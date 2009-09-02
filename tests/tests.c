@@ -521,15 +521,18 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
     mpfr_neg (x, x, MPFR_RNDN);
 }
 
-/* The test_one argument is a boolean. If it is true and rnd is a rounding
-   mode toward infinity, then the function is tested in only one rounding
-   mode (the one provided in rnd) and the variable rndnext is not used (due to
-   the break). If it is true and rnd is a rounding mode toward or away from
-   zero, then the function is tested twice, first with the provided rounding
-   mode and second with the rounding mode toward the corresponding infinity
-   (determined by the sign of the result). If it is false, then the function
-   is tested in the 5 rounding modes, and rnd must initially be MPFR_RNDZ; thus
+/* The test_one argument is seen a boolean. If it is true and rnd is
+   a rounding mode toward infinity, then the function is tested in
+   only one rounding mode (the one provided in rnd) and the variable
+   rndnext is not used (due to the break). If it is true and rnd is a
+   rounding mode toward or away from zero, then the function is tested
+   twice, first with the provided rounding mode and second with the
+   rounding mode toward the corresponding infinity (determined by the
+   sign of the result). If it is false, then the function is tested
+   in the 5 rounding modes, and rnd must initially be MPFR_RNDZ; thus
    rndnext will be initialized in the first iteration.
+   If the test_one argument is 2, then this means that y is exact, and
+   the ternary value is checked.
    As examples of use, see the calls to test5rm from the data_check and
    bad_cases functions. */
 static void
@@ -543,8 +546,10 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
   mpfr_set_prec (z, yprec);
   while (1)
     {
+      int inex;
+
       MPFR_ASSERTN (rnd != MPFR_RND_MAX);
-      fct (z, x, rnd);
+      inex = fct (z, x, rnd);
       if (! (mpfr_equal_p (y, z) || (mpfr_nan_p (y) && mpfr_nan_p (z))))
         {
           printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
@@ -556,6 +561,15 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           printf ("\ngot      ");
           mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
           printf ("\n");
+          exit (1);
+        }
+      if (test_one == 2 && inex != 0)
+        {
+          printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
+                  name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
+                  mpfr_print_rnd_mode (rnd));
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
+          printf ("\nexact case, but non-zero ternary value (%d)\n", inex);
           exit (1);
         }
       if (rnd == MPFR_RNDN)
@@ -606,7 +620,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
 
    xprec is the input precision
    yprec is the output precision
-   rnd is the rounding mode (n, z, u, d, a, Z)
+   rnd is the rounding mode (n, z, u, d, a, Z, *)
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
 
@@ -615,6 +629,9 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    mode is tested in precision yprec-1. This is useful for worst cases,
    where yprec is the minimum value such that one has a worst case in a
    directed rounding mode.
+
+   If rnd is *, y must be an exact case. All the rounding modes are tested
+   and the ternary value is checked (it must be 0).
  */
 void
 data_check (char *f, int (*foo) (FLIST), char *name)
@@ -714,6 +731,9 @@ data_check (char *f, int (*foo) (FLIST), char *name)
             case 'd':
               rnd = MPFR_RNDD;
               break;
+            case '*':
+              rnd = MPFR_RND_MAX; /* non-existing rounding mode */
+              break;
             default:
               printf ("Error: unexpected rounding mode"
                       " in file '%s': %c\n", f, (int) r);
@@ -742,7 +762,14 @@ data_check (char *f, int (*foo) (FLIST), char *name)
               perror ("data_check");
               exit (1);
             }
-          test5rm (foo, x, y, z, rnd, r != 'Z', name);
+          if (r == '*')
+            {
+              int rndint;
+              RND_LOOP (rndint)
+                test5rm (foo, x, y, z, (mpfr_rnd_t) rndint, 2, name);
+            }
+          else
+            test5rm (foo, x, y, z, rnd, r != 'Z', name);
         }
     }
 
