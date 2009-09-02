@@ -311,6 +311,7 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
+  /* Digamma is undefined for negative integers */
   if (MPFR_IS_NEG(x) && mpfr_integer_p (x))
     {
       MPFR_SET_NAN(y);
@@ -357,7 +358,6 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Digamma is undefined for negative integers */
   if (MPFR_IS_NEG(x))
     inex = mpfr_digamma_reflection (y, x, rnd_mode);
   /* if x < 1/2 we use the reflection formula */
