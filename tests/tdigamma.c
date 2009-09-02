@@ -33,6 +33,8 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 2);
 
+  data_check ("data/digamma", mpfr_digamma, "mpfr_digamma");
+
   tests_end_mpfr ();
   return 0;
 }
