@@ -33,10 +33,10 @@
 17 53 n -3.5 0xB1C685C38A29Dp-51
 17 53 n -4.5 0xCE384CDFFBF0Fp-51
 # special values
-2 2 n nan nan
-2 2 n +inf +inf
-2 2 n -inf nan
-2 2 n +0 -inf
-2 2 n -0 +inf
-2 2 n -1 nan
-2 2 n -2 nan
+2 2 * nan nan
+2 2 * +inf +inf
+2 2 * -inf nan
+2 2 * +0 -inf
+2 2 * -0 +inf
+2 2 * -1 nan
+2 2 * -2 nan
