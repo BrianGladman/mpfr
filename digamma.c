@@ -215,7 +215,7 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   else
     q = MPFR_PREC(x) + 1;
   mpfr_init2 (x_plus_j, q);
-  
+
   mpfr_init2 (t, p);
   mpfr_init2 (u, p);
   MPFR_ZIV_INIT (loop, p);
