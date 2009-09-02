@@ -522,11 +522,11 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
 }
 
 /* The test_one argument is a boolean. If it is true and rnd is a rounding
-   mode towards infinity, then the function is tested in only one rounding
+   mode toward infinity, then the function is tested in only one rounding
    mode (the one provided in rnd) and the variable rndnext is not used (due to
-   the break). If it is true and rnd is a rounding mode towards or away from
+   the break). If it is true and rnd is a rounding mode toward or away from
    zero, then the function is tested twice, first with the provided rounding
-   mode and second with the rounding mode towards the corresponding infinity
+   mode and second with the rounding mode toward the corresponding infinity
    (determined by the sign of the result). If it is false, then the function
    is tested in the 5 rounding modes, and rnd must initially be MPFR_RNDZ; thus
    rndnext will be initialized in the first iteration.
@@ -610,7 +610,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
 
-   If rnd is Z, y is the expected output in round-towards-zero, and the
+   If rnd is Z, y is the expected output in round-toward-zero, and the
    four directed rounding modes are tested, then the round-to-nearest
    mode is tested in precision yprec-1. This is useful for worst cases,
    where yprec is the minimum value such that one has a worst case in a
@@ -871,7 +871,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
           mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
           printf ("\n");
         }
-      /* Note: y is now the expected result rounded towards zero. */
+      /* Note: y is now the expected result rounded toward zero. */
       test5rm (fct, x, y, z, MPFR_RNDZ, 0, name);
     next_i:
       /* In case the exponent range has been changed by

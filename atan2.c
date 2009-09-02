@@ -200,7 +200,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                Assuming pz <= -2 emin + 5, we can round away from zero
                (this is what mpfr_underflow always does on MPFR_RNDN).
                In the case MPFR_RNDN with |y/x| <= 2^(emin-2), we round
-               towards zero, as |atan(z)/z| < 1. */
+               toward zero, as |atan(z)/z| < 1. */
             MPFR_ASSERTN (MPFR_PREC_MAX <=
                           2 * (mpfr_uexp_t) - MPFR_EMIN_MIN + 5);
             if (rnd_mode == MPFR_RNDN && MPFR_IS_ZERO (tmp))

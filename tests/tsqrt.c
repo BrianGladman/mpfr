@@ -178,7 +178,7 @@ check_float (void)
   check24("281474876047360.0", MPFR_RNDD, "1.6777212e7");
   check24("91214552498176.0", MPFR_RNDD, "9.550631e6");
 
-  /* check that rounding away is just rounding towards plus infinity */
+  /* check that rounding away is just rounding toward plus infinity */
   check24("91214552498176.0", MPFR_RNDA, "9.550632e6");
 }
 
@@ -679,7 +679,7 @@ main (void)
   check4 ("72154663483843080704304789585920.0", MPFR_RNDD,
           "1.e2d9a51977e6d@13");
 
-  /* check that rounding away is just rounding towards plus infinity */
+  /* check that rounding away is just rounding toward plus infinity */
   check4 ("72154663483843080704304789585920.0", MPFR_RNDA,
           "1.e2d9a51977e6e@13");
 

@@ -1257,7 +1257,7 @@ typedef struct {
 
    y is the destination (a mpfr_t), v the value to set (a mpfr_t),
    err1+err2 with err2 <= 3 the error term (mp_exp_t's), dir (an int) is
-   the direction of the committed error (if dir = 0, it rounds towards 0,
+   the direction of the committed error (if dir = 0, it rounds toward 0,
    if dir=1, it rounds away from 0), rnd the rounding mode.
 
    It returns from the function a ternary value in case of success.

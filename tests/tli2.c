@@ -124,7 +124,7 @@ normal (void)
       exit (1);
     }
 
-  /* round towards zero mode and 5 bits of precision,
+  /* round toward zero mode and 5 bits of precision,
      it should be rounded to 2^-2 + 2^-6 */
   mpfr_set_prec (y, 5);
   inexact = mpfr_li2 (y, x, MPFR_RNDZ);

@@ -72,7 +72,7 @@ check3 (const char *op, mpfr_rnd_t rnd, const char *res)
   mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
-/* expx is the value of exp(X) rounded towards -infinity */
+/* expx is the value of exp(X) rounded toward -infinity */
 static void
 check_worst_case (const char *Xs, const char *expxs)
 {
@@ -83,7 +83,7 @@ check_worst_case (const char *Xs, const char *expxs)
   test_exp(y, x, MPFR_RNDD);
   if (mpfr_cmp_str1 (y, expxs))
     {
-      printf ("exp(x) rounded towards -infinity is wrong\n");
+      printf ("exp(x) rounded toward -infinity is wrong\n");
       exit(1);
     }
   mpfr_set_str1(x, Xs);
@@ -91,7 +91,7 @@ check_worst_case (const char *Xs, const char *expxs)
   mpfr_nexttoinf (y);
   if (mpfr_cmp(x,y))
     {
-      printf ("exp(x) rounded towards +infinity is wrong\n");
+      printf ("exp(x) rounded toward +infinity is wrong\n");
       exit(1);
     }
   mpfr_clears (x, y, (mpfr_ptr) 0);

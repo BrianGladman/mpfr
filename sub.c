@@ -88,7 +88,7 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     { /* signs differ, it's an addition */
       if (MPFR_GET_EXP (b) < MPFR_GET_EXP (c))
-         { /* exchange rounding modes towards +/- infinity */
+         { /* exchange rounding modes toward +/- infinity */
           int inexact;
           rnd_mode = MPFR_INVERT_RND (rnd_mode);
           if (MPFR_LIKELY (MPFR_PREC (a) == MPFR_PREC (b)
