@@ -3946,6 +3946,22 @@ where
 3 - \Exp(t))
 \end{eqnarray*}
 
+\subsection{The Digamma Function}
+
+The Digamma function \texttt{mpfr\_digamma} is defined by:
+\[ \psi(x) = \frac{d}{dx} \log\Gamma(x), \]
+and is computed from the asymptotic series \cite{Smith01}
+\[ \psi(x) \sim \log x - \frac{1}{2x} - \sum_{n=1}^{\infty}
+   \frac{B_{2n}}{2n x^{2n}}. \]
+(We assume the error in the sum is bounded by the first neglected term.)
+Since $B_{2n} \approx 2 (2n)!/(2\pi)^{-2n}$, the terms of the sum decrease
+until $n \approx \pi x$, and then the error term is $\approx e^{-2\pi x}$.
+If $x$ is too small with respect to the target precision, we use the formula
+\cite{Smith01}:
+\[ \psi(x+j) = \frac{1}{x+j-1} + \frac{1}{x+j-2} + \cdots + \frac{1}{x} +
+\psi(x), \]
+and compute $\psi(x+j)$ instead with the asymptotic formula.
+
 \subsection{Radix Conversion}
 
 The \texttt{mpfr\_get\_str} function with size $0$ and base $b$ chooses an

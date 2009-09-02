@@ -1827,6 +1827,12 @@ by @var{signp}. When @var{op} is an infinity or a non-positive integer,
 the sign of the zero.
 @end deftypefun
 
+@deftypefun int mpfr_digamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Digamma (sometimes also called Psi)
+function on @var{op}, rounded in the direction @var{rnd}.
+When @var{op} is a negative integer, NaN is returned.
+@end deftypefun
+
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_zeta_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Riemann Zeta function on @var{op},
