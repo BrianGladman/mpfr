@@ -113,7 +113,6 @@ Table of contents:
     E1(+0)   = +Inf
     E1(-0)   = -Inf
   DawsonIntegral
-  Psi = LogDerivative : see ref. [Smith01] in algorithms.bib
   GammaD(x) = Gamma(x+1/2)
 - functions defined in the LIA-2 standard
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq
