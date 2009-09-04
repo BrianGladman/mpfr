@@ -22,7 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-#include "bernoulli.c"
 
 /* given a precision p, return alpha, such that the argument reduction
    will use k = alpha*p*log(2).
@@ -360,8 +359,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
       if (Bm == 0)
         {
-          B = bernoulli ((mpz_t *) 0, 0);
-          B = bernoulli (B, 1);
+          B = mpfr_bernoulli_internal ((mpz_t *) 0, 0);
+          B = mpfr_bernoulli_internal (B, 1);
           Bm = 2;
         }
 
@@ -392,7 +391,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
           /* invariant: t=1/(2m)/(2m-1)/z^(2m-1)/(2m+1)! */
           if (Bm <= m)
             {
-              B = bernoulli (B, m); /* B[2m]*(2m+1)!, exact */
+              B = mpfr_bernoulli_internal (B, m); /* B[2m]*(2m+1)!, exact */
               Bm ++;
             }
           mpfr_mul_z (v, t, B[m], MPFR_RNDN); /* (1+u)^(10m-7) */

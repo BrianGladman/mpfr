@@ -22,7 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-#include "bernoulli.c"
 
 /* Compute the alternating series
    s = S(z) = \sum_{k=0}^infty B_{2k} (z))^{2k+1} / (2k+1)!
@@ -54,7 +53,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   mpfr_init2 (v, p);
   mpfr_init2 (w, p);
 
-  B = bernoulli ((mpz_t *) 0, 0);
+  B = mpfr_bernoulli_internal ((mpz_t *) 0, 0);
   Bm = Bmax = 1;
 
   MPFR_ZIV_INIT (loop, p);
@@ -69,7 +68,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
       for (i = 1;; i++)
         {
           if (i >= Bmax)
-            B = bernoulli (B, Bmax++);  /* B_2i * (2i+1)!, exact */
+            B = mpfr_bernoulli_internal (B, Bmax++); /* B_2i*(2i+1)!, exact */
 
           mpfr_mul (v, u, v, MPFR_RNDU);
           mpfr_div_ui (v, v, 2 * i, MPFR_RNDU);

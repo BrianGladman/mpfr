@@ -1678,6 +1678,9 @@ __MPFR_DECLSPEC void mpfr_abort_prec_max _MPFR_PROTO ((void))
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
                                                 unsigned long));
 
+__MPFR_DECLSPEC mpz_t* mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
+                                                            unsigned long));
+
 #if defined (__cplusplus)
 }
 #endif

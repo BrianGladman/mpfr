@@ -1,4 +1,4 @@
-/* bernoulli -- auxiliary function to compute Bernoulli numbers.
+/* bernoulli -- internal function to compute Bernoulli numbers.
 
 Copyright 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -20,6 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include "mpfr-impl.h"
+
 /* assuming b[0]...b[2(n-1)] are computed, computes and stores B[2n]*(2n+1)!
 
    t/(exp(t)-1) = sum(B[j]*t^j/j!, j=0..infinity)
@@ -33,8 +35,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Then C[n] = -sum(binomial(n+1,k)*C[k]*n!/(k+1)!,  k=0..n-1),
    which proves that the C[n] are integers.
 */
-static mpz_t*
-bernoulli (mpz_t *b, unsigned long n)
+mpz_t*
+mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
 {
   if (n == 0)
     {

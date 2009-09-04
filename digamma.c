@@ -21,7 +21,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
-#include "bernoulli.c"
 
 /* Put in s an approximation of digamma(x).
    Assumes x >= 2.
@@ -60,12 +59,12 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
   /* in the following we note err=xxx when the ratio between the approximation
      and the exact result can be written (1 + theta)^xxx for |theta| <= 2^(-p),
      following Higham's method */
-  B = bernoulli ((mpz_t *) 0, 0);
+  B = mpfr_bernoulli_internal ((mpz_t *) 0, 0);
   mpfr_set_ui (t, 1, MPFR_RNDN); /* err = 0 */
   for (n = 1;; n++)
     {
       /* compute next Bernoulli number */
-      B = bernoulli (B, n);
+      B = mpfr_bernoulli_internal (B, n);
       /* The main term is Bernoulli[2n]/(2n)/x^(2n) = B[n]/(2n+1)!(2n)/x^(2n)
          = B[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2. */
       mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
