@@ -292,6 +292,7 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           if (MPFR_IS_POS(x)) /* Digamma(+Inf) = +Inf */
             {
+              MPFR_SET_SAME_SIGN(y, x);
               MPFR_SET_INF(y);
               MPFR_RET(0);
             }

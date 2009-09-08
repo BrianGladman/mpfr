@@ -26,10 +26,36 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TEST_FUNCTION mpfr_digamma
 #include "tgeneric.c"
 
+static void
+special ()
+{
+  mpfr_t x, y;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  
+  mpfr_set_inf (y, -1);
+  mpfr_set_inf (x, 1);
+  mpfr_digamma (y, x, MPFR_RNDN);
+  if (mpfr_inf_p (y) == 0 || mpfr_sgn (y) < 0)
+    {
+      printf ("error for Psi(+Inf)\n");
+      printf ("expected +Inf\n");
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  special ();
 
   test_generic (2, 100, 2);
 
