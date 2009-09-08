@@ -27,13 +27,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "tgeneric.c"
 
 static void
-special ()
+special (void)
 {
   mpfr_t x, y;
 
   mpfr_init (x);
   mpfr_init (y);
-  
+
   mpfr_set_inf (y, -1);
   mpfr_set_inf (x, 1);
   mpfr_digamma (y, x, MPFR_RNDN);
@@ -64,4 +64,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
