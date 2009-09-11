@@ -396,7 +396,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))          \
     (void) va_arg ((ap), long);                                         \
   else if ((specinfo).spec == 'c')                                      \
-    (void) va_arg ((ap), wint_t);                                       \
+    (void) va_arg ((ap), int);                                          \
   else if ((specinfo).spec == 's')                                      \
     (void) va_arg ((ap), int); /* we assume integer promotion */        \
   break;
