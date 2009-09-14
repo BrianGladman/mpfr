@@ -106,12 +106,37 @@ check_inf_nan (void)
 #endif
 }
 
+static void
+bug20090520 (void)
+{
+  mpfr_t x;
+  long double d, e;
+  int i;
+
+  mpfr_init (x);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  d = 1.0;
+  mpfr_div_2exp (x, x, 16383, MPFR_RNDN);
+  for (i = 0; i < 16383; i++)
+    d *= 0.5;
+  e = mpfr_get_ld (x, MPFR_RNDN);
+  if (e != d)
+    {
+      printf ("mpfr_get_ld(1e-16383) failed\n");
+      printf ("expected %La\n", d);
+      printf ("got      %La\n", e);
+      exit (1);
+    }
+  mpfr_clear (x);
+}
 
 int
 main (void)
 {
   tests_start_mpfr ();
   mpfr_test_init ();
+
+  bug20090520 ();
 
   check_round ();
   check_inf_nan ();

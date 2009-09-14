@@ -128,7 +128,10 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       tmpmant = MPFR_MANT (tmp);
       e = MPFR_GET_EXP (tmp);
-      denorm = MPFR_UNLIKELY (e < -16382) ? - e - 16382 + 1 : 0;
+      /* the smallest normal number is 2^(-16382), which is 0.5*2^(-16381)
+         in MPFR, thus any exponent <= -16382 corresponds to a subnormal
+         number */
+      denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
 #if BITS_PER_MP_LIMB >= 64
       ld.s.manl = (tmpmant[0] >> denorm);
       ld.s.manh = (tmpmant[0] >> denorm) >> 32;
