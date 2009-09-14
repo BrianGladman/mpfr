@@ -20,6 +20,10 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* Reference: James Demmel and Yozo Hida, Fast and accurate floating-point
+   summation with application to computational geometry, Numerical Algorithms,
+   volume 37, number 1-4, pages 101--112, 2004. */
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -233,7 +237,6 @@ sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mp_prec_t F)
 }
 
 /* Sum a list of floating-point numbers.
- * FIXME : add reference to Demmel-Hida's paper.
  */
 
 int
