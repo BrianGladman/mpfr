@@ -1,6 +1,6 @@
-/* mpfr_zero_p -- check for zero
+/* mpfr_regular_p -- check for regular number (neither NaN, Inf or zero)
 
-Copyright 2004, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+Copyright 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-(mpfr_zero_p) (mpfr_srcptr x)
+(mpfr_regular_p) (mpfr_srcptr x)
 {
-  return MPFR_IS_ZERO(x);
+  return MPFR_IS_SINGULAR(x) == 0;
 }

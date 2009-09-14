@@ -1591,8 +1591,10 @@ If one of the operands is NaN, set the @emph{erange} flag and return zero.
 @deftypefunx int mpfr_inf_p (mpfr_t @var{op})
 @deftypefunx int mpfr_number_p (mpfr_t @var{op})
 @deftypefunx int mpfr_zero_p (mpfr_t @var{op})
+@deftypefunx int mpfr_regular_p (mpfr_t @var{op})
 Return non-zero if @var{op} is respectively NaN, an infinity, an ordinary
-number (i.e.@: neither NaN nor an infinity) or zero. Return zero otherwise.
+number (i.e.@: neither NaN nor an infinity), zero, or a regular number
+(i.e.@: neither NaN, nor an infinity nor zero). Return zero otherwise.
 @end deftypefun
 
 @deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
