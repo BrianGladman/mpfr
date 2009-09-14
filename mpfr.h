@@ -726,9 +726,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #ifndef MPFR_USE_NO_MACRO
 
 /* Inlining theses functions is both faster and smaller */
-#define mpfr_nan_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
-#define mpfr_inf_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_INF)
-#define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
+#define mpfr_nan_p(_x)      ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
+#define mpfr_inf_p(_x)      ((_x)->_mpfr_exp == __MPFR_EXP_INF)
+#define mpfr_zero_p(_x)     ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
+#define mpfr_regular_p(_x)  ((_x)->_mpfr_exp >  __MPFR_EXP_INF)
 #define mpfr_sgn(_x)                                          \
   ((_x)->_mpfr_exp < __MPFR_EXP_INF ?                         \
    (mpfr_nan_p (_x) ? mpfr_set_erangeflag () : (void) 0), 0 : \
