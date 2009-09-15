@@ -34,9 +34,6 @@ Table of contents:
 
 - add a description of the algorithms used + proof of correctness
 
-- mpfr_set_prec: add an explanation of how to speed up calculations
-  which increase their precision at each step.
-
 
 ##############################################################################
 2. Installation
