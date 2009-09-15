@@ -65,6 +65,26 @@ check_denorms (void)
         }
     }
 
+  mpfr_set_str_binary (x, "1e-1074");
+  dd = mpfr_get_d (x, MPFR_RNDA);
+  d2 = 0x1p-1074;
+  if (dd != d2)
+    {
+      printf ("Error for x=1e-1074, RNDA\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "1e-1075");
+  dd = mpfr_get_d (x, MPFR_RNDA);
+  d2 = 0x1p-1074;
+  if (dd != d2)
+    {
+      printf ("Error for x=1e-1075, RNDA\n");
+      printf ("expected %a\n", d2);
+      printf ("got      %a\n", dd);
+      exit (1);
+    }
+
   mpfr_clear (x);
   return fail;
 }

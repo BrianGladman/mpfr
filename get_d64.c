@@ -317,6 +317,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   e = MPFR_GET_EXP (src);
   negative = MPFR_IS_NEG (src);
 
+  if (MPFR_UNLIKELY(rnd_mode == MPFR_RNDA))
+    rnd_mode = negative ? MPFR_RNDD : MPFR_RNDU;
+
   /* the smallest decimal64 number is 10^(-398),
      with 2^(-1323) < 10^(-398) < 2^(-1322) */
   if (MPFR_UNLIKELY (e < -1323)) /* src <= 2^(-1324) < 1/2*10^(-398) */

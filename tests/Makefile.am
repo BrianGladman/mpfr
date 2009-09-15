@@ -20,10 +20,10 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn		\
      tconst_log2 tconst_pi tcopysign tcos tcosh tcot tcoth	\
      tcsc tcsch td_div td_sub tdigamma tdim tdiv tdiv_d tdiv_ui \
      teint teq terf texp texp10 texp2 texpm1 tfactorial tfits   \
-     tfma tfmod tfms tfprintf tfrac tgamma tget_d tget_d_2exp	\
-     tget_f tget_ld_2exp tget_set_d64 tget_sj tget_str		\
-     tget_z tgmpop thyperbolic thypot tinp_str tj0 tj1 tjn	\
-     tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2	\
+     tfma tfmod tfms tfprintf tfrac tgamma tget_binary32 tget_d \
+     tget_d_2exp tget_f tget_ld_2exp tget_set_d64 tget_sj       \
+     tget_str tget_z tgmpop thyperbolic thypot tinp_str tj0 tj1 \
+     tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2	\
      tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui	\
      tnext tout_str toutimpl tpow tpow3 tpow_all tpow_z		\
      tprintf trandom trec_sqrt tremquo trint troot		\

@@ -382,6 +382,11 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #endif
 #define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
 
+#ifndef IEEE_FLT_MANT_DIG
+#define IEEE_FLT_MANT_DIG 24
+#endif
+#define MPFR_LIMBS_PER_BINARY32 ((IEEE_FLT_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
+
 /* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0
    at compile time. */
 #if defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
