@@ -1930,13 +1930,13 @@ not call these functions directly (they could have been called internally).
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long @var{n}, mpfr_rnd_t @var{rnd})
-Set @var{ret} to the sum of all elements of @var{tab} whose size is @var{n},
+Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 rounded in the direction @var{rnd}. Warning, @var{tab} is a table of pointers
-to mpfr_t, not a table of mpfr_t (preliminary interface). The returned
-@code{int} value is zero when the computed value is the exact value,
-and non-zero when this cannot be guaranteed, without giving the
-direction of the error as the other functions do. However, @code{mpfr_sum} does
-guarantee the result is correctly rounded.
+to mpfr_t, not a table of mpfr_t (preliminary interface). If the returned
+@code{int} value is zero, @var{rop} is guaranteed to be the exact
+sum; otherwise @var{rop} might be smaller than, equal to, or larger than
+the exact sum (in accordance to the rounding mode).
+However, @code{mpfr_sum} does guarantee the result is correctly rounded.
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
