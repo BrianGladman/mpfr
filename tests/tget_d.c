@@ -65,6 +65,9 @@ check_denorms (void)
         }
     }
 
+  /* FIXME: The following code is C99-only (0x syntax for FP numbers).
+     And the tests are incorrect on platforms with no subnormals. */
+
   mpfr_set_str_binary (x, "1e-1074");
   dd = mpfr_get_d (x, MPFR_RNDA);
   d2 = 0x1p-1074;
