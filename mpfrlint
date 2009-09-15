@@ -36,7 +36,7 @@ do
   fi
 done
 
-texisvnd=`TZ=UTC svn info mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
+texisvnd=`LC_ALL=C TZ=UTC svn info mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [ $? -eq 0 ] && [ -n "$texisvnd" ]; then
   texidate=`sed -n 's/@set UPDATED-MONTH \([A-Z][a-z][a-z]\).*\( [0-9][0-9][0-9][0-9]\)/\1\2/p' mpfr.texi`
   cat <<EOF
