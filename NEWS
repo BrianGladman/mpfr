@@ -33,6 +33,7 @@ _ The rounding mode type mp_rnd_t is now mpfr_rnd_t (mp_rnd_t kept for
   information about options used at MPFR build time.
 - New function mpfr_set_zero.
 - New function mpfr_digamma.
+- New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
 - Some documentation files are installed in $docdir.
 - Bug fixes.
 
