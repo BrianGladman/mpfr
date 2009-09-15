@@ -1,4 +1,4 @@
-/* mpfr_get_binary32 -- convert a mpfr_t to a machine single precision float
+/* mpfr_get_flt -- convert a mpfr_t to a machine single precision float
 
 Copyright 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_FLT_INFP ((float) MPFR_DBL_INFP)
 
 float
-mpfr_get_binary32 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
+mpfr_get_flt (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   int negative;
   mp_exp_t e;
@@ -50,7 +50,7 @@ mpfr_get_binary32 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(rnd_mode == MPFR_RNDA))
     rnd_mode = negative ? MPFR_RNDD : MPFR_RNDU;
 
-  /* the smallest positive normal binary32 number is 2^(-126) = 0.5*2^(-125),
+  /* the smallest positive normal float number is 2^(-126) = 0.5*2^(-125),
      and the smallest positive subnormal number is 2^(-149) = 0.5*2^(-148) */
   if (MPFR_UNLIKELY (e < -148))
     {
@@ -67,7 +67,7 @@ mpfr_get_binary32 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
          ? FLT_MIN : 0.0);
       if (d != 0.0) /* we multiply FLT_MIN = 2^(-126) by FLT_EPSILON = 2^(-23)
                        to get +-2^(-149) */
-        d *= DBL_EPSILON;
+        d *= FLT_EPSILON;
     }
   /* the largest normal number is 2^128*(1-2^(-24)) = 0.111...111e128 */
   else if (MPFR_UNLIKELY (e > 128))
@@ -82,7 +82,7 @@ mpfr_get_binary32 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     {
       int nbits;
       mp_size_t np, i;
-      mp_limb_t tp[MPFR_LIMBS_PER_BINARY32];
+      mp_limb_t tp[MPFR_LIMBS_PER_FLT];
       int carry;
       double dd;
 
@@ -94,7 +94,7 @@ mpfr_get_binary32 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD (nbits >= 1);
         }
       np = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
-      MPFR_ASSERTD(np <= MPFR_LIMBS_PER_BINARY32);
+      MPFR_ASSERTD(np <= MPFR_LIMBS_PER_FLT);
       carry = mpfr_round_raw_4 (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
                                 nbits, rnd_mode);
       /* we perform the reconstruction using the 'double' type here,

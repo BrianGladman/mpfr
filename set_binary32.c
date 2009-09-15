@@ -1,4 +1,4 @@
-/* mpfr_set_binary32 -- convert a machine single precision float to mpfr_t
+/* mpfr_set_flt -- convert a machine single precision float to mpfr_t
 
 Copyright 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_set_binary32 (mpfr_ptr r, float f, mpfr_rnd_t rnd_mode)
+mpfr_set_flt (mpfr_ptr r, float f, mpfr_rnd_t rnd_mode)
 {
   /* we convert f to double precision and use mpfr_set_d;
      NaN and infinities should be preserved, and all single precision

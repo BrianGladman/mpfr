@@ -1068,7 +1068,7 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_uj (mpfr_t @var{rop}, uintmax_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_sj (mpfr_t @var{rop}, intmax_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_binary32 (mpfr_t @var{rop}, float @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_flt (mpfr_t @var{rop}, float @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ld (mpfr_t @var{rop}, long double @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_decimal64 (mpfr_t @var{rop}, _Decimal64 @var{op}, mpfr_rnd_t @var{rnd})
@@ -1082,7 +1082,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system does not support the IEEE 754 standard,
-@code{mpfr_set_binary32}, @code{mpfr_set_d}, @code{mpfr_set_ld} and
+@code{mpfr_set_flt}, @code{mpfr_set_d}, @code{mpfr_set_ld} and
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
 option @samp{--enable-decimal-float}, which also requires
@@ -1096,7 +1096,7 @@ denominator) can not be representable as a @code{mpfr_t}.
 Note: If you want to store a floating-point constant to a @code{mpfr_t},
 you should use @code{mpfr_set_str} (or one of the MPFR constant functions,
 such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of 
-@code{mpfr_set_binary32}, @code{mpfr_set_d},
+@code{mpfr_set_flt}, @code{mpfr_set_d},
 @code{mpfr_set_ld} or @code{mpfr_set_decimal64}.
 Otherwise the floating-point constant will be first
 converted into a reduced-precision (e.g., 53-bit) binary number before
@@ -1237,7 +1237,7 @@ See @code{mpfr_set_str}.
 @cindex Conversion functions
 @section Conversion Functions
 
-@deftypefun float mpfr_get_binary32 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun float mpfr_get_flt (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx double mpfr_get_d (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx _Decimal64 mpfr_get_decimal64 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
