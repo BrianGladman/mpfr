@@ -349,26 +349,28 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t), char *foo)
       /* first check wrt the first operand */
       r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
-      if (mpfr_compare (res1, ref1) || inexa != inexd)
+      /* the low 2 bits of the inexact flag concern the 1st operand */
+      if (mpfr_compare (res1, ref1) || (inexa & 3) != (inexd & 3))
         {
           printf ("Error with RNDA for %s (1st operand)\n", foo);
           DISP2("a=",ref3);
-          DISP("expected ", ref1);
-          DISP("got      ", res1);
-          printf ("inexa=%d inexd=%d\n", inexa, inexd);
+          DISP("expected ", ref1); printf ("\n");
+          DISP("got      ", res1); printf ("\n");
+          printf ("inexa=%d inexd=%d\n", inexa & 3, inexd & 3);
           exit (1);
         }
 
       /* now check wrt the second operand */
       r = MPFR_SIGN(res2) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
-      if (mpfr_compare (res2, ref2) || inexa != inexd)
+      /* bits 2..3 of the inexact flag concern the 2nd operand */
+      if (mpfr_compare (res2, ref2) || (inexa >> 2) != (inexd >> 2))
         {
           printf ("Error with RNDA for %s (2nd operand)\n", foo);
           DISP2("a=",ref3);
           DISP("expected ", ref2); printf ("\n");
           DISP("got      ", res2); printf ("\n");
-          printf ("inexa=%d inexd=%d\n", inexa, inexd);
+          printf ("inexa=%d inexd=%d\n", inexa >> 2, inexd >> 2);
           exit (1);
         }
 

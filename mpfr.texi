@@ -1691,7 +1691,10 @@ Set simultaneously @var{sop} to the sine of @var{op} and
                    @var{cop} to the cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precisions of
 @var{sop} and @var{cop}, which must be different variables.
-Return 0 iff both results are exact.
+Return 0 iff both results are exact, more precisely it returns @math{s+4c}
+where @math{s=0} if @var{sop} is exact, @math{s=1} if @var{sop} is larger
+than the sine of @var{op}, @math{s=2} if @var{sop} is smaller than the sine
+of @var{op}, and similarly for @math{c}.
 @end deftypefun
 
 @deftypefun int mpfr_acos (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1753,10 +1756,11 @@ rounded in the direction @var{rnd}.
 
 @deftypefun int mpfr_sinh_cosh (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set simultaneously @var{sop} to the hyperbolic sine of @var{op} and
-                   @var{cop} to the hyperbolic cosine of @var{op},
+@var{cop} to the hyperbolic cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precision of
 @var{sop} and @var{cop} which must be different variables.
-Return 0 iff both results are exact.
+Return 0 iff both results are exact (see @code{mpfr_sin_cos} for a more
+detailed description of the return value).
 @end deftypefun
 
 @deftypefun int mpfr_sech (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

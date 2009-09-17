@@ -23,6 +23,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
+#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
+
 /* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact
    ie, iff x = 0 */
 int
@@ -54,7 +57,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           MPFR_SET_SAME_SIGN (y, x);
           /* y = 0, thus exact, but z is inexact in case of underflow
              or overflow */
-          return mpfr_set_ui (z, 1, rnd_mode);
+          inexy = 0; /* y is exact */
+          inexz = mpfr_set_ui (z, 1, rnd_mode);
+          return INEX(inexy,inexz);
         }
     }
 
@@ -208,5 +213,5 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
   mpfr_check_range (y, inexy, rnd_mode);
   mpfr_check_range (z, inexz, rnd_mode);
-  MPFR_RET (1); /* Always inexact */
+  MPFR_RET (INEX(inexy,inexz));
 }

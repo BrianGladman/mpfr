@@ -23,6 +23,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
+#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
+
  /* The computations are done by
     cosh(x) = 1/2 [e^(x)+e^(-x)]
     sinh(x) = 1/2 [e^(x)-e^(-x)]
@@ -32,12 +35,12 @@ int
 mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
 {
   mpfr_t x;
-  int inexact, inexact_sh, inexact_ch;
+  int inexact_sh, inexact_ch;
 
   MPFR_ASSERTN (sh != ch);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-                 ("sh[%#R]=%R ch[%#R]=%R inexact=%d", sh, sh, ch, ch, inexact));
+                 ("sh[%#R]=%R ch[%#R]=%R", sh, sh, ch, ch));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
     {
@@ -60,7 +63,9 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_ZERO (xt));
           MPFR_SET_ZERO (sh);                   /* sinh(0) = 0 */
           MPFR_SET_SAME_SIGN (sh, xt);
-          return mpfr_set_ui (ch, 1, rnd_mode); /* cosh(0) = 1 */
+          inexact_sh = 0;
+          inexact_ch = mpfr_set_ui (ch, 1, rnd_mode); /* cosh(0) = 1 */
+          return INEX(inexact_sh,inexact_ch);
         }
     }
 
@@ -145,8 +150,8 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
   }
 
   /* now, let's raise the flags if needed */
-  inexact = mpfr_check_range (sh, inexact_sh, rnd_mode);
-  inexact = mpfr_check_range (ch, inexact_ch, rnd_mode) || inexact;
+  inexact_sh = mpfr_check_range (sh, inexact_sh, rnd_mode);
+  inexact_ch = mpfr_check_range (ch, inexact_ch, rnd_mode);
 
-  return inexact;
+  return INEX(inexact_sh,inexact_ch);
 }

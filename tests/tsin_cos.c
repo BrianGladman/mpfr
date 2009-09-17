@@ -280,14 +280,28 @@ static void
 test20071214 (void)
 {
   mpfr_t a, b;
+  int inex;
 
   mpfr_init2 (a, 4);
   mpfr_init2 (b, 4);
 
   mpfr_set_ui_2exp (a, 3, -4, MPFR_RNDN);
-  mpfr_sin_cos (a, b, a, MPFR_RNDD);
+  inex = mpfr_sin_cos (a, b, a, MPFR_RNDD);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 11, -6) == 0);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (b, 15, -4) == 0);
+  MPFR_ASSERTN(inex == 10);
+
+  mpfr_set_ui_2exp (a, 3, -4, MPFR_RNDN);
+  inex = mpfr_sin_cos (a, b, a, MPFR_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 3, -4) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (b, 1) == 0);
+  MPFR_ASSERTN(inex == 5);
+
+  mpfr_set_ui_2exp (a, 3, -4, MPFR_RNDN);
+  inex = mpfr_sin_cos (a, b, a, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 3, -4) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (b, 1) == 0);
+  MPFR_ASSERTN(inex == 5);
 
   mpfr_clear (a);
   mpfr_clear (b);
