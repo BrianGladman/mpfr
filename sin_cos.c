@@ -327,22 +327,22 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mp_prec_t r,
     {
       /* i is even here */
       /* invariant: Q[0]*Q[1]*...*Q[k] equals (2i-1)!,
-	 we have already summed terms of index < i
-	 in S[0]/Q[0], ..., S[k]/Q[k] */
+         we have already summed terms of index < i
+         in S[0]/Q[0], ..., S[k]/Q[k] */
       k ++;
       if (k + 1 >= alloc) /* necessarily k + 1 = alloc */
-	{
-	  alloc ++;
-	  mpz_init (T[k+1]);
-	  mpz_init (Q[k+1]);
-	  mpz_init (ptoj[k+1]);
-	  mpz_mul (ptoj[k+1], ptoj[k], ptoj[k]); /* pp^(2^(k+1)) */
-	  size_ptoj[k+1] = mpz_sizeinbase (ptoj[k+1], 2);
-	}
+        {
+          alloc ++;
+          mpz_init (T[k+1]);
+          mpz_init (Q[k+1]);
+          mpz_init (ptoj[k+1]);
+          mpz_mul (ptoj[k+1], ptoj[k], ptoj[k]); /* pp^(2^(k+1)) */
+          size_ptoj[k+1] = mpz_sizeinbase (ptoj[k+1], 2);
+        }
       /* for i even, we have Q[k] = (2*i)*(2*i+1), T[k] = 1,
-	 then                Q[k+1] = (2*i+2)*(2*i+3), T[k+1] = 1,
-	 which reduces to T[k] = (2*i+2)*(2*i+3)*2^r-pp,
-	 Q[k] = (2*i)*(2*i+1)*(2*i+2)*(2*i+3). */
+         then                Q[k+1] = (2*i+2)*(2*i+3), T[k+1] = 1,
+         which reduces to T[k] = (2*i+2)*(2*i+3)*2^r-pp,
+         Q[k] = (2*i)*(2*i+1)*(2*i+2)*(2*i+3). */
       log2_nb_terms[k] = 1;
       mpz_set_ui (Q[k], (2 * i + 2) * (2 * i + 3));
       mpz_mul_2exp (T[k], Q[k], r);
@@ -364,11 +364,11 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mp_prec_t r,
           mpz_add (T[k-1], T[k-1], T[k]);
           mpz_mul (Q[k-1], Q[k-1], Q[k]);
           log2_nb_terms[k-1] ++; /* number of terms in S[k-1]
-				    is a power of 2 by construction */
-	  prec_i_have = mpz_sizeinbase (Q[k], 2);
-	  mult[k-1] += prec_i_have + (r << l) - size_ptoj[l] - 1;
-	  accu[k-1] = (k == 1) ? mult[k-1] : mult[k-1] + accu[k-2];
-	  prec_i_have = accu[k-1];
+                                    is a power of 2 by construction */
+          prec_i_have = mpz_sizeinbase (Q[k], 2);
+          mult[k-1] += prec_i_have + (r << l) - size_ptoj[l] - 1;
+          accu[k-1] = (k == 1) ? mult[k-1] : mult[k-1] + accu[k-2];
+          prec_i_have = accu[k-1];
           l ++;
           j >>= 1;
           k --;
@@ -498,7 +498,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd_mode)
             continue;
           mpfr_sub_z (x2, x2, y, GMP_RNDN); /* should be exact */
           l2 = sin_bs_aux (Q2, S2, C2, y, 2 * sh - 1, prec_s);
-          /* we now have |S2/Q2/2^l2 - sin(X)| <= 9*2^(prec_s) 
+          /* we now have |S2/Q2/2^l2 - sin(X)| <= 9*2^(prec_s)
              and |C2/Q2/2^l2 - cos(X)| <= 6*2^(prec_s), with X=y/2^(2sh-1) */
         }
       if (sh == 1) /* S=0, C=1 */
@@ -652,4 +652,3 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd)
   mpfr_clear (tc);
   return INEX(inexs,inexc);
 }
-
