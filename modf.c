@@ -82,27 +82,17 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
     }
   else /* op has both integral and fractional parts */
     {
-      mpfr_t opf, opi;
-      MPFR_SAVE_EXPO_DECL (expo);
-
-      MPFR_SAVE_EXPO_MARK (expo);
-
-      /* opi and opf are set with minimal but sufficient precision */
-      mpfr_init2 (opi, ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ope);
-      inexi = mpfr_trunc (opi, op);
-      mpfr_init2 (opf, opq - ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : opq - ope);
-      inexf = mpfr_frac (opf, op, MPFR_RNDZ);
-      MPFR_ASSERTD (inexf == 0);
-
-      inexf = mpfr_set (fop, opf, rnd_mode);
-      inexi = mpfr_set (iop, opi, rnd_mode);
-      mpfr_clear (opi);
-      mpfr_clear (opf);
-
-      MPFR_SAVE_EXPO_FREE (expo);
-      inexf = mpfr_check_range (fop, inexf, rnd_mode);
-      inexi = mpfr_check_range (iop, inexi, rnd_mode);
-
+      if (iop != op)
+        {
+          inexi = mpfr_rint_trunc (iop, op, rnd_mode);
+          inexf = mpfr_frac (fop, op, rnd_mode);
+        }
+      else
+        {
+          MPFR_ASSERTN (fop != op);
+          inexf = mpfr_frac (fop, op, rnd_mode);
+          inexi = mpfr_rint_trunc (iop, op, rnd_mode);
+        }
       MPFR_RET (INEX(inexi, inexf));
     }
 }
