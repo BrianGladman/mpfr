@@ -22,23 +22,47 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/resource.h>
 
 #include "mpfr-test.h"
 
-static void
-large_test (int prec, int N)
+static int
+cputime ()
 {
-  int i;
+  struct rusage rus;
+
+  getrusage (0, &rus);
+  return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
+}
+
+extern mp_size_t mpfr_sincos_threshold;
+
+static void
+large_test (char *X, int prec, int N)
+{
+  int i, st;
   mpfr_t x, s, c;
+  mp_size_t threshold = mpfr_sincos_threshold;
 
   mpfr_init2 (x, prec);
   mpfr_init2 (s, prec);
   mpfr_init2 (c, prec);
-  mpfr_set_ui (x, 3, MPFR_RNDN);
-  mpfr_sqrt (x, x, MPFR_RNDN);
-  for (i=0; i<N; i++)
+  mpfr_set_str (x, X, 10, MPFR_RNDN);
+
+  mpfr_sincos_threshold = prec + 1;
+  st = cputime ();
+  for (i = 0; i < N; i++)
     mpfr_sin_cos (s, c, x, MPFR_RNDN);
-  mpfr_out_str (stdout, 10, 0, s, MPFR_RNDN); puts ("");
+  printf ("mpfr_sin_cos took %dms\n", cputime () - st);
+
+  mpfr_sincos_threshold = prec;
+  st = cputime ();
+  for (i = 0; i < N; i++)
+    mpfr_sin_cos (s, c, x, MPFR_RNDN);
+  printf ("mpfr_sincos_fast took %dms\n", cputime () - st);
+
+  mpfr_sincos_threshold = threshold;
   mpfr_clear (x);
   mpfr_clear (s);
   mpfr_clear (c);
@@ -307,16 +331,87 @@ test20071214 (void)
   mpfr_clear (b);
 }
 
+/* check that mpfr_sin_cos and test_mpfr_sincos_fast agree */
+static void
+test_mpfr_sincos_fast (void)
+{
+  mpfr_t x, y, z, yref, zref, h;
+  mp_prec_t p = 1000;
+  mp_size_t threshold = mpfr_sincos_threshold;
+  int i, inex, inexref;
+  mp_rnd_t r;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, p);
+  mpfr_init2 (yref, p);
+  mpfr_init2 (zref, p);
+  mpfr_init2 (h, p);
+  mpfr_set_ui_2exp (h, 1, -3, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  for (i = 0; i < 100; i++)
+    {
+      mpfr_urandomb (h, RANDS);
+      mpfr_add (x, x, h, MPFR_RNDN);
+      r = RND_RAND ();
+      mpfr_sincos_threshold = p + 1;
+      inexref = mpfr_sin_cos (yref, zref, x, r);
+      mpfr_sincos_threshold = 1;
+      inex = mpfr_sin_cos (y, z, x, r);
+      if (mpfr_cmp (y, yref))
+        {
+          printf ("mpfr_sin_cos and mpfr_sincos_fast disagree\n");
+          printf ("x="); mpfr_dump (x);
+          printf ("rnd=%s\n", mpfr_print_rnd_mode (r));
+          printf ("yref="); mpfr_dump (yref);
+          printf ("y="); mpfr_dump (y);
+          exit (1);
+        }
+      if (mpfr_cmp (z, zref))
+        {
+          printf ("mpfr_sin_cos and mpfr_sincos_fast disagree\n");
+          printf ("x="); mpfr_dump (x);
+          printf ("rnd=%s\n", mpfr_print_rnd_mode (r));
+          printf ("zref="); mpfr_dump (zref);
+          printf ("z="); mpfr_dump (z);
+          exit (1);
+        }
+      if (inex != inexref)
+        {
+          printf ("mpfr_sin_cos and mpfr_sincos_fast disagree\n");
+          printf ("x="); mpfr_dump (x);
+          printf ("rnd=%s\n", mpfr_print_rnd_mode (r));
+          printf ("inexref=%d inex=%d\n", inexref, inex);
+          exit (1);
+        }
+    }
+  mpfr_sincos_threshold = threshold;
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (yref);
+  mpfr_clear (zref);
+  mpfr_clear (h);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   if (argc > 1)
     {
-      large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
+      if (argc != 3 && argc != 4)
+        {
+          fprintf (stderr, "Usage: tsin_cos x prec [n]\n");
+          exit (1);
+        }
+      large_test (argv[1], atoi (argv[2]), (argc > 3) ? atoi (argv[3]) : 1);
+      goto end;
     }
+
+  test_mpfr_sincos_fast ();
 
   check_nans ();
 
@@ -346,6 +441,7 @@ main(int argc, char *argv[])
   tiny ();
   test20071214 ();
 
+ end:
   tests_end_mpfr ();
   return 0;
 }
