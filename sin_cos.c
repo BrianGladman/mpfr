@@ -465,7 +465,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_init (C2);
   mpz_init (y);
 
-  mpfr_set (x2, x, GMP_RNDN); /* exact */
+  mpfr_set (x2, x, MPFR_RNDN); /* exact */
   mpz_set_ui (Q, 1);
   l = 0;
   mpz_set_ui (S, 0); /* sin(0) = S/(2^l*Q), exact */
@@ -485,18 +485,18 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpz_set_ui (Q2, 1);
           mpz_set_ui (C2, 1);
           mpz_mul_2exp (C2, C2, l2);
-          mpfr_set_ui (x2, 0, GMP_RNDN);
+          mpfr_set_ui (x2, 0, MPFR_RNDN);
         }
       else
         {
           /* y <- trunc(x2 * 2^sh) = trunc(x * 2^(2*sh-1)) */
-          mpfr_mul_2exp (x2, x2, sh, GMP_RNDN); /* exact */
-          mpfr_get_z (y, x2, GMP_RNDZ); /* round towards zero: now
+          mpfr_mul_2exp (x2, x2, sh, MPFR_RNDN); /* exact */
+          mpfr_get_z (y, x2, MPFR_RNDZ); /* round towards zero: now
                                            0 <= x2 < 2^sh, thus
                                            0 <= x2/2^(sh-1) < 2^(1-sh) */
           if (mpz_cmp_ui (y, 0) == 0)
             continue;
-          mpfr_sub_z (x2, x2, y, GMP_RNDN); /* should be exact */
+          mpfr_sub_z (x2, x2, y, MPFR_RNDN); /* should be exact */
           l2 = sin_bs_aux (Q2, S2, C2, y, 2 * sh - 1, prec_s);
           /* we now have |S2/Q2/2^l2 - sin(X)| <= 9*2^(prec_s)
              and |C2/Q2/2^l2 - cos(X)| <= 6*2^(prec_s), with X=y/2^(2sh-1) */
@@ -534,13 +534,13 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd_mode)
   j = 11 * j;
   for (err = 0; j > 1; j = (j + 1) / 2, err ++);
 
-  mpfr_set_z (s, S, GMP_RNDN);
-  mpfr_div_z (s, s, Q, GMP_RNDN);
-  mpfr_div_2exp (s, s, l, GMP_RNDN);
+  mpfr_set_z (s, S, MPFR_RNDN);
+  mpfr_div_z (s, s, Q, MPFR_RNDN);
+  mpfr_div_2exp (s, s, l, MPFR_RNDN);
 
-  mpfr_set_z (c, C, GMP_RNDN);
-  mpfr_div_z (c, c, Q, GMP_RNDN);
-  mpfr_div_2exp (c, c, l, GMP_RNDN);
+  mpfr_set_z (c, C, MPFR_RNDN);
+  mpfr_div_z (c, c, Q, MPFR_RNDN);
+  mpfr_div_2exp (c, c, l, MPFR_RNDN);
 
   mpz_clear (Q);
   mpz_clear (S);
