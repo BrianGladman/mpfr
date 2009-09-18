@@ -26,8 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
 #define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
 
-int mpfr_sincos_fast (mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t);
-
 /* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact
    ie, iff x = 0 */
 int
@@ -555,7 +553,11 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd_mode)
   return err;
 }
 
-/* assumes x is neither NaN, +/-Inf, nor +/- 0 */
+/* Assumes x is neither NaN, +/-Inf, nor +/- 0.
+   One of s and c might be NULL, in which case the corresponding value is
+   not computed.
+   Assumes s differs from c.
+ */
 int
 mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd)
 {
@@ -565,7 +567,13 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd)
   mp_exp_t err, errs, errc;
   MPFR_ZIV_DECL (loop);
 
-  w = MPFR_PREC(s) >= MPFR_PREC(c) ? MPFR_PREC(s) : MPFR_PREC(c);
+  MPFR_ASSERTN(s != c);
+  if (s == NULL)
+    w = MPFR_PREC(c);
+  else if (c == NULL)
+    w = MPFR_PREC(s);
+  else
+    w = MPFR_PREC(s) >= MPFR_PREC(c) ? MPFR_PREC(s) : MPFR_PREC(c);
   w += MPFR_INT_CEIL_LOG2(w) + 9; /* ensures w >= 10 (needed by sincos_aux) */
   mpfr_init2 (ts, w);
   mpfr_init2 (tc, w);
@@ -630,15 +638,15 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mp_rnd_t rnd)
       /* adjust errors with respect to absolute values */
       errs = err - MPFR_EXP(ts);
       errc = err - MPFR_EXP(tc);
-      if (MPFR_CAN_ROUND (ts, w - errs, MPFR_PREC(s), rnd) &&
-          MPFR_CAN_ROUND (tc, w - errc, MPFR_PREC(c), rnd))
+      if ((s == NULL || MPFR_CAN_ROUND (ts, w - errs, MPFR_PREC(s), rnd)) &&
+          (c == NULL || MPFR_CAN_ROUND (tc, w - errc, MPFR_PREC(c), rnd)))
         break;
       MPFR_ZIV_NEXT (loop, w);
     }
   MPFR_ZIV_FREE (loop);
 
-  inexs = mpfr_set (s, ts, rnd);
-  inexc = mpfr_set (c, tc, rnd);
+  inexs = (s == NULL) ? 0 : mpfr_set (s, ts, rnd);
+  inexc = (c == NULL) ? 0 : mpfr_set (c, tc, rnd);
 
   mpfr_clear (ts);
   mpfr_clear (tc);

@@ -23,6 +23,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+static int
+mpfr_sin_fast (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  int inex;
+
+  inex = mpfr_sincos_fast (y, NULL, x, rnd_mode);
+  inex = inex & 3; /* 0: exact, 1: rounded up, 2: rounded down */
+  return (inex == 2) ? -1 : inex;
+}
+
 int
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -62,6 +72,10 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Compute initial precision */
   precy = MPFR_PREC (y);
+
+  if (precy >= MPFR_SINCOS_THRESHOLD)
+    return mpfr_sin_fast (y, x, rnd_mode);
+
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
   expx = MPFR_GET_EXP (x);
 

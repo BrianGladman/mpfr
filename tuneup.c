@@ -147,7 +147,7 @@ int verbose;
 
 
 /* First we include all the functions we want to tune inside this program.
-   We can't use GNU MPFR library since the THRESHOLD can't vary */
+   We can't use the GNU MPFR library since the thresholds are fixed macros. */
 
 /* Setup mpfr_exp_2 */
 mp_prec_t mpfr_exp_2_threshold;

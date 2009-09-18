@@ -23,6 +23,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+static int
+mpfr_cos_fast (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  int inex;
+
+  inex = mpfr_sincos_fast (NULL, y, x, rnd_mode);
+  inex = inex >> 2; /* 0: exact, 1: rounded up, 2: rounded down */
+  return (inex == 2) ? -1 : inex;
+}
+
 /* f <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...
    Assumes |r| < 1/2, and f, r have the same precision.
    Returns e such that the error on f is bounded by 2^e ulps.
@@ -154,6 +164,13 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Compute initial precision */
   precy = MPFR_PREC (y);
+
+  if (precy >= MPFR_SINCOS_THRESHOLD)
+    {
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_cos_fast (y, x, rnd_mode);
+    }
+
   K0 = __gmpfr_isqrt (precy / 3);
   m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy) + 2 * K0;
 
