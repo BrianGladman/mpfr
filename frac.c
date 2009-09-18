@@ -110,6 +110,14 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     tp[tn] = k | ((un) ? mpn_lshift (tp + t0, up, un, sh) : (mp_limb_t) 0);
   if (t0 > 0)
     MPN_ZERO(tp, t0);
+  else
+    {
+      int tsh;
+
+      /* non-significant bits in low limb */
+      tsh = (mp_prec_t) tn * BITS_PER_MP_LIMB - MPFR_PREC(t);
+      tp[0] &= ~ MPFR_LIMB_MASK (tsh);
+    }
 
   if (t != r)
     { /* t is tmp */
