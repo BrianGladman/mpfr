@@ -393,7 +393,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   for (i = 0 ; i < oldn0 ; i++)
     mpz_clear (tabz[i]);
   mpz_clear (ukz);
-  (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
+  (*__gmp_free_func) (tabz, oldn0 * sizeof (mpz_t));
   MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);

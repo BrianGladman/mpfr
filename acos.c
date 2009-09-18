@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 int
@@ -87,7 +88,8 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     supplement = 2 - MPFR_GET_EXP (xp);
   mpfr_clear (xp);
 
-  prec = MPFR_PREC (acos) + 10 + supplement;
+  prec = MPFR_PREC (acos);
+  prec += MPFR_INT_CEIL_LOG2(prec) + 10 + supplement;
 
   /* VL: The following change concerning prec comes from r3145
      "Optimize mpfr_acos by choosing a better initial precision."
@@ -122,7 +124,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
       mpfr_sub (arcc, tmp, arcc, MPFR_RNDN);
 
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (arcc, prec-supplement,
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (arcc, prec - supplement,
                                        MPFR_PREC (acos), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
