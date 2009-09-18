@@ -75,7 +75,8 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       MPFR_SET_SAME_SIGN (iop, op);
       MPFR_SET_ZERO (iop);
       MPFR_SAVE_EXPO_FREE (expo);
-      mpfr_check_range (fop, inexf, rnd_mode); /* set the underflow flag if needed */
+      mpfr_check_range (fop, inexf, rnd_mode); /* set the overflow flag
+                                                  if needed */
       MPFR_RET (INEX(0, inexf));
     }
   else if (ope >= opq) /* op has no fractional part */
@@ -84,7 +85,8 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       MPFR_SET_SAME_SIGN (fop, op);
       MPFR_SET_ZERO (fop);
       MPFR_SAVE_EXPO_FREE (expo);
-      mpfr_check_range (iop, inexi, rnd_mode); /* set the overflow flag if needed */
+      mpfr_check_range (iop, inexi, rnd_mode); /* set the overflow flag
+                                                  if needed */
       MPFR_RET (INEX(inexi, 0));
     }
   else /* op has both integral and fractional parts */
