@@ -51,7 +51,7 @@ main (void)
       printf ("Error for mpfr_set_flt(NaN)\n");
       exit (1);
     }
-  
+
   mpfr_set_inf (x, 1);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
@@ -60,7 +60,7 @@ main (void)
       printf ("Error for mpfr_set_flt(mpfr_get_flt(+Inf))n");
       exit (1);
     }
-  
+
   mpfr_set_inf (x, -1);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
@@ -69,7 +69,7 @@ main (void)
       printf ("Error for mpfr_set_flt(mpfr_get_flt(-Inf))n");
       exit (1);
     }
-  
+
   mpfr_set_ui (x, 0, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
@@ -78,7 +78,7 @@ main (void)
       printf ("Error for mpfr_set_flt(mpfr_get_flt(+0))n");
       exit (1);
     }
-  
+
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
@@ -88,7 +88,7 @@ main (void)
       printf ("Error for mpfr_set_flt(mpfr_get_flt(-0))n");
       exit (1);
     }
-  
+
   mpfr_set_ui (x, 17, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
@@ -100,7 +100,7 @@ main (void)
       mpfr_dump (x);
       exit (1);
     }
-  
+
   mpfr_set_si (x, -42, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
@@ -365,7 +365,7 @@ main (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
-  
+
   tests_end_mpfr ();
   return 0;
 }

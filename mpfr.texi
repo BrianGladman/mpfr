@@ -1095,7 +1095,7 @@ denominator) can not be representable as a @code{mpfr_t}.
 
 Note: If you want to store a floating-point constant to a @code{mpfr_t},
 you should use @code{mpfr_set_str} (or one of the MPFR constant functions,
-such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of 
+such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of
 @code{mpfr_set_flt}, @code{mpfr_set_d},
 @code{mpfr_set_ld} or @code{mpfr_set_decimal64}.
 Otherwise the floating-point constant will be first
