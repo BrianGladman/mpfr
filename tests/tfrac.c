@@ -177,17 +177,24 @@ bug20090918 (void)
 {
   mpfr_t x, y;
   mp_limb_t y0;
+  int inex;
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 13);
   mpfr_set_str (x, "61680.352935791015625", 10, MPFR_RNDN);
-  mpfr_frac (y, x, MPFR_RNDZ);
+  inex = mpfr_frac (y, x, MPFR_RNDZ);
   y0 = MPFR_MANT(y)[0];
   while ((y0 >> 1) << 1 == y0)
     y0 >>= 1;
   if (y0 > 0x2000)
     {
       printf ("Error in bug20090918 (significand has more than 13 bits).\n");
+      exit (1);
+    }
+  if (inex >= 0)
+    {
+      printf ("Incorrect ternary value in bug20090918, expected negative,"
+              " got %d.\n", inex);
       exit (1);
     }
   mpfr_clear (x);
