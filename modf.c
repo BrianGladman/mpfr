@@ -32,7 +32,6 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
   mp_exp_t ope;
   mp_prec_t opq;
   int inexi, inexf;
-  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),
                  ("iop[%#R]=%R fop[%#R]=%R", iop, iop, fop, fop));
@@ -64,8 +63,6 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
         }
     }
 
-  MPFR_SAVE_EXPO_MARK (expo);
-
   ope = MPFR_GET_EXP (op);
   opq = MPFR_PREC (op);
 
@@ -74,9 +71,6 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       inexf = (fop != op) ? mpfr_set (fop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (iop, op);
       MPFR_SET_ZERO (iop);
-      MPFR_SAVE_EXPO_FREE (expo);
-      mpfr_check_range (fop, inexf, rnd_mode); /* set the overflow flag
-                                                  if needed */
       MPFR_RET (INEX(0, inexf));
     }
   else if (ope >= opq) /* op has no fractional part */
@@ -84,14 +78,14 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       inexi = (iop != op) ? mpfr_set (iop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (fop, op);
       MPFR_SET_ZERO (fop);
-      MPFR_SAVE_EXPO_FREE (expo);
-      mpfr_check_range (iop, inexi, rnd_mode); /* set the overflow flag
-                                                  if needed */
       MPFR_RET (INEX(inexi, 0));
     }
   else /* op has both integral and fractional parts */
     {
       mpfr_t opf, opi;
+      MPFR_SAVE_EXPO_DECL (expo);
+
+      MPFR_SAVE_EXPO_MARK (expo);
 
       /* opi and opf are set with minimal but sufficient precision */
       mpfr_init2 (opi, ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ope);
