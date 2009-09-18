@@ -172,6 +172,7 @@ special (void)
   mpfr_clear (t);
 }
 
+/* Occurs with 64-bit limbs, but not with 32-bit limbs. */
 static void
 bug20090918 (void)
 {
