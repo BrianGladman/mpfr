@@ -22,47 +22,23 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/resource.h>
 
 #include "mpfr-test.h"
-
-static int
-cputime ()
-{
-  struct rusage rus;
-
-  getrusage (0, &rus);
-  return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
-}
-
-extern mp_size_t mpfr_sincos_threshold;
 
 static void
 large_test (char *X, int prec, int N)
 {
-  int i, st;
+  int i;
   mpfr_t x, s, c;
-  mp_size_t threshold = mpfr_sincos_threshold;
 
   mpfr_init2 (x, prec);
   mpfr_init2 (s, prec);
   mpfr_init2 (c, prec);
   mpfr_set_str (x, X, 10, MPFR_RNDN);
 
-  mpfr_sincos_threshold = prec + 1;
-  st = cputime ();
   for (i = 0; i < N; i++)
     mpfr_sin_cos (s, c, x, MPFR_RNDN);
-  printf ("mpfr_sin_cos took %dms\n", cputime () - st);
 
-  mpfr_sincos_threshold = prec;
-  st = cputime ();
-  for (i = 0; i < N; i++)
-    mpfr_sin_cos (s, c, x, MPFR_RNDN);
-  printf ("mpfr_sincos_fast took %dms\n", cputime () - st);
-
-  mpfr_sincos_threshold = threshold;
   mpfr_clear (x);
   mpfr_clear (s);
   mpfr_clear (c);
@@ -337,7 +313,6 @@ test_mpfr_sincos_fast (void)
 {
   mpfr_t x, y, z, yref, zref, h;
   mp_prec_t p = 1000;
-  mp_size_t threshold = mpfr_sincos_threshold;
   int i, inex, inexref;
   mp_rnd_t r;
 
@@ -354,10 +329,8 @@ test_mpfr_sincos_fast (void)
       mpfr_urandomb (h, RANDS);
       mpfr_add (x, x, h, MPFR_RNDN);
       r = RND_RAND ();
-      mpfr_sincos_threshold = p + 1;
       inexref = mpfr_sin_cos (yref, zref, x, r);
-      mpfr_sincos_threshold = 1;
-      inex = mpfr_sin_cos (y, z, x, r);
+      inex = mpfr_sincos_fast (y, z, x, r);
       if (mpfr_cmp (y, yref))
         {
           printf ("mpfr_sin_cos and mpfr_sincos_fast disagree\n");
@@ -385,7 +358,6 @@ test_mpfr_sincos_fast (void)
           exit (1);
         }
     }
-  mpfr_sincos_threshold = threshold;
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

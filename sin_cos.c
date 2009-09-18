@@ -26,9 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
 #define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
 
-mp_size_t mpfr_sincos_threshold = 20000; /* up from this value (in bits),
-                                            we use mpfr_sincos_fast */
-
 int mpfr_sincos_fast (mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 
 /* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact
@@ -128,7 +125,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       m += 2 * (-expx);
     }
 
-  if (prec >= mpfr_sincos_threshold)
+  if (prec >= MPFR_SINCOS_THRESHOLD)
     {
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_sincos_fast (y, z, x, rnd_mode);
