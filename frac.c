@@ -37,6 +37,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   int sh;
   mpfr_t tmp;
   mpfr_ptr t;
+  int inex;
 
   /* Special cases */
   if (MPFR_UNLIKELY(MPFR_IS_NAN(u)))
@@ -54,6 +55,8 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   ue = MPFR_GET_EXP (u);
   if (ue <= 0)  /* |u| < 1 */
     return mpfr_set (r, u, rnd_mode);
+
+  /* Now |u| >= 1, meaning that an overflow is not possible. */
 
   uq = MPFR_PREC(u);
   un = (uq - 1) / BITS_PER_MP_LIMB;  /* index of most significant limb */
@@ -110,23 +113,26 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     tp[tn] = k | ((un) ? mpn_lshift (tp + t0, up, un, sh) : (mp_limb_t) 0);
   if (t0 > 0)
     MPN_ZERO(tp, t0);
-  else
-    {
-      int tsh;
-
-      /* non-significant bits in low limb */
-      tsh = (mp_prec_t) tn * BITS_PER_MP_LIMB - MPFR_PREC(t);
-      tp[0] &= ~ MPFR_LIMB_MASK (tsh);
-    }
 
   if (t != r)
     { /* t is tmp */
-      int inex;
-
       inex = mpfr_set (r, t, rnd_mode);
       mpfr_clear (t);
-      return inex;
     }
   else
-    MPFR_RET(0);
+    { /* There may be remaining non-significant bits in t (= r). */
+      int carry;
+
+      carry = mpfr_round_raw (tp, tp,
+                              (mp_prec_t) (tn + 1) * BITS_PER_MP_LIMB,
+                              MPFR_IS_NEG (r), MPFR_PREC (r), rnd_mode,
+                              &inex);
+      if (carry)
+        {
+          tp[tn] = MPFR_LIMB_HIGHBIT;
+          MPFR_EXP (r) ++;
+        }
+    }
+
+  return inex;
 }
