@@ -172,14 +172,13 @@ special (void)
   mpfr_clear (t);
 }
 
-/* Occurs with 64-bit limbs, but not with 32-bit limbs. */
 static void
 bug20090918 (void)
 {
   mpfr_t x, y;
   mp_limb_t y0;
 
-  mpfr_init2 (x, 53);
+  mpfr_init2 (x, 32);
   mpfr_init2 (y, 13);
   mpfr_set_str (x, "61680.352935791015625", 10, MPFR_RNDN);
   mpfr_frac (y, x, MPFR_RNDZ);
