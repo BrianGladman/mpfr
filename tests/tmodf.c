@@ -109,17 +109,26 @@ main (int argc, char *argv[])
 
   check_nans ();
 
+  /* integer part is exact, frac. part is exact: return value should be 0 */
   check ("61680","3.52935791015625e-1", "61680.352935791015625",
          53, 53, 53, 0, MPFR_RNDZ);
+  /* integer part is rounded up, fractional part is rounded up: return value
+     should be 1+4*1=5 */
   check ("-53968","-3.529052734375e-1", "-53970.352935791015625",
-         13, 13, 53, 2, MPFR_RNDZ);
+         13, 13, 53, 5, MPFR_RNDZ);
+  /* integer part is rounded down, fractional part is rounded down:
+     return value should be 2+4*2=10 */
   check ("61632","3.525390625e-1",      "61648.352935791015625",
-         10, 10, 53, -2, MPFR_RNDZ);
+         10, 10, 53, 10, MPFR_RNDZ);
   check ("61680", "0", "61680",  53, 53, 53, 0, MPFR_RNDZ);
+  /* integer part is rounded up, fractional part is exact: 1 */
   check ("-53968","0", "-53970", 13, 13, 53, 1, MPFR_RNDZ);
+  /* integer part is rounded up, fractional part is exact: 1 */
   check ("-43392","0", "-43399", 13, 13, 53, 1, MPFR_RNDU);
-  check ("-52720","0", "-52719", 13, 13, 53, -1, MPFR_RNDD);
-  check ("61632", "0", "61648",  10, 10, 53, -1, MPFR_RNDZ);
+  /* integer part is rounded down, fractional part is exact: 2 */
+  check ("-52720","0", "-52719", 13, 13, 53, 2, MPFR_RNDD);
+  /* integer part is rounded down, fractional part is exact: 2 */
+  check ("61632", "0", "61648",  10, 10, 53, 2, MPFR_RNDZ);
 
   tests_end_mpfr ();
   return 0;

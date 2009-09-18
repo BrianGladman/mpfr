@@ -2313,7 +2313,8 @@ the fractional part of @var{op}, rounded in the direction @var{rnd} with the
 corresponding precision of @var{iop} and @var{fop} (equivalent to
 @code{mpfr_trunc(@var{iop}, @var{op}, @var{rnd})} and
 @code{mpfr_frac(@var{fop}, @var{op}, @var{rnd})}). The variables @var{iop} and
-@var{fop} must be different. Return 0 iff both results are exact.
+@var{fop} must be different. Return 0 iff both results are exact (see
+@code{mpfr_sin_cos} for a more detailed description of the return value).
 @end deftypefun
 
 @deftypefun int mpfr_fmod (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})

@@ -22,13 +22,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
+#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
+
 /* Set iop to the integral part of op and fop to its fractional part */
 int
 mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t ope;
   mp_prec_t opq;
-  int inexact;
+  int inexi, inexf;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),
@@ -66,26 +69,26 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
   ope = MPFR_GET_EXP (op);
   opq = MPFR_PREC (op);
 
-  if (ope <=0)   /* 0 < |op| < 1 */
+  if (ope <= 0)   /* 0 < |op| < 1 */
     {
-      inexact = (fop != op) ? mpfr_set (fop, op, rnd_mode) : 0;
+      inexf = (fop != op) ? mpfr_set (fop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (iop, op);
       MPFR_SET_ZERO (iop);
       MPFR_SAVE_EXPO_FREE (expo);
-      mpfr_check_range (fop, inexact, rnd_mode); /* set the underflow flag if needed */
-      MPFR_RET (MPFR_INT_SIGN (op) > 0 ? -2 : +2);
+      mpfr_check_range (fop, inexf, rnd_mode); /* set the underflow flag if needed */
+      MPFR_RET (INEX(0, inexf));
     }
   else if (ope >= opq) /* op has no fractional part */
     {
-      inexact = (iop != op)? mpfr_set (iop, op, rnd_mode) : 0;
+      inexi = (iop != op) ? mpfr_set (iop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (fop, op);
       MPFR_SET_ZERO (fop);
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (iop, inexact, rnd_mode); /* set the overflow flag if needed */
+      mpfr_check_range (iop, inexi, rnd_mode); /* set the overflow flag if needed */
+      MPFR_RET (INEX(inexi, 0));
     }
   else /* op has both integral and fractional parts */
     {
-      int inexi, inexf;
       mpfr_t opf, opi;
 
       /* opi and opf are set with minimal but sufficient precision */
@@ -104,14 +107,6 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       inexf = mpfr_check_range (fop, inexf, rnd_mode);
       inexi = mpfr_check_range (iop, inexi, rnd_mode);
 
-      /* return value like mpfr_trunc():   */
-      /* 0 iff iop and fop are exact       */
-      /* -1 if op is an integer, op > iop    */
-      /* +1 if op is an integer, op < iop    */
-      /* -2 if op is not an integer, op > 0  */
-      /* +2 if op is not an integer, op < 0  */
-      inexact = inexf ? (inexi ? 2 * inexi : -2 * MPFR_INT_SIGN (op)) :
-        (mpfr_zero_p (fop) ? inexi : 2 * inexi);
-      MPFR_RET (inexact);
+      MPFR_RET (INEX(inexi, inexf));
     }
 }
