@@ -42,7 +42,7 @@ check (const char *xis, const char *xfs, const char *xs,
   inexact = mpfr_modf (xi, xf, x, rnd_mode);
   if (mpfr_cmp_str1 (xi, xis))
     {
-      printf ("mpfr_mof failed for x=%s, rnd=%s\n",
+      printf ("mpfr_modf failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode(rnd_mode));
       printf ("got integer value: ");
       mpfr_out_str (stdout, 10, 0, xi, MPFR_RNDN);
@@ -51,7 +51,7 @@ check (const char *xis, const char *xfs, const char *xs,
     }
   if (mpfr_cmp_str1 (xf, xfs))
     {
-      printf ("mpfr_mof failed for x=%s, rnd=%s\n",
+      printf ("mpfr_modf failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode(rnd_mode));
       printf ("got fractional value: ");
       mpfr_out_str (stdout, 10, 0, xf, MPFR_RNDN);
@@ -60,7 +60,7 @@ check (const char *xis, const char *xfs, const char *xs,
     }
   if (inexact != expected_return)
     {
-      printf ("mpfr_mof failed for x=%s, rnd=%s\n",
+      printf ("mpfr_modf failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode(rnd_mode));
       printf ("got return value: %d, expected %d\n", inexact, expected_return);
       exit (1);
