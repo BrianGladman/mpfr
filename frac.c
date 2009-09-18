@@ -38,6 +38,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mpfr_t tmp;
   mpfr_ptr t;
   int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* Special cases */
   if (MPFR_UNLIKELY(MPFR_IS_NAN(u)))
@@ -100,7 +101,6 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* If we use a temporary variable, we take the non-significant bits
      of u into account, because of the mpn_lshift below. */
   MPFR_SET_SAME_SIGN(t, u);
-  MPFR_SET_EXP (t, re);
 
   /* Put the fractional part of u into t */
   tn = (MPFR_PREC(t) - 1) / BITS_PER_MP_LIMB;
@@ -114,15 +114,20 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (t0 > 0)
     MPN_ZERO(tp, t0);
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   if (t != r)
     { /* t is tmp */
-      inex = mpfr_set (r, t, rnd_mode);
+      MPFR_EXP (t) = 0;  /* should be re, but not necessarily in the range */
+      inex = mpfr_set (r, t, rnd_mode);  /* no underflow */
       mpfr_clear (t);
+      MPFR_EXP (r) += re;
     }
   else
     { /* There may be remaining non-significant bits in t (= r). */
       int carry;
 
+      MPFR_EXP (r) = re;
       carry = mpfr_round_raw (tp, tp,
                               (mp_prec_t) (tn + 1) * BITS_PER_MP_LIMB,
                               MPFR_IS_NEG (r), MPFR_PREC (r), rnd_mode,
@@ -134,5 +139,6 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
     }
 
-  return inex;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (r, inex, rnd_mode);
 }

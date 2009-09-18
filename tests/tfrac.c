@@ -180,17 +180,21 @@ bug20090918 (void)
   int inexy, inexz;
   int r, i;
   char *s[] = { "61680.352935791015625", "61680.999999" };
+  mp_exp_t emin;
 
+  emin = mpfr_get_emin ();
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 13);
 
-  for (i = 0; i <= 1; i++)
+  for (i = 0; i <= 9; i++)
     {
-      mpfr_set_str (x, s[i], 10, MPFR_RNDZ);
+      mpfr_set_str (x, s[i & 1], 10, MPFR_RNDZ);
 
       RND_LOOP(r)
         {
+          set_emin ((i >> 1) - 3);
           inexy = mpfr_frac (y, x, (mpfr_rnd_t) r);
+          set_emin (emin);
           y0 = MPFR_MANT(y)[0];
           while (y0 != 0 && (y0 >> 1) << 1 == y0)
             y0 >>= 1;
@@ -205,6 +209,9 @@ bug20090918 (void)
           inexz = mpfr_frac (z, x, MPFR_RNDN);
           MPFR_ASSERTN (inexz == 0);  /* exact */
           inexz = mpfr_prec_round (z, 13, (mpfr_rnd_t) r);
+          set_emin ((i >> 1) - 3);
+          inexz = mpfr_check_range (z, inexz, (mpfr_rnd_t) r);
+          set_emin (emin);
           if (mpfr_cmp0 (y, z) != 0)
             {
               printf ("Error in bug20090918, i = %d, %s.\n", i,
