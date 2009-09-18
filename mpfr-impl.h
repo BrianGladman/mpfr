@@ -1686,7 +1686,8 @@ __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
 __MPFR_DECLSPEC mpz_t* mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
                                                             unsigned long));
 
-__MPFR_DECLSPEC int mpfr_sincos_fast _MPFR_PROTO((mpfr_t, mpfr_t, mpfr_srcptr, mp_rnd_t));
+__MPFR_DECLSPEC int mpfr_sincos_fast _MPFR_PROTO((mpfr_t, mpfr_t,
+                                                  mpfr_srcptr, mpfr_rnd_t));
 
 #if defined (__cplusplus)
 }
