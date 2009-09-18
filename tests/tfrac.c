@@ -180,17 +180,23 @@ bug20090918 (void)
   int inexy, inexz;
   int r, i;
   char *s[] = { "61680.352935791015625", "61680.999999" };
+  mp_exp_t emax;
+
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 13);
 
-  for (i = 0; i <= 1; i++)
+  for (i = 0; i <= 3; i++)
     {
-      mpfr_set_str (x, s[i], 10, MPFR_RNDZ);
+      mpfr_set_str (x, s[i & 1], 10, MPFR_RNDZ);
 
       RND_LOOP(r)
         {
+          if (i & 2)
+            set_emax (0);
           inexy = mpfr_frac (y, x, (mpfr_rnd_t) r);
+          set_emax (emax);
           y0 = MPFR_MANT(y)[0];
           while (y0 != 0 && (y0 >> 1) << 1 == y0)
             y0 >>= 1;
@@ -204,7 +210,10 @@ bug20090918 (void)
           mpfr_init2 (z, 32);
           inexz = mpfr_frac (z, x, MPFR_RNDN);
           MPFR_ASSERTN (inexz == 0);  /* exact */
+          if (i & 2)
+            set_emax (0);
           inexz = mpfr_prec_round (z, 13, (mpfr_rnd_t) r);
+          set_emax (emax);
           if (mpfr_cmp0 (y, z) != 0)
             {
               printf ("Error in bug20090918, i = %d, %s.\n", i,
