@@ -178,46 +178,52 @@ bug20090918 (void)
   mpfr_t x, y, z;
   mp_limb_t y0;
   int inexy, inexz;
-  int r;
+  int r, i;
+  char *s[] = { "61680.352935791015625", "61680.999999" };
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 13);
-  mpfr_set_str (x, "61680.352935791015625", 10, MPFR_RNDN);
 
-  RND_LOOP(r)
+  for (i = 0; i <= 1; i++)
     {
-      inexy = mpfr_frac (y, x, (mpfr_rnd_t) r);
-      y0 = MPFR_MANT(y)[0];
-      while ((y0 >> 1) << 1 == y0)
-        y0 >>= 1;
-      if (y0 > 0x2000)
+      mpfr_set_str (x, s[i], 10, MPFR_RNDZ);
+
+      RND_LOOP(r)
         {
-          printf ("Error in bug20090918 (significand has more than 13 bits),"
-                  " %s.\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          exit (1);
+          inexy = mpfr_frac (y, x, (mpfr_rnd_t) r);
+          y0 = MPFR_MANT(y)[0];
+          while (y0 != 0 && (y0 >> 1) << 1 == y0)
+            y0 >>= 1;
+          if (y0 > 0x2000)
+            {
+              printf ("Error in bug20090918 (significand has more than"
+                      " 13 bits), i = %d, %s.\n", i,
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              exit (1);
+            }
+          mpfr_init2 (z, 32);
+          inexz = mpfr_frac (z, x, MPFR_RNDN);
+          MPFR_ASSERTN (inexz == 0);  /* exact */
+          inexz = mpfr_prec_round (z, 13, (mpfr_rnd_t) r);
+          if (mpfr_cmp0 (y, z) != 0)
+            {
+              printf ("Error in bug20090918, i = %d, %s.\n", i,
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("Expected ");
+              mpfr_dump (z);
+              printf ("Got      ");
+              mpfr_dump (y);
+              exit (1);
+            }
+          if (! SAME_SIGN (inexy, inexz))
+            {
+              printf ("Incorrect ternary value in bug20090918, i = %d, %s.\n",
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("Expected %d, got %d.\n", inexz, inexy);
+              exit (1);
+            }
+          mpfr_clear (z);
         }
-      mpfr_init2 (z, 32);
-      inexz = mpfr_frac (z, x, MPFR_RNDN);
-      MPFR_ASSERTN (inexz == 0);  /* exact */
-      inexz = mpfr_prec_round (z, 13, (mpfr_rnd_t) r);
-      if (mpfr_cmp0 (y, z) != 0)
-        {
-          printf ("Error in bug20090918, %s.\n",
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          printf ("Expected ");
-          mpfr_dump (z);
-          printf ("Got      ");
-          mpfr_dump (y);
-          exit (1);
-        }
-      if (! SAME_SIGN (inexy, inexz))
-        {
-          printf ("Incorrect ternary value in bug20090918, %s.\n",
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          printf ("Expected %d, got %d.\n", inexz, inexy);
-          exit (1);
-        }
-      mpfr_clear (z);
     }
 
   mpfr_clear (x);
