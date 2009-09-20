@@ -15,6 +15,14 @@ grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
 grep mp_rnd_t {,tests/}*.{c,h} | grep -v '# *\(define\|ifndef\) *mp_rnd_t'
 
+for file in {,tests/}*.{c,h} {,tests/}Makefile.am acinclude.m4 configure.in
+do
+  # Note: this is one less that the POSIX minimum limit in case
+  # implementations are buggy like POSIX examples. :)
+  perl -ne "/.{2047,}/ and print \
+    \"Line \$. of file '$file' has more than 2046 bytes.\n\"" "$file"
+done
+
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
   {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
