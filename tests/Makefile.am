@@ -45,7 +45,7 @@ check_LTLIBRARIES = libfrtests.la
 libfrtests_la_SOURCES = mpfr-test.h memory.c rnd_mode.c tests.c cmp_str.c random2.c
 
 $(top_builddir)/libmpfr.la:
-	cd $(top_builddir); make libmpfr.la
+	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) libmpfr.la
 
 TESTS = $(check_PROGRAMS)
 TESTS_ENVIRONMENT = MPFR_QUIET=1
