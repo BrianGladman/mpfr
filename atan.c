@@ -285,7 +285,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* since realprec >= 4, n0 >= ceil(log2(8)) >= 3, thus 3*n0 > 2 */
       prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
 
-      /* the number of lost bits due to argument reduction is 
+      /* the number of lost bits due to argument reduction is
          9 - 2 * EXP(sk), which we estimate by 9 + 2*ceil(log2(p))
          since we manage that sk < 1/p */
       if (MPFR_PREC (atan) > 100)
@@ -315,17 +315,21 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           oldn0 = 3 * (n0 + 1);
         }
 
+      /* The mpfr_ui_div below mustn't underflow. This is guaranteed by
+         MPFR_SAVE_EXPO_MARK, but let's check that for maintainability. */
+      MPFR_ASSERTD (__gmpfr_emax <= 1 - __gmpfr_emin);
+
       if (comparaison > 0) /* use atan(xp) = Pi/2 - atan(1/xp) */
         mpfr_ui_div (sk, 1, xp, MPFR_RNDN);
       else
         mpfr_set (sk, xp, MPFR_RNDN);
-      
+
       /* now 0 < sk <= 1 */
 
       /* Argument reduction: atan(x) = 2 atan((sqrt(1+x^2)-1)/x).
          We want |sk| < k/sqrt(p) where p is the target precision. */
       lost = 0;
-      for (red = 0; MPFR_EXP(sk) > - (mp_exp_t) log2p; red ++)
+      for (red = 0; MPFR_GET_EXP(sk) > - (mp_exp_t) log2p; red ++)
         {
           lost = 9 - 2 * MPFR_EXP(sk);
           mpfr_mul (tmp, sk, sk, MPFR_RNDN);
