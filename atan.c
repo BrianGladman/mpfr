@@ -30,6 +30,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    If X=x^2, we want 1 - X/3 + X^2/5 - ... + (-1)^k*X^k/(2k+1) + ...
 
    Assume p is non-zero.
+
+   When we sum terms up to x^k/(2k+1), the denominator Q[0] is
+   3*5*7*...*(2k+1) ~ (2k/e)^k.
 */
 static void
 mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
@@ -190,8 +193,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpz_t  ukz;
   mpz_t *tabz;
   mp_exp_t exptol;
-  mp_prec_t prec, realprec;
-  unsigned long twopoweri;
+  mp_prec_t prec, realprec, est_lost, lost;
+  unsigned long twopoweri, log2p, red;
   int comparaison, inexact;
   int i, n0, oldn0;
   MPFR_GROUP_DECL (group);
@@ -264,7 +267,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
   prec = realprec + BITS_PER_MP_LIMB;
 
-  /* Initialisation    */
+  /* Initialisation */
   mpz_init (ukz);
   MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
@@ -276,40 +279,65 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* First, if |x| < 1, we need to have more prec to be able to round (sup)
          n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
       mp_prec_t sup;
-#if 0
-      sup = 1;
-      if (MPFR_GET_EXP (xp) < 0
-          && (mpfr_uexp_t) (2-MPFR_GET_EXP (xp)) > realprec)
-        sup = (mpfr_uexp_t) (2-MPFR_GET_EXP (xp)) - realprec;
-#else
-      sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1;
-#endif
+      sup = MPFR_GET_EXP (xp) < 0 ? 2 - MPFR_GET_EXP (xp) : 1; /* sup >= 1 */
+
       n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);
-      MPFR_ASSERTD (3*n0 > 2);
+      /* since realprec >= 4, n0 >= ceil(log2(8)) >= 3, thus 3*n0 > 2 */
       prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
+
+      /* the number of lost bits due to argument reduction is 
+         9 - 2 * EXP(sk), which we estimate by 9 + 2*ceil(log2(p))
+         since we manage that sk < 1/p */
+      if (MPFR_PREC (atan) > 100)
+        {
+          log2p = MPFR_INT_CEIL_LOG2(prec) / 2 - 3;
+          est_lost = 9 + 2 * log2p;
+          prec += est_lost;
+        }
+      else
+        log2p = est_lost = 0; /* don't reduce the argument */
 
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
       if (MPFR_LIKELY (oldn0 == 0))
         {
-          oldn0 = 3*(n0+1);
-          tabz = (mpz_t *) (*__gmp_allocate_func) (oldn0*sizeof (mpz_t));
+          oldn0 = 3 * (n0 + 1);
+          tabz = (mpz_t *) (*__gmp_allocate_func) (oldn0 * sizeof (mpz_t));
           for (i = 0; i < oldn0; i++)
             mpz_init (tabz[i]);
         }
-      else if (MPFR_UNLIKELY (oldn0 < 3*n0+1))
+      else if (MPFR_UNLIKELY (oldn0 < 3 * (n0 + 1)))
         {
           tabz = (mpz_t *) (*__gmp_reallocate_func)
-            (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
-          for (i = oldn0; i < 3*(n0+1); i++)
+            (tabz, oldn0 * sizeof (mpz_t), 3 * (n0 + 1)*sizeof (mpz_t));
+          for (i = oldn0; i < 3 * (n0 + 1); i++)
             mpz_init (tabz[i]);
-          oldn0 = 3*(n0+1);
+          oldn0 = 3 * (n0 + 1);
         }
 
-      if (comparaison > 0)
+      if (comparaison > 0) /* use atan(xp) = Pi/2 - atan(1/xp) */
         mpfr_ui_div (sk, 1, xp, MPFR_RNDN);
       else
         mpfr_set (sk, xp, MPFR_RNDN);
+      
+      /* now 0 < sk <= 1 */
+
+      /* Argument reduction: atan(x) = 2 atan((sqrt(1+x^2)-1)/x).
+         We want |sk| < k/sqrt(p) where p is the target precision. */
+      lost = 0;
+      for (red = 0; MPFR_EXP(sk) > - (mp_exp_t) log2p; red ++)
+        {
+          lost = 9 - 2 * MPFR_EXP(sk);
+          mpfr_mul (tmp, sk, sk, MPFR_RNDN);
+          mpfr_add_ui (tmp, tmp, 1, MPFR_RNDN);
+          mpfr_sqrt (tmp, tmp, MPFR_RNDN);
+          mpfr_sub_ui (tmp, tmp, 1, MPFR_RNDN);
+          if (red == 0 && comparaison > 0)
+            /* use xp = 1/sk */
+            mpfr_mul (sk, tmp, xp, MPFR_RNDN);
+          else
+            mpfr_div (sk, tmp, sk, MPFR_RNDN);
+        }
 
       /* sk is 1/|x| if |x| > 1, and |x| otherwise, i.e. min(|x|, 1/|x|) */
 
@@ -332,11 +360,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_SET_ZERO (arctgt);
       twopoweri = 1 << 0;
       MPFR_ASSERTD (n0 >= 4);
-      /* FIXME: further reduce the argument so that it is less than
-         1/n where n is the output precision. In such a way, the
-         first calls to mpfr_atan_aux will not be too expensive,
-         since the number of needed terms will be n/log(n), so the
-         factorial contribution will be O(n). */
       for (i = 0 ; i < n0; i++)
         {
           if (MPFR_UNLIKELY (MPFR_IS_ZERO (sk)))
@@ -372,8 +395,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       /* Add last step (Arctan(sk) ~= sk */
       mpfr_add (arctgt, arctgt, sk, MPFR_RNDN);
+
+      /* argument reduction */
+      mpfr_mul_2exp (arctgt, arctgt, red, MPFR_RNDN);
+
       if (comparaison > 0)
-        {
+        { /* atan(x) = Pi/2-atan(1/x) for x > 0 */
           mpfr_const_pi (tmp, MPFR_RNDN);
           mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
           mpfr_sub (arctgt, tmp, arctgt, MPFR_RNDN);
@@ -381,8 +408,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_SET_POS (arctgt);
 
     can_round:
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec, MPFR_PREC (atan),
-                                       rnd_mode)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec + est_lost - lost,
+                                       MPFR_PREC (atan), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, realprec);
     }

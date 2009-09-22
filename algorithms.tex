@@ -2011,22 +2011,64 @@ The terms that are canceled are $\pi/2$ and $\arcsin\,x$, their order is $2$. Th
 \subsection{The arc-tangent function} % from Mathieu Dutour
 
 The arc-tangent function admits the following argument reduction:
-\[ \arctan x = 2 \arctan \frac{x}{1+\sqrt{1+x^2}}. \]
-If applied once, it reduced the argument to $|x| < 1$, then each successive
+\[ \arctan x = 2 \arctan \frac{x}{1+\sqrt{1+x^2}}
+             = 2 \arctan \frac{\sqrt{1+x^2}-1}{x}. \]
+If applied once, it reduces the argument to $|x| < 1$, then each successive
 application reduces $x$ by a factor of at least $2$.
 
-\begin{comment}
-{Assume} $0 \leq y < 1$, where $y$ is an approximation of some
-real $x$ such that $x = y (1 + \delta)$. We approximate
-$\frac{x}{1+\sqrt{1+x^2}}$ using the following algorithm:
+Assume $|x| \leq 1$. 
+We approximate $\frac{\sqrt{1+x^2}-1}{x}$ using the following algorithm:
 \begin{quote}
 $s \leftarrow \circ(x^2)$ [nearest] \\
 $t \leftarrow \circ(1+s)$ [nearest] \\
 $u \leftarrow \circ(\sqrt{t})$ [nearest] \\
-$v \leftarrow \circ(1+u))$ [nearest] \\
-$w \leftarrow \circ(\frac{x}{v})$ [nearest]
+$v \leftarrow \circ(u-1))$ [nearest] \\
+$w \leftarrow \circ(\frac{v}{x})$ [nearest]
 \end{quote}
-\end{comment}
+Assuming all computations are done with precision $p$, and denoting
+$\theta_i$ a value such that $|\theta_i| \leq 2^{-p}$, we have
+$s = x^2 (1+\theta_1)$, $t = (1+s) (1+\theta_2) =
+(1 + x^2 (1+\theta_1)) (1+\theta_2) = (1+x^2) (1+\theta_3)^2$,
+$u = \sqrt{t} (1+\theta_4) = \sqrt{1+x^2} (1+\theta_3) (1 + \theta_4)
+= \sqrt{1+x^2} (1 + \theta_5)^2$.
+Now let us write $u - 1 = (\sqrt{1+x^2}-1) (1 + \lambda)$; we have
+\[ \lambda = \frac{\sqrt{1+x^2}}{\sqrt{1+x^2}-1} (2 \theta_5 + \theta_5^2). \]
+For $|x| \leq 1$, we have $2/x^2 \leq \frac{\sqrt{1+x^2}}{\sqrt{1+x^2}-1}
+\leq (2+\sqrt{2})/x^2$, and for $p \geq 5$ the expression
+$(2+\sqrt{2}) (2 \theta_5 + \theta_5^2)$ is bounded by $7 \theta_5$, thus we
+can write $u - 1 = (\sqrt{1+x^2}-1) (1 + 7 \theta_5/x)$.
+It follows $v = (u-1) (1 + \theta_6)$ and
+$w = \frac{\sqrt{1+x^2}-1}{x} (1 + 7 \theta_5/x) (1 + \theta_7)^2$.
+Still for $|x| \leq 1$ and $p \geq 5$, the product
+$(1 + 7 \theta_5/x) (1 + \theta_7)^2$ can be written
+$(1 + 10 \theta_8/x)$, thus we have
+$w = \frac{\sqrt{1+x^2}-1}{x} (1 + 10 \theta_8/x)$, and the relative
+error on $w$ is bounded by $10/x \cdot 2^{-p}$.
+
+Now if we want to apply several times this argument reduction, we need to
+analyze the error when $x$ is not exact, but say $x = \bar{x} (1 + \varepsilon
+\theta)$, with $\varepsilon \geq 0$ a parameter, and $|\theta| \leq 2^{-p}$.
+The above analysis remains valid with $x$ replaced by $\bar{x} (1 + \varepsilon
+\theta)$, thus we get $w = f(x) (1 + 10 \theta_8/x)$,
+with $f(x) = \frac{\sqrt{1+x^2}-1}{x}$, and $x = \bar{x} (1 + \varepsilon
+\theta)$. The derivative of $f$ is bounded by $1/2$ for $|x| \leq 1$, thus
+$|f(x) - f(\bar{x})| \leq \frac{1}{2} \varepsilon \bar{x}$. Thus we have
+\[ w = \frac{\sqrt{1+\bar{x}^2}-1}{\bar{x}} (1 + \frac{\varepsilon\theta_9}{2})
+(1 + 10 \theta_8/x). \]
+Assuming $\varepsilon \leq 21/x$, we have
+$w = \frac{\sqrt{1+\bar{x}^2}-1}{\bar{x}} (1 + \frac{21}{2} \theta_{10}/x)
+(1 + 10 \theta_8/x) = \frac{\sqrt{1+\bar{x}^2}-1}{\bar{x}}
+(1 + 21 \theta_{11}/x)$, as long as $|x| \geq 210 \cdot 2^{-p}$.
+Since initially $\varepsilon=0$, this proves by induction that
+$\varepsilon \leq 21/x$, and the relative error on $w$ after several
+argument reductions is bounded by $21/x \cdot 2^{-p}$, where $x$ is the last
+reduced argument.
+Since the arc-tangent function has a derivative less than $1$,
+the corresponding absolute error bound for
+$\arctan w$ is also $21/x \cdot 2^{-p}$.
+Since $\arctan\frac{\sqrt{1+x^2}-1}{x} \geq 5x/16$ for $0 \leq x \leq 1$,
+the relative error bound on $\arctan\frac{\sqrt{1+x^2}-1}{x}$ is
+$2^{7-p}/x^2 \leq 2^{9-2\Exp(x)-p}$.
 
 \subsubsection{Binary splitting}
 \noindent The Taylor series for $\arctan$ is suitable for analysis using Binary splitting.
