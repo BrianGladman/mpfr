@@ -343,10 +343,10 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             mpfr_div (sk, tmp, sk, MPFR_RNDN);
         }
 
-      /* FIXME: update the comments.
-         The next one at least is no longer true. */
-
-      /* sk is 1/|x| if |x| > 1, and |x| otherwise, i.e. min(|x|, 1/|x|) */
+      /* we started from x0 = 1/|x| if |x| > 1, and |x| otherwise, thus
+         we had x0 = min(|x|, 1/|x|) <= 1, and applied 'red' times the
+         argument reduction x -> (sqrt(1+x^2)-1)/x, which keeps 0 < x < 1,
+         thus 0 < sk <= 1, and sk=1 can occur only if red=0 */
 
       /* If sk=1, then if |x| < 1, we have 1 - 2^(-prec-1) <= |x| < 1,
          or if |x| > 1, we have 1 - 2^(-prec-1) <= 1/|x| < 1, thus in all
