@@ -39,6 +39,10 @@ EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/libmpfr.la
 INCLUDES = -I$(top_srcdir) -I$(top_builddir)
+
+# LOADLIBES (documented in the "GNU make" manual and equivalent to LDLIBS)
+# enables to compile a program foo.c in the test directory by simply doing
+# "make foo".
 LOADLIBES=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(top_builddir)/tests/.libs/libfrtests.a $(top_builddir)/.libs/libmpfr.a $(LIBS) $(MPFR_LIBM)
 
 check_LTLIBRARIES = libfrtests.la
