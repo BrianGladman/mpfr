@@ -135,7 +135,8 @@ To make a release (for the MPFR team):
      Update the libtool version too (see Makefile.am).
      Update the date in mpfr.texi.
 
-  3) Update the NEWS file.
+  3) Update the NEWS file, in particular say if the the release is binary
+     and/or API compatible (or not) with previous releases.
      Update the FAQ.html file with update-faq (and check it).
 
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
