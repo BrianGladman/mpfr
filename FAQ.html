@@ -129,6 +129,7 @@ and <cite><acronym>MPFR</acronym></cite>?</a></li>
 <li><a href="#mpf2mpfr">How to convert my program written using
 <cite><acronym>MPF</acronym></cite> to
 <cite><acronym>MPFR</acronym></cite>?</a></li>
+<li><a href="#no_libgmp">At configure time, I get the error: <q>libgmp not found or uses a different ABI.</q></a></li>
 <li><a href="#undef_ref1">I get undefined reference to <code>__gmp_get_memory_functions</code>.</a></li>
 <li><a href="#undef_ref2">When I link my program with
 <cite><acronym>MPFR</acronym></cite>, I get undefined reference
@@ -199,9 +200,49 @@ header files. If the program uses <cite><acronym>MPF</acronym></cite>
 internals (such as direct access to <code>__mpf_struct</code> members),
 additional changes will be needed.</p></dd>
 
-<dt id="undef_ref1">3. I get undefined reference to <code>__gmp_get_memory_functions</code>.</dt>
+<dt id="no_libgmp">3. At configure time, I get the error: <q>libgmp not found or uses a different ABI.</q></dt>
 
-<dd><p>If you get such an error, in particular when running
+<dd><p>This test (<samp>checking for __gmpz_init in -lgmp</samp>) comes
+after the <samp>gmp.h</samp> detection. The failure occurs either because
+the <cite><acronym>GMP</acronym></cite> library could not be found
+(as it is not in the provided library search paths) or because the
+<cite><acronym>GMP</acronym></cite> library that was found does not have
+the expected <acronym title="Application Binary Interface">ABI</acronym>
+(<abbr>e.g.</abbr> 32-bit <abbr>vs</abbr> 64-bit). The latter problem can
+have several causes:</p>
+<ul>
+<li>A wrong libgmp library has been picked up. This can occur if you have
+several <cite><acronym>GMP</acronym></cite> versions installed on the
+machine and something is wrong with the provided library search paths.</li>
+<li>Wrong compiler options (<samp>CFLAGS</samp>) were given. In general, the
+presence or absence of the <samp>-m64</samp> compiler option must match the
+library <acronym title="Application Binary Interface">ABI</acronym>.</li>
+<li>A wrong <samp>gmp.h</samp> file has been picked up (if you have several
+<cite><acronym>GMP</acronym></cite> versions installed). Indeed, by default,
+<cite><acronym>MPFR</acronym></cite> gets the compiler options from the
+<samp>gmp.h</samp> file (with <cite><acronym>GMP</acronym></cite> 4.2.3
+or later); this is needed because <cite><acronym>GMP</acronym></cite> does
+not necessarily use the default <acronym>ABI</acronym>. The consequence is
+that if the <samp>gmp.h</samp> file is associated with a library using a
+different <acronym>ABI</acronym>, the <acronym>ABI</acronym>-related options
+will be incorrect. Hence the failure.</li>
+</ul>
+<p>Note: The <samp>config.log</samp> output gives more information
+than the error message. In particular, see the output of the test:
+<samp>checking for CC and CFLAGS in gmp.h</samp>; it should give you
+the default compiler options (from <samp>gmp.h</samp>).</p>
+
+<p>See also the answer to the <a href="#undef_ref1">next question</a>.</p></dd>
+
+<dt id="undef_ref1">4. I get undefined reference to <code>__gmp_get_memory_functions</code>.</dt>
+
+<dd><p>Note: this was mainly a problem when upgrading from
+<cite><acronym>GMP</acronym></cite> 4.1.4 to a later version,
+but information given below may still be useful in other cases,
+when several <cite><acronym>GMP</acronym></cite> libraries are
+installed on the same machine.</p>
+
+<p>If you get such an error, in particular when running
 <samp>make check</samp>, then this probably means that you are using
 the header file from <cite><acronym>GMP</acronym></cite> 4.2.x but the
 <cite><acronym>GMP</acronym></cite> 4.1.4 library. This can happen if
@@ -229,9 +270,9 @@ and other software that uses <cite><acronym>GMP</acronym></cite> and/or
 environment variables allow you to set them in a global way.</p>
 <p>Other information can be given in the <samp>INSTALL</samp> file and
 <samp>ld</samp> manual. Please look at them for more details. See also
-the next question.</p></dd>
+the <a href="#undef_ref2">next question</a>.</p></dd>
 
-<dt id="undef_ref2">4. When I link my program with
+<dt id="undef_ref2">5. When I link my program with
 <cite><acronym>MPFR</acronym></cite>, I get undefined reference
 to <code>__gmpXXXX</code>.</dt>
 
@@ -247,9 +288,9 @@ See <samp>INSTALL</samp> file and <samp>ld</samp> manual for more
 details.</p>
 <p>If you used correct link options, but still get an error, this may mean
 that your include and library search paths are inconsistent. Please see the
-previous question.</p></dd>
+<a href="#undef_ref1">previous question</a>.</p></dd>
 
-<dt id="crash_high_prec">5. My program crashes with high precisions.</dt>
+<dt id="crash_high_prec">6. My program crashes with high precisions.</dt>
 
 <dd><p>Your stack size limit may be too small; indeed, by default,
 <cite><acronym>GMP</acronym></cite> 4.1.4 and below allocates all
@@ -267,7 +308,7 @@ be increased above some value.</p></li>
 <cite><acronym>MPFR</acronym></cite> to use another allocation method.</p></li>
 </ul></dd>
 
-<dt id="accuracy">6. Though I have increased the precision, the results
+<dt id="accuracy">7. Though I have increased the precision, the results
 are not more accurate.</dt>
 
 <dd><p>The reason may be the use of C floating-point numbers. If you want
@@ -286,7 +327,7 @@ with <code>mpfr_set (y, x, MPFR_RNDN)</code> where the variable <var>y</var>
 is more precise than the variable <var>x</var> will not make it more
 accurate; the (binary) value will remain unchanged.</p></dd>
 
-<dt id="detect_mpfr">7. How can I detect <cite><acronym>MPFR</acronym></cite>
+<dt id="detect_mpfr">8. How can I detect <cite><acronym>MPFR</acronym></cite>
 installation using <cite>autoconf</cite> or <cite>pkg-config</cite>?</dt>
 
 <dd><p>The <cite><acronym>MPFR</acronym></cite> team does not currently
@@ -295,7 +336,7 @@ be added to the <cite><acronym>MPFR</acronym></cite> manual. The
 <cite><acronym>MPFR</acronym></cite> team does not wish to support
 <cite>pkg-config</cite> yet.</p></dd>
 
-<dt id="cite">8. How to cite <cite><acronym>MPFR</acronym></cite> in a
+<dt id="cite">9. How to cite <cite><acronym>MPFR</acronym></cite> in a
 scientific publication?</dt>
 
 <dd><p>To properly cite <cite><acronym>MPFR</acronym></cite> in a scientific
