@@ -124,8 +124,8 @@ mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
     return 0; /* We cannot round if Zero, Nan or Inf */
   else
-    return mpfr_can_round_raw(MPFR_MANT(b), MPFR_LIMB_SIZE(b),
-                              MPFR_SIGN(b), err, rnd1, rnd2, prec);
+    return mpfr_can_round_raw (MPFR_MANT(b), MPFR_LIMB_SIZE(b),
+                               MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int
@@ -158,21 +158,20 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* warning: if k = m*BITS_PER_MP_LIMB, consider limb m-1 and not m */
   k = (err - 1) / BITS_PER_MP_LIMB;
   MPFR_UNSIGNED_MINUS_MODULO(s, err);
-
   /* the error corresponds to bit s in limb k, the most significant limb
      being limb 0 */
+
   k1 = (prec - 1) / BITS_PER_MP_LIMB;
   MPFR_UNSIGNED_MINUS_MODULO(s1, prec);
-
   /* the last significant bit is bit s1 in limb k1 */
 
   /* don't need to consider the k1 most significant limbs */
   k -= k1;
   bn -= k1;
   prec -= (mp_prec_t) k1 * BITS_PER_MP_LIMB;
+
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */
-
   MPFR_TMP_MARK(marker);
   tn = bn;
   k++; /* since we work with k+1 everywhere */
@@ -192,8 +191,11 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
     case MPFR_RNDZ:
       /* Round to Zero */
       cc = (bp[bn - 1] >> s1) & 1;
-      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-      /* now round b +/- 2^(MPFR_EXP(b)-err) */
+      /* mpfr_round_raw2 returns 1 if one should add 1 at ulp(b,prec),
+         and 0 otherwise */
+      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
+      /* cc is the new value of bit s1 in bp[bn-1] */
+      /* now round b + 2^(MPFR_EXP(b)-err) */
       cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
     case MPFR_RNDN:
@@ -208,12 +210,13 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
     default:
       /* Round away */
       cc = (bp[bn - 1] >> s1) & 1;
-      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
       cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
     }
 
+  /* if cc2 is 1, then a carry or borrow propagates to the next limb */
   if (cc2 && cc)
     {
       MPFR_TMP_FREE(marker);

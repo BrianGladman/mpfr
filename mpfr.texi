@@ -2398,13 +2398,18 @@ value if one is able to round correctly @var{x} to precision
 and 0 otherwise (including for NaN and Inf).
 This function @strong{does not modify} its arguments.
 
+If @var{rnd1} is @code{MPFR_RNDN}, then the sign of the error is
+unknown, but its absolute value is the same, so that the possible range
+is twice as large as with a directed rounding for @var{rnd1}.
+
 Note: if one wants to also determine the correct ternary value when rounding
-@var{b} to precision @var{prec}, a useful trick is the following:
+@var{b} to precision @var{prec} with rounding mode @var{rnd},
+a useful trick is the following:
 @verbatim
-   if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ, prec + (rnd2 == MPFR_RNDN)))
+   if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ, prec + (rnd == MPFR_RNDN)))
       ...
 @end verbatim
-Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
+Indeed, if @var{rnd} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not

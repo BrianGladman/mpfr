@@ -90,6 +90,23 @@ main (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 137);
+  mpfr_set_str_binary (x, "-0.10111001101001010110011000110100111010011101101010010100101100001110000100111111011101010110001010111100100101110111100001000010000000000E-97");
+  if (mpfr_can_round (x, 132, MPFR_RNDU, MPFR_RNDZ, 128) == 0)
+    {
+      printf ("Error (4) in mpfr_can_round\n");
+      exit (1);
+    }
+
+  /* in the following, we can round but cannot determine the inexact flag */
+  mpfr_set_prec (x, 86);
+  mpfr_set_str_binary (x, "-0.11100100010011001111011010100111101010011000000000000000000000000000000000000000000000E-80");
+  if (mpfr_can_round (x, 81, MPFR_RNDU, MPFR_RNDZ, 44) == 0)
+    {
+      printf ("Error (5) in mpfr_can_round\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 62);
   mpfr_set_str (x, "0.ff4ca619c76ba69", 16, MPFR_RNDZ);
   for (i = 30; i < 99; i++)
