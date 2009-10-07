@@ -366,6 +366,52 @@ test_mpfr_sincos_fast (void)
   mpfr_clear (h);
 }
 
+static void
+bug20091007 (void)
+{
+  mpfr_t x, y, z, yref, zref;
+  mp_prec_t p = 1000;
+  int inex, inexref;
+  mp_rnd_t r = MPFR_RNDZ;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, p);
+  mpfr_init2 (yref, p);
+  mpfr_init2 (zref, p);
+
+  mpfr_set_str_binary (x, "0.1100111101100110111000010001010111010011101111010010110101011001001010110000011110111111010000100001010001001111000101010001100101000100100000110111101000111001101110111111010100011111111010100110010000010110100011011101100101111000100111110111000000101110000000011001011001111111111000001100100110011111010101101101010110111101100001010010101001001100011100000001111100011101111010000010100001000100101101000111001011001110000100101100000101001110110010111101000001011010101001111001000001100110101000110011000101100100011011111111111111010010101001110011100010100110111100100000111111100100011101110001111100000111000001011001001000100110100010001000010100001100101001101101100000101101101110000000000100010101101111101011101111111100010001001010101011101010000010101101100001001111100010111110111010100000001000101011101100000100110001101110001010001101001011000001110100011111001001001110000110101100000111001010101010001011001000110111010001000000011000111111010110111100100001010000000011010010E5");
+  inexref = mpfr_sin_cos (yref, zref, x, r);
+  inex = mpfr_sincos_fast (y, z, x, r);
+  
+  if (mpfr_cmp (y, yref))
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091007)\n");
+      printf ("yref="); mpfr_dump (yref);
+      printf ("y="); mpfr_dump (y);
+      exit (1);
+    }
+  if (mpfr_cmp (z, zref))
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091007)\n");
+      printf ("zref="); mpfr_dump (zref);
+      printf ("z="); mpfr_dump (z);
+      exit (1);
+    }
+  if (inex != inexref)
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091007)\n");
+      printf ("inexref=%d inex=%d\n", inexref, inex);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (yref);
+  mpfr_clear (zref);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main (int argc, char *argv[])
@@ -382,6 +428,8 @@ main (int argc, char *argv[])
       large_test (argv[1], atoi (argv[2]), (argc > 3) ? atoi (argv[3]) : 1);
       goto end;
     }
+
+  bug20091007 ();
 
   test_mpfr_sincos_fast ();
 

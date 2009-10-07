@@ -642,6 +642,8 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd)
           (c == NULL || MPFR_CAN_ROUND (tc, w - errc, MPFR_PREC(c), rnd)))
         break;
       MPFR_ZIV_NEXT (loop, w);
+      mpfr_set_prec (ts, w);
+      mpfr_set_prec (tc, w);
     }
   MPFR_ZIV_FREE (loop);
 
