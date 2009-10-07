@@ -383,7 +383,7 @@ bug20091007 (void)
   mpfr_set_str (x, "1.9ecdc22ba77a5ab2560f7e84289e2a328906f47377ea3fd4c82d1bb2f13ee05c032cffc1933eadab7b0a5498e03e3bd0508968e59c25829d97a0b54f20cd4662c8dfffa54e714de41fc8ee3e0e0b244d110a194db05b70022b7d77f88955d415b09f17dd404576098dc51a583a3e49c35839551646e880c7eb790a01a4@1", 16, MPFR_RNDN);
   inexref = mpfr_sin_cos (yref, zref, x, r);
   inex = mpfr_sincos_fast (y, z, x, r);
-  
+
   if (mpfr_cmp (y, yref))
     {
       printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091007)\n");
