@@ -179,18 +179,21 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          call below fails, we will have clobbered the input */
       mpfr_set_prec (xr, MPFR_PREC(c));
       mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
-      mpfr_sqr (c, xr, MPFR_RNDU);
-      mpfr_ui_sub (c, 1, c, MPFR_RNDN);
-      err = 2 + (- MPFR_GET_EXP (c)) / 2;
-      mpfr_sqrt (c, c, MPFR_RNDN);
+      mpfr_sqr (c, xr, MPFR_RNDU); /* the absolute error is bounded by
+                                      2^(5-m) if reduce=1, and by 2^(2-m)
+                                      otherwise */
+      mpfr_ui_sub (c, 1, c, MPFR_RNDN); /* error bounded by 2^(6-m) if reduce
+                                           is 1, and 2^(3-m) otherwise */
+      mpfr_sqrt (c, c, MPFR_RNDN); /* the absolute error is bounded by
+                                      2^(6-m-Exp(c)) if reduce=1, and
+                                      2^(3-m-Exp(c)) otherwise */
+      err = 3 + 3 * reduce - MPFR_GET_EXP (c);
       if (neg)
         MPFR_CHANGE_SIGN (c);
 
       /* the absolute error on c is at most 2^(err-m), which we must put
-         in the form 2^(EXP(c)-err). If there was an argument reduction,
-         we need to add 2^(2-m); since err >= 2, the error is bounded by
-         2^(err+1-m) in that case. */
-      err = MPFR_GET_EXP (c) + (mp_exp_t) m - (err + reduce);
+         in the form 2^(EXP(c)-err). */
+      err = MPFR_GET_EXP (c) + (mp_exp_t) m - err;
       if (mpfr_can_round (c, err, MPFR_RNDN, rnd_mode,
                           MPFR_PREC (y) + (rnd_mode == MPFR_RNDN)))
         break;
