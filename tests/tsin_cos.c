@@ -420,7 +420,7 @@ bug20091008 (void)
   mpfr_t x, y, z, yref, zref;
   mp_prec_t p = 1000;
   int inex, inexref;
-  mp_rnd_t r = MPFR_RNDN;
+  mpfr_rnd_t r = MPFR_RNDN;
 
   mpfr_init2 (x, p);
   mpfr_init2 (y, p);
