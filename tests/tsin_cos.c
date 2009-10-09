@@ -412,6 +412,8 @@ bug20091007 (void)
   mpfr_clear (zref);
 }
 
+/* Note: with the sin_cos.c code before r6507, the disagreement occurs
+   only on the return ("inexact") value, which is new in r6444. */
 static void
 bug20091008 (void)
 {
@@ -429,7 +431,7 @@ bug20091008 (void)
   mpfr_set_str (x, "c.91813724e28ef6a711d33e6505984699daef7fe93636c1ed5d0168bc96989cc6802f7f9e405c902ec62fb90cd39c9d21084c8ad8b5af4c4aa87bf402e2e4a78e6fe1ffeb6dbbbdbbc2983c196c518966ccc1e094ed39ee77984ef2428069d65de37928e75247edbe7007245e682616b5ebbf05f2fdefc74ad192024f10", 16, MPFR_RNDN);
   inexref = mpfr_sin_cos (yref, zref, x, r);
   inex = mpfr_sincos_fast (y, z, x, r);
-  
+
   if (mpfr_cmp (y, yref))
     {
       printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091008)\n");
