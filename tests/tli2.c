@@ -147,10 +147,40 @@ normal (void)
   mpfr_clear (y);
 }
 
+static void
+bug20091013 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 17);
+  mpfr_init2 (y, 2);
+  mpfr_set_str_binary (x, "0.10000000000000000E-16");
+  inex = mpfr_li2 (y, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (y, 1, -17) != 0)
+    {
+      printf ("Error in bug20091013()\n");
+      printf ("expected 2^(-17)\n");
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  if (inex >= 0)
+    {
+      printf ("Error in bug20091013()\n");
+      printf ("expected negative ternary value, got %d\n", inex);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  bug20091013 ();
 
   special ();
 
