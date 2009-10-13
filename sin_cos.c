@@ -194,7 +194,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* the absolute error on c is at most 2^(err-m), which we must put
          in the form 2^(EXP(c)-err). */
       err = MPFR_GET_EXP (c) + (mp_exp_t) m - err;
-      if (mpfr_can_round (c, err, MPFR_RNDN, rnd_mode,
+      if (mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
                           MPFR_PREC (y) + (rnd_mode == MPFR_RNDN)))
         break;
       /* check for huge cancellation */

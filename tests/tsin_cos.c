@@ -462,6 +462,54 @@ bug20091008 (void)
   mpfr_clear (zref);
 }
 
+static void
+bug20091013 (void)
+{
+  mpfr_t x, y, z, yref, zref;
+  mp_prec_t p = 1000;
+  int inex, inexref;
+  mpfr_rnd_t r = MPFR_RNDN;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, p);
+  mpfr_init2 (yref, p);
+  mpfr_init2 (zref, p);
+
+  mpfr_set_str (x, "3.240ff3fdcb1ee7cd667b96287593ae24e20fb63ed7c2d5bf4bd0f2cc5509283b04e7628e66382605f14ed5967cef15296041539a1bdaa626c777c7fbb6f2068414759b78cee14f37848689b3a170f583656be4e0837f464d8210556a3a822d4ecfdd59f4e0d5fdb76bf7e15b8a57234e2160b98e14c17bbdf27c4643b8@1", 16, MPFR_RNDN);
+  inexref = mpfr_sin_cos (yref, zref, x, r);
+  inex = mpfr_sincos_fast (y, z, x, r);
+
+  if (mpfr_cmp (y, yref))
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091013)\n");
+      printf ("yref="); mpfr_dump (yref);
+      printf ("y="); mpfr_dump (y);
+      exit (1);
+    }
+  if (mpfr_cmp (z, zref))
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091013)\n");
+      printf ("zref="); mpfr_dump (zref);
+      printf ("z="); mpfr_dump (z);
+      exit (1);
+    }
+  /* sin(x) is rounded down and cos(x) is rounded down, thus we should get
+     2+4*2 = 10 as return value */
+  if (inex != inexref)
+    {
+      printf ("mpfr_sin_cos and mpfr_sincos_fast disagree (bug20091013)\n");
+      printf ("inexref=%d inex=%d (10 expected)\n", inexref, inex);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (yref);
+  mpfr_clear (zref);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main (int argc, char *argv[])
@@ -478,6 +526,8 @@ main (int argc, char *argv[])
       large_test (argv[1], atoi (argv[2]), (argc > 3) ? atoi (argv[3]) : 1);
       goto end;
     }
+
+  bug20091013 ();
 
   bug20091008 ();
 
