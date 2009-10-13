@@ -322,8 +322,10 @@ test_mpfr_sincos_fast (void)
   mpfr_init2 (yref, p);
   mpfr_init2 (zref, p);
   mpfr_init2 (h, p);
-  mpfr_set_ui_2exp (h, 1, -3, MPFR_RNDN);
   mpfr_set_ui (x, 0, MPFR_RNDN);
+  /* we generate a random value x, compute sin(x) and cos(x) with both
+     mpfr_sin_cos and mpfr_sincos_fast, and check the values and the flags
+     agree */
   for (i = 0; i < 100; i++)
     {
       mpfr_urandomb (h, RANDS);
