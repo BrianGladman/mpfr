@@ -224,6 +224,8 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- compute exp by using the series for cosh or sinh, which has half the terms
+  (see Exercise 4.11 from Modern Computer Arithmetic, version 0.3)
 - fix regression with mpfr_mpz_root (from Keith Briggs, 5 July 2006), for
    example on 3Ghz P4 with gmp-4.2, x=12.345:
    prec=50000    k=2   k=3   k=10  k=100
