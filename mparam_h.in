@@ -673,8 +673,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  680,682,682,675,682,677,666,683,680,682,682,684,680,681,674,674 \
   
 #define MPFR_MUL_THRESHOLD 19
-#define MPFR_EXP_2_THRESHOLD 411
-#define MPFR_EXP_THRESHOLD 45200
+#define MPFR_EXP_2_THRESHOLD 411 /* bits */
+#define MPFR_EXP_THRESHOLD 45200 /* bits */
 
 /**************************************
  * Threshold for PentiumPro/Pentium M *
@@ -1412,10 +1412,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define MPFR_MUL_THRESHOLD 40
 #endif
 #ifndef MPFR_EXP_2_THRESHOLD
-# define MPFR_EXP_2_THRESHOLD 100
+# define MPFR_EXP_2_THRESHOLD 100 /* bits */
 #endif
 #ifndef MPFR_EXP_THRESHOLD
-# define MPFR_EXP_THRESHOLD 25000
+# define MPFR_EXP_THRESHOLD 25000 /* bits */
 #endif
 #ifndef MPFR_SINCOS_THRESHOLD
 # define MPFR_SINCOS_THRESHOLD 30000 /* bits */
