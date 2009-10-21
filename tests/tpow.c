@@ -979,15 +979,16 @@ overflows3 (void)
 
   if (MPFR_EMAX_MAX % 3 == 0)
     {
-      mpfr_t x, y, z;
+      mpfr_t x, y, z, t;
       mp_exp_t emin, emax;
+      unsigned int flags;
 
       emin = mpfr_get_emin ();
       emax = mpfr_get_emax ();
       set_emin (MPFR_EMIN_MIN);
       set_emax (MPFR_EMAX_MAX);
 
-      mpfr_inits2 (16, x, y, z, (mpfr_ptr) 0);
+      mpfr_inits2 (16, x, y, z, t, (mpfr_ptr) 0);
 
       mpfr_set_si_2exp (x, 1, -2 * (MPFR_EMAX_MAX / 3), MPFR_RNDN);
       mpfr_set_si_2exp (y, -3, -1, MPFR_RNDN);
@@ -995,17 +996,39 @@ overflows3 (void)
       mpfr_pow (z, x, y, MPFR_RNDN);
       if (MPFR_IS_NEG (z) || ! mpfr_inf_p (z))
         {
-          printf ("Error in overflows3: expected +Inf, got ");
+          printf ("Error in overflows3 (RNDN): expected +Inf, got ");
           mpfr_dump (z);
           exit (1);
         }
       if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
         {
-          printf ("Error in overflows3: bad flags (%u)\n", __gmpfr_flags);
+          printf ("Error in overflows3 (RNDN): bad flags (%u)\n",
+                  __gmpfr_flags);
           exit (1);
         }
 
-      mpfr_clears (x, y, z, (mpfr_ptr) 0);
+      mpfr_clear_flags ();
+      mpfr_pow (z, x, y, MPFR_RNDZ);
+      flags = __gmpfr_flags;
+      mpfr_set (t, z, MPFR_RNDN);
+      mpfr_nextabove (t);
+      if (MPFR_IS_NEG (z) || mpfr_inf_p (z) || ! mpfr_inf_p (t))
+        {
+          printf ("Error in overflows3 (RNDZ):\nexpected ");
+          mpfr_set_inf (t, 1);
+          mpfr_nextbelow (t);
+          mpfr_dump (t);
+          printf ("got      ");
+          mpfr_dump (z);
+          exit (1);
+        }
+      if (flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+        {
+          printf ("Error in overflows3 (RNDZ): bad flags (%u)\n", flags);
+          exit (1);
+        }
+
+      mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
 
       set_emin (emin);
       set_emax (emax);
