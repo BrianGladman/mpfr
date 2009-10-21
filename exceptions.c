@@ -224,13 +224,16 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
        *   | Possible underflow/overflow detection -> return.
        *   | If can_round, break (exit the loop).
        *   | Otherwise, increase the working precision and loop.
-       *   Round the approximation in the target precision.
+       *   Round the approximation in the target precision.  <== See below
        *   Restore the flags (that could have been set due to underflows
        *   or overflows during the internal computations).
        *   Execute: return mpfr_check_range (...).
        * The problem is that an overflow could be generated when rounding the
        * approximation (in general, such an overflow could not be detected
        * earlier), and the overflow flag is lost when the flags are restored.
+       * This can occur only when the rounding yields an exponent change
+       * and the new exponent is larger than the maximum exponent, so that
+       * an infinity is necessarily obtained.
        * So, the simplest solution is to detect this overflow case here in
        * mpfr_check_range, which is easy to do since the rounded result is
        * necessarily an inexact infinity.
