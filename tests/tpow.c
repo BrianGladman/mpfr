@@ -975,13 +975,15 @@ overflows3 (void)
 {
   /* x^y where x = 2^b, y is not an integer (so that mpfr_pow_z is not used)
      and b * y = emax in the extended exponent range. If emax is divisible
-     by 3, we choose x = 2^(-2*emax/3) and y = -3/2. */
+     by 3, we choose x = 2^(-2*emax/3) and y = -3/2.
+     Test also with nextbelow(x). */
 
   if (MPFR_EMAX_MAX % 3 == 0)
     {
       mpfr_t x, y, z, t;
       mp_exp_t emin, emax;
       unsigned int flags;
+      int i;
 
       emin = mpfr_get_emin ();
       emax = mpfr_get_emax ();
@@ -991,41 +993,47 @@ overflows3 (void)
       mpfr_inits2 (16, x, y, z, t, (mpfr_ptr) 0);
 
       mpfr_set_si_2exp (x, 1, -2 * (MPFR_EMAX_MAX / 3), MPFR_RNDN);
-      mpfr_set_si_2exp (y, -3, -1, MPFR_RNDN);
-      mpfr_clear_flags ();
-      mpfr_pow (z, x, y, MPFR_RNDN);
-      if (MPFR_IS_NEG (z) || ! mpfr_inf_p (z))
+      for (i = 0; i <= 1; i++)
         {
-          printf ("Error in overflows3 (RNDN): expected +Inf, got ");
-          mpfr_dump (z);
-          exit (1);
-        }
-      if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
-        {
-          printf ("Error in overflows3 (RNDN): bad flags (%u)\n",
-                  __gmpfr_flags);
-          exit (1);
-        }
+          mpfr_set_si_2exp (y, -3, -1, MPFR_RNDN);
+          mpfr_clear_flags ();
+          mpfr_pow (z, x, y, MPFR_RNDN);
+          if (MPFR_IS_NEG (z) || ! mpfr_inf_p (z))
+            {
+              printf ("Error in overflows3 (RNDN, i = %d): expected +Inf,"
+                      " got ", i);
+              mpfr_dump (z);
+              exit (1);
+            }
+          if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+            {
+              printf ("Error in overflows3 (RNDN, i = %d): bad flags (%u)\n",
+                      i, __gmpfr_flags);
+              exit (1);
+            }
 
-      mpfr_clear_flags ();
-      mpfr_pow (z, x, y, MPFR_RNDZ);
-      flags = __gmpfr_flags;
-      mpfr_set (t, z, MPFR_RNDN);
-      mpfr_nextabove (t);
-      if (MPFR_IS_NEG (z) || mpfr_inf_p (z) || ! mpfr_inf_p (t))
-        {
-          printf ("Error in overflows3 (RNDZ):\nexpected ");
-          mpfr_set_inf (t, 1);
-          mpfr_nextbelow (t);
-          mpfr_dump (t);
-          printf ("got      ");
-          mpfr_dump (z);
-          exit (1);
-        }
-      if (flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
-        {
-          printf ("Error in overflows3 (RNDZ): bad flags (%u)\n", flags);
-          exit (1);
+          mpfr_clear_flags ();
+          mpfr_pow (z, x, y, MPFR_RNDZ);
+          flags = __gmpfr_flags;
+          mpfr_set (t, z, MPFR_RNDN);
+          mpfr_nextabove (t);
+          if (MPFR_IS_NEG (z) || mpfr_inf_p (z) || ! mpfr_inf_p (t))
+            {
+              printf ("Error in overflows3 (RNDZ, i = %d):\nexpected ", i);
+              mpfr_set_inf (t, 1);
+              mpfr_nextbelow (t);
+              mpfr_dump (t);
+              printf ("got      ");
+              mpfr_dump (z);
+              exit (1);
+            }
+          if (flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+            {
+              printf ("Error in overflows3 (RNDZ, i = %d): bad flags (%u)\n",
+                      i, flags);
+              exit (1);
+            }
+          mpfr_nextbelow (x);
         }
 
       mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
