@@ -231,7 +231,8 @@ Table of contents:
 - improve mpfr_gamma (see http://code.google.com/p/fastfunlib/). A possible
   idea is to implement a fast algorithm for the argument reconstruction
   gamma(x+k). One could also use the series for 1/gamma(x), see for example
-  http://dlmf.nist.gov/5/7/.
+  http://dlmf.nist.gov/5/7/ or formula (36) from
+  http://mathworld.wolfram.com/GammaFunction.html
 - fix regression with mpfr_mpz_root (from Keith Briggs, 5 July 2006), for
    example on 3Ghz P4 with gmp-4.2, x=12.345:
    prec=50000    k=2   k=3   k=10  k=100

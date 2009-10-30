@@ -62,23 +62,28 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 
       /* Update the cache. */
       pold = prec;
-      mpfr_prec_round (cache->x, pold, MPFR_RNDN);
+      /* no need to keep the previous value */
+      mpfr_set_prec (cache->x, pold);
       cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
-      /* we assume all cached constants are positive */
-      MPFR_ASSERTN(MPFR_IS_POS(cache->x));
     }
+
+  /* now pold >= prec is the precision of cache->x */
 
   /* First, check if the cache has the exact value (unlikely).
      Else the exact value is between (assuming x=cache->x > 0):
        x and x+ulp(x) if cache->inexact < 0,
        x-ulp(x) and x if cache->inexact > 0,
      and abs(x-exact) <= ulp(x)/2. */
+
+  /* we assume all cached constants are positive */
   MPFR_ASSERTN (MPFR_IS_POS (cache->x)); /* TODO... */
   sign = MPFR_SIGN (cache->x);
   MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
   MPFR_SET_SIGN (dest, sign);
+
+  /* round cache->x from precision pold down to precision prec */
   MPFR_RNDRAW_GEN (inexact, dest,
-                   MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
+                   MPFR_MANT (cache->x), pold, rnd, sign,
                    if (MPFR_UNLIKELY (cache->inexact == 0))
                      {
                        if ((_sp[0] & _ulp) == 0)
@@ -91,7 +96,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
                      }
                    else if (cache->inexact < 0)
                      goto addoneulp;
-                   else
+                   else /* cache->inexact > 0 */
                      {
                        inexact = -sign;
                        goto trunc_doit;
@@ -99,6 +104,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
                    if (MPFR_UNLIKELY (++MPFR_EXP (dest) > __gmpfr_emax))
                      mpfr_overflow (dest, rnd, sign);
                   );
+
   if (MPFR_LIKELY (cache->inexact != 0))
     {
       switch (rnd)
@@ -109,7 +115,10 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
             {
               inexact = cache->inexact;
               if (inexact > 0)
-                mpfr_nextbelow (dest);
+                {
+                  mpfr_nextbelow (dest);
+                  inexact = -inexact;
+                }
             }
           break;
         case MPFR_RNDU:
@@ -118,7 +127,10 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
             {
               inexact = cache->inexact;
               if (inexact < 0)
-                mpfr_nextabove (dest);
+                {
+                  mpfr_nextabove (dest);
+                  inexact = -inexact;
+                }
             }
           break;
         default: /* MPFR_RNDN */

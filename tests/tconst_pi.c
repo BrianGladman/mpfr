@@ -71,6 +71,60 @@ my_const_pi (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 #define TEST_FUNCTION my_const_pi
 #include "tgeneric.c"
 
+static void
+bug20091030 (void)
+{
+  mpfr_t x, x_ref;
+  int inex, inex_ref;
+  mp_prec_t p;
+  mpfr_rnd_t r;
+
+  mpfr_free_cache ();
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  for (p = MPFR_PREC_MIN; p <= 100; p++)
+    {
+      mpfr_set_prec (x, p);
+      inex = mpfr_const_pi (x, MPFR_RNDU);
+      if (inex < 0)
+        {
+          printf ("Error, inex < 0 for RNDU (prec=%lu)\n", p);
+          exit (1);
+        }
+      inex = mpfr_const_pi (x, MPFR_RNDD);
+      if (inex > 0)
+        {
+          printf ("Error, inex > 0 for RNDD (prec=%lu)\n", p);
+          exit (1);
+        }
+    }
+  mpfr_free_cache ();
+  mpfr_init2 (x_ref, MPFR_PREC_MIN);
+  for (p = MPFR_PREC_MIN; p <= 100; p++)
+    {
+      mpfr_set_prec (x, p + 10);
+      mpfr_const_pi (x, MPFR_RNDN);
+      mpfr_set_prec (x, p);
+      mpfr_set_prec (x_ref, p);
+      for (r = 0; r < MPFR_RND_MAX; r++)
+        {
+          inex = mpfr_const_pi (x, r);
+          inex_ref = mpfr_const_pi_internal (x_ref, r);
+          if (inex != inex_ref || mpfr_cmp (x, x_ref) != 0)
+            {
+              printf ("mpfr_const_pi and mpfr_const_pi_internal disagree\n");
+              printf ("mpfr_const_pi gives ");
+              mpfr_dump (x);
+              printf ("mpfr_const_pi_internal gives ");
+              mpfr_dump (x_ref);
+              printf ("inex=%d inex_ref=%d\n", inex, inex_ref);
+              exit (1);
+            }
+        }
+    }
+  mpfr_clear (x);
+  mpfr_clear (x_ref);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -118,10 +172,13 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
 
-  check_large();
+  bug20091030 ();
+
+  check_large ();
 
   test_generic (2, 200, 1);
 
   tests_end_mpfr ();
+
   return 0;
 }
