@@ -512,6 +512,42 @@ bug20091013 (void)
   mpfr_clear (zref);
 }
 
+static void
+consistency (void)
+{
+  mpfr_t x, s1, s2, c1, c2;
+  mpfr_rnd_t rnd;
+  int i;
+
+  for (i = 0; i <= 10000; i++)
+    {
+      mpfr_init2 (x, MPFR_PREC_MIN + (randlimb () % 8));
+      mpfr_inits2 (MPFR_PREC_MIN + (randlimb () % 8), s1, s2, c1, c2,
+                   (mpfr_ptr) 0);
+      tests_default_random (x, 256, -5, 50);
+      rnd = RND_RAND ();
+      mpfr_sin (s1, x, rnd);
+      mpfr_cos (c1, x, rnd);
+      mpfr_sin_cos (s2, c2, x, rnd);
+      if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)))
+        {
+          printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,\nx = ",
+                  mpfr_print_rnd_mode (rnd));
+          mpfr_dump (x);
+          printf ("s1 = ");
+          mpfr_dump (s1);
+          printf ("s2 = ");
+          mpfr_dump (s2);
+          printf ("c1 = ");
+          mpfr_dump (c1);
+          printf ("c2 = ");
+          mpfr_dump (c2);
+          exit (1);
+        }
+      mpfr_clears (x, s1, s2, c1, c2, (mpfr_ptr) 0);
+    }
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main (int argc, char *argv[])
@@ -534,6 +570,8 @@ main (int argc, char *argv[])
   bug20091008 ();
 
   bug20091007 ();
+
+  consistency ();
 
   test_mpfr_sincos_fast ();
 
