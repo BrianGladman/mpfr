@@ -239,6 +239,19 @@ overflowed_cos0 (void)
   mpfr_clear (y);
 }
 
+static void
+bug20091030 (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 5);
+  mpfr_init2 (y, 2);
+  mpfr_set_str (x, "-0.11001E3", 2, MPFR_RNDN);
+  mpfr_cos (y, x, MPFR_RNDN);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -359,6 +372,8 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  bug20091030 ();
 
   data_check ("data/cos", mpfr_cos, "mpfr_cos");
   bad_cases (mpfr_cos, mpfr_acos, "mpfr_cos", 256, -40, 0, 4, 128, 800, 50);
