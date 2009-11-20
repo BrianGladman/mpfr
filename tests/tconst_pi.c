@@ -77,7 +77,7 @@ bug20091030 (void)
   mpfr_t x, x_ref;
   int inex, inex_ref;
   mp_prec_t p;
-  mpfr_rnd_t r;
+  int r;
 
   mpfr_free_cache ();
   mpfr_init2 (x, MPFR_PREC_MIN);
@@ -107,8 +107,8 @@ bug20091030 (void)
       mpfr_set_prec (x_ref, p);
       for (r = 0; r < MPFR_RND_MAX; r++)
         {
-          inex = mpfr_const_pi (x, r);
-          inex_ref = mpfr_const_pi_internal (x_ref, r);
+          inex = mpfr_const_pi (x, (mpfr_rnd_t) r);
+          inex_ref = mpfr_const_pi_internal (x_ref, (mpfr_rnd_t) r);
           if (inex != inex_ref || mpfr_cmp (x, x_ref) != 0)
             {
               printf ("mpfr_const_pi and mpfr_const_pi_internal disagree\n");
