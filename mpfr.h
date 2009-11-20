@@ -49,15 +49,17 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 #endif
 
 /* Check if <stdint.h> / <inttypes.h> is included or if the user
-   explicitly wants intmax_t. Note: with C++ implementations, the
-   test of the C99 macros will work only if the user has defined
-   __STDC_LIMIT_MACROS or __STDC_CONSTANT_MACROS before <stdint.h>
-   has been included (see ISO C99 standard); that's why _STDINT_H
-   (defined by the glibc) and _STDINT_H_ (defined under Mac OS X)
-   are tested too, but under other OS, MPFR_USE_INTMAX_T may need
-   to be defined. */
-#if ((defined (INTMAX_C) || defined (INTMAX_MAX)) && \
-     (defined (UINTMAX_C) || defined (UINTMAX_MAX))) || \
+   explicitly wants intmax_t, by checking INTMAX_C and UINTMAX_C.
+   We do not check INTMAX_MAX and UINTMAX_MAX because under Solaris,
+   these macros are always defined by <limits.h> (i.e. even when
+   <stdint.h> and <inttypes.h> are not included).
+   Note: with C++ implementations, the test of the C99 macros will
+   work only if the user has defined __STDC_CONSTANT_MACROS before
+   <stdint.h> has been included (see ISO C99 standard); that's why
+   _STDINT_H (defined by the glibc) and _STDINT_H_ (defined under
+   Mac OS X) are tested too, but under other OS, MPFR_USE_INTMAX_T
+   may need to be defined. */
+#if (defined (INTMAX_C) && defined (UINTMAX_C)) || \
   defined (MPFR_USE_INTMAX_T) || defined (_STDINT_H) || defined (_STDINT_H_)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
