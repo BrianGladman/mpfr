@@ -171,7 +171,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         err = m;
       else
         err = MPFR_GET_EXP (c) + (mp_exp_t) (m - 3);
-      if (!mpfr_can_round (c, err, MPFR_RNDN, rnd_mode,
+      if (!mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
                            MPFR_PREC (z) + (rnd_mode == MPFR_RNDN)))
         goto next_step;
 
