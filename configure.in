@@ -148,7 +148,11 @@ dnl Autoconf detection
 AC_PROG_EGREP
 AC_PROG_SED
 
+dnl ********************************************************************
 dnl Check for CC and CFLAGS in gmp.h
+
+if test -z "$user_redefine_cc" && test "$cross_compiling" != yes ; then
+
 dnl We need to guess the C preprocessor instead of using AC_PROG_CPP,
 dnl since AC_PROG_CPP implies AC_PROG_CC, which chooses a compiler
 dnl (before we have the chance to get it from gmp.h) and does some
@@ -156,7 +160,7 @@ dnl checking related to this compiler (such as dependency tracking
 dnl options); if the compiler changes due to __GMP_CC in gmp.h, one
 dnl would have incorrect settings.
 dnl FIXME: Move this in aclocal ?
-if test -z "$GMP_CC$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
+if test -z "$GMP_CC$GMP_CFLAGS" ; then
    AC_MSG_CHECKING(for CC and CFLAGS in gmp.h)
    GMP_CC=__GMP_CC
    GMP_CFLAGS=__GMP_CFLAGS
@@ -185,10 +189,11 @@ if test -z "$GMP_CC$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
       AC_MSG_RESULT(yes [CC=$GMP_CC CFLAGS=$GMP_CFLAGS])
    fi
 fi
+
 dnl But they may be invalid, so we must check them first.
 dnl Don't redefine them if the user force them!
 dnl FIXME: do not use AC_RUN_IFELSE, as it implies AC_PROG_CC!
-if test -n "$GMP_CC$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
+if test -n "$GMP_CC$GMP_CFLAGS" ; then
    CFLAGS=$GMP_CFLAGS
    CC=$GMP_CC
 dnl AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
@@ -204,6 +209,10 @@ dnl     CFLAGS=
 dnl     CC=
 dnl   ])
 fi
+
+fi
+
+dnl ********************************************************************
 
 AC_PROG_CC
 AC_PROG_CPP
