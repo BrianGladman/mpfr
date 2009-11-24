@@ -164,7 +164,7 @@ if test -z "$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
    echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
    GMP_CFLAGS=`$CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g'`
    rm -f conftest*
-   if test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" -o "x$GMP_CC" = "x__GMP_CC" ; then
+   if test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" || test "x$GMP_CC" = "x__GMP_CC" ; then
       AC_MSG_RESULT(no)
       GMP_CFLAGS=
       GMP_CC=
