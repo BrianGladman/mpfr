@@ -168,11 +168,13 @@ You can see the latter with the following command:
 
 if the GMP build directory is available. Then type:
 
-  ./configure <configure options> CC=<C compiler> CFLAGS=<compiler options>
+  ./configure <configure options> CC=<C compiler> CFLAGS="<compiler options>"
 
-and continue the install. On some platforms, you should provide further
-options to match those used by GMP, or set some environment variables.
-For instance, see the "Notes on AIX/PowerPC" section below.
+(quotes are needed when there are spaces or other special characters
+in the CC/CFLAGS value) and continue the install. On some platforms,
+you should provide further options to match those used by GMP, or set
+some environment variables. For instance, see the "Notes on AIX/PowerPC"
+section below.
 
 Warning! Do NOT use optimization options that can change the semantics
 of math operations, such as GCC's -ffast-math or Sun CC's -fast.
