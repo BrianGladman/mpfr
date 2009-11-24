@@ -158,22 +158,26 @@ dnl would have incorrect settings.
 dnl FIXME: Move this in aclocal ?
 if test -z "$GMP_CC$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
    AC_MSG_CHECKING(for CC and CFLAGS in gmp.h)
-   dnl Try "c99 -E" first?
-   if which cpp > /dev/null ; then
-     OUR_CPP=cpp
-   else
-     OUR_CPP="cc -E"
-   fi
-   # Get CC
-   echo "#include \"gmp.h\"" >  conftest.c
-   echo "MPFR_OPTION __GMP_CC"           >> conftest.c
-   GMP_CC=`$OUR_CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g'`
-   #Get CFLAGS
-   echo "#include \"gmp.h\"" >  conftest.c
-   echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
-   GMP_CFLAGS=`$OUR_CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g'`
+   GMP_CC=__GMP_CC
+   GMP_CFLAGS=__GMP_CFLAGS
+   for cpp in /lib/cpp gcc cc c99
+   do
+     test $cpp = /lib/cpp || cpp="$cpp -E"
+     echo foo > conftest.c
+     if $cpp $CPPFLAGS conftest.c > /dev/null 2> /dev/null ; then
+       # Get CC
+       echo "#include \"gmp.h\"" >  conftest.c
+       echo "MPFR_OPTION __GMP_CC"           >> conftest.c
+       GMP_CC=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g'`
+       # Get CFLAGS
+       echo "#include \"gmp.h\"" >  conftest.c
+       echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
+       GMP_CFLAGS=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g'`
+       break
+     fi
+   done
    rm -f conftest*
-   if test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" || test "x$GMP_CC" = "x__GMP_CC" ; then
+   if test "x$GMP_CC" = "x__GMP_CC" || test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" ; then
       AC_MSG_RESULT(no)
       GMP_CFLAGS=
       GMP_CC=
