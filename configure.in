@@ -194,20 +194,16 @@ dnl But they may be invalid, so we must check them first.
 dnl Don't redefine them if the user force them!
 dnl FIXME: do not use AC_RUN_IFELSE, as it implies AC_PROG_CC!
 if test -n "$GMP_CC$GMP_CFLAGS" ; then
-   CFLAGS=$GMP_CFLAGS
-   CC=$GMP_CC
-dnl AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
-dnl AC_RUN_IFELSE(AC_LANG_PROGRAM([[/*hello*/]],[[/*world*/]]), [
-dnl     AC_MSG_RESULT(yes)
-dnl   ], [
-dnl     AC_MSG_RESULT(no)
-dnl     CFLAGS=
-dnl     CC=
-dnl   ], [
-dnl     AC_MSG_RESULT([can't test])
-dnl     CFLAGS=
-dnl     CC=
-dnl   ])
+   AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
+   echo "int main (void) { return 0; }" > conftest.c
+   if $GMP_CC $GMP_CFLAGS -o conftest conftest.c 2> /dev/null ; then
+     AC_MSG_RESULT(yes)
+     CFLAGS=$GMP_CFLAGS
+     CC=$GMP_CC
+   else
+     AC_MSG_RESULT(no)
+   fi
+   rm -f conftest*
 fi
 
 fi
