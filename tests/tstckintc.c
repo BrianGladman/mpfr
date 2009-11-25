@@ -158,7 +158,7 @@ test2 (void)
   (mpfr_custom_init_set) (x, c[0], c[1], p, &c[2]);
   if (c != a || mpfr_cmp_ui (x, 59) != 0)
     {
-      printf ("Compact (2) failed! c=%p a=%p\n", c, a);
+      printf ("Compact (2) failed! c=%p a=%p\n", (void *) c, (void *) a);
       mpfr_dump (x);
       exit (1);
     }
