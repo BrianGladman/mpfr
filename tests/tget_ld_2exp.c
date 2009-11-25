@@ -123,8 +123,8 @@ bug20090520 (void)
   if (e != d)
     {
       printf ("mpfr_get_ld(1e-16383) failed\n");
-      printf ("expected %La\n", d);
-      printf ("got      %La\n", e);
+      printf ("expected %.20Le\n", d);
+      printf ("got      %.20Le\n", e);
       exit (1);
     }
   mpfr_clear (x);

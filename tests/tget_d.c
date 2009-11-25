@@ -83,8 +83,8 @@ check_denorms (void)
   if (d2 != 0.0 && dd != d2)
     {
       printf ("Error for x=1e-1075, RNDA\n");
-      printf ("expected %a\n", d2);
-      printf ("got      %a\n", dd);
+      printf ("expected %.16e\n", d2);
+      printf ("got      %.16e\n", dd);
       exit (1);
     }
 
