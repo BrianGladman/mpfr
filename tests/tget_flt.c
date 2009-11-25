@@ -170,21 +170,21 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-150),RNDN)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDZ);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-150),RNDZ)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDD);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-150),RNDD)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   g = FLT_MIN * FLT_EPSILON;
@@ -192,14 +192,14 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-150),RNDU)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDA);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-150),RNDA)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
 
@@ -209,21 +209,21 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-151),RNDN)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDZ);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-151),RNDZ)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDD);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-151),RNDD)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   g = FLT_MIN * FLT_EPSILON;
@@ -231,14 +231,14 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-151),RNDU)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDA);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-151),RNDA)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
 
@@ -248,35 +248,35 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-149),RNDN)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDZ);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-149),RNDZ)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDD);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-149),RNDD)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDU);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-149),RNDU)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDA);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^(-149),RNDA)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
 
@@ -286,14 +286,14 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128,RNDZ)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDD);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128,RNDD)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDN); /* 2^128 rounds to itself with extended
@@ -302,21 +302,21 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128,RNDN)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDU);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128,RNDU)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDA);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128,RNDA)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
 
@@ -329,14 +329,14 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128*(1-2^(-25)),RNDZ)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDD);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128*(1-2^(-25)),RNDD)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDN); /* first round to 2^128 (even rule),
@@ -345,21 +345,21 @@ main (void)
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128*(1-2^(-25)),RNDN)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDU);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128*(1-2^(-25)),RNDU)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
   f = mpfr_get_flt (x, MPFR_RNDA);
   if (f != g)
     {
       printf ("Error for mpfr_get_flt(2^128*(1-2^(-25)),RNDA)\n");
-      printf ("expected %a, got %a\n", g, f);
+      printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
 
