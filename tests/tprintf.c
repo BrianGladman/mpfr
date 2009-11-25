@@ -271,9 +271,7 @@ check_mixed (void)
   check_vprintf ("a. %hi, b. %f, c. %#.2Rf%n", sh, d, mpfr, &i);
   check_length (4, i, 29, d);
   check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz, &sz);
-#ifndef NPRINTF_ZU
-  check_length (5, sz, 34, zu);
-#endif
+  check_length (5, sz, 34, u); /* no format specifier '%zu' in C89 */
   check_vprintf ("a. %Pu, b. %c, c. %RUG, d. %Zi%Zn", prec, ch, mpfr, mpz, &mpz);
   check_length_with_cmp (6, mpz, 24, mpz_cmp_ui (mpz, 24), Zi);
   check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn c. %p",
@@ -282,19 +280,17 @@ check_mixed (void)
 
 #ifndef NPRINTF_T
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
-  check_length (8, p, 20, td);
+  check_length (8, p, 20, d); /* no format specifier '%td' in C89 */
 #endif
 
 #ifndef NPRINTF_L
   check_vprintf ("a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
-#ifndef NPRINTF_ZU
-  check_length (9, sz, 30, zu);
-#endif
+  check_length (9, sz, 30, u); /* no format specifier '%zu' in C89 */
 #endif
 
 #ifndef NPRINTF_HH
   check_vprintf ("a. %hhi, b. %Ra, c. %hhu%hhn", sch, mpfr, uch, &uch);
-  check_length (10, uch, 22, hhu);
+  check_length (10, uch, 22, u); /* no format specifier '%hhu' in C89 */
 #endif
 
 #if defined(HAVE_LONG_LONG) && !defined(NPRINTF_LL)
@@ -317,7 +313,7 @@ check_mixed (void)
     check_vprintf ("a. %*RA, b. %ji%Fn", 10, mpfr, im, &mpf);
     check_length_with_cmp (31, mpf, 20, mpf_cmp_ui (mpf, 20), Fg);
     check_vprintf ("a. %.*Re, b. %jx%jn", 10, mpfr, uim, &im);
-    check_length (32, im, 25, ji);
+    check_length (32, im, 25, li); /* no format specifier "%ji" in C89 */
   }
 #endif
 
