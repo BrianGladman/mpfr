@@ -280,7 +280,7 @@ check_mixed (void)
 
 #ifndef NPRINTF_T
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
-  check_length (8, p, 20, d); /* no format specifier '%td' in C89 */
+  check_length (8, (long) p, 20, ld); /* no format specifier '%td' in C89 */
 #endif
 
 #ifndef NPRINTF_L
@@ -290,7 +290,7 @@ check_mixed (void)
 
 #ifndef NPRINTF_HH
   check_vprintf ("a. %hhi, b. %Ra, c. %hhu%hhn", sch, mpfr, uch, &uch);
-  check_length (10, uch, 22, u); /* no format specifier '%hhu' in C89 */
+  check_length (10, (unsigned int) uch, 22, u); /* no format specifier '%hhu' in C89 */
 #endif
 
 #if defined(HAVE_LONG_LONG) && !defined(NPRINTF_LL)

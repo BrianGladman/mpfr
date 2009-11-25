@@ -200,7 +200,7 @@ check_mixed (FILE *fout)
 
 #ifndef NPRINTF_T
   check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
-  check_length (8, p, 20, d); /* no format specifier "%td" in C89 */
+  check_length (8, (long) p, 20, ld); /* no format specifier "%td" in C89 */
 #endif
 
 #ifndef NPRINTF_L
@@ -210,7 +210,7 @@ check_mixed (FILE *fout)
 
 #ifndef NPRINTF_HH
   check_vfprintf (fout, "a. %hhi, b.%RA, c. %hhu%hhn", sch, mpfr, uch, &uch);
-  check_length (10, uch, 21, u); /* no format specifier "%hhu" in C89 */
+  check_length (10, (unsigned int) uch, 21, u); /* no format specifier "%hhu" in C89 */
 #endif
 
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
