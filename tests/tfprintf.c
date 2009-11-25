@@ -191,7 +191,9 @@ check_mixed (FILE *fout)
   check_length (4, i, 29, d);
   check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz,
                   &sz);
+#ifndef NPRINTF_ZU
   check_length (5, sz, 34, zu);
+#endif
   check_vfprintf (fout, "a. %Pu, b. %c, c. %Zi%Zn", prec, ch, mpz, &mpz);
   check_length_with_cmp (6, mpz, 17, mpz_cmp_ui (mpz, 17), Zi);
   check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %p", mpfr, mpq, &mpfr,
@@ -205,7 +207,9 @@ check_mixed (FILE *fout)
 
 #ifndef NPRINTF_L
   check_vfprintf (fout, "a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
+#ifndef NPRINTF_ZU
   check_length (9, sz, 30, zu);
+#endif
 #endif
 
 #ifndef NPRINTF_HH

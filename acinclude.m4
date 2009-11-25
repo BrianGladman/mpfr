@@ -729,6 +729,10 @@ MPFR_FUNC_GMP_PRINTF_SPEC([Lf], [long double], [
 #include <gmp.h>
          ],,
          [AC_DEFINE([NPRINTF_L], 1, [gmp_printf cannot read long double])])
+MPFR_FUNC_GMP_PRINTF_SPEC([zu], [size_t], [
+#include <gmp.h>
+         ],,
+         [AC_DEFINE([NPRINTF_ZU], 1, [gmp_printf cannot read size_t])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #if defined (__cplusplus)
