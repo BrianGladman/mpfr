@@ -190,9 +190,8 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    fi
 fi
 
-dnl But they may be invalid, so we must check them first.
-dnl Don't redefine them if the user force them!
-dnl FIXME: do not use AC_RUN_IFELSE, as it implies AC_PROG_CC!
+dnl But these variables may be invalid, so we must check them first.
+dnl Note: we do not use AC_RUN_IFELSE, as it implies AC_PROG_CC.
 if test -n "$GMP_CC$GMP_CFLAGS" ; then
    AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
    echo "int main (void) { return 0; }" > conftest.c
