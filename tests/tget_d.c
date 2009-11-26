@@ -31,21 +31,15 @@ check_denorms (void)
 {
   mpfr_rnd_t rnd_mode;
   mpfr_t x;
-  double d, d2, dd, f, dbl_min;
+  double d, d2, dd, f;
   int fail = 0, k, n;
-
-  /* workaround for gcc bug on m68040-unknown-netbsd1.4.1,
-     where DBL_MIN gives (1-2^(-52))/2^1022 */
-  dbl_min = 1.0;
-  for (d = DBL_MIN; d < 0.9; d *= 2.0)
-    dbl_min /= 2.0;
 
   mpfr_init2 (x, BITS_PER_MP_LIMB);
 
   rnd_mode = MPFR_RNDN;
   for (k = -17; k <= 17; k += 2)
     {
-      d = (double) k * dbl_min; /* k * 2^(-1022) */
+      d = (double) k * DBL_MIN; /* k * 2^(-1022) */
       f = 1.0;
       mpfr_set_si (x, k, MPFR_RNDN);
       mpfr_div_2exp (x, x, 1022, MPFR_RNDN); /* k * 2^(-1022) */
