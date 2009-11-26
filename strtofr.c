@@ -560,8 +560,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                               mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
-          /* On some FreeBsd/Alpha, LONG_MIN/1 produces an exception
-             so we check for this before doing the division */
+          /* On some FreeBsd/Alpha, LONG_MIN/1 produced an exception
+             so we check for this before doing the division.
+             http://www.freebsd.org/cgi/query-pr.cgi?pr=72024 */
           if (tmp > 0 && pow2 != 1 && MPFR_EXP_MAX/pow2 <= tmp)
             goto overflow;
           else if (tmp < 0 && pow2 != 1 && MPFR_EXP_MIN/pow2 >= tmp)

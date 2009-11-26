@@ -72,8 +72,11 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
           mp_exp_t expx = MPFR_EXP (x) - 1, expy;
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
+           *
            * Some systems (apparently alpha-freebsd) abort with
            * LONG_MIN / 1, and LONG_MIN / -1 is undefined.
+           * http://www.freebsd.org/cgi/query-pr.cgi?pr=72024
+           *
            * Proof of the overflow checking. The expressions below are
            * assumed to be on the rational numbers, but the word "overflow"
            * still has its own meaning in the C context. / still denotes
