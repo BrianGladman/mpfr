@@ -120,7 +120,10 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
            * MPFR_EXP_MAX instead of __gmpfr_emin and __gmpfr_emax. The
            * current bounds do not lead to noticeably slower code and
            * allow us to avoid a bug in Sun's compiler for Solaris/x86
-           * (when optimizations are enabled).
+           * (when optimizations are enabled); known affected versions:
+           *   cc: Sun C 5.8 2005/10/13
+           *   cc: Sun C 5.8 Patch 121016-02 2006/03/31
+           *   cc: Sun C 5.8 Patch 121016-04 2006/10/18
            */
           expy =
             n != -1 && expx > 0 && expx > (__gmpfr_emin - 1) / n ?
