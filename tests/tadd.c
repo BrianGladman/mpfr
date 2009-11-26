@@ -66,26 +66,16 @@ test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   return res;
 }
 
-/* Parameter "z1" of check() used to be last in the argument list, but that
-   tickled a bug in 32-bit sparc gcc 2.95.2.  A "double" in that position is
-   passed on the stack at an address which is 4mod8, but the generated code
-   didn't take into account that alignment, resulting in bus errors.  The
-   easiest workaround is to move it to the start of the arg list (where it's
-   passed in registers), this macro does that.  FIXME: Change the actual
-   calls to check(), rather than using a macro.  */
-
-#define check(x,y,rnd_mode,px,py,pz,z1)  pcheck(x,y,z1,rnd_mode,px,py,pz)
-
-/* checks that x+y gives the right result with 53 bits of precision */
+/* checks that xs+ys gives the expected result zs */
 static void
-pcheck (const char *xs, const char *ys, const char *zs, mpfr_rnd_t rnd_mode,
-        unsigned int px, unsigned int py, unsigned int pz)
+check (const char *xs, const char *ys, mpfr_rnd_t rnd_mode,
+        unsigned int px, unsigned int py, unsigned int pz, const char *zs)
 {
   mpfr_t xx,yy,zz;
 
-  mpfr_init2(xx, px);
-  mpfr_init2(yy, py);
-  mpfr_init2(zz, pz);
+  mpfr_init2 (xx, px);
+  mpfr_init2 (yy, py);
+  mpfr_init2 (zz, pz);
 
   mpfr_set_str1 (xx, xs);
   mpfr_set_str1 (yy, ys);
@@ -109,7 +99,9 @@ check2b (const char *xs, int px,
 {
   mpfr_t xx, yy, zz;
 
-  mpfr_init2(xx,px); mpfr_init2(yy,py); mpfr_init2(zz,pz);
+  mpfr_init2 (xx,px);
+  mpfr_init2 (yy,py);
+  mpfr_init2 (zz,pz);
   mpfr_set_str_binary (xx, xs);
   mpfr_set_str_binary (yy, ys);
   test_add (zz, xx, yy, rnd_mode);

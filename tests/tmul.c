@@ -50,13 +50,10 @@ test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #define test_mul mpfr_mul
 #endif
 
-/* Workaround for sparc gcc 2.95.x bug, see notes in tadd.c. */
-#define check(x,y,rnd_mode,px,py,pz,res)  pcheck(x,y,res,rnd_mode,px,py,pz)
-
-/* checks that x*y gives the right result */
+/* checks that xs * ys gives the expected result res */
 static void
-pcheck (const char *xs, const char *ys, const char *res, mpfr_rnd_t rnd_mode,
-        unsigned int px, unsigned int py, unsigned int pz)
+check (const char *xs, const char *ys, mpfr_rnd_t rnd_mode,
+        unsigned int px, unsigned int py, unsigned int pz, const char *res)
 {
   mpfr_t xx, yy, zz;
 
