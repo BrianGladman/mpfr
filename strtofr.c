@@ -561,11 +561,12 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
           /* On some FreeBsd/Alpha, LONG_MIN/1 produced an exception
-             so we check for this before doing the division.
-             http://www.freebsd.org/cgi/query-pr.cgi?pr=72024 */
-          if (tmp > 0 && pow2 != 1 && MPFR_EXP_MAX/pow2 <= tmp)
+             so we used to check for this before doing the division.
+             Since this bug is closed now (Nov 26, 2009), we remove
+             that check (http://www.freebsd.org/cgi/query-pr.cgi?pr=72024) */
+          if (tmp > 0 && MPFR_EXP_MAX / pow2 <= tmp)
             goto overflow;
-          else if (tmp < 0 && pow2 != 1 && MPFR_EXP_MIN/pow2 >= tmp)
+          else if (tmp < 0 && MPFR_EXP_MIN / pow2 >= tmp)
             goto underflow;
           tmp *= pow2;
           MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
