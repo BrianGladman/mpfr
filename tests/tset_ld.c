@@ -39,10 +39,9 @@ check_gcc33_bug (void)
     return;  /* OK */
   printf
     ("Detected optimization bug of gcc 3.3 on Alpha concerning long double\n"
-     "comparisons; set_ld tests are disabled (set_ld won't work correctly).\n"
+     "comparisons; set_ld tests might fail (set_ld won't work correctly).\n"
      "See http://gcc.gnu.org/ml/gcc-bugs/2003-10/msg00853.html for more\n"
-     "information on this bug.\n");
-  exit (0);  /* This is not a bug in MPFR, so don't fail. */
+     "information.\n");
 }
 
 static int
