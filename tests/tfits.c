@@ -62,137 +62,137 @@ main (void)
   mpfr_init2 (x, 256);
 
   /* Check NAN */
-  mpfr_set_nan(x);
-  if (mpfr_fits_ulong_p(x, MPFR_RNDN))
+  mpfr_set_nan (x);
+  if (mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR1;
 
   /* Check INF */
-  mpfr_set_inf(x, 1);
-  if (mpfr_fits_ulong_p(x, MPFR_RNDN))
+  mpfr_set_inf (x, 1);
+  if (mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR1;
 
   /* Check Zero */
-  MPFR_SET_ZERO(x);
-  if (!mpfr_fits_ulong_p(x, MPFR_RNDN))
+  MPFR_SET_ZERO (x);
+  if (!mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check small op */
   mpfr_set_str1 (x, "1@-1");
-  if (!mpfr_fits_ulong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check 17 */
   mpfr_set_ui (x, 17, MPFR_RNDN);
-  if (!mpfr_fits_ulong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check all other values */
-  mpfr_set_ui(x, ULONG_MAX, MPFR_RNDN);
-  mpfr_mul_2exp(x, x, 1, MPFR_RNDN);
-  if (mpfr_fits_ulong_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+  if (mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR1;
-  mpfr_mul_2exp(x, x, 40, MPFR_RNDN);
-  if (mpfr_fits_ulong_p(x, MPFR_RNDN))
+  mpfr_mul_2exp (x, x, 40, MPFR_RNDN);
+  if (mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR1;
 
-  mpfr_set_ui(x, ULONG_MAX, MPFR_RNDN);
-  if (!mpfr_fits_ulong_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
+  if (!mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_ui(x, LONG_MAX, MPFR_RNDN);
-  if (!mpfr_fits_slong_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, LONG_MAX, MPFR_RNDN);
+  if (!mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_ui(x, UINT_MAX, MPFR_RNDN);
-  if (!mpfr_fits_uint_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, UINT_MAX, MPFR_RNDN);
+  if (!mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_ui(x, INT_MAX, MPFR_RNDN);
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, INT_MAX, MPFR_RNDN);
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_ui(x, USHRT_MAX, MPFR_RNDN);
-  if (!mpfr_fits_ushort_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, USHRT_MAX, MPFR_RNDN);
+  if (!mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_ui(x, SHRT_MAX, MPFR_RNDN);
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  mpfr_set_ui (x, SHRT_MAX, MPFR_RNDN);
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
 
-  mpfr_set_si(x, 1, MPFR_RNDN);
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  mpfr_set_si (x, 1, MPFR_RNDN);
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check negative value */
   mpfr_set_si (x, -1, MPFR_RNDN);
-  if (!mpfr_fits_sint_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sint_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_sshort_p(x, MPFR_RNDN))
+  if (!mpfr_fits_sshort_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_slong_p(x, MPFR_RNDN))
+  if (!mpfr_fits_slong_p (x, MPFR_RNDN))
     ERROR2;
-  if (mpfr_fits_uint_p(x, MPFR_RNDN))
+  if (mpfr_fits_uint_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_ushort_p(x, MPFR_RNDN))
+  if (mpfr_fits_ushort_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_ulong_p(x, MPFR_RNDN))
+  if (mpfr_fits_ulong_p (x, MPFR_RNDN))
     ERROR1;
 
   mpfr_clear (x);
@@ -208,41 +208,41 @@ static void check_intmax (void)
 #ifdef _MPFR_H_HAVE_INTMAX_T
   mpfr_t x;
 
-  mpfr_init2 (x, sizeof(uintmax_t)*CHAR_BIT);
+  mpfr_init2 (x, sizeof (uintmax_t)*CHAR_BIT);
 
   /* Check NAN */
-  mpfr_set_nan(x);
-  if (mpfr_fits_uintmax_p(x, MPFR_RNDN))
+  mpfr_set_nan (x);
+  if (mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_intmax_p(x, MPFR_RNDN))
+  if (mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR1;
 
   /* Check INF */
-  mpfr_set_inf(x, 1);
-  if (mpfr_fits_uintmax_p(x, MPFR_RNDN))
+  mpfr_set_inf (x, 1);
+  if (mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR1;
-  if (mpfr_fits_intmax_p(x, MPFR_RNDN))
+  if (mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR1;
 
   /* Check Zero */
-  MPFR_SET_ZERO(x);
-  if (!mpfr_fits_uintmax_p(x, MPFR_RNDN))
+  MPFR_SET_ZERO (x);
+  if (!mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_intmax_p(x, MPFR_RNDN))
+  if (!mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check small op */
   mpfr_set_str1 (x, "1@-1");
-  if (!mpfr_fits_uintmax_p(x, MPFR_RNDN))
+  if (!mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_intmax_p(x, MPFR_RNDN))
+  if (!mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check 17 */
   mpfr_set_ui (x, 17, MPFR_RNDN);
-  if (!mpfr_fits_uintmax_p(x, MPFR_RNDN))
+  if (!mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR2;
-  if (!mpfr_fits_intmax_p(x, MPFR_RNDN))
+  if (!mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR2;
 
   /* Check hugest */
