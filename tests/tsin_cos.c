@@ -560,21 +560,35 @@ static void
 consistency (void)
 {
   mpfr_t x, s1, s2, c1, c2;
+  mp_exp_t emin;
   mpfr_rnd_t rnd;
   unsigned int flags_sin, flags_cos, flags, flags_before;
   int inex_sin, is, inex_cos, ic, inex;
   int i;
+
+  emin = mpfr_get_emin ();
 
   for (i = 0; i <= 10000; i++)
     {
       mpfr_init2 (x, MPFR_PREC_MIN + (randlimb () % 8));
       mpfr_inits2 (MPFR_PREC_MIN + (randlimb () % 8), s1, s2, c1, c2,
                    (mpfr_ptr) 0);
-      tests_default_random (x, 256, -5, 50);
-      rnd = RND_RAND ();
-      flags_before = (randlimb () & 1) ?
-        (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
-        (unsigned int) 0;
+      if (i < 2 * MPFR_RND_MAX)
+        {
+          mpfr_set_emin (MPFR_EMIN_MIN);
+          mpfr_set_si (x, i < MPFR_RND_MAX ? 1 : -1, MPFR_RNDN);
+          mpfr_set_exp (x, mpfr_get_emin ());
+          rnd = (mpfr_rnd_t) (i % MPFR_RND_MAX);
+          flags_before = 0;
+        }
+      else
+        {
+          tests_default_random (x, 256, -5, 50);
+          rnd = RND_RAND ();
+          flags_before = (randlimb () & 1) ?
+            (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
+            (unsigned int) 0;
+        }
       __gmpfr_flags = flags_before;
       inex_sin = mpfr_sin (s1, x, rnd);
       is = inex_sin < 0 ? 2 : inex_sin > 0 ? 1 : 0;
@@ -607,6 +621,7 @@ consistency (void)
           exit (1);
         }
       mpfr_clears (x, s1, s2, c1, c2, (mpfr_ptr) 0);
+      mpfr_set_emin (emin);
     }
 }
 
