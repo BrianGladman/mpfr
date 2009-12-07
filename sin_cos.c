@@ -87,17 +87,19 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (y != x)
         /* y and x differ, thus we can safely try to compute y first */
         {
-          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
-                                            { inexy = _inexact;
-                                              goto small_input; });
+          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
+            y, x, -2 * expx, 2, 0, rnd_mode,
+            { inexy = _inexact;
+              goto small_input; });
           if (0)
             {
             small_input:
               /* we can go here only if we can round sin(x) */
-              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
-                                                1, 0, rnd_mode,
-                                                { inexz = _inexact;
-                                                  goto end; });
+              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
+                z, __gmpfr_one, -2 * expx, 1, 0, rnd_mode,
+                { inexz = _inexact;
+                  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+                  goto end; });
             }
 
           /* if we go here, one of the two MPFR_FAST_COMPUTE_IF_SMALL_INPUT
@@ -106,18 +108,19 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       else /* y and x are the same variable: try to compute z first, which
               necessarily differs */
         {
-          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
-                                            1, 0, rnd_mode,
-                                            { inexz = _inexact;
-                                              goto small_input2; });
+          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
+            z, __gmpfr_one, -2 * expx, 1, 0, rnd_mode,
+            { inexz = _inexact;
+              goto small_input2; });
           if (0)
             {
             small_input2:
               /* we can go here only if we can round cos(x) */
-              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0,
-                                                rnd_mode,
-                                                { inexy = _inexact;
-                                                  goto end; });
+              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (
+                y, x, -2 * expx, 2, 0, rnd_mode,
+                { inexy = _inexact;
+                  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+                  goto end; });
             }
         }
       m += 2 * (-expx);
@@ -218,7 +221,6 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (xr);
 
  end:
-  /* FIXME: update the underflow flag if need be. */
   MPFR_SAVE_EXPO_FREE (expo);
   mpfr_check_range (y, inexy, rnd_mode);
   mpfr_check_range (z, inexz, rnd_mode);
