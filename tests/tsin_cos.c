@@ -561,6 +561,7 @@ consistency (void)
 {
   mpfr_t x, s1, s2, c1, c2;
   mpfr_rnd_t rnd;
+  int inex_sin, is, inex_cos, ic, inex;
   int i;
 
   for (i = 0; i <= 10000; i++)
@@ -570,10 +571,13 @@ consistency (void)
                    (mpfr_ptr) 0);
       tests_default_random (x, 256, -5, 50);
       rnd = RND_RAND ();
-      mpfr_sin (s1, x, rnd);
-      mpfr_cos (c1, x, rnd);
-      mpfr_sin_cos (s2, c2, x, rnd);
-      if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)))
+      inex_sin = mpfr_sin (s1, x, rnd);
+      is = inex_sin < 0 ? 2 : inex_sin > 0 ? 1 : 0;
+      inex_cos = mpfr_cos (c1, x, rnd);
+      ic = inex_cos < 0 ? 2 : inex_cos > 0 ? 1 : 0;
+      inex = mpfr_sin_cos (s2, c2, x, rnd);
+      if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)) ||
+          inex != is + 4 * ic)
         {
           printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,\nx = ",
                   mpfr_print_rnd_mode (rnd));
@@ -586,6 +590,8 @@ consistency (void)
           mpfr_dump (c1);
           printf ("c2 = ");
           mpfr_dump (c2);
+          printf ("inex_sin = %d (s = %d), inex_cos = %d (c = %d), "
+                  "inex = %d\n", inex_sin, is, inex_cos, ic, inex);
           exit (1);
         }
       mpfr_clears (x, s1, s2, c1, c2, (mpfr_ptr) 0);
