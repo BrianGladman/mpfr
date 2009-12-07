@@ -561,7 +561,7 @@ consistency (void)
 {
   mpfr_t x, s1, s2, c1, c2;
   mpfr_rnd_t rnd;
-  unsigned int flags_sin, flags_cos, flags;
+  unsigned int flags_sin, flags_cos, flags, flags_before;
   int inex_sin, is, inex_cos, ic, inex;
   int i;
 
@@ -572,13 +572,18 @@ consistency (void)
                    (mpfr_ptr) 0);
       tests_default_random (x, 256, -5, 50);
       rnd = RND_RAND ();
-      mpfr_clear_flags ();
+      flags_before = (randlimb () & 1) ?
+        (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
+        (unsigned int) 0;
+      __gmpfr_flags = flags_before;
       inex_sin = mpfr_sin (s1, x, rnd);
       is = inex_sin < 0 ? 2 : inex_sin > 0 ? 1 : 0;
       flags_sin = __gmpfr_flags;
+      __gmpfr_flags = flags_before;
       inex_cos = mpfr_cos (c1, x, rnd);
       ic = inex_cos < 0 ? 2 : inex_cos > 0 ? 1 : 0;
       flags_cos = __gmpfr_flags;
+      __gmpfr_flags = flags_before;
       inex = mpfr_sin_cos (s2, c2, x, rnd);
       flags = __gmpfr_flags;
       if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)) ||
