@@ -560,26 +560,31 @@ static void
 consistency (void)
 {
   mpfr_t x, s1, s2, c1, c2;
-  mp_exp_t emin;
+  mp_exp_t emin, emax;
   mpfr_rnd_t rnd;
   unsigned int flags_sin, flags_cos, flags, flags_before;
   int inex_sin, is, inex_cos, ic, inex;
   int i;
 
   emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   for (i = 0; i <= 10000; i++)
     {
       mpfr_init2 (x, MPFR_PREC_MIN + (randlimb () % 8));
       mpfr_inits2 (MPFR_PREC_MIN + (randlimb () % 8), s1, s2, c1, c2,
                    (mpfr_ptr) 0);
-      if (i < 2 * MPFR_RND_MAX)
+      if (i < 8 * MPFR_RND_MAX)
         {
-          mpfr_set_emin (MPFR_EMIN_MIN);
-          mpfr_set_si (x, i < MPFR_RND_MAX ? 1 : -1, MPFR_RNDN);
+          int j = i / MPFR_RND_MAX;
+          if (j & 1)
+            mpfr_set_emin (MPFR_EMIN_MIN);
+          mpfr_set_si (x, (j & 2) ? 1 : -1, MPFR_RNDN);
           mpfr_set_exp (x, mpfr_get_emin ());
           rnd = (mpfr_rnd_t) (i % MPFR_RND_MAX);
           flags_before = 0;
+          if (j & 4)
+            mpfr_set_emax (-17);
         }
       else
         {
@@ -603,8 +608,8 @@ consistency (void)
       if (!(mpfr_equal_p (s1, s2) && mpfr_equal_p (c1, c2)) ||
           inex != is + 4 * ic || flags != (flags_sin | flags_cos))
         {
-          printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,\nx = ",
-                  mpfr_print_rnd_mode (rnd));
+          printf ("mpfr_sin_cos and mpfr_sin/mpfr_cos disagree on %s,"
+                  " i = %d\nx = ", mpfr_print_rnd_mode (rnd), i);
           mpfr_dump (x);
           printf ("s1 = ");
           mpfr_dump (s1);
@@ -616,12 +621,13 @@ consistency (void)
           mpfr_dump (c2);
           printf ("inex_sin = %d (s = %d), inex_cos = %d (c = %d), "
                   "inex = %d\n", inex_sin, is, inex_cos, ic, inex);
-          printf ("flags_sin = %x, flags_cos = %x, flags = %x\n",
+          printf ("flags_sin = 0x%x, flags_cos = 0x%x, flags = 0x%x\n",
                   flags_sin, flags_cos, flags);
           exit (1);
         }
       mpfr_clears (x, s1, s2, c1, c2, (mpfr_ptr) 0);
       mpfr_set_emin (emin);
+      mpfr_set_emax (emax);
     }
 }
 
