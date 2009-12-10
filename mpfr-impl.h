@@ -485,6 +485,27 @@ static double double_zero = 0.0;
   } while (0)
 #endif
 
+#ifdef HAVE_LDOUBLE_IEEE_QUAD_LITTLE
+# define LONGDOUBLE_NAN_ACTION(x, action)                       \
+  do {                                                          \
+    union {                                                     \
+      long double    ld;                                        \
+      struct {                                                  \
+        unsigned int man0 : 32;                                 \
+        unsigned int man1 : 32;                                 \
+        unsigned int man2 : 32;                                 \
+        unsigned int man3 : 16;                                 \
+        unsigned int exp  : 15;                                 \
+        unsigned int sign : 1;                                  \
+      } s;                                                      \
+    } u;                                                        \
+    u.ld = (x);                                                 \
+    if (u.s.exp == 0x7FFFL                                      \
+        && (u.s.man0 | u.s.man1 | u.s.man2 | u.s.man3) != 0)    \
+      { action; }                                               \
+  } while (0)
+#endif
+
 /* Under IEEE rules, NaN is not equal to anything, including itself.
    "volatile" here stops "cc" on mips64-sgi-irix6.5 from optimizing away
    x!=x. */

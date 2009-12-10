@@ -544,6 +544,28 @@ BEGIN {
               found = 1
               exit
             }
+
+          if (got[8] == "300" && \
+              got[9] == "031" && \
+              got[10] == "326" && \
+              got[11] == "363" && \
+              got[12] == "105" && \
+              got[13] == "100" && \
+              got[14] == "000" && \
+              got[15] == "000" && \
+              got[16] == "000" && \
+              got[17] == "000" && \
+              got[18] == "000" && \
+              got[19] == "000" && \
+              got[20] == "000" && \
+              got[21] == "000" && \
+              got[22]  == "000" && \
+              got[23]  == "000")
+            {
+              print "IEEE quad, little endian"
+              found = 1
+              exit
+            }
         }
     }
 }
@@ -584,6 +606,9 @@ case $mpfr_cv_c_long_double_format in
     ;;
   "IEEE quad, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_BIG, 1)
+    ;;
+  "IEEE quad, little endian")
+    AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_LITTLE, 1)
     ;;
   unknown* | "not available")
     ;;
