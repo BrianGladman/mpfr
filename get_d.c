@@ -27,7 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #include "ieee_floats.h"
-#include "scale2.c"
 
 /* Assumes IEEE-754 double precision; otherwise, only an approximated
    result will be returned, without any guaranty (and special cases

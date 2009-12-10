@@ -1689,6 +1689,8 @@ __MPFR_DECLSPEC mpz_t* mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
 __MPFR_DECLSPEC int mpfr_sincos_fast _MPFR_PROTO((mpfr_t, mpfr_t,
                                                   mpfr_srcptr, mpfr_rnd_t));
 
+__MPFR_DECLSPEC double mpfr_scale2 _MPFR_PROTO((double, int));
+
 #if defined (__cplusplus)
 }
 #endif

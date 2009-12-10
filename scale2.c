@@ -20,11 +20,13 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include "mpfr-impl.h"
+
 /* Note: we could use the ldexp function, but since we want not to depend on
    math.h, we write our own implementation. */
 
 /* multiplies 1/2 <= d <= 1 by 2^exp */
-static double
+double
 mpfr_scale2 (double d, int exp)
 {
 #if _GMP_IEEE_FLOATS

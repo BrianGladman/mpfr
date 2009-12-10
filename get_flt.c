@@ -26,7 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #include "ieee_floats.h"
-#include "scale2.c"
 
 #define FLT_NEG_ZERO ((float) DBL_NEG_ZERO)
 #define MPFR_FLT_INFM ((float) MPFR_DBL_INFM)

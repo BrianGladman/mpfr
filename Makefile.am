@@ -17,7 +17,7 @@ SUBDIRS = tests
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER FAQ.html NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c
 
-EXTRA_DIST = PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jyn_asympt.c scale2.c ieee_floats.h
+EXTRA_DIST = PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jyn_asympt.c ieee_floats.h
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 
@@ -54,7 +54,7 @@ eint.c sech.c csch.c coth.c round_near_x.c constant.c abort_prec_max.c	\
 stack_interface.c lngamma.c zeta_ui.c set_d64.c get_d64.c jn.c yn.c	\
 rem1.c get_patches.c add_d.c sub_d.c d_sub.c mul_d.c div_d.c d_div.c	\
 li2.c rec_sqrt.c min_prec.c buildopt.c digamma.c bernoulli.c		\
-isregular.c set_flt.c get_flt.c
+isregular.c set_flt.c get_flt.c scale2.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 
