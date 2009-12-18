@@ -172,6 +172,7 @@ mp_prec_t mpfr_sincos_threshold;
 #undef MPFR_SINCOS_THRESHOLD
 #define MPFR_SINCOS_THRESHOLD mpfr_sincos_threshold
 #include "sin_cos.c"
+#include "cos.c"
 static double speed_mpfr_sincos (struct speed_params *s) {
   SPEED_MPFR_FUNC2 (mpfr_sin_cos);
 }
@@ -304,7 +305,7 @@ tune_simple_func (mp_prec_t *threshold,
     pmin += BITS_PER_MP_LIMB;
   }
 
-  /* then look for a upper bound within 20% */
+  /* then look for an upper bound within 20% */
   pmax = pmin * 2;
   for (;;) {
     d = domeasure (threshold, func, pmax);

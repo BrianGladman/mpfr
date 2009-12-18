@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <float.h> /* for DBL_EPSILON */
 #include "mpfr-impl.h"
 
 /* Note: we could use the ldexp function, but since we want not to depend on

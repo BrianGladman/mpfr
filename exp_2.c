@@ -325,26 +325,30 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
     m = 2;
 
   MPFR_TMP_MARK(marker);
-  R = (mpz_t*) MPFR_TMP_ALLOC((m+1)*sizeof(mpz_t));          /* R[i] is r^i */
-  expR = (mp_exp_t*) MPFR_TMP_ALLOC((m+1)*sizeof(mp_exp_t)); /* exponent for R[i] */
-  sizer = 1 + (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB;
-  mpz_init(tmp);
-  MY_INIT_MPZ(rr, sizer+2);
-  MY_INIT_MPZ(t, 2*sizer);            /* double size for products */
-  mpz_set_ui(s, 0);
-  *exps = 1-q;                        /* 1 ulp = 2^(1-q) */
+  R = (mpz_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mpz_t));       /* R[i] is r^i */
+  expR = (mp_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mp_exp_t));
+  /* expR[i] is the exponent for R[i] */
+  sizer = MPFR_LIMB_SIZE(r);
+  mpz_init (tmp);
+  MY_INIT_MPZ (rr, sizer + 2);
+  MY_INIT_MPZ (t, 2 * sizer);            /* double size for products */
+  mpz_set_ui (s, 0);
+  *exps = 1 - q;                        /* 1 ulp = 2^(1-q) */
   for (i = 0 ; i <= m ; i++)
-    MY_INIT_MPZ(R[i], sizer+2);
-  expR[1] = mpfr_get_z_exp(R[1], r); /* exact operation: no error */
-  expR[1] = mpz_normalize2(R[1], R[1], expR[1], 1-q); /* error <= 1 ulp */
-  mpz_mul(t, R[1], R[1]); /* err(t) <= 2 ulps */
-  mpz_fdiv_q_2exp (R[2], t, q-1); /* err(R[2]) <= 3 ulps */
-  expR[2] = 1-q;
+    MY_INIT_MPZ (R[i], sizer + 2);
+  expR[1] = mpfr_get_z_exp (R[1], r); /* exact operation: no error */
+  expR[1] = mpz_normalize2 (R[1], R[1], expR[1], 1 - q); /* error <= 1 ulp */
+  mpz_mul (t, R[1], R[1]); /* err(t) <= 2 ulps */
+  mpz_fdiv_q_2exp (R[2], t, q - 1); /* err(R[2]) <= 3 ulps */
+  expR[2] = 1 - q;
   for (i = 3 ; i <= m ; i++)
     {
-      mpz_mul(t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
-      mpz_fdiv_q_2exp (R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
-      expR[i] = 1-q;
+      if ((i & 1) == 1)
+        mpz_mul (t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
+      else
+        mpz_mul (t, R[i/2], R[i/2]);
+      mpz_fdiv_q_2exp (R[i], t, q - 1); /* err(R[i]) <= 2*i-1 ulps */
+      expR[i] = 1 - q;
     }
   mpz_set_ui (R[0], 1);
   mpz_mul_2exp (R[0], R[0], q-1);
