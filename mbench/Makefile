@@ -27,8 +27,8 @@ RM=rm -f
 CP=cp -f
 MV=mv -f
 
-GMP=/localdisk/libs/
-MPFR=$(GMP)
+GMP=/usr
+MPFR=$(PWD)/..
 PARI=$(GMP)
 NTL=$(GMP)
 CLN=$(GMP)
@@ -50,7 +50,7 @@ NAME=mbench
 # add -I$(MPFR) and -I$(GMP) if GMP/MPFR build directories are given
 INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 # search first for real install, then for build directory
-LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` $(MPFR)/.libs/libmpfr.a `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` $(GMP)/.libs/libgmp.a
+LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/.libs/libmpfr.a && echo $(MPFR)/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
 
 XLIBS=`test -f $(PARI)/lib/libpari.a && echo $(PARI)/lib/libpari.a` \
       `test -f $(NTL)/lib/libntl.a && echo $(NTL)/lib/libntl.a`     \
