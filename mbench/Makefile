@@ -48,6 +48,10 @@ NAME=mbench
 .SUFFIXES: .c .o
 
 # add -I$(MPFR) and -I$(GMP) if GMP/MPFR build directories are given
+# Warning! If $(MPFR) and/or $(GMP) is regarded as a "system directory",
+# this may give unexpected results[*]; in particular, with GCC, the option
+# is ignored in such a case.
+# [*] http://austingroupbugs.net/view.php?id=187
 INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 # search first for real install, then for build directory
 LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/.libs/libmpfr.a && echo $(MPFR)/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
