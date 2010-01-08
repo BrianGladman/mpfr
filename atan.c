@@ -265,7 +265,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
-  prec = realprec + GMP_LIMB_BITS;
+  prec = realprec + GMP_NUMB_BITS;
 
   /* Initialisation */
   mpz_init (ukz);

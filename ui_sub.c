@@ -53,11 +53,11 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     }
   else
     {
-      MPFR_TMP_INIT1 (up, uu, GMP_LIMB_BITS);
+      MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;
-      MPFR_SET_EXP (uu, GMP_LIMB_BITS - cnt);
+      MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
       return mpfr_sub (y, uu, x, rnd_mode);
     }
 }

@@ -45,16 +45,16 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mp_exp_t e, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD (i == (mp_limb_t) i);
 
       /* Position of the highest limb */
-      xn = (MPFR_PREC (x) - 1) / GMP_LIMB_BITS;
+      xn = (MPFR_PREC (x) - 1) / GMP_NUMB_BITS;
       count_leading_zeros (cnt, (mp_limb_t) i);
-      MPFR_ASSERTD (cnt < GMP_LIMB_BITS);  /* OK since i != 0 */
+      MPFR_ASSERTD (cnt < GMP_NUMB_BITS);  /* OK since i != 0 */
 
       xp = MPFR_MANT(x);
       xp[xn] = ((mp_limb_t) i) << cnt;
       /* Zero the xn lower limbs. */
       MPN_ZERO(xp, xn);
 
-      nbits = GMP_LIMB_BITS - cnt;
+      nbits = GMP_NUMB_BITS - cnt;
       e += nbits;  /* exponent _before_ the rounding */
 
       /* round if MPFR_PREC(x) smaller than length of i */

@@ -41,8 +41,8 @@ check_round_p (void)
       /* avoid mpn_random which leaks memory */
       for (i = 0; i < n; i++)
         buf[i] = randlimb ();
-      p = (mp_prec_t) randlimb() % ((n-1) * GMP_LIMB_BITS) + MPFR_PREC_MIN;
-      err = p + randlimb () % GMP_LIMB_BITS;
+      p = (mp_prec_t) randlimb() % ((n-1) * GMP_NUMB_BITS) + MPFR_PREC_MIN;
+      err = p + randlimb () % GMP_NUMB_BITS;
       r1 = mpfr_round_p (buf, n, err, p);
       r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
                                MPFR_RNDN, MPFR_RNDZ, p);

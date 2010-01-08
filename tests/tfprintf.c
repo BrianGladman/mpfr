@@ -216,11 +216,11 @@ check_mixed (FILE *fout)
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
   /* The 'M' specifier was added in gmp 4.2.0 */
   check_vfprintf (fout, "a. %Mx b. %Re%Mn", limb[0], mpfr, &limb[0]);
-  if (limb[0] != 14 + GMP_LIMB_BITS / 4 || limb[1] != ~ (mp_limb_t) 0
+  if (limb[0] != 14 + GMP_NUMB_BITS / 4 || limb[1] != ~ (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
       printf ("Error in test #11: mpfr_vfprintf did not print %d characters"
-              " as expected\n", 14 + (int) GMP_LIMB_BITS / 4);
+              " as expected\n", 14 + (int) GMP_NUMB_BITS / 4);
       exit (1);
     }
 
@@ -229,11 +229,11 @@ check_mixed (FILE *fout)
      and check it doesn't go through */
   check_vfprintf (fout, "a. %Re .b %Nx%Nn", mpfr, limb, limb_size, limb,
                   limb_size - 1);
-  if (limb[0] != 14 + 3 * GMP_LIMB_BITS / 4 || limb[1] != (mp_limb_t) 0
+  if (limb[0] != 14 + 3 * GMP_NUMB_BITS / 4 || limb[1] != (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
       printf ("Error in test #12: mpfr_vfprintf did not print %d characters"
-              " as expected\n", 14 + (int) GMP_LIMB_BITS / 4);
+              " as expected\n", 14 + (int) GMP_NUMB_BITS / 4);
       exit (1);
     }
 #endif

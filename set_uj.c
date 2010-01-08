@@ -59,7 +59,7 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
   mp_limb_t yp[sizeof(uintmax_t) / sizeof(mp_limb_t)];
   mpfr_t y;
   unsigned long uintmax_bit_size = sizeof(uintmax_t) * CHAR_BIT;
-  unsigned long bpml = GMP_LIMB_BITS % uintmax_bit_size;
+  unsigned long bpml = GMP_NUMB_BITS % uintmax_bit_size;
 
   /* Special case */
   if (j == 0)
@@ -78,9 +78,9 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
     limb = yp[0] = j;
   else
     {
-      /* Note: either GMP_LIMB_BITS = uintmax_bit_size, then k = 1 the
-         shift j >>= bpml is never done, or GMP_LIMB_BITS < uintmax_bit_size
-         and bpml = GMP_LIMB_BITS. */
+      /* Note: either GMP_NUMB_BITS = uintmax_bit_size, then k = 1 the
+         shift j >>= bpml is never done, or GMP_NUMB_BITS < uintmax_bit_size
+         and bpml = GMP_NUMB_BITS. */
       for (i = 0; i < k; i++, j >>= bpml)
         yp[i] = j; /* Only the low bits are copied */
 
@@ -110,7 +110,7 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
       else
         MPN_ZERO (yp, len);   /* Zeroing the last limbs */
     }
-  e += k * GMP_LIMB_BITS - cnt;    /* Update Expo */
+  e += k * GMP_NUMB_BITS - cnt;    /* Update Expo */
   MPFR_ASSERTD (MPFR_LIMB_MSB(yp[numberof (yp) - 1]) != 0);
 
   /* Check expo underflow / overflow (can't use mpfr_check_range) */

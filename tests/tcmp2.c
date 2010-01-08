@@ -284,13 +284,13 @@ special (void)
       exit (1);
     }
 
-  mpfr_set_prec (x, 2 * GMP_LIMB_BITS);
-  mpfr_set_prec (y, GMP_LIMB_BITS);
+  mpfr_set_prec (x, 2 * GMP_NUMB_BITS);
+  mpfr_set_prec (y, GMP_NUMB_BITS);
   mpfr_set_ui (x, 1, MPFR_RNDN); /* x = 1 */
   mpfr_set_ui (y, 1, MPFR_RNDN);
-  mpfr_nextbelow (y);            /* y = 1 - 2^(-GMP_LIMB_BITS) */
+  mpfr_nextbelow (y);            /* y = 1 - 2^(-GMP_NUMB_BITS) */
   mpfr_cmp2 (x, y, &j);
-  if (mpfr_cmp2 (x, y, &j) <= 0 || j != GMP_LIMB_BITS)
+  if (mpfr_cmp2 (x, y, &j) <= 0 || j != GMP_NUMB_BITS)
     {
       printf ("Error in mpfr_cmp2 (2)\n");
       exit (1);

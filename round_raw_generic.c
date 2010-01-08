@@ -80,9 +80,9 @@ mpfr_round_raw_generic(
       (xprec <= yprec || MPFR_IS_LIKE_RNDZ (rnd_mode, neg)))
     return 0;
 
-  xsize = (xprec-1)/GMP_LIMB_BITS + 1;
-  nw = yprec / GMP_LIMB_BITS;
-  rw = yprec & (GMP_LIMB_BITS - 1);
+  xsize = (xprec-1)/GMP_NUMB_BITS + 1;
+  nw = yprec / GMP_NUMB_BITS;
+  rw = yprec & (GMP_NUMB_BITS - 1);
 
   if (MPFR_UNLIKELY(xprec <= yprec))
     { /* No rounding is necessary. */
@@ -107,7 +107,7 @@ mpfr_round_raw_generic(
       if (MPFR_LIKELY(rw))
         {
           nw++;
-          lomask = MPFR_LIMB_MASK (GMP_LIMB_BITS - rw);
+          lomask = MPFR_LIMB_MASK (GMP_NUMB_BITS - rw);
           himask = ~lomask;
         }
       else
@@ -121,7 +121,7 @@ mpfr_round_raw_generic(
       if (MPFR_LIKELY( rnd_mode == MPFR_RNDN) )
         {
           /* Rounding to nearest */
-          mp_limb_t rbmask = MPFR_LIMB_ONE << (GMP_LIMB_BITS - 1 - rw);
+          mp_limb_t rbmask = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1 - rw);
           if (sb & rbmask) /* rounding bit */
             sb &= ~rbmask; /* it is 1, clear it */
           else
@@ -171,7 +171,7 @@ mpfr_round_raw_generic(
 #else
               carry = mpn_add_1 (yp, xp + xsize - nw, nw,
                                  rw ?
-                                 MPFR_LIMB_ONE << (GMP_LIMB_BITS - rw)
+                                 MPFR_LIMB_ONE << (GMP_NUMB_BITS - rw)
                                  : MPFR_LIMB_ONE);
               yp[0] &= himask;
               return carry;
@@ -226,7 +226,7 @@ mpfr_round_raw_generic(
               return 1;
 #else
               carry = mpn_add_1(yp, xp + xsize - nw, nw,
-                                rw ? MPFR_LIMB_ONE << (GMP_LIMB_BITS - rw)
+                                rw ? MPFR_LIMB_ONE << (GMP_NUMB_BITS - rw)
                                 : 1);
               yp[0] &= himask;
               return carry;
@@ -243,7 +243,7 @@ mpfr_round_raw_generic(
       if (MPFR_LIKELY(rw))
         {
           nw++;
-          himask = ~MPFR_LIMB_MASK (GMP_LIMB_BITS - rw);
+          himask = ~MPFR_LIMB_MASK (GMP_NUMB_BITS - rw);
         }
       else
         himask = ~(mp_limb_t) 0;

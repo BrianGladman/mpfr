@@ -57,7 +57,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/GMP_LIMB_BITS+1;             \
+  size = (s->size-1)/GMP_NUMB_BITS+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -91,7 +91,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/GMP_LIMB_BITS+1;             \
+  size = (s->size-1)/GMP_NUMB_BITS+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -144,7 +144,7 @@ static double domeasure (mp_prec_t *threshold,
 
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = p;
-  size = (p - 1)/GMP_LIMB_BITS+1;
+  size = (p - 1)/GMP_NUMB_BITS+1;
   s.xp = malloc (2*size*sizeof (mp_limb_t));
   if (s.xp == NULL)
     {
@@ -183,7 +183,7 @@ tune_simple_func (mp_prec_t *threshold,
     {
       measure = domeasure (threshold, func, p);
       printf ("prec=%lu mpfr_mul=%e ", p, measure);
-      n = 1 + (p - 1) / GMP_LIMB_BITS;
+      n = 1 + (p - 1) / GMP_NUMB_BITS;
       if (n <= MPFR_MUL_THRESHOLD)
         k = MUL_FFT_THRESHOLD + 1;
       else if (n < MPFR_MULHIGH_TAB_SIZE)
@@ -255,7 +255,7 @@ all (void)
     printf ("Measuring mpfr_mul with mpfr_mul_threshold=%lu...\n",
             mpfr_mul_threshold);
   tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul,
-                    2*GMP_LIMB_BITS+1, 1000);
+                    2*GMP_NUMB_BITS+1, 1000);
 
   /* End of tuning */
   time (&end_time);

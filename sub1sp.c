@@ -155,7 +155,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Read prec and num of limbs */
   p = MPFR_PREC(b);
-  n = (p-1)/GMP_LIMB_BITS+1;
+  n = (p-1)/GMP_NUMB_BITS+1;
 
   /* Fast cmp of |b| and |c|*/
   bx = MPFR_GET_EXP (b);
@@ -231,7 +231,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   bx -= cnt; /* Update final expo */
                 }
               /* Last limb should be ok */
-              MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((-p)%GMP_LIMB_BITS)));
+              MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((-p)%GMP_NUMB_BITS)));
             }
           else
             {
@@ -258,9 +258,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   MPN_COPY_DECR(ap+len, ap, k);
                 }
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
-              bx -= cnt + len*GMP_LIMB_BITS; /* Update Expo */
+              bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
               /* Last limb should be ok */
-              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((-p)%GMP_LIMB_BITS)));
+              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((-p)%GMP_NUMB_BITS)));
             }
           /* Check expo underflow */
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
@@ -364,7 +364,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 carry = cp[k]&MPFR_LIMB_ONE;
                 k--;
               } while (k>=0 &&
-                       bp[k]==(carry=cp[k]/2+(carry<<(GMP_LIMB_BITS-1))));
+                       bp[k]==(carry=cp[k]/2+(carry<<(GMP_NUMB_BITS-1))));
               if (MPFR_UNLIKELY(k<0))
                 {
                   /*If carry then (sh==0 and Virtual c'[-1] > Virtual b[-1]) */
@@ -384,7 +384,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   MPFR_TMP_FREE (marker);
                   return 0;
                 }
-              /* carry = cp[k]/2+(cp[k-1]&1)<<(GMP_LIMB_BITS-1) = c'[k]*/
+              /* carry = cp[k]/2+(cp[k-1]&1)<<(GMP_NUMB_BITS-1) = c'[k]*/
               else if (bp[k] > carry)
                 goto SubD1NoLose;
               else
@@ -406,7 +406,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* cp == -1 and c'p+1 = ? */
           bcp  = 1;
           /* We need Cp+1 later for a very improbable case. */
-          bbcp = (MPFR_MANT(c)[n-1] & (MPFR_LIMB_ONE<<(GMP_LIMB_BITS-2)));
+          bbcp = (MPFR_MANT(c)[n-1] & (MPFR_LIMB_ONE<<(GMP_NUMB_BITS-2)));
           /* We need also C'p+1 for an even more unprobable case... */
           if (MPFR_LIKELY( bbcp ))
             bcp1 = 1;
@@ -498,8 +498,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
 
       /* Shift c in temporary allocated place */
-      dm = d % GMP_LIMB_BITS;
-      m = d / GMP_LIMB_BITS;
+      dm = d % GMP_NUMB_BITS;
+      m = d / GMP_NUMB_BITS;
       if (MPFR_UNLIKELY(dm == 0))
         {
           /* dm = 0 and m > 0: Just copy */
@@ -543,8 +543,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               else
                 {
                   mp_limb_t *tp = MPFR_MANT(c);
-                  mp_size_t kx = n-1 - (x / GMP_LIMB_BITS);
-                  mpfr_prec_t sx = GMP_LIMB_BITS-1-(x%GMP_LIMB_BITS);
+                  mp_size_t kx = n-1 - (x / GMP_NUMB_BITS);
+                  mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
                   DEBUG (printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
                                  (unsigned long) x, (long) kx,
                                  (unsigned long) sx));
@@ -569,8 +569,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mp_limb_t *tp = MPFR_MANT(c);
           /* Start from bit x=p-d in mantissa C */
           mpfr_prec_t  x = p-d;
-          mp_size_t   kx = n-1 - (x / GMP_LIMB_BITS);
-          mpfr_prec_t sx = GMP_LIMB_BITS-1-(x%GMP_LIMB_BITS);
+          mp_size_t   kx = n-1 - (x / GMP_NUMB_BITS);
+          mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
           MPFR_ASSERTD(p >= d);
           bcp = (tp[kx] & (MPFR_LIMB_ONE<<sx));
           /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
@@ -605,8 +605,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               mp_limb_t *tp = MPFR_MANT(c);
               /* Start from bit x=(p+1)-d in mantissa C */
               mp_prec_t x  = p+1-d;
-              mp_size_t kx = n-1 - (x/GMP_LIMB_BITS);
-              mp_prec_t sx = GMP_LIMB_BITS-1-(x%GMP_LIMB_BITS);
+              mp_size_t kx = n-1 - (x/GMP_NUMB_BITS);
+              mp_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
               MPFR_ASSERTD(p > d);
               DEBUG (printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
                              (unsigned long) x, (long) kx,

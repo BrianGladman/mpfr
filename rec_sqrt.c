@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H /* for umul_ppmm */
 #include "mpfr-impl.h"
 
-#define LIMB_SIZE(x) ((((x)-1)>>MPFR_LOG2_GMP_LIMB_BITS) + 1)
+#define LIMB_SIZE(x) ((((x)-1)>>MPFR_LOG2_GMP_NUMB_BITS) + 1)
 
 #define MPFR_COM_N(x,y,n)                               \
   {                                                     \
@@ -209,7 +209,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
          thus the h-3 most significant bits of t should be zero,
          which is in fact h+1+as-3 because of the normalization of A.
          This corresponds to th=floor((h+1+as-3)/GMP_NUMB_BITS) limbs. */
-      th = (h + 1 + as - 3) >> MPFR_LOG2_GMP_LIMB_BITS;
+      th = (h + 1 + as - 3) >> MPFR_LOG2_GMP_NUMB_BITS;
       tn = LIMB_SIZE(2 * h + 1 + as);
 
       /* we need h+1+as bits of a */
@@ -487,8 +487,8 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
      up to a full limb to maximize the chance of rounding, while avoiding
      to allocate extra space */
   wp = rp + 11;
-  if (wp < rn * GMP_LIMB_BITS)
-    wp = rn * GMP_LIMB_BITS;
+  if (wp < rn * GMP_NUMB_BITS)
+    wp = rn * GMP_NUMB_BITS;
   for (;;)
     {
       MPFR_TMP_MARK (marker);
@@ -511,7 +511,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
          mantissa is exactly 1/2 and the exponent is odd. */
       if (s == 0 && mpfr_cmp_ui_2exp (u, 1, MPFR_EXP(u) - 1) == 0)
         {
-          mp_prec_t pl = wn * GMP_LIMB_BITS - wp;
+          mp_prec_t pl = wn * GMP_NUMB_BITS - wp;
 
           /* we should have x=111...111 */
           mpn_add_1 (x, x, wn, MPFR_LIMB_ONE << pl);
@@ -521,7 +521,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
       MPFR_TMP_FREE(marker);
 
-      wp += GMP_LIMB_BITS;
+      wp += GMP_NUMB_BITS;
     }
   cy = mpfr_round_raw (MPFR_MANT(r), x, wp, 0, rp, rnd_mode, &inex);
   MPFR_EXP(r) = - (MPFR_EXP(u) - 1 - s) / 2;

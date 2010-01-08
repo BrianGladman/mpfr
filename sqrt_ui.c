@@ -34,13 +34,13 @@ mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mpfr_rnd_t rnd_mode)
       int inex;
       MPFR_SAVE_EXPO_DECL (expo);
 
-      MPFR_TMP_INIT1 (up, uu, GMP_LIMB_BITS);
+      MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
       MPFR_ASSERTN (u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;
 
       MPFR_SAVE_EXPO_MARK (expo);
-      MPFR_SET_EXP (uu, GMP_LIMB_BITS - cnt);
+      MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
       inex = mpfr_sqrt(r, uu, rnd_mode);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range(r, inex, rnd_mode);

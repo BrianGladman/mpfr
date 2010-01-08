@@ -37,6 +37,6 @@ __gmpfr_int_ceil_log2 (unsigned long n)
       limb = n - 1;
       MPFR_ASSERTN (limb == n - 1);
       count_leading_zeros (b, limb);
-      return GMP_LIMB_BITS - b;
+      return GMP_NUMB_BITS - b;
     }
 }

@@ -54,10 +54,10 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   MPFR_SET_POS (rop);
 
   /* Uniform non-normalized significand */
-  mpfr_rand_raw (rp, rstate, nlimbs * GMP_LIMB_BITS);
+  mpfr_rand_raw (rp, rstate, nlimbs * GMP_NUMB_BITS);
 
-  /* If nbits isn't a multiple of GMP_LIMB_BITS, mask the low bits */
-  cnt = nlimbs * GMP_LIMB_BITS - nbits;
+  /* If nbits isn't a multiple of GMP_NUMB_BITS, mask the low bits */
+  cnt = nlimbs * GMP_NUMB_BITS - nbits;
   if (MPFR_LIKELY (cnt != 0))
     rp[0] &= ~MPFR_LIMB_MASK (cnt);
 
@@ -68,7 +68,7 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
     {
       k ++;
       nlimbs --;
-      exp -= GMP_LIMB_BITS;
+      exp -= GMP_NUMB_BITS;
     }
 
   if (MPFR_LIKELY (nlimbs != 0)) /* otherwise value is zero */

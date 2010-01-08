@@ -161,22 +161,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
 #endif
 
-#if (GMP_LIMB_BITS<32) || (GMP_LIMB_BITS & (GMP_LIMB_BITS - 1))
-# error "GMP_LIMB_BITS must be a power of 2, and >= 32"
+#if (GMP_NUMB_BITS<32) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))
+# error "GMP_NUMB_BITS must be a power of 2, and >= 32"
 #endif
 
-#if GMP_LIMB_BITS == 16
-# define MPFR_LOG2_GMP_LIMB_BITS 4
-#elif GMP_LIMB_BITS == 32
-# define MPFR_LOG2_GMP_LIMB_BITS 5
-#elif GMP_LIMB_BITS == 64
-# define MPFR_LOG2_GMP_LIMB_BITS 6
-#elif GMP_LIMB_BITS == 128
-# define MPFR_LOG2_GMP_LIMB_BITS 7
-#elif GMP_LIMB_BITS == 256
-# define MPFR_LOG2_GMP_LIMB_BITS 8
+#if GMP_NUMB_BITS == 16
+# define MPFR_LOG2_GMP_NUMB_BITS 4
+#elif GMP_NUMB_BITS == 32
+# define MPFR_LOG2_GMP_NUMB_BITS 5
+#elif GMP_NUMB_BITS == 64
+# define MPFR_LOG2_GMP_NUMB_BITS 6
+#elif GMP_NUMB_BITS == 128
+# define MPFR_LOG2_GMP_NUMB_BITS 7
+#elif GMP_NUMB_BITS == 256
+# define MPFR_LOG2_GMP_NUMB_BITS 8
 #else
-# error "Can't compute log2(GMP_LIMB_BITS)"
+# error "Can't compute log2(GMP_NUMB_BITS)"
 #endif
 
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
@@ -385,12 +385,12 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #ifndef IEEE_DBL_MANT_DIG
 #define IEEE_DBL_MANT_DIG 53
 #endif
-#define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/GMP_LIMB_BITS+1)
+#define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/GMP_NUMB_BITS+1)
 
 #ifndef IEEE_FLT_MANT_DIG
 #define IEEE_FLT_MANT_DIG 24
 #endif
-#define MPFR_LIMBS_PER_FLT ((IEEE_FLT_MANT_DIG-1)/GMP_LIMB_BITS+1)
+#define MPFR_LIMBS_PER_FLT ((IEEE_FLT_MANT_DIG-1)/GMP_NUMB_BITS+1)
 
 /* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0
    at compile time. */
@@ -458,7 +458,7 @@ static double double_zero = 0.0;
 # define MPFR_LDBL_MANT_DIG LDBL_MANT_DIG
 #else
 # define MPFR_LDBL_MANT_DIG \
-  (sizeof(long double)*GMP_LIMB_BITS/sizeof(mp_limb_t))
+  (sizeof(long double)*GMP_NUMB_BITS/sizeof(mp_limb_t))
 #endif
 #define MPFR_LIMBS_PER_LONG_DOUBLE \
   ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
@@ -554,7 +554,7 @@ typedef union {
 /* #undef MPFR_LDBL_MANT_DIG */
 #undef MPFR_LIMBS_PER_LONG_DOUBLE
 /* #define MPFR_LDBL_MANT_DIG   64 */
-#define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/GMP_LIMB_BITS+1)
+#define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/GMP_NUMB_BITS+1)
 
 #endif
 
@@ -574,14 +574,14 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #define MPFR_PREC(x)      ((x)->_mpfr_prec)
 #define MPFR_EXP(x)       ((x)->_mpfr_exp)
 #define MPFR_MANT(x)      ((x)->_mpfr_d)
-#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/GMP_LIMB_BITS+1)
+#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/GMP_NUMB_BITS+1)
 
 #if   _MPFR_PREC_FORMAT == 1
-# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (GMP_LIMB_BITS - 1))
+# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (GMP_NUMB_BITS - 1))
 #elif _MPFR_PREC_FORMAT == 2
-# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (GMP_LIMB_BITS - 1))
+# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (GMP_NUMB_BITS - 1))
 #elif _MPFR_PREC_FORMAT == 3
-# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (GMP_LIMB_BITS - 1))
+# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (GMP_NUMB_BITS - 1))
 #else
 # error "Invalid MPFR Prec format"
 #endif
@@ -623,7 +623,7 @@ typedef intmax_t mpfr_eexp_t;
 
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
- ((mp_exp_t) 1 << (GMP_LIMB_BITS*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
+ ((mp_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and
@@ -947,7 +947,7 @@ extern unsigned char *mpfr_stack;
       _limb = (x) - 1;                                    \
       MPFR_ASSERTN (_limb == (x) - 1);                    \
       count_leading_zeros (_b, _limb);                    \
-      (GMP_LIMB_BITS - _b); }))
+      (GMP_NUMB_BITS - _b); }))
 #else
 # define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
 #endif
@@ -992,21 +992,21 @@ do {                                                                  \
   MPFR_MANT(x)[_size] = MPFR_LIMB_HIGHBIT;                            \
 } while (0)
 
-/* Compute s = (-a) % GMP_LIMB_BITS
+/* Compute s = (-a) % GMP_NUMB_BITS
  * a is unsigned! Check if it works,
  * otherwise tries another way to compute it */
 #define MPFR_UNSIGNED_MINUS_MODULO(s, a)                              \
   do                                                                  \
     {                                                                 \
-      if (IS_POW2 (GMP_LIMB_BITS))                                 \
-        (s) = (-(a)) % GMP_LIMB_BITS;                              \
+      if (IS_POW2 (GMP_NUMB_BITS))                                 \
+        (s) = (-(a)) % GMP_NUMB_BITS;                              \
       else                                                            \
         {                                                             \
-          (s) = (a) % GMP_LIMB_BITS;                               \
+          (s) = (a) % GMP_NUMB_BITS;                               \
           if ((s) != 0)                                               \
-            (s) = GMP_LIMB_BITS - (s);                             \
+            (s) = GMP_NUMB_BITS - (s);                             \
         }                                                             \
-      MPFR_ASSERTD ((s) >= 0 && (s) < GMP_LIMB_BITS);              \
+      MPFR_ASSERTD ((s) >= 0 && (s) < GMP_NUMB_BITS);              \
     }                                                                 \
   while (0)
 
@@ -1038,7 +1038,7 @@ do {                                                                  \
    MPFR_ASSERTD (mpz_sgn (z) != 0);             \
    _size = ABSIZ(z);                            \
    count_leading_zeros (_cnt, PTR(z)[_size-1]); \
-   (r) = _size * GMP_LIMB_BITS - _cnt;       \
+   (r) = _size * GMP_NUMB_BITS - _cnt;       \
   } while (0)
 
 /* Needs <locale.h> */
@@ -1135,8 +1135,8 @@ typedef struct {
     _destp = MPFR_MANT (dest);                                              \
     if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
       {                                                                     \
-        _srcs  = (_srcprec  + GMP_LIMB_BITS-1)/GMP_LIMB_BITS;         \
-        _dests = (_destprec + GMP_LIMB_BITS-1)/GMP_LIMB_BITS - _srcs; \
+        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
+        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS - _srcs; \
         MPN_COPY (_destp + _dests, srcp, _srcs);                            \
         MPN_ZERO (_destp, _dests);                                          \
         inexact = 0;                                                        \
@@ -1149,12 +1149,12 @@ typedef struct {
         mp_limb_t _rb, _sb, _ulp;                                           \
                                                                             \
         /* Compute Position and shift */                                    \
-        _srcs  = (_srcprec  + GMP_LIMB_BITS-1)/GMP_LIMB_BITS;         \
-        _dests = (_destprec + GMP_LIMB_BITS-1)/GMP_LIMB_BITS;         \
+        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
+        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
         MPFR_UNSIGNED_MINUS_MODULO (_sh, _destprec);                        \
         _sp = srcp + _srcs - _dests;                                        \
                                                                             \
-        /* General case when prec % GMP_LIMB_BITS != 0 */                \
+        /* General case when prec % GMP_NUMB_BITS != 0 */                \
         if (MPFR_LIKELY (_sh != 0))                                         \
           {                                                                 \
             mp_limb_t _mask;                                                \
@@ -1355,7 +1355,7 @@ typedef struct {
 #ifndef MPFR_USE_LOGGING
 
 #define MPFR_ZIV_DECL(_x) mp_prec_t _x
-#define MPFR_ZIV_INIT(_x, _p) (_x) = GMP_LIMB_BITS
+#define MPFR_ZIV_INIT(_x, _p) (_x) = GMP_NUMB_BITS
 #define MPFR_ZIV_NEXT(_x, _p) ((_p) += (_x), (_x) = (_p)/2)
 #define MPFR_ZIV_FREE(x)
 
@@ -1382,7 +1382,7 @@ typedef struct {
     "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
        (double) 100.0 * _x ## _bad / _x ## _loop,  _x ## _bad, _x ## _loop ); }
 
-#define MPFR_ZIV_INIT(_x, _p) ((_x) = GMP_LIMB_BITS, _x ## _loop ++);     \
+#define MPFR_ZIV_INIT(_x, _p) ((_x) = GMP_NUMB_BITS, _x ## _loop ++);     \
   if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
    fprintf (mpfr_log_file, "%s:ZIV 1st prec=%lu\n", __func__,                \
             (unsigned long) (_p))
@@ -1519,7 +1519,7 @@ struct mpfr_group_t {
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mp_prec_t) (_prec + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS; \
+ _size = (mp_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS; \
  if (MPFR_UNLIKELY (_size * (num) > MPFR_GROUP_STATIC_SIZE))            \
    {                                                                    \
      (g).alloc = (num) * _size * sizeof (mp_limb_t);                    \
@@ -1566,7 +1566,7 @@ struct mpfr_group_t {
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mp_prec_t) (_prec + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS; \
+ _size = (mp_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS; \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
  if (MPFR_LIKELY (_oalloc == 0))                                        \
    (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
@@ -1664,7 +1664,7 @@ __MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *,
        const mp_limb_t *, mp_prec_t, int, mp_prec_t, mpfr_rnd_t));
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
-  mpfr_round_raw_2((xp),(xn)*GMP_LIMB_BITS,(neg),(prec),(r))
+  mpfr_round_raw_2((xp),(xn)*GMP_NUMB_BITS,(neg),(prec),(r))
 
 __MPFR_DECLSPEC int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
 

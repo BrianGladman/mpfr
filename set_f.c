@@ -43,7 +43,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
   if (SIZ(x) * MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0)
     MPFR_CHANGE_SIGN (y);
 
-  sy = 1 + (MPFR_PREC(y) - 1) / GMP_LIMB_BITS;
+  sy = 1 + (MPFR_PREC(y) - 1) / GMP_NUMB_BITS;
   my = MPFR_MANT(y);
   mx = PTR(x);
 
@@ -51,7 +51,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
 
   if (sy <= sx) /* we may have to round even when sy = sx */
     {
-      unsigned long xprec = sx * GMP_LIMB_BITS;
+      unsigned long xprec = sx * GMP_NUMB_BITS;
 
       MPFR_TMP_MARK(marker);
       tmp = (mp_limb_t*) MPFR_TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
@@ -78,21 +78,21 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
       inexact = 0;
     }
 
-  /* warning: EXP(x) * GMP_LIMB_BITS may exceed the maximal exponent */
-  if (EXP(x) > 1 + (__gmpfr_emax - 1) / GMP_LIMB_BITS)
+  /* warning: EXP(x) * GMP_NUMB_BITS may exceed the maximal exponent */
+  if (EXP(x) > 1 + (__gmpfr_emax - 1) / GMP_NUMB_BITS)
     {
-      /* EXP(x) >= 2 + floor((__gmpfr_emax-1)/GMP_LIMB_BITS)
-         EXP(x) >= 2 + (__gmpfr_emax - GMP_LIMB_BITS) / GMP_LIMB_BITS
-                >= 1 + __gmpfr_emax / GMP_LIMB_BITS
-         EXP(x) * GMP_LIMB_BITS >= __gmpfr_emax + GMP_LIMB_BITS
-         Since 0 <= cnt <= GMP_LIMB_BITS-1, and 0 <= carry <= 1,
-         we have then EXP(x) * GMP_LIMB_BITS - cnt + carry > __gmpfr_emax */
+      /* EXP(x) >= 2 + floor((__gmpfr_emax-1)/GMP_NUMB_BITS)
+         EXP(x) >= 2 + (__gmpfr_emax - GMP_NUMB_BITS) / GMP_NUMB_BITS
+                >= 1 + __gmpfr_emax / GMP_NUMB_BITS
+         EXP(x) * GMP_NUMB_BITS >= __gmpfr_emax + GMP_NUMB_BITS
+         Since 0 <= cnt <= GMP_NUMB_BITS-1, and 0 <= carry <= 1,
+         we have then EXP(x) * GMP_NUMB_BITS - cnt + carry > __gmpfr_emax */
       return mpfr_overflow (y, rnd_mode, MPFR_SIGN (y));
     }
   else
     {
       /* Do not use MPFR_SET_EXP as the exponent may be out of range. */
-      MPFR_EXP (y) = EXP (x) * GMP_LIMB_BITS - (mp_exp_t) cnt + carry;
+      MPFR_EXP (y) = EXP (x) * GMP_NUMB_BITS - (mp_exp_t) cnt + carry;
     }
 
   return mpfr_check_range (y, inexact, rnd_mode);

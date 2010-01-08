@@ -83,7 +83,7 @@ check_one (mpz_ptr z)
   mpfr_init2 (f, MAX( mpz_sizeinbase (z, 2), MPFR_PREC_MIN) );
   mpz_init (got);
 
-  for (sh = -2*GMP_LIMB_BITS ; sh < 2*GMP_LIMB_BITS ; sh++)
+  for (sh = -2*GMP_NUMB_BITS ; sh < 2*GMP_NUMB_BITS ; sh++)
     {
       for (neg = 0; neg <= 1; neg++)
         {
@@ -139,10 +139,10 @@ check (void)
   mpz_set_si (z, 123L);
   check_one (z);
 
-  mpz_rrandomb (z, RANDS, 2*GMP_LIMB_BITS);
+  mpz_rrandomb (z, RANDS, 2*GMP_NUMB_BITS);
   check_one (z);
 
-  mpz_rrandomb (z, RANDS, 5*GMP_LIMB_BITS);
+  mpz_rrandomb (z, RANDS, 5*GMP_NUMB_BITS);
   check_one (z);
 
   mpz_clear (z);

@@ -147,7 +147,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo - r * (i - 1) );
 }
 
-#define shift (GMP_LIMB_BITS/2)
+#define shift (GMP_NUMB_BITS/2)
 
 int
 mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -174,7 +174,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
-  prec_x = MPFR_INT_CEIL_LOG2 (MPFR_PREC (x)) - MPFR_LOG2_GMP_LIMB_BITS;
+  prec_x = MPFR_INT_CEIL_LOG2 (MPFR_PREC (x)) - MPFR_LOG2_GMP_NUMB_BITS;
   if (prec_x < 0)
     prec_x = 0;
 
@@ -207,10 +207,10 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       int scaled = 0;
       MPFR_BLOCK_DECL (flags);
 
-      k = MPFR_INT_CEIL_LOG2 (Prec) - MPFR_LOG2_GMP_LIMB_BITS;
+      k = MPFR_INT_CEIL_LOG2 (Prec) - MPFR_LOG2_GMP_NUMB_BITS;
 
       /* now we have to extract */
-      twopoweri = GMP_LIMB_BITS;
+      twopoweri = GMP_NUMB_BITS;
 
       /* Allocate tables */
       P    = (mpz_t*) (*__gmp_allocate_func) (3*(k+2)*sizeof(mpz_t));

@@ -31,7 +31,7 @@ mpfr_setmin (mpfr_ptr x, mp_exp_t e)
   mp_limb_t *xp;
 
   MPFR_SET_EXP (x, e);
-  xn = (MPFR_PREC(x) - 1) / GMP_LIMB_BITS;
+  xn = (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
   xp = MPFR_MANT(x);
   xp[xn] = MPFR_LIMB_HIGHBIT;
   MPN_ZERO(xp, xn);

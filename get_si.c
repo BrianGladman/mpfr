@@ -57,7 +57,7 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
       /* now the result is in the most significant limb of x */
       exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
       n = MPFR_LIMB_SIZE(x);
-      a = MPFR_MANT(x)[n - 1] >> (GMP_LIMB_BITS - exp);
+      a = MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
       s = MPFR_SIGN(f) > 0 ? a : a <= LONG_MAX ? - (long) a : LONG_MIN;
     }
 

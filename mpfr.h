@@ -142,12 +142,12 @@ typedef struct {
 /*
    The represented number is
       _sign*(_d[k-1]/B+_d[k-2]/B^2+...+_d[0]/B^k)*2^_exp
-   where k=ceil(_mp_prec/GMP_LIMB_BITS) and B=2^GMP_LIMB_BITS.
+   where k=ceil(_mp_prec/GMP_NUMB_BITS) and B=2^GMP_NUMB_BITS.
 
    For the msb (most significant bit) normalized representation, we must have
       _d[k-1]>=B/2, unless the number is singular.
 
-   We must also have the last k*GMP_LIMB_BITS-_prec bits set to zero.
+   We must also have the last k*GMP_NUMB_BITS-_prec bits set to zero.
 */
 
 typedef __mpfr_struct mpfr_t[1];

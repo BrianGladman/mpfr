@@ -120,7 +120,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     error_r = 0;
   else
     count_leading_zeros (error_r, (mp_limb_t) SAFE_ABS (unsigned long, n));
-  error_r = GMP_LIMB_BITS - error_r + 2;
+  error_r = GMP_NUMB_BITS - error_r + 2;
 
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
@@ -188,7 +188,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
           MPFR_TMP_MARK(marker);
-          MY_INIT_MPZ(ss, 3 + 2*((q-1)/GMP_LIMB_BITS));
+          MY_INIT_MPZ(ss, 3 + 2*((q-1)/GMP_NUMB_BITS));
           exps = mpfr_get_z_exp (ss, s);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
@@ -260,7 +260,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   MPFR_ASSERTN (MPFR_IS_PURE_FP (r));
 
   MPFR_TMP_MARK(marker);
-  qn = 1 + (q-1)/GMP_LIMB_BITS;
+  qn = 1 + (q-1)/GMP_NUMB_BITS;
   expt = 0;
   *exps = 1 - (mp_exp_t) q;                   /* s = 2^(q-1) */
   MY_INIT_MPZ(t, 2*qn+1);

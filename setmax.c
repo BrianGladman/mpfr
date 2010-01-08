@@ -32,8 +32,8 @@ mpfr_setmax (mpfr_ptr x, mp_exp_t e)
   mp_limb_t *xp;
 
   MPFR_SET_EXP (x, e);
-  xn = 1 + (MPFR_PREC(x) - 1) / GMP_LIMB_BITS;
-  sh = (mp_prec_t) xn * GMP_LIMB_BITS - MPFR_PREC(x);
+  xn = 1 + (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
+  sh = (mp_prec_t) xn * GMP_NUMB_BITS - MPFR_PREC(x);
   xp = MPFR_MANT(x);
   xp[0] = MP_LIMB_T_MAX << sh;
   for (i = 1; i < xn; i++)

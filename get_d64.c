@@ -269,8 +269,8 @@ string_to_Decimal64 (char *s)
     rn = mpn_set_str (rp, (unsigned char *) m, 16, 10);
     if (rn == 1)
       rp[1] = 0;
-#if GMP_LIMB_BITS > 32
-    rp[1] = rp[1] << (GMP_LIMB_BITS - 32);
+#if GMP_NUMB_BITS > 32
+    rp[1] = rp[1] << (GMP_NUMB_BITS - 32);
     rp[1] |= rp[0] >> 32;
     rp[0] &= 4294967295UL;
 #endif

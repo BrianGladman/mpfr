@@ -136,17 +136,17 @@ is_odd (mpfr_srcptr y)
      (b) all the 'z' bits are zero
   */
 
-  prec = ((prec - 1) / GMP_LIMB_BITS + 1) * GMP_LIMB_BITS - expo;
+  prec = ((prec - 1) / GMP_NUMB_BITS + 1) * GMP_NUMB_BITS - expo;
   /* number of z+0 bits */
 
-  yn = prec / GMP_LIMB_BITS;
+  yn = prec / GMP_NUMB_BITS;
   MPFR_ASSERTN(yn >= 0);
   /* yn is the index of limb containing the 't' bit */
 
   yp = MPFR_MANT(y);
-  /* if expo is a multiple of GMP_LIMB_BITS, t is bit 0 */
-  if (expo % GMP_LIMB_BITS == 0 ? (yp[yn] & 1) == 0
-      : yp[yn] << ((expo % GMP_LIMB_BITS) - 1) != MPFR_LIMB_HIGHBIT)
+  /* if expo is a multiple of GMP_NUMB_BITS, t is bit 0 */
+  if (expo % GMP_NUMB_BITS == 0 ? (yp[yn] & 1) == 0
+      : yp[yn] << ((expo % GMP_NUMB_BITS) - 1) != MPFR_LIMB_HIGHBIT)
     return 0;
   while (--yn >= 0)
     if (yp[yn] != 0)

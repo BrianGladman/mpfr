@@ -283,9 +283,9 @@ static unsigned long
 sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mp_prec_t r,
             mp_prec_t prec)
 {
-  mpz_t T[GMP_LIMB_BITS], Q[GMP_LIMB_BITS], ptoj[GMP_LIMB_BITS], pp;
-  mp_prec_t log2_nb_terms[GMP_LIMB_BITS], mult[GMP_LIMB_BITS];
-  mp_prec_t accu[GMP_LIMB_BITS], size_ptoj[GMP_LIMB_BITS];
+  mpz_t T[GMP_NUMB_BITS], Q[GMP_NUMB_BITS], ptoj[GMP_NUMB_BITS], pp;
+  mp_prec_t log2_nb_terms[GMP_NUMB_BITS], mult[GMP_NUMB_BITS];
+  mp_prec_t accu[GMP_NUMB_BITS], size_ptoj[GMP_NUMB_BITS];
   mp_prec_t prec_i_have, r0 = r;
   unsigned long alloc, i, j, k;
   mp_prec_t l;

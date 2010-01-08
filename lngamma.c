@@ -67,13 +67,13 @@ unit_bit (mpfr_srcptr (x))
 
   /* Now, the unit bit is represented. */
 
-  prec = ((prec - 1) / GMP_LIMB_BITS + 1) * GMP_LIMB_BITS - expo;
+  prec = ((prec - 1) / GMP_NUMB_BITS + 1) * GMP_NUMB_BITS - expo;
   /* number of represented fractional bits (including the trailing 0's) */
 
-  x0 = *(MPFR_MANT (x) + prec / GMP_LIMB_BITS);
+  x0 = *(MPFR_MANT (x) + prec / GMP_NUMB_BITS);
   /* limb containing the unit bit */
 
-  return (x0 >> (prec % GMP_LIMB_BITS)) & 1;
+  return (x0 >> (prec % GMP_NUMB_BITS)) & 1;
 }
 #endif
 
@@ -369,7 +369,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
         }
 
       /* m <= maxm ensures that 2*m*(2*m+1) <= ULONG_MAX */
-      maxm = 1UL << (GMP_LIMB_BITS / 2 - 1);
+      maxm = 1UL << (GMP_NUMB_BITS / 2 - 1);
 
       /* s:(1+u)^15, t:(1+u)^2, t <= 3/128 */
 

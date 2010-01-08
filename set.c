@@ -49,7 +49,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, int signb)
        * just copy the mantissa, and set the exponent and the sign
        * The result is exact. */
       MPN_COPY (MPFR_MANT (a), MPFR_MANT (b),
-                (MPFR_PREC (b) + GMP_LIMB_BITS-1)/GMP_LIMB_BITS);
+                (MPFR_PREC (b) + GMP_NUMB_BITS-1)/GMP_NUMB_BITS);
       MPFR_RET (0);
     }
   else

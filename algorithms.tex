@@ -536,19 +536,19 @@ exponent of $c$ is smaller than that of $b$.
    n = 0; res = 0;
    while (b[n] == c[n])
       n++;
-      res += GMP_LIMB_BITS;
+      res += GMP_NUMB_BITS;
 
    /* now b[n] > c[n] and the first res bits coincide */
 
    dif = b[n] - c[n];
    while (dif == 1)
       n++;
-      dif = (dif << GMP_LIMB_BITS) + b[n] - c[n];
-      res += GMP_LIMB_BITS;
+      dif = (dif << GMP_NUMB_BITS) + b[n] - c[n];
+      res += GMP_NUMB_BITS;
 
    /* now dif > 1 */
 
-   res += GMP_LIMB_BITS - number_of_bits(dif);
+   res += GMP_NUMB_BITS - number_of_bits(dif);
 
    if (!is_power_of_two(dif))
       return res;

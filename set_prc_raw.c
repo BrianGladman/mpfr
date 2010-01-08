@@ -26,6 +26,6 @@ void
 mpfr_set_prec_raw (mpfr_ptr x, mpfr_prec_t p)
 {
   MPFR_ASSERTN (p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
-  MPFR_ASSERTN (p <= (mpfr_prec_t) MPFR_GET_ALLOC_SIZE(x) * GMP_LIMB_BITS);
+  MPFR_ASSERTN (p <= (mpfr_prec_t) MPFR_GET_ALLOC_SIZE(x) * GMP_NUMB_BITS);
   MPFR_PREC(x) = p;
 }

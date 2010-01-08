@@ -49,7 +49,7 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
       px = MPFR_PREC (x);
 
       fprintf (stream, "0.");
-      for (n = (px - 1) / GMP_LIMB_BITS; ; n--)
+      for (n = (px - 1) / GMP_NUMB_BITS; ; n--)
         {
           mp_limb_t wd, t;
 
@@ -84,12 +84,12 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
   int i;
   mp_prec_t count = 0;
   char c;
-  mp_size_t n = (r - 1) / GMP_LIMB_BITS + 1;
+  mp_size_t n = (r - 1) / GMP_NUMB_BITS + 1;
 
   printf("%s ", str);
   for(n-- ; n>=0 ; n--)
     {
-      for(i = GMP_LIMB_BITS-1 ; i >=0 ; i--)
+      for(i = GMP_NUMB_BITS-1 ; i >=0 ; i--)
         {
           c = (p[n] & (((mp_limb_t)1L)<<i)) ? '1' : '0';
           putchar(c);
@@ -109,11 +109,11 @@ mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx,
   int i;
   mp_prec_t count = 0;
   char c;
-  mp_size_t n = (r - 1) / GMP_LIMB_BITS + 1;
+  mp_size_t n = (r - 1) / GMP_NUMB_BITS + 1;
 
   for(n-- ; n>=0 ; n--)
     {
-      for(i = GMP_LIMB_BITS-1 ; i >=0 ; i--)
+      for(i = GMP_NUMB_BITS-1 ; i >=0 ; i--)
         {
           c = (p[n] & (((mp_limb_t)1L)<<i)) ? '1' : '0';
           putchar(c);

@@ -138,7 +138,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   if (tmp[yn] == 0)
     {
       MPN_COPY(yp, tmp, yn);
-      exp -= GMP_LIMB_BITS;
+      exp -= GMP_NUMB_BITS;
     }
   else
     {
@@ -152,11 +152,11 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           mp_limb_t w = tmp[0] << shlz;
 
           mpn_lshift (yp, tmp + 1, yn, shlz);
-          yp[0] += tmp[0] >> (GMP_LIMB_BITS - shlz);
+          yp[0] += tmp[0] >> (GMP_NUMB_BITS - shlz);
 
-          if (w > (MPFR_LIMB_ONE << (GMP_LIMB_BITS - 1)))
+          if (w > (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
             { middle = 1; }
-          else if (w < (MPFR_LIMB_ONE << (GMP_LIMB_BITS - 1)))
+          else if (w < (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
             { middle = -1; }
           else
             { middle = (c != 0); }
@@ -166,7 +166,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
         }
       else
         { /* this happens only if u == 1 and xp[xn-1] >=
-             1<<(GMP_LIMB_BITS-1). It might be better to handle the
+             1<<(GMP_NUMB_BITS-1). It might be better to handle the
              u == 1 case seperately ?
           */
 

@@ -167,7 +167,7 @@ check (int argc, const char *argv[])
   mp_limb_t max_error;
 
   count_leading_zeros (max_error, n);
-  max_error = 2*(GMP_LIMB_BITS-max_error);
+  max_error = 2*(GMP_NUMB_BITS-max_error);
   printf ("For N=%lu estimated max_error=%lu ulps\n",
           (unsigned long) n, (unsigned long) max_error);
   n0p = malloc (2 * n * sizeof (mp_limb_t));

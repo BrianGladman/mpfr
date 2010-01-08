@@ -132,10 +132,10 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          in MPFR, thus any exponent <= -16382 corresponds to a subnormal
          number */
       denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
-#if GMP_LIMB_BITS >= 64
+#if GMP_NUMB_BITS >= 64
       ld.s.manl = (tmpmant[0] >> denorm);
       ld.s.manh = (tmpmant[0] >> denorm) >> 32;
-#elif GMP_LIMB_BITS == 32
+#elif GMP_NUMB_BITS == 32
       if (MPFR_LIKELY (denorm == 0))
         {
           ld.s.manl = tmpmant[0];
@@ -152,7 +152,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           ld.s.manh = 0;
         }
 #else
-# error "GMP_LIMB_BITS must be 32 or >= 64"
+# error "GMP_NUMB_BITS must be 32 or >= 64"
       /* Other values have never been supported anyway. */
 #endif
       if (MPFR_LIKELY (denorm == 0))

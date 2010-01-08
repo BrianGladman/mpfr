@@ -43,7 +43,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
 
   zn = ABS(SIZ(z));
   MPFR_ASSERTD (zn >= 1);
-  if (MPFR_UNLIKELY (zn > MPFR_EMAX_MAX / GMP_LIMB_BITS + 1))
+  if (MPFR_UNLIKELY (zn > MPFR_EMAX_MAX / GMP_NUMB_BITS + 1))
     return mpfr_overflow (f, rnd_mode, sign_z);
 
   fp = MPFR_MANT (f);
@@ -51,15 +51,15 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
   dif = zn - fn;
   zp = PTR(z);
   count_leading_zeros (k, zp[zn-1]);
-  /* because zn >= __gmpfr_emax / GMP_LIMB_BITS + 2
-     and zn * GMP_LIMB_BITS >= __gmpfr_emax + GMP_LIMB_BITS + 1
-     and exp = zn * GMP_LIMB_BITS - k > __gmpfr_emax */
+  /* because zn >= __gmpfr_emax / GMP_NUMB_BITS + 2
+     and zn * GMP_NUMB_BITS >= __gmpfr_emax + GMP_NUMB_BITS + 1
+     and exp = zn * GMP_NUMB_BITS - k > __gmpfr_emax */
 
-  /* now zn <= MPFR_EMAX_MAX / GMP_LIMB_BITS + 1
-     thus zn * GMP_LIMB_BITS <= MPFR_EMAX_MAX + GMP_LIMB_BITS
-     and exp = zn * GMP_LIMB_BITS - k
-             <= MPFR_EMAX_MAX + GMP_LIMB_BITS */
-  exp = (mp_prec_t) zn * GMP_LIMB_BITS - k;
+  /* now zn <= MPFR_EMAX_MAX / GMP_NUMB_BITS + 1
+     thus zn * GMP_NUMB_BITS <= MPFR_EMAX_MAX + GMP_NUMB_BITS
+     and exp = zn * GMP_NUMB_BITS - k
+             <= MPFR_EMAX_MAX + GMP_NUMB_BITS */
+  exp = (mp_prec_t) zn * GMP_NUMB_BITS - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
   if (MPFR_UNLIKELY (exp > __gmpfr_emax))
     return mpfr_overflow (f, rnd_mode, sign_z);
@@ -77,7 +77,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
         {
           mpn_lshift (fp, &zp[dif], fn, k);
           if (MPFR_LIKELY (dif > 0))
-            fp[0] |= zp[dif - 1] >> (GMP_LIMB_BITS - k);
+            fp[0] |= zp[dif - 1] >> (GMP_NUMB_BITS - k);
         }
       else
         MPN_COPY (fp, zp + dif, fn);
@@ -95,7 +95,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
         }
       else /* sh == 0 */
         {
-          mp_limb_t mask = MPFR_LIMB_ONE << (GMP_LIMB_BITS - 1 - k);
+          mp_limb_t mask = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1 - k);
           if (MPFR_LIKELY (dif > 0))
             {
               rb = zp[--dif] & mask;
@@ -110,7 +110,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
         {
           sb = zp[--dif];
           if (MPFR_LIKELY (k != 0))
-            sb &= MPFR_LIMB_MASK (GMP_LIMB_BITS - k);
+            sb &= MPFR_LIMB_MASK (GMP_NUMB_BITS - k);
           if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0))
             do {
               sb = zp[--dif];

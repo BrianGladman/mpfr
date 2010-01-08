@@ -144,10 +144,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
-     (-cancel) % GMP_LIMB_BITS to the right */
+     (-cancel) % GMP_NUMB_BITS to the right */
   bn      = MPFR_LIMB_SIZE (b);
   MPFR_UNSIGNED_MINUS_MODULO (shift_b, cancel);
-  cancel1 = (cancel + shift_b) / GMP_LIMB_BITS;
+  cancel1 = (cancel + shift_b) / GMP_NUMB_BITS;
 
   /* the high cancel1 limbs from b should not be taken into account */
   if (MPFR_UNLIKELY (shift_b == 0))
@@ -167,17 +167,17 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
   /* reserve a space to store c aligned with the result, i.e. shifted by
-      (diff_exp-cancel) % GMP_LIMB_BITS to the right */
+      (diff_exp-cancel) % GMP_NUMB_BITS to the right */
   cn      = MPFR_LIMB_SIZE(c);
-  if ((UINT_MAX % GMP_LIMB_BITS) == (GMP_LIMB_BITS-1)
-      && ((-(unsigned) 1)%GMP_LIMB_BITS > 0))
-    shift_c = (diff_exp - cancel) % GMP_LIMB_BITS;
+  if ((UINT_MAX % GMP_NUMB_BITS) == (GMP_NUMB_BITS-1)
+      && ((-(unsigned) 1)%GMP_NUMB_BITS > 0))
+    shift_c = (diff_exp - cancel) % GMP_NUMB_BITS;
   else
     {
-      shift_c = diff_exp - (cancel % GMP_LIMB_BITS);
-      shift_c = (shift_c + GMP_LIMB_BITS) % GMP_LIMB_BITS;
+      shift_c = diff_exp - (cancel % GMP_NUMB_BITS);
+      shift_c = (shift_c + GMP_NUMB_BITS) % GMP_NUMB_BITS;
     }
-  MPFR_ASSERTD( shift_c >= 0 && shift_c < GMP_LIMB_BITS);
+  MPFR_ASSERTD( shift_c >= 0 && shift_c < GMP_NUMB_BITS);
 
   if (MPFR_UNLIKELY(shift_c == 0))
     {
@@ -203,11 +203,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (ap != cp);
   MPFR_ASSERTD (bp != cp);
 
-  /* here we have shift_c = (diff_exp - cancel) % GMP_LIMB_BITS,
-        0 <= shift_c < GMP_LIMB_BITS
-     thus we want cancel2 = ceil((cancel - diff_exp) / GMP_LIMB_BITS) */
+  /* here we have shift_c = (diff_exp - cancel) % GMP_NUMB_BITS,
+        0 <= shift_c < GMP_NUMB_BITS
+     thus we want cancel2 = ceil((cancel - diff_exp) / GMP_NUMB_BITS) */
 
-  cancel2 = (long int) (cancel - (diff_exp - shift_c)) / GMP_LIMB_BITS;
+  cancel2 = (long int) (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
   printf ("cancel=%lu cancel1=%lu cancel2=%ld\n",
@@ -298,7 +298,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #endif
 
   /* now perform rounding */
-  sh = (mp_prec_t) an * GMP_LIMB_BITS - MPFR_PREC(a);
+  sh = (mp_prec_t) an * GMP_NUMB_BITS - MPFR_PREC(a);
   /* last unused bits from a */
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
@@ -485,7 +485,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   inexact = 1; /* result larger than exact value */
 
  truncate:
-  if (MPFR_UNLIKELY((ap[an-1] >> (GMP_LIMB_BITS - 1)) == 0))
+  if (MPFR_UNLIKELY((ap[an-1] >> (GMP_NUMB_BITS - 1)) == 0))
     /* case 1 - epsilon */
     {
       ap[an-1] = MPFR_LIMB_HIGHBIT;

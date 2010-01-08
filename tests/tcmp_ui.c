@@ -209,8 +209,8 @@ main (void)
 
   /* corner case */
   mpfr_set_ui (x, 1, MPFR_RNDZ);
-  mpfr_mul_2exp (x, x, GMP_LIMB_BITS - 1, MPFR_RNDZ);
-  /* now EXP(x)=GMP_LIMB_BITS */
+  mpfr_mul_2exp (x, x, GMP_NUMB_BITS - 1, MPFR_RNDZ);
+  /* now EXP(x)=GMP_NUMB_BITS */
   MPFR_ASSERTN(mpfr_cmp_si (x, 1) > 0);
 
   mpfr_clear (x);

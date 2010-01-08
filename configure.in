@@ -415,10 +415,10 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
   AC_FUNC_ALLOCA
 ])
 
-dnl Check for valid GMP_LIMB_BITS and BYTES_PER_MP_LIMB
+dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
 dnl This test doesn't need to link with libgmp (at least it shouldn't).
 if test -n "$gmp_internal_file_check" ; then
-  AC_MSG_CHECKING(for valid GMP_LIMB_BITS)
+  AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <limits.h>
 #include "gmp.h"
@@ -428,7 +428,7 @@ if test -n "$gmp_internal_file_check" ; then
          && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
 ]])], [AC_MSG_RESULT(yes)], [
        AC_MSG_RESULT(no)
-       AC_MSG_ERROR([GMP_LIMB_BITS is incorrect.
+       AC_MSG_ERROR([GMP_NUMB_BITS is incorrect.
 You probably need to change some of the GMP or MPFR compile options.])],
        [AC_MSG_RESULT([can't test])])
 fi

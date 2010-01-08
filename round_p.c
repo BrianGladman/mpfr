@@ -62,14 +62,14 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
   mp_limb_t tmp, mask;
   int s;
 
-  err = (mp_prec_t) bn * GMP_LIMB_BITS;
+  err = (mp_prec_t) bn * GMP_NUMB_BITS;
   if (MPFR_UNLIKELY (err0 <= 0 || (mpfr_uexp_t) err0 <= prec || prec >= err))
     return 0;  /* can't round */
   err = MIN (err, (mpfr_uexp_t) err0);
 
-  k = prec / GMP_LIMB_BITS;
-  s = GMP_LIMB_BITS - prec%GMP_LIMB_BITS;
-  n = err / GMP_LIMB_BITS - k;
+  k = prec / GMP_NUMB_BITS;
+  s = GMP_NUMB_BITS - prec%GMP_NUMB_BITS;
+  n = err / GMP_NUMB_BITS - k;
 
   MPFR_ASSERTD (n >= 0);
   MPFR_ASSERTD (bn > k);
@@ -77,14 +77,14 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
   /* Check first limb */
   bp += bn-1-k;
   tmp = *bp--;
-  mask = s == GMP_LIMB_BITS ? MP_LIMB_T_MAX : MPFR_LIMB_MASK (s);
+  mask = s == GMP_NUMB_BITS ? MP_LIMB_T_MAX : MPFR_LIMB_MASK (s);
   tmp &= mask;
 
   if (MPFR_LIKELY (n == 0))
     {
       /* prec and error are in the same limb */
-      s = GMP_LIMB_BITS - err % GMP_LIMB_BITS;
-      MPFR_ASSERTD (s < GMP_LIMB_BITS);
+      s = GMP_NUMB_BITS - err % GMP_NUMB_BITS;
+      MPFR_ASSERTD (s < GMP_NUMB_BITS);
       tmp  >>= s;
       mask >>= s;
       return tmp != 0 && tmp != mask;
@@ -96,8 +96,8 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
         if (*bp-- != 0)
           return 1;
       /* Check if final error limb is 0 */
-      s = GMP_LIMB_BITS - err % GMP_LIMB_BITS;
-      if (s == GMP_LIMB_BITS)
+      s = GMP_NUMB_BITS - err % GMP_NUMB_BITS;
+      if (s == GMP_NUMB_BITS)
         return 0;
       tmp = *bp >> s;
       return tmp != 0;
@@ -109,8 +109,8 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
         if (*bp-- != MP_LIMB_T_MAX)
           return 1;
       /* Check if final error limb is 0 */
-      s = GMP_LIMB_BITS - err % GMP_LIMB_BITS;
-      if (s == GMP_LIMB_BITS)
+      s = GMP_NUMB_BITS - err % GMP_NUMB_BITS;
+      if (s == GMP_NUMB_BITS)
         return 0;
       tmp = *bp >> s;
       return tmp != (MP_LIMB_T_MAX >> s);

@@ -284,7 +284,7 @@ test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
   int n;
 
   mpfr_init (x);
-  mpfr_init2 (z, pmax+GMP_LIMB_BITS);
+  mpfr_init2 (z, pmax+GMP_NUMB_BITS);
   mpf_init2 (y, MPFR_PREC_MIN);
   for(p=pmin ; p < pmax ; p+=3)
     {
