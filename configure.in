@@ -424,7 +424,7 @@ if test -n "$gmp_internal_file_check" ; then
 #include "gmp.h"
 #include "gmp-impl.h"
 ]], [[
-  return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+  return GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
          && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
 ]])], [AC_MSG_RESULT(yes)], [
        AC_MSG_RESULT(no)
