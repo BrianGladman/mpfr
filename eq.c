@@ -56,8 +56,8 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   if (uexp != vexp)
     return 0; /* no bit agree */
 
-  usize = (MPFR_PREC(u) - 1) / BITS_PER_MP_LIMB + 1;
-  vsize = (MPFR_PREC(v) - 1) / BITS_PER_MP_LIMB + 1;
+  usize = (MPFR_PREC(u) - 1) / GMP_LIMB_BITS + 1;
+  vsize = (MPFR_PREC(v) - 1) / GMP_LIMB_BITS + 1;
 
   if (vsize > usize) /* exchange u and v */
     {
@@ -78,23 +78,23 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 
   if (usize > vsize)
     {
-      if ((unsigned long) vsize * BITS_PER_MP_LIMB < n_bits)
+      if ((unsigned long) vsize * GMP_LIMB_BITS < n_bits)
         {
-          /* check if low min(PREC(u), n_bits) - (vsize * BITS_PER_MP_LIMB)
+          /* check if low min(PREC(u), n_bits) - (vsize * GMP_LIMB_BITS)
              bits from u are non-zero */
-          unsigned long remains = n_bits - (vsize * BITS_PER_MP_LIMB);
+          unsigned long remains = n_bits - (vsize * GMP_LIMB_BITS);
           k = usize - vsize - 1;
-          while (k >= 0 && remains >= BITS_PER_MP_LIMB && !up[k])
+          while (k >= 0 && remains >= GMP_LIMB_BITS && !up[k])
             {
               k--;
-              remains -= BITS_PER_MP_LIMB;
+              remains -= GMP_LIMB_BITS;
             }
           /* now either k < 0: all low bits from u are zero
-                 or remains < BITS_PER_MP_LIMB: check high bits from up[k]
+                 or remains < GMP_LIMB_BITS: check high bits from up[k]
                  or up[k] <> 0: different */
-          if (k >= 0 && (((remains < BITS_PER_MP_LIMB) &&
-                          (up[k] >> (BITS_PER_MP_LIMB - remains))) ||
-                         (remains >= BITS_PER_MP_LIMB && up[k])))
+          if (k >= 0 && (((remains < GMP_LIMB_BITS) &&
+                          (up[k] >> (GMP_LIMB_BITS - remains))) ||
+                         (remains >= GMP_LIMB_BITS && up[k])))
             return 0;           /* surely too different */
         }
       size = vsize;
@@ -108,34 +108,34 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 
   /* If size is too large wrt n_bits, reduce it to look only at the
      high n_bits bits.
-     Otherwise, if n_bits > size * BITS_PER_MP_LIMB, reduce n_bits to
-     size * BITS_PER_MP_LIMB, since the extra low bits of one of the
+     Otherwise, if n_bits > size * GMP_LIMB_BITS, reduce n_bits to
+     size * GMP_LIMB_BITS, since the extra low bits of one of the
      operands have already been check above. */
-  if ((unsigned long) size > 1 + (n_bits - 1) / BITS_PER_MP_LIMB)
-    size = 1 + (n_bits - 1) / BITS_PER_MP_LIMB;
-  else if (n_bits > (unsigned long) size * BITS_PER_MP_LIMB)
-    n_bits = size * BITS_PER_MP_LIMB;
+  if ((unsigned long) size > 1 + (n_bits - 1) / GMP_LIMB_BITS)
+    size = 1 + (n_bits - 1) / GMP_LIMB_BITS;
+  else if (n_bits > (unsigned long) size * GMP_LIMB_BITS)
+    n_bits = size * GMP_LIMB_BITS;
 
   up += usize - size;
   vp += vsize - size;
 
-  for (i = size - 1; i > 0 && n_bits >= BITS_PER_MP_LIMB; i--)
+  for (i = size - 1; i > 0 && n_bits >= GMP_LIMB_BITS; i--)
     {
       if (up[i] != vp[i])
         return 0;
-      n_bits -= BITS_PER_MP_LIMB;
+      n_bits -= GMP_LIMB_BITS;
     }
 
-  /* now either i=0 or n_bits<BITS_PER_MP_LIMB */
+  /* now either i=0 or n_bits<GMP_LIMB_BITS */
 
-  /* since n_bits <= size * BITS_PER_MP_LIMB before the above for-loop,
-     we have the invariant n_bits <= (i+1) * BITS_PER_MP_LIMB, thus
-     we always have n_bits <= BITS_PER_MP_LIMB here */
-  MPFR_ASSERTD(n_bits <= BITS_PER_MP_LIMB);
+  /* since n_bits <= size * GMP_LIMB_BITS before the above for-loop,
+     we have the invariant n_bits <= (i+1) * GMP_LIMB_BITS, thus
+     we always have n_bits <= GMP_LIMB_BITS here */
+  MPFR_ASSERTD(n_bits <= GMP_LIMB_BITS);
 
-  if (n_bits & (BITS_PER_MP_LIMB - 1))
-    return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) ==
-            vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))));
+  if (n_bits & (GMP_LIMB_BITS - 1))
+    return (up[i] >> (GMP_LIMB_BITS - (n_bits & (GMP_LIMB_BITS - 1))) ==
+            vp[i] >> (GMP_LIMB_BITS - (n_bits & (GMP_LIMB_BITS - 1))));
   else
     return (up[i] == vp[i]);
 }

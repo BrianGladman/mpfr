@@ -120,9 +120,9 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
           for (k = n; k > 0; k--)
             {
               count_leading_zeros (kbits, k);
-              kbits = BITS_PER_MP_LIMB - kbits;
+              kbits = GMP_LIMB_BITS - kbits;
               /* if k^m is too large, use mpz_tdiv_q */
-              if (m * kbits > 2 * BITS_PER_MP_LIMB)
+              if (m * kbits > 2 * GMP_LIMB_BITS)
                 {
                   /* if we know in advance that k^m > d, then floor(d/k^m) will
                      be zero below, so there is no need to compute k^m */
@@ -165,9 +165,9 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
               /* we have d[k] = sum(t[i], i=k+1..n)
                  with t[i] = n*(n+i-1)!*4^i/(n-i)!/(2i)!
                  t[k-1]/t[k] = k*(2k-1)/(n-k+1)/(n+k-1)/2 */
-#if (BITS_PER_MP_LIMB == 32)
+#if (GMP_LIMB_BITS == 32)
 #define KMAX 46341 /* max k such that k*(2k-1) < 2^32 */
-#elif (BITS_PER_MP_LIMB == 64)
+#elif (GMP_LIMB_BITS == 64)
 #define KMAX 3037000500
 #endif
 #ifdef KMAX

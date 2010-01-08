@@ -460,20 +460,20 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* Set y to the value of the ~prec most significant bits of pstr->mant
          (as long as we guarantee correct rounding, we don't need to get
          exactly prec bits). */
-      ysize = (prec - 1) / BITS_PER_MP_LIMB + 1;
+      ysize = (prec - 1) / GMP_LIMB_BITS + 1;
       /* prec bits corresponds to ysize limbs */
-      ysize_bits = ysize * BITS_PER_MP_LIMB;
+      ysize_bits = ysize * GMP_LIMB_BITS;
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits */
       y = (mp_limb_t*) MPFR_TMP_ALLOC ((2 * ysize + 1) * sizeof (mp_limb_t));
       y += ysize; /* y has (ysize+1) allocated limbs */
 
       /* pstr_size is the number of characters we read in pstr->mant
          to have at least ysize full limbs.
-         We must have base^(pstr_size-1) >= (2^(BITS_PER_MP_LIMB))^ysize
+         We must have base^(pstr_size-1) >= (2^(GMP_LIMB_BITS))^ysize
          (in the worst case, the first digit is one and all others are zero).
-         i.e., pstr_size >= 1 + ysize*BITS_PER_MP_LIMB/log2(base)
-          Since ysize ~ prec/BITS_PER_MP_LIMB and prec < Umax/2 =>
-          ysize*BITS_PER_MP_LIMB can not overflow.
+         i.e., pstr_size >= 1 + ysize*GMP_LIMB_BITS/log2(base)
+          Since ysize ~ prec/GMP_LIMB_BITS and prec < Umax/2 =>
+          ysize*GMP_LIMB_BITS can not overflow.
          We compute pstr_size = 1 + ceil(ysize_bits * Num / Den)
           where Num/Den >= 1/log2(base)
          It is not exactly ceil(1/log2(base)) but could be one more (base 2)
@@ -527,20 +527,20 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
             }
           /* for each bit shift decrease exponent of y */
           /* (This should not overflow) */
-          exp = - ((ysize - real_ysize) * BITS_PER_MP_LIMB + count);
+          exp = - ((ysize - real_ysize) * GMP_LIMB_BITS + count);
         }
       else  /* shift y to the right, by doing this we might lose some
                bits from the result of mpn_set_str (in addition to the
                characters neglected from pstr->mant) */
         {
-          /* shift {y, num_limb} for (BITS_PER_MP_LIMB - count) bits
+          /* shift {y, num_limb} for (GMP_LIMB_BITS - count) bits
              to the right. FIXME: can we prove that count cannot be zero here,
-             since mpn_rshift does not accept a shift of BITS_PER_MP_LIMB? */
+             since mpn_rshift does not accept a shift of GMP_LIMB_BITS? */
           MPFR_ASSERTD (count != 0);
-          exact = mpn_rshift (y, y, real_ysize, BITS_PER_MP_LIMB - count) ==
+          exact = mpn_rshift (y, y, real_ysize, GMP_LIMB_BITS - count) ==
             MPFR_LIMB_ZERO;
           /* for each bit shift increase exponent of y */
-          exp = BITS_PER_MP_LIMB - count;
+          exp = GMP_LIMB_BITS - count;
         }
 
       /* compute base^(exp_s-pr) on n limbs */
@@ -551,7 +551,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           mp_exp_t tmp;
 
           count_leading_zeros (pow2, (mp_limb_t) pstr->base);
-          pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
+          pow2 = GMP_LIMB_BITS - pow2 - 1; /* base = 2^pow2 */
           MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
           /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
              with overflow checking

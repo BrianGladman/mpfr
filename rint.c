@@ -81,7 +81,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           mp_size_t rm;
 
           rp = MPFR_MANT(r);
-          rm = (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB;
+          rm = (MPFR_PREC(r) - 1) / GMP_LIMB_BITS;
           rp[rm] = MPFR_LIMB_HIGHBIT;
           MPN_ZERO(rp, rm);
           MPFR_SET_EXP (r, 1);  /* |r| = 1 */
@@ -116,7 +116,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
       MPFR_SET_EXP (r, exp); /* Does nothing if r==u */
 
-      if ((exp - 1) / BITS_PER_MP_LIMB >= un)
+      if ((exp - 1) / GMP_LIMB_BITS >= un)
         {
           ui = un;
           idiff = 0;
@@ -126,10 +126,10 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         {
           mp_size_t uj;
 
-          ui = (exp - 1) / BITS_PER_MP_LIMB + 1;  /* #limbs of the int part */
+          ui = (exp - 1) / GMP_LIMB_BITS + 1;  /* #limbs of the int part */
           MPFR_ASSERTD (un >= ui);
           uj = un - ui;  /* lowest limb of the integer part */
-          idiff = exp % BITS_PER_MP_LIMB;  /* #int-part bits in up[uj] or 0 */
+          idiff = exp % GMP_LIMB_BITS;  /* #int-part bits in up[uj] or 0 */
 
           uflags = idiff == 0 || (up[uj] << idiff) == 0 ? 0 : 2;
           if (uflags == 0)
@@ -186,7 +186,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
             }
           if (uflags == 0)
             { /* u is an integer; determine if it is representable in r */
-              if (sh != 0 && rp[0] << (BITS_PER_MP_LIMB - sh) != 0)
+              if (sh != 0 && rp[0] << (GMP_LIMB_BITS - sh) != 0)
                 uflags = 1;  /* u is not representable in r */
               else
                 {
@@ -216,7 +216,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           rn = ui;
 
           /* number of fractional bits in whole rp[0] */
-          ush = idiff == 0 ? 0 : BITS_PER_MP_LIMB - idiff;
+          ush = idiff == 0 ? 0 : GMP_LIMB_BITS - idiff;
 
           if (rj == 0 && ush < sh)
             {

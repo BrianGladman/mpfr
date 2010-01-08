@@ -100,7 +100,7 @@ mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
           nbits += (1021 + e);
           MPFR_ASSERTD (nbits >= 1);
         }
-      np = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+      np = (nbits + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS;
       MPFR_ASSERTD ( np <= MPFR_LIMBS_PER_DOUBLE );
       carry = mpfr_round_raw_4 (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
                                 nbits, rnd_mode);

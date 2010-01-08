@@ -40,7 +40,7 @@ mpfr_min_prec (mpfr_srcptr x)
   /* Count full limbs set to zero */
   for (n = 0; mx[n] == 0; n++)
     {
-      res += BITS_PER_MP_LIMB;
+      res += GMP_LIMB_BITS;
     }
 
   i = 0;
@@ -51,11 +51,11 @@ mpfr_min_prec (mpfr_srcptr x)
 
   res += i;
   /* If we have trailing zero bits because the precision
-   * is not a multiple of BITS_PER_MP_LIMB, we must not count
+   * is not a multiple of GMP_LIMB_BITS, we must not count
    * those. */
-  i = px % BITS_PER_MP_LIMB;
+  i = px % GMP_LIMB_BITS;
   if (i != 0)
-    res -= BITS_PER_MP_LIMB - i;
+    res -= GMP_LIMB_BITS - i;
 
   return px - res;
 }

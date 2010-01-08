@@ -104,7 +104,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Read prec and num of limbs */
   p = MPFR_PREC(b);
-  n = (p+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;
+  n = (p+GMP_LIMB_BITS-1)/GMP_LIMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
   bx = MPFR_GET_EXP(b);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
@@ -211,8 +211,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         mpfr_uexp_t dm;
         mp_size_t m;
 
-        dm = d % BITS_PER_MP_LIMB;
-        m = d / BITS_PER_MP_LIMB;
+        dm = d % GMP_LIMB_BITS;
+        m = d / GMP_LIMB_BITS;
         if (MPFR_UNLIKELY(dm == 0))
           {
             /* dm = 0 and m > 0: Just copy */
@@ -257,8 +257,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               else
                 {
                   mp_limb_t *tp = MPFR_MANT(c);
-                  mp_size_t kx = n-1 - (x / BITS_PER_MP_LIMB);
-                  mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
+                  mp_size_t kx = n-1 - (x / GMP_LIMB_BITS);
+                  mpfr_prec_t sx = GMP_LIMB_BITS-1-(x%GMP_LIMB_BITS);
                   DEBUG (printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
                                  (unsigned long) x, (long) kx,
                                  (unsigned long) sx));
@@ -283,8 +283,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mp_limb_t *tp = MPFR_MANT(c);
           /* Start from bit x=p-d in mantissa C */
           mpfr_prec_t  x = p-d;
-          mp_size_t   kx = n-1 - (x / BITS_PER_MP_LIMB);
-          mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
+          mp_size_t   kx = n-1 - (x / GMP_LIMB_BITS);
+          mpfr_prec_t sx = GMP_LIMB_BITS-1-(x%GMP_LIMB_BITS);
           MPFR_ASSERTD(p >= d);
           bcp = tp[kx] & (MPFR_LIMB_ONE<<sx);
           /* Looks at the last bits of limb kx (If sx=0, does nothing)*/

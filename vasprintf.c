@@ -798,14 +798,14 @@ next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
     return 0;
 
   xm = MPFR_MANT (x) [MPFR_LIMB_SIZE (x) - 1];
-  pm = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - nbits);
+  pm = MPFR_LIMB_MASK (GMP_LIMB_BITS - nbits);
   if ((xm & ~pm) ^ ~pm)
     /* do no round up if some of the nbits first bits are 0s. */
     return 0;
 
   if (rnd == MPFR_RNDN)
     /* mask for rounding bit */
-    pm = (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - nbits - 1));
+    pm = (MPFR_LIMB_ONE << (GMP_LIMB_BITS - nbits - 1));
 
   /* round up if some remaining bits are 1 */
   /* warning: the return value must be an int */
@@ -1043,7 +1043,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     {
       int digit;
       mp_limb_t msl = MPFR_MANT (p)[MPFR_LIMB_SIZE (p) - 1];
-      int rnd_bit = BITS_PER_MP_LIMB - 5;
+      int rnd_bit = GMP_LIMB_BITS - 5;
 
       /* pick up the 4 first bits */
       digit = msl >> (rnd_bit+1);

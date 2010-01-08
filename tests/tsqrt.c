@@ -342,31 +342,31 @@ special (void)
     }
 
   /* corner case rw = 0 in rounding to nearest */
-  mpfr_set_prec (z, BITS_PER_MP_LIMB - 1);
-  mpfr_set_prec (y, BITS_PER_MP_LIMB - 1);
+  mpfr_set_prec (z, GMP_LIMB_BITS - 1);
+  mpfr_set_prec (y, GMP_LIMB_BITS - 1);
   mpfr_set_ui (y, 1, MPFR_RNDN);
-  mpfr_mul_2exp (y, y, BITS_PER_MP_LIMB - 1, MPFR_RNDN);
+  mpfr_mul_2exp (y, y, GMP_LIMB_BITS - 1, MPFR_RNDN);
   mpfr_nextabove (y);
-  for (p = 2 * BITS_PER_MP_LIMB - 1; p <= 1000; p++)
+  for (p = 2 * GMP_LIMB_BITS - 1; p <= 1000; p++)
     {
       mpfr_set_prec (x, p);
       mpfr_set_ui (x, 1, MPFR_RNDN);
-      mpfr_set_exp (x, BITS_PER_MP_LIMB);
+      mpfr_set_exp (x, GMP_LIMB_BITS);
       mpfr_add_ui (x, x, 1, MPFR_RNDN);
-      /* now x = 2^(BITS_PER_MP_LIMB - 1) + 1 (BITS_PER_MP_LIMB bits) */
+      /* now x = 2^(GMP_LIMB_BITS - 1) + 1 (GMP_LIMB_BITS bits) */
       MPFR_ASSERTN (mpfr_mul (x, x, x, MPFR_RNDN) == 0); /* exact */
       inexact = test_sqrt (z, x, MPFR_RNDN);
-      /* even rule: z should be 2^(BITS_PER_MP_LIMB - 1) */
+      /* even rule: z should be 2^(GMP_LIMB_BITS - 1) */
       MPFR_ASSERTN (inexact < 0);
-      MPFR_ASSERTN (mpfr_cmp_ui_2exp (z, 1, BITS_PER_MP_LIMB - 1) == 0);
+      MPFR_ASSERTN (mpfr_cmp_ui_2exp (z, 1, GMP_LIMB_BITS - 1) == 0);
       mpfr_nextbelow (x);
-      /* now x is just below [2^(BITS_PER_MP_LIMB - 1) + 1]^2 */
+      /* now x is just below [2^(GMP_LIMB_BITS - 1) + 1]^2 */
       inexact = test_sqrt (z, x, MPFR_RNDN);
       MPFR_ASSERTN(inexact < 0 &&
-                   mpfr_cmp_ui_2exp (z, 1, BITS_PER_MP_LIMB - 1) == 0);
+                   mpfr_cmp_ui_2exp (z, 1, GMP_LIMB_BITS - 1) == 0);
       mpfr_nextabove (x);
       mpfr_nextabove (x);
-      /* now x is just above [2^(BITS_PER_MP_LIMB - 1) + 1]^2 */
+      /* now x is just above [2^(GMP_LIMB_BITS - 1) + 1]^2 */
       inexact = test_sqrt (z, x, MPFR_RNDN);
       if (mpfr_cmp (z, y))
         {
@@ -392,23 +392,23 @@ special (void)
       printf ("Error in sqrt(9:1000) for prec=10\n");
       exit (1);
     }
-  mpfr_set_prec (y, BITS_PER_MP_LIMB);
+  mpfr_set_prec (y, GMP_LIMB_BITS);
   mpfr_nextabove (x);
   inexact = test_sqrt (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 3) || inexact >= 0)
     {
-      printf ("Error in sqrt(9:1000) for prec=%d\n", (int) BITS_PER_MP_LIMB);
+      printf ("Error in sqrt(9:1000) for prec=%d\n", (int) GMP_LIMB_BITS);
       exit (1);
     }
-  mpfr_set_prec (x, 2 * BITS_PER_MP_LIMB);
-  mpfr_set_prec (y, BITS_PER_MP_LIMB);
+  mpfr_set_prec (x, 2 * GMP_LIMB_BITS);
+  mpfr_set_prec (y, GMP_LIMB_BITS);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_nextabove (y);
   mpfr_set (x, y, MPFR_RNDN);
   inexact = test_sqrt (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1) || inexact >= 0)
     {
-      printf ("Error in sqrt(1) for prec=%d\n", (int) BITS_PER_MP_LIMB);
+      printf ("Error in sqrt(1) for prec=%d\n", (int) GMP_LIMB_BITS);
       mpfr_dump (y);
       exit (1);
     }

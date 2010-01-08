@@ -96,13 +96,13 @@ main (void)
       MPFR_SET_ALLOC_SIZE(a, s);
       /* Check normal form */
       tmp = MPFR_MANT(a)[0];
-      if ((pr % BITS_PER_MP_LIMB) != 0)
+      if ((pr % GMP_LIMB_BITS) != 0)
         {
           MPFR_MANT(a)[0] = ~0;
           if (mpfr_check(a))  ERROR("last bits non 0");
         }
       MPFR_MANT(a)[0] = tmp;
-      MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB-1);
+      MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= MPFR_LIMB_MASK (GMP_LIMB_BITS-1);
       if (mpfr_check(a))  ERROR("last bits non 0");
       /* Final */
       mpfr_set_ui(a, 2137, MPFR_RNDN);

@@ -34,7 +34,7 @@ check_denorms (void)
   double d, d2, dd, f;
   int fail = 0, k, n;
 
-  mpfr_init2 (x, BITS_PER_MP_LIMB);
+  mpfr_init2 (x, GMP_LIMB_BITS);
 
   rnd_mode = MPFR_RNDN;
   for (k = -17; k <= 17; k += 2)

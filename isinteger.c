@@ -44,13 +44,13 @@ mpfr_integer_p (mpfr_srcptr x)
 
   /* 0 < expo < prec */
 
-  xn =  (mp_size_t) ((prec - 1) / BITS_PER_MP_LIMB);  /* index of last limb */
-  xn -= (mp_size_t) (expo / BITS_PER_MP_LIMB);
+  xn =  (mp_size_t) ((prec - 1) / GMP_LIMB_BITS);  /* index of last limb */
+  xn -= (mp_size_t) (expo / GMP_LIMB_BITS);
   /* now the index of the last limb containing bits of the fractional part */
 
   xp = MPFR_MANT(x);
   MPFR_ASSERTN(xn >= 0);
-  if (xp[xn] << (expo % BITS_PER_MP_LIMB) != 0)
+  if (xp[xn] << (expo % GMP_LIMB_BITS) != 0)
     return 0;
   while (--xn >= 0)
     if (xp[xn] != 0)

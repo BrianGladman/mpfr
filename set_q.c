@@ -43,7 +43,7 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
 
   /* Get working precision */
   count_leading_zeros (c, p[s-1]);
-  pf = s * BITS_PER_MP_LIMB - c;
+  pf = s * GMP_LIMB_BITS - c;
   if (pf < MPFR_PREC_MIN)
     pf = MPFR_PREC_MIN;
   mpfr_init2 (f, pf);
@@ -102,12 +102,12 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
   cd = set_z (d, den, &sd);
 
   sn -= sd;
-  if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB))
+  if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / GMP_LIMB_BITS))
     {
       inexact = mpfr_overflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }
-  if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / BITS_PER_MP_LIMB -1))
+  if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / GMP_LIMB_BITS -1))
     {
       if (rnd == MPFR_RNDN)
         rnd = MPFR_RNDZ;
@@ -116,8 +116,8 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
     }
 
   inexact = mpfr_div (f, n, d, rnd);
-  shift = BITS_PER_MP_LIMB*sn+cn-cd;
-  MPFR_ASSERTD (shift == BITS_PER_MP_LIMB*sn+cn-cd);
+  shift = GMP_LIMB_BITS*sn+cn-cd;
+  MPFR_ASSERTD (shift == GMP_LIMB_BITS*sn+cn-cd);
   cd = mpfr_mul_2si (f, f, shift, rnd);
   MPFR_SAVE_EXPO_FREE (expo);
   if (MPFR_UNLIKELY (cd != 0))

@@ -182,7 +182,7 @@ ternary_test (void)
     {
 
       mpf_set_prec (x, prec);
-      mpfr_set_prec (y, PREC (x) * BITS_PER_MP_LIMB + 1);
+      mpfr_set_prec (y, PREC (x) * GMP_LIMB_BITS + 1);
 
       /* y == 1 */
       mpfr_set_ui_2exp (y, 1, prec, MPFR_RNDN);
@@ -326,7 +326,7 @@ main (void)
     }
 
   /* bug reported by Jim White */
-  for (e = 0; e <= 2 * BITS_PER_MP_LIMB; e++)
+  for (e = 0; e <= 2 * GMP_LIMB_BITS; e++)
     {
       /* test with 2^(-e) */
       mpfr_set_ui (y, 1, MPFR_RNDN);

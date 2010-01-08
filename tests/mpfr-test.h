@@ -138,7 +138,7 @@ mpfr_print_raw (mpfr_srcptr x)
       mx = MPFR_MANT (x);
       px = MPFR_PREC (x);
 
-      for (n = (px - 1) / BITS_PER_MP_LIMB; ; n--)
+      for (n = (px - 1) / GMP_LIMB_BITS; ; n--)
         {
           mp_limb_t wd, t;
 

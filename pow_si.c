@@ -150,7 +150,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
 
         abs_n = - (unsigned long) n;
         count_leading_zeros (size_n, (mp_limb_t) abs_n);
-        size_n = BITS_PER_MP_LIMB - size_n;
+        size_n = GMP_LIMB_BITS - size_n;
 
         /* initial working precision */
         Ny = MPFR_PREC (y);

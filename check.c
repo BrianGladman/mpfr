@@ -47,7 +47,7 @@ mpfr_check (mpfr_srcptr x)
   /* Check size of mantissa */
   s = MPFR_GET_ALLOC_SIZE(x);
   if (s<=0 || s > MP_SIZE_T_MAX ||
-      MPFR_PREC(x) > ((mp_prec_t)s*BITS_PER_MP_LIMB))
+      MPFR_PREC(x) > ((mp_prec_t)s*GMP_LIMB_BITS))
     return 0;
   /* Acces all the mp_limb of the mantissa: may do a seg fault */
   for(i = 0 ; i < s ; i++)
@@ -56,13 +56,13 @@ mpfr_check (mpfr_srcptr x)
   if (MPFR_IS_PURE_FP(x))
     {
       /* Check first mp_limb of mantissa (Must start with a 1 bit) */
-      if ( ((xm[MPFR_LIMB_SIZE(x)-1])>>(BITS_PER_MP_LIMB-1)) == 0)
+      if ( ((xm[MPFR_LIMB_SIZE(x)-1])>>(GMP_LIMB_BITS-1)) == 0)
         return 0;
       /* Check last mp_limb of mantissa */
-      rw = (MPFR_PREC(x) % BITS_PER_MP_LIMB);
+      rw = (MPFR_PREC(x) % GMP_LIMB_BITS);
       if (rw != 0)
         {
-          tmp = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
+          tmp = MPFR_LIMB_MASK (GMP_LIMB_BITS - rw);
           if ((xm[0] & tmp) != 0)
             return 0;
         }

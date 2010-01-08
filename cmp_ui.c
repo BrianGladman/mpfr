@@ -64,21 +64,21 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
       e = MPFR_GET_EXP (b); /* 2^(e-1) <= b < 2^e */
       if (e <= f)
         return -1;
-      if (f < MPFR_EMAX_MAX - BITS_PER_MP_LIMB &&
-          e > f + BITS_PER_MP_LIMB)
+      if (f < MPFR_EMAX_MAX - GMP_LIMB_BITS &&
+          e > f + GMP_LIMB_BITS)
         return 1;
 
-      /* now f < e <= f + BITS_PER_MP_LIMB */
+      /* now f < e <= f + GMP_LIMB_BITS */
       c = (mp_limb_t) i;
       count_leading_zeros(k, c);
-      if ((int) (e - f) > BITS_PER_MP_LIMB - k)
+      if ((int) (e - f) > GMP_LIMB_BITS - k)
         return 1;
-      if ((int) (e - f) < BITS_PER_MP_LIMB - k)
+      if ((int) (e - f) < GMP_LIMB_BITS - k)
         return -1;
 
       /* now b and i*2^f have the same exponent */
       c <<= k;
-      bn = (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB;
+      bn = (MPFR_PREC(b) - 1) / GMP_LIMB_BITS;
       bp = MPFR_MANT(b);
       if (bp[bn] > c)
         return 1;

@@ -334,7 +334,7 @@ randlimb (void)
 {
   mp_limb_t limb;
 
-  mpfr_rand_raw (&limb, RANDS, BITS_PER_MP_LIMB);
+  mpfr_rand_raw (&limb, RANDS, GMP_LIMB_BITS);
   return limb;
 }
 

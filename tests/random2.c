@@ -136,7 +136,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
     }
 
   /* Generate random exponent.  */
-  mpfr_rand_raw (&elimb, RANDS, BITS_PER_MP_LIMB);
+  mpfr_rand_raw (&elimb, RANDS, GMP_LIMB_BITS);
   exp = ABS (exp);
   MPFR_SET_EXP (x, elimb % (2 * exp + 1) - exp);
 

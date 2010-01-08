@@ -98,10 +98,10 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
 
-  bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
-  cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
+  bn = (bq+GMP_LIMB_BITS-1)/GMP_LIMB_BITS; /* number of limbs of b */
+  cn = (cq+GMP_LIMB_BITS-1)/GMP_LIMB_BITS; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
-  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+  tn = (bq + cq + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS;
   /* <= k, thus no int overflow */
   MPFR_ASSERTD(tn <= k);
 
@@ -116,8 +116,8 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     : mpn_mul (tmp, MPFR_MANT(c), cn, MPFR_MANT(b), bn);
 
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-     with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-  b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
+     with tmp[k-1]>=2^(GMP_LIMB_BITS-2) */
+  b1 >>= GMP_LIMB_BITS - 1; /* msb from the product */
 
   /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
      then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
@@ -283,10 +283,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTD (bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
 
-  bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
-  cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
+  bn = (bq+GMP_LIMB_BITS-1)/GMP_LIMB_BITS; /* number of limbs of b */
+  cn = (cq+GMP_LIMB_BITS-1)/GMP_LIMB_BITS; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
-  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+  tn = (bq + cq + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS;
   MPFR_ASSERTD (tn <= k); /* tn <= k, thus no int overflow */
 
   /* Check for no size_t overflow*/
@@ -339,7 +339,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           tmp[3] += (tmp[2] < t1);
           b1 = tmp[3];
         }
-      b1 >>= (BITS_PER_MP_LIMB - 1);
+      b1 >>= (GMP_LIMB_BITS - 1);
       tmp += k - tn;
       if (MPFR_UNLIKELY (b1 == 0))
         mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
@@ -383,12 +383,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             /* It is not the faster way, but it is safer */
             MPFR_SET_SAME_SIGN (b_tmp, b);
             MPFR_SET_EXP (b_tmp, MPFR_GET_EXP (b));
-            MPFR_PREC (b_tmp) = bn * BITS_PER_MP_LIMB;
+            MPFR_PREC (b_tmp) = bn * GMP_LIMB_BITS;
             MPFR_MANT (b_tmp) = bp;
 
             MPFR_SET_SAME_SIGN (c_tmp, c);
             MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
-            MPFR_PREC (c_tmp) = cn * BITS_PER_MP_LIMB;
+            MPFR_PREC (c_tmp) = cn * GMP_LIMB_BITS;
             MPFR_MANT (c_tmp) = cp;
 
             /* Call again mpfr_mul with the fixed arguments */
@@ -401,7 +401,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         n = MPFR_LIMB_SIZE (a) + 1;
         n = MIN (n, cn);
         MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
-        p = n * BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+        p = n * GMP_LIMB_BITS - MPFR_INT_CEIL_LOG2 (n + 2);
         bp += bn - n;
         cp += cn - n;
 
@@ -409,7 +409,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            We may lost 1 bit due to RNDN, 1 due to final shift. */
         if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
           {
-            if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB
+            if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + GMP_LIMB_BITS
                                || bn <= MPFR_MUL_THRESHOLD+1))
               {
                 /* MulHigh can't produce a roundable result. */
@@ -436,7 +436,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               }
             /* We will compute with one extra limb */
             n++;
-            p = n * BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+            p = n * GMP_LIMB_BITS - MPFR_INT_CEIL_LOG2 (n + 2);
             /* Due to some nasty reasons we can have only 4 bits */
             MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
 
@@ -450,8 +450,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         /* Compute an approximation of the product of b and c */
         mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-           with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-        b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */
+           with tmp[k-1]>=2^(GMP_LIMB_BITS-2) */
+        b1 = tmp[k-1] >> (GMP_LIMB_BITS - 1); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
            then their product is in (1/4, 1/2] with probability 2*ln(2)-1
@@ -477,8 +477,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
 
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-           with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-        b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
+           with tmp[k-1]>=2^(GMP_LIMB_BITS-2) */
+        b1 >>= GMP_LIMB_BITS - 1; /* msb from the product */
 
         /* if the mantissas of b and c are uniformly distributed in (1/2, 1],
            then their product is in (1/4, 1/2] with probability 2*ln(2)-1

@@ -185,7 +185,7 @@ decimal64_to_string (char *s, _Decimal64 d)
       rp[1] &= 524287; /* 2^19-1: cancel G[11] */
       rp[1] |= 2097152; /* add 2^21 */
     }
-#if BITS_PER_MP_LIMB >= 54
+#if GMP_LIMB_BITS >= 54
   rp[0] |= rp[1] << 32;
   rn = 1;
 #endif

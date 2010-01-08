@@ -31,7 +31,7 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
   int i;
 
   if (mpz_size (z) <= 1)
-    p = BITS_PER_MP_LIMB;
+    p = GMP_LIMB_BITS;
   else
     MPFR_MPZ_SIZEINBASE2 (p, z);
   mpfr_init2 (t, p);
@@ -313,7 +313,7 @@ mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
   mpfr_t t;
   int res;
 
-  mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * BITS_PER_MP_LIMB );
+  mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * GMP_LIMB_BITS );
   res = mpfr_set_f (t, z, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (x, t);

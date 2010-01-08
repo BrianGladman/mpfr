@@ -55,7 +55,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
 
-  nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
+  nw = 1 + (prec - 1) / GMP_LIMB_BITS; /* needed allocated limbs */
 
   /* check if x has enough allocated space for the mantissa */
   ow = MPFR_GET_ALLOC_SIZE(x);
@@ -108,7 +108,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mpfr_rnd_t rnd_mode)
   return inexact;
 }
 
-/* assumption: BITS_PER_MP_LIMB is a power of 2 */
+/* assumption: GMP_LIMB_BITS is a power of 2 */
 
 /* assuming b is an approximation to x in direction rnd1 with error at
    most 2^(MPFR_EXP(b)-err), returns 1 if one is able to round exactly
@@ -141,7 +141,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   if (MPFR_UNLIKELY(err0 < 0 || (mpfr_uexp_t) err0 <= prec))
     return 0;  /* can't round */
-  else if (MPFR_UNLIKELY (prec > (mp_prec_t) bn * BITS_PER_MP_LIMB))
+  else if (MPFR_UNLIKELY (prec > (mp_prec_t) bn * GMP_LIMB_BITS))
     { /* then ulp(b) < precision < error */
       return rnd2 == MPFR_RNDN && (mpfr_uexp_t) err0 - 2 >= prec;
       /* can round only in rounding to the nearest and err0 >= prec + 2 */
@@ -152,23 +152,23 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */
-  err = ((mpfr_uexp_t) err0 > (mp_prec_t) bn * BITS_PER_MP_LIMB) ?
-    (mp_prec_t) bn * BITS_PER_MP_LIMB : (mp_prec_t) err0;
+  err = ((mpfr_uexp_t) err0 > (mp_prec_t) bn * GMP_LIMB_BITS) ?
+    (mp_prec_t) bn * GMP_LIMB_BITS : (mp_prec_t) err0;
 
-  /* warning: if k = m*BITS_PER_MP_LIMB, consider limb m-1 and not m */
-  k = (err - 1) / BITS_PER_MP_LIMB;
+  /* warning: if k = m*GMP_LIMB_BITS, consider limb m-1 and not m */
+  k = (err - 1) / GMP_LIMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(s, err);
   /* the error corresponds to bit s in limb k, the most significant limb
      being limb 0 */
 
-  k1 = (prec - 1) / BITS_PER_MP_LIMB;
+  k1 = (prec - 1) / GMP_LIMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(s1, prec);
   /* the last significant bit is bit s1 in limb k1 */
 
   /* don't need to consider the k1 most significant limbs */
   k -= k1;
   bn -= k1;
-  prec -= (mp_prec_t) k1 * BITS_PER_MP_LIMB;
+  prec -= (mp_prec_t) k1 * GMP_LIMB_BITS;
 
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */

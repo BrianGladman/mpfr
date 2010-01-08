@@ -31,9 +31,9 @@ mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
   mp_size_t i;
   for (i = 0; i < n; i++)
     printf ("+%lu*2^%lu", (unsigned long) ap[i], (unsigned long)
-            (BITS_PER_MP_LIMB * i));
+            (GMP_LIMB_BITS * i));
   if (cy)
-    printf ("+2^%lu", (unsigned long) (BITS_PER_MP_LIMB * n));
+    printf ("+2^%lu", (unsigned long) (GMP_LIMB_BITS * n));
   printf ("\n");
 }
 #endif
@@ -65,11 +65,11 @@ mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
       while (cmp == 0 && bn > 0)
         {
           bn --;
-          bb = (extra) ? ((bp[bn+1] << (BITS_PER_MP_LIMB - 1)) | (bp[bn] >> 1))
+          bb = (extra) ? ((bp[bn+1] << (GMP_LIMB_BITS - 1)) | (bp[bn] >> 1))
             : bp[bn];
           cmp = (ap[k + bn] > bb) ? 1 : ((ap[k + bn] < bb) ? -1 : 0);
         }
-      bb = (extra) ? bp[0] << (BITS_PER_MP_LIMB - 1) : MPFR_LIMB_ZERO;
+      bb = (extra) ? bp[0] << (GMP_LIMB_BITS - 1) : MPFR_LIMB_ZERO;
       while (cmp == 0 && k > 0)
         {
           k--;
@@ -85,7 +85,7 @@ mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
       while (cmp == 0 && an > 0)
         {
           an --;
-          bb = (extra) ? ((bp[k+an+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k+an] >> 1))
+          bb = (extra) ? ((bp[k+an+1] << (GMP_LIMB_BITS - 1)) | (bp[k+an] >> 1))
             : bp[k+an];
           if (ap[an] > bb)
             cmp = 1;
@@ -95,7 +95,7 @@ mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
       while (cmp == 0 && k > 0)
         {
           k--;
-          bb = (extra) ? ((bp[k+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k] >> 1))
+          bb = (extra) ? ((bp[k+1] << (GMP_LIMB_BITS - 1)) | (bp[k] >> 1))
             : bp[k];
           cmp = (bb != MPFR_LIMB_ZERO) ? -1 : 0;
         }
@@ -116,7 +116,7 @@ mpfr_mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
   MPFR_ASSERTD (cy <= 1);
   while (n--)
     {
-      bb = (extra) ? ((bp[1] << (BITS_PER_MP_LIMB-1)) | (bp[0] >> 1)) : bp[0];
+      bb = (extra) ? ((bp[1] << (GMP_LIMB_BITS-1)) | (bp[0] >> 1)) : bp[0];
       rp = ap[0] - bb - cy;
       cy = (ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO) ?
         MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
@@ -346,11 +346,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
       MPN_COPY (q0p, qp + 1, q0size);
       sticky3 = qp[0];
-      sh2 = BITS_PER_MP_LIMB;
+      sh2 = GMP_LIMB_BITS;
     }
   qp[0] ^= sticky3;
   /* sticky3 contains the truncated bits from the quotient,
-     including the round bit, and 1 <= sh2 <= BITS_PER_MP_LIMB
+     including the round bit, and 1 <= sh2 <= GMP_LIMB_BITS
      is the number of bits in sticky3 */
   inex = (sticky != MPFR_LIMB_ZERO) || (sticky3 != MPFR_LIMB_ZERO);
 #ifdef DEBUG
@@ -625,7 +625,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
  sub_two_ulp:
   /* we cannot subtract MPFR_LIMB_MPFR_LIMB_ONE << (sh+1) since this is
-     undefined for sh = BITS_PER_MP_LIMB */
+     undefined for sh = GMP_LIMB_BITS */
   qh -= mpn_sub_1 (q0p, q0p, q0size, MPFR_LIMB_ONE << sh);
   /* go through */
 

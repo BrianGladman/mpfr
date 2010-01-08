@@ -35,7 +35,7 @@ mpfr_powerof2_raw (mpfr_srcptr x)
      So we don't want to test if it is a pure FP.
      MPFR_ASSERTN(MPFR_IS_PURE_FP(x)); */
   xp = MPFR_MANT(x);
-  xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
+  xn = (MPFR_PREC(x) - 1) / GMP_LIMB_BITS;
   /*if (NOT_POW2(xp[xn]))*/
   if (xp[xn] != MPFR_LIMB_HIGHBIT)
     return 0;

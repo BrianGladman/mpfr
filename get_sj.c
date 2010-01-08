@@ -95,7 +95,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
         {
           for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
             {
-              sh -= BITS_PER_MP_LIMB;
+              sh -= GMP_LIMB_BITS;
               /* Note the concerning the casts below:
                  When sh >= 0, the cast must be performed before the shift
                  for the case sizeof(intmax_t) > sizeof(mp_limb_t).
@@ -112,7 +112,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
         {
           for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
             {
-              sh -= BITS_PER_MP_LIMB;
+              sh -= GMP_LIMB_BITS;
               /* See above for the note concerning the casts. */
               r -= (sh >= 0
                     ? (intmax_t) xp[n] << sh

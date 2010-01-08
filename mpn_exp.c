@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    that is:
    a*2^exp_r <= b^e <= 2^exp_r (a + 2^f),
    where a represents {a, n}, i.e. the integer
-   a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^BITS_PER_MP_LIMB
+   a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^GMP_LIMB_BITS
 
    Return -1 is the result is exact.
    Return -2 if an overflow occurred in the computation of exp_r.
@@ -63,7 +63,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   B = (mp_limb_t) b;
   count_leading_zeros (h, B);
 
-  bits = BITS_PER_MP_LIMB - h;
+  bits = GMP_LIMB_BITS - h;
 
   B = B << h;
   h = - h;
@@ -73,14 +73,14 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   a [n - 1] = B;
   MPN_ZERO (a, n - 1);
   /* initial exponent for A: invariant is A = {a, n} * 2^f */
-  f = h - (n - 1) * BITS_PER_MP_LIMB;
+  f = h - (n - 1) * GMP_LIMB_BITS;
 
   /* determine number of bits in e */
   count_leading_zeros (t, (mp_limb_t) e);
 
-  t = BITS_PER_MP_LIMB - t; /* number of bits of exponent e */
+  t = GMP_LIMB_BITS - t; /* number of bits of exponent e */
 
-  error = t; /* error <= BITS_PER_MP_LIMB */
+  error = t; /* error <= GMP_LIMB_BITS */
 
   MPN_ZERO (c, 2 * n);
 
@@ -88,8 +88,8 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
     {
 
       /* determine precision needed */
-      bits = n * BITS_PER_MP_LIMB - mpn_scan1 (a, 0);
-      n1 = (n * BITS_PER_MP_LIMB - bits) / BITS_PER_MP_LIMB;
+      bits = n * GMP_LIMB_BITS - mpn_scan1 (a, 0);
+      n1 = (n * GMP_LIMB_BITS - bits) / GMP_LIMB_BITS;
 
       /* square of A : {c+2n1, 2(n-n1)} = {a+n1, n-n1}^2 */
       mpn_sqr_n (c + 2 * n1, a + n1, n - n1);
@@ -103,9 +103,9 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
           MPFR_TMP_FREE(marker);
           return -2;
         }
-      /* FIXME: Could f = 2*f + n * BITS_PER_MP_LIMB be used? */
+      /* FIXME: Could f = 2*f + n * GMP_LIMB_BITS be used? */
       f = 2*f;
-      MPFR_SADD_OVERFLOW (f, f, n * BITS_PER_MP_LIMB,
+      MPFR_SADD_OVERFLOW (f, f, n * GMP_LIMB_BITS,
                           mp_exp_t, mpfr_uexp_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           goto overflow, goto overflow);
@@ -122,14 +122,14 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
         MPN_COPY (a, c + n, n);
 
       if ((error == t) && (2 * n1 <= n) &&
-          (mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * BITS_PER_MP_LIMB))
+          (mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * GMP_LIMB_BITS))
         error = i;
 
       if (e & ((mp_exp_t) 1 << i))
         {
           /* multiply A by B */
           c[2 * n - 1] = mpn_mul_1 (c + n - 1, a, n, B);
-          f += h + BITS_PER_MP_LIMB;
+          f += h + GMP_LIMB_BITS;
           if ((c[2 * n - 1] & MPFR_LIMB_HIGHBIT) == 0)
             { /* shift A by one bit to the left */
               mpn_lshift (a, c + n, n, 1);
@@ -153,7 +153,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 
   if (error == t)
     return -1; /* result is exact */
-  else /* error <= t-2 <= BITS_PER_MP_LIMB-2
+  else /* error <= t-2 <= GMP_LIMB_BITS-2
           err_s_ab, err_s_a2 <= t-1       */
     {
       /* if there are p loops after the first inexact result, with
@@ -163,11 +163,11 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
       */
       error = error + err_s_ab + err_s_a2 / 2 + 3; /* <= 5t/2-1/2 */
 #if 0
-      if ((error - 1) >= ((n * BITS_PER_MP_LIMB - 1) / 2))
-        error = n * BITS_PER_MP_LIMB; /* result is completely wrong:
+      if ((error - 1) >= ((n * GMP_LIMB_BITS - 1) / 2))
+        error = n * GMP_LIMB_BITS; /* result is completely wrong:
                                          this is very unlikely since error is
                                          at most 5/2*log_2(e), and
-                                         n * BITS_PER_MP_LIMB is at least
+                                         n * GMP_LIMB_BITS is at least
                                          3*log_2(e) */
 #endif
       return error;

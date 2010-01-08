@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* given 0 <= |p| < 1, this function extracts limbs of p and puts them in y.
    It is mainly designed for the "binary splitting" algorithm.
 
-   More precisely, if B = 2^BITS_PER_MP_LIMB:
+   More precisely, if B = 2^GMP_LIMB_BITS:
    - for i=0, y = floor(p * B)
    - for i>0, y = (p * B^(2^i)) mod B^(2^(i-1))
  */

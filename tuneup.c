@@ -48,7 +48,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
+  size = (s->size-1)/GMP_LIMB_BITS+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -83,7 +83,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
+  size = (s->size-1)/GMP_LIMB_BITS+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -119,7 +119,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
+  size = (s->size-1)/GMP_LIMB_BITS+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -227,7 +227,7 @@ static double domeasure (mp_prec_t *threshold,
 
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = p;
-  size = (p - 1)/BITS_PER_MP_LIMB+1;
+  size = (p - 1)/GMP_LIMB_BITS+1;
   s.xp = malloc (2*size*sizeof (mp_limb_t));
   if (s.xp == NULL)
     {
@@ -302,7 +302,7 @@ tune_simple_func (mp_prec_t *threshold,
     d = domeasure (threshold, func, pmin);
     if (d < 0.10)
       break;
-    pmin += BITS_PER_MP_LIMB;
+    pmin += GMP_LIMB_BITS;
   }
 
   /* then look for an upper bound within 20% */
@@ -318,7 +318,7 @@ tune_simple_func (mp_prec_t *threshold,
   try = 0;
   while ((pmax-pmin) >= THRESHOLD_FINAL_WINDOW)
     {
-      pstep = MAX(MIN(BITS_PER_MP_LIMB/2,(pmax-pmin)/(2*THRESHOLD_WINDOW)),1);
+      pstep = MAX(MIN(GMP_LIMB_BITS/2,(pmax-pmin)/(2*THRESHOLD_WINDOW)),1);
       if (verbose)
         printf ("Pmin = %8lu Pmax = %8lu Pstep=%lu\n", pmin, pmax, pstep);
       p = (pmin + pmax) / 2;
@@ -587,16 +587,16 @@ all (const char *filename)
   if (verbose)
     printf ("Tuning mpfr_mul...\n");
   tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul,
-                    2*BITS_PER_MP_LIMB+1);
+                    2*GMP_LIMB_BITS+1);
   fprintf (f, "#define MPFR_MUL_THRESHOLD %lu /* limbs */\n",
-           (unsigned long) (mpfr_mul_threshold - 1) / BITS_PER_MP_LIMB + 1);
+           (unsigned long) (mpfr_mul_threshold - 1) / GMP_LIMB_BITS + 1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)
     printf ("Tuning mpfr_exp_2...\n");
   tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
                     MPFR_PREC_MIN);
-  mpfr_exp_2_threshold = MAX (BITS_PER_MP_LIMB, mpfr_exp_2_threshold);
+  mpfr_exp_2_threshold = MAX (GMP_LIMB_BITS, mpfr_exp_2_threshold);
   fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_exp_2_threshold);
 
@@ -604,7 +604,7 @@ all (const char *filename)
   if (verbose)
     printf ("Tuning mpfr_exp...\n");
   tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp,
-                    MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);
+                    MPFR_PREC_MIN+3*GMP_LIMB_BITS);
   fprintf (f, "#define MPFR_EXP_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_exp_threshold);
 
@@ -612,7 +612,7 @@ all (const char *filename)
   if (verbose)
     printf ("Tuning mpfr_sin_cos...\n");
   tune_simple_func (&mpfr_sincos_threshold, speed_mpfr_sincos,
-                    MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);
+                    MPFR_PREC_MIN+3*GMP_LIMB_BITS);
   fprintf (f, "#define MPFR_SINCOS_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_sincos_threshold);
 

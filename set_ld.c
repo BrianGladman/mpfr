@@ -198,8 +198,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
                       /* Since mpfr_add was inexact, the sticky bit is 1. */
                       tp = MPFR_MANT (t);
                       rb_mask = MPFR_LIMB_ONE <<
-                        (BITS_PER_MP_LIMB - 1 -
-                         (MPFR_PREC (r) & (BITS_PER_MP_LIMB - 1)));
+                        (GMP_LIMB_BITS - 1 -
+                         (MPFR_PREC (r) & (GMP_LIMB_BITS - 1)));
                       if (rnd_mode == MPFR_RNDN)
                         rnd_mode = (*tp & rb_mask) ^ MPFR_IS_NEG (t) ?
                           MPFR_RNDU : MPFR_RNDD;
@@ -283,7 +283,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
     }
 
   /* Extract mantissa */
-#if BITS_PER_MP_LIMB >= 64
+#if GMP_LIMB_BITS >= 64
   tmpmant[0] = ((mp_limb_t) x.s.manh << 32) | ((mp_limb_t) x.s.manl);
 #else
   tmpmant[0] = (mp_limb_t) x.s.manl;
@@ -309,7 +309,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   else
     exp -= 0x3FFE;
 
-  MPFR_SET_EXP (tmp, exp - cnt - k * BITS_PER_MP_LIMB);
+  MPFR_SET_EXP (tmp, exp - cnt - k * GMP_LIMB_BITS);
 
   /* tmp is exact */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);

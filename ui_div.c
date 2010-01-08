@@ -65,11 +65,11 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     }
   else if (MPFR_LIKELY(u != 0))
     {
-      MPFR_TMP_INIT1(up, uu, BITS_PER_MP_LIMB);
+      MPFR_TMP_INIT1(up, uu, GMP_LIMB_BITS);
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros(cnt, (mp_limb_t) u);
       up[0] = (mp_limb_t) u << cnt;
-      MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
+      MPFR_SET_EXP (uu, GMP_LIMB_BITS - cnt);
       return mpfr_div (y, uu, x, rnd_mode);
     }
   else /* u = 0, and x != 0 */

@@ -80,7 +80,7 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
       MPFR_ASSERTN ((mp_prec_t) sh <= prec);
       for (n = MPFR_LIMB_SIZE(x) - 1; n >= 0; n--)
         {
-          sh -= BITS_PER_MP_LIMB;
+          sh -= GMP_LIMB_BITS;
           r += (sh >= 0
                 ? (uintmax_t) xp[n] << sh
                 : (uintmax_t) xp[n] >> (- sh));

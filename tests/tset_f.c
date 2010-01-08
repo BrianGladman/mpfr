@@ -94,7 +94,7 @@ main (void)
       pr = 2 + (randlimb () & 255);
       mpf_set_prec (z, pr);
       mpf_urandomb (z, RANDS, z->_mp_prec);
-      mpfr_set_prec (u, ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
+      mpfr_set_prec (u, ((pr / GMP_LIMB_BITS + 1) * GMP_LIMB_BITS));
       mpfr_set_f (u, z, MPFR_RNDN);
       if (mpfr_cmp_f (u , z) != 0)
         {
@@ -102,7 +102,7 @@ main (void)
           printf ("mpf (precision=%lu)=", pr);
           mpf_out_str (stdout, 16, 0, z);
           printf ("\nmpfr(precision=%lu)=",
-                  ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
+                  ((pr / GMP_LIMB_BITS + 1) * GMP_LIMB_BITS));
           mpfr_out_str (stdout, 16, 0, u, MPFR_RNDN);
           putchar ('\n');
           exit (1);

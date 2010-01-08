@@ -48,7 +48,7 @@ print_mpfr (mpfr_srcptr x, const char *name)
     { fprintf (stderr, "Error in printf\n"); exit (1); }
   for (i = 0; i < size_of_bits2use; i++)
     {
-      if (printf ("#elif BITS_PER_MP_LIMB == %d\n"
+      if (printf ("#elif GMP_LIMB_BITS == %d\n"
                   "const mp_limb_t %s__tab[] = { 0x", bits2use[i], name) < 0)
         { fprintf (stderr, "Error in printf\n"); exit (1); }
       size = mpn_get_str (temp, 256, MPFR_MANT (x), MPFR_LIMB_SIZE (x));

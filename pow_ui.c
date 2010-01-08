@@ -87,7 +87,7 @@ mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* setup initial precision */
-  prec = MPFR_PREC (y) + 3 + BITS_PER_MP_LIMB
+  prec = MPFR_PREC (y) + 3 + GMP_LIMB_BITS
     + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
   mpfr_init2 (res, prec);
 

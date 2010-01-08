@@ -86,7 +86,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   q = MPFR_PREC(r);
   p = q + MPFR_INT_CEIL_LOG2(q) + 15;
   MPFR_ASSERTD (p >= 7); /* see algorithms.tex */
-  s = (p - 1) / BITS_PER_MP_LIMB + 1;
+  s = (p - 1) / GMP_LIMB_BITS + 1;
 
   /* b (op2) and a (op1) are the 2 operands but we want b >= a */
   compare = mpfr_cmp (op1, op2);
@@ -157,7 +157,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
 
       /* Next iteration */
       MPFR_ZIV_NEXT (loop, p);
-      s = (p - 1) / BITS_PER_MP_LIMB + 1;
+      s = (p - 1) / GMP_LIMB_BITS + 1;
     }
   MPFR_ZIV_FREE (loop);
 

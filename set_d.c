@@ -26,22 +26,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
+/* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_LIMB_BITS).
    Assumes d is neither 0 nor NaN nor Inf. */
 static long
 __gmpfr_extract_double (mp_ptr rp, double d)
-     /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
+     /* e=0 iff GMP_LIMB_BITS=32 and rp has only one limb */
 {
   long exp;
   mp_limb_t manl;
-#if BITS_PER_MP_LIMB == 32
+#if GMP_LIMB_BITS == 32
   mp_limb_t manh;
 #endif
 
   /* BUGS
      1. Should handle Inf and NaN in IEEE specific code.
      2. Handle Inf and NaN also in default code, to avoid hangs.
-     3. Generalize to handle all BITS_PER_MP_LIMB.
+     3. Generalize to handle all GMP_LIMB_BITS.
      4. This lits is incomplete and misspelled.
    */
 
@@ -58,7 +58,7 @@ __gmpfr_extract_double (mp_ptr rp, double d)
     exp = x.s.exp;
     if (exp)
       {
-#if BITS_PER_MP_LIMB >= 64
+#if GMP_LIMB_BITS >= 64
         manl = ((MPFR_LIMB_ONE << 63)
                 | ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
@@ -68,7 +68,7 @@ __gmpfr_extract_double (mp_ptr rp, double d)
       }
     else /* denormalized number */
       {
-#if BITS_PER_MP_LIMB >= 64
+#if GMP_LIMB_BITS >= 64
         manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
 #else
         manh = (x.s.manh << 11) /* high 21 bits */
@@ -117,7 +117,7 @@ __gmpfr_extract_double (mp_ptr rp, double d)
       }
 
     d *= MP_BASE_AS_DOUBLE;
-#if BITS_PER_MP_LIMB >= 64
+#if GMP_LIMB_BITS >= 64
     manl = d;
 #else
     manh = (mp_limb_t) d;
@@ -127,7 +127,7 @@ __gmpfr_extract_double (mp_ptr rp, double d)
 
 #endif /* _GMP_IEEE_FLOATS */
 
-#if BITS_PER_MP_LIMB >= 64
+#if GMP_LIMB_BITS >= 64
   rp[0] = manl;
 #else
   rp[1] = manh;
@@ -242,7 +242,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
     MPN_ZERO (tmpmant, k);
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
-  MPFR_EXP(tmp) -= (mp_exp_t) (cnt + k * BITS_PER_MP_LIMB);
+  MPFR_EXP(tmp) -= (mp_exp_t) (cnt + k * GMP_LIMB_BITS);
 
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);

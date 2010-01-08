@@ -60,12 +60,12 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* Now |u| >= 1, meaning that an overflow is not possible. */
 
   uq = MPFR_PREC(u);
-  un = (uq - 1) / BITS_PER_MP_LIMB;  /* index of most significant limb */
-  un -= (mp_size_t) (ue / BITS_PER_MP_LIMB);
+  un = (uq - 1) / GMP_LIMB_BITS;  /* index of most significant limb */
+  un -= (mp_size_t) (ue / GMP_LIMB_BITS);
   /* now the index of the MSL containing bits of the fractional part */
 
   up = MPFR_MANT(u);
-  sh = ue % BITS_PER_MP_LIMB;
+  sh = ue % GMP_LIMB_BITS;
   k = up[un] << sh;
   /* the first bit of the fractional part is the MSB of k */
 
@@ -77,15 +77,15 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       /* first bit 1 of the fractional part -> MSB of the number */
       re = -cnt;
       sh += cnt;
-      MPFR_ASSERTN (sh < BITS_PER_MP_LIMB);
+      MPFR_ASSERTN (sh < GMP_LIMB_BITS);
       k <<= cnt;
     }
   else
     {
-      re = sh - BITS_PER_MP_LIMB;
+      re = sh - GMP_LIMB_BITS;
       /* searching for the first bit 1 (exists since u isn't an integer) */
       while (up[--un] == 0)
-        re -= BITS_PER_MP_LIMB;
+        re -= GMP_LIMB_BITS;
       MPFR_ASSERTN(un >= 0);
       k = up[un];
       count_leading_zeros(sh, k);
@@ -95,15 +95,15 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* The exponent of r will be re */
   /* un: index of the limb of u that contains the first bit 1 of the FP */
 
-  t = (mp_size_t) (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB < un ?
-    (mpfr_init2 (tmp, (un + 1) * BITS_PER_MP_LIMB), tmp) : r;
+  t = (mp_size_t) (MPFR_PREC(r) - 1) / GMP_LIMB_BITS < un ?
+    (mpfr_init2 (tmp, (un + 1) * GMP_LIMB_BITS), tmp) : r;
   /* t has enough precision to contain the fractional part of u */
   /* If we use a temporary variable, we take the non-significant bits
      of u into account, because of the mpn_lshift below. */
   MPFR_SET_SAME_SIGN(t, u);
 
   /* Put the fractional part of u into t */
-  tn = (MPFR_PREC(t) - 1) / BITS_PER_MP_LIMB;
+  tn = (MPFR_PREC(t) - 1) / GMP_LIMB_BITS;
   MPFR_ASSERTN(tn >= un);
   t0 = tn - un;
   tp = MPFR_MANT(t);
@@ -129,7 +129,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
       MPFR_EXP (r) = re;
       carry = mpfr_round_raw (tp, tp,
-                              (mp_prec_t) (tn + 1) * BITS_PER_MP_LIMB,
+                              (mp_prec_t) (tn + 1) * GMP_LIMB_BITS,
                               MPFR_IS_NEG (r), MPFR_PREC (r), rnd_mode,
                               &inex);
       if (carry)

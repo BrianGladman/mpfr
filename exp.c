@@ -131,8 +131,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mp_size_t yn;
               int sh;
 
-              yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
-              sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
+              yn = 1 + (MPFR_PREC(y) - 1) / GMP_LIMB_BITS;
+              sh = (mp_prec_t) yn * GMP_LIMB_BITS - MPFR_PREC(y);
               MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
               inexact = 1;
             }

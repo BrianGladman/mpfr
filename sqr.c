@@ -57,7 +57,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (2 * bq > bq); /* PREC_MAX is /2 so no integer overflow */
 
   bn = MPFR_LIMB_SIZE(b); /* number of limbs of b */
-  tn = 1 + (2 * bq - 1) / BITS_PER_MP_LIMB; /* number of limbs of square,
+  tn = 1 + (2 * bq - 1) / GMP_LIMB_BITS; /* number of limbs of square,
                                                2*bn or 2*bn-1 */
 
   MPFR_TMP_MARK(marker);
@@ -68,8 +68,8 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   b1 = tmp[2 * bn - 1];
 
   /* now tmp[0]..tmp[2*bn-1] contains the product of both mantissa,
-     with tmp[2*bn-1]>=2^(BITS_PER_MP_LIMB-2) */
-  b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
+     with tmp[2*bn-1]>=2^(GMP_LIMB_BITS-2) */
+  b1 >>= GMP_LIMB_BITS - 1; /* msb from the product */
 
   /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
      then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386

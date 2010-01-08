@@ -208,7 +208,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
                      2nd most significant bit of up[k-1];
                      (b) if the exponent of u is odd, the 1/4 bit is the
                      1st most significant bit of up[k-1]; */
-                  sticky1 = MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 2 + odd_exp);
+                  sticky1 = MPFR_LIMB_ONE << (GMP_LIMB_BITS - 2 + odd_exp);
                   if (up[k - 1] < sticky1)
                     inexact = -1;
                   else if (up[k - 1] > sticky1)

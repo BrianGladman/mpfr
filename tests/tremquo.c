@@ -63,9 +63,9 @@ main (int argc, char *argv[])
 
   if (argc == 3) /* usage: tremquo x y (rnd=MPFR_RNDN implicit) */
     {
-      mpfr_init2 (x, BITS_PER_MP_LIMB);
-      mpfr_init2 (y, BITS_PER_MP_LIMB);
-      mpfr_init2 (r, BITS_PER_MP_LIMB);
+      mpfr_init2 (x, GMP_LIMB_BITS);
+      mpfr_init2 (y, GMP_LIMB_BITS);
+      mpfr_init2 (r, GMP_LIMB_BITS);
       mpfr_set_str (x, argv[1], 10, MPFR_RNDN);
       mpfr_set_str (y, argv[2], 10, MPFR_RNDN);
       mpfr_remquo (r, q, x, y, MPFR_RNDN);

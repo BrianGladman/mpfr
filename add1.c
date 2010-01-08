@@ -43,12 +43,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
 
-  an = (aq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of a */
-  aq2 = (mp_prec_t) an * BITS_PER_MP_LIMB;
+  an = (aq-1)/GMP_LIMB_BITS+1; /* number of limbs of a */
+  aq2 = (mp_prec_t) an * GMP_LIMB_BITS;
   sh = aq2 - aq;                  /* non-significant bits in low limb */
 
-  bn = (bq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of b */
-  cn = (cq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of c */
+  bn = (bq-1)/GMP_LIMB_BITS+1; /* number of limbs of b */
+  cn = (cq-1)/GMP_LIMB_BITS+1; /* number of limbs of c */
 
   ap = MPFR_MANT(a);
   bp = MPFR_MANT(b);
@@ -121,7 +121,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       dif = aq2 - diff_exp;
       /* dif is the number of bits of c which overlap with a' */
 
-      difn = (dif-1)/BITS_PER_MP_LIMB + 1;
+      difn = (dif-1)/GMP_LIMB_BITS + 1;
       /* only the highest difn limbs from c have to be considered */
       if (MPFR_UNLIKELY(difn > cn))
         {
@@ -131,13 +131,13 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPN_ZERO(ap, difn - cn);
           difn = cn;
         }
-      k = diff_exp / BITS_PER_MP_LIMB;
+      k = diff_exp / GMP_LIMB_BITS;
 
       /* zero the most significant k limbs of a */
       a2p = ap + (an - k);
       MPN_ZERO(a2p, k);
 
-      shift = diff_exp % BITS_PER_MP_LIMB;
+      shift = diff_exp % GMP_LIMB_BITS;
 
       if (MPFR_LIKELY(shift))
         {
@@ -206,7 +206,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* determine rounding and sticky bits (and possible carry) */
 
-  difw = (mp_exp_t) an - (mp_exp_t) (diff_exp / BITS_PER_MP_LIMB);
+  difw = (mp_exp_t) an - (mp_exp_t) (diff_exp / GMP_LIMB_BITS);
   /* difw is the number of limbs from b (regarded as having an infinite
      precision) that have already been combined with c; -n if the next
      n limbs from b won't be combined with c. */
@@ -242,7 +242,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               if (rb < 0) /* rb not initialized yet */
                 {
-                  rb = bb >> (BITS_PER_MP_LIMB - 1);
+                  rb = bb >> (GMP_LIMB_BITS - 1);
                   bb |= MPFR_LIMB_HIGHBIT;
                 }
               fb = 1;
@@ -268,7 +268,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           int difs;
 
           ck = cn - difw;
-          difs = diff_exp % BITS_PER_MP_LIMB;
+          difs = diff_exp % GMP_LIMB_BITS;
 
           if (difs == 0 && ck == 0)
             goto c_read;
@@ -281,7 +281,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
               if (difs)
                 {
-                  cc = cprev << (BITS_PER_MP_LIMB - difs);
+                  cc = cprev << (GMP_LIMB_BITS - difs);
                   if (--ck >= 0)
                     {
                       cprev = cp[ck];
@@ -309,9 +309,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
               if (rb < 0) /* rb not initialized yet */
                 {
-                  rb = bb >> (BITS_PER_MP_LIMB - 1);
+                  rb = bb >> (GMP_LIMB_BITS - 1);
                   bb <<= 1;
-                  bb |= bb >> (BITS_PER_MP_LIMB - 1);
+                  bb |= bb >> (GMP_LIMB_BITS - 1);
                 }
 
               fb = bb != 0;
@@ -327,7 +327,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 {
                   if (ck < 0)
                     goto c_read;
-                  cc = cprev << (BITS_PER_MP_LIMB - difs);
+                  cc = cprev << (GMP_LIMB_BITS - difs);
                   if (--ck >= 0)
                     {
                       cprev = cp[ck];
@@ -373,7 +373,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
           if (fb || ck < 0)
             goto rounding;
-          if (difs && cprev << (BITS_PER_MP_LIMB - difs))
+          if (difs && cprev << (GMP_LIMB_BITS - difs))
             {
               fb = 1;
               goto rounding;
@@ -398,7 +398,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               bb = bp[--bk];
               if (rb < 0) /* rb not initialized yet */
                 {
-                  rb = bb >> (BITS_PER_MP_LIMB - 1);
+                  rb = bb >> (GMP_LIMB_BITS - 1);
                   bb &= ~MPFR_LIMB_HIGHBIT;
                 }
               fb = bb != 0;
@@ -436,7 +436,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
           MPFR_ASSERTD(difw >= 0 && cn >= difw);
           ck = cn - difw;
-          difs = diff_exp % BITS_PER_MP_LIMB;
+          difs = diff_exp % GMP_LIMB_BITS;
 
           if (difs == 0 && ck == 0)
             { /* c has entirely been read */
@@ -449,10 +449,10 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               mp_limb_t cc;
 
               cc = difs ? (MPFR_ASSERTD(ck < cn),
-                           cp[ck] << (BITS_PER_MP_LIMB - difs)) : cp[--ck];
+                           cp[ck] << (GMP_LIMB_BITS - difs)) : cp[--ck];
               if (rb < 0)
                 {
-                  rb = cc >> (BITS_PER_MP_LIMB - 1);
+                  rb = cc >> (GMP_LIMB_BITS - 1);
                   cc &= ~MPFR_LIMB_HIGHBIT;
                 }
               while (cc == 0)

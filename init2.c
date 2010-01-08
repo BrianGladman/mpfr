@@ -32,11 +32,11 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
    * associated to the maximum of mpfr_prec_t*/
   MPFR_ASSERTN( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
 
-  /* Check for correct BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB */
-  MPFR_ASSERTN( BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+  /* Check for correct GMP_LIMB_BITS and BYTES_PER_MP_LIMB */
+  MPFR_ASSERTN( GMP_LIMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
                 && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
 
-  MPFR_ASSERTN (mp_bits_per_limb == BITS_PER_MP_LIMB);
+  MPFR_ASSERTN (mp_bits_per_limb == GMP_LIMB_BITS);
 
   /* Check for correct EXP NAN, ZERO & INF in both mpfr.h and in mpfr-impl.h */
   MPFR_ASSERTN( __MPFR_EXP_NAN  == MPFR_EXP_NAN  );
@@ -51,7 +51,7 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
      which both have an odd mantissa */
   MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
-  xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
+  xsize = (mp_size_t) ((p - 1) / GMP_LIMB_BITS) + 1;
   tmp   = (mp_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
 
   MPFR_PREC(x) = p;                /* Set prec */
