@@ -11,6 +11,8 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.{c,h} | \
 grep -E 'if +(test|\[).* == ' acinclude.m4 configure.in
 grep -E '="`' acinclude.m4 configure.in
 
+grep GMP_LIMB_BITS {,tests/}*.{c,h}
+
 grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
 grep mp_rnd_t {,tests/}*.{c,h} | grep -v '# *\(define\|ifndef\) *mp_rnd_t'
