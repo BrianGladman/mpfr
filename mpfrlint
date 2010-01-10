@@ -56,4 +56,12 @@ mpfr.texi's UPDATED-MONTH seems to be incorrect:
 EOF
 fi
 
+acv1="`sed -n 's/.*autoconf \([0-9.]\+\) (at least).*/\1/p' README.dev`"
+acv2="`sed -n 's/AC_PREREQ(\([0-9.]\+\).*/\1/p' acinclude.m4`"
+[ "x$acv1" = "x$acv2" ] || cat <<EOF
+autoconf minimal versions differ:
+  README.dev:   $acv1
+  acinclude.m4: $acv2
+EOF
+
 true
