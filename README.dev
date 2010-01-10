@@ -3,7 +3,7 @@ Notes for the MPFR developers and Subversion users
 
 To compile source code obtained from the Subversion repository, you
 need some GNU development utilities: aclocal, autoheader, automake,
-autoconf 2.50 (at least) and libtoolize. As some files like "configure"
+autoconf 2.60 (at least) and libtoolize. As some files like "configure"
 are not part of the Subversion repository, you first need to run
 "autoreconf -i"; if you have both autoconf 2.13 and 2.50 installed and
 use a wrapper, you may need to run "autoreconf" a second time (as with

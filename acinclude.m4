@@ -23,6 +23,7 @@ dnl  51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 dnl  autoconf 2.60 is necessary because of the use of AC_PROG_SED.
 dnl  The following line allows the autoconf wrapper (when installed)
 dnl  to work as expected.
+dnl  If you change the required version, please update README.dev too!
 AC_PREREQ(2.60)
 
 dnl ------------------------------------------------------------
