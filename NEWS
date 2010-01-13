@@ -34,6 +34,7 @@ _ The rounding mode type mp_rnd_t is now mpfr_rnd_t (mp_rnd_t kept for
 - New function mpfr_set_zero.
 - New function mpfr_digamma.
 - New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
+- New function mpfr_urandom.
 - Speed improvement for large operands in the trigonometric functions
   (mpfr_sin, mpfr_cos, mpfr_tan, mpfr_sin_cos): speedup of about 2.5 for
   10^5 digits, of about 5 for 10^6 digits.
