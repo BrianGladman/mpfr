@@ -37,6 +37,7 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   mp_limb_t limb_mask = 0;
   long count = 0;
   int i;
+  int inex = 1;
 
   size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
   tab = (int *) calloc (size_tab, sizeof(int));
@@ -59,7 +60,7 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
 
   for (k = 0; k < nbtests; k++)
     {
-      mpfr_urandom (x, RANDS, rnd);
+      inex &= mpfr_urandom (x, RANDS, rnd);
       /* check that lower bits are zero */
       if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh) && !MPFR_IS_ZERO (x))
         {
@@ -67,6 +68,14 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
           mpfr_print_binary (x); puts ("");
           exit (1);
         }
+      /* check that the value is in [0,1] */
+      if (mpfr_cmp_ui (x, 0) < 0 || mpfr_cmp_ui (x, 1) > 0)
+        {
+          printf ("Error: mpfr_urandom() returns number outside [0, 1]:\n");
+          mpfr_print_binary (x); puts ("");
+          exit (1);
+        }
+
       d = mpfr_get_d1 (x); av += d; var += d*d;
       i = (int)(size_tab * d);
       if (d == 1.0) i --;
@@ -76,19 +85,28 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
         count ++;
     }
 
+  if (inex == 0)
+    {
+      /* one call in the loop pretended to return an exact number! */
+      printf ("Error: mpfr_urandom() returns a zero ternary value.\n");
+      exit (1);
+    }
+
   /* coverage test */
   emin = mpfr_get_emin ();
   set_emin (1);
-  /* the generated number in [0,1] is not in the exponent range, except:
-     - if it is zero and rnd is toward zero or to nearest
-     - if it is one and rnd is not toward zero and not to nearest */
-  k = mpfr_urandom (x, RANDS, rnd);
-  if ((k == 0 || mpfr_nan_p (x) == 0)
-      && (((rnd != MPFR_RNDZ && rnd != MPFR_RNDN) && MPFR_IS_ZERO (x))
-          || ((rnd==MPFR_RNDZ || rnd==MPFR_RNDN) && mpfr_cmp_ui (x, 1)==0)))
+  inex = mpfr_urandom (x, RANDS, rnd);
+  if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
+          && (!MPFR_IS_ZERO (x) || inex != -1))
+      || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
+          && (mpfr_cmp_ui (x, 1) != 0 || inex != +1))
+      || (rnd == MPFR_RNDN && (mpfr_cmp_ui (x, 1) != 0 || inex != +1)
+          &&(!MPFR_IS_ZERO (x) || inex != -1)))
     {
-      printf ("Error in mpfr_urandom, expected NaN, got ");
-      mpfr_dump (x);
+      printf ("Error: mpfr_urandom() do not handle correctly a restricted "
+              "exponent range.\nrounding mode: %s\nternary value: %d\n"
+              "random value: ", mpfr_print_rnd_mode (rnd), inex);
+      mpfr_print_binary (x); puts ("");
       exit (1);
     }
   set_emin (emin);
@@ -104,9 +122,9 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   var = (var / nbtests) - av * av;
 
   th = (double)nbtests / size_tab;
-  printf("Average = %.5f\nVariance = %.5f\n", av, var);
-  printf("Repartition for urandom with rounding mode %s. "
-         "Each integer should be close to %d.\n",
+  printf ("Average = %.5f\nVariance = %.5f\n", av, var);
+  printf ("Repartition for urandom with rounding mode %s. "
+          "Each integer should be close to %d.\n",
          mpfr_print_rnd_mode (rnd), (int)th);
 
   for (k = 0; k < size_tab; k++)

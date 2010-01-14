@@ -37,6 +37,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   mp_exp_t exp;
   int rndbit = 0;
   int cnt;
+  int inex;
 
   rp = MPFR_MANT (rop);
   nbits = MPFR_PREC (rop);
@@ -74,8 +75,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
       exp -= k * GMP_NUMB_BITS;
     }
   count_leading_zeros (cnt, rp[n - 1]);
-  if (mpfr_set_exp (rop, exp - cnt))
-    goto outofrange;
+  MPFR_EXP (rop) = exp - cnt;
 
 
   /* Significand */
@@ -93,10 +93,14 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   /* Rounding */
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && rndbit))
-    mpfr_nextabove (rop);
+    {
+      mpfr_nextabove (rop);
+      inex = +1;
+    }
+  else
+    inex = -1;
 
- normalexit:
-  return 0;
+  return mpfr_check_range (rop, inex, rnd_mode);
 
  tiny:
   /* To get here, we have been drawing more than 2^31 zeros in a raw
@@ -104,18 +108,10 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   MPFR_SET_ZERO (rop);
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && rndbit))
-    mpfr_nextabove (rop);
+    {
+      mpfr_nextabove (rop);
+      return mpfr_check_range (rop, +1, rnd_mode);
+    }
 
-  return 0;
-
- outofrange:
-  /* If the exponent is not in the current exponent range, we choose
-     to return a NaN as this is probably a user error.
-     Indeed this can happen only if the exponent range has been
-     reduced to a very small interval and/or the precision is huge
-     (very unlikely). */
-  MPFR_SET_NAN (rop);
-  __gmpfr_flags |= MPFR_FLAGS_NAN; /* Can't use MPFR_RET_NAN */
-
-  return 1;
+  return -1;
 }

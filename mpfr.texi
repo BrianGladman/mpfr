@@ -2485,13 +2485,11 @@ created using the GMP @code{gmp_randinit} function, see the GMP manual.
 
 @deftypefun int mpfr_urandom (mpfr_t @var{rop}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
 Generate a uniformly distributed random float.
+
 The floating-point number @var{rop} can be seen as if a random real number is
 generated according to the continuous uniform distribution on the interval
 [0, 1] and then rounded in the direction @var{rnd}.
 
-Return 0, unless the exponent is not in the current exponent range, in
-which case @var{rop} is set to NaN and a non-zero value is returned (this
-should never happen in practice, except in very specific cases).
 The second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @end deftypefun
