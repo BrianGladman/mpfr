@@ -712,3 +712,8 @@ Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
 (C99, 6.9.2). Depending on the context, use either a simple declaration
 (with the "extern" storage-class specifier) or an external definition.
 This is also cleaner.
+
+===========================================================================
+
+In case of detected internal error, do not use printf() and exit().
+Use assertions (MPFR_ASSERTN) instead.
