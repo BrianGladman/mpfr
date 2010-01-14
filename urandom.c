@@ -70,7 +70,18 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
         }
 
       if (exp < MPFR_EXP_MIN + k * GMP_NUMB_BITS)
-        goto tiny;
+        {
+          /* To get here, we have been drawing more than 2^31 zeros in
+             a raw (very unlucky). */
+          MPFR_SET_ZERO (rop);
+          if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
+              || (rnd_mode == MPFR_RNDN && rndbit))
+            {
+              mpfr_nextabove (rop);
+              return mpfr_check_range (rop, +1, rnd_mode);
+            }
+          return -1;
+        }
 
       exp -= k * GMP_NUMB_BITS;
     }
@@ -101,17 +112,4 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
     inex = -1;
 
   return mpfr_check_range (rop, inex, rnd_mode);
-
- tiny:
-  /* To get here, we have been drawing more than 2^31 zeros in a raw
-     (very unlucky). */
-  MPFR_SET_ZERO (rop);
-  if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-      || (rnd_mode == MPFR_RNDN && rndbit))
-    {
-      mpfr_nextabove (rop);
-      return mpfr_check_range (rop, +1, rnd_mode);
-    }
-
-  return -1;
 }
