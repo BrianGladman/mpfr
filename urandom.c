@@ -26,6 +26,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME.
+ * - mpfr_nextabove leads to an assertion failure in reduced exponent range:
+ *   next.c:90: MPFR assertion failed: !mpfr_set_exp ((x), (exp + 1))
+ * - The algorithm itself looks wrong (the bits should be determined MSB
+ *   first in fixed point, so that there's no reason to determine the
+ *   rounding bit first). Please include a proof.
+ */
+
 int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 {
