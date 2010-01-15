@@ -89,6 +89,8 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
+- implement functions for random distributions, see for example
+  http://websympa.loria.fr/wwsympa/arc/mpfr/2010-01/msg00034.html
 - wanted for Magma [John Cannon <john@maths.usyd.edu.au>, Tue, 19 Apr 2005]:
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
