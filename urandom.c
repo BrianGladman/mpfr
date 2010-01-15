@@ -27,8 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* FIXME.
- * - mpfr_nextabove leads to an assertion failure in reduced exponent range:
- *   next.c:90: MPFR assertion failed: !mpfr_set_exp ((x), (exp + 1))
  * - The algorithm itself looks wrong (the bits should be determined MSB
  *   first in fixed point, so that there's no reason to determine the
  *   rounding bit first). Please include a proof.
@@ -85,7 +83,10 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && rndbit))
             {
+              MPFR_SAVE_EXPO_DECL (expo);
+              MPFR_SAVE_EXPO_MARK (expo);
               mpfr_nextabove (rop);
+              MPFR_SAVE_EXPO_FREE (expo);              
               return mpfr_check_range (rop, +1, rnd_mode);
             }
           return -1;
@@ -113,8 +114,11 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && rndbit))
     {
+      MPFR_SAVE_EXPO_DECL (expo);
+      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_nextabove (rop);
       inex = +1;
+      MPFR_SAVE_EXPO_FREE (expo);              
     }
   else
     inex = -1;
