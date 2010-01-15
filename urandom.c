@@ -108,7 +108,13 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
-      mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+      /* Take care of the exponent range: it may have been reduced */
+      if (exp < emin)
+        mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+      else if (exp > mpfr_get_emax ())
+        mpfr_set_inf (rop, +1); /* overflow */
+      else
+        mpfr_nextabove (rop);
       inex = +1;
     }
   else
