@@ -46,6 +46,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   mp_size_t n;
   mp_size_t k; /* number of high zero limbs */
   mp_exp_t exp;
+  mp_exp_t emin;
   int cnt;
   int inex;
 
@@ -54,7 +55,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
   exp = 0;
-
+  emin = mpfr_get_emin ();
 
   /* Exponent */
   k = nlimbs;
@@ -71,7 +72,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
           n --;
         }
 
-      if (exp < MPFR_EXP_MIN + k * GMP_NUMB_BITS)
+      if (exp < emin + k * GMP_NUMB_BITS)
         {
           /* To get here, we have been drawing more than 2^31 zeros in
              a raw (very unlucky). */
@@ -79,11 +80,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
             {
-              MPFR_SAVE_EXPO_DECL (expo);
-              MPFR_SAVE_EXPO_MARK (expo);
-              mpfr_nextabove (rop);
-              MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_check_range (rop, +1, rnd_mode);
+              mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+              return +1;
             }
           return -1;
         }
@@ -110,11 +108,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
-      MPFR_SAVE_EXPO_DECL (expo);
-      MPFR_SAVE_EXPO_MARK (expo);
-      mpfr_nextabove (rop);
+      mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
       inex = +1;
-      MPFR_SAVE_EXPO_FREE (expo);
     }
   else
     inex = -1;
