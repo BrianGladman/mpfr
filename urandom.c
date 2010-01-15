@@ -26,11 +26,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME.
- * - The algorithm itself looks wrong (the bits should be determined MSB
- *   first in fixed point, so that there's no reason to determine the
- *   rounding bit first). Please include a proof.
- */
+
+static int
+random_rounding_bit (gmp_randstate_t rstate)
+{
+  mp_limb_t r;
+
+  mpfr_rand_raw (&r, rstate, 1);
+  return r & MPFR_LIMB_ONE;
+}
+
 
 int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
@@ -41,7 +46,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   mp_size_t n;
   mp_size_t k; /* number of high zero limbs */
   mp_exp_t exp;
-  int rndbit = 0;
   int cnt;
   int inex;
 
@@ -50,14 +54,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
   exp = 0;
-
-
-  /* Rounding bit */
-  if (rnd_mode == MPFR_RNDN)
-    {
-      mpfr_rand_raw (rp, rstate, GMP_NUMB_BITS);
-      rndbit = rp[0] & 1;
-    }
 
 
   /* Exponent */
@@ -81,7 +77,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              a raw (very unlucky). */
           MPFR_SET_ZERO (rop);
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-              || (rnd_mode == MPFR_RNDN && rndbit))
+              || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
             {
               MPFR_SAVE_EXPO_DECL (expo);
               MPFR_SAVE_EXPO_MARK (expo);
@@ -112,7 +108,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 
   /* Rounding */
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-      || (rnd_mode == MPFR_RNDN && rndbit))
+      || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
       MPFR_SAVE_EXPO_DECL (expo);
       MPFR_SAVE_EXPO_MARK (expo);
