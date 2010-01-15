@@ -44,7 +44,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   mp_prec_t nbits;
   mp_size_t nlimbs;
   mp_size_t n;
-  mp_size_t k; /* number of high zero limbs */
   mp_exp_t exp;
   mp_exp_t emin;
   int cnt;
@@ -113,7 +112,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
       if (exp < emin)
         mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
       else if (exp > mpfr_get_emax ())
-        mpfr_set_inf (rop, +1); /* overflow */
+        mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
       else
         mpfr_nextabove (rop);
       inex = +1;
