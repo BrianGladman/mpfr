@@ -57,39 +57,40 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   exp = 0;
   emin = mpfr_get_emin ();
 
+
   /* Exponent */
-  k = nlimbs;
-  while (k == nlimbs)
+  /* We first get a random limb rp[0] that cannot be zero, then the
+     first non-zero bit determine the exponent. If only the very last
+     bit is set, loop again. */
+  cnt = GMP_NUMB_BITS - 1;
+  while (cnt == GMP_NUMB_BITS - 1)
     {
-      mpfr_rand_raw (rp, rstate, nlimbs * GMP_NUMB_BITS);
+      mpfr_rand_raw (rp, rstate, GMP_NUMB_BITS);
+      count_leading_zeros (cnt, rp[0]);
 
-      /* Count the null significant limbs k and remaining limbs n */
-      k = 0;
-      n = nlimbs;
-      while (k != nlimbs && rp[n - 1] == 0)
+      if (MPFR_UNLIKELY (exp < emin + cnt))
         {
-          k ++;
-          n --;
-        }
+          /* To get here, we have been drawing more than emin zeros in
+             a raw, then return 0 or the smallest representable
+             number.
 
-      if (exp < emin + k * GMP_NUMB_BITS)
-        {
-          /* To get here, we have been drawing more than 2^31 zeros in
-             a raw (very unlucky). */
+             The rounding to nearest mode is subtle:
+             If exp - cnt == emin - 1, the rounding bit is set except
+             if cnt-th bit in the limb is the less significant bit. */
           MPFR_SET_ZERO (rop);
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-              || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
+              || (rnd_mode == MPFR_RNDN && cnt == exp - emin - 1
+                  && (cnt!=GMP_NUMB_BITS-1 || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
               return +1;
             }
           return -1;
         }
-
-      exp -= k * GMP_NUMB_BITS;
+      exp -= cnt;
     }
-  count_leading_zeros (cnt, rp[n - 1]);
-  MPFR_EXP (rop) = exp - cnt;
+  MPFR_EXP (rop) = exp; /* Warning: may be outside the current
+                           exponent range */
 
 
   /* Significand */
