@@ -86,7 +86,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
               MPFR_SAVE_EXPO_DECL (expo);
               MPFR_SAVE_EXPO_MARK (expo);
               mpfr_nextabove (rop);
-              MPFR_SAVE_EXPO_FREE (expo);              
+              MPFR_SAVE_EXPO_FREE (expo);
               return mpfr_check_range (rop, +1, rnd_mode);
             }
           return -1;
@@ -118,7 +118,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
       MPFR_SAVE_EXPO_MARK (expo);
       mpfr_nextabove (rop);
       inex = +1;
-      MPFR_SAVE_EXPO_FREE (expo);              
+      MPFR_SAVE_EXPO_FREE (expo);
     }
   else
     inex = -1;
