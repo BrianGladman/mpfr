@@ -60,7 +60,8 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
 
   for (k = 0; k < nbtests; k++)
     {
-      inex &= mpfr_urandom (x, RANDS, rnd);
+      i = mpfr_urandom (x, RANDS, rnd);
+      inex = (i != 0) && inex;
       /* check that lower bits are zero */
       if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh) && !MPFR_IS_ZERO (x))
         {
