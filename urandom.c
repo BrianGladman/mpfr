@@ -61,6 +61,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   /* We first get a random limb rp[0] that cannot be zero, then the
      first non-zero bit determine the exponent. If only the very last
      bit is set, loop again. */
+  /* FIXME: count_leading_zeros has an undefined behavior on 0.
+     Also (probably related), GMP_NUMB_BITS - 1 seems incorrect. */
   cnt = GMP_NUMB_BITS - 1;
   while (cnt == GMP_NUMB_BITS - 1)
     {
