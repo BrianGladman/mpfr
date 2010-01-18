@@ -55,7 +55,21 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   MPFR_SET_POS (rop);
   exp = 0;
   emin = mpfr_get_emin ();
-
+  if (MPFR_UNLIKELY (emin > 0))
+    {
+      if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
+          || (emin == 1 && rnd_mode == MPFR_RNDN
+              && random_rounding_bit (rstate)))
+        {
+          mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+          return +1;
+        }
+      else
+        {
+          MPFR_SET_ZERO (rop);
+          return -1;
+        }
+    }
 
   /* Exponent */
   cnt = GMP_NUMB_BITS;
