@@ -103,7 +103,8 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
               && (!MPFR_IS_ZERO (x) || inex != -1))
           || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
               && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1))
-          || (rnd == MPFR_RNDN && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
+          || (rnd == MPFR_RNDN
+              && (k > 0 || mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
               && (!MPFR_IS_ZERO (x) || inex != -1)))
         {
           printf ("Error: mpfr_urandom() do not handle correctly a restricted"
