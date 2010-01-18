@@ -241,7 +241,7 @@ check_mixed (void)
   double d = -1.25;
   long double ld = -1.25;
 
-  ptrdiff_t p = 1;
+  ptrdiff_t p = 1, saved_p;
   size_t sz = 1;
 
   mpz_t mpz;
@@ -279,9 +279,10 @@ check_mixed (void)
   check_length_with_cmp (7, mpfr, 15, mpfr_cmp_ui (mpfr, 15), Rg);
 
 #ifndef NPRINTF_T
+  saved_p = p;
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   if (p != 20)
-    mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, 1);
+    mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, saved_p);
   check_length (8, (long) p, 20, ld); /* no format specifier '%td' in C89 */
 #endif
 
