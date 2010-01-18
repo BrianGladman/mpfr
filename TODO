@@ -91,6 +91,13 @@ Table of contents:
 
 - implement functions for random distributions, see for example
   http://websympa.loria.fr/wwsympa/arc/mpfr/2010-01/msg00034.html
+  (suggested by Charles Karney <ckarney@Sarnoff.com>, 18 Jan 2010):
+   * a Bernoulli distribution with prob p/q (exact)
+   * a general discrete distribution (i with prob w[i]/sum(w[i]) (Walker
+     algorithm, but make it exact)
+   * a uniform distribution in (a,b)
+   * exponential distribution (mean lambda) (von Neumann's method?)
+   * normal distribution (mean m, s.d. sigma) (ratio method?)
 - wanted for Magma [John Cannon <john@maths.usyd.edu.au>, Tue, 19 Apr 2005]:
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
