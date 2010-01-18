@@ -95,20 +95,23 @@ test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
 
   /* coverage test */
   emin = mpfr_get_emin ();
-  set_emin (1);
-  inex = mpfr_urandom (x, RANDS, rnd);
-  if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
-          && (!MPFR_IS_ZERO (x) || inex != -1))
-      || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
-          && (mpfr_cmp_ui (x, 1) != 0 || inex != +1))
-      || (rnd == MPFR_RNDN && (mpfr_cmp_ui (x, 1) != 0 || inex != +1)
-          &&(!MPFR_IS_ZERO (x) || inex != -1)))
+  for (k = 0; k < 5; k++)
     {
-      printf ("Error: mpfr_urandom() do not handle correctly a restricted "
-              "exponent range.\nrounding mode: %s\nternary value: %d\n"
-              "random value: ", mpfr_print_rnd_mode (rnd), inex);
-      mpfr_print_binary (x); puts ("");
-      exit (1);
+      set_emin (k+1);
+      inex = mpfr_urandom (x, RANDS, rnd);
+      if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
+              && (!MPFR_IS_ZERO (x) || inex != -1))
+          || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
+              && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1))
+          || (rnd == MPFR_RNDN && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
+              && (!MPFR_IS_ZERO (x) || inex != -1)))
+        {
+          printf ("Error: mpfr_urandom() do not handle correctly a restricted"
+                  " exponent range.\nrounding mode: %s\nternary value: %d\n"
+                  "random value: ", mpfr_print_rnd_mode (rnd), inex);
+          mpfr_print_binary (x); puts ("");
+          exit (1);
+        }
     }
   set_emin (emin);
 
