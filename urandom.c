@@ -58,16 +58,15 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 
 
   /* Exponent */
-  /* We first get a random limb rp[0] that cannot be zero, then the
-     first non-zero bit determine the exponent. If only the very last
-     bit is set, loop again. */
-  /* FIXME: count_leading_zeros has an undefined behavior on 0.
-     Also (probably related), GMP_NUMB_BITS - 1 seems incorrect. */
-  cnt = GMP_NUMB_BITS - 1;
-  while (cnt == GMP_NUMB_BITS - 1)
+  cnt = GMP_NUMB_BITS;
+  while (cnt == GMP_NUMB_BITS)
     {
+      /* generate one random limb rp[0] */
       mpfr_rand_raw (rp, rstate, GMP_NUMB_BITS);
-      count_leading_zeros (cnt, rp[0]);
+      if (MPFR_UNLIKELY (rp[0] == 0))
+        cnt = GMP_NUMB_BITS;
+      else
+        count_leading_zeros (cnt, rp[0]);
 
       if (MPFR_UNLIKELY (exp < emin + cnt))
         {
@@ -76,17 +75,21 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              number.
 
              The rounding to nearest mode is subtle:
-             If exp - cnt == emin - 1, the rounding bit is set except
-             if cnt-th bit in the limb is the less significant bit. */
-          MPFR_SET_ZERO (rop);
+             If exp - cnt == emin - 1, the rounding bit is set, except
+             if cnt == GMP_NUMB_BITS in which case the rounding bit is
+             outside rp[0] and must be generated. */
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && cnt == exp - emin - 1
-                  && (cnt!=GMP_NUMB_BITS-1 || random_rounding_bit (rstate))))
+                  && (cnt != GMP_NUMB_BITS || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
               return +1;
             }
-          return -1;
+          else
+            {
+              MPFR_SET_ZERO (rop);
+              return -1;
+            }
         }
       exp -= cnt;
     }
