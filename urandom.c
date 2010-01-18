@@ -70,9 +70,9 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 
       if (MPFR_UNLIKELY (exp < emin + cnt))
         {
-          /* To get here, we have been drawing more than emin zeros in
-             a raw, then return 0 or the smallest representable
-             number.
+          /* To get here, we have been drawing more than -emin zeros
+             in a row, then return 0 or the smallest representable
+             positive number.
 
              The rounding to nearest mode is subtle:
              If exp - cnt == emin - 1, the rounding bit is set, except
