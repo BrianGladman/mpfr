@@ -280,6 +280,8 @@ check_mixed (void)
 
 #ifndef NPRINTF_T
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
+  if (p != 20)
+    mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, 1);
   check_length (8, (long) p, 20, ld); /* no format specifier '%td' in C89 */
 #endif
 
