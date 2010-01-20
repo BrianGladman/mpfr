@@ -195,19 +195,30 @@ selected by the linker, then your library search paths are probably
 not correctly set (some paths are missing or they are specified in an
 incorrect order).
 
-Such problems commonly occur under GNU/Linux machines, where default
-header and library paths may be inconsistent: gcc is configured to
-search /usr/local/include by default, while /usr/local/lib is not in
-the default search paths. If you have a GMP version installed in /usr
-(provided by the OS) and a new one installed in /usr/local, then the
-header of the new GMP version and the library of the old GMP version
-will be used! A typical error is the above one in "make check". The
-solution is to add /usr/local/include to your C_INCLUDE_PATH and to
-add /usr/local/lib to your LIBRARY_PATH and LD_LIBRARY_PATH (and/or
-LD_RUN_PATH), as said above. Alternatively, you can use --with-gmp*
-configure options (described above), e.g. --with-gmp=/usr/local, but
-other software that uses GMP and/or MPFR will need correct paths too,
-and environment variables allow to set them in a global way.
+Such problems commonly occur under some GNU/Linux machines, where the
+default header and library search paths may be inconsistent: GCC is
+configured to search /usr/local/include and /usr/local/lib by default,
+while the dynamic linker ignores /usr/local/lib. If you have a GMP
+version installed in /usr (provided by the OS) and a new one installed
+in /usr/local, then the header of the new GMP version and the library
+of the old GMP version will be used! A typical error is the above one
+in "make check". The best solution is to make sure that the dynamic
+linker configuration is consistent with gcc's behavior, for instance
+by having /usr/local/lib in /etc/ld.so.conf or in some file from
+/etc/ld.so.conf.d (as Debian did). See
+
+  http://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html
+
+for more information. Alternatively you can use:
+  * environment variables. This may sometimes be needed. If DIR
+    is the installation directory of GMP, add DIR/include to your
+    CPATH or C_INCLUDE_PATH (for compilers other than GCC, please
+    check the manual or your compiler), and add DIR/lib to your
+    LIBRARY_PATH and LD_LIBRARY_PATH (and/or LD_RUN_PATH);
+  * --with-gmp* configure options (described above), e.g.
+    --with-gmp=/usr/local, but other software that uses GMP and/or
+    MPFR will need correct paths too, and environment variables
+    allow one to set such paths in a global way.
 
 For instance, under Unix, where paths are separated by a colon:
 
