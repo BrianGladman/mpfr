@@ -1,7 +1,7 @@
 /* mpfr_subnormalize -- Subnormalize a floating point number
    emulating sub-normal numbers.
 
-Copyright 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+Copyright 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.

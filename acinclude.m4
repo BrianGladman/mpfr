@@ -1,6 +1,6 @@
 dnl  MPFR specific autoconf macros
 
-dnl  Copyright 2000, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+dnl  Copyright 2000, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 dnl  Contributed by the Arenaire and Cacao projects, INRIA.
 dnl
 dnl  This file is part of the GNU MPFR Library.

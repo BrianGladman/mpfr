@@ -1,6 +1,6 @@
 /* mpfr_get_flt -- convert a mpfr_t to a machine single precision float
 
-Copyright 2009 Free Software Foundation, Inc.
+Copyright 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.

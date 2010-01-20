@@ -1,7 +1,7 @@
 /* mpfr_div_d -- divide a multiple precision floating-point number
                  by a machine double precision float
 
-Copyright 2007, 2008, 2009 Free Software Foundation, Inc.
+Copyright 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.
