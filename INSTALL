@@ -185,8 +185,9 @@ places only, such options would not make MPFR faster anyway.
 On some platforms, try with "gmake" (GNU make) instead of "make".
 Problems have been reported with the Tru64 make.
 
-If the build was OK, but the tests failed to link with GMP or gave an
-error like
+If the configure script reports that gmp.h version and libgmp version
+are different, or if the build was OK, but the tests failed to link
+with GMP or gave an error like
 
   undefined reference to `__gmp_get_memory_functions'
 
@@ -199,26 +200,35 @@ Such problems commonly occur under some GNU/Linux machines, where the
 default header and library search paths may be inconsistent: GCC is
 configured to search /usr/local/include and /usr/local/lib by default,
 while the dynamic linker ignores /usr/local/lib. If you have a GMP
-version installed in /usr (provided by the OS) and a new one installed
-in /usr/local, then the header of the new GMP version and the library
-of the old GMP version will be used! A typical error is the above one
-in "make check". The best solution is to make sure that the dynamic
-linker configuration is consistent with gcc's behavior, for instance
-by having /usr/local/lib in /etc/ld.so.conf or in some file from
-/etc/ld.so.conf.d (as Debian did). See
-
-  http://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html
-
-for more information. Alternatively you can use:
-  * environment variables. This may sometimes be needed. If DIR
+version installed in /usr (provided by the OS vendor) and a new one
+installed in /usr/local, then the header of the new GMP version and
+the library of the old GMP version will be used! The best solution
+is to make sure that the dynamic linker configuration is consistent
+with GCC's behavior, for instance by having /usr/local/lib in
+/etc/ld.so.conf or in some file from /etc/ld.so.conf.d (as Debian
+did: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=395177). See
+also http://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html for more
+information. Alternatively you can use:
+  * environment variables. This may sometimes be necessary. If DIR
     is the installation directory of GMP, add DIR/include to your
     CPATH or C_INCLUDE_PATH (for compilers other than GCC, please
-    check the manual or your compiler), and add DIR/lib to your
+    check the manual of your compiler), and add DIR/lib to your
     LIBRARY_PATH and LD_LIBRARY_PATH (and/or LD_RUN_PATH);
   * --with-gmp* configure options (described above), e.g.
-    --with-gmp=/usr/local, but other software that uses GMP and/or
-    MPFR will need correct paths too, and environment variables
-    allow one to set such paths in a global way.
+    --with-gmp=/opt/local (to use /opt/local/include for headers and
+    /opt/local/lib for libraries), but other software that uses GMP
+    and/or MPFR will need correct paths too, and environment variables
+    allow one to set such search paths in a global way.
+    Note about "--with-gmp=/usr/local". This option may appear to
+    solve the above inconsistency problem, but does not work as you
+    expect. Indeed it affects the library search path, in particular,
+    the one used by the dynamic linker (thus adding the missing
+    /usr/local/lib directory as wanted), but since /usr/local/include
+    is a "standard system include directory" for GCC, the include
+    search patch is not changed; this is often not a problem in this
+    particular case because usually, /usr/local/include is already
+    last in the include search patch, but this may fail under some
+    occasions and may trigger obscure errors.
 
 For instance, under Unix, where paths are separated by a colon:
 
