@@ -33,11 +33,10 @@ Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
-The GNU MPFR Library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License (either version 3
-of the License, or, at your option, any later version) and the GNU General
-Public License as published by the Free Software Foundation (most of MPFR is
-under the former, some under the latter).
+The GNU MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
 
 The GNU MPFR Library is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
