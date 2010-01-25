@@ -30,5 +30,5 @@ mpfr_get_patches (void)
 {
 EOF
 
-echo '  return "'`tr "\n" " " < PATCHES`'";'
+echo '  return "'`cat PATCHES`'";'
 echo '}'
