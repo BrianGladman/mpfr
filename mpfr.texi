@@ -1125,6 +1125,9 @@ Contrary to @code{mpfr_strtofr}, @code{mpfr_set_str} requires the
 This function returns 0 if the entire string up to the final null character
 is a valid number in base @var{base}; otherwise it returns @minus{}1, and
 @var{rop} may have changed.
+Note: it is preferable to use @code{mpfr_set_str} if one wants to distinguish
+between an infinite @var{rop} value coming from an infinite @var{s} or from
+an overflow.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mpfr_rnd_t @var{rnd})
