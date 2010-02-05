@@ -311,24 +311,6 @@ AC_C_VOLATILE
 MPFR_CONFIGS
 
 dnl
-dnl Setup LIBTOOL
-dnl
-dnl Currently libtool always want to detect a C++ and fortran compiler
-dnl Remove this by hacking a few: AC_PROG_CXX, AC_PROG_F77 are defined
-dnl but they are never called. Set with_tag to ''
-dnl Set am__fastdepCXX to something
-dnl Remove this when Libtool >= 2.0 is used
-if test -n "$variable_indefinie" ; then
- AC_PROG_CXX([g++])
- AC_PROG_F77([g77])
- AC_PROG_CXXCPP
-fi
-am__fastdepCXX_FALSE='#'
-if test "${with_tags+set}" != set; then
-  with_tags=
-fi
-
-dnl
 dnl Setup GMP detection
 dnl
 
