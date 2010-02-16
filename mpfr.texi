@@ -494,12 +494,10 @@ with @code{va_list} parameters, such as @code{mpfr_vprintf}.
 And for any functions using @code{intmax_t}, you must include
 @code{<stdint.h>} or @code{<inttypes.h>} before @file{mpfr.h}, to
 allow @file{mpfr.h} to define prototypes for these functions. Moreover,
-users of C++ compilers under some platforms may need to define the
-@code{__STDC_CONSTANT_MACROS} macro (before @code{<stdint.h>} or
-@code{<inttypes.h>} has been included) or @code{MPFR_USE_INTMAX_T}
-(before @file{mpfr.h} has been included), at least for portability;
-of course, it is possible to do that on the command line, e.g.,
-with @code{-DMPFR_USE_INTMAX_T}.
+users of C++ compilers under some platforms may need to define
+@code{MPFR_USE_INTMAX_T} (and should do it for portability) before
+@file{mpfr.h} has been included; of course, it is possible to do that
+on the command line, e.g., with @code{-DMPFR_USE_INTMAX_T}.
 
 You can avoid the use of MPFR macros encapsulating functions by defining
 the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
