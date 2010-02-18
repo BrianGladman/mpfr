@@ -2887,12 +2887,6 @@ See the test suite for examples.
 @cindex Internals
 @section Internals
 
-The following types and
-functions were mainly designed for the implementation of MPFR,
-but may be useful for users too.
-However no upward compatibility is guaranteed.
-You may need to include @file{mpfr-impl.h} to use them.
-
 The @code{mpfr_t} type consists of four fields.
 
 @itemize @bullet
@@ -2906,7 +2900,8 @@ the variable (in bits); this is not less than @code{MPFR_PREC_MIN}.
 An exponent of 0 means a radix point just above the most significant
 limb.  Non-zero values @math{n} are a multiplier @math{2^n} relative to that
 point.
-A NaN, an infinity and a zero are indicated by a special value of the exponent.
+A NaN, an infinity and a zero are indicated by special values of the exponent
+field.
 
 @item Finally, the @code{_mpfr_d} is a pointer to the limbs, least
 significant limbs stored first.
@@ -2914,16 +2909,9 @@ The number of limbs in use is controlled by @code{_mpfr_prec}, namely
 ceil(@code{_mpfr_prec}/@code{mp_bits_per_limb}).
 Non-singular values always have the most significant bit of the most
 significant limb set to 1.  When the precision does not correspond to a
-whole number of limbs, the excess bits at the low end of the data are zero.
+whole number of limbs, the excess bits at the low end of the data are zeros.
 
 @end itemize
-
-@c The following function is not documented any more after mpfr-2.3.0
-@c @deftypefun double mpfr_get_d1 (mpfr_t @var{op})
-@c Convert @var{op} to a @code{double}, using the default MPFR rounding mode
-@c (see function @code{mpfr_set_default_rounding_mode}). This function is
-@c obsolete.
-@c @end deftypefun
 
 @node Contributors, References, MPFR Interface, Top
 @comment  node-name,  next,  previous,  up
