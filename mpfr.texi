@@ -1104,6 +1104,7 @@ MPFR can work with it.
 @deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_uj_2exp (mpfr_t @var{rop}, uintmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_sj_2exp (mpfr_t @var{rop}, intmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_z_exp (mpfr_t @var{rop}, mpz_t @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
 two to the power @var{e}}, rounded toward the given direction @var{rnd}.
 Note that the input 0 is converted to +0.
