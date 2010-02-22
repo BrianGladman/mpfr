@@ -377,7 +377,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           if (!MPFR_IS_ZERO (tmp))
             {
               /* tmp = ukz*2^exptol */
-              exptol = mpfr_get_z_exp (ukz, tmp);
+              exptol = mpfr_get_z_2exp (ukz, tmp);
               /* since the s_k are decreasing (see algorithms.tex),
                  and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
                  thus exptol < 0 */

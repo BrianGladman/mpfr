@@ -38,7 +38,7 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd)
   MPFR_ASSERTN (inex != 1 && inex != -1); /* integral part of f is
                                              representable in r */
   MPFR_ASSERTN (MPFR_IS_FP (r) );
-  exp = mpfr_get_z_exp (z, r);
+  exp = mpfr_get_z_2exp (z, r);
   if (exp >= 0)
     mpz_mul_2exp (z, z, exp);
   else

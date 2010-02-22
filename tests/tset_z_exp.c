@@ -1,4 +1,4 @@
-/* Test file for mpfr_set_z_exp.
+/* Test file for mpfr_set_z_2exp.
 
 Copyright 1999, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -48,10 +48,10 @@ check0 (void)
   for(r = 0; r < MPFR_RND_MAX; r++)
     {
       e = randexp ();
-      inexact = mpfr_set_z_exp (x, y, e, (mpfr_rnd_t) r);
+      inexact = mpfr_set_z_2exp (x, y, e, (mpfr_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
-          printf ("mpfr_set_z_exp(x,0,e) failed for e=%ld, rnd=%s\n", e,
+          printf ("mpfr_set_z_2exp(x,0,e) failed for e=%ld, rnd=%s\n", e,
 		  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
@@ -75,11 +75,11 @@ check (long i, mpfr_rnd_t rnd)
   mpz_init (z);
   mpz_set_ui (z, i);
   e = randexp ();
-  mpfr_set_z_exp (f, z, e, rnd);
+  mpfr_set_z_2exp (f, z, e, rnd);
   mpfr_div_2si (f, f, e, rnd);
   if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
-      printf ("Error in mpfr_set_z_exp for i=%ld e=%ld rnd_mode=%d\n",
+      printf ("Error in mpfr_set_z_2exp for i=%ld e=%ld rnd_mode=%d\n",
 	      i, e, rnd);
       printf ("expected %ld\n", i);
       mpfr_printf ("got %Re\n", f);

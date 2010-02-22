@@ -62,7 +62,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   mpz_init (x);
   mpz_init (s);
   mpz_init (t);
-  ex = mpfr_get_z_exp (x, r); /* r = x*2^ex */
+  ex = mpfr_get_z_2exp (x, r); /* r = x*2^ex */
 
   /* remove trailing zeroes */
   l = mpz_scan1 (x, 0);

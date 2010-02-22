@@ -87,8 +87,8 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
   mpz_init (my);
   mpz_init (r);
 
-  ex = mpfr_get_z_exp (mx, x);  /* x = mx*2^ex */
-  ey = mpfr_get_z_exp (my, y);  /* y = my*2^ey */
+  ex = mpfr_get_z_2exp (mx, x);  /* x = mx*2^ex */
+  ey = mpfr_get_z_2exp (my, y);  /* y = my*2^ey */
 
   /* to get rid of sign problems, we compute it separately:
      quo(-x,-y) = quo(x,y), rem(-x,-y) = -rem(x,y)

@@ -59,7 +59,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpz_init (u);
   mpz_init (m);
   MPFR_GROUP_INIT_3 (group, 31, eps, erru, errs);
-  e = mpfr_get_z_exp (m, x); /* x = m * 2^e */
+  e = mpfr_get_z_2exp (m, x); /* x = m * 2^e */
   MPFR_ASSERTD (mpz_sizeinbase (m, 2) == MPFR_PREC (x));
   if (MPFR_PREC (x) > w)
     {

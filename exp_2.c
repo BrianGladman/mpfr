@@ -189,7 +189,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
           MPFR_TMP_MARK(marker);
           MY_INIT_MPZ(ss, 3 + 2*((q-1)/GMP_NUMB_BITS));
-          exps = mpfr_get_z_exp (ss, s);
+          exps = mpfr_get_z_2exp (ss, s);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
           l = (precy < MPFR_EXP_2_THRESHOLD)
@@ -268,7 +268,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   mpz_set_ui(t, 1);
   mpz_set_ui(s, 1);
   mpz_mul_2exp(s, s, q-1);
-  expr = mpfr_get_z_exp(rr, r);               /* no error here */
+  expr = mpfr_get_z_2exp(rr, r);               /* no error here */
 
   l = 0;
   for (;;) {
@@ -336,7 +336,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   *exps = 1 - q;                        /* 1 ulp = 2^(1-q) */
   for (i = 0 ; i <= m ; i++)
     MY_INIT_MPZ (R[i], sizer + 2);
-  expR[1] = mpfr_get_z_exp (R[1], r); /* exact operation: no error */
+  expR[1] = mpfr_get_z_2exp (R[1], r); /* exact operation: no error */
   expR[1] = mpz_normalize2 (R[1], R[1], expR[1], 1 - q); /* error <= 1 ulp */
   mpz_mul (t, R[1], R[1]); /* err(t) <= 2 ulps */
   mpz_fdiv_q_2exp (R[2], t, q - 1); /* err(R[2]) <= 3 ulps */

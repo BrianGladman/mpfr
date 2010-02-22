@@ -1104,7 +1104,7 @@ MPFR can work with it.
 @deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_uj_2exp (mpfr_t @var{rop}, uintmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_sj_2exp (mpfr_t @var{rop}, intmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_z_exp (mpfr_t @var{rop}, mpz_t @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_z_2exp (mpfr_t @var{rop}, mpz_t @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
 two to the power @var{e}}, rounded toward the given direction @var{rnd}.
 Note that the input 0 is converted to +0.
@@ -1252,21 +1252,6 @@ The @code{mpfr_get_decimal64} function is built only under some conditions:
 see the documentation of @code{mpfr_set_decimal64}.
 @end deftypefun
 
-@deftypefun double mpfr_get_d_2exp (long *@var{exp}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx {long double} mpfr_get_ld_2exp (long *@var{exp}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Return @var{d} and set @var{exp} such that @math{0.5@le{}@GMPabs{@var{d}}<1}
-and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
-@var{op} rounded to double (resp.@: long double)
-precision, using the given rounding mode.
-@comment See ISO C standard, frexp function.
-If @var{op} is zero, then a zero of the same sign (or an unsigned zero,
-if the implementation does not have signed zeros) is returned, and
-@var{exp} is set to 0.
-If @var{op} is NaN or an infinity, then the corresponding double precision
-(resp.@: long-double precision)
-value is returned, and @var{exp} is undefined.
-@end deftypefun
-
 @deftypefun long mpfr_get_si (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx {unsigned long} mpfr_get_ui (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx intmax_t mpfr_get_sj (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1282,7 +1267,22 @@ See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{rop}, mpfr_t @var{op})
+@deftypefun double mpfr_get_d_2exp (long *@var{exp}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx {long double} mpfr_get_ld_2exp (long *@var{exp}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Return @var{d} and set @var{exp} such that @math{0.5@le{}@GMPabs{@var{d}}<1}
+and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
+@var{op} rounded to double (resp.@: long double)
+precision, using the given rounding mode.
+@comment See ISO C standard, frexp function.
+If @var{op} is zero, then a zero of the same sign (or an unsigned zero,
+if the implementation does not have signed zeros) is returned, and
+@var{exp} is set to 0.
+If @var{op} is NaN or an infinity, then the corresponding double precision
+(resp.@: long-double precision)
+value is returned, and @var{exp} is undefined.
+@end deftypefun
+
+@deftypefun mp_exp_t mpfr_get_z_2exp (mpz_t @var{rop}, mpfr_t @var{op})
 Put the scaled significand of @var{op} (regarded as an integer, with the
 precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}

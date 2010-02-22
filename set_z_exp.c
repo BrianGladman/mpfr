@@ -1,5 +1,5 @@
-/* mpfr_set_z_exp -- set a floating-point number from a multiple-precision
-                     integer and an exponent
+/* mpfr_set_z_2exp -- set a floating-point number from a multiple-precision
+                      integer and an exponent
 
 Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* set f to the integer z multiplied by 2^e */
 int
-mpfr_set_z_exp (mpfr_ptr f, mpz_srcptr z, mp_exp_t e, mpfr_rnd_t rnd_mode)
+mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mp_exp_t e, mpfr_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif, en;
   int k, sign_z, inex;

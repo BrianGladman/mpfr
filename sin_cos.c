@@ -485,7 +485,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       if (sh > prec_s / 2) /* sin(x) = x + O(x^3), cos(x) = 1 + O(x^2) */
         {
-          l2 = -mpfr_get_z_exp (S2, x2); /* S2/2^l2 = x2 */
+          l2 = -mpfr_get_z_2exp (S2, x2); /* S2/2^l2 = x2 */
           l2 += sh - 1;
           mpz_set_ui (Q2, 1);
           mpz_set_ui (C2, 1);

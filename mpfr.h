@@ -296,7 +296,7 @@ __MPFR_DECLSPEC int
 __MPFR_DECLSPEC int
   mpfr_set_z _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int
-  mpfr_set_z_exp _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mp_exp_t, mpfr_rnd_t));
+  mpfr_set_z_2exp _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mp_exp_t, mpfr_rnd_t));
 __MPFR_DECLSPEC void mpfr_set_nan _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 __MPFR_DECLSPEC void mpfr_set_zero _MPFR_PROTO ((mpfr_ptr, int));
@@ -348,7 +348,7 @@ __MPFR_DECLSPEC intmax_t mpfr_get_sj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #endif
 
-__MPFR_DECLSPEC mp_exp_t mpfr_get_z_exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
+__MPFR_DECLSPEC mp_exp_t mpfr_get_z_2exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC float mpfr_get_flt _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC double mpfr_get_d _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
@@ -642,6 +642,7 @@ __MPFR_DECLSPEC int mpfr_jn _MPFR_PROTO ((mpfr_ptr, long, mpfr_srcptr,
                                           mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_y0 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_y1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_Ai1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_yn _MPFR_PROTO ((mpfr_ptr, long, mpfr_srcptr,
                                           mpfr_rnd_t));
 

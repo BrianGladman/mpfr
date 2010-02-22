@@ -21,6 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ##############################################################################
 
 Changes from versions 2.4.* to version 3.0:
+- MPFR 3.0 is binary and API incompatible with previous versions.
 - MPFR is now distributed under the GNU Lesser General Public License
   version 3 or later (LGPL v3+).
 - Rounding modes GMP_RNDX are now MPFR_RNDX (GMP_RNDX kept for compatibility).
@@ -35,7 +36,8 @@ _ The rounding mode type mp_rnd_t is now mpfr_rnd_t (mp_rnd_t kept for
 - New function mpfr_digamma.
 - New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
 - New function mpfr_urandom.
-- New function mpfr_set_z_exp (companion to mpfr_get_z_exp).
+- New function mpfr_set_z_2exp (companion to mpfr_get_z_2exp, which was renamed
+  from mpfr_get_z_exp in previous versions).
 - Speed improvement for large operands in the trigonometric functions
   (mpfr_sin, mpfr_cos, mpfr_tan, mpfr_sin_cos): speedup of about 2.5 for
   10^5 digits, of about 5 for 10^6 digits.

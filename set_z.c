@@ -26,5 +26,5 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  return mpfr_set_z_exp (f, z, 0, rnd_mode);
+  return mpfr_set_z_2exp (f, z, 0, rnd_mode);
 }

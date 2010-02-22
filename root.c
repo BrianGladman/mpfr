@@ -124,7 +124,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
   mpz_init (m);
 
-  e = mpfr_get_z_exp (m, x);                /* x = m * 2^e */
+  e = mpfr_get_z_2exp (m, x);                /* x = m * 2^e */
   if ((negative = MPFR_IS_NEG(x)))
     mpz_neg (m, m);
   r = e % (mp_exp_t) k;
