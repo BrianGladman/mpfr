@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ##############################################################################
 
 Changes from versions 2.4.* to version 3.0:
-- MPFR 3.0 is binary and API incompatible with previous versions.
+- MPFR 3.0 is binary incompatible but API compatible with previous versions.
 - MPFR is now distributed under the GNU Lesser General Public License
   version 3 or later (LGPL v3+).
 - Rounding modes GMP_RNDX are now MPFR_RNDX (GMP_RNDX kept for compatibility).
