@@ -473,6 +473,20 @@ BEGIN {
               found = 1
               exit
             }
+
+          if (got[15] == "000" && \
+              got[14] == "000" && \
+              got[13] == "000" && \
+              got[12] == "124" && \
+              got[11] == "064" && \
+              got[10] == "157" && \
+              got[9] ==  "235" && \
+              got[8] ==  "301")
+            {
+              print "IEEE double, little endian"
+              found = 1
+              exit
+            }
         }
 
       # start sequence, with 12-byte body
