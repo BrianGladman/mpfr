@@ -567,6 +567,28 @@ BEGIN {
               found = 1
               exit
             }
+
+          if (got[23] == "301" && \
+              got[22] == "235" && \
+              got[21] == "157" && \
+              got[20] == "064" && \
+              got[19] == "124" && \
+              got[18] == "000" && \
+              got[17] == "000" && \
+              got[16] == "000" && \
+              got[15] == "000" && \
+              got[14] == "000" && \
+              got[13] == "000" && \
+              got[12] == "000" && \
+              got[11] == "000" && \
+              got[10] == "000" && \
+              got[9]  == "000" && \
+              got[8]  == "000")
+            {
+              print "possibly double-double, big endian"
+              found = 1
+              exit
+            }
         }
     }
 }
@@ -610,6 +632,12 @@ case $mpfr_cv_c_long_double_format in
     ;;
   "IEEE quad, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_LITTLE, 1)
+    ;;
+  "possibly double-double, big endian")
+    AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
+    AC_MSG_WARN([but due to GCC PR26374, we can't test further.])
+    AC_MSG_WARN([You can safely ignore this warning, though.])
+    # Since we are not sure, we do not want to define a macro.
     ;;
   unknown* | "not available")
     ;;
