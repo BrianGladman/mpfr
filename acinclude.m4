@@ -441,6 +441,40 @@ BEGIN {
       if (got[1] != "062") continue
       if (got[0] != "020") continue
 
+      # start sequence, with 8-byte body
+      if (got[23] == "001" && \
+          got[22] == "043" && \
+          got[21] == "105" && \
+          got[20] == "147" && \
+          got[19] == "211" && \
+          got[18] == "253" && \
+          got[17] == "315" && \
+          got[16] == "357")
+        {
+          saw = " (" got[15] \
+                 " " got[14] \
+                 " " got[13] \
+                 " " got[12] \
+                 " " got[11] \
+                 " " got[10] \
+                 " " got[9]  \
+                 " " got[8] ")"
+
+          if (got[15] == "301" && \
+              got[14] == "235" && \
+              got[13] == "157" && \
+              got[12] == "064" && \
+              got[11] == "124" && \
+              got[10] == "000" && \
+              got[9] ==  "000" && \
+              got[8] ==  "000")
+            {
+              print "IEEE double, big endian"
+              found = 1
+              exit
+            }
+        }
+
       # start sequence, with 12-byte body
       if (got[27] == "001" && \
           got[26] == "043" && \
