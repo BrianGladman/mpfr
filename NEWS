@@ -48,6 +48,8 @@ _ The rounding mode type mp_rnd_t is now mpfr_rnd_t (mp_rnd_t kept for
 - Speed improvement for large operands of the inverse trigonometric functions
   (arcsin, arccos, arctan): about 2 for 10^3 digits, up to 2.7 for 10^6 digits
 - Some documentation files are installed in $docdir.
+- The configure script recognizes some extra "long double" formats
+  (double big endian, double little endian, double-double big endian).
 - Bug fixes.
 
 Changes from versions 2.3.* to version 2.4.0:
