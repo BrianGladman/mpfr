@@ -510,7 +510,7 @@ test_property1 (mp_prec_t p, mpfr_rnd_t r)
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (y, RANDS);
   mpfr_mul (z, x, x, r);
-  mpfr_mul (t, x, x, r);
+  mpfr_mul (t, y, y, r);
   mpfr_add (z, z, t, r);
   mpfr_sqrt (z, z, r);
   mpfr_div (z, x, z, r);
