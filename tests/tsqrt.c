@@ -514,6 +514,8 @@ test_property1 (mp_prec_t p, mpfr_rnd_t r)
   mpfr_add (z, z, t, r);
   mpfr_sqrt (z, z, r);
   mpfr_div (z, x, z, r);
+  /* Note: if both x and y are 0, z is NAN, but the test below will
+     be false. So, everything is fine. */
   if (mpfr_cmp_si (z, -1) < 0 || mpfr_cmp_ui (z, 1) > 0)
     {
       printf ("Error, -1 <= x/sqrt(x^2+y^2) <= 1 does not hold for r=%s\n",
