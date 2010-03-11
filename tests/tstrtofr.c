@@ -1078,6 +1078,33 @@ bug20081028 (void)
   mpfr_clear (x);
 }
 
+/* check that 1.23e is correctly parsed, cf
+   http://gmplib.org/list-archives/gmp-bugs/2010-March/001898.html */
+static void
+test20100310 (void)
+{
+  mpfr_t x, y;
+  char str[] = "1.23e", *endptr;
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_strtofr (x, str, &endptr, 10, GMP_RNDN);
+  mpfr_strtofr (y, "1.23", NULL, 10, GMP_RNDN);
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("x <> y in test20100310\n");
+      exit (1);
+    }
+  if (endptr != str + 4) /* strtofr should take into account '1.23',
+                            not '1.23e' */
+    {
+      printf ("endptr <> str + 4 in test20100310\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1089,6 +1116,7 @@ main (int argc, char *argv[])
   check_overflow ();
   check_retval ();
   bug20081028 ();
+  test20100310 ();
 
   tests_end_mpfr ();
   return 0;
