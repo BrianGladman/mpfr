@@ -1088,8 +1088,8 @@ test20100310 (void)
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
-  mpfr_strtofr (x, str, &endptr, 10, GMP_RNDN);
-  mpfr_strtofr (y, "1.23", NULL, 10, GMP_RNDN);
+  mpfr_strtofr (x, str, &endptr, 10, MPFR_RNDN);
+  mpfr_strtofr (y, "1.23", NULL, 10, MPFR_RNDN);
   if (mpfr_cmp (x, y) != 0)
     {
       printf ("x <> y in test20100310\n");
