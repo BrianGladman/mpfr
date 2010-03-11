@@ -496,9 +496,10 @@ check_nan (void)
   mpfr_clear (got);
 }
 
-/* check that -1 <= x/sqrt(x^2+y^2) <= 1 for rounding to nearest or up */
+/* check that -1 <= x/sqrt(x^2+s*y^2) <= 1 for rounding to nearest or up
+   with s = 0 and s = 1 */
 static void
-test_property1 (mp_prec_t p, mpfr_rnd_t r)
+test_property1 (mp_prec_t p, mpfr_rnd_t r, int s)
 {
   mpfr_t x, y, z, t;
 
@@ -508,10 +509,13 @@ test_property1 (mp_prec_t p, mpfr_rnd_t r)
   mpfr_init2 (t, p);
 
   mpfr_urandomb (x, RANDS);
-  mpfr_urandomb (y, RANDS);
   mpfr_mul (z, x, x, r);
-  mpfr_mul (t, y, y, r);
-  mpfr_add (z, z, t, r);
+  if (s)
+    {
+      mpfr_urandomb (y, RANDS);
+      mpfr_mul (t, y, y, r);
+      mpfr_add (z, z, t, r);
+    }
   mpfr_sqrt (z, z, r);
   mpfr_div (z, x, z, r);
   /* Note: if both x and y are 0, z is NAN, but the test below will
@@ -571,9 +575,12 @@ main (void)
 
   for (p = MPFR_PREC_MIN; p <= 128; p++)
     {
-      test_property1 (p, MPFR_RNDN);
-      test_property1 (p, MPFR_RNDU);
-      test_property1 (p, MPFR_RNDA);
+      test_property1 (p, MPFR_RNDN, 0);
+      test_property1 (p, MPFR_RNDU, 0);
+      test_property1 (p, MPFR_RNDA, 0);
+      test_property1 (p, MPFR_RNDN, 1);
+      test_property1 (p, MPFR_RNDU, 1);
+      test_property1 (p, MPFR_RNDA, 1);
       test_property2 (p, MPFR_RNDN);
     }
 
