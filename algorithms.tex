@@ -12,6 +12,24 @@
 Algorithms and Proofs}
 \author{The MPFR team}
 
+%%%%%%%%%%%%%% macros for the package algorithm2e %%%%%%%%%%%%%%%
+\usepackage[english, lined, linesnumbered]{algorithm2e}
+\SetKwData{tempv}{temp}
+\SetKwData{tzero}{t0}
+\SetKwData{tone}{t1}
+\SetKwData{ivar}{i}
+\SetKwData{kvar}{k}
+\SetKwData{svar}{s}
+\SetKwData{approxErr}{approxErr}
+\SetKwData{evalErr}{evalErr}
+\SetKwData{correctBits}{correctBits}
+\SetKwData{wprec}{wprec}
+\SetKwData{precc}{prec}
+\SetKwData{cond}{cond}
+\SetKwData{assumedExp}{assumedExp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathOperator{\Ai}{Ai}
 \DeclareMathOperator{\acosh}{acosh}
 \DeclareMathOperator{\Li2}{Li_2}
 \DeclareMathOperator{\erf}{erf}
@@ -29,6 +47,8 @@ Algorithms and Proofs}
 \def\Paragraph#1{\noindent {\sc #1}}
 \def\Z{{\mathcal Z}}
 \def\Q{{\mathbb Q}}
+\def\R{{\mathbb R}}
+\def\C{{\mathbb C}}
 \def\N{{\mathcal N}}
 \def\If{{\bf if}}
 \def\then{{\bf then}}
@@ -41,12 +61,16 @@ Algorithms and Proofs}
 \def\cmod{\,\mathrm{cmod}\,}
 
 \newcommand{\U}[1]{\quad \mbox{[Rule~\ref{#1}]}}
+\newcommand{\fl}[1]{\widehat{#1}}
+\newcommand{\rnd}[1]{\left\langle#1\right\rangle}
 
 \DeclareMathOperator{\error}{error}
 
 \newtheorem{Rule}{Rule}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
+\newtheorem{fact}{Fact}
+\newtheorem{assumption}{Hypothesis}
 
 \begin{document}
 \maketitle
@@ -4003,6 +4027,193 @@ If $x$ is too small with respect to the target precision, we use the formula
 \[ \psi(x+j) = \frac{1}{x+j-1} + \frac{1}{x+j-2} + \cdots + \frac{1}{x} +
 \psi(x), \]
 and compute $\psi(x+j)$ instead with the asymptotic formula.
+
+\subsection{The Airy Function}
+\subsubsection{Definitions}
+The $\Ai$ function is a solution of the differential equation $y''(x) = x\,y(x)$. It has a power series developed at $0$ that is defined for each $x \in \C$ (we will consider only the case $x \in \R$ in the following):
+\begin{equation}
+  \label{defAi}
+  \Ai(x) = \sum_{i=0}^{+\infty} a_i\,x^i,
+\end{equation}
+where the sequence $a_i$ satisfies the following recurrence:
+     $$\left\{ \begin{array}{ccccl}
+         a_0 & = & \Ai(0) & = & 1/ ( \Gamma(2/3)\,\sqrt[3]{9} )\\
+         a_1 & = & \Ai'(0)& = &-1/ (\Gamma(1/3)\,\sqrt[3]{3})\\
+         \multicolumn{3}{r}{a_2} & = & 0\\
+         \multicolumn{3}{r}{\forall n\ge0, a_{i+3}}& = & a_i / ((i+2)\,(i+3)).
+       \end{array}
+       \right.
+       $$
+For each $i$, we define $t_i = a_i\,x^i$. The sequence $(t_i)_i$ satisfies a similar recurrence.
+
+We denote by $C$ the function defined by
+      $$ C(x) =  \sum_{i=0}^{+\infty} |a_i| \cdot |x|^i.$$
+This function is involved in the condition number of the series~\eqref{defAi}.
+
+\subsubsection{Notations}
+For the error analysis, we refer to classical techniques and lemmas (see e.g.~\cite{Higham02}). In particular, we use Stewart's error counter: $x\rnd{k}$ represents any value $\widehat{x}$ of the form $$\widehat{x} = x\,\prod_{i=1}^k (1+\theta_i)^{\pm 1}$$  where $|\theta_i| \le u = 2^{1-p}$ with $p$ the current precision.
+
+It is known that $x\rnd{k} =x(1+\mu)$ where $|\mu| \le \gamma_k$ with $\gamma_k \le 2ku$ when $2ku \le 1$ (see~\cite{Higham02}).
+
+As usual, we denote by $\Exp(x)$ the exponent of $x$ (the smallest~$E \in \mathbb{Z}$ such that~$|x| < 2^E$).
+
+\subsubsection{Technical results}
+\begin{fact}
+\label{conditionNumberOfAi}
+  The function $C$ satisfies the following inequalities:
+  \begin{equation}
+    \label{majoreCond}
+    \left\{\begin{array}{ccl} 
+        C(x) \le 1 & \text{ if } & 0 \le x < 1\\
+        C(x) \le \frac{1}{2}\,x^{-1/4}\,\exp\left(\frac{2}{3}\,x^{3/2}\right) & \text{ if } & x \ge 1
+      \end{array}
+      \right.
+  \end{equation}
+\end{fact}
+
+\begin{fact}
+For $x \in [1/4,\,1]$, the following holds: 
+  $$\left\{\begin{array}{rcl}
+      x/\Gamma(x) &\in& [1/16,\,1]\\
+      \Gamma'(x) &\in& [-16,\,-1/2].
+    \end{array}
+  \right.
+  $$
+So, if $a = \circ(1/3)$ computed in precision $\wprec+4$, then we can write $\Gamma(a) = \Gamma(1/3)\rnd{1}$ in precision $\wprec$ (the same holds for $a = \circ(2/3)$).
+\end{fact}
+\begin{proof}
+Let $\alpha = 1/3$ or $\alpha = 2/3$. We suppose that $a = \circ(\alpha)$. So we can write $a = (1+\theta)\,\alpha$ where $|\theta|\le 2^{-3-\wprec}$, so we have
+$$ \Gamma(a) = \Gamma(\alpha + \alpha\,\theta) = \Gamma(\alpha) + \alpha\,\theta\Gamma'(\xi),$$% \Gamma(1/3)\,\left(1+\theta\,\frac{a\,\Gamma'(\xi)}{\Gamma(a)}\right),$$
+where $\xi$ lies between $\alpha$ and $a$. In particular, $\xi \in [1/4,\,1]$. Thus $$\Gamma(a) = \Gamma(\alpha)\,\left(1 + \theta\frac{\alpha}{\Gamma(\alpha)}\,\Gamma'(\xi)\right) = \Gamma(\alpha)\,(1+\theta')$$ with $|\theta'| \le 16|\theta| \le 2^{1-\wprec}.$  
+\end{proof}
+
+\subsubsection{Algorithm}
+\begin{algorithm}[htp]
+  \TitleOfAlgo{ \texttt{mpfr\_ai}}
+  \label{algoAi1}
+  \SetKw{true}{true}
+  \SetKw{KwAnd}{and}
+
+  \tcc{except when mentioned, the precision used is $\wprec$}
+  $\tempv \gets \circ(2/3)$ \tcc*{with precision $\wprec+4$}
+  $\tempv \gets \Gamma(\tempv)$\;
+  $\tzero \gets \sqrt[3]{9}$\;
+  $\tzero \gets \tzero \cdot \tempv$\;
+  $\tzero \gets 1/\tzero$\;
+  \BlankLine
+  $\tempv \gets \circ(1/3)$ \tcc*{with precision $\wprec+4$}
+  $\tempv \gets \Gamma(\tempv)$\;
+  $\tone \gets \sqrt[3]{3}$\;
+  $\tone \gets \tone \cdot \tempv$\;
+  $\tone \gets -x/\tone$\;
+  \BlankLine
+  $\svar \gets \tzero+\tone $\;
+  $\kvar \gets 2$\;
+  \While{\true}{
+    $\tzero \gets \tzero\cdot x^3/(\kvar\cdot(\kvar+1))$\;
+    $\tone \gets \tone\cdot x^3/((\kvar+1)\cdot(\kvar+2))$\;
+    $\kvar \gets \kvar+3$\;
+    $\svar \gets \svar + \tzero + \tone$\;
+    \BlankLine
+    \If{~~~$(\Exp(\tzero) \le \Exp(\svar)-\precc-3)$\\ \KwAnd $(\Exp(\tone) \le \Exp(\svar)-\precc-3)$\\ \KwAnd $|x|^3 \le \kvar\cdot(\kvar+1)/2$}{break\;}
+  }\nllabel{endOfLoop}
+  $\evalErr \gets 4 + \log_2(k) - \Exp(\svar)$\;
+  \lIf{$|x| \ge 1$}{$\evalErr \gets \evalErr + (2/3)\log_2(e)x^{3/2} - \log_2(x)/4 - 1$\;}
+  $\correctBits \gets \min(\precc+1,\,\wprec-\evalErr) - 1$\;
+\end{algorithm}
+
+Algorithm~\ref{algoAi1} is run to obtain an approximate value of $\Ai(x)$ with a relative error bounded by $2^{-\precc}$. Except if this is explicitly mentioned, the operations are performed with correct rounding and with precision $\wprec$. The link between $\precc$ and $\wprec$ will be expressed in Section~\ref{linkBetweenPrec}.
+
+Analysis : it is clear that, while entering in the loop for the $j$-th time, $k = 3j-1$, $\tzero \simeq t_{3j-3}$, $\tone \simeq t_{3j-2}$ and $\svar \simeq \sum_{i=0}^{k} t_i$.
+
+Let $K$ be the value of $k$ when exiting the loop. Hence $K =3j+2$ where $j$ denotes the number of times that the loop has been performed. Moreover $\svar \simeq \sum_{i=0}^{K} t_i$, $\tzero \simeq t_{3j}$, and $\tone \simeq t_{3j+1}$
+
+\begin{assumption}
+\label{assumptionPrecLargeEnough}
+  In the following, we suppose that $2 \cdot (4K) \cdot 2^{1-\wprec} \le 1$.
+\end{assumption}  
+
+\noindent\textbf{Roundoff errors.}
+Before entering the loop, $\tzero = t_0\rnd{4}$ and $\tone = t_1\rnd{4}$. A trivial recurrence shows that, at the end of the $j$-th execution of the loop, we have $\tzero = t_{3j}\rnd{4+5j}$ and $\tone = t_{3j+1}\rnd{4+5j}$. At the end of the $j$-th execution of the loop, $\svar$ has been obtained by the accumulation of $2j+1$ additions. So, when exiting the loop, all the terms of the sum have accumulated at most $4+5j+2j+1 = 7j+5$ errors, which we conveniently bound by $4K$ (remember that $K=3j+2$). So we can write
+     $$  \svar = \sum_{k=0}^{K} t_{k}\rnd{4K}. $$
+For each $k$, we know that $t_k\rnd{4K} = t_k(1+\mu^{(k)})$ where $$|\mu^{(k)}| \le \gamma_{4K} \le 2\cdot(4K)\cdot 2^{1-\wprec} \quad \text{(here we use the hypothesis~\ref{assumptionPrecLargeEnough}).}$$ Hence
+$$  \svar = \left(\sum_{k=0}^{K} t_{k}\right) + \left(\sum_{k=0}^{K} t_{k}\,\mu^{(k)}\right),$$
+and we can bound the roundoff errors by
+$$ \left|\svar - \sum_{i=0}^K t_i \right| \le \sum_{i=0}^K |t_i|\,\gamma_{4K} \le \gamma_{4K}\,\underbrace{\sum_{i=0}^{+\infty} |t_k|}_{C(x)} \le C(x)\cdot(8K\,2^{1-\wprec}). $$
+We remark that, by definition of $\evalErr$ and by Fact~\ref{conditionNumberOfAi}, we have $$C(x) \le 2^{\Exp(\svar) + \evalErr - 4 - \log_2(K)}.$$ So, finally
+ $$\boxed{\left|\svar - \sum_{i=0}^K t_i \right| \le 2^{\Exp(\svar)+\evalErr-\wprec}.}$$
+
+Remark: during the algorithm $\tzero = t_{3j}\rnd{4+5j}$, so in particular $|t_{3j}| \le 2|\tzero|$. The same remark holds for $\tone$ and $t_{3j+1}$.
+
+\noindent \textbf{Approximation error.}
+The stopping criterion ensures that, for $n \ge K$, $|t_{n+1}| \le |t_{n-2}|/2$. Besides, we recall that $K = 3j+2$. Thus
+
+$$ \left|\sum_{k=j+1}^{+\infty} t_{3k}\right| \le \frac{t_{3j}}{2} + \frac{t_{3j}}{4} + \frac{t_{3j}}{8} + \cdots  \le |t_{3j}|.$$ 
+Using the remark above, we can bound $|t_{3j}|$ by $2 |\tzero| \le 2^{1+\Exp(\tzero)}$. The stopping criterion of the loop ensures that $\Exp(\tzero) \le \Exp(\svar) - \precc - 3$ so we conclude that $$ \left|\sum_{k=j+1}^{+\infty} t_{3k}\right| \le 2^{\Exp(\svar)-\precc-2} .$$
+Likewise, $$ \left|\sum_{k=j+1}^{+\infty} t_{3k+1}\right| \le 2^{\Exp(\svar)-\precc-2}.$$
+From this, we deduce the following upper bound on the approximation error:
+   $$\boxed{\left|\Ai(x)-\sum_{i=0}^K t_i\right| \le 2^{\Exp(\svar)-\precc-1}.}$$
+
+
+\noindent\textbf{Overall error.}
+By definition of $\correctBits$, we finally get
+    $$\boxed{\left|\Ai(x)-\svar\right| \le 2^{\Exp(\svar)-\correctBits}.}$$
+
+\noindent\textbf{Determination of $\mathsf{wprec}$.}
+\label{linkBetweenPrec}
+The variable $\precc$ must be chosen slightly larger than the final target precision, in order to bypass the TMD. In practice we keep a few guard bits, which ensures that we do not encounter bad cases too often. The Ziv' loop is performed over $\precc$.
+
+We would like the roundoff errors and the approximation error to be approximately of the same order of magnitude, i.e.
+$$ \wprec = \precc + 1 + \evalErr.$$
+
+The value $\evalErr$ depends on $\Exp(\svar)$ (that we do not know, \emph{a priori}) and on $K$ (idem). We may estimate $K \simeq \precc$ (anyway, only the logarithm of this value is used, so we do not care too much of this value)
+Concerning $\Exp(\svar)$, when $x \ge 0$, it is possible to rigorously estimate it with the following inequalities. When $x<0$, it is more obfuscated since $\Ai(x)$ can be arbitrarily close to zero. I do not have any estimation yet.
+
+\begin{fact}
+  \label{orderOfMagnitudeAi}
+  The following inequalities hold:
+$$
+\left\{
+\begin{array}{ccl}
+  \Ai(x) \ge 1/8 & \text{ if } &0\le x\le 1\\
+  \Ai(x) \ge \frac{1}{4}\,x^{-1/4}\,\exp\left(-\frac{2}{3} \, x^{3/2}\right) & \text{ if } &x\ge 1.
+\end{array}
+\right.
+$$
+\end{fact}
+
+
+These estimates are used to set the initial value of $\wprec$. When $x \le 0$, we initially suppose that $\Exp(\Ai(x)) \ge -10$. More precisely, we use a variable $\assumedExp$ to remember this assumption (initially $\assumedExp=10$).
+
+Representing the condition number by a variable $\cond$, and using Fact~\ref{conditionNumberOfAi} we can set
+$$
+\left\{
+\begin{array}{lcl}
+  \cond = 0 & \text{ if } & |x| \le 1\\
+  \cond = \lceil\frac{2}{3}\log_2(e)x^{3/2}\rceil - \lfloor\frac{\log_2(x)}{4}\rfloor - 1 & \text{ if } & |x|\ge 1.
+\end{array}
+\right.
+$$
+Using Fact~\ref{orderOfMagnitudeAi}, we can set the initial value of $\wprec$ the following way:
+$$
+\boxed{
+\begin{array}{ll}
+  \wprec = \precc + 1 + 4 + \lceil \log_2(\precc)\rceil + \cond + \assumedExp & \text{ if }\quad x \le 0\\
+  \wprec = \precc + 1 + 4 + \lceil \log_2(\precc)\rceil + \cond + 3 & \text{ if }\quad  0 \le x \le 1\\
+  \wprec = \precc + 1 + 4 + \lceil \log_2(\precc)\rceil + \cond + 2 + \lceil\frac{2}{3}\log_2(e)x^{3/2}\rceil + \lceil\frac{\log_2(x)}{4}\rceil & \text{ if }\quad  x > 1.
+\end{array}
+}
+$$
+
+When the algorithm exits the loop (line~\ref{endOfLoop} of the algorithm), several cases are possible:
+\begin{itemize}
+\item $\correctBits$ can be negative: this typically happens when $x \ge 0$ and the $\Ai(x)$ is almost zero. In this case, the initial assumption that $\Exp(\Ai(x)) \ge -\mathsf{presumedExp}$ is false and $\wprec$ was badly chosen. This is \textbf{not} due to a bad case in Ziv' strategy. We choose to double $\assumedExp$ and set the new value of $\wprec$ as 
+$$  \wprec = \precc + 1 + 4 + \lceil \log_2(\kvar)\rceil + \cond + \assumedExp;$$
+\item $\correctBits$ can be positive but smaller than $\precc$. The cause of this phenomenon is the same as in the previous case. However, since we have at least one correct bit, we get an important information: $\svar$ is a first approximation of $\Ai(x)$. Hence we do not rely on $\assumedExp$ for choosing the new value of $\wprec$:
+$$  \wprec = \precc + 1 + 4 + \lceil \log_2(\kvar)\rceil + \cond - \Exp(\svar);$$
+\item finally, if $\correctBits \ge \precc$ but if we cannot round, it means that we really are in a bad case of Ziv' strategy. In this case, we update $\precc$ (according to the usual MPFR strategy) and we recompute a new working precision from it: as in the previous case, we can rely on $\Exp(\svar)$. The only unknown is the new truncation rank. We assume that it will not be multiplied by more than~$4$ and we set:
+$$  \wprec = \precc + 1 + 4 + \lceil \log_2(4\kvar)\rceil + \cond - \Exp(\svar).$$
+\end{itemize}
 
 \subsection{Radix Conversion}
 

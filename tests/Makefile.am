@@ -32,7 +32,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstrtofr \
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap turandom \
      ttan ttanh ttrunc tui_div tui_pow tui_sub ty0 ty1 tyn	\
-     tzeta tzeta_ui
+     tzeta tzeta_ui tai
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 

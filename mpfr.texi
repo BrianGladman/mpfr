@@ -1915,6 +1915,15 @@ in future versions): If @var{x} or @var{y} is an infinity, then plus
 infinity is returned in @var{rop}, even if the other number is NaN.
 @end deftypefun
 
+@deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Airy function Ai
+ on @var{op}, rounded in the direction @var{rnd}. 
+When @var{op} is
+NaN,
+@var{rop} is always set to NaN. When @var{op} is +Inf or @minus{}Inf,
+@var{rop} is +0.
+@end deftypefun
+
 @deftypefun int mpfr_const_log2 (mpfr_t @var{rop}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_pi (mpfr_t @var{rop}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_euler (mpfr_t @var{rop}, mpfr_rnd_t @var{rnd})
