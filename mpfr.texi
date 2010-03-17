@@ -2947,6 +2947,7 @@ file, and helped to the Microsoft Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
 Damien Stehl@'e contributed the @code{mpfr_get_ld_2exp} function.
+Sylvain Chevillard contributed the @code{mpfr_ai} function.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
 fruitful discussions at the beginning of that project, Torbj@"orn Granlund
