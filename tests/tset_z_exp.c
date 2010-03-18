@@ -52,7 +52,7 @@ check0 (void)
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
           printf ("mpfr_set_z_2exp(x,0,e) failed for e=%ld, rnd=%s\n", e,
-		  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
     }
@@ -80,7 +80,7 @@ check (long i, mpfr_rnd_t rnd)
   if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
       printf ("Error in mpfr_set_z_2exp for i=%ld e=%ld rnd_mode=%d\n",
-	      i, e, rnd);
+              i, e, rnd);
       printf ("expected %ld\n", i);
       mpfr_printf ("got %Re\n", f);
       exit (1);
