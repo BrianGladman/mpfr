@@ -1917,7 +1917,7 @@ infinity is returned in @var{rop}, even if the other number is NaN.
 
 @deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Airy function Ai
- on @var{op}, rounded in the direction @var{rnd}. 
+ on @var{op}, rounded in the direction @var{rnd}.
 When @var{op} is
 NaN,
 @var{rop} is always set to NaN. When @var{op} is +Inf or @minus{}Inf,
