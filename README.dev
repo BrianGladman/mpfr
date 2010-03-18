@@ -369,6 +369,9 @@ result will depend on the floating-point arithmetic of the system;
 this has shown many problems in the past and problems may still occur
 with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
 
+To check the result of some function, use mpfr_equal_p rather than
+mpfr_cmp, as mpfr_cmp will return 0 (equality) if the result is NaN.
+
 Also, make sure that the tests run against previous MPFR versions,
 possibly by disabling some tests with code like
 
