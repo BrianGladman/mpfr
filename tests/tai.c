@@ -26,16 +26,50 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-
 #define TEST_FUNCTION mpfr_ai
 #define TEST_RANDOM_EMIN -5
 #define TEST_RANDOM_EMAX 5
 #include "tgeneric.c"
 
+static void
+check_large (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init2 (x, 38);
+  mpfr_init2 (y, 110);
+  mpfr_init2 (z, 110);
+  mpfr_set_str_binary (x, "-1E8");
+  mpfr_ai (y, x, MPFR_RNDN);
+  mpfr_set_str_binary (z, "-10001110100001011111110001100011101100011100010000110100100101011111011100000101110101010010000000101110011111E-112");
+  if (mpfr_cmp (y, z) != 0)
+    {
+      printf ("Error in mpfr_ai for x=-2^8\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "-1E26");
+  mpfr_ai (y, x, MPFR_RNDN);
+  mpfr_set_str_binary (z, "-110001111100000011001010010101001101001011001011101011001010100100001110001101101101000010000011001000001011E-118");
+  if (mpfr_cmp (y, z) != 0)
+    {
+      printf ("Error in mpfr_ai for x=-2^26\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "-0.11111111111111111111111111111111111111E1073741823");
+  mpfr_ai (y, x, MPFR_RNDN);
+  /* FIXME: compute the correctly rounded value we should get for Ai(x),
+     and check we get this value */
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  check_large ();
 
   test_generic (2, 100, 100);
 
