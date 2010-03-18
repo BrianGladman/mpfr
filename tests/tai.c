@@ -29,6 +29,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TEST_FUNCTION mpfr_ai
 #define TEST_RANDOM_EMIN -5
 #define TEST_RANDOM_EMAX 5
+#define REDUCE_EMAX 7 /* this is to avoid that test_generic() calls mpfr_ai
+                         with too large inputs. FIXME: remove this once
+                         mpfr_ai can handle large inputs */
 #include "tgeneric.c"
 
 static void
@@ -71,7 +74,7 @@ main (int argc, char *argv[])
 
   check_large ();
 
-  test_generic (2, 100, 100);
+  test_generic (2, 100, 10);
 
   tests_end_mpfr ();
   return 0;
