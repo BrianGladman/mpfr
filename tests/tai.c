@@ -42,7 +42,7 @@ check_large (void)
   mpfr_set_str_binary (x, "-1E8");
   mpfr_ai (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "-10001110100001011111110001100011101100011100010000110100100101011111011100000101110101010010000000101110011111E-112");
-  if (mpfr_cmp (y, z) != 0)
+  if (mpfr_equal_p (y, z) == 0)
     {
       printf ("Error in mpfr_ai for x=-2^8\n");
       exit (1);
@@ -50,7 +50,7 @@ check_large (void)
   mpfr_set_str_binary (x, "-1E26");
   mpfr_ai (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "-110001111100000011001010010101001101001011001011101011001010100100001110001101101101000010000011001000001011E-118");
-  if (mpfr_cmp (y, z) != 0)
+  if (mpfr_equal_p (y, z) == 0)
     {
       printf ("Error in mpfr_ai for x=-2^26\n");
       exit (1);
