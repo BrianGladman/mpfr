@@ -88,7 +88,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
 
   /* Set initial precision */
-  /* If we compute sum(i=0,N-1, t_i), the relative error is bounded by   */
+  /* If we compute sum(i=0, N-1, t_i), the relative error is bounded by  */
   /*       2*(4N)*2^(1-wprec)*C(|x|)/Ai(x)                               */
   /* where C(|x|) = 1 if 0<=x<=1                                         */
   /*   and C(|x|) = (1/2)*x^(-1/4)*exp(2/3 x^(3/2))  if x >= 1           */
@@ -231,7 +231,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       else
         {
           if (wprec<err+prec+1)
-            correct_bits = (unsigned)((signed)wprec-(signed)err-1);
+            correct_bits = (unsigned) ((signed) wprec - (signed) err - 1);
           else
             correct_bits = prec;
         }
@@ -242,14 +242,14 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (correct_bits==0)
         {
           assumed_exponent *= 2;
-          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%d)\n",0));
+          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%d)\n", 0));
           wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (k) + cond + assumed_exponent;
         }
       else
         {
           if (correct_bits < prec)
             { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x) (E=%d)\n",MPFR_EXP (s),0));
+              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x) (E=%d)\n",MPFR_EXP (s), 0));
               wprec = prec + err + 1;
             }
           else
@@ -268,7 +268,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_ZIV_FREE (loop);
   MPFR_SAVE_EXPO_FREE (expo);
 
-  r = mpfr_set (y,s,rnd);
+  r = mpfr_set (y, s, rnd);
 
   mpfr_clear (ti);
   mpfr_clear (tip1);
