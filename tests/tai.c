@@ -50,6 +50,7 @@ check_large (void)
       printf ("Error in mpfr_ai for x=-2^8\n");
       exit (1);
     }
+#if 0 /* disabled since mpfr_ai does not currently handle large arguments */
   mpfr_set_str_binary (x, "-1E26");
   mpfr_ai (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "-110001111100000011001010010101001101001011001011101011001010100100001110001101101101000010000011001000001011E-118");
@@ -62,6 +63,7 @@ check_large (void)
   mpfr_ai (y, x, MPFR_RNDN);
   /* FIXME: compute the correctly rounded value we should get for Ai(x),
      and check we get this value */
+#endif
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
@@ -72,9 +74,9 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  /*  check_large (); */
+  check_large ();
 
-  test_generic (2, 100, 10);
+  test_generic (2, 100, 5);
 
   tests_end_mpfr ();
   return 0;
