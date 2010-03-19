@@ -72,7 +72,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  check_large ();
+  /*  check_large (); */
 
   test_generic (2, 100, 10);
 

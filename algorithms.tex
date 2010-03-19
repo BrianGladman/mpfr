@@ -4029,6 +4029,9 @@ If $x$ is too small with respect to the target precision, we use the formula
 and compute $\psi(x+j)$ instead with the asymptotic formula.
 
 \subsection{The Airy Function}
+~\newline
+\textbf{Warning:} the current implementation is not made for large arguments. It works fine typically for $|x| \le 500$. For larger inputs, other methods will be implemented in a close future.
+
 \subsubsection{Definitions}
 The $\Ai$ function is a solution of the differential equation $y''(x) = x\,y(x)$. It has a power series developed at $0$ that is defined for each $x \in \C$ (we will consider only the case $x \in \R$ in the following):
 \begin{equation}
