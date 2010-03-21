@@ -706,7 +706,11 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 /* DON'T USE THIS! (For MPFR-public macros only, see below.)
    The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
-   are the smallest values. */
+   are the smallest values.
+   FIXME: In the following macros, the cast of an unsigned type with MSB set
+   to the signed type mp_exp_t yields an integer overflow, which can give
+   unexpected results with future compilers and aggressive optimisations.
+   Why not working only with signed types, using INT_MIN and LONG_MIN? */
 #if __GMP_MP_SIZE_T_INT
 #define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
 #define __MPFR_EXP_ZERO ((mp_exp_t)((~((~(unsigned int)0)>>1))+1))
