@@ -1659,8 +1659,8 @@ Set @var{rop} to the natural logarithm of @var{op},
 @m{\log_2 @var{op}, log2(@var{op})} or
 @m{\log_{10} @var{op}, log10(@var{op})}, respectively,
 rounded in the direction @var{rnd}.
-Return @minus{}Inf if @var{op} is @minus{}0 (i.e.@: the sign of the zero
-has no influence on the result).
+Set @var{rop} to @minus{}Inf if @var{op} is @minus{}0
+(i.e.@: the sign of the zero has no influence on the result).
 @end deftypefun
 
 @deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1791,37 +1791,41 @@ Set @var{rop} to the exponential of @var{op} minus one,
 rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun int mpfr_eint (mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
-Set @var{y} to the exponential integral of @var{x},
+@deftypefun int mpfr_eint (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the exponential integral of @var{op},
 rounded in the direction @var{rnd}.
-For positive @var{x},
+For positive @var{op},
 the exponential integral is the sum of Euler's constant, of the logarithm
-of @var{x}, and of the sum for k from 1 to infinity of
+of @var{op}, and of the sum for k from 1 to infinity of
 @ifnottex
-@var{x} to the power k, divided by k and factorial(k).
+@var{op} to the power k, divided by k and factorial(k).
 @end ifnottex
 @tex
-$x^k/k/k!$.
+$@var{op}^k/k/k!$.
 @end tex
-For negative @var{x}, the returned value is NaN.
+For negative @var{op}, @var{rop} is set to NaN.
 @end deftypefun
 
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd_mode})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd_mode}. The dilogarithm function is defined here as
-@m{-\int_{t=0}^x log(1-t)/t dt,the integral of -log(1-t)/t from 0 to x}.
+@m{-\int_{t=0}^{op} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
+to @var{op}}.
+@c FIXME: It should be {@var{op}} instead of {op} above, but pdftex fails
+@c on the correct form.
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Gamma function on @var{op}, rounded in the
-direction @var{rnd}. When @var{op} is a negative integer, NaN is returned.
+direction @var{rnd}. When @var{op} is a negative integer, @var{rop} is set
+to NaN.
 @end deftypefun
 
 @deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
-When @math{@minus{}2@var{k}@minus{}1 @le{} @var{x} @le{} @minus{}2@var{k}},
-@var{k} being a non-negative integer, NaN is returned.
+When @math{@minus{}2@var{k}@minus{}1 @le{} @var{op} @le{} @minus{}2@var{k}},
+@var{k} being a non-negative integer, @var{rop} is set to NaN.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
