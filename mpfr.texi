@@ -1528,8 +1528,8 @@ Just changes the sign if @var{rop} and @var{op} are the same variable.
 @deftypefun int mpfr_dim (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the positive difference of @var{op1} and @var{op2}, i.e.,
 @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}
-if @math{@var{op1} > @var{op2}}, and +0 otherwise.
-Returns NaN when @var{op1} or @var{op2} is NaN.
+if @math{@var{op1} > @var{op2}}, +0 if @math{@var{op1} @le{} @var{op2}},
+and NaN if @var{op1} or @var{op2} is NaN.
 @end deftypefun
 
 @deftypefun int mpfr_mul_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
