@@ -1464,8 +1464,8 @@ and @code{mpfr_div_d}.
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{\sqrt{@var{op}}, the square root of @var{op}}
-rounded in the direction @var{rnd}. Return @minus{}0 if @var{op} is
-@minus{}0 (to be consistent with the IEEE 754 standard).
+rounded in the direction @var{rnd} (set @var{rop} to @minus{}0 if @var{op} is
+@minus{}0, to be consistent with the IEEE 754 standard).
 Set @var{rop} to NaN if @var{op} is negative.
 @end deftypefun
 
