@@ -1471,17 +1471,16 @@ Set @var{rop} to NaN if @var{op} is negative.
 
 @deftypefun int mpfr_rec_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{1/\sqrt{@var{op}}, the reciprocal square root of @var{op}}
-rounded in the direction @var{rnd}. Return +Inf if @var{op} is @pom{}0,
-and +0 if @var{op} is +Inf.
-Set @var{rop} to NaN if @var{op} is negative.
+rounded in the direction @var{rnd}. Set @var{rop} to +Inf if @var{op} is
+@pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
-An odd (resp.@: even) root of a negative number (including @minus{}Inf)
-returns a negative number (resp.@: NaN).
+For @var{k} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
+set @var{rop} to a negative number (resp.@: NaN).
 The @var{k}th root of @minus{}0 is defined to be @minus{}0,
 whatever the parity of @var{k}.
 @end deftypefun
