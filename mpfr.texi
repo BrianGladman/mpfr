@@ -2442,8 +2442,8 @@ The function name is subject to change.
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
-Return the input string (MPFR_RNDD, MPFR_RNDU, MPFR_RNDN, MPFR_RNDZ)
-corresponding to the rounding mode @var{rnd} or a null pointer if
+Return a string ("MPFR_RNDD", "MPFR_RNDU", "MPFR_RNDN", "MPFR_RNDZ")
+corresponding to the rounding mode @var{rnd}, or a null pointer if
 @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
