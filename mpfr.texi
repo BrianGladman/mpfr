@@ -1493,8 +1493,8 @@ whatever the parity of @var{k}.
 @deftypefunx int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to @var{op2}},
 rounded in the direction @var{rnd}.
-Special values are currently handled as described in the ISO C99 and
-IEEE 754-2008 standards for the @code{pow} function:
+Special values are handled as described in the ISO C99 and IEEE 754-2008
+standards for the @code{pow} function:
 @itemize @bullet
 @item @code{pow(@pom{}0, @var{y})} returns plus or minus infinity for @var{y} a negative odd integer.
 @item @code{pow(@pom{}0, @var{y})} returns plus infinity for @var{y} negative and not an odd integer.
@@ -1720,8 +1720,8 @@ As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
 @m{-\pi,-Pi}, its rounded result might be outside the function output range.
 
 @code{atan2(y, 0)} does not raise any floating-point exception.
-Special values are currently handled as described in the ISO C99 and
-IEEE 754-2008 standards for the @code{atan2} function:
+Special values are handled as described in the ISO C99 and IEEE 754-2008
+standards for the @code{atan2} function:
 @itemize @bullet
 @item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
 @item @code{atan2(-0, -0)} returns @m{-\pi,-Pi}.
