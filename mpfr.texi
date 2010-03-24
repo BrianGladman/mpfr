@@ -1833,8 +1833,8 @@ See also @code{mpfr_lgamma}.
 Set @var{rop} to the value of the logarithm of the absolute value of the
 Gamma function on @var{op}, rounded in the direction @var{rnd}. The sign
 (1 or @minus{}1) of Gamma(@var{op}) is returned in the object pointed to
-by @var{signp}. When @var{op} is an infinity or a non-positive integer,
-+Inf is returned. When @var{op} is NaN, @minus{}Inf or a negative integer,
+by @var{signp}. When @var{op} is an infinity or a non-positive integer, set
+@var{rop} to +Inf. When @var{op} is NaN, @minus{}Inf or a negative integer,
 *@var{signp} is undefined, and when @var{op} is @pom{}0, *@var{signp} is
 the sign of the zero.
 @end deftypefun
@@ -1842,7 +1842,7 @@ the sign of the zero.
 @deftypefun int mpfr_digamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Digamma (sometimes also called Psi)
 function on @var{op}, rounded in the direction @var{rnd}.
-When @var{op} is a negative integer, NaN is returned.
+When @var{op} is a negative integer, set @var{rop} to NaN.
 @end deftypefun
 
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1868,7 +1868,7 @@ Set @var{rop} to the value of the first kind Bessel function of order 0, 1
 and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
 NaN, @var{rop} is always set to NaN. When @var{op} is plus or minus Infinity,
 @var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
-@var{rop} is +0 or @minus{}0 depending on the parity and sign of @var{n},
+@var{rop} is set to +0 or @minus{}0 depending on the parity and sign of @var{n},
 and the sign of @var{op}.
 @end deftypefun
 
@@ -1877,10 +1877,9 @@ and the sign of @var{op}.
 @deftypefunx int mpfr_yn (mpfr_t @var{rop}, long @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the second kind Bessel function of order 0, 1
 and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN or negative,
-@var{rop} is always set to NaN. When @var{op} is +Inf,
-@var{rop} is +0. When @var{op} is zero,
-@var{rop} is +Inf or @minus{}Inf depending on the parity and sign of @var{n}.
+NaN or negative, @var{rop} is always set to NaN. When @var{op} is +Inf,
+@var{rop} is set to +0. When @var{op} is zero, @var{rop} is set to +Inf
+or @minus{}Inf depending on the parity and sign of @var{n}.
 @end deftypefun
 
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
@@ -1900,7 +1899,7 @@ The arithmetic-geometric mean is the common limit of the sequences
 u[n] and v[n], where u[0]=@var{op1}, v[0]=@var{op2}, u[n+1] is the
 arithmetic mean of u[n] and v[n], and v[n+1] is the geometric mean of
 u[n] and v[n].
-If any operand is negative, the return value is NaN.
+If any operand is negative, set @var{rop} to NaN.
 @end deftypefun
 
 @deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
@@ -1913,9 +1912,9 @@ i.e.@: $\sqrt{x^2+y^2}$,
 @end tex
 rounded in the direction @var{rnd}.
 Special values are currently handled as described in Section F.9.4.3 of
-the ISO C99 standard, for the @code{hypot} function (note this may change
-in future versions): If @var{x} or @var{y} is an infinity, then plus
-infinity is returned in @var{rop}, even if the other number is NaN.
+the ISO C99 and IEEE 754-2008 standards, for the @code{hypot} function:
+If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
+even if the other number is NaN.
 @end deftypefun
 
 @deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2434,7 +2433,7 @@ be the case when @var{b} is near from a value exactly representable on
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_min_prec (mpfr_t @var{x})
-Returns the minimal number of bits required to store the significand of
+Return the minimal number of bits required to store the significand of
 @var{x}, and 0 for special values, including 0. (Warning: the returned
 value can be less than @code{MPFR_PREC_MIN}.)
 
