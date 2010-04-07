@@ -45,7 +45,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # elif defined (_AIX) || defined (_IBMR2)
 #  pragma alloca
 # else
-char *alloca ();
+void *alloca (size_t);
 # endif
 #endif
 
