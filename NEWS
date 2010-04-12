@@ -36,6 +36,7 @@ _ The rounding mode type mp_rnd_t is now mpfr_rnd_t (mp_rnd_t kept for
 - mpfr_get_f and mpfr_get_z now return a ternary value.
 - New functions mpfr_buildopt_tls_p and mpfr_buildopt_decimal_p giving
   information about options used at MPFR build time.
+- New function mpfr_regular_p.
 - New function mpfr_set_zero.
 - New function mpfr_digamma.
 - New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
