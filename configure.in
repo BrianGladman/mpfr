@@ -383,7 +383,7 @@ error
 ])
 
 dnl Check if we can use internal header files of GMP (only --with-gmp-build)
-if test "$use_gmp_build" == yes ; then
+if test "$use_gmp_build" = yes ; then
    AC_MSG_CHECKING(for gmp internal files)
    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
    #include "gmp.h"
@@ -399,7 +399,7 @@ fi
 
 dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
 dnl This test doesn't need to link with libgmp (at least it shouldn't).
-if test "$use_gmp_build" == yes ; then
+if test "$use_gmp_build" = yes ; then
   AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <limits.h>
