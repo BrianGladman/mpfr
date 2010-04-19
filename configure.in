@@ -382,24 +382,24 @@ error
  AC_MSG_ERROR([GMP 4.1.0 min required])
 ])
 
-dnl Check if we can use internal header files of GMP.
-AC_MSG_CHECKING(for gmp internal files)
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-]])],[
-  AC_MSG_RESULT(yes)
-  AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
-  gmp_internal_file_check=yes
-],[
-  AC_MSG_RESULT(no)
-  AC_FUNC_ALLOCA
-])
+dnl Check if we can use internal header files of GMP (only --with-gmp-build)
+if test "$use_gmp_build" == yes ; then
+   AC_MSG_CHECKING(for gmp internal files)
+   AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+   #include "gmp.h"
+   #include "gmp-impl.h"
+   #include "longlong.h"
+   ]])],[
+     AC_MSG_RESULT(yes)
+     AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
+   ],[
+     AC_MSG_ERROR([header files gmp-impl.h and longlong.h not found])
+   ])
+fi
 
 dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
 dnl This test doesn't need to link with libgmp (at least it shouldn't).
-if test -n "$gmp_internal_file_check" ; then
+if test "$use_gmp_build" == yes ; then
   AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <limits.h>
