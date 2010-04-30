@@ -53,12 +53,12 @@ mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   mpfr_t x;
   int res;
 
-  if (MPFR_IS_NAN(f) || MPFR_IS_INF(f) || MPFR_SIGN(f) < 0)
-    return 0; /* does not fit */
-
-  if (MPFR_IS_ZERO(f))
-    return 1; /* zero always fits */
-
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
+    /* Zero always fit */
+    return MPFR_IS_ZERO (f) ? 1 : 0;
+  else if (MPFR_IS_NEG (f))
+    /* Negative numbers doesn't fit */
+    return 0;
   /* now it fits if
      (a) f <= MAXIMUM
      (b) round(f, prec(slong), rnd) <= MAXIMUM */
