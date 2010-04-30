@@ -63,10 +63,10 @@ inexact_sign (int x)
 }
 
 static void
-check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
+check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
 {
   mpfr_t x, y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int inex1, inex2, n;
   mp_limb_t limb;
 

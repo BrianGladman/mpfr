@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 static void
-test_urandomb (long nbtests, mp_prec_t prec, int verbose)
+test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
 {
   mpfr_t x;
   int *tab, size_tab, k, sh, xn;
@@ -107,7 +107,7 @@ int
 main (int argc, char *argv[])
 {
   long nbtests;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   int verbose = 0;
 
   tests_start_mpfr ();

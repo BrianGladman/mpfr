@@ -48,7 +48,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
 }
 
 #undef mpfr_get_prec
-mp_prec_t
+mpfr_prec_t
 mpfr_get_prec (mpfr_srcptr x)
 {
   return MPFR_PREC(x);

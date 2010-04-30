@@ -24,14 +24,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #undef mpfr_custom_get_size
 size_t
-mpfr_custom_get_size (mp_prec_t prec)
+mpfr_custom_get_size (mpfr_prec_t prec)
 {
   return (prec + GMP_NUMB_BITS -1) / GMP_NUMB_BITS * BYTES_PER_MP_LIMB;
 }
 
 #undef mpfr_custom_init
 void
-mpfr_custom_init (void *mantissa, mp_prec_t prec)
+mpfr_custom_init (void *mantissa, mpfr_prec_t prec)
 {
   return ;
 }
@@ -60,7 +60,7 @@ mpfr_custom_move (mpfr_ptr x, void *new_position)
 #undef mpfr_custom_init_set
 void
 mpfr_custom_init_set (mpfr_ptr x, int kind, mp_exp_t exp,
-                     mp_prec_t prec, void *mantissa)
+                     mpfr_prec_t prec, void *mantissa)
 {
   mpfr_kind_t t;
   int s;

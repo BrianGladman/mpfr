@@ -39,7 +39,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpfr_t erru, errs;
   mpz_t m, s, t, u;
   mp_exp_t e, sizeinbase;
-  mp_prec_t w = MPFR_PREC(y);
+  mpfr_prec_t w = MPFR_PREC(y);
   unsigned long k;
   MPFR_GROUP_DECL (group);
 
@@ -151,7 +151,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
 static mp_exp_t
 mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
 {
-  mp_prec_t p = MPFR_PREC(y);
+  mpfr_prec_t p = MPFR_PREC(y);
   mpfr_t invx, t, err;
   unsigned long k;
   mp_exp_t err_exp;
@@ -196,7 +196,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   int inex;
   mpfr_t tmp, ump;
   mp_exp_t err, te;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 

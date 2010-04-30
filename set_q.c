@@ -33,7 +33,7 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
   mp_limb_t *p;
   mp_size_t s;
   int c;
-  mp_prec_t pf;
+  mpfr_prec_t pf;
 
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 

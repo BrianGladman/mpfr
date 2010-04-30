@@ -200,7 +200,7 @@ mpfr_fms (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           mpfr_t scaled_z;
           mpfr_srcptr new_z;
           mp_exp_t diffexp;
-          mp_prec_t pzs;
+          mpfr_prec_t pzs;
           int xy_underflows;
 
           /* Let's scale z so that ulp(z) > 2^emin and ulp(s) > 2^emin

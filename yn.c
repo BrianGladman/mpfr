@@ -212,7 +212,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   if (n == 0 && MPFR_EXP(z) < - (mp_exp_t) (MPFR_PREC(res) / 2))
     {
       mpfr_t l, h, t, logz;
-      mp_prec_t prec;
+      mpfr_prec_t prec;
       int ok, inex2;
 
       prec = MPFR_PREC(res) + 10;
@@ -268,7 +268,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   if (n == 1 && MPFR_EXP(z) + 1 < - (mp_exp_t) MPFR_PREC(res))
     {
       mpfr_t y;
-      mp_prec_t prec;
+      mpfr_prec_t prec;
       mp_exp_t err1;
       int ok;
       MPFR_BLOCK_DECL (flags);
@@ -315,7 +315,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 
   /* General case */
   {
-    mp_prec_t prec;
+    mpfr_prec_t prec;
     mp_exp_t err1, err2, err3;
     mpfr_t y, s1, s2, s3;
     MPFR_ZIV_DECL (loop);

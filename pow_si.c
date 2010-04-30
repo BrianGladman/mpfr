@@ -139,8 +139,8 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
         /* Declaration of the intermediary variable */
         mpfr_t t;
         /* Declaration of the size variable */
-        mp_prec_t Ny;                              /* target precision */
-        mp_prec_t Nt;                              /* working precision */
+        mpfr_prec_t Ny;                              /* target precision */
+        mpfr_prec_t Nt;                              /* working precision */
         mpfr_rnd_t rnd1;
         int size_n;
         int inexact;

@@ -77,7 +77,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   int inex;
   unsigned long absn;
-  mp_prec_t prec, pbound, err;
+  mpfr_prec_t prec, pbound, err;
   mp_exp_t exps, expT;
   mpfr_t y, s, t, absz;
   unsigned long k, zz, k0;

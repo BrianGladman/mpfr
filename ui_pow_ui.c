@@ -29,7 +29,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   mp_exp_t err;
   unsigned long m;
   mpfr_t res;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   int size_n;
   int inexact;
   MPFR_ZIV_DECL (loop);

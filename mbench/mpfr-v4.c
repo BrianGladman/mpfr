@@ -81,7 +81,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 int verbose = 0;
 
-void mpfr_bench(mp_prec_t prec_a, mp_prec_t prec_b, mp_prec_t prec_c, 
+void mpfr_bench(mpfr_prec_t prec_a, mpfr_prec_t prec_b, mpfr_prec_t prec_c, 
 		const char *b_str, const char *c_str, unsigned long seed)
 {
   mpfr_t a,b,c;
@@ -135,8 +135,8 @@ void mpfr_bench(mp_prec_t prec_a, mp_prec_t prec_b, mp_prec_t prec_c,
 }
 
 #define MAX_OP 40
-void mpfr_stats (unsigned long num, mp_prec_t prec_a, mp_prec_t prec_b, 
-		 mp_prec_t prec_c, unsigned long seed)
+void mpfr_stats (unsigned long num, mpfr_prec_t prec_a, mpfr_prec_t prec_b, 
+		 mpfr_prec_t prec_c, unsigned long seed)
 {
   mpf_t xt[num],yt[num],zt[num];
   unsigned long long mc[num][MAX_OP], m;
@@ -232,7 +232,7 @@ void mpfr_stats (unsigned long num, mp_prec_t prec_a, mp_prec_t prec_b,
 
 int main(int argc, const char *argv[])
 {
-  mp_prec_t prec_a, prec_b, prec_c;
+  mpfr_prec_t prec_a, prec_b, prec_c;
   unsigned long seed, stat;
   int i;
   const char *b_strptr, *c_strptr;

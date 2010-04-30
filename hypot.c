@@ -31,9 +31,9 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
   int inexact, exact;
   mpfr_t t, te, ti; /* auxiliary variables */
-  mp_prec_t N, Nz; /* size variables */
-  mp_prec_t Nt;   /* precision of the intermediary variable */
-  mp_prec_t threshold;
+  mpfr_prec_t N, Nz; /* size variables */
+  mpfr_prec_t Nt;   /* precision of the intermediary variable */
+  mpfr_prec_t threshold;
   mp_exp_t Ex, sh;
   mpfr_uexp_t diff_exp;
 
@@ -141,7 +141,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
-      mp_prec_t err;
+      mpfr_prec_t err;
 
       exact = mpfr_mul_2si (te, x, sh, MPFR_RNDZ);
       exact |= mpfr_mul_2si (ti, y, sh, MPFR_RNDZ);

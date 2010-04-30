@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static mp_exp_t
 mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
 {
-  mp_prec_t p = MPFR_PREC (s);
+  mpfr_prec_t p = MPFR_PREC (s);
   mpfr_t t, u, invxx;
   mp_exp_t e, exps, f, expu;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
@@ -120,7 +120,7 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
 static int
 mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t p = MPFR_PREC(y) + 10, q;
+  mpfr_prec_t p = MPFR_PREC(y) + 10, q;
   mpfr_t t, u, v;
   mp_exp_t e1, expv;
   int inex;
@@ -201,7 +201,7 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 static int
 mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t p = MPFR_PREC(y) + 10, q;
+  mpfr_prec_t p = MPFR_PREC(y) + 10, q;
   mpfr_t t, u, x_plus_j;
   int inex;
   mp_exp_t errt, erru, expt;

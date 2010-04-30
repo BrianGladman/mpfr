@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 long Buffer[BUFFER_SIZE];
 char *stack = (char *) Buffer;
-mp_prec_t p = PREC_TESTED;
+mpfr_prec_t p = PREC_TESTED;
 
 #define ALIGNED(s) (((s) + sizeof (long) - 1) / sizeof (long) * sizeof (long))
 
@@ -48,7 +48,7 @@ new_st (size_t s)
 
  /* Alloc a new mpfr_t on the main stack */
 static mpfr_ptr
-new_mpfr (mp_prec_t p)
+new_mpfr (mpfr_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
   void *mantissa = new_st (mpfr_custom_get_size (p));

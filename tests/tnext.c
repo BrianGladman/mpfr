@@ -34,7 +34,7 @@ generic_abovebelow (void)
   for (i = 0; i < 20000; i++)
     {
       mpfr_t x, y, z, t;
-      mp_prec_t prec;
+      mpfr_prec_t prec;
       int neg, below;
 
       prec = (randlimb () % 300) + MPFR_PREC_MIN;
@@ -97,7 +97,7 @@ inverse_test (void)
 {
   static const char *tests[] = { "0", "1", "2", "3.1", "Inf" };
   int i, neg, below;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
 
   for (i = 0; i < (int) (sizeof(tests) / sizeof(tests[0])); i++)
     for (neg = 0; neg <= 1; neg++)

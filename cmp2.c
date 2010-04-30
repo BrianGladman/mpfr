@@ -34,12 +34,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 int
-mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
+mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 {
   mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
   mp_size_t bn, cn;
   mpfr_uexp_t diff_exp;
-  mp_prec_t res = 0;
+  mpfr_prec_t res = 0;
   int sign;
 
   /* b=c should not happen, since cmp2 is called only from agm

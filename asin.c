@@ -27,7 +27,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp;
   int compared, inexact;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mp_exp_t xp_exp;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);

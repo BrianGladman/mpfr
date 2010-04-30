@@ -106,7 +106,7 @@ int
 mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 {
   unsigned long n = MPFR_PREC (x);
-  mp_prec_t w; /* working precision */
+  mpfr_prec_t w; /* working precision */
   unsigned long N;
   mpz_t *T, *P, *Q;
   mpfr_t t, q;

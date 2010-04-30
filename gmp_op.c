@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 init_set_z (mpfr_ptr t, mpz_srcptr z)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   int i;
 
   if (mpz_size (z) <= 1)
@@ -101,7 +101,7 @@ mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmp;
   int res;
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
     return mpfr_mul_ui (y, x, 0, rnd_mode);
@@ -122,7 +122,7 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmp;
   int res;
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
     return mpfr_div_ui (y, x, 0, rnd_mode);
@@ -142,7 +142,7 @@ int
 mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t    t,q;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mp_exp_t  err;
   int res;
   MPFR_ZIV_DECL (loop);
@@ -215,7 +215,7 @@ int
 mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
 {
   mpfr_t t,q;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int res;
   mp_exp_t err;
   MPFR_ZIV_DECL (loop);
@@ -295,7 +295,7 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
 {
   mpfr_t t;
   int res;
-  mp_prec_t p;
+  mpfr_prec_t p;
   /* x < a/b ? <=> x*b < a */
   MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
   MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));

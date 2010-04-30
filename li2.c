@@ -135,7 +135,7 @@ static int
 mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t g, h;
-  mp_prec_t w = MPFR_PREC (y) + 20;
+  mpfr_prec_t w = MPFR_PREC (y) + 20;
   int inex = 0;
 
   MPFR_ASSERTN (mpfr_cmp_ui (x, 38) >= 0);
@@ -181,7 +181,7 @@ static int
 mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t g, h;
-  mp_prec_t w = MPFR_PREC (y) + 20;
+  mpfr_prec_t w = MPFR_PREC (y) + 20;
   int inex = 0;
 
   MPFR_ASSERTN (mpfr_cmp_si (x, -7) <= 0);

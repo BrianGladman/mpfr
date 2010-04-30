@@ -144,7 +144,7 @@ static void
 check_inexact (void)
 {
   mpfr_t x, y, z;
-  mp_prec_t px, py;
+  mpfr_prec_t px, py;
   int inexact, cmp;
   unsigned long int u;
   int rnd;

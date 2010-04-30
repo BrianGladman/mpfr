@@ -42,7 +42,7 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
   else
     {
       mp_limb_t *mx;
-      mp_prec_t px;
+      mpfr_prec_t px;
       mp_size_t n;
 
       mx = MPFR_MANT (x);
@@ -79,10 +79,10 @@ mpfr_print_binary (mpfr_srcptr x)
 }
 
 void
-mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
+mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mpfr_prec_t r)
 {
   int i;
-  mp_prec_t count = 0;
+  mpfr_prec_t count = 0;
   char c;
   mp_size_t n = (r - 1) / GMP_NUMB_BITS + 1;
 
@@ -103,11 +103,11 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
 }
 
 void
-mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx,
-                mp_prec_t error)
+mpfr_dump_mant (const mp_limb_t *p, mpfr_prec_t r, mpfr_prec_t precx,
+                mpfr_prec_t error)
 {
   int i;
-  mp_prec_t count = 0;
+  mpfr_prec_t count = 0;
   char c;
   mp_size_t n = (r - 1) / GMP_NUMB_BITS + 1;
 

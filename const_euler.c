@@ -40,7 +40,7 @@ static void mpfr_const_euler_R (mpfr_ptr, unsigned long);
 int
 mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
 {
-  mp_prec_t prec = MPFR_PREC(x), m, log2m;
+  mpfr_prec_t prec = MPFR_PREC(x), m, log2m;
   mpfr_t y, z;
   unsigned long n;
   int inexact;

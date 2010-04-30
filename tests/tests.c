@@ -539,7 +539,7 @@ static void
 test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
          mpfr_rnd_t rnd, int test_one, char *name)
 {
-  mp_prec_t yprec = MPFR_PREC (y);
+  mpfr_prec_t yprec = MPFR_PREC (y);
   mpfr_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
 
   MPFR_ASSERTN (test_one || rnd == MPFR_RNDZ);
@@ -637,7 +637,7 @@ void
 data_check (char *f, int (*foo) (FLIST), char *name)
 {
   FILE *fp;
-  mp_prec_t xprec, yprec;
+  mpfr_prec_t xprec, yprec;
   mpfr_t x, y, z;
   mpfr_rnd_t rnd;
   char r;
@@ -792,7 +792,7 @@ data_check (char *f, int (*foo) (FLIST), char *name)
 void
 bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
            int pos, mp_exp_t emin, mp_exp_t emax,
-           mp_prec_t pymin, mp_prec_t pymax, mp_prec_t psup,
+           mpfr_prec_t pymin, mpfr_prec_t pymax, mpfr_prec_t psup,
            int n)
 {
   mpfr_t x, y, z;
@@ -808,7 +808,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
   mpfr_inits (x, y, z, (mpfr_ptr) 0);
   for (i = 0; i < n; i++)
     {
-      mp_prec_t px, py, pz;
+      mpfr_prec_t px, py, pz;
       int inex;
 
       if (dbg)

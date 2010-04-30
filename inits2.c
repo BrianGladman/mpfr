@@ -35,13 +35,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /*
- * Contrary to mpfr_init2, mp_prec_t p is the first argument
+ * Contrary to mpfr_init2, mpfr_prec_t p is the first argument
  */
 
 /* Explicit support for K&R compiler */
 void
 #if HAVE_STDARG
-mpfr_inits2 (mp_prec_t p, mpfr_ptr x, ...)
+mpfr_inits2 (mpfr_prec_t p, mpfr_ptr x, ...)
 #else
 mpfr_inits2 (va_alist)
  va_dcl
@@ -51,10 +51,10 @@ mpfr_inits2 (va_alist)
 #if HAVE_STDARG
   va_start (arg, x);
 #else
-  mp_prec_t p;
+  mpfr_prec_t p;
   mpfr_ptr x;
   va_start(arg);
-  p =  va_arg (arg, mp_prec_t);
+  p =  va_arg (arg, mpfr_prec_t);
   x =  va_arg (arg, mpfr_ptr);
 #endif
   while (x != 0)

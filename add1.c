@@ -28,7 +28,7 @@ int
 mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t *ap, *bp, *cp;
-  mp_prec_t aq, bq, cq, aq2;
+  mpfr_prec_t aq, bq, cq, aq2;
   mp_size_t an, bn, cn;
   mp_exp_t difw, exp;
   int sh, rb, fb, inex;
@@ -44,7 +44,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cq = MPFR_PREC(c);
 
   an = (aq-1)/GMP_NUMB_BITS+1; /* number of limbs of a */
-  aq2 = (mp_prec_t) an * GMP_NUMB_BITS;
+  aq2 = (mpfr_prec_t) an * GMP_NUMB_BITS;
   sh = aq2 - aq;                  /* non-significant bits in low limb */
 
   bn = (bq-1)/GMP_NUMB_BITS+1; /* number of limbs of b */
@@ -112,7 +112,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     { /* c overlaps with a' */
       mp_limb_t *a2p;
       mp_limb_t cc;
-      mp_prec_t dif;
+      mpfr_prec_t dif;
       mp_size_t difn, k;
       int shift;
 

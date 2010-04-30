@@ -76,7 +76,7 @@ bug20091030 (void)
 {
   mpfr_t x, x_ref;
   int inex, inex_ref;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int r;
 
   mpfr_free_cache ();
@@ -129,7 +129,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mpfr_rnd_t rnd;
 
   tests_start_mpfr ();

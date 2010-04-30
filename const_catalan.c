@@ -86,7 +86,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mpfr_rnd_t rnd_mode)
 {
   mpfr_t x, y, z;
   mpz_t T, P, Q;
-  mp_prec_t pg, p;
+  mpfr_prec_t pg, p;
   int inex;
   MPFR_ZIV_DECL (loop);
   MPFR_GROUP_DECL (group);

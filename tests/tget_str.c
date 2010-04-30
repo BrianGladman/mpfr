@@ -50,7 +50,7 @@ check_small (void)
   mpfr_t x;
   char *s;
   mp_exp_t e;
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   mpfr_init (x);
 
@@ -1072,7 +1072,7 @@ check_large (void)
 #define MAX_DIGITS 100
 
 static void
-check_special (int b, mp_prec_t p)
+check_special (int b, mpfr_prec_t p)
 {
   mpfr_t x;
   int i, j;
@@ -1210,7 +1210,7 @@ main (int argc, char *argv[])
   char s[MAX_DIGITS + 2];
   mp_exp_t e, f;
   size_t m;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int i;
 
   tests_start_mpfr ();

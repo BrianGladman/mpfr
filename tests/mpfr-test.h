@@ -87,7 +87,7 @@ void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mp_exp_t, mp_exp_t));
 void data_check _MPFR_PROTO ((char *, int (*) (FLIST), char *));
 void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
                              char *, int, mp_exp_t, mp_exp_t,
-                             mp_prec_t, mp_prec_t, mp_prec_t, int));
+                             mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,MPFR_RNDN)
@@ -132,7 +132,7 @@ mpfr_print_raw (mpfr_srcptr x)
   else
     {
       mp_limb_t *mx;
-      mp_prec_t px;
+      mpfr_prec_t px;
       mp_size_t n;
 
       mx = MPFR_MANT (x);

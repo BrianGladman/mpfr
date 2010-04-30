@@ -110,7 +110,7 @@ check24 (const char *as, mpfr_rnd_t rnd_mode, const char *qs)
 }
 
 static void
-check_diverse (const char *as, mp_prec_t p, const char *qs)
+check_diverse (const char *as, mpfr_prec_t p, const char *qs)
 {
   mpfr_t q;
 
@@ -187,7 +187,7 @@ special (void)
 {
   mpfr_t x, y, z;
   int inexact;
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -419,7 +419,7 @@ special (void)
 }
 
 static void
-check_inexact (mp_prec_t p)
+check_inexact (mpfr_prec_t p)
 {
   mpfr_t x, y, z;
   mpfr_rnd_t rnd;
@@ -499,7 +499,7 @@ check_nan (void)
 /* check that -1 <= x/sqrt(x^2+s*y^2) <= 1 for rounding to nearest or up
    with s = 0 and s = 1 */
 static void
-test_property1 (mp_prec_t p, mpfr_rnd_t r, int s)
+test_property1 (mpfr_prec_t p, mpfr_rnd_t r, int s)
 {
   mpfr_t x, y, z, t;
 
@@ -538,7 +538,7 @@ test_property1 (mp_prec_t p, mpfr_rnd_t r, int s)
 
 /* check sqrt(x^2) = x */
 static void
-test_property2 (mp_prec_t p, mpfr_rnd_t r)
+test_property2 (mpfr_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t x, y;
 
@@ -568,7 +568,7 @@ test_property2 (mp_prec_t p, mpfr_rnd_t r)
 int
 main (void)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   int k;
 
   tests_start_mpfr ();

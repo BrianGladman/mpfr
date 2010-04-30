@@ -216,7 +216,7 @@ heap_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
  * Internal use function.
  */
 static int
-sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mp_prec_t F)
+sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mpfr_prec_t F)
 {
   mpfr_t sum;
   unsigned long i;
@@ -243,7 +243,7 @@ int
 mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
 {
   mpfr_t cur_sum;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_srcptr *perm, *const tab = (mpfr_srcptr *) tab_p;
   int k, error_trap;
   MPFR_ZIV_DECL (loop);

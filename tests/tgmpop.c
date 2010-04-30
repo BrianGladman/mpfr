@@ -199,11 +199,11 @@ check_for_zero (void)
 }
 
 static void
-test_cmp_z (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+test_cmp_z (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
 {
   mpfr_t x, z;
   mpz_t  y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int res1, res2;
   int n;
 
@@ -237,11 +237,11 @@ test_cmp_z (mp_prec_t pmin, mp_prec_t pmax, int nmax)
 }
 
 static void
-test_cmp_q (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+test_cmp_q (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
 {
   mpfr_t x, z;
   mpq_t  y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int res1, res2;
   int n;
 
@@ -275,11 +275,11 @@ test_cmp_q (mp_prec_t pmin, mp_prec_t pmax, int nmax)
 }
 
 static void
-test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+test_cmp_f (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
 {
   mpfr_t x, z;
   mpf_t  y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int res1, res2;
   int n;
 
@@ -390,11 +390,11 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t),
 }
 
 static void
-test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
+test_genericz (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
                int (*func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t),
                const char *op)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
   mpz_t  arg2;
   mpfr_rnd_t rnd;
@@ -467,11 +467,11 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 }
 
 static void
-test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
+test_genericq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
                int (*func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t),
                const char *op)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
   mpq_t  arg2;
   mpfr_rnd_t rnd;
@@ -547,7 +547,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 }
 
 static void
-test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
+test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
                int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t),
                void (*mpq_func)(mpq_ptr, mpq_srcptr, mpq_srcptr),
                const char *op)
@@ -555,7 +555,7 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
   mpfr_t fra, frb, frq;
   mpq_t  q1, q2, qr;
   unsigned int n;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
 
   for (prec = p0 ; prec < p1 ; prec++)
     {

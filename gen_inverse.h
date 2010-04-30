@@ -43,8 +43,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 FUNCTION (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t precy; /* target precision */
-  mp_prec_t m;     /* working precision */
+  mpfr_prec_t precy; /* target precision */
+  mpfr_prec_t m;     /* working precision */
   mpfr_t z;        /* temporary variable to store INVERSE(x) */
   int inexact;     /* inexact flag */
   MPFR_ZIV_DECL (loop);

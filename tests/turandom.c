@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-test_urandom (long nbtests, mp_prec_t prec, mpfr_rnd_t rnd, long bit_index,
+test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
               int verbose)
 {
   mpfr_t x;
@@ -158,7 +158,7 @@ int
 main (int argc, char *argv[])
 {
   long nbtests;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   int verbose = 0;
   mpfr_rnd_t rnd;
   long bit_index;

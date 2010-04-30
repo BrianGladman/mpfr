@@ -256,12 +256,12 @@ main (void)
 {
   int i, base;
   mpfr_t x;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mp_exp_t e;
 
   mpfr_init (x);
   printf ("struct dymmy_test { \n"
-          " mp_prec_t prec; \n"
+          " mpfr_prec_t prec; \n"
           " int base; \n"
           " const char *str; \n"
           " const char *binstr; \n"
@@ -286,7 +286,7 @@ main (void)
 #endif
 
 static struct dymmy_test {
- mp_prec_t prec;
+ mpfr_prec_t prec;
  int base;
  const char *str;
  const char *binstr;
@@ -598,7 +598,7 @@ check_reftable (void)
 {
   int i, base;
   mpfr_t x, y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   char *s;
 
   mpfr_init2 (x, 200);

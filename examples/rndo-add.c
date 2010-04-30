@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int main (int argc, char **argv)
 {
   mpfr_t LIST;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   int pprec;       /* will be prec - 1 for mpfr_printf */
 
   if (argc != 4)

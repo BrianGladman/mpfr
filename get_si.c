@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 long
 mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   long s;
   mpfr_t x;
 

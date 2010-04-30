@@ -74,7 +74,7 @@ test_int (void)
   unsigned long n0 = 1, n1 = 80, n;
   mpz_t f;
   mpfr_t x, y;
-  mp_prec_t prec_f, p;
+  mpfr_prec_t prec_f, p;
   int r;
   int inex1, inex2;
 

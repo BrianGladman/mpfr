@@ -42,7 +42,7 @@ int
 mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
 {
   int inexact;
-  mp_prec_t p, q;
+  mpfr_prec_t p, q;
   mpfr_t tmp1, tmp2;
   mp_limb_t *tmp1p, *tmp2p;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -103,7 +103,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
 
   /* use initial precision about q+lg(q)+5 */
   p = q + 5 + 2 * MPFR_INT_CEIL_LOG2 (q);
-  /* % ~(mp_prec_t)GMP_NUMB_BITS  ;
+  /* % ~(mpfr_prec_t)GMP_NUMB_BITS  ;
      m=q; while (m) { p++; m >>= 1; }  */
   /* if (MPFR_LIKELY(p % GMP_NUMB_BITS != 0))
       p += GMP_NUMB_BITS - (p%GMP_NUMB_BITS); */

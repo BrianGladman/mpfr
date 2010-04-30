@@ -438,7 +438,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 static int
 parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mp_exp_t  exp;
   mp_exp_t  ysize_bits;
   mp_limb_t *y, *result;

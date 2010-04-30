@@ -411,11 +411,11 @@ pow_si_long_min (void)
 }
 
 static void
-check_inexact (mp_prec_t p)
+check_inexact (mpfr_prec_t p)
 {
   mpfr_t x, y, z, t;
   unsigned long u;
-  mp_prec_t q;
+  mpfr_prec_t q;
   int inexact, cmp;
   int rnd;
 
@@ -1371,7 +1371,7 @@ bug20080820 (void)
 int
 main (int argc, char **argv)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   tests_start_mpfr ();
 

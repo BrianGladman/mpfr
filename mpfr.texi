@@ -557,11 +557,11 @@ the sign bit of a NaN is unspecified.
 
 
 @cindex Precision
-@tindex @code{mp_prec_t}
+@tindex @code{mpfr_prec_t}
 @noindent
 The @dfn{precision} is the number of bits used to represent the significand
 of a floating-point number;
-the corresponding C data type is @code{mp_prec_t}.
+the corresponding C data type is @code{mpfr_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
 is equal to 2.
@@ -897,7 +897,7 @@ An @code{mpfr_t} object must be initialized before storing the first value in
 it.  The functions @code{mpfr_init} and @code{mpfr_init2} are used for that
 purpose.
 
-@deftypefun void mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun void mpfr_init2 (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Initialize @var{x}, set its precision to be @strong{exactly}
 @var{prec} bits and its value to NaN. (Warning: the corresponding
 @code{mpf} functions initialize to zero instead.)
@@ -910,7 +910,7 @@ The precision @var{prec} must be an integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX} (otherwise the behavior is undefined).
 @end deftypefun
 
-@deftypefun void mpfr_inits2 (mp_prec_t @var{prec}, mpfr_t @var{x}, ...)
+@deftypefun void mpfr_inits2 (mpfr_prec_t @var{prec}, mpfr_t @var{x}, ...)
 Initialize all the @code{mpfr_t} variables of the given @code{va_list},
 set their precision to be @strong{exactly}
 @var{prec} bits and their value to NaN.
@@ -997,7 +997,7 @@ due to the @code{MPFR_DECL_INIT} implementation.
 @end itemize
 @end defmac
 
-@deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
+@deftypefun void mpfr_set_default_prec (mpfr_prec_t @var{prec})
 Set the default precision to be @strong{exactly} @var{prec} bits.  The
 precision of a variable means the number of bits used to store its significand.
 All
@@ -1008,7 +1008,7 @@ The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 @end deftypefun
 
-@deftypefun mp_prec_t mpfr_get_default_prec (void)
+@deftypefun mpfr_prec_t mpfr_get_default_prec (void)
 Return the default MPFR precision in bits.
 @end deftypefun
 
@@ -1033,7 +1033,7 @@ calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
-@deftypefun void mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun void mpfr_set_prec (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits,
 and set its value to NaN.
 The previous value stored in @var{x} is lost. It is equivalent to
@@ -1047,7 +1047,7 @@ In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_prec_round} instead.
 @end deftypefun
 
-@deftypefun mp_prec_t mpfr_get_prec (mpfr_t @var{x})
+@deftypefun mpfr_prec_t mpfr_get_prec (mpfr_t @var{x})
 Return the precision actually used for assignments of @var{x}, i.e.@: the
 number of bits used to store its significand.
 @end deftypefun
@@ -2072,7 +2072,7 @@ and @samp{P}:
 @item @samp{N}  @tab @code{mp_limb_t} array, integer conversions
 @item @samp{Z}  @tab @code{mpz_t}, integer conversions
 
-@item @samp{P}  @tab @code{mp_prec_t}, integer conversions
+@item @samp{P}  @tab @code{mpfr_prec_t}, integer conversions
 @item @samp{R}  @tab @code{mpfr_t}, float conversions
 @end multitable
 @end quotation
@@ -2098,15 +2098,15 @@ With conversion specification not involving @samp{P} and @samp{R} types,
 @code{mpfr_printf} behaves exactly as @code{gmp_printf}.
 
 The @samp{P} type specifies that a following @samp{o}, @samp{u}, @samp{x}, or
-@samp{X} conversion specifier applies to a @code{mp_prec_t} argument.
-It is needed because the @code{mp_prec_t} type does not necessarily
+@samp{X} conversion specifier applies to a @code{mpfr_prec_t} argument.
+It is needed because the @code{mpfr_prec_t} type does not necessarily
 correspond to an @code{unsigned int} or any fixed standard type.
 The @samp{precision} field specifies the minimum number of digits to
 appear. The default @samp{precision} is 1.
 For example:
 @example
 mpfr_t x;
-mp_prec_t p;
+mpfr_prec_t p;
 mpfr_init (x);
 @dots{}
 p = mpfr_get_prec (x);
@@ -2376,7 +2376,7 @@ The default rounding mode is to nearest initially.
 Get the default rounding mode.
 @end deftypefun
 
-@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mpfr_prec_t @var{prec}, mpfr_rnd_t @var{rnd})
 Round @var{x} according to @var{rnd} with precision @var{prec}, which
 must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
 (otherwise the behavior is undefined).
@@ -2400,11 +2400,11 @@ already an approximation to @var{n} bits:
 @end example
 @end deftypefun
 
-@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mpfr_rnd_t @var{rnd}, mp_prec_t @var{prec})
+@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mpfr_rnd_t @var{rnd}, mpfr_prec_t @var{prec})
 [This function is obsolete. Please use @code{mpfr_prec_round} instead.]
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mp_prec_t @var{prec})
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
 E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
@@ -2769,7 +2769,7 @@ to zero, whereas the corresponding MPFR functions initialize to NaN:
 this is useful to detect uninitialized values, but is slightly incompatible
 with @code{mpf}.
 
-@deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
 The only difference with @code{mpfr_set_prec} is that @var{prec} is assumed to
 be small enough so that the significand fits into the current allocated memory
@@ -2835,18 +2835,18 @@ GMP Custom Allocation, allocates its memory on the application stack.
 
 Note 3: This interface is preliminary.
 
-@deftypefun size_t mpfr_custom_get_size (mp_prec_t @var{prec})
+@deftypefun size_t mpfr_custom_get_size (mpfr_prec_t @var{prec})
 Return the needed size in bytes to store the significand of a FP number
 of precision @var{prec}.
 @end deftypefun
 
-@deftypefun void mpfr_custom_init (void *@var{significand}, mp_prec_t @var{prec})
+@deftypefun void mpfr_custom_init (void *@var{significand}, mpfr_prec_t @var{prec})
 Initialize a significand of precision @var{prec}.
 @var{significand} must be an area of @code{mpfr_custom_get_size (prec)} bytes
 at least and be suitably aligned for an array of @code{mp_limb_t}.
 @end deftypefun
 
-@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mp_prec_t @var{prec}, void *@var{significand})
+@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mpfr_prec_t @var{prec}, void *@var{significand})
 Perform a dummy initialization of a @code{mpfr_t} and set it to:
 @itemize
 @item if @code{ABS(kind) == MPFR_NAN_KIND}, @var{x} is set to NaN;

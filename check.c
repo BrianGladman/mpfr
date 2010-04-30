@@ -47,7 +47,7 @@ mpfr_check (mpfr_srcptr x)
   /* Check size of mantissa */
   s = MPFR_GET_ALLOC_SIZE(x);
   if (s<=0 || s > MP_SIZE_T_MAX ||
-      MPFR_PREC(x) > ((mp_prec_t)s*GMP_NUMB_BITS))
+      MPFR_PREC(x) > ((mpfr_prec_t)s*GMP_NUMB_BITS))
     return 0;
   /* Acces all the mp_limb of the mantissa: may do a seg fault */
   for(i = 0 ; i < s ; i++)

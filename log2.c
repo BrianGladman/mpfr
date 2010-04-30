@@ -91,8 +91,8 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t, tt;
     /* Declaration of the size variable */
-    mp_prec_t Ny = MPFR_PREC(r);              /* target precision */
-    mp_prec_t Nt;                             /* working precision */
+    mpfr_prec_t Ny = MPFR_PREC(r);              /* target precision */
+    mpfr_prec_t Nt;                             /* working precision */
     mp_exp_t err;                             /* error */
     MPFR_ZIV_DECL (loop);
 

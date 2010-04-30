@@ -205,7 +205,7 @@ static void
 check_regression (void)
 {
   mpfr_t x, y;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int i;
 
   p = strlen (xs) - 2 - 3;

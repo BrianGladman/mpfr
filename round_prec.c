@@ -46,11 +46,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "round_raw_generic.c"
 
 int
-mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mpfr_rnd_t rnd_mode)
+mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t *tmp, *xp;
   int carry, inexact;
-  mp_prec_t nw, ow;
+  mpfr_prec_t nw, ow;
   MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
@@ -119,7 +119,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mpfr_rnd_t rnd_mode)
 
 int
 mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
-                mpfr_rnd_t rnd2, mp_prec_t prec)
+                mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
     return 0; /* We cannot round if Zero, Nan or Inf */
@@ -130,9 +130,9 @@ mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
 
 int
 mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
-                    mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mp_prec_t prec)
+                    mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
-  mp_prec_t err;
+  mpfr_prec_t err;
   mp_size_t k, k1, tn;
   int s, s1;
   mp_limb_t cc, cc2;
@@ -141,7 +141,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   if (MPFR_UNLIKELY(err0 < 0 || (mpfr_uexp_t) err0 <= prec))
     return 0;  /* can't round */
-  else if (MPFR_UNLIKELY (prec > (mp_prec_t) bn * GMP_NUMB_BITS))
+  else if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
     { /* then ulp(b) < precision < error */
       return rnd2 == MPFR_RNDN && (mpfr_uexp_t) err0 - 2 >= prec;
       /* can round only in rounding to the nearest and err0 >= prec + 2 */
@@ -152,8 +152,8 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */
-  err = ((mpfr_uexp_t) err0 > (mp_prec_t) bn * GMP_NUMB_BITS) ?
-    (mp_prec_t) bn * GMP_NUMB_BITS : (mp_prec_t) err0;
+  err = ((mpfr_uexp_t) err0 > (mpfr_prec_t) bn * GMP_NUMB_BITS) ?
+    (mpfr_prec_t) bn * GMP_NUMB_BITS : (mpfr_prec_t) err0;
 
   /* warning: if k = m*GMP_NUMB_BITS, consider limb m-1 and not m */
   k = (err - 1) / GMP_NUMB_BITS;
@@ -168,7 +168,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* don't need to consider the k1 most significant limbs */
   k -= k1;
   bn -= k1;
-  prec -= (mp_prec_t) k1 * GMP_NUMB_BITS;
+  prec -= (mpfr_prec_t) k1 * GMP_NUMB_BITS;
 
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */

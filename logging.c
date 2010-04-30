@@ -40,7 +40,7 @@ int   mpfr_log_level;
 int   mpfr_log_base;
 int   mpfr_log_current;
 int   mpfr_log_worstcase_limit;
-mp_prec_t mpfr_log_prec;
+mpfr_prec_t mpfr_log_prec;
 
 static int
 mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
@@ -51,8 +51,8 @@ mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
 
   /* TODO: Use much more flag from info  */
   mpfr_srcptr w = *((mpfr_srcptr *) (arg[0]));
-  mp_prec_t prec = mpfr_log_prec != 0 ? mpfr_log_prec
-    : info->width == -1 ? 0 : (mp_prec_t) info->width;
+  mpfr_prec_t prec = mpfr_log_prec != 0 ? mpfr_log_prec
+    : info->width == -1 ? 0 : (mpfr_prec_t) info->width;
 
   org_type_logging = mpfr_log_type;
   mpfr_log_type = 0; /* We disable the logging during this print! */

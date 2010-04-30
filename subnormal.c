@@ -105,7 +105,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
   else /* Hard case: It is more or less the same problem than mpfr_cache */
     {
       mpfr_t dest;
-      mp_prec_t q;
+      mpfr_prec_t q;
       int sign;
 
       /* Compute the intermediary precision */

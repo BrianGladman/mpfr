@@ -211,7 +211,7 @@ test_against_libc (void)
 #endif
 
 static void
-err (char *str, mp_size_t s, mpfr_t x, mpfr_t y, mp_prec_t p, mpfr_rnd_t r,
+err (char *str, mp_size_t s, mpfr_t x, mpfr_t y, mpfr_prec_t p, mpfr_rnd_t r,
      int trint, int inexact)
 {
   printf ("Error: %s\ns = %u, p = %u, r = %s, trint = %d, inexact = %d\nx = ",
@@ -229,7 +229,7 @@ main (int argc, char *argv[])
 {
   mp_size_t s;
   mpz_t z;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mpfr_t x, y, t, u, v;
   int r;
   int inexact, sign_t;

@@ -144,7 +144,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   mpfr_t b, c, z_pre, f, s1;
   double beta, sd, dnep;
   mpfr_t *tc1;
-  mp_prec_t precz, precs, d, dint;
+  mpfr_prec_t precz, precs, d, dint;
   int p, n, l, add;
   int inex;
   MPFR_GROUP_DECL (group);
@@ -300,7 +300,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   mpfr_t z_pre, s1, y, p;
   double sd, eps, m1, c;
   long add;
-  mp_prec_t precz, prec1, precs, precs1;
+  mpfr_prec_t precz, prec1, precs, precs1;
   int inex;
   MPFR_GROUP_DECL (group);
   MPFR_ZIV_DECL (loop);

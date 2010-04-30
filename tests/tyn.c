@@ -30,7 +30,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y;
   long n;
-  mp_prec_t prec = 53;
+  mpfr_prec_t prec = 53;
 
   tests_start_mpfr ();
 

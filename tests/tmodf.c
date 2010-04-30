@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 static void
 check (const char *xis, const char *xfs, const char *xs,
-       mp_prec_t xip, mp_prec_t xfp, mp_prec_t xp,
+       mpfr_prec_t xip, mpfr_prec_t xfp, mpfr_prec_t xp,
        int expected_return, mpfr_rnd_t rnd_mode)
 {
   int inexact;

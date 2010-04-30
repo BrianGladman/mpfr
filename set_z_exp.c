@@ -64,7 +64,7 @@ mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mp_exp_t e, mpfr_rnd_t rnd_mode)
      and exp = zn * GMP_NUMB_BITS + e - k
              <= (zn + en) * GMP_NUMB_BITS - k + GMP_NUMB_BITS - 1
              <= MPFR_EMAX_MAX + 2 * GMP_NUMB_BITS - 1 */
-  exp = (mp_prec_t) zn * GMP_NUMB_BITS + e - k;
+  exp = (mpfr_prec_t) zn * GMP_NUMB_BITS + e - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
   if (MPFR_UNLIKELY (exp > __gmpfr_emax))
     return mpfr_overflow (f, rnd_mode, sign_z);

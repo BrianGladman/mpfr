@@ -32,13 +32,13 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y, z;
 
-  mp_prec_t prec, yprec;
+  mpfr_prec_t prec, yprec;
   mpfr_t t, s;
   mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n, err;
 
-  mp_prec_t p0=2, p1=100;
+  mpfr_prec_t p0=2, p1=100;
   unsigned int N=25;
 
   tests_start_mpfr ();

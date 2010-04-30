@@ -136,7 +136,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t bx,cx;
   mpfr_uexp_t d;
-  mp_prec_t p, sh, cnt;
+  mpfr_prec_t p, sh, cnt;
   mp_size_t n;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t limb;
@@ -604,9 +604,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                  compute Cp+1 and C'p+2 from mantissa C */
               mp_limb_t *tp = MPFR_MANT(c);
               /* Start from bit x=(p+1)-d in mantissa C */
-              mp_prec_t x  = p+1-d;
+              mpfr_prec_t x  = p+1-d;
               mp_size_t kx = n-1 - (x/GMP_NUMB_BITS);
-              mp_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
+              mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
               MPFR_ASSERTD(p > d);
               DEBUG (printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
                              (unsigned long) x, (long) kx,

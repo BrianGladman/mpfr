@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 check_inexact (void)
 {
-  mp_prec_t p, q;
+  mpfr_prec_t p, q;
   mpfr_t x, y, absx;
   int rnd;
   int inexact, cmp;

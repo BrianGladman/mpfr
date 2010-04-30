@@ -26,11 +26,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check_inexact (mp_prec_t p)
+check_inexact (mpfr_prec_t p)
 {
   mpfr_t x, y, z;
   unsigned long u;
-  mp_prec_t q;
+  mpfr_prec_t q;
   int inexact, cmp;
   int rnd;
 
@@ -85,7 +85,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y;
   unsigned int xprec, yprec, i;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mp_exp_t emax;
 
   tests_start_mpfr ();

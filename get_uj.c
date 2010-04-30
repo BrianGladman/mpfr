@@ -47,7 +47,7 @@ uintmax_t
 mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   uintmax_t r;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_t x;
 
   if (!mpfr_fits_uintmax_p (f, rnd))
@@ -77,7 +77,7 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
       MPFR_ASSERTN (MPFR_IS_POS (x));
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
-      MPFR_ASSERTN ((mp_prec_t) sh <= prec);
+      MPFR_ASSERTN ((mpfr_prec_t) sh <= prec);
       for (n = MPFR_LIMB_SIZE(x) - 1; n >= 0; n--)
         {
           sh -= GMP_NUMB_BITS;

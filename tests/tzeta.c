@@ -199,7 +199,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t s, y, z;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_rnd_t rnd_mode;
   int inex;
 

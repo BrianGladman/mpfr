@@ -467,7 +467,7 @@ static void
 check_inexact (void)
 {
   mpfr_t x, y, z, u;
-  mp_prec_t px, py, pu, pz;
+  mpfr_prec_t px, py, pu, pz;
   int inexact, cmp;
   mpfr_rnd_t rnd;
 
@@ -627,7 +627,7 @@ static void
 check_overflow (void)
 {
   mpfr_t a, b, c;
-  mp_prec_t prec_a;
+  mpfr_prec_t prec_a;
   int r;
 
   mpfr_init2 (a, 256);
@@ -676,7 +676,7 @@ check_1111 (void)
   mpfr_set_ui (one, 1, MPFR_RNDN);
   for (n = 0; n < NUM; n++)
     {
-      mp_prec_t prec_a, prec_b, prec_c;
+      mpfr_prec_t prec_a, prec_b, prec_c;
       mp_exp_t tb=0, tc, diff;
       mpfr_t a, b, c, s;
       int m = 512;
@@ -747,7 +747,7 @@ check_1111 (void)
 static void
 check_1minuseps (void)
 {
-  static mp_prec_t prec_a[] = {
+  static mpfr_prec_t prec_a[] = {
     MPFR_PREC_MIN, 30, 31, 32, 33, 62, 63, 64, 65, 126, 127, 128, 129
   };
   static int supp_b[] = {
@@ -761,7 +761,7 @@ check_1minuseps (void)
   for (ia = 0; ia < numberof (prec_a); ia++)
     for (ib = 0; ib < numberof(supp_b); ib++)
       {
-        mp_prec_t prec_b;
+        mpfr_prec_t prec_b;
         int rnd_mode;
 
         prec_b = prec_a[ia] + supp_b[ib];

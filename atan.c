@@ -41,12 +41,12 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   unsigned long n, i, k, j, l;
   mp_exp_t diff, expo;
   int im, done;
-  mp_prec_t mult, *accu, *log2_nb_terms;
-  mp_prec_t precy = MPFR_PREC(y);
+  mpfr_prec_t mult, *accu, *log2_nb_terms;
+  mpfr_prec_t precy = MPFR_PREC(y);
 
   MPFR_ASSERTD(mpz_cmp_ui (p, 0) != 0);
 
-  accu = (mp_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mp_prec_t));
+  accu = (mpfr_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mpfr_prec_t));
   log2_nb_terms = accu + m + 1;
 
   /* Set Tables */
@@ -163,7 +163,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
     }
-  (*__gmp_free_func) (accu, (2 * m + 2) * sizeof (mp_prec_t));
+  (*__gmp_free_func) (accu, (2 * m + 2) * sizeof (mpfr_prec_t));
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2 * precy;
@@ -193,7 +193,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpz_t  ukz;
   mpz_t *tabz;
   mp_exp_t exptol;
-  mp_prec_t prec, realprec, est_lost, lost;
+  mpfr_prec_t prec, realprec, est_lost, lost;
   unsigned long twopoweri, log2p, red;
   int comparaison, inexact;
   int i, n0, oldn0;
@@ -278,7 +278,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       /* First, if |x| < 1, we need to have more prec to be able to round (sup)
          n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
-      mp_prec_t sup;
+      mpfr_prec_t sup;
       sup = MPFR_GET_EXP (xp) < 0 ? 2 - MPFR_GET_EXP (xp) : 1; /* sup >= 1 */
 
       n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);

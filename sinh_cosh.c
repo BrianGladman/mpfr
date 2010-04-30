@@ -77,7 +77,7 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
   {
     mpfr_t s, c, ti;
     mp_exp_t d;
-    mp_prec_t N;    /* Precision of the intermediary variables */
+    mpfr_prec_t N;    /* Precision of the intermediary variables */
     long int err;    /* Precision of error */
     MPFR_ZIV_DECL (loop);
     MPFR_SAVE_EXPO_DECL (expo);

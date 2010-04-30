@@ -265,7 +265,7 @@ main (void)
 {
   mpfr_t x;
   int r;
-  mp_prec_t p;
+  mpfr_prec_t p;
   unsigned long k;
 
   tests_start_mpfr ();

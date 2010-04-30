@@ -124,7 +124,7 @@ unsigned long num;
 mpf_t *xt, *yt, *zt;
 int smooth = 3; /* (default) minimal number of routine calls for each number */
 
-void lets_start(unsigned long n, mp_prec_t p)
+void lets_start(unsigned long n, mpfr_prec_t p)
 {
   unsigned long i;
   gmp_randstate_t state;
@@ -167,7 +167,7 @@ void lets_end(void)
   free (zt);
 }
 
-double get_speed(mp_prec_t p, int select)
+double get_speed(mpfr_prec_t p, int select)
 {
   unsigned long long mc[num], m;
   mpfr_t a,b,c;
@@ -241,12 +241,12 @@ double get_speed(mp_prec_t p, int select)
 int
 write_data (const char *filename, 
 	    unsigned long num,
-	    mp_prec_t p1, mp_prec_t p2, mp_prec_t ps, float pr,
+	    mpfr_prec_t p1, mpfr_prec_t p2, mpfr_prec_t ps, float pr,
 	    int select1, int select2, int postscript)
 {
   char strf[256], strg[256];
   FILE *f, *g;
-  mp_prec_t p, step;
+  mpfr_prec_t p, step;
   int op = 0;
 
   lets_start (num, p2);
@@ -289,7 +289,7 @@ write_data (const char *filename,
               get_speed(p, select2));
       if (pr != 0.0)
         {
-          step = (mp_prec_t) (p * pr - p);
+          step = (mpfr_prec_t) (p * pr - p);
           if (step < 1)
             step = 1;
         }
@@ -310,11 +310,11 @@ write_data (const char *filename,
 int
 write_data2 (const char *filename, 
 	     unsigned long num,
-	     mp_prec_t p_begin, mp_prec_t p_end, mp_prec_t p_step, float p_r,
+	     mpfr_prec_t p_begin, mpfr_prec_t p_end, mpfr_prec_t p_step, float p_r,
 	     int s_begin, int s_end)
 {
   FILE *f;
-  mp_prec_t p, step;
+  mpfr_prec_t p, step;
   int s;
 
   lets_start (num, p_end);
@@ -335,7 +335,7 @@ write_data2 (const char *filename,
       fprintf (f, "\n");
       if (p_r != 0.0)
         {
-          step = (mp_prec_t) (p * p_r - p);
+          step = (mpfr_prec_t) (p * p_r - p);
           if (step < 1)
             step = 1;
         }
@@ -357,7 +357,7 @@ int op_num (void)
 
 int main(int argc, const char *argv[])
 {
-  mp_prec_t p1, p2, ps;
+  mpfr_prec_t p1, p2, ps;
   float pr;
   int i;
   unsigned long stat;

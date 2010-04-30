@@ -89,7 +89,7 @@ mpfr_compare (mpfr_srcptr a, mpfr_srcptr b)
 
 static void
 test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
-       char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+       char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1;
@@ -160,7 +160,7 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
 static void
 test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                        mpfr_rnd_t),
-       char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+       char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref, op1, op2, op3;
   mpfr_t res;
@@ -288,7 +288,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
 
 static void
 test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
-         char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+         char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref1, ref2;
   unsigned int ref3;
@@ -333,7 +333,7 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
 
 static void
 testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
-         char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+         char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref1, ref3;
   unsigned int ref2;
@@ -374,7 +374,7 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
 /* foo(mpfr_ptr, mpfr_srcptr, mp_rndt) */
 static void
 test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
-       char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+       char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref1, ref2;
   mpfr_t res1;
@@ -414,7 +414,7 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
 /* foo(mpfr_ptr, mpfr_srcptr) */
 static void
 test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
-        char *foo, mp_prec_t prec)
+        char *foo, mpfr_prec_t prec)
 {
   mpfr_t ref1, ref2;
   mpfr_t res1;
@@ -454,7 +454,7 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
 /* one operand, two results */
 static void
 test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
-        char *foo, mp_prec_t prec, mpfr_rnd_t rnd)
+        char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1, res2;
@@ -520,7 +520,7 @@ int
 main (void)
 {
   int rnd;
-  mp_prec_t p;
+  mpfr_prec_t p;
   tests_start_mpfr ();
 
   p = (randlimb () % 200)+ MPFR_PREC_MIN;

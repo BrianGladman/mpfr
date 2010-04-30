@@ -51,7 +51,7 @@ worst_cases (void)
 {
   mpfr_t x, y;
   unsigned int i, j, k, b, expected;
-  mp_prec_t l;
+  mpfr_prec_t l;
 
   mpfr_init2 (x, 200);
   mpfr_init2 (y, 200);
@@ -142,7 +142,7 @@ static void
 tcmp2 (double x, double y, int i)
 {
   mpfr_t xx, yy;
-  mp_prec_t j;
+  mpfr_prec_t j;
 
   if (i == -1)
     {
@@ -183,7 +183,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  mp_prec_t j;
+  mpfr_prec_t j;
 
   mpfr_init (x); mpfr_init (y);
 

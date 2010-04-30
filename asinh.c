@@ -31,7 +31,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   int signx, neg;
-  mp_prec_t Ny, Nt;
+  mpfr_prec_t Ny, Nt;
   mpfr_t t; /* auxiliary variables */
   mp_exp_t err;
   MPFR_SAVE_EXPO_DECL (expo);

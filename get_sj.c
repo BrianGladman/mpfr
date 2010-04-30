@@ -47,7 +47,7 @@ intmax_t
 mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   intmax_t r;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_t x;
 
   if (!mpfr_fits_intmax_p (f, rnd))
@@ -80,9 +80,9 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
-      MPFR_ASSERTN ((mp_prec_t) sh <= prec);
+      MPFR_ASSERTN ((mpfr_prec_t) sh <= prec);
       if (INTMAX_MIN + INTMAX_MAX != 0
-          && MPFR_UNLIKELY ((mp_prec_t) sh == prec))
+          && MPFR_UNLIKELY ((mpfr_prec_t) sh == prec))
         {
           /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
              has the same size as intmax_t, we cannot use the code in

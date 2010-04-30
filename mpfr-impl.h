@@ -206,7 +206,7 @@ extern "C" {
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR unsigned int __gmpfr_flags;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emin;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emax;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mp_prec_t    __gmpfr_default_fp_bit_precision;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
@@ -1127,7 +1127,7 @@ typedef struct {
   do {                                                                      \
     mp_size_t _dests, _srcs;                                                \
     mp_limb_t *_destp;                                                      \
-    mp_prec_t _destprec, _srcprec;                                          \
+    mpfr_prec_t _destprec, _srcprec;                                        \
                                                                             \
     /* Check Trivial Case when Dest Mantissa has more bits than source */   \
     _srcprec = sprec;                                                       \
@@ -1135,8 +1135,8 @@ typedef struct {
     _destp = MPFR_MANT (dest);                                              \
     if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
       {                                                                     \
-        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
-        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS - _srcs; \
+        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
+        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS - _srcs;       \
         MPN_COPY (_destp + _dests, srcp, _srcs);                            \
         MPN_ZERO (_destp, _dests);                                          \
         inexact = 0;                                                        \
@@ -1144,17 +1144,17 @@ typedef struct {
     else                                                                    \
       {                                                                     \
         /* Non trivial case: rounding needed */                             \
-        mp_prec_t _sh;                                                      \
+        mpfr_prec_t _sh;                                                    \
         mp_limb_t *_sp;                                                     \
         mp_limb_t _rb, _sb, _ulp;                                           \
                                                                             \
         /* Compute Position and shift */                                    \
-        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
-        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;         \
+        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
+        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
         MPFR_UNSIGNED_MINUS_MODULO (_sh, _destprec);                        \
         _sp = srcp + _srcs - _dests;                                        \
                                                                             \
-        /* General case when prec % GMP_NUMB_BITS != 0 */                \
+        /* General case when prec % GMP_NUMB_BITS != 0 */                   \
         if (MPFR_LIKELY (_sh != 0))                                         \
           {                                                                 \
             mp_limb_t _mask;                                                \
@@ -1189,7 +1189,7 @@ typedef struct {
             _ulp = MPFR_LIMB_ONE;                                           \
           }                                                                 \
         /* Rounding */                                                      \
-        if (MPFR_LIKELY (rnd == MPFR_RNDN))                                  \
+        if (MPFR_LIKELY (rnd == MPFR_RNDN))                                 \
           {                                                                 \
             if (_rb == 0)                                                   \
               {                                                             \
@@ -1354,7 +1354,7 @@ typedef struct {
 
 #ifndef MPFR_USE_LOGGING
 
-#define MPFR_ZIV_DECL(_x) mp_prec_t _x
+#define MPFR_ZIV_DECL(_x) mpfr_prec_t _x
 #define MPFR_ZIV_INIT(_x, _p) (_x) = GMP_NUMB_BITS
 #define MPFR_ZIV_NEXT(_x, _p) ((_p) += (_x), (_x) = (_p)/2)
 #define MPFR_ZIV_FREE(x)
@@ -1371,7 +1371,7 @@ typedef struct {
 
 /* Use LOGGING */
 #define MPFR_ZIV_DECL(_x)                                     \
-  mp_prec_t _x;                                               \
+  mpfr_prec_t _x;                                             \
   int _x ## _cpt = 1;                                         \
   static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
   static const char *_x ## _fname = __func__;                 \
@@ -1433,7 +1433,7 @@ __MPFR_DECLSPEC extern int   mpfr_log_type;
 __MPFR_DECLSPEC extern int   mpfr_log_level;
 __MPFR_DECLSPEC extern int   mpfr_log_current;
 __MPFR_DECLSPEC extern int   mpfr_log_base;
-__MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
+__MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 
 #if defined (__cplusplus)
  }
@@ -1514,12 +1514,12 @@ struct mpfr_group_t {
  }} while (0)
 
 #define MPFR_GROUP_INIT_TEMPLATE(g, prec, num, handler) do {            \
- mp_prec_t _prec = (prec);                                              \
+ mpfr_prec_t _prec = (prec);                                            \
  mp_size_t _size;                                                       \
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mp_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS; \
+ _size = (mpfr_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;     \
  if (MPFR_UNLIKELY (_size * (num) > MPFR_GROUP_STATIC_SIZE))            \
    {                                                                    \
      (g).alloc = (num) * _size * sizeof (mp_limb_t);                    \
@@ -1560,13 +1560,13 @@ struct mpfr_group_t {
    MPFR_GROUP_TINIT(g, 4, a);MPFR_GROUP_TINIT(g, 5, b))
 
 #define MPFR_GROUP_REPREC_TEMPLATE(g, prec, num, handler) do {          \
- mp_prec_t _prec = (prec);                                              \
+ mpfr_prec_t _prec = (prec);                                            \
  size_t    _oalloc = (g).alloc;                                         \
  mp_size_t _size;                                                       \
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mp_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS; \
+ _size = (mpfr_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;     \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
  if (MPFR_LIKELY (_oalloc == 0))                                        \
    (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
@@ -1621,10 +1621,10 @@ __MPFR_DECLSPEC int mpfr_add1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                               mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_can_round_raw _MPFR_PROTO ((const mp_limb_t *,
-                    mp_size_t, int, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t, mp_prec_t));
+                    mp_size_t, int, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t));
 
 __MPFR_DECLSPEC int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr,
-                                            mp_prec_t *));
+                                            mpfr_prec_t *));
 
 __MPFR_DECLSPEC long          __gmpfr_ceil_log2     _MPFR_PROTO ((double));
 __MPFR_DECLSPEC long          __gmpfr_floor_log2    _MPFR_PROTO ((double));
@@ -1651,17 +1651,17 @@ __MPFR_DECLSPEC void mpfr_fprint_binary _MPFR_PROTO ((FILE *, mpfr_srcptr));
 #endif
 __MPFR_DECLSPEC void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC void mpfr_print_mant_binary _MPFR_PROTO ((const char*,
-                                          const mp_limb_t*, mp_prec_t));
+                                          const mp_limb_t*, mpfr_prec_t));
 __MPFR_DECLSPEC void mpfr_set_str_binary _MPFR_PROTO((mpfr_ptr, const char*));
 
 __MPFR_DECLSPEC int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *,
-       const mp_limb_t *, mp_prec_t, int, mp_prec_t, mpfr_rnd_t, int *));
+       const mp_limb_t *, mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t, int *));
 __MPFR_DECLSPEC int mpfr_round_raw_2 _MPFR_PROTO ((const mp_limb_t *,
-             mp_prec_t, int, mp_prec_t, mpfr_rnd_t));
+             mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_round_raw_3 _MPFR_PROTO ((const mp_limb_t *,
-             mp_prec_t, int, mp_prec_t, mpfr_rnd_t, int *));
+             mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t, int *));
 __MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *,
-       const mp_limb_t *, mp_prec_t, int, mp_prec_t, mpfr_rnd_t));
+       const mp_limb_t *, mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t));
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
   mpfr_round_raw_2((xp),(xn)*GMP_NUMB_BITS,(neg),(prec),(r))
@@ -1694,11 +1694,11 @@ __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr,
 __MPFR_DECLSPEC void mpfr_sqrhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_size_t));
 
 __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
-                                               mp_exp_t, mp_prec_t));
+                                               mp_exp_t, mpfr_prec_t));
 
 __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
-                                                  mp_prec_t, mp_prec_t,
-                                                  mp_prec_t));
+                                                  mpfr_prec_t, mpfr_prec_t,
+                                                  mpfr_prec_t));
 
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                     mpfr_uexp_t, int,

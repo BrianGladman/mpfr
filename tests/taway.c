@@ -94,7 +94,7 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1;
-  mp_prec_t p1, p2, p3;
+  mpfr_prec_t p1, p2, p3;
   int i, inexa, inexd;
   mpfr_rnd_t r;
 
@@ -140,7 +140,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                        mpfr_rnd_t), char *foo)
 {
   mpfr_t ref, op1, op2, op3;
-  mp_prec_t pout, p1, p2, p3;
+  mpfr_prec_t pout, p1, p2, p3;
   mpfr_t res;
   int i, j, k, inexa, inexd;
   mpfr_rnd_t r;
@@ -199,7 +199,7 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
   mpfr_t ref1, ref2;
   unsigned int ref3;
   mpfr_t res1;
-  mp_prec_t p1, p2;
+  mpfr_prec_t p1, p2;
   int i, inexa, inexd;
   mpfr_rnd_t r;
 
@@ -244,7 +244,7 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
   mpfr_t ref1, ref3;
   unsigned int ref2;
   mpfr_t res1;
-  mp_prec_t p1, p3;
+  mpfr_prec_t p1, p3;
   int i, inexa, inexd;
   mpfr_rnd_t r;
 
@@ -285,7 +285,7 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t), char *foo)
 {
   mpfr_t ref1, ref2;
   mpfr_t res1;
-  mp_prec_t p1, p2;
+  mpfr_prec_t p1, p2;
   int i, inexa, inexd;
   mpfr_rnd_t r;
 
@@ -326,7 +326,7 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t), char *foo)
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1, res2;
-  mp_prec_t p1, p2, p3;
+  mpfr_prec_t p1, p2, p3;
   int i, inexa, inexd;
   mpfr_rnd_t r;
 

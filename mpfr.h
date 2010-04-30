@@ -264,7 +264,7 @@ __MPFR_DECLSPEC void mpfr_init _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_clear _MPFR_PROTO ((mpfr_ptr));
 
 __MPFR_DECLSPEC void
-  mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
+  mpfr_inits2 _MPFR_PROTO ((mpfr_prec_t, mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
 __MPFR_DECLSPEC void
   mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
 __MPFR_DECLSPEC void
@@ -279,11 +279,11 @@ __MPFR_DECLSPEC mpfr_prec_t mpfr_min_prec _MPFR_PROTO ((mpfr_srcptr));
 
 __MPFR_DECLSPEC mp_exp_t mpfr_get_exp _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_set_exp _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
-__MPFR_DECLSPEC mp_prec_t mpfr_get_prec _MPFR_PROTO((mpfr_srcptr));
+__MPFR_DECLSPEC mpfr_prec_t mpfr_get_prec _MPFR_PROTO((mpfr_srcptr));
 __MPFR_DECLSPEC void mpfr_set_prec _MPFR_PROTO((mpfr_ptr, mpfr_prec_t));
 __MPFR_DECLSPEC void mpfr_set_prec_raw _MPFR_PROTO((mpfr_ptr, mpfr_prec_t));
 __MPFR_DECLSPEC void mpfr_set_default_prec _MPFR_PROTO((mpfr_prec_t));
-__MPFR_DECLSPEC mp_prec_t mpfr_get_default_prec _MPFR_PROTO((void));
+__MPFR_DECLSPEC mpfr_prec_t mpfr_get_default_prec _MPFR_PROTO((void));
 
 __MPFR_DECLSPEC int mpfr_set_d _MPFR_PROTO ((mpfr_ptr, double, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_set_flt _MPFR_PROTO ((mpfr_ptr, float, mpfr_rnd_t));
@@ -691,13 +691,13 @@ __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
                                                 char **, int, mpfr_rnd_t));
 
-__MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mp_prec_t));
-__MPFR_DECLSPEC void   mpfr_custom_init       _MPFR_PROTO ((void *, mp_prec_t));
+__MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mpfr_prec_t));
+__MPFR_DECLSPEC void   mpfr_custom_init       _MPFR_PROTO ((void *, mpfr_prec_t));
 __MPFR_DECLSPEC void * mpfr_custom_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC mp_exp_t mpfr_custom_get_exp  _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC void   mpfr_custom_move       _MPFR_PROTO ((mpfr_ptr, void *));
 __MPFR_DECLSPEC void   mpfr_custom_init_set   _MPFR_PROTO ((mpfr_ptr, int,
-                                               mp_exp_t, mp_prec_t, void *));
+                                               mp_exp_t, mpfr_prec_t, void *));
 __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 #if defined (__cplusplus)

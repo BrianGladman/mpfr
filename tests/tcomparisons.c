@@ -36,7 +36,7 @@ cmp_tests (void)
   mpfr_inits (x, y, (mpfr_ptr) 0);
   for (i = 0; i < 80000; i++)
     {
-      mp_prec_t precx, precy;
+      mpfr_prec_t precx, precy;
       int signx, signy, cmp;
       unsigned int cmpbool = 0;
 
@@ -97,7 +97,7 @@ eq_tests (void)
   mpfr_inits (x, y, (mpfr_ptr) 0);
   for (i = 0; i < 20000; i++)
     {
-      mp_prec_t precx;
+      mpfr_prec_t precx;
 
       precx = (randlimb () % 17) * 11 + MPFR_PREC_MIN;
       mpfr_set_prec (x, precx);

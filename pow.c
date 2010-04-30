@@ -90,7 +90,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             = ((a'*2^b')^c with c odd integer */
   {
     mpfr_t tmp;
-    mp_prec_t p;
+    mpfr_prec_t p;
     MPFR_MPZ_SIZEINBASE2 (p, a);
     mpfr_init2 (tmp, p); /* prec = 1 should not be possible */
     res = mpfr_set_z (tmp, a, MPFR_RNDN);
@@ -112,7 +112,7 @@ static int
 is_odd (mpfr_srcptr y)
 {
   mp_exp_t expo;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mp_size_t yn;
   mp_limb_t *yp;
 
@@ -165,8 +165,8 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   int check_exact_case = 0;
   int inexact;
   /* Declaration of the size variable */
-  mp_prec_t Nz = MPFR_PREC(z);               /* target precision */
-  mp_prec_t Nt;                              /* working precision */
+  mpfr_prec_t Nz = MPFR_PREC(z);               /* target precision */
+  mpfr_prec_t Nt;                              /* working precision */
   mp_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
 
@@ -228,7 +228,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       /* We need to test */
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (t) || MPFR_UNDERFLOW (flags1)))
         {
-          mp_prec_t Ntmin;
+          mpfr_prec_t Ntmin;
           MPFR_BLOCK_DECL (flags2);
 
           MPFR_ASSERTN (!k_non_zero);

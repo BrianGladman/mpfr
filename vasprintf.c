@@ -63,7 +63,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Define a length modifier corresponding to mp_prec_t.
+/* Define a length modifier corresponding to mpfr_prec_t.
    We use literal string instead of literal character so as to permit future
    extension to long long int ("ll"). */
 #if   _MPFR_PREC_FORMAT == 1
@@ -779,7 +779,7 @@ struct number_parts
 static int
 next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
 {
-  mp_prec_t nbits;
+  mpfr_prec_t nbits;
   mp_limb_t pm;
   mp_limb_t xm;
 
@@ -818,10 +818,10 @@ next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
    Return +1 if x is rounded up to 10^f, return zero otherwise.
    If e is not NULL, *e is set to f. */
 static int
-round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mp_prec_t p, mpfr_rnd_t r)
+round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t f, u, v, y;
-  mp_prec_t m;
+  mpfr_prec_t m;
   mp_exp_t ex;
   mpfr_uexp_t uexp;
   int roundup = -1; /* boolean (-1: not set) */
@@ -2082,7 +2082,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
                                 case */
         }
       else if (spec.arg_type == MPFR_PREC_ARG)
-        /* output mp_prec_t variable */
+        /* output mpfr_prec_t variable */
         {
           char *s;
           char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */

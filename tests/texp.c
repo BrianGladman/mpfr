@@ -156,10 +156,10 @@ check_worst_cases (void)
 }
 
 static void
-compare_exp2_exp3 (mp_prec_t p0, mp_prec_t p1)
+compare_exp2_exp3 (mpfr_prec_t p0, mpfr_prec_t p1)
 {
   mpfr_t x, y, z;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_rnd_t rnd;
 
   mpfr_init (x);
@@ -199,7 +199,7 @@ static void
 check_large (void)
 {
   mpfr_t x, z;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
 
   /* bug found by Patrick Pe'lissier on 7 Jun 2004 */
   prec = 203780;
@@ -596,7 +596,7 @@ bug20080731 (void)
 {
   mp_exp_t emin;
   mpfr_t x, y1, y2;
-  mp_prec_t prec = 64;
+  mpfr_prec_t prec = 64;
 
   emin = mpfr_get_emin ();
   set_emin (MPFR_EMIN_MIN);

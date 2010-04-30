@@ -71,8 +71,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
     mp_exp_t d;
 
     /* Declaration of the size variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
-    mp_prec_t Nt;                  /* working precision */
+    mpfr_prec_t Ny = MPFR_PREC(y);   /* target precision */
+    mpfr_prec_t Nt;                  /* working precision */
     long int err;                  /* error */
     int sign = MPFR_SIGN (xt);
     MPFR_ZIV_DECL (loop);

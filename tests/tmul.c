@@ -210,7 +210,7 @@ static void
 check_exact (void)
 {
   mpfr_t a, b, c, d;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   int i, inexact;
   mpfr_rnd_t rnd;
 

@@ -30,7 +30,7 @@ mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd)
 {
   unsigned long m;
   mpfr_t res;
-  mp_prec_t prec, err;
+  mpfr_prec_t prec, err;
   int inexact;
   mpfr_rnd_t rnd1;
   MPFR_SAVE_EXPO_DECL (expo);

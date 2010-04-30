@@ -102,7 +102,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 
   /* now yp[xn], ..., yp[0] is msb-normalized too, and has at most
      PREC(x) + (GMP_NUMB_BITS - cnt) non-zero bits */
-  MPFR_RNDRAW (inexact, y, yp, (mp_prec_t) (xn + 1) * GMP_NUMB_BITS,
+  MPFR_RNDRAW (inexact, y, yp, (mpfr_prec_t) (xn + 1) * GMP_NUMB_BITS,
                rnd_mode, MPFR_SIGN (x), cnt -- );
 
   MPFR_TMP_FREE (marker);

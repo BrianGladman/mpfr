@@ -122,7 +122,7 @@ int verbose;
    We can't use GNU MPFR library since the THRESHOLD can't vary */
 
 /* Setup mpfr_mul */
-mp_prec_t mpfr_mul_threshold = MPFR_MUL_THRESHOLD;
+mpfr_prec_t mpfr_mul_threshold = MPFR_MUL_THRESHOLD;
 static double speed_mpfr_mul (struct speed_params *s) {
   SPEED_MPFR_OP (mpfr_mul);
 }
@@ -134,9 +134,9 @@ static double speed_mpfr_mul (struct speed_params *s) {
  ************************************************/
 #define THRESHOLD_WINDOW 16
 #define THRESHOLD_FINAL_WINDOW 128
-static double domeasure (mp_prec_t *threshold,
+static double domeasure (mpfr_prec_t *threshold,
                          double (*func) (struct speed_params *),
-                         mp_prec_t p)
+                         mpfr_prec_t p)
 {
   struct speed_params s;
   mp_size_t size;
@@ -171,12 +171,12 @@ static double domeasure (mp_prec_t *threshold,
    if algo2 is better for low prec, and algo1 better for high prec,
    the behaviour of this function is undefined. */
 static void
-tune_simple_func (mp_prec_t *threshold,
+tune_simple_func (mpfr_prec_t *threshold,
                   double (*func) (struct speed_params *),
-                  mp_prec_t pstart, mp_prec_t pend)
+                  mpfr_prec_t pstart, mpfr_prec_t pend)
 {
   double measure;
-  mp_prec_t p = pstart;
+  mpfr_prec_t p = pstart;
   mp_size_t k, n;
 
   while (p <= pend)

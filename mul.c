@@ -40,7 +40,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_exp_t  ax;
   mp_limb_t *tmp;
   mp_limb_t b1;
-  mp_prec_t bq, cq;
+  mpfr_prec_t bq, cq;
   mp_size_t bn, cn, tn, k;
   MPFR_TMP_DECL(marker);
 
@@ -209,7 +209,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_exp_t  ax, ax2;
   mp_limb_t *tmp;
   mp_limb_t b1;
-  mp_prec_t bq, cq;
+  mpfr_prec_t bq, cq;
   mp_size_t bn, cn, tn, k;
   MPFR_TMP_DECL (marker);
 
@@ -351,7 +351,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       {
         mp_limb_t *bp, *cp;
         mp_size_t n;
-        mp_prec_t p;
+        mpfr_prec_t p;
 
         /* Fist check if we can reduce the precision of b or c:
            exact values are a nightmare for the short product trick */

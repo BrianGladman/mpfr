@@ -162,7 +162,7 @@ check (unsigned long y, const char *xs, mpfr_rnd_t rnd_mode, const char *zs)
 
 /* if u = o(x-y), v = o(u-x), w = o(v+y), then x-y = u-w */
 static void
-check_two_sum (mp_prec_t p)
+check_two_sum (mpfr_prec_t p)
 {
   unsigned int x;
   mpfr_t y, u, v, w;
@@ -265,7 +265,7 @@ static void check_neg (void)
 int
 main (int argc, char *argv[])
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   unsigned k;
 
   tests_start_mpfr ();

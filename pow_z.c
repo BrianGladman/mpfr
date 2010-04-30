@@ -32,7 +32,7 @@ static int
 mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd, int cr)
 {
   mpfr_t res;
-  mp_prec_t prec, err;
+  mpfr_prec_t prec, err;
   int inexact;
   mpfr_rnd_t rnd1, rnd2;
   mpz_t absz;
@@ -260,7 +260,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
     {
       /* Declaration of the intermediary variable */
       mpfr_t t;
-      mp_prec_t Nt;   /* Precision of the intermediary variable */
+      mpfr_prec_t Nt;   /* Precision of the intermediary variable */
       mpfr_rnd_t rnd1;
       mp_size_t size_z;
       MPFR_ZIV_DECL (loop);

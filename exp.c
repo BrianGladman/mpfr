@@ -28,7 +28,7 @@ int
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t expx;
-  mp_prec_t precy;
+  mpfr_prec_t precy;
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -132,7 +132,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               int sh;
 
               yn = 1 + (MPFR_PREC(y) - 1) / GMP_NUMB_BITS;
-              sh = (mp_prec_t) yn * GMP_NUMB_BITS - MPFR_PREC(y);
+              sh = (mpfr_prec_t) yn * GMP_NUMB_BITS - MPFR_PREC(y);
               MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
               inexact = 1;
             }

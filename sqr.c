@@ -29,7 +29,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   mp_exp_t  ax;
   mp_limb_t *tmp;
   mp_limb_t b1;
-  mp_prec_t bq;
+  mpfr_prec_t bq;
   mp_size_t bn, tn;
   MPFR_TMP_DECL(marker);
 

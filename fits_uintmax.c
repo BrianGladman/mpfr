@@ -48,7 +48,7 @@ int
 mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_exp_t exp;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   uintmax_t s;
   mpfr_t x, y;
   int res;

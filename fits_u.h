@@ -26,7 +26,7 @@ int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_exp_t exp;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   TYPE s;
   mpfr_t x;
   int res;

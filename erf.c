@@ -180,7 +180,7 @@ mul_2exp (double x, mp_exp_t e)
 static int
 mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t n, m;
+  mpfr_prec_t n, m;
   mp_exp_t nuk, sigmak;
   double tauk;
   mpfr_t y, s, t, u;
@@ -192,7 +192,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
   n = MPFR_PREC (res); /* target precision */
 
   /* initial working precision */
-  m = n + (mp_prec_t) (xf2 / LOG2) + 8 + MPFR_INT_CEIL_LOG2 (n);
+  m = n + (mpfr_prec_t) (xf2 / LOG2) + 8 + MPFR_INT_CEIL_LOG2 (n);
 
   mpfr_init2 (y, m);
   mpfr_init2 (s, m);

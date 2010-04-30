@@ -211,7 +211,7 @@ check_erange (void)
 int
 main (void)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_t x, y;
   intmax_t s;
   uintmax_t u;

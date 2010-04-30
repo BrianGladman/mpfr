@@ -87,7 +87,7 @@ int
 mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mpfr_uexp_t d;
-  mp_prec_t p;
+  mpfr_prec_t p;
   unsigned int sh;
   mp_size_t n;
   mp_limb_t *ap, *cp;

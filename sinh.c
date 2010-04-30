@@ -66,7 +66,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
   {
     mpfr_t t, ti;
     mp_exp_t d;
-    mp_prec_t Nt;    /* Precision of the intermediary variable */
+    mpfr_prec_t Nt;    /* Precision of the intermediary variable */
     long int err;    /* Precision of error */
     MPFR_ZIV_DECL (loop);
     MPFR_SAVE_EXPO_DECL (expo);

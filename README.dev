@@ -530,7 +530,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
 {
   [Declare all used variables]
   int inexact;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -619,7 +619,7 @@ the new threshold. If it is a classical threshold (not complex), you could
 use this method (example of mpfr_exp):
 
 /* Define the threshold as a variable instead of a constant */
-mp_prec_t mpfr_exp_threshold;
+mpfr_prec_t mpfr_exp_threshold;
 #undef  MPFR_EXP_THRESHOLD
 #define MPFR_EXP_THRESHOLD mpfr_exp_threshold
 /* Include the test function to threshold directly in the test

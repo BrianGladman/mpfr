@@ -108,9 +108,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 static void
-test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
+test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
 {
-  mp_prec_t prec, xprec, yprec;
+  mpfr_prec_t prec, xprec, yprec;
   mpfr_t x, y, z, t;
 #ifdef TWO_ARGS
   mpfr_t u;

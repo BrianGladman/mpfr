@@ -41,7 +41,7 @@ int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 {
   mp_ptr rp;
-  mp_prec_t nbits;
+  mpfr_prec_t nbits;
   mp_size_t nlimbs;
   mp_size_t n;
   mp_exp_t exp;

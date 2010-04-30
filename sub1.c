@@ -33,7 +33,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign;
   mpfr_uexp_t diff_exp;
-  mp_prec_t cancel, cancel1;
+  mpfr_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t carry, bb, cc, borrow = 0;
@@ -298,7 +298,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #endif
 
   /* now perform rounding */
-  sh = (mp_prec_t) an * GMP_NUMB_BITS - MPFR_PREC(a);
+  sh = (mpfr_prec_t) an * GMP_NUMB_BITS - MPFR_PREC(a);
   /* last unused bits from a */
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;

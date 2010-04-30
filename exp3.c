@@ -40,13 +40,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 static void
 mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
-                   mpz_t *Q, mp_prec_t *mult)
+                   mpz_t *Q, mpfr_prec_t *mult)
 {
   unsigned long n, i, j;
   mpz_t *S, *ptoj;
-  mp_prec_t *log2_nb_terms;
+  mpfr_prec_t *log2_nb_terms;
   mp_exp_t diff, expo;
-  mp_prec_t precy = MPFR_PREC(y), prec_i_have, prec_ptoj;
+  mpfr_prec_t precy = MPFR_PREC(y), prec_i_have, prec_ptoj;
   int k, l;
 
   MPFR_ASSERTN ((size_t) m < sizeof (long) * CHAR_BIT - 1);
@@ -135,7 +135,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
     mpz_mul_2exp (S[0], S[0], -diff);
 
   MPFR_MPZ_SIZEINBASE2 (prec_i_have, Q[0]);
-  diff = (mp_exp_t) prec_i_have - (mp_prec_t) precy;
+  diff = (mp_exp_t) prec_i_have - (mpfr_prec_t) precy;
   expo -= diff;
   if (diff > 0)
     mpz_fdiv_q_2exp (Q[0], Q[0], diff);
@@ -157,10 +157,10 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mp_exp_t ttt, shift_x;
   unsigned long twopoweri;
   mpz_t *P;
-  mp_prec_t *mult;
+  mpfr_prec_t *mult;
   int i, k, loop;
   int prec_x;
-  mp_prec_t realprec, Prec;
+  mpfr_prec_t realprec, Prec;
   int iter;
   int inexact = 0;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -216,7 +216,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       P    = (mpz_t*) (*__gmp_allocate_func) (3*(k+2)*sizeof(mpz_t));
       for (i = 0; i < 3*(k+2); i++)
         mpz_init (P[i]);
-      mult = (mp_prec_t*) (*__gmp_allocate_func) (2*(k+2)*sizeof(mp_prec_t));
+      mult = (mpfr_prec_t*) (*__gmp_allocate_func) (2*(k+2)*sizeof(mpfr_prec_t));
 
       /* Particular case for i==0 */
       mpfr_extract (uk, x_copy, 0);
@@ -244,7 +244,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       for (i = 0; i < 3*(k+2); i++)
         mpz_clear (P[i]);
       (*__gmp_free_func) (P, 3*(k+2)*sizeof(mpz_t));
-      (*__gmp_free_func) (mult, 2*(k+2)*sizeof(mp_prec_t));
+      (*__gmp_free_func) (mult, 2*(k+2)*sizeof(mpfr_prec_t));
 
       if (shift_x > 0)
         {

@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* tlog2 [prec] [rnd] [0 = no print] */
 
 static void
-check (mp_prec_t p0, mp_prec_t p1)
+check (mpfr_prec_t p0, mpfr_prec_t p1)
 {
   mpfr_t x, y, z;
   mpfr_rnd_t rnd;

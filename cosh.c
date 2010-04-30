@@ -70,8 +70,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
     /* Declaration of the size variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
-    mp_prec_t Nt;                  /* Precision of the intermediary variable */
+    mpfr_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
+    mpfr_prec_t Nt;                  /* Precision of the intermediary variable */
     long int err;                  /* Precision of error */
     MPFR_ZIV_DECL (loop);
     MPFR_GROUP_DECL (group);

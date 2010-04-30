@@ -28,7 +28,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmp, pi;
   int inexact;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mp_exp_t e;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -123,7 +123,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             {
               mpfr_t tmp2;
               MPFR_ZIV_DECL (loop2);
-              mp_prec_t prec2 = MPFR_PREC (dest) + 10;
+              mpfr_prec_t prec2 = MPFR_PREC (dest) + 10;
 
               mpfr_init2 (tmp2, prec2);
               MPFR_ZIV_INIT (loop2, prec2);

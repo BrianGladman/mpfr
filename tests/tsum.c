@@ -54,10 +54,10 @@ sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mpfr_rnd_t rnd)
 }
 
 
-static mp_prec_t
-get_prec_max (mpfr_t *tab, unsigned long n, mp_prec_t f)
+static mpfr_prec_t
+get_prec_max (mpfr_t *tab, unsigned long n, mpfr_prec_t f)
 {
-  mp_prec_t res;
+  mpfr_prec_t res;
   mp_exp_t min, max;
   unsigned long i;
 
@@ -81,10 +81,10 @@ get_prec_max (mpfr_t *tab, unsigned long n, mp_prec_t f)
 
 
 static void
-algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mp_prec_t f)
+algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mpfr_prec_t f)
 {
   unsigned long i;
-  mp_prec_t prec_max;
+  mpfr_prec_t prec_max;
 
   prec_max = get_prec_max(tab, n, f);
   mpfr_set_prec (somme, prec_max);
@@ -101,7 +101,7 @@ algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mp_prec_t f)
 
 /* Test the sorting function */
 static void
-test_sort (mp_prec_t f, unsigned long n)
+test_sort (mpfr_prec_t f, unsigned long n)
 {
   mpfr_t *tab;
   mpfr_ptr *tabtmp;
@@ -140,7 +140,7 @@ test_sort (mp_prec_t f, unsigned long n)
 }
 
 static void
-test_sum (mp_prec_t f, unsigned long n)
+test_sum (mpfr_prec_t f, unsigned long n)
 {
   mpfr_t sum, real_sum, real_non_rounded;
   mpfr_t *tab;
@@ -284,7 +284,7 @@ void check_special (void)
 int
 main (void)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   unsigned long n;
 
   tests_start_mpfr ();

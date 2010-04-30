@@ -50,7 +50,7 @@ check3 (const char *xs, unsigned long y, mpfr_rnd_t rnd_mode, const char *zs)
                then x + y = u + w
 thus if u = o(y-x), v = o(u+x), w = o(v-y), then y-x = u-w */
 static void
-check_two_sum (mp_prec_t p)
+check_two_sum (mpfr_prec_t p)
 {
   unsigned int x;
   mpfr_t y, u, v, w;
@@ -123,7 +123,7 @@ check_nans (void)
 int
 main (int argc, char *argv[])
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   int k;
 
   tests_start_mpfr ();

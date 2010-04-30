@@ -39,7 +39,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t c, xr;
   mpfr_srcptr xx;
   mp_exp_t expx, err;
-  mp_prec_t precy, m;
+  mpfr_prec_t precy, m;
   int inexact, sign, reduce;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);

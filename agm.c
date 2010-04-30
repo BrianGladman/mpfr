@@ -29,7 +29,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
 {
   int compare, inexact;
   mp_size_t s;
-  mp_prec_t p, q;
+  mpfr_prec_t p, q;
   mp_limb_t *up, *vp, *tmpp;
   mpfr_t u, v, tmp;
   unsigned long n; /* number of iterations */
@@ -109,7 +109,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
-      mp_prec_t eq;
+      mpfr_prec_t eq;
 
       /* Init temporary vars */
       MPFR_TMP_INIT (up, u, p, s);

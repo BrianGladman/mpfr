@@ -312,7 +312,7 @@ static void
 test_mpfr_sincos_fast (void)
 {
   mpfr_t x, y, z, yref, zref, h;
-  mp_prec_t p = 1000;
+  mpfr_prec_t p = 1000;
   int i, inex, inexref;
   mpfr_rnd_t r;
 
@@ -372,7 +372,7 @@ static void
 bug20091007 (void)
 {
   mpfr_t x, y, z, yref, zref;
-  mp_prec_t p = 1000;
+  mpfr_prec_t p = 1000;
   int inex, inexref;
   mpfr_rnd_t r = MPFR_RNDZ;
 
@@ -420,7 +420,7 @@ static void
 bug20091008 (void)
 {
   mpfr_t x, y, z, yref, zref;
-  mp_prec_t p = 1000;
+  mpfr_prec_t p = 1000;
   int inex, inexref;
   mpfr_rnd_t r = MPFR_RNDN;
 
@@ -468,7 +468,7 @@ static void
 bug20091013 (void)
 {
   mpfr_t x, y, z, yref, zref;
-  mp_prec_t p = 1000;
+  mpfr_prec_t p = 1000;
   int inex, inexref;
   mpfr_rnd_t r = MPFR_RNDN;
 
@@ -519,7 +519,7 @@ static void
 bug20091122 (void)
 {
   mpfr_t x, y, z, yref, zref;
-  mp_prec_t p = 3;
+  mpfr_prec_t p = 3;
   mpfr_rnd_t r = MPFR_RNDN;
 
   mpfr_init2 (x, 5);

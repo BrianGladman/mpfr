@@ -45,8 +45,8 @@ mpfr_clear_cache (mpfr_cache_t cache)
 int
 mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 {
-  mp_prec_t prec = MPFR_PREC (dest);
-  mp_prec_t pold = MPFR_PREC (cache->x);
+  mpfr_prec_t prec = MPFR_PREC (dest);
+  mpfr_prec_t pold = MPFR_PREC (cache->x);
   int inexact, sign;
   MPFR_SAVE_EXPO_DECL (expo);
 

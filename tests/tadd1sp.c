@@ -105,7 +105,7 @@ main (void)
   }
 
 static void
-check_random (mp_prec_t p)
+check_random (mpfr_prec_t p)
 {
   mpfr_t a1,b,c,a2;
   int r;

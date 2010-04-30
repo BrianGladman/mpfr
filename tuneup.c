@@ -150,7 +150,7 @@ int verbose;
    We can't use the GNU MPFR library since the thresholds are fixed macros. */
 
 /* Setup mpfr_exp_2 */
-mp_prec_t mpfr_exp_2_threshold;
+mpfr_prec_t mpfr_exp_2_threshold;
 #undef  MPFR_EXP_2_THRESHOLD
 #define MPFR_EXP_2_THRESHOLD mpfr_exp_2_threshold
 #include "exp_2.c"
@@ -159,7 +159,7 @@ static double speed_mpfr_exp_2 (struct speed_params *s) {
 }
 
 /* Setup mpfr_exp */
-mp_prec_t mpfr_exp_threshold;
+mpfr_prec_t mpfr_exp_threshold;
 #undef  MPFR_EXP_THRESHOLD
 #define MPFR_EXP_THRESHOLD mpfr_exp_threshold
 #include "exp.c"
@@ -168,7 +168,7 @@ static double speed_mpfr_exp (struct speed_params *s) {
 }
 
 /* Setup mpfr_sin_cos */
-mp_prec_t mpfr_sincos_threshold;
+mpfr_prec_t mpfr_sincos_threshold;
 #undef MPFR_SINCOS_THRESHOLD
 #define MPFR_SINCOS_THRESHOLD mpfr_sincos_threshold
 #include "sin_cos.c"
@@ -178,7 +178,7 @@ static double speed_mpfr_sincos (struct speed_params *s) {
 }
 
 /* Setup mpfr_mul */
-mp_prec_t mpfr_mul_threshold;
+mpfr_prec_t mpfr_mul_threshold;
 #undef  MPFR_MUL_THRESHOLD
 #define MPFR_MUL_THRESHOLD mpfr_mul_threshold
 #include "mul.c"
@@ -217,9 +217,9 @@ analyze_data (double *dat, int ndat) {
 
 #define THRESHOLD_WINDOW 16
 #define THRESHOLD_FINAL_WINDOW 128
-static double domeasure (mp_prec_t *threshold,
+static double domeasure (mpfr_prec_t *threshold,
                          double (*func) (struct speed_params *),
-                         mp_prec_t p)
+                         mpfr_prec_t p)
 {
   struct speed_params s;
   mp_size_t size;
@@ -269,15 +269,15 @@ static double domeasure (mp_prec_t *threshold,
    if algo2 is better for low prec, and algo1 better for high prec,
    the behaviour of this function is undefined. */
 static void
-tune_simple_func (mp_prec_t *threshold,
+tune_simple_func (mpfr_prec_t *threshold,
                   double (*func) (struct speed_params *),
-                  mp_prec_t pstart)
+                  mpfr_prec_t pstart)
 {
   double measure[THRESHOLD_FINAL_WINDOW+1];
   double d;
-  mp_prec_t pstep;
+  mpfr_prec_t pstep;
   int i, numpos, numneg, try;
-  mp_prec_t pmin, pmax, p;
+  mpfr_prec_t pmin, pmax, p;
 
   /* first look for a lower bound within 10% */
   pmin = p = pstart;

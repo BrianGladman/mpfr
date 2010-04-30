@@ -32,9 +32,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 static void
-test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
+test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
 {
-  mp_prec_t prec, yprec;
+  mpfr_prec_t prec, yprec;
   mpfr_t x, y, z, t;
   INTEGER_TYPE u;
   mpfr_rnd_t rnd;

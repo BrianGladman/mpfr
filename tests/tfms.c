@@ -542,13 +542,13 @@ main (int argc, char *argv[])
     }
 
   {
-    mp_prec_t prec;
+    mpfr_prec_t prec;
     mpfr_t t, slong;
     mpfr_rnd_t rnd;
     int inexact, compare;
     unsigned int n;
 
-    mp_prec_t p0=2, p1=200;
+    mpfr_prec_t p0=2, p1=200;
     unsigned int N=200;
 
     mpfr_init (t);

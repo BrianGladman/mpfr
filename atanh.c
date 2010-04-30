@@ -31,7 +31,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t x, t, te;
-  mp_prec_t Nx, Ny, Nt;
+  mpfr_prec_t Nx, Ny, Nt;
   mp_exp_t err;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);

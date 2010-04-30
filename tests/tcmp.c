@@ -32,7 +32,7 @@ main (void)
   mpfr_t xx, yy;
   int c;
   long i;
-  mp_prec_t p;
+  mpfr_prec_t p;
 
   tests_start_mpfr ();
 

@@ -26,9 +26,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 static unsigned long
-mpfr_exp2_aux (mpz_t, mpfr_srcptr, mp_prec_t, mp_exp_t *);
+mpfr_exp2_aux (mpz_t, mpfr_srcptr, mpfr_prec_t, mp_exp_t *);
 static unsigned long
-mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, mp_prec_t, mp_exp_t *);
+mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, mpfr_prec_t, mp_exp_t *);
 static mp_exp_t
 mpz_normalize  (mpz_t, mpz_t, mp_exp_t);
 static mp_exp_t
@@ -86,7 +86,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   unsigned long K, k, l, err; /* FIXME: Which type ? */
   int error_r;
   mp_exp_t exps;
-  mp_prec_t q, precy;
+  mpfr_prec_t q, precy;
   int inexact;
   mpfr_t r, s;
   mpz_t ss;
@@ -248,7 +248,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
 static unsigned long
-mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
+mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
 {
   unsigned long l;
   mp_exp_t dif, expt, expr;
@@ -306,11 +306,11 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
    The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
 static unsigned long
-mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
+mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
 {
   mp_exp_t expr, *expR, expt;
   mp_size_t sizer;
-  mp_prec_t ql;
+  mpfr_prec_t ql;
   unsigned long l, m, i;
   mpz_t t, *R, rr, tmp;
   mp_size_t sbit, rrbit;

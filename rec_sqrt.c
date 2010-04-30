@@ -70,8 +70,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    http://www.loria.fr/~zimmerma/mca/pub226.html
 */
 static void
-mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
-                   mp_srcptr a, mp_prec_t ap, int as)
+mpfr_mpn_rec_sqrt (mp_ptr x, mpfr_prec_t p,
+                   mp_srcptr a, mpfr_prec_t ap, int as)
 
 {
   /* the following T1 and T2 are bipartite tables giving initial
@@ -191,7 +191,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
     }
   else /* p >= 12 */
     {
-      mp_prec_t h, pl;
+      mpfr_prec_t h, pl;
       mp_ptr r, s, t, u;
       mp_size_t xn, rn, th, ln, tn, sn, ahn, un;
       mp_limb_t neg, cy, cu;
@@ -418,7 +418,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
 int
 mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t rp, up, wp;
+  mpfr_prec_t rp, up, wp;
   mp_size_t rn, wn;
   int s, cy, inex;
   mp_ptr x;
@@ -511,7 +511,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
          mantissa is exactly 1/2 and the exponent is odd. */
       if (s == 0 && mpfr_cmp_ui_2exp (u, 1, MPFR_EXP(u) - 1) == 0)
         {
-          mp_prec_t pl = wn * GMP_NUMB_BITS - wp;
+          mpfr_prec_t pl = wn * GMP_NUMB_BITS - wp;
 
           /* we should have x=111...111 */
           mpn_add_1 (x, x, wn, MPFR_LIMB_ONE << pl);

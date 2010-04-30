@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t prec, m;
+  mpfr_prec_t prec, m;
   int neg, reduce;
   mpfr_t c, xr;
   mpfr_srcptr xx;
@@ -232,10 +232,10 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 /* truncate Q from R to at most prec bits.
    Return the number of truncated bits.
  */
-static mp_prec_t
-reduce (mpz_t Q, mpz_srcptr R, mp_prec_t prec)
+static mpfr_prec_t
+reduce (mpz_t Q, mpz_srcptr R, mpfr_prec_t prec)
 {
-  mp_prec_t l = mpz_sizeinbase (R, 2);
+  mpfr_prec_t l = mpz_sizeinbase (R, 2);
 
   l = (l > prec) ? l - prec : 0;
   mpz_fdiv_q_2exp (Q, R, l);
@@ -246,7 +246,7 @@ reduce (mpz_t Q, mpz_srcptr R, mp_prec_t prec)
    Return the number of truncated bits.
  */
 static unsigned long
-reduce2 (mpz_t S, mpz_t C, mp_prec_t prec)
+reduce2 (mpz_t S, mpz_t C, mpfr_prec_t prec)
 {
   unsigned long ls = mpz_sizeinbase (S, 2);
   unsigned long lc = mpz_sizeinbase (C, 2);
@@ -280,15 +280,15 @@ reduce2 (mpz_t S, mpz_t C, mp_prec_t prec)
    Assumes prec >= 10.
 */
 static unsigned long
-sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mp_prec_t r,
-            mp_prec_t prec)
+sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
+            mpfr_prec_t prec)
 {
   mpz_t T[GMP_NUMB_BITS], Q[GMP_NUMB_BITS], ptoj[GMP_NUMB_BITS], pp;
-  mp_prec_t log2_nb_terms[GMP_NUMB_BITS], mult[GMP_NUMB_BITS];
-  mp_prec_t accu[GMP_NUMB_BITS], size_ptoj[GMP_NUMB_BITS];
-  mp_prec_t prec_i_have, r0 = r;
+  mpfr_prec_t log2_nb_terms[GMP_NUMB_BITS], mult[GMP_NUMB_BITS];
+  mpfr_prec_t accu[GMP_NUMB_BITS], size_ptoj[GMP_NUMB_BITS];
+  mpfr_prec_t prec_i_have, r0 = r;
   unsigned long alloc, i, j, k;
-  mp_prec_t l;
+  mpfr_prec_t l;
 
   if (MPFR_UNLIKELY(mpz_cmp_ui (p, 0) == 0)) /* sin(x)/x -> 1 */
     {
@@ -452,7 +452,7 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mp_prec_t r,
 static int
 sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t prec_s, sh;
+  mpfr_prec_t prec_s, sh;
   mpz_t Q, S, C, Q2, S2, C2, y;
   mpfr_t x2;
   unsigned long l, l2, j, err;
@@ -568,7 +568,7 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inexs, inexc;
   mpfr_t x_red, ts, tc;
-  mp_prec_t w;
+  mpfr_prec_t w;
   mp_exp_t err, errs, errc;
   MPFR_ZIV_DECL (loop);
 

@@ -351,7 +351,7 @@ bug_ddefour(void)
 
 /* if u = o(x-y), v = o(u-x), w = o(v+y), then x-y = u-w */
 static void
-check_two_sum (mp_prec_t p)
+check_two_sum (mpfr_prec_t p)
 {
   mpfr_t x, y, u, v, w;
   mpfr_rnd_t rnd;
@@ -398,7 +398,7 @@ static void
 check_inexact (void)
 {
   mpfr_t x, y, z, u;
-  mp_prec_t px, py, pu, pz;
+  mpfr_prec_t px, py, pu, pz;
   int inexact, cmp;
   mpfr_rnd_t rnd;
 
@@ -486,7 +486,7 @@ check_inexact (void)
 int
 main (void)
 {
-  mp_prec_t p;
+  mpfr_prec_t p;
   unsigned int i;
 
   tests_start_mpfr ();

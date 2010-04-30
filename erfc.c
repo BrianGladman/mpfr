@@ -35,7 +35,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
 {
   mpfr_t t, xx, err;
   unsigned long k;
-  mp_prec_t prec = MPFR_PREC(y);
+  mpfr_prec_t prec = MPFR_PREC(y);
   mp_exp_t exp_err;
 
   mpfr_init2 (t, prec);
@@ -126,7 +126,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   int inex;
   mpfr_t tmp;
   mp_exp_t te, err;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 

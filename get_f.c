@@ -31,7 +31,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
   int inex;
   mp_size_t sx, sy;
-  mp_prec_t precx, precy;
+  mpfr_prec_t precx, precy;
   mp_limb_t *xp;
   int sh;
 
@@ -78,7 +78,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   sx = PREC(x); /* number of limbs of the mantissa of x */
 
   precy = MPFR_PREC(y);
-  precx = (mp_prec_t) sx * GMP_NUMB_BITS;
+  precx = (mpfr_prec_t) sx * GMP_NUMB_BITS;
   sy = MPFR_LIMB_SIZE (y);
 
   xp = PTR (x);
@@ -115,7 +115,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       mpfr_t z;
       mp_size_t sz;
 
-      /* Recall that precx = (mp_prec_t) sx * GMP_NUMB_BITS, thus removing
+      /* Recall that precx = (mpfr_prec_t) sx * GMP_NUMB_BITS, thus removing
          sh bits (sh < GMP_NUMB_BITSS) won't reduce the number of limbs. */
       mpfr_init2 (z, precx - sh);
       sz = MPFR_LIMB_SIZE (z);

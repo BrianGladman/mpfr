@@ -37,7 +37,7 @@ int
 mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t a, A, B, D, S;
-  mp_prec_t px, p, cancel, k, kmax;
+  mpfr_prec_t px, p, cancel, k, kmax;
   MPFR_ZIV_DECL (loop);
   int inex;
 

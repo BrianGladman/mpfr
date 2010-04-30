@@ -138,12 +138,12 @@ check_special (void)
 }
 
 static void
-check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
+check_integer (mpfr_prec_t begin, mpfr_prec_t end, unsigned long max)
 {
   mpfr_t x, y1, y2;
   mpz_t z;
   unsigned long i, n;
-  mp_prec_t p;
+  mpfr_prec_t p;
   int res1, res2;
   mpfr_rnd_t rnd;
 

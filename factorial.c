@@ -37,9 +37,9 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mpfr_rnd_t rnd_mode)
   unsigned long i;
   int round, inexact;
 
-  mp_prec_t Ny;   /* Precision of output variable */
-  mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
-  mp_prec_t err;  /* Precision of error */
+  mpfr_prec_t Ny;   /* Precision of output variable */
+  mpfr_prec_t Nt;   /* Precision of Intermediary Calculation variable */
+  mpfr_prec_t err;  /* Precision of error */
 
   mpfr_rnd_t rnd;
   MPFR_SAVE_EXPO_DECL (expo);

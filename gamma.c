@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef IS_GAMMA
 
 /* return a sufficient precision such that 2-x is exact, assuming x < 0 */
-static mp_prec_t
+static mpfr_prec_t
 mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
 {
   /* Since x < 0, 2-x = 2+y with y := -x.
@@ -45,7 +45,7 @@ mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
 }
 
 /* return a sufficient precision such that 1-x is exact, assuming x < 1 */
-static mp_prec_t
+static mpfr_prec_t
 mpfr_gamma_1_minus_x_exact (mpfr_srcptr x)
 {
   if (MPFR_IS_POS(x))
@@ -99,7 +99,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;
-  mp_prec_t realprec;
+  mpfr_prec_t realprec;
   int compared, inex, is_integer;
   MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -213,7 +213,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (is_integer && mpfr_fits_ulong_p (x, MPFR_RNDN))
     {
       unsigned long int u;
-      mp_prec_t p = MPFR_PREC(gamma);
+      mpfr_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, MPFR_RNDN);
       if (u < 44787929UL && bits_fac (u - 1) <= p + (rnd_mode == MPFR_RNDN))
         /* bits_fac: lower bound on the number of bits of m,
@@ -266,7 +266,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (MPFR_IS_NEG(x))
     {
       int underflow = 0, sgn, ck;
-      mp_prec_t w;
+      mpfr_prec_t w;
 
       mpfr_init2 (xp, 53);
       mpfr_init2 (tmp, 53);
@@ -321,7 +321,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   realprec = MPFR_PREC (gamma);
   /* we want both 1-x and 2-x to be exact */
   {
-    mp_prec_t w;
+    mpfr_prec_t w;
     w = mpfr_gamma_1_minus_x_exact (x);
     if (realprec < w)
       realprec = w;

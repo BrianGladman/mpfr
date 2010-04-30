@@ -30,7 +30,7 @@ int
 mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t ope;
-  mp_prec_t opq;
+  mpfr_prec_t opq;
   int inexi, inexf;
 
   MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),

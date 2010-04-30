@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    precision should be >= 4.
 */
 static void
-mpfr_gamma_alpha (mpfr_t s, mp_prec_t p)
+mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
 {
   if (p <= 100)
     mpfr_set_ui_2exp (s, 614, -10, MPFR_RNDN); /* about 0.6 */
@@ -54,7 +54,7 @@ static int
 unit_bit (mpfr_srcptr (x))
 {
   mp_exp_t expo;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mp_limb_t x0;
 
   expo = MPFR_GET_EXP (x);
@@ -95,7 +95,7 @@ unit_bit (mpfr_srcptr (x))
 static int
 GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 {
-  mp_prec_t precy, w; /* working precision */
+  mpfr_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
@@ -123,7 +123,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
     {
       mpfr_t l, h, g;
       int ok, inex2;
-      mp_prec_t prec = MPFR_PREC(y) + 14;
+      mpfr_prec_t prec = MPFR_PREC(y) + 14;
       MPFR_ZIV_DECL (loop);
 
       MPFR_ZIV_INIT (loop, prec);
@@ -592,7 +592,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           mpfr_t l, h;
           int ok, inex2;
-          mp_prec_t w = MPFR_PREC (y) + 14;
+          mpfr_prec_t w = MPFR_PREC (y) + 14;
 
           while (1)
             {

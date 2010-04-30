@@ -192,7 +192,7 @@ main (int argc, char *argv[])
   if (argc != 1) /* teint x [prec] */
     {
       mpfr_t x;
-      mp_prec_t p;
+      mpfr_prec_t p;
       p = (argc < 3) ? 53 : atoi (argv[2]);
       mpfr_init2 (x, p);
       mpfr_set_str (x, argv[1], 10, MPFR_RNDN);

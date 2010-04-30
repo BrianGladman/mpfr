@@ -84,11 +84,11 @@ test1 (void)
 }
 
 static void
-check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
+check1 (mpfr_ptr x, mpfr_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
 {
   mpfr_t y, z, t;
   int inexact, compare, compare2;
-  mp_prec_t yprec;
+  mpfr_prec_t yprec;
   mp_exp_t err;
 
   yprec = prec + 10;
@@ -190,11 +190,11 @@ main (int argc, char *argv[])
 
   {
   mpfr_t z, t;
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   mpfr_rnd_t rnd;
   unsigned int n;
 
-  mp_prec_t p0=2, p1=100;
+  mpfr_prec_t p0=2, p1=100;
   unsigned int N=20;
 
   mpfr_init2 (z, 38);

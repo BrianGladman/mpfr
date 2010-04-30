@@ -288,7 +288,7 @@ static void
 check_hard (void)
 {
   mpfr_t u, v, q, q2;
-  mp_prec_t precu, precv, precq;
+  mpfr_prec_t precu, precv, precq;
   int rnd;
   int inex, inex2, i, j;
 
@@ -515,7 +515,7 @@ static void
 check_inexact (void)
 {
   mpfr_t x, y, z, u;
-  mp_prec_t px, py, pu;
+  mpfr_prec_t px, py, pu;
   int inexact, cmp;
   mpfr_rnd_t rnd;
 
@@ -768,7 +768,7 @@ consistency (void)
   for (i = 0; i < 10000; i++)
     {
       mpfr_rnd_t rnd;
-      mp_prec_t px, py, pz, p;
+      mpfr_prec_t px, py, pz, p;
       int inex1, inex2;
 
       rnd = RND_RAND ();

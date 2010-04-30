@@ -42,7 +42,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 {
   mpz_t x, t, s;
   mp_exp_t ex, l, m;
-  mp_prec_t p, q;
+  mpfr_prec_t p, q;
   unsigned long i, maxi, imax;
 
   MPFR_ASSERTD(mpfr_get_exp (r) <= -1);
@@ -130,7 +130,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_prec_t K0, K, precy, m, k, l;
+  mpfr_prec_t K0, K, precy, m, k, l;
   int inexact, reduce = 0;
   mpfr_t r, s, xr, c;
   mp_exp_t exps, cancel = 0, expx;

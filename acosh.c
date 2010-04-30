@@ -71,8 +71,8 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
     /* Declaration of the intermediary variables */
     mpfr_t t;
     /* Declaration of the size variables */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
-    mp_prec_t Nt;                  /* Precision of the intermediary variable */
+    mpfr_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
+    mpfr_prec_t Nt;                  /* Precision of the intermediary variable */
     mp_exp_t  err, exp_te, d;      /* Precision of error */
     MPFR_ZIV_DECL (loop);
 
@@ -94,7 +94,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
         if (MPFR_OVERFLOW (flags))
           {
             mpfr_t ln2;
-            mp_prec_t pln2;
+            mpfr_prec_t pln2;
 
             /* As x is very large and the precision is not too large, we
                assume that we obtain the same result by evaluating ln(2x).

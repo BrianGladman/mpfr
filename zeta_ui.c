@@ -43,7 +43,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
     }
   else /* m >= 2 */
     {
-      mp_prec_t p = MPFR_PREC(z);
+      mpfr_prec_t p = MPFR_PREC(z);
       unsigned long n, k, err, kbits;
       mpz_t d, t, s, q;
       mpfr_t y;

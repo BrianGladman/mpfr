@@ -41,7 +41,7 @@ static int
 FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   mpfr_t s, c, P, Q, t, iz, err_t, err_s, err_u;
-  mp_prec_t w;
+  mpfr_prec_t w;
   long k;
   int inex, stop, diverge = 0;
   mp_exp_t err2, err;

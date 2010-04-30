@@ -154,7 +154,7 @@ void mpf_set_fr (mpf_t dest, mpfr_t src, mp_rnd_t rnd)
 }
 
 #define MAX_OP 40
-void make_stats(const char *filename, int num, mp_prec_t prec, int select_op,
+void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
 		const char *outputname, int smooth, int granularity)
 {
   mpfr_t tab[num+1];
@@ -314,7 +314,7 @@ void make_stats(const char *filename, int num, mp_prec_t prec, int select_op,
 
 int main(int argc, const char *argv[])
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   unsigned long stat;  
   int i, select_op = -1, smooth = 3, granularity = 10, op;
   const char *filename = "float.data";

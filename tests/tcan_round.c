@@ -32,7 +32,7 @@ check_round_p (void)
 {
   mp_limb_t buf[MAX_LIMB_SIZE];
   mp_size_t n, i;
-  mp_prec_t p;
+  mpfr_prec_t p;
   mp_exp_t err;
   int r1, r2;
 
@@ -41,7 +41,7 @@ check_round_p (void)
       /* avoid mpn_random which leaks memory */
       for (i = 0; i < n; i++)
         buf[i] = randlimb ();
-      p = (mp_prec_t) randlimb() % ((n-1) * GMP_NUMB_BITS) + MPFR_PREC_MIN;
+      p = (mpfr_prec_t) randlimb() % ((n-1) * GMP_NUMB_BITS) + MPFR_PREC_MIN;
       err = p + randlimb () % GMP_NUMB_BITS;
       r1 = mpfr_round_p (buf, n, err, p);
       r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
@@ -61,7 +61,7 @@ int
 main (void)
 {
   mpfr_t x;
-  mp_prec_t i, j;
+  mpfr_prec_t i, j;
 
   tests_start_mpfr ();
 

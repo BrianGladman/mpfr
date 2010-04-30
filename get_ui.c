@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 unsigned long
 mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_prec_t prec;
+  mpfr_prec_t prec;
   unsigned long s;
   mpfr_t x;
   mp_size_t n;

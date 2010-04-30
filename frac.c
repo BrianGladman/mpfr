@@ -31,7 +31,7 @@ int
 mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t re, ue;
-  mp_prec_t uq;
+  mpfr_prec_t uq;
   mp_size_t un, tn, t0;
   mp_limb_t *up, *tp, k;
   int sh;
@@ -129,7 +129,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
       MPFR_EXP (r) = re;
       carry = mpfr_round_raw (tp, tp,
-                              (mp_prec_t) (tn + 1) * GMP_NUMB_BITS,
+                              (mpfr_prec_t) (tn + 1) * GMP_NUMB_BITS,
                               MPFR_IS_NEG (r), MPFR_PREC (r), rnd_mode,
                               &inex);
       if (carry)
