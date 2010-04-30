@@ -47,10 +47,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_exp_t exp;
+  mp_exp_t e;
   mpfr_prec_t prec;
   uintmax_t s;
-  mpfr_t x, y;
+  mpfr_t x;
   int res;
 
   if (MPFR_IS_NAN(f) || MPFR_IS_INF(f) || MPFR_SIGN(f) < 0)
@@ -63,35 +63,30 @@ mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
      (a) f <= MAXIMUM
      (b) round(f, prec(slong), rnd) <= MAXIMUM */
 
-  exp = MPFR_EXP(f);
-  if (exp < 1)
+  e = MPFR_GET_EXP (f);
+  if (e < 1)
     return 1; /* |f| < 1: always fits */
 
   /* first compute prec(MAXIMUM) */
   for (s = UINTMAX_MAX, prec = 0; s != 0; s /= 2, prec ++);
 
-  /* MAXIMUM needs prec bits, i.e. 2^(prec-1) <= |MAXIMUM| < 2^prec */
+  /* MAXIMUM needs prec bits, i.e. MAXIMUM = 2^prec - 1 */
 
-   /* if exp < prec - 1, then f < 2^(prec-1) < |MAXIMUM| */
-  if ((mpfr_prec_t) exp < prec - 1)
+  /* if e <= prec - 1, then f < 2^(prec-1) < MAXIMUM */
+  if ((mpfr_prec_t) e <= prec - 1)
     return 1;
 
-  /* if exp > prec + 1, then f >= 2^prec > MAXIMUM */
-  if ((mpfr_prec_t) exp > prec + 1)
+  /* if e >= prec + 1, then f >= 2^prec > MAXIMUM */
+  if ((mpfr_prec_t) e >= prec + 1)
     return 0;
 
-  /* remains cases exp = prec-1 to prec+1 */
+  MPFR_ASSERTD (e == prec);
 
   /* hard case: first round to prec bits, then check */
   mpfr_init2 (x, prec);
-  mpfr_init2 (y, prec);
   mpfr_set (x, f, rnd);
-  res = mpfr_set_uj (y, UINTMAX_MAX, MPFR_RNDN);
-  MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp (x, y) <= 0;
-  mpfr_clear (y);
+  res = MPFR_GET_EXP (x) == e;
   mpfr_clear (x);
-
   return res;
 }
 
