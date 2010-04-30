@@ -43,6 +43,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
+/* FIXME: the integer division with negative result isn't well-defined
+   in pre-C99. This function needs to be optimized anyway (like what
+   has been done in fits_uintmax.c). */
+
 /* We can't use fits_s.h <= mpfr_cmp_ui */
 int
 mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)

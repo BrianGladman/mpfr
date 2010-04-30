@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* FIXME: the integer division with negative result isn't well-defined
+   in pre-C99. This function needs to be optimized anyway (like what
+   has been done in fits_u.h). */
+
 int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
