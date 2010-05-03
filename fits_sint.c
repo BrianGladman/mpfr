@@ -23,6 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FUNCTION   mpfr_fits_sint_p
 #define MAXIMUM    INT_MAX
 #define MINIMUM    INT_MIN
-#define TYPE       signed int
+#define TYPE       int
 
 #include "fits_s.h"

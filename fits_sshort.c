@@ -23,6 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FUNCTION   mpfr_fits_sshort_p
 #define MAXIMUM    SHRT_MAX
 #define MINIMUM    SHRT_MIN
-#define TYPE       signed short
+#define TYPE       short
 
 #include "fits_s.h"

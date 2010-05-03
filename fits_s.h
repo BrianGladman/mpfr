@@ -23,16 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* FIXME: the integer division with negative result isn't well-defined
-   in pre-C99. This function needs to be optimized anyway (like what
-   has been done in fits_u.h). */
-
 int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_exp_t exp;
-  mpfr_prec_t prec;
-  TYPE s;
+  mp_exp_t e;
+  int prec;
   mpfr_t x;
   int neg;
   int res;
@@ -45,37 +40,47 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
      (a) MINIMUM <= f <= MAXIMUM
      (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM */
 
-  exp = MPFR_GET_EXP (f);
-  if (exp < 1)
+  e = MPFR_GET_EXP (f);
+  if (e < 1)
     return 1; /* |f| < 1: always fits */
 
   neg = MPFR_IS_NEG (f);
 
   /* let EXTREMUM be MAXIMUM if f > 0, and MINIMUM if f < 0 */
 
-  /* first compute prec(EXTREMUM), this could be done at configure time */
-  s = (neg) ? MINIMUM : MAXIMUM;
-  for (prec = 0; s != 0; s /= 2, prec ++);
+  /* first compute prec(EXTREMUM), this could be done at configure time,
+     but the result can depend on neg (the loop is moved inside the "if"
+     to give the compiler a better chance to compute prec statically) */
+  if (neg)
+    {
+      unsigned TYPE s;
+      /* In C89, the division on negative integers isn't well-defined. */
+      s = SAFE_ABS (unsigned TYPE, MINIMUM);
+      for (prec = 0; s != 0; s /= 2, prec ++);
+    }
+  else
+    {
+      TYPE s;
+      s = MAXIMUM;
+      for (prec = 0; s != 0; s /= 2, prec ++);
+    }
 
   /* EXTREMUM needs prec bits, i.e. 2^(prec-1) <= |EXTREMUM| < 2^prec */
 
-   /* if exp < prec - 1, then f < 2^(prec-1) < |EXTREMUM| */
-  if ((mpfr_prec_t) exp < prec - 1)
+   /* if e <= prec - 1, then f < 2^(prec-1) <= |EXTREMUM| */
+  if (e <= prec - 1)
     return 1;
 
-  /* if exp > prec + 1, then f >= 2^prec > EXTREMUM */
-  if ((mpfr_prec_t) exp > prec + 1)
+  /* if e >= prec + 1, then f >= 2^prec > |EXTREMUM| */
+  if (e >= prec + 1)
     return 0;
 
-  /* remains cases exp = prec-1 to prec+1 */
+  MPFR_ASSERTD (e == prec);
 
   /* hard case: first round to prec bits, then check */
   mpfr_init2 (x, prec);
   mpfr_set (x, f, rnd);
-  res = (neg) ? (mpfr_cmp_si (x, MINIMUM) >= 0)
-    : (mpfr_cmp_si (x, MAXIMUM) <= 0);
+  res = neg ? (mpfr_cmp_si (x, MINIMUM) >= 0) : (MPFR_GET_EXP (x) == e);
   mpfr_clear (x);
-
   return res;
 }
-

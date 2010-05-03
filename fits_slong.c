@@ -23,6 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FUNCTION   mpfr_fits_slong_p
 #define MAXIMUM    LONG_MAX
 #define MINIMUM    LONG_MIN
-#define TYPE       signed long
+#define TYPE       long
 
 #include "fits_s.h"

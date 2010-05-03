@@ -43,69 +43,78 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
-/* FIXME: the integer division with negative result isn't well-defined
-   in pre-C99. This function needs to be optimized anyway (like what
-   has been done in fits_uintmax.c). */
-
 /* We can't use fits_s.h <= mpfr_cmp_ui */
 int
 mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_exp_t exp;
-  mpfr_prec_t prec;
-  intmax_t s;
+  mp_exp_t e;
+  int prec;
   mpfr_t x, y;
   int neg;
   int res;
 
-  if (MPFR_IS_NAN (f) || MPFR_IS_INF (f))
-    return 0; /* does not fit */
-
-  if (MPFR_IS_ZERO (f))
-    return 1; /* zero always fits */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
+    /* Zero always fit */
+    return MPFR_IS_ZERO (f) ? 1 : 0;
 
   /* now it fits if either
      (a) MINIMUM <= f <= MAXIMUM
      (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM */
 
-  exp = MPFR_EXP (f);
-  if (exp < 1)
+  e = MPFR_EXP (f);
+  if (e < 1)
     return 1; /* |f| < 1: always fits */
 
-  neg = (MPFR_SIGN (f) > 0) ? 0 : 1;
+  neg = MPFR_IS_NEG (f);
 
   /* let EXTREMUM be MAXIMUM if f > 0, and MINIMUM if f < 0 */
 
-  /* first compute prec(EXTREMUM), this could be done at configure time */
-  s = (neg) ? INTMAX_MIN : INTMAX_MAX;
-  for (prec = 0; s != 0; s /= 2, prec ++);
+  /* first compute prec(EXTREMUM), this could be done at configure time,
+     but the result can depend on neg (the loop is moved inside the "if"
+     to give the compiler a better chance to compute prec statically) */
+  if (neg)
+    {
+      uintmax_t s;
+      /* In C89, the division on negative integers isn't well-defined. */
+      s = SAFE_ABS (uintmax_t, INTMAX_MIN);
+      for (prec = 0; s != 0; s /= 2, prec ++);
+    }
+  else
+    {
+      intmax_t s;
+      s = INTMAX_MAX;
+      for (prec = 0; s != 0; s /= 2, prec ++);
+    }
 
   /* EXTREMUM needs prec bits, i.e. 2^(prec-1) <= |EXTREMUM| < 2^prec */
 
-   /* if exp < prec - 1, then f < 2^(prec-1) < |EXTREMUM| */
-  if ((mpfr_prec_t) exp < prec - 1)
+   /* if e <= prec - 1, then f < 2^(prec-1) <= |EXTREMUM| */
+  if (e <= prec - 1)
     return 1;
 
-  /* if exp > prec + 1, then f >= 2^prec > EXTREMUM */
-  if ((mpfr_prec_t) exp > prec + 1)
+  /* if e >= prec + 1, then f >= 2^prec > |EXTREMUM| */
+  if (e >= prec + 1)
     return 0;
 
-  /* remains cases exp = prec-1 to prec+1 */
+  MPFR_ASSERTD (e == prec);
 
   /* hard case: first round to prec bits, then check */
   mpfr_init2 (x, prec);
-  mpfr_init2 (y, prec);
-
   mpfr_set (x, f, rnd);
-  mpfr_set_sj (y, neg ? INTMAX_MIN : INTMAX_MAX, MPFR_RNDN);
 
-  res = (neg
-         ? (mpfr_cmp (x, y) >= 0)
-         : (mpfr_cmp (x, y) <= 0));
+  if (neg)
+    {
+      mpfr_init2 (y, prec);
+      mpfr_set_sj (y, INTMAX_MIN, MPFR_RNDN);
+      res = mpfr_cmp (x, y) >= 0;
+      mpfr_clear (y);
+    }
+  else
+    {
+      res = MPFR_GET_EXP (x) == e;
+    }
 
-  mpfr_clear (y);
   mpfr_clear (x);
-
   return res;
 }
 
