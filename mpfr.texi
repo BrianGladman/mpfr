@@ -2123,6 +2123,7 @@ one of the following characters:
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{U}  @tab round toward plus infinity
 @item @samp{D}  @tab round toward minus infinity
+@item @samp{Y}  @tab round away from zero
 @item @samp{Z}  @tab round toward zero
 @item @samp{N}  @tab round to nearest
 @item @samp{*}  @tab rounding mode indicated by the @code{mpfr_rnd_t} argument
@@ -2141,11 +2142,7 @@ mpfr_printf ("%.128RNf", x);
 mpfr_printf ("%.128R*f", MPFR_RNDN, x);
 @end example
 
-Note that the rounding away from zero mode is only available through @samp{*},
-as in
-@example
-mpfr_printf ("%.128R*f", MPFR_RNDA, x);
-@end example
+Note that the rounding away from zero mode is specified with @samp{Y}
 because ISO C reserves the @samp{A} specifier for hexadecimal output (see
 below).
 

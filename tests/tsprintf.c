@@ -226,29 +226,49 @@ decimal (void)
   /* special numbers */
   mpfr_set_inf (x, 1);
   check_sprintf (pinf_str, "%Re", x);
+  check_sprintf (pinf_str, "%RUe", x);
   check_sprintf (pinf_uc_str, "%RE", x);
+  check_sprintf (pinf_uc_str, "%RDE", x);
   check_sprintf (pinf_str, "%Rf", x);
+  check_sprintf (pinf_str, "%RYf", x);
   check_sprintf (pinf_uc_str, "%RF", x);
+  check_sprintf (pinf_uc_str, "%RZF", x);
   check_sprintf (pinf_str, "%Rg", x);
+  check_sprintf (pinf_str, "%RNg", x);
   check_sprintf (pinf_uc_str, "%RG", x);
+  check_sprintf (pinf_uc_str, "%RUG", x);
   check_sprintf ("       inf", "%010Re", x);
+  check_sprintf ("       inf", "%010RDe", x);
 
   mpfr_set_inf (x, -1);
   check_sprintf (minf_str, "%Re", x);
+  check_sprintf (minf_str, "%RYe", x);
   check_sprintf (minf_uc_str, "%RE", x);
+  check_sprintf (minf_uc_str, "%RZE", x);
   check_sprintf (minf_str, "%Rf", x);
+  check_sprintf (minf_str, "%RNf", x);
   check_sprintf (minf_uc_str, "%RF", x);
+  check_sprintf (minf_uc_str, "%RUF", x);
   check_sprintf (minf_str, "%Rg", x);
+  check_sprintf (minf_str, "%RDg", x);
   check_sprintf (minf_uc_str, "%RG", x);
+  check_sprintf (minf_uc_str, "%RYG", x);
   check_sprintf ("      -inf", "%010Re", x);
+  check_sprintf ("      -inf", "%010RZe", x);
 
   mpfr_set_nan (x);
   check_sprintf (nan_str, "%Re", x);
+  check_sprintf (nan_str, "%RNe", x);
   check_sprintf (nan_uc_str, "%RE", x);
+  check_sprintf (nan_uc_str, "%RUE", x);
   check_sprintf (nan_str, "%Rf", x);
+  check_sprintf (nan_str, "%RDf", x);
   check_sprintf (nan_uc_str, "%RF", x);
+  check_sprintf (nan_uc_str, "%RYF", x);
   check_sprintf (nan_str, "%Rg", x);
+  check_sprintf (nan_str, "%RZg", x);
   check_sprintf (nan_uc_str, "%RG", x);
+  check_sprintf (nan_uc_str, "%RNG", x);
   check_sprintf ("       nan", "%010Re", x);
 
   /* positive numbers */
@@ -362,9 +382,13 @@ decimal (void)
   check_sprintf ("0.000000", "%Rf", x);
   check_sprintf ("1e-17", "%Rg", x);
   check_sprintf ("0.0", "%.1RDf", x);
+  check_sprintf ("0.0", "%.1RZf", x);
   check_sprintf ("0.1", "%.1RUf", x);
+  check_sprintf ("0.1", "%.1RYf", x);
   check_sprintf ("0", "%.0RDf", x);
+  check_sprintf ("0", "%.0RZf", x);
   check_sprintf ("1", "%.0RUf", x);
+  check_sprintf ("1", "%.0RYf", x);
 
   /* check rounding mode */
   mpfr_set_str (x, "0.0076", 10, MPFR_RNDN);
@@ -372,6 +396,7 @@ decimal (void)
   check_sprintf ("0.007", "%.3RZF", x);
   check_sprintf ("0.008", "%.3RF", x);
   check_sprintf ("0.008", "%.3RUF", x);
+  check_sprintf ("0.008", "%.3RYF", x);
   check_vsprintf ("0.008", "%.3R*F", MPFR_RNDA, x);
 
   /* check limit between %f-style and %g-style */
@@ -405,7 +430,8 @@ decimal (void)
   mpfr_set_prec (x, 53);
 
   /* Exponent zero has a plus sign */
-  mpfr_set_str (x, "-9.95645044213728791504536275169812142849e-01", 10, MPFR_RNDN);
+  mpfr_set_str (x, "-9.95645044213728791504536275169812142849e-01", 10,
+                MPFR_RNDN);
   check_sprintf ("-1.0e+00", "%- #0.1Re", x);
 
   /* Decimal point and no figure after it with '#' flag and 'G' style */
@@ -415,6 +441,7 @@ decimal (void)
   /* precision zero */
   mpfr_set_d (x, -9.5, MPFR_RNDN);
   check_sprintf ("-10",    "%.0RDf", x);
+  check_sprintf ("-10",    "%.0RYf", x);
   check_sprintf ("-10",    "%.0Rf", x);
   check_sprintf ("-1e+01", "%.0Re", x);
   check_sprintf ("-1e+01", "%.0Rg", x);
@@ -487,11 +514,21 @@ hexadecimal (void)
   /* special */
   mpfr_set_inf (x, 1);
   check_sprintf (pinf_str, "%Ra", x);
+  check_sprintf (pinf_str, "%RUa", x);
+  check_sprintf (pinf_str, "%RDa", x);
   check_sprintf (pinf_uc_str, "%RA", x);
+  check_sprintf (pinf_uc_str, "%RYA", x);
+  check_sprintf (pinf_uc_str, "%RZA", x);
+  check_sprintf (pinf_uc_str, "%RNA", x);
 
   mpfr_set_inf (x, -1);
   check_sprintf (minf_str, "%Ra", x);
+  check_sprintf (minf_str, "%RYa", x);
+  check_sprintf (minf_str, "%RZa", x);
+  check_sprintf (minf_str, "%RNa", x);
   check_sprintf (minf_uc_str, "%RA", x);
+  check_sprintf (minf_uc_str, "%RUA", x);
+  check_sprintf (minf_uc_str, "%RDA", x);
 
   mpfr_set_nan (x);
   check_sprintf (nan_str, "%Ra", x);
@@ -503,6 +540,11 @@ hexadecimal (void)
 
   /* simplest case right justified */
   check_sprintf ("   0xf.edcba987654321p+24", "%25Ra", x);
+  check_sprintf ("   0xf.edcba987654321p+24", "%25RUa", x);
+  check_sprintf ("   0xf.edcba987654321p+24", "%25RDa", x);
+  check_sprintf ("   0xf.edcba987654321p+24", "%25RYa", x);
+  check_sprintf ("   0xf.edcba987654321p+24", "%25RZa", x);
+  check_sprintf ("   0xf.edcba987654321p+24", "%25RNa", x);
   check_sprintf ("                  0x1p+28", "%25.0Ra", x);
   check_sprintf ("                   0x0p+0", "%25.0Ra", z);
   /* sign or space, pad with leading zeros */
@@ -561,12 +603,15 @@ hexadecimal (void)
                 "fffffffffffffffff", 16, MPFR_RNDN);
   check_sprintf ("0x1p+4 [300]", "%.0RNa [300]", x);
   check_sprintf ("0xfp+0 [300]", "%.0RZa [300]", x);
+  check_sprintf ("0x1p+4 [300]", "%.0RYa [300]", x);
   check_sprintf ("0xfp+0 [300]", "%.0RDa [300]", x);
   check_sprintf ("0x1p+4 [300]", "%.0RUa [300]", x);
   check_sprintf ("0x1.0000000000000000000000000000000000000000p+4",
                  "%.40RNa", x);
   check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffffffp+0",
                  "%.40RZa", x);
+  check_sprintf ("0x1.0000000000000000000000000000000000000000p+4",
+                 "%.40RYa", x);
   check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffffffp+0",
                  "%.40RDa", x);
   check_sprintf ("0x1.0000000000000000000000000000000000000000p+4",
@@ -576,14 +621,14 @@ hexadecimal (void)
                 "ffffffffffffffffff", 16, MPFR_RNDN);
   check_sprintf ("0XFP+0", "%.0RNA", x);
   check_sprintf ("0XFP+0", "%.0RZA", x);
+  check_sprintf ("0X1P+4", "%.0RYA", x);
   check_sprintf ("0XFP+0", "%.0RDA", x);
   check_sprintf ("0X1P+4", "%.0RUA", x);
-  check_vsprintf ("0X1P+4", "%.0R*A", MPFR_RNDA, x);
   check_sprintf ("0XF.8P+0", "%.1RNA", x);
   check_sprintf ("0XF.7P+0", "%.1RZA", x);
+  check_sprintf ("0XF.8P+0", "%.1RYA", x);
   check_sprintf ("0XF.7P+0", "%.1RDA", x);
   check_sprintf ("0XF.8P+0", "%.1RUA", x);
-  check_vsprintf ("0XF.8P+0", "%.1R*A", MPFR_RNDA, x);
 
   /* do not round up to the next power of the base */
   mpfr_set_str (x, "0xf.fffffffffffffffffffffffffffffffffffffeffffffffffffff"
@@ -592,12 +637,12 @@ hexadecimal (void)
                  "%.40RNa", x);
   check_sprintf ("0xf.fffffffffffffffffffffffffffffffffffffeffp+0",
                  "%.40RZa", x);
+  check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
+                 "%.40RYa", x);
   check_sprintf ("0xf.fffffffffffffffffffffffffffffffffffffeffp+0",
                  "%.40RDa", x);
   check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
                  "%.40RUa", x);
-  check_vsprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
-                  "%.40R*a", MPFR_RNDA, x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
@@ -646,9 +691,10 @@ binary (void)
   /* sign or space, decimal point (unused), left justified */
   check_sprintf (" 1.1p+9    ", "%- #11.1RDb", x);
   check_sprintf (" 1.p+9     ", "%- #11.0RDb", x);
-  check_sprintf (" 1.p+10    ", "%- #11.0RNb", x);
   check_sprintf (" 1.p+10    ", "%- #11.0RUb", x);
-  check_vsprintf (" 1.p+10    ", "%- #11.0R*b", MPFR_RNDA, x);
+  check_sprintf (" 1.p+9     ", "%- #11.0RZb", x);
+  check_sprintf (" 1.p+10    ", "%- #11.0RYb", x);
+  check_sprintf (" 1.p+10    ", "%- #11.0RNb", x);
 
   mpfr_mul_si (x, x, -1, MPFR_RNDD);
   mpfr_mul_si (z, z, -1, MPFR_RNDD);
@@ -659,14 +705,14 @@ binary (void)
 
   /* precision 0 */
   check_sprintf ("-1p+10", "%.0RNb", x);
-  check_sprintf ("-1p+9",  "%.0RZb", x);
   check_sprintf ("-1p+10", "%.0RDb", x);
   check_sprintf ("-1p+9",  "%.0RUb", x);
-  check_vsprintf ("-1p+10", "%.0R*b", MPFR_RNDA, x);
+  check_sprintf ("-1p+9",  "%.0RZb", x);
+  check_sprintf ("-1p+10", "%.0RYb", x);
   /* round to next base power */
   check_sprintf ("-1.0p+10", "%.1RNb", x);
   check_sprintf ("-1.0p+10", "%.1RDb", x);
-  check_vsprintf ("-1.0p+10", "%.1R*b", MPFR_RNDA, x);
+  check_sprintf ("-1.0p+10", "%.1RYb", x);
   /* do not round to next base power */
   check_sprintf ("-1.1p+9", "%.1RUb", x);
   check_sprintf ("-1.1p+9", "%.1RZb", x);

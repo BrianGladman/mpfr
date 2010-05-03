@@ -1974,6 +1974,10 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
               ++fmt;
               spec.rnd_mode = MPFR_RNDU;
               break;
+            case 'Y':
+              ++fmt;
+              spec.rnd_mode = MPFR_RNDA;
+              break;
             case 'Z':
               ++fmt;
               spec.rnd_mode = MPFR_RNDZ;
