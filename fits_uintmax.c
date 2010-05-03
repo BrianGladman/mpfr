@@ -57,7 +57,7 @@ mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
     /* Zero always fit */
     return MPFR_IS_ZERO (f) ? 1 : 0;
   else if (MPFR_IS_NEG (f))
-    /* Negative numbers doesn't fit */
+    /* Negative numbers don't fit */
     return 0;
   /* now it fits if
      (a) f <= MAXIMUM
