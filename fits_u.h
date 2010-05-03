@@ -26,7 +26,7 @@ int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_exp_t e;
-  mpfr_prec_t prec;
+  int prec;
   TYPE s;
   mpfr_t x;
   int res;
@@ -42,20 +42,18 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
      (b) round(f, prec(slong), rnd) <= MAXIMUM */
 
   e = MPFR_GET_EXP (f);
-  if (e < 1)
-    return 1; /* |f| < 1: always fits */
 
-  /* first compute prec(MAXIMUM) */
+  /* first compute prec(MAXIMUM); fits in an int */
   for (s = MAXIMUM, prec = 0; s != 0; s /= 2, prec ++);
 
   /* MAXIMUM needs prec bits, i.e. MAXIMUM = 2^prec - 1 */
 
-   /* if e <= prec - 1, then f < 2^(prec-1) < MAXIMUM */
-  if ((mpfr_prec_t) e <= prec - 1)
+  /* if e <= prec - 1, then f < 2^(prec-1) < MAXIMUM */
+  if (e <= prec - 1)
     return 1;
 
   /* if e >= prec + 1, then f >= 2^prec > MAXIMUM */
-  if ((mpfr_prec_t) e >= prec + 1)
+  if (e >= prec + 1)
     return 0;
 
   MPFR_ASSERTD (e == prec);
