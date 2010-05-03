@@ -499,6 +499,12 @@ users of C++ compilers under some platforms may need to define
 @file{mpfr.h} has been included; of course, it is possible to do that
 on the command line, e.g., with @code{-DMPFR_USE_INTMAX_T}.
 
+Note: If @code{mpfr.h} and/or @code{gmp.h} (used by @code{mpfr.h})
+are included several times (possibly from another header file), the
+aforementioned standard headers should be included @strong{before} the
+first inclusion of @code{mpfr.h} or @code{gmp.h}. For the time being,
+this problem is not avoidable in MPFR without a change in GMP.
+
 You can avoid the use of MPFR macros encapsulating functions by defining
 the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
 general this should not be necessary, but this can be useful when debugging
