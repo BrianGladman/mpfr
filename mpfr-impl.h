@@ -753,6 +753,12 @@ typedef intmax_t mpfr_eexp_t;
  ************** Rounding mode macros  *****************
  ******************************************************/
 
+/* MPFR_RND_MAX gives the number of supported rounding modes by all functions.
+ * Once faithful rounding is implemented, MPFR_RNDA should be changed
+ * to MPFR_RNDF. But this will also require more changes in the tests.
+ */
+#define MPFR_RND_MAX ((MPFR_RNDA)+1)
+
 /* We want to test this :
  *  (rnd == MPFR_RNDU && test) || (rnd == RNDD && !test)
  * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
