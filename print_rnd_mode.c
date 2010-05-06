@@ -25,6 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 const char *
 mpfr_print_rnd_mode (mpfr_rnd_t rnd_mode)
 {
+  /* If we forget to update this function after a new rounding mode
+     is added, this will be detected by the following assertion. */
+  MPFR_ASSERTN (MPFR_RND_MAX == MPFR_RNDA + 1);
   switch (rnd_mode)
     {
     case MPFR_RNDD:
