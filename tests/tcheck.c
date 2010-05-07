@@ -69,8 +69,12 @@ main (void)
       /* Check prec */
       MPFR_PREC(a) = 1;
       if (mpfr_check(a))  ERROR("precmin");
-      MPFR_PREC(a) = MPFR_PREC_MAX+1;
-      if (mpfr_check(a))  ERROR("precmax");
+      if ((mpfr_prec_t) 0 - 1 > 0)
+        {
+          printf ("blah\n");
+          MPFR_PREC(a) = MPFR_PREC_MAX+1;
+          if (mpfr_check(a))  ERROR("precmax");
+        }
       MPFR_PREC(a) = pr;
       if (!mpfr_check(a)) ERROR("prec");
       /* Check exponent */
