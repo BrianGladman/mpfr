@@ -118,6 +118,8 @@ typedef unsigned long  mpfr_prec_t;
 #endif
 
 /* Definition of precision limits */
+/* Note: the casts allows the expression to yield the wanted behavior
+   for _MPFR_PREC_FORMAT == 1 (due to integer promotion rules). */
 #define MPFR_PREC_MIN 2
 #define MPFR_PREC_MAX ((mpfr_prec_t)((mpfr_prec_t)(~(mpfr_prec_t)0)>>1))
 
