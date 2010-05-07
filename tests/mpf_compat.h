@@ -35,7 +35,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 int
-main ()
+main (void)
 {
   unsigned long int prec;
   unsigned long int prec2;
