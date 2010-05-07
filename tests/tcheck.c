@@ -71,7 +71,6 @@ main (void)
       if (mpfr_check(a))  ERROR("precmin");
       if ((mpfr_prec_t) 0 - 1 > 0)
         {
-          printf ("blah\n");
           MPFR_PREC(a) = MPFR_PREC_MAX+1;
           if (mpfr_check(a))  ERROR("precmax");
         }
