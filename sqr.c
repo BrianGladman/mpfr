@@ -26,7 +26,7 @@ int
 mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int cc, inexact;
-  mp_exp_t  ax;
+  mpfr_exp_t ax;
   mp_limb_t *tmp;
   mp_limb_t b1;
   mpfr_prec_t bq;
@@ -86,7 +86,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 
   MPFR_TMP_FREE(marker);
   {
-    mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
+    mpfr_exp_t ax2 = ax + (mpfr_exp_t) (b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
       return mpfr_overflow (a, rnd_mode, MPFR_SIGN_POS);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
@@ -96,7 +96,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
            is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
            both arguments are powers of 2), then round to zero. */
         if (rnd_mode == MPFR_RNDN &&
-            (ax + (mp_exp_t) b1 < __gmpfr_emin || mpfr_powerof2_raw (b)))
+            (ax + (mpfr_exp_t) b1 < __gmpfr_emin || mpfr_powerof2_raw (b)))
           rnd_mode = MPFR_RNDZ;
         return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
       }

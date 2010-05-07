@@ -163,13 +163,13 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
   MPFR_ASSERTD (dir == 0 || dir == 1);
 
   /* First check if we can round. The test is more restrictive than
-     necessary. Note that if err is not representable in an mp_exp_t,
-     then err > MPFR_PREC (v) and the conversion to mp_exp_t will not
+     necessary. Note that if err is not representable in an mpfr_exp_t,
+     then err > MPFR_PREC (v) and the conversion to mpfr_exp_t will not
      occur. */
   if (!(err > MPFR_PREC (y) + 1
         && (err > MPFR_PREC (v)
             || mpfr_round_p (MPFR_MANT (v), MPFR_LIMB_SIZE (v),
-                             (mp_exp_t) err,
+                             (mpfr_exp_t) err,
                              MPFR_PREC (y) + (rnd == MPFR_RNDN)))))
     /* If we assume we can not round, return 0, and y is not modified */
     return 0;

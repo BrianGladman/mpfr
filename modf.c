@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
 {
-  mp_exp_t ope;
+  mpfr_exp_t ope;
   mpfr_prec_t opq;
   int inexi, inexf;
 

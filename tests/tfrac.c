@@ -180,7 +180,7 @@ bug20090918 (void)
   int inexy, inexz;
   int r, i;
   char *s[] = { "61680.352935791015625", "61680.999999" };
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
   mpfr_init2 (x, 32);

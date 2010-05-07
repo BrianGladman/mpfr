@@ -51,7 +51,7 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
          overflow; the first test useful so that the real test can't lead
          to an integer overflow. */
       {
-        mp_exp_t exp = MPFR_GET_EXP (y);
+        mpfr_exp_t exp = MPFR_GET_EXP (y);
         if (MPFR_UNLIKELY( __gmpfr_emin > MPFR_EMAX_MAX - (long) n ||
                            exp < __gmpfr_emin + (long) n) )
           {

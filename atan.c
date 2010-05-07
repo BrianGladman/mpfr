@@ -39,7 +39,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 {
   mpz_t *S, *Q, *ptoj;
   unsigned long n, i, k, j, l;
-  mp_exp_t diff, expo;
+  mpfr_exp_t diff, expo;
   int im, done;
   mpfr_prec_t mult, *accu, *log2_nb_terms;
   mpfr_prec_t precy = MPFR_PREC(y);
@@ -192,7 +192,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t xp, arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
   mpz_t *tabz;
-  mp_exp_t exptol;
+  mpfr_exp_t exptol;
   mpfr_prec_t prec, realprec, est_lost, lost;
   unsigned long twopoweri, log2p, red;
   int comparaison, inexact;
@@ -329,7 +329,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* Argument reduction: atan(x) = 2 atan((sqrt(1+x^2)-1)/x).
          We want |sk| < k/sqrt(p) where p is the target precision. */
       lost = 0;
-      for (red = 0; MPFR_GET_EXP(sk) > - (mp_exp_t) log2p; red ++)
+      for (red = 0; MPFR_GET_EXP(sk) > - (mpfr_exp_t) log2p; red ++)
         {
           lost = 9 - 2 * MPFR_EXP(sk);
           mpfr_mul (tmp, sk, sk, MPFR_RNDN);

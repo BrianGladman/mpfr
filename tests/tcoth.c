@@ -136,7 +136,7 @@ underflowed_cothinf (void)
 {
   mpfr_t x, y;
   int i, inex, rnd, err = 0;
-  mp_exp_t old_emin;
+  mpfr_exp_t old_emin;
 
   old_emin = mpfr_get_emin ();
 

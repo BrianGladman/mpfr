@@ -29,7 +29,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t tmp, pi;
   int inexact;
   mpfr_prec_t prec;
-  mp_exp_t e;
+  mpfr_exp_t e;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 

@@ -64,7 +64,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      with 1 - x^2/3 <= sqrt(Pi)*erf(x)/2/x <= 1 for x >= 0. This means that
      if x^2/3 < 2^(-PREC(y)-1) we can decide of the correct rounding,
      unless we have a worst-case for 2x/sqrt(Pi). */
-  if (MPFR_EXP(x) < - (mp_exp_t) (MPFR_PREC(y) / 2))
+  if (MPFR_EXP(x) < - (mpfr_exp_t) (MPFR_PREC(y) / 2))
     {
       /* we use 2x/sqrt(Pi) (1 - x^2/3) <= erf(x) <= 2x/sqrt(Pi) for x > 0
          and 2x/sqrt(Pi) <= erf(x) <= 2x/sqrt(Pi) (1 - x^2/3) for x < 0.
@@ -154,7 +154,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
 /* return x*2^e */
 static double
-mul_2exp (double x, mp_exp_t e)
+mul_2exp (double x, mpfr_exp_t e)
 {
   if (e > 0)
     {
@@ -181,7 +181,7 @@ static int
 mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t n, m;
-  mp_exp_t nuk, sigmak;
+  mpfr_exp_t nuk, sigmak;
   double tauk;
   mpfr_t y, s, t, u;
   unsigned int k;
@@ -220,7 +220,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
           sigmak -= MPFR_GET_EXP(s);
           nuk = MPFR_GET_EXP(u) - MPFR_GET_EXP(s);
 
-          if ((nuk < - (mp_exp_t) m) && ((double) k >= xf2))
+          if ((nuk < - (mpfr_exp_t) m) && ((double) k >= xf2))
             break;
 
           /* tauk <- 1/2 + tauk * 2^sigmak + (1+8k)*2^nuk */

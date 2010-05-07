@@ -141,7 +141,7 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -166,7 +166,7 @@ overflowed_cos0 (void)
 {
   mpfr_t x, y;
   int emax, i, inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 

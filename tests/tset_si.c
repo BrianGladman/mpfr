@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   unsigned long zl, dl;
   int inex;
   int r;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int flag;
 
   tests_start_mpfr ();

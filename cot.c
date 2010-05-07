@@ -50,7 +50,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    an underflow is not possible as emin = - emax. The overflow is a
    real overflow possibly except when |x| = 2^emin. */
 #define ACTION_TINY(y,x,r) \
-  if (MPFR_EXP(x) + 1 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
+  if (MPFR_EXP(x) + 1 <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
     {                                                                   \
       int two2emin;                                                     \
       int signx = MPFR_SIGN(x);                                         \

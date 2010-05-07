@@ -270,7 +270,7 @@ main (void)
   mpf_t x;
   mpfr_t y, z;
   unsigned long i;
-  mp_exp_t e;
+  mpfr_exp_t e;
   int inex;
 
   tests_start_mpfr ();

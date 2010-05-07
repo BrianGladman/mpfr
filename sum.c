@@ -42,14 +42,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 static void heap_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *);
 static void count_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *,
-                        mp_exp_t, mpfr_uexp_t);
+                        mpfr_exp_t, mpfr_uexp_t);
 
 /* Either sort the tab in perm and returns 0
    Or returns 1 for +INF, -1 for -INF and 2 for NAN */
 int
 mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
 {
-  mp_exp_t min, max;
+  mpfr_exp_t min, max;
   mpfr_uexp_t exp_num;
   unsigned long i;
   int sign_inf;
@@ -95,7 +95,7 @@ mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
 /* Performs a count sort of the entries */
 static void
 count_sort (mpfr_srcptr *const tab, unsigned long n,
-            mpfr_srcptr *perm, mp_exp_t min, mpfr_uexp_t exp_num)
+            mpfr_srcptr *perm, mpfr_exp_t min, mpfr_uexp_t exp_num)
 {
   unsigned long *account;
   unsigned long target_rank, i;

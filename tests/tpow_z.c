@@ -323,7 +323,7 @@ bug20080904 (void)
 {
   mpz_t exp;
   mpfr_t a, answer;
-  mp_exp_t emin_default;
+  mpfr_exp_t emin_default;
 
   mpz_init (exp);
   mpfr_init2 (a, 70);

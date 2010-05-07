@@ -34,7 +34,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                    mpfr_rnd_t rnd_mode, int *inexact)
 {
   mpz_t a, c;
-  mp_exp_t d, b;
+  mpfr_exp_t d, b;
   unsigned long i;
   int res;
 
@@ -111,7 +111,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 static int
 is_odd (mpfr_srcptr y)
 {
-  mp_exp_t expo;
+  mpfr_exp_t expo;
   mpfr_prec_t prec;
   mp_size_t yn;
   mp_limb_t *yp;
@@ -167,7 +167,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* Declaration of the size variable */
   mpfr_prec_t Nz = MPFR_PREC(z);               /* target precision */
   mpfr_prec_t Nt;                              /* working precision */
-  mp_exp_t err;                              /* error */
+  mpfr_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
 
 
@@ -270,7 +270,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             }
 
           k_non_zero = 1;
-          Ntmin = sizeof(mp_exp_t) * CHAR_BIT;
+          Ntmin = sizeof(mpfr_exp_t) * CHAR_BIT;
           if (Ntmin > Nt)
             {
               Nt = Ntmin;
@@ -556,7 +556,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
       /* We must restore the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
-      mpfr_init2 (tmp, sizeof (mp_exp_t) * CHAR_BIT);
+      mpfr_init2 (tmp, sizeof (mpfr_exp_t) * CHAR_BIT);
       inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), MPFR_RNDN);
       MPFR_ASSERTN (inex2 == 0);
       if (MPFR_IS_NEG (y))
@@ -606,7 +606,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   /* Special case (+/-2^b)^Y which could be exact. If x is negative, then
      necessarily y is a large integer. */
   {
-    mp_exp_t b = MPFR_GET_EXP (x) - 1;
+    mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
 
     MPFR_ASSERTN (b >= LONG_MIN && b <= LONG_MAX);  /* FIXME... */
     if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), b) == 0)
@@ -646,7 +646,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      that case y is a large integer. */
   {
     mpfr_t t;
-    mp_exp_t err;
+    mpfr_exp_t err;
 
     /* We need an upper bound on the exponent of y * log(x). */
     mpfr_init2 (t, 16);

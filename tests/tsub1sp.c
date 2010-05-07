@@ -102,7 +102,7 @@ check_special (void)
   int r;
   mpfr_prec_t p;
   int i = -1, inexact1, inexact2;
-  mp_exp_t es;
+  mpfr_exp_t es;
 
   mpfr_inits (x, y, z, x2, (mpfr_ptr) 0);
 

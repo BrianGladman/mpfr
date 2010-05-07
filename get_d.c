@@ -37,7 +37,7 @@ mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   double d;
   int negative;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
@@ -135,7 +135,7 @@ double
 mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   double ret;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   mpfr_t tmp;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))

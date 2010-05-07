@@ -31,7 +31,7 @@ check_diff (void)
   int inex;
   mpfr_t x;
   mpz_t  z;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpz_init   (z);
   mpfr_init2 (x, 2);

@@ -42,10 +42,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   if (MPFR_GET_EXP(z) == 1) /* 1 <= |z| < 2 */                          \
     {                                                                   \
       /* the following is exact by Sterbenz theorem */                  \
-      mpfr_sub_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, MPFR_RNDN);          \
-      if (MPFR_IS_ZERO(z) || MPFR_GET_EXP(z) <= - (mp_exp_t) precy)     \
+      mpfr_sub_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, MPFR_RNDN);         \
+      if (MPFR_IS_ZERO(z) || MPFR_GET_EXP(z) <= - (mpfr_exp_t) precy)   \
         {                                                               \
-          mpfr_add_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, MPFR_RNDN);      \
+          mpfr_add_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, MPFR_RNDN);     \
           break;                                                        \
         }                                                               \
     }
@@ -63,7 +63,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    result. If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
    A sufficient condition is thus EXP(x) + 1 <= -2 MAX(PREC(x),PREC(Y)). */
 #define ACTION_TINY(y,x,r) \
-  if (MPFR_EXP(x) + 1 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
+  if (MPFR_EXP(x) + 1 <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
     {                                                                   \
       int signx = MPFR_SIGN(x);                                         \
       inexact = mpfr_ui_div (y, 1, x, r);                               \

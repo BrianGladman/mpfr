@@ -24,12 +24,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 unsigned int MPFR_THREAD_ATTR __gmpfr_flags = 0;
 
-mp_exp_t MPFR_THREAD_ATTR __gmpfr_emin = MPFR_EMIN_DEFAULT;
-mp_exp_t MPFR_THREAD_ATTR __gmpfr_emax = MPFR_EMAX_DEFAULT;
+mpfr_exp_t MPFR_THREAD_ATTR __gmpfr_emin = MPFR_EMIN_DEFAULT;
+mpfr_exp_t MPFR_THREAD_ATTR __gmpfr_emax = MPFR_EMAX_DEFAULT;
 
 #undef mpfr_get_emin
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emin (void)
 {
   return __gmpfr_emin;
@@ -38,7 +38,7 @@ mpfr_get_emin (void)
 #undef mpfr_set_emin
 
 int
-mpfr_set_emin (mp_exp_t exponent)
+mpfr_set_emin (mpfr_exp_t exponent)
 {
   if (exponent >= MPFR_EMIN_MIN && exponent <= MPFR_EMIN_MAX)
     {
@@ -51,13 +51,13 @@ mpfr_set_emin (mp_exp_t exponent)
     }
 }
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emin_min (void)
 {
   return MPFR_EMIN_MIN;
 }
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emin_max (void)
 {
   return MPFR_EMIN_MAX;
@@ -65,7 +65,7 @@ mpfr_get_emin_max (void)
 
 #undef mpfr_get_emax
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emax (void)
 {
   return __gmpfr_emax;
@@ -74,7 +74,7 @@ mpfr_get_emax (void)
 #undef mpfr_set_emax
 
 int
-mpfr_set_emax (mp_exp_t exponent)
+mpfr_set_emax (mpfr_exp_t exponent)
 {
   if (exponent >= MPFR_EMAX_MIN && exponent <= MPFR_EMAX_MAX)
     {
@@ -87,12 +87,12 @@ mpfr_set_emax (mp_exp_t exponent)
     }
 }
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emax_min (void)
 {
   return MPFR_EMAX_MIN;
 }
-mp_exp_t
+mpfr_exp_t
 mpfr_get_emax_max (void)
 {
   return MPFR_EMAX_MAX;
@@ -195,7 +195,7 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
 {
   if (MPFR_LIKELY( MPFR_IS_PURE_FP(x)) )
     { /* x is a non-zero FP */
-      mp_exp_t exp = MPFR_EXP (x);  /* Do not use MPFR_GET_EXP */
+      mpfr_exp_t exp = MPFR_EXP (x);  /* Do not use MPFR_GET_EXP */
       if (MPFR_UNLIKELY( exp < __gmpfr_emin) )
         {
           /* The following test is necessary because in the rounding to the

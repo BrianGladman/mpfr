@@ -31,7 +31,7 @@ int
 mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
 {
   int inexact;
-  mp_exp_t ex;
+  mpfr_exp_t ex;
   MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -78,7 +78,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
   if (MPFR_IS_NEG (x) && ex > 5)  /* x <= -32 */
     {
       mpfr_t minus_one, t;
-      mp_exp_t err;
+      mpfr_exp_t err;
 
       mpfr_init2 (minus_one, 2);
       mpfr_init2 (t, 64);
@@ -105,7 +105,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
     /* Declaration of the size variable */
     mpfr_prec_t Ny = MPFR_PREC(y);   /* target precision */
     mpfr_prec_t Nt;                  /* working precision */
-    mp_exp_t err, exp_te;          /* error */
+    mpfr_exp_t err, exp_te;          /* error */
     MPFR_ZIV_DECL (loop);
 
     /* compute the precision of intermediary variable */

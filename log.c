@@ -116,7 +116,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
     {
       mp_size_t size;
       long m;
-      mp_exp_t cancel;
+      mpfr_exp_t cancel;
 
       /* Calculus of m (depends on p) */
       m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;

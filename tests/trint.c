@@ -32,7 +32,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 
   mpfr_init (x);
   mpfr_init (y);

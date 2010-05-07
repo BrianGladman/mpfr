@@ -160,7 +160,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
           A sufficient condition is thus EXP(x) + 2 <= -2 MAX(PREC(x),PREC(Y)).
   */
-  if (MPFR_EXP(x) + 2 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
+  if (MPFR_EXP(x) + 2 <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
     {
       int positive = MPFR_IS_POS (x);
       inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
@@ -338,7 +338,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, realprec);
   for (;;)
     {
-      mp_exp_t err_g;
+      mpfr_exp_t err_g;
       int ck;
       MPFR_GROUP_REPREC_4 (group, realprec, xp, tmp, tmp2, GammaTrial);
 

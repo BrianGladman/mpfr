@@ -86,7 +86,7 @@ main (int argc, char *argv[])
   mpfr_t x, y;
   unsigned int xprec, yprec, i;
   mpfr_prec_t p;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 
   tests_start_mpfr ();
 

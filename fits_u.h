@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_exp_t e;
+  mpfr_exp_t e;
   int prec;
   TYPE s;
   mpfr_t x;

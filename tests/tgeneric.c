@@ -122,7 +122,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
   int inexact, compare, compare2;
   unsigned int n;
   unsigned long ctrt = 0, ctrn = 0;
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();

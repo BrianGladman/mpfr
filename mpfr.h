@@ -108,8 +108,8 @@ typedef enum {
 #endif
 
 /* Let's make mpfr_prec_t signed in order to avoid problems due to the
-   usual arithmetic conversions when mixing mpfr_prec_t and mp_exp_t in
-   an expression (for error analysis) if casts are forgotten. */
+   usual arithmetic conversions when mixing mpfr_prec_t and mpfr_exp_t
+   in an expression (for error analysis) if casts are forgotten. */
 #if   _MPFR_PREC_FORMAT == 1
 typedef short mpfr_prec_t;
 typedef unsigned short mpfr_uprec_t;
@@ -132,15 +132,18 @@ typedef unsigned long  mpfr_uprec_t;
 /* Definition of sign */
 typedef int          mpfr_sign_t;
 
+/* Definition of the exponent: same as in GMP. */
+typedef mp_exp_t     mpfr_exp_t;
+
 /* Definition of the standard exponent limits */
-#define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 << 30) - 1))
+#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((unsigned long) 1 << 30) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
 /* Definition of the main structure */
 typedef struct {
   mpfr_prec_t  _mpfr_prec;
   mpfr_sign_t  _mpfr_sign;
-  mp_exp_t     _mpfr_exp;
+  mpfr_exp_t   _mpfr_exp;
   mp_limb_t   *_mpfr_d;
 } __mpfr_struct;
 
@@ -233,14 +236,14 @@ __MPFR_DECLSPEC __gmp_const char * mpfr_get_patches _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_tls_p     _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_decimal_p _MPFR_PROTO ((void));
 
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emin     _MPFR_PROTO ((void));
-__MPFR_DECLSPEC int      mpfr_set_emin     _MPFR_PROTO ((mp_exp_t));
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emin_min _MPFR_PROTO ((void));
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emin_max _MPFR_PROTO ((void));
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emax     _MPFR_PROTO ((void));
-__MPFR_DECLSPEC int      mpfr_set_emax     _MPFR_PROTO ((mp_exp_t));
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emax_min _MPFR_PROTO ((void));
-__MPFR_DECLSPEC mp_exp_t mpfr_get_emax_max _MPFR_PROTO ((void));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emin     _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int        mpfr_set_emin     _MPFR_PROTO ((mpfr_exp_t));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emin_min _MPFR_PROTO ((void));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emin_max _MPFR_PROTO ((void));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emax     _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int        mpfr_set_emax     _MPFR_PROTO ((mpfr_exp_t));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emax_min _MPFR_PROTO ((void));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_emax_max _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC void mpfr_set_default_rounding_mode _MPFR_PROTO((mpfr_rnd_t));
 __MPFR_DECLSPEC mpfr_rnd_t mpfr_get_default_rounding_mode _MPFR_PROTO((void));
@@ -283,12 +286,12 @@ __MPFR_DECLSPEC void
 __MPFR_DECLSPEC int
   mpfr_prec_round _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int
-  mpfr_can_round _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
+  mpfr_can_round _MPFR_PROTO ((mpfr_srcptr, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t,
                                mpfr_prec_t));
 __MPFR_DECLSPEC mpfr_prec_t mpfr_min_prec _MPFR_PROTO ((mpfr_srcptr));
 
-__MPFR_DECLSPEC mp_exp_t mpfr_get_exp _MPFR_PROTO ((mpfr_srcptr));
-__MPFR_DECLSPEC int mpfr_set_exp _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_exp _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC int mpfr_set_exp _MPFR_PROTO ((mpfr_ptr, mpfr_exp_t));
 __MPFR_DECLSPEC mpfr_prec_t mpfr_get_prec _MPFR_PROTO((mpfr_srcptr));
 __MPFR_DECLSPEC void mpfr_set_prec _MPFR_PROTO((mpfr_ptr, mpfr_prec_t));
 __MPFR_DECLSPEC void mpfr_set_prec_raw _MPFR_PROTO((mpfr_ptr, mpfr_prec_t));
@@ -306,7 +309,7 @@ __MPFR_DECLSPEC int
 __MPFR_DECLSPEC int
   mpfr_set_z _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int
-  mpfr_set_z_2exp _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mp_exp_t, mpfr_rnd_t));
+  mpfr_set_z_2exp _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mpfr_exp_t, mpfr_rnd_t));
 __MPFR_DECLSPEC void mpfr_set_nan _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 __MPFR_DECLSPEC void mpfr_set_zero _MPFR_PROTO ((mpfr_ptr, int));
@@ -318,9 +321,9 @@ __MPFR_DECLSPEC int mpfr_set_si _MPFR_PROTO ((mpfr_ptr, long, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set_ui _MPFR_PROTO ((mpfr_ptr, unsigned long, mpfr_rnd_t));
 __MPFR_DECLSPEC int
-  mpfr_set_si_2exp _MPFR_PROTO ((mpfr_ptr, long, mp_exp_t, mpfr_rnd_t));
+  mpfr_set_si_2exp _MPFR_PROTO ((mpfr_ptr, long, mpfr_exp_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int
-  mpfr_set_ui_2exp _MPFR_PROTO ((mpfr_ptr,unsigned long,mp_exp_t,mpfr_rnd_t));
+  mpfr_set_ui_2exp _MPFR_PROTO ((mpfr_ptr,unsigned long,mpfr_exp_t,mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set_q _MPFR_PROTO ((mpfr_ptr, mpq_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int
@@ -358,7 +361,7 @@ __MPFR_DECLSPEC intmax_t mpfr_get_sj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #endif
 
-__MPFR_DECLSPEC mp_exp_t mpfr_get_z_2exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_get_z_2exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC float mpfr_get_flt _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC double mpfr_get_d _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
@@ -375,7 +378,7 @@ __MPFR_DECLSPEC long double mpfr_get_ld_2exp _MPFR_PROTO ((long*, mpfr_srcptr,
 __MPFR_DECLSPEC long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr,
                                                         mpfr_rnd_t));
-__MPFR_DECLSPEC char*mpfr_get_str _MPFR_PROTO ((char*, mp_exp_t*, int, size_t,
+__MPFR_DECLSPEC char*mpfr_get_str _MPFR_PROTO ((char*, mpfr_exp_t*, int, size_t,
                                                 mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_get_z _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f,
                                              mpfr_rnd_t));
@@ -530,9 +533,9 @@ __MPFR_DECLSPEC int mpfr_cmpabs _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_cmp_ui _MPFR_PROTO ((mpfr_srcptr, unsigned long));
 __MPFR_DECLSPEC int mpfr_cmp_si _MPFR_PROTO ((mpfr_srcptr, long));
 __MPFR_DECLSPEC int mpfr_cmp_ui_2exp _MPFR_PROTO ((mpfr_srcptr, unsigned long,
-                                                   mp_exp_t));
+                                                   mpfr_exp_t));
 __MPFR_DECLSPEC int mpfr_cmp_si_2exp _MPFR_PROTO ((mpfr_srcptr, long,
-                                                   mp_exp_t));
+                                                   mpfr_exp_t));
 __MPFR_DECLSPEC void mpfr_reldiff _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                 mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_eq _MPFR_PROTO((mpfr_srcptr, mpfr_srcptr,
@@ -702,12 +705,12 @@ __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
                                                 char **, int, mpfr_rnd_t));
 
 __MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mpfr_prec_t));
-__MPFR_DECLSPEC void   mpfr_custom_init       _MPFR_PROTO ((void *, mpfr_prec_t));
+__MPFR_DECLSPEC void   mpfr_custom_init    _MPFR_PROTO ((void *, mpfr_prec_t));
 __MPFR_DECLSPEC void * mpfr_custom_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
-__MPFR_DECLSPEC mp_exp_t mpfr_custom_get_exp  _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC mpfr_exp_t mpfr_custom_get_exp  _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC void   mpfr_custom_move       _MPFR_PROTO ((mpfr_ptr, void *));
 __MPFR_DECLSPEC void   mpfr_custom_init_set   _MPFR_PROTO ((mpfr_ptr, int,
-                                               mp_exp_t, mpfr_prec_t, void *));
+                                             mpfr_exp_t, mpfr_prec_t, void *));
 __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 #if defined (__cplusplus)
@@ -718,17 +721,17 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
    are the smallest values.
    FIXME: In the following macros, the cast of an unsigned type with MSB set
-   to the signed type mp_exp_t yields an integer overflow, which can give
+   to the signed type mpfr_exp_t yields an integer overflow, which can give
    unexpected results with future compilers and aggressive optimisations.
    Why not working only with signed types, using INT_MIN and LONG_MIN? */
 #if __GMP_MP_SIZE_T_INT
-#define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mp_exp_t)((~((~(unsigned int)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mp_exp_t)((~((~(unsigned int)0)>>1))+3))
+#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+2))
+#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+1))
+#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+3))
 #else
-#define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned long)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mp_exp_t)((~((~(unsigned long)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mp_exp_t)((~((~(unsigned long)0)>>1))+3))
+#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+2))
+#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+1))
+#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+3))
 #endif
 
 /* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
@@ -834,9 +837,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_custom_get_mantissa(x) ((void*)((x)->_mpfr_d))
 #define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
 #define mpfr_custom_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
-#define mpfr_custom_init_set(x,k,e,p,m) do {                    \
+#define mpfr_custom_init_set(x,k,e,p,m) do {                   \
   mpfr_ptr _x = (x);                                           \
-  mp_exp_t _e;                                                 \
+  mpfr_exp_t _e;                                               \
   mpfr_kind_t _t;                                              \
   int _s, _k;                                                  \
   _k = (k);                                                    \

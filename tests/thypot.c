@@ -287,7 +287,7 @@ check_overflow (void)
 static void
 alltst (void)
 {
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   ext = 0;
   test_small ();

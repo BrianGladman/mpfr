@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 int
-mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
+mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mpfr_exp_t f)
 {
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(b) ))
     {
@@ -53,7 +53,7 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
     return 1;
   else /* b > 0, i > 0 */
     {
-      mp_exp_t e;
+      mpfr_exp_t e;
       int k;
       mp_size_t bn;
       mp_limb_t c, *bp;

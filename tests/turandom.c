@@ -32,7 +32,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   mpfr_t x;
   int *tab, size_tab, k, sh, xn;
   double d, av = 0, var = 0, chi2 = 0, th;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
   mp_size_t limb_index = 0;
   mp_limb_t limb_mask = 0;
   long count = 0;

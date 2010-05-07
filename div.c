@@ -149,7 +149,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t sticky;
   mp_limb_t sticky3;
   mp_limb_t round_bit = MPFR_LIMB_ZERO;
-  mp_exp_t qexp;
+  mpfr_exp_t qexp;
   int sign_quotient;
   int extra_bit;
   int sh, sh2;

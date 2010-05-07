@@ -69,7 +69,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
       /* detect exact powers: x^(-n) is exact iff x is a power of 2 */
       if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_EXP(x) - 1) == 0)
         {
-          mp_exp_t expx = MPFR_EXP (x) - 1, expy;
+          mpfr_exp_t expx = MPFR_EXP (x) - 1, expy;
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
            *

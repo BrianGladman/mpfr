@@ -350,7 +350,7 @@ static void
 check_special_pow_si (void)
 {
   mpfr_t a, b;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpfr_init (a);
   mpfr_init (b);
@@ -478,7 +478,7 @@ static void
 special (void)
 {
   mpfr_t x, y, z, t;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int inex;
 
   mpfr_init2 (x, 53);
@@ -773,7 +773,7 @@ underflows (void)
   int err = 0;
   int inexact;
   int i;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpfr_init2 (x, 64);
   mpfr_init2 (y, 64);
@@ -931,7 +931,7 @@ static void
 overflows2 (void)
 {
   mpfr_t x, y, z;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int e;
 
   /* x^y in reduced exponent range, where x = 2^b and y is not an integer
@@ -981,7 +981,7 @@ overflows3 (void)
   if (MPFR_EMAX_MAX % 3 == 0)
     {
       mpfr_t x, y, z, t;
-      mp_exp_t emin, emax;
+      mpfr_exp_t emin, emax;
       unsigned int flags;
       int i;
 
@@ -1085,7 +1085,7 @@ static void
 bug20071103 (void)
 {
   mpfr_t x, y, z;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -1111,7 +1111,7 @@ static void
 bug20071104 (void)
 {
   mpfr_t x, y, z;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int inex;
 
   emin = mpfr_get_emin ();
@@ -1153,7 +1153,7 @@ bug20071127 (void)
 {
   mpfr_t x, y, z;
   int i, tern;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -1188,7 +1188,7 @@ bug20071128 (void)
 {
   mpfr_t max_val, x, y, z;
   int i, tern;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -1341,13 +1341,13 @@ bug20080721 (void)
 static void
 bug20080820 (void)
 {
-  mp_exp_t emin;
+  mpfr_exp_t emin;
   mpfr_t x, y, z1, z2;
 
   emin = mpfr_get_emin ();
   mpfr_set_emin (MPFR_EMIN_MIN);
   mpfr_init2 (x, 80);
-  mpfr_init2 (y, sizeof (mp_exp_t) * CHAR_BIT + 32);
+  mpfr_init2 (y, sizeof (mpfr_exp_t) * CHAR_BIT + 32);
   mpfr_init2 (z1, 2);
   mpfr_init2 (z2, 80);
   mpfr_set_ui (x, 2, MPFR_RNDN);

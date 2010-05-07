@@ -85,7 +85,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       (rnd == MPFR_RNDN) + mpfr_power2_raw (b)
       but it is more expensive and not very useful */
   if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b)
-                     - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
+                     - (mpfr_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
     {
       /* Remember, we can't have an exact result! */
       /*   A.AAAAAAAAAAAAAAAAA
@@ -498,7 +498,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
      exponent range */
   if (MPFR_LIKELY(cancel))
     {
-      mp_exp_t exp_a;
+      mpfr_exp_t exp_a;
 
       cancel -= add_exp; /* still valid as unsigned long */
       exp_a = MPFR_GET_EXP (b) - cancel;
@@ -518,7 +518,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* in case cancel = 0, add_exp can still be 1, in case b is just
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
-      mp_exp_t exp_b;
+      mpfr_exp_t exp_b;
 
       exp_b = MPFR_GET_EXP (b);
       if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))

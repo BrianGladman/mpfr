@@ -108,7 +108,7 @@ check_special_exprange (void)
   int inexact, ov;
   unsigned int eflags, gflags;
   mpfr_t xi, xf, x;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 
   emax = mpfr_get_emax ();
   mpfr_init2 (xi, 7);

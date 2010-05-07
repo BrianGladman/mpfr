@@ -143,7 +143,7 @@ main (void)
 {
   mpfr_t x, y, z, u;
   int inexact;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 
   tests_start_mpfr ();
 

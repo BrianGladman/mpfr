@@ -29,7 +29,7 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
   unsigned long s;
   mpfr_t x;
   mp_size_t n;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
 
   if (!mpfr_fits_ulong_p (f, rnd))
     {

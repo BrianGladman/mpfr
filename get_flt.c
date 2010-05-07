@@ -35,7 +35,7 @@ float
 mpfr_get_flt (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   int negative;
-  mp_exp_t e;
+  mpfr_exp_t e;
   float d;
 
   /* in case of NaN, +Inf, -Inf, +0, -0, the conversion from double to float

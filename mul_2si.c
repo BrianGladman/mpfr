@@ -34,7 +34,7 @@ mpfr_mul_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd_mode)
 
   if (MPFR_LIKELY( MPFR_IS_PURE_FP(y)) )
     {
-      mp_exp_t exp = MPFR_GET_EXP (y);
+      mpfr_exp_t exp = MPFR_GET_EXP (y);
       if (MPFR_UNLIKELY( n > 0 && (__gmpfr_emax < MPFR_EMIN_MIN + n ||
                                    exp > __gmpfr_emax - n)))
         return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));

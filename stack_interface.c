@@ -44,7 +44,7 @@ mpfr_custom_get_mantissa (mpfr_srcptr x)
 }
 
 #undef mpfr_custom_get_exp
-mp_exp_t
+mpfr_exp_t
 mpfr_custom_get_exp (mpfr_srcptr x)
 {
   return MPFR_EXP (x);
@@ -59,12 +59,12 @@ mpfr_custom_move (mpfr_ptr x, void *new_position)
 
 #undef mpfr_custom_init_set
 void
-mpfr_custom_init_set (mpfr_ptr x, int kind, mp_exp_t exp,
+mpfr_custom_init_set (mpfr_ptr x, int kind, mpfr_exp_t exp,
                      mpfr_prec_t prec, void *mantissa)
 {
   mpfr_kind_t t;
   int s;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   if (kind >= 0)
     {

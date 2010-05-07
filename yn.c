@@ -42,12 +42,12 @@ mpfr_y1 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
    return e >= 0 the exponent difference between the maximal value of |s|
    during the for loop and the final value of |s|.
 */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_yn_s1 (mpfr_ptr s, mpfr_srcptr y, unsigned long n)
 {
   unsigned long k;
   mpz_t f;
-  mp_exp_t e, emax;
+  mpfr_exp_t e, emax;
 
   mpz_init_set_ui (f, 1);
   /* we compute n!*S1 = sum(a[k]*y^k,k=0..n) where a[k] = n!*(n-k)!/k!,
@@ -81,13 +81,13 @@ mpfr_yn_s1 (mpfr_ptr s, mpfr_srcptr y, unsigned long n)
    k=2: 3/2+h(n+2)
    Returns e such that the error is bounded by 2^e ulp(s).
 */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
 {
   unsigned long k, zz;
   mpfr_t t, u;
   mpz_t p, q; /* p/q will store h(k)+h(n+k) */
-  mp_exp_t exps, expU;
+  mpfr_exp_t exps, expU;
 
   zz = mpfr_get_ui (y, MPFR_RNDU); /* y = z^2/4 */
   MPFR_ASSERTN (zz < ULONG_MAX - 2);
@@ -132,7 +132,7 @@ mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
       exps = MPFR_EXP (s);
       if (exps > expU)
         expU = exps;
-      if (MPFR_EXP (u) + (mp_exp_t) MPFR_PREC (u) < MPFR_EXP (s) &&
+      if (MPFR_EXP (u) + (mpfr_exp_t) MPFR_PREC (u) < MPFR_EXP (s) &&
           zz / (2 * k) < k + n)
         break;
     }
@@ -209,7 +209,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
      Note: we use both the main term in log(z) and the constant term, because
      otherwise the relative error would be only in 1/log(|log(z)|).
   */
-  if (n == 0 && MPFR_EXP(z) < - (mp_exp_t) (MPFR_PREC(res) / 2))
+  if (n == 0 && MPFR_EXP(z) < - (mpfr_exp_t) (MPFR_PREC(res) / 2))
     {
       mpfr_t l, h, t, logz;
       mpfr_prec_t prec;
@@ -265,11 +265,11 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 
   /* small argument check for y1(z) = -2/Pi/z + O(log(z)):
      for 0 <= z <= 1, |y1(z) + 2/Pi/z| <= 0.25 */
-  if (n == 1 && MPFR_EXP(z) + 1 < - (mp_exp_t) MPFR_PREC(res))
+  if (n == 1 && MPFR_EXP(z) + 1 < - (mpfr_exp_t) MPFR_PREC(res))
     {
       mpfr_t y;
       mpfr_prec_t prec;
-      mp_exp_t err1;
+      mpfr_exp_t err1;
       int ok;
       MPFR_BLOCK_DECL (flags);
 
@@ -295,7 +295,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       if (MPFR_EXP(y) + 2 >= MPFR_PREC(y)) /* ulp(y) >= 1/4 */
         err1 = 3;
       else /* ulp(y) <= 1/8 */
-        err1 = (mp_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;
+        err1 = (mpfr_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;
       ok = MPFR_CAN_ROUND (y, prec - err1, MPFR_PREC(res), r);
       if (ok)
         inex = mpfr_set (res, y, r);
@@ -316,7 +316,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   /* General case */
   {
     mpfr_prec_t prec;
-    mp_exp_t err1, err2, err3;
+    mpfr_exp_t err1, err2, err3;
     mpfr_t y, s1, s2, s3;
     MPFR_ZIV_DECL (loop);
 

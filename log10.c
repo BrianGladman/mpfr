@@ -92,7 +92,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
     /* Declaration of the size variable */
     mpfr_prec_t Ny = MPFR_PREC(r);   /* Precision of output variable */
     mpfr_prec_t Nt;        /* Precision of the intermediary variable */
-    mp_exp_t  err;                           /* Precision of error */
+    mpfr_exp_t  err;                           /* Precision of error */
 
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */

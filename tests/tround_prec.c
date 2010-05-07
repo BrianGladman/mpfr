@@ -29,7 +29,7 @@ int
 main (void)
 {
    mpfr_t x;
-   mp_exp_t emax;
+   mpfr_exp_t emax;
 
    tests_start_mpfr ();
 

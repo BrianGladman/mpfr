@@ -31,7 +31,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   int sh;
   mp_size_t xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   int inexact, middle = 1, nexttoinf;
   MPFR_TMP_DECL(marker);
 

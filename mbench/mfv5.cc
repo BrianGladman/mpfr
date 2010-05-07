@@ -71,7 +71,7 @@ build_base (vector<string> &base, const option_test &opt)
   mpfr_t x;
   gmp_randstate_t state;
   const char *str;
-  mp_exp_t e;
+  mpfr_exp_t e;
   char *buffer;
 
   mpfr_init2 (x, opt.prec);

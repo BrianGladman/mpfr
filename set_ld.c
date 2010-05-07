@@ -232,7 +232,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_LONG_DOUBLE];
   mpfr_long_double_t x;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   int signd;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -303,7 +303,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
     MPN_ZERO (tmpmant, k);
 
   /* Set exponent */
-  exp = (mp_exp_t) ((x.s.exph << 8) + x.s.expl);  /* 15-bit unsigned int */
+  exp = (mpfr_exp_t) ((x.s.exph << 8) + x.s.expl);  /* 15-bit unsigned int */
   if (MPFR_UNLIKELY (exp == 0))
     exp -= 0x3FFD;
   else

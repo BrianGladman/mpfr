@@ -103,7 +103,7 @@ overflowed_sech0 (void)
 {
   mpfr_t x, y;
   int emax, i, inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 

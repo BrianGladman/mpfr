@@ -52,7 +52,7 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
     {
       mp_limb_t a;
       mp_size_t n;
-      mp_exp_t exp;
+      mpfr_exp_t exp;
 
       /* now the result is in the most significant limb of x */
       exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */

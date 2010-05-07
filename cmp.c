@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 {
-  mp_exp_t be, ce;
+  mpfr_exp_t be, ce;
   mp_size_t bn, cn;
   mp_limb_t *bp, *cp;
 

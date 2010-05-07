@@ -68,7 +68,7 @@ check_default_rnd (void)
 static void
 check_emin_emax (void)
 {
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
@@ -142,7 +142,7 @@ static void
 check_flags (void)
 {
   mpfr_t x;
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
@@ -295,7 +295,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   tests_start_mpfr ();
 

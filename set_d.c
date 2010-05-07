@@ -242,7 +242,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
     MPN_ZERO (tmpmant, k);
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
-  MPFR_EXP(tmp) -= (mp_exp_t) (cnt + k * GMP_NUMB_BITS);
+  MPFR_EXP(tmp) -= (mpfr_exp_t) (cnt + k * GMP_NUMB_BITS);
 
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);

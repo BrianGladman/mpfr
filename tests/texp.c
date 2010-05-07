@@ -222,7 +222,7 @@ static void
 check_special (void)
 {
   mpfr_t x, y, z;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -517,7 +517,7 @@ overflowed_exp0 (void)
 {
   mpfr_t x, y;
   int emax, i, inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 
@@ -594,7 +594,7 @@ overflowed_exp0 (void)
 static void
 bug20080731 (void)
 {
-  mp_exp_t emin;
+  mpfr_exp_t emin;
   mpfr_t x, y1, y2;
   mpfr_prec_t prec = 64;
 
@@ -752,7 +752,7 @@ underflow_up (int extended_emin)
    * because mpfr_sub (r, x, r, MPFR_RNDU); yields a null value. This is
    * fixed in r5453 by going to next Ziv's iteration.
    */
-  for (precx = sizeof(mp_exp_t) * CHAR_BIT + 1; precx <= 81; precx += 8)
+  for (precx = sizeof(mpfr_exp_t) * CHAR_BIT + 1; precx <= 81; precx += 8)
     {
       mpfr_init2 (x, precx);
       mpfr_log (x, minpos, MPFR_RNDD);  /* |ulp| <= 1/2 */
@@ -787,7 +787,7 @@ underflow_up (int extended_emin)
     {
       mpfr_set_ui_2exp (t, 1, - precy, MPFR_RNDN);         /* 2^(-p) */
       mpfr_set_ui_2exp (t2, 1, 1 - 2 * precy, MPFR_RNDN);  /* 2^(-2p+1) */
-      precx = sizeof(mp_exp_t) * CHAR_BIT + 2 * precy + 8;
+      precx = sizeof(mpfr_exp_t) * CHAR_BIT + 2 * precy + 8;
       mpfr_init2 (x, precx);
       mpfr_init2 (y, precy);
       for (i = 0; i <= 1; i++)
@@ -884,7 +884,7 @@ underflow_up (int extended_emin)
    * due to a double-rounding problem in mpfr_mul_2si when rescaling
    * the result.
    */
-  mpfr_inits2 (sizeof(mp_exp_t) * CHAR_BIT + 64, x, t, (mpfr_ptr) 0);
+  mpfr_inits2 (sizeof(mpfr_exp_t) * CHAR_BIT + 64, x, t, (mpfr_ptr) 0);
   for (i = 0; i <= 1; i++)
     {
       mpfr_log (x, minpos, i ? MPFR_RNDU : MPFR_RNDD);
@@ -937,7 +937,7 @@ underflow_up (int extended_emin)
 static void
 underflow (void)
 {
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   underflow_up (0);
 

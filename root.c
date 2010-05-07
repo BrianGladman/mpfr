@@ -42,7 +42,7 @@ int
 mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
-  mp_exp_t e, r, sh;
+  mpfr_exp_t e, r, sh;
   mpfr_prec_t n, size_m, tmp;
   int inexact, negative;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -127,7 +127,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   e = mpfr_get_z_2exp (m, x);                /* x = m * 2^e */
   if ((negative = MPFR_IS_NEG(x)))
     mpz_neg (m, m);
-  r = e % (mp_exp_t) k;
+  r = e % (mpfr_exp_t) k;
   if (r < 0)
     r += k; /* now r = e (mod k) with 0 <= e < r */
   /* x = (m*2^r) * 2^(e-r) where e-r is a multiple of k */
@@ -139,10 +139,10 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   /* we now multiply m by 2^(r+k*sh) so that root(m,k) will give
      exactly n bits: we want k*(n-1)+1 <= size_m + k*sh + r <= k*n
      i.e. sh = floor ((kn-size_m-r)/k) */
-  if ((mp_exp_t) size_m + r > k * (mp_exp_t) n)
+  if ((mpfr_exp_t) size_m + r > k * (mpfr_exp_t) n)
     sh = 0; /* we already have too many bits */
   else
-    sh = (k * (mp_exp_t) n - (mp_exp_t) size_m - r) / k;
+    sh = (k * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / k;
   sh = k * sh + r;
   if (sh >= 0)
     {
@@ -165,7 +165,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   sh = tmp - n;
   if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
-      inexact = inexact || ((mp_exp_t) mpz_scan1 (m, 0) < sh);
+      inexact = inexact || ((mpfr_exp_t) mpz_scan1 (m, 0) < sh);
       mpz_fdiv_q_2exp (m, m, sh);
       e += k * sh;
     }
@@ -185,7 +185,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
      is not changed; or inexact=0, and inexact is set only when
      rnd_mode=MPFR_RNDN and bit (n+1) from m is 1 */
   inexact += mpfr_set_z (y, m, MPFR_RNDN);
-  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / (mp_exp_t) k);
+  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / (mpfr_exp_t) k);
 
   if (negative)
     {

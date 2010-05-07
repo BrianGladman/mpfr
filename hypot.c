@@ -34,7 +34,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   mpfr_prec_t N, Nz; /* size variables */
   mpfr_prec_t Nt;   /* precision of the intermediary variable */
   mpfr_prec_t threshold;
-  mp_exp_t Ex, sh;
+  mpfr_exp_t Ex, sh;
   mpfr_uexp_t diff_exp;
 
   MPFR_SAVE_EXPO_DECL (expo);

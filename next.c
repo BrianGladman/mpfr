@@ -48,7 +48,7 @@ mpfr_nexttozero (mpfr_ptr x)
       mpn_sub_1 (xp, xp, xn, MPFR_LIMB_ONE << sh);
       if (MPFR_UNLIKELY( MPFR_LIMB_MSB(xp[xn-1]) == 0) )
         { /* was an exact power of two: not normalized any more */
-          mp_exp_t exp = MPFR_EXP (x);
+          mpfr_exp_t exp = MPFR_EXP (x);
           if (MPFR_UNLIKELY(exp == __gmpfr_emin))
             MPFR_SET_ZERO(x);
           else
@@ -82,7 +82,7 @@ mpfr_nexttoinf (mpfr_ptr x)
       if (MPFR_UNLIKELY( mpn_add_1 (xp, xp, xn, MPFR_LIMB_ONE << sh)) )
         /* got 1.0000... */
         {
-          mp_exp_t exp = MPFR_EXP (x);
+          mpfr_exp_t exp = MPFR_EXP (x);
           if (MPFR_UNLIKELY(exp == __gmpfr_emax))
             MPFR_SET_INF(x);
           else

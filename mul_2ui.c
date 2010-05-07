@@ -50,7 +50,7 @@ mpfr_mul_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd_mod
          the first test useful so that the real test can't lead to an
          overflow. */
       {
-        mp_exp_t exp = MPFR_GET_EXP (y);
+        mpfr_exp_t exp = MPFR_GET_EXP (y);
         if (MPFR_UNLIKELY( __gmpfr_emax < MPFR_EMIN_MIN + (long) n ||
                            exp > __gmpfr_emax - (long) n))
           return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));

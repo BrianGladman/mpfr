@@ -35,7 +35,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * Note that this is different from the C function frexp().
  */
 
-mp_exp_t
+mpfr_exp_t
 mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
 {
   mp_size_t fn;

@@ -84,7 +84,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #elif (__GMP_MP_SIZE_T_INT == 0)
 #define MPFR_EXP_FORMAT_SPEC "li"
 #else
-#error "mp_exp_t size not supported"
+#error "mpfr_exp_t size not supported"
 #endif
 
 /* Output for special values defined in the C99 standard */
@@ -818,11 +818,11 @@ next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
    Return +1 if x is rounded up to 10^f, return zero otherwise.
    If e is not NULL, *e is set to f. */
 static int
-round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
+round_to_10_power (mpfr_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t f, u, v, y;
   mpfr_prec_t m;
-  mp_exp_t ex;
+  mpfr_exp_t ex;
   mpfr_uexp_t uexp;
   int roundup = -1; /* boolean (-1: not set) */
 
@@ -851,7 +851,7 @@ round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
 
   /* In most cases, the output exponent is f. */
   if (e != NULL)
-    *e = (mp_exp_t)mpfr_get_si (f, MPFR_RNDD);
+    *e = (mpfr_exp_t)mpfr_get_si (f, MPFR_RNDD);
 
   if (r == MPFR_RNDZ
       || (MPFR_IS_POS (x) && r == MPFR_RNDD)
@@ -866,7 +866,7 @@ round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
   {
     int cmp;
     int inex_u, inex_v, inex_w;
-    mp_exp_t exp_u, exp_v, exp_w;
+    mpfr_exp_t exp_u, exp_v, exp_w;
 
     m = MPFR_PREC (x);
     m += MPFR_INT_CEIL_LOG2 (m);
@@ -938,7 +938,7 @@ round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
         if (mpfr_cmp (y, u) >= 0)
           {
             if (e != NULL)
-              *e = (mp_exp_t)mpfr_get_si (f, MPFR_RNDD) + 1;
+              *e = (mpfr_exp_t)mpfr_get_si (f, MPFR_RNDD) + 1;
 
             roundup = +1;
             break;
@@ -967,7 +967,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
   int uppercase;
   int base;
   char *str;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
 
   uppercase = spec.spec == 'A';
 
@@ -1174,7 +1174,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
 {
   char *str;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
 
   const int uppercase = spec.spec == 'E' || spec.spec == 'G';
   const int spec_g = spec.spec == 'g' || spec.spec == 'G';
@@ -1293,7 +1293,7 @@ static int
 regular_fg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
 {
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   char * str;
   const int spec_g = (spec.spec == 'g' || spec.spec == 'G');
   const int keep_trailing_zeros = spec_g && spec.alt;
@@ -1358,7 +1358,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   {
                     /* compare |p| to y = 0.5*10^(-spec.prec) */
                     mpfr_t y;
-                    mp_exp_t e = MAX (MPFR_PREC (p), 56);
+                    mpfr_exp_t e = MAX (MPFR_PREC (p), 56);
                     mpfr_init2 (y, e + 8);
                     do
                       {
@@ -1735,7 +1735,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              where T is the threshold computed below and X is the exponent
              that would be displayed with style 'e' and precision T-1. */
           int threshold;
-          mp_exp_t x;
+          mpfr_exp_t x;
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
           round_to_10_power (&x, p, threshold - 1, spec.rnd_mode);

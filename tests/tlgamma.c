@@ -58,7 +58,7 @@ special (void)
   mpfr_t x, y;
   int inex;
   int sign;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   mpfr_init (x);
   mpfr_init (y);

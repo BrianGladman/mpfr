@@ -698,9 +698,9 @@ Avoid mixing signed and unsigned types, as this can lead signed types
 to be automatically converted into unsigned types (usual arithmetic
 conversions). If such a signed type contains a negative value, the
 result will probably be incorrect. With MPFR 2.x, this problem could
-arise with mp_exp_t, which is signed, and mpfr_prec_t (mp_prec_t),
+arise with mpfr_exp_t, which is signed, and mpfr_prec_t (mp_prec_t),
 which was unsigned (it is now signed), meaning that in general, a cast
-of a mpfr_prec_t into a mp_exp_t was needed.
+of a mpfr_prec_t into a mpfr_exp_t was needed.
 
 Note that such bugs are difficult to detect because they may depend on
 the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,

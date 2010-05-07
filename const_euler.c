@@ -55,7 +55,7 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
-      mp_exp_t exp_S, err;
+      mpfr_exp_t exp_S, err;
       /* since prec >= 1, we have m >= 24 here, which ensures n >= 9 below */
       n = 1 + (unsigned long) ((double) m * LOG2 / 2.0);
       MPFR_ASSERTD (n >= 9);

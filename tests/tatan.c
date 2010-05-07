@@ -219,7 +219,7 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -428,7 +428,7 @@ static void
 smallvals_atan2 (void)
 {
   mpfr_t a, x, y;
-  mp_exp_t old_emin;
+  mpfr_exp_t old_emin;
 
   mpfr_inits (a, x, y, (mpfr_ptr) 0);
   mpfr_set_ui (y, 0, MPFR_RNDN);

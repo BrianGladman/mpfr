@@ -141,9 +141,9 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 int
 mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  mpfr_t    t,q;
+  mpfr_t      t,q;
   mpfr_prec_t p;
-  mp_exp_t  err;
+  mpfr_exp_t  err;
   int res;
   MPFR_ZIV_DECL (loop);
 
@@ -194,7 +194,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
       /* We can get 0, but we can't round since q is inexact */
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
         {
-          err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+          err = (mpfr_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
             {
               res = mpfr_set (y, t, rnd_mode);
@@ -217,7 +217,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
   mpfr_t t,q;
   mpfr_prec_t p;
   int res;
-  mp_exp_t err;
+  mpfr_exp_t err;
   MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -272,7 +272,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
       /* We can get 0, but we can't round since q is inexact */
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
         {
-          err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+          err = (mpfr_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
           res = MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode);
           if (MPFR_LIKELY (res != 0))  /* We can round! */
             {

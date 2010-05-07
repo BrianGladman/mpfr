@@ -62,7 +62,7 @@ special_overflow (void)
 {
   mpfr_t x, y;
   int i;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();

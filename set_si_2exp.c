@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_set_si_2exp (mpfr_ptr x, long i, mp_exp_t e, mpfr_rnd_t rnd_mode)
+mpfr_set_si_2exp (mpfr_ptr x, long i, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
 {
   if (i == 0)
     {

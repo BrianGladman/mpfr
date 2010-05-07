@@ -46,7 +46,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
    A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(Y)). */
 #define ACTION_TINY(y,x,r) \
-  if (MPFR_EXP(x) <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y)))   \
+  if (MPFR_EXP(x) <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
     {                                                                   \
       int signx = MPFR_SIGN(x);                                         \
       inexact = mpfr_ui_div (y, 1, x, r);                               \

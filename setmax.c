@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Note: the flags are not cleared and the current sign is kept. */
 
 void
-mpfr_setmax (mpfr_ptr x, mp_exp_t e)
+mpfr_setmax (mpfr_ptr x, mpfr_exp_t e)
 {
   mp_size_t xn, i;
   int sh;

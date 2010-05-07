@@ -85,7 +85,7 @@ static void
 check_special (void)
 {
   mpfr_t x, y;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpfr_init (x);
   mpfr_init (y);

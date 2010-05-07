@@ -38,7 +38,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t c, xr;
   mpfr_srcptr xx;
-  mp_exp_t expx, err;
+  mpfr_exp_t expx, err;
   mpfr_prec_t precy, m;
   int inexact, sign, reduce;
   MPFR_ZIV_DECL (loop);
@@ -112,8 +112,9 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
             mpfr_add (c, c, xr, MPFR_RNDZ);
-          if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
-              || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+          if (MPFR_IS_ZERO(xr)
+              || MPFR_EXP(xr) < (mpfr_exp_t) 3 - (mpfr_exp_t) m
+              || MPFR_EXP(c) < (mpfr_exp_t) 3 - (mpfr_exp_t) m)
             goto ziv_next;
 
           /* |xr - x - 2kPi| <= 2^(2-m), thus |sin(xr) - sin(x)| <= 2^(2-m) */
@@ -149,12 +150,12 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              plus 2^(2-m) if there was an argument reduction.
              Since EXP(c) <= 1, 3-m-EXP(c) >= 2-m, thus the error
              is at most 2^(3-m-EXP(c)) in case of argument reduction. */
-          err = 2 * MPFR_GET_EXP (c) + (mp_exp_t) m - 3 - (reduce != 0);
+          err = 2 * MPFR_GET_EXP (c) + (mpfr_exp_t) m - 3 - (reduce != 0);
           if (MPFR_CAN_ROUND (c, err, precy, rnd_mode))
             break;
 
           /* check for huge cancellation (Near 0) */
-          if (err < (mp_exp_t) MPFR_PREC (y))
+          if (err < (mpfr_exp_t) MPFR_PREC (y))
             m += MPFR_PREC (y) - err;
           /* Check if near 1 */
           if (MPFR_GET_EXP (c) == 1)

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mp_exp_t expx;
+  mpfr_exp_t expx;
   mpfr_prec_t precy;
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -65,7 +65,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     /* We must extended the exponent range and save the flags now. */
     MPFR_SAVE_EXPO_MARK (expo);
 
-    mpfr_init2 (e, sizeof (mp_exp_t) * CHAR_BIT);
+    mpfr_init2 (e, sizeof (mpfr_exp_t) * CHAR_BIT);
     mpfr_init2 (bound, 32);
 
     inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
@@ -107,8 +107,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
   if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
-      mp_exp_t emin = __gmpfr_emin;
-      mp_exp_t emax = __gmpfr_emax;
+      mpfr_exp_t emin = __gmpfr_emin;
+      mpfr_exp_t emax = __gmpfr_emax;
       int signx = MPFR_SIGN (x);
 
       MPFR_SET_POS (y);

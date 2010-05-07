@@ -60,7 +60,7 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
               putc ((wd & t) == 0 ? '0' : '1', stream);
               if (--px == 0)
                 {
-                  mp_exp_t ex;
+                  mpfr_exp_t ex;
 
                   ex = MPFR_GET_EXP (x);
                   MPFR_ASSERTN (ex >= LONG_MIN && ex <= LONG_MAX);

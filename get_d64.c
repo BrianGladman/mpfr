@@ -297,7 +297,7 @@ _Decimal64
 mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   int negative;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   /* the encoding of NaN, Inf, zero is the same under DPD or BID */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
@@ -363,7 +363,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
             }
           else
             {
-              mp_exp_t e2;
+              mpfr_exp_t e2;
               long digits = 16 - (-382 - e);
               /* if e = -397 then 16 - (-382 - e) = 1 */
               mpfr_get_str (s, &e2, 10, digits, src, rnd_mode);

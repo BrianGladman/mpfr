@@ -31,7 +31,7 @@ main (void)
 {
   mpfr_t x, u;
   mpf_t y, z;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
   unsigned long k, pr;
   int r, inexact;
 

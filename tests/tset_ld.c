@@ -163,7 +163,7 @@ main (int argc, char *argv[])
   long double d, e;
   mpfr_t x;
   int i;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 #ifdef WITH_FPU_CONTROL
   fpu_control_t cw;
 

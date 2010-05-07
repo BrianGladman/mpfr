@@ -25,9 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Check against mpfr_can_round ? */
 #ifdef WANT_ASSERT
 # if WANT_ASSERT >= 2
-int mpfr_round_p_2 (mp_limb_t *, mp_size_t, mp_exp_t, mpfr_prec_t);
+int mpfr_round_p_2 (mp_limb_t *, mp_size_t, mpfr_exp_t, mpfr_prec_t);
 int
-mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mpfr_prec_t prec)
+mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
 {
   int i1, i2;
 
@@ -55,7 +55,7 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mpfr_prec_t prec)
  * precision prec.
  */
 int
-mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mpfr_prec_t prec)
+mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
 {
   mpfr_prec_t err;
   mp_size_t k, n;

@@ -24,8 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static int mpfr_get_str_aux (char *const, mp_exp_t *const, mp_limb_t *const,
-                       mp_size_t, mp_exp_t, long, int, size_t, mpfr_rnd_t);
+static int mpfr_get_str_aux (char *const, mpfr_exp_t *const, mp_limb_t *const,
+                       mp_size_t, mpfr_exp_t, long, int, size_t, mpfr_rnd_t);
 
 /* The implicit \0 is useless, but we do not write num_to_text[62] otherwise
    g++ complains. */
@@ -73,8 +73,8 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
    - MPFR_ROUND_FAILED otherwise (too large error)
 */
 static int
-mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
-                  mp_size_t n, mp_exp_t f, long e, int b, size_t m,
+mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
+                  mp_size_t n, mpfr_exp_t f, long e, int b, size_t m,
                   mpfr_rnd_t rnd)
 {
   const char *num_to_text;
@@ -2205,15 +2205,15 @@ const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2] = {
    For i=0, uses a 23-bit upper approximation to log(beta)/log(2).
    For i=1, uses a 76-bit upper approximation to log(2)/log(beta).
 */
-static mp_exp_t
-ceil_mul (mp_exp_t e, int beta, int i)
+static mpfr_exp_t
+ceil_mul (mpfr_exp_t e, int beta, int i)
 {
   mpfr_srcptr p;
   mpfr_t t;
-  mp_exp_t r;
+  mpfr_exp_t r;
 
   p = &__gmpfr_l2b[beta-2][i];
-  mpfr_init2 (t, sizeof (mp_exp_t) * CHAR_BIT);
+  mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_set_exp_t (t, e, MPFR_RNDU);
   mpfr_mul (t, t, p, MPFR_RNDU);
   r = mpfr_get_exp_t (t, MPFR_RNDU);
@@ -2235,15 +2235,15 @@ ceil_mul (mp_exp_t e, int beta, int i)
    the memory space allocated, with free(s, strlen(s)).
 */
 char*
-mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t rnd)
+mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   const char *num_to_text;
   int exact;                      /* exact result */
-  mp_exp_t exp, g;
-  mp_exp_t prec; /* precision of the computation */
+  mpfr_exp_t exp, g;
+  mpfr_exp_t prec; /* precision of the computation */
   long err;
   mp_limb_t *a;
-  mp_exp_t exp_a;
+  mpfr_exp_t exp_a;
   mp_limb_t *result;
   mp_limb_t *xp;
   mp_limb_t *reste;
@@ -2331,7 +2331,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t r
   if (IS_POW2(b))
     {
       int pow2;
-      mp_exp_t f, r;
+      mpfr_exp_t f, r;
       mp_limb_t *x1;
       mp_size_t nb;
       int inexp;
@@ -2403,10 +2403,10 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t r
   g = ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
   exact = 1;
   prec = ceil_mul (m, b, 0) + 1;
-  exp = ((mp_exp_t) m < g) ? g - (mp_exp_t) m : (mp_exp_t) m - g;
+  exp = ((mpfr_exp_t) m < g) ? g - (mpfr_exp_t) m : (mpfr_exp_t) m - g;
   prec += MPFR_INT_CEIL_LOG2 (prec); /* number of guard bits */
   if (exp != 0) /* add maximal exponentiation error */
-    prec += 3 * (mp_exp_t) MPFR_INT_CEIL_LOG2 (exp);
+    prec += 3 * (mpfr_exp_t) MPFR_INT_CEIL_LOG2 (exp);
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -2423,7 +2423,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t r
 
       nx = 1 + (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
 
-      if ((mp_exp_t) m == g) /* final exponent is 0, no multiplication or
+      if ((mpfr_exp_t) m == g) /* final exponent is 0, no multiplication or
                                 division to perform */
         {
           if (nx > n)
@@ -2432,7 +2432,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t r
           MPN_COPY2 (a, n, xp, nx);
           exp_a = MPFR_GET_EXP (x) - n * GMP_NUMB_BITS;
         }
-      else if ((mp_exp_t) m > g) /* we have to multiply x by b^exp */
+      else if ((mpfr_exp_t) m > g) /* we have to multiply x by b^exp */
         {
           mp_limb_t *x1;
 
@@ -2523,7 +2523,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t r
       else if (ret == -MPFR_ROUND_FAILED)
         {
           /* too many digits in mantissa: exp = |m-g| */
-          if ((mp_exp_t) m > g) /* exp = m - g, multiply by b^exp */
+          if ((mpfr_exp_t) m > g) /* exp = m - g, multiply by b^exp */
             {
               g++;
               exp --;

@@ -78,7 +78,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   int inex;
   unsigned long absn;
   mpfr_prec_t prec, pbound, err;
-  mp_exp_t exps, expT;
+  mpfr_exp_t exps, expT;
   mpfr_t y, s, t, absz;
   unsigned long k, zz, k0;
   MPFR_ZIV_DECL (loop);
@@ -162,7 +162,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
          Warning: absn is an unsigned long. */
       if ((MPFR_EXP(y) < 0 && absn > (unsigned long) (-__gmpfr_emin))
           || (absn <= (unsigned long) (-MPFR_EMIN_MIN) &&
-              MPFR_EXP(y) < __gmpfr_emin / (mp_exp_t) absn))
+              MPFR_EXP(y) < __gmpfr_emin / (mpfr_exp_t) absn))
         {
           mpfr_clear (y);
           return mpfr_underflow (res, (r == MPFR_RNDN) ? MPFR_RNDZ : r,
@@ -216,7 +216,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           exps = MPFR_EXP (s);
           if (exps > expT)
             expT = exps;
-          if (MPFR_EXP (t) + (mp_exp_t) prec <= MPFR_EXP (s) &&
+          if (MPFR_EXP (t) + (mpfr_exp_t) prec <= MPFR_EXP (s) &&
               zz / (2 * k) < k + n)
             break;
         }

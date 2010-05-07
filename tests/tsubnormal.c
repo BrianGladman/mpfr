@@ -55,7 +55,7 @@ check1 (void)
 {
   mpfr_t x;
   int i, j, k, s, old_inex;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -109,7 +109,7 @@ check2 (void)
 {
   mpfr_t x, y, z;
   int tern;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
 
@@ -146,7 +146,7 @@ check3 (void)
 {
   mpfr_t x, y, z;
   int tern;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
 

@@ -218,8 +218,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
                                        MPFR_EXP (x) - 1) == 0))
     {
-      mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
-                                       variable */
+      mpfr_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
+                                         variable */
 
       MPFR_LOG_MSG (("x^n with x power of two\n", 0));
       mpfr_set_si (y, mpz_odd_p (z) ? MPFR_INT_SIGN(x) : 1, rnd);

@@ -30,13 +30,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Returns e such that the error is bounded by 2^e ulp(y),
    or returns 0 in case of underflow.
 */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
 {
   mpfr_t t, xx, err;
   unsigned long k;
   mpfr_prec_t prec = MPFR_PREC(y);
-  mp_exp_t exp_err;
+  mpfr_exp_t exp_err;
 
   mpfr_init2 (t, prec);
   mpfr_init2 (xx, prec);
@@ -60,7 +60,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
       mpfr_mul_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), MPFR_RNDU);
       mpfr_add_ui (err, err, 14 * k, MPFR_RNDU); /* 2^(1-p) * t <= 2 ulp(t) */
       mpfr_div_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), MPFR_RNDU);
-      if (MPFR_GET_EXP (t) + (mp_exp_t) prec <= MPFR_GET_EXP (y))
+      if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= MPFR_GET_EXP (y))
         {
           /* the truncation error is bounded by |t| < ulp(y) */
           mpfr_add_ui (err, err, 1, MPFR_RNDU);
@@ -125,7 +125,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
   mpfr_t tmp;
-  mp_exp_t te, err;
+  mpfr_exp_t te, err;
   mpfr_prec_t prec;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -156,7 +156,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   if (MPFR_SIGN (x) < 0)
     {
-      mp_exp_t e = MPFR_EXP(x);
+      mpfr_exp_t e = MPFR_EXP(x);
       /* For x < 0 going to -infinity, erfc(x) tends to 2 by below.
          More precisely, we have 2 + 1/sqrt(Pi)/x/exp(x^2) < erfc(x) < 2.
          Thus log2 |2 - erfc(x)| <= -log2|x| - x^2 / log(2).

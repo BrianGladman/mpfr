@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_set_exp (mpfr_ptr x, mp_exp_t exponent)
+mpfr_set_exp (mpfr_ptr x, mpfr_exp_t exponent)
 {
   if (exponent >= __gmpfr_emin && exponent <= __gmpfr_emax)
     {

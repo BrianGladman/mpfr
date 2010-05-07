@@ -26,13 +26,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 static unsigned long
-mpfr_exp2_aux (mpz_t, mpfr_srcptr, mpfr_prec_t, mp_exp_t *);
+mpfr_exp2_aux (mpz_t, mpfr_srcptr, mpfr_prec_t, mpfr_exp_t *);
 static unsigned long
-mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, mpfr_prec_t, mp_exp_t *);
-static mp_exp_t
-mpz_normalize  (mpz_t, mpz_t, mp_exp_t);
-static mp_exp_t
-mpz_normalize2 (mpz_t, mpz_t, mp_exp_t, mp_exp_t);
+mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, mpfr_prec_t, mpfr_exp_t *);
+static mpfr_exp_t
+mpz_normalize  (mpz_t, mpz_t, mpfr_exp_t);
+static mpfr_exp_t
+mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
 
 #define MY_INIT_MPZ(x, s) { \
    (x)->_mp_alloc = (s); \
@@ -42,8 +42,8 @@ mpz_normalize2 (mpz_t, mpz_t, mp_exp_t, mp_exp_t);
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
-static mp_exp_t
-mpz_normalize (mpz_t rop, mpz_t z, mp_exp_t q)
+static mpfr_exp_t
+mpz_normalize (mpz_t rop, mpz_t z, mpfr_exp_t q)
 {
   size_t k;
 
@@ -52,7 +52,7 @@ mpz_normalize (mpz_t rop, mpz_t z, mp_exp_t q)
   if (q < 0 || (mpfr_uexp_t) k > (mpfr_uexp_t) q)
     {
       mpz_fdiv_q_2exp (rop, z, (unsigned long) ((mpfr_uexp_t) k - q));
-      return (mp_exp_t) k - q;
+      return (mpfr_exp_t) k - q;
     }
   if (MPFR_UNLIKELY(rop != z))
     mpz_set(rop, z);
@@ -63,8 +63,8 @@ mpz_normalize (mpz_t rop, mpz_t z, mp_exp_t q)
    if expz < target, shift z by (target-expz) bits to the right.
    Returns target.
 */
-static mp_exp_t
-mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
+static mpfr_exp_t
+mpz_normalize2 (mpz_t rop, mpz_t z, mpfr_exp_t expz, mpfr_exp_t target)
 {
   if (target > expz)
     mpz_fdiv_q_2exp (rop, z, target-expz);
@@ -85,7 +85,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   long n;
   unsigned long K, k, l, err; /* FIXME: Which type ? */
   int error_r;
-  mp_exp_t exps;
+  mpfr_exp_t exps;
   mpfr_prec_t q, precy;
   int inexact;
   mpfr_t r, s;
@@ -169,7 +169,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       if (MPFR_IS_PURE_FP (r))
         {
-          mp_exp_t cancel;
+          mpfr_exp_t cancel;
 
           /* number of cancelled bits */
           cancel = MPFR_GET_EXP (x) - MPFR_GET_EXP (r);
@@ -248,10 +248,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
 static unsigned long
-mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
+mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
 {
   unsigned long l;
-  mp_exp_t dif, expt, expr;
+  mpfr_exp_t dif, expt, expr;
   mp_size_t qn;
   mpz_t t, rr;
   mp_size_t sbit, tbit;
@@ -262,7 +262,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
   MPFR_TMP_MARK(marker);
   qn = 1 + (q-1)/GMP_NUMB_BITS;
   expt = 0;
-  *exps = 1 - (mp_exp_t) q;                   /* s = 2^(q-1) */
+  *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
   MY_INIT_MPZ(t, 2*qn+1);
   MY_INIT_MPZ(rr, qn+1);
   mpz_set_ui(t, 1);
@@ -279,7 +279,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
     MPFR_MPZ_SIZEINBASE2 (tbit, t);
     dif = *exps + sbit - expt - tbit;
     /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
-    expt += mpz_normalize(t, t, (mp_exp_t) q-dif); /* error at most 2^(1-q) */
+    expt += mpz_normalize(t, t, (mpfr_exp_t) q-dif); /* error at most 2^(1-q) */
     mpz_fdiv_q_ui (t, t, l);                   /* error at most 2^(1-q) */
     /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
     MPFR_ASSERTD (expt == *exps);
@@ -306,9 +306,9 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
    The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
 static unsigned long
-mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
+mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
 {
-  mp_exp_t expr, *expR, expt;
+  mpfr_exp_t expr, *expR, expt;
   mp_size_t sizer;
   mpfr_prec_t ql;
   unsigned long l, m, i;
@@ -326,7 +326,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mp_exp_t *exps)
 
   MPFR_TMP_MARK(marker);
   R = (mpz_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mpz_t));       /* R[i] is r^i */
-  expR = (mp_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mp_exp_t));
+  expR = (mpfr_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mpfr_exp_t));
   /* expR[i] is the exponent for R[i] */
   sizer = MPFR_LIMB_SIZE(r);
   mpz_init (tmp);

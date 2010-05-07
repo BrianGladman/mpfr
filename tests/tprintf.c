@@ -349,7 +349,7 @@ check_random (int nb_tests)
       'f',
       'g'
     };
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();

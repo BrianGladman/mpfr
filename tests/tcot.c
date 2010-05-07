@@ -82,9 +82,9 @@ check_specials (void)
 }
 
 static void
-two2emin (mp_exp_t e)
+two2emin (mpfr_exp_t e)
 {
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
   mpfr_t x, y;
   int i, rnd;
 

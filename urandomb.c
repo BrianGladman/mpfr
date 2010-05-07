@@ -45,7 +45,7 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   mpfr_prec_t nbits;
   mp_size_t nlimbs;
   mp_size_t k; /* number of high zero limbs */
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   int cnt;
 
   rp = MPFR_MANT (rop);

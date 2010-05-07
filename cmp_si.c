@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 int
-mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
+mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
 {
   int si;
 
@@ -50,7 +50,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
     return MPFR_INT_SIGN (b);
   else /* b and i are of same sign si */
     {
-      mp_exp_t e;
+      mpfr_exp_t e;
       unsigned long ai;
       int k;
       mp_size_t bn;

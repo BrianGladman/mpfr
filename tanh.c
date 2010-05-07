@@ -68,7 +68,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
-    mp_exp_t d;
+    mpfr_exp_t d;
 
     /* Declaration of the size variable */
     mpfr_prec_t Ny = MPFR_PREC(y);   /* target precision */

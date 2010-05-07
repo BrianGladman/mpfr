@@ -204,8 +204,8 @@ extern "C" {
 #endif
 
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR unsigned int __gmpfr_flags;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emin;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emax;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
@@ -583,10 +583,10 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 /* Define limits and unsigned type of exponent. The following definitions
  * depend on mp_exp_t; if this type changes in GMP, these definitions will
- * need to be modified (alternatively, a mpfr_exp_t type could be defined).
+ * need to be modified.
  */
 #if __GMP_MP_SIZE_T_INT == 1
-typedef unsigned int            mpfr_uexp_t;
+typedef unsigned int       mpfr_uexp_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
 #else
@@ -612,7 +612,7 @@ typedef intmax_t mpfr_eexp_t;
 
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
- ((mp_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
+ ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and
@@ -1074,8 +1074,8 @@ do {                                                                  \
 
 typedef struct {
   unsigned int saved_flags;
-  mp_exp_t saved_emin;
-  mp_exp_t saved_emax;
+  mpfr_exp_t saved_emin;
+  mpfr_exp_t saved_emax;
 } mpfr_save_expo_t;
 
 #define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t x
@@ -1280,7 +1280,7 @@ typedef struct {
    v=1 or v=x.
 
    y is the destination (a mpfr_t), v the value to set (a mpfr_t),
-   err1+err2 with err2 <= 3 the error term (mp_exp_t's), dir (an int) is
+   err1+err2 with err2 <= 3 the error term (mpfr_exp_t's), dir (an int) is
    the direction of the committed error (if dir = 0, it rounds toward 0,
    if dir=1, it rounds away from 0), rnd the rounding mode.
 
@@ -1291,14 +1291,14 @@ typedef struct {
    The test is less restrictive than necessary, but the function
    will finish the check itself.
 
-   Note: err1 + err2 is allowed to overflow as mp_exp_t, but it must give
+   Note: err1 + err2 is allowed to overflow as mpfr_exp_t, but it must give
    its real value as mpfr_uexp_t.
 */
 #define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,v,err1,err2,dir,rnd,extra)   \
   do {                                                                  \
     mpfr_ptr _y = (y);                                                  \
-    mp_exp_t _err1 = (err1);                                            \
-    mp_exp_t _err2 = (err2);                                            \
+    mpfr_exp_t _err1 = (err1);                                          \
+    mpfr_exp_t _err2 = (err2);                                          \
     if (_err1 > 0)                                                      \
       {                                                                 \
         mpfr_uexp_t _err = (mpfr_uexp_t) _err1 + _err2;                 \
@@ -1320,8 +1320,8 @@ typedef struct {
 #define MPFR_SMALL_INPUT_AFTER_SAVE_EXPO(y,v,err1,err2,dir,rnd,expo,extra) \
   do {                                                                  \
     mpfr_ptr _y = (y);                                                  \
-    mp_exp_t _err1 = (err1);                                            \
-    mp_exp_t _err2 = (err2);                                            \
+    mpfr_exp_t _err1 = (err1);                                          \
+    mpfr_exp_t _err2 = (err2);                                          \
     if (_err1 > 0)                                                      \
       {                                                                 \
         mpfr_uexp_t _err = (mpfr_uexp_t) _err1 + _err2;                 \
@@ -1614,7 +1614,7 @@ __MPFR_DECLSPEC int mpfr_add1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                               mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_can_round_raw _MPFR_PROTO ((const mp_limb_t *,
-                    mp_size_t, int, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t));
+             mp_size_t, int, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t));
 
 __MPFR_DECLSPEC int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr,
                                             mpfr_prec_t *));
@@ -1633,11 +1633,11 @@ __MPFR_DECLSPEC int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_pow_general _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                            mpfr_srcptr, mpfr_rnd_t, int, mpfr_save_expo_t *));
 
-__MPFR_DECLSPEC void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
-__MPFR_DECLSPEC void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
+__MPFR_DECLSPEC void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mpfr_exp_t));
+__MPFR_DECLSPEC void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mpfr_exp_t));
 
-__MPFR_DECLSPEC long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
-                           mp_exp_t, size_t));
+__MPFR_DECLSPEC long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mpfr_exp_t *, int,
+                                                mpfr_exp_t, size_t));
 
 #ifdef _MPFR_H_HAVE_FILE
 __MPFR_DECLSPEC void mpfr_fprint_binary _MPFR_PROTO ((FILE *, mpfr_srcptr));
@@ -1687,7 +1687,7 @@ __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr,
 __MPFR_DECLSPEC void mpfr_sqrhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_size_t));
 
 __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
-                                               mp_exp_t, mpfr_prec_t));
+                                               mpfr_exp_t, mpfr_prec_t));
 
 __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
                                                   mpfr_prec_t, mpfr_prec_t,

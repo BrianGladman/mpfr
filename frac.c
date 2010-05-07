@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
-  mp_exp_t re, ue;
+  mpfr_exp_t re, ue;
   mpfr_prec_t uq;
   mp_size_t un, tn, t0;
   mp_limb_t *up, *tp, k;

@@ -26,7 +26,7 @@ int
 mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
                 mpfr_rnd_t rnd)
 {
-  mp_exp_t err;
+  mpfr_exp_t err;
   unsigned long m;
   mpfr_t res;
   mpfr_prec_t prec;

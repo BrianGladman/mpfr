@@ -27,7 +27,7 @@ int
 mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp, arcc, tmp;
-  mp_exp_t supplement;
+  mpfr_exp_t supplement;
   mpfr_prec_t prec;
   int sign, compared, inexact;
   MPFR_SAVE_EXPO_DECL (expo);

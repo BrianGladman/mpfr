@@ -53,7 +53,7 @@ mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
 static int
 unit_bit (mpfr_srcptr (x))
 {
-  mp_exp_t expo;
+  mpfr_exp_t expo;
   mpfr_prec_t prec;
   mp_limb_t x0;
 
@@ -100,7 +100,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
   int inexact, compared;
-  mp_exp_t err_s, err_t;
+  mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
   double d;
@@ -119,7 +119,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
   /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
      - log|x| - gamma*x <= log|gamma(x)| <= - log|x| - gamma*x + x^2 */
-  if (MPFR_EXP(z0) <= - (mp_exp_t) MPFR_PREC(y))
+  if (MPFR_EXP(z0) <= - (mpfr_exp_t) MPFR_PREC(y))
     {
       mpfr_t l, h, g;
       int ok, inex2;
@@ -198,7 +198,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
   if (compared < 0)
     {
-      mp_exp_t err_u;
+      mpfr_exp_t err_u;
 
       /* use reflection formula:
          gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x)
@@ -373,7 +373,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
       /* s:(1+u)^15, t:(1+u)^2, t <= 3/128 */
 
-      for (m = 2; MPFR_GET_EXP(v) + (mp_exp_t) w >= MPFR_GET_EXP(s); m++)
+      for (m = 2; MPFR_GET_EXP(v) + (mpfr_exp_t) w >= MPFR_GET_EXP(s); m++)
         {
           mpfr_mul (t, t, u, MPFR_RNDN); /* (1+u)^(10m-14) */
           if (m <= maxm)
@@ -468,9 +468,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          We have sqrt(2*Pi)/(z0*(z0+1)*...*(z0+k-1)) <= sqrt(2*Pi)/k! <= 0.5
          since k>=3, thus t <= -0.5 and ulp(t) >= 2^(-w).
          Thus the error on t is bounded by (2.16*k+1.54)*ulp(t). */
-      err_t = MPFR_GET_EXP(t) + (mp_exp_t)
+      err_t = MPFR_GET_EXP(t) + (mpfr_exp_t)
         __gmpfr_ceil_log2 (2.2 * (double) k + 1.6);
-      err_s = MPFR_GET_EXP(s) + (mp_exp_t)
+      err_s = MPFR_GET_EXP(s) + (mpfr_exp_t)
         __gmpfr_ceil_log2 (2.0 * (double) m + 48.0);
       mpfr_add (s, s, t, MPFR_RNDN); /* this is a subtraction in fact */
       /* the final error in ulp(s) is
@@ -586,7 +586,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
          compute an interval [l,h] such that l <= -log(-x) and
          -log(-x) - x <= h, and check whether l and h round to the same number
          for the target precision and rounding modes. */
-      if (MPFR_EXP(x) + 1 <= - (mp_exp_t) MPFR_PREC(y))
+      if (MPFR_EXP(x) + 1 <= - (mpfr_exp_t) MPFR_PREC(y))
         /* since PREC(y) >= 1, this ensures EXP(x) <= -2,
            thus |x| <= 0.25 < 0.4 */
         {
@@ -623,7 +623,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
                 return inex;
               /* if ulp(log(-x)) <= |x| there is no reason to loop,
                  since the width of [l, h] will be at least |x| */
-              if (MPFR_EXP(l) < MPFR_EXP(x) + (mp_exp_t) w)
+              if (MPFR_EXP(l) < MPFR_EXP(x) + (mpfr_exp_t) w)
                 break;
               w += MPFR_INT_CEIL_LOG2(w) + 3;
             }

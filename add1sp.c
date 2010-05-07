@@ -91,7 +91,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   unsigned int sh;
   mp_size_t n;
   mp_limb_t *ap, *cp;
-  mp_exp_t  bx;
+  mpfr_exp_t bx;
   mp_limb_t limb;
   int inexact;
   MPFR_TMP_DECL(marker);

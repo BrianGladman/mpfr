@@ -216,8 +216,8 @@ Table of contents:
   - radians
   - sqrtpi
 
-- mpfr_frexp(mpfr_t rop, mp_exp_t *n, mpfr_t op, mpfr_rnd_t rnd) suggested by
-  Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
+- mpfr_frexp(mpfr_t rop, mpfr_exp_t *n, mpfr_t op, mpfr_rnd_t rnd) suggested
+  by Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
 - mpfr_inp_raw, mpfr_out_raw (cf mail "Serialization of mpfr_t" from Alexey
   and answer from Granlund on mpfr list, May 2007)
 - [maybe useful for SAGE] implement companion frac_* functions to the rint_*
@@ -415,9 +415,7 @@ Table of contents:
 - add an option to use a 32-bit exponent type (int) on LP64 machines,
   mainly for developers, in order to be able to test the case where the
   extended exponent range is the same as the default exponent range, on
-  such platforms. This would need to rename all mp_exp_t as mpfr_exp_t
-  and add a typedef either to mp_exp_t (default) or to int (when this
-  option is enabled).
+  such platforms.
 
 - test underflow/overflow detection of various functions (in particular
   mpfr_exp) in reduced exponent ranges, including ranges that do not

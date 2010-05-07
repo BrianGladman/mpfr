@@ -45,7 +45,7 @@ int
 mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
-  mp_exp_t e, r, sh;
+  mpfr_exp_t e, r, sh;
   mpfr_prec_t n, size_m, tmp;
   int inexact, negative;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -91,7 +91,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
      i.e. 3*sh + size_m + r <= 3*n */
-  sh = (3 * (mp_exp_t) n - (mp_exp_t) size_m - r) / 3;
+  sh = (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / 3;
   sh = 3 * sh + r;
   if (sh >= 0)
     {
@@ -114,7 +114,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   sh = tmp - n;
   if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
-      inexact = inexact || ((mp_exp_t) mpz_scan1 (m, 0) < sh);
+      inexact = inexact || ((mpfr_exp_t) mpz_scan1 (m, 0) < sh);
       mpz_fdiv_q_2exp (m, m, sh);
       e += 3 * sh;
     }

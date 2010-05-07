@@ -58,7 +58,7 @@ static mpfr_prec_t
 get_prec_max (mpfr_t *tab, unsigned long n, mpfr_prec_t f)
 {
   mpfr_prec_t res;
-  mp_exp_t min, max;
+  mpfr_exp_t min, max;
   unsigned long i;
 
   for (i = 0; MPFR_IS_ZERO (tab[i]); i++)

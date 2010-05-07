@@ -41,7 +41,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   int odd_exp;
   int sh; /* number of extra bits in rp[0] */
   int inexact; /* return ternary flag */
-  mp_exp_t expr;
+  mpfr_exp_t expr;
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", u, u, rnd_mode),

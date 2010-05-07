@@ -92,7 +92,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
   else
     {
       /* Do not use MPFR_SET_EXP as the exponent may be out of range. */
-      MPFR_EXP (y) = EXP (x) * GMP_NUMB_BITS - (mp_exp_t) cnt + carry;
+      MPFR_EXP (y) = EXP (x) * GMP_NUMB_BITS - (mpfr_exp_t) cnt + carry;
     }
 
   return mpfr_check_range (y, inexact, rnd_mode);

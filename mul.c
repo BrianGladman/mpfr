@@ -37,7 +37,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   /* Old implementation */
   int sign_product, cc, inexact;
-  mp_exp_t  ax;
+  mpfr_exp_t ax;
   mp_limb_t *tmp;
   mp_limb_t b1;
   mpfr_prec_t bq, cq;
@@ -136,7 +136,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_TMP_FREE(marker);
 
   {
-    mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
+    mpfr_exp_t ax2 = ax + (mpfr_exp_t) (b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
       return mpfr_overflow (a, rnd_mode, sign_product);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
@@ -146,7 +146,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
            both arguments are powers of 2), then round to zero. */
         if (rnd_mode == MPFR_RNDN &&
-            (ax + (mp_exp_t) b1 < __gmpfr_emin ||
+            (ax + (mpfr_exp_t) b1 < __gmpfr_emin ||
              (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
           rnd_mode = MPFR_RNDZ;
         return mpfr_underflow (a, rnd_mode, sign_product);
@@ -206,7 +206,7 @@ int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign, inexact;
-  mp_exp_t  ax, ax2;
+  mpfr_exp_t ax, ax2;
   mp_limb_t *tmp;
   mp_limb_t b1;
   mpfr_prec_t bq, cq;
@@ -488,7 +488,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
       }
 
-  ax2 = ax + (mp_exp_t) (b1 - 1);
+  ax2 = ax + (mpfr_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
   MPFR_TMP_FREE (marker);
   MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
@@ -502,7 +502,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
          both arguments are powers of 2), then round to zero. */
       if (rnd_mode == MPFR_RNDN
-          && (ax + (mp_exp_t) b1 < __gmpfr_emin
+          && (ax + (mpfr_exp_t) b1 < __gmpfr_emin
               || (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, sign);

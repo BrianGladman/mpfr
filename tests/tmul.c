@@ -280,7 +280,7 @@ static void
 check_max(void)
 {
   mpfr_t xx, yy, zz;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpfr_init2(xx, 4);
   mpfr_init2(yy, 4);

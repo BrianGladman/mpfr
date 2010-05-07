@@ -45,7 +45,7 @@ static void
 check_underflow (void)
 {
   mpfr_t a;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int res;
 
   mpfr_init (a);
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   mpfr_t x, y;
   unsigned long k, bd, nc, i;
   char *str, *str2;
-  mp_exp_t e;
+  mpfr_exp_t e;
   int base, logbase, prec, baseprec, ret, obase;
 
   tests_start_mpfr ();
@@ -771,7 +771,7 @@ main (int argc, char *argv[])
           for (crnd = 0; crnd < 3; crnd++)
             {
               char *str1;
-              mp_exp_t exp;
+              mpfr_exp_t exp;
 
               *(MPFR_MANT(x)) = check_limb[climb];
               MPFR_EXP(x) = 0;

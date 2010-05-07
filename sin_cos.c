@@ -35,7 +35,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   int neg, reduce;
   mpfr_t c, xr;
   mpfr_srcptr xx;
-  mp_exp_t err, expx;
+  mpfr_exp_t err, expx;
   int inexy, inexz;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -152,8 +152,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
             mpfr_add (c, c, xr, MPFR_RNDZ);
-          if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
-              || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+          if (MPFR_IS_ZERO(xr)
+              || MPFR_EXP(xr) < (mpfr_exp_t) 3 - (mpfr_exp_t) m
+              || MPFR_EXP(c) < (mpfr_exp_t) 3 - (mpfr_exp_t) m)
             goto next_step;
           xx = xr;
         }
@@ -173,7 +174,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (reduce == 0)
         err = m;
       else
-        err = MPFR_GET_EXP (c) + (mp_exp_t) (m - 3);
+        err = MPFR_GET_EXP (c) + (mpfr_exp_t) (m - 3);
       if (!mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
                            MPFR_PREC (z) + (rnd_mode == MPFR_RNDN)))
         goto next_step;
@@ -196,12 +197,12 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       /* the absolute error on c is at most 2^(err-m), which we must put
          in the form 2^(EXP(c)-err). */
-      err = MPFR_GET_EXP (c) + (mp_exp_t) m - err;
+      err = MPFR_GET_EXP (c) + (mpfr_exp_t) m - err;
       if (mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
                           MPFR_PREC (y) + (rnd_mode == MPFR_RNDN)))
         break;
       /* check for huge cancellation */
-      if (err < (mp_exp_t) MPFR_PREC (y))
+      if (err < (mpfr_exp_t) MPFR_PREC (y))
         m += MPFR_PREC (y) - err;
       /* Check if near 1 */
       if (MPFR_GET_EXP (c) == 1
@@ -299,7 +300,7 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
     }
 
   /* check that X=p/2^r <= 1/2 */
-  MPFR_ASSERTN(mpz_sizeinbase (p, 2) - (mp_exp_t) r <= -1);
+  MPFR_ASSERTN(mpz_sizeinbase (p, 2) - (mpfr_exp_t) r <= -1);
 
   mpz_init (pp);
 
@@ -569,7 +570,7 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd)
   int inexs, inexc;
   mpfr_t x_red, ts, tc;
   mpfr_prec_t w;
-  mp_exp_t err, errs, errc;
+  mpfr_exp_t err, errs, errc;
   MPFR_ZIV_DECL (loop);
 
   MPFR_ASSERTN(s != c);

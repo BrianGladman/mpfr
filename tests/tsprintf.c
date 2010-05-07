@@ -1046,12 +1046,12 @@ bug20081214 (void)
  * some C libraries behave differently on %a, but this is a bug.
  */
 static void
-check_emax_aux (mp_exp_t e)
+check_emax_aux (mpfr_exp_t e)
 {
   mpfr_t x;
   char *s1, s2[256];
   int i;
-  mp_exp_t emax;
+  mpfr_exp_t emax;
 
   MPFR_ASSERTN (e <= LONG_MAX);
   emax = mpfr_get_emax ();

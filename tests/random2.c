@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 void
-mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
+mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
               gmp_randstate_t rstate)
 {
   mp_size_t xn, k, ri;

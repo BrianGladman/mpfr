@@ -135,7 +135,7 @@ int verbose = 0;
 
 void mpf_set_fr (mpf_t dest, mpfr_t src, mp_rnd_t rnd)
 {
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   char *tmp, *tmp2;
   long len;
 

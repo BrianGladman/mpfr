@@ -94,7 +94,7 @@ set_fpu_prec (void)
 
 #endif
 
-static mp_exp_t default_emin, default_emax;
+static mpfr_exp_t default_emin, default_emax;
 
 static void tests_rand_start (void);
 static void tests_rand_end   (void);
@@ -465,7 +465,7 @@ src_fopen (const char *filename, const char *mode)
 }
 
 void
-set_emin (mp_exp_t exponent)
+set_emin (mpfr_exp_t exponent)
 {
   if (mpfr_set_emin (exponent))
     {
@@ -475,7 +475,7 @@ set_emin (mp_exp_t exponent)
 }
 
 void
-set_emax (mp_exp_t exponent)
+set_emax (mpfr_exp_t exponent)
 {
   if (mpfr_set_emax (exponent))
     {
@@ -489,7 +489,7 @@ set_emax (mp_exp_t exponent)
    If pos=0, all generated numbers are positive.
 */
 void
-tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
+tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax)
 {
   MPFR_ASSERTN (emin <= emax);
   MPFR_ASSERTN (emin >= MPFR_EMIN_MIN);
@@ -501,7 +501,7 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
   mpfr_urandomb (x, RANDS);
   if (MPFR_IS_PURE_FP (x) && (emin >= 1 || (randlimb () & 1)))
     {
-      mp_exp_t e;
+      mpfr_exp_t e;
       e = MPFR_GET_EXP (x) +
         (emin + (long) (randlimb () % (emax - emin + 1)));
       /* Note: There should be no overflow here because both terms are
@@ -791,14 +791,14 @@ data_check (char *f, int (*foo) (FLIST), char *name)
  */
 void
 bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
-           int pos, mp_exp_t emin, mp_exp_t emax,
+           int pos, mpfr_exp_t emin, mpfr_exp_t emax,
            mpfr_prec_t pymin, mpfr_prec_t pymax, mpfr_prec_t psup,
            int n)
 {
   mpfr_t x, y, z;
   char *dbgenv;
   int i, dbg;
-  mp_exp_t old_emin, old_emax;
+  mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();

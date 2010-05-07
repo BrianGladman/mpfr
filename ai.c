@@ -209,9 +209,9 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
           /* FIXME: if s==0 */
           test1 = MPFR_IS_ZERO (ti)
-            || ( MPFR_EXP (ti) + (mp_exp_t)prec + 3 <= MPFR_EXP (s) );
+            || ( MPFR_EXP (ti) + (mpfr_exp_t)prec + 3 <= MPFR_EXP (s) );
           test2 = MPFR_IS_ZERO (tip1)
-            || ( MPFR_EXP (tip1) + (mp_exp_t)prec + 3 <= MPFR_EXP (s) );
+            || ( MPFR_EXP (tip1) + (mpfr_exp_t)prec + 3 <= MPFR_EXP (s) );
 
           if ( test1 && test2 && (x3u <= k*(k+1)/2) )
             break; /* FIXME: if k*(k+1) overflows */

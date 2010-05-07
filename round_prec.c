@@ -88,7 +88,7 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(carry))
     {
-      mp_exp_t exp = MPFR_EXP (x);
+      mpfr_exp_t exp = MPFR_EXP (x);
 
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
         (void) mpfr_overflow(x, rnd_mode, MPFR_SIGN(x));
@@ -118,7 +118,7 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 */
 
 int
-mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
+mpfr_can_round (mpfr_srcptr b, mpfr_exp_t err, mpfr_rnd_t rnd1,
                 mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
@@ -129,7 +129,7 @@ mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
 }
 
 int
-mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
+mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
                     mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
   mpfr_prec_t err;

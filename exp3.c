@@ -45,7 +45,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   unsigned long n, i, j;
   mpz_t *S, *ptoj;
   mpfr_prec_t *log2_nb_terms;
-  mp_exp_t diff, expo;
+  mpfr_exp_t diff, expo;
   mpfr_prec_t precy = MPFR_PREC(y), prec_i_have, prec_ptoj;
   int k, l;
 
@@ -127,7 +127,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   /* Q[0] now equals i! */
   MPFR_MPZ_SIZEINBASE2 (prec_i_have, S[0]);
-  diff = (mp_exp_t) prec_i_have - 2 * (mp_exp_t) precy;
+  diff = (mpfr_exp_t) prec_i_have - 2 * (mpfr_exp_t) precy;
   expo = diff;
   if (diff >= 0)
     mpz_fdiv_q_2exp (S[0], S[0], diff);
@@ -135,7 +135,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
     mpz_mul_2exp (S[0], S[0], -diff);
 
   MPFR_MPZ_SIZEINBASE2 (prec_i_have, Q[0]);
-  diff = (mp_exp_t) prec_i_have - (mpfr_prec_t) precy;
+  diff = (mpfr_exp_t) prec_i_have - (mpfr_prec_t) precy;
   expo -= diff;
   if (diff > 0)
     mpz_fdiv_q_2exp (Q[0], Q[0], diff);
@@ -154,7 +154,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t, x_copy, tmp;
   mpz_t uk;
-  mp_exp_t ttt, shift_x;
+  mpfr_exp_t ttt, shift_x;
   unsigned long twopoweri;
   mpz_t *P;
   mpfr_prec_t *mult;
@@ -288,7 +288,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           if (MPFR_UNLIKELY (scaled && MPFR_IS_PURE_FP (y)))
             {
               int inex2;
-              mp_exp_t ey;
+              mpfr_exp_t ey;
 
               /* The result has been scaled and needs to be corrected. */
               ey = MPFR_GET_EXP (y);

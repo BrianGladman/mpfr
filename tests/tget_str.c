@@ -29,7 +29,7 @@ check3 (char *d, mpfr_rnd_t rnd, char *res)
 {
   mpfr_t x;
   char *str;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   mpfr_init2 (x, 53);
   mpfr_set_str (x, d, 10, rnd);
@@ -49,7 +49,7 @@ check_small (void)
 {
   mpfr_t x;
   char *s;
-  mp_exp_t e;
+  mpfr_exp_t e;
   mpfr_prec_t p;
 
   mpfr_init (x);
@@ -989,7 +989,7 @@ check_large (void)
                       '3', '7', '2', '2', '7', '5', '6', '2', '3', '1',
                       '2', '1', '3', '1', '4', '2', '6', '9', '2', '3',
                       '\0' };
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   mpfr_init2 (x, 3322);
   mpfr_set_str (x, xm, 10, MPFR_RNDN);
@@ -1077,7 +1077,7 @@ check_special (int b, mpfr_prec_t p)
   mpfr_t x;
   int i, j;
   char s[MAX_DIGITS + 2], s2[MAX_DIGITS + 2], c;
-  mp_exp_t e;
+  mpfr_exp_t e;
   int r;
   size_t m;
 
@@ -1156,7 +1156,7 @@ check_bug_base2k (void)
   */
   mpfr_t xx, yy, zz;
   char *s;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   mpfr_init2 (xx, 107);
   mpfr_init2 (yy, 79);
@@ -1181,7 +1181,7 @@ check_reduced_exprange (void)
 {
   mpfr_t x;
   char *s;
-  mp_exp_t emax, e;
+  mpfr_exp_t emax, e;
 
   emax = mpfr_get_emax ();
   mpfr_init2 (x, 8);
@@ -1208,7 +1208,7 @@ main (int argc, char *argv[])
   mpfr_t x;
   mpfr_rnd_t r;
   char s[MAX_DIGITS + 2];
-  mp_exp_t e, f;
+  mpfr_exp_t e, f;
   size_t m;
   mpfr_prec_t p;
   int i;
@@ -1230,7 +1230,7 @@ main (int argc, char *argv[])
     {
       m = 2 + (randlimb () % (MAX_DIGITS - 1));
       mpfr_urandomb (x, RANDS);
-      e = (mp_exp_t) (randlimb () % 21) - 10;
+      e = (mpfr_exp_t) (randlimb () % 21) - 10;
       mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
                     ((e == 10) ? mpfr_get_emax () : e));
       b = 2 + (randlimb () % 35);

@@ -28,11 +28,11 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   int inex;
   mpfr_t r;
-  mp_exp_t exp = MPFR_EXP (f);
+  mpfr_exp_t exp = MPFR_EXP (f);
 
   /* if exp <= 0, then |f|<1, thus |o(f)|<=1 */
   MPFR_ASSERTN (exp < 0 || exp <= MPFR_PREC_MAX);
-  mpfr_init2 (r, (exp < (mp_exp_t) MPFR_PREC_MIN ?
+  mpfr_init2 (r, (exp < (mpfr_exp_t) MPFR_PREC_MIN ?
                   MPFR_PREC_MIN : (mpfr_prec_t) exp));
   inex = mpfr_rint (r, f, rnd);
   MPFR_ASSERTN (inex != 1 && inex != -1); /* integral part of f is

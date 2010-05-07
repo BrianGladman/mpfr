@@ -38,10 +38,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 long
-mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
+mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
 {
   mp_limb_t *c, B;
-  mp_exp_t f, h;
+  mpfr_exp_t f, h;
   int i;
   unsigned long t; /* number of bits in e */
   unsigned long bits;
@@ -106,7 +106,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
       /* FIXME: Could f = 2*f + n * GMP_NUMB_BITS be used? */
       f = 2*f;
       MPFR_SADD_OVERFLOW (f, f, n * GMP_NUMB_BITS,
-                          mp_exp_t, mpfr_uexp_t,
+                          mpfr_exp_t, mpfr_uexp_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           goto overflow, goto overflow);
       if ((c[2*n - 1] & MPFR_LIMB_HIGHBIT) == 0)
@@ -125,7 +125,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
           (mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * GMP_NUMB_BITS))
         error = i;
 
-      if (e & ((mp_exp_t) 1 << i))
+      if (e & ((mpfr_exp_t) 1 << i))
         {
           /* multiply A by B */
           c[2 * n - 1] = mpn_mul_1 (c + n - 1, a, n, B);

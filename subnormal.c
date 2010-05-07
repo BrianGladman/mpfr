@@ -45,7 +45,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
       mpfr_emin to mpfr_emin + MPFR_PREC(y) - 1  */
   if (MPFR_LIKELY (MPFR_IS_SINGULAR (y)
                    || (MPFR_GET_EXP (y) >=
-                       __gmpfr_emin + (mp_exp_t) MPFR_PREC (y) - 1)))
+                       __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)))
     inexact = old_inexact;
 
   /* We have to emulate one bit rounding if EXP(y) = emin */

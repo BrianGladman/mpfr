@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #undef mpfr_get_exp
-mp_exp_t
+mpfr_exp_t
 mpfr_get_exp (mpfr_srcptr x)
 {
   MPFR_ASSERTN(MPFR_IS_PURE_FP(x));

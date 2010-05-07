@@ -47,7 +47,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
-  mp_exp_t e;
+  mpfr_exp_t e;
   int prec;
   mpfr_t x, y;
   int neg;

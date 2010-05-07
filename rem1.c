@@ -56,7 +56,7 @@ static int
 mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
            mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
-  mp_exp_t ex, ey;
+  mpfr_exp_t ex, ey;
   int compare, inex, q_is_odd, sign, signx = MPFR_SIGN (x);
   mpz_t mx, my, r;
 

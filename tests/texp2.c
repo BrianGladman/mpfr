@@ -36,7 +36,7 @@ special_overflow (void)
 {
   mpfr_t x, y;
   int inex;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -71,7 +71,7 @@ emax_m_eps (void)
       mpfr_t x, y;
       int inex, ov;
 
-      mpfr_init2 (x, sizeof(mp_exp_t) * CHAR_BIT * 4);
+      mpfr_init2 (x, sizeof(mpfr_exp_t) * CHAR_BIT * 4);
       mpfr_init2 (y, 8);
       mpfr_set_si (x, mpfr_get_emax (), MPFR_RNDN);
 
@@ -120,7 +120,7 @@ static void
 exp_range (void)
 {
   mpfr_t x;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
   set_emin (3);
@@ -144,7 +144,7 @@ overflowed_exp2_0 (void)
 {
   mpfr_t x, y;
   int emax, i, inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 
@@ -221,7 +221,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   tests_start_mpfr ();
 

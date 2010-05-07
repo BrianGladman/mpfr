@@ -26,10 +26,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-static mp_exp_t
+static mpfr_exp_t
 randexp (void)
 {
-  return (mp_exp_t) (randlimb () % (__gmpfr_emax - __gmpfr_emin))
+  return (mpfr_exp_t) (randlimb () % (__gmpfr_emax - __gmpfr_emin))
     + __gmpfr_emin;
 }
 
@@ -39,7 +39,7 @@ check0 (void)
   mpz_t y;
   mpfr_t x;
   int inexact, r;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   /* Check for +0 */
   mpfr_init (x);
@@ -69,7 +69,7 @@ check (long i, mpfr_rnd_t rnd)
 {
   mpfr_t f;
   mpz_t z;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   mpfr_init2 (f, 8 * sizeof(long));
   mpz_init (z);

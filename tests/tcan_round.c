@@ -33,7 +33,7 @@ check_round_p (void)
   mp_limb_t buf[MAX_LIMB_SIZE];
   mp_size_t n, i;
   mpfr_prec_t p;
-  mp_exp_t err;
+  mpfr_exp_t err;
   int r1, r2;
 
   for (n = 2 ; n <= MAX_LIMB_SIZE ; n++)

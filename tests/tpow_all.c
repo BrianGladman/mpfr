@@ -466,7 +466,7 @@ static void
 underflow_up1 (void)
 {
   mpfr_t delta, x, y, z, z0;
-  mp_exp_t n;
+  mpfr_exp_t n;
   int inex;
   int rnd;
   int i;
@@ -551,7 +551,7 @@ static void
 underflow_up2 (void)
 {
   mpfr_t x, y, z, z0, eps;
-  mp_exp_t n;
+  mpfr_exp_t n;
   int inex;
   int rnd;
 
@@ -608,7 +608,7 @@ underflow_up3 (void)
   int i;
 
   mpfr_init2 (x, 64);
-  mpfr_init2 (y, sizeof (mp_exp_t) * CHAR_BIT);
+  mpfr_init2 (y, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_init2 (z, 32);
   mpfr_init2 (z0, 2);
 
@@ -744,7 +744,7 @@ overflow_inv (void)
 static void
 alltst (void)
 {
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   ext = 0;
   tst ();

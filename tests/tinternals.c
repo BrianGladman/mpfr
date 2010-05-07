@@ -51,7 +51,7 @@ static void
 test_round_near_x (void)
 {
   mpfr_t x, y, z, eps;
-  mp_exp_t e;
+  mpfr_exp_t e;
   int failures = 0, mx, neg, err, dir, r, inex, inex2;
   char buffer[7], *p;
 

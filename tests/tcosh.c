@@ -141,7 +141,7 @@ special_overflow (void)
      2. cosh(x) is not representable in the selected range of exp.
      3. cosh(x) exp overflow even with the largest range of exp */
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();

@@ -1106,11 +1106,11 @@ converted into a reduced-precision (e.g., 53-bit) binary number before
 MPFR can work with it.
 @end deftypefun
 
-@deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mpfr_exp_t @var{e}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mpfr_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_uj_2exp (mpfr_t @var{rop}, uintmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_sj_2exp (mpfr_t @var{rop}, intmax_t @var{op}, intmax_t @var{e}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_z_2exp (mpfr_t @var{rop}, mpz_t @var{op}, mp_exp_t @var{e}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_z_2exp (mpfr_t @var{rop}, mpz_t @var{op}, mpfr_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
 two to the power @var{e}}, rounded toward the given direction @var{rnd}.
 Note that the input 0 is converted to +0.
@@ -1288,7 +1288,7 @@ If @var{op} is NaN or an infinity, then the corresponding double precision
 value is returned, and @var{exp} is undefined.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_z_2exp (mpz_t @var{rop}, mpfr_t @var{op})
+@deftypefun mpfr_exp_t mpfr_get_z_2exp (mpz_t @var{rop}, mpfr_t @var{op})
 Put the scaled significand of @var{op} (regarded as an integer, with the
 precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
@@ -1300,7 +1300,7 @@ exactly equals
 $rop \times 2^{\rm exp}$.
 @end tex
 If @var{op} is zero, the minimal exponent @code{emin} is returned.
-If the exponent is not representable in the @code{mp_exp_t} type, the
+If the exponent is not representable in the @code{mpfr_exp_t} type, the
 behavior is undefined.
 @end deftypefun
 
@@ -1318,7 +1318,7 @@ The @emph{erange} flag is set if @var{op} is NaN or Inf, which do not exist in
 @code{mpf}.
 @end deftypefun
 
-@deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
 number of significant digits; in the latter case, @var{n} must be greater
@@ -1583,8 +1583,8 @@ or both arguments are NaN. But only floating-point numbers can be compared
 (you may need to do a conversion first).
 @end deftypefun
 
-@deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mp_exp_t @var{e})
-@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mp_exp_t @var{e})
+@deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_exp_t @var{e})
+@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mpfr_exp_t @var{e})
 Compare @var{op1} and @m{@var{op2} \times 2^e, @var{op2} multiplied by two to
 the power @var{e}}. Similar as above.
 @end deftypefun
@@ -2403,7 +2403,7 @@ already an approximation to @var{n} bits:
 @end example
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
 E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
@@ -2508,13 +2508,13 @@ The second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_exp (mpfr_t @var{x})
+@deftypefun mpfr_exp_t mpfr_get_exp (mpfr_t @var{x})
 Get the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
 number and the significand is chosen in [1/2,1). The behavior for NaN,
 infinity or zero is undefined.
 @end deftypefun
 
-@deftypefun int mpfr_set_exp (mpfr_t @var{x}, mp_exp_t @var{e})
+@deftypefun int mpfr_set_exp (mpfr_t @var{x}, mpfr_exp_t @var{e})
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0 (even if @var{x} is not a non-zero ordinary number);
 otherwise, return a non-zero value.
@@ -2608,8 +2608,8 @@ return zero otherwise.
 @cindex Exception related functions
 @section Exception Related Functions
 
-@deftypefun mp_exp_t mpfr_get_emin (void)
-@deftypefunx mp_exp_t mpfr_get_emax (void)
+@deftypefun mpfr_exp_t mpfr_get_emin (void)
+@deftypefunx mpfr_exp_t mpfr_get_emax (void)
 Return the (current) smallest and largest exponents allowed for a
 floating-point variable. The smallest positive value of a floating-point
 variable is @m{1/2 \times 2^{\rm emin}, one half times 2 raised to the
@@ -2617,8 +2617,8 @@ smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
 \times 2^{\rm emax}, (1 - epsilon) times 2 raised to the largest exponent}.
 @end deftypefun
 
-@deftypefun int mpfr_set_emin (mp_exp_t @var{exp})
-@deftypefunx int mpfr_set_emax (mp_exp_t @var{exp})
+@deftypefun int mpfr_set_emin (mpfr_exp_t @var{exp})
+@deftypefunx int mpfr_set_emax (mpfr_exp_t @var{exp})
 Set the smallest and largest exponents allowed for a floating-point variable.
 Return a non-zero value when @var{exp} is not in the range accepted by the
 implementation (in that case the smallest or largest exponent is not changed),
@@ -2630,10 +2630,10 @@ behavior will be undefined, in the sense of the ISO C standard.
 @c It is also her/his responsibility to check that @m {emin <= emax}.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_emin_min (void)
-@deftypefunx mp_exp_t mpfr_get_emin_max (void)
-@deftypefunx mp_exp_t mpfr_get_emax_min (void)
-@deftypefunx mp_exp_t mpfr_get_emax_max (void)
+@deftypefun mpfr_exp_t mpfr_get_emin_min (void)
+@deftypefunx mpfr_exp_t mpfr_get_emin_max (void)
+@deftypefunx mpfr_exp_t mpfr_get_emax_min (void)
+@deftypefunx mpfr_exp_t mpfr_get_emax_max (void)
 Return the minimum and maximum of the smallest and largest exponents
 allowed for @code{mpfr_set_emin} and @code{mpfr_set_emax}. These values
 are implementation dependent; it is possible to create a non
@@ -2845,7 +2845,7 @@ Initialize a significand of precision @var{prec}.
 at least and be suitably aligned for an array of @code{mp_limb_t}.
 @end deftypefun
 
-@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mpfr_prec_t @var{prec}, void *@var{significand})
+@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mpfr_exp_t @var{exp}, mpfr_prec_t @var{prec}, void *@var{significand})
 Perform a dummy initialization of a @code{mpfr_t} and set it to:
 @itemize
 @item if @code{ABS(kind) == MPFR_NAN_KIND}, @var{x} is set to NaN;
@@ -2878,7 +2878,7 @@ The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
+@deftypefun mpfr_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
 Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
 number. The return value for NaN, Infinity or Zero is unspecified but does not
 produce any trap.

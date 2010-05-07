@@ -89,7 +89,7 @@ check1 (mpfr_ptr x, mpfr_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
   mpfr_t y, z, t;
   int inexact, compare, compare2;
   mpfr_prec_t yprec;
-  mp_exp_t err;
+  mpfr_exp_t err;
 
   yprec = prec + 10;
 

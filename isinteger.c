@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_integer_p (mpfr_srcptr x)
 {
-  mp_exp_t expo;
+  mpfr_exp_t expo;
   mpfr_prec_t prec;
   mp_size_t xn;
   mp_limb_t *xp;

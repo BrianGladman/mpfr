@@ -28,7 +28,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
 {
   char *s, *s0;
   size_t l;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   MPFR_ASSERTN (base >= 2 && base <= 62);
 

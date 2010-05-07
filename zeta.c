@@ -166,12 +166,12 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
      The error is < 2^(-x+1) <= 2^(-2^(EXP(x)-1)+1) */
   if (MPFR_GET_EXP (s) > 3)
     {
-      mp_exp_t err;
+      mpfr_exp_t err;
       err = MPFR_GET_EXP (s) - 1;
-      if (err > (mp_exp_t) (sizeof (mp_exp_t)*CHAR_BIT-2))
+      if (err > (mpfr_exp_t) (sizeof (mpfr_exp_t)*CHAR_BIT-2))
         err = MPFR_EMAX_MAX;
       else
-        err = ((mp_exp_t)1) << err;
+        err = ((mpfr_exp_t)1) << err;
       err = 1 - (-err+1); /* GET_EXP(one) - (-err+1) = err :) */
       MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, err, 0, 1,
                                         rnd_mode, {});
@@ -201,7 +201,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
     {
       /* Principal loop: we compute, in z_pre,
          an approximation of Zeta(s), that we send to can_round */
-      if (MPFR_GET_EXP (s1) <= -(mp_exp_t) ((mpfr_prec_t) (d-3)/2))
+      if (MPFR_GET_EXP (s1) <= -(mpfr_exp_t) ((mpfr_prec_t) (d-3)/2))
         /* Branch 1: when s-1 is very small, one
            uses the approximation Zeta(s)=1/(s-1)+gamma,
            where gamma is Euler's constant */
@@ -341,7 +341,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
      Thus if |s| <= 1/4*ulp(1/2), we can deduce the correct rounding
      (the 1/4 covers the case where |zeta(s)| < 1/2 and rounding to nearest).
      A sufficient condition is that EXP(s) + 1 < -PREC(z). */
-  if (MPFR_EXP(s) + 1 < - (mp_exp_t) MPFR_PREC(z))
+  if (MPFR_EXP(s) + 1 < - (mpfr_exp_t) MPFR_PREC(z))
     {
       int signs = MPFR_SIGN(s);
       mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */

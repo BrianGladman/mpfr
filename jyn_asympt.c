@@ -44,7 +44,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   mpfr_prec_t w;
   long k;
   int inex, stop, diverge = 0;
-  mp_exp_t err2, err;
+  mpfr_exp_t err2, err;
   MPFR_ZIV_DECL (loop);
 
   mpfr_init (c);

@@ -30,7 +30,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   int ret;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   tests_start_mpfr ();
 

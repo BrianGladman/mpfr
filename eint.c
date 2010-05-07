@@ -32,13 +32,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* compute in y an approximation of sum(x^k/k/k!, k=1..infinity),
    and return e such that the absolute error is bound by 2^e ulp(y) */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
 {
   mpfr_t eps; /* dynamic (absolute) error bound on t */
   mpfr_t erru, errs;
   mpz_t m, s, t, u;
-  mp_exp_t e, sizeinbase;
+  mpfr_exp_t e, sizeinbase;
   mpfr_prec_t w = MPFR_PREC(y);
   unsigned long k;
   MPFR_GROUP_DECL (group);
@@ -48,7 +48,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
      thus |R(x)/x| <= |x|/2
      thus if |x| <= 2^(-PREC(y)) we have |S - o(x)| <= ulp(y) */
 
-  if (MPFR_GET_EXP(x) <= - (mp_exp_t) w)
+  if (MPFR_GET_EXP(x) <= - (mpfr_exp_t) w)
     {
       mpfr_set (y, x, MPFR_RNDN);
       return 0;
@@ -148,13 +148,13 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
    Assumes x >= PREC(y) * log(2).
    Returns the error bound in terms of ulp(y).
 */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
 {
   mpfr_prec_t p = MPFR_PREC(y);
   mpfr_t invx, t, err;
   unsigned long k;
-  mp_exp_t err_exp;
+  mpfr_exp_t err_exp;
 
   mpfr_init2 (t, p);
   mpfr_init2 (invx, p);
@@ -163,7 +163,7 @@ mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
   mpfr_set_ui (t, 1, MPFR_RNDN); /* exact */
   mpfr_set (y, t, MPFR_RNDN);
   mpfr_set_ui (err, 0, MPFR_RNDN);
-  for (k = 1; MPFR_GET_EXP(t) + (mp_exp_t) p > MPFR_GET_EXP(y); k++)
+  for (k = 1; MPFR_GET_EXP(t) + (mpfr_exp_t) p > MPFR_GET_EXP(y); k++)
     {
       mpfr_mul (t, t, invx, MPFR_RNDN); /* 2 more roundings */
       mpfr_mul_ui (t, t, k, MPFR_RNDN); /* 1 more rounding: t = k!/x^k*(1+u)^e
@@ -195,7 +195,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
   mpfr_t tmp, ump;
-  mp_exp_t err, te;
+  mpfr_exp_t err, te;
   mpfr_prec_t prec;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -244,7 +244,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_sub (ump, x, tmp, MPFR_RNDD);
   mpfr_const_log2 (tmp, MPFR_RNDU);
   mpfr_div (ump, ump, tmp, MPFR_RNDD);
-  /* FIXME: We really need mpfr_set_exp_t and mpfr_cmp_exp_t functions. */
+  /* FIXME: We really need mpfr_set_exp_t and mpfr_cmpfr_exp_t functions. */
   MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
   if (mpfr_cmp_ui (ump, __gmpfr_emax) >= 0)
     {

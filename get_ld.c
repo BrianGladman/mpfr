@@ -38,7 +38,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       long double r; /* result */
       long double m;
       double s; /* part of result */
-      mp_exp_t sh; /* exponent shift, so that x/2^sh is in the double range */
+      mpfr_exp_t sh; /* exponent shift, so that x/2^sh is in the double range */
       mpfr_t y, z;
       int sign;
 
@@ -124,7 +124,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   else
     {
       mp_limb_t *tmpmant;
-      mp_exp_t e, denorm;
+      mpfr_exp_t e, denorm;
 
       tmpmant = MPFR_MANT (tmp);
       e = MPFR_GET_EXP (tmp);
@@ -177,7 +177,7 @@ long double
 mpfr_get_ld_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   long double ret;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
   mpfr_t tmp;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))

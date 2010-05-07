@@ -46,10 +46,10 @@ test_mul (int i, int div, mpfr_ptr y, mpfr_srcptr x,
 }
 
 static void
-underflow (mp_exp_t e)
+underflow (mpfr_exp_t e)
 {
   mpfr_t x, y, z1, z2;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
   int i, k;
   int prec;
   int rnd;

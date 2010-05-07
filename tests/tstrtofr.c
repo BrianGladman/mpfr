@@ -257,7 +257,7 @@ main (void)
   int i, base;
   mpfr_t x;
   mpfr_prec_t p;
-  mp_exp_t e;
+  mpfr_exp_t e;
 
   mpfr_init (x);
   printf ("struct dymmy_test { \n"

@@ -630,7 +630,7 @@ static void
 check_nan (void)
 {
   mpfr_t  a, d, q;
-  mp_exp_t emax, emin;
+  mpfr_exp_t emax, emin;
   int i;
 
   mpfr_init2 (a, 100L);
@@ -855,7 +855,7 @@ test_20070603 (void)
 static void
 test_20070628 (void)
 {
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
   mpfr_t x, y;
   int inex, err = 0;
 

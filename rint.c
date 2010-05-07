@@ -29,7 +29,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   int sign;
   int rnd_away;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
 
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ))
     {

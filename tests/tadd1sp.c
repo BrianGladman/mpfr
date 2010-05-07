@@ -32,7 +32,7 @@ static void
 check_overflow (void)
 {
   mpfr_t x, y, z1, z2;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();

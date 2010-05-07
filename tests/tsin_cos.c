@@ -170,7 +170,7 @@ overflowed_sin_cos0 (void)
 {
   mpfr_t x, y, z;
   int emax, inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 
@@ -560,7 +560,7 @@ static void
 consistency (void)
 {
   mpfr_t x, s1, s2, c1, c2;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   mpfr_rnd_t rnd;
   unsigned int flags_sin, flags_cos, flags, flags_before, flags_ref;
   int inex_sin, is, inex_cos, ic, inex, inex_ref;

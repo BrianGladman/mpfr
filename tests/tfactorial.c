@@ -122,7 +122,7 @@ overflowed_fac0 (void)
 {
   mpfr_t x, y;
   int inex, rnd, err = 0;
-  mp_exp_t old_emax;
+  mpfr_exp_t old_emax;
 
   old_emax = mpfr_get_emax ();
 
@@ -235,7 +235,7 @@ main (int argc, char *argv[])
                 /* fact(n) ends with floor(n/2)+floor(n/4)+... zeros */
                 for (k=n/2, zeros=0; k; k >>= 1)
                   zeros += k;
-                if (MPFR_EXP(y) <= (mp_exp_t) (prec + zeros))
+                if (MPFR_EXP(y) <= (mpfr_exp_t) (prec + zeros))
                   /* result should be exact */
                   {
                     if (inexact)

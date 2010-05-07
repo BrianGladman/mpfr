@@ -32,7 +32,7 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
   mpfr_t x;
   int *tab, size_tab, k, sh, xn;
   double d, av = 0, var = 0, chi2 = 0, th;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
   tab = (int *) calloc (size_tab, sizeof(int));

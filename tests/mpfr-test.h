@@ -72,7 +72,7 @@ int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mpfr_rnd_t));
 void mpfr_test_init _MPFR_PROTO ((void));
 mp_limb_t randlimb _MPFR_PROTO ((void));
 void randseed _MPFR_PROTO ((unsigned int));
-void mpfr_random2 _MPFR_PROTO ((mpfr_ptr, mp_size_t, mp_exp_t, gmp_randstate_t));
+void mpfr_random2 _MPFR_PROTO ((mpfr_ptr, mp_size_t, mpfr_exp_t, gmp_randstate_t));
 int ulp _MPFR_PROTO ((double, double));
 double dbl _MPFR_PROTO ((double, int));
 double Ulp _MPFR_PROTO ((double));
@@ -81,12 +81,12 @@ void d_trace _MPFR_PROTO ((const char *, double));
 void ld_trace _MPFR_PROTO ((const char *, long double));
 
 FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
-void set_emin _MPFR_PROTO ((mp_exp_t));
-void set_emax _MPFR_PROTO ((mp_exp_t));
-void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mp_exp_t, mp_exp_t));
+void set_emin _MPFR_PROTO ((mpfr_exp_t));
+void set_emax _MPFR_PROTO ((mpfr_exp_t));
+void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mpfr_exp_t, mpfr_exp_t));
 void data_check _MPFR_PROTO ((char *, int (*) (FLIST), char *));
 void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
-                             char *, int, mp_exp_t, mp_exp_t,
+                             char *, int, mpfr_exp_t, mpfr_exp_t,
                              mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
@@ -149,7 +149,7 @@ mpfr_print_raw (mpfr_srcptr x)
               printf ((wd & t) == 0 ? "0" : "1");
               if (--px == 0)
                 {
-                  mp_exp_t ex;
+                  mpfr_exp_t ex;
 
                   ex = MPFR_GET_EXP (x);
                   MPFR_ASSERTN (ex >= LONG_MIN && ex <= LONG_MAX);

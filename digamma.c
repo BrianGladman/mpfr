@@ -28,12 +28,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Returns an integer e such that the error is bounded by 2^e ulps
    of the result s.
 */
-static mp_exp_t
+static mpfr_exp_t
 mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
 {
   mpfr_prec_t p = MPFR_PREC (s);
   mpfr_t t, u, invxx;
-  mp_exp_t e, exps, f, expu;
+  mpfr_exp_t e, exps, f, expu;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
   unsigned long n0, n; /* number of allocated B[] */
 
@@ -80,7 +80,7 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
          sum((10n+4)/2^n, n=1..infinity) = 24 */
       exps = mpfr_get_exp (s);
       expu = mpfr_get_exp (u);
-      if (expu < exps - (mp_exp_t) p)
+      if (expu < exps - (mpfr_exp_t) p)
         break;
       mpfr_sub (s, s, u, MPFR_RNDN); /* error <= 24 + n/2 */
       if (mpfr_get_exp (s) < exps)
@@ -122,7 +122,7 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_PREC(y) + 10, q;
   mpfr_t t, u, v;
-  mp_exp_t e1, expv;
+  mpfr_exp_t e1, expv;
   int inex;
   MPFR_ZIV_DECL (loop);
 
@@ -157,7 +157,7 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       mpfr_const_pi (v, MPFR_RNDN);  /* v = Pi*(1+theta) for |theta|<=2^(-p) */
       mpfr_mul (t, v, x, MPFR_RNDN); /* (1+theta)^2 */
-      e1 = MPFR_EXP(t) - (mp_exp_t) p + 1; /* bound for t: err(t) <= 2^e1 */
+      e1 = MPFR_EXP(t) - (mpfr_exp_t) p + 1; /* bound for t: err(t) <= 2^e1 */
       mpfr_cot (t, t, MPFR_RNDN);
       /* cot(t * (1+h)) = cot(t) - theta * (1 + cot(t)^2) with |theta|<=t*h */
       if (MPFR_EXP(t) > 0)
@@ -165,7 +165,7 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       else
         e1 = e1 + 1;
       /* now theta * (1 + cot(t)^2) <= 2^e1 */
-      e1 += (mp_exp_t) p - MPFR_EXP(t); /* error is now 2^e1 ulps */
+      e1 += (mpfr_exp_t) p - MPFR_EXP(t); /* error is now 2^e1 ulps */
       mpfr_mul (t, t, v, MPFR_RNDN);
       e1 ++;
       mpfr_digamma (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
@@ -204,7 +204,7 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_prec_t p = MPFR_PREC(y) + 10, q;
   mpfr_t t, u, x_plus_j;
   int inex;
-  mp_exp_t errt, erru, expt;
+  mpfr_exp_t errt, erru, expt;
   unsigned long j = 0, min;
   MPFR_ZIV_DECL (loop);
 
@@ -333,7 +333,7 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(Y)). */
   if (MPFR_EXP(x) < -2)
     {
-      if (MPFR_EXP(x) <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y)))
+      if (MPFR_EXP(x) <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y)))
         {
           int signx = MPFR_SIGN(x);
           inex = mpfr_si_div (y, -1, x, rnd_mode);

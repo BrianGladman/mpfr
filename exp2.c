@@ -101,7 +101,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* Declaration of the size variable */
       mpfr_prec_t Ny = MPFR_PREC(y);              /* target precision */
       mpfr_prec_t Nt;                             /* working precision */
-      mp_exp_t err;                             /* error */
+      mpfr_exp_t err;                             /* error */
       MPFR_ZIV_DECL (loop);
 
       /* compute the precision of intermediary variable */

@@ -197,7 +197,7 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
-  mp_exp_t emin, emax;
+  mpfr_exp_t emin, emax;
   int inex;
 
   emin = mpfr_get_emin ();
@@ -441,7 +441,7 @@ test20071231 (void)
 {
   mpfr_t x;
   int inex;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
   mpfr_set_emin (-1000000);

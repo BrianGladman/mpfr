@@ -30,7 +30,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t *ap, *bp, *cp;
   mpfr_prec_t aq, bq, cq, aq2;
   mp_size_t an, bn, cn;
-  mp_exp_t difw, exp;
+  mpfr_exp_t difw, exp;
   int sh, rb, fb, inex;
   mpfr_uexp_t diff_exp;
   MPFR_TMP_DECL(marker);
@@ -206,7 +206,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* determine rounding and sticky bits (and possible carry) */
 
-  difw = (mp_exp_t) an - (mp_exp_t) (diff_exp / GMP_NUMB_BITS);
+  difw = (mpfr_exp_t) an - (mpfr_exp_t) (diff_exp / GMP_NUMB_BITS);
   /* difw is the number of limbs from b (regarded as having an infinite
      precision) that have already been combined with c; -n if the next
      n limbs from b won't be combined with c. */

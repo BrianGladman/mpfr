@@ -26,12 +26,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* set f to the integer z multiplied by 2^e */
 int
-mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mp_exp_t e, mpfr_rnd_t rnd_mode)
+mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif, en;
   int k, sign_z, inex;
   mp_limb_t *fp, *zp;
-  mp_exp_t exp;
+  mpfr_exp_t exp;
 
   sign_z = mpz_sgn (z);
   if (MPFR_UNLIKELY (sign_z == 0)) /* ignore the exponent for 0 */

@@ -78,7 +78,7 @@ check_large (void)
 {
   mpz_t z;
   mpfr_t x, y;
-  mp_exp_t emax, emin;
+  mpfr_exp_t emax, emin;
 
   mpz_init (z);
   mpfr_init2 (x, 160);
