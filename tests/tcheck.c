@@ -69,11 +69,16 @@ main (void)
       /* Check prec */
       MPFR_PREC(a) = 1;
       if (mpfr_check(a))  ERROR("precmin");
+#if MPFR_VERSION_MAJOR < 3
+      /* Disable the test with MPFR >= 3 since mpfr_prec_t is now signed.
+         The "if" below is sufficient, but the MPFR_PREC_MAX+1 generates
+         a warning with GCC 4.4.4 even though the test is always false. */
       if ((mpfr_prec_t) 0 - 1 > 0)
         {
           MPFR_PREC(a) = MPFR_PREC_MAX+1;
           if (mpfr_check(a))  ERROR("precmax");
         }
+#endif
       MPFR_PREC(a) = pr;
       if (!mpfr_check(a)) ERROR("prec");
       /* Check exponent */

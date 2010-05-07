@@ -34,7 +34,9 @@ Changes from versions 2.4.* to version 3.0:
   compatibility).
 - The precision type is now mpfr_prec_t (as in previous versions, both
   mpfr_prec_t and mp_prec_t are accepted, but mp_prec_t may be removed
-  in the future).
+  in the future) and it is now signed (it was unsigned in MPFR 2.*, but
+  this was not documented). In practice, this change should not affect
+  existing code that assumed nothing on the precision type.
 - Functions mpfr_random and mpfr_random2 have been removed.
 - mpfr_get_f and mpfr_get_z now return a ternary value.
 - New functions mpfr_buildopt_tls_p and mpfr_buildopt_decimal_p giving

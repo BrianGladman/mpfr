@@ -576,17 +576,6 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #define MPFR_MANT(x)      ((x)->_mpfr_d)
 #define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/GMP_NUMB_BITS+1)
 
-#if   _MPFR_PREC_FORMAT == 1
-# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (GMP_NUMB_BITS - 1))
-#elif _MPFR_PREC_FORMAT == 2
-# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (GMP_NUMB_BITS - 1))
-#elif _MPFR_PREC_FORMAT == 3
-# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (GMP_NUMB_BITS - 1))
-#else
-# error "Invalid MPFR Prec format"
-#endif
-
-
 
 /******************************************************
  ***************** exponent limits ********************
@@ -998,21 +987,19 @@ do {                                                                  \
   MPFR_MANT(x)[_size] = MPFR_LIMB_HIGHBIT;                            \
 } while (0)
 
-/* Compute s = (-a) % GMP_NUMB_BITS
- * a is unsigned! Check if it works,
- * otherwise tries another way to compute it */
+/* Compute s = (-a) % GMP_NUMB_BITS as unsigned */
 #define MPFR_UNSIGNED_MINUS_MODULO(s, a)                              \
   do                                                                  \
     {                                                                 \
-      if (IS_POW2 (GMP_NUMB_BITS))                                 \
-        (s) = (-(a)) % GMP_NUMB_BITS;                              \
+      if (IS_POW2 (GMP_NUMB_BITS))                                    \
+        (s) = (- (unsigned int) (a)) % GMP_NUMB_BITS;                 \
       else                                                            \
         {                                                             \
-          (s) = (a) % GMP_NUMB_BITS;                               \
+          (s) = (a) % GMP_NUMB_BITS;                                  \
           if ((s) != 0)                                               \
-            (s) = GMP_NUMB_BITS - (s);                             \
+            (s) = GMP_NUMB_BITS - (s);                                \
         }                                                             \
-      MPFR_ASSERTD ((s) >= 0 && (s) < GMP_NUMB_BITS);              \
+      MPFR_ASSERTD ((s) >= 0 && (s) < GMP_NUMB_BITS);                 \
     }                                                                 \
   while (0)
 

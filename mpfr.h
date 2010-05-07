@@ -107,21 +107,27 @@ typedef enum {
 # endif
 #endif
 
+/* Let's make mpfr_prec_t signed in order to avoid problems due to the
+   usual arithmetic conversions when mixing mpfr_prec_t and mp_exp_t in
+   an expression (for error analysis) if casts are forgotten. */
 #if   _MPFR_PREC_FORMAT == 1
-typedef unsigned short mpfr_prec_t;
+typedef short mpfr_prec_t;
+typedef unsigned short mpfr_uprec_t;
 #elif _MPFR_PREC_FORMAT == 2
-typedef unsigned int   mpfr_prec_t;
+typedef int   mpfr_prec_t;
+typedef unsigned int   mpfr_uprec_t;
 #elif _MPFR_PREC_FORMAT == 3
-typedef unsigned long  mpfr_prec_t;
+typedef long  mpfr_prec_t;
+typedef unsigned long  mpfr_uprec_t;
 #else
 # error "Invalid MPFR Prec format"
 #endif
 
-/* Definition of precision limits */
+/* Definition of precision limits without needing <limits.h> */
 /* Note: the casts allows the expression to yield the wanted behavior
    for _MPFR_PREC_FORMAT == 1 (due to integer promotion rules). */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((mpfr_prec_t)((mpfr_prec_t)(~(mpfr_prec_t)0)>>1))
+#define MPFR_PREC_MAX ((mpfr_prec_t)((mpfr_uprec_t)(~(mpfr_uprec_t)0)>>1))
 
 /* Definition of sign */
 typedef int          mpfr_sign_t;
