@@ -705,7 +705,7 @@ data_check (char *f, int (*foo) (FLIST), char *name)
         {
           ungetc (c, fp);
 
-          c = fscanf (fp, "%lu %lu %c", &xprec, &yprec, &r);
+          c = fscanf (fp, "%ld %ld %c", &xprec, &yprec, &r);
           if (c == EOF)
             {
               perror ("data_check");
