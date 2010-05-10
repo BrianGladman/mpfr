@@ -305,7 +305,7 @@ OBJECT_MODE is 64 and the -maix64 option is not provided.
 Notes on 32-bit Windows Applications (win32)
 ============================================
 
-1 - We advise to use mingw (http://www.mingw.org/), which is simpler and
+1 - We advise to use MinGW (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
     Windows code. The binaries compiled with Cygwin require a dynamic
     library (cygwin.dll) to work; there is a Cygwin option -mno-cygwin to
@@ -313,6 +313,8 @@ Notes on 32-bit Windows Applications (win32)
 
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux.
+    But if you want to generate a library for MinGW from a Cygwin
+    environment, you may need the -mno-cygwin gcc option.
 
 3 - If you want to make libraries to work under another Windows compiler
     like Visual C / C++, you have two options.  Since the unix-like *.a
@@ -373,7 +375,7 @@ Notes on 64-bit Windows Applications (x64)
 [See the Notes on 32-bit Windows Applications, which might be relevant here,
  in particular when running a 64-bit operating system]
 
-Cygwin and mingw do not yet offer support for native Windows 64 builds but
+Cygwin and MinGW do not yet offer support for native Windows 64 builds but
 the 32-bit version of MPFR can be used to build 32-bit applications that
 will run on 64-bit Windows systems (see above). MPFR can be built as a native
 64-bit static or DLL library for Windows 64 using the Visual Studio build
