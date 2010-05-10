@@ -314,7 +314,8 @@ Notes on 32-bit Windows Applications (win32)
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux.
     But if you want to generate a library for MinGW from a Cygwin
-    environment, you may need the -mno-cygwin gcc option.
+    environment, you may need the -mno-cygwin gcc option (otherwise
+    a typical error is _P_WAIT being undeclared).
 
 3 - If you want to make libraries to work under another Windows compiler
     like Visual C / C++, you have two options.  Since the unix-like *.a
