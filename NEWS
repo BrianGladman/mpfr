@@ -59,6 +59,7 @@ Changes from versions 2.4.* to version 3.0:
 - Some documentation files are installed in $docdir.
 - The configure script recognizes some extra "long double" formats
   (double big endian, double little endian, double-double big endian).
+- MPFR manual: added "API Compatibility" section.
 - Bug fixes.
 
 Changes from versions 2.3.* to version 2.4.0:

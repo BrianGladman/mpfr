@@ -100,6 +100,7 @@ floating-point arithmetic, version @value{VERSION}.
 * Reporting Bugs::              How to usefully report bugs.
 * MPFR Basics::                 What every MPFR user should now.
 * MPFR Interface::              MPFR functions and macros.
+* API Compatibility::           API compatibility with previous MPFR versions.
 * Contributors::
 * References::
 * GNU Free Documentation License::
@@ -836,7 +837,7 @@ precision and rounding mode, and caches (i.e., data that are not
 accessed via parameters) are either global (if MPFR has not been
 compiled as thread safe) or per-thread (thread local storage).
 
-@node MPFR Interface, Contributors, MPFR Basics, Top
+@node MPFR Interface, API Compatibility, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
 @cindex Floating-point functions
@@ -2927,7 +2928,244 @@ whole number of limbs, the excess bits at the low end of the data are zeros.
 
 @end itemize
 
-@node Contributors, References, MPFR Interface, Top
+@node API Compatibility, Contributors, MPFR Interface, Top
+@chapter API Compatibility
+
+The goal of this section is to describe some API changes that occurred
+from one version to another, and how to write code that can be compiled
+and run with older MPFR versions.  The minimum MPFR version that will
+be considered is 2.2.0 (released on 20 September 2005).
+
+API changes can only occur between major or minor versions.  Thus the
+patchlevel (the third number in the MPFR version) will be ignored in
+the following.  If a program does not use MPFR internals, changes in
+the behavior from a patchlevel to another one should only result from
+what was regarded as a bug or unspecified behavior.
+@comment This includes undefined behavior.
+
+As a general rule, a program written for some MPFR version should work
+with later versions, possibly except at a new major version, where
+some features (described as obsolete for some time) can be removed.
+In such a case, a failure should occur during compilation or linking.
+If a result becomes incorrect because of such a change, please look
+at the various changes below (they are minimal, and most software
+should be unaffected), at the FAQ and at the MPFR web page for your
+version (a bug could have been introduced and be already fixed);
+and if the problem is not mentioned, please send us a bug report
+(@pxref{Reporting Bugs}).
+
+However, a program written for the current MPFR version (as documented
+by this manual) may not necessarily work with previous versions of
+MPFR.  This section should help developers to write portable code.
+
+Note: Information given here may be incomplete.  API changes are
+also described in the NEWS file (for each version, instead of being
+classified like here), together with other changes.
+
+@menu
+* Type and Macro Changes::
+* Added Functions::
+* Changed Functions::
+* Removed Functions::
+@end menu
+
+@node Type and Macro Changes, Added Functions, API Compatibility, API Compatibility
+@section Type and Macro Changes
+
+TODO
+@comment GMP_RNDX->MPFR_RNDX, MPFR_RNDA, mpfr_rnd_t, mpfr_prec_t, mpfr_exp_t
+
+@node Added Functions, Changed Functions, Type and Macro Changes, API Compatibility
+@section Added Functions
+
+We give here the functions that were added after MPFR 2.2, and in which
+MPFR version.
+
+@comment The functions are listed in such a way that if a developer wonders
+@comment whether some function existed in some previous version, then he can
+@comment find this very quickly.
+
+@itemize @bullet
+
+@item @code{mpfr_add_d} in MPFR 2.4.
+
+@item @code{mpfr_asprintf} in MPFR 2.4.
+
+@item @code{mpfr_buildopt_decimal_p} in MPFR 3.0.
+
+@item @code{mpfr_buildopt_tls_p} in MPFR 3.0.
+
+@item @code{mpfr_copysign} in MPFR 2.3.
+Note: MPFR 2.2 had a @code{mpfr_copysign} function that was available,
+but not documented and with a slight difference in the semantics (when
+the second input operand is a NaN).
+
+@item @code{mpfr_d_div} in MPFR 2.4.
+
+@item @code{mpfr_d_sub} in MPFR 2.4.
+
+@item @code{mpfr_digamma} in MPFR 3.0.
+
+@item @code{mpfr_div_d} in MPFR 2.4.
+
+@item @code{mpfr_fmod} in MPFR 2.4.
+
+@item @code{mpfr_fms} in MPFR 2.3.
+
+@item @code{mpfr_fprintf} in MPFR 2.4.
+
+@item @code{mpfr_get_flt} in MPFR 3.0.
+
+@item @code{mpfr_get_patches} in MPFR 2.3.
+
+@item @code{mpfr_get_z_2exp} in MPFR 3.0.
+This function was named @code{mpfr_get_z_exp} in previous versions;
+@code{mpfr_get_z_exp} is still available via a macro in @file{mpfr.h}:
+@example
+#define mpfr_get_z_exp mpfr_get_z_2exp
+@end example
+Thus code that needs to work with both MPFR 2.x and MPFR 3.x should
+use @code{mpfr_get_z_exp}.
+
+@item @code{mpfr_j0} in MPFR 2.3.
+
+@item @code{mpfr_j1} in MPFR 2.3.
+
+@item @code{mpfr_jn} in MPFR 2.3.
+
+@item @code{mpfr_lgamma} in MPFR 2.3.
+
+@item @code{mpfr_li2} in MPFR 2.4.
+
+@item @code{mpfr_modf} in MPFR 2.4.
+
+@item @code{mpfr_mul_d} in MPFR 2.4.
+
+@item @code{mpfr_printf} in MPFR 2.4.
+
+@item @code{mpfr_rec_sqrt} in MPFR 2.4.
+
+@item @code{mpfr_regular_p} in MPFR 3.0.
+
+@item @code{mpfr_remainder} in MPFR 2.3.
+
+@item @code{mpfr_remquo} in MPFR 2.3.
+
+@item @code{mpfr_set_flt} in MPFR 3.0.
+
+@item @code{mpfr_set_z_2exp} in MPFR 3.0.
+
+@item @code{mpfr_set_zero} in MPFR 3.0.
+
+@item @code{mpfr_setsign} in MPFR 2.3.
+
+@item @code{mpfr_signbit} in MPFR 2.3.
+
+@item @code{mpfr_sinh_cosh} in MPFR 2.4.
+
+@item @code{mpfr_snprintf} in MPFR 2.4.
+
+@item @code{mpfr_sprintf} in MPFR 2.4.
+
+@item @code{mpfr_sub_d} in MPFR 2.4.
+
+@item @code{mpfr_urandom} in MPFR 3.0.
+
+@item @code{mpfr_vasprintf} in MPFR 2.4.
+
+@item @code{mpfr_vfprintf} in MPFR 2.4.
+
+@item @code{mpfr_vprintf} in MPFR 2.4.
+
+@item @code{mpfr_vsprintf} in MPFR 2.4.
+
+@item @code{mpfr_vsnprintf} in MPFR 2.4.
+
+@item @code{mpfr_y0} in MPFR 2.3.
+
+@item @code{mpfr_y1} in MPFR 2.3.
+
+@item @code{mpfr_yn} in MPFR 2.3.
+
+@end itemize
+
+@node Changed Functions, Removed Functions, Added Functions, API Compatibility
+@section Changed Functions
+
+The following functions have changed after MPFR 2.2. Changes can affect
+the behavior of code written for some MPFR version when built and run
+against another MPFR version (older or newer), as described below.
+
+@itemize @bullet
+
+@item @code{mpfr_check_range} in MPFR 2.3.2 and MPFR 2.4.
+If the value is an inexact infinity, the overflow flag is now set
+(in case it was lost), while it was previously left unchanged.
+This is really what is expected in practice (and what the MPFR code
+was expecting), so that the previous behavior was regarded as a bug.
+Hence the change in MPFR 2.3.2.
+
+@item @code{mpfr_copysign} in MPFR 2.3.
+Actually, this is more like an addition since the @code{mpfr_copysign}
+function was not documented in MPFR 2.2.  When the second input operand
+was a NaN, the result was set to NaN.  Now the sign of the NaN (even
+though it is meaningless) is taken for the output value, in order to
+match the IEEE 754 requirements.
+
+@item @code{mpfr_get_f} in MPFR 3.0.
+This function was returning zero, except for NaN and Inf, which do not
+exist in @code{mpf}. The @emph{erange} flag is now set in these cases,
+and @code{mpfr_get_f} now returns the usual ternary value.
+
+@item @code{mpfr_get_z} in MPFR 3.0.
+The return type was @code{void}; it is now @code{int}, and the usual
+ternary value is returned.  Thus programs that need to work with both
+MPFR 2.x and 3.x must not use the return value.  Even in this case,
+C code using @code{mpfr_get_z} as the second or third term of
+a conditional operator may also be affected. For instance, the
+following is correct with MPFR 3.0, but not with MPFR 2.x:
+@example
+  bool ? mpfr_get_z(...) : mpfr_add(...);
+@end example
+On the other hand, the following is correct with MPFR 2.x, but not
+with MPFR 3.0:
+@example
+  bool ? mpfr_get_z(...) : (void) mpfr_add(...);
+@end example
+Portable code should cast @code{mpfr_get_z(...)} to @code{void} to
+use the type @code{void} for both terms of the conditional operator,
+as in:
+@example
+  bool ? (void) mpfr_get_z(...) : (void) mpfr_add(...);
+@end example
+Alternatively, @code{if ... else} can be used instead of the
+conditional operator.
+
+@item @code{mpfr_strtofr} in MPFR 2.3.1 and MPFR 2.4.
+This was actually a bug fix since the code and the documentation did
+not match.  But both were changed in order to have a more consistent
+and useful behavior.  The main changes in the code are as follows.
+The binary exponent is now accepted even without the @code{0b} or
+@code{0x} prefix.  Data corresponding to NaN can now have an optional
+sign (such data were previously invalid).
+
+@item @code{mpfr_strtofr} in MPFR 3.0.
+This function now accepts bases from 37 to 62 (no changes for the other
+bases).  Note: if an unsupported base is provided to this function,
+the behavior is undefined; more precisely, in MPFR 2.3.1 and later,
+providing an unsupported base yields an assertion failure (this
+behavior may change in the future).
+
+@end itemize
+
+@node Removed Functions, , Changed Functions, API Compatibility
+@section Removed Functions
+
+Functions @code{mpfr_random} and @code{mpfr_random2} have been
+removed in MPFR 3.0 (this only affects old code built against
+MPFR 3.0 or later).
+
+@node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
