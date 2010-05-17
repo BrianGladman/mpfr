@@ -41,6 +41,7 @@ Changes from versions 2.4.* to version 3.0:
   the same as GMP's mp_exp_t.
 - Functions mpfr_random and mpfr_random2 have been removed.
 - mpfr_get_f and mpfr_get_z now return a ternary value.
+- mpfr_strtofr now accepts bases from 37 to 62.
 - New functions mpfr_buildopt_tls_p and mpfr_buildopt_decimal_p giving
   information about options used at MPFR build time.
 - New function mpfr_regular_p.
