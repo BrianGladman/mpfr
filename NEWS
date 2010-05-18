@@ -64,6 +64,7 @@ Changes from versions 2.4.* to version 3.0:
 - Bug fixes.
 
 Changes from versions 2.3.* to version 2.4.0:
+- The "andouillette sauce moutarde" release.
 - MPFR is now a GNU package.
 - Changes in the behavior of mpfr_strtofr and in its documentation
   concerning particular cases where the code and the documentation
@@ -92,6 +93,7 @@ Changes from versions 2.3.* to version 2.4.0:
   suppressed in the next release, and that the specification of
   mpfr_eq may change in the next release (for compatibility with
   the mpf layer of GMP).
+- Test coverage: 96.7% lines of code
 - Bug fixes.
 
 Changes from versions 2.2.* to version 2.3.0:
