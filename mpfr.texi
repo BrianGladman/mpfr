@@ -3024,7 +3024,16 @@ Warning!  A program assuming (intentionally or not) that
 @code{mpfr_prec_t} is signed may be affected by this problem when
 it is built and run against MPFR 2.x.
 
-TODO: rounding mode changes GMP_RNDx to MPFR_RNDx. New MPFR_RNDA.
+The rounding modes @code{GMP_RNDx} were renamed as @code{MPFR_RNDx}
+in MPFR 3.0. However the old names @code{GMP_RNDx} have been kept for
+compatibility, using:
+@example
+#define GMP_RNDN MPFR_RNDN
+#define GMP_RNDZ MPFR_RNDZ
+#define GMP_RNDU MPFR_RNDU
+#define GMP_RNDD MPFR_RNDD
+@end example
+The rounding mode ``round away from zero'' (@code{MPFR_RNDA}) was added in MPFR 3.0.
 
 @node Added Functions, Changed Functions, Type and Macro Changes, API Compatibility
 @section Added Functions
