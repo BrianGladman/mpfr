@@ -23,7 +23,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#define MPFR_SMALL_PRECISION MPFR_PREC_MIN
+#define MPFR_SMALL_PRECISION 32
+
+/* These functions are provided by file gammaonethird.c */
+int mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr, mp_prec_t);
+void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr, unsigned long int, unsigned long int, mpfr_rnd_t);
+
 
 /* Reminder and notations:
    -----------------------
@@ -66,7 +71,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_t x3;                     /* used to store x^3 */
   mpfr_t tmp_sp, tmp2_sp;        /* small precision variables */
   unsigned long int x3u;         /* used to store ceil(x^3) */
-  mpfr_t temp;
+  mpfr_t temp1, temp2;
   int test1, test2;
 
   /* Logging */
@@ -142,7 +147,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   mpfr_init (ti);
   mpfr_init (tip1);
-  mpfr_init (temp);
+  mpfr_init (temp1);
+  mpfr_init (temp2);
   mpfr_init (x3);
   mpfr_init (s);
 
@@ -152,7 +158,6 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       MPFR_LOG_MSG (("Working precision: %d\n", wprec, 0));
       mpfr_set_prec (ti, wprec);
       mpfr_set_prec (tip1, wprec);
-      mpfr_set_prec (temp, wprec+4);
       mpfr_set_prec (x3, wprec);
       mpfr_set_prec (s, wprec);
 
@@ -162,23 +167,17 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       x3u = mpfr_get_ui (x3, MPFR_RNDU);   /* x3u >= ceil(x^3) */
       if (MPFR_IS_NEG (x)) MPFR_CHANGE_SIGN (x3);
 
-
+      mpfr_gamma_one_and_two_third (temp1, temp2, wprec);
       mpfr_set_ui (ti, 9, MPFR_RNDN);
       mpfr_cbrt (ti, ti, MPFR_RNDN);
-      mpfr_set_ui (temp, 2, MPFR_RNDN);
-      mpfr_div_ui (temp, temp, 3, MPFR_RNDN);
-      mpfr_gamma (temp, temp, MPFR_RNDN);
-      mpfr_mul (ti, ti, temp, MPFR_RNDN);
-      mpfr_ui_div (ti, 1, ti , MPFR_RNDN); /* ti = 1 / ( Gamma(2/3)*9^(1/3) ) */
+      mpfr_mul (ti, ti, temp2, MPFR_RNDN);
+      mpfr_ui_div (ti, 1, ti , MPFR_RNDN); /* ti = 1 / ( Gamma (2/3)*9^(1/3) ) */
 
       mpfr_set_ui (tip1, 3, MPFR_RNDN);
       mpfr_cbrt (tip1, tip1, MPFR_RNDN);
-      mpfr_set_ui (temp, 1, MPFR_RNDN);
-      mpfr_div_ui (temp, temp, 3, MPFR_RNDN);
-      mpfr_gamma (temp, temp, MPFR_RNDN);
-      mpfr_mul (tip1, tip1, temp, MPFR_RNDN);
+      mpfr_mul (tip1, tip1, temp1, MPFR_RNDN);
       mpfr_neg (tip1, tip1, MPFR_RNDN);
-      mpfr_div (tip1, x, tip1, MPFR_RNDN); /* tip1 = -x/(Gamma(1/3)*3^(1/3)) */
+      mpfr_div (tip1, x, tip1, MPFR_RNDN); /* tip1 = -x/(Gamma (1/3)*3^(1/3)) */
 
       mpfr_add (s, ti, tip1, MPFR_RNDN);
 
@@ -190,18 +189,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_mul (ti, ti, x3, MPFR_RNDN);
           mpfr_mul (tip1, tip1, x3, MPFR_RNDN);
 
-          if (k+2 <= ULONG_MAX/(k+1))
-            {
-              mpfr_div_ui (ti, ti, k*(k+1), MPFR_RNDN);
-              mpfr_div_ui (tip1, tip1, (k+1)*(k+2), MPFR_RNDN);
-            }
-          else
-            {
-              mpfr_div_ui (ti, ti, k, MPFR_RNDN);
-              mpfr_div_ui (ti, ti, k+1, MPFR_RNDN);
-              mpfr_div_ui (tip1, tip1, k+1, MPFR_RNDN);
-              mpfr_div_ui (tip1, tip1, k+2, MPFR_RNDN);
-            }
+          mpfr_div_ui2 (ti, ti, k, (k+1), MPFR_RNDN);
+          mpfr_div_ui2 (tip1, tip1, (k+1), (k+2), MPFR_RNDN);
 
           k += 3;
           mpfr_add (s, s, ti, MPFR_RNDN);
@@ -249,7 +238,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           if (correct_bits < prec)
             { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x) (E=%d)\n",MPFR_EXP (s), 0));
+              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x) (E=%d)\n", MPFR_EXP (s), 0));
               wprec = prec + err + 1;
             }
           else
@@ -272,7 +261,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   mpfr_clear (ti);
   mpfr_clear (tip1);
-  mpfr_clear (temp);
+  mpfr_clear (temp1);
+  mpfr_clear (temp2);
   mpfr_clear (x3);
   mpfr_clear (s);
   mpfr_clear (tmp_sp);
