@@ -3009,7 +3009,7 @@ in MPFR only) may be removed in the future, as the prefix
 
 @comment r6787
 The precision type @code{mpfr_prec_t} (@code{mp_prec_t}) was unsigned
-before MPFR 3.0; it is now signed. @code{MPFR_PREC_MAX} has not changed,
+before MPFR 3.0; it is now signed.  @code{MPFR_PREC_MAX} has not changed,
 though.  Indeed the MPFR code requires that @code{MPFR_PREC_MAX} be
 representable in a @code{mpfr_exp_t}, which may have the same size as
 @code{mpfr_prec_t}.  The consequence is that valid code that does not
