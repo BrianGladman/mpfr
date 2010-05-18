@@ -49,6 +49,7 @@ Changes from versions 2.4.* to version 3.0:
 - New function mpfr_regular_p.
 - New function mpfr_set_zero.
 - New function mpfr_digamma.
+- New function mpfr_ai.
 - New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
 - New function mpfr_urandom.
 - New function mpfr_set_z_2exp (companion to mpfr_get_z_2exp, which was renamed
