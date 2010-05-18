@@ -28,7 +28,7 @@ Changes from versions 2.4.* to version 3.0:
   not break any existing code.
 - MPFR is now distributed under the GNU Lesser General Public License
   version 3 or later (LGPL v3+).
-- Rounding modes GMP_RNDX are now MPFR_RNDX (GMP_RNDX kept for compatibility).
+- Rounding modes GMP_RNDx are now MPFR_RNDx (GMP_RNDx kept for compatibility).
 - A new rounding mode (MPFR_RNDA) is available to round away from zero.
 - The rounding mode type is now mpfr_rnd_t (as in previous versions, both
   mpfr_rnd_t and mp_rnd_t are accepted, but mp_rnd_t may be removed in
