@@ -2972,8 +2972,57 @@ classified like here), together with other changes.
 @node Type and Macro Changes, Added Functions, API Compatibility, API Compatibility
 @section Type and Macro Changes
 
-TODO
-@comment GMP_RNDX->MPFR_RNDX, MPFR_RNDA, mpfr_rnd_t, mpfr_prec_t, mpfr_exp_t
+@comment r6789
+The official type for exponent values changed from @code{mp_exp_t} to
+@code{mpfr_exp_t} in MPFR 3.0.  The type @code{mp_exp_t} will remain
+available as it comes from GMP (with a different meaning).  These types
+are currently the same (@code{mpfr_exp_t} is defined as @code{mp_exp_t}
+with @code{typedef}), so that programs can still use @code{mp_exp_t};
+but this may change in the future (possibly via a configure option).
+Alternatively, using the following code after including @file{mpfr.h}
+will work with official MPFR versions, as @code{mpfr_exp_t} was never
+defined in MPFR 2.x:
+@example
+#if MPFR_VERSION_MAJOR < 3
+typedef mp_exp_t mpfr_exp_t;
+#endif
+@end example
+
+The official types for precision values and for rounding modes
+respectively changed from @code{mp_prec_t} and @code{mp_rnd_t}
+to @code{mpfr_prec_t} and @code{mpfr_rnd_t} in MPFR 3.0.  This
+change was actually done a long time ago in MPFR, at least since
+MPFR 2.2.0, with the following code in @file{mpfr.h}:
+@example
+#ifndef mp_rnd_t
+# define mp_rnd_t  mpfr_rnd_t
+#endif
+#ifndef mp_prec_t
+# define mp_prec_t mpfr_prec_t
+#endif
+@end example
+This means that it is safe to use the new official types
+@code{mpfr_prec_t} and @code{mpfr_rnd_t} in your programs.
+The types @code{mp_prec_t} and @code{mp_rnd_t} (defined
+in MPFR only) may be removed in the future, as the prefix
+@code{mp_} is used by GMP.
+
+@comment r6787
+The precision type @code{mpfr_prec_t} (@code{mp_prec_t}) was unsigned
+before MPFR 3.0; it is now signed. @code{MPFR_PREC_MAX} has not changed,
+though.  Indeed the MPFR code requires that @code{MPFR_PREC_MAX} be
+representable in a @code{mpfr_exp_t}, which may have the same size as
+@code{mpfr_prec_t}.  The consequence is that valid code that does not
+assume anything about the signness of @code{mpfr_prec_t} should work
+with past and new MPFR versions.  This change was useful as the use
+of unsigned types tends to convert signed values to unsigned ones in
+expressions due to the usual arithmetic conversions, which can yield
+incorrect results if a negative value is converted in such a way.
+Warning!  A program assuming (intentionally or not) that
+@code{mpfr_prec_t} is signed may be affected by this problem when
+it is built and run against MPFR 2.x.
+
+TODO: rounding mode changes GMP_RNDx to MPFR_RNDx. New MPFR_RNDA.
 
 @node Added Functions, Changed Functions, Type and Macro Changes, API Compatibility
 @section Added Functions
