@@ -21,15 +21,23 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define MPFR_NEED_LONGLONG_H
-#include <mpfr-impl.h>
+#include "mpfr-impl.h"
 
 #define MPFR_ACC_OR_MUL(v)                              \
-  if (v <= ULONG_MAX / acc) acc *= v;                   \
-  else { mpfr_mul_ui (y, y, acc, mode); acc = v; }
+  if (v <= ULONG_MAX / acc)                             \
+    acc *= v;                                           \
+  else                                                  \
+    {                                                   \
+      mpfr_mul_ui (y, y, acc, mode); acc = v;           \
+    }
 
 #define MPFR_ACC_OR_DIV(v)                              \
-  if (v <= ULONG_MAX / acc) acc *= v;                   \
-  else { mpfr_div_ui (y, y, acc, mode); acc = v; }
+  if (v <= ULONG_MAX / acc)                             \
+    acc *= v;                                           \
+  else                                                  \
+    {                                                   \
+      mpfr_div_ui (y, y, acc, mode); acc = v;           \
+    }
 
 void
 mpfr_mul_ui5 (mpfr_ptr y, mpfr_srcptr x,
@@ -80,6 +88,7 @@ mpfr_div_ui8 (mpfr_ptr y, mpfr_srcptr x,
 /* using C. H. Brown's formula.                                         */
 /* The computed value s satisfies |s-omega| <= 2^{1-prec}*omega         */
 /* As usual, the variable s is supposed to be initialized.              */
+void
 mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 {
   mpfr_t uk;
@@ -105,7 +114,7 @@ mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 
       mpfr_add (s, s, uk, MPFR_RNDN);
       k++;
-      if (MPFR_EXP (uk) + (signed) prec <= MPFR_EXP (s) + 7)
+      if (MPFR_GET_EXP (uk) + prec <= MPFR_GET_EXP (s) + 7)
         break;
     }
 
@@ -114,7 +123,7 @@ mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 }
 
 /* Returns y such that |Gamma(1/3)-y| <= 2^{1-prec}*Gamma(1/3) */
-int
+void
 mpfr_gamma_one_third (mpfr_ptr y, mp_prec_t prec)
 {
   mpfr_t tmp, tmp2, tmp3;
@@ -151,7 +160,7 @@ mpfr_gamma_one_third (mpfr_ptr y, mp_prec_t prec)
 /*                                                                    */
 /* Uses the formula Gamma(z)Gamma(1-z) = pi / sin(pi*z)               */
 /* to compute Gamma(2/3) from Gamma(1/3).                             */
-int
+void
 mpfr_gamma_one_and_two_third (mpfr_ptr y1, mpfr_ptr y2, mp_prec_t prec)
 {
   mpfr_t temp;

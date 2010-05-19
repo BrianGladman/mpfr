@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define MPFR_NEED_LONGLONG_H
-#include <mpfr-impl.h>
+#include "mpfr-impl.h"
 
 #define SMALL_PRECISION 32
 
@@ -74,9 +74,9 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_prec_t prec;              /* target precision */
   mpfr_prec_t err;               /* used to estimate the evaluation error */
   mpfr_prec_t correctBits;       /* estimates the number of correct bits*/
-  unsigned long int i, j, k, L, t;
+  unsigned long int i, j, L, t;
   unsigned long int cond;        /* condition number of the series */
-  unsigned assumedExp;           /* used as a lowerbound of |EXP (Ai (x))| */
+  unsigned long int assumed_exponent;  /* used as a lowerbound of |EXP (Ai (x))| */
   int r;                         /* returned ternary value */
   mpfr_t s;                      /* used to store the partial sum */
   mpfr_t u0, u1;
@@ -91,8 +91,14 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_LOG_FUNC ( ("x[%#R]=%R rnd=%d", x, x, rnd), ("y[%#R]=%R", y, y) );
 
   /* Special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_NAN (x))) { MPFR_SET_NAN (y); MPFR_RET_NAN; }
-  if (MPFR_UNLIKELY (MPFR_IS_INF (x))) { return mpfr_set_ui (y, 0, rnd); }
+  if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
+    {
+      MPFR_SET_NAN (y); MPFR_RET_NAN;
+    }
+  if (MPFR_UNLIKELY (MPFR_IS_INF (x))) 
+    {
+      return mpfr_set_ui (y, 0, rnd); 
+    }
 
   /* Save current exponents range */
   MPFR_SAVE_EXPO_MARK (expo);
@@ -117,30 +123,36 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_mul_d (tmp2_sp, tmp_sp, 0.96179669392597567, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
-  if (MPFR_EXP (x) <= 0 ) cond = 0;
-  else cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_EXP (x) - 1)/4 - 1;
+  if (MPFR_GET_EXP (x) <= 0 ) 
+    cond = 0;
+  else
+    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1)/4 - 1;
 
   /* This variable is used to store the maximal assumed exponent of       */
   /* Ai (x). More precisely, we assume that |Ai (x)| will be greater than */
   /* 2^{-assumedExp}.                                                     */
   if (MPFR_IS_POS (x))
     {
-      if (MPFR_EXP (x) <= 0) assumedExp = 3;
-      else assumedExp = 2 + (MPFR_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+      if (MPFR_GET_EXP (x) <= 0)
+        assumed_exponent = 3;
+      else
+        assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
     }
   /* We do not know Ai (x) yet */
   /* We cover the case when EXP (Ai (x))>=-10 */
-  else assumedExp = 10;
+  else 
+    assumed_exponent = 10;
 
-  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumedExp;
+  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumed_exponent;
 
   /* We assume that the truncation rank will be ~ prec */
   L = isqrt (prec);
-  MPFR_LOG_MSG (("size of blocks L = %d\n", L, 0));
+  MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
 
   z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t) );
   MPFR_ASSERTN (z != NULL);
-  for (j=0; j<=L; j++)  mpfr_init (z[j]);
+  for (j=0; j<=L; j++)  
+    mpfr_init (z[j]);
 
   mpfr_init (s);
   mpfr_init (u0); mpfr_init (u1);
@@ -151,9 +163,10 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* ZIV loop */
   for (;;)
     {
-      MPFR_LOG_MSG (("working precision: %d\n", wprec, 0));
+      MPFR_LOG_MSG (("working precision: %Pu\n", wprec));
 
-      for (j=0; j<=L; j++)  mpfr_set_prec (z[j], wprec);
+      for (j=0; j<=L; j++)  
+        mpfr_set_prec (z[j], wprec);
       mpfr_set_prec (s, wprec);
       mpfr_set_prec (u0, wprec); mpfr_set_prec (u1, wprec);
       mpfr_set_prec (result, wprec);
@@ -165,14 +178,18 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_sqr (z[1], u1, MPFR_RNDU);
       mpfr_mul (z[1], z[1], x, (MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD) );
 
-      if (MPFR_IS_NEG (x)) MPFR_CHANGE_SIGN (z[1]);
+      if (MPFR_IS_NEG (x))
+        MPFR_CHANGE_SIGN (z[1]);
       x3u = mpfr_get_ui (z[1], MPFR_RNDU);   /* x3u >= ceil (x^3) */
-      if (MPFR_IS_NEG (x)) MPFR_CHANGE_SIGN (z[1]);
+      if (MPFR_IS_NEG (x)) 
+        MPFR_CHANGE_SIGN (z[1]);
 
       for (j=2; j<=L ;j++)
         {
-          if (j%2 == 0) mpfr_sqr (z[j], z[j/2], MPFR_RNDN);
-          else mpfr_mul (z[j], z[j-1], z[1], MPFR_RNDN);
+          if (j%2 == 0)
+            mpfr_sqr (z[j], z[j/2], MPFR_RNDN);
+          else 
+            mpfr_mul (z[j], z[j-1], z[1], MPFR_RNDN);
         }
 
       mpfr_gamma_one_and_two_third (temp1, temp2, wprec);
@@ -203,7 +220,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
               t -= 3;
               mpfr_div_ui2 (s, s, (t+2), (t+3), MPFR_RNDN);
               mpfr_add (s, s, z[j], MPFR_RNDN);
-              if (j==0) break;
+              if (j==0)
+                break;
             }
           mpfr_mul (s, s, u0, MPFR_RNDN);
           mpfr_add (result, result, s, MPFR_RNDN);
@@ -225,7 +243,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
               t -= 3;
               mpfr_div_ui2 (s, s, (t + 2), (t + 3), MPFR_RNDN);
               mpfr_add (s, s, z[j], MPFR_RNDN);
-              if (j==0) break;
+              if (j==0)
+                break;
             }
           mpfr_mul (s, s, u1, MPFR_RNDN);
           mpfr_add (result, result, s, MPFR_RNDN);
@@ -246,50 +265,57 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           t -= 3;
 
           test0 = MPFR_IS_ZERO (u0) ||
-            (MPFR_EXP (u0) + (mp_exp_t)prec + 4 <= MPFR_EXP (result));
+            (MPFR_GET_EXP (u0) + (mp_exp_t)prec + 4 <= MPFR_GET_EXP (result));
           test1 = MPFR_IS_ZERO (u1) ||
-            (MPFR_EXP (u1) + (mp_exp_t)prec + 4 <= MPFR_EXP (result));
+            (MPFR_GET_EXP (u1) + (mp_exp_t)prec + 4 <= MPFR_GET_EXP (result));
 
-          if ( test0 && test1 && (x3u <= (t + 2) * (t + 3) / 2) ) break;
+          if ( test0 && test1 && (x3u <= (t + 2) * (t + 3) / 2) ) 
+            break;
         }
 
-      MPFR_LOG_MSG (("Truncation rank: %d\n", t, 0));
+      MPFR_LOG_MSG (("Truncation rank: %lu\n", t));
 
-      err = 5 + MPFR_INT_CEIL_LOG2 (L+1) + MPFR_INT_CEIL_LOG2 (i+1) + cond - MPFR_EXP (result);
+      err = 5 + MPFR_INT_CEIL_LOG2 (L+1) + MPFR_INT_CEIL_LOG2 (i+1) + cond - MPFR_GET_EXP (result);
 
       /* err is the number of bits lost due to the evaluation error */
       /* wprec-(prec+1): the number of bits lost due to the approximation error */
-      MPFR_LOG_MSG (("Roundoff error: %d\n", err, 0));
-      MPFR_LOG_MSG (("Approxim error: %d\n", wprec - prec - 1, 0));
+      MPFR_LOG_MSG (("Roundoff error: %Pu\n", err));
+      MPFR_LOG_MSG (("Approxim error: %Pu\n", wprec - prec - 1));
 
-      if (wprec < err+1) correctBits = 0;
+      if (wprec < err+1)
+        correctBits = 0;
       else
         {
-          if (wprec < err+prec+1) correctBits = (unsigned) ( (signed)wprec - (signed)err - 1);
-          else correctBits = prec;
+          if (wprec < err+prec+1)
+            correctBits = wprec - err - 1;
+          else
+            correctBits = prec;
         }
 
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits, MPFR_PREC (y), rnd))) break;
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits, MPFR_PREC (y), rnd))) 
+        break;
 
-      for (j=0; j<=L; j++)  mpfr_clear (z[j]);
+      for (j=0; j<=L; j++)  
+        mpfr_clear (z[j]);
       (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
       L = isqrt (t);
-      MPFR_LOG_MSG (("size of blocks L = %d\n", L, 0));
+      MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
       z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t));
       MPFR_ASSERTN (z != NULL);
-      for (j=0; j<=L; j++)  mpfr_init (z[j]);
+      for (j=0; j<=L; j++)  
+        mpfr_init (z[j]);
 
       if (correctBits == 0)
         {
-          assumedExp *= 2;
-          MPFR_LOG_MSG (("Not a single bit correct (assumedExp=%d)\n", 0));
-          wprec = prec + 6 + MPFR_INT_CEIL_LOG2 (t) + cond + assumedExp;
+          assumed_exponent *= 2;
+          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n", assumed_exponent));
+          wprec = prec + 6 + MPFR_INT_CEIL_LOG2 (t) + cond + assumed_exponent;
         }
     else
       {
         if (correctBits < prec)
           { /* The precision was badly chosen */
-            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai (x) (E=%d)\n", MPFR_EXP (result), 0));
+            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai (x) (E=%ld)\n", (long)(MPFR_GET_EXP (result))));
             wprec = prec + err + 1;
           }
         else
@@ -298,7 +324,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
             /* We update wprec */
             /* We assume that t will not be multiplied by more than 4 */
-            wprec = prec + (MPFR_INT_CEIL_LOG2 (t) + 2) + 6 + cond - MPFR_EXP (result);
+            wprec = prec + (MPFR_INT_CEIL_LOG2 (t) + 2) + 6 + cond - MPFR_GET_EXP (result);
           }
       }
     } /* End of ZIV loop */
@@ -310,7 +336,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   mpfr_clear (tmp_sp);
   mpfr_clear (tmp2_sp);
-  for (j=0; j<=L; j++)  mpfr_clear (z[j]);
+  for (j=0; j<=L; j++)  
+    mpfr_clear (z[j]);
   (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
 
   mpfr_clear (s);
