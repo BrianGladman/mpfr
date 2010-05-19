@@ -1373,7 +1373,7 @@ case a null pointer is returned.
 
 @deftypefun void mpfr_free_str (char *@var{str})
 Free a string allocated by @code{mpfr_get_str} using the current unallocation
-function (preliminary interface).
+function.
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
 For more information about how it is done:
 @ifinfo
@@ -1960,7 +1960,7 @@ not call these functions directly (they could have been called internally).
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 rounded in the direction @var{rnd}. Warning, @var{tab} is an array of pointers
-to @code{mpfr_t}, not an array of @code{mpfr_t} (preliminary interface).
+to @code{mpfr_t}, not an array of @code{mpfr_t}.
 If the returned @code{int} value is zero, @var{rop} is guaranteed to be the
 exact sum; otherwise @var{rop} might be smaller than, equal to, or larger than
 the exact sum (in accordance to the rounding mode).
@@ -2685,7 +2685,6 @@ If the result cannot be represented in the current exponent range
 (due to a too small @code{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e.@: the ternary value is propagated.
-This is a preliminary interface.
 @end deftypefun
 
 This is an example of how to emulate binary double IEEE 754 arithmetic
@@ -2832,8 +2831,6 @@ Note 2: MPFR functions may use the cached functions (mpfr_const_pi for
 example), even if they are not explicitly called. You have to call
 @code{mpfr_free_cache} each time you garbage the memory iff mpfr_init, through
 GMP Custom Allocation, allocates its memory on the application stack.
-
-Note 3: This interface is preliminary.
 
 @deftypefun size_t mpfr_custom_get_size (mpfr_prec_t @var{prec})
 Return the needed size in bytes to store the significand of a FP number
