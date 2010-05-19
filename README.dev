@@ -218,11 +218,8 @@ To make a release (for the MPFR team):
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
 
-A libtool bug (with icc) to be fixed before the next MPFR releases:
-  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
-
 Before a release, add AM_MAINTAINER_MODE(enable) to configure.in,
-autoreconf -i with patched automake (2008-09-01), then comment out
+autoreconf -i with Automake 1.11, then comment out
 AM_MAINTAINER_MODE(enable) while keeping the timestamp.
 
 ===========================================================================
