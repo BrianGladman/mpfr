@@ -160,7 +160,7 @@ main (int argc, char *argv[])
   long nbtests;
   mpfr_prec_t prec;
   int verbose = 0;
-  mpfr_rnd_t rnd;
+  int rnd;
   long bit_index;
 
   tests_start_mpfr ();
@@ -197,11 +197,11 @@ main (int argc, char *argv[])
 
   RND_LOOP(rnd)
     {
-      test_urandom (nbtests, prec, rnd, bit_index, verbose);
+      test_urandom (nbtests, prec, (mpfr_rnd_t) rnd, bit_index, verbose);
 
       if (argc == 1)  /* check also small precision */
         {
-          test_urandom (nbtests, 2, rnd, -1, 0);
+          test_urandom (nbtests, 2, (mpfr_rnd_t) rnd, -1, 0);
         }
     }
 

@@ -699,15 +699,16 @@ overflow_inv (void)
                   if (rnd == MPFR_RNDA)
                     rnd2 = s < 0 ? MPFR_RNDD : MPFR_RNDU;
                   else
-                    rnd2 = rnd;
+                    rnd2 = (mpfr_rnd_t) rnd;
 
                   overflow = t == 0 ||
-                    ((mpfr_rnd_t) rnd == MPFR_RNDN && (precx > 10 || t == 1)) ||
-                    ((mpfr_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU) &&
+                    ((mpfr_rnd_t) rnd == MPFR_RNDN &&
+                     (precx > 10 || t == 1)) ||
+                    (rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU) &&
                      (precx > 10 || t <= 2));
                   inf = overflow &&
                     ((mpfr_rnd_t) rnd == MPFR_RNDN ||
-                     (mpfr_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU));
+                     rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU));
                   mpfr_clear_flags ();
                   inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
                   if (overflow ^ !! mpfr_overflow_p ())

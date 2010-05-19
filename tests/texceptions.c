@@ -53,7 +53,8 @@ check_default_rnd (void)
       t = (mpfr_get_default_rounding_mode) ();
       if ((mpfr_rnd_t) r != t)
         {
-          printf ("%s %s\n", mpfr_print_rnd_mode (r), mpfr_print_rnd_mode (t));
+          printf ("%s %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                  mpfr_print_rnd_mode (t));
           ERROR("ERROR in setting / getting default rounding mode (1)");
         }
     }

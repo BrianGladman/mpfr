@@ -118,7 +118,7 @@ check_special_exprange (void)
   mpfr_set_str (x, "0.11111111", 2, MPFR_RNDN);
   for (ov = 0; ov <= 1; ov++)
     {
-      char *s = ov ? "@Inf@" : "1";
+      const char *s = ov ? "@Inf@" : "1";
 
       if (ov)
         set_emax (0);
