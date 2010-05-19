@@ -164,10 +164,10 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
       mpfr_sqr (x3, x, MPFR_RNDU);
       mpfr_mul (x3, x3, x, (MPFR_IS_POS (x)?MPFR_RNDU:MPFR_RNDD));  /* x3=x^3 */
-      if (MPFR_IS_NEG (x)) 
+      if (MPFR_IS_NEG (x))
         MPFR_CHANGE_SIGN (x3);
       x3u = mpfr_get_ui (x3, MPFR_RNDU);   /* x3u >= ceil(x^3) */
-      if (MPFR_IS_NEG (x)) 
+      if (MPFR_IS_NEG (x))
         MPFR_CHANGE_SIGN (x3);
 
       mpfr_gamma_one_and_two_third (temp1, temp2, wprec);

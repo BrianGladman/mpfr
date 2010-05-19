@@ -95,9 +95,9 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     {
       MPFR_SET_NAN (y); MPFR_RET_NAN;
     }
-  if (MPFR_UNLIKELY (MPFR_IS_INF (x))) 
+  if (MPFR_UNLIKELY (MPFR_IS_INF (x)))
     {
-      return mpfr_set_ui (y, 0, rnd); 
+      return mpfr_set_ui (y, 0, rnd);
     }
 
   /* Save current exponents range */
@@ -123,7 +123,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_mul_d (tmp2_sp, tmp_sp, 0.96179669392597567, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
-  if (MPFR_GET_EXP (x) <= 0 ) 
+  if (MPFR_GET_EXP (x) <= 0 )
     cond = 0;
   else
     cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1)/4 - 1;
@@ -140,7 +140,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     }
   /* We do not know Ai (x) yet */
   /* We cover the case when EXP (Ai (x))>=-10 */
-  else 
+  else
     assumed_exponent = 10;
 
   wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumed_exponent;
@@ -151,7 +151,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t) );
   MPFR_ASSERTN (z != NULL);
-  for (j=0; j<=L; j++)  
+  for (j=0; j<=L; j++)
     mpfr_init (z[j]);
 
   mpfr_init (s);
@@ -165,7 +165,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     {
       MPFR_LOG_MSG (("working precision: %Pu\n", wprec));
 
-      for (j=0; j<=L; j++)  
+      for (j=0; j<=L; j++)
         mpfr_set_prec (z[j], wprec);
       mpfr_set_prec (s, wprec);
       mpfr_set_prec (u0, wprec); mpfr_set_prec (u1, wprec);
@@ -181,14 +181,14 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_IS_NEG (x))
         MPFR_CHANGE_SIGN (z[1]);
       x3u = mpfr_get_ui (z[1], MPFR_RNDU);   /* x3u >= ceil (x^3) */
-      if (MPFR_IS_NEG (x)) 
+      if (MPFR_IS_NEG (x))
         MPFR_CHANGE_SIGN (z[1]);
 
       for (j=2; j<=L ;j++)
         {
           if (j%2 == 0)
             mpfr_sqr (z[j], z[j/2], MPFR_RNDN);
-          else 
+          else
             mpfr_mul (z[j], z[j-1], z[1], MPFR_RNDN);
         }
 
@@ -269,7 +269,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           test1 = MPFR_IS_ZERO (u1) ||
             (MPFR_GET_EXP (u1) + (mp_exp_t)prec + 4 <= MPFR_GET_EXP (result));
 
-          if ( test0 && test1 && (x3u <= (t + 2) * (t + 3) / 2) ) 
+          if ( test0 && test1 && (x3u <= (t + 2) * (t + 3) / 2) )
             break;
         }
 
@@ -292,17 +292,17 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
             correctBits = prec;
         }
 
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits, MPFR_PREC (y), rnd))) 
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits, MPFR_PREC (y), rnd)))
         break;
 
-      for (j=0; j<=L; j++)  
+      for (j=0; j<=L; j++)
         mpfr_clear (z[j]);
       (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
       L = isqrt (t);
       MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
       z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t));
       MPFR_ASSERTN (z != NULL);
-      for (j=0; j<=L; j++)  
+      for (j=0; j<=L; j++)
         mpfr_init (z[j]);
 
       if (correctBits == 0)
@@ -336,7 +336,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   mpfr_clear (tmp_sp);
   mpfr_clear (tmp2_sp);
-  for (j=0; j<=L; j++)  
+  for (j=0; j<=L; j++)
     mpfr_clear (z[j]);
   (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
 
