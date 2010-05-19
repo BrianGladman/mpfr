@@ -2967,6 +2967,7 @@ classified like here), together with other changes.
 * Added Functions::
 * Changed Functions::
 * Removed Functions::
+* Other Changes::
 @end menu
 
 @node Type and Macro Changes, Added Functions, API Compatibility, API Compatibility
@@ -3220,12 +3221,41 @@ behavior may change in the future).
 
 @end itemize
 
-@node Removed Functions, , Changed Functions, API Compatibility
+@node Removed Functions, Other Changes, Changed Functions, API Compatibility
 @section Removed Functions
 
 Functions @code{mpfr_random} and @code{mpfr_random2} have been
 removed in MPFR 3.0 (this only affects old code built against
 MPFR 3.0 or later).
+
+@node Other Changes, , Removed Functions, API Compatibility
+@section Other Changes
+
+@comment r6699
+For users of a C++ compiler, the way how the availability of @code{intmax_t}
+is detected has changed in MPFR 3.0.
+In MPFR 2.x, if a macro @code{INTMAX_C} or @code{UINTMAX_C} was defined
+(e.g. when the @code{__STDC_CONSTANT_MACROS} macro had been defined
+before @code{<stdint.h>} or @code{<inttypes.h>} has been included),
+@code{intmax_t} was assumed to be defined.
+However this was not always the case (more precisely, @code{intmax_t}
+can be defined only in the namespace @code{std}, as with Boost), so
+that compilations could fail.
+Thus the check for @code{INTMAX_C} or @code{UINTMAX_C} is now disabled for
+C++ compilers, with the following consequences:
+
+@itemize
+
+@item Programs written for MPFR 2.x that need @code{intmax_t} may no longer
+be compiled against MPFR 3.0: a @code{#define MPFR_USE_INTMAX_T} may be
+necessary before @file{mpfr.h} is included.
+
+@item The compilation of programs that work with MPFR 3.0 may fail with
+MPFR 2.x due to the problem described above.  Workarounds are possible,
+such as defining @code{intmax_t} and @code{uintmax_t} in the global
+namespace, though this is not clean.
+
+@end itemize
 
 @node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up
