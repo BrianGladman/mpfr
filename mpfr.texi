@@ -3014,7 +3014,7 @@ though.  Indeed the MPFR code requires that @code{MPFR_PREC_MAX} be
 representable in the exponent type, which may have the same size as
 @code{mpfr_prec_t} but has always been signed.
 The consequence is that valid code that does not assume anything about
-the signness of @code{mpfr_prec_t} should work with past and new MPFR
+the signedness of @code{mpfr_prec_t} should work with past and new MPFR
 versions.
 This change was useful as the use of unsigned types tends to convert
 signed values to unsigned ones in expressions due to the usual arithmetic
