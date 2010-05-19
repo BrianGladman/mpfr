@@ -78,13 +78,18 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_LOG_FUNC ( ("x[%#R]=%R rnd=%d", x, x, rnd), ("y[%#R]=%R", y, y) );
 
   /* Special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      MPFR_SET_NAN (y);
-      MPFR_RET_NAN;
+      if (MPFR_IS_NAN (x))
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF (x))
+        return mpfr_set_ui (y, 0, rnd);
     }
-  if (MPFR_UNLIKELY (MPFR_IS_INF (x)))
-    return mpfr_set_ui (y, 0, rnd);
+
+  /* FIXME: handle the case x == 0 (and in a consistent way for +0 and -0) */
 
   /* Save current exponents range */
   MPFR_SAVE_EXPO_MARK (expo);
