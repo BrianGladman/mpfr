@@ -3047,7 +3047,7 @@ MPFR version.
 
 @item @code{mpfr_add_d} in MPFR 2.4.
 
-@item @code{mpfr_ai} in MPFR 3.0.
+@item @code{mpfr_ai} in MPFR 3.0 (incomplete, experimental).
 
 @item @code{mpfr_asprintf} in MPFR 2.4.
 
