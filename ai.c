@@ -128,7 +128,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_mul_d (tmp2_sp, tmp_sp, 0.96179669392597567, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
-  if (MPFR_GET_EXP (x) <= 0)
+  if ( (MPFR_IS_ZERO(x)) || (MPFR_GET_EXP (x) <= 0) )
     cond = 0;
   else
     cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x)-1)/4 - 1;
@@ -136,7 +136,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 5 + cond;
   if (MPFR_IS_POS (x))
     {
-      if (MPFR_GET_EXP (x) <= 0)
+      if ( (MPFR_IS_ZERO(x)) || (MPFR_GET_EXP (x) <= 0) )
         wprec += 3;
       else
         wprec += 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
