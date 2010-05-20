@@ -2503,7 +2503,7 @@ in the direction of @var{y},
 numbers). If the result is zero, it keeps the same sign. No underflow or
 overflow is generated.
 @c PZ: we should say what happens when x=y: is x unchanged?
-@c: in particular what happens if x=-0 and y=+0?
+@c in particular what happens if x=-0 and y=+0?
 @end deftypefun
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
