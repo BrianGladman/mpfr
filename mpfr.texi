@@ -1972,7 +1972,8 @@ not call these functions directly (they could have been called internally).
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
-rounded in the direction @var{rnd}. Warning: @var{tab} is an array of pointers
+rounded in the direction @var{rnd}. Warning: for efficiency reasons,
+@var{tab} is an array of pointers
 to @code{mpfr_t}, not an array of @code{mpfr_t}.
 If the returned @code{int} value is zero, @var{rop} is guaranteed to be the
 exact sum; otherwise @var{rop} might be smaller than, equal to, or larger than
