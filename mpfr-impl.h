@@ -1710,6 +1710,24 @@ __MPFR_DECLSPEC int mpfr_sincos_fast _MPFR_PROTO((mpfr_t, mpfr_t,
 
 __MPFR_DECLSPEC double mpfr_scale2 _MPFR_PROTO((double, int));
 
+__MPFR_DECLSPEC void mpfr_div_ui2 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr,
+                                               unsigned long int, unsigned long int,
+                                               mpfr_rnd_t));
+
+__MPFR_DECLSPEC void mpfr_div_ui8 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr,
+                                               unsigned long int, unsigned long int,
+                                               unsigned long int, unsigned long int,
+                                               unsigned long int, unsigned long int,
+                                               unsigned long int, unsigned long int,
+                                               mpfr_rnd_t));
+
+__MPFR_DECLSPEC void mpfr_mul_ui5 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr,
+                                               unsigned long int, unsigned long int,
+                                               unsigned long int, unsigned long int,
+                                               unsigned long int, mpfr_rnd_t));
+
+__MPFR_DECLSPEC void mpfr_gamma_one_and_two_third _MPFR_PROTO((mpfr_ptr, mpfr_ptr, mp_prec_t));
+
 #if defined (__cplusplus)
 }
 #endif

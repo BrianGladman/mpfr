@@ -25,10 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define MPFR_SMALL_PRECISION 32
 
-/* These functions are provided by file gammaonethird.c */
-int mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr, mp_prec_t);
-void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr, unsigned long int, unsigned long int, mpfr_rnd_t);
-
 
 /* Reminder and notations:
    -----------------------

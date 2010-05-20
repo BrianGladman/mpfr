@@ -88,7 +88,7 @@ mpfr_div_ui8 (mpfr_ptr y, mpfr_srcptr x,
 /* using C. H. Brown's formula.                                         */
 /* The computed value s satisfies |s-omega| <= 2^{1-prec}*omega         */
 /* As usual, the variable s is supposed to be initialized.              */
-void
+static void
 mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 {
   mpfr_t uk;
@@ -123,7 +123,7 @@ mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 }
 
 /* Returns y such that |Gamma(1/3)-y| <= 2^{1-prec}*Gamma(1/3) */
-void
+static void
 mpfr_gamma_one_third (mpfr_ptr y, mp_prec_t prec)
 {
   mpfr_t tmp, tmp2, tmp3;
