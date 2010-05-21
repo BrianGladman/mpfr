@@ -108,11 +108,6 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   prec = MPFR_PREC (y)+11;
   MPFR_ZIV_INIT (loop, prec);
 
-  /* This variable is used to store the maximal assumed exponent of     */
-  /* Ai(x). More precisely, we assume that |Ai(x)| will be greater than */
-  /* 2^{-assumed_exponent}.                                             */
-  assumed_exponent = 10;
-
   /* The working precision is heuristically chosen in order to obtain  */
   /* approximately prec correct bits in the sum. To sum up: the sum    */
   /* is stopped when the *exact* sum gives ~ prec correct bit. And     */
@@ -125,7 +120,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_sqrt (tmp_sp, tmp_sp, MPFR_RNDU); /* tmp_sp ~ x^3/2 */
 
   /* 0.96179669392597567 >~ 2/3 * log2(e). See algorithms.tex */
-  mpfr_mul_d (tmp2_sp, tmp_sp, 0.96179669392597567, MPFR_RNDU);
+  mpfr_set_str(tmp2_sp, "0.96179669392597567", 10, MPFR_RNDU);
+  mpfr_mul (tmp2_sp, tmp_sp, tmp2_sp, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
   if ( (MPFR_IS_ZERO(x)) || (MPFR_GET_EXP (x) <= 0) )
@@ -133,19 +129,26 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   else
     cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x)-1)/4 - 1;
 
-  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 5 + cond;
-  if (MPFR_IS_POS (x))
+  /* The variable assumed_exponent is used to store the maximal assumed */
+  /* exponent of Ai(x). More precisely, we assume that |Ai(x)| will be  */
+  /* greater than 2^{-assumed_exponent}.                                */
+  if (MPFR_IS_ZERO(x)) assumed_exponent = 2;
+  else 
     {
-      if ( (MPFR_IS_ZERO(x)) || (MPFR_GET_EXP (x) <= 0) )
-        wprec += 3;
+      if (MPFR_IS_POS (x))
+	{
+	  if (MPFR_GET_EXP (x) <= 0)
+	    assumed_exponent = 3;
+	  else
+	    assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+	}
+      /* We do not know Ai (x) yet */
+      /* We cover the case when EXP (Ai (x))>=-10 */
       else
-        wprec += 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+	assumed_exponent = 10;
     }
-  else
-    {
-      /* wprec = wprec - EXP(Ai(x)) but we do not know Ai(x) yet */
-      wprec += assumed_exponent; /* We cover the case when EXP(Ai(x))>=-10 */
-    }
+  
+  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 5 + cond + assumed_exponent;
 
   mpfr_init (ti);
   mpfr_init (tip1);
