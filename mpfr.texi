@@ -1187,10 +1187,9 @@ is not followed by a binary/hexadecimal digit, then the subject sequence
 stops at the character @code{0}, thus 0 is read.
 
 Special data (for infinities and NaN) can be @code{@@inf@@} or
-@code{@@nan@@(n-char-sequence)}, and if @math{@var{base} @le{} 16},
+@code{@@nan@@(n-char-sequence-opt)}, and if @math{@var{base} @le{} 16},
 it can also be @code{infinity}, @code{inf}, @code{nan} or
 @code{nan(n-char-sequence-opt)}, all case insensitive.
-@c PZ: we define n-char-sequence-opt, but not n-char-sequence
 A @code{n-char-sequence-opt} is a possibly empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
