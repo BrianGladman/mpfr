@@ -151,17 +151,17 @@ check_erange (void)
   /* Test for ERANGE flag + correct behaviour if overflow */
 
   mpfr_init2 (x, 256);
-  mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
+  mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
   mpfr_clear_erangeflag ();
   dl = mpfr_get_uj (x, MPFR_RNDN);
-  if (dl != UINTMAX_MAX || mpfr_erangeflag_p ())
+  if (dl != MPFR_UINTMAX_MAX || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (1)\n");
       exit (1);
     }
   mpfr_add_ui (x, x, 1, MPFR_RNDN);
   dl = mpfr_get_uj (x, MPFR_RNDN);
-  if (dl != UINTMAX_MAX || !mpfr_erangeflag_p ())
+  if (dl != MPFR_UINTMAX_MAX || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (2)\n");
       exit (1);
@@ -174,32 +174,32 @@ check_erange (void)
       printf ("ERROR for get_uj + ERANGE + -1 \n");
       exit (1);
     }
-  mpfr_set_sj (x, INTMAX_MAX, MPFR_RNDN);
+  mpfr_set_sj (x, MPFR_INTMAX_MAX, MPFR_RNDN);
   mpfr_clear_erangeflag ();
   d = mpfr_get_sj (x, MPFR_RNDN);
-  if (d != INTMAX_MAX || mpfr_erangeflag_p ())
+  if (d != MPFR_INTMAX_MAX || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (1)\n");
       exit (1);
     }
   mpfr_add_ui (x, x, 1, MPFR_RNDN);
   d = mpfr_get_sj (x, MPFR_RNDN);
-  if (d != INTMAX_MAX || !mpfr_erangeflag_p ())
+  if (d != MPFR_INTMAX_MAX || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (2)\n");
       exit (1);
     }
-  mpfr_set_sj (x, INTMAX_MIN, MPFR_RNDN);
+  mpfr_set_sj (x, MPFR_INTMAX_MIN, MPFR_RNDN);
   mpfr_clear_erangeflag ();
   d = mpfr_get_sj (x, MPFR_RNDN);
-  if (d != INTMAX_MIN || mpfr_erangeflag_p ())
+  if (d != MPFR_INTMAX_MIN || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (1)\n");
       exit (1);
     }
   mpfr_sub_ui (x, x, 1, MPFR_RNDN);
   d = mpfr_get_sj (x, MPFR_RNDN);
-  if (d != INTMAX_MIN || !mpfr_erangeflag_p ())
+  if (d != MPFR_INTMAX_MIN || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (2)\n");
       exit (1);
@@ -218,7 +218,7 @@ main (void)
 
   tests_start_mpfr ();
 
-  for (u = UINTMAX_MAX, prec = 0; u != 0; u /= 2, prec++)
+  for (u = MPFR_UINTMAX_MAX, prec = 0; u != 0; u /= 2, prec++)
     { }
 
   mpfr_init2 (x, prec + 4);
@@ -233,7 +233,7 @@ main (void)
 
   mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
-  for (s = INTMAX_MAX; s != 0; s /= 17)
+  for (s = MPFR_INTMAX_MAX; s != 0; s /= 17)
     {
       check_sj (s, y);
       mpfr_div_ui (y, y, 17, MPFR_RNDZ);
@@ -243,16 +243,16 @@ main (void)
   mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
   mpfr_neg (y, y, MPFR_RNDN);
-  if (INTMAX_MIN + INTMAX_MAX != 0)
+  if (MPFR_INTMAX_MIN + MPFR_INTMAX_MAX != 0)
     mpfr_sub_ui (y, y, 1, MPFR_RNDN); /* INTMAX_MIN */
-  for (s = INTMAX_MIN; s != 0; s /= 17)
+  for (s = MPFR_INTMAX_MIN; s != 0; s /= 17)
     {
       check_sj (s, y);
       mpfr_div_ui (y, y, 17, MPFR_RNDZ);
       mpfr_trunc (y, y);
     }
 
-  for (u = UINTMAX_MAX; u != 0; u /= 17)
+  for (u = MPFR_UINTMAX_MAX; u != 0; u /= 17)
     {
       check_uj (u, x);
       mpfr_div_ui (x, x, 17, MPFR_RNDZ);

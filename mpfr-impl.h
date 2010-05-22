@@ -150,6 +150,27 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 /******************************************************
+ ****************** (U)INTMAX_MAX *********************
+ ******************************************************/
+
+/* Let's try to fix UINTMAX_MAX and INTMAX_MAX if these macros don't work
+   (e.g. with gcc -ansi -pedantic-errors in 32-bit mode under GNU/Linux),
+   see <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698>. */
+#ifdef _MPFR_H_HAVE_INTMAX_T
+# ifdef MPFR_HAVE_INTMAX_MAX
+#  define MPFR_UINTMAX_MAX UINTMAX_MAX
+#  define MPFR_INTMAX_MAX INTMAX_MAX
+#  define MPFR_INTMAX_MIN INTMAX_MIN
+# else
+#  define MPFR_UINTMAX_MAX ((uintmax_t) -1)
+#  define MPFR_INTMAX_MAX ((intmax_t) (MPFR_UINTMAX_MAX >> 1))
+#  define MPFR_INTMAX_MIN (INT_MIN + INT_MAX - MPFR_INTMAX_MAX)
+# endif
+#endif
+
+
+
+/******************************************************
  ******************** Check GMP ***********************
  ******************************************************/
 

@@ -101,7 +101,7 @@ check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
     }
   /* Special case */
   mpfr_set_prec (x, sizeof(uintmax_t)*CHAR_BIT);
-  inex1 = mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
+  inex1 = mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
   if (inex1 != 0 || mpfr_sgn(x) <= 0)
     ERROR ("inexact / UINTMAX_MAX");
   inex1 = mpfr_add_ui (x, x, 1, MPFR_RNDN);
@@ -135,18 +135,18 @@ check_set_uj_2exp (void)
   if (inex || mpfr_cmp_ui(x, 1024L * 1024L))
     ERROR("(1024U,+10)");
 
-  inex = mpfr_set_uj_2exp (x, UINTMAX_MAX, 1000, MPFR_RNDN);
+  inex = mpfr_set_uj_2exp (x, MPFR_UINTMAX_MAX, 1000, MPFR_RNDN);
   inex |= mpfr_div_2ui (x, x, 1000, MPFR_RNDN);
   inex |= mpfr_add_ui (x, x, 1, MPFR_RNDN);
   if (inex || !mpfr_powerof2_raw (x)
       || MPFR_EXP (x) != (sizeof(uintmax_t)*CHAR_BIT+1) )
     ERROR("(UINTMAX_MAX)");
 
-  inex = mpfr_set_uj_2exp (x, UINTMAX_MAX, MPFR_EMAX_MAX-10, MPFR_RNDN);
+  inex = mpfr_set_uj_2exp (x, MPFR_UINTMAX_MAX, MPFR_EMAX_MAX-10, MPFR_RNDN);
   if (inex == 0 || !mpfr_inf_p (x))
     ERROR ("Overflow");
 
-  inex = mpfr_set_uj_2exp (x, UINTMAX_MAX, MPFR_EMIN_MIN-1000, MPFR_RNDN);
+  inex = mpfr_set_uj_2exp (x, MPFR_UINTMAX_MAX, MPFR_EMIN_MIN-1000, MPFR_RNDN);
   if (inex == 0 || !MPFR_IS_ZERO (x))
     ERROR ("Underflow");
 
@@ -161,7 +161,7 @@ check_set_sj (void)
 
   mpfr_init2 (x, sizeof(intmax_t)*CHAR_BIT-1);
 
-  inex = mpfr_set_sj (x, -INTMAX_MAX, MPFR_RNDN);
+  inex = mpfr_set_sj (x, -MPFR_INTMAX_MAX, MPFR_RNDN);
   inex |= mpfr_add_si (x, x, -1, MPFR_RNDN);
   if (inex || mpfr_sgn (x) >=0 || !mpfr_powerof2_raw (x)
       || MPFR_EXP (x) != (sizeof(intmax_t)*CHAR_BIT) )
@@ -182,7 +182,7 @@ check_set_sj_2exp (void)
 
   mpfr_init2 (x, sizeof(intmax_t)*CHAR_BIT-1);
 
-  inex = mpfr_set_sj_2exp (x, INTMAX_MIN, 1000, MPFR_RNDN);
+  inex = mpfr_set_sj_2exp (x, MPFR_INTMAX_MIN, 1000, MPFR_RNDN);
   if (inex || mpfr_sgn (x) >=0 || !mpfr_powerof2_raw (x)
       || MPFR_EXP (x) != (sizeof(intmax_t)*CHAR_BIT+1000) )
     ERROR("set_sj_2exp (INTMAX_MIN)");

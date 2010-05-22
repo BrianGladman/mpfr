@@ -53,14 +53,14 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (!mpfr_fits_uintmax_p (f, rnd))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? (uintmax_t) 0 : UINTMAX_MAX;
+      return MPFR_IS_NEG (f) ? (uintmax_t) 0 : MPFR_UINTMAX_MAX;
     }
 
   if (MPFR_IS_ZERO (f))
     return (uintmax_t) 0;
 
   /* determine the precision of uintmax_t */
-  for (r = UINTMAX_MAX, prec = 0; r != 0; r /= 2, prec++)
+  for (r = MPFR_UINTMAX_MAX, prec = 0; r != 0; r /= 2, prec++)
     { }
 
   /* Now, r = 0. */

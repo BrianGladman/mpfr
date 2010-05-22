@@ -66,7 +66,7 @@ mpfr_fits_uintmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   e = MPFR_GET_EXP (f);
 
   /* first compute prec(MAXIMUM); fits in an int */
-  for (s = UINTMAX_MAX, prec = 0; s != 0; s /= 2, prec ++);
+  for (s = MPFR_UINTMAX_MAX, prec = 0; s != 0; s /= 2, prec ++);
 
   /* MAXIMUM needs prec bits, i.e. MAXIMUM = 2^prec - 1 */
 

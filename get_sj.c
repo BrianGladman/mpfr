@@ -53,13 +53,13 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (!mpfr_fits_intmax_p (f, rnd))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? INTMAX_MIN : INTMAX_MAX;
+      return MPFR_IS_NEG (f) ? MPFR_INTMAX_MIN : MPFR_INTMAX_MAX;
     }
   if (MPFR_IS_ZERO (f))
      return (intmax_t) 0;
 
   /* determine the precision of intmax_t */
-  for (r = INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
+  for (r = MPFR_INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
     {
     }
   /* Note: though INTMAX_MAX would have been sufficient for the conversion,
@@ -81,7 +81,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
       MPFR_ASSERTN ((mpfr_prec_t) sh <= prec);
-      if (INTMAX_MIN + INTMAX_MAX != 0
+      if (MPFR_INTMAX_MIN + MPFR_INTMAX_MAX != 0
           && MPFR_UNLIKELY ((mpfr_prec_t) sh == prec))
         {
           /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
@@ -89,7 +89,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
              the for loop since the operations would be performed in
              unsigned arithmetic. */
           MPFR_ASSERTN (MPFR_IS_NEG (x) && (mpfr_powerof2_raw (x)));
-          r = INTMAX_MIN;
+          r = MPFR_INTMAX_MIN;
         }
       else if (MPFR_IS_POS (x))
         {

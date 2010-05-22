@@ -253,21 +253,21 @@ static void check_intmax (void)
     ERROR1;
 
   /* Check all other values */
-  mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
+  mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
   mpfr_add_ui (x, x, 1, MPFR_RNDN);
   if (mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR1;
-  mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
+  mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
   if (!mpfr_fits_uintmax_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_sj (x, INTMAX_MAX, MPFR_RNDN);
+  mpfr_set_sj (x, MPFR_INTMAX_MAX, MPFR_RNDN);
   mpfr_add_ui (x, x, 1, MPFR_RNDN);
   if (mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR1;
-  mpfr_set_sj (x, INTMAX_MAX, MPFR_RNDN);
+  mpfr_set_sj (x, MPFR_INTMAX_MAX, MPFR_RNDN);
   if (!mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR2;
-  mpfr_set_sj (x, INTMAX_MIN, MPFR_RNDN);
+  mpfr_set_sj (x, MPFR_INTMAX_MIN, MPFR_RNDN);
   if (!mpfr_fits_intmax_p (x, MPFR_RNDN))
     ERROR2;
   mpfr_sub_ui (x, x, 1, MPFR_RNDN);

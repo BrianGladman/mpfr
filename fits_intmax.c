@@ -76,13 +76,13 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
     {
       uintmax_t s;
       /* In C89, the division on negative integers isn't well-defined. */
-      s = SAFE_ABS (uintmax_t, INTMAX_MIN);
+      s = SAFE_ABS (uintmax_t, MPFR_INTMAX_MIN);
       for (prec = 0; s != 0; s /= 2, prec ++);
     }
   else
     {
       intmax_t s;
-      s = INTMAX_MAX;
+      s = MPFR_INTMAX_MAX;
       for (prec = 0; s != 0; s /= 2, prec ++);
     }
 
@@ -105,7 +105,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (neg)
     {
       mpfr_init2 (y, prec);
-      mpfr_set_sj (y, INTMAX_MIN, MPFR_RNDN);
+      mpfr_set_sj (y, MPFR_INTMAX_MIN, MPFR_RNDN);
       res = mpfr_cmp (x, y) >= 0;
       mpfr_clear (y);
     }

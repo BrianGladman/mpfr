@@ -113,6 +113,15 @@ AC_CHECK_TYPE([long long int],
 
 dnl intmax_t is C99
 AC_CHECK_TYPES([intmax_t])
+if test "$ac_cv_type_intmax_t" = yes; then
+  AC_CACHE_CHECK([for working INTMAX_MAX], mpfr_cv_have_intmax_max, [
+    AC_TRY_COMPILE([#include <stdint.h>], [intmax_t x = INTMAX_MAX;],
+      mpfr_cv_have_intmax_max=yes, mpfr_cv_have_intmax_max=no)
+  ])
+  if test "$mpfr_cv_have_intmax_max" = "yes"; then
+    AC_DEFINE(MPFR_HAVE_INTMAX_MAX,1,[Define if you have a working INTMAX_MAX.])
+  fi
+fi
 
 AC_CHECK_TYPE( [union fpc_csr],
    AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), ,
