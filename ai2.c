@@ -25,7 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define SMALL_PRECISION 32
 
-static unsigned long isqrt (unsigned long n)
+static unsigned long
+isqrt (unsigned long n)
 {
   mpz_t tmp;
   unsigned int res;
