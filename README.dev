@@ -250,7 +250,10 @@ List of the used macros for building MPFR:
 
 + HAVE_STDARG:          Define if the system supports 'stdarg.h'.
                          Otherwise it is assumed it is 'vararg.h'.
+
 + HAVE_STDINT_H:        Define if 'intmax_t' is supported (ISO C99).
++ MPFR_HAVE_INTMAX_MAX: Define if the INTMAX_MAX macro works correctly
+                         (if 'intmax_t' is supported).
 
  Define format of long double.
 + HAVE_LDOUBLE_IEEE_EXT_LITTLE:         IEEE extended, little endian.
@@ -707,6 +710,13 @@ a test works on 32 bits but fails on 64 bits in the extended exponent
 range (or conversely), the cause may be related to the integer types
 (e.g. a signness problem or an integer overflow due to different type
 sizes).
+
+===========================================================================
+
+You can use the features related to intmax_t only if _MPFR_H_HAVE_INTMAX_T
+is defined. In such a case, do not use the macros UINTMAX_MAX, INTMAX_MAX
+and INTMAX_MIN directly (because they may make the compilation fail), but
+the MPFR versions: MPFR_UINTMAX_MAX, MPFR_INTMAX_MAX and MPFR_INTMAX_MIN.
 
 ===========================================================================
 
