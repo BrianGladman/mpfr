@@ -738,7 +738,7 @@ This file performs random tests for values of x between -5 and 5, with
 a precision varying from 2 to 100.
 
 You can add your own tests to this basic file.
-Do not forget to add 'tfunc' in the variable check_PROGRAMS 
+Do not forget to add 'tfunc' in the variable check_PROGRAMS
 of tests/Makefile.am
 
 /* Test file for mpfr_func.
