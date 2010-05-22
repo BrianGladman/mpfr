@@ -132,8 +132,9 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* The variable assumed_exponent is used to store the maximal assumed */
   /* exponent of Ai(x). More precisely, we assume that |Ai(x)| will be  */
   /* greater than 2^{-assumed_exponent}.                                */
-  if (MPFR_IS_ZERO(x)) assumed_exponent = 2;
-  else 
+  if (MPFR_IS_ZERO(x))
+    assumed_exponent = 2;
+  else
     {
       if (MPFR_IS_POS (x))
 	{
@@ -226,7 +227,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         correct_bits=0;
       else
         {
-          if (wprec<err+prec+1)
+          if (wprec < err+prec+1)
             correct_bits =  wprec - err - 1;
           else
             correct_bits = prec;
@@ -235,7 +236,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, correct_bits, MPFR_PREC (y), rnd)))
         break;
 
-      if (correct_bits==0)
+      if (correct_bits == 0)
         {
           assumed_exponent *= 2;
           MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n", assumed_exponent));
