@@ -137,18 +137,18 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   else
     {
       if (MPFR_IS_POS (x))
-	{
-	  if (MPFR_GET_EXP (x) <= 0)
-	    assumed_exponent = 3;
-	  else
-	    assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
-	}
+        {
+          if (MPFR_GET_EXP (x) <= 0)
+            assumed_exponent = 3;
+          else
+            assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+        }
       /* We do not know Ai (x) yet */
       /* We cover the case when EXP (Ai (x))>=-10 */
       else
-	assumed_exponent = 10;
+        assumed_exponent = 10;
     }
-  
+
   wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 5 + cond + assumed_exponent;
 
   mpfr_init (ti);
