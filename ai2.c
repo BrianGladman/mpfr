@@ -130,7 +130,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* This variable is used to store the maximal assumed exponent of       */
   /* Ai (x). More precisely, we assume that |Ai (x)| will be greater than */
   /* 2^{-assumedExp}.                                                     */
-  if (MPFR_IS_ZERO(x)) assumed_exponent = 2;
+  if (MPFR_IS_ZERO(x))
+    assumed_exponent = 2;
   else
     {
       if (MPFR_IS_POS (x))
