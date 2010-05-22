@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       mpfr_div_ui (y, y, acc, mode); acc = v;           \
     }
 
-void
+static void
 mpfr_mul_ui5 (mpfr_ptr y, mpfr_srcptr x,
               unsigned long int v1, unsigned long int v2,
               unsigned long int v3, unsigned long int v4,
@@ -64,7 +64,7 @@ mpfr_div_ui2 (mpfr_ptr y, mpfr_srcptr x,
   mpfr_div_ui (y, y, acc, mode);
 }
 
-void
+static void
 mpfr_div_ui8 (mpfr_ptr y, mpfr_srcptr x,
               unsigned long int v1, unsigned long int v2,
               unsigned long int v3, unsigned long int v4,
