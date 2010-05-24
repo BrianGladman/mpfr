@@ -22,18 +22,19 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 2.4.* to version 3.0:
 - The "boudin aux pommes" release.
-- MPFR 3.0 is binary incompatible with previous versions but (almost) API
-  compatible. More precisely the obsolete functions mpfr_random and
-  mpfr_random2 have been removed, and the return type of the functions
-  mpfr_get_f and mpfr_get_z is now int instead of void. In practice this should
-  not break any existing code.
+- MPFR 3.0 is binary incompatible with previous versions but (almost)
+  API compatible. More precisely the obsolete functions mpfr_random
+  and mpfr_random2 have been removed, and the return type of the
+  functions mpfr_get_f and mpfr_get_z is now int instead of void.
+  In practice, this should not break any existing code.
 - MPFR is now distributed under the GNU Lesser General Public License
   version 3 or later (LGPL v3+).
-- Rounding modes GMP_RNDx are now MPFR_RNDx (GMP_RNDx kept for compatibility).
+- Rounding modes GMP_RNDx are now MPFR_RNDx (GMP_RNDx kept for
+  compatibility).
 - A new rounding mode (MPFR_RNDA) is available to round away from zero.
-- The rounding mode type is now mpfr_rnd_t (as in previous versions, both
-  mpfr_rnd_t and mp_rnd_t are accepted, but mp_rnd_t may be removed in
-  the future).
+- The rounding mode type is now mpfr_rnd_t (as in previous versions,
+  both mpfr_rnd_t and mp_rnd_t are accepted, but mp_rnd_t may be
+  removed in the future).
 - The precision type is now mpfr_prec_t (as in previous versions, both
   mpfr_prec_t and mp_prec_t are accepted, but mp_prec_t may be removed
   in the future) and it is now signed (it was unsigned in MPFR 2.*, but
@@ -50,15 +51,17 @@ Changes from versions 2.4.* to version 3.0:
 - New function mpfr_set_zero.
 - New function mpfr_digamma.
 - New function mpfr_ai (incomplete, experimental).
-- New functions mpfr_set_flt and mpfr_get_flt to convert from/to the float type
+- New functions mpfr_set_flt and mpfr_get_flt to convert from/to the
+  float type.
 - New function mpfr_urandom.
-- New function mpfr_set_z_2exp (companion to mpfr_get_z_2exp, which was renamed
-  from mpfr_get_z_exp in previous versions).
+- New function mpfr_set_z_2exp (companion to mpfr_get_z_2exp, which
+  was renamed from mpfr_get_z_exp in previous versions).
 - Speed improvement for large operands in the trigonometric functions
-  (mpfr_sin, mpfr_cos, mpfr_tan, mpfr_sin_cos): speedup of about 2.5 for
-  10^5 digits, of about 5 for 10^6 digits.
-- Speed improvement for large operands of the inverse trigonometric functions
-  (arcsin, arccos, arctan): about 2 for 10^3 digits, up to 2.7 for 10^6 digits
+  (mpfr_sin, mpfr_cos, mpfr_tan, mpfr_sin_cos): speedup of about 2.5
+  for 10^5 digits, of about 5 for 10^6 digits.
+- Speed improvement for large operands of the inverse trigonometric
+  functions (arcsin, arccos, arctan): about 2 for 10^3 digits, up to
+  2.7 for 10^6 digits.
 - Some documentation files are installed in $docdir.
 - The configure script recognizes some extra "long double" formats
   (double big endian, double little endian, double-double big endian).
