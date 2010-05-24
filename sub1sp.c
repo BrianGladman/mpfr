@@ -231,7 +231,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   bx -= cnt; /* Update final expo */
                 }
               /* Last limb should be ok */
-              MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((-p)%GMP_NUMB_BITS)));
+              MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((unsigned int) (-p)
+                                                    % GMP_NUMB_BITS)));
             }
           else
             {
@@ -260,7 +261,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
               bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
               /* Last limb should be ok */
-              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((-p)%GMP_NUMB_BITS)));
+              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((unsigned int) (-p)
+                                                    % GMP_NUMB_BITS)));
             }
           /* Check expo underflow */
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
