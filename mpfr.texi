@@ -343,9 +343,7 @@ for more information, in particular if you get error messages.
 @samp{make}
 
 This will compile MPFR, and create a library archive file @file{libmpfr.a}.
-On most platforms, a dynamic library will be produced too (see configure).
-@c PZ: should "see configure" be "see INSTALL"?
-@c VL: perhaps.
+On most platforms, a dynamic library will be produced too.
 @item
 @samp{make check}
 
@@ -503,14 +501,10 @@ are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}):
 #include <mpfr.h>
 @end example
 
-@c PZ: should we really put index entries for those types and headers?
-@c VL: it may be useful.
 @cindex @code{stdarg.h}
 Likewise @code{<stdarg.h>} (or @code{<varargs.h>}) is required for prototypes
 with @code{va_list} parameters, such as @code{mpfr_vprintf}.
 
-@c PZ: should we really put index entries for those types and headers?
-@c VL: it may be useful.
 @cindex @code{stdint.h}
 @cindex @code{inttypes.h}
 @cindex @code{intmax_t}
@@ -792,8 +786,8 @@ real number and the result obtained after the rounding, assuming an
 unbounded exponent range (for the rounding), has an exponent larger
 than the maximum value of the current exponent range. In the round-to-nearest
 mode, the result is infinite.
-@c PZ: Here again, MPFR consider overflow @emph{after} rounding?
-@c VL: this is the only definition of overflow (the only one that makes sense?).
+Note: unlike the underflow case, there is only one possible definition of
+overflow here.
 
 @item NaN:
 A NaN exception occurs when the result of a function is NaN.
@@ -950,10 +944,10 @@ It begins from @var{x}, and ends when it encounters a null pointer (whose
 type must also be @code{mpfr_ptr}).
 @end deftypefun
 
-Here is an example of how to use multiple initialization functions:
+Here is an example of how to use multiple initialization functions
+(since @code{NULL} is not necessarily defined, we use
+@code{(mpfr_ptr) 0} instead).
 
-@c PZ: according to above, we should have (mpfr_ptr) NULL below?
-@c VL: NULL is not necessarily defined. So (mpfr_ptr) 0 is better.
 @example
 @{
   mpfr_t x, y, z, t;
@@ -985,8 +979,6 @@ Warning! In a given program, some other libraries might change the default
 precision and not restore it. Thus it is safer to use @code{mpfr_inits2}.
 @end deftypefun
 
-@c PZ: shouldn't MPFR_DECL_INIT go into Internals?
-@c VL: No, AFAIK, it can be used by the user.
 @defmac MPFR_DECL_INIT (@var{name}, @var{prec})
 This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
 initializes it and sets its precision to be @strong{exactly} @var{prec} bits
@@ -1155,9 +1147,7 @@ detect the base, as described below) or a number from 2 to 62 (otherwise
 the behavior is undefined). If @var{nptr} starts with valid data, the
 result is stored in @var{rop} and @code{*@var{endptr}} points to the
 character just after the valid data (if @var{endptr} is not a null pointer);
-otherwise @var{rop} is set to zero
-@c PZ: why not NAN?
-@c VL: consistency with strtod.
+otherwise @var{rop} is set to zero (for consistency with @code{strtod})
 and the value of @var{nptr} is stored
 in the location referenced by @var{endptr} (if @var{endptr} is not a null
 pointer). The usual ternary value is returned.
@@ -1477,8 +1467,6 @@ When a result is zero, its sign is the product of the signs of the operands
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
 @end deftypefun
 
-@c PZ: say something about efficiency wrt mpfr_mul?
-@c VL: I don't think so. Intuitively, mpfr_sqr should be as fast as mpfr_mul.
 @deftypefun int mpfr_sqr (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op}^{2}, the square of @var{op}}
 rounded in the direction @var{rnd}.
@@ -1741,10 +1729,9 @@ of the arc-cosine function;
 still, the result lies in the image of the output range
 by the rounding function.
 The same holds for @code{asin(-1)}, @code{asin(1)}, @code{atan(-Inf)},
-@code{atan(+Inf)} or for example for @code{atan(op)} for large @var{op} and
+@code{atan(+Inf)} or for @code{atan(op)} with large @var{op} and
 small precision of @var{rop}.
 @c PZ: check the above is correct
-@c VL: too many "for"
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -1830,10 +1817,8 @@ rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_expm1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @m{e^{op}-1,the exponential of @var{op} minus one},
-@c PZ: the exponential of @var{op} minus one is ambiguous
-@c VL: the exponential of @var{op} followed by a subtraction by one?
-rounded in the direction @var{rnd}.
+Set @var{rop} to @m{e^{op}-1,the exponential of @var{op} followed by a
+subtraction by one}, rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_eint (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2356,7 +2341,6 @@ in binary) in 2-bit precision, because the two enclosing numbers representable
 on two bits are 8 and 12, and the closest is 12.
 (If one first rounded to an integer, one would round 10.5 to 10 with
 even rounding, and then 10 would be rounded to 8 again with even rounding.)
-@c PZ: this example is better I think
 @end deftypefun
 
 @deftypefun int mpfr_rint_ceil (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2372,8 +2356,6 @@ If the result is not representable, it is rounded in the direction @var{rnd}.
 The returned value is the ternary value associated with the considered
 round-to-integer function (regarded in the same way as any other
 mathematical function).
-@c PZ: check the following is correct
-@c VL: IMHO, this is OK.
 Contrary to @code{mpfr_rint}, those functions do perform a double rounding:
 first @var{op} is rounded to the nearest integer in the direction given by
 the function name, then this nearest integer (if not representable) is
@@ -2524,10 +2506,6 @@ are equal, @var{x} is unchanged. Otherwise, if @var{x}
 is different from @var{y}, replace @var{x} by the next floating-point
 number (with the precision of @var{x} and the current exponent range)
 in the direction of @var{y}
-@c PZ: removed since there is always one, namely y, no?
-@c if there is one
-@c VL: not y (which isn't necessarily representable in the precision
-@c of x), but the infinity.
 (the infinite values are seen as the smallest and largest floating-point
 numbers). If the result is zero, it keeps the same sign. No underflow or
 overflow is generated.
@@ -2595,11 +2573,6 @@ negative, @minus{}0, or a NaN whose representation has its sign bit set).
 Set the value of @var{rop} from @var{op}, rounded toward the given
 direction @var{rnd}, then set (resp.@: clear) its sign bit if @var{s}
 is non-zero (resp.@: zero), even when @var{op} is a NaN.
-@c PZ: check the following is correct
-@c VL: not for NaN.
-@c If @var{s} is zero, it is equivalent to @code{mpfr_abs (rop, op, rnd)},
-@c otherwise it is equivalent to @code{mpfr_abs (rop, op, rnd)} followed by
-@c @code{mpfr_neg (rop, rop, rnd)}, where the second operation is exact.
 @end deftypefun
 
 @deftypefun int mpfr_copysign (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -2714,8 +2687,6 @@ or @code{mpfr_set_emin(mpfr_get_emin_min())} may not be portable.
 @end deftypefun
 
 @deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mpfr_rnd_t @var{rnd})
-@c PZ: I've modified the description, please check
-@c VL: I've done some other modifications.
 This function assumes that @var{x} is the correctly-rounded value of some
 real value @var{y} in the direction @var{rnd} and some extended exponent
 range, and that @var{t} is the corresponding ternary value.
@@ -2834,7 +2805,7 @@ By inserting the following two lines after the @code{#include <gmp.h>} line,
 @noindent
 any program written for
 MPF can be compiled directly with MPFR without any changes
-@c PZ: check
+@c PZ: check (Philippe, FIXME)
 (except the @code{gmp_printf} functions will not work for arguments of type
 @code{mpfr_t}).
 All operations are then performed with the default MPFR rounding mode,
@@ -2856,16 +2827,12 @@ space for @var{x}. Otherwise the behavior is undefined.
 Return non-zero if @var{op1} and @var{op2} are both non-zero ordinary
 numbers with the same exponent and the same first @var{op3} bits, both
 zero, or both infinities of the same sign. Return zero otherwise.
-@c PZ: already said in the section header
-@c This function is defined for compatibility with MPF.
-@c VL: say it again to discourage its use?
-Do not use it if
+This function is defined for compatibility with MPF, we do not recommend
+to use it otherwise.
+Do not use it either if
 you want to know whether two numbers are close to each other; for instance,
 1.011111 and 1.100000 are regarded as different for any value of
 @var{op3} larger than 1.
-@c PZ: I suggest to fix that interface
-@c VL: yes, this was announced in MPFR 2.4.0. Has MPF changed?
-@c See also mpfr_cmp2.
 @end deftypefun
 
 @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -2882,9 +2849,8 @@ precision of @var{rop} and the rounding mode @var{rnd} for all operations.
 @deftypefunx int mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 These functions are identical to @code{mpfr_mul_2ui} and @code{mpfr_div_2ui}
 respectively.
-@c PZ: already said in the section header
-@c These functions are only kept for compatibility with MPF.
-@c VL: say it again to discourage its use?
+These functions are only kept for compatibility with MPF, one should
+prefer @code{mpfr_mul_2ui} and @code{mpfr_div_2ui} otherwise.
 @end deftypefun
 
 
@@ -2920,11 +2886,6 @@ Note 2: MPFR functions may use the cached functions (@code{mpfr_const_pi} for
 example), even if they are not explicitly called. You have to call
 @code{mpfr_free_cache} each time you garbage the memory iff @code{mpfr_init},
 through GMP Custom Allocation, allocates its memory on the application stack.
-@c PZ: should it be the heap instead of the stack here?
-@c VL: I don't think so. If the memory is allocated on the stack, the
-@c caches will becode invalid when the memory is garbaged, hence the
-@c need to explictly free the caches to remove the references to the
-@c old (now invalid) data.
 
 @deftypefun size_t mpfr_custom_get_size (mpfr_prec_t @var{prec})
 Return the needed size in bytes to store the significand of a floating-point
@@ -2937,6 +2898,7 @@ Initialize a significand of precision @var{prec}, where
 at least and be suitably aligned for an array of @code{mp_limb_t}.
 @c PZ: give an example how to align?
 @c VL: mp_limb_t is no longer defined.
+@c PZ: yes it is in Internals!
 @end deftypefun
 
 @deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mpfr_exp_t @var{exp}, mpfr_prec_t @var{prec}, void *@var{significand})
@@ -2966,9 +2928,7 @@ The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
-@c PZ: I suggest to change this function to mpfr_custom_get_significand
-@c VL: I agree. And keep the old one with a #define?
-@deftypefun {void *} mpfr_custom_get_mantissa (mpfr_t @var{x})
+@deftypefun {void *} mpfr_custom_get_significand (mpfr_t @var{x})
 Return a pointer to the significand used by a @code{mpfr_t} initialized with
 @code{mpfr_custom_init_set}.
 The behavior of this function for any @code{mpfr_t} not initialized
@@ -2991,9 +2951,6 @@ itself.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
-
-@c PZ: removed
-@c See the test suite for examples.
 
 @node Internals,  , Custom Interface, MPFR Interface
 @cindex Internals
@@ -3088,10 +3045,6 @@ available as it comes from GMP (with a different meaning).  These types
 are currently the same (@code{mpfr_exp_t} is defined as @code{mp_exp_t}
 with @code{typedef}), so that programs can still use @code{mp_exp_t};
 but this may change in the future.
-@c PZ: removed -> do not promise too much!
-@c (possibly via a configure option).
-@c VL: I didn't promise anything. The goal was to discourage from
-@c testing the version.
 Alternatively, using the following code after including @file{mpfr.h}
 will work with official MPFR versions, as @code{mpfr_exp_t} was never
 defined in MPFR 2.x:
@@ -3172,13 +3125,9 @@ MPFR version.
 
 @item @code{mpfr_copysign} in MPFR 2.3.
 Note: MPFR 2.2 had a @code{mpfr_copysign} function that was available,
-but not documented.
-@c PZ: if not documented, we should not speak about its interface!
-@c and with a slight difference in the semantics (when
-@c the second input operand is a NaN).
-@c VL: But users shouldn't assume that the function just became documented.
-@c The semantics has changed, so that using the version from 2.2 would be
-@c incorrect.
+but not documented,
+and with a slight difference in the semantics (when
+the second input operand is a NaN).
 
 @item @code{mpfr_d_div} and @code{mpfr_d_sub} in MPFR 2.4.
 
@@ -3258,23 +3207,11 @@ against another MPFR version (older or newer), as described below.
 @itemize @bullet
 
 @item @code{mpfr_check_range} changed in MPFR 2.3.2 and MPFR 2.4.
-@c PZ: why also in 2.4?
 If the value is an inexact infinity, the overflow flag is now set
 (in case it was lost), while it was previously left unchanged.
 This is really what is expected in practice (and what the MPFR code
 was expecting), so that the previous behavior was regarded as a bug.
 Hence the change in MPFR 2.3.2.
-
-@c PZ: since it was not in the public interface, I suggest not to speak of it
-@c VL: it was in the public interface (via mpfr.h), so that a compilation
-@c against MPFR 2.2 will *not* fail, though the results may be different.
-@c However the old behavior could be regarded as a bug.
-@c @item @code{mpfr_copysign} in MPFR 2.3.
-@c Actually, this is more like an addition since the @code{mpfr_copysign}
-@c function was not documented in MPFR 2.2.  When the second input operand
-@c was a NaN, the result was set to NaN.  Now the sign of the NaN (even
-@c though it is meaningless) is taken for the output value, in order to
-@c match the IEEE 754 requirements.
 
 @item @code{mpfr_get_f} changed in MPFR 3.0.
 This function was returning zero, except for NaN and Inf, which do not
@@ -3306,10 +3243,6 @@ Alternatively, @code{if ... else} can be used instead of the
 conditional operator.
 
 @item @code{mpfr_strtofr} changed in MPFR 2.3.1 and MPFR 2.4.
-@c PZ: why also in 2.4?
-@c VL: the change in 2.4 is normal, the change in 2.3.1 (patchlevel)
-@c was an exception to resolve a bug. Note that 2.3.1 is not an
-@c ancestor of 2.4.
 This was actually a bug fix since the code and the documentation did
 not match.  But both were changed in order to have a more consistent
 and useful behavior.  The main changes in the code are as follows.
