@@ -36,9 +36,9 @@ mpfr_custom_init (void *mantissa, mpfr_prec_t prec)
   return ;
 }
 
-#undef mpfr_custom_get_mantissa
+#undef mpfr_custom_get_significand
 void *
-mpfr_custom_get_mantissa (mpfr_srcptr x)
+mpfr_custom_get_significand (mpfr_srcptr x)
 {
   return (void*) MPFR_MANT (x);
 }

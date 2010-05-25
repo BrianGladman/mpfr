@@ -709,7 +709,7 @@ __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
 
 __MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mpfr_prec_t));
 __MPFR_DECLSPEC void   mpfr_custom_init    _MPFR_PROTO ((void *, mpfr_prec_t));
-__MPFR_DECLSPEC void * mpfr_custom_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC void * mpfr_custom_get_significand _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC mpfr_exp_t mpfr_custom_get_exp  _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC void   mpfr_custom_move       _MPFR_PROTO ((mpfr_ptr, void *));
 __MPFR_DECLSPEC void   mpfr_custom_init_set   _MPFR_PROTO ((mpfr_ptr, int,
@@ -837,7 +837,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_custom_get_size(p) ((size_t)                            \
        (((p)+GMP_NUMB_BITS-1)/GMP_NUMB_BITS*sizeof (mp_limb_t)))
 #define mpfr_custom_init(m,p) do {} while (0)
-#define mpfr_custom_get_mantissa(x) ((void*)((x)->_mpfr_d))
+#define mpfr_custom_get_significand(x) ((void*)((x)->_mpfr_d))
 #define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
 #define mpfr_custom_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
 #define mpfr_custom_init_set(x,k,e,p,m) do {                   \
