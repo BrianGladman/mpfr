@@ -24,20 +24,28 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #define MPFR_ACC_OR_MUL(v)                              \
-  if (v <= ULONG_MAX / acc)                             \
-    acc *= v;                                           \
-  else                                                  \
+  do                                                    \
     {                                                   \
-      mpfr_mul_ui (y, y, acc, mode); acc = v;           \
-    }
+      if (v <= ULONG_MAX / acc)                         \
+        acc *= v;                                       \
+      else                                              \
+        {                                               \
+          mpfr_mul_ui (y, y, acc, mode); acc = v;       \
+        }                                               \
+    }                                                   \
+  while (0)
 
 #define MPFR_ACC_OR_DIV(v)                              \
-  if (v <= ULONG_MAX / acc)                             \
-    acc *= v;                                           \
-  else                                                  \
+  do                                                    \
     {                                                   \
-      mpfr_div_ui (y, y, acc, mode); acc = v;           \
-    }
+      if (v <= ULONG_MAX / acc)                         \
+        acc *= v;                                       \
+      else                                              \
+        {                                               \
+          mpfr_div_ui (y, y, acc, mode); acc = v;       \
+        }                                               \
+    }                                                   \
+  while (0)
 
 static void
 mpfr_mul_ui5 (mpfr_ptr y, mpfr_srcptr x,
