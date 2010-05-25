@@ -25,6 +25,18 @@ do
     \"Line \$. of file '$file' has more than 2046 bytes.\n\"" "$file"
 done
 
+# In general, one needs to include mpfr-impl.h (note that some platforms
+# such as MS Windows use a config.h, which is included by mpfr-impl.h).
+for file in *.c
+do
+  [ "$file" = ansi2knr.c ] || \
+    [ "$file" = div-short.c ] || \
+    [ "$file" = jyn_asympt.c ] || \
+    [ "$file" = round_raw_generic.c ] || \
+    grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\)\.h"' $file || \
+    echo "Missing '#include \"mpfr-impl.h\"' in $file?"
+done
+
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
   {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
