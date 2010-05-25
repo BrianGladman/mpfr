@@ -186,7 +186,7 @@ log
 @end tex
 @ifnottex
 @macro pom
-±
+Â±
 @end macro
 @end ifnottex
 
