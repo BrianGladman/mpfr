@@ -949,8 +949,8 @@ type must also be @code{mpfr_ptr}).
 @end deftypefun
 
 Here is an example of how to use multiple initialization functions
-(since @code{NULL} is not necessarily defined, we use
-@code{(mpfr_ptr) 0} instead).
+(since @code{NULL} is not necessarily defined in this context, we use
+@code{(mpfr_ptr) 0} instead, but @code{(mpfr_ptr) NULL} is also correct).
 
 @example
 @{
@@ -2905,10 +2905,9 @@ number of precision @var{prec}.
 @deftypefun void mpfr_custom_init (void *@var{significand}, mpfr_prec_t @var{prec})
 Initialize a significand of precision @var{prec}, where
 @var{significand} must be an area of @code{mpfr_custom_get_size (prec)} bytes
-at least and be suitably aligned for an array of @code{mp_limb_t}.
+at least and be suitably aligned for an array of @code{mp_limb_t} (GMP type,
+@pxref{Internals}).
 @c PZ: give an example how to align?
-@c VL: mp_limb_t is no longer defined.
-@c PZ: yes it is in Internals!
 @end deftypefun
 
 @deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mpfr_exp_t @var{exp}, mpfr_prec_t @var{prec}, void *@var{significand})
