@@ -3129,6 +3129,16 @@ but not documented,
 and with a slight difference in the semantics (when
 the second input operand is a NaN).
 
+@item @code{mpfr_custom_get_significand} in MPFR 3.0.
+This function was named @code{mpfr_custom_get_mantissa} in previous
+versions; @code{mpfr_custom_get_mantissa} is still available via a
+macro in @file{mpfr.h}:
+@example
+#define mpfr_custom_get_mantissa mpfr_custom_get_significand
+@end example
+Thus code that needs to work with both MPFR 2.x and MPFR 3.x should
+use @code{mpfr_custom_get_mantissa}.
+
 @item @code{mpfr_d_div} and @code{mpfr_d_sub} in MPFR 2.4.
 
 @item @code{mpfr_digamma} in MPFR 3.0.
