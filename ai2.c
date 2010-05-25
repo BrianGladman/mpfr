@@ -72,7 +72,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_prec_t correctBits;       /* estimates the number of correct bits*/
   unsigned long int i, j, L, t;
   unsigned long int cond;        /* condition number of the series */
-  unsigned long int assumed_exponent;  /* used as a lowerbound of |EXP (Ai (x))| */
+  unsigned long int assumed_exponent; /* used as a lowerbound of |EXP(Ai(x))| */
   int r;                         /* returned ternary value */
   mpfr_t s;                      /* used to store the partial sum */
   mpfr_t u0, u1;
@@ -139,7 +139,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           if (MPFR_GET_EXP (x) <= 0)
             assumed_exponent = 3;
           else
-            assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+            assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+                                + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
         }
       /* We do not know Ai (x) yet */
       /* We cover the case when EXP (Ai (x))>=-10 */
@@ -200,7 +201,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_set_ui (u0, 9, MPFR_RNDN);
       mpfr_cbrt (u0, u0, MPFR_RNDN);
       mpfr_mul (u0, u0, temp2, MPFR_RNDN);
-      mpfr_ui_div (u0, 1, u0 , MPFR_RNDN); /* u0 = 1 / ( Gamma (2/3)*9^(1/3) ) */
+      mpfr_ui_div (u0, 1, u0 , MPFR_RNDN); /* u0 = 1/( Gamma (2/3)*9^(1/3) ) */
 
       mpfr_set_ui (u1, 3, MPFR_RNDN);
       mpfr_cbrt (u1, u1, MPFR_RNDN);
@@ -279,10 +280,11 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
       MPFR_LOG_MSG (("Truncation rank: %lu\n", t));
 
-      err = 5 + MPFR_INT_CEIL_LOG2 (L+1) + MPFR_INT_CEIL_LOG2 (i+1) + cond - MPFR_GET_EXP (result);
+      err = (5 + MPFR_INT_CEIL_LOG2 (L+1) + MPFR_INT_CEIL_LOG2 (i+1)
+             + cond - MPFR_GET_EXP (result));
 
       /* err is the number of bits lost due to the evaluation error */
-      /* wprec-(prec+1): the number of bits lost due to the approximation error */
+      /* wprec-(prec+1): number of bits lost due to the approximation error */
       MPFR_LOG_MSG (("Roundoff error: %Pu\n", err));
       MPFR_LOG_MSG (("Approxim error: %Pu\n", wprec - prec - 1));
 
@@ -296,7 +298,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
             correctBits = prec;
         }
 
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits, MPFR_PREC (y), rnd)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (result, correctBits,
+                                       MPFR_PREC (y), rnd)))
         break;
 
       for (j=0; j<=L; j++)
@@ -312,14 +315,16 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (correctBits == 0)
         {
           assumed_exponent *= 2;
-          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n", assumed_exponent));
+          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n",
+                         assumed_exponent));
           wprec = prec + 6 + MPFR_INT_CEIL_LOG2 (t) + cond + assumed_exponent;
         }
     else
       {
         if (correctBits < prec)
           { /* The precision was badly chosen */
-            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai (x) (E=%ld)\n", (long)(MPFR_GET_EXP (result))));
+            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai (x)"));
+            MPFR_LOG_MSG ((" (E=%ld)\n", (long)(MPFR_GET_EXP (result))));
             wprec = prec + err + 1;
           }
         else
@@ -328,7 +333,8 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
             /* We update wprec */
             /* We assume that t will not be multiplied by more than 4 */
-            wprec = prec + (MPFR_INT_CEIL_LOG2 (t) + 2) + 6 + cond - MPFR_GET_EXP (result);
+            wprec = (prec + (MPFR_INT_CEIL_LOG2 (t) + 2) + 6 + cond
+                     - MPFR_GET_EXP (result));
           }
       }
     } /* End of ZIV loop */

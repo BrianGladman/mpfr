@@ -60,7 +60,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_prec_t correct_bits;      /* estimates the number of correct bits*/
   unsigned long int k;
   unsigned long int cond;        /* condition number of the series */
-  unsigned long int assumed_exponent;     /* used as a lowerbound of |EXP(Ai(x))| */
+  unsigned long int assumed_exponent; /* used as a lowerbound of |EXP(Ai(x))| */
   int r;
   mpfr_t s;                      /* used to store the partial sum */
   mpfr_t ti, tip1;   /* used to store successive values of t_i */
@@ -141,7 +141,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           if (MPFR_GET_EXP (x) <= 0)
             assumed_exponent = 3;
           else
-            assumed_exponent = 2 + (MPFR_GET_EXP (x)/4 + 1) + mpfr_get_ui (tmp2_sp, MPFR_RNDU);
+            assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+                                + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
         }
       /* We do not know Ai (x) yet */
       /* We cover the case when EXP (Ai (x))>=-10 */
@@ -179,7 +180,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_set_ui (ti, 9, MPFR_RNDN);
       mpfr_cbrt (ti, ti, MPFR_RNDN);
       mpfr_mul (ti, ti, temp2, MPFR_RNDN);
-      mpfr_ui_div (ti, 1, ti , MPFR_RNDN); /* ti = 1 / ( Gamma (2/3)*9^(1/3) ) */
+      mpfr_ui_div (ti, 1, ti , MPFR_RNDN); /* ti = 1/( Gamma (2/3)*9^(1/3) ) */
 
       mpfr_set_ui (tip1, 3, MPFR_RNDN);
       mpfr_cbrt (tip1, tip1, MPFR_RNDN);
@@ -206,9 +207,9 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
           /* FIXME: if s==0 */
           test1 = MPFR_IS_ZERO (ti)
-            || ( MPFR_GET_EXP (ti) + (mpfr_exp_t)prec + 3 <= MPFR_GET_EXP (s) );
+            || (MPFR_GET_EXP (ti) + (mpfr_exp_t)prec + 3 <= MPFR_GET_EXP (s));
           test2 = MPFR_IS_ZERO (tip1)
-            || ( MPFR_GET_EXP (tip1) + (mpfr_exp_t)prec + 3 <= MPFR_GET_EXP (s) );
+            || (MPFR_GET_EXP (tip1) + (mpfr_exp_t)prec + 3 <= MPFR_GET_EXP (s));
 
           if ( test1 && test2 && (x3u <= k*(k+1)/2) )
             break; /* FIXME: if k*(k+1) overflows */
@@ -239,14 +240,16 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (correct_bits == 0)
         {
           assumed_exponent *= 2;
-          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n", assumed_exponent));
+          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n",
+                         assumed_exponent));
           wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (k) + cond + assumed_exponent;
         }
       else
         {
           if (correct_bits < prec)
             { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x) (E=%ld)\n", (long)MPFR_GET_EXP (s)));
+              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"));
+              MPFR_LOG_MSG ((" (E=%ld)\n", (long)MPFR_GET_EXP (s)));
               wprec = prec + err + 1;
             }
           else
