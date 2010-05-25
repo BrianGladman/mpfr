@@ -61,7 +61,7 @@ new_mpfr (mpfr_prec_t p)
 static mpfr_ptr
 return_mpfr (mpfr_ptr x, char *old_stack)
 {
-  void *mantissa       = mpfr_custom_get_mantissa (x);
+  void *mantissa       = mpfr_custom_get_significand (x);
   size_t size_mantissa = mpfr_custom_get_size (mpfr_get_prec (x));
   mpfr_ptr newx;
 
