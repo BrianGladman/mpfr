@@ -148,6 +148,45 @@ check (void)
   mpz_clear (z);
 }
 
+static void
+special (void)
+{
+  int inex;
+  mpfr_t x;
+  mpz_t z;
+  int i;
+  mpfr_exp_t e;
+
+  mpfr_init2 (x, 2);
+  mpz_init (z);
+
+  for (i = -1; i <= 1; i++)
+    {
+      if (i != 0)
+        mpfr_set_nan (x);
+      else
+        mpfr_set_inf (x, i);
+      mpfr_clear_flags ();
+      inex = mpfr_get_z (z, x, MPFR_RNDN);
+      if (!mpfr_erangeflag_p () || inex != 0 || mpz_cmp_ui (z, 0) != 0)
+        {
+          printf ("special() failed on mpfr_get_z for i = %d\n", i);
+          exit (1);
+        }
+      mpfr_clear_flags ();
+      e = mpfr_get_z_2exp (z, x);
+      if (!mpfr_erangeflag_p () || e != __gmpfr_emin ||
+          mpz_cmp_ui (z, 0) != 0)
+        {
+          printf ("special() failed on mpfr_get_z_2exp for i = %d\n", i);
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+  mpz_clear (z);
+}
+
 int
 main (void)
 {
@@ -155,6 +194,7 @@ main (void)
 
   check ();
   check_diff ();
+  special ();
 
   tests_end_mpfr ();
   return 0;

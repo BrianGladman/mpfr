@@ -32,14 +32,16 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY (!mpfr_fits_slong_p (f, rnd)))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? LONG_MIN : LONG_MAX;
+      return MPFR_IS_NAN (f) ? 0 :
+        MPFR_IS_NEG (f) ? LONG_MIN : LONG_MAX;
     }
 
-  else if (MPFR_UNLIKELY (MPFR_IS_ZERO (f)))
-     return (long) 0;
+  if (MPFR_IS_ZERO (f))
+    return (long) 0;
 
   /* determine prec of long */
-  for (s = LONG_MIN, prec = 0; s != 0; s /= 2, prec ++);
+  for (s = LONG_MIN, prec = 0; s != 0; s /= 2, prec++)
+    { }
 
   /* first round to prec bits */
   mpfr_init2 (x, prec);

@@ -205,6 +205,22 @@ check_erange (void)
       exit (1);
     }
 
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_uj (x, MPFR_RNDN);
+  if (d != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_uj + NaN\n");
+      exit (1);
+    }
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_sj (x, MPFR_RNDN);
+  if (d != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_sj + NaN\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
 }
 

@@ -50,18 +50,19 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   mpfr_prec_t prec;
   mpfr_t x;
 
-  if (!mpfr_fits_intmax_p (f, rnd))
+  if (MPFR_UNLIKELY (!mpfr_fits_intmax_p (f, rnd)))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? MPFR_INTMAX_MIN : MPFR_INTMAX_MAX;
+      return MPFR_IS_NAN (f) ? 0 :
+        MPFR_IS_NEG (f) ? MPFR_INTMAX_MIN : MPFR_INTMAX_MAX;
     }
+
   if (MPFR_IS_ZERO (f))
      return (intmax_t) 0;
 
   /* determine the precision of intmax_t */
   for (r = MPFR_INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
-    {
-    }
+    { }
   /* Note: though INTMAX_MAX would have been sufficient for the conversion,
      we chose INTMAX_MIN so that INTMAX_MIN - 1 is always representable in
      precision prec; this is useful to detect overflows in MPFR_RNDZ (will

@@ -50,10 +50,11 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
   mpfr_prec_t prec;
   mpfr_t x;
 
-  if (!mpfr_fits_uintmax_p (f, rnd))
+  if (MPFR_UNLIKELY (!mpfr_fits_uintmax_p (f, rnd)))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? (uintmax_t) 0 : MPFR_UINTMAX_MAX;
+      return MPFR_IS_NAN (f) || MPFR_IS_NEG (f) ?
+        (uintmax_t) 0 : MPFR_UINTMAX_MAX;
     }
 
   if (MPFR_IS_ZERO (f))

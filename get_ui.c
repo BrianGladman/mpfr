@@ -31,16 +31,18 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
   mp_size_t n;
   mpfr_exp_t exp;
 
-  if (!mpfr_fits_ulong_p (f, rnd))
+  if (MPFR_UNLIKELY (!mpfr_fits_ulong_p (f, rnd)))
     {
       MPFR_SET_ERANGE ();
-      return MPFR_IS_NEG (f) ? 0 : ULONG_MAX;
+      return MPFR_IS_NAN (f) || MPFR_IS_NEG (f) ?
+        (unsigned long) 0 : ULONG_MAX;
     }
 
   if (MPFR_IS_ZERO (f))
     return (unsigned long) 0;
 
-  for (s = ULONG_MAX, prec = 0; s != 0; s >>= 1, prec ++);
+  for (s = ULONG_MAX, prec = 0; s != 0; s /= 2, prec ++)
+    { }
 
   /* first round to prec bits */
   mpfr_init2 (x, prec);

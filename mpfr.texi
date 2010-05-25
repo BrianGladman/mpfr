@@ -1278,13 +1278,10 @@ see the documentation of @code{mpfr_set_decimal64}.
 Convert @var{op} to a @code{long}, an @code{unsigned long},
 an @code{intmax_t} or an @code{uintmax_t} (respectively) after rounding
 it with respect to @var{rnd}.
-If @var{op} is NaN, the result is undefined.
-@c PZ: is the erange flag set in the above case?
-@c VL: no, however we could decide to set it and return an arbitrary value,
-@c e.g. 0.
-If @var{op} is too big for the return type, it returns the maximum
+If @var{op} is NaN, 0 is returned and the @emph{erange} flag is set.
+If @var{op} is too big for the return type, the function returns the maximum
 or the minimum of the corresponding C type, depending on the direction
-of the overflow. The @emph{erange} flag is set too.
+of the overflow; the @emph{erange} flag is set too.
 See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
@@ -1318,13 +1315,18 @@ exactly equals
 $rop \times 2^{\rm exp}$.
 @end tex
 If @var{op} is zero, the minimal exponent @code{emin} is returned.
-If the exponent is not representable in the @code{mpfr_exp_t} type, the
-behavior is undefined.
+If @var{op} is NaN or an infinity, the @emph{erange} flag is set, @var{rop}
+is set to 0, and the the minimal exponent @code{emin} is returned.
+The returned exponent may be less than the minimal exponent @code{emin}
+of MPFR numbers in the current exponent range; in case the exponent is
+not representable in the @code{mpfr_exp_t} type, the @emph{erange} flag
+is set and the minimal value of the @code{mpfr_exp_t} type is returned.
 @end deftypefun
 
 @deftypefun int mpfr_get_z (mpz_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
-@var{rnd}. If @var{op} is NaN or Inf, the result is undefined.
+@var{rnd}. If @var{op} is NaN or n infinity, the @emph{erange} flag is
+set, @var{rop} is set to 0, and 0 is returned.
 @end deftypefun
 
 @deftypefun int mpfr_get_f (mpf_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

@@ -372,6 +372,22 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_ui (x, MPFR_RNDN);
+  if (d != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_ui + NaN\n");
+      exit (1);
+    }
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_si (x, MPFR_RNDN);
+  if (d != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_si + NaN\n");
+      exit (1);
+    }
+
   emin = mpfr_get_emin ();
   mpfr_set_prec (x, 2);
 
