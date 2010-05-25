@@ -2082,8 +2082,8 @@ the standard @code{printf} (in particular, notice that the @samp{precision} is
 related to the number of digits displayed in the base chosen by @samp{conv}
 and not related to the internal precision of the @code{mpfr_t} variable).
 @code{mpfr_printf} accepts the same @samp{type} specifiers as GMP (except the
-non-standard and deprecated @samp{q}, use @samp{ll} instead), plus @samp{R}
-and @samp{P}:
+non-standard and deprecated @samp{q}, use @samp{ll} instead), namely the
+length modifiers defined in the C standard:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -2095,11 +2095,18 @@ and @samp{P}:
 @item @samp{L}  @tab @code{long double}
 @item @samp{t}  @tab @code{ptrdiff_t}
 @item @samp{z}  @tab @code{size_t}
+@end multitable
+@end quotation
 
+and the @samp{type} specifiers defined in GMP plus @samp{R} and @samp{P}
+specific to MPFR (the second column in the table below shows the type of the
+argument read in the argument list and the kind of @samp{conv} specifier to
+use after the @samp{type} specifier):
+
+@quotation
+@multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{F}  @tab @code{mpf_t}, float conversions
 @item @samp{Q}  @tab @code{mpq_t}, integer conversions
-@c PZ: should it be rational conversions instead?
-@c VL: I think so. Philippe? FIXME
 @item @samp{M}  @tab @code{mp_limb_t}, integer conversions
 @item @samp{N}  @tab @code{mp_limb_t} array, integer conversions
 @item @samp{Z}  @tab @code{mpz_t}, integer conversions
@@ -2117,11 +2124,10 @@ mentioned in the GMP documentation:
 @ifnotinfo
 see Section ``Formatted Output Strings'' in @cite{GNU MP}.
 @end ifnotinfo
-In particular, the @samp{type} specifiers (except @samp{R} and @samp{P}
-defined by MPFR) are supported only if they are supported by @code{gmp_printf}
-in your GMP build; this implies that the standard specifiers, such as
-@samp{t}, must @emph{also} be supported by your C library if you want to use
-them.
+In particular, the @samp{type} specifiers (except @samp{R} and @samp{P}) are
+supported only if they are supported by @code{gmp_printf} in your GMP build;
+this implies that the standard specifiers, such as @samp{t}, must @emph{also}
+be supported by your C library if you want to use them.
 
 The @samp{rounding} field is specific to @code{mpfr_t} arguments and should
 not be used with other types.
