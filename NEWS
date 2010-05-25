@@ -23,10 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 Changes from versions 2.4.* to version 3.0:
 - The "boudin aux pommes" release.
 - MPFR 3.0 is binary incompatible with previous versions but (almost)
-  API compatible. More precisely the obsolete functions mpfr_random
-  and mpfr_random2 have been removed, and the return type of the
-  functions mpfr_get_f and mpfr_get_z is now int instead of void.
-  In practice, this should not break any existing code.
+  API compatible.  More precisely the obsolete functions mpfr_random
+  and mpfr_random2 have been removed, the meaning of the return type
+  of the function mpfr_get_f has changed, and the return type of the
+  function mpfr_get_z is now int instead of void.  In practice, this
+  should not break any existing code.
 - MPFR is now distributed under the GNU Lesser General Public License
   version 3 or later (LGPL v3+).
 - Rounding modes GMP_RNDx are now MPFR_RNDx (GMP_RNDx kept for
