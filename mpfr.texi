@@ -11,6 +11,10 @@
 @end iftex
 @comment %**end of header
 
+@c Note: avoid using non-ASCII characters directly when possible,
+@c as the "info" utility cannot currently handle them.
+@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
+
 @copying
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
