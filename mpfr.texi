@@ -2817,7 +2817,6 @@ By inserting the following two lines after the @code{#include <gmp.h>} line,
 @noindent
 any program written for
 MPF can be compiled directly with MPFR without any changes
-@c PZ: check (Philippe, FIXME)
 (except the @code{gmp_printf} functions will not work for arguments of type
 @code{mpfr_t}).
 All operations are then performed with the default MPFR rounding mode,
