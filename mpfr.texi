@@ -1325,7 +1325,7 @@ is set and the minimal value of the @code{mpfr_exp_t} type is returned.
 
 @deftypefun int mpfr_get_z (mpz_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
-@var{rnd}. If @var{op} is NaN or n infinity, the @emph{erange} flag is
+@var{rnd}. If @var{op} is NaN or an infinity, the @emph{erange} flag is
 set, @var{rop} is set to 0, and 0 is returned.
 @end deftypefun
 
