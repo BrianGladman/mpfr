@@ -2484,13 +2484,13 @@ Newton's algorithm to compute the inverse of @var{a}, assuming @var{x} is
 already an approximation to @var{n} bits:
 @example
   mpfr_set_prec (t, 2 * n);
-  mpfr_set (t, a, MPFR_RNDN);            /* round a to 2n bits */
-  mpfr_mul (t, t, x, MPFR_RNDN);         /* t is correct to 2n bits */
-  mpfr_ui_sub (t, 1, t, MPFR_RNDN);      /* high n bits cancel with 1 */
-  mpfr_prec_round (t, n, MPFR_RNDN);     /* t is correct to n bits */
-  mpfr_mul (t, t, x, MPFR_RNDN);         /* t is correct to n bits */
+  mpfr_set (t, a, MPFR_RNDN);         /* round a to 2n bits */
+  mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to 2n bits */
+  mpfr_ui_sub (t, 1, t, MPFR_RNDN);   /* high n bits cancel with 1 */
+  mpfr_prec_round (t, n, MPFR_RNDN);  /* t is correct to n bits */
+  mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to n bits */
   mpfr_prec_round (x, 2 * n, MPFR_RNDN); /* exact */
-  mpfr_add (x, x, t, MPFR_RNDN);         /* x is correct to 2n bits */
+  mpfr_add (x, x, t, MPFR_RNDN);      /* x is correct to 2n bits */
 @end example
 @end deftypefun
 
