@@ -1309,7 +1309,7 @@ precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
 exactly equals
 @ifnottex
-@var{rop} multiplied by two exponent @var{exp}.
+@var{rop} times 2 raised to the power @var{exp}.
 @end ifnottex
 @tex
 $rop \times 2^{\rm exp}$.
