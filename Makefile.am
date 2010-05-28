@@ -15,7 +15,8 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = tests
 
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER FAQ.html NEWS TODO \
-  examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c
+  examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
+  examples/version.c
 
 EXTRA_DIST = PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jyn_asympt.c ieee_floats.h
 
