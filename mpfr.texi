@@ -730,8 +730,8 @@ an underflow if that value is not representable in the current exponent range.
 
 This section specifies the floating-point values (of type @code{mpfr_t})
 returned by MPFR functions (where by ``returned'' we mean here the modified
-value of the destination variable, which should not be mixed with ternary
-return value of those functions).
+value of the destination object, which should not be mixed with the ternary
+return value of type @code{int} of those functions).
 For functions returning several values (like
 @code{mpfr_sin_cos}), the rules apply to each result separately.
 
