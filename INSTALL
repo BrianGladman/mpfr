@@ -127,6 +127,7 @@ symbols, and thus dynamically linking your software with a different
 version of GMP might fail, even though it is declared as compatible
 by Libtool's versioning system.
 
+
 Tuning MPFR
 ===========
 
@@ -137,6 +138,7 @@ by the MPFR tuning mechanism.
 
 Then go back to the MPFR build directory, and type "make tune". This will
 build an optimized file "mparam.h" for your specific architecture.
+
 
 ./configure options
 ===================
@@ -384,6 +386,7 @@ Notes on 32-bit Windows Applications (win32)
 
     Note: The L modifier has been standard for a long time (it was added
     in ISO C89).
+
 
 Notes on 64-bit Windows Applications (x64)
 ==========================================
