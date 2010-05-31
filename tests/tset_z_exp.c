@@ -89,12 +89,39 @@ check (long i, mpfr_rnd_t rnd)
   mpz_clear (z);
 }
 
+/* See http://websympa.loria.fr/wwsympa/arc/mpfr/2010-05/msg00020.html */
+static void
+bug20100531 (void)
+{
+  mpfr_t f;
+  mpz_t z;
+  mpfr_exp_t e;
+  long i = 854452717;
+
+  mpfr_init2 (f, 8 * sizeof(long));
+  mpz_init (z);
+  mpz_set_ui (z, i);
+  e = 1073741810;
+  mpfr_set_z_2exp (f, z, e, MPFR_RNDD);
+  mpfr_div_2si (f, f, e, MPFR_RNDD);
+  if (mpfr_get_si (f, MPFR_RNDZ) != i)
+    {
+      printf ("Error in bug20100531, expected %ld\n", i);
+      mpfr_printf ("got %Re\n", f);
+      exit (1);
+    }
+  mpfr_clear (f);
+  mpz_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
   long j;
 
   tests_start_mpfr ();
+
+  bug20100531 ();
 
   check (0, MPFR_RNDN);
   for (j = 0; j < 200000; j++)
