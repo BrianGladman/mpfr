@@ -1775,15 +1775,9 @@ Set @var{rop} to the arc-tangent2 of @var{y} and @var{x},
 rounded in the direction @var{rnd}:
 if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
 if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan (@GMPabs{y/x}))},
-thus a number from @m{-\pi/2,-Pi/2} to @m{3\pi/2,3*Pi/2}.
-@c PZ: check the above is correct
-@c VL: atan2 from C99 disagrees:
-@c "The atan2 functions return arctan y/x in the interval [-pi,+pi] radians."
-@c See also IEEE 754-2008. FIXME!
+thus a number from @m{-\pi,-Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
 @m{-\pi,-Pi},
-@c PZ: shouldn't it be -pi/2 or 3pi/2 instead?
-@c VL: no, see above.
 its rounded result might be outside the function output range.
 
 @code{atan2(y, 0)} does not raise any floating-point exception.
