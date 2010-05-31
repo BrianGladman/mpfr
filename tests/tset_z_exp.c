@@ -84,7 +84,8 @@ check (long i, mpfr_rnd_t rnd)
   inex = mpfr_set_z_2exp (f, z, e, rnd);
   if (inex != 0)
     {
-      printf ("Error in mpfr_set_z_2exp for i=%ld, e=%ld, wrong ternary value\n", i, e);
+      printf ("Error in mpfr_set_z_2exp for i=%ld, e=%ld,"
+              " wrong ternary value\n", i, (long) e);
       printf ("expected 0, got %d\n", inex);
       exit (1);
     }
