@@ -70,18 +70,17 @@ check (long i, mpfr_rnd_t rnd)
   mpfr_t f;
   mpz_t z;
   mpfr_exp_t e;
-  int inex;
 
+  /* FIXME: why 8? */
   mpfr_init2 (f, 8 * sizeof(long));
   mpz_init (z);
   mpz_set_ui (z, i);
   do
-    {
-      e = randexp ();
-      inex = mpfr_set_z_2exp (f, z, e, rnd);
-      /* inex != 0 in case of overflow (exponent too large) */
-    }
-  while (inex != 0);
+    e = randexp ();
+  while (e > mpfr_get_emax () - 8 * sizeof(long));
+  mpfr_set_z_2exp (f, z, e, rnd);
+  /* FIXME: shouldn't the inex flag of mpfr_set_z_2exp be 0?
+     This isn't always the case. */
   mpfr_div_2si (f, f, e, rnd);
   if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
