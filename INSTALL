@@ -53,6 +53,11 @@ MPFR).
 4. To build the library, type:
      make
 
+   [optional] if you want to tune MPFR for your specific architecture, see
+   the section "Tuning MPFR" below. Note that for most common architectures,
+   MPFR includes some default tuning parameters which should be near from
+   optimal.
+
 5. To check the built library (runs the test files), type:
      make check
 
@@ -122,6 +127,16 @@ symbols, and thus dynamically linking your software with a different
 version of GMP might fail, even though it is declared as compatible
 by Libtool's versioning system.
 
+Tuning MPFR
+===========
+
+For this, you need to build MPFR with a GMP build directory (see above).
+In the GMP build directory, you also need to go into the "tune" subdirectory
+and type "make speed". This will build the GMP speed library, which is used
+by the MPFR tuning mechanism.
+
+Then go back to the MPFR build directory, and type "make tune". This will
+build an optimized file "mparam.h" for your specific architecture.
 
 ./configure options
 ===================
