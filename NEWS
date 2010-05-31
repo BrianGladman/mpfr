@@ -48,6 +48,10 @@ Changes from versions 2.4.* to version 3.0:
 - mpfr_strtofr now accepts bases from 37 to 62.
 - mpfr_custom_get_mantissa was renamed to mpfr_custom_get_significand
   (mpfr_custom_get_mantissa is still available via a #define).
+- Functions mpfr_get_si, mpfr_get_ui, mpfr_get_sj, mpfr_get_uj,
+  mpfr_get_z and mpfr_get_z_2exp no longer have cases with undefined
+  behavior; in these cases, the behavior is now specified, and in
+  particular, the erange flag is set.
 - New functions mpfr_buildopt_tls_p and mpfr_buildopt_decimal_p giving
   information about options used at MPFR build time.
 - New function mpfr_regular_p.

@@ -3261,6 +3261,11 @@ This function was returning zero, except for NaN and Inf, which do not
 exist in MPF. The @emph{erange} flag is now set in these cases,
 and @code{mpfr_get_f} now returns the usual ternary value.
 
+@item @code{mpfr_get_si}, @code{mpfr_get_sj}, @code{mpfr_get_ui}
+and @code{mpfr_get_uj} changed in MPFR 3.0.
+In previous MPFR versions, the cases where the @emph{erange} flag
+is set were unspecified.
+
 @item @code{mpfr_get_z} changed in MPFR 3.0.
 The return type was @code{void}; it is now @code{int}, and the usual
 ternary value is returned.  Thus programs that need to work with both
@@ -3284,6 +3289,16 @@ as in:
 @end example
 Alternatively, @code{if ... else} can be used instead of the
 conditional operator.
+
+Moreover the cases where the @emph{erange} flag is set were unspecified
+in MPFR 2.x.
+
+@item @code{mpfr_get_z_exp} changed in MPFR 3.0.
+In previous MPFR versions, the cases where the @emph{erange} flag
+is set were unspecified.
+Note: this function has been renamed to @code{mpfr_get_z_2exp}
+in MPFR 3.0, but @code{mpfr_get_z_exp} is still available for
+compatibility reasons.
 
 @item @code{mpfr_strtofr} changed in MPFR 2.3.1 and MPFR 2.4.
 This was actually a bug fix since the code and the documentation did
