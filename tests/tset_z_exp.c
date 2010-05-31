@@ -45,7 +45,7 @@ check0 (void)
   mpfr_init (x);
   mpz_init (y);
   mpz_set_si (y, 0);
-  for(r = 0; r < MPFR_RND_MAX; r++)
+  for (r = 0; r < MPFR_RND_MAX; r++)
     {
       e = randexp ();
       inexact = mpfr_set_z_2exp (x, y, e, (mpfr_rnd_t) r);
@@ -70,17 +70,24 @@ check (long i, mpfr_rnd_t rnd)
   mpfr_t f;
   mpz_t z;
   mpfr_exp_t e;
+  int inex;
 
-  /* FIXME: why 8? */
-  mpfr_init2 (f, 8 * sizeof(long));
+  /* using CHAR_BIT * sizeof(long) bits of precision ensures that
+     mpfr_set_z_2exp is exact below */
+  mpfr_init2 (f, CHAR_BIT * sizeof(long));
   mpz_init (z);
   mpz_set_ui (z, i);
+  /* the following loop ensures that no overflow occurs */
   do
     e = randexp ();
-  while (e > mpfr_get_emax () - 8 * sizeof(long));
-  mpfr_set_z_2exp (f, z, e, rnd);
-  /* FIXME: shouldn't the inex flag of mpfr_set_z_2exp be 0?
-     This isn't always the case. */
+  while (e > mpfr_get_emax () - CHAR_BIT * sizeof(long));
+  inex = mpfr_set_z_2exp (f, z, e, rnd);
+  if (inex != 0)
+    {
+      printf ("Error in mpfr_set_z_2exp for i=%ld, e=%ld, wrong ternary value\n", i, e);
+      printf ("expected 0, got %d\n", inex);
+      exit (1);
+    }
   mpfr_div_2si (f, f, e, rnd);
   if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
