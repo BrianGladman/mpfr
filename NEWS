@@ -73,6 +73,7 @@ Changes from versions 2.4.* to version 3.0:
 - The configure script recognizes some extra "long double" formats
   (double big endian, double little endian, double-double big endian).
 - MPFR manual: added "API Compatibility" section.
+- Test coverage: 97.1% lines of code.
 - Bug fixes.
 
 Changes from versions 2.3.* to version 2.4.0:
