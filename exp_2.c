@@ -34,10 +34,22 @@ mpz_normalize  (mpz_t, mpz_t, mpfr_exp_t);
 static mpfr_exp_t
 mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
 
-#define MY_INIT_MPZ(x, s) { \
-   (x)->_mp_alloc = (s); \
-   PTR(x) = (mp_ptr) MPFR_TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
+#ifdef DEBUG
+ #define MY_INIT_MPZ(x,s) mpz_init(x)
+ #define MY_CLEAR_MPZ(x) mpz_clear(x)
+#else
+/* Warning: GMP seems to allocate more than necessary, for example with
+   GMP 5.0.1 mpz_init_set_str (z, "559571982226613223396", 10) allocates 3
+   limbs on a 64-bit machine, even if z fits into 2 limbs. Then
+   mpz_fdiv_q_2exp (rop, z, 34) allocates 3 limbs in rop, even if the
+   result fits into 1 limb. Thus we allocate one more limb than requested.
+   See http://gmplib.org/list-archives/gmp-devel/2010-June/001577.html */
+ #define MY_INIT_MPZ(x, s) { \
+   (x)->_mp_alloc = (s + 1); \
+   PTR(x) = (mp_ptr) MPFR_TMP_ALLOC((s + 1)*BYTES_PER_MP_LIMB); \
    (x)->_mp_size = 0; }
+ #define MY_CLEAR_MPZ(x)
+#endif
 
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
@@ -55,7 +67,7 @@ mpz_normalize (mpz_t rop, mpz_t z, mpfr_exp_t q)
       return (mpfr_exp_t) k - q;
     }
   if (MPFR_UNLIKELY(rop != z))
-    mpz_set(rop, z);
+    mpz_set (rop, z);
   return 0;
 }
 
@@ -67,9 +79,9 @@ static mpfr_exp_t
 mpz_normalize2 (mpz_t rop, mpz_t z, mpfr_exp_t expz, mpfr_exp_t target)
 {
   if (target > expz)
-    mpz_fdiv_q_2exp (rop, z, target-expz);
+    mpz_fdiv_q_2exp (rop, z, target - expz);
   else
-    mpz_mul_2exp(rop, z, expz-target);
+    mpz_mul_2exp (rop, z, expz - target);
   return target;
 }
 
@@ -188,7 +200,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
           MPFR_TMP_MARK(marker);
-          MY_INIT_MPZ(ss, 3 + 2*((q-1)/GMP_NUMB_BITS));
+          MY_INIT_MPZ (ss, 3 + 2*((q-1)/GMP_NUMB_BITS));
           exps = mpfr_get_z_2exp (ss, s);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
@@ -208,6 +220,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_set_z (s, ss, MPFR_RNDN);
 
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
+          MY_CLEAR_MPZ(ss);
           MPFR_TMP_FREE(marker); /* don't need ss anymore */
 
           /* error is at most 2^K*l, plus cancel+2 to take into account of
@@ -292,6 +305,8 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
     expr += mpz_normalize(rr, rr, tbit);
   }
 
+  MY_CLEAR_MPZ(t);
+  MY_CLEAR_MPZ(rr);
   MPFR_TMP_FREE(marker);
   return 3*l*(l+1);
 }
@@ -325,8 +340,8 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
     m = 2;
 
   MPFR_TMP_MARK(marker);
-  R = (mpz_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mpz_t));       /* R[i] is r^i */
-  expR = (mpfr_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof(mpfr_exp_t));
+  R = (mpz_t*) MPFR_TMP_ALLOC((m + 1) * sizeof (mpz_t));      /* R[i] is r^i */
+  expR = (mpfr_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof (mpfr_exp_t));
   /* expR[i] is the exponent for R[i] */
   sizer = MPFR_LIMB_SIZE(r);
   mpz_init (tmp);
@@ -364,9 +379,9 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
       /* all R[i] must have exponent 1-ql */
       if (l != 0)
         for (i = 0 ; i < m ; i++)
-          expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
+          expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1 - ql);
       /* the absolute error on R[i]*rr is still 2*i-1 ulps */
-      expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
+      expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1 - ql);
       /* err(t) <= 2*m-1 ulps */
       /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
          using Horner's scheme */
@@ -408,6 +423,8 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
     }
   while ((size_t) expr+rrbit > (size_t) (int) -q);
 
+  MY_CLEAR_MPZ(rr);
+  MY_CLEAR_MPZ(t);
   MPFR_TMP_FREE(marker);
   mpz_clear(tmp);
   return l*(l+4);
