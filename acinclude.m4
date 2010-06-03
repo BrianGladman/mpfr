@@ -716,11 +716,6 @@ case $host in
   *-*-beos* | *-*-cygwin* | *-*-pw32*)
     # According to libtool AC CHECK LIBM, these systems don't have libm
     ;;
-  *-*-hpux*)
-    # -lM means something subtly different to -lm, SVID style error handling
-    # or something.  FIXME: Why exactly do we want this?
-    AC_CHECK_LIB(M, main, MPFR_LIBM="-lM")
-    ;;
   *-*-solaris*)
     # On Solaris the math functions new in C99 are in -lm9x.
     # FIXME: Do we need -lm9x as well as -lm, or just instead of?
