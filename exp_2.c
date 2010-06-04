@@ -34,23 +34,6 @@ mpz_normalize  (mpz_t, mpz_t, mpfr_exp_t);
 static mpfr_exp_t
 mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
 
-#ifdef DEBUG
- #define MY_INIT_MPZ(x,s) mpz_init(x)
- #define MY_CLEAR_MPZ(x) mpz_clear(x)
-#else
-/* Warning: GMP seems to allocate more than necessary, for example with
-   GMP 5.0.1 mpz_init_set_str (z, "559571982226613223396", 10) allocates 3
-   limbs on a 64-bit machine, even if z fits into 2 limbs. Then
-   mpz_fdiv_q_2exp (rop, z, 34) allocates 3 limbs in rop, even if the
-   result fits into 1 limb. Thus we allocate one more limb than requested.
-   See http://gmplib.org/list-archives/gmp-devel/2010-June/001577.html */
- #define MY_INIT_MPZ(x, s) { \
-   (x)->_mp_alloc = (s + 1); \
-   PTR(x) = (mp_ptr) MPFR_TMP_ALLOC((s + 1)*BYTES_PER_MP_LIMB); \
-   (x)->_mp_size = 0; }
- #define MY_CLEAR_MPZ(x)
-#endif
-
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
@@ -103,7 +86,6 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t r, s;
   mpz_t ss;
   MPFR_ZIV_DECL (loop);
-  MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
                  ("y[%#R]=%R inexact=%d", y, y, inexact));
@@ -199,8 +181,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_POS (r));
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
-          MPFR_TMP_MARK(marker);
-          MY_INIT_MPZ (ss, 3 + 2*((q-1)/GMP_NUMB_BITS));
+          mpz_init (ss);
           exps = mpfr_get_z_2exp (ss, s);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
@@ -220,8 +201,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_set_z (s, ss, MPFR_RNDN);
 
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
-          MY_CLEAR_MPZ(ss);
-          MPFR_TMP_FREE(marker); /* don't need ss anymore */
+          mpz_clear (ss);
 
           /* error is at most 2^K*l, plus cancel+2 to take into account of
              the error of 3*2^(EXP(old_r)-EXP(new_r)) on r */
@@ -268,16 +248,14 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   mp_size_t qn;
   mpz_t t, rr;
   mp_size_t sbit, tbit;
-  MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN (MPFR_IS_PURE_FP (r));
 
-  MPFR_TMP_MARK(marker);
   qn = 1 + (q-1)/GMP_NUMB_BITS;
   expt = 0;
   *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
-  MY_INIT_MPZ(t, 2*qn+1);
-  MY_INIT_MPZ(rr, qn+1);
+  mpz_init (t);
+  mpz_init (rr);
   mpz_set_ui(t, 1);
   mpz_set_ui(s, 1);
   mpz_mul_2exp(s, s, q-1);
@@ -305,10 +283,10 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
     expr += mpz_normalize(rr, rr, tbit);
   }
 
-  MY_CLEAR_MPZ(t);
-  MY_CLEAR_MPZ(rr);
-  MPFR_TMP_FREE(marker);
-  return 3*l*(l+1);
+  mpz_clear (t);
+  mpz_clear (rr);
+
+  return 3 * l * (l + 1);
 }
 
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
@@ -340,17 +318,17 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
     m = 2;
 
   MPFR_TMP_MARK(marker);
-  R = (mpz_t*) MPFR_TMP_ALLOC((m + 1) * sizeof (mpz_t));      /* R[i] is r^i */
+  R = (mpz_t*) MPFR_TMP_ALLOC ((m + 1) * sizeof (mpz_t));     /* R[i] is r^i */
   expR = (mpfr_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof (mpfr_exp_t));
   /* expR[i] is the exponent for R[i] */
   sizer = MPFR_LIMB_SIZE(r);
   mpz_init (tmp);
-  MY_INIT_MPZ (rr, sizer + 2);
-  MY_INIT_MPZ (t, 2 * sizer);            /* double size for products */
+  mpz_init (rr);
+  mpz_init (t);
   mpz_set_ui (s, 0);
   *exps = 1 - q;                        /* 1 ulp = 2^(1-q) */
   for (i = 0 ; i <= m ; i++)
-    MY_INIT_MPZ (R[i], sizer + 2);
+    mpz_init (R[i]);
   expR[1] = mpfr_get_z_2exp (R[1], r); /* exact operation: no error */
   expR[1] = mpz_normalize2 (R[1], R[1], expR[1], 1 - q); /* error <= 1 ulp */
   mpz_mul (t, R[1], R[1]); /* err(t) <= 2 ulps */
@@ -421,11 +399,14 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
       /* TODO: Wrong cast. I don't want what is right, but this is
          certainly wrong */
     }
-  while ((size_t) expr+rrbit > (size_t) (int) -q);
+  while ((size_t) expr + rrbit > (size_t) (int) -q);
 
-  MY_CLEAR_MPZ(rr);
-  MY_CLEAR_MPZ(t);
+  for (i = 0 ; i <= m ; i++)
+    mpz_clear (R[i]);
   MPFR_TMP_FREE(marker);
-  mpz_clear(tmp);
-  return l*(l+4);
+  mpz_clear (rr);
+  mpz_clear (t);
+  mpz_clear (tmp);
+
+  return l * (l + 4);
 }
