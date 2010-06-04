@@ -399,7 +399,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
       /* TODO: Wrong cast. I don't want what is right, but this is
          certainly wrong */
     }
-  while ((size_t) expr + rrbit > (size_t) (int) -q);
+  while ((size_t) expr + rrbit > (size_t) -q);
 
   for (i = 0 ; i <= m ; i++)
     mpz_clear (R[i]);
