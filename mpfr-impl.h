@@ -1522,6 +1522,9 @@ struct mpfr_group_t {
 
 #define MPFR_GROUP_DECL(g) struct mpfr_group_t g
 #define MPFR_GROUP_CLEAR(g) do {                                 \
+ MPFR_LOG_MSG (("GROUP_CLEAR: ptr = 0x%lX, size = %lu\n",        \
+                (unsigned long) (g).mant,                        \
+                (unsigned long) (g).alloc));                     \
  if (MPFR_UNLIKELY ((g).alloc != 0)) {                           \
    MPFR_ASSERTD ((g).mant != (g).tab);                           \
    (*__gmp_free_func) ((g).mant, (g).alloc);                     \
@@ -1544,6 +1547,8 @@ struct mpfr_group_t {
      (g).alloc = 0;                                                     \
      (g).mant = (g).tab;                                                \
    }                                                                    \
+ MPFR_LOG_MSG (("GROUP_INIT: ptr = 0x%lX, size = %lu\n",                \
+                (unsigned long) (g).mant, (unsigned long) (g).alloc));  \
  handler;                                                               \
  } while (0)
 #define MPFR_GROUP_TINIT(g, n, x)                       \
@@ -1577,6 +1582,8 @@ struct mpfr_group_t {
  mpfr_prec_t _prec = (prec);                                            \
  size_t    _oalloc = (g).alloc;                                         \
  mp_size_t _size;                                                       \
+ MPFR_LOG_MSG (("GROUP_REPREC: oldptr = 0x%lX, oldsize = %lu\n",        \
+                (unsigned long) (g).mant, (unsigned long) _oalloc));    \
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
@@ -1587,6 +1594,8 @@ struct mpfr_group_t {
  else                                                                   \
    (g).mant = (mp_limb_t *)                                             \
      (*__gmp_reallocate_func) ((g).mant, _oalloc, (g).alloc);           \
+ MPFR_LOG_MSG (("GROUP_REPREC: newptr = 0x%lX, newsize = %lu\n",        \
+                (unsigned long) (g).mant, (unsigned long) (g).alloc));  \
  handler;                                                               \
  } while (0)
 
