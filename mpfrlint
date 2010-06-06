@@ -17,6 +17,9 @@ grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
 grep mp_rnd_t {,tests/}*.{c,h} | grep -v '# *\(define\|ifndef\) *mp_rnd_t'
 
+sp="[[:space:]]*"
+grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {,tests/}*.{c,h}
+
 for file in {,tests/}*.{c,h} {,tests/}Makefile.am acinclude.m4 configure.in
 do
   # Note: this is one less that the POSIX minimum limit in case
