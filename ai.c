@@ -248,8 +248,8 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           if (correct_bits < prec)
             { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"));
-              MPFR_LOG_MSG ((" (E=%ld)\n", (long)MPFR_GET_EXP (s)));
+              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)", 0));
+              MPFR_LOG_MSG ((" (E=%ld)\n", (long) MPFR_GET_EXP (s)));
               wprec = prec + err + 1;
             }
           else
