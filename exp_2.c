@@ -85,7 +85,6 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   int inexact;
   mpfr_t r, s;
   mpz_t ss;
-  MPFR_GROUP_DECL(group);
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
@@ -127,8 +126,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 5;
 
-
-  MPFR_GROUP_INIT_2 (group, q + error_r, r, s);
+  /* Note: due to the mpfr_prec_round below, it is not possible to use
+     the MPFR_GROUP_* macros here. */
+  mpfr_init2 (r, q + error_r);
+  mpfr_init2 (s, q + error_r);
 
   /* the algorithm consists in computing an upper bound of exp(x) using
      a precision of q bits, and see if we can round to MPFR_PREC(y) taking
@@ -221,11 +222,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
 
       MPFR_ZIV_NEXT (loop, q);
-      MPFR_GROUP_REPREC_2 (group, q, r, s);
+      mpfr_set_prec (r, q);
+      mpfr_set_prec (s, q);
     }
   MPFR_ZIV_FREE (loop);
 
-  MPFR_GROUP_CLEAR (group);
+  mpfr_clear (r);
+  mpfr_clear (s);
 
   return inexact;
 }
