@@ -70,6 +70,12 @@ Changes from versions 2.4.* to version 3.0.0:
   functions (arcsin, arccos, arctan): about 2 for 10^3 digits, up to
   2.7 for 10^6 digits.
 - Some documentation files are installed in $docdir.
+- The detection of a GMP build directory (more precisely, the internal
+  header files of GMP) was previously done separately from the use of
+  the --with-gmp-build configure option. This was not consistent with
+  the documentation and with other parts of the configure script. So,
+  as of MPFR 3.0.0, the internal header files of GMP are now used if
+  and only if the --with-gmp-build configure option is given.
 - The configure script recognizes some extra "long double" formats
   (double big endian, double little endian, double-double big endian).
 - MPFR manual: added "API Compatibility" section.
