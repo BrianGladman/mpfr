@@ -122,6 +122,11 @@ to build it with them. Just do this in step 1:
 where GMPBUILD is the GMP build directory. The needed header files are:
 gmp-impl.h, longlong.h and all the necessary headers to use them.
 
+As gmp-impl.h and longlong.h are only in the GMP source directory,
+you first need to copy these files to the build directory if it is
+different (there may be other workarounds, such as setting $CPPFLAGS
+to search the GMP source directory).
+
 Warning: the library obtained in this way may use some internal GMP
 symbols, and thus dynamically linking your software with a different
 version of GMP might fail, even though it is declared as compatible
@@ -162,12 +167,8 @@ build an optimized file "mparam.h" for your specific architecture.
                         so that DIR will have a lower precedence. Also,
                         this may not work if DIR is a system directory.
 
---with-gmp-build=DIR    assumes that DIR contains the source of GMP and
-                        enables the use of GMP internals.
-                        Try to set CC/CFLAGS to GMP's ones. This is not
-                        guaranteed to work as the configure script does
-                        some compiler tests earlier, and the change may
-                        be too late.
+--with-gmp-build=DIR    assumes that DIR contains the GMP build directory,
+                        and enables the use of GMP internals (see above).
                         Warning! This option and the group of options
                         --with-gmp are mutually exclusive.
 
@@ -182,6 +183,14 @@ build an optimized file "mparam.h" for your specific architecture.
                         thread safe. For instance, though Mac OS X uses
                         GCC, it may not currently support GCC's __thread
                         storage class.
+
+Note: By default, the configure script tries to set CC/CFLAGS to GMP's
+ones (this feature needs GMP 4.3.0 or later, or the --with-gmp-build
+option). However this is not guaranteed to work as the configure script
+does some compiler tests earlier, and the change may be too late. Also,
+the values obtained from GMP may be incorrect if GMP has been built
+on a different machine. In such a case, the user may need to specify
+CC/CFLAGS as explained below.
 
 Run "./configure --help" to see the other options (autoconf default options).
 
