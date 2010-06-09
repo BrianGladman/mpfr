@@ -302,6 +302,18 @@ the test suite: C and C++ are not the same language! You should use a C
 compiler instead.
 
 
+Notes on Mac OS X
+=================
+
+If you get an error of the form
+
+  ld: pointer in read-only segment not allowed in slidable image...
+
+this can mean that the link is done against a static (GMP) library.
+In such a case, you should configure MPFR with --disable-shared to
+disable the build of the shared library.
+
+
 Notes on FreeBSD 4.3
 ====================
 
