@@ -108,7 +108,7 @@ To make a release (for the MPFR team):
      b) build GMP with --disable-shared in say /tmp/gmp-x.y.z
         There is no need in tuning GMP, since most users will build MPFR
         with a vanilla GMP installation, i.e., with the default GMP tuning;
-	however you need to go into /tmp/gmp-x.y.z/tune and type "make speed"
+        however you need to go into /tmp/gmp-x.y.z/tune and type "make speed"
         (the MPFR tuning is using the resulting speed library)
      c) configure MPFR with --disable-shared --with-gmp-build=/tmp/gmp-x.y.z
      d) run "make" and "make tune"
