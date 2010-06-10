@@ -20,8 +20,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 ##############################################################################
 
-Probably many bugs.
-
 Known bugs:
 
 * The overflow/underflow exceptions may be badly handled in some functions;
