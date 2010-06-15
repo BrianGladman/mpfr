@@ -23,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define __MPFR_T_LOW_BENCHMARCH_H__
 
 #include <iostream>
+#include <stdio.h> /* for printf and putchar */
 #include <cstring>
 #include <cstdlib>
 #include <climits>
