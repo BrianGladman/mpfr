@@ -408,6 +408,14 @@ a. Using MinGW
     Note: The L modifier has been standard for a long time (it was added
     in ISO C89).
 
+    Note 2: this now works correctly with Visual C++ 2008 and 2010
+    (tested on Microsoft (R) 32-bit C/C++ Optimizing Compiler Version
+     15.00.21022.08 for 80x86, Microsoft (R) C/C++ Optimizing Compiler
+     Version 15.00.21022.08 for x64, Microsoft (R) 32-bit C/C++ Optimizing
+     Compiler Version 16.00.30319.01 for 80x86, Microsoft (R) C/C++ Optimizing
+     Compiler Version 16.00.30319.01 for x64).
+
+
 b. Using Cygwin
 ===============
 
