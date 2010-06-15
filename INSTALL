@@ -351,9 +351,7 @@ a. Using MinGW
 
 1 - We advise to use MinGW (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
-    Windows code. The binaries compiled with Cygwin require a dynamic
-    library (cygwin.dll) to work; there is a Cygwin option -mno-cygwin to
-    build native code, but it may require some non-portable tricks.
+    Windows code.
 
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux.
@@ -361,13 +359,9 @@ a. Using MinGW
     environment, you may need the -mno-cygwin gcc option (otherwise
     a typical error is _P_WAIT being undeclared).
 
-3 - If you want to make libraries to work under another Windows compiler
-    like Visual C / C++, you have two options.  Since the unix-like *.a
-    library files are compatible with Windows *.lib files, you can simply
-    rename all *.a libraries to *.lib.  The second option is to build
-    MPFR with the Microsoft Visual Studio compiler to produce Windows
-    libraries directly (Visual Studio build projects for MPFR are
-    available at http://fp.gladman.plus.com/computing/gmp4win.htm).
+3 - If you want to make libraries work under another Windows compiler
+    like Visual C / C++, since the unix-like *.a library files are compatible
+    with Windows *.lib files, you can simply rename all *.a libraries to *.lib.
 
     With gmp-4.1.3, the only remaining problem seems to be the "alloca" calls
     in GMP. Configuring GMP and MPFR with --enable-alloca=malloc-reentrant
@@ -419,7 +413,9 @@ b. Using Cygwin
 
 This build should be similar to that for MinGW except that the resulting
 library depends on the Cygwin DLL and cannot therefore be used with
-Visual Studio as described above.
+Visual Studio as with MinGW. Indeed, the binaries compiled with Cygwin
+require a dynamic library (cygwin.dll) to work; there is a Cygwin option
+-mno-cygwin to build native code, but it may require some non-portable tricks.
 
 c. Using Visual C++ 2008/2010
 =============================
