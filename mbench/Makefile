@@ -53,7 +53,7 @@ NAME=mbench
 # is ignored in such a case.
 # [*] http://austingroupbugs.net/view.php?id=187
 ifeq	($(CC),gcc)
-INCLUDES=-I. `test -d $(MPFR_INCLUDE) && echo "-isystem $(MPFR_INCLUDE)"` `test -d $(MPFR) && echo "-isystem $(MPFR)"` `test -d $(GMP)/include/ && echo "-isystem $(GMP)/include/"` `test -d $(GMP) && echo "-isystem $(GMP)"`
+INCLUDES=`test -f $(GMP_INCLUDE)/gmp.h && echo "-include $(GMP_INCLUDE)/gmp.h"` `test -f $(GMP)/gmp.h && echo "-include $(GMP)/gmp.h"` `test -f $(MPFR_INCLUDE)/mpfr.h && echo "-include $(MPFR_INCLUDE)/mpfr.h"` `test -f $(MPFR)/mpfr.h && echo "-include $(MPFR)/mpfr.h"` -I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 else
 INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 endif
