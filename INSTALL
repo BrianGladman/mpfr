@@ -340,8 +340,14 @@ due to the early compiler tests, as gcc will not compile any program if
 OBJECT_MODE is 64 and the -maix64 option is not provided.
 
 
-Notes on 32-bit Windows Applications (win32)
-============================================
+MPFR for use with 32-bit Windows Applications (win32)
+=====================================================
+
+There are several ways of building MPFR on Windows, the most appropriate
+approach depending on how you intend to use the resulting libraries.
+
+a. Using MinGW
+==============
 
 1 - We advise to use MinGW (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
@@ -408,15 +414,69 @@ Notes on 32-bit Windows Applications (win32)
     Note: The L modifier has been standard for a long time (it was added
     in ISO C89).
 
+b. Using Cygwin
+===============
 
-Notes on 64-bit Windows Applications (x64)
-==========================================
+This build should be similar to that for MinGW except that the resulting
+library depends on the Cygwin DLL and cannot therefore be used with
+Visual Studio as described above.
 
-[See the Notes on 32-bit Windows Applications, which might be relevant here,
- in particular when running a 64-bit operating system]
+c. Using Visual C++ 2008/2010
+=============================
 
-Cygwin and MinGW do not yet offer support for native Windows 64 builds but
-the 32-bit version of MPFR can be used to build 32-bit applications that
-will run on 64-bit Windows systems (see above). MPFR can be built as a native
-64-bit static or DLL library for Windows 64 using the Visual Studio build
-projects at http://fp.gladman.plus.com/computing/gmp4win.htm.
+Win32 versions of the MPFR library can be built using Microsoft Visual
+C++ 2008 or 2010 using the build projects available here:
+
+http://gladman.plushost.co.uk/oldsite/computing/gmp4win.php
+
+These build projects contain both win32 and x64 builds but the latter
+will give errors if your version of Visual C++ lacks the 64-bit
+compiler and tools.   The 32-bit build projects should however work
+on Visual C++ 2008, Visual C++ Express 2008 (SP1), Visual C++ 2010
+and Visual C++ Express 2010.
+
+MPFR for use with 64-bit Windows Applications (x64)
+===================================================
+
+There are two ways of building MPFR for use with 64-bit Windows
+applications.
+
+a. Using MinGW64
+================
+
+The MinGW64 version of the GCC compiler is now available here:
+
+http://sourceforge.net/projects/mingw-w64/
+
+It can build both GMP and MPFR for 64-bit Windows applications.
+
+b. Using Visual C++ 2008/2010
+=============================
+
+x64 versions of the MPFR library can be built using Microsoft Visual
+C++ 2008 or 2010 using the build projects available here:
+
+http://gladman.plushost.co.uk/oldsite/computing/gmp4win.php
+
+These build projects contain both win32 and x64 builds but the latter
+can only be built if your version of Visual C++ contains the 64-bit
+compiler and tools.  On Visual C++ 2008, the 64-bit tools are an
+option during installation so if you don't have them you will need
+to start the Visual Studio installer and add them to your IDE
+configuration.  On Visual C++ 2010 they are installed by default.
+
+As delivered, Visual C++ Express 2008 SP1 cannot build x64 projects
+but the Windows SDK can be added to it to allow this. The IDE then
+needs to be configured as described here:
+
+http://msdn.microsoft.com/en-us/library/9yb4317s(VS.80).aspx
+
+to allow x64 builds.
+
+Visual C++ Express 2010 requires the Windows 7 SDK to be installed
+in order to build x64 projects. This SDK is available here:
+
+http://tinyurl.com/25zz8r6
+
+In this case, once this SDK has been installed, Visual C++ Express 2010
+will build x64 projects without further changes.
