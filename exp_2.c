@@ -80,7 +80,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   long n;
   unsigned long K, k, l, err; /* FIXME: Which type ? */
   int error_r;
-  mpfr_exp_t exps;
+  mpfr_exp_t exps, expx;
   mpfr_prec_t q, precy;
   int inexact;
   mpfr_t r, s;
@@ -90,13 +90,14 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
                  ("y[%#R]=%R inexact=%d", y, y, inexact));
 
+  expx = MPFR_GET_EXP (x);
   precy = MPFR_PREC(y);
 
   /* Warning: we cannot use the 'double' type here, since on 64-bit machines
      x may be as large as 2^62*log(2) without overflow, and then x/log(2)
      is about 2^62: not every integer of that size can be represented as a
      'double', thus the argument reduction would fail. */
-  if (MPFR_GET_EXP (x) <= -2)
+  if (expx <= -2)
     /* |x| <= 0.25, thus n = round(x/log(2)) = 0 */
     n = 0;
   else
@@ -125,6 +126,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   err = K + MPFR_INT_CEIL_LOG2 (2 * l + 18);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 5;
+  /* if |x| >> 1, take into account the cancelled bits */
+  if (expx > 0)
+    q += expx;
 
   /* Note: due to the mpfr_prec_round below, it is not possible to use
      the MPFR_GROUP_* macros here. */
@@ -168,7 +172,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_exp_t cancel;
 
           /* number of cancelled bits */
-          cancel = MPFR_GET_EXP (x) - MPFR_GET_EXP (r);
+          cancel = expx - MPFR_GET_EXP (r);
           if (cancel < 0) /* this might happen in the second loop if x is
                              tiny negative: the initial n is 0, then in the
                              first loop n becomes -1 and r = x + log(2) */
@@ -207,13 +211,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
           /* error is at most 2^K*l, plus cancel+2 to take into account of
              the error of 3*2^(EXP(old_r)-EXP(new_r)) on r */
-          K += MPFR_INT_CEIL_LOG2 (l) + cancel + 2;
+          err = K + MPFR_INT_CEIL_LOG2 (l) + cancel + 2;
 
           MPFR_LOG_MSG (("before mult. by 2^n:\n", 0));
           MPFR_LOG_VAR (s);
           MPFR_LOG_MSG (("err=%lu bits\n", K));
 
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q - K, precy, rnd_mode)))
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q - err, precy, rnd_mode)))
             {
               mpfr_clear_flags ();
               inexact = mpfr_mul_2si (y, s, n, rnd_mode);
