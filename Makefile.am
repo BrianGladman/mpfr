@@ -119,13 +119,13 @@ tune:
 # But if the VERSION file contains "-dev", this is not checked.
 # Note: this is a heuristic, to detect some mistakes.
 dist-hook:
-	grep -q -e -dev $(srcdir)/VERSION || \
+	grep -q -e -dev $(srcdir)/VERSION || { \
 	  mv=`sed -n "s/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*/\1\\\\\\.\2/p" $(srcdir)/VERSION` && \
 	  pl=`sed -n "s/^$$mv\.\([0-9][0-9]*\).*/\1/p" $(srcdir)/VERSION` && \
 	  printf "mv=%s / pl=%s\n" "$$mv" "$$pl" && \
 	  vinfo=`sed -n "s/^# *$$mv\.x *\([0-9][0-9]*\):x:\([0-9][0-9]*\)/\1:$$pl:\2/p" $(srcdir)/Makefile.am` && \
 	  printf "vinfo=%s\n" "$$vinfo" && \
-	  grep -q -e "-version-info $$vinfo$$" $(srcdir)/Makefile.am
+	  grep -q -e "-version-info $$vinfo$$" $(srcdir)/Makefile.am; }
 
 # The following needs to be removed once GNU Automake 1.11 support is added.
 DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.xz \
