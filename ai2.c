@@ -292,7 +292,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       for (j=0; j<=L; j++)
         mpfr_clear (z[j]);
       (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
-      L = isqrt (t);
+      L = __gmpfr_isqrt (t);
       MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
       z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t));
       MPFR_ASSERTN (z != NULL);
