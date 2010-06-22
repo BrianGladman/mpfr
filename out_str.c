@@ -22,6 +22,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#define OUT_STR_RET(S)                          \
+  do                                            \
+    {                                           \
+      int r;                                    \
+      r = fprintf (stream, (S));                \
+      return r < 0 ? 0 : r;                     \
+    }                                           \
+  while (0)
+
 size_t
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
               mpfr_rnd_t rnd_mode)
@@ -36,37 +45,16 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   if (stream == NULL)
     stream = stdout;
 
-  if (MPFR_IS_NAN(op))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
     {
-      fprintf (stream, "@NaN@");
-      return 5;
-    }
-
-  if (MPFR_IS_INF(op))
-    {
-      if (MPFR_SIGN(op) > 0)
-        {
-          fprintf (stream, "@Inf@");
-          return 5;
-        }
+      if (MPFR_IS_NAN (op))
+        OUT_STR_RET ("@NaN@");
+      else if (MPFR_IS_INF (op))
+        OUT_STR_RET (MPFR_IS_POS (op) ? "@Inf@" : "-@Inf@");
       else
         {
-          fprintf (stream, "-@Inf@");
-          return 6;
-        }
-    }
-
-  if (MPFR_IS_ZERO(op))
-    {
-      if (MPFR_SIGN(op) > 0)
-        {
-          fprintf(stream, "0");
-          return 1;
-        }
-      else
-        {
-          fprintf(stream, "-0");
-          return 2;
+          MPFR_ASSERTD (MPFR_IS_ZERO (op));
+          OUT_STR_RET (MPFR_IS_POS (op) ? "0" : "-0");
         }
     }
 
