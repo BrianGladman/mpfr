@@ -723,6 +723,13 @@ the MPFR versions: MPFR_UINTMAX_MAX, MPFR_INTMAX_MAX and MPFR_INTMAX_MIN.
 
 ===========================================================================
 
+Use mpfr_prec_t and mpfr_rnd_t instead of the old types mp_prec_t and
+mp_rnd_t. Similarly, use mpfr_exp_t instead of GMP's mp_exp_t type
+(unless you really want mp_exp_t, e.g. for conversions with mpf; but
+you should not assume that mpfr_exp_t and mp_exp_t are identical).
+
+===========================================================================
+
 Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
 (C99, 6.9.2). Depending on the context, use either a simple declaration
 (with the "extern" storage-class specifier) or an external definition.
