@@ -99,7 +99,11 @@ $(srcdir)/get_patches.c: PATCHES get_patches.sh
 #CLEANFILES = get_patches.c
 
 # Tune program
-EXTRA_PROGRAMS = tuneup speed
+EXTRA_PROGRAMS = tuneup speed bidimensional_sample
+
+bidimensional_sample_SOURCES = bidimensional_sample.c
+bidimensional_sample_LDADD = -lspeed libmpfr.la
+bidimensional_sample_LDFLAGS = -static
 
 tuneup_SOURCES = tuneup.c
 tuneup_LDADD = -lspeed libmpfr.la
