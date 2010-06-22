@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename mpfr.info
 @documentencoding UTF-8
-@set VERSION 3.0.0-dev
+@set VERSION 3.1.0-dev
 @set UPDATED-MONTH June 2010
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
@@ -462,7 +462,7 @@ specific to MPFR). Problems are also mentioned in the FAQ
 Please report problems to @samp{mpfr@@loria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
-MPFR 3.0.0 web page @url{http://www.mpfr.org/mpfr-3.0.0/}.
+MPFR 3.1.0 web page @url{http://www.mpfr.org/mpfr-3.1.0/}.
 
 @section Getting the Latest Version of MPFR
 
@@ -477,7 +477,7 @@ The latest version of MPFR is available from
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
 If you think you have found a bug in the MPFR library, first have a look
-on the MPFR 3.0.0 web page @url{http://www.mpfr.org/mpfr-3.0.0/} and the
+on the MPFR 3.1.0 web page @url{http://www.mpfr.org/mpfr-3.1.0/} and the
 FAQ @url{http://www.mpfr.org/faq.html}:
 perhaps this bug is already known, in which case you may find there
 a workaround for it.
