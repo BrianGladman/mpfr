@@ -2050,7 +2050,7 @@ first digit and a trailing exponent in base 10, in the form @samp{eNNN},
 are printed. If @var{base} is greater than 10, @samp{@@} will be used
 instead of @samp{e} as exponent delimiter.
 
-Return the number of bytes written, or if an error occurred, return 0.
+Return the number of characters written, or if an error occurred, return 0.
 @end deftypefun
 
 @deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base}, mpfr_rnd_t @var{rnd})

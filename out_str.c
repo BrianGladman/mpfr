@@ -39,7 +39,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   if (MPFR_IS_NAN(op))
     {
       fprintf (stream, "@NaN@");
-      return 3;
+      return 5;
     }
 
   if (MPFR_IS_INF(op))
@@ -47,12 +47,12 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
       if (MPFR_SIGN(op) > 0)
         {
           fprintf (stream, "@Inf@");
-          return 3;
+          return 5;
         }
       else
         {
           fprintf (stream, "-@Inf@");
-          return 4;
+          return 6;
         }
     }
 
