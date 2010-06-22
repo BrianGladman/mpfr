@@ -257,9 +257,9 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           t -= 3;
 
           test0 = MPFR_IS_ZERO (u0) ||
-            (MPFR_GET_EXP (u0) + (mp_exp_t)prec + 4 <= MPFR_GET_EXP (result));
+            (MPFR_GET_EXP (u0) + (mpfr_exp_t)prec + 4 <= MPFR_GET_EXP (result));
           test1 = MPFR_IS_ZERO (u1) ||
-            (MPFR_GET_EXP (u1) + (mp_exp_t)prec + 4 <= MPFR_GET_EXP (result));
+            (MPFR_GET_EXP (u1) + (mpfr_exp_t)prec + 4 <= MPFR_GET_EXP (result));
 
           if ( test0 && test1 && (x3u <= (t + 2) * (t + 3) / 2) )
             break;

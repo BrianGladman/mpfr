@@ -603,8 +603,8 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  ******************************************************/
 
 /* Define limits and unsigned type of exponent. The following definitions
- * depend on mp_exp_t; if this type changes in GMP, these definitions will
- * need to be modified.
+ * depend on [mp_exp_t]; if this type changes in GMP, these definitions
+ * will need to be modified.
  */
 #if __GMP_MP_SIZE_T_INT == 1
 typedef unsigned int       mpfr_uexp_t;
@@ -1744,7 +1744,7 @@ __MPFR_DECLSPEC void mpfr_div_ui2 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr,
                                                unsigned long int, unsigned long int,
                                                mpfr_rnd_t));
 
-__MPFR_DECLSPEC void mpfr_gamma_one_and_two_third _MPFR_PROTO((mpfr_ptr, mpfr_ptr, mp_prec_t));
+__MPFR_DECLSPEC void mpfr_gamma_one_and_two_third _MPFR_PROTO((mpfr_ptr, mpfr_ptr, mpfr_prec_t));
 
 #if defined (__cplusplus)
 }

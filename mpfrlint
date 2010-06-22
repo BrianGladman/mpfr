@@ -15,7 +15,12 @@ grep GMP_LIMB_BITS {,tests/}*.{c,h}
 
 grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
-grep mp_rnd_t {,tests/}*.{c,h} | grep -v '# *\(define\|ifndef\) *mp_rnd_t'
+for i in exp prec rnd
+do
+  grep mp_${i}_t {,tests/}*.{c,h} | \
+    grep -v "\(# *define\|# *ifndef\|typedef\) *mp_${i}_t" | \
+    grep -v "\[mp_${i}_t\]"
+done
 
 sp="[[:space:]]*"
 grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {,tests/}*.{c,h}

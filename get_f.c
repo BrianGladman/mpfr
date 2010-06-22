@@ -55,7 +55,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
           MPFR_SET_ERANGE ();
 
-          /* To this day, mp_exp_t and mp_size_t are #defined as the same
+          /* To this day, [mp_exp_t] and mp_size_t are #defined as the same
              type */
           EXP (x) = MP_SIZE_T_MAX;
 

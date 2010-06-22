@@ -97,12 +97,12 @@ mpfr_div_ui8 (mpfr_ptr y, mpfr_srcptr x,
 /* The computed value s satisfies |s-omega| <= 2^{1-prec}*omega         */
 /* As usual, the variable s is supposed to be initialized.              */
 static void
-mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
+mpfr_Browns_const (mpfr_ptr s, mpfr_prec_t prec)
 {
   mpfr_t uk;
   unsigned long int k;
 
-  mp_prec_t working_prec = prec + 10 + MPFR_INT_CEIL_LOG2 (2 + prec / 10);
+  mpfr_prec_t working_prec = prec + 10 + MPFR_INT_CEIL_LOG2 (2 + prec / 10);
 
   mpfr_init2 (uk, working_prec);
   mpfr_set_prec (s, working_prec);
@@ -132,7 +132,7 @@ mpfr_Browns_const (mpfr_ptr s, mp_prec_t prec)
 
 /* Returns y such that |Gamma(1/3)-y| <= 2^{1-prec}*Gamma(1/3) */
 static void
-mpfr_gamma_one_third (mpfr_ptr y, mp_prec_t prec)
+mpfr_gamma_one_third (mpfr_ptr y, mpfr_prec_t prec)
 {
   mpfr_t tmp, tmp2, tmp3;
 
@@ -169,7 +169,7 @@ mpfr_gamma_one_third (mpfr_ptr y, mp_prec_t prec)
 /* Uses the formula Gamma(z)Gamma(1-z) = pi / sin(pi*z)               */
 /* to compute Gamma(2/3) from Gamma(1/3).                             */
 void
-mpfr_gamma_one_and_two_third (mpfr_ptr y1, mpfr_ptr y2, mp_prec_t prec)
+mpfr_gamma_one_and_two_third (mpfr_ptr y1, mpfr_ptr y2, mpfr_prec_t prec)
 {
   mpfr_t temp;
 

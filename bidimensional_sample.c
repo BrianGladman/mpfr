@@ -254,7 +254,7 @@ void generate_2D_sample (FILE *output, struct speed_params2D param)
       size = (s->size-1)/GMP_NUMB_BITS+1;               \
       s->xp[size-1] |= MPFR_LIMB_HIGHBIT;               \
       MPFR_TMP_INIT1 (s->xp, x, s->size);               \
-      MPFR_SET_EXP (x, (mp_exp_t)s->r);                 \
+      MPFR_SET_EXP (x, (mpfr_exp_t) s->r);              \
       if (s->align_xp == 2) MPFR_SET_NEG (x);           \
                                                         \
       mpfr_init2 (w, s->size);                          \
