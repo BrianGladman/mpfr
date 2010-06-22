@@ -25,19 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define SMALL_PRECISION 32
 
-static unsigned long
-isqrt (unsigned long n)
-{
-  mpz_t tmp;
-  unsigned int res;
-  mpz_init (tmp);
-  mpz_set_ui (tmp, n);
-  mpz_sqrt (tmp, tmp);
-  res = mpz_get_ui (tmp);
-  mpz_clear (tmp);
-  return res;
-}
-
 /* Reminder and notations:
    -----------------------
 
@@ -151,7 +138,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumed_exponent;
 
   /* We assume that the truncation rank will be ~ prec */
-  L = isqrt (prec);
+  L = __gmpfr_isqrt (prec);
   MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
 
   z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t) );
