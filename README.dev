@@ -55,7 +55,7 @@ instance, for their own patches, MPFR developers do:
 For patches from MPFR developers, e.g. for MPFR 2.4.0:
 1. Unarchive the tarball: a directory mpfr-2.4.0 is created.
 2. Go into this directory (cd mpfr-2.4.0).
-3. Apply the current patches with "patch -N -Z -p1 < /path/to/patches".
+3. Apply the current patches with "patch -N -Z -p1 < /path/to/allpatches".
 4. Reset the PATCHES file with "true >| PATCHES".
 5. Rename mpfr-2.4.0 as mpfr-2.4.0-a and duplicate it as mpfr-2.4.0-b
    without changing the timestamps (e.g. with cp -a).
