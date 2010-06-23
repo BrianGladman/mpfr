@@ -46,7 +46,7 @@ static void
 special (void)
 {
   mpfr_t x;
-  size_t n;
+  unsigned int n;
 
   mpfr_init (x);
 
