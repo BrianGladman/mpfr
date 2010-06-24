@@ -108,14 +108,18 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       n = mpfr_get_si (r, MPFR_RNDN);
       mpfr_clear (r);
     }
+  /* we have |x| <= (|n|+1)*log(2) */
   MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
 
-  /* error bounds the cancelled bits in x - n*log(2) */
+  /* error_r bounds the cancelled bits in x - n*log(2) */
   if (MPFR_UNLIKELY (n == 0))
     error_r = 0;
   else
-    count_leading_zeros (error_r, (mp_limb_t) SAFE_ABS (unsigned long, n));
-  error_r = GMP_NUMB_BITS - error_r + 2;
+    {
+      count_leading_zeros (error_r, (mp_limb_t) SAFE_ABS (unsigned long, n) + 1);
+      error_r = GMP_NUMB_BITS - error_r;
+      /* we have |x| <= 2^error_r * log(2) */
+    }
 
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
@@ -132,6 +136,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Note: due to the mpfr_prec_round below, it is not possible to use
      the MPFR_GROUP_* macros here. */
+  
   mpfr_init2 (r, q + error_r);
   mpfr_init2 (s, q + error_r);
 
@@ -151,7 +156,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* if n<0, we have to get an upper bound of log(2)
          in order to get an upper bound of r = x-n*log(2) */
       mpfr_const_log2 (s, (n >= 0) ? MPFR_RNDZ : MPFR_RNDU);
-      /* s is within 1 ulp of log(2) */
+      /* s is within 1 ulp(s) of log(2) */
 
       mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? MPFR_RNDZ : MPFR_RNDU);
       /* r is within 3 ulps of |n|*log(2) */
@@ -163,26 +168,22 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_LOG_VAR (r);
 
       mpfr_sub (r, x, r, MPFR_RNDU);
-      /* possible cancellation here: if r is zero, increase the working
-         precision (Ziv's loop); otherwise, the error on r is at most
-         3*2^(EXP(old_r)-EXP(new_r)) ulps */
 
       if (MPFR_IS_PURE_FP (r))
         {
-          mpfr_exp_t cancel;
-
-          /* number of cancelled bits */
-          cancel = expx - MPFR_GET_EXP (r);
-          if (cancel < 0) /* this might happen in the second loop if x is
-                             tiny negative: the initial n is 0, then in the
-                             first loop n becomes -1 and r = x + log(2) */
-            cancel = 0;
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
               n--;
               mpfr_add (r, r, s, MPFR_RNDU);
             }
-          mpfr_prec_round (r, q, MPFR_RNDU);
+
+	  /* since there was a cancellation in x - n*log(2), the low error_r
+	     bits from r are zero and thus non significant, thus we can reduce
+	     the working precision */
+	  if (error_r > 0)
+	    mpfr_prec_round (r, q, MPFR_RNDU);
+	  /* the error on r is at most 3 ulps (3 ulps if error_r = 0,
+	     and 1 + 3/2 if error_r > 0) */
           MPFR_LOG_VAR (r);
           MPFR_ASSERTD (MPFR_IS_POS (r));
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
@@ -209,9 +210,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
           mpz_clear (ss);
 
-          /* error is at most 2^K*l, plus cancel+2 to take into account of
-             the error of 3*2^(EXP(old_r)-EXP(new_r)) on r */
-          err = K + MPFR_INT_CEIL_LOG2 (l) + cancel + 2;
+          /* error is at most 2^K*l, plus 2 to take into account of
+             the error of 3 ulps on r */
+          err = K + MPFR_INT_CEIL_LOG2 (l) + 2;
 
           MPFR_LOG_MSG (("before mult. by 2^n:\n", 0));
           MPFR_LOG_VAR (s);
@@ -226,8 +227,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
 
       MPFR_ZIV_NEXT (loop, q);
-      mpfr_set_prec (r, q);
-      mpfr_set_prec (s, q);
+      mpfr_set_prec (r, q + error_r);
+      mpfr_set_prec (s, q + error_r);
     }
   MPFR_ZIV_FREE (loop);
 
