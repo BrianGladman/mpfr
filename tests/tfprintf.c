@@ -212,8 +212,8 @@ check_mixed (FILE *fout)
 #endif
 
 #ifndef NPRINTF_HH
-  check_vfprintf (fout, "a. %hhi, b.%RA, c. %hhu%hhn", sch, mpfr, uch, &uch);
-  check_length (10, (unsigned int) uch, 21, u); /* no format specifier "%hhu" in C89 */
+  check_vfprintf (fout, "a. %hhi, b. %RA, c. %hhu%hhn", sch, mpfr, uch, &uch);
+  check_length (10, (unsigned int) uch, 22, u); /* no format specifier "%hhu" in C89 */
 #endif
 
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
