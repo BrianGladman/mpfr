@@ -501,6 +501,8 @@ Please include compiler version information in your bug report. This can
 be extracted using @samp{cc -V} on some machines, or, if you're using GCC,
 @samp{gcc -v}. Also, include the output from @samp{uname -a} and the MPFR
 version (the GMP version may be useful too).
+If you get a failure while running @samp{make} or @samp{make check}, please
+include the @samp{config.log} file in your bug report.
 
 If your bug report is good, we will do our best to help you to get a corrected
 version of the library; if the bug report is poor, we will not do anything
