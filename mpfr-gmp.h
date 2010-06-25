@@ -29,8 +29,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <limits.h> /* For INT_MAX, ... */
 #include <string.h> /* For memcpy, memset and memmove */
-#include <alloca.h> /* for alloca, cf
-             http://websympa.loria.fr/wwsympa/arc/mpfr/2010-06/msg00061.html */
 
 /* The following tries to get a good version of alloca.
    See gmp-impl.h for implementation details and original version */
