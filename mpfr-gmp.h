@@ -32,6 +32,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* The following tries to get a good version of alloca.
    See gmp-impl.h for implementation details and original version */
+/* FIXME: the autoconf manual gives a different piece of code under the
+   documentation of the AC_FUNC_ALLOCA macro. Should we switch to it? */
 #ifndef alloca
 # if defined ( __GNUC__ )
 #  define alloca __builtin_alloca

@@ -59,6 +59,9 @@ AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 dnl sys/fpu.h - MIPS specific
 AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
+dnl Check how to get `alloca'
+AC_FUNC_ALLOCA
+
 dnl SIZE_MAX macro
 gl_SIZE_MAX
 
