@@ -201,6 +201,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+/* For the future: N1478: Supporting the 'noreturn' property in C1x
+   http://www.open-std.org/JTC1/SC22/WG14/www/docs/n1478.htm */
 # define MPFR_NORETURN_ATTR __attribute__ ((noreturn))
 # define MPFR_CONST_ATTR    __attribute__ ((const))
 #else
