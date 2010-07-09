@@ -469,7 +469,7 @@ test20100709 (void)
   int inex;
 
   mpfr_init2 (x, 100);
-  mpfr_set_d (x, -4.6308260837372266e+07, MPFR_RNDN);
+  mpfr_set_str (x, "-4.6308260837372266e+07", 10, MPFR_RNDN);
   inex = mpfr_gamma (x, x, MPFR_RNDN);
   MPFR_ASSERTN(MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
   mpfr_clear (x);
