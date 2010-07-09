@@ -274,7 +274,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* we want an upper bound for x * [log(2-x)-1].
          since x < 0, we need a lower bound on log(2-x) */
       mpfr_ui_sub (xp, 2, x, MPFR_RNDD);
-      mpfr_log (xp, xp, MPFR_RNDD);
+      mpfr_log2 (xp, xp, MPFR_RNDD);
       mpfr_sub_ui (xp, xp, 1, MPFR_RNDD);
       mpfr_mul (xp, xp, x, MPFR_RNDU);
 
@@ -303,8 +303,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           mpfr_sub (tmp, tmp, tmp2, MPFR_RNDZ); /* low bnd on |sin(Pi*(2-x))| */
           mpfr_ui_div (tmp, 12, tmp, MPFR_RNDU); /* upper bound */
-          mpfr_log (tmp, tmp, MPFR_RNDU);
-          mpfr_add (tmp, tmp, xp, MPFR_RNDU);
+          mpfr_log2 (tmp, tmp, MPFR_RNDU);
+          mpfr_add (xp, tmp, xp, MPFR_RNDU);
           underflow = mpfr_cmp_si (xp, expo.saved_emin - 2) <= 0;
         }
 

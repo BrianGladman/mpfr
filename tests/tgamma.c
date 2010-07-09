@@ -461,6 +461,20 @@ test20071231 (void)
   mpfr_clear (x);
 }
 
+/* bug found by Stathis, only occurs on 32-bit machines */
+static void
+test20100709 (void)
+{
+  mpfr_t x;
+  int inex;
+
+  mpfr_init2 (x, 100);
+  mpfr_set_d (x, -4.6308260837372266e+07, MPFR_RNDN);
+  inex = mpfr_gamma (x, x, MPFR_RNDN);
+  MPFR_ASSERTN(MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -471,6 +485,7 @@ main (int argc, char *argv[])
   test_generic (2, 100, 2);
   gamma_integer ();
   test20071231 ();
+  test20100709 ();
 
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
