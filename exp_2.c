@@ -136,7 +136,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Note: due to the mpfr_prec_round below, it is not possible to use
      the MPFR_GROUP_* macros here. */
-  
+
   mpfr_init2 (r, q + error_r);
   mpfr_init2 (s, q + error_r);
 
@@ -177,13 +177,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mpfr_add (r, r, s, MPFR_RNDU);
             }
 
-	  /* since there was a cancellation in x - n*log(2), the low error_r
-	     bits from r are zero and thus non significant, thus we can reduce
-	     the working precision */
-	  if (error_r > 0)
-	    mpfr_prec_round (r, q, MPFR_RNDU);
-	  /* the error on r is at most 3 ulps (3 ulps if error_r = 0,
-	     and 1 + 3/2 if error_r > 0) */
+          /* since there was a cancellation in x - n*log(2), the low error_r
+             bits from r are zero and thus non significant, thus we can reduce
+             the working precision */
+          if (error_r > 0)
+            mpfr_prec_round (r, q, MPFR_RNDU);
+          /* the error on r is at most 3 ulps (3 ulps if error_r = 0,
+             and 1 + 3/2 if error_r > 0) */
           MPFR_LOG_VAR (r);
           MPFR_ASSERTD (MPFR_IS_POS (r));
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
