@@ -305,6 +305,10 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_ui_div (tmp, 12, tmp, MPFR_RNDU); /* upper bound */
           mpfr_log2 (tmp, tmp, MPFR_RNDU);
           mpfr_add (xp, tmp, xp, MPFR_RNDU);
+          /* The assert below checks that expo.saved_emin - 2 always
+             fits in a long. FIXME if we want to allow mpfr_exp_t to
+             be a long long, for instance. */
+          MPFR_ASSERTN (MPFR_EMIN_MIN - 2 >= LONG_MIN);
           underflow = mpfr_cmp_si (xp, expo.saved_emin - 2) <= 0;
         }
 
