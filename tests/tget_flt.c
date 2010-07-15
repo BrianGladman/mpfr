@@ -57,7 +57,9 @@ main (void)
   mpfr_set_flt (x, f, MPFR_RNDN);
   if (mpfr_inf_p (x) == 0 || mpfr_sgn (x) < 0)
     {
-      printf ("Error for mpfr_set_flt(mpfr_get_flt(+Inf))n");
+      printf ("Error for mpfr_set_flt(mpfr_get_flt(+Inf)):\n");
+      printf ("expected -Inf\n");
+      printf ("got "); mpfr_dump (x);
       exit (1);
     }
 
