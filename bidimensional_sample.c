@@ -8,8 +8,6 @@
 #define _PROTO __GMP_PROTO
 #include "speed.h"
 
-#define SMALL_PRECISION 32
-
 /* Let f be a function for which we have several implementations f1, f2... */
 /* We wish to have a quick overview of which implementation is the best    */
 /* in function of the point x where f(x) is computed and of the prectision */
@@ -99,7 +97,7 @@ void generate_2D_sample (FILE *output, struct speed_params2D param)
     }
 
 
-  mpfr_init2 (temp, SMALL_PRECISION);
+  mpfr_init2 (temp, MPFR_SMALL_PRECISION);
 
   /* The precision is sampled from min_prec to max_prec with        */
   /* approximately nb_points_prec points. If logarithmic_scale_prec */
@@ -158,6 +156,7 @@ void generate_2D_sample (FILE *output, struct speed_params2D param)
   prec = (double)param.min_prec;
   while (prec <= param.max_prec)
     {
+      printf ("prec = %d\n", (int)prec);
       if (param.logarithmic_scale_x == 0)
         mpfr_set_d (temp, param.min_x, MPFR_RNDU);
       else if (param.logarithmic_scale_x == -1)
@@ -297,32 +296,145 @@ timing_exp3 (struct speed_params *s)
   SPEED_MPFR_FUNC_2D (mpfr_exp_3);
 }
 
+double
+timing_ai1 (struct speed_params *s)
+{
+  SPEED_MPFR_FUNC_2D (mpfr_ai);
+}
+
+double
+timing_ai2 (struct speed_params *s)
+{
+  SPEED_MPFR_FUNC_2D (mpfr_ai2);
+}
+
+/* These functions are for testing purpose only */
+/* They are used to draw which method is actually used */
+
+#include "ai.c"
+double
+virtual_timing_ai1 (struct speed_params *s)
+{
+  double t;
+  unsigned i;
+  mpfr_t w, x;
+  mp_size_t size;
+  mpfr_t temp1, temp2;
+
+  SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);
+  SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);
+
+  size = (s->size-1)/GMP_NUMB_BITS+1;
+  s->xp[size-1] |= MPFR_LIMB_HIGHBIT;
+  MPFR_TMP_INIT1 (s->xp, x, s->size);
+  MPFR_SET_EXP (x, (mpfr_exp_t) s->r);
+  if (s->align_xp == 2) MPFR_SET_NEG (x);
+
+  mpfr_init2 (w, s->size);
+  speed_starttime ();
+  i = s->reps;
+
+  mpfr_init2 (temp1, MPFR_SMALL_PRECISION);
+  mpfr_init2 (temp2, MPFR_SMALL_PRECISION);
+
+  mpfr_set (temp1, x, MPFR_SMALL_PRECISION);
+  mpfr_set_si (temp2, MPFR_AI_THRESHOLD2, MPFR_RNDN);
+  mpfr_mul_ui (temp2, temp2, (unsigned int)MPFR_PREC (w), MPFR_RNDN);
+
+  if (MPFR_IS_NEG (x))
+      mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD1, MPFR_RNDN);
+  else
+      mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD3, MPFR_RNDN);
+
+  mpfr_add (temp1, temp1, temp2, MPFR_RNDN);
+
+  if (mpfr_cmp_si (temp1, MPFR_AI_SCALE) > 0)
+    t = 1000.;
+  else
+    t = 1.;
+
+  mpfr_clear (temp1);
+  mpfr_clear (temp2);
+
+  return t;
+}
+
+double
+virtual_timing_ai2 (struct speed_params *s)
+{
+  double t;
+  unsigned i;
+  mpfr_t w, x;
+  mp_size_t size;
+  mpfr_t temp1, temp2;
+
+  SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);
+  SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);
+
+  size = (s->size-1)/GMP_NUMB_BITS+1;
+  s->xp[size-1] |= MPFR_LIMB_HIGHBIT;
+  MPFR_TMP_INIT1 (s->xp, x, s->size);
+  MPFR_SET_EXP (x, (mpfr_exp_t) s->r);
+  if (s->align_xp == 2) MPFR_SET_NEG (x);
+
+  mpfr_init2 (w, s->size);
+  speed_starttime ();
+  i = s->reps;
+
+  mpfr_init2 (temp1, MPFR_SMALL_PRECISION);
+  mpfr_init2 (temp2, MPFR_SMALL_PRECISION);
+
+  mpfr_set (temp1, x, MPFR_SMALL_PRECISION);
+  mpfr_set_si (temp2, MPFR_AI_THRESHOLD2, MPFR_RNDN);
+  mpfr_mul_ui (temp2, temp2, (unsigned int)MPFR_PREC (w), MPFR_RNDN);
+
+  if (MPFR_IS_NEG (x))
+      mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD1, MPFR_RNDN);
+  else
+      mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD3, MPFR_RNDN);
+
+  mpfr_add (temp1, temp1, temp2, MPFR_RNDN);
+
+  if (mpfr_cmp_si (temp1, MPFR_AI_SCALE) > 0)
+    t = 1.;
+  else
+    t = 1000.;
+
+  mpfr_clear (temp1);
+  mpfr_clear (temp2);
+
+  return t;
+}
+
 int
 main (void)
 {
-  char filename[256] = "tune.dat";
   FILE *output;
   struct speed_params2D param;
-  double (*speed_funcs[4]) (struct speed_params *s);
-  speed_funcs[0] = timing_exp1;
-  speed_funcs[1] = timing_exp2;
-  speed_funcs[2] = timing_exp3;
-  speed_funcs[3] = NULL;
+  double (*speed_funcs[3]) (struct speed_params *s);
+
+  /* char filename[256] = "virtual_timing_ai.dat"; */
+  /* speed_funcs[0] = virtual_timing_ai1; */
+  /* speed_funcs[1] = virtual_timing_ai2; */
+
+  char filename[256] = "airy.dat";
+  speed_funcs[0] = timing_ai1;
+  speed_funcs[1] = timing_ai2;
+  speed_funcs[2] = NULL;
   output = fopen (filename, "w");
   if (output == NULL)
     {
       fprintf (stderr, "Can't open file '%s' for writing.\n", filename);
       abort ();
     }
-
-  param.min_x = -13.;
-  param.max_x = 27.;
+  param.min_x = -80;
+  param.max_x = 60;
   param.min_prec = 50;
-  param.max_prec = 100000;
-  param.nb_points_x = 400;
-  param.nb_points_prec = 400;
-  param.logarithmic_scale_x  = -1;
-  param.logarithmic_scale_prec = 1;
+  param.max_prec = 1500;
+  param.nb_points_x = 200;
+  param.nb_points_prec = 200;
+  param.logarithmic_scale_x  = 0;
+  param.logarithmic_scale_prec = 0;
   param.speed_funcs = speed_funcs;
 
   generate_2D_sample (output, param);

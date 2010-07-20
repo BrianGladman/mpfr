@@ -377,6 +377,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
  ****************** double macros *********************
  ******************************************************/
 
+/* Precision used for lower precision computations */
+#define MPFR_SMALL_PRECISION 32
+
 /* Definition of constants */
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
 #define ALPHA 4.3191365662914471407 /* a+2 = a*log(a), rounded to +infinity */

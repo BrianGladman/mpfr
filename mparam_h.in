@@ -1420,3 +1420,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef MPFR_SINCOS_THRESHOLD
 # define MPFR_SINCOS_THRESHOLD 30000 /* bits */
 #endif
+#ifndef MPFR_AI_THRESHOLD1
+# define MPFR_AI_THRESHOLD1 -13107
+#endif
+#ifndef MPFR_AI_THRESHOLD2
+# define MPFR_AI_THRESHOLD2 1311
+#endif
+#ifndef MPFR_AI_THRESHOLD3
+# define MPFR_AI_THRESHOLD3 19661
+#endif
