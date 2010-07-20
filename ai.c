@@ -23,6 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+static int
+mpfr_ai1 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+static int
+mpfr_ai2 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+
 /* Reminder and notations:
    -----------------------
 
