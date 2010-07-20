@@ -296,10 +296,12 @@ timing_exp3 (struct speed_params *s)
   SPEED_MPFR_FUNC_2D (mpfr_exp_3);
 }
 
+
+#include "ai.c"
 double
 timing_ai1 (struct speed_params *s)
 {
-  SPEED_MPFR_FUNC_2D (mpfr_ai);
+  SPEED_MPFR_FUNC_2D (mpfr_ai1);
 }
 
 double
@@ -310,8 +312,6 @@ timing_ai2 (struct speed_params *s)
 
 /* These functions are for testing purpose only */
 /* They are used to draw which method is actually used */
-
-#include "ai.c"
 double
 virtual_timing_ai1 (struct speed_params *s)
 {
@@ -420,6 +420,7 @@ main (void)
   char filename[256] = "airy.dat";
   speed_funcs[0] = timing_ai1;
   speed_funcs[1] = timing_ai2;
+
   speed_funcs[2] = NULL;
   output = fopen (filename, "w");
   if (output == NULL)
