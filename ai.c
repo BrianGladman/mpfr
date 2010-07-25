@@ -605,13 +605,19 @@ int
 mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   mpfr_t temp1, temp2;
-  int ternary;
+  int use_ai2;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* The exponent range must be large enough for the computation of temp1. */
+  MPFR_SAVE_EXPO_MARK (expo);
+
   mpfr_init2 (temp1, MPFR_SMALL_PRECISION);
   mpfr_init2 (temp2, MPFR_SMALL_PRECISION);
 
-  mpfr_set (temp1, x, MPFR_SMALL_PRECISION);
+  mpfr_set (temp1, x, MPFR_RNDN);
   mpfr_set_si (temp2, MPFR_AI_THRESHOLD2, MPFR_RNDN);
-  mpfr_mul_ui (temp2, temp2, (unsigned int)MPFR_PREC (y), MPFR_RNDN);
+  mpfr_mul_ui (temp2, temp2, MPFR_PREC (y) > ULONG_MAX ?
+               ULONG_MAX : (unsigned long) MPFR_PREC (y), MPFR_RNDN);
 
   if (MPFR_IS_NEG (x))
       mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD1, MPFR_RNDN);
@@ -619,13 +625,12 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_mul_si (temp1, temp1, MPFR_AI_THRESHOLD3, MPFR_RNDN);
 
   mpfr_add (temp1, temp1, temp2, MPFR_RNDN);
-
-  if (mpfr_cmp_si (temp1, MPFR_AI_SCALE) > 0)
-    ternary = mpfr_ai2 (y, x, rnd);
-  else
-    ternary = mpfr_ai1 (y, x, rnd);
-
-  mpfr_clear (temp1);
   mpfr_clear (temp2);
-  return ternary;
+
+  use_ai2 = mpfr_cmp_si (temp1, MPFR_AI_SCALE) > 0;
+  mpfr_clear (temp1);
+
+  MPFR_SAVE_EXPO_FREE (expo); /* Ignore all previous exceptions. */
+
+  return use_ai2 ? mpfr_ai2 (y, x, rnd) : mpfr_ai1 (y, x, rnd);
 }
