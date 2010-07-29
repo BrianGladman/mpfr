@@ -214,9 +214,9 @@ To make a release (for the MPFR team):
      Upload the tarballs and the signatures to the MPFR web server
      (via svn), to INRIAGforge and to the GNU FTP site. Update the
      mpfr-current symbolic link and the history page. Announce the
-     release in the mpfr, gmp-discuss and gcc mailing-lists, and on
-     INRIAGforge. In case of a new patchlevel release, add a link from
-     the web page of the previous release.
+     release in the mpfr-announce, gmp-discuss and gcc mailing-lists,
+     and on INRIAGforge. In case of a new patchlevel release, add a
+     link from the web page of the previous release.
 
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
