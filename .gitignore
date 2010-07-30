@@ -42,6 +42,7 @@
 /config.status
 /config.sub
 /configure
+/configure.lineno
 /depcomp
 /get_patches.c
 /install-sh
