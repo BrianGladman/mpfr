@@ -1,7 +1,7 @@
 /* Functions for evaluating Gamma(1/3) and Gamma(2/3). Used by mpfr_ai.
 
 Copyright 2010 Free Software Foundation, Inc.
-Contributed by the Arenaire and Cacao projects, INRIA.
+Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
