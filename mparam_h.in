@@ -23,13 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # error "MPFR Internal not included"
 #endif
 
-/* Warning! There is currently a bug in the mparam_h.in -> mparam.h
- * dependency rule:
- *   https://gforge.inria.fr/tracker/index.php?func=detail&aid=10810&group_id=136&atid=619
- * If you modify this file, then make sure that mparam.h is rebuilt
- * early enough, e.g. by running "./config.status mparam.h".
- */
-
 /* Note: the different macros used here are those defined by gcc,
    for example with gcc -dM -E -xc /dev/null
    As of gcc 4.2, you can also use: -march=native or -mtune=native */
