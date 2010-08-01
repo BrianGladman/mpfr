@@ -22,6 +22,8 @@ EXTRA_DIST = PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jy
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 
+BUILT_SOURCES = mparam.h
+
 lib_LTLIBRARIES = libmpfr.la
 
 libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-gmp.h mpfr-impl.h		\
