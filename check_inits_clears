@@ -18,7 +18,8 @@ sub wanted
     open FILE, '<', $_ or die;
     while (<FILE>)
       {
-        /^ +mpfr_(init|clear)s/ && ! /\) *(0|NULL)/ or next;
+        /^ +mpfr_(init|clear)s/ && ! /\(mpfr_ptr\) *(0|NULL)/ or next;
+        /, *$/ and $_ .= <FILE>, redo;
         $ctr++ or print "Error found in $File::Find::name\n";
         print;
         $err = 1;
