@@ -84,6 +84,6 @@ autoconf minimal versions differ:
   acinclude.m4: $acv2
 EOF
 
-./check_inits_clears
+"`dirname -- "$0"`"/check_inits_clears
 
 true
