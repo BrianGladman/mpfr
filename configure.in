@@ -172,11 +172,13 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
        # Get CC
        echo "#include \"gmp.h\"" >  conftest.c
        echo "MPFR_OPTION __GMP_CC"           >> conftest.c
-       GMP_CC=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g'`
+       GMP_CC=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g;s/ *" *//g'`
        # Get CFLAGS
        echo "#include \"gmp.h\"" >  conftest.c
        echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
-       GMP_CFLAGS=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g'`
+       unset rmpedantic
+       [test "$enable_logging" = yes && rmpedantic='s/[ "]-pedantic[ "]/ /g;']
+       GMP_CFLAGS=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e "$rmpedantic"'s/MPFR_OPTION //g;s/ *" *//g'`
        break
      fi
    done
