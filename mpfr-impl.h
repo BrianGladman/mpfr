@@ -1394,7 +1394,6 @@ typedef struct {
   int _x ## _cpt = 1;                                         \
   static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
   static const char *_x ## _fname = __func__;                 \
-  auto void __attribute__ ((destructor)) x ## _f  (void);     \
   void __attribute__ ((destructor)) x ## _f  (void) {         \
   if (_x ## _loop != 0 && MPFR_LOG_STAT_F&mpfr_log_type)      \
      fprintf (mpfr_log_file,                                  \
@@ -1490,7 +1489,6 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 
 #define MPFR_LOG_FUNC(begin,end)                                            \
   static const char *__mpfr_log_fname = __func__;                           \
-  auto void __mpfr_log_cleanup (int *time);                                 \
   void __mpfr_log_cleanup (int *time) {                                     \
     int __gmpfr_log_time = *time;                                           \
     MPFR_LOG_END2 end; }                                                    \
