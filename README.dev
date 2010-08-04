@@ -182,8 +182,7 @@ To make a release (for the MPFR team):
      ./configure CC=g++ (MPFR 2.3.2 did not).
 
      Try different compilers, e.g., icc, opencc (x86_64 machines),
-     tcc <http://bellard.org/tcc/>, clang. In particular, try with
-     "clang -fcatch-undefined-ansic-behavior".
+     tcc <http://bellard.org/tcc/>, llvm-gcc, clang.
 
      On 64-bit PowerPC, test against GMP built with the different ABI's:
      32, mode32 and mode64 (in particular mode32, where long's have
