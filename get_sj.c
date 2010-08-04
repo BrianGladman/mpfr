@@ -94,7 +94,12 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
         }
       else if (MPFR_IS_POS (x))
         {
-          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
+          /* Note: testing the condition sh >= 0 is necessary to avoid
+             an undefined behavior on xp[n] >> S when S >= GMP_NUMB_BITS
+             (even though xp[n] == 0 in such a case). This can happen if
+             sizeof(mp_limb_t) < sizeof(intmax_t) and |x| is small enough
+             because of the trailing bits due to its normalization. */
+          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0 && sh >= 0; n--)
             {
               sh -= GMP_NUMB_BITS;
               /* Note the concerning the casts below:
@@ -104,7 +109,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
                  for the case sizeof(intmax_t) == sizeof(mp_limb_t), as
                  mp_limb_t is unsigned, therefore not representable as an
                  intmax_t when the MSB is 1 (this is the case here). */
-              MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
+              MPFR_ASSERTD (sh < GMP_NUMB_BITS && -sh < GMP_NUMB_BITS);
               r += (sh >= 0
                     ? (intmax_t) xp[n] << sh
                     : (intmax_t) (xp[n] >> (-sh)));
@@ -112,11 +117,11 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
         }
       else
         {
-          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
+          /* See the comments for the case x positive. */
+          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0 && sh >= 0; n--)
             {
               sh -= GMP_NUMB_BITS;
-              /* See above for the note concerning the casts. */
-              MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
+              MPFR_ASSERTD (sh < GMP_NUMB_BITS && -sh < GMP_NUMB_BITS);
               r -= (sh >= 0
                     ? (intmax_t) xp[n] << sh
                     : (intmax_t) (xp[n] >> (-sh)));
