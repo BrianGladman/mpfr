@@ -104,6 +104,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
                  for the case sizeof(intmax_t) == sizeof(mp_limb_t), as
                  mp_limb_t is unsigned, therefore not representable as an
                  intmax_t when the MSB is 1 (this is the case here). */
+              MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
               r += (sh >= 0
                     ? (intmax_t) xp[n] << sh
                     : (intmax_t) (xp[n] >> (-sh)));
@@ -115,6 +116,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
             {
               sh -= GMP_NUMB_BITS;
               /* See above for the note concerning the casts. */
+              MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
               r -= (sh >= 0
                     ? (intmax_t) xp[n] << sh
                     : (intmax_t) (xp[n] >> (-sh)));
