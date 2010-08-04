@@ -183,10 +183,12 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
 
+#if !defined(MPFR_ERRDIVZERO)
   /* check NaN */
   mpfr_set_nan (x);
   d = mpfr_get_ld (x, MPFR_RNDN);
   check_set_get (d, x);
+#endif
 
   /* check +0.0 and -0.0 */
   d = 0.0;
@@ -205,6 +207,7 @@ main (int argc, char *argv[])
 #endif
     }
 
+#if !defined(MPFR_ERRDIVZERO)
   /* check +Inf */
   mpfr_set_inf (x, 1);
   d = mpfr_get_ld (x, MPFR_RNDN);
@@ -214,6 +217,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, -1);
   d = mpfr_get_ld (x, MPFR_RNDN);
   check_set_get (d, x);
+#endif
 
   /* check the largest power of two */
   d = 1.0; while (d < LDBL_MAX / 2.0) d += d;

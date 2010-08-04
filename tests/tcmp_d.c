@@ -68,6 +68,7 @@ main (void)
       exit (1);
     }
 
+#if !defined(MPFR_ERRDIVZERO)
   /* Check NAN */
   mpfr_clear_erangeflag ();
   c = mpfr_cmp_d (x, DBL_NAN);
@@ -94,6 +95,7 @@ main (void)
 #endif
       exit (1);
     }
+#endif  /* MPFR_ERRDIVZERO */
 
   mpfr_clear(x);
 

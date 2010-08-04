@@ -206,6 +206,30 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
 fi
 
+dnl Check the FP division by 0 fails (e.g. on a non-IEEE-754 platform).
+dnl In such a case, MPFR_ERRDIVZERO is defined to disable the tests
+dnl involving a FP division by 0.
+dnl For the developers: to check whether all these tests are disabled,
+dnl configure MPFR with "-DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1".
+AC_CACHE_CHECK([if the FP division by 0 fails], mpfr_cv_errdivzero, [
+AC_TRY_RUN([
+int main() {
+  volatile double d = 0.0, x;
+  x = 0.0 / d;
+  x = 1.0 / d;
+  return 0;
+}
+], [mpfr_cv_errdivzero="no"],
+   [mpfr_cv_errdivzero="yes"],
+   [mpfr_cv_errdivzero="cannot test, assume no"])
+])
+if test "$mpfr_cv_errdivzero" = "yes"; then
+  AC_DEFINE(MPFR_ERRDIVZERO,1,[Define if the FP division by 0 fails.])
+  AC_MSG_WARN([The floating-point division by 0 fails instead of])
+  AC_MSG_WARN([returning a special value: NaN or infinity. Tests])
+  AC_MSG_WARN([involving a FP division by 0 will be disabled.])
+fi
+
 dnl Check whether NAN != NAN (as required by the IEEE-754 standard,
 dnl but not by the ISO C standard). For instance, this is false with
 dnl MIPSpro 7.3.1.3m under IRIX64. By default, assume this is true.

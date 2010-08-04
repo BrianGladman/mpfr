@@ -65,6 +65,7 @@ main (int argc, char *argv[])
 
   mpfr_init (x);
 
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_set_nan (x);
   d = mpfr_get_d (x, MPFR_RNDN);
   if (! DOUBLE_ISNAN (d))
@@ -89,6 +90,7 @@ main (int argc, char *argv[])
 #endif
       exit (1);
     }
+#endif  /* MPFR_ERRDIVZERO */
 
   d = 0.0;
   mpfr_set_d (x, d, MPFR_RNDN);
@@ -101,6 +103,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_set_inf (x, 1);
   d = mpfr_get_d (x, MPFR_RNDN);
   mpfr_set_ui (x, 0, MPFR_RNDN);
@@ -112,6 +115,7 @@ main (int argc, char *argv[])
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_set_d (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+#endif  /* MPFR_ERRDIVZERO */
 
   mpfr_set_prec (x, 2);
 

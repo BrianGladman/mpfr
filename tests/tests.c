@@ -34,6 +34,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
+#ifdef MPFR_TEST_DIVBYZERO
+# include <fenv.h>
+#endif
+
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>  /* for struct timeval */
 # include <time.h>
@@ -168,6 +172,11 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
+#ifdef MPFR_TEST_DIVBYZERO
+  /* Define to test the use of MPFR_ERRDIVZERO */
+  feclearexcept (FE_ALL_EXCEPT);
+#endif
+
   tests_memory_start ();
   tests_rand_start ();
   tests_limit_start ();
@@ -196,6 +205,19 @@ tests_end_mpfr (void)
   mpfr_free_cache ();
   tests_rand_end ();
   tests_memory_end ();
+
+#ifdef MPFR_TEST_DIVBYZERO
+  /* Define to test the use of MPFR_ERRDIVZERO */
+  if (fetestexcept (FE_DIVBYZERO|FE_INVALID))
+    {
+      printf ("A floating-point division by 0 occurred!\n");
+#ifdef MPFR_ERRDIVZERO
+      /* This should never occur because the purpose of defining
+         MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
+      err = 1;
+#endif
+    }
+#endif
 
   if (err)
     exit (err);

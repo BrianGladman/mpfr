@@ -92,6 +92,7 @@ check_regulars (void)
 static void
 check_nans (void)
 {
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_t  x, y;
   int inexact;
 
@@ -126,6 +127,7 @@ check_nans (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
+#endif
 }
 
 #define TEST_FUNCTION mpfr_add_d

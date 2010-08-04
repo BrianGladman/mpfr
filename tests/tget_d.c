@@ -90,7 +90,7 @@ static void
 check_inf_nan (void)
 {
   /* only if nans and infs are available */
-#if _GMP_IEEE_FLOATS
+#if _GMP_IEEE_FLOATS && !defined(MPFR_ERRDIVZERO)
   mpfr_t  x;
   double  d;
 
@@ -140,20 +140,24 @@ check_max (void)
   MPFR_ASSERTN(d == -DBL_MAX);
   d = mpfr_get_d (u, MPFR_RNDU);
   MPFR_ASSERTN(d == -DBL_MAX);
+#if _GMP_IEEE_FLOATS && !defined(MPFR_ERRDIVZERO)
   d = mpfr_get_d (u, MPFR_RNDN);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
   d = mpfr_get_d (u, MPFR_RNDD);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
+#endif
 
   mpfr_set_str_binary (u, "1E1024");
   d = mpfr_get_d (u, MPFR_RNDZ);
   MPFR_ASSERTN(d == DBL_MAX);
   d = mpfr_get_d (u, MPFR_RNDD);
   MPFR_ASSERTN(d == DBL_MAX);
+#if _GMP_IEEE_FLOATS && !defined(MPFR_ERRDIVZERO)
   d = mpfr_get_d (u, MPFR_RNDN);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
   d = mpfr_get_d (u, MPFR_RNDU);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
+#endif
 
   mpfr_clear (u);
 }
