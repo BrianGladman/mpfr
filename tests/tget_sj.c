@@ -244,6 +244,13 @@ main (void)
   check_sj (0, x);
   check_uj (0, x);
 
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  check_sj (1, x);
+  check_uj (1, x);
+
+  mpfr_neg (x, x, MPFR_RNDN);
+  check_sj (-1, x);
+
   mpfr_set_si_2exp (x, 1, prec, MPFR_RNDN);
   mpfr_sub_ui (x, x, 1, MPFR_RNDN); /* UINTMAX_MAX */
 
