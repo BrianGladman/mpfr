@@ -96,6 +96,15 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
   return res;
 }
 
+/* FIXME [VL] (for mpfr_mul_q and mpfr_div_q): an intermediate overflow
+   doesn't necessarily imply an overflow on the final result. Moreover
+   the exponent range should be extended in the usual way.
+   To fix this, I think that these functions should call a common
+   function mpfr_muldiv_z:
+     res = mpfr_muldiv_z (y, x, mpq_numref(z), mpq_denref(z), rnd_mode);
+     res = mpfr_muldiv_z (y, x, mpq_denref(z), mpq_numref(z), rnd_mode);
+   respectively, so that all the work isn't done twice. */
+
 int
 mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
