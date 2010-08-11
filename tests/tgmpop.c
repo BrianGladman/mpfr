@@ -593,7 +593,7 @@ test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
     }
 }
 
-void
+static void
 bug_mul_q_20100810 (void)
 {
   mpfr_t x;
@@ -637,7 +637,7 @@ bug_mul_q_20100810 (void)
   mpfr_clear (x);
 }
 
-void
+static void
 bug_div_q_20100810 (void)
 {
   mpfr_t x;
