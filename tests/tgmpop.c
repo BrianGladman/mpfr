@@ -593,6 +593,94 @@ test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
     }
 }
 
+void
+bug_mul_q_20100810 (void)
+{
+  mpfr_t x;
+  mpfr_t y;
+  mpq_t q;
+  int inexact;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpq_init (q);
+
+  /* mpfr_mul_q: the inexact value must be set in case of overflow */
+  mpq_set_ui (q, 4096, 3);
+  mpfr_set_inf (x, +1);
+  mpfr_nextbelow (x);
+  inexact = mpfr_mul_q (y, x, q, MPFR_RNDD);
+
+  if (inexact <= 0)
+    {
+      printf ("Overflow error in mpfr_mul_q. ");
+      printf ("Wrong inexact flag: got %d, should be positive.\n", inexact);
+
+      exit (1);
+    }
+  if (!mpfr_inf_p (y))
+    {
+      printf ("Overflow error in mpfr_mul_q (y, x, q, MPFR_RNDD). ");
+      printf ("\nx = ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDD);
+      printf ("\nq = ");
+      mpq_out_str (stdout, 10, q);
+      printf ("\ny = ");
+      mpfr_out_str (stdout, 10, 0, y, MPFR_RNDD);
+      printf (" (should be +infinity)\n");
+
+      exit (1);
+    }
+
+  mpq_clear (q);
+  mpfr_clear (y);
+  mpfr_clear (x);
+}
+
+void
+bug_div_q_20100810 (void)
+{
+  mpfr_t x;
+  mpfr_t y;
+  mpq_t q;
+  int inexact;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpq_init (q);
+
+  /* mpfr_div_q: the inexact value must be set in case of overflow */
+  mpq_set_ui (q, 3, 4096);
+  mpfr_set_inf (x, +1);
+  mpfr_nextbelow (x);
+  inexact = mpfr_div_q (y, x, q, MPFR_RNDD);
+
+  if (inexact <= 0)
+    {
+      printf ("Overflow error in mpfr_div_q. ");
+      printf ("Wrong inexact flag: got %d, should be positive.\n", inexact);
+
+      exit (1);
+    }
+  if (!mpfr_inf_p (y))
+    {
+      printf ("Overflow error in mpfr_div_q (y, x, q, MPFR_RNDD). ");
+      printf ("\nx = ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDD);
+      printf ("\nq = ");
+      mpq_out_str (stdout, 10, q);
+      printf ("\ny = ");
+      mpfr_out_str (stdout, 10, 0, y, MPFR_RNDD);
+      printf (" (should be +infinity)\n");
+
+      exit (1);
+    }
+
+  mpq_clear (q);
+  mpfr_clear (y);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -622,6 +710,9 @@ main (int argc, char *argv[])
   test_cmp_f (2, 100, 100);
 
   check_for_zero ();
+
+  bug_mul_q_20100810 ();
+  bug_div_q_20100810 ();
 
   tests_end_mpfr ();
   return 0;

@@ -110,8 +110,15 @@ mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
       MPFR_MPZ_SIZEINBASE2 (p, mpq_numref (z));
       mpfr_init2 (tmp, MPFR_PREC (x) + p);
       res = mpfr_mul_z (tmp, x, mpq_numref(z), MPFR_RNDN );
-      MPFR_ASSERTD (res == 0);
-      res = mpfr_div_z (y, tmp, mpq_denref(z), rnd_mode);
+      if (MPFR_UNLIKELY (res != 0))
+        {
+          /* overflow case */
+          MPFR_ASSERTD (mpfr_inf_p (tmp));
+          mpfr_set (y, tmp, MPFR_RNDN); /* exact */
+        }
+      else
+        res = mpfr_div_z (y, tmp, mpq_denref(z), rnd_mode);
+
       mpfr_clear (tmp);
       return res;
     }
@@ -132,8 +139,15 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
     MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
   mpfr_init2 (tmp, MPFR_PREC(x) + p);
   res = mpfr_mul_z (tmp, x, mpq_denref(z), MPFR_RNDN );
-  MPFR_ASSERTD( res == 0 );
-  res = mpfr_div_z (y, tmp, mpq_numref(z), rnd_mode);
+  if (MPFR_UNLIKELY (res != 0))
+    {
+      /* overflow case */
+      MPFR_ASSERTD (mpfr_inf_p (tmp));
+      mpfr_set (y, tmp, MPFR_RNDN); /* exact */
+    }
+  else
+    res = mpfr_div_z (y, tmp, mpq_numref(z), rnd_mode);
+
   mpfr_clear (tmp);
   return res;
 }
