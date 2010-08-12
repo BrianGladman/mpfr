@@ -63,7 +63,7 @@ m4/libtool.m4 and missing are distributed under the same licence of
 GNU MPFR.
 
 
-You can get the latest source code by Subversion at InriaGforge:
+You can get the latest source code by Subversion at INRIAGForge:
 
   svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
 
@@ -84,8 +84,7 @@ For more information about Subversion, please see:
   * http://svnbook.red-bean.com/ (the official Subversion book);
   * http://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
     but interesting general information can be found there);
-  * http://subversion.tigris.org/faq.html (the Subversion FAQ).
+  * http://subversion.apache.org/faq.html (the Subversion FAQ).
 
-Subversion users should read the file "README.dev".
-
-Note: the old CVS repository at cvs-sop.inria.fr is now closed.
+Subversion users should read the file "README.dev" (provided via
+SVN only).
