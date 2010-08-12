@@ -12,15 +12,6 @@ old Debian packages, due to a bug in the wrapper). Then you can run
 there are no patches to apply, and the URLs are not valid since the
 corresponding version has not been released yet).
 
-If for some reason, this doesn't work, there's still the old way: run
-the "prepare" script to generate these files; as the "prepare" script
-also runs "configure", you must give the options that will be passed
-to "configure", for instance: ./prepare --with-gmp=/path/to/gmp
-Give "--help" if you don't know (./prepare --help). Then, you can
-use the configure script as usual. Read the INSTALL file for more
-information. If you use GNU tools, you can give "-dev" as the first
-option to the "prepare" script to get better dependency tracking.
-
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
 ===========================================================================
