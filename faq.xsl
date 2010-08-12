@@ -54,6 +54,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   </xsl:copy>
 </xsl:template>
 
+<xsl:template match="comment()"/>
+
 <xsl:template match="node()|@*">
   <xsl:copy>
     <xsl:apply-templates select="node()|@*"/>
