@@ -289,7 +289,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_set_prec (tmp, w);
       mpfr_set_prec (tmp2, w);
       ck = mpfr_ui_sub (tmp, 2, x, MPFR_RNDN);
-      MPFR_ASSERTD (ck == 0);
+      MPFR_ASSERTD (ck == 0);  (void) ck; /* use ck to avoid a warning */
       mpfr_const_pi (tmp2, MPFR_RNDN);
       mpfr_mul (tmp2, tmp2, tmp, MPFR_RNDN); /* Pi*(2-x) */
       mpfr_sin (tmp, tmp2, MPFR_RNDN); /* sin(Pi*(2-x)) */
@@ -348,8 +348,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       /* reflection formula: gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x) */
 
-      ck = mpfr_ui_sub (xp, 2, x, MPFR_RNDN);
-      MPFR_ASSERTD(ck == 0); /* 2-x, exact */
+      ck = mpfr_ui_sub (xp, 2, x, MPFR_RNDN); /* 2-x, exact */
+      MPFR_ASSERTD(ck == 0);  (void) ck; /* use ck to avoid a warning */
       mpfr_gamma (tmp, xp, MPFR_RNDN);   /* gamma(2-x), error (1+u) */
       mpfr_const_pi (tmp2, MPFR_RNDN);   /* Pi, error (1+u) */
       mpfr_mul (GammaTrial, tmp2, xp, MPFR_RNDN); /* Pi*(2-x), error (1+u)^2 */
@@ -362,8 +362,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          The relative error is thus bounded by |(1+u^2)-1|*g/sin(g)
          <= |(1+u^2)-1|*2^err_g. <= 2.25*u*2^err_g for |u|<=1/4.
          With the rounding error, this gives (0.5 + 2.25*2^err_g)*u. */
-      ck = mpfr_sub_ui (xp, x, 1, MPFR_RNDN);
-      MPFR_ASSERTD(ck == 0); /* x-1, exact */
+      ck = mpfr_sub_ui (xp, x, 1, MPFR_RNDN); /* x-1, exact */
+      MPFR_ASSERTD(ck == 0);  (void) ck; /* use ck to avoid a warning */
       mpfr_mul (xp, tmp2, xp, MPFR_RNDN); /* Pi*(x-1), error (1+u)^2 */
       mpfr_mul (GammaTrial, GammaTrial, tmp, MPFR_RNDN);
       /* [1 + (0.5 + 2.25*2^err_g)*u]*(1+u)^2 = 1 + (2.5 + 2.25*2^err_g)*u
