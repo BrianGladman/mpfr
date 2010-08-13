@@ -36,7 +36,7 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
     MPFR_MPZ_SIZEINBASE2 (p, z);
   mpfr_init2 (t, p);
   i = mpfr_set_z (t, z, MPFR_RNDN);
-  MPFR_ASSERTD (i == 0);
+  MPFR_ASSERTD (i == 0);  (void) i; /* use i to avoid a warning */
 }
 
 /* Init, set a mpfr_t with enough precision to store a mpz_t without round,
