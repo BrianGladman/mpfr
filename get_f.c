@@ -133,7 +133,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           out = mpn_rshift (xp, MPFR_MANT(z), sz, sh);
           /* If sh hasn't changed, it is the number of the non-significant
              bits in the lowest limb of z. Therefore out == 0. */
-          MPFR_ASSERTD (out == 0);
+          MPFR_ASSERTD (out == 0);  (void) out; /* avoid a warning */
         }
       else
         MPN_COPY (xp, MPFR_MANT(z), sz);
