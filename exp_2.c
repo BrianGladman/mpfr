@@ -244,6 +244,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    The absolute error on s is less than 3*l*(l+1)*2^(-q).
    Version using fixed-point arithmetic with mpz instead
    of mpfr for internal computations.
+   NOTE[VL]: the following sentence seems to be obsolete since MY_INIT_MPZ
+   is no longer used (r6919); qn was the number of limbs of q.
    s must have at least qn+1 limbs (qn should be enough, but currently fails
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
@@ -252,13 +254,11 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
 {
   unsigned long l;
   mpfr_exp_t dif, expt, expr;
-  mp_size_t qn;
   mpz_t t, rr;
   mp_size_t sbit, tbit;
 
   MPFR_ASSERTN (MPFR_IS_PURE_FP (r));
 
-  qn = 1 + (q-1)/GMP_NUMB_BITS;
   expt = 0;
   *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
   mpz_init (t);
@@ -302,6 +302,8 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
    Uses m multiplications of full size and 2l/m of decreasing size,
    i.e. a total equivalent to about m+l/m full multiplications,
    i.e. 2*sqrt(l) for m=sqrt(l).
+   NOTE[VL]: The following sentence seems to be obsolete since MY_INIT_MPZ
+   is no longer used (r6919); sizer was the number of limbs of r.
    Version using mpz. ss must have at least (sizer+1) limbs.
    The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
@@ -309,7 +311,6 @@ static unsigned long
 mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
 {
   mpfr_exp_t expr, *expR, expt;
-  mp_size_t sizer;
   mpfr_prec_t ql;
   unsigned long l, m, i;
   mpz_t t, *R, rr, tmp;
@@ -328,7 +329,6 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   R = (mpz_t*) MPFR_TMP_ALLOC ((m + 1) * sizeof (mpz_t));     /* R[i] is r^i */
   expR = (mpfr_exp_t*) MPFR_TMP_ALLOC((m + 1) * sizeof (mpfr_exp_t));
   /* expR[i] is the exponent for R[i] */
-  sizer = MPFR_LIMB_SIZE(r);
   mpz_init (tmp);
   mpz_init (rr);
   mpz_init (t);
