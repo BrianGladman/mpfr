@@ -74,7 +74,7 @@ AC_ARG_WITH(gmp_build,
    [
    if test -z "$gmp_lib_path" && test -z "$with_gmp_include" ; then
       CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
-      LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
+      LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune"
       gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
       if test -r $withval/Makefile ; then
          GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
