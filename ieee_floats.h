@@ -33,38 +33,38 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* The "d" field guarantees alignment to a suitable boundary for a double.
    Could use a union instead, if we checked the compiler supports union
    initializers.  */
-struct dbl_bytes {
+union dbl_bytes {
   unsigned char b[8];
   double d;
 };
 
-#define MPFR_DBL_INFP  (* (const double *) dbl_infp.b)
-#define MPFR_DBL_INFM  (* (const double *) dbl_infm.b)
-#define MPFR_DBL_NAN   (* (const double *) dbl_nan.b)
+#define MPFR_DBL_INFP  (dbl_infp.d)
+#define MPFR_DBL_INFM  (dbl_infm.d)
+#define MPFR_DBL_NAN   (dbl_nan.d)
 
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
-static const struct dbl_bytes dbl_infp =
-  { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F }, 0.0 };
-static const struct dbl_bytes dbl_infm =
-  { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF }, 0.0 };
-static const struct dbl_bytes dbl_nan  =
-  { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F }, 0.0 };
+static const union dbl_bytes dbl_infp =
+  { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F } };
+static const union dbl_bytes dbl_infm =
+  { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF } };
+static const union dbl_bytes dbl_nan  =
+  { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F } };
 #endif
 #if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
-static const struct dbl_bytes dbl_infp =
-  { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_infm =
-  { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_nan  =
-  { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 }, 0.0 };
+static const union dbl_bytes dbl_infp =
+  { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 } };
+static const union dbl_bytes dbl_infm =
+  { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 } };
+static const union dbl_bytes dbl_nan  =
+  { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 } };
 #endif
 #if HAVE_DOUBLE_IEEE_BIG_ENDIAN
-static const struct dbl_bytes dbl_infp =
-  { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_infm =
-  { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_nan  =
-  { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 }, 0.0 };
+static const union dbl_bytes dbl_infp =
+  { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 } };
+static const union dbl_bytes dbl_infm =
+  { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 } };
+static const union dbl_bytes dbl_nan  =
+  { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 } };
 #endif
 
 #else /* _GMP_IEEE_FLOATS */
