@@ -34,7 +34,6 @@ main (int argc, char *argv[])
   unsigned int prec, yprec;
   int rnd;
   mpfr_t x, y, z, t;
-  int inexact;
   unsigned long n;
 
   tests_start_mpfr ();
@@ -77,12 +76,12 @@ main (int argc, char *argv[])
       for (n = 0; n < 50; n++)
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
           {
-            inexact = mpfr_zeta_ui (y, n, MPFR_RNDN);
+            mpfr_zeta_ui (y, n, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))
               {
                 mpfr_set (t, y, (mpfr_rnd_t) rnd);
-                inexact = mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
+                mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
                 if (mpfr_cmp (t, z))
                   {
                     printf ("results differ for n=%lu", n);

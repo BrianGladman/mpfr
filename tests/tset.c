@@ -149,9 +149,13 @@ main (void)
 
   /* check prototypes of mpfr_init_set_* */
   inexact = mpfr_init_set_si (x, -1, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
   inexact = mpfr_init_set (y, x, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
   inexact = mpfr_init_set_ui (z, 1, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
   inexact = mpfr_init_set_d (u, 1.0, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
 
   emax = mpfr_get_emax ();
   set_emax (0);

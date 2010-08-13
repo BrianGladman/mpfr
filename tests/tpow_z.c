@@ -269,9 +269,10 @@ check_overflow (void)
   mpfr_set_str_binary (a, "1E10");
   mpz_init_set_ui (z, ULONG_MAX);
   res = mpfr_pow_z (a, a, z, MPFR_RNDN);
-  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) < 0)
+  if (! MPFR_IS_INF (a) || MPFR_SIGN (a) < 0 || res <= 0)
     {
-      printf ("Error for (1e10)^ULONG_MAX\n");
+      printf ("Error for (1e10)^ULONG_MAX, expected +Inf,\ngot ");
+      mpfr_dump (a);
       exit (1);
     }
 
@@ -284,7 +285,7 @@ check_overflow (void)
   n = (ULONG_MAX ^ (ULONG_MAX >> 1)) + 1;
   mpz_set_ui (z, n);
   res = mpfr_pow_z (a, a, z, MPFR_RNDN);
-  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) > 0)
+  if (! MPFR_IS_INF (a) || MPFR_SIGN (a) > 0 || res >= 0)
     {
       printf ("Error for (-1e10)^%lu, expected -Inf,\ngot ", n);
       mpfr_dump (a);

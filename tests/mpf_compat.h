@@ -135,6 +135,10 @@ main (void)
   /* MPF doen't have mpf_free_str */
   mpfr_free_str (s);
 
+  /* Use d, l and u to avoid a warning with -Wunused-but-set-variable
+     from GCC 4.6. The variables above were mainly used for prototype
+     checking. */
+  (void) d;  (void) l;  (void)  u;
 
   /* Arithmetic Functions */
 

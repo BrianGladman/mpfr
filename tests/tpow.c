@@ -1171,7 +1171,7 @@ bug20071127 (void)
       mpfr_set_str (y, "8000000000000000", 16, MPFR_RNDN);
       mpfr_add_si (y, y, i, MPFR_RNDN);
       tern = mpfr_pow (z, x, y, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_IS_POS(z));
+      MPFR_ASSERTN (mpfr_zero_p (z) && MPFR_IS_POS (z) && tern < 0);
     }
 
   mpfr_clear (x);
@@ -1211,7 +1211,7 @@ bug20071128 (void)
       mpfr_set_si_2exp (y, -1, i, MPFR_RNDN);
       mpfr_add_si (y, y, 1, MPFR_RNDN);
       tern = mpfr_pow (z, x, y, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_SIGN(z) < 0);
+      MPFR_ASSERTN (mpfr_zero_p (z) && MPFR_IS_NEG (z) && tern > 0);
     }
 
   /* on 32-bit machines */
