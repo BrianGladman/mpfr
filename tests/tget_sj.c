@@ -34,11 +34,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
-#endif
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#endif
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #include "mpfr-test.h"

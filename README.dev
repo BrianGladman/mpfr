@@ -249,7 +249,8 @@ List of the used macros for building MPFR:
 + HAVE_STDARG:          Define if the system supports 'stdarg.h'.
                          Otherwise it is assumed it is 'vararg.h'.
 
-+ HAVE_STDINT_H:        Define if 'intmax_t' is supported (ISO C99).
++ HAVE_INTTYPES_H:      Define if <inttypes.h> is available (ISO C99).
++ HAVE_STDINT_H:        Define if <stdint.h> is available (ISO C99).
 + MPFR_HAVE_INTMAX_MAX: Define if the INTMAX_MAX macro works correctly
                          (if 'intmax_t' is supported).
 
@@ -345,6 +346,26 @@ not work with the native SunOS 4 C compiler, whose headers are
 not conform to the standard (even with C90); other problems may
 occur on this architecture. You can either include <stdio.h> or
 use 0 (possibly casted to the target pointer type).
+
+   ====================================================================
+
+For files that need intmax_t or similar, use:
+
+#if HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
+#endif
+
+Note that even though the ISO C99 standard requires that <inttypes.h>
+include <stdint.h>, in practice this is not true on all platforms,
+such as OSF/1 (Tru64) 5.1. This is consistent with autoconf, which
+has used this form since 2004-01-26 (in headers.m4).
+
+References:
+  http://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=commitdiff;h=62ac9bbfebe879581dabeed78c6ac66b907dd51d
+  http://websympa.loria.fr/wwsympa/arc/mpfr/2010-08/msg00015.html
 
    ====================================================================
 

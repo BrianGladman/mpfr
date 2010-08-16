@@ -27,11 +27,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stddef.h>
 
 #if HAVE_INTTYPES_H
-# include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h>
-# endif
+# include <inttypes.h>
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #include "mpfr-test.h"

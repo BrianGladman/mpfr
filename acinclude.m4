@@ -838,11 +838,11 @@ AC_DEFUN([MPFR_CHECK_PRINTF_SPEC], [
 AC_REQUIRE([MPFR_CONFIGS])dnl
 if test "$ac_cv_type_intmax_t" = yes; then
  MPFR_FUNC_GMP_PRINTF_SPEC([jd], [intmax_t], [
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
-#endif
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#endif
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
 #endif
          ],,
          [AC_DEFINE([NPRINTF_J], 1, [gmp_printf cannot read intmax_t])])

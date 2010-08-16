@@ -53,11 +53,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #if HAVE_INTTYPES_H
-# include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h> /* for WINT_MAX in particular */
-# endif
+# include <inttypes.h>
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #define MPFR_NEED_LONGLONG_H
