@@ -23,11 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static int
-mpfr_ai1 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
-static int
-mpfr_ai2 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
-
 /* Reminder and notations:
    -----------------------
 
@@ -51,7 +46,7 @@ mpfr_ai2 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 
 
 /* Airy function Ai evaluated by the most naive algorithm */
-int
+static int
 mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   MPFR_ZIV_DECL (loop);
@@ -286,7 +281,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
 
 /* Airy function Ai evaluated by Smith algorithm */
-int
+static int
 mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   MPFR_ZIV_DECL (loop);
