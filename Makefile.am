@@ -18,19 +18,14 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
   examples/version.c
 
-EXTRA_DIST = PATCHES VERSION tools/get_patches.sh
+EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh
 
-# In a "make dist", check that libtool -version-info value is up-to-date.
-# But if the VERSION file contains "-dev", this is not checked.
+# In a "make dist", check consistency concerning -version-info
+# and if the VERSION file doesn't end with "-dev", check that
+# the -version-info value is up-to-date.
 # Note: this is a heuristic, to detect some mistakes.
 dist-hook:
-	grep -q -e -dev $(srcdir)/VERSION || { \
-	  mv=`sed -n "s/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*/\1\\\\\\.\2/p" $(srcdir)/VERSION` && \
-	  pl=`sed -n "s/^$$mv\.\([0-9][0-9]*\).*/\1/p" $(srcdir)/VERSION` && \
-	  printf "mv=%s / pl=%s\n" "$$mv" "$$pl" && \
-	  vinfo=`sed -n "s/^# *$$mv\.x *\([0-9][0-9]*\):x:\([0-9][0-9]*\)/\1:$$pl:\2/p" $(srcdir)/src/Makefile.am` && \
-	  printf "vinfo=%s\n" "$$vinfo" && \
-	  grep -q -e "-version-info $$vinfo$$" $(srcdir)/src/Makefile.am; }
+	cd $(srcdir) && tools/ck-version-info
 
 # The following needs to be removed once GNU Automake 1.11 support is added.
 DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.xz \
