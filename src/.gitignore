@@ -1,0 +1,9 @@
+/*.la
+/*.lo
+/*.orig
+/.deps
+/.libs
+/Makefile
+/Makefile.in
+/get_patches.c
+/mparam.h
