@@ -115,7 +115,11 @@ mpfr_log_begin (void)
     mpfr_log_type = MPFR_LOG_INPUT_F|MPFR_LOG_OUTPUT_F|MPFR_LOG_TIME_F
       |MPFR_LOG_INTERNAL_F|MPFR_LOG_MSG_F|MPFR_LOG_BADCASE_F|MPFR_LOG_STAT_F;
 
-  /* Register printf functions */
+  /* Register printf functions
+   * Note[VL]: register_printf_function is now deprecated by the GNU libc.
+   * Use either register_printf_specifier or (much better) mpfr_fprintf.
+   * See https://gforge.inria.fr/tracker/index.php?func=detail&aid=10930
+   */
   register_printf_function ('R', mpfr_printf_mpfr_print,
                             mpfr_printf_mpfr_arginfo);
 
