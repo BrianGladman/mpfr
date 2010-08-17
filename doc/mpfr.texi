@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.1.0-dev
-@set UPDATED-MONTH June 2010
+@set UPDATED-MONTH August 2010
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -429,8 +429,9 @@ Create a Postscript version of the manual, in @file{mpfr.ps}.
 @samp{mpfr.html} or @samp{html}
 
 Create a HTML version of the manual, in several pages in the directory
-@file{mpfr.html}; if you want only one output HTML file, then type
-@samp{makeinfo --html --no-split mpfr.texi} instead.
+@file{doc/mpfr.html}; if you want only one output HTML file, then type
+@samp{makeinfo --html --no-split mpfr.texi} from the @samp{doc} directory
+instead.
 
 @item
 @samp{clean}

@@ -371,8 +371,7 @@ dnl    important to run the test below.
 if test "$enable_thread_safe" = yes; then
 AC_CACHE_CHECK([for TLS support], mpfr_cv_working_tls, [
 saved_CPPFLAGS="$CPPFLAGS"
-# The -I$srcdir is necessary when objdir is different from srcdir.
-CPPFLAGS="$CPPFLAGS -I$srcdir"
+CPPFLAGS="$CPPFLAGS -I$srcdir/src"
 AC_RUN_IFELSE([
 #define MPFR_USE_THREAD_SAFE 1
 #include "mpfr-thread.h"

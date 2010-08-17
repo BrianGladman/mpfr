@@ -108,7 +108,8 @@ install recent versions of some utilities such as texinfo.
 
 * Type "make html" to produce the documentation in the HTML format
   (in several pages); if you want only one output HTML file, then
-  type "makeinfo --html --no-split mpfr.texi" instead.
+  type "makeinfo --html --no-split mpfr.texi" from the doc directory
+  instead.
 
 
 Building MPFR with internal GMP header files

@@ -6,9 +6,10 @@
 use strict;
 use warnings;
 use File::Find;
+use Cwd;
 
 my $err = 0;
-find(\&wanted, '.');
+find(\&wanted, -d 'src' || getcwd() !~ m,/tools$, ? '.' : '..');
 exit $err;
 
 sub wanted

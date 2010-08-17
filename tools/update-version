@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Run this script from the top or tools directory to update the MPFR version.
+
 set -e
 
 LC_ALL=C
@@ -17,6 +19,9 @@ fi
 #   ./update-version 2 3 0
 #   ./update-version 2 3 0 p1 -
 
+dir=`pwd`
+[ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
+
 replace()
 {
   if [ ! -h "$2" ] && [ -r "$2" ] && [ -w "$2" ]; then
@@ -33,20 +38,20 @@ replace()
 
 vers="$1.$2.$3"
 full="$vers${4:+-$4}"
-echo $full > VERSION
 replace "s/(?<=#define MPFR_VERSION_MAJOR ).*/$1/; \
          s/(?<=#define MPFR_VERSION_MINOR ).*/$2/; \
          s/(?<=#define MPFR_VERSION_PATCHLEVEL ).*/$3/; \
-         s/(?<=#define MPFR_VERSION_STRING ).*/\"$full\"/" mpfr.h
-replace "s/(?<=return \").*\"/$full\"/" version.c
+         s/(?<=#define MPFR_VERSION_STRING ).*/\"$full\"/" src/mpfr.h
+replace "s/(?<=return \").*\"/$full\"/" src/version.c
+echo $full > VERSION
 
 if [ $# -lt 5 ]; then
   # Up to 4 arguments...
   u="http://www.mpfr.org/mpfr-"
-  replace "s/(?<=\@set VERSION ).*/$full/" mpfr.texi
-  replace \
-    "s,MPFR [\d.]+( web page \@url{$u)[\d.]+/,MPFR $vers\${1}$vers/," mpfr.texi
-  replace "s/(?<=AC_INIT).*/([MPFR],[$full])/" configure.in
+  replace "s/(?<=\@set VERSION ).*/$full/" doc/mpfr.texi
+  replace "s,MPFR [\d.]+( web page \@url{$u)[\d.]+/,MPFR $vers\${1}$vers/," \
+    doc/mpfr.texi
+  replace "s/(?<=AC_INIT).*/([MPFR],[$full])/" configure.ac
   replace "s,(?<=$u).*?/,$vers/," INSTALL
 fi
 

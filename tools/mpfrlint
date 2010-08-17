@@ -2,30 +2,35 @@
 
 # Check possible problems in the MPFR source.
 
-grep '^# *include *<math\.h>' *.c
+# mpfrlint can be run from the tools directory
+dir=`pwd`
+[ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
 
-grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.{c,h} | \
-  grep -v '^exceptions.c:' | grep -v '^mpfr-impl.h:#define mpfr_.*_p()' | \
-  grep -v '^mpfr.h:__MPFR_DECLSPEC '
+grep '^# *include *<math\.h>' src/*.c
 
-grep -E 'if +(test|\[).* == ' acinclude.m4 configure.in
-grep -E '="`' acinclude.m4 configure.in
+grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' src/*.{c,h} | \
+  grep -v '^src/exceptions.c:' | \
+  grep -v '^src/mpfr-impl.h:#define mpfr_.*_p()' | \
+  grep -v '^src/mpfr.h:__MPFR_DECLSPEC '
 
-grep GMP_LIMB_BITS {,tests/}*.{c,h}
+grep -E 'if +(test|\[).* == ' acinclude.m4 configure.ac
+grep -E '="`' acinclude.m4 configure.ac
 
-grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
+grep GMP_LIMB_BITS {src,tests}/*.{c,h}
+
+grep GMP_RND {src,tests}/*.{c,h} | grep -v '#define GMP_RND'
 
 for i in exp prec rnd
 do
-  grep mp_${i}_t {,tests/}*.{c,h} | \
+  grep mp_${i}_t {src,tests}/*.{c,h} | \
     grep -v "\(# *define\|# *ifndef\|typedef\) *mp_${i}_t" | \
     grep -v "\[mp_${i}_t\]"
 done
 
 sp="[[:space:]]*"
-grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {,tests/}*.{c,h}
+grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {src,tests}/*.{c,h}
 
-for file in {,tests/}*.{c,h} {,tests/}Makefile.am acinclude.m4 configure.in
+for file in {src,tests}/*.{c,h} */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case
   # implementations are buggy like POSIX examples. :)
@@ -35,19 +40,17 @@ done
 
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
-for file in *.c
+for file in src/*.c
 do
-  [ "$file" = ansi2knr.c ] || \
-    [ "$file" = div-short.c ] || \
-    [ "$file" = jyn_asympt.c ] || \
-    [ "$file" = round_raw_generic.c ] || \
+  [ "$file" = src/jyn_asympt.c ] || \
+    [ "$file" = src/round_raw_generic.c ] || \
     grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\)\.h"' $file || \
     echo "Missing '#include \"mpfr-impl.h\"' in $file?"
 done
 
-fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
+fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' doc/fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
-  {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
+  {s/.*Version //; s/ or.*//; p; q}' doc/mpfr.texi`"
 [ "x$fdlv1" = "x$fdlv2" ] || cat <<EOF
 GFDL versions differ:
    fdl.texi: $fdlv1
@@ -56,19 +59,19 @@ EOF
 
 # Note: if paragraphs are reformatted, this may need to be updated.
 lgpl="`sed -n '/version [0-9.]\+ or any later version/ \
-  {s/.*version //; s/ or.*//; p; q}' mpfr.texi`"
-for file in {,tests/}*.{c,h}
+  {s/.*version //; s/ or.*//; p; q}' doc/mpfr.texi`"
+for file in {src,tests}/*.{c,h}
 do
-  [ "$file" = "get_patches.c" ] && file="get_patches.sh"
+  [ "$file" = "src/get_patches.c" ] && file="tools/get_patches.sh"
   if grep -q "GNU MPFR Library" "$file"; then
     grep -q "either version $lgpl of the License" "$file" || \
       echo "Possibly missing or incorrect copyright notice in $file"
   fi
 done
 
-texisvnd=`LC_ALL=C TZ=UTC svn info mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
+texisvnd=`LC_ALL=C TZ=UTC svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [ $? -eq 0 ] && [ -n "$texisvnd" ]; then
-  texidate=`sed -n 's/@set UPDATED-MONTH \([A-Z][a-z][a-z]\).*\( [0-9][0-9][0-9][0-9]\)/\1\2/p' mpfr.texi`
+  texidate=`sed -n 's/@set UPDATED-MONTH \([A-Z][a-z][a-z]\).*\( [0-9][0-9][0-9][0-9]\)/\1\2/p' doc/mpfr.texi`
   [ "$texidate" = "$texisvnd" ] || cat <<EOF
 mpfr.texi's UPDATED-MONTH seems to be incorrect:
   mpfr.texi's UPDATED-MONTH: $texidate
@@ -76,7 +79,7 @@ mpfr.texi's UPDATED-MONTH seems to be incorrect:
 EOF
 fi
 
-acv1="`sed -n 's/.*autoconf \([0-9.]\+\) (at least).*/\1/p' README.dev`"
+acv1="`sed -n 's/.*autoconf \([0-9.]\+\) (at least).*/\1/p' doc/README.dev`"
 acv2="`sed -n 's/AC_PREREQ(\([0-9.]\+\).*/\1/p' acinclude.m4`"
 [ "x$acv1" = "x$acv2" ] || cat <<EOF
 autoconf minimal versions differ:
@@ -84,6 +87,7 @@ autoconf minimal versions differ:
   acinclude.m4: $acv2
 EOF
 
+cd "$dir"
 "`dirname -- "$0"`"/check_inits_clears
 
 true

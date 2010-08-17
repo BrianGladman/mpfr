@@ -36,8 +36,8 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
-LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/libmpfr.la
-INCLUDES = -I$(top_srcdir) -I$(top_builddir)
+LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/src/libmpfr.la
+INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)/src
 
 # LOADLIBES (documented in the "GNU make" manual and equivalent to LDLIBS)
 # enables to compile a program foo.c in the test directory by simply doing
@@ -47,8 +47,8 @@ LOADLIBES=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(top_builddir)/tests/.libs/
 check_LTLIBRARIES = libfrtests.la
 libfrtests_la_SOURCES = mpfr-test.h memory.c rnd_mode.c tests.c cmp_str.c random2.c
 
-$(top_builddir)/libmpfr.la:
-	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) libmpfr.la
+$(top_builddir)/src/libmpfr.la:
+	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libmpfr.la
 
 TESTS = $(check_PROGRAMS)
 TESTS_ENVIRONMENT = MPFR_QUIET=1

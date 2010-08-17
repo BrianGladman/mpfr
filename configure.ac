@@ -496,7 +496,7 @@ if test -f confdefs.h; then
 fi
 
 dnl Output
-AC_CONFIG_FILES([Makefile tests/Makefile mparam.h:mparam_h.in])
+AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile tests/Makefile tune/Makefile src/mparam.h:src/mparam_h.in])
 AC_OUTPUT
 
 dnl NEWS README AUTHORS Changelog

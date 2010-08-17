@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "" release.
+- The MPFR source has been reorganized.
+- Dropped ansi2knr support.
 - Bug fixes.
 
 Changes from versions 2.4.* to version 3.0.0:
