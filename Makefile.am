@@ -16,9 +16,9 @@ SUBDIRS = doc src tests tune
 
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
-  examples/version.c tools/get_patches.sh
+  examples/version.c
 
-EXTRA_DIST = PATCHES VERSION
+EXTRA_DIST = PATCHES VERSION tools/get_patches.sh
 
 # In a "make dist", check that libtool -version-info value is up-to-date.
 # But if the VERSION file contains "-dev", this is not checked.
