@@ -701,11 +701,11 @@ bug_mul_div_q_20100818 (void)
 
   mpq_set_ui (qa, 3, 17);
   mpq_set_ui (qb, 17, 3);
-  inex = mpfr_set_ui (x1, 7, GMP_RNDN);
+  inex = mpfr_set_ui (x1, 7, MPFR_RNDN);
   MPFR_ASSERTN (inex == 0);
 
   e = MPFR_EMAX_MAX - 3;
-  inex = mpfr_set_ui_2exp (x2, 7, e, GMP_RNDN);  /* x2 = x1 * 2^e */
+  inex = mpfr_set_ui_2exp (x2, 7, e, MPFR_RNDN);  /* x2 = x1 * 2^e */
   MPFR_ASSERTN (inex == 0);
 
   RND_LOOP(rnd)
@@ -713,9 +713,9 @@ bug_mul_div_q_20100818 (void)
       mpfr_mul_q (y1, x1, qa, (mpfr_rnd_t) rnd);
       mpfr_div_q (y3, x1, qb, (mpfr_rnd_t) rnd);
       MPFR_ASSERTN (mpfr_equal_p (y1, y3));
-      inex = mpfr_set_ui_2exp (y3, 1, e, GMP_RNDN);
+      inex = mpfr_set_ui_2exp (y3, 1, e, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
-      inex = mpfr_mul (y3, y3, y1, GMP_RNDN);  /* y3 = y1 * 2^e */
+      inex = mpfr_mul (y3, y3, y1, MPFR_RNDN);  /* y3 = y1 * 2^e */
       MPFR_ASSERTN (inex == 0);
       mpfr_mul_q (y2, x2, qa, (mpfr_rnd_t) rnd);
       if (! mpfr_equal_p (y2, y3))
@@ -736,7 +736,7 @@ bug_mul_div_q_20100818 (void)
     }
 
   e = MPFR_EMIN_MIN;
-  inex = mpfr_set_ui_2exp (x2, 7, e, GMP_RNDN);  /* x2 = x1 * 2^e */
+  inex = mpfr_set_ui_2exp (x2, 7, e, MPFR_RNDN);  /* x2 = x1 * 2^e */
   MPFR_ASSERTN (inex == 0);
 
   RND_LOOP(rnd)
@@ -744,9 +744,9 @@ bug_mul_div_q_20100818 (void)
       mpfr_div_q (y1, x1, qa, (mpfr_rnd_t) rnd);
       mpfr_mul_q (y3, x1, qb, (mpfr_rnd_t) rnd);
       MPFR_ASSERTN (mpfr_equal_p (y1, y3));
-      inex = mpfr_set_ui_2exp (y3, 1, e, GMP_RNDN);
+      inex = mpfr_set_ui_2exp (y3, 1, e, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
-      inex = mpfr_mul (y3, y3, y1, GMP_RNDN);  /* y3 = y1 * 2^e */
+      inex = mpfr_mul (y3, y3, y1, MPFR_RNDN);  /* y3 = y1 * 2^e */
       MPFR_ASSERTN (inex == 0);
       mpfr_div_q (y2, x2, qa, (mpfr_rnd_t) rnd);
       if (! mpfr_equal_p (y2, y3))
