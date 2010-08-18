@@ -98,35 +98,56 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
 
 /* FIXME [VL] (for mpfr_mul_q and mpfr_div_q): an intermediate overflow
    doesn't necessarily imply an overflow on the final result. Moreover
-   the exponent range should be extended in the usual way.
-   To fix this, I think that these functions should call a common
-   function mpfr_muldiv_z:
-     res = mpfr_muldiv_z (y, x, mpq_numref(z), mpq_denref(z), rnd_mode);
-     res = mpfr_muldiv_z (y, x, mpq_denref(z), mpq_numref(z), rnd_mode);
-   respectively, so that all the work isn't done twice. */
+   the exponent range should be extended in the usual way (unless the
+   computations are done in mpn, mpz or mpq). */
 
-int
-mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
+/* Compute y = RND(x*n/d), where n and d are mpz integers.
+   An integer 0 is assumed to have a positive sign.
+   This function is used by mpfr_mul_q and mpfr_div_q.
+   Note: the status of the rational 0/(-1) is not clear (if there is
+   a signed infinity, there should be a signed zero). But infinities
+   are not currently supported/documented in GMP, and if the rational
+   is canonicalized as it should be, the case 0/(-1) cannot occur. */
+static int
+mpfr_muldiv_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr n, mpz_srcptr d,
+               mpfr_rnd_t rnd_mode)
 {
-  mpfr_t tmp;
-  int res;
-  mpfr_prec_t p;
-
-  if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
-    return mpfr_mul_ui (y, x, 0, rnd_mode);
+  if (MPFR_UNLIKELY (mpz_sgn (n) == 0))
+    {
+      if (MPFR_UNLIKELY (mpz_sgn (d) == 0))
+        MPFR_SET_NAN (y);
+      else
+        {
+          mpfr_mul_ui (y, x, 0, MPFR_RNDN);  /* exact: +0, -0 or NaN */
+          if (MPFR_UNLIKELY (mpz_sgn (d) < 0))
+            MPFR_CHANGE_SIGN (y);
+        }
+      return 0;
+    }
+  else if (MPFR_UNLIKELY (mpz_sgn (d) == 0))
+    {
+      mpfr_div_ui (y, x, 0, MPFR_RNDN);  /* exact: +Inf, -Inf or NaN */
+      if (MPFR_UNLIKELY (mpz_sgn (n) < 0))
+        MPFR_CHANGE_SIGN (y);
+      return 0;
+    }
   else
     {
-      MPFR_MPZ_SIZEINBASE2 (p, mpq_numref (z));
+      mpfr_prec_t p;
+      mpfr_t tmp;
+      int res;
+
+      MPFR_MPZ_SIZEINBASE2 (p, n);
       mpfr_init2 (tmp, MPFR_PREC (x) + p);
-      res = mpfr_mul_z (tmp, x, mpq_numref(z), MPFR_RNDN );
+      res = mpfr_mul_z (tmp, x, n, MPFR_RNDN);
       if (MPFR_UNLIKELY (res != 0))
         {
-          /* overflow case */
+          /* overflow case - FIXME */
           MPFR_ASSERTD (mpfr_inf_p (tmp));
           mpfr_set (y, tmp, MPFR_RNDN); /* exact */
         }
       else
-        res = mpfr_div_z (y, tmp, mpq_denref(z), rnd_mode);
+        res = mpfr_div_z (y, tmp, d, rnd_mode);
 
       mpfr_clear (tmp);
       return res;
@@ -134,31 +155,15 @@ mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 }
 
 int
+mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
+{
+  return mpfr_muldiv_z (y, x, mpq_numref (z), mpq_denref (z), rnd_mode);
+}
+
+int
 mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  mpfr_t tmp;
-  int res;
-  mpfr_prec_t p;
-
-  if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
-    return mpfr_div_ui (y, x, 0, rnd_mode);
-  else if (MPFR_UNLIKELY (mpz_sgn (mpq_denref (z)) == 0))
-    p = 0;
-  else
-    MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
-  mpfr_init2 (tmp, MPFR_PREC(x) + p);
-  res = mpfr_mul_z (tmp, x, mpq_denref(z), MPFR_RNDN );
-  if (MPFR_UNLIKELY (res != 0))
-    {
-      /* overflow case */
-      MPFR_ASSERTD (mpfr_inf_p (tmp));
-      mpfr_set (y, tmp, MPFR_RNDN); /* exact */
-    }
-  else
-    res = mpfr_div_z (y, tmp, mpq_numref(z), rnd_mode);
-
-  mpfr_clear (tmp);
-  return res;
+  return mpfr_muldiv_z (y, x, mpq_denref (z), mpq_numref (z), rnd_mode);
 }
 
 int
