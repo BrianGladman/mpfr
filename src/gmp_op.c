@@ -96,11 +96,6 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
   return res;
 }
 
-/* FIXME [VL] (for mpfr_mul_q and mpfr_div_q): an intermediate overflow
-   doesn't necessarily imply an overflow on the final result. Moreover
-   the exponent range should be extended in the usual way (unless the
-   computations are done in mpn, mpz or mpq). */
-
 /* Compute y = RND(x*n/d), where n and d are mpz integers.
    An integer 0 is assumed to have a positive sign.
    This function is used by mpfr_mul_q and mpfr_div_q.
@@ -135,22 +130,49 @@ mpfr_muldiv_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr n, mpz_srcptr d,
     {
       mpfr_prec_t p;
       mpfr_t tmp;
-      int res;
+      int inexact;
+      MPFR_SAVE_EXPO_DECL (expo);
 
+      MPFR_SAVE_EXPO_MARK (expo);
+
+      /* With the current MPFR code, using mpfr_mul_z and mpfr_div_z
+         for the general case should be faster than doing everything
+         in mpn, mpz and/or mpq. MPFR_SAVE_EXPO_MARK could be avoided
+         here, but it would be more difficult to handle corner cases. */
       MPFR_MPZ_SIZEINBASE2 (p, n);
       mpfr_init2 (tmp, MPFR_PREC (x) + p);
-      res = mpfr_mul_z (tmp, x, n, MPFR_RNDN);
-      if (MPFR_UNLIKELY (res != 0))
+      inexact = mpfr_mul_z (tmp, x, n, MPFR_RNDN);
+      /* Since |n| >= 1, an underflow is not possible. And the precision of
+         tmp has been chosen so that inexact != 0 iff there's an overflow. */
+      if (MPFR_UNLIKELY (inexact != 0))
         {
-          /* overflow case - FIXME */
+          mpfr_t x0;
+          mpfr_exp_t ex;
+          MPFR_BLOCK_DECL (flags);
+
+          /* intermediate overflow case */
           MPFR_ASSERTD (mpfr_inf_p (tmp));
-          mpfr_set (y, tmp, MPFR_RNDN); /* exact */
+          ex = MPFR_GET_EXP (x);  /* x is a pure FP number */
+          MPFR_ALIAS (x0, x, MPFR_SIGN(x), 0);  /* x0 = x / 2^ex */
+          MPFR_BLOCK (flags,
+                      inexact = mpfr_mul_z (tmp, x0, n, MPFR_RNDN);
+                      MPFR_ASSERTD (inexact == 0);
+                      inexact = mpfr_div_z (y, tmp, d, rnd_mode);
+                      /* Just in case the division underflows
+                         (highly unlikely, not supported)... */
+                      MPFR_ASSERTN (!MPFR_BLOCK_EXCEP));
+          MPFR_EXP (y) += ex;
+          /* Detect highly unlikely, not supported corner cases... */
+          MPFR_ASSERTN (MPFR_EXP (y) >= __gmpfr_emin && MPFR_IS_PURE_FP (y));
+          /* The potential overflow will be detected by mpfr_check_range. */
         }
       else
-        res = mpfr_div_z (y, tmp, d, rnd_mode);
+        inexact = mpfr_div_z (y, tmp, d, rnd_mode);
 
       mpfr_clear (tmp);
-      return res;
+
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (y, inexact, rnd_mode);
     }
 }
 
