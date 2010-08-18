@@ -681,6 +681,99 @@ bug_div_q_20100810 (void)
   mpfr_clear (x);
 }
 
+static void
+bug_mul_div_q_20100818 (void)
+{
+  mpq_t qa, qb;
+  mpfr_t x1, x2, y1, y2, y3;
+  mpfr_exp_t emin, emax, e;
+  int inex;
+  int rnd;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpq_init (qa);
+  mpq_init (qb);
+  mpfr_inits2 (32, x1, x2, y1, y2, y3, (mpfr_ptr) 0);
+
+  mpq_set_ui (qa, 3, 17);
+  mpq_set_ui (qb, 17, 3);
+  inex = mpfr_set_ui (x1, 7, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+
+  e = MPFR_EMAX_MAX - 3;
+  inex = mpfr_set_ui_2exp (x2, 7, e, GMP_RNDN);  /* x2 = x1 * 2^e */
+  MPFR_ASSERTN (inex == 0);
+
+  RND_LOOP(rnd)
+    {
+      mpfr_mul_q (y1, x1, qa, (mpfr_rnd_t) rnd);
+      mpfr_div_q (y3, x1, qb, (mpfr_rnd_t) rnd);
+      MPFR_ASSERTN (mpfr_equal_p (y1, y3));
+      inex = mpfr_set_ui_2exp (y3, 1, e, GMP_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_mul (y3, y3, y1, GMP_RNDN);  /* y3 = y1 * 2^e */
+      MPFR_ASSERTN (inex == 0);
+      mpfr_mul_q (y2, x2, qa, (mpfr_rnd_t) rnd);
+      if (! mpfr_equal_p (y2, y3))
+        {
+          printf ("Error 1 in bug_mul_div_q_20100818 (rnd = %d)\n", rnd);
+          printf ("Expected "); mpfr_dump (y3);
+          printf ("Got      "); mpfr_dump (y2);
+          exit (1);
+        }
+      mpfr_div_q (y2, x2, qb, (mpfr_rnd_t) rnd);
+      if (! mpfr_equal_p (y2, y3))
+        {
+          printf ("Error 2 in bug_mul_div_q_20100818 (rnd = %d)\n", rnd);
+          printf ("Expected "); mpfr_dump (y3);
+          printf ("Got      "); mpfr_dump (y2);
+          exit (1);
+        }
+    }
+
+  e = MPFR_EMIN_MIN;
+  inex = mpfr_set_ui_2exp (x2, 7, e, GMP_RNDN);  /* x2 = x1 * 2^e */
+  MPFR_ASSERTN (inex == 0);
+
+  RND_LOOP(rnd)
+    {
+      mpfr_div_q (y1, x1, qa, (mpfr_rnd_t) rnd);
+      mpfr_mul_q (y3, x1, qb, (mpfr_rnd_t) rnd);
+      MPFR_ASSERTN (mpfr_equal_p (y1, y3));
+      inex = mpfr_set_ui_2exp (y3, 1, e, GMP_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_mul (y3, y3, y1, GMP_RNDN);  /* y3 = y1 * 2^e */
+      MPFR_ASSERTN (inex == 0);
+      mpfr_div_q (y2, x2, qa, (mpfr_rnd_t) rnd);
+      if (! mpfr_equal_p (y2, y3))
+        {
+          printf ("Error 3 in bug_mul_div_q_20100818 (rnd = %d)\n", rnd);
+          printf ("Expected "); mpfr_dump (y3);
+          printf ("Got      "); mpfr_dump (y2);
+          exit (1);
+        }
+      mpfr_mul_q (y2, x2, qb, (mpfr_rnd_t) rnd);
+      if (! mpfr_equal_p (y2, y3))
+        {
+          printf ("Error 4 in bug_mul_div_q_20100818 (rnd = %d)\n", rnd);
+          printf ("Expected "); mpfr_dump (y3);
+          printf ("Got      "); mpfr_dump (y2);
+          exit (1);
+        }
+    }
+
+  mpq_clear (qa);
+  mpq_clear (qb);
+  mpfr_clears (x1, x2, y1, y2, y3, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -713,6 +806,7 @@ main (int argc, char *argv[])
 
   bug_mul_q_20100810 ();
   bug_div_q_20100810 ();
+  bug_mul_div_q_20100818 ();
 
   tests_end_mpfr ();
   return 0;
