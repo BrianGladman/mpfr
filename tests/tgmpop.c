@@ -837,6 +837,11 @@ reduced_expo_range (void)
       exit (1);
     }
   MPFR_ASSERTN (__gmpfr_flags == 0);
+  if (mpfr_cmp_z (x, z) <= 0)
+    {
+      printf ("Error 5 in reduce_expo_range: expected a positive value.\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpz_clear (z);

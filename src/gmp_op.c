@@ -99,7 +99,27 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
 {
   mpfr_t t;
   int res;
-  init_set_z (t, z);
+  mpfr_prec_t p;
+  unsigned int flags;
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    return mpfr_cmp_si (x, mpz_sgn (z));
+
+  if (mpz_size (z) <= 1)
+    p = GMP_NUMB_BITS;
+  else
+    MPFR_MPZ_SIZEINBASE2 (p, z);
+  mpfr_init2 (t, p);
+  flags = __gmpfr_flags;
+  if (mpfr_set_z (t, z, MPFR_RNDN))
+    {
+      /* overflow (t is an infinity) or underflow */
+      mpfr_div_2ui (t, t, 2, MPFR_RNDZ);  /* if underflow, set t to zero */
+      __gmpfr_flags = flags;  /* restore the flags */
+      /* The real value of t (= z), which falls outside the exponent range,
+         has been replaced by an equivalent value for the comparison: zero
+         or an infinity. */
+    }
   res = mpfr_cmp (x, t);
   mpfr_clear (t);
   return res;
