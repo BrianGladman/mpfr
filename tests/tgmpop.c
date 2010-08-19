@@ -593,12 +593,6 @@ test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
     }
 }
 
-#if 0
-
-/* The following tests seem buggy. They compute a product of positive
-   numbers that overflows in MPFR_RNDD. But in this rounding mode, the
-   result should not be an infinity (result expected by the tests). */
-
 static void
 bug_mul_q_20100810 (void)
 {
@@ -615,7 +609,7 @@ bug_mul_q_20100810 (void)
   mpq_set_ui (q, 4096, 3);
   mpfr_set_inf (x, +1);
   mpfr_nextbelow (x);
-  inexact = mpfr_mul_q (y, x, q, MPFR_RNDD);
+  inexact = mpfr_mul_q (y, x, q, MPFR_RNDU);
 
   if (inexact <= 0)
     {
@@ -659,7 +653,7 @@ bug_div_q_20100810 (void)
   mpq_set_ui (q, 3, 4096);
   mpfr_set_inf (x, +1);
   mpfr_nextbelow (x);
-  inexact = mpfr_div_q (y, x, q, MPFR_RNDD);
+  inexact = mpfr_div_q (y, x, q, MPFR_RNDU);
 
   if (inexact <= 0)
     {
@@ -686,8 +680,6 @@ bug_div_q_20100810 (void)
   mpfr_clear (y);
   mpfr_clear (x);
 }
-
-#endif
 
 static void
 bug_mul_div_q_20100818 (void)
@@ -879,8 +871,8 @@ main (int argc, char *argv[])
 
   check_for_zero ();
 
-  /* bug_mul_q_20100810 ();
-     bug_div_q_20100810 (); */
+  bug_mul_q_20100810 ();
+  bug_div_q_20100810 ();
   bug_mul_div_q_20100818 ();
   reduced_expo_range ();
 
