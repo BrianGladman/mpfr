@@ -107,6 +107,28 @@ special (void)
   CHECK_FOR ("0.5- -1/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
   res = mpfr_div_q (y, x, z, MPFR_RNDN);
   CHECK_FOR ("0.5 / (-1/0)", mpfr_zero_p (y) && MPFR_SIGN (y) < 0 && res == 0);
+  mpq_set_ui (z, 1, 0);
+  mpfr_set_inf (x, 1);
+  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("+Inf + +Inf", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("+Inf - +Inf", MPFR_IS_NAN (y) && res == 0);
+  mpfr_set_inf (x, -1);
+  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("-Inf + +Inf", MPFR_IS_NAN (y) && res == 0);
+  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("-Inf - +Inf", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
+  mpq_set_si (z, -1, 0);
+  mpfr_set_inf (x, 1);
+  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("+Inf + -Inf", MPFR_IS_NAN (y) && res == 0);
+  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("+Inf - -Inf", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+  mpfr_set_inf (x, -1);
+  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("-Inf + -Inf", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
+  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  CHECK_FOR ("-Inf - -Inf", MPFR_IS_NAN (y) && res == 0);
 
   /* 0 */
   mpq_set_ui (z, 0, 1);

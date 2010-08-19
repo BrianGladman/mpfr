@@ -235,7 +235,13 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
         }
       else if (MPFR_IS_INF (x))
         {
-          MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
+          if (MPFR_UNLIKELY (mpz_sgn (mpq_denref (z)) == 0 &&
+                             MPFR_MULT_SIGN (mpz_sgn (mpq_numref (z)),
+                                             MPFR_SIGN (x)) <= 0))
+            {
+              MPFR_SET_NAN (y);
+              MPFR_RET_NAN;
+            }
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_RET (0);
@@ -308,7 +314,13 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
         }
       else if (MPFR_IS_INF (x))
         {
-          MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
+          if (MPFR_UNLIKELY (mpz_sgn (mpq_denref (z)) == 0 &&
+                             MPFR_MULT_SIGN (mpz_sgn (mpq_numref (z)),
+                                             MPFR_SIGN (x)) >= 0))
+            {
+              MPFR_SET_NAN (y);
+              MPFR_RET_NAN;
+            }
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_RET (0);
