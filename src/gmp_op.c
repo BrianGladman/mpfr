@@ -23,7 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Init and set a mpfr_t with enough precision to store a mpz */
+/* Init and set a mpfr_t with enough precision to store a mpz.
+   This function should be called in the extended exponent range. */
 static void
 init_set_z (mpfr_ptr t, mpz_srcptr z)
 {
@@ -36,7 +37,11 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
     MPFR_MPZ_SIZEINBASE2 (p, z);
   mpfr_init2 (t, p);
   i = mpfr_set_z (t, z, MPFR_RNDN);
-  MPFR_ASSERTD (i == 0);  (void) i; /* use i to avoid a warning */
+  /* Possible assertion failure in case of overflow. Such cases,
+     which imply that z is huge (if the function is called in
+     the extended exponent range), are currently not supported,
+     just like precisions around MPFR_PREC_MAX. */
+  MPFR_ASSERTN (i == 0);  (void) i; /* use i to avoid a warning */
 }
 
 /* Init, set a mpfr_t with enough precision to store a mpz_t without round,
@@ -47,10 +52,14 @@ foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mpfr_rnd_t r,
 {
   mpfr_t t;
   int i;
-  init_set_z (t, z);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  init_set_z (t, z);  /* There should be no exceptions. */
   i = (*f) (x, y, t, r);
   mpfr_clear (t);
-  return i;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (x, i, r);
 }
 
 int

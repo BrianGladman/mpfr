@@ -782,6 +782,68 @@ bug_mul_div_q_20100818 (void)
   set_emax (emax);
 }
 
+static void
+reduced_expo_range (void)
+{
+  mpfr_t x;
+  mpz_t z;
+  mpfr_exp_t emin;
+  int inex;
+
+  emin = mpfr_get_emin ();
+  set_emin (4);
+
+  mpfr_init2 (x, 32);
+  mpz_init (z);
+
+  mpfr_clear_flags ();
+  inex = mpfr_set_ui (x, 17, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpz_set_ui (z, 3);
+  inex = mpfr_mul_z (x, x, z, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 51) != 0)
+    {
+      printf ("Error 1 in reduce_expo_range: expected 51 with inex = 0,"
+              " got\n");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("with inex = %d\n", inex);
+      exit (1);
+    }
+  inex = mpfr_div_z (x, x, z, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 17) != 0)
+    {
+      printf ("Error 2 in reduce_expo_range: expected 17 with inex = 0,"
+              " got\n");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("with inex = %d\n", inex);
+      exit (1);
+    }
+  inex = mpfr_add_z (x, x, z, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 20) != 0)
+    {
+      printf ("Error 3 in reduce_expo_range: expected 20 with inex = 0,"
+              " got\n");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("with inex = %d\n", inex);
+      exit (1);
+    }
+  inex = mpfr_sub_z (x, x, z, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 17) != 0)
+    {
+      printf ("Error 4 in reduce_expo_range: expected 17 with inex = 0,"
+              " got\n");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("with inex = %d\n", inex);
+      exit (1);
+    }
+  MPFR_ASSERTN (__gmpfr_flags == 0);
+
+  mpfr_clear (x);
+  mpz_clear (z);
+
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -815,6 +877,7 @@ main (int argc, char *argv[])
   /* bug_mul_q_20100810 ();
      bug_div_q_20100810 (); */
   bug_mul_div_q_20100818 ();
+  reduced_expo_range ();
 
   tests_end_mpfr ();
   return 0;
