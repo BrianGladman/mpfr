@@ -801,6 +801,7 @@ reduced_expo_range (void)
 {
   mpfr_t x;
   mpz_t z;
+  mpq_t q;
   mpfr_exp_t emin;
   int inex;
 
@@ -808,8 +809,8 @@ reduced_expo_range (void)
   set_emin (4);
 
   mpfr_init2 (x, 32);
-  mpz_init (z);
 
+  mpz_init (z);
   mpfr_clear_flags ();
   inex = mpfr_set_ui (x, 17, MPFR_RNDN);
   MPFR_ASSERTN (inex == 0);
@@ -856,9 +857,30 @@ reduced_expo_range (void)
       printf ("Error 5 in reduce_expo_range: expected a positive value.\n");
       exit (1);
     }
+  mpz_clear (z);
+
+  mpq_init (q);
+  mpq_set_ui (q, 1, 1);
+  mpfr_set_ui (x, 16, MPFR_RNDN);
+  inex = mpfr_add_q (x, x, q, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 17) != 0)
+    {
+      printf ("Error in reduce_expo_range for 16 + 1/1,"
+              " got inex = %d and\nx = ", inex);
+      mpfr_dump (x);
+      exit (1);
+    }
+  inex = mpfr_sub_q (x, x, q, MPFR_RNDN);
+  if (inex != 0 || MPFR_IS_NAN (x) || mpfr_cmp_ui (x, 16) != 0)
+    {
+      printf ("Error in reduce_expo_range for 17 - 1/1,"
+              " got inex = %d and\nx = ", inex);
+      mpfr_dump (x);
+      exit (1);
+    }
+  mpq_clear (q);
 
   mpfr_clear (x);
-  mpz_clear (z);
 
   set_emin (emin);
 }

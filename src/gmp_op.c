@@ -224,6 +224,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
   mpfr_prec_t p;
   mpfr_exp_t  err;
   int res;
+  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -255,6 +256,8 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
             return mpfr_set_q (y, z, rnd_mode);
         }
     }
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
@@ -293,7 +296,9 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   mpfr_clear (q);
-  return res;
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, res, rnd_mode);
 }
 
 int
@@ -303,6 +308,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
   mpfr_prec_t p;
   int res;
   mpfr_exp_t err;
+  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -339,6 +345,8 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
             }
         }
     }
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
@@ -378,7 +386,9 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   mpfr_clear (q);
-  return res;
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, res, rnd_mode);
 }
 
 int
