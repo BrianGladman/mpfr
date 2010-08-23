@@ -409,14 +409,19 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
   mpfr_t t;
   int res;
   mpfr_prec_t p;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* x < a/b ? <=> x*b < a */
   MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
   MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
   mpfr_init2 (t, MPFR_PREC(x) + p);
-  res = mpfr_mul_z (t, x, mpq_denref (z), MPFR_RNDN );
+  res = mpfr_mul_z (t, x, mpq_denref (z), MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp_z (t, mpq_numref (z) );
+  res = mpfr_cmp_z (t, mpq_numref (z));
   mpfr_clear (t);
+  MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }
 
@@ -425,11 +430,15 @@ mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
 {
   mpfr_t t;
   int res;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * GMP_NUMB_BITS );
   res = mpfr_set_f (t, z, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (x, t);
   mpfr_clear (t);
+  MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }
