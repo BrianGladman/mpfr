@@ -885,6 +885,76 @@ reduced_expo_range (void)
   set_emin (emin);
 }
 
+static void
+addsubq_overflow_aux (mpfr_exp_t e)
+{
+  mpfr_t x, y;
+  mpq_t q;
+  mpfr_exp_t emax;
+  int inex;
+  int rnd;
+  int sign, sub;
+
+  MPFR_ASSERTN (e <= LONG_MAX);
+  emax = mpfr_get_emax ();
+  set_emax (e);
+  mpfr_inits2 (16, x, y, (mpfr_ptr) 0);
+  mpq_init (q);
+
+  mpfr_set_inf (x, 1);
+  mpfr_nextbelow (x);
+  mpq_set_ui (q, 1, 1);
+
+  for (sign = 0; sign <= 1; sign++)
+    {
+      for (sub = 0; sub <= 1; sub++)
+        {
+          RND_LOOP(rnd)
+            {
+              unsigned int flags, ex_flags;
+              int inf;
+
+              inf = rnd == MPFR_RNDA ||
+                    rnd == (sign ? MPFR_RNDD : MPFR_RNDU);
+              ex_flags = MPFR_FLAGS_INEXACT | (inf ? MPFR_FLAGS_OVERFLOW : 0);
+              mpfr_clear_flags ();
+              inex = sub ?
+                mpfr_sub_q (y, x, q, (mpfr_rnd_t) rnd) :
+                mpfr_add_q (y, x, q, (mpfr_rnd_t) rnd);
+              flags = __gmpfr_flags;
+              if (inex == 0 || flags != ex_flags ||
+                  (inf ? ! mpfr_inf_p (y) : ! mpfr_equal_p (x, y)))
+                {
+                  printf ("Error in addsubq_overflow_aux(%ld),"
+                          " sign = %d, %s\n", (long) e, sign,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                  printf ("Got inex = %d, y = ", inex);
+                  mpfr_dump (y);
+                  printf ("Expected flags:");
+                  flags_out (ex_flags);
+                  printf ("Got flags:     ");
+                  flags_out (flags);
+                  exit (1);
+                }
+            }
+          mpq_neg (q, q);
+        }
+      mpfr_neg (x, x, MPFR_RNDN);
+      mpq_neg (q, q);
+    }
+
+  mpq_clear (q);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
+  set_emax (emax);
+}
+
+static void
+addsubq_overflow (void)
+{
+  addsubq_overflow_aux (4913);
+  addsubq_overflow_aux (MPFR_EMAX_MAX);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -919,6 +989,7 @@ main (int argc, char *argv[])
   bug_div_q_20100810 ();
   bug_mul_div_q_20100818 ();
   reduced_expo_range ();
+  addsubq_overflow ();
 
   tests_end_mpfr ();
   return 0;
