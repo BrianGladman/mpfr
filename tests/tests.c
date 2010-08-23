@@ -932,3 +932,23 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
     }
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
+
+void
+flags_out (unsigned int flags)
+{
+  int none = 1;
+
+  if (flags & MPFR_FLAGS_UNDERFLOW)
+    none = 0, printf (" underflow");
+  if (flags & MPFR_FLAGS_OVERFLOW)
+    none = 0, printf (" overflow");
+  if (flags & MPFR_FLAGS_NAN)
+    none = 0, printf (" nan");
+  if (flags & MPFR_FLAGS_INEXACT)
+    none = 0, printf (" inexact");
+  if (flags & MPFR_FLAGS_ERANGE)
+    none = 0, printf (" erange");
+  if (none)
+    printf (" none");
+  printf (" (%u)\n", flags);
+}

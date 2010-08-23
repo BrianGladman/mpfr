@@ -88,6 +88,7 @@ void data_check _MPFR_PROTO ((char *, int (*) (FLIST), char *));
 void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
                              char *, int, mpfr_exp_t, mpfr_exp_t,
                              mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int));
+void flags_out _MPFR_PROTO ((unsigned int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,MPFR_RNDN)
