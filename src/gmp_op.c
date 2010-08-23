@@ -266,6 +266,8 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
+      MPFR_BLOCK_DECL (flags);
+
       res = mpfr_set_q (q, z, MPFR_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0))
@@ -274,7 +276,11 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
           res = mpfr_add (y, x, q, rnd_mode);
           break;
         }
-      mpfr_add (t, x, q, MPFR_RNDN);       /* Error <= 1/2 ulp(t) */
+      MPFR_BLOCK (flags, mpfr_add (t, x, q, MPFR_RNDN));
+      /* Error on t is <= 1/2 ulp(t), except in case of overflow/underflow,
+         but such an exception is very unlikely as it would be possible
+         only if q has a huge numerator or denominator. Not supported! */
+      MPFR_ASSERTN (! (MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)));
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
          If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
                              <= 2^(EXP(q)-EXP(t))
@@ -355,6 +361,8 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for(;;)
     {
+      MPFR_BLOCK_DECL (flags);
+
       res = mpfr_set_q(q, z, MPFR_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0))
@@ -363,7 +371,11 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
           res = mpfr_sub (y, x, q, rnd_mode);
           break;
         }
-      mpfr_sub (t, x, q, MPFR_RNDN);       /* Error <= 1/2 ulp(t) */
+      MPFR_BLOCK (flags, mpfr_sub (t, x, q, MPFR_RNDN));
+      /* Error on t is <= 1/2 ulp(t), except in case of overflow/underflow,
+         but such an exception is very unlikely as it would be possible
+         only if q has a huge numerator or denominator. Not supported! */
+      MPFR_ASSERTN (! (MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)));
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
          If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
                              <= 2^(EXP(q)-EXP(t))
