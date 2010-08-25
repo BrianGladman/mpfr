@@ -460,7 +460,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
    [AC_MSG_RESULT(yes)
     MPFR_CHECK_PRINTF_SPEC],
    [AC_MSG_RESULT(no)
-    AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions or])
+    AC_MSG_WARN(['gmp.h' and 'libgmp' seem to have different versions or])
     AC_MSG_WARN([we cannot run a program linked with GMP (if you cannot])
     AC_MSG_WARN([see the version numbers above). A cause may be different])
     AC_MSG_WARN([GMP versions with different ABI's.])
