@@ -35,10 +35,10 @@ MPFR).
 
 2. It is strongly advised to apply the latest patches (if this has
    not been done yet), e.g.
-     wget http://www.mpfr.org/mpfr-3.1.0/patches
-     patch -N -Z -p1 < patches
+     wget http://www.mpfr.org/mpfr-3.1.0/allpatches
+     patch -N -Z -p1 < allpatches
    or
-     curl http://www.mpfr.org/mpfr-3.1.0/patches | patch -N -Z -p1
+     curl http://www.mpfr.org/mpfr-3.1.0/allpatches | patch -N -Z -p1
 
    (Those instructions are for the GNU patch command, for example
     /usr/bin/gpatch on Solaris.)
