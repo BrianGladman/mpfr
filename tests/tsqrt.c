@@ -456,7 +456,7 @@ check_inexact (mpfr_prec_t p)
 }
 
 static void
-check_nan (void)
+check_singular (void)
 {
   mpfr_t  x, got;
 
@@ -587,7 +587,7 @@ main (void)
 
   check_diverse ("635030154261163106768013773815762607450069292760790610550915652722277604820131530404842415587328", 160, "796887792767063979679855997149887366668464780637");
   special ();
-  check_nan ();
+  check_singular ();
 
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
