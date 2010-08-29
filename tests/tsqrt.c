@@ -491,6 +491,7 @@ check_nan (void)
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_number_p (got));
   MPFR_ASSERTN (mpfr_cmp_ui (got, 0L) == 0);
+  MPFR_ASSERTN (MPFR_IS_NEG (got));
 
   mpfr_clear (x);
   mpfr_clear (got);
