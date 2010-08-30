@@ -485,7 +485,14 @@ check_singular (void)
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (got));
 
-  /* sqrt(-0) == 0 */
+  /* sqrt(+0) == +0 */
+  mpfr_set_si (x, 0L, MPFR_RNDZ);
+  MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_number_p (got));
+  MPFR_ASSERTN (mpfr_cmp_ui (got, 0L) == 0);
+  MPFR_ASSERTN (MPFR_IS_POS (got));
+
+  /* sqrt(-0) == -0 */
   mpfr_set_si (x, 0L, MPFR_RNDZ);
   MPFR_SET_NEG (x);
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
