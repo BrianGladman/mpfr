@@ -807,10 +807,12 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
-/* We use the fact that mpfr_sgn on NaN sets the erange flag and returns 0. */
+/* We use the fact that mpfr_sgn on NaN sets the erange flag and returns 0.
+   But warning! mpfr_sgn is specified as a macro in the API, thus the macro
+   mustn't be used if side effects are possible, like here. */
 #define mpfr_cmp_ui(_f,_u)                 \
  (__builtin_constant_p (_u) && (_u) == 0 ? \
-   mpfr_sgn (_f) :                         \
+   (mpfr_sgn) (_f) :                       \
    mpfr_cmp_ui_2exp ((_f),(_u),0))
 #undef mpfr_cmp_si
 #define mpfr_cmp_si(_f,_s)                 \
