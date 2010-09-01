@@ -88,6 +88,90 @@ check_nan (void)
   mpfr_clear (x);
 }
 
+/* Since mpfr_cmp_ui and mpfr_cmp_si are also implemented by a macro
+   with __builtin_constant_p for GCC, check that side effects are
+   handled correctly. */
+static void
+check_macros (void)
+{
+  mpfr_t x;
+  int c;
+
+  mpfr_init2 (x, 32);
+
+  c = 0;
+  mpfr_set_ui (x, 17, MPFR_RNDN);
+  if (mpfr_cmp_ui (x, 17) != 0)
+    {
+      printf ("Error 1 on mpfr_cmp_ui(x,17) in check_macros\n");
+      exit (1);
+    }
+  if (mpfr_cmp_ui (x, (c++, 17)) != 0)
+    {
+      printf ("Error 2 on mpfr_cmp_ui(x,17) in check_macros\n");
+      exit (1);
+    }
+  if (c != 1)
+    {
+      printf ("Error 3 on mpfr_cmp_ui(x,17) in check_macros\n"
+              "(c = %d instead of 1)\n", c);
+      exit (1);
+    }
+  if (mpfr_cmp_si (x, 17) != 0)
+    {
+      printf ("Error 1 on mpfr_cmp_si(x,17) in check_macros\n");
+      exit (1);
+    }
+  if (mpfr_cmp_si (x, (c++, 17)) != 0)
+    {
+      printf ("Error 2 on mpfr_cmp_si(x,17) in check_macros\n");
+      exit (1);
+    }
+  if (c != 2)
+    {
+      printf ("Error 3 on mpfr_cmp_si(x,17) in check_macros\n"
+              "(c = %d instead of 2)\n", c);
+      exit (1);
+    }
+
+  c = 0;
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  if (mpfr_cmp_ui (x, 0) != 0)
+    {
+      printf ("Error 1 on mpfr_cmp_ui(x,0) in check_macros\n");
+      exit (1);
+    }
+  if (mpfr_cmp_ui (x, (c++, 0)) != 0)
+    {
+      printf ("Error 2 on mpfr_cmp_ui(x,0) in check_macros\n");
+      exit (1);
+    }
+  if (c != 1)
+    {
+      printf ("Error 3 on mpfr_cmp_ui(x,0) in check_macros\n"
+              "(c = %d instead of 1)\n", c);
+      exit (1);
+    }
+  if (mpfr_cmp_si (x, 0) != 0)
+    {
+      printf ("Error 1 on mpfr_cmp_si(x,0) in check_macros\n");
+      exit (1);
+    }
+  if (mpfr_cmp_si (x, (c++, 0)) != 0)
+    {
+      printf ("Error 2 on mpfr_cmp_si(x,0) in check_macros\n");
+      exit (1);
+    }
+  if (c != 2)
+    {
+      printf ("Error 3 on mpfr_cmp_si(x,0) in check_macros\n"
+              "(c = %d instead of 2)\n", c);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -216,6 +300,7 @@ main (void)
   mpfr_clear (x);
 
   check_nan ();
+  check_macros ();
 
   tests_end_mpfr ();
   return 0;
