@@ -800,6 +800,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
      anyway. Checking with other ICC versions is needed. Possibly detect
      whether warnings are produced or not with a configure test.
    + Remove C++ too, since it complains too much. */
+/* These macros use the fact that:
+     X == 0 implies (T) X == 0 and
+     X >= 0 implies (T) X >= 0,
+   where T is an integer type. */
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
