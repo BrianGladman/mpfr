@@ -172,6 +172,42 @@ check_macros (void)
   mpfr_clear (x);
 }
 
+/* Bug in r7114 */
+static void
+test_macros (void)
+{
+  mpfr_t x[3];
+  mpfr_ptr p;
+
+  mpfr_inits (x[0], x[1], x[2], (mpfr_ptr) 0);
+  mpfr_set_ui (x[0], 0, MPFR_RNDN);
+  p = x[0];
+  if (mpfr_cmp_ui (p++, 0) != 0)
+    {
+      printf ("Error in mpfr_cmp_ui macro: result should be 0.\n");
+      exit (1);
+    }
+  if (p != x[1])
+    {
+      printf ("Error in mpfr_cmp_ui macro: p - x[0] = %d (expecting 1)\n",
+              (int) (p - x[0]));
+      exit (1);
+    }
+  p = x[0];
+  if (mpfr_cmp_si (p++, 0) != 0)
+    {
+      printf ("Error in mpfr_cmp_si macro: result should be 0.\n");
+      exit (1);
+    }
+  if (p != x[1])
+    {
+      printf ("Error in mpfr_cmp_si macro: p - x[0] = %d (expecting 1)\n",
+              (int) (p - x[0]));
+      exit (1);
+    }
+  mpfr_clears (x[0], x[1], x[2], (mpfr_ptr) 0);
+}
+
 int
 main (void)
 {
@@ -301,6 +337,7 @@ main (void)
 
   check_nan ();
   check_macros ();
+  test_macros ();
 
   tests_end_mpfr ();
   return 0;
