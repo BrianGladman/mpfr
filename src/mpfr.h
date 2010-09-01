@@ -800,10 +800,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
      anyway. Checking with other ICC versions is needed. Possibly detect
      whether warnings are produced or not with a configure test.
    + Remove C++ too, since it complains too much. */
-/* These macros use the fact that:
-     X == 0 implies (T) X == 0 and
-     X >= 0 implies (T) X >= 0,
-   where T is an integer type.
+/* Added casts to improve robustness in case of undefined behavior and
+   compiler extensions based on UB (in particular -fwrapv). MPFR doesn't
+   use such extensions, but these macros will be used by 3rd-party code,
+   where such extensions may be required.
    Moreover casts to unsigned long have been added to avoid warnings in
    programs that use MPFR and are compiled with -Wconversion; such casts
    are OK since if X is a constant expression, then (unsigned long) X is
@@ -818,31 +818,31 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 /* We use the fact that mpfr_sgn on NaN sets the erange flag and returns 0.
    But warning! mpfr_sgn is specified as a macro in the API, thus the macro
    mustn't be used if side effects are possible, like here. */
-#define mpfr_cmp_ui(_f,_u)                      \
-  (__builtin_constant_p (_u) && (_u) == 0 ?     \
-   (mpfr_sgn) (_f) :                            \
-   mpfr_cmp_ui_2exp ((_f),(_u),0))
+#define mpfr_cmp_ui(_f,_u)                                      \
+  (__builtin_constant_p (_u) && (unsigned long) (_u) == 0 ?     \
+   (mpfr_sgn) (_f) :                                            \
+   mpfr_cmp_ui_2exp ((_f), (unsigned long) (_u), 0))
 #undef mpfr_cmp_si
-#define mpfr_cmp_si(_f,_s)                      \
-  (__builtin_constant_p (_s) && (_s) >= 0 ?     \
-   mpfr_cmp_ui ((_f), (unsigned long) (_s)) :   \
-   mpfr_cmp_si_2exp ((_f), (_s), 0))
+#define mpfr_cmp_si(_f,_s)                              \
+  (__builtin_constant_p (_s) && (long) (_s) >= 0 ?      \
+   mpfr_cmp_ui ((_f), (unsigned long) (long) (_s)) :    \
+   mpfr_cmp_si_2exp ((_f), (long) (_s), 0))
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #undef mpfr_set_ui
-#define mpfr_set_ui(_f,_u,_r)                   \
-  (__builtin_constant_p (_u) && (_u) == 0 ?     \
-   __extension__ ({                             \
-       mpfr_ptr _p = (_f);                      \
-       _p->_mpfr_sign = 1;                      \
-       _p->_mpfr_exp = __MPFR_EXP_ZERO;         \
-       (void) (_r); 0; }) :                     \
-   mpfr_set_ui_2exp ((_f), (_u), 0, (_r)))
+#define mpfr_set_ui(_f,_u,_r)                                   \
+  (__builtin_constant_p (_u) && (unsigned long) (_u) == 0 ?     \
+   __extension__ ({                                             \
+       mpfr_ptr _p = (_f);                                      \
+       _p->_mpfr_sign = 1;                                      \
+       _p->_mpfr_exp = __MPFR_EXP_ZERO;                         \
+       (void) (_r); 0; }) :                                     \
+   mpfr_set_ui_2exp ((_f), (unsigned long) (_u), 0, (_r)))
 #endif
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)                                   \
-  (__builtin_constant_p (_s) && (_s) >= 0 ?                     \
-   mpfr_set_ui ((_f), (unsigned long) (_s), (_r)) :             \
-   mpfr_set_si_2exp ((_f), (_s), 0, (_r)))
+  (__builtin_constant_p (_s) && (long) (_s) >= 0 ?              \
+   mpfr_set_ui ((_f), (unsigned long) (long) (_s), (_r)) :      \
+   mpfr_set_si_2exp ((_f), (long) (_s), 0, (_r)))
 #endif
 #endif
 
