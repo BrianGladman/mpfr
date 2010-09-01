@@ -807,7 +807,11 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    Moreover casts to unsigned long have been added to avoid warnings in
    programs that use MPFR and are compiled with -Wconversion; such casts
    are OK since if X is a constant expression, then (unsigned long) X is
-   also a constant expression, so that the optimizations still work. */
+   also a constant expression, so that the optimizations still work. The
+   warnings are probably related to the following two bugs:
+     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210
+     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38470 (possibly a variant)
+   and the casts could be removed once these bugs are fixed. */
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
