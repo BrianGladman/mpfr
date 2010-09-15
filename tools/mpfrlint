@@ -48,6 +48,17 @@ do
     echo "Missing '#include \"mpfr-impl.h\"' in $file?"
 done
 
+# mpfr_printf-like functions shouldn't be used in the tests,
+# as they need <stdarg.h> (HAVE_STDARG defined).
+for file in tests/*.c
+do
+  case $file in
+    *printf*) ;;
+    *) grep -q "mpfr_[a-z]*printf" $file && \
+        echo "$file contains mpfr_printf-like function calls" ;;
+  esac
+done
+
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' doc/fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
   {s/.*Version //; s/ or.*//; p; q}' doc/mpfr.texi`"
