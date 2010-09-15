@@ -2921,6 +2921,14 @@ with $|m| < 2^p$. Then if the relative error on the approximation of
 $x^y$ is less than $\frac{1}{2}$ ulp, then rounding it to nearest will give
 $x^y$.
 
+\subsection{The integer power}
+
+The integer power \texttt{mpfr\_pow\_ui} is computed as follows.
+We compute an approximation of $x^n$ by binary exponentiation.
+The error analysis for binary exponentiation is the same as if we did
+naive exponentiation, computing $x^2, x^3, ..., x^{n-1}, x^n$ with $n-1$
+successive multiplications, and Lemma~\ref{rel_ulp} gives the error bound.
+
 \subsection{The real cube root}
 
 The \texttt{mpfr\_cbrt} function computes the real cube root of $x$.
@@ -2954,6 +2962,28 @@ whether $r=0$ or not.
 The even rounding rule is needed only when the input $x$ has at least
 $3n+1$ bits, since the cube of a odd number of $n+1$ bits has at least
 $3n+1$ bits.
+
+\subsection{The $k$-th root}
+
+The $k$-th root \texttt{mpfr\_root}
+of $x > 0$ is computed as follows. First write
+$x = m \cdot 2^e$ with $m$ and $e$ integers, $e$ multiple of $k$.
+If $m < 2^{k(p-1)}$, where $p$ is the target precision --- plus $1$ for
+rounding to nearest ---, we multiply
+$m$ by $2^{k t}$ for some integer $t > 0$ and subtract $k t$ from $e$ such that
+$2^{k(p-1)} \leq m \cdot 2^{k t} < 2^{kp}$, i.e., the integer square root of
+$m \cdot 2^{k t}$ has exactly $p$ bits.
+
+We thus now have $x = m \cdot 2^e$ where $2^{k(p-1)} \leq m$ and $e$
+multiple of $k$. We then call the \texttt{mpz\_root} function from GMP,
+which computes $s$ such that $s^k \leq m < (s+1)^k$, and tells us if the
+left equality holds or not (this gives the round bit for directed rounding,
+and the sticky bit for rounding to nearest, in which case the round bit is the
+least significant bit of $s$). If $s$ has more than $p$ bits, the round and
+sticky bits can both be determined from the low bits of $s$.
+
+Note: this algorithm is inefficient since it deals with intermediate values of
+$O(k p)$ bits.
 
 \subsection{The exponential integral}
 
