@@ -27,15 +27,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* generate nbits random bits into mp[], assuming mp was allocated to contain
+   a sufficient number of limbs */
 void
 mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
 {
   mpz_t z;
 
   /* To be sure to avoid the potential allocation of mpz_urandomb */
-  ALLOC(z) = SIZ(z) = (nbits / GMP_NUMB_BITS) + 1;
+  ALLOC(z) = SIZ(z) = ((nbits - 1) / GMP_NUMB_BITS) + 1;
   PTR(z)   = mp;
-  mpz_urandomb(z, rstate, nbits);
+  mpz_urandomb (z, rstate, nbits);
 }
 
 int
