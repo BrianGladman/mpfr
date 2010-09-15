@@ -54,14 +54,14 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   nbits = MPFR_PREC (rop);
   nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
+  cnt = nlimbs * GMP_NUMB_BITS - nbits;
 
   /* Uniform non-normalized significand */
-  mpfr_rand_raw (rp, rstate, nlimbs * GMP_NUMB_BITS);
-
-  /* If nbits isn't a multiple of GMP_NUMB_BITS, mask the low bits */
-  cnt = nlimbs * GMP_NUMB_BITS - nbits;
-  if (MPFR_LIKELY (cnt != 0))
-    rp[0] &= ~MPFR_LIMB_MASK (cnt);
+  /* generate exactly nbits so that the random generator stays in the same
+     state, independent of the machine word size GMP_NUMB_BITS */
+  mpfr_rand_raw (rp, rstate, nbits);
+  if (MPFR_LIKELY (cnt != 0)) /* this will put the low bits to zero */
+    mpn_lshift (rp, rp, nlimbs, cnt);
 
   /* Count the null significant limbs and remaining limbs */
   exp = 0;

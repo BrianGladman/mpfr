@@ -103,6 +103,36 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
   return;
 }
 
+/* Problem reported by Carl Witty: check mpfr_urandomb give similar results
+   on 32-bit and 64-bit machines.
+   We assume the default GMP random generator does not depend on the machine
+   word size, not on the GMP version.
+*/
+static void
+bug20100914 (void)
+{
+  mpfr_t x;
+  gmp_randstate_t s;
+
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 42);
+  mpfr_init2 (x, 17);
+  mpfr_urandomb (x, s);
+  if (mpfr_cmp_str1 (x, "0.895943") != 0)
+    {
+      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.895943\n", x);
+      exit (1);
+    }
+  mpfr_urandomb (x, s);
+  if (mpfr_cmp_str1 (x, "0.848824") != 0)
+    {
+      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.848824\n", x);
+      exit (1);
+    }
+  mpfr_clear (x);
+  gmp_randclear (s);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -134,6 +164,8 @@ main (int argc, char *argv[])
     {
       test_urandomb (nbtests, 2, 0);
     }
+
+  bug20100914 ();
 
   tests_end_mpfr ();
   return 0;

@@ -153,6 +153,33 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   return;
 }
 
+/* problem reported by Carl Witty */
+static void
+bug20100914 (void)
+{
+  mpfr_t x;
+  gmp_randstate_t s;
+
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 42);
+  mpfr_init2 (x, 17);
+  mpfr_urandom (x, s, MPFR_RNDN);
+  /* the following values are obtained on a 32-bit computer, we should get
+     the same values on a 64-bit computer */
+  if (mpfr_cmp_str1 (x, "0.196152") != 0)
+    {
+      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.196152\n", x);
+      exit (1);
+    }
+  mpfr_urandom (x, s, MPFR_RNDN);
+  if (mpfr_cmp_str1 (x, "0.414497") != 0)
+    {
+      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.414497\n", x);
+      exit (1);
+    }
+  mpfr_clear (x);
+  gmp_randclear (s);
+}
 
 int
 main (int argc, char *argv[])
@@ -204,6 +231,8 @@ main (int argc, char *argv[])
           test_urandom (nbtests, 2, (mpfr_rnd_t) rnd, -1, 0);
         }
     }
+
+  bug20100914 ();
 
   tests_end_mpfr ();
   return 0;

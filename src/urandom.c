@@ -27,6 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 
+/* generate one random bit */
 static int
 random_rounding_bit (gmp_randstate_t rstate)
 {
@@ -75,7 +76,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   cnt = GMP_NUMB_BITS;
   while (cnt == GMP_NUMB_BITS)
     {
-      /* generate one random limb rp[0] */
+      /* generate one random limb rp[0]. FIXME: why do we generate a number
+         of bits that depends on GMP_NUMB_BITS? */
       mpfr_rand_raw (rp, rstate, GMP_NUMB_BITS);
       if (MPFR_UNLIKELY (rp[0] == 0))
         cnt = GMP_NUMB_BITS;
@@ -111,7 +113,9 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
                            exponent range */
 
 
-  /* Significand */
+  /* Significand. FIXME: can we generate only 'nbits' bits, and shift them
+     as in mpfr_urandomb, so that the random state generator is left in the
+     same state, independent of GMP_NUMB_BITS? */
   mpfr_rand_raw (rp, rstate, nlimbs * GMP_NUMB_BITS);
 
   /* Set the msb to 1 since it was fixed by the exponent choice */
