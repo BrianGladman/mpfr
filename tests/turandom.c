@@ -168,13 +168,17 @@ bug20100914 (void)
      the same values on a 64-bit computer */
   if (mpfr_cmp_str1 (x, "0.196152") != 0)
     {
-      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.196152\n", x);
+      printf ("Error in bug20100914, expected 0.196152, got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
   mpfr_urandom (x, s, MPFR_RNDN);
   if (mpfr_cmp_str1 (x, "0.414497") != 0)
     {
-      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.414497\n", x);
+      printf ("Error in bug20100914, expected 0.414497, got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
   mpfr_clear (x);

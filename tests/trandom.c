@@ -120,13 +120,17 @@ bug20100914 (void)
   mpfr_urandomb (x, s);
   if (mpfr_cmp_str1 (x, "0.895943") != 0)
     {
-      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.895943\n", x);
+      printf ("Error in bug20100914, expected 0.895943, got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
   mpfr_urandomb (x, s);
   if (mpfr_cmp_str1 (x, "0.848824") != 0)
     {
-      mpfr_printf ("Error in bug20100914, got %Rf, expected 0.848824\n", x);
+      printf ("Error in bug20100914, expected 0.848824, got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
   mpfr_clear (x);
