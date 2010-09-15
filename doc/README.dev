@@ -395,6 +395,11 @@ with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
 To check the result of some function, use mpfr_equal_p rather than
 mpfr_cmp, as mpfr_cmp will return 0 (equality) if the result is NaN.
 
+Do not use functions that need optional features (except in a context
+where such features are required). For instance, the mpfr_printf-like
+functions need <stdarg.h>, thus should not be used, except for testing
+them.
+
 Also, make sure that the tests run against previous MPFR versions,
 possibly by disabling some tests with code like
 
