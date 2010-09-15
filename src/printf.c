@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "config.h"
 #endif
 
-/* The mpfr_printf-like functions are defined only if stdarg.h exist */
+/* The mpfr_printf-like functions are defined only if <stdarg.h> exist */
 #ifdef HAVE_STDARG
 
 #include <stdarg.h>
