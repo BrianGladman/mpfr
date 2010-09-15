@@ -2577,6 +2577,11 @@ which case @var{rop} is set to NaN and a non-zero value is returned (this
 should never happen in practice, except in very specific cases). The
 second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
+
+Note: for a given version of MPFR, the returned value of @var{rop} and the
+new value of @var{state} (which controls further random values) do not depend
+on the machine word size, assuming this holds for the underlying GMP random
+generator.
 @end deftypefun
 
 @deftypefun int mpfr_urandom (mpfr_t @var{rop}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
@@ -2587,6 +2592,9 @@ generated according to the continuous uniform distribution on the interval
 
 The second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
+
+Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
+range and the rounding mode might have a side effect on the next random state.
 @end deftypefun
 
 @deftypefun mpfr_exp_t mpfr_get_exp (mpfr_t @var{x})
