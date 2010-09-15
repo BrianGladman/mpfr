@@ -26,8 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Various i386 systems have been seen with float.h LDBL constants equal to
-   the DBL ones, whereas they ought to be bigger, reflecting the 10-byte
+/* Various i386 systems have been seen with <float.h> LDBL constants equal
+   to the DBL ones, whereas they ought to be bigger, reflecting the 10-byte
    IEEE extended format on that processor.  gcc 3.2.1 on FreeBSD and Solaris
    has been seen with the problem, and gcc 2.95.4 on FreeBSD 4.7.  */
 

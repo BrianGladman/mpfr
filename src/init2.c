@@ -38,7 +38,7 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 
   MPFR_ASSERTN (mp_bits_per_limb == GMP_NUMB_BITS);
 
-  /* Check for correct EXP NAN, ZERO & INF in both mpfr.h and in mpfr-impl.h */
+  /* Check for correct EXP NAN, ZERO & INF in both mpfr.h and mpfr-impl.h */
   MPFR_ASSERTN( __MPFR_EXP_NAN  == MPFR_EXP_NAN  );
   MPFR_ASSERTN( __MPFR_EXP_ZERO == MPFR_EXP_ZERO );
   MPFR_ASSERTN( __MPFR_EXP_INF  == MPFR_EXP_INF  );

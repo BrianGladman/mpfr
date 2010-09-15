@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "config.h"
 #endif
 
-/* The mpfr_printf-like functions are defined only if stdarg.h exists */
+/* The mpfr_printf-like functions are defined only if <stdarg.h> exists */
 #ifdef HAVE_STDARG
 
 #include <stdarg.h>
@@ -47,7 +47,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if defined (__cplusplus)
 #include <cstddef>
-#define __STDC_LIMIT_MACROS   /* SIZE_MAX defined with stdint.h inclusion */
+#define __STDC_LIMIT_MACROS   /* SIZE_MAX defined with <stdint.h> inclusion */
 #else
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
