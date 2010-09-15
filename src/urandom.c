@@ -73,16 +73,20 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
     }
 
   /* Exponent */
-  cnt = GMP_NUMB_BITS;
-  while (cnt == GMP_NUMB_BITS)
+#define DRAW_BITS 8 /* we draw DRAW_BITS at a time */
+  cnt = DRAW_BITS;
+  MPFR_ASSERTN(DRAW_BITS <= GMP_NUMB_BITS);
+  while (cnt == DRAW_BITS)
     {
-      /* generate one random limb rp[0]. FIXME: why do we generate a number
-         of bits that depends on GMP_NUMB_BITS? */
-      mpfr_rand_raw (rp, rstate, GMP_NUMB_BITS);
+      /* generate DRAW_BITS in rp[0] */
+      mpfr_rand_raw (rp, rstate, DRAW_BITS);
       if (MPFR_UNLIKELY (rp[0] == 0))
-        cnt = GMP_NUMB_BITS;
+        cnt = DRAW_BITS;
       else
-        count_leading_zeros (cnt, rp[0]);
+        {
+          count_leading_zeros (cnt, rp[0]);
+          cnt -= GMP_NUMB_BITS - DRAW_BITS;
+        }
 
       if (MPFR_UNLIKELY (exp < emin + cnt))
         {
@@ -92,11 +96,11 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 
              The rounding to nearest mode is subtle:
              If exp - cnt == emin - 1, the rounding bit is set, except
-             if cnt == GMP_NUMB_BITS in which case the rounding bit is
+             if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && cnt == exp - emin - 1
-                  && (cnt != GMP_NUMB_BITS || random_rounding_bit (rstate))))
+                  && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
               return +1;
@@ -113,19 +117,15 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
                            exponent range */
 
 
-  /* Significand. FIXME: can we generate only 'nbits' bits, and shift them
-     as in mpfr_urandomb, so that the random state generator is left in the
-     same state, independent of GMP_NUMB_BITS? */
-  mpfr_rand_raw (rp, rstate, nlimbs * GMP_NUMB_BITS);
+  /* Significand: we need generate only nbits-1 bits, since the most
+     significant is 1 */
+  mpfr_rand_raw (rp, rstate, nbits - 1);
+  n = nlimbs * GMP_NUMB_BITS - nbits;
+  if (MPFR_LIKELY (n != 0)) /* this will put the low bits to zero */
+    mpn_lshift (rp, rp, nlimbs, n);
 
   /* Set the msb to 1 since it was fixed by the exponent choice */
   rp[nlimbs - 1] |= MPFR_LIMB_HIGHBIT;
-
-  /* If nbits isn't a multiple of GMP_NUMB_BITS, mask the low bits */
-  n = nlimbs * GMP_NUMB_BITS - nbits;
-  if (MPFR_LIKELY (n != 0))
-    rp[0] &= ~MPFR_LIMB_MASK (n);
-
 
   /* Rounding */
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA

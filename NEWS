@@ -24,6 +24,10 @@ Changes from versions 3.0.* to version 3.1.0:
 - The "" release.
 - The MPFR source has been reorganized.
 - Dropped ansi2knr support.
+- The mpfr_urandom and mpfr_urandomb functions now return identical values
+  on processors with different word size (assuming the same random seed, and
+  assuming the GMP random generator does not depend itself on the word size,
+  which is not documented but seems to hold).
 - Bug fixes.
 
 Changes from versions 2.4.* to version 3.0.0:

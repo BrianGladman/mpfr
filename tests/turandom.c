@@ -166,17 +166,17 @@ bug20100914 (void)
   mpfr_urandom (x, s, MPFR_RNDN);
   /* the following values are obtained on a 32-bit computer, we should get
      the same values on a 64-bit computer */
-  if (mpfr_cmp_str1 (x, "0.196152") != 0)
+  if (mpfr_cmp_str1 (x, "0.8488312") != 0)
     {
-      printf ("Error in bug20100914, expected 0.196152, got ");
+      printf ("Error in bug20100914, expected 0.8488312, got ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
   mpfr_urandom (x, s, MPFR_RNDN);
-  if (mpfr_cmp_str1 (x, "0.414497") != 0)
+  if (mpfr_cmp_str1 (x, "0.8156509") != 0)
     {
-      printf ("Error in bug20100914, expected 0.414497, got ");
+      printf ("Error in bug20100914, expected 0.8156509, got ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
