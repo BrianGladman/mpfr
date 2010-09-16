@@ -127,8 +127,8 @@ main (void)
       if (mpfr_cmp (x, y) != 0)
         {
           printf ("Error for mpfr_set_flt(mpfr_get_flt(x))\n");
-          mpfr_printf ("expected %Ra\n", x);
-          mpfr_printf ("got      %Ra\n", y);
+          printf ("expected "); mpfr_dump (x);
+          printf ("got      "); mpfr_dump (y);
           exit (1);
         }
       mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
@@ -145,8 +145,8 @@ main (void)
       if (mpfr_cmp (x, y) != 0)
         {
           printf ("Error for mpfr_set_flt(mpfr_get_flt(x))\n");
-          mpfr_printf ("expected %Ra\n", x);
-          mpfr_printf ("got      %Ra\n", y);
+          printf ("expected "); mpfr_dump (x);
+          printf ("got      "); mpfr_dump (y);
           exit (1);
         }
       mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
@@ -163,8 +163,8 @@ main (void)
       if (mpfr_cmp (x, y) != 0)
         {
           printf ("Error for mpfr_set_flt(mpfr_get_flt(x))\n");
-          mpfr_printf ("expected %Ra\n", x);
-          mpfr_printf ("got      %Ra\n", y);
+          printf ("expected "); mpfr_dump (x);
+          printf ("got      "); mpfr_dump (y);
           exit (1);
         }
       mpfr_mul_2exp (x, x, 1, MPFR_RNDN);

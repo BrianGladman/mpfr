@@ -95,7 +95,7 @@ check (long i, mpfr_rnd_t rnd)
       printf ("Error in mpfr_set_z_2exp for i=%ld e=%ld rnd_mode=%d\n",
               i, e, rnd);
       printf ("expected %ld\n", i);
-      mpfr_printf ("got %Re\n", f);
+      printf ("got      "); mpfr_dump (f);
       exit (1);
     }
   mpfr_clear (f);
