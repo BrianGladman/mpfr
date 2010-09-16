@@ -2580,8 +2580,7 @@ created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
 Note: for a given version of MPFR, the returned value of @var{rop} and the
 new value of @var{state} (which controls further random values) do not depend
-on the machine word size, assuming this holds for the underlying GMP random
-generator.
+on the machine word size.
 @end deftypefun
 
 @deftypefun int mpfr_urandom (mpfr_t @var{rop}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
