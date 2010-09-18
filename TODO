@@ -232,6 +232,12 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- use mpn_div_q to speed up mpfr_div. However mpn_div_q, which is new in
+  GMP 5, is not documented in the GMP manual, thus we are not sure it
+  guarantees to return the same quotient as mpn_tdiv_qr.
+  Also mpfr_div uses the remainder computed by mpn_divrem. A workaround would
+  be to first try with mpn_div_q, and if we cannot (easily) compute the
+  rounding, then use the current code with mpn_divrem.
 - compute exp by using the series for cosh or sinh, which has half the terms
   (see Exercise 4.11 from Modern Computer Arithmetic, version 0.3)
   The same method can be used for log, using the series for atanh, i.e.,
