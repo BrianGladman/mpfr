@@ -80,5 +80,5 @@ For more information about Subversion, please see:
     but interesting general information can be found there);
   * http://subversion.apache.org/faq.html (the Subversion FAQ).
 
-Subversion users should read the file "README.dev" (provided via
+Subversion users should read the file "doc/README.dev" (provided via
 SVN only).
