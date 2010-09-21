@@ -140,6 +140,8 @@ are not more accurate.</a></li>
 installation using <cite>autoconf</cite> or <cite>pkg-config</cite>?</a></li>
 <li><a href="#cite">How to cite <cite><acronym>MPFR</acronym></cite> in a
 scientific publication?</a></li>
+<li><a href="#fpic">When I build <cite><acronym>MPFR</acronym></cite>, I get
+an error asking me to recompile with <samp>-fPIC</samp>.</a></li>
 </ol>
 
 <dl class="faq">
@@ -349,6 +351,31 @@ and/or the library web page
 is related to a particular release of <cite><acronym>MPFR</acronym></cite>,
 for example if you report timings, please also indicate the release number
 for future reference.</p></dd>
+
+<dt id="fpic">10. When I build <cite><acronym>MPFR</acronym></cite>, I get
+an error asking me to recompile with <samp>-fPIC</samp>.</dt>
+
+<dd><p>A typical error looks like:</p>
+<p><tt>/usr/bin/ld: <em>/path/to/</em>libgmp.a(realloc.o): relocation
+R_X86_64_32 against `.rodata.str1.1' can not be used when making a
+shared object; recompile with -fPIC<br />
+<em>/path/to/</em>libgmp.a: could not read symbols: Bad value<br />
+collect2: ld returned 1 exit status</tt></p>
+<p>The probable reason is that you tried to build
+<cite><acronym>MPFR</acronym></cite> with the shared library enabled (this
+is the default), while only a static <cite><acronym>GMP</acronym></cite>
+library could be found. To solve this problem, either rebuild and reinstall
+<cite><acronym>GMP</acronym></cite> without the <samp>--disable-shared</samp>
+configure option, or configure <cite><acronym>MPFR</acronym></cite> with
+<samp>--disable-shared</samp>. If you did this and still get the above
+error, the cause may be conflicting <cite><acronym>GMP</acronym></cite>
+versions installed on your system; please check that your search path
+settings are correct.</p>
+<p>Additional note about the last sentence: Under <acronym>GNU</acronym>/Linux
+(for instance), the linker takes the first library found in the library search
+path, whether it is dynamic or static. The default behavior under darwin is
+different, but <cite><acronym>MPFR</acronym></cite> will change it.</p></dd>
+
 
 </dl>
 
