@@ -142,8 +142,9 @@ In the GMP build directory, you also need to go into the "tune" subdirectory
 and type "make speed". This will build the GMP speed library, which is used
 by the MPFR tuning mechanism.
 
-Then go back to the MPFR build directory, and type "make tune". This will
-build an optimized file "mparam.h" for your specific architecture.
+Then go back to the MPFR build directory, go into the "tune" subdirectory and
+type "make tune". This will build an optimized file "mparam.h" for your
+specific architecture.
 
 
 ./configure options
