@@ -353,7 +353,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         mp_size_t n;
         mpfr_prec_t p;
 
-        /* Fist check if we can reduce the precision of b or c:
+        /* First check if we can reduce the precision of b or c:
            exact values are a nightmare for the short product trick */
         bp = MPFR_MANT (b);
         cp = MPFR_MANT (c);
@@ -370,15 +370,15 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 bp++;
                 bn--;
                 MPFR_ASSERTD (bn > 0);
-              } /* This must end since the MSL is != 0 */
+              } /* This must end since the most significant limb is != 0 */
 
-            /* Check for c too */
+            /* Check for c too: if b ==c, will do nothing */
             while (*cp == 0)
               {
                 cp++;
                 cn--;
                 MPFR_ASSERTD (cn > 0);
-              } /* This must end since the MSL is != 0 */
+              } /* This must end since the most significant limb is != 0 */
 
             /* It is not the faster way, but it is safer */
             MPFR_SET_SAME_SIGN (b_tmp, b);
@@ -386,13 +386,18 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             MPFR_PREC (b_tmp) = bn * GMP_NUMB_BITS;
             MPFR_MANT (b_tmp) = bp;
 
-            MPFR_SET_SAME_SIGN (c_tmp, c);
-            MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
-            MPFR_PREC (c_tmp) = cn * GMP_NUMB_BITS;
-            MPFR_MANT (c_tmp) = cp;
+	    if (b != c)
+	      {
+		MPFR_SET_SAME_SIGN (c_tmp, c);
+		MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
+		MPFR_PREC (c_tmp) = cn * GMP_NUMB_BITS;
+		MPFR_MANT (c_tmp) = cp;
 
-            /* Call again mpfr_mul with the fixed arguments */
-            return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
+		/* Call again mpfr_mul with the fixed arguments */
+		return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
+	      }
+	    else
+	      return mpfr_mul (a, b_tmp, b_tmp, rnd_mode);
           }
 
         /* Compute estimated precision of mulhigh.
