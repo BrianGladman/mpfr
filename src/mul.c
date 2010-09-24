@@ -347,7 +347,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     /* Mulders' mulhigh. Disable if squaring, since it is not tuned for
        such a case */
-    if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD && b != c))
+    if (MPFR_UNLIKELY ((bn > MPFR_MUL_THRESHOLD && b != c)
+		       || (bn > MPFR_SQR_THRESHOLD && b == c)))
       {
         mp_limb_t *bp, *cp;
         mp_size_t n;
@@ -426,14 +427,17 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 bp[0] = 0;
                 MPN_COPY (bp + 1, MPFR_MANT (b) + bn - n, n);
               }
-            if (cn > n)
-              cp --; /* FIXME: Could this happen? */
-            else
-              {
-                cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
-                cp[0] = 0;
-                MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
-              }
+	    if (b != c)
+	      {
+		if (cn > n)
+		  cp --; /* FIXME: Could this happen? */
+		else
+		  {
+		    cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+		    cp[0] = 0;
+		    MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
+		  }
+	      }
             /* We will compute with one extra limb */
             n++;
             p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (n + 2);
@@ -448,7 +452,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           }
         MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
         /* Compute an approximation of the product of b and c */
-        mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
+	if (b != c)
+	  mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
+	else
+	  mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
         b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */

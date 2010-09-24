@@ -60,6 +60,9 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   tn = 1 + (2 * bq - 1) / GMP_NUMB_BITS; /* number of limbs of square,
                                                2*bn or 2*bn-1 */
 
+  if (MPFR_UNLIKELY(bn > MPFR_SQR_THRESHOLD))
+    return mpfr_mul (a, b, b, rnd_mode);
+
   MPFR_TMP_MARK(marker);
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2 * bn * BYTES_PER_MP_LIMB);
 

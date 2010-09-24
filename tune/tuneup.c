@@ -32,10 +32,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 int verbose;
 
+/* template for an unary function */
 /* s->size: precision of both input and output
    s->xp  : Mantissa of first input
    s->yp  : mantissa of second input                    */
-
 #define SPEED_MPFR_FUNC(mean_fun)                       \
   do                                                    \
     {                                                   \
@@ -113,6 +113,7 @@ int verbose;
     }                                                   \
   while (0)
 
+/* template for a function like mpfr_mul */
 #define SPEED_MPFR_OP(mean_fun)                         \
   do                                                    \
     {                                                   \
@@ -146,6 +147,44 @@ int verbose;
       i = s->reps;                                      \
       do                                                \
         mean_fun (w, x, y, MPFR_RNDN);                  \
+      while (--i != 0);                                 \
+      t = speed_endtime ();                             \
+                                                        \
+      MPFR_TMP_FREE (marker);                           \
+      return t;                                         \
+    }                                                   \
+  while (0)
+
+/* special template for mpfr_mul(a,b,b) */
+#define SPEED_MPFR_SQR(mean_fun)                         \
+  do                                                    \
+    {                                                   \
+      unsigned  i;                                      \
+      mp_ptr    wp;                                     \
+      double    t;                                      \
+      mpfr_t    w, x;					\
+      mp_size_t size;                                   \
+      MPFR_TMP_DECL (marker);                           \
+                                                        \
+      SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);   \
+      SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);   \
+      MPFR_TMP_MARK (marker);                           \
+                                                        \
+      size = (s->size-1)/GMP_NUMB_BITS+1;               \
+      s->xp[size-1] |= MPFR_LIMB_HIGHBIT;               \
+      MPFR_TMP_INIT1 (s->xp, x, s->size);               \
+      MPFR_SET_EXP (x, 0);                              \
+                                                        \
+      MPFR_TMP_INIT (wp, w, s->size, size);             \
+                                                        \
+      speed_operand_src (s, s->xp, size);               \
+      speed_operand_dst (s, wp, size);                  \
+      speed_cache_fill (s);                             \
+                                                        \
+      speed_starttime ();                               \
+      i = s->reps;                                      \
+      do                                                \
+        mean_fun (w, x, x, MPFR_RNDN);                  \
       while (--i != 0);                                 \
       t = speed_endtime ();                             \
                                                         \
@@ -234,18 +273,24 @@ speed_mpfr_sincos (struct speed_params *s)
   SPEED_MPFR_FUNC2 (mpfr_sin_cos);
 }
 
-/* Setup mpfr_mul */
+/* Setup mpfr_mul and mpfr_sqr */
 mpfr_prec_t mpfr_mul_threshold;
+mpfr_prec_t mpfr_sqr_threshold;
 #undef  MPFR_MUL_THRESHOLD
 #define MPFR_MUL_THRESHOLD mpfr_mul_threshold
+#undef  MPFR_SQR_THRESHOLD
+#define MPFR_SQR_THRESHOLD mpfr_sqr_threshold
 #include "mul.c"
 static double
 speed_mpfr_mul (struct speed_params *s)
 {
   SPEED_MPFR_OP (mpfr_mul);
 }
-
-
+static double
+speed_mpfr_sqr (struct speed_params *s)
+{
+  SPEED_MPFR_SQR (mpfr_mul);
+}
 
 /************************************************
  * Common functions (inspired by GMP function)  *
@@ -912,6 +957,14 @@ all (const char *filename)
                     2*GMP_NUMB_BITS+1);
   fprintf (f, "#define MPFR_MUL_THRESHOLD %lu /* limbs */\n",
            (unsigned long) (mpfr_mul_threshold - 1) / GMP_NUMB_BITS + 1);
+
+  /* Tune mpfr_sqr (threshold is in limbs, but it doesn't matter too much) */
+  if (verbose)
+    printf ("Tuning mpfr_sqr...\n");
+  tune_simple_func (&mpfr_sqr_threshold, speed_mpfr_sqr,
+                    2*GMP_NUMB_BITS+1);
+  fprintf (f, "#define MPFR_SQR_THRESHOLD %lu /* limbs */\n",
+           (unsigned long) (mpfr_sqr_threshold - 1) / GMP_NUMB_BITS + 1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)
