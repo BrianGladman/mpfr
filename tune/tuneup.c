@@ -969,9 +969,7 @@ all (const char *filename)
   /* Tune mpfr_exp_2 */
   if (verbose)
     printf ("Tuning mpfr_exp_2...\n");
-  tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
-                    MPFR_PREC_MIN);
-  mpfr_exp_2_threshold = MAX (GMP_NUMB_BITS, mpfr_exp_2_threshold);
+  tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2, GMP_NUMB_BITS);
   fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_exp_2_threshold);
 
