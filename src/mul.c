@@ -210,7 +210,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t *tmp;
   mp_limb_t b1;
   mpfr_prec_t bq, cq;
-  mp_size_t bn, cn, tn, k;
+  mp_size_t bn, cn, tn, k, threshold;
   MPFR_TMP_DECL (marker);
 
   MPFR_LOG_FUNC (("b[%#R]=%R c[%#R]=%R rnd=%d", b, b, c, c, rnd_mode),
@@ -345,10 +345,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
   else
-    /* Mulders' mulhigh. Disable if squaring, since it is not tuned for
-       such a case */
-    if (MPFR_UNLIKELY ((bn > MPFR_MUL_THRESHOLD && b != c)
-		       || (bn > MPFR_SQR_THRESHOLD && b == c)))
+    /* Mulders' mulhigh. */
+    if (MPFR_UNLIKELY (bn > (threshold = b != c ?
+                             MPFR_MUL_THRESHOLD : MPFR_SQR_THRESHOLD)))
       {
         mp_limb_t *bp, *cp;
         mp_size_t n;
@@ -358,7 +357,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            exact values are a nightmare for the short product trick */
         bp = MPFR_MANT (b);
         cp = MPFR_MANT (c);
-        MPFR_ASSERTN (MPFR_MUL_THRESHOLD >= 1);
+        MPFR_ASSERTN (threshold >= 1);
         if (MPFR_UNLIKELY ((bp[0] == 0 && bp[1] == 0) ||
                            (cp[0] == 0 && cp[1] == 0)))
           {
@@ -407,11 +406,11 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         cp += cn - n;
 
         /* Check if MulHigh can produce a roundable result.
-           We may lost 1 bit due to RNDN, 1 due to final shift. */
+           We may lose 1 bit due to RNDN, 1 due to final shift. */
         if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
           {
             if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + GMP_NUMB_BITS
-                               || bn <= MPFR_MUL_THRESHOLD+1))
+                               || bn <= threshold + 1))
               {
                 /* MulHigh can't produce a roundable result. */
                 MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",
