@@ -56,7 +56,7 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
   mp_size_t k;
 
   MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE > 4);
-  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 2*n/3;
+  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 3*(n/4);
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n);
@@ -91,7 +91,7 @@ mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
   mp_size_t k;
 
   MPFR_ASSERTD (MPFR_SQRHIGH_TAB_SIZE > 4);
-  k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n] : 2*n/3;
+  k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n] : n/2 + n/50;
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
   if (k < 0)
     /* we can't use mpn_sqr_basecase here, since it requires
@@ -107,8 +107,13 @@ mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
 
       mpn_sqr_n (rp + 2 * l, np + l, k);          /* fills rp[2l..2n-1] */
       mpfr_mulhigh_n (rp, np, np + k, l);         /* fills rp[l-1..2l-1] */
-      /* FIXME: maybe shift by 2 is a better idea but it has to handle carry*/
+      /* {rp+n-1,l+1} += 2 * {rp+l-1,l+1} */
+      /* mpn_lshift is 30% to 50% faster than mpn_add_n on Core 2 */
+#if 0
       cy = mpn_add_n (rp + n - 1, rp + n - 1, rp + l - 1, l + 1);
+#else
+      cy = mpn_lshift (rp + l - 1, rp + l - 1, l + 1, 1);
+#endif
       cy += mpn_add_n (rp + n - 1, rp + n - 1, rp + l - 1, l + 1);
       mpn_add_1 (rp + n + l, rp + n + l, k, cy); /* propagate carry */
     }
