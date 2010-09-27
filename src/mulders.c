@@ -1,4 +1,4 @@
-/* Mulder's MulHigh function (short product)
+/* Mulders' MulHigh function (short product)
 
 Copyright 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
