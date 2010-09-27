@@ -34,6 +34,8 @@ dnl   but the IEEE-754 specific flags must be set here.
 dnl   -GMP's linkage.
 dnl   -Libtool stuff.
 dnl   -Handling of special arguments of MPFR's configure.
+dnl FIXME: With autoconf 2.68, MPFR_CONFIGS generates warnings
+dnl   "warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body"
 AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
