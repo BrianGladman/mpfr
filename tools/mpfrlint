@@ -30,6 +30,10 @@ done
 sp="[[:space:]]*"
 grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {src,tests}/*.{c,h}
 
+# Constant checking should use MPFR_ASSERTN, not MPFR_ASSERTD.
+# This test is a heuristic.
+grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
+
 for file in {src,tests}/*.{c,h} */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case
