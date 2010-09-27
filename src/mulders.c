@@ -55,7 +55,7 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
 
-  MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
+  MPFR_ASSERTN (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
   k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 3*(n/4);
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
   if (k < 0)
@@ -90,7 +90,7 @@ mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
 {
   mp_size_t k;
 
-  MPFR_ASSERTD (MPFR_SQRHIGH_TAB_SIZE > 2); /* ensures k < n */
+  MPFR_ASSERTN (MPFR_SQRHIGH_TAB_SIZE > 2); /* ensures k < n */
   k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n]
     : n/2 + n/50 + 1; /* +1 ensures that k > n/2 */
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
