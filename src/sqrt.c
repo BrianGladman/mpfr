@@ -82,14 +82,16 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_SET_POS(r);
 
   MPFR_UNSIGNED_MINUS_MODULO(sh,MPFR_PREC(r));
-  rsize = MPFR_LIMB_SIZE(r) + (sh == 0); /* number of limbs of r, plus 1
-                                            if exact limb multiple, this is the
-                                            number of wanted limbs for the
-                                            square root */
+  if (sh == 0 && rnd_mode == MPFR_RNDN)
+    sh = GMP_NUMB_BITS; /* ugly case */
+  rsize = MPFR_LIMB_SIZE(r) + (sh == GMP_NUMB_BITS);
+  /* rsize is the number of limbs of r + 1 if exact limb multiple and rounding
+     to nearest, this is the number of wanted limbs for the square root */
   rrsize = rsize + rsize;
   usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
   rp0 = MPFR_MANT(r);
-  rp = (sh) ? rp0 : MPFR_TMP_ALLOC (rsize * sizeof (mp_limb_t));
+  rp = (sh < GMP_NUMB_BITS) ? rp0
+    : MPFR_TMP_ALLOC (rsize * sizeof (mp_limb_t));
   up = MPFR_MANT(u);
   sticky0 = MPFR_LIMB_ZERO; /* truncated part of input */
   sticky1 = MPFR_LIMB_ZERO; /* truncated part of rp[0] */
@@ -141,8 +143,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* a return value of zero in mpn_sqrtrem indicates a perfect square */
   sticky = sticky0 || tsize != 0;
 
-  /* truncated low bits of rp[0] */
-  sticky1 = rp[0] & ((sh) ? MPFR_LIMB_MASK(sh) : ~MPFR_LIMB_ZERO);
+  /* truncate low bits of rp[0] */
+  sticky1 = rp[0] & ((sh < GMP_NUMB_BITS) ? MPFR_LIMB_MASK(sh)
+                     : ~MPFR_LIMB_ZERO);
   rp[0] -= sticky1;
 
   sticky = sticky || sticky1;
@@ -156,10 +159,10 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      /* if sh>0, the round bit is bit (sh-1) of sticky1
+      /* if sh < GMP_NUMB_BITS, the round bit is bit (sh-1) of sticky1
                   and the sticky bit is formed by the low sh-1 bits from
                   sticky1, together with {tp, tsize} and sticky0. */
-      if (sh)
+      if (sh < GMP_NUMB_BITS)
         {
           if (sticky1 & (MPFR_LIMB_ONE << (sh - 1)))
             { /* round bit is set */
@@ -172,7 +175,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           else /* round bit is zero */
             goto truncate; /* with the default inexact=-1 */
         }
-      else
+      else /* sh = GMP_NUMB_BITS: the round bit is the most significant bit
+              of rp[0], and the remaining GMP_NUMB_BITS-1 bits contribute to
+              the sticky bit */
         {
           if (sticky1 & MPFR_LIMB_HIGHBIT)
             { /* round bit is set */
@@ -189,7 +194,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     goto add_one_ulp;
 
  even_rule: /* has to set inexact */
-  if (sh)
+  if (sh < GMP_NUMB_BITS)
     inexact = (rp[0] & (MPFR_LIMB_ONE << sh)) ? 1 : -1;
   else
     inexact = (rp[1] & MPFR_LIMB_ONE) ? 1 : -1;
@@ -199,8 +204,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  add_one_ulp:
   inexact = 1; /* always here */
-  rp += sh == 0;
-  rsize -= sh == 0;
+  if (sh == GMP_NUMB_BITS)
+    {
+      rp ++;
+      rsize --;
+      sh = 0;
+    }
   if (mpn_add_1 (rp0, rp, rsize, MPFR_LIMB_ONE << sh))
     {
       expr ++;
@@ -209,7 +218,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   goto end;
 
  truncate: /* inexact = 0 or -1 */
-  if (sh == 0)
+  if (sh == GMP_NUMB_BITS)
     MPN_COPY (rp0, rp + 1, rsize - 1);
 
  end:
