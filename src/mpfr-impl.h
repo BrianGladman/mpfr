@@ -829,7 +829,7 @@ typedef intmax_t mpfr_eexp_t;
 /* Mask to get the Most Significant Bit of a limb */
 #define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
 
-/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO*/
+/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO */
 #ifdef CNST_LIMB
 # define MPFR_LIMB_ONE  CNST_LIMB(1)
 # define MPFR_LIMB_ZERO CNST_LIMB(0)

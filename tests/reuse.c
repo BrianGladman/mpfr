@@ -523,7 +523,7 @@ main (void)
   mpfr_prec_t p;
   tests_start_mpfr ();
 
-  p = (randlimb () % 200)+ MPFR_PREC_MIN;
+  p = (randlimb () % 200) + MPFR_PREC_MIN;
   RND_LOOP (rnd)
   {
     test2a (mpfr_round, "mpfr_round", p);

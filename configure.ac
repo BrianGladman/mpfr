@@ -470,6 +470,8 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
 
+AC_CHECK_FUNCS([__gmpn_rootrem])
+
 dnl End of tests which need to link with GMP.
 fi
 
