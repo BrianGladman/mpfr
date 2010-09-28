@@ -128,10 +128,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   tsize = mpn_sqrtrem (rp, tp = sp, sp, rrsize);
 
-  l = tsize;
-  sticky = sticky0;
-  while (sticky == MPFR_LIMB_ZERO && l != 0)
-    sticky = tp[--l];
+  /* a return value of zero in mpn_sqrtrem indicates a perfect square */
+  sticky = sticky0 || tsize != 0;
 
   /* truncated low bits of rp[0] */
   MPFR_UNSIGNED_MINUS_MODULO(sh,MPFR_PREC(r));
