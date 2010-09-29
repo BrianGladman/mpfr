@@ -90,6 +90,14 @@ AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
    AC_DEFINE_UNQUOTED([MPFR_MULHIGH_SIZE],$withval, [Mulhigh size]))
 
+AC_ARG_ENABLE(gmp-internals,
+   [  --enable-gmp-internals  enable use of GMP undocumented functions [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([WANT_GMP_INTERNALS],1,[Want GMP internals]) ;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-gmp-internals: yes or no]) ;;
+     esac])
+
 AC_ARG_ENABLE(assert,
    [  --enable-assert         enable ASSERT checking [[default=no]]],
    [ case $enableval in

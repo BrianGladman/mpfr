@@ -133,13 +133,11 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* sticky0 is non-zero iff the truncated part of the input is non-zero */
 
   /* mpn_rootrem with NULL 2nd argument is faster than mpn_sqrtrem, thus use
-     it if available. Note: since __gmpn_rootrem is not in the GMP API (at
-     least for GMP 5.0.1), we should not use it for releases of MPFR, since
-     it might be removed or changed in future versions of GMP. */
-#ifdef HAVE___GMPN_ROOTREM
+     it if available and if the user asked to use GMP internal functions */
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_ROOTREM)
   tsize = __gmpn_rootrem (rp, NULL, sp, rrsize, 2);
 #else
-  tsize = mpn_sqrtrem (rp, tp = sp, sp, rrsize);
+  tsize = mpn_sqrtrem (rp, NULL, sp, rrsize);
 #endif
 
   /* a return value of zero in mpn_sqrtrem indicates a perfect square */
@@ -163,7 +161,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       /* if sh < GMP_NUMB_BITS, the round bit is bit (sh-1) of sticky1
                   and the sticky bit is formed by the low sh-1 bits from
-                  sticky1, together with {tp, tsize} and sticky0. */
+                  sticky1, together with the sqrtrem remainder and sticky0. */
       if (sh < GMP_NUMB_BITS)
         {
           if (sticky1 & (MPFR_LIMB_ONE << (sh - 1)))
