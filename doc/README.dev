@@ -92,6 +92,9 @@ To make a release (for the MPFR team):
      and the libtool-related files (config.guess, etc.) are up-to-date.
      An "autoreconf -f -i" may be necessary.
 
+     Comment the line AC_CHECK_FUNCS([__gmpn_rootrem]) in configure.ac
+     (see also the comment in sqrt.c).
+
   1) Generate the tuning parameters on different architectures and
      put them in src/mparam_h.in. For each architecture:
 

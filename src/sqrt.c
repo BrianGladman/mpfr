@@ -133,11 +133,13 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* sticky0 is non-zero iff the truncated part of the input is non-zero */
 
   /* mpn_rootrem with NULL 2nd argument is faster than mpn_sqrtrem, thus use
-     it if available */
-#ifndef HAVE___GMPN_ROOTREM
-  tsize = mpn_sqrtrem (rp, tp = sp, sp, rrsize);
-#else
+     it if available. Note: since __gmpn_rootrem is not in the GMP API (at
+     least for GMP 5.0.1), we should not use it for releases of MPFR, since
+     it might be removed or changed in future versions of GMP. */
+#ifdef HAVE___GMPN_ROOTREM
   tsize = __gmpn_rootrem (rp, NULL, sp, rrsize, 2);
+#else
+  tsize = mpn_sqrtrem (rp, tp = sp, sp, rrsize);
 #endif
 
   /* a return value of zero in mpn_sqrtrem indicates a perfect square */
