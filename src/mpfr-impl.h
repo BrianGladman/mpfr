@@ -1720,6 +1720,8 @@ __MPFR_DECLSPEC int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t,
 __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr,
                                                   mp_srcptr, mp_size_t));
 __MPFR_DECLSPEC void mpfr_sqrhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_size_t));
+__MPFR_DECLSPEC mp_limb_t mpfr_divhigh_n _MPFR_PROTO ((mp_ptr qp, mp_ptr np,
+                                                     mp_ptr dp, mp_size_t n));
 
 __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
                                                mpfr_exp_t, mpfr_prec_t));

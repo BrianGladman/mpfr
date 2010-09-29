@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* Check against mpfr_can_round ? */
+/* Check against mpfr_can_round? */
 #ifdef WANT_ASSERT
 # if WANT_ASSERT >= 2
 int mpfr_round_p_2 (mp_limb_t *, mp_size_t, mpfr_exp_t, mpfr_prec_t);

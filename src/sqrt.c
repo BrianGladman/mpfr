@@ -81,6 +81,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   MPFR_SET_POS(r);
 
+  MPFR_TMP_MARK (marker);
   MPFR_UNSIGNED_MINUS_MODULO(sh,MPFR_PREC(r));
   if (sh == 0 && rnd_mode == MPFR_RNDN)
     sh = GMP_NUMB_BITS; /* ugly case */
@@ -98,7 +99,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
   inexact = -1; /* return ternary flag */
 
-  MPFR_TMP_MARK (marker);
   sp = (mp_limb_t *) MPFR_TMP_ALLOC (rrsize * sizeof (mp_limb_t));
 
   /* copy the most significant limbs of u to {sp, rrsize} */
@@ -225,5 +225,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTN (expr >= MPFR_EMIN_MIN && expr <= MPFR_EMAX_MAX);
   MPFR_EXP (r) = expr;
   MPFR_TMP_FREE(marker);
+
   return mpfr_check_range (r, inexact, rnd_mode);
 }

@@ -695,15 +695,20 @@ tune_simple_func_in_some_direction (long int *threshold1,
 /************************************
  * Tune Mulders' mulhigh function   *
  ************************************/
-#define TOLERANCE 1.02
+#define TOLERANCE 1.00
+#define MULDERS_TABLE_SIZE 1024
 #ifndef MPFR_MULHIGH_SIZE
-# define MPFR_MULHIGH_SIZE 1024
+# define MPFR_MULHIGH_SIZE MULDERS_TABLE_SIZE
 #endif
 #ifndef MPFR_SQRHIGH_SIZE
-# define MPFR_SQRHIGH_SIZE 1024
+# define MPFR_SQRHIGH_SIZE MULDERS_TABLE_SIZE
+#endif
+#ifndef MPFR_DIVHIGH_SIZE
+# define MPFR_DIVHIGH_SIZE MULDERS_TABLE_SIZE
 #endif
 #define MPFR_MULHIGH_TAB_SIZE MPFR_MULHIGH_SIZE
 #define MPFR_SQRHIGH_TAB_SIZE MPFR_SQRHIGH_SIZE
+#define MPFR_DIVHIGH_TAB_SIZE MPFR_DIVHIGH_SIZE
 #include "mulders.c"
 
 static double
@@ -718,11 +723,17 @@ speed_mpfr_sqrhigh (struct speed_params *s)
   SPEED_ROUTINE_MPN_SQR (mpfr_sqrhigh_n);
 }
 
-#define MAX_STEPS 32 /* maximum number of values of k tried for a given n */
+static double
+speed_mpfr_divhigh (struct speed_params *s)
+{
+  SPEED_ROUTINE_MPN_DC_DIVREM_CALL (mpfr_divhigh_n (q, a, d, s->size));
+}
 
-/* Tune size N */
+#define MAX_STEPS 513 /* maximum number of values of k tried for a given n */
+
+/* Tune mpfr_mulhigh_n for size n */
 static mp_size_t
-tune_mulders_upto (mp_size_t n)
+tune_mul_mulders_upto (mp_size_t n)
 {
   struct speed_params s;
   mp_size_t k, kbest, step;
@@ -735,8 +746,8 @@ tune_mulders_upto (mp_size_t n)
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = n;
-  s.xp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
-  s.yp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
+  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.yp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 
@@ -767,7 +778,7 @@ tune_mulders_upto (mp_size_t n)
   return kbest;
 }
 
-/* Tune size N */
+/* Tune mpfr_sqrhigh_n for size n */
 static mp_size_t
 tune_sqr_mulders_upto (mp_size_t n)
 {
@@ -782,7 +793,7 @@ tune_sqr_mulders_upto (mp_size_t n)
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_wp = 64;
   s.size = n;
-  s.xp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
+  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
 
   /* Check k == -1, mpn_sqr_basecase */
@@ -812,8 +823,50 @@ tune_sqr_mulders_upto (mp_size_t n)
   return kbest;
 }
 
+/* Tune mpfr_divhigh_n for size n */
+static mp_size_t
+tune_div_mulders_upto (mp_size_t n)
+{
+  struct speed_params s;
+  mp_size_t k, kbest, step;
+  double t, tbest;
+  MPFR_TMP_DECL (marker);
+
+  if (n == 0)
+    return 0;
+
+  MPFR_TMP_MARK (marker);
+  s.align_xp = s.align_yp = s.align_wp = s.align_wp2 = 64;
+  s.size = n;
+  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.yp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  mpn_random (s.xp, n);
+  mpn_random (s.yp, n);
+
+  /* Check k == n, i.e., mpn_divrem */
+  divhigh_ktab[n] = n;
+  kbest = n;
+  tbest = speed_measure (speed_mpfr_divhigh, &s);
+
+  /* Check Mulders */
+  step = 1 + n / (2 * MAX_STEPS);
+  for (k = (n+1) / 2 ; k < n ; k += step)
+    {
+      divhigh_ktab[n] = k;
+      t =  speed_measure (speed_mpfr_divhigh, &s);
+      if (t * TOLERANCE < tbest)
+        kbest = k, tbest = t;
+    }
+
+  divhigh_ktab[n] = kbest;
+
+  MPFR_TMP_FREE (marker);
+  
+  return kbest;
+}
+
 static void
-tune_mulders (FILE *f)
+tune_mul_mulders (FILE *f)
 {
   mp_size_t k;
 
@@ -822,7 +875,7 @@ tune_mulders (FILE *f)
   fprintf (f, "#define MPFR_MULHIGH_TAB  \\\n ");
   for (k = 0 ; k < MPFR_MULHIGH_TAB_SIZE ; k++)
     {
-      fprintf (f, "%d", (int) tune_mulders_upto (k));
+      fprintf (f, "%d", (int) tune_mul_mulders_upto (k));
       if (k != MPFR_MULHIGH_TAB_SIZE-1)
         fputc (',', f);
       if ((k+1) % 16 == 0)
@@ -847,6 +900,29 @@ tune_sqr_mulders (FILE *f)
     {
       fprintf (f, "%d", (int) tune_sqr_mulders_upto (k));
       if (k != MPFR_SQRHIGH_TAB_SIZE-1)
+        fputc (',', f);
+      if ((k+1) % 16 == 0)
+        fprintf (f, " \\\n ");
+      if (verbose)
+        putchar ('.');
+    }
+  fprintf (f, " \n");
+  if (verbose)
+    putchar ('\n');
+}
+
+static void
+tune_div_mulders (FILE *f)
+{
+  mp_size_t k;
+
+  if (verbose)
+    printf ("Tuning mpfr_divhigh_n[%d]", (int) MPFR_DIVHIGH_TAB_SIZE);
+  fprintf (f, "#define MPFR_DIVHIGH_TAB  \\\n ");
+  for (k = 0 ; k < MPFR_DIVHIGH_TAB_SIZE ; k++)
+    {
+      fprintf (f, "%d", (int) tune_div_mulders_upto (k));
+      if (k != MPFR_DIVHIGH_TAB_SIZE - 1)
         fputc (',', f);
       if ((k+1) % 16 == 0)
         fprintf (f, " \\\n ");
@@ -945,10 +1021,13 @@ all (const char *filename)
   fprintf (f, "\n");
 
   /* Tune mulhigh */
-  tune_mulders (f);
+  tune_mul_mulders (f);
 
   /* Tune sqrhigh */
   tune_sqr_mulders (f);
+
+  /* Tune divhigh */
+  tune_div_mulders (f);
 
   /* Tune mpfr_mul (threshold is in limbs, but it doesn't matter too much) */
   if (verbose)

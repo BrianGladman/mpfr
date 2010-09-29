@@ -444,6 +444,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 	      }
             /* We will compute with one extra limb */
             n++;
+            /* ceil(log2(n+2)) takes into account the lost bits due to
+               Mulders' short product */
             p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (n + 2);
             /* Due to some nasty reasons we can have only 4 bits */
             MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
@@ -462,7 +464,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 	  mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
-        b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */
+        b1 = MPFR_LIMB_MSB(tmp[k-1]); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
            then their product is in (1/4, 1/2] with probability 2*ln(2)-1
@@ -474,7 +476,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         tmp += k - tn;
         MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
-        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p+b1-1, MPFR_PREC(a)
+        /* if the most significant bit b1 is zero, we have only p-1 correct
+           bits */
+        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1, MPFR_PREC(a)
                                           + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */

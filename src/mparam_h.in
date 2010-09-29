@@ -1413,6 +1413,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef MPFR_SQRHIGH_TAB
 # define MPFR_SQRHIGH_TAB -1,-1,-1,-1,-1,-1,-1,-1,0,0,0,0,0,0,0,0,0
 #endif
+#ifndef MPFR_DIVHIGH_TAB
+# define MPFR_DIVHIGH_TAB 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+#endif
 #ifndef MPFR_MUL_THRESHOLD
 # define MPFR_MUL_THRESHOLD 20 /* limbs */
 #endif
