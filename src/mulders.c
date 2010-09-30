@@ -37,7 +37,7 @@ static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
 #endif
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
-   of {up, n} * {vp, n}. The error is less than n ulps of rp[n]. */
+   of {up, n} * {vp, n}. The error is less than n-1 ulps of rp[n]. */
 static void
 mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
 {
@@ -53,7 +53,7 @@ mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
 }
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
-   of {np, n} * {mp, n}. The error is less than n ulps of rp[n]. */
+   of {np, n} * {mp, n}. The error is less than n-1 ulps of rp[n]. */
 void
 mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
@@ -65,7 +65,7 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n); /* result is exact, no error */
   else if (k == 0)
-    mpfr_mulhigh_n_basecase (rp, np, mp, n); /* basecase error < n ulps */
+    mpfr_mulhigh_n_basecase (rp, np, mp, n); /* basecase error < n-1 ulps */
   else if (n > MUL_FFT_THRESHOLD)
     mpn_mul_n (rp, np, mp, n); /* result is exact, no error */
   else
@@ -80,9 +80,11 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
       cy += mpn_add_n (rp + n - 1, rp + n - 1, rp + l - 1, l + 1);
       mpn_add_1 (rp + n + l, rp + n + l, k, cy); /* propagate carry */
       /* the neglected terms are in the two recursive calls to mpfr_mulhigh_n,
-         where in each case by induction the error is at most l ulps, thus
+         where in each case by induction the error is at most l-1 ulps, plus
+	 the two overlapping products {np, l} * {mp, k} and {np, k} * {mp, l},
+	 which are altogether bounded by B^n, thus 1 ulp each, thus
          the total error is at most 2l ulps. Since k > n/2, l < n/2 which
-         gives an error < n ulps. */
+         gives an error < n-1 ulps. */
     }
 }
 
@@ -165,7 +167,7 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   tp = MPFR_TMP_ALLOC (2 * l * sizeof (mp_limb_t));
   mpfr_mulhigh_n (tp, qp + k, dp, l);
   /* we are only interested in the upper l limbs from {tp,2l} */
-  cy = mpn_sub_n (np + k, np + k, tp, 2 * l);
+  cy = mpn_sub_n (np + n, np + n, tp + l, l);
   while (cy > 0) /* Q1 was too large: subtract 1 to Q1 and add D to np+l */
     {
       qh -= mpn_sub_1 (qp + l, qp + l, k, MPFR_LIMB_ONE);
