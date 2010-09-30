@@ -162,7 +162,7 @@ int verbose;
       unsigned  i;                                      \
       mp_ptr    wp;                                     \
       double    t;                                      \
-      mpfr_t    w, x;					\
+      mpfr_t    w, x;                                   \
       mp_size_t size;                                   \
       MPFR_TMP_DECL (marker);                           \
                                                         \
@@ -861,7 +861,7 @@ tune_div_mulders_upto (mp_size_t n)
   divhigh_ktab[n] = kbest;
 
   MPFR_TMP_FREE (marker);
-  
+
   return kbest;
 }
 

@@ -292,7 +292,7 @@ __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
   __MPFR_DECLSPEC mp_size_t __gmpn_rootrem _MPFR_PROTO ((mp_ptr, mp_ptr,
                                              mp_srcptr, mp_size_t, mp_limb_t));
 #endif
-#endif  
+#endif
 
 /* Temp memory allocate */
 

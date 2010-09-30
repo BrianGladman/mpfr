@@ -393,20 +393,20 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             MPFR_PREC (b_tmp) = bn * GMP_NUMB_BITS;
             MPFR_MANT (b_tmp) = bp;
 
-	    if (b != c)
-	      {
-		MPFR_SET_SAME_SIGN (c_tmp, c);
-		MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
-		MPFR_PREC (c_tmp) = cn * GMP_NUMB_BITS;
-		MPFR_MANT (c_tmp) = cp;
+            if (b != c)
+              {
+                MPFR_SET_SAME_SIGN (c_tmp, c);
+                MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
+                MPFR_PREC (c_tmp) = cn * GMP_NUMB_BITS;
+                MPFR_MANT (c_tmp) = cp;
 
-		/* Call again mpfr_mul with the fixed arguments */
-		return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
-	      }
-	    else
+                /* Call again mpfr_mul with the fixed arguments */
+                return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
+              }
+            else
               /* Call mpfr_mul instead of mpfr_sqr as the precision
                  is probably still high enough. */
-	      return mpfr_mul (a, b_tmp, b_tmp, rnd_mode);
+              return mpfr_mul (a, b_tmp, b_tmp, rnd_mode);
           }
 
         /* Compute estimated precision of mulhigh.
@@ -440,17 +440,17 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 bp[0] = 0;
                 MPN_COPY (bp + 1, MPFR_MANT (b) + bn - n, n);
               }
-	    if (b != c)
-	      {
-		if (cn > n)
-		  cp --; /* FIXME: Could this happen? */
-		else
-		  {
-		    cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
-		    cp[0] = 0;
-		    MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
-		  }
-	      }
+            if (b != c)
+              {
+                if (cn > n)
+                  cp --; /* FIXME: Could this happen? */
+                else
+                  {
+                    cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                    cp[0] = 0;
+                    MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
+                  }
+              }
             /* We will compute with one extra limb */
             n++;
             /* ceil(log2(n+2)) takes into account the lost bits due to
@@ -467,10 +467,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           }
         MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
         /* Compute an approximation of the product of b and c */
-	if (b != c)
-	  mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
-	else
-	  mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
+        if (b != c)
+          mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
+        else
+          mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
         b1 = MPFR_LIMB_MSB(tmp[k-1]); /* msb from the product */
