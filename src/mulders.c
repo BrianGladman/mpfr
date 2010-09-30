@@ -143,7 +143,6 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   mp_size_t k, l;
   mp_limb_t qh, cy;
   mp_ptr tp;
-  int count = 0;
   MPFR_TMP_DECL(marker);
 
   k = divhigh_ktab[n];
@@ -169,8 +168,6 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   cy = mpn_sub_n (np + k, np + k, tp, 2 * l);
   while (cy > 0) /* Q1 was too large: subtract 1 to Q1 and add D to np+l */
     {
-      if (count++ >= 2)
-        abort();
       qh -= mpn_sub_1 (qp + l, qp + l, k, MPFR_LIMB_ONE);
       cy -= mpn_add_n (np + l, np + l, dp, n);
     }
