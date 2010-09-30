@@ -202,6 +202,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 /* Multiply 2 mpfr_t */
 
+/* Note: mpfr_sqr will call mpfr_mul if bn > MPFR_SQR_THRESHOLD,
+   in order to use Mulders' mulhigh, which is handled only here
+   to avoid partial code duplication. There is some overhead due
+   to the additional tests, but slowdown should not be noticeable
+   as this code is not executed in very small precisions. */
+
 int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
@@ -345,7 +351,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
   else
-    /* Mulders' mulhigh. */
+    /* Mulders' mulhigh. This code can also be used via mpfr_sqr,
+       hence the tests b != c. */
     if (MPFR_UNLIKELY (bn > (threshold = b != c ?
                              MPFR_MUL_THRESHOLD : MPFR_SQR_THRESHOLD)))
       {
@@ -397,6 +404,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 		return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
 	      }
 	    else
+              /* Call mpfr_mul instead of mpfr_sqr as the precision
+                 is probably still high enough. */
 	      return mpfr_mul (a, b_tmp, b_tmp, rnd_mode);
           }
 
