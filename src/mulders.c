@@ -81,8 +81,8 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
       mpn_add_1 (rp + n + l, rp + n + l, k, cy); /* propagate carry */
       /* the neglected terms are in the two recursive calls to mpfr_mulhigh_n,
          where in each case by induction the error is at most l-1 ulps, plus
-	 the two overlapping products {np, l} * {mp, k} and {np, k} * {mp, l},
-	 which are altogether bounded by B^n, thus 1 ulp each, thus
+         the two overlapping products {np, l} * {mp, k} and {np, k} * {mp, l},
+         which are altogether bounded by B^n, thus 1 ulp each, thus
          the total error is at most 2l ulps. Since k > n/2, l < n/2 which
          gives an error < n-1 ulps. */
     }
