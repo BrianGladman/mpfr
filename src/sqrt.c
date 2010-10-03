@@ -92,7 +92,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
   rp0 = MPFR_MANT(r);
   rp = (sh < GMP_NUMB_BITS) ? rp0
-    : MPFR_TMP_ALLOC (rsize * sizeof (mp_limb_t));
+    : (mp_ptr) MPFR_TMP_ALLOC (rsize * sizeof (mp_limb_t));
   up = MPFR_MANT(u);
   sticky0 = MPFR_LIMB_ZERO; /* truncated part of input */
   sticky1 = MPFR_LIMB_ZERO; /* truncated part of rp[0] */
