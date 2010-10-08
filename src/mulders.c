@@ -150,7 +150,7 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   k = divhigh_ktab[n];
   MPFR_ASSERTD ((n+1)/2 <= k && k <= n); /* we should have n/2 <= k <= n */
 
-  /* for k=0, we use a full division (mpn_divrem) */
+  /* for k=n, we use a full division (mpn_divrem) */
 
   if (k == n)
     return mpn_divrem (qp, 0, np, 2 * n, dp, n);
