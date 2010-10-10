@@ -211,8 +211,8 @@ test_against_libc (void)
 #endif
 
 static void
-err (char *str, mp_size_t s, mpfr_t x, mpfr_t y, mpfr_prec_t p, mpfr_rnd_t r,
-     int trint, int inexact)
+err (const char *str, mp_size_t s, mpfr_t x, mpfr_t y, mpfr_prec_t p,
+     mpfr_rnd_t r, int trint, int inexact)
 {
   printf ("Error: %s\ns = %u, p = %u, r = %s, trint = %d, inexact = %d\nx = ",
           str, (unsigned int) s, (unsigned int) p, mpfr_print_rnd_mode (r),

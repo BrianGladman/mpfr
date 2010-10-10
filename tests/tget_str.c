@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check3 (char *d, mpfr_rnd_t rnd, char *res)
+check3 (const char *d, mpfr_rnd_t rnd, const char *res)
 {
   mpfr_t x;
   char *str;

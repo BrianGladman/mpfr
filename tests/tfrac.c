@@ -179,7 +179,7 @@ bug20090918 (void)
   mp_limb_t y0;
   int inexy, inexz;
   int r, i;
-  char *s[] = { "61680.352935791015625", "61680.999999" };
+  const char *s[] = { "61680.352935791015625", "61680.999999" };
   mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();

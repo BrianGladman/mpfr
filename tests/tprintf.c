@@ -66,7 +66,7 @@ const int prec_max_printf = 5000;
 int stdout_redirect;
 
 static void
-check (char *fmt, mpfr_t x)
+check (const char *fmt, mpfr_t x)
 {
   if (mpfr_printf (fmt, x) == -1)
     {
@@ -78,7 +78,7 @@ check (char *fmt, mpfr_t x)
 }
 
 static void
-check_vprintf (char *fmt, ...)
+check_vprintf (const char *fmt, ...)
 {
   va_list ap;
 
@@ -95,7 +95,7 @@ check_vprintf (char *fmt, ...)
 }
 
 static void
-check_vprintf_failure (char *fmt, ...)
+check_vprintf_failure (const char *fmt, ...)
 {
   va_list ap;
 
@@ -227,8 +227,10 @@ static void
 check_mixed (void)
 {
   int ch = 'a';
+#ifndef NPRINTF_HH
   signed char sch = -1;
   unsigned char uch = 1;
+#endif
   short sh = -1;
   unsigned short ush = 1;
   int i = -1;
@@ -238,9 +240,13 @@ check_mixed (void)
   unsigned long ulo = 1;
   float f = -1.25;
   double d = -1.25;
+#if !defined(NPRINTF_T) || !defined(NPRINTF_L)
   long double ld = -1.25;
+#endif
 
+#ifndef NPRINTF_T
   ptrdiff_t p = 1, saved_p;
+#endif
   size_t sz = 1;
 
   mpz_t mpz;

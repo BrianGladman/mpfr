@@ -733,7 +733,9 @@ mixed (void)
   int n1;
   int n2;
   int i = 121;
+#ifndef NPRINTF_L
   long double d = 1. / 31.;
+#endif
   mpf_t mpf;
   mpq_t mpq;
   mpz_t mpz;

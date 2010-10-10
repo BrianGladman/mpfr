@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 test_exact (void)
 {
-  char *val[] =
+  const char *val[] =
     { "@NaN@", "-@Inf@", "-2", "-1", "-0", "0", "1", "2", "@Inf@" };
   int sv = sizeof (val) / sizeof (*val);
   int i, j, k;

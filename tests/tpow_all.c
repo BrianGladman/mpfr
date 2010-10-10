@@ -43,7 +43,7 @@ static int all_cmpres_errors;
 /* Non-zero when extended exponent range */
 static int ext = 0;
 
-static char *val[] =
+static const char *val[] =
   { "min", "min+", "max", "@NaN@", "-@Inf@", "-4", "-3", "-2", "-1.5",
     "-1", "-0.5", "-0", "0", "0.5", "1", "1.5", "2", "3", "4", "@Inf@" };
 

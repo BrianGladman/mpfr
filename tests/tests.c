@@ -559,7 +559,7 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax)
    bad_cases functions. */
 static void
 test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
-         mpfr_rnd_t rnd, int test_one, char *name)
+         mpfr_rnd_t rnd, int test_one, const char *name)
 {
   mpfr_prec_t yprec = MPFR_PREC (y);
   mpfr_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
@@ -656,7 +656,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    and the ternary value is checked (it must be 0).
  */
 void
-data_check (char *f, int (*foo) (FLIST), char *name)
+data_check (const char *f, int (*foo) (FLIST), const char *name)
 {
   FILE *fp;
   int xprec, yprec;  /* not mpfr_prec_t because of the fscanf */
@@ -814,7 +814,7 @@ data_check (char *f, int (*foo) (FLIST), char *name)
  * pos, emin, emax: arguments for tests_default_random.
  */
 void
-bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
+bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
            int pos, mpfr_exp_t emin, mpfr_exp_t emax,
            mpfr_prec_t pymin, mpfr_prec_t pymax, mpfr_prec_t psup,
            int n)
