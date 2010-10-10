@@ -16,10 +16,18 @@ test ! -h "$DIR"
 svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
 cd "$DIR"
 autoreconf -i
-./configure --with-gmp="$GMP" --enable-assert=full \
---disable-shared --enable-thread-safe --enable-tests-timeout=60 \
-CC="$CC" CFLAGS="-Wall -Wmissing-prototypes -O2 -g -fstack-protector \
--D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
+# -Wmissing-prototypes is not valid for C++
+if [ "$CC" == "g++" ]; then
+   ./configure --with-gmp="$GMP" --enable-assert=full \
+   --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
+   CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector \
+   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
+else
+   ./configure --with-gmp="$GMP" --enable-assert=full \
+   --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
+   CC="$CC" CFLAGS="-Wall -Wmissing-prototypes -O2 -g -fstack-protector \
+   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
+fi
 make
 export GMP_CHECK_RANDOMIZE=1
 export MPFR_CHECK_MAX=1
