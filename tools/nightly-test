@@ -17,10 +17,11 @@ svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
 cd "$DIR"
 autoreconf -i
 # -Wmissing-prototypes is not valid for C++
+# add -Wno-sign-conversion because of a bug in g++
 if [ "$CC" == "g++" ]; then
    ./configure --with-gmp="$GMP" --enable-assert=full \
    --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
-   CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector \
+   CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector -Wno-sign-compare \
    -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
 else
    ./configure --with-gmp="$GMP" --enable-assert=full \
