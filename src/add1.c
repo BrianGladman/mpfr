@@ -71,6 +71,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
   /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
+  /* Note: exponents can be negative, but the unsigned subtraction is
+     a modular subtraction, so that one gets the correct result. */
   diff_exp = (mpfr_uexp_t) exp - MPFR_GET_EXP(c);
 
   /*
@@ -93,7 +95,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   rb = fb = -1; /* means: not initialized */
 
-  if (MPFR_UNLIKELY((mpfr_uexp_t) aq2 <= diff_exp))
+  if (MPFR_UNLIKELY (MPFR_UEXP (aq2) <= diff_exp))
     { /* c does not overlap with a' */
       if (MPFR_UNLIKELY(an > bn))
         { /* a has more limbs than b */
@@ -423,7 +425,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             rb = 0;
           fb = 0;
         }
-      else if (diff_exp > (mpfr_uexp_t) aq2)
+      else if (diff_exp > MPFR_UEXP (aq2))
         { /* b is followed by at least a zero bit, then by c */
           if (rb < 0)
             rb = 0;

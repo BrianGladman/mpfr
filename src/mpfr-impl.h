@@ -624,6 +624,10 @@ typedef unsigned long int  mpfr_uexp_t;
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
+/* Before doing a cast to mpfr_uexp_t, make sure that the value is
+   nonnegative. */
+#define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
+
 #if MPFR_EXP_MIN >= LONG_MIN && MPFR_EXP_MAX <= LONG_MAX
 typedef long int mpfr_eexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
