@@ -93,7 +93,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   rb = fb = -1; /* means: not initialized */
 
-  if (MPFR_UNLIKELY(aq2 <= diff_exp))
+  if (MPFR_UNLIKELY((mpfr_uexp_t) aq2 <= diff_exp))
     { /* c does not overlap with a' */
       if (MPFR_UNLIKELY(an > bn))
         { /* a has more limbs than b */
@@ -423,7 +423,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             rb = 0;
           fb = 0;
         }
-      else if (diff_exp > aq2)
+      else if (diff_exp > (mpfr_uexp_t) aq2)
         { /* b is followed by at least a zero bit, then by c */
           if (rb < 0)
             rb = 0;
