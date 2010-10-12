@@ -1110,7 +1110,7 @@ all (const char *filename)
   mpfr_div (tmp1, tmp1, x3, MPFR_RNDN);
   mpfr_ai_threshold3 = mpfr_get_si (tmp1, MPFR_RNDN);
 
-  fprintf (f, "#define MPFR_AI_THRESHOLD1 %ld\n", mpfr_ai_threshold1);
+  fprintf (f, "#define MPFR_AI_THRESHOLD1 %ld /* threshold for negative input of mpfr_ai */\n", mpfr_ai_threshold1);
   fprintf (f, "#define MPFR_AI_THRESHOLD2 %ld\n", mpfr_ai_threshold2);
   fprintf (f, "#define MPFR_AI_THRESHOLD3 %ld\n", mpfr_ai_threshold3);
 
