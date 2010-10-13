@@ -345,6 +345,8 @@ domeasure (mpfr_prec_t *threshold,
   mpn_random (s.yp, size);
   *threshold = MPFR_PREC_MAX;
   t1 = speed_measure (func, &s);
+  if (t1 == -1.0) /* try again */
+    t1 = speed_measure (func, &s);
   if (t1 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 1!\n");
@@ -352,6 +354,8 @@ domeasure (mpfr_prec_t *threshold,
     }
   *threshold = 1;
   t2 = speed_measure (func, &s);
+  if (t2 == -1.0) /* try again */
+    t2 = speed_measure (func, &s);
   if (t2 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 2!\n");
@@ -414,6 +418,8 @@ domeasure2 (long int *threshold1, long int *threshold2, long int *threshold3,
   *threshold2 = 0;
   *threshold3 = 0;
   t1 = speed_measure (func, &s);
+  if (t1 == -1.0) /* try again */
+    t1 = speed_measure (func, &s);
   if (t1 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 1!\n");
@@ -426,6 +432,8 @@ domeasure2 (long int *threshold1, long int *threshold2, long int *threshold3,
     *threshold3 = INT_MAX;
   *threshold2 = INT_MAX;
   t2 = speed_measure (func, &s);
+  if (t2 == -1.0) /* try again */
+    t2 = speed_measure (func, &s);
   if (t2 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 2!\n");
@@ -755,10 +763,24 @@ tune_mul_mulders_upto (mp_size_t n)
   mulhigh_ktab[n] = -1;
   kbest = -1;
   tbest =  speed_measure (speed_mpfr_mulhigh, &s);
+  if (tbest == -1.0) /* try again */
+    tbest =  speed_measure (speed_mpfr_mulhigh, &s);
+  if (tbest == -1.0)
+    {
+      fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
+      abort ();
+    }
 
   /* Check k == 0, mpn_mulhigh_n_basecase */
   mulhigh_ktab[n] = 0;
   t = speed_measure (speed_mpfr_mulhigh, &s);
+  if (t == -1.0)
+    t = speed_measure (speed_mpfr_mulhigh, &s);
+  if (t == -1.0)
+    {
+      fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
+      abort ();
+    }
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
@@ -768,6 +790,13 @@ tune_mul_mulders_upto (mp_size_t n)
     {
       mulhigh_ktab[n] = k;
       t =  speed_measure (speed_mpfr_mulhigh, &s);
+      if (t == -1.0)
+	t =  speed_measure (speed_mpfr_mulhigh, &s);
+      if (t == -1.0)
+	{
+	  fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
+	  abort ();
+	}
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
@@ -800,10 +829,24 @@ tune_sqr_mulders_upto (mp_size_t n)
   sqrhigh_ktab[n] = -1;
   kbest = -1;
   tbest =  speed_measure (speed_mpfr_sqrhigh, &s);
+  if (tbest == -1.0)
+    tbest =  speed_measure (speed_mpfr_sqrhigh, &s);
+  if (tbest == -1.0)
+    {
+      fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
+      abort ();
+    }
 
   /* Check k == 0, mpfr_mulhigh_n_basecase */
   sqrhigh_ktab[n] = 0;
   t = speed_measure (speed_mpfr_sqrhigh, &s);
+  if (t == -1.0)
+    t =  speed_measure (speed_mpfr_sqrhigh, &s);
+  if (t == -1.0)
+    {
+      fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
+      abort ();
+    }
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
@@ -813,6 +856,13 @@ tune_sqr_mulders_upto (mp_size_t n)
     {
       sqrhigh_ktab[n] = k;
       t =  speed_measure (speed_mpfr_sqrhigh, &s);
+      if (t == -1.0)
+	t =  speed_measure (speed_mpfr_sqrhigh, &s);
+      if (t == -1.0)
+	{
+	  fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
+	  abort ();
+	}
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
@@ -847,6 +897,13 @@ tune_div_mulders_upto (mp_size_t n)
   divhigh_ktab[n] = n;
   kbest = n;
   tbest = speed_measure (speed_mpfr_divhigh, &s);
+  if (tbest == -1.0)
+    tbest =  speed_measure (speed_mpfr_divhigh, &s);
+  if (tbest == -1.0)
+    {
+      fprintf (stderr, "Failed to measure mpfr_divhigh!\n");
+      abort ();
+    }
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
@@ -854,6 +911,13 @@ tune_div_mulders_upto (mp_size_t n)
     {
       divhigh_ktab[n] = k;
       t =  speed_measure (speed_mpfr_divhigh, &s);
+      if (t == -1.0)
+	t =  speed_measure (speed_mpfr_divhigh, &s);
+      if (t == -1.0)
+	{
+	  fprintf (stderr, "Failed to measure mpfr_divhigh!\n");
+	  abort ();
+	}
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
