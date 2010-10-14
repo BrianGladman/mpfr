@@ -320,6 +320,25 @@ analyze_data (double *dat, int ndat)
   return min_j;
 }
 
+static double
+mpfr_speed_measure (speed_function_t fun, struct speed_params *s, char *m)
+{
+  double t = -1.0;
+  int i;
+  
+  for (i = 0; i < 1 && t == -1.0; i++)
+    t = speed_measure (fun, s);
+  if (t == -1.0)
+    {
+      fprintf (stderr, "Failed to measure %s!\n", m);
+      fprintf (stderr, "If CPU frequency scaling is enabled, please disable it:\n");
+      fprintf (stderr, "   under Linux: cpufreq-selector -g performance\n");
+      fprintf (stderr, "On a multi-core processor, you might also try to load all the cores\n");
+      abort ();
+    }
+  return t;
+}
+
 #define THRESHOLD_WINDOW 16
 #define THRESHOLD_FINAL_WINDOW 128
 static double
@@ -344,23 +363,9 @@ domeasure (mpfr_prec_t *threshold,
   s.yp = s.xp + size;
   mpn_random (s.yp, size);
   *threshold = MPFR_PREC_MAX;
-  t1 = speed_measure (func, &s);
-  if (t1 == -1.0) /* try again */
-    t1 = speed_measure (func, &s);
-  if (t1 == -1.0)
-    {
-      fprintf (stderr, "Failed to measure function 1!\n");
-      abort ();
-    }
+  t1 = mpfr_speed_measure (func, &s, "1");
   *threshold = 1;
-  t2 = speed_measure (func, &s);
-  if (t2 == -1.0) /* try again */
-    t2 = speed_measure (func, &s);
-  if (t2 == -1.0)
-    {
-      fprintf (stderr, "Failed to measure function 2!\n");
-      abort ();
-    }
+  t2 = mpfr_speed_measure (func, &s, "2");
   free (s.xp);
   /* t1 is the time of the first algo (used for low prec) */
   if (t2 >= t1)
@@ -417,28 +422,14 @@ domeasure2 (long int *threshold1, long int *threshold2, long int *threshold3,
   *threshold1 = 0;
   *threshold2 = 0;
   *threshold3 = 0;
-  t1 = speed_measure (func, &s);
-  if (t1 == -1.0) /* try again */
-    t1 = speed_measure (func, &s);
-  if (t1 == -1.0)
-    {
-      fprintf (stderr, "Failed to measure function 1!\n");
-      abort ();
-    }
+  t1 = mpfr_speed_measure (func, &s, "1");
 
   if (MPFR_IS_NEG (x))
     *threshold1 = INT_MIN;
   else
     *threshold3 = INT_MAX;
   *threshold2 = INT_MAX;
-  t2 = speed_measure (func, &s);
-  if (t2 == -1.0) /* try again */
-    t2 = speed_measure (func, &s);
-  if (t2 == -1.0)
-    {
-      fprintf (stderr, "Failed to measure function 2!\n");
-      abort ();
-    }
+  t2 = mpfr_speed_measure (func, &s, "2");
 
   /* t1 is the time of the first algo (used for low prec) */
   if (t2 >= t1)
@@ -762,25 +753,11 @@ tune_mul_mulders_upto (mp_size_t n)
   /* Check k == -1, mpn_mul_basecase */
   mulhigh_ktab[n] = -1;
   kbest = -1;
-  tbest =  speed_measure (speed_mpfr_mulhigh, &s);
-  if (tbest == -1.0) /* try again */
-    tbest =  speed_measure (speed_mpfr_mulhigh, &s);
-  if (tbest == -1.0)
-    {
-      fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
-      abort ();
-    }
+  tbest = mpfr_speed_measure (speed_mpfr_mulhigh, &s, "mpfr_mulhigh");
 
   /* Check k == 0, mpn_mulhigh_n_basecase */
   mulhigh_ktab[n] = 0;
-  t = speed_measure (speed_mpfr_mulhigh, &s);
-  if (t == -1.0)
-    t = speed_measure (speed_mpfr_mulhigh, &s);
-  if (t == -1.0)
-    {
-      fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
-      abort ();
-    }
+  t = mpfr_speed_measure (speed_mpfr_mulhigh, &s, "mpfr_mulhigh");
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
@@ -789,14 +766,7 @@ tune_mul_mulders_upto (mp_size_t n)
   for (k = n / 2 + 1 ; k < n ; k += step)
     {
       mulhigh_ktab[n] = k;
-      t =  speed_measure (speed_mpfr_mulhigh, &s);
-      if (t == -1.0)
-	t =  speed_measure (speed_mpfr_mulhigh, &s);
-      if (t == -1.0)
-	{
-	  fprintf (stderr, "Failed to measure mpfr_mulhigh!\n");
-	  abort ();
-	}
+      t = mpfr_speed_measure (speed_mpfr_mulhigh, &s, "mpfr_mulhigh");
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
@@ -828,25 +798,11 @@ tune_sqr_mulders_upto (mp_size_t n)
   /* Check k == -1, mpn_sqr_basecase */
   sqrhigh_ktab[n] = -1;
   kbest = -1;
-  tbest =  speed_measure (speed_mpfr_sqrhigh, &s);
-  if (tbest == -1.0)
-    tbest =  speed_measure (speed_mpfr_sqrhigh, &s);
-  if (tbest == -1.0)
-    {
-      fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
-      abort ();
-    }
+  tbest = mpfr_speed_measure (speed_mpfr_sqrhigh, &s, "mpfr_sqrhigh");
 
   /* Check k == 0, mpfr_mulhigh_n_basecase */
   sqrhigh_ktab[n] = 0;
-  t = speed_measure (speed_mpfr_sqrhigh, &s);
-  if (t == -1.0)
-    t =  speed_measure (speed_mpfr_sqrhigh, &s);
-  if (t == -1.0)
-    {
-      fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
-      abort ();
-    }
+  t = mpfr_speed_measure (speed_mpfr_sqrhigh, &s, "mpfr_sqrhigh");
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
@@ -855,14 +811,7 @@ tune_sqr_mulders_upto (mp_size_t n)
   for (k = n / 2 + 1 ; k < n ; k += step)
     {
       sqrhigh_ktab[n] = k;
-      t =  speed_measure (speed_mpfr_sqrhigh, &s);
-      if (t == -1.0)
-	t =  speed_measure (speed_mpfr_sqrhigh, &s);
-      if (t == -1.0)
-	{
-	  fprintf (stderr, "Failed to measure mpfr_sqrhigh!\n");
-	  abort ();
-	}
+      t = mpfr_speed_measure (speed_mpfr_sqrhigh, &s, "mpfr_sqrhigh");
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
@@ -896,28 +845,15 @@ tune_div_mulders_upto (mp_size_t n)
   /* Check k == n, i.e., mpn_divrem */
   divhigh_ktab[n] = n;
   kbest = n;
-  tbest = speed_measure (speed_mpfr_divhigh, &s);
-  if (tbest == -1.0)
-    tbest =  speed_measure (speed_mpfr_divhigh, &s);
-  if (tbest == -1.0)
-    {
-      fprintf (stderr, "Failed to measure mpfr_divhigh!\n");
-      abort ();
-    }
+  tbest = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
   for (k = (n+1) / 2 ; k < n ; k += step)
+    // for (k = 1; k < n; k += step)
     {
       divhigh_ktab[n] = k;
-      t =  speed_measure (speed_mpfr_divhigh, &s);
-      if (t == -1.0)
-	t =  speed_measure (speed_mpfr_divhigh, &s);
-      if (t == -1.0)
-	{
-	  fprintf (stderr, "Failed to measure mpfr_divhigh!\n");
-	  abort ();
-	}
+      t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
       if (t * TOLERANCE < tbest)
         kbest = k, tbest = t;
     }
