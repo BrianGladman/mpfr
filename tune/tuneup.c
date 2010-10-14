@@ -325,8 +325,8 @@ mpfr_speed_measure (speed_function_t fun, struct speed_params *s, char *m)
 {
   double t = -1.0;
   int i;
-  
-  for (i = 0; i < 1 && t == -1.0; i++)
+  int number_of_iterations = 5;
+  for (i = 0; i < number_of_iterations && t == -1.0; i++)
     t = speed_measure (fun, s);
   if (t == -1.0)
     {
@@ -363,9 +363,9 @@ domeasure (mpfr_prec_t *threshold,
   s.yp = s.xp + size;
   mpn_random (s.yp, size);
   *threshold = MPFR_PREC_MAX;
-  t1 = mpfr_speed_measure (func, &s, "1");
+  t1 = mpfr_speed_measure (func, &s, "function 1");
   *threshold = 1;
-  t2 = mpfr_speed_measure (func, &s, "2");
+  t2 = mpfr_speed_measure (func, &s, "function 2");
   free (s.xp);
   /* t1 is the time of the first algo (used for low prec) */
   if (t2 >= t1)
