@@ -42,3 +42,12 @@ mpfr_buildopt_decimal_p (void)
   return 0;
 #endif
 }
+
+const char *mpfr_buildopt_tune_case (void)
+{
+#ifdef MPFR_TUNE_CASE
+  return MPFR_TUNE_CASE;
+#else
+  return "Generic thresholds";
+#endif
+}

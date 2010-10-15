@@ -326,8 +326,15 @@ mpfr_speed_measure (speed_function_t fun, struct speed_params *s, char *m)
   double t = -1.0;
   int i;
   int number_of_iterations = 5;
-  for (i = 0; i < number_of_iterations && t == -1.0; i++)
-    t = speed_measure (fun, s);
+  for (i = 1; i <= number_of_iterations && t == -1.0; i++)
+    {
+      t = speed_measure (fun, s);
+      if ( (t == -1.0) && (i+1 <= number_of_iterations) )
+        {
+          printf("speed_measure failed. Trying again... (%d/%d)\n",
+                 i+1, number_of_iterations);
+        }
+    }
   if (t == -1.0)
     {
       fprintf (stderr, "Failed to measure %s!\n", m);
@@ -422,14 +429,14 @@ domeasure2 (long int *threshold1, long int *threshold2, long int *threshold3,
   *threshold1 = 0;
   *threshold2 = 0;
   *threshold3 = 0;
-  t1 = mpfr_speed_measure (func, &s, "1");
+  t1 = mpfr_speed_measure (func, &s, "function 1");
 
   if (MPFR_IS_NEG (x))
     *threshold1 = INT_MIN;
   else
     *threshold3 = INT_MAX;
   *threshold2 = INT_MAX;
-  t2 = mpfr_speed_measure (func, &s, "2");
+  t2 = mpfr_speed_measure (func, &s, "function 2");
 
   /* t1 is the time of the first algo (used for low prec) */
   if (t2 >= t1)
@@ -1018,7 +1025,8 @@ all (const char *filename)
 #else
   fprintf (f, "system compiler */\n");
 #endif
-  fprintf (f, "\n");
+  fprintf (f, "\n\n");
+  fprintf (f, "#define MPFR_TUNE_CASE \"Tuned with 'make tune'\"\n");
 
   /* Tune mulhigh */
   tune_mul_mulders (f);
