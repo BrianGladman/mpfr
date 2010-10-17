@@ -2196,7 +2196,7 @@ one of the following characters:
 @item @samp{D}  @tab round toward minus infinity
 @item @samp{Y}  @tab round away from zero
 @item @samp{Z}  @tab round toward zero
-@item @samp{N}  @tab round to nearest
+@item @samp{N}  @tab round to nearest (with ties to even)
 @item @samp{*}  @tab rounding mode indicated by the @code{mpfr_rnd_t} argument
 just before the corresponding @code{mpfr_t} variable.
 @end multitable
