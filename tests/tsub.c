@@ -201,6 +201,8 @@ check_diverse (void)
   if (mpfr_cmp (z, x))
     {
       printf ("Error in mpfr_sub (2)\n");
+      printf ("Expected "); mpfr_print_binary (x); puts ("");
+      printf ("Got      "); mpfr_print_binary (z); puts ("");
       exit (1);
     }
   mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");

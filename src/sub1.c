@@ -198,7 +198,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
 #ifdef DEBUG
-  printf ("shift_b=%d shift_c=%d diffexp=%lu\n", shift_b, shift_c,
+  printf ("rnd=%s shift_b=%d shift_c=%d diffexp=%lu\n",
+          mpfr_print_rnd_mode (rnd_mode), shift_b, shift_c,
           (unsigned long) diff_exp);
 #endif
 
@@ -347,7 +348,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn -= (long int) an + cancel2;
 
 #ifdef DEBUG
-  printf ("last %d bits from a are %lu, bn=%ld, cn=%ld\n",
+  printf ("last sh=%d bits from a are %lu, bn=%ld, cn=%ld\n",
           sh, (unsigned long) carry, (long) bn, (long) cn);
 #endif
 
@@ -382,7 +383,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* cmp_low compares low(b) and low(c) */
       if (cmp_low == 0)
-        cmp_low = (bb < cc) ? -1 : (bb > cc) ? 1 : 0;
+        cmp_low = (bb < cc) ? -2+k : (bb > cc) ? 1 : 0;
 
       /* the case rounding to nearest with sh=0 is special since one couldn't
          subtract above 1/2 ulp in the trailing limb of the result */
@@ -404,7 +405,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* we have to subtract one ulp if bb < cc,
                  and truncate if bb > cc */
             }
-          else /* bb >= cc */
+          else if (cmp_low >= 0) /* bb >= cc */
             {
               if (cc < half)
                 cc += half;
@@ -435,9 +436,18 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                  whatever the value of sh.
                  If sh>0, then cmp_low < 0 implies that the initial neglected
                  sh bits were 0 (otherwise cmp_low=2 initially), thus the
-                 weight of the new bits is less than 0.5 ulp too. */
-              if (bb > cc || sh > 0) /* -0.5 ulp < low(b)-low(c) < 0 */
-                {
+                 weight of the new bits is less than 0.5 ulp too.
+                 If k > 0 (and sh=0) this means that either the first neglected
+                 limbs bb and cc were equal (thus cmp_low was 0 for k=0),
+                 or we had bb - cc = -0.5 ulp or 0.5 ulp.
+                 The last case is not possible here since we would have
+                 cmp_low > 0 which is sticky.
+                 In the first case (where we have cmp_low = -1), we truncate,
+                 whereas in the 2nd case we have cmp_low = -2 and we subtract
+                 one ulp.
+              */
+              if (bb > cc || sh > 0 || cmp_low == -1)
+                {  /* -0.5 ulp < low(b)-low(c) < 0 */
                   inexact = 1;
                   goto truncate;
                 }
