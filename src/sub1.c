@@ -37,7 +37,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t carry, bb, cc, borrow = 0;
-  int inexact, shift_b, shift_c, add_exp = 0; 
+  int inexact, shift_b, shift_c, add_exp = 0;
   int cmp_low = 0; /* used for rounding to nearest: 0 if low(b) = low(c),
                       negative if low(b) < low(c), positive if low(b)>low(c) */
   int sh, k;
@@ -370,7 +370,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   for (k = 0; (bn > 0) || (cn > 0); k = 1)
     {
       /* if cmp_low < 0, we know low(b) - low(c) < 0
-         if cmp_low > 0, we know low(b) - low(c) > 0 
+         if cmp_low > 0, we know low(b) - low(c) > 0
             (more precisely if cmp_low = 2, low(b) - low(c) = 0.5 ulp so far)
          if cmp_low = 0, so far low(b) - low(c) = 0 */
 
