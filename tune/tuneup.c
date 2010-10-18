@@ -331,8 +331,8 @@ mpfr_speed_measure (speed_function_t fun, struct speed_params *s, char *m)
       t = speed_measure (fun, s);
       if ( (t == -1.0) && (i+1 <= number_of_iterations) )
         {
-          printf("speed_measure failed. Trying again... (%d/%d)\n",
-                 i+1, number_of_iterations);
+          printf("speed_measure failed for size %lu. Trying again... (%d/%d)\n",
+                 s->size, i+1, number_of_iterations);
         }
     }
   if (t == -1.0)
