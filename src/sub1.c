@@ -37,7 +37,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t carry, bb, cc, borrow = 0;
-  int inexact, shift_b, shift_c, is_exact = 1, down = 0, add_exp = 0;
+  int inexact, shift_b, shift_c, add_exp = 0; 
+  int cmp_low = 0; /* used for rounding to nearest: 0 if low(b) = low(c),
+                      negative if low(b) < low(c), positive if low(b)>low(c) */
   int sh, k;
   MPFR_TMP_DECL(marker);
 
@@ -307,17 +309,18 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
       if (MPFR_LIKELY(sh))
         {
-          is_exact = (carry == 0);
           /* can decide except when carry = 2^(sh-1) [middle]
              or carry = 0 [truncate, but cannot decide inexact flag] */
-          down = (carry < (MPFR_LIMB_ONE << (sh - 1)));
           if (carry > (MPFR_LIMB_ONE << (sh - 1)))
             goto add_one_ulp;
-          else if ((0 < carry) && down)
+          else if ((0 < carry) && (carry < (MPFR_LIMB_ONE << (sh - 1))))
             {
               inexact = -1; /* result if smaller than exact value */
               goto truncate;
             }
+          /* now carry = 2^(sh-1), in which case cmp_low=2,
+             or carry = 0, in which case cmp_low=0 */
+          cmp_low = (carry == 0) ? 0 : 2;
         }
     }
   else /* directed rounding: set rnd_mode to RNDZ iff toward zero */
@@ -348,8 +351,28 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           sh, (unsigned long) carry, (long) bn, (long) cn);
 #endif
 
+  /* for rounding to nearest, we couldn't conclude up to here in the following
+     cases:
+     (1) sh = 0, then cmp_low=0: we can either truncate, subtract one ulp
+         or add one ulp: -1 ulp < low(b)-low(c) < 1 ulp
+     (2) sh > 0 but the low sh bits from high(b)-high(c) equal 2^(sh-1):
+         -0.5 ulp <= -1/2^sh < low(b)-low(c)-0.5 < 1/2^sh <= 0.5 ulp
+        we can't decide the rounding, in that case cmp_low=2:
+        either we truncate and flag=-1, or we add one ulp and flag=1
+     (3) the low sh>0 bits from high(b)-high(c) equal 0: we know we have to
+         truncate but we can't decide the ternary value, here cmp_low=0:
+         -0.5 ulp <= -1/2^sh < low(b)-low(c) < 1/2^sh <= 0.5 ulp
+         we always truncate and inexact can be any of -1,0,1
+  */
+
+  /* note: here cn might exceed cn0, in which case we consider a zero limb */
   for (k = 0; (bn > 0) || (cn > 0); k = 1)
     {
+      /* if cmp_low < 0, we know low(b) - low(c) < 0
+         if cmp_low > 0, we know low(b) - low(c) > 0 
+            (more precisely if cmp_low = 2, low(b) - low(c) = 0.5 ulp so far)
+         if cmp_low = 0, so far low(b) - low(c) = 0 */
+
       /* get next limbs */
       bb = (bn > 0) ? bp[--bn] : 0;
       if ((cn > 0) && (cn-- <= cn0))
@@ -357,76 +380,78 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       else
         cc = 0;
 
-      /* down is set when low(b) < low(c) */
-      if (down == 0)
-        down = (bb < cc);
+      /* cmp_low compares low(b) and low(c) */
+      if (cmp_low == 0)
+        cmp_low = (bb < cc) ? -1 : (bb > cc) ? 1 : 0;
 
       /* the case rounding to nearest with sh=0 is special since one couldn't
          subtract above 1/2 ulp in the trailing limb of the result */
-      if ((rnd_mode == MPFR_RNDN) && sh == 0 && k == 0)
+      if (rnd_mode == MPFR_RNDN && sh == 0 && k == 0)
         {
           mp_limb_t half = MPFR_LIMB_HIGHBIT;
-
-          is_exact = (bb == cc);
 
           /* add one ulp if bb > cc + half
              truncate if cc - half < bb < cc + half
              sub one ulp if bb < cc - half
           */
 
-          if (down)
+          if (cmp_low < 0) /* bb < cc: -1 ulp < low(b) - low(c) < 0 */
             {
               if (cc >= half)
                 cc -= half;
-              else
+              else /* since bb < cc < half, bb+half < 2*half */
                 bb += half;
+              /* we have to subtract one ulp if bb < cc,
+                 and truncate if bb > cc */
             }
           else /* bb >= cc */
             {
               if (cc < half)
                 cc += half;
-              else
+              else /* since bb >= cc >= half, bb - half >= 0 */
                 bb -= half;
+              /* we have to add one ulp if bb > cc,
+                 and truncate if bb < cc */
             }
         }
 
 #ifdef DEBUG
-      printf ("    bb=%lu cc=%lu down=%d is_exact=%d\n",
-              (unsigned long) bb, (unsigned long) cc, down, is_exact);
+      printf ("k=%u bb=%lu cc=%lu cmp_low=%d\n", k,
+              (unsigned long) bb, (unsigned long) cc, cmp_low);
 #endif
-      if (bb < cc)
+      if (cmp_low < 0) /* low(b) - low(c) < 0: either truncate or subtract
+                          one ulp */
         {
           if (rnd_mode == MPFR_RNDZ)
-            goto sub_one_ulp;
+            goto sub_one_ulp; /* set inexact=-1 */
           else if (rnd_mode != MPFR_RNDN) /* round away */
             {
               inexact = 1;
               goto truncate;
             }
-          else /* round to nearest: special case here since for sh=k=0
-                  bb = bb0 - MPFR_LIMB_HIGHBIT */
+          else /* round to nearest */
             {
-              if (is_exact && sh == 0)
+              /* If cmp_low < 0 and bb > cc, then -0.5 ulp < low(b)-low(c) < 0,
+                 whatever the value of sh.
+                 If sh>0, then cmp_low < 0 implies that the initial neglected
+                 sh bits were 0 (otherwise cmp_low=2 initially), thus the
+                 weight of the new bits is less than 0.5 ulp too. */
+              if (bb > cc || sh > 0) /* -0.5 ulp < low(b)-low(c) < 0 */
                 {
-                  /* For k=0 we can't decide exactness since it may depend
-                     from low order bits.
-                     For k=1, the first low limbs matched: low(b)-low(c)<0. */
-                  if (k)
-                    {
-                      inexact = 1;
-                      goto truncate;
-                    }
-                }
-              else if (down && sh == 0)
-                goto sub_one_ulp;
-              else
-                {
-                  inexact = (is_exact) ? 1 : -1;
+                  inexact = 1;
                   goto truncate;
                 }
+              else if (bb < cc) /* here sh = 0 and low(b)-low(c) < -0.5 ulp */
+                goto sub_one_ulp;
+              /* the only case where we can't conclude is sh=0 and bb=cc,
+                 i.e., we have low(b) - low(c) = -0.5 ulp (up to now), thus
+                 we don't know if we must truncate or subtract one ulp.
+                 Note: for sh=0 we can't have low(b) - low(c) = -0.5 ulp up to
+                 now, since low(b) - low(c) > 1/2^sh */
             }
         }
-      else if (bb > cc)
+      else if (cmp_low > 0) /* 0 < low(b) - low(c): either truncate or
+                               add one ulp */
         {
           if (rnd_mode == MPFR_RNDZ)
             {
@@ -437,34 +462,45 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             goto add_one_ulp;
           else /* round to nearest */
             {
-              if (is_exact)
+              if (bb > cc)
+                {
+                  /* if sh=0, then bb>cc means that low(b)-low(c) > 0.5 ulp,
+                     and similarly when cmp_low=2 */
+                  if (sh == 0 || cmp_low == 2)
+                    goto add_one_ulp;
+                  /* sh > 0 and cmp_low = 1: this implies that the sh initial
+                     neglected bits were 0, and the remaining low(b)-low(c)>0,
+                     but its weight is less than 0.5 ulp */
+                  else /* 0 < low(b) - low(c) < 0.5 ulp */
+                    {
+                      inexact = -1;
+                      goto truncate;
+                    }
+                }
+              else if (bb < cc) /* 0 < low(b) - low(c) < 0.5 ulp */
                 {
                   inexact = -1;
                   goto truncate;
                 }
-              else if (down)
-                {
-                  inexact = 1;
-                  goto truncate;
-                }
-              else
-                goto add_one_ulp;
+              /* the only case where we can't conclude is bb=cc, i.e.,
+                 low(b) - low(c) = 0.5 ulp (up to now), thus we don't know
+                 if we must truncate or add one ulp. */
             }
         }
     }
 
-  if ((rnd_mode == MPFR_RNDN) && !is_exact)
+  if ((rnd_mode == MPFR_RNDN) && cmp_low != 0)
     {
       /* even rounding rule */
       if ((ap[0] >> sh) & 1)
         {
-          if (down)
+          if (cmp_low < 0)
             goto sub_one_ulp;
           else
             goto add_one_ulp;
         }
       else
-        inexact = (down) ? 1 : -1;
+        inexact = (cmp_low > 0) ? -1 : 1;
     }
   else
     inexact = 0;
