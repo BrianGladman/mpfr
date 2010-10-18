@@ -478,6 +478,55 @@ check_inexact (void)
   mpfr_clear (u);
 }
 
+/* Bug found by Jakub Jelinek
+   http://bugzilla.redhat.com/643657
+   https://gforge.inria.fr/tracker/index.php?func=detail&aid=11301&group_id=136&atid=619
+*/
+static void
+bug20101017 (void)
+{
+  mpfr_t a, b, c;
+  int inex;
+  int i;
+
+  mpfr_init2 (a, GMP_NUMB_BITS * 2);
+  mpfr_init2 (b, GMP_NUMB_BITS);
+  mpfr_init2 (c, GMP_NUMB_BITS);
+
+  /* a = 2^(2N) + k.2^(2N-1) + 2^N and b = 1
+     with N = GMP_NUMB_BITS and k = 0 or 1.
+     c = a - b should round to the same value as a. */
+
+  for (i = 2; i <= 3; i++)
+    {
+      mpfr_set_ui_2exp (a, i, GMP_NUMB_BITS - 1, MPFR_RNDN);
+      mpfr_add_ui (a, a, 1, MPFR_RNDN);
+      mpfr_mul_2ui (a, a, GMP_NUMB_BITS, MPFR_RNDN);
+      mpfr_set_ui (b, 1, MPFR_RNDN);
+      inex = mpfr_sub (c, a, b, MPFR_RNDN);
+      mpfr_set (b, a, MPFR_RNDN);
+      if (! mpfr_equal_p (c, b))
+        {
+          printf ("Error in bug20101017 for i = %d.\n", i);
+          printf ("Expected ");
+          mpfr_out_str (stdout, 16, 0, b, MPFR_RNDN);
+          putchar ('\n');
+          printf ("Got      ");
+          mpfr_out_str (stdout, 16, 0, c, MPFR_RNDN);
+          putchar ('\n');
+          exit (1);
+        }
+      if (inex <= 0)
+        {
+          printf ("Error in bug20101017 for i = %d: bad inex value.\n", i);
+          printf ("Expected positive, got %d.\n", inex);
+          exit (1);
+        }
+    }
+
+  mpfr_clears (a, b, c, (mpfr_ptr) 0);
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -497,6 +546,7 @@ main (void)
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
+  bug20101017 ();
   test_generic (2, 800, 100);
 
   tests_end_mpfr ();
