@@ -518,10 +518,10 @@ bug20101017 (void)
           putchar ('\n');
           exit (1);
         }
-      if (inex <= 0)
+      if (inex >= 0)
         {
           printf ("Error in bug20101017 for i = %d: bad inex value.\n", i);
-          printf ("Expected positive, got %d.\n", inex);
+          printf ("Expected negative, got %d.\n", inex);
           exit (1);
         }
     }
