@@ -304,6 +304,19 @@ the test suite: C and C++ are not the same language! You should use a C
 compiler instead.
 
 
+Notes about ABI
+===============
+
+On 64-bit computers, it may happen that the default ABI (Application Binary
+Interface) chosen by MPFR does not correspond to the default one chosen by
+the compiler. In fact, since MPFR relies on GMP, it uses the same ABI as GMP.
+To be sure that your program compiles and links correctly, use the same
+compiler flags as MPFR does (look for CFLAGS in config.log).
+
+You might also recompile GMP with a different ABI, with for example
+./configure ABI=32.
+
+
 Notes on Mac OS X
 =================
 
