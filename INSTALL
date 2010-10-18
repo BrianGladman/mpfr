@@ -309,7 +309,12 @@ Notes about ABI
 
 On 64-bit computers, it may happen that the default ABI (Application Binary
 Interface) chosen by MPFR does not correspond to the default one chosen by
-the compiler. In fact, since MPFR relies on GMP, it uses the same ABI as GMP.
+the compiler.
+
+In particular, this kind of message may indicate the problem:
+/usr/bin/ld: skipping incompatible mpfr/src/.libs/libmpfr.a when searching for -lmpfr
+
+In fact, since MPFR relies on GMP, it uses the same ABI as GMP.
 To be sure that your program compiles and links correctly, use the same
 compiler flags as MPFR does (look for CFLAGS in config.log).
 
