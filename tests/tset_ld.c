@@ -154,6 +154,8 @@ test_fixed_bugs (void)
   mpfr_set_ui_2exp (x, 1, -16447, MPFR_RNDN);
   mpfr_get_ld (x, MPFR_RNDN);  /* an assertion failed in init2.c:50 */
 
+  /* FIXME: 0x... for the floating-point types is C99 only. */
+
   /* bug reported by Jakub Jelinek (2010-10-17)
      https://gforge.inria.fr/tracker/?func=detail&aid=11300 */
   mpfr_set_prec (x, MPFR_LDBL_MANT_DIG);
