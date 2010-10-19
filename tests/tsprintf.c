@@ -1071,7 +1071,11 @@ check_emax_aux (mpfr_exp_t e)
 
   if (strcmp (s1, s2) != 0)
     {
-      printf ("Error in check_emax_aux for emax = %ld\n", e);
+      printf ("Error in check_emax_aux for emax = ");
+      if (e > LONG_MAX)
+        printf ("(>LONG_MAX)\n");
+      else
+        printf ("%ld\n", (long) e);
       printf ("Expected %s\n", s2);
       printf ("Got      %s\n", s1);
       exit (1);
@@ -1086,7 +1090,11 @@ check_emax_aux (mpfr_exp_t e)
 
   if (strcmp (s1, s2) != 0)
     {
-      printf ("Error in check_emax_aux for emax = %ld\n", e);
+      printf ("Error in check_emax_aux for emax = ");
+      if (e > LONG_MAX)
+        printf ("(>LONG_MAX)\n");
+      else
+        printf ("%ld\n", (long) e);
       printf ("Expected %s\n", s2);
       printf ("Got      %s\n", s1);
       exit (1);

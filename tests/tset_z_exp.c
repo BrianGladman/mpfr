@@ -51,8 +51,14 @@ check0 (void)
       inexact = mpfr_set_z_2exp (x, y, e, (mpfr_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
-          printf ("mpfr_set_z_2exp(x,0,e) failed for e=%ld, rnd=%s\n", e,
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          printf ("mpfr_set_z_2exp(x,0,e) failed for e=");
+          if (e < LONG_MIN)
+            printf ("(<LONG_MIN)");
+          else if (e > LONG_MAX)
+            printf ("(>LONG_MAX)");
+          else
+            printf ("%ld", (long) e);
+          printf (", rnd=%s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
     }
@@ -92,8 +98,14 @@ check (long i, mpfr_rnd_t rnd)
   mpfr_div_2si (f, f, e, rnd);
   if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
-      printf ("Error in mpfr_set_z_2exp for i=%ld e=%ld rnd_mode=%d\n",
-              i, e, rnd);
+      printf ("Error in mpfr_set_z_2exp for i=%ld e=", i);
+      if (e < LONG_MIN)
+        printf ("(<LONG_MIN)");
+      else if (e > LONG_MAX)
+        printf ("(>LONG_MAX)");
+      else
+        printf ("%ld", (long) e);
+      printf (" rnd_mode=%d\n", rnd);
       printf ("expected %ld\n", i);
       printf ("got      "); mpfr_dump (f);
       exit (1);

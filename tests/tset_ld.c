@@ -72,9 +72,15 @@ check_set_get (long double d, mpfr_t x)
       inex = mpfr_set_ld (x, d, (mpfr_rnd_t) r);
       if (inex != 0)
         {
+          mpfr_exp_t emin, emax;
+          emin = mpfr_get_emin ();
+          emax = mpfr_get_emax ();
           printf ("Error: mpfr_set_ld should be exact\n");
           printf ("d=%1.30Le inex=%d\n", d, inex);
-          printf ("emin=%ld emax=%ld\n", mpfr_get_emin (), mpfr_get_emax ());
+          if (emin >= LONG_MIN)
+            printf ("emin=%ld\n", (long) emin);
+          if (emax <= LONG_MAX)
+            printf ("emax=%ld\n", (long) emax);
           mpfr_dump (x);
           exit (1);
         }

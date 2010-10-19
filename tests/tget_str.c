@@ -816,7 +816,7 @@ check_small (void)
   if (e != 2 || strcmp (s, "20"))
     {
       printf ("Error in mpfr_get_str for x=13.5, base 7\n");
-      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
@@ -828,7 +828,7 @@ check_small (void)
   if (e != 2 || strcmp (s, "20"))
     {
       printf ("Error in mpfr_get_str for x=13.5+tiny, base 7\n");
-      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
@@ -838,7 +838,7 @@ check_small (void)
   if (e != 2 || strcmp (s, "16"))
     {
       printf ("Error in mpfr_get_str for x=13.5-tiny, base 7\n");
-      printf ("Expected s=16, e=2, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=16, e=2, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
@@ -852,7 +852,7 @@ check_small (void)
   if (e != 2 || strcmp (s, "66"))
     {
       printf ("Error in mpfr_get_str for x=48.5, base 7\n");
-      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
@@ -864,7 +864,7 @@ check_small (void)
   if (e != 3 || strcmp (s, "10"))
     {
       printf ("Error in mpfr_get_str for x=48.5+tiny, base 7\n");
-      printf ("Expected s=10, e=3, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=10, e=3, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
@@ -874,7 +874,7 @@ check_small (void)
   if (e != 2 || strcmp (s, "66"))
     {
       printf ("Error in mpfr_get_str for x=48.5-tiny, base 7\n");
-      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, e);
+      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, (long) e);
       exit (1);
     }
   mpfr_free_str (s);
