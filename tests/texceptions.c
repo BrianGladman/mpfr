@@ -342,7 +342,7 @@ main (int argc, char *argv[])
   if (!mpfr_inf_p (x) || (mpfr_sgn(x) <= 0))
     {
       printf ("Error: x+x rounded to nearest for x=2^1023 should give +Inf\n");
-      printf ("emax = %ld\n", mpfr_get_emax ());
+      printf ("emax = %ld\n", (long) mpfr_get_emax ());
       printf ("got "); mpfr_print_binary (x); puts ("");
       exit (1);
     }
@@ -377,7 +377,7 @@ main (int argc, char *argv[])
   if (!MPFR_IS_ZERO (x) )
     {
       printf ("Error: x rounded to nearest for x=2^-1024 should give Zero\n");
-      printf ("emin = %ld\n", mpfr_get_emin ());
+      printf ("emin = %ld\n", (long) mpfr_get_emin ());
       printf ("got "); mpfr_dump (x);
       exit (1);
     }
