@@ -528,7 +528,106 @@ bug20101017 (void)
         }
     }
 
+  mpfr_set_prec (a, 64);
+  mpfr_set_prec (b, 129);
+  mpfr_set_prec (c, 2);
+  mpfr_set_str_binary (b, "0.100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001E65");
+  mpfr_set_str_binary (c, "0.10E1");
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 1, 64) != 0 || inex >= 0)
+    {
+      printf ("Error in mpfr_sub for b-c for b=2^64+1+2^(-64), c=1\n");
+      printf ("Expected result 2^64 with inex < 0\n");
+      printf ("Got "); mpfr_print_binary (a);
+      printf (" with inex=%d\n", inex);
+      exit (1);
+    }
+
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
+}
+
+/* hard test of rounding */
+static void
+check_rounding (void)
+{
+  mpfr_t a, b, c, res;
+  mp_prec_t p;
+  long k, l;
+  int i;
+
+#define MAXKL (2 * GMP_NUMB_BITS)
+  for (p = MPFR_PREC_MIN; p <= GMP_NUMB_BITS; p++)
+    {
+      mpfr_init2 (a, p);
+      mpfr_init2 (res, p);
+      mpfr_init2 (b, p + 1 + MAXKL);
+      mpfr_init2 (c, MPFR_PREC_MIN);
+
+      /* b = 2^p + 1 + 2^(-k), c = 2^(-l) */
+      for (k = 0; k <= MAXKL; k++)
+        for (l = 0; l <= MAXKL; l++)
+          {
+            mpfr_set_ui_2exp (b, 1, p, MPFR_RNDN);
+            mpfr_add_ui (b, b, 1, MPFR_RNDN);
+            mpfr_mul_2ui (b, b, k, MPFR_RNDN);
+            mpfr_add_ui (b, b, 1, MPFR_RNDN);
+            mpfr_div_2ui (b, b, k, MPFR_RNDN);
+            mpfr_set_ui_2exp (c, 1, -l, MPFR_RNDN);
+            i = mpfr_sub (a, b, c, MPFR_RNDN);
+            /* b - c = 2^p + 1 + 2^(-k) - 2^(-l), should be rounded to
+               2^p for l <= k, and 2^p+2 for l < k */
+            if (l <= k)
+              {
+                if (mpfr_cmp_ui_2exp (a, 1, p) != 0)
+                  {
+                    printf ("Wrong result in check_rounding\n");
+                    printf ("p=%lu k=%ld l=%ld\n", p, k, l);
+                    printf ("b="); mpfr_print_binary (b); puts ("");
+                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("Expected 2^%lu\n", p);
+                    printf ("Got      "); mpfr_print_binary (a); puts ("");
+                    exit (1);
+                  }
+                if (i >= 0)
+                  {
+                    printf ("Wrong ternary value in check_rounding\n");
+                    printf ("p=%lu k=%ld l=%ld\n", p, k, l);
+                    printf ("b="); mpfr_print_binary (b); puts ("");
+                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("a="); mpfr_print_binary (a); puts ("");
+                    printf ("Expected < 0, got %d\n", i);
+                    exit (1);
+                  }
+              }
+            else /* l < k */
+              {
+                mpfr_set_ui_2exp (res, 1, p, MPFR_RNDN);
+                mpfr_add_ui (res, res, 2, MPFR_RNDN);
+                if (mpfr_cmp (a, res) != 0)
+                  {
+                    printf ("Wrong result in check_rounding\n");
+                    printf ("b="); mpfr_print_binary (b); puts ("");
+                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("Expected "); mpfr_print_binary (res); puts ("");
+                    printf ("Got      "); mpfr_print_binary (a); puts ("");
+                    exit (1);
+                  }
+                if (i <= 0)
+                  {
+                    printf ("Wrong ternary value in check_rounding\n");
+                    printf ("b="); mpfr_print_binary (b); puts ("");
+                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("Expected > 0, got %d\n", i);
+                    exit (1);
+                  }
+              }
+          }
+
+      mpfr_clear (a);
+      mpfr_clear (res);
+      mpfr_clear (b);
+      mpfr_clear (c);
+    }
 }
 
 #define TEST_FUNCTION test_sub
@@ -544,13 +643,14 @@ main (void)
 
   tests_start_mpfr ();
 
+  bug20101017 ();
+  check_rounding ();
   check_diverse ();
   check_inexact ();
   bug_ddefour ();
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
-  bug20101017 ();
   test_generic (2, 800, 100);
 
   tests_end_mpfr ();

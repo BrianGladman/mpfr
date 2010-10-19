@@ -354,16 +354,16 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* for rounding to nearest, we couldn't conclude up to here in the following
      cases:
-     (1) sh = 0, then cmp_low=0: we can either truncate, subtract one ulp
-         or add one ulp: -1 ulp < low(b)-low(c) < 1 ulp
-     (2) sh > 0 but the low sh bits from high(b)-high(c) equal 2^(sh-1):
-         -0.5 ulp <= -1/2^sh < low(b)-low(c)-0.5 < 1/2^sh <= 0.5 ulp
+     1. sh = 0, then cmp_low=0: we can either truncate, subtract one ulp
+        or add one ulp: -1 ulp < low(b)-low(c) < 1 ulp
+     2. sh > 0 but the low sh bits from high(b)-high(c) equal 2^(sh-1):
+        -0.5 ulp <= -1/2^sh < low(b)-low(c)-0.5 < 1/2^sh <= 0.5 ulp
         we can't decide the rounding, in that case cmp_low=2:
         either we truncate and flag=-1, or we add one ulp and flag=1
-     (3) the low sh>0 bits from high(b)-high(c) equal 0: we know we have to
-         truncate but we can't decide the ternary value, here cmp_low=0:
-         -0.5 ulp <= -1/2^sh < low(b)-low(c) < 1/2^sh <= 0.5 ulp
-         we always truncate and inexact can be any of -1,0,1
+     3. the low sh>0 bits from high(b)-high(c) equal 0: we know we have to
+        truncate but we can't decide the ternary value, here cmp_low=0:
+        -0.5 ulp <= -1/2^sh < low(b)-low(c) < 1/2^sh <= 0.5 ulp
+        we always truncate and inexact can be any of -1,0,1
   */
 
   /* note: here cn might exceed cn0, in which case we consider a zero limb */
@@ -382,12 +382,32 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         cc = 0;
 
       /* cmp_low compares low(b) and low(c) */
-      if (cmp_low == 0)
+      if (cmp_low == 0) /* case 1 or 3 */
         cmp_low = (bb < cc) ? -2+k : (bb > cc) ? 1 : 0;
+
+      /* Case 1 for k=0 splits into 7 subcases:
+         1a: bb > cc + half
+         1b: bb = cc + half
+         1c: 0 < bb - cc < half
+         1d: bb = cc
+         1e: -half < bb - cc < 0
+         1f: bb - cc = -half
+         1g: bb - cc < -half
+         
+         Case 2 splits into 3 subcases:
+         2a: bb > cc
+         2b: bb = cc
+         2c: bb < cc
+
+         Case 3 splits into 3 subcases:
+         3a: bb > cc
+         3b: bb = cc
+         3c: bb < cc
+      */
 
       /* the case rounding to nearest with sh=0 is special since one couldn't
          subtract above 1/2 ulp in the trailing limb of the result */
-      if (rnd_mode == MPFR_RNDN && sh == 0 && k == 0)
+      if (rnd_mode == MPFR_RNDN && sh == 0 && k == 0) /* case 1 for k=0 */
         {
           mp_limb_t half = MPFR_LIMB_HIGHBIT;
 
@@ -396,23 +416,27 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              sub one ulp if bb < cc - half
           */
 
-          if (cmp_low < 0) /* bb < cc: -1 ulp < low(b) - low(c) < 0 */
+          if (cmp_low < 0) /* bb < cc: -1 ulp < low(b) - low(c) < 0,
+                              cases 1e, 1f and 1g */
             {
               if (cc >= half)
                 cc -= half;
               else /* since bb < cc < half, bb+half < 2*half */
                 bb += half;
-              /* we have to subtract one ulp if bb < cc,
+              /* now we have bb < cc + half:
+                 we have to subtract one ulp if bb < cc,
                  and truncate if bb > cc */
             }
-          else if (cmp_low >= 0) /* bb >= cc */
+          else if (cmp_low >= 0) /* bb >= cc, cases 1a to 1d */
             {
               if (cc < half)
                 cc += half;
               else /* since bb >= cc >= half, bb - half >= 0 */
                 bb -= half;
-              /* we have to add one ulp if bb > cc,
+              /* now we have bb > cc - half: we have to add one ulp if bb > cc,
                  and truncate if bb < cc */
+              if (cmp_low > 0)
+                cmp_low = 2;
             }
         }
 
@@ -447,11 +471,15 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                  one ulp.
               */
               if (bb > cc || sh > 0 || cmp_low == -1)
-                {  /* -0.5 ulp < low(b)-low(c) < 0 */
+                {  /* -0.5 ulp < low(b)-low(c) < 0,
+                      bb > cc corresponds to cases 1e and 1f1
+                      sh > 0 corresponds to cases 3c and 3b3
+                      cmp_low = -1 corresponds to case 1d3 (also 3b3) */
                   inexact = 1;
                   goto truncate;
                 }
-              else if (bb < cc) /* here sh = 0 and low(b)-low(c) < -0.5 ulp */
+              else if (bb < cc) /* here sh = 0 and low(b)-low(c) < -0.5 ulp,
+                                   this corresponds to cases 1g and 1f3 */
                 goto sub_one_ulp;
               /* the only case where we can't conclude is sh=0 and bb=cc,
                  i.e., we have low(b) - low(c) = -0.5 ulp (up to now), thus
@@ -476,18 +504,20 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 {
                   /* if sh=0, then bb>cc means that low(b)-low(c) > 0.5 ulp,
                      and similarly when cmp_low=2 */
-                  if (sh == 0 || cmp_low == 2)
+                  if (cmp_low == 2) /* cases 1a, 1b1, 2a and 2b1 */
                     goto add_one_ulp;
-                  /* sh > 0 and cmp_low = 1: this implies that the sh initial
+                  /* sh > 0 and cmp_low > 0: this implies that the sh initial
                      neglected bits were 0, and the remaining low(b)-low(c)>0,
                      but its weight is less than 0.5 ulp */
-                  else /* 0 < low(b) - low(c) < 0.5 ulp */
+                  else /* 0 < low(b) - low(c) < 0.5 ulp, this corresponds to
+                          cases 3a, 1d1 and 3b1 */
                     {
                       inexact = -1;
                       goto truncate;
                     }
                 }
-              else if (bb < cc) /* 0 < low(b) - low(c) < 0.5 ulp */
+              else if (bb < cc) /* 0 < low(b) - low(c) < 0.5 ulp, cases 1c,
+                                   1b3, 2b3 and 2c */
                 {
                   inexact = -1;
                   goto truncate;
@@ -497,6 +527,29 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                  if we must truncate or add one ulp. */
             }
         }
+      /* after k=0, we cannot conclude in the following cases, we split them
+         according to the values of bb and cc for k=1:
+         1b. sh=0 and cmp_low = 1 and bb-cc = half [around 0.5 ulp]
+             1b1. bb > cc: add one ulp, inex = 1
+             1b2: bb = cc: cannot conclude
+             1b3: bb < cc: truncate, inex = -1
+         1d. sh=0 and cmp_low = 0 and bb-cc = 0 [around 0]
+             1d1: bb > cc: truncate, inex = -1
+             1d2: bb = cc: cannot conclude
+             1d3: bb < cc: truncate, inex = +1
+         1f. sh=0 and cmp_low = -1 and bb-cc = -half [around -0.5 ulp]
+             1f1: bb > cc: truncate, inex = +1
+             1f2: bb = cc: cannot conclude
+             1f3: bb < cc: sub one ulp, inex = -1
+         2b. sh > 0 and cmp_low = 2 and bb=cc [around 0.5 ulp]
+             2b1. bb > cc: add one ulp, inex = 1
+             2b2: bb = cc: cannot conclude
+             2b3: bb < cc: truncate, inex = -1
+         3b. sh > 0 and cmp_low = 0 [around 0]
+             3b1. bb > cc: truncate, inex = -1
+             3b2: bb = cc: cannot conclude
+             3b3: bb < cc: truncate, inex = +1
+      */
     }
 
   if ((rnd_mode == MPFR_RNDN) && cmp_low != 0)
