@@ -147,11 +147,37 @@ static void
 test_fixed_bugs (void)
 {
   mpfr_t x;
+  long double l, m;
 
   /* bug found by Steve Kargl (2009-03-14) */
   mpfr_init2 (x, 64);
   mpfr_set_ui_2exp (x, 1, -16447, MPFR_RNDN);
   mpfr_get_ld (x, MPFR_RNDN);  /* an assertion failed in init2.c:50 */
+
+  /* bug reported by Jakub Jelinek (2010-10-17)
+     https://gforge.inria.fr/tracker/?func=detail&aid=11300 */
+  mpfr_set_prec (x, MPFR_LDBL_MANT_DIG);
+  l = 0x1.23456789abcdef0123456789abcdp-914L;
+  mpfr_set_ld (x, l, MPFR_RNDN);
+  m = mpfr_get_ld (x, MPFR_RNDN);
+  if (m != l)
+    {
+      printf ("Error in get_ld o set_ld for l=%Le\n", l);
+      printf ("Got m=%Le instead of l\n", m);
+      exit (1);
+    }
+
+  /* another similar test which failed with extended double precision and the
+     generic code for mpfr_set_ld */
+  l = 0x1.23456789abcdef0123456789abcdp-968L;
+  mpfr_set_ld (x, l, MPFR_RNDN);
+  m = mpfr_get_ld (x, MPFR_RNDN);
+  if (m != l)
+    {
+      printf ("Error in get_ld o set_ld for l=%Le\n", l);
+      printf ("Got m=%Le instead of l\n", m);
+      exit (1);
+    }
 
   mpfr_clear (x);
 }

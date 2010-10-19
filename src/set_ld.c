@@ -102,21 +102,25 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
             {
               x /= div13; /* exact */
               shift_exp += 8192;
+              mpfr_div_2si (t, t, 8192, MPFR_RNDZ);
             }
           if (ABS (x) >= div12)
             {
               x /= div12; /* exact */
               shift_exp += 4096;
+              mpfr_div_2si (t, t, 4096, MPFR_RNDZ);
             }
           if (ABS (x) >= div11)
             {
               x /= div11; /* exact */
               shift_exp += 2048;
+              mpfr_div_2si (t, t, 2048, MPFR_RNDZ);
             }
           if (ABS (x) >= div10)
             {
               x /= div10; /* exact */
               shift_exp += 1024;
+              mpfr_div_2si (t, t, 1024, MPFR_RNDZ);
             }
           /* warning: we may have DBL_MAX=2^1024*(1-2^(-53)) < x < 2^1024,
              therefore we have one extra exponent reduction step */
@@ -124,9 +128,10 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
             {
               x /= div9; /* exact */
               shift_exp += 512;
+              mpfr_div_2si (t, t, 512, MPFR_RNDZ);
             }
         } /* Check overflow of double */
-      else
+      else /* no overflow on double */
         {
           long double div9, div10, div11;
 
@@ -149,29 +154,34 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
                 {
                   x /= div13; /* exact */
                   shift_exp -= 8192;
+                  mpfr_mul_2si (t, t, 8192, MPFR_RNDZ);
                 }
               if (ABS (x) <= div12)
                 {
                   x /= div12; /* exact */
                   shift_exp -= 4096;
+                  mpfr_mul_2si (t, t, 4096, MPFR_RNDZ);
                 }
               if (ABS (x) <= div11)
                 {
                   x /= div11; /* exact */
                   shift_exp -= 2048;
+                  mpfr_mul_2si (t, t, 2048, MPFR_RNDZ);
                 }
               if (ABS (x) <= div10)
                 {
                   x /= div10; /* exact */
                   shift_exp -= 1024;
+                  mpfr_mul_2si (t, t, 1024, MPFR_RNDZ);
                 }
               if (ABS(x) <= div9)
                 {
                   x /= div9;  /* exact */
                   shift_exp -= 512;
+                  mpfr_mul_2si (t, t, 512, MPFR_RNDZ);
                 }
             }
-          else
+          else /* no underflow */
             {
               inexact = mpfr_set_d (u, (double) x, MPFR_RNDZ);
               MPFR_ASSERTD (inexact == 0);
