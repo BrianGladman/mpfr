@@ -6,6 +6,7 @@
 \usepackage{url}
 \usepackage{comment}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \pagestyle{plain}
 \title{The MPFR\footnote{\lowercase{\url{http://www.mpfr.org/}}} Library:
@@ -624,36 +625,31 @@ $a[0 \dots {\tt an}-1] \leftarrow a[0 \dots {\tt an}-1] - c[{\tt cn} -
 ${\tt sh} \leftarrow {\tt an} \cdot w - \prec(a)$; \quad
         $r \leftarrow a[0] \bmod 2^{\tt sh}$; \quad
         $a[0] \leftarrow a[0] - r$ \\
-\If\ $\circ = \N$ and ${\tt sh} > 0$ \then \\
-\q \If\ $r > 2^{{\tt sh}-1}$ \then\
-        $a \leftarrow a + \ulp(a)$; return $1$
-   \elif\ $0 < r < 2^{{\tt sh}-1}$ \then\ return $-1$ \\
-\elif\ $\circ \in \{ \Z, \infty \}$ and $r > 0$ \then \\
-\q \If\ $\circ = \Z$ return $-1$
-   \Else\ $a \leftarrow a + \ulp(a)$; return $1$ \\
-${\tt bl} \leftarrow {\tt bn} - {\tt an} - {\tt cancel_b}$ \\
-${\tt cl} \leftarrow {\tt cn} - {\tt an} - {\tt cancel_c}$ \\
-\for\ $k=0$ \while\ ${\tt bl} > 0$ and ${\tt cl} > 0$ {\bf do} \\
-\q ${\tt bl} \leftarrow {\tt bl} - 1$; ${\tt bp} \leftarrow b[{\tt bl}]$ \\
-\q ${\tt cl} \leftarrow {\tt cl} - 1$; ${\tt cp} \leftarrow c[{\tt cl}]$ \\
-\q \If\ $\circ = \N$ and $k=0$ and ${\tt sh}=0$ \then \\
-\q \q \If\ ${\tt cp} \ge 2^{w-1}$ \then\ return $-1$ \\
-\q \q $r \leftarrow {\tt bp} - {\tt cp}$; \quad
-        ${\tt cp} \leftarrow {\tt cp} + 2^{w-1}$ \\
-\q \If\ ${\tt bp} < {\tt cp}$ \then \\
-\q \q \If\ $\circ = \Z$ \then\ $a \leftarrow a - \ulp(a)$; \quad
-      \If\ $\circ = \infty$ \then\ return $1$ \Else\ return $-1$
-\q \If\ ${\tt bp} > {\tt cp}$ \then \\
-\q \q \If\ $\circ = \Z$ \then\ return $-1$ \Else\
-        $a \leftarrow a + \ulp(a)$; return $1$ \\
-\If\ $\circ = \N$ and $r > 0$ \then \\
-\q \If\ $a[0] \, {\rm div} \, 2^{\tt sh}$ is odd \then\
-        $a \leftarrow a + \ulp(a)$; return $1$ \Else\ return $-1$ \\
-Return $0$.
 \end{quote}
 where $b[i]$ and $c[i]$ is meant as $0$ for negative $i$,
 and $c[i]$ is meant as $0$ for $i \ge {\tt cn}$
 (${\tt cancel_b} \ge 0$, but ${\tt cancel_c}$ may be negative).
+
+The rounding is determined by a left-to-right subtraction of the neglected
+limb of $b$ and $c$, until one is able to determine the correct rounding
+\emph{and} the correct ternary value.
+After the above algorithm, there are three cases where one cannot conclude:
+\begin{enumerate}
+\item if ${\tt sh} = 0$, since the low part of $b-c$ can have any value
+      between $-1$ ulp and $1$ ulp. The result might be $a-1$, $a$ or $a+1$;
+\item if ${\tt sh} > 0$ and $r = 2^{\tt sh - 1}$: the result might be
+      $a$ or $a+1$;
+\item if ${\tt sh} > 0$ and $r = 0$: the result is always $a$, but we cannot
+      determine the ternary value.
+\end{enumerate}
+In those three cases we look at the most significant neglected limbs from
+$b$ and $c$ until we can conclude.
+In case 1 the first limb is special, since it will rule out one of the
+possible results $a-1$, $a$ or $a+1$.
+Up from the second limb, the analysis is invariant.
+The corresponding tree is the following:
+
+\centerline{\includegraphics[width=13cm,angle=90]{sub_tree.pdf}}
 
 \subsection{The {\tt mpfr\_mul} function}
 
