@@ -154,12 +154,11 @@ test_fixed_bugs (void)
   mpfr_set_ui_2exp (x, 1, -16447, MPFR_RNDN);
   mpfr_get_ld (x, MPFR_RNDN);  /* an assertion failed in init2.c:50 */
 
-  /* FIXME: 0x... for the floating-point types is C99 only. */
-
   /* bug reported by Jakub Jelinek (2010-10-17)
      https://gforge.inria.fr/tracker/?func=detail&aid=11300 */
   mpfr_set_prec (x, MPFR_LDBL_MANT_DIG);
-  l = 0x1.23456789abcdef0123456789abcdp-914L;
+  /* l = 0x1.23456789abcdef0123456789abcdp-914L; */
+  l = 8.215640181713713164092636634579e-276;
   mpfr_set_ld (x, l, MPFR_RNDN);
   m = mpfr_get_ld (x, MPFR_RNDN);
   if (m != l)
@@ -171,7 +170,8 @@ test_fixed_bugs (void)
 
   /* another similar test which failed with extended double precision and the
      generic code for mpfr_set_ld */
-  l = 0x1.23456789abcdef0123456789abcdp-968L;
+  /* l = 0x1.23456789abcdef0123456789abcdp-968L; */
+  l = 4.560596445887084662336528403703e-292;
   mpfr_set_ld (x, l, MPFR_RNDN);
   m = mpfr_get_ld (x, MPFR_RNDN);
   if (m != l)
