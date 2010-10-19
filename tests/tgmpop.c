@@ -450,7 +450,7 @@ test_genericz (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
                           (unsigned) prec, mpfr_print_rnd_mode (rnd), op);
                   mpfr_print_binary (arg1);
                   printf("\narg2=");
-                  mpz_out_str (stdout, 2, arg2);
+                  mpz_out_str (stdout, 10, arg2);
                   printf ("\ngot      ");
                   mpfr_dump (dst_small);
                   printf ("expected ");
