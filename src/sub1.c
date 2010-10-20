@@ -393,7 +393,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          1e: -half < bb - cc < 0
          1f: bb - cc = -half
          1g: bb - cc < -half
-         
+
          Case 2 splits into 3 subcases:
          2a: bb > cc
          2b: bb = cc
