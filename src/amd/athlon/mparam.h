@@ -1,4 +1,4 @@
-#define MPFR_TUNE_CASE "AMD Athlon"
+#define MPFR_TUNE_CASE "src/amd/athlon/mparam.h"
 #define MPFR_MULHIGH_TAB  \
  -1,0,-1,0,-1,0,-1,-1,0,-1,-1,0,0,0,0,10, \
  0,12,13,14,15,16,0,0,0,0,0,19,0,0,0,0, \

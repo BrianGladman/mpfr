@@ -53,10 +53,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #elif defined (__arm__) /* Threshold for ARM */
 #include "arm/mparam.h"
 
-#elif defined (__PPC64__) /* Threshold for PowerPC */
+#elif defined (__PPC64__) /* Threshold for 64-bit PowerPC */
 #include "powerpc64/mparam.h"
 
-#elif defined (__sparc_v9__) /* Threshold for Sparc 64 bits */
+#elif defined (__sparc_v9__) /* Threshold for 64-bits Sparc */
 #include "sparc64/mparam.h"
 
 /* __mips64? __mips? */

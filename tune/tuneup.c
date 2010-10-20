@@ -1024,7 +1024,7 @@ all (const char *filename)
   fprintf (f, "system compiler */\n");
 #endif
   fprintf (f, "\n\n");
-  fprintf (f, "#define MPFR_TUNE_CASE \"Tuned with 'make tune'\"\n");
+  fprintf (f, "#define MPFR_TUNE_CASE \"src/mparam.h)\"\n");
 
   /* Tune mulhigh */
   tune_mul_mulders (f);
