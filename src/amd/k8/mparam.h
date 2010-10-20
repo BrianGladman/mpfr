@@ -2,7 +2,6 @@
 /* gcc11.fsffrance.org (Dual-Core AMD Opteron(tm) Processor 2212) with gmp 5.0.1 */
 
 
-#define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,9,9,11, \
  12,13,11,15,14,14,15,16,18,18,19,20,18,19,19,20, \

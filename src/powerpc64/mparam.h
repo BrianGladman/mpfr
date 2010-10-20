@@ -2,7 +2,6 @@
 /* ps3gccfarm.fsffrance.org (Cell Broadband Engine, altivec supported) with gmp 5.0.1 */
 
 
-#define MPFR_TUNE_CASE "src/powerpc64/mparam.h"
 #define MPFR_MULHIGH_TAB  \
  -1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0, \
  0,0,0,0,0,14,14,14,14,14,16,16,18,18,18,18, \

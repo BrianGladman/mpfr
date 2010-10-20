@@ -2,7 +2,6 @@
 /* Babe.fsffrance.org (Madison) with gmp 5.0.1 */
 
 
-#define MPFR_TUNE_CASE "src/ia64/mparam.h"
 #define MPFR_MULHIGH_TAB  \
  -1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, \
  -1,-1,14,16,16,17,18,19,20,20,22,22,20,21,20,21, \
