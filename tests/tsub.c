@@ -551,7 +551,7 @@ static void
 check_rounding (void)
 {
   mpfr_t a, b, c, res;
-  mp_prec_t p;
+  mpfr_prec_t p;
   long k, l;
   int i;
 
