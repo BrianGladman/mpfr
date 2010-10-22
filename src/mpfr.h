@@ -936,4 +936,4 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_get_z_exp mpfr_get_z_2exp
 #define mpfr_custom_get_mantissa mpfr_custom_get_significand
 
-#endif /* __MPFR_H*/
+#endif /* __MPFR_H */
