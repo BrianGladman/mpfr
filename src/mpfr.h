@@ -69,6 +69,16 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
 
+/* Avoid some problems with macro expansion if the user defines macros
+   with the same name as keywords. By convention, identifiers and macro
+   names starting with mpfr_ are reserved by MPFR. */
+typedef void            mpfr_void;
+typedef int             mpfr_int;
+typedef unsigned int    mpfr_uint;
+typedef long            mpfr_long;
+typedef unsigned long   mpfr_ulong;
+typedef size_t          mpfr_size_t;
+
 /* Definition of rounding modes (DON'T USE MPFR_RNDNA!).
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible
@@ -138,7 +148,7 @@ typedef int          mpfr_sign_t;
 typedef mp_exp_t     mpfr_exp_t;
 
 /* Definition of the standard exponent limits */
-#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((unsigned long) 1 << 30) - 1))
+#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((mpfr_ulong) 1 << 30) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
 /* Definition of the main structure */
@@ -820,45 +830,45 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    But warning! mpfr_sgn is specified as a macro in the API, thus the macro
    mustn't be used if side effects are possible, like here. */
 #define mpfr_cmp_ui(_f,_u)                                      \
-  (__builtin_constant_p (_u) && (unsigned long) (_u) == 0 ?     \
+  (__builtin_constant_p (_u) && (mpfr_ulong) (_u) == 0 ?        \
    (mpfr_sgn) (_f) :                                            \
-   mpfr_cmp_ui_2exp ((_f), (unsigned long) (_u), 0))
+   mpfr_cmp_ui_2exp ((_f), (mpfr_ulong) (_u), 0))
 #undef mpfr_cmp_si
-#define mpfr_cmp_si(_f,_s)                              \
-  (__builtin_constant_p (_s) && (long) (_s) >= 0 ?      \
-   mpfr_cmp_ui ((_f), (unsigned long) (long) (_s)) :    \
-   mpfr_cmp_si_2exp ((_f), (long) (_s), 0))
+#define mpfr_cmp_si(_f,_s)                                      \
+  (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
+   mpfr_cmp_ui ((_f), (mpfr_ulong) (mpfr_long) (_s)) :          \
+   mpfr_cmp_si_2exp ((_f), (mpfr_long) (_s), 0))
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #undef mpfr_set_ui
 #define mpfr_set_ui(_f,_u,_r)                                   \
-  (__builtin_constant_p (_u) && (unsigned long) (_u) == 0 ?     \
+  (__builtin_constant_p (_u) && (mpfr_ulong) (_u) == 0 ?        \
    __extension__ ({                                             \
        mpfr_ptr _p = (_f);                                      \
        _p->_mpfr_sign = 1;                                      \
        _p->_mpfr_exp = __MPFR_EXP_ZERO;                         \
-       (void) (_r); 0; }) :                                     \
-   mpfr_set_ui_2exp ((_f), (unsigned long) (_u), 0, (_r)))
+       (mpfr_void) (_r); 0; }) :                                \
+   mpfr_set_ui_2exp ((_f), (mpfr_ulong) (_u), 0, (_r)))
 #endif
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)                                   \
-  (__builtin_constant_p (_s) && (long) (_s) >= 0 ?              \
-   mpfr_set_ui ((_f), (unsigned long) (long) (_s), (_r)) :      \
-   mpfr_set_si_2exp ((_f), (long) (_s), 0, (_r)))
+  (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
+   mpfr_set_ui ((_f), (mpfr_ulong) (mpfr_long) (_s), (_r)) :    \
+   mpfr_set_si_2exp ((_f), (mpfr_long) (_s), 0, (_r)))
 #endif
 #endif
 
 /* Macro version of mpfr_stack interface for fast access */
-#define mpfr_custom_get_size(p) ((size_t)                            \
+#define mpfr_custom_get_size(p) ((mpfr_size_t)                          \
        (((p)+GMP_NUMB_BITS-1)/GMP_NUMB_BITS*sizeof (mp_limb_t)))
 #define mpfr_custom_init(m,p) do {} while (0)
-#define mpfr_custom_get_significand(x) ((void*)((x)->_mpfr_d))
+#define mpfr_custom_get_significand(x) ((mpfr_void*)((x)->_mpfr_d))
 #define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
 #define mpfr_custom_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
 #define mpfr_custom_init_set(x,k,e,p,m) do {                   \
   mpfr_ptr _x = (x);                                           \
   mpfr_exp_t _e;                                               \
   mpfr_kind_t _t;                                              \
-  int _s, _k;                                                  \
+  mpfr_int _s, _k;                                             \
   _k = (k);                                                    \
   if (_k >= 0)  {                                              \
     _t = (mpfr_kind_t) _k;                                     \
@@ -875,11 +885,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
   _x->_mpfr_exp  = _e;                                         \
   _x->_mpfr_d    = (mp_limb_t*) (m);                           \
  } while (0)
-#define mpfr_custom_get_kind(x)                                              \
-  ( (x)->_mpfr_exp >  __MPFR_EXP_INF ? (int)MPFR_REGULAR_KIND*MPFR_SIGN (x) \
-  : (x)->_mpfr_exp == __MPFR_EXP_INF ? (int)MPFR_INF_KIND*MPFR_SIGN (x)     \
-  : (x)->_mpfr_exp == __MPFR_EXP_NAN ? (int)MPFR_NAN_KIND                   \
-  : (int) MPFR_ZERO_KIND * MPFR_SIGN (x) )
+#define mpfr_custom_get_kind(x)                                         \
+  ( (x)->_mpfr_exp >  __MPFR_EXP_INF ?                                  \
+    (mpfr_int) MPFR_REGULAR_KIND * MPFR_SIGN (x)                        \
+  : (x)->_mpfr_exp == __MPFR_EXP_INF ?                                  \
+    (mpfr_int) MPFR_INF_KIND * MPFR_SIGN (x)                            \
+  : (x)->_mpfr_exp == __MPFR_EXP_NAN ? (mpfr_int) MPFR_NAN_KIND         \
+  : (mpfr_int) MPFR_ZERO_KIND * MPFR_SIGN (x) )
 
 
 #endif /* MPFR_USE_NO_MACRO */

@@ -560,6 +560,10 @@ aforementioned standard headers should be included @strong{before} the
 first inclusion of @code{mpfr.h} or @code{gmp.h}. For the time being,
 this problem is not avoidable in MPFR without a change in GMP.
 
+When calling a MPFR macro, it is not allowed to have previously defined
+a macro with the same name as some keywords (currently @code{do},
+@code{while} and @code{sizeof}).
+
 You can avoid the use of MPFR macros encapsulating functions by defining
 the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
 general this should not be necessary, but this can be useful when debugging
