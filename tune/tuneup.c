@@ -1128,9 +1128,9 @@ all (const char *filename)
   /* End of tuning */
   time (&end_time);
   fprintf (f, "/* Tuneup completed successfully, took %ld seconds */\n",
-           end_time - start_time);
+           (long) (end_time - start_time));
   if (verbose)
-    printf ("Complete (took %ld seconds).\n", end_time - start_time);
+    printf ("Complete (took %ld seconds).\n", (long) (end_time - start_time));
 
   fclose (f);
 }
