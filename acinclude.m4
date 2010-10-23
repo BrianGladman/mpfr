@@ -506,6 +506,7 @@ BEGIN {
               got[9] ==  "000" && \
               got[8] ==  "000")
             {
+              # format used on 32-bit PowerPC
               print "IEEE double, big endian"
               found = 1
               exit
