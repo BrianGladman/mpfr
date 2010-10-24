@@ -391,6 +391,11 @@ main (void)
 
   tests_start_mpfr ();
 
+  /* FIXME: this test is too long on old machines (it is the only one
+     that times out with --enable-assert=full --enable-tests-timeout=60
+     on a PowerBook G4 at 400 MHz under GNU/Linux. Reduce the value of N
+     or use a time-based loop? */
+
   while (N--)
     {
       /* no need to test mpfr_round, mpfr_ceil, mpfr_floor, mpfr_trunc since
