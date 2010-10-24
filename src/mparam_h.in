@@ -73,6 +73,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/sparc64/mparam.h"
 #include "sparc64/mparam.h"
 
+#elif defined (__hppa__) /* Threshold for HPPA */
+#define MPFR_TUNE_CASE "src/hppa/mparam.h"
+#include "hppa/mparam.h"
+
 /* __mips64? __mips? */
 #endif
 

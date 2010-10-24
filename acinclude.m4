@@ -627,6 +627,7 @@ BEGIN {
               got[9]  == "000" && \
               got[8]  == "000")
             {
+              # format used on HP 9000/785 under HP-UX
               print "IEEE quad, big endian"
               found = 1
               exit
