@@ -387,14 +387,9 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
 int
 main (void)
 {
-  int N = 40;
+  int N = 20;
 
   tests_start_mpfr ();
-
-  /* FIXME: this test is too long on old machines (it is the only one
-     that times out with --enable-assert=full --enable-tests-timeout=60
-     on a PowerBook G4 at 400 MHz under GNU/Linux. Reduce the value of N
-     or use a time-based loop? */
 
   while (N--)
     {
