@@ -186,6 +186,12 @@ specific architecture.
                         GCC, it may not currently support GCC's __thread
                         storage class.
 
+--enable-gmp-internals  allows the MPFR build to use GMP's undocumented
+                        functions (not from the public API). Note that
+                        library versioning is not guaranteed to work if
+                        this option is used. Thus it must not be used in
+                        binary distributions.
+
 Note: By default, the configure script tries to set CC/CFLAGS to GMP's
 ones (this feature needs GMP 4.3.0 or later, or the --with-gmp-build
 option). However this is not guaranteed to work as the configure script

@@ -24,6 +24,9 @@ Changes from versions 3.0.* to version 3.1.0:
 - The "" release.
 - The MPFR source has been reorganized.
 - Dropped ansi2knr support.
+- New --enable-gmp-internals configure option to use GMP's undocumented
+  functions (not from the public API). Note that library versioning is
+  not guaranteed to work if this option is used.
 - The mpfr_urandom and mpfr_urandomb functions now return identical values
   on processors with different word size (assuming the same random seed, and
   since the GMP random generator does not depend itself on the word size,
