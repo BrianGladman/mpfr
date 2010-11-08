@@ -822,7 +822,15 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    warnings are probably related to the following two bugs:
      http://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210
      http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38470 (possibly a variant)
-   and the casts could be removed once these bugs are fixed. */
+   and the casts could be removed once these bugs are fixed.
+   Casts shouldn't be used on the generic calls (to the ..._2exp functions),
+   where implicit conversions are performed. Indeed, having at least one
+   implicit conversion in the macro allows the compiler to emit diagnostics
+   when normally expected, for instance in the following call:
+     mpfr_set_ui (x, "foo", MPFR_RNDN);
+   If this is not possible (for future macros), one of the tricks described
+   on http://groups.google.com/group/comp.std.c/msg/e92abd24bf9eaf7b could
+   be used. */
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
@@ -832,12 +840,12 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_cmp_ui(_f,_u)                                      \
   (__builtin_constant_p (_u) && (mpfr_ulong) (_u) == 0 ?        \
    (mpfr_sgn) (_f) :                                            \
-   mpfr_cmp_ui_2exp ((_f), (mpfr_ulong) (_u), 0))
+   mpfr_cmp_ui_2exp ((_f), (_u), 0))
 #undef mpfr_cmp_si
 #define mpfr_cmp_si(_f,_s)                                      \
   (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
    mpfr_cmp_ui ((_f), (mpfr_ulong) (mpfr_long) (_s)) :          \
-   mpfr_cmp_si_2exp ((_f), (mpfr_long) (_s), 0))
+   mpfr_cmp_si_2exp ((_f), (_s), 0))
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #undef mpfr_set_ui
 #define mpfr_set_ui(_f,_u,_r)                                   \
@@ -847,13 +855,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
        _p->_mpfr_sign = 1;                                      \
        _p->_mpfr_exp = __MPFR_EXP_ZERO;                         \
        (mpfr_void) (_r); 0; }) :                                \
-   mpfr_set_ui_2exp ((_f), (mpfr_ulong) (_u), 0, (_r)))
+   mpfr_set_ui_2exp ((_f), (_u), 0, (_r)))
 #endif
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)                                   \
   (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
    mpfr_set_ui ((_f), (mpfr_ulong) (mpfr_long) (_s), (_r)) :    \
-   mpfr_set_si_2exp ((_f), (mpfr_long) (_s), 0, (_r)))
+   mpfr_set_si_2exp ((_f), (_s), 0, (_r)))
 #endif
 #endif
 
