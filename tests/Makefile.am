@@ -42,6 +42,9 @@ INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)/src
 # LOADLIBES (documented in the "GNU make" manual and equivalent to LDLIBS)
 # enables to compile a program foo.c in the test directory by simply doing
 # "make foo".
+# Warning! This is not guaranteed to work, as libtool is not used. In
+# particular, this may not work as expected under GNU/Linux if --with-gmp
+# has been used, unless the directory is in your $LD_LIBRARY_PATH.
 LOADLIBES=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(top_builddir)/tests/.libs/libfrtests.a $(top_builddir)/src/.libs/libmpfr.a $(LIBS) $(MPFR_LIBM)
 
 check_LTLIBRARIES = libfrtests.la
