@@ -773,9 +773,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_inf_p(_x)      ((_x)->_mpfr_exp == __MPFR_EXP_INF)
 #define mpfr_zero_p(_x)     ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
 #define mpfr_regular_p(_x)  ((_x)->_mpfr_exp >  __MPFR_EXP_INF)
-#define mpfr_sgn(_x)                                          \
-  ((_x)->_mpfr_exp < __MPFR_EXP_INF ?                         \
-   (mpfr_nan_p (_x) ? mpfr_set_erangeflag () : (void) 0), 0 : \
+#define mpfr_sgn(_x)                                               \
+  ((_x)->_mpfr_exp < __MPFR_EXP_INF ?                              \
+   (mpfr_nan_p (_x) ? mpfr_set_erangeflag () : (mpfr_void) 0), 0 : \
    MPFR_SIGN (_x))
 
 /* Prevent them from using as lvalues */
