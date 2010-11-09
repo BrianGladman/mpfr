@@ -738,13 +738,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    unexpected results with future compilers and aggressive optimisations.
    Why not working only with signed types, using INT_MIN and LONG_MIN? */
 #if __GMP_MP_SIZE_T_INT
-#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(unsigned int)0)>>1))+3))
+#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+2))
+#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+1))
+#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+3))
 #else
-#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(unsigned long)0)>>1))+3))
+#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+2))
+#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+1))
+#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+3))
 #endif
 
 /* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
