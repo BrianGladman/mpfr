@@ -302,7 +302,7 @@ check_pow_si (void)
     }
   else
     {
-      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, LONG_MAX));
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, (mpfr_exp_t) LONG_MAX));
     }
 
   mpfr_set_si (x, 2, MPFR_RNDN);
@@ -313,7 +313,7 @@ check_pow_si (void)
     }
   else
     {
-      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, LONG_MIN));
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, (mpfr_exp_t) LONG_MIN));
     }
 
   mpfr_set_si (x, 2, MPFR_RNDN);
@@ -329,7 +329,7 @@ check_pow_si (void)
     }
   else
     {
-      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, LONG_MIN + 1));
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, (mpfr_exp_t) (LONG_MIN + 1)));
     }
 
   mpfr_set_si_2exp (x, 1, -1, MPFR_RNDN);  /* 0.5 */
@@ -340,7 +340,7 @@ check_pow_si (void)
     }
   else
     {
-      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 2, - (LONG_MIN + 1)));
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 2, (mpfr_exp_t) - (LONG_MIN + 1)));
     }
 
   mpfr_clear (x);
