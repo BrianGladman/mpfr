@@ -473,7 +473,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
-        b1 = MPFR_LIMB_MSB(tmp[k-1]); /* msb from the product */
+        b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
            then their product is in (1/4, 1/2] with probability 2*ln(2)-1
