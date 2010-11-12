@@ -18,6 +18,10 @@ cd "$DIR"
 autoreconf -i
 # -Wmissing-prototypes is not valid for C++
 # add -Wno-sign-conversion because of a bug in g++
+# -pedantic-errors (instead of just -pedantic) below allows us to
+# deactivate the support of C99 features in the configure (as they
+# will give an error) and to test that MPFR can be built with a
+# C90-only compiler.
 if [ "$CC" == "g++" ]; then
    ./configure --with-gmp="$GMP" --enable-assert=full \
    --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
