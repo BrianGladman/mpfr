@@ -90,7 +90,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
-/* if mpn_sqr_n is not exported, use mpn_mul instead */
+/* If a mpn_sqr_n macro is not defined, use mpn_mul. GMP 4.x defines a
+   mpn_sqr_n macro in gmp-impl.h (and this macro disappeared in GMP 5),
+   so that GMP's macro can only be used when MPFR has been configured
+   with --with-gmp-build (and only with GMP 4.x). */
 #ifndef mpn_sqr_n
 # define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
 #endif
