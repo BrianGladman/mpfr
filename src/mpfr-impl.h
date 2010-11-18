@@ -1693,8 +1693,11 @@ __MPFR_DECLSPEC int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *,
        const mp_limb_t *, mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t, int *));
 __MPFR_DECLSPEC int mpfr_round_raw_2 _MPFR_PROTO ((const mp_limb_t *,
              mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t));
+/* No longer defined (see round_prec.c).
+   Uncomment if it needs to be defined again.
 __MPFR_DECLSPEC int mpfr_round_raw_3 _MPFR_PROTO ((const mp_limb_t *,
              mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t, int *));
+*/
 __MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *,
        const mp_limb_t *, mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t));
 
