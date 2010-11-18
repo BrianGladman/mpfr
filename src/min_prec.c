@@ -25,37 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 mpfr_prec_t
 mpfr_min_prec (mpfr_srcptr x)
 {
-  mp_limb_t *mx;
-  mpfr_prec_t px, res;
-  mp_size_t n;
-  int i;
-
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return 0;
 
-  mx = MPFR_MANT (x);
-  px = MPFR_PREC (x);
-
-  res = 0;
-  /* Count full limbs set to zero */
-  for (n = 0; mx[n] == 0; n++)
-    {
-      res += GMP_NUMB_BITS;
-    }
-
-  i = 0;
-  /* mx[n] is now the first limb which is not null. Count number
-   * of null bits in mx[n], from the right */
-  while ((mx[n] & (MPFR_LIMB_ONE << i)) == 0)
-    i++;
-
-  res += i;
-  /* If we have trailing zero bits because the precision
-   * is not a multiple of GMP_NUMB_BITS, we must not count
-   * those. */
-  i = px % GMP_NUMB_BITS;
-  if (i != 0)
-    res -= GMP_NUMB_BITS - i;
-
-  return px - res;
+  /* from a suggestion by Andreas Enge (2010-11-18) */
+  return MPFR_LIMB_SIZE (x) * GMP_NUMB_BITS - mpn_scan1 (x->_mpfr_d, 0);
 }
