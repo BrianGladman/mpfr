@@ -20,6 +20,9 @@ grep GMP_LIMB_BITS {src,tests}/*.{c,h}
 
 grep GMP_RND {src,tests}/*.{c,h} | grep -v '#define GMP_RND'
 
+# Do not use __mpfr_struct structure members in .c files.
+grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
+
 for i in exp prec rnd
 do
   grep mp_${i}_t {src,tests}/*.{c,h} | \
