@@ -29,5 +29,5 @@ mpfr_min_prec (mpfr_srcptr x)
     return 0;
 
   /* from a suggestion by Andreas Enge (2010-11-18) */
-  return MPFR_LIMB_SIZE (x) * GMP_NUMB_BITS - mpn_scan1 (x->_mpfr_d, 0);
+  return MPFR_LIMB_SIZE (x) * GMP_NUMB_BITS - mpn_scan1 (MPFR_MANT (x), 0);
 }
