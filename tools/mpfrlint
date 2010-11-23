@@ -66,9 +66,18 @@ do
   esac
 done
 
-fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' doc/fdl.texi`"
-fdlv2="`sed -n '/GNU Free Documentation License/ \
-  {s/.*Version //; s/ or.*//; p; q}' doc/mpfr.texi`"
+fdlv1="`sed -n '/Version / {
+  s/.*Version //
+  s/,.*//
+  p
+  q
+  }' doc/fdl.texi`"
+fdlv2="`sed -n '/GNU Free Documentation License/ {
+  s/.*Version //
+  s/ or.*//
+  p
+  q
+  }' doc/mpfr.texi`"
 [ "x$fdlv1" = "x$fdlv2" ] || cat <<EOF
 GFDL versions differ:
    fdl.texi: $fdlv1
@@ -76,8 +85,12 @@ GFDL versions differ:
 EOF
 
 # Note: if paragraphs are reformatted, this may need to be updated.
-lgpl="`sed -n '/version [0-9.]\+ or any later version/ \
-  {s/.*version //; s/ or.*//; p; q}' doc/mpfr.texi`"
+lgpl="`sed -n '/version [0-9.]* or any later version/ {
+  s/.*version //
+  s/ or.*//
+  p
+  q
+  }' doc/mpfr.texi`"
 for file in {src,tests}/*.{c,h}
 do
   [ "$file" = "src/get_patches.c" ] && file="tools/get_patches.sh"
