@@ -218,7 +218,7 @@ main (int argc, char *argv[])
     }
 
   /* problem found by Kevin on spe175.testdrive.compaq.com
-     (03 Sep 2003) */
+     (03 Sep 2003), ia64 under HP-UX */
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 2);
   mpfr_set_str (x, "0.5", 10, MPFR_RNDN);
