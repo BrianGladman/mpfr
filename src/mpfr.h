@@ -231,6 +231,17 @@ typedef enum {
 # define __MPFR_DECLSPEC __GMP_DECLSPEC
 #endif
 
+/* Use MPFR_DEPRECATED to mark MPFR functions, types or variables as
+   deprecated. Code inspired by Apache Subversion's svn_types.h file. */
+#if defined(__GNUC__) && \
+  (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+# define MPFR_DEPRECATED __attribute__ ((deprecated))
+#elif defined(_MSC_VER) && _MSC_VER >= 1300
+# define MPFR_DEPRECATED __declspec(deprecated)
+#else
+# define MPFR_DEPRECATED
+#endif
+
 /* Note: In order to be declared, some functions need a specific
    system header to be included *before* "mpfr.h". If the user
    forgets to include the header, the MPFR function prototype in
@@ -923,6 +934,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
 /* Compatibility layer -- obsolete functions and macros */
+/* Note: it is not possible to output warnings, unless one defines
+   a deprecated variable and uses it, e.g.
+     MPFR_DEPRECATED extern int mpfr_deprecated_feature;
+     #define MPFR_EMIN_MIN ((void)mpfr_deprecated_feature,mpfr_get_emin_min())
+   (the cast to void avoids a warning because the left-hand operand
+   has no effect).
+ */
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 #define __gmp_default_rounding_mode (mpfr_get_default_rounding_mode())
