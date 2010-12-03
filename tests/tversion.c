@@ -45,17 +45,29 @@ main (void)
 
   /* In some cases, it may be acceptable to have different versions for
      the header and the library, in particular when shared libraries are
-     used (e.g., after a bug-fix upgrade of the library). Versioning takes
-     care of that, as long as the user has a correct configuration (which
-     is not always the case, hence the following warning). Moreover MPFR
-     uses GMP internals, which may lead to incompatibilities even though
-     GMP's public interface has not changed (the following warning is
-     useful in that case too). */
-  printf ("WARNING! The versions of gmp.h (%s) and libgmp (%s) do not "
-          "match.\nThis may lead to errors, in particular with MPFR. "
-          "If some tests fail,\nplease check that first. As we are not "
-          "sure, we do not regard this as\nan error.\n",
-          buffer, gmp_version);
+     used (e.g., after a bug-fix upgrade of the library, and versioning
+     ensures that this can be done only when the binary interface is
+     compatible). However, when recompiling software like here, this
+     should never happen (except if GMP has been upgraded between two
+     "make check" runs, but there's no reason for that). A difference
+     between the versions of gmp.h and libgmp probably indicates either
+     a bad configuration or some other inconsistency in the development
+     environment, and it is better to fail (in particular for automatic
+     installations). */
+  printf ("ERROR! The versions of gmp.h (%s) and libgmp (%s) do not "
+          "match.\nThe possible causes are:\n"
+          "  * A bad configuration in your include/library search paths.\n"
+          "  * An inconsistency in the include/library search paths of\n"
+          "    your development environment; an example:\n"
+          "      http://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
+          "  * GMP has been upgraded after the first \"make check\".\n"
+          "    In such a case, try again after a \"make clean\".\n"
+          "  * A new or non-standard version naming is used in GMP.\n"
+          "    In this case, a patch may already be available on the\n"
+          "    MPFR web site.  Otherwise please report the problem.\n"
+          "In the first two cases, this may lead to errors, in particular"
+          " with MPFR.\nIf some other tests fail, please solve that"
+          " problem first.\n", buffer, gmp_version);
 
-  return 0;
+  return 1;
 }
