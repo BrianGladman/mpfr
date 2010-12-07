@@ -46,7 +46,9 @@ MPFR).
 3. In the MPFR directory, to detect your system, type:
      ./configure
    possibly with options (see below, in particular if this step or
-   one of the following fails).
+   one of the following fails). You should also check whether WARNING
+   lines have been output (such a problem may cause a failure in one
+   of the following steps).
    Note: paths provided in configure options must always be absolute
    (relative paths are not supported).
 
@@ -167,7 +169,8 @@ specific architecture.
                         add -I and -L options to CPPFLAGS and LDFLAGS
                         *after* the ones that are currently declared,
                         so that DIR will have a lower precedence. Also,
-                        this may not work if DIR is a system directory.
+                        this may not work if DIR is a system directory
+                        (typically /usr or /usr/local).
 
 --with-gmp-build=DIR    assumes that DIR contains the GMP build directory,
                         and enables the use of GMP internals (see above).
