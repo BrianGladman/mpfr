@@ -468,12 +468,16 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
    [AC_MSG_RESULT(yes)
     MPFR_CHECK_PRINTF_SPEC],
    [AC_MSG_RESULT(no)
+    AC_MSG_WARN([==========================================================])
     AC_MSG_WARN(['gmp.h' and 'libgmp' seem to have different versions or])
     AC_MSG_WARN([we cannot run a program linked with GMP (if you cannot])
     AC_MSG_WARN([see the version numbers above). A cause may be different])
-    AC_MSG_WARN([GMP versions with different ABI's.])
+    AC_MSG_WARN([GMP versions with different ABI's or the use of --with-gmp])
+    AC_MSG_WARN([or --with-gmp-include with a system include directory])
+    AC_MSG_WARN([(such as /usr/include or /usr/local/include).])
     AC_MSG_WARN([However since we can't use 'libtool' inside the configure,])
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
+    AC_MSG_WARN([==========================================================])
     ],AC_MSG_RESULT([can not test])
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
