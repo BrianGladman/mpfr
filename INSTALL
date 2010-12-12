@@ -124,7 +124,7 @@ to build it with them. Just do this in step 1:
 
 where GMPBUILD is the GMP build directory. The needed header files are:
 gmp-impl.h, longlong.h and all the necessary headers to use them, which
-may be located either the the GMP source directory or in the GMP build
+may be located either in the GMP source directory or in the GMP build
 directory, in case they are different (MPFR takes care of that, as of
 MPFR 3.1.0).
 
