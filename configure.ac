@@ -44,6 +44,9 @@ test_CFLAGS=${CFLAGS+set}
 
 AC_CANONICAL_HOST
 
+AC_PROG_EGREP
+AC_PROG_SED
+
 dnl To use a separate config header.
 dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
@@ -77,8 +80,8 @@ AC_ARG_WITH(gmp_build,
       LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune"
       gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
       if test -r $withval/Makefile ; then
-         GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
-         GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
+         GMP_CFLAGS=`$SED -n 's/^CFLAGS = //p' $withval/Makefile`
+         GMP_CC=`$SED -n 's/^CC = //p' $withval/Makefile`
       fi
       use_gmp_build=yes
    else
@@ -152,9 +155,6 @@ dnl Check if user request its CC and CFLAGS
 if test -n "$CFLAGS" || test -n "$CC" ; then
  user_redefine_cc=yes
 fi
-dnl Autoconf detection
-AC_PROG_EGREP
-AC_PROG_SED
 
 dnl ********************************************************************
 dnl Check for CC and CFLAGS in gmp.h
