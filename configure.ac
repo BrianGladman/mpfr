@@ -84,6 +84,7 @@ AC_ARG_WITH(gmp_build,
          GMP_CC=`$SED -n 's/^CC = //p' $withval/Makefile`
          GMP_SOURCE=`$SED -n 's/^srcdir = *//p' $withval/Makefile`
          case "$GMP_SOURCE" in
+           .)  GMP_SOURCE="" ;;
            /*) ;;
            ?*) GMP_SOURCE="$withval/$GMP_SOURCE" ;;
          esac
