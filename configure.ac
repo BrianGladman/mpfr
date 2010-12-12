@@ -82,13 +82,13 @@ AC_ARG_WITH(gmp_build,
       if test -r $withval/Makefile ; then
          GMP_CFLAGS=`$SED -n 's/^CFLAGS = //p' $withval/Makefile`
          GMP_CC=`$SED -n 's/^CC = //p' $withval/Makefile`
-         GMP_SOURCE=`grep -w "srcdir =" $withval/Makefile  | sed 's/srcdir = //'`
-         if test "$GMP_SOURCE" != "." ; then
-            if test -d "$GMP_SOURCE" ; then
-               CPPFLAGS="$CPPFLAGS -I$GMP_SOURCE -I$GMP_SOURCE/tune"
-            elif test -d "$withval/$GMP_SOURCE" ; then
-               CPPFLAGS="$CPPFLAGS -I$withval/$GMP_SOURCE -I$withval/$GMP_SOURCE/tune"
-            fi
+         GMP_SOURCE=`$SED -n 's/srcdir = *//' $withval/Makefile`
+         case "$GMP_SOURCE" in
+           /*) ;;
+           ?*) GMP_SOURCE="$withval/$GMP_SOURCE" ;;
+         esac
+         if test -d "$GMP_SOURCE" ; then
+            CPPFLAGS="$CPPFLAGS -I$GMP_SOURCE -I$GMP_SOURCE/tune"
          fi
       fi
       use_gmp_build=yes
