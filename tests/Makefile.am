@@ -11,6 +11,12 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu $(top_builddir)/ansi2knr
 
+# tversion is run
+#   * at the beginning so that the user gets a possible version error
+#     before any other one (the version error may be the cause of the
+#     other errors), and
+#   * at the end so that the error message is also near the end of the
+#     output.
 check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat	\
      reuse tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm	\
@@ -32,7 +38,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan	\
      ttanh ttrunc tui_div tui_pow tui_sub turandom ty0 ty1 tyn	\
-     tzeta tzeta_ui
+     tzeta tzeta_ui tversion
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
