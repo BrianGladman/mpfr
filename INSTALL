@@ -123,12 +123,10 @@ to build it with them. Just do this in step 1:
   ./configure --with-gmp-build=GMPBUILD
 
 where GMPBUILD is the GMP build directory. The needed header files are:
-gmp-impl.h, longlong.h and all the necessary headers to use them.
-
-As gmp-impl.h and longlong.h are only in the GMP source directory,
-you first need to copy these files to the build directory if it is
-different (there may be other workarounds, such as setting $CPPFLAGS
-to search the GMP source directory).
+gmp-impl.h, longlong.h and all the necessary headers to use them, which
+may be located either the the GMP source directory or in the GMP build
+directory, in case they are different (MPFR takes care of that, as of
+MPFR 3.1.0).
 
 Warning: the library obtained in this way may use some internal GMP
 symbols, and thus dynamically linking your software with a different
