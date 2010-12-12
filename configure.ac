@@ -82,7 +82,7 @@ AC_ARG_WITH(gmp_build,
       if test -r $withval/Makefile ; then
          GMP_CFLAGS=`$SED -n 's/^CFLAGS = //p' $withval/Makefile`
          GMP_CC=`$SED -n 's/^CC = //p' $withval/Makefile`
-         GMP_SOURCE=`$SED -n 's/^srcdir = *//' $withval/Makefile`
+         GMP_SOURCE=`$SED -n 's/^srcdir = *//p' $withval/Makefile`
          case "$GMP_SOURCE" in
            /*) ;;
            ?*) GMP_SOURCE="$withval/$GMP_SOURCE" ;;
