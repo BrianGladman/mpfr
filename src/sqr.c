@@ -64,7 +64,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
     return mpfr_mul (a, b, b, rnd_mode);
 
   MPFR_TMP_MARK(marker);
-  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2 * bn * BYTES_PER_MP_LIMB);
+  tmp = MPFR_TMP_LIMBS_ALLOC (2 * bn);
 
   /* Multiplies the mantissa in temporary allocated space */
   mpn_sqr_n (tmp, MPFR_MANT(b), bn);

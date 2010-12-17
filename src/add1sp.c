@@ -204,7 +204,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mp_limb_t bcp, bcp1; /* Cp and C'p+1 */
 
       /* General case: 1 <= d < p */
-      cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+      cp = MPFR_TMP_LIMBS_ALLOC (n);
 
       /* Shift c in temporary allocated place */
       {

@@ -91,15 +91,14 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   rrsize = rsize + rsize;
   usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
   rp0 = MPFR_MANT(r);
-  rp = (sh < GMP_NUMB_BITS) ? rp0
-    : (mp_ptr) MPFR_TMP_ALLOC (rsize * sizeof (mp_limb_t));
+  rp = (sh < GMP_NUMB_BITS) ? rp0 : MPFR_TMP_LIMBS_ALLOC (rsize);
   up = MPFR_MANT(u);
   sticky0 = MPFR_LIMB_ZERO; /* truncated part of input */
   sticky1 = MPFR_LIMB_ZERO; /* truncated part of rp[0] */
   odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
   inexact = -1; /* return ternary flag */
 
-  sp = (mp_limb_t *) MPFR_TMP_ALLOC (rrsize * sizeof (mp_limb_t));
+  sp = MPFR_TMP_LIMBS_ALLOC (rrsize);
 
   /* copy the most significant limbs of u to {sp, rrsize} */
   if (MPFR_LIKELY(usize <= rrsize)) /* in case r and u have the same precision,

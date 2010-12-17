@@ -229,7 +229,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mpfr_prec_t p,
          2h bits, and th at most h bits, then tn-th can store at least h bits,
          thus tn - th >= xn, and reserving the space for u is enough. */
       MPFR_ASSERTD(2 * xn <= un);
-      u = r = (mp_ptr) MPFR_TMP_ALLOC (un * sizeof (mp_limb_t));
+      u = r = MPFR_TMP_LIMBS_ALLOC (un);
       if (2 * h <= GMP_NUMB_BITS) /* xn=rn=1, and since p <= 2h-3, n=1,
                                      thus ln = 0 */
         {
@@ -253,7 +253,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mpfr_prec_t p,
          i.e., at weight 2^{-2h} (s is aligned to the low significant bits)
        */
       sn = an + rn;
-      s = (mp_ptr) MPFR_TMP_ALLOC (sn * sizeof (mp_limb_t));
+      s = MPFR_TMP_LIMBS_ALLOC (sn);
       if (rn == 1) /* rn=1 implies n=1, since rn*GMP_NUMB_BITS >= 2h,
                            and 2h >= p+3 */
         {
@@ -495,7 +495,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       wn = LIMB_SIZE(wp);
       out_of_place = (r == u) || (wn > rn);
       if (out_of_place)
-        x = (mp_ptr) MPFR_TMP_ALLOC (wn * sizeof (mp_limb_t));
+        x = MPFR_TMP_LIMBS_ALLOC (wn);
       else
         x = MPFR_MANT(r);
       mpfr_mpn_rec_sqrt (x, wp, MPFR_MANT(u), up, s);

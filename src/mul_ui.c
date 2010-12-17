@@ -80,7 +80,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 
   MPFR_ASSERTD (xn < MP_SIZE_T_MAX);
   MPFR_TMP_MARK(marker);
-  yp = (mp_ptr) MPFR_TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
+  yp = MPFR_TMP_LIMBS_ALLOC (xn + 1);
 
   MPFR_ASSERTN (u == (mp_limb_t) u);
   yp[xn] = mpn_mul_1 (yp, MPFR_MANT (x), xn, u);

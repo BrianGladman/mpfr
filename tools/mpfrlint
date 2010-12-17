@@ -37,6 +37,9 @@ grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {src,tests}/*.{c,h}
 # This test is a heuristic.
 grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
 
+# Use MPFR_TMP_LIMBS_ALLOC.
+grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
+
 for file in {src,tests}/*.{c,h} */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case

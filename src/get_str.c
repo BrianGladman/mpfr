@@ -2353,7 +2353,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       n = (prec - 1) / GMP_NUMB_BITS + 1;
 
       MPFR_TMP_MARK (marker);
-      x1 = (mp_limb_t*) MPFR_TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
+      x1 = MPFR_TMP_LIMBS_ALLOC (n + 1);
       nb = n * GMP_NUMB_BITS - prec;
       /* round xp to the precision prec, and put it into x1
          put the carry into x1[n] */
@@ -2419,7 +2419,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       n = 1 + (prec - 1) / GMP_NUMB_BITS;
 
       /* a will contain the approximation of the mantissa */
-      a = (mp_limb_t*) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+      a = MPFR_TMP_LIMBS_ALLOC (n);
 
       nx = 1 + (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
 
@@ -2455,7 +2455,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
           err = (err <= 0) ? 2 : err + 1;
 
           /* result = a * x */
-          result = (mp_limb_t*) MPFR_TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
+          result = MPFR_TMP_LIMBS_ALLOC (n + nx1);
           mpn_mul (result, a, n, x1, nx1);
           exp_a += MPFR_GET_EXP (x);
           if (mpn_scan1 (result, 0) < (nx1 * GMP_NUMB_BITS))
@@ -2480,9 +2480,9 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
           exact = (err == -1);
 
           /* allocate memory for x1, result and reste */
-          x1 = (mp_limb_t*) MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
-          result = (mp_limb_t*) MPFR_TMP_ALLOC ((n + 1) * sizeof (mp_limb_t));
-          reste = (mp_limb_t*) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+          x1 = MPFR_TMP_LIMBS_ALLOC (2 * n);
+          result = MPFR_TMP_LIMBS_ALLOC (n + 1);
+          reste = MPFR_TMP_LIMBS_ALLOC (n);
 
           /* initialize x1 = x */
           MPN_COPY2 (x1, 2 * n, xp, nx);

@@ -301,7 +301,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Shift c in the allocated temporary block */
             SubD1NoLose:
               c0 = cp[0] & (MPFR_LIMB_ONE<<sh);
-              cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+              cp = MPFR_TMP_LIMBS_ALLOC (n);
               mpn_rshift(cp, MPFR_MANT(c), n, 1);
               if (MPFR_LIKELY(c0 == 0))
                 {
@@ -346,7 +346,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Calcul of 2*b-c (Exact) */
               /* Shift b in the allocated temporary block */
             SubD1Lose:
-              bp = (mp_limb_t*) MPFR_TMP_ALLOC (n * BYTES_PER_MP_LIMB);
+              bp = MPFR_TMP_LIMBS_ALLOC (n);
               mpn_lshift (bp, MPFR_MANT(b), n, 1);
               ap = MPFR_MANT(a);
               mpn_sub_n (ap, bp, cp, n);
@@ -497,7 +497,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* General case: 2 <= d < p */
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-      cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+      cp = MPFR_TMP_LIMBS_ALLOC (n);
 
       /* Shift c in temporary allocated place */
       dm = d % GMP_NUMB_BITS;

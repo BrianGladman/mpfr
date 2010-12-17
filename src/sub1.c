@@ -158,13 +158,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Ensure ap != bp */
       if (MPFR_UNLIKELY (ap == bp))
         {
-          bp = (mp_ptr) MPFR_TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
+          bp = MPFR_TMP_LIMBS_ALLOC (bn);
           MPN_COPY (bp, ap, bn);
         }
     }
   else
     {
-      bp = (mp_ptr) MPFR_TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
+      bp = MPFR_TMP_LIMBS_ALLOC (bn + 1);
       bp[0] = mpn_rshift (bp + 1, MPFR_MANT(b), bn++, shift_b);
     }
 
@@ -187,13 +187,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Ensure ap != cp */
       if (ap == cp)
         {
-          cp = (mp_ptr) MPFR_TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+          cp = MPFR_TMP_LIMBS_ALLOC (cn);
           MPN_COPY(cp, ap, cn);
         }
     }
  else
     {
-      cp = (mp_ptr) MPFR_TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
+      cp = MPFR_TMP_LIMBS_ALLOC (cn + 1);
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 

@@ -464,7 +464,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* prec bits corresponds to ysize limbs */
       ysize_bits = ysize * GMP_NUMB_BITS;
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits */
-      y = (mp_limb_t*) MPFR_TMP_ALLOC ((2 * ysize + 1) * sizeof (mp_limb_t));
+      y = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
       y += ysize; /* y has (ysize+1) allocated limbs */
 
       /* pstr_size is the number of characters we read in pstr->mant
@@ -586,7 +586,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           mp_limb_t *z;
           mpfr_exp_t exp_z;
 
-          result = (mp_limb_t*) MPFR_TMP_ALLOC ((2*ysize+1)*BYTES_PER_MP_LIMB);
+          result = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
 
           /* z = base^(exp_base-sptr_size) using space allocated at y-ysize */
           z = y - ysize;
@@ -645,7 +645,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           mp_limb_t *z;
           mpfr_exp_t exp_z;
 
-          result = (mp_limb_t*) MPFR_TMP_ALLOC ((3*ysize+1) * BYTES_PER_MP_LIMB);
+          result = MPFR_TMP_LIMBS_ALLOC (3 * ysize + 1);
 
           /* set y to y * K^ysize */
           y = y - ysize;  /* we have allocated ysize limbs at y - ysize */

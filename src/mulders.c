@@ -164,7 +164,7 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   /* it remains {np,2l+k} = {np,n+l} as remainder */
 
   /* now we have to subtract high(Q1)*D0 where Q1={qp+l,k} and D0={dp,l} */
-  tp = (mp_ptr) MPFR_TMP_ALLOC (2 * l * sizeof (mp_limb_t));
+  tp = MPFR_TMP_LIMBS_ALLOC (2 * l);
   mpfr_mulhigh_n (tp, qp + k, dp, l);
   /* we are only interested in the upper l limbs from {tp,2l} */
   cy = mpn_sub_n (np + n, np + n, tp + l, l);

@@ -54,7 +54,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
       unsigned long xprec = sx * GMP_NUMB_BITS;
 
       MPFR_TMP_MARK(marker);
-      tmp = (mp_limb_t*) MPFR_TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
+      tmp = MPFR_TMP_LIMBS_ALLOC (sx);
       if (cnt)
         mpn_lshift (tmp, mx, sx, cnt);
       else

@@ -56,14 +56,14 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(ap == bp))
     {
-      bp = (mp_ptr) MPFR_TMP_ALLOC (bn * BYTES_PER_MP_LIMB);
+      bp = MPFR_TMP_LIMBS_ALLOC (bn);
       MPN_COPY (bp, ap, bn);
       if (ap == cp)
         { cp = bp; }
     }
   else if (MPFR_UNLIKELY(ap == cp))
     {
-      cp = (mp_ptr) MPFR_TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+      cp = MPFR_TMP_LIMBS_ALLOC (cn);
       MPN_COPY(cp, ap, cn);
     }
 

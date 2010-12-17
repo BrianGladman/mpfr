@@ -264,7 +264,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          sticky bits */
       qsize = q0size + 1;
       /* need to allocate memory for the quotient */
-      qp = (mp_ptr) MPFR_TMP_ALLOC (qsize * sizeof(mp_limb_t));
+      qp = MPFR_TMP_LIMBS_ALLOC (qsize);
     }
   else
     {
@@ -274,7 +274,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   qqsize = qsize + qsize;
 
   /* prepare the dividend */
-  ap = (mp_ptr) MPFR_TMP_ALLOC (qqsize * sizeof(mp_limb_t));
+  ap = MPFR_TMP_LIMBS_ALLOC (qqsize);
   if (MPFR_LIKELY(qqsize > usize)) /* use the full dividend */
     {
       k = qqsize - usize; /* k > 0 */
@@ -307,7 +307,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               between quotient and divisor, necessarily k = 0
               since quotient and divisor are the same mpfr variable */
         {
-          bp = (mp_ptr) MPFR_TMP_ALLOC (qsize * sizeof(mp_limb_t));
+          bp = MPFR_TMP_LIMBS_ALLOC (qsize);
           MPN_COPY(bp, vp, vsize);
         }
       sticky_v = sticky_v || mpfr_mpn_cmpzero (vp, k);
@@ -421,7 +421,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               int cmp_s_r;
               mp_limb_t qh2;
 
-              sp = (mp_ptr) MPFR_TMP_ALLOC (vsize * sizeof(mp_limb_t));
+              sp = MPFR_TMP_LIMBS_ALLOC (vsize);
               k = vsize - qsize;
               /* sp <- {qp, qsize} * {vp, vsize-qsize} */
               qp[0] ^= sticky3orig; /* restore original quotient */

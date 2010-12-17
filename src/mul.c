@@ -108,7 +108,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Check for no size_t overflow*/
   MPFR_ASSERTD((size_t) k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   MPFR_TMP_MARK(marker);
-  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
+  tmp = MPFR_TMP_LIMBS_ALLOC (k);
 
   /* multiplies two mantissa in temporary allocated space */
   b1 = (MPFR_LIKELY(bn >= cn)) ?
@@ -298,7 +298,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Check for no size_t overflow*/
   MPFR_ASSERTD ((size_t) k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   MPFR_TMP_MARK (marker);
-  tmp = (mp_limb_t *) MPFR_TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
+  tmp = MPFR_TMP_LIMBS_ALLOC (k);
 
   /* multiplies two mantissa in temporary allocated space */
   if (MPFR_UNLIKELY (bn < cn))
@@ -436,7 +436,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               bp --;
             else
               {
-                bp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                bp = MPFR_TMP_LIMBS_ALLOC (n + 1);
                 bp[0] = 0;
                 MPN_COPY (bp + 1, MPFR_MANT (b) + bn - n, n);
               }
@@ -446,7 +446,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   cp --; /* FIXME: Could this happen? */
                 else
                   {
-                    cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                    cp = MPFR_TMP_LIMBS_ALLOC (n + 1);
                     cp[0] = 0;
                     MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
                   }
@@ -461,7 +461,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
             if (MPFR_LIKELY (k < 2*n))
               {
-                tmp = (mp_limb_t*) MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
+                tmp = MPFR_TMP_LIMBS_ALLOC (2 * n);
                 tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
               }
           }

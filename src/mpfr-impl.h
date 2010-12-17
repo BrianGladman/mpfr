@@ -894,6 +894,9 @@ extern unsigned char *mpfr_stack;
 #define MPFR_TMP_FREE(_x) (mpfr_stack = (_x))
 #endif
 
+#define MPFR_TMP_LIMBS_ALLOC(N) \
+  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * BYTES_PER_MP_LIMB))
+
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
  * since only functions dealing with the Heap care about it */
@@ -904,7 +907,7 @@ extern unsigned char *mpfr_stack;
    MPFR_SET_INVALID_EXP(x))
 
 #define MPFR_TMP_INIT(xp, x, p, s)                                   \
-  (xp = (mp_ptr) MPFR_TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),   \
+  (xp = MPFR_TMP_LIMBS_ALLOC(s),                                     \
    MPFR_TMP_INIT1(xp, x, p))
 
 #define MPFR_TMP_INIT_ABS(d, s)                                      \
