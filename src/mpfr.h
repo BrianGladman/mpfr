@@ -935,11 +935,11 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 /* Compatibility layer -- obsolete functions and macros */
 /* Note: it is not possible to output warnings, unless one defines
-   a deprecated variable and uses it, e.g.
-     MPFR_DEPRECATED extern int mpfr_deprecated_feature;
-     #define MPFR_EMIN_MIN ((void)mpfr_deprecated_feature,mpfr_get_emin_min())
-   (the cast to void avoids a warning because the left-hand operand
-   has no effect).
+ * a deprecated variable and uses it, e.g.
+ *   MPFR_DEPRECATED extern int mpfr_deprecated_feature;
+ *   #define MPFR_EMIN_MIN ((void)mpfr_deprecated_feature,mpfr_get_emin_min())
+ * (the cast to void avoids a warning because the left-hand operand
+ * has no effect).
  */
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
