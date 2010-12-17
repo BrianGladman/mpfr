@@ -111,13 +111,7 @@ typedef enum {
 #define GMP_RNDD MPFR_RNDD
 
 /* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
-#ifndef _MPFR_PREC_FORMAT
-# if __GMP_MP_SIZE_T_INT == 1
-#  define _MPFR_PREC_FORMAT 2
-# else
-#  define _MPFR_PREC_FORMAT 3
-# endif
-#endif
+#define _MPFR_PREC_FORMAT 2
 
 /* Let's make mpfr_prec_t signed in order to avoid problems due to the
    usual arithmetic conversions when mixing mpfr_prec_t and mpfr_exp_t
@@ -144,8 +138,8 @@ typedef unsigned long  mpfr_uprec_t;
 /* Definition of sign */
 typedef int          mpfr_sign_t;
 
-/* Definition of the exponent: same as in GMP. */
-typedef mp_exp_t     mpfr_exp_t;
+/* Definition of the exponent: 32 bits (FOR TESTING ONLY). */
+typedef int          mpfr_exp_t;
 
 /* Definition of the standard exponent limits */
 #define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((mpfr_ulong) 1 << 30) - 1))
@@ -748,15 +742,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    to the signed type mpfr_exp_t yields an integer overflow, which can give
    unexpected results with future compilers and aggressive optimisations.
    Why not working only with signed types, using INT_MIN and LONG_MIN? */
-#if __GMP_MP_SIZE_T_INT
 #define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+2))
 #define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+1))
 #define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+3))
-#else
-#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+3))
-#endif
 
 /* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
 #ifndef MPFR_EXTENSION

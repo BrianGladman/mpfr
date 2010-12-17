@@ -83,13 +83,8 @@ extern "C" {
 #define GMP_LIMB_HIGHBIT (MP_LIMB_T_MAX ^ (MP_LIMB_T_MAX >> 1))
 
 
-#if __GMP_MP_SIZE_T_INT
 #define MP_SIZE_T_MAX      INT_MAX
 #define MP_SIZE_T_MIN      INT_MIN
-#else
-#define MP_SIZE_T_MAX      LONG_MAX
-#define MP_SIZE_T_MIN      LONG_MIN
-#endif
 
 #define LONG_HIGHBIT       LONG_MIN
 #define INT_HIGHBIT        INT_MIN

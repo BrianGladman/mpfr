@@ -614,15 +614,9 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  * depend on [mp_exp_t]; if this type changes in GMP, these definitions
  * will need to be modified.
  */
-#if __GMP_MP_SIZE_T_INT == 1
 typedef unsigned int       mpfr_uexp_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
-#else
-typedef unsigned long int  mpfr_uexp_t;
-# define MPFR_EXP_MAX (LONG_MAX)
-# define MPFR_EXP_MIN (LONG_MIN)
-#endif
 #ifndef mp_exp_unsigned_t
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
