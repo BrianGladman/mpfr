@@ -341,7 +341,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
      Thus if |s| <= 1/4*ulp(1/2), we can deduce the correct rounding
      (the 1/4 covers the case where |zeta(s)| < 1/2 and rounding to nearest).
      A sufficient condition is that EXP(s) + 1 < -PREC(z). */
-  if (MPFR_EXP(s) + 1 < - (mpfr_exp_t) MPFR_PREC(z))
+  if (MPFR_GET_EXP (s) + 1 < - (mpfr_exp_t) MPFR_PREC(z))
     {
       int signs = MPFR_SIGN(s);
       mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */
@@ -374,7 +374,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       tmp[0] = *s;
-      MPFR_EXP (tmp) = MPFR_EXP (s) - 1;
+      MPFR_EXP (tmp) = MPFR_GET_EXP (s) - 1;
       if (mpfr_integer_p (tmp))
         {
           MPFR_SET_ZERO (z);

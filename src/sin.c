@@ -113,8 +113,8 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           else
             mpfr_add (c, c, xr, MPFR_RNDZ);
           if (MPFR_IS_ZERO(xr)
-              || MPFR_EXP(xr) < (mpfr_exp_t) 3 - (mpfr_exp_t) m
-              || MPFR_EXP(c) < (mpfr_exp_t) 3 - (mpfr_exp_t) m)
+              || MPFR_GET_EXP(xr) < (mpfr_exp_t) 3 - (mpfr_exp_t) m
+              || MPFR_GET_EXP(c) < (mpfr_exp_t) 3 - (mpfr_exp_t) m)
             goto ziv_next;
 
           /* |xr - x - 2kPi| <= 2^(2-m), thus |sin(xr) - sin(x)| <= 2^(2-m) */

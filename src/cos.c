@@ -214,7 +214,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* now |x| < 4 (or xr if reduce = 1), thus |r| <= 16 */
 
       /* we need |r| < 1/2 for mpfr_cos2_aux, i.e., EXP(r) - 2K <= -1 */
-      K = K0 + 1 + MAX(0, MPFR_EXP(r)) / 2;
+      K = K0 + 1 + MAX(0, MPFR_GET_EXP(r)) / 2;
       /* since K0 >= 0, if EXP(r) < 0, then K >= 1, thus EXP(r) - 2K <= -3;
          otherwise if EXP(r) >= 0, then K >= 1/2 + EXP(r)/2, thus
          EXP(r) - 2K <= -1 */
