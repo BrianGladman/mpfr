@@ -422,7 +422,6 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mp_size_t rn, wn;
   int s, cy, inex;
   mp_ptr x;
-  int out_of_place;
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", u, u, rnd_mode),
@@ -493,8 +492,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       MPFR_TMP_MARK (marker);
       wn = LIMB_SIZE(wp);
-      out_of_place = (r == u) || (wn > rn);
-      if (out_of_place)
+      if (r == u || wn > rn)
         x = MPFR_TMP_LIMBS_ALLOC (wn);
       else
         x = MPFR_MANT(r);
