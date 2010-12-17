@@ -904,7 +904,7 @@ extern unsigned char *mpfr_stack;
    MPFR_SET_INVALID_EXP(x))
 
 #define MPFR_TMP_INIT(xp, x, p, s)                                   \
-  (xp = (mp_ptr) MPFR_TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),        \
+  (xp = (mp_ptr) MPFR_TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),   \
    MPFR_TMP_INIT1(xp, x, p))
 
 #define MPFR_TMP_INIT_ABS(d, s)                                      \
