@@ -420,10 +420,15 @@ Table of contents:
   mainly for developers, in order to be able to test the case where the
   extended exponent range is the same as the default exponent range, on
   such platforms.
+  Tests can be done with the exp-int branch (added on 2010-12-17, and
+  many tests fail at this time).
 
 - test underflow/overflow detection of various functions (in particular
   mpfr_exp) in reduced exponent ranges, including ranges that do not
   contain 0.
+
+- add an internal macro that does the equivalent of the following?
+    MPFR_IS_ZERO(x) || MPFR_GET_EXP(x) <= value
 
 
 ##############################################################################
