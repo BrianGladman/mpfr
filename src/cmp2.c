@@ -43,8 +43,8 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   int sign;
 
   /* b=c should not happen, since cmp2 is called only from agm
-     (with different variables), and from sub1 (if same b=c, then
-     sub1sp would be called instead */
+     (with different variables) and from sub1 (if b=c, then
+     sub1sp would be called instead). */
   MPFR_ASSERTD (b != c);
 
   /* the cases b=0 or c=0 are also treated apart in agm and sub
