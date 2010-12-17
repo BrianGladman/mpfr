@@ -492,7 +492,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       MPFR_TMP_MARK (marker);
       wn = LIMB_SIZE(wp);
-      if (r == u || wn > rn)
+      if (r == u || wn > rn) /* out of place, i.e., we cannot use r */
         x = MPFR_TMP_LIMBS_ALLOC (wn);
       else
         x = MPFR_MANT(r);
