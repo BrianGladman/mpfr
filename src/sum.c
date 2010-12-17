@@ -108,7 +108,7 @@ count_sort (mpfr_srcptr *const tab, unsigned long n,
 
   /* Performs a counting sort of the entries */
   MPFR_TMP_MARK (marker);
-  account = (unsigned long *) MPFR_TMP_ALLOC (exp_num * sizeof * account);
+  account = (unsigned long *) MPFR_TMP_ALLOC (exp_num * sizeof *account);
   for (i = 0; i < exp_num; i++)
     account[i] = 0;
   for (i = 0; i < n; i++)
