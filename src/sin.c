@@ -114,6 +114,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             mpfr_add (c, c, xr, MPFR_RNDZ);
           if (MPFR_IS_ZERO(xr)
               || MPFR_GET_EXP(xr) < (mpfr_exp_t) 3 - (mpfr_exp_t) m
+              || MPFR_IS_ZERO(c)
               || MPFR_GET_EXP(c) < (mpfr_exp_t) 3 - (mpfr_exp_t) m)
             goto ziv_next;
 
