@@ -1,4 +1,4 @@
-# Copyright 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+# Copyright 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 # Contributed by Patrick Pelissier, INRIA.
 # 
 # This file is part of the MPFR Library.
@@ -28,7 +28,7 @@ CP=cp -f
 MV=mv -f
 
 GMP=/usr
-MPFR=$(PWD)/..
+MPFR=$(PWD)/../..
 PARI=$(GMP)
 NTL=$(GMP)
 CLN=$(GMP)
@@ -59,7 +59,7 @@ INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 endif
 
 # search first for real install, then for build directory
-LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/.libs/libmpfr.a && echo $(MPFR)/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
+LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/src/.libs/libmpfr.a && echo $(MPFR)/src/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
 
 XLIBS=`test -f $(PARI)/lib/libpari.a && echo $(PARI)/lib/libpari.a` \
       `test -f $(NTL)/lib/libntl.a && echo $(NTL)/lib/libntl.a`     \
