@@ -46,7 +46,12 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          all subsequent operations are exact (this avoids double rounding
          problems) */
       mpfr_init2 (y, MPFR_LDBL_MANT_DIG);
-      mpfr_init2 (z, IEEE_DBL_MANT_DIG);
+      mpfr_init2 (z, MPFR_LDBL_MANT_DIG);
+      /* Note about the precision of z: even though IEEE_DBL_MANT_DIG is
+         sufficient, z has been set to the same precision as y so that
+         the mpfr_sub below calls mpfr_sub1sp, which is faster than the
+         generic subtraction, even in this particular case (from tests
+         done by Patrick Pelissier on a 64-bit Core2 Duo against r7285). */
 
       mpfr_set (y, x, rnd_mode);
       sh = MPFR_GET_EXP (y);
