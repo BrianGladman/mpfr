@@ -51,7 +51,9 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          sufficient, z has been set to the same precision as y so that
          the mpfr_sub below calls mpfr_sub1sp, which is faster than the
          generic subtraction, even in this particular case (from tests
-         done by Patrick Pelissier on a 64-bit Core2 Duo against r7285). */
+         done by Patrick Pelissier on a 64-bit Core2 Duo against r7285).
+         But here there is an important cancellation in the subtraction.
+         TODO: get more information about what has been tested. */
 
       mpfr_set (y, x, rnd_mode);
       sh = MPFR_GET_EXP (y);
