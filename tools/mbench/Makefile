@@ -23,6 +23,7 @@ CC=gcc
 CXX=g++
 RANLIB=ranlib
 CFLAGS=-O2 -fomit-frame-pointer -Wall -g
+LDFLAGS=
 RM=rm -f
 CP=cp -f
 MV=mv -f
@@ -117,7 +118,7 @@ mfv5-crlibm.o: mfv5-crlibm.cc mfv5.h
 	@(test -f $(CRLIBM)/lib/libcrlibm.a && $(CXX) $(INCLUDES) -I$(CRLIBM)/include/ $(CFLAGS) -c $< && echo "Using CRLIBM.") || ($(CXX) -c mfv5-void.cc -o mfv5-crlibm.o && echo "CRLIBM not found.")
 
 mfv5:	mfv5.o mfv5-mpfr.o mfv5-mpf.o mfv5-ntl.o mfv5-arprec.o mfv5-pari.o mfv5-cln.o mfv5-libc.o mfv5-crlibm.o
-	$(CXX) $(CFLAGS) mfv5.o mfv5-mpfr.o mfv5-mpf.o mfv5-ntl.o mfv5-arprec.o mfv5-pari.o mfv5-cln.o mfv5-libc.o mfv5-crlibm.o $(XLIBS) $(LIBS) -o mfv5
+	$(CXX) $(CFLAGS) mfv5.o mfv5-mpfr.o mfv5-mpf.o mfv5-ntl.o mfv5-arprec.o mfv5-pari.o mfv5-cln.o mfv5-libc.o mfv5-crlibm.o $(XLIBS) $(LIBS) $(LDFLAGS) -o mfv5
 
 dist: $(DIST)
 	rm -fr $(NAME)-$(VERSION) $(NAME)-$(VERSION).tar $(NAME)-$(VERSION).tar.bz2
@@ -126,3 +127,6 @@ dist: $(DIST)
 	tar cf $(NAME)-$(VERSION).tar $(NAME)-$(VERSION)
 	bzip2 $(NAME)-$(VERSION).tar
 	rm -fr $(NAME)-$(VERSION)
+
+rt:
+	make clean all CFLAGS="-O2 -fomit-frame-pointer -Wall -g -DUSE_CLOCK_MONOTONIC" LDFLAGS="-lrt"

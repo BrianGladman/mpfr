@@ -35,7 +35,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 /* High accuracy timing */
-#if defined (__i386__) || defined(__amd64__)
+#if defined (USE_CLOCK_MONOTONIC)
+
+/* Needs to include -lrt in the library section */
+#include <time.h> 
+
+#define timp_rdtsc()                                           \
+({unsigned long long int x;				       \
+  struct timespec ts;                                          \
+  clock_gettime(CLOCK_MONOTONIC, &ts);                         \
+  x = ts.tv_sec * 1000000000UL + ts.tv_nsec;                   \
+ x; })
+#define timp_rdtsc_before(time) (time = timp_rdtsc())
+#define timp_rdtsc_after(time)  (time = timp_rdtsc())
+
+#elif defined (__i386__) || defined(__amd64__)
 
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
