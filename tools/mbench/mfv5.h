@@ -40,7 +40,8 @@ struct option_test {
   unsigned long seed;
   unsigned long stat;
   bool verbose;
-  option_test () : prec (53), seed (14528596), stat (100), verbose (false) {}
+  std::string export_base;
+  option_test () : prec (53), seed (14528596), stat (100), verbose (false), export_base("") {}
 };
 
 class registered_test;

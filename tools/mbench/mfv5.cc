@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define USAGE                                                           \
  "Bench functions for Pentium (V5++).\n"                                \
  __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"                \
- "Usage: mfv5 [-pPREC] [-sSEED] [-mSIZE] [-iPRIO] [-lLIST] tests ...\n"
+ "Usage: mfv5 [-pPREC] [-sSEED] [-mSIZE] [-iPRIO] [-lLIST] [-xEXPORT_BASE] tests ...\n"
 
 using namespace std;
 
@@ -73,6 +73,7 @@ build_base (vector<string> &base, const option_test &opt)
   const char *str;
   mpfr_exp_t e;
   char *buffer;
+  FILE *f = fopen (opt.export_base.c_str(), "w");
 
   mpfr_init2 (x, opt.prec);
   gmp_randinit_lc_2exp_size (state, 128);
@@ -88,12 +89,16 @@ build_base (vector<string> &base, const option_test &opt)
     if (buffer == 0)
       abort ();
     sprintf (buffer, "%sE%ld", str, (unsigned long) e-strlen(str)+1);
+    if (f)
+      fprintf (f, "%s\n", buffer);
     base.push_back (buffer);
     if (opt.verbose)
       cout << "[" << i << "] = " << buffer << endl;
     free (buffer);
     mpfr_free_str ((char*)str);
   }
+  if (f)
+    fclose (f);
 
   gmp_randclear(state);
   mpfr_clear (x);
@@ -136,6 +141,9 @@ int main (int argc, const char *argv[])
 	    case 'l':
 	      list_test ();
 	      exit (0);
+	      break;
+	    case 'x':
+	      options.export_base = (argv[i]+2);
 	      break;
 	    default:
 	      cerr <<  "Unkwown option:" << argv[i] << endl;

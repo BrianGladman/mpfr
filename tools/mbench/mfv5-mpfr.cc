@@ -176,7 +176,14 @@ public:
     return mpfr_atanh (a,b,r);
   }
 };
-
+class mpfr_get_ld_test {
+  long double ld;
+public:
+  int func (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    ld = mpfr_get_ld (c, r);
+    return 0;
+  }
+};
 
 static mpfr_test<mpfr_add_test> test1 ("mpfr_add");
 static mpfr_test<mpfr_sub_test> test2 ("mpfr_sub");
@@ -202,6 +209,8 @@ static mpfr_test<mpfr_tanh_test>  testCh ("mpfr_tanh");
 static mpfr_test<mpfr_acosh_test> testDh ("mpfr_acosh");
 static mpfr_test<mpfr_asinh_test> testEh ("mpfr_asinh");
 static mpfr_test<mpfr_atanh_test> testFh ("mpfr_atanh");
+
+static mpfr_test<mpfr_get_ld_test> testFj ("mpfr_get_ld");
 
 /* Do the test */
 template <class T>
