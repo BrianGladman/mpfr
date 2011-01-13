@@ -24,6 +24,9 @@ Changes from versions 3.0.* to version 3.1.0:
 - The "" release.
 - The MPFR source has been reorganized.
 - Dropped ansi2knr support.
+- TLS support is now detected automatically. If TLS is supported, MPFR is
+  built as thread safe by default. To disable TLS explicitly, configure
+  MPFR with --disable-thread-safe.
 - New --enable-gmp-internals configure option to use GMP's undocumented
   functions (not from the public API). Note that library versioning is
   not guaranteed to work if this option is used.

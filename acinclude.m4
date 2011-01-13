@@ -362,6 +362,14 @@ LIBS="$saved_LIBS"
 dnl Now try to check the long double format
 MPFR_C_LONG_DOUBLE_FORMAT
 
+if test "$enable_logging" = yes; then
+  if test "$enable_thread_safe" = yes; then
+    AC_MSG_ERROR([Enable either `Logging' or `thread-safe', not both])
+  else
+    enable_thread_safe=no
+  fi
+fi
+
 dnl Check if thread-local variables are supported.
 dnl At least two problems can occur in practice:
 dnl 1. The compilation fails, e.g. because the compiler doesn't know
@@ -370,8 +378,8 @@ dnl 2. The compilation succeeds, but the system doesn't support TLS or
 dnl    there is some ld configuration problem. One of the effects can
 dnl    be that thread-local variables always evaluate to 0. So, it is
 dnl    important to run the test below.
-if test "$enable_thread_safe" = yes; then
-AC_CACHE_CHECK([for TLS support], mpfr_cv_working_tls, [
+if test "$enable_thread_safe" != no; then
+AC_MSG_CHECKING(for TLS support)
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src"
 AC_RUN_IFELSE([
@@ -381,12 +389,22 @@ MPFR_THREAD_ATTR int x = 17;
 int main() {
   return x != 17;
 }
-  ], [mpfr_cv_working_tls="yes"],
+  ], [AC_MSG_RESULT(yes)
+      AC_DEFINE([MPFR_USE_THREAD_SAFE],1,[Build MPFR as thread safe])
+     ],
      [AC_MSG_RESULT(no)
-      AC_MSG_ERROR([please configure with --disable-thread-safe])],
-     [mpfr_cv_working_tls="cannot test, assume yes"])
+      if test "$enable_thread_safe" = yes; then
+        AC_MSG_ERROR([please configure with --disable-thread-safe])
+      fi
+     ],
+     [if test "$enable_thread_safe" = yes; then
+        AC_MSG_RESULT([cannot test, assume yes])
+        AC_DEFINE([MPFR_USE_THREAD_SAFE],1,[Build MPFR as thread safe])
+      else
+        AC_MSG_RESULT([cannot test, assume no])
+      fi
+     ])
 CPPFLAGS="$saved_CPPFLAGS"
-])
 fi
 ])
 

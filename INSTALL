@@ -187,6 +187,10 @@ specific architecture.
                         GCC, it may not currently support GCC's __thread
                         storage class.
 
+--disable-thread-safe   build MPFR without TLS. By default, TLS support
+                        is detected automatically, and MPFR is built as
+                        thread safe if supported.
+
 --enable-gmp-internals  allows the MPFR build to use GMP's undocumented
                         functions (not from the public API). Note that
                         library versioning is not guaranteed to work if
