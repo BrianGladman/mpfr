@@ -154,10 +154,18 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         goto set_zero;
     }
 
-  /* When x=1, atan2(y,x) = atan(y). FIXME: more generally, if x is a power
-     of two, we could call directly atan(y/x) since y/x is exact. */
-  if (mpfr_cmp_ui (x, 1) == 0)
-    return mpfr_atan (dest, y, rnd_mode);
+  /* When x is a power of two, we call directly atan(y/x) since y/x is
+     exact. */
+  if (MPFR_UNLIKELY (MPFR_IS_POWER_OF_2 (x))) 
+    {
+      int r;
+      mpfr_t yoverx;
+      mpfr_init2 (yoverx, MPFR_PREC (y));
+      mpfr_div_2si (yoverx, y, MPFR_EXP (x) - 1, MPFR_RNDN);
+      r = mpfr_atan (dest, yoverx, rnd_mode);
+      mpfr_clear (yoverx);
+      return r;
+    }
 
   MPFR_SAVE_EXPO_MARK (expo);
 
