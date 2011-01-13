@@ -496,6 +496,7 @@ $|\delta_i| \leq \epsilon$, for $n \epsilon < 1$.
 Then we can write $\prod_{i=1}^n (1+\delta_i)
 = 1 + \theta$ with
 \[ |\theta| \leq \frac{n \epsilon}{1 - n \epsilon}. \]
+The same holds if some terms $1+\delta_i$ are replaced by $1/(1+\delta_i)$.
 \end{lemma}
 \begin{proof}
 The maximum values of $\theta$ are obtained when all the $\delta_i$ are
@@ -514,6 +515,16 @@ For the second inequality, we first prove by induction that $(1-\epsilon)^n
 \geq 1 - n \epsilon$ for integer $n \geq 0$.
 It follows $(1-\epsilon)^n (1 - n \epsilon) \geq (1 - n \epsilon)^2 \geq
 1 - 2 n \epsilon$, which concludes the proof.
+
+Now assume some of the terms $1+\delta$ are replaced by $1/(1+\delta)$.
+The worst case is when $1/(1+\delta) = 1/(1-\epsilon)$ or
+$1/(1+\epsilon)$.
+If $1/(1+\delta) = 1/(1+\epsilon)$, we can write
+$1/(1+\delta) = 1 - \delta'$ with $|\delta'| = \epsilon/(1+\epsilon)
+< \epsilon$, thus this is covered by the previous proof.
+If $1/(1+\delta) = 1/(1-\epsilon)$, it suffices to prove that
+$1/(1-\epsilon)^n \leq 1/(1-n\epsilon)$, i.e., that
+$(1-\epsilon)^n \geq 1-n\epsilon$, which is true.
 \end{proof}
 
 \section{Low level functions}
