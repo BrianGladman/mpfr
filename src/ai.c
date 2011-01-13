@@ -82,11 +82,40 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         return mpfr_set_ui (y, 0, rnd);
     }
 
-  /* FIXME: handle the case x == 0 (and in a consistent way for +0 and -0) */
 
   /* Save current exponents range */
   MPFR_SAVE_EXPO_MARK (expo);
 
+  if (MPFR_UNLIKELY (MPFR_IS_ZERO (x)))
+    {
+      mpfr_t y1, y2;
+      prec = MPFR_PREC (y) + 3;
+      mpfr_init2 (y1, prec);
+      mpfr_init2 (y2, prec);
+      MPFR_ZIV_INIT (loop, prec);
+      
+      /* ZIV loop */
+      for (;;)
+        {
+          mpfr_gamma_one_and_two_third (y1, y2, prec); /* y2 = Gamma(2/3)(1 + delta1), |delta1| <= 2^{1-prec}. */
+          
+          r = mpfr_set_ui (y1, 9, MPFR_RNDN);
+          MPFR_ASSERTD (r == 0);
+          mpfr_cbrt (y1, y1, MPFR_RNDN); /* y1 = cbrt(9)(1 + delta2), |delta2| <= 2^{-prec}. */ 
+          mpfr_mul (y1, y1, y2, MPFR_RNDN);
+          mpfr_ui_div (y1, 1, y1, MPFR_RNDN);
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (y1, prec - 3, MPFR_PREC (y), rnd)))
+            break;
+          MPFR_ZIV_NEXT (loop, prec);
+        }
+      r = mpfr_set (y, y1, rnd);
+      MPFR_ZIV_FREE (loop);
+      MPFR_SAVE_EXPO_FREE (expo);
+      mpfr_clear (y1);
+      mpfr_clear (y2);
+      return mpfr_check_range (y, r, rnd);
+    }
+  
   /* FIXME: underflow for large values of |x| ? */
 
 
