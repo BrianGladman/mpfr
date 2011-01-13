@@ -69,15 +69,41 @@ check_large (void)
   mpfr_clear (z);
 }
 
+static void
+check_zero (void)
+{
+  mpfr_t x, y, r;
+  
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_init2 (r, 53);
+  
+  mpfr_set_str_binary (r, "10110101110001100011110010110001001110001010110111E-51");
+  
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_ai (y, x, MPFR_RNDN);
+  if (mpfr_equal_p (y, r) == 0)
+    {
+      printf ("Error in mpfr_ai for x=0\n");
+      printf ("Expected "); mpfr_dump (r);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (r);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
-
+  
   check_large ();
-
+  check_zero ();
+  
   test_generic (2, 100, 5);
-
+  
   tests_end_mpfr ();
   return 0;
 }
