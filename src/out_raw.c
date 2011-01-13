@@ -9,9 +9,9 @@
          01: normal
          10: Inf
          11: NaN
-       - 1 bit for the precision encoding (prec_enc)
        - 1 bit for the exponent encoding (exp_enc) for normal numbers,
          otherwise 0 is stored here (reserved for future extensions)
+       - 1 bit for the precision encoding (prec_enc)
        If prec_enc=0, the remaining 27 bits encode the precision (< 2^27)
        If prec_enc=1, the precision is stored in the following 27 bits
        (high part) and then 32 bits (low part). Thus the maximal precision
