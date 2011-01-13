@@ -39,15 +39,6 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # include <gmp.h>
 #endif
 
-/* Check if stdio.h is included or if the user wants FILE */
-#if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
-# define _MPFR_H_HAVE_FILE 1
-#endif
-
-#if defined (_GMP_H_HAVE_VA_LIST)
-# define _MPFR_H_HAVE_VA_LIST 1
-#endif
-
 /* Avoid some problems with macro expansion if the user defines macros
    with the same name as keywords. By convention, identifiers and macro
    names starting with mpfr_ are reserved by MPFR. */
@@ -379,17 +370,6 @@ __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nextbelow _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nexttoward _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
 
-#ifdef _MPFR_H_HAVE_FILE
-#define mpfr_inp_str __gmpfr_inp_str
-#define mpfr_out_str __gmpfr_out_str
-__MPFR_DECLSPEC size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE*, int,
-                                                  mpfr_rnd_t));
-__MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
-                                                  mpfr_srcptr, mpfr_rnd_t));
-#define mpfr_fprintf __gmpfr_fprintf
-__MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
-                                               ...));
-#endif
 __MPFR_DECLSPEC int mpfr_printf _MPFR_PROTO ((__gmp_const char*, ...));
 __MPFR_DECLSPEC int mpfr_asprintf _MPFR_PROTO ((char**, __gmp_const char*,
                                                 ...));
@@ -397,25 +377,6 @@ __MPFR_DECLSPEC int mpfr_sprintf _MPFR_PROTO ((char*, __gmp_const char*,
                                                ...));
 __MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t,
                                                 __gmp_const char*, ...));
-
-#ifdef _MPFR_H_HAVE_VA_LIST
-#ifdef _MPFR_H_HAVE_FILE
-#define mpfr_vfprintf __gmpfr_vfprintf
-__MPFR_DECLSPEC int mpfr_vfprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
-                                                va_list));
-#endif /* _MPFR_H_HAVE_FILE */
-#define mpfr_vprintf __gmpfr_vprintf
-#define mpfr_vasprintf __gmpfr_vasprintf
-#define mpfr_vsprintf __gmpfr_vsprintf
-#define mpfr_vsnprintf __gmpfr_vsnprintf
-__MPFR_DECLSPEC int mpfr_vprintf _MPFR_PROTO ((__gmp_const char*, va_list));
-__MPFR_DECLSPEC int mpfr_vasprintf _MPFR_PROTO ((char**, __gmp_const char*,
-                                                 va_list));
-__MPFR_DECLSPEC int mpfr_vsprintf _MPFR_PROTO ((char*, __gmp_const char*,
-                                               va_list));
-__MPFR_DECLSPEC int mpfr_vsnprintf _MPFR_PROTO ((char*, size_t,
-                                                __gmp_const char*, va_list));
-#endif /* _MPFR_H_HAVE_VA_LIST */
 
 __MPFR_DECLSPEC int mpfr_pow _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                            mpfr_srcptr, mpfr_rnd_t));
@@ -972,4 +933,82 @@ __MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #endif
 
 # endif /* _MPFR_H_HAVE_INTMAX_T */
+#endif
+
+
+/* Check if <stdio.h> has been included or if the user wants FILE */
+#if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
+# ifndef _MPFR_H_HAVE_FILE
+# define _MPFR_H_HAVE_FILE 1
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+#define mpfr_inp_str __gmpfr_inp_str
+#define mpfr_out_str __gmpfr_out_str
+__MPFR_DECLSPEC size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE*, int,
+                                                  mpfr_rnd_t));
+__MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
+                                                  mpfr_srcptr, mpfr_rnd_t));
+#define mpfr_fprintf __gmpfr_fprintf
+__MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
+                                               ...));
+
+#if defined (__cplusplus)
+}
+#endif
+
+# endif /* _MPFR_H_HAVE_FILE */
+#endif
+
+
+/* check if <stdarg.h> has been included or if the user wants va_list */
+#if defined (_GMP_H_HAVE_VA_LIST) || defined (MPFR_USE_VA_LIST)
+# ifndef _MPFR_H_HAVE_VA_LIST
+# define _MPFR_H_HAVE_VA_LIST 1
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+#define mpfr_vprintf __gmpfr_vprintf
+#define mpfr_vasprintf __gmpfr_vasprintf
+#define mpfr_vsprintf __gmpfr_vsprintf
+#define mpfr_vsnprintf __gmpfr_vsnprintf
+__MPFR_DECLSPEC int mpfr_vprintf _MPFR_PROTO ((__gmp_const char*, va_list));
+__MPFR_DECLSPEC int mpfr_vasprintf _MPFR_PROTO ((char**, __gmp_const char*,
+                                                 va_list));
+__MPFR_DECLSPEC int mpfr_vsprintf _MPFR_PROTO ((char*, __gmp_const char*,
+                                               va_list));
+__MPFR_DECLSPEC int mpfr_vsnprintf _MPFR_PROTO ((char*, size_t,
+                                                __gmp_const char*, va_list));
+
+#if defined (__cplusplus)
+}
+#endif
+
+# endif /* _MPFR_H_HAVE_VA_LIST */
+#endif
+
+
+/* check if <stdarg.h> has been included and if FILE is available
+   (see above) */
+#if defined (_MPFR_H_HAVE_VA_LIST) && defined (_MPFR_H_HAVE_FILE)
+# ifndef _MPFR_H_HAVE_VA_LIST_FILE
+# define _MPFR_H_HAVE_VA_LIST_FILE 1
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+#define mpfr_vfprintf __gmpfr_vfprintf
+__MPFR_DECLSPEC int mpfr_vfprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
+                                                va_list));
+
+#if defined (__cplusplus)
+}
+#endif
+
+# endif /* _MPFR_H_HAVE_VA_LIST_FILE */
 #endif
