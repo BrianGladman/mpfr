@@ -168,7 +168,7 @@ along with this file.  If not, see http://www.gnu.org/licenses/.  */
 #endif
 
 /* Note: the following FIXME comes from GMP, thus it does make sense to try
-   to resolve it. */
+   to resolve it in MPFR. */
 /* FIXME: The macros using external routines like __MPN(count_leading_zeros)
    don't need to be under !NO_ASM */
 #if ! defined (NO_ASM)
@@ -1379,6 +1379,8 @@ extern UWtype __MPN(udiv_qrnnd) _PROTO ((UWtype *, UWtype, UWtype, UWtype));
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rI" (bh), "rJ" (al), "rI" (bl)	\
 	   __CLOBBER_CC)
+/* Note: the following FIXME comes from GMP, thus it does make sense to try
+   to resolve it in MPFR. */
 /* FIXME: When gcc -mcpu=v9 is used on solaris, gcc/config/sol2-sld-64.h
    doesn't define anything to indicate that to us, it only sets __sparcv8. */
 #if defined (__sparc_v9__) || defined (__sparcv9)
@@ -1603,6 +1605,8 @@ extern UWtype __MPN(udiv_qrnnd) _PROTO ((UWtype *, UWtype, UWtype, UWtype));
 	     : "=g" (q), "=g" (r) : "g" (__x.__ll), "g" (d));		\
   } while (0)
 #if 0
+/* Note: the following FIXME comes from GMP, thus it does make sense to try
+   to resolve it in MPFR. */
 /* FIXME: This instruction appears to be unimplemented on some systems (vax
    8800 maybe). */
 #define count_trailing_zeros(count,x)					\
