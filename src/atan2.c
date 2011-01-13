@@ -161,10 +161,17 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       int r;
       mpfr_t yoverx;
       mpfr_init2 (yoverx, MPFR_PREC (y));
-      mpfr_div_2si (yoverx, y, MPFR_EXP (x) - 1, MPFR_RNDN);
-      r = mpfr_atan (dest, yoverx, rnd_mode);
-      mpfr_clear (yoverx);
-      return r;
+      if (MPFR_LIKELY (mpfr_div_2si (yoverx, y, MPFR_EXP (x) - 1, MPFR_RNDN) == 0))
+	{
+	  r = mpfr_atan (dest, yoverx, rnd_mode);
+	  mpfr_clear (yoverx);
+	  return r;
+	}	  
+      else
+	{
+	  /* Division is inexact because of a small exponent range */
+	  mpfr_clear (yoverx);
+	}
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
