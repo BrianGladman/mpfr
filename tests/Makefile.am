@@ -35,7 +35,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      trandom trec_sqrt tremquo trint troot tround_prec tsec	\
      tsech tset_d tset_f tset_ld tset_q tset_si tset_sj		\
      tset_str tset_z tset_z_exp tsi_op tsin tsin_cos tsinh	\
-     tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstrtofr	\
+     tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan	\
      ttanh ttrunc tui_div tui_pow tui_sub turandom ty0 ty1 tyn	\
      tzeta tzeta_ui tversion

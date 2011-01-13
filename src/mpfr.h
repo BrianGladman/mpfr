@@ -48,27 +48,6 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # define _MPFR_H_HAVE_VA_LIST 1
 #endif
 
-/* Check if <stdint.h> / <inttypes.h> is included or if the user
-   explicitly wants intmax_t. Automatical detection is done by
-   checking:
-     - INTMAX_C and UINTMAX_C, but not if the compiler is a C++ one
-       (as suggested by Patrick Pelissier) because the test does not
-       work well in this case. See:
-         http://websympa.loria.fr/wwsympa/arc/mpfr/2010-02/msg00025.html
-       We do not check INTMAX_MAX and UINTMAX_MAX because under Solaris,
-       these macros are always defined by <limits.h> (i.e. even when
-       <stdint.h> and <inttypes.h> are not included).
-     - _STDINT_H (defined by the glibc), _STDINT_H_ (defined under
-       Mac OS X) and _STDINT (defined under MS Visual Studio), but
-       this test may not work with all implementations.
-       Portable software should not rely on these tests.
-*/
-#if (defined (INTMAX_C) && defined (UINTMAX_C) && !defined(__cplusplus)) || \
-  defined (MPFR_USE_INTMAX_T) || \
-  defined (_STDINT_H) || defined (_STDINT_H_) || defined (_STDINT)
-# define _MPFR_H_HAVE_INTMAX_T 1
-#endif
-
 /* Avoid some problems with macro expansion if the user defines macros
    with the same name as keywords. By convention, identifiers and macro
    names starting with mpfr_ are reserved by MPFR. */
@@ -367,23 +346,6 @@ __MPFR_DECLSPEC int
   mpfr_setsign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, int, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
-
-#ifdef _MPFR_H_HAVE_INTMAX_T
-#define mpfr_set_sj __gmpfr_set_sj
-#define mpfr_set_sj_2exp __gmpfr_set_sj_2exp
-#define mpfr_set_uj __gmpfr_set_uj
-#define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
-#define mpfr_get_sj __gmpfr_mpfr_get_sj
-#define mpfr_get_uj __gmpfr_mpfr_get_uj
-__MPFR_DECLSPEC int mpfr_set_sj _MPFR_PROTO ((mpfr_t, intmax_t, mpfr_rnd_t));
-__MPFR_DECLSPEC int
-  mpfr_set_sj_2exp _MPFR_PROTO ((mpfr_t, intmax_t, intmax_t, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_set_uj _MPFR_PROTO ((mpfr_t, uintmax_t, mpfr_rnd_t));
-__MPFR_DECLSPEC int
-  mpfr_set_uj_2exp _MPFR_PROTO ((mpfr_t, uintmax_t, intmax_t, mpfr_rnd_t));
-__MPFR_DECLSPEC intmax_t mpfr_get_sj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
-#endif
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_get_z_2exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC float mpfr_get_flt _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
@@ -963,3 +925,51 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_custom_get_mantissa mpfr_custom_get_significand
 
 #endif /* __MPFR_H */
+
+
+/* Check if <stdint.h> / <inttypes.h> is included or if the user
+   explicitly wants intmax_t. Automatical detection is done by
+   checking:
+     - INTMAX_C and UINTMAX_C, but not if the compiler is a C++ one
+       (as suggested by Patrick Pelissier) because the test does not
+       work well in this case. See:
+         http://websympa.loria.fr/wwsympa/arc/mpfr/2010-02/msg00025.html
+       We do not check INTMAX_MAX and UINTMAX_MAX because under Solaris,
+       these macros are always defined by <limits.h> (i.e. even when
+       <stdint.h> and <inttypes.h> are not included).
+     - _STDINT_H (defined by the glibc), _STDINT_H_ (defined under
+       Mac OS X) and _STDINT (defined under MS Visual Studio), but
+       this test may not work with all implementations.
+       Portable software should not rely on these tests.
+*/
+#if (defined (INTMAX_C) && defined (UINTMAX_C) && !defined(__cplusplus)) || \
+  defined (MPFR_USE_INTMAX_T) || \
+  defined (_STDINT_H) || defined (_STDINT_H_) || defined (_STDINT)
+# ifndef _MPFR_H_HAVE_INTMAX_T
+# define _MPFR_H_HAVE_INTMAX_T 1
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+#define mpfr_set_sj __gmpfr_set_sj
+#define mpfr_set_sj_2exp __gmpfr_set_sj_2exp
+#define mpfr_set_uj __gmpfr_set_uj
+#define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
+#define mpfr_get_sj __gmpfr_mpfr_get_sj
+#define mpfr_get_uj __gmpfr_mpfr_get_uj
+__MPFR_DECLSPEC int mpfr_set_sj _MPFR_PROTO ((mpfr_t, intmax_t, mpfr_rnd_t));
+__MPFR_DECLSPEC int
+  mpfr_set_sj_2exp _MPFR_PROTO ((mpfr_t, intmax_t, intmax_t, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_set_uj _MPFR_PROTO ((mpfr_t, uintmax_t, mpfr_rnd_t));
+__MPFR_DECLSPEC int
+  mpfr_set_uj_2exp _MPFR_PROTO ((mpfr_t, uintmax_t, intmax_t, mpfr_rnd_t));
+__MPFR_DECLSPEC intmax_t mpfr_get_sj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
+
+#if defined (__cplusplus)
+}
+#endif
+
+# endif /* _MPFR_H_HAVE_INTMAX_T */
+#endif
