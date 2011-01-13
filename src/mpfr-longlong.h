@@ -167,7 +167,8 @@ along with this file.  If not, see http://www.gnu.org/licenses/.  */
   } while (0)
 #endif
 
-
+/* Note: the following FIXME comes from GMP, thus it does make sense to try
+   to resolve it. */
 /* FIXME: The macros using external routines like __MPN(count_leading_zeros)
    don't need to be under !NO_ASM */
 #if ! defined (NO_ASM)
