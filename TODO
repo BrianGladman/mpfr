@@ -336,9 +336,6 @@ Table of contents:
 6. Miscellaneous
 ##############################################################################
 
-- Once the double inclusion of mpfr.h is fully supported, add tstdint
-  to check_PROGRAMS in the tests/Makefile.am file.
-
 - [suggested by Tobias Burnus <burnus(at)net-b.de> and
    Asher Langton <langton(at)gcc.gnu.org>, Wed, 01 Aug 2007]
   support quiet and signaling NaNs in mpfr:
