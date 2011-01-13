@@ -48,7 +48,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
-  return 0;
+  return 77;
 }
 
 #else

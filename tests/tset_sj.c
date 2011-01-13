@@ -46,11 +46,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 #ifndef _MPFR_H_HAVE_INTMAX_T
+
 int
 main (void)
 {
-  return 0;
+  return 77;
 }
+
 #else
 
 #define ERROR(str) {printf("Error for "str"\n"); exit(1);}

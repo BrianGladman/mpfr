@@ -51,7 +51,7 @@ main (void)
 int
 main (void)
 {
-  return 0;
+  return 77;
 }
 
 #endif  /* HAVE_STDINT_H */
