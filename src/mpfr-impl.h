@@ -716,7 +716,8 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
 
-#define MPFR_IS_POWER_OF_2(x)  (mpfr_cmp_ui_2exp (x, 1, MPFR_GET_EXP (x) - 1) == 0)
+#define MPFR_IS_POWER_OF_2(x) \
+  (mpfr_cmp_ui_2exp ((x), 1, MPFR_GET_EXP (x) - 1) == 0)
 
 
 /******************************************************
