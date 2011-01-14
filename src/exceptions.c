@@ -147,7 +147,7 @@ mpfr_clear_erangeflag (void)
   __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE;
 }
 
-#undef mpfr_clear_underflow
+#undef mpfr_set_underflow
 
 void
 mpfr_set_underflow (void)
@@ -155,7 +155,7 @@ mpfr_set_underflow (void)
   __gmpfr_flags |= MPFR_FLAGS_UNDERFLOW;
 }
 
-#undef mpfr_clear_overflow
+#undef mpfr_set_overflow
 
 void
 mpfr_set_overflow (void)
@@ -163,7 +163,7 @@ mpfr_set_overflow (void)
   __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
 }
 
-#undef mpfr_clear_nanflag
+#undef mpfr_set_nanflag
 
 void
 mpfr_set_nanflag (void)
@@ -171,7 +171,7 @@ mpfr_set_nanflag (void)
   __gmpfr_flags |= MPFR_FLAGS_NAN;
 }
 
-#undef mpfr_clear_inexflag
+#undef mpfr_set_inexflag
 
 void
 mpfr_set_inexflag (void)
@@ -179,7 +179,7 @@ mpfr_set_inexflag (void)
   __gmpfr_flags |= MPFR_FLAGS_INEXACT;
 }
 
-#undef mpfr_clear_erangeflag
+#undef mpfr_set_erangeflag
 
 void
 mpfr_set_erangeflag (void)
