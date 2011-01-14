@@ -684,19 +684,7 @@ typedef intmax_t mpfr_eexp_t;
  ********** Singular Values (NAN, INF, ZERO) **********
  ******************************************************/
 
-/*
- * Clear flags macros are still defined and should be still used
- * since the functions must not assume the internal format.
- * How to deal with special values ?
- *  1. Check if is a special value (Zero, Nan, Inf) wiht MPFR_IS_SINGULAR
- *  2. Deal with the special value with MPFR_IS_NAN, MPFR_IS_INF, etc
- *  3. Else clear the flags of the dest (it must be done after since src
- *     may be also the dest!)
- * MPFR_SET_INF, MPFR_SET_NAN, MPFR_SET_ZERO must clear by
- * themselves the other flags.
- */
-
-/* Enum special value of exponent.*/
+/* Enum special value of exponent. */
 # define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
 # define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
 # define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
