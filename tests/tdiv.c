@@ -1,4 +1,4 @@
-/* Test file for mpfr_div.
+/* Test file for mpfr_div (and some mpfr_div_ui, etc. tests).
 
 Copyright 1999, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
@@ -25,6 +25,91 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+static void
+check_equal (mpfr_srcptr a, mpfr_srcptr a2, char *s,
+             mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
+{
+  if ((MPFR_IS_NAN (a) && MPFR_IS_NAN (a2)) ||
+      mpfr_equal_p (a, a2))
+    return;
+  printf ("Error in %s\n", mpfr_print_rnd_mode (r));
+  printf ("b  = ");
+  mpfr_dump (b);
+  printf ("c  = ");
+  mpfr_dump (c);
+  printf ("mpfr_div    result: ");
+  mpfr_dump (a);
+  printf ("%s result: ", s);
+  mpfr_dump (a2);
+  exit (1);
+}
+
+static int
+mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
+{
+  mpfr_t a2;
+  unsigned int oldflags, newflags;
+  int inex, inex2;
+
+  oldflags = __gmpfr_flags;
+  inex = mpfr_div (a, b, c, r);
+
+  if (a == b || a == c)
+    return inex;
+
+  newflags = __gmpfr_flags;
+
+  mpfr_init2 (a2, MPFR_PREC (a));
+
+  if (mpfr_integer_p (b) && ! (MPFR_IS_ZERO (b) && MPFR_IS_NEG (b)))
+    {
+      /* b is an integer, but not -0 (-0 is rejected as
+         it becomes +0 when converted to an integer). */
+      if (mpfr_fits_ulong_p (b, MPFR_RNDA))
+        {
+          __gmpfr_flags = oldflags;
+          inex2 = mpfr_ui_div (a2, mpfr_get_ui (b, MPFR_RNDN), c, r);
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (__gmpfr_flags == newflags);
+          check_equal (a, a2, "mpfr_ui_div", b, c, r);
+        }
+      if (mpfr_fits_slong_p (b, MPFR_RNDA))
+        {
+          __gmpfr_flags = oldflags;
+          inex2 = mpfr_si_div (a2, mpfr_get_si (b, MPFR_RNDN), c, r);
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (__gmpfr_flags == newflags);
+          check_equal (a, a2, "mpfr_si_div", b, c, r);
+        }
+    }
+
+  if (mpfr_integer_p (c) && ! (MPFR_IS_ZERO (c) && MPFR_IS_NEG (c)))
+    {
+      /* c is an integer, but not -0 (-0 is rejected as
+         it becomes +0 when converted to an integer). */
+      if (mpfr_fits_ulong_p (c, MPFR_RNDA))
+        {
+          __gmpfr_flags = oldflags;
+          inex2 = mpfr_div_ui (a2, b, mpfr_get_ui (c, MPFR_RNDN), r);
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (__gmpfr_flags == newflags);
+          check_equal (a, a2, "mpfr_div_ui", b, c, r);
+        }
+      if (mpfr_fits_slong_p (c, MPFR_RNDA))
+        {
+          __gmpfr_flags = oldflags;
+          inex2 = mpfr_div_si (a2, b, mpfr_get_si (c, MPFR_RNDN), r);
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (__gmpfr_flags == newflags);
+          check_equal (a, a2, "mpfr_div_si", b, c, r);
+        }
+    }
+
+  mpfr_clear (a2);
+
+  return inex;
+}
+
 #ifdef CHECK_EXTERNAL
 static int
 test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
@@ -37,7 +122,7 @@ test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       printf (" ");
       mpfr_print_raw (c);
     }
-  res = mpfr_div (a, b, c, rnd_mode);
+  res = mpfr_all_div (a, b, c, rnd_mode);
   if (ok)
     {
       printf (" ");
@@ -47,7 +132,7 @@ test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   return res;
 }
 #else
-#define test_div mpfr_div
+#define test_div mpfr_all_div
 #endif
 
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
