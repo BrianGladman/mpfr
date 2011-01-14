@@ -278,11 +278,6 @@ Table of contents:
   the following messages.
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
-- inline mpfr_neg? Problems with NAN flags:
-   #define mpfr_neg(_d,_x,_r)                          \
-    (__builtin_constant_p ((_d)==(_x)) && (_d)==(_x) ? \
-     ((_d)->_mpfr_sign = -(_d)->_mpfr_sign, 0)       : \
-      mpfr_neg ((_d), (_x), (_r)))  */
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
