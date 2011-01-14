@@ -219,10 +219,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
 #elif defined(DOUBLE_ARG1)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, d, x, rnd);
+          /* d can be infinite due to overflow in mpfr_get_d */
           finite_inputs |= ! DOUBLE_ISINF (d);
 #elif defined(DOUBLE_ARG2)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, x, d, rnd);
+          /* d can be infinite due to overflow in mpfr_get_d */
           finite_inputs |= ! DOUBLE_ISINF (d);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
