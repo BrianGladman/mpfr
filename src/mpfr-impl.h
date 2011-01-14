@@ -261,7 +261,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_FLAGS_NAN 4
 #define MPFR_FLAGS_INEXACT 8
 #define MPFR_FLAGS_ERANGE 16
-#define MPFR_FLAGS_ALL 31
+#define MPFR_FLAGS_DIVBY0 32
+#define MPFR_FLAGS_ALL 63
 
 /* Replace some commun functions for direct access to the global vars */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
@@ -281,6 +282,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
 #define mpfr_clear_erangeflag() \
   ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
+#define mpfr_clear_divby0() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0))
 #define mpfr_underflow_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
 #define mpfr_overflow_p() \
@@ -291,6 +294,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
 #define mpfr_erangeflag_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
+#define mpfr_divby0_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_DIVBY0))
 
 /* Testing an exception flag correctly is tricky. There are mainly two
    pitfalls: First, one needs to remember to clear the corresponding
@@ -317,6 +322,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_BLOCK_TEST(_flags,_f) MPFR_UNLIKELY ((_flags) & (_f))
 #define MPFR_BLOCK_EXCEP (__gmpfr_flags & (MPFR_FLAGS_UNDERFLOW | \
                                            MPFR_FLAGS_OVERFLOW | \
+                                           MPFR_FLAGS_DIVBY0 | \
                                            MPFR_FLAGS_NAN))
 /* Let's use a MPFR_ prefix, because e.g. OVERFLOW is defined by glibc's
    math.h, though this is not a reserved identifier! */
@@ -325,6 +331,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_NANFLAG(_flags)    MPFR_BLOCK_TEST (_flags, MPFR_FLAGS_NAN)
 #define MPFR_INEXFLAG(_flags)   MPFR_BLOCK_TEST (_flags, MPFR_FLAGS_INEXACT)
 #define MPFR_ERANGEFLAG(_flags) MPFR_BLOCK_TEST (_flags, MPFR_FLAGS_ERANGE)
+#define MPFR_DIVBY0(_flags)     MPFR_BLOCK_TEST (_flags, MPFR_FLAGS_DIVBY0)
 
 
 /******************************************************

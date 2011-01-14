@@ -123,6 +123,14 @@ mpfr_clear_overflow (void)
   __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW;
 }
 
+#undef mpfr_clear_divby0
+
+void
+mpfr_clear_divby0 (void)
+{
+  __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0;
+}
+
 #undef mpfr_clear_nanflag
 
 void
@@ -161,6 +169,14 @@ void
 mpfr_set_overflow (void)
 {
   __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
+}
+
+#undef mpfr_set_divby0
+
+void
+mpfr_set_divby0 (void)
+{
+  __gmpfr_flags |= MPFR_FLAGS_DIVBY0;
 }
 
 #undef mpfr_set_nanflag
@@ -257,6 +273,14 @@ int
 mpfr_overflow_p (void)
 {
   return __gmpfr_flags & MPFR_FLAGS_OVERFLOW;
+}
+
+#undef mpfr_divby0_p
+
+int
+mpfr_divby0_p (void)
+{
+  return __gmpfr_flags & MPFR_FLAGS_DIVBY0;
 }
 
 #undef mpfr_nanflag_p

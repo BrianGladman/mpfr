@@ -282,6 +282,8 @@ check_set (void)
   MPFR_ASSERTN ((mpfr_overflow_p) ());
   mpfr_set_underflow ();
   MPFR_ASSERTN ((mpfr_underflow_p) ());
+  mpfr_set_divby0 ();
+  MPFR_ASSERTN ((mpfr_divby0_p) ());
   mpfr_set_nanflag ();
   MPFR_ASSERTN ((mpfr_nanflag_p) ());
   mpfr_set_inexflag ();

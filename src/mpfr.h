@@ -247,18 +247,21 @@ __MPFR_DECLSPEC __gmp_const char *
 __MPFR_DECLSPEC void mpfr_clear_flags _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_clear_underflow _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_clear_overflow _MPFR_PROTO ((void));
+__MPFR_DECLSPEC void mpfr_clear_divby0 _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_clear_nanflag _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_clear_inexflag _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_clear_erangeflag _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC void mpfr_set_underflow _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_set_overflow _MPFR_PROTO ((void));
+__MPFR_DECLSPEC void mpfr_set_divby0 _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_set_nanflag _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_set_inexflag _MPFR_PROTO ((void));
 __MPFR_DECLSPEC void mpfr_set_erangeflag _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC int mpfr_underflow_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_overflow_p _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int mpfr_divby0_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_nanflag_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_inexflag_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_erangeflag_p _MPFR_PROTO ((void));
