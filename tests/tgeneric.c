@@ -146,6 +146,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
       /* Note: in precision p1, we test 4 special cases. */
       for (n = 0; n < (prec == p1 ? N + 4 : N); n++)
         {
+          int finite_inputs = 0;
+
           xprec = prec;
           if (randlimb () & 1)
             {
@@ -217,9 +219,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
 #elif defined(DOUBLE_ARG1)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, d, x, rnd);
+          finite_inputs |= ! DOUBLE_ISINF (d);
 #elif defined(DOUBLE_ARG2)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, x, d, rnd);
+          finite_inputs |= ! DOUBLE_ISINF (d);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
@@ -232,14 +236,30 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                 TGENERIC_CHECK ("Bad NaN flag",
                                 MPFR_IS_NAN (y) && mpfr_nanflag_p ());
               else if (MPFR_IS_INF (y))
-                TGENERIC_CHECK ("Bad overflow flag",
-                                (compare != 0) ^ (mpfr_overflow_p () == 0));
+                {
+                  TGENERIC_CHECK ("Bad overflow flag",
+                                  (compare != 0) ^ (mpfr_overflow_p () == 0));
+                  TGENERIC_CHECK ("Bad division-by-zero flag",
+                                  (compare == 0 && finite_inputs) ^
+                                  (mpfr_divby0_p () == 0));
+                }
               else if (MPFR_IS_ZERO (y))
                 TGENERIC_CHECK ("Bad underflow flag",
                                 (compare != 0) ^ (mpfr_underflow_p () == 0));
             }
+          else if (mpfr_divby0_p ())
+            {
+              TGENERIC_CHECK ("Both overflow and division by zero",
+                              ! mpfr_overflow_p ());
+              TGENERIC_CHECK ("Both underflow and division by zero",
+                              ! mpfr_underflow_p ());
+              TGENERIC_CHECK ("Bad compare value (division by zero)",
+                              compare == 0);
+            }
           else if (mpfr_overflow_p ())
             {
+              TGENERIC_CHECK ("Both underflow and overflow",
+                              ! mpfr_underflow_p ());
               TGENERIC_CHECK ("Bad compare value (overflow)", compare != 0);
               mpfr_nexttoinf (y);
               TGENERIC_CHECK ("Should have been max MPFR number",
