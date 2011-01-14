@@ -1,16 +1,31 @@
 #!/bin/bash
 
+# Set up the right directoy
+cd $(dirname $0)/..
+
 # First Build MPFR in /tmp/
 echo "Erasing previous /tmp/ompfr-gcov"
 rm -rf /tmp/ompfr-gcov
-mkdir /tmp/ompfr-gcov
+mkdir /tmp/ompfr-gcov || exit 1
+
 echo "Copying MPFR sources to /tmp/ompfr-gcov"
-cp -r . /tmp/ompfr-gcov
-cd /tmp/ompfr-gcov
+cp -r . /tmp/ompfr-gcov || exit 1
+cd /tmp/ompfr-gcov || exit 1
+
+echo "Remove previous coverage information."
+rm -f $(find . -name '*.gc*')
+
+echo "Reconfiguring MPFR"
+autoreconf -i || exit 1
+
 echo "Building MPFR"
 ./configure --enable-assert --disable-shared --enable-static \
-  CFLAGS="-fprofile-arcs -ftest-coverage -g"
-make check -j2
+  CFLAGS="-fprofile-arcs -ftest-coverage -g"  || exit 1
+make clean  || exit 1
+make all -j4 || exit 1
+
+# Note: we want to compute the coverage even in case of failure of some tests.
+make check -j4
 
 # Check version of gcov:
 # 3.3 outputs like this:
@@ -29,8 +44,9 @@ make check -j2
 # It supports gcov *.c
 
 # Setup the parser depending on gcov
-gcov --version > coverage-tmp
-if grep "gcov (GCC) 3.4" coverage-tmp ; then
+version=$(gcov --version | head -1 | cut -f2 -d')')
+version=$(( $(echo "$version" | cut -f1 -d'.')*100 + $(echo "$version" | cut -f1 -d'.')*10 ))
+if test "$version" -ge 340 ; then
  echo "#!/bin/bash
 while true ; do
  if read x ; then
@@ -70,8 +86,10 @@ done
 fi
 
 # Do "gcov" for all files and parse the output
-find . -name '*.c' -exec gcov -f '{}' ';' | \
-  bash coverage.subscript > coverage.mpfr
+for i in $(find src -name '*.c')
+do
+    gcov -f $i -o $(dirname $i) 2> /dev/null || exit 1
+done | bash coverage.subscript | grep -v '__gmp' > coverage.mpfr
 
-rm -f coverage.subscript coverage-tmp
+rm -f coverage.subscript coverage-tmp || exit 1
 echo "Coverage summary saved in file /tmp/ompfr-gcov/coverage.mpfr"
