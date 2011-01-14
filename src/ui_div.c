@@ -53,6 +53,7 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
               /* u > 0, so y = sign(x) * Inf */
               MPFR_SET_SAME_SIGN(y, x);
               MPFR_SET_INF(y);
+              mpfr_set_divby0 ();
               MPFR_RET(0);
             }
           else
