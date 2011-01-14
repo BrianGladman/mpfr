@@ -291,7 +291,52 @@ check_set (void)
   mpfr_set_erangeflag ();
   MPFR_ASSERTN ((mpfr_erangeflag_p) ());
 
-  mpfr_clear_flags ();
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_ALL);
+
+  mpfr_clear_overflow ();
+  MPFR_ASSERTN (! (mpfr_overflow_p) ());
+  mpfr_clear_underflow ();
+  MPFR_ASSERTN (! (mpfr_underflow_p) ());
+  mpfr_clear_divby0 ();
+  MPFR_ASSERTN (! (mpfr_divby0_p) ());
+  mpfr_clear_nanflag ();
+  MPFR_ASSERTN (! (mpfr_nanflag_p) ());
+  mpfr_clear_inexflag ();
+  MPFR_ASSERTN (! (mpfr_inexflag_p) ());
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN (! (mpfr_erangeflag_p) ());
+
+  MPFR_ASSERTN (__gmpfr_flags == 0);
+
+  (mpfr_set_overflow) ();
+  MPFR_ASSERTN (mpfr_overflow_p ());
+  (mpfr_set_underflow) ();
+  MPFR_ASSERTN (mpfr_underflow_p ());
+  (mpfr_set_divby0) ();
+  MPFR_ASSERTN (mpfr_divby0_p ());
+  (mpfr_set_nanflag) ();
+  MPFR_ASSERTN (mpfr_nanflag_p ());
+  (mpfr_set_inexflag) ();
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  (mpfr_set_erangeflag) ();
+  MPFR_ASSERTN (mpfr_erangeflag_p ());
+
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_ALL);
+
+  (mpfr_clear_overflow) ();
+  MPFR_ASSERTN (! mpfr_overflow_p ());
+  (mpfr_clear_underflow) ();
+  MPFR_ASSERTN (! mpfr_underflow_p ());
+  (mpfr_clear_divby0) ();
+  MPFR_ASSERTN (! mpfr_divby0_p ());
+  (mpfr_clear_nanflag) ();
+  MPFR_ASSERTN (! mpfr_nanflag_p ());
+  (mpfr_clear_inexflag) ();
+  MPFR_ASSERTN (! mpfr_inexflag_p ());
+  (mpfr_clear_erangeflag) ();
+  MPFR_ASSERTN (! mpfr_erangeflag_p ());
+
+  MPFR_ASSERTN (__gmpfr_flags == 0);
 }
 
 int
