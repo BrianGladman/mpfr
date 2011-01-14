@@ -223,8 +223,8 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
  end:
   MPFR_SAVE_EXPO_FREE (expo);
-  mpfr_check_range (y, inexy, rnd_mode);
-  mpfr_check_range (z, inexz, rnd_mode);
+  inexy = mpfr_check_range (y, inexy, rnd_mode);
+  inexz = mpfr_check_range (z, inexz, rnd_mode);
   MPFR_RET (INEX(inexy,inexz));
 }
 
