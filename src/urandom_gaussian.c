@@ -127,7 +127,7 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
   s2 = mpz_tstbit (x, 1);
   for (;;)
     {
-      /* s = x^2 + y^2 (loop invariant) */
+      /* s = xp^2 + yp^2 (loop invariant) */
       mpfr_set_prec (sfr, 2 * tprec);
       mpfr_set_prec (l, tprec);
       mpfr_set_z (sfr, s, MPFR_RNDN); /* exact */
@@ -139,7 +139,8 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
       mpfr_sqrt (l, l, MPFR_RNDN);
 
       mpfr_set_prec (r1, tprec);
-      mpfr_mul_z (r1, l, x, MPFR_RNDN);
+      mpfr_mul_z (r1, l, xp, MPFR_RNDN);
+      mpfr_div_2ui (r1, r1, tprec, MPFR_RNDN); /* exact */
       if (s1)
 	mpfr_neg (r1, r1, MPFR_RNDN);
       if (MPFR_CAN_ROUND (r1, tprec - 2, MPFR_PREC (rop1), rnd))
@@ -147,7 +148,8 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
 	  if (rop2 != NULL)
 	    {
 	      mpfr_set_prec (r2, tprec);
-	      mpfr_mul_z (r2, l, y, MPFR_RNDN);
+	      mpfr_mul_z (r2, l, yp, MPFR_RNDN);
+	      mpfr_div_2ui (r2, r2, tprec, MPFR_RNDN); /* exact */
 	      if (s2)
 		mpfr_neg (r2, r2, MPFR_RNDN);
 	      if (MPFR_CAN_ROUND (r2, tprec - 2, MPFR_PREC (rop2), rnd))
