@@ -50,7 +50,8 @@ round_near_x.c constant.c abort_prec_max.c stack_interface.c lngamma.c	\
 zeta_ui.c set_d64.c get_d64.c jn.c yn.c rem1.c get_patches.c add_d.c	\
 sub_d.c d_sub.c mul_d.c div_d.c d_div.c li2.c rec_sqrt.c min_prec.c	\
 buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
-scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h
+scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
+urandom_gaussian.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 
