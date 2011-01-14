@@ -25,10 +25,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+int error;
+
 #define PRINT_ERROR_IF(condition, text)         \
   do {                                          \
     if (condition)                              \
-      printf (text);                            \
+      {                                         \
+        printf ("%s", text);                    \
+        error = 1;                              \
+      }                                         \
   } while (0)
 
 
@@ -147,6 +152,9 @@ main (void)
 
   tests_start_mpfr ();
 
+  /* Default : no error */
+  error = 0;
+
   /* check prototypes of mpfr_init_set_* */
   inexact = mpfr_init_set_si (x, -1, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
@@ -197,5 +205,5 @@ main (void)
   test_generic (2, 1000, 10);
 
   tests_end_mpfr ();
-  return 0;
+  return error;
 }
