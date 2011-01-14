@@ -146,7 +146,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
       /* Note: in precision p1, we test 4 special cases. */
       for (n = 0; n < (prec == p1 ? N + 4 : N); n++)
         {
-          int finite_inputs = 0;
+          int infinite_input = 0;
 
           xprec = prec;
           if (randlimb () & 1)
@@ -220,12 +220,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, d, x, rnd);
           /* d can be infinite due to overflow in mpfr_get_d */
-          finite_inputs |= ! DOUBLE_ISINF (d);
+          infinite_input |= ! DOUBLE_ISINF (d);
 #elif defined(DOUBLE_ARG2)
           d = mpfr_get_d (u, rnd);
           compare = TEST_FUNCTION (y, x, d, rnd);
           /* d can be infinite due to overflow in mpfr_get_d */
-          finite_inputs |= ! DOUBLE_ISINF (d);
+          infinite_input |= ! DOUBLE_ISINF (d);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
@@ -242,7 +242,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                   TGENERIC_CHECK ("Bad overflow flag",
                                   (compare != 0) ^ (mpfr_overflow_p () == 0));
                   TGENERIC_CHECK ("Bad division-by-zero flag",
-                                  (compare == 0 && finite_inputs) ^
+                                  (compare == 0 && !infinite_input) ^
                                   (mpfr_divby0_p () == 0));
                 }
               else if (MPFR_IS_ZERO (y))
