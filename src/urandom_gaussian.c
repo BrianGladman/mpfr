@@ -68,9 +68,9 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
   mpz_init (b);
   mpfr_init2 (sfr, MPFR_PREC_MIN);
   mpfr_init2 (l, MPFR_PREC_MIN);
-  mpfr_init2 (r1, MPFR_PREC (rop1));
+  mpfr_init2 (r1, MPFR_PREC_MIN);
   if (rop2 != NULL)
-      mpfr_init2 (r2, MPFR_PREC (rop2));
+    mpfr_init2 (r2, MPFR_PREC_MIN);
 
   mpz_set_ui (xp, 0);
   mpz_set_ui (yp, 0);
@@ -135,11 +135,13 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
       mpfr_div (l, l, sfr, MPFR_RNDN);
       mpfr_sqrt (l, l, MPFR_RNDN);
 
+      mpfr_set_prec (r1, tprec);
       mpfr_mul_z (r1, l, x, MPFR_RNDN);
       if (MPFR_CAN_ROUND (r1, tprec - 2, MPFR_PREC (rop1), rnd))
 	{
 	  if (rop2 != NULL)
 	    {
+	      mpfr_set_prec (r2, tprec);
 	      mpfr_mul_z (r2, l, y, MPFR_RNDN);
 	      if (MPFR_CAN_ROUND (r2, tprec - 2, MPFR_PREC (rop2), rnd))
 		break;
