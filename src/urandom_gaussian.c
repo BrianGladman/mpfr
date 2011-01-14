@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t rnd)
 {
-  int inex1, inex2;
+  int inex1, inex2, s1, s2;
   mpz_t x, y, xp, yp, t, a, b, s;
   mpfr_t sfr, l, r1, r2;
   mpfr_prec_t tprec, tprec0;
@@ -121,7 +121,10 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
   mpz_mul (a, xp, xp);
   mpz_mul (b, yp, yp);
   mpz_add (s, a, b);
-  
+  /* Compute the signs of the output */
+  mpz_urandomb (x, rstate, 2);
+  s1 = mpz_tstbit (x, 0);
+  s2 = mpz_tstbit (x, 1);
   for (;;)
     {
       /* s = x^2 + y^2 (loop invariant) */
@@ -137,12 +140,16 @@ mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpf
 
       mpfr_set_prec (r1, tprec);
       mpfr_mul_z (r1, l, x, MPFR_RNDN);
+      if (s1)
+	mpfr_neg (r1, r1, MPFR_RNDN);
       if (MPFR_CAN_ROUND (r1, tprec - 2, MPFR_PREC (rop1), rnd))
 	{
 	  if (rop2 != NULL)
 	    {
 	      mpfr_set_prec (r2, tprec);
 	      mpfr_mul_z (r2, l, y, MPFR_RNDN);
+	      if (s2)
+		mpfr_neg (r2, r2, MPFR_RNDN);
 	      if (MPFR_CAN_ROUND (r2, tprec - 2, MPFR_PREC (rop2), rnd))
 		break;
 	    }
