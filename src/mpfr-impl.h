@@ -754,6 +754,10 @@ typedef intmax_t mpfr_eexp_t;
 /* Special inexact value */
 #define MPFR_EVEN_INEX 2
 
+/* Macros for functions returning two inexact values in an 'int' */
+#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
+#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
+
 /* When returning the ternary inexact value, ALWAYS use one of the
    following two macros, unless the flag comes from another function
    returning the ternary inexact value */
@@ -1728,6 +1732,8 @@ __MPFR_DECLSPEC int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t,
                                               mpfr_rnd_t));
 
 __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr,
+                                                  mp_srcptr, mp_size_t));
+__MPFR_DECLSPEC void mpfr_mullow_n  _MPFR_PROTO ((mp_ptr, mp_srcptr,
                                                   mp_srcptr, mp_size_t));
 __MPFR_DECLSPEC void mpfr_sqrhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_size_t));
 __MPFR_DECLSPEC mp_limb_t mpfr_divhigh_n _MPFR_PROTO ((mp_ptr qp, mp_ptr np,
