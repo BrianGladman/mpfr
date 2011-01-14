@@ -82,7 +82,8 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
 }
 
 
-int mpfr_si_div (mpfr_ptr y, long int u, mpfr_srcptr x,mpfr_rnd_t rnd_mode)
+int
+mpfr_si_div (mpfr_ptr y, long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int res;
 
