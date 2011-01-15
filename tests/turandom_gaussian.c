@@ -101,8 +101,8 @@ main (int argc, char *argv[])
   nbtests = 10;
   if (argc > 1)
     {
-      verbose = 1;
       long a = atol (argv[1]);
+      verbose = 1;
       if (a != 0)
         nbtests = a;
     }
