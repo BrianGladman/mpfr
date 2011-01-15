@@ -1,3 +1,27 @@
+/* mpfr_out_raw -- output a floating-point number to binary portable format
+
+Copyright 2011 Free Software Foundation, Inc.
+Contributed by the Arenaire and Caramel projects, INRIA.
+
+This file is part of the GNU MPFR Library.
+
+The GNU MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The GNU MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+#include "mpfr-impl.h"
+
 /* format for out_raw:
    A mpfr_t is represented by up to 3 fields, each one is represented by a
    sequence of 32-bit words. 32-bit words are stored as 4 bytes in little
@@ -38,3 +62,47 @@
    - a normal binary128 IEEE-754 number uses 192 bits: 32 for (a), 32 for (b),
      and 128 for (c).
  */   
+
+size_t
+mpfr_out_raw (FILE *stream, mpfr_srcptr x)
+{
+  size_t n; /* number of bytes of the output */
+  mpfr_prec_t prec = MPFR_PREC(x);
+  int prec_enc, exp_enc = 0;
+  char *s, *t;
+
+  prec_enc = (prec >= 134217728);
+  n = 4 + 4 * prec_enc;
+  if (MPFR_IS_SINGULAR(x) == 0)
+    {
+      mpfr_exp_t e = MPFR_EXP(x);
+      mpfr_prec_t p = (prec - 1) / 32 + 1; /* ceil(prec/32) */
+
+      exp_enc = (e < -2147483648 || 2147483647 < e);
+      n += 4 + 4 * exp_enc + 4 * p;
+    }
+  t = s = malloc (n * sizeof (char));
+  t[0] = mpfr_signbit (x) << 7;
+  if (MPFR_IS_NAN(x))
+    t[0] += 3 << 5;
+  else if (MPFR_IS_INF(x))
+    t[0] += 2 << 5;
+  else if (MPFR_IS_ZERO(x))
+    t[0] += 1 << 5;
+  t[0] += exp_enc << 4;
+  t[0] += prec_enc << 3;
+  if (prec_enc == 1)
+    {
+      t[0] += prec >> 56; /* reduction mod 255 is implicit */
+      t[1] += prec >> 48;
+      t[2] += prec >> 40;
+      t[3] += prec >> 32;
+      t += 4;
+    }
+  t[0] += prec >> 24;  /* reduction mod 255 is implicit */
+  t[1] = prec >> 16;
+  t[2] = prec >> 8;
+  t[3] = prec;
+  free (s);
+  return n;
+}

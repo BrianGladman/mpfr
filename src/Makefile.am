@@ -23,7 +23,7 @@ mpfr-longlong.h mpfr-thread.h exceptions.c extract.c uceil_exp2.c	\
 uceil_log2.c ufloor_log2.c add.c add1.c add_ui.c agm.c clear.c cmp.c	\
 cmp_abs.c cmp_si.c cmp_ui.c comparisons.c div_2exp.c div_2si.c		\
 div_2ui.c div.c div_ui.c dump.c eq.c exp10.c exp2.c exp3.c exp.c	\
-frac.c get_d.c get_exp.c get_str.c init.c inp_str.c isinteger.c		\
+frac.c frexp.c get_d.c get_exp.c get_str.c init.c inp_str.c isinteger.c	\
 isinf.c isnan.c isnum.c const_log2.c log.c modf.c mul_2exp.c mul_2si.c	\
 mul_2ui.c mul.c mul_ui.c neg.c next.c out_str.c printf.c vasprintf.c	\
 const_pi.c pow.c pow_si.c pow_ui.c print_raw.c print_rnd_mode.c		\

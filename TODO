@@ -79,7 +79,7 @@ Table of contents:
        a  = q*bb+r     --> q has exactly n bits.
     else
        aa <- a*2^(nq-n)
-       aa = q*b+r      --> q has exaclty n bits.
+       aa = q*b+r      --> q has exactly n bits.
   If RNDN, takes nq+1 bits. (See also the new division function).
 
 
@@ -217,8 +217,6 @@ Table of contents:
   - radians
   - sqrtpi
 
-- mpfr_frexp(mpfr_t rop, mpfr_exp_t *n, mpfr_t op, mpfr_rnd_t rnd) suggested
-  by Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
 - mpfr_inp_raw, mpfr_out_raw (cf mail "Serialization of mpfr_t" from Alexey
   and answer from Granlund on mpfr list, May 2007)
 - [maybe useful for SAGE] implement companion frac_* functions to the rint_*
