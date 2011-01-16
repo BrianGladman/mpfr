@@ -2613,7 +2613,7 @@ Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
 range and the rounding mode might have a side effect on the next random state.
 @end deftypefun
 
-@deftypefun int mpfr_urandom_gaussian (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_grandom (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
 Generate two random floats according to a standard normal gaussian
 distribution. If @var{rop2} is a null pointer, then only one value is generated
 and stored in @var{rop1}.

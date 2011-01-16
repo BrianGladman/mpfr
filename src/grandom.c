@@ -1,7 +1,7 @@
-/* mpfr_urandom_gaussian (rop1, rop2, state, rnd_mode) -- Generate up
-   to two pseudorandom real numbers according to a standard normal
-   gaussian distribution and round it to the precision of rop1, rop2
-   according to the given rounding mode.
+/* mpfr_grandom (rop1, rop2, state, rnd_mode) -- Generate up to two
+   pseudorandom real numbers according to a standard normal gaussian
+   distribution and round it to the precision of rop1, rop2 according
+   to the given rounding mode.
 
 Copyright 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 int
-mpfr_urandom_gaussian (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t rnd)
+mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t rnd)
 {
   int inex1, inex2, s1, s2;
   mpz_t x, y, xp, yp, t, a, b, s;

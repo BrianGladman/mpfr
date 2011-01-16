@@ -28,7 +28,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      terf texp texp10 texp2 texpm1 tfactorial tfits tfma tfmod	\
      tfms tfprintf tfrac tfrexp tgamma tget_flt tget_d tget_d_2exp \
      tget_f tget_ld_2exp tget_set_d64 tget_sj tget_str tget_z	\
-     tgmpop thyperbolic thypot tinp_str tj0 tj1 tjn tl2b	\
+     tgmpop tgrandom thyperbolic thypot tinp_str tj0 tj1 tjn tl2b	\
      tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2 tmin_prec	\
      tminmax tmodf tmul tmul_2exp tmul_d tmul_ui tnext		\
      tout_str toutimpl tpow tpow3 tpow_all tpow_z tprintf	\
@@ -37,7 +37,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
      tset_str tset_z tset_z_exp tsi_op tsin tsin_cos tsinh	\
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan	\
-     ttanh ttrunc tui_div tui_pow tui_sub turandom turandom_gaussian \
+     ttanh ttrunc tui_div tui_pow tui_sub turandom 	 \
       tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat

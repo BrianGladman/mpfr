@@ -1,6 +1,6 @@
-/* Test file for mpfr_urandom_gaussian
+/* Test file for mpfr_grandom
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+Copyright 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -26,8 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-test_urandom_gaussian (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
-		       int verbose)
+test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
+	      int verbose)
 {
   mpfr_t *t;
   mpfr_t av, va, tmp;
@@ -37,7 +37,7 @@ test_urandom_gaussian (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   t = malloc (nbtests * sizeof (mpfr_t));
   if (t == NULL)
     {
-      fprintf (stderr, "turandom_gaussian: can't allocate memory in test_urandom_gaussian\n");
+      fprintf (stderr, "tgrandom: can't allocate memory in test_grandom\n");
       exit (1);
     }
   
@@ -47,7 +47,7 @@ test_urandom_gaussian (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   inex = 1;
   for (i = 0; i < nbtests; i += 2)
     {
-      itmp = mpfr_urandom_gaussian (t[i], t[i + 1], RANDS, MPFR_RNDN);
+      itmp = mpfr_grandom (t[i], t[i + 1], RANDS, MPFR_RNDN);
       inex = ((itmp & 3) != 0) && ((itmp & 12) != 0) && inex;
     }
 
@@ -107,7 +107,7 @@ main (int argc, char *argv[])
         nbtests = a;
     }
   
-  test_urandom_gaussian (nbtests, 420, MPFR_RNDN, verbose);
+  test_grandom (nbtests, 420, MPFR_RNDN, verbose);
 
   tests_end_mpfr ();
   return 0;

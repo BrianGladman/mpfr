@@ -369,8 +369,8 @@ __MPFR_DECLSPEC void mpfr_free_str _MPFR_PROTO ((char *));
 
 __MPFR_DECLSPEC int mpfr_urandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_urandom_gaussian _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, gmp_randstate_t,
-							mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_grandom _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, gmp_randstate_t,
+					       mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
