@@ -464,7 +464,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           /* Determine the sign now, in case y and z are the same object */
           negative = MPFR_IS_NEG(x) && is_odd (y);
           if (MPFR_IS_NEG (y))
-            MPFR_SET_INF (z);
+            {
+              MPFR_SET_INF (z);
+              mpfr_set_divby0 ();
+            }
           else
             MPFR_SET_ZERO (z);
           if (negative)

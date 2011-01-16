@@ -705,15 +705,21 @@ special (void)
 static void
 particular_cases (void)
 {
-  mpfr_t t[11], r;
+  mpfr_t t[11], r, r2;
+  mpz_t z;
+  long si;
+
   static const char *name[11] = {
     "NaN", "+inf", "-inf", "+0", "-0", "+1", "-1", "+2", "-2", "+0.5", "-0.5"};
   int i, j;
   int error = 0;
 
+  mpz_init (z);
+
   for (i = 0; i < 11; i++)
     mpfr_init2 (t[i], 2);
   mpfr_init2 (r, 6);
+  mpfr_init2 (r2, 6);
 
   mpfr_set_nan (t[0]);
   mpfr_set_inf (t[1], 1);
@@ -729,7 +735,7 @@ particular_cases (void)
       {
         double d;
         int p;
-        static int q[11][11] = {
+        static const int q[11][11] = {
           /*          NaN +inf -inf  +0   -0   +1   -1   +2   -2  +0.5 -0.5 */
           /*  NaN */ { 0,   0,   0,  128, 128,  0,   0,   0,   0,   0,   0  },
           /* +inf */ { 0,   1,   2,  128, 128,  1,   2,   1,   2,   1,   2  },
@@ -743,24 +749,168 @@ particular_cases (void)
           /* +0.5 */ { 0,   2,   1,  128, 128,  64, 256,  32, 512,  90, 180 },
           /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
         };
+        /* This define is used to make the following table readable */
+#define N MPFR_FLAGS_NAN
+#define I MPFR_FLAGS_INEXACT
+#define D MPFR_FLAGS_DIVBY0
+        static const unsigned int f[11][11] = {
+          /*          NaN +inf -inf  +0 -0 +1 -1 +2 -2 +0.5 -0.5 */
+          /*  NaN */ { N,   N,   N,  0,  0, N, N, N, N,  N,   N  },
+          /* +inf */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  0,   0  },
+          /* -inf */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  0,   0  },
+          /*  +0  */ { N,   0,   0,  0,  0, 0, D, 0, D,  0,   D  },
+          /*  -0  */ { N,   0,   0,  0,  0, 0, D, 0, D,  0,   D  },
+          /*  +1  */ { 0,   0,   0,  0,  0, 0, 0, 0, 0,  0,   0  },
+          /*  -1  */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  N,   N  },
+          /*  +2  */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  I,   I  },
+          /*  -2  */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  N,   N  },
+          /* +0.5 */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  I,   I  },
+          /* -0.5 */ { N,   0,   0,  0,  0, 0, 0, 0, 0,  N,   N  }
+        };
+#undef N
+#undef I
+#undef D
+        mpfr_clear_flags ();
         test_pow (r, t[i], t[j], MPFR_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
           mpfr_cmp_ui (r, 0) == 0 ? 2 :
           (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
-        if (p != 0 && MPFR_SIGN(r) < 0)
+        if (p != 0 && MPFR_IS_NEG (r))
           p = -p;
         if (p != q[i][j])
           {
-            printf ("Error in mpfr_pow for particular case (%s)^(%s) (%d,%d):\n"
-                    "got %d instead of %d\n", name[i], name[j], i,j,p, q[i][j]);
+            printf ("Error in mpfr_pow for (%s)^(%s) (%d,%d):\n"
+                    "got %d instead of %d\n",
+                    name[i], name[j], i, j, p, q[i][j]);
             mpfr_dump (r);
             error = 1;
+          }
+        if (__gmpfr_flags != f[i][j])
+          {
+            printf ("Error in mpfr_pow for (%s)^(%s) (%d,%d):\n"
+                    "Flags = %u instead of expected %u\n",
+                    name[i], name[j], i, j, __gmpfr_flags, f[i][j]);
+            mpfr_dump (r);
+            error = 1;
+          }
+        /* Perform the same tests with pow_z & pow_si & pow_ui
+           if t[j] is an integer */
+        if (mpfr_integer_p (t[j]))
+          {
+            /* mpfr_pow_z */
+            mpfr_clear_flags ();
+            mpfr_get_z (z, t[j], MPFR_RNDN);
+            mpfr_pow_z (r, t[i], z, MPFR_RNDN);
+            p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
+              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
+            if (p != 0 && MPFR_IS_NEG (r))
+              p = -p;
+            if (p != q[i][j])
+              {
+                printf ("Error in mpfr_pow_z for (%s)^(%s) (%d,%d):\n"
+                        "got %d instead of %d\n",
+                        name[i], name[j], i, j, p, q[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
+            if (__gmpfr_flags != f[i][j])
+              {
+                printf ("Error in mpfr_pow_z for (%s)^(%s) (%d,%d):\n"
+                        "Flags = %u instead of expected %u\n",
+                        name[i], name[j], i, j, __gmpfr_flags, f[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
+            /* mpfr_pow_si */
+            mpfr_clear_flags ();
+            si = mpfr_get_si (t[j], MPFR_RNDN);
+            mpfr_pow_si (r, t[i], si, MPFR_RNDN);
+            p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
+              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
+            if (p != 0 && MPFR_IS_NEG (r))
+              p = -p;
+            if (p != q[i][j])
+              {
+                printf ("Error in mpfr_pow_si for (%s)^(%s) (%d,%d):\n"
+                        "got %d instead of %d\n",
+                        name[i], name[j], i, j, p, q[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
+            if (__gmpfr_flags != f[i][j])
+              {
+                printf ("Error in mpfr_pow_si for (%s)^(%s) (%d,%d):\n"
+                        "Flags = %u instead of expected %u\n",
+                        name[i], name[j], i, j, __gmpfr_flags, f[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
+            /* if si >= 0, test mpfr_pow_ui */
+            if (si >= 0)
+              {
+                mpfr_clear_flags ();
+                mpfr_pow_ui (r, t[i], si, MPFR_RNDN);
+                p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
+                  mpfr_cmp_ui (r, 0) == 0 ? 2 :
+                  (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
+                if (p != 0 && MPFR_IS_NEG (r))
+                  p = -p;
+                if (p != q[i][j])
+                  {
+                    printf ("Error in mpfr_pow_ui for (%s)^(%s) (%d,%d):\n"
+                            "got %d instead of %d\n",
+                            name[i], name[j], i, j, p, q[i][j]);
+                    mpfr_dump (r);
+                    error = 1;
+                  }
+                if (__gmpfr_flags != f[i][j])
+                  {
+                    printf ("Error in mpfr_pow_ui for (%s)^(%s) (%d,%d):\n"
+                            "Flags = %u instead of expected %u\n",
+                            name[i], name[j], i, j, __gmpfr_flags, f[i][j]);
+                    mpfr_dump (r);
+                    error = 1;
+                  }
+              }
+          } /* integer_p */
+        /* Perform the same tests with mpfr_ui_pow */
+        if (mpfr_integer_p (t[i]) && MPFR_IS_POS (t[i]))
+          {
+            /* mpfr_ui_pow */
+            mpfr_clear_flags ();
+            si = mpfr_get_si (t[i], MPFR_RNDN);
+            mpfr_ui_pow (r, si, t[j], MPFR_RNDN);
+            p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
+              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
+            if (p != 0 && MPFR_IS_NEG (r))
+              p = -p;
+            if (p != q[i][j])
+              {
+                printf ("Error in mpfr_ui_pow for (%s)^(%s) (%d,%d):\n"
+                        "got %d instead of %d\n",
+                        name[i], name[j], i, j, p, q[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
+            if (__gmpfr_flags != f[i][j])
+              {
+                printf ("Error in mpfr_ui_pow for (%s)^(%s) (%d,%d):\n"
+                        "Flags = %u instead of expected %u\n",
+                        name[i], name[j], i, j, __gmpfr_flags, f[i][j]);
+                mpfr_dump (r);
+                error = 1;
+              }
           }
       }
 
   for (i = 0; i < 11; i++)
     mpfr_clear (t[i]);
   mpfr_clear (r);
+  mpfr_clear (r2);
+  mpz_clear (z);
 
   if (error)
     exit (1);

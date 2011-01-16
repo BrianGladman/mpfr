@@ -58,6 +58,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
             {
               MPFR_ASSERTD (MPFR_IS_ZERO (x));
               MPFR_SET_INF(y);
+              mpfr_set_divby0 ();
               if (MPFR_IS_POS (x) || ((unsigned) n & 1) == 0)
                 MPFR_SET_POS (y);
               else

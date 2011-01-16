@@ -202,8 +202,11 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
             /* 0^n = +/-0 for any n */
             MPFR_SET_ZERO (y);
           else
-            /* 0^(-n) if +/- INF */
-            MPFR_SET_INF (y);
+            {
+              /* 0^(-n) if +/- INF */
+              MPFR_SET_INF (y);
+              mpfr_set_divby0 ();
+            }
           if (MPFR_LIKELY (MPFR_IS_POS (x) || mpz_even_p (z)))
             MPFR_SET_POS (y);
           else
