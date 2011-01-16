@@ -180,10 +180,11 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
               when z goes to zero */
         {
           MPFR_SET_INF(res);
-          if (n >= 0 || (n & 1) == 0)
+          if (n >= 0 || ((unsigned long) n & 1) == 0)
             MPFR_SET_NEG(res);
           else
             MPFR_SET_POS(res);
+          mpfr_set_divby0 ();
           MPFR_RET(0);
         }
     }
