@@ -34,7 +34,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   int i, inex, itmp;
 
   nbtests = (nbtests & 1) ? (nbtests + 1) : nbtests;
-  t = malloc (nbtests * sizeof (mpfr_t));
+  t = (mpfr_t *) malloc (nbtests * sizeof (mpfr_t));
   if (t == NULL)
     {
       fprintf (stderr, "tgrandom: can't allocate memory in test_grandom\n");
