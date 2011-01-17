@@ -61,7 +61,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
      double-extended format);
    - a normal binary128 IEEE-754 number uses 192 bits: 32 for (a), 32 for (b),
      and 128 for (c).
- */   
+ */
 
 size_t
 mpfr_out_raw (FILE *stream, mpfr_srcptr x)
@@ -69,11 +69,13 @@ mpfr_out_raw (FILE *stream, mpfr_srcptr x)
   size_t n; /* number of bytes of the output */
   mpfr_prec_t prec = MPFR_PREC(x);
   int prec_enc, exp_enc = 0;
-  char *s, *t;
+  unsigned char *s, *t;
+
+  MPFR_ASSERTN (CHAR_BIT == 8);
 
   prec_enc = (prec >= 134217728);
   n = 4 + 4 * prec_enc;
-  if (MPFR_IS_SINGULAR(x) == 0)
+  if (MPFR_LIKELY (! MPFR_IS_SINGULAR(x)))
     {
       mpfr_exp_t e = MPFR_EXP(x);
       mpfr_prec_t p = (prec - 1) / 32 + 1; /* ceil(prec/32) */
@@ -81,8 +83,8 @@ mpfr_out_raw (FILE *stream, mpfr_srcptr x)
       exp_enc = (e < -2147483648 || 2147483647 < e);
       n += 4 + 4 * exp_enc + 4 * p;
     }
-  t = s = malloc (n * sizeof (char));
-  t[0] = mpfr_signbit (x) << 7;
+  t = s = (unsigned char *) malloc (n * sizeof (char));
+  t[0] = (mpfr_signbit (x) != 0) << 7;
   if (MPFR_IS_NAN(x))
     t[0] += 3 << 5;
   else if (MPFR_IS_INF(x))
@@ -91,15 +93,18 @@ mpfr_out_raw (FILE *stream, mpfr_srcptr x)
     t[0] += 1 << 5;
   t[0] += exp_enc << 4;
   t[0] += prec_enc << 3;
-  if (prec_enc == 1)
+  if (prec_enc)
     {
-      t[0] += prec >> 56; /* reduction mod 255 is implicit */
-      t[1] += prec >> 48;
-      t[2] += prec >> 40;
-      t[3] += prec >> 32;
+      /* FIXME: the shift count may be too large for the type size. */
+      /* FIXME: check that the precision is not too large. */
+      t[0] += prec >> 56; /* reduction mod 8 is implicit */
+      t[1] = prec >> 48;
+      t[2] = prec >> 40;
+      t[3] = prec >> 32;
       t += 4;
+      t[0] = 0;
     }
-  t[0] += prec >> 24;  /* reduction mod 255 is implicit */
+  t[0] += prec >> 24;  /* reduction mod 256 is implicit */
   t[1] = prec >> 16;
   t[2] = prec >> 8;
   t[3] = prec;
