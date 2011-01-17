@@ -35,20 +35,20 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
   mpz_t x, y, xp, yp, t, a, b, s;
   mpfr_t sfr, l, r1, r2;
   mpfr_prec_t tprec, tprec0;
-  
+
   inex2 = inex1 = 0;
-  
+
   if (rop2 == NULL) /* only one output requested. */
     {
       tprec0 = MPFR_PREC (rop1);
-    } 
+    }
   else
     {
       tprec0 = MAX (MPFR_PREC (rop1), MPFR_PREC (rop2));
     }
 
   tprec0 += 11;
-  
+
   /* We use "Marsaglia polar method" here (cf.
      George Marsaglia, Normal (Gaussian) random variables for supercomputers
      The Journal of Supercomputing, Volume 5, Number 1, 49–55
@@ -57,7 +57,7 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
      First we draw uniform x and y in [0,1] using mpz_urandomb (in
      fixed precision), and scale them to [-1, 1].
   */
-  
+
   mpz_init (xp);
   mpz_init (yp);
   mpz_init (x);
@@ -79,41 +79,41 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
     {
       tprec = tprec0;
       do
-	{
-	  mpz_urandomb (xp, rstate, tprec);
-	  mpz_urandomb (yp, rstate, tprec);
-	  mpz_mul (a, xp, xp);
-	  mpz_mul (b, yp, yp);
-	  mpz_add (s, a, b);
-	}
+        {
+          mpz_urandomb (xp, rstate, tprec);
+          mpz_urandomb (yp, rstate, tprec);
+          mpz_mul (a, xp, xp);
+          mpz_mul (b, yp, yp);
+          mpz_add (s, a, b);
+        }
       while (mpz_sizeinbase (s, 2) > tprec * 2); /* x^2 + y^2 <= 2^{2tprec} */
-      
-      for (;;)
-	{
-	  /* FIXME: compute s as s += 2x + 2y + 2 */
-	  mpz_add_ui (a, xp, 1);
-	  mpz_add_ui (b, yp, 1);
-	  mpz_mul (a, a, a);
-	  mpz_mul (b, b, b);
-	  mpz_add (s, a, b);
-	  if ((mpz_sizeinbase (s, 2) <= 2 * tprec) ||
-	      ((mpz_sizeinbase (s, 2) == 2 * tprec + 1) && (mpz_scan1 (s, 0) == 2 * tprec)))
-	    goto yeepee;
-	  /* Extend by 32 bits */
-	  mpz_mul_2exp (xp, xp, 32);
-	  mpz_mul_2exp (yp, yp, 32);
-	  mpz_urandomb (x, rstate, 32);
-	  mpz_urandomb (y, rstate, 32);
-	  mpz_add (xp, xp, x);
-	  mpz_add (yp, yp, y);
-	  tprec += 32;
 
-	  mpz_mul (a, xp, xp);
-	  mpz_mul (b, yp, yp);
-	  mpz_add (s, a, b);
-	  if (mpz_sizeinbase (s, 2) > tprec * 2)
-	    break;
-	}
+      for (;;)
+        {
+          /* FIXME: compute s as s += 2x + 2y + 2 */
+          mpz_add_ui (a, xp, 1);
+          mpz_add_ui (b, yp, 1);
+          mpz_mul (a, a, a);
+          mpz_mul (b, b, b);
+          mpz_add (s, a, b);
+          if ((mpz_sizeinbase (s, 2) <= 2 * tprec) ||
+              ((mpz_sizeinbase (s, 2) == 2 * tprec + 1) && (mpz_scan1 (s, 0) == 2 * tprec)))
+            goto yeepee;
+          /* Extend by 32 bits */
+          mpz_mul_2exp (xp, xp, 32);
+          mpz_mul_2exp (yp, yp, 32);
+          mpz_urandomb (x, rstate, 32);
+          mpz_urandomb (y, rstate, 32);
+          mpz_add (xp, xp, x);
+          mpz_add (yp, yp, y);
+          tprec += 32;
+
+          mpz_mul (a, xp, xp);
+          mpz_mul (b, yp, yp);
+          mpz_add (s, a, b);
+          if (mpz_sizeinbase (s, 2) > tprec * 2)
+            break;
+        }
     }
  yeepee:
 
@@ -142,22 +142,22 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
       mpfr_mul_z (r1, l, xp, MPFR_RNDN);
       mpfr_div_2ui (r1, r1, tprec, MPFR_RNDN); /* exact */
       if (s1)
-	mpfr_neg (r1, r1, MPFR_RNDN);
+        mpfr_neg (r1, r1, MPFR_RNDN);
       if (MPFR_CAN_ROUND (r1, tprec - 2, MPFR_PREC (rop1), rnd))
-	{
-	  if (rop2 != NULL)
-	    {
-	      mpfr_set_prec (r2, tprec);
-	      mpfr_mul_z (r2, l, yp, MPFR_RNDN);
-	      mpfr_div_2ui (r2, r2, tprec, MPFR_RNDN); /* exact */
-	      if (s2)
-		mpfr_neg (r2, r2, MPFR_RNDN);
-	      if (MPFR_CAN_ROUND (r2, tprec - 2, MPFR_PREC (rop2), rnd))
-		break;
-	    }
-	  else
-	    break;
-	}
+        {
+          if (rop2 != NULL)
+            {
+              mpfr_set_prec (r2, tprec);
+              mpfr_mul_z (r2, l, yp, MPFR_RNDN);
+              mpfr_div_2ui (r2, r2, tprec, MPFR_RNDN); /* exact */
+              if (s2)
+                mpfr_neg (r2, r2, MPFR_RNDN);
+              if (MPFR_CAN_ROUND (r2, tprec - 2, MPFR_PREC (rop2), rnd))
+                break;
+            }
+          else
+            break;
+        }
       /* Extend by 32 bits */
       mpz_mul_2exp (xp, xp, 32);
       mpz_mul_2exp (yp, yp, 32);

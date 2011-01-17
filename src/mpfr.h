@@ -356,7 +356,7 @@ __MPFR_DECLSPEC double mpfr_get_d_2exp _MPFR_PROTO ((long*, mpfr_srcptr,
 __MPFR_DECLSPEC long double mpfr_get_ld_2exp _MPFR_PROTO ((long*, mpfr_srcptr,
                                                            mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_frexp _MPFR_PROTO ((mpfr_exp_t*, mpfr_ptr,
-					     mpfr_srcptr, mpfr_rnd_t));
+                                             mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr,
                                                         mpfr_rnd_t));
@@ -370,7 +370,7 @@ __MPFR_DECLSPEC void mpfr_free_str _MPFR_PROTO ((char *));
 __MPFR_DECLSPEC int mpfr_urandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_grandom _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, gmp_randstate_t,
-					       mpfr_rnd_t));
+                                               mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
