@@ -59,12 +59,13 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
     }
 
   /* atanh (x) = NaN as soon as |x| > 1, and arctanh(+/-1) = +/-Inf */
-  if (MPFR_UNLIKELY (MPFR_EXP (xt) > 0))
+  if (MPFR_UNLIKELY (MPFR_GET_EXP (xt) > 0))
     {
-      if (MPFR_EXP (xt) == 1 && mpfr_powerof2_raw (xt))
+      if (MPFR_GET_EXP (xt) == 1 && mpfr_powerof2_raw (xt))
         {
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, xt);
+          mpfr_set_divby0 ();
           MPFR_RET (0);
         }
       MPFR_SET_NAN (y);

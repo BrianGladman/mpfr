@@ -222,6 +222,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           MPFR_SET_INF(y);
           MPFR_SET_NEG(y);
+          mpfr_set_divby0 ();
           MPFR_RET(0);
         }
     }
