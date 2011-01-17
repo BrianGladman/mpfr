@@ -1,6 +1,6 @@
 /* mpfr_erfc -- The Complementary Error Function of a floating-point number
 
-Copyright 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
+Copyright 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

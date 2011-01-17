@@ -1,6 +1,6 @@
 /* tfprintf.c -- test file for mpfr_fprintf and mpfr_vfprintf
 
-Copyright 2008, 2009, 2010 Free Software Foundation, Inc.
+Copyright 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify

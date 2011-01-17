@@ -2,7 +2,7 @@
    mpfr_fmod -- compute the floating-point remainder of x/y
    mpfr_remquo and mpfr_remainder -- argument reduction functions
 
-Copyright 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
+Copyright 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

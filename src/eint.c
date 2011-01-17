@@ -1,6 +1,6 @@
 /* mpfr_eint, mpfr_eint1 -- the exponential integral
 
-Copyright 2005, 2006, 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
+Copyright 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
