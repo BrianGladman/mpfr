@@ -68,6 +68,7 @@
 /tfms
 /tfprintf
 /tfrac
+/tfrexp
 /tgamma
 /tget_d
 /tget_d_2exp
@@ -79,6 +80,7 @@
 /tget_str
 /tget_z
 /tgmpop
+/tgrandom
 /thyperbolic
 /thypot
 /tinits
