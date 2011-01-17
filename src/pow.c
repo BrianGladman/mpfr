@@ -465,6 +465,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           negative = MPFR_IS_NEG(x) && is_odd (y);
           if (MPFR_IS_NEG (y))
             {
+              MPFR_ASSERTD (! MPFR_IS_INF (y));
               MPFR_SET_INF (z);
               mpfr_set_divby0 ();
             }
