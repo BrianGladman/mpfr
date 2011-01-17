@@ -156,22 +156,24 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* When x is a power of two, we call directly atan(y/x) since y/x is
      exact. */
-  if (MPFR_UNLIKELY (MPFR_IS_POWER_OF_2 (x))) 
+  if (MPFR_UNLIKELY (MPFR_IS_POWER_OF_2 (x)))
     {
       int r;
       mpfr_t yoverx;
+
       mpfr_init2 (yoverx, MPFR_PREC (y));
-      if (MPFR_LIKELY (mpfr_div_2si (yoverx, y, MPFR_EXP (x) - 1, MPFR_RNDN) == 0))
-	{
-	  r = mpfr_atan (dest, yoverx, rnd_mode);
-	  mpfr_clear (yoverx);
-	  return r;
-	}	  
+      if (MPFR_LIKELY (mpfr_div_2si (yoverx, y, MPFR_GET_EXP (x) - 1,
+                                     MPFR_RNDN) == 0))
+        {
+          r = mpfr_atan (dest, yoverx, rnd_mode);
+          mpfr_clear (yoverx);
+          return r;
+        }
       else
-	{
-	  /* Division is inexact because of a small exponent range */
-	  mpfr_clear (yoverx);
-	}
+        {
+          /* Division is inexact because of a small exponent range */
+          mpfr_clear (yoverx);
+        }
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
