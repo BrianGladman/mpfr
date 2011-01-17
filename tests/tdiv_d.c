@@ -64,12 +64,30 @@ check_nans (void)
   MPFR_ASSERTN (MPFR_IS_NEG (y));
 
   /* 0.0 / 0.0 is nan */
-  mpfr_set_d (x, 0.0, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_clear_flags ();
   inexact = mpfr_div_d (y, x, 0.0, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
-  MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
   MPFR_ASSERTN (mpfr_nan_p (y));
+
+  /* 1.0 / 0.0 == +inf */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 0.0, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_DIVBY0);
+  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (MPFR_IS_POS (y));
+
+  /* -1.0 / 0.0 == -inf */
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 0.0, MPFR_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_DIVBY0);
+  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (MPFR_IS_NEG (y));
 
   mpfr_clear (x);
   mpfr_clear (y);
