@@ -93,15 +93,15 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_init2 (y1, prec);
       mpfr_init2 (y2, prec);
       MPFR_ZIV_INIT (loop, prec);
-      
+
       /* ZIV loop */
       for (;;)
         {
           mpfr_gamma_one_and_two_third (y1, y2, prec); /* y2 = Gamma(2/3)(1 + delta1), |delta1| <= 2^{1-prec}. */
-          
+
           r = mpfr_set_ui (y1, 9, MPFR_RNDN);
           MPFR_ASSERTD (r == 0);
-          mpfr_cbrt (y1, y1, MPFR_RNDN); /* y1 = cbrt(9)(1 + delta2), |delta2| <= 2^{-prec}. */ 
+          mpfr_cbrt (y1, y1, MPFR_RNDN); /* y1 = cbrt(9)(1 + delta2), |delta2| <= 2^{-prec}. */
           mpfr_mul (y1, y1, y2, MPFR_RNDN);
           mpfr_ui_div (y1, 1, y1, MPFR_RNDN);
           if (MPFR_LIKELY (MPFR_CAN_ROUND (y1, prec - 3, MPFR_PREC (y), rnd)))
@@ -115,7 +115,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_clear (y2);
       return mpfr_check_range (y, r, rnd);
     }
-  
+
   /* FIXME: underflow for large values of |x| ? */
 
 
