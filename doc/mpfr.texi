@@ -830,6 +830,9 @@ mode, the result is infinite.
 Note: unlike the underflow case, there is only one possible definition of
 overflow here.
 
+@item Division-by-zero:
+An exact infinite result is obtained from finite inputs.
+
 @item NaN:
 A NaN exception occurs when the result of a function is NaN.
 @c NaN is defined above. So, we don't say anything more.
@@ -2842,31 +2845,37 @@ in the subnormal range, which may not be the case for your hardware.
 
 @deftypefun void mpfr_clear_underflow (void)
 @deftypefunx void mpfr_clear_overflow (void)
+@deftypefunx void mpfr_clear_divby0 (void)
 @deftypefunx void mpfr_clear_nanflag (void)
 @deftypefunx void mpfr_clear_inexflag (void)
 @deftypefunx void mpfr_clear_erangeflag (void)
-Clear the underflow, overflow, invalid, inexact and @emph{erange} flags.
+Clear the underflow, overflow, division-by-zero, invalid,
+inexact and @emph{erange} flags.
 @end deftypefun
 
 @deftypefun void mpfr_set_underflow (void)
 @deftypefunx void mpfr_set_overflow (void)
+@deftypefunx void mpfr_set_divby0 (void)
 @deftypefunx void mpfr_set_nanflag (void)
 @deftypefunx void mpfr_set_inexflag (void)
 @deftypefunx void mpfr_set_erangeflag (void)
-Set the underflow, overflow, invalid, inexact and @emph{erange} flags.
+Set the underflow, overflow, division-by-zero, invalid,
+inexact and @emph{erange} flags.
 @end deftypefun
 
 @deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, invalid, inexact, @emph{erange}).
+Clear all global flags (underflow, overflow, division-by-zero, invalid,
+inexact, @emph{erange}).
 @end deftypefun
 
 @deftypefun int mpfr_underflow_p (void)
 @deftypefunx int mpfr_overflow_p (void)
+@deftypefunx int mpfr_divby0_p (void)
 @deftypefunx int mpfr_nanflag_p (void)
 @deftypefunx int mpfr_inexflag_p (void)
 @deftypefunx int mpfr_erangeflag_p (void)
-Return the corresponding (underflow, overflow, invalid, inexact, @emph{erange})
-flag, which is non-zero iff the flag is set.
+Return the corresponding (underflow, overflow, division-by-zero, invalid,
+inexact, @emph{erange}) flag, which is non-zero iff the flag is set.
 @end deftypefun
 
 @node Compatibility with MPF, Custom Interface, Exception Related Functions, MPFR Interface
