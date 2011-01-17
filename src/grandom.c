@@ -29,7 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 int
-mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t rnd)
+mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate,
+              mpfr_rnd_t rnd)
 {
   int inex1, inex2, s1, s2;
   mpz_t x, y, xp, yp, t, a, b, s;
@@ -97,7 +98,8 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
           mpz_mul (b, b, b);
           mpz_add (s, a, b);
           if ((mpz_sizeinbase (s, 2) <= 2 * tprec) ||
-              ((mpz_sizeinbase (s, 2) == 2 * tprec + 1) && (mpz_scan1 (s, 0) == 2 * tprec)))
+              ((mpz_sizeinbase (s, 2) == 2 * tprec + 1) &&
+               (mpz_scan1 (s, 0) == 2 * tprec)))
             goto yeepee;
           /* Extend by 32 bits */
           mpz_mul_2exp (xp, xp, 32);
@@ -179,7 +181,7 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate, mpfr_rnd_t r
   inex1 = mpfr_check_range (rop1, inex1, rnd);
 
   if (rop2 != NULL)
-      mpfr_clear (r2);
+    mpfr_clear (r2);
   mpfr_clear (r1);
   mpfr_clear (l);
   mpfr_clear (sfr);
