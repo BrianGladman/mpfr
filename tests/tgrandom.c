@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 static void
 test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
-	      int verbose)
+              int verbose)
 {
   mpfr_t *t;
   mpfr_t av, va, tmp;
@@ -40,10 +40,10 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       fprintf (stderr, "tgrandom: can't allocate memory in test_grandom\n");
       exit (1);
     }
-  
+
   for (i = 0; i < nbtests; ++i)
     mpfr_init2 (t[i], prec);
-  
+
   inex = 1;
   for (i = 0; i < nbtests; i += 2)
     {
@@ -67,22 +67,22 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       mpfr_set_ui (av, 0, MPFR_RNDN);
       mpfr_set_ui (va, 0, MPFR_RNDN);
       for (i = 0; i < nbtests; ++i)
-	{
-	  mpfr_add (av, av, t[i], MPFR_RNDN);
-	  mpfr_sqr (tmp, t[i], MPFR_RNDN);
-	  mpfr_add (va, va, tmp, MPFR_RNDN);
-	}
+        {
+          mpfr_add (av, av, t[i], MPFR_RNDN);
+          mpfr_sqr (tmp, t[i], MPFR_RNDN);
+          mpfr_add (va, va, tmp, MPFR_RNDN);
+        }
       mpfr_div_ui (av, av, nbtests, MPFR_RNDN);
       mpfr_div_ui (va, va, nbtests, MPFR_RNDN);
       mpfr_sqr (tmp, av, MPFR_RNDN);
       mpfr_sub (va, va, av, MPFR_RNDN);
-      
+
       mpfr_printf ("Average = %.5Rf\nVariance = %.5Rf\n", av, va);
       mpfr_clear (av);
       mpfr_clear (va);
       mpfr_clear (tmp);
     }
-  
+
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
   free (t);
@@ -106,7 +106,7 @@ main (int argc, char *argv[])
       if (a != 0)
         nbtests = a;
     }
-  
+
   test_grandom (nbtests, 420, MPFR_RNDN, verbose);
 
   tests_end_mpfr ();

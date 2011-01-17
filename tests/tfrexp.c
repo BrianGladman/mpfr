@@ -29,7 +29,7 @@ check_special (void)
   mpfr_t x, y;
   int inex;
   mpfr_exp_t exp;
-  
+
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
 

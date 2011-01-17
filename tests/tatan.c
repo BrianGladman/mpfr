@@ -558,12 +558,12 @@ atan2_pow_of_2 (void)
       mpfr_set_ui_2exp (x, 1, d[i], MPFR_RNDN);
       mpfr_atan2 (r, y, x, MPFR_RNDN);
       if (mpfr_equal_p (r, g) == 0)
-	{
-	  printf ("Error in mpfr_atan2 (5)\n");
-	  printf ("Expected "); mpfr_print_binary (g); printf ("\n");
-	  printf ("Got      "); mpfr_print_binary (r); printf ("\n");
-	  exit (1);
-	}
+        {
+          printf ("Error in mpfr_atan2 (5)\n");
+          printf ("Expected "); mpfr_print_binary (g); printf ("\n");
+          printf ("Got      "); mpfr_print_binary (r); printf ("\n");
+          exit (1);
+        }
     }
   mpfr_clear (x);
   mpfr_clear (y);
