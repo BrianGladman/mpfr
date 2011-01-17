@@ -64,6 +64,7 @@ for file in tests/*.c
 do
   case $file in
     *printf*) ;;
+    tests/tvalist.c) ;;
     *) grep -q "mpfr_[a-z]*printf" $file && \
         echo "$file contains mpfr_printf-like function calls" ;;
   esac
