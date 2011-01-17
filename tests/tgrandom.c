@@ -77,6 +77,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       mpfr_sqr (tmp, av, MPFR_RNDN);
       mpfr_sub (va, va, av, MPFR_RNDN);
 
+      /* FIXME: do not use mpfr_printf in the tests. */
       mpfr_printf ("Average = %.5Rf\nVariance = %.5Rf\n", av, va);
       mpfr_clear (av);
       mpfr_clear (va);
