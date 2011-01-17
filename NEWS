@@ -41,7 +41,8 @@ Changes from versions 3.0.* to version 3.1.0:
 - The --with-gmp-build configure option can now be used when the GMP
   source directory and the GMP build directory are different (without
   having to copy header files manually as before).
-- New function mpfr_frexp,
+- New functions mpfr_frexp and mpfr_grandom.
+- New division-by-zero exception (flag) and associated functions.
 - Bug fixes.
 
 Changes from versions 2.4.* to version 3.0.0:
