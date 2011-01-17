@@ -46,13 +46,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
          the exponent
        - if exp_enc=1, a first 32-bit word encodes a positive integer m,
          and the following m 32-bit words encode the exponent (in 2-complement
-	 representation, with least significant words first)
+         representation, with least significant words first)
    (c) (optional) a field for the significand:
        - if the number is NaN, Inf, 0, this field is empty
        - otherwise, let p = ceil(prec/32), the significand is represented
          by p consecutive 32-bit words (least significant words first).
-	 Thus on a little-endian machine the significand can be directly
-	 copied using memcopy.
+         Thus on a little-endian machine the significand can be directly
+         copied using memcopy.
    Examples:
    - a normal binary32 IEEE-754 number uses 96 bits: 32 for (a), 32 for (b),
      and 32 for (c);
