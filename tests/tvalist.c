@@ -38,7 +38,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
-  int (*fct) ();
+  int (*fct) (FILE*, __gmp_const char*, va_list);
 
   fct = mpfr_vfprintf;
   return 0;
