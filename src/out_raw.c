@@ -1,3 +1,6 @@
+This is work in progress. Before continuing, please read
+http://websympa.loria.fr/wwsympa/arc/mpfr/2011-01/msg00039.html.
+
 /* mpfr_out_raw -- output a floating-point number to binary portable format
 
 Copyright 2011 Free Software Foundation, Inc.
