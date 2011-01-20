@@ -260,6 +260,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   /* eint() has a root 0.37250741078136663446..., so if x is near,
      already take more bits */
+  /* FIXME: do not use native floating-point here. */
   if (MPFR_GET_EXP(x) == -1) /* 1/4 <= x < 1/2 */
     {
       double d;
