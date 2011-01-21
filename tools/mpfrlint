@@ -62,12 +62,10 @@ done
 # as they need <stdarg.h> (HAVE_STDARG defined).
 for file in tests/*.c
 do
-  case $file in
-    *printf*) ;;
-    tests/tvalist.c) ;;
-    *) grep -q "mpfr_[a-z]*printf" $file && \
-        echo "$file contains mpfr_printf-like function calls" ;;
-  esac
+  sed '/#if\(def\)\? *HAVE_STDARG/,/#\(endif\|else\) .*HAVE_STDARG/d
+       /\/\*.*\*\//d
+       /\/\*/,/\*\//d' $file | grep -q "mpfr_[a-z]*printf" && \
+    echo "$file contains unprotected mpfr_printf-like function calls"
 done
 
 fdlv1="`sed -n '/Version / {
