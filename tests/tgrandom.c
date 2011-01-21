@@ -83,7 +83,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       mpfr_clear (va);
       mpfr_clear (tmp);
     }
-#endif
+#endif /* HAVE_STDARG */
 
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
