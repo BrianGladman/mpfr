@@ -58,6 +58,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       exit (1);
     }
 
+#ifdef HAVE_STDARG
   if (verbose)
     {
       mpfr_init2 (av, prec);
@@ -77,12 +78,12 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
       mpfr_sqr (tmp, av, MPFR_RNDN);
       mpfr_sub (va, va, av, MPFR_RNDN);
 
-      /* FIXME: do not use mpfr_printf in the tests. */
       mpfr_printf ("Average = %.5Rf\nVariance = %.5Rf\n", av, va);
       mpfr_clear (av);
       mpfr_clear (va);
       mpfr_clear (tmp);
     }
+#endif
 
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
