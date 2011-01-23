@@ -162,9 +162,9 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
          thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
          If n*EXP(y) < __gmpfr_emin then we have an underflow.
          Warning: absn is an unsigned long. */
-      if ((MPFR_EXP(y) < 0 && absn > (unsigned long) (-__gmpfr_emin))
-          || (absn <= (unsigned long) (-MPFR_EMIN_MIN) &&
-              MPFR_EXP(y) < __gmpfr_emin / (mpfr_exp_t) absn))
+      if ((MPFR_GET_EXP (y) < 0 && absn > (-__gmpfr_emin))
+          || (absn <= (-MPFR_EMIN_MIN) &&
+              MPFR_GET_EXP (y) < __gmpfr_emin / (mpfr_exp_t) absn))
         {
           MPFR_GROUP_CLEAR (g);
           return mpfr_underflow (res, (r == MPFR_RNDN) ? MPFR_RNDZ : r,
@@ -195,12 +195,13 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       if (absn > 0)
         mpfr_div_2ui (t, t, absn, MPFR_RNDN);
       mpfr_set (s, t, MPFR_RNDN);
-      exps = MPFR_EXP (s);
+      exps = MPFR_GET_EXP (s);
       expT = exps;
       for (k = 1; ; k++)
         {
           mpfr_mul (t, t, y, MPFR_RNDN);
           mpfr_neg (t, t, MPFR_RNDN);
+          MPFR_ASSERTN (absn <= ULONG_MAX - k);
           if (k + absn <= ULONG_MAX / k)
             mpfr_div_ui (t, t, k * (k + absn), MPFR_RNDN);
           else
@@ -208,22 +209,22 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
               mpfr_div_ui (t, t, k, MPFR_RNDN);
               mpfr_div_ui (t, t, k + absn, MPFR_RNDN);
             }
-          exps = MPFR_EXP (t);
+          exps = MPFR_GET_EXP (t);
           if (exps > expT)
             expT = exps;
           mpfr_add (s, s, t, MPFR_RNDN);
-          exps = MPFR_EXP (s);
+          exps = MPFR_GET_EXP (s);
           if (exps > expT)
             expT = exps;
-          if (MPFR_EXP (t) + (mpfr_exp_t) prec <= MPFR_EXP (s) &&
+          if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= MPFR_EXP (s) &&
               zz / (2 * k) < k + n)
             break;
         }
       /* the error is bounded by (4k^2+21/2k+7) ulp(s)*2^(expT-exps)
          <= (k+2)^2 ulp(s)*2^(2+expT-exps) */
-      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2 + expT - MPFR_EXP (s);
+      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2 + expT - MPFR_GET_EXP (s);
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, prec - err, MPFR_PREC(res), r)))
-          break;
+        break;
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);
