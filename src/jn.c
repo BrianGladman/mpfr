@@ -216,7 +216,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           exps = MPFR_GET_EXP (s);
           if (exps > expT)
             expT = exps;
-          if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= MPFR_EXP (s) &&
+          if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= MPFR_GET_EXP (s) &&
               zz / (2 * k) < k + n)
             break;
         }
