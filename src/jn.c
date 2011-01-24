@@ -195,7 +195,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       if (absn > 0)
         mpfr_div_2ui (t, t, absn, MPFR_RNDN);
       mpfr_set (s, t, MPFR_RNDN);
-      /* note: we assume here that the maximal error is proportional to
+      /* note: we assume here that the maximal error bound is proportional to
          2^exps, which is true also in the case where s=0 */
       exps = MPFR_IS_ZERO (s) ? MPFR_EMIN_MIN : MPFR_GET_EXP (s);
       expT = exps;
