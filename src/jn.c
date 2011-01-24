@@ -78,7 +78,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   int inex;
   unsigned long absn;
   mpfr_prec_t prec, pbound, err;
-  mpfr_exp_t exps, expT;
+  mpfr_exp_t exps, expT, diffexp;
   mpfr_t y, s, t, absz;
   unsigned long k, zz, k0;
   MPFR_GROUP_DECL(g);
@@ -222,8 +222,12 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
         }
       /* the error is bounded by (4k^2+21/2k+7) ulp(s)*2^(expT-exps)
          <= (k+2)^2 ulp(s)*2^(2+expT-exps) */
+      diffexp = expT - exps;
+      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2;
       /* FIXME: Can an overflow occur in the following sum? */
-      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2 + expT - exps;
+      MPFR_ASSERTN (diffexp >= 0 && err >= 0 &&
+                    diffexp <= MPFR_PREC_MAX - err);
+      err += diffexp;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, prec - err, MPFR_PREC(res), r)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
