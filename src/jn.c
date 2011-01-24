@@ -119,7 +119,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
      |j0(z) - 1| <= z^2/4 for -1 <= z <= 1. */
   if (n == 0)
     MPFR_FAST_COMPUTE_IF_SMALL_INPUT (res, __gmpfr_one, -2 * MPFR_GET_EXP (z),
-                                      2, 0, r, /* Nothing */ );
+                                      2, 0, r, (void) 0 );
 
   /* idem for j1: j1(z) = z/2 - z^3/16 + ..., more precisely
      |j1(z) - z/2| <= |z^3|/16 for -1 <= z <= 1, with the sign of j1(z) - z/2
