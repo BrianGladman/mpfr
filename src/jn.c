@@ -195,7 +195,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       if (absn > 0)
         mpfr_div_2ui (t, t, absn, MPFR_RNDN);
       mpfr_set (s, t, MPFR_RNDN);
-      exps = MPFR_GET_EXP (s);
+      exps = MPFR_IS_ZERO (s) ? MPFR_EMIN_MIN : MPFR_GET_EXP (s);
       expT = exps;
       for (k = 1; ; k++)
         {
@@ -209,20 +209,21 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
               mpfr_div_ui (t, t, k, MPFR_RNDN);
               mpfr_div_ui (t, t, k + absn, MPFR_RNDN);
             }
-          exps = MPFR_GET_EXP (t);
+          exps = MPFR_IS_ZERO (s) ? MPFR_EMIN_MIN : MPFR_GET_EXP (t);
           if (exps > expT)
             expT = exps;
           mpfr_add (s, s, t, MPFR_RNDN);
-          exps = MPFR_GET_EXP (s);
+          exps = MPFR_IS_ZERO (s) ? MPFR_EMIN_MIN : MPFR_GET_EXP (s);
           if (exps > expT)
             expT = exps;
-          if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= MPFR_GET_EXP (s) &&
+          if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= exps &&
               zz / (2 * k) < k + n)
             break;
         }
       /* the error is bounded by (4k^2+21/2k+7) ulp(s)*2^(expT-exps)
          <= (k+2)^2 ulp(s)*2^(2+expT-exps) */
-      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2 + expT - MPFR_GET_EXP (s);
+      /* FIXME: Can an overflow occur in the following sum? */
+      err = 2 * MPFR_INT_CEIL_LOG2(k + 2) + 2 + expT - exps;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, prec - err, MPFR_PREC(res), r)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
