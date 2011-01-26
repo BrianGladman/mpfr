@@ -53,7 +53,7 @@ mpfr_check (mpfr_srcptr x)
   for(i = 0 ; i < s ; i++)
     tmp = xm[i];
   /* Check if it isn't singular*/
-  if (MPFR_IS_PURE_FP(x))
+  if (! MPFR_IS_SINGULAR (x))
     {
       /* Check first mp_limb of mantissa (Must start with a 1 bit) */
       if ( ((xm[MPFR_LIMB_SIZE(x)-1])>>(GMP_NUMB_BITS-1)) == 0)
