@@ -61,17 +61,36 @@ get_prec_max (mpfr_t *tab, unsigned long n, mpfr_prec_t f)
   mpfr_exp_t min, max;
   unsigned long i;
 
-  for (i = 0; MPFR_IS_ZERO (tab[i]); i++)
-    MPFR_ASSERTD (i < n);
+  i = 0;
+  while (MPFR_IS_ZERO (tab[i]))
+    {
+      i++;
+      if (i == n)
+        return MPFR_PREC_MIN;  /* all values are 0 */
+    }
+
+  if (! mpfr_check (tab[i]))
+    {
+      printf ("tab[%lu] is not valid.\n", i);
+      exit (1);
+    }
+  MPFR_ASSERTN (MPFR_IS_FP (tab[i]));
   min = max = MPFR_GET_EXP(tab[i]);
   for (i++; i < n; i++)
     {
-      if (!MPFR_IS_ZERO (tab[i])) {
-        if (MPFR_GET_EXP(tab[i]) > max)
-          max = MPFR_GET_EXP(tab[i]);
-        if (MPFR_GET_EXP(tab[i]) < min)
-          min = MPFR_GET_EXP(tab[i]);
-      }
+      if (! mpfr_check (tab[i]))
+        {
+          printf ("tab[%lu] is not valid.\n", i);
+          exit (1);
+        }
+      MPFR_ASSERTN (MPFR_IS_FP (tab[i]));
+      if (! MPFR_IS_ZERO (tab[i]))
+        {
+          if (MPFR_GET_EXP(tab[i]) > max)
+            max = MPFR_GET_EXP(tab[i]);
+          if (MPFR_GET_EXP(tab[i]) < min)
+            min = MPFR_GET_EXP(tab[i]);
+        }
     }
   res = max - min;
   res += f;
