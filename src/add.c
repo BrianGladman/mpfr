@@ -86,7 +86,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     { /* signs differ, it's a subtraction */
       if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
                       && MPFR_PREC(b) == MPFR_PREC(c)))
-        return mpfr_sub1sp(a,b,c,rnd_mode);
+        return mpfr_sub1sp(a, b, c, rnd_mode);
       else
         return mpfr_sub1(a, b, c, rnd_mode);
     }
