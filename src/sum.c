@@ -73,6 +73,7 @@ mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
         }
       else
         {
+          MPFR_ASSERTD (MPFR_IS_PURE_FP (tab[i]));
           if (MPFR_GET_EXP (tab[i]) < min)
             min = MPFR_GET_EXP(tab[i]);
           if (MPFR_GET_EXP (tab[i]) > max)
