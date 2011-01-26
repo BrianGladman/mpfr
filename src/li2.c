@@ -223,7 +223,8 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode), ("y[%#R]=%R", y));
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+                 ("y[%#R]=%R", y, y));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
