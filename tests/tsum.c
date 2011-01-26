@@ -193,7 +193,8 @@ test_sum (mpfr_prec_t f, unsigned long n)
   for (i = 0; i < n; i++)
     {
       mpfr_urandomb (tab[i], RANDS);
-      mpfr_set_exp (tab[i], randlimb () % 1000);
+      if (! mpfr_zero_p (tab[i]))
+        mpfr_set_exp (tab[i], randlimb () % 1000);
     }
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
