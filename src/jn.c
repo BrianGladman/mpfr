@@ -201,6 +201,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       expT = exps;
       for (k = 1; ; k++)
         {
+          MPFR_LOG_MSG (("loop on k, k = %lu\n", k));
           mpfr_mul (t, t, y, MPFR_RNDN);
           mpfr_neg (t, t, MPFR_RNDN);
           MPFR_ASSERTN (absn <= ULONG_MAX - k);
