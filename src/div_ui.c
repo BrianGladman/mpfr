@@ -35,6 +35,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   int inexact, middle = 1, nexttoinf;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R n=%lu rnd=%d", x, x, u, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
@@ -257,6 +260,9 @@ int
 mpfr_div_si (mpfr_ptr y, mpfr_srcptr x, long int u, mpfr_rnd_t rnd_mode)
 {
   int res;
+
+  MPFR_LOG_FUNC (("x[%#R]=%R n=%ld rnd=%d", x, x, u, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", y, y, res));
 
   if (u >= 0)
     res = mpfr_div_ui (y, x, u, rnd_mode);
