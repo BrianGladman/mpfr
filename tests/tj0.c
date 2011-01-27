@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   mpfr_clear_flags ();
   inex = mpfr_j0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_INEXACT);
-  mpfr_set_str (x, "0x.e5439fd9267p-2", 0, GMP_RNDN);
+  mpfr_set_str (x, "0x.e5439fd9267p-2", 0, MPFR_RNDN);
   if (! mpfr_equal_p (y, x))
     {
       printf ("Error on 2:\n");
