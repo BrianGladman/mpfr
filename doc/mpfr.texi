@@ -3352,14 +3352,6 @@ Note: this function has been renamed to @code{mpfr_get_z_2exp}
 in MPFR 3.0, but @code{mpfr_get_z_exp} is still available for
 compatibility reasons.
 
-@item @code{mpfr_urandom} and @code{mpfr_urandomb} changed in MPFR 3.1.
-Their behavior no longer depends on the platform (assuming this is also
-true for GMP's random generator).  As a consequence, the returned values
-can be different between MPFR 3.1 and previous MPFR versions.
-Note: as the reproducibility of these functions was not specified
-before MPFR 3.1, the MPFR 3.1 behavior is @emph{not} regarded as
-backward incompatible with previous versions.
-
 @item @code{mpfr_strtofr} changed in MPFR 2.3.1 and MPFR 2.4.
 This was actually a bug fix since the code and the documentation did
 not match.  But both were changed in order to have a more consistent
@@ -3374,6 +3366,14 @@ bases).  Note: if an unsupported base is provided to this function,
 the behavior is undefined; more precisely, in MPFR 2.3.1 and later,
 providing an unsupported base yields an assertion failure (this
 behavior may change in the future).
+
+@item @code{mpfr_urandom} and @code{mpfr_urandomb} changed in MPFR 3.1.
+Their behavior no longer depends on the platform (assuming this is also
+true for GMP's random generator).  As a consequence, the returned values
+can be different between MPFR 3.1 and previous MPFR versions.
+Note: as the reproducibility of these functions was not specified
+before MPFR 3.1, the MPFR 3.1 behavior is @emph{not} regarded as
+backward incompatible with previous versions.
 
 @end itemize
 
