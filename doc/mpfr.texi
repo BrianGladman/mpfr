@@ -2815,6 +2815,10 @@ If the result cannot be represented in the current exponent range
 (due to a too small @code{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
+
+As usual, if the returned ternary value is non zero, the inexact flag is set.
+Moreover, if a second rounding occurred (because the input @var{x} was in the
+subnormal range), the underflow flag is set.
 @end deftypefun
 
 This is an example of how to emulate binary double IEEE 754 arithmetic
@@ -3366,6 +3370,13 @@ bases).  Note: if an unsupported base is provided to this function,
 the behavior is undefined; more precisely, in MPFR 2.3.1 and later,
 providing an unsupported base yields an assertion failure (this
 behavior may change in the future).
+
+@item @code{mpfr_subnormalize} changed in MPFR 3.1.
+This was actually regarded as a bug fix. The @code{mpfr_subnormalize}
+implementation up to MPFR 3.0.0 did not change the flags. In particular,
+it did not follow the generic rule concerning the inexact flag (and no
+special behavior was specified). The case of the underflow flag was more
+a lack of specification.
 
 @item @code{mpfr_urandom} and @code{mpfr_urandomb} changed in MPFR 3.1.
 Their behavior no longer depends on the platform (assuming this is also
