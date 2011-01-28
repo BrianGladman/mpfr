@@ -58,8 +58,6 @@ Table of contents:
   the input in case of cancellation).
   -> remove those dependencies from the input precision.
 
-- mpfr_get_str should support base up to 62 too.
-
 - mpfr_can_round:
    change the meaning of the 2nd argument (err). Currently the error is
    at most 2^(MPFR_EXP(b)-err), i.e. err is the relative shift wrt the

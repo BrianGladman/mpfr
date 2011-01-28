@@ -55,7 +55,7 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
    n is the number of limbs of r.
    e represents the maximal error in the approximation of Y
       (e < 0 iff the approximation is exact, i.e., r*2^f = Y).
-   b is the wanted base (2 <= b <= 36).
+   b is the wanted base (2 <= b <= 62).
    m is the number of wanted digits in the mantissa.
    rnd is the rounding mode.
    It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value
@@ -2224,7 +2224,7 @@ ceil_mul (mpfr_exp_t e, int beta, int i)
 /* prints the mantissa of x in the string s, and writes the corresponding
    exponent in e.
    x is rounded with direction rnd, m is the number of digits of the mantissa,
-   b is the given base (2 <= b <= 36).
+   b is the given base (2 <= b <= 62).
 
    Return value:
    if s=NULL, allocates a string to store the mantissa, with
