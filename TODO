@@ -378,14 +378,6 @@ Table of contents:
       - The rounded value is the same.
   It should be a complement to tgeneric tests.
 
-- add a new exception "division by zero" (IEEE-754 terminology) / "infinitary"
-  (LIA-2 terminology). In IEEE 754R (2006 February 14 8:00):
-    "The division by zero exception shall be signaled iff an exact
-    infinite result is defined for an operation on finite operands.
-    [such as a pole or logarithmic singularity.] In particular, the
-    division by zero exception shall be signaled if the divisor is
-    zero and the dividend is a finite nonzero number."
-
 - in div.c, try to find a case for which cy != 0 after the line
         cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
   (which should be added to the tests), e.g. by having {vp, k} = 0, or
