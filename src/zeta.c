@@ -185,14 +185,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   inex = mpfr_sub (s1, s, __gmpfr_one, MPFR_RNDN);
   MPFR_ASSERTD (inex == 0);
 
-  /* case s=1 */
-  if (MPFR_IS_ZERO (s1))
-    {
-      MPFR_SET_INF (z);
-      MPFR_SET_POS (z);
-      MPFR_ASSERTD (inex == 0);
-      goto clear_and_return;
-    }
+  /* case s=1 should have already been handled */
+  MPFR_ASSERTD (!MPFR_IS_ZERO (s1));
 
   MPFR_GROUP_INIT_4 (group, MPFR_PREC_MIN, b, c, z_pre, f);
 
@@ -288,7 +282,6 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   inex = mpfr_set (z, z_pre, rnd_mode);
 
   MPFR_GROUP_CLEAR (group);
- clear_and_return:
   mpfr_clear (s1);
 
   return inex;
@@ -381,6 +374,15 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           MPFR_SET_POS (z);
           MPFR_RET (0);
         }
+    }
+
+  /* Check for case s= 1 before changing the exponent range */
+  if (mpfr_cmp (s, __gmpfr_one) ==0)
+    {
+      MPFR_SET_INF (z);
+      MPFR_SET_POS (z);
+      mpfr_set_divby0 ();
+      MPFR_RET (0);
     }
 
   MPFR_SAVE_EXPO_MARK (expo);

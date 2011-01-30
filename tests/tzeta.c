@@ -249,10 +249,11 @@ main (int argc, char *argv[])
   mpfr_set_prec (z, 53);
 
   mpfr_set_ui (s, 1, MPFR_RNDN);
+  mpfr_clear_divby0();
   mpfr_zeta (z, s, MPFR_RNDN);
-  if (!mpfr_inf_p (z) || MPFR_SIGN (z) < 0)
+  if (!mpfr_inf_p (z) || MPFR_SIGN (z) < 0 || !mpfr_divby0_p())
     {
-      printf ("Error in mpfr_zeta for s = 1 (should be +inf)\n");
+      printf ("Error in mpfr_zeta for s = 1 (should be +inf) with divby0 flag\n");
       exit (1);
     }
 
