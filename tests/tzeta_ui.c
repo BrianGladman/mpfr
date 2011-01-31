@@ -35,6 +35,7 @@ main (int argc, char *argv[])
   int rnd;
   mpfr_t x, y, z, t;
   unsigned long n;
+  int inex;
 
   tests_start_mpfr ();
 
@@ -64,6 +65,16 @@ main (int argc, char *argv[])
       printf ("got      "); mpfr_dump (x);
       exit (1);
     }
+
+  mpfr_clear_divby0 ();
+  inex = mpfr_zeta_ui (x, 0, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0 && mpfr_cmp_si_2exp (x, -1, -1) == 0
+                && !mpfr_divby0_p ());
+
+  mpfr_clear_divby0 ();
+  inex = mpfr_zeta_ui (x, 1, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0 && MPFR_IS_INF (x) && MPFR_IS_POS (x)
+                && mpfr_divby0_p ());
 
   for (prec = MPFR_PREC_MIN; prec <= 100; prec++)
     {
