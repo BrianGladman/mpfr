@@ -25,13 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[3.1.0-dev])
 
-dnl Once GNU Automake 1.11 is available on more platforms, remove
-dnl the following line, uncomment the next two lines, and remove the
-dnl dist rule from the Makefile.am file. If the dist-* options are
-dnl modified, DIST_ARCHIVES from Makefile.am needs to be updated.
-AM_INIT_AUTOMAKE([1.10 no-define dist-bzip2 dist-zip])
-dnl AM_INIT_AUTOMAKE([1.11 no-define dist-bzip2 dist-xz dist-zip])
-dnl AM_MAINTAINER_MODE(enable)
+AM_INIT_AUTOMAKE([1.11 no-define dist-bzip2 dist-xz dist-zip])
+AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
 

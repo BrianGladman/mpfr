@@ -26,14 +26,3 @@ EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh
 # Note: this is a heuristic, to detect some mistakes.
 dist-hook:
 	cd $(srcdir) && tools/ck-version-info
-
-# The following needs to be removed once GNU Automake 1.11 support is added.
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.xz \
-	$(distdir).zip
-dist dist-all: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
-	tardir=$(distdir) && $(am__tar) | bzip2 -9 -c >$(distdir).tar.bz2
-	tardir=$(distdir) && $(am__tar) | xz -c >$(distdir).tar.xz
-	-rm -f $(distdir).zip
-	zip -rq $(distdir).zip $(distdir)
-	$(am__remove_distdir)
