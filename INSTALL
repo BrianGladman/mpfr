@@ -575,6 +575,10 @@ MPFR for use with 64-bit Windows Applications (x64)
 There are two ways of building MPFR for use with 64-bit Windows
 applications.
 
+Note: with Visual Studio 2008 and Intel Compiler v11.1 it might be necessary
+to define __INTEL_COMPILER
+(see http://websympa.loria.fr/wwsympa/arc/mpfr/2011-02/msg00001.html).
+
 a. Using MinGW64
 ================
 
