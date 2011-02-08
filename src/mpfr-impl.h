@@ -119,7 +119,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __MPFR_STDC(version) 0
 #endif
 
-#if defined(__ICC)
+#if defined(_WIN32)
+/* Under MS Windows (e.g. with VS2008 or VS2010), Intel's compiler doesn't
+   support/enable extensions like the ones seen under GNU/Linux.
+   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-02/msg00032.html */
+# define __MPFR_ICC(a,b,c) 0
+#elif defined(__ICC)
 # define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+(c))
 #elif defined(__INTEL_COMPILER)
 # define __MPFR_ICC(a,b,c) (__INTEL_COMPILER >= (a)*100+(b)*10+(c))
