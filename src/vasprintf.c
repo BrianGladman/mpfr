@@ -461,7 +461,7 @@ typedef wint_t mpfr_va_wint;
         (void) va_arg ((ap), mp_limb_t);        \
         break;                                  \
       case MP_LIMB_ARRAY_ARG:                   \
-        (void) va_arg ((ap), mp_ptr);           \
+        (void) va_arg ((ap), mpfr_limb_ptr);    \
         (void) va_arg ((ap), mp_size_t);        \
         break;                                  \
       case MPZ_ARG:                             \

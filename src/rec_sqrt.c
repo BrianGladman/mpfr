@@ -70,8 +70,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    http://www.loria.fr/~zimmerma/mca/pub226.html
 */
 static void
-mpfr_mpn_rec_sqrt (mp_ptr x, mpfr_prec_t p,
-                   mp_srcptr a, mpfr_prec_t ap, int as)
+mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
+                   mpfr_limb_srcptr a, mpfr_prec_t ap, int as)
 
 {
   /* the following T1 and T2 are bipartite tables giving initial
@@ -192,7 +192,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mpfr_prec_t p,
   else /* p >= 12 */
     {
       mpfr_prec_t h, pl;
-      mp_ptr r, s, t, u;
+      mpfr_limb_ptr r, s, t, u;
       mp_size_t xn, rn, th, ln, tn, sn, ahn, un;
       mp_limb_t neg, cy, cu;
       MPFR_TMP_DECL(marker);
@@ -421,7 +421,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mpfr_prec_t rp, up, wp;
   mp_size_t rn, wn;
   int s, cy, inex;
-  mp_ptr x;
+  mpfr_limb_ptr x;
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", u, u, rnd_mode),

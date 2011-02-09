@@ -31,9 +31,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mp_size_t tsize; /* number of limbs of the sqrtrem remainder */
   mp_size_t k;
   mp_size_t l;
-  mp_ptr rp, rp0;
-  mp_ptr up;
-  mp_ptr sp;
+  mpfr_limb_ptr rp, rp0;
+  mpfr_limb_ptr up;
+  mpfr_limb_ptr sp;
   mp_limb_t sticky0; /* truncated part of input */
   mp_limb_t sticky1; /* truncated part of rp[0] */
   mp_limb_t sticky;

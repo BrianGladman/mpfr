@@ -39,7 +39,8 @@ static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
    of {up, n} * {vp, n}. The error is less than n-1 ulps of rp[n]. */
 static void
-mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
+mpfr_mulhigh_n_basecase (mpfr_limb_ptr rp, mpfr_limb_srcptr up,
+                         mpfr_limb_srcptr vp, mp_size_t n)
 {
   mp_size_t i;
 
@@ -55,7 +56,8 @@ mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
    of {np, n} * {mp, n}. The error is less than n-1 ulps of rp[n]. */
 void
-mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
+mpfr_mulhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
+                mp_size_t n)
 {
   mp_size_t k;
 
@@ -98,7 +100,7 @@ static short sqrhigh_ktab[] = {MPFR_SQRHIGH_TAB};
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
    of {np, n}^2. The error is less than n ulps of rp[n]. */
 void
-mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
+mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
 {
   mp_size_t k;
 
@@ -140,11 +142,12 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
    THIS IS PRELIMINARY CODE, DO NOT USE IT.
 */
 mp_limb_t
-mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
+mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
+                mp_size_t n)
 {
   mp_size_t k, l;
   mp_limb_t qh, cy;
-  mp_ptr tp;
+  mpfr_limb_ptr tp;
   MPFR_TMP_DECL(marker);
 
   k = divhigh_ktab[n];

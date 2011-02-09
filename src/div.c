@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef DEBUG2
 #define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
 static void
-mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
+mpfr_mpn_print3 (mpfr_limb_ptr ap, mp_size_t n, mp_limb_t cy)
 {
   mp_size_t i;
   for (i = 0; i < n; i++)
@@ -40,7 +40,7 @@ mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 
 /* check if {ap, an} is zero */
 static int
-mpfr_mpn_cmpzero (mp_ptr ap, mp_size_t an)
+mpfr_mpn_cmpzero (mpfr_limb_ptr ap, mp_size_t an)
 {
   while (an > 0)
     if (MPFR_LIKELY(ap[--an] != MPFR_LIMB_ZERO))
@@ -53,7 +53,8 @@ mpfr_mpn_cmpzero (mp_ptr ap, mp_size_t an)
    Takes into account bp[0] for extra=1.
 */
 static int
-mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
+mpfr_mpn_cmp_aux (mpfr_limb_ptr ap, mp_size_t an,
+                  mpfr_limb_ptr bp, mp_size_t bn, int extra)
 {
   int cmp = 0;
   mp_size_t k;
@@ -109,7 +110,8 @@ mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
    Return borrow out.
 */
 static mp_limb_t
-mpfr_mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
+mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
+                  mp_limb_t cy, int extra)
 {
   mp_limb_t bb, rp;
 
@@ -137,11 +139,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_size_t qsize; /* number of limbs of the computed quotient */
   mp_size_t qqsize;
   mp_size_t k;
-  mp_ptr q0p = MPFR_MANT(q), qp;
-  mp_ptr up = MPFR_MANT(u);
-  mp_ptr vp = MPFR_MANT(v);
-  mp_ptr ap;
-  mp_ptr bp;
+  mpfr_limb_ptr q0p = MPFR_MANT(q), qp;
+  mpfr_limb_ptr up = MPFR_MANT(u);
+  mpfr_limb_ptr vp = MPFR_MANT(v);
+  mpfr_limb_ptr ap;
+  mpfr_limb_ptr bp;
   mp_limb_t qh;
   mp_limb_t sticky_u = MPFR_LIMB_ZERO;
   mp_limb_t low_u;
@@ -419,7 +421,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
                  r + low(u) has qsize + (usize-2*qsize) = usize-qsize limbs */
             {
               mp_size_t l;
-              mp_ptr sp;
+              mpfr_limb_ptr sp;
               int cmp_s_r;
               mp_limb_t qh2;
 

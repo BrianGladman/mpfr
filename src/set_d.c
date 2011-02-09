@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
    Assumes d is neither 0 nor NaN nor Inf. */
 static long
-__gmpfr_extract_double (mp_ptr rp, double d)
+__gmpfr_extract_double (mpfr_limb_ptr rp, double d)
      /* e=0 iff GMP_NUMB_BITS=32 and rp has only one limb */
 {
   long exp;

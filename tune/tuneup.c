@@ -40,7 +40,7 @@ int verbose;
   do                                                    \
     {                                                   \
       unsigned  i;                                      \
-      mp_ptr    wp;                                     \
+      mpfr_limb_ptr wp;                                 \
       double    t;                                      \
       mpfr_t    w, x;                                   \
       mp_size_t size;                                   \
@@ -78,7 +78,7 @@ int verbose;
   do                                                    \
     {                                                   \
       unsigned  i;                                      \
-      mp_ptr    vp, wp;                                 \
+      mpfr_limb_ptr vp, wp;                             \
       double    t;                                      \
       mpfr_t    v, w, x;                                \
       mp_size_t size;                                   \
@@ -118,7 +118,7 @@ int verbose;
   do                                                    \
     {                                                   \
       unsigned  i;                                      \
-      mp_ptr    wp;                                     \
+      mpfr_limb_ptr wp;                                 \
       double    t;                                      \
       mpfr_t    w, x, y;                                \
       mp_size_t size;                                   \
@@ -156,11 +156,11 @@ int verbose;
   while (0)
 
 /* special template for mpfr_mul(a,b,b) */
-#define SPEED_MPFR_SQR(mean_fun)                         \
+#define SPEED_MPFR_SQR(mean_fun)                        \
   do                                                    \
     {                                                   \
       unsigned  i;                                      \
-      mp_ptr    wp;                                     \
+      mpfr_limb_ptr wp;                                 \
       double    t;                                      \
       mpfr_t    w, x;                                   \
       mp_size_t size;                                   \
@@ -202,7 +202,7 @@ int verbose;
   do                                                    \
     {                                                   \
       unsigned  i;                                      \
-      mp_ptr    wp;                                     \
+      mpfr_limb_ptr wp;                                 \
       double    t;                                      \
       mpfr_t    w, x;                                   \
       mp_size_t size;                                   \

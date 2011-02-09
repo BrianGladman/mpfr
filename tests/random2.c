@@ -36,7 +36,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
 {
   mp_size_t xn, k, ri;
   unsigned long sh;
-  mp_ptr xp;
+  mp_limb_t *xp;
   mp_limb_t elimb, ran, acc;
   int ran_nbits, bit_pos, nb;
 

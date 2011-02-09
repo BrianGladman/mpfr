@@ -47,7 +47,7 @@ int verbose;
 
 #define SPEED_MPFR_FUNC(mean_fun) do {               \
   unsigned  i;                                       \
-  mp_ptr    wp;                                      \
+  mpfr_limb_ptr wp;                                  \
   double    t;                                       \
   mpfr_t    w, x;                                    \
   mp_size_t size;                                    \
@@ -57,7 +57,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/GMP_NUMB_BITS+1;             \
+  size = (s->size-1)/GMP_NUMB_BITS+1;                \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -71,7 +71,7 @@ int verbose;
   speed_starttime ();                                \
   i = s->reps;                                       \
   do                                                 \
-    mean_fun (w, x, MPFR_RNDN);                       \
+    mean_fun (w, x, MPFR_RNDN);                      \
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
@@ -81,7 +81,7 @@ int verbose;
 
 #define SPEED_MPFR_OP(mean_fun) do {                 \
   unsigned  i;                                       \
-  mp_ptr    wp;                                      \
+  mpfr_limb_ptr wp;                                  \
   double    t;                                       \
   mpfr_t    w, x, y;                                 \
   mp_size_t size;                                    \
@@ -91,7 +91,7 @@ int verbose;
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
   MPFR_TMP_MARK (marker);                            \
                                                      \
-  size = (s->size-1)/GMP_NUMB_BITS+1;             \
+  size = (s->size-1)/GMP_NUMB_BITS+1;                \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
   MPFR_TMP_INIT1 (s->xp, x, s->size);                \
   MPFR_SET_EXP (x, 0);                               \
@@ -109,7 +109,7 @@ int verbose;
   speed_starttime ();                                \
   i = s->reps;                                       \
   do                                                 \
-    mean_fun (w, x, y, MPFR_RNDN);                    \
+    mean_fun (w, x, y, MPFR_RNDN);                   \
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \

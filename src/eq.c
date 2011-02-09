@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 {
-  mp_srcptr up, vp;
+  mpfr_limb_srcptr up, vp;
   mp_size_t usize, vsize, size, i;
   mpfr_exp_t uexp, vexp;
   int k;

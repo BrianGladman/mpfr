@@ -30,7 +30,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* generate nbits random bits into mp[], assuming mp was allocated to contain
    a sufficient number of limbs */
 void
-mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
+mpfr_rand_raw (mpfr_limb_ptr mp, gmp_randstate_t rstate,
+               unsigned long int nbits)
 {
   mpz_t z;
 
@@ -43,7 +44,7 @@ mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
 int
 mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
 {
-  mp_ptr rp;
+  mpfr_limb_ptr rp;
   mpfr_prec_t nbits;
   mp_size_t nlimbs;
   mp_size_t k; /* number of high zero limbs */

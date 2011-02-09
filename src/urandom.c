@@ -41,7 +41,7 @@ random_rounding_bit (gmp_randstate_t rstate)
 int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 {
-  mp_ptr rp;
+  mpfr_limb_ptr rp;
   mpfr_prec_t nbits;
   mp_size_t nlimbs;
   mp_size_t n;
