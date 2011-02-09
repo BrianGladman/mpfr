@@ -629,6 +629,8 @@ __MPFR_DECLSPEC int mpfr_add_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                              mpz_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_sub_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                              mpz_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_z_sub _MPFR_PROTO ((mpfr_ptr, mpz_srcptr,
+                                             mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_cmp_z _MPFR_PROTO ((mpfr_srcptr, mpz_srcptr));
 
 __MPFR_DECLSPEC int mpfr_mul_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,

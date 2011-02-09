@@ -85,7 +85,7 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- implement mpfr_z_sub, mpfr_q_sub, mpfr_z_div, mpfr_q_div?
+- implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement functions for random distributions, see for example
   http://websympa.loria.fr/wwsympa/arc/mpfr/2010-01/msg00034.html
   (suggested by Charles Karney <ckarney@Sarnoff.com>, 18 Jan 2010):

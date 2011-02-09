@@ -1503,6 +1503,7 @@ is a power of 2, with a precision at most that declared by the C implementation
 @deftypefunx int mpfr_sub_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_d_sub (mpfr_t @var{rop}, double @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_d (mpfr_t @var{rop}, mpfr_t @var{op1}, double @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_z_sub (mpfr_t @var{rop}, mpz_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction

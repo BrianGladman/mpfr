@@ -61,6 +61,21 @@ foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mpfr_rnd_t r,
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, i, r);
 }
+static int
+foo2 (mpfr_ptr x, mpz_srcptr y, mpfr_srcptr z, mpfr_rnd_t r,
+     int (*f)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t))
+{
+  mpfr_t t;
+  int i;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  init_set_z (t, y);  /* There should be no exceptions. */
+  i = (*f) (x, t, z, r);
+  mpfr_clear (t);
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (x, i, r);
+}
 
 int
 mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
@@ -92,6 +107,16 @@ mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
     return mpfr_set (y, x, r);
   else
     return foo (y, x, z, r, mpfr_sub);
+}
+
+int
+mpfr_z_sub (mpfr_ptr y, mpz_srcptr x, mpfr_srcptr z, mpfr_rnd_t r)
+{
+  /* Mpz 0 is unsigned */
+  if (MPFR_UNLIKELY (mpz_sgn (x) == 0))
+    return mpfr_neg (y, z, r);
+  else
+    return foo2 (y, x, z, r, mpfr_sub);
 }
 
 int
