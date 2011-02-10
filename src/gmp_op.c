@@ -61,6 +61,7 @@ foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mpfr_rnd_t r,
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, i, r);
 }
+
 static int
 foo2 (mpfr_ptr x, mpz_srcptr y, mpfr_srcptr z, mpfr_rnd_t r,
      int (*f)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t))
