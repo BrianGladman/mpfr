@@ -686,6 +686,10 @@ and may not be portable.
 MPFR manual (mpfr.texi):
   * Use "significand", not "mantissa".
   * Use "@minus{}" for the minus character, not "-".
+  * Warning! Texinfo is not like TeX. Whitespace is preserved in the
+    info file. So, do not use additional space for .texi indentation.
+    This also means that you need to care about the typography. Please
+    read Section "Inserting Space" in the Texinfo manual.
   * Follow the English typography, not the French one!
 
 ===========================================================================
