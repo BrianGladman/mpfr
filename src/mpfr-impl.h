@@ -656,10 +656,12 @@ typedef unsigned long int  mpfr_uexp_t;
 typedef long int mpfr_eexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
+# define MPFR_EXP_FSPEC "l"
 #elif defined (_MPFR_H_HAVE_INTMAX_T)
 typedef intmax_t mpfr_eexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_sj((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_sj((x),(e),(r))
+# define MPFR_EXP_FSPEC "j"
 #else
 # error "Cannot define mpfr_get_exp_t and mpfr_set_exp_t"
 #endif
