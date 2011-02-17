@@ -43,6 +43,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Loop for all rounding modes */
 #define RND_LOOP(_r) for((_r) = 0 ; (_r) < MPFR_RND_MAX ; (_r)++)
 
+/* Test whether two floating-point data have the same value,
+   seen as an element of the set of the floating-point data
+   (Level 2 in the IEEE 754-2008 standard). */
+#define SAME_VAL(X,Y)                                                   \
+  ((MPFR_IS_NAN (X) && MPFR_IS_NAN (Y)) ||                              \
+   (mpfr_equal_p ((X), (Y)) && MPFR_INT_SIGN (X) == MPFR_INT_SIGN (Y)))
+
 /* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
    been included. They have the same semantics as in gmp-impl.h, but the
    expressions may be slightly different. So, it's better to undefine
