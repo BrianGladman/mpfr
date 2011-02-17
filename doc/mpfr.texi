@@ -1698,11 +1698,12 @@ This is equivalent to @code{mpfr_cmp_ui (op, 0)}, but more efficient.
 @deftypefunx int mpfr_less_p (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_lessequal_p (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_equal_p (mpfr_t @var{op1}, mpfr_t @var{op2})
-Return non-zero if @math{@var{op1} > @var{op2}},
-                   @math{@var{op1} @ge{} @var{op2}},
-                   @math{@var{op1} < @var{op2}},
-                   @math{@var{op1} @le{} @var{op2}},
-                   @math{@var{op1} = @var{op2}} respectively,
+Return non-zero if
+@math{@var{op1} > @var{op2}},
+@math{@var{op1} @ge{} @var{op2}},
+@math{@var{op1} < @var{op2}},
+@math{@var{op1} @le{} @var{op2}},
+@math{@var{op1} = @var{op2}} respectively,
 and zero otherwise.
 Those functions return zero whenever @var{op1} and/or @var{op2} is NaN.
 @end deftypefun
