@@ -111,7 +111,7 @@ static void
 test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
 {
   mpfr_prec_t prec, xprec, yprec;
-  mpfr_t x, y, z, t;
+  mpfr_t x, y, z, t, w;
 #ifdef TWO_ARGS
   mpfr_t u;
 #elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
@@ -127,12 +127,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
 
-  mpfr_init (x);
-  mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
+  mpfr_inits2 (MPFR_PREC_MIN, x, y, z, t, w, (mpfr_ptr) 0);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-  mpfr_init (u);
+  mpfr_init2 (u, MPFR_PREC_MIN);
 #endif
 
   /* generic test */
@@ -142,6 +139,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
       mpfr_set_prec (y, yprec);
+      mpfr_set_prec (w, yprec);
 
       /* Note: in precision p1, we test 4 special cases. */
       for (n = 0; n < (prec == p1 ? N + 4 : N); n++)
@@ -232,6 +230,90 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
           TGENERIC_CHECK ("Bad inexact flag",
                           (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
+          /* Consistency test in a reduced exponent range. Doing it
+             for the first 10 samples and for prec == p1 (which has
+             some special cases) should be sufficient. */
+          if (ctrt <= 10 || prec == p1)
+            {
+              unsigned int flags, oldflags = __gmpfr_flags;
+              mpfr_exp_t e, emin, emax, oemin, oemax;
+
+              /* Determine the smallest exponent range containing the
+                 exponents of the mpfr_t inputs (x, and u if TWO_ARGS)
+                 and output (y). */
+              emin = MPFR_EMAX_MAX;
+              emax = MPFR_EMIN_MIN;
+              if (MPFR_IS_PURE_FP (x))
+                {
+                  e = MPFR_GET_EXP (x);
+                  if (e < emin)
+                    emin = e;
+                  if (e > emax)
+                    emax = e;
+                }
+              if (MPFR_IS_PURE_FP (y))
+                {
+                  e = MPFR_GET_EXP (y);
+                  if (e < emin)
+                    emin = e;
+                  if (e > emax)
+                    emax = e;
+                }
+#if defined(TWO_ARGS)
+              if (MPFR_IS_PURE_FP (u))
+                {
+                  e = MPFR_GET_EXP (u);
+                  if (e < emin)
+                    emin = e;
+                  if (e > emax)
+                    emax = e;
+                }
+#endif
+              if (emin > emax)
+                emin = emax;  /* case where all values are singular */
+              oemin = mpfr_get_emin ();
+              oemax = mpfr_get_emax ();
+              mpfr_set_emin (emin);
+              mpfr_set_emax (emax);
+              mpfr_clear_flags ();
+#if defined(TWO_ARGS)
+              inexact = TEST_FUNCTION (w, x, u, rnd);
+#elif defined(DOUBLE_ARG1)
+              inexact = TEST_FUNCTION (w, d, x, rnd);
+#elif defined(DOUBLE_ARG2)
+              inexact = TEST_FUNCTION (w, x, d, rnd);
+#else
+              inexact = TEST_FUNCTION (w, x, rnd);
+#endif
+              flags = __gmpfr_flags;
+              mpfr_set_emin (oemin);
+              mpfr_set_emax (oemax);
+              if (! (SAME_VAL (w, y) &&
+                     SAME_SIGN (inexact, compare) &&
+                     flags == oldflags))
+                {
+                  printf ("Error in reduced exponent range [%"
+                          MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d] on:\n",
+                          (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
+                  printf ("x = ");
+                  mpfr_dump (x);
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+                  printf ("u = ");
+                  mpfr_dump (u);
+#endif
+                  printf ("yprec = %u, rnd_mode = %s\n",
+                          (unsigned int) yprec, mpfr_print_rnd_mode (rnd));
+                  printf ("Expected:\n  y = ");
+                  mpfr_dump (y);
+                  printf ("  inex = %d, flags = %u\n",
+                          SIGN (compare), oldflags);
+                  printf ("Got:\n  w = ");
+                  mpfr_dump (w);
+                  printf ("  inex = %d, flags = %u\n",
+                          SIGN (inexact), flags);
+                  exit (1);
+                }
+            }
           if (MPFR_IS_SINGULAR (y))
             {
               if (MPFR_IS_NAN (y) || mpfr_nanflag_p ())
@@ -387,10 +469,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
             ctrn, ctrt);
 #endif
 
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
+  mpfr_clears (x, y, z, t, w, (mpfr_ptr) 0);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
   mpfr_clear (u);
 #endif
