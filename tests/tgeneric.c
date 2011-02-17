@@ -50,12 +50,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   do                                                                    \
     {                                                                   \
       printf ("%s\nx = ", (S));                                         \
-      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                       \
+      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                      \
       printf ("\n");                                                    \
       if ((void *) U != 0)                                              \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                   \
+          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                  \
           printf ("\n");                                                \
         }                                                               \
       printf ("yprec = %u, rnd_mode = %s, inexact = %d, flags = %u\n",  \
@@ -82,12 +82,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       printf ("tgeneric: testing function " STR(F)                      \
               ", %s, target prec = %lu\nx = ",                          \
               mpfr_print_rnd_mode (rnd), (unsigned long) (P));          \
-      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                       \
+      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                      \
       printf ("\n");                                                    \
       if (U)                                                            \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                   \
+          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                  \
           printf ("\n");                                                \
         }                                                               \
     }                                                                   \
