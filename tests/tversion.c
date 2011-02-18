@@ -55,8 +55,8 @@ main (void)
      environment, and it is better to fail (in particular for automatic
      installations). */
   printf ("ERROR! The versions of gmp.h (%s) and libgmp (%s) do not "
-          "match.\nThe possible causes are:\n"
-          "  * A bad configuration in your include/library search paths.\n"
+          "match.\nThe possible causes are:\n", buffer, gmp_version);
+  printf ("  * A bad configuration in your include/library search paths.\n"
           "  * An inconsistency in the include/library search paths of\n"
           "    your development environment; an example:\n"
           "      http://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
@@ -64,10 +64,10 @@ main (void)
           "    In such a case, try again after a \"make clean\".\n"
           "  * A new or non-standard version naming is used in GMP.\n"
           "    In this case, a patch may already be available on the\n"
-          "    MPFR web site.  Otherwise please report the problem.\n"
-          "In the first two cases, this may lead to errors, in particular"
+          "    MPFR web site.  Otherwise please report the problem.\n");
+  printf ("In the first two cases, this may lead to errors, in particular"
           " with MPFR.\nIf some other tests fail, please solve that"
-          " problem first.\n", buffer, gmp_version);
+          " problem first.\n");
 
   return 1;
 }
