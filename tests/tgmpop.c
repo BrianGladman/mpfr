@@ -430,13 +430,13 @@ test_special2z (int (*mpfr_func)(mpfr_ptr, mpz_srcptr, mpfr_srcptr, mpfr_rnd_t),
   res = mpfr_set_z(x1, z1, MPFR_RNDN);
   if (res)
     {
-      printf("Specialz %s: set_z1 error\n", op);
+      printf("Special2z %s: set_z1 error\n", op);
       exit(1);
     }
   mpfr_set_z (x2, z2, MPFR_RNDN);
   if (res)
     {
-      printf("Specialz %s: set_z2 error\n", op);
+      printf("Special2z %s: set_z2 error\n", op);
       exit(1);
     }
 
@@ -444,19 +444,19 @@ test_special2z (int (*mpfr_func)(mpfr_ptr, mpz_srcptr, mpfr_srcptr, mpfr_rnd_t),
   res = mpfr_func(x1, z1, x2, MPFR_RNDN);
   if (res)
     {
-      printf("Specialz %s: wrong inexact flag.\n", op);
+      printf("Special2z %s: wrong inexact flag.\n", op);
       exit(1);
     }
   mpz_func(z1, z1, z2);
   res = mpfr_set_z (x2, z1, MPFR_RNDN);
   if (res)
     {
-      printf("Specialz %s: set_z2 error\n", op);
+      printf("Special2z %s: set_z2 error\n", op);
       exit(1);
     }
   if (mpfr_cmp(x1, x2))
     {
-      printf("Specialz %s: results differ.\nx1=", op);
+      printf("Special2z %s: results differ.\nx1=", op);
       mpfr_print_binary(x1);
       printf("\nx2=");
       mpfr_print_binary(x2);
@@ -466,15 +466,15 @@ test_special2z (int (*mpfr_func)(mpfr_ptr, mpz_srcptr, mpfr_srcptr, mpfr_rnd_t),
       exit(1);
     }
 
-  mpz_set_ui (z1, 1);
-  mpz_set_ui (z2, 0);
-  mpfr_set_ui (x2, 0, MPFR_RNDN);
+  mpz_set_ui (z1, 0);
+  mpz_set_ui (z2, 1);
+  mpfr_set_ui (x2, 1, MPFR_RNDN);
   res = mpfr_func(x1, z1, x2, MPFR_RNDN);
   mpz_func (z1, z1, z2);
   mpfr_set_z (x2, z1, MPFR_RNDN);
   if (mpfr_cmp(x1, x2))
     {
-      printf("Specialz %s: results differ(2).\nx1=", op);
+      printf("Special2z %s: results differ(2).\nx1=", op);
       mpfr_print_binary(x1);
       printf("\nx2=");
       mpfr_print_binary(x2);
@@ -1107,6 +1107,53 @@ addsubq_overflow (void)
   addsubq_overflow_aux (MPFR_EMAX_MAX);
 }
 
+static void
+coverage_mpfr_mul_q_20110218(void)
+{
+  mpfr_t cmp, res, op1;
+  mpq_t op2;
+  int status;
+
+  mpfr_init(cmp);
+  mpfr_init(res);
+  mpfr_init_set_si(op1, 1, MPFR_RNDN);
+
+  mpq_init(op2);
+  mpq_set_si(op2, 0, 0);
+  mpz_set_si(mpq_denref(op2), 0); 
+
+  status = mpfr_mul_q(res, op1, op2, MPFR_RNDN);
+
+  if ((status != 0) || (mpfr_cmp(cmp, res) != 0)) {
+      printf("Results differ %d.\nres=", status);
+      mpfr_print_binary(res);
+      printf("\ncmp=");
+      mpfr_print_binary(cmp);
+      putchar('\n');
+      exit(1);
+  }
+
+  mpfr_set_si(op1, 1, MPFR_RNDN);
+  mpq_set_si(op2, -1, 0);
+
+  status = mpfr_mul_q(res, op1, op2, MPFR_RNDN);
+
+  mpfr_set_inf(cmp, -1);
+  if ((status != 0) || (mpfr_cmp(res, cmp) != 0)) {
+      printf("mpfr_mul_q 1 * (-1/0) returned a wrong value :\n waiting for ");
+      mpfr_print_binary(cmp);
+      printf(" got ");
+      mpfr_print_binary(res);
+      printf("\n trinary value is %d\n", status);
+      exit(1);
+  }
+
+  mpq_clear(op2);
+  mpfr_clear(op1);
+  mpfr_clear(res);
+  mpfr_clear(cmp);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1144,6 +1191,8 @@ main (int argc, char *argv[])
   bug_mul_div_q_20100818 ();
   reduced_expo_range ();
   addsubq_overflow ();
+
+  coverage_mpfr_mul_q_20110218();
 
   tests_end_mpfr ();
   return 0;
