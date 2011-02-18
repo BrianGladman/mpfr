@@ -48,9 +48,11 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
           /* acos(0)=Pi/2 */
+          MPFR_SAVE_EXPO_MARK (expo);
           inexact = mpfr_const_pi (acos, rnd_mode);
           mpfr_div_2ui (acos, acos, 1, rnd_mode); /* exact */
-          MPFR_RET (inexact);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_check_range (acos, inexact, rnd_mode);
         }
     }
 
