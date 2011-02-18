@@ -23,6 +23,27 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+static int
+pi_div_2ui (mpfr_ptr dest, int i, int neg, mpfr_rnd_t rnd_mode)
+{
+  int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  if (neg) /* -PI/2^i */
+    {
+      inexact = - mpfr_const_pi (dest, MPFR_INVERT_RND (rnd_mode));
+      MPFR_CHANGE_SIGN (dest);
+    }
+  else /* PI/2^i */
+    {
+      inexact = mpfr_const_pi (dest, rnd_mode);
+    }
+  mpfr_div_2ui (dest, dest, i, rnd_mode);  /* exact */
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (dest, inexact, rnd_mode);
+}
+
 int
 mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -83,48 +104,21 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       if (MPFR_IS_ZERO (x))
         {
-        set_pi_2:
-          if (MPFR_IS_NEG (y)) /* -PI/2 */
-            {
-              inexact = mpfr_const_pi (dest, MPFR_INVERT_RND(rnd_mode));
-              MPFR_CHANGE_SIGN (dest);
-              mpfr_div_2ui (dest, dest, 1, rnd_mode);
-              return -inexact;
-            }
-          else /* PI/2 */
-            {
-              inexact = mpfr_const_pi (dest, rnd_mode);
-              mpfr_div_2ui (dest, dest, 1, rnd_mode);
-              return inexact;
-            }
+          return pi_div_2ui (dest, 1, MPFR_IS_NEG (y), rnd_mode);
         }
       if (MPFR_IS_INF (y))
         {
           if (!MPFR_IS_INF (x)) /* +/- PI/2 */
-            goto set_pi_2;
+            return pi_div_2ui (dest, 1, MPFR_IS_NEG (y), rnd_mode);
           else if (MPFR_IS_POS (x)) /* +/- PI/4 */
-            {
-              if (MPFR_IS_NEG (y))
-                {
-                  rnd_mode = MPFR_INVERT_RND (rnd_mode);
-                  inexact = mpfr_const_pi (dest, rnd_mode);
-                  MPFR_CHANGE_SIGN (dest);
-                  mpfr_div_2ui (dest, dest, 2, rnd_mode);
-                  return -inexact;
-                }
-              else
-                {
-                  inexact = mpfr_const_pi (dest, rnd_mode);
-                  mpfr_div_2ui (dest, dest, 2, rnd_mode);
-                  return inexact;
-                }
-            }
+            return pi_div_2ui (dest, 2, MPFR_IS_NEG (y), rnd_mode);
           else /* +/- 3*PI/4: Ugly since we have to round properly */
             {
               mpfr_t tmp2;
               MPFR_ZIV_DECL (loop2);
               mpfr_prec_t prec2 = MPFR_PREC (dest) + 10;
 
+              MPFR_SAVE_EXPO_MARK (expo);
               mpfr_init2 (tmp2, prec2);
               MPFR_ZIV_INIT (loop2, prec2);
               for (;;)
@@ -144,7 +138,8 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                 MPFR_CHANGE_SIGN (tmp2);
               inexact = mpfr_set (dest, tmp2, rnd_mode);
               mpfr_clear (tmp2);
-              return inexact;
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_check_range (dest, inexact, rnd_mode);
             }
         }
       MPFR_ASSERTD (MPFR_IS_INF (x));
