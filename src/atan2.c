@@ -155,11 +155,13 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       int r;
       mpfr_t yoverx;
+      unsigned int saved_flags = __gmpfr_flags;
 
       mpfr_init2 (yoverx, MPFR_PREC (y));
       if (MPFR_LIKELY (mpfr_div_2si (yoverx, y, MPFR_GET_EXP (x) - 1,
                                      MPFR_RNDN) == 0))
         {
+          /* Here the flags have not changed due to mpfr_div_2si. */
           r = mpfr_atan (dest, yoverx, rnd_mode);
           mpfr_clear (yoverx);
           return r;
@@ -168,6 +170,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           /* Division is inexact because of a small exponent range */
           mpfr_clear (yoverx);
+          __gmpfr_flags = saved_flags;
         }
     }
 
