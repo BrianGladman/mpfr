@@ -168,7 +168,58 @@ large (mpfr_exp_t e)
         printf ("%ld", (long) e);
       else
         printf (">LONG_MAX");
-      printf (")\nExpected inex > 0, flags = %u,\n         y = ",
+      printf (") for mpfr_mul_2si\n");
+      printf ("Expected inex > 0, flags = %u,\n         y = ",
+              (unsigned int) MPFR_FLAGS_INEXACT);
+      mpfr_dump (y);
+      printf ("Got      inex = %d, flags = %u,\n         y = ",
+              inex, flags);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_clear_flags ();
+  inex = mpfr_div_2si (z, x, 1, MPFR_RNDU);
+  flags = __gmpfr_flags;
+
+  if (inex <= 0 || flags != MPFR_FLAGS_INEXACT || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in large(");
+      if (e == MPFR_EMAX_MAX)
+        printf ("MPFR_EMAX_MAX");
+      else if (e == emax)
+        printf ("default emax");
+      else if (e <= LONG_MAX)
+        printf ("%ld", (long) e);
+      else
+        printf (">LONG_MAX");
+      printf (") for mpfr_div_2si\n");
+      printf ("Expected inex > 0, flags = %u,\n         y = ",
+              (unsigned int) MPFR_FLAGS_INEXACT);
+      mpfr_dump (y);
+      printf ("Got      inex = %d, flags = %u,\n         y = ",
+              inex, flags);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_clear_flags ();
+  inex = mpfr_div_2ui (z, x, 1, MPFR_RNDU);
+  flags = __gmpfr_flags;
+
+  if (inex <= 0 || flags != MPFR_FLAGS_INEXACT || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in large(");
+      if (e == MPFR_EMAX_MAX)
+        printf ("MPFR_EMAX_MAX");
+      else if (e == emax)
+        printf ("default emax");
+      else if (e <= LONG_MAX)
+        printf ("%ld", (long) e);
+      else
+        printf (">LONG_MAX");
+      printf (") for mpfr_div_2ui\n");
+      printf ("Expected inex > 0, flags = %u,\n         y = ",
               (unsigned int) MPFR_FLAGS_INEXACT);
       mpfr_dump (y);
       printf ("Got      inex = %d, flags = %u,\n         y = ",
