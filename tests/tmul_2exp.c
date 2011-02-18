@@ -133,6 +133,63 @@ underflow0 (void)
   underflow (MPFR_EMIN_MIN);
 }
 
+static void
+large (mpfr_exp_t e)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t emax;
+  int inex;
+  unsigned int flags;
+
+  emax = mpfr_get_emax ();
+  set_emax (e);
+  mpfr_init2 (x, 8);
+  mpfr_init2 (y, 8);
+  mpfr_init2 (z, 4);
+
+  mpfr_set_inf (x, 1);
+  mpfr_nextbelow (x);
+
+  mpfr_mul_2si (y, x, -1, MPFR_RNDU);
+  mpfr_prec_round (y, 4, MPFR_RNDU);
+
+  mpfr_clear_flags ();
+  inex = mpfr_mul_2si (z, x, -1, MPFR_RNDU);
+  flags = __gmpfr_flags;
+
+  if (inex <= 0 || flags != MPFR_FLAGS_INEXACT || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in large(");
+      if (e == MPFR_EMAX_MAX)
+        printf ("MPFR_EMAX_MAX");
+      else if (e == emax)
+        printf ("default emax");
+      else if (e <= LONG_MAX)
+        printf ("%ld", (long) e);
+      else
+        printf (">LONG_MAX");
+      printf (")\nExpected inex > 0, flags = %u,\n         y = ",
+              (unsigned int) MPFR_FLAGS_INEXACT);
+      mpfr_dump (y);
+      printf ("Got      inex = %d, flags = %u,\n         y = ",
+              inex, flags);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  set_emax (emax);
+}
+
+static void
+large0 (void)
+{
+  large (256);
+  if (mpfr_get_emax () != MPFR_EMAX_MAX)
+    large (mpfr_get_emax ());
+  large (MPFR_EMAX_MAX);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -223,6 +280,7 @@ main (int argc, char *argv[])
   mpfr_clears (w, z, (mpfr_ptr) 0);
 
   underflow0 ();
+  large0 ();
 
   tests_end_mpfr ();
   return 0;
