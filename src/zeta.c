@@ -320,10 +320,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       else /* s iz zero */
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (s));
-          mpfr_set_ui (z, 1, rnd_mode);
-          mpfr_div_2ui (z, z, 1, rnd_mode);
-          MPFR_CHANGE_SIGN (z);
-          MPFR_RET (0);
+          return mpfr_set_si_2exp (z, -1, -1, rnd_mode);
         }
     }
 
@@ -337,6 +334,8 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   if (MPFR_GET_EXP (s) + 1 < - (mpfr_exp_t) MPFR_PREC(z))
     {
       int signs = MPFR_SIGN(s);
+
+      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */
       if (rnd_mode == MPFR_RNDA)
         rnd_mode = MPFR_RNDD; /* the result is around -1/2, thus negative */
@@ -359,6 +358,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           else /* (MPFR_RNDZ and s > 0) or MPFR_RNDN: z = -1/2 */
             inex = (signs > 0) ? 1 : -1;
         }
+      MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (z, inex, rnd_mode);
     }
 
