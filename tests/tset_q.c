@@ -95,6 +95,56 @@ static void check0(void)
   mpq_clear (y);
 }
 
+static void
+check_nan_inf_mpq ()
+{
+  mpfr_t mpfr_value, mpfr_cmp;
+  mpq_t mpq_value;
+  int status;
+
+  mpfr_init2 (mpfr_value, MPFR_PREC_MIN);
+  mpq_init (mpq_value);
+  mpq_set_si (mpq_value, 0, 0);
+  mpz_set_si (mpq_denref (mpq_value), 0);
+
+  status = mpfr_set_q (mpfr_value, mpq_value, MPFR_RNDN);
+
+  if ((status != 0) || (!MPFR_IS_NAN (mpfr_value)))
+    {
+      mpfr_init2 (mpfr_cmp, MPFR_PREC_MIN);
+      mpfr_set_nan (mpfr_cmp);
+      printf ("mpfr_set_q with a NAN mpq value returned a wrong value :\n"
+              " waiting for ");
+      mpfr_print_binary (mpfr_cmp);
+      printf (" got ");
+      mpfr_print_binary (mpfr_value);
+      printf ("\n trinary value is %d\n", status);
+      exit (1);
+    }
+
+  mpq_set_si (mpq_value, -1, 0);
+  mpz_set_si (mpq_denref (mpq_value), 0);
+
+  status = mpfr_set_q (mpfr_value, mpq_value, MPFR_RNDN);
+
+  if ((status != 0) || (!MPFR_IS_INF (mpfr_value)) ||
+      (MPFR_SIGN(mpfr_value) != mpq_sgn(mpq_value)))
+    {
+      mpfr_init2 (mpfr_cmp, MPFR_PREC_MIN);
+      mpfr_set_inf (mpfr_cmp, -1);
+      printf ("mpfr_set_q with a -INF mpq value returned a wrong value :\n"
+              " waiting for ");
+      mpfr_print_binary (mpfr_cmp);
+      printf (" got ");
+      mpfr_print_binary (mpfr_value);
+      printf ("\n trinary value is %d\n", status);
+      exit (1);
+    }
+
+  mpq_clear (mpq_value);
+  mpfr_clear (mpfr_value);
+}
+
 int
 main (void)
 {
@@ -111,6 +161,8 @@ main (void)
   check (1, 1, MPFR_RNDN, "1.0");
 
   check0();
+
+  check_nan_inf_mpq ();
 
   tests_end_mpfr ();
   return 0;
