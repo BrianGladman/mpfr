@@ -185,52 +185,62 @@ check_min(void)
 }
 
 static void
-check_get_d_2exp_inf_nan(void)
+check_get_d_2exp_inf_nan (void)
 {
   double var_d;
   long exp;
   mpfr_t var;
 
-  /* get_d.c : 143-151 */
+  mpfr_init2 (var, mpfr_get_default_prec ());
 
-  mpfr_init(var);
-
-  mpfr_set_nan(var);
-  var_d = mpfr_get_d_2exp(&exp, var, MPFR_RNDN);
-  if (!DOUBLE_ISNAN (var_d)) {
-    printf("mpfr_get_d_2exp with a NAN mpfr value returned a wrong value : waiting for %g got %g\n", MPFR_DBL_NAN, var_d);
-    exit(1);
-  }
+  mpfr_set_nan (var);
+  var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
+  if (!DOUBLE_ISNAN (var_d))
+    {
+      printf ("mpfr_get_d_2exp with a NAN mpfr value returned a wrong value :\n"
+              " waiting for %g got %g\n", MPFR_DBL_NAN, var_d);
+      exit (1);
+    }
   
-  mpfr_set_zero(var, 1);
-  var_d = mpfr_get_d_2exp(&exp, var, MPFR_RNDN);
-  if ((exp != 0) || (var_d != 0.0)) {
-    printf("mpfr_get_d_2exp with a +0.0 mpfr value returned a wrong value :\n double waiting for 0.0 got %g\n exp waiting for 0 got %ld\n", var_d, exp);
-    exit(1);
-  }
+  mpfr_set_zero (var, 1);
+  var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
+  if ((exp != 0) || (var_d != 0.0)) 
+    {
+      printf ("mpfr_get_d_2exp with a +0.0 mpfr value returned a wrong value :\n"
+              " double waiting for 0.0 got %g\n exp waiting for 0 got %ld\n",
+              var_d, exp);
+      exit (1);
+    }
 
-  mpfr_set_zero(var, -1);
-  var_d = mpfr_get_d_2exp(&exp, var, MPFR_RNDN);
-  if ((exp != 0) || (var_d != DBL_NEG_ZERO)) {
-    printf("mpfr_get_d_2exp with a +0.0 mpfr value returned a wrong value :\n double waiting for %g got %g\n exp waiting for 0 got %ld\n", DBL_NEG_ZERO, var_d, exp);
-    exit(1);
-  }
+  mpfr_set_zero (var, -1);
+  var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
+  if ((exp != 0) || (var_d != DBL_NEG_ZERO))
+    {
+      printf ("mpfr_get_d_2exp with a +0.0 mpfr value returned a wrong value :\n"
+              " double waiting for %g got %g\n exp waiting for 0 got %ld\n",
+              DBL_NEG_ZERO, var_d, exp);
+      exit (1);
+    }
 
-  mpfr_set_inf(var, 1);
-  var_d = mpfr_get_d_2exp(&exp, var, MPFR_RNDN);
-  if (var_d != MPFR_DBL_INFP) {
-    printf("mpfr_get_d_2exp with a +Inf mpfr value returned a wrong value : waiting for %g got %g\n", MPFR_DBL_INFP, var_d);
-    exit(1);
-  }
+  mpfr_set_inf (var, 1);
+  var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
+  if (var_d != MPFR_DBL_INFP)
+    {
+      printf ("mpfr_get_d_2exp with a +Inf mpfr value returned a wrong value :\n"
+              " waiting for %g got %g\n", MPFR_DBL_INFP, var_d);
+      exit (1);
+    }
 
-  mpfr_set_inf(var, -1);
-  var_d = mpfr_get_d_2exp(&exp, var, MPFR_RNDN);
-  if (var_d != MPFR_DBL_INFM) {
-    printf("mpfr_get_d_2exp with a -Inf mpfr value returned a wrong value : waiting for %g got %g\n", MPFR_DBL_INFM, var_d);
-    exit(1);
-  }
+  mpfr_set_inf (var, -1);
+  var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
+  if (var_d != MPFR_DBL_INFM)
+    {
+      printf ("mpfr_get_d_2exp with a -Inf mpfr value returned a wrong value :\n"
+              " waiting for %g got %g\n", MPFR_DBL_INFM, var_d);
+      exit (1);
+    }
 
-  mpfr_clear(var);
+  mpfr_clear (var);
 }
 
 int
@@ -272,7 +282,7 @@ main (void)
   check_min();
   check_max();
 
-  check_get_d_2exp_inf_nan();
+  check_get_d_2exp_inf_nan ();
 
   tests_end_mpfr ();
   return 0;
