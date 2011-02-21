@@ -1111,13 +1111,11 @@ static void
 coverage_mpfr_mul_q_20110218 (void)
 {
   mpfr_t cmp, res, op1;
-  mpfr_prec_t prec;
   mpq_t op2;
   int status;
 
-  prec = mpfr_get_default_prec ();
-  mpfr_init2 (cmp, prec);
-  mpfr_init2 (res, prec);
+  mpfr_init2 (cmp, MPFR_PREC_MIN);
+  mpfr_init2 (res, MPFR_PREC_MIN);
   mpfr_init_set_si (op1, 1, MPFR_RNDN);
 
   mpq_init (op2);

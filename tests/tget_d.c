@@ -191,7 +191,7 @@ check_get_d_2exp_inf_nan (void)
   long exp;
   mpfr_t var;
 
-  mpfr_init2 (var, mpfr_get_default_prec ());
+  mpfr_init2 (var, MPFR_PREC_MIN);
 
   mpfr_set_nan (var);
   var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
