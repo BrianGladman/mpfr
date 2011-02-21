@@ -70,7 +70,8 @@ check (long int n, long int d, mpfr_rnd_t rnd, const char *ys)
   mpq_clear (q);
 }
 
-static void check0(void)
+static void
+check0 (void)
 {
   mpq_t y;
   mpfr_t x;
@@ -96,7 +97,7 @@ static void check0(void)
 }
 
 static void
-check_nan_inf_mpq ()
+check_nan_inf_mpq (void)
 {
   mpfr_t mpfr_value, mpfr_cmp;
   mpq_t mpq_value;
