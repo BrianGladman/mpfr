@@ -587,7 +587,7 @@ exprange (void)
   MPFR_ASSERTN (mpfr_inexflag_p ());
   if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
     {
-      printf ("Error in exprange (test4)\n");
+      printf ("Error in exprange (test5)\n");
       printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
       mpfr_dump (y);
       printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
