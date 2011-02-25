@@ -478,25 +478,93 @@ test20100709 (void)
 static void
 exprange (void)
 {
-  mpfr_exp_t emin;
+  mpfr_exp_t emin, emax;
   mpfr_t x, y, z;
   int inex1, inex2;
   unsigned int flags1, flags2;
 
   emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
-  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
+  mpfr_init2 (x, 16);
+  mpfr_inits2 (8, y, z, (mpfr_ptr) 0);
 
   mpfr_set_ui_2exp (x, 5, -1, MPFR_RNDN);
+  mpfr_clear_flags ();
   inex1 = mpfr_gamma (y, x, MPFR_RNDN);
   flags1 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
   mpfr_set_emin (0);
+  mpfr_clear_flags ();
   inex2 = mpfr_gamma (z, x, MPFR_RNDN);
   flags2 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
   mpfr_set_emin (emin);
   if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
     {
       printf ("Error in exprange (test1)\n");
+      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      mpfr_dump (y);
+      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_set_ui_2exp (x, 32769, -60, MPFR_RNDN);
+  mpfr_clear_flags ();
+  inex1 = mpfr_gamma (y, x, MPFR_RNDD);
+  flags1 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_set_emax (45);
+  mpfr_clear_flags ();
+  inex2 = mpfr_gamma (z, x, MPFR_RNDD);
+  flags2 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_set_emax (emax);
+  if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in exprange (test2)\n");
+      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      mpfr_dump (y);
+      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_set_emax (44);
+  mpfr_clear_flags ();
+  inex1 = mpfr_check_range (y, inex1, MPFR_RNDD);
+  flags1 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_clear_flags ();
+  inex2 = mpfr_gamma (z, x, MPFR_RNDD);
+  flags2 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_set_emax (emax);
+  if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in exprange (test3)\n");
+      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      mpfr_dump (y);
+      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_set_ui_2exp (x, 1, -60, MPFR_RNDN);
+  mpfr_clear_flags ();
+  inex1 = mpfr_gamma (y, x, MPFR_RNDD);
+  flags1 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_set_emax (60);
+  mpfr_clear_flags ();
+  inex2 = mpfr_gamma (z, x, MPFR_RNDD);
+  flags2 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  mpfr_set_emax (emax);
+  if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in exprange (test4)\n");
       printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
       mpfr_dump (y);
       printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
