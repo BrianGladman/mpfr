@@ -105,10 +105,11 @@ underflow (mpfr_exp_t e)
                     printf ("%ld", (long) e);
                   else
                     printf ("<LONG_MIN");
-                  printf (")\nwith %s, x = %d/16, prec = %d, k = %d, mpfr_%s",
-                          div == 0 ? "mul_2si" : div == 1 ? "div_2si" :
-                          "div_2ui", i, prec, k, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  printf ("\nExpected ");
+                  printf (") with mpfr_%s,\nx = %d/16, prec = %d, k = %d, "
+                          "%s\n", div == 0 ? "mul_2si" : div == 1 ?
+                          "div_2si" : "div_2ui", i, prec, k,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                  printf ("Expected ");
                   mpfr_out_str (stdout, 16, 0, z1, MPFR_RNDN);
                   printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
                   printf ("Got      ");
