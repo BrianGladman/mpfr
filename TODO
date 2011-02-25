@@ -51,6 +51,8 @@ Table of contents:
 3. Changes in existing functions
 ##############################################################################
 
+- export mpfr_overflow and mpfr_underflow as public functions
+
 - many functions currently taking into account the precision of the *input*
   variable to set the initial working precison (acosh, asinh, cosh, ...).
   This is nonsense since the "average" working precision should only depend
