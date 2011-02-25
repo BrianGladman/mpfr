@@ -226,12 +226,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          to return a mpz_t or mpfr_t. */
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,
      gamma(x) >= exp(-x) * x^(x-1/2) * sqrt(2*Pi)
               >= 2 * (x/e)^x / x for x >= 1 */
   if (compared > 0)
     {
       mpfr_t yp;
+      mpfr_exp_t expxp;
       MPFR_BLOCK_DECL (flags);
 
       /* 1/e rounded down to 53 bits */
@@ -247,15 +250,16 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_mul (xp, xp, yp, MPFR_RNDZ); /* x^(x-2) / e^x */
       mpfr_mul (xp, xp, x, MPFR_RNDZ); /* lower bound on x^(x-1) / e^x */
       MPFR_BLOCK (flags, mpfr_mul_2ui (xp, xp, 1, MPFR_RNDZ));
+      expxp = MPFR_GET_EXP (xp);
       mpfr_clear (xp);
       mpfr_clear (yp);
-      return MPFR_OVERFLOW (flags) ? mpfr_overflow (gamma, rnd_mode, 1)
-        : mpfr_gamma_aux (gamma, x, rnd_mode);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return MPFR_OVERFLOW (flags) || expxp > __gmpfr_emax ?
+        mpfr_overflow (gamma, rnd_mode, 1) :
+        mpfr_gamma_aux (gamma, x, rnd_mode);
     }
 
   /* now compared < 0 */
-
-  MPFR_SAVE_EXPO_MARK (expo);
 
   /* check for underflow: for x < 1,
      gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x).

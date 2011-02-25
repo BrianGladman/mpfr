@@ -475,6 +475,38 @@ test20100709 (void)
   mpfr_clear (x);
 }
 
+static void
+exprange (void)
+{
+  mpfr_exp_t emin;
+  mpfr_t x, y, z;
+  int inex1, inex2;
+  unsigned int flags1, flags2;
+
+  emin = mpfr_get_emin ();
+
+  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
+
+  mpfr_set_ui_2exp (x, 5, -1, MPFR_RNDN);
+  inex1 = mpfr_gamma (y, x, MPFR_RNDN);
+  flags1 = __gmpfr_flags;
+  mpfr_set_emin (0);
+  inex2 = mpfr_gamma (z, x, MPFR_RNDN);
+  flags2 = __gmpfr_flags;
+  mpfr_set_emin (emin);
+  if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in exprange (test1)\n");
+      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      mpfr_dump (y);
+      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -482,6 +514,7 @@ main (int argc, char *argv[])
 
   special ();
   special_overflow ();
+  exprange ();
   test_generic (2, 100, 2);
   gamma_integer ();
   test20071231 ();
