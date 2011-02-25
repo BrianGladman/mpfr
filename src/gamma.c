@@ -164,6 +164,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (MPFR_EXP(x) + 2 <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
     {
       int positive = MPFR_IS_POS (x);
+
+      MPFR_SAVE_EXPO_MARK (expo);
       inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
       if (inex == 0) /* x is a power of two */
         {
@@ -188,7 +190,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                 inex = -1;
             }
         }
-      MPFR_RET (inex);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (gamma, inex, rnd_mode);
     }
 
   is_integer = mpfr_integer_p (x);
