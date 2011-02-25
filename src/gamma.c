@@ -188,7 +188,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                 inex = -1;
             }
         }
-      return inex;
+      MPFR_RET (inex);
     }
 
   is_integer = mpfr_integer_p (x);
