@@ -30,15 +30,15 @@ mpfr_mul_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd_mode)
   MPFR_LOG_FUNC (("x[%#R]=%R n=%ld rnd=%d", x, x, n, rnd_mode),
                  ("y[%#R]=%R inexact=%d", y, y, inexact));
 
-  inexact = MPFR_UNLIKELY(y != x) ? mpfr_set (y, x, rnd_mode) : 0;
-
-  if (MPFR_LIKELY( MPFR_IS_PURE_FP(y)) )
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    return mpfr_set (y, x, rnd_mode);
+  else
     {
-      mpfr_exp_t exp = MPFR_GET_EXP (y);
+      mpfr_exp_t exp = MPFR_GET_EXP (x);
+      MPFR_SETRAW (inexact, y, x, exp, rnd_mode);
       if (MPFR_UNLIKELY( n > 0 && (__gmpfr_emax < MPFR_EMIN_MIN + n ||
                                    exp > __gmpfr_emax - n)))
         return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));
-
       else if (MPFR_UNLIKELY(n < 0 && (__gmpfr_emin > MPFR_EMAX_MAX + n ||
                                        exp < __gmpfr_emin - n)))
         {
@@ -52,5 +52,5 @@ mpfr_mul_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd_mode)
       MPFR_SET_EXP (y, exp + n);
     }
 
-  return inexact;
+  MPFR_RET (inexact);
 }
