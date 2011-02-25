@@ -572,6 +572,31 @@ exprange (void)
       exit (1);
     }
 
+  MPFR_ASSERTN (MPFR_EMIN_MIN == - MPFR_EMAX_MAX);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_nextabove (x);
+  mpfr_set_inf (y, 1);
+  mpfr_nextbelow (y);
+  inex1 = -1;
+  flags1 = MPFR_FLAGS_INEXACT;
+  mpfr_clear_flags ();
+  inex2 = mpfr_gamma (z, x, MPFR_RNDD);
+  flags2 = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_inexflag_p ());
+  if (inex1 != inex2 || flags1 != flags2 || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in exprange (test4)\n");
+      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      mpfr_dump (y);
+      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      mpfr_dump (z);
+      exit (1);
+    }
+  mpfr_set_emin (emin);
+  mpfr_set_emax (emax);
+
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
