@@ -196,9 +196,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
       /* take into account sign of x */
       if (signx < 0)
         mpz_neg (r, r);
-      inex = mpfr_set_z (rem, r, rnd);
-      /* if ex > ey, rem should be multiplied by 2^ey, else by 2^ex */
-      MPFR_EXP (rem) += (ex > ey) ? ey : ex;
+      inex = mpfr_set_z_2exp (rem, r, ex > ey ? ey : ex, rnd);
     }
 
   if (quo)
