@@ -635,6 +635,31 @@ consistency (void)
     }
 }
 
+static void
+coverage_01032011 (void)
+{
+  mpfr_t val, cval, sval, svalf;
+  int status_f, status;
+  
+  mpfr_init2 (val, MPFR_PREC_MIN);
+  mpfr_init2 (cval, MPFR_PREC_MIN);
+  mpfr_init2 (sval, MPFR_PREC_MIN);
+  mpfr_init2 (svalf, MPFR_PREC_MIN);
+
+  mpfr_set_flt(val, -0.7, MPFR_RNDN);
+
+  status_f = mpfr_sincos_fast (svalf, NULL, val, MPFR_RNDN);
+  status = mpfr_sin_cos (sval, cval, val, MPFR_RNDN);
+  if (mpfr_cmp (svalf, sval) != 0)
+    {
+      mpfr_printf ("mpfr_sincos_fast differ from mpfr_sin_cos result:\n"
+                   " sin is %Rf instead of %Rf\n", svalf, sval);
+      exit (1);
+    }
+
+  mpfr_clears(val, cval, sval, svalf, (mpfr_ptr) 0);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main (int argc, char *argv[])
@@ -687,6 +712,8 @@ main (int argc, char *argv[])
   overflowed_sin_cos0 ();
   tiny ();
   test20071214 ();
+
+  coverage_01032011 ();
 
  end:
   tests_end_mpfr ();
