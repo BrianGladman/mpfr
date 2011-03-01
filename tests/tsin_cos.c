@@ -646,14 +646,17 @@ coverage_01032011 (void)
   mpfr_init2 (sval, MPFR_PREC_MIN);
   mpfr_init2 (svalf, MPFR_PREC_MIN);
 
-  mpfr_set_flt(val, -0.7, MPFR_RNDN);
+  mpfr_set_str1 (val, "-0.7");
 
   status_f = mpfr_sincos_fast (svalf, NULL, val, MPFR_RNDN);
   status = mpfr_sin_cos (sval, cval, val, MPFR_RNDN);
   if (mpfr_cmp (svalf, sval) != 0)
     {
-      mpfr_printf ("mpfr_sincos_fast differ from mpfr_sin_cos result:\n"
-                   " sin is %Rf instead of %Rf\n", svalf, sval);
+      printf ("mpfr_sincos_fast differ from mpfr_sin_cos result:\n"
+              " sin fast is ");
+      mpfr_dump (svalf);
+      printf (" sin is ");
+      mpfr_dump (sval);
       exit (1);
     }
 
