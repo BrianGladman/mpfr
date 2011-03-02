@@ -31,7 +31,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   mp_size_t s;
   mpfr_prec_t p, q;
   mp_limb_t *up, *vp, *tmpp;
-  mpfr_t u, v, tmp;
+  mpfr_t u, v, tmp, sc1, sc2;
+  mpfr_exp_t scale = 0;
   unsigned long n; /* number of iterations */
   unsigned long err = 0;
   MPFR_ZIV_DECL (loop);
@@ -102,7 +103,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
       op1 = op2;
       op2 = t;
     }
-  /* Now b(=op2) >= a (=op1) */
+
+  /* Now b (=op2) > a (=op1) */
 
   MPFR_SAVE_EXPO_MARK (expo);
 
@@ -113,6 +115,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       mpfr_prec_t eq;
+      MPFR_BLOCK_DECL (flags);
 
       /* Init temporary vars */
       MPFR_TMP_INIT (up, u, p, s);
@@ -120,12 +123,80 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
       MPFR_TMP_INIT (tmpp, tmp, p, s);
 
       /* Calculus of un and vn */
-      /* FIXME: possible underflow or overflow in the mpfr_mul.
-         Intermediate scaling by a well-chosen power of 2 will
-         be necessary in such a case. */
-      mpfr_mul (u, op1, op2, MPFR_RNDN); /* Faster since PREC(op) < PREC(u) */
+    retry:
+      MPFR_BLOCK (flags,
+                  mpfr_mul (u, op1, op2, MPFR_RNDN);
+                  /* mpfr_mul(...): faster since PREC(op) < PREC(u) */
+                  mpfr_add (v, op1, op2, MPFR_RNDN);
+                  /* mpfr_add with !=prec is still good */);
+      if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)))
+        {
+          mpfr_exp_t e1 , e2;
+
+          MPFR_ASSERTN (scale == 0);
+          e1 = MPFR_EXP (op1);
+          e2 = MPFR_EXP (op2);
+
+          /* Let's determine scale to avoid an overflow/underflow. */
+          if (MPFR_OVERFLOW (flags))
+            {
+              /* Let's recall that emin <= e1 <= e2 <= emax.
+                 There has been an overflow. Thus e2 >= emax/2.
+                 If the mpfr_mul overflowed, then e1 + e2 > emax.
+                 If the mpfr_add overflowed, then e2 = emax.
+                 We want: (e1 + scale) + (e2 + scale) <= emax,
+                 i.e. scale <= (emax - e1 - e2) / 2. Let's take
+                 scale = min(floor((emax - e1 - e2) / 2), -1).
+                 This is OK, as:
+                 1. emin <= scale <= -1.
+                 2. e1 + scale >= emin. Indeed:
+                    * If e1 + e2 > emax, then
+                      e1 + scale >= e1 + (emax - e1 - e2) / 2 - 1
+                                 >= (emax + e1 - emax) / 2 - 1
+                                 >= e1 / 2 - 1 >= emin.
+                    * Otherwise, mpfr_mul didn't overflow, therefore
+                      mpfr_add overflowed and e2 = emax, so that
+                      e1 > emin (see restriction below).
+                      e1 + scale > emin - 1, thus e1 + scale >= emin.
+                 3. e2 + scale <= emax, since scale < 0. */
+              if (e1 + e2 > __gmpfr_emax)
+                {
+                  scale = - (((e1 + e2) - __gmpfr_emax + 1) / 2);
+                  MPFR_ASSERTN (scale < 0);
+                }
+              else
+                {
+                  /* The addition necessarily overflowed. */
+                  MPFR_ASSERTN (e2 == __gmpfr_emax);
+                  /* The case where e1 = emin and e2 = emax is not supported
+                     here. This would mean that the precision of e2 would be
+                     huge (and possibly not supported in practice anyway). */
+                  MPFR_ASSERTN (e1 > __gmpfr_emin);
+                  scale = -1;
+                }
+
+            }
+          else  /* underflow only (in the multiplication) */
+            {
+              /* We have e1 + e2 <= emin (so, e1 <= e2 <= 0).
+                 We want: (e1 + scale) + (e2 + scale) >= emin + 1,
+                 i.e. scale >= (emin + 1 - e1 - e2) / 2. let's take
+                 scale = ceil((emin + 1 - e1 - e2) / 2). This is OK, as:
+                 1. 1 <= scale <= emax.
+                 2. e1 + scale >= emin + 1 >= emin.
+                 3. e2 + scale <= scale <= emax. */
+              MPFR_ASSERTN (e1 <= e2 && e2 <= 0);
+              scale = (__gmpfr_emin + 2 - e1 - e2) / 2;
+              MPFR_ASSERTN (scale > 0);
+            }
+
+          MPFR_ALIAS (sc1, op1, MPFR_SIGN (op1), e1 + scale);
+          MPFR_ALIAS (sc2, op2, MPFR_SIGN (op2), e2 + scale);
+          op1 = sc1;
+          op2 = sc2;
+          goto retry;
+        }
       mpfr_sqrt (u, u, MPFR_RNDN);
-      mpfr_add (v, op1, op2, MPFR_RNDN); /* add with !=prec is still good*/
       mpfr_div_2ui (v, v, 1, MPFR_RNDN);
       n = 1;
       while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2)
@@ -169,6 +240,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
+  if (scale != 0)
+    MPFR_EXP (r) -= scale;
 
   /* Let's clean */
   MPFR_TMP_FREE(marker);
