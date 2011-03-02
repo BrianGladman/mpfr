@@ -196,6 +196,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
           op2 = sc2;
           goto retry;
         }
+      mpfr_clear_flags ();
       mpfr_sqrt (u, u, MPFR_RNDN);
       mpfr_div_2ui (v, v, 1, MPFR_RNDN);
       n = 1;
@@ -237,6 +238,9 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
       s = (p - 1) / GMP_NUMB_BITS + 1;
     }
   MPFR_ZIV_FREE (loop);
+
+  MPFR_ASSERTN (! (mpfr_overflow_p () || mpfr_underflow_p () ||
+                   mpfr_divby0_p () || mpfr_nanflag_p ()));
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
