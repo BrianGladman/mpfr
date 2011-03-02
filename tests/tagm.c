@@ -32,31 +32,77 @@ check4 (const char *as, const char *bs, mpfr_rnd_t rnd_mode,
         const char *res, int inex)
 {
   mpfr_t ta, tb, tc, tres;
-  unsigned int expflags, newflags;
-  int inex2;
+  mpfr_exp_t emin, emax;
+  int i;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_inits2 (53, ta, tb, tc, tres, (mpfr_ptr) 0);
 
-  mpfr_set_str1 (ta, as);
-  mpfr_set_str1 (tb, bs);
-  mpfr_set_str1 (tc, res);
-
-  __gmpfr_flags = expflags =
-    (randlimb () & 1) ? MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE : 0;
-  inex2 = mpfr_agm (tres, ta, tb, rnd_mode);
-  newflags = __gmpfr_flags;
-  expflags |= MPFR_FLAGS_INEXACT;
-
-  if (SIGN (inex2) != inex || newflags != expflags ||
-      ! mpfr_equal_p (tres, tc))
+  for (i = 0; i <= 2; i++)
     {
-      printf ("mpfr_agm failed for a=%s, b=%s, rnd_mode=%d\n",
-              as, bs, rnd_mode);
-      printf ("expected inex = %d, flags = %u,\n         ", inex, expflags);
-      mpfr_dump (tc);
-      printf ("got      inex = %d, flags = %u,\n         ", inex2, newflags);
-      mpfr_dump (tres);
-      exit (1);
+      unsigned int expflags, newflags;
+      int inex2;
+
+      mpfr_set_str1 (ta, as);
+      mpfr_set_str1 (tb, bs);
+      mpfr_set_str1 (tc, res);
+
+      if (i > 0)
+        {
+          mpfr_exp_t ea, eb, ec, e0;
+
+          set_emin (MPFR_EMIN_MIN);
+          set_emax (MPFR_EMAX_MAX);
+
+          ea = mpfr_get_exp (ta);
+          eb = mpfr_get_exp (tb);
+          ec = mpfr_get_exp (tc);
+
+          e0 = i == 1 ? __gmpfr_emin : __gmpfr_emax;
+          if ((i == 1 && ea < eb) || (i == 2 && ea > eb))
+            {
+              mpfr_set_exp (ta, e0);
+              mpfr_set_exp (tb, e0 + (eb - ea));
+              mpfr_set_exp (tc, e0 + (ec - ea));
+            }
+          else
+            {
+              mpfr_set_exp (ta, e0 + (ea - eb));
+              mpfr_set_exp (tb, e0);
+              mpfr_set_exp (tc, e0 + (ec - eb));
+            }
+        }
+
+      __gmpfr_flags = expflags =
+        (randlimb () & 1) ? MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE : 0;
+      inex2 = mpfr_agm (tres, ta, tb, rnd_mode);
+      newflags = __gmpfr_flags;
+      expflags |= MPFR_FLAGS_INEXACT;
+
+      if (SIGN (inex2) != inex || newflags != expflags ||
+          ! mpfr_equal_p (tres, tc))
+        {
+          printf ("mpfr_agm failed in rnd_mode=%s for\n",
+                  mpfr_print_rnd_mode (rnd_mode));
+          printf ("  a = ");
+          mpfr_out_str (stdout, 10, 0, ta, MPFR_RNDN);
+          printf ("\n");
+          printf ("  b = ");
+          mpfr_out_str (stdout, 10, 0, tb, MPFR_RNDN);
+          printf ("\n");
+          printf ("expected inex = %d, flags = %u,\n"
+                  "         ", inex, expflags);
+          mpfr_dump (tc);
+          printf ("got      inex = %d, flags = %u,\n"
+                  "         ", inex2, newflags);
+          mpfr_dump (tres);
+          exit (1);
+        }
+
+      set_emin (emin);
+      set_emax (emax);
     }
 
   mpfr_clears (ta, tb, tc, tres, (mpfr_ptr) 0);
