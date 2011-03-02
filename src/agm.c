@@ -239,8 +239,14 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
     }
   MPFR_ZIV_FREE (loop);
 
-  MPFR_ASSERTN (! (mpfr_overflow_p () || mpfr_underflow_p () ||
-                   mpfr_divby0_p () || mpfr_nanflag_p ()));
+  if (MPFR_UNLIKELY ((__gmpfr_flags & (MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
+                     != 0))
+    {
+      MPFR_ASSERTN (! mpfr_overflow_p ());
+      MPFR_ASSERTN (! mpfr_underflow_p ());
+      MPFR_ASSERTN (! mpfr_divby0_p ());
+      MPFR_ASSERTN (! mpfr_nanflag_p ());
+    }
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
