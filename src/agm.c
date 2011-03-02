@@ -205,6 +205,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
           mpfr_add (tmp, u, v, MPFR_RNDN);
           mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
           /* See proof in algorithms.tex */
+          /* FIXME: in case of underflow, the error analysis is incorrect.
+             Should the underflows be avoided (see above)? */
           if (4*eq > p)
             {
               mpfr_t w;
