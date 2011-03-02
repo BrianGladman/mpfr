@@ -36,6 +36,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   unsigned long err = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
+  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("op2[%#R]=%R op1[%#R]=%R rnd=%d", op2,op2,op1,op1,rnd_mode),
                  ("r[%#R]=%R inexact=%d", r, r, inexact));
@@ -103,6 +104,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
     }
   /* Now b(=op2) >= a (=op1) */
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   MPFR_TMP_MARK(marker);
 
   /* Main loop */
@@ -117,6 +120,9 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
       MPFR_TMP_INIT (tmpp, tmp, p, s);
 
       /* Calculus of un and vn */
+      /* FIXME: possible underflow or overflow in the mpfr_mul.
+         Intermediate scaling by a well-chosen power of 2 will
+         be necessary in such a case. */
       mpfr_mul (u, op1, op2, MPFR_RNDN); /* Faster since PREC(op) < PREC(u) */
       mpfr_sqrt (u, u, MPFR_RNDN);
       mpfr_add (v, op1, op2, MPFR_RNDN); /* add with !=prec is still good*/
@@ -167,11 +173,15 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   /* Let's clean */
   MPFR_TMP_FREE(marker);
 
-  return inexact; /* agm(u,v) can be exact for u, v rational only for u=v.
-                     Proof (due to Nicolas Brisebarre): it suffices to consider
-                     u=1 and v<1. Then 1/AGM(1,v) = 2F1(1/2,1/2,1;1-v^2),
-                     and a theorem due to G.V. Chudnovsky states that for x a
-                     non-zero algebraic number with |x|<1, then
-                     2F1(1/2,1/2,1;x) and 2F1(-1/2,1/2,1;x) are algebraically
-                     independent over Q. */
+  MPFR_SAVE_EXPO_FREE (expo);
+  /* From the definition of the AGM, underflow and overflow
+     are not possible. */
+  return mpfr_check_range (r, inexact, rnd_mode);
+  /* agm(u,v) can be exact for u, v rational only for u=v.
+     Proof (due to Nicolas Brisebarre): it suffices to consider
+     u=1 and v<1. Then 1/AGM(1,v) = 2F1(1/2,1/2,1;1-v^2),
+     and a theorem due to G.V. Chudnovsky states that for x a
+     non-zero algebraic number with |x|<1, then
+     2F1(1/2,1/2,1;x) and 2F1(-1/2,1/2,1;x) are algebraically
+     independent over Q. */
 }
