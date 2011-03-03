@@ -35,7 +35,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_uexp_t diff_exp;
   MPFR_TMP_DECL(marker);
 
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
   MPFR_TMP_MARK(marker);
 
