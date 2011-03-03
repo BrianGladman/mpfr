@@ -151,7 +151,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_TMP_MARK(marker);
 
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
   /* Read prec and num of limbs */
   p = MPFR_PREC(b);
