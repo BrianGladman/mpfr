@@ -30,9 +30,9 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   int compare, inexact;
   mp_size_t s;
   mpfr_prec_t p, q;
-  mp_limb_t *up, *vp, *tmpp;
-  mpfr_t u, v, tmp, sc1, sc2;
-  mpfr_exp_t scale = 0;
+  mp_limb_t *up, *vp, *ufp, *vfp;
+  mpfr_t u, v, uf, vf, sc1, sc2;
+  mpfr_exp_t scaleop = 0, scaleit;
   unsigned long n; /* number of iterations */
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
@@ -120,7 +120,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
       /* Init temporary vars */
       MPFR_TMP_INIT (up, u, p, s);
       MPFR_TMP_INIT (vp, v, p, s);
-      MPFR_TMP_INIT (tmpp, tmp, p, s);
+      MPFR_TMP_INIT (ufp, uf, p, s);
+      MPFR_TMP_INIT (vfp, vf, p, s);
 
       /* Calculus of un and vn */
     retry:
@@ -133,11 +134,11 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
         {
           mpfr_exp_t e1 , e2;
 
-          MPFR_ASSERTN (scale == 0);
-          e1 = MPFR_EXP (op1);
-          e2 = MPFR_EXP (op2);
+          MPFR_ASSERTN (scaleop == 0);
+          e1 = MPFR_GET_EXP (op1);
+          e2 = MPFR_GET_EXP (op2);
 
-          /* Let's determine scale to avoid an overflow/underflow. */
+          /* Let's determine scaleop to avoid an overflow/underflow. */
           if (MPFR_OVERFLOW (flags))
             {
               /* Let's recall that emin <= e1 <= e2 <= emax.
@@ -161,8 +162,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                  3. e2 + scale <= emax, since scale < 0. */
               if (e1 + e2 > __gmpfr_emax)
                 {
-                  scale = - (((e1 + e2) - __gmpfr_emax + 1) / 2);
-                  MPFR_ASSERTN (scale < 0);
+                  scaleop = - (((e1 + e2) - __gmpfr_emax + 1) / 2);
+                  MPFR_ASSERTN (scaleop < 0);
                 }
               else
                 {
@@ -172,7 +173,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                      here. This would mean that the precision of e2 would be
                      huge (and possibly not supported in practice anyway). */
                   MPFR_ASSERTN (e1 > __gmpfr_emin);
-                  scale = -1;
+                  scaleop = -1;
                 }
 
             }
@@ -186,46 +187,89 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                  2. e1 + scale >= emin + 1 >= emin.
                  3. e2 + scale <= scale <= emax. */
               MPFR_ASSERTN (e1 <= e2 && e2 <= 0);
-              scale = (__gmpfr_emin + 2 - e1 - e2) / 2;
-              MPFR_ASSERTN (scale > 0);
+              scaleop = (__gmpfr_emin + 2 - e1 - e2) / 2;
+              MPFR_ASSERTN (scaleop > 0);
             }
 
-          MPFR_ALIAS (sc1, op1, MPFR_SIGN (op1), e1 + scale);
-          MPFR_ALIAS (sc2, op2, MPFR_SIGN (op2), e2 + scale);
+          MPFR_ALIAS (sc1, op1, MPFR_SIGN (op1), e1 + scaleop);
+          MPFR_ALIAS (sc2, op2, MPFR_SIGN (op2), e2 + scaleop);
           op1 = sc1;
           op2 = sc2;
+          MPFR_LOG_MSG (("Exception in pre-iteration, scale = %"
+                         MPFR_EXP_FSPEC "d\n", scaleop));
           goto retry;
         }
+
       mpfr_clear_flags ();
       mpfr_sqrt (u, u, MPFR_RNDN);
       mpfr_div_2ui (v, v, 1, MPFR_RNDN);
+
+      scaleit = 0;
       n = 1;
       while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2)
         {
-          mpfr_add (tmp, u, v, MPFR_RNDN);
-          mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
+          MPFR_BLOCK_DECL (flags2);
+
+          MPFR_LOG_MSG (("Iteration n = %lu\n", n));
+
+        retry2:
+          mpfr_add (vf, u, v, MPFR_RNDN);  /* No overflow? */
+          mpfr_div_2ui (vf, vf, 1, MPFR_RNDN);
           /* See proof in algorithms.tex */
-          /* FIXME: in case of underflow, the error analysis is incorrect.
-             Should the underflows be avoided (see above)? */
           if (4*eq > p)
             {
               mpfr_t w;
-              /* tmp = U(k) */
+              MPFR_BLOCK_DECL (flags3);
+
+              MPFR_LOG_MSG (("4*eq > p\n", 0));
+
+              /* vf = V(k) */
               mpfr_init2 (w, (p + 1) / 2);
-              mpfr_sub (w, v, u, MPFR_RNDN);         /* e = V(k-1)-U(k-1) */
-              mpfr_sqr (w, w, MPFR_RNDN);            /* e = e^2 */
-              mpfr_div_2ui (w, w, 4, MPFR_RNDN);     /* e*= (1/2)^2*1/4  */
-              mpfr_div (w, w, tmp, MPFR_RNDN);       /* 1/4*e^2/U(k) */
-              mpfr_sub (v, tmp, w, MPFR_RNDN);
-              err = MPFR_GET_EXP (tmp) - MPFR_GET_EXP (v); /* 0 or 1 */
+              MPFR_BLOCK
+                (flags3,
+                 mpfr_sub (w, v, u, MPFR_RNDN);       /* e = V(k-1)-U(k-1) */
+                 mpfr_sqr (w, w, MPFR_RNDN);          /* e = e^2 */
+                 mpfr_div_2ui (w, w, 4, MPFR_RNDN);   /* e*= (1/2)^2*1/4  */
+                 mpfr_div (w, w, vf, MPFR_RNDN);      /* 1/4*e^2/V(k) */
+                 );
+              if (MPFR_LIKELY (! MPFR_UNDERFLOW (flags3)))
+                {
+                  mpfr_sub (v, vf, w, MPFR_RNDN);
+                  err = MPFR_GET_EXP (vf) - MPFR_GET_EXP (v); /* 0 or 1 */
+                  mpfr_clear (w);
+                  break;
+                }
+              /* There has been an underflow because of the cancellation
+                 between V(k-1) and U(k-1). Let's use the conventional
+                 method. */
+              MPFR_LOG_MSG (("4*eq > p -> underflow\n", 0));
               mpfr_clear (w);
-              break;
+              mpfr_clear_underflow ();
             }
-          mpfr_mul (u, u, v, MPFR_RNDN);
-          mpfr_sqrt (u, u, MPFR_RNDN);
-          mpfr_swap (v, tmp);
+          /* U(k) increases, so that U.V can overflow (but not underflow). */
+          MPFR_BLOCK (flags2, mpfr_mul (uf, u, v, MPFR_RNDN););
+          if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags2)))
+            {
+              mpfr_exp_t scale2;
+
+              scale2 = - (((MPFR_GET_EXP (u) + MPFR_GET_EXP (v))
+                           - __gmpfr_emax + 1) / 2);
+              MPFR_EXP (u) += scale2;
+              MPFR_EXP (v) += scale2;
+              scaleit += scale2;
+              MPFR_LOG_MSG (("Overflow in iteration n = %lu, scaleit = %"
+                             MPFR_EXP_FSPEC "d (%" MPFR_EXP_FSPEC "d)\n",
+                             n, scaleit, scale2));
+              mpfr_clear_overflow ();
+              goto retry2;
+            }
+          mpfr_sqrt (u, uf, MPFR_RNDN);
+          mpfr_swap (v, vf);
           n ++;
         }
+
+      MPFR_LOG_MSG (("End of iterations (n = %lu)\n", n));
+
       /* the error on v is bounded by (18n+51) ulps, or twice if there
          was an exponent loss in the final subtraction */
       err += MPFR_INT_CEIL_LOG2(18 * n + 51); /* 18n+51 should not overflow
@@ -252,8 +296,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
-  if (scale != 0)
-    MPFR_EXP (r) -= scale;
+  MPFR_EXP (r) -= scaleop + scaleit;
 
   /* Let's clean */
   MPFR_TMP_FREE(marker);
