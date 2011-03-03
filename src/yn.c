@@ -406,9 +406,9 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       }
     MPFR_ZIV_FREE (loop);
 
-    inex = (n >= 0 || (n & 1) == 0)
-      ? mpfr_set (res, s2, r)
-      : mpfr_neg (res, s2, r);
+    /* Assume two's complement for the test n & 1 */
+    inex = mpfr_set4 (res, s2, r, n >= 0 || (n & 1) == 0 ?
+                      MPFR_SIGN (s2) : - MPFR_SIGN (s2));
 
     mpfr_clear (y);
     mpfr_clear (s1);
