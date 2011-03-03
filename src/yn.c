@@ -151,6 +151,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   int inex;
   unsigned long absn;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R n=%d rnd=%d", z, z, n, r),
                  ("y[%#R]=%R", res, res));
@@ -198,6 +199,8 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     }
 
   /* now z is not singular, and z > 0 */
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* Deal with tiny arguments. We have:
      y0(z) = 2 log(z)/Pi + 2 (euler - log(2))/Pi + O(log(z)*z^2), more
@@ -247,13 +250,11 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_neg (t, t, MPFR_RNDD);
       mpfr_div_2ui (t, t, 1, MPFR_RNDD);
       mpfr_mul (t, t, logz, MPFR_RNDU); /* upper bound on z^2/2*log(z) */
-      /* an underflow may happen in the above instructions, clear flag */
-      mpfr_clear_underflow ();
       mpfr_add (h, h, t, MPFR_RNDU);
       inex = mpfr_prec_round (l, MPFR_PREC(res), r);
       inex2 = mpfr_prec_round (h, MPFR_PREC(res), r);
       /* we need h=l and inex=inex2 */
-      ok = (inex == inex2) && (mpfr_cmp (l, h) == 0);
+      ok = (inex == inex2) && mpfr_equal_p (l, h);
       if (ok)
         mpfr_set (res, h, r); /* exact */
       mpfr_clear (l);
@@ -261,7 +262,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_clear (t);
       mpfr_clear (logz);
       if (ok)
-        return inex;
+        goto end;
     }
 
   /* small argument check for y1(z) = -2/Pi/z + O(log(z)):
@@ -286,6 +287,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       if (MPFR_OVERFLOW (flags))
         {
           mpfr_clear (y);
+          MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (res, r, -1);
         }
       mpfr_neg (y, y, MPFR_RNDN);
@@ -302,7 +304,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
         inex = mpfr_set (res, y, r);
       mpfr_clear (y);
       if (ok)
-        return inex;
+        goto end;
     }
 
   /* we can use the asymptotic expansion as soon as z > p log(2)/2,
@@ -311,7 +313,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     {
       inex = mpfr_yn_asympt (res, n, z, r);
       if (inex != 0)
-        return inex;
+        goto end;
     }
 
   /* General case */
@@ -414,7 +416,9 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     mpfr_clear (s3);
   }
 
-  return inex;
+ end:
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (res, inex, r);
 }
 
 #define MPFR_YN
