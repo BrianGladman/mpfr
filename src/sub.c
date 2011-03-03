@@ -75,7 +75,9 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           return mpfr_set (a, b, rnd_mode);
         }
     }
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (b) && MPFR_IS_PURE_FP (c));
+
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (c));
 
   if (MPFR_LIKELY (MPFR_SIGN (b) == MPFR_SIGN (c)))
     { /* signs are equal, it's a real subtraction */

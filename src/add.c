@@ -80,7 +80,8 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (c));
 
   if (MPFR_UNLIKELY(MPFR_SIGN(b) != MPFR_SIGN(c)))
     { /* signs differ, it's a subtraction */
