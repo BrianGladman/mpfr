@@ -34,7 +34,6 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   mpfr_t u, v, tmp, sc1, sc2;
   mpfr_exp_t scale = 0;
   unsigned long n; /* number of iterations */
-  unsigned long err = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -115,6 +114,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       mpfr_prec_t eq;
+      unsigned long err = 0;  /* must be set to 0 at each Ziv iteration */
       MPFR_BLOCK_DECL (flags);
 
       /* Init temporary vars */
