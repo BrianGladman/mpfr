@@ -288,10 +288,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY ((__gmpfr_flags & (MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
                      != 0))
     {
-      MPFR_ASSERTN (! mpfr_overflow_p ());
-      MPFR_ASSERTN (! mpfr_underflow_p ());
-      MPFR_ASSERTN (! mpfr_divby0_p ());
-      MPFR_ASSERTN (! mpfr_nanflag_p ());
+      MPFR_ASSERTN (! mpfr_overflow_p ());   /* since mpfr_clear_flags */
+      MPFR_ASSERTN (! mpfr_underflow_p ());  /* since mpfr_clear_flags */
+      MPFR_ASSERTN (! mpfr_divby0_p ());     /* since mpfr_clear_flags */
+      MPFR_ASSERTN (! mpfr_nanflag_p ());    /* since mpfr_clear_flags */
     }
 
   /* Setting of the result */
