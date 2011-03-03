@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* If |b| != |c|, puts the number of canceled bits when one subtracts |c|
-   from |b| in *cancel. Returns the sign of the difference.
+   from |b| in *cancel. Returns the sign of the difference (-1, 0, 1).
 
    Assumes neither of b or c is NaN, +/- infinity, or +/- 0.
 
@@ -42,10 +42,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   mpfr_prec_t res = 0;
   int sign;
 
-  /* b=c should not happen, since cmp2 is called only from agm
-     (with different variables) and from sub1 (if b=c, then
-     sub1sp would be called instead). */
-  MPFR_ASSERTD (b != c);
+  /* b=c should not happen, since cmp2 is called only from agm (with
+     different variables) and from sub1 (if b=c, then sub1sp would be
+     called instead). So, no need for a particular optimization here. */
 
   /* the cases b=0 or c=0 are also treated apart in agm and sub
      (which calls sub1) */
