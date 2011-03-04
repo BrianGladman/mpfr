@@ -229,19 +229,32 @@ coverage_03032011 (void)
 {
   mpfr_t in, out, cmp;
   int status;
+  int precIn;
+  char strData[(GMP_NUMB_BITS * 4)+256];
 
-  mpfr_init2 (in, GMP_NUMB_BITS * 3);
+  precIn = GMP_NUMB_BITS * 4;
+
+  mpfr_init2 (in, precIn);
   mpfr_init2 (out, GMP_NUMB_BITS);
   mpfr_init2 (cmp, GMP_NUMB_BITS);
 
-  mpfr_set_str_binary (in, "0.1E194");
-  mpfr_set_str_binary (in, 
-    "0.1000000000000000000000000000000000000000000000000000000000000000"
-    "0000000000000000000000000000000000000000000000000000000000000000"
-    "0000000000000000000000000000000000000000000000000000000000000001E194");
+  /* cmp = "0.1EprecIn+2" */
+  status = snprintf (strData, 257, "0.1E%d", precIn+2);
+  if (status == -1)
+    {
+      return;
+    }
+  mpfr_set_str_binary (cmp, strData);
+
+  /* in = "0.10...01EprecIn+2" use all (precIn) mantisa bits */
+  memset ((void *)strData, '0', precIn+2);
+  strData[1] = '.';
+  strData[2] = '1';
+  snprintf (&strData[precIn+1], 255, "1E%d", precIn+2);
+  mpfr_set_str_binary (in, strData);
+
   status = mpfr_rint (out, in, MPFR_RNDN);
-  mpfr_set_str_binary (cmp, "0.1E194");
-  if ((mpfr_cmp (out, cmp) != 0) || (status != -1))
+  if ((mpfr_cmp (out, cmp) != 0) || (status >= 0))
     {
       printf("mpfr_rint error :\n status is %d instead of 0\n", status);
       printf(" out value is ");
@@ -254,19 +267,17 @@ coverage_03032011 (void)
   mpfr_clear (cmp);
   mpfr_clear (out);
 
-  mpfr_init2 (out, (GMP_NUMB_BITS * 2) - 1);
-  mpfr_init2 (cmp, (GMP_NUMB_BITS * 2) - 1);
-  mpfr_set_str_binary (in, "0.1E194");
-  mpfr_set_str_binary (in, 
-    "0.1111111111111111111111111111111111111111111111111111111111111101"
-    "1111111111111111111111111111111111111111111111111111111111111101"
-    "1111111111111111111111111111111111111111111111111111111111111101E194");
-  status = mpfr_rint (out, in, MPFR_RNDN);
-  mpfr_set_str_binary (cmp, 
-    "0.1111111111111111111111111111111111111111111111111111111111111101"
-    "111111111111111111111111111111111111111111111111111111111111111E194");
+  mpfr_init2 (out, GMP_NUMB_BITS);
+  mpfr_init2 (cmp, GMP_NUMB_BITS);
 
-  if ((mpfr_cmp (out, cmp) != 0) || (status != 1))
+  /* cmp = "0.10...01EprecIn+2" use all (GMP_NUMB_BITS) mantisa bits */
+  strcpy (&strData[GMP_NUMB_BITS+1], &strData[precIn+1]);
+  mpfr_set_str_binary (cmp, strData);
+
+  ((mp_limb_t *)MPFR_MANT(in))[2] = MPFR_LIMB_HIGHBIT;
+  status = mpfr_rint (out, in, MPFR_RNDN);
+
+  if ((mpfr_cmp (out, cmp) != 0) || (status <= 0))
     {
       printf("mpfr_rint error :\n status is %d instead of 0\n", status);
       printf(" out value is\n");
