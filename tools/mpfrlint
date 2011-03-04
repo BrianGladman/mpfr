@@ -36,6 +36,12 @@ done
 sp="[[:space:]]*"
 grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {src,tests}/*.{c,h}
 
+# Do not use snprintf as it is not available in ISO C90.
+# Even on platforms where it is available, the prototype
+# may not be included (e.g. with gcc -ansi), so that the
+# code may be compiled incorrectly.
+grep '[^a-z_]snprintf *([^)]' {src,tests}/*.{c,h}
+
 # Constant checking should use MPFR_ASSERTN, not MPFR_ASSERTD.
 # This test is a heuristic.
 grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
