@@ -239,18 +239,15 @@ coverage_03032011 (void)
   mpfr_init2 (cmp, GMP_NUMB_BITS);
 
   /* cmp = "0.1EprecIn+2" */
-  status = snprintf (strData, 257, "0.1E%d", precIn+2);
-  if (status == -1)
-    {
-      return;
-    }
+  /* The buffer size is sufficient, as precIn is small in practice. */
+  sprintf (strData, "0.1E%d", precIn+2);
   mpfr_set_str_binary (cmp, strData);
 
   /* in = "0.10...01EprecIn+2" use all (precIn) mantisa bits */
   memset ((void *)strData, '0', precIn+2);
   strData[1] = '.';
   strData[2] = '1';
-  snprintf (&strData[precIn+1], 255, "1E%d", precIn+2);
+  sprintf (&strData[precIn+1], "1E%d", precIn+2);
   mpfr_set_str_binary (in, strData);
 
   status = mpfr_rint (out, in, MPFR_RNDN);
