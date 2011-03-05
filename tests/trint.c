@@ -243,7 +243,7 @@ coverage_03032011 (void)
   sprintf (strData, "0.1E%d", precIn+2);
   mpfr_set_str_binary (cmp, strData);
 
-  /* in = "0.10...01EprecIn+2" use all (precIn) mantisa bits */
+  /* in = "0.10...01EprecIn+2" use all (precIn) significand bits */
   memset ((void *)strData, '0', precIn+2);
   strData[1] = '.';
   strData[2] = '1';
@@ -267,7 +267,7 @@ coverage_03032011 (void)
   mpfr_init2 (out, GMP_NUMB_BITS);
   mpfr_init2 (cmp, GMP_NUMB_BITS);
 
-  /* cmp = "0.10...01EprecIn+2" use all (GMP_NUMB_BITS) mantisa bits */
+  /* cmp = "0.10...01EprecIn+2" use all (GMP_NUMB_BITS) significand bits */
   strcpy (&strData[GMP_NUMB_BITS+1], &strData[precIn+1]);
   mpfr_set_str_binary (cmp, strData);
 
@@ -398,13 +398,13 @@ main (int argc, char *argv[])
                     if (trint == 2)
                       {
                         /* halfway case for mpfr_rint in MPFR_RNDN rounding
-                           mode: round to an even integer or mantissa. */
+                           mode: round to an even integer or significand. */
                         mpfr_div_2ui (y, y, 1, MPFR_RNDZ);
                         if (!mpfr_integer_p (y))
                           err ("halfway case for mpfr_rint, result isn't an"
                                " even integer", s, x, y, p, (mpfr_rnd_t) r, trint, inexact);
                         /* If floor(x) and ceil(x) aren't both representable
-                           integers, the mantissa must be even. */
+                           integers, the significand must be even. */
                         mpfr_sub (v, v, y, MPFR_RNDN);
                         mpfr_abs (v, v, MPFR_RNDN);
                         if (mpfr_cmp_ui (v, 1) != 0)
@@ -412,7 +412,7 @@ main (int argc, char *argv[])
                             mpfr_div_2si (y, y, MPFR_EXP (y) - MPFR_PREC (y)
                                           + 1, MPFR_RNDN);
                             if (!mpfr_integer_p (y))
-                              err ("halfway case for mpfr_rint, mantissa isn't"
+                              err ("halfway case for mpfr_rint, significand isn't"
                                    " even", s, x, y, p, (mpfr_rnd_t) r, trint, inexact);
                           }
                       }
