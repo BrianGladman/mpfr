@@ -154,7 +154,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
      (see algorithms.tex) */
   if (absn > 0)
     {
-      /* the following is an upper 32-bit approximation of exp(1)/2 */
+      /* the following is an upper 32-bit approximation to exp(1)/2 */
       mpfr_set_str_binary (y, "1.0101101111110000101010001011001");
       if (MPFR_SIGN(z) > 0)
         mpfr_mul (y, y, z, MPFR_RNDU);
@@ -164,7 +164,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           mpfr_neg (y, y, MPFR_RNDU);
         }
       mpfr_div_ui (y, y, absn, MPFR_RNDU);
-      /* now y is an upper approximation of |ze/2n|: y < 2^EXP(y),
+      /* now y is an upper approximation to |ze/2n|: y < 2^EXP(y),
          thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
          If n*EXP(y) < __gmpfr_emin then we have an underflow.
          Warning: absn is an unsigned long. */
