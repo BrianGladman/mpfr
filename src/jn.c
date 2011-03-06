@@ -152,6 +152,8 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 
   /* check underflow case: |j(n,z)| <= 1/sqrt(2 Pi n) (ze/2n)^n
      (see algorithms.tex) */
+  /* FIXME: the code below doesn't detect all the underflow cases. Either
+     this should be done, or the generic code should detect underflows. */
   if (absn > 0)
     {
       /* the following is an upper 32-bit approximation to exp(1)/2 */
@@ -166,11 +168,13 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_div_ui (y, y, absn, MPFR_RNDU);
       /* now y is an upper approximation to |ze/2n|: y < 2^EXP(y),
          thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
-         If n*EXP(y) < __gmpfr_emin then we have an underflow.
+         If n*EXP(y) < emin then we have an underflow.
+         Note that if emin = MPFR_EMIN_MIN and j = 1, this inequality
+         will never be satisfied.
          Warning: absn is an unsigned long. */
-      if ((MPFR_GET_EXP (y) < 0 && absn > (-__gmpfr_emin))
-          || (absn <= (-MPFR_EMIN_MIN) &&
-              MPFR_GET_EXP (y) < __gmpfr_emin / (mpfr_exp_t) absn))
+      if ((MPFR_GET_EXP (y) < 0 && absn > - expo.saved_emin)
+          || (absn <= - MPFR_EMIN_MIN &&
+              MPFR_GET_EXP (y) < expo.saved_emin / (mpfr_exp_t) absn))
         {
           MPFR_GROUP_CLEAR (g);
           MPFR_SAVE_EXPO_FREE (expo);
