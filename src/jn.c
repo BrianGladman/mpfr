@@ -197,7 +197,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_pow_ui (t, z, absn, MPFR_RNDN); /* z^|n| */
       mpfr_mul (y, z, z, MPFR_RNDN);       /* z^2 */
       zz = mpfr_get_ui (y, MPFR_RNDU);
-      MPFR_ASSERTN (zz < ULONG_MAX);
+      MPFR_ASSERTN (zz <= ULONG_MAX);
       mpfr_div_2ui (y, y, 2, MPFR_RNDN);   /* z^2/4 */
       mpfr_fac_ui (s, absn, MPFR_RNDN);    /* |n|! */
       mpfr_div (t, t, s, MPFR_RNDN);
