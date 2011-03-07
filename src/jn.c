@@ -42,27 +42,34 @@ mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
   return mpfr_jn (res, 1, z, r);
 }
 
-/* Estimate k0 such that z^2/4 = k0 * (k0 + n)
-   i.e., (sqrt(n^2+z^2)-n)/2 = n/2 * (sqrt(1+(z/n)^2) - 1).
-   Return min(2*k0/log(2), ULONG_MAX).
+/* Estimate k1 such that z^2/4 = k1 * (k1 + n)
+   i.e., k1 = (sqrt(n^2+z^2)-n)/2 = n/2 * (sqrt(1+(z/n)^2) - 1) if n != 0.
+   Return k0 = min(2*k1/log(2), ULONG_MAX).
 */
 static unsigned long
-mpfr_jn_k0 (long n, mpfr_srcptr z)
+mpfr_jn_k0 (unsigned long n, mpfr_srcptr z)
 {
   mpfr_t t, u;
   unsigned long k0;
 
   mpfr_init2 (t, 32);
   mpfr_init2 (u, 32);
-  mpfr_div_si (t, z, n, MPFR_RNDN);
-  mpfr_sqr (t, t, MPFR_RNDN);
-  mpfr_add_ui (t, t, 1, MPFR_RNDN);
-  mpfr_sqrt (t, t, MPFR_RNDN);
-  mpfr_sub_ui (t, t, 1, MPFR_RNDN);
-  mpfr_mul_si (t, t, n, MPFR_RNDN);
-  /* the following is a 32-bit approximation to nearest of log(2) */
-  mpfr_set_str_binary (u, "0.10110001011100100001011111111");
-  mpfr_div (t, t, u, MPFR_RNDN);
+  if (n == 0)
+    {
+      mpfr_abs (t, z, MPFR_RNDN);  /* t = 2*k1 */
+    }
+  else
+    {
+      mpfr_div_ui (t, z, n, MPFR_RNDN);
+      mpfr_sqr (t, t, MPFR_RNDN);
+      mpfr_add_ui (t, t, 1, MPFR_RNDN);
+      mpfr_sqrt (t, t, MPFR_RNDN);
+      mpfr_sub_ui (t, t, 1, MPFR_RNDN);
+      mpfr_mul_ui (t, t, n, MPFR_RNDN);  /* t = 2*k1 */
+    }
+  /* the following is a 32-bit approximation to nearest to 1/log(2) */
+  mpfr_set_str_binary (u, "1.0111000101010100011101100101001");
+  mpfr_mul (t, t, u, MPFR_RNDN);
   if (mpfr_fits_ulong_p (t, MPFR_RNDN))
     k0 = mpfr_get_ui (t, MPFR_RNDN);
   else
