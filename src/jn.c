@@ -78,6 +78,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   int inex;
   unsigned long absn;
   mpfr_prec_t prec, pbound, err;
+  mpfr_uprec_t uprec;
   mpfr_exp_t exps, expT, diffexp;
   mpfr_t y, s, t, absz;
   unsigned long k, zz, k0;
@@ -187,8 +188,16 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   /* the logarithm of the ratio between the largest term in the series
      and the first one is roughly bounded by k0, which we add to the
      working precision to take into account this cancellation */
+  /* The following operations avoid integer overflow and ensure that
+     prec <= MPFR_PREC_MAX (prec = MPFR_PREC_MAX won't prevent an abort,
+     but the failure should be handled cleanly). */
   k0 = mpfr_jn_k0 (absn, z);
-  prec = MPFR_PREC (res) + k0 + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (res)) + 3;
+  MPFR_LOG_MSG (("k0 = %lu\n", k0));
+  uprec = MPFR_PREC_MAX - 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC_MAX) - 3;
+  if (k0 < uprec)
+    uprec = k0;
+  uprec += MPFR_PREC (res) + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (res)) + 3;
+  prec = uprec < MPFR_PREC_MAX ? (mpfr_prec_t) uprec : MPFR_PREC_MAX;
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
