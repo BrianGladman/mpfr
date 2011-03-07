@@ -215,6 +215,9 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           MPFR_LOG_MSG (("loop on k, k = %lu\n", k));
           mpfr_mul (t, t, y, MPFR_RNDN);
           mpfr_neg (t, t, MPFR_RNDN);
+          /* Mathematically: absn <= LONG_MAX + 1 <= (ULONG_MAX + 1) / 2,
+             and in practice, k is not very large, so that one should have
+             k + absn <= ULONG_MAX. */
           MPFR_ASSERTN (absn <= ULONG_MAX - k);
           if (k + absn <= ULONG_MAX / k)
             mpfr_div_ui (t, t, k * (k + absn), MPFR_RNDN);
@@ -231,8 +234,9 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           exps = MPFR_IS_ZERO (s) ? MPFR_EMIN_MIN : MPFR_GET_EXP (s);
           if (exps > expT)
             expT = exps;
+          /* Above it has been checked that k + absn <= ULONG_MAX. */
           if (MPFR_GET_EXP (t) + (mpfr_exp_t) prec <= exps &&
-              zz / (2 * k) < k + n)
+              zz / (2 * k) < k + absn)
             break;
         }
       /* the error is bounded by (4k^2+21/2k+7) ulp(s)*2^(expT-exps)
