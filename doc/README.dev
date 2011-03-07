@@ -431,12 +431,12 @@ TMP_DECL, since TMP_DECL may be replace by nothing:
 
 Instead of:                                 Usually preprocessed as:
   unsigned long t                             unsigned long t;
-  TMP_DECL (maker);                           ;
+  TMP_DECL (marker);                          ;
   MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
 use:
   unsigned long t                             unsigned long t;
   MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
-  TMP_DECL (maker);                           ;
+  TMP_DECL (marker);                          ;
 
    ====================================================================
 
