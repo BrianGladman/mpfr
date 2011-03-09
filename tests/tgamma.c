@@ -25,6 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* Note: there could be an incorrect test about suspicious overflow
+   (MPFR_SUSPICIOUS_OVERFLOW) for x = 2^(-emax) = 0.5 * 2^(emin+1) in
+   RNDZ or RNDD, but this case is never tested in the generic tests. */
 #define TEST_FUNCTION mpfr_gamma
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #include "tgeneric.c"
