@@ -628,6 +628,105 @@ exprange (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
+static int
+tiny_aux (int stop, mpfr_exp_t e)
+{
+  mpfr_t x, y, z;
+  int r, s, spm, inex, err = 0;
+  int expected_dir[2][5] = { { 1, -1, 1, -1, 1 }, { 1, 1, 1, -1, -1 } };
+
+  mpfr_init2 (x, 32);
+  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
+
+  mpfr_set_ui_2exp (x, 1, e, MPFR_RNDN);
+  spm = 1;
+  for (s = 0; s < 2; s++)
+    {
+      RND_LOOP(r)
+        {
+          mpfr_rnd_t rr = (mpfr_rnd_t) r;
+          mpfr_exp_t exponent, emax;
+
+          /* Exponent of the rounded value in infinite exponent range. */
+          exponent = expected_dir[s][r] < 0 && s == 0 ? - e : 1 - e;
+
+          for (emax = exponent - 1; emax <= exponent; emax++)
+            {
+              unsigned int flags, expected_flags = MPFR_FLAGS_INEXACT;
+              int overflow, expected_inex = expected_dir[s][r];
+
+              if (emax > MPFR_EMAX_MAX)
+                break;
+              mpfr_set_emax (emax);
+
+              mpfr_clear_flags ();
+              inex = mpfr_gamma (y, x, rr);
+              flags = __gmpfr_flags;
+              mpfr_clear_flags ();
+              mpfr_set_si_2exp (z, spm, - e, MPFR_RNDU);
+              overflow = mpfr_overflow_p ();
+              /* z is 1/x - euler rounded toward +inf */
+
+              if (overflow && rr == MPFR_RNDN && s == 1)
+                expected_inex = -1;
+
+              if (expected_inex < 0)
+                mpfr_nextbelow (z); /* 1/x - euler rounded toward -inf */
+
+              if (exponent > emax)
+                expected_flags |= MPFR_FLAGS_OVERFLOW;
+
+              if (!(mpfr_equal_p (y, z) && flags == expected_flags
+                    && SAME_SIGN (inex, expected_inex)))
+                {
+                  printf ("Error in tiny for s = %d, r = %s, emax = %"
+                          MPFR_EXP_FSPEC "d%s\n  on ",
+                          s, mpfr_print_rnd_mode (rr), emax,
+                          exponent > emax ? " (overflow)" : "");
+                  mpfr_dump (x);
+                  printf ("  expected inex = %2d, ", expected_inex);
+                  mpfr_dump (z);
+                  printf ("  got      inex = %2d, ", SIGN (inex));
+                  mpfr_dump (y);
+                  printf ("  expected flags = %u, got %u\n",
+                          expected_flags, flags);
+                  if (stop)
+                    exit (1);
+                  err = 1;
+                }
+            }
+        }
+      mpfr_neg (x, x, MPFR_RNDN);
+      spm = - spm;
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  return err;
+}
+
+static void
+tiny (int stop)
+{
+  mpfr_exp_t emin;
+  int err = 0;
+
+  emin = mpfr_get_emin ();
+
+  /* Note: in r7499, exponent -17 will select the generic code (in
+     tiny_aux, x has precision 32), while the other exponent values
+     will select special code for tiny values. */
+  err |= tiny_aux (stop, -17);
+  err |= tiny_aux (stop, -999);
+  err |= tiny_aux (stop, mpfr_get_emin ());
+
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  err |= tiny_aux (stop, MPFR_EMIN_MIN);
+  mpfr_set_emin (emin);
+
+  if (err)
+    exit (1);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -636,6 +735,7 @@ main (int argc, char *argv[])
   special ();
   special_overflow ();
   exprange ();
+  tiny (argc == 1);
   test_generic (2, 100, 2);
   gamma_integer ();
   test20071231 ();
