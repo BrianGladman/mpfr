@@ -634,6 +634,9 @@ tiny_aux (int stop, mpfr_exp_t e)
   mpfr_t x, y, z;
   int r, s, spm, inex, err = 0;
   int expected_dir[2][5] = { { 1, -1, 1, -1, 1 }, { 1, 1, 1, -1, -1 } };
+  mpfr_exp_t saved_emax;
+
+  saved_emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 32);
   mpfr_inits2 (8, y, z, (mpfr_ptr) 0);
@@ -701,6 +704,7 @@ tiny_aux (int stop, mpfr_exp_t e)
     }
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  mpfr_set_emax (saved_emax);
   return err;
 }
 
