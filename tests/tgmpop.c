@@ -1120,7 +1120,7 @@ coverage_mpfr_mul_q_20110218 (void)
 
   mpq_init (op2);
   mpq_set_si (op2, 0, 0);
-  mpz_set_si (mpq_denref (op2), 0); 
+  mpz_set_si (mpq_denref (op2), 0);
 
   status = mpfr_mul_q (res, op1, op2, MPFR_RNDN);
 

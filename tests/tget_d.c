@@ -201,10 +201,10 @@ check_get_d_2exp_inf_nan (void)
               " waiting for %g got %g\n", MPFR_DBL_NAN, var_d);
       exit (1);
     }
-  
+
   mpfr_set_zero (var, 1);
   var_d = mpfr_get_d_2exp (&exp, var, MPFR_RNDN);
-  if ((exp != 0) || (var_d != 0.0)) 
+  if ((exp != 0) || (var_d != 0.0))
     {
       printf ("mpfr_get_d_2exp with a +0.0 mpfr value returned a wrong value :\n"
               " double waiting for 0.0 got %g\n exp waiting for 0 got %ld\n",

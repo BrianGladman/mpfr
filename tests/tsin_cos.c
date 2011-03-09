@@ -640,7 +640,7 @@ coverage_01032011 (void)
 {
   mpfr_t val, cval, sval, svalf;
   int status_f, status;
-  
+
   mpfr_init2 (val, MPFR_PREC_MIN);
   mpfr_init2 (cval, MPFR_PREC_MIN);
   mpfr_init2 (sval, MPFR_PREC_MIN);
