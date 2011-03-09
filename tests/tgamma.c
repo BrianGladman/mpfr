@@ -719,9 +719,12 @@ tiny (int stop)
   err |= tiny_aux (stop, -999);
   err |= tiny_aux (stop, mpfr_get_emin ());
 
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  err |= tiny_aux (stop, MPFR_EMIN_MIN);
-  mpfr_set_emin (emin);
+  if (emin != MPFR_EMIN_MIN)
+    {
+      mpfr_set_emin (MPFR_EMIN_MIN);
+      err |= tiny_aux (stop, MPFR_EMIN_MIN);
+      mpfr_set_emin (emin);
+    }
 
   if (err)
     exit (1);
