@@ -166,6 +166,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       int sign = MPFR_SIGN (x); /* retrieve sign before possible override */
       int special;
+      MPFR_BLOCK_DECL (flags);
 
       MPFR_SAVE_EXPO_MARK (expo);
 
@@ -177,8 +178,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         MPFR_IS_LIKE_RNDD (rnd_mode, sign) &&
         mpfr_powerof2_raw (x);
 
-      mpfr_clear_flags ();
-      inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
+      MPFR_BLOCK (flags, inex = mpfr_ui_div (gamma, 1, x, rnd_mode));
       if (inex == 0) /* x is a power of two */
         {
           /* return RND(1/x - euler) = RND(+/- 2^k - eps) with eps > 0 */
@@ -190,14 +190,14 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               inex = -1;
             }
         }
-      else if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+      else if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
         {
           /* Overflow in the division 1/x. This is a real overflow, except
              in RNDZ or RNDD when 1/x = 2^emax, i.e. x = 2^(-emax): due to
              the "- euler", the rounded value in unbounded exponent range
              is 0.111...11 * 2^emax (not an overflow). */
           if (!special)
-            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, flags);
         }
       MPFR_SAVE_EXPO_FREE (expo);
       /* Note: an overflow is possible with an infinite result;
