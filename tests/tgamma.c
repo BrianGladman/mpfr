@@ -636,7 +636,7 @@ tiny_aux (int stop, mpfr_exp_t e)
   int expected_dir[2][5] = { { 1, -1, 1, -1, 1 }, { 1, 1, 1, -1, -1 } };
 
   mpfr_init2 (x, 32);
-  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
+  mpfr_inits2 (8, y, z, (mpfr_ptr) 0);
 
   mpfr_set_ui_2exp (x, 1, e, MPFR_RNDN);
   spm = 1;
