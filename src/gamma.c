@@ -161,34 +161,43 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
           A sufficient condition is thus EXP(x) + 2 <= -2 MAX(PREC(x),PREC(Y)).
   */
-  if (MPFR_EXP(x) + 2 <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
+  if (MPFR_GET_EXP (x) + 2
+      <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
     {
-      int positive = MPFR_IS_POS (x);
+      int sign = MPFR_SIGN (x); /* retrieve sign before possible override */
+      int special;
 
       MPFR_SAVE_EXPO_MARK (expo);
+
+      /* for overflow cases, see below; this needs to be done
+         before x possibly gets overridden. */
+      special =
+        MPFR_GET_EXP (x) == 1 - MPFR_EMAX_MAX &&
+        MPFR_IS_POS_SIGN (sign) &&
+        MPFR_IS_LIKE_RNDD (rnd_mode, sign) &&
+        mpfr_powerof2_raw (x);
+
+      mpfr_clear_flags ();
       inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
       if (inex == 0) /* x is a power of two */
         {
-          if (positive)
+          /* return RND(1/x - euler) = RND(+/- 2^k - eps) with eps > 0 */
+          if (rnd_mode == MPFR_RNDN || MPFR_IS_LIKE_RNDU (rnd_mode, sign))
+            inex = 1;
+          else
             {
-              if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDN)
-                inex = 1;
-              else /* round to zero or to -Inf */
-                {
-                  mpfr_nextbelow (gamma); /* 2^k - epsilon */
-                  inex = -1;
-                }
+              mpfr_nextbelow (gamma);
+              inex = -1;
             }
-          else /* negative */
-            {
-              if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDZ)
-                {
-                  mpfr_nextabove (gamma); /* -2^k + epsilon */
-                  inex = 1;
-                }
-              else /* round to nearest and to -Inf */
-                inex = -1;
-            }
+        }
+      else if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+        {
+          /* Overflow in the division 1/x. This is a real overflow, except
+             in RNDZ or RNDD when 1/x = 2^emax, i.e. x = 2^(-emax): due to
+             the "- euler", the rounded value in unbounded exponent range
+             is 0.111...11 * 2^emax (not an overflow). */
+          if (!special)
+            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
         }
       MPFR_SAVE_EXPO_FREE (expo);
       /* Note: an overflow is possible with an infinite result;
