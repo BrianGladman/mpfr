@@ -43,6 +43,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TEST_RANDOM_EMAX 255
 #endif
 
+/* If the MPFR_SUSPICIOUS_OVERFLOW test fails but this is not a bug,
+   then define TGENERIC_SO_TEST with an adequate test (possibly 0) to
+   omit this particular case. */
+#ifndef TGENERIC_SO_TEST
+#define TGENERIC_SO_TEST 1
+#endif
+
 /* The (void *) below is needed to avoid a warning with gcc 4.2+ and functions
  * with 2 arguments. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
  */
@@ -440,7 +447,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
               MPFR_ASSERTN (MPFR_IS_PURE_FP (y));
               mpfr_nexttoinf (y);
               if (MPFR_IS_INF (y) && MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y))
-                  && !mpfr_overflow_p ())
+                  && !mpfr_overflow_p () && TGENERIC_SO_TEST)
                 {
                   printf ("Possible bug! |y| is the maximum finite number "
                           "and has been obtained when\nrounding toward zero"
