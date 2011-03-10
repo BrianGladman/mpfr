@@ -139,11 +139,39 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
        inex = _inexact; goto end
      is forgotten in MPFR_FAST_COMPUTE_IF_SMALL_INPUT below. */
   if (n == 1)
-    /* we first compute 2j1(z) = z - z^3/8 + ..., then divide by 2 using
-       the "extra" argument of MPFR_FAST_COMPUTE_IF_SMALL_INPUT. */
-    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (res, z, -2 * MPFR_GET_EXP (z), 3,
-                                      0, r, mpfr_div_2ui (res, res, 1, r);
-                                      inex = _inexact; goto end);
+    {
+      /* We first compute 2j1(z) = z - z^3/8 + ..., then divide by 2 using
+         the "extra" argument of MPFR_FAST_COMPUTE_IF_SMALL_INPUT. But we
+         must also handle the underflow case (an overflow is not possible
+         for small inputs). If an underflow occurred in mpfr_round_near_x,
+         the rounding was to zero or equivalent, and the result is 0, so
+         that the division by 2 will give the wanted result. Otherwise...
+         The rounded result in unbounded exponent range is res/2. If the
+         division by 2 doesn't underflow, it is exact, and we can return
+         this result. And an underflow in the division is a real underflow.
+         In case of directed rounding mode, the result is correct. But in
+         case of rounding to nearest, there is a double rounding problem,
+         and the result is 0 iff the result before the division is the
+         minimum positive number and _inexact has the same sign as z;
+         but in rounding to nearest, res/2 will yield 0 iff |res| is the
+         minimum positive number, so that we just need to test the result
+         of the division and the sign of _inexact. */
+      mpfr_clear_flags ();
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT
+        (res, z, -2 * MPFR_GET_EXP (z), 3, 0, r, {
+          int inex2 = mpfr_div_2ui (res, res, 1, r);
+          if (MPFR_UNLIKELY (r == MPFR_RNDN && MPFR_IS_ZERO (res)) &&
+              (MPFR_ASSERTN (inex2 != 0), SIGN (_inexact) != MPFR_SIGN (z)))
+            {
+              mpfr_nexttoinf (res);
+              inex = - inex2;
+            }
+          else
+            inex = inex2 != 0 ? inex2 : _inexact;
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+          goto end;
+        });
+    }
 
   /* we can use the asymptotic expansion as soon as |z| > p log(2)/2,
      but to get some margin we use it for |z| > p/2 */
