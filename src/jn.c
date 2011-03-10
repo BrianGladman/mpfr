@@ -213,7 +213,6 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       MPFR_BLOCK_DECL (flags);
 
       MPFR_GROUP_REPREC_3 (g, prec, y, s, t);
-      mpfr_clear_flags ();
       MPFR_BLOCK (flags, {
       mpfr_pow_ui (t, z, absn, MPFR_RNDN); /* z^|n| */
       mpfr_mul (y, z, z, MPFR_RNDN);       /* z^2 */
