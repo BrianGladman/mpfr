@@ -83,6 +83,7 @@ int
 mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   int inex;
+  int exception = 0;
   unsigned long absn;
   mpfr_prec_t prec, pbound, err;
   mpfr_uprec_t uprec;
@@ -209,7 +210,11 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
+      MPFR_BLOCK_DECL (flags);
+
       MPFR_GROUP_REPREC_3 (g, prec, y, s, t);
+      mpfr_clear_flags ();
+      MPFR_BLOCK (flags, {
       mpfr_pow_ui (t, z, absn, MPFR_RNDN); /* z^|n| */
       mpfr_mul (y, z, z, MPFR_RNDN);       /* z^2 */
       mpfr_clear_erangeflag ();
@@ -255,6 +260,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
               zz / (2 * k) < k + absn)
             break;
         }
+      });
       /* the error is bounded by (4k^2+21/2k+7) ulp(s)*2^(expT-exps)
          <= (k+2)^2 ulp(s)*2^(2+expT-exps) */
       diffexp = expT - exps;
@@ -264,7 +270,18 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
                     diffexp <= MPFR_PREC_MAX - err);
       err += diffexp;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, prec - err, MPFR_PREC(res), r)))
-        break;
+        {
+          if (MPFR_LIKELY (! (MPFR_UNDERFLOW (flags) ||
+                              MPFR_OVERFLOW (flags))))
+            break;
+          /* The error analysis is incorrect in case of exception.
+             If an underflow or overflow occurred, try once more in
+             a larger precision, and if this happens a second time,
+             then abort to avoid a probable infinite loop. This is
+             a problem that must be fixed! */
+          MPFR_ASSERTN (! exception);
+          exception = 1;
+        }
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);
