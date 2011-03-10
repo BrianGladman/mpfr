@@ -3369,7 +3369,8 @@ $z \rightarrow \pm\infty$, and tends to $0$ when $z \rightarrow 0$, except
 $J_0$ which tends to $1$.
 
 We use the following algorithm, with working precision $w$, and rounding
-to nearest:
+to nearest. Warning! This algorithm assumes that no underflows/overflows
+occur.
 \begin{quote}
 $x \leftarrow \circ(z^n)$ \\
 $y \leftarrow \circ(z^2)/4$ [division by $4$ is exact] \\
