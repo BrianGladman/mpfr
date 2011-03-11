@@ -155,7 +155,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
          for x >= 27282, erfc(x) < 2^(-2^30-1), and
          for x >= 1787897414, erfc(x) < 2^(-2^62-1).
       */
-      if ((emin >= -1073741823UL && mpfr_cmp_ui (x, 27282) >= 0) ||
+      if ((emin >= -1073741823 && mpfr_cmp_ui (x, 27282) >= 0) ||
           mpfr_cmp_ui (x, 1787897414) >= 0)
         return mpfr_underflow (y, (rnd == MPFR_RNDN) ? MPFR_RNDZ : rnd, 1);
     }
