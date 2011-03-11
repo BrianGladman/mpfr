@@ -157,7 +157,11 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       */
       if ((emin >= -1073741823 && mpfr_cmp_ui (x, 27282) >= 0) ||
           mpfr_cmp_ui (x, 1787897414) >= 0)
-        return mpfr_underflow (y, (rnd == MPFR_RNDN) ? MPFR_RNDZ : rnd, 1);
+        {
+          /* May be incorrect if MPFR_EMAX_MAX >= 2^62. */
+          MPFR_ASSERTN ((MPFR_EMAX_MAX >> 31) >> 31 == 0);
+          return mpfr_underflow (y, (rnd == MPFR_RNDN) ? MPFR_RNDZ : rnd, 1);
+        }
     }
 
   if (MPFR_SIGN (x) < 0)
