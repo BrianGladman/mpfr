@@ -547,11 +547,14 @@ test_erfc (void)
 
   /* bug found by Pascal Molin on March 10, 2011 */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-1073808789);
-  mpfr_set_si (x, 27282, MPFR_RNDN);
-  mpfr_erfc (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) != 0);
-  mpfr_set_emin (emin);
+  if (! mpfr_set_emin (-1073808789))
+    {
+      /* Typically, a 64-bit machine. */
+      mpfr_set_si (x, 27282, MPFR_RNDN);
+      mpfr_erfc (y, x, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_cmp_ui (y, 0) != 0);
+      mpfr_set_emin (emin);
+    }
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
