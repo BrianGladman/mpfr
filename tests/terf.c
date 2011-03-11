@@ -521,6 +521,7 @@ test_erfc (void)
 {
   mpfr_t x, y, z;
   int inex;
+  mp_exp_t emin;
 
   mpfr_inits2 (40, x, y, z, (mpfr_ptr) 0);
 
@@ -543,6 +544,14 @@ test_erfc (void)
   mpfr_set_si (x, -256, MPFR_RNDN);
   inex = mpfr_erfc (x, x, MPFR_RNDN);
   MPFR_ASSERTN(inex > 0 && mpfr_cmp_ui (x, 2) == 0);
+
+  /* bug found by Pascal Molin on March 10, 2011 */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-1073808789);
+  mpfr_set_si (x, 27282, MPFR_RNDN);
+  mpfr_erfc (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) != 0);
+  mpfr_set_emin (emin);
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
