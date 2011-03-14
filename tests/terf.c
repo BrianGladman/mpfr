@@ -521,7 +521,7 @@ test_erfc (void)
 {
   mpfr_t x, y, z;
   int inex;
-  mp_exp_t emin;
+  mpfr_exp_t emin;
 
   mpfr_inits2 (40, x, y, z, (mpfr_ptr) 0);
 
