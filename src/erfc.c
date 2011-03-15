@@ -164,6 +164,9 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
     }
 
+  /* Init stuff */
+  MPFR_SAVE_EXPO_MARK (expo);
+
   if (MPFR_SIGN (x) < 0)
     {
       mpfr_exp_t e = MPFR_EXP(x);
@@ -185,10 +188,11 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
             {
               mpfr_nextbelow (y);
-              return -1;
+              inex = -1;
             }
           else
-            return 1;
+            inex = 1;
+          goto end;
         }
       else if (e >= 3) /* more accurate test */
         {
@@ -203,16 +207,15 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_neg (u, x, MPFR_RNDZ); /* 0 <= u <= |x| */
           mpfr_log2 (u, u, MPFR_RNDZ); /* u <= log2(|x|) */
           mpfr_add (t, t, u, MPFR_RNDZ); /* t <= log2|x| + x^2 / log(2) */
-          near_2 = mpfr_cmp_ui (t, MPFR_PREC(y)) >= 0;
+          /* Taking into account that mpfr_exp_t >= mpfr_prec_t */
+          mpfr_set_exp_t (u, MPFR_PREC (y), MPFR_RNDU);
+          near_2 = mpfr_cmp (t, u) >= 0;  /* 1 if PREC(y) <= u <= t <= ... */
           mpfr_clear (t);
           mpfr_clear (u);
           if (near_2)
             goto near_two;
         }
     }
-
-  /* Init stuff */
-  MPFR_SAVE_EXPO_MARK (expo);
 
   /* erfc(x) ~ 1, with error < 2^(EXP(x)+1) */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, - MPFR_GET_EXP (x) - 1,
