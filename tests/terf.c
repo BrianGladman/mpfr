@@ -559,6 +559,43 @@ test_erfc (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
+/* Failure in r7569 (2011-03-15) due to incorrect flags. */
+static void
+reduced_expo_range (void)
+{
+  mpfr_exp_t emax;
+  mpfr_t x, y, ex_y;
+  int inex, ex_inex;
+  unsigned int flags, ex_flags;
+
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (3);
+  mpfr_init2 (x, 33);
+  mpfr_inits2 (110, y, ex_y, (mpfr_ptr) 0);
+  mpfr_set_str_binary (x, "-0.111100110111111111011101010101110E3");
+  mpfr_clear_flags ();
+  inex = mpfr_erfc (y, x, MPFR_RNDZ);
+  flags = __gmpfr_flags;
+  mpfr_set_str (ex_y, "1.fffffffffffffffffffffe607440", 16, MPFR_RNDN);
+  ex_inex = -1;
+  ex_flags = MPFR_FLAGS_INEXACT;
+  if (SIGN (inex) != ex_inex || flags != ex_flags ||
+      ! mpfr_equal_p (y, ex_y))
+    {
+      printf ("Error in reduced_expo_range\non x = ");
+      mpfr_dump (x);
+      printf ("Expected y = ");
+      mpfr_out_str (stdout, 16, 0, ex_y, MPFR_RNDN);
+      printf ("\n         inex = %d, flags = %u\n", ex_inex, ex_flags);
+      printf ("Got      y = ");
+      mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
+      printf ("\n         inex = %d, flags = %u\n", SIGN (inex), flags);
+      exit (1);
+    }
+  mpfr_clears (x, y, ex_y, (mpfr_ptr) 0);
+  mpfr_set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -568,6 +605,7 @@ main (int argc, char *argv[])
   special_erfc ();
   large_arg ();
   test_erfc ();
+  reduced_expo_range ();
 
   test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
