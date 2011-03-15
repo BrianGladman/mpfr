@@ -50,6 +50,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TGENERIC_SO_TEST 1
 #endif
 
+#define STR(F) #F
+#define MAKE_STR(S) STR(S)
+
 /* The (void *) below is needed to avoid a warning with gcc 4.2+ and functions
  * with 2 arguments. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
  */
@@ -72,17 +75,20 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     }                                                                   \
   while (0)
 
+#define TGENERIC_CHECK_AUX(S, EXPR, U)                        \
+  do                                                          \
+    if (!(EXPR))                                              \
+      TGENERIC_FAIL (S " in " MAKE_STR(TEST_FUNCTION), x, U); \
+  while (0)
+
 #undef TGENERIC_CHECK
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-#define TGENERIC_CHECK(S, EXPR) \
-  do if (!(EXPR)) TGENERIC_FAIL (S, x, u); while (0)
+#define TGENERIC_CHECK(S, EXPR) TGENERIC_CHECK_AUX(S, EXPR, u)
 #else
-#define TGENERIC_CHECK(S, EXPR) \
-  do if (!(EXPR)) TGENERIC_FAIL (S, x, 0); while (0)
+#define TGENERIC_CHECK(S, EXPR) TGENERIC_CHECK_AUX(S, EXPR, 0)
 #endif
 
 #ifdef DEBUG_TGENERIC
-#define STR(F) #F
 #define TGENERIC_IAUX(F,P,X,U)                                          \
   do                                                                    \
     {                                                                   \
@@ -299,7 +305,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                      SAME_SIGN (inexact, compare) &&
                      flags == oldflags))
                 {
-                  printf ("Error in reduced exponent range [%"
+                  printf ("Error in " MAKE_STR(TEST_FUNCTION)
+                          ", reduced exponent range [%"
                           MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d] on:\n",
                           (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
                   printf ("x = ");
