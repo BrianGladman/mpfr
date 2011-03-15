@@ -414,18 +414,44 @@ static void
 large_arg (void)
 {
   mpfr_t x, y;
+  unsigned int flags;
 
   mpfr_init2 (x, 88);
   mpfr_init2 (y, 98);
 
   mpfr_set_si_2exp (x, -1, 173, MPFR_RNDN);
+  mpfr_clear_flags ();
   mpfr_erfc (y, x, MPFR_RNDN);
+  flags = __gmpfr_flags;
   if (mpfr_cmp_ui (y, 2) != 0)
     {
       printf ("mpfr_erfc failed for large x (1)\n");
       exit (1);
     }
+  if (flags != MPFR_FLAGS_INEXACT)
+    {
+      printf ("mpfr_erfc sets incorrect flags for large x (1)\n");
+      printf ("Expected %u, got %u\n",
+              (unsigned int) MPFR_FLAGS_INEXACT, flags);
+      exit (1);
+    }
 
+  mpfr_set_si_2exp (x, -1, mpfr_get_emax () - 3, MPFR_RNDN);
+  mpfr_clear_flags ();
+  mpfr_erfc (y, x, MPFR_RNDN);
+  flags = __gmpfr_flags;
+  if (mpfr_cmp_ui (y, 2) != 0)
+    {
+      printf ("mpfr_erfc failed for large x (1b)\n");
+      exit (1);
+    }
+  if (flags != MPFR_FLAGS_INEXACT)
+    {
+      printf ("mpfr_erfc sets incorrect flags for large x (1b)\n");
+      printf ("Expected %u, got %u\n",
+              (unsigned int) MPFR_FLAGS_INEXACT, flags);
+      exit (1);
+    }
 
   mpfr_set_prec (x, 33);
   mpfr_set_prec (y, 43);
@@ -462,7 +488,9 @@ large_arg (void)
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 21);
   mpfr_set_str_binary (x, "-1.0e3");
+  mpfr_clear_flags ();
   mpfr_erfc (y, x, MPFR_RNDZ);
+  flags = __gmpfr_flags;
   mpfr_set_prec (x, 21);
   mpfr_set_str_binary (x, "1.11111111111111111111");
   if (mpfr_cmp (x, y) != 0)
@@ -470,11 +498,20 @@ large_arg (void)
       printf ("mpfr_erfc failed for large x (4)\n");
       exit (1);
     }
+  if (flags != MPFR_FLAGS_INEXACT)
+    {
+      printf ("mpfr_erfc sets incorrect flags for large x (4)\n");
+      printf ("Expected %u, got %u\n",
+              (unsigned int) MPFR_FLAGS_INEXACT, flags);
+      exit (1);
+    }
 
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 31);
   mpfr_set_str_binary (x, "-1.0e3");
+  mpfr_clear_flags ();
   mpfr_erfc (y, x, MPFR_RNDZ);
+  flags = __gmpfr_flags;
   mpfr_set_prec (x, 31);
   mpfr_set_str_binary (x, "1.111111111111111111111111111111");
   if (mpfr_cmp (x, y) != 0)
@@ -482,6 +519,13 @@ large_arg (void)
       printf ("mpfr_erfc failed for x=-8, prec=31 (5)\n");
       printf ("expected "); mpfr_dump (x);
       printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+  if (flags != MPFR_FLAGS_INEXACT)
+    {
+      printf ("mpfr_erfc sets incorrect flags for large x (5)\n");
+      printf ("Expected %u, got %u\n",
+              (unsigned int) MPFR_FLAGS_INEXACT, flags);
       exit (1);
     }
 
