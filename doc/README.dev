@@ -570,9 +570,9 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
 
   /* Log it if requested */
   MPFR_LOG_BEGIN
-    (("op[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_prec_log, op, rnd),
+    (("op[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
      ("rop[%Pu]=%.*Rg inexact=%d",
-       mpfr_get_prec (rop), mpfr_prec_log, rop, inexact));
+       mpfr_get_prec (rop), mpfr_log_prec, rop, inexact));
 
   /* First deal with particular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
