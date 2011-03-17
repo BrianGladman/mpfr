@@ -44,6 +44,10 @@ Changes from versions 3.0.* to version 3.1.0:
 - New functions mpfr_frexp, mpfr_grandom and mpfr_z_sub.
 - New division-by-zero exception (flag) and associated functions.
 - Bug fixes.
+  Note: The mpfr_subnormalize implementation up to MPFR 3.0.0 did not change
+  the flags. In particular, it did not follow the generic rule concerning
+  the inexact flag (and no special behavior was specified). The case of the
+  underflow flag was more a lack of specification.
 
 Changes from versions 2.4.* to version 3.0.0:
 - The "boudin aux pommes" release.
