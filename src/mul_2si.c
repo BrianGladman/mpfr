@@ -27,7 +27,7 @@ mpfr_mul_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd_mode)
 {
   int inexact;
 
-  MPFR_LOG_FUNC 
+  MPFR_LOG_FUNC
     (("x[%Pu]=%.*Rg n=%ld rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x, n, rnd_mode),
      ("y[%Pu]=%.*Rg inexact=%d",
