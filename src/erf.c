@@ -34,8 +34,9 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   int inex, large;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-                 ("y[%#R]=%R inexact=%d", y, y, inex));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (y), mpfr_log_prec, y, inex));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {

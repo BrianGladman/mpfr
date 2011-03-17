@@ -33,8 +33,12 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
   mpfr_prec_t opq;
   int inexi, inexf;
 
-  MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),
-                 ("iop[%#R]=%R fop[%#R]=%R", iop, iop, fop, fop));
+  MPFR_LOG_FUNC
+    (("op[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (op), mpfr_log_prec, op, rnd_mode),
+     ("iop[%Pu]=%.*Rg fop[%Pu]=%.*Rg",
+      mpfr_get_prec (iop), mpfr_log_prec, iop,
+      mpfr_get_prec (fop), mpfr_log_prec, fop));
 
   MPFR_ASSERTN (iop != fop);
 

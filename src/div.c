@@ -159,8 +159,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   int like_rndz;
   MPFR_TMP_DECL(marker);
 
-  MPFR_LOG_FUNC (("u[%#R]=%R v[%#R]=%R rnd=%d", u, u, v, v, rnd_mode),
-                 ("q[%#R]=%R inexact=%d", q, q, inex));
+  MPFR_LOG_FUNC (
+    ("u[%Pu]=%.*Rg v[%Pu]=%.*Rg rnd=%d",
+     mpfr_get_prec(u), mpfr_log_prec, u,
+     mpfr_get_prec (v),mpfr_log_prec, v, rnd_mode),
+    ("q[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(q), mpfr_log_prec, q, inex));
 
   /**************************************************************************
    *                                                                        *

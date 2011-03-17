@@ -470,12 +470,12 @@ the source code of the function to understand its real meaning.
 You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
-MPFR_LOG_BASE:  Base of the outputs (default: 10).
-MPFR_LOG_PREC:  # of digits of the outputs (default: 0, ie. maximum).
+MPFR_LOG_PREC: # of digits of the output (set the internal variable
+               mpfr_log_prec, default: 6).
 MPFR_LOG_LEVEL: Max recursive level (default: 7).
 
-MPFR_LOG_INPUT:    Log the inputs
-MPFR_LOG_OUTPUT:   Log the outputs
+MPFR_LOG_INPUT:    Log the input
+MPFR_LOG_OUTPUT:   Log the output
 MPFR_LOG_TIME:     Log the time spent inside the function.
 MPFR_LOG_INTERNAL: Log the intermediary variables if any.
 MPFR_LOG_MSG:      Log the messages sent by MPFR if any.
@@ -508,12 +508,13 @@ after the format string.
 Example:
  int dodo (mpfr_t x, mpfr_t op, int cnt, mpfr_rnd_t rnd) {
   [decl]
-  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%s", op, op, RND2STR(rnd)));
+  MPFR_LOG_BEGIN (("op[%Pu]=%.*Rg rnd=%s",
+                    mpfr_get_prec(op), mpfr_log_prec, op, RND2STR(rnd)));
 
 +++ MPFR_LOG_END(x)
  Add this macro at the end of a function.
 Example:
- MPFR_LOG_END (("x[%#R]=%R i=%d", x, x, i));
+ MPFR_LOG_END (("x[%Pu]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
  return i;
 }
 
@@ -522,16 +523,17 @@ Example:
 the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
 since it intercepts the return itself to put the end statement.
 Example
- MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op"),
-                ("x[%#R]=%R inexact=%d", x, x, i));
+ MPFR_LOG_FUNC (
+    ("op[%Pu]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
+    ("x[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
 
 
 The double brackets "((" and "))" are needed since MPFR must still
 compile with non GNU compiler, so Macros with variable # of args
 are not allowed.
 
-It registers a glibc printf extension %R to display a mpfr_t.
-%#R is used to display the precision of a mpfr_t.
+It uses the extension of the mpfr_printf function: %Rf to display a mpfr_t.
+%Ru is used to display the precision of a mpfr_t.
 It uses some extended attributes of GCC (constructor, etc.) to achieve
 its goals too.
 
@@ -567,8 +569,10 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Log it if requested */
-  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op, rnd),
-                  ("rop[%#R]=%R inexact=%d", rop, rop, inexact));
+  MPFR_LOG_BEGIN
+    (("op[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_prec_log, op, rnd),
+     ("rop[%Pu]=%.*Rg inexact=%d",
+       mpfr_get_prec (rop), mpfr_prec_log, rop, inexact));
 
   /* First deal with particular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))

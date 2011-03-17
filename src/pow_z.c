@@ -40,8 +40,11 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd, int cr)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R z=? rnd=%d cr=%d", x, x, rnd, cr),
-                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg z=%Zd rnd=%d cr=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, z, rnd, cr),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inexact));
 
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 
@@ -167,8 +170,11 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
   mpz_t tmp;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R z=? rnd=%d", x, x, rnd),
-                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg z=%Zd rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, z, rnd),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inexact));
 
   /* x^0 = 1 for any x, even a NaN */
   if (MPFR_UNLIKELY (mpz_sgn (z) == 0))

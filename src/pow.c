@@ -171,8 +171,12 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   MPFR_ZIV_DECL (ziv_loop);
 
 
-  MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
-                 ("z[%#R]=%R inexact=%d", z, z, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x,
+      mpfr_get_prec (y), mpfr_log_prec, y, rnd_mode),
+     ("z[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (z), mpfr_log_prec, z, inexact));
 
   /* We put the absolute value of x in absx, pointing to the significand
      of x to avoid allocating memory for the significand of absx. */
@@ -386,8 +390,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   int y_is_integer;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
-                 ("z[%#R]=%R inexact=%d", z, z, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x,
+      mpfr_get_prec (y), mpfr_log_prec, y, rnd_mode),
+     ("z[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (z), mpfr_log_prec, z, inexact));
 
   if (MPFR_ARE_SINGULAR (x, y))
     {

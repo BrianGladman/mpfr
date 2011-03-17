@@ -37,6 +37,14 @@ mpfr_fms (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_GROUP_DECL(group);
 
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg  z[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x,
+      mpfr_get_prec (y), mpfr_log_prec, y,
+      mpfr_get_prec (z), mpfr_log_prec, z, rnd_mode),
+     ("s[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (s), mpfr_log_prec, s, inexact));
+
   /* particular cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ||
                      MPFR_IS_SINGULAR(y) ||

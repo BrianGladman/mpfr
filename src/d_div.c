@@ -30,8 +30,9 @@ mpfr_d_div (mpfr_ptr a, double b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_t d;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("b=%.20g c[%#R]=%R rnd=%d", b, c, c, rnd_mode),
-                 ("a[%#R]=%R", a, a));
+  MPFR_LOG_FUNC (
+    ("b=%.20g c[%Pu]=%*.Rg rnd=%d", b, mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
+    ("a[%Pu]=%*.Rg", mpfr_get_prec (a), mpfr_log_prec, a));
 
   MPFR_SAVE_EXPO_MARK (expo);
 

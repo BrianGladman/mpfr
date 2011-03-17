@@ -47,6 +47,12 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   int inexact, negative;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg k=%lu rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, k, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inexact));
+
   if (MPFR_UNLIKELY (k <= 1))
     {
       if (k < 1) /* k==0 => y=x^(1/0)=x^(+Inf) */

@@ -33,8 +33,10 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-                 ("acos[%#R]=%R inexact=%d", acos, acos, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("acos[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec(acos), mpfr_log_prec, acos, inexact));
 
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))

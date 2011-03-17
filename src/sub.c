@@ -25,8 +25,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
-  MPFR_LOG_FUNC (("b[%#R]=%R c[%#R]=%R rnd=%d", b, b, c, c, rnd_mode),
-                 ("a[%#R]=%R", a, a));
+  MPFR_LOG_FUNC
+    (("b[%Pu]=%.*Rg c[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (b), mpfr_log_prec, b,
+      mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
+     ("a[%Pu]=%.*Rg", mpfr_get_prec (a), mpfr_log_prec, a));
 
   if (MPFR_ARE_SINGULAR (b,c))
     {

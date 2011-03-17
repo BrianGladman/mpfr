@@ -36,8 +36,10 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (xt), mpfr_log_prec, xt, rnd_mode),
+    ("y[%Pu]=%.*Rg inexact=%d",
+     mpfr_get_prec (y), mpfr_log_prec, y, inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))

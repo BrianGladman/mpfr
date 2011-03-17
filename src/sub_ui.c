@@ -36,6 +36,12 @@ mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 
       MPFR_SAVE_EXPO_DECL (expo);
 
+      MPFR_LOG_FUNC
+        (("x[%Pu]=%.*Rg u=%lu rnd=%d",
+          mpfr_get_prec(x), mpfr_log_prec, x, u, rnd_mode),
+         ("y[%Pu]=%.*Rg inexact=%d",
+          mpfr_get_prec(y), mpfr_log_prec, y, inex));
+
       MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
       MPFR_ASSERTN (u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);

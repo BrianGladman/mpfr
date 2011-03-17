@@ -49,8 +49,10 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
 
-  MPFR_LOG_FUNC (("a[%#R]=%R rnd=%d", a, a, rnd_mode),
-                 ("r[%#R]=%R inexact=%d", r, r, inexact));
+  MPFR_LOG_FUNC
+    (("a[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (a), mpfr_log_prec, a, rnd_mode),
+     ("r[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (r), mpfr_log_prec, r,
+      inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))

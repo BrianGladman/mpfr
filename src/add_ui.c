@@ -26,6 +26,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
 {
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg u=%d rnd=%d",
+      mpfr_get_prec(x), mpfr_log_prec, x, u, rnd_mode),
+     ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_get_prec, y));
+
   if (MPFR_LIKELY(u != 0) )  /* if u=0, do nothing */
     {
       mpfr_t uu;

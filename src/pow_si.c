@@ -31,8 +31,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
 {
-  MPFR_LOG_FUNC (("x[%#R]=%R n=%ld rnd=%d", x, x, n, rnd),
-                 ("y[%#R]=%R", y, y));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg n=%ld rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, n, rnd),
+     ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
 
   if (n >= 0)
     return mpfr_pow_ui (y, x, n, rnd);

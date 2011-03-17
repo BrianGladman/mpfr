@@ -87,8 +87,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpz_t ss;
   MPFR_ZIV_DECL (loop);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y,
+      inexact));
 
   expx = MPFR_GET_EXP (x);
   precy = MPFR_PREC(y);

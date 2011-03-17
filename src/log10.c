@@ -34,6 +34,11 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC
+    (("a[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (a), mpfr_log_prec, a, rnd_mode),
+     ("r[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (r), mpfr_log_prec, r, inexact));
+
   /* If a is NaN, the result is NaN */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {

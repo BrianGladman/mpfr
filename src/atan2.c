@@ -54,8 +54,12 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
-  MPFR_LOG_FUNC (("y[%#R]=%R x[%#R]=%R rnd=%d", y, y, x, x, rnd_mode),
-                 ("atan[%#R]=%R inexact=%d", dest, dest, inexact));
+  MPFR_LOG_FUNC
+    (("y[%Pu]=%.*Rg x[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y,
+      mpfr_get_prec (x), mpfr_log_prec, x, rnd_mode),
+     ("atan[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (dest), mpfr_log_prec, dest, inexact));
 
   /* Special cases */
   if (MPFR_ARE_SINGULAR (x, y))

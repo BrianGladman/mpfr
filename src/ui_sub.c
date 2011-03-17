@@ -30,6 +30,11 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
   mp_limb_t up[1];
   unsigned long cnt;
 
+  MPFR_LOG_FUNC
+    (("u=%lu x[%Pu]=%.*Rg rnd=%d",
+      u, mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pu]=%.*Rg", mpfr_get_prec(y), mpfr_log_prec, y));
+
   if (MPFR_UNLIKELY (u == 0))
     return mpfr_neg (y, x, rnd_mode);
 

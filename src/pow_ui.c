@@ -37,8 +37,11 @@ mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
-  MPFR_LOG_FUNC (("x[%#R]=%R n=%lu rnd=%d", x, x, n, rnd),
-                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg n=%lu rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, n, rnd),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inexact));
 
   /* x^0 = 1 for any x, even a NaN */
   if (MPFR_UNLIKELY (n == 0))

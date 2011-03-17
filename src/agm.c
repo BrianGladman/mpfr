@@ -38,8 +38,12 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   MPFR_TMP_DECL(marker);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_LOG_FUNC (("op2[%#R]=%R op1[%#R]=%R rnd=%d", op2,op2,op1,op1,rnd_mode),
-                 ("r[%#R]=%R inexact=%d", r, r, inexact));
+  MPFR_LOG_FUNC
+    (("op2[%Pu]=%.*Rg op1[%Pu]=%.*Rg rnd=%d",
+      mpfr_get_prec (op2), mpfr_log_prec, op2,
+      mpfr_get_prec (op1), mpfr_log_prec, op1, rnd_mode),
+     ("r[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (r), mpfr_log_prec, r, inexact));
 
   /* Deal with special values */
   if (MPFR_ARE_SINGULAR (op1, op2))

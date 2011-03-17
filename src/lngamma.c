@@ -508,8 +508,10 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd),
-                 ("lngamma[%#R]=%R inexact=%d", y, y, inex));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inex));
 
   /* special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -545,8 +547,10 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
 
-  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd),
-                 ("lgamma[%#R]=%R inexact=%d", y, y, inex));
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd),
+     ("y[%Pu]=%.*Rg signp=%d inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, *signp, inex));
 
   *signp = 1;  /* most common case */
 

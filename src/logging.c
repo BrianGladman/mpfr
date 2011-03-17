@@ -28,7 +28,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Can't include them before (in particular, printf.h) */
 #include <stdlib.h>
-#include <printf.h>
 #include <stdarg.h>
 #include <time.h>
 
@@ -37,42 +36,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 FILE *mpfr_log_file;
 int   mpfr_log_type;
 int   mpfr_log_level;
-int   mpfr_log_base;
 int   mpfr_log_current;
 int   mpfr_log_worstcase_limit;
 mpfr_prec_t mpfr_log_prec;
-
-static int
-mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
-                        const void * const *arg)
-{
-  int length;
-  int org_type_logging;
-
-  /* TODO: Use much more flag from info  */
-  mpfr_srcptr w = *((mpfr_srcptr *) (arg[0]));
-  mpfr_prec_t prec = mpfr_log_prec != 0 ? mpfr_log_prec
-    : info->width == -1 ? 0 : (mpfr_prec_t) info->width;
-
-  org_type_logging = mpfr_log_type;
-  mpfr_log_type = 0; /* We disable the logging during this print! */
-  if (info->alt)
-    length = fprintf (stream, "%lu", (unsigned long) MPFR_PREC (w));
-  else
-    length = mpfr_out_str (stream, mpfr_log_base, prec, w, MPFR_RNDN);
-  mpfr_log_type = org_type_logging;
-
-  return length;
-}
-
-static int
-mpfr_printf_mpfr_arginfo (const struct printf_info *info, size_t n,
-                          int *argtypes)
-{
-  if (n > 0)
-    argtypes[0] = PA_POINTER;
-  return 1;
-}
 
 static void mpfr_log_begin (void) __attribute__((constructor));
 
@@ -85,15 +51,12 @@ mpfr_log_begin (void)
   time_t tt;
 
   /* Grab some information */
-  var = getenv ("MPFR_LOG_BASE");
-  mpfr_log_base = var == NULL || *var == 0 ? 10 : atoi (var);
-
   var = getenv ("MPFR_LOG_LEVEL");
   mpfr_log_level = var == NULL || *var == 0 ? 7 : atoi (var);
   mpfr_log_current = 0;
 
   var = getenv ("MPFR_LOG_PREC");
-  mpfr_log_prec = var == NULL || *var == 0 ? 0 : atol (var);
+  mpfr_log_prec = var == NULL ? 6 : atol (var);
 
   /* Get what we need to log */
   mpfr_log_type = 0;
@@ -114,14 +77,6 @@ mpfr_log_begin (void)
   if (getenv ("MPFR_LOG_ALL") != NULL)
     mpfr_log_type = MPFR_LOG_INPUT_F|MPFR_LOG_OUTPUT_F|MPFR_LOG_TIME_F
       |MPFR_LOG_INTERNAL_F|MPFR_LOG_MSG_F|MPFR_LOG_BADCASE_F|MPFR_LOG_STAT_F;
-
-  /* Register printf functions
-   * Note[VL]: register_printf_function is now deprecated by the GNU libc.
-   * Use either register_printf_specifier or (much better) mpfr_fprintf.
-   * See https://gforge.inria.fr/tracker/index.php?func=detail&aid=10930
-   */
-  register_printf_function ('R', mpfr_printf_mpfr_print,
-                            mpfr_printf_mpfr_arginfo);
 
   /* Open filename if needed */
   var = getenv ("MPFR_LOG_FILE");
