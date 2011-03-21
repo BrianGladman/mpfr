@@ -221,6 +221,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
         }
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* detect exact powers: x^-n is exact iff x is a power of 2
      Do it if n > 0 too as this is faster and this filtering is
      needed in case of underflow. */
@@ -255,12 +257,9 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
       else
         MPFR_SET_EXP (y, mpz_get_si (tmp));
       mpz_clear (tmp);
-      MPFR_RET (inexact);
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
     }
-
-  MPFR_SAVE_EXPO_MARK (expo);
-
-  if (mpz_sgn (z) > 0)
+  else if (mpz_sgn (z) > 0)
     {
       inexact = mpfr_pow_pos_z (y, x, z, rnd, 1);
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
