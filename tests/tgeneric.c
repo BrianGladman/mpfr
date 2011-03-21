@@ -288,6 +288,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
               oemax = mpfr_get_emax ();
               mpfr_set_emin (emin);
               mpfr_set_emax (emax);
+#ifdef DEBUG_TGENERIC
+              /* Useful information in case of assertion failure. */
+              printf ("tgeneric: reduced exponent range [%"
+                      MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n",
+                      (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
+#endif
               mpfr_clear_flags ();
 #if defined(TWO_ARGS)
               inexact = TEST_FUNCTION (w, x, u, rnd);
