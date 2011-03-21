@@ -40,14 +40,21 @@ make check
 # gcc45 All 156 tests passed
 # gcc46 All 156 tests passed
 # gcc47 All 156 tests passed
-# gcc50 Connection refused
+# gcc50 Connection timed out
 # gcc51 All 156 tests passed
-# gcc52 
+# gcc52 All 156 tests passed
 # gcc53 Connection timed out
-# gcc54 
-# gcc60 
-# gcc61 
-# gcc62 
-# gcc63 
-# gcc64 
-
+# gcc54 All 156 tests passed
+# gcc55 Connection timed out
+# gcc56 Connection timed out
+# gcc57 Connection timed out
+# gcc60 All 156 tests passed
+# gcc61 All 156 tests passed (GMP configured with ABI=1.0)
+# gcc62 All 156 tests passed
+# gcc63 All 156 tests passed
+# gcc64 All 156 tests passed
+# gcc70 All 156 tests passed
+# gcc100 Connection closed by remote host
+# gcc101 Connection closed by remote host
+# gcc200 Connection timed out
+# gcc201 Connection timed out
