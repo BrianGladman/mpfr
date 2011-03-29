@@ -23,8 +23,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* This is an internal function and one assumes that x is a non-special
- * number (more precisely, only its significand is considered). It
- * returns 1 (true) if |x| is a power of 2, else 0.
+ * number (more precisely, only its significand is considered and this
+ * function can be used even if the exponent field of x has not been
+ * initialized). It returns 1 (true) if |x| is a power of 2, else 0.
  */
 
 int
