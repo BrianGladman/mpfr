@@ -540,8 +540,11 @@ pow_int (mpfr_rnd_t rnd)
       if (i & 1)
         mpfr_neg (ref2, ref2, MPFR_RNDN);
       mpfr_set_ui (ref3, 20, MPFR_RNDN);
+      /* We need to test huge integers because different algorithms/codes
+         are used for not-too-large integers (mpfr_pow_z) and for general
+         cases, in particular huge integers (mpfr_pow_general). [r7606] */
       if (i & 2)
-        mpfr_mul_2ui (ref3, ref3, 1000, MPFR_RNDN);  /* huge integer */
+        mpfr_mul_2ui (ref3, ref3, 1000, MPFR_RNDN);
       if (i & 4)
         mpfr_add_ui (ref3, ref3, 1, MPFR_RNDN);  /* odd integer */
 
