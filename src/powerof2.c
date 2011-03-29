@@ -22,7 +22,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* This is an internal function and one assumes that x is a real number. */
+/* This is an internal function and one assumes that x is a non-special
+ * number (more precisely, only its significand is considered). It
+ * returns 1 (true) if |x| is a power of 2, else 0.
+ */
 
 int
 mpfr_powerof2_raw (mpfr_srcptr x)
@@ -36,7 +39,6 @@ mpfr_powerof2_raw (mpfr_srcptr x)
      MPFR_ASSERTN(MPFR_IS_PURE_FP(x)); */
   xp = MPFR_MANT(x);
   xn = (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
-  /*if (NOT_POW2(xp[xn]))*/
   if (xp[xn] != MPFR_LIMB_HIGHBIT)
     return 0;
   while (xn > 0)
