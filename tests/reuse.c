@@ -76,6 +76,8 @@ set_special (mpfr_ptr x, unsigned int select)
       break;
     default:
       mpfr_urandomb (x, RANDS);
+      if (randlimb () & 1)
+        mpfr_neg (x, x, MPFR_RNDN);
       break;
     }
 }
