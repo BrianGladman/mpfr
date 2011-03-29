@@ -161,6 +161,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                   mpfr_rnd_t rnd_mode, int y_is_integer, mpfr_save_expo_t *expo)
 {
   mpfr_t t, u, k, absx;
+  int neg_result = 0;
   int k_non_zero = 0;
   int check_exact_case = 0;
   int inexact;
@@ -185,7 +186,10 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* We will compute the absolute value of the result. So, let's
      invert the rounding mode if the result is negative. */
   if (MPFR_IS_NEG (x) && is_odd (y))
-    rnd_mode = MPFR_INVERT_RND (rnd_mode);
+    {
+      neg_result = 1;
+      rnd_mode = MPFR_INVERT_RND (rnd_mode);
+    }
 
   /* compute the precision of intermediary variable */
   /* the optimal number of bits : see algorithms.tex */
@@ -352,7 +356,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   mpfr_clear (t);
 
   /* update the sign of the result if x was negative */
-  if (MPFR_IS_NEG (x) && is_odd (y))
+  if (neg_result)
     {
       MPFR_SET_NEG(z);
       inexact = -inexact;
