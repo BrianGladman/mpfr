@@ -520,6 +520,51 @@ reldiff_wrapper (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   return 0;
 }
 
+static void
+pow_int (mpfr_rnd_t rnd)
+{
+  mpfr_t ref1, ref2, ref3;
+  mpfr_t res1;
+  int i;
+
+#ifdef DEBUG
+  printf("pow_int\n");
+#endif
+  mpfr_inits2 ((randlimb () % 200) + MPFR_PREC_MIN,
+               ref1, ref2, res1, (mpfr_ptr) 0);
+  mpfr_init2 (ref3, 1005);
+
+  for (i = 0; i <= 15; i++)
+    {
+      mpfr_urandomb (ref2, RANDS);
+      if (i & 1)
+        mpfr_neg (ref2, ref2, MPFR_RNDN);
+      mpfr_set_ui (ref3, 20, MPFR_RNDN);
+      if (i & 2)
+        mpfr_mul_2ui (ref3, ref3, 1000, MPFR_RNDN);  /* huge integer */
+      if (i & 4)
+        mpfr_add_ui (ref3, ref3, 1, MPFR_RNDN);  /* odd integer */
+
+      /* reference call: pow(a, b, c) */
+      mpfr_pow (ref1, ref2, ref3, rnd);
+
+      /* pow(a, a, c) */
+      mpfr_set (res1, ref2, rnd); /* exact operation */
+      mpfr_pow (res1, res1, ref3, rnd);
+
+      if (mpfr_compare (res1, ref1))
+        {
+          printf ("Error for pow_int(a, a, c) for ");
+          DISP("a=",ref2); DISP2(", c=",ref3);
+          printf ("expected "); mpfr_print_binary (ref1); puts ("");
+          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          exit (1);
+        }
+    }
+
+  mpfr_clears (ref1, ref2, ref3, res1, (mpfr_ptr) 0);
+}
+
 int
 main (void)
 {
@@ -614,6 +659,7 @@ main (void)
 
     test3 (mpfr_remainder, "mpfr_remainder", p, (mpfr_rnd_t) rnd);
     test3 (mpfr_pow, "mpfr_pow", p, (mpfr_rnd_t) rnd);
+    pow_int ((mpfr_rnd_t) rnd);
     test3 (mpfr_atan2, "mpfr_atan2", p, (mpfr_rnd_t) rnd);
     test3 (mpfr_hypot, "mpfr_hypot", p, (mpfr_rnd_t) rnd);
 
