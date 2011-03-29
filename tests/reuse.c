@@ -105,51 +105,52 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
 
   /* for each variable, consider each of the following 6 possibilities:
      NaN, +Infinity, -Infinity, +0, -0 or a random number */
-  for (i=0; i < SPECIAL_MAX*SPECIAL_MAX ; i++) {
-    set_special (ref2, i%SPECIAL_MAX);
-    set_special (ref3, i/SPECIAL_MAX);
+  for (i=0; i < SPECIAL_MAX*SPECIAL_MAX ; i++)
+    {
+      set_special (ref2, i%SPECIAL_MAX);
+      set_special (ref3, i/SPECIAL_MAX);
 
-    /* reference call: foo(a, b, c) */
-    testfunc (ref1, ref2, ref3, rnd);
+      /* reference call: foo(a, b, c) */
+      testfunc (ref1, ref2, ref3, rnd);
 
-    /* foo(a, a, c) */
-    mpfr_set (res1, ref2, rnd); /* exact operation */
-    testfunc (res1, res1, ref3, rnd);
+      /* foo(a, a, c) */
+      mpfr_set (res1, ref2, rnd); /* exact operation */
+      testfunc (res1, res1, ref3, rnd);
 
-    if (mpfr_compare (res1, ref1))
-      {
-        printf ("Error for %s(a, a, c) for ", foo);
-        DISP("a=",ref2); DISP2(", c=",ref3);
-        printf ("expected "); mpfr_print_binary (ref1); puts ("");
-        printf ("got      "); mpfr_print_binary (res1); puts ("");
-        exit (1);
-      }
+      if (mpfr_compare (res1, ref1))
+        {
+          printf ("Error for %s(a, a, c) for ", foo);
+          DISP("a=",ref2); DISP2(", c=",ref3);
+          printf ("expected "); mpfr_print_binary (ref1); puts ("");
+          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          exit (1);
+        }
 
-    /* foo(a, b, a) */
-    mpfr_set (res1, ref3, rnd);
-    testfunc (res1, ref2, res1, rnd);
-    if (mpfr_compare (res1, ref1))
-      {
-        printf ("Error for %s(a, b, a) for ", foo);
-        DISP("b=",ref2); DISP2(", a=", ref3);
-        DISP("expected ", ref1); DISP2(", got ",res1);
-        exit (1);
-      }
+      /* foo(a, b, a) */
+      mpfr_set (res1, ref3, rnd);
+      testfunc (res1, ref2, res1, rnd);
+      if (mpfr_compare (res1, ref1))
+        {
+          printf ("Error for %s(a, b, a) for ", foo);
+          DISP("b=",ref2); DISP2(", a=", ref3);
+          DISP("expected ", ref1); DISP2(", got ",res1);
+          exit (1);
+        }
 
-    /* foo(a, a, a) */
-    mpfr_set (ref3, ref2, rnd);
-    testfunc (ref1, ref2, ref3, rnd);
-    mpfr_set (res1, ref2, rnd);
-    testfunc (res1, res1, res1, rnd);
+      /* foo(a, a, a) */
+      mpfr_set (ref3, ref2, rnd);
+      testfunc (ref1, ref2, ref3, rnd);
+      mpfr_set (res1, ref2, rnd);
+      testfunc (res1, res1, res1, rnd);
 
-    if (mpfr_compare (res1, ref1))
-      {
-        printf ("Error for %s(a, a, a) for ", foo);
-        DISP2("a=",ref2);
-        DISP("expected ", ref1); DISP2(", got", res1);
-        exit (1);
-      }
-  }
+      if (mpfr_compare (res1, ref1))
+        {
+          printf ("Error for %s(a, a, a) for ", foo);
+          DISP2("a=",ref2);
+          DISP("expected ", ref1); DISP2(", got", res1);
+          exit (1);
+        }
+    }
 
   mpfr_clear (ref1);
   mpfr_clear (ref2);
@@ -347,24 +348,25 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
   mpfr_init2 (ref3, prec);
   mpfr_init2 (res1, prec);
 
-  for (i=0; i<SPECIAL_MAX*2; i++) {
-    set_special (ref3, i%SPECIAL_MAX);
-    ref2 = i/SPECIAL_MAX==0 ? 0 : randlimb ();
+  for (i=0; i<SPECIAL_MAX*2; i++)
+    {
+      set_special (ref3, i%SPECIAL_MAX);
+      ref2 = i/SPECIAL_MAX==0 ? 0 : randlimb ();
 
-    /* reference call: foo(a, b, c) */
-    testfunc (ref1, ref2, ref3, rnd);
+      /* reference call: foo(a, b, c) */
+      testfunc (ref1, ref2, ref3, rnd);
 
-    /* foo(a, b, a) */
-    mpfr_set (res1, ref3, rnd); /* exact operation */
-    testfunc (res1, ref2, res1, rnd);
-    if (mpfr_compare (res1, ref1))
-      {
-        printf ("Error for %s(a, b, a) for b=%u \n", foo, ref2);
-        DISP2("a=", ref3);
-        DISP("expected", ref1); DISP2(", got ", res1);
-        exit (1);
-      }
-  }
+      /* foo(a, b, a) */
+      mpfr_set (res1, ref3, rnd); /* exact operation */
+      testfunc (res1, ref2, res1, rnd);
+      if (mpfr_compare (res1, ref1))
+        {
+          printf ("Error for %s(a, b, a) for b=%u \n", foo, ref2);
+          DISP2("a=", ref3);
+          DISP("expected", ref1); DISP2(", got ", res1);
+          exit (1);
+        }
+    }
 
   mpfr_clear (ref1);
   mpfr_clear (ref3);
