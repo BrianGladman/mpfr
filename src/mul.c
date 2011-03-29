@@ -144,7 +144,8 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         /* In the rounding to the nearest mode, if the exponent of the exact
            result (i.e. before rounding, i.e. without taking cc into account)
            is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
-           both arguments are powers of 2), then round to zero. */
+           both arguments are powers of 2) in absolute value, then round to
+           zero. */
         if (rnd_mode == MPFR_RNDN &&
             (ax + (mpfr_exp_t) b1 < __gmpfr_emin ||
              (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
