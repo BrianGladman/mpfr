@@ -61,7 +61,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (y) == __gmpfr_emin)
     {
       /* If this is a power of 2, we don't need rounding.
-         It handles cases when rouding away and y=0.1*2^emin */
+         It handles cases when |y| = 0.1 * 2^emin */
       if (mpfr_powerof2_raw (y))
         MPFR_RET (old_inexact);
 
