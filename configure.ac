@@ -116,8 +116,7 @@ AC_ARG_ENABLE(assert,
 AC_ARG_ENABLE(logging,
    [  --enable-logging        enable MPFR logging (the system must support it)
                           [[default=no]]],
-   [ disable_gcc_format_warning=yes
-     case $enableval in
+   [ case $enableval in
       yes) AC_DEFINE([MPFR_USE_LOGGING],1,[Log what MPFR does]) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
@@ -299,9 +298,6 @@ dnl If compiler is gcc, then use some specific flags.
 dnl But don't touch user other flags.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wall -Wmissing-prototypes -Wpointer-arith $CFLAGS"
-  if test -n "$disable_gcc_format_warning" ; then
-   CFLAGS="$CFLAGS -Wno-format"
-  fi
 fi
 
 AM_PROG_CC_C_O
