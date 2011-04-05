@@ -402,12 +402,13 @@ For instance, under Unix, where paths are separated by a colon:
     setenv LIBRARY_PATH "/usr/local/lib:/other/path/lib"
     setenv LD_LIBRARY_PATH "$LIBRARY_PATH"
 
-If you can't solve your problem, you should contact us at <mpfr@loria.fr>,
-indicating the machine and operating system used (uname -a), the compiler
-and version used (gcc -v if you use gcc), the configure options used if
-any (including variables such as CC and CFLAGS), the version of GMP and
-MPFR used, and a description of the problem encountered. Please send us
-also the log of the "configure" (config.log).
+If you can't solve your problem, you should contact us via the MPFR
+mailing-list <mpfr@loria.fr>, indicating the machine and operating system
+used (uname -a), the compiler and version used (gcc -v if you use gcc),
+the configure options used if any (including variables such as CC and
+CFLAGS), the version of GMP and MPFR used, and a description of the
+problem encountered. Please send us also the log of the "configure"
+(config.log).
 
 Note that even if you can build MPFR with a C++ compiler, you can't run
 the test suite: C and C++ are not the same language! You should use a C
