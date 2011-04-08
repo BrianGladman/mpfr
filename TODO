@@ -417,6 +417,8 @@ Table of contents:
 7. Portability
 ##############################################################################
 
+- add a web page with results of builds on different architectures
+
 - support the decimal64 function without requiring --with-gmp-build
 
 - [Kevin about texp.c long strings]
