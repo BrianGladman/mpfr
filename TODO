@@ -389,8 +389,6 @@ Table of contents:
   it cannot be supported. Modify the "configure --help" description
   to say "on systems that support it".
 
-- allow generic tests to run with a restricted exponent range.
-
 - add generic bad cases for functions that don't have an inverse
   function that is implemented (use a single Newton iteration).
 
