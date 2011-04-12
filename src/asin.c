@@ -65,11 +65,14 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   compared = mpfr_cmp_ui (xp, 1);
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   if (MPFR_UNLIKELY (compared >= 0))
     {
       mpfr_clear (xp);
       if (compared > 0)                  /* asin(x) = NaN for |x| > 1 */
         {
+          MPFR_SAVE_EXPO_FREE (expo);
           MPFR_SET_NAN (asin);
           MPFR_RET_NAN;
         }
@@ -82,41 +85,40 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               inexact = -mpfr_const_pi (asin, MPFR_INVERT_RND(rnd_mode));
               MPFR_CHANGE_SIGN (asin);
             }
-          mpfr_div_2ui (asin, asin, 1, rnd_mode); /* May underflow */
-          return inexact;
+          mpfr_div_2ui (asin, asin, 1, rnd_mode);
         }
     }
-
-  MPFR_SAVE_EXPO_MARK (expo);
-
-  /* Compute exponent of 1 - ABS(x) */
-  mpfr_ui_sub (xp, 1, xp, MPFR_RNDD);
-  MPFR_ASSERTD (MPFR_GET_EXP (xp) <= 0);
-  MPFR_ASSERTD (MPFR_GET_EXP (x) <= 0);
-  xp_exp = 2 - MPFR_GET_EXP (xp);
-
-  /* Set up initial prec */
-  prec = MPFR_PREC (asin) + 10 + xp_exp;
-
-  /* use asin(x) = atan(x/sqrt(1-x^2)) */
-  MPFR_ZIV_INIT (loop, prec);
-  for (;;)
+  else
     {
-      mpfr_set_prec (xp, prec);
-      mpfr_sqr (xp, x, MPFR_RNDN);
-      mpfr_ui_sub (xp, 1, xp, MPFR_RNDN);
-      mpfr_sqrt (xp, xp, MPFR_RNDN);
-      mpfr_div (xp, x, xp, MPFR_RNDN);
-      mpfr_atan (xp, xp, MPFR_RNDN);
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (xp, prec - xp_exp,
-                                       MPFR_PREC (asin), rnd_mode)))
-        break;
-      MPFR_ZIV_NEXT (loop, prec);
-    }
-  MPFR_ZIV_FREE (loop);
-  inexact = mpfr_set (asin, xp, rnd_mode);
+      /* Compute exponent of 1 - ABS(x) */
+      mpfr_ui_sub (xp, 1, xp, MPFR_RNDD);
+      MPFR_ASSERTD (MPFR_GET_EXP (xp) <= 0);
+      MPFR_ASSERTD (MPFR_GET_EXP (x) <= 0);
+      xp_exp = 2 - MPFR_GET_EXP (xp);
 
-  mpfr_clear (xp);
+      /* Set up initial prec */
+      prec = MPFR_PREC (asin) + 10 + xp_exp;
+
+      /* use asin(x) = atan(x/sqrt(1-x^2)) */
+      MPFR_ZIV_INIT (loop, prec);
+      for (;;)
+        {
+          mpfr_set_prec (xp, prec);
+          mpfr_sqr (xp, x, MPFR_RNDN);
+          mpfr_ui_sub (xp, 1, xp, MPFR_RNDN);
+          mpfr_sqrt (xp, xp, MPFR_RNDN);
+          mpfr_div (xp, x, xp, MPFR_RNDN);
+          mpfr_atan (xp, xp, MPFR_RNDN);
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (xp, prec - xp_exp,
+                                           MPFR_PREC (asin), rnd_mode)))
+            break;
+          MPFR_ZIV_NEXT (loop, prec);
+        }
+      MPFR_ZIV_FREE (loop);
+      inexact = mpfr_set (asin, xp, rnd_mode);
+
+      mpfr_clear (xp);
+    }
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (asin, inexact, rnd_mode);
