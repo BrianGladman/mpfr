@@ -873,7 +873,7 @@ fi
 MPFR_FUNC_GMP_PRINTF_SPEC([hhd], [char], [
 #include <gmp.h>
          ],,
-         [AC_DEFINE([NPRINTF_HH], 1, [gmp_printf cannot use 'hh' length modifier])])
+         [AC_DEFINE([NPRINTF_HH], 1, [gmp_printf cannot use `hh' length modifier])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([lld], [long long int], [
 #include <gmp.h>
