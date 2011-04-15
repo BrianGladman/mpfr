@@ -407,6 +407,7 @@ int main() {
 CPPFLAGS="$saved_CPPFLAGS"
 fi
 ])
+dnl end of MPFR_CONFIGS
 
 
 dnl  MPFR_C_LONG_DOUBLE_FORMAT
