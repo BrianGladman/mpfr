@@ -287,7 +287,7 @@ char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 ]]), [AC_MSG_RESULT(yes)],[
  AC_MSG_RESULT(no)
  AC_DEFINE(MPFR_NO_CONSECUTIVE_CHARSET,1,[Charset is not consecutive])
-], [AC_MSG_RESULT(can not test)])
+], [AC_MSG_RESULT(cannot test)])
 
 dnl Must be checked with the LIBM
 dnl but we don't want to add the LIBM to MPFR dependency.
