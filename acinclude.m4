@@ -34,12 +34,6 @@ dnl   but the IEEE-754 specific flags must be set here.
 dnl   -GMP's linkage.
 dnl   -Libtool stuff.
 dnl   -Handling of special arguments of MPFR's configure.
-dnl
-dnl FIXME: With autoconf 2.68, MPFR_CONFIGS generates warnings
-dnl   "warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body"
-dnl This is due to: AC_RUN_IFELSE(AC_LANG_PROGRAM(...), ...)
-dnl Possibly an autoconf bug:
-dnl   http://article.gmane.org/gmane.comp.sysutils.autoconf.bugs/7884
 AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
@@ -271,7 +265,7 @@ fi
 
 dnl Check if the chars '0' to '9' are consecutive values
 AC_MSG_CHECKING([if charset has consecutive values])
-AC_RUN_IFELSE(AC_LANG_PROGRAM([[
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 char *number = "0123456789";
 char *lower  = "abcdefghijklmnopqrstuvwxyz";
 char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -284,7 +278,7 @@ char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
    if ( (*p)+1 != *(p+1) ) return 1;
  for (p = (unsigned char*) upper, i = 0; i < 25; i++)
    if ( (*p)+1 != *(p+1) ) return 1;
-]]), [AC_MSG_RESULT(yes)],[
+]])], [AC_MSG_RESULT(yes)],[
  AC_MSG_RESULT(no)
  AC_DEFINE(MPFR_NO_CONSECUTIVE_CHARSET,1,[Charset is not consecutive])
 ], [AC_MSG_RESULT(cannot test)])
@@ -386,14 +380,15 @@ if test "$enable_thread_safe" != no; then
 AC_MSG_CHECKING(for TLS support)
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-AC_RUN_IFELSE([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #define MPFR_USE_THREAD_SAFE 1
 #include "mpfr-thread.h"
 MPFR_THREAD_ATTR int x = 17;
 int main() {
   return x != 17;
 }
-  ], [AC_MSG_RESULT(yes)
+  ]])],
+     [AC_MSG_RESULT(yes)
       AC_DEFINE([MPFR_USE_THREAD_SAFE],1,[Build MPFR as thread safe])
      ],
      [AC_MSG_RESULT(no)
