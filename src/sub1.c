@@ -210,7 +210,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         0 <= shift_c < GMP_NUMB_BITS
      thus we want cancel2 = ceil((cancel - diff_exp) / GMP_NUMB_BITS) */
 
-  cancel2 = (long int) (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
+  MPFR_ASSERTD (cancel >= 0);
+  if (cancel >= diff_exp)
+    cancel2 = (cancel - diff_exp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
+  else
+    cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
   printf ("cancel=%lu cancel1=%lu cancel2=%ld\n",
@@ -246,7 +250,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     if ((mp_size_t) cancel1 < bn) /* otherwise b does not overlap with a */
       {
         MPN_ZERO (ap, an + cancel1 - bn);
-        MPN_COPY (ap + an + cancel1 - bn, bp, bn - cancel1);
+        MPN_COPY (ap + (an + cancel1 - bn), bp, bn - cancel1);
       }
     else
       MPN_ZERO (ap, an);
@@ -270,7 +274,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             /* a: <---------------------------->
                c: <-------------------------> */
             {
-              ap2 = ap + an + cancel2 - cn;
+              ap2 = ap + an + (cancel2 - cn);
               if (cn > cancel2)
                 mpn_sub_n (ap2, ap2, cp, cn - cancel2);
             }
@@ -347,7 +351,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
      and the (cn - (an+cancel2)) limbs from c. */
   bn -= an + cancel1;
   cn0 = cn;
-  cn -= (long int) an + cancel2;
+  cn -= an + cancel2;
 
 #ifdef DEBUG
   printf ("last sh=%d bits from a are %lu, bn=%ld, cn=%ld\n",
@@ -601,7 +605,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
       mpfr_exp_t exp_a;
 
-      cancel -= add_exp; /* still valid as unsigned long */
+      cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
       exp_a = MPFR_GET_EXP (b) - cancel;
       if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
