@@ -340,7 +340,17 @@ bug20080904 (void)
   /* The correct result is near 2^(-2^62), so it underflows when
      MPFR_EMIN_MIN > -2^62 (i.e. with 32 and 64 bits machines). */
   mpfr_set_str (a, "AA500C0D7A69275DBp-4632850503556296886", 16, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp0 (answer, a) == 0);
+  if (! mpfr_equal_p (answer, a))
+    {
+      printf ("Error in bug20080904:\n");
+      printf ("Expected ");
+      mpfr_out_str (stdout, 16, 0, a, MPFR_RNDN);
+      putchar ('\n');
+      printf ("Got      ");
+      mpfr_out_str (stdout, 16, 0, answer, MPFR_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
 
   mpfr_set_emin (emin_default);
 
