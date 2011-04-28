@@ -179,6 +179,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   if (MPFR_UNLIKELY (high_dif != 0)) /* high_dif == 1 */
     {
       res--;
+      MPFR_ASSERTD (res >= 0);
       if (dif != 0)
         {
           *cancel = res;
