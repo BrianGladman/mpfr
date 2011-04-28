@@ -173,7 +173,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn      = MPFR_LIMB_SIZE(c);
   if ((UINT_MAX % GMP_NUMB_BITS) == (GMP_NUMB_BITS-1)
       && ((-(unsigned) 1)%GMP_NUMB_BITS > 0))
-    shift_c = (diff_exp - cancel) % GMP_NUMB_BITS;
+    shift_c = ((mpfr_uexp_t) diff_exp - cancel) % GMP_NUMB_BITS;
   else
     {
       shift_c = diff_exp - (cancel % GMP_NUMB_BITS);
@@ -210,8 +210,22 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         0 <= shift_c < GMP_NUMB_BITS
      thus we want cancel2 = ceil((cancel - diff_exp) / GMP_NUMB_BITS) */
 
+  /* Possible optimization with a C99 compiler (i.e. well-defined
+     integer division): if MPFR_PREC_MAX is reduced to
+     ((mpfr_prec_t)((mpfr_uprec_t)(~(mpfr_uprec_t)0)>>1) - GMP_NUMB_BITS + 1)
+     and diff_exp is of type mpfr_exp_t (no need for mpfr_uexp_t, since
+     the sum or difference of 2 exponents must be representable, as used
+     by the multiplication code), then the computation of cancel2 could
+     be simplified to
+       cancel2 = (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
+     because cancel, diff_exp and shift_c are all non-negative and
+     these variables are signed. */
+
   MPFR_ASSERTD (cancel >= 0);
   if (cancel >= diff_exp)
+    /* Note that cancel is signed and will be converted to mpfr_uexp_t
+       (type of diff_exp) in the expression below, so that this will
+       work even if cancel is very large and diff_exp = 0. */
     cancel2 = (cancel - diff_exp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
   else
     cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
