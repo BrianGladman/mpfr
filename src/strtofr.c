@@ -381,14 +381,17 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E')))
        && (!isspace((unsigned char) str[1])) )
     {
-      char *endptr[1];
+      char *endptr;
       /* the exponent digits are kept in ASCII */
-      mpfr_exp_t read_exp = strtol (str + 1, endptr, 10);
-      mpfr_exp_t sum = 0;
-      if (endptr[0] != str+1)
-        str = endptr[0];
-      MPFR_ASSERTN (read_exp == (long) read_exp);
-      MPFR_SADD_OVERFLOW (sum, read_exp, pstr->exp_base,
+      mpfr_exp_t sum;
+      long read_exp = strtol (str + 1, &endptr, 10);
+      if (endptr != str+1)
+        str = endptr;
+      sum =
+        read_exp < MPFR_EXP_MIN ? (str = endptr, MPFR_EXP_MIN) :
+        read_exp > MPFR_EXP_MAX ? (str = endptr, MPFR_EXP_MAX) :
+        (mpfr_exp_t) read_exp;
+      MPFR_SADD_OVERFLOW (sum, sum, pstr->exp_base,
                           mpfr_exp_t, mpfr_uexp_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           res = 2, res = 3);
@@ -401,10 +404,14 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
            && (*str == 'p' || *str == 'P')
            && (!isspace((unsigned char) str[1])))
     {
-      char *endptr[1];
-      pstr->exp_bin = (mpfr_exp_t) strtol (str + 1, endptr, 10);
-      if (endptr[0] != str+1)
-        str = endptr[0];
+      char *endptr;
+      long read_exp = strtol (str + 1, &endptr, 10);
+      if (endptr != str+1)
+        str = endptr;
+      pstr->exp_bin =
+        read_exp < MPFR_EXP_MIN ? (str = endptr, MPFR_EXP_MIN) :
+        read_exp > MPFR_EXP_MAX ? (str = endptr, MPFR_EXP_MAX) :
+        (mpfr_exp_t) read_exp;
     }
 
   /* Remove 0's at the beginning and end of mant_s[0..prec_s-1] */
