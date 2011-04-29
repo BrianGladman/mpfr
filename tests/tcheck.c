@@ -25,7 +25,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define ERROR(s) printf("mpfr_check failed " s " Prec=%lu\n", pr), exit(1)
+#define ERROR(s)                                                      \
+  (printf ("mpfr_check failed " s " Prec=%lu\n", (unsigned long) pr), \
+   exit(1))
 
 int
 main (void)

@@ -120,7 +120,7 @@ check_diverse (const char *as, mpfr_prec_t p, const char *qs)
   if (mpfr_cmp_str1 (q, qs))
     {
       printf ("mpfr_sqrt failed for a=%s, prec=%lu, rnd_mode=%s\n",
-              as, p, mpfr_print_rnd_mode (MPFR_RNDN));
+              as, (unsigned long) p, mpfr_print_rnd_mode (MPFR_RNDN));
       printf ("expected sqrt is %s, got ", qs);
       mpfr_out_str (stdout, 10, 0, q, MPFR_RNDN);
       printf ("\n");

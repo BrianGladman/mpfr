@@ -172,7 +172,7 @@ check_integer (mpfr_prec_t begin, mpfr_prec_t end, unsigned long max)
               if (mpfr_cmp (y1, y2) != 0)
                 {
                   printf ("Error for p = %lu, z = %lu, rnd = %s and x = ",
-                          p, n, mpfr_print_rnd_mode (rnd));
+                          (unsigned long) p, n, mpfr_print_rnd_mode (rnd));
                   mpfr_dump (x);
                   printf ("Ypowsi = "); mpfr_dump (y1);
                   printf ("Ypowz  = "); mpfr_dump (y2);
@@ -181,7 +181,8 @@ check_integer (mpfr_prec_t begin, mpfr_prec_t end, unsigned long max)
               if (res1 != res2)
                 {
                   printf ("Wrong inexact flags for p = %lu, z = %lu, rnd = %s"
-                          " and x = ", p, n, mpfr_print_rnd_mode (rnd));
+                          " and x = ", (unsigned long) p, n,
+                          mpfr_print_rnd_mode (rnd));
                   mpfr_dump (x);
                   printf ("Ypowsi(inex = %2d) = ", res1); mpfr_dump (y1);
                   printf ("Ypowz (inex = %2d) = ", res2); mpfr_dump (y2);

@@ -221,7 +221,7 @@ main (int argc, char *argv[])
         {
           printf ("Warning. Cannot compute the bit frequency: the given bit "
                   "index (= %ld) is not less than the precision (= %ld).\n",
-                  bit_index, prec);
+                  bit_index, (long) prec);
           bit_index = -1;
         }
     }
