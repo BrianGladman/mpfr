@@ -271,7 +271,7 @@ coverage_03032011 (void)
   strcpy (&strData[GMP_NUMB_BITS+1], &strData[precIn+1]);
   mpfr_set_str_binary (cmp, strData);
 
-  ((mp_limb_t *)MPFR_MANT(in))[2] = MPFR_LIMB_HIGHBIT;
+  (MPFR_MANT(in))[2] = MPFR_LIMB_HIGHBIT;
   status = mpfr_rint (out, in, MPFR_RNDN);
 
   if ((mpfr_cmp (out, cmp) != 0) || (status <= 0))
