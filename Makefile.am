@@ -18,7 +18,8 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
   examples/version.c
 
-EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh
+EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh \
+  $(DATAFILES)
 
 # In a "make dist", check consistency concerning -version-info
 # and if the VERSION file doesn't end with "-dev", check that

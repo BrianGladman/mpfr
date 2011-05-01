@@ -516,6 +516,13 @@ if test -f confdefs.h; then
   mv confdefs.tmp confdefs.h
 fi
 
+if grep -q -e '-dev$' $srcdir/VERSION; then
+  AC_SUBST([DATAFILES])dnl
+  DATAFILES=`echo \`$SED -n \
+    's/^ *data_check *("\(data\/[[^"]]*\)".*/tests\/\1/p' \
+    $srcdir/tests/*.c\``
+fi
+
 dnl Output
 AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile tests/Makefile tune/Makefile src/mparam.h:src/mparam_h.in])
 AC_OUTPUT
