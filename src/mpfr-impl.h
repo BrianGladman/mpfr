@@ -325,12 +325,16 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    MPFR_BLOCK_EXCEP should be used only inside a block; it is useful to
    detect some exception in order to exit the block as soon as possible. */
 #define MPFR_BLOCK_DECL(_flags) unsigned int _flags
+/* The (void) (_flags) makes sure that _flags is read at least once (it
+   makes sense to use MPFR_BLOCK while _flags will never be read in the
+   source, so that we wish to avoid the corresponding warning). */
 #define MPFR_BLOCK(_flags,_op)          \
   do                                    \
     {                                   \
       mpfr_clear_flags ();              \
       _op;                              \
       (_flags) = __gmpfr_flags;         \
+      (void) (_flags);                  \
     }                                   \
   while (0)
 #define MPFR_BLOCK_TEST(_flags,_f) MPFR_UNLIKELY ((_flags) & (_f))
