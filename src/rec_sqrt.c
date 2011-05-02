@@ -381,6 +381,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
             MPN_COPY (x, u, ln);
           cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
           /* add cu at x+un */
+          /* FIXME: x[un] is not necessarily allocated. Buffer overflow! */
           cy += mpn_add_1 (x + un, x + un, th, cu);
         }
       else /* negative case */
