@@ -35,12 +35,25 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_USE_FILE /* necessary due to GMP bug concerning inclusions */
 #include <mpfr.h>
 
-int
-main (void)
+static void
+test (FILE *fout, const char *fmt, ...)
 {
   int (*fct) (FILE*, __gmp_const char*, va_list);
 
   fct = mpfr_vfprintf;
+  if (0)
+    {
+      va_list ap;
+      va_start (ap, fmt);
+      fct (fout, fmt, ap);
+      va_end (ap);
+    }
+}
+
+int
+main (void)
+{
+  test (stdout, "%d\n", 0);
   return 0;
 }
 
