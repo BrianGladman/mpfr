@@ -375,13 +375,14 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       MPFR_ASSERTD(un == ln + 1 || un == ln + 2);
       /* the high un-ln limbs of u will overlap the low part of {x+ln,xn},
          we need to add or subtract the overlapping part {u + ln, un - ln} */
+      /* FIXME! */
+      MPFR_ASSERTN (th != 0);  /* th == 0 will yield a buffer overflow */
       if (neg == 0)
         {
           if (ln > 0)
             MPN_COPY (x, u, ln);
           cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
           /* add cu at x+un */
-          /* FIXME: x[un] is not necessarily allocated. Buffer overflow! */
           cy += mpn_add_1 (x + un, x + un, th, cu);
         }
       else /* negative case */
