@@ -1509,48 +1509,67 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
  }
 #endif
 
+/* LOG_PRINT calls mpfr_fprintf on mpfr_log_file with logging disabled
+   (recursive logging is not wanted and freezes MPFR). */
+#define LOG_PRINT(format, ...)                                          \
+  do                                                                    \
+    {                                                                   \
+      int old_level = mpfr_log_level;                                   \
+      mpfr_log_level = -1;  /* disable logging in mpfr_fprintf */       \
+      mpfr_fprintf (mpfr_log_file, format, __VA_ARGS__);                \
+      mpfr_log_level = old_level;                                       \
+    }                                                                   \
+  while (0)
+
 #define MPFR_LOG_VAR(x)                                                 \
-  if((MPFR_LOG_INTERNAL_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))\
-    mpfr_fprintf (mpfr_log_file, "%s.%d:%s[%#Pu]=%.*Rf\n", \
-                  __func__, __LINE__, #x, mpfr_get_prec (x), mpfr_log_prec, x);
+  do                                                                    \
+    if ((MPFR_LOG_INTERNAL_F & mpfr_log_type) &&                        \
+        (mpfr_log_current <= mpfr_log_level))                           \
+      LOG_PRINT ("%s.%d:%s[%#Pu]=%.*Rf\n", __func__, __LINE__,          \
+                 #x, mpfr_get_prec (x), mpfr_log_prec, x);              \
+  while (0)
 
 #define MPFR_LOG_MSG2(format, ...)                                      \
-  if ((MPFR_LOG_MSG_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
-    mpfr_fprintf (mpfr_log_file, "%s.%d: "format,                       \
-                  __func__, __LINE__, __VA_ARGS__);
+  do                                                                    \
+    if ((MPFR_LOG_MSG_F & mpfr_log_type) &&                             \
+        (mpfr_log_current <= mpfr_log_level))                           \
+      LOG_PRINT ("%s.%d: "format, __func__, __LINE__, __VA_ARGS__);     \
+  while (0)
 #define MPFR_LOG_MSG(x) MPFR_LOG_MSG2 x
 
 #define MPFR_LOG_BEGIN2(format, ...)                                    \
   mpfr_log_current ++;                                                  \
-  if ((MPFR_LOG_INPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
-    mpfr_fprintf (mpfr_log_file, "%s:IN  "format"\n",                   \
-                  __func__, __VA_ARGS__);                               \
-  if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
+  if ((MPFR_LOG_INPUT_F & mpfr_log_type) &&                             \
+      (mpfr_log_current <= mpfr_log_level))                             \
+    LOG_PRINT ("%s:IN  "format"\n", __func__, __VA_ARGS__);             \
+  if ((MPFR_LOG_TIME_F & mpfr_log_type) &&                              \
+      (mpfr_log_current <= mpfr_log_level))                             \
     __gmpfr_log_time = mpfr_get_cputime ();
 #define MPFR_LOG_BEGIN(x)                                               \
   int __gmpfr_log_time = 0;                                             \
   MPFR_LOG_BEGIN2 x
 
 #define MPFR_LOG_END2(format, ...)                                      \
-  if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
+  if ((MPFR_LOG_TIME_F & mpfr_log_type) &&                              \
+      (mpfr_log_current <= mpfr_log_level))                             \
     fprintf (mpfr_log_file, "%s:TIM %dms\n", __mpfr_log_fname,          \
              mpfr_get_cputime () - __gmpfr_log_time);                   \
-  if ((MPFR_LOG_OUTPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
-    mpfr_fprintf (mpfr_log_file, "%s:OUT "format"\n",                   \
-                  __mpfr_log_fname, __VA_ARGS__);                       \
+  if ((MPFR_LOG_OUTPUT_F & mpfr_log_type) &&                            \
+      (mpfr_log_current <= mpfr_log_level))                             \
+    LOG_PRINT ("%s:OUT "format"\n", __mpfr_log_fname, __VA_ARGS__);     \
   mpfr_log_current --;
-#define MPFR_LOG_END(x)                                                     \
-  static const char *__mpfr_log_fname = __func__;                           \
+#define MPFR_LOG_END(x)                                                 \
+  static const char *__mpfr_log_fname = __func__;                       \
   MPFR_LOG_END2 x
 
-#define MPFR_LOG_FUNC(begin,end)                                            \
-  static const char *__mpfr_log_fname = __func__;                           \
-  auto void __mpfr_log_cleanup (int *time);                                 \
-  void __mpfr_log_cleanup (int *time) {                                     \
-    int __gmpfr_log_time = *time;                                           \
-    MPFR_LOG_END2 end; }                                                    \
-  int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));      \
-  __gmpfr_log_time = 0;                                                     \
+#define MPFR_LOG_FUNC(begin,end)                                        \
+  static const char *__mpfr_log_fname = __func__;                       \
+  auto void __mpfr_log_cleanup (int *time);                             \
+  void __mpfr_log_cleanup (int *time) {                                 \
+    int __gmpfr_log_time = *time;                                       \
+    MPFR_LOG_END2 end; }                                                \
+  int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));  \
+  __gmpfr_log_time = 0;                                                 \
   MPFR_LOG_BEGIN2 begin
 
 #else /* MPFR_USE_LOGGING */
