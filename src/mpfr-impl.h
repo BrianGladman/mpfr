@@ -1203,7 +1203,7 @@ typedef struct {
         _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
         _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
         MPFR_UNSIGNED_MINUS_MODULO (_sh, _destprec);                        \
-        _sp = srcp + _srcs - _dests;                                        \
+        _sp = (srcp) + _srcs - _dests;                                      \
                                                                             \
         /* General case when prec % GMP_NUMB_BITS != 0 */                   \
         if (MPFR_LIKELY (_sh != 0))                                         \
