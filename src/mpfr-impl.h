@@ -1210,10 +1210,17 @@ typedef struct {
           {                                                                 \
             mp_limb_t _mask;                                                \
             /* Compute Rounding Bit and Sticky Bit */                       \
+            /* Note: in directed rounding modes, if the rounding bit */     \
+            /* is 1, the behavior does not depend on the sticky bit; */     \
+            /* thus we will not try to compute it in this case (this */     \
+            /* can be much faster and avoids to read uninitialized   */     \
+            /* data in the current mpfr_mul implementation). We just */     \
+            /* make sure that _sb is initialized.                    */     \
             _mask = MPFR_LIMB_ONE << (_sh - 1);                             \
             _rb = _sp[0] & _mask;                                           \
             _sb = _sp[0] & (_mask - 1);                                     \
-            if (MPFR_UNLIKELY (_sb == 0))                                   \
+            if (MPFR_UNLIKELY (_sb == 0) &&                                 \
+                ((rnd) == MPFR_RNDN || _rb == 0))                           \
               { /* TODO: Improve it */                                      \
                 mp_limb_t *_tmp;                                            \
                 mp_size_t _n;                                               \
@@ -1226,10 +1233,11 @@ typedef struct {
         else /* _sh == 0 */                                                 \
           {                                                                 \
             MPFR_ASSERTD (_dests < _srcs);                                  \
-            /* Compute Rounding Bit and Sticky Bit */                       \
+            /* Compute Rounding Bit and Sticky Bit - see note above */      \
             _rb = _sp[-1] & MPFR_LIMB_HIGHBIT;                              \
             _sb = _sp[-1] & (MPFR_LIMB_HIGHBIT-1);                          \
-            if (MPFR_UNLIKELY (_sb == 0))                                   \
+            if (MPFR_UNLIKELY (_sb == 0) &&                                 \
+                ((rnd) == MPFR_RNDN || _rb == 0))                           \
               {                                                             \
                 mp_limb_t *_tmp;                                            \
                 mp_size_t _n;                                               \

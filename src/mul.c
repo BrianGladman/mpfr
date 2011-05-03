@@ -480,10 +480,11 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
         /* [VL] FIXME: This cannot be true: mpfr_mulhigh_n only
            depends on pointers and n. As k can be arbitrarily larger,
-           the result cannot depend on k. And indeed valgrind
-           complains, but apparently because MPFR_RNDRAW tries to
-           compute the sticky bit even when the mpfr_mul behavior
-           doesn't depend on it. */
+           the result cannot depend on k. And indeed, with GMP compiled
+           with --enable-alloca=debug, valgrind was complaining, at
+           least because MPFR_RNDRAW at the end tried to compute the
+           sticky bit even when not necessary; this problem is fixed,
+           but there's at least something wrong with the comment above. */
         b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
