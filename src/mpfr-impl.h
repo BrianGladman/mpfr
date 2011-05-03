@@ -1441,33 +1441,54 @@ typedef struct {
 # endif
 
 /* Use LOGGING */
-#define MPFR_ZIV_DECL(_x)                                     \
-  mpfr_prec_t _x;                                             \
-  int _x ## _cpt = 1;                                         \
-  static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
-  static const char *_x ## _fname = __func__;                 \
-  auto void __attribute__ ((destructor)) x ## _f  (void);     \
-  void __attribute__ ((destructor)) x ## _f  (void) {         \
-  if (_x ## _loop != 0 && MPFR_LOG_STAT_F&mpfr_log_type)      \
-     fprintf (mpfr_log_file,                                  \
-    "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
-       (double) 100.0 * _x ## _bad / _x ## _loop,  _x ## _bad, _x ## _loop ); }
+#define MPFR_ZIV_DECL(_x)                                               \
+  mpfr_prec_t _x;                                                       \
+  int _x ## _cpt = 1;                                                   \
+  static unsigned long  _x ## _loop = 0, _x ## _bad = 0;                \
+  static const char *_x ## _fname = __func__;                           \
+  auto void __attribute__ ((destructor)) x ## _f  (void);               \
+  void __attribute__ ((destructor)) x ## _f  (void) {                   \
+    if (_x ## _loop != 0 && (MPFR_LOG_STAT_F & mpfr_log_type))          \
+      fprintf (mpfr_log_file,                                           \
+               "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n",  \
+               _x ## _fname, (double) 100.0 * _x ## _bad / _x ## _loop, \
+               _x ## _bad, _x ## _loop ); }
 
-#define MPFR_ZIV_INIT(_x, _p) ((_x) = GMP_NUMB_BITS, _x ## _loop ++);     \
-  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
-    mpfr_fprintf (mpfr_log_file, "%s:ZIV 1st prec=%Pu\n",               \
-                  __func__, (unsigned long) (_p))
+#define MPFR_ZIV_INIT(_x, _p)                                           \
+  do                                                                    \
+    {                                                                   \
+      (_x) = GMP_NUMB_BITS;                                             \
+      _x ## _loop ++;                                                   \
+      if ((MPFR_LOG_BADCASE_F & mpfr_log_type) &&                       \
+          (mpfr_log_current <= mpfr_log_level))                         \
+        LOG_PRINT ("%s:ZIV 1st prec=%Pd\n",                             \
+                   __func__, (mpfr_prec_t) (_p));                       \
+    }                                                                   \
+  while (0)
 
-#define MPFR_ZIV_NEXT(_x, _p)                                                \
- ((_p)+=(_x),(_x)=(_p)/2, _x ## _bad += (_x ## _cpt == 1), _x ## _cpt ++);   \
-  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
-    mpfr_fprintf (mpfr_log_file, "%s:ZIV new prec=%Pu\n", \
-                  __func__, (unsigned long) (_p))
+#define MPFR_ZIV_NEXT(_x, _p)                                           \
+  do                                                                    \
+    {                                                                   \
+      (_p) += (_x);                                                     \
+      (_x) = (_p) / 2;                                                  \
+      _x ## _bad += (_x ## _cpt == 1);                                  \
+      _x ## _cpt ++;                                                    \
+      if ((MPFR_LOG_BADCASE_F & mpfr_log_type) &&                       \
+          (mpfr_log_current <= mpfr_log_level))                         \
+        LOG_PRINT ("%s:ZIV new prec=%Pd\n",                             \
+                   __func__, (mpfr_prec_t) (_p));                       \
+    }                                                                   \
+  while (0)
 
-#define MPFR_ZIV_FREE(_x)                                             \
-  if (MPFR_LOG_BADCASE_F&mpfr_log_type && _x##_cpt>1                  \
-      && mpfr_log_current<=mpfr_log_level)                            \
-   fprintf (mpfr_log_file, "%s:ZIV %d loops\n", __func__, _x ## _cpt)
+#define MPFR_ZIV_FREE(_x)                                               \
+  do                                                                    \
+    {                                                                   \
+      if ((MPFR_LOG_BADCASE_F & mpfr_log_type) && _x ## _cpt > 1 &&     \
+          (mpfr_log_current <= mpfr_log_level))                         \
+        fprintf (mpfr_log_file, "%s:ZIV %d loops\n",                    \
+                 __func__, _x ## _cpt);                                 \
+    }                                                                   \
+  while (0)
 
 #endif
 
