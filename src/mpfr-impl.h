@@ -1441,6 +1441,11 @@ typedef struct {
 # endif
 
 /* Use LOGGING */
+
+/* Note: the mpfr_log_level >= 0 below avoids to take into account
+   Ziv loops used by the MPFR functions called by the mpfr_fprintf
+   in LOG_PRINT. */
+
 #define MPFR_ZIV_DECL(_x)                                               \
   mpfr_prec_t _x;                                                       \
   int _x ## _cpt = 1;                                                   \
@@ -1458,7 +1463,8 @@ typedef struct {
   do                                                                    \
     {                                                                   \
       (_x) = GMP_NUMB_BITS;                                             \
-      _x ## _loop ++;                                                   \
+      if (mpfr_log_level >= 0)                                          \
+        _x ## _loop ++;                                                 \
       if ((MPFR_LOG_BADCASE_F & mpfr_log_type) &&                       \
           (mpfr_log_current <= mpfr_log_level))                         \
         LOG_PRINT ("%s:ZIV 1st prec=%Pd\n",                             \
@@ -1471,7 +1477,8 @@ typedef struct {
     {                                                                   \
       (_p) += (_x);                                                     \
       (_x) = (_p) / 2;                                                  \
-      _x ## _bad += (_x ## _cpt == 1);                                  \
+      if (mpfr_log_level >= 0)                                          \
+        _x ## _bad += (_x ## _cpt == 1);                                \
       _x ## _cpt ++;                                                    \
       if ((MPFR_LOG_BADCASE_F & mpfr_log_type) &&                       \
           (mpfr_log_current <= mpfr_log_level))                         \
