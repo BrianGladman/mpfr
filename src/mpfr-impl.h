@@ -1181,7 +1181,7 @@ typedef struct {
     mpfr_prec_t _destprec, _srcprec;                                        \
                                                                             \
     /* Check Trivial Case when Dest Mantissa has more bits than source */   \
-    _srcprec = sprec;                                                       \
+    _srcprec = (sprec);                                                     \
     _destprec = MPFR_PREC (dest);                                           \
     _destp = MPFR_MANT (dest);                                              \
     if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
