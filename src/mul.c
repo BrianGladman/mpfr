@@ -478,9 +478,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
         /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
            with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
-        /* FIXME: This cannot be true: mpfr_mulhigh_n and mpfr_sqrhigh_n
-           only depend on pointers and n. As k can be arbitrarily larger,
-           the result cannot depend on k. And indeed valgrind complains. */
+        /* [VL] FIXME: This cannot be true: mpfr_mulhigh_n only
+           depends on pointers and n. As k can be arbitrarily larger,
+           the result cannot depend on k. And indeed valgrind
+           complains, but apparently because MPFR_RNDRAW tries to
+           compute the sticky bit even when the mpfr_mul behavior
+           doesn't depend on it. */
         b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
