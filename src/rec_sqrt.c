@@ -375,14 +375,15 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       MPFR_ASSERTD(un == ln + 1 || un == ln + 2);
       /* the high un-ln limbs of u will overlap the low part of {x+ln,xn},
          we need to add or subtract the overlapping part {u + ln, un - ln} */
-      /* Warning! th may be 0, in which case mpn_add_1 and mpn_sub_1
-         mustn't be used. In such a case, the limb (carry) will be 0,
-         so that this is semantically a no-op, but if mpn_add_1 and
-         mpn_sub_1 are used, GMP still does a non-atomic read/write
-         in a place that is not always allocated, with the possible
-         consequences: a crash if the memory is not mapped, or (a bit
-         unlikely) memory corruption if another process/thread writes
-         at the same place. */
+      /* Warning! th may be 0, in which case the mpn_add_1 and mpn_sub_1
+         below (with size = th) mustn't be used. In such a case, the limb
+         (carry) will be 0, so that this is semantically a no-op, but if
+         mpn_add_1 and mpn_sub_1 are used, GMP (currently) still does a
+         non-atomic read/write in a place that is not always allocated,
+         with the possible consequences: a crash if the corresponding
+         address is not mapped, or (rather unlikely) memory corruption
+         if another process/thread writes at the same place; things may
+         be worse with future GMP versions. Hence the tests carry != 0. */
       if (neg == 0)
         {
           if (ln > 0)
