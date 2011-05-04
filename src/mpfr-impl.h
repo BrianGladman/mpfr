@@ -278,7 +278,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_FLAGS_DIVBY0 32
 #define MPFR_FLAGS_ALL 63
 
-/* Replace some commun functions for direct access to the global vars */
+/* Replace some common functions for direct access to the global vars */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
 #define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
