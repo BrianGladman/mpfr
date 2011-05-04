@@ -69,7 +69,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 #define ap a
 #define Ap A
 #define Bp B
-    for (k = 0, cancel = 0; ; k++)
+    for (k = 0; ; k++)
       {
         /* invariant: 1/2 <= B <= A <= a < 1 */
         mpfr_add (S, A, B, MPFR_RNDN); /* 1 <= S <= 2 */
