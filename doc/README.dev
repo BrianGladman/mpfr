@@ -837,3 +837,21 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
+
+===========================================================================
+
+To debug some test program, e.g. tadd, with gdb, you cannot run "gdb tadd"
+since libtool has generated a wrapper script to link the program against
+the correct MPFR library. Instead, run:
+
+  libtool --mode=execute gdb tadd
+
+Alternatively, something like
+
+  LD_PRELOAD=../src/.libs/libmpfr.so gdb .libs/tadd
+
+may also work (example for GNU/Linux).
+
+Note: for test programs not listed in Makefile.am (check_PROGRAMS),
+libtool is not used (a static link against MPFR is done via LOADLIBES
+in Makefile.am), so that gdb should be used in the conventional way.
