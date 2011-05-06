@@ -488,6 +488,8 @@ MPFR_LOG_ALL:      Log everything
 
 Define them. Run your program, and view `mpfr.log`.
 
+For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
+
    ====================================================================
 
 This feature is available only for gcc >= 3.0 and glibc >= 2.0.
