@@ -277,7 +277,7 @@ tests_rand_start (void)
   perform_seed = getenv ("GMP_CHECK_RANDOMIZE");
   if (perform_seed != NULL)
     {
-      seed = atoi (perform_seed);
+      seed = strtoul (perform_seed, NULL, 10);
       if (! (seed == 0 || seed == 1))
         {
           printf ("Re-seeding with GMP_CHECK_RANDOMIZE=%lu\n", seed);
