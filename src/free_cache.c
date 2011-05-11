@@ -44,8 +44,15 @@ free_l2b (void)
 void
 mpfr_free_cache (void)
 {
+#ifndef MPFR_USE_LOGGING
   mpfr_clear_cache (__gmpfr_cache_const_pi);
   mpfr_clear_cache (__gmpfr_cache_const_log2);
+#else
+  mpfr_clear_cache (__gmpfr_normal_pi);
+  mpfr_clear_cache (__gmpfr_normal_log2);
+  mpfr_clear_cache (__gmpfr_logging_pi);
+  mpfr_clear_cache (__gmpfr_logging_log2);
+#endif
   mpfr_clear_cache (__gmpfr_cache_const_euler);
   mpfr_clear_cache (__gmpfr_cache_const_catalan);
   /* free_l2b (); */

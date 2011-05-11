@@ -24,7 +24,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* Declare the cache */
+#ifndef MPFR_USE_LOGGING
 MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_log2, mpfr_const_log2_internal);
+#else
+MPFR_DECL_INIT_CACHE(__gmpfr_normal_log2, mpfr_const_log2_internal);
+MPFR_DECL_INIT_CACHE(__gmpfr_logging_log2, mpfr_const_log2_internal);
+mpfr_cache_ptr MPFR_THREAD_ATTR __gmpfr_cache_const_log2 = __gmpfr_normal_log2;
+#endif
 
 /* Set User interface */
 #undef mpfr_const_log2

@@ -238,6 +238,7 @@ struct __gmpfr_cache_s {
   int (*func)(mpfr_ptr, mpfr_rnd_t);
 };
 typedef struct __gmpfr_cache_s mpfr_cache_t[1];
+typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
 
 #if defined (__cplusplus)
 extern "C" {
@@ -248,10 +249,24 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
+
+#ifndef MPFR_USE_LOGGING
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
+#else
+/* Two constants are used by the logging functions (via mpfr_fprintf,
+   then mpfr_log, for the base conversion): pi and log(2). Since the
+   mpfr_cache function isn't re-entrant when working on the same cache,
+   we need to define two caches for each constant. */
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_normal_pi;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_normal_log2;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_logging_pi;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_logging_log2;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2;
+#endif
 
 #define BASE_MAX 62
 __MPFR_DECLSPEC extern const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2];
@@ -1552,8 +1567,12 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
     {                                                                   \
       int old_level = mpfr_log_level;                                   \
       mpfr_log_level = -1;  /* disable logging in mpfr_fprintf */       \
+      __gmpfr_cache_const_pi = __gmpfr_logging_pi;                      \
+      __gmpfr_cache_const_log2 = __gmpfr_logging_log2;                  \
       mpfr_fprintf (mpfr_log_file, format, __VA_ARGS__);                \
       mpfr_log_level = old_level;                                       \
+      __gmpfr_cache_const_pi = __gmpfr_normal_pi;                       \
+      __gmpfr_cache_const_log2 = __gmpfr_normal_log2;                   \
     }                                                                   \
   while (0)
 
