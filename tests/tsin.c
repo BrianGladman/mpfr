@@ -348,6 +348,17 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_prec (s, 9);
+  mpfr_set_prec (x, 190);
+  mpfr_const_pi (x, MPFR_RNDN);
+  mpfr_sin (s, x, MPFR_RNDZ);
+  if (mpfr_cmp_str (s, "0.100000101e-196", 2, MPFR_RNDN))
+    {
+      printf ("Error for x ~= pi\n");
+      mpfr_dump (s);
+      exit (1);
+    }
+
   mpfr_clear (s2);
   mpfr_clear (c2);
   mpfr_clear (s);
