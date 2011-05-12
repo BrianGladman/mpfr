@@ -80,6 +80,10 @@ typedef enum {
 #define GMP_RNDU MPFR_RNDU
 #define GMP_RNDD MPFR_RNDD
 
+/* Note: With the following default choices for _MPFR_PREC_FORMAT and
+   _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as mp_exp_t (at least
+   up to GMP 5). */
+
 /* Define precision: 1 (short), 2 (int) or 3 (long) (DON'T USE IT!) */
 #ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT == 1
@@ -87,6 +91,16 @@ typedef enum {
 # else
 #  define _MPFR_PREC_FORMAT 3
 # endif
+#endif
+
+/* Define exponent: 1 (short), 2 (int), 3 (long) or 4 (intmax_t)
+   (DON'T USE IT!) */
+#ifndef _MPFR_EXP_FORMAT
+# define _MPFR_EXP_FORMAT _MPFR_PREC_FORMAT
+#endif
+
+#if _MPFR_PREC_FORMAT > _MPFR_EXP_FORMAT
+# error "mpfr_prec_t must not be larger than mpfr_exp_t"
 #endif
 
 /* Let's make mpfr_prec_t signed in order to avoid problems due to the
@@ -114,12 +128,35 @@ typedef unsigned long  mpfr_uprec_t;
 /* Definition of sign */
 typedef int          mpfr_sign_t;
 
-/* Definition of the exponent: same as in GMP. */
-typedef mp_exp_t     mpfr_exp_t;
+/* Definition of the exponent. _MPFR_EXP_FORMAT must be large enough
+   so that mpfr_exp_t has at least 32 bits. */
+#if   _MPFR_EXP_FORMAT == 1
+typedef short mpfr_exp_t;
+typedef unsigned short mpfr_uexp_t;
+#elif _MPFR_EXP_FORMAT == 2
+typedef int mpfr_exp_t;
+typedef unsigned int mpfr_uexp_t;
+#elif _MPFR_EXP_FORMAT == 3
+typedef long mpfr_exp_t;
+typedef unsigned long mpfr_uexp_t;
+#elif _MPFR_EXP_FORMAT == 4
+typedef intmax_t mpfr_exp_t;
+typedef uintmax_t mpfr_uexp_t;
+#else
+# error "Invalid MPFR Exp format"
+#endif
 
 /* Definition of the standard exponent limits */
 #define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((mpfr_ulong) 1 << 30) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
+
+/* DON'T USE THIS! (For MPFR-public macros only, see below.)
+   The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
+   are the smallest values. */
+#define __MPFR_EXP_MAX ((mpfr_exp_t) (((mpfr_uexp_t) -1) >> 1))
+#define __MPFR_EXP_NAN  (1 - __MPFR_EXP_MAX)
+#define __MPFR_EXP_ZERO (0 - __MPFR_EXP_MAX)
+#define __MPFR_EXP_INF  (2 - __MPFR_EXP_MAX)
 
 /* Definition of the main structure */
 typedef struct {
@@ -671,23 +708,6 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 #if defined (__cplusplus)
 }
-#endif
-
-/* DON'T USE THIS! (For MPFR-public macros only, see below.)
-   The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
-   are the smallest values.
-   FIXME: In the following macros, the cast of an unsigned type with MSB set
-   to the signed type mpfr_exp_t yields an integer overflow, which can give
-   unexpected results with future compilers and aggressive optimisations.
-   Why not working only with signed types, using INT_MIN and LONG_MIN? */
-#if __GMP_MP_SIZE_T_INT
-#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_uint)0)>>1))+3))
-#else
-#define __MPFR_EXP_NAN  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+2))
-#define __MPFR_EXP_ZERO ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+1))
-#define __MPFR_EXP_INF  ((mpfr_exp_t)((~((~(mpfr_ulong)0)>>1))+3))
 #endif
 
 /* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */

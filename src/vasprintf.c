@@ -78,14 +78,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #error "mpfr_prec_t size not supported"
 #endif
 
-#if (__GMP_MP_SIZE_T_INT == 1)
-#define MPFR_EXP_FORMAT_SPEC "i"
-#elif (__GMP_MP_SIZE_T_INT == 0)
-#define MPFR_EXP_FORMAT_SPEC "li"
-#else
-#error "mpfr_exp_t size not supported"
-#endif
-
 /* Output for special values defined in the C99 standard */
 #define MPFR_NAN_STRING_LC "nan"
 #define MPFR_NAN_STRING_UC "NAN"
@@ -1155,9 +1147,9 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
     exp_fmt[0] = uppercase ? 'P' : 'p';
     exp_fmt[1] = '\0';
-    strcat (exp_fmt, "%+.1" MPFR_EXP_FORMAT_SPEC);
+    strcat (exp_fmt, "%+.1" MPFR_EXP_FSPEC "d");
 
-    if (sprintf (str, exp_fmt, exp) < 0)
+    if (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0)
       return -1;
   }
 
@@ -1275,9 +1267,9 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
     exp_fmt[0] = uppercase ? 'E' : 'e';
     exp_fmt[1] = '\0';
-    strcat (exp_fmt, "%+.2" MPFR_EXP_FORMAT_SPEC);
+    strcat (exp_fmt, "%+.2" MPFR_EXP_FSPEC "d");
 
-    if (sprintf (str, exp_fmt, exp) < 0)
+    if (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0)
       return -1;
   }
 

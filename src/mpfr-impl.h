@@ -650,19 +650,24 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  ***************** exponent limits ********************
  ******************************************************/
 
-/* Define limits and unsigned type of exponent. The following definitions
- * depend on [mp_exp_t]; if this type changes in GMP, these definitions
- * will need to be modified.
- */
-#if __GMP_MP_SIZE_T_INT == 1
-typedef unsigned int       mpfr_uexp_t;
+/* Define limits and unsigned type of exponent.
+   These types can be used in preprocessor directives. */
+#if   _MPFR_EXP_FORMAT == 1
+# define MPFR_EXP_MAX (SHRT_MAX)
+# define MPFR_EXP_MIN (SHRT_MIN)
+#elif _MPFR_EXP_FORMAT == 2
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
-#else
-typedef unsigned long int  mpfr_uexp_t;
+#elif _MPFR_EXP_FORMAT == 3
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
+#elif _MPFR_EXP_FORMAT == 4
+# define MPFR_EXP_MAX (MPFR_INTMAX_MAX)
+# define MPFR_EXP_MIN (MPFR_INTMAX_MIN)
+#else
+# error "Invalid MPFR Exp format"
 #endif
+
 #ifndef mp_exp_unsigned_t
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
