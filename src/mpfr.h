@@ -80,7 +80,7 @@ typedef enum {
 #define GMP_RNDU MPFR_RNDU
 #define GMP_RNDD MPFR_RNDD
 
-/* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
+/* Define precision: 1 (short), 2 (int) or 3 (long) (DON'T USE IT!) */
 #ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT == 1
 #  define _MPFR_PREC_FORMAT 2
