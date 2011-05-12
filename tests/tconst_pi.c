@@ -87,13 +87,15 @@ bug20091030 (void)
       inex = mpfr_const_pi (x, MPFR_RNDU);
       if (inex < 0)
         {
-          printf ("Error, inex < 0 for RNDU (prec=%lu)\n", p);
+          printf ("Error, inex < 0 for RNDU (prec=%lu)\n",
+                  (unsigned long) p);
           exit (1);
         }
       inex = mpfr_const_pi (x, MPFR_RNDD);
       if (inex > 0)
         {
-          printf ("Error, inex > 0 for RNDD (prec=%lu)\n", p);
+          printf ("Error, inex > 0 for RNDD (prec=%lu)\n",
+                  (unsigned long) p);
           exit (1);
         }
     }

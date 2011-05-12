@@ -38,7 +38,8 @@ static void
 error1 (mpfr_rnd_t rnd, mpfr_prec_t prec,
         mpfr_t in, mpfr_t outmul, mpfr_t outsqr)
 {
-  printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
+  printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd),
+         (unsigned long) prec);
   mpfr_dump(in);
   printf("OutputMul="); mpfr_dump(outmul);
   printf("OutputSqr="); mpfr_dump(outsqr);
@@ -49,7 +50,8 @@ static void
 error2 (mpfr_rnd_t rnd, mpfr_prec_t prec, mpfr_t in, mpfr_t out,
         int inexactmul, int inexactsqr)
 {
-  printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
+  printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd),
+         (unsigned long) prec);
   mpfr_dump(in);
   printf("Output="); mpfr_dump(out);
   printf("InexactMul= %d InexactSqr= %d\n", inexactmul, inexactsqr);

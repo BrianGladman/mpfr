@@ -751,7 +751,8 @@ test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
           /* We should have fra <= qr <= frb */
           if ( (mpfr_cmp(fra, frq) > 0) || (mpfr_cmp (frq, frb) > 0))
             {
-              printf("Range error for prec=%lu and %s", prec, op);
+              printf("Range error for prec=%lu and %s",
+                     (unsigned long) prec, op);
               printf ("\nq1="); mpq_out_str(stdout, 2, q1);
               printf ("\nq2="); mpq_out_str(stdout, 2, q2);
               printf ("\nfr_dn="); mpfr_print_binary (fra);

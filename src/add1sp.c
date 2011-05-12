@@ -52,7 +52,9 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       fprintf (stderr, "add1 & add1sp return different values for %s\n"
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
                mpfr_print_rnd_mode (rnd_mode),
-               MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
+               (unsigned long) MPFR_PREC (a),
+               (unsigned long) MPFR_PREC (b),
+               (unsigned long) MPFR_PREC (c));
       mpfr_fprint_binary (stderr, tmpb);
       fprintf (stderr, "\nC = ");
       mpfr_fprint_binary (stderr, tmpc);

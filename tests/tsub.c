@@ -581,17 +581,17 @@ check_rounding (void)
                 if (mpfr_cmp_ui_2exp (a, 1, p) != 0)
                   {
                     printf ("Wrong result in check_rounding\n");
-                    printf ("p=%lu k=%ld l=%ld\n", p, k, l);
+                    printf ("p=%lu k=%ld l=%ld\n", (unsigned long) p, k, l);
                     printf ("b="); mpfr_print_binary (b); puts ("");
                     printf ("c="); mpfr_print_binary (c); puts ("");
-                    printf ("Expected 2^%lu\n", p);
+                    printf ("Expected 2^%lu\n", (unsigned long) p);
                     printf ("Got      "); mpfr_print_binary (a); puts ("");
                     exit (1);
                   }
                 if (i >= 0)
                   {
                     printf ("Wrong ternary value in check_rounding\n");
-                    printf ("p=%lu k=%ld l=%ld\n", p, k, l);
+                    printf ("p=%lu k=%ld l=%ld\n", (unsigned long) p, k, l);
                     printf ("b="); mpfr_print_binary (b); puts ("");
                     printf ("c="); mpfr_print_binary (c); puts ("");
                     printf ("a="); mpfr_print_binary (a); puts ("");

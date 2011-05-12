@@ -86,7 +86,7 @@ check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
           if (mpfr_cmp (x, y))
             {
               printf ("ERROR for mpfr_set_uj and j=%lu and p=%lu\n",
-                      (unsigned long) limb, p);
+                      (unsigned long) limb, (unsigned long) p);
               printf ("X="); mpfr_dump (x);
               printf ("Y="); mpfr_dump (y);
               exit (1);
@@ -95,7 +95,7 @@ check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
             {
               printf ("ERROR for inexact(set_uj): j=%lu p=%lu\n"
                       "Inexact1= %d Inexact2= %d\n",
-                      (unsigned long) limb, p, inex1, inex2);
+                      (unsigned long) limb, (unsigned long) p, inex1, inex2);
               exit (1);
             }
         }
