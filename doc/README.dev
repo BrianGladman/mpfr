@@ -188,6 +188,9 @@ To make a release (for the MPFR team):
      to detect whether tests can fail due to a FP division by 0 on
      platforms where such an operation fails (e.g. trap).
 
+     Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
+     than the "long" type.
+
      Test with valgrind: "valgrind --trace-children=yes make check"
      (after a first "make check" for the compilation).
 
