@@ -647,11 +647,11 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 
 /******************************************************
- ***************** exponent limits ********************
+ **************** exponent properties *****************
  ******************************************************/
 
-/* Define limits and unsigned type of exponent.
-   These types can be used in preprocessor directives. */
+/* Limits of the mpfr_exp_t type (NOT those of valid exponent values).
+   These macros can be used in preprocessor directives. */
 #if   _MPFR_EXP_FORMAT == 1
 # define MPFR_EXP_MAX (SHRT_MAX)
 # define MPFR_EXP_MIN (SHRT_MIN)
@@ -666,10 +666,6 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 # define MPFR_EXP_MIN (MPFR_INTMAX_MIN)
 #else
 # error "Invalid MPFR Exp format"
-#endif
-
-#ifndef mp_exp_unsigned_t
-# define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
 /* Before doing a cast to mpfr_uexp_t, make sure that the value is
