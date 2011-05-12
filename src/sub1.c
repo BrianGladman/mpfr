@@ -173,7 +173,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn      = MPFR_LIMB_SIZE(c);
   if ((UINT_MAX % GMP_NUMB_BITS) == (GMP_NUMB_BITS-1)
       && ((-(unsigned) 1)%GMP_NUMB_BITS > 0))
-    shift_c = (diff_exp - cancel) % GMP_NUMB_BITS;
+    shift_c = ((mpfr_uexp_t) diff_exp - cancel) % GMP_NUMB_BITS;
   else
     {
       shift_c = diff_exp - (cancel % GMP_NUMB_BITS);
@@ -210,7 +210,25 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         0 <= shift_c < GMP_NUMB_BITS
      thus we want cancel2 = ceil((cancel - diff_exp) / GMP_NUMB_BITS) */
 
-  cancel2 = (long int) (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
+  /* Possible optimization with a C99 compiler (i.e. well-defined
+     integer division): if MPFR_PREC_MAX is reduced to
+     ((mpfr_prec_t)((mpfr_uprec_t)(~(mpfr_uprec_t)0)>>1) - GMP_NUMB_BITS + 1)
+     and diff_exp is of type mpfr_exp_t (no need for mpfr_uexp_t, since
+     the sum or difference of 2 exponents must be representable, as used
+     by the multiplication code), then the computation of cancel2 could
+     be simplified to
+       cancel2 = (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
+     because cancel, diff_exp and shift_c are all non-negative and
+     these variables are signed. */
+
+  MPFR_ASSERTD (cancel >= 0);
+  if (cancel >= diff_exp)
+    /* Note that cancel is signed and will be converted to mpfr_uexp_t
+       (type of diff_exp) in the expression below, so that this will
+       work even if cancel is very large and diff_exp = 0. */
+    cancel2 = (cancel - diff_exp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
+  else
+    cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
   printf ("cancel=%lu cancel1=%lu cancel2=%ld\n",
@@ -246,7 +264,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     if ((mp_size_t) cancel1 < bn) /* otherwise b does not overlap with a */
       {
         MPN_ZERO (ap, an + cancel1 - bn);
-        MPN_COPY (ap + an + cancel1 - bn, bp, bn - cancel1);
+        MPN_COPY (ap + (an + cancel1 - bn), bp, bn - cancel1);
       }
     else
       MPN_ZERO (ap, an);
@@ -270,7 +288,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             /* a: <---------------------------->
                c: <-------------------------> */
             {
-              ap2 = ap + an + cancel2 - cn;
+              ap2 = ap + an + (cancel2 - cn);
               if (cn > cancel2)
                 mpn_sub_n (ap2, ap2, cp, cn - cancel2);
             }
@@ -347,7 +365,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
      and the (cn - (an+cancel2)) limbs from c. */
   bn -= an + cancel1;
   cn0 = cn;
-  cn -= (long int) an + cancel2;
+  cn -= an + cancel2;
 
 #ifdef DEBUG
   printf ("last sh=%d bits from a are %lu, bn=%ld, cn=%ld\n",
@@ -601,7 +619,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
       mpfr_exp_t exp_a;
 
-      cancel -= add_exp; /* still valid as unsigned long */
+      cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
       exp_a = MPFR_GET_EXP (b) - cancel;
       if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
