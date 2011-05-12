@@ -1034,13 +1034,13 @@ extern unsigned char *mpfr_stack;
   do {                                                                \
   if ((a) >= 0 && (b) >= 0) {                                         \
          UTYPE uc,ua,ub;                                              \
-         ua = (UTYPE) a; ub = (UTYPE) b;                              \
+         ua = (UTYPE) (a); ub = (UTYPE) (b);                          \
          MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_POS_OVERFLOW);     \
          if (uc > (UTYPE)(MAX)) ACTION_IF_POS_OVERFLOW;               \
          else (c) = (STYPE) uc;                                       \
   } else if ((a) < 0 && (b) < 0) {                                    \
          UTYPE uc,ua,ub;                                              \
-         ua = -(UTYPE) a; ub = -(UTYPE) b;                            \
+         ua = -(UTYPE) (a); ub = -(UTYPE) (b);                        \
          MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_NEG_OVERFLOW);     \
          if (uc >= -(UTYPE)(MIN) || uc > (UTYPE)(MAX)) {              \
            if (uc ==  -(UTYPE)(MIN)) (c) = (MIN);                     \
