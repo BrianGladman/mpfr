@@ -22,6 +22,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if HAVE_STDINT_H
 
+#if _MPFR_EXP_FORMAT == 4
+/* If mpfr_exp_t is defined as intmax_t, intmax_t must be defined before
+   the inclusion of mpfr.h (this test doesn't use mpfr-impl.h). */
+# include <stdint.h>
+#endif
+
 /* Assume that this is in fact a header inclusion for some library
    that uses MPFR, i.e. this inclusion is hidden in another one.
    MPFR currently (rev 6704) fails to handle this case. */

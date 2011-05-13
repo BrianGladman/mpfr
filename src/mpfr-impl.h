@@ -40,6 +40,26 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 #include <limits.h>
 
+#if _MPFR_EXP_FORMAT == 4
+
+/* mpfr_exp_t will be defined as intmax_t */
+
+/* The ISO C99 standard specifies that in C++ implementations the
+   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+#if defined(__cplusplus)
+# define __STDC_LIMIT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#if HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
+#endif
+
+#endif  /* _MPFR_EXP_FORMAT == 4 */
+
 /* Check if we are inside a build of MPFR or inside the test suite.
    This is needed in mpfr.h to export or import the functions.
    It matters only for Windows DLL */

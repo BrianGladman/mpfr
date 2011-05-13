@@ -140,6 +140,9 @@ typedef unsigned int mpfr_uexp_t;
 typedef long mpfr_exp_t;
 typedef unsigned long mpfr_uexp_t;
 #elif _MPFR_EXP_FORMAT == 4
+/* Note: in this case, intmax_t and uintmax_t must be defined before
+   the inclusion of mpfr.h (we do not include <stdint.h> here because
+   of some non-ISO C99 implementations that support these types). */
 typedef intmax_t mpfr_exp_t;
 typedef uintmax_t mpfr_uexp_t;
 #else
