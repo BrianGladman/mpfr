@@ -52,14 +52,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
 
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
-#if HAVE_STDINT_H
-# include <stdint.h>
-#endif
-
 #define MPFR_NEED_LONGLONG_H
+#include "mpfr-intmax.h"
 #include "mpfr-impl.h"
 
 /* Define a length modifier corresponding to mpfr_prec_t.

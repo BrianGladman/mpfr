@@ -24,20 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"       /* for a build within gmp */
 #endif
 
-/* The ISO C99 standard specifies that in C++ implementations the
-   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
-#if defined __cplusplus
-# define __STDC_LIMIT_MACROS
-# define __STDC_CONSTANT_MACROS
-#endif
-
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
-#if HAVE_STDINT_H
-# include <stdint.h>
-#endif
-
+#include "mpfr-intmax.h"
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_INTMAX_T

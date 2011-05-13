@@ -27,20 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <stdlib.h>
 
-/* The ISO C99 standard specifies that in C++ implementations the
-   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
-#if defined __cplusplus
-# define __STDC_LIMIT_MACROS
-# define __STDC_CONSTANT_MACROS
-#endif
-
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
-#endif
-
+#include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
 #ifndef _MPFR_H_HAVE_INTMAX_T

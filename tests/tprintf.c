@@ -25,13 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <stddef.h>
 
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
-#if HAVE_STDINT_H
-# include <stdint.h>
-#endif
-
+#include "mpfr-intmax.h"
 #include "mpfr-test.h"
 #define STDOUT_FILENO 1
 
