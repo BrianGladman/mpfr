@@ -703,6 +703,9 @@ MPFR manual (mpfr.texi):
     This also means that you need to care about the typography. Please
     read Section "Inserting Space" in the Texinfo manual.
   * Follow the English typography, not the French one!
+  * Beware of the following texinfo bug:
+      http://savannah.gnu.org/bugs/?33329
+      http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
 
 ===========================================================================
 
