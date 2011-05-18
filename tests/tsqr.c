@@ -121,12 +121,46 @@ check_special (void)
   mpfr_clear (x);
 }
 
+/* Test of a bug seen with GCC 4.5.2 and GMP 5.0.1 on m68k (m68000 target).
+     http://websympa.loria.fr/wwsympa/arc/mpfr/2011-05/msg00003.html
+     http://websympa.loria.fr/wwsympa/arc/mpfr/2011-05/msg00041.html
+*/
+static void
+check_mpn_sqr (void)
+{
+#if GMP_NUMB_BITS == 32 && __GNU_MP_VERSION >= 5
+  /* Note: since we test a low-level bug, src is initialized
+     without using a GMP function, just in case. */
+  mp_limb_t src[5] =
+    { 0x90000000, 0xbaa55f4f, 0x2cbec4d9, 0xfcef3242, 0xda827999 };
+  mp_limb_t exd[10] =
+    { 0x00000000, 0x31000000, 0xbd4bc59a, 0x41fbe2b5, 0x33471e7e,
+      0x90e826a7, 0xbaa55f4f, 0x2cbec4d9, 0xfcef3242, 0xba827999 };
+  mp_limb_t dst[10];
+  int i;
+
+  mpn_sqr (dst, src, 5);  /* new in GMP 5 */
+  for (i = 0; i < 10; i++)
+    {
+      if (dst[i] != exd[i])
+        {
+          printf ("Error in check_mpn_sqr\n");
+          printf ("exd[%d] = 0x%08lx\n", i, (unsigned long) exd[i]);
+          printf ("dst[%d] = 0x%08lx\n", i, (unsigned long) dst[i]);
+          exit (1);
+        }
+    }
+#endif
+}
+
 int
 main (void)
 {
   mpfr_prec_t p;
 
   tests_start_mpfr ();
+
+  check_mpn_sqr ();
 
   check_special ();
   for (p = 2; p < 200; p++)
