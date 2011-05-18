@@ -2,7 +2,6 @@
 
 Copyright 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
-Copied from mpf/fits_s.h.
 
 This file is part of the GNU MPFR Library.
 
@@ -22,6 +21,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
+
+/* The original version of this file came from GMP's mpf/fits_s.h;
+   it has been adapted for MPFR.  In particular, the result can be
+   rounded away from zero. */
 
 int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
