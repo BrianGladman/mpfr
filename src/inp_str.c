@@ -1,9 +1,8 @@
-/* mpf_inp_str(dest_float, stream, base) -- Input a number in base
-   BASE from stdio stream STREAM and store the result in DEST_FLOAT.
+/* mpfr_inp_str -- input a number in base BASE from stdio stream STREAM
+                   and store the result in ROP
 
 Copyright 1999, 2001, 2002, 2004, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
-(Copied from GMP, file mpf/inp_str.c)
 
 This file is part of the GNU MPFR Library.
 
@@ -25,6 +24,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <ctype.h>
 
 #include "mpfr-impl.h"
+
+/* The original version of this function came from GMP's mpf/inp_str.c;
+   it has been adapted for MPFR. */
 
 size_t
 mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
