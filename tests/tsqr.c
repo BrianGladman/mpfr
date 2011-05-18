@@ -147,6 +147,9 @@ check_mpn_sqr (void)
           printf ("Error in check_mpn_sqr\n");
           printf ("exd[%d] = 0x%08lx\n", i, (unsigned long) exd[i]);
           printf ("dst[%d] = 0x%08lx\n", i, (unsigned long) dst[i]);
+          printf ("Note: This is not a bug in MPFR, but a bug in"
+                  " either GMP or, more\nprobably, in the compiler."
+                  " It may cause other tests to fail.\n");
           exit (1);
         }
     }
