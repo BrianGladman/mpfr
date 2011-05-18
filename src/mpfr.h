@@ -81,7 +81,7 @@ typedef enum {
 #define GMP_RNDD MPFR_RNDD
 
 /* Note: With the following default choices for _MPFR_PREC_FORMAT and
-   _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as mp_exp_t (at least
+   _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as [mp_exp_t] (at least
    up to GMP 5). */
 
 /* Define precision: 1 (short), 2 (int) or 3 (long) (DON'T USE IT!) */
