@@ -3,7 +3,7 @@
 Copyright 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
-This file is part of the GNU MPFR Library, and was contributed by Mathieu Dutour.
+This file is part of the GNU MPFR Library.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
