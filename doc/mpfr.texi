@@ -3448,8 +3448,8 @@ as well as the internal function @code{mpfr_exp3},
 a first implementation of the sine and cosine,
 and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.
-Mathieu Dutour contributed the functions @code{mpfr_atan} and @code{mpfr_asin},
-and a previous version of @code{mpfr_gamma};
+Mathieu Dutour contributed the functions @code{mpfr_acos}, @code{mpfr_asin}
+and @code{mpfr_atan}, and a previous version of @code{mpfr_gamma};
 David Daney contributed the hyperbolic and inverse hyperbolic functions,
 the base-2 exponential, and the factorial function. Fabrice Rouillier
 contributed the @code{mpfr_xxx_z} and @code{mpfr_xxx_q} functions,
@@ -3458,6 +3458,9 @@ Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
 Damien Stehl@'e contributed the @code{mpfr_get_ld_2exp} function.
 Sylvain Chevillard contributed the @code{mpfr_ai} function.
+Alain Delplanque contributed the new version of the @code{mpfr_get_str}
+function.
+Laurent Fousse contributed the @code{mpfr_sum} function.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
 fruitful discussions at the beginning of that project, Torbj@"orn Granlund
