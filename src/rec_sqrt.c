@@ -383,14 +383,14 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
             MPN_COPY (x, u, ln);
           cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
           /* add cu at x+un */
-	  cy += (th == 0) ? cu : mpn_add_1 (x + un, x + un, th, cu);
+          cy += (th == 0) ? cu : mpn_add_1 (x + un, x + un, th, cu);
         }
       else /* negative case */
         {
           /* subtract {u+ln, un-ln} from {x+ln,un} */
           cy = mpn_sub (x + ln, x + ln, xn, u + ln, un - ln);
           /* carry cy is at x+un, like cu, and n -  un = th */
-	  cy += (th == 0) ? cu : mpn_sub_1 (x + un, x + un, th, cy + cu);
+          cy += (th == 0) ? cu : mpn_sub_1 (x + un, x + un, th, cy + cu);
           /* cy cannot be zero, since the most significant bit of Xh is 1,
              and the correction is bounded by 2^{-h+3} */
           MPFR_ASSERTD(cy == 0);
