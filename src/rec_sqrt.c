@@ -361,6 +361,16 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
         }
       else /* round bit is in u[-1] */
         cu = mpn_add_1 (u, u, un, u[-1] >> (GMP_NUMB_BITS - 1));
+      /* cu can be 1 only when we had before u >= 111...111, with at least
+         un*GMP_NUMB_BITS+1-pl+as leading ones, i.e.,
+         p+1+as-th*GMP_NUMB_BITS leading ones.
+         Since u is obtained by truncating t_l * x_h, where x_h has h
+         significant bits, if x_h <= 1 - 2^(-(p+1+as-th*GMP_NUMB_BITS)),
+         then u < 1 - 2^(-(p+1-th*GMP_NUMB_BITS)), and cu=0.
+         This is true when th=0, since x_h has only h significant bits,
+         and we always have h < p for p >= 12.
+      */
+      MPFR_ASSERTN(cu == 0);
 
       /* We already have filled {x + ln, xn = n - ln}, and we want to add or
          subtract cu*B^un + {u, un} at position x.
@@ -377,21 +387,26 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
          we need to add or subtract the overlapping part {u + ln, un - ln} */
       /* Warning! th may be 0, in which case the mpn_add_1 and mpn_sub_1
          below (with size = th) mustn't be used. */
+      MPFR_ASSERTD (cu <= 1);
       if (neg == 0)
         {
           if (ln > 0)
             MPN_COPY (x, u, ln);
           cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
-          /* add cu at x+un */
+          /* cy is the carry at x + (ln + xn) = x + n */
+
+          /* add cu at x + un */
           cy += (th == 0) ? cu : mpn_add_1 (x + un, x + un, th, cu);
         }
       else /* negative case */
         {
           /* subtract {u+ln, un-ln} from {x+ln,un} */
           cy = mpn_sub (x + ln, x + ln, xn, u + ln, un - ln);
-          /* carry cy is at x+un, like cu, and n -  un = th */
-          cy += (th == 0) ? cu : mpn_sub_1 (x + un, x + un, th, cy + cu);
-          /* cy cannot be zero, since the most significant bit of Xh is 1,
+          /* cy is the borrow at x + (ln + xn) = x + n */
+
+          /* subtract cu at x + un */
+          cy += (th == 0) ? cu : mpn_sub_1 (x + un, x + un, th, cu);
+          /* cy cannot be non-zero, since the most significant bit of Xh is 1,
              and the correction is bounded by 2^{-h+3} */
           MPFR_ASSERTD(cy == 0);
           if (ln > 0)
