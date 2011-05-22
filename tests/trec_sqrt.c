@@ -119,6 +119,67 @@ pm2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   return mpfr_pow_si (y, x, -2, rnd_mode);
 }
 
+/* exercises corner cases with inputs around 1 or 2 */
+static void
+bad_case2 (void)
+{
+  mpfr_t r, u;
+  mpfr_prec_t pr, pu;
+  mpfr_rnd_t rnd;
+
+  for (pr = MPFR_PREC_MIN; pr <= 192; pr++)
+    for (pu = MPFR_PREC_MIN; pu <= 192; pu++)
+      {
+	mpfr_init2 (r, pr);
+	mpfr_init2 (u, pu);
+
+	mpfr_set_ui (u, 1, MPFR_RNDN);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextbelow (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextbelow (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_set_ui (u, 1, MPFR_RNDN);
+	mpfr_nextabove (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextabove (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_set_ui (u, 2, MPFR_RNDN);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextbelow (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextbelow (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_set_ui (u, 2, MPFR_RNDN);
+	mpfr_nextabove (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_nextabove (u);
+	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+	  mpfr_rec_sqrt (r, u, rnd);
+
+	mpfr_clear (r);
+	mpfr_clear (u);
+      }
+}
+
 int
 main (void)
 {
@@ -126,6 +187,7 @@ main (void)
 
   special ();
   bad_case1 ();
+  bad_case2 ();
   test_generic (2, 300, 15);
 
   data_check ("data/rec_sqrt", mpfr_rec_sqrt, "mpfr_rec_sqrt");

@@ -66,7 +66,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    including the case where ap <= GMP_NUMB_BITS, thus it can be used to
    implement an efficient mpfr_rec_sqrt_ui function.
 
-   Reference: Modern Computer Algebra, Richard Brent and Paul Zimmermann,
+   References:
+   [1] Modern Computer Algebra, Richard Brent and Paul Zimmermann,
    http://www.loria.fr/~zimmerma/mca/pub226.html
 */
 static void
@@ -197,6 +198,9 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       mp_limb_t neg, cy, cu;
       MPFR_TMP_DECL(marker);
 
+      /* compared to Algorithm 3.9 of [1], we have {a, an} = A/2 if as=0,
+	 and A/4 if as=1. */
+
       /* h = max(11, ceil((p+3)/2)) is the bitsize of the recursive call */
       h = (p < 18) ? 11 : (p >> 1) + 2;
 
@@ -208,7 +212,15 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
          we get |Xh^2 - 1/A| <= 2^{-h+1}, thus |A*Xh^2 - 1| <= 2^{-h+3},
          thus the h-3 most significant bits of t should be zero,
          which is in fact h+1+as-3 because of the normalization of A.
-         This corresponds to th=floor((h+1+as-3)/GMP_NUMB_BITS) limbs. */
+         This corresponds to th=floor((h+1+as-3)/GMP_NUMB_BITS) limbs.
+	 
+	 More precisely we have |Xh^2 - 1/A| <= 2^{-h} * (Xh + A^{-1/2})
+	 <= 2^{-h} * (2 A^{-1/2} + 2^{-h}) <= 2.001 * 2^{-h} * A^{-1/2}
+	 since A < 4 and h >= 11, thus
+	 |A*Xh^2 - 1| <= 2.001 * 2^{-h} * A^{1/2} <= 1.001 * 2^{2-h}.
+	 This is sufficient to prove that the upper limb of {t,tn} below is
+	 less that 0.501 * 2^GMP_NUMB_BITS, thus cu = 0 below.
+      */
       th = (h + 1 + as - 3) >> MPFR_LOG2_GMP_NUMB_BITS;
       tn = LIMB_SIZE(2 * h + 1 + as);
 
@@ -220,6 +232,8 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       mpfr_mpn_rec_sqrt (x + ln, h, a + an - ahn, ahn * GMP_NUMB_BITS, as);
       /* the most h significant bits of X are set, X has ceil(h/GMP_NUMB_BITS)
          limbs, the low (-h) % GMP_NUMB_BITS bits are zero */
+
+      /* compared to Algorithm 3.9 of [1], we have {x+ln,xn} = X_h */
 
       MPFR_TMP_MARK (marker);
       /* first step: square X in r, result is exact */
@@ -243,6 +257,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       else
         {
           mpn_mul_n (r, x + ln, x + ln, xn);
+	  /* we have {r, 2*xn} = X_h^2 */
           if (rn < 2 * xn)
             r ++;
         }
@@ -276,7 +291,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
              100000... or 011111... if as=0, or
              010000... or 001111... if as=1.
              We ignore the bits of s after the first 2h+1+as ones.
-          */
+	     We have {s, rn+an} = A*X_h^2/2 if as=0, A*X_h^2/4 if as=1. */
         }
 
       /* We ignore the bits of s after the first 2h+1+as ones: s has rn + an
@@ -326,6 +341,8 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       else
         mpn_mul (u, t, tn, x + ln, xn);
 
+      /* we have {u, tn+xn} = T_l X_h/2 if as=0, T_l X_h/4 if as=1 */
+
       /* we have already discarded the upper th high limbs of t, thus we only
          have to consider the upper n - th limbs of u */
       un = n - th; /* un cannot be zero, since p <= n*GMP_NUMB_BITS,
@@ -350,6 +367,8 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
            least significant bit of u[0] */
         mpn_lshift (u - 1, u - 1, un + 1, 1);
 
+      /* now {u,un} represents U / 2 from Algorithm 3.9 */
+
       pl = n * GMP_NUMB_BITS - p;       /* low bits from x */
       /* We want that the low pl bits are zero after rounding to nearest,
          thus we round u to nearest at bit pl-1 of u[0] */
@@ -361,19 +380,10 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
         }
       else /* round bit is in u[-1] */
         cu = mpn_add_1 (u, u, un, u[-1] >> (GMP_NUMB_BITS - 1));
-      /* cu can be 1 only when we had before u >= 111...111, with at least
-         un*GMP_NUMB_BITS+1-pl+as leading ones, i.e.,
-         p+1+as-th*GMP_NUMB_BITS leading ones.
-         Since u is obtained by truncating t_l * x_h, where x_h has h
-         significant bits, if x_h <= 1 - 2^(-(p+1+as-th*GMP_NUMB_BITS)),
-         then u < 1 - 2^(-(p+1-th*GMP_NUMB_BITS)), and cu=0.
-         This is true when th=0, since x_h has only h significant bits,
-         and we always have h < p for p >= 12.
-      */
       MPFR_ASSERTN(cu == 0);
 
       /* We already have filled {x + ln, xn = n - ln}, and we want to add or
-         subtract cu*B^un + {u, un} at position x.
+         subtract {u, un} at position x.
          un = n - th, where th contains <= h+1+as-3<=h-1 bits
          ln = n - xn, where xn contains >= h bits
          thus un > ln.
@@ -387,16 +397,12 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
          we need to add or subtract the overlapping part {u + ln, un - ln} */
       /* Warning! th may be 0, in which case the mpn_add_1 and mpn_sub_1
          below (with size = th) mustn't be used. */
-      MPFR_ASSERTD (cu <= 1);
       if (neg == 0)
         {
           if (ln > 0)
             MPN_COPY (x, u, ln);
           cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
           /* cy is the carry at x + (ln + xn) = x + n */
-
-          /* add cu at x + un */
-          cy += (th == 0) ? cu : mpn_add_1 (x + un, x + un, th, cu);
         }
       else /* negative case */
         {
@@ -404,8 +410,6 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
           cy = mpn_sub (x + ln, x + ln, xn, u + ln, un - ln);
           /* cy is the borrow at x + (ln + xn) = x + n */
 
-          /* subtract cu at x + un */
-          cy += (th == 0) ? cu : mpn_sub_1 (x + un, x + un, th, cu);
           /* cy cannot be non-zero, since the most significant bit of Xh is 1,
              and the correction is bounded by 2^{-h+3} */
           MPFR_ASSERTD(cy == 0);
