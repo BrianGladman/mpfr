@@ -223,7 +223,7 @@ Table of contents:
   functions. For example mpfr_frac_floor(x) = x - floor(x). (The current
   mpfr_frac function corresponds to mpfr_rint_trunc.)
 - scaled erfc (http://websympa.loria.fr/wwsympa/arc/mpfr/2009-05/msg00054.html)
-- asec, acsc, acot, asech, acsch and acoth (mail from Björn Terelius on mpfr
+- asec, acsc, acot, asech, acsch and acoth (mail from BjÃ¶rn Terelius on mpfr
   list, 18 June 2009)
 
 ##############################################################################
