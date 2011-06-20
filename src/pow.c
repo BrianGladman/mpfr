@@ -326,14 +326,38 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
        * correctly detect underflows and overflows. However, in rounding to
        * nearest, if z * 2^k = 2^(emin - 2), then the double rounding may
        * affect the result. We need to cope with that before overwriting z.
+       * This can occur only if k < 0 (this test is necessary to avoid a
+       * potential integer overflow).
        * If inexact >= 0, then the real result is <= 2^(emin - 2), so that
        * o(2^(emin - 2)) = +0 is correct. If inexact < 0, then the real
        * result is > 2^(emin - 2) and we need to round to 2^(emin - 1).
        */
-      MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
+      MPFR_ASSERTN (MPFR_EXP_MAX <= LONG_MAX);
       lk = mpfr_get_si (k, MPFR_RNDN);
-      if (rnd_mode == MPFR_RNDN && inexact < 0 &&
-          MPFR_GET_EXP (z) + lk == __gmpfr_emin - 1 && mpfr_powerof2_raw (z))
+      /* Due to early overflow detection, |k| should not be much larger than
+       * MPFR_EMAX_MAX, and as MPFR_EMAX_MAX <= MPFR_EXP_MAX/2 <= LONG_MAX/2,
+       * an overflow should not be possible in mpfr_get_si (and lk is exact).
+       * And one even has the following assertion. TODO: complete proof.
+       */
+      MPFR_ASSERTD (lk > LONG_MIN && lk < LONG_MAX);
+      /* Note: even in case of overflow (lk inexact), the code is correct.
+       * Indeed, for the 3 occurrences of lk:
+       *   - The test lk < 0 is correct as sign(lk) = sign(k).
+       *   - In the test MPFR_GET_EXP (z) == __gmpfr_emin - 1 - lk,
+       *     if lk is inexact, then lk = LONG_MIN <= MPFR_EXP_MIN
+       *     (the minimum value of the mpfr_exp_t type), and
+       *     __gmpfr_emin - 1 - lk >= MPFR_EMIN_MIN - 1 - 2 * MPFR_EMIN_MIN
+       *     >= - MPFR_EMIN_MIN - 1 = MPFR_EMAX_MAX - 1. However, from the
+       *     choice of k, z has been chosen to be around 1, so that the
+       *     result of the test is false, as if lk were exact.
+       *   - In the mpfr_mul_2si (z, z, lk, rnd_mode), if lk is inexact,
+       *     then |lk| >= LONG_MAX >= MPFR_EXP_MAX, and as z is around 1,
+       *     mpfr_mul_2si underflows or overflows in the same way as if
+       *     lk were exact.
+       * TODO: give a bound on |t|, then on |EXP(z)|.
+       */
+      if (rnd_mode == MPFR_RNDN && inexact < 0 && lk < 0 &&
+          MPFR_GET_EXP (z) == __gmpfr_emin - 1 - lk && mpfr_powerof2_raw (z))
         {
           /* Rounding to nearest, real result > z * 2^k = 2^(emin - 2),
            * underflow case: as the minimum precision is > 1, we will
