@@ -392,13 +392,13 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 /* The computation of z = pow(x,y) is done by
    z = exp(y * log(x)) = x^y
    For the special cases, see Section F.9.4.4 of the C standard:
-     _ pow(±0, y) = ±inf for y an odd integer < 0.
-     _ pow(±0, y) = +inf for y < 0 and not an odd integer.
-     _ pow(±0, y) = ±0 for y an odd integer > 0.
-     _ pow(±0, y) = +0 for y > 0 and not an odd integer.
-     _ pow(-1, ±inf) = 1.
+     _ pow(Â±0, y) = Â±inf for y an odd integer < 0.
+     _ pow(Â±0, y) = +inf for y < 0 and not an odd integer.
+     _ pow(Â±0, y) = Â±0 for y an odd integer > 0.
+     _ pow(Â±0, y) = +0 for y > 0 and not an odd integer.
+     _ pow(-1, Â±inf) = 1.
      _ pow(+1, y) = 1 for any y, even a NaN.
-     _ pow(x, ±0) = 1 for any x, even a NaN.
+     _ pow(x, Â±0) = 1 for any x, even a NaN.
      _ pow(x, y) = NaN for finite x < 0 and finite non-integer y.
      _ pow(x, -inf) = +inf for |x| < 1.
      _ pow(x, -inf) = +0 for |x| > 1.
