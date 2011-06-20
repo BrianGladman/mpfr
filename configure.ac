@@ -482,12 +482,14 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
 
-dnl FIXME (in mpfr-gmp.h too): __gmpn_rootrem is an internal GMP
-dnl symbol; thus it may be changed or removed (without being handled
-dnl by the versioning system, which is even worse, as this can mean
-dnl undetected incompatibilities in case of GMP library upgrade).
-dnl Only the GMP public API should be used. Moreover the check below
-dnl may yield an incorrect result as libtool isn't used in configure
+dnl Warning! __gmpn_rootrem is an internal GMP symbol; thus its behavior
+dnl may change or this symbol may be removed in the future (without being
+dnl handled by the library versioning system, which is even worse, as this
+dnl can mean undetected incompatibilities in case of GMP library upgrade,
+dnl without rebuilding MPFR). So, this symbol must not be used, unless
+dnl WANT_GMP_INTERNALS is defined. Only the GMP public API should be used
+dnl by default, in particular by binary distributions. Moreover the check
+dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
 AC_CHECK_FUNCS([__gmpn_rootrem])
 
