@@ -493,6 +493,11 @@ Define them. Run your program, and view `mpfr.log`.
 
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
 
+Note: The running time may be much longer. If logging is used on the
+testsuite with a default timeout, it may be necessary to increase the
+timeout time by setting the environment variable MPFR_TESTS_TIMEOUT
+to the new timeout value in seconds (or 0 to disable the timeout).
+
    ====================================================================
 
 This feature is available only for gcc >= 3.0 and glibc >= 2.0.
