@@ -1155,7 +1155,8 @@ such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of
 @code{mpfr_set_flt}, @code{mpfr_set_d},
 @code{mpfr_set_ld} or @code{mpfr_set_decimal64}.
 Otherwise the floating-point constant will be first
-converted into a reduced-precision (e.g., 53-bit) binary number before
+converted into a reduced-precision (e.g., 53-bit) binary
+(or decimal, for @code{mpfr_set_decimal64}) number before
 MPFR can work with it.
 @end deftypefun
 
