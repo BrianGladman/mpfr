@@ -336,12 +336,22 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
 dnl It also disables the tests involving the linking with LIBGMP if DLL
+dnl
+dnl "-Wl,output-def" is used to get a .def file for use by MS lib to make
+dnl a .lib import library, described in the manual.
+dnl
+dnl Incidentally, libtool does generate an import library libmpfr.dll.a,
+dnl but it's "ar" format and cannot be used by the MS linker.  There
+dnl doesn't seem to be any GNU tool for generating or converting to .lib.
+AC_SUBST(MPFR_LDFLAGS)
+AC_SUBST(LIBMPFR_LDFLAGS)
 AC_LIBTOOL_WIN32_DLL
 case $host in
   *-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-os2*)
    AC_MSG_CHECKING(for DLL/static GMP)
    if test "$enable_shared" = yes; then
-     LDFLAGS="$LDFLAGS -no-undefined"
+     MPFR_LDFLAGS="$MPFR_LDFLAGS -no-undefined"
+     LIBMPFR_LDFLAGS="$LIBMPFR_LDFLAGS -Wl,--output-def,.libs/libmpfr-4.dll.def"
      dont_link_with_gmp="yes"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
