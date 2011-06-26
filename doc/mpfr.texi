@@ -109,7 +109,7 @@ floating-point arithmetic, version @value{VERSION}.
 * References::
 * GNU Free Documentation License::
 * Concept Index::
-* Function Index::
+* Function and Type Index::
 @end menu
 
 
@@ -3544,12 +3544,12 @@ Birkh@"auser, Boston, 2009.
 @include fdl.texi
 
 
-@node Concept Index, Function Index, GNU Free Documentation License, Top
+@node Concept Index, Function and Type Index, GNU Free Documentation License, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Concept Index
 @printindex cp
 
-@node Function Index,  , Concept Index, Top
+@node Function and Type Index,  , Concept Index, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Function and Type Index
 @printindex fn
