@@ -28,7 +28,7 @@ open VERSION, '<', 'VERSION'
 my $version = do { local $/; <VERSION> };
 close VERSION or die "$!\n$0: can't close VERSION file\n";
 
-my ($mv,$pl,$suf) = $version =~ /^(\d+\.\d+)\.(\d+)(-.*)?$/
+my ($mv,$pl,$suf) = $version =~ /^(\d+\.\d+)\.(\d+)(-\S+)?/
   or die "$0: bad VERSION format\n";
 
 open MF, '<', 'src/Makefile.am'
@@ -45,7 +45,7 @@ while (<MF>)
     $age = $3;
     $mv eq $1 and $vinfo = "$cur:$pl:$age";
   }
-/^libmpfr_la_LDFLAGS\s+=\s+-version-info\s+(\d+:\d+:\d+)$/
+/^libmpfr_la_LDFLAGS\s+=.*\s-version-info\s+(\d+:\d+:\d+)\s/
   or die "$0: missing correct libmpfr_la_LDFLAGS line";
 close MF or die "$!\n$0: can't close Makefile.am file\n";
 $suf eq '-dev' || $vinfo eq $1
