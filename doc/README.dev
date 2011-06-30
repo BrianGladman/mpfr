@@ -883,3 +883,18 @@ exec $cmd gdb "$@"
 and
 
   alias gdb='/path/to/the/wrapper/script'
+
+===========================================================================
+
+For developers - Use of the svn:eol-style Subversion property
+
+The svn:eol-style Subversion property is traditionally set to "native" on
+text files, but this has drawbacks:
+  * On systems where the end-of-line (EOL) sequence is not LF, the obtained
+    files are different from those from the tarballs. This makes maintenance
+    harder.
+  * Some tools under Windows (such as makeinfo of MinGW/MSYS) don't support
+    the MS-Windows EOL sequence CRLF, and the MPFR build fails.
+
+For these reasons, the svn:eol-style Subversion property should never be set
+to "native".
