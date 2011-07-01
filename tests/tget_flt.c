@@ -32,6 +32,12 @@ main (void)
   int i;
 
   infp = FLT_MAX + FLT_MAX;
+  if (infp * 0.5 != infp)
+    {
+      fprintf (stderr, "Error, FLT_MAX + FLT_MAX does not yield INFP\n");
+      fprintf (stderr, "(this is probably a compiler bug, please report)\n");
+      exit (1);
+    }
 
   tests_start_mpfr ();
 
