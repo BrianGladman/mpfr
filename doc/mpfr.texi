@@ -3267,6 +3267,8 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_li2} in MPFR 2.4.
 
+@item @code{mpfr_min_prec} in MPFR 3.0.
+
 @item @code{mpfr_modf} in MPFR 2.4.
 
 @item @code{mpfr_mul_d} in MPFR 2.4.

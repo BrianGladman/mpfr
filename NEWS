@@ -94,6 +94,7 @@ Changes from versions 2.4.* to version 3.0.0:
 - New function mpfr_urandom.
 - New function mpfr_set_z_2exp (companion to mpfr_get_z_2exp, which
   was renamed from mpfr_get_z_exp in previous versions).
+- New function mpfr_min_prec.
 - Speed improvement for large precisions in the trigonometric functions
   (mpfr_sin, mpfr_cos, mpfr_tan, mpfr_sin_cos): speedup of about 2.5
   for 10^5 digits, of about 5 for 10^6 digits.
