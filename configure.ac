@@ -447,7 +447,7 @@ else
 
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
- [AC_MSG_ERROR(libgmp not found or uses a different ABI.
+ [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
 Please read the INSTALL file -- see "In case of problem".)])
 
 dnl Check for corresponding 'gmp.h' and libgmp.a
