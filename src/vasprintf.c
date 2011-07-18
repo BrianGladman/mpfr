@@ -797,148 +797,21 @@ next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
   return xm & pm ? 1 : 0;
 }
 
-/* For a real non zero number x, what is the exponent f when rounding x with
-   rounding mode r to r(x) = m*10^f, where m has p+1 digits and 1 <= m < 10 ?
+/* For a real non zero number x, what is the exponent f when rounding x after
+   rounding with mode r to r(x) = m*10^f, where m has p+1 digits and
+   1 <= m < 10, i.e., 10^f <= round(x,r) < 10^(f+1).
 
-   Return +1 if x is rounded up to 10^f, return zero otherwise.
-   If e is not NULL, *e is set to f. */
-static int
+   The value of f is put into *e. */
+static void
 round_to_10_power (mpfr_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
 {
-  mpfr_t f, u, v, y;
-  mpfr_prec_t m;
-  mpfr_exp_t ex;
-  mpfr_uexp_t uexp;
-  int roundup = -1; /* boolean (-1: not set) */
+  char *buf;
 
-  MPFR_ZIV_DECL (loop);
-
-  /* y = abs(x) */
-  MPFR_ALIAS (y, x, 1, MPFR_EXP(x));
-
-  /* we want f = floor(log(|x|)/log(10)) exactly.
-     we have |f| >= |Exp(x)|/3,
-     then m = ceil(log(uexp/3)/log(2)) > log(f)/log(2)
-     is a sufficient precision for f. */
-  ex = mpfr_get_exp (x);
-  uexp = SAFE_ABS (mpfr_uexp_t, ex) / 3;
-  m = 1;
-  while (uexp)
-    {
-      uexp >>= 1;
-      m++;
-    }
-  if (m < 2)
-    m = 2;
-  mpfr_init2 (f, m);
-  mpfr_log10 (f, y, MPFR_RNDD);
-  mpfr_floor (f, f);
-
-  /* In most cases, the output exponent is f. */
-  if (e != NULL)
-    *e = (mpfr_exp_t)mpfr_get_si (f, MPFR_RNDD);
-
-  if (r == MPFR_RNDZ
-      || (MPFR_IS_POS (x) && r == MPFR_RNDD)
-      || (MPFR_IS_NEG (x) && r == MPFR_RNDU))
-    /* If rounding toward zero, the exponent is f */
-    {
-      mpfr_clear (f);
-      return 0;
-    }
-
-  /* Is |x| less than 10^(f+1) - 10^(f-p)? */
-  {
-    int cmp;
-    int inex_u, inex_v, inex_w;
-    mpfr_exp_t exp_u, exp_v, exp_w;
-
-    m = MPFR_PREC (x);
-    m += MPFR_INT_CEIL_LOG2 (m);
-    mpfr_init2 (u, m);
-    mpfr_init2 (v, m);
-
-    MPFR_ZIV_INIT (loop, m);
-    for (;;)
-      {
-        mpfr_set_prec (u, m);
-        mpfr_set_prec (v, m);
-
-        /* u = o(10^(f+1)) rounding toward -infinity
-           error (u) < 1 ulp(u)
-           error(u) = 0 if inex_u = 0 */
-        mpfr_add_ui (u, f, 1, MPFR_RNDN);
-        inex_u = mpfr_ui_pow (u, 10, u, MPFR_RNDD);
-        exp_u = MPFR_EXP (u);
-
-        /* if r = rounding to nearest
-           v = o(0.5 * 10^(f-p)) rounding toward +infinity
-           else
-           v = o(10^(f-p)) rounding toward +infinity
-
-           error(v) < 1 ulp(v)
-           error(v) = 0 if inex_v = 0 */
-        mpfr_sub_ui (v, f, p, MPFR_RNDN);
-        inex_v = mpfr_ui_pow (v, 10, v, MPFR_RNDU);
-        if (r == MPFR_RNDN)
-          mpfr_div_2ui (v, v, 1, MPFR_RNDN);
-        exp_v = MPFR_EXP (v);
-
-        /* w = o(u-v) rounding toward -infinity
-           w is an approximation of 10^(f+1) - v with
-           error(w) < 1 ulp(w) + error(u) + error(v)
-           error(w) = 0 iff inex_u = inex_v = inex_diff = 0 */
-        inex_w = mpfr_sub (u, u, v, MPFR_RNDD);
-        exp_w = MPFR_EXP (u);
-
-        cmp = mpfr_cmp (y, u);
-
-        if (cmp < 0)
-          /* |x| < u <= 10^(f+1) - v, the exponent is f */
-          {
-            roundup = 0;
-            break;
-          }
-        else if (cmp == 0 && inex_u == 0 && inex_v == 0 && inex_w == 0)
-          /* |x| = u = 10^(f+1) - v, the exponent is f+1 */
-          {
-            if (e != NULL)
-              (*e)++;
-
-            roundup = +1;
-            break;
-          }
-
-          /* compare |x| with w + error(w) */
-        if (inex_u)
-          mpfr_set_ui_2exp (v, 1, exp_u - m, MPFR_RNDU);
-        else
-          mpfr_set_ui (v, 0, MPFR_RNDN);
-        if (inex_v)
-          mpfr_set_ui_2exp (v, 1, exp_v - m, MPFR_RNDU);
-        if (inex_w)
-          mpfr_set_ui_2exp (v, 1, exp_w - m, MPFR_RNDU);
-
-        mpfr_add (u, u, v, MPFR_RNDU);
-        if (mpfr_cmp (y, u) >= 0)
-          {
-            if (e != NULL)
-              *e = (mpfr_exp_t)mpfr_get_si (f, MPFR_RNDD) + 1;
-
-            roundup = +1;
-            break;
-          }
-
-        MPFR_ZIV_NEXT (loop, m);
-      }
-    MPFR_ZIV_FREE (loop);
-    mpfr_clear (u);
-    mpfr_clear (v);
-  }
-
-  MPFR_ASSERTD (roundup != -1);
-  mpfr_clear (f);
-  return roundup;
+  buf = mpfr_get_str (NULL, e, 10, p + 1, x, r);
+  /* mpfr_get_str corresponds to a significand between 0.1 and 1,
+     whereas here we want a significand between 1 and 10. */
+  *e = *e - 1;
+  mpfr_free_str (buf);
 }
 
 /* Determine the different parts of the string representation of the regular
