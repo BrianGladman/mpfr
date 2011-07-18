@@ -1065,10 +1065,14 @@ subsequent calls to @code{mpfr_init} or @code{mpfr_inits}
 will use this precision, but previously
 initialized variables are unaffected.
 The default precision is set to 53 bits initially.
+
+Note: when MPFR is built with the @code{--enable-thread-safe} configure option,
+the default precision is local to each thread.
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_get_default_prec (void)
 Return the current default MPFR precision in bits.
+See the documentation of @code{mpfr_set_default_prec}.
 @end deftypefun
 
 @need 2000
