@@ -910,7 +910,11 @@ terminating a thread, or before exiting when using tools like
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
 accessed via parameters) are either global (if MPFR has not been
-compiled as thread safe) or per-thread (thread local storage).
+compiled as thread safe) or per-thread (thread local storage, TLS).
+The initial values of TLS data after a thread is created entirely
+depend on the compiler and thread implementation (MPFR simply does
+a conventional variable initialization, the variables being declared
+with an implementation-defined TLS specifier).
 
 @node MPFR Interface, API Compatibility, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
@@ -1091,7 +1095,8 @@ initialized variables are unaffected.
 The default precision is set to 53 bits initially.
 
 Note: when MPFR is built with the @code{--enable-thread-safe} configure option,
-the default precision is local to each thread.
+the default precision is local to each thread. @xref{Memory Handling}, for
+more information.
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_get_default_prec (void)
