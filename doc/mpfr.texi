@@ -518,6 +518,18 @@ the language needs to be improved, please send a note to the same address.
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Basics
 
+@menu
+* Headers and Libraries::
+* Nomenclature and Types::
+* MPFR Variable Conventions::
+* Rounding Modes::
+* Floating-Point Values on Special Numbers::
+* Exceptions::
+* Memory Handling::
+@end menu
+
+@node Headers and Libraries, Nomenclature and Types, MPFR Basics, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Headers and Libraries
 
 @cindex @file{mpfr.h}
@@ -605,6 +617,8 @@ also be necessary to set up some sort of run-time library path (e.g.,
 @samp{LD_LIBRARY_PATH}) on some systems. Please read the @file{INSTALL}
 file for additional information.
 
+@node Nomenclature and Types, MPFR Variable Conventions, Headers and Libraries, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Nomenclature and Types
 
 @cindex Floating-point number
@@ -655,6 +669,8 @@ floating-point operation, in case the exact result can not be represented
 exactly in the destination significand;
 the corresponding C data type is @code{mpfr_rnd_t}.
 
+@node MPFR Variable Conventions, Rounding Modes, Nomenclature and Types, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section MPFR Variable Conventions
 
 Before you can assign to an MPFR variable, you need to initialize it by calling
@@ -682,6 +698,8 @@ This
 computes the square of @var{x} with rounding mode @code{rnd}
 and puts the result back in @var{x}.
 
+@node Rounding Modes, Floating-Point Values on Special Numbers, MPFR Variable Conventions, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Rounding Modes
 
 The following five rounding modes are supported:
@@ -738,6 +756,8 @@ Unless documented otherwise, functions returning as result the value @code{1}
 for special cases (like @code{acos(0)}) yield an overflow or
 an underflow if that value is not representable in the current exponent range.
 
+@node Floating-Point Values on Special Numbers, Exceptions, Rounding Modes, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Floating-Point Values on Special Numbers
 
 This section specifies the floating-point values (of type @code{mpfr_t})
@@ -797,6 +817,8 @@ on (NaN,+Inf) gives +Inf (as specified in @ref{Special Functions}),
 since for any finite input @var{x}, @code{mpfr_hypot} on (@var{x},+Inf)
 gives +Inf.
 
+@node Exceptions, Memory Handling, Floating-Point Values on Special Numbers, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Exceptions
 
 MPFR supports 5 exception types:
@@ -871,6 +893,8 @@ a range error in MPFR.
 
 @end itemize
 
+@node Memory Handling, , Exceptions, MPFR Basics
+@comment  node-name,  next,  previous,  up
 @section Memory Handling
 
 MPFR functions may create caches, e.g., when computing constants such
