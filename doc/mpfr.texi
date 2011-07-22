@@ -915,6 +915,11 @@ The initial values of TLS data after a thread is created entirely
 depend on the compiler and thread implementation (MPFR simply does
 a conventional variable initialization, the variables being declared
 with an implementation-defined TLS specifier).
+@c References to TLS specification or documentation can be given here.
+@c Concerning some thread implementations under Unix, POSIX specifies
+@c the thread interface only; TLS variables (with the __thread specifier)
+@c is just a GCC extension. There is currently no clear documentation
+@c about TLS variable initialization.
 
 @node MPFR Interface, API Compatibility, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
