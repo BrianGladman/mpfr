@@ -44,10 +44,9 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   int inexact;
   mpfr_prec_t p, q;
   mpfr_t tmp1, tmp2;
-  mp_limb_t *tmp1p, *tmp2p;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
-  MPFR_TMP_DECL(marker);
+  MPFR_GROUP_DECL(group);
 
   MPFR_LOG_FUNC
     (("a[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (a), mpfr_log_prec, a, rnd_mode),
@@ -111,23 +110,17 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   /* if (MPFR_LIKELY(p % GMP_NUMB_BITS != 0))
       p += GMP_NUMB_BITS - (p%GMP_NUMB_BITS); */
 
-  MPFR_TMP_MARK(marker);
   MPFR_SAVE_EXPO_MARK (expo);
+  MPFR_GROUP_INIT_2 (group, p, tmp1, tmp2);
 
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
-      mp_size_t size;
       long m;
       mpfr_exp_t cancel;
 
       /* Calculus of m (depends on p) */
       m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
-
-      /* All the mpfr_t needed have a precision of p */
-      size = (p-1)/GMP_NUMB_BITS+1;
-      MPFR_TMP_INIT (tmp1p, tmp1, p, size);
-      MPFR_TMP_INIT (tmp2p, tmp2, p, size);
 
       mpfr_mul_2si (tmp2, a, m, MPFR_RNDN);    /* s=a*2^m,        err<=1 ulp  */
       mpfr_div (tmp1, __gmpfr_four, tmp2, MPFR_RNDN);/* 4/s,      err<=2 ulps */
@@ -166,11 +159,12 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
         }
 
       MPFR_ZIV_NEXT (loop, p);
+      MPFR_GROUP_REPREC_2 (group, p, tmp1, tmp2);
     }
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (r, tmp1, rnd_mode);
   /* We clean */
-  MPFR_TMP_FREE(marker);
+  MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
