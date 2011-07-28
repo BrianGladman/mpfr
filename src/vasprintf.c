@@ -797,6 +797,14 @@ next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
   return xm & pm ? 1 : 0;
 }
 
+/* Record information from mpfr_get_str() so as to avoid multiple
+   calls to this expensive function. */
+struct decimal_info
+{
+  mpfr_exp_t exp;
+  char *str;
+};
+
 /* For a real non zero number x, what is the exponent f when rounding x after
    rounding with mode r to r(x) = m*10^f, where m has p+1 digits and
    1 <= m < 10, i.e., 10^f <= round(x,r) < 10^(f+1).
@@ -1025,11 +1033,12 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when SPEC.SPEC is 'e', 'E', 'g', or 'G'.
+   DEC_INFO contains the previously computed exponent and string or is NULL.
 
    return -1 if some field > INT_MAX */
 static int
 regular_eg (struct number_parts *np, mpfr_srcptr p,
-            const struct printf_spec spec)
+            const struct printf_spec spec, struct decimal_info *dec_info)
 {
   char *str;
   mpfr_exp_t exp;
@@ -1047,19 +1056,25 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
   /* integral part */
   np->ip_size = 1;
-  {
-    size_t nsd;
+  if (dec_info == NULL)
+    {
+      size_t nsd;
 
-    /* Number of significant digits:
-       - if no given precision, then let mpfr_get_str determine it,
-       - if a precision is specified, then one digit before decimal point
-       plus SPEC.PREC after it.
-       We use the fact here that mpfr_get_str allows us to ask for only one
-       significant digit when the base is not a power of 2. */
-    nsd = (spec.prec < 0) ? 0 : spec.prec + np->ip_size;
-    str = mpfr_get_str (0, &exp, 10, nsd, p, spec.rnd_mode);
-  }
-  register_string (np->sl, str);
+      /* Number of significant digits:
+         - if no given precision, then let mpfr_get_str determine it,
+         - if a precision is specified, then one digit before decimal point
+         plus SPEC.PREC after it.
+         We use the fact here that mpfr_get_str allows us to ask for only one
+         significant digit when the base is not a power of 2. */
+      nsd = (spec.prec < 0) ? 0 : spec.prec + np->ip_size;
+      str = mpfr_get_str (0, &exp, 10, nsd, p, spec.rnd_mode);
+      register_string (np->sl, str);
+    }
+  else
+    {
+      exp = dec_info->exp;
+      str = dec_info->str;
+    }
   np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
   if (spec.prec != 0)
@@ -1145,11 +1160,12 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when SPEC.SPEC is 'f', 'F', 'g', or 'G'.
+   DEC_INFO contains the previously computed exponent and string or is NULL.
 
    return -1 if some field of number_parts is greater than INT_MAX */
 static int
 regular_fg (struct number_parts *np, mpfr_srcptr p,
-            const struct printf_spec spec)
+            const struct printf_spec spec, struct decimal_info *dec_info)
 {
   mpfr_exp_t exp;
   char * str;
@@ -1262,13 +1278,22 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             {
               char *ptr;
               size_t str_len;
-              size_t nsd = spec.prec + exp + 1;
-              /* WARNING: nsd may equal 1, but here we use the fact that
-                 mpfr_get_str can return one digit with base ten
-                 (undocumented feature, see comments in get_str.c) */
+              if (dec_info == NULL)
+                {
+                  size_t nsd = spec.prec + exp + 1;
+                  /* WARNING: nsd may equal 1, but here we use the
+                     fact that mpfr_get_str can return one digit with
+                     base ten (undocumented feature, see comments in
+                     get_str.c) */
 
-              str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
-              register_string (np->sl, str);
+                  str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
+                  register_string (np->sl, str);
+                }
+              else
+                {
+                  exp = dec_info->exp;
+                  str = dec_info->str;
+                }
               if (MPFR_IS_NEG (p))
                 ++str;
               if (exp == 1)
@@ -1327,7 +1352,6 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       /* Determine the position of the most significant decimal digit. */
       round_to_10_power (&exp, p, 0, MPFR_RNDZ);
-
       MPFR_ASSERTD (exp >= 0);
       if (exp > INT_MAX)
         /* P is too large to print all its integral part digits */
@@ -1574,12 +1598,12 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         {
           if (spec.prec == -1)
             spec.prec = 6;
-          if (regular_fg (np, p, spec) == -1)
+          if (regular_fg (np, p, spec, NULL) == -1)
             goto error;
         }
       else if (spec.spec == 'e' || spec.spec == 'E')
         {
-          if (regular_eg (np, p, spec) == -1)
+          if (regular_eg (np, p, spec, NULL) == -1)
             goto error;
         }
       else
@@ -1594,23 +1618,29 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              that would be displayed with style 'e' and precision T-1. */
           int threshold;
           mpfr_exp_t x;
+          struct decimal_info dec_info;
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
-          round_to_10_power (&x, p, threshold - 1, spec.rnd_mode);
+          dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
+                                        p, spec.rnd_mode);
+          register_string (np->sl, dec_info.str);
+          /* mpfr_get_str corresponds to a significand between 0.1 and 1,
+             whereas here we want a significand between 1 and 10. */
+          x = dec_info.exp - 1;
 
           if (threshold > x && x >= -4)
             {
               /* the conversion is with style 'f' */
               spec.prec = threshold - x - 1;
 
-              if (regular_fg (np, p, spec) == -1)
+              if (regular_fg (np, p, spec, &dec_info) == -1)
                 goto error;
             }
           else
             {
               spec.prec = threshold - 1;
 
-              if (regular_eg (np, p, spec) == -1)
+              if (regular_eg (np, p, spec, &dec_info) == -1)
                 goto error;
             }
         }
