@@ -115,7 +115,7 @@ mpfr_mulhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
 
 /* Put in  rp[0..n] the n+1 low limbs of {np, n} * {mp, n}.
    Assume 2n limbs are allocated at rp. */
-static void
+void
 mpfr_mullow_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
