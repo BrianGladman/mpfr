@@ -2204,8 +2204,8 @@ const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2] = {
    For i=0, uses a 23-bit upper approximation to log(beta)/log(2).
    For i=1, uses a 76-bit upper approximation to log(2)/log(beta).
 */
-static mpfr_exp_t
-ceil_mul (mpfr_exp_t e, int beta, int i)
+mpfr_exp_t
+mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
 {
   mpfr_srcptr p;
   mpfr_t t;
@@ -2282,7 +2282,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       return s;
     }
 
-  MPFR_SAVE_EXPO_MARK (expo);  /* needed for ceil_mul (at least) */
+  MPFR_SAVE_EXPO_MARK (expo);  /* needed for mpfr_ceil_mul (at least) */
 
   if (m == 0)
     {
@@ -2295,7 +2295,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
          the first base-b digit contains only one bit, so we get
          1 + ceil((n-1)/k) = 2 + floor((n-2)/k) instead.
       */
-      m = 1 + ceil_mul (IS_POW2(b) ? MPFR_PREC(x) - 1 : MPFR_PREC(x), b, 1);
+      m = 1 +
+        mpfr_ceil_mul (IS_POW2(b) ? MPFR_PREC(x) - 1 : MPFR_PREC(x), b, 1);
       if (m < 2)
         m = 2;
     }
@@ -2399,9 +2400,9 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
   if (neg)
     rnd = MPFR_INVERT_RND(rnd);
 
-  g = ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
+  g = mpfr_ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
   exact = 1;
-  prec = ceil_mul (m, b, 0) + 1;
+  prec = mpfr_ceil_mul (m, b, 0) + 1;
   exp = ((mpfr_exp_t) m < g) ? g - (mpfr_exp_t) m : (mpfr_exp_t) m - g;
   prec += MPFR_INT_CEIL_LOG2 (prec); /* number of guard bits */
   if (exp != 0) /* add maximal exponentiation error */
