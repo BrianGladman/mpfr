@@ -582,6 +582,25 @@ BEGIN {
               found = 1
               exit
             }
+
+          if (got[19] == "300" && \
+              got[18] == "031" && \
+              got[17] == "000" && \
+              got[16] == "000" && \
+              got[15] == "353" && \
+              got[14] == "171" && \
+              got[13] == "242" && \
+              got[12] == "240" && \
+              got[11] == "000" && \
+              got[10] == "000" && \
+              got[09] == "000" && \
+              got[08] == "000")
+            {
+              # format found on m68k
+              print "IEEE extended, big endian"
+              found = 1
+              exit
+            }
         }
 
       # start sequence, with 16-byte body
