@@ -204,7 +204,7 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   MPFR_TMP_DECL(marker);
 
   k = divhigh_ktab[n];
-  MPFR_ASSERTD ((n+4)/2 <= k && k < n); /* bounds from [1] */
+  MPFR_ASSERTD ((n+4)/2 <= k && k <= n); /* bounds from [1] */
 
   /* for k=n, we use a full division (mpn_divrem) */
 
