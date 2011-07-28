@@ -768,7 +768,8 @@ tune_mul_mulders_upto (mp_size_t n)
 
   /* Check Mulders with cutoff point k */
   step = 1 + n / (2 * MAX_STEPS);
-  for (k = n / 2 + 1 ; k < n ; k += step)
+  /* we need k >= (n+3)/2, which translates into k >= (n+4)/2 in C */
+  for (k = (n + 4) / 2 ; k < n ; k += step)
     {
       mulhigh_ktab[n] = k;
       t = mpfr_speed_measure (speed_mpfr_mulhigh, &s, "mpfr_mulhigh");
@@ -813,7 +814,8 @@ tune_sqr_mulders_upto (mp_size_t n)
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
-  for (k = n / 2 + 1 ; k < n ; k += step)
+  /* we need k >= (n+3)/2, which translates into k >= (n+4)/2 in C */
+  for (k = (n + 4) / 2 ; k < n ; k += step)
     {
       sqrhigh_ktab[n] = k;
       t = mpfr_speed_measure (speed_mpfr_sqrhigh, &s, "mpfr_sqrhigh");
@@ -854,8 +856,9 @@ tune_div_mulders_upto (mp_size_t n)
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
-  for (k = (n+1) / 2 ; k < n ; k += step)
-    // for (k = 1; k < n; k += step)
+  /* we should have (n+3)/2 <= k < n, which translates into
+     (n+4)/2 <= k < n in C */
+  for (k = (n + 4) / 2 ; k < n ; k += step)
     {
       divhigh_ktab[n] = k;
       t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
