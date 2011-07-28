@@ -805,21 +805,27 @@ struct decimal_info
   char *str;
 };
 
-/* For a real non zero number x, what is the exponent f when rounding x after
-   rounding with mode r to r(x) = m*10^f, where m has p+1 digits and
-   1 <= m < 10, i.e., 10^f <= round(x,r) < 10^(f+1).
-
-   The value of f is put into *e. */
-static void
-round_to_10_power (mpfr_exp_t *e, mpfr_srcptr x, mpfr_prec_t p, mpfr_rnd_t r)
+/* For a real non zero number x, what is the exponent f so that
+   10^f <= x < 10^(f+1). */
+static mpfr_exp_t
+floor_log10 (mpfr_srcptr x)
 {
-  char *buf;
+  mpfr_t y;
+  mpfr_exp_t exp;
 
-  buf = mpfr_get_str (NULL, e, 10, p + 1, x, r);
-  /* mpfr_get_str corresponds to a significand between 0.1 and 1,
-     whereas here we want a significand between 1 and 10. */
-  *e = *e - 1;
-  mpfr_free_str (buf);
+  /* make sure first that y can represent a mpfr_exp_t exactly
+     and can compare with x */
+  mpfr_prec_t prec = sizeof (mpfr_exp_t) * CHAR_BIT;
+  mpfr_init2 (y, MAX (prec, MPFR_PREC (x)));
+
+  exp = mpfr_ceil_mul (MPFR_GET_EXP (x), 10, 1) - 1;
+  mpfr_set_exp_t (y, exp, MPFR_RNDU);
+  mpfr_ui_pow (y, 10, y, MPFR_RNDU);
+  if (mpfr_cmpabs (x, y) < 0)
+    exp--;
+
+  mpfr_clear (y);
+  return exp;
 }
 
 /* Determine the different parts of the string representation of the regular
@@ -1210,7 +1216,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       else
         {
           /* exp =  position of the most significant decimal digit. */
-          round_to_10_power (&exp, p, 0, MPFR_RNDZ);
+          exp = floor_log10 (p);
           MPFR_ASSERTD (exp < 0);
 
           if (exp < -spec.prec)
@@ -1351,7 +1357,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       size_t nsd;  /* Number of significant digits */
 
       /* Determine the position of the most significant decimal digit. */
-      round_to_10_power (&exp, p, 0, MPFR_RNDZ);
+      exp = floor_log10 (p);
       MPFR_ASSERTD (exp >= 0);
       if (exp > INT_MAX)
         /* P is too large to print all its integral part digits */
@@ -1360,8 +1366,16 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       np->ip_size = exp + 1;
 
       nsd = spec.prec + np->ip_size;
-      str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
-      register_string (np->sl, str);
+      if (dec_info == NULL)
+        {
+          str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
+          register_string (np->sl, str);
+        }
+      else
+        {
+          exp = dec_info->exp;
+          str = dec_info->str;
+        }
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
 
       if (spec.group)

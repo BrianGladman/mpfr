@@ -392,6 +392,40 @@ decimal (void)
   check_sprintf ("1", "%.0RUf", x);
   check_sprintf ("1", "%.0RYf", x);
 
+  /* multiple of 10 with 'g' style */
+  mpfr_set_str (x, "10", 10, MPFR_RNDN);
+  check_sprintf ("10", "%Rg", x);
+  check_sprintf ("1e+01", "%.0Rg", x);
+  check_sprintf ("1e+01", "%.1Rg", x);
+  check_sprintf ("10", "%.2Rg", x);
+
+  mpfr_ui_div (x, 1, x, MPFR_RNDN);
+  check_sprintf ("0.1", "%Rg", x);
+  check_sprintf ("0.1", "%.0Rg", x);
+  check_sprintf ("0.1", "%.1Rg", x);
+
+  mpfr_set_str (x, "1000", 10, MPFR_RNDN);
+  check_sprintf ("1000", "%Rg", x);
+  check_sprintf ("1e+03", "%.0Rg", x);
+  check_sprintf ("1e+03", "%.3Rg", x);
+  check_sprintf ("1000", "%.4Rg", x);
+
+  mpfr_ui_div (x, 1, x, MPFR_RNDN);
+  check_sprintf ("0.001", "%Rg", x);
+  check_sprintf ("0.001", "%.0Rg", x);
+  check_sprintf ("0.001", "%.1Rg", x);
+
+  mpfr_set_str (x, "100000", 10, MPFR_RNDN);
+  check_sprintf ("100000", "%Rg", x);
+  check_sprintf ("1e+05", "%.0Rg", x);
+  check_sprintf ("1e+05", "%.5Rg", x);
+  check_sprintf ("100000", "%.6Rg", x);
+
+  mpfr_ui_div (x, 1, x, MPFR_RNDN);
+  check_sprintf ("1e-05", "%Rg", x);
+  check_sprintf ("1e-05", "%.0Rg", x);
+  check_sprintf ("1e-05", "%.1Rg", x);
+
   /* check rounding mode */
   mpfr_set_str (x, "0.0076", 10, MPFR_RNDN);
   check_sprintf ("0.007", "%.3RDF", x);
