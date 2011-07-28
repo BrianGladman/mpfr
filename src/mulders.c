@@ -67,7 +67,8 @@ mpfr_mulhigh_n_basecase (mpfr_limb_ptr rp, mpfr_limb_srcptr up,
 /* Put in  rp[0..n] the n+1 low limbs of {up, n} * {vp, n}.
    Assume 2n limbs are allocated at rp. */
 static void
-mpfr_mullow_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
+mpfr_mullow_n_basecase (mpfr_limb_ptr rp, mpfr_limb_srcptr up,
+                        mpfr_limb_srcptr vp, mp_size_t n)
 {
   mp_size_t i;
 
@@ -116,7 +117,8 @@ mpfr_mulhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
 /* Put in  rp[0..n] the n+1 low limbs of {np, n} * {mp, n}.
    Assume 2n limbs are allocated at rp. */
 void
-mpfr_mullow_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
+mpfr_mullow_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
+               mp_size_t n)
 {
   mp_size_t k;
 
@@ -239,10 +241,11 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
 }
 #else /* below is the FoldDiv(K) algorithm from [1] */
 mp_limb_t
-mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
+mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
+                mp_size_t n)
 {
   mp_size_t k, r;
-  mp_ptr ip, tp, up;
+  mpfr_limb_ptr ip, tp, up;
   mp_limb_t qh = 0, cy, cc;
   int count;
   MPFR_TMP_DECL(marker);
@@ -254,9 +257,9 @@ mpfr_divhigh_n (mp_ptr qp, mp_ptr np, mp_ptr dp, mp_size_t n)
   k = (n - 1) / K + 1; /* ceil(n/K) */
 
   MPFR_TMP_MARK (marker);
-  ip = MPFR_TMP_ALLOC ((k + 1) * sizeof (mp_limb_t));
-  tp = MPFR_TMP_ALLOC ((n + k) * sizeof (mp_limb_t));
-  up = MPFR_TMP_ALLOC (2 * (k + 1) * sizeof (mp_limb_t));
+  ip = MPFR_TMP_LIMBS_ALLOC (k + 1);
+  tp = MPFR_TMP_LIMBS_ALLOC (n + k);
+  up = MPFR_TMP_LIMBS_ALLOC (2 * (k + 1));
   mpn_invert (ip, dp + n - (k + 1), k + 1, NULL); /* takes about 13% for n=1000 */
   /* {ip, k+1} = floor((B^(2k+2)-1)/D - B^(k+1) where D = {dp+n-(k+1),k+1} */
   for (r = n, cc = 0UL; r > 0;)
