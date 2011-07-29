@@ -820,6 +820,8 @@ floor_log10 (mpfr_srcptr x)
 
   exp = mpfr_ceil_mul (MPFR_GET_EXP (x), 10, 1) - 1;
   mpfr_set_exp_t (y, exp, MPFR_RNDU);
+  /* The following call to mpfr_ui_pow should be fast: y is an integer
+     (not too large), so that mpfr_pow_z will be used internally. */
   mpfr_ui_pow (y, 10, y, MPFR_RNDU);
   if (mpfr_cmpabs (x, y) < 0)
     exp--;
