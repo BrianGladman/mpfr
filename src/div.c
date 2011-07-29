@@ -20,6 +20,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* References:
+   [1] Short Division of Long Integers, David Harvey and Paul Zimmermann,
+       Proceedings of the 20th Symposium on Computer Arithmetic (ARITH-20),
+       July 25-27, 2011, pages 7-14.
+*/
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -136,7 +142,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_size_t q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
   mp_size_t usize = MPFR_LIMB_SIZE(u);
   mp_size_t vsize = MPFR_LIMB_SIZE(v);
-  mp_size_t qsize; /* number of limbs of the computed quotient */
+  mp_size_t qsize; /* number of limbs wanted for the computed quotient */
   mp_size_t qqsize;
   mp_size_t k;
   mpfr_limb_ptr q0p = MPFR_MANT(q), qp;
@@ -263,7 +269,109 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   /* set exponent */
   qexp = MPFR_GET_EXP (u) - MPFR_GET_EXP (v) + extra_bit;
 
+  /* sh is the number of zero bits in the low limb of the quotient */
   MPFR_UNSIGNED_MINUS_MODULO(sh, MPFR_PREC(q));
+
+  like_rndz = rnd_mode == MPFR_RNDZ ||
+    rnd_mode == (sign_quotient < 0 ? MPFR_RNDU : MPFR_RNDD);
+
+  /**************************************************************************
+   *                                                                        *
+   *       We first try Mulders' short division (for large operands)        *
+   *                                                                        *
+   **************************************************************************/
+
+#ifndef MPFR_DIV_THRESHOLD
+#define MPFR_DIV_THRESHOLD 23 /* near to optimal on a Core 2 Duo U9600 */
+#endif
+
+  if (MPFR_UNLIKELY(q0size >= MPFR_DIV_THRESHOLD &&
+		    vsize >= MPFR_DIV_THRESHOLD))
+    {
+      mp_size_t n = q0size + 1; /* we will perform a short (2n)/n division */
+      mpfr_limb_ptr ap, bp, qp;
+      mpfr_prec_t p;
+
+      /* since Mulders' short division clobbers the dividend, we have to
+         copy it */
+      ap = MPFR_TMP_LIMBS_ALLOC (n + n);
+      if (usize >= n + n) /* truncate the dividend */
+        MPN_COPY(ap, up + usize - (n + n), n + n);
+      else                /* zero-pad the dividend */
+        {
+          MPN_COPY(ap + (n + n) - usize, up, usize);
+          MPN_ZERO(ap, (n + n) - usize);
+        }
+
+      if (vsize >= n) /* truncate the divisor */
+	bp = vp + vsize - n;
+      else            /* zero-pad the divisor */
+        {
+	  bp = MPFR_TMP_LIMBS_ALLOC (n);
+          MPN_COPY(bp + n - vsize, vp, vsize);
+          MPN_ZERO(bp, n - vsize);
+        }
+
+      qp = MPFR_TMP_LIMBS_ALLOC (n);
+      qh = mpfr_divhigh_n (qp, ap, bp, n);
+      /* in all cases, the error is at most (2n+2) ulps on qh*B^n+{qp,n},
+         cf algorithms.tex */
+
+      p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (2 * n + 2);
+      /* if qh is 1, then we need only PREC(q)-1 bits of {qp,n},
+         if rnd=RNDN, we need to be able to round with a directed rounding
+            and one more bit */
+      if (MPFR_LIKELY (mpfr_round_p (qp, n, p,
+                                 MPFR_PREC(q) + (rnd_mode == MPFR_RNDN) - qh)))
+        {
+          /* we can round correctly whatever the rounding mode */
+          if (qh == 0)
+	    MPN_COPY (q0p, qp + 1, q0size);
+          else
+            {
+              mpn_rshift (q0p, qp + 1, q0size, 1);
+              q0p[q0size - 1] ^= MPFR_LIMB_HIGHBIT;
+            }
+          q0p[0] &= ~MPFR_LIMB_MASK(sh); /* put to zero low sh bits */
+
+          if (rnd_mode == MPFR_RNDN) /* round to nearest */
+            {
+              /* we know we can round, thus we are never in the even rule case:
+                 if the round bit is 0, we truncate
+                 if the round bit is 1, we add 1 */
+              if (qh == 0)
+                {
+                  if (sh > 0)
+                    round_bit = (qp[1] >> (sh - 1)) & 1;
+                  else
+                    round_bit = qp[0] >> (GMP_NUMB_BITS - 1);
+                }
+              else /* qh = 1 */
+                round_bit = (qp[1] >> sh) & 1;
+              if (round_bit == 0)
+                {
+                  inex = -1;
+                  goto truncate;
+                }
+              else /* round_bit = 1 */
+                goto add_one_ulp;
+            }
+          else if (like_rndz == 0) /* round away */
+            goto add_one_ulp;
+          /* else round to zero: nothing to do */
+          else
+            {
+              inex = -1;
+              goto truncate;
+            }
+        }
+    }
+
+  /**************************************************************************
+   *                                                                        *
+   *     Mulders' short division failed: we revert to integer division      *
+   *                                                                        *
+   **************************************************************************/
 
   if (MPFR_UNLIKELY(rnd_mode == MPFR_RNDN && sh == 0))
     { /* we compute the quotient with one more limb, in order to get
@@ -326,7 +434,13 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       k = qsize - vsize;
     }
 
-  /* we now can perform the division */
+  /**************************************************************************
+   *                                                                        *
+   *  Here we perform the real division of {ap+k,qqsize-k} by {bp,qsize-k}  *
+   *                                                                        *
+   **************************************************************************/
+
+  /* if Mulders' short division failed, we revert to division with remainder */
   qh = mpn_divrem (qp, 0, ap + k, qqsize - k, bp, qsize - k);
   /* warning: qh may be 1 if u1 == v1, but u < v */
 #ifdef DEBUG2
@@ -364,9 +478,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   printf ("sticky=%lu sticky3=%lu inex=%d\n",
           (unsigned long) sticky, (unsigned long) sticky3, inex);
 #endif
-
-  like_rndz = rnd_mode == MPFR_RNDZ ||
-    rnd_mode == (sign_quotient < 0 ? MPFR_RNDU : MPFR_RNDD);
 
   /* to round, we distinguish two cases:
      (a) vsize <= qsize: we used the full divisor

@@ -205,14 +205,15 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   mpfr_limb_ptr tp;
   MPFR_TMP_DECL(marker);
 
-  k = divhigh_ktab[n];
-  MPFR_ASSERTD ((n+4)/2 <= k && k <= n); /* bounds from [1] */
+  MPFR_ASSERTN (MPFR_MULHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
+  k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);
 
   /* for k=n, we use a full division (mpn_divrem) */
 
   if (k == n)
     return mpn_divrem (qp, 0, np, 2 * n, dp, n);
 
+  MPFR_ASSERTD ((n+4)/2 <= k && k < n); /* bounds from [1] */
   MPFR_TMP_MARK (marker);
   l = n - k;
   /* first divide the most significant 2k limbs from N by the most significant
@@ -221,11 +222,14 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
 
   /* it remains {np,2l+k} = {np,n+l} as remainder */
 
-  /* now we have to subtract high(Q1)*D0 where Q1={qp+l,k} and D0={dp,l} */
+  /* now we have to subtract high(Q1)*D0 where Q1=qh*B^k+{qp+l,k} and
+     D0={dp,l} */
   tp = MPFR_TMP_LIMBS_ALLOC (2 * l);
   mpfr_mulhigh_n (tp, qp + k, dp, l);
   /* we are only interested in the upper l limbs from {tp,2l} */
   cy = mpn_sub_n (np + n, np + n, tp + l, l);
+  if (qh)
+    cy += mpn_sub_n (np + n, np + n, dp, l);
   while (cy > 0) /* Q1 was too large: subtract 1 to Q1 and add D to np+l */
     {
       qh -= mpn_sub_1 (qp + l, qp + l, k, MPFR_LIMB_ONE);
