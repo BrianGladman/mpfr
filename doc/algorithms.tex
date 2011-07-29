@@ -810,6 +810,33 @@ to decide rounding after the first stage, one should choose
 $\varepsilon_p \geq 3$ (to include the round-to-nearest case).
 \end{comment}
 
+\subsubsection{Using Mulders' short division}
+
+For larger operands, Mulders' short division might be faster than calling
+GMP's integer division. A detailed description of Mulders' short division
+for integers can be found in \cite{HaZi11}.
+We assume that we want the quotient integer significant on $n-1$ limbs,
+and we perform a short division on $n$ limbs.
+Let $q$ be the real quotient $u/v$, scaled so that it has exactly $n$ limbs;
+let $q_1$ be the integer division we would perform using GMP's integer
+division as described above, and let $q_2$ be the approximate quotient
+returned by Algorithm \texttt{ShortDiv} or \texttt{FoldDiv} from \cite{HaZi11}.
+From the above analysis, we know that $q_1 - 2 < q < q_1 + 1$, the divisor
+being truncated or not.
+From Theorems~1 and~2 from \cite{HaZi11}, we have
+$q_1 - 2n \leq q_2 \leq q_1 + 2n$.
+It thus follows:
+\[ q_1 - (2n+2) < q < q_2 + (2n+1), \]
+and in all cases the difference between $q$ and $q_2$ is less than $2n+2$
+ulps (on $n$ limbs).
+Since we want to round $q$ on $n-1$ limbs, and usually $2n+2$ is small
+compared to the limb value, in most cases we will be able to round correctly.
+
+In the rare cases where we are not able to round correctly, we can either
+revert to the above method using integer division, or better use the
+approximate quotient $q_2$ to deduce the exact quotient $q_1$ and the
+corresponding remainder, which will trade a division for a multiplication.
+
 \subsection{The {\tt mpfr\_sqrt} function}
 
 The \texttt{mpfr\_sqrt} implementation uses the \texttt{mpn\_sqrtrem}
