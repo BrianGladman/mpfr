@@ -29,6 +29,17 @@ main (void)
 {
   char buffer[256];
 
+#ifdef __MPIR_VERSION
+  printf ("MPIR: include %d.%d.%d, lib %s\n",
+          __MPIR_VERSION, __MPIR_VERSION_MINOR, __MPIR_VERSION_PATCHLEVEL,
+          mpir_version);
+#else
+  printf ("GMP: include %d.%d.%d, lib %s\n",
+          __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR, __GNU_MP_VERSION_PATCHLEVEL,
+          gmp_version);
+#endif
+  printf ("MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
+
   /* Test the MPFR version. */
   test_version ();
 
