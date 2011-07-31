@@ -281,10 +281,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
    *                                                                        *
    **************************************************************************/
 
-#ifndef MPFR_DIV_THRESHOLD
-#define MPFR_DIV_THRESHOLD 23 /* near to optimal on a Core 2 Duo U9600 */
-#endif
-
   if (MPFR_UNLIKELY(q0size >= MPFR_DIV_THRESHOLD &&
 		    vsize >= MPFR_DIV_THRESHOLD))
     {

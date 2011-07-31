@@ -273,14 +273,18 @@ speed_mpfr_sincos (struct speed_params *s)
   SPEED_MPFR_FUNC2 (mpfr_sin_cos);
 }
 
-/* Setup mpfr_mul and mpfr_sqr */
+/* Setup mpfr_mul, mpfr_sqr and mpfr_div */
 mpfr_prec_t mpfr_mul_threshold;
 mpfr_prec_t mpfr_sqr_threshold;
+mpfr_prec_t mpfr_div_threshold;
 #undef  MPFR_MUL_THRESHOLD
 #define MPFR_MUL_THRESHOLD mpfr_mul_threshold
 #undef  MPFR_SQR_THRESHOLD
 #define MPFR_SQR_THRESHOLD mpfr_sqr_threshold
+#undef  MPFR_DIV_THRESHOLD
+#define MPFR_DIV_THRESHOLD mpfr_div_threshold
 #include "mul.c"
+#include "div.c"
 static double
 speed_mpfr_mul (struct speed_params *s)
 {
@@ -290,6 +294,11 @@ static double
 speed_mpfr_sqr (struct speed_params *s)
 {
   SPEED_MPFR_SQR (mpfr_mul);
+}
+static double
+speed_mpfr_div (struct speed_params *s)
+{
+  SPEED_MPFR_OP (mpfr_div);
 }
 
 /************************************************
@@ -1055,6 +1064,14 @@ all (const char *filename)
                     2*GMP_NUMB_BITS+1);
   fprintf (f, "#define MPFR_SQR_THRESHOLD %lu /* limbs */\n",
            (unsigned long) (mpfr_sqr_threshold - 1) / GMP_NUMB_BITS + 1);
+
+  /* Tune mpfr_div (threshold is in limbs, but it doesn't matter too much) */
+  if (verbose)
+    printf ("Tuning mpfr_div...\n");
+  tune_simple_func (&mpfr_div_threshold, speed_mpfr_div,
+                    2*GMP_NUMB_BITS+1);
+  fprintf (f, "#define MPFR_DIV_THRESHOLD %lu /* limbs */\n",
+           (unsigned long) (mpfr_div_threshold - 1) / GMP_NUMB_BITS + 1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)

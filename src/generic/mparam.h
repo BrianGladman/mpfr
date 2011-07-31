@@ -18,6 +18,10 @@
 # define MPFR_SQR_THRESHOLD 20 /* limbs */
 #endif
 
+#ifndef MPFR_DIV_THRESHOLD
+# define MPFR_DIV_THRESHOLD 25 /* limbs */
+#endif
+
 #ifndef MPFR_EXP_2_THRESHOLD
 # define MPFR_EXP_2_THRESHOLD 100 /* bits */
 #endif
