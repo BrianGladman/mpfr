@@ -39,6 +39,7 @@ Changes from versions 3.0.* to version 3.1.0:
 - Speed improvement for the mpfr_sqr and mpfr_div functions using Mulders'
   algorithm. As a consequence, other functions using those routines are
   also faster.
+- Much faster formatted output (mpfr_printf, etc.) with %Rg and similar.
 - The --with-gmp-build configure option can now be used when the GMP
   source directory and the GMP build directory are different (without
   having to copy header files manually as before).
