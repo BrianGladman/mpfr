@@ -189,7 +189,8 @@ To make a release (for the MPFR team):
      than the "long" type.
 
      Test with valgrind: "valgrind --trace-children=yes make check"
-     (after a first "make check" for the compilation).
+     (after a first "make check" for the compilation). See below for
+     more information about valgrind.
 
      Test with both "make check" and the worst cases.
 
@@ -898,3 +899,54 @@ text files, but this has drawbacks:
 
 For these reasons, the svn:eol-style Subversion property should never be set
 to "native".
+
+===========================================================================
+
+To run the MPFR test suite under valgrind, you may need to do several
+things.
+
+First, as the running time is much longer than usual, you should not use
+the --enable-tests-timeout configure option, or set the timeout value to
+a large value; this can be done at run time, e.g. with
+
+  export MPFR_TESTS_TIMEOUT=0
+
+to disable the timeout, so that you do not need to rebuild MPFR for
+this purpose.
+
+Before running valgrind, you should run "make check" a first time so
+that everything is compiled out of valgrind.
+
+Then you need the --trace-children=yes valgrind option (a possible
+exception is when you run an individual test that has been built
+statically). The reason is that libtool generates wrapper scripts
+to link the tests against the right libraries. The drawback is that
+you will get valgrind output for all the processes, including the
+shell commands from the wrapper scripts (the --trace-children-skip
+valgrind option will not allow you to filter every unwanted process).
+But you can filter the output with:
+
+  sed -n '/= Command: [^ ]*\/\.libs\/lt-/,/= ERROR SUMMARY:/p'
+
+For readability, you should redirect the valgrind output to a file.
+You can use --log-file, but due to --trace-children=yes, you need
+the %p format specifier in the filename argument to generate a file
+for each child; however many files will be generated, and it may be
+better to use the following method to get a single file:
+
+  valgrind --trace-children=yes --log-fd=3 make check 3> vg.out
+
+then
+
+  sed -n '/= Command: [^ ]*\/\.libs\/lt-/,/= ERROR SUMMARY:/p' vg.out
+
+to get only the valgrind output corresponding to the MPFR tests.
+
+Or if your shell supports it, you can use a process substitution
+to filter the valgrind output directly to a file, e.g. with bash
+or zsh:
+
+  valgrind --trace-children=yes --log-fd=3 make check 3> >(sed -n \
+    '/= Command: [^ ]*\/\.libs\/lt-/,/= ERROR SUMMARY:/p' > vg.out)
+
+if you do not mind about the buffering delays.
