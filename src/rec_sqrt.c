@@ -199,7 +199,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       MPFR_TMP_DECL(marker);
 
       /* compared to Algorithm 3.9 of [1], we have {a, an} = A/2 if as=0,
-	 and A/4 if as=1. */
+         and A/4 if as=1. */
 
       /* h = max(11, ceil((p+3)/2)) is the bitsize of the recursive call */
       h = (p < 18) ? 11 : (p >> 1) + 2;
@@ -213,13 +213,13 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
          thus the h-3 most significant bits of t should be zero,
          which is in fact h+1+as-3 because of the normalization of A.
          This corresponds to th=floor((h+1+as-3)/GMP_NUMB_BITS) limbs.
-	 
-	 More precisely we have |Xh^2 - 1/A| <= 2^{-h} * (Xh + A^{-1/2})
-	 <= 2^{-h} * (2 A^{-1/2} + 2^{-h}) <= 2.001 * 2^{-h} * A^{-1/2}
-	 since A < 4 and h >= 11, thus
-	 |A*Xh^2 - 1| <= 2.001 * 2^{-h} * A^{1/2} <= 1.001 * 2^{2-h}.
-	 This is sufficient to prove that the upper limb of {t,tn} below is
-	 less that 0.501 * 2^GMP_NUMB_BITS, thus cu = 0 below.
+
+         More precisely we have |Xh^2 - 1/A| <= 2^{-h} * (Xh + A^{-1/2})
+         <= 2^{-h} * (2 A^{-1/2} + 2^{-h}) <= 2.001 * 2^{-h} * A^{-1/2}
+         since A < 4 and h >= 11, thus
+         |A*Xh^2 - 1| <= 2.001 * 2^{-h} * A^{1/2} <= 1.001 * 2^{2-h}.
+         This is sufficient to prove that the upper limb of {t,tn} below is
+         less that 0.501 * 2^GMP_NUMB_BITS, thus cu = 0 below.
       */
       th = (h + 1 + as - 3) >> MPFR_LOG2_GMP_NUMB_BITS;
       tn = LIMB_SIZE(2 * h + 1 + as);
@@ -257,7 +257,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       else
         {
           mpn_mul_n (r, x + ln, x + ln, xn);
-	  /* we have {r, 2*xn} = X_h^2 */
+          /* we have {r, 2*xn} = X_h^2 */
           if (rn < 2 * xn)
             r ++;
         }
@@ -291,7 +291,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
              100000... or 011111... if as=0, or
              010000... or 001111... if as=1.
              We ignore the bits of s after the first 2h+1+as ones.
-	     We have {s, rn+an} = A*X_h^2/2 if as=0, A*X_h^2/4 if as=1. */
+             We have {s, rn+an} = A*X_h^2/2 if as=0, A*X_h^2/4 if as=1. */
         }
 
       /* We ignore the bits of s after the first 2h+1+as ones: s has rn + an

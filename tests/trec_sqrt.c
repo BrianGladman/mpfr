@@ -130,53 +130,53 @@ bad_case2 (void)
   for (pr = MPFR_PREC_MIN; pr <= 192; pr++)
     for (pu = MPFR_PREC_MIN; pu <= 192; pu++)
       {
-	mpfr_init2 (r, pr);
-	mpfr_init2 (u, pu);
+        mpfr_init2 (r, pr);
+        mpfr_init2 (u, pu);
 
-	mpfr_set_ui (u, 1, MPFR_RNDN);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_set_ui (u, 1, MPFR_RNDN);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextbelow (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextbelow (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextbelow (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextbelow (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_set_ui (u, 1, MPFR_RNDN);
-	mpfr_nextabove (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_set_ui (u, 1, MPFR_RNDN);
+        mpfr_nextabove (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextabove (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextabove (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_set_ui (u, 2, MPFR_RNDN);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_set_ui (u, 2, MPFR_RNDN);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextbelow (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextbelow (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextbelow (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextbelow (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_set_ui (u, 2, MPFR_RNDN);
-	mpfr_nextabove (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_set_ui (u, 2, MPFR_RNDN);
+        mpfr_nextabove (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_nextabove (u);
-	for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-	  mpfr_rec_sqrt (r, u, rnd);
+        mpfr_nextabove (u);
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          mpfr_rec_sqrt (r, u, rnd);
 
-	mpfr_clear (r);
-	mpfr_clear (u);
+        mpfr_clear (r);
+        mpfr_clear (u);
       }
 }
 

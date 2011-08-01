@@ -282,7 +282,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
    **************************************************************************/
 
   if (MPFR_UNLIKELY(q0size >= MPFR_DIV_THRESHOLD &&
-		    vsize >= MPFR_DIV_THRESHOLD))
+                    vsize >= MPFR_DIV_THRESHOLD))
     {
       mp_size_t n = q0size + 1; /* we will perform a short (2n)/n division */
       mpfr_limb_ptr ap, bp, qp;
@@ -300,10 +300,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
         }
 
       if (vsize >= n) /* truncate the divisor */
-	bp = vp + vsize - n;
+        bp = vp + vsize - n;
       else            /* zero-pad the divisor */
         {
-	  bp = MPFR_TMP_LIMBS_ALLOC (n);
+          bp = MPFR_TMP_LIMBS_ALLOC (n);
           MPN_COPY(bp + n - vsize, vp, vsize);
           MPN_ZERO(bp, n - vsize);
         }
@@ -322,7 +322,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
         {
           /* we can round correctly whatever the rounding mode */
           if (qh == 0)
-	    MPN_COPY (q0p, qp + 1, q0size);
+            MPN_COPY (q0p, qp + 1, q0size);
           else
             {
               mpn_rshift (q0p, qp + 1, q0size, 1);
