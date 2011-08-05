@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ])
 
 dnl Add check-news when it checks for more than 15 lines
-AC_INIT([MPFR],[3.1.0-dev])
+AC_INIT([MPFR],[3.2.0-dev])
 
 AM_INIT_AUTOMAKE([1.11 no-define dist-bzip2 dist-xz dist-zip])
 AM_MAINTAINER_MODE(enable)
