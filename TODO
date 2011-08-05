@@ -230,6 +230,8 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- implement a mpfr_sqrthigh algorithm based on Mulders' algorithm, with a
+  basecase variant
 - use mpn_div_q to speed up mpfr_div. However mpn_div_q, which is new in
   GMP 5, is not documented in the GMP manual, thus we are not sure it
   guarantees to return the same quotient as mpn_tdiv_qr.
