@@ -501,7 +501,8 @@ dnl WANT_GMP_INTERNALS is defined. Only the GMP public API should be used
 dnl by default, in particular by binary distributions. Moreover the check
 dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
-AC_CHECK_FUNCS([__gmpn_rootrem])
+dnl Same for __gmpn_sbpi1_divappr_q.
+AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
 
 dnl End of tests which need to link with GMP.
 fi

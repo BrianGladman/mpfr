@@ -864,10 +864,15 @@ tune_div_mulders_upto (mp_size_t n)
   tbest = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
 
   /* Check k == 0, i.e., mpfr_divhigh_n_basecase */
-  divhigh_ktab[n] = 0;
-  t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
-  if (t * TOLERANCE < tbest)
-    kbest = 0, tbest = t;
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
+  if (n > 2) /* mpn_sbpi1_divappr_q requires dn > 2 */
+#endif
+    {
+      divhigh_ktab[n] = 0;
+      t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
+      if (t * TOLERANCE < tbest)
+        kbest = 0, tbest = t;
+    }
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
@@ -948,7 +953,7 @@ tune_div_mulders (FILE *f)
       if (k != MPFR_DIVHIGH_TAB_SIZE - 1)
         fputc (',', f);
       if ((k+1) % 16 == 0)
-	fprintf (f, " /*%u-%u*/ \\\n ", k - 15, k);
+	fprintf (f, " /*%zu-%zu*/ \\\n ", k - 15, k);
       if (verbose)
         putchar ('.');
     }

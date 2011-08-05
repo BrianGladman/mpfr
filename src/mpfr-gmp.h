@@ -314,6 +314,88 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 #define TMP_MARK(m) (tmp_marker = 0)
 #define TMP_FREE(m) mpfr_tmp_free (tmp_marker)
 
+/* invert_limb macro, copied from GMP 5.0.2, file gmp-impl.h.
+   It returns invxl = floor((B^2-1)/xl)-B, where B=2^BITS_PER_LIMB,
+   assuming the most significant bit of xl is set. */
+#undef invert_limb
+#define invert_limb(invxl,xl)                             \
+  do {                                                    \
+    mp_limb_t dummy;                                      \
+    MPFR_ASSERTD ((xl) != 0);                             \
+    udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
+  } while (0)
+
+/* invert_pi1 macro, adapted from GMP 5.0.2, file gmp-impl.h.
+   It returns dinv = floor((B^3-1)/(d1*B+d0))-B, where B=2^BITS_PER_LIMB,
+   assuming the most significant bit of d1 is set. */
+typedef struct {mp_limb_t inv32;} gmp_pi1_t;
+#undef invert_pi1
+#define invert_pi1(dinv, d1, d0)				\
+  do {								\
+    mp_limb_t v, p, t1, t0, mask;				\
+    invert_limb (v, d1);					\
+    p = d1 * v;							\
+    p += d0;							\
+    if (p < d0)							\
+      {								\
+	v--;							\
+	mask = -(p >= d1);					\
+	p -= d1;						\
+	v += mask;						\
+	p -= mask & d1;						\
+      }								\
+    umul_ppmm (t1, t0, d0, v);					\
+    p += t1;							\
+    if (p < t1)							\
+      {								\
+        v--;							\
+	if (MPFR_UNLIKELY (p >= d1))                            \
+	  {							\
+	    if (p > d1 || t0 >= d0)				\
+	      v--;						\
+	  }							\
+      }								\
+    (dinv).inv32 = v;                                           \
+  } while (0)
+
+/* udiv_qr_3by2 macro, adapted from GMP 5.0.2, file gmp-impl.h.
+   Compute quotient the quotient and remainder for n / d. Requires d
+   >= B^2 / 2 and n < d B. dinv is the inverse
+
+     floor ((B^3 - 1) / (d0 + d1 B)) - B.
+
+   NOTE: Output variables are updated multiple times. Only some inputs
+   and outputs may overlap.
+*/
+#undef udiv_qr_3by2
+#define udiv_qr_3by2(q, r1, r0, n2, n1, n0, d1, d0, dinv)		\
+  do {									\
+    mp_limb_t _q0, _t1, _t0, _mask;					\
+    umul_ppmm ((q), _q0, (n2), (dinv));					\
+    add_ssaaaa ((q), _q0, (q), _q0, (n2), (n1));			\
+									\
+    /* Compute the two most significant limbs of n - q'd */		\
+    (r1) = (n1) - (d1) * (q);						\
+    (r0) = (n0);							\
+    sub_ddmmss ((r1), (r0), (r1), (r0), (d1), (d0));			\
+    umul_ppmm (_t1, _t0, (d0), (q));					\
+    sub_ddmmss ((r1), (r0), (r1), (r0), _t1, _t0);			\
+    (q)++;								\
+									\
+    /* Conditionally adjust q and the remainders */			\
+    _mask = - (mp_limb_t) ((r1) >= _q0);				\
+    (q) += _mask;							\
+    add_ssaaaa ((r1), (r0), (r1), (r0), _mask & (d1), _mask & (d0));	\
+    if (MPFR_UNLIKELY ((r1) >= (d1)))					\
+      {									\
+	if ((r1) > (d1) || (r0) >= (d0))				\
+	  {								\
+	    (q)++;							\
+	    sub_ddmmss ((r1), (r0), (r1), (r0), (d1), (d0));		\
+	  }								\
+      }									\
+  } while (0)
+
 #if defined (__cplusplus)
 }
 #endif

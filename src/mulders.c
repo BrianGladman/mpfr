@@ -189,6 +189,7 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
 #define MPFR_DIVHIGH_TAB_SIZE (sizeof(divhigh_ktab) / sizeof(divhigh_ktab[0]))
 #endif
 
+#if !(defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q))
 /* Put in Q={qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).
    Assumes the most significant bit of D is set. Clobbers N.
@@ -200,8 +201,6 @@ mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
 {
   mp_limb_t qh, d1, d0, dinv, q2, q1, q0;
   gmp_pi1_t dinv2;
-  mp_size_t n0 = n;
-  mp_ptr np0 = np;
 
   np += n;
 
@@ -214,7 +213,7 @@ mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
 
   if (n == 1)
     {
-      dinv = __MPN(invert_limb) (d1);
+      invert_limb (dinv, d1);
       umul_ppmm (q1, q0, np[0], dinv);
       qp[0] = np[0] + q1;
       return qh;
@@ -227,30 +226,30 @@ mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   while (n > 1)
     {
       /* Invariant: it remains to reduce n limbs from N (in addition to the
-	 initial low n limbs).
-	 Since n >= 2 here, necessarily we had n >= 2 initially, which means
-	 that in addition to the limb np[n-1] to reduce, we have at least 2
-	 extra limbs, thus accessing np[n-3] is valid. */
+         initial low n limbs).
+         Since n >= 2 here, necessarily we had n >= 2 initially, which means
+         that in addition to the limb np[n-1] to reduce, we have at least 2
+         extra limbs, thus accessing np[n-3] is valid. */
 
       /* warning: we can have np[n-1]=d1 and np[n-2]=d0, but since {np,n} < D,
-	 the largest possible partial quotient is B-1 */
+         the largest possible partial quotient is B-1 */
       if (MPFR_UNLIKELY(np[n - 1] == d1 && np[n - 2] == d0))
-	q2 = ~ (mp_limb_t) 0;
+        q2 = ~ (mp_limb_t) 0;
       else
-	udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
-		      d1, d0, dinv2.inv32);
+        udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
+                      d1, d0, dinv2.inv32);
       /* since q2 = floor((np[n-1]*B^2+np[n-2]*B+np[n-3])/(d1*B+d0)),
-	 we have q2 <= (np[n-1]*B^2+np[n-2]*B+np[n-3])/(d1*B+d0),
-	 thus np[n-1]*B^2+np[n-2]*B+np[n-3] >= q2*(d1*B+d0)
-	 and {np-1, n} >= q2*D - q2*B^(n-2) >= q2*D - B^(n-1)
-	 thus {np-1, n} - (q2-1)*D >= D - B^(n-1) >= 0
-	 which proves that at most one correction is needed */
+         we have q2 <= (np[n-1]*B^2+np[n-2]*B+np[n-3])/(d1*B+d0),
+         thus np[n-1]*B^2+np[n-2]*B+np[n-3] >= q2*(d1*B+d0)
+         and {np-1, n} >= q2*D - q2*B^(n-2) >= q2*D - B^(n-1)
+         thus {np-1, n} - (q2-1)*D >= D - B^(n-1) >= 0
+         which proves that at most one correction is needed */
       q0 = mpn_submul_1 (np - 1, dp, n, q2);
       if (MPFR_UNLIKELY(q0 > np[n - 1]))
-	{
-	  mpn_add_n (np - 1, np - 1, dp, n);
+        {
+          mpn_add_n (np - 1, np - 1, dp, n);
           q2 --;
-	}
+        }
       qp[--n] = q2;
       dp ++;
     }
@@ -277,6 +276,7 @@ mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
 
   return qh;
 }
+#endif
 
 /* Put in {qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).
@@ -297,11 +297,19 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
   k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);
 
-  /* for k=n, we use a full division (mpn_divrem) */
-
   if (k == 0)
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
+  {
+    gmp_pi1_t dinv2;
+    invert_pi1 (dinv2, dp[n - 1], dp[n - 2]);
+    return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
+  }
+#else /* use our own code for base-case short division */
     return mpfr_divhigh_n_basecase (qp, np, dp, n);
+#endif
   else if (k == n)
+    /* for k=n, we use a division with remainder (mpn_divrem),
+     which computes the exact quotient */
     return mpn_divrem (qp, 0, np, 2 * n, dp, n);
 
   MPFR_ASSERTD ((n+4)/2 <= k && k < n); /* bounds from [1] */
