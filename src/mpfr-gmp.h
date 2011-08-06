@@ -325,10 +325,12 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
     udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
   } while (0)
 
+typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
+                                                 mpfr_pi1_t to avoid using
+                                                 GMP's namespace. */
 /* invert_pi1 macro, adapted from GMP 5.0.2, file gmp-impl.h.
    It returns dinv = floor((B^3-1)/(d1*B+d0))-B, where B=2^BITS_PER_LIMB,
    assuming the most significant bit of d1 is set. */
-typedef struct {mp_limb_t inv32;} gmp_pi1_t;
 #undef invert_pi1
 #define invert_pi1(dinv, d1, d0)				\
   do {								\

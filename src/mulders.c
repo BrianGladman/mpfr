@@ -189,6 +189,10 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
 #define MPFR_DIVHIGH_TAB_SIZE (sizeof(divhigh_ktab) / sizeof(divhigh_ktab[0]))
 #endif
 
+#ifndef __GMPFR_GMP_H__
+#define mpfr_pi1_t gmp_pi1_t /* with a GMP build */
+#endif
+
 #if !(defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q))
 /* Put in Q={qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).
@@ -200,7 +204,7 @@ static mp_limb_t
 mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
 {
   mp_limb_t qh, d1, d0, dinv, q2, q1, q0;
-  gmp_pi1_t dinv2;
+  mpfr_pi1_t dinv2;
 
   np += n;
 
@@ -300,7 +304,7 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   if (k == 0)
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
   {
-    gmp_pi1_t dinv2;
+    mpfr_pi1_t dinv2;
     invert_pi1 (dinv2, dp[n - 1], dp[n - 2]);
     return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
   }
