@@ -89,7 +89,7 @@ mpfr_mulhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
 {
   mp_size_t k;
 
-  MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
+  MPFR_ASSERTN (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
   k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 3*(n/4);
   /* Algorithm ShortMul from [1] requires k >= (n+3)/2, which translates
      into k >= (n+4)/2 in the C language. */
@@ -122,7 +122,7 @@ mpfr_mullow_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
 {
   mp_size_t k;
 
-  MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
+  MPFR_ASSERTN (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
   k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 3*(n/4);
   MPFR_ASSERTD (k == -1 || k == 0 || (2 * k >= n && k < n));
   if (k < 0)
@@ -157,7 +157,7 @@ mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
 {
   mp_size_t k;
 
-  MPFR_ASSERTD (MPFR_SQRHIGH_TAB_SIZE > 2); /* ensures k < n */
+  MPFR_ASSERTN (MPFR_SQRHIGH_TAB_SIZE > 2); /* ensures k < n */
   k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n]
     : (n+4)/2; /* ensures that k >= (n+3)/2 */
   MPFR_ASSERTD (k == -1 || k == 0 || (k >= (n+4)/2 && k < n));
@@ -299,7 +299,7 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   mpfr_limb_ptr tp;
   MPFR_TMP_DECL(marker);
 
-  MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
+  MPFR_ASSERTN (MPFR_MULHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
   k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);
 
   if (k == 0)
