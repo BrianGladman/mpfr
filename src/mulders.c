@@ -201,7 +201,8 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
    The approximate quotient Q satisfies - 2(n-1) < N/D - Q <= 4.
 */
 static mp_limb_t
-mpfr_divhigh_n_basecase (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
+mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
+                         mpfr_limb_srcptr dp, mp_size_t n)
 {
   mp_limb_t qh, d1, d0, dinv, q2, q1, q0;
   mpfr_pi1_t dinv2;
