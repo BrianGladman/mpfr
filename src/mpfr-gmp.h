@@ -334,30 +334,30 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
 #undef invert_pi1
 #define invert_pi1(dinv, d1, d0)                                \
   do {                                                          \
-    mp_limb_t v, p, t1, t0, mask;                               \
-    invert_limb (v, d1);                                        \
-    p = d1 * v;                                                 \
-    p += d0;                                                    \
-    if (p < d0)                                                 \
+    mp_limb_t _v, _p, _t1, _t0, _mask;                          \
+    invert_limb (_v, d1);                                       \
+    _p = d1 * _v;                                               \
+    _p += d0;                                                   \
+    if (_p < d0)                                                \
       {                                                         \
-        v--;                                                    \
-        mask = -(p >= d1);                                      \
-        p -= d1;                                                \
-        v += mask;                                              \
-        p -= mask & d1;                                         \
+        _v--;                                                   \
+        _mask = -(_p >= d1);                                    \
+        _p -= d1;                                               \
+        _v += _mask;                                            \
+        _p -= _mask & d1;                                       \
       }                                                         \
-    umul_ppmm (t1, t0, d0, v);                                  \
-    p += t1;                                                    \
-    if (p < t1)                                                 \
+    umul_ppmm (_t1, _t0, d0, _v);                               \
+    _p += _t1;                                                  \
+    if (_p < _t1)                                               \
       {                                                         \
-        v--;                                                    \
-        if (MPFR_UNLIKELY (p >= d1))                            \
+        _v--;                                                   \
+        if (MPFR_UNLIKELY (_p >= d1))                           \
           {                                                     \
-            if (p > d1 || t0 >= d0)                             \
-              v--;                                              \
+            if (_p > d1 || _t0 >= d0)                           \
+              _v--;                                             \
           }                                                     \
       }                                                         \
-    (dinv).inv32 = v;                                           \
+    (dinv).inv32 = _v;                                          \
   } while (0)
 
 /* udiv_qr_3by2 macro, adapted from GMP 5.0.2, file gmp-impl.h.
