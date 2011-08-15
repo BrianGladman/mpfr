@@ -209,8 +209,12 @@ the <cite><acronym>GMP</acronym></cite> library could not be found
 (as it is not in the provided library search paths) or because the
 <cite><acronym>GMP</acronym></cite> library that was found does not have
 the expected <acronym title="Application Binary Interface">ABI</acronym>
-(<abbr>e.g.</abbr> 32-bit <abbr>vs</abbr> 64-bit). The latter problem can
-have several causes:</p>
+(<abbr>e.g.</abbr> 32-bit <abbr>vs</abbr> 64-bit). The former problem can be
+due to the fact that a static build of <cite><acronym>MPFR</acronym></cite>
+was requested while only a shared <cite><acronym>GMP</acronym></cite> library
+is installed (or the opposite, but another error can also show up in this
+case, see the <a href="#fpic">question about <samp>-fPIC</samp></a>). The
+latter problem can have several causes:</p>
 <ul>
 <li>A wrong libgmp library has been picked up. This can occur if you have
 several <cite><acronym>GMP</acronym></cite> versions installed on the
