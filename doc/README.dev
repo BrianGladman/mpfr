@@ -971,3 +971,20 @@ or zsh:
     '/= Command: [^ ]*\/\.libs\/lt-/,/= ERROR SUMMARY:/p' > vg.out)
 
 if you do not mind about the buffering delays.
+
+===========================================================================
+
+To update the FAQ, checkout the misc directory of the repository root.
+Modify the faq.xhtml file and run
+
+  xsltproc --nodtdattr faq-web.xsl faq.xhtml > www/faq.html
+
+Check with "svn diff" that this change has been done correctly (in case
+of incorrect installation of XML tools), validate the files with
+
+  xmllint --noout --loaddtd --valid faq.xhtml www/faq.html
+
+and if everything is OK (no error messages), commit both files.
+
+Update the FAQ.html file with update-faq in the doc directory of the
+MPFR trunk and supported branches.
