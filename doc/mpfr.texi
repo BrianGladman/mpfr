@@ -720,6 +720,7 @@ rounded to (10.0)=2 with a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section 4.2.2).
 
+@cindex Ternary value
 Most MPFR functions take as first argument the destination variable, as
 second and following arguments the input variables, as last argument a
 rounding mode, and have a return value of type @code{int}, called the
