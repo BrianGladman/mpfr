@@ -390,6 +390,12 @@ dnl
 dnl Setup GMP detection (continued)
 dnl
 
+dnl Check minimal GMP version
+dnl We only guarantee that with a *functional* and recent enough GMP version,
+dnl MPFR will compile; we do not guarantee that GMP will compile.
+dnl In particular fat builds are broken in GMP 4.3.2 and GMP 5.0.0
+dnl (at least on 64-bit Core 2 under Linux),
+dnl see http://gmplib.org/list-archives/gmp-bugs/2011-August/002345.html.
 AC_MSG_CHECKING(for recent GMP)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include "gmp.h"
