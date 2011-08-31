@@ -1434,11 +1434,17 @@ set, @var{rop} is set to 0, and 0 is returned.
 @deftypefun int mpfr_get_f (mpf_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
-@c Since we say it in the "API Compatibility" section, no need to say it here:
-@c Return the usual ternary value. Notice that the meaning of the returned value
-@c has changed since version 3.0.
-The @emph{erange} flag is set if @var{op} is NaN or Inf, which do not exist in
-MPF.
+The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
+do not exist in MPF.  If @var{op} is NaN, then @var{rop} is undefined.
+If @var{op} is an +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
+the maximum (resp.@: minimum) value in the precision of the MPF number;
+if a future MPF version supports infinities, this behavior will be
+considered incorrect and will change (portable programs should assume
+that @var{rop} is set either to this finite number or to an infinite
+number).
+Note that since MPFR currently has the same exponent type as MPF (but
+not with the same radix), the range of values is much larger in MPF
+than in MPFR, so that an overflow or underflow is not possible.
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
