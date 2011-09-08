@@ -63,4 +63,10 @@ $(top_builddir)/src/libmpfr.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libmpfr.la
 
 TESTS = $(check_PROGRAMS)
-TESTS_ENVIRONMENT = MPFR_QUIET=1
+TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
+
+# Option to prevent libtool from generating wrapper scripts for the tests.
+# This is useful to easily run the test scripts under valgrind or gdb.
+# See discussion http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28033
+# http://article.gmane.org/gmane.comp.lib.gnulib.bugs/28140 in particular.
+AM_LDFLAGS = -no-install

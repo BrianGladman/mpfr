@@ -870,6 +870,11 @@ main (int argc, char *argv[])
 
 ===========================================================================
 
+NOTE: with "AM_LDFLAGS = -no-install" in tests/Makefile.am, the following
+is obsolete, as libtool no longer generates wrapper scripts; but it is left
+here in case negative effects of "AM_LDFLAGS = -no-install" are seen or for
+users with a special setup.
+
 To debug some test program, e.g. tadd, with gdb, you cannot run "gdb tadd"
 since libtool has generated a wrapper script to link the program against
 the correct MPFR library. Instead, run:
@@ -934,6 +939,15 @@ a large value; this can be done at run time, e.g. with
 
 to disable the timeout, so that you do not need to rebuild MPFR for
 this purpose.
+
+Then just set the VALGRIND environment variable to "valgrind -q" before
+running "make check", or type directly:
+
+  VALGRIND="valgrind -q" make check
+
+NOTE: with the new tests/Makefile.am file, the following is obsolete;
+but it might still be useful under some occasions, e.g. if all the
+valgrind output needs to be sent to a single file.
 
 Before running valgrind, you should run "make check" a first time so
 that everything is compiled out of valgrind.
