@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ##############################################################################
 
 Changes from versions 3.0.* to version 3.1.0:
-- The "" release.
+- The "canard à l'orange" release.
 - The MPFR source has been reorganized.
 - Dropped ansi2knr support.
 - TLS support is now detected automatically. If TLS is supported, MPFR is
@@ -47,6 +47,10 @@ Changes from versions 3.0.* to version 3.1.0:
 - New division-by-zero exception (flag) and associated functions.
 - The mpfr.h header can be included several times, while still supporting
   optional functions (see Section "Headers and Libraries" in the manual).
+- Updated tuning parameters.
+- Improved MPFR manual.
+- MPFR tests: libtool no longer generates wrapper scripts with "make check"
+  (so that running the tests under valgrind or gdb is easier).
 - Bug fixes.
   Note: The mpfr_subnormalize implementation up to MPFR 3.0.0 did not change
   the flags. In particular, it did not follow the generic rule concerning
