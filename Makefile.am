@@ -21,9 +21,11 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
 EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh \
   $(DATAFILES)
 
-# In a "make dist", check consistency concerning -version-info
-# and if the VERSION file doesn't end with "-dev", check that
-# the -version-info value is up-to-date.
-# Note: this is a heuristic, to detect some mistakes.
+# Various checks for "make dist".
+# * Check consistency concerning -version-info. Moreover if the VERSION
+#   file doesn't end with "-dev", check that the -version-info value is
+#   up-to-date. Note: this is a heuristic, to detect some mistakes.
+# * Check that copyright notices exist and appear to be correct.
 dist-hook:
 	cd $(srcdir) && tools/ck-version-info
+	cd $(srcdir) && tools/ck-copyright-notice

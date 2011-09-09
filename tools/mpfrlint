@@ -97,21 +97,7 @@ GFDL versions differ:
   mpfr.texi: $fdlv2
 EOF
 
-# Note: if paragraphs are reformatted, this may need to be updated.
-lgpl="`sed -n '/version [0-9.]* or any later version/ {
-  s/.*version //
-  s/ or.*//
-  p
-  q
-  }' doc/mpfr.texi`"
-for file in $srctests
-do
-  [ "$file" = "src/get_patches.c" ] && file="tools/get_patches.sh"
-  if grep -q "GNU MPFR Library" "$file"; then
-    grep -q "either version $lgpl of the License" "$file" || \
-      echo "Possibly missing or incorrect copyright notice in $file"
-  fi
-done
+tools/ck-copyright-notice
 
 texisvnd=`LC_ALL=C TZ=UTC svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [ $? -eq 0 ] && [ -n "$texisvnd" ]; then
