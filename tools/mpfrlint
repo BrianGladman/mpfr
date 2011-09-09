@@ -17,11 +17,13 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' src/*.{c,h} | 
 grep -E 'if +(test|\[).* == ' acinclude.m4 configure.ac
 grep -E '="`' acinclude.m4 configure.ac
 
-grep GMP_LIMB_BITS {src,tests}/*.{c,h}
+srctests=`find src tests -name '*.[ch]'`
 
-grep GMP_RND {src,tests}/*.{c,h} | grep -v '#define GMP_RND'
+grep GMP_LIMB_BITS $srctests
 
-grep -E 'mp_(src)?ptr' {src,tests}/*.{c,h}
+grep GMP_RND $srctests | grep -v '#define GMP_RND'
+
+grep -E 'mp_(src)?ptr' $srctests
 
 # Do not use __mpfr_struct structure members in .c files.
 grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
@@ -34,13 +36,13 @@ do
 done
 
 sp="[[:space:]]*"
-grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" {src,tests}/*.{c,h}
+grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" $srctests
 
 # Do not use snprintf as it is not available in ISO C90.
 # Even on platforms where it is available, the prototype
 # may not be included (e.g. with gcc -ansi), so that the
 # code may be compiled incorrectly.
-grep '[^a-z_]snprintf *([^)]' {src,tests}/*.{c,h}
+grep '[^a-z_]snprintf *([^)]' $srctests
 
 # Constant checking should use MPFR_ASSERTN, not MPFR_ASSERTD.
 # This test is a heuristic.
@@ -49,7 +51,7 @@ grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
 # Use MPFR_TMP_LIMBS_ALLOC.
 grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
 
-for file in {src,tests}/*.{c,h} */Makefile.am acinclude.m4 configure.ac
+for file in $srctests */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case
   # implementations are buggy like POSIX examples. :)
@@ -102,7 +104,7 @@ lgpl="`sed -n '/version [0-9.]* or any later version/ {
   p
   q
   }' doc/mpfr.texi`"
-for file in {src,tests}/*.{c,h}
+for file in $srctests
 do
   [ "$file" = "src/get_patches.c" ] && file="tools/get_patches.sh"
   if grep -q "GNU MPFR Library" "$file"; then
