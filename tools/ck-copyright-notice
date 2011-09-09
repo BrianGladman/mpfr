@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# Copyright 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+# This script is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
 # ck-copyright-notice can be run from the tools directory
 dir=`pwd`
 [ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..

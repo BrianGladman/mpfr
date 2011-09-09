@@ -18,7 +18,8 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
   examples/version.c
 
-EXTRA_DIST = PATCHES VERSION tools/ck-version-info tools/get_patches.sh \
+EXTRA_DIST = PATCHES VERSION \
+  tools/ck-copyright-notice tools/ck-version-info tools/get_patches.sh \
   $(DATAFILES)
 
 # Various checks for "make dist".
