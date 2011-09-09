@@ -21,9 +21,16 @@ srctests=`find src tests -name '*.[ch]'`
 err=0
 for file in $srctests
 do
-  [ "$file" = "tests/RRTest.c" ] && continue
-  [ "$file" = "src/get_patches.c" ] && file="tools/get_patches.sh"
-  grep -q "Copyright .* Free Software Foundation" "$file" && \
+  y=""
+  case $file in
+    tests/RRTest.c)
+      continue ;;
+    src/get_patches.c)
+      file="tools/get_patches.sh" ;;
+    */mparam.h)
+      y="2005," ;;
+  esac
+  grep -q "Copyright $y.* Free Software Foundation" "$file" && \
   grep -q "GNU MPFR Library" "$file" && \
   grep -q "either version $lgpl of the License" "$file" && continue
   echo "Possibly missing or incorrect copyright notice in $file"
