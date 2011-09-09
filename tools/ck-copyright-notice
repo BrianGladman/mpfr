@@ -24,6 +24,10 @@ do
   y=""
   case $file in
     tests/RRTest.c)
+      # This file doesn't have a copyright notice, but isn't distributed.
+      continue ;;
+    src/mpfr-longlong.h)
+      # This file (which comes from GMP) has a specific copyright notice.
       continue ;;
     src/get_patches.c)
       file="tools/get_patches.sh" ;;
