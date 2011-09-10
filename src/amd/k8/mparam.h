@@ -24,7 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    with gmp 5.0.2.
    Keith Briggs sent similar parameters obtained on a AMD Athlon
    (__tune_k8__, __x86_64, __amd64, __k8) */
-*/
 
 
 #define MPFR_MULHIGH_TAB  \
