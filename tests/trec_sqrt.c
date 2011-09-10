@@ -125,7 +125,7 @@ bad_case2 (void)
 {
   mpfr_t r, u;
   mpfr_prec_t pr, pu;
-  mpfr_rnd_t rnd;
+  int rnd;
 
   for (pr = MPFR_PREC_MIN; pr <= 192; pr++)
     for (pu = MPFR_PREC_MIN; pu <= 192; pu++)
@@ -135,45 +135,45 @@ bad_case2 (void)
 
         mpfr_set_ui (u, 1, MPFR_RNDN);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 1, MPFR_RNDN);
         mpfr_nextabove (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextabove (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 2, MPFR_RNDN);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 2, MPFR_RNDN);
         mpfr_nextabove (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextabove (u);
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
-          mpfr_rec_sqrt (r, u, rnd);
+          mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_clear (r);
         mpfr_clear (u);
