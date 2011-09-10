@@ -313,7 +313,7 @@ Table of contents:
 
 - better distinguish different processors (for example Opteron and Core 2)
   and use corresponding default tuning parameters (as in GMP). This could be
-  done in configure.in to avoid hacking config.guess, for example define
+  done in configure.ac to avoid hacking config.guess, for example define
   MPFR_HAVE_CORE2.
   Note (VL): the effect on cross-compilation (that can be a processor
   with the same architecture, e.g. compilation on a Core 2 for an
