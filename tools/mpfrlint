@@ -98,7 +98,7 @@ GFDL versions differ:
 EOF
 
 tools/ck-copyright-notice
-which gcc 2> /dev/null && tools/ck-mparam
+which gcc > /dev/null 2> /dev/null && tools/ck-mparam
 
 texisvnd=`LC_ALL=C TZ=UTC svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [ $? -eq 0 ] && [ -n "$texisvnd" ]; then
