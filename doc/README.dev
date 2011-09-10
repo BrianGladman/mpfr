@@ -249,10 +249,6 @@ To make a release (for the MPFR team):
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
 
-Before a release, add AM_MAINTAINER_MODE(enable) to configure.in,
-autoreconf -i with Automake 1.11, then comment out
-AM_MAINTAINER_MODE(enable) while keeping the timestamp.
-
 ===========================================================================
 
 To check the coverage of the Test Suite, you can use GCOV.
