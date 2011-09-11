@@ -3307,6 +3307,8 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
+@item @code{mpfr_frexp} in MPFR 3.1.
+
 @item @code{mpfr_get_flt} in MPFR 3.0.
 
 @item @code{mpfr_get_patches} in MPFR 2.3.
@@ -3319,6 +3321,8 @@ This function was named @code{mpfr_get_z_exp} in previous versions;
 @end example
 Thus code that needs to work with both MPFR 2.x and MPFR 3.x should
 use @code{mpfr_get_z_exp}.
+
+@item @code{mpfr_grandom} in MPFR 3.1.
 
 @item @code{mpfr_j0}, @code{mpfr_j1} and @code{mpfr_jn} in MPFR 2.3.
 
@@ -3364,6 +3368,8 @@ use @code{mpfr_get_z_exp}.
       @code{mpfr_vsprintf} and @code{mpfr_vsnprintf} in MPFR 2.4.
 
 @item @code{mpfr_y0}, @code{mpfr_y1} and @code{mpfr_yn} in MPFR 2.3.
+
+@item @code{mpfr_z_sub} in MPFR 3.1.
 
 @end itemize
 
