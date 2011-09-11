@@ -709,7 +709,7 @@ The following five rounding modes are supported:
 @item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008),
 @item @code{MPFR_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008),
 @item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008),
-@item @code{MPFR_RNDA}: round away from zero (experimental).
+@item @code{MPFR_RNDA}: round away from zero.
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
