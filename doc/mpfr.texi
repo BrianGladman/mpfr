@@ -3268,6 +3268,8 @@ MPFR version.
 
 @item @code{mpfr_buildopt_decimal_p} and @code{mpfr_buildopt_tls_p} in MPFR 3.0.
 
+@item @code{mpfr_clear_divby0} in MPFR 3.1 (new division-by-zero exception).
+
 @item @code{mpfr_copysign} in MPFR 2.3.
 Note: MPFR 2.2 had a @code{mpfr_copysign} function that was available,
 but not documented,
@@ -3287,6 +3289,8 @@ use @code{mpfr_custom_get_mantissa}.
 @item @code{mpfr_d_div} and @code{mpfr_d_sub} in MPFR 2.4.
 
 @item @code{mpfr_digamma} in MPFR 3.0.
+
+@item @code{mpfr_divby0_p} in MPFR 3.1 (new division-by-zero exception).
 
 @item @code{mpfr_div_d} in MPFR 2.4.
 
@@ -3328,6 +3332,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_regular_p} in MPFR 3.0.
 
 @item @code{mpfr_remainder} and @code{mpfr_remquo} in MPFR 2.3.
+
+@item @code{mpfr_set_divby0} in MPFR 3.1 (new division-by-zero exception).
 
 @item @code{mpfr_set_flt} in MPFR 3.0.
 
@@ -3483,6 +3489,10 @@ such as defining @code{intmax_t} and @code{uintmax_t} in the global
 namespace, though this is not clean.
 
 @end itemize
+
+The division-by-zero exception is new in MPFR 3.1. However it should
+not introduce incompatible changes for programs that strictly follow
+the MPFR API since the exception can only be seen via new functions.
 
 @node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up
