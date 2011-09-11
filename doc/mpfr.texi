@@ -3507,6 +3507,9 @@ The division-by-zero exception is new in MPFR 3.1. However it should
 not introduce incompatible changes for programs that strictly follow
 the MPFR API since the exception can only be seen via new functions.
 
+As of MPFR 3.1, the @file{mpfr.h} header can be included several times,
+while still supporting optional functions (@pxref{Headers and Libraries}).
+
 @node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
