@@ -2783,6 +2783,11 @@ is MPFR was built with the @code{--enable-decimal-float} configure option),
 return zero otherwise.
 @end deftypefun
 
+@deftypefun {const char *} mpfr_buildopt_tune_case (void)
+Return a string saying which thresholds file has been used at compile time.
+This file is normally selected from the processor type.
+@end deftypefun
+
 @node Exception Related Functions, Compatibility with MPF, Miscellaneous Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Exception related functions
@@ -3267,6 +3272,8 @@ MPFR version.
 @item @code{mpfr_asprintf} in MPFR 2.4.
 
 @item @code{mpfr_buildopt_decimal_p} and @code{mpfr_buildopt_tls_p} in MPFR 3.0.
+
+@item @code{mpfr_buildopt_tune_case} in MPFR 3.1.
 
 @item @code{mpfr_clear_divby0} in MPFR 3.1 (new division-by-zero exception).
 
