@@ -89,6 +89,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #  include "mpfr-gmp.h"
 # endif
 # ifdef MPFR_NEED_LONGLONG_H
+#  define LONGLONG_STANDALONE
 #  include "mpfr-longlong.h"
 # endif
 
