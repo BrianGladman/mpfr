@@ -822,7 +822,7 @@ gives +Inf.
 @comment  node-name,  next,  previous,  up
 @section Exceptions
 
-MPFR supports 5 exception types:
+MPFR supports 6 exception types:
 
 @itemize @bullet
 
