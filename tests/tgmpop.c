@@ -1,5 +1,5 @@
-/* Test file for mpfr_add_[q,z], mpfr_sub_[q,z], mpfr_div_[q,z], mpfr_mul_[q,z]
-   and mpfr_cmp_[q,z]
+/* Test file for mpfr_add_[q,z], mpfr_sub_[q,z], mpfr_div_[q,z],
+   mpfr_mul_[q,z], mpfr_cmp_[f,q,z]
 
 Copyright 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
@@ -232,6 +232,20 @@ test_cmp_z (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
   mpfr_init (x);
   mpfr_init2 (z, MPFR_PREC_MIN);
   mpz_init (y);
+
+  /* check the erange flag when x is NaN */
+  mpfr_set_nan (x);
+  mpz_set_ui (y, 17);
+  mpfr_clear_erangeflag ();
+  res1 = mpfr_cmp_z (x, y);
+  if (res1 != 0 || mpfr_erangeflag_p () == 0)
+    {
+      printf ("Error for mpfr_cmp_z (NaN, 17)\n");
+      printf ("Return value: expected 0, got %d\n", res1);
+      printf ("Erange flag: expected set, got %d\n", mpfr_erangeflag_p ());
+      exit (1);
+    }
+
   for(p=pmin ; p < pmax ; p++)
     {
       mpfr_set_prec (x, p);
@@ -270,6 +284,20 @@ test_cmp_q (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
   mpfr_init (x);
   mpfr_init2 (z, MPFR_PREC_MIN);
   mpq_init (y);
+
+  /* check the erange flag when x is NaN */
+  mpfr_set_nan (x);
+  mpq_set_ui (y, 17, 1);
+  mpfr_clear_erangeflag ();
+  res1 = mpfr_cmp_q (x, y);
+  if (res1 != 0 || mpfr_erangeflag_p () == 0)
+    {
+      printf ("Error for mpfr_cmp_q (NaN, 17)\n");
+      printf ("Return value: expected 0, got %d\n", res1);
+      printf ("Erange flag: expected set, got %d\n", mpfr_erangeflag_p ());
+      exit (1);
+    }
+
   for(p=pmin ; p < pmax ; p++)
     {
       mpfr_set_prec (x, p);
@@ -308,6 +336,20 @@ test_cmp_f (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
   mpfr_init (x);
   mpfr_init2 (z, pmax+GMP_NUMB_BITS);
   mpf_init2 (y, MPFR_PREC_MIN);
+
+  /* check the erange flag when x is NaN */
+  mpfr_set_nan (x);
+  mpf_set_ui (y, 17);
+  mpfr_clear_erangeflag ();
+  res1 = mpfr_cmp_f (x, y);
+  if (res1 != 0 || mpfr_erangeflag_p () == 0)
+    {
+      printf ("Error for mpfr_cmp_f (NaN, 17)\n");
+      printf ("Return value: expected 0, got %d\n", res1);
+      printf ("Erange flag: expected set, got %d\n", mpfr_erangeflag_p ());
+      exit (1);
+    }
+
   for(p=pmin ; p < pmax ; p+=3)
     {
       mpfr_set_prec (x, p);
