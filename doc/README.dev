@@ -175,9 +175,9 @@ To make a release (for the MPFR team):
      with --enable-alloca=debug and MPFR with --with-gmp-build to be
      able to get the memory leak errors), with and without -DXDEBUG in
      $CFLAGS, with and without gmp internal files (--enable-gmp-internals),
-     with and without GMP built as a shared library, with and without srcdir
-     equal to objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
-     with and without --enable-logging.
+     with and without GMP built as a shared library, with objdir equal to
+     and different from srcdir (e.g. ../mpfr-source/configure after making
+     mpfr-source read-only), with and without --enable-logging.
 
      Try different gcc versions with different options: with and without
      "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and without "-ansi" (which
@@ -194,6 +194,7 @@ To make a release (for the MPFR team):
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
+     Also test --enable-gmp-internals with it.
 
      Try different compilers, e.g., icc, opencc (x86_64 machines),
      tcc <http://bellard.org/tcc/>, llvm-gcc, clang.
