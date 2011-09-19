@@ -294,6 +294,13 @@ __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 #endif
 #endif
 
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
+#ifndef __gmpn_sbpi1_divappr_q
+  __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q _MPFR_PROTO ((mp_limb_t*,
+                mp_limb_t*, mp_size_t, mp_limb_t*, mp_size_t, mp_limb_t));
+#endif
+#endif
+
 /* Temp memory allocate */
 
 struct tmp_marker
