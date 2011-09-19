@@ -799,6 +799,35 @@ you should not assume that mpfr_exp_t and mp_exp_t are identical).
 
 ===========================================================================
 
+How to specify (for reading) the minimum exponent or the maximum exponent
+in the MPFR source depends on the context.
+
+1. The most portable form is mpfr_get_emin() and mpfr_get_emax(). In
+   the MPFR source, this is equivalent to __gmpfr_emin and __gmpfr_emax
+   respectively (macros are defined in mpfr-impl.h; the only difference
+   is that the macros do not evaluate to a lvalue).
+
+2. If the exponent range has been extended, you can use the constants
+   MPFR_EXT_EMIN and MPFR_EXT_EMAX instead. This will be faster if TLS
+   is enabled. It also avoids a bug on some Linux/Sparc machines with
+   some GCC versions and TLS, but this shouldn't be the primary concern,
+   as this might be the other way round on some other machines. This is
+   the most common context.
+   Note: If you really want to specify the current minimum or maximum
+   exponent, do not use MPFR_EMIN_MIN or MPFR_EMAX_MAX, even though
+   they have the same value. This may prevent some form of testing in
+   the future.
+
+3. If you want the minimum and maximum possible exponent values supported
+   by MPFR, use MPFR_EMIN_MIN and MPFR_EMAX_MAX respectively.
+
+4. If you want the minimum and maximum values supported by the mpfr_exp_t
+   type (i.e. the limits of this type), use MPFR_EXP_MIN and MPFR_EXP_MAX
+   respectively. This may be useful for intermediate computations on the
+   exponents.
+
+===========================================================================
+
 Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
 (C99, 6.9.2). Depending on the context, use either a simple declaration
 (with the "extern" storage-class specifier) or an external definition.

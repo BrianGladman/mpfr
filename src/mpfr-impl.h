@@ -1158,13 +1158,17 @@ typedef struct {
   mpfr_exp_t saved_emax;
 } mpfr_save_expo_t;
 
+/* Minimum and maximum exponents of the extended exponent range. */
+#define MPFR_EXT_EMIN MPFR_EMIN_MIN
+#define MPFR_EXT_EMAX MPFR_EMAX_MAX
+
 #define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t x
 #define MPFR_SAVE_EXPO_MARK(x)     \
  ((x).saved_flags = __gmpfr_flags, \
   (x).saved_emin = __gmpfr_emin,   \
   (x).saved_emax = __gmpfr_emax,   \
-  __gmpfr_emin = MPFR_EMIN_MIN,    \
-  __gmpfr_emax = MPFR_EMAX_MAX)
+  __gmpfr_emin = MPFR_EXT_EMIN,    \
+  __gmpfr_emax = MPFR_EXT_EMAX)
 #define MPFR_SAVE_EXPO_FREE(x)     \
  (__gmpfr_flags = (x).saved_flags, \
   __gmpfr_emin = (x).saved_emin,   \
