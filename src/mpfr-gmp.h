@@ -289,8 +289,8 @@ __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_ROOTREM)
 #ifndef __gmpn_rootrem
-  __MPFR_DECLSPEC mp_size_t __gmpn_rootrem _MPFR_PROTO ((mpfr_limb_ptr,
-                    mpfr_limb_ptr, mpfr_limb_srcptr, mp_size_t, mp_limb_t));
+  __MPFR_DECLSPEC mp_size_t __gmpn_rootrem _MPFR_PROTO ((mp_limb_t*,
+                    mp_limb_t*, mp_limb_t*, mp_size_t, mp_limb_t));
 #endif
 #endif
 

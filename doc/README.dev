@@ -174,9 +174,9 @@ To make a release (for the MPFR team):
      and without GMP's --disable-alloca configure option (or compile GMP
      with --enable-alloca=debug and MPFR with --with-gmp-build to be
      able to get the memory leak errors), with and without -DXDEBUG in
-     $CFLAGS, with and without gmp internal files, with and without
-     GMP built as a shared library, with and without srcdir equal to
-     objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
+     $CFLAGS, with and without gmp internal files (--enable-gmp-internals),
+     with and without GMP built as a shared library, with and without srcdir
+     equal to objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
      with and without --enable-logging.
 
      Try different gcc versions with different options: with and without
