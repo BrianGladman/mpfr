@@ -412,6 +412,10 @@ Table of contents:
 - add an internal macro that does the equivalent of the following?
     MPFR_IS_ZERO(x) || MPFR_GET_EXP(x) <= value
 
+- check whether __gmpfr_emin and __gmpfr_emax could be replaced by
+  a constant (see README.dev). Also check the use of MPFR_EMIN_MIN
+  and MPFR_EMAX_MAX.
+
 
 ##############################################################################
 7. Portability
