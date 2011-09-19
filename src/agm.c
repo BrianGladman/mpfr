@@ -164,19 +164,19 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                       e1 > emin (see restriction below).
                       e1 + scale > emin - 1, thus e1 + scale >= emin.
                  3. e2 + scale <= emax, since scale < 0. */
-              if (e1 + e2 > __gmpfr_emax)
+              if (e1 + e2 > MPFR_EMAX_MAX)
                 {
-                  scaleop = - (((e1 + e2) - __gmpfr_emax + 1) / 2);
+                  scaleop = - (((e1 + e2) - MPFR_EMAX_MAX + 1) / 2);
                   MPFR_ASSERTN (scaleop < 0);
                 }
               else
                 {
                   /* The addition necessarily overflowed. */
-                  MPFR_ASSERTN (e2 == __gmpfr_emax);
+                  MPFR_ASSERTN (e2 == MPFR_EMAX_MAX);
                   /* The case where e1 = emin and e2 = emax is not supported
                      here. This would mean that the precision of e2 would be
                      huge (and possibly not supported in practice anyway). */
-                  MPFR_ASSERTN (e1 > __gmpfr_emin);
+                  MPFR_ASSERTN (e1 > MPFR_EMIN_MIN);
                   scaleop = -1;
                 }
 
@@ -191,7 +191,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                  2. e1 + scale >= emin + 1 >= emin.
                  3. e2 + scale <= scale <= emax. */
               MPFR_ASSERTN (e1 <= e2 && e2 <= 0);
-              scaleop = (__gmpfr_emin + 2 - e1 - e2) / 2;
+              scaleop = (MPFR_EMIN_MIN + 2 - e1 - e2) / 2;
               MPFR_ASSERTN (scaleop > 0);
             }
 
@@ -257,7 +257,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
               mpfr_exp_t scale2;
 
               scale2 = - (((MPFR_GET_EXP (u) + MPFR_GET_EXP (v))
-                           - __gmpfr_emax + 1) / 2);
+                           - MPFR_EMAX_MAX + 1) / 2);
               MPFR_EXP (u) += scale2;
               MPFR_EXP (v) += scale2;
               scaleit += scale2;
