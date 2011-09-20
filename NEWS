@@ -43,8 +43,8 @@ Changes from versions 3.0.* to version 3.1.0:
 - The --with-gmp-build configure option can now be used when the GMP
   source directory and the GMP build directory are different (without
   having to copy header files manually as before).
-- New functions mpfr_buildopt_tune_case, mpfr_frexp, mpfr_grandom and
-  mpfr_z_sub.
+- New functions mpfr_buildopt_internals_p, mpfr_buildopt_tune_case,
+  mpfr_frexp, mpfr_grandom and mpfr_z_sub.
 - New division-by-zero exception (flag) and associated functions.
 - The mpfr.h header can be included several times, while still supporting
   optional functions (see Section "Headers and Libraries" in the manual).

@@ -43,6 +43,16 @@ mpfr_buildopt_decimal_p (void)
 #endif
 }
 
+int
+mpfr_buildopt_internals_p (void)
+{
+#if defined(MPFR_HAVE_GMP_IMPL) || defined(WANT_GMP_INTERNALS)
+  return 1;
+#else
+  return 0;
+#endif
+}
+
 const char *mpfr_buildopt_tune_case (void)
 {
 #ifdef MPFR_TUNE_CASE
