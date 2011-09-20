@@ -64,9 +64,15 @@ int main (void)
           MPFR_VERSION_MINOR, MPFR_VERSION_PATCHLEVEL);
 
 #if MPFR_VERSION_MAJOR >= 3
-  printf ("MPFR features: TLS = %s, decimal = %s\n",
+  printf ("MPFR features: TLS = %s, decimal = %s",
           mpfr_buildopt_tls_p () ? "yes" : "no",
           mpfr_buildopt_decimal_p () ? "yes" : "no");
+# if MPFR_VERSION_MAJOR > 3 || MPFR_VERSION_MINOR >= 1
+  printf (", GMP internals = %s\nMPFR tuning: %s",
+          mpfr_buildopt_gmpinternals_p () ? "yes" : "no",
+          mpfr_buildopt_tune_case ());
+# endif
+  printf ("\n");
 #endif
 
   printf ("MPFR patches: %s\n\n", mpfr_get_patches ());
