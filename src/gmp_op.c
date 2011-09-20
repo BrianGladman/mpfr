@@ -430,23 +430,36 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
 }
 
 int
-mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
+mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr q)
 {
   mpfr_t t;
   int res;
   mpfr_prec_t p;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  if (MPFR_UNLIKELY (mpq_denref (q) == 0))
+    {
+      /* q is an infinity or NaN */
+      mpfr_init2 (t, 2);
+      mpfr_set_q (t, q, MPFR_RNDN);
+      res = mpfr_cmp (x, t);
+      mpfr_clear (t);
+      return res;
+    }
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    return mpfr_cmp_si (x, mpq_sgn (q));
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* x < a/b ? <=> x*b < a */
-  MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
-  MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
+  MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (q));
   mpfr_init2 (t, MPFR_PREC(x) + p);
-  res = mpfr_mul_z (t, x, mpq_denref (z), MPFR_RNDN);
+  res = mpfr_mul_z (t, x, mpq_denref (q), MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp_z (t, mpq_numref (z));
+  res = mpfr_cmp_z (t, mpq_numref (q));
   mpfr_clear (t);
+
   MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }
@@ -458,6 +471,9 @@ mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
   int res;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    return mpfr_cmp_si (x, mpf_sgn (z));
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * GMP_NUMB_BITS );
@@ -465,6 +481,7 @@ mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (x, t);
   mpfr_clear (t);
+
   MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }
