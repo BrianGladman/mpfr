@@ -61,18 +61,18 @@ check_decimal_p (void)
 }
 
 static void
-check_internals_p (void)
+check_gmpinternals_p (void)
 {
 #if defined(MPFR_HAVE_GMP_IMPL) || defined(WANT_GMP_INTERNALS)
-  if (!mpfr_buildopt_internals_p())
+  if (!mpfr_buildopt_gmpinternals_p())
     {
-      printf ("Error: mpfr_buildopt_internals_p should return true\n");
+      printf ("Error: mpfr_buildopt_gmpinternals_p should return true\n");
       exit (1);
     }
 #else
-  if (mpfr_buildopt_internals_p())
+  if (mpfr_buildopt_gmpinternals_p())
     {
-      printf ("Error: mpfr_buildopt_internals_p should return false\n");
+      printf ("Error: mpfr_buildopt_gmpinternals_p should return false\n");
       exit (1);
     }
 #endif
@@ -83,7 +83,7 @@ main (void)
 {
   check_tls_p();
   check_decimal_p();
-  check_internals_p();
+  check_gmpinternals_p();
 
   return 0;
 }

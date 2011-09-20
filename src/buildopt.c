@@ -44,7 +44,7 @@ mpfr_buildopt_decimal_p (void)
 }
 
 int
-mpfr_buildopt_internals_p (void)
+mpfr_buildopt_gmpinternals_p (void)
 {
 #if defined(MPFR_HAVE_GMP_IMPL) || defined(WANT_GMP_INTERNALS)
   return 1;
