@@ -11,9 +11,9 @@ make
 make install
 cd $HOME
 /bin/rm -fr mpfr-3.1.0*
-wget http://www.mpfr.org/mpfr-3.1.0/mpfr-3.1.0-rc1.tar.bz2
-tar jxf mpfr-3.1.0-rc1.tar.bz2
-cd mpfr-3.1.0-rc1
+wget http://www.mpfr.org/mpfr-3.1.0/mpfr-3.1.0-rc2.tar.bz2
+tar jxf mpfr-3.1.0-rc2.tar.bz2
+cd mpfr-3.1.0-rc2
 ./configure --with-gmp=$HOME --prefix=$HOME --disable-shared
 make
 make check
@@ -60,3 +60,9 @@ make check
 # gcc101 Connection timed out
 # gcc200 Connection timed out
 # gcc201 Connection timed out
+
+# results with mpfr-3.1.0-rc2.tar.bz2
+# gcc54 All 160 tests passed (1 test was not run)
+# gcc61 All 160 tests passed (1 test was not run) ABI=1.0 GCC 4.4.1
+# gcc62 All 160 tests passed (1 test was not run)
+# gcc63 All 160 tests passed (1 test was not run)
