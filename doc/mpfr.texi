@@ -1399,9 +1399,9 @@ such that @math{0.5@le{}@GMPabs{@var{y}}<1}
 and @m{@var{y}\times 2^{exp}, @var{y} times 2 raised to @var{exp}} equals
 @var{x} rounded to the precision of @var{y}, using the given rounding mode.
 @comment See ISO C standard, frexp function.
-If @var{x} is zero, then a zero of the same sign is returned, and
+If @var{x} is zero, then a zero of the same sign is returned in @var{y}, and
 @var{exp} is set to 0.
-If @var{x} is NaN or an infinity, then the same value is returned,
+If @var{x} is NaN or an infinity, then the same value is returned in @var{y},
 and @var{exp} is undefined.
 @end deftypefun
 
