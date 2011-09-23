@@ -73,6 +73,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   </xsl:copy>
 </xsl:template>
 
+<!-- Note: the MPFR logo section is filtered out; this is important
+     as the logo is non-free. -->
 <xsl:template match="&filter; |
                      text()[preceding-sibling::*[1]/self::&filter;]"/>
 
