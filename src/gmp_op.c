@@ -57,6 +57,7 @@ foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mpfr_rnd_t r,
   MPFR_SAVE_EXPO_MARK (expo);
   init_set_z (t, z);  /* There should be no exceptions. */
   i = (*f) (x, y, t, r);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, i, r);
@@ -73,6 +74,7 @@ foo2 (mpfr_ptr x, mpz_srcptr y, mpfr_srcptr z, mpfr_rnd_t r,
   MPFR_SAVE_EXPO_MARK (expo);
   init_set_z (t, y);  /* There should be no exceptions. */
   i = (*f) (x, t, z, r);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, i, r);
