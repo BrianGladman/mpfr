@@ -343,7 +343,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                 {
                   TGENERIC_CHECK ("Bad overflow flag",
                                   (compare != 0) ^ (mpfr_overflow_p () == 0));
-                  TGENERIC_CHECK ("Bad division-by-zero flag",
+                  TGENERIC_CHECK ("Bad divide-by-zero flag",
                                   (compare == 0 && !infinite_input) ^
                                   (mpfr_divby0_p () == 0));
                 }
@@ -353,11 +353,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
             }
           else if (mpfr_divby0_p ())
             {
-              TGENERIC_CHECK ("Both overflow and division by zero",
+              TGENERIC_CHECK ("Both overflow and divide-by-zero",
                               ! mpfr_overflow_p ());
-              TGENERIC_CHECK ("Both underflow and division by zero",
+              TGENERIC_CHECK ("Both underflow and divide-by-zero",
                               ! mpfr_underflow_p ());
-              TGENERIC_CHECK ("Bad compare value (division by zero)",
+              TGENERIC_CHECK ("Bad compare value (divide-by-zero)",
                               compare == 0);
             }
           else if (mpfr_overflow_p ())

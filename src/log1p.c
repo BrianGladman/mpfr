@@ -85,7 +85,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(comp <= 0))
     {
       if (comp == 0)
-        /* x=0: log1p(-1)=-inf (division by zero) */
+        /* x=0: log1p(-1)=-inf (divide-by-zero exception) */
         {
           MPFR_SET_INF (y);
           MPFR_SET_NEG (y);

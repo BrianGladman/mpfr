@@ -129,7 +129,7 @@ check_large (void)
     }
 
   /* problem found by Damien Fischer <damien@maths.usyd.edu.au> 4 Aug 2003:
-     produced a division by zero exception */
+     produced a divide-by-zero exception */
   mpfr_set_prec (a, 268);
   mpfr_set_prec (b, 268);
   mpfr_set_prec (agm, 268);

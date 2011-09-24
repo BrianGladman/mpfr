@@ -858,7 +858,7 @@ mode, the result is infinite.
 Note: unlike the underflow case, there is only one possible definition of
 overflow here.
 
-@item Division-by-zero:
+@item Divide-by-zero:
 An exact infinite result is obtained from finite inputs.
 
 @item NaN:
@@ -2920,7 +2920,7 @@ in the subnormal range, which may not be the case for your hardware.
 @deftypefunx void mpfr_clear_nanflag (void)
 @deftypefunx void mpfr_clear_inexflag (void)
 @deftypefunx void mpfr_clear_erangeflag (void)
-Clear the underflow, overflow, division-by-zero, invalid,
+Clear the underflow, overflow, divide-by-zero, invalid,
 inexact and @emph{erange} flags.
 @end deftypefun
 
@@ -2930,12 +2930,12 @@ inexact and @emph{erange} flags.
 @deftypefunx void mpfr_set_nanflag (void)
 @deftypefunx void mpfr_set_inexflag (void)
 @deftypefunx void mpfr_set_erangeflag (void)
-Set the underflow, overflow, division-by-zero, invalid,
+Set the underflow, overflow, divide-by-zero, invalid,
 inexact and @emph{erange} flags.
 @end deftypefun
 
 @deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, division-by-zero, invalid,
+Clear all global flags (underflow, overflow, divide-by-zero, invalid,
 inexact, @emph{erange}).
 @end deftypefun
 
@@ -2945,7 +2945,7 @@ inexact, @emph{erange}).
 @deftypefunx int mpfr_nanflag_p (void)
 @deftypefunx int mpfr_inexflag_p (void)
 @deftypefunx int mpfr_erangeflag_p (void)
-Return the corresponding (underflow, overflow, division-by-zero, invalid,
+Return the corresponding (underflow, overflow, divide-by-zero, invalid,
 inexact, @emph{erange}) flag, which is non-zero iff the flag is set.
 @end deftypefun
 
@@ -3282,7 +3282,7 @@ MPFR version.
 @item @code{mpfr_buildopt_gmpinternals_p} and @code{mpfr_buildopt_tune_case}
 in MPFR 3.1.
 
-@item @code{mpfr_clear_divby0} in MPFR 3.1 (new division-by-zero exception).
+@item @code{mpfr_clear_divby0} in MPFR 3.1 (new divide-by-zero exception).
 
 @item @code{mpfr_copysign} in MPFR 2.3.
 Note: MPFR 2.2 had a @code{mpfr_copysign} function that was available,
@@ -3304,7 +3304,7 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_digamma} in MPFR 3.0.
 
-@item @code{mpfr_divby0_p} in MPFR 3.1 (new division-by-zero exception).
+@item @code{mpfr_divby0_p} in MPFR 3.1 (new divide-by-zero exception).
 
 @item @code{mpfr_div_d} in MPFR 2.4.
 
@@ -3351,7 +3351,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_remainder} and @code{mpfr_remquo} in MPFR 2.3.
 
-@item @code{mpfr_set_divby0} in MPFR 3.1 (new division-by-zero exception).
+@item @code{mpfr_set_divby0} in MPFR 3.1 (new divide-by-zero exception).
 
 @item @code{mpfr_set_flt} in MPFR 3.0.
 
@@ -3510,7 +3510,7 @@ namespace, though this is not clean.
 
 @end itemize
 
-The division-by-zero exception is new in MPFR 3.1. However it should
+The divide-by-zero exception is new in MPFR 3.1. However it should
 not introduce incompatible changes for programs that strictly follow
 the MPFR API since the exception can only be seen via new functions.
 
