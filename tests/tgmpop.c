@@ -25,125 +25,145 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include "mpfr-test.h"
 
-#define CHECK_FOR(str, cond)                                      \
-if ((cond) == 0) {                                                \
-  printf ("Special case error " str ". Inexact value=%d\n", res); \
-  printf ("Get "); mpfr_dump (y);                                 \
-  printf ("X=  "); mpfr_dump (x);                                 \
-  printf ("Z=  "); mpz_dump (mpq_numref(z));                      \
-  printf ("   /"); mpz_dump (mpq_denref(z));                      \
-  exit (1);                                                       \
-}
+#define CHECK_FOR(str, cond)                                            \
+  if ((cond) == 0) {                                                    \
+    printf ("Special case error %s. Ternary value = %d, flags = %u\n",  \
+            str, res, __gmpfr_flags);                                   \
+    printf ("Got "); mpfr_dump (y);                                     \
+    printf ("X = "); mpfr_dump (x);                                     \
+    printf ("Q = "); mpz_dump (mpq_numref(q));                          \
+    printf ("   /"); mpz_dump (mpq_denref(q));                          \
+    exit (1);                                                           \
+  }
+
+#define CHECK_FORZ(str, cond)                                           \
+  if ((cond) == 0) {                                                    \
+    printf ("Special case error %s. Ternary value = %d, flags = %u\n",  \
+            str, res, __gmpfr_flags);                                   \
+    printf ("Got "); mpfr_dump (y);                                     \
+    printf ("X = "); mpfr_dump (x);                                     \
+    printf ("Z = "); mpz_dump (z);                                      \
+    exit (1);                                                           \
+  }
 
 static void
 special (void)
 {
   mpfr_t x, y;
-  mpq_t z;
+  mpq_t q;
+  mpz_t z;
   int res = 0;
 
   mpfr_init (x);
   mpfr_init (y);
-  mpq_init (z);
+  mpq_init (q);
+  mpz_init (z);
 
   /* cancellation in mpfr_add_q */
   mpfr_set_prec (x, 60);
   mpfr_set_prec (y, 20);
-  mpz_set_str (mpq_numref (z), "-187207494", 10);
-  mpz_set_str (mpq_denref (z), "5721", 10);
+  mpz_set_str (mpq_numref (q), "-187207494", 10);
+  mpz_set_str (mpq_denref (q), "5721", 10);
   mpfr_set_str_binary (x, "11111111101001011011100101100011011110010011100010000100001E-44");
-  mpfr_add_q (y, x, z, MPFR_RNDN);
+  mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("cancelation in add_q", mpfr_cmp_ui_2exp (y, 256783, -64) == 0);
 
   mpfr_set_prec (x, 19);
   mpfr_set_str_binary (x, "0.1011110101110011100E0");
-  mpz_set_str (mpq_numref (z), "187207494", 10);
-  mpz_set_str (mpq_denref (z), "5721", 10);
+  mpz_set_str (mpq_numref (q), "187207494", 10);
+  mpz_set_str (mpq_denref (q), "5721", 10);
   mpfr_set_prec (y, 29);
-  mpfr_add_q (y, x, z, MPFR_RNDD);
+  mpfr_add_q (y, x, q, MPFR_RNDD);
   mpfr_set_prec (x, 29);
   mpfr_set_str_binary (x, "11111111101001110011010001001E-14");
   CHECK_FOR ("cancelation in add_q", mpfr_cmp (x,y) == 0);
 
   /* Inf */
   mpfr_set_inf (x, 1);
-  mpz_set_str (mpq_numref (z), "395877315", 10);
-  mpz_set_str (mpq_denref (z), "3508975966", 10);
+  mpz_set_str (mpq_numref (q), "395877315", 10);
+  mpz_set_str (mpq_denref (q), "3508975966", 10);
   mpfr_set_prec (y, 118);
-  mpfr_add_q (y, x, z, MPFR_RNDU);
+  mpfr_add_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("inf", mpfr_inf_p (y) && mpfr_sgn (y) > 0);
-  mpfr_sub_q (y, x, z, MPFR_RNDU);
+  mpfr_sub_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("inf", mpfr_inf_p (y) && mpfr_sgn (y) > 0);
 
   /* Nan */
   MPFR_SET_NAN (x);
-  mpfr_add_q (y, x, z, MPFR_RNDU);
+  mpfr_add_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("nan", mpfr_nan_p (y));
-  mpfr_sub_q (y, x, z, MPFR_RNDU);
+  mpfr_sub_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("nan", mpfr_nan_p (y));
 
   /* Exact value */
   mpfr_set_prec (x, 60);
   mpfr_set_prec (y, 60);
   mpfr_set_str1 (x, "0.5");
-  mpz_set_str (mpq_numref (z), "3", 10);
-  mpz_set_str (mpq_denref (z), "2", 10);
-  res = mpfr_add_q (y, x, z, MPFR_RNDU);
+  mpz_set_str (mpq_numref (q), "3", 10);
+  mpz_set_str (mpq_denref (q), "2", 10);
+  res = mpfr_add_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("0.5+3/2", mpfr_cmp_ui(y, 2)==0 && res==0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDU);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("0.5-3/2", mpfr_cmp_si(y, -1)==0 && res==0);
 
   /* Inf Rationnal */
-  mpq_set_ui (z, 1, 0);
+  mpq_set_ui (q, 1, 0);
   mpfr_set_str1 (x, "0.5");
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("0.5+1/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("0.5-1/0", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
-  mpq_set_si (z, -1, 0);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  mpq_set_si (q, -1, 0);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("0.5+ -1/0", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("0.5- -1/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
-  res = mpfr_div_q (y, x, z, MPFR_RNDN);
+  res = mpfr_div_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("0.5 / (-1/0)", mpfr_zero_p (y) && MPFR_SIGN (y) < 0 && res == 0);
-  mpq_set_ui (z, 1, 0);
+  mpq_set_ui (q, 1, 0);
   mpfr_set_inf (x, 1);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("+Inf + +Inf", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("+Inf - +Inf", MPFR_IS_NAN (y) && res == 0);
   mpfr_set_inf (x, -1);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("-Inf + +Inf", MPFR_IS_NAN (y) && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("-Inf - +Inf", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
-  mpq_set_si (z, -1, 0);
+  mpq_set_si (q, -1, 0);
   mpfr_set_inf (x, 1);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("+Inf + -Inf", MPFR_IS_NAN (y) && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("+Inf - -Inf", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
   mpfr_set_inf (x, -1);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("-Inf + -Inf", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("-Inf - -Inf", MPFR_IS_NAN (y) && res == 0);
 
   /* 0 */
-  mpq_set_ui (z, 0, 1);
+  mpq_set_ui (q, 0, 1);
   mpfr_set_ui (x, 42, MPFR_RNDN);
-  res = mpfr_add_q (y, x, z, MPFR_RNDN);
+  res = mpfr_add_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("42+0/1", mpfr_cmp_ui (y, 42) == 0 && res == 0);
-  res = mpfr_sub_q (y, x, z, MPFR_RNDN);
+  res = mpfr_sub_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("42-0/1", mpfr_cmp_ui (y, 42) == 0 && res == 0);
-  res = mpfr_mul_q (y, x, z, MPFR_RNDN);
+  res = mpfr_mul_q (y, x, q, MPFR_RNDN);
   CHECK_FOR ("42*0/1", mpfr_zero_p (y) && MPFR_SIGN (y) > 0 && res == 0);
-  res = mpfr_div_q (y, x, z, MPFR_RNDN);
-  CHECK_FOR ("42/(0/1)", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+  mpfr_clear_flags ();
+  res = mpfr_div_q (y, x, q, MPFR_RNDN);
+  CHECK_FOR ("42/(0/1)", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0
+             && mpfr_divby0_p ());
+  mpz_set_ui (z, 0);
+  mpfr_clear_flags ();
+  res = mpfr_div_z (y, x, z, MPFR_RNDN);
+  CHECK_FORZ ("42/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0
+              && mpfr_divby0_p ());
 
-
-  mpq_clear (z);
+  mpz_clear (z);
+  mpq_clear (q);
   mpfr_clear (x);
   mpfr_clear (y);
 }
