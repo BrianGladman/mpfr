@@ -1942,7 +1942,10 @@ of @var{op}, and of the sum for k from 1 to infinity of
 @tex
 $@var{op}^k/(k \cdot k!)$.
 @end tex
-For negative @var{op}, @var{rop} is set to NaN.
+For negative @var{op}, @var{rop} is set to NaN
+(this definition for negative argument follows formula 5.1.2 from the
+Handbook of Mathematical Functions from Abramowitz and Stegun, a future
+version might use another definition).
 @end deftypefun
 
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
