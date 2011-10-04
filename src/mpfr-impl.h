@@ -988,10 +988,11 @@ extern unsigned char *mpfr_stack;
  ******************************************************/
 
 /* Theses macros help the compiler to determine if a test is
- * likely or unlikely. */
+   likely or unlikely. The !! is necessary in case x is larger
+   than a long. */
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
 # define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
-# define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
+# define MPFR_UNLIKELY(x) (__builtin_expect(!!(x),0))
 #else
 # define MPFR_LIKELY(x) (x)
 # define MPFR_UNLIKELY(x) (x)
