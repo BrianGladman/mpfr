@@ -471,6 +471,22 @@ due to the early compiler tests, as gcc will not compile any program if
 OBJECT_MODE is 64 and the -maix64 option is not provided.
 
 
+Notes on HP-UX
+==============
+
+If you use the --with-gmp-lib=DIR or --with-gmp=DIR configure option and
+an old MPFR is already installing in DIR, then you need to install MPFR
+(make install) or remove the old MPFR version before running the tests
+(make check). The reason is that libtool 2.4 adds the -L../src/.libs or
+equivalent (where the MPFR library that has just been compiled can be
+found) after $(LDFLAGS), which contains the "-L DIR" added at configure
+time. Alternatively, you can try to predefine LDFLAGS with something
+like LDFLAGS="-L$(top_builddir)/src/.libs" (the MPFR configure script
+is written so that "-L DIR" will appear after the predefined options,
+as required here). Or avoid the --with-gmp* options and use environment
+variables as said above.
+
+
 MPFR for use with 32-bit Windows Applications (win32)
 =====================================================
 
