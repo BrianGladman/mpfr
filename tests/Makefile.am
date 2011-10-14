@@ -65,8 +65,24 @@ $(top_builddir)/src/libmpfr.la:
 TESTS = $(check_PROGRAMS)
 TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 
-# Option to prevent libtool from generating wrapper scripts for the tests.
+# The -no-install option prevents libtool from generating wrapper scripts
+# for the tests.
 # This is useful to easily run the test scripts under valgrind or gdb.
 # See discussion http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28033
 # http://article.gmane.org/gmane.comp.lib.gnulib.bugs/28140 in particular.
-AM_LDFLAGS = -no-install
+#
+# The -L$(top_builddir)/src/.libs option is necessary for some platforms,
+# such as HP-UX, when --with-gmp or --with-gmp-lib is used and an old MPFR
+# library is already installed in the corresponding lib directory: its
+# purpose is to make sure that the local .libs comes first in the library
+# search path (otherwise the tests are linked against the old MPFR library
+# by the LINK command -- see the generated Makefile). See:
+#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00042.html
+#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00043.html
+#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00044.html
+#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00066.html
+#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00065.html
+# and
+#   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=9728
+#
+AM_LDFLAGS = -no-install -L$(top_builddir)/src/.libs
