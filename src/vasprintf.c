@@ -1441,7 +1441,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
    partition_number initializes the given structure np, so all previous
    information in that variable is lost.
    return the total number of characters to be written.
-   return -1 if an error occured, in that case np's fields are in an undefined
+   return -1 if an error occurred, in that case np's fields are in an undefined
    state but all string buffers have been freed. */
 static int
 partition_number (struct number_parts *np, mpfr_srcptr p,
