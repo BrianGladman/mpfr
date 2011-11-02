@@ -1367,9 +1367,14 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       np->ip_size = exp + 1;
 
+      /* if p = 999.99999999..., floor_log10(p) will return 2 whereas
+         it might be rounded to 1000.00000000... */
+      if ((dec_info != NULL) && (dec_info->exp == np->ip_size + 1))
+        np->ip_size = dec_info->exp;
+
       nsd = spec.prec + np->ip_size;
       if (dec_info == NULL)
-        {
+        { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
           str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
           register_string (np->sl, str);
         }
@@ -1385,7 +1390,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         np->thousands_sep = MPFR_THOUSANDS_SEPARATOR;
 
       if (nsd == 0 || (spec_g && !spec.alt))
-        /* compute how much non-zero digits in integral and fractional
+        /* compute how many non-zero digits in integral and fractional
            parts */
         {
           size_t str_len;

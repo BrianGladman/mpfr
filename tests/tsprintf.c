@@ -475,6 +475,10 @@ decimal (void)
   check_sprintf ("-1.", "%- #0.1RG", x);
 
   /* precision zero */
+  mpfr_set_d (x, 9.5, MPFR_RNDN);
+  check_sprintf ("9",    "%.0RDf", x);
+  check_sprintf ("10",    "%.0RUf", x);
+
   mpfr_set_d (x, -9.5, MPFR_RNDN);
   check_sprintf ("-10",    "%.0RDf", x);
   check_sprintf ("-10",    "%.0RYf", x);
@@ -1078,6 +1082,23 @@ bug20081214 (void)
   mpfr_clear (x);
 }
 
+static void
+bug20111102 (void)
+{
+  mpfr_t t;
+  char s[100];
+
+  mpfr_init2 (t, 84);
+  mpfr_set_str (t, "999.99999999999999999999", 10, MPFR_RNDN);
+  mpfr_sprintf (s, "%.20RNg",t);
+  if (strcmp (s, "1000") != 0)
+    {
+      printf ("Error in bug20111102, expected 1000, got %s\n", s);
+      exit (1);
+    }
+  mpfr_clear (t);
+}
+
 /* In particular, the following test makes sure that the rounding
  * for %Ra and %Rb is not done on the MPFR number itself (as it
  * would overflow). Note: it has been reported on comp.std.c that
@@ -1161,6 +1182,7 @@ main (int argc, char **argv)
   locale = setlocale (LC_ALL, "C");
 #endif
 
+  bug20111102 ();
   native_types ();
   hexadecimal ();
   binary ();
