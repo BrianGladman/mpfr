@@ -1178,7 +1178,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
   mpfr_exp_t exp;
   char * str;
   const int spec_g = (spec.spec == 'g' || spec.spec == 'G');
-  const int keep_trailing_zeros = spec_g && spec.alt;
+  const int keep_trailing_zeros = !spec_g || spec.alt;
 
   /* WARNING: an empty precision field is forbidden (it means precision = 6
      and it should have been changed to 6 before the function call) */
@@ -1356,7 +1356,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
   else
     /* 1 <= |p| */
     {
-      size_t nsd;  /* Number of significant digits */
+      size_t str_len;
 
       /* Determine the position of the most significant decimal digit. */
       exp = floor_log10 (p);
@@ -1365,17 +1365,10 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         /* P is too large to print all its integral part digits */
         return -1;
 
-      np->ip_size = exp + 1;
-
-      /* if p = 999.99999999..., floor_log10(p) will return 2 whereas
-         it might be rounded to 1000.00000000... */
-      if ((dec_info != NULL) && (dec_info->exp == np->ip_size + 1))
-        np->ip_size = dec_info->exp;
-
-      nsd = spec.prec + np->ip_size;
       if (dec_info == NULL)
         { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
-          str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
+          str =
+	    mpfr_get_str (NULL, &exp, 10, spec.prec+exp+1, p, spec.rnd_mode);
           register_string (np->sl, str);
         }
       else
@@ -1384,81 +1377,60 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           str = dec_info->str;
         }
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
+      str_len = strlen (str);
+
+      /* integral part */
+      if (exp > str_len)
+	/* mpfr_get_str give no trailing zero when p is rounded up to the next
+	   multiple of 10 (p integer, so no fractional part) */
+	{
+	  np->ip_trailing_zeros = exp - str_len;
+	  np->ip_size = str_len;
+	}
+      else
+	np->ip_size = exp;
 
       if (spec.group)
         /* thousands separator in integral part */
         np->thousands_sep = MPFR_THOUSANDS_SEPARATOR;
 
-      if (nsd == 0 || (spec_g && !spec.alt))
-        /* compute how many non-zero digits in integral and fractional
-           parts */
-        {
-          size_t str_len;
-          str_len = strlen (str); /* note: the sign has been skipped */
+      /* fractional part */
+      str += np->ip_size;
+      str_len -= np->ip_size;
+      if (!keep_trailing_zeros)
+	/* remove trailing zeros, if any */
+	{
+	  char *ptr = str + str_len - 1; /* pointer to the last digit of
+					    str */
+	  while ((*ptr == '0') && (str_len != 0))
+	    {
+	      --ptr;
+	      --str_len;
+	    }
+	}
 
-          if (exp > str_len)
-            /* mpfr_get_str doesn't give the trailing zeros when p is a
-               multiple of 10 (p integer, so no fractional part) */
-            {
-              np->ip_trailing_zeros = exp - str_len;
-              np->ip_size = str_len;
-              if (spec.alt)
-                np->point = MPFR_DECIMAL_POINT;
-            }
-          else
-            /* str may contain some digits which are in fractional part */
-            {
-              char *ptr;
+      if (str_len > 0)
+	/* some nonzero digits in fractional part */
+	{
+	  if (str_len > INT_MAX)
+	    /* too many digits in fractional part */
+	    return -1;
 
-              ptr = str + str_len - 1; /* points to the end of str */
-              str_len -= np->ip_size;  /* number of digits in fractional
-                                          part */
+	  np->point = MPFR_DECIMAL_POINT;
+	  np->fp_ptr = str;
+	  np->fp_size = str_len;
+	}
 
-              if (!keep_trailing_zeros)
-                /* remove trailing zeros, if any */
-                {
-                  while ((*ptr == '0') && (str_len != 0))
-                    {
-                      --ptr;
-                      --str_len;
-                    }
-                }
+      if (keep_trailing_zeros && str_len < spec.prec)
+	/* add missing trailing zeros */
+	{
+	  np->point = MPFR_DECIMAL_POINT;
+	  np->fp_trailing_zeros = spec.prec - np->fp_size;
+	}
 
-              if (str_len > INT_MAX)
-                /* too many digits in fractional part */
-                return -1;
-
-              if (str_len != 0)
-                /* some digits in fractional part */
-                {
-                  np->point = MPFR_DECIMAL_POINT;
-                  np->fp_ptr = str + np->ip_size;
-                  np->fp_size = str_len;
-                }
-            }
-        }
-      else
-        /* spec.prec digits in fractional part */
-        {
-          if (np->ip_size == exp - 1)
-            /* the absolute value of the number has been rounded up to a power
-               of ten.
-               Insert an additional zero in integral part and put the rest of
-               them in fractional part. */
-            np->ip_trailing_zeros = 1;
-
-          if (spec.prec != 0)
-            {
-              MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros == exp);
-              MPFR_ASSERTD (np->ip_size + spec.prec == nsd);
-
-              np->point = MPFR_DECIMAL_POINT;
-              np->fp_ptr = str + np->ip_size;
-              np->fp_size = spec.prec;
-            }
-          else if (spec.alt)
-            np->point = MPFR_DECIMAL_POINT;
-        }
+      if (spec.alt)
+	/* add decimal point even if no digits follow it */
+	np->point = MPFR_DECIMAL_POINT;
     }
 
   return 0;
