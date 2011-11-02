@@ -1382,7 +1382,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       /* integral part */
       if (exp > str_len)
         /* mpfr_get_str gives no trailing zero when p is rounded up to the next
-           multiple of 10 (p integer, so no fractional part) */
+           power of 10 (p integer, so no fractional part) */
         {
           np->ip_trailing_zeros = exp - str_len;
           np->ip_size = str_len;
