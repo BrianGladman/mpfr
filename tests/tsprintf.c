@@ -479,6 +479,14 @@ decimal (void)
   check_sprintf ("9",    "%.0RDf", x);
   check_sprintf ("10",    "%.0RUf", x);
 
+  mpfr_set_d (x, 19.5, MPFR_RNDN);
+  check_sprintf ("19",    "%.0RDf", x);
+  check_sprintf ("20",    "%.0RUf", x);
+
+  mpfr_set_d (x, 99.5, MPFR_RNDN);
+  check_sprintf ("99",    "%.0RDf", x);
+  check_sprintf ("100",   "%.0RUf", x);
+
   mpfr_set_d (x, -9.5, MPFR_RNDN);
   check_sprintf ("-10",    "%.0RDf", x);
   check_sprintf ("-10",    "%.0RYf", x);
