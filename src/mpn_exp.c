@@ -91,7 +91,7 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
       n1 = (n * GMP_NUMB_BITS - bits) / GMP_NUMB_BITS;
 
       /* square of A : {c+2n1, 2(n-n1)} = {a+n1, n-n1}^2 */
-      /* FIXME: we should use a short square here, but this needs to redo
+      /* TODO: we should use a short square here, but this needs to redo
          the error analysis */
       mpn_sqr_n (c + 2 * n1, a + n1, n - n1);
 
