@@ -1368,7 +1368,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       if (dec_info == NULL)
         { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
           str =
-	    mpfr_get_str (NULL, &exp, 10, spec.prec+exp+1, p, spec.rnd_mode);
+            mpfr_get_str (NULL, &exp, 10, spec.prec+exp+1, p, spec.rnd_mode);
           register_string (np->sl, str);
         }
       else
@@ -1381,14 +1381,14 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       /* integral part */
       if (exp > str_len)
-	/* mpfr_get_str give no trailing zero when p is rounded up to the next
-	   multiple of 10 (p integer, so no fractional part) */
-	{
-	  np->ip_trailing_zeros = exp - str_len;
-	  np->ip_size = str_len;
-	}
+        /* mpfr_get_str gives no trailing zero when p is rounded up to the next
+           multiple of 10 (p integer, so no fractional part) */
+        {
+          np->ip_trailing_zeros = exp - str_len;
+          np->ip_size = str_len;
+        }
       else
-	np->ip_size = exp;
+        np->ip_size = exp;
 
       if (spec.group)
         /* thousands separator in integral part */
@@ -1398,39 +1398,39 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       str += np->ip_size;
       str_len -= np->ip_size;
       if (!keep_trailing_zeros)
-	/* remove trailing zeros, if any */
-	{
-	  char *ptr = str + str_len - 1; /* pointer to the last digit of
-					    str */
-	  while ((*ptr == '0') && (str_len != 0))
-	    {
-	      --ptr;
-	      --str_len;
-	    }
-	}
+        /* remove trailing zeros, if any */
+        {
+          char *ptr = str + str_len - 1; /* pointer to the last digit of
+                                            str */
+          while ((*ptr == '0') && (str_len != 0))
+            {
+              --ptr;
+              --str_len;
+            }
+        }
 
       if (str_len > 0)
-	/* some nonzero digits in fractional part */
-	{
-	  if (str_len > INT_MAX)
-	    /* too many digits in fractional part */
-	    return -1;
+        /* some nonzero digits in fractional part */
+        {
+          if (str_len > INT_MAX)
+            /* too many digits in fractional part */
+            return -1;
 
-	  np->point = MPFR_DECIMAL_POINT;
-	  np->fp_ptr = str;
-	  np->fp_size = str_len;
-	}
+          np->point = MPFR_DECIMAL_POINT;
+          np->fp_ptr = str;
+          np->fp_size = str_len;
+        }
 
       if (keep_trailing_zeros && str_len < spec.prec)
-	/* add missing trailing zeros */
-	{
-	  np->point = MPFR_DECIMAL_POINT;
-	  np->fp_trailing_zeros = spec.prec - np->fp_size;
-	}
+        /* add missing trailing zeros */
+        {
+          np->point = MPFR_DECIMAL_POINT;
+          np->fp_trailing_zeros = spec.prec - np->fp_size;
+        }
 
       if (spec.alt)
-	/* add decimal point even if no digits follow it */
-	np->point = MPFR_DECIMAL_POINT;
+        /* add decimal point even if no digits follow it */
+        np->point = MPFR_DECIMAL_POINT;
     }
 
   return 0;
