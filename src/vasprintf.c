@@ -1303,6 +1303,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   str = dec_info->str;
                 }
               if (MPFR_IS_NEG (p))
+		/* skip sign */
                 ++str;
               if (exp == 1)
                 /* round up to 1 */
@@ -1314,7 +1315,6 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 }
               else
                 {
-                  /* skip sign */
                   np->fp_ptr = str;
                   np->fp_leading_zeros = -exp;
                   MPFR_ASSERTD (exp <= 0);
