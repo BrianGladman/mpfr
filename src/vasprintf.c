@@ -1303,7 +1303,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   str = dec_info->str;
                 }
               if (MPFR_IS_NEG (p))
-		/* skip sign */
+                /* skip sign */
                 ++str;
               if (exp == 1)
                 /* round up to 1 */
