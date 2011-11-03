@@ -1098,7 +1098,7 @@ bug20111102 (void)
 
   mpfr_init2 (t, 84);
   mpfr_set_str (t, "999.99999999999999999999", 10, MPFR_RNDN);
-  mpfr_sprintf (s, "%.20RNg",t);
+  mpfr_sprintf (s, "%.20RNg", t);
   if (strcmp (s, "1000") != 0)
     {
       printf ("Error in bug20111102, expected 1000, got %s\n", s);
