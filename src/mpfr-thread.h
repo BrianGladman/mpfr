@@ -32,6 +32,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # ifdef MPFR_USE_THREAD_SAFE
 #  if defined(_MSC_VER)
 #   if defined(_WINDLL)
+/* see http://msdn.microsoft.com/en-us/library/9w1sdazb%28v=vs.80%29.aspx */
 #    error "Can't build MPFR DLL as thread safe."
 #    define MPFR_THREAD_ATTR
 #   else
