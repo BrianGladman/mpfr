@@ -549,6 +549,9 @@ decimal (void)
   mpfr_set_str (x, "-9.996", 10, MPFR_RNDN);
   check_sprintf ("-10.0", "%.1Rf", x);
 
+  /* regression in MPFR 3.1.0 (bug introduced in r7761, fixed in r7931) */
+  check_sprintf ("-10", "%.2Rg", x);
+
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
