@@ -92,6 +92,8 @@ Table of contents:
   http://gcc.gnu.org/onlinedocs/gcc/Floating-Types.html
   (this should be defined only with --enable-gcc-float128 as with
   --enable-decimal-float)
+  See also the discussion started at:
+    http://websympa.loria.fr/wwsympa/arc/mpfr/2010-05/msg00003.html
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement functions for random distributions, see for example
   http://websympa.loria.fr/wwsympa/arc/mpfr/2010-01/msg00034.html
