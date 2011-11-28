@@ -3466,8 +3466,9 @@ special behavior was specified). The case of the underflow flag was more
 a lack of specification.
 
 @item @code{mpfr_urandom} and @code{mpfr_urandomb} changed in MPFR 3.1.
-Their behavior no longer depends on the platform (assuming this is also
-true for GMP's random generator).  As a consequence, the returned values
+Their behavior no longer depends on the platform (assuming this is also true
+for GMP's random generator, which is not the case between GMP 4.1 and 4.2 if
+@code{gmp_randinit_default} is used).  As a consequence, the returned values
 can be different between MPFR 3.1 and previous MPFR versions.
 Note: as the reproducibility of these functions was not specified
 before MPFR 3.1, the MPFR 3.1 behavior is @emph{not} regarded as
