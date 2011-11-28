@@ -227,6 +227,10 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))
 
 /* Random */
+/* TODO: these variables and macros seem to be used only in the tests.
+   Remove them from the MPFR source (src directory) so that the symbols
+   mpfr_rands_initialized and mpfr_rands are not defined in the MPFR
+   library? */
 #undef  __gmp_rands_initialized
 #undef  __gmp_rands
 #define __gmp_rands_initialized mpfr_rands_initialized
