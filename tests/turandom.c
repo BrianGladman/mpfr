@@ -172,8 +172,6 @@ bug20100914 (void)
   gmp_randseed_ui (s, 42);
   mpfr_init2 (x, 17);
   mpfr_urandom (x, s, MPFR_RNDN);
-  /* the following values are obtained on a 32-bit computer, we should get
-     the same values on a 64-bit computer */
   if (mpfr_cmp_str1 (x, C1) != 0)
     {
       printf ("Error in bug20100914, expected " C1 ", got ");
