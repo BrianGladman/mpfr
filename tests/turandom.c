@@ -160,23 +160,31 @@ bug20100914 (void)
   mpfr_t x;
   gmp_randstate_t s;
 
+#if __MPFR_GMP(4,2,0)
+# define C1 "0.8488312"
+# define C2 "0.8156509"
+#else
+# define C1 "0.6485367"
+# define C2 "0.9362717"
+#endif
+
   gmp_randinit_default (s);
   gmp_randseed_ui (s, 42);
   mpfr_init2 (x, 17);
   mpfr_urandom (x, s, MPFR_RNDN);
   /* the following values are obtained on a 32-bit computer, we should get
      the same values on a 64-bit computer */
-  if (mpfr_cmp_str1 (x, "0.8488312") != 0)
+  if (mpfr_cmp_str1 (x, C1) != 0)
     {
-      printf ("Error in bug20100914, expected 0.8488312, got ");
+      printf ("Error in bug20100914, expected " C1 ", got ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
   mpfr_urandom (x, s, MPFR_RNDN);
-  if (mpfr_cmp_str1 (x, "0.8156509") != 0)
+  if (mpfr_cmp_str1 (x, C2) != 0)
     {
-      printf ("Error in bug20100914, expected 0.8156509, got ");
+      printf ("Error in bug20100914, expected " C2 ", got ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
