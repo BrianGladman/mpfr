@@ -189,7 +189,11 @@ specific architecture.
 
 --disable-thread-safe   build MPFR without TLS. By default, TLS support
                         is detected automatically, and MPFR is built as
-                        thread safe if supported.
+                        thread safe if supported. However this detection
+                        is only a heuristic: TLS can be detected as
+                        supported while its support is incomplete or
+                        buggy (MPFR tests may fail). In such a case,
+                        this option is useful.
 
 --enable-gmp-internals  allows the MPFR build to use GMP's undocumented
                         functions (not from the public API). Note that
@@ -336,14 +340,29 @@ you should provide further options to match those used by GMP, or set
 some environment variables. For instance, see the "Notes on AIX/PowerPC"
 section below.
 
-If "make check" fails, try to configure MPFR without TLS support, i.e., with
---disable-thread-safe, since TLS support is still buggy on some configurations.
-
 Warning! Do NOT use optimization options that can change the semantics
 of math operations, such as GCC's -ffast-math or Sun CC's -fast.
 Otherwise conversions from/to double's may be incorrect on infinities,
 NaN's and signed zeros. Since native FP arithmetic is used in a few
 places only, such options would not make MPFR faster anyway.
+
+If some "make check" tests fail, you can try the --disable-thread-safe
+configure option (see the configure options above): it has been reported
+that some platforms have buggy TLS support. Before trying this option,
+you may want to check in the configure output whether MPFR was built
+with TLS support; if yes, you will have a line:
+  checking for TLS support... yes
+Alternatively "grep MPFR_USE_THREAD_SAFE config.log" will show that
+MPFR_USE_THREAD_SAFE is defined to 1. If it is "no" (or the variable
+is not defined), the --disable-thread-safe option would be useless.
+
+Some tests failure may be due to other compiler bugs, in particular
+in optimization code. You can try to build MPFR without compiler
+optimizations by giving -O0 (letter O, digit 0) in CFLAGS. If the
+MPFR tests no longer fail, this was probably due to a compiler bug,
+though we cannot exclude a bug in MPFR. You may want to contact us
+(see below), possibly after looking at:
+  http://www.loria.fr/~zimmerma/software/compilerbugs.html
 
 On some platforms, try with "gmake" (GNU make) instead of "make".
 Problems have been reported with the Tru64 make.
