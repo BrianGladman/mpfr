@@ -122,8 +122,9 @@ AC_ARG_ENABLE(logging,
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
 AC_ARG_ENABLE(thread-safe,
-   [  --enable-thread-safe    build MPFR as thread safe (the system must support
-                          it) [[default=autodetect]]],
+   [  --disable-thread-safe   explicitly disable TLS support
+  --enable-thread-safe    build MPFR as thread safe, i.e. with TLS support
+                          (the system must support it) [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
       no)  ;;
