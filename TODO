@@ -347,6 +347,10 @@ Table of contents:
   * functions to set/test a quiet/signaling NaN: mpfr_set_snan, mpfr_snan_p,
     mpfr_set_qnan, mpfr_qnan_p
   * correctly convert to/from double (if encoding of s/qNaN is fixed in 754R)
+  Note: Signaling NaNs are not specified by the ISO C standard and may
+  not be supported by the implementation. GCC needs the -fsignaling-nans
+  option (but this does not affect the C library, which may or may not
+  accept signaling NaNs).
 
 - check again coverage: on 2007-07-27, Patrick Pelissier reports that the
   following files are not tested at 100%: add1.c, atan.c, atan2.c,
