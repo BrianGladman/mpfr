@@ -6658,9 +6658,9 @@ Changed paths:
    M /trunk/zeta_ui.c
 
 Replaced
-  Contributed by the Arenaire and Cacao projects
+  Contributed by the AriC and Cacao projects
 by
-  Contributed by the Arenaire and Caramel projects
+  Contributed by the AriC and Caramel projects
 ------------------------------------------------------------------------
 r7024 | vlefevre | 2010-07-30 15:26:12 +0000 (Fri, 30 Jul 2010) | 1 line
 Changed paths:
@@ -26391,7 +26391,7 @@ Changed paths:
    M /trunk/volatile.c
    M /trunk/zeta_ui.c
 
-Added "Contributed by the Arenaire and Cacao projects, INRIA." to the
+Added "Contributed by the AriC and Cacao projects, INRIA." to the
 copyright notices and removed a few old things.
 
 ------------------------------------------------------------------------

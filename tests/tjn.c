@@ -1,7 +1,7 @@
 /* tjn -- test file for the Bessel function of first kind
 
 Copyright 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
-Contributed by the Arenaire and Caramel projects, INRIA.
+Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

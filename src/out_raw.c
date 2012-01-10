@@ -4,7 +4,7 @@ http://websympa.loria.fr/wwsympa/arc/mpfr/2011-01/msg00039.html.
 /* mpfr_out_raw -- output a floating-point number to binary portable format
 
 Copyright 2011, 2012 Free Software Foundation, Inc.
-Contributed by the Arenaire and Caramel projects, INRIA.
+Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
