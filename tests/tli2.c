@@ -1,6 +1,6 @@
 /* mpfr_tli2 -- test file for dilogarithm function
 
-Copyright 2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+Copyright 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

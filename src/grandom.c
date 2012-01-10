@@ -3,7 +3,7 @@
    distribution and round it to the precision of rop1, rop2 according
    to the given rounding mode.
 
-Copyright 2011 Free Software Foundation, Inc.
+Copyright 2011, 2012 Free Software Foundation, Inc.
 Contributed by the Arenaire and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
