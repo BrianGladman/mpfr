@@ -3562,7 +3562,7 @@ the continuous support of INRIA, and of the LORIA (Nancy, France) and LIP
 (Lyon, France) laboratories. In particular the main authors were or are
 members of the PolKA, Spaces, Cacao and Caramel
 project-teams at LORIA and of the
-Ar@'enaire project-team at LIP.
+Ar@'enaire and AriC project-teams at LIP.
 This project was started during the Fiable (reliable in French) action
 supported by INRIA, and continued during the AOC action.
 The development of MPFR was also supported by a grant
