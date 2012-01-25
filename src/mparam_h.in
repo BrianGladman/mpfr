@@ -35,6 +35,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
 #include "x86_64/core2/mparam.h"
 
+#elif defined (__tune_nocona__) && defined (__x86_64) /* 64-bit Xeon */
+#define MPFR_TUNE_CASE "src/x86_64/xeon/mparam.h"
+#include "x86_64/xeon/mparam.h"
+
 #elif defined (__tune_core2__) && defined (__i386) /* 32-bit Core 2,
       for example a 64-bit machine with gmp/mpfr compiled with ABI=32 */
 #define MPFR_TUNE_CASE "src/x86/core2/mparam.h"
