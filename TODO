@@ -216,6 +216,13 @@ Table of contents:
     This function has multiple branches for x < 0 (2 funcs W0(x) and Wm1(x))
   + Trigamma Function psi'(x).
     and Polygamma Function: psi^{(m)}(x) for m >= 0, x > 0.
+- functions from ISO/IEC 24747:2009 (Extensions to the C Library,
+  to Support Mathematical Special Functions).
+  Standard: http://www.iso.org/iso/catalogue_detail.htm?csnumber=38857
+  Draft: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1292.pdf
+  Rationale: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1244.pdf
+  Also check whether the functions that are already implemented in MPFR
+  match this standard.
 
 - from gnumeric (www.gnome.org/projects/gnumeric/doc/function-reference.html):
   - beta
