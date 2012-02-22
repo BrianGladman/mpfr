@@ -229,6 +229,10 @@ To make a release (for the MPFR team):
       ln -nsf ../../../mpfr-new/src/.libs/libmpfr.so.1.* libmpfr.so.1)
      then "make check".
 
+     Also test with different environment variables set
+     (GMP_CHECK_RANDOMIZE, MPFR_CHECK_MAX, MPFR_CHECK_LIBC_PRINTF,
+     MPFR_CHECK_LARGEMEM, MPFR_DEBUG_BADCASES, MPFR_SUSPICIOUS_OVERFLOW).
+
   7) For the release itself (not the release candidates), if no problems
      have been found, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
