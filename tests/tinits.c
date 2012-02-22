@@ -1,4 +1,4 @@
-/* Test file for mpfr_inits, mpfr_inits2 and mpfr_clears.
+/* Test file for mpfr_init2, mpfr_inits, mpfr_inits2 and mpfr_clears.
 
 Copyright 2003, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -28,10 +28,27 @@ main (void)
   mpfr_t a, b, c;
 
   tests_start_mpfr ();
+
   mpfr_inits (a, b, c, (mpfr_ptr) 0);
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
   mpfr_inits2 (200, a, b, c, (mpfr_ptr) 0);
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
+
+  /* test for precision 2^31-1, see
+     https://gforge.inria.fr/tracker/index.php?func=detail&aid=13918 */
+  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
+    {
+      mpfr_init2 (a, 2147483647);
+      mpfr_set_ui (a, 17, MPFR_RNDN);
+      if (mpfr_get_ui (a, MPFR_RNDN) != 17)
+        {
+          printf ("Error in mpfr_init2 with precision 2^31-1\n");
+          exit (1);
+        }
+      mpfr_clear (a);
+    }
+
   tests_end_mpfr ();
+
   return 0;
 }
