@@ -91,7 +91,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY (MPFR_IS_ZERO (x)))
     {
       mpfr_t y1, y2;
-      prec = MPFR_PREC (y) + 3;
+      prec = MPFR_ADD_PREC (MPFR_PREC (y), 3);
       mpfr_init2 (y1, prec);
       mpfr_init2 (y2, prec);
       MPFR_ZIV_INIT (loop, prec);
@@ -133,7 +133,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* if x<=0,    ?????                                                   */
 
   /* We begin with 11 guard bits */
-  prec = MPFR_PREC (y)+11;
+  prec = MPFR_ADD_PREC (MPFR_PREC (y), 11);
   MPFR_ZIV_INIT (loop, prec);
 
   /* The working precision is heuristically chosen in order to obtain  */
@@ -178,7 +178,8 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         assumed_exponent = 10;
     }
 
-  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 5 + cond + assumed_exponent;
+  wprec = MPFR_ADD_PREC (prec, MPFR_INT_CEIL_LOG2 (prec) + 5 + cond
+                         + assumed_exponent);
 
   mpfr_init (ti);
   mpfr_init (tip1);
