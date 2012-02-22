@@ -20,12 +20,15 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <stdlib.h>
+
 #include "mpfr-test.h"
 
 int
 main (void)
 {
   mpfr_t a, b, c;
+  long large_prec;
 
   tests_start_mpfr ();
 
@@ -36,9 +39,11 @@ main (void)
 
   /* test for precision 2^31-1, see
      https://gforge.inria.fr/tracker/index.php?func=detail&aid=13918 */
-  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
+  large_prec = 2147483647;
+  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL &&
+      large_prec <= MPFR_PREC_MAX)
     {
-      mpfr_init2 (a, 2147483647);
+      mpfr_init2 (a, large_prec);
       mpfr_set_ui (a, 17, MPFR_RNDN);
       if (mpfr_get_ui (a, MPFR_RNDN) != 17)
         {
