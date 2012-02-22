@@ -48,8 +48,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, int signb)
       /* Same precision and b is not singular:
        * just copy the mantissa, and set the exponent and the sign
        * The result is exact. */
-      MPN_COPY (MPFR_MANT (a), MPFR_MANT (b),
-                (MPFR_PREC (b) + GMP_NUMB_BITS-1)/GMP_NUMB_BITS);
+      MPN_COPY (MPFR_MANT (a), MPFR_MANT (b), MPFR_LIMB_SIZE (b));
       MPFR_RET (0);
     }
   else

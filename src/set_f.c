@@ -43,7 +43,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
   if (SIZ(x) * MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0)
     MPFR_CHANGE_SIGN (y);
 
-  sy = 1 + (MPFR_PREC(y) - 1) / GMP_NUMB_BITS;
+  sy = MPFR_LIMB_SIZE (y);
   my = MPFR_MANT(y);
   mx = PTR(x);
 

@@ -55,12 +55,12 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
 
-  nw = 1 + (prec - 1) / GMP_NUMB_BITS; /* needed allocated limbs */
+  nw = MPFR_PREC2LIMBS (prec); /* needed allocated limbs */
 
   /* check if x has enough allocated space for the significand */
   /* Get the number of limbs from the precision.
      (Compatible with all allocation methods) */
-  ow = (MPFR_PREC (x) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;
+  ow = MPFR_LIMB_SIZE (x);
   if (nw > ow)
     {
       /* FIXME: Variable can't be created using custom allocation,

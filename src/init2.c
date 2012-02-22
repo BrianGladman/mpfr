@@ -51,7 +51,7 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
      which both have an odd mantissa */
   MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
-  xsize = (mp_size_t) ((p - 1) / GMP_NUMB_BITS) + 1;
+  xsize = MPFR_PREC2LIMBS (p);
   tmp   = (mpfr_limb_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
 
   MPFR_PREC(x) = p;                /* Set prec */

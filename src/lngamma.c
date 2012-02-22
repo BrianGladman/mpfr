@@ -67,7 +67,7 @@ unit_bit (mpfr_srcptr (x))
 
   /* Now, the unit bit is represented. */
 
-  prec = ((prec - 1) / GMP_NUMB_BITS + 1) * GMP_NUMB_BITS - expo;
+  prec = MPFR_PREC2LIMBS (prec) * GMP_NUMB_BITS - expo;
   /* number of represented fractional bits (including the trailing 0's) */
 
   x0 = *(MPFR_MANT (x) + prec / GMP_NUMB_BITS);

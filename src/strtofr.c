@@ -467,7 +467,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* Set y to the value of the ~prec most significant bits of pstr->mant
          (as long as we guarantee correct rounding, we don't need to get
          exactly prec bits). */
-      ysize = (prec - 1) / GMP_NUMB_BITS + 1;
+      ysize = MPFR_PREC2LIMBS (prec);
       /* prec bits corresponds to ysize limbs */
       ysize_bits = ysize * GMP_NUMB_BITS;
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits */

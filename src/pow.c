@@ -136,7 +136,7 @@ is_odd (mpfr_srcptr y)
      (b) all the 'z' bits are zero
   */
 
-  prec = ((prec - 1) / GMP_NUMB_BITS + 1) * GMP_NUMB_BITS - expo;
+  prec = MPFR_PREC2LIMBS (prec) * GMP_NUMB_BITS - expo;
   /* number of z+0 bits */
 
   yn = prec / GMP_NUMB_BITS;

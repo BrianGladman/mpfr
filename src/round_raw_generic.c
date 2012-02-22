@@ -80,7 +80,7 @@ mpfr_round_raw_generic(
       (xprec <= yprec || MPFR_IS_LIKE_RNDZ (rnd_mode, neg)))
     return 0;
 
-  xsize = (xprec-1)/GMP_NUMB_BITS + 1;
+  xsize = MPFR_PREC2LIMBS (xprec);
   nw = yprec / GMP_NUMB_BITS;
   rw = yprec & (GMP_NUMB_BITS - 1);
 

@@ -32,7 +32,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
   MPFR_ASSERTN (p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
   /* Calculate the new number of limbs */
-  xsize = (p - 1) / GMP_NUMB_BITS + 1;
+  xsize = MPFR_PREC2LIMBS (p);
 
   /* Realloc only if the new size is greater than the old */
   xoldsize = MPFR_GET_ALLOC_SIZE (x);

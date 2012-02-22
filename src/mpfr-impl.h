@@ -646,10 +646,15 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  **************** mpfr_t properties *******************
  ******************************************************/
 
+/* In the following macro, p is usually a mpfr_prec_t, but this macro
+   works with other integer types (without integer overflow). */
+#define MPFR_PREC2LIMBS(p) \
+  (MPFR_ASSERTD (p >= 1), ((p) - 1) / GMP_NUMB_BITS + 1)
+
 #define MPFR_PREC(x)      ((x)->_mpfr_prec)
 #define MPFR_EXP(x)       ((x)->_mpfr_exp)
 #define MPFR_MANT(x)      ((x)->_mpfr_d)
-#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/GMP_NUMB_BITS+1)
+#define MPFR_LIMB_SIZE(x) (MPFR_PREC2LIMBS (MPFR_PREC ((x))))
 
 
 /******************************************************
@@ -1214,8 +1219,8 @@ typedef struct {
     _destp = MPFR_MANT (dest);                                              \
     if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
       {                                                                     \
-        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
-        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS - _srcs;       \
+        _srcs  = MPFR_PREC2LIMBS (_srcprec);                                \
+        _dests = MPFR_PREC2LIMBS (_destprec) - _srcs;                       \
         MPN_COPY (_destp + _dests, srcp, _srcs);                            \
         MPN_ZERO (_destp, _dests);                                          \
         inexact = 0;                                                        \
@@ -1228,8 +1233,8 @@ typedef struct {
         mp_limb_t _rb, _sb, _ulp;                                           \
                                                                             \
         /* Compute Position and shift */                                    \
-        _srcs  = (_srcprec  + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
-        _dests = (_destprec + GMP_NUMB_BITS-1)/GMP_NUMB_BITS;               \
+        _srcs  = MPFR_PREC2LIMBS (_srcprec);                                \
+        _dests = MPFR_PREC2LIMBS (_destprec);                               \
         MPFR_UNSIGNED_MINUS_MODULO (_sh, _destprec);                        \
         _sp = (srcp) + _srcs - _dests;                                      \
                                                                             \
@@ -1373,7 +1378,7 @@ typedef struct {
       if (MPFR_LIKELY (MPFR_PREC (dest) == MPFR_PREC (src)))            \
         {                                                               \
           MPN_COPY (MPFR_MANT (dest), MPFR_MANT (src),                  \
-                    (MPFR_PREC (src) + GMP_NUMB_BITS-1)/GMP_NUMB_BITS); \
+                    MPFR_LIMB_SIZE (src));                              \
           inexact = 0;                                                  \
         }                                                               \
       else                                                              \
@@ -1683,7 +1688,7 @@ struct mpfr_group_t {
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mpfr_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;     \
+ _size = MPFR_PREC2LIMBS (_prec);                                       \
  if (MPFR_UNLIKELY (_size * (num) > MPFR_GROUP_STATIC_SIZE))            \
    {                                                                    \
      (g).alloc = (num) * _size * sizeof (mp_limb_t);                    \
@@ -1734,7 +1739,7 @@ struct mpfr_group_t {
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                                 \
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
- _size = (mpfr_prec_t) (_prec + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS;     \
+ _size = MPFR_PREC2LIMBS (_prec);                                       \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
  if (MPFR_LIKELY (_oalloc == 0))                                        \
    (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
@@ -1887,7 +1892,7 @@ __MPFR_DECLSPEC void mpfr_abort_prec_max _MPFR_PROTO ((void))
        MPFR_NORETURN_ATTR;
 
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mpfr_limb_ptr, gmp_randstate_t,
-                                                unsigned long));
+                                                mpfr_prec_t));
 
 __MPFR_DECLSPEC mpz_t* mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
                                                             unsigned long));

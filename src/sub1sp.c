@@ -155,8 +155,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
   /* Read prec and num of limbs */
-  p = MPFR_PREC(b);
-  n = (p-1)/GMP_NUMB_BITS+1;
+  p = MPFR_PREC (b);
+  n = MPFR_PREC2LIMBS (p);
 
   /* Fast cmp of |b| and |c|*/
   bx = MPFR_GET_EXP (b);

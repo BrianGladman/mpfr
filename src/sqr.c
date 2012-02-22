@@ -56,11 +56,11 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   ax = 2 * MPFR_GET_EXP (b);
   bq = MPFR_PREC(b);
 
-  MPFR_ASSERTD (2 * bq > bq); /* PREC_MAX is /2 so no integer overflow */
+  MPFR_ASSERTN (2 * (mpfr_uprec_t) bq <= MPFR_PREC_MAX);
 
-  bn = MPFR_LIMB_SIZE(b); /* number of limbs of b */
-  tn = 1 + (2 * bq - 1) / GMP_NUMB_BITS; /* number of limbs of square,
-                                               2*bn or 2*bn-1 */
+  bn = MPFR_LIMB_SIZE (b); /* number of limbs of b */
+  tn = MPFR_PREC2LIMBS (2 * bq); /* number of limbs of square,
+                                    2*bn or 2*bn-1 */
 
   if (MPFR_UNLIKELY(bn > MPFR_SQR_THRESHOLD))
     return mpfr_mul (a, b, b, rnd_mode);

@@ -31,13 +31,20 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    a sufficient number of limbs */
 void
 mpfr_rand_raw (mpfr_limb_ptr mp, gmp_randstate_t rstate,
-               unsigned long int nbits)
+               mpfr_prec_t nbits)
 {
   mpz_t z;
 
+  MPFR_ASSERTN (nbits >= 1);
   /* To be sure to avoid the potential allocation of mpz_urandomb */
-  ALLOC(z) = SIZ(z) = ((nbits - 1) / GMP_NUMB_BITS) + 1;
+  ALLOC(z) = SIZ(z) = MPFR_PREC2LIMBS (nbits);
   PTR(z)   = mp;
+#if __MPFR_GMP(5,0,0)
+  /* Check for integer overflow (unless mp_bitcnt_t is signed,
+     but according to the GMP manual, this shouldn't happen).
+     Note: mp_bitcnt_t has been introduced in GMP 5.0.0. */
+  MPFR_ASSERTN ((mp_bitcnt_t) -1 < 0 || nbits <= (mp_bitcnt_t) -1);
+#endif
   mpz_urandomb (z, rstate, nbits);
 }
 

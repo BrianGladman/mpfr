@@ -56,8 +56,8 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   if (uexp != vexp)
     return 0; /* no bit agree */
 
-  usize = (MPFR_PREC(u) - 1) / GMP_NUMB_BITS + 1;
-  vsize = (MPFR_PREC(v) - 1) / GMP_NUMB_BITS + 1;
+  usize = MPFR_LIMB_SIZE (u);
+  vsize = MPFR_LIMB_SIZE (v);
 
   if (vsize > usize) /* exchange u and v */
     {
