@@ -43,14 +43,15 @@ main (void)
   if (getenv ("MPFR_CHECK_LARGEMEM") != NULL &&
       large_prec <= MPFR_PREC_MAX)
     {
-      mpfr_init2 (a, large_prec);
+      mpfr_inits2 (large_prec, a, b, (mpfr_ptr) 0);
       mpfr_set_ui (a, 17, MPFR_RNDN);
+      mpfr_set (b, a, MPFR_RNDN);
       if (mpfr_get_ui (a, MPFR_RNDN) != 17)
         {
           printf ("Error in mpfr_init2 with precision 2^31-1\n");
           exit (1);
         }
-      mpfr_clear (a);
+      mpfr_clears (a, b, (mpfr_ptr) 0);
     }
 
   tests_end_mpfr ();
