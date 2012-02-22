@@ -463,6 +463,9 @@ dnl We do not set LD_LIBRARY_PATH, as it is not possible to set it just
 dnl before the test program is run, and we do not want to affect other
 dnl programs (such as the compiler), because the behavior could be
 dnl incorrect and even have security implications.
+dnl WARNING! LD_RUN_PATH is not taken into account by the GNU gold ld,
+dnl e.g. from binutils-gold 2.22-5 under Debian; see
+dnl   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
 saved_LD_RUN_PATH="$LD_RUN_PATH"
 LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
 export LD_RUN_PATH
