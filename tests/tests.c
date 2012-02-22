@@ -812,6 +812,11 @@ data_check (const char *f, int (*foo) (FLIST), const char *name)
  * mode for some lower precision: see data_check).
  * fct, inv, name: data related to the function.
  * pos, emin, emax: arguments for tests_default_random.
+ * For debugging purpose (e.g. in case of crash or infinite loop),
+ * you can set the MPFR_DEBUG_BADCASES environment variable to 1 in
+ * order to output information about the tested worst cases. You can
+ * also enable logging (when supported), but this may give too much
+ * information.
  */
 void
 bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
