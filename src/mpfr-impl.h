@@ -1474,7 +1474,7 @@ typedef struct {
 
 #define MPFR_ZIV_DECL(_x) mpfr_prec_t _x
 #define MPFR_ZIV_INIT(_x, _p) (_x) = GMP_NUMB_BITS
-#define MPFR_ZIV_NEXT(_x, _p) ((_p) += (_x), (_x) = (_p)/2)
+#define MPFR_ZIV_NEXT(_x, _p) ((_p) = MPFR_ADD_PREC (_p, _x), (_x) = (_p)/2)
 #define MPFR_ZIV_FREE(x)
 
 #else
@@ -1522,7 +1522,7 @@ typedef struct {
 #define MPFR_ZIV_NEXT(_x, _p)                                           \
   do                                                                    \
     {                                                                   \
-      (_p) += (_x);                                                     \
+      (_p) = MPFR_ADD_PREC (_p, _x);                                    \
       (_x) = (_p) / 2;                                                  \
       if (mpfr_log_level >= 0)                                          \
         _x ## _bad += (_x ## _cpt == 1);                                \
