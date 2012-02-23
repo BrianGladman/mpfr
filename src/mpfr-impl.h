@@ -1464,9 +1464,18 @@ typedef struct {
  ***************  Ziv Loop Macro  *********************
  ******************************************************/
 
-/* To safely increase some precision. This macro is particularly useful
-   when determining the initial working precision before Ziv's loop.
-   P is a precision, X is an arbitrary non-negative integer. */
+/* To safely increase some precision, detecting integer overflows.
+   This macro is particularly useful when determining the initial
+   working precision before Ziv's loop. P is a precision, X is an
+   arbitrary non-negative integer.
+   Note: On 2012-02-23, the MPFR_PREC_MAX value has been decreased
+   by 256 from the maximum value representable in the mpfr_prec_t
+   type, in order to avoid some integer overflows when this macro
+   is not used (if the result is larger than MPFR_PREC_MAX, this
+   should be detected with a later assertion, e.g. in mpfr_init2).
+   But this change is mainly for existing code that has not been
+   updated yet. So, it is advised to always use MPFR_ADD_PREC if
+   the result can be larger than MPFR_PREC_MAX. */
 #define MPFR_ADD_PREC(P,X) \
   (MPFR_ASSERTN ((X) <= MPFR_PREC_MAX - (P)), (P) + (X))
 

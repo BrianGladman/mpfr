@@ -120,10 +120,13 @@ typedef unsigned long  mpfr_uprec_t;
 #endif
 
 /* Definition of precision limits without needing <limits.h> */
-/* Note: the casts allows the expression to yield the wanted behavior
-   for _MPFR_PREC_FORMAT == 1 (due to integer promotion rules). */
+/* Note: The casts allows the expression to yield the wanted behavior
+   for _MPFR_PREC_FORMAT == 1 (due to integer promotion rules). We
+   also make sure that MPFR_PREC_MIN and MPFR_PREC_MAX have a signed
+   integer type. The "- 256" allows more security, avoiding some
+   integer overflows in extreme cases; ideally it should be useless. */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((mpfr_prec_t)((mpfr_uprec_t)(~(mpfr_uprec_t)0)>>1))
+#define MPFR_PREC_MAX ((mpfr_prec_t) ((((mpfr_uprec_t) -1) >> 1) - 256))
 
 /* Definition of sign */
 typedef int          mpfr_sign_t;
