@@ -23,8 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#define EXP1 2.71828182845904523536 /* exp(1) */
-
 static int mpfr_erf_0 (mpfr_ptr, mpfr_srcptr, double, mpfr_rnd_t);
 
 int
