@@ -114,7 +114,6 @@ static void
 mpfr_const_euler_S2_aux (mpz_t P, mpz_t Q, mpz_t T, mpfr_t n,
                          unsigned long a, unsigned long b, int need_P)
 {
-  MPFR_LOG_MSG (("mpfr_const_euler_S2_aux: a = %lu, b = %lu\n", a, b));
   if (a + 1 == b)
     {
       int inex;
