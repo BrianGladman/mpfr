@@ -104,6 +104,16 @@ int main (void)
   printf ("sizeof(mpfr_prec_t) = %d\n", (int) sizeof(mpfr_prec_t));
   printf ("sizeof(mpfr_exp_t)  = %d\n", (int) sizeof(mpfr_exp_t));
 #endif
+#ifdef _MPFR_PREC_FORMAT
+  printf ("_MPFR_PREC_FORMAT = %d\n", (int) _MPFR_PREC_FORMAT);
+#endif
+  /* Note: "long" is sufficient for all current _MPFR_PREC_FORMAT values
+     (1, 2, 3). Thus we do not need to depend on ISO C99 or later. */
+  printf ("MPFR_PREC_MIN = %ld\n", (long) MPFR_PREC_MIN);
+  printf ("MPFR_PREC_MAX = %ld\n", (long) MPFR_PREC_MAX);
+#ifdef _MPFR_EXP_FORMAT
+  printf ("_MPFR_EXP_FORMAT = %d\n", (int) _MPFR_EXP_FORMAT);
+#endif
 
   failure_test ();
 
