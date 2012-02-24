@@ -28,7 +28,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Headers not available everywhere mustn't be included unconditionally. */
 #include <stdlib.h>
-#include <stdarg.h>
 #include <time.h>
 
 /* Define LOGGING variables */
