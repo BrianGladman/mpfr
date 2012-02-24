@@ -29,8 +29,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Execute with at least an argument to report all the errors found by
    comparisons. */
 
-#include <stdlib.h>
-
 #include "mpfr-test.h"
 
 /* Behavior of cmpres (called by test_others):

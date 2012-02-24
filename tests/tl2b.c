@@ -23,8 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Execute this program with an argument to generate code that initializes
    the l2b constants. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "mpfr-test.h"
 
 /* Must be a multiple of 4 */

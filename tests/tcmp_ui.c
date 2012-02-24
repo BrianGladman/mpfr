@@ -56,9 +56,6 @@ if (TCMP_UI_CHECK_NAN >= 0)
 
 #else
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "mpfr-test.h"
 
 static void

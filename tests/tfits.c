@@ -26,10 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"       /* for a build within gmp */
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 

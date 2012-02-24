@@ -24,7 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef HAVE_STDARG
 #include <stdarg.h>
 
-#include <stdlib.h>
 #include <float.h>
 
 #ifdef HAVE_LOCALE_H

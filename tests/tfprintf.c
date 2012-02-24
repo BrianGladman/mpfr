@@ -23,8 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef HAVE_STDARG
 #include <stdarg.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <float.h>
 #include <stddef.h>
 

@@ -22,10 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Note: this file comes from GMP's tests/memory.c */
 
-#include <stdio.h>
-#include <stdlib.h>  /* for abort */
-#include <limits.h>
-
 #include "mpfr-test.h"
 
 /* Each block allocated is a separate malloc, for the benefit of a redzoning
