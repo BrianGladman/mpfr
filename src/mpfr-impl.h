@@ -1611,7 +1611,7 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
   do                                                                    \
     if ((MPFR_LOG_INTERNAL_F & mpfr_log_type) &&                        \
         (mpfr_log_current <= mpfr_log_level))                           \
-      LOG_PRINT ("%s.%d:%s[%#Pu]=%.*Rf\n", __func__, __LINE__,          \
+      LOG_PRINT ("%s.%d:%s[%#Pu]=%.*Rg\n", __func__, __LINE__,          \
                  #x, mpfr_get_prec (x), mpfr_log_prec, x);              \
   while (0)
 
