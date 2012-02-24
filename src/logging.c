@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_USE_LOGGING
 
-/* Can't include them before (in particular, printf.h) */
+/* Headers not available everywhere mustn't be included unconditionally. */
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
