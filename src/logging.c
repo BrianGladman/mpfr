@@ -26,8 +26,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_USE_LOGGING
 
-/* Headers not available everywhere mustn't be included unconditionally. */
-#include <stdlib.h>
+/* The <time.h> header might not be available everywhere (it is standard,
+   but not even required by freestanding C implementations); thus it isn't
+   included unconditionally. */
 #include <time.h>
 
 /* Define LOGGING variables */

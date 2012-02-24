@@ -38,6 +38,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 #include <string.h>
 #endif
+#include <stdlib.h>
 #include <limits.h>
 
 #if _MPFR_EXP_FORMAT == 4
@@ -408,7 +409,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    it needs to be used again in the future. */
 
 #ifdef MPFR_USE_WARNINGS
-# include <stdlib.h>
 # define MPFR_WARNING(W)                    \
   do                                        \
     {                                       \
