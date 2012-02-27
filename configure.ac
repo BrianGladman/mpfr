@@ -497,6 +497,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([(such as /usr/include or /usr/local/include).])
     AC_MSG_WARN([However since we can't use 'libtool' inside the configure,])
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
+    AC_MSG_WARN([Temporary LD_RUN_PATH was "$LD_RUN_PATH".])
     AC_MSG_WARN([==========================================================])
     ],AC_MSG_RESULT([can not test])
 )
