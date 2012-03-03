@@ -53,7 +53,9 @@ Changes from versions 3.0.* to version 3.1.0:
 - MPFR tests: libtool no longer generates wrapper scripts with "make check"
   (so that running the tests under valgrind or gdb is easier).
 - Internal change: the logging mechanism has been improved.
-- Bug fixes.
+- Bug fixes, in particular a huge inefficiency in mpfr_exp (when the
+  target precision is less than MPFR_EXP_THRESHOLD) on hard-to-round
+  cases, which can take several minutes.
   Note: The mpfr_subnormalize implementation up to MPFR 3.0.0 did not change
   the flags. In particular, it did not follow the generic rule concerning
   the inexact flag (and no special behavior was specified). The case of the
