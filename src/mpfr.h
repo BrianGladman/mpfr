@@ -39,6 +39,18 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # include <gmp.h>
 #endif
 
+/* GMP's internal __gmp_const macro has been removed on 2012-03-04:
+     http://gmplib.org:8000/gmp/rev/d287cfaf6732
+   const is standard and now assumed to be available. If the __gmp_const
+   definition is no longer present in GMP, this probably means that GMP
+   assumes that const is available; thus let's define it to const.
+   Note: this is a temporary fix that can be backported to previous MPFR
+   versions. In the future, __gmp_const should be replaced by const like
+   in GMP. */
+#ifndef __gmp_const
+# define __gmp_const const
+#endif
+
 /* Avoid some problems with macro expansion if the user defines macros
    with the same name as keywords. By convention, identifiers and macro
    names starting with mpfr_ are reserved by MPFR. */
