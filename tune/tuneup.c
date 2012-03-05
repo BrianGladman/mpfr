@@ -953,7 +953,7 @@ tune_div_mulders (FILE *f)
       if (k != MPFR_DIVHIGH_TAB_SIZE - 1)
         fputc (',', f);
       if ((k+1) % 16 == 0)
-        fprintf (f, " /*%zu-%zu*/ \\\n ", k - 15, k);
+        fprintf (f, " /*%zu-%zu*/ \\\n ", (size_t) k - 15, (size_t) k);
       if (verbose)
         putchar ('.');
     }
