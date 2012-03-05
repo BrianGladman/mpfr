@@ -98,7 +98,7 @@ typedef enum {
 
 /* Define precision: 1 (short), 2 (int) or 3 (long) (DON'T USE IT!) */
 #ifndef _MPFR_PREC_FORMAT
-# if __GMP_MP_SIZE_T_INT == 1
+# if __GMP_MP_SIZE_T_INT
 #  define _MPFR_PREC_FORMAT 2
 # else
 #  define _MPFR_PREC_FORMAT 3
