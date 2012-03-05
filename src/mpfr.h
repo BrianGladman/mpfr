@@ -46,7 +46,7 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
    assumes that const is available; thus let's define it to const.
    Note: this is a temporary fix that can be backported to previous MPFR
    versions. In the future, __gmp_const should be replaced by const like
-   in GMP. */
+   in GMP. See MPFR bug 13947. */
 #ifndef __gmp_const
 # define __gmp_const const
 #endif
