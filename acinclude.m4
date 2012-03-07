@@ -751,6 +751,12 @@ AH_VERBATIM([HAVE_LDOUBLE],
 #undef HAVE_LDOUBLE_IEEE_QUAD_BIG])
 
 case $mpfr_cv_c_long_double_format in
+  "IEEE double, little endian")
+    AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
+    ;;
+  "IEEE double, big endian")
+    AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
+    ;;
   "IEEE extended, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_LITTLE, 1)
     ;;
