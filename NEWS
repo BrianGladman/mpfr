@@ -20,6 +20,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 ##############################################################################
 
+Changes from versions 3.1.* to version 3.2.0:
+- The "" release.
+- Updated tuning parameters.
+- Improved MPFR manual.
+- Bug fixes.
+
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.
 - The MPFR source has been reorganized.
