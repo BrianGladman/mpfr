@@ -432,10 +432,6 @@ CFLAGS), the version of GMP and MPFR used, and a description of the
 problem encountered. Please send us also the log of the "configure"
 (config.log).
 
-Note that even if you can build MPFR with a C++ compiler, you can't run
-the test suite: C and C++ are not the same language! You should use a C
-compiler instead.
-
 
 Notes about ABI
 ===============
