@@ -25,8 +25,89 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-#ifndef HAVE_LDOUBLE_IEEE_EXT_LITTLE
+#if defined(HAVE_LDOUBLE_IS_DOUBLE)
 
+/* special code when "long double" is the same format as "double" */
+long double
+mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  return (long double) mpfr_get_d (x, rnd_mode);
+}
+
+#elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE)
+
+/* special code for IEEE 754 little-endian extended format */
+long double
+mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_long_double_t ld;
+  mpfr_t tmp;
+  int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+
+  mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
+  inex = mpfr_set (tmp, x, rnd_mode);
+
+  mpfr_set_emin (-16382-63);
+  mpfr_set_emax (16384);
+  mpfr_subnormalize (tmp, mpfr_check_range (tmp, inex, rnd_mode), rnd_mode);
+  mpfr_prec_round (tmp, 64, MPFR_RNDZ); /* exact */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
+    ld.ld = (long double) mpfr_get_d (tmp, rnd_mode);
+  else
+    {
+      mp_limb_t *tmpmant;
+      mpfr_exp_t e, denorm;
+
+      tmpmant = MPFR_MANT (tmp);
+      e = MPFR_GET_EXP (tmp);
+      /* the smallest normal number is 2^(-16382), which is 0.5*2^(-16381)
+         in MPFR, thus any exponent <= -16382 corresponds to a subnormal
+         number */
+      denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
+#if GMP_NUMB_BITS >= 64
+      ld.s.manl = (tmpmant[0] >> denorm);
+      ld.s.manh = (tmpmant[0] >> denorm) >> 32;
+#elif GMP_NUMB_BITS == 32
+      if (MPFR_LIKELY (denorm == 0))
+        {
+          ld.s.manl = tmpmant[0];
+          ld.s.manh = tmpmant[1];
+        }
+      else if (denorm < 32)
+        {
+          ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32 - denorm));
+          ld.s.manh = tmpmant[1] >> denorm;
+        }
+      else /* 32 <= denorm <= 64 */
+        {
+          ld.s.manl = tmpmant[1] >> (denorm - 32);
+          ld.s.manh = 0;
+        }
+#else
+# error "GMP_NUMB_BITS must be 32 or >= 64"
+      /* Other values have never been supported anyway. */
+#endif
+      if (MPFR_LIKELY (denorm == 0))
+        {
+          ld.s.exph = (e + 0x3FFE) >> 8;
+          ld.s.expl = (e + 0x3FFE);
+        }
+      else
+        ld.s.exph = ld.s.expl = 0;
+      ld.s.sign = MPFR_IS_NEG (x);
+    }
+
+  mpfr_clear (tmp);
+  MPFR_SAVE_EXPO_FREE (expo);
+  return ld.ld;
+}
+
+#else
+
+/* generic code */
 long double
 mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -105,76 +186,6 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         r = -r;
       return r;
     }
-}
-
-#else
-
-long double
-mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
-{
-  mpfr_long_double_t ld;
-  mpfr_t tmp;
-  int inex;
-  MPFR_SAVE_EXPO_DECL (expo);
-
-  MPFR_SAVE_EXPO_MARK (expo);
-
-  mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
-  inex = mpfr_set (tmp, x, rnd_mode);
-
-  mpfr_set_emin (-16382-63);
-  mpfr_set_emax (16384);
-  mpfr_subnormalize (tmp, mpfr_check_range (tmp, inex, rnd_mode), rnd_mode);
-  mpfr_prec_round (tmp, 64, MPFR_RNDZ); /* exact */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
-    ld.ld = (long double) mpfr_get_d (tmp, rnd_mode);
-  else
-    {
-      mp_limb_t *tmpmant;
-      mpfr_exp_t e, denorm;
-
-      tmpmant = MPFR_MANT (tmp);
-      e = MPFR_GET_EXP (tmp);
-      /* the smallest normal number is 2^(-16382), which is 0.5*2^(-16381)
-         in MPFR, thus any exponent <= -16382 corresponds to a subnormal
-         number */
-      denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
-#if GMP_NUMB_BITS >= 64
-      ld.s.manl = (tmpmant[0] >> denorm);
-      ld.s.manh = (tmpmant[0] >> denorm) >> 32;
-#elif GMP_NUMB_BITS == 32
-      if (MPFR_LIKELY (denorm == 0))
-        {
-          ld.s.manl = tmpmant[0];
-          ld.s.manh = tmpmant[1];
-        }
-      else if (denorm < 32)
-        {
-          ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32 - denorm));
-          ld.s.manh = tmpmant[1] >> denorm;
-        }
-      else /* 32 <= denorm <= 64 */
-        {
-          ld.s.manl = tmpmant[1] >> (denorm - 32);
-          ld.s.manh = 0;
-        }
-#else
-# error "GMP_NUMB_BITS must be 32 or >= 64"
-      /* Other values have never been supported anyway. */
-#endif
-      if (MPFR_LIKELY (denorm == 0))
-        {
-          ld.s.exph = (e + 0x3FFE) >> 8;
-          ld.s.expl = (e + 0x3FFE);
-        }
-      else
-        ld.s.exph = ld.s.expl = 0;
-      ld.s.sign = MPFR_IS_NEG (x);
-    }
-
-  mpfr_clear (tmp);
-  MPFR_SAVE_EXPO_FREE (expo);
-  return ld.ld;
 }
 
 #endif
