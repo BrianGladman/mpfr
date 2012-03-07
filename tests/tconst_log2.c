@@ -66,15 +66,21 @@ check (mpfr_prec_t p0, mpfr_prec_t p1)
 static void
 check_large (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z;
+
   mpfr_init2 (x, 25000);
   mpfr_init2 (y, 26000);
+  mpfr_init2 (z, 26000);
   (mpfr_const_log2) (x, MPFR_RNDN); /* First one ! */
   (mpfr_const_log2) (y, MPFR_RNDN); /* Then the other - cache - */
+  mpfr_set (z, y, MPFR_RNDN);
   mpfr_prec_round (y, 25000, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("const_log2: error for large prec\n");
+      printf ("x="); mpfr_dump (x);
+      printf ("y="); mpfr_dump (y);
+      printf ("z="); mpfr_dump (z);
       exit (1);
     }
 
@@ -83,7 +89,7 @@ check_large (void)
   mpfr_set_prec (x, 26249);
   mpfr_const_log2 (x, MPFR_RNDZ);
 
-  mpfr_clears (x, y, (mpfr_ptr) 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
 static void
@@ -186,9 +192,9 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_clear(x);
+  mpfr_clear (x);
 
-  check_large();
+  check_large ();
   check_cache ();
 
   test_generic (2, 200, 1);
