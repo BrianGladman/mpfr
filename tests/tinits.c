@@ -38,9 +38,11 @@ main (void)
   /* test for precision 2^31-1, see
      https://gforge.inria.fr/tracker/index.php?func=detail&aid=13918 */
   large_prec = 2147483647;
-  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL &&
-      large_prec <= MPFR_PREC_MAX)
+  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
     {
+      /* We assume that the precision won't be increased internally. */
+      if (large_prec > MPFR_PREC_MAX)
+        large_prec = MPFR_PREC_MAX;
       mpfr_inits2 (large_prec, a, b, (mpfr_ptr) 0);
       mpfr_set_ui (a, 17, MPFR_RNDN);
       mpfr_set (b, a, MPFR_RNDN);
