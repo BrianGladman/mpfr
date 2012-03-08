@@ -64,7 +64,7 @@ check (const char *fmt, mpfr_t x)
 {
   if (mpfr_printf (fmt, x) == -1)
     {
-      fprintf (stderr, "Error in mpfr_printf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error 1 in mpfr_printf(\"%s\", ...)\n", fmt);
 
       exit (1);
     }
@@ -79,7 +79,7 @@ check_vprintf (const char *fmt, ...)
   va_start (ap, fmt);
   if (mpfr_vprintf (fmt, ap) == -1)
     {
-      fprintf (stderr, "Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error 2 in mpfr_vprintf(\"%s\", ...)\n", fmt);
 
       va_end (ap);
       exit (1);
@@ -97,7 +97,7 @@ check_vprintf_failure (const char *fmt, ...)
   if (mpfr_vprintf (fmt, ap) != -1)
    {
       putchar ('\n');
-      fprintf (stderr, "Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error 3 in mpfr_vprintf(\"%s\", ...)\n", fmt);
 
       va_end (ap);
       exit (1);
@@ -153,6 +153,10 @@ check_invalid_format (void)
   check_vprintf_failure ("%Rx", i);
 }
 
+/* The goal of this test is to check cases where more INT_MAX characters
+   are output, in which case, it should be a failure, because like C's
+   *printf functions, the return type is int and the returned value must
+   be either the number of characters printed or a negative value. */
 static void
 check_long_string (void)
 {
@@ -166,8 +170,7 @@ check_long_string (void)
        MPFR: Can't reallocate memory (old_size=4096 new_size=2147487744)
      The implementation might be improved to use less memory and avoid
      this problem. In the mean time, let's choose a smaller precision,
-     but with r8077 on an x86_64 machine with a 32-bit ABI (-m32), this
-     currently fails with: Error in mpfr_vprintf("%Rb", ...) */
+     but this will generally have the effect to disable the test. */
   if (sizeof (void *) == 4)
     large_prec /= 2;
 
@@ -180,8 +183,11 @@ check_long_string (void)
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextabove (x);
 
-  check_vprintf_failure ("%Rb", x);
-  check_vprintf_failure ("%RA %RA %Ra %Ra", x, x, x, x);
+  if (large_prec >= INT_MAX - 512)
+    {
+      check_vprintf_failure ("%Rb %512d", x, 1);
+      check_vprintf_failure ("%RA %RA %Ra %Ra %512d", x, x, x, x, 1);
+    }
 
   mpfr_clear (x);
 }
