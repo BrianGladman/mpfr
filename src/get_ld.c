@@ -63,10 +63,12 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       tmpmant = MPFR_MANT (tmp);
       e = MPFR_GET_EXP (tmp);
-      /* the smallest normal number is 2^(-16382), which is 0.5*2^(-16381)
-         in MPFR, thus any exponent <= -16382 corresponds to a subnormal
-         number */
+      /* The smallest positive normal number is 2^(-16382), which is
+         0.5*2^(-16381) in MPFR, thus any exponent <= -16382 corresponds to a
+         subnormal number. The smallest positive subnormal number is 2^(-16445)
+         which is 0.5*2^(-16444) in MPFR thus 0 <= denorm <= 63. */
       denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
+      ASSERT(0 <= denorm && denorm < 64);
 #if GMP_NUMB_BITS >= 64
       ld.s.manl = (tmpmant[0] >> denorm);
       ld.s.manh = (tmpmant[0] >> denorm) >> 32;
@@ -81,7 +83,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32 - denorm));
           ld.s.manh = tmpmant[1] >> denorm;
         }
-      else /* 32 <= denorm <= 64 */
+      else /* 32 <= denorm < 64 */
         {
           ld.s.manl = tmpmant[1] >> (denorm - 32);
           ld.s.manh = 0;

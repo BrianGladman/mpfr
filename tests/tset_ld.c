@@ -110,9 +110,9 @@ test_small (void)
   mpfr_t x, y, z;
   long double d;
 
-  mpfr_init2 (x, 64);
-  mpfr_init2 (y, 64);
-  mpfr_init2 (z, 64);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+  mpfr_init2 (y, MPFR_LDBL_MANT_DIG);
+  mpfr_init2 (z, MPFR_LDBL_MANT_DIG);
 
   /* x = 11906603631607553907/2^(16381+64) */
   mpfr_set_str (x, "0.1010010100111100110000001110101101000111010110000001111101110011E-16381", 2, MPFR_RNDN);
@@ -153,7 +153,7 @@ test_fixed_bugs (void)
   long double l, m;
 
   /* bug found by Steve Kargl (2009-03-14) */
-  mpfr_init2 (x, 64);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
   mpfr_set_ui_2exp (x, 1, -16447, MPFR_RNDN);
   mpfr_get_ld (x, MPFR_RNDN);  /* an assertion failed in init2.c:50 */
 
@@ -184,6 +184,30 @@ test_fixed_bugs (void)
       exit (1);
     }
 
+  mpfr_clear (x);
+}
+
+static void
+check_subnormal (void)
+{
+  long double d, e;
+  mpfr_t x;
+
+  d = 17.0;
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+  while (d != 0.0)
+    {
+      mpfr_set_ld (x, d, MPFR_RNDN);
+      e = mpfr_get_ld (x, MPFR_RNDN);
+      if (e != d)
+        {
+          printf ("Error for mpfr_get_ld o mpfr_set_ld\n");
+          printf ("d=%Le\n", d);
+          printf ("x="); mpfr_dump (x);
+          printf ("e=%Le\n", e);
+        }
+      d *= 0.5;
+    }
   mpfr_clear (x);
 }
 
@@ -302,6 +326,8 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   test_small ();
+
+  check_subnormal ();
 
   tests_end_mpfr ();
 
