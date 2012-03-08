@@ -75,12 +75,12 @@ check_large (void)
   (mpfr_const_log2) (y, MPFR_RNDN); /* Then the other - cache - */
   mpfr_set (z, y, MPFR_RNDN);
   mpfr_prec_round (y, 25000, MPFR_RNDN);
-  if (mpfr_cmp (x, y))
+  if (mpfr_cmp (x, y) != 0)
     {
       printf ("const_log2: error for large prec\n");
-      printf ("x="); mpfr_dump (x);
-      printf ("y="); mpfr_dump (y);
-      printf ("z="); mpfr_dump (z);
+      mpfr_printf ("x=%Ra\n", x);
+      mpfr_printf ("y=%Ra\n", y);
+      mpfr_printf ("z=%Ra\n", z);
       exit (1);
     }
 
