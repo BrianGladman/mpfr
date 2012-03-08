@@ -159,8 +159,23 @@ check_long_string (void)
   /* this test is VERY expensive both in time (~1 min on core2 @ 2.40GHz) and
      in memory (~2.5 GB) */
   mpfr_t x;
+  long large_prec = 2147483647;
 
-  mpfr_init2 (x, INT_MAX);
+  /* With a 32-bit (4GB) address space, a realloc failure has been noticed
+     with a 2G precision (though allocating up to 4GB is possible):
+       MPFR: Can't reallocate memory (old_size=4096 new_size=2147487744)
+     The implementation might be improved to use less memory and avoid
+     this problem. In the mean time, let's choose a smaller precision,
+     but with r8077 on an x86_64 machine with a 32-bit ABI (-m32), this
+     currently fails with: Error in mpfr_vprintf("%Rb", ...) */
+  if (sizeof (void *) == 4)
+    large_prec /= 2;
+
+  /* We assume that the precision won't be increased internally. */
+  if (large_prec > MPFR_PREC_MAX)
+    large_prec = MPFR_PREC_MAX;
+
+  mpfr_init2 (x, large_prec);
 
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextabove (x);
