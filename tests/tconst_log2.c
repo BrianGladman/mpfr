@@ -78,9 +78,15 @@ check_large (void)
   if (mpfr_cmp (x, y) != 0)
     {
       printf ("const_log2: error for large prec\n");
-      mpfr_printf ("x=%Ra\n", x);
-      mpfr_printf ("y=%Ra\n", y);
-      mpfr_printf ("z=%Ra\n", z);
+      printf ("x = ");
+      mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
+      printf ("\n");
+      printf ("y = ");
+      mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
+      printf ("\n");
+      printf ("z = ");
+      mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
 
