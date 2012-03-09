@@ -653,7 +653,7 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
    in the MPFR_LAST_LIMB() and MPFR_LIMB_SIZE() macros below to avoid
    too much expansion for assertions (in practice, this should be a
    problem just when testing MPFR with the --enable-assert configure
-   option and the -ansi -pedantic-errors compiler flags). */
+   option and the -ansi -pedantic-errors gcc compiler flags). */
 #define MPFR_PREC2LIMBS(p) \
   (MPFR_ASSERTD ((p) >= 1), ((p) - 1) / GMP_NUMB_BITS + 1)
 
