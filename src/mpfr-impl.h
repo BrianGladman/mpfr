@@ -645,14 +645,23 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  ******************************************************/
 
 /* In the following macro, p is usually a mpfr_prec_t, but this macro
-   works with other integer types (without integer overflow). */
+   works with other integer types (without integer overflow). Checking
+   that p >= 1 in debug mode is useful here because this macro can be
+   used on a computed precision (in particular, this formula does not
+   work for a degenerate case p = 0, and could give different results
+   on different platforms). But let us not use an assertion checking
+   in the MPFR_LAST_LIMB() and MPFR_LIMB_SIZE() macros below to avoid
+   too much expansion for assertions (in practice, this should be a
+   problem just when testing MPFR with the --enable-assert configure
+   option and the -ansi -pedantic-errors compiler flags). */
 #define MPFR_PREC2LIMBS(p) \
-  (MPFR_ASSERTD (p >= 1), ((p) - 1) / GMP_NUMB_BITS + 1)
+  (MPFR_ASSERTD ((p) >= 1), ((p) - 1) / GMP_NUMB_BITS + 1)
 
 #define MPFR_PREC(x)      ((x)->_mpfr_prec)
 #define MPFR_EXP(x)       ((x)->_mpfr_exp)
 #define MPFR_MANT(x)      ((x)->_mpfr_d)
-#define MPFR_LIMB_SIZE(x) (MPFR_PREC2LIMBS (MPFR_PREC ((x))))
+#define MPFR_LAST_LIMB(x) ((MPFR_PREC (x) - 1) / GMP_NUMB_BITS)
+#define MPFR_LIMB_SIZE(x) (MPFR_LAST_LIMB (x) + 1)
 
 
 /******************************************************
@@ -752,7 +761,7 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
 #define MPFR_IS_PURE_FP(x)  (!MPFR_IS_SINGULAR(x) && \
-  (MPFR_ASSERTD ((MPFR_MANT(x)[MPFR_LIMB_SIZE(x)-1]  \
+  (MPFR_ASSERTD ((MPFR_MANT(x)[MPFR_LAST_LIMB(x)]  \
                   & MPFR_LIMB_HIGHBIT) != 0), 1))
 
 #define MPFR_ARE_SINGULAR(x,y) \
@@ -1065,7 +1074,7 @@ extern unsigned char *mpfr_stack;
 /* Set a number to 1 (Fast) - It doesn't check if 1 is in the exponent range */
 #define MPFR_SET_ONE(x)                                               \
 do {                                                                  \
-  mp_size_t _size = MPFR_LIMB_SIZE(x) - 1;                            \
+  mp_size_t _size = MPFR_LAST_LIMB(x);                                \
   MPFR_SET_POS(x);                                                    \
   MPFR_EXP(x) = 1;                                                    \
   MPN_ZERO ( MPFR_MANT(x), _size);                                    \
