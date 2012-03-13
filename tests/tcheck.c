@@ -48,6 +48,8 @@ main (void)
       if (!mpfr_check(a)) ERROR("for inf");
       MPFR_SET_ZERO(a);
       if (!mpfr_check(a)) ERROR("for zero");
+      MPFR_EXP (a) = MPFR_EXP_MIN;
+      if (mpfr_check(a))  ERROR("for EXP = MPFR_EXP_MIN");
       /* Check var */
       mpfr_set_ui(a, 2, MPFR_RNDN);
       if (!mpfr_check(a)) ERROR("for set_ui");
