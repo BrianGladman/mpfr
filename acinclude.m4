@@ -753,18 +753,23 @@ AH_VERBATIM([HAVE_LDOUBLE],
 case $mpfr_cv_c_long_double_format in
   "IEEE double, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
+    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "IEEE double, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
+    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   "IEEE extended, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_LITTLE, 1)
+    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "IEEE quad, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_BIG, 1)
+    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   "IEEE quad, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_LITTLE, 1)
+    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "possibly double-double, big endian")
     AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
