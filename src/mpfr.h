@@ -724,6 +724,11 @@ __MPFR_DECLSPEC void   mpfr_custom_move       _MPFR_PROTO ((mpfr_ptr, void *));
 __MPFR_DECLSPEC void   mpfr_custom_init_set   _MPFR_PROTO ((mpfr_ptr, int,
                                              mpfr_exp_t, mpfr_prec_t, void *));
 __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
+struct FILE;
+__MPFR_DECLSPEC int    mpfr_fpif_export_binary  _MPFR_PROTO ((struct FILE*, 
+                                                              mpfr_ptr));
+__MPFR_DECLSPEC int    mpfr_fpif_import_binary  _MPFR_PROTO ((struct FILE*, 
+                                                              mpfr_ptr));
 
 #if defined (__cplusplus)
 }
