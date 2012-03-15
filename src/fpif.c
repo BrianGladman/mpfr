@@ -20,7 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <mpfr.h>
+#include "mpfr-impl.h"
 
 /* FIXME:
     - <endian.h> is not standard.
@@ -56,7 +56,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     size++;\
   }\
   while(storage != 0);
-  
+
 #define ALLOC_RESULT(buffer, buffer_size, wanted_size)\
   if ((buffer == NULL) || (*buffer_size < (wanted_size)))\
   {\
@@ -77,11 +77,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     (precision > 248 ? sizeof(mpfr_prec_t) : 0) + 3))
 
 #ifdef IS_BIG_ENDIAN
-static void putLittleEndianData (unsigned char * result, unsigned char * data, 
+static void putLittleEndianData (unsigned char * result, unsigned char * data,
   size_t data_max_size, size_t data_size, unsigned int nb_data)
 #else
 /* Intel */
-static void putBigEndianData (unsigned char * result, unsigned char * data, 
+static void putBigEndianData (unsigned char * result, unsigned char * data,
   size_t data_max_size, size_t data_size, unsigned int nb_data)
 #endif
 {
@@ -475,7 +475,7 @@ static int mpfr_fpif_read_limbs
 {
   mpfr_prec_t precision;
   size_t nb_byte;
-  size_t nb_limb, mp_bytes_per_limb;
+  size_t mp_bytes_per_limb;
   size_t nb_partial_byte;
   size_t i, j;
 
@@ -483,7 +483,6 @@ static int mpfr_fpif_read_limbs
   nb_byte = (precision + 7) >> 3;
   mp_bytes_per_limb = mp_bits_per_limb >> 3;
   nb_partial_byte = nb_byte % mp_bytes_per_limb;
-  nb_limb = (nb_byte + mp_bytes_per_limb - 1) / mp_bytes_per_limb;
   
   if ((buffer == NULL) || (*buffer_size < nb_byte))
   {
@@ -514,7 +513,8 @@ static int mpfr_fpif_read_limbs
  * x : IN : mpfr number to put in the file
  * return 0 if successfull
  */
-int mpfr_fpif_export_binary(struct FILE *fh, mpfr_t x)
+int
+mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
 {
   signed int status;
   unsigned char * buf;
@@ -568,14 +568,15 @@ int mpfr_fpif_export_binary(struct FILE *fh, mpfr_t x)
  * x : IN/OUT : mpfr number extracted from the file, his precision is reset to
  *              be able to hold the number,
  */
-int mpfr_fpif_import_binary(struct FILE *fh, mpfr_t x)
+int
+mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
 {
   int status;
   mpfr_prec_t precision;
   unsigned char * buffer;
   size_t used_size;
   
-  precision = mpfr_fpif_read_precision_from_file(fh);
+  precision = mpfr_fpif_read_precision_from_file (fh);
   if (precision == 0)
   {
     return -1;

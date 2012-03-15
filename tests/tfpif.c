@@ -26,8 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     - Use the GNU coding style.
 */
 
-#include <unistd.h>
-#include <mpfr.h>
+#include <unistd.h> /* for unlink */
+#include "mpfr-test.h"
 
 int main(int argc, char *argv[])
 {
@@ -37,11 +37,7 @@ int main(int argc, char *argv[])
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
-  size_t limb_size, exponent_size;
   signed int i;
-  unsigned char * buf;
-  size_t buf_size, max_buf_size, buf_pos;
-  mpfr_prec_t precision;
 
   if (argc == 2)
   {
