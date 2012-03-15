@@ -20,10 +20,14 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <mpfr.h>
+
+/* FIXME:
+    - <endian.h> is not standard.
+    - Use the specific alloc/free functions.
+    - Use () around arguments in macros.
+    - Use the GNU coding style.
+*/
 
 #include <endian.h>
 #ifndef __BYTE_ORDER

@@ -20,9 +20,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+/* FIXME:
+    - <unistd.h> is not standard.
+    - Use printf instead of fprintf (or is there any reason to use fprintf?).
+    - Use the GNU coding style.
+*/
+
 #include <unistd.h>
 #include <mpfr.h>
 
@@ -67,7 +70,7 @@ int main(int argc, char *argv[])
     fh = fopen(filenameCompressed, "w");  
     if (fh == NULL)
     {
-      fprintf(stderr, "Failled to open for writing %s, exiting...\n", 
+      fprintf(stderr, "Failed to open for writing %s, exiting...\n", 
         filenameCompressed);
       return -1;
     }
@@ -82,7 +85,7 @@ int main(int argc, char *argv[])
         {
           unlink(filenameCompressed);
         }
-        fprintf(stderr, "Failled to export the %d number, exiting...\n", i);
+        fprintf(stderr, "Failed to export the %d number, exiting...\n", i);
         return -1;
       }
     }
@@ -97,7 +100,7 @@ int main(int argc, char *argv[])
     {
       unlink(filenameCompressed);
     }
-    fprintf(stderr, "Failled to open for reading %s, exiting...\n", 
+    fprintf(stderr, "Failed to open for reading %s, exiting...\n", 
       filenameCompressed);
     return -1;
   }
