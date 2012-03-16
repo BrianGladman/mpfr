@@ -108,6 +108,8 @@ int main(int argc, char *argv[])
     if (mpfr_cmp(x[i], y) != 0)
     {
       fprintf(stderr, "mpfr_cmp failed on the %d number, exiting...\n", i);
+      printf ("expected "); mpfr_dump (x[i]);
+      printf ("got      "); mpfr_dump (y);
       if (delFile == 0)
       {
         unlink(filenameCompressed);

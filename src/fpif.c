@@ -60,6 +60,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   ((size_t)(((precision) >> 3) + (exponent_size) +     \
             ((precision) > 248 ? sizeof(mpfr_prec_t) : 0) + 3))
 
+/* copy in result[] the values in data[] with a different endianness */
 static void
 #ifdef HAVE_BIG_ENDIAN
 putLittleEndianData (unsigned char * result, unsigned char * data,
@@ -79,6 +80,7 @@ putBigEndianData (unsigned char * result, unsigned char * data,
         data[(i * data_max_size) + data_max_size - j - 1];
 }
 
+/* copy in result[] the values in data[] with the same endianness */
 static void
 #ifdef HAVE_BIG_ENDIAN
 putBigEndianData (unsigned char * result, unsigned char * data,
@@ -95,6 +97,7 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
     memcpy (&result[i * data_size], &data[i * data_max_size], data_size);
 }
 
+/* copy in result[] the values in data[] with a different endianness */
 static void
 #ifdef HAVE_BIG_ENDIAN
 getLittleEndianData (unsigned char * result, unsigned char * data,
@@ -114,6 +117,7 @@ getBigEndianData (unsigned char * result, unsigned char * data,
         data[(i * data_size) + j];
 }
 
+/* copy in result[] the values in data[] with the same endianness */
 static void
 #ifdef HAVE_BIG_ENDIAN
 getBigEndianData (unsigned char * result, unsigned char * data,
@@ -295,7 +299,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
 /*
  * x : OUT : MPFR number extracted from the binary buffer
  * fh : IN : file handler
- * return 0 if successfull
+ * return 0 if successful
  */
 /* TODO
  *   exponents that use more than 16 bytes are not managed
@@ -409,7 +413,7 @@ mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
  *           precision than the number in the binary format
  * buffer : IN : limb of the MPFR number x in a binary format,
  * buffer_size : IN/OUT : size of the buffer => size used in the buffer
- * return 0 if successfull
+ * return 0 if successful
  */
 static int
 mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
@@ -450,7 +454,7 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
 /*
  * fh : IN : file hander
  * x : IN : MPFR number to put in the file
- * return 0 if successfull
+ * return 0 if successful
  */
 int
 mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
@@ -503,7 +507,8 @@ mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
 /*
  * fh : IN : file hander
  * x : IN/OUT : MPFR number extracted from the file, his precision is reset to
- *              be able to hold the number,
+ *              be able to hold the number
+ * Return 0 if the import was successful.
  */
 int
 mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
@@ -522,7 +527,7 @@ mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
   if (status != 0)
     return -1;
 
-  if (mpfr_regular_p(x) != 0)
+  if (mpfr_regular_p (x) != 0)
     {
       used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);
       buffer = (*__gmp_allocate_func) (used_size);
