@@ -204,10 +204,10 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
       if (status != 1)
         return 0;
 
-    precision = 0;
-    getLittleEndianData ((unsigned char *)&precision, &buffer[0],
-                         sizeof(mpfr_prec_t), precision_size + 1, 1);
-    precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
+      precision = 0;
+      getLittleEndianData ((unsigned char *)&precision, &buffer[0],
+                           sizeof(mpfr_prec_t), precision_size + 1, 1);
+      precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
     }
   else
     precision = precision_size - 7;
@@ -309,7 +309,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 {
   mpfr_exp_t exponent;
   size_t exponent_size;
-  char sign;
+  int sign;
   unsigned char buffer[sizeof(mpfr_exp_t)];
   int status;
   size_t statusFile;
@@ -323,7 +323,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   if (statusFile != 1)
     return 1;
 
-  sign = -(buffer[0] & 0x80);
+  sign = (buffer[0] & 0x80) ? -1 : 0;
   exponent = buffer[0] & 0x7F;
   exponent_size = 1;
 
