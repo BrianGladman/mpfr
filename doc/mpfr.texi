@@ -2173,6 +2173,9 @@ computer, or export on a little-endian computer and import on a big-endian
 computer.
 The precision of @var{op} is stored too.
 Return 0 iff the export was successful.
+
+Note: this function is experimental and its interface might change in future
+versions.
 @end deftypefun
 
 @deftypefun int mpfr_fpif_import_binary (FILE *@var{stream}, mpfr_t @var{op})
@@ -2180,6 +2183,9 @@ Import the number @var{op} from the stream @var{stream} in a binary portable
 way (see @code{mpfr_fpif_export_binary}).
 The precision of @var{op} is set to the value read from the stream.
 Return 0 iff the import was successful.
+
+Note: this function is experimental and its interface might change in future
+version.
 @end deftypefun
 
 @node Formatted Output Functions, Integer Related Functions, Input and Output Functions, MPFR Interface
