@@ -72,7 +72,7 @@ putBigEndianData (unsigned char * result, unsigned char * data,
                     unsigned int nb_data)
 #endif
 {
-  int i, j;
+  unsigned int i, j;
 
   for (i = 0; i < nb_data; i++)
     for (j = 0; j < data_size; j++)
@@ -91,7 +91,7 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
                      unsigned int nb_data)
 #endif
 {
-  int i;
+  unsigned int i;
 
   for (i = 0; i < nb_data; i++)
     memcpy (&result[i * data_size], &data[i * data_max_size], data_size);
@@ -109,7 +109,7 @@ getBigEndianData (unsigned char * result, unsigned char * data,
                   unsigned int nb_data)
 #endif
 {
-  int i, j;
+  unsigned int i, j;
 
   for (i = 0; i < nb_data; i++)
     for (j = 0; j < data_size; j++)
@@ -128,7 +128,7 @@ getLittleEndianData (unsigned char * result, unsigned char * data,
                      unsigned int nb_data)
 #endif
 {
-  int i;
+  unsigned int i;
 
   for(i = 0; i < nb_data; i++)
     memcpy (&result[i * data_size], &data[i * data_max_size], data_size);
@@ -460,11 +460,11 @@ int
 mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
 {
   int status;
-  unsigned char * buf;
+  unsigned char *buf;
   size_t used_size, buf_size;
 
   buf_size = MAX_VARIABLE_STORAGE(sizeof(mpfr_exp_t), mpfr_get_prec (x));
-  buf = (*__gmp_allocate_func) (buf_size);
+  buf = (unsigned char*) (*__gmp_allocate_func) (buf_size);
   if (buf == NULL)
     return -1;
 
@@ -515,7 +515,7 @@ mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
 {
   int status;
   mpfr_prec_t precision;
-  unsigned char * buffer;
+  unsigned char *buffer;
   size_t used_size;
 
   precision = mpfr_fpif_read_precision_from_file (fh);
@@ -530,7 +530,7 @@ mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
   if (mpfr_regular_p (x) != 0)
     {
       used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);
-      buffer = (*__gmp_allocate_func) (used_size);
+      buffer = (unsigned char*) (*__gmp_allocate_func) (used_size);
       status = fread (buffer, used_size, 1, fh);
       if (status != 1)
         {
