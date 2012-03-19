@@ -41,7 +41,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	  	\
      tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat \
-	stream.data
+	mpfrtest.dat
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/src/libmpfr.la
 INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)/src
