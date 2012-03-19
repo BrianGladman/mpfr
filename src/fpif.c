@@ -31,27 +31,30 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_EXTERNAL_EXPONENT 94
 
 /* Begin: Low level helper functions */
-#define COUNT_NB_BYTE(storage, size)\
-  do\
-  {\
-    (storage) >>= 8;                            \
-    (size)++;                                   \
-  }\
-  while((storage) != 0)
+#define COUNT_NB_BYTE(storage, size)            \
+  do                                            \
+    {                                           \
+      (storage) >>= 8;                          \
+      (size)++;                                 \
+    }                                           \
+  while ((storage) != 0)
 
 #define ALLOC_RESULT(buffer, buffer_size, wanted_size)                  \
-  do {                                                                  \
-  if (((buffer) == NULL) || (*(buffer_size) < (wanted_size)))           \
+  do                                                                    \
     {                                                                   \
-      (buffer) = (unsigned char *) (*__gmp_reallocate_func) ((buffer), *(buffer_size), (wanted_size)); \
-      if ((buffer) == NULL)                                             \
+      if ((buffer) == NULL || *(buffer_size) < (wanted_size))           \
         {                                                               \
-          *(buffer_size) = 0;                                           \
-          return NULL;                                                  \
+          (buffer) = (unsigned char *) (*__gmp_reallocate_func)         \
+            ((buffer), *(buffer_size), (wanted_size));                  \
+          if ((buffer) == NULL)                                         \
+            {                                                           \
+              *(buffer_size) = 0;                                       \
+              return NULL;                                              \
+            }                                                           \
         }                                                               \
+      *(buffer_size) = (wanted_size);                                   \
     }                                                                   \
-    *(buffer_size) = (wanted_size);                                     \
-    } while (0)
+  while (0)
 
 /*
  * size in byte of a MPFR number in a binary object of a variable size
@@ -66,7 +69,7 @@ static void
 putLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size,
                      unsigned int nb_data)
-#else /* Intel */
+#else /* little endian */
 putBigEndianData (unsigned char * result, unsigned char * data,
                     size_t data_max_size, size_t data_size,
                     unsigned int nb_data)
@@ -103,7 +106,7 @@ static void
 getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size,
                      unsigned int nb_data)
-#else /* Intel */
+#else /* little endian */
 getBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size,
                   unsigned int nb_data)
@@ -122,7 +125,7 @@ static void
 #ifdef HAVE_BIG_ENDIAN
 getBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size, unsigned int nb_data)
-#else /* Intel */
+#else /* little endian */
 getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size,
                      unsigned int nb_data)
@@ -205,7 +208,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
         return 0;
 
       precision = 0;
-      getLittleEndianData ((unsigned char *)&precision, &buffer[0],
+      getLittleEndianData ((unsigned char *) &precision, &buffer[0],
                            sizeof(mpfr_prec_t), precision_size + 1, 1);
       precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
     }
@@ -239,7 +242,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
   exponent_sign = 0;
   exponent_size = 0;
 
-  if (mpfr_regular_p (x) != 0)
+  if (mpfr_regular_p (x))
     {
       if ((exponent > MPFR_MAX_EMBEDDED_EXPONENT) ||
           (exponent < MPFR_MIN_EMBEDDED_EXPONENT))
@@ -266,7 +269,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
   result = buffer;
   ALLOC_RESULT(result, buffer_size, exponent_size + 1);
 
-  if (mpfr_regular_p (x) != 0)
+  if (mpfr_regular_p (x))
     {
       if (exponent_size == 0)
         result[0] = exponent;
@@ -278,11 +281,11 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
                                sizeof(mpfr_exp_t), exponent_size, 1);
         }
     }
-  else if (mpfr_zero_p (x) != 0)
+  else if (mpfr_zero_p (x))
     result[0] = MPFR_KIND_ZERO;
-  else if (mpfr_inf_p (x) != 0)
+  else if (mpfr_inf_p (x))
     result[0] = MPFR_KIND_INF;
-  else if (mpfr_nan_p (x) != 0)
+  else if (mpfr_nan_p (x))
     result[0] = MPFR_KIND_NAN;
   else
     {
@@ -336,26 +339,26 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
       if (exponent_size > sizeof(mpfr_exp_t))
         return 1;
 
-    statusFile = fread (&buffer[0], exponent_size, 1, fh);
-    if (statusFile != 1)
-      return 1;
+      statusFile = fread (&buffer[0], exponent_size, 1, fh);
+      if (statusFile != 1)
+        return 1;
 
-    exponent = 0;
-    getLittleEndianData ((unsigned char *) &exponent, &buffer[0],
-                         sizeof(mpfr_exp_t), exponent_size, 1);
+      exponent = 0;
+      getLittleEndianData ((unsigned char *) &exponent, &buffer[0],
+                           sizeof(mpfr_exp_t), exponent_size, 1);
 
-    exponent_sign = exponent & (1 << ((exponent_size << 3) - 1));
+      exponent_sign = exponent & (1 << ((exponent_size << 3) - 1));
 
-    exponent &= ~exponent_sign;
-    exponent += MPFR_MAX_EMBEDDED_EXPONENT;
+      exponent &= ~exponent_sign;
+      exponent += MPFR_MAX_EMBEDDED_EXPONENT;
 
-    if (exponent_sign != 0)
-      exponent = -exponent;
+      if (exponent_sign != 0)
+        exponent = -exponent;
 
-    mpfr_setsign (x, x, sign, MPFR_RNDN);
-    status = mpfr_set_exp (x, exponent);
+      mpfr_setsign (x, x, sign, MPFR_RNDN);
+      status = mpfr_set_exp (x, exponent);
 
-    exponent_size++;
+      exponent_size++;
     }
   else if (exponent == MPFR_KIND_ZERO)
     mpfr_set_zero (x, sign);
@@ -398,11 +401,11 @@ mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
   result = buffer;
   ALLOC_RESULT(result, buffer_size, nb_byte);
 
-  putBigEndianData (result, (unsigned char*)x->_mpfr_d,
+  putBigEndianData (result, (unsigned char*) MPFR_MANT(x),
                     sizeof(mp_limb_t), nb_partial_byte, 1);
   for (i = nb_partial_byte, j = (nb_partial_byte == 0) ? 0 : 1; j < nb_limb;
        i += mp_bytes_per_limb, j++)
-    putLittleEndianData (&result[i], (unsigned char*)(&x->_mpfr_d[j]),
+    putLittleEndianData (&result[i], (unsigned char*) (MPFR_MANT(x) + j),
                          sizeof(mp_limb_t), sizeof(mp_limb_t), 1);
 
   return result;
@@ -439,12 +442,12 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
   if (nb_partial_byte > 0)
     {
       memset (MPFR_MANT(x), 0, sizeof(mp_limb_t));
-      getBigEndianData ((unsigned char*)MPFR_MANT(x), buffer,
+      getBigEndianData ((unsigned char*) MPFR_MANT(x), buffer,
                         sizeof(mp_limb_t), nb_partial_byte, 1);
     }
   for (i = nb_partial_byte, j = (nb_partial_byte == 0) ? 0 : 1; i < nb_byte;
        i += mp_bytes_per_limb, j++)
-    getLittleEndianData ((unsigned char*)(&MPFR_MANT(x)[j]), &buffer[i],
+    getLittleEndianData ((unsigned char*) (&MPFR_MANT(x)[j]), &buffer[i],
                          sizeof(mp_limb_t), sizeof(mp_limb_t), 1);
 
   return 0;
@@ -487,7 +490,7 @@ mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
       return -1;
     }
 
-  if (mpfr_regular_p(x) != 0)
+  if (mpfr_regular_p (x))
     {
       used_size = buf_size;
       buf = mpfr_fpif_store_limbs (buf, &used_size, x);
@@ -527,7 +530,7 @@ mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
   if (status != 0)
     return -1;
 
-  if (mpfr_regular_p (x) != 0)
+  if (mpfr_regular_p (x))
     {
       used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);
       buffer = (unsigned char*) (*__gmp_allocate_func) (used_size);

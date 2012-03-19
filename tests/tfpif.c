@@ -23,14 +23,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 int
-main( int argc, char *argv[])
+main (int argc, char *argv[])
 {
   char *filenameCompressed = NULL;
-  signed int status;
+  int status;
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
-  signed int i;
+  int i;
   char data[] = "stream.data";
 
   if (argc == 2)
@@ -58,14 +58,14 @@ main( int argc, char *argv[])
   if (filenameCompressed == NULL)
     {
       filenameCompressed = "stream_data.test";
-      fh = fopen (filenameCompressed, "w");  
+      fh = fopen (filenameCompressed, "w");
       if (fh == NULL)
         {
           printf ("Failed to open for writing %s, exiting...\n",
                   filenameCompressed);
           exit (1);
         }
-  
+
       for (i = 0; i < 9; i++)
         {
           status = mpfr_fpif_export_binary (fh, x[i]);
@@ -76,13 +76,13 @@ main( int argc, char *argv[])
               exit (1);
             }
         }
-  
+
       fclose (fh);
     }
 
   /* we then read back "stream_data.test" (or argv[1]) and check we get the
      same numbers x[i] */
-  fh = fopen (filenameCompressed, "r");  
+  fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
       printf ("Failed to open for reading %s, exiting...\n",
@@ -107,7 +107,7 @@ main( int argc, char *argv[])
 
   /* we do the same for the fixed file "stream_data.expected", this ensures
      we get same results with different word size or endianness */
-  fh = fopen (data, "r");  
+  fh = fopen (data, "r");
   if (fh == NULL)
     {
       printf ("Failed to open for reading %s, exiting...\n", data);
@@ -118,7 +118,7 @@ main( int argc, char *argv[])
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import_binary (fh, y);
-      if (mpfr_cmp(x[i], y) != 0)
+      if (mpfr_cmp (x[i], y) != 0)
         {
           printf ("mpfr_cmp failed on data number %d, exiting...\n", i);
           printf ("expected "); mpfr_dump (x[i]);
@@ -135,4 +135,3 @@ main( int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
