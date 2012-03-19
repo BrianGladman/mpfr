@@ -22,9 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 3.1.* to version 3.2.0:
 - The "" release.
-- New functions: mpfr_fpif_export_binary, mpfr_fpif_import_binary.
-  FIXME: see FIXME in src/mpfr.h, src/fpif.c and tests/tfpif.c; document
-  the functions in mpfr.texi.
+- New functions: mpfr_fpif_export and mpfr_fpif_import to export and import
+  numbers in a floating-point interchange format, independent both on the
+  number of bits per word and on the endianness.
 - Updated tuning parameters.
 - Improved MPFR manual.
 - Bug fixes.
