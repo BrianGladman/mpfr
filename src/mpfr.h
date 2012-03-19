@@ -1002,8 +1002,10 @@ __MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
 #define mpfr_fprintf __gmpfr_fprintf
 __MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
                                                ...));
+#define mpfr_fpif_export __gmpfr_fpif_export
+#define mpfr_fpif_import __gmpfr_fpif_import
 __MPFR_DECLSPEC int    mpfr_fpif_export _MPFR_PROTO ((FILE*, mpfr_ptr));
-__MPFR_DECLSPEC int    mpfr_fpif_import _MPFR_PROTO ((FILE*, mpfr_ptr));
+  __MPFR_DECLSPEC int    mpfr_fpif_import _MPFR_PROTO ((mpfr_ptr, FILE*));
 
 #if defined (__cplusplus)
 }

@@ -94,7 +94,7 @@ main (int argc, char *argv[])
   for (i = 0; i < 9; i++)
     {
       mpfr_init2 (y, 2);
-      mpfr_fpif_import (fh, y);
+      mpfr_fpif_import (y, fh);
       if (mpfr_cmp(x[i], y) != 0)
         {
           printf ("mpfr_cmp failed on written number %d, exiting...\n", i);
@@ -118,7 +118,7 @@ main (int argc, char *argv[])
   for (i = 0; i < 9; i++)
     {
       mpfr_init2 (y, 2);
-      mpfr_fpif_import (fh, y);
+      mpfr_fpif_import (y, fh);
       if (mpfr_cmp (x[i], y) != 0)
         {
           printf ("mpfr_cmp failed on data number %d, exiting...\n", i);

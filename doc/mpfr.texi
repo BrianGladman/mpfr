@@ -2179,7 +2179,7 @@ Note: this function is experimental and its interface might change in future
 versions.
 @end deftypefun
 
-@deftypefun int mpfr_fpif_import (FILE *@var{stream}, mpfr_t @var{op})
+@deftypefun int mpfr_fpif_import (mpfr_t @var{op}, FILE *@var{stream})
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
 The precision of @var{op} is set to the value read from the stream.

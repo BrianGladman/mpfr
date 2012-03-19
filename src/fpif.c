@@ -509,13 +509,13 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
 }
 
 /*
- * fh : IN : file hander
  * x : IN/OUT : MPFR number extracted from the file, his precision is reset to
  *              be able to hold the number
+ * fh : IN : file hander
  * Return 0 if the import was successful.
  */
 int
-mpfr_fpif_import (FILE *fh, mpfr_t x)
+mpfr_fpif_import (mpfr_t x, FILE *fh)
 {
   int status;
   mpfr_prec_t precision;
