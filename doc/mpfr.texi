@@ -2185,7 +2185,7 @@ The precision of @var{op} is set to the value read from the stream.
 Return 0 iff the import was successful.
 
 Note: this function is experimental and its interface might change in future
-version.
+versions.
 @end deftypefun
 
 @node Formatted Output Functions, Integer Related Functions, Input and Output Functions, MPFR Interface
