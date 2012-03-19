@@ -1,4 +1,5 @@
-/* mpfr_fpif -- Binary export & import of MPFR numbers.
+/* mpfr_fpif -- Binary export & import of MPFR numbers
+   (floating-point interchange format)
 
 Copyright 2012 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
@@ -460,7 +461,7 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
  * return 0 if successful
  */
 int
-mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
+mpfr_fpif_export (FILE *fh, mpfr_t x)
 {
   int status;
   unsigned char *buf;
@@ -514,7 +515,7 @@ mpfr_fpif_export_binary (FILE *fh, mpfr_t x)
  * Return 0 if the import was successful.
  */
 int
-mpfr_fpif_import_binary (FILE *fh, mpfr_t x)
+mpfr_fpif_import (FILE *fh, mpfr_t x)
 {
   int status;
   mpfr_prec_t precision;
