@@ -22,19 +22,25 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#define FILE_NAME_RW "mpfrtest.txt" /* temporary name (written then read) */
+#define FILE_NAME_R  "mpfrtest.dat" /* fixed file name (read only) */
+
 int
 main (int argc, char *argv[])
 {
-  char *filenameCompressed = NULL;
+  char *filenameCompressed = FILE_NAME_RW;
+  char *data = FILE_NAME_R;
   int status;
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
   int i;
-  char data[] = "stream.data";
 
-  if (argc == 2)
-    filenameCompressed = argv[1];
+  if (argc != 1)
+    {
+      printf ("Usage: %s\n", argv[0]);
+      exit (1);
+    }
 
   tests_start_mpfr ();
 
@@ -53,35 +59,30 @@ main (int argc, char *argv[])
   mpfr_div (x[8], x[6], x[7], MPFR_RNDN);
   mpfr_div (x[6], x[6], x[7], MPFR_RNDN);
 
-  /* we first write to file "stream_data.test" (or argv[1] if given) the
-     numbers x[i] */
-  if (filenameCompressed == NULL)
+  /* we first write to file FILE_NAME_RW the numbers x[i] */
+  filenameCompressed = FILE_NAME_RW;
+  fh = fopen (filenameCompressed, "w");
+  if (fh == NULL)
     {
-      filenameCompressed = "stream_data.test";
-      fh = fopen (filenameCompressed, "w");
-      if (fh == NULL)
-        {
-          printf ("Failed to open for writing %s, exiting...\n",
-                  filenameCompressed);
-          exit (1);
-        }
-
-      for (i = 0; i < 9; i++)
-        {
-          status = mpfr_fpif_export_binary (fh, x[i]);
-          if (status != 0)
-            {
-              fclose (fh);
-              printf ("Failed to export number %d, exiting...\n", i);
-              exit (1);
-            }
-        }
-
-      fclose (fh);
+      printf ("Failed to open for writing %s, exiting...\n",
+              filenameCompressed);
+      exit (1);
     }
 
-  /* we then read back "stream_data.test" (or argv[1]) and check we get the
-     same numbers x[i] */
+  for (i = 0; i < 9; i++)
+    {
+      status = mpfr_fpif_export_binary (fh, x[i]);
+      if (status != 0)
+        {
+          fclose (fh);
+          printf ("Failed to export number %d, exiting...\n", i);
+          exit (1);
+        }
+    }
+
+  fclose (fh);
+
+  /* we then read back FILE_NAME_RW and check we get the same numbers x[i] */
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
@@ -105,7 +106,7 @@ main (int argc, char *argv[])
     }
   fclose (fh);
 
-  /* we do the same for the fixed file "stream_data.expected", this ensures
+  /* we do the same for the fixed file FILE_NAME_R, this ensures
      we get same results with different word size or endianness */
   fh = fopen (data, "r");
   if (fh == NULL)
@@ -132,6 +133,7 @@ main (int argc, char *argv[])
   for (i = 0; i < 9; i++)
     mpfr_clear (x[i]);
 
+  remove (FILE_NAME_RW);
   tests_end_mpfr ();
   return 0;
 }
