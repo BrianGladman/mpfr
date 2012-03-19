@@ -753,34 +753,27 @@ AH_VERBATIM([HAVE_LDOUBLE],
 case $mpfr_cv_c_long_double_format in
   "IEEE double, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
-    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   "IEEE double, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
-    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "IEEE extended, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_LITTLE, 1)
-    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "IEEE extended, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_BIG, 1)
-    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   "IEEE quad, big endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_BIG, 1)
-    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   "IEEE quad, little endian")
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_LITTLE, 1)
-    AC_DEFINE(HAVE_LITTLE_ENDIAN)
     ;;
   "possibly double-double, big endian")
     AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
     AC_MSG_WARN([but due to GCC PR26374, we can't test further.])
     AC_MSG_WARN([You can safely ignore this warning, though.])
     # Since we are not sure, we do not want to define a macro.
-    AC_DEFINE(HAVE_BIG_ENDIAN)
     ;;
   unknown* | "not available")
     ;;
@@ -789,7 +782,6 @@ case $mpfr_cv_c_long_double_format in
     ;;
 esac
 ])
-
 
 dnl  MPFR_CHECK_LIBM
 dnl  ---------------

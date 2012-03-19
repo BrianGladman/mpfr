@@ -319,6 +319,9 @@ esac
 
 AC_C_CONST
 AC_C_VOLATILE
+dnl  Determine the endianness of integer
+AC_C_BIGENDIAN([AC_DEFINE(HAVE_BIG_ENDIAN)],[AC_DEFINE(HAVE_LITTLE_ENDIAN)])
+
 MPFR_CONFIGS
 
 dnl
