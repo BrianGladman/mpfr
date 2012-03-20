@@ -658,7 +658,7 @@ void
 data_check (const char *f, int (*foo) (FLIST), const char *name)
 {
   FILE *fp;
-  int xprec, yprec;  /* not mpfr_prec_t because of the fscanf */
+  long int xprec, yprec;  /* not mpfr_prec_t because of the fscanf */
   mpfr_t x, y, z;
   mpfr_rnd_t rnd;
   char r;
@@ -726,7 +726,7 @@ data_check (const char *f, int (*foo) (FLIST), const char *name)
         {
           ungetc (c, fp);
 
-          c = fscanf (fp, "%d %d %c", &xprec, &yprec, &r);
+          c = fscanf (fp, "%ld %ld %c", &xprec, &yprec, &r);
           MPFR_ASSERTN (xprec >= MPFR_PREC_MIN && xprec <= MPFR_PREC_MAX);
           MPFR_ASSERTN (yprec >= MPFR_PREC_MIN && yprec <= MPFR_PREC_MAX);
           if (c == EOF)
