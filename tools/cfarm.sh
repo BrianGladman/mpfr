@@ -1,21 +1,30 @@
+#!/bin/bash
 # this script helps to check MPFR is running on the GCC compile farm
 # 1) update the GMP version if needed
 # 2) update the MPFR release candidate
 # 3) ssh gcc100 < cfarm.sh
-/bin/rm -fr gmp-5.0.2*
-wget http://mirror.ibcp.fr/pub/gnu/gmp/gmp-5.0.2.tar.bz2
-tar jxf gmp-5.0.2.tar.bz2
-cd gmp-5.0.2
-./configure --prefix=$HOME --disable-shared
+if [ ! -d gmp-5.0.4 ]; then
+   /bin/rm -fr gmp*
+   wget ftp://ftp.gmplib.org/pub/gmp-5.0.4/gmp-5.0.4.tar.bz2
+   tar jxf gmp-5.0.4.tar.bz2
+   cd gmp-5.0.4
+   if [ "`hostname`" = "dingo" ]; then
+      # gcc 4.3.2 miscompiles GMP
+      ./configure --prefix=$HOME CC=/opt/cfarm/release/4.4.1/bin/gcc
+   else
+      ./configure --prefix=$HOME
+   fi
+   make
+   make install
+   cd $HOME
+fi
+/bin/rm -fr mpfr*
+wget http://www.loria.fr/~zimmerma/mpfr-3.2.0-dev.tar.bz2
+tar jxf mpfr-3.2.0-dev.tar.bz2
+cd  mpfr-3.2.0-dev
+./configure --with-gmp=$HOME --prefix=$HOME
 make
 make install
-cd $HOME
-/bin/rm -fr mpfr-3.1.0*
-wget http://www.mpfr.org/mpfr-3.1.0/mpfr-3.1.0-rc2.tar.bz2
-tar jxf mpfr-3.1.0-rc2.tar.bz2
-cd mpfr-3.1.0-rc2
-./configure --with-gmp=$HOME --prefix=$HOME --disable-shared
-make
 make check
 
 # results with mpfr-3.1.0-rc1.tar.bz2

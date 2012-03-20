@@ -40,7 +40,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/x86/core2/mparam.h"
 #include "x86/core2/mparam.h"
 
-#elif defined (__tune_k8__) || defined (__tune_amdfam10__) /* AMD 64 */
+#elif defined (__tune_k8__) || defined (__amd64__) /* AMD 64 */
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
 
