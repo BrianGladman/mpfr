@@ -466,12 +466,14 @@ ld_trace (const char *name, long double ld)
 FILE *
 src_fopen (const char *filename, const char *mode)
 {
-  const char *srcdir = getenv ("srcdir");
+#ifndef SRCDIR
+  return fopen (filename, mode);
+#else
+  char *srcdir;
   char *buffer;
   FILE *f;
 
-  if (srcdir == NULL)
-    return fopen (filename, mode);
+  srcdir = SRCDIR;
   buffer =
     (char*) (*__gmp_allocate_func) (strlen (filename) + strlen (srcdir) + 2);
   if (buffer == NULL)
@@ -483,6 +485,7 @@ src_fopen (const char *filename, const char *mode)
   f = fopen (buffer, mode);
   (*__gmp_free_func) (buffer, strlen (filename) + strlen (srcdir) + 2);
   return f;
+#endif
 }
 
 void
