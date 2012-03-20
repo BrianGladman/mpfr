@@ -40,7 +40,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	  	\
      ttanh ttrunc tui_div tui_pow tui_sub turandom 	 		\
      tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
 
-EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat \
+EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.dat tmul.dat \
 	mpfrtest.dat
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/src/libmpfr.la
