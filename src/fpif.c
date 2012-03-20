@@ -64,7 +64,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   ((size_t)(((precision) >> 3) + (exponent_size) +     \
             ((precision) > 248 ? sizeof(mpfr_prec_t) : 0) + 3))
 
-/* copy in result[] the values in data[] with a different endianness */
+/* copy in result[] the values in data[] with a different endianness,
+   where data_size might be smaller than data_max_size, so that we only
+   copy data_size bytes */
 static void
 #ifdef HAVE_BIG_ENDIAN
 putLittleEndianData (unsigned char * result, unsigned char * data,
@@ -76,6 +78,7 @@ putBigEndianData (unsigned char * result, unsigned char * data,
 {
   unsigned int j;
 
+  ASSERT(data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
     result[j] = data[data_max_size - j - 1];
 }
@@ -90,6 +93,7 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
+  ASSERT(data_size <= data_max_size);
   memcpy (result, data, data_size);
 }
 
@@ -105,6 +109,7 @@ getBigEndianData (unsigned char * result, unsigned char * data,
 {
   unsigned int j;
 
+  ASSERT(data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
     result[data_max_size - j - 1] = data[j];
 }
@@ -119,6 +124,7 @@ getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
+  ASSERT(data_size <= data_max_size);
   memcpy (result, data, data_size);
 }
 
@@ -156,7 +162,7 @@ mpfr_fpif_store_precision (unsigned char * buffer, size_t * buffer_size,
     {
       result[0] = size_precision - 1;
       precision -= (MPFR_MAX_EMBEDDED_PRECISION + 1);
-      putLittleEndianData (&result[1], (unsigned char *) &precision,
+      putLittleEndianData (result + 1, (unsigned char *) &precision,
                            sizeof(mpfr_prec_t), size_precision);
     }
   else
@@ -180,7 +186,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
   if (fh == NULL)
     return 0;
 
-  status = fread (&buffer[0], 1, 1, fh);
+  status = fread (buffer, 1, 1, fh);
   if (status != 1)
     return 0;
 
@@ -188,12 +194,12 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
 
   if (precision_size < 8)
     {
-      status = fread (&buffer[0], precision_size + 1, 1, fh);
+      status = fread (buffer, precision_size + 1, 1, fh);
       if (status != 1)
         return 0;
 
       precision = 0;
-      getLittleEndianData ((unsigned char *) &precision, &buffer[0],
+      getLittleEndianData ((unsigned char *) &precision, buffer,
                            sizeof(mpfr_prec_t), precision_size + 1);
       precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
     }
@@ -262,7 +268,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
         {
           result[0] = MPFR_EXTERNAL_EXPONENT + exponent_size;
 
-          putLittleEndianData (&result[1], (unsigned char *) &exponent,
+          putLittleEndianData (result + 1, (unsigned char *) &exponent,
                                sizeof(mpfr_exp_t), exponent_size);
         }
     }
@@ -307,7 +313,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   if (fh == NULL)
     return 1;
 
-  statusFile = fread (&buffer[0], 1, 1, fh);
+  statusFile = fread (buffer, 1, 1, fh);
   if (statusFile != 1)
     return 1;
 
@@ -324,12 +330,12 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
       if (exponent_size > sizeof(mpfr_exp_t))
         return 1;
 
-      statusFile = fread (&buffer[0], exponent_size, 1, fh);
+      statusFile = fread (buffer, exponent_size, 1, fh);
       if (statusFile != 1)
         return 1;
 
       exponent = 0;
-      getLittleEndianData ((unsigned char *) &exponent, &buffer[0],
+      getLittleEndianData ((unsigned char *) &exponent, buffer,
                            sizeof(mpfr_exp_t), exponent_size);
 
       exponent_sign = exponent & (1 << ((exponent_size << 3) - 1));
@@ -390,7 +396,7 @@ mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
                     sizeof(mp_limb_t), nb_partial_byte);
   for (i = nb_partial_byte, j = (nb_partial_byte == 0) ? 0 : 1; j < nb_limb;
        i += mp_bytes_per_limb, j++)
-    putLittleEndianData (&result[i], (unsigned char*) (MPFR_MANT(x) + j),
+    putLittleEndianData (result + i, (unsigned char*) (MPFR_MANT(x) + j),
                          sizeof(mp_limb_t), sizeof(mp_limb_t));
 
   return result;
@@ -432,7 +438,7 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
     }
   for (i = nb_partial_byte, j = (nb_partial_byte == 0) ? 0 : 1; i < nb_byte;
        i += mp_bytes_per_limb, j++)
-    getLittleEndianData ((unsigned char*) (&MPFR_MANT(x)[j]), &buffer[i],
+    getLittleEndianData ((unsigned char*) (MPFR_MANT(x) + j), buffer + i,
                          sizeof(mp_limb_t), sizeof(mp_limb_t));
 
   return 0;
@@ -525,7 +531,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
           (*__gmp_free_func) (buffer, used_size);
           return -1;
         }
-      status = mpfr_fpif_read_limbs (x, &buffer[0], &used_size);
+      status = mpfr_fpif_read_limbs (x, buffer, &used_size);
       (*__gmp_free_func) (buffer, used_size);
       if (status != 0)
         return -1;
