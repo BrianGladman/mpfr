@@ -108,10 +108,10 @@ main (int argc, char *argv[])
 
   /* we do the same for the fixed file FILE_NAME_R, this ensures
      we get same results with different word size or endianness */
-  fh = fopen (data, "r");
+  fh = src_fopen (data, "r");
   if (fh == NULL)
     {
-      printf ("Failed to open for reading %s, exiting...\n", data);
+      printf ("Failed to open for reading %s in srcdir, exiting...\n", data);
       exit (1);
     }
 

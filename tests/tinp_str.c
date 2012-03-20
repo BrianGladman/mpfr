@@ -35,16 +35,16 @@ main (int argc, char *argv[])
   mpfr_init (y);
 
   mpfr_set_prec (x, 15);
-  f = src_fopen ("inp_str.data", "r");
+  f = src_fopen ("inp_str.dat", "r");
   if (f == NULL)
     {
-      printf ("Error, can't open inp_str.data\n");
+      printf ("Error, can't open inp_str.dat\n");
       exit (1);
     }
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i == 0 || mpfr_cmp_ui (x, 31415))
     {
-      printf ("Error in reading 1st line from file inp_str.data (%d)\n", i);
+      printf ("Error in reading 1st line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
@@ -52,7 +52,7 @@ main (int argc, char *argv[])
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if ((i == 0) || mpfr_cmp_ui (x, 31416))
     {
-      printf ("Error in reading 2nd line from file inp_str.data (%d)\n", i);
+      printf ("Error in reading 2nd line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
@@ -60,7 +60,7 @@ main (int argc, char *argv[])
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i != 0)
     {
-      printf ("Error in reading 3rd line from file inp_str.data (%d)\n", i);
+      printf ("Error in reading 3rd line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
@@ -74,7 +74,7 @@ main (int argc, char *argv[])
       getc (f);
       if (mpfr_inp_str (x, f, i, MPFR_RNDN) == 0 || !mpfr_equal_p (x, y))
         {
-          printf ("Error in reading %dth line from file inp_str.data\n", i+2);
+          printf ("Error in reading %dth line from file inp_str.dat\n", i+2);
           mpfr_dump (x);
           exit (1);
         }
