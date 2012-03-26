@@ -388,12 +388,18 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_ASSERTN(expr)  \
    ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY( (ASSERT_FAIL(expr),0) )))
 
-/* MPFR_ASSERTD(expr): assertions that should be checked when testing */
+/* MPFR_ASSERTD(expr): assertions that should be checked when testing.
+   MPFR_DBGRES(assignment): to be used when the result is tested only
+     in an MPFR_ASSERTD expression (in order to avoid a warning, e.g.
+     with GCC's -Wunused-but-set-variable, in non-debug mode).
+ */
 #ifdef WANT_ASSERT
 # define MPFR_EXP_CHECK 1
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
+# define MPFR_DBGRES(A)      (A)
 #else
 # define MPFR_ASSERTD(expr)  ((void) 0)
+# define MPFR_DBGRES(A)      ((void) (A))
 #endif
 
 /* Code to deal with impossible

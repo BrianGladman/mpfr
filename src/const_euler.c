@@ -118,7 +118,7 @@ mpfr_const_euler_S2_aux (mpz_t P, mpz_t Q, mpz_t T, mpfr_t n,
       int inex;
       MPFR_BLOCK_DECL (flags);
 
-      MPFR_BLOCK (flags, inex = mpfr_get_z (P, n, MPFR_RNDN));
+      MPFR_BLOCK (flags, MPFR_DBGRES (inex = mpfr_get_z (P, n, MPFR_RNDN)));
       MPFR_ASSERTD (inex == 0 && ! MPFR_ERANGEFLAG (flags));
       if (a > 1)
         mpz_mul_si (P, P, 1 - (long) a);
