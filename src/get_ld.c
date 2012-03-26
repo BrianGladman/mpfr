@@ -68,7 +68,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          subnormal number. The smallest positive subnormal number is 2^(-16445)
          which is 0.5*2^(-16444) in MPFR thus 0 <= denorm <= 63. */
       denorm = MPFR_UNLIKELY (e <= -16382) ? - e - 16382 + 1 : 0;
-      ASSERT(0 <= denorm && denorm < 64);
+      MPFR_ASSERTD (0 <= denorm && denorm < 64);
 #if GMP_NUMB_BITS >= 64
       ld.s.manl = (tmpmant[0] >> denorm);
       ld.s.manh = (tmpmant[0] >> denorm) >> 32;

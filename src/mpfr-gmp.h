@@ -157,6 +157,7 @@ __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
                                                    const char *));
 
 #define ASSERT_FAIL(expr)  mpfr_assert_fail (__FILE__, __LINE__, #expr)
+/* ASSERT() is for mpfr-longlong.h only. */
 #define ASSERT(expr)       MPFR_ASSERTD(expr)
 
 /* Access fileds of GMP struct */

@@ -78,7 +78,7 @@ putBigEndianData (unsigned char * result, unsigned char * data,
 {
   unsigned int j;
 
-  ASSERT(data_size <= data_max_size);
+  MPFR_ASSERTD (data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
     result[j] = data[data_max_size - j - 1];
 }
@@ -93,7 +93,7 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
-  ASSERT(data_size <= data_max_size);
+  MPFR_ASSERTD (data_size <= data_max_size);
   memcpy (result, data, data_size);
 }
 
@@ -109,7 +109,7 @@ getBigEndianData (unsigned char * result, unsigned char * data,
 {
   unsigned int j;
 
-  ASSERT(data_size <= data_max_size);
+  MPFR_ASSERTD (data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
     result[data_max_size - j - 1] = data[j];
 }
@@ -124,7 +124,7 @@ getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
-  ASSERT(data_size <= data_max_size);
+  MPFR_ASSERTD (data_size <= data_max_size);
   memcpy (result, data, data_size);
 }
 
