@@ -61,6 +61,14 @@ typedef long            mpfr_long;
 typedef unsigned long   mpfr_ulong;
 typedef size_t          mpfr_size_t;
 
+/* Global (possibly TLS) flags. Might also be used in an mpfr_t in the
+   future (there would be room as mpfr_sign_t just needs 1 byte).
+   TODO: The tests currently assume that the flags fits in an unsigned int;
+   this should be cleaned up, e.g. by defining a function that outputs the
+   flags as a string or by using the flags_out function (from tests/tests.c
+   directly). */
+typedef unsigned int    mpfr_flags_t;
+
 /* Definition of rounding modes (DON'T USE MPFR_RNDNA!).
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible

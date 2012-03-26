@@ -251,7 +251,7 @@ typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
 extern "C" {
 #endif
 
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR unsigned int __gmpfr_flags;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
@@ -346,7 +346,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    Note: _op can be either a statement or an expression.
    MPFR_BLOCK_EXCEP should be used only inside a block; it is useful to
    detect some exception in order to exit the block as soon as possible. */
-#define MPFR_BLOCK_DECL(_flags) unsigned int _flags
+#define MPFR_BLOCK_DECL(_flags) mpfr_flags_t _flags
 /* The (void) (_flags) makes sure that _flags is read at least once (it
    makes sense to use MPFR_BLOCK while _flags will never be read in the
    source, so that we wish to avoid the corresponding warning). */
@@ -1173,7 +1173,7 @@ do {                                                                  \
    temporarily */
 
 typedef struct {
-  unsigned int saved_flags;
+  mpfr_flags_t saved_flags;
   mpfr_exp_t saved_emin;
   mpfr_exp_t saved_emax;
 } mpfr_save_expo_t;

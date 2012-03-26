@@ -159,7 +159,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       int r;
       mpfr_t yoverx;
-      unsigned int saved_flags = __gmpfr_flags;
+      mpfr_flags_t saved_flags = __gmpfr_flags;
 
       mpfr_init2 (yoverx, MPFR_PREC (y));
       if (MPFR_LIKELY (mpfr_div_2si (yoverx, y, MPFR_GET_EXP (x) - 1,

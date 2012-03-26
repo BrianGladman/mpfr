@@ -128,7 +128,7 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
   mpfr_t t;
   int res;
   mpfr_prec_t p;
-  unsigned int flags;
+  mpfr_flags_t flags;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return mpfr_cmp_si (x, mpz_sgn (z));

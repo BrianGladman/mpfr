@@ -304,7 +304,8 @@ test_underflow2 (void)
           if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
             {
               printf (ERRTU2 "flags = %u instead of %u\n", b, i,
-                      __gmpfr_flags, (unsigned int) MPFR_FLAGS_INEXACT);
+                      (unsigned int) __gmpfr_flags,
+                      (unsigned int) MPFR_FLAGS_INEXACT);
               err = 1;
             }
           same = i == 15 || (i == 16 && b == 0);

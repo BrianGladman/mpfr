@@ -249,7 +249,8 @@ bug20071104 (void)
     }
   if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
     {
-      printf ("Error in bug20071104: bad flags (%u)\n", __gmpfr_flags);
+      printf ("Error in bug20071104: bad flags (%u)\n",
+              (unsigned int) __gmpfr_flags);
       exit (1);
     }
   mpfr_clears (x, y, (mpfr_ptr) 0);

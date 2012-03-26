@@ -157,7 +157,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
                    mpfr_rnd_t rnd)
 {
   int inexact, sign;
-  unsigned int old_flags = __gmpfr_flags;
+  mpfr_flags_t old_flags = __gmpfr_flags;
 
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (v));
   MPFR_ASSERTD (dir == 0 || dir == 1);

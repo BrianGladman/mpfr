@@ -712,7 +712,8 @@ underflow_up (int extended_emin)
                         printf (" and extended emin");
                       printf ("\nfor precx = %d, precy = %d, %s\n",
                               precx, precy, e3 ? "mpfr_exp_3" : "mpfr_exp");
-                      printf ("Got %u instead of %u.\n", __gmpfr_flags,
+                      printf ("Got %u instead of %u.\n",
+                              (unsigned int) __gmpfr_flags,
                               (unsigned int) MPFR_FLAGS_INEXACT);
                       err = 1;
                     }
@@ -836,7 +837,7 @@ underflow_up (int extended_emin)
                                   precy + i, 1 - 2 * (precy + i));
                         printf (", %s\n", e3 ? "mpfr_exp_3" : "mpfr_exp");
                         printf ("Got %u instead of %u.\n",
-                                __gmpfr_flags, flags);
+                                (unsigned int) __gmpfr_flags, flags);
                         err = 1;
                       }
                     if (rnd == MPFR_RNDU || rnd == MPFR_RNDA || rnd == MPFR_RNDN ?
