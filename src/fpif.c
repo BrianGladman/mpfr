@@ -533,8 +533,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
 
   if (mpfr_regular_p (x))
     {
-      /*used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);*/
-      used_size = (precision + 7) >> 3;
+      used_size = (precision + 7) >> 3; /* ceil(precision/8) */
       buffer = (unsigned char*) (*__gmp_allocate_func) (used_size);
       if (buffer == NULL)
         {

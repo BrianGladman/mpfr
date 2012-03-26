@@ -139,13 +139,13 @@ main (int argc, char *argv[])
   remove (FILE_NAME_RW);
 
   mpfr_init2 (y, 2);
-  status = mpfr_fpif_export(NULL, y);
+  status = mpfr_fpif_export (NULL, y);
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail with a NULL file\n");
       exit(1);
     }
-  status = mpfr_fpif_import(y, NULL);
+  status = mpfr_fpif_import (y, NULL);
   if (status == 0)
     {
       printf ("mpfr_fpif_import did not fail with a NULL file\n");
@@ -161,7 +161,7 @@ main (int argc, char *argv[])
       remove (FILE_NAME_RW);
       exit (1);
     }
-  status = mpfr_fpif_import(y, fh);
+  status = mpfr_fpif_import (y, fh);
   if (status == 0)
     {
       printf ("mpfr_fpif_import did not fail on a empty file\n");
@@ -170,10 +170,10 @@ main (int argc, char *argv[])
       exit(1);
     }
 
-  for(i=0;i<6;i++)
+  for (i = 0; i < 6; i++)
     {
-      rewind(fh);
-      status = fwrite(&badData[i][0], badDataSize[i], 1, fh);
+      rewind (fh);
+      status = fwrite (&badData[i][0], badDataSize[i], 1, fh);
       if (status != 1)
         {
           printf ("Write error on the test file\n");
@@ -181,12 +181,12 @@ main (int argc, char *argv[])
           remove (FILE_NAME_RW);
           exit(1);
         }
-      rewind(fh);
-      status = mpfr_fpif_import(y, fh);
+      rewind (fh);
+      status = mpfr_fpif_import (y, fh);
       if (status == 0)
         {
           printf ("mpfr_fpif_import did not fail on a bad imported data\n");
-          switch(i)
+          switch (i)
             {
             case 0:
               printf ("  not enough precision data\n");
@@ -207,7 +207,7 @@ main (int argc, char *argv[])
               printf ("  no limb data\n");
               break;
             default:
-              printf ("Test fatal error, unknow case\n");
+              printf ("Test fatal error, unknown case\n");
               break;
             }
           fclose (fh);
@@ -228,7 +228,7 @@ main (int argc, char *argv[])
     }
 
   mpfr_init2 (y, 2);
-  status = mpfr_fpif_export(fh, y);
+  status = mpfr_fpif_export (fh, y);
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail on a read only stream\n");
