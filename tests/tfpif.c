@@ -34,6 +34,9 @@ main (int argc, char *argv[])
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
+  unsigned char badData[6][2] = 
+    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
+  int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
   int i;
 
   if (argc != 1)
@@ -134,6 +137,109 @@ main (int argc, char *argv[])
     mpfr_clear (x[i]);
 
   remove (FILE_NAME_RW);
+
+  mpfr_init2 (y, 2);
+  status = mpfr_fpif_export(NULL, y);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_export did not fail with a NULL file\n");
+      exit(1);
+    }
+  status = mpfr_fpif_import(y, NULL);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_import did not fail with a NULL file\n");
+      exit(1);
+    }
+
+  fh = fopen (filenameCompressed, "w+");
+  if (fh == NULL)
+    {
+      printf ("Failed to open for reading/writing %s, exiting...\n",
+            filenameCompressed);
+      fclose (fh);
+      remove (FILE_NAME_RW);
+      exit (1);
+    }
+  status = mpfr_fpif_import(y, fh);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_import did not fail on a empty file\n");
+      fclose (fh);
+      remove (FILE_NAME_RW);
+      exit(1);
+    }
+
+  for(i=0;i<6;i++)
+    {
+      rewind(fh);
+      status = fwrite(&badData[i][0], badDataSize[i], 1, fh);
+      if (status != 1)
+        {
+          printf ("Write error on the test file\n");
+          fclose (fh);
+          remove (FILE_NAME_RW);
+          exit(1);
+        }
+      rewind(fh);
+      status = mpfr_fpif_import(y, fh);
+      if (status == 0)
+        {
+          printf ("mpfr_fpif_import did not fail on a bad imported data\n");
+          switch(i)
+            {
+            case 0:
+              printf ("  not enough precision data\n");
+              break;
+            case 1:
+              printf ("  no exponent data\n");
+              break;
+            case 2:
+              printf ("  too big exponent\n");
+              break;
+            case 3:
+              printf ("  not enough exponent data\n");
+              break;
+            case 4:
+              printf ("  exponent data wrong\n");
+              break;
+            case 5:
+              printf ("  no limb data\n");
+              break;
+            default:
+              printf ("Test fatal error, unknow case\n");
+              break;
+            }
+          fclose (fh);
+          remove (FILE_NAME_RW);
+          exit(1);
+        }
+    }
+
+  fclose (fh);
+  mpfr_clear (y);
+
+  fh = fopen (filenameCompressed, "r");
+  if (fh == NULL)
+    {
+      printf ("Failed to open for reading %s, exiting...\n",
+              filenameCompressed);
+      exit (1);
+    }
+
+  mpfr_init2 (y, 2);
+  status = mpfr_fpif_export(fh, y);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_export did not fail on a read only stream\n");
+      exit(1);
+    }
+
+  fclose (fh);
+  remove (FILE_NAME_RW);
+
+  mpfr_clear (y);
+  
   tests_end_mpfr ();
   return 0;
 }

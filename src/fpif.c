@@ -455,7 +455,11 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
 {
   int status;
   unsigned char *buf;
+  unsigned char *bufResult;
   size_t used_size, buf_size;
+
+  if (fh == NULL)
+    return -1;
 
   buf_size = MAX_VARIABLE_STORAGE(sizeof(mpfr_exp_t), mpfr_get_prec (x));
   buf = (unsigned char*) (*__gmp_allocate_func) (buf_size);
@@ -472,7 +476,13 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
       return -1;
     }
   used_size = buf_size;
-  buf = mpfr_fpif_store_exponent (buf, &used_size, x);
+  bufResult = mpfr_fpif_store_exponent (buf, &used_size, x);
+  if (bufResult == NULL)
+    {
+      (*__gmp_free_func) (buf, buf_size);
+      return -1;
+    }
+  buf = bufResult;
   used_size > buf_size ? buf_size = used_size : 0;
   status = fwrite (buf, used_size, 1, fh);
   if (status != 1)
@@ -523,8 +533,13 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
 
   if (mpfr_regular_p (x))
     {
-      used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);
+      /*used_size = (precision / 8) + ((precision % 8) == 0 ? 0 : 1);*/
+      used_size = (precision + 7) >> 3;
       buffer = (unsigned char*) (*__gmp_allocate_func) (used_size);
+      if (buffer == NULL)
+        {
+          return -1;
+        }
       status = fread (buffer, used_size, 1, fh);
       if (status != 1)
         {
