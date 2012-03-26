@@ -661,7 +661,12 @@ limited stack size) or an assertion failure (with unlimited stack size,
 e.g. with "make check").
 
 Do not use code with side effects inside MPFR_ASSERTD or MPFR_ASSERTN,
-as assertion checking can be disabled.
+as assertion checking can be disabled. If a variable is set only to test
+it in an MPFR_ASSERTD expression, the MPFR_DBGRES macro should be used
+with the assignment as its argument, e.g.
+  int inex;
+  MPFR_DBGRES (inex = mpfr_set (y, x, rnd));
+  MPFR_ASSERTD (inex == 0);
 
 Exception handling (overflow/underflow in particular):
   * Warning: To detect exceptions and/or possible error loss due to
