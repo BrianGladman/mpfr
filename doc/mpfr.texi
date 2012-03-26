@@ -2525,13 +2525,15 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 @end deftypefun
 
 @deftypefun int mpfr_fmod (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fmodquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 Set @var{r} to the value of @math{@var{x} - @var{n}@var{y}}, rounded
 according to the direction @var{rnd}, where @var{n} is the integer quotient
 of @var{x} divided by @var{y}, defined as follows: @var{n} is rounded
-toward zero for @code{mpfr_fmod}, and to the nearest integer (ties rounded
-to even) for @code{mpfr_remainder} and @code{mpfr_remquo}.
+toward zero for @code{mpfr_fmod} and @code{mpfr_fmodquo},
+and to the nearest integer (ties rounded to even) for @code{mpfr_remainder}
+and @code{mpfr_remquo}.
 
 Special values are handled as described in Section F.9.7.1 of
 the ISO C99 standard:
@@ -2541,7 +2543,7 @@ to the precision of @var{r}.
 If @var{r} is zero, it has the sign of @var{x}.
 The return value is the ternary value corresponding to @var{r}.
 
-Additionally, @code{mpfr_remquo} stores
+Additionally, @code{mpfr_fmodquo} and @code{mpfr_remquo} store
 the low significant bits from the quotient @var{n} in @var{*q}
 (more precisely the number of bits in a @code{long} minus one),
 with the sign of @var{x} divided by @var{y}

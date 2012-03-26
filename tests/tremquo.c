@@ -1,4 +1,4 @@
-/* tremquo -- test file for mpfr_remquo and mpfr_remainder
+/* tremquo -- test file for mpfr_remquo, mpfr_remainder and mpfr_fmodquo.
 
 Copyright 2007, 2008, 2009, 2010, 2011, 2012 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -87,30 +87,43 @@ main (int argc, char *argv[])
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (r));
 
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_set_nan (y);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (r));
 
   mpfr_set_inf (x, 1); /* +Inf */
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (r));
 
   mpfr_set_inf (x, 1); /* +Inf */
   mpfr_set_ui (y, 0, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (r));
 
   mpfr_set_inf (x, 1); /* +Inf */
   mpfr_set_inf (y, 1);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (r));
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_POS (r));
+  MPFR_ASSERTN (q[0] == (long) 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_POS (r));
   MPFR_ASSERTN (q[0] == (long) 0);
 
@@ -120,10 +133,16 @@ main (int argc, char *argv[])
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_NEG (r));
   MPFR_ASSERTN (q[0] == (long) 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_NEG (r));
+  MPFR_ASSERTN (q[0] == (long) 0);
 
   mpfr_set_ui (x, 17, MPFR_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp (r, x) == 0);
+  MPFR_ASSERTN (q[0] == (long) 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp (r, x) == 0);
   MPFR_ASSERTN (q[0] == (long) 0);
 
@@ -131,10 +150,15 @@ main (int argc, char *argv[])
   mpfr_set_ui (y, 0, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (r));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (r));
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_set_ui (y, 17, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_POS (r));
+  MPFR_ASSERTN (q[0] == (long) 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_POS (r));
   MPFR_ASSERTN (q[0] == (long) 0);
 
@@ -144,38 +168,97 @@ main (int argc, char *argv[])
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_NEG (r));
   MPFR_ASSERTN (q[0] == (long) 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 0) == 0 && MPFR_IS_NEG (r));
+  MPFR_ASSERTN (q[0] == (long) 0);
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
-  /* check four possible sign combinations */
+  /* check four possible sign combinations for 42/17 */
   mpfr_set_ui (x, 42, MPFR_RNDN);
   mpfr_set_ui (y, 17, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 8) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 8) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+
   mpfr_set_si (x, -42, MPFR_RNDN);
   mpfr_set_ui (y, 17, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
   MPFR_ASSERTN (q[0] == (long) -2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
+  MPFR_ASSERTN (q[0] == (long) -2);
+
   mpfr_set_si (x, -42, MPFR_RNDN);
   mpfr_set_si (y, -17, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+
   mpfr_set_ui (x, 42, MPFR_RNDN);
   mpfr_set_si (y, -17, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 8) == 0);
+  MPFR_ASSERTN (q[0] == (long) -2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (r, 8) == 0);
   MPFR_ASSERTN (q[0] == (long) -2);
 
+  /* same tests for 43/17, rounded to 3 to nearest, and to 2 to zero */
+  mpfr_set_ui (x, 43, MPFR_RNDN);
+  mpfr_set_ui (y, 17, MPFR_RNDN);
+  mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
+  MPFR_ASSERTN (q[0] == (long) 3);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 9) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+
+  mpfr_set_si (x, -43, MPFR_RNDN);
+  mpfr_set_ui (y, 17, MPFR_RNDN);
+  mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, 8) == 0);
+  MPFR_ASSERTN (q[0] == (long) -3);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -9) == 0);
+  MPFR_ASSERTN (q[0] == (long) -2);
+
+  mpfr_set_si (x, -43, MPFR_RNDN);
+  mpfr_set_si (y, -17, MPFR_RNDN);
+  mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, 8) == 0);
+  MPFR_ASSERTN (q[0] == (long) 3);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -9) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+
+  mpfr_set_ui (x, 43, MPFR_RNDN);
+  mpfr_set_si (y, -17, MPFR_RNDN);
+  mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -8) == 0);
+  MPFR_ASSERTN (q[0] == (long) -3);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 9) == 0);
+  MPFR_ASSERTN (q[0] == (long) -2);
+
+  /* other tests */
   mpfr_set_prec (x, 100);
   mpfr_set_prec (y, 50);
   mpfr_set_ui (x, 42, MPFR_RNDN);
   mpfr_nextabove (x); /* 42 + 2^(-94) */
   mpfr_set_ui (y, 21, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -94) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -94) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
 
@@ -185,6 +268,9 @@ main (int argc, char *argv[])
   mpfr_nextabove (x); /* 42 + 2^(-44) */
   mpfr_set_ui (y, 21, MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -44) == 0);
+  MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -44) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
 
@@ -197,6 +283,11 @@ main (int argc, char *argv[])
   /* r should be 42 - 2*(21 + 2^(-45)) = -2^(-44) */
   MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -44) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* r should be 42 - (21 + 2^(-45) = 21 - 2^(-45) */
+  mpfr_sub_ui (r, r, 21, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -45) == 0);
+  MPFR_ASSERTN (q[0] == (long) 1);
 
   mpfr_set_prec (x, 50);
   mpfr_set_prec (y, 100);
@@ -207,12 +298,20 @@ main (int argc, char *argv[])
   /* r should be 42 - 2*(21 + 2^(-95)) = -2^(-94) */
   MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -94) == 0);
   MPFR_ASSERTN (q[0] == (long) 2);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* r should be 42 - (21 + 2^(-95) = 21 - 2^(-94), which rounded to 53 bits
+     should give 21 */
+  MPFR_ASSERTN (mpfr_cmp_ui (r, 21) == 0);
+  MPFR_ASSERTN (q[0] == (long) 1);
 
   /* exercise large quotient */
   mpfr_set_ui_2exp (x, 1, 65, MPFR_RNDN);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   /* quotient is 2^65 */
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0);
+  MPFR_ASSERTN (q[0] % 1073741824L == 0L);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0);
   MPFR_ASSERTN (q[0] % 1073741824L == 0L);
 
@@ -227,6 +326,10 @@ main (int argc, char *argv[])
   /* q should be 41803643793084085130, r should be 605/2048 */
   MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 605, -11) == 0);
   MPFR_ASSERTN ((q[0] > 0) && ((q[0] % 1073741824L) == 733836170L));
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* q should be 41803643793084085130, r should be 605/2048 */
+  MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 605, -11) == 0);
+  MPFR_ASSERTN ((q[0] > 0) && ((q[0] % 1073741824L) == 733836170L));
 
   /* check cases where quotient is 1.5 +/- eps */
   mpfr_set_prec (x, 65);
@@ -238,6 +341,11 @@ main (int argc, char *argv[])
   /* x/y = 1.5, quotient should be 2 (even rule), remainder should be -1 */
   MPFR_ASSERTN (mpfr_cmp_si (r, -1) == 0);
   MPFR_ASSERTN (q[0] == 2L);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* x/y = 1.5, quotient should be 1, remainder should be 1 */
+  MPFR_ASSERTN (mpfr_cmp_si (r, 1) == 0);
+  MPFR_ASSERTN (q[0] == 1L);
+
   mpfr_set_ui (x, 3, MPFR_RNDN);
   mpfr_nextabove (x); /* 3 + 2^(-63) */
   mpfr_set_ui (y, 2, MPFR_RNDN);
@@ -246,6 +354,14 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (mpfr_add_ui (r, r, 1, MPFR_RNDN) == 0);
   MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -63) == 0);
   MPFR_ASSERTN (q[0] == 2L);
+  mpfr_set_prec (r, 64);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* x/y = 1.5 + 2^(-64), quo should be 1, r should be 1 + 2^(-63) */
+  MPFR_ASSERTN (mpfr_sub_ui (r, r, 1, MPFR_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 1, -63) == 0);
+  MPFR_ASSERTN (q[0] == 1L);
+
+  mpfr_set_prec (r, 63);
   mpfr_set_ui (x, 3, MPFR_RNDN);
   mpfr_set_ui (y, 2, MPFR_RNDN);
   mpfr_nextabove (y); /* 2 + 2^(-63) */
@@ -254,10 +370,16 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (mpfr_sub_ui (r, r, 1, MPFR_RNDN) == 0);
   MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -63) == 0);
   MPFR_ASSERTN (q[0] == 1L);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
+  /* x/y = 1.5 - eps, quo should be 1, r should be 1 - 2^(-63) */
+  MPFR_ASSERTN (mpfr_sub_ui (r, r, 1, MPFR_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -63) == 0);
+  MPFR_ASSERTN (q[0] == 1L);
 
   /* bug founds by Kaveh Ghazi, 3 May 2007 */
   mpfr_set_ui (x, 2, MPFR_RNDN);
   mpfr_set_ui (y, 3, MPFR_RNDN);
+  /* quotient rounded to nearest is 1, thus remainder is -1 */
   mpfr_remainder (r, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, -1) == 0);
 
@@ -275,6 +397,9 @@ main (int argc, char *argv[])
   mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
   mpfr_set_ui_2exp (y, 1, mpfr_get_emin (), MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_SIGN (r) > 0);
+  MPFR_ASSERTN (q[0] == 0);
+  mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_SIGN (r) > 0);
   MPFR_ASSERTN (q[0] == 0);
 
