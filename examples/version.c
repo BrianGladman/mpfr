@@ -121,6 +121,7 @@ int main (void)
 #ifdef _MPFR_EXP_FORMAT
   printf ("_MPFR_EXP_FORMAT = %d\n", (int) _MPFR_EXP_FORMAT);
 #endif
+  printf ("sizeof(mpfr_t) = %d\n", (int) sizeof(mpfr_t));
 
   failure_test ();
 
