@@ -34,7 +34,7 @@ main (int argc, char *argv[])
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
-  unsigned char badData[6][2] = 
+  unsigned char badData[6][2] =
     { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
   int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
   int i;
@@ -239,7 +239,7 @@ main (int argc, char *argv[])
   remove (FILE_NAME_RW);
 
   mpfr_clear (y);
-  
+
   tests_end_mpfr ();
   return 0;
 }
