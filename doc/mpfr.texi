@@ -3338,7 +3338,11 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_fmod} in MPFR 2.4.
 
+@item @code{mpfr_fmodquo} in MPFR 3.2.
+
 @item @code{mpfr_fms} in MPFR 2.3.
+
+@item @code{mpfr_fpif_export} and @code{mpfr_fpif_import} in MPFR 3.2.
 
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
