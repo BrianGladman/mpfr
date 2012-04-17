@@ -669,6 +669,12 @@ floating-point operation, in case the exact result can not be represented
 exactly in the destination significand;
 the corresponding C data type is @code{mpfr_rnd_t}.
 
+@cindex Group of flags
+@tindex @code{mpfr_flags_t}
+MPFR has a global (or per-thread) flag for each supported exception and
+provides operations on flags (@ref{Exceptions}). The C data type is used
+to represent a group of flags (or a mask).
+
 @node MPFR Variable Conventions, Rounding Modes, Nomenclature and Types, MPFR Basics
 @comment  node-name,  next,  previous,  up
 @section MPFR Variable Conventions
@@ -822,11 +828,20 @@ gives +Inf.
 @comment  node-name,  next,  previous,  up
 @section Exceptions
 
-MPFR supports 6 exception types:
+MPFR defines a global (or per-thread) flag for each supported exception.
+A macro evaluating to a power of two is associated with each flag and
+exception, in order to be able to specify a group of flags (or a mask)
+by OR'ing such macros.
+
+Flags can be cleared (lowered), set (raised), and tested by functions
+described in @ref{Exception Related Functions}.
+
+The supported exceptions are listed below. The macro associated with
+each exception is in parentheses.
 
 @itemize @bullet
 
-@item Underflow:
+@item Underflow (@code{MPFR_FLAGS_UNDERFLOW}):
 An underflow occurs when the exact result of a function is a non-zero
 real number and the result obtained after the rounding, assuming an
 unbounded exponent range (for the rounding), has an exponent smaller
@@ -849,7 +864,7 @@ it is rounded to @m{0.5 @times 2^e, 0.5 times 2 to @var{e}}, which is
 representable in the current exponent range. As a consequence, this will
 not yield an underflow in MPFR.
 
-@item Overflow:
+@item Overflow (@code{MPFR_FLAGS_OVERFLOW}):
 An overflow occurs when the exact result of a function is a non-zero
 real number and the result obtained after the rounding, assuming an
 unbounded exponent range (for the rounding), has an exponent larger
@@ -858,18 +873,18 @@ mode, the result is infinite.
 Note: unlike the underflow case, there is only one possible definition of
 overflow here.
 
-@item Divide-by-zero:
+@item Divide-by-zero (@code{MPFR_FLAGS_DIVBY0}):
 An exact infinite result is obtained from finite inputs.
 
-@item NaN:
+@item NaN (@code{MPFR_FLAGS_NAN}):
 A NaN exception occurs when the result of a function is NaN.
 @c NaN is defined above. So, we don't say anything more.
 
-@item Inexact:
+@item Inexact (@code{MPFR_FLAGS_INEXACT}):
 An inexact exception occurs when the result of a function cannot be
 represented exactly and must be rounded.
 
-@item Range error:
+@item Range error (@code{MPFR_FLAGS_ERANGE}):
 A range exception occurs when a function that does not return a MPFR
 number (such as comparisons and conversions to an integer) has an
 invalid result (e.g., an argument is NaN in @code{mpfr_cmp}, or a
@@ -877,8 +892,9 @@ conversion to an integer cannot be represented in the target type).
 
 @end itemize
 
-MPFR has a global flag for each exception, which can be cleared, set
-or tested by functions described in @ref{Exception Related Functions}.
+Moreover, the group consisting of all the flags is represented by
+the @code{MPFR_FLAGS_ALL} macro (if new flags are added in future
+MPFR versions, they will be added to this macro too).
 
 Differences with the ISO C99 standard:
 
@@ -2948,8 +2964,14 @@ in the subnormal range, which may not be the case for your hardware.
 @deftypefunx void mpfr_clear_nanflag (void)
 @deftypefunx void mpfr_clear_inexflag (void)
 @deftypefunx void mpfr_clear_erangeflag (void)
-Clear the underflow, overflow, divide-by-zero, invalid,
+Clear (lower) the underflow, overflow, divide-by-zero, invalid,
 inexact and @emph{erange} flags.
+@end deftypefun
+
+@deftypefun void mpfr_clear_flags (void)
+Clear (lower) all global flags (underflow, overflow, divide-by-zero, invalid,
+inexact, @emph{erange}). Note: a group of flags can be cleared by using
+@code{mpfr_flags_restore}.
 @end deftypefun
 
 @deftypefun void mpfr_set_underflow (void)
@@ -2958,13 +2980,8 @@ inexact and @emph{erange} flags.
 @deftypefunx void mpfr_set_nanflag (void)
 @deftypefunx void mpfr_set_inexflag (void)
 @deftypefunx void mpfr_set_erangeflag (void)
-Set the underflow, overflow, divide-by-zero, invalid,
+Set (raise) the underflow, overflow, divide-by-zero, invalid,
 inexact and @emph{erange} flags.
-@end deftypefun
-
-@deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, divide-by-zero, invalid,
-inexact, @emph{erange}).
 @end deftypefun
 
 @deftypefun int mpfr_underflow_p (void)
@@ -2975,6 +2992,28 @@ inexact, @emph{erange}).
 @deftypefunx int mpfr_erangeflag_p (void)
 Return the corresponding (underflow, overflow, divide-by-zero, invalid,
 inexact, @emph{erange}) flag, which is non-zero iff the flag is set.
+@end deftypefun
+
+@deftypefun void mpfr_flags_clear (mpfr_flags_t @var{mask})
+Clear (lower) the group of flags specified by @var{mask}.
+@end deftypefun
+
+@deftypefun void mpfr_flags_set (mpfr_flags_t @var{mask})
+Set (raise) the group of flags specified by @var{mask}.
+@end deftypefun
+
+@deftypefun mpfr_flags_t mpfr_flags_test (mpfr_flags_t @var{mask})
+Return the flags specified by @var{mask}. To test whether any flag from
+@var{mask} is set, compare the return value to 0.
+@end deftypefun
+
+@deftypefun mpfr_flags_t mpfr_flags_save (void)
+Return all the flags. It is equivalent to
+@code{mpfr_flags_test(MPFR_FLAGS_ALL)}.
+@end deftypefun
+
+@deftypefun void mpfr_flags_restore (mpfr_flags_t @var{flags}, mpfr_flags_t @var{mask})
+Restore the status of the flags from @var{flags} specified by @var{mask}.
 @end deftypefun
 
 @node Compatibility with MPF, Custom Interface, Exception Related Functions, MPFR Interface
@@ -3286,6 +3325,11 @@ compatibility (this might change in future versions), using:
 The rounding mode ``round away from zero'' (@code{MPFR_RNDA}) was added in
 MPFR 3.0 (however no rounding mode @code{GMP_RNDA} exists).
 
+The flags-related macros, whose name starts with @code{MPFR_FLAGS_},
+were added in MPFR 3.2 (for the new functions @code{mpfr_flags_clear},
+@code{mpfr_flags_restore}, @code{mpfr_flags_set} and @code{mpfr_flags_test},
+in particular).
+
 @node Added Functions, Changed Functions, Type and Macro Changes, API Compatibility
 @section Added Functions
 
@@ -3335,6 +3379,10 @@ use @code{mpfr_custom_get_mantissa}.
 @item @code{mpfr_divby0_p} in MPFR 3.1 (new divide-by-zero exception).
 
 @item @code{mpfr_div_d} in MPFR 2.4.
+
+@item @code{mpfr_flags_clear}, @code{mpfr_flags_restore},
+@code{mpfr_flags_save}, @code{mpfr_flags_set} and @code{mpfr_flags_test}
+in MPFR 3.2.
 
 @item @code{mpfr_fmod} in MPFR 2.4.
 
