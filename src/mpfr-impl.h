@@ -333,6 +333,13 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define mpfr_divby0_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_DIVBY0))
 
+/* Use a do-while statement for the MPFR_SET_ERANGE() macro in order
+   to prevent one from using this macro in an expression, as the
+   sequence point rules could be broken if __gmpfr_flags is assigned
+   twice in the same expression (via macro expansions). */
+#define MPFR_SET_ERANGE() \
+  do __gmpfr_flags |= MPFR_FLAGS_ERANGE; while (0)
+
 /* Testing an exception flag correctly is tricky. There are mainly two
    pitfalls: First, one needs to remember to clear the corresponding
    flag, in case it was set before the function call or during some
@@ -826,8 +833,6 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_RET(I) return \
   (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
-
-#define MPFR_SET_ERANGE() (__gmpfr_flags |= MPFR_FLAGS_ERANGE)
 
 #define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
 #define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
