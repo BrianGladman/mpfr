@@ -291,35 +291,23 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
  }
 #endif
 
-/* Flags of __gmpfr_flags */
-#define MPFR_FLAGS_UNDERFLOW 1
-#define MPFR_FLAGS_OVERFLOW 2
-#define MPFR_FLAGS_NAN 4
-#define MPFR_FLAGS_INEXACT 8
-#define MPFR_FLAGS_ERANGE 16
-#define MPFR_FLAGS_DIVBY0 32
-#define MPFR_FLAGS_ALL 63
-
 /* Replace some common functions for direct access to the global vars */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
 #define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
 #define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
-#define mpfr_clear_flags() \
-  ((void) (__gmpfr_flags = 0))
-#define mpfr_clear_underflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
-#define mpfr_clear_overflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
-#define mpfr_clear_nanflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
-#define mpfr_clear_inexflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
-#define mpfr_clear_erangeflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
-#define mpfr_clear_divby0() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0))
+/* Flags related macros. */
+/* Note: Function-like macros that modify __gmpfr_flags are not defined
+   because of the risk to break the sequence point rules if two such
+   macros are used in the same expression (without a sequence point
+   between). For instance, mpfr_sgn currently uses mpfr_set_erangeflag(),
+   which mustn't be implemented as a macro for this reason. */
+
+#define mpfr_flags_test(mask) \
+  (__gmpfr_flags & (mpfr_flags_t) (mask))
+
+#if MPFR_FLAGS_ALL <= INT_MAX
 #define mpfr_underflow_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
 #define mpfr_overflow_p() \
@@ -332,6 +320,14 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
 #define mpfr_divby0_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_DIVBY0))
+#endif
+
+/* Use a do-while statement for the MPFR_SET_ERANGE() macro in order
+   to prevent one from using this macro in an expression, as the
+   sequence point rules could be broken if __gmpfr_flags is assigned
+   twice in the same expression (via macro expansions). */
+#define MPFR_SET_ERANGE() \
+  do __gmpfr_flags |= MPFR_FLAGS_ERANGE; while (0)
 
 /* Testing an exception flag correctly is tricky. There are mainly two
    pitfalls: First, one needs to remember to clear the corresponding
@@ -826,8 +822,6 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_RET(I) return \
   (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
-
-#define MPFR_SET_ERANGE() (__gmpfr_flags |= MPFR_FLAGS_ERANGE)
 
 #define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
 #define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))

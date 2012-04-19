@@ -99,6 +99,44 @@ mpfr_get_emax_max (void)
 }
 
 
+#undef mpfr_flags_clear
+
+void mpfr_flags_clear (mpfr_flags_t mask)
+{
+  __gmpfr_flags &= MPFR_FLAGS_ALL ^ mask;
+}
+
+#undef mpfr_flags_set
+
+void mpfr_flags_set (mpfr_flags_t mask)
+{
+  __gmpfr_flags |= mask;
+}
+
+#undef mpfr_flags_test
+
+mpfr_flags_t mpfr_flags_test (mpfr_flags_t mask)
+{
+  return __gmpfr_flags & mask;
+}
+
+#undef mpfr_flags_save
+
+mpfr_flags_t mpfr_flags_save (void)
+{
+  return __gmpfr_flags;
+}
+
+#undef mpfr_flags_restore
+
+void mpfr_flags_restore (mpfr_flags_t flags, mpfr_flags_t mask)
+{
+  __gmpfr_flags =
+    (__gmpfr_flags & (MPFR_FLAGS_ALL ^ mask)) |
+    (flags & mask);
+}
+
+
 #undef mpfr_clear_flags
 
 void
@@ -259,11 +297,15 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
   MPFR_RET (t);  /* propagate inexact ternary value, unlike most functions */
 }
 
+
+/* Note: The assertions below should be evaluated at compile time. */
+
 #undef mpfr_underflow_p
 
 int
 mpfr_underflow_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_UNDERFLOW <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_UNDERFLOW;
 }
 
@@ -272,6 +314,7 @@ mpfr_underflow_p (void)
 int
 mpfr_overflow_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_OVERFLOW <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_OVERFLOW;
 }
 
@@ -280,6 +323,7 @@ mpfr_overflow_p (void)
 int
 mpfr_divby0_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_DIVBY0 <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_DIVBY0;
 }
 
@@ -288,6 +332,7 @@ mpfr_divby0_p (void)
 int
 mpfr_nanflag_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_NAN <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_NAN;
 }
 
@@ -296,6 +341,7 @@ mpfr_nanflag_p (void)
 int
 mpfr_inexflag_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_INEXACT <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_INEXACT;
 }
 
@@ -304,8 +350,10 @@ mpfr_inexflag_p (void)
 int
 mpfr_erangeflag_p (void)
 {
+  MPFR_ASSERTN (MPFR_FLAGS_ERANGE <= INT_MAX);
   return __gmpfr_flags & MPFR_FLAGS_ERANGE;
 }
+
 
 /* #undef mpfr_underflow */
 
