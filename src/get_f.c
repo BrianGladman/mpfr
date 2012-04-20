@@ -44,7 +44,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         }
       else if (MPFR_IS_NAN (y))
         {
-          MPFR_SET_ERANGE ();
+          MPFR_SET_ERANGEFLAG ();
           return 0;
         }
       else /* y is plus infinity (resp. minus infinity), set x to the maximum
@@ -53,7 +53,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           int i;
           mp_limb_t *xp;
 
-          MPFR_SET_ERANGE ();
+          MPFR_SET_ERANGEFLAG ();
 
           /* To this day, [mp_exp_t] and mp_size_t are #defined as the same
              type */

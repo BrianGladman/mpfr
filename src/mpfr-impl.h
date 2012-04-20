@@ -306,18 +306,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
 #define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
-#define mpfr_clear_flags() \
-  ((void) (__gmpfr_flags = 0))
-#define mpfr_clear_underflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
-#define mpfr_clear_overflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
-#define mpfr_clear_nanflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
-#define mpfr_clear_inexflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
-#define mpfr_clear_erangeflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
 #define mpfr_clear_divby0() \
   ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0))
 #define mpfr_underflow_p() \
@@ -333,11 +321,24 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define mpfr_divby0_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_DIVBY0))
 
-/* Use a do-while statement for the MPFR_SET_ERANGE() macro in order
-   to prevent one from using this macro in an expression, as the
-   sequence point rules could be broken if __gmpfr_flags is assigned
-   twice in the same expression (via macro expansions). */
-#define MPFR_SET_ERANGE() \
+/* Use a do-while statement for the following macros in order to prevent
+   one from using them in an expression, as the sequence point rules could
+   be broken if __gmpfr_flags is assigned twice in the same expression
+   (via macro expansions). It is not clear whether an expression with
+   sequence points, like (void) (0, __gmpfr_flags = 0), would avoid UB. */
+#define MPFR_CLEAR_FLAGS() \
+  do __gmpfr_flags = 0; while (0)
+#define MPFR_CLEAR_UNDERFLOW() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW; while (0)
+#define MPFR_CLEAR_OVERFLOW() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW; while (0)
+#define MPFR_CLEAR_NANFLAG() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN; while (0)
+#define MPFR_CLEAR_INEXFLAG() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT; while (0)
+#define MPFR_CLEAR_ERANGEFLAG() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE; while (0)
+#define MPFR_SET_ERANGEFLAG() \
   do __gmpfr_flags |= MPFR_FLAGS_ERANGE; while (0)
 
 /* Testing an exception flag correctly is tricky. There are mainly two
@@ -360,7 +361,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_BLOCK(_flags,_op)          \
   do                                    \
     {                                   \
-      mpfr_clear_flags ();              \
+      MPFR_CLEAR_FLAGS ();              \
       _op;                              \
       (_flags) = __gmpfr_flags;         \
       (void) (_flags);                  \
@@ -1465,7 +1466,7 @@ typedef struct {
         if (MPFR_UNLIKELY (_err > MPFR_PREC (_y) + 1))                  \
           {                                                             \
             int _inexact;                                               \
-            mpfr_clear_flags ();                                        \
+            MPFR_CLEAR_FLAGS ();                                        \
             _inexact = mpfr_round_near_x (_y,(v),_err,(dir),(rnd));     \
             if (_inexact != 0)                                          \
               {                                                         \

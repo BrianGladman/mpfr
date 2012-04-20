@@ -204,7 +204,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
           goto retry;
         }
 
-      mpfr_clear_flags ();
+      MPFR_CLEAR_FLAGS ();
       mpfr_sqrt (u, u, MPFR_RNDN);
       mpfr_div_2ui (v, v, 1, MPFR_RNDN);
 
@@ -248,7 +248,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                  method. */
               MPFR_LOG_MSG (("4*eq > p -> underflow\n", 0));
               mpfr_clear (w);
-              mpfr_clear_underflow ();
+              MPFR_CLEAR_UNDERFLOW ();
             }
           /* U(k) increases, so that U.V can overflow (but not underflow). */
           MPFR_BLOCK (flags2, mpfr_mul (uf, u, v, MPFR_RNDN););
@@ -264,7 +264,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
               MPFR_LOG_MSG (("Overflow in iteration n = %lu, scaleit = %"
                              MPFR_EXP_FSPEC "d (%" MPFR_EXP_FSPEC "d)\n",
                              n, scaleit, scale2));
-              mpfr_clear_overflow ();
+              MPFR_CLEAR_OVERFLOW ();
               goto retry2;
             }
           mpfr_sqrt (u, uf, MPFR_RNDN);

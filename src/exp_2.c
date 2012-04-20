@@ -222,7 +222,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q - err, precy, rnd_mode)))
             {
-              mpfr_clear_flags ();
+              MPFR_CLEAR_FLAGS ();
               inexact = mpfr_mul_2si (y, s, n, rnd_mode);
               break;
             }

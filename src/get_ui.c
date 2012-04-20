@@ -33,7 +33,7 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (!mpfr_fits_ulong_p (f, rnd)))
     {
-      MPFR_SET_ERANGE ();
+      MPFR_SET_ERANGEFLAG ();
       return MPFR_IS_NAN (f) || MPFR_IS_NEG (f) ?
         (unsigned long) 0 : ULONG_MAX;
     }

@@ -38,7 +38,7 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (!mpfr_fits_uintmax_p (f, rnd)))
     {
-      MPFR_SET_ERANGE ();
+      MPFR_SET_ERANGEFLAG ();
       return MPFR_IS_NAN (f) || MPFR_IS_NEG (f) ?
         (uintmax_t) 0 : MPFR_UINTMAX_MAX;
     }

@@ -41,7 +41,7 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
     {
       if (MPFR_IS_NAN (b) || MPFR_IS_NAN (c))
         {
-          MPFR_SET_ERANGE ();
+          MPFR_SET_ERANGEFLAG ();
           return 0;
         }
       else if (MPFR_IS_INF(b))

@@ -38,7 +38,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (!mpfr_fits_intmax_p (f, rnd)))
     {
-      MPFR_SET_ERANGE ();
+      MPFR_SET_ERANGEFLAG ();
       return MPFR_IS_NAN (f) ? 0 :
         MPFR_IS_NEG (f) ? MPFR_INTMAX_MIN : MPFR_INTMAX_MAX;
     }

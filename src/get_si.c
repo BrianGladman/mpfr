@@ -31,7 +31,7 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (!mpfr_fits_slong_p (f, rnd)))
     {
-      MPFR_SET_ERANGE ();
+      MPFR_SET_ERANGEFLAG ();
       return MPFR_IS_NAN (f) ? 0 :
         MPFR_IS_NEG (f) ? LONG_MIN : LONG_MAX;
     }
