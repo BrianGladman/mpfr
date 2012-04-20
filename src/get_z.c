@@ -33,7 +33,7 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
     {
       if (MPFR_UNLIKELY (MPFR_NOTZERO (f)))
-        MPFR_SET_ERANGE ();
+        MPFR_SET_ERANGEFLAG ();
       mpz_set_ui (z, 0);
       /* The ternary value is 0 even for infinity. Giving the rounding
          direction in this case would not make much sense anyway, and

@@ -367,7 +367,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           MPFR_ASSERTN (MPFR_PREC_MIN > 1);
           mpfr_nextabove (z);
         }
-      mpfr_clear_flags ();
+      MPFR_CLEAR_FLAGS ();
       inex2 = mpfr_mul_2si (z, z, lk, rnd_mode);
       if (inex2)  /* underflow or overflow */
         {
@@ -665,7 +665,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
            possible (due to basic overflow and underflow checking above, as
            the result is ~ 2^tmp), and an underflow is not possible either
            because b is an integer (thus either 0 or >= 1). */
-        mpfr_clear_flags ();
+        MPFR_CLEAR_FLAGS ();
         inexact = mpfr_exp2 (z, tmp, rnd_mode);
         mpfr_clear (tmp);
         if (sgnx < 0 && is_odd (y))
@@ -701,7 +701,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     MPFR_ASSERTN (MPFR_IS_PURE_FP (t));
     err = MPFR_GET_EXP (y) + MPFR_GET_EXP (t);
     mpfr_clear (t);
-    mpfr_clear_flags ();
+    MPFR_CLEAR_FLAGS ();
     MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (z, __gmpfr_one, - err, 0,
                                       (MPFR_SIGN (y) > 0) ^ (cmp_x_1 < 0),
                                       rnd_mode, expo, {});
