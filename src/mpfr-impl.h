@@ -324,7 +324,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 /* Use a do-while statement for the following macros in order to prevent
    one from using them in an expression, as the sequence point rules could
    be broken if __gmpfr_flags is assigned twice in the same expression
-   (via macro expansions). It is not clear whether an expression with
+   (via macro expansions). For instance, the mpfr_sgn macro currently uses
+   mpfr_set_erangeflag(), which mustn't be implemented as a function-like
+   macro for this reason. It is not clear whether an expression with
    sequence points, like (void) (0, __gmpfr_flags = 0), would avoid UB. */
 #define MPFR_CLEAR_FLAGS() \
   do __gmpfr_flags = 0; while (0)
