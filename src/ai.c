@@ -178,8 +178,11 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         assumed_exponent = 10;
     }
 
-  wprec = MPFR_ADD_PREC (prec, MPFR_INT_CEIL_LOG2 (prec) + 5 + cond
-                         + assumed_exponent);
+  {
+    mpfr_prec_t incr =
+      MPFR_INT_CEIL_LOG2 (prec) + 5 + cond + assumed_exponent;
+    wprec = MPFR_ADD_PREC (prec, incr);
+  }
 
   mpfr_init (ti);
   mpfr_init (tip1);
