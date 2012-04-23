@@ -1043,6 +1043,10 @@ extern unsigned char *mpfr_stack;
  *   Computes ceil(log2(x)) only for x integer (unsigned long)
  *   Undefined if x is 0 */
 #if __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0)
+/* Note: This macro MPFR_INT_CEIL_LOG2 shouldn't be used in an MPFR_ASSERT*
+   macro, either directly or indirectly via other macros, otherwise it can
+   yield an error due to a too large stringized expression in ASSERT_FAIL.
+   A static inline function could be a better solution than this macro. */
 # define MPFR_INT_CEIL_LOG2(x)                            \
     (MPFR_UNLIKELY ((x) == 1) ? 0 :                       \
      __extension__ ({ int _b; mp_limb_t _limb;            \
