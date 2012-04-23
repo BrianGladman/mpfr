@@ -9,7 +9,7 @@ dir=`pwd`
 grep '^# *include *<math\.h>' src/*.c
 
 grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' src/*.{c,h} | \
-  grep -v 'mpfr_clear_' | \
+  grep -v -i 'mpfr_clear_' | \
   grep -v '^src/exceptions.c:' | \
   grep -v '^src/mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^src/mpfr.h:__MPFR_DECLSPEC '
