@@ -672,7 +672,7 @@ the corresponding C data type is @code{mpfr_rnd_t}.
 @cindex Group of flags
 @tindex @code{mpfr_flags_t}
 MPFR has a global (or per-thread) flag for each supported exception and
-provides operations on flags (@ref{Exceptions}). The C data type is used
+provides operations on flags (@ref{Exceptions}). This C data type is used
 to represent a group of flags (or a mask).
 
 @node MPFR Variable Conventions, Rounding Modes, Nomenclature and Types, MPFR Basics
