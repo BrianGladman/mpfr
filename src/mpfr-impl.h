@@ -306,8 +306,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
 #define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
-#define mpfr_clear_divby0() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0))
 #define mpfr_underflow_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
 #define mpfr_overflow_p() \
@@ -340,6 +338,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT; while (0)
 #define MPFR_CLEAR_ERANGEFLAG() \
   do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE; while (0)
+#define MPFR_CLEAR_DIVBY0() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0; while (0)
 #define MPFR_SET_ERANGEFLAG() \
   do __gmpfr_flags |= MPFR_FLAGS_ERANGE; while (0)
 
