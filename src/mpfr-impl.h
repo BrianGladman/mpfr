@@ -341,6 +341,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT; while (0)
 #define MPFR_CLEAR_ERANGEFLAG() \
   do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE; while (0)
+#define MPFR_CLEAR_DIVBY0() \
+  do __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_DIVBY0; while (0)
 #define MPFR_SET_ERANGEFLAG() \
   do __gmpfr_flags |= MPFR_FLAGS_ERANGE; while (0)
 
