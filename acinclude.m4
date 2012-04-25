@@ -137,6 +137,15 @@ AC_CHECK_TYPE( [union fpc_csr],
 #endif
 ])
 
+dnl Check for _Noreturn function specifier (ISO C11)
+AC_CACHE_CHECK([for _Noreturn], mpfr_cv_have_noreturn, [
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE([[_Noreturn void foo(int);]])],
+    mpfr_cv_have_noreturn=yes, mpfr_cv_have_noreturn=no)
+])
+if test "$mpfr_cv_have_noreturn" = "yes"; then
+  AC_DEFINE(MPFR_HAVE_NORETURN,1,[Define if the _Noreturn function specifier is supported.])
+fi
+
 dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"

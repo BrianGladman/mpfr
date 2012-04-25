@@ -224,13 +224,19 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 # error "Can't compute log2(GMP_NUMB_BITS)"
 #endif
 
+#if defined(MPFR_HAVE_NORETURN)
+/* _Noreturn is specified by ISO C11 (Section 6.7.4);
+   in GCC, it is supported as of version 4.7. */
+# define MPFR_NORETURN _Noreturn
+#elif __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+# define MPFR_NORETURN __attribute__ ((noreturn))
+#else
+# define MPFR_NORETURN
+#endif
+
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-/* For the future: N1478: Supporting the 'noreturn' property in C1x
-   http://www.open-std.org/JTC1/SC22/WG14/www/docs/n1478.htm */
-# define MPFR_NORETURN_ATTR __attribute__ ((noreturn))
 # define MPFR_CONST_ATTR    __attribute__ ((const))
 #else
-# define MPFR_NORETURN_ATTR
 # define MPFR_CONST_ATTR
 #endif
 
@@ -1928,8 +1934,7 @@ __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                     mpfr_uexp_t, int,
                                                     mpfr_rnd_t));
-__MPFR_DECLSPEC void mpfr_abort_prec_max _MPFR_PROTO ((void))
-       MPFR_NORETURN_ATTR;
+__MPFR_DECLSPEC MPFR_NORETURN void mpfr_abort_prec_max _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mpfr_limb_ptr, gmp_randstate_t,
                                                 mpfr_prec_t));
