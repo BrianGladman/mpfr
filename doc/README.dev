@@ -723,6 +723,15 @@ More complex tuning is possible but needs special attention.
 
 ===========================================================================
 
+MPFR uses many macros, thus finding where an error occurs exactly may
+be difficult when it is in some macro expansion. For GCC users, a new
+experimental -ftrack-macro-expansion option has been added in GCC 4.7.
+"It allows the compiler to emit diagnostic about the current macro
+expansion stack when a compilation error occurs in a macro expansion."
+<http://gcc.gnu.org/gcc-4.7/changes.html>
+
+===========================================================================
+
 Bit Twiddling Hacks - Sean Eron Anderson maintain a list of tricks to get
 efficient code on <http://graphics.stanford.edu/~seander/bithacks.html>.
 WARNING: some of those tricks may not take into account possible overflows,
