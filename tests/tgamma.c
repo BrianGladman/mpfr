@@ -475,6 +475,36 @@ test20100709 (void)
   mpfr_clear (x);
 }
 
+/* bug found by Giridhar Tammana */
+static void
+test20120426 (void)
+{
+  mpfr_t xa, xb;
+  int i;
+  mpfr_exp_t emin;
+
+  mpfr_init2 (xa, 53);
+  mpfr_init2 (xb, 53);
+  mpfr_set_d (xb, -168.5, MPFR_RNDN);
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-1073);
+  i = mpfr_gamma (xa, xb, MPFR_RNDN);
+  i = mpfr_subnormalize (xa, i, MPFR_RNDN); /* new ternary value */
+  mpfr_set_str (xb, "-9.5737343987585366746184749943e-304", 10, MPFR_RNDN);
+  if (!((i > 0) && (mpfr_cmp (xa, xb) == 0)))
+    {
+      printf ("Error in test20120426, i=%d\n", i);
+      printf ("expected ");
+      mpfr_print_binary (xb); putchar ('\n');
+      printf ("got      ");
+      mpfr_print_binary (xa); putchar ('\n');
+      exit (1);
+    }
+  mpfr_set_emin (emin);
+  mpfr_clear (xa);
+  mpfr_clear (xb);
+}
+
 static void
 exprange (void)
 {
@@ -818,6 +848,7 @@ main (int argc, char *argv[])
   gamma_integer ();
   test20071231 ();
   test20100709 ();
+  test20120426 ();
 
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
