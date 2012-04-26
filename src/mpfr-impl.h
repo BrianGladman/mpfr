@@ -228,9 +228,19 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 /* _Noreturn is specified by ISO C11 (Section 6.7.4);
    in GCC, it is supported as of version 4.7. */
 # define MPFR_NORETURN _Noreturn
-#elif __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-# define MPFR_NORETURN __attribute__ ((noreturn))
-#else
+#elif !defined(noreturn)
+/* A noreturn macro could be defined if <stdnoreturn.h> has been included,
+   in which case it would make sense to #define MPFR_NORETURN noreturn.
+   But this is unlikely, as MPFR_HAVE_NORETURN should have been defined
+   in such a case. So, in doubt, let us avoid any code that would use a
+   noreturn macro, since it could be invalid. */
+# if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+#  define MPFR_NORETURN __attribute__ ((noreturn))
+# elif defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
+#  define MPFR_NORETURN __declspec (noreturn)
+# endif
+#endif
+#ifndef MPFR_NORETURN
 # define MPFR_NORETURN
 #endif
 
