@@ -336,6 +336,9 @@ check_set (void)
   MPFR_ASSERTN (__gmpfr_flags == 0);
 }
 
+/* Note: this test assumes that mpfr_flags_* can be implemented as both
+   a function and a macro. Thus in such a case, both implementations are
+   tested. */
 static void
 check_groups (void)
 {
