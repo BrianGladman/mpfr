@@ -310,8 +310,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       w += 17; /* to get tmp2 small enough */
       mpfr_set_prec (tmp, w);
       mpfr_set_prec (tmp2, w);
-      ck = mpfr_ui_sub (tmp, 2, x, MPFR_RNDN);
-      MPFR_ASSERTD (ck == 0);  (void) ck; /* use ck to avoid a warning */
+      MPFR_DBGRES (ck = mpfr_ui_sub (tmp, 2, x, MPFR_RNDN));
+      MPFR_ASSERTD (ck == 0); /* tmp = 2-x exactly */
       mpfr_const_pi (tmp2, MPFR_RNDN);
       mpfr_mul (tmp2, tmp2, tmp, MPFR_RNDN); /* Pi*(2-x) */
       mpfr_sin (tmp, tmp2, MPFR_RNDN); /* sin(Pi*(2-x)) */
