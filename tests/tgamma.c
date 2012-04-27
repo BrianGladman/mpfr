@@ -461,18 +461,59 @@ test20071231 (void)
   mpfr_clear (x);
 }
 
-/* bug found by Stathis, only occurs on 32-bit machines */
+/* bug found by Stathis in mpfr_gamma, only occurs on 32-bit machines;
+   the second test is for 64-bit machines. This bug reappeared due to
+   r8159. */
 static void
 test20100709 (void)
 {
-  mpfr_t x;
+  mpfr_t x, y, z;
+  int sign;
   int inex;
+  mpfr_exp_t emin;
 
   mpfr_init2 (x, 100);
+  mpfr_init2 (y, 32);
+  mpfr_init2 (z, 32);
   mpfr_set_str (x, "-4.6308260837372266e+07", 10, MPFR_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_nextabove (y);
+  mpfr_log (y, y, MPFR_RNDD);
+  mpfr_const_log2 (z, MPFR_RNDU);
+  mpfr_sub (y, y, z, MPFR_RNDD); /* log(MIN/2) = log(MIN) - log(2) */
+  mpfr_lgamma (z, &sign, x, MPFR_RNDU);
+  MPFR_ASSERTN (sign == -1);
+  MPFR_ASSERTN (mpfr_less_p (z, y)); /* thus underflow */
   inex = mpfr_gamma (x, x, MPFR_RNDN);
-  MPFR_ASSERTN(MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
+  MPFR_ASSERTN (MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
   mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+
+  /* Similar bug for 64-bit machines. */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_init2 (x, 100);
+  mpfr_init2 (y, 32);
+  mpfr_init2 (z, 32);
+  mpfr_set_str (x, "-90.6308260837372266e+15", 10, MPFR_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_nextabove (y);
+  mpfr_log (y, y, MPFR_RNDD);
+  mpfr_const_log2 (z, MPFR_RNDU);
+  mpfr_sub (y, y, z, MPFR_RNDD); /* log(MIN/2) = log(MIN) - log(2) */
+  mpfr_lgamma (z, &sign, x, MPFR_RNDU);
+  MPFR_ASSERTN (sign == -1);
+  if (mpfr_less_p (z, y))  /* true on 64-bit machines */
+    {
+      /* thus underflow */
+      inex = mpfr_gamma (x, x, MPFR_RNDN);
+      MPFR_ASSERTN (MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_set_emin (emin);
 }
 
 /* bug found by Giridhar Tammana */
