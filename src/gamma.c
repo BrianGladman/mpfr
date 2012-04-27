@@ -285,6 +285,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                 <= 12 * ((2-x)/e)^x / |sin(Pi*(2-x))|.
      To avoid an underflow in ((2-x)/e)^x, we compute the logarithm.
   */
+  /* FIXME: Should the underflow detection below be exact (please document)?
+     If not, underflow cases need to be handled in the Ziv loop. If
+     intermediate underflow or overflow can occur, this also needs to be
+     taken into account. Could mpfr_lgamma be useful? i.e. compute the log
+     with mpfr_lgamma, then take the exponential and correct the sign. How
+     about the efficiency? */
   if (MPFR_IS_NEG(x))
     {
       int underflow = 0, sgn, ck;
