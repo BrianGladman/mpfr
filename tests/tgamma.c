@@ -490,7 +490,8 @@ test20100709 (void)
   mpfr_clear (y);
   mpfr_clear (z);
 
-  /* Similar bug for 64-bit machines. */
+  /* Similar test for 64-bit machines (also valid with a 32-bit exponent,
+     but will not trigger the bug). */
   emin = mpfr_get_emin ();
   mpfr_set_emin (MPFR_EMIN_MIN);
   mpfr_init2 (x, 100);
@@ -504,12 +505,9 @@ test20100709 (void)
   mpfr_sub (y, y, z, MPFR_RNDD); /* log(MIN/2) = log(MIN) - log(2) */
   mpfr_lgamma (z, &sign, x, MPFR_RNDU);
   MPFR_ASSERTN (sign == -1);
-  if (mpfr_less_p (z, y))  /* true on 64-bit machines */
-    {
-      /* thus underflow */
-      inex = mpfr_gamma (x, x, MPFR_RNDN);
-      MPFR_ASSERTN (MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
-    }
+  MPFR_ASSERTN (mpfr_less_p (z, y)); /* thus underflow */
+  inex = mpfr_gamma (x, x, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO(x) && MPFR_IS_NEG(x) && inex > 0);
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
