@@ -390,6 +390,8 @@ Table of contents:
 
 - add a new rounding mode: round to nearest, with ties away from zero
   (this is roundTiesToAway in 754-2008, could be used by mpfr_round)
+  Named MPFR_RNDNA. For partial support, see
+    http://websympa.loria.fr/wwsympa/arc/mpfr/2012-05/msg00000.html
 - add a new roundind mode: round to odd. If the result is not exactly
         representable, then round to the odd mantissa. This rounding
         has the nice property that for k > 1, if:
