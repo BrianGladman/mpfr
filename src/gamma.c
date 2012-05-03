@@ -378,7 +378,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       err_g = MPFR_GET_EXP(GammaTrial);
       mpfr_sin (GammaTrial, GammaTrial, MPFR_RNDN); /* sin(Pi*(2-x)) */
       /* if tmp is +Inf, there is an underflow, since the
-         Pi*(x-1)/sin(Pi*(2-x)) term is larger than 1 in absolute value.
+         Pi*(x-1)/sin(Pi*(2-x)) term is larger than 1 in absolute value and
+         the inverse of the maximum finite number is approximatively twice
+         the minimum positive number in the extended exponent range.
          The sign is that of -sin(Pi*(2-x)). */
       if (mpfr_inf_p (tmp))
         {
