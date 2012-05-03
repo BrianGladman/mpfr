@@ -933,11 +933,13 @@ static void
 exp_lgamma_tests (void)
 {
   mpfr_t x;
-  mpfr_exp_t emin;
+  mpfr_exp_t emin, emax;
   int i;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (MPFR_EMIN_MIN);
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 
   mpfr_init2 (x, 96);
   for (i = 3; i <= 8; i++)
@@ -956,13 +958,18 @@ exp_lgamma_tests (void)
   exp_lgamma (x, 53, 64);
   mpfr_set_str (x, "-90.6308260837372266e+15", 10, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
-  /* The following test triggers an endless loop in r8186
-     on 64-bit machines (64-bit exponent). */
+  /* The following two tests trigger an endless loop in r8186
+     on 64-bit machines (64-bit exponent). The second one (due
+     to undetected overflow) is a direct consequence of the
+     first one, due to the call of Gamma(2-x) if x < 1. */
+  mpfr_set_str (x, "1.2b13fc45a92dec8@14", 16, MPFR_RNDN);
+  exp_lgamma (x, 53, 64);
   mpfr_set_str (x, "-1.2b13fc45a92dea8@14", 16, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
   mpfr_clear (x);
 
-  mpfr_set_emin (emin);
+  set_emin (emin);
+  set_emax (emax);
 }
 
 int
