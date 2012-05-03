@@ -952,7 +952,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
      - INTMAX_C and UINTMAX_C, but not if the compiler is a C++ one
        (as suggested by Patrick Pelissier) because the test does not
        work well in this case. See:
-         http://websympa.loria.fr/wwsympa/arc/mpfr/2010-02/msg00025.html
+         https://sympa.inria.fr/sympa/arc/mpfr/2010-02/msg00025.html
        We do not check INTMAX_MAX and UINTMAX_MAX because under Solaris,
        these macros are always defined by <limits.h> (i.e. even when
        <stdint.h> and <inttypes.h> are not included).

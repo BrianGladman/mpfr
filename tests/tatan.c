@@ -568,7 +568,7 @@ atan2_pow_of_2 (void)
   mpfr_clear (g);
 }
 
-/* http://websympa.loria.fr/wwsympa/arc/mpfr/2011-05/msg00008.html
+/* https://sympa.inria.fr/sympa/arc/mpfr/2011-05/msg00008.html
  * Incorrect flags (in debug mode on a 32-bit machine, assertion failure).
  */
 static void

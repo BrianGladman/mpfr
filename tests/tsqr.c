@@ -119,8 +119,8 @@ check_special (void)
 }
 
 /* Test of a bug seen with GCC 4.5.2 and GMP 5.0.1 on m68k (m68000 target).
-     http://websympa.loria.fr/wwsympa/arc/mpfr/2011-05/msg00003.html
-     http://websympa.loria.fr/wwsympa/arc/mpfr/2011-05/msg00041.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2011-05/msg00003.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2011-05/msg00041.html
 */
 static void
 check_mpn_sqr (void)

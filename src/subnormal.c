@@ -38,9 +38,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Set the inexact flag if the returned ternary value is non-zero.
    Set the underflow flag if a second rounding occurred (whether this
    rounding is exact or not). See
-     http://websympa.loria.fr/wwsympa/arc/mpfr/2009-06/msg00000.html
-     http://websympa.loria.fr/wwsympa/arc/mpfr/2009-06/msg00008.html
-     http://websympa.loria.fr/wwsympa/arc/mpfr/2009-06/msg00010.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00000.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00008.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00010.html
 */
 
 int

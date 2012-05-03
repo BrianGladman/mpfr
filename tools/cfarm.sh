@@ -23,7 +23,7 @@ wget http://www.loria.fr/~zimmerma/mpfr-3.2.0-dev.tar.bz2
 tar jxf mpfr-3.2.0-dev.tar.bz2
 cd  mpfr-3.2.0-dev
 if [ "`hostname`" = "dingo" ]; then
-   # http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00048.html
+   # https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00048.html
    ./configure --with-gmp=$HOME --disable-thread-safe
 else
    ./configure --with-gmp=$HOME

@@ -80,11 +80,11 @@ TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 # purpose is to make sure that the local .libs comes first in the library
 # search path (otherwise the tests are linked against the old MPFR library
 # by the LINK command -- see the generated Makefile). See:
-#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00042.html
-#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00043.html
-#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00044.html
-#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00066.html
-#   http://websympa.loria.fr/wwsympa/arc/mpfr/2011-10/msg00065.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00042.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00043.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00044.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00066.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00065.html
 # and
 #   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=9728
 #

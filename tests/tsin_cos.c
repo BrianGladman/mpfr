@@ -511,7 +511,7 @@ bug20091013 (void)
 
 /* Bug reported by Laurent Fousse for the 2.4 branch.
    No problem in the trunk.
-   http://websympa.loria.fr/wwsympa/arc/mpfr/2009-11/msg00044.html */
+   https://sympa.inria.fr/sympa/arc/mpfr/2009-11/msg00044.html */
 static void
 bug20091122 (void)
 {
