@@ -956,6 +956,8 @@ exp_lgamma_tests (void)
   exp_lgamma (x, 53, 64);
   mpfr_set_str (x, "-90.6308260837372266e+15", 10, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
+  /* The following test triggers an endless loop in r8186
+     on 64-bit machines (64-bit exponent). */
   mpfr_set_str (x, "-1.2b13fc45a92dea8@14", 16, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
   mpfr_clear (x);
