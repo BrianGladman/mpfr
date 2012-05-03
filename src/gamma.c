@@ -383,6 +383,18 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_mul (GammaTrial, tmp2, xp, MPFR_RNDN); /* Pi*(2-x), error (1+u)^2 */
       err_g = MPFR_GET_EXP(GammaTrial);
       mpfr_sin (GammaTrial, GammaTrial, MPFR_RNDN); /* sin(Pi*(2-x)) */
+      /* if tmp is +Inf, there is an underflow, since the
+	 Pi*(x-1)/sin(Pi*(2-x)) term is larger than 1 in absolute value.
+	 The sign is that of -sin(Pi*(2-x)). */
+      if (mpfr_inf_p (tmp))
+	{
+	  int sgn = mpfr_sgn (GammaTrial);
+	  MPFR_ZIV_FREE (loop);
+	  MPFR_GROUP_CLEAR (group);
+	  mpz_clear (fact);
+	  MPFR_SAVE_EXPO_FREE (expo);
+	  return mpfr_underflow (gamma, (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, -sgn);
+	}
       err_g = err_g + 1 - MPFR_GET_EXP(GammaTrial);
       /* let g0 the true value of Pi*(2-x), g the computed value.
          We have g = g0 + h with |h| <= |(1+u^2)-1|*g.
