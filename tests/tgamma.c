@@ -874,6 +874,95 @@ tiny (int stop)
     exit (1);
 }
 
+/* Test mpfr_gamma in precision p1 by comparing it with exp(lgamma(x))
+   computing with a working precision p2. Assume that x is not an
+   integer <= 2. */
+static void
+exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
+{
+  mpfr_t yd, yu, z;
+  int inex, sign;
+
+  if (mpfr_integer_p (x) && mpfr_cmp_si (x, 2) <= 0)
+    {
+      printf ("Warning! x is an integer <= 2 in exp_lgamma: ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar ('\n');
+      return;
+    }
+  mpfr_inits2 (p2, yd, yu, (mpfr_ptr) 0);
+  inex = mpfr_lgamma (yd, &sign, x, MPFR_RNDD);
+  mpfr_set (yu, yd, MPFR_RNDN);  /* exact */
+  if (inex)
+    mpfr_nextabove (yu);
+  mpfr_exp (yd, yd, MPFR_RNDD);
+  mpfr_exp (yu, yu, MPFR_RNDU);
+  if (sign < 0)
+    {
+      mpfr_neg (yd, yd, MPFR_RNDN);  /* exact */
+      mpfr_neg (yu, yu, MPFR_RNDN);  /* exact */
+      mpfr_swap (yd, yu);
+    }
+  /* yd < Gamma(x) < yu (strict inequalities since x != 1 and x != 2) */
+  mpfr_init2 (z, p1);
+  mpfr_gamma (z, x, MPFR_RNDD);  /* z <= Gamma(x) < yu */
+  if (! mpfr_less_p (z, yu))
+    {
+      printf ("Error in exp_lgamma on x = ");
+      mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
+      printf ("yu = ");
+      mpfr_dump (yu);
+      printf ("z  = ");
+      mpfr_dump (z);
+      exit (1);
+    }
+  mpfr_gamma (z, x, MPFR_RNDU);  /* z >= Gamma(x) > yd */
+  if (! mpfr_greater_p (z, yd))
+    {
+      printf ("Error in exp_lgamma on x = ");
+      mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
+      printf ("yd = ");
+      mpfr_dump (yd);
+      printf ("z  = ");
+      mpfr_dump (z);
+      exit (1);
+    }
+  mpfr_clears (yd, yu, z, (mpfr_ptr) 0);
+}
+
+static void
+exp_lgamma_tests (void)
+{
+  mpfr_t x;
+  mpfr_exp_t emin;
+  int i;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (MPFR_EMIN_MIN);
+
+  mpfr_init2 (x, 96);
+  for (i = 3; i <= 8; i++)
+    {
+      mpfr_set_ui (x, i, MPFR_RNDN);
+      exp_lgamma (x, 53, 64);
+      mpfr_nextbelow (x);
+      exp_lgamma (x, 53, 64);
+      mpfr_nextabove (x);
+      mpfr_nextabove (x);
+      exp_lgamma (x, 53, 64);
+    }
+  mpfr_set_str (x, "1.7", 10, MPFR_RNDN);
+  exp_lgamma (x, 53, 64);
+  mpfr_set_str (x, "-4.6308260837372266e+07", 10, MPFR_RNDN);
+  exp_lgamma (x, 53, 64);
+  mpfr_set_str (x, "-90.6308260837372266e+15", 10, MPFR_RNDN);
+  exp_lgamma (x, 53, 64);
+  mpfr_set_str (x, "-1.2b13fc45a92dea8@14", 16, MPFR_RNDN);
+  exp_lgamma (x, 53, 64);
+  mpfr_clear (x);
+
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -888,6 +977,7 @@ main (int argc, char *argv[])
   test20071231 ();
   test20100709 ();
   test20120426 ();
+  exp_lgamma_tests ();
 
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
