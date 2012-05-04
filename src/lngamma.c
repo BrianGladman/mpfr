@@ -99,12 +99,13 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
-  int inexact, compared;
+  int inexact, compared, ok;
   mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   compared = mpfr_cmp_ui (z0, 1);
 
@@ -205,9 +206,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          thus lngamma(x) = log(Pi*(x-1)/sin(Pi*(2-x))) - lngamma(2-x) */
 
       w = precy + MPFR_INT_CEIL_LOG2 (precy);
+      w += MPFR_INT_CEIL_LOG2 (w) + 14;
+      MPFR_ZIV_INIT (loop, w);
       while (1)
         {
-          w += MPFR_INT_CEIL_LOG2 (w) + 14;
           MPFR_ASSERTD(w >= 3);
           mpfr_set_prec (s, w);
           mpfr_set_prec (t, w);
@@ -288,7 +290,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
                                   + (rnd == MPFR_RNDN)))
                 goto end;
             }
+          MPFR_ZIV_NEXT (loop, w);
         }
+      MPFR_ZIV_FREE (loop);
     }
 
   /* now z0 > 1 */
@@ -298,10 +302,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   /* since k is O(w), the value of log(z0*...*(z0+k-1)) is about w*log(w),
      so there is a cancellation of ~log(w) in the argument reconstruction */
   w = precy + MPFR_INT_CEIL_LOG2 (precy);
-
+  w += MPFR_INT_CEIL_LOG2 (w) + 13;
+  MPFR_ZIV_INIT (loop, w);
   do
     {
-      w += MPFR_INT_CEIL_LOG2 (w) + 13;
       MPFR_ASSERTD (w >= 3);
 
       /* argument reduction: we compute gamma(z0 + k), where the series
@@ -441,6 +445,40 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 #ifdef IS_GAMMA
       err_s = MPFR_GET_EXP(s);
       mpfr_exp (s, s, MPFR_RNDN);
+      /* If s is +Inf, we compute exp(lngamma(z0)). */
+      if (mpfr_inf_p (s))
+        {
+          int inexd, inexu;
+          
+          mpfr_set_prec (u, MPFR_PREC(y));
+          mpfr_set_prec (v, MPFR_PREC(y));
+          mpfr_lngamma (s, z0, MPFR_RNDD);
+          inexd = mpfr_exp (u, s, rnd);
+          mpfr_lngamma (s, z0, MPFR_RNDU);
+          inexu = mpfr_exp (v, s, rnd);
+          /* u is the rounding with mode 'rnd' of a lower bound of gamma(z0),
+             v is the rounding with mode 'rnd' of an upper bound, thus if both
+             are equal, so is the wanted result.
+             If u and v differ, at some point of Ziv's loop they should agree.
+          */
+          if (mpfr_cmp (u, v) == 0)
+            {
+              MPFR_ASSERTN(inexd == inexu);
+              MPFR_ZIV_FREE (loop);
+              oldBm = Bm;
+              while (Bm--)
+                mpz_clear (B[Bm]);
+              (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
+              mpfr_set (y, u, rnd); /* exact */
+              mpfr_clear (s);
+              mpfr_clear (t);
+              mpfr_clear (u);
+              mpfr_clear (v);
+              mpfr_clear (z);
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_check_range (y, inexd, rnd);
+            }
+        }
       /* before the exponential, we have s = s0 + h where
          |h| <= (2m+48)*ulp(s), thus exp(s0) = exp(s) * exp(-h).
          For |h| <= 1/4, we have |exp(h)-1| <= 1.2*|h| thus
@@ -480,8 +518,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       err_s = (err_t == err_s) ? 1 + err_s : ((err_t > err_s) ? err_t : err_s);
       err_s += 1 - MPFR_GET_EXP(s);
 #endif
+      ok = MPFR_CAN_ROUND (s, w - err_s, precy, rnd);
+      MPFR_ZIV_NEXT (loop, w);
     }
-  while (MPFR_UNLIKELY (!MPFR_CAN_ROUND (s, w - err_s, precy, rnd)));
+  while (MPFR_UNLIKELY (ok == 0));
 
   oldBm = Bm;
   while (Bm--)
@@ -490,6 +530,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
  end:
   inexact = mpfr_set (y, s, rnd);
+  MPFR_ZIV_FREE (loop);
 
   mpfr_clear (s);
   mpfr_clear (t);
