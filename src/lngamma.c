@@ -99,7 +99,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
-  int inexact, compared, ok;
+  int inexact, compared;
   mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
@@ -173,6 +173,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
           mpfr_clear (g);
           if (ok)
             {
+              MPFR_ZIV_FREE (loop);
               MPFR_SAVE_EXPO_FREE (expo);
               return mpfr_check_range (y, inexact, rnd);
             }
@@ -304,7 +305,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   w = precy + MPFR_INT_CEIL_LOG2 (precy);
   w += MPFR_INT_CEIL_LOG2 (w) + 13;
   MPFR_ZIV_INIT (loop, w);
-  do
+  while (1)
     {
       MPFR_ASSERTD (w >= 3);
 
@@ -448,36 +449,28 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       /* If s is +Inf, we compute exp(lngamma(z0)). */
       if (mpfr_inf_p (s))
         {
-          int inexd, inexu;
-          
-          mpfr_set_prec (u, MPFR_PREC(y));
-          mpfr_set_prec (v, MPFR_PREC(y));
-          mpfr_lngamma (s, z0, MPFR_RNDD);
-          inexd = mpfr_exp (u, s, rnd);
-          mpfr_lngamma (s, z0, MPFR_RNDU);
-          inexu = mpfr_exp (v, s, rnd);
-          /* u is the rounding with mode 'rnd' of a lower bound of gamma(z0),
-             v is the rounding with mode 'rnd' of an upper bound, thus if both
+          int inex2;
+
+          mpfr_set_prec (s, MPFR_PREC(y));
+          mpfr_set_prec (t, MPFR_PREC(y));
+          mpfr_lngamma (u, z0, MPFR_RNDD);  /* RNDD(lngamma(z0)), inexact */
+          mpfr_set (v, u, MPFR_RNDN);       /* exact */
+          mpfr_nextabove (v);               /* RNDU(lngamma(z0)) */
+          inexact = mpfr_exp (s, u, rnd);
+          inex2 = mpfr_exp (t, v, rnd);
+          /* s is the rounding with mode 'rnd' of a lower bound of gamma(z0),
+             t is the rounding with mode 'rnd' of an upper bound, thus if both
              are equal, so is the wanted result.
-             If u and v differ, at some point of Ziv's loop they should agree.
+             If s and t differ, at some point of Ziv's loop they should agree.
           */
-          if (mpfr_cmp (u, v) == 0)
+          /* FIXME: update the overflow flag if need be (an additional
+             test on both mpfr_exp calls must probably be done). */
+          if (mpfr_equal_p (s, t))
             {
-              MPFR_ASSERTN(inexd == inexu);
-              MPFR_ZIV_FREE (loop);
-              oldBm = Bm;
-              while (Bm--)
-                mpz_clear (B[Bm]);
-              (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
-              mpfr_set (y, u, rnd); /* exact */
-              mpfr_clear (s);
-              mpfr_clear (t);
-              mpfr_clear (u);
-              mpfr_clear (v);
-              mpfr_clear (z);
-              MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_check_range (y, inexd, rnd);
+              MPFR_ASSERTN (SAME_SIGN (inexact, inex2));
+              goto end0;
             }
+          goto ziv_next;
         }
       /* before the exponential, we have s = s0 + h where
          |h| <= (2m+48)*ulp(s), thus exp(s0) = exp(s) * exp(-h).
@@ -518,11 +511,17 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       err_s = (err_t == err_s) ? 1 + err_s : ((err_t > err_s) ? err_t : err_s);
       err_s += 1 - MPFR_GET_EXP(s);
 #endif
-      ok = MPFR_CAN_ROUND (s, w - err_s, precy, rnd);
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, w - err_s, precy, rnd)))
+        break;
+#ifdef IS_GAMMA
+    ziv_next:
+#endif
       MPFR_ZIV_NEXT (loop, w);
     }
-  while (MPFR_UNLIKELY (ok == 0));
 
+#ifdef IS_GAMMA
+ end0:
+#endif
   oldBm = Bm;
   while (Bm--)
     mpz_clear (B[Bm]);
