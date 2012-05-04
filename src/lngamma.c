@@ -99,7 +99,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
-  int inexact, compared;
+  int compared, huge = 0;
+  int INITIALIZED(inexact); /* set together with huge or at the end */
   mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
@@ -450,24 +451,38 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       if (mpfr_inf_p (s))
         {
           int inex2;
+          MPFR_BLOCK_DECL (flags);
+          MPFR_BLOCK_DECL (flags2);
 
+          MPFR_BLOCK (flags, mpfr_lngamma (u, z0, MPFR_RNDD));
+          /* u = RNDD(lngamma(z0)), inexact */
+          if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
+            {
+              inexact = mpfr_overflow (y, rnd, 1);
+              MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
+              huge = 1;
+              goto end0;
+            }
+          mpfr_set (v, u, MPFR_RNDN);       /* exact */
+          mpfr_nextabove (v);               /* v = RNDU(lngamma(z0)) */
           mpfr_set_prec (s, MPFR_PREC(y));
           mpfr_set_prec (t, MPFR_PREC(y));
-          mpfr_lngamma (u, z0, MPFR_RNDD);  /* RNDD(lngamma(z0)), inexact */
-          mpfr_set (v, u, MPFR_RNDN);       /* exact */
-          mpfr_nextabove (v);               /* RNDU(lngamma(z0)) */
-          inexact = mpfr_exp (s, u, rnd);
-          inex2 = mpfr_exp (t, v, rnd);
+          MPFR_BLOCK (flags, inexact = mpfr_exp (s, u, rnd));
+          MPFR_BLOCK (flags2, inex2 = mpfr_exp (t, v, rnd));
           /* s is the rounding with mode 'rnd' of a lower bound of gamma(z0),
              t is the rounding with mode 'rnd' of an upper bound, thus if both
              are equal, so is the wanted result.
-             If s and t differ, at some point of Ziv's loop they should agree.
+             If s and t differ or the overflow flags differ,
+             at some point of Ziv's loop they should agree.
           */
-          /* FIXME: update the overflow flag if need be (an additional
-             test on both mpfr_exp calls must probably be done). */
-          if (mpfr_equal_p (s, t))
+          if (mpfr_equal_p (s, t) &&
+              MPFR_OVERFLOW (flags) == MPFR_OVERFLOW (flags2))
             {
               MPFR_ASSERTN (SAME_SIGN (inexact, inex2));
+              mpfr_set (y, s, MPFR_RNDN);  /* exact */
+              if (MPFR_LIKELY (MPFR_OVERFLOW (flags)))
+                MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
+              huge = 1;
               goto end0;
             }
           goto ziv_next;
@@ -528,7 +543,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
 
  end:
-  inexact = mpfr_set (y, s, rnd);
+  if (!huge)
+    inexact = mpfr_set (y, s, rnd);
   MPFR_ZIV_FREE (loop);
 
   mpfr_clear (s);
