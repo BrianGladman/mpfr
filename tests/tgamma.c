@@ -880,8 +880,8 @@ tiny (int stop)
 static void
 exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
 {
-  mpfr_t yd, yu, z;
-  int inex, sign;
+  mpfr_t yd, yu, zd, zu;
+  int inexd, inexu, sign;
   int underflow = -1, overflow = -1;  /* -1: we don't know */
   int got_underflow, got_overflow;
 
@@ -892,9 +892,9 @@ exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
       return;
     }
   mpfr_inits2 (p2, yd, yu, (mpfr_ptr) 0);
-  inex = mpfr_lgamma (yd, &sign, x, MPFR_RNDD);
+  inexd = mpfr_lgamma (yd, &sign, x, MPFR_RNDD);
   mpfr_set (yu, yd, MPFR_RNDN);  /* exact */
-  if (inex)
+  if (inexd)
     mpfr_nextabove (yu);
   mpfr_clear_flags ();
   mpfr_exp (yd, yd, MPFR_RNDD);
@@ -915,12 +915,12 @@ exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
       mpfr_swap (yd, yu);
     }
   /* yd < Gamma(x) < yu (strict inequalities since x != 1 and x != 2) */
-  mpfr_init2 (z, p1);
+  mpfr_inits2 (p1, zd, zu, (mpfr_ptr) 0);
   mpfr_clear_flags ();
-  mpfr_gamma (z, x, MPFR_RNDD);  /* z <= Gamma(x) < yu */
+  inexd = mpfr_gamma (zd, x, MPFR_RNDD);  /* zd <= Gamma(x) < yu */
   got_underflow = underflow == -1 ? -1 : !! mpfr_underflow_p ();
   got_overflow = overflow == -1 ? -1 : !! mpfr_overflow_p ();
-  if (! mpfr_less_p (z, yu) ||
+  if (! mpfr_less_p (zd, yu) || inexd > 0 ||
       got_underflow != underflow ||
       got_overflow != overflow)
     {
@@ -928,17 +928,18 @@ exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
       mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
       printf ("yu = ");
       mpfr_dump (yu);
-      printf ("z  = ");
-      mpfr_dump (z);
+      printf ("zd = ");
+      mpfr_dump (zd);
+      printf ("got inexd = %d, expected <= 0\n", inexd);
       printf ("got underflow = %d, expected %d\n", got_underflow, underflow);
       printf ("got overflow = %d, expected %d\n", got_overflow, overflow);
       exit (1);
     }
   mpfr_clear_flags ();
-  mpfr_gamma (z, x, MPFR_RNDU);  /* z >= Gamma(x) > yd */
+  inexu = mpfr_gamma (zu, x, MPFR_RNDU);  /* zu >= Gamma(x) > yd */
   got_underflow = underflow == -1 ? -1 : !! mpfr_underflow_p ();
   got_overflow = overflow == -1 ? -1 : !! mpfr_overflow_p ();
-  if (! mpfr_greater_p (z, yd) ||
+  if (! mpfr_greater_p (zu, yd) || inexu < 0 ||
       got_underflow != underflow ||
       got_overflow != overflow)
     {
@@ -946,13 +947,35 @@ exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
       mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
       printf ("yd = ");
       mpfr_dump (yd);
-      printf ("z  = ");
-      mpfr_dump (z);
+      printf ("zu = ");
+      mpfr_dump (zu);
+      printf ("got inexu = %d, expected >= 0\n", inexu);
       printf ("got underflow = %d, expected %d\n", got_underflow, underflow);
       printf ("got overflow = %d, expected %d\n", got_overflow, overflow);
       exit (1);
     }
-  mpfr_clears (yd, yu, z, (mpfr_ptr) 0);
+  if (mpfr_equal_p (zd, zu))
+    {
+      if (inexd != 0 || inexu != 0)
+        {
+          printf ("Error in exp_lgamma on x = ");
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
+          printf ("zd = zu, thus exact, but inexd = %d and inexu = %d\n",
+                  inexd, inexu);
+          exit (1);
+        }
+      MPFR_ASSERTN (got_underflow == 0);
+      MPFR_ASSERTN (got_overflow == 0);
+    }
+  else if (inexd == 0 || inexu == 0)
+    {
+      printf ("Error in exp_lgamma on x = ");
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN); putchar ('\n');
+          printf ("zd != zu, thus inexact, but inexd = %d and inexu = %d\n",
+                  inexd, inexu);
+          exit (1);
+    }
+  mpfr_clears (yd, yu, zd, zu, (mpfr_ptr) 0);
 }
 
 static void
