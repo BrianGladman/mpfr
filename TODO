@@ -82,6 +82,10 @@ Table of contents:
        aa = q*b+r      --> q has exactly n bits.
   If RNDN, takes nq+1 bits. (See also the new division function).
 
+- for functions that return a native floating-point value (mpfr_get_flt,
+  mpfr_get_d, mpfr_get_ld, mpfr_get_decimal64), raise exception flags
+  with feraiseexcept(), when supported.
+
 
 ##############################################################################
 4. New functions to implement
