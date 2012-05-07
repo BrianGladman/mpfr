@@ -100,7 +100,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;
   mpfr_prec_t realprec;
-  int compared, inex, is_integer;
+  int compared, is_integer;
+  int inex = 0;  /* 0 means: result gamma not set yet */
   MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -377,21 +378,14 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_mul (GammaTrial, tmp2, xp, MPFR_RNDN); /* Pi*(2-x), error (1+u)^2 */
       err_g = MPFR_GET_EXP(GammaTrial);
       mpfr_sin (GammaTrial, GammaTrial, MPFR_RNDN); /* sin(Pi*(2-x)) */
-      /* if tmp is +Inf, there is an underflow, since the
-         Pi*(x-1)/sin(Pi*(2-x)) term is larger than 1 in absolute value.
-         FIXME: Mathematically, in absolute value, one has a value > 1
-         multiplied by a value less than approximately 2^emin (i.e.
-         twice the minimum positive number). This won't necessarily
-         yield an underflow.
-         The sign is that of -sin(Pi*(2-x)). */
+      /* If tmp is +Inf, we compute exp(lngamma(x)). */
       if (mpfr_inf_p (tmp))
         {
-          int sgn = mpfr_sgn (GammaTrial);
-          MPFR_ZIV_FREE (loop);
-          MPFR_GROUP_CLEAR (group);
-          mpz_clear (fact);
-          MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_underflow (gamma, (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, -sgn);
+          inex = mpfr_explgamma (gamma, x, &expo, tmp, tmp2, rnd_mode);
+          if (inex)
+            goto end;
+          else
+            goto ziv_next;
         }
       err_g = err_g + 1 - MPFR_GET_EXP(GammaTrial);
       /* let g0 the true value of Pi*(2-x), g the computed value.
@@ -427,11 +421,16 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (MPFR_LIKELY (MPFR_CAN_ROUND (GammaTrial, realprec - err_g,
                                        MPFR_PREC(gamma), rnd_mode)))
         break;
+
+    ziv_next:
       MPFR_ZIV_NEXT (loop, realprec);
     }
+
+ end:
   MPFR_ZIV_FREE (loop);
 
-  inex = mpfr_set (gamma, GammaTrial, rnd_mode);
+  if (inex == 0)
+    inex = mpfr_set (gamma, GammaTrial, rnd_mode);
   MPFR_GROUP_CLEAR (group);
   mpz_clear (fact);
 

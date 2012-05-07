@@ -49,7 +49,70 @@ mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
     mpfr_set_ui_2exp (s, 9, -1, MPFR_RNDN); /* 4.5 */
 }
 
-#ifndef IS_GAMMA
+#ifdef IS_GAMMA
+
+/* This function is called in case of intermediate overflow/underflow.
+   The s1 and s2 arguments are temporary MPFR numbers, having the
+   working precision. If the result could be determined, then the
+   flags are updated via pexpo, y is set to the result, and the
+   (non-zero) ternary value is returned. Otherwise 0 is returned
+   in order to perform the next Ziv iteration. */
+static int
+mpfr_explgamma (mpfr_ptr y, mpfr_srcptr x, mpfr_save_expo_t *pexpo,
+                mpfr_ptr s1, mpfr_ptr s2, mpfr_rnd_t rnd)
+{
+  mpfr_t t1, t2;
+  int inex1, inex2, sign;
+  MPFR_BLOCK_DECL (flags1);
+  MPFR_BLOCK_DECL (flags2);
+  MPFR_GROUP_DECL (group);
+
+  MPFR_BLOCK (flags1, inex1 = mpfr_lgamma (s1, &sign, x, MPFR_RNDD));
+  MPFR_ASSERTN (inex1 != 0);
+  /* s1 = RNDD(lngamma(x)), inexact */
+  if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags1)))
+    {
+      if (MPFR_SIGN (s1) > 0)
+        {
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (*pexpo, MPFR_FLAGS_OVERFLOW);
+          return mpfr_overflow (y, rnd, sign);
+        }
+      else
+        {
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (*pexpo, MPFR_FLAGS_UNDERFLOW);
+          return mpfr_underflow (y, rnd == MPFR_RNDN ? MPFR_RNDZ : rnd, sign);
+        }
+    }
+
+  mpfr_set (s2, s1, MPFR_RNDN);     /* exact */
+  mpfr_nextabove (s2);              /* v = RNDU(lngamma(z0)) */
+
+  if (sign < 0)
+    rnd = MPFR_INVERT_RND (rnd);  /* since the result with be negated */
+  MPFR_GROUP_INIT_2 (group, MPFR_PREC (y), t1, t2);
+  MPFR_BLOCK (flags1, inex1 = mpfr_exp (t1, s1, rnd));
+  MPFR_BLOCK (flags2, inex2 = mpfr_exp (t2, s2, rnd));
+  /* t1 is the rounding with mode 'rnd' of a lower bound on |Gamma(x)|,
+     t2 is the rounding with mode 'rnd' of an upper bound, thus if both
+     are equal, so is the wanted result. If t1 and t2 differ or the flags
+     differ, at some point of Ziv's loop they should agree. */
+  if (mpfr_equal_p (t1, t2) && flags1 == flags2)
+    {
+      MPFR_ASSERTN ((inex1 > 0 && inex2 > 0) || (inex1 < 0 && inex2 < 0));
+      mpfr_set4 (y, t1, MPFR_RNDN, sign);  /* exact */
+      if (sign < 0)
+        inex1 = - inex1;
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (*pexpo, flags1);
+    }
+  else
+    inex1 = 0;  /* couldn't determine the result */
+  MPFR_GROUP_CLEAR (group);
+
+  return inex1;
+}
+
+#else
+
 static int
 unit_bit (mpfr_srcptr x)
 {
@@ -75,6 +138,7 @@ unit_bit (mpfr_srcptr x)
 
   return (x0 >> (prec % GMP_NUMB_BITS)) & 1;
 }
+
 #endif
 
 /* lngamma(x) = log(gamma(x)).
@@ -99,8 +163,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
-  int compared, huge = 0;
-  int INITIALIZED(inexact); /* set together with huge or at the end */
+  int compared;
+  int inexact = 0;  /* 0 means: result y not set yet */
   mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
@@ -124,7 +188,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   if (MPFR_EXP(z0) <= - (mpfr_exp_t) MPFR_PREC(y))
     {
       mpfr_t l, h, g;
-      int ok, inex2;
+      int ok, inex1, inex2;
       mpfr_prec_t prec = MPFR_PREC(y) + 14;
       MPFR_ZIV_DECL (loop);
 
@@ -159,14 +223,14 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
           mpfr_sub (h, h, g, MPFR_RNDD);
           mpfr_mul (g, z0, z0, MPFR_RNDU);
           mpfr_add (h, h, g, MPFR_RNDU);
-          inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
+          inex1 = mpfr_prec_round (l, MPFR_PREC(y), rnd);
           inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
           /* Caution: we not only need l = h, but both inexact flags should
              agree. Indeed, one of the inexact flags might be zero. In that
              case if we assume lngamma(z0) cannot be exact, the other flag
              should be correct. We are conservative here and request that both
              inexact flags agree. */
-          ok = SAME_SIGN (inexact, inex2) && mpfr_cmp (l, h) == 0;
+          ok = SAME_SIGN (inex1, inex2) && mpfr_cmp (l, h) == 0;
           if (ok)
             mpfr_set (y, h, rnd); /* exact */
           mpfr_clear (l);
@@ -176,7 +240,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
             {
               MPFR_ZIV_FREE (loop);
               MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_check_range (y, inexact, rnd);
+              return mpfr_check_range (y, inex1, rnd);
             }
           /* since we have log|gamma(x)| = - log|x| - gamma*x + O(x^2),
              if x ~ 2^(-n), then we have a n-bit approximation, thus
@@ -450,42 +514,11 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       /* If s is +Inf, we compute exp(lngamma(z0)). */
       if (mpfr_inf_p (s))
         {
-          int inex2;
-          MPFR_BLOCK_DECL (flags);
-          MPFR_BLOCK_DECL (flags2);
-
-          MPFR_BLOCK (flags, mpfr_lngamma (u, z0, MPFR_RNDD));
-          /* u = RNDD(lngamma(z0)), inexact */
-          if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
-            {
-              inexact = mpfr_overflow (y, rnd, 1);
-              MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
-              huge = 1;
-              goto end0;
-            }
-          mpfr_set (v, u, MPFR_RNDN);       /* exact */
-          mpfr_nextabove (v);               /* v = RNDU(lngamma(z0)) */
-          mpfr_set_prec (s, MPFR_PREC(y));
-          mpfr_set_prec (t, MPFR_PREC(y));
-          MPFR_BLOCK (flags, inexact = mpfr_exp (s, u, rnd));
-          MPFR_BLOCK (flags2, inex2 = mpfr_exp (t, v, rnd));
-          /* s is the rounding with mode 'rnd' of a lower bound of gamma(z0),
-             t is the rounding with mode 'rnd' of an upper bound, thus if both
-             are equal, so is the wanted result.
-             If s and t differ or the overflow flags differ,
-             at some point of Ziv's loop they should agree.
-          */
-          if (mpfr_equal_p (s, t) &&
-              MPFR_OVERFLOW (flags) == MPFR_OVERFLOW (flags2))
-            {
-              MPFR_ASSERTN (SAME_SIGN (inexact, inex2));
-              mpfr_set (y, s, MPFR_RNDN);  /* exact */
-              if (MPFR_LIKELY (MPFR_OVERFLOW (flags)))
-                MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
-              huge = 1;
-              goto end0;
-            }
-          goto ziv_next;
+          inexact = mpfr_explgamma (y, z0, &expo, s, t, rnd);
+          if (inexact)
+            goto end0;
+          else
+            goto ziv_next;
         }
       /* before the exponential, we have s = s0 + h where
          |h| <= (2m+48)*ulp(s), thus exp(s0) = exp(s) * exp(-h).
@@ -543,7 +576,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
 
  end:
-  if (!huge)
+  if (inexact == 0)
     inexact = mpfr_set (y, s, rnd);
   MPFR_ZIV_FREE (loop);
 
