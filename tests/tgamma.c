@@ -1030,6 +1030,13 @@ exp_lgamma_tests (void)
      Revision r8189 fails on 64-bit machines as the flag is unset. */
   mpfr_set_str (x, "1.2b13fc45a92ded8@14", 16, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
+  /* On the following tests, with r8196, one gets an underflow on
+     32-bit machines, while a normal result is expected (see FIXME
+     in gamma.c:382). */
+  mpfr_set_str (x, "-2ab68d6.657542f855111c6104", 16, MPFR_RNDN);
+  exp_lgamma (x, 12, 64);  /* failure on 32-bit machines */
+  mpfr_set_str (x, "-12b13fc45a92deb.1c6c5bc964", 16, MPFR_RNDN);
+  exp_lgamma (x, 12, 64);  /* failure on 64-bit machines */
   mpfr_clear (x);
 
   set_emin (emin);
