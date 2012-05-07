@@ -51,7 +51,7 @@ mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
 
 #ifndef IS_GAMMA
 static int
-unit_bit (mpfr_srcptr (x))
+unit_bit (mpfr_srcptr x)
 {
   mpfr_exp_t expo;
   mpfr_prec_t prec;
