@@ -67,7 +67,7 @@ floating-point arithmetic, version @value{VERSION}.
 @subtitle @value{UPDATED-MONTH}
 
 @author The MPFR team
-@email{mpfr@@loria.fr}
+@email{mpfr@@inria.fr}
 
 @c Include the Distribution inside the titlepage so
 @c that headings are turned off.
@@ -383,7 +383,7 @@ On most platforms, a dynamic library will be produced too.
 
 This will make sure MPFR was built correctly.
 If you get error messages, please report this to the MPFR mailing-list
-@samp{mpfr@@loria.fr}.  (@xref{Reporting Bugs}, for
+@samp{mpfr@@inria.fr}.  (@xref{Reporting Bugs}, for
 information on what to include in useful bug reports.)
 
 @item
@@ -460,7 +460,7 @@ specific to MPFR). Problems are also mentioned in the FAQ
 
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
-Please report problems to the MPFR mailing-list @samp{mpfr@@loria.fr}.
+Please report problems to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
 MPFR 3.2.0 web page @url{http://www.mpfr.org/mpfr-3.2.0/}.
@@ -509,7 +509,7 @@ If your bug report is good, we will do our best to help you to get a corrected
 version of the library; if the bug report is poor, we will not do anything
 about it (aside of chiding you to send better bug reports).
 
-Send your bug report to the MPFR mailing-list @samp{mpfr@@loria.fr}.
+Send your bug report to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 
 If you think something in this manual is unclear, or downright incorrect, or if
 the language needs to be improved, please send a note to the same address.

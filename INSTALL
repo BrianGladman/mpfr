@@ -433,7 +433,7 @@ For instance, under Unix, where paths are separated by a colon:
     setenv LD_LIBRARY_PATH "$LIBRARY_PATH"
 
 If you can't solve your problem, you should contact us via the MPFR
-mailing-list <mpfr@loria.fr>, indicating the machine and operating system
+mailing-list <mpfr@inria.fr>, indicating the machine and operating system
 used (uname -a), the compiler and version used (gcc -v if you use gcc),
 the configure options used if any (including variables such as CC and
 CFLAGS), the version of GMP and MPFR used, and a description of the
