@@ -1021,6 +1021,11 @@ exp_lgamma_tests (void)
   exp_lgamma (x, 53, 64);
   mpfr_set_str (x, "-1.2b13fc45a92dea8@14", 16, MPFR_RNDN);
   exp_lgamma (x, 53, 64);
+  /* Similar tests (overflow threshold) for 32-bit machines. */
+  mpfr_set_str (x, "2ab68d8.657542f855111c61", 16, MPFR_RNDN);
+  exp_lgamma (x, 12, 64);
+  mpfr_set_str (x, "-2ab68d6.657542f855111c61", 16, MPFR_RNDN);
+  exp_lgamma (x, 12, 64);
   /* The following test is an overflow on 32-bit and 64-bit machines.
      Revision r8189 fails on 64-bit machines as the flag is unset. */
   mpfr_set_str (x, "1.2b13fc45a92ded8@14", 16, MPFR_RNDN);
