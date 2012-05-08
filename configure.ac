@@ -302,7 +302,6 @@ if test "$test_CFLAGS" != set && test -n "$GCC"; then
 fi
 
 AM_PROG_CC_C_O
-AM_C_PROTOTYPES
 
 case $host in
   *-apple-darwin*)

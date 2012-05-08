@@ -9,7 +9,7 @@
 # PARTICULAR PURPOSE.
 
 
-AUTOMAKE_OPTIONS = 1.6 gnu $(top_builddir)/ansi2knr
+AUTOMAKE_OPTIONS = 1.6 gnu
 
 # tversion is run
 #   * at the beginning so that the user gets a possible version error
