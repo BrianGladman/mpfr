@@ -307,21 +307,23 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
  }
 #endif
 
-/* Flags of __gmpfr_flags */
-#define MPFR_FLAGS_UNDERFLOW 1
-#define MPFR_FLAGS_OVERFLOW 2
-#define MPFR_FLAGS_NAN 4
-#define MPFR_FLAGS_INEXACT 8
-#define MPFR_FLAGS_ERANGE 16
-#define MPFR_FLAGS_DIVBY0 32
-#define MPFR_FLAGS_ALL 63
-
 /* Replace some common functions for direct access to the global vars */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
 #define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
 #define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
+/* Flags related macros. */
+/* Note: Function-like macros that modify __gmpfr_flags are not defined
+   because of the risk to break the sequence point rules if two such
+   macros are used in the same expression (without a sequence point
+   between). For instance, mpfr_sgn currently uses mpfr_set_erangeflag(),
+   which mustn't be implemented as a macro for this reason. */
+
+#define mpfr_flags_test(mask) \
+  (__gmpfr_flags & (mpfr_flags_t) (mask))
+
+#if MPFR_FLAGS_ALL <= INT_MAX
 #define mpfr_underflow_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
 #define mpfr_overflow_p() \
@@ -334,6 +336,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
   ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
 #define mpfr_divby0_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_DIVBY0))
+#endif
 
 /* Use a do-while statement for the following macros in order to prevent
    one from using them in an expression, as the sequence point rules could

@@ -69,6 +69,15 @@ typedef size_t          mpfr_size_t;
    directly). */
 typedef unsigned int    mpfr_flags_t;
 
+/* Flags macros (in the public API) */
+#define MPFR_FLAGS_UNDERFLOW 1
+#define MPFR_FLAGS_OVERFLOW 2
+#define MPFR_FLAGS_NAN 4
+#define MPFR_FLAGS_INEXACT 8
+#define MPFR_FLAGS_ERANGE 16
+#define MPFR_FLAGS_DIVBY0 32
+#define MPFR_FLAGS_ALL 63
+
 /* Definition of rounding modes (DON'T USE MPFR_RNDNA!).
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible
@@ -329,6 +338,13 @@ __MPFR_DECLSPEC int mpfr_divby0_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_nanflag_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_inexflag_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_erangeflag_p _MPFR_PROTO ((void));
+
+__MPFR_DECLSPEC void mpfr_flags_clear _MPFR_PROTO ((mpfr_flags_t));
+__MPFR_DECLSPEC void mpfr_flags_set _MPFR_PROTO ((mpfr_flags_t));
+__MPFR_DECLSPEC mpfr_flags_t mpfr_flags_test _MPFR_PROTO ((mpfr_flags_t));
+__MPFR_DECLSPEC mpfr_flags_t mpfr_flags_save _MPFR_PROTO ((void));
+__MPFR_DECLSPEC void mpfr_flags_restore _MPFR_PROTO ((mpfr_flags_t,
+                                                      mpfr_flags_t));
 
 __MPFR_DECLSPEC int
   mpfr_check_range _MPFR_PROTO ((mpfr_ptr, int, mpfr_rnd_t));

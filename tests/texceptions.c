@@ -336,6 +336,83 @@ check_set (void)
   MPFR_ASSERTN (__gmpfr_flags == 0);
 }
 
+/* Note: this test assumes that mpfr_flags_* can be implemented as both
+   a function and a macro. Thus in such a case, both implementations are
+   tested. */
+static void
+check_groups (void)
+{
+  int i, j;
+  for (i = 0; i < 200; i++)
+    {
+      mpfr_flags_t f1, f2, mask;
+
+      f1 = __gmpfr_flags;
+      MPFR_ASSERTN (mpfr_flags_save () == f1);
+      MPFR_ASSERTN ((mpfr_flags_save) () == f1);
+      MPFR_ASSERTN (__gmpfr_flags == f1);
+      mask = randlimb () & MPFR_FLAGS_ALL;
+      if (randlimb () & 1)
+        mpfr_flags_set (mask);
+      else
+        (mpfr_flags_set) (mask);
+      for (j = 1; j <= MPFR_FLAGS_ALL; j <<= 1)
+        if ((__gmpfr_flags & j) != ((mask & j) != 0 ? j : (f1 & j)))
+          {
+            printf ("mpfr_flags_set error: old = 0x%lx, group = 0x%lx, "
+                    "new = 0x%lx, j = 0x%lx\n",
+                    (unsigned long) f1, (unsigned long) mask,
+                    (unsigned long) __gmpfr_flags, (unsigned long) j);
+            exit (1);
+          }
+
+      f2 = __gmpfr_flags;
+      mask = randlimb () & MPFR_FLAGS_ALL;
+      if (randlimb () & 1)
+        mpfr_flags_clear (mask);
+      else
+        (mpfr_flags_clear) (mask);
+      for (j = 1; j <= MPFR_FLAGS_ALL; j <<= 1)
+        if ((__gmpfr_flags & j) != ((mask & j) != 0 ? 0 : (f2 & j)))
+          {
+            printf ("mpfr_flags_clear error: old = 0x%lx, group = 0x%lx, "
+                    "new = 0x%lx, j = 0x%lx\n",
+                    (unsigned long) f2, (unsigned long) mask,
+                    (unsigned long) __gmpfr_flags, (unsigned long) j);
+            exit (1);
+          }
+
+      mask = randlimb () & MPFR_FLAGS_ALL;
+      f2 = (randlimb () & 1) ?
+        mpfr_flags_test (mask) : (mpfr_flags_test) (mask);
+      for (j = 1; j <= MPFR_FLAGS_ALL; j <<= 1)
+        if ((f2 & j) != ((mask & j) != 0 ? (__gmpfr_flags & j) : 0))
+          {
+            printf ("mpfr_flags_test error: current = 0x%lx, mask = 0x%lx, "
+                    "res = 0x%lx, j = 0x%lx\n",
+                    (unsigned long) __gmpfr_flags, (unsigned long) mask,
+                    (unsigned long) f2, (unsigned long) j);
+            exit (1);
+          }
+
+      f2 = __gmpfr_flags;
+      if (randlimb () & 1)
+        mpfr_flags_restore (f1, mask);
+      else
+        (mpfr_flags_restore) (f1, mask);
+      for (j = 1; j <= MPFR_FLAGS_ALL; j <<= 1)
+        if ((__gmpfr_flags & j) != (((mask & j) != 0 ? f1 : f2) & j))
+          {
+            printf ("mpfr_flags_restore error: old = 0x%lx, flags = 0x%lx, "
+                    "mask = 0x%lx, new = 0x%lx, j = 0x%lx\n",
+                    (unsigned long) f2, (unsigned long) f1,
+                    (unsigned long) mask, (unsigned long) __gmpfr_flags,
+                    (unsigned long) j);
+            exit (1);
+          }
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -437,6 +514,7 @@ main (int argc, char *argv[])
   check_set_get_prec ();
   check_powerof2 ();
   check_set ();
+  check_groups ();
 
   tests_end_mpfr ();
   return 0;

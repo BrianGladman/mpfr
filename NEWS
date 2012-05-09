@@ -27,6 +27,8 @@ Changes from versions 3.1.* to version 3.2.0:
   number of bits per word and on the endianness.
 - New function mpfr_fmodquo to return the low bits of the quotient
   corresponding to mpfr_fmod.
+- New functions mpfr_flags_clear, mpfr_flags_set, mpfr_flags_test,
+  mpfr_flags_save and mpfr_flags_restore to operate on groups of flags.
 - Updated tuning parameters.
 - Improved MPFR manual.
 - Bug fixes.
