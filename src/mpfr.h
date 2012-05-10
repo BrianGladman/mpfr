@@ -76,7 +76,12 @@ typedef unsigned int    mpfr_flags_t;
 #define MPFR_FLAGS_INEXACT 8
 #define MPFR_FLAGS_ERANGE 16
 #define MPFR_FLAGS_DIVBY0 32
-#define MPFR_FLAGS_ALL 63
+#define MPFR_FLAGS_ALL (MPFR_FLAGS_UNDERFLOW | \
+                        MPFR_FLAGS_OVERFLOW  | \
+                        MPFR_FLAGS_NAN       | \
+                        MPFR_FLAGS_INEXACT   | \
+                        MPFR_FLAGS_ERANGE    | \
+                        MPFR_FLAGS_DIVBY0)
 
 /* Definition of rounding modes (DON'T USE MPFR_RNDNA!).
    Warning! Changing the contents of this enum should be seen as an
