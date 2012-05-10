@@ -3003,8 +3003,20 @@ Set (raise) the group of flags specified by @var{mask}.
 @end deftypefun
 
 @deftypefun mpfr_flags_t mpfr_flags_test (mpfr_flags_t @var{mask})
-Return the flags specified by @var{mask}. To test whether any flag from
-@var{mask} is set, compare the return value to 0.
+Return the flags specified by @var{mask}.  To test whether any flag from
+@var{mask} is set, compare the return value to 0.  You can also test
+individual flags by AND'ing the result with @code{MPFR_FLAGS_} macros.
+Example:
+@example
+mpfr_flags_t t = mpfr_flags_test (MPFR_FLAGS_UNDERFLOW|
+                                  MPFR_FLAGS_OVERFLOW)
+@dots{}
+if (t)  /* underflow and/or overflow (unlikely) */
+  @{
+    if (t & MPFR_FLAGS_UNDERFLOW)  @{ /* handle underflow */ @}
+    if (t & MPFR_FLAGS_OVERFLOW)   @{ /* handle overflow  */ @}
+  @}
+@end example
 @end deftypefun
 
 @deftypefun mpfr_flags_t mpfr_flags_save (void)
