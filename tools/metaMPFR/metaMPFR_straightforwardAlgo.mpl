@@ -284,10 +284,10 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
   if (type = FUNCTION_SERIES)
   then
     fprintf(fd, "      mpfr_set_prec (tmp, wprec);\n"):
-    fprintf(fd, "      if(mpfr_get_prec(x) > wprec)\n"):
+    fprintf(fd, "      if(mpfr_get_prec (x) > wprec)\n"):
     fprintf(fd, "        mpfr_set_prec (x1, wprec);\n"):
     fprintf(fd, "      else\n"):
-    fprintf(fd, "        mpfr_set_prec(x1, mpfr_get_prec(x));\n"):
+    fprintf(fd, "        mpfr_set_prec (x1, mpfr_get_prec (x));\n"):
     for i from 2 to nops(exponents)-1 do
       fprintf(fd, "      mpfr_set_prec (x%d, wprec);\n", exponents[i])
     od:
@@ -611,7 +611,7 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
 
   fprintf(fd, "    } /* End of ZIV loop */\n\n"):
   fprintf(fd, "  MPFR_ZIV_FREE (loop);\n\n"):
-  fprintf(fd, "  r = mpfr_set (y, s, rnd);\n\n"):
+  fprintf(fd, "  r = mpfr_set (res, s, rnd);\n\n"):
 
 
   ######################################################
@@ -637,7 +637,7 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
 
   fprintf(fd, "\n"):
   fprintf(fd, "  MPFR_SAVE_EXPO_FREE (expo);\n"):
-  fprintf(fd, "  return mpfr_check_range (y, r, rnd);\n"):
+  fprintf(fd, "  return mpfr_check_range (res, r, rnd);\n"):
   fprintf(fd, "}\n"):
   
   fclose(fd):
