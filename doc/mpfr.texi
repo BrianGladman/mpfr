@@ -2971,7 +2971,7 @@ inexact and @emph{erange} flags.
 @deftypefun void mpfr_clear_flags (void)
 Clear (lower) all global flags (underflow, overflow, divide-by-zero, invalid,
 inexact, @emph{erange}). Note: a group of flags can be cleared by using
-@code{mpfr_flags_restore}.
+@code{mpfr_flags_clear}.
 @end deftypefun
 
 @deftypefun void mpfr_set_underflow (void)
