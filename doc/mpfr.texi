@@ -2994,6 +2994,12 @@ Return the corresponding (underflow, overflow, divide-by-zero, invalid,
 inexact, @emph{erange}) flag, which is non-zero iff the flag is set.
 @end deftypefun
 
+The @code{mpfr_flags_} functions below that take an argument @var{mask}
+can operate on any subset of the exception flags: a flag is part of this
+subset (or group) if and only if the corresponding bit of the argument
+@var{mask} is set.  The @code{MPFR_FLAGS_} macros will normally be used
+to build this argument.  @xref{Exceptions}.
+
 @deftypefun void mpfr_flags_clear (mpfr_flags_t @var{mask})
 Clear (lower) the group of flags specified by @var{mask}.
 @end deftypefun
@@ -3025,7 +3031,8 @@ Return all the flags. It is equivalent to
 @end deftypefun
 
 @deftypefun void mpfr_flags_restore (mpfr_flags_t @var{flags}, mpfr_flags_t @var{mask})
-Restore the status of the flags from @var{flags} specified by @var{mask}.
+Restore the flags specified by @var{mask} to their state represented
+in @var{flags}.
 @end deftypefun
 
 @node Compatibility with MPF, Custom Interface, Exception Related Functions, MPFR Interface
