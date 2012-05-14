@@ -77,7 +77,7 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
   fprintf(fd, "  mpfr_prec_t correctBits;       /* estimates the number of correct bits*/\n"):
   fprintf(fd, "  unsigned long int k;\n"):
   fprintf(fd, "  unsigned long int conditionNumber;        /* condition number of the series */\n"):
-  fprintf(fd, "  unsigned assumedExp;           /* used as a lowerbound of -EXP(f(x)) */\n"):
+  fprintf(fd, "  unsigned assumed_exponent;     /* used as a lowerbound of -EXP(f(x)) */\n"):
   fprintf(fd, "  int r;                         /* returned ternary value */\n"):
   fprintf(fd, "  mpfr_t s;                      /* used to store the partial sum */\n"):
   
@@ -90,11 +90,11 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
   if (hardconstant=1)
   then
     if (type=CONSTANT_SERIES)
-      then fprintf(fd, "  mpfr_t x%d;                      /* used to store %a */\n", d, c):
+      then fprintf(fd, "  mpfr_t x%d;                     /* used to store %a */\n", d, c):
     elif (type=FUNCTION_SERIES_RATIONAL)
-      then fprintf(fd, "  mpfr_t x%d;                      /* used to store %a */\n", d, c*(u/v)^d):
+      then fprintf(fd, "  mpfr_t x%d;                     /* used to store %a */\n", d, c*(u/v)^d):
     elif (type=FUNCTION_SERIES)
-      then fprintf(fd, "  mpfr_t x%d;                      /* used to store %a */\n", d, c*x^d):
+      then fprintf(fd, "  mpfr_t x%d;                     /* used to store %a */\n", d, c*x^d):
     fi:
   fi:
 
@@ -118,6 +118,7 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
     fprintf(fd, "test%d", init_cond[i][1]):
     if (i<nc) then fprintf(fd, ", ") else fprintf(fd, ";\n") fi:
   od:
+  fprintf(fd, "  int global_test;               /* used to test when the sum can be stopped */"):
 
   fprintf(fd, "\n"):
   fprintf(fd, "  /* Logging */\n"):
@@ -235,15 +236,15 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
   # when fofx is known by using asympt(fofx, x, 1). A clean implementation appears to be complex though.
   # We must catch errors if the development does not exist (e.g. AiryAi(-x));
   # We must find a separation after which the asymptotic behavior is valid (e.g. x>1)
-  printf("The code contains a variable assumedExp arbitrarily set to 10. You can put any value heuristically chosen. The closer it is to -log_2(|f(x)|), the better it is.\n"):
-  fprintf(fd, "  assumedExp = 10; /* TIP: You can put any value heuristically chosen. The closer it is to -log_2(|f(x)|), the better it is */\n"):
+  printf("The code contains a variable assumed_exponent arbitrarily set to 10. You can put any value heuristically chosen. The closer it is to -log_2(|f(x)|), the better it is.\n"):
+  fprintf(fd, "  assumed_exponent = 10; /* TIP: You can put any value heuristically chosen. The closer it is to -log_2(|f(x)|), the better it is */\n"):
 
   # TODO: find a way of putting a rigorous value here.
   # This value *must* be rigorous: the safety of the implementation relies on it.
   # Precisely, we need to have sum(|a(i)*x^i|) <= 2^conditionNumber
   fprintf(fd, "  conditionNumber = xxx; /* FIXME: set a value such that sum(|a(i)*x^i|) <= 2^conditionNumber */\n"):
   printf("The code contains a variable conditionNumber that you must manually set to a suitable value, in order to ensure that sum_{i=0}^{infinity} |a(i)*x^i| <= 2^conditionNumber\n"):
-  fprintf(fd, "  wprec = prec + ERRORANALYSISPREC + conditionNumber + assumedExp;\n"):
+  fprintf(fd, "  wprec = prec + ERRORANALYSISPREC + conditionNumber + assumed_exponent;\n"):
 
 
   ######################################################
@@ -532,17 +533,20 @@ generateStraightforwardAlgo := proc(rec, aofn, type, name, filename, fofx := _f(
   # We have t(k0+d) = c*s1(k0)/s1(k0+d) * s2(k0+d)/s2(k0)* p(k0)/q(k0) * x^d t(k0)
   # (where x=u/v or x=1 in cases of rational series or constant series)
   # So it suffices that:
-  # forall k0>=k, |c * s1(k0)/s1(k0+d) * s2(k0+d)/s2(k0) * p(k0)/q(k0) * x^d| <= 1/2     (1)
+  # forall k0>=k-d, |c * s1(k0)/s1(k0+d) * s2(k0+d)/s2(k0) * p(k0)/q(k0) * x^d| <= 1/2     (1)
   #
-  # If this is true, we can bound |tk + t(k+d) + t(k+2d) + ...| by 2tk
-  # so the total remainder is bounded by 2*nc*tk.
+  # If this is true, |tk| = |c*s1(k-d)/s1(k) * s2(k)/s2(k-d)* p(k-d)/q(k-d) * x^d t(k-d)| <= t(k-d)/2
+  # This is also true for larger values of k, so we can bound |tk + t(k+d) + t(k+2d) + ...| by |t(k-d)|.
+  # And the same holds for |t(k+1) + ...|, |t(k+2) + ...|, etc. up to |t(k+d-1)+...|.
   #
   # global_test depends on k and we must satisfy:
   #  "if (global_test) then (1) holds".
+  #
+  # the total remainder is bounded by 2*nc*tk.
 
-  fprintf(fd, "          global_test = xxx; /* FIXME: set the value in order to ensure that, whenever global_test is true, we have: forall k'>=k, |r(k')*x^d| <= 1/2, where r is the fraction such that a(n+d)=r(n)a(n)*/\n"):
+  fprintf(fd, "          global_test = xxx; /* FIXME: set the value in order to ensure that, whenever global_test is true, we have: forall k'>=k, |r(k')*x^d| <= 1/2, where r is the fraction such that a(n)=r(n)a(n-d)*/\n"):
   printf("The code contains a variable global_test that you must manually set to a suitable value, in order to ensure that when global_test is true, the following holds:\n"):
-  printf("        forall k'>=k, |r(k')*x^d| <= 1/2, where r is the fraction such that a(n+d)=r(n)a(n)\n"):
+  printf("        forall k'>=k, |r(k')*x^d| <= 1/2, where r is the fraction such that a(n)=r(n)a(n-d)\n"):
   guard_bits := 1+1+ceil(log[2](nc)):
   for i from 1 to nc do
     i0 := init_cond[i][1]:
