@@ -98,6 +98,8 @@ Table of contents:
   --enable-decimal-float)
   See also the discussion started at:
     https://sympa.inria.fr/sympa/arc/mpfr/2010-05/msg00003.html
+  and a new one at:
+    https://sympa.inria.fr/sympa/arc/mpfr/2012-05/msg00019.html
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement mpfr_pow_q and variants with two integers (native or mpz)
   instead of a rational? See IEEE P1788.
