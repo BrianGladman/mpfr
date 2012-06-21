@@ -255,7 +255,7 @@ main (int argc, char *argv[])
   if (MPFR_SIGN(x) > 0)
     {
       printf ("Error: sign of -0.0 is not set correctly\n");
-#ifdef _GMP_IEEE_FLOATS
+#if _GMP_IEEE_FLOATS
       exit (1);
       /* Non IEEE doesn't support negative zero yet */
 #endif
