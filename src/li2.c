@@ -44,7 +44,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
      reduced so that 0 < z <= log(2). Here is additionnal check that z is
      (nearly) correct */
   MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
-  MPFR_ASSERTD (mpfr_cmp_d (z, 0.6953125) <= 0);
+  MPFR_ASSERTD (mpfr_cmp_ui_2exp (z, 89, -7) <= 0); /* z <= 0.6953125 */
 
   sump = MPFR_PREC (sum);       /* target precision */
   p = sump + MPFR_INT_CEIL_LOG2 (sump) + 4;     /* the working precision */
@@ -264,7 +264,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   yp = MPFR_PREC (y);
   m = yp + MPFR_INT_CEIL_LOG2 (yp) + 13;
 
-  if (MPFR_LIKELY ((mpfr_cmp_ui (x, 0) > 0) && (mpfr_cmp_d (x, 0.5) <= 0)))
+  if (MPFR_LIKELY ((mpfr_cmp_ui (x, 0) > 0) && (mpfr_cmp_ui_2exp (x, 1, -1) <= 0)))
     /* 0 < x <= 1/2: Li2(x) = S(-log(1-x))-log^2(1-x)/4 */
     {
       mpfr_t s, u;
