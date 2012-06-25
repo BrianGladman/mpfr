@@ -164,7 +164,7 @@ check_large (void)
             {
               printf ("mpfr_set_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
                       i, mpfr_print_rnd_mode (r));
-              mpfr_printf ("got ");
+              printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
@@ -210,7 +210,7 @@ check_small (void)
             {
               printf ("mpfr_set_float128 failed for 2^%d rnd=%s\n", i,
                       mpfr_print_rnd_mode (r));
-              mpfr_printf ("got ");
+              printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
@@ -229,7 +229,7 @@ check_small (void)
             {
               printf ("mpfr_set_float128 failed for -2^%d rnd=%s\n", i,
                       mpfr_print_rnd_mode (r));
-              mpfr_printf ("got ");
+              printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
