@@ -122,7 +122,7 @@ check_large (void)
   __float128 f, e;
   int i;
   mpfr_t x, y;
-  mp_rnd_t r;
+  mpfr_rnd_t r;
 
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
@@ -193,7 +193,7 @@ check_small (void)
   __float128 f, e;
   int i;
   mpfr_t x, y;
-  mp_rnd_t r;
+  mpfr_rnd_t r;
 
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
