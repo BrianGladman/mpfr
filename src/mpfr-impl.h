@@ -431,6 +431,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 # define MPFR_DBGRES(A)      ((void) (A))
 #endif
 
+#include "mpfr-sassert.h"
+
 /* Code to deal with impossible
    WARNING: It doesn't use do { } while (0) for Insure++*/
 #define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}

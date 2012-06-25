@@ -417,6 +417,35 @@ int main() {
      ])
 CPPFLAGS="$saved_CPPFLAGS"
 fi
+
+dnl Check if Static Assertions are supported.
+AC_MSG_CHECKING(for Static Assertion support)
+saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#define MPFR_USE_STATIC_ASSERT 1
+#include "mpfr-sassert.h"
+
+/* Test if Static Assertions work */
+MPFR_DECL_STATIC_ASSERT(sizeof(char) <= sizeof(int));
+
+int main() {
+  MPFR_DECL_STATIC_ASSERT(sizeof(int) <= sizeof(long));
+  int x;
+  x = 1;
+  MPFR_STAT_STATIC_ASSERT(sizeof(short) <= sizeof(int));
+  return 0;
+}
+  ]])],
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE([MPFR_USE_STATIC_ASSERT],1,[Build MPFR with Static Assertions])
+     ],
+     [AC_MSG_RESULT(no)
+     ],
+     [AC_MSG_RESULT([cannot test, assume no])
+     ])
+CPPFLAGS="$saved_CPPFLAGS"
+
 ])
 dnl end of MPFR_CONFIGS
 
