@@ -135,45 +135,47 @@ check_large (void)
   for (i = 113; i < 16384; i++)
     {
       for (r = 0; r < MPFR_RND_MAX; r++)
-	{
-	  mpfr_set_float128 (x, f, r);
-	  if (mpfr_cmp (x, y) != 0)
-	    {
-	      printf ("mpfr_set_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      mpfr_printf ("got %Re\n", x);
-	      exit (1);
-	    }
-	  e =  mpfr_get_float128 (x, r);
-	  if (e != f)
-	    {
-	      printf ("mpfr_get_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      exit (1);
-	    }
-	}
+        {
+          mpfr_set_float128 (x, f, r);
+          if (mpfr_cmp (x, y) != 0)
+            {
+              printf ("mpfr_set_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              printf ("got ");
+              mpfr_dump (x);
+              exit (1);
+            }
+          e =  mpfr_get_float128 (x, r);
+          if (e != f)
+            {
+              printf ("mpfr_get_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              exit (1);
+            }
+        }
 
       /* check with opposite number */
       f = -f;
       mpfr_neg (y, y, MPFR_RNDN);
       for (r = 0; r < MPFR_RND_MAX; r++)
-	{
-	  mpfr_set_float128 (x, f, r);
-	  if (mpfr_cmp (x, y) != 0)
-	    {
-	      printf ("mpfr_set_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      mpfr_printf ("got %Re\n", x);
-	      exit (1);
-	    }
-	  e =  mpfr_get_float128 (x, r);
-	  if (e != f)
-	    {
-	      printf ("mpfr_get_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      exit (1);
-	    }
-	}
+        {
+          mpfr_set_float128 (x, f, r);
+          if (mpfr_cmp (x, y) != 0)
+            {
+              printf ("mpfr_set_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              mpfr_printf ("got ");
+              mpfr_dump (x);
+              exit (1);
+            }
+          e =  mpfr_get_float128 (x, r);
+          if (e != f)
+            {
+              printf ("mpfr_get_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              exit (1);
+            }
+        }
 
       f = -f;
       mpfr_neg (y, y, MPFR_RNDN);
@@ -202,42 +204,44 @@ check_small (void)
   for (i = 0; f != 0.0; i--)
     {
       for (r = 0; r < MPFR_RND_MAX; r++)
-	{
-	  mpfr_set_float128 (x, f, r);
-	  if (mpfr_cmp (x, y) != 0)
-	    {
-	      printf ("mpfr_set_float128 failed for 2^%d rnd=%s\n", i,
-		      mpfr_print_rnd_mode (r));
-	      mpfr_printf ("got %Re\n", x);
-	      exit (1);
-	    }
-	  e =  mpfr_get_float128 (x, r);
-	  if (e != f)
-	    {
-	      printf ("mpfr_get_float128 failed for 2^%d rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      exit (1);
-	    }
+        {
+          mpfr_set_float128 (x, f, r);
+          if (mpfr_cmp (x, y) != 0)
+            {
+              printf ("mpfr_set_float128 failed for 2^%d rnd=%s\n", i,
+                      mpfr_print_rnd_mode (r));
+              mpfr_printf ("got ");
+              mpfr_dump (x);
+              exit (1);
+            }
+          e =  mpfr_get_float128 (x, r);
+          if (e != f)
+            {
+              printf ("mpfr_get_float128 failed for 2^%d rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              exit (1);
+            }
 
-	  /* check with opposite number */
-	  mpfr_set_float128 (x, -f, r);
-	  mpfr_neg  (y, y, MPFR_RNDN);
-	  if (mpfr_cmp (x, y) != 0)
-	    {
-	      printf ("mpfr_set_float128 failed for -2^%d rnd=%s\n", i,
-		      mpfr_print_rnd_mode (r));
-	      mpfr_printf ("got %Re\n", x);
-	      exit (1);
-	    }
-	  if (e != f)
-	    {
-	      printf ("mpfr_get_float128 failed for -2^%d rnd=%s\n",
-		      i, mpfr_print_rnd_mode (r));
-	      exit (1);
-	    }
+          /* check with opposite number */
+          mpfr_set_float128 (x, -f, r);
+          mpfr_neg  (y, y, MPFR_RNDN);
+          if (mpfr_cmp (x, y) != 0)
+            {
+              printf ("mpfr_set_float128 failed for -2^%d rnd=%s\n", i,
+                      mpfr_print_rnd_mode (r));
+              mpfr_printf ("got ");
+              mpfr_dump (x);
+              exit (1);
+            }
+          if (e != f)
+            {
+              printf ("mpfr_get_float128 failed for -2^%d rnd=%s\n",
+                      i, mpfr_print_rnd_mode (r));
+              exit (1);
+            }
 
-	  mpfr_neg  (y, y, MPFR_RNDN);
-	}
+          mpfr_neg  (y, y, MPFR_RNDN);
+        }
       f =  0.5 * f;
       mpfr_div_2exp (y, y, 1, MPFR_RNDN);
     }

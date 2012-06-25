@@ -85,28 +85,28 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
               shift_exp += 8192;
               mpfr_div_2si (t, t, 8192, MPFR_RNDZ);
             }
-	  /* now |x| < 2^8192 */
+          /* now |x| < 2^8192 */
           if (ABS (x) >= div12)
             {
               x /= div12; /* exact */
               shift_exp += 4096;
               mpfr_div_2si (t, t, 4096, MPFR_RNDZ);
             }
-	  /* now |x| < 2^4096 */
+          /* now |x| < 2^4096 */
           if (ABS (x) >= div11)
             {
               x /= div11; /* exact */
               shift_exp += 2048;
               mpfr_div_2si (t, t, 2048, MPFR_RNDZ);
             }
-	  /* now |x| < 2^2048 */
+          /* now |x| < 2^2048 */
           if (ABS (x) >= (0.5 * div10))
             {
               x /= (2.0 * div10); /* exact */
               shift_exp += 1025;
               mpfr_div_2si (t, t, 1025, MPFR_RNDZ);
             }
-	  /* now |x| < 2^1023 */
+          /* now |x| < 2^1023 */
         } /* end of check overflow of double */
 
       /* check underflow on double */
@@ -118,50 +118,50 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
           /* div9 = 2^(-512) */
           div10 = div9  * div9;  /* 2^(-1024) */
           div11 = div10 * div10; /* 2^(-2048) */
-	  div12 = div11 * div11; /* 2^(-4096) */
-	  div13 = div12 * div12; /* 2^(-8192) */
-	  if (ABS (x) <= div13)
-	    {
-	      x /= div13; /* exact */
-	      shift_exp -= 8192;
-	      mpfr_mul_2si (t, t, 8192, MPFR_RNDZ);
-	    }
-	  /* now |x| > 2^(-8192) */
-	  if (ABS (x) <= div12)
-	    {
-	      x /= div12; /* exact */
-	      shift_exp -= 4096;
-	      mpfr_mul_2si (t, t, 4096, MPFR_RNDZ);
-	    }
-	  /* now |x| > 2^(-4096) */
-	  if (ABS (x) <= div11)
-	    {
-	      x /= div11; /* exact */
-	      shift_exp -= 2048;
-	      mpfr_mul_2si (t, t, 2048, MPFR_RNDZ);
-	    }
-	  /* now |x| > 2^(-2048) */
-	  if (ABS (x) <= (div10 * 4.0)) /* div10 * 4.0 = 2^(-1022) */
-	    {
-	      x /= (div10 * 0.25); /* exact, div10 * 0.25 = 2^(-1026) */
-	      shift_exp -= 1026;
-	      mpfr_mul_2si (t, t, 1026, MPFR_RNDZ);
-	    }
-	  /* now |x| > 2^(-1022) */
-	}
+          div12 = div11 * div11; /* 2^(-4096) */
+          div13 = div12 * div12; /* 2^(-8192) */
+          if (ABS (x) <= div13)
+            {
+              x /= div13; /* exact */
+              shift_exp -= 8192;
+              mpfr_mul_2si (t, t, 8192, MPFR_RNDZ);
+            }
+          /* now |x| > 2^(-8192) */
+          if (ABS (x) <= div12)
+            {
+              x /= div12; /* exact */
+              shift_exp -= 4096;
+              mpfr_mul_2si (t, t, 4096, MPFR_RNDZ);
+            }
+          /* now |x| > 2^(-4096) */
+          if (ABS (x) <= div11)
+            {
+              x /= div11; /* exact */
+              shift_exp -= 2048;
+              mpfr_mul_2si (t, t, 2048, MPFR_RNDZ);
+            }
+          /* now |x| > 2^(-2048) */
+          if (ABS (x) <= (div10 * 4.0)) /* div10 * 4.0 = 2^(-1022) */
+            {
+              x /= (div10 * 0.25); /* exact, div10 * 0.25 = 2^(-1026) */
+              shift_exp -= 1026;
+              mpfr_mul_2si (t, t, 1026, MPFR_RNDZ);
+            }
+          /* now |x| > 2^(-1022) */
+        }
       else /* no underflow: 2^(-512) <= |x| < 2^1023 */
-	{
-	  inexact = mpfr_set_d (u, (double) x, MPFR_RNDZ);
-	  MPFR_ASSERTD (inexact == 0);
-	  if (mpfr_add (t, t, u, MPFR_RNDZ) != 0)
-	    {
-	      if (!mpfr_number_p (t))
-		break;
-	      /* Inexact. This cannot happen unless the C implementation
-		 "lies" on the precision. */
-	    }
-	  x -= (__float128) mpfr_get_d1 (u); /* exact */
-	}
+        {
+          inexact = mpfr_set_d (u, (double) x, MPFR_RNDZ);
+          MPFR_ASSERTD (inexact == 0);
+          if (mpfr_add (t, t, u, MPFR_RNDZ) != 0)
+            {
+              if (!mpfr_number_p (t))
+                break;
+              /* Inexact. This cannot happen unless the C implementation
+                 "lies" on the precision. */
+            }
+          x -= (__float128) mpfr_get_d1 (u); /* exact */
+        }
     }
 
   inexact = mpfr_mul_2si (r, t, shift_exp, rnd_mode);
