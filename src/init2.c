@@ -30,21 +30,21 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 
   /* Check if we can represent the number of limbs
    * associated to the maximum of mpfr_prec_t*/
-  MPFR_ASSERTN( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
+  MPFR_STAT_STATIC_ASSERT( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
 
   /* Check for correct GMP_NUMB_BITS and BYTES_PER_MP_LIMB */
-  MPFR_ASSERTN( GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
-                && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
-
+  MPFR_STAT_STATIC_ASSERT( GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
+                      && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
+  /* Check for mp_bits_per_limb (a global variable inside GMP library) */
   MPFR_ASSERTN (mp_bits_per_limb == GMP_NUMB_BITS);
 
   /* Check for correct EXP NAN, ZERO & INF in both mpfr.h and mpfr-impl.h */
-  MPFR_ASSERTN( __MPFR_EXP_NAN  == MPFR_EXP_NAN  );
-  MPFR_ASSERTN( __MPFR_EXP_ZERO == MPFR_EXP_ZERO );
-  MPFR_ASSERTN( __MPFR_EXP_INF  == MPFR_EXP_INF  );
+  MPFR_STAT_STATIC_ASSERT( __MPFR_EXP_NAN  == MPFR_EXP_NAN  );
+  MPFR_STAT_STATIC_ASSERT( __MPFR_EXP_ZERO == MPFR_EXP_ZERO );
+  MPFR_STAT_STATIC_ASSERT( __MPFR_EXP_INF  == MPFR_EXP_INF  );
 
-  MPFR_ASSERTN( MPFR_EMAX_MAX <= (MPFR_EXP_MAX >> 1)  );
-  MPFR_ASSERTN( MPFR_EMIN_MIN >= -(MPFR_EXP_MAX >> 1) );
+  MPFR_STAT_STATIC_ASSERT( MPFR_EMAX_MAX <= (MPFR_EXP_MAX >> 1)  );
+  MPFR_STAT_STATIC_ASSERT( MPFR_EMIN_MIN >= -(MPFR_EXP_MAX >> 1) );
 
   /* p=1 is not allowed since the rounding to nearest even rule requires at
      least two bits of mantissa: the neighbours of 3/2 are 1*2^0 and 1*2^1,
