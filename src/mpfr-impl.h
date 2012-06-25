@@ -976,19 +976,6 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_TMP_FREE(x) TMP_FREE
 #endif
 
-/* This code is experimental: don't use it */
-#ifdef MPFR_USE_OWN_MPFR_TMP_ALLOC
-extern unsigned char *mpfr_stack;
-#undef MPFR_TMP_DECL
-#undef MPFR_TMP_MARK
-#undef MPFR_TMP_ALLOC
-#undef MPFR_TMP_FREE
-#define MPFR_TMP_DECL(_x) unsigned char *(_x)
-#define MPFR_TMP_MARK(_x) ((_x) = mpfr_stack)
-#define MPFR_TMP_ALLOC(_s) (mpfr_stack += (_s), mpfr_stack - (_s))
-#define MPFR_TMP_FREE(_x) (mpfr_stack = (_x))
-#endif
-
 #define MPFR_TMP_LIMBS_ALLOC(N) \
   ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * BYTES_PER_MP_LIMB))
 
