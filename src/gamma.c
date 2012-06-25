@@ -38,10 +38,13 @@ mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
      carry can occur, or ULP(y) > 2, and we need w >= EXP(y)-1:
      (a) if EXP(y) <= 1, w = PREC(y) + 2 - EXP(y)
      (b) if EXP(y) > 1 and EXP(y)-PREC(y) <= 1, w = PREC(y) + 1
-     (c) if EXP(y) > 1 and EXP(y)-PREC(y) > 1, w = EXP(y) - 1 */
+     (c) if EXP(y) > 1 and EXP(y)-PREC(y) > 1, w = EXP(y) - 1.
+
+     Note: case (c) cannot happen in practice since this would imply that
+     y is integer, thus x is negative integer, which has already been tested
+     before any call to mpfr_gamma_2_minus_x_exact(), and NaN was returned */
   return (MPFR_GET_EXP(x) <= 1) ? MPFR_PREC(x) + 2 - MPFR_GET_EXP(x)
-    : ((MPFR_GET_EXP(x) <= MPFR_PREC(x) + 1) ? MPFR_PREC(x) + 1
-       : MPFR_GET_EXP(x) - 1);
+    : MPFR_PREC(x) + 1;
 }
 
 /* return a sufficient precision such that 1-x is exact, assuming x < 1 */
