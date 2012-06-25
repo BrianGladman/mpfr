@@ -38,6 +38,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #   else
 #    define MPFR_THREAD_ATTR __declspec( thread )
 #   endif
+#  elif defined(MPFR_USE_C11_THREAD_SAFE)
+#   define MPFR_THREAD_ATTR _Thread_local
 #  else
 #   define MPFR_THREAD_ATTR __thread
 #  endif
