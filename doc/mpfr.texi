@@ -1193,7 +1193,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 The @code{mpfr_set_float128} function is built only with the configure
 option @samp{--enable-float128}, which requires the compiler or
 system provides the @samp{__float128} data type
-(recent versions of GCC support this data type).
+(GCC 4.3 or later supports this data type).
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system does not support the IEEE 754 standard,

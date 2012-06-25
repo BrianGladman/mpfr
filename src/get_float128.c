@@ -21,6 +21,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifdef MPFR_WANT_FLOAT128
+
 #include "mpfr-impl.h"
 
 /* generic code */
@@ -96,3 +98,5 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return r;
     }
 }
+
+#endif /* MPFR_WANT_FLOAT128 */
