@@ -54,12 +54,14 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_SET_POS (y);
 
       r = 0.0;
-      do {
-        s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
-        r += (__float128) s;
-        mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
-        mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
-      } while (!MPFR_IS_ZERO (y));
+      do
+        {
+          s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
+          r += (__float128) s;
+          mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
+          mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+        }
+      while (MPFR_NOTZERO (y));
 
       mpfr_clear (z);
       mpfr_clear (y);
