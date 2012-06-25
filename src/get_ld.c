@@ -159,7 +159,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD (r > 0);
       if (sh != 0)
         {
-          /* An overflow may occurs (example: 0.5*2^1024) */
+          /* An overflow may occur (example: 0.5*2^1024) */
           while (r < 1.0)
             {
               r += r;
