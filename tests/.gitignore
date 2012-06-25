@@ -127,6 +127,7 @@
 /tset_d
 /tset_exp
 /tset_f
+/tset_float128
 /tset_ld
 /tset_q
 /tset_si
