@@ -272,7 +272,7 @@ return y.d == 0.14894469406741037E-123 ? 0 :
      esac])
 
 AC_ARG_ENABLE(float128,
-   [  --enable-float128  build conversion functions from/to__float128
+   [  --enable-float128       build conversion functions from/to __float128
                           [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_WANT_FLOAT128],1,
