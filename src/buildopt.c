@@ -55,9 +55,6 @@ mpfr_buildopt_gmpinternals_p (void)
 
 const char *mpfr_buildopt_tune_case (void)
 {
-#ifdef MPFR_TUNE_CASE
+  /* MPFR_TUNE_CASE is always defined (can be "default"). */
   return MPFR_TUNE_CASE;
-#else
-  return "Generic thresholds";
-#endif
 }
