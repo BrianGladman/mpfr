@@ -26,6 +26,7 @@ int
 main (void)
 {
   char buffer[256];
+  int err = 0;
 
 #ifdef __MPIR_VERSION
   printf ("[tversion] MPIR: header %d.%d.%d, library %s\n",
@@ -36,7 +37,16 @@ main (void)
           __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR, __GNU_MP_VERSION_PATCHLEVEL,
           gmp_version);
 #endif
-  printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
+
+  if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
+    {
+      printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
+              " do not match!\n  %s\n  %s\n",
+              mpfr_buildopt_tune_case (), MPFR_TUNE_CASE);
+      err = 1;
+    }
+  else
+    printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
 
   /* Test the MPFR version. */
   test_version ();
@@ -44,12 +54,12 @@ main (void)
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
            __GNU_MP_VERSION_PATCHLEVEL);
   if (strcmp (buffer, gmp_version) == 0)
-    return 0;
+    return err;
   if (__GNU_MP_VERSION_PATCHLEVEL == 0)
     {
       sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
       if (strcmp (buffer, gmp_version) == 0)
-        return 0;
+        return err;
     }
 
   /* In some cases, it may be acceptable to have different versions for
