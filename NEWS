@@ -29,6 +29,8 @@ Changes from versions 3.1.* to version 3.2.0:
   corresponding to mpfr_fmod.
 - New functions mpfr_flags_clear, mpfr_flags_set, mpfr_flags_test,
   mpfr_flags_save and mpfr_flags_restore to operate on groups of flags.
+- New functions mpfr_set_float128 and mpfr_get_float128 to convert from/to
+  the __float128 type (requires --enable-float128 and compiler support)
 - Updated tuning parameters.
 - Improved MPFR manual.
 - Bug fixes.

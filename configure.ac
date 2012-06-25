@@ -271,6 +271,21 @@ return y.d == 0.14894469406741037E-123 ? 0 :
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
      esac])
 
+AC_ARG_ENABLE(float128,
+   [  --enable-float128  build conversion functions from/to__float128
+                          [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([MPFR_WANT_FLOAT128],1,
+              [Build float128 conversion functions])
+           AC_MSG_CHECKING(if compiler knows __float128)
+           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x;]])],
+              [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([Compiler doesn't know __float128; try GCC >= 4.6]
+           )]);;
+      no)  ;;
+      *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
+     esac])
+
 dnl Check if compiler is ICC, and if such a case, disable GCC
 dnl And add some specific flags.
 dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).

@@ -388,6 +388,12 @@ __MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, _Decimal64,
 #endif
 __MPFR_DECLSPEC int
   mpfr_set_ld _MPFR_PROTO ((mpfr_ptr, long double, mpfr_rnd_t));
+#ifdef MPFR_WANT_FLOAT128
+__MPFR_DECLSPEC int
+  mpfr_set_float128 _MPFR_PROTO ((mpfr_ptr, __float128, mpfr_rnd_t));
+__MPFR_DECLSPEC __float128
+  mpfr_get_float128 _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
+#endif
 __MPFR_DECLSPEC int
   mpfr_set_z _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int

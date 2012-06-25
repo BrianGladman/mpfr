@@ -571,6 +571,9 @@ static double double_zero = 0.0;
 #define MPFR_LIMBS_PER_LONG_DOUBLE \
   ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
 
+/* this is standardized by IEEE 754 */
+#define IEEE_FLOAT128_MANT_DIG 113
+
 /* LONGDOUBLE_NAN_ACTION executes the code "action" if x is a NaN. */
 
 /* On hppa2.0n-hp-hpux10 with the unbundled HP cc, the test x!=x on a NaN
