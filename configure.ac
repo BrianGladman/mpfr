@@ -171,7 +171,7 @@ dnl (before we have the chance to get it from gmp.h) and does some
 dnl checking related to this compiler (such as dependency tracking
 dnl options); if the compiler changes due to __GMP_CC in gmp.h, one
 dnl would have incorrect settings.
-dnl FIXME: Move this in aclocal ?
+dnl FIXME: Move this in acinclude.m4 ?
 if test -z "$GMP_CC$GMP_CFLAGS" ; then
    AC_MSG_CHECKING(for CC and CFLAGS in gmp.h)
    GMP_CC=__GMP_CC
