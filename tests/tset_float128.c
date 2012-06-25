@@ -280,4 +280,13 @@ main (int argc, char *argv[])
   return 0;
 }
 
+#else /* MPFR_WANT_FLOAT128 */
+
+/* dummy main to say this test is ignored */
+int
+main (void)
+{
+  return 77;
+}
+
 #endif /* MPFR_WANT_FLOAT128 */
