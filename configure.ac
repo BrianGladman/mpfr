@@ -280,7 +280,7 @@ AC_ARG_ENABLE(float128,
            AC_MSG_CHECKING(if compiler knows __float128)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x;]])],
               [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([Compiler doesn't know __float128; try GCC >= 4.6]
+              [AC_MSG_ERROR([Compiler doesn't know __float128; try GCC >= 4.3]
            )]);;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
