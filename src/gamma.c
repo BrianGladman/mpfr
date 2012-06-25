@@ -27,7 +27,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "lngamma.c"
 #undef IS_GAMMA
 
-/* return a sufficient precision such that 2-x is exact, assuming x < 0 */
+/* return a sufficient precision such that 2-x is exact, assuming x < 0
+   and x is not an integer */
 static mpfr_prec_t
 mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
 {
@@ -41,13 +42,13 @@ mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
      (c) if EXP(y) > 1 and EXP(y)-PREC(y) > 1, w = EXP(y) - 1.
 
      Note: case (c) cannot happen in practice since this would imply that
-     y is integer, thus x is negative integer, which has already been tested
-     before any call to mpfr_gamma_2_minus_x_exact(), and NaN was returned */
+     y is integer, thus x is negative integer */
   return (MPFR_GET_EXP(x) <= 1) ? MPFR_PREC(x) + 2 - MPFR_GET_EXP(x)
     : MPFR_PREC(x) + 1;
 }
 
-/* return a sufficient precision such that 1-x is exact, assuming x < 1 */
+/* return a sufficient precision such that 1-x is exact, assuming x < 1
+   and x is not an integer */
 static mpfr_prec_t
 mpfr_gamma_1_minus_x_exact (mpfr_srcptr x)
 {
@@ -55,10 +56,9 @@ mpfr_gamma_1_minus_x_exact (mpfr_srcptr x)
     return MPFR_PREC(x) - MPFR_GET_EXP(x);
   else if (MPFR_GET_EXP(x) <= 0)
     return MPFR_PREC(x) + 1 - MPFR_GET_EXP(x);
-  else if (MPFR_PREC(x) >= MPFR_GET_EXP(x))
+  else /* necessarily MPFR_PREC(x) > MPFR_GET_EXP(x) since otherwise
+          x would be an integer */
     return MPFR_PREC(x) + 1;
-  else
-    return MPFR_GET_EXP(x);
 }
 
 /* returns a lower bound of the number of significant bits of n!
