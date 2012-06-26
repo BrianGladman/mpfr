@@ -357,7 +357,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          Then o(x^2) <= 2^(-2k), o(1+x^2) <= 1+2^(-2k),
          o(sqrt(1+x^2)) <= 1+2^(-2k-1), o(sqrt(1+x^2)-1) <= 2^(-2k-1),
          and o((sqrt(1+x^2)-1)/x) <= 2^(-k) <= 1/2.
-      
+
          Now if sk=1 before the loop, then EXP(sk)=1 and since log2p >= 0,
          the loop is performed at least once, thus the case sk=1 cannot
          happen below.
