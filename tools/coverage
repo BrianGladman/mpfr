@@ -86,10 +86,12 @@ done
 fi
 
 # Do "gcov" for all files and parse the output
-for i in $(find src -name '*.c')
+cd src
+for i in $(find . -name '*.c')
 do
     gcov -f $i -o $(dirname $i) 2> /dev/null || exit 1
-done | bash coverage.subscript | grep -v '__gmp' > coverage.mpfr
+done | bash ../coverage.subscript | grep -v '__gmp' > ../coverage.mpfr
 
 rm -f coverage.subscript coverage-tmp || exit 1
 echo "Coverage summary saved in file /tmp/ompfr-gcov/coverage.mpfr"
+
