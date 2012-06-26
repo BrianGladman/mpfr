@@ -10,6 +10,9 @@
 /mpfr_compat
 /mpfr.log
 /reuse
+/tabort_defalloc1
+/tabort_defalloc2
+/tabort_prec_max
 /tabs
 /tacos
 /tacosh
@@ -21,6 +24,7 @@
 /tai
 /tasin
 /tasinh
+/tassert
 /tatan
 /tatanh
 /taway
