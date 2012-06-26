@@ -137,7 +137,8 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   else
     q = MPFR_EXP(x);
   mpfr_init2 (u, q);
-  MPFR_ASSERTN(mpfr_ui_sub (u, 1, x, MPFR_RNDN) == 0);
+  MPFR_DBGRES(inex = mpfr_ui_sub (u, 1, x, MPFR_RNDN));
+  MPFR_ASSERTN(inex == 0);
 
   /* if x is half an integer, cot(Pi*x) = 0, thus Digamma(x) = Digamma(1-x) */
   mpfr_mul_2exp (u, u, 1, MPFR_RNDN);
