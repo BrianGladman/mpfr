@@ -166,7 +166,7 @@ To make a release (for the MPFR team):
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
 
   5) Make sure that any change has been committed (with "svn st").
-     Generate the release version with "make dist", but see below.
+     Generate the release version with "make dist".
 
   6) Test the release version on different machines, with and without
      --enable-assert, with and without GMP's --disable-alloca configure
