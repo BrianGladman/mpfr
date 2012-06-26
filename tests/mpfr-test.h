@@ -25,6 +25,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <stdio.h>
 
+/* The no assertion request doesn't apply to the tests */
+#if defined(WANT_ASSERT)
+# if WANT_ASSERT < 0
+#  undef WANT_ASSERT
+# endif
+#endif
+
 #include "mpfr-impl.h"
 
 /* generates a random long int, a random double,
