@@ -1945,10 +1945,6 @@ __MPFR_DECLSPEC mp_limb_t mpfr_divhigh_n _MPFR_PROTO ((mpfr_limb_ptr,
 __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
                                                mpfr_exp_t, mpfr_prec_t));
 
-__MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
-                                                  mpfr_prec_t, mpfr_prec_t,
-                                                  mpfr_prec_t));
-
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                     mpfr_uexp_t, int,
                                                     mpfr_rnd_t));
