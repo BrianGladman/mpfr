@@ -345,25 +345,25 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             mpfr_div (sk, tmp, sk, MPFR_RNDN);
         }
 
-      /* we started from x0 = 1/|x| if |x| > 1, and |x| otherwise, thus
+      /* We started from x0 = 1/|x| if |x| > 1, and |x| otherwise, thus
          we had x0 = min(|x|, 1/|x|) <= 1, and applied 'red' times the
-         argument reduction x -> (sqrt(1+x^2)-1)/x, which keeps 0 < x < 1,
-         thus 0 < sk <= 1, and sk=1 can occur only if red=0 */
+         argument reduction x -> (sqrt(1+x^2)-1)/x, which keeps 0 < x <= 1 */
 
-      /* If sk=1, then if |x| < 1, we have 1 - 2^(-prec-1) <= |x| < 1,
-         or if |x| > 1, we have 1 - 2^(-prec-1) <= 1/|x| < 1, thus in all
-         cases ||x| - 1| <= 2^(-prec), from which it follows
-         |atan|x| - Pi/4| <= 2^(-prec), given the Taylor expansion
-         atan(1+x) = Pi/4 + x/2 - x^2/4 + ...
-         Since Pi/4 = 0.785..., the error is at most one ulp.
+      /* We first show that if the for-loop is executed at least once, then
+         sk < 1 after the loop. Indeed for 1/2 <= x <= 1, interval
+         arithmetic with precision 5 shows that (sqrt(1+x^2)-1)/x,
+         when evaluated with rounding to nearest, gives a value <= 0.875.
+         Now assume 2^(-k-1) <= x <= 2^(-k) for k >= 1.
+         Then o(x^2) <= 2^(-2k), o(1+x^2) <= 1+2^(-2k),
+         o(sqrt(1+x^2)) <= 1+2^(-2k-1), o(sqrt(1+x^2)-1) <= 2^(-2k-1),
+         and o((sqrt(1+x^2)-1)/x) <= 2^(-k) <= 1/2.
+      
+         Now if sk=1 before the loop, then EXP(sk)=1 and since log2p >= 0,
+         the loop is performed at least once, thus the case sk=1 cannot
+         happen below.
       */
-      if (MPFR_UNLIKELY(mpfr_cmp_ui (sk, 1) == 0))
-        {
-          mpfr_const_pi (arctgt, MPFR_RNDN); /* 1/2 ulp extra error */
-          mpfr_div_2ui (arctgt, arctgt, 2, MPFR_RNDN); /* exact */
-          realprec = prec - 2;
-          goto can_round;
-        }
+
+      MPFR_ASSERTD(mpfr_cmp_ui (sk, 1) < 0);
 
       /* Assignation  */
       MPFR_SET_ZERO (arctgt);
@@ -416,7 +416,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       MPFR_SET_POS (arctgt);
 
-    can_round:
       if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec + est_lost - lost,
                                        MPFR_PREC (atan), rnd_mode)))
         break;
