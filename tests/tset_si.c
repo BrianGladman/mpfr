@@ -244,6 +244,14 @@ main (int argc, char *argv[])
               mpfr_get_si (x, MPFR_RNDZ), inex);
       exit (1);
     }
+  /* Also test the mpfr_set_ui function (instead of macro). */
+  inex = (mpfr_set_ui) (x, 33096, MPFR_RNDU);
+  if (mpfr_get_si (x, MPFR_RNDZ) != 49152)
+    {
+      printf ("Error in mpfr_set_ui function, exp. 49152, got %ld, inex %d\n",
+              mpfr_get_si (x, MPFR_RNDZ), inex);
+      exit (1);
+    }
 
   for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
