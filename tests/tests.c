@@ -56,6 +56,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <sys/resource.h>
 #endif
 
+#if defined(HAVE_SIGNAL) || defined(HAVE_SIGACTION)
+# include <signal.h>
+#endif
+
 #include "mpfr-test.h"
 
 #ifdef MPFR_FPU_PREC
@@ -958,4 +962,36 @@ flags_out (unsigned int flags)
   if (none)
     printf (" none");
   printf (" (%u)\n", flags);
+}
+
+static void
+abort_called (int x)
+{
+  /* Ok, abort has been called */
+  exit (0);
+}
+
+/* This function has to be called for a test
+   that will call the abort function */
+void
+tests_expect_abort (void)
+{
+#if defined(HAVE_SIGACTION)
+  struct sigaction act;
+  int ret;
+
+  memset (&act, 0, sizeof act);
+  act.sa_handler = abort_called;
+  ret = sigaction (SIGABRT, &act, NULL);
+  if (ret != 0)
+    {
+      /* Can't register error handler: Skip test */
+      exit (77);
+    }
+#elif defined(HAVE_SIGNAL)
+  signal (SIGABRT, abort_called);
+#else
+  /* Can't register error handler: Skip test */
+  exit (77);
+#endif
 }

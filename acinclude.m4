@@ -88,7 +88,7 @@ dnl MPFR, but if they are implemented as macros, this is also OK (in our
 dnl case).  So, we do not return an error, but their tests are currently
 dnl useless.
 dnl gettimeofday is not defined for MinGW
-AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday])
+AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday sigaction signal])
 
 dnl Check for IEEE-754 switches on Alpha
 case $host in
