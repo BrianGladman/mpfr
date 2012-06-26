@@ -130,6 +130,17 @@ check_ternary_value (void)
                           " got %d\n", cmp, inexact);
                   exit (1);
                 }
+              /* Test mpfr_set function too */
+              inexact = (mpfr_set) (y, x, (mpfr_rnd_t) rnd);
+              cmp = mpfr_cmp (y, x);
+              if (((inexact == 0) && (cmp != 0)) ||
+                  ((inexact > 0) && (cmp <= 0)) ||
+                  ((inexact < 0) && (cmp >= 0)))
+                {
+                  printf ("Wrong ternary value in mpfr_set(2): expected %d,"
+                          " got %d\n", cmp, inexact);
+                  exit (1);
+                }
             }
         }
     }
