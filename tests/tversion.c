@@ -48,6 +48,9 @@ main (void)
   else
     printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
 
+  if (strcmp (mpfr_get_patches (), "") != 0)
+    printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
+
   /* Test the MPFR version. */
   test_version ();
 
