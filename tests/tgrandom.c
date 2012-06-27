@@ -23,12 +23,37 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
+test_special (mpfr_prec_t p)
+{
+  mpfr_t x;
+  int inexact;
+
+  mpfr_init2 (x, p);
+
+  inexact = mpfr_grandom (x, NULL, RANDS, GMP_RNDN);
+  if ((inexact & 3) == 0)
+    {
+      printf ("Error: mpfr_grandom() returns a zero ternary value.\n");
+      exit (1);
+    }
+  if ((inexact & (3 << 2)) != 0)
+    {
+      printf ("Error: the second ternary value of mpfr_grandom(x, NULL, ...)"
+              " must be 0.\n");
+      exit (1);
+    }
+
+  mpfr_clear(x);
+}
+
+
+static void
 test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
               int verbose)
 {
   mpfr_t *t;
   mpfr_t av, va, tmp;
-  int i, inex, itmp;
+  int i, inexact;
 
   nbtests = (nbtests & 1) ? (nbtests + 1) : nbtests;
   t = (mpfr_t *) malloc (nbtests * sizeof (mpfr_t));
@@ -41,18 +66,15 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   for (i = 0; i < nbtests; ++i)
     mpfr_init2 (t[i], prec);
 
-  inex = 1;
   for (i = 0; i < nbtests; i += 2)
     {
-      itmp = mpfr_grandom (t[i], t[i + 1], RANDS, MPFR_RNDN);
-      inex = ((itmp & 3) != 0) && ((itmp & 12) != 0) && inex;
-    }
-
-  if (inex == 0)
-    {
-      /* one call in the loop pretended to return an exact number! */
-      printf ("Error: mpfr_urandom_gaussian() returns a zero ternary value.\n");
-      exit (1);
+      inexact = mpfr_grandom (t[i], t[i + 1], RANDS, MPFR_RNDN);
+      if ((inexact & 3) == 0 || (inexact & (3 << 2)) == 0)
+        {
+          /* one call in the loop pretended to return an exact number! */
+          printf ("Error: mpfr_grandom() returns a zero ternary value.\n");
+          exit (1);
+        }
     }
 
 #ifdef HAVE_STDARG
@@ -107,6 +129,8 @@ main (int argc, char *argv[])
     }
 
   test_grandom (nbtests, 420, MPFR_RNDN, verbose);
+  test_special (2);
+  test_special (42000);
 
   tests_end_mpfr ();
   return 0;
