@@ -30,7 +30,7 @@ test_special (mpfr_prec_t p)
 
   mpfr_init2 (x, p);
 
-  inexact = mpfr_grandom (x, NULL, RANDS, GMP_RNDN);
+  inexact = mpfr_grandom (x, NULL, RANDS, MPFR_RNDN);
   if ((inexact & 3) == 0)
     {
       printf ("Error: mpfr_grandom() returns a zero ternary value.\n");
