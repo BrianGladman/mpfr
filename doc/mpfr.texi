@@ -2735,6 +2735,12 @@ distribution and then rounded in the direction @var{rnd}.
 The third argument is a @code{gmp_randstate_t} structure, which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
+The combination of the ternary values is returned like with
+@code{mpfr_sin_cos}. If @var{rop2} is a null pointer, the second ternary
+value is assumed to be 0 (note that the encoding of the only ternary value
+is not the same as the usual encoding for functions that return only one
+result). Otherwise the ternary value of a random number is always non-zero.
+
 Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
 range and the rounding mode might have a side effect on the next random state.
 @end deftypefun
