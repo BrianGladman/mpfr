@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# to compute the coverage of mpfr-x.y.z, just copy this script
+# into mpfr-x.y.z/tools and run it
+
 # Set up the right directoy
 cd $(dirname $0)/..
 
