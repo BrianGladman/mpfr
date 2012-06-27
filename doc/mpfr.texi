@@ -582,7 +582,7 @@ a macro with the same name as some keywords (currently @code{do},
 @code{while} and @code{sizeof}).
 
 You can avoid the use of MPFR macros encapsulating functions by defining
-the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
+the @code{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
 general this should not be necessary, but this can be useful when debugging
 user code: with some macros, the compiler may emit spurious warnings with
 some warning options, and macros can prevent some prototype checking.
@@ -1195,7 +1195,7 @@ option @samp{--enable-float128}, which requires the compiler or
 system provides the @samp{__float128} data type
 (GCC 4.3 or later supports this data type);
 to use @code{mpfr_set_float128}, one should define the macro
-@samp{MPFR_WANT_FLOAT128} before including @file{mpfr.h}.
+@code{MPFR_WANT_FLOAT128} before including @file{mpfr.h}.
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system does not support the IEEE 754 standard,
@@ -1207,7 +1207,7 @@ option @samp{--enable-decimal-float}, which also requires
 system provides the @samp{_Decimal64} data type
 (recent versions of GCC support this data type);
 to use @code{mpfr_set_decimal64}, one should define the macro
-@samp{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
+@code{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
 @c GCC 4.2.0 required to be configured with --enable-decimal-float
 @c but GCC 4.4.3 seems to have decimal support by default
 @code{mpfr_set_q} might fail if the numerator (or the
