@@ -1193,7 +1193,9 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 The @code{mpfr_set_float128} function is built only with the configure
 option @samp{--enable-float128}, which requires the compiler or
 system provides the @samp{__float128} data type
-(GCC 4.3 or later supports this data type).
+(GCC 4.3 or later supports this data type);
+to use @code{mpfr_set_float128}, one should define the macro
+@samp{MPFR_WANT_FLOAT128} before including @file{mpfr.h}.
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system does not support the IEEE 754 standard,
@@ -1203,7 +1205,9 @@ The @code{mpfr_set_decimal64} function is built only with the configure
 option @samp{--enable-decimal-float}, which also requires
 @samp{--with-gmp-build}, and when the compiler or
 system provides the @samp{_Decimal64} data type
-(recent versions of GCC support this data type).
+(recent versions of GCC support this data type);
+to use @code{mpfr_set_decimal64}, one should define the macro
+@samp{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
 @c GCC 4.2.0 required to be configured with --enable-decimal-float
 @c but GCC 4.4.3 seems to have decimal support by default
 @code{mpfr_set_q} might fail if the numerator (or the
