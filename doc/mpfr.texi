@@ -3683,6 +3683,8 @@ The development of MPFR was also supported by a grant
 from INRIA by an "associate engineer" grant (2003-2005),
 an "op@'eration de d@'eveloppement logiciel" grant (2007-2009),
 and the post-doctoral grant of Sylvain Chevillard in 2009-2010.
+The MPFR-MPC workshop in June 2012 was partly supported by the ERC
+grant ANTICS of Andreas Enge.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
