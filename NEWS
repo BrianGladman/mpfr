@@ -69,6 +69,7 @@ Changes from versions 3.0.* to version 3.1.0:
 - MPFR tests: libtool no longer generates wrapper scripts with "make check"
   (so that running the tests under valgrind or gdb is easier).
 - Internal change: the logging mechanism has been improved.
+- Test coverage: 95.2% lines of code.
 - Bug fixes, in particular a huge inefficiency in mpfr_exp (when the
   target precision is less than MPFR_EXP_THRESHOLD) on hard-to-round
   cases, which can take several minutes.
@@ -170,7 +171,7 @@ Changes from versions 2.3.* to version 2.4.0:
   suppressed in the next release, and that the specification of
   mpfr_eq may change in the next release (for compatibility with
   the mpf layer of GMP).
-- Test coverage: 96.7% lines of code
+- Test coverage: 96.7% lines of code.
 - Bug fixes.
 
 Changes from versions 2.2.* to version 2.3.0:
