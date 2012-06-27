@@ -93,5 +93,10 @@ do
 done | bash ../coverage.subscript | grep -v '__gmp' > ../coverage.mpfr
 
 rm -f coverage.subscript coverage-tmp || exit 1
-echo "Coverage summary saved in file /tmp/ompfr-gcov/coverage.mpfr"
 
+cd -
+lcov --capture --directory . --output-file all.info || exit 1
+genhtml -o coverage all.info || exit 1
+
+echo "Coverage summary saved in file    /tmp/ompfr-gcov/coverage.mpfr"
+echo "Detailed coverage is available at /tmp/ompfr-gcov/coverage/index.html"
