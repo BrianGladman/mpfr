@@ -23,11 +23,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # error "MPFR Internal not included"
 #endif
 
+/* Threshold when testing coverage */
+#if defined(MPFR_TUNE_COVERAGE)
+#define MPFR_TUNE_CASE "src/generic/coverage/mparam.h"
+#include "generic/coverage/mparam.h"
+
 /* Note: the different macros used here are those defined by gcc,
    for example with gcc -dM -E -xc /dev/null
    As of gcc 4.2, you can also use: -march=native or -mtune=native */
 
-#if defined (__tune_pentium4__) /* Threshold for Pentium 4 */
+#elif defined (__tune_pentium4__) /* Threshold for Pentium 4 */
 #define MPFR_TUNE_CASE "src/x86_64/pentium4/mparam.h"
 #include "x86_64/pentium4/mparam.h"
 

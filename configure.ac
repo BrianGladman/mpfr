@@ -151,6 +151,14 @@ AC_ARG_ENABLE(tests-timeout,
       *)    AC_MSG_ERROR([bad value for --enable-tests-timeout]) ;;
      esac])
 
+AC_ARG_ENABLE(tune-for-coverage,
+   [  --tune-for-coverage     tune MPFR for coverage tests.],
+   [ case $enableval in
+      no)   ;;
+      yes)  AC_DEFINE([MPFR_TUNE_COVERAGE], 1, [tune for coverage]) ;;
+      *)    AC_MSG_ERROR([bad value for --enable-tune-for-coverage]) ;;
+     esac])
+
 
 dnl
 dnl Setup CC and CFLAGS
