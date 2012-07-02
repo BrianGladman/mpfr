@@ -41,23 +41,21 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   /* first round to n+1 bits with rounding to nearest-even */
   inex = foo (tmp, op, MPFR_RNDN);
 
-  if (mpfr_regular_p (tmp) == 0)
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
+    mpfr_set (rop, tmp, MPFR_RNDN); /* inex unchanged */
+  else
     {
-      mpfr_set (rop, tmp, MPFR_RNDN);
-      goto end;
+      MPFR_UNSIGNED_MINUS_MODULO(sh, n + 1);
+      lastbit = (MPFR_MANT(tmp)[0] >> sh) & 1;
+
+      if (lastbit == 0)
+        mpfr_set (rop, tmp, MPFR_RNDN); /* exact, inex unchanged */
+      else if (inex == 0)  /* midpoint: round away from zero */
+        inex = mpfr_set (rop, tmp, MPFR_RNDA);
+      else  /* lastbit == 1, inex != 0: double rounding */
+        inex = mpfr_set (rop, tmp, (inex > 0) ? MPFR_RNDD : MPFR_RNDU);
     }
 
-  MPFR_UNSIGNED_MINUS_MODULO(sh, n + 1);
-  lastbit = (MPFR_MANT(tmp)[0] >> sh) & 1;
-
-  if (inex == 0 && lastbit)
-    inex = mpfr_set (rop, tmp, MPFR_RNDA);
-  else if (lastbit == 0)
-    mpfr_set (rop, tmp, MPFR_RNDN); /* inex unchanged */
-  else if (inex > 0)
-    inex = mpfr_set (rop, tmp, (inex > 0) ? MPFR_RNDD : MPFR_RNDU);
-
- end:
   mpfr_clear (tmp);
   return inex;
 }
