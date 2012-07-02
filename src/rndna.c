@@ -22,6 +22,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* Note: this doesn't work for 2^(emin-2). Currently, the best that can be
+   done is to extend the exponent range internally, and do not support the
+   case emin = MPFR_EMIN_MIN from the caller. */
+
 /* put in rop the value of foo(op), rounded to nearest-away,
    and return the ternary value */
 int
@@ -31,7 +35,7 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   mpfr_t tmp;
   int inex, lastbit, sh;
   mpfr_prec_t n = mpfr_get_prec (rop);
-  
+
   mpfr_init2 (tmp, n + 1);
 
   /* first round to n+1 bits with rounding to nearest-even */
