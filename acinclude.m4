@@ -88,7 +88,26 @@ dnl MPFR, but if they are implemented as macros, this is also OK (in our
 dnl case).  So, we do not return an error, but their tests are currently
 dnl useless.
 dnl gettimeofday is not defined for MinGW
-AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday sigaction signal])
+AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday signal])
+
+dnl We cannot use AC_CHECK_FUNCS on sigaction, because while this
+dnl function may be provided by the C library, its prototype and
+dnl associated structure may not be available, e.g. when compiling
+dnl with "gcc -std=c99".
+AC_MSG_CHECKING(for sigaction and its associated structure)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <signal.h>
+int f (int (*func)(int, const struct sigaction *, struct sigaction *))
+{ return 0; }
+]], [[
+ struct sigaction act;
+ f (sigaction);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_SIGACTION, 1,
+    [Define if you have a working sigaction function.])
+],[AC_MSG_RESULT(no)])
 
 dnl Check for IEEE-754 switches on Alpha
 case $host in
