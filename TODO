@@ -383,10 +383,6 @@ Table of contents:
    1250 bytes would still be small compared to the code size!
    Store pi in round to zero mode (to recover other modes).
 
-- add a new rounding mode: round to nearest, with ties away from zero
-  (this is roundTiesToAway in 754-2008, could be used by mpfr_round)
-  Named MPFR_RNDNA. For partial support, see
-    https://sympa.inria.fr/sympa/arc/mpfr/2012-05/msg00000.html
 - add a new roundind mode: round to odd. If the result is not exactly
         representable, then round to the odd mantissa. This rounding
         has the nice property that for k > 1, if:

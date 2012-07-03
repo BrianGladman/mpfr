@@ -19,9 +19,9 @@ if [ ! -d gmp-5.0.4 ]; then
    cd $HOME
 fi
 /bin/rm -fr mpfr*
-wget http://www.loria.fr/~zimmerma/mpfr-3.2.0-dev.tar.bz2
-tar jxf mpfr-3.2.0-dev.tar.bz2
-cd  mpfr-3.2.0-dev
+wget http://www.mpfr.org/mpfr-3.1.1/mpfr-3.1.1-rc1.tar.bz2
+tar jxf mpfr-3.1.1-rc1.tar.bz2
+cd  mpfr-3.1.1-rc1
 if [ "`hostname`" = "dingo" ]; then
    # https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00048.html
    ./configure --with-gmp=$HOME --disable-thread-safe

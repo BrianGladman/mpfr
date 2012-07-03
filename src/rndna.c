@@ -33,8 +33,17 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
                          int foo(mpfr_t, mpfr_srcptr, mpfr_rnd_t))
 {
   mpfr_t tmp;
-  int inex, lastbit, sh;
+  int inex;
   mpfr_prec_t n = mpfr_get_prec (rop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* we check emin has not the smallest possible value, otherwise we cannot
+     determine the correct round-to-nearest-away rounding for
+     0.25*2^emin_min, which gets rounded to 0 with nearest-even,
+     like 0.24*2^emin_min */
+  MPFR_ASSERTN(mpfr_get_emin () > mpfr_get_emin_min ());
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   mpfr_init2 (tmp, n + 1);
 
@@ -45,6 +54,8 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
     mpfr_set (rop, tmp, MPFR_RNDN); /* inex unchanged */
   else
     {
+      int lastbit, sh;
+
       MPFR_UNSIGNED_MINUS_MODULO(sh, n + 1);
       lastbit = (MPFR_MANT(tmp)[0] >> sh) & 1;
 
@@ -57,5 +68,7 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
     }
 
   mpfr_clear (tmp);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+  MPFR_SAVE_EXPO_FREE (expo);
   return inex;
 }

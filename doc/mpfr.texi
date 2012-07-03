@@ -2664,6 +2664,18 @@ Return a string ("MPFR_RNDD", "MPFR_RNDU", "MPFR_RNDN", "MPFR_RNDZ",
 if @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
+@deftypefun int mpfr_round_nearest_away (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{foo} (mpfr_t, mpfr_t, mpfr_rnd_t))
+Given a function @var{foo} (for example @code{mpfr_sin}) and a value @var{op},
+put in @var{rop} the round-to-nearest-away rounding of @var{foo}(@var{op}).
+This rounding is defined in the same way as round-to-nearest-even, except in
+case of tie, the value away from zero is returned.
+Due to implementation constraints, this function requires that the minimal
+exponent @code{emin} is not the smallest possible value.
+
+Note: this function is experimental and its interface might change in future
+versions.
+@end deftypefun
+
 @node Miscellaneous Functions, Exception Related Functions, Rounding Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Miscellaneous float functions
