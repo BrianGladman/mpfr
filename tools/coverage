@@ -8,7 +8,7 @@ cd $(dirname $0)/..
 
 # First Build MPFR in /tmp/
 echo "Erasing previous /tmp/ompfr-gcov"
-rm -rf /tmp/ompfr-gcov
+rm -rf /tmp/ompfr-gcov || exit 1
 mkdir /tmp/ompfr-gcov || exit 1
 
 echo "Copying MPFR sources to /tmp/ompfr-gcov"
