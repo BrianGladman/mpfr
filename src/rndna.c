@@ -37,11 +37,10 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   mpfr_prec_t n = mpfr_get_prec (rop);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* we check emin has not the smallest possible value, otherwise we cannot
+  /* when emin is the smallest possible value, we cannot
      determine the correct round-to-nearest-away rounding for
-     0.25*2^emin_min, which gets rounded to 0 with nearest-even,
-     like 0.24*2^emin_min */
-  MPFR_ASSERTN(mpfr_get_emin () > mpfr_get_emin_min ());
+     0.25*2^emin, which gets rounded to 0 with nearest-even,
+     instead of 0.5^2^emin. */
 
   MPFR_SAVE_EXPO_MARK (expo);
 
