@@ -2665,10 +2665,14 @@ if @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
 @deftypefun int mpfr_round_nearest_away (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{foo} (mpfr_t, mpfr_t, mpfr_rnd_t))
-Given a function @var{foo} (for example @code{mpfr_sin}) and a value @var{op},
+Given a function @var{foo} and a value @var{op},
 put in @var{rop} the round-to-nearest-away rounding of @var{foo}(@var{op}).
 This rounding is defined in the same way as round-to-nearest-even, except in
 case of tie, the value away from zero is returned.
+The function @var{foo} takes as input a MPFR number as second argument,
+a rounding mode as third argument,
+puts in its first argument the value @var{foo}(@var{op}) rounded according
+to this rounding mode, and returns the corresponding ternary value.
 Due to implementation constraints, this function computes a wrong value when
 the minimal exponent @code{emin} is the smallest possible one @var{e}, and
 @var{foo}(@var{op}) equals exactly @m{2^{e-2}, two to the power

@@ -383,6 +383,9 @@ Table of contents:
    1250 bytes would still be small compared to the code size!
    Store pi in round to zero mode (to recover other modes).
 
+- add other prototypes for round to nearest-away (mpfr_round_nearest_away
+  only deals with the prototypes of say mpfr_sin) or implement it as a native
+  rounding mode
 - add a new roundind mode: round to odd. If the result is not exactly
         representable, then round to the odd mantissa. This rounding
         has the nice property that for k > 1, if:

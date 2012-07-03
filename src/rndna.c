@@ -69,5 +69,5 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   mpfr_clear (tmp);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
-  return inex;
+  return mpfr_check_range (rop, inex, MPFR_RNDN);
 }
