@@ -41,6 +41,7 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
      determine the correct round-to-nearest-away rounding for
      0.25*2^emin, which gets rounded to 0 with nearest-even,
      instead of 0.5^2^emin. */
+  MPFR_ASSERTN(__gmpfr_emin > MPFR_EMIN_MIN);
 
   MPFR_SAVE_EXPO_MARK (expo);
 

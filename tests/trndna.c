@@ -148,6 +148,10 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  /* mpfr_round_nearest_away requires emin is not the smallest possible */
+  if (mpfr_get_emin () == mpfr_get_emin_min ())
+    mpfr_set_emin (mpfr_get_emin_min () + 1);
+
   test_special ();
 
   test_nonspecial ();

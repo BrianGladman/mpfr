@@ -55,7 +55,6 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
-
         }
       else /* x is zero */
         {

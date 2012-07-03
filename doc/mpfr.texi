@@ -2673,11 +2673,8 @@ The function @var{foo} takes as input a MPFR number as second argument,
 a rounding mode as third argument,
 puts in its first argument the value @var{foo}(@var{op}) rounded according
 to this rounding mode, and returns the corresponding ternary value.
-Due to implementation constraints, this function computes a wrong value when
-the minimal exponent @code{emin} is the smallest possible one @var{e}, and
-@var{foo}(@var{op}) equals exactly @m{2^{e-2}, two to the power
-@var{e}@minus{}2}; in that case the value computed is zero instead of
-@m{2^{e-1}, two to the power @var{e}@minus{}1}.
+Due to implementation constraints, this function should not be called when
+the minimal exponent @code{emin} is the smallest possible one.
 
 Note: this function is experimental and its interface might change in future
 versions.

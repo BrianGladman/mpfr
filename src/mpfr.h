@@ -753,6 +753,9 @@ __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
                                                 char **, int, mpfr_rnd_t));
 
+__MPFR_DECLSPEC int mpfr_round_nearest_away _MPFR_PROTO ((mpfr_ptr,
+                       mpfr_srcptr, int foo(mpfr_t, mpfr_srcptr, mpfr_rnd_t)));
+
 __MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mpfr_prec_t));
 __MPFR_DECLSPEC void   mpfr_custom_init    _MPFR_PROTO ((void *, mpfr_prec_t));
 __MPFR_DECLSPEC void * mpfr_custom_get_significand _MPFR_PROTO ((mpfr_srcptr));
