@@ -213,7 +213,8 @@ tests_end_mpfr (void)
   /* Define to test the use of MPFR_ERRDIVZERO */
   if (fetestexcept (FE_DIVBYZERO|FE_INVALID))
     {
-      printf ("A floating-point division by 0 occurred!\n");
+      printf ("A floating-point division by 0 or an invalid operation"
+              " occurred!\n");
 #ifdef MPFR_ERRDIVZERO
       /* This should never occur because the purpose of defining
          MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
