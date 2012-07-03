@@ -49,6 +49,7 @@ test_special (void)
   if (inex != 0)
     {
       printf ("Wrong ternary value for exp(+Inf)\n");
+      printf ("expected 0, got %d\n", inex);
       exit (1);
     }
   if (mpfr_inf_p (y) == 0 || mpfr_sgn (y) <= 0)

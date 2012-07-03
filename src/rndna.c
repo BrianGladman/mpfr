@@ -69,5 +69,13 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   mpfr_clear (tmp);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
+
+  /* special treatment for the case rop = +/- 2^(emin-2), which should be
+     rounded to +/- 2^(emin-1). We do as if it was rounded to zero, thus the
+     mpfr_check_range() call will round it to +/- 2^(emin-1). */
+  if (inex == 0 && mpfr_cmp_si_2exp (rop, (mpfr_sgn (rop) > 0) ? 1 : -1,
+                                     __gmpfr_emin - 2) == 0)
+    inex = -mpfr_sgn (rop);
+
   return mpfr_check_range (rop, inex, MPFR_RNDN);
 }
