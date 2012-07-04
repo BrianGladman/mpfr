@@ -28,6 +28,7 @@ make clean  || exit 1
 make all -j4 || exit 1
 
 # Note: we want to compute the coverage even in case of failure of some tests.
+unset GMP_CHECK_RANDOMIZE
 make check -j4
 
 # Check version of gcov:
