@@ -146,15 +146,19 @@ test_nonspecial (void)
 int
 main (int argc, char *argv[])
 {
+  mpfr_exp_t emin = 1;
+
   tests_start_mpfr ();
 
   /* mpfr_round_nearest_away requires emin is not the smallest possible */
-  if (mpfr_get_emin () == mpfr_get_emin_min ())
+  if ((emin = mpfr_get_emin ()) == mpfr_get_emin_min ())
     mpfr_set_emin (mpfr_get_emin_min () + 1);
 
   test_special ();
 
   test_nonspecial ();
+
+  mpfr_set_emin (emin);
 
   tests_end_mpfr ();
   return 0;
