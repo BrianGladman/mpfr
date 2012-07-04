@@ -679,7 +679,7 @@ to represent a group of flags (or a mask).
 @comment  node-name,  next,  previous,  up
 @section MPFR Variable Conventions
 
-Before you can assign to an MPFR variable, you need to initialize it by calling
+Before you can assign to a MPFR variable, you need to initialize it by calling
 one of the special initialization functions.  When you're done with a
 variable, you need to clear it out, using one of the functions for that
 purpose.
