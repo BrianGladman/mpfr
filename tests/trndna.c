@@ -146,7 +146,7 @@ test_nonspecial (void)
 int
 main (int argc, char *argv[])
 {
-  mpfr_exp_t emin = 1;
+  mpfr_exp_t emin;
 
   tests_start_mpfr ();
 
