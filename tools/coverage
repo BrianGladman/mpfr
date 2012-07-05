@@ -19,7 +19,7 @@ echo "Remove previous coverage information."
 rm -f $(find . -name '*.gc*')
 
 # Remove MPFR_* environment variables to get reproducible coverage results.
-for i in `env | grep '^MPFR_'`; do unset "$i"; done
+for i in `env | sed -n 's/^\(MPFR_[^=]*\).*/\1/p'`; do unset "$i"; done
 
 echo "Reconfiguring MPFR"
 autoreconf -i || exit 1
