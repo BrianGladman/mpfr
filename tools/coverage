@@ -18,6 +18,9 @@ cd /tmp/ompfr-gcov || exit 1
 echo "Remove previous coverage information."
 rm -f $(find . -name '*.gc*')
 
+# Remove MPFR_* environment variables to get reproducible coverage results.
+for i in `env | grep '^MPFR_'`; do unset "$i"; done
+
 echo "Reconfiguring MPFR"
 autoreconf -i || exit 1
 
@@ -29,10 +32,6 @@ make all -j4 || exit 1
 
 # Note: we want to compute the coverage even in case of failure of some tests.
 unset GMP_CHECK_RANDOMIZE
-unset MPFR_CHECK_MAX
-unset MPFR_SUSPICIOUS_OVERFLOW
-unset MPFR_CHECK_LIBC_PRINTF
-unset MPFR_CHECK_LARGEMEM
 make check -j4
 
 # Check version of gcov:
