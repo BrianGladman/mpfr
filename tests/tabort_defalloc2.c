@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (int argc, char **argv)
 {
-  char *ptr;
+  void *ptr;
 
   tests_start_mpfr ();
   tests_expect_abort ();
