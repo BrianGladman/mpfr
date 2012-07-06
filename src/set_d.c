@@ -66,7 +66,7 @@ __gmpfr_extract_double (mpfr_limb_ptr rp, double d)
         manl = x.s.manl << 11;
 #endif
       }
-    else /* denormalized number */
+    else /* subnormal number */
       {
 #if GMP_NUMB_BITS >= 64
         manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);

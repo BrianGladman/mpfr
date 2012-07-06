@@ -47,7 +47,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * Note: yprec may be < MPFR_PREC_MIN; in particular, it may be equal
  * to 1. In this case, the even rounding is done away from 0, which is
  * a natural generalization. Indeed, a number with 1-bit precision can
- * be seen as a denormalized number with more precision.
+ * be seen as a subnormal number with more precision.
  */
 
 int

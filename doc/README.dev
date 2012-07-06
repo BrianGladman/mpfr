@@ -320,7 +320,7 @@ List of the used macros for checking MPFR:
 
 + MPFR_HAVE_FESETROUND: Define if the fesetround function is defined
                          (and in header fenv.h).
-+ HAVE_DENORMS:         Define if denormalized floats work.
++ HAVE_DENORMS:         Define if subnormal (denormalized) floats work.
 + HAVE_SYS_TIME_H:      Define if the header sys/time.h is usable.
 + HAVE_GETTIMEOFDAY:    Define if the function gettimeofday is present.
 + MPFR_HAVE_TESTS_x86:  Define if we are on x86.

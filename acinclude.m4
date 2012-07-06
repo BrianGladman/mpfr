@@ -221,8 +221,8 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
   fi
 fi
 
-dnl Check if denormalized numbers are supported
-AC_CACHE_CHECK([for denormalized numbers], mpfr_cv_have_denorms, [
+dnl Check if subnormal (denormalized) numbers are supported
+AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
 AC_TRY_RUN([
 #include <math.h>
 #include <stdio.h>
@@ -234,7 +234,7 @@ int main() {
 ], mpfr_cv_have_denorms=yes, mpfr_cv_have_denorms=no, mpfr_cv_have_denorms=no)
 ])
 if test "$mpfr_cv_have_denorms" = "yes"; then
-  AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
+  AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) floats work.])
 fi
 
 dnl Check the FP division by 0 fails (e.g. on a non-IEEE-754 platform).

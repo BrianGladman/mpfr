@@ -117,7 +117,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 2);
 
-  /* checks that denormalized are not flushed to zero */
+  /* checks that subnormals are not flushed to zero */
   d = DBL_MIN; /* 2^(-1022) */
   for (n=0; n<52; n++, d /= 2.0)
     if (d != 0.0) /* should be 2^(-1022-n) */

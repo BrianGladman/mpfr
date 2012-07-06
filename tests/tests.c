@@ -320,7 +320,7 @@ mpfr_test_init (void)
 {
   double d;
 #ifdef HAVE_FPC_CSR
-  /* to get denormalized numbers on IRIX64 */
+  /* to get subnormal numbers on IRIX64 */
   union fpc_csr exp;
 
   exp.fc_word = get_fpc_csr();
