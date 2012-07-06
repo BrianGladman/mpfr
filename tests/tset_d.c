@@ -90,6 +90,7 @@ main (int argc, char *argv[])
     }
 #endif  /* MPFR_ERRDIVZERO */
 
+#ifdef HAVE_SIGNEDZ
   d = 0.0;
   mpfr_set_d (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
@@ -100,6 +101,7 @@ main (int argc, char *argv[])
       printf ("Error in mpfr_set_d on -0\n");
       exit (1);
     }
+#endif  /* HAVE_SIGNEDZ */
 
 #if !defined(MPFR_ERRDIVZERO)
   mpfr_set_inf (x, 1);
