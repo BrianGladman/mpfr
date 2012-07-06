@@ -240,6 +240,22 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) floats work.])
 fi
 
+dnl Check if signed zeros are supported. Note: the test will fail
+dnl if the division by 0 generates a trap.
+AC_CACHE_CHECK([for signed zeros], mpfr_cv_have_signedz, [
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+int main() {
+  return 1.0 / 0.0 == 1.0 / -0.0;
+}
+]])],
+   [mpfr_cv_have_signedz="yes"],
+   [mpfr_cv_have_signedz="no"],
+   [mpfr_cv_have_signedz="cannot test, assume no"])
+])
+if test "$mpfr_cv_have_signedz" = "yes"; then
+  AC_DEFINE(HAVE_SIGNEDZ,1,[Define if signed zeros are supported.])
+fi
+
 dnl Check the FP division by 0 fails (e.g. on a non-IEEE-754 platform).
 dnl In such a case, MPFR_ERRDIVZERO is defined to disable the tests
 dnl involving a FP division by 0.
