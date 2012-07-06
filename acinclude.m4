@@ -186,7 +186,7 @@ if test -n "$GCC"; then
   AC_CACHE_CHECK([for gcc float-conversion bug], mpfr_cv_gcc_floatconv_bug, [
   saved_LIBS="$LIBS"
   LIBS="$LIBS $MPFR_LIBM"
-  AC_TRY_RUN([
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <float.h>
 #ifdef MPFR_HAVE_FESETROUND
 #include <fenv.h>
@@ -211,7 +211,8 @@ int main() {
   return 0;
 }
 static double get_max (void) { static volatile double d = DBL_MAX; return d; }
-  ], [mpfr_cv_gcc_floatconv_bug="no"],
+  ]])],
+     [mpfr_cv_gcc_floatconv_bug="no"],
      [mpfr_cv_gcc_floatconv_bug="yes, use -ffloat-store"],
      [mpfr_cv_gcc_floatconv_bug="cannot test, use -ffloat-store"])
   LIBS="$saved_LIBS"
@@ -223,7 +224,7 @@ fi
 
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <math.h>
 #include <stdio.h>
 int main() {
@@ -231,7 +232,10 @@ int main() {
   fprintf (stderr, "%e\n", x / 2.0);
   return 2.0 * (x / 2.0) != x;
 }
-], mpfr_cv_have_denorms=yes, mpfr_cv_have_denorms=no, mpfr_cv_have_denorms=no)
+]])],
+   [mpfr_cv_have_denorms="yes"],
+   [mpfr_cv_have_denorms="no"],
+   [mpfr_cv_have_denorms="cannot test, assume no"])
 ])
 if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) floats work.])
@@ -243,14 +247,15 @@ dnl involving a FP division by 0.
 dnl For the developers: to check whether all these tests are disabled,
 dnl configure MPFR with "-DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1".
 AC_CACHE_CHECK([if the FP division by 0 fails], mpfr_cv_errdivzero, [
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int main() {
   volatile double d = 0.0, x;
   x = 0.0 / d;
   x = 1.0 / d;
   return 0;
 }
-], [mpfr_cv_errdivzero="no"],
+]])],
+   [mpfr_cv_errdivzero="no"],
    [mpfr_cv_errdivzero="yes"],
    [mpfr_cv_errdivzero="cannot test, assume no"])
 ])
@@ -265,7 +270,7 @@ dnl Check whether NAN != NAN (as required by the IEEE-754 standard,
 dnl but not by the ISO C standard). For instance, this is false with
 dnl MIPSpro 7.3.1.3m under IRIX64. By default, assume this is true.
 AC_CACHE_CHECK([if NAN == NAN], mpfr_cv_nanisnan, [
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <math.h>
 #ifndef NAN
@@ -276,7 +281,8 @@ int main() {
   d = NAN;
   return d != d;
 }
-], [mpfr_cv_nanisnan="yes"],
+]])],
+   [mpfr_cv_nanisnan="yes"],
    [mpfr_cv_nanisnan="no"],
    [mpfr_cv_nanisnan="cannot test, assume no"])
 ])
