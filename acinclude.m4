@@ -225,7 +225,6 @@ fi
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <math.h>
 #include <stdio.h>
 int main() {
   double x = 2.22507385850720138309e-308;
