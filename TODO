@@ -247,6 +247,8 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- in mpfr_log1p, use the series of log(1+x) when x is small, but not small
+  enough so that the approximation log(1+x) = x + O(x^2) suffices
 - use the src/x86_64/corei5/mparam.h file once GMP recognizes correctly the
   Core i5 processors (note that gcc -mtune=native gives __tune_corei7__
   and not __tune_corei5__ on those processors)
