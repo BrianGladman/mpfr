@@ -1,0 +1,174 @@
+#!/bin/sh
+
+# This announce-text script should be run before publishing an announce
+# of a new GNU MPFR release. It does some checking, then it outputs the
+# announce text to stdout. Information messages are written to stderr.
+#
+# Warning! The release name in the announce text may contain accented
+# letters. Make sure they are preserved if your locales are not UTF-8
+# based.
+#
+# Usage: announce-text [ <variable_settings> ]
+# where arguments can be, for instance:
+#   root=<repository_root>
+#   vers=<mpfr_version>
+#   nopgpsig=1  to disable checking of the PGP signatures.
+#   nogforge=1  to disable checking of the tarballs on INRIAGForge.
+#   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
+
+set -e
+
+tmpdir=`mktemp -d /tmp/announce-text-XXXXXXXX`
+trap 'rm -rf $tmpdir' 0 1 2 15
+echo "Temporary directory: $tmpdir" >&2
+
+alias wget="wget -q"
+
+for i in $@
+do
+  eval "$i"
+done
+
+[ -z "$root" ] && root=$(svn info | sed -n 's/^Repository Root: //p')
+echo "Repository root: $root" >&2
+
+cd $tmpdir
+
+#vers=$(svn ls --xml "$root/tags" | xmlstarlet sel -T -t -v \
+#  "//entry[not(commit/@revision < //entry/commit/@revision)]/name" -)
+vers=$(svn ls -v "$root/tags" | perl -ne \
+  'm,^\s*(\d+)\s.*\s(\d+\.\d+\.\d+)/, && $1 > $r and ($r,$v) = ($1,$2);
+   END { print $v }')
+echo "MPFR version: $vers" >&2
+
+www="$root/misc/www/mpfr-$vers"
+echo "MPFR $vers www directory: $www" >&2
+svn ls "$www" | sort > ls1
+cat <<EOF > ls2
+index.html
+mpfr-$vers.tar.bz2
+mpfr-$vers.tar.bz2.asc
+mpfr-$vers.tar.gz
+mpfr-$vers.tar.gz.asc
+mpfr-$vers.tar.xz
+mpfr-$vers.tar.xz.asc
+mpfr-$vers.zip
+mpfr-$vers.zip.asc
+mpfr.dvi.gz
+mpfr.html
+mpfr.pdf
+mpfr.ps.gz
+EOF
+
+missing=$(diff ls1 ls2 | sed -n 's/^> //p')
+if [ -n "$missing" ]; then
+  echo "Missing files in the www directory:" $missing >&2
+  exit 1
+fi
+
+echo "Getting the files from the www directory..." >&2
+for i in tar.bz2 tar.gz tar.xz zip
+do
+  svn cat "$www/mpfr-$vers.$i" > "mpfr-$vers.$i"
+  if [ -z "$nopgpsig" ]; then
+    svn cat "$www/mpfr-$vers.$i.asc" > "mpfr-$vers.$i.asc"
+    gpg --verify "mpfr-$vers.$i.asc" >&2
+    rm "mpfr-$vers.$i.asc"
+  fi
+done
+md5sum mpfr-$vers.* > md5sum.out
+sha1sum mpfr-$vers.* > sha1sum.out
+rm mpfr-*
+
+if [ -z "$nogforge" ]; then
+  echo "Comparing with INRIAGForge..." >&2
+  gforge="https://gforge.inria.fr"
+  wget -O files.html "$gforge/frs/?group_id=136"
+  for i in $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\".*/\1/p" \
+             files.html)
+  do
+    wget "$gforge$i"
+  done
+  for i in md5sum sha1sum
+  do
+    $i mpfr-$vers.* > sums-gforge
+    diff $i.out sums-gforge >&2
+  done
+  rm mpfr-* sums-gforge
+fi
+
+if [ -z "$nognuftp" ]; then
+  echo "Comparing with GNU FTP (ftp.gnu.org)..." >&2
+  for i in tar.bz2 tar.gz tar.xz zip
+  do
+    wget http://ftp.gnu.org/gnu/mpfr/mpfr-$vers.$i
+  done
+  for i in md5sum sha1sum
+  do
+    $i mpfr-$vers.* > sums-gnu
+    diff $i.out sums-gnu >&2
+  done
+  rm mpfr-* sums-gnu
+fi
+
+# Do not use a pipe in order to check the exit status.
+svn cat "$root/tags/$vers/NEWS" > NEWS
+sed -n "/^Changes .* to version ${vers}:/,/^\$/p" NEWS > Changes
+if [ "$(wc -l < Changes)" -lt 3 ]; then
+  echo "The Changes file is too small:" >&2
+  cat Changes >&2
+  exit 1
+fi
+
+rname=$(sed -n "/^Changes .* to version ${vers%.*}\.0:/,+1 {
+    s/.*The \(\".*\"\) release.*/\1/p
+  }" NEWS)
+
+pl=${vers##*.}
+[ $pl -gt 0 ] && rname="$rname, patch level $pl"
+
+cat <<EOF
+Subject: Announce: GNU MPFR $vers is released
+
+GNU MPFR $vers ($rname) is now available
+for download from the MPFR web site:
+
+  http://www.mpfr.org/mpfr-$vers/
+
+from INRIAGForge:
+
+  https://gforge.inria.fr/projects/mpfr/
+
+and from the GNU FTP site:
+
+  http://ftp.gnu.org/gnu/mpfr/
+
+Thanks very much to those who sent us bug reports and/or tested the
+release candidate.
+
+The MD5's:
+EOF
+cat md5sum.out
+cat <<EOF
+
+The SHA1's:
+EOF
+cat sha1sum.out
+cat <<EOF
+
+The signatures:
+http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.xz.asc
+http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.bz2.asc
+http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.gz.asc
+http://www.mpfr.org/mpfr-$vers/mpfr-$vers.zip.asc
+
+EOF
+cat Changes
+cat <<EOF
+You can send success and failure reports to <mpfr@inria.fr>, and give
+us the canonical system name (by running the "./config.guess" script),
+the processor and the compiler version, in order to complete the
+"Platforms Known to Support MPFR" section of the MPFR $vers web page.
+
+Regards,
+EOF
