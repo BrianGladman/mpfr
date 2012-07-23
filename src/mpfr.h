@@ -993,7 +993,8 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 */
 #if (defined (INTMAX_C) && defined (UINTMAX_C) && !defined(__cplusplus)) || \
   defined (MPFR_USE_INTMAX_T) || \
-  defined (_STDINT_H) || defined (_STDINT_H_) || defined (_STDINT)
+  defined (_STDINT_H) || defined (_STDINT_H_) || defined (_STDINT) || \
+  defined (_SYS_STDINT_H_) /* needed for FreeBSD */
 # ifndef _MPFR_H_HAVE_INTMAX_T
 # define _MPFR_H_HAVE_INTMAX_T 1
 
