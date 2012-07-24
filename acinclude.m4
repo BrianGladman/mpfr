@@ -226,7 +226,7 @@ dnl Check for double-to-integer conversion bug
 dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
 AC_MSG_CHECKING(for double-to-integer conversion bug)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include "gmp.h"
+#include <gmp.h>
 ]], [[
   double d;
   mp_limb_t u;
@@ -246,7 +246,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 ]])], [AC_MSG_RESULT(no)], [
        AC_MSG_RESULT(yes)
        AC_MSG_ERROR([double-to-integer conversion is incorrect.
-You need to use another compiler (or disable optimization).])])
+You need to use another compiler (or lower the optimization level).])])
 
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
@@ -1051,7 +1051,7 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #else
 #include <stddef.h>
 #endif
-#include "gmp.h"
+#include <gmp.h>
     ],,
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])
