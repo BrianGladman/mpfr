@@ -560,8 +560,9 @@ with @code{va_list} parameters, such as @code{mpfr_vprintf}.
 @cindex @code{uintmax_t}
 And for any functions using @code{intmax_t}, you must include
 @code{<stdint.h>} or @code{<inttypes.h>} before @file{mpfr.h}, to
-allow @file{mpfr.h} to define prototypes for these functions. Moreover,
-users of C++ compilers under some platforms may need to define
+allow @file{mpfr.h} to define prototypes for these functions.
+Moreover, under some platforms (in particular with C++ compilers),
+users may need to define
 @code{MPFR_USE_INTMAX_T} (and should do it for portability) before
 @file{mpfr.h} has been included; of course, it is possible to do that
 on the command line, e.g., with @code{-DMPFR_USE_INTMAX_T}.
