@@ -222,6 +222,32 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
   fi
 fi
 
+dnl Check for double-to-integer conversion bug
+dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
+AC_MSG_CHECKING(for double-to-integer conversion bug)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+]], [[
+  double d;
+  mp_limb_t u;
+  int i;
+
+  d = 1.0;
+  for (i = 0; i < GMP_NUMB_BITS - 1; i++)
+    d = d + d;
+  u = (mp_limb_t) d;
+  for (; i > 0; i--)
+    {
+      if (u & 1)
+        break;
+      u = u >> 1;
+    }
+  return (i == 0 && u == 1UL) ? 0 : 1;
+]])], [AC_MSG_RESULT(no)], [
+       AC_MSG_RESULT(yes)
+       AC_MSG_ERROR([double-to-integer conversion is incorrect.
+You need to use another compiler (or disable optimization).])])
+
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
