@@ -224,7 +224,7 @@ fi
 
 dnl Check for double-to-integer conversion bug
 dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
-AC_MSG_CHECKING(for double-to-integer conversion bug)
+AC_CACHE_CHECK([for double-to-integer conversion bug], mpfr_cv_dbl_int_bug, [
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
 ]], [[
@@ -243,10 +243,14 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
       u = u >> 1;
     }
   return (i == 0 && u == 1UL) ? 0 : 1;
-]])], [AC_MSG_RESULT(no)], [
-       AC_MSG_RESULT(yes)
-       AC_MSG_ERROR([double-to-integer conversion is incorrect.
-You need to use another compiler (or lower the optimization level).])])
+]])], [mpfr_cv_dbl_int_bug="no"],
+      [mpfr_cv_dbl_int_bug="yes"],
+      [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
+])
+if test "$mpfr_cv_dbl_int_bug" = "yes"; then
+  AC_MSG_ERROR([double-to-integer conversion is incorrect.
+You need to use another compiler (or lower the optimization level).])
+fi
 
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
