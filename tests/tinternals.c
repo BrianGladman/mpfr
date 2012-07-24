@@ -139,6 +139,31 @@ test_set_prec_raw (void)
   mpfr_clear (x);
 }
 
+/* https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435 */
+static void
+test_double_integer_conversion (void)
+{
+  double d;
+  mp_limb_t u;
+  int i;
+
+  d = 1.0;
+  for (i = 0; i < GMP_NUMB_BITS - 1; i++)
+    d = d + d;
+  u = (mp_limb_t) d;
+  for (; i > 0; i--)
+    {
+      if (u & 1)
+        break;
+      u = u >> 1;
+    }
+  if (i != 0 || u != 1UL)
+    {
+      printf ("Error in double to integer conversion\n");
+      exit (1);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -152,6 +177,7 @@ main (int argc, char **argv)
 
   test_round_near_x ();
   test_set_prec_raw ();
+  test_double_integer_conversion ();
 
   tests_end_mpfr ();
   return 0;
