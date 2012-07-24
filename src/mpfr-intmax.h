@@ -30,11 +30,24 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __STDC_CONSTANT_MACROS
 #endif
 
+/* The definition of MPFR_USE_INTMAX_T is needed on systems for which
+   the current (non-standard) macro tests in mpfr.h is not sufficient.
+   This will force the support of intmax_t/uintmax_t if <inttypes.h>
+   and/or <stdint.h> are available. This also avoids a failure in the
+   tests (replace the macro tests in mpfr.h by just
+     #if defined (MPFR_USE_INTMAX_T)
+   to simulate such a system and reproduce the problem).
+   Note: if this makes the build fail on some systems (because these
+   headers are broken), we will need a configure test to undefine
+   HAVE_INTTYPES_H and HAVE_STDINT_H in such a case. */
+
 #if HAVE_INTTYPES_H
 # include <inttypes.h>
+# define MPFR_USE_INTMAX_T
 #endif
 #if HAVE_STDINT_H
 # include <stdint.h>
+# define MPFR_USE_INTMAX_T
 #endif
 
 #endif
