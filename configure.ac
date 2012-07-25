@@ -566,7 +566,7 @@ if test -f confdefs.h; then
   mv confdefs.tmp confdefs.h
 fi
 
-if grep -q -e '-dev$' $srcdir/VERSION; then
+if $EGREP -q -e '-dev$' $srcdir/VERSION; then
   AC_SUBST([DATAFILES])dnl
   DATAFILES=`echo \`$SED -n \
     's/^ *data_check *("\(data\/[[^"]]*\)".*/tests\/\1/p' \
