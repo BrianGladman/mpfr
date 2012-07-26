@@ -547,21 +547,21 @@ fi
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
 dnl and polluate (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
-  sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
-  sed '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_ALLOCA /d' <confdefs.h >confdefs.tmp
-  sed '/#define HAVE_DLFCN_H/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_MEM/d' <confdefs.h >confdefs.tmp
-  sed '/#define STDC_HEADERS/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_STRTOL/d' <confdefs.h >confdefs.tmp
-  sed '/#define HAVE_STDLIB_H/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_UNISTD_H/d' <confdefs.h >confdefs.tmp
-  sed '/#define HAVE_STDC_HEADERS/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_LONG_DOUBLE/d' <confdefs.h >confdefs.tmp
-  sed '/#define HAVE_SYS_STAT_H/d' <confdefs.tmp >confdefs.h
-  sed '/#define HAVE_SYS_TYPES_H/d' <confdefs.h >confdefs.tmp
-  sed '/#define PROTOTYPES/d' <confdefs.tmp >confdefs.h
-  sed '/#define __PROTOTYPES/d' <confdefs.h >confdefs.tmp
+  $SED '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
+  $SED '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_ALLOCA /d' <confdefs.h >confdefs.tmp
+  $SED '/#define HAVE_DLFCN_H/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_MEM/d' <confdefs.h >confdefs.tmp
+  $SED '/#define STDC_HEADERS/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_STRTOL/d' <confdefs.h >confdefs.tmp
+  $SED '/#define HAVE_STDLIB_H/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_UNISTD_H/d' <confdefs.h >confdefs.tmp
+  $SED '/#define HAVE_STDC_HEADERS/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_LONG_DOUBLE/d' <confdefs.h >confdefs.tmp
+  $SED '/#define HAVE_SYS_STAT_H/d' <confdefs.tmp >confdefs.h
+  $SED '/#define HAVE_SYS_TYPES_H/d' <confdefs.h >confdefs.tmp
+  $SED '/#define PROTOTYPES/d' <confdefs.tmp >confdefs.h
+  $SED '/#define __PROTOTYPES/d' <confdefs.h >confdefs.tmp
 
   mv confdefs.tmp confdefs.h
 fi
