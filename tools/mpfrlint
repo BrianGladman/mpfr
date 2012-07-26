@@ -14,8 +14,15 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' src/*.{c,h} | 
   grep -v '^src/mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^src/mpfr.h:__MPFR_DECLSPEC '
 
-grep -E 'if +(test|\[).* == ' acinclude.m4 configure.ac
-grep -E '="`' acinclude.m4 configure.ac
+grconf()
+{
+  grep -v '^dnl ' acinclude.m4 configure.ac | grep -E "$1" && \
+    echo "in grconf '$1'"
+}
+
+grconf '^(.*if +|[[:space:]]*)(test|\[).* == '
+grconf '="`'
+grconf '[^a-z][ef]?grep[^a-z]'
 
 srctests=`find src tests -name '*.[ch]'`
 
