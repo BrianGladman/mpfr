@@ -99,7 +99,7 @@ compute_l2b (int output)
             }
           else
             {
-              /* 76-bit upper approximation to log(2)/log(b) */
+              /* 77-bit upper approximation to log(2)/log(b) */
               mpfr_init2 (p, 77);
               mpfr_set_ui (p, beta, MPFR_RNDD);
               mpfr_log2 (p, p, MPFR_RNDD);
