@@ -23,6 +23,7 @@ grconf()
 grconf '^(.*if +|[[:space:]]*)(test|\[).* == '
 grconf '="`'
 grconf '[^a-z][ef]?grep[^a-z]'
+grconf '[^a-z]sed[^a-z]'
 
 srctests=`find src tests -name '*.[ch]'`
 
