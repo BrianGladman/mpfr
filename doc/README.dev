@@ -26,12 +26,11 @@ To compile source code obtained from the Subversion repository, you
 need some GNU development utilities: aclocal, autoheader, automake,
 autoconf 2.60 (at least) and libtoolize. As some files like "configure"
 are not part of the Subversion repository, you first need to run
-"autoreconf -i"; if you have both autoconf 2.13 and 2.50 installed and
-use a wrapper, you may need to run "autoreconf" a second time (as with
-old Debian packages, due to a bug in the wrapper). Then you can run
-"configure" in the usual way (see the INSTALL file, but note that
-there are no patches to apply, and the URLs are not valid since the
-corresponding version has not been released yet).
+"autoreconf -i" (or autogen.sh, which could be used later to update
+the config files). Then you can run "configure" in the usual way
+(see the INSTALL file, but note that there are no patches to apply,
+and the URLs are not valid since the corresponding version has not
+been released yet).
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
@@ -111,7 +110,9 @@ To make a release (for the MPFR team):
 
   0) Make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
      and the libtool-related files (config.guess, etc.) are up-to-date.
-     An "autoreconf -f -i" may be necessary.
+     Running autogen.sh may be necessary; avoid the possible warnings,
+     as long as this does not require too recent tools (e.g. < 4 years
+     old).
 
   1) Generate the tuning parameters on different architectures and
      put them in src/mparam_h.in. For each architecture:
