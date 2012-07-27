@@ -372,7 +372,7 @@ dnl but it's "ar" format and cannot be used by the MS linker.  There
 dnl doesn't seem to be any GNU tool for generating or converting to .lib.
 AC_SUBST(MPFR_LDFLAGS)
 AC_SUBST(LIBMPFR_LDFLAGS)
-AC_LIBTOOL_WIN32_DLL
+LT_INIT(win32-dll)
 case $host in
   *-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-os2*)
    AC_MSG_CHECKING(for DLL/static GMP)
@@ -402,8 +402,6 @@ error
   fi
   ;;
 esac
-dnl Finally set up LibTool
-AC_PROG_LIBTOOL
 
 
 dnl

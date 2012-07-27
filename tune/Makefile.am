@@ -23,7 +23,7 @@ bidimensional_sample_SOURCES = bidimensional_sample.c
 bidimensional_sample_LDADD = -lspeed $(top_builddir)/src/libmpfr.la
 bidimensional_sample_LDFLAGS = -static
 
-INCLUDES = -I$(top_srcdir)/src -I$(top_builddir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src
 
 tune:
 	$(MAKE) $(AM_MAKEFLAGS) tuneup$(EXEEXT)

@@ -120,7 +120,7 @@ alpha*-*-*)
     mpfr_cv_ieee_switches="-fprm d -ieee_with_inexact"
   fi
   CFLAGS="$CFLAGS $mpfr_cv_ieee_switches"
-  AC_TRY_COMPILE(,,, mpfr_cv_ieee_switches="none")
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])], , mpfr_cv_ieee_switches="none")
   ])
   if test "$mpfr_cv_ieee_switches" = "none"; then
     CFLAGS="$saved_CFLAGS"
@@ -139,7 +139,7 @@ if test "$ac_cv_type_intmax_t" = yes; then
   AC_CACHE_CHECK([for working INTMAX_MAX], mpfr_cv_have_intmax_max, [
     saved_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-    AC_TRY_COMPILE([#include "mpfr-intmax.h"], [intmax_t x = INTMAX_MAX;],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "mpfr-intmax.h"]], [[intmax_t x = INTMAX_MAX;]])],
       mpfr_cv_have_intmax_max=yes, mpfr_cv_have_intmax_max=no)
     CPPFLAGS="$saved_CPPFLAGS"
   ])
@@ -169,7 +169,7 @@ dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"
 LIBS="$LIBS $MPFR_LIBM"
-AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fenv.h>]], [[fesetround(FE_TONEAREST);]])],
   mpfr_cv_have_fesetround=yes, mpfr_cv_have_fesetround=no)
 LIBS="$saved_LIBS"
 ])
@@ -604,7 +604,7 @@ struct {
 };
 ]
 EOF
-  mpfr_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >&AC_FD_CC 2>&1"
+  mpfr_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >&AS_MESSAGE_LOG_FD 2>&1"
   if AC_TRY_EVAL(mpfr_compile); then
     cat >conftest.awk <<\EOF
 [
@@ -864,8 +864,8 @@ EOF
     mpfr_cv_c_long_double_format=`od -b conftest.$OBJEXT | $AWK -f conftest.awk`
     case $mpfr_cv_c_long_double_format in
     unknown*)
-      echo "cannot match anything, conftest.$OBJEXT contains" >&AC_FD_CC
-      od -b conftest.$OBJEXT >&AC_FD_CC
+      echo "cannot match anything, conftest.$OBJEXT contains" >&AS_MESSAGE_LOG_FD
+      od -b conftest.$OBJEXT >&AS_MESSAGE_LOG_FD
       ;;
     esac
   else
@@ -978,7 +978,7 @@ dnl  as a fallback.
 AC_DEFUN([GMP_C_ATTRIBUTE_MODE],
 [AC_CACHE_CHECK([whether gcc __attribute__ ((mode (XX))) works],
                gmp_cv_c_attribute_mode,
-[AC_TRY_COMPILE([typedef int SItype __attribute__ ((mode (SI)));], ,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[typedef int SItype __attribute__ ((mode (SI)));]], [[]])],
  gmp_cv_c_attribute_mode=yes, gmp_cv_c_attribute_mode=no)
 ])
 if test $gmp_cv_c_attribute_mode = yes; then
@@ -1011,7 +1011,9 @@ $3
   [AC_MSG_RESULT(yes)
   $4],
   [AC_MSG_RESULT(no)
-  $5])
+  $5],
+  [AC_MSG_RESULT(cross-compiling, assuming yes)
+  $4])
 ])
 
 
