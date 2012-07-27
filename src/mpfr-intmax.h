@@ -24,22 +24,24 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define __MPFR_INTMAX_H__
 
 /* The ISO C99 standard specifies that in C++ implementations the
-   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+ * INTMAX_MAX, ... macros should only be defined if explicitly requested.
+ */
 #if defined __cplusplus
 # define __STDC_LIMIT_MACROS
 # define __STDC_CONSTANT_MACROS
 #endif
 
 /* The definition of MPFR_USE_INTMAX_T is needed on systems for which
-   the current (non-standard) macro tests in mpfr.h is not sufficient.
-   This will force the support of intmax_t/uintmax_t if <inttypes.h>
-   and/or <stdint.h> are available. This also avoids a failure in the
-   tests (replace the macro tests in mpfr.h by just
-     #if defined (MPFR_USE_INTMAX_T)
-   to simulate such a system and reproduce the problem).
-   Note: if this makes the build fail on some systems (because these
-   headers are broken), we will need a configure test to undefine
-   HAVE_INTTYPES_H and HAVE_STDINT_H in such a case. */
+ * the current (non-standard) macro tests in mpfr.h is not sufficient.
+ * This will force the support of intmax_t/uintmax_t if <inttypes.h>
+ * and/or <stdint.h> are available. This also avoids a failure in the
+ * tests (replace the macro tests in mpfr.h by just
+ *   #if defined (MPFR_USE_INTMAX_T)
+ * to simulate such a system and reproduce the problem).
+ * Note: if this makes the build fail on some systems (because these
+ * headers are broken), we will need a configure test to undefine
+ * HAVE_INTTYPES_H and HAVE_STDINT_H in such a case.
+ */
 
 #if HAVE_INTTYPES_H
 # include <inttypes.h>
