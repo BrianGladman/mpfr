@@ -192,6 +192,9 @@ To make a release (for the MPFR team):
      Try also with gcc's -fno-common option.
      Check also with "-Wformat=2", but without logging support (in order
      to avoid too many spurious warnings).
+     Check with "-UHAVE_BIG_ENDIAN -UHAVE_LITTLE_ENDIAN" to simulate
+     platforms where the endianness is unknown (or can't be specified
+     without AC_CONFIG_HEADERS).
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).

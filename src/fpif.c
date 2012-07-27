@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#if !defined (HAVE_BIG_ENDIAN) && !defined (HAVE_LITTLE_ENDIAN)
+#error "Endianness is unknown. Not supported yet."
+#endif
+
 #define MPFR_KIND_ZERO 119
 #define MPFR_KIND_INF 120
 #define MPFR_KIND_NAN 121
@@ -68,10 +72,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    where data_size might be smaller than data_max_size, so that we only
    copy data_size bytes */
 static void
-#ifdef HAVE_BIG_ENDIAN
+#if defined (HAVE_BIG_ENDIAN)
 putLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
-#else /* little endian */
+#elif defined (HAVE_LITTLE_ENDIAN)
 putBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size)
 #endif
@@ -85,10 +89,10 @@ putBigEndianData (unsigned char * result, unsigned char * data,
 
 /* copy in result[] the values in data[] with the same endianness */
 static void
-#ifdef HAVE_BIG_ENDIAN
+#if defined (HAVE_BIG_ENDIAN)
 putBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size)
-#else /* little endian */
+#elif defined (HAVE_LITTLE_ENDIAN)
 putLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif
@@ -99,10 +103,10 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
 
 /* copy in result[] the values in data[] with a different endianness */
 static void
-#ifdef HAVE_BIG_ENDIAN
+#if defined (HAVE_BIG_ENDIAN)
 getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
-#else /* little endian */
+#elif defined (HAVE_LITTLE_ENDIAN)
 getBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size)
 #endif
@@ -116,10 +120,10 @@ getBigEndianData (unsigned char * result, unsigned char * data,
 
 /* copy in result[] the values in data[] with the same endianness */
 static void
-#ifdef HAVE_BIG_ENDIAN
+#if defined (HAVE_BIG_ENDIAN)
 getBigEndianData (unsigned char * result, unsigned char * data,
                   size_t data_max_size, size_t data_size)
-#else /* little endian */
+#elif defined (HAVE_LITTLE_ENDIAN)
 getLittleEndianData (unsigned char * result, unsigned char * data,
                      size_t data_max_size, size_t data_size)
 #endif

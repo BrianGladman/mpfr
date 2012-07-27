@@ -342,8 +342,12 @@ esac
 
 AC_C_CONST
 AC_C_VOLATILE
-dnl  Determine the endianness of integer
-AC_C_BIGENDIAN([AC_DEFINE(HAVE_BIG_ENDIAN)],[AC_DEFINE(HAVE_LITTLE_ENDIAN)])
+dnl Determine the endianness of integer. But since MPFR doesn't use
+dnl AC_CONFIG_HEADERS, configure cannot provide such information for
+dnl universal binaries containing variants with different endianness
+dnl (i.e. generic code must be used).
+AC_C_BIGENDIAN([AC_DEFINE(HAVE_BIG_ENDIAN)],[AC_DEFINE(HAVE_LITTLE_ENDIAN)],
+[true],[true])
 
 MPFR_CONFIGS
 
