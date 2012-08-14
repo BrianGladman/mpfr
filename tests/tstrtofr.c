@@ -1103,6 +1103,41 @@ test20100310 (void)
   mpfr_clear (y);
 }
 
+/* From a bug reported by Joseph S. Myers
+   https://sympa.inria.fr/sympa/arc/mpfr/2012-08/msg00005.html */
+static void
+bug20120814 (void)
+{
+  mpfr_exp_t emin = -30, e;
+  mpfr_t x, y;
+  int r;
+  char s[64], *p;
+
+  mpfr_init2 (x, 2);
+  mpfr_set_ui_2exp (x, 3, emin - 2, MPFR_RNDN);
+  mpfr_get_str (s + 1, &e, 10, 19, x, MPFR_RNDD);
+  s[0] = s[1];
+  s[1] = '.';
+  for (p = s; *p != 0; p++) ;
+  *p = 'e';
+  sprintf (p + 1, "%d", (int) e - 1);
+
+  mpfr_init2 (y, 4);
+  r = mpfr_strtofr (y, s, NULL, 0, MPFR_RNDN);
+  if (r <= 0 || ! mpfr_equal_p (x, y))
+    {
+      printf ("Error in bug20120814\n");
+      printf ("mpfr_strtofr failed on string \"%s\"\n", s);
+      printf ("Expected inex > 0 and y = 0.1100E%d\n", (int) emin);
+      printf ("Got inex = %-6d and y = ", r);
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1115,6 +1150,7 @@ main (int argc, char *argv[])
   check_retval ();
   bug20081028 ();
   test20100310 ();
+  bug20120814 ();
 
   tests_end_mpfr ();
   return 0;
