@@ -333,7 +333,8 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   /* the largest decimal64 number is just below 10^(385) < 2^1279 */
   else if (MPFR_UNLIKELY (e > 1279)) /* then src >= 2^1279 */
     {
-      if (MPFR_RNDZ || (rnd_mode == MPFR_RNDU && negative != 0)
+      if (rnd_mode == MPFR_RNDZ
+          || (rnd_mode == MPFR_RNDU && negative != 0)
           || (rnd_mode == MPFR_RNDD && negative == 0))
         return get_decimal64_max (negative);
       else
@@ -384,7 +385,8 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
          which corresponds to s=[0.]9999...999 and e=385 */
       else if (e > 385)
         {
-          if (MPFR_RNDZ || (rnd_mode == MPFR_RNDU && negative != 0)
+          if (rnd_mode == MPFR_RNDZ
+              || (rnd_mode == MPFR_RNDU && negative != 0)
               || (rnd_mode == MPFR_RNDD && negative == 0))
             return get_decimal64_max (negative);
           else
