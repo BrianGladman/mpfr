@@ -31,6 +31,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
+#ifndef DEC64_MAX
+# define DEC64_MAX 9.999999999999999E384dd
+#endif
+
 #ifdef DPD_FORMAT
 static int T[1000] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 32,
@@ -141,26 +145,14 @@ get_decimal64_zero (int negative)
 static _Decimal64
 get_decimal64_min (int negative)
 {
-  union ieee_double_extract x;
-
-  x.s.sig = (negative) ? 1 : 0;
-  x.s.exp = 0;
-  x.s.manh = 0;
-  x.s.manl = 1;
-  return x.d;
+  return negative ? - 1E-398dd : 1E-398dd;
 }
 
 /* construct the decimal64 largest finite number with given sign */
 static _Decimal64
 get_decimal64_max (int negative)
 {
-  union ieee_double_extract x;
-
-  x.s.sig = (negative) ? 1 : 0;
-  x.s.exp = 1919;
-  x.s.manh = 1048575; /* 2^20-1 */
-  x.s.manl = ~0;
-  return x.d;
+  return negative ? - DEC64_MAX : DEC64_MAX;
 }
 
 /* one-to-one conversion:
