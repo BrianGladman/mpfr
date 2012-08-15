@@ -28,8 +28,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Check if we have to check the result of mpfr_mul.
    TODO: Find a better (and faster?) check than using old implementation */
-#ifdef WANT_ASSERT
-# if WANT_ASSERT >= 3
+#ifdef MPFR_WANT_ASSERT
+# if MPFR_WANT_ASSERT >= 3
 
 int mpfr_mul2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode);
 static int

@@ -26,9 +26,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdio.h>
 
 /* The no assertion request doesn't apply to the tests */
-#if defined(WANT_ASSERT)
-# if WANT_ASSERT < 0
-#  undef WANT_ASSERT
+#if defined(MPFR_WANT_ASSERT)
+# if MPFR_WANT_ASSERT < 0
+#  undef MPFR_WANT_ASSERT
 # endif
 #endif
 

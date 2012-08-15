@@ -25,8 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* Check if we have to check the result of mpfr_sub1sp with mpfr_sub1 */
-#ifdef WANT_ASSERT
-# if WANT_ASSERT >= 2
+#ifdef MPFR_WANT_ASSERT
+# if MPFR_WANT_ASSERT >= 2
 
 int mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode);
 int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)

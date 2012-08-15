@@ -108,10 +108,10 @@ AC_ARG_ENABLE(gmp-internals,
 AC_ARG_ENABLE(assert,
    [  --enable-assert         enable ASSERT checking [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([WANT_ASSERT],1,[Want assertion]) ;;
-      none) AC_DEFINE([WANT_ASSERT],-1,[Do no want any assertion]) ;;
+      yes) AC_DEFINE([MPFR_WANT_ASSERT],1,[Want assertion]) ;;
+      none) AC_DEFINE([MPFR_WANT_ASSERT],-1,[Do no want any assertion]) ;;
       no)  ;;
-      full) AC_DEFINE([WANT_ASSERT],2,[Want assertion]) ;;
+      full) AC_DEFINE([MPFR_WANT_ASSERT],2,[Want assertion]) ;;
       *) AC_MSG_ERROR([bad value for --enable-assert: yes, no, none or full]) ;;
      esac])
 AC_ARG_ENABLE(logging,

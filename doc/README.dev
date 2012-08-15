@@ -313,7 +313,7 @@ List of the used macros for building MPFR:
 
 + XDEBUG:               Use generic 'double' code instead of IEEE specific one.
                         The IEEE code for double needs GMP internal files.
-+ WANT_ASSERT:          Define to 1 to turn on the assertions, 2 for complete
++ MPFR_WANT_ASSERT:     Define to 1 to turn on the assertions, 2 for complete
                         assertions (debugging mode), -1 to disable assertions
                         entirely.
 

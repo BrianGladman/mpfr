@@ -213,7 +213,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
   MPFR_EXP(tmp) = __gmpfr_extract_double (tmpmant, d);
 
-#ifdef WANT_ASSERT
+#ifdef MPFR_WANT_ASSERT
   /* Failed assertion if the stored value is 0 (e.g., if the exponent range
      has been reduced at the wrong moment and an underflow to 0 occurred).
      Probably a bug in the C implementation if this happens. */
