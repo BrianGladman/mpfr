@@ -148,6 +148,15 @@ check_inf_nan (void)
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDU);
+  ASSERT_ALWAYS (d == 9.999999999999999E384dd);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_set_decimal64 (x, d, MPFR_RNDZ);
+  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str (x, "-9.999999999999999E384", 10, MPFR_RNDZ);
+  mpfr_set (y, x, MPFR_RNDZ);
+  d = mpfr_get_decimal64 (x, MPFR_RNDA);
+  ASSERT_ALWAYS (d == -9.999999999999999E384dd);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
   ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
