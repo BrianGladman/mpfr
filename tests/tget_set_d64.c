@@ -288,6 +288,32 @@ check_overflow (void)
     exit (1);
 }
 
+static void
+check_tiny (void)
+{
+  mpfr_t x;
+  _Decimal64 d;
+
+  /* If 0.5E-398 < |x| < 1E-398 (smallest subnormal), x should round
+     to +/- 1E-398 in MPFR_RNDN. Note: the midpoint 0.5E-398 between
+     0 and 1E-398 is not a representable binary number, so that there
+     are no tests for it. */
+  mpfr_init2 (x, 128);
+  mpfr_set_str (x, "1E-398", 10, MPFR_RNDZ);
+  d = mpfr_get_decimal64 (x, MPFR_RNDN);
+  MPFR_ASSERTN (d == 1.0E-398dd);
+  mpfr_neg (x, x, MPFR_RNDN);
+  d = mpfr_get_decimal64 (x, MPFR_RNDN);
+  MPFR_ASSERTN (d == -1.0E-398dd);
+  mpfr_set_str (x, "0.5E-398", 10, MPFR_RNDU);
+  d = mpfr_get_decimal64 (x, MPFR_RNDN);
+  MPFR_ASSERTN (d == 1.0E-398dd);
+  mpfr_neg (x, x, MPFR_RNDN);
+  d = mpfr_get_decimal64 (x, MPFR_RNDN);
+  MPFR_ASSERTN (d == -1.0E-398dd);
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -305,6 +331,7 @@ main (void)
   check_random ();
   check_native ();
   check_overflow ();
+  check_tiny ();
 
   tests_end_mpfr ();
   return 0;

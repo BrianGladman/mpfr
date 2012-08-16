@@ -346,12 +346,15 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
              which corresponds to s=[0.]1000...000 and e=-397 */
           if (e < -397)
             {
-              /* FIXME: for rnd_mode == MPFR_RNDN and e = -398, compare
-                 |src| with 0.5E-398 to determine the rounding direction.
-                 This can be done on MPFR numbers (in binary, with enough
-                 precision to represent 0.5E-398 exactly) or by rounding
-                 src to 1 decimal digit away from zero.
-                 Add testcases (positive and negative). */
+              if (rnd_mode == MPFR_RNDN && e == -398)
+                {
+                  /* If 0.5E-398 < |src| < 1E-398 (smallest subnormal),
+                     src should round to +/- 1E-398 in MPFR_RNDN. */
+                  mpfr_get_str (s, &e, 10, 1, src, MPFR_RNDA);
+                  return e == -398 && s[negative] <= '5' ?
+                    get_decimal64_zero (negative) :
+                    get_decimal64_min (negative);
+                }
               if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN
                   || (rnd_mode == MPFR_RNDD && negative == 0)
                   || (rnd_mode == MPFR_RNDU && negative != 0))
