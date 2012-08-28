@@ -185,9 +185,9 @@ infinities, not-a-number (NaN).</p></li>
 
 <dd><p>You need to add <q><code>r</code></q> to the function names, and to
 specify the rounding mode (<code>MPFR_RNDN</code> for rounding to nearest,
-<code>MPFR_RNDZ</code> for rounding towards zero, <code>MPFR_RNDU</code>
-for rounding towards plus infinity, <code>MPFR_RNDD</code> for rounding
-towards minus infinity). You can also define macros as follows:
+<code>MPFR_RNDZ</code> for rounding toward zero, <code>MPFR_RNDU</code>
+for rounding toward plus infinity, <code>MPFR_RNDD</code> for rounding
+toward minus infinity). You can also define macros as follows:
 <code class="block-code">#define mpf_add(a, b, c) mpfr_add(a, b, c, MPFR_RNDN)</code></p>
 <p>The header file <samp>mpf2mpfr.h</samp> from the
 <cite><acronym>MPFR</acronym></cite> distribution automatically
