@@ -674,9 +674,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           if (err >= 0)
             {
               mp_limb_t cy;
+              unsigned long h = err / GMP_NUMB_BITS;
+              unsigned long l = err - h * GMP_NUMB_BITS;
 
-              MPFR_ASSERTN(err < GMP_NUMB_BITS);
-              cy = mpn_add_1 (z, z, ysize, ((mp_limb_t) 1) << err);
+              MPFR_ASSERTN(h < ysize);
+              cy = mpn_add_1 (z, z, ysize - h, ((mp_limb_t) 1) << l);
               MPFR_ASSERTN(cy == 0);
             }
           exact = exact && (err == -1);
