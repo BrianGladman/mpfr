@@ -497,7 +497,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           /* y <- trunc(x2 * 2^sh) = trunc(x * 2^(2*sh-1)) */
           mpfr_mul_2exp (x2, x2, sh, MPFR_RNDN); /* exact */
-          mpfr_get_z (y, x2, MPFR_RNDZ); /* round towards zero: now
+          mpfr_get_z (y, x2, MPFR_RNDZ); /* round toward zero: now
                                            0 <= x2 < 2^sh, thus
                                            0 <= x2/2^(sh-1) < 2^(1-sh) */
           if (mpz_cmp_ui (y, 0) == 0)
