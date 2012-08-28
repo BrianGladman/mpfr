@@ -32,7 +32,8 @@ struct parsed_string {
   int            base;     /* base of the string */
   unsigned char *mantissa; /* raw significand (without any point) */
   unsigned char *mant;     /* stripped significand (without starting and
-                              ending zeroes) */
+                              ending zeroes). This points inside the area
+                              allocated for the mantissa field. */
   size_t         prec;     /* length of mant (zero for +/-0) */
   size_t         alloc;    /* allocation size of mantissa */
   mpfr_exp_t     exp_base; /* number of digits before the point */
@@ -413,7 +414,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
         (mpfr_exp_t) read_exp;
     }
 
-  /* Remove 0's at the beginning and end of mant_s[0..prec_s-1] */
+  /* Remove 0's at the beginning and end of mantissa[0..prec-1] */
   mant = pstr->mantissa;
   for ( ; (pstr->prec > 0) && (*mant == 0) ; mant++, pstr->prec--)
     pstr->exp_base--;
@@ -458,7 +459,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   /* initialize the working precision */
   prec = MPFR_PREC (x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
 
-  /* compute y as long as rounding is not possible */
+  /* compute the value y of the leading characters as long as rounding is not
+     possible */
   MPFR_TMP_MARK(marker);
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -513,7 +515,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
       MPFR_ASSERTD (real_ysize <= ysize+1);
 
-      /* normalize y: warning we can get even get ysize+1 limbs! */
+      /* normalize y: warning we can even get ysize+1 limbs! */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
       count_leading_zeros (count, y[real_ysize - 1]);
       /* exact means that the number of limbs of the output of mpn_set_str
@@ -549,7 +551,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           exp = GMP_NUMB_BITS - count;
         }
 
-      /* compute base^(exp_s-pr) on n limbs */
+      /* compute base^(exp_base - pstr_size) on n limbs */
       if (IS_POW2 (pstr->base))
         {
           /* Base: 2, 4, 8, 16, 32 */
@@ -610,7 +612,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              If exact is zero, then z is rounded toward zero with respect
              to that value. */
 
-          /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
+          /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g):
+             since both y and z are rounded toward zero, so is "result" */
           mpn_mul_n (result, y, z, ysize);
 
           /* compute the error on the product */
@@ -666,6 +669,16 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* (z, exp_z) = base^(exp_base-pstr_size) */
           z = result + 2*ysize + 1;
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
+          /* Since we want y/z rounded towards zero, we must get an upper
+             bound of z. If err >= 0, the error on z is bounded by 2^err. */
+          if (err >= 0)
+            {
+              mp_limb_t cy;
+
+              MPFR_ASSERTN(err < GMP_NUMB_BITS);
+              cy = mpn_add_1 (z, z, ysize, ((mp_limb_t) 1) << err);
+              MPFR_ASSERTN(cy == 0);
+            }
           exact = exact && (err == -1);
           if (err == -2)
             goto underflow; /* FIXME: Sure? */
@@ -696,6 +709,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           if (result[2 * ysize] == MPFR_LIMB_ONE)
             {
               mp_limb_t *r = result + ysize;
+
               exact = exact && ((*r & MPFR_LIMB_ONE) == 0);
               mpn_rshift (r, r, ysize + 1, 1);
               /* Overflow Checking not needed */
