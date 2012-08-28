@@ -669,7 +669,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* (z, exp_z) = base^(exp_base-pstr_size) */
           z = result + 2*ysize + 1;
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
-          /* Since we want y/z rounded towards zero, we must get an upper
+          /* Since we want y/z rounded toward zero, we must get an upper
              bound of z. If err >= 0, the error on z is bounded by 2^err. */
           if (err >= 0)
             {
