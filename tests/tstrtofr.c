@@ -1146,7 +1146,7 @@ bug20120829 (void)
   char s[48] = "1e-1";
 
   mpfr_init2 (e, 128);
-  mpfr_inits2 (4, x1, x2, (mpfr_ptr *) 0);
+  mpfr_inits2 (4, x1, x2, (mpfr_ptr) 0);
 
   inex1 = mpfr_set_si (e, -1, MPFR_RNDN);
   MPFR_ASSERTN (inex1 == 0);
@@ -1185,7 +1185,7 @@ bug20120829 (void)
         }
     }
 
-  mpfr_clears (e, x1, x2, (mpfr_ptr *) 0);
+  mpfr_clears (e, x1, x2, (mpfr_ptr) 0);
 }
 
 int
