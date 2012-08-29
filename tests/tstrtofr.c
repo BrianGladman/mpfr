@@ -1167,7 +1167,7 @@ bug20120829 (void)
   inex = mpfr_mul_ui (e, e, 100000000, MPFR_RNDN);
   MPFR_ASSERTN (inex == 0);
   mpfr_exp10 (x, e, MPFR_RNDN);
-  /* On 64-bit machines, r8391 does a:
+  /* On 32-bit and 64-bit machines, r8391 does a:
      strtofr.c:680: MPFR assertion failed: h < ysize */
   inex = mpfr_strtofr (y, "1e-10000000000000000", NULL, 0, MPFR_RNDN);
   if (! mpfr_equal_p (x, y) || inex >= 0)
