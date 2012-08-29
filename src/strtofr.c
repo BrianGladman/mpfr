@@ -677,7 +677,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               unsigned long h = err / GMP_NUMB_BITS;
               unsigned long l = err - h * GMP_NUMB_BITS;
 
-              MPFR_ASSERTN(h < ysize);
+              if (h >= ysize) /* not enough precision in z */
+                goto next_loop;
               cy = mpn_add_1 (z, z, ysize - h, ((mp_limb_t) 1) << l);
               MPFR_ASSERTN(cy == 0);
             }
@@ -745,6 +746,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                                        MPFR_RNDN, rnd, MPFR_PREC(x)))
         break;
 
+    next_loop:
       /* update the prec for next loop */
       MPFR_ZIV_NEXT (loop, prec);
     } /* loop */
