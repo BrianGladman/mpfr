@@ -612,7 +612,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              If exact is zero, then z is rounded toward zero with respect
              to that value. */
 
-          /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g):
+          /* multiply(y = 0.mant[0]...mant[pr-1])_base by base^(exp-g):
              since both y and z are rounded toward zero, so is "result" */
           mpn_mul_n (result, y, z, ysize);
 
@@ -722,7 +722,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* case exp_base = pstr_size: no multiplication or division needed */
       else
         {
-          /* base^(exp_s-pr) = 1             nothing to compute */
+          /* base^(exp-pr) = 1             nothing to compute */
           result = y;
           err = 0;
         }
