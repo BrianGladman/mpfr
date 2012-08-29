@@ -679,8 +679,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
               if (h >= ysize) /* not enough precision in z */
                 goto next_loop;
-              cy = mpn_add_1 (z, z, ysize - h, ((mp_limb_t) 1) << l);
-              MPFR_ASSERTN(cy == 0);
+              cy = mpn_add_1 (z, z, ysize - h, MPFR_LIMB_ONE << l);
+              if (cy != 0) /* the code below requires z on ysize limbs */
+                goto next_loop;
             }
           exact = exact && (err == -1);
           if (err == -2)
