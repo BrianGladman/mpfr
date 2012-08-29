@@ -1167,10 +1167,11 @@ bug20120829 (void)
           inex2 = SIGN (inex2);
           /* On 32-bit machines, for i = 7, r8389, r8391 and r8394 do:
              strtofr.c:...: MPFR assertion failed: cy == 0
+             r8396 is OK.
              On 64-bit machines, for i = 15,
              r8389 does: strtofr.c:678: MPFR assertion failed: err < (64 - 0)
              r8391 does: strtofr.c:680: MPFR assertion failed: h < ysize
-             r8394 is OK.
+             r8394 and r8396 are OK.
           */
           if (! mpfr_equal_p (x1, x2) || inex1 != inex2)
             {
