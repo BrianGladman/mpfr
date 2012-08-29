@@ -1138,6 +1138,51 @@ bug20120814 (void)
   mpfr_clear (y);
 }
 
+static void
+bug20120829 (void)
+{
+  mpfr_t x, y, e;
+  int inex;
+
+  mpfr_init2 (e, 128);
+  mpfr_inits2 (4, x, y, (mpfr_ptr *) 0);
+
+  inex = mpfr_set_si (e, -100000000, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_exp10 (x, e, MPFR_RNDN);
+  inex = mpfr_strtofr (y, "1e-100000000", NULL, 0, MPFR_RNDN);
+  /* On 32-bit machines, r8389 does a:
+     strtofr.c:678: MPFR assertion failed: err < (32 - 0)
+     Fixed in r8390. */
+  if (! mpfr_equal_p (x, y) || inex >= 0)
+    {
+      printf ("Error 1 in bug20120829\n");
+      printf ("Expected inex < 0, y = ");
+      mpfr_dump (x);
+      printf ("Got      inex = %d, y = ", inex);
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  inex = mpfr_mul_ui (e, e, 100000000, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_exp10 (x, e, MPFR_RNDN);
+  /* On 64-bit machines, r8391 does a:
+     strtofr.c:680: MPFR assertion failed: h < ysize */
+  inex = mpfr_strtofr (y, "1e-10000000000000000", NULL, 0, MPFR_RNDN);
+  if (! mpfr_equal_p (x, y) || inex >= 0)
+    {
+      printf ("Error 2 in bug20120829\n");
+      printf ("Expected inex < 0, y = ");
+      mpfr_dump (x);
+      printf ("Got      inex = %d, y = ", inex);
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clears (e, x, y, (mpfr_ptr *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1151,6 +1196,7 @@ main (int argc, char *argv[])
   bug20081028 ();
   test20100310 ();
   bug20120814 ();
+  bug20120829 ();
 
   tests_end_mpfr ();
   return 0;
