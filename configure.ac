@@ -244,19 +244,7 @@ AC_ARG_ENABLE(decimal-float,
               [Build decimal float functions])
            AC_MSG_CHECKING(if compiler knows _Decimal64)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
-              [AC_MSG_RESULT(yes)
-               if test "$use_gmp_build" != yes ; then
-                  AC_MSG_ERROR([decimal float support requires --with-gmp-build])
-               fi
-               AC_MSG_CHECKING(if _GMP_IEEE_FLOATS is defined)
-               AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-#include "gmp.h"
-#include "gmp-impl.h"
-#ifndef _GMP_IEEE_FLOATS
-#error "_GMP_IEEE_FLOATS is not defined"
-#endif]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
-                  AC_MSG_ERROR([decimal float support requires _GMP_IEEE_FLOATS])])
-              ],
+              [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.2, configured with --enable-decimal-float]
            )])
            AC_MSG_CHECKING(decimal float format)

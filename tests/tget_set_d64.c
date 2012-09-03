@@ -30,6 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* #define DEBUG */
 
+#if _GMP_IEEE_FLOATS
 static void
 print_decimal64 (_Decimal64 d)
 {
@@ -51,6 +52,14 @@ print_decimal64 (_Decimal64 d)
     printf ("%d", (x.s.manl >> (i - 1)) & 1);
   printf ("|\n");
 }
+#else
+/* portable version, assuming long double has at least 55 bits */
+static void
+print_decimal64 (_Decimal64 d)
+{
+  printf ("%.15Le\n", (long double) d);
+}
+#endif /* _GMP_IEEE_FLOATS */
 
 static void
 check_inf_nan (void)
@@ -65,63 +74,63 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_nan_p (x));
+  MPFR_ASSERTN (mpfr_nan_p (x));
 
   mpfr_set_inf (x, 1);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
   mpfr_set_inf (x, -1);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0);
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) > 0);
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_neg (x, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) < 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) < 0);
 
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 1) == 0);
 
   mpfr_set_si (x, -1, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_si (x, -1) == 0);
+  MPFR_ASSERTN (mpfr_cmp_si (x, -1) == 0);
 
   mpfr_set_ui (x, 2, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_ui (x, 2) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 2) == 0);
 
   mpfr_set_ui (x, 99, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp_ui (x, 99) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 99) == 0);
 
   mpfr_set_str (x, "9999999999999999", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   /* smallest normal number */
   mpfr_set_str (x, "1E-383", 10, MPFR_RNDU);
@@ -129,7 +138,7 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDU);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   /* smallest subnormal number */
   mpfr_set_str (x, "1E-398", 10, MPFR_RNDU);
@@ -137,7 +146,7 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDU);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   /* subnormal number with exponent change when we round back
      from 16 digits to 1 digit */
@@ -146,24 +155,24 @@ check_inf_nan (void)
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDD);
   mpfr_set_str (y, "1E-397", 10, MPFR_RNDN);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   /* largest number */
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDU);
-  ASSERT_ALWAYS (d == DEC64_MAX);
+  MPFR_ASSERTN (d == DEC64_MAX);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   mpfr_set_str (x, "-9.999999999999999E384", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDA);
-  ASSERT_ALWAYS (d == -DEC64_MAX);
+  MPFR_ASSERTN (d == -DEC64_MAX);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
@@ -172,7 +181,7 @@ check_inf_nan (void)
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_decimal64 (y, d, MPFR_RNDU);
-  ASSERT_ALWAYS (mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -199,6 +208,7 @@ check_random (void)
       mpfr_set_decimal64 (y, d, MPFR_RNDN);
       if (mpfr_cmp (x, y) != 0)
         {
+          printf ("Error:\n");
           printf ("x="); mpfr_dump (x);
           printf ("d="); print_decimal64 (d);
           printf ("y="); mpfr_dump (y);

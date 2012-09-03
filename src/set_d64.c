@@ -102,6 +102,7 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
+#if _GMP_IEEE_FLOATS
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 23 characters.
  */
@@ -126,15 +127,17 @@ decimal64_to_string (char *s, _Decimal64 d)
   Gh = x.s.exp >> 6;
   if (Gh == 31)
     {
-      sprintf (s, "NaN");
+      s += sprintf (s, "NaN");
+      *s = '\0';
       return;
     }
   else if (Gh == 30)
     {
       if (x.s.sig == 0)
-        sprintf (s, "Inf");
+        s += sprintf (s, "Inf");
       else
-        sprintf (s, "-Inf");
+        s += sprintf (s, "-Inf");
+      *s = '\0';
       return;
     }
   t = s;
@@ -206,7 +209,201 @@ decimal64_to_string (char *s, _Decimal64 d)
 
   exp -= 398; /* unbiased exponent */
   t += sprintf (t, "E%d", exp);
+  *t = '\0';
 }
+#else
+/* portable version */
+#ifndef DEC64_MAX
+# define DEC64_MAX 9.999999999999999E384dd
+#endif
+
+static void
+decimal64_to_string (char *s, _Decimal64 d)
+{
+  int sign = 0, n;
+  long exp = 0;
+  char *s0 = s;
+
+  if (d != d) /* NaN */
+    {
+      s += sprintf (s, "NaN");
+      *s = '\0';
+      return;
+    }
+  else if (d > DEC64_MAX) /* +Inf */
+    {
+      s += sprintf (s, "Inf");
+      *s = '\0';
+      return;
+    }
+  else if (d < -DEC64_MAX) /* -Inf */
+    {
+      s += sprintf (s, "-Inf");
+      *s = '\0';
+      return;
+    }
+    
+  /* now d is neither NaN nor +Inf nor -Inf */
+
+  /* warning: we cannot distinguish -0.0 from +0.0 */
+  if (d < (_Decimal64) 0.0 || (d == (_Decimal64) -0.0 &&
+                               (_Decimal64) 1.0 / d < (_Decimal64) 0.0))
+    {
+      sign = 1;
+      d = -d;
+    }
+
+  /* now normalize d in [0.1, 1[ */
+  if (d >= (_Decimal64) 1.0)
+    {
+      _Decimal64 ten16 = (double) 1e16; /* 10^16 is exactly representable
+                                           in binary64 */
+      _Decimal64 ten32 = ten16 * ten16;
+      _Decimal64 ten64 = ten32 * ten32;
+      _Decimal64 ten128 = ten64 * ten64;
+      _Decimal64 ten256 = ten128 * ten128;
+
+      if (d >= ten256)
+        {
+          d /= ten256;
+          exp += 256;
+        }
+      if (d >= ten128)
+        {
+          d /= ten128;
+          exp += 128;
+        }
+      if (d >= ten64)
+        {
+          d /= ten64;
+          exp += 64;
+        }
+      if (d >= ten32)
+        {
+          d /= ten32;
+          exp += 32;
+        }
+      if (d >= (_Decimal64) 10000000000000000.0)
+        {
+          d /= (_Decimal64) 10000000000000000.0;
+          exp += 16;
+        }
+      if (d >= (_Decimal64) 100000000.0)
+        {
+          d /= (_Decimal64) 100000000.0;
+          exp += 8;
+        }
+      if (d >= (_Decimal64) 10000.0)
+        {
+          d /= (_Decimal64) 10000.0;
+          exp += 4;
+        }
+      if (d >= (_Decimal64) 100.0)
+        {
+          d /= (_Decimal64) 100.0;
+          exp += 2;
+        }
+      if (d >= (_Decimal64) 10.0)
+        {
+          d /= (_Decimal64) 10.0;
+          exp += 1;
+        }
+      if (d >= (_Decimal64) 1.0)
+        {
+          d /= (_Decimal64) 10.0;
+          exp += 1;
+        }
+    }
+  else /* d < 1.0 */
+    {
+      _Decimal64 ten16, ten32, ten64, ten128, ten256;
+
+      ten16 = (double) 1e16; /* 10^16 is exactly representable in binary64 */
+      ten16 = (_Decimal64) 1.0 / ten16; /* 10^(-16), exact */
+      ten32 = ten16 * ten16;
+      ten64 = ten32 * ten32;
+      ten128 = ten64 * ten64;
+      ten256 = ten128 * ten128;
+
+      if (d < ten256)
+        {
+          d /= ten256;
+          exp -= 256;
+        }
+      if (d < ten128)
+        {
+          d /= ten128;
+          exp -= 128;
+        }
+      if (d < ten64)
+        {
+          d /= ten64;
+          exp -= 64;
+        }
+      if (d < ten32)
+        {
+          d /= ten32;
+          exp -= 32;
+        }
+      /* the double constant 0.0000000000000001 is 2028240960365167/2^104,
+         which should be rounded to 1e-16 in _Decimal64 */
+      if (d < (_Decimal64) 0.0000000000000001)
+        {
+          d *= (_Decimal64) 10000000000000000.0;
+          exp -= 16;
+        }
+      /* the double constant 0.00000001 is 3022314549036573/2^78,
+         which should be rounded to 1e-8 in _Decimal64 */
+      if (d < (_Decimal64) 0.00000001)
+        {
+          d *= (_Decimal64) 100000000.0;
+          exp -= 8;
+        }
+      /* the double constant 0.0001 is 7378697629483821/2^66,
+         which should be rounded to 1e-4 in _Decimal64 */
+      if (d < (_Decimal64) 0.0001)
+        {
+          d *= (_Decimal64) 10000.0;
+          exp -= 4;
+        }
+      /* the double constant 0.01 is 5764607523034235/2^59,
+         which should be rounded to 1e-2 in _Decimal64 */
+      if (d < (_Decimal64) 0.01)
+        {
+          d *= (_Decimal64) 100.0;
+          exp -= 2;
+        }
+      /* the double constant 0.1 is 3602879701896397/2^55,
+         which should be rounded to 1e-1 in _Decimal64 */
+      if (d < (_Decimal64) 0.1)
+        {
+          d *= (_Decimal64) 10.0;
+          exp -= 1;
+        }
+    }
+
+  /* now 0.1 <= d < 1 */
+  if (sign == 1)
+    *s++ = '-';
+  *s++ = '0';
+  *s++ = '.';
+  for (n = 0; n < 16; n++)
+    {
+      double e;
+      int r;
+
+      d *= (_Decimal64) 10.0;
+      e = (double) d;
+      r = (int) e;
+      *s++ = '0' + r;
+      d -= (_Decimal64) r;
+    }
+  MPFR_ASSERTN(d == (_Decimal64) 0.0);
+  if (exp != 0)
+    s += sprintf (s, "E%d", exp);
+  *s = '\0';
+}
+#endif /* _GMP_IEEE_FLOATS */
 
 int
 mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mpfr_rnd_t rnd_mode)
