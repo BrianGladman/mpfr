@@ -91,7 +91,6 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- support the Decimal64 types without --with-gmp-build
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement mpfr_pow_q and variants with two integers (native or mpz)
   instead of a rational? See IEEE P1788.
@@ -454,8 +453,6 @@ Table of contents:
 ##############################################################################
 
 - add a web page with results of builds on different architectures
-
-- support the decimal64 function without requiring --with-gmp-build
 
 - [Kevin about texp.c long strings]
   For strings longer than c99 guarantees, it might be cleaner to
