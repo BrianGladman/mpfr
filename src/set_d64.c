@@ -249,10 +249,12 @@ decimal64_to_string (char *s, _Decimal64 d)
       d = -d;
     }
   else if (d == (_Decimal64) -0.0)
-    { /* warning: the comparison d == -0.0 returns true for d = 0.0 too,
-         copy code from set_d.c here */
-      double dd = (double) d, negzero = DBL_NEG_ZERO;
-      if (memcmp (&dd, &negzero, sizeof(double)) == 0)
+    { /* Warning: the comparison d == -0.0 returns true for d = 0.0 too,
+         copy code from set_d.c here. We first compare to the +0.0 bitstring,
+         in case +0.0 and -0.0 are represented identically. */
+      double dd = (double) d, poszero = +0.0, negzero = DBL_NEG_ZERO;
+      if (memcmp (&dd, &poszero, sizeof(double)) != 0 &&
+          memcmp (&dd, &negzero, sizeof(double)) == 0)
         {
           sign = 1;
           d = -d;
