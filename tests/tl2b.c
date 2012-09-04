@@ -34,15 +34,15 @@ static __mpfr_struct l2b[BASE_MAX-1][2];
 static void
 print_mpfr (mpfr_srcptr x, const char *name)
 {
-  unsigned char temp[16];   /* buffer for the base-256 string */
-  unsigned char *ptr;       /* pointer to its first non-zero byte */
-  int size;                 /* size of the string */
-  int i;                    /* bits2use index */
-  int j;                    /* output limb index */
-  int k;                    /* byte index (in output limb) */
-  int r;                    /* digit index, relative to ptr */
-  unsigned char prefix[12]; /* "0x" or "UINT64_C(0x" */
-  unsigned char suffix[2];  /* "" or ")" */
+  unsigned char temp[16]; /* buffer for the base-256 string */
+  unsigned char *ptr;     /* pointer to its first non-zero byte */
+  int size;               /* size of the string */
+  int i;                  /* bits2use index */
+  int j;                  /* output limb index */
+  int k;                  /* byte index (in output limb) */
+  int r;                  /* digit index, relative to ptr */
+  char prefix[12];        /* "0x" or "UINT64_C(0x" */
+  char suffix[2];         /* "" or ")" */
 
   if (printf ("#if 0\n") < 0)
     { fprintf (stderr, "Error in printf\n"); exit (1); }
