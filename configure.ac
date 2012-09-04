@@ -236,8 +236,12 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
 
-dnl _Decimal64 is not defined in C++
-dnl cf http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
+dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
+dnl (note that it is not guaranteed to be available because it may
+dnl be disabled in the GCC build). See:
+dnl   http://gcc.gnu.org/gcc-4.3/changes.html
+dnl _Decimal64 is not yet defined in GCC for C++:
+dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
 AC_ARG_ENABLE(decimal-float,
    [  --enable-decimal-float  build conversion functions from/to decimal floats
                           [[default=no]]],
@@ -247,8 +251,10 @@ AC_ARG_ENABLE(decimal-float,
            AC_MSG_CHECKING(if compiler knows _Decimal64)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
               [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.4.3]
-           )])
+              [AC_MSG_RESULT(no)
+AC_MSG_ERROR([Compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+Please use another compiler or build MPFR without --enable-decimal-float.])]
+           )
            AC_MSG_CHECKING(decimal float format)
            AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
