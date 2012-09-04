@@ -224,7 +224,6 @@ decimal64_to_string (char *s, _Decimal64 d)
 {
   int sign = 0, n;
   int exp = 0;
-  char *s0 = s;
 
   if (d != d) /* NaN */
     {
@@ -244,12 +243,20 @@ decimal64_to_string (char *s, _Decimal64 d)
     
   /* now d is neither NaN nor +Inf nor -Inf */
 
-  /* warning: we cannot distinguish -0.0 from +0.0 */
-  if (d < (_Decimal64) 0.0 || (d == (_Decimal64) -0.0 &&
-                               (_Decimal64) 1.0 / d < (_Decimal64) 0.0))
+  if (d < (_Decimal64) 0.0)
     {
       sign = 1;
       d = -d;
+    }
+  else if (d == (_Decimal64) -0.0)
+    { /* warning: the comparison d == -0.0 returns true for d = 0.0 too,
+         copy code from set_d.c here */
+      double dd = (double) d, negzero = DBL_NEG_ZERO;
+      if (memcmp (&dd, &negzero, sizeof(double)) == 0)
+        {
+          sign = 1;
+          d = -d;
+        }
     }
 
   /* now normalize d in [0.1, 1[ */
