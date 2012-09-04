@@ -385,11 +385,6 @@ __MPFR_DECLSPEC int mpfr_set_flt _MPFR_PROTO ((mpfr_ptr, float, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 /* _Decimal64 is not defined in C++,
    cf http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364 */
-#if defined (__cplusplus) && defined(__GNUC__)
-#ifndef _Decimal64
-typedef float _Decimal64 __attribute__((mode(DD)));
-#endif
-#endif
 __MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, _Decimal64,
                                                      mpfr_rnd_t));
 #endif
