@@ -104,7 +104,12 @@ static unsigned int T[1024] = {
 
 #if _GMP_IEEE_FLOATS
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
-   The string s needs to have at least 23 characters.
+   The string s needs to have at least 25 characters (with the final '\0'):
+   * 1 for the sign '-'
+   * 2 for the leading '0.'
+   * 16 for the significand
+   * 5 for the exponent (for example 'E-100')
+   * 1 for the final '\0'
  */
 static void
 decimal64_to_string (char *s, _Decimal64 d)
@@ -127,17 +132,15 @@ decimal64_to_string (char *s, _Decimal64 d)
   Gh = x.s.exp >> 6;
   if (Gh == 31)
     {
-      s += sprintf (s, "NaN");
-      *s = '\0';
+      sprintf (s, "NaN");
       return;
     }
   else if (Gh == 30)
     {
       if (x.s.sig == 0)
-        s += sprintf (s, "Inf");
+        sprintf (s, "Inf");
       else
-        s += sprintf (s, "-Inf");
-      *s = '\0';
+        sprintf (s, "-Inf");
       return;
     }
   t = s;
@@ -208,8 +211,7 @@ decimal64_to_string (char *s, _Decimal64 d)
 #endif /* DPD or BID */
 
   exp -= 398; /* unbiased exponent */
-  t += sprintf (t, "E%d", exp);
-  *t = '\0';
+  sprintf (t, "E%d", exp);
 }
 #else
 /* portable version */
@@ -226,20 +228,17 @@ decimal64_to_string (char *s, _Decimal64 d)
 
   if (d != d) /* NaN */
     {
-      s += sprintf (s, "NaN");
-      *s = '\0';
+      sprintf (s, "NaN"); /* sprintf puts a final '\0' */
       return;
     }
   else if (d > DEC64_MAX) /* +Inf */
     {
-      s += sprintf (s, "Inf");
-      *s = '\0';
+      sprintf (s, "Inf");
       return;
     }
   else if (d < -DEC64_MAX) /* -Inf */
     {
-      s += sprintf (s, "-Inf");
-      *s = '\0';
+      sprintf (s, "-Inf");
       return;
     }
     
@@ -400,17 +399,19 @@ decimal64_to_string (char *s, _Decimal64 d)
     }
   MPFR_ASSERTN(d == (_Decimal64) 0.0);
   if (exp != 0)
-    s += sprintf (s, "E%d", exp);
-  *s = '\0';
+    sprintf (s, "E%d", exp); /* adds a final '\0' */
+  else
+    *s = '\0';
 }
 #endif /* _GMP_IEEE_FLOATS */
 
 int
 mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mpfr_rnd_t rnd_mode)
 {
-  char s[23]; /* need 1 character for sign,
-                     16 characters for mantissa,
-                      1 character for exponent,
+  char s[25]; /* need 1 character for sign,
+                      2 characters for '0.'
+                     16 characters for significand,
+                      1 character for exponent 'E',
                       4 characters for exponent (including sign),
                       1 character for terminating \0. */
 
