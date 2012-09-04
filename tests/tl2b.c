@@ -41,13 +41,26 @@ print_mpfr (mpfr_srcptr x, const char *name)
   int j;                    /* output limb index */
   int k;                    /* byte index (in output limb) */
   int r;                    /* digit index, relative to ptr */
+  unsigned char prefix[12]; /* "0x" or "UINT64_C(0x" */
+  unsigned char suffix[2];  /* "" or ")" */
 
   if (printf ("#if 0\n") < 0)
     { fprintf (stderr, "Error in printf\n"); exit (1); }
   for (i = 0; i < size_of_bits2use; i++)
     {
+      if (bits2use[i] == 64)
+        {
+          strcpy (prefix, "UINT64_C(0x");
+          strcpy (suffix, ")");
+        }
+      else
+        {
+          strcpy (prefix, "0x");
+          strcpy (suffix, "");
+        }
       if (printf ("#elif GMP_NUMB_BITS == %d\n"
-                  "const mp_limb_t %s__tab[] = { 0x", bits2use[i], name) < 0)
+                  "const mp_limb_t %s__tab[] = { %s", bits2use[i], name,
+                  prefix) < 0)
         { fprintf (stderr, "Error in printf\n"); exit (1); }
       size = mpn_get_str (temp, 256, MPFR_MANT (x), MPFR_LIMB_SIZE (x));
       MPFR_ASSERTN (size <= 16);
@@ -66,7 +79,9 @@ print_mpfr (mpfr_srcptr x, const char *name)
           for (k = 0; k < bits2use[i] / 8; k++)
             if (printf ("%02x", r < size ? ptr[r++] : 0) < 0)
               { fprintf (stderr, "Error in printf\n"); exit (1); }
-          if (printf (j == 0 ? " };\n" : ", 0x") < 0)
+          if (j == 0 && printf ("%s };\n", suffix) < 0)
+            { fprintf (stderr, "Error in printf\n"); exit (1); }
+          else if (j > 0 && printf ("%s, %s", suffix, prefix) < 0)
             { fprintf (stderr, "Error in printf\n"); exit (1); }
         }
     }
@@ -82,6 +97,9 @@ compute_l2b (int output)
   int beta, i;
   int error = 0;
   char buffer[30];
+
+  if (output)
+    printf ("#ifndef UINT64_C\n# define UINT64_C(c) c\n#endif\n\n");
 
   for (beta = 2; beta <= BASE_MAX; beta++)
     {
