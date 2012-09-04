@@ -243,13 +243,21 @@ AC_ARG_ENABLE(decimal-float,
       yes) AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
               [Build decimal float functions])
            AC_MSG_CHECKING(if compiler knows _Decimal64)
-           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
+           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef _Decimal64
+typedef float _Decimal64 __attribute__((mode(DD)));
+#endif
+_Decimal64 x;
+]])],
               [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.2, configured with --enable-decimal-float]
            )])
            AC_MSG_CHECKING(decimal float format)
            AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
+#ifndef _Decimal64
+typedef float _Decimal64 __attribute__((mode(DD)));
+#endif
 ]], [[
 union { double d; _Decimal64 d64; } y;
 y.d64 = 1234567890123456.0dd;

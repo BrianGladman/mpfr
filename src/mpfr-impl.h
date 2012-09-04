@@ -63,7 +63,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
-#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
+#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
 # ifndef __GMP_H__
 #  include "gmp.h"
@@ -689,9 +689,19 @@ typedef union {
  ******************************************************/
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
+
+/* _Decimal64 is not defined in C++,
+   cf http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364 */
+#if defined (__cplusplus) && defined(__GNUC__)
+#ifndef _Decimal64
+typedef float _Decimal64 __attribute__((mode(DD)));
+#endif
+#endif
+
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
-#endif
+
+#endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 /******************************************************
  **************** mpfr_t properties *******************
