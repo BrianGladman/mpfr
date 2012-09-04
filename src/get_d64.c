@@ -34,9 +34,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #if _GMP_IEEE_FLOATS
 #else
 #include "ieee_floats.h"
+#endif
+
 #ifndef DEC64_MAX
 # define DEC64_MAX 9.999999999999999E384dd
-#endif
 #endif
 
 #ifdef DPD_FORMAT

@@ -223,7 +223,7 @@ static void
 decimal64_to_string (char *s, _Decimal64 d)
 {
   int sign = 0, n;
-  long exp = 0;
+  int exp = 0;
   char *s0 = s;
 
   if (d != d) /* NaN */
