@@ -1203,8 +1203,7 @@ If the system does not support the IEEE 754 standard,
 @code{mpfr_set_flt}, @code{mpfr_set_d}, @code{mpfr_set_ld} and
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
-option @samp{--enable-decimal-float}, which also requires
-@samp{--with-gmp-build}, and when the compiler or
+option @samp{--enable-decimal-float}, and when the compiler or
 system provides the @samp{_Decimal64} data type
 (recent versions of GCC support this data type);
 to use @code{mpfr_set_decimal64}, one should define the macro

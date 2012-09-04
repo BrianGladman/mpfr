@@ -250,7 +250,7 @@ typedef float _Decimal64 __attribute__((mode(DD)));
 _Decimal64 x;
 ]])],
               [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.2, configured with --enable-decimal-float]
+              [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.4.3]
            )])
            AC_MSG_CHECKING(decimal float format)
            AC_RUN_IFELSE([AC_LANG_PROGRAM([[
