@@ -240,7 +240,7 @@ decimal64_to_string (char *s, _Decimal64 d)
       sprintf (s, "-Inf");
       return;
     }
-    
+
   /* now d is neither NaN nor +Inf nor -Inf */
 
   if (d < (_Decimal64) 0.0)
