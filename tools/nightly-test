@@ -28,10 +28,11 @@ if [ "$CC" == "g++" ]; then
    CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector -Wno-sign-compare \
    -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
 else
-   ./configure --with-gmp="$GMP" --enable-assert=full \
+# removed -ansi since it is incompatible with --enable-decimal-float
+   ./configure --with-gmp="$GMP" --enable-assert=full --enable-decimal-float \
    --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
    CC="$CC" CFLAGS="-Wall -Wmissing-prototypes -O2 -g -fstack-protector \
-   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic"
+   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -pedantic"
 fi
 make
 export GMP_CHECK_RANDOMIZE=1
