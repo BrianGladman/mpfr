@@ -29,6 +29,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_VERSION_PATCHLEVEL 0
 #define MPFR_VERSION_STRING "3.2.0-dev"
 
+/* User macros:
+   MPFR_USE_FILE:        Define it to make MPFR define functions dealing
+                         with FILE* (auto-detect).
+   MPFR_USE_INTMAX_T:    Define it to make MPFR define functions dealing
+                         with intmax_t (auto-detect).
+   MPFR_USE_VA_LIST:     Define it to make MPFR define functions dealing
+                         with va_list (auto-detect).
+   MPFR_USE_C99_FEATURE: Define it to 1 to make MPFR support C99-feature
+                         (auto-detect), to 0 to bypass the detection.
+   MPFR_USE_EXTENSION:   Define it to make MPFR use GCC extension to
+                         reduce warnings.
+   MPFR_USE_NO_MACRO:    Define it to make MPFR remove any overriding
+                         function macro.
+*/
+
 /* Macros dealing with MPFR VERSION */
 #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
 #define MPFR_VERSION \
@@ -258,6 +273,28 @@ typedef enum {
 # if __GNUC__ >= 4
 #  undef __MPFR_SENTINEL_ATTR
 #  define __MPFR_SENTINEL_ATTR __attribute__ ((sentinel))
+# endif
+#endif
+
+/* If the user hasn't requested his/her preference
+   and if the intension of support by the compiler is C99
+   and if the compiler is known to support the C99 feature
+   then we can auto-detect the C99 support as OK.
+   __GNUC__ is used to detect GNU-C, ICC & CLANG compilers.
+   Currently we need only variadic macros, and they are present
+   since GCC >= 3. We don't test library version since we don't
+   use any feature present in the library too (except intmax_t,
+   but they use another detection).*/
+#ifndef MPFR_USE_C99_FEATURE
+# if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#  if defined (__GNUC__)
+#   if __GNUC__ >= 3
+#    define MPFR_USE_C99_FEATURE 1
+#   endif
+#  endif
+# endif
+# ifndef MPFR_USE_C99_FEATURE
+#  define MPFR_USE_C99_FEATURE 0
 # endif
 #endif
 
@@ -755,8 +792,8 @@ __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
                                                 char **, int, mpfr_rnd_t));
 
-__MPFR_DECLSPEC int mpfr_round_nearest_away _MPFR_PROTO ((mpfr_ptr,
-                       mpfr_srcptr, int foo(mpfr_t, mpfr_srcptr, mpfr_rnd_t)));
+__MPFR_DECLSPEC void mpfr_round_nearest_away_begin _MPFR_PROTO((mpfr_t));
+__MPFR_DECLSPEC int  mpfr_round_nearest_away_end   _MPFR_PROTO((mpfr_t, int));
 
 __MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mpfr_prec_t));
 __MPFR_DECLSPEC void   mpfr_custom_init    _MPFR_PROTO ((void *, mpfr_prec_t));
@@ -786,6 +823,18 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define MPFR_DECL_INIT(_x, _p)                                        \
   MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
+
+#if MPFR_USE_C99_FEATURE
+/* C99 & C11 version: functions with multiple inputs supported */
+#define mpfr_round_nearest_away(func, rop, ...)                         \
+  (mpfr_round_nearest_away_begin(rop),                                  \
+   mpfr_round_nearest_away_end((rop), func((rop), __VA_ARGS__, MPFR_RNDN)))
+#else
+/* C89 version: function with one input supported */
+#define mpfr_round_nearest_away(func, rop, op)                          \
+  (mpfr_round_nearest_away_begin(rop),                                  \
+   mpfr_round_nearest_away_end((rop), func((rop), (op), MPFR_RNDN)))
+#endif
 
 /* Fast access macros to replace function interface.
    If the USER don't want to use the macro interface, let him make happy

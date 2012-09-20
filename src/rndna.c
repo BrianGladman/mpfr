@@ -26,15 +26,48 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    done is to extend the exponent range internally, and do not support the
    case emin = MPFR_EMIN_MIN from the caller. */
 
-/* put in rop the value of foo(op), rounded to nearest-away,
-   and return the ternary value */
-int
-mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
-                         int foo(mpfr_t, mpfr_srcptr, mpfr_rnd_t))
+/* In order to work, we'll save the context within the mantissa of 'rop'.
+   For that, we need to do some low level stuff like for init2/clear to create
+   a mantissa of bigger size, which contains the extra context.
+   To add a new field of type T in the context, add its type in
+   mpfr_size_limb_extended_t (if it is not already present)
+   and add a new value for the enum mpfr_index_extended_t before MANTISSA. */
+typedef union {
+  mp_size_t    si;
+  mp_limb_t    li;
+  mpfr_exp_t   ex;
+  mpfr_prec_t  pr;
+  mpfr_sign_t  sg;
+  mpfr_flags_t fl;
+  mpfr_limb_ptr pi;
+} mpfr_size_limb_extended_t;
+typedef enum {
+  ALLOC_SIZE = 0,
+  OLD_MANTISSA,
+  OLD_EXPONENT,
+  OLD_SIGN,
+  OLD_PREC,
+  OLD_FLAGS,
+  OLD_EXP_MIN,
+  OLD_EXP_MAX,
+  MANTISSA
+} mpfr_index_extended_t ;
+
+#define MPFR_MALLOC_EXTENDED_SIZE(s) \
+  (MANTISSA * sizeof(mpfr_size_limb_extended_t) + \
+   BYTES_PER_MP_LIMB * (size_t) (s))
+
+/* This function is called before the applied function
+   and prepares rop to give it one more bit of precision
+   and to save its old value within it. */
+void
+mpfr_round_nearest_away_begin (mpfr_t rop)
 {
   mpfr_t tmp;
-  int inex;
-  mpfr_prec_t n = mpfr_get_prec (rop);
+  mp_size_t xsize;
+  mpfr_size_limb_extended_t *ext;
+  mpfr_prec_t p;
+  int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* when emin is the smallest possible value, we cannot
@@ -43,13 +76,84 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
      instead of 0.5^2^emin. */
   MPFR_ASSERTN(__gmpfr_emin > MPFR_EMIN_MIN);
 
+  p = MPFR_PREC (rop) + 1;
   MPFR_SAVE_EXPO_MARK (expo);
 
-  mpfr_init2 (tmp, n + 1);
+  /* We can't use mpfr_init2 since we need to store an additional context
+     within the mantissa. */
+  MPFR_ASSERTN(p <= MPFR_PREC_MAX);
+  /* Allocate the context within the needed mantissa. */
+  xsize = MPFR_PREC2LIMBS (p);
+  ext   = (mpfr_size_limb_extended_t *)
+    (*__gmp_allocate_func) (MPFR_MALLOC_EXTENDED_SIZE(xsize));
 
-  /* first round to n+1 bits with rounding to nearest-even */
-  inex = foo (tmp, op, MPFR_RNDN);
+  /* Save the context first */
+  ext[ALLOC_SIZE].si   = xsize;
+  ext[OLD_MANTISSA].pi = MPFR_MANT(rop);
+  ext[OLD_EXPONENT].ex = MPFR_EXP(rop);
+  ext[OLD_SIGN].sg     = MPFR_SIGN(rop);
+  ext[OLD_PREC].pr     = MPFR_PREC(rop);
+  ext[OLD_FLAGS].fl    = expo.saved_flags;
+  ext[OLD_EXP_MIN].ex  = expo.saved_emin;
+  ext[OLD_EXP_MAX].ex  = expo.saved_emax;
 
+  /* Create tmp as a proper NAN. */
+  MPFR_PREC(tmp) = p;                           /* Set prec */
+  MPFR_SET_POS(tmp);                            /* Set a sign */
+  MPFR_MANT(tmp) =  (mp_limb_t*)(ext+MANTISSA); /* Set Mantissa ptr */
+  MPFR_SET_NAN(tmp);                            /* initializes to NaN */
+
+  /* Copy rop into tmp now (rop may be used as input latter). */
+  MPFR_DBGRES (inexact = mpfr_set(tmp, rop, MPFR_RNDN));
+  MPFR_ASSERTD(inexact == 0); /* Shall be exact since prec(tmp) > prec(rop) */
+
+  /* Overwrite rop with tmp */
+  rop[0] = tmp[0];
+
+  /* rop now contains a copy of rop, with one extra bit of precision
+     while keeping the old rop "hidden" within its mantissa. */
+
+  return;
+}
+
+/* This function is called after the applied function.
+   rop is the one prepared in the function above,
+   and contains the result of the applied function.
+   This function restores rop like it was before the
+   calls to mpfr_round_nearest_away_begin while
+   copying it back the result of the applied function
+   and performing additional roundings. */
+int
+mpfr_round_nearest_away_end (mpfr_t rop, int inex)
+{
+  mpfr_t    tmp;
+  mp_size_t xsize;
+  mpfr_size_limb_extended_t *ext;
+  mpfr_prec_t n;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* Get back the hidden context. */
+  ext = ((mpfr_size_limb_extended_t *) MPFR_MANT(rop)) - MANTISSA;
+
+  /* Create tmp with the result of the function. */
+  tmp[0] = rop[0];
+
+  /* Revert rop back to what it was before calling
+     mpfr_round_neareset_away_begin. */
+  MPFR_PREC(rop) = ext[OLD_PREC].pr;
+  MPFR_SIGN(rop) = ext[OLD_SIGN].sg;
+  MPFR_EXP(rop)  = ext[OLD_EXPONENT].ex;
+  MPFR_MANT(rop) = ext[OLD_MANTISSA].pi;
+  MPFR_ASSERTD(MPFR_PREC(tmp) == MPFR_PREC(rop)+1);
+
+  /* Restore the saved context. */
+  expo.saved_flags = ext[OLD_FLAGS].fl;
+  expo.saved_emin  = ext[OLD_EXP_MIN].ex;
+  expo.saved_emax  = ext[OLD_EXP_MAX].ex;
+  xsize            = ext[ALLOC_SIZE].si;
+
+  /* Perform RNDNA. */
+  n = MPFR_PREC(rop);
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
     mpfr_set (rop, tmp, MPFR_RNDN); /* inex unchanged */
   else
@@ -67,7 +171,6 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
         inex = mpfr_set (rop, tmp, (inex > 0) ? MPFR_RNDD : MPFR_RNDU);
     }
 
-  mpfr_clear (tmp);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
 
@@ -77,6 +180,9 @@ mpfr_round_nearest_away (mpfr_t rop, mpfr_srcptr op,
   if (inex == 0 && mpfr_cmp_si_2exp (rop, (mpfr_sgn (rop) > 0) ? 1 : -1,
                                      __gmpfr_emin - 2) == 0)
     inex = -mpfr_sgn (rop);
+
+  /* Free tmp (cannot call mpfr_clear): free the associated context. */
+  (*__gmp_free_func)(ext, MPFR_MALLOC_EXTENDED_SIZE(xsize));
 
   return mpfr_check_range (rop, inex, MPFR_RNDN);
 }

@@ -32,7 +32,7 @@ test_special (void)
   mpfr_init2 (y, MPFR_PREC_MIN);
 
   mpfr_set_nan (x);
-  inex = mpfr_round_nearest_away (y, x, mpfr_sin);
+  inex = mpfr_round_nearest_away (mpfr_sin, y, x);
   if (inex != 0)
     {
       printf ("Wrong ternary value for sin(NaN)\n");
@@ -45,7 +45,7 @@ test_special (void)
     }
 
   mpfr_set_inf (x, 1);
-  inex = mpfr_round_nearest_away (y, x, mpfr_exp);
+  inex = mpfr_round_nearest_away (mpfr_exp, y, x);
   if (inex != 0)
     {
       printf ("Wrong ternary value for exp(+Inf)\n");
@@ -59,7 +59,7 @@ test_special (void)
     }
 
   mpfr_set_inf (x, -1);
-  inex = mpfr_round_nearest_away (y, x, mpfr_cbrt);
+  inex = mpfr_round_nearest_away (mpfr_cbrt, y, x);
   if (inex != 0)
     {
       printf ("Wrong ternary value for cbrt(-Inf)\n");
@@ -86,7 +86,7 @@ test_nonspecial (void)
 
   /* case where the computation on n+1 bits ends with a '0' */
   mpfr_set_ui (x, 2, MPFR_RNDN);
-  inex = mpfr_round_nearest_away (y, x, mpfr_sin);
+  inex = mpfr_round_nearest_away (mpfr_sin, y, x);
   if (inex >= 0)
     {
       printf ("Wrong ternary value for sin(2)\n");
@@ -100,7 +100,7 @@ test_nonspecial (void)
 
   /* case where the computation on n+1 bits ends with a '1' and is exact */
   mpfr_set_ui (x, 37, MPFR_RNDN);
-  inex = mpfr_round_nearest_away (y, x, mpfr_sqr);
+  inex = mpfr_round_nearest_away (mpfr_sqr, y, x);
   if (inex <= 0)
     {
       printf ("Wrong ternary value for sqr(37)\n");
@@ -114,7 +114,7 @@ test_nonspecial (void)
 
   /* case where the computation on n+1 bits ends with a '1' but is inexact */
   mpfr_set_ui (x, 91, MPFR_RNDN);
-  inex = mpfr_round_nearest_away (y, x, mpfr_sqr);
+  inex = mpfr_round_nearest_away (mpfr_sqr, y, x);
   if (inex <= 0)
     {
       printf ("Wrong ternary value for sqr(91)\n");
@@ -127,7 +127,7 @@ test_nonspecial (void)
     }
 
   mpfr_set_ui (x, 131, MPFR_RNDN);
-  inex = mpfr_round_nearest_away (y, x, mpfr_sqr);
+  inex = mpfr_round_nearest_away (mpfr_sqr, y, x);
   if (inex >= 0)
     {
       printf ("Wrong ternary value for sqr(131)\n");
