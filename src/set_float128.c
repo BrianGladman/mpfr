@@ -21,12 +21,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#ifdef MPFR_WANT_FLOAT128
-
 #include <float.h> /* for DBL_MAX */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
+
+#ifdef MPFR_WANT_FLOAT128
 
 int
 mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
