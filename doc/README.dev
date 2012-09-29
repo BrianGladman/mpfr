@@ -928,6 +928,13 @@ main (int argc, char *argv[])
 
 ===========================================================================
 
+When using GNU extensions (based on the value of the __GNUC_* macros), check
+whether they work with ICC. The following paper can give useful information:
+"Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
+<http://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
+
+===========================================================================
+
 NOTE: with "AM_LDFLAGS = -no-install" in tests/Makefile.am, the following
 is obsolete, as libtool no longer generates wrapper scripts; but it is left
 here in case negative effects of "AM_LDFLAGS = -no-install" are seen or for
