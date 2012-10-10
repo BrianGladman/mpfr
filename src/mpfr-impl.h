@@ -1170,8 +1170,18 @@ do {                                                                  \
    (r) = _size * GMP_NUMB_BITS - _cnt;       \
   } while (0)
 
-/* Needs <locale.h> */
-#ifdef HAVE_LOCALE_H
+/* MPFR_LCONV_DPTS can also be forced to 0 or 1 by the user. */
+#ifndef MPFR_LCONV_DPTS
+# if defined(HAVE_LOCALE_H) && \
+     defined(HAVE_STRUCT_LCONV_DECIMAL_POINT) && \
+     defined(HAVE_STRUCT_LCONV_THOUSANDS_SEP)
+#  define MPFR_LCONV_DPTS 1
+# else
+#  define MPFR_LCONV_DPTS 0
+# endif
+#endif
+
+#if MPFR_LCONV_DPTS
 #include <locale.h>
 /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
    be negative (the ISO C99 does not seem to forbid negative values). */

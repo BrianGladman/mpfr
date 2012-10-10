@@ -59,6 +59,10 @@ AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 dnl sys/fpu.h - MIPS specific
 AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
+dnl Android has a <locale.h>, but not the following members.
+AC_CHECK_MEMBERS([struct lconv.decimal_point, struct lconv.thousands_sep],,,
+  [#include <locale.h>])
+
 dnl Check how to get `alloca'
 AC_FUNC_ALLOCA
 
