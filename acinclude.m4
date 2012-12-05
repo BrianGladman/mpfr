@@ -29,11 +29,13 @@ AC_PREREQ(2.60)
 dnl ------------------------------------------------------------
 dnl You must put in MPFR_CONFIGS everything which configure MPFR
 dnl except:
-dnl   -everything dealing with CC and CFLAGS in particular the ABI
-dnl   but the IEEE-754 specific flags must be set here.
-dnl   -GMP's linkage.
-dnl   -Libtool stuff.
-dnl   -Handling of special arguments of MPFR's configure.
+dnl   - Everything dealing with CC and CFLAGS in particular the ABI
+dnl     but the IEEE-754 specific flags must be set here.
+dnl   - Tests that depend on gmp.h (see MPFR_CHECK_DBL2INT_BUG as an example:
+dnl     a function needs to be defined and called in configure.ac).
+dnl   - GMP's linkage.
+dnl   - Libtool stuff.
+dnl   - Handling of special arguments of MPFR's configure.
 AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
@@ -224,36 +226,6 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
   if test "$mpfr_cv_gcc_floatconv_bug" != "no"; then
     CFLAGS="$CFLAGS -ffloat-store"
   fi
-fi
-
-dnl Check for double-to-integer conversion bug
-dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
-AC_CACHE_CHECK([for double-to-integer conversion bug], mpfr_cv_dbl_int_bug, [
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <gmp.h>
-]], [[
-  double d;
-  mp_limb_t u;
-  int i;
-
-  d = 1.0;
-  for (i = 0; i < GMP_NUMB_BITS - 1; i++)
-    d = d + d;
-  u = (mp_limb_t) d;
-  for (; i > 0; i--)
-    {
-      if (u & 1)
-        break;
-      u = u >> 1;
-    }
-  return (i == 0 && u == 1UL) ? 0 : 1;
-]])], [mpfr_cv_dbl_int_bug="no"],
-      [mpfr_cv_dbl_int_bug="yes"],
-      [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
-])
-if test "$mpfr_cv_dbl_int_bug" = "yes"; then
-  AC_MSG_ERROR([double-to-integer conversion is incorrect.
-You need to use another compiler (or lower the optimization level).])
 fi
 
 dnl Check if subnormal (denormalized) numbers are supported
@@ -549,6 +521,42 @@ CPPFLAGS="$saved_CPPFLAGS"
 
 ])
 dnl end of MPFR_CONFIGS
+
+
+dnl MPFR_CHECK_DBL2INT_BUG
+dnl ----------------------
+dnl Check for double-to-integer conversion bug
+dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
+AC_DEFUN([MPFR_CHECK_DBL2INT_BUG], [
+AC_REQUIRE([MPFR_CONFIGS])dnl
+AC_CACHE_CHECK([for double-to-integer conversion bug], mpfr_cv_dbl_int_bug, [
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <gmp.h>
+]], [[
+  double d;
+  mp_limb_t u;
+  int i;
+
+  d = 1.0;
+  for (i = 0; i < GMP_NUMB_BITS - 1; i++)
+    d = d + d;
+  u = (mp_limb_t) d;
+  for (; i > 0; i--)
+    {
+      if (u & 1)
+        break;
+      u = u >> 1;
+    }
+  return (i == 0 && u == 1UL) ? 0 : 1;
+]])], [mpfr_cv_dbl_int_bug="no"],
+      [mpfr_cv_dbl_int_bug="yes"],
+      [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
+])
+if test "$mpfr_cv_dbl_int_bug" = "yes"; then
+  AC_MSG_ERROR([double-to-integer conversion is incorrect.
+You need to use another compiler (or lower the optimization level).])
+fi
+])
 
 
 dnl  MPFR_C_LONG_DOUBLE_FORMAT
