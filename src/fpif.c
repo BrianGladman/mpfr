@@ -184,7 +184,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
 {
   mpfr_prec_t precision;
   size_t precision_size;
-  unsigned char buffer[sizeof(mpfr_prec_t)];
+  unsigned char buffer[8];
   size_t status;
 
   if (fh == NULL)
