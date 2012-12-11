@@ -70,7 +70,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* copy in result[] the values in data[] with a different endianness,
    where data_size might be smaller than data_max_size, so that we only
-   copy data_size bytes */
+   copy data_size bytes from the end of data[]. */
 static void
 #if defined (HAVE_BIG_ENDIAN)
 putLittleEndianData (unsigned char * result, unsigned char * data,
@@ -101,7 +101,10 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
   memcpy (result, data, data_size);
 }
 
-/* copy in result[] the values in data[] with a different endianness */
+/* copy in result[] the values in data[] with a different endianness;
+   the data are written at the end of the result[] buffer (if
+   data_size < data_max_size, the first bytes of result[] are
+   left untouched). */
 static void
 #if defined (HAVE_BIG_ENDIAN)
 getLittleEndianData (unsigned char * result, unsigned char * data,
@@ -177,7 +180,7 @@ mpfr_fpif_store_precision (unsigned char * buffer, size_t * buffer_size,
 
 /*
  * fh : IN : file handler
- * return the precision stored in the binary buffer
+ * return the precision stored in the binary buffer, 0 in case of error
  */
 static mpfr_prec_t
 mpfr_fpif_read_precision_from_file (FILE *fh)
@@ -195,26 +198,36 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
     return 0;
 
   precision_size = buffer[0];
+  if (precision_size >= 8)
+    return precision_size - 7;
 
-  if (precision_size < 8)
+  precision_size++;
+
+  /* Read the precision in little-endian format. */
+  status = fread (buffer, precision_size, 1, fh);
+  if (status != 1)
+    return 0;
+
+  while (precision_size > sizeof(mpfr_prec_t))
     {
-      status = fread (buffer, precision_size + 1, 1, fh);
-      if (status != 1)
-        return 0;
-
-      precision = 0;
-      /* FIXME: Handle the case where
-           sizeof(mpfr_prec_t) < precision_size + 1
-         and where the read precision is too large.
-         Btw, shouldn't sizeof(mpfr_prec_t) be changed to 8 here? */
-      getLittleEndianData ((unsigned char *) &precision, buffer,
-                           sizeof(mpfr_prec_t), precision_size + 1);
-      precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
+      if (buffer[precision_size-1] != 0)
+        return 0;  /* the read precision doesn't fit in a mpfr_prec_t */
+      precision_size--;
     }
-  else
-    precision = precision_size - 7;
 
-  return precision;
+  if (precision_size == sizeof(mpfr_prec_t) &&
+      buffer[precision_size-1] >= 0x80)
+    return 0;  /* the read precision doesn't fit in a mpfr_prec_t */
+
+  precision = 0;  /* to pad with 0's if data_size < data_max_size */
+
+  /* On big-endian machines, the data must be copied at the end of the
+     precision object in the memory; thus data_max_size (3rd argument)
+     must be sizeof(mpfr_prec_t). */
+  getLittleEndianData ((unsigned char *) &precision, buffer,
+                       sizeof(mpfr_prec_t), precision_size);
+
+  return precision + (MPFR_MAX_EMBEDDED_PRECISION + 1);
 }
 
 /*
