@@ -205,7 +205,8 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
       precision = 0;
       /* FIXME: Handle the case where
            sizeof(mpfr_prec_t) < precision_size + 1
-         and where the read precision is too large. */
+         and where the read precision is too large.
+         Btw, shouldn't sizeof(mpfr_prec_t) be changed to 8 here? */
       getLittleEndianData ((unsigned char *) &precision, buffer,
                            sizeof(mpfr_prec_t), precision_size + 1);
       precision += (MPFR_MAX_EMBEDDED_PRECISION + 1);
