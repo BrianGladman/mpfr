@@ -20,7 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define NUM 30000
+#define N 30000
 
 #include <float.h>
 
@@ -672,7 +672,7 @@ check_1111 (void)
 
   mpfr_init2 (one, MPFR_PREC_MIN);
   mpfr_set_ui (one, 1, MPFR_RNDN);
-  for (n = 0; n < NUM; n++)
+  for (n = 0; n < N; n++)
     {
       mpfr_prec_t prec_a, prec_b, prec_c;
       mpfr_exp_t tb=0, tc, diff;

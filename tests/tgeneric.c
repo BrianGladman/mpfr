@@ -121,7 +121,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 static void
-test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
+test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 {
   mpfr_prec_t prec, xprec, yprec;
   mpfr_t x, y, z, t, w;
@@ -155,7 +155,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
       mpfr_set_prec (w, yprec);
 
       /* Note: in precision p1, we test 4 special cases. */
-      for (n = 0; n < (prec == p1 ? N + 4 : N); n++)
+      for (n = 0; n < (prec == p1 ? nmax + 4 : nmax); n++)
         {
           int infinite_input = 0;
 
