@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FILE_NAME_RW "mpfrtest.txt" /* temporary name (written then read) */
 #define FILE_NAME_R  "mpfrtest.dat" /* fixed file name (read only) */
 
+/* TODO: add tests for precision 1 and for precisions > MPFR_PREC_MAX. */
+
 int
 main (int argc, char *argv[])
 {
