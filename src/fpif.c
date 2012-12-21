@@ -543,14 +543,13 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
   unsigned char *buffer;
   size_t used_size;
 
-  /* FIXME: One may have precision > MPFR_PREC_MAX. This can be taken into
-     account either here or in mpfr_fpif_read_precision_from_file. One may
-     also have 0 < precision < MPFR_PREC_MIN. Should this be regarded as an
-     error or should the precision of the number be raised to MPFR_PREC_MIN
-     (I think that the latter choice is safe and expected). */
   precision = mpfr_fpif_read_precision_from_file (fh);
-  if (precision == 0)  /* precision = 0 means an error */
+  if (precision == 0) /* precision = 0 means an error */
     return -1;
+  if (precision > MPFR_PREC_MAX)
+    return -1;
+  if (precision < MPFR_PREC_MIN)
+    precision = MPFR_PREC_MIN;
   mpfr_set_prec (x, precision);
 
   status = mpfr_fpif_read_exponent_from_file (x, fh);

@@ -2209,8 +2209,10 @@ versions.
 @deftypefun int mpfr_fpif_import (mpfr_t @var{op}, FILE *@var{stream})
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
-The precision of @var{op} is set to the value read from the stream.
-Return 0 iff the import was successful.
+The precision of @var{op} is read from the stream. If the precision is less 
+than MPFR_PREC_MIN, it is set to MPFR_PREC_MIN. If the precision is more 
+than MPFR_PREC_MAX, the function fail.
+Return 0 if the import was successful.
 
 Note: this function is experimental and its interface might change in future
 versions.
