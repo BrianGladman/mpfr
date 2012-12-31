@@ -12,7 +12,7 @@
 EXTRA_PROGRAMS = tuneup speed bidimensional_sample
 
 tuneup_SOURCES = tuneup.c
-tuneup_LDADD = -lspeed $(top_builddir)/src/libmpfr.la
+tuneup_LDADD = -lspeed -lrt $(top_builddir)/src/libmpfr.la
 tuneup_LDFLAGS = -static
 
 speed_SOURCES = speed.c
