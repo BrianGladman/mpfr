@@ -347,11 +347,11 @@ AC_C_BIGENDIAN([AC_DEFINE(HAVE_BIG_ENDIAN)],[AC_DEFINE(HAVE_LITTLE_ENDIAN)],
 
 MPFR_CONFIGS
 
-# (From GMP 5.1)
-# clock_gettime is in librt on *-*-osf5.1 and on glibc, so att -lrt to
-# TUNE_LIBS if needed. On linux (tested on x86_32, 2.6.26),
-# clock_getres reports ns accuracy, while in a quick test on osf
-# clock_getres said only 1 millisecond.
+# (Based on GMP 5.1)
+# clock_gettime is in librt on *-*-osf5.1 and on glibc < 2.17, so add -lrt to
+# TUNE_LIBS if needed (e.g. if clock_gettime is not already in the C library).
+# On linux (tested on x86_32, 2.6.26), clock_getres reports ns accuracy,
+# while in a quick test on osf, clock_getres said only 1 millisecond.
 old_LIBS="$LIBS"
 AC_SEARCH_LIBS(clock_gettime, rt, [
   AC_DEFINE([HAVE_CLOCK_GETTIME],1,[Define to 1 if you have the `clock_gettime' function])])
