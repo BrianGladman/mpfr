@@ -524,7 +524,7 @@ test20120426 (void)
 
   mpfr_init2 (xa, 53);
   mpfr_init2 (xb, 53);
-  mpfr_set_d (xb, -168.5, MPFR_RNDN);
+  mpfr_set_si_2exp (xb, -337, -1, MPFR_RNDN);
   emin = mpfr_get_emin ();
   mpfr_set_emin (-1073);
   i = mpfr_gamma (xa, xb, MPFR_RNDN);
