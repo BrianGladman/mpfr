@@ -43,7 +43,7 @@ static void failure_test (void)
   mpfr_t x;
 
   mpfr_init2 (x, 128);
-  mpfr_set_str (x, "17", 0, GMP_RNDN);
+  mpfr_set_str (x, "17", 0, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 17) != 0)
     printf ("\nFailure in mpfr_set_str! Probably an unmatched ABI!\n");
   mpfr_clear (x);
