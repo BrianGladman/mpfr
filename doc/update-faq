@@ -1,4 +1,4 @@
 #!/bin/sh
 
-wget -q -O - http://www.mpfr.org/faq.html | xsltproc --nodtdattr faq.xsl - | \
-  perl -pe 's,GMP_RND,MPFR_RND,g;' > FAQ.html
+wget -q -O - http://www.mpfr.org/faq.html | \
+  xsltproc --nodtdattr faq.xsl - > FAQ.html
