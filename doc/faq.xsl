@@ -13,7 +13,7 @@ the faq.html file on the MPFR web site. See the update-faq script.
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:h="http://www.w3.org/1999/xhtml"
-                exclude-result-prefixes="h">
+                xmlns="http://www.w3.org/1999/xhtml">
 
 <xsl:output method="xml"
             encoding="iso-8859-1"
@@ -63,8 +63,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     <xsl:text>&#10;</xsl:text>
     <xsl:copy-of select="h:title"/>
     <xsl:text>&#10;</xsl:text>
-    <h:style type="text/css"><xsl:text disable-output-escaping="yes">
-&styles;</xsl:text></h:style>
+    <style type="text/css"><xsl:text disable-output-escaping="yes">/*&lt;![CDATA[*/&#10;&styles;/*]]&gt;*/</xsl:text></style>
     <xsl:text>&#10;</xsl:text>
   </xsl:copy>
 </xsl:template>
