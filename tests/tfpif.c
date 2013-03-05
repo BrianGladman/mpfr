@@ -65,7 +65,6 @@ main (int argc, char *argv[])
   mpfr_div (x[6], x[6], x[7], MPFR_RNDN);
 
   /* we first write to file FILE_NAME_RW the numbers x[i] */
-  filenameCompressed = FILE_NAME_RW;
   fh = fopen (filenameCompressed, "w");
   if (fh == NULL)
     {
@@ -138,7 +137,7 @@ main (int argc, char *argv[])
   for (i = 0; i < 9; i++)
     mpfr_clear (x[i]);
 
-  remove (FILE_NAME_RW);
+  remove (filenameCompressed);
 
   mpfr_init2 (y, 2);
   status = mpfr_fpif_export (NULL, y);
@@ -160,7 +159,7 @@ main (int argc, char *argv[])
       printf ("Failed to open for reading/writing %s, exiting...\n",
             filenameCompressed);
       fclose (fh);
-      remove (FILE_NAME_RW);
+      remove (filenameCompressed);
       exit (1);
     }
   status = mpfr_fpif_import (y, fh);
@@ -168,7 +167,7 @@ main (int argc, char *argv[])
     {
       printf ("mpfr_fpif_import did not fail on a empty file\n");
       fclose (fh);
-      remove (FILE_NAME_RW);
+      remove (filenameCompressed);
       exit(1);
     }
 
@@ -180,7 +179,7 @@ main (int argc, char *argv[])
         {
           printf ("Write error on the test file\n");
           fclose (fh);
-          remove (FILE_NAME_RW);
+          remove (filenameCompressed);
           exit(1);
         }
       rewind (fh);
@@ -213,7 +212,7 @@ main (int argc, char *argv[])
               break;
             }
           fclose (fh);
-          remove (FILE_NAME_RW);
+          remove (filenameCompressed);
           exit(1);
         }
     }
@@ -238,7 +237,7 @@ main (int argc, char *argv[])
     }
 
   fclose (fh);
-  remove (FILE_NAME_RW);
+  remove (filenameCompressed);
 
   mpfr_clear (y);
 
