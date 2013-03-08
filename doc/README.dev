@@ -39,7 +39,11 @@ To generate mpfr.info, you need texinfo version 4.2 (or higher).
 The VERSION file contains the number of the next release version, i.e.
 the version currently being developed. A suffix can be attached for the
 development versions (in general, "-dev") or pre-release versions (e.g.
-"-rc1"). It must be updated with the update-version script.
+"-rc1"). It must be updated with the update-version script. Examples:
+
+  tools/update-version 3 1 0 dev
+  tools/update-version 3 1 0 rc1
+  tools/update-version 3 1 0
 
 If nightly snapshots are built, the date in the yyyymmdd format and/or
 the Subversion revision number (giving more accurate information) must
@@ -152,9 +156,11 @@ To make a release (for the MPFR team):
      page.
 
   2) Check the version and change the suffix to "rc1", "rc2", etc. with
-     update-version for the release candidates; remove the suffix for
-     the final release.
-     Update the libtool version too (see src/Makefile.am).
+     tools/update-version for the release candidates; remove the suffix
+     for the final release.
+     Update the libtool version too (see src/Makefile.am). Check with
+     tools/ck-version-info (this check will also be done automatically
+     by "make dist").
      Update the date in doc/mpfr.texi.
 
   3) Update the NEWS file, in particular say if the the release is binary
