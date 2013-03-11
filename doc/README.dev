@@ -258,6 +258,10 @@ To make a release (for the MPFR team):
      Upload the tarballs and the signatures to the MPFR web server
      (via svn), to INRIAGForge and to the GNU FTP site.
      Update the mpfr-current symbolic link and the history page.
+     Update the old current page to point to the new release; see
+     examples for 3.0.1 (latest version of the branch) and 3.1.0
+     (which is not the latest version of the branch).
+     Make sure that all the pending commits have been done.
      Run the tools/announce-text script to do some checking and get
      the announce text. Edit this text if need be.
      Announce the release in the mpfr-announce, mpfr, gmp-discuss, gcc
@@ -266,12 +270,18 @@ To make a release (for the MPFR team):
      published on the main page).
      In case of a new patchlevel release, add a link from the web page
      of the previous release.
+
      * For the release candidates: Announce the RC in the mpfr-announce,
      mpfr, gmp-discuss, gcc and platform-testers[3] mailing-lists.
+     A minimal web page for the MPFR release can be created right now
+     (see svn history such as [4] for examples), as the manual already
+     contains the new URL's.
+
      [1] http://www.gnu.org/prep/maintain/html_node/Announcements.html
      [2] http://siteadmin.gforge.inria.fr/FAQ.html
      [3] See https://lists.gnu.org/mailman/listinfo/platform-testers and
      https://lists.gnu.org/archive/html/platform-testers/2011-09/msg00000.html
+     [4] https://gforge.inria.fr/scm/viewvc.php/misc/www/mpfr-3.1.2/index.html?view=markup&revision=8472&root=mpfr
 
 Note: Mail sent to the mpfr-announce list should also be sent to
 the mpfr list, and the Reply-To should be set to the mpfr list.
