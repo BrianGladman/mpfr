@@ -6,7 +6,7 @@
 #
 # Warning! The release name in the announce text may contain accented
 # letters. Make sure they are preserved if your locales are not UTF-8
-# based.
+# based. Moreover, you may need to modify the text.
 #
 # Usage: announce-text [ <variable_settings> ]
 # where arguments can be, for instance:
@@ -161,6 +161,19 @@ http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.xz.asc
 http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.bz2.asc
 http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.gz.asc
 http://www.mpfr.org/mpfr-$vers/mpfr-$vers.zip.asc
+
+Each tarball is signed by Vincent Lefèvre. This can be verified
+using the DSA key ID 98C3739D; this key can be retrieved with:
+
+  gpg --recv-keys 98C3739D
+
+or by downloading it from <https://www.vinc17.net/pgp.html>.
+The key fingerprint is:
+
+  07F3 DBBE CC1A 3960 5078  094D 980C 1976 98C3 739D
+
+The signatures can be verified with: gpg --verify <file.asc>
+You should check that the key fingerprint matches.
 
 EOF
 cat Changes
