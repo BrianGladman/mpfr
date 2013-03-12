@@ -33,15 +33,24 @@ MPFR).
 
 1. Extract the files from the archive.
 
-2. It is strongly advised to apply the latest patches (if this has
-   not been done yet), e.g.
+2. It is strongly advised to apply the latest patches if this has
+   not been done yet and if patches are available. You can check
+   on the release page:
+
+     http://www.mpfr.org/mpfr-3.2.0/
+
+   which may have additional information. The patches can be applied
+   with commands like:
+
      wget http://www.mpfr.org/mpfr-3.2.0/allpatches
      patch -N -Z -p1 < allpatches
+
    or
+
      curl http://www.mpfr.org/mpfr-3.2.0/allpatches | patch -N -Z -p1
 
    (Those instructions are for the GNU patch command, for example
-    /usr/bin/gpatch on Solaris.)
+   /usr/bin/gpatch on Solaris.)
 
 3. In the MPFR directory, to detect your system, type:
      ./configure
