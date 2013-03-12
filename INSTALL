@@ -581,7 +581,6 @@ a. Using MinGW
      Compiler Version 16.00.30319.01 for 80x86, Microsoft (R) C/C++ Optimizing
      Compiler Version 16.00.30319.01 for x64).
 
-
 b. Using Cygwin
 ===============
 
@@ -590,6 +589,10 @@ library depends on the Cygwin DLL and cannot therefore be used with
 Visual Studio as with MinGW. Indeed, the binaries compiled with Cygwin
 require a dynamic library (cygwin.dll) to work; there is a Cygwin option
 -mno-cygwin to build native code, but it may require some non-portable tricks.
+
+In case of failure, you may need to pass LDFLAGS='-shared-libgcc' at the
+end of the configure line due to a bug in GCC. Otherwise, if threading
+support is not needed, you can configure MPFR with --disable-thread-safe.
 
 c. Using Visual C++ 2008/2010
 =============================
