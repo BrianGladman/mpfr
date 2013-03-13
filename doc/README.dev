@@ -163,7 +163,7 @@ To make a release (for the MPFR team):
      by "make dist").
      Update the date in doc/mpfr.texi.
 
-  3) Update the NEWS file, in particular say if the the release is binary
+  3) Update the NEWS file, in particular say if the release is binary
      and/or API compatible (or not) with previous releases.
      Also update the "API Compatibility" section in the manual (mpfr.texi).
      Update the FAQ.html file with update-faq (and check it) in the doc
