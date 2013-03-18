@@ -208,6 +208,60 @@ check_erange (void)
   mpfr_clear (x);
 }
 
+static void
+test_get_uj_smallneg (void)
+{
+  mpfr_t x;
+  int i;
+
+  mpfr_init2 (x, 64);
+
+  for (i = 1; i <= 4; i++)
+    {
+      int r;
+
+      mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
+      RND_LOOP (r)
+        {
+          intmax_t s;
+          uintmax_t u;
+
+          mpfr_clear_erangeflag ();
+          s = mpfr_get_sj (x, (mpfr_rnd_t) r);
+          if (mpfr_erangeflag_p ())
+            {
+              printf ("ERROR for get_sj + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              exit (1);
+            }
+          u = mpfr_get_uj (x, (mpfr_rnd_t) r);
+          if (u != 0)
+            {
+              printf ("ERROR for get_uj + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              printf ("Expected 0, got %ju\n", u);
+              exit (1);
+            }
+          if ((s == 0) ^ !mpfr_erangeflag_p ())
+            {
+              char *not = s == 0 ? "" : " not";
+
+              printf ("ERROR for get_uj + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              printf ("The rounding integer (%jd) is%s representable in "
+                      "unsigned long,\nbut the erange flag is%s set.\n",
+                      s, not, not);
+              exit (1);
+            }
+        }
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -270,6 +324,7 @@ main (void)
   mpfr_clear (y);
 
   check_erange ();
+  test_get_uj_smallneg ();
 
   tests_end_mpfr ();
   return 0;
