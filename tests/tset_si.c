@@ -154,7 +154,8 @@ test_get_ui_smallneg (void)
       mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
       RND_LOOP (r)
         {
-          int s, u;
+          long s;
+          unsigned long u;
 
           mpfr_clear_erangeflag ();
           s = mpfr_get_si (x, (mpfr_rnd_t) r);
@@ -171,7 +172,7 @@ test_get_ui_smallneg (void)
               printf ("ERROR for get_ui + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-              printf ("Expected 0, got %u\n", u);
+              printf ("Expected 0, got %lu\n", u);
               exit (1);
             }
           if ((s == 0) ^ !mpfr_erangeflag_p ())
@@ -181,7 +182,7 @@ test_get_ui_smallneg (void)
               printf ("ERROR for get_ui + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-              printf ("The rounding integer (%d) is%s representable in "
+              printf ("The rounding integer (%ld) is%s representable in "
                       "unsigned long,\nbut the erange flag is%s set.\n",
                       s, not, not);
               exit (1);
