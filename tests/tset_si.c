@@ -139,6 +139,59 @@ test_macros_keyword (void)
   mpfr_clear (x);
 }
 
+static void
+test_get_ui_smallneg (void)
+{
+  mpfr_t x;
+  int i;
+
+  mpfr_init2 (x, 64);
+
+  for (i = 1; i <= 4; i++)
+    {
+      int r;
+
+      mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
+      RND_LOOP (r)
+        {
+          int s, u;
+
+          mpfr_clear_erangeflag ();
+          s = mpfr_get_si (x, (mpfr_rnd_t) r);
+          if (mpfr_erangeflag_p ())
+            {
+              printf ("ERROR for get_si + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              exit (1);
+            }
+          u = mpfr_get_ui (x, (mpfr_rnd_t) r);
+          if (u != 0)
+            {
+              printf ("ERROR for get_ui + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              printf ("Expected 0, got %u\n", u);
+              exit (1);
+            }
+          if ((s == 0) ^ !mpfr_erangeflag_p ())
+            {
+              char *not = s == 0 ? "" : " not";
+
+              printf ("ERROR for get_ui + ERANGE + small negative op"
+                      " for rnd = %s and x = -%d/4\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+              printf ("The rounding integer (%d) is%s representable in "
+                      "unsigned long,\nbut the erange flag is%s set.\n",
+                      s, not, not);
+              exit (1);
+            }
+        }
+    }
+
+  mpfr_clear (x);
+}
+
 /* FIXME: Comparing against mpfr_get_si/ui is not ideal, it'd be better to
    have all tests examine the bits in mpfr_t for what should come out.  */
 
@@ -455,6 +508,7 @@ main (int argc, char *argv[])
   test_2exp ();
   test_macros ();
   test_macros_keyword ();
+  test_get_ui_smallneg ();
   tests_end_mpfr ();
   return 0;
 }
