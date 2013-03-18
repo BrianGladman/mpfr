@@ -130,8 +130,9 @@ pl=${vers##*.}
 cat <<EOF
 Subject: Announce: GNU MPFR $vers is released
 
-GNU MPFR $vers ($rname) is now available
-for download from the MPFR web site:
+GNU MPFR $vers ($rname), a C library for
+multiple-precision floating-point computations with correct rounding,
+is now available for download from the MPFR web site:
 
   http://www.mpfr.org/mpfr-$vers/
 
