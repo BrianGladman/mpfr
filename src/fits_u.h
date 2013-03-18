@@ -32,16 +32,19 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   int res;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
-    /* Zero always fit */
-    return MPFR_IS_ZERO (f) ? 1 : 0;
-  else if (MPFR_IS_NEG (f))
-    /* Negative numbers don't fit */
-    return 0;
-  /* now it fits if
-     (a) f <= MAXIMUM
-     (b) round(f, prec(slong), rnd) <= MAXIMUM */
+    return MPFR_IS_ZERO (f) ? 1 : 0;  /* Zero always fits */
 
   e = MPFR_GET_EXP (f);
+
+  if (MPFR_IS_NEG (f))
+    return e >= 1 ? 0  /* f <= -1 does not fit */
+      : rnd != MPFR_RNDN ? MPFR_IS_LIKE_RNDU (rnd, -1)  /* directed mode */
+      : e < 0 ? 1  /* f > -1/2 fits in MPFR_RNDN */
+      : mpfr_powerof2_raw(f);  /* -1/2 fits, -1 < f < -1/2 don't */
+
+  /* Now it fits if
+     (a) f <= MAXIMUM
+     (b) round(f, prec(slong), rnd) <= MAXIMUM */
 
   /* first compute prec(MAXIMUM); fits in an int */
   for (s = MAXIMUM, prec = 0; s != 0; s /= 2, prec ++);
