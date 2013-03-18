@@ -1393,7 +1393,7 @@ and @code{mpfr_set_decimal64} respectively.
 @deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{long}, an @code{unsigned long},
 an @code{intmax_t} or an @code{uintmax_t} (respectively) after rounding
-it with respect to @var{rnd}.
+it to an integer with respect to @var{rnd}.
 If @var{op} is NaN, 0 is returned and the @emph{erange} flag is set.
 If @var{op} is too big for the return type, the function returns the maximum
 or the minimum of the corresponding C type, depending on the direction
