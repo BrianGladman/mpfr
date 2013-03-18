@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
-/* We can't use fits_s.h <= mpfr_cmp_ui */
+/* We can't use fits_s.h as it uses mpfr_cmp_si */
 int
 mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
