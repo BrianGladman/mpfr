@@ -1,4 +1,4 @@
-/* Test file for mpfr_set_si and mpfr_set_ui.
+/* Test file for mpfr_set_si, mpfr_set_ui, mpfr_get_si and mpfr_get_ui.
 
 Copyright 1999, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
