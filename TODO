@@ -246,6 +246,7 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- improve mpfr_grandom using the algorithm in http://arxiv.org/abs/1303.6257
 - in mpfr_log1p, use the series of log(1+x) when x is small, but not small
   enough so that the approximation log(1+x) = x + O(x^2) suffices
 - use the src/x86_64/corei5/mparam.h file once GMP recognizes correctly the
