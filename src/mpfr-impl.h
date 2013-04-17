@@ -1051,11 +1051,22 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 
 /* Declare that some variable is initialized before being used (without a
    dummy initialization) in order to avoid some compiler warnings. Use the
-   VAR = VAR trick (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296)
-   only with gcc as this is undefined behavior, and we don't know what
-   other compilers do (they may also be smarter). This trick could be
-   disabled with future gcc versions. */
-#if defined(__GNUC__)
+   VAR = VAR trick (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
+   only with gcc as this is undefined behavior, and we don't know what other
+   compilers do (they may also be smarter). This self-initialization trick
+   could be disabled with future gcc versions.
+   However, for clang (which defines __GNUC__), this trick must not be used
+   as it currently generates a warning, at least with:
+     Debian clang version 3.0-6.2 (tags/RELEASE_30/final) (based on LLVM 3.0)
+     __VERSION__ "4.2.1 Compatible Debian Clang 3.0 (tags/RELEASE_30/final)"
+     __clang__ 1
+     __clang_major__ 3
+     __clang_minor__ 0
+     __clang_patchlevel__ 0
+     __clang_version__ "3.0 (tags/RELEASE_30/final)"
+   (see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=705583 for this
+   problem with clang). */
+#if defined(__GNUC__) && !defined(__clang__)
 # define INITIALIZED(VAR) VAR = VAR
 #else
 # define INITIALIZED(VAR) VAR
