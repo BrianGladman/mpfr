@@ -10,6 +10,10 @@
 
 
 AUTOMAKE_OPTIONS = gnu
+
+# ACLOCAL_AMFLAGS will be fully deprecated in Automake 2.0; use
+# AC_CONFIG_MACRO_DIRS (introduced in Automake 1.13) instead,
+# once Automake 1.13 is available on most platforms.
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = doc src tests tune
