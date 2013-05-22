@@ -374,7 +374,6 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
-dnl It also disables the tests involving the linking with LIBGMP if DLL
 dnl
 dnl "-Wl,output-def" is used to get a .def file for use by MS lib to make
 dnl a .lib import library, described in the manual.
@@ -391,7 +390,6 @@ case $host in
    if test "$enable_shared" = yes; then
      MPFR_LDFLAGS="$MPFR_LDFLAGS -no-undefined"
      LIBMPFR_LDFLAGS="$LIBMPFR_LDFLAGS -Wl,--output-def,.libs/libmpfr-4.dll.def"
-     dont_link_with_gmp="yes"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
 #if !__GMP_LIBGMP_DLL
@@ -479,15 +477,6 @@ You probably need to change some of the GMP or MPFR compile options.])],
 fi
 
 
-dnl We really need to link using libtool. But it is impossible with the current
-dnl libtool.
-dnl The practical problems appear only under MS Windows since the library name
-dnl is libgmp-3 (due to libtool versionning). The best solution
-dnl is to believe it works under MS-Windows.
-if test "$dont_link_with_gmp" = yes ; then
-LIBS="-lgmp $LIBS"
-else
-
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
@@ -551,9 +540,6 @@ dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
 dnl Same for __gmpn_sbpi1_divappr_q.
 AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
-
-dnl End of tests which need to link with GMP.
-fi
 
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
 dnl and polluate (and slow down because libtool has to parse them) the build.
