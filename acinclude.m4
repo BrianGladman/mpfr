@@ -1060,7 +1060,8 @@ MPFR_FUNC_GMP_PRINTF_SPEC([lld], [long long int], [
 
 MPFR_FUNC_GMP_PRINTF_SPEC([Lf], [long double], [
 #include <gmp.h>
-         ],,
+         ],
+         [AC_DEFINE([PRINTF_L], 1, [gmp_printf can read long double])],
          [AC_DEFINE([NPRINTF_L], 1, [gmp_printf cannot read long double])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
@@ -1070,6 +1071,7 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #include <stddef.h>
 #endif
 #include <gmp.h>
-    ],,
+    ],
+    [AC_DEFINE([PRINTF_T], 1, [gmp_printf can read ptrdiff_t])],
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])

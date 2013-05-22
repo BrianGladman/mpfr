@@ -147,11 +147,11 @@ check_mixed (FILE *fout)
   unsigned long ulo = 1;
   float f = -1.25;
   double d = -1.25;
-#if !defined(NPRINTF_T) || !defined(NPRINTF_L)
+#if defined(PRINTF_T) || defined(PRINTF_L)
   long double ld = -1.25;
 #endif
 
-#ifndef NPRINTF_T
+#ifdef PRINTF_T
   ptrdiff_t p = 1, saved_p;
 #endif
   size_t sz = 1;
@@ -197,7 +197,7 @@ check_mixed (FILE *fout)
                   (void *) &i);
   check_length_with_cmp (7, mpfr, 15, mpfr_cmp_ui (mpfr, 15), Rg);
 
-#ifndef NPRINTF_T
+#ifdef PRINTF_T
   saved_p = p;
   check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   if (p != 20)
@@ -205,7 +205,7 @@ check_mixed (FILE *fout)
   check_length (8, (long) p, 20, ld); /* no format specifier "%td" in C89 */
 #endif
 
-#ifndef NPRINTF_L
+#ifdef PRINTF_L
   check_vfprintf (fout, "a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
   check_length (9, (unsigned long) sz, 30, lu); /* no format specifier "%zu" in C89 */
 #endif

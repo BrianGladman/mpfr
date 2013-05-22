@@ -783,7 +783,7 @@ mixed (void)
   int n1;
   int n2;
   int i = 121;
-#ifndef NPRINTF_L
+#ifdef PRINTF_L
   long double d = 1. / 31.;
 #endif
   mpf_t mpf;
@@ -820,7 +820,7 @@ mixed (void)
       exit (1);
     }
 
-#ifndef NPRINTF_L
+#ifdef PRINTF_L
   check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
