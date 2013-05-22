@@ -160,7 +160,7 @@ __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
 /* ASSERT() is for mpfr-longlong.h only. */
 #define ASSERT(expr)       MPFR_ASSERTD(expr)
 
-/* Access fileds of GMP struct */
+/* Access fields of GMP struct */
 #define SIZ(x) ((x)->_mp_size)
 #define ABSIZ(x) ABS (SIZ (x))
 #define PTR(x) ((x)->_mp_d)
