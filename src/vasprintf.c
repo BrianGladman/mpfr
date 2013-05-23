@@ -1835,7 +1835,8 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
       if (spec.arg_type == UNSUPPORTED)
         /* the current architecture doesn't support this type */
         {
-          goto error;
+          //          goto error;
+          continue;
         }
       else if (spec.arg_type == MPFR_ARG)
         {
@@ -1872,7 +1873,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
       spec.spec = *fmt;
       if (!specinfo_is_valid (spec))
-        goto error;
+        continue;//        goto error;
 
       if (*fmt)
         fmt++;

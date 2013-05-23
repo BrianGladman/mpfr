@@ -112,45 +112,51 @@ check_invalid_format (void)
   int i = 0;
 
   /* format in disorder */
-  check_vprintf_failure ("blah %l2.1d blah", i);
-  check_vprintf_failure ("blah %2.1#d blah", i);
+  check_vprintf ("blah %l2.1d blah", i);
+  check_vprintf ("blah %2.1#d blah", i);
 
   /* incomplete format */
-  check_vprintf_failure ("%", i);
-  check_vprintf_failure ("% (missing conversion specifier)", i);
-  check_vprintf_failure ("missing conversion specifier %h", i);
-  check_vprintf_failure ("this should fail %.l because of missing conversion specifier "
-                         "(or doubling %%)", i);
-  check_vprintf_failure ("%L", i);
-  check_vprintf_failure ("%hh. ", i);
-  check_vprintf_failure ("blah %j.");
-  check_vprintf_failure ("%ll blah");
-  check_vprintf_failure ("blah%t blah");
-  check_vprintf_failure ("%z ");
-  check_vprintf_failure ("%F (missing conversion specifier)");
-  check_vprintf_failure ("%Q (missing conversion specifier)");
-  check_vprintf_failure ("%M (missing conversion specifier)");
-  check_vprintf_failure ("%N (missing conversion specifier)");
-  check_vprintf_failure ("%Z (missing conversion specifier)");
-  check_vprintf_failure ("%R (missing conversion specifier)");
-  check_vprintf_failure ("%R");
-  check_vprintf_failure ("%P (missing conversion specifier)");
+  check_vprintf ("%", i);
+  check_vprintf ("% (missing conversion specifier)", i);
+  check_vprintf ("missing conversion specifier %h", i);
+  check_vprintf ("this should be printed literally %.l because of "
+                 "missing conversion specifier (or doubling %%)", i);
+  check_vprintf ("%L", i);
+  check_vprintf ("%hh. ", i);
+  check_vprintf ("blah %j.");
+  check_vprintf ("%ll blah");
+  check_vprintf ("blah%t blah");
+  check_vprintf ("%z ");
+  check_vprintf ("%F (missing conversion specifier)");
+  check_vprintf ("%Q (missing conversion specifier)");
+  check_vprintf ("%M (missing conversion specifier)");
+  check_vprintf ("%N (missing conversion specifier)");
+  check_vprintf ("%Z (missing conversion specifier)");
+  check_vprintf ("%R (missing conversion specifier)");
+  check_vprintf ("%R");
+  check_vprintf ("%P (missing conversion specifier)");
+  check_vprintf ("%l (string, missing conversion specifier) "
+                 "%d (number, OK)", i, i);
 
   /* conversion specifier with wrong length specifier */
-  check_vprintf_failure ("%ha", i);
-  check_vprintf_failure ("%hhe", i);
-  check_vprintf_failure ("%jf", i);
-  check_vprintf_failure ("%lg", i);
-  check_vprintf_failure ("%tA", i);
-  check_vprintf_failure ("%zE", i);
-  check_vprintf_failure ("%Ld", i);
-  check_vprintf_failure ("%Qf", i);
-  check_vprintf_failure ("%MG", i);
-  check_vprintf_failure ("%Na", i);
-  check_vprintf_failure ("%ZE", i);
-  check_vprintf_failure ("%PG", i);
-  check_vprintf_failure ("%Fu", i);
-  check_vprintf_failure ("%Rx", i);
+  check_vprintf ("%ha", i);
+  check_vprintf ("%hhe", i);
+  check_vprintf ("%jf", i);
+  check_vprintf ("%lg", i);
+  check_vprintf ("%tA", i);
+  check_vprintf ("%zE", i);
+  check_vprintf ("%Ld", i);
+  check_vprintf ("%Qf", i);
+  check_vprintf ("%MG", i);
+  check_vprintf ("%Na", i);
+  check_vprintf ("%ZE", i);
+  check_vprintf ("%PG", i);
+  check_vprintf ("%Fu", i);
+  check_vprintf ("%Rx", i);
+
+  /* Invalid precision field */
+  check_vprintf ("%1.1.1d (string, invalid precision field) "
+                 "%1.1d (number OK)", i + 1, i);
 }
 
 /* The goal of this test is to check cases where more INT_MAX characters
