@@ -308,7 +308,9 @@ dnl   * Now use -mieee-fp instead of -mp (ICC 13 says: option '-mp' is
 dnl     deprecated and will be removed in a future release.). According
 dnl     to "icc -help", both options are equivalent; it also suggests
 dnl     to use -fp-model <arg> instead of -mp, but what is <arg>? Anyway
-dnl     -mieee-fp solves the tset_d failure due to a negative zero.
+dnl     -mieee-fp solves the tset_d failure due to a negative zero. This
+dnl     option has been introduced in ICC 9.0 for Linux (2005-06):
+dnl     http://www.ncsa.illinois.edu/UserInfo/Resources/Software/Intel/Compilers/9.0/C_ReleaseNotes.htm
 AC_MSG_CHECKING(for ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
