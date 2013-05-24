@@ -135,8 +135,7 @@ check_invalid_format (void)
   check_vprintf ("%R (missing conversion specifier)");
   check_vprintf ("%R");
   check_vprintf ("%P (missing conversion specifier)");
-  check_vprintf ("%l (string, missing conversion specifier) "
-                 "%d (number, OK)", i, i);
+  check_vprintf ("%l (string, missing conversion specifier)", i);
 
   /* conversion specifier with wrong length specifier */
   check_vprintf ("%ha", i);
@@ -155,8 +154,7 @@ check_invalid_format (void)
   check_vprintf ("%Rx", i);
 
   /* Invalid precision field */
-  check_vprintf ("%1.1.1d (string, invalid precision field) "
-                 "%1.1d (number OK)", i + 1, i);
+  check_vprintf ("%2.2.2d (string, invalid precision field)", i);
 }
 
 /* The goal of this test is to check cases where more INT_MAX characters

@@ -1833,11 +1833,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
       fmt = parse_arg_type (fmt, &spec);
       if (spec.arg_type == UNSUPPORTED)
-        /* the current architecture doesn't support this type */
-        {
-          //          goto error;
-          continue;
-        }
+        /* the current architecture doesn't support the type corresponding to
+           the format specifier; according to the ISO C99 standard, the
+           behavior is undefined. We choose to print the format specifier as a
+           literal string, what may be printed after this string is
+           undefined. */
+        continue;
       else if (spec.arg_type == MPFR_ARG)
         {
           switch (*fmt)
@@ -1873,7 +1874,11 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
       spec.spec = *fmt;
       if (!specinfo_is_valid (spec))
-        continue;//        goto error;
+        /* the format specifier is invalid; according to the ISO C99 standard,
+           the behavior is undefined. We choose to print the invalid format
+           specifier as a literal string, what may be printed after this
+           string is undefined. */
+        continue;
 
       if (*fmt)
         fmt++;
@@ -2007,6 +2012,16 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         {
           mpfr_srcptr p;
 
+          if (spec.spec != 'a' && spec.spec != 'A'
+              && spec.spec != 'b'
+              && spec.spec != 'e' && spec.spec != 'E'
+              && spec.spec != 'f' && spec.spec != 'F'
+              && spec.spec != 'g' && spec.spec != 'G')
+            /* the format specifier is invalid; skip the invalid format
+           specifier so as to print it as a literal string. What may be
+           printed after this string is undefined. */
+            continue;
+
           p = va_arg (ap, mpfr_srcptr);
 
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
@@ -2014,25 +2029,8 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
-          switch (spec.spec)
-            {
-            case 'a':
-            case 'A':
-            case 'b':
-            case 'e':
-            case 'E':
-            case 'f':
-            case 'F':
-            case 'g':
-            case 'G':
-              if (sprnt_fp (&buf, p, spec) < 0)
-                goto overflow_error;
-              break;
-
-            default:
-              /* unsupported specifier */
-              goto error;
-            }
+          if (sprnt_fp (&buf, p, spec) < 0)
+            goto overflow_error;
         }
       else
         /* gmp_printf specification, step forward in the va_list */
