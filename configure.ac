@@ -304,6 +304,11 @@ dnl     the GCC variable confuses libtool. See:
 dnl       http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 dnl   * If need be, the gcc predefined macros __GNUC_* can be disabled
 dnl     thanks to the -no-gcc option.
+dnl   * Now use -mieee-fp instead of -mp (ICC 13 says: option '-mp' is
+dnl     deprecated and will be removed in a future release.). According
+dnl     to "icc -help", both options are equivalent; it also suggests
+dnl     to use -fp-model <arg> instead of -mp, but what is <arg>? Anyway
+dnl     -mieee-fp solves the tset_d failure due to a negative zero.
 AC_MSG_CHECKING(for ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
@@ -312,7 +317,7 @@ error
 #endif
 ]], [[]])],[
  AC_MSG_RESULT(yes)
- CFLAGS="-fp_port -mp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
+ CFLAGS="-fp_port -mieee-fp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
 ],[AC_MSG_RESULT(no)])
 
 dnl If compiler is gcc, then use some specific flags.
