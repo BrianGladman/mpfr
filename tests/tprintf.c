@@ -106,57 +106,6 @@ check_vprintf_failure (const char *fmt, ...)
   va_end (ap);
 }
 
-static void
-check_invalid_format (void)
-{
-  int i = 0;
-
-  /* format in disorder */
-  check_vprintf ("blah %l2.1d blah", i);
-  check_vprintf ("blah %2.1#d blah", i);
-
-  /* incomplete format */
-  check_vprintf ("%", i);
-  check_vprintf ("% (missing conversion specifier)", i);
-  check_vprintf ("missing conversion specifier %h", i);
-  check_vprintf ("this should be printed literally %.l because of "
-                 "missing conversion specifier (or doubling %%)", i);
-  check_vprintf ("%L", i);
-  check_vprintf ("%hh. ", i);
-  check_vprintf ("blah %j.");
-  check_vprintf ("%ll blah");
-  check_vprintf ("blah%t blah");
-  check_vprintf ("%z ");
-  check_vprintf ("%F (missing conversion specifier)");
-  check_vprintf ("%Q (missing conversion specifier)");
-  check_vprintf ("%M (missing conversion specifier)");
-  check_vprintf ("%N (missing conversion specifier)");
-  check_vprintf ("%Z (missing conversion specifier)");
-  check_vprintf ("%R (missing conversion specifier)");
-  check_vprintf ("%R");
-  check_vprintf ("%P (missing conversion specifier)");
-  check_vprintf ("%l (string, missing conversion specifier)", i);
-
-  /* conversion specifier with wrong length specifier */
-  check_vprintf ("%ha", i);
-  check_vprintf ("%hhe", i);
-  check_vprintf ("%jf", i);
-  check_vprintf ("%lg", i);
-  check_vprintf ("%tA", i);
-  check_vprintf ("%zE", i);
-  check_vprintf ("%Ld", i);
-  check_vprintf ("%Qf", i);
-  check_vprintf ("%MG", i);
-  check_vprintf ("%Na", i);
-  check_vprintf ("%ZE", i);
-  check_vprintf ("%PG", i);
-  check_vprintf ("%Fu", i);
-  check_vprintf ("%Rx", i);
-
-  /* Invalid precision field */
-  check_vprintf ("%2.2.2d (string, invalid precision field)", i);
-}
-
 /* The goal of this test is to check cases where more INT_MAX characters
    are output, in which case, it should be a failure, because like C's
    *printf functions, the return type is int and the returned value must
@@ -534,7 +483,6 @@ main (int argc, char *argv[])
       N = atoi (argv[1]);
     }
 
-  check_invalid_format ();
   check_special ();
   check_mixed ();
 
