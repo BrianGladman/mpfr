@@ -315,19 +315,11 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 't':
       ++format;
-#ifdef PRINTF_T
       specinfo->arg_type = PTRDIFF_ARG;
-#else
-      specinfo->arg_type = UNSUPPORTED;
-#endif
       break;
     case 'L':
       ++format;
-#ifdef PRINTF_L
       specinfo->arg_type = LONG_DOUBLE_ARG;
-#else
-      specinfo->arg_type = UNSUPPORTED;
-#endif
       break;
     case 'F':
       ++format;
