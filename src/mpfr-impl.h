@@ -250,6 +250,14 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 # define MPFR_CONST_ATTR
 #endif
 
+/* add MPFR_MAYBE_UNUSED after a variable declaration to avoid compiler
+   warnings if it is not used */
+#if __MPFR_GNUC(3,4)
+#define MPFR_MAYBE_UNUSED __attribute__ ((unused))
+#else
+#define MPFR_MAYBE_UNUSED
+#endif
+
 /******************************************************
  ************* Global Internal Variables **************
  ******************************************************/

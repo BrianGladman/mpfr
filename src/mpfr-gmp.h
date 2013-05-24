@@ -333,7 +333,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 #undef invert_limb
 #define invert_limb(invxl,xl)                             \
   do {                                                    \
-    mp_limb_t dummy;                                      \
+    mp_limb_t dummy MPFR_MAYBE_UNUSED;                    \
     MPFR_ASSERTD ((xl) != 0);                             \
     udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
   } while (0)
