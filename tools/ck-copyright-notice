@@ -42,7 +42,7 @@ do
     src/get_patches.c)
       file="tools/get_patches.sh" ;;
     */mparam.h)
-      y="2005," ;;
+      y="2005-" ;;
   esac
   grep -q "Copyright $y.* Free Software Foundation" "$file" && \
   grep -q "GNU MPFR Library" "$file" && \
