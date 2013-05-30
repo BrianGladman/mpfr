@@ -1,6 +1,6 @@
 /* Test file for mpfr_fpif.
 
-Copyright 2012, 2013 Free Software Foundation, Inc.
+Copyright 2012-2013 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
 
 This file is part of the GNU MPFR Library.
