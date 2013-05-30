@@ -226,7 +226,8 @@ the values obtained from GMP may be incorrect if GMP has been built
 on a different machine. In such a case, the user may need to specify
 CC/CFLAGS as explained below.
 
-Run "./configure --help" to see the other options (autoconf default options).
+Run "./configure --help" to see the other options (default options
+from Autoconf and Automake).
 
 
 If 'gmp.h' and 'libgmp' do not match
