@@ -42,6 +42,9 @@ AC_CANONICAL_HOST
 AC_PROG_EGREP
 AC_PROG_SED
 
+dnl Support unusual archivers.
+AM_PROG_AR
+
 dnl To use a separate config header.
 dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
