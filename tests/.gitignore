@@ -1,6 +1,8 @@
 /*.la
 /*.lo
+/*.log
 /*.orig
+/*.trs
 /.deps
 /.libs
 /Makefile
