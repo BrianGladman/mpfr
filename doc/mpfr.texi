@@ -2767,7 +2767,7 @@ range and the rounding mode might have a side effect on the next random state.
 @deftypefunx int mpfr_grandom (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
 Generate one (two for @code{mpfr_grandom})
 random floating-point number according to a standard normal gaussian
-distribution.
+distribution (with mean zero and variance one).
 For @code{mpfr_grandom}, if @var{rop2} is a null pointer, then only one value is generated
 and stored in @var{rop1}.
 
@@ -2795,7 +2795,8 @@ deprecated and will be removed in a future release.
 
 @deftypefun int mpfr_erandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
 Generate one random floating-point number according to an exponential
-distribution. Other characteristics are identical to @code{mpfr_nrandom}.
+distribution, with mean one.
+Other characteristics are identical to @code{mpfr_nrandom}.
 @end deftypefun
 
 @deftypefun mpfr_exp_t mpfr_get_exp (mpfr_t @var{x})

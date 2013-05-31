@@ -58,7 +58,7 @@ sub_d.c d_sub.c mul_d.c div_d.c d_div.c li2.c rec_sqrt.c min_prec.c	\
 buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
 scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
 grandom.c fpif.c set_float128.c get_float128.c rndna.c nrandom.c        \
-random_deviate.h random_deviate.c mpfr_random.h erandom.c
+random_deviate.h random_deviate.c erandom.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 

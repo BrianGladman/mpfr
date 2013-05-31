@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #if !defined(MPFR_RANDOM_DEVIATE_HH)
 #define MPFR_RANDOM_DEVIATE_H 1
 
-#include <mpfr_random.h>
+#include "mpfr-impl.h"
 
 #if defined(__cplusplus)
 extern "C" {
