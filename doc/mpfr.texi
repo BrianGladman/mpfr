@@ -2763,19 +2763,23 @@ Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
 range and the rounding mode might have a side effect on the next random state.
 @end deftypefun
 
-@deftypefun int mpfr_grandom (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
-Generate two random floats according to a standard normal gaussian
-distribution. If @var{rop2} is a null pointer, then only one value is generated
+@deftypefun int mpfr_nrandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_grandom (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
+Generate one (two for @code{mpfr_grandom})
+random floating-point number according to a standard normal gaussian
+distribution.
+For @code{mpfr_grandom}, if @var{rop2} is a null pointer, then only one value is generated
 and stored in @var{rop1}.
 
 The floating-point number @var{rop1} (and @var{rop2}) can be seen as if a
 random real number were generated according to the standard normal gaussian
 distribution and then rounded in the direction @var{rnd}.
 
-The third argument is a @code{gmp_randstate_t} structure, which should be
+The @code{gmp_randstate_t} argument should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
-The combination of the ternary values is returned like with
+For @code{mpfr_grandom},
+the combination of the ternary values is returned like with
 @code{mpfr_sin_cos}. If @var{rop2} is a null pointer, the second ternary
 value is assumed to be 0 (note that the encoding of the only ternary value
 is not the same as the usual encoding for functions that return only one
@@ -2783,6 +2787,15 @@ result). Otherwise the ternary value of a random number is always non-zero.
 
 Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
 range and the rounding mode might have a side effect on the next random state.
+
+Note: @code{mpfr_nrandom} is much more efficient than @code{mpfr_grandom},
+especially for large precision. Thus @code{mpfr_grandom} is marked as
+deprecated and will be removed in a future release.
+@end deftypefun
+
+@deftypefun int mpfr_erandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
+Generate one random floating-point number according to an exponential
+distribution. Other characteristics are identical to @code{mpfr_nrandom}.
 @end deftypefun
 
 @deftypefun mpfr_exp_t mpfr_get_exp (mpfr_t @var{x})
