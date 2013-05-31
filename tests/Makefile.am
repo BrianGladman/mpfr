@@ -39,7 +39,7 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1      \
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan		\
      ttanh ttrunc tui_div tui_pow tui_sub turandom 	 		\
-     tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
+     tvalist ty0 ty1 tyn tzeta tzeta_ui tversion tnrandom terandom
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
