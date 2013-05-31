@@ -37,7 +37,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 
 #define MPFR_NEED_LONGLONG_H
-#include <random_deviate.h>
+#include "random_deviate.h"
 
 /*
  * RANDOM_CHUNK can be picked in the range 1 <= RANDOM_CHUNK <= 64.  Low values
