@@ -33,6 +33,8 @@ Changes from versions 3.1.* to version 3.2.0:
   the __float128 type (requires --enable-float128 and compiler support).
 - New function mpfr_round_nearest_away to add partial emulation of the
   rounding to nearest-away (as defined in IEEE 754-2008).
+- New functions mpfr_nrandom and mpfr_erandom to generate random numbers
+  following normal and exponential distributions respectively.
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - Updated tuning parameters.
 - Improved MPFR manual.
