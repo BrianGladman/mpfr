@@ -59,17 +59,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define RANDOM_CHUNK 32     /* Require 1 <= RANDOM_CHUNK <= 32; recommend 32 */
 #endif
 
-/*
- * If RANDOM_SIMPLE is 1, then the high fraction is not used allowing for
- * considerably simpler implementations.  These should give precisely the same
- * results as for non-RANDOM_SIMPLE and act as a cross check.  When requesting
- * results with a low precision the non-RANDOM_SIMPLE implementation is about
- * 1.8 times faster.
- */
-#if !defined(RANDOM_SIMPLE)
-#define RANDOM_SIMPLE 0         /* Use 0 except if testing */
-#endif
-
 static const unsigned W = RANDOM_CHUNK;
 
 /* allocate and set to (0,1) */
@@ -79,9 +68,6 @@ void mpfr_random_deviate_init(mpfr_random_deviate_t x) {
 
 /* reset to (0,1) */
 void mpfr_random_deviate_reset(mpfr_random_deviate_t x) {
-#if RANDOM_SIMPLE
-  mpz_set_ui(x->f, 0);
-#endif
   x->e = 0;
 }
 
@@ -93,9 +79,7 @@ void mpfr_random_deviate_swap(mpfr_random_deviate_t x,
                               mpfr_random_deviate_t y) {
   unsigned long t;
   t = x->e; x->e = y->e; y->e = t;
-#if !RANDOM_SIMPLE
   t = x->h; x->h = y->h; y->h = t;
-#endif
   mpz_swap(x->f, y->f);
 }
 
@@ -103,30 +87,6 @@ void mpfr_random_deviate_swap(mpfr_random_deviate_t x,
 static void random_deviate_generate(mpfr_random_deviate_t x, unsigned long k,
                                     gmp_randstate_t r, mpz_t t) {
   /* if t is non-null, it is used as a temporary */
-#if RANDOM_SIMPLE
-  if (t) {
-    if (x->e >= k) return;
-    /* force computation of first W bits separately so the results match the
-     * non-simple case */
-    random_deviate_generate(x, W, r, 0);
-    /* passed a mpz_t so compute needed bits in one call to mpz_urandomb */
-    k = ((k + (W-1)) / W) * W;  /* Round up to multiple of W */
-    k -= x->e;                  /* The number of new bits */
-    if (k == 0) return; /* Generation of first W bits might mean we can exit */
-    mpz_urandomb(t, r, k);
-    mpz_mul_2exp(x->f, x->f, k);
-    mpz_add(x->f, x->f, t);
-    x->e += k;
-  } else {
-    /* no mpz_t so compute the bits W at a time via gmp_urandomb_ui */
-    while (x->e < k) {
-      unsigned long w = gmp_urandomb_ui(r, W);
-      mpz_mul_2exp(x->f, x->f, W);
-      mpz_add_ui(x->f, x->f, w);
-      x->e += W;
-    }
-  }
-#else
   if (x->e >= k) return;
   if (x->e == 0) {
       x->h = gmp_urandomb_ui(r, W); /* Generate the high fraction */
@@ -156,7 +116,6 @@ static void random_deviate_generate(mpfr_random_deviate_t x, unsigned long k,
       x->e += W;
     }
   }
-#endif
 }
 
 /*
@@ -180,11 +139,9 @@ static int highest_bit_idx(unsigned long x) {
 /* return position of leading bit, counting from 1 */
 static long random_deviate_leading_bit(mpfr_random_deviate_t x,
                                        gmp_randstate_t r) {
-#if !RANDOM_SIMPLE
   random_deviate_generate(x, W, r, 0);
   if (x->h) return W - highest_bit_idx(x->h);
   random_deviate_generate(x, 2 * W, r, 0);
-#endif
   while (mpz_sgn(x->f) == 0)
     random_deviate_generate(x, x->e + W, r, 0);
   return x->e + 1 - mpz_sizeinbase(x->f, 2);
@@ -195,9 +152,7 @@ int mpfr_random_deviate_tstbit(mpfr_random_deviate_t x, unsigned long k,
                                gmp_randstate_t r) {
   if (k == 0) return 0;
   random_deviate_generate(x, k, r, 0);
-#if !RANDOM_SIMPLE
   if (k <= W) return (x->h >> (W - k)) & 1UL;
-#endif
   return mpz_tstbit(x->f, x->e - k);
 }
 
@@ -206,12 +161,10 @@ int mpfr_random_deviate_less(mpfr_random_deviate_t x, mpfr_random_deviate_t y,
                              gmp_randstate_t r) {
   unsigned long k = 1;
   if (x == y) return 0;
-#if !RANDOM_SIMPLE
   random_deviate_generate(x, W, r, 0);
   random_deviate_generate(y, W, r, 0);
   if (x->h != y->h) return x->h < y->h; /* Compare the high fractions */
   k += W;
-#endif
   for (; ; ++k) {             /* Compare the rest of the fraction bit by bit */
     int a = mpfr_random_deviate_tstbit(x, k, r);
     int b = mpfr_random_deviate_tstbit(y, k, r);
@@ -276,11 +229,6 @@ int mpfr_random_deviate_value(int neg, unsigned long n,
    */
   if (p - l + 1 > 0)
     random_deviate_generate(x, p + 1 - l, r, t);
-#if RANDOM_SIMPLE
-  mpz_set_ui(t, n);             /* The integer part */
-  mpz_mul_2exp(t, t, x->e);     /* Shift to allow for fraction */
-  mpz_add(t, t, x->f);          /* Add high fraction */
-#else
   if (n == 0) {
     /* Since the minimum prec is 2 we know that x->h has been generated. */
     mpz_set_ui(t, x->h);        /* Set high fraction */
@@ -295,7 +243,6 @@ int mpfr_random_deviate_value(int neg, unsigned long n,
     mpz_mul_2exp(t, t, x->e - W); /* Shift to allow for low fraction */
     mpz_add(t, t, x->f);          /* Add low fraction */
   }
-#endif
   /*
    * We could trim off any excess bits here by shifting rightward.  This is an
    * unnecessary complication.
