@@ -1,8 +1,6 @@
 /* mpfr_nrandom (rop, state, rnd_mode) -- Generate a normal deviate with mean 0
    and variance 1 and round it to the precision of rop according to the given
-   rounding mode.  If MPFR_ALT_RANDOM is defined, include also
-   mpfr_grandom_alt (rop1, rop2, state, rnd_mode) -- mimic the functionality of
-   mpfr_grandom.
+   rounding mode.
 
 Copyright 2013 Free Software Foundation, Inc.
 Contributed by Charles Karney <charles@karney.com>, SRI International.
@@ -117,15 +115,3 @@ int mpfr_nrandom(mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd) {
   mpfr_random_deviate_clear(x);
   return inex;
 }
-
-#if MPFR_ALT_RANDOM
-/* mimic the behavior of mpfr_grandom */
-int mpfr_grandom_alt(mpfr_t z1, mpfr_t z2,
-                     gmp_randstate_t r, mpfr_rnd_t rnd) {
-  int inex1, inex2;
-  inex1 = mpfr_nrandom(z1, r, rnd);
-  inex2 = z2 ? mpfr_nrandom(z2, r, rnd) : 0;
-  return (inex1 == 0 ? 0 : (inex1 > 0 ? 1 : 2)) |
-    ((inex2 == 0 ? 0 : (inex2 > 0 ? 1 : 2)) << 2);
-}
-#endif
