@@ -36,6 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * is undefined if e <= RANDOM_CHUNK.
  */
 
+#define MPFR_NEED_LONGLONG_H
 #include <random_deviate.h>
 
 /*
@@ -62,120 +63,167 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static const unsigned W = RANDOM_CHUNK;
 
 /* allocate and set to (0,1) */
-void mpfr_random_deviate_init(mpfr_random_deviate_t x) {
-  mpz_init(x->f); x->e = 0;
+void
+mpfr_random_deviate_init (mpfr_random_deviate_t x)
+{
+  mpz_init (x->f);
+  x->e = 0;
 }
 
 /* reset to (0,1) */
-void mpfr_random_deviate_reset(mpfr_random_deviate_t x) {
+void
+mpfr_random_deviate_reset (mpfr_random_deviate_t x)
+{
   x->e = 0;
 }
 
 /* deallocate */
-void mpfr_random_deviate_clear(mpfr_random_deviate_t x) { mpz_clear(x->f); }
+void
+mpfr_random_deviate_clear (mpfr_random_deviate_t x)
+{
+  mpz_clear (x->f);
+}
 
 /* swap two random deviates */
-void mpfr_random_deviate_swap(mpfr_random_deviate_t x,
-                              mpfr_random_deviate_t y) {
+void
+mpfr_random_deviate_swap (mpfr_random_deviate_t x, mpfr_random_deviate_t y)
+{
   unsigned long t;
-  t = x->e; x->e = y->e; y->e = t;
-  t = x->h; x->h = y->h; y->h = t;
-  mpz_swap(x->f, y->f);
+
+  /* swap x->e and y->e */
+  t = x->e;
+  x->e = y->e;
+  y->e = t;
+
+  /* swap x->h and y->h */
+  t = x->h;
+  x->h = y->h;
+  y->h = t;
+
+  /* swap x->f and y->f */
+  mpz_swap (x->f, y->f);
 }
 
 /* ensure x has at least k bits */
-static void random_deviate_generate(mpfr_random_deviate_t x, unsigned long k,
-                                    gmp_randstate_t r, mpz_t t) {
+static void
+random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
+                         gmp_randstate_t r, mpz_t t)
+{
   /* if t is non-null, it is used as a temporary */
-  if (x->e >= k) return;
-  if (x->e == 0) {
-      x->h = gmp_urandomb_ui(r, W); /* Generate the high fraction */
+  if (x->e >= k)
+    return;
+
+  if (x->e == 0)
+    {
+      x->h = gmp_urandomb_ui (r, W); /* Generate the high fraction */
       x->e = W;
-      if (x->e >= k) return;    /* Maybe that's it? */
-  }
-  if (t) {
-    /* passed a mpz_t so compute needed bits in one call to mpz_urandomb */
-    k = ((k + (W-1)) / W) * W;  /* Round up to multiple of W */
-    k -= x->e;                  /* The number of new bits */
-    mpz_urandomb(x->e == W ? x->f : t, r, k); /* Copy directly to x->f? */
-    if (x->e > W) {
-      mpz_mul_2exp(x->f, x->f, k);
-      mpz_add(x->f, x->f, t);
+      if (x->e >= k)
+        return;    /* Maybe that's it? */
     }
-    x->e += k;
-  } else {
-    /* no mpz_t so compute the bits W at a time via gmp_urandomb_ui */
-    while (x->e < k) {
-      unsigned long w = gmp_urandomb_ui(r, W);
-      if (x->e == W)
-        mpz_set_ui(x->f, w);
-      else {
-        mpz_mul_2exp(x->f, x->f, W);
-        mpz_add_ui(x->f, x->f, w);
-      }
-      x->e += W;
+
+  if (t)
+    {
+      /* passed a mpz_t so compute needed bits in one call to mpz_urandomb */
+      k = ((k + (W-1)) / W) * W;  /* Round up to multiple of W */
+      k -= x->e;                  /* The number of new bits */
+      mpz_urandomb (x->e == W ? x->f : t, r, k); /* Copy directly to x->f? */
+      if (x->e > W)
+        {
+          mpz_mul_2exp (x->f, x->f, k);
+          mpz_add (x->f, x->f, t);
+        }
+      x->e += k;
     }
-  }
+  else
+    {
+      /* no mpz_t so compute the bits W at a time via gmp_urandomb_ui */
+      /* FIXME: would it be faster to init/clear a local t? */
+      while (x->e < k)
+        {
+          unsigned long w = gmp_urandomb_ui (r, W);
+          if (x->e == W)
+            mpz_set_ui (x->f, w);
+          else
+            {
+              mpz_mul_2exp (x->f, x->f, W);
+              mpz_add_ui (x->f, x->f, w);
+            }
+          x->e += W;
+        }
+    }
 }
 
 /*
  * return index [-1..63] of highest bit set.  Return -1 if x = 0, 63 is if x =
  * ~0.  (From Algorithms for programmers by Joerg Arndt.)
  */
-static int highest_bit_idx(unsigned long x) {
-  int r = 0;
-  if (x == 0) return -1;
-  /* handle 64-bit unsigned longs in a way that doesn't trigger warnings when
-   * they are only 32-bits */
-  if (x & ~0xffffffffUL) { x >>= 16; x >>= 16; r +=32; }
-  if (x &  0xffff0000UL) { x >>= 16; r += 16; }
-  if (x &  0x0000ff00UL) { x >>=  8; r +=  8; }
-  if (x &  0x000000f0UL) { x >>=  4; r +=  4; }
-  if (x &  0x0000000cUL) { x >>=  2; r +=  2; }
-  if (x &  0x00000002UL) {           r +=  1; }
-  return r;
+static int
+highest_bit_idx (unsigned long x)
+{
+  unsigned long cnt;
+
+  if (x == 0)
+    return -1;
+
+  count_leading_zeros (cnt, (mp_limb_t) x);
+  return GMP_NUMB_BITS - 1 - cnt;
 }
 
 /* return position of leading bit, counting from 1 */
-static long random_deviate_leading_bit(mpfr_random_deviate_t x,
-                                       gmp_randstate_t r) {
-  random_deviate_generate(x, W, r, 0);
-  if (x->h) return W - highest_bit_idx(x->h);
-  random_deviate_generate(x, 2 * W, r, 0);
-  while (mpz_sgn(x->f) == 0)
-    random_deviate_generate(x, x->e + W, r, 0);
-  return x->e + 1 - mpz_sizeinbase(x->f, 2);
+static long
+random_deviate_leading_bit (mpfr_random_deviate_t x, gmp_randstate_t r)
+{
+  random_deviate_generate (x, W, r, 0);
+  if (x->h)
+    return W - highest_bit_idx (x->h);
+  random_deviate_generate (x, 2 * W, r, 0);
+  while (mpz_sgn (x->f) == 0)
+    random_deviate_generate (x, x->e + W, r, 0);
+  return x->e + 1 - mpz_sizeinbase (x->f, 2);
 }
 
 /* return kth bit of fraction, representing 2^-k */
-int mpfr_random_deviate_tstbit(mpfr_random_deviate_t x, unsigned long k,
-                               gmp_randstate_t r) {
-  if (k == 0) return 0;
-  random_deviate_generate(x, k, r, 0);
-  if (k <= W) return (x->h >> (W - k)) & 1UL;
-  return mpz_tstbit(x->f, x->e - k);
+int
+mpfr_random_deviate_tstbit (mpfr_random_deviate_t x, unsigned long k,
+                            gmp_randstate_t r)
+{
+  if (k == 0)
+    return 0;
+  random_deviate_generate (x, k, r, 0);
+  if (k <= W)
+    return (x->h >> (W - k)) & 1UL;
+  return mpz_tstbit (x->f, x->e - k);
 }
 
 /* compare two random deviates, x < y */
-int mpfr_random_deviate_less(mpfr_random_deviate_t x, mpfr_random_deviate_t y,
-                             gmp_randstate_t r) {
+int
+mpfr_random_deviate_less (mpfr_random_deviate_t x, mpfr_random_deviate_t y,
+                          gmp_randstate_t r)
+{
   unsigned long k = 1;
-  if (x == y) return 0;
-  random_deviate_generate(x, W, r, 0);
-  random_deviate_generate(y, W, r, 0);
-  if (x->h != y->h) return x->h < y->h; /* Compare the high fractions */
+
+  if (x == y)
+    return 0;
+  random_deviate_generate (x, W, r, 0);
+  random_deviate_generate (y, W, r, 0);
+  if (x->h != y->h)
+    return x->h < y->h; /* Compare the high fractions */
   k += W;
-  for (; ; ++k) {             /* Compare the rest of the fraction bit by bit */
-    int a = mpfr_random_deviate_tstbit(x, k, r);
-    int b = mpfr_random_deviate_tstbit(y, k, r);
-    if (a != b) return a < b;
-  }
+  for (; ; ++k)
+    {             /* Compare the rest of the fraction bit by bit */
+      int a = mpfr_random_deviate_tstbit (x, k, r);
+      int b = mpfr_random_deviate_tstbit (y, k, r);
+      if (a != b)
+        return a < b;
+    }
 }
 
 /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
-int mpfr_random_deviate_value(int neg, unsigned long n,
-                              mpfr_random_deviate_t x, mpfr_t z,
-                              gmp_randstate_t r, mpfr_rnd_t rnd) {
+int
+mpfr_random_deviate_value (int neg, unsigned long n,
+                           mpfr_random_deviate_t x, mpfr_t z,
+                           gmp_randstate_t r, mpfr_rnd_t rnd)
+{
   /* r is used to add as many bits as necessary to match the precision of z */
   long l;                     /* The leading bit is 2^l */
   long p = mpfr_get_prec(z);  /* Number of bits in result */
@@ -183,9 +231,9 @@ int mpfr_random_deviate_value(int neg, unsigned long n,
   int inex;
 
   if (n == 0)
-    l = -random_deviate_leading_bit(x, r); /* l < 0 */
+    l = -random_deviate_leading_bit (x, r); /* l < 0 */
   else
-    l = highest_bit_idx(n); /* l >= 0 */
+    l = highest_bit_idx (n); /* l >= 0 */
 
   /*
    * Leading bit is 2^l; thus the trailing bit in result is 2^(l-p+1) =
@@ -222,39 +270,45 @@ int mpfr_random_deviate_value(int neg, unsigned long n,
    * more parsimonious approach (which was taken to allow accurate counts of
    * the number of random digits to be made).
    */
-  mpz_init(t);
+  mpz_init (t);
   /*
    * This is the only call to random_deviate_generate where a mpz_t is passed
    * (because an arbitrarily large number of bits may need to be generated).
    */
   if (p - l + 1 > 0)
-    random_deviate_generate(x, p + 1 - l, r, t);
-  if (n == 0) {
-    /* Since the minimum prec is 2 we know that x->h has been generated. */
-    mpz_set_ui(t, x->h);        /* Set high fraction */
-  } else {
-    mpz_set_ui(t, n);           /* The integer part */
-    if (x->e > 0) {
-      mpz_mul_2exp(t, t, W);    /* Shift to allow for high fraction */
-      mpz_add_ui(t, t, x->h);   /* Add high fraction */
+    random_deviate_generate (x, p + 1 - l, r, t);
+  if (n == 0)
+    {
+      /* Since the minimum prec is 2 we know that x->h has been generated. */
+      mpz_set_ui (t, x->h);        /* Set high fraction */
     }
-  }
-  if (x->e > W) {
-    mpz_mul_2exp(t, t, x->e - W); /* Shift to allow for low fraction */
-    mpz_add(t, t, x->f);          /* Add low fraction */
-  }
+  else
+    {
+      mpz_set_ui (t, n);           /* The integer part */
+      if (x->e > 0)
+        {
+          mpz_mul_2exp (t, t, W);    /* Shift to allow for high fraction */
+          mpz_add_ui (t, t, x->h);   /* Add high fraction */
+        }
+    }
+  if (x->e > W)
+    {
+      mpz_mul_2exp (t, t, x->e - W); /* Shift to allow for low fraction */
+      mpz_add (t, t, x->f);          /* Add low fraction */
+    }
   /*
    * We could trim off any excess bits here by shifting rightward.  This is an
    * unnecessary complication.
    */
-  mpz_setbit(t, 0);      /* Set the trailing bit so result is always inexact */
-  if (neg) mpz_neg(t, t);
+  mpz_setbit (t, 0);     /* Set the trailing bit so result is always inexact */
+  if (neg)
+    mpz_neg (t, t);
   /*
    * Let mpfr_set_z_2exp do all the work of rounding to the requested
    * precision, setting overflow/underflow flags, and returning the right
    * inexact value.
    */
-  inex = mpfr_set_z_2exp(z, t, -x->e, rnd);
-  mpz_clear(t);
+  inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
+  mpz_clear (t);
   return inex;
 }
