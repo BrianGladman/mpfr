@@ -1,7 +1,4 @@
 /* random_deviate routines for mpfr_erandom and mpfr_nrandom.
-   If MPFR_ALT_RANDOM is defined, include also
-   mpfr_urandom_alt (rop, state, rnd_mode) -- mimic the functionality of
-   mpfr_urandom.
 
 Copyright 2013 Free Software Foundation, Inc.
 Contributed by Charles Karney <charles@karney.com>, SRI International.
@@ -314,37 +311,3 @@ int mpfr_random_deviate_value(int neg, unsigned long n,
   mpz_clear(t);
   return inex;
 }
-
-#if MPFR_ALT_RANDOM
-/*
- * Sampling from the uniform distribution in [0,1].  This duplicates the
- * functionality of mpfr_urandom.  It is included just to exercise
- * mpfr_random_deviate_value.  The relative timings of mpfr_urandom_alt vs
- * mpfr_urandom shows that the overhead of generating the random bits in a
- * mpz_t (via mpfr_random_deviate) and then converting the result to an mpfr_t
- * is about 3/2.
- *
- * It would be possible to generalize this to sample in [m,n], by sampling an
- * integer uniformly in [m,n) and setting the sign and integer in the call to
- * mpfr_random_deviate_value.
- */
-
-/* return a uniform random deviate in [0,1] as a MPFR */
-int mpfr_urandom_alt(mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd) {
-  mpfr_random_deviate_t x;
-  int inex;
-  mpfr_random_deviate_init(x);
-  /*
-   * sampling in the integer range [m,n] is illustrated here assuming n > m and
-   * that n - m doesn't overflow.
-   *
-   *   long m = -2, n = 10;
-   *   long k = m + gmp_urandomm_ui(r, n - m);
-   *   inex = mpfr_random_deviate_value(k < 0, k < 0 ? -(k + 1) : k,
-   *                                    x, z, r, rnd);
-   */
-  inex = mpfr_random_deviate_value(0, 0, x, z, r, rnd);
-  mpfr_random_deviate_clear(x);
-  return inex;
-}
-#endif
