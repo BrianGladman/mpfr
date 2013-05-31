@@ -154,8 +154,8 @@ random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
 }
 
 /*
- * return index [-1..63] of highest bit set.  Return -1 if x = 0, 63 is if x =
- * ~0.  (From Algorithms for programmers by Joerg Arndt.)
+ * return index [-1..63] of highest bit set.
+ * Return -1 if x = 0, 63 is if x = ~0.
  */
 static int
 highest_bit_idx (unsigned long x)
@@ -225,8 +225,8 @@ mpfr_random_deviate_value (int neg, unsigned long n,
                            gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   /* r is used to add as many bits as necessary to match the precision of z */
-  long l;                     /* The leading bit is 2^l */
-  long p = mpfr_get_prec(z);  /* Number of bits in result */
+  long l;                      /* The leading bit is 2^l */
+  long p = mpfr_get_prec (z);  /* Number of bits in result */
   mpz_t t;
   int inex;
 
