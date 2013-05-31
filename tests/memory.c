@@ -44,6 +44,8 @@ static struct header  *tests_memory_list;
 
 /* Return a pointer to a pointer to the found block (so it can be updated
    when unlinking). */
+/* FIXME: This is a O(n) search, while it could be done in nearly
+   constant time with a better data structure! */
 static struct header **
 tests_memory_find (void *ptr)
 {
