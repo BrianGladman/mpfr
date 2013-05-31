@@ -27,42 +27,57 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * given in John von Neumann, Various techniques used in connection with random
  * digits, in A. S. Householder, G. E. Forsythe, and H. H. Germond, editors,
  * "Monte Carlo Method", number 12 in Applied Mathematics Series, pp. 36-38
- * (NBS, Washington, DC, 1951), proceedings of a symposium held June 29-July 1,
+ * (NBS, Washington, DC, 1951), Proceedings of a symposium held June 29-July 1,
  * 1949, in Los Angeles.
  *
- * An modification to this algorithm is given in Charles F. F. Karney, Sampling
+ * A modification to this algorithm is given in Charles F. F. Karney, Sampling
  * exactly from the normal distribution (March 2013),
  * http://arxiv.org/abs/1303.6257v1 .  Although this improves the bit
  * efficiency, in practice, it results in a slightly slower algorithm for MPFR.
  * So here the original von Neumann algorithm is used.
  */
 
-#include <random_deviate.h>
+#include "random_deviate.h"
 
 /* true with prob exp(-x) */
-static int E(mpfr_random_deviate_t x, gmp_randstate_t r,
-             mpfr_random_deviate_t p, mpfr_random_deviate_t q) {
+static int
+E (mpfr_random_deviate_t x, gmp_randstate_t r,
+   mpfr_random_deviate_t p, mpfr_random_deviate_t q)
+{
   /* p and q are temporaries */
-  mpfr_random_deviate_reset(p);
-  if (!mpfr_random_deviate_less(p, x, r)) return 1;
-  for (;;) {
-    mpfr_random_deviate_reset(q);
-    if (!mpfr_random_deviate_less(q, p, r)) return 0;
-    mpfr_random_deviate_reset(p);
-    if (!mpfr_random_deviate_less(p, q, r)) return 1;
-  }
+  mpfr_random_deviate_reset (p);
+  if (!mpfr_random_deviate_less (p, x, r))
+    return 1;
+  for (;;)
+    {
+      mpfr_random_deviate_reset (q);
+      if (!mpfr_random_deviate_less (q, p, r))
+        return 0;
+      mpfr_random_deviate_reset (p);
+      if (!mpfr_random_deviate_less (p, q, r))
+        return 1;
+    }
 }
 
 /* return an exponential random deviate with mean 1 as a MPFR  */
-int mpfr_erandom(mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd) {
+int
+mpfr_erandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
+{
   mpfr_random_deviate_t x, p, q;
   int inex;
   unsigned long k = 0;
-  mpfr_random_deviate_init(x);
-  mpfr_random_deviate_init(p); mpfr_random_deviate_init(q);
-  while (!E(x, r, p, q)) { ++k; mpfr_random_deviate_reset(x); }
-  mpfr_random_deviate_clear(q); mpfr_random_deviate_clear(p);
-  inex = mpfr_random_deviate_value(0, k, x, z, r, rnd);
-  mpfr_random_deviate_clear(x);
+
+  mpfr_random_deviate_init (x);
+  mpfr_random_deviate_init (p);
+  mpfr_random_deviate_init (q);
+  while (!E(x, r, p, q))
+    {
+      ++k;
+      mpfr_random_deviate_reset (x);
+    }
+  mpfr_random_deviate_clear (q);
+  mpfr_random_deviate_clear (p);
+  inex = mpfr_random_deviate_value (0, k, x, z, r, rnd);
+  mpfr_random_deviate_clear (x);
   return inex;
 }
