@@ -20,7 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#if !defined(MPFR_RANDOM_DEVIATE_HH)
+#if !defined(MPFR_RANDOM_DEVIATE_H)
 #define MPFR_RANDOM_DEVIATE_H 1
 
 #include "mpfr-impl.h"
