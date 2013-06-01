@@ -154,19 +154,46 @@ random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
 }
 
 /*
+ * return index [-1..63] of highest bit set.  Return -1 if x = 0, 63 is if x =
+ * ~0.  (From Algorithms for programmers by Joerg Arndt.)
+ */
+static int
+highest_bit_idx_alt (unsigned long x)
+{
+  int r = 0;
+
+  if (x == 0)
+    return -1;
+  /* handle 64-bit unsigned longs in a way that doesn't trigger warnings when
+   * they are only 32-bits */
+  if (x & ~0xffffffffUL) { x >>= 16; x >>= 16; r +=32; }
+  if (x &  0xffff0000UL) { x >>= 16; r += 16; }
+  if (x &  0x0000ff00UL) { x >>=  8; r +=  8; }
+  if (x &  0x000000f0UL) { x >>=  4; r +=  4; }
+  if (x &  0x0000000cUL) { x >>=  2; r +=  2; }
+  if (x &  0x00000002UL) {           r +=  1; }
+  return r;
+}
+
+/*
  * return index [-1..63] of highest bit set.
  * Return -1 if x = 0, 63 is if x = ~0.
  */
 static int
 highest_bit_idx (unsigned long x)
 {
-  unsigned long cnt;
+  /* this test should be evaluated at compile time */
+  if (sizeof (mp_limb_t) >= sizeof (unsigned long))
+    {
+      unsigned long cnt;
 
-  if (x == 0)
-    return -1;
-
-  count_leading_zeros (cnt, (mp_limb_t) x);
-  return GMP_NUMB_BITS - 1 - cnt;
+      if (x == 0)
+        return -1;
+      count_leading_zeros (cnt, (mp_limb_t) x);
+      return GMP_NUMB_BITS - 1 - cnt;
+    }
+  else
+    return highest_bit_idx_alt (x);
 }
 
 /* return position of leading bit, counting from 1 */
