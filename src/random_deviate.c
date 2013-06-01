@@ -177,7 +177,9 @@ highest_bit_idx_alt (unsigned long x)
 
 /*
  * return index [-1..63] of highest bit set.
- * Return -1 if x = 0, 63 is if x = ~0.
+ * Return -1 if x = 0, 63 is if x = ~0 (for 64-bit unsigned long).
+ * FIXME: needs portable support or assert for x >= 2^64 (e.g. with
+ * 128-bit unsigned long). See highest_bit_idx_alt too.
  */
 static int
 highest_bit_idx (unsigned long x)
