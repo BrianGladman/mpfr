@@ -110,7 +110,7 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
             (mpfr_random_deviate_reset (p),
              !mpfr_random_deviate_less (p, x, r))) )
         break;
-    mpfr_random_deviate_swap (p, q); /* an efficient way of doing p = q */
+      mpfr_random_deviate_swap (p, q); /* an efficient way of doing p = q */
     }
   return (n & 1UL) == 0;
 }
