@@ -164,6 +164,8 @@ highest_bit_idx_alt (unsigned long x)
 
   if (x == 0)
     return -1;
+  MPFR_ASSERTN (sizeof (unsigned long) * CHAR_BIT == 32 ||
+                sizeof (unsigned long) * CHAR_BIT == 64);
   /* handle 64-bit unsigned longs in a way that doesn't trigger warnings when
    * they are only 32-bits */
   if (x & ~0xffffffffUL) { x >>= 16; x >>= 16; r +=32; }
