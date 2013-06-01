@@ -76,7 +76,7 @@ for file in src/*.c
 do
   [ "$file" = src/jyn_asympt.c ] || \
     [ "$file" = src/round_raw_generic.c ] || \
-    grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\)\.h"' $file || \
+    grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\|random_deviate\)\.h"' $file || \
     echo "Missing '#include \"mpfr-impl.h\"' in $file?"
 done
 
