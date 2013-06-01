@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * deviate uniformly distributed in (0,1) as
  *
  *  typedef struct {
- *    unsigned long e;            // bits in the fraction 
+ *    unsigned long e;            // bits in the fraction
  *    unsigned long h;            // the high W bits of the fraction
  *    mpz_t f;                    // the rest of the fraction
  *  } mpfr_random_deviate_t[1];
