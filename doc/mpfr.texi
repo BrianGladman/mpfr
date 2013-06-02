@@ -2765,11 +2765,10 @@ range and the rounding mode might have a side effect on the next random state.
 
 @deftypefun int mpfr_nrandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_grandom (mpfr_t @var{rop1}, mpfr_t @var{rop2}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
-Generate one (two for @code{mpfr_grandom})
-random floating-point number according to a standard normal gaussian
-distribution (with mean zero and variance one).
-For @code{mpfr_grandom}, if @var{rop2} is a null pointer, then only one value is generated
-and stored in @var{rop1}.
+Generate one (possibly two for @code{mpfr_grandom}) random floating-point
+number according to a standard normal gaussian distribution (with mean zero
+and variance one). For @code{mpfr_grandom}, if @var{rop2} is a null pointer,
+then only one value is generated and stored in @var{rop1}.
 
 The floating-point number @var{rop1} (and @var{rop2}) can be seen as if a
 random real number were generated according to the standard normal gaussian
