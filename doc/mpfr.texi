@@ -3418,9 +3418,8 @@ in particular).
 @node Added Functions, Changed Functions, Type and Macro Changes, API Compatibility
 @section Added Functions
 
-We give here in alphabetical order
-the functions that were added after MPFR 2.2, and in which
-MPFR version.
+We give here in alphabetical order the functions (and function-like macros)
+that were added after MPFR 2.2, and in which MPFR version.
 
 @comment The functions are listed in such a way that if a developer wonders
 @comment whether some function existed in some previous version, then he can
@@ -3465,6 +3464,8 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_div_d} in MPFR 2.4.
 
+@item @code{mpfr_erandom} in MPFR 3.2.
+
 @item @code{mpfr_flags_clear}, @code{mpfr_flags_restore},
 @code{mpfr_flags_save}, @code{mpfr_flags_set} and @code{mpfr_flags_test}
 in MPFR 3.2.
@@ -3480,6 +3481,9 @@ in MPFR 3.2.
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
 @item @code{mpfr_frexp} in MPFR 3.1.
+
+@item @code{mpfr_get_float128} in MPFR 3.2 if configured with
+@samp{--enable-float128}.
 
 @item @code{mpfr_get_flt} in MPFR 3.0.
 
@@ -3508,6 +3512,8 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_mul_d} in MPFR 2.4.
 
+@item @code{mpfr_nrandom} in MPFR 3.2.
+
 @item @code{mpfr_printf} in MPFR 2.4.
 
 @item @code{mpfr_rec_sqrt} in MPFR 2.4.
@@ -3516,7 +3522,12 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_remainder} and @code{mpfr_remquo} in MPFR 2.3.
 
+@item @code{mpfr_round_nearest_away} in MPFR 3.2.
+
 @item @code{mpfr_set_divby0} in MPFR 3.1 (new divide-by-zero exception).
+
+@item @code{mpfr_set_float128} in MPFR 3.2 if configured with
+@samp{--enable-float128}.
 
 @item @code{mpfr_set_flt} in MPFR 3.0.
 
@@ -3646,6 +3657,9 @@ removed in MPFR 3.0 (this only affects old code built against
 MPFR 3.0 or later).
 (The function @code{mpfr_random} had been deprecated since at least MPFR 2.2.0,
 and @code{mpfr_random2} since MPFR 2.4.0.)
+
+Function @code{mpfr_grandom} is marked as deprecated in MPFR 3.2.
+It will be removed in a future release.
 
 @node Other Changes, , Removed Functions, API Compatibility
 @section Other Changes
