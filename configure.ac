@@ -25,10 +25,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[3.2.0-dev])
 
-dnl Automake 1.11.2 is required for AM_PROG_AR, but let's even require
-dnl 1.11.6 for security reasons (similarly, if you have 1.12, make sure
-dnl that you have at least 1.12.2).
-AM_INIT_AUTOMAKE([1.11.6 no-define dist-bzip2 dist-xz dist-zip])
+dnl Automake 1.11.2 is required for AM_PROG_AR (but note that
+dnl unless a security patch has been applied to Automake, e.g.
+dnl via an OS distribution, Automake versions up to 1.11.6 are
+dnl vulnerable for "make distcheck").
+AM_INIT_AUTOMAKE([1.11.2 no-define dist-bzip2 dist-xz dist-zip])
 AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
