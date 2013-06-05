@@ -35,6 +35,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * http://arxiv.org/abs/1303.6257v1 .  Although this improves the bit
  * efficiency, in practice, it results in a slightly slower algorithm for MPFR.
  * So here the original von Neumann algorithm is used.
+ *
+ * There are a few "weasel words" regarding the accuracy of this
+ * implementation.  The algorithm produces exactly rounded exponential deviates
+ * provided that gmp's random number engine delivers truly random bits.  If it
+ * did, the algorithm would be perfect; however, this implementation would have
+ * problems, e.g., in that the integer part of the exponential deviate is
+ * represented by an unsigned long, whereas in reality the integer part in
+ * unbounded.  In this implementation, asserts catch overflow in the integer
+ * part and similar (very, very) unlikely events.  In reality, of course, gmp's
+ * random number engine has a finite internal state (19937 bits in the case of
+ * the MT19937 method).  This means that these unlikely events in fact won't
+ * occur.  If the asserts are triggered, then this is an indication that the
+ * random number engine is defective.  (Even if a hardware random number
+ * generator were used, the most likely explanation for the triggering of the
+ * asserts would be that the hardware generator was broken.)
  */
 
 #include "random_deviate.h"
@@ -73,6 +88,9 @@ mpfr_erandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
   while (!E(x, r, p, q))
     {
       ++k;
+      /* Catch k wrapping around to 0; for a 32-bit unsigned long, the
+       * probability of this is exp(-2^32)). */
+      MPFR_ASSERTN (k != 0UL);
       mpfr_random_deviate_reset (x);
     }
   mpfr_random_deviate_clear (q);

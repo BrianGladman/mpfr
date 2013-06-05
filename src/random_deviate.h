@@ -29,8 +29,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
+  /* This should be an unsigned type with a width of at least 32 and capable of
+   * representing at least 2*MPFR_PREC_MAX.  This is used to count the bits in
+   * the fraction of a mpfr_random_deviate_t.  See the checks made on this type
+   * in random_deviate_generate. */
+  typedef unsigned long mpfr_random_size_t;
+
   typedef struct {
-    unsigned long e;            /* bits in the fraction */
+    mpfr_random_size_t e;       /* total bits in the fraction */
     unsigned long h;            /* the high W bits of the fraction */
     mpz_t f;                    /* the rest of the fraction */
   } mpfr_random_deviate_t[1];
@@ -49,7 +55,7 @@ extern "C" {
                                 mpfr_random_deviate_t y);
 
   /* return kth bit of fraction, representing 2^-k */
-  int mpfr_random_deviate_tstbit(mpfr_random_deviate_t x, unsigned long k,
+  int mpfr_random_deviate_tstbit(mpfr_random_deviate_t x, mpfr_random_size_t k,
                                  gmp_randstate_t r);
 
   /* compare two random deviates, x < y */

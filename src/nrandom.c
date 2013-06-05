@@ -34,6 +34,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * implementation benefits from caching temporary random deviates across calls.
  * This isn't possible in C without additional machinery which would complicate
  * the interface.
+ *
+ * There are a few "weasel words" regarding the accuracy of this
+ * implementation.  The algorithm produces exactly rounded normal deviates
+ * provided that gmp's random number engine delivers truly random bits.  If it
+ * did, the algorithm would be perfect; however, this implementation would have
+ * problems, e.g., in that the integer part of the normal deviate is
+ * represented by an unsigned long, whereas in reality the integer part in
+ * unbounded.  In this implementation, asserts catch overflow in the integer
+ * part and similar (very, very) unlikely events.  In reality, of course, gmp's
+ * random number engine has a finite internal state (19937 bits in the case of
+ * the MT19937 method).  This means that these unlikely events in fact won't
+ * occur.  If the asserts are triggered, then this is an indication that the
+ * random number engine is defective.  (Even if a hardware random number
+ * generator were used, the most likely explanation for the triggering of the
+ * asserts would be that the hardware generator was broken.)
  */
 
 #include "random_deviate.h"
@@ -65,20 +80,32 @@ G (gmp_randstate_t r, mpfr_random_deviate_t p, mpfr_random_deviate_t q)
   unsigned long n = 0;
 
   while (H (r, p, q))
-    ++n;
+    {
+      ++n;
+      /* Catch n wrapping around to 0; for a 32-bit unsigned long, the
+       * probability of this is exp(-2^30)). */
+      MPFR_ASSERTN (n != 0UL);
+    }
   return n;
 }
 
-/* Step N2: true with probability exp(-n/2). */
+/* Step N2: true with probability exp(-m*n/2). */
 static int
-P (unsigned long n, gmp_randstate_t r,
+P (unsigned long m, unsigned long n, gmp_randstate_t r,
    mpfr_random_deviate_t p, mpfr_random_deviate_t q)
 {
-  /* p and q are temporaries */
-  while (n--)
+  /* p and q are temporaries.  m*n is passed as two separate parameters to deal
+   * with the case where m*n overflows an unsigned long.  This may be called
+   * with m = 0 and n = (unsigned long)(-1) and, because m in handled in to the
+   * outer loop, this routine will correctly return 1. */
+  while (m--)
     {
-      if (!H (r, p, q))
-        return 0;
+      unsigned long k = n;
+      while (k--)
+        {
+          if (!H (r, p, q))
+            return 0;
+        }
     }
   return 1;
 }
@@ -97,14 +124,21 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
    mpfr_random_deviate_t p, mpfr_random_deviate_t q)
 {
   /* p and q are temporaries */
-  unsigned long n = 0, m = 2 * k + 2;
-  int  f;
 
-  for (;; ++n)
+  /* Check if 2 * k + 2 would overflow; for a 32-bit unsigned long, the
+   * probability of this is exp(-2^61)).  */
+  MPFR_ASSERTN (k < ((unsigned long)(-1) >> 1));
+
+  unsigned long m = 2 * k + 2;
+  /* n tracks the parity of the loop; s == 1 on first trip thru loop. */
+  unsigned n = 0, s = 1;
+  int f;
+
+  for (;; ++n, s = 0)           /* overflow of n is innocuous */
     {
       if ( ((f = k ? 0 : C (m, r)) < 0) ||
            (mpfr_random_deviate_reset (q),
-            !mpfr_random_deviate_less (q, n ? p : x, r)) ||
+            !mpfr_random_deviate_less (q, s ? x : p, r)) ||
            ((f = k ? C (m, r) : f) < 0) ||
            (f == 0 &&
             (mpfr_random_deviate_reset (p),
@@ -112,7 +146,7 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
         break;
       mpfr_random_deviate_swap (p, q); /* an efficient way of doing p = q */
     }
-  return (n & 1UL) == 0;
+  return (n & 1U) == 0;
 }
 
 /* return a normal random deviate with mean 0 and variance 1 as a MPFR  */
@@ -129,7 +163,7 @@ mpfr_nrandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
   for (;;)
     {
       k = G (r, p, q);                               /* step 1 */
-      if (!P (k * (k - 1), r, p, q))
+      if (!P (k, k - 1, r, p, q))
         continue;                                    /* step 2 */
       mpfr_random_deviate_reset (x);                 /* step 3 */
       for (j = 0; j <= k && B (k, x, r, p, q); ++j); /* step 4 */

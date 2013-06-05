@@ -88,12 +88,13 @@ mpfr_random_deviate_clear (mpfr_random_deviate_t x)
 void
 mpfr_random_deviate_swap (mpfr_random_deviate_t x, mpfr_random_deviate_t y)
 {
+  mpfr_random_size_t s;
   unsigned long t;
 
   /* swap x->e and y->e */
-  t = x->e;
+  s = x->e;
   x->e = y->e;
-  y->e = t;
+  y->e = s;
 
   /* swap x->h and y->h */
   t = x->h;
@@ -106,9 +107,45 @@ mpfr_random_deviate_swap (mpfr_random_deviate_t x, mpfr_random_deviate_t y)
 
 /* ensure x has at least k bits */
 static void
-random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
+random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
                          gmp_randstate_t r, mpz_t t)
 {
+  /* Various compile time checks on mprf_random_deviate_t */
+
+  /* Check that the h field of a mpfr_random_deviate_t can hold W bits */
+  MPFR_STAT_STATIC_ASSERT (W > 0 && W <= sizeof (unsigned long) * CHAR_BIT);
+
+  /* Check mpfr_random_size_t can hold 32 bits and a mpfr_uprec_t.  This
+   * ensures that max(mpfr_random_size_t) exceeds MPFR_PREC_MAX by at least
+   * 2^31 because mpfr_prec_t is a signed version of mpfr_uprec_t.  This allows
+   * random deviates with many leading zeros in the fraction to be handled
+   * correctly. */
+  MPFR_STAT_STATIC_ASSERT (sizeof (mpfr_random_size_t) * CHAR_BIT >= 32 &&
+                           sizeof (mpfr_random_size_t) >=
+                           sizeof (mpfr_uprec_t));
+
+  /* Check that a mp_bitcnt_t can hold a mpfr_random_size_t (both unsigned).
+   * This test is needed in case the conversion to an mpfr_t is via an mpq_t in
+   * mpfr_random_deviate_value (which is extremely unlikely). */
+  MPFR_STAT_STATIC_ASSERT (sizeof (mp_bitcnt_t) >=
+                           sizeof (mpfr_random_size_t));
+
+  /* Check that a mpz_t can hold max(mpfr_random_size_t) bits.  A mpz_t
+   * consists of up to max(_mp_size) * GMP_NUMB_BITS bits.  So condition is
+   * max(_mp_size) * GMP_NUMB_BITS >= max(mpfr_random_size_t) or max(_mp_size)
+   * >= max(mpfr_random_size_t) / GMP_NUMB_BITS + 1.  _mp_size is a signed int,
+   * so max(_mp_size) = (1<<(8*sizeof(int)-1)-1) and max(mpfr_random_size_t) =
+   * (mpfr_random_size_t)(-1).  CURRENTLY THIS ASSERT FAILS!! */
+  /*
+  MPFR_STAT_STATIC_ASSERT ((1UL << (sizeof (int) * CHAR_BIT -  1)) - 1 >=
+                           (mpfr_random_size_t)(-1) / GMP_NUMB_BITS + 1);
+  */
+
+  /* Finally, at runtime, check that k is not too big.  e is set to ceil(k/W)*W
+   * and we require that this allows x->e + 1 in random_deviate_leading_bit to
+   * be computed without overflow. */
+  MPFR_ASSERTN (k <= (mpfr_random_size_t)(-(W + 1)));
+
   /* if t is non-null, it is used as a temporary */
   if (x->e >= k)
     return;
@@ -137,7 +174,6 @@ random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
   else
     {
       /* no mpz_t so compute the bits W at a time via gmp_urandomb_ui */
-      /* FIXME: would it be faster to init/clear a local t? */
       while (x->e < k)
         {
           unsigned long w = gmp_urandomb_ui (r, W);
@@ -154,8 +190,8 @@ random_deviate_generate (mpfr_random_deviate_t x, unsigned long k,
 }
 
 /*
- * return index [-1..63] of highest bit set.  Return -1 if x = 0, 63 is if x =
- * ~0.  (From Algorithms for programmers by Joerg Arndt.)
+ * return index [-1..127] of highest bit set.  Return -1 if x = 0, 2 if x = 4,
+ * etc.  (From Algorithms for programmers by Joerg Arndt.)
  */
 static int
 highest_bit_idx_alt (unsigned long x)
@@ -164,10 +200,13 @@ highest_bit_idx_alt (unsigned long x)
 
   if (x == 0)
     return -1;
-  MPFR_ASSERTN (sizeof (unsigned long) * CHAR_BIT == 32 ||
-                sizeof (unsigned long) * CHAR_BIT == 64);
-  /* handle 64-bit unsigned longs in a way that doesn't trigger warnings when
-   * they are only 32-bits */
+  MPFR_ASSERTN (sizeof (unsigned long) * CHAR_BIT <= 128);
+  if (sizeof (unsigned long) * CHAR_BIT > 64)
+    {
+      /* handle 128-bit unsigned longs avoiding compiler warnings */
+      unsigned long y = x >> 16; y >>= 24; y >>= 24;
+      if (y) { x = y; r += 64;}
+    }
   if (x & ~0xffffffffUL) { x >>= 16; x >>= 16; r +=32; }
   if (x &  0xffff0000UL) { x >>= 16; r += 16; }
   if (x &  0x0000ff00UL) { x >>=  8; r +=  8; }
@@ -180,8 +219,7 @@ highest_bit_idx_alt (unsigned long x)
 /*
  * return index [-1..63] of highest bit set.
  * Return -1 if x = 0, 63 is if x = ~0 (for 64-bit unsigned long).
- * FIXME: needs portable support or assert for x >= 2^64 (e.g. with
- * 128-bit unsigned long). See highest_bit_idx_alt too.
+ * See highest_bit_idx_alt too.
  */
 static int
 highest_bit_idx (unsigned long x)
@@ -201,21 +239,28 @@ highest_bit_idx (unsigned long x)
 }
 
 /* return position of leading bit, counting from 1 */
-static long
+static mpfr_random_size_t
 random_deviate_leading_bit (mpfr_random_deviate_t x, gmp_randstate_t r)
 {
+  mpfr_random_size_t l;
   random_deviate_generate (x, W, r, 0);
   if (x->h)
     return W - highest_bit_idx (x->h);
   random_deviate_generate (x, 2 * W, r, 0);
   while (mpz_sgn (x->f) == 0)
-    random_deviate_generate (x, x->e + W, r, 0);
-  return x->e + 1 - mpz_sizeinbase (x->f, 2);
+    random_deviate_generate (x, x->e + 1, r, 0);
+  l = x->e + 1 - mpz_sizeinbase (x->f, 2);
+  /* Guard against a ridiculously long string of leading zeros in the fraction;
+   * probability of this happening is 2^(-2^31).  In particular ensure that
+   * p + 1 + l in mpfr_random_deviate_value doesn't overflow with p =
+   * MPFR_PREC_MAX. */
+  MPFR_ASSERTN (l + 1 < (mpfr_random_size_t)(-MPFR_PREC_MAX));
+  return l;
 }
 
 /* return kth bit of fraction, representing 2^-k */
 int
-mpfr_random_deviate_tstbit (mpfr_random_deviate_t x, unsigned long k,
+mpfr_random_deviate_tstbit (mpfr_random_deviate_t x, mpfr_random_size_t k,
                             gmp_randstate_t r)
 {
   if (k == 0)
@@ -231,7 +276,7 @@ int
 mpfr_random_deviate_less (mpfr_random_deviate_t x, mpfr_random_deviate_t y,
                           gmp_randstate_t r)
 {
-  unsigned long k = 1;
+  mpfr_random_size_t k = 1;
 
   if (x == y)
     return 0;
@@ -256,21 +301,28 @@ mpfr_random_deviate_value (int neg, unsigned long n,
                            gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   /* r is used to add as many bits as necessary to match the precision of z */
-  long l;                      /* The leading bit is 2^l */
-  long p = mpfr_get_prec (z);  /* Number of bits in result */
+  int s;
+  mpfr_random_size_t l;                     /* The leading bit is 2^(s*l) */
+  mpfr_random_size_t p = mpfr_get_prec (z); /* Number of bits in result */
   mpz_t t;
   int inex;
 
   if (n == 0)
-    l = -random_deviate_leading_bit (x, r); /* l < 0 */
+    {
+      s = -1;
+      l = random_deviate_leading_bit (x, r); /* l > 0 */
+    }
   else
-    l = highest_bit_idx (n); /* l >= 0 */
+    {
+      s = 1;
+      l = highest_bit_idx (n); /* l >= 0 */
+    }
 
   /*
-   * Leading bit is 2^l; thus the trailing bit in result is 2^(l-p+1) =
-   * 2^-(p-l-1).  For the sake of illustration, take l = 0 and p = 4, thus bits
-   * through the 1/8 position need to be generated; assume that these bits are
-   * 1.010 = 10/8 which represents a deviate in the range (10,11)/8.
+   * Leading bit is 2^(s*l); thus the trailing bit in result is 2^(s*l-p+1) =
+   * 2^-(p-1-s*l).  For the sake of illustration, take l = 0 and p = 4, thus
+   * bits through the 1/8 position need to be generated; assume that these bits
+   * are 1.010 = 10/8 which represents a deviate in the range (10,11)/8.
    *
    * If the rounding mode is one of RNDZ, RNDU, RNDD, RNDA, we add a 1 bit to
    * the result to give 1.0101 = (10+1/2)/8.  When this is converted to a MPFR
@@ -285,29 +337,30 @@ mpfr_random_deviate_value (int neg, unsigned long n,
    * the inexact flag so that the result is 10/8 with the inexact flag = 1.
    *
    * Here we always generate at least 2 additional random bits, so that bit
-   * position 2^-(p-l+1) is generated.  (The result often contains more random
-   * bits than this because random bits are added in batches of W and because
-   * additional bits may have been required in the process of generating the
-   * random deviate.)  The integer and all the bits in the fraction are then
-   * copied into an mpz, the least significant bit is unconditionally set to 1,
-   * the sign is set, and the result together with the exponent -x->e is used
-   * to generate an mpfr using mpfr_set_z_2exp.
+   * position 2^-(p+1-s*l) is generated.  (The result often contains more
+   * random bits than this because random bits are added in batches of W and
+   * because additional bits may have been required in the process of
+   * generating the random deviate.)  The integer and all the bits in the
+   * fraction are then copied into an mpz, the least significant bit is
+   * unconditionally set to 1, the sign is set, and the result together with
+   * the exponent -x->e is used to generate an mpfr using mpfr_set_z_2exp.
    *
    * If random bits were very expensive, we would only need to generate to the
-   * 2^-(p-l-1) bit (no extra bits) for the RNDZ, RNDU, RNDD, RNDA modes and to
-   * the 2^-(p-l) bit (1 extra bit) for RNDN.  By always generating 2 bits we
-   * save on some bit shuffling when formed the mpz to be converted to an mpfr.
-   * The implementation of the RandomNumber class in RandomLib illustrates the
-   * more parsimonious approach (which was taken to allow accurate counts of
-   * the number of random digits to be made).
+   * 2^-(p-1-s*l) bit (no extra bits) for the RNDZ, RNDU, RNDD, RNDA modes and
+   * to the 2^-(p-s*l) bit (1 extra bit) for RNDN.  By always generating 2 bits
+   * we save on some bit shuffling when formed the mpz to be converted to an
+   * mpfr.  The implementation of the RandomNumber class in RandomLib
+   * illustrates the more parsimonious approach (which was taken to allow
+   * accurate counts of the number of random digits to be made).
    */
   mpz_init (t);
   /*
    * This is the only call to random_deviate_generate where a mpz_t is passed
    * (because an arbitrarily large number of bits may need to be generated).
    */
-  if (p - l + 1 > 0)
-    random_deviate_generate (x, p + 1 - l, r, t);
+  if ((s > 0 && p + 1 > l) ||
+      (s < 0 && p + 1 + l > 0))
+    random_deviate_generate (x, s > 0 ? p + 1 - l : p + 1 + l, r, t);
   if (n == 0)
     {
       /* Since the minimum prec is 2 we know that x->h has been generated. */
@@ -334,12 +387,38 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   mpz_setbit (t, 0);     /* Set the trailing bit so result is always inexact */
   if (neg)
     mpz_neg (t, t);
-  /*
-   * Let mpfr_set_z_2exp do all the work of rounding to the requested
-   * precision, setting overflow/underflow flags, and returning the right
-   * inexact value.
-   */
-  inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
-  mpz_clear (t);
+  /* Is -x->e representable as a mpfr_exp_t? */
+  if (x->e <= (mpfr_uexp_t)(-1) >> 1)
+    {
+      /*
+       * Let mpfr_set_z_2exp do all the work of rounding to the requested
+       * precision, setting overflow/underflow flags, and returning the right
+       * inexact value.
+       */
+      inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
+      mpz_clear (t);
+    }
+  else
+    {
+      /*
+       * Cannot convert to mpfr in a single call to mpfr_set_z_2exp because the
+       * shift is too big (implies that the number of leading zeros in the
+       * fraction and the requested precision are both large).  So form an
+       * rational number q = t/2^(x->e) and convert that.
+       */
+      mpq_t q;
+      mpz_ptr qn, qd;
+      mpq_init (q);             /* q = 0/1 */
+      qn = mpq_numref(q);
+      mpz_swap (qn, t);         /* numerator = t */
+      mpz_clear (t);
+      qd = mpq_denref(q);       /* initially equal to 1 */
+      /* we know that x->e fits into a mp_bitcnt_t */
+      mpz_mul_2exp (qd, qd, x->e); /* denominator = 2^(x->e) */
+      /* no need to call mpq_canonicalize because qn is odd and qd is
+       * positive and a power of 2 */
+      inex = mpfr_set_q (z, q, rnd);
+      mpq_clear (q);
+    }
   return inex;
 }
