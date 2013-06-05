@@ -36,6 +36,7 @@ README          - this file
 TODO            - what remains to do (any help is welcome!)
 VERSION         - version of MPFR (next release version if taken by Subversion)
 ac*.m4          - automatic configuration files
+ar-lib          - auxiliary installation file
 compile         - auxiliary installation file
 config.*        - auxiliary installation files
 configure*      - configuration files
@@ -47,6 +48,7 @@ ltmain.sh       - auxiliary installation file
 m4/             - directory containing additional configuration files
 missing         - auxiliary installation file
 src/            - directory containing the MPFR source
+test-driver     - auxiliary installation file
 tests/          - directory containing the testsuite (for "make check")
 tools/          - directory containing various tools
 tune/           - directory containing files for tuning MPFR
