@@ -2405,8 +2405,9 @@ a similar way that $z=\circ_{p_z}(x)$, except that we need to add one ulp
 to the result when rounding toward plus infinity and $x$ is exactly
 representable with $p_z$ bits of precision.
 
-When none of the above conditions are satisfied and when $\Exp(x) - \Exp(y)
-\leq e_{max} - 2$, we use the following algorithm:
+When none of the above conditions are satisfied, we use the following
+algorithm, whose precision is guaranteed when
+$\Exp(x) - \Exp(y) \leq e_{max} - 2$:
 
 \begin{quote}
   Algorithm {\tt hypot\_1}\\
@@ -2414,10 +2415,10 @@ When none of the above conditions are satisfied and when $\Exp(x) - \Exp(y)
   $p$ the working precision with $p \geq p_z$.\\
   Output: $\sqrt{x^2+y^2}$ with $\left\{
   \begin{array}{l}
-    p-4 \textnormal{ bits of precision if } p <\max(p_x, p_y),\\
-    p-2 \textnormal{ bits of precision if } \max(p_x, p_y) \leq p.
+    p-4 \textnormal{ bits of precision if } p < \max(p_x, p_y),\\
+    p-2 \textnormal{ bits of precision if } p \geq \max(p_x, p_y).
   \end{array}\right.$\\
-  $s \leftarrow \lfloor e_{max}/2\rfloor - \Exp(x) -1$\\
+  $s \leftarrow \lfloor (e_{max}-1)/2 \rfloor - \Exp(x)$\\
   $x_s \leftarrow \Z(x\times 2^s)$\\
   $y_s \leftarrow \Z(y\times 2^s)$\\
   $u \leftarrow \Z(x_s^2)$\\
@@ -2428,26 +2429,30 @@ When none of the above conditions are satisfied and when $\Exp(x) - \Exp(y)
 \end{quote}
 
 In order to avoid undue overflow during computation, we shift inputs'
-exponents by $s = \lfloor\frac{e_{max}}{2}\rfloor -1 -\Exp(x)$ before
+exponents by $s = \lfloor\frac{e_{max}-1}{2}\rfloor - \Exp(x)$ before
 computing squares and shift back the output's exponent by $-s$ using the fact
 that $\sqrt{(x.2^s)^2+(y.2^s)^2}/2^s = \sqrt{x^2+y^2}$. We show below that
-neither overflow nor underflow goes on.
+overflow cannot occur, and underflow cannot occur either when
+$\Exp(x) - \Exp(y) \leq e_{max} - 2$.
 
 We check first that the exponent shift does not cause overflow and, in the
-same time, that the squares of the shifted inputs never overflow. For $x$, we
-have $\Exp(x) + s = \lfloor e_{max}/2\rfloor - 1$, so $\Exp(x_s^2) < e_{max} -
-1$ and neither $x_s$ nor $x_s^2$ overflows. For $y$, note that we have $y_s
-\leq x_s$ because $y \leq x$, thus $y_s$ and $y_s^2$ do not overflow.
+same time, that the squares of the shifted inputs never overflow.
+For $x$, we have $\Exp(x) + s = \lfloor (e_{max}-1)/2 \rfloor$, so
+$\Exp(x_s^2) \leq e_{max} - 1$ and neither $x_s$ nor $x_s^2$ overflows.
+Therefore we have: $\Z(x_s^2) \leq x_s^2 < 2^{e_{max} - 1}$.
+For $y$, note that we have $y_s \leq x_s$ because $y \leq x$, thus $y_s$
+and $y_s^2$ do not overflow.
 
 Secondly, let us see that the exponent shift does not cause underflow. For
 $x$, we know that $0 \leq \Exp(x) + s$, thus neither $x_s$ nor $x_s^2$
 underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 2$
-ensures that $-e_{max}/2 \leq \Exp(y) + s$ which shows that $y_s$ and its
-square do not underflow.
+ensures that $e_{min}/2 = -e_{max}/2 \leq \Exp(y) + s$, which shows that
+$y_s$ and its square do not underflow (even when taking the rounding
+into account since the scaling is exact).
 
 Thirdly, the addition does not overflow because $u + v < 2 x_s^2$ and it was
-shown above that $x_s^2 < 2^{e_{max} - 1}$. It cannot underflow because both
-operands are positive.
+shown above that $\Z(x_s^2) < 2^{e_{max} - 1}$. It cannot underflow because
+both operands are positive.
 
 Fourthly, as $x_s < t$, the square root does not underflow. Due to the
 exponent shift, we have $1 \leq x_s$, then $w$ is greater than 1 and thus
