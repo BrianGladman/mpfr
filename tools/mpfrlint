@@ -57,7 +57,7 @@ grep '[^a-z_]snprintf *([^)]' $srctests
 grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
 
 # MPFR_ASSERTD or MPFR_ASSERTN must be used for assertions, not ASSERT.
-grep '[^_]ASSERT[ (]' {src,tests}/*.c
+grep -E '[^_]ASSERT *(\(|$)' {src,tests}/*.c
 
 # Use MPFR_TMP_LIMBS_ALLOC.
 grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
