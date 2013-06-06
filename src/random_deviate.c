@@ -112,8 +112,10 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
 {
   /* Various compile time checks on mprf_random_deviate_t */
 
-  /* Check that the h field of a mpfr_random_deviate_t can hold W bits */
-  MPFR_STAT_STATIC_ASSERT (W > 0 && W <= sizeof (unsigned long) * CHAR_BIT);
+  /* Check that the h field of a mpfr_random_deviate_t can hold
+     W := RANDOM_CHUNK bits */
+  MPFR_STAT_STATIC_ASSERT (RANDOM_CHUNK > 0);
+  MPFR_STAT_STATIC_ASSERT (RANDOM_CHUNK <= sizeof (unsigned long) * CHAR_BIT);
 
   /* Check mpfr_random_size_t can hold 32 bits and a mpfr_uprec_t.  This
    * ensures that max(mpfr_random_size_t) exceeds MPFR_PREC_MAX by at least

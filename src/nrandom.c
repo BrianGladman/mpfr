@@ -125,14 +125,14 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
 {
   /* p and q are temporaries */
 
-  /* Check if 2 * k + 2 would overflow; for a 32-bit unsigned long, the
-   * probability of this is exp(-2^61)).  */
-  MPFR_ASSERTN (k < ((unsigned long)(-1) >> 1));
-
   unsigned long m = 2 * k + 2;
   /* n tracks the parity of the loop; s == 1 on first trip thru loop. */
   unsigned n = 0, s = 1;
   int f;
+
+  /* Check if 2 * k + 2 would overflow; for a 32-bit unsigned long, the
+   * probability of this is exp(-2^61)).  */
+  MPFR_ASSERTN (k < ((unsigned long)(-1) >> 1));
 
   for (;; ++n, s = 0)           /* overflow of n is innocuous */
     {
