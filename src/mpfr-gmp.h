@@ -73,7 +73,7 @@ extern "C" {
 
 /* Define mp_bitcnt_t if not present */
 #ifndef mp_bitcnt_t
-#define mp_bitcnt_t unsigned long
+typedef unsigned long mp_bitcnt_t;
 #endif
 
 /* Define some macros */
