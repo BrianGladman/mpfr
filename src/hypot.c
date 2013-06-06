@@ -142,7 +142,11 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   /* Scale x and y to avoid overflow/underflow in x^2 and overflow in y^2
      (as |x| >= |y|). The scaling of y can underflow only when the target
      precision is huge, otherwise the case would already have been handled
-     by the diff_exp > threshold code. */
+     by the diff_exp > threshold code.
+     FIXME: Friedland in "Algorithm 312: Absolute Value and Square Root of a
+     Complex Number" (Communications of the ACM, 1967) avoids overflow by
+     computing |x|*sqrt(1+(y/x)^2) if |x| >= |y|, and |y|*sqrt(1+(x/y)^2)
+     otherwise. */
   sh = mpfr_get_emax () / 2 - Ex - 1;
 
   MPFR_ZIV_INIT (loop, Nt);
