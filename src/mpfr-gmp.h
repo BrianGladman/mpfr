@@ -72,7 +72,7 @@ extern "C" {
 #endif
 
 /* Define mp_bitcnt_t if not present */
-#ifndef mp_bitcnt_t
+#if __GNU_MP_VERSION < 5
 typedef unsigned long mp_bitcnt_t;
 #endif
 
