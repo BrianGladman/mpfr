@@ -91,10 +91,6 @@ extern "C" {
 #define MP_SIZE_T_MIN      LONG_MIN
 #endif
 
-#define LONG_HIGHBIT       LONG_MIN
-#define INT_HIGHBIT        INT_MIN
-#define SHRT_HIGHBIT       SHRT_MIN
-
 /* MP_LIMB macros */
 #define MPN_ZERO(dst, n) memset((dst), 0, (n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
