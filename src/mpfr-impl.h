@@ -258,6 +258,12 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 #define MPFR_MAYBE_UNUSED
 #endif
 
+/* Compatibility with old GMP versions. */
+#if __GNU_MP_VERSION < 5
+typedef unsigned long mp_bitcnt_t;
+#endif
+
+
 /******************************************************
  ************* Global Internal Variables **************
  ******************************************************/

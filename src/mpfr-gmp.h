@@ -71,11 +71,6 @@ extern "C" {
 # error "Could not detect GMP_NUMB_BITS. Try with gmp internal files."
 #endif
 
-/* Define mp_bitcnt_t if not present */
-#if __GNU_MP_VERSION < 5
-typedef unsigned long mp_bitcnt_t;
-#endif
-
 /* Define some macros */
 #define BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
