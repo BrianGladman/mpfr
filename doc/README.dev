@@ -827,13 +827,18 @@ incorrect value in case of a bug in MPFR.
 
 ===========================================================================
 
-Avoid mixing signed and unsigned types, as this can lead signed types
-to be automatically converted into unsigned types (usual arithmetic
+Avoid mixing signed and unsigned integer types, as this can lead signed
+types to be automatically converted into unsigned types (usual arithmetic
 conversions). If such a signed type contains a negative value, the
 result will probably be incorrect. With MPFR 2.x, this problem could
 arise with mpfr_exp_t, which is signed, and mpfr_prec_t (mp_prec_t),
 which was unsigned (it is now signed), meaning that in general, a cast
 of a mpfr_prec_t into a mpfr_exp_t was needed.
+
+Even when a variable will always contain nonnegative values, it is
+generally better to define it as a signed type. The exceptions are
+when the value is seen as an array of bits (e.g. for limbs) and to
+locally avoid integer overflow.
 
 Note that such bugs are difficult to detect because they may depend on
 the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,
