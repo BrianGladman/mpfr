@@ -60,7 +60,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define RANDOM_CHUNK 32     /* Require 1 <= RANDOM_CHUNK <= 32; recommend 32 */
 #endif
 
-static const unsigned W = RANDOM_CHUNK;
+#define W RANDOM_CHUNK         /* W is just an shorter name for RANDOM_CHUNK */
 
 /* allocate and set to (0,1) */
 void
@@ -112,10 +112,8 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
 {
   /* Various compile time checks on mprf_random_deviate_t */
 
-  /* Check that the h field of a mpfr_random_deviate_t can hold
-     W := RANDOM_CHUNK bits */
-  MPFR_STAT_STATIC_ASSERT (RANDOM_CHUNK > 0);
-  MPFR_STAT_STATIC_ASSERT (RANDOM_CHUNK <= sizeof (unsigned long) * CHAR_BIT);
+  /* Check that the h field of a mpfr_random_deviate_t can hold W bits */
+  MPFR_STAT_STATIC_ASSERT (W > 0 && W <= sizeof (unsigned long) * CHAR_BIT);
 
   /* Check mpfr_random_size_t can hold 32 bits and a mpfr_uprec_t.  This
    * ensures that max(mpfr_random_size_t) exceeds MPFR_PREC_MAX by at least
@@ -132,21 +130,10 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
   MPFR_STAT_STATIC_ASSERT (sizeof (mp_bitcnt_t) >=
                            sizeof (mpfr_random_size_t));
 
-  /* Check that a mpz_t can hold max(mpfr_random_size_t) bits.  A mpz_t
-   * consists of up to max(_mp_size) * GMP_NUMB_BITS bits.  So condition is
-   * max(_mp_size) * GMP_NUMB_BITS >= max(mpfr_random_size_t) or max(_mp_size)
-   * >= max(mpfr_random_size_t) / GMP_NUMB_BITS + 1.  _mp_size is a signed int,
-   * so max(_mp_size) = (1<<(8*sizeof(int)-1)-1) and max(mpfr_random_size_t) =
-   * (mpfr_random_size_t)(-1).  CURRENTLY THIS ASSERT FAILS!! */
-  /*
-  MPFR_STAT_STATIC_ASSERT ((1UL << (sizeof (int) * CHAR_BIT -  1)) - 1 >=
-                           (mpfr_random_size_t)(-1) / GMP_NUMB_BITS + 1);
-  */
-
   /* Finally, at runtime, check that k is not too big.  e is set to ceil(k/W)*W
    * and we require that this allows x->e + 1 in random_deviate_leading_bit to
    * be computed without overflow. */
-  MPFR_ASSERTN (k <= (mpfr_random_size_t)(-(W + 1)));
+  MPFR_ASSERTN (k <= (mpfr_random_size_t)(-((int) W + 1)));
 
   /* if t is non-null, it is used as a temporary */
   if (x->e >= k)
