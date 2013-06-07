@@ -2407,7 +2407,7 @@ representable with $p_z$ bits of precision.
 
 When none of the above conditions are satisfied, we use the following
 algorithm, whose precision is guaranteed when
-$\Exp(x) - \Exp(y) \leq e_{max} - 2$:
+$\Exp(x) - \Exp(y) \leq e_{max} - 1$:
 
 \begin{quote}
   Algorithm {\tt hypot\_1}\\
@@ -2433,7 +2433,7 @@ exponents by $s = \lfloor\frac{e_{max}-1}{2}\rfloor - \Exp(x)$ before
 computing squares and shift back the output's exponent by $-s$ using the fact
 that $\sqrt{(x.2^s)^2+(y.2^s)^2}/2^s = \sqrt{x^2+y^2}$. We show below that
 overflow cannot occur, and underflow cannot occur either when
-$\Exp(x) - \Exp(y) \leq e_{max} - 2$.
+$\Exp(x) - \Exp(y) \leq e_{max} - 1$.
 
 We check first that the exponent shift does not cause overflow and, in the
 same time, that the squares of the shifted inputs never overflow.
@@ -2445,10 +2445,12 @@ and $y_s^2$ do not overflow.
 
 Secondly, let us see that the exponent shift does not cause underflow. For
 $x$, we know that $0 \leq \Exp(x) + s$, thus neither $x_s$ nor $x_s^2$
-underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 2$
-ensures that $e_{min}/2 = -e_{max}/2 \leq \Exp(y) + s$, which shows that
-$y_s$ and its square do not underflow (even when taking the rounding
-into account since the scaling is exact).
+underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 1$
+implies that $\lfloor(e_{max}-1)/2\rfloor - s - \Exp(y) \leq e_{max} - 1$,
+and since $e_{max}/2-1 \leq \lfloor(e_{max}-1)/2\rfloor$, we deduce
+$e_{min}/2 = -e_{max}/2 \leq \Exp(y) + s$, which shows that $y_s$ and
+its square do not underflow (even when taking the rounding into account
+since the scaling is exact).
 
 Thirdly, the addition does not overflow because $u + v < 2 x_s^2$ and it was
 shown above that $\Z(x_s^2) < 2^{e_{max} - 1}$. It cannot underflow because
