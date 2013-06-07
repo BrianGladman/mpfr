@@ -384,6 +384,14 @@ for some C compiler (Old DOS compiler). Also don't use "pm", which is used
 by the C compiler 'sharp' to design variables that should be stored in the
 flash memory. Don't use "new", which is reserved in C++.
 
+Check C++ reserved keywords, e.g. from
+
+  http://en.cppreference.com/w/cpp/keyword
+
+or more generally:
+
+  https://www.google.com/search?q=%22C%2B%2B%22+reserved+keywords
+
    =====================================================================
 
 Avoid variable names "l", "I" and "O", which look like "1" and "0" with
