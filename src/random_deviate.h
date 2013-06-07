@@ -25,47 +25,51 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* This should be an unsigned type with a width of at least 32 and capable of
+ * representing at least 2*MPFR_PREC_MAX.  This is used to count the bits in
+ * the fraction of a mpfr_random_deviate_t.  See the checks made on this type
+ * in random_deviate_generate. */
+typedef unsigned long mpfr_random_size_t;
+
+typedef struct {
+  mpfr_random_size_t e;       /* total number of bits in the fraction */
+  unsigned long h;            /* the high W bits of the fraction */
+  mpz_t f;                    /* the rest of the fraction */
+} __mpfr_random_deviate_struct;
+
+typedef __mpfr_random_deviate_struct mpfr_random_deviate_t[1];
+typedef __mpfr_random_deviate_struct *mpfr_random_deviate_ptr;
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-  /* This should be an unsigned type with a width of at least 32 and capable of
-   * representing at least 2*MPFR_PREC_MAX.  This is used to count the bits in
-   * the fraction of a mpfr_random_deviate_t.  See the checks made on this type
-   * in random_deviate_generate. */
-  typedef unsigned long mpfr_random_size_t;
-
-  typedef struct {
-    mpfr_random_size_t e;       /* total bits in the fraction */
-    unsigned long h;            /* the high W bits of the fraction */
-    mpz_t f;                    /* the rest of the fraction */
-  } mpfr_random_deviate_t[1];
-
   /* allocate and set to (0,1) */
-  void mpfr_random_deviate_init(mpfr_random_deviate_t x);
+  void mpfr_random_deviate_init(mpfr_random_deviate_ptr x);
 
   /* reset to (0,1) */
-  void mpfr_random_deviate_reset(mpfr_random_deviate_t x);
+  void mpfr_random_deviate_reset(mpfr_random_deviate_ptr x);
 
   /* deallocate */
-  void mpfr_random_deviate_clear(mpfr_random_deviate_t x);
+  void mpfr_random_deviate_clear(mpfr_random_deviate_ptr x);
 
   /* swap two random deviates */
-  void mpfr_random_deviate_swap(mpfr_random_deviate_t x,
-                                mpfr_random_deviate_t y);
+  void mpfr_random_deviate_swap(mpfr_random_deviate_ptr x,
+                                mpfr_random_deviate_ptr y);
 
   /* return kth bit of fraction, representing 2^-k */
-  int mpfr_random_deviate_tstbit(mpfr_random_deviate_t x, mpfr_random_size_t k,
+  int mpfr_random_deviate_tstbit(mpfr_random_deviate_ptr x,
+                                 mpfr_random_size_t k,
                                  gmp_randstate_t r);
 
   /* compare two random deviates, x < y */
-  int mpfr_random_deviate_less(mpfr_random_deviate_t x,
-                               mpfr_random_deviate_t y,
+  int mpfr_random_deviate_less(mpfr_random_deviate_ptr x,
+                               mpfr_random_deviate_ptr y,
                                gmp_randstate_t r);
 
   /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
   int mpfr_random_deviate_value(int neg, unsigned long n,
-                                mpfr_random_deviate_t x, mpfr_t z,
+                                mpfr_random_deviate_ptr x, mpfr_t z,
                                 gmp_randstate_t r, mpfr_rnd_t rnd);
 
 #if defined(__cplusplus)

@@ -177,14 +177,14 @@ test_get_ui_smallneg (void)
             }
           if ((s == 0) ^ !mpfr_erangeflag_p ())
             {
-              char *not = s == 0 ? "" : " not";
+              const char *Not = s == 0 ? "" : " not";
 
               printf ("ERROR for get_ui + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               printf ("The rounding integer (%ld) is%s representable in "
                       "unsigned long,\nbut the erange flag is%s set.\n",
-                      s, not, not);
+                      s, Not, Not);
               exit (1);
             }
         }
