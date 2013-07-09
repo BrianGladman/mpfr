@@ -962,6 +962,10 @@ whether they work with ICC. The following paper can give useful information:
 "Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
 <http://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
 
+To detect compilers, see
+
+  http://sourceforge.net/p/predef/wiki/Compilers/
+
 ===========================================================================
 
 NOTE: with "AM_LDFLAGS = -no-install" in tests/Makefile.am, the following
