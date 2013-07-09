@@ -880,12 +880,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 
 /* When using GCC, optimize certain common comparisons and affectations.
-   + Remove ICC since it defines __GNUC__ but produces a
-     huge number of warnings if you use this code.
+   + Remove some Intel C/C++ (ICC) versions since they now define __GNUC__
+     but produce a huge number of warnings if you use this code.
      VL: I couldn't reproduce a single warning when enabling these macros
-     with icc 10.1 20080212 on Itanium. But with this version, __ICC isn't
-     defined (__INTEL_COMPILER is, though), so that these macros are enabled
-     anyway. Checking with other ICC versions is needed. Possibly detect
+     with icc 10.1 20080212 on Itanium. But with this version, the obsolete
+     __ICC macro isn't defined (__INTEL_COMPILER is, though), so that these
+     macros are enabled anyway. Checking with other ICC versions is needed.
+     For now, !defined(__ICC) seems to be the right test. Possibly detect
      whether warnings are produced or not with a configure test.
    + Remove C++ too, since it complains too much. */
 /* Added casts to improve robustness in case of undefined behavior and
