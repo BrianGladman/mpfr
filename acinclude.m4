@@ -547,7 +547,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
         break;
       u = u >> 1;
     }
-  return (i == 0 && u == 1UL) ? 0 : i;
+  return (i == 0 && u == 1UL) ? 0 : 1 + i;
 ]])], [mpfr_cv_dbl_int_bug="no"],
       [mpfr_cv_dbl_int_bug="yes (exit status is $?)"],
       [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
