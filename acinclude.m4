@@ -549,13 +549,14 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     }
   return (i == 0 && u == 1UL) ? 0 : 1;
 ]])], [mpfr_cv_dbl_int_bug="no"],
-      [mpfr_cv_dbl_int_bug="yes"],
+      [mpfr_cv_dbl_int_bug="yes (exit status is $?)"],
       [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
 ])
-if test "$mpfr_cv_dbl_int_bug" = "yes"; then
+case $mpfr_cv_dbl_int_bug in
+yes*)
   AC_MSG_ERROR([double-to-integer conversion is incorrect.
 You need to use another compiler (or lower the optimization level).])
-fi
+esac
 ])
 
 
