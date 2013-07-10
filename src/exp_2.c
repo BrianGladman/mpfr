@@ -204,7 +204,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           for (k = 0; k < K; k++)
             {
               mpz_mul (ss, ss, ss);
-              exps <<= 1;
+              exps *= 2;
               exps += mpz_normalize (ss, ss, q);
             }
           mpfr_set_z (s, ss, MPFR_RNDN);
