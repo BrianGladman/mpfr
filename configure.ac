@@ -517,6 +517,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
            __GNU_MP_VERSION_PATCHLEVEL);
   printf ("(%s/%s) ", buffer, gmp_version);
+  fflush (stdout);
   if (strcmp (buffer, gmp_version) == 0)
     return 0;
   if (__GNU_MP_VERSION_PATCHLEVEL != 0)
