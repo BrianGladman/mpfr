@@ -224,6 +224,9 @@ To make a release (for the MPFR team):
        VALGRIND="valgrind -q --error-exitcode=1 --leak-check=full"
      See below for more information about valgrind.
 
+     Test with "clang -fsanitize=undefined" (available as of Clang 3.3),
+     e.g.: ./configure CC=clang CFLAGS='-fsanitize=undefined'
+
      Test with both "make check" and the worst cases.
 
      Check that there are no abnormal regressions in the timings (both
