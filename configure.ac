@@ -510,7 +510,7 @@ AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
 Please read the INSTALL file -- see "In case of problem".)])
 
-dnl Check for corresponding 'gmp.h' and libgmp.a
+dnl Check for corresponding 'gmp.h' and libgmp
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
 dnl We do not set LD_LIBRARY_PATH, as it is not possible to set it just
 dnl before the test program is run, and we do not want to affect other
@@ -556,6 +556,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
     AC_MSG_WARN([Temporary LD_RUN_PATH was "$LD_RUN_PATH".])
     AC_MSG_WARN([==========================================================])
+    AC_MSG_ERROR([gmp.h and libgmp differ])
     ],AC_MSG_RESULT([can not test])
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
