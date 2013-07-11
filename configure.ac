@@ -41,6 +41,11 @@ dnl and CC check may modify the compiler.
 
 test_CFLAGS=${CFLAGS+set}
 
+dnl Check if user request its CC and CFLAGS
+if test -n "$CFLAGS" || test -n "$CC" ; then
+ user_redefine_cc=yes
+fi
+
 AC_CANONICAL_HOST
 
 AC_PROG_EGREP
@@ -170,11 +175,6 @@ AC_ARG_ENABLE(tune-for-coverage,
 dnl
 dnl Setup CC and CFLAGS
 dnl
-
-dnl Check if user request its CC and CFLAGS
-if test -n "$CFLAGS" || test -n "$CC" ; then
- user_redefine_cc=yes
-fi
 
 dnl ********************************************************************
 dnl Check for CC and CFLAGS in gmp.h
