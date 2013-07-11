@@ -196,9 +196,16 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    AC_MSG_CHECKING(for CC and CFLAGS in gmp.h)
    GMP_CC=__GMP_CC
    GMP_CFLAGS=__GMP_CFLAGS
-   for cpp in /lib/cpp gcc cc c99
+   # /lib/cpp under Solaris doesn't support some environment variables
+   # used by GCC, such as C_INCLUDE_PATH. If the user has set up such
+   # environment variables, he probably wants to use them. So, let us
+   # prefer cpp and gcc to /lib/cpp.
+   for cpp in cpp gcc /lib/cpp cc c99
    do
-     test $cpp = /lib/cpp || cpp="$cpp -E"
+     case $cpp in
+       *cpp*) ;;
+       *) cpp="$cpp -E" ;;
+     esac
      echo foo > conftest.c
      if $cpp $CPPFLAGS conftest.c > /dev/null 2> /dev/null ; then
        # Get CC
