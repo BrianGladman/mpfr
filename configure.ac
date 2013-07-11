@@ -46,13 +46,13 @@ if test -n "$CFLAGS" || test -n "$CC" ; then
  user_redefine_cc=yes
 fi
 
+dnl Basic Autoconf macros. At this point, they must not make Autoconf
+dnl choose a compiler because of the CC and CFLAGS setup from gmp.h!
+
 AC_CANONICAL_HOST
 
 AC_PROG_EGREP
 AC_PROG_SED
-
-dnl Support unusual archivers.
-AM_PROG_AR
 
 dnl To use a separate config header.
 dnl There is still some problem with GMP's HAVE_CONFIG
@@ -179,6 +179,10 @@ dnl
 dnl ********************************************************************
 dnl Check for CC and CFLAGS in gmp.h
 
+dnl Warning! The following tests must be done before Autoconf selects
+dnl a compiler. This means that some macros such as AC_PROG_CC and
+dnl AM_PROG_AR must be put after the following code.
+
 if test -z "$user_redefine_cc" && test "$cross_compiling" != yes ; then
 
 dnl We need to guess the C preprocessor instead of using AC_PROG_CPP,
@@ -242,6 +246,9 @@ dnl ********************************************************************
 AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
+
+dnl Support unusual archivers.
+AM_PROG_AR
 
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
