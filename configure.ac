@@ -556,7 +556,6 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
     AC_MSG_WARN([Temporary LD_RUN_PATH was "$LD_RUN_PATH".])
     AC_MSG_WARN([==========================================================])
-    AC_MSG_ERROR([gmp.h and libgmp differ])
     ],AC_MSG_RESULT([can not test])
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
