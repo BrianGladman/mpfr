@@ -382,6 +382,12 @@ produce illegal codes with the first form.
 
    =====================================================================
 
+Try to avoid "LONG_MIN/1" since it produces a SIGNAL on (old) FreeBsd.
+Don't forget that LONG_MIN/-1 is not representable (specially
+with code like MPFR_EXP_MIN/n).
+
+   =====================================================================
+
 Don't use "near" and "far" as variable names since they are "Keywords"
 for some C compiler (Old DOS compiler). Also don't use "pm", which is used
 by the C compiler 'sharp' to design variables that should be stored in the
@@ -395,18 +401,6 @@ or more generally:
 
   https://www.google.com/search?q=%22C%2B%2B%22+reserved+keywords
 
-   =====================================================================
-
-Avoid variable names "l", "I" and "O", which look like "1" and "0" with
-some fonts.
-
-   =====================================================================
-
-For identifiers defined in MPFR, do not use the GMP namespaces
-(gmp_..., GMP_...).
-
-   =====================================================================
-
 Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
 
   Avoid the use of identifiers or idioms that would prevent code
@@ -417,17 +411,26 @@ Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
 
    =====================================================================
 
-Try to avoid "LONG_MIN/1" since it produces a SIGNAL on (old) FreeBsd.
-Don't forget that LONG_MIN/-1 is not representable (specially
-with code like MPFR_EXP_MIN/n).
+C-Reduce may be useful to try to identify whether a bug comes from the
+compiler.
 
-   =====================================================================
+===========================================================================
+
+Avoid variable names "l", "I" and "O", which look like "1" and "0" with
+some fonts.
+
+===========================================================================
+
+For identifiers defined in MPFR, do not use the GMP namespaces
+(gmp_..., GMP_...).
+
+===========================================================================
 
 The headers <limits.h>, <stdio.h>, <stdlib.h> and <string.h> are always
 included in mpfr-impl.h; thus you need not (and should not) include them
 in usual source and test files.
 
-   =====================================================================
+===========================================================================
 
 For files that need intmax_t or similar, use:
 
@@ -447,7 +450,7 @@ References:
   http://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=commitdiff;h=62ac9bbfebe879581dabeed78c6ac66b907dd51d
   https://sympa.inria.fr/sympa/arc/mpfr/2010-08/msg00015.html
 
-   =====================================================================
+===========================================================================
 
 Use locale-dependent functions when the result needs to depend on the
 locales, e.g. the fractional point in mpfr_out_str.
@@ -459,9 +462,9 @@ the required characters from the basic character set (see ISO C99
 standard Section 5.2.1 "Character sets"). And tolower(letter) does
 not necessarily return the corresponding lowercase letter from these
 required characters. For instance, tolower('I') returns a dotless 'i'
-in Turkish locales.
+in Turkish tr_TR.iso88599 locales.
 
-   =====================================================================
+===========================================================================
 
 In the tests, do not use `mpfr_set_d` (except when testing it), as the
 result will depend on the floating-point arithmetic of the system;
@@ -495,7 +498,7 @@ In case of failure, freeing the memory explicitly is not necessary.
 We do this in case of success just to be able to detect memory leaks
 in MPFR.
 
-   =====================================================================
+===========================================================================
 
 If you have to mix TMP_DECL and MPFR_SAVE_EXPO_DECL in the declaring
 section of your function, please declare MPFR_SAVE_EXPO_DECL before
@@ -510,16 +513,16 @@ use:
   MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
   TMP_DECL (marker);                          ;
 
-   =====================================================================
+===========================================================================
 
 Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
 
-   =====================================================================
+===========================================================================
 
 Do not use C99-only features, such as empty macro arguments or C++-style
 comments.
 
-   =====================================================================
+===========================================================================
 
 When testing a "boolean" macro M (i.e. which is normally either equal
 to 1 or undefined), do not use #if M, but #ifdef M or #if defined(M).
@@ -564,7 +567,7 @@ testsuite with a default timeout, it may be necessary to increase the
 timeout time by setting the environment variable MPFR_TESTS_TIMEOUT
 to the new timeout value in seconds (or 0 to disable the timeout).
 
-   ====================================================================
+===========================================================================
 
 This feature is available only for gcc >= 3.0 and glibc >= 2.0.
 To achieve this, theses macros have been added:
@@ -617,6 +620,7 @@ It uses some extended attributes of GCC (constructor, etc.) to achieve
 its goals too.
 
 ===========================================================================
+
 ZivLoop Controler
 
 Ziv strategy is quite used in MPFR. In order to factorize the code, you
