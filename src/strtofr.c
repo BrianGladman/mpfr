@@ -219,7 +219,7 @@ fast_casecmp (const char *s1, const char *s2)
    It returns:
       -1 if invalid string,
       0 if special string (like nan),
-      1 if the string is ok.
+      1 if the string is OK.
       2 if overflows
    So it doesn't return the ternary value
    BUT if it returns 0 (NAN or INF), the ternary value is also '0'

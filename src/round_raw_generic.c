@@ -86,7 +86,7 @@ mpfr_round_raw_generic(
 
   if (MPFR_UNLIKELY(xprec <= yprec))
     { /* No rounding is necessary. */
-      /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
+      /* if yp=xp, maybe an overlap: MPN_COPY_DECR is OK when src <= dst */
       if (MPFR_LIKELY(rw))
         nw++;
       MPFR_ASSERTD(nw >= 1);

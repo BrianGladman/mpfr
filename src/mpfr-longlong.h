@@ -1491,7 +1491,7 @@ extern UWtype __MPN(udiv_qrnnd) _PROTO ((UWtype *, UWtype, UWtype, UWtype));
 #endif /* __sparclite__ */
 #endif /* __sparc_v8__ */
 #endif /* __sparc_v9__ */
-/* Default to sparc v7 versions of umul_ppmm and udiv_qrnnd.  */
+/* Default to SPARC v7 versions of umul_ppmm and udiv_qrnnd.  */
 #ifndef umul_ppmm
 #define umul_ppmm(w1, w0, u, v) \
   __asm__ ("! Inlined umul_ppmm\n"					\

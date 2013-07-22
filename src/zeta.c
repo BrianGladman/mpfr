@@ -217,7 +217,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           dnep = (double) d * LOG2;
           sd = mpfr_get_d (s, MPFR_RNDN);
           /* beta = dnep + 0.61 + sd * log (6.2832 / sd);
-             but a larger value is ok */
+             but a larger value is OK */
 #define LOG6dot2832 1.83787940484160805532
           beta = dnep + 0.61 + sd * (LOG6dot2832 - LOG2 *
                                      __gmpfr_floor_log2 (sd));

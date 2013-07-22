@@ -30,10 +30,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
    it doesn't automaticaly cast a "mpfr_ptr []" to "mpfr_srcptr const []"
    if necessary. So the choice are:
-     mpfr_s **                : ok
-     mpfr_s *const*           : ok
-     mpfr_s **const           : ok
-     mpfr_s *const*const      : ok
+     mpfr_s **                : OK
+     mpfr_s *const*           : OK
+     mpfr_s **const           : OK
+     mpfr_s *const*const      : OK
      const mpfr_s *const*     : no
      const mpfr_s **const     : no
      const mpfr_s *const*const: no

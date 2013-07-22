@@ -231,7 +231,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   mpn_lshift(ap, ap, n, cnt); /* Normalize number */
                   bx -= cnt; /* Update final expo */
                 }
-              /* Last limb should be ok */
+              /* Last limb should be OK */
               MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((unsigned int) (-p)
                                                     % GMP_NUMB_BITS)));
             }
@@ -261,7 +261,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
               bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
-              /* Last limb should be ok */
+              /* Last limb should be OK */
               MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((unsigned int) (-p)
                                                     % GMP_NUMB_BITS)));
             }
@@ -430,7 +430,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           DEBUG( printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", bbcp!=0, bcp1!=0) );
           bp = MPFR_MANT (b);
 
-          /* Even if src and dest overlap, it is ok using MPN_COPY */
+          /* Even if src and dest overlap, it is OK using MPN_COPY */
           if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
             {
               if (MPFR_UNLIKELY( bcp && bcp1==0 ))
