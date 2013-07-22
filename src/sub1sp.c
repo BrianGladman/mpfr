@@ -662,7 +662,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTN(bbcp1 != (mp_limb_t) -1);
           bcp  = bbcp;
           bcp1 = bbcp1;
-          /* We dont't have anymore a valid Cp+1!
+          /* We don't have anymore a valid Cp+1!
              But since Ap >= 100000xxx001, the final sub can't unnormalize!*/
         }
       MPFR_ASSERTD( !(ap[0] & ~mask) );
@@ -691,7 +691,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
   /* Result should be smaller than exact value: inexact=-1 */
   inexact = -1;
-  /* Check normalisation */
+  /* Check normalization */
   if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
     {
       /* ap was a power of 2, and we lose a bit */
@@ -783,7 +783,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       If d==0      : Exact case. This is never called.
       if 1 < d < p : bx=MPFR_EXP(b) or MPFR_EXP(b)-1 > MPFR_EXP(c) > emin
       if d == 1    : bx=MPFR_EXP(b). If we could lose any bits, the exact
-                     normalisation is called.
+                     normalization is called.
       if d >=  p   : bx=MPFR_EXP(b) >= MPFR_EXP(c) + p > emin
      After SubOneUlp, we could have one bit less.
       if 1 < d < p : bx >= MPFR_EXP(b)-2 >= MPFR_EXP(c) > emin

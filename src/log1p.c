@@ -117,7 +117,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     if (MPFR_EXP(x) < 0)
       Nt += -MPFR_EXP(x);
 
-    /* initialise of intermediary variable */
+    /* initialize of intermediary variable */
     mpfr_init2 (t, Nt);
 
     /* First computation of log1p */

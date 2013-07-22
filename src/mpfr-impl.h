@@ -976,7 +976,7 @@ typedef intmax_t mpfr_eexp_t;
  ********************** Memory ************************
  ******************************************************/
 
-/* Heap Memory gestion */
+/* Heap memory handling */
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
@@ -989,7 +989,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_REAL_PTR(x) \
    ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
 
-/* Temporary memory gestion */
+/* Temporary memory handling */
 #ifndef TMP_SALLOC
 /* GMP 4.1.x or below or internals */
 #define MPFR_TMP_DECL TMP_DECL

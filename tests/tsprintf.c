@@ -992,7 +992,7 @@ random_double (void)
          the sign of a zero exponent (the C99 rationale says: "The sign
          of a zero exponent in %e format is unspecified.  The committee
          knows of different implementations and choose not to require
-         implementations to document their behaviour in this case
+         implementations to document their behavior in this case
          (by making this be implementation defined behaviour).  Most
          implementations use a "+" sign, e.g., 1.2e+00; but there is at
          least one implementation that uses the sign of the unlimited

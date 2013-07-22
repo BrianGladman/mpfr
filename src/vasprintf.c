@@ -662,7 +662,7 @@ struct string_list
   struct string_list *next; /* NULL in last node */
 };
 
-/* initialisation */
+/* initialization */
 static void
 init_string_list (struct string_list *sl)
 {
@@ -1743,7 +1743,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.exp_ptr)
     buffer_cat (buf, np.exp_ptr, np.exp_size);
 
-  /* left justication padding with right spaces */
+  /* left justification padding with right spaces */
   if (np.pad_type == RIGHT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 

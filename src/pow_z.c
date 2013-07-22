@@ -280,7 +280,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
       Nt = Nt + size_z + 3 + MPFR_INT_CEIL_LOG2 (Nt);
       /* ensures Nt >= bits(z)+2 */
 
-      /* initialise of intermediary variable */
+      /* initialize of intermediary variable */
       mpfr_init2 (t, Nt);
 
       /* We will compute rnd(rnd1(1/x) ^ (-z)), where rnd1 is the rounding
@@ -357,7 +357,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - size_z - 2, MPFR_PREC (y),
                                            rnd)))
             break;
-          /* actualisation of the precision */
+          /* actualization of the precision */
           MPFR_ZIV_NEXT (loop, Nt);
           mpfr_set_prec (t, Nt);
         }

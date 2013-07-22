@@ -195,7 +195,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* the optimal number of bits : see algorithms.tex */
   Nt = Nz + 5 + MPFR_INT_CEIL_LOG2 (Nz);
 
-  /* initialise of intermediary variable */
+  /* initialize of intermediary variable */
   mpfr_init2 (t, Nt);
 
   MPFR_ZIV_INIT (ziv_loop, Nt);

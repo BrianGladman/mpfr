@@ -562,7 +562,7 @@ tune_simple_func (mpfr_prec_t *threshold,
    It assumes that for (x,p) close to zero, algo1 is used
    and algo2 is used when (x,p) is far from zero.
    If algo2 is better for low prec, and algo1 better for high prec,
-   the behaviour of this function is undefined.
+   the behavior of this function is undefined.
    This tuning function tries couples (x,p) of the form (ell*dirx, ell*dirp)
    until it finds a point on the boundary. It returns ell.
  */

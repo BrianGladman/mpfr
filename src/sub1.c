@@ -62,7 +62,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
    * If subtraction: sign(a) = sign * sign(b)
    * If addition: sign(a) = sign of the larger argument in absolute value.
    *
-   * Both cases can be simplidied in:
+   * Both cases can be simplified in:
    * if (sign>0)
    *    if addition: sign(a) = sign * sign(b) = sign(b)
    *    if subtraction, b is greater, so sign(a) = sign(b)

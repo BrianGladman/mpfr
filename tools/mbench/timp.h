@@ -104,7 +104,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * hardware interruption cycles.
  * The filling of the CPU cache is done because we do several loops,
  * and get the minimum.
- * Declaring num_cycle as "volatile" is to avoid optimisation when it is
+ * Declaring num_cycle as "volatile" is to avoid optimization when it is
  * possible (To properly calcul overhead).
  * overhead is calculated outside by a call to:
  *   overhead = MEASURE("overhead", ;)

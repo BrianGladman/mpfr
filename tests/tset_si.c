@@ -395,7 +395,7 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (mpfr_get_ui (x, MPFR_RNDD) == 0);
   MPFR_ASSERTN (mpfr_get_si (x, MPFR_RNDD) == 0);
 
-  /* Test for ERANGE flag + correct behaviour if overflow */
+  /* Test for ERANGE flag + correct behavior if overflow */
   mpfr_set_prec (x, 256);
   mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
   mpfr_clear_erangeflag ();

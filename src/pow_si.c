@@ -158,7 +158,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
 
         MPFR_SAVE_EXPO_MARK (expo);
 
-        /* initialise of intermediary   variable */
+        /* initialize of intermediary   variable */
         mpfr_init2 (t, Nt);
 
         /* We will compute rnd(rnd1(1/x) ^ |n|), where rnd1 is the rounding
@@ -233,7 +233,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
             if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - size_n - 2, Ny, rnd)))
               break;
 
-            /* actualisation of the precision */
+            /* actualization of the precision */
             MPFR_ZIV_NEXT (loop, Nt);
             mpfr_set_prec (t, Nt);
           }

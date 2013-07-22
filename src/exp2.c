@@ -113,7 +113,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* the optimal number of bits : see algorithms.tex */
       Nt = Ny + 5 + MPFR_INT_CEIL_LOG2 (Ny);
 
-      /* initialise of intermediary variable */
+      /* initialize of intermediary variable */
       mpfr_init2 (t, Nt);
 
       /* First computation */

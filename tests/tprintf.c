@@ -471,7 +471,7 @@ main (int argc, char *argv[])
             {
               /* Output the error message to stderr since it is not
                  a message about a wrong result in MPFR. Anyway the
-                 stdandard output may have changed. */
+                 standard output may have changed. */
               fprintf (stderr, "Can't open /dev/null or a temporary file\n");
               exit (1);
             }

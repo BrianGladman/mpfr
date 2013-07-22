@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Let f be a function for which we have several implementations f1, f2... */
 /* We wish to have a quick overview of which implementation is the best    */
-/* in function of the point x where f(x) is computed and of the prectision */
+/* in function of the point x where f(x) is computed and of the precision */
 /* prec requested by the user.                                             */
 /* This is performed by drawing a 2D graphic with color indicating which   */
 /* method is the best.                                                     */

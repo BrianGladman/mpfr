@@ -108,7 +108,7 @@ along with this file.  If not, see http://www.gnu.org/licenses/.  */
 
    Apparently it was only the last "%" that was ever actually respected, so
    the code has been updated to leave just that.  Clearly there's a free
-   choice whether high or low should get it, if there's a reason to favour
+   choice whether high or low should get it, if there's a reason to favor
    one over the other.  Also obviously when the constraints on the two
    operands are identical there's no benefit to the reloader in any "%" at
    all.
@@ -694,7 +694,7 @@ extern UWtype __MPN(udiv_qrnnd) _PROTO ((UWtype *, UWtype, UWtype, UWtype));
 
 #if HAVE_HOST_CPU_pentiummmx && ! defined (LONGLONG_STANDALONE)
 /* The following should be a fixed 14 or 15 cycles, but possibly plus an L1
-   cache miss reading from __clz_tab.  For P55 it's favoured over the float
+   cache miss reading from __clz_tab.  For P55 it's favored over the float
    below so as to avoid mixing MMX and x87, since the penalty for switching
    between the two is about 100 cycles.
 
@@ -1764,7 +1764,7 @@ extern UWtype mpn_udiv_qrnnd_r _PROTO ((UWtype, UWtype, UWtype, UWtype *));
 /* If we still don't have umul_ppmm, define it using plain C.
 
    For reference, when this code is used for squaring (ie. u and v identical
-   expressions), gcc recognises __x1 and __x2 are the same and generates 3
+   expressions), gcc recognizes __x1 and __x2 are the same and generates 3
    multiplies, not 4.  The subsequent additions could be optimized a bit,
    but the only place GMP currently uses such a square is mpn_sqr_basecase,
    and chips obliged to use this generic C umul will have plenty of worse

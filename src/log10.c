@@ -104,7 +104,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
     /* the optimal number of bits : see algorithms.tex */
     Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
 
-    /* initialise of intermediary variables */
+    /* initialize of intermediary variables */
     mpfr_init2 (t, Nt);
     mpfr_init2 (tt, Nt);
 
@@ -132,7 +132,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
             && mpfr_cmp (a, tt) == 0)
           break;
 
-        /* actualisation of the precision */
+        /* actualization of the precision */
         MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
         mpfr_set_prec (tt, Nt);

@@ -132,7 +132,7 @@ check_erange (void)
   uintmax_t dl;
   intmax_t d;
 
-  /* Test for ERANGE flag + correct behaviour if overflow */
+  /* Test for ERANGE flag + correct behavior if overflow */
 
   mpfr_init2 (x, 256);
   mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);

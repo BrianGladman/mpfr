@@ -88,7 +88,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
   /* the optimal number of bits : see algorithms.ps */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
 
-  /* initialise of intermediary variable */
+  /* initialize of intermediary variable */
   mpfr_init2 (t, Nt);
   mpfr_init2 (te, Nt);
 

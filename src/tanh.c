@@ -84,7 +84,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
        For x > 0, exp(2*x) > 2^(2*x)
        If 2 ^(2*x) > 2^emax or x>emax/2, there is an overflow */
     if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax/2) >= 0)) {
-      /* initialise of intermediary variables
+      /* initialize of intermediary variables
          since 'set_one' label assumes the variables have been
          initialize */
       MPFR_GROUP_INIT_2 (group, MPFR_PREC_MIN, t, te);
@@ -98,7 +98,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
     if (MPFR_GET_EXP (x) < 0)
       Nt += -MPFR_GET_EXP (x);
 
-    /* initialise of intermediary variable */
+    /* initialize of intermediary variable */
     MPFR_GROUP_INIT_2 (group, Nt, t, te);
 
     MPFR_ZIV_INIT (loop, Nt);
