@@ -345,11 +345,8 @@ error
 
 dnl If compiler is gcc, then use some specific flags.
 dnl But don't touch user other flags.
-dnl The -Wno-unused-local-typedefs flag is added to avoid spurious
-dnl "typedef 'MPFR_ASSERT_xxx' locally defined but not used" warnings
-dnl due to the implementation of static assertions.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
-  CFLAGS="-Wall -Wmissing-prototypes -Wpointer-arith -Wno-unused-local-typedefs $CFLAGS"
+  CFLAGS="-Wall -Wmissing-prototypes -Wpointer-arith $CFLAGS"
 fi
 
 AM_PROG_CC_C_O
