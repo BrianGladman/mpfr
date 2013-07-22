@@ -576,7 +576,7 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 
 /* Form a string by concatenating the first LEN characters of STR to TZ
    zero(s), insert into one character C each 3 characters starting from end
-   to begining and concatenate the result to the buffer B. */
+   to beginning and concatenate the result to the buffer B. */
 static void
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)

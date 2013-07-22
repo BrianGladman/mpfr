@@ -1,4 +1,4 @@
-/* mpfr_sub1sp -- internal function to perform a "real" substraction
+/* mpfr_sub1sp -- internal function to perform a "real" subtraction
    All the op must have the same precision
 
 Copyright 2003-2013 Free Software Foundation, Inc.
@@ -649,7 +649,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_lshift(ap, ap, n, 1);
           /* Ap >= 100000xxx010 */
           if (MPFR_UNLIKELY(bcp!=0)) /* Check if Cp = -1 */
-            /* Since Cp == -1, we have to substract one more */
+            /* Since Cp == -1, we have to subtract one more */
             {
               mpn_sub_1(ap, ap, n, MPFR_LIMB_ONE<<sh);
               MPFR_ASSERTD(MPFR_LIMB_MSB(ap[n-1]) != 0);

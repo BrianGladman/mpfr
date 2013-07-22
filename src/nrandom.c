@@ -126,7 +126,7 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
   /* p and q are temporaries */
 
   unsigned long m = 2 * k + 2;
-  /* n tracks the parity of the loop; s == 1 on first trip thru loop. */
+  /* n tracks the parity of the loop; s == 1 on first trip through loop. */
   unsigned n = 0, s = 1;
   int f;
 

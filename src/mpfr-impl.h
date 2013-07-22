@@ -445,7 +445,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 # define MPFR_DBGRES(A)      ((void) (A))
 #endif
 
-/* Check if the user requested absolutly no assertion (including MPFR_ASSERTN) */
+/* Check if the user requested absolutely no assertion (including MPFR_ASSERTN) */
 #if defined(MPFR_WANT_ASSERT)
 # if MPFR_WANT_ASSERT < 0
 #  undef MPFR_ASSERTN

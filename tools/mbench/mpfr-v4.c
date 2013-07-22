@@ -45,7 +45,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /*
  * List of all the tests to do.
- * Macro "Bench" is defined futhermore
+ * Macro "Bench" is defined furthermore
  */
 #define TEST_LIST \
   BENCH("MPFR::::::::::", ; ); \
