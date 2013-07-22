@@ -43,11 +43,20 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Default version which should be compatible with nearly all compilers */
 # if !defined(MPFR_DECL_STATIC_ASSERT)
+#  if __MPFR_GNUC(4,8)
+/* Get rid of annoying warnings "typedef '...' locally defined but not used"
+   (new in GCC 4.8). Thanks to Jonathan Wakely for this solution:
+   http://gcc.gnu.org/ml/gcc-help/2013-07/msg00142.html */
+#   define MPFR_TYPEDEF_UNUSED __attribute__ ((unused))
+#  else
+#   define MPFR_TYPEDEF_UNUSED
+#  endif
 #  define MPFR_ASSERT_CAT(a,b) MPFR_ASSERT_CAT_(a,b)
 #  define MPFR_ASSERT_CAT_(a,b) a ## b
 #  define MPFR_STAT_STATIC_ASSERT(c) do {                                    \
  typedef enum { MPFR_ASSERT_CAT(MPFR_STATIC_ASSERT_CONST_,__LINE__) = !(c) } \
- MPFR_ASSERT_CAT(MPFR_ASSERT_,__LINE__)[!!(c) ? 1 : -1]; } while (0)
+ MPFR_ASSERT_CAT(MPFR_ASSERT_,__LINE__)[!!(c) ? 1 : -1]                      \
+   MPFR_TYPEDEF_UNUSED; } while (0)
 #  define MPFR_DECL_STATIC_ASSERT(c)                                         \
  typedef enum { MPFR_ASSERT_CAT(MPFR_STATIC_ASSERT_CONST_,__LINE__) = !(c) } \
  MPFR_ASSERT_CAT(MPFR_ASSERT_,__LINE__)[!!(c) ? 1 : -1];
