@@ -800,13 +800,15 @@ positive value when @var{n} goes to the infinity.
 When the input point is in the closure of the domain of the mathematical
 function and an input argument is +0 (resp.@: @minus{}0), one considers
 the limit when the corresponding argument approaches 0 from above
-(resp.@: below). If the limit is not defined (e.g., @code{mpfr_log} on
-@minus{}0), the behavior is specified in the description of the MPFR function.
+(resp.@: below). If the limit is not defined (e.g., @code{mpfr_sqrt}
+and @code{mpfr_log} on @minus{}0), the behavior is specified in the
+description of the MPFR function.
 
 When the result is equal to 0, its sign is determined by considering the
 limit as if the input point were not in the domain: If one approaches 0
 from above (resp.@: below), the result is +0 (resp.@: @minus{}0);
-for example, @code{mpfr_sin} on +0 gives +0.
+for example, @code{mpfr_sin} on @minus{}0 gives @minus{}0 and
+@code{mpfr_acos} on 1 gives +0 (in all rounding modes).
 In the other cases, the sign is specified in the description of the MPFR
 function; for example @code{mpfr_max} on @minus{}0 and +0 gives +0.
 
@@ -822,8 +824,8 @@ such a case is always explicitly specified in @ref{MPFR Interface}.
 @c that advantages in practice), like for any bug fix.
 Example: @code{mpfr_hypot} on (NaN,0) gives NaN, but @code{mpfr_hypot}
 on (NaN,+Inf) gives +Inf (as specified in @ref{Special Functions}),
-since for any finite input @var{x}, @code{mpfr_hypot} on (@var{x},+Inf)
-gives +Inf.
+since for any finite or infinite input @var{x}, @code{mpfr_hypot} on
+(@var{x},+Inf) gives +Inf.
 
 @node Exceptions, Memory Handling, Floating-Point Values on Special Numbers, MPFR Basics
 @comment  node-name,  next,  previous,  up
@@ -1571,7 +1573,8 @@ respectively @code{unsigned long}, @code{long}, @code{unsigned int},
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
-@var{rnd}. For types having no signed zero, it is considered unsigned
+@var{rnd}.  The IEEE-754 rules are used, in particular for signed zeros.
+But for types having no signed zeros, 0 is considered unsigned
 (i.e., (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
 The @code{mpfr_add_d} function assumes that the radix of the @code{double} type
 is a power of 2, with a precision at most that declared by the C implementation
@@ -1589,7 +1592,8 @@ is a power of 2, with a precision at most that declared by the C implementation
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
-@var{rnd}. For types having no signed zero, it is considered unsigned
+@var{rnd}.  The IEEE-754 rules are used, in particular for signed zeros.
+But for types having no signed zeros, 0 is considered unsigned
 (i.e., (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
 0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_sub}
@@ -1605,7 +1609,7 @@ and @code{mpfr_sub_d}.
 Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2}} rounded in the
 direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
-(for types having no signed zero, it is considered positive).
+(for types having no signed zeros, 0 is considered positive).
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
 @end deftypefun
 
@@ -1625,7 +1629,7 @@ rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_div_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
-(for types having no signed zero, it is considered positive).
+(for types having no signed zeros, 0 is considered positive).
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_div}
 and @code{mpfr_div_d}.
 @end deftypefun
@@ -1633,15 +1637,17 @@ and @code{mpfr_div_d}.
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{\sqrt{@var{op}}, the square root of @var{op}}
-rounded in the direction @var{rnd} (set @var{rop} to @minus{}0 if @var{op} is
-@minus{}0, to be consistent with the IEEE 754 standard).
+rounded in the direction @var{rnd}.  Set @var{rop} to @minus{}0 if
+@var{op} is @minus{}0, to be consistent with the IEEE 754 standard.
 Set @var{rop} to NaN if @var{op} is negative.
 @end deftypefun
 
 @deftypefun int mpfr_rec_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{1/\sqrt{@var{op}}, the reciprocal square root of @var{op}}
-rounded in the direction @var{rnd}. Set @var{rop} to +Inf if @var{op} is
-@pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.
+rounded in the direction @var{rnd}.  Set @var{rop} to +Inf if @var{op} is
+@pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.  Warning!
+Therefore the result on @minus{}0 is different from the IEEE 754-2008 one
+(which is @minus{}Inf instead of +Inf).
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1822,7 +1828,9 @@ Set @var{rop} to the natural logarithm of @var{op},
 @m{\log_2 @var{op}, log2(@var{op})} or
 @m{\log_{10} @var{op}, log10(@var{op})}, respectively,
 rounded in the direction @var{rnd}.
-Set @var{rop} to @minus{}Inf if @var{op} is @minus{}0
+Set @var{rop} to +0 if @var{op} is 1 (in all rounding modes),
+for consistency with the ISO C99 and IEEE 754-2008 standards.
+Set @var{rop} to @minus{}Inf if @var{op} is @pom{}0
 (i.e., the sign of the zero has no influence on the result).
 @end deftypefun
 
@@ -2054,7 +2062,10 @@ or @minus{}Inf depending on the parity and sign of @var{n}.
 @deftypefunx int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}}
 (resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}})
-rounded in the direction @var{rnd}.
+rounded in the direction @var{rnd}.  Concerning special values (signed zeros,
+infinities, NaN), these functions behave like a multiplication followed by a
+separate addition or subtraction.  That is, the fused operation matters only
+for rounding.
 @end deftypefun
 
 @deftypefun int mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
