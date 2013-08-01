@@ -73,7 +73,10 @@ check_set_get (long double d, mpfr_t x)
           emin = mpfr_get_emin ();
           emax = mpfr_get_emax ();
           printf ("Error: mpfr_set_ld should be exact\n");
-          printf ("d=%1.30Le inex=%d\n", d, inex);
+          /* we use 33 digits here, since if "long double" is implemented as
+             a pair of two "double"s, then we get at least 106 bits of
+             precision, and ceil(1+106*log(2)/log(10)) = 33 */
+          printf ("d=%.33Le inex=%d\n", d, inex);
           if (emin >= LONG_MIN)
             printf ("emin=%ld\n", (long) emin);
           if (emax <= LONG_MAX)
@@ -88,7 +91,7 @@ check_set_get (long double d, mpfr_t x)
         {
           printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
           printf ("  r=%d\n", r);
-          printf ("  d=%1.30Le get_ld(set_ld(d))=%1.30Le\n", d, e);
+          printf ("  d=%.33Le get_ld(set_ld(d))=%.33Le\n", d, e);
           ld_trace ("  d", d);
           printf ("  x="); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
           printf ("\n");
@@ -130,7 +133,7 @@ test_small (void)
       mpfr_out_str (NULL, 10, 21, x, MPFR_RNDN);
       printf (" = ");
       mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
-      printf ("\n        -> d = %.21Lg", d);
+      printf ("\n        -> d = %.33Le", d);
       printf ("\n        -> y = ");
       mpfr_out_str (NULL, 10, 21, y, MPFR_RNDN);
       printf (" = ");
@@ -292,7 +295,7 @@ main (int argc, char *argv[])
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* check largest 2^(2^k) that is representable as a long double */
+  /* check largest 2^k that is representable as a long double */
   d = (LDBL_MAX / 2) + (LDBL_MAX / 4 * LDBL_EPSILON);
   check_set_get (d, x);
 
