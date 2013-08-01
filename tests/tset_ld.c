@@ -254,10 +254,12 @@ main (int argc, char *argv[])
   mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
   if (MPFR_SIGN(x) > 0)
     {
-      printf ("Error: sign of -0.0 is not set correctly\n");
 #if _GMP_IEEE_FLOATS
+      printf ("Error: sign of -0.0 is not set correctly\n");
       exit (1);
+#else
       /* Non IEEE doesn't support negative zero yet */
+      printf ("Warning: sign of -0.0 is not set correctly\n");
 #endif
     }
 
