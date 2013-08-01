@@ -93,7 +93,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
-  /* If a is 1, the result is 0 */
+  /* If a is 1, the result is +0 */
   else if (MPFR_UNLIKELY (MPFR_GET_EXP (a) == 1 && mpfr_cmp_ui (a, 1) == 0))
     {
       MPFR_SET_ZERO (r);

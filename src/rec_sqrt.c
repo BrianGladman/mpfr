@@ -456,7 +456,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
       else if (MPFR_IS_ZERO(u)) /* 1/sqrt(+0) = 1/sqrt(-0) = +Inf */
         {
-          /* 0+ or 0- */
+          /* +0 or -0 */
           MPFR_SET_INF(r);
           MPFR_SET_POS(r);
           mpfr_set_divby0 ();
