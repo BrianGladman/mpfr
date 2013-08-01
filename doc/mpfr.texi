@@ -1646,8 +1646,9 @@ Set @var{rop} to NaN if @var{op} is negative.
 Set @var{rop} to @m{1/\sqrt{@var{op}}, the reciprocal square root of @var{op}}
 rounded in the direction @var{rnd}.  Set @var{rop} to +Inf if @var{op} is
 @pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.  Warning!
-Therefore the result on @minus{}0 is different from the IEEE 754-2008 one
-(which is @minus{}Inf instead of +Inf).
+Therefore the result on @minus{}0 is different from the one of the rSqrt
+function recommended by the IEEE 754-2008 standard (Section 9.2.1), which
+is @minus{}Inf instead of +Inf.
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2090,8 +2091,8 @@ i.e., the square root of the sum of the squares of @var{x} and @var{y},
 i.e., $\sqrt{x^2+y^2}$,
 @end tex
 rounded in the direction @var{rnd}.
-Special values are handled as described in Section F.9.4.3 of
-the ISO C99 and IEEE 754-2008 standards:
+Special values are handled as described in the ISO C99 (Section F.9.4.3)
+and IEEE 754-2008 (Section 9.2.1) standards:
 If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
 even if the other number is NaN.
 @end deftypefun
