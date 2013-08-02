@@ -1838,6 +1838,7 @@ Set @var{rop} to @minus{}Inf if @var{op} is @pom{}0
 @deftypefun int mpfr_log1p (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the logarithm of one plus @var{op},
 rounded in the direction @var{rnd}.
+Set @var{rop} to @minus{}Inf if @var{op} is @minus{}1.
 @end deftypefun
 
 @deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
