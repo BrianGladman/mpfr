@@ -72,7 +72,8 @@ check_set_get (long double d, mpfr_t x)
           mpfr_exp_t emin, emax;
           emin = mpfr_get_emin ();
           emax = mpfr_get_emax ();
-          printf ("Error: mpfr_set_ld should be exact\n");
+          printf ("Error: mpfr_set_ld should be exact (rnd=%s)\n",
+                  mpfr_print_rnd_mode (r));
           /* we use 33 digits here, since if "long double" is implemented as
              a pair of two "double"s, then we get at least 106 bits of
              precision, and ceil(1+106*log(2)/log(10)) = 33 */
