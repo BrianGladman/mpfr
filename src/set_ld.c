@@ -296,7 +296,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
                     break;
                   /* Inexact. This cannot happen unless the C implementation
                      "lies" on the precision or when long doubles are
-                     implemented with FP expansions like under Mac OS X. */
+                     implemented with FP expansions like double-double on
+                     PowerPC. */
                   if (MPFR_PREC (t) != MPFR_PREC (r) + 1)
                     {
                       /* We assume that MPFR_PREC (r) < MPFR_PREC_MAX.
