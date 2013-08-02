@@ -284,7 +284,14 @@ main (int argc, char *argv[])
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* check largest long double */
+  /* check LDBL_MAX; according to the C standard, LDBL_MAX must be
+     exactly (1-b^(-LDBL_MANT_DIG)).b^LDBL_MAX_EXP, where b is the
+     radix (in practice, b = 2), even though there can be larger
+     long double values, not regarded as being in the subset of
+     the floating-point values of the system. As a consequence
+     (assuming b = 2), LDBL_MAX must be exactly representable on
+     LDBL_MANT_DIG bits. Some systems are buggy, though... Perhaps
+     we should test? */
   d = LDBL_MAX;
   check_set_get (d, x);
   check_set_get (-d, x);
