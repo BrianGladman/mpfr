@@ -53,9 +53,70 @@ Isnan_ld (long double d)
   return 1;
 }
 
-/* checks that a long double converted to a mpfr (with precision >=113),
-   then converted back to a long double gives the initial value,
-   or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
+/* Return the minimal number of bits to represent d exactly (0 for zero).
+   Assume d is neither NaN nor +/-Inf.
+   If flag is non-zero, also print d. */
+static mpfr_prec_t
+print_binary (long double d, int flag)
+{
+  long double e;
+  long exp = 1;
+  mpfr_prec_t prec = 0;
+
+  if (d < (long double) 0.0 ||
+      (d == (long double) 0.0 && (1.0 / (double) d < 0.0)))
+    {
+      if (flag)
+        printf ("-");
+      d = -d;
+    }
+  /* now d >= 0 */
+  if (d == (long double) 0.0)
+    {
+      if (flag)
+        printf ("0.0\n");
+      return prec;
+    }
+  /* now d > 0 */
+  e = (long double) 1.0;
+  while (e > d)
+    {
+      e = e * (long double) 0.5;
+      exp --;
+    }
+  /* now d >= e */
+  while (d >= e + e)
+    {
+      e = e + e;
+      exp ++;
+    }
+  /* now e <= d < 2e */
+  if (flag)
+    printf ("0.");
+  while (d > 0)
+    {
+      prec++;
+      if (d >= e)
+        {
+          if (flag)
+            printf ("1");
+          d -= e;
+        }
+      else
+        {
+          if (flag)
+            printf ("0");
+        }
+      e *= (long double) 0.5;
+    }
+  if (flag)
+    printf ("e%ld\n", exp);
+  return prec;
+}
+
+/* checks that a long double converted to a mpfr (with precision
+   MPFR_LDBL_MANT_DIG), then converted back to a long double gives the initial
+   value, or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
 */
 static void
 check_set_get (long double d, mpfr_t x)
@@ -64,6 +125,7 @@ check_set_get (long double d, mpfr_t x)
   long double e;
   int inex;
 
+  MPFR_ASSERTN(mpfr_get_prec (x) == MPFR_LDBL_MANT_DIG);
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
       inex = mpfr_set_ld (x, d, (mpfr_rnd_t) r);
@@ -72,23 +134,33 @@ check_set_get (long double d, mpfr_t x)
           mpfr_exp_t emin, emax;
           emin = mpfr_get_emin ();
           emax = mpfr_get_emax ();
-          printf ("Error: mpfr_set_ld should be exact (rnd=%s)\n",
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          /* we use 33 digits here, since if "long double" is implemented as
-             a pair of two "double"s, then we get at least 106 bits of
-             precision, and ceil(1+106*log(2)/log(10)) = 33 */
-          printf ("d=%.33Le inex=%d\n", d, inex);
-          if (emin >= LONG_MIN)
-            printf ("emin=%ld\n", (long) emin);
-          if (emax <= LONG_MAX)
-            printf ("emax=%ld\n", (long) emax);
-          mpfr_dump (x);
-          exit (1);
+          if (print_binary (d, 0) <= MPFR_LDBL_MANT_DIG)
+            {
+              printf ("Error: mpfr_set_ld should be exact (rnd=%s)\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              /* we use 33 digits here, since if "long double" is implemented
+                 as a pair of two "double"s, then we get at least 106 bits of
+                 precision, and ceil(1+106*log(2)/log(10)) = 33 */
+              printf ("d=%.33Le inex=%d\n", d, inex);
+              if (emin >= LONG_MIN)
+                printf ("emin=%ld\n", (long) emin);
+              if (emax <= LONG_MAX)
+                printf ("emax=%ld\n", (long) emax);
+              mpfr_dump (x);
+              exit (1);
+            }
+          else
+            {
+              printf ("Warning: the following long double number has"
+                      " precision %lu which is larger than MPFR_LDBL_MANT_DIG"
+                      "=%d\n", print_binary (d, 0), MPFR_LDBL_MANT_DIG);
+              print_binary (d, 1);
+            }
         }
       e = mpfr_get_ld (x, (mpfr_rnd_t) r);
-      if ((Isnan_ld(d) && ! Isnan_ld(e)) ||
-          (Isnan_ld(e) && ! Isnan_ld(d)) ||
-          (e != d && !(Isnan_ld(e) && Isnan_ld(d))))
+      if (inex == 0 && ((Isnan_ld(d) && ! Isnan_ld(e)) ||
+                        (Isnan_ld(e) && ! Isnan_ld(d)) ||
+                        (e != d && !(Isnan_ld(e) && Isnan_ld(d)))))
         {
           printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
           printf ("  r=%d\n", r);
