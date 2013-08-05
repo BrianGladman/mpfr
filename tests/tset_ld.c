@@ -375,10 +375,6 @@ main (int argc, char *argv[])
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* check largest 2^k that is representable as a long double */
-  d = (LDBL_MAX / 2) + (LDBL_MAX / 4 * LDBL_EPSILON);
-  check_set_get (d, x);
-
   /* check that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
   for (i = 1; i < MPFR_LDBL_MANT_DIG; i++)
