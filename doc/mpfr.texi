@@ -455,7 +455,7 @@ Delete all files copied by @samp{make install}.
 In case of problem, please read the @file{INSTALL} file carefully
 before reporting a bug, in particular section ``In case of problem''.
 Some problems are due to bad configuration on the user side (not
-specific to MPFR). Problems are also mentioned in the FAQ
+specific to MPFR)@. Problems are also mentioned in the FAQ
 @url{http://www.mpfr.org/faq.html}.
 
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
@@ -492,7 +492,7 @@ There are a few things you should think about when you put your bug report
 together.
 
 You have to send us a test case that makes it possible for us to reproduce the
-bug, i.e., a small self-content program, using no other library than MPFR.
+bug, i.e., a small self-content program, using no other library than MPFR@.
 Include instructions on how to run the test case.
 
 You also have to explain what is wrong; if you get a crash, or if the results
@@ -637,7 +637,7 @@ represents an uninitialized object, the result of an invalid operation
 +Infinity minus +Infinity). Moreover, like in the IEEE 754 standard,
 zero is signed, i.e., there are both +0 and @minus{}0; the behavior
 is the same as in the IEEE 754 standard and it is generalized to
-the other functions supported by MPFR. Unless documented otherwise,
+the other functions supported by MPFR@. Unless documented otherwise,
 the sign bit of a NaN is unspecified.
 @c VL: re-added how mpfr_t is defined, due to some questions from users
 @c in the past (the fact that the result was returned in an argument
@@ -813,7 +813,7 @@ In the other cases, the sign is specified in the description of the MPFR
 function; for example @code{mpfr_max} on @minus{}0 and +0 gives +0.
 
 When the input point is not in the closure of the domain of the function,
-the result is NaN. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN.
+the result is NaN@. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN@.
 
 When an input argument is NaN, the result is NaN, possibly except when
 a partial function is constant on the finite floating-point numbers;
@@ -865,7 +865,7 @@ first considers the rounded result assuming an unbounded exponent range.
 The exact result cannot be represented exactly in precision 2, and here,
 it is rounded to @m{0.5 @times 2^e, 0.5 times 2 to @var{e}}, which is
 representable in the current exponent range. As a consequence, this will
-not yield an underflow in MPFR.
+not yield an underflow in MPFR@.
 
 @item Overflow (@code{MPFR_FLAGS_OVERFLOW}):
 An overflow occurs when the exact result of a function is a non-zero
@@ -880,7 +880,7 @@ overflow here.
 An exact infinite result is obtained from finite inputs.
 
 @item NaN (@code{MPFR_FLAGS_NAN}):
-A NaN exception occurs when the result of a function is NaN.
+A NaN exception occurs when the result of a function is NaN@.
 @c NaN is defined above. So, we don't say anything more.
 
 @item Inexact (@code{MPFR_FLAGS_INEXACT}):
@@ -909,7 +909,7 @@ the NaN flag whenever a NaN is generated, even when a NaN is propagated
 (e.g., in NaN + NaN), as if all NaNs were signaling.
 
 @item An invalid exception in C corresponds to either a NaN exception or
-a range error in MPFR.
+a range error in MPFR@.
 
 @end itemize
 
@@ -930,7 +930,7 @@ terminating a thread, or before exiting when using tools like
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
 accessed via parameters) are either global (if MPFR has not been
-compiled as thread safe) or per-thread (thread local storage, TLS).
+compiled as thread safe) or per-thread (thread local storage, TLS)@.
 The initial values of TLS data after a thread is created entirely
 depend on the compiler and thread implementation (MPFR simply does
 a conventional variable initialization, the variables being declared
@@ -1009,7 +1009,7 @@ purpose.
 
 @deftypefun void mpfr_init2 (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Initialize @var{x}, set its precision to be @strong{exactly}
-@var{prec} bits and its value to NaN. (Warning: the corresponding
+@var{prec} bits and its value to NaN@. (Warning: the corresponding
 MPF function initializes to zero instead.)
 
 Normally, a variable should be initialized once only or at
@@ -1023,7 +1023,7 @@ The precision @var{prec} must be an integer between @code{MPFR_PREC_MIN} and
 @deftypefun void mpfr_inits2 (mpfr_prec_t @var{prec}, mpfr_t @var{x}, ...)
 Initialize all the @code{mpfr_t} variables of the given variable
 argument @code{va_list}, set their precision to be @strong{exactly}
-@var{prec} bits and their value to NaN.
+@var{prec} bits and their value to NaN@.
 See @code{mpfr_init2} for more details.
 The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
 (or equivalently @code{mpfr_ptr}).
@@ -1061,7 +1061,7 @@ Here is an example of how to use multiple initialization functions
 
 @deftypefun void mpfr_init (mpfr_t @var{x})
 Initialize @var{x}, set its precision to the default precision,
-and set its value to NaN.
+and set its value to NaN@.
 The default precision can be changed by a call to @code{mpfr_set_default_prec}.
 
 Warning! In a given program, some other libraries might change the default
@@ -1070,7 +1070,7 @@ precision and not restore it. Thus it is safer to use @code{mpfr_init2}.
 
 @deftypefun void mpfr_inits (mpfr_t @var{x}, ...)
 Initialize all the @code{mpfr_t} variables of the given @code{va_list},
-set their precision to the default precision and their value to NaN.
+set their precision to the default precision and their value to NaN@.
 See @code{mpfr_init} for more details.
 The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
 (or equivalently @code{mpfr_ptr}).
@@ -1084,7 +1084,7 @@ precision and not restore it. Thus it is safer to use @code{mpfr_inits2}.
 @defmac MPFR_DECL_INIT (@var{name}, @var{prec})
 This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
 initializes it and sets its precision to be @strong{exactly} @var{prec} bits
-and its value to NaN. @var{name} must be a valid identifier.
+and its value to NaN@. @var{name} must be a valid identifier.
 You must use this macro in the declaration section.
 This macro is much faster than using @code{mpfr_init2} but has some
 drawbacks:
@@ -1152,7 +1152,7 @@ closely match the actual accurate part of the numbers.
 
 @deftypefun void mpfr_set_prec (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits,
-and set its value to NaN.
+and set its value to NaN@.
 The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to
 @code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
@@ -1320,7 +1320,7 @@ it can also be @code{infinity}, @code{inf}, @code{nan} or
 A @code{n-char-sequence-opt} is a possibly empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
-NaN.
+NaN@.
 For example, @code{-@@nAn@@(This_Is_Not_17)} is a valid representation for NaN
 in base 17.
 
@@ -1464,7 +1464,7 @@ set, @var{rop} is set to 0, and 0 is returned.
 Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
 The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
-do not exist in MPF.  If @var{op} is NaN, then @var{rop} is undefined.
+do not exist in MPF@.  If @var{op} is NaN, then @var{rop} is undefined.
 If @var{op} is an +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
 the maximum (resp.@: minimum) value in the precision of the MPF number;
 if a future MPF version supports infinities, this behavior will be
@@ -1656,7 +1656,7 @@ is @minus{}Inf instead of +Inf.
 Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
 For @var{k} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
-set @var{rop} to a negative number (resp.@: NaN).
+set @var{rop} to a negative number (resp.@: NaN)@.
 The @var{k}th root of @minus{}0 is defined to be @minus{}0,
 whatever the parity of @var{k}.
 @end deftypefun
@@ -1677,8 +1677,8 @@ standards for the @code{pow} function:
 @item @code{pow(@pom{}0, @var{y})} returns plus or minus zero for @var{y} a positive odd integer.
 @item @code{pow(@pom{}0, @var{y})} returns plus zero for @var{y} positive and not an odd integer.
 @item @code{pow(-1, @pom{}Inf)} returns 1.
-@item @code{pow(+1, @var{y})} returns 1 for any @var{y}, even a NaN.
-@item @code{pow(@var{x}, @pom{}0)} returns 1 for any @var{x}, even a NaN.
+@item @code{pow(+1, @var{y})} returns 1 for any @var{y}, even a NaN@.
+@item @code{pow(@var{x}, @pom{}0)} returns 1 for any @var{x}, even a NaN@.
 @item @code{pow(@var{x}, @var{y})} returns NaN for finite negative @var{x} and finite non-integer @var{y}.
 @item @code{pow(@var{x}, -Inf)} returns plus infinity for @math{0 < @GMPabs{x} < 1}, and plus zero for @math{@GMPabs{x} > 1}.
 @item @code{pow(@var{x}, +Inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}, and plus infinity for @math{@GMPabs{x} > 1}.
@@ -1704,7 +1704,7 @@ that of @var{op}.
 Set @var{rop} to the positive difference of @var{op1} and @var{op2}, i.e.,
 @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}
 if @math{@var{op1} > @var{op2}}, +0 if @math{@var{op1} @le{} @var{op2}},
-and NaN if @var{op1} or @var{op2} is NaN.
+and NaN if @var{op1} or @var{op2} is NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_mul_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
@@ -1748,7 +1748,7 @@ Note: These functions may be useful to distinguish the three possible cases.
 If you need to distinguish two cases only, it is recommended to use the
 predicate functions (e.g., @code{mpfr_equal_p} for the equality) described
 below; they behave like the IEEE 754 comparisons, in particular when one
-or both arguments are NaN. But only floating-point numbers can be compared
+or both arguments are NaN@. But only floating-point numbers can be compared
 (you may need to do a conversion first).
 @end deftypefun
 
@@ -1794,7 +1794,7 @@ Return non-zero if
 @math{@var{op1} @le{} @var{op2}},
 @math{@var{op1} = @var{op2}} respectively,
 and zero otherwise.
-Those functions return zero whenever @var{op1} and/or @var{op2} is NaN.
+Those functions return zero whenever @var{op1} and/or @var{op2} is NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_lessgreater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
@@ -1997,7 +1997,7 @@ to @var{op}}.
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Gamma function on @var{op}, rounded in the
 direction @var{rnd}. When @var{op} is a negative integer, @var{rop} is set
-to NaN.
+to NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2005,7 +2005,7 @@ Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
 When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
 When @math{@minus{}2@var{k}@minus{}1 @le{} @var{op} @le{} @minus{}2@var{k}},
-@var{k} being a non-negative integer, @var{rop} is set to NaN.
+@var{k} being a non-negative integer, @var{rop} is set to NaN@.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
@@ -2023,7 +2023,7 @@ undefined, and when @var{op} is @pom{}0, *@var{signp} is the sign of the zero.
 @deftypefun int mpfr_digamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Digamma (sometimes also called Psi)
 function on @var{op}, rounded in the direction @var{rnd}.
-When @var{op} is a negative integer, set @var{rop} to NaN.
+When @var{op} is a negative integer, set @var{rop} to NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2045,7 +2045,7 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to the value of the first kind Bessel function of order 0,
 (resp.@: 1 and @var{n})
 on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN, @var{rop} is always set to NaN. When @var{op} is plus or minus Infinity,
+NaN, @var{rop} is always set to NaN@. When @var{op} is plus or minus Infinity,
 @var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
 @var{rop} is set to +0 or @minus{}0 depending on the parity and sign of @var{n},
 and the sign of @var{op}.
@@ -2057,7 +2057,7 @@ and the sign of @var{op}.
 Set @var{rop} to the value of the second kind Bessel function of order 0
 (resp.@: 1 and @var{n})
 on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN or negative, @var{rop} is always set to NaN. When @var{op} is +Inf,
+NaN or negative, @var{rop} is always set to NaN@. When @var{op} is +Inf,
 @var{rop} is set to +0. When @var{op} is zero, @var{rop} is set to +Inf
 or @minus{}Inf depending on the parity and sign of @var{n}.
 @end deftypefun
@@ -2082,7 +2082,7 @@ where @m{u_0,@var{u}_@var{0}}=@var{op1}, @m{v_0,@var{v}_@var{0}}=@var{op2},
 arithmetic mean of @m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}},
 and @m{v_{n+1},@var{v}_(@var{n}+1)} is the geometric mean of
 @m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}}.
-If any operand is negative, set @var{rop} to NaN.
+If any operand is negative, set @var{rop} to NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
@@ -2097,7 +2097,7 @@ rounded in the direction @var{rnd}.
 Special values are handled as described in the ISO C99 (Section F.9.4.3)
 and IEEE 754-2008 (Section 9.2.1) standards:
 If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
-even if the other number is NaN.
+even if the other number is NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2105,7 +2105,7 @@ Set @var{rop} to the value of the Airy function Ai
  on @var{x}, rounded in the direction @var{rnd}.
 When @var{x} is
 NaN,
-@var{rop} is always set to NaN. When @var{x} is +Inf or @minus{}Inf,
+@var{rop} is always set to NaN@. When @var{x} is +Inf or @minus{}Inf,
 @var{rop} is +0.
 The current implementation is not intended to be used with large arguments.
 It works with @GMPabs{@var{x}} typically smaller than 500. For larger arguments,
@@ -2225,7 +2225,7 @@ versions.
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
 The precision of @var{op} is read from the stream. If the precision is less
-than MPFR_PREC_MIN, it is set to MPFR_PREC_MIN. If the precision is greater
+than MPFR_PREC_MIN, it is set to MPFR_PREC_MIN@. If the precision is greater
 than MPFR_PREC_MAX, the function fails.
 Return 0 iff the import was successful.
 
@@ -2581,7 +2581,7 @@ and @code{mpfr_remquo}.
 
 Special values are handled as described in Section F.9.7.1 of
 the ISO C99 standard:
-If @var{x} is infinite or @var{y} is zero, @var{r} is NaN.
+If @var{x} is infinite or @var{y} is zero, @var{r} is NaN@.
 If @var{y} is infinite and @var{x} is finite, @var{r} is @var{x} rounded
 to the precision of @var{r}.
 If @var{r} is zero, it has the sign of @var{x}.
@@ -2721,7 +2721,7 @@ int i = mpfr_round_nearest_away(mpfr_add_ui, r, f, ul);
 @section Miscellaneous Functions
 
 @deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
-If @var{x} or @var{y} is NaN, set @var{x} to NaN. If @var{x} and @var{y}
+If @var{x} or @var{y} is NaN, set @var{x} to NaN@. If @var{x} and @var{y}
 are equal, @var{x} is unchanged. Otherwise, if @var{x}
 is different from @var{y}, replace @var{x} by the next floating-point
 number (with the precision of @var{x} and the current exponent range)
@@ -2741,7 +2741,7 @@ Equivalent to @code{mpfr_nexttoward} where @var{y} is plus infinity
 @deftypefunx int mpfr_max (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the minimum (resp.@: maximum)
 of @var{op1} and @var{op2}. If @var{op1}
-and @var{op2} are both NaN, then @var{rop} is set to NaN. If @var{op1}
+and @var{op2} are both NaN, then @var{rop} is set to NaN@. If @var{op1}
 or @var{op2} is NaN, then @var{rop} is set to the numeric value. If
 @var{op1} and @var{op2} are zeros of different signs, then @var{rop}
 is set to @minus{}0 (resp.@: +0).
@@ -2834,13 +2834,13 @@ negative, @minus{}0, or a NaN whose representation has its sign bit set).
 @deftypefun int mpfr_setsign (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{s}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded toward the given
 direction @var{rnd}, then set (resp.@: clear) its sign bit if @var{s}
-is non-zero (resp.@: zero), even when @var{op} is a NaN.
+is non-zero (resp.@: zero), even when @var{op} is a NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_copysign (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op1}, rounded toward the given
 direction @var{rnd}, then set its sign bit to that of @var{op2} (even
-when @var{op1} or @var{op2} is a NaN). This function is equivalent to
+when @var{op1} or @var{op2} is a NaN)@. This function is equivalent to
 @code{mpfr_setsign (@var{rop}, @var{op1}, mpfr_signbit (@var{op2}), @var{rnd})}.
 @end deftypefun
 
@@ -3121,7 +3121,7 @@ in @var{flags}.
 @section Compatibility With MPF
 
 A header file @file{mpf2mpfr.h} is included in the distribution of MPFR for
-compatibility with the GNU MP class MPF.
+compatibility with the GNU MP class MPF@.
 By inserting the following two lines after the @code{#include <gmp.h>} line,
 @verbatim
 #include <mpfr.h>
@@ -3138,7 +3138,7 @@ which can be reset with @code{mpfr_set_default_rounding_mode}.
 Warning: the @code{mpf_init} and @code{mpf_init2} functions initialize
 to zero, whereas the corresponding MPFR functions initialize to NaN:
 this is useful to detect uninitialized values, but is slightly incompatible
-with MPF.
+with MPF@.
 
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
@@ -3344,7 +3344,7 @@ and if the problem is not mentioned, please send us a bug report
 
 However, a program written for the current MPFR version (as documented
 by this manual) may not necessarily work with previous versions of
-MPFR.  This section should help developers to write portable code.
+MPFR@.  This section should help developers to write portable code.
 
 Note: Information given here may be incomplete.  API changes are
 also described in the NEWS file (for each version, instead of being
@@ -3459,7 +3459,7 @@ in MPFR 3.1.
 Note: MPFR 2.2 had a @code{mpfr_copysign} function that was available,
 but not documented,
 and with a slight difference in the semantics (when
-the second input operand is a NaN).
+the second input operand is a NaN)@.
 
 @item @code{mpfr_custom_get_significand} in MPFR 3.0.
 This function was named @code{mpfr_custom_get_mantissa} in previous
@@ -3589,7 +3589,7 @@ Hence the change in MPFR 2.3.2.
 
 @item @code{mpfr_get_f} changed in MPFR 3.0.
 This function was returning zero, except for NaN and Inf, which do not
-exist in MPF. The @emph{erange} flag is now set in these cases,
+exist in MPF@. The @emph{erange} flag is now set in these cases,
 and @code{mpfr_get_f} now returns the usual ternary value.
 
 @item @code{mpfr_get_si}, @code{mpfr_get_sj}, @code{mpfr_get_ui}
@@ -3755,7 +3755,7 @@ the continuous support of INRIA, and of the LORIA (Nancy, France) and LIP
 (Lyon, France) laboratories. In particular the main authors were or are
 members of the PolKA, Spaces, Cacao and Caramel
 project-teams at LORIA and of the
-Ar@'enaire and AriC project-teams at LIP.
+Ar@'enaire and AriC project-teams at LIP@.
 This project was started during the Fiable (reliable in French) action
 supported by INRIA, and continued during the AOC action.
 The development of MPFR was also supported by a grant
