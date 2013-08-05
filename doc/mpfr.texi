@@ -2960,7 +2960,7 @@ or @code{mpfr_set_emin(mpfr_get_emin_min())} may not be portable.
 @end deftypefun
 
 @deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mpfr_rnd_t @var{rnd})
-This function assumes that @var{x} is the correctly-rounded value of some
+This function assumes that @var{x} is the correctly rounded value of some
 real value @var{y} in the direction @var{rnd} and some extended exponent
 range, and that @var{t} is the corresponding @ref{ternary value}.
 For example, one performed @code{t = mpfr_log (x, u, rnd)}, and @var{y} is the
