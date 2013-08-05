@@ -54,7 +54,6 @@ Isnan_ld (long double d)
 }
 
 /* Return the minimal number of bits to represent d exactly (0 for zero).
-   Assume d is neither NaN nor +/-Inf.
    If flag is non-zero, also print d. */
 static mpfr_prec_t
 print_binary (long double d, int flag)
@@ -63,6 +62,12 @@ print_binary (long double d, int flag)
   long exp = 1;
   mpfr_prec_t prec = 0;
 
+  if (Isnan_ld (d))
+    {
+      if (flag)
+        printf ("NaN\n");
+      return 0;
+    }
   if (d < (long double) 0.0 ||
       (d == (long double) 0.0 && (1.0 / (double) d < 0.0)))
     {
@@ -71,6 +76,14 @@ print_binary (long double d, int flag)
       d = -d;
     }
   /* now d >= 0 */
+  /* Use 2 differents tests for Inf, to avoid potential bugs
+     in implementations. */
+  if (Isnan_ld (d - d) || (d > 1 && d * 0.5 == d))
+    {
+      if (flag)
+        printf ("Inf\n");
+      return 0;
+    }
   if (d == (long double) 0.0)
     {
       if (flag)
@@ -119,14 +132,20 @@ print_binary (long double d, int flag)
    value, or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
 */
 static void
-check_set_get (long double d, mpfr_t x)
+check_set_get (long double d)
 {
+  mpfr_t x;
+  mpfr_prec_t prec;
   int r;
   long double e;
   int inex;
 
-  MPFR_ASSERTN(mpfr_get_prec (x) == MPFR_LDBL_MANT_DIG);
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  prec = print_binary (d, 0);
+  if (prec < MPFR_PREC_MIN)
+    prec = MPFR_PREC_MIN;
+  mpfr_init2 (x, prec);
+
+  RND_LOOP(r)
     {
       inex = mpfr_set_ld (x, d, (mpfr_rnd_t) r);
       if (inex != 0)
@@ -134,28 +153,21 @@ check_set_get (long double d, mpfr_t x)
           mpfr_exp_t emin, emax;
           emin = mpfr_get_emin ();
           emax = mpfr_get_emax ();
-          if (print_binary (d, 0) <= MPFR_LDBL_MANT_DIG)
-            {
-              printf ("Error: mpfr_set_ld should be exact (rnd=%s)\n",
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-              /* we use 33 digits here, since if "long double" is implemented
-                 as a pair of two "double"s, then we get at least 106 bits of
-                 precision, and ceil(1+106*log(2)/log(10)) = 33 */
-              printf ("d=%.33Le inex=%d\n", d, inex);
-              if (emin >= LONG_MIN)
-                printf ("emin=%ld\n", (long) emin);
-              if (emax <= LONG_MAX)
-                printf ("emax=%ld\n", (long) emax);
-              mpfr_dump (x);
-              exit (1);
-            }
-          else
-            {
-              printf ("Warning: the following long double number has"
-                      " precision %lu which is larger than MPFR_LDBL_MANT_DIG"
-                      "=%d\n", print_binary (d, 0), MPFR_LDBL_MANT_DIG);
-              print_binary (d, 1);
-            }
+          printf ("Error: mpfr_set_ld should be exact (rnd = %s)\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          /* we use 36 digits here, as the maximum LDBL_MANT_DIG value
+             seen in the current implementations is 113 (binary128),
+             and ceil(1+113*log(2)/log(10)) = 36 */
+          printf ("  d = %.36Le, inex = %d\n", d, inex);
+          if (emin >= LONG_MIN)
+            printf ("  emin = %ld\n", (long) emin);
+          if (emax <= LONG_MAX)
+            printf ("  emax = %ld\n", (long) emax);
+          printf ("  d = ");
+          print_binary (d, 1);
+          printf ("  x = ");
+          mpfr_dump (x);
+          exit (1);
         }
       e = mpfr_get_ld (x, (mpfr_rnd_t) r);
       if (inex == 0 && ((Isnan_ld(d) && ! Isnan_ld(e)) ||
@@ -163,12 +175,19 @@ check_set_get (long double d, mpfr_t x)
                         (e != d && !(Isnan_ld(e) && Isnan_ld(d)))))
         {
           printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
-          printf ("  r=%d\n", r);
-          printf ("  d=%.33Le get_ld(set_ld(d))=%.33Le\n", d, e);
+          printf ("  rnd = %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          printf ("                  d = %.36Le\n", d);
+          printf ("  get_ld(set_ld(d)) = %.36Le\n", e);
           ld_trace ("  d", d);
-          printf ("  x="); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
+          printf ("  x = "); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
           printf ("\n");
           ld_trace ("  e", e);
+          printf ("  d = ");
+          print_binary (d, 1);
+          printf ("  x = ");
+          mpfr_dump (x);
+          printf ("  e = ");
+          print_binary (e, 1);
 #ifdef MPFR_NANISNAN
           if (Isnan_ld(d) || Isnan_ld(e))
             printf ("The reason is that NAN == NAN. Please look at the "
@@ -178,6 +197,8 @@ check_set_get (long double d, mpfr_t x)
           exit (1);
         }
     }
+
+  mpfr_clear (x);
 }
 
 static void
@@ -311,20 +332,20 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG + 64);
 
 #if !defined(MPFR_ERRDIVZERO)
   /* check NaN */
   mpfr_set_nan (x);
   d = mpfr_get_ld (x, MPFR_RNDN);
-  check_set_get (d, x);
+  check_set_get (d);
 #endif
 
   /* check +0.0 and -0.0 */
   d = 0.0;
-  check_set_get (d, x);
+  check_set_get (d);
   d = DBL_NEG_ZERO;
-  check_set_get (d, x);
+  check_set_get (d);
 
   /* check that the sign of -0.0 is set */
   mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
@@ -343,18 +364,18 @@ main (int argc, char *argv[])
   /* check +Inf */
   mpfr_set_inf (x, 1);
   d = mpfr_get_ld (x, MPFR_RNDN);
-  check_set_get (d, x);
+  check_set_get (d);
 
   /* check -Inf */
   mpfr_set_inf (x, -1);
   d = mpfr_get_ld (x, MPFR_RNDN);
-  check_set_get (d, x);
+  check_set_get (d);
 #endif
 
   /* check the largest power of two */
   d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
-  check_set_get (d, x);
-  check_set_get (-d, x);
+  check_set_get (d);
+  check_set_get (-d);
 
   /* check LDBL_MAX; according to the C standard, LDBL_MAX must be
      exactly (1-b^(-LDBL_MANT_DIG)).b^LDBL_MAX_EXP, where b is the
@@ -365,31 +386,31 @@ main (int argc, char *argv[])
      LDBL_MANT_DIG bits. Some systems are buggy, though... Perhaps
      we should test? */
   d = LDBL_MAX;
-  check_set_get (d, x);
-  check_set_get (-d, x);
+  check_set_get (d);
+  check_set_get (-d);
 
   /* check the smallest power of two */
   d = 1.0;
   while ((e = d / 2.0) != (long double) 0.0 && e != d)
     d = e;
-  check_set_get (d, x);
-  check_set_get (-d, x);
+  check_set_get (d);
+  check_set_get (-d);
 
   /* check that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
-  for (i = 1; i < MPFR_LDBL_MANT_DIG; i++)
+  for (i = 1; i < MPFR_LDBL_MANT_DIG + 8; i++)
     {
       d = 2.0 * d; /* d = 2^i */
-      check_set_get (d, x);
-      check_set_get (d + 1.0, x);
-      check_set_get (d - 1.0, x);
+      check_set_get (d);
+      check_set_get (d + 1.0);
+      check_set_get (d - 1.0);
     }
 
   for (i = 0; i < 10000; i++)
     {
       mpfr_urandomb (x, RANDS);
       d = mpfr_get_ld (x, MPFR_RNDN);
-      check_set_get (d, x);
+      check_set_get (d);
     }
 
   /* check with reduced emax to exercise overflow */
