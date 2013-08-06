@@ -423,7 +423,7 @@ main (int argc, char *argv[])
   mpfr_set_ld (x, (long double) 2.0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   for (d = (long double) 2.0, i = 0; i < 13; i++, d *= d);
-  /* now d = 2^8192 */
+  /* now d = 2^8192, or an infinity (e.g. with double or double-double) */
   mpfr_set_ld (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   set_emax (emax);
