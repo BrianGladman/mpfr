@@ -141,13 +141,8 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
           mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
           mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
-          /* The following code instead of the 3 lines below:
-               r = s + mpfr_get_d (y, rnd_mode);
-             doesn't work with GCC 20121109 (Red Hat 4.7.2-8).
-             A compiler bug? */
-          r = s;
-          s = mpfr_get_d (y, rnd_mode);  /* second part of y */
-          r += s;
+          /* Add the second part of y (in the correct rounding mode). */
+          r = (long double) s + mpfr_get_d (y, rnd_mode);
         }
       else
 #endif
