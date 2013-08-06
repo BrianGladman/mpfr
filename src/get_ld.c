@@ -125,34 +125,63 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_t y, z;
       int sign;
 
-      /* first round x to the target long double precision, so that
-         all subsequent operations are exact (this avoids double rounding
-         problems) */
-      mpfr_init2 (y, MPFR_LDBL_MANT_DIG);
-      mpfr_init2 (z, MPFR_LDBL_MANT_DIG);
-      /* Note about the precision of z: even though IEEE_DBL_MANT_DIG is
-         sufficient, z has been set to the same precision as y so that
-         the mpfr_sub below calls mpfr_sub1sp, which is faster than the
-         generic subtraction, even in this particular case (from tests
-         done by Patrick Pelissier on a 64-bit Core2 Duo against r7285).
-         But here there is an important cancellation in the subtraction.
-         TODO: get more information about what has been tested. */
-
-      mpfr_set (y, x, rnd_mode);
-      sh = MPFR_GET_EXP (y);
-      sign = MPFR_SIGN (y);
-      MPFR_SET_EXP (y, 0);
-      MPFR_SET_POS (y);
-
-      r = 0.0;
-      do
+#if defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
+      if (MPFR_LDBL_MANT_DIG == 106)
         {
+          /* Assume double-double format (as found with the PowerPC ABI).
+             The generic code below isn't used because numbers with
+             precision > 106 would not be supported. */
+          mpfr_init2 (y, mpfr_get_prec (x));
+          mpfr_init2 (z, IEEE_DBL_MANT_DIG); /* keep the precision small */
+          mpfr_set (y, x, rnd_mode); /* exact */
+          sh = MPFR_GET_EXP (y);
+          sign = MPFR_SIGN (y);
+          MPFR_SET_EXP (y, 0);
+          MPFR_SET_POS (y);
           s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
-          r += (long double) s;
           mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
           mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+          /* The following code instead of the 3 lines below:
+               r = s + mpfr_get_d (y, rnd_mode);
+             doesn't work with GCC 20121109 (Red Hat 4.7.2-8).
+             A compiler bug? */
+          r = s;
+          s = mpfr_get_d (y, rnd_mode);  /* second part of y */
+          r += s;
         }
-      while (!MPFR_IS_ZERO (y));
+      else
+#endif
+        {
+          /* First round x to the target long double precision, so that
+             all subsequent operations are exact (this avoids double rounding
+             problems). However if the format contains numbers that have more
+             precision, MPFR won't be able to generate such numbers. */
+          mpfr_init2 (y, MPFR_LDBL_MANT_DIG);
+          mpfr_init2 (z, MPFR_LDBL_MANT_DIG);
+          /* Note about the precision of z: even though IEEE_DBL_MANT_DIG is
+             sufficient, z has been set to the same precision as y so that
+             the mpfr_sub below calls mpfr_sub1sp, which is faster than the
+             generic subtraction, even in this particular case (from tests
+             done by Patrick Pelissier on a 64-bit Core2 Duo against r7285).
+             But here there is an important cancellation in the subtraction.
+             TODO: get more information about what has been tested. */
+
+          mpfr_set (y, x, rnd_mode);
+          sh = MPFR_GET_EXP (y);
+          sign = MPFR_SIGN (y);
+          MPFR_SET_EXP (y, 0);
+          MPFR_SET_POS (y);
+
+          r = 0.0;
+          do
+            {
+              s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
+              r += (long double) s;
+              mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
+              mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+            }
+          while (!MPFR_IS_ZERO (y));
+        }
 
       mpfr_clear (z);
       mpfr_clear (y);
