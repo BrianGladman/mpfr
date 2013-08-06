@@ -314,7 +314,7 @@ check_subnormal (void)
 int
 main (int argc, char *argv[])
 {
-  long double d, e;
+  volatile long double d, e;
   mpfr_t x;
   int i;
   mpfr_exp_t emax;
