@@ -170,6 +170,7 @@ check_set_get (long double d)
           print_binary (d, 1);
           printf ("  x = ");
           mpfr_dump (x);
+          printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
           exit (1);
         }
       e = mpfr_get_ld (x, (mpfr_rnd_t) r);
