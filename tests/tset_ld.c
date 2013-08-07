@@ -106,7 +106,7 @@ print_binary (long double d, int flag)
   /* now e <= d < 2e */
   if (flag)
     printf ("0.");
-  while (d > 0)
+  while (d > (long double) 0.0)
     {
       prec++;
       if (d >= e)
