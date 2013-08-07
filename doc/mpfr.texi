@@ -1899,8 +1899,8 @@ small precision of @var{rop}.
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the arc-tangent2 of @var{y} and @var{x},
 rounded in the direction @var{rnd}:
-if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
-if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan (@GMPabs{y/x}))},
+if @code{x > 0}, @code{atan2(y, x) = atan(y/x)};
+if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan(@GMPabs{y/x}))},
 thus a number from @m{-\pi,-Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
 @m{-\pi,-Pi},
