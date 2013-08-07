@@ -166,6 +166,7 @@ check_set_get (long double d)
             printf ("  emin = %ld\n", (long) emin);
           if (emax <= LONG_MAX)
             printf ("  emax = %ld\n", (long) emax);
+          ld_trace ("  d", d);
           printf ("  d = ");
           print_binary (d, 1);
           printf ("  x = ");
