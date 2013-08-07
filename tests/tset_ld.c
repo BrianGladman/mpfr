@@ -155,11 +155,12 @@ check_set_get (long double d)
           emax = mpfr_get_emax ();
           printf ("Error: mpfr_set_ld should be exact (rnd = %s)\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          /* We use 28 hex digits here, as the maximum LDBL_MANT_DIG value
+          /* We use 36 digits here, as the maximum LDBL_MANT_DIG value
              seen in the current implementations is 113 (binary128),
-             and assuming only 1 bit is printed before the . separator,
-             it remains 112 bits to print. */
-          printf ("  d = %.28La\n", d);
+             and ceil(1+113*log(2)/log(10)) = 36. But the current glibc
+             implementation of printf with double-double arithmetic
+             (e.g. on PowerPC) is not accurate. */
+          printf ("  d ~= %.36Le (output may be wrong!)\n", d);
           printf ("  inex = %d\n", inex);
           if (emin >= LONG_MIN)
             printf ("  emin = %ld\n", (long) emin);
