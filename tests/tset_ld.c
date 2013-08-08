@@ -97,32 +97,36 @@ print_binary (long double d, int flag)
       e = e * (long double) 0.5;
       exp --;
     }
+  if (flag == 2) printf ("1: e=%.36Le\n", e);
   /* now d >= e */
   while (d >= e + e)
     {
       e = e + e;
       exp ++;
     }
+  if (flag == 2) printf ("2: e=%.36Le\n", e);
   /* now e <= d < 2e */
-  if (flag)
+  if (flag == 1)
     printf ("0.");
+  if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%lu\n", d, e, prec);
   while (d > (long double) 0.0)
     {
       prec++;
       if (d >= e)
         {
-          if (flag)
+          if (flag == 1)
             printf ("1");
           d -= e;
         }
       else
         {
-          if (flag)
+          if (flag == 1)
             printf ("0");
         }
       e *= (long double) 0.5;
+      if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%lu\n", d, e, prec);
     }
-  if (flag)
+  if (flag == 1)
     printf ("e%ld\n", exp);
   return prec;
 }
@@ -172,6 +176,7 @@ check_set_get (long double d)
           printf ("  x = ");
           mpfr_dump (x);
           printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
+          print_binary (d, 2);
           exit (1);
         }
       e = mpfr_get_ld (x, (mpfr_rnd_t) r);
