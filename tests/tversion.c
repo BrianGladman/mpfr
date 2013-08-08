@@ -28,6 +28,10 @@ main (void)
   char buffer[256];
   int err = 0;
 
+#ifdef __GNUC__
+  printf ("[tversion] GCC: %d.%d.%d\n",
+          __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#endif
 #ifdef __MPIR_VERSION
   printf ("[tversion] MPIR: header %d.%d.%d, library %s\n",
           __MPIR_VERSION, __MPIR_VERSION_MINOR, __MPIR_VERSION_PATCHLEVEL,
