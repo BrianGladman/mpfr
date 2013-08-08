@@ -116,7 +116,7 @@ print_binary (long double d, int flag)
         {
           if (flag == 1)
             printf ("1");
-          d -= e;
+          d = (long double) ((long double) d - (long double) e);
         }
       else
         {
