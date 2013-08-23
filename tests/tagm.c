@@ -166,7 +166,7 @@ check_large (void)
 }
 
 static void
-check_nans (void)
+check_special (void)
 {
   mpfr_t  x, y, m;
 
@@ -174,16 +174,21 @@ check_nans (void)
   mpfr_init2 (y, 123L);
   mpfr_init2 (m, 123L);
 
-  /* agm(1,nan) == nan */
+  /* agm(1,nan) is NaN */
   mpfr_set_ui (x, 1L, MPFR_RNDN);
   mpfr_set_nan (y);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (m));
 
   /* agm(1,+inf) == +inf */
   mpfr_set_ui (x, 1L, MPFR_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (m));
+  MPFR_ASSERTN (mpfr_sgn (m) > 0);
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (m));
   MPFR_ASSERTN (mpfr_sgn (m) > 0);
 
@@ -194,22 +199,54 @@ check_nans (void)
   MPFR_ASSERTN (mpfr_inf_p (m));
   MPFR_ASSERTN (mpfr_sgn (m) > 0);
 
-  /* agm(-inf,+inf) == nan */
+  /* agm(-inf,+inf) is NaN */
   mpfr_set_inf (x, -1);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
 
-  /* agm(+0,+inf) == nan */
+  /* agm(+0,+inf) is NaN */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+
+  /* agm(-0,+inf) is NaN */
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_set_inf (y, 1);
+  mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+
+  /* agm(+0,-inf) is NaN */
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_inf (y, -1);
+  mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+
+  /* agm(-0,-inf) is NaN */
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_set_inf (y, -1);
+  mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (m));
 
   /* agm(+0,1) == +0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
 
   /* agm(-0,1) == +0 */
@@ -218,12 +255,33 @@ check_nans (void)
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_agm (m, x, y, MPFR_RNDN);
   MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+
+  /* agm(+0,-1) == +0 */
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_si (y, -1, MPFR_RNDN);
+  mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+
+  /* agm(-0,-1) == +0 */
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_set_si (y, -1, MPFR_RNDN);
+  mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
 
   /* agm(-0,+0) == +0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_set_ui (y, 0, MPFR_RNDN);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
 
   /* agm(1,1) == 1 */
@@ -232,10 +290,12 @@ check_nans (void)
   mpfr_agm (m, x, y, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (m ,1) == 0);
 
-  /* agm(-1,-2) == NaN */
+  /* agm(-1,-2) is NaN */
   mpfr_set_si (x, -1, MPFR_RNDN);
   mpfr_set_si (y, -2, MPFR_RNDN);
   mpfr_agm (m, x, y, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+  mpfr_agm (m, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (m));
 
   mpfr_clear (x);
@@ -254,7 +314,7 @@ main (int argc, char* argv[])
 {
   tests_start_mpfr ();
 
-  check_nans ();
+  check_special ();
 
   check_large ();
   check4 ("2.0", "1.0", MPFR_RNDN, "1.456791031046906869", -1);

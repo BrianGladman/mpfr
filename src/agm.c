@@ -72,7 +72,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
             }
         }
       else /* a and b are neither NaN nor Inf, and one is zero */
-        {  /* If a or b is 0, the result is +0 since a sqrt is positive */
+        {  /* If a or b is 0, the result is +0, in particular because the
+              result is always >= 0 with our definition (Maple sometimes
+              chooses a different sign for GaussAGM, but it uses another
+              definition, with possible negative results). */
           MPFR_ASSERTD (MPFR_IS_ZERO (op1) || MPFR_IS_ZERO (op2));
           MPFR_SET_POS (r);
           MPFR_SET_ZERO (r);
