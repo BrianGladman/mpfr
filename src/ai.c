@@ -45,7 +45,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 
-/* Airy function Ai evaluated by the most naive algorithm */
+/* Airy function Ai evaluated by the most naive algorithm.
+   Assume that x is a finite number. */
 static int
 mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
@@ -71,19 +72,6 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_LOG_FUNC (
     ("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd),
     ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y) );
-
-  /* Special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
-    {
-      if (MPFR_IS_NAN (x))
-        {
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      else if (MPFR_IS_INF (x))
-        return mpfr_set_ui (y, 0, rnd);
-    }
-
 
   /* Save current exponents range */
   MPFR_SAVE_EXPO_MARK (expo);
@@ -315,7 +303,8 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 }
 
 
-/* Airy function Ai evaluated by Smith algorithm */
+/* Airy function Ai evaluated by Smith algorithm.
+   Assume that x is a finite number. */
 static int
 mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
@@ -342,18 +331,6 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_LOG_FUNC (
     ("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x),  mpfr_log_prec, x, rnd),
     ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
-
-  /* Special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
-    {
-      if (MPFR_IS_NAN (x))
-        {
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      else if (MPFR_IS_INF (x))
-        return mpfr_set_ui (y, 0, rnd);
-    }
 
   /* Save current exponents range */
   MPFR_SAVE_EXPO_MARK (expo);
@@ -639,6 +616,18 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_t temp1, temp2;
   int use_ai2;
   MPFR_SAVE_EXPO_DECL (expo);
+
+  /* Special cases */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    {
+      if (MPFR_IS_NAN (x))
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF (x))
+        return mpfr_set_ui (y, 0, rnd);
+    }
 
   /* The exponent range must be large enough for the computation of temp1. */
   MPFR_SAVE_EXPO_MARK (expo);
