@@ -228,6 +228,15 @@ To make a release (for the MPFR team):
 
      Test with "clang -fsanitize=undefined" (available as of Clang 3.3),
      e.g.: ./configure CC=clang CFLAGS='-fsanitize=undefined'
+     The -fno-sanitize-recover option can give more visibility by making
+     the corresponding tests fail (useful for automated tests). However
+     clang currently regards the floating-point division by zero as an
+     error with "-fsanitize=undefined", even when IEC 60559 / IEEE 754
+     (Annex F of ISO C) is claimed to be supported. This is detected by
+     a configure test, which sets MPFR_ERRDIVZERO to disable the tests
+     involving a floating-point division by zero. Alternatively, one can
+     use a list of individual -fsanitize checks instead of "undefined".
+     Bug report: http://llvm.org/bugs/show_bug.cgi?id=17000
 
      Test with both "make check" and the worst cases.
 
