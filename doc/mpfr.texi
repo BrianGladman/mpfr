@@ -2512,6 +2512,8 @@ the next lower or equal representable integer, @code{mpfr_round} to the
 nearest representable integer, rounding halfway cases away from zero
 (as in the roundTiesToAway mode of IEEE 754-2008),
 and @code{mpfr_trunc} to the next representable integer toward zero.
+When @var{op} is a zero or an infinity, set @var{rop} to the same value
+(with the same sign).
 
 The returned value is zero when the result is exact, positive when it is
 greater than the original value of @var{op}, and negative when it is smaller.
@@ -2541,6 +2543,8 @@ Set @var{rop} to @var{op} rounded to an integer.
 @code{mpfr_rint_round} to the nearest integer, rounding halfway cases away
 from zero, and @code{mpfr_rint_trunc} to the next integer toward zero.
 If the result is not representable, it is rounded in the direction @var{rnd}.
+When @var{op} is a zero or an infinity, set @var{rop} to the same value
+(with the same sign).
 The returned value is the ternary value associated with the considered
 round-to-integer function (regarded in the same way as any other
 mathematical function).
@@ -2559,6 +2563,8 @@ Set @var{rop} to the fractional part of @var{op}, having the same sign as
 @var{op}, rounded in the direction @var{rnd} (unlike in @code{mpfr_rint},
 @var{rnd} affects only how the exact fractional part is rounded, not how
 the fractional part is generated).
+When @var{op} is an integer or an infinity, set @var{rop} to zero with
+the same sign as @var{op}.
 @end deftypefun
 
 @deftypefun int mpfr_modf (mpfr_t @var{iop}, mpfr_t @var{fop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
