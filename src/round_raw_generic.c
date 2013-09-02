@@ -48,6 +48,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * to 1. In this case, the even rounding is done away from 0, which is
  * a natural generalization. Indeed, a number with 1-bit precision can
  * be seen as a subnormal number with more precision.
+ *
+ * MPFR_RNDNA is now supported, but needs to be tested [TODO].
  */
 
 int
@@ -118,20 +120,19 @@ mpfr_round_raw_generic(
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
       /* Rounding to nearest? */
-      if (MPFR_LIKELY (rnd_mode == MPFR_RNDN))
+      if (MPFR_LIKELY (rnd_mode == MPFR_RNDN || rnd_mode == MPFR_RNDNA))
         {
           /* Rounding to nearest */
           mp_limb_t rbmask = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1 - rw);
-          if (sb & rbmask) /* rounding bit */
-            sb &= ~rbmask; /* it is 1, clear it */
-          else
-            {
-              /* Rounding bit is 0, behave like rounding to 0 */
-              goto rnd_RNDZ;
-            }
+
+          if ((sb & rbmask) == 0) /* rounding bit = 0 ? */
+            goto rnd_RNDZ; /* yes, behave like rounding toward zero */
+          /* Rounding to nearest with rounding bit = 1 */
+          if (MPFR_UNLIKELY (rnd_mode == MPFR_RNDNA))
+            goto rnd_RNDN_add_one_ulp; /* like rounding away from zero */
+          sb &= ~rbmask; /* first bits after the rounding bit */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
-          /* rounding to nearest, with rounding bit = 1 */
           if (MPFR_UNLIKELY(sb == 0)) /* Even rounding. */
             {
               /* sb == 0 && rnd_mode == MPFR_RNDN */
