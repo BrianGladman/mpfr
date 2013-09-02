@@ -117,8 +117,8 @@ mpfr_round_raw_generic(
         }
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
-      /* Rounding to nearest ? */
-      if (MPFR_LIKELY( rnd_mode == MPFR_RNDN) )
+      /* Rounding to nearest? */
+      if (MPFR_LIKELY (rnd_mode == MPFR_RNDN))
         {
           /* Rounding to nearest */
           mp_limb_t rbmask = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1 - rw);
@@ -140,34 +140,31 @@ mpfr_round_raw_generic(
                 {
                   if (use_inexp)
                     *inexp = 2*MPFR_EVEN_INEX*neg-MPFR_EVEN_INEX;
-                  /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;*/
-                  /* Since neg = 0 or 1 and sb=0*/
-#if flag == 1
-                  return 0 /*sb != 0 && rnd_mode != MPFR_RNDZ */;
-#else
+                  /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX : -MPFR_EVEN_INEX */
+                  /* since neg = 0 or 1 and sb = 0 */
+#if flag == 0
                   MPN_COPY_INCR(yp, xp + xsize - nw, nw);
                   yp[0] &= himask;
-                  return 0;
 #endif
+                  return 0; /* sb != 0 && rnd_mode != MPFR_RNDZ */
                 }
               else
                 {
                   /* sb != 0 && rnd_mode == MPFR_RNDN */
                   if (use_inexp)
                     *inexp = MPFR_EVEN_INEX-2*MPFR_EVEN_INEX*neg;
-                  /*((neg!=0)^(sb!=0))? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX; */
-                  /*Since neg= 0 or 1 and sb != 0 */
+                  /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX : -MPFR_EVEN_INEX */
+                  /* since neg = 0 or 1 and sb != 0 */
                   goto rnd_RNDN_add_one_ulp;
                 }
             }
-          else /* sb != 0  && rnd_mode == MPFR_RNDN*/
+          else /* sb != 0 && rnd_mode == MPFR_RNDN */
             {
               if (use_inexp)
-                /* *inexp = (neg == 0) ? 1 : -1; but since neg = 0 or 1 */
-                *inexp = 1-2*neg;
+                *inexp = 1-2*neg; /* neg == 0 ? 1 : -1 */
             rnd_RNDN_add_one_ulp:
 #if flag == 1
-              return 1; /*sb != 0 && rnd_mode != MPFR_RNDZ;*/
+              return 1; /* sb != 0 && rnd_mode != MPFR_RNDZ */
 #else
               carry = mpn_add_1 (yp, xp + xsize - nw, nw,
                                  rw ?
@@ -178,7 +175,7 @@ mpfr_round_raw_generic(
 #endif
             }
         }
-      /* Rounding to Zero ? */
+      /* Rounding toward zero? */
       else if (MPFR_IS_LIKE_RNDZ(rnd_mode, neg))
         {
           /* rnd_mode == MPFR_RNDZ */
@@ -187,41 +184,36 @@ mpfr_round_raw_generic(
             sb = xp[--k];
           if (use_inexp)
             /* rnd_mode == MPFR_RNDZ and neg = 0 or 1 */
-            /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
+            /* ((neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1 */
             *inexp = MPFR_UNLIKELY(sb == 0) ? 0 : (2*neg-1);
-#if flag == 1
-          return 0; /*sb != 0 && rnd_mode != MPFR_RNDZ;*/
-#else
+#if flag == 0
           MPN_COPY_INCR(yp, xp + xsize - nw, nw);
           yp[0] &= himask;
-          return 0;
 #endif
+          return 0; /* sb != 0 && rnd_mode != MPFR_RNDZ */
         }
       else
         {
-          /* rnd_mode = Away */
+          /* Rounding away from zero */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
           if (MPFR_UNLIKELY(sb == 0))
             {
               /* sb = 0 && rnd_mode != MPFR_RNDZ */
               if (use_inexp)
-                /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
+                /* ((neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1 */
                 *inexp = 0;
-#if flag == 1
-              return 0;
-#else
+#if flag == 0
               MPN_COPY_INCR(yp, xp + xsize - nw, nw);
               yp[0] &= himask;
-              return 0;
 #endif
+              return 0;
             }
           else
             {
               /* sb != 0 && rnd_mode != MPFR_RNDZ */
               if (use_inexp)
-                /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
-                *inexp = 1-2*neg;
+                *inexp = 1-2*neg; /* neg == 0 ? 1 : -1 */
 #if flag == 1
               return 1;
 #else
@@ -236,10 +228,8 @@ mpfr_round_raw_generic(
     }
   else
     {
-      /* Roundind mode = Zero / No inexact flag */
-#if flag == 1
-      return 0 /*sb != 0 && rnd_mode != MPFR_RNDZ*/;
-#else
+      /* Rounding toward zero / no inexact flag */
+#if flag == 0
       if (MPFR_LIKELY(rw))
         {
           nw++;
@@ -249,8 +239,8 @@ mpfr_round_raw_generic(
         himask = ~(mp_limb_t) 0;
       MPN_COPY_INCR(yp, xp + xsize - nw, nw);
       yp[0] &= himask;
-      return 0;
 #endif
+      return 0;
     }
 }
 
