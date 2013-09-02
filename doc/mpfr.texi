@@ -989,7 +989,7 @@ any MPFR function or macro, whether or not there is an error.
 * Special Functions::
 * Input and Output Functions::
 * Formatted Output Functions::
-* Integer Related Functions::
+* Integer and Remainder Related Functions::
 * Rounding Related Functions::
 * Miscellaneous Functions::
 * Exception Related Functions::
@@ -2236,7 +2236,7 @@ Note: this function is experimental and its interface might change in future
 versions.
 @end deftypefun
 
-@node Formatted Output Functions, Integer Related Functions, Input and Output Functions, MPFR Interface
+@node Formatted Output Functions, Integer and Remainder Related Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float output functions
 @cindex Output functions
@@ -2494,9 +2494,10 @@ the null-terminator, or a negative value if an error occurred.
 @c @code{EOVERFLOW}.
 @end deftypefun
 
-@node Integer Related Functions, Rounding Related Functions, Formatted Output Functions, MPFR Interface
+@node Integer and Remainder Related Functions, Rounding Related Functions, Formatted Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Integer related functions
+@cindex Remainder related functions
 @section Integer and Remainder Related Functions
 
 @deftypefun int mpfr_rint (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2611,7 +2612,7 @@ additive argument reduction.
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
 
-@node Rounding Related Functions, Miscellaneous Functions, Integer Related Functions, MPFR Interface
+@node Rounding Related Functions, Miscellaneous Functions, Integer and Remainder Related Functions, MPFR Interface
 @cindex Rounding mode related functions
 @section Rounding Related Functions
 
