@@ -359,6 +359,10 @@ Table of contents:
   Mulders short product was slower than a full product for large sizes.
   This should be precisely analyzed and fixed if needed.
 
+- implement optional cache sharing between threads (with light locking).
+  https://sympa.inria.fr/sympa/arc/mpfr/2013-09/msg00000.html
+  https://sympa.inria.fr/sympa/arc/mpfr/2013-09/msg00002.html
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################
