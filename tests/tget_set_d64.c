@@ -61,8 +61,22 @@ print_decimal64 (_Decimal64 d)
 }
 #endif /* _GMP_IEEE_FLOATS */
 
+#define ERR_MISC(V)                                         \
+  do                                                        \
+    {                                                       \
+      printf ("Error in check_misc for " V ".\n");          \
+      printf ("  mpfr_get_decimal64() returned: ");         \
+      print_decimal64 (d);                                  \
+      printf ("  mpfr_set_decimal64() set x to: ");         \
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);           \
+      printf (" approx.\n    = ");                          \
+      mpfr_dump (x);                                        \
+      err = 1;                                              \
+    }                                                       \
+ while (0)
+
 static void
-check_inf_nan (void)
+check_misc (void)
 {
   mpfr_t  x, y;
   _Decimal64 d;
@@ -81,73 +95,66 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  if (! mpfr_inf_p (x) || mpfr_sgn (x) <= 0)
-    {
-      printf ("Error in check_inf_nan for +Inf.\n");
-      printf ("  mpfr_get_decimal64() returned: ");
-      print_decimal64 (d);
-      printf ("  mpfr_set_decimal64() set x to: ");
-      mpfr_dump (x);
-      err = 1;
-    }
+  if (! mpfr_inf_p (x) || MPFR_IS_NEG (x))
+    ERR_MISC ("+Inf");
 
   mpfr_set_inf (x, -1);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  if (! mpfr_inf_p (x) || mpfr_sgn (x) >= 0)
-    {
-      printf ("Error in check_inf_nan for -Inf.\n");
-      printf ("  mpfr_get_decimal64() returned: ");
-      print_decimal64 (d);
-      printf ("  mpfr_set_decimal64() set x to: ");
-      mpfr_dump (x);
-      err = 1;
-    }
+  if (! mpfr_inf_p (x) || MPFR_IS_POS (x))
+    ERR_MISC ("-Inf");
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) > 0);
+  if (MPFR_NOTZERO (x) || MPFR_IS_NEG (x))
+    ERR_MISC ("+0");
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_neg (x, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_SIGN (x) < 0);
+  if (MPFR_NOTZERO (x) || MPFR_IS_POS (x))
+    ERR_MISC ("-0");
 
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_ui (x, 1) == 0);
+  if (mpfr_cmp_ui (x, 1) != 0)
+    ERR_MISC ("+1");
 
   mpfr_set_si (x, -1, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_si (x, -1) == 0);
+  if (mpfr_cmp_si (x, -1) != 0)
+    ERR_MISC ("-1");
 
   mpfr_set_ui (x, 2, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_ui (x, 2) == 0);
+  if (mpfr_cmp_ui (x, 2) != 0)
+    ERR_MISC ("2");
 
   mpfr_set_ui (x, 99, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp_ui (x, 99) == 0);
+  if (mpfr_cmp_ui (x, 99) != 0)
+    ERR_MISC ("99");
 
   mpfr_set_str (x, "9999999999999999", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (! mpfr_equal_p (x, y))
+    ERR_MISC ("9999999999999999");
 
   /* smallest normal number */
   mpfr_set_str (x, "1E-383", 10, MPFR_RNDU);
@@ -155,7 +162,8 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDU);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (! mpfr_equal_p (x, y))
+    ERR_MISC ("1E-383");
 
   /* smallest subnormal number */
   mpfr_set_str (x, "1E-398", 10, MPFR_RNDU);
@@ -163,7 +171,8 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDU);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (! mpfr_equal_p (x, y))
+    ERR_MISC ("1E-398");
 
   /* subnormal number with exponent change when we round back
      from 16 digits to 1 digit */
@@ -172,7 +181,8 @@ check_inf_nan (void)
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDD);
   mpfr_set_str (y, "1E-397", 10, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (! mpfr_equal_p (x, y))
+    ERR_MISC ("9.9E-398");
 
   /* largest number */
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
@@ -182,11 +192,12 @@ check_inf_nan (void)
     {
       mpfr_set_ui (x, 0, MPFR_RNDZ);
       mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-      MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+      if (! mpfr_equal_p (x, y))
+        ERR_MISC ("DEC64_MAX");
     }
   else
     {
-      printf ("Error in check_inf_nan for DEC64_MAX.\n");
+      printf ("Error in check_misc for DEC64_MAX.\n");
       printf ("  mpfr_get_decimal64() returned: ");
       print_decimal64 (d);
       err = 1;
@@ -199,11 +210,12 @@ check_inf_nan (void)
     {
       mpfr_set_ui (x, 0, MPFR_RNDZ);
       mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-      MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+      if (! mpfr_equal_p (x, y))
+        ERR_MISC ("-DEC64_MAX");
     }
   else
     {
-      printf ("Error in check_inf_nan for -DEC64_MAX.\n");
+      printf ("Error in check_misc for -DEC64_MAX.\n");
       printf ("  mpfr_get_decimal64() returned: ");
       print_decimal64 (d);
       err = 1;
@@ -216,7 +228,8 @@ check_inf_nan (void)
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_decimal64 (y, d, MPFR_RNDU);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (! mpfr_equal_p (x, y))
+    ERR_MISC ("DEC64_MAX (2)");
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -375,7 +388,7 @@ main (void)
   printf ("Using BID format\n");
 #endif
 #endif
-  check_inf_nan ();
+  check_misc ();
   check_random ();
   check_native ();
   check_overflow ();
