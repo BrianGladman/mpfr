@@ -66,6 +66,7 @@ check_inf_nan (void)
 {
   mpfr_t  x, y;
   _Decimal64 d;
+  int err = 0;
 
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
@@ -80,13 +81,29 @@ check_inf_nan (void)
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  if (! mpfr_inf_p (x) || mpfr_sgn (x) <= 0)
+    {
+      printf ("Error in check_inf_nan for +Inf.\n");
+      printf ("  mpfr_get_decimal64() returned: ");
+      print_decimal64 (d);
+      printf ("  mpfr_set_decimal64() set x to: ");
+      mpfr_dump (x);
+      err = 1;
+    }
 
   mpfr_set_inf (x, -1);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+  if (! mpfr_inf_p (x) || mpfr_sgn (x) >= 0)
+    {
+      printf ("Error in check_inf_nan for -Inf.\n");
+      printf ("  mpfr_get_decimal64() returned: ");
+      print_decimal64 (d);
+      printf ("  mpfr_set_decimal64() set x to: ");
+      mpfr_dump (x);
+      err = 1;
+    }
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
@@ -161,18 +178,36 @@ check_inf_nan (void)
   mpfr_set_str (x, "9.999999999999999E384", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDU);
-  MPFR_ASSERTN (d == DEC64_MAX);
-  mpfr_set_ui (x, 0, MPFR_RNDZ);
-  mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (d == DEC64_MAX)
+    {
+      mpfr_set_ui (x, 0, MPFR_RNDZ);
+      mpfr_set_decimal64 (x, d, MPFR_RNDZ);
+      MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+    }
+  else
+    {
+      printf ("Error in check_inf_nan for DEC64_MAX.\n");
+      printf ("  mpfr_get_decimal64() returned: ");
+      print_decimal64 (d);
+      err = 1;
+    }
 
   mpfr_set_str (x, "-9.999999999999999E384", 10, MPFR_RNDZ);
   mpfr_set (y, x, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDA);
-  MPFR_ASSERTN (d == -DEC64_MAX);
-  mpfr_set_ui (x, 0, MPFR_RNDZ);
-  mpfr_set_decimal64 (x, d, MPFR_RNDZ);
-  MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+  if (d == -DEC64_MAX)
+    {
+      mpfr_set_ui (x, 0, MPFR_RNDZ);
+      mpfr_set_decimal64 (x, d, MPFR_RNDZ);
+      MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
+    }
+  else
+    {
+      printf ("Error in check_inf_nan for -DEC64_MAX.\n");
+      printf ("  mpfr_get_decimal64() returned: ");
+      print_decimal64 (d);
+      err = 1;
+    }
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
@@ -185,6 +220,9 @@ check_inf_nan (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  if (err)
+    exit (1);
 }
 
 static void
