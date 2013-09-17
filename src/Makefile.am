@@ -78,7 +78,8 @@ libmpfr_la_LIBADD = @LIBOBJS@
 #        2.4.x    3:x:2
 #        3.0.x    4:x:0
 #        3.1.x    5:x:1
-libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 5:0:1
+#        3.2.x    6:x:2
+libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:2
 
 # Important note: If for some reason, srcdir is read-only at build time
 # (and you use objdir != srcdir), then you need to rebuild get_patches.c
