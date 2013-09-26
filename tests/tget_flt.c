@@ -31,6 +31,11 @@ main (void)
   float f, g, infp;
   int i;
 
+  tests_start_mpfr ();
+
+#if !defined(MPFR_ERRDIVZERO)
+  /* The definition of DBL_POS_INF involves a division by 0. This makes
+     "clang -O2 -fsanitize=undefined -fno-sanitize-recover" fail. */
   infp = (float) DBL_POS_INF;
   if (infp * 0.5 != infp)
     {
@@ -38,8 +43,7 @@ main (void)
       fprintf (stderr, "(this is probably a compiler bug, please report)\n");
       exit (1);
     }
-
-  tests_start_mpfr ();
+#endif
 
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
