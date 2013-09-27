@@ -28,8 +28,11 @@ int
 main (void)
 {
   mpfr_t x, y;
-  float f, g, infp;
+  float f, g;
   int i;
+#if !defined(MPFR_ERRDIVZERO)
+  float infp;
+#endif
 
   tests_start_mpfr ();
 
@@ -359,6 +362,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
+#if !defined(MPFR_ERRDIVZERO)
   f = mpfr_get_flt (x, MPFR_RNDN); /* first round to 2^128 (even rule),
                                       thus we should get +Inf */
   g = infp;
@@ -382,6 +386,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
+#endif
 
   mpfr_clear (x);
   mpfr_clear (y);
