@@ -336,10 +336,11 @@ main (int argc, char *argv[])
     }
 #endif
 
+  tests_start_mpfr ();
+
   check_gcc33_bug ();
   test_fixed_bugs ();
 
-  tests_start_mpfr ();
   mpfr_test_init ();
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG + 64);
