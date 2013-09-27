@@ -68,8 +68,11 @@ print_binary (long double d, int flag)
         printf ("NaN\n");
       return 0;
     }
-  if (d < (long double) 0.0 ||
-      (d == (long double) 0.0 && (1.0 / (double) d < 0.0)))
+  if (d < (long double) 0.0
+#if !defined(MPFR_ERRDIVZERO)
+      || (d == (long double) 0.0 && (1.0 / (double) d < 0.0))
+#endif
+      )
     {
       if (flag)
         printf ("-");
