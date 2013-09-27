@@ -571,6 +571,8 @@ static double double_zero = 0.0;
    (with Xcode 2.4.1, i.e. the latest one). */
 #define LVALUE(x) (&(x) == &(x) || &(x) != &(x))
 #define DOUBLE_ISINF(x) (LVALUE(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
+/* The DOUBLE_ISNAN(x) macro is also valid on long double x
+   (assuming that the compiler isn't too broken). */
 #ifdef MPFR_NANISNAN
 /* Avoid MIPSpro / IRIX64 / gcc -ffast-math (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is

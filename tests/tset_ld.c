@@ -44,8 +44,11 @@ check_gcc33_bug (void)
 static int
 Isnan_ld (long double d)
 {
-  double e = (double) d;
-  if (DOUBLE_ISNAN (e))
+  /* Do not convert d to double as this can give an overflow, which
+     may confuse compilers without IEEE 754 support (such as clang
+     -fsanitize=undefined), or trigger a trap if enabled.
+     The DOUBLE_ISNAN macro should work fine on long double. */
+  if (DOUBLE_ISNAN (d))
     return 1;
   LONGDOUBLE_NAN_ACTION (d, goto yes);
   return 0;
