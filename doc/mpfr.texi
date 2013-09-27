@@ -1557,6 +1557,8 @@ Return non-zero if @var{op} would fit in the respective C data type,
 respectively @code{unsigned long}, @code{long}, @code{unsigned int},
 @code{int}, @code{unsigned short}, @code{short}, @code{uintmax_t},
 @code{intmax_t}, when rounded to an integer in the direction @var{rnd}.
+For instance, with the @code{MPFR_RNDU} rounding mode on @minus{}0.5,
+the result will be non-zero for all these functions.
 @end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
