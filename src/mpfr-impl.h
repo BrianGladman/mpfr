@@ -530,8 +530,16 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_LIMBS_PER_FLT ((IEEE_FLT_MANT_DIG-1)/GMP_NUMB_BITS+1)
 
 /* Visual C++ doesn't support +1.0/0.0, -1.0/0.0 and 0.0/0.0
-   at compile time. */
-#if defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
+   at compile time.
+   Clang with -fsanitize=undefined is a bit similar due to a bug:
+     http://llvm.org/bugs/show_bug.cgi?id=17381
+   but even without its sanitizer, it may be better to use the
+   double_zero version until IEEE 754 division by zero is properly
+   supported:
+     http://llvm.org/bugs/show_bug.cgi?id=17000
+*/
+#if (defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)) || \
+    defined(__clang__)
 static double double_zero = 0.0;
 # define DBL_NAN (double_zero/double_zero)
 # define DBL_POS_INF ((double) 1.0/double_zero)
