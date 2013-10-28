@@ -20,6 +20,18 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* TODO: add some generic random test with cancellations. Something like:
+   1. Generate random numbers with random precisions.
+   2. Compute the sum s at some random precision and some rounding mode.
+   3. While s != 0:
+   4. Include -s in the array.
+   5. Reorder the terms randomly.
+   6. Recompute a new sum s' at some random precision and some rounding mode.
+   7. Check that |s'| < ulp(s), with a factor 1/2 for MPFR_RNDN.
+   8. Reiterate at (3) with s = s'.
+   Also add tests with intermediate overflows.
+*/
+
 #include "mpfr-test.h"
 
 static int
