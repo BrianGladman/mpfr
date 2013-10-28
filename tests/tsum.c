@@ -298,6 +298,41 @@ void check_special (void)
   mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
 }
 
+/* bug reported by Joseph S. Myers on 2013-10-27
+   https://sympa.inria.fr/sympa/arc/mpfr/2013-10/msg00015.html */
+static void
+bug20131027 (void)
+{
+  mpfr_t r, t[4];
+  mpfr_ptr p[4];
+  char *s[4] = {
+    "0x1p1000",
+    "-0x0.fffffffffffff80000000000000001p1000",
+    "-0x1p947",
+    "0x1p880"
+  };
+  int i;
+
+  mpfr_init2 (r, 53);
+  for (i = 0; i < 4; i++)
+    {
+      mpfr_init2 (t[i], i == 0 ? 53 : 1000);
+      mpfr_set_str (t[i], s[i], 0, MPFR_RNDN);
+      p[i] = t[i];
+    }
+  mpfr_sum (r, p, 4, MPFR_RNDN);
+
+  if (MPFR_NOTZERO (r))
+    {
+      printf ("mpfr_sum incorrect in bug20131027: expected 0, got\n");
+      mpfr_dump (r);
+      exit (1);
+    }
+
+  for (i = 0; i < 4; i++)
+    mpfr_clear (t[i]);
+  mpfr_clear (r);
+}
 
 int
 main (void)
@@ -308,6 +343,7 @@ main (void)
   tests_start_mpfr ();
 
   check_special ();
+  bug20131027 ();
   test_sort (1764, 1026);
   for (p = 2 ; p < 444 ; p += 17)
     for (n = 2 ; n < 1026 ; n += 42 + p)
