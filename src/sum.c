@@ -301,8 +301,7 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
       error_trap = sum_once (cur_sum, perm, n, prec + k);
       if (MPFR_LIKELY (error_trap == 0 ||
                        (!MPFR_IS_ZERO (cur_sum) &&
-                        mpfr_can_round (cur_sum,
-                                        MPFR_GET_EXP (cur_sum) - prec + 2,
+                        mpfr_can_round (cur_sum, prec - 2,
                                         MPFR_RNDN, rnd, MPFR_PREC (ret)))))
         break;
       MPFR_ZIV_NEXT (loop, prec);
