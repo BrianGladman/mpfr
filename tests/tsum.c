@@ -29,7 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    6. Recompute a new sum s' at some random precision and some rounding mode.
    7. Check that |s'| < ulp(s), with a factor 1/2 for MPFR_RNDN.
    8. Reiterate at (3) with s = s'.
-   Also add tests with intermediate overflows.
+   Also add tests with intermediate overflows and tests with underflows
+   (this matters here as we don't have subnormals).
 */
 
 #include "mpfr-test.h"
