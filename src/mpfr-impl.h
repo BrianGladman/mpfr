@@ -1958,7 +1958,8 @@ __MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *,
 __MPFR_DECLSPEC int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
 
 __MPFR_DECLSPEC int mpfr_sum_sort _MPFR_PROTO ((mpfr_srcptr *const,
-                                                unsigned long, mpfr_srcptr *));
+                                                unsigned long, mpfr_srcptr *,
+                                                mpfr_prec_t *));
 
 __MPFR_DECLSPEC int mpfr_get_cputime _MPFR_PROTO ((void));
 

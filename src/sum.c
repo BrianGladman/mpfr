@@ -45,9 +45,13 @@ static void count_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *,
                         mpfr_exp_t, mpfr_uexp_t);
 
 /* Either sort the tab in perm and returns 0
-   Or returns 1 for +INF, -1 for -INF and 2 for NAN */
+   Or returns 1 for +INF, -1 for -INF and 2 for NAN.
+   Also set *maxprec to the maximal precision of tab[0..n-1] and of the
+   initial value of *maxprec.
+*/
 int
-mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
+mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm,
+               mpfr_prec_t *maxprec)
 {
   mpfr_exp_t min, max;
   mpfr_uexp_t exp_num;
@@ -79,6 +83,8 @@ mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
           if (MPFR_GET_EXP (tab[i]) > max)
             max = MPFR_GET_EXP(tab[i]);
         }
+      if (MPFR_PREC (tab[i]) > *maxprec)
+        *maxprec = MPFR_PREC (tab[i]);
     }
   if (MPFR_UNLIKELY (sign_inf != 0))
     return sign_inf;
@@ -266,7 +272,8 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
   /* Sort and treat special cases */
   MPFR_TMP_MARK (marker);
   perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof *perm);
-  error_trap = mpfr_sum_sort (tab, n, perm);
+  prec = MPFR_PREC (ret);
+  error_trap = mpfr_sum_sort (tab, n, perm, &prec);
   /* Check if there was a NAN or a INF */
   if (MPFR_UNLIKELY (error_trap != 0))
     {
@@ -281,8 +288,7 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
       MPFR_RET (0);
     }
 
-  /* Initial precision */
-  prec = MAX (MPFR_PREC (tab[0]), MPFR_PREC (ret));
+  /* Initial precision is max(prec(ret),prec(tab[0]),...,prec(tab[n-1])) */
   k = MPFR_INT_CEIL_LOG2 (n) + 1;
   prec += k + 2;
   mpfr_init2 (cur_sum, prec);

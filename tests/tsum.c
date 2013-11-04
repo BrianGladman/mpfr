@@ -136,6 +136,7 @@ test_sort (mpfr_prec_t f, unsigned long n)
   mpfr_ptr *tabtmp;
   mpfr_srcptr *perm;
   unsigned long i;
+  mpfr_prec_t prec = MPFR_PREC_MIN;
 
   /* Init stuff */
   tab = (mpfr_t *) (*__gmp_allocate_func) (n * sizeof (mpfr_t));
@@ -150,7 +151,7 @@ test_sort (mpfr_prec_t f, unsigned long n)
       tabtmp[i] = tab[i];
     }
 
-  mpfr_sum_sort ((mpfr_srcptr *)tabtmp, n, perm);
+  mpfr_sum_sort ((mpfr_srcptr *)tabtmp, n, perm, &prec);
 
   if (check_is_sorted (n, perm) == 0)
     {
