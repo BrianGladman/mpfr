@@ -35,7 +35,7 @@ special (void)
   mpfr_init (z);
 
   mpfr_set_nan (x);
-  mpfr_hypot (z, x, y, MPFR_RNDN);
+  mpfr_hypot (z, x, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (z));
 
   mpfr_set_inf (x, 1);
