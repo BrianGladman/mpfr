@@ -1028,7 +1028,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 }
 
 /* Determine the different parts of the string representation of the regular
-   number P when SPEC.SPEC is 'e', 'E', 'g', or 'G'.
+   number P when spec.spec is 'e', 'E', 'g', or 'G'.
    DEC_INFO contains the previously computed exponent and string or is NULL.
 
    return -1 if some field > INT_MAX */
@@ -1155,7 +1155,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 }
 
 /* Determine the different parts of the string representation of the regular
-   number P when SPEC.SPEC is 'f', 'F', 'g', or 'G'.
+   number P when spec.spec is 'f', 'F', 'g', or 'G'.
    DEC_INFO contains the previously computed exponent and string or is NULL.
 
    return -1 if some field of number_parts is greater than INT_MAX */
@@ -1547,7 +1547,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             /* fractional part */
             {
               np->point = MPFR_DECIMAL_POINT;
-              np->fp_trailing_zeros = (spec.spec == 'g' && spec.spec == 'G') ?
+              np->fp_trailing_zeros = (spec.spec == 'g' || spec.spec == 'G') ?
                 spec.prec - 1 : spec.prec;
             }
           else if (spec.alt)
