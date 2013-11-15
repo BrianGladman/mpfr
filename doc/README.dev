@@ -929,7 +929,11 @@ the following prototype tfunc.c (to put in the directory 'tests').
 This file performs random tests for values of x between -5 and 5, with
 a precision varying from 2 to 100.
 
-You can add your own tests to this basic file.
+You can add your own tests to this basic file. When adding the expected
+result, do NOT use the one obtained from the MPFR function! Otherwise,
+if this function is buggy, the test will be wrong and the function will
+remain buggy.
+
 Do not forget to add 'tfunc' in the variable check_PROGRAMS
 of tests/Makefile.am
 
