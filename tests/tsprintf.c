@@ -458,7 +458,7 @@ decimal (void)
   check_sprintf ("1.00000000000000000000000000000", "%#.30Rg", x);
   check_sprintf ("1", "%.30Rg", x);
   mpfr_set_ui (x, 0, MPFR_RNDN);
-  check_sprintf ("0.000000000000000000000000000000", "%#.30Rg", x);
+  check_sprintf ("0.00000000000000000000000000000", "%#.30Rg", x);
   check_sprintf ("0", "%.30Rg", x);
 
   /* following tests with precision 53 bits */
