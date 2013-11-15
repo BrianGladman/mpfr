@@ -455,9 +455,15 @@ decimal (void)
   check_sprintf ("1.999900  ", "%-#10.7RG", x);
   check_sprintf ("1.9999    ", "%-10.7RG", x);
   mpfr_set_ui (x, 1, MPFR_RNDN);
+  check_sprintf ("1.", "%#.1Rg", x);
+  check_sprintf ("1.   ", "%-#5.1Rg", x);
+  check_sprintf ("  1.0", "%#5.2Rg", x);
   check_sprintf ("1.00000000000000000000000000000", "%#.30Rg", x);
   check_sprintf ("1", "%.30Rg", x);
   mpfr_set_ui (x, 0, MPFR_RNDN);
+  check_sprintf ("0.", "%#.1Rg", x);
+  check_sprintf ("0.   ", "%-#5.1Rg", x);
+  check_sprintf ("  0.0", "%#5.2Rg", x);
   check_sprintf ("0.00000000000000000000000000000", "%#.30Rg", x);
   check_sprintf ("0", "%.30Rg", x);
 
