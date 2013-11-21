@@ -162,7 +162,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
-  mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
+  mpz_t *B;
   int compared;
   int inexact = 0;  /* 0 means: result y not set yet */
   mpfr_exp_t err_s, err_t;
