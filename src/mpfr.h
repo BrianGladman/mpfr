@@ -960,7 +960,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
     _t = (mpfr_kind_t) _k;                                     \
     _s = 1;                                                    \
   } else {                                                     \
-    _t = (mpfr_kind_t) -k;                                     \
+    _t = (mpfr_kind_t) - _k;                                   \
     _s = -1;                                                   \
   }                                                            \
   _e = _t == MPFR_REGULAR_KIND ? (e) :                         \
