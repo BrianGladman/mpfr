@@ -250,9 +250,9 @@ dummy_add (long *a, long *b)
 {
   mpfr_t x, y, z;
   long *r = dummy_new ();
-  mpfr_custom_init_set (x, MPFR_REGULAR_KIND, 0, p, &r[2]);
+  mpfr_custom_init_set (x, 0 + MPFR_REGULAR_KIND, 0, p, &r[2]);
   (mpfr_custom_init_set) (y, a[0], a[1], p, &a[2]);
-  mpfr_custom_init_set (z, b[0], b[1], p, &b[2]);
+  mpfr_custom_init_set (z, 0 + b[0], b[1], p, &b[2]);
   mpfr_add (x, y, z, MPFR_RNDN);
   r[0] = (mpfr_custom_get_kind) (x);
   r[1] = (mpfr_custom_get_exp) (x);
