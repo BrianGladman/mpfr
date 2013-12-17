@@ -472,8 +472,10 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* prec bits corresponds to ysize limbs */
       ysize_bits = ysize * GMP_NUMB_BITS;
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits */
-      y = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
-      y += ysize; /* y has (ysize+1) allocated limbs */
+      /* we need to allocate one more limb to work around bug
+         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html */
+      y = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 2);
+      y += ysize; /* y has (ysize+2) allocated limbs */
 
       /* pstr_size is the number of characters we read in pstr->mant
          to have at least ysize full limbs.
