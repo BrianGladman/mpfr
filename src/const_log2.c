@@ -29,7 +29,7 @@ MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_log2, mpfr_const_log2_internal);
 #else
 MPFR_DECL_INIT_CACHE(__gmpfr_normal_log2, mpfr_const_log2_internal);
 MPFR_DECL_INIT_CACHE(__gmpfr_logging_log2, mpfr_const_log2_internal);
-mpfr_cache_ptr MPFR_THREAD_ATTR __gmpfr_cache_const_log2 = __gmpfr_normal_log2;
+MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2 = __gmpfr_normal_log2;
 #endif
 
 /* Set User interface */

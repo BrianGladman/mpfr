@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-mpfr_rnd_t MPFR_THREAD_ATTR __gmpfr_default_rounding_mode = MPFR_RNDN;
+MPFR_THREAD_ATTR mpfr_rnd_t __gmpfr_default_rounding_mode = MPFR_RNDN;
 
 void
 mpfr_set_default_rounding_mode (mpfr_rnd_t rnd_mode)

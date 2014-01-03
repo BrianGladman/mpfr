@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* default is IEEE double precision, i.e. 53 bits */
-mpfr_prec_t MPFR_THREAD_ATTR __gmpfr_default_fp_bit_precision \
+MPFR_THREAD_ATTR mpfr_prec_t __gmpfr_default_fp_bit_precision \
   = IEEE_DBL_MANT_DIG;
 
 void

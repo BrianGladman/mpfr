@@ -28,7 +28,7 @@ MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_pi, mpfr_const_pi_internal);
 #else
 MPFR_DECL_INIT_CACHE(__gmpfr_normal_pi, mpfr_const_pi_internal);
 MPFR_DECL_INIT_CACHE(__gmpfr_logging_pi, mpfr_const_pi_internal);
-mpfr_cache_ptr MPFR_THREAD_ATTR __gmpfr_cache_const_pi = __gmpfr_normal_pi;
+MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi = __gmpfr_normal_pi;
 #endif
 
 /* Set User Interface */

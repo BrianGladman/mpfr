@@ -22,10 +22,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-mpfr_flags_t MPFR_THREAD_ATTR __gmpfr_flags = 0;
+MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags = 0;
 
-mpfr_exp_t MPFR_THREAD_ATTR __gmpfr_emin = MPFR_EMIN_DEFAULT;
-mpfr_exp_t MPFR_THREAD_ATTR __gmpfr_emax = MPFR_EMAX_DEFAULT;
+MPFR_THREAD_ATTR mpfr_exp_t __gmpfr_emin = MPFR_EMIN_DEFAULT;
+MPFR_THREAD_ATTR mpfr_exp_t __gmpfr_emax = MPFR_EMAX_DEFAULT;
 
 #undef mpfr_get_emin
 
