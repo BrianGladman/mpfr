@@ -24,7 +24,7 @@ the faq.html file on the MPFR web site. See the update-faq script.
 <xsl:template match="/">
   <xsl:text>&#10;</xsl:text>
   <xsl:comment>
-Copyright 2000-2013 Free Software Foundation, Inc.
+Copyright 2000-2014 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

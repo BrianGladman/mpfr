@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_sj and mpfr_get_uj.
 
-Copyright 2004-2013 Free Software Foundation, Inc.
+Copyright 2004-2014 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

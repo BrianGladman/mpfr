@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_COPYRIGHT([
-Copyright 1999-2013 Free Software Foundation, Inc.
+Copyright 1999-2014 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
