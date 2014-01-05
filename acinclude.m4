@@ -273,6 +273,7 @@ int main (void) {
   volatile double d = 0.0, x;
   x = 0.0 / d;
   x = 1.0 / d;
+  (void) x;
   return 0;
 }
 ]])],
