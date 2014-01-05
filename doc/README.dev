@@ -240,6 +240,16 @@ To make a release (for the MPFR team):
 
      Test with both "make check" and the worst cases.
 
+     Check various warnings, in particular for obsolescent features.
+     With GCC: "-Wall -Wold-style-declaration -Wold-style-definition
+     -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
+     -Wmissing-field-initializers". They can easily be checked in
+     automatic tests by adding "-Werror -Wno-error=unused-function",
+     but this needs:
+       * GCC 4.9 (at the time of writing, a GCC trunk snapshot)
+       * a patched autoconf:
+     http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
+
      Check that there are no abnormal regressions in the timings (both
      for 100, 1000, 10000 digits, http://mpfr.org/mpfr-current/timings.html,
      and for small precision, using the mbench program, see mpfr/mbench).
