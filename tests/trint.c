@@ -187,6 +187,7 @@ test_against_libc (void)
 {
   mpfr_rnd_t r = MPFR_RNDN;
 
+  (void) r;  /* avoid a warning by using r */
 #if HAVE_ROUND
   TEST_FCT (round);
 #endif
