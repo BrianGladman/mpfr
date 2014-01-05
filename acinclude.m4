@@ -198,7 +198,7 @@ if test -n "$GCC"; then
 #include <fenv.h>
 #endif
 static double get_max (void);
-int main() {
+int main (void) {
   double x = 0.5;
   double y;
   int i;
@@ -232,7 +232,7 @@ dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
-int main() {
+int main (void) {
   double x = 2.22507385850720138309e-308;
   fprintf (stderr, "%e\n", x / 2.0);
   return 2.0 * (x / 2.0) != x;
@@ -250,7 +250,7 @@ dnl Check if signed zeros are supported. Note: the test will fail
 dnl if the division by 0 generates a trap.
 AC_CACHE_CHECK([for signed zeros], mpfr_cv_have_signedz, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-int main() {
+int main (void) {
   return 1.0 / 0.0 == 1.0 / -0.0;
 }
 ]])],
@@ -269,7 +269,7 @@ dnl For the developers: to check whether all these tests are disabled,
 dnl configure MPFR with "-DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1".
 AC_CACHE_CHECK([if the FP division by 0 fails], mpfr_cv_errdivzero, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-int main() {
+int main (void) {
   volatile double d = 0.0, x;
   x = 0.0 / d;
   x = 1.0 / d;
@@ -297,7 +297,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifndef NAN
 # define NAN (0.0/0.0)
 #endif
-int main() {
+int main (void) {
   double d;
   d = NAN;
   return d != d;
@@ -443,7 +443,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #define MPFR_USE_C11_THREAD_SAFE 1
 #include "mpfr-thread.h"
 MPFR_THREAD_ATTR int x = 17;
-int main() {
+int main (void) {
   return x != 17;
 }
   ]])],
@@ -468,7 +468,7 @@ then
  #define MPFR_USE_THREAD_SAFE 1
  #include "mpfr-thread.h"
  MPFR_THREAD_ATTR int x = 17;
- int main() {
+ int main (void) {
    return x != 17;
  }
    ]])],
@@ -502,7 +502,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 /* Test if Static Assertions work */
 MPFR_DECL_STATIC_ASSERT(sizeof(char) <= sizeof(int));
 
-int main() {
+int main (void) {
   MPFR_DECL_STATIC_ASSERT(sizeof(int) <= sizeof(long));
   int x;
   x = 1;
