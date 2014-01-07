@@ -636,7 +636,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mask = ~MPFR_LIMB_MASK (sh);
       cp[0] &= mask;
 
-      /* Substract the mantissa c from b in a */
+      /* Subtract the mantissa c from b in a */
       ap = MPFR_MANT(a);
       mpn_sub_n (ap, bp, cp, n);
       DEBUG( mpfr_print_mant_binary("Sub=  ", ap, p) );

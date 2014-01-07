@@ -642,7 +642,7 @@ its goals too.
 
 ===========================================================================
 
-ZivLoop Controler
+ZivLoop Controller
 
 Ziv strategy is quite used in MPFR. In order to factorize the code, you
 could use theses macros:
@@ -702,7 +702,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
   [Initialize the intermediate variables using mpfr_init2]
   MPFR_SAVE_EXPO_MARK (expo);            /* Maximal range for exponent */
 
-  MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
+  MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controller */
   for (;;)                               /* Infinite loop */
     {
       [Compute an estimation of the function and]
@@ -712,7 +712,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       [Use `mpfr_set_prec` to resize all needed intermediate variables]
     }
-  MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controler */
+  MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controller */
 
   inexact = mpfr_set (rop, temp, rnd);   /* Set rop to the computed value */
   [Clear all intermediate variables]

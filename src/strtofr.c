@@ -565,7 +565,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
           /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
              with overflow checking
-             and check that we can add/substract 2 to exp without overflow */
+             and check that we can add/subtract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -(mpfr_exp_t) pstr_size,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
@@ -625,7 +625,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
           /* compute the exponent of y */
           /* exp += exp_z + ysize_bits with overflow checking
-             and check that we can add/substract 2 to exp without overflow */
+             and check that we can add/subtract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
@@ -697,7 +697,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                        2 * ysize, z, ysize);
 
           /* exp -= exp_z + ysize_bits with overflow checking
-             and check that we can add/substract 2 to exp without overflow */
+             and check that we can add/subtract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,

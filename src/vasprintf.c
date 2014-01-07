@@ -358,7 +358,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 
 /* With a C++ compiler wchar_t and enumeration in va_list are converted to
    integer type : int, unsigned int, long or unsigned long (unfortunately,
-   this is implementation dependant).
+   this is implementation dependent).
    We follow gmp which assumes in print/doprnt.c that wchar_t is converted
    to int (because wchar_t <= int).
    For wint_t, we assume that the case WINT_MAX < INT_MAX yields an
