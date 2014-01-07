@@ -68,7 +68,7 @@ Table of contents:
    2^(MPFR_EXP(b)-MPFR_PREC(b)+err).
 
 - mpfr_set_q first tries to convert the numerator and the denominator
-  to mpfr_t. But this convertion may fail even if the correctly rounded
+  to mpfr_t. But this conversion may fail even if the correctly rounded
   result is representable. New way to implement:
   Function q = a/b.  nq = PREC(q) na = PREC(a) nb = PREC(b)
     If na < nb
