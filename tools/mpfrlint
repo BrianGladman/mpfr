@@ -129,6 +129,11 @@ autoconf minimal versions differ:
   acinclude.m4: $acv2
 EOF
 
+# In case of problems, one can also skip files or use "grep -v"...
+which codespell > /dev/null 2> /dev/null &&
+  codespell -q3 -S algorithm2e.sty,algorithms.tex,texinfo.tex \
+    AUTHORS BUGS INSTALL NEWS README TODO doc examples {src,tests}/*.{c,h}
+
 cd "$dir"
 "`dirname -- "$0"`"/check_inits_clears
 
