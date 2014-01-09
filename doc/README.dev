@@ -160,7 +160,7 @@ To make a release (for the MPFR team):
      for the final release.
      Update the libtool version too (see src/Makefile.am). Check with
      tools/ck-version-info (this check will also be done automatically
-     by "make dist").
+     by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
 
   3) Update the NEWS file, in particular say if the release is binary
@@ -173,7 +173,7 @@ To make a release (for the MPFR team):
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
 
   5) Make sure that any change has been committed (with "svn st").
-     Generate the release version with "make dist".
+     Generate the release version with "make distcheck".
 
   6) Test the release version on different machines, with --enable-assert
      set to yes, no (default), none and full respectively, with and
