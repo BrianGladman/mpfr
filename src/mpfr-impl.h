@@ -41,6 +41,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <limits.h>
 
+/* The macros defined in mpfr-cvers.h do not depend on anything,
+   so that it is better to include this header file early: then
+   it can be used by any other header. */
+#include "mpfr-cvers.h"
+
 #if _MPFR_EXP_FORMAT == 4
 /* mpfr_exp_t will be defined as intmax_t */
 # include "mpfr-intmax.h"
@@ -107,52 +112,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done.
-   If the use of detection macros is needed in the future, this could be
-   moved below (after the detection macros are defined). */
+   the support of thread-local variables. A configure check is now done. */
 #include "mpfr-thread.h"
 
-
-/******************************************************
- ***************** Detection macros *******************
- ******************************************************/
-
-/* Macros to detect STDC, GCC, GLIBC, GMP and ICC version */
-#if defined(__STDC_VERSION__)
-# define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
-#elif defined(__STDC__)
-# define __MPFR_STDC(version) (0 == (version))
-#else
-# define __MPFR_STDC(version) 0
-#endif
-
-#if defined(_WIN32)
-/* Under MS Windows (e.g. with VS2008 or VS2010), Intel's compiler doesn't
-   support/enable extensions like the ones seen under GNU/Linux.
-   https://sympa.inria.fr/sympa/arc/mpfr/2011-02/msg00032.html */
-# define __MPFR_ICC(a,b,c) 0
-#elif defined(__ICC)
-# define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+(c))
-#elif defined(__INTEL_COMPILER)
-# define __MPFR_ICC(a,b,c) (__INTEL_COMPILER >= (a)*100+(b)*10+(c))
-#else
-# define __MPFR_ICC(a,b,c) 0
-#endif
-
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && ! __MPFR_ICC(0,0,0)
-# define __MPFR_GNUC(a,i) \
- (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0) >= MPFR_VERSION_NUM(a,i,0))
-#else
-# define __MPFR_GNUC(a,i) 0
-#endif
-
-#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-# define __MPFR_GLIBC(a,i) \
- (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0) >= MPFR_VERSION_NUM(a,i,0))
-#else
-# define __MPFR_GLIBC(a,i) 0
-#endif
-
+/* Macro to detect the GMP version */
 #if defined(__GNU_MP_VERSION) && \
     defined(__GNU_MP_VERSION_MINOR) && \
     defined(__GNU_MP_VERSION_PATCHLEVEL)

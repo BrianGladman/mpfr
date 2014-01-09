@@ -23,6 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef __MPFR_STATIC_ASSERT_H__
 #define __MPFR_STATIC_ASSERT_H__
 
+#include "mpfr-cvers.h"  /* for __MPFR_GNUC */
+
 /* How to use:
    ===========
    MPFR_DECL_STATIC_ASSERT:
