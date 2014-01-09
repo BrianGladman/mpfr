@@ -506,7 +506,8 @@ MPFR_DECL_STATIC_ASSERT(sizeof(char) <= sizeof(int));
 int main (void) {
   MPFR_DECL_STATIC_ASSERT(sizeof(int) <= sizeof(long));
   int x;
-  x = 1;
+  (void) (x = 1);  /* cast to void: avoid a warning, at least with GCC */
+  /* Test of the macro after a declaraction and a statement. */
   MPFR_STAT_STATIC_ASSERT(sizeof(short) <= sizeof(int));
   return 0;
 }
