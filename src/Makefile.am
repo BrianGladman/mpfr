@@ -23,8 +23,8 @@ BUILT_SOURCES = mparam.h
 
 lib_LTLIBRARIES = libmpfr.la
 
-libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-gmp.h mpfr-impl.h mpfr-intmax.h \
-mpfr-longlong.h mpfr-sassert.h mpfr-thread.h 				\
+libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-cvers.h mpfr-gmp.h          \
+mpfr-impl.h mpfr-intmax.h mpfr-longlong.h mpfr-sassert.h mpfr-thread.h 	\
 exceptions.c extract.c uceil_exp2.c					\
 uceil_log2.c ufloor_log2.c add.c add1.c add_ui.c agm.c clear.c cmp.c	\
 cmp_abs.c cmp_si.c cmp_ui.c comparisons.c div_2exp.c div_2si.c		\
