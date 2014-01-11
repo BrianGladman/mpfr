@@ -99,6 +99,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp_ui (x, 0) != 0 || MPFR_IS_POS(x))
     {
       printf ("Error in mpfr_set_d on -0\n");
+      printf ("d = %g, x = ", d);
+      mpfr_dump (x);
       exit (1);
     }
 #endif  /* HAVE_SIGNEDZ */
