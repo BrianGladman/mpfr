@@ -204,6 +204,7 @@ check_set_get (long double d)
           mpfr_dump (x);
           printf ("  e = ");
           print_binary (e, 1);
+          printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
 #ifdef MPFR_NANISNAN
           if (Isnan_ld(d) || Isnan_ld(e))
             printf ("The reason is that NAN == NAN. Please look at the "
