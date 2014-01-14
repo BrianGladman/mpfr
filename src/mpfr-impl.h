@@ -392,7 +392,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 #define MPFR_ASSERTN(expr)  \
-   ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY( (ASSERT_FAIL(expr),0) )))
+  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing.
    MPFR_DBGRES(assignment): to be used when the result is tested only
