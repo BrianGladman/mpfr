@@ -41,7 +41,8 @@ Changes from versions 3.1.* to version 3.2.0:
   --with-gmp-build.
 - Updated tuning parameters.
 - Improved MPFR manual.
-- Bug fixes.
+- Bug fixes. In particular, a speed improvement when the --enable-assert
+  or --enable-assert=full configure option is used with GCC.
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.
