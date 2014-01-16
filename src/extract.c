@@ -40,7 +40,7 @@ mpfr_extract (mpz_ptr y, mpfr_srcptr p, unsigned int i)
   /* as 0 <= |p| < 1, we don't have to care with infinities, NaN, ... */
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (p));
 
-  _mpz_realloc (y, two_i_2);
+  mpz_realloc2 (y, two_i_2 * GMP_NUMB_BITS);
   if ((mpfr_uexp_t) size_p < two_i)
     {
       MPN_ZERO (PTR(y), two_i_2);

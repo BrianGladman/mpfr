@@ -163,7 +163,6 @@ __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
 #define EXP(x) ((x)->_mp_exp)
 #define PREC(x) ((x)->_mp_prec)
 #define ALLOC(x) ((x)->_mp_alloc)
-#define MPZ_REALLOC(z,n) ((n) > ALLOC(z) ? _mpz_realloc(z,n) : PTR(z))
 
 /* Non IEEE float supports -- needs to detect them with proper configure */
 #undef  XDEBUG
