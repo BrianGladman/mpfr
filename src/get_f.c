@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#ifndef WANT_MINI_GMP
 /* Since MPFR-3.0, return the usual inexact value.
    The erange flag is set if an error occurred in the conversion
    (y is NaN, +Inf, or -Inf that have no equivalent in mpf)
@@ -146,3 +147,4 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
   return inex;
 }
+#endif

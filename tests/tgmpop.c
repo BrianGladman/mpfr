@@ -21,6 +21,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifndef WANT_MINI_GMP
 #include "mpfr-test.h"
 
 #define CHECK_FOR(str, cond)                                            \
@@ -1260,4 +1261,10 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
+#else
+int
+main ()
+{
+  return 0;
+}
+#endif

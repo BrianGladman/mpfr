@@ -48,7 +48,9 @@ check_round_p (void)
           printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
                   "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
                   r1, r2, n, (long) err, (unsigned long) p);
+#ifndef WANT_MINI_GMP
           gmp_printf ("%NX\n", buf, n);
+#endif
           exit (1);
         }
     }

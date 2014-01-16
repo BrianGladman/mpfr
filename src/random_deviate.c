@@ -36,6 +36,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * is undefined if e <= RANDOM_CHUNK.
  */
 
+/* this file cannot compile with mini-gmp since it uses mpq_t */
+#ifndef WANT_MINI_GMP
 #define MPFR_NEED_LONGLONG_H
 #include "random_deviate.h"
 
@@ -411,3 +413,4 @@ mpfr_random_deviate_value (int neg, unsigned long n,
     }
   return inex;
 }
+#endif

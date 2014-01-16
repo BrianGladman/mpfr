@@ -16,7 +16,7 @@ EXTRA_DIST = round_raw_generic.c jyn_asympt.c x86/core2/mparam.h        \
 	amd/amdfam10/mparam.h powerpc32/mparam.h hppa/mparam.h          \
         mips/mparam.h
 
-include_HEADERS = mpfr.h mpf2mpfr.h
+include_HEADERS = mpfr.h mpf2mpfr.h mpfr-mini-gmp.h
 
 BUILT_SOURCES = mparam.h
 
@@ -58,7 +58,7 @@ sub_d.c d_sub.c mul_d.c div_d.c d_div.c li2.c rec_sqrt.c min_prec.c	\
 buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
 scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
 grandom.c fpif.c set_float128.c get_float128.c rndna.c nrandom.c        \
-random_deviate.h random_deviate.c erandom.c
+random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 

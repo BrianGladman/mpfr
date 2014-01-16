@@ -320,6 +320,17 @@ AC_ARG_ENABLE(float128,
       *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
      esac])
 
+test_libgmp=__gmpz_init
+
+AC_ARG_ENABLE(mini-gmp,
+   [--enable-mini-gmp build MPFR with mini-gmp [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([WANT_MINI_GMP],1,[Use mini-gmp])
+           test_libgmp=mpz_init;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-mini-gmp: yes or no]) ;;
+     esac])
+
 dnl Check if compiler is ICC, and if such a case, disable GCC
 dnl And add some specific flags.
 dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).
@@ -512,9 +523,8 @@ You probably need to change some of the GMP or MPFR compile options.])],
        [AC_MSG_RESULT([can't test])])
 fi
 
-
 dnl Check if we can link with GMP
-AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
+AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
 Please read the INSTALL file -- see "In case of problem".)])
 

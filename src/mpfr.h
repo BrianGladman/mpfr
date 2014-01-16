@@ -312,6 +312,9 @@ typedef enum {
 #if defined(__MPFR_WITHIN_MPFR) && __GMP_LIBGMP_DLL
 # define __MPFR_DECLSPEC __GMP_DECLSPEC_EXPORT
 #else
+#ifndef __GMP_DECLSPEC
+# define __GMP_DECLSPEC
+#endif
 # define __MPFR_DECLSPEC __GMP_DECLSPEC
 #endif
 
@@ -440,10 +443,15 @@ __MPFR_DECLSPEC int
 __MPFR_DECLSPEC void mpfr_set_nan _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 __MPFR_DECLSPEC void mpfr_set_zero _MPFR_PROTO ((mpfr_ptr, int));
+
+#ifndef WANT_MINI_GMP
+  /* mini-gmp does not provide mpf_t, we disable the following functions */
 __MPFR_DECLSPEC int
   mpfr_set_f _MPFR_PROTO ((mpfr_ptr, mpf_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 __MPFR_DECLSPEC int
   mpfr_get_f _MPFR_PROTO ((mpf_ptr, mpfr_srcptr, mpfr_rnd_t));
+#endif
 __MPFR_DECLSPEC int mpfr_set_si _MPFR_PROTO ((mpfr_ptr, long, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set_ui _MPFR_PROTO ((mpfr_ptr, unsigned long, mpfr_rnd_t));
@@ -451,8 +459,20 @@ __MPFR_DECLSPEC int
   mpfr_set_si_2exp _MPFR_PROTO ((mpfr_ptr, long, mpfr_exp_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set_ui_2exp _MPFR_PROTO ((mpfr_ptr,unsigned long,mpfr_exp_t,mpfr_rnd_t));
+#ifndef WANT_MINI_GMP
+  /* mini-gmp does not provide mpq_t, we disable the following functions */
 __MPFR_DECLSPEC int
   mpfr_set_q _MPFR_PROTO ((mpfr_ptr, mpq_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_mul_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                             mpq_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_div_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                             mpq_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_add_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                             mpq_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_sub_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                             mpq_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_cmp_q _MPFR_PROTO ((mpfr_srcptr, mpq_srcptr));
+#endif
 __MPFR_DECLSPEC int
   mpfr_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
 __MPFR_DECLSPEC int
@@ -768,18 +788,6 @@ __MPFR_DECLSPEC int mpfr_sub_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_z_sub _MPFR_PROTO ((mpfr_ptr, mpz_srcptr,
                                              mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_cmp_z _MPFR_PROTO ((mpfr_srcptr, mpz_srcptr));
-
-__MPFR_DECLSPEC int mpfr_mul_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                             mpq_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_div_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                             mpq_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_add_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                             mpq_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_sub_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                             mpq_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_cmp_q _MPFR_PROTO ((mpfr_srcptr, mpq_srcptr));
-
-__MPFR_DECLSPEC int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 
 __MPFR_DECLSPEC int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                                            mpfr_srcptr, mpfr_rnd_t));
