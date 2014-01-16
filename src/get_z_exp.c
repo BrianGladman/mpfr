@@ -55,6 +55,10 @@ mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
 
   fn = MPFR_LIMB_SIZE(f);
 
+  /* FIXME: temporary assert for security. Too large values should
+     probably be handled like infinities. */
+  MPFR_ASSERTN (fn <= INT_MAX);  /* due to SIZ(z) being an int */
+
   /* check whether allocated space for z is enough */
   mpz_realloc2 (z, (mp_bitcnt_t) fn * GMP_NUMB_BITS);
 
