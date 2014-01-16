@@ -56,7 +56,7 @@ mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
   fn = MPFR_LIMB_SIZE(f);
 
   /* check whether allocated space for z is enough */
-  mpz_realloc2 (z, fn * GMP_NUMB_BITS);
+  mpz_realloc2 (z, (mp_bitcnt_t) fn * GMP_NUMB_BITS);
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (f));
   if (MPFR_LIKELY (sh))
