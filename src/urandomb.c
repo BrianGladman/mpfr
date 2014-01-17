@@ -98,6 +98,8 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
         }
       if (cnt != 0)
         mpn_lshift (rp + k, rp, nlimbs, cnt);
+      else if (k != 0)
+        mpn_copyi (rp + k, rp, nlimbs);
       if (k != 0)
         MPN_ZERO (rp, k);
     }
