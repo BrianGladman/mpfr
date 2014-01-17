@@ -62,24 +62,16 @@ check (const char *xs, const char *ys, mpfr_rnd_t rnd_mode,
   test_mul(zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str1 (zz, res) )
     {
-      printf ("(1)mpfr_mul failed for x=%s y=%s with rnd=%s\n",
+      printf ("(1) mpfr_mul failed for x=%s y=%s with rnd=%s\n",
               xs, ys, mpfr_print_rnd_mode (rnd_mode));
       printf ("correct is %s, mpfr_mul gives ", res);
-      mpfr_out_str(stdout, 10, 0, zz, MPFR_RNDN);
-      /*
-        printf("\nBinary forms:\nxx=");
-        mpfr_print_binary (xx);
-        printf("\nyy=");
-        mpfr_print_binary (yy);
-        printf("\nzz=");
-        mpfr_print_binary(zz);
-        printf("\nre=");
-        mpfr_set_str1 (zz, res);
-        mpfr_print_binary(zz);
-        putchar('\n');*/
+      mpfr_out_str (stdout, 10, 0, zz, MPFR_RNDN);
+      putchar ('\n');
       exit (1);
     }
-  mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+  mpfr_clear (xx);
+  mpfr_clear (yy);
+  mpfr_clear (zz);
 }
 
 static void
@@ -96,18 +88,8 @@ check53 (const char *xs, const char *ys, mpfr_rnd_t rnd_mode, const char *zs)
       printf ("(2) mpfr_mul failed for x=%s y=%s with rnd=%s\n",
               xs, ys, mpfr_print_rnd_mode(rnd_mode));
       printf ("correct result is %s,\n mpfr_mul gives ", zs);
-      mpfr_out_str(stdout, 10, 0, zz, MPFR_RNDN);
-      /*
-        printf("\nBinary forms:\nxx=");
-        mpfr_print_binary (xx);
-        printf("\nyy=");
-        mpfr_print_binary (yy);
-        printf("\nzz=");
-        mpfr_print_binary(zz);
-        printf("\nre=");
-        mpfr_set_str1 (zz, zs);
-        mpfr_print_binary(zz);
-        putchar('\n'); */
+      mpfr_out_str (stdout, 10, 0, zz, MPFR_RNDN);
+      putchar ('\n');
       exit (1);
     }
   mpfr_clears (xx, yy, zz, (mpfr_ptr) 0);
@@ -128,8 +110,8 @@ check24 (const char *xs, const char *ys, mpfr_rnd_t rnd_mode, const char *zs)
       printf ("(3) mpfr_mul failed for x=%s y=%s with "
               "rnd=%s\n", xs, ys, mpfr_print_rnd_mode(rnd_mode));
       printf ("correct result is gives %s, mpfr_mul gives ", zs);
-      mpfr_out_str(stdout, 10, 0, zz, MPFR_RNDN);
-      putchar('\n');
+      mpfr_out_str (stdout, 10, 0, zz, MPFR_RNDN);
+      putchar ('\n');
       exit (1);
     }
   mpfr_clears (xx, yy, zz, (mpfr_ptr) 0);
@@ -195,8 +177,8 @@ check_sign (void)
   if (mpfr_cmp_ui (a, 4) )
     {
       printf ("2.0*2.0 gives \n");
-      mpfr_out_str(stdout, 10, 0, a, MPFR_RNDN);
-      putchar('\n');
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      putchar ('\n');
       exit (1);
     }
   mpfr_clear(a); mpfr_clear(b);
