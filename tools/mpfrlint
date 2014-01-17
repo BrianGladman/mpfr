@@ -84,7 +84,7 @@ done
 # as they need <stdarg.h> (HAVE_STDARG defined).
 for file in tests/*.c
 do
-  sed '/#if\(def\)\? *HAVE_STDARG/,/#\(endif\|else\) .*HAVE_STDARG/d
+  sed '/#if\(def\| *defined *(\)\? *HAVE_STDARG/,/#\(endif\|else\) .*HAVE_STDARG/d
        /\/\*.*\*\//d
        /\/\*/,/\*\//d' $file | grep -q "mpfr_[a-z]*printf" && \
     echo "$file contains unprotected mpfr_printf-like function calls"
