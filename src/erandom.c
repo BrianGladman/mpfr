@@ -102,4 +102,10 @@ mpfr_erandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
   mpfr_random_deviate_clear (x);
   return inex;
 }
+
+#else
+
+/* Avoid an empty translation unit (see ISO C99, 6.9) */
+typedef int foo;
+
 #endif

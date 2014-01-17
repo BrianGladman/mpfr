@@ -213,4 +213,10 @@ mpfr_asprintf (char **pp, const char *fmt, ...)
 
   return ret;
 }
+
+#else /* HAVE_STDARG */
+
+/* Avoid an empty translation unit (see ISO C99, 6.9) */
+typedef int foo;
+
 #endif /* HAVE_STDARG */

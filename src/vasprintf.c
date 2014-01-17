@@ -2071,4 +2071,9 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   return -1;
 }
 
+#else /* HAVE_STDARG */
+
+/* Avoid an empty translation unit (see ISO C99, 6.9) */
+typedef int foo;
+
 #endif /* HAVE_STDARG */

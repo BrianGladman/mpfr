@@ -20,9 +20,13 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* The following include will do 2 things: include the config.h
+   if there is one (as it may define WANT_MINI_GMP), and avoid
+   an empty translation unit (see ISO C99, 6.9). */
+#include "mpfr-impl.h"
+
 #ifdef WANT_MINI_GMP
 
-#include "mpfr-impl.h"
 #include "mpfr-mini-gmp.h"
 
 #ifndef mp_bits_per_limb
