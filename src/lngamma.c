@@ -33,6 +33,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
 {
+  MPFR_LOG_FUNC
+    (("p=%Pu", p),
+     ("s[%Pu]=%.*Rg", mpfr_get_prec (s), mpfr_log_prec, s));
+
   if (p <= 100)
     mpfr_set_ui_2exp (s, 614, -10, MPFR_RNDN); /* about 0.6 */
   else if (p <= 500)
@@ -190,7 +194,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
   /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
      - log|x| - gamma*x <= log|gamma(x)| <= - log|x| - gamma*x + x^2 */
-  if (MPFR_EXP(z0) <= - (mpfr_exp_t) MPFR_PREC(y))
+  if (MPFR_GET_EXP (z0) <= - (mpfr_exp_t) MPFR_PREC(y))
     {
       mpfr_t l, h, g;
       int ok, inex1, inex2;
@@ -255,7 +259,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
              which would need precision n. */
           MPFR_ZIV_NEXT (loop, prec);
         }
-      while (prec <= -MPFR_EXP(z0));
+      while (prec <= - MPFR_GET_EXP (z0));
       MPFR_ZIV_FREE (loop);
     }
 #endif
