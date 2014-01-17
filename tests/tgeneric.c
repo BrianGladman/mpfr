@@ -211,7 +211,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   if (getenv ("MPFR_CHECK_MAX") == NULL)
                     goto next_n;
-                  mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_si (x, n == 2 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
