@@ -126,6 +126,10 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   int inex;
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
+
   /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
      q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)
      is ok, otherwise for x < -1, PREC(x) is ok if EXP(x) <= PREC(x),
@@ -209,6 +213,10 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   unsigned long j = 0, min;
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
+
   /* compute a precision q such that x+1 is exact */
   if (MPFR_PREC(x) < MPFR_EXP(x))
     q = MPFR_EXP(x);
@@ -285,7 +293,6 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_LOG_FUNC
     (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
      ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
-
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
