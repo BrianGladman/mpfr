@@ -20,8 +20,9 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#ifndef WANT_MINI_GMP
 #include "mpfr-test.h"
+
+#ifndef WANT_MINI_GMP
 
 int
 main (void)
@@ -202,10 +203,13 @@ main (void)
   tests_end_mpfr ();
   return 0;
 }
+
 #else
+
 int
-main ()
+main (void)
 {
-  return 0;
+  return 77;
 }
+
 #endif

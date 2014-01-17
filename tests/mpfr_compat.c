@@ -21,13 +21,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #ifndef WANT_MINI_GMP
+
 #define MPFR
 #define mpf_free_str mpfr_free_str
 #include "mpf_compat.h"
+
 #else
+
 int
-main ()
+main (void)
 {
-  return 0;
+  return 77;
 }
+
 #endif
