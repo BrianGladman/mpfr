@@ -172,6 +172,11 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (z0), mpfr_log_prec, z0, rnd),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec (y), mpfr_log_prec, y, inexact));
+
   compared = mpfr_cmp_ui (z0, 1);
 
   MPFR_SAVE_EXPO_MARK (expo);
