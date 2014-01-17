@@ -38,9 +38,9 @@ gmp_randinit_default (gmp_randstate_t state)
 
 #ifdef WANT_gmp_randseed_ui
 void
-gmp_randseed_ui (gmp_randstate_t state, const mpz_t seed)
+gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
 {
-  srand48 (mpz_get_ui (seed));
+  srand48 (seed);
 }
 #endif
 
@@ -167,7 +167,9 @@ mpz_realloc2 (mpz_t X, mp_bitcnt_t N)
   
   if (n > X->_mp_alloc)
     {
-      X->_mp_d = gmp_default_realloc (X->_mp_d, X->_mp_alloc, n);
+      X->_mp_d = gmp_default_realloc (X->_mp_d,
+                                      X->_mp_alloc * sizeof (mp_limb_t),
+                                      n * sizeof (mp_limb_t));
       X->_mp_alloc = n;
     }
 }
@@ -226,8 +228,10 @@ mpn_divrem (mp_limb_t *qp, mp_size_t qn, mp_limb_t *np,
   MPFR_ASSERTN(q->_mp_size == qn || q->_mp_size == qn + 1);
   mpn_copyi (qp, q->_mp_d, qn);
   ret = (q->_mp_size == qn) ? 0 : q->_mp_d[qn];
-  MPFR_ASSERTN(r->_mp_size == dn);
-  mpn_copyi (np, r->_mp_d, dn);
+  if (r->_mp_size > 0)
+    mpn_copyi (np, r->_mp_d, r->_mp_size);
+  if (r->_mp_size < dn)
+    mpn_zero (np + r->_mp_size, dn - r->_mp_size);
   mpz_clear (q);
   mpz_clear (r);
   return ret;

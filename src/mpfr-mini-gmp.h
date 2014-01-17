@@ -56,7 +56,7 @@ void gmp_randinit_default (gmp_randstate_t);
 
 #ifndef gmp_randseed_ui
 #define WANT_gmp_randseed_ui
-void gmp_randseed_ui (gmp_randstate_t, const mpz_t);
+void gmp_randseed_ui (gmp_randstate_t, unsigned long int);
 #endif
 
 #ifndef gmp_randclear

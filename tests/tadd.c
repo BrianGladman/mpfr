@@ -81,8 +81,8 @@ check (const char *xs, const char *ys, mpfr_rnd_t rnd_mode,
   if (mpfr_cmp_str1 (zz, zs) )
     {
       printf ("expected sum is %s, got ", zs);
-      mpfr_out_str(stdout, 10, 0, zz, MPFR_RNDN);
-      printf ("mpfr_add failed for x=%s y=%s with rnd_mode=%s\n",
+      mpfr_out_str (stdout, 10, 0, zz, MPFR_RNDN);
+      printf ("\nmpfr_add failed for x=%s y=%s with rnd_mode=%s\n",
               xs, ys, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }
