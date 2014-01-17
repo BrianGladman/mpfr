@@ -145,6 +145,12 @@ unit_bit (mpfr_srcptr x)
 
 #endif
 
+/* FIXME: There is an internal overflow when z is very large.
+   Simple overflow detection with possible false negatives?
+   For the particular cases near the overflow boundary,
+   scaling by a power of two?
+*/
+
 /* lngamma(x) = log(gamma(x)).
    We use formula [6.1.40] from Abramowitz&Stegun:
    lngamma(z) = (z-1/2)*log(z) - z + 1/2*log(2*Pi)
