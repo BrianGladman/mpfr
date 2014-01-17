@@ -312,9 +312,9 @@ typedef enum {
 #if defined(__MPFR_WITHIN_MPFR) && __GMP_LIBGMP_DLL
 # define __MPFR_DECLSPEC __GMP_DECLSPEC_EXPORT
 #else
-#ifndef __GMP_DECLSPEC
-# define __GMP_DECLSPEC
-#endif
+# ifndef __GMP_DECLSPEC
+#  define __GMP_DECLSPEC
+# endif
 # define __MPFR_DECLSPEC __GMP_DECLSPEC
 #endif
 
