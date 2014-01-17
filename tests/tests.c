@@ -180,7 +180,10 @@ tests_start_mpfr (void)
   feclearexcept (FE_ALL_EXCEPT);
 #endif
 
+#ifndef WANT_MINI_GMP
+  /* disable since mini-gmp does not keep track of old_size in realloc/free */
   tests_memory_start ();
+#endif
   tests_rand_start ();
   tests_limit_start ();
 
@@ -207,7 +210,9 @@ tests_end_mpfr (void)
 
   mpfr_free_cache ();
   tests_rand_end ();
+#ifndef WANT_MINI_GMP
   tests_memory_end ();
+#endif
 
 #ifdef MPFR_TEST_DIVBYZERO
   /* Define to test the use of MPFR_ERRDIVZERO */
