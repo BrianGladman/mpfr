@@ -383,7 +383,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x=NAN does not return NAN");
+      printf ("evaluation of function in x=NAN does not return NAN\n");
       exit (1);
     }
 
@@ -393,7 +393,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p(s))
     {
-      printf ("evaluation of function in y=NAN does not return NAN");
+      printf ("evaluation of function in y=NAN does not return NAN\n");
       exit (1);
     }
 
@@ -403,7 +403,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in z=NAN does not return NAN");
+      printf ("evaluation of function in z=NAN does not return NAN\n");
       exit (1);
     }
 
@@ -453,7 +453,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x=INF y=0  does not return NAN");
+      printf ("evaluation of function in x=INF y=0  does not return NAN\n");
       exit (1);
     }
 
@@ -463,7 +463,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x=0 y=INF does not return NAN");
+      printf ("evaluation of function in x=0 y=INF does not return NAN\n");
       exit (1);
     }
 
@@ -473,7 +473,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x=INF y>0 z=INF does not return NAN");
+      printf ("evaluation of function in x=INF y>0 z=INF does not return NAN\n");
       exit (1);
     }
 
@@ -483,7 +483,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x>0 y=INF z=INF does not return NAN");
+      printf ("evaluation of function in x>0 y=INF z=INF does not return NAN\n");
       exit (1);
     }
 
@@ -493,7 +493,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
-      printf ("evaluation of function in x=INF does not return INF");
+      printf ("evaluation of function in x=INF does not return INF\n");
       exit (1);
     }
 
@@ -503,7 +503,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
-      printf ("evaluation of function in y=INF does not return INF");
+      printf ("evaluation of function in y=INF does not return INF\n");
       exit (1);
     }
 
@@ -513,7 +513,7 @@ main (int argc, char *argv[])
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
-      printf ("evaluation of function in z=-INF does not return INF");
+      printf ("evaluation of function in z=-INF does not return INF\n");
       exit (1);
     }
 
