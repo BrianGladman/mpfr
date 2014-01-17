@@ -98,7 +98,7 @@ mpz_perfect_square_p (const mpz_t z)
 {
   mpz_t s, r;
   int ret;
-  
+
   if (mpz_sgn (z) < 0)
     return 0;
 
@@ -132,7 +132,7 @@ mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
 {
   mpz_t q, r, n, d;
   mp_limb_t ret;
-  
+
   d->_mp_d = gmp_default_alloc (sizeof (mp_limb_t));
   d->_mp_d[0] = d0;
   d->_mp_size = 1;
@@ -168,7 +168,7 @@ void
 mpz_realloc2 (mpz_t X, mp_bitcnt_t N)
 {
   unsigned long n = (N - 1) / GMP_NUMB_BITS + 1;
-  
+
   if (n > X->_mp_alloc)
     {
       X->_mp_d = gmp_default_realloc (X->_mp_d,
