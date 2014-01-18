@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
-  do n = randlimb (); while (n == 0);
+  do n = randlimb (); while (n <= 1);
 
   MPFR_SET_INF(x);
   mpfr_ui_pow (y, n, x, MPFR_RNDN);
