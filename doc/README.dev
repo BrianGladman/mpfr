@@ -920,6 +920,30 @@ in the MPFR source depends on the context.
    respectively. This may be useful for intermediate computations on the
    exponents.
 
+More on exponent handling:
+
+* The unsigned type corresponding to mpfr_exp_t is mpfr_uexp_t. It may be
+  useful if the considered values are nonnegative and don't necessarily
+  fit in mpfr_exp_t. To convert a mpfr_exp_t to mpfr_uexp_t, you should
+  use the MPFR_UEXP macro, as in debug mode, it checks that the value is
+  nonnegative (in future MPFR versions, MPFR_UEXP could tell the compiler
+  that the value is nonnegative, possibly allowing more optimization).
+
+* If a mpfr_exp_t appears in arithmetic expressions together with ISO C90
+  types int and/or long, computations must be done with the largest type,
+  which is provided by mpfr_eexp_t.
+
+* If a mpfr_exp_t needs to be converted from or to a MPFR number, the
+  mpfr_set_exp_t or mpfr_get_exp_t macro should be used.
+
+* If a mpfr_exp_t needs to be converted into a character string with a
+  formatted output function (fprintf, printf, sprintf), the mpfr_eexp_t
+  type should be used, together with the MPFR_EXP_FSPEC specifier, e.g.
+
+    printf ("%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) exponent);
+
+For implementation details, see the mpfr.h and mpfr-impl.h files.
+
 ===========================================================================
 
 Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
