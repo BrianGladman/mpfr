@@ -1229,8 +1229,9 @@ main (int argc, char *argv[])
       m = 2 + (randlimb () % (MAX_DIGITS - 1));
       mpfr_urandomb (x, RANDS);
       e = (mpfr_exp_t) (randlimb () % 21) - 10;
-      mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
-                    ((e == 10) ? mpfr_get_emax () : e));
+      if (!MPFR_IS_ZERO(x))
+        mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
+                      ((e == 10) ? mpfr_get_emax () : e));
       b = 2 + (randlimb () % 35);
       r = RND_RAND ();
       mpfr_get_str (s, &f, b, m, x, r);
