@@ -304,6 +304,8 @@ mpn_tdiv_qr (mp_limb_t *QP, mp_limb_t *RP, mp_size_t QXN,
   mpz_tdiv_qr (q, r, n, d);
   MPFR_ASSERTN(q->_mp_size > 0);
   mpn_copyi (QP, q->_mp_d, q->_mp_size);
+  if (q->_mp_size < NN - DN + 1)
+    mpn_zero (QP + q->_mp_size, NN - DN + 1 - q->_mp_size);
   if (r->_mp_size > 0)
     mpn_copyi (RP, r->_mp_d, r->_mp_size);
   if (r->_mp_size < DN)

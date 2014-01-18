@@ -29,9 +29,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   mpfr_set_str_binary (x, t); \
   if (mpfr_cmp (x, y)) \
     { \
-      printf ("Error in mpfr_set_str (%d):\n", n); \
+      printf ("Error in mpfr_set_str (%d):\nexpected ", n); \
       mpfr_print_binary (x); \
-      puts (""); \
+      printf ("\ngot      "); \
       mpfr_print_binary (y); \
       puts (""); \
       mpfr_clear (x); \
@@ -230,7 +230,8 @@ main (int argc, char *argv[])
         baseprec = 1 + (prec - 2 + logbase) / logbase;
       str = mpfr_get_str (NULL, &e, base, baseprec, x, rnd);
       mpfr_set_str (y, str, base, rnd);
-      MPFR_EXP(y) += logbase * (e - strlen (str));
+      if (!MPFR_IS_ZERO(y))
+        MPFR_EXP(y) += logbase * (e - strlen (str));
       if (mpfr_cmp (x, y))
         {
           printf ("mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",

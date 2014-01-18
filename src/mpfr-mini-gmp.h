@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "gmp.h"
 
 #ifndef gmp_version
-extern const char * const gmp_version;
+extern char gmp_version[];
 #endif
 
 #ifndef __gmp_const
