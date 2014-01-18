@@ -488,22 +488,22 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_urandomb (y, RANDS);
+  do mpfr_urandomb (y, RANDS); while (MPFR_IS_ZERO(y));
   mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
-      printf ("evaluation of function in x=INF does not return INF\n");
+      printf ("evaluation of function at x=INF does not return INF\n");
       exit (1);
     }
 
   mpfr_set_inf (y, 1);
-  mpfr_urandomb (x, RANDS);
+  do mpfr_urandomb (x, RANDS); while (MPFR_IS_ZERO(x));
   mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
-      printf ("evaluation of function in y=INF does not return INF\n");
+      printf ("evaluation of function at y=INF does not return INF\n");
       exit (1);
     }
 
