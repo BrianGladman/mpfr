@@ -98,7 +98,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
-  unsigned long k, bd, nc, i;
+  unsigned long k, bd, nc, i, lz;
   char *str, *str2;
   mpfr_exp_t e;
   int base, logbase, prec, baseprec, ret, obase;
@@ -138,11 +138,21 @@ main (int argc, char *argv[])
 
   *(str2++) = '.';
 
-  for (k = 1; k < nc - 17 - bd; k++)
-    *(str2++) = '0' + (char) (randlimb () & 1);
+  lz = 0;
+  for (k = 1; k < nc - 17 - bd; k++, str2++)
+    {
+      *str2 = '0' + (char) (randlimb () & 1);
+      if (lz == 0 && *str2 != '0')
+        lz = k; /* position of the first 1 */
+    }
+
+  if (lz) /* if lz>0, we have lz-1 leading zeroes after the binary point,
+             thus to avoid a subnormal number in case randlimb () gives
+             zero below, we need to add lz to the minimal exponent */
+    lz --;
 
   *(str2++) = 'e';
-  sprintf (str2, "%d", (int) (randlimb () & INT_MAX) + INT_MIN/2);
+  sprintf (str2, "%d", (int) (randlimb () & INT_MAX) + mpfr_get_emin () + lz);
 
   mpfr_set_prec (x, nc + 10);
   mpfr_set_str_binary (x, str);
