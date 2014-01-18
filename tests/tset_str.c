@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   lz = 0;
   for (k = 1; k < nc - 17 - bd; k++, str2++)
     {
-      *str2 = '0' + (char) (randlimb () & 1);
+      *str2 = '0' + (randlimb () & 1);
       if (lz == 0 && *str2 != '0')
         lz = k; /* position of the first 1 */
     }
