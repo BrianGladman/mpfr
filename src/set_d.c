@@ -27,11 +27,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
-   Assumes d finite and > 0. */
-static long
+   Assumes d finite and > 0.
+   The int type should be sufficient for exp.
+*/
+static int
 extract_double (mpfr_limb_ptr rp, double d)
 {
-  long exp;
+  int exp;
   mp_limb_t manl;
 #if GMP_NUMB_BITS == 32
   mp_limb_t manh;
