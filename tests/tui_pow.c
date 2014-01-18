@@ -156,13 +156,13 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
-  n = randlimb ();
+  do n = randlimb (); while (n == 0);
 
   MPFR_SET_INF(x);
   mpfr_ui_pow (y, n, x, MPFR_RNDN);
   if(!MPFR_IS_INF(y))
     {
-      printf ("evaluation of function in INF does not return INF\n");
+      printf ("evaluation of function at INF does not return INF\n");
       exit (1);
     }
 
