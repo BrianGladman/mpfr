@@ -39,12 +39,7 @@ extract_double (mpfr_limb_ptr rp, double d)
   mp_limb_t manh;
 #endif
 
-  /* BUGS
-     1. Should handle Inf and NaN in IEEE specific code.
-     2. Handle Inf and NaN also in default code, to avoid hangs.
-     3. Generalize to handle all GMP_NUMB_BITS.
-     4. This lits is incomplete and misspelled.
-   */
+  /* FIXME: Generalize to handle all GMP_NUMB_BITS. */
 
   MPFR_ASSERTD(!DOUBLE_ISNAN(d));
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
@@ -60,28 +55,27 @@ extract_double (mpfr_limb_ptr rp, double d)
     if (exp)
       {
 #if GMP_NUMB_BITS >= 64
-        manl = ((MPFR_LIMB_ONE << 63)
-                | ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
+        manl = ((MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)) |
+                ((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
+                ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
 #else
         manh = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
         manl = x.s.manl << 11;
 #endif
+        exp -= 1022;
       }
     else /* subnormal number */
       {
 #if GMP_NUMB_BITS >= 64
-        manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
+        manl = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
+                ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
 #else
         manh = (x.s.manh << 11) /* high 21 bits */
           | (x.s.manl >> 21); /* middle 11 bits */
         manl = x.s.manl << 11; /* low 21 bits */
 #endif
+        exp = -1021;
       }
-
-    if (exp)
-      exp -= 1022;
-    else
-      exp = -1021;
   }
 
 #else /* _GMP_IEEE_FLOATS */
@@ -91,7 +85,6 @@ extract_double (mpfr_limb_ptr rp, double d)
     exp = 0;
     if (d >= 1.0)
       {
-        MPFR_ASSERTN (d * 0.5 != d);
         while (d >= 32768.0)
           {
             d *= (1.0 / 65536.0);
@@ -128,11 +121,9 @@ extract_double (mpfr_limb_ptr rp, double d)
 
 #endif /* _GMP_IEEE_FLOATS */
 
-#if GMP_NUMB_BITS >= 64
   rp[0] = manl;
-#else
+#if GMP_NUMB_BITS == 32
   rp[1] = manh;
-  rp[0] = manl;
 #endif
 
   return exp;
