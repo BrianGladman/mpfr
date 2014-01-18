@@ -218,7 +218,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
      by the multiplication code), then the computation of cancel2 could
      be simplified to
        cancel2 = (cancel - (diff_exp - shift_c)) / GMP_NUMB_BITS;
-     because cancel, diff_exp and shift_c are all non-negative and
+     because cancel, diff_exp and shift_c are all nonnegative and
      these variables are signed. */
 
   MPFR_ASSERTD (cancel >= 0);

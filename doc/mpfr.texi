@@ -2007,7 +2007,7 @@ Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
 When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
 When @math{@minus{}2@var{k}@minus{}1 @le{} @var{op} @le{} @minus{}2@var{k}},
-@var{k} being a non-negative integer, @var{rop} is set to NaN@.
+@var{k} being a nonnegative integer, @var{rop} is set to NaN@.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
@@ -2017,7 +2017,7 @@ Gamma function on @var{op}, rounded in the direction @var{rnd}. The sign
 (1 or @minus{}1) of Gamma(@var{op}) is returned in the object pointed to
 by @var{signp}.
 When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
-When @var{op} is an infinity or a non-positive integer, set @var{rop} to +Inf.
+When @var{op} is an infinity or a nonpositive integer, set @var{rop} to +Inf.
 When @var{op} is NaN, @minus{}Inf or a negative integer, *@var{signp} is
 undefined, and when @var{op} is @pom{}0, *@var{signp} is the sign of the zero.
 @end deftypefun
