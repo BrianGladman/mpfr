@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
-   Assumes d is neither 0 nor NaN nor Inf. */
+   Assumes d finite and > 0. */
 static long
 __gmpfr_extract_double (mpfr_limb_ptr rp, double d)
      /* e=0 iff GMP_NUMB_BITS=32 and rp has only one limb */
@@ -47,7 +47,7 @@ __gmpfr_extract_double (mpfr_limb_ptr rp, double d)
 
   MPFR_ASSERTD(!DOUBLE_ISNAN(d));
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
-  MPFR_ASSERTD(d != 0.0);
+  MPFR_ASSERTD(d > 0.0);
 
 #if _GMP_IEEE_FLOATS
 
