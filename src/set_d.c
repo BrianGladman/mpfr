@@ -162,16 +162,19 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
       MPFR_SET_ZERO(r);
       {
         /* This is to get the sign of zero on non-IEEE hardware
-           Some systems support +0.0, -0.0 and unsigned zero.
+           Some systems support +0.0, -0.0, and unsigned zero.
+           Some other systems may just have an unsigned zero.
            We can't use d == +0.0 since it should be always true,
            so we check that the memory representation of d is the
            same than +0.0, etc.
-           Note: if -0.0 has several representations, this may not work,
-           but this is hardly fixable in a portable way (without depending
-           on a math library) and only the sign could be incorrect. Such
-           systems should be taken into account on a case-by-case basis.
-           If the code is changed here, set_d64.c code should be updated
-           too. */
+           Note: r is set to -0 only if d is detected as a negative zero
+           *and*, for the double type, -0 has a different representation
+           from +0. If -0.0 has several representations, the code below
+           may not work as expected, but this is hardly fixable in a
+           portable way (without depending on a math library) and only
+           the sign could be incorrect. Such systems should be taken
+           into account on a case-by-case basis. If the code is changed
+           here, set_d64.c code should be updated too. */
         double poszero = +0.0, negzero = DBL_NEG_ZERO;
         if (memcmp(&d, &poszero, sizeof(double)) == 0)
           MPFR_SET_POS(r);
