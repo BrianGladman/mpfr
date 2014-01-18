@@ -30,7 +30,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Assumes d finite and > 0. */
 static long
 extract_double (mpfr_limb_ptr rp, double d)
-     /* e=0 iff GMP_NUMB_BITS=32 and rp has only one limb */
 {
   long exp;
   mp_limb_t manl;
