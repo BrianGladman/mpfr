@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
    Assumes d finite and > 0. */
 static long
-__gmpfr_extract_double (mpfr_limb_ptr rp, double d)
+extract_double (mpfr_limb_ptr rp, double d)
      /* e=0 iff GMP_NUMB_BITS=32 and rp has only one limb */
 {
   long exp;
@@ -215,7 +215,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
   d = ABS (d);
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
-  MPFR_EXP(tmp) = __gmpfr_extract_double (tmpmant, d);
+  MPFR_EXP(tmp) = extract_double (tmpmant, d);
 
 #ifdef MPFR_WANT_ASSERT
   /* Failed assertion if the stored value is 0 (e.g., if the exponent range
