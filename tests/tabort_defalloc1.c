@@ -23,6 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-test.h"
 
+#ifndef WANT_MINI_GMP
+
 int
 main (int argc, char **argv)
 {
@@ -36,3 +38,14 @@ main (int argc, char **argv)
   tests_end_mpfr ();
   return -1; /* Should not be executed */
 }
+
+#else /* don't test with mini-gmp, which does not fully implement GMP
+         memory functions */
+
+int
+main (void)
+{
+  return 77;
+}
+
+#endif
