@@ -131,9 +131,9 @@ mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
               mp_limb_t d0)
 {
   mpz_t q, r, n, d;
-  mp_limb_t ret;
+  mp_limb_t ret, dd[1];
 
-  d->_mp_d = gmp_default_alloc (sizeof (mp_limb_t));
+  d->_mp_d = dd;
   d->_mp_d[0] = d0;
   d->_mp_size = 1;
   mpz_init (q);
