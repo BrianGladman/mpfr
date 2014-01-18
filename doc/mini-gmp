@@ -1,0 +1,38 @@
+How to compile GNU MPFR with mini-gmp
+=====================================
+
+(this was tested with MPFR 3.1.2 and GMP 5.1.3 on x86_64 GNU/Linux machine)
+
+1) extract the GMP tarball in say /tmp/gmp-5.1.3
+   go into /tmp/gmp-5.1.3/mini-gmp
+   add the following line in mini-gmp.c (say at line 43):
+   char gmp_version[] = "5.1.3";
+   gcc -O2 -g -fPIC -c mini-gmp.c
+   ar r libgmp.a mini-gmp.o
+
+2) create a GMP install directory in say /tmp
+   mkdir /tmp/include
+   mkdir /tmp/lib
+   mv libgmp.a /tmp/lib
+   cp mini-gmp.h /tmp/include/gmp.h
+
+3) do the following changes in /tmp/include/gmp.h:
+
+$ diff gmp.h.orig gmp.h
+29a30,35
+> #define __GNU_MP_VERSION            5
+> #define __GNU_MP_VERSION_MINOR      1
+> #define __GNU_MP_VERSION_PATCHLEVEL 3
+> 
+> extern char gmp_version[];
+> 
+34a41,46
+> #endif
+> 
+> /* random generation functions */
+> #ifndef gmp_randstate_t
+> typedef long int __gmp_randstate_struct;
+> typedef __gmp_randstate_struct gmp_randstate_t[1];
+
+4) extract the MPFR tarball in say /tmp/mpfr-3.1.2
+   ./configure --with-gmp=/tmp --enable-mini-gmp
