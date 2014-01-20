@@ -25,8 +25,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
-  char buffer[256];
   int err = 0;
+
+  /* Test the GMP and MPFR versions. */
+  if (test_version ())
+    exit (1);
 
 #ifdef __GNUC__
   printf ("[tversion] GCC: %d.%d.%d\n",
@@ -55,45 +58,5 @@ main (void)
   if (strcmp (mpfr_get_patches (), "") != 0)
     printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
 
-  /* Test the MPFR version. */
-  test_version ();
-
-  sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
-           __GNU_MP_VERSION_PATCHLEVEL);
-  if (strcmp (buffer, gmp_version) == 0)
-    return err;
-  if (__GNU_MP_VERSION_PATCHLEVEL == 0)
-    {
-      sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
-      if (strcmp (buffer, gmp_version) == 0)
-        return err;
-    }
-
-  /* In some cases, it may be acceptable to have different versions for
-     the header and the library, in particular when shared libraries are
-     used (e.g., after a bug-fix upgrade of the library, and versioning
-     ensures that this can be done only when the binary interface is
-     compatible). However, when recompiling software like here, this
-     should never happen (except if GMP has been upgraded between two
-     "make check" runs, but there's no reason for that). A difference
-     between the versions of gmp.h and libgmp probably indicates either
-     a bad configuration or some other inconsistency in the development
-     environment, and it is better to fail (in particular for automatic
-     installations). */
-  printf ("ERROR! The versions of gmp.h (%s) and libgmp (%s) do not "
-          "match.\nThe possible causes are:\n", buffer, gmp_version);
-  printf ("  * A bad configuration in your include/library search paths.\n"
-          "  * An inconsistency in the include/library search paths of\n"
-          "    your development environment; an example:\n"
-          "      http://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
-          "  * GMP has been upgraded after the first \"make check\".\n"
-          "    In such a case, try again after a \"make clean\".\n"
-          "  * A new or non-standard version naming is used in GMP.\n"
-          "    In this case, a patch may already be available on the\n"
-          "    MPFR web site.  Otherwise please report the problem.\n");
-  printf ("In the first two cases, this may lead to errors, in particular"
-          " with MPFR.\nIf some other tests fail, please solve that"
-          " problem first.\n");
-
-  return 1;
+  return err;
 }

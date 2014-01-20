@@ -115,10 +115,60 @@ extern void (*dummy_func) (mpfr_srcptr);
 void (*dummy_func)(mpfr_srcptr) = mpfr_dump;
 #endif
 
-void
+/* Various version checks.
+   A mismatch on the GMP version is not regarded as fatal. A mismatch
+   on the MPFR version is regarded as fatal, since this means that we
+   would not check the MPFR library that has just been built (the goal
+   of "make check") but a different library that is already installed,
+   i.e. any test result would be meaningless; in such a case, we exit
+   immediately with an error (exit status = 1).
+   Return value: 0 for no errors, 1 in case of any non-fatal error. */
+int
 test_version (void)
 {
   const char *version;
+  char buffer[256];
+  int err = 0;
+
+  sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+           __GNU_MP_VERSION_PATCHLEVEL);
+  if (strcmp (buffer, gmp_version) != 0)
+    err = 1;
+  else if (__GNU_MP_VERSION_PATCHLEVEL == 0)
+    {
+      sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+      if (strcmp (buffer, gmp_version) != 0)
+        err = 1;
+    }
+
+  /* In some cases, it may be acceptable to have different versions for
+     the header and the library, in particular when shared libraries are
+     used (e.g., after a bug-fix upgrade of the library, and versioning
+     ensures that this can be done only when the binary interface is
+     compatible). However, when recompiling software like here, this
+     should never happen (except if GMP has been upgraded between two
+     "make check" runs, but there's no reason for that). A difference
+     between the versions of gmp.h and libgmp probably indicates either
+     a bad configuration or some other inconsistency in the development
+     environment, and it is better to fail (in particular for automatic
+     installations). */
+  if (err)
+    {
+      printf ("ERROR! The versions of gmp.h (%s) and libgmp (%s) do not "
+              "match.\nThe possible causes are:\n", buffer, gmp_version);
+      printf ("  * A bad configuration in your include/library search paths.\n"
+              "  * An inconsistency in the include/library search paths of\n"
+              "    your development environment; an example:\n"
+              "      http://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
+              "  * GMP has been upgraded after the first \"make check\".\n"
+              "    In such a case, try again after a \"make clean\".\n"
+              "  * A new or non-standard version naming is used in GMP.\n"
+              "    In this case, a patch may already be available on the\n"
+              "    MPFR web site.  Otherwise please report the problem.\n");
+      printf ("In the first two cases, this may lead to errors, in particular"
+              " with MPFR.\nIf some other tests fail, please solve that"
+              " problem first.\n");
+    }
 
   /* VL: I get the following error on an OpenSUSE machine, and changing
      the value of shlibpath_overrides_runpath in the libtool file from
@@ -134,25 +184,24 @@ test_version (void)
                MPFR_VERSION_PATCHLEVEL);
       for (i = 0; buffer[i] == version[i]; i++)
         if (buffer[i] == '\0')
-          return;
+          return err;
       if (buffer[i] == '\0' && version[i] == '-')
-        return;
+        return err;
       printf ("MPFR_VERSION_MAJOR.MPFR_VERSION_MINOR.MPFR_VERSION_PATCHLEVEL"
               " (%s)\nand MPFR_VERSION_STRING (%s) do not match!\nIt seems "
               "that the mpfr.h file has been corrupted.\n", buffer, version);
-      exit (1);
     }
-
-  printf ("Incorrect MPFR version! (%s header vs %s library)\n"
-          "Nothing else has been tested since for this reason,\n"
-          "any other test may fail. Please fix this one first.\n\n"
-          "You can try to avoid this problem by changing the value of\n"
-          "shlibpath_overrides_runpath in the libtool file and rebuild\n"
-          "MPFR (make clean && make && make check).\n"
-          "Otherwise this error may be due to a corrupted mpfr.h, an\n"
-          "incomplete build (try to rebuild MPFR from scratch and/or\n"
-          "use 'make clean'), or something wrong in the system.\n",
-          MPFR_VERSION_STRING, version);
+  else
+    printf ("Incorrect MPFR version! (%s header vs %s library)\n"
+            "Nothing else has been tested since for this reason,\n"
+            "any other test may fail. Please fix this one first.\n\n"
+            "You can try to avoid this problem by changing the value of\n"
+            "shlibpath_overrides_runpath in the libtool file and rebuild\n"
+            "MPFR (make clean && make && make check).\n"
+            "Otherwise this error may be due to a corrupted mpfr.h, an\n"
+            "incomplete build (try to rebuild MPFR from scratch and/or\n"
+            "use 'make clean'), or something wrong in the system.\n",
+            MPFR_VERSION_STRING, version);
   exit (1);
 }
 

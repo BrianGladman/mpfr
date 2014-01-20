@@ -74,7 +74,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
-void test_version _MPFR_PROTO ((void));
+int test_version _MPFR_PROTO ((void));
 
 void tests_memory_start _MPFR_PROTO ((void));
 void tests_memory_end _MPFR_PROTO ((void));
