@@ -41,6 +41,17 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1      \
      ttanh ttrunc tui_div tui_pow tui_sub turandom 	 		\
      tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
 
+# Before Automake 1.13, we ran tversion at the beginning and at the end
+# of the tests, and output from tversion appeared at the same place as
+# the tests results (make output). With Automake 1.13+, the tests are
+# parallelized by default and their output is sent to log files instead
+# of the make output, so that the user could no longer see information
+# from tversion. To mimic the old behavior, we now output the contents
+# of the tversion log file if this file exists (i.e. if the Makefile
+# has been generated with Automake 1.13+).
+check:
+	cat tversion.log 2> /dev/null || true
+
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.dat tmul.dat \
