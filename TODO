@@ -47,18 +47,6 @@ Table of contents:
   There is also a library symbol mpir_version, which should match VERSION, set
   by configure, for example 0.9.0.
 
-- mini-gmp support
-  https://gmplib.org/list-archives/gmp-devel/2014-January/003572.html
-  * Add --enable-mini-gmp configure option?
-  * Drop __gmp_const now (already done in GMP)?
-  * In mpfr.h, replace GMP_NUMB_BITS by sizeof(mp_limb_t) * CHAR_BIT
-    and add a test to mpfrlint.
-  * If --enable-mini-gmp, define GMP_NUMB_BITS at configure time, using:
-    │AC_COMPUTE_INT(mini_gmp_limb_bits, [sizeof(mp_limb_t) * CHAR_BIT], [
-    │#include <limits.h>
-    │#include <mini-gmp.h>
-    │], ...)
-
 ##############################################################################
 3. Changes in existing functions
 ##############################################################################
