@@ -26,6 +26,73 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    fma(x,y,z)= x*y + z
 */
 
+/* this function deals with all cases where inputs are singular, i.e.,
+   either NaN, Inf or zero */
+static int
+mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
+                   mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) || MPFR_IS_NAN(z))
+    {
+      MPFR_SET_NAN(s);
+      MPFR_RET_NAN;
+    }
+  /* now neither x, y or z is NaN */
+  else if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
+    {
+      /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
+      if ((MPFR_IS_ZERO(y)) ||
+          (MPFR_IS_ZERO(x)) ||
+          (MPFR_IS_INF(z) &&
+           ((MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y))) != MPFR_SIGN(z))))
+        {
+          MPFR_SET_NAN(s);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
+        {
+          MPFR_SET_INF(s);
+          MPFR_SET_SAME_SIGN(s, z);
+          MPFR_RET(0);
+        }
+      else /* z is finite */
+        {
+          MPFR_SET_INF(s);
+          MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x) , MPFR_SIGN(y)));
+          MPFR_RET(0);
+        }
+    }
+  /* now x and y are finite */
+  else if (MPFR_IS_INF(z))
+    {
+      MPFR_SET_INF(s);
+      MPFR_SET_SAME_SIGN(s, z);
+      MPFR_RET(0);
+    }
+  else if (MPFR_IS_ZERO(x) || MPFR_IS_ZERO(y))
+    {
+      if (MPFR_IS_ZERO(z))
+        {
+          int sign_p;
+          sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          MPFR_SET_SIGN(s,(rnd_mode != MPFR_RNDD ?
+                           ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
+                            ? -1 : 1) :
+                           ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
+                            ? 1 : -1)));
+          MPFR_SET_ZERO(s);
+          MPFR_RET(0);
+        }
+      else
+        return mpfr_set (s, z, rnd_mode);
+    }
+  else /* necessarily z is zero here */
+    {
+      MPFR_ASSERTD(MPFR_IS_ZERO(z));
+      return mpfr_mul (s, x, y, rnd_mode);
+    }
+}
+
 int
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           mpfr_rnd_t rnd_mode)
@@ -44,76 +111,43 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       mpfr_get_prec (s), mpfr_log_prec, s, inexact));
 
   /* particular cases */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ||
-                     MPFR_IS_SINGULAR(y) ||
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) || MPFR_IS_SINGULAR(y) ||
                      MPFR_IS_SINGULAR(z) ))
+    return mpfr_fma_singular (s, x, y, z, rnd_mode);
+
+  /* first try to use a truncated product, in case no underflow nor
+     overflow happens */
+  mpfr_exp_t expu;
+  mpfr_flags_t saved_flags = __gmpfr_flags;
+  MPFR_GROUP_INIT_1 (group, MPFR_PREC(s) + GMP_NUMB_BITS, u);
+  mpfr_mul (u, x, y, MPFR_RNDZ);
+  expu = MPFR_EXP(u);
+  if (__gmpfr_emin < expu && expu < __gmpfr_emax)
     {
-      if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) || MPFR_IS_NAN(z))
+      int signu = MPFR_SIGN (u);
+      mpfr_add (u, u, z, MPFR_RNDZ);
+      if (__gmpfr_emin < MPFR_EXP(u) && MPFR_EXP(u) < __gmpfr_emax)
         {
-          MPFR_SET_NAN(s);
-          MPFR_RET_NAN;
-        }
-      /* now neither x, y or z is NaN */
-      else if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
-        {
-          /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
-          if ((MPFR_IS_ZERO(y)) ||
-              (MPFR_IS_ZERO(x)) ||
-              (MPFR_IS_INF(z) &&
-               ((MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y))) != MPFR_SIGN(z))))
-            {
-              MPFR_SET_NAN(s);
-              MPFR_RET_NAN;
-            }
-          else if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
-            {
-              MPFR_SET_INF(s);
-              MPFR_SET_SAME_SIGN(s, z);
-              MPFR_RET(0);
-            }
-          else /* z is finite */
-            {
-              MPFR_SET_INF(s);
-              MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x) , MPFR_SIGN(y)));
-              MPFR_RET(0);
-            }
-        }
-      /* now x and y are finite */
-      else if (MPFR_IS_INF(z))
-        {
-          MPFR_SET_INF(s);
-          MPFR_SET_SAME_SIGN(s, z);
-          MPFR_RET(0);
-        }
-      else if (MPFR_IS_ZERO(x) || MPFR_IS_ZERO(y))
-        {
-          if (MPFR_IS_ZERO(z))
-            {
-              int sign_p;
-              sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-              MPFR_SET_SIGN(s,(rnd_mode != MPFR_RNDD ?
-                               ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
-                                ? -1 : 1) :
-                               ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
-                                ? 1 : -1)));
-              MPFR_SET_ZERO(s);
-              MPFR_RET(0);
-            }
+          mp_prec_t err;
+          if (signu == MPFR_SIGN(z) || expu <= MPFR_EXP(u))
+            err = 1;
           else
-            return mpfr_set (s, z, rnd_mode);
-        }
-      else /* necessarily z is zero here */
-        {
-          MPFR_ASSERTD(MPFR_IS_ZERO(z));
-          return mpfr_mul (s, x, y, rnd_mode);
+            err = 1 + expu - MPFR_EXP(u);
+          if (mpfr_can_round (u, MPFR_PREC(s) + GMP_NUMB_BITS - err, MPFR_RNDN,
+                              MPFR_RNDZ, MPFR_PREC(s) + (rnd_mode == MPFR_RNDN)))
+            {
+              inexact = mpfr_set (s, u, rnd_mode);
+              MPFR_GROUP_CLEAR (group);
+              return inexact;
+            }
         }
     }
+  __gmpfr_flags = saved_flags;
 
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
   MPFR_SAVE_EXPO_MARK (expo);
-  MPFR_GROUP_INIT_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
-
+  MPFR_GROUP_REPREC_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
   if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
     {
       /* overflow or underflow - this case is regarded as rare, thus
