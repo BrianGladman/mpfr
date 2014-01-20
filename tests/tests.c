@@ -187,12 +187,13 @@ test_version (void)
           return err;
       if (buffer[i] == '\0' && version[i] == '-')
         return err;
-      printf ("MPFR_VERSION_MAJOR.MPFR_VERSION_MINOR.MPFR_VERSION_PATCHLEVEL"
+      printf ("%sMPFR_VERSION_MAJOR.MPFR_VERSION_MINOR.MPFR_VERSION_PATCHLEVEL"
               " (%s)\nand MPFR_VERSION_STRING (%s) do not match!\nIt seems "
-              "that the mpfr.h file has been corrupted.\n", buffer, version);
+              "that the mpfr.h file has been corrupted.\n", err ? "\n" : "",
+              buffer, version);
     }
   else
-    printf ("Incorrect MPFR version! (%s header vs %s library)\n"
+    printf ("%sIncorrect MPFR version! (%s header vs %s library)\n"
             "Nothing else has been tested since for this reason,\n"
             "any other test may fail. Please fix this one first.\n\n"
             "You can try to avoid this problem by changing the value of\n"
@@ -201,7 +202,7 @@ test_version (void)
             "Otherwise this error may be due to a corrupted mpfr.h, an\n"
             "incomplete build (try to rebuild MPFR from scratch and/or\n"
             "use 'make clean'), or something wrong in the system.\n",
-            MPFR_VERSION_STRING, version);
+            err ? "\n" : "", MPFR_VERSION_STRING, version);
   exit (1);
 }
 
