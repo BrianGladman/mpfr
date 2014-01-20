@@ -101,6 +101,9 @@ set_fpu_prec (void)
 
 #endif
 
+char             mpfr_rands_initialized = 0;
+gmp_randstate_t  mpfr_rands;
+
 static mpfr_exp_t default_emin, default_emax;
 
 static void tests_rand_start (void);
@@ -123,7 +126,6 @@ test_version (void)
   /* VL: I get the following error on an OpenSUSE machine, and changing
      the value of shlibpath_overrides_runpath in the libtool file from
      'no' to 'yes' fixes the problem. */
-
   version = mpfr_get_version ();
   if (strcmp (MPFR_VERSION_STRING, version) == 0)
     {
@@ -271,17 +273,17 @@ tests_rand_start (void)
   char           *perform_seed;
   unsigned long  seed;
 
-  if (__gmp_rands_initialized)
+  if (mpfr_rands_initialized)
     {
       printf (
-        "Please let tests_start() initialize the global __gmp_rands, i.e.\n"
+        "Please let tests_start() initialize the global mpfr_rands, i.e.\n"
         "ensure that function is called before the first use of RANDS.\n");
       exit (1);
     }
 
-  gmp_randinit_default (__gmp_rands);
-  __gmp_rands_initialized = 1;
-  rands = __gmp_rands;
+  gmp_randinit_default (mpfr_rands);
+  mpfr_rands_initialized = 1;
+  rands = mpfr_rands;
 
   perform_seed = getenv ("GMP_CHECK_RANDOMIZE");
   if (perform_seed != NULL)

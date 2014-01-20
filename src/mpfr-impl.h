@@ -58,6 +58,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __MPFR_WITHIN_MPFR 1
 #endif
 
+
+
 /******************************************************
  ****************** Include files *********************
  ******************************************************/
@@ -82,6 +84,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # ifndef __MPFR_H
 #  include "mpfr.h"
 # endif
+# include "mpfr-gmp.h"
 
 #else /* Build without gmp internals */
 
@@ -95,48 +98,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # ifndef __MPFR_H
 #  include "mpfr.h"
 # endif
-# ifndef __GMPFR_GMP_H__
-#  include "mpfr-gmp.h"
-# endif
+# include "mpfr-gmp.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  define LONGLONG_STANDALONE
 #  include "mpfr-longlong.h"
 # endif
 
 #endif
+
 #undef MPFR_NEED_LONGLONG_H
-
-/* If a mpn_sqr_n macro is not defined, use mpn_mul. GMP 4.x defines a
-   mpn_sqr_n macro in gmp-impl.h (and this macro disappeared in GMP 5),
-   so that GMP's macro can only be used when MPFR has been configured
-   with --with-gmp-build (and only with GMP 4.x). */
-#ifndef mpn_sqr_n
-# define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
-#endif
-
-/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
-   no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done. */
-#include "mpfr-thread.h"
-
-/* Macro to detect the GMP version */
-#if defined(__GNU_MP_VERSION) && \
-    defined(__GNU_MP_VERSION_MINOR) && \
-    defined(__GNU_MP_VERSION_PATCHLEVEL)
-# define __MPFR_GMP(a,b,c) \
-  (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
-#else
-# define __MPFR_GMP(a,b,c) 0
-#endif
-
-
-
-/******************************************************
- ************* GMP Basic Pointer Types ****************
- ******************************************************/
-
-typedef mp_limb_t *mpfr_limb_ptr;
-typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 
 
 
@@ -162,34 +132,13 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 
 
 /******************************************************
- ******************** Check GMP ***********************
+ ************** Attributes definition *****************
  ******************************************************/
 
-#if !__MPFR_GMP(4,1,0)
-# error "GMP 4.1.0 or newer needed"
-#endif
-
-#if GMP_NAIL_BITS != 0
-# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
-#endif
-
-#if (GMP_NUMB_BITS<32) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))
-# error "GMP_NUMB_BITS must be a power of 2, and >= 32"
-#endif
-
-#if GMP_NUMB_BITS == 16
-# define MPFR_LOG2_GMP_NUMB_BITS 4
-#elif GMP_NUMB_BITS == 32
-# define MPFR_LOG2_GMP_NUMB_BITS 5
-#elif GMP_NUMB_BITS == 64
-# define MPFR_LOG2_GMP_NUMB_BITS 6
-#elif GMP_NUMB_BITS == 128
-# define MPFR_LOG2_GMP_NUMB_BITS 7
-#elif GMP_NUMB_BITS == 256
-# define MPFR_LOG2_GMP_NUMB_BITS 8
-#else
-# error "Can't compute log2(GMP_NUMB_BITS)"
-#endif
+/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
+   no longer used, as they sometimes gave incorrect information about
+   the support of thread-local variables. A configure check is now done. */
+#include "mpfr-thread.h"
 
 #if defined(MPFR_HAVE_NORETURN)
 /* _Noreturn is specified by ISO C11 (Section 6.7.4);
@@ -225,15 +174,15 @@ typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
 #define MPFR_MAYBE_UNUSED
 #endif
 
-/* Compatibility with old GMP versions. */
-#if __GNU_MP_VERSION < 5
-typedef unsigned long mp_bitcnt_t;
-#endif
 
 
 /******************************************************
  ************* Global Internal Variables **************
  ******************************************************/
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
 
 /* Cache struct */
 struct __gmpfr_cache_s {
@@ -243,10 +192,6 @@ struct __gmpfr_cache_s {
 };
 typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
-
-#if defined (__cplusplus)
-extern "C" {
-#endif
 
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;

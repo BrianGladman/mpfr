@@ -196,10 +196,6 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
 #define MPFR_DIVHIGH_TAB_SIZE (sizeof(divhigh_ktab) / sizeof(divhigh_ktab[0]))
 #endif
 
-#ifndef __GMPFR_GMP_H__
-#define mpfr_pi1_t gmp_pi1_t /* with a GMP build */
-#endif
-
 #if !(defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q))
 /* Put in Q={qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).

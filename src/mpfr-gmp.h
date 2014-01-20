@@ -1,4 +1,4 @@
-/* Interface to replace gmp-impl.h
+/* Uniform Interface to GMP.
 
 Copyright 2004-2014 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -27,8 +27,66 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # error  "mpfr-impl.h not included"
 #endif
 
-#include <limits.h> /* For INT_MAX, ... */
-#include <string.h> /* For memcpy, memset and memmove */
+
+/******************************************************
+ ******************** C++ Compatibility ***************
+ ******************************************************/
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+
+/******************************************************
+ ******************** Identify GMP ********************
+ ******************************************************/
+
+/* Macro to detect the GMP version */
+#if defined(__GNU_MP_VERSION) && \
+    defined(__GNU_MP_VERSION_MINOR) && \
+    defined(__GNU_MP_VERSION_PATCHLEVEL)
+# define __MPFR_GMP(a,b,c) \
+  (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
+#else
+# define __MPFR_GMP(a,b,c) 0
+#endif
+
+
+
+/******************************************************
+ ******************** Check GMP ***********************
+ ******************************************************/
+
+#if !__MPFR_GMP(4,2,0)
+# error "GMP 4.2.0 or newer needed"
+#endif
+
+#if GMP_NAIL_BITS != 0
+# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
+#endif
+
+#if (GMP_NUMB_BITS<32) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))
+# error "GMP_NUMB_BITS must be a power of 2, and >= 32"
+#endif
+
+#if GMP_NUMB_BITS == 32
+# define MPFR_LOG2_GMP_NUMB_BITS 5
+#elif GMP_NUMB_BITS == 64
+# define MPFR_LOG2_GMP_NUMB_BITS 6
+#elif GMP_NUMB_BITS == 128
+# define MPFR_LOG2_GMP_NUMB_BITS 7
+#elif GMP_NUMB_BITS == 256
+# define MPFR_LOG2_GMP_NUMB_BITS 8
+#else
+# error "Can't compute log2(GMP_NUMB_BITS)"
+#endif
+
+
+
+/******************************************************
+ ************* Define GMP Internal Interface  *********
+ ******************************************************/
+
+#ifndef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
 /* The following tries to get a good version of alloca.
    See gmp-impl.h for implementation details and original version */
@@ -49,26 +107,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # else
 void *alloca (size_t);
 # endif
-#endif
-
-#if defined (__cplusplus)
-extern "C" {
-#endif
-
-/* Define GMP_NUMB_BITS
-   Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
-#if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
-#ifndef GMP_NUMB_BITS
-# define GMP_NUMB_BITS  (GMP_NUMB_BITS+GMP_NAIL_BITS)
-#endif
-#elif defined (__GMP_GMP_NUMB_BITS) /* Older versions 4.x.x */
-# define GMP_NUMB_BITS  __GMP_GMP_NUMB_BITS
-# define GMP_NUMB_BITS GMP_NUMB_BITS
-# ifndef GMP_NAIL_BITS
-#  define GMP_NAIL_BITS 0
-# endif
-#else
-# error "Could not detect GMP_NUMB_BITS. Try with gmp internal files."
 #endif
 
 /* Define some macros */
@@ -221,46 +259,7 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 #define MAX(h,i) ((h) > (i) ? (h) : (i))
 #define numberof(x)  (sizeof (x) / sizeof ((x)[0]))
 
-/* Random */
-/* TODO: these variables and macros seem to be used only in the tests.
-   Remove them from the MPFR source (src directory) so that the symbols
-   mpfr_rands_initialized and mpfr_rands are not defined in the MPFR
-   library? Moreover, whether the GMP build directory is used or not,
-   we could use our own rand state, so that __gmp_rands_initialized and
-   __gmp_rands would no longer be needed. */
-#undef  __gmp_rands_initialized
-#undef  __gmp_rands
-#define __gmp_rands_initialized mpfr_rands_initialized
-#define __gmp_rands             mpfr_rands
-
-__MPFR_DECLSPEC extern char             mpfr_rands_initialized;
-__MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
-
-#undef RANDS
-#define RANDS                                   \
-  ((__gmp_rands_initialized ? 0                 \
-    : (__gmp_rands_initialized = 1,             \
-       gmp_randinit_default (__gmp_rands), 0)), \
-   __gmp_rands)
-
-#undef RANDS_CLEAR
-#define RANDS_CLEAR()                   \
-  do {                                  \
-    if (__gmp_rands_initialized)        \
-      {                                 \
-        __gmp_rands_initialized = 0;    \
-        gmp_randclear (__gmp_rands);    \
-      }                                 \
-  } while (0)
-
-typedef __gmp_randstate_struct *gmp_randstate_ptr;
-
 /* Allocate func are defined in gmp-impl.h */
-
-/* In newer GMP, there aren't anymore __gmp_allocate_func,
-   __gmp_reallocate_func & __gmp_free_func in gmp.h
-   Just getting the correct value by calling mp_get_memory_functions */
-#ifdef mp_get_memory_functions
 
 #undef __gmp_allocate_func
 #undef __gmp_reallocate_func
@@ -274,19 +273,6 @@ __MPFR_DECLSPEC extern void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *,
                                                           size_t, size_t));
 __MPFR_DECLSPEC extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *,
                                                                     size_t));
-
-#endif
-
-#undef __gmp_default_allocate
-#undef __gmp_default_reallocate
-#undef __gmp_default_free
-#define __gmp_default_allocate   mpfr_default_allocate
-#define __gmp_default_reallocate mpfr_default_reallocate
-#define __gmp_default_free       mpfr_default_free
-__MPFR_DECLSPEC void *__gmp_default_allocate _MPFR_PROTO ((size_t));
-__MPFR_DECLSPEC void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t,
-                                                             size_t));
-__MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_ROOTREM)
 #ifndef __gmpn_rootrem
@@ -302,8 +288,8 @@ __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 #endif
 #endif
 
-/* Temp memory allocate */
 
+/* Temp memory allocate */
 struct tmp_marker
 {
   void *ptr;
@@ -322,51 +308,35 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 #define TMP_MARK(m) (tmp_marker = 0)
 #define TMP_FREE(m) mpfr_tmp_free (tmp_marker)
 
+#endif /* GMP Internal replacement */
+
+
+
+/******************************************************
+ ****** GMP Interface which changes with versions *****
+ ****** to other versions of GMP. Add missing     *****
+ ****** interfaces.                               *****
+ ******************************************************/
+
+/* If a mpn_sqr_n macro is not defined, use mpn_mul. GMP 4.x defines a
+   mpn_sqr_n macro in gmp-impl.h (and this macro disappeared in GMP 5),
+   so that GMP's macro can only be used when MPFR has been configured
+   with --with-gmp-build (and only with GMP 4.x). */
+#ifndef mpn_sqr_n
+# define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
+#endif
+
 /* invert_limb macro, copied from GMP 5.0.2, file gmp-impl.h.
    It returns invxl = floor((B^2-1)/xl)-B, where B=2^BITS_PER_LIMB,
    assuming the most significant bit of xl is set. */
-#undef invert_limb
+#ifndef invert_limb
 #define invert_limb(invxl,xl)                             \
   do {                                                    \
     mp_limb_t dummy MPFR_MAYBE_UNUSED;                    \
     MPFR_ASSERTD ((xl) != 0);                             \
     udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
   } while (0)
-
-typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
-                                                 mpfr_pi1_t to avoid using
-                                                 GMP's namespace. */
-/* invert_pi1 macro, adapted from GMP 5.0.2, file gmp-impl.h.
-   It returns dinv = floor((B^3-1)/(d1*B+d0))-B, where B=2^BITS_PER_LIMB,
-   assuming the most significant bit of d1 is set. */
-#undef invert_pi1
-#define invert_pi1(dinv, d1, d0)                                \
-  do {                                                          \
-    mp_limb_t _v, _p, _t1, _t0, _mask;                          \
-    invert_limb (_v, d1);                                       \
-    _p = d1 * _v;                                               \
-    _p += d0;                                                   \
-    if (_p < d0)                                                \
-      {                                                         \
-        _v--;                                                   \
-        _mask = -(_p >= d1);                                    \
-        _p -= d1;                                               \
-        _v += _mask;                                            \
-        _p -= _mask & d1;                                       \
-      }                                                         \
-    umul_ppmm (_t1, _t0, d0, _v);                               \
-    _p += _t1;                                                  \
-    if (_p < _t1)                                               \
-      {                                                         \
-        _v--;                                                   \
-        if (MPFR_UNLIKELY (_p >= d1))                           \
-          {                                                     \
-            if (_p > d1 || _t0 >= d0)                           \
-              _v--;                                             \
-          }                                                     \
-      }                                                         \
-    (dinv).inv32 = _v;                                          \
-  } while (0)
+#endif
 
 /* udiv_qr_3by2 macro, adapted from GMP 5.0.2, file gmp-impl.h.
    Compute quotient the quotient and remainder for n / d. Requires d
@@ -377,7 +347,7 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
    NOTE: Output variables are updated multiple times. Only some inputs
    and outputs may overlap.
 */
-#undef udiv_qr_3by2
+#ifndef udiv_qr_3by2
 #define udiv_qr_3by2(q, r1, r0, n2, n1, n0, d1, d0, dinv)               \
   do {                                                                  \
     mp_limb_t _q0, _t1, _t0, _mask;                                     \
@@ -405,7 +375,66 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
           }                                                             \
       }                                                                 \
   } while (0)
+#endif
 
+/* invert_pi1 macro adapted from GMP 5 */
+typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
+#ifndef invert_pi1
+#define invert_pi1(dinv, d1, d0)                                        \
+  do {                                                                  \
+    mp_limb_t _v, _p, _t1, _t0, _mask;                                  \
+    invert_limb (_v, d1);                                               \
+    _p = (d1) * _v;                                                     \
+    _p += (d0);                                                         \
+    if (_p < (d0))                                                      \
+      {                                                                 \
+        _v--;                                                           \
+        _mask = -(mp_limb_t) (_p >= (d1));                              \
+        _p -= (d1);                                                     \
+        _v += _mask;                                                    \
+        _p -= _mask & (d1);                                             \
+      }                                                                 \
+    umul_ppmm (_t1, _t0, d0, _v);                                       \
+    _p += _t1;                                                          \
+    if (_p < _t1)                                                       \
+      {                                                                 \
+        _v--;                                                           \
+        if (MPFR_UNLIKELY (_p >= (d1)))                                 \
+          {                                                             \
+            if (_p > (d1) || _t0 >= (d0))                               \
+              _v--;                                                     \
+          }                                                             \
+      }                                                                 \
+    (dinv).inv32 = _v;                                                  \
+  } while (0)
+#endif
+
+/* mpn_copyd is a new exported function in GMP 5.
+   It existed in GMP 4 in the internal header, but still may not be
+   defined if HAVE_NATIVE_mpn_copyd is not defined */
+#if !__MPFR_GMP(5,0,0)
+# undef  mpn_copyd
+# define mpn_copyd MPN_COPY
+#endif
+
+
+
+/******************************************************
+ ************* GMP Basic Pointer Types ****************
+ ******************************************************/
+/* Compatibility with old GMP versions. */
+#if !__MPFR_GMP(5,0,0)
+typedef unsigned long mp_bitcnt_t;
+#endif
+
+typedef mp_limb_t *mpfr_limb_ptr;
+typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
+
+
+
+/******************************************************
+ ******************** C++ Compatibility ***************
+ ******************************************************/
 #if defined (__cplusplus)
 }
 #endif

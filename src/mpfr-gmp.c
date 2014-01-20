@@ -25,9 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifndef MPFR_HAVE_GMP_IMPL
 
-char             mpfr_rands_initialized = 0;
-gmp_randstate_t  mpfr_rands;
-
 const struct bases mpfr_bases[257] =
 {
   /*  0 */ {0.0},
@@ -303,8 +300,6 @@ mpfr_assert_fail (const char *filename, int linenum,
   abort();
 }
 
-#ifdef mp_get_memory_functions
-
 /* putting 0 as initial values forces those symbols to be fully defined,
    and always resolved, otherwise they are only tentatively defined, which
    leads to problems on e.g. MacOS, cf
@@ -316,51 +311,14 @@ void * (*mpfr_allocate_func) (size_t) = 0;
 void * (*mpfr_reallocate_func) (void *,size_t, size_t) = 0;
 void   (*mpfr_free_func) (void *, size_t) = 0;
 
-#endif
-
-void *
-mpfr_default_allocate (size_t size)
-{
-  void *ret;
-  ret = malloc (size);
-  if (ret == NULL)
-    {
-      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
-               (unsigned long) size);
-      abort ();
-    }
-  return ret;
-}
-
-void *
-mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
-{
-  void *ret;
-  ret = realloc (oldptr, new_size);
-  if (ret == NULL)
-    {
-      fprintf (stderr,
-               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
-               (unsigned long) old_size, (unsigned long) new_size);
-      abort ();
-    }
-  return ret;
-}
-
-void
-mpfr_default_free (void *blk_ptr, size_t blk_size)
-{
-  free (blk_ptr);
-}
-
 void *
 mpfr_tmp_allocate (struct tmp_marker **tmp_marker, size_t size)
 {
   struct tmp_marker *head;
 
   head = (struct tmp_marker *)
-    mpfr_default_allocate (sizeof (struct tmp_marker));
-  head->ptr = mpfr_default_allocate (size);
+    (*mpfr_allocate_func) (sizeof (struct tmp_marker));
+  head->ptr = (*mpfr_allocate_func) (size);
   head->size = size;
   head->next = *tmp_marker;
   *tmp_marker = head;
@@ -375,9 +333,9 @@ mpfr_tmp_free (struct tmp_marker *tmp_marker)
   while (tmp_marker != NULL)
     {
       t = tmp_marker;
-      mpfr_default_free (t->ptr, t->size);
+      (*mpfr_free_func) (t->ptr, t->size);
       tmp_marker = t->next;
-      mpfr_default_free (t, sizeof (struct tmp_marker));
+      (*mpfr_free_func) (t, sizeof (struct tmp_marker));
     }
 }
 

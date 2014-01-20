@@ -77,12 +77,12 @@ tests_allocate (size_t size)
       abort ();
     }
 
-  h = (struct header *) __gmp_default_allocate (sizeof (*h));
+  h = (struct header *) mpfr_default_allocate (sizeof (*h));
   h->next = tests_memory_list;
   tests_memory_list = h;
 
   h->size = size;
-  h->ptr = __gmp_default_allocate (size);
+  h->ptr = mpfr_default_allocate (size);
   return h->ptr;
 }
 
@@ -117,7 +117,7 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
     }
 
   h->size = new_size;
-  h->ptr = __gmp_default_reallocate (ptr, old_size, new_size);
+  h->ptr = mpfr_default_reallocate (ptr, old_size, new_size);
   return h->ptr;
 }
 
@@ -142,8 +142,8 @@ tests_free_nosize (void *ptr)
 
   *hp = h->next;  /* unlink */
 
-  __gmp_default_free (ptr, h->size);
-  __gmp_default_free (h, sizeof (*h));
+  mpfr_default_free (ptr, h->size);
+  mpfr_default_free (h, sizeof (*h));
 }
 
 static void
@@ -162,6 +162,41 @@ tests_free (void *ptr, size_t size)
     }
 
   tests_free_nosize (ptr);
+}
+
+void *
+mpfr_default_allocate (size_t size)
+{
+  void *ret;
+  ret = malloc (size);
+  if (MPFR_UNLIKELY (ret == NULL))
+    {
+      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
+               (unsigned long) size);
+      abort ();
+    }
+  return ret;
+}
+
+void *
+mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
+{
+  void *ret;
+  ret = realloc (oldptr, new_size);
+  if (MPFR_UNLIKELY(ret == NULL))
+    {
+      fprintf (stderr,
+               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
+               (unsigned long) old_size, (unsigned long) new_size);
+      abort ();
+    }
+  return ret;
+}
+
+void
+mpfr_default_free (void *blk_ptr, size_t blk_size)
+{
+  free (blk_ptr);
 }
 
 void
