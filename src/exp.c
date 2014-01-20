@@ -62,13 +62,15 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* First, let's detect most overflow and underflow cases. */
   {
+    mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
+    mp_limb_t bound_limb[(32 - 1) / GMP_NUMB_BITS + 1];
     mpfr_t e, bound;
 
     /* We extend the exponent range and save the flags. */
     MPFR_SAVE_EXPO_MARK (expo);
 
-    mpfr_init2 (e, sizeof (mpfr_exp_t) * CHAR_BIT);
-    mpfr_init2 (bound, 32);
+    MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
+    MPFR_TMP_INIT1(bound_limb, bound, 32);
 
     inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
     MPFR_ASSERTD (inexact == 0);
@@ -77,7 +79,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     if (MPFR_UNLIKELY (mpfr_cmp (x, bound) >= 0))
       {
         /* x > log(2^emax), thus exp(x) > 2^emax */
-        mpfr_clears (e, bound, (mpfr_ptr) 0);
         MPFR_SAVE_EXPO_FREE (expo);
         return mpfr_overflow (y, rnd_mode, 1);
       }
@@ -91,7 +92,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     if (MPFR_UNLIKELY (mpfr_cmp (x, bound) <= 0))
       {
         /* x < log(2^(emin - 2)), thus exp(x) < 2^(emin - 2) */
-        mpfr_clears (e, bound, (mpfr_ptr) 0);
         MPFR_SAVE_EXPO_FREE (expo);
         return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                                1);
@@ -99,7 +99,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
     /* Other overflow/underflow cases must be detected
        by the generic routines. */
-    mpfr_clears (e, bound, (mpfr_ptr) 0);
     MPFR_SAVE_EXPO_FREE (expo);
   }
 
