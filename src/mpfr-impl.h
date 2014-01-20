@@ -353,7 +353,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 # define MPFR_DBGRES(A)      (A)
 #else
-# define MPFR_ASSERTD(expr)  ((void) 0)
+# define MPFR_ASSERTD(expr)  MPFR_ASSUME (expr)
 # define MPFR_DBGRES(A)      ((void) (A))
 #endif
 
@@ -370,14 +370,41 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 # endif
 #endif
 
+/* MPFR_ASSUME is like assert(), but it is a hint to a compiler about a
+   statement of fact in a function call free expression, which allows
+   the compiler to generate better machine code.
+   __builtin_unreachable has been introduced in GCC 4.5 but it works
+   fine since 4.8 only (before it may generate unoptimized code if there
+   are more than one decision).
+   The use of __builtin_constant_p is to avoid calling any function in
+   assertions: it detects if the expression can be reduced to a constant,
+   i.e. if the expression has any other effect than being false or true
+   which is wrong if there is any function call.
+   In the development code, it is better to use MPFR_ASSERTD than
+   MPFR_ASSUME, since it'll check if the condition is true in debug
+   build.
+*/
+#if defined(MPFR_HAVE_BUILTIN_UNREACHABLE) && __MPFR_GNUC(4, 8)
+# define MPFR_ASSUME(x)                                 \
+    (! __builtin_constant_p (!!(x) || !(x)) || (x) ?    \
+     (void) 0 : __builtin_unreachable())
+#elif defined(_MSC_VER)
+# define MPFR_ASSUME(x) __assume(x)
+#else
+# define MPFR_ASSUME(x) ((void) 0)
+#endif
+
 #include "mpfr-sassert.h"
 
 /* Code to deal with impossible, for functions returning an int.
    The "return 0;" avoids an error with current GCC versions and
    "-Werror=return-type".
    WARNING: It doesn't use do { } while (0) for Insure++ */
-#define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
-
+#if defined(HAVE_BUILTIN_UNREACHABLE)
+# define MPFR_RET_NEVER_GO_HERE() { __builtin_unreachable(); }
+#else
+# define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
+#endif
 
 /******************************************************
  ******************** Warnings ************************

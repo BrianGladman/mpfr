@@ -171,6 +171,21 @@ if test "$mpfr_cv_have_noreturn" = "yes"; then
   AC_DEFINE(MPFR_HAVE_NORETURN,1,[Define if the _Noreturn function specifier is supported.])
 fi
 
+dnl Check for __builtin_unreachable
+AC_CACHE_CHECK([for __builtin_unreachable], mpfr_cv_have_builtin_unreachable,
+[
+  AC_LINK_IFELSE([AC_LANG_PROGRAM(
+      [[int x;]],
+      [[if (x) __builtin_unreachable(); ]]
+    )],
+    mpfr_cv_have_builtin_unreachable=yes,
+    mpfr_cv_have_builtin_unreachable=no)
+])
+if test "$mpfr_cv_have_builtin_unreachable" = "yes"; then
+  AC_DEFINE(MPFR_HAVE_BUILTIN_UNREACHABLE, 1,
+   [Define if the _Builtin_unreachable function is supported.])
+fi
+
 dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"
