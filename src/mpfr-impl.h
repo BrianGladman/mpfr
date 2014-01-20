@@ -427,9 +427,11 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 
 #include "mpfr-sassert.h"
 
-/* Code to deal with impossible
-   WARNING: It doesn't use do { } while (0) for Insure++*/
-#define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}
+/* Code to deal with impossible, for functions returning an int.
+   The "return 0;" avoids an error with current GCC versions and
+   "-Werror=return-type".
+   WARNING: It doesn't use do { } while (0) for Insure++ */
+#define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
 
 
 /******************************************************
