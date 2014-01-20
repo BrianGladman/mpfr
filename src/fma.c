@@ -128,7 +128,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       mpfr_add (u, u, z, MPFR_RNDZ);
       if (__gmpfr_emin < MPFR_EXP(u) && MPFR_EXP(u) < __gmpfr_emax)
         {
-          mp_prec_t err;
+          mpfr_prec_t err;
           if (signu == MPFR_SIGN(z) || expu <= MPFR_EXP(u))
             err = 1;
           else
