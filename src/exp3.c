@@ -283,7 +283,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             }
         }
 
-      if (mpfr_can_round (shift_x > 0 ? t : tmp, realprec, MPFR_RNDD, MPFR_RNDZ,
+      if (mpfr_can_round (shift_x > 0 ? t : tmp, realprec, MPFR_RNDN, MPFR_RNDZ,
                           MPFR_PREC(y) + (rnd_mode == MPFR_RNDN)))
         {
           inexact = mpfr_set (y, shift_x > 0 ? t : tmp, rnd_mode);

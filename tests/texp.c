@@ -148,7 +148,7 @@ check_worst_cases (void)
 
   mpfr_set_prec (x, 118);
   mpfr_set_str_binary (x, "0.1110010100011101010000111110011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E-86");
-  mpfr_init2 (y, 118);
+  mpfr_set_prec (y, 118);
   mpfr_exp_2 (y, x, MPFR_RNDU);
   mpfr_exp_3 (x, x, MPFR_RNDU);
   if (mpfr_cmp (x, y))
