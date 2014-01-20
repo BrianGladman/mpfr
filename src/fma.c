@@ -115,39 +115,11 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                      MPFR_IS_SINGULAR(z) ))
     return mpfr_fma_singular (s, x, y, z, rnd_mode);
 
-  /* first try to use a truncated product, in case no underflow nor
-     overflow happens */
-  mpfr_exp_t expu;
-  mpfr_flags_t saved_flags = __gmpfr_flags;
-  MPFR_GROUP_INIT_1 (group, MPFR_PREC(s) + GMP_NUMB_BITS, u);
-  mpfr_mul (u, x, y, MPFR_RNDZ);
-  expu = MPFR_EXP(u);
-  if (__gmpfr_emin < expu && expu < __gmpfr_emax)
-    {
-      int signu = MPFR_SIGN (u);
-      mpfr_add (u, u, z, MPFR_RNDZ);
-      if (__gmpfr_emin < MPFR_EXP(u) && MPFR_EXP(u) < __gmpfr_emax)
-        {
-          mpfr_prec_t err;
-          if (signu == MPFR_SIGN(z) || expu <= MPFR_EXP(u))
-            err = 1;
-          else
-            err = 1 + expu - MPFR_EXP(u);
-          if (mpfr_can_round (u, MPFR_PREC(s) + GMP_NUMB_BITS - err, MPFR_RNDN,
-                              MPFR_RNDZ, MPFR_PREC(s) + (rnd_mode == MPFR_RNDN)))
-            {
-              inexact = mpfr_set (s, u, rnd_mode);
-              MPFR_GROUP_CLEAR (group);
-              return inexact;
-            }
-        }
-    }
-  __gmpfr_flags = saved_flags;
-
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
   MPFR_SAVE_EXPO_MARK (expo);
-  MPFR_GROUP_REPREC_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
+  MPFR_GROUP_INIT_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
+
   if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
     {
       /* overflow or underflow - this case is regarded as rare, thus
