@@ -1,4 +1,4 @@
-# Copyright 2005-2010 Free Software Foundation, Inc.
+# Copyright 2005-2010, 2014 Free Software Foundation, Inc.
 # Contributed by Patrick Pelissier, INRIA.
 # 
 # This file is part of the MPFR Library.
@@ -17,7 +17,7 @@
 # along with the MPFR Library; see the file COPYING.LESSER.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301, USA.
- 
+
 AR=ar
 CC=gcc
 CXX=g++
@@ -42,7 +42,7 @@ MPFR_INCLUDE=$(MPFR)/include
 MPFR_LIB=$(MPFR)/lib
 
 ########################################################
-VERSION=0.6.1
+VERSION=0.6.2
 NAME=mbench
 
 #########################################################
@@ -54,13 +54,13 @@ NAME=mbench
 # is ignored in such a case.
 # [*] http://austingroupbugs.net/view.php?id=187
 ifeq	($(CC),gcc)
-INCLUDES=`test -f $(GMP_INCLUDE)/gmp.h && echo "-include $(GMP_INCLUDE)/gmp.h"` `test -f $(GMP)/gmp.h && echo "-include $(GMP)/gmp.h"` `test -f $(MPFR_INCLUDE)/mpfr.h && echo "-include $(MPFR_INCLUDE)/mpfr.h"` `test -f $(MPFR)/mpfr.h && echo "-include $(MPFR)/mpfr.h"` -I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
+INCLUDES=`test -f $(GMP_INCLUDE)/gmp.h && echo "-include $(GMP_INCLUDE)/gmp.h"` `test -f $(GMP)/gmp.h && echo "-include $(GMP)/gmp.h"` `test -f $(MPFR_INCLUDE)/mpfr.h && echo "-include $(MPFR_INCLUDE)/mpfr.h"` `test -f $(MPFR)/mpfr.h && echo "-include $(MPFR)/mpfr.h"` `test -f $(MPFR)/src/mpfr.h && echo "-include $(MPFR)/src/mpfr.h"` -I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 else
 INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 endif
 
 # search first for real install, then for build directory
-LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/src/.libs/libmpfr.a && echo $(MPFR)/src/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
+LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` `(test -f $(MPFR)/.libs/libmpfr.a && echo $(MPFR)/.libs/libmpfr.a)` `(test -f $(MPFR)/src/.libs/libmpfr.a && echo $(MPFR)/src/.libs/libmpfr.a)` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` `(test -f $(GMP)/.libs/libgmp.a && echo $(GMP)/.libs/libgmp.a)`
 
 XLIBS=`test -f $(PARI)/lib/libpari.a && echo $(PARI)/lib/libpari.a` \
       `test -f $(NTL)/lib/libntl.a && echo $(NTL)/lib/libntl.a`     \
