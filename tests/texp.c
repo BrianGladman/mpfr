@@ -146,6 +146,22 @@ check_worst_cases (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 118);
+  mpfr_set_str_binary (x, "0.1110010100011101010000111110011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E-86");
+  mpfr_init2 (y, 118);
+  mpfr_exp_2 (y, x, MPFR_RNDU);
+  mpfr_exp_3 (x, x, MPFR_RNDU);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("mpfr_exp_2 and mpfr_exp_3 differ for prec=118\n");
+      printf ("mpfr_exp_2 gives ");
+      mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+      printf ("\nmpfr_exp_3 gives ");
+      mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   return 0;
