@@ -27,10 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 extern char gmp_version[];
 #endif
 
-#ifndef __gmp_const
-#define __gmp_const const
-#endif
-
 #ifndef GMP_NUMB_BITS
 #define GMP_NUMB_BITS 64
 #endif

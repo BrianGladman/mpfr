@@ -44,7 +44,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 test (FILE *fout, const char *fmt, ...)
 {
-  int (*fct) (FILE*, __gmp_const char*, va_list);
+  int (*fct) (FILE*, const char*, va_list);
 
   fct = mpfr_vfprintf;
   if (0)

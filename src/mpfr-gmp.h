@@ -428,7 +428,7 @@ typedef unsigned long mp_bitcnt_t;
 #endif
 
 typedef mp_limb_t *mpfr_limb_ptr;
-typedef __gmp_const mp_limb_t *mpfr_limb_srcptr;
+typedef const mp_limb_t *mpfr_limb_srcptr;
 
 
 
