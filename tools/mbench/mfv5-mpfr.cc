@@ -68,6 +68,14 @@ public:
     return mpfr_mul (a,b,c,r);
   }
 };
+
+class mpfr_fma_test {
+public:
+  int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_fma (a,b,b,c,r);
+  }
+};
+
 class mpfr_div_test {
 public:
   int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
@@ -188,6 +196,7 @@ public:
 static mpfr_test<mpfr_add_test> test1 ("mpfr_add");
 static mpfr_test<mpfr_sub_test> test2 ("mpfr_sub");
 static mpfr_test<mpfr_mul_test> test3 ("mpfr_mul");
+static mpfr_test<mpfr_fma_test> test10 ("mpfr_fma");
 static mpfr_test<mpfr_div_test> test4 ("mpfr_div");
 static mpfr_test<mpfr_set_test> test5 ("mpfr_set");
 
