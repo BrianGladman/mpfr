@@ -630,5 +630,5 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return mpfr_check_range (y, inexact, rnd_mode);
     }
 
-  MPFR_ASSERTN (0);             /* should never reach this point */
+  MPFR_RET_NEVER_GO_HERE ();
 }
