@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_set_exp (mpfr_ptr x, mpfr_exp_t exponent)
 {
-  if (exponent >= __gmpfr_emin && exponent <= __gmpfr_emax)
+  if (MPFR_LIKELY (exponent >= __gmpfr_emin && exponent <= __gmpfr_emax))
     {
       MPFR_EXP(x) = exponent; /* do not use MPFR_SET_EXP of course... */
       return 0;

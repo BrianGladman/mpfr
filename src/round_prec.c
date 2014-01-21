@@ -61,7 +61,7 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
   /* Get the number of limbs from the precision.
      (Compatible with all allocation methods) */
   ow = MPFR_LIMB_SIZE (x);
-  if (nw > ow)
+  if (MPFR_UNLIKELY (nw > ow))
     {
       /* FIXME: Variable can't be created using custom allocation,
          MPFR_DECL_INIT or GROUP_ALLOC: How to detect? */
