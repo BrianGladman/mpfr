@@ -44,13 +44,12 @@ mpz_normalize (mpz_t rop, mpz_t z, mpfr_exp_t q)
 
   MPFR_MPZ_SIZEINBASE2 (k, z);
   MPFR_ASSERTD (k == (mpfr_uexp_t) k);
-  if (q < 0 || (mpfr_uexp_t) k > (mpfr_uexp_t) q)
+  if (MPFR_LIKELY(q < 0 || (mpfr_uexp_t) k > (mpfr_uexp_t) q))
     {
       mpz_fdiv_q_2exp (rop, z, (unsigned long) ((mpfr_uexp_t) k - q));
       return (mpfr_exp_t) k - q;
     }
-  if (MPFR_UNLIKELY(rop != z))
-    mpz_set (rop, z);
+  mpz_set (rop, z);
   return 0;
 }
 
@@ -61,7 +60,7 @@ mpz_normalize (mpz_t rop, mpz_t z, mpfr_exp_t q)
 static mpfr_exp_t
 mpz_normalize2 (mpz_t rop, mpz_t z, mpfr_exp_t expz, mpfr_exp_t target)
 {
-  if (target > expz)
+  if (MPFR_LIKELY(target > expz))
     mpz_fdiv_q_2exp (rop, z, target - expz);
   else
     mpz_mul_2exp (rop, z, expz - target);
@@ -83,8 +82,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_exp_t exps, expx;
   mpfr_prec_t q, precy;
   int inexact;
-  mpfr_t r, s;
+  mpfr_t s, r;
   mpz_t ss;
+  MPFR_GROUP_DECL(group);
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC
@@ -99,16 +99,16 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      x may be as large as 2^62*log(2) without overflow, and then x/log(2)
      is about 2^62: not every integer of that size can be represented as a
      'double', thus the argument reduction would fail. */
-  if (expx <= -2)
+  if (MPFR_UNLIKELY(expx <= -2))
     /* |x| <= 0.25, thus n = round(x/log(2)) = 0 */
     n = 0;
   else
     {
-      mpfr_init2 (r, sizeof (long) * CHAR_BIT);
+      mp_limb_t r_limb[(sizeof (long) -1) / sizeof(mp_limb_t) + 1];
+      MPFR_TMP_INIT1(r_limb, r, sizeof (long) * CHAR_BIT);
       mpfr_const_log2 (r, MPFR_RNDZ);
       mpfr_div (r, x, r, MPFR_RNDN);
       n = mpfr_get_si (r, MPFR_RNDN);
-      mpfr_clear (r);
     }
   /* we have |x| <= (|n|+1)*log(2) */
   MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
@@ -136,11 +136,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (expx > 0)
     q += expx;
 
-  /* Note: due to the mpfr_prec_round below, it is not possible to use
-     the MPFR_GROUP_* macros here. */
-
-  mpfr_init2 (r, q + error_r);
-  mpfr_init2 (s, q + error_r);
+  /* Even with to the mpfr_prec_round below, it is possible to use
+     the MPFR_GROUP_* macros here because mpfr_prec_round is only
+     called in a special case. */
+  MPFR_GROUP_INIT_2(group, q + error_r, r, s);
 
   /* the algorithm consists in computing an upper bound of exp(x) using
      a precision of q bits, and see if we can round to MPFR_PREC(y) taking
@@ -171,7 +170,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       mpfr_sub (r, x, r, MPFR_RNDU);
 
-      if (MPFR_IS_PURE_FP (r))
+      if (MPFR_LIKELY(MPFR_IS_PURE_FP (r)))
         {
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
@@ -182,15 +181,20 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           /* since there was a cancellation in x - n*log(2), the low error_r
              bits from r are zero and thus non significant, thus we can reduce
              the working precision */
-          if (error_r > 0)
-            mpfr_prec_round (r, q, MPFR_RNDU);
+          if (MPFR_LIKELY(error_r > 0))
+            {
+              MPFR_ASSERTD( MPFR_PREC(r) > q);
+              /* since MPFR_PREC(r) > q, there is no reallocation to do,
+                 and it is safe to use it with MPFR_GROUP functions */
+              mpfr_prec_round (r, q, MPFR_RNDU);
+            }
           /* the error on r is at most 3 ulps (3 ulps if error_r = 0,
              and 1 + 3/2 if error_r > 0) */
           MPFR_LOG_VAR (r);
           MPFR_ASSERTD (MPFR_IS_POS (r));
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
-          mpz_init (ss);
+          mpz_init2 (ss, q+GMP_NUMB_BITS);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
           l = (precy < MPFR_EXP_2_THRESHOLD)
@@ -228,13 +232,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
 
       MPFR_ZIV_NEXT (loop, q);
-      mpfr_set_prec (r, q + error_r);
-      mpfr_set_prec (s, q + error_r);
+      MPFR_GROUP_REPREC_2(group, q+error_r, r, s);
     }
   MPFR_ZIV_FREE (loop);
-
-  mpfr_clear (r);
-  mpfr_clear (s);
+  MPFR_GROUP_CLEAR (group);
 
   return inexact;
 }
@@ -258,12 +259,12 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   mpz_t t, rr;
   mp_size_t sbit, tbit;
 
-  MPFR_ASSERTN (MPFR_IS_PURE_FP (r));
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (r));
 
   expt = 0;
   *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
-  mpz_init (t);
-  mpz_init (rr);
+  mpz_init2 (t, 2*q + GMP_NUMB_BITS);
+  mpz_init2 (rr, q + GMP_NUMB_BITS);
   mpz_set_ui(t, 1);
   mpz_set_ui(s, 1);
   mpz_mul_2exp(s, s, q-1);

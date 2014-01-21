@@ -24,6 +24,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* #define DEBUG */
 
+/* Cache for emin and emax bounds.
+   Contrary to other caches, it uses a fixed size for the mantissa,
+   so there is no dynamic allocation, and no need to free them. */
+static MPFR_THREAD_ATTR mpfr_exp_t previous_emin;
+static MPFR_THREAD_ATTR mp_limb_t  bound_emin_limb[(32 - 1) / GMP_NUMB_BITS + 1];
+static MPFR_THREAD_ATTR mpfr_t     bound_emin;
+static MPFR_THREAD_ATTR mpfr_exp_t previous_emax;
+static MPFR_THREAD_ATTR mp_limb_t  bound_emax_limb[(32 - 1) / GMP_NUMB_BITS + 1];
+static MPFR_THREAD_ATTR mpfr_t     bound_emax;
+
 int
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -61,46 +71,60 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   /* First, let's detect most overflow and underflow cases. */
-  {
-    mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
-    mp_limb_t bound_limb[(32 - 1) / GMP_NUMB_BITS + 1];
-    mpfr_t e, bound;
+  /* emax bound is cached. Check if the value in cache is ok */
+  if (MPFR_UNLIKELY (mpfr_get_emax() != previous_emax))
+    {
+      /* Recompute the emax bound */
+      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
+      mpfr_t e;
 
-    /* We extend the exponent range and save the flags. */
-    MPFR_SAVE_EXPO_MARK (expo);
+      /* We extend the exponent range and save the flags. */
+      MPFR_SAVE_EXPO_MARK (expo);
 
-    MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
-    MPFR_TMP_INIT1(bound_limb, bound, 32);
+      MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
+      MPFR_TMP_INIT1(bound_emax_limb, bound_emax, 32);
 
-    inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
-    MPFR_ASSERTD (inexact == 0);
-    mpfr_const_log2 (bound, expo.saved_emax < 0 ? MPFR_RNDD : MPFR_RNDU);
-    mpfr_mul (bound, bound, e, MPFR_RNDU);
-    if (MPFR_UNLIKELY (mpfr_cmp (x, bound) >= 0))
-      {
-        /* x > log(2^emax), thus exp(x) > 2^emax */
-        MPFR_SAVE_EXPO_FREE (expo);
-        return mpfr_overflow (y, rnd_mode, 1);
-      }
+      inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      mpfr_const_log2 (bound_emax, expo.saved_emax < 0 ? MPFR_RNDD : MPFR_RNDU);
+      mpfr_mul (bound_emax, bound_emax, e, MPFR_RNDU);
+      previous_emax = expo.saved_emax;
+      MPFR_SAVE_EXPO_FREE (expo);
+    }
+  /* mpfr_cmp works even in reduced emin,emax range */
+  if (MPFR_UNLIKELY (mpfr_cmp (x, bound_emax) >= 0))
+    {
+      /* x > log(2^emax), thus exp(x) > 2^emax */
+      return mpfr_overflow (y, rnd_mode, 1);
+    }
 
-    inexact = mpfr_set_exp_t (e, expo.saved_emin, MPFR_RNDN);
-    MPFR_ASSERTD (inexact == 0);
-    inexact = mpfr_sub_ui (e, e, 2, MPFR_RNDN);
-    MPFR_ASSERTD (inexact == 0);
-    mpfr_const_log2 (bound, expo.saved_emin < 0 ? MPFR_RNDU : MPFR_RNDD);
-    mpfr_mul (bound, bound, e, MPFR_RNDD);
-    if (MPFR_UNLIKELY (mpfr_cmp (x, bound) <= 0))
-      {
-        /* x < log(2^(emin - 2)), thus exp(x) < 2^(emin - 2) */
-        MPFR_SAVE_EXPO_FREE (expo);
-        return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
-                               1);
-      }
+  /* emin bound is cached. Check if the value in cache is ok */
+  if (MPFR_UNLIKELY (mpfr_get_emin() != previous_emin))
+    {
+      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
+      mpfr_t e;
 
-    /* Other overflow/underflow cases must be detected
-       by the generic routines. */
-    MPFR_SAVE_EXPO_FREE (expo);
-  }
+      /* We extend the exponent range and save the flags. */
+      MPFR_SAVE_EXPO_MARK (expo);
+
+      MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
+      MPFR_TMP_INIT1(bound_emin_limb, bound_emin, 32);
+
+      inexact = mpfr_set_exp_t (e, expo.saved_emin, MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      inexact = mpfr_sub_ui (e, e, 2, MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      mpfr_const_log2 (bound_emin, expo.saved_emin < 0 ? MPFR_RNDU : MPFR_RNDD);
+      mpfr_mul (bound_emin, bound_emin, e, MPFR_RNDD);
+      previous_emin = expo.saved_emin;
+      MPFR_SAVE_EXPO_FREE (expo);
+    }
+  if (MPFR_UNLIKELY (mpfr_cmp (x, bound_emin) <= 0))
+    {
+      /* x < log(2^(emin - 2)), thus exp(x) < 2^(emin - 2) */
+      return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
+                             1);
+    }
 
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);

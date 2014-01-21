@@ -45,6 +45,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define use_inexp 0
 #include "round_raw_generic.c"
 
+/* Note: if the new prec is lower than the current one, a reallocation
+   must not be done (see exp_2.c). */
+
 int
 mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 {
