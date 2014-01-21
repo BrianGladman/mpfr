@@ -300,7 +300,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   tn = MPFR_PREC2LIMBS (bq + cq);
   MPFR_ASSERTD (tn <= k); /* tn <= k, thus no int overflow */
 
-  /* Check for no size_t overflow*/
+  /* Check for no size_t overflow. */
   MPFR_ASSERTD ((size_t) k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   MPFR_TMP_MARK (marker);
   tmp = MPFR_TMP_LIMBS_ALLOC (k);
@@ -318,17 +318,17 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (bn >= cn);
   if (MPFR_LIKELY (bn <= 2))
     {
+      /* The 3 cases perform the same first operation. */
+      umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
       if (bn == 1)
         {
           /* 1 limb * 1 limb */
-          umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
           b1 = tmp[1];
         }
       else if (MPFR_UNLIKELY (cn == 1))
         {
           /* 2 limbs * 1 limb */
           mp_limb_t t;
-          umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
           umul_ppmm (tmp[2], t, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);
           add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t);
           b1 = tmp[2];
@@ -338,7 +338,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* 2 limbs * 2 limbs */
           mp_limb_t t1, t2, t3;
           /* First 2 limbs * 1 limb */
-          umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
           umul_ppmm (tmp[2], t1, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);
           add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t1);
           /* Second, the other 2 limbs * 1 limb product */
@@ -369,7 +368,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            exact values are a nightmare for the short product trick */
         bp = MPFR_MANT (b);
         cp = MPFR_MANT (c);
-        MPFR_ASSERTN (threshold >= 1);
+        MPFR_STAT_STATIC_ASSERT (MPFR_MUL_THRESHOLD >= 1 &&
+                                 MPFR_SQR_THRESHOLD >= 1);
         if (MPFR_UNLIKELY ((bp[0] == 0 && bp[1] == 0) ||
                            (cp[0] == 0 && cp[1] == 0)))
           {
