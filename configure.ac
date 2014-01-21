@@ -323,7 +323,7 @@ AC_ARG_ENABLE(float128,
 test_libgmp=__gmpz_init
 
 AC_ARG_ENABLE(mini-gmp,
-   [--enable-mini-gmp build MPFR with mini-gmp [[default=no]]],
+   [  --enable-mini-gmp       build MPFR with mini-gmp (experimental) [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([WANT_MINI_GMP],1,[Use mini-gmp])
            test_libgmp=mpz_init;;
