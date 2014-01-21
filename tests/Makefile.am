@@ -11,12 +11,6 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# tversion is run
-#   * at the beginning so that the user gets a possible version error
-#     before any other one (the version error may be the cause of the
-#     other errors), and
-#   * at the end so that the error message is also near the end of the
-#     output.
 check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1      \
      tabort_defalloc2 tinternals tinits tisqrt tsgn tcheck	  	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat	  	\
