@@ -358,10 +358,12 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "0.5", 10, MPFR_RNDN);
   mpfr_set_str (z, "-0.375", 10, MPFR_RNDN);
   mpfr_fms (s, x, y, z, MPFR_RNDU); /* result is 0 */
-  if (mpfr_cmp_ui(s, 0))
+  if (mpfr_cmp_ui (s, 0))
     {
-      printf("Error: -0.75 * 0.5 - -0.375 should be equal to 0 for prec=2\n");
-      exit(1);
+      printf ("Error: -0.75 * 0.5 - -0.375 should be equal to 0 for prec=2\n");
+      printf ("got instead ");
+      mpfr_dump (s);
+      exit (1);
     }
 
   mpfr_set_prec (x, 27);
