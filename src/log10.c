@@ -68,7 +68,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_ZERO (a));
           MPFR_SET_INF (r);
           MPFR_SET_NEG (r);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET (0); /* log10(0) is an exact -infinity */
         }
     }

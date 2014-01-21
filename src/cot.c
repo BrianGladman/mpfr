@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_INF(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_ZERO(y,x) do { MPFR_SET_SAME_SIGN(y,x); MPFR_SET_INF(y); \
-                              mpfr_set_divby0 (); MPFR_RET(0); } while (1)
+                              MPFR_SET_DIVBY0 (); MPFR_RET(0); } while (1)
 
 /* (This analysis is adapted from that for mpfr_coth.)
    Near x=0, cot(x) = 1/x - x/3 + ..., more precisely we have

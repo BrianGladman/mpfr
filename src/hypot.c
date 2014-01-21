@@ -205,7 +205,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
 
   if (MPFR_OVERFLOW (flags))
-    mpfr_set_overflow ();
+    MPFR_SET_OVERFLOW ();
   /* hypot(x,y) >= |x|, thus underflow is not possible. */
 
   return mpfr_check_range (z, inexact, rnd_mode);

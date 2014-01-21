@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_INF(y) return mpfr_set_si (y, MPFR_IS_POS(x) ? 1 : -1, rnd_mode)
 #define ACTION_ZERO(y,x) do { MPFR_SET_SAME_SIGN(y,x); MPFR_SET_INF(y); \
-                              mpfr_set_divby0 (); MPFR_RET(0); } while (1)
+                              MPFR_SET_DIVBY0 (); MPFR_RET(0); } while (1)
 
 /* We know |coth(x)| > 1, thus if the approximation z is such that
    1 <= z <= 1 + 2^(-p) where p is the target precision, then the

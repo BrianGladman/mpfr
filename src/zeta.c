@@ -382,7 +382,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
     {
       MPFR_SET_INF (z);
       MPFR_SET_POS (z);
-      mpfr_set_divby0 ();
+      MPFR_SET_DIVBY0 ();
       MPFR_RET (0);
     }
 

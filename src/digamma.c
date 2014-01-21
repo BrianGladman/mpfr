@@ -324,7 +324,7 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           /* the following works also in case of overlap */
           MPFR_SET_INF(y);
           MPFR_SET_OPPOSITE_SIGN(y, x);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET(0);
         }
     }

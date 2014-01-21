@@ -54,7 +54,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
                        __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)))
     MPFR_RET (old_inexact);
 
-  mpfr_set_underflow ();
+  MPFR_SET_UNDERFLOW ();
   sign = MPFR_SIGN (y);
 
   /* We have to emulate one bit rounding if EXP(y) = emin */

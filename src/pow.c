@@ -503,7 +503,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
             {
               MPFR_ASSERTD (! MPFR_IS_INF (y));
               MPFR_SET_INF (z);
-              mpfr_set_divby0 ();
+              MPFR_SET_DIVBY0 ();
             }
           else
             MPFR_SET_ZERO (z);

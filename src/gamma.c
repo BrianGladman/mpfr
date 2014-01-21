@@ -141,7 +141,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
           MPFR_SET_INF(gamma);
           MPFR_SET_SAME_SIGN(gamma, x);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET (0);  /* exact */
         }
     }

@@ -186,7 +186,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
             MPFR_SET_NEG(res);
           else
             MPFR_SET_POS(res);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET(0);
         }
     }

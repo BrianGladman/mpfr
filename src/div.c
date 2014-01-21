@@ -215,7 +215,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
             {
               MPFR_ASSERTD (! MPFR_IS_INF (u));
               MPFR_SET_INF(q);
-              mpfr_set_divby0 ();
+              MPFR_SET_DIVBY0 ();
               MPFR_RET(0);
             }
         }

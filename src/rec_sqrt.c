@@ -459,7 +459,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           /* +0 or -0 */
           MPFR_SET_INF(r);
           MPFR_SET_POS(r);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET(0); /* Inf is exact */
         }
       else

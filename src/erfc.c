@@ -185,7 +185,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
         near_two:
           mpfr_set_ui (y, 2, MPFR_RNDN);
-          mpfr_set_inexflag ();
+          MPFR_SET_INEXFLAG ();
           if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
             {
               mpfr_nextbelow (y);

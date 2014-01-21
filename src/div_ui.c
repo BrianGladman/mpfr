@@ -77,7 +77,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           /* x/0 is Inf since x != 0*/
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET (0);
         }
       else /* y = x/1 = x */

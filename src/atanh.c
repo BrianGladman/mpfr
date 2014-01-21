@@ -67,7 +67,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
         {
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, xt);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET (0);
         }
       MPFR_SET_NAN (y);

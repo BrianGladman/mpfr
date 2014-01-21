@@ -207,7 +207,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
               inexact = -sign;
               mpfr_nexttozero (y);
               if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
-                mpfr_set_underflow ();
+                MPFR_SET_UNDERFLOW ();
             }
         }
       else /* The error term is positive for v positive */
@@ -221,7 +221,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
               inexact = sign;
               mpfr_nexttoinf (y);
               if (MPFR_UNLIKELY (MPFR_IS_INF (y)))
-                mpfr_set_overflow ();
+                MPFR_SET_OVERFLOW ();
             }
         }
     }

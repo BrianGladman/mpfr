@@ -628,7 +628,7 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       else /* lngamma(+Inf) = lngamma(+0) = +Inf */
         {
           if (MPFR_IS_ZERO (x))
-            mpfr_set_divby0 ();
+            MPFR_SET_DIVBY0 ();
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
           MPFR_RET (0);  /* exact */
@@ -668,7 +668,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
       else
         {
           if (MPFR_IS_ZERO (x))
-            mpfr_set_divby0 ();
+            MPFR_SET_DIVBY0 ();
           *signp = MPFR_INT_SIGN (x);
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
@@ -682,7 +682,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
-          mpfr_set_divby0 ();
+          MPFR_SET_DIVBY0 ();
           MPFR_RET (0);
         }
 

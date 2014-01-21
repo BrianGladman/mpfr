@@ -243,7 +243,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 /* Note: Function-like macros that modify __gmpfr_flags are not defined
    because of the risk to break the sequence point rules if two such
    macros are used in the same expression (without a sequence point
-   between). For instance, mpfr_sgn currently uses mpfr_set_erangeflag(),
+   between). For instance, mpfr_sgn currently uses mpfr_set_erangeflag,
    which mustn't be implemented as a macro for this reason. */
 
 #define mpfr_flags_test(mask) \
@@ -268,7 +268,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    one from using them in an expression, as the sequence point rules could
    be broken if __gmpfr_flags is assigned twice in the same expression
    (via macro expansions). For instance, the mpfr_sgn macro currently uses
-   mpfr_set_erangeflag(), which mustn't be implemented as a function-like
+   mpfr_set_erangeflag, which mustn't be implemented as a function-like
    macro for this reason. It is not clear whether an expression with
    sequence points, like (void) (0, __gmpfr_flags = 0), would avoid UB. */
 #define MPFR_CLEAR_FLAGS() \
