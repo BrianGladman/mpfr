@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 Changes from versions 3.1.* to version 3.2.0:
 - The "dinde aux marrons" release.
 - MPFR now depends on GMP 4.2+ instead of 4.1+.
-- Mini-gmp support via the --enable-mini-gmp configure option.
+- Mini-gmp support via the --enable-mini-gmp configure option (experimental).
 - New functions: mpfr_fpif_export and mpfr_fpif_import to export and import
   numbers in a floating-point interchange format, independent both on the
   number of bits per word and on the endianness.
