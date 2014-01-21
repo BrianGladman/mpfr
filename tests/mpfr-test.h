@@ -74,7 +74,7 @@ extern "C" {
 
 #define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
-void test_version _MPFR_PROTO ((void));
+int test_version _MPFR_PROTO ((void));
 
 void tests_memory_start _MPFR_PROTO ((void));
 void tests_memory_end _MPFR_PROTO ((void));

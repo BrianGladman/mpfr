@@ -11,12 +11,6 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# tversion is run
-#   * at the beginning so that the user gets a possible version error
-#     before any other one (the version error may be the cause of the
-#     other errors), and
-#   * at the end so that the error message is also near the end of the
-#     output.
 check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1      \
      tabort_defalloc2 tinternals tinits tisqrt tsgn tcheck	  	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat	  	\
@@ -39,7 +33,18 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1      \
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan		\
      ttanh ttrunc tui_div tui_pow tui_sub turandom 	 		\
-     tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
+     tvalist ty0 ty1 tyn tzeta tzeta_ui
+
+# Before Automake 1.13, we ran tversion at the beginning and at the end
+# of the tests, and output from tversion appeared at the same place as
+# the tests results (make output). With Automake 1.13+, the tests are
+# parallelized by default and their output is sent to log files instead
+# of the make output, so that the user could no longer see information
+# from tversion. To mimic the old behavior, we now output the contents
+# of the tversion log file if this file exists (i.e. if the Makefile
+# has been generated with Automake 1.13+).
+check:
+	cat tversion.log 2> /dev/null || true
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
