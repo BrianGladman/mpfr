@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 3.1.* to version 3.2.0:
 - The "dinde aux marrons" release.
+- MPFR now depends on GMP 4.2+ instead of 4.1+.
 - New functions: mpfr_fpif_export and mpfr_fpif_import to export and import
   numbers in a floating-point interchange format, independent both on the
   number of bits per word and on the endianness.
@@ -41,6 +42,7 @@ Changes from versions 3.1.* to version 3.2.0:
   --with-gmp-build.
 - Updated tuning parameters.
 - Better Automake 1.13 support.
+- Dropped K&R C compatibility.
 - Improved MPFR manual.
 - Bug fixes. In particular, a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC.
