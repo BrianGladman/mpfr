@@ -286,9 +286,9 @@ const struct bases mpfr_bases[257] =
   /* 256 */ {0.1250000000000000},
 };
 
-void
+MPFR_COLD_FUNCTION_ATTR void
 mpfr_assert_fail (const char *filename, int linenum,
-                     const char *expr)
+                  const char *expr)
 {
   if (filename != NULL && filename[0] != '\0')
     {

@@ -85,7 +85,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
    a positive value otherwise. */
-int
+MPFR_HOT_FUNCTION_ATTR int
 mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mpfr_uexp_t d;

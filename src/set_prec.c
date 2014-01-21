@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-void
+MPFR_HOT_FUNCTION_ATTR void
 mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
 {
   mp_size_t xsize, xoldsize;
@@ -36,7 +36,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
 
   /* Realloc only if the new size is greater than the old */
   xoldsize = MPFR_GET_ALLOC_SIZE (x);
-  if (xsize > xoldsize)
+  if (MPFR_UNLIKELY (xsize > xoldsize))
     {
       tmp = (mpfr_limb_ptr) (*__gmp_reallocate_func)
         (MPFR_GET_REAL_PTR(x), MPFR_MALLOC_SIZE(xoldsize), MPFR_MALLOC_SIZE(xsize));

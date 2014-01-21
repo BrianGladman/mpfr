@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-void
+MPFR_HOT_FUNCTION_ATTR void
 mpfr_clear (mpfr_ptr m)
 {
   (*__gmp_free_func) (MPFR_GET_REAL_PTR (m),

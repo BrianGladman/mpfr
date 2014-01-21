@@ -248,7 +248,6 @@ typedef enum {
 
 /* GMP defines:
     + size_t:                Standard size_t
-    + __GMP_ATTRIBUTE_PURE   Attribute for math functions.
     + __GMP_NOTHROW          For C++: can't throw .
     + __GMP_EXTERN_INLINE    Attribute for inline function.
     + __GMP_DECLSPEC_EXPORT  compiling to go into a DLL

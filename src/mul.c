@@ -209,7 +209,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
    to the additional tests, but slowdown should not be noticeable
    as this code is not executed in very small precisions. */
 
-int
+MPFR_HOT_FUNCTION_ATTR int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign, inexact;

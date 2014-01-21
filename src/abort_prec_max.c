@@ -22,7 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-void mpfr_abort_prec_max (void)
+MPFR_COLD_FUNCTION_ATTR MPFR_NORETURN void
+mpfr_abort_prec_max (void)
 {
   fprintf (stderr, "MPFR: Maximal precision overflow\n");
   abort ();

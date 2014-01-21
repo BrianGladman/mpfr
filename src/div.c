@@ -136,7 +136,7 @@ mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
   return cy;
 }
 
-int
+MPFR_HOT_FUNCTION_ATTR int
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mp_size_t q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */

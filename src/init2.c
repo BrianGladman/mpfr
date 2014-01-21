@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-void
+MPFR_HOT_FUNCTION_ATTR void
 mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 {
   mp_size_t xsize;

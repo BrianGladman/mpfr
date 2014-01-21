@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    returns 0 and sets erange flag if b and/or c is NaN.
 */
 
-int
+MPFR_HOT_FUNCTION_ATTR int
 mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 {
   mpfr_exp_t be, ce;

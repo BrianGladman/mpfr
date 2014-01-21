@@ -166,6 +166,28 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define MPFR_CONST_ATTR
 #endif
 
+#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+# define MPFR_PURE_FUNCTION_ATTR    __attribute__ ((pure))
+#else
+# define MPFR_PURE_FUNCTION_ATTR
+#endif
+
+/* The hot attribute on a function is used to inform the compiler
+   that the function is a hot spot of the compiled program. */
+#if __MPFR_GNUC(4,3)
+# define MPFR_HOT_FUNCTION_ATTR     __attribute__ ((hot))
+#else
+# define MPFR_HOT_FUNCTION_ATTR
+#endif
+
+/* The cold attribute on functions is used to inform the compiler
+   that the function is unlikely to be executed. */
+#if __MPFR_GNUC(4,3)
+# define MPFR_COLD_FUNCTION_ATTR    __attribute__ ((cold))
+#else
+# define MPFR_COLD_FUNCTION_ATTR
+#endif
+
 /* add MPFR_MAYBE_UNUSED after a variable declaration to avoid compiler
    warnings if it is not used */
 #if __MPFR_GNUC(3,4)
@@ -1844,8 +1866,10 @@ struct mpfr_group_t {
 extern "C" {
 #endif
 
-__MPFR_DECLSPEC int mpfr_underflow _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t, int));
-__MPFR_DECLSPEC int mpfr_overflow _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t, int));
+MPFR_COLD_FUNCTION_ATTR __MPFR_DECLSPEC int
+  mpfr_underflow _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t, int));
+MPFR_COLD_FUNCTION_ATTR __MPFR_DECLSPEC int
+  mpfr_overflow _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t, int));
 
 __MPFR_DECLSPEC int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                             mpfr_srcptr, mpfr_rnd_t));
@@ -1945,7 +1969,8 @@ __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                     mpfr_uexp_t, int,
                                                     mpfr_rnd_t));
-__MPFR_DECLSPEC MPFR_NORETURN void mpfr_abort_prec_max _MPFR_PROTO ((void));
+__MPFR_DECLSPEC MPFR_COLD_FUNCTION_ATTR MPFR_NORETURN void
+  mpfr_abort_prec_max _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mpfr_limb_ptr, gmp_randstate_t,
                                                 mpfr_prec_t));
