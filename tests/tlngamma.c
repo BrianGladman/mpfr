@@ -30,7 +30,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  int inex;
+  int i, inex;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -43,19 +43,19 @@ special (void)
       exit (1);
     }
 
-  mpfr_set_inf (x, -1);
-  mpfr_lngamma (y, x, MPFR_RNDN);
-  if (!mpfr_nan_p (y))
-    {
-      printf ("Error for lngamma(-Inf)\n");
-      exit (1);
-    }
-
   mpfr_set_inf (x, 1);
   mpfr_lngamma (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for lngamma(+Inf)\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, -1);
+  mpfr_lngamma (y, x, MPFR_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for lngamma(-Inf)\n");
       exit (1);
     }
 
@@ -70,7 +70,7 @@ special (void)
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_lngamma (y, x, MPFR_RNDN);
-  if (!mpfr_nan_p (y))
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for lngamma(-0)\n");
       exit (1);
@@ -84,12 +84,33 @@ special (void)
       exit (1);
     }
 
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_lngamma (y, x, MPFR_RNDN);
-  if (!mpfr_nan_p (y))
+  for (i = 1; i <= 5; i++)
     {
-      printf ("Error for lngamma(-1)\n");
-      exit (1);
+      int c;
+
+      mpfr_set_si (x, -i, MPFR_RNDN);
+      mpfr_lngamma (y, x, MPFR_RNDN);
+      if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+        {
+          printf ("Error for lngamma(-%d)\n", i);
+          exit (1);
+        }
+      if (i & 1)
+        {
+          mpfr_nextabove (x);
+          c = '+';
+        }
+      else
+        {
+          mpfr_nextbelow (x);
+          c = '-';
+        }
+      mpfr_lngamma (y, x, MPFR_RNDN);
+      if (!mpfr_nan_p (y))
+        {
+          printf ("Error for lngamma(-%d%cepsilon)\n", i, c);
+          exit (1);
+        }
     }
 
   mpfr_set_ui (x, 2, MPFR_RNDN);

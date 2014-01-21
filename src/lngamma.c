@@ -618,14 +618,15 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_get_prec (y), mpfr_log_prec, y, inex));
 
   /* special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x) ||
+                     (MPFR_IS_NEG (x) && mpfr_integer_p (x))))
     {
-      if (MPFR_IS_NAN (x) || MPFR_IS_NEG (x))
+      if (MPFR_IS_NAN (x))
         {
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      else /* lngamma(+Inf) = lngamma(+0) = +Inf */
+      else /* lngamma(+/-Inf) = lngamma(nonpositive integer) = +Inf */
         {
           if (MPFR_IS_ZERO (x))
             MPFR_SET_DIVBY0 ();
@@ -635,8 +636,8 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
     }
 
-  /* if x < 0 and -2k-1 <= x <= -2k, then lngamma(x) = NaN */
-  if (MPFR_IS_NEG (x) && (unit_bit (x) == 0 || mpfr_integer_p (x)))
+  /* if -2k-1 < x < -2k <= 0, then lngamma(x) = NaN */
+  if (MPFR_IS_NEG (x) && unit_bit (x) == 0)
     {
       MPFR_SET_NAN (y);
       MPFR_RET_NAN;

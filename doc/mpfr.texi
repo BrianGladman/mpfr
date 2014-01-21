@@ -800,9 +800,11 @@ positive value when @var{n} goes to the infinity.
 When the input point is in the closure of the domain of the mathematical
 function and an input argument is +0 (resp.@: @minus{}0), one considers
 the limit when the corresponding argument approaches 0 from above
-(resp.@: below). If the limit is not defined (e.g., @code{mpfr_sqrt}
-and @code{mpfr_log} on @minus{}0), the behavior is specified in the
-description of the MPFR function.
+(resp.@: below), if possible. If the limit is not defined (e.g.,
+@code{mpfr_sqrt} and @code{mpfr_log} on @minus{}0), the behavior is
+specified in the description of the MPFR function, but must be consistent
+with the rule from the above paragraph (e.g., @code{mpfr_log} on @pom{}0
+gives @minus{}Inf).
 
 When the result is equal to 0, its sign is determined by considering the
 limit as if the input point were not in the domain: If one approaches 0
@@ -2006,8 +2008,10 @@ to NaN@.
 Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
 When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
-When @math{@minus{}2@var{k}@minus{}1 @le{} @var{op} @le{} @minus{}2@var{k}},
-@var{k} being a nonnegative integer, @var{rop} is set to NaN@.
+When @var{op} is an infinity or a nonpositive integer, set @var{rop} to +Inf,
+following the general rules on special values.
+When @math{@minus{}2@var{k}@minus{}1 < @var{op} < @minus{}2@var{k}},
+@var{k} being a nonnegative integer, set @var{rop} to NaN@.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
