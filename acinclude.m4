@@ -597,6 +597,36 @@ You need to use another compiler (or lower the optimization level).])
 esac
 ])
 
+dnl MPFR_PARSE_DIRECTORY
+dnl Input:  $1 = a string to a relative or absolute directory
+dnl Output: $2 = the variable to set with the absolute directory
+AC_DEFUN([MPFR_PARSE_DIRECTORY],
+[
+ dnl Check if argument is a directory
+ if test -d $1 ; then
+    dnl Get the absolute path of the directory
+    dnl in case of relative directory.
+    dnl If realpath is not a valid command,
+    dnl an error is produced and we keep the given path.
+    local_tmp=`realpath $1 2>/dev/null`
+    if test "$local_tmp" != "" ; then
+       if test -d "$local_tmp" ; then
+           $2="$local_tmp"
+       else
+           $2=$1
+       fi
+    else
+       $2=$1
+    fi
+    dnl Check for space in the directory
+    if test `echo $1|cut -d' ' -f1` != $1 ; then
+        AC_MSG_ERROR($1 directory shall not contain any space.)
+    fi
+ else
+    AC_MSG_ERROR($1 shall be a valid directory)
+ fi
+])
+
 
 dnl  MPFR_C_LONG_DOUBLE_FORMAT
 dnl  -------------------------

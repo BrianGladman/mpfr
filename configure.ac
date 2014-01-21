@@ -62,14 +62,17 @@ dnl Extra arguments to configure
 unset gmp_lib_path GMP_CFLAGS GMP_CC
 AC_ARG_WITH(gmp_include,
    [  --with-gmp-include=DIR  GMP include directory ],
+   MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    CPPFLAGS="$CPPFLAGS -I$withval")
 AC_ARG_WITH(gmp_lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], [
+   MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    LDFLAGS="$LDFLAGS -L$withval"
    gmp_lib_path="$withval"
   ])
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
+   MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    if test -z "$with_gmp_lib" && test -z "$with_gmp_include" ; then
       CPPFLAGS="$CPPFLAGS -I$withval/include"
       LDFLAGS="$LDFLAGS -L$withval/lib"
@@ -82,6 +85,7 @@ AC_ARG_WITH(gmp,
 AC_ARG_WITH(gmp_build,
    [  --with-gmp-build=DIR    GMP build directory (please read INSTALL file)],
    [
+   MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    if test -z "$gmp_lib_path" && test -z "$with_gmp_include" ; then
       CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
       LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune"
