@@ -357,7 +357,7 @@ cancel (void)
 {
   mpfr_t x[2 * MPFR_NCANCEL];
   mpfr_ptr px[2 * MPFR_NCANCEL];
-  int i, n;
+  int i, j, n;
 
   for (i = 0; i < 8; i++)
     {
@@ -379,20 +379,26 @@ cancel (void)
             }
           else
             {
+              /* random permutation with n random transpositions */
+              for (j = 0; j < n; j++)
+                {
+                  int k1, k2;
+
+                  k1 = randlimb () % (n-1);
+                  k2 = randlimb () % (n-1);
+                  mpfr_swap (x[k1], x[k2]);
+                }
               rnd = RND_RAND ();
 #if DEBUG
               printf ("mpfr_sum cancellation test\n");
-              {
-                int j;
-                for (j = 0; j < n; j++)
-                  {
-                    printf ("  x%d[%3ld] = ", j, mpfr_get_prec(x[j]));
-                    mpfr_out_str (stdout, 16, 0, x[j], MPFR_RNDN);
-                    printf ("\n");
-                  }
-                printf ("  rnd = %s, output prec = %ld\n",
-                        mpfr_print_rnd_mode (rnd), mpfr_get_prec (x[n]));
-              }
+              for (j = 0; j < n; j++)
+                {
+                  printf ("  x%d[%3ld] = ", j, mpfr_get_prec(x[j]));
+                  mpfr_out_str (stdout, 16, 0, x[j], MPFR_RNDN);
+                  printf ("\n");
+                }
+              printf ("  rnd = %s, output prec = %ld\n",
+                      mpfr_print_rnd_mode (rnd), mpfr_get_prec (x[n]));
 #endif
               mpfr_sum (x[n], px, n, rnd);
               mpfr_neg (x[n], x[n], MPFR_RNDN);
