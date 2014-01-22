@@ -599,6 +599,9 @@ dnl (see above).
 dnl Same for __gmpn_sbpi1_divappr_q.
 AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
 
+dnl The getrusage function is needed for MPFR bench (cf tools/bench)
+AC_CHECK_FUNCS([getrusage])
+
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
 dnl and polluate (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
@@ -629,7 +632,7 @@ if $EGREP -q -e '-dev$' $srcdir/VERSION; then
 fi
 
 dnl Output
-AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile tests/Makefile tune/Makefile src/mparam.h:src/mparam_h.in])
+AC_CONFIG_FILES([Makefile doc/Makefile src/Makefile tests/Makefile tune/Makefile src/mparam.h:src/mparam_h.in tools/bench/Makefile])
 AC_OUTPUT
 
 dnl NEWS README AUTHORS Changelog
