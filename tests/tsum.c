@@ -359,7 +359,7 @@ cancel (void)
   mpfr_ptr px[2 * MPFR_NCANCEL];
   int i, n;
 
-  for (i = 0; i < 16; i++)
+  for (i = 0; i < 8; i++)
     {
       for (n = 0; n < sizeof (x) / sizeof (mpfr_t); n++)
         {
@@ -380,6 +380,20 @@ cancel (void)
           else
             {
               rnd = RND_RAND ();
+#if DEBUG
+              printf ("mpfr_sum cancellation test\n");
+              {
+                int j;
+                for (j = 0; j < n; j++)
+                  {
+                    printf ("  x%d[%3ld] = ", j, mpfr_get_prec(x[j]));
+                    mpfr_out_str (stdout, 16, 0, x[j], MPFR_RNDN);
+                    printf ("\n");
+                  }
+                printf ("  rnd = %s, output prec = %ld\n",
+                        mpfr_print_rnd_mode (rnd), mpfr_get_prec (x[n]));
+              }
+#endif
               mpfr_sum (x[n], px, n, rnd);
               mpfr_neg (x[n], x[n], MPFR_RNDN);
             }
