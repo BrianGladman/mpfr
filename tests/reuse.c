@@ -146,7 +146,7 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
         {
           printf ("Error for %s(a, a, a) for ", foo);
           DISP2("a=",ref2);
-          DISP("expected ", ref1); DISP2(", got", res1);
+          DISP("expected ", ref1); DISP2(", got ", res1);
           exit (1);
         }
     }
@@ -199,7 +199,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -211,7 +211,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -223,7 +223,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -235,7 +235,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -247,7 +247,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -259,7 +259,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
 
@@ -271,7 +271,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 {
                   printf ("Error for %s(a, a, a, a) for ", foo);
                   DISP2("a=", op1);
-                  DISP("expected ", ref); DISP2(", got", res);
+                  DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
             }
