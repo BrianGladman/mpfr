@@ -628,7 +628,7 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
       else /* lngamma(+/-Inf) = lngamma(nonpositive integer) = +Inf */
         {
-          if (MPFR_IS_ZERO (x))
+          if (!MPFR_IS_INF (x))
             MPFR_SET_DIVBY0 ();
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
