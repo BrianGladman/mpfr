@@ -586,7 +586,7 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax)
     {
       mpfr_exp_t e;
       e = MPFR_GET_EXP (x) +
-        (emin + (long) (randlimb () % (emax - emin + 1)));
+        (emin + (mpfr_exp_t) (randlimb () % (emax - emin + 1)));
       /* Note: There should be no overflow here because both terms are
          between MPFR_EMIN_MIN and MPFR_EMAX_MAX, but the sum e isn't
          necessarily between MPFR_EMIN_MIN and MPFR_EMAX_MAX. */
