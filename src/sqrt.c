@@ -133,13 +133,16 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   /* sticky0 is non-zero iff the truncated part of the input is non-zero */
 
-  /* mpn_rootrem with NULL 2nd argument is faster than mpn_sqrtrem, thus use
-     it if available and if the user asked to use GMP internal functions */
+  /* for size above about 500 limbs, mpn_rootrem with NULL 2nd argument is
+     faster than mpn_sqrtrem, thus use it if available and if the user asked
+     to use GMP internal functions
+     (https://gmplib.org/list-archives/gmp-devel/2010-September/001654.html) */
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_ROOTREM)
-  tsize = __gmpn_rootrem (rp, NULL, sp, rrsize, 2);
-#else
-  tsize = mpn_sqrtrem (rp, NULL, sp, rrsize);
+  if (rrsize >= 500)
+    tsize = __gmpn_rootrem (rp, NULL, sp, rrsize, 2);
+  else
 #endif
+  tsize = mpn_sqrtrem (rp, NULL, sp, rrsize);
 
   /* a return value of zero in mpn_sqrtrem indicates a perfect square */
   sticky = sticky0 || tsize != 0;
