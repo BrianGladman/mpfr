@@ -260,8 +260,6 @@ Table of contents:
 ##############################################################################
 
 - improve mpfr_grandom using the algorithm in http://arxiv.org/abs/1303.6257
-- in mpfr_log1p, use the series of log(1+x) when x is small, but not small
-  enough so that the approximation log(1+x) = x + O(x^2) suffices
 - use the src/x86_64/corei5/mparam.h file once GMP recognizes correctly the
   Core i5 processors (note that gcc -mtune=native gives __tune_corei7__
   and not __tune_corei5__ on those processors)
@@ -288,7 +286,6 @@ Table of contents:
    mpz_root      0.036 0.072 0.476 7.628
    mpfr_mpz_root 0.004 0.004 0.036 12.20
    See also mail from Carl Witty on mpfr list, 09 Oct 2007.
-- implement Mulders algorithm for squaring and division
 - for sparse input (say x=1 with 2 bits), mpfr_exp is not faster than for
         full precision when precision <= MPFR_EXP_THRESHOLD. The reason is
         that argument reduction kills sparsity. Maybe avoid argument reduction
