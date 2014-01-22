@@ -16,7 +16,7 @@ AUTOMAKE_OPTIONS = gnu
 # once Automake 1.13 is available on most platforms.
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = doc src tests tune
+SUBDIRS = doc src tests tune tools/bench
 
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
