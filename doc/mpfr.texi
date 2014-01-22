@@ -3781,7 +3781,9 @@ and the post-doctoral grant of Sylvain Chevillard in 2009-2010.
 The MPFR-MPC workshop in June 2012 was partly supported by the ERC
 grant ANTICS of Andreas Enge.
 The MPFR-MPC workshop in January 2013 was partly supported by the ERC
-grant ANTICS, the GDR IM and the Caramel project-team.
+grant ANTICS, the GDR IM and the Caramel project-team, during which
+Mickaël Gastineau and Bill Hart contributed the MPFRbench program, and
+Fredrik Johannsson a faster version of @code{mpfr_const_euler}.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
