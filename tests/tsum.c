@@ -31,6 +31,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    8. Reiterate at (3) with s = s'.
    Also add tests with intermediate overflows and tests with underflows
    (this matters here as we don't have subnormals).
+   Note: partly done in the cancel() test (r8857); the result is not tested
+   yet, but this test already shows an efficiency problem.
 */
 
 #include "mpfr-test.h"
