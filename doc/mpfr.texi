@@ -3780,6 +3780,8 @@ an "op@'eration de d@'eveloppement logiciel" grant (2007-2009),
 and the post-doctoral grant of Sylvain Chevillard in 2009-2010.
 The MPFR-MPC workshop in June 2012 was partly supported by the ERC
 grant ANTICS of Andreas Enge.
+The MPFR-MPC workshop in January 2013 was partly supported by the ERC
+grant ANTICS, the GDR IM and the Caramel project-team.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
