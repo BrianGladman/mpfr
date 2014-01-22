@@ -219,7 +219,8 @@ heap_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
 
 
 /* Sum a list of float with order given by permutation perm,
- * intermediate size set to F.
+ * intermediate size set to F. Return non-zero if at least one of
+ * the operations is inexact (thus 0 implies that the sum is exact).
  * Internal use function.
  */
 static int
@@ -236,16 +237,19 @@ sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mpfr_prec_t F)
   for (i = 1; i < n - 1; i++)
     {
       MPFR_ASSERTD (!MPFR_IS_NAN (sum) && !MPFR_IS_INF (sum));
-      error_trap |= mpfr_add (sum, sum, tab[i], MPFR_RNDN);
+      if (mpfr_add (sum, sum, tab[i], MPFR_RNDN))
+        error_trap = 1;
     }
-  error_trap |= mpfr_add (ret, sum, tab[n - 1], MPFR_RNDN);
+  if (mpfr_add (ret, sum, tab[n - 1], MPFR_RNDN))
+    error_trap = 1;
   mpfr_clear (sum);
   return error_trap;
 }
 
 /* Sum a list of floating-point numbers.
+ * If the return value is 0, then the sum is exact.
+ * Otherwise the return value gives no information.
  */
-
 int
 mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
 {
@@ -310,11 +314,13 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
   MPFR_ZIV_FREE (loop);
   MPFR_TMP_FREE (marker);
 
-  error_trap |= mpfr_set (ret, cur_sum, rnd);
+  if (mpfr_set (ret, cur_sum, rnd))
+    error_trap = 1;
   mpfr_clear (cur_sum);
 
   MPFR_SAVE_EXPO_FREE (expo);
-  error_trap |= mpfr_check_range (ret, 0, rnd);
+  if (mpfr_check_range (ret, 0, rnd))
+    error_trap = 1;
   return error_trap; /* It doesn't return the ternary value */
 }
 
