@@ -135,14 +135,11 @@ test_version (void)
 
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
            __GNU_MP_VERSION_PATCHLEVEL);
-  if (strcmp (buffer, gmp_version) != 0)
+  if (strcmp (buffer, gmp_version) != 0 &&
+      (__GNU_MP_VERSION_PATCHLEVEL != 0 ||
+       (sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR),
+        strcmp (buffer, gmp_version) != 0)))
     err = 1;
-  else if (__GNU_MP_VERSION_PATCHLEVEL == 0)
-    {
-      sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
-      if (strcmp (buffer, gmp_version) != 0)
-        err = 1;
-    }
 
   /* In some cases, it may be acceptable to have different versions for
      the header and the library, in particular when shared libraries are
