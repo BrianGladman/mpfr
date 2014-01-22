@@ -35,6 +35,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#ifndef MPFR_NCANCEL
+#define MPFR_NCANCEL 10
+#endif
+
 static int
 check_is_sorted (unsigned long n, mpfr_srcptr *perm)
 {
@@ -348,6 +352,44 @@ bug20131027 (void)
   mpfr_clear (r);
 }
 
+static void
+cancel (void)
+{
+  mpfr_t x[2 * MPFR_NCANCEL];
+  mpfr_ptr px[2 * MPFR_NCANCEL];
+  int i, n;
+
+  for (i = 0; i < 16; i++)
+    {
+      for (n = 0; n < sizeof (x) / sizeof (mpfr_t); n++)
+        {
+          mpfr_prec_t p;
+          mpfr_rnd_t rnd;
+
+          px[n] = x[n];
+          p = MPFR_PREC_MIN + (randlimb () % 256);
+          mpfr_init2 (x[n], p);
+          if (n < MPFR_NCANCEL)
+            {
+              mpfr_exp_t e;
+
+              e = (i & 1) ? 0 : mpfr_get_emin ();
+              tests_default_random (x[n], 256, e,
+                                    ((i & 2) ? e + 2000 : mpfr_get_emax ()));
+            }
+          else
+            {
+              rnd = RND_RAND ();
+              mpfr_sum (x[n], px, n, rnd);
+              mpfr_neg (x[n], x[n], MPFR_RNDN);
+            }
+        }
+
+      while (--n >= 0)
+        mpfr_clear (x[n]);
+    }
+}
+
 int
 main (void)
 {
@@ -362,6 +404,7 @@ main (void)
   for (p = 2 ; p < 444 ; p += 17)
     for (n = 2 ; n < 1026 ; n += 42 + p)
       test_sum (p, n);
+  cancel ();
 
   tests_end_mpfr ();
   return 0;
