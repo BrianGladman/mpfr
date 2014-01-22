@@ -45,6 +45,7 @@ Changes from versions 3.1.* to version 3.2.0:
 - Better Automake 1.13 support.
 - Dropped K&R C compatibility.
 - Improved MPFR manual.
+- New MPFRbench program (see the tools/bench directory).
 - Bug fixes. In particular, a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC.
 
