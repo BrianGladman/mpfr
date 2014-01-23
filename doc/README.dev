@@ -313,6 +313,11 @@ the mpfr list, and the Reply-To should be set to the mpfr list.
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
 
+To add tcc support with libtool 2.4.2 or below, do the following before
+running "make distcheck":
+$ patch m4/libtool.m4 libtool-tcc-wl.patch
+$ autoreconf
+
 ===========================================================================
 
 To check the coverage of the Test Suite, you can use GCOV.
