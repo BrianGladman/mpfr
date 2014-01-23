@@ -186,7 +186,7 @@ int main (int argc, const char *argv[])
   cout << "MPFR VERSION HEADER= " << MPFR_VERSION_STRING << " LIB=" << mpfr_get_version() << endl;
 
   if (options.import_base != "")
-    read_base(base, options);
+    read_base (base, options);
   else
     build_base (base, options);
 
