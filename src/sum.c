@@ -38,6 +38,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       "holes" will count for nothing).
    4. Take care of the TMD (something like above, since there can still
       be cancellations).
+   As a bonus, this will also solve overflow and underflow issues, since
+   everything is done in fixed point and the output exponent will be
+   considered only at the end (early overflow detection can also be done).
 */
 
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
