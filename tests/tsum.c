@@ -355,11 +355,50 @@ bug20131027 (void)
 }
 
 static void
+check_extreme (void)
+{
+  mpfr_t u, v, w, x, y;
+  mpfr_ptr t[] = { u, v };
+  int i, inex, r;
+
+  mpfr_inits2 (32, u, v, w, x, y, (mpfr_ptr) 0);
+  mpfr_setmin (u, mpfr_get_emax ());
+  mpfr_setmax (v, mpfr_get_emin ());
+  mpfr_setmin (w, mpfr_get_emax () - 40);
+  RND_LOOP (r)
+    for (i = 0; i < 2; i++)
+      {
+        mpfr_sum (x, t, 2, (mpfr_rnd_t) r);
+        mpfr_set_prec (y, 64);
+        inex = mpfr_add (y, u, w, MPFR_RNDN);
+        MPFR_ASSERTN (inex == 0);
+        mpfr_prec_round (y, 32, (mpfr_rnd_t) r);
+        if (! mpfr_equal_p (x, y))
+          {
+            printf ("Error in check_extreme (%s, i = %d)\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+            printf ("Expected ");
+            mpfr_dump (y);
+            printf ("Got      ");
+            mpfr_dump (x);
+            exit (1);
+          }
+        mpfr_neg (v, v, MPFR_RNDN);
+        mpfr_neg (w, w, MPFR_RNDN);
+      }
+  mpfr_clears (u, v, w, x, y, (mpfr_ptr) 0);
+}
+
+static void
 cancel (void)
 {
   mpfr_t x[2 * MPFR_NCANCEL];
   mpfr_ptr px[2 * MPFR_NCANCEL];
   int i, j, n;
+
+  /* FIXME: re-enable and improve once mpfr_sum has been fixed.
+     check_extreme() is currently sufficient to show problems. */
+  return;
 
   for (i = 0; i < 8; i++)
     {
@@ -426,6 +465,7 @@ main (void)
   for (p = 2 ; p < 444 ; p += 17)
     for (n = 2 ; n < 1026 ; n += 42 + p)
       test_sum (p, n);
+  check_extreme ();
   cancel ();
 
   tests_end_mpfr ();

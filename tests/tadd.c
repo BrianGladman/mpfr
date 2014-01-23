@@ -1094,6 +1094,40 @@ tests (void)
   check_1minuseps ();
 }
 
+static void
+check_extreme (void)
+{
+  mpfr_t u, v, w, x, y;
+  int i, inex, r;
+
+  mpfr_inits2 (32, u, v, w, x, y, (mpfr_ptr) 0);
+  mpfr_setmin (u, mpfr_get_emax ());
+  mpfr_setmax (v, mpfr_get_emin ());
+  mpfr_setmin (w, mpfr_get_emax () - 40);
+  RND_LOOP (r)
+    for (i = 0; i < 2; i++)
+      {
+        mpfr_add (x, u, v, (mpfr_rnd_t) r);
+        mpfr_set_prec (y, 64);
+        inex = mpfr_add (y, u, w, MPFR_RNDN);
+        MPFR_ASSERTN (inex == 0);
+        mpfr_prec_round (y, 32, (mpfr_rnd_t) r);
+        if (! mpfr_equal_p (x, y))
+          {
+            printf ("Error in check_extreme (%s, i = %d)\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+            printf ("Expected ");
+            mpfr_dump (y);
+            printf ("Got      ");
+            mpfr_dump (x);
+            exit (1);
+          }
+        mpfr_neg (v, v, MPFR_RNDN);
+        mpfr_neg (w, w, MPFR_RNDN);
+      }
+  mpfr_clears (u, v, w, x, y, (mpfr_ptr) 0);
+}
+
 #define TEST_FUNCTION test_add
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -1111,6 +1145,9 @@ main (int argc, char *argv[])
   usesp = 1;
   tests ();
 #endif
+
+  check_extreme ();
+
   test_generic (2, 1000, 100);
 
   tests_end_mpfr ();
