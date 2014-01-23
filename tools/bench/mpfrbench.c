@@ -285,6 +285,12 @@ main (void)
           gmp_printf ("group score %s : %12Zd\n\n", groupname[g], groupscore[g]);
         }
     }
+  /* divide by 132 the global score to get about 10^3 on a
+     Intel(R) Core(TM)2 Quad CPU    Q9550  @ 2.83GHz
+     with GMP : 5.1.3  MPFR : 3.1.2
+     GMP compiler: gcc -std=gnu99, GMP flags: -O2 -pedantic
+     -fomit-frame-pointer -m64 -mtune=core2 -march=core2 */
+  mpz_div_ui (globalscore, globalscore, 132);
   gmp_printf ("global score : %12Zd\n\n", globalscore);
 
   for (i = 0; i < NB_BENCH_OP; i++)
