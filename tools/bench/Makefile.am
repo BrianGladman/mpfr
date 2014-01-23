@@ -8,7 +8,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-AM_CPPFLAGS = -I$(top_srcdir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src
 AM_DEFAULT_SOURCE_EXT = .c
 
 LDADD = $(top_builddir)/src/libmpfr.la
