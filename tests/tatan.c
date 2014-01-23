@@ -538,7 +538,7 @@ atan2_pow_of_2 (void)
   mpfr_t x, y, r, g;
   int i;
   int d[] = { 0, -1, 1 };
-  int ntests = sizeof (d) / sizeof (int);
+  int ntests = numberof (d);
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);

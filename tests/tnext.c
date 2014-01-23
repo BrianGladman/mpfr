@@ -96,7 +96,7 @@ inverse_test (void)
   int i, neg, below;
   mpfr_prec_t prec;
 
-  for (i = 0; i < (int) (sizeof(tests) / sizeof(tests[0])); i++)
+  for (i = 0; i < numberof (tests); i++)
     for (neg = 0; neg <= 1; neg++)
       for (below = 0; below <= 1; below++)
         for (prec = MPFR_PREC_MIN; prec < 200; prec += 3)

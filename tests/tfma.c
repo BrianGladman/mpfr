@@ -28,7 +28,7 @@ test_exact (void)
 {
   const char *val[] =
     { "@NaN@", "-@Inf@", "-2", "-1", "-0", "0", "1", "2", "@Inf@" };
-  int sv = sizeof (val) / sizeof (*val);
+  int sv = numberof (val);
   int i, j, k;
   int rnd;
   mpfr_t a, b, c, r1, r2;

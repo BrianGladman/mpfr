@@ -158,8 +158,7 @@ compute_score (mpz_t zscore, int op, gmp_randstate_t randstate)
   mpz_init_set_si (zscore, 1);
 
   i = op;
-  for (k = 0; k < (int)sizeof (arrayprecision_op1) / sizeof (arrayprecision_op1[0]);
-       k++, countprec++)
+  for (k = 0; k < numberof (arrayprecision_op1); k++, countprec++)
     {
       mpfr_prec_t precision1 = arrayprecision_op1[k];
       mpfr_prec_t precision2 = arrayprecision_op2[k];

@@ -358,7 +358,7 @@ my_setstr (mpfr_ptr t, const char *s)
 static void
 tst (void)
 {
-  int sv = sizeof (val) / sizeof (*val);
+  int sv = numberof (val);
   int i, j;
   int rnd;
   mpfr_t x, y, z, tmp;

@@ -757,7 +757,7 @@ check_1minuseps (void)
   mpfr_init2 (c, MPFR_PREC_MIN);
 
   for (ia = 0; ia < numberof (prec_a); ia++)
-    for (ib = 0; ib < numberof(supp_b); ib++)
+    for (ib = 0; ib < numberof (supp_b); ib++)
       {
         mpfr_prec_t prec_b;
         int rnd_mode;
@@ -771,7 +771,7 @@ check_1minuseps (void)
         mpfr_div_ui (b, c, prec_a[ia], MPFR_RNDN);
         mpfr_sub (b, c, b, MPFR_RNDN);  /* b = 1 - 2^(-prec_a) */
 
-        for (ic = 0; ic < numberof(supp_b); ic++)
+        for (ic = 0; ic < numberof (supp_b); ic++)
           for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
             {
               mpfr_t s;

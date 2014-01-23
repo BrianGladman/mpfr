@@ -41,8 +41,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static short mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
 #else
 static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
-#define MPFR_MULHIGH_TAB_SIZE \
-  ((mp_size_t) (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0])))
+#define MPFR_MULHIGH_TAB_SIZE ((mp_size_t) numberof (mulhigh_ktab))
 #endif
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
@@ -152,7 +151,7 @@ mpfr_mullow_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
 static short sqrhigh_ktab[MPFR_SQRHIGH_TAB_SIZE];
 #else
 static short sqrhigh_ktab[] = {MPFR_SQRHIGH_TAB};
-#define MPFR_SQRHIGH_TAB_SIZE (sizeof(sqrhigh_ktab) / sizeof(sqrhigh_ktab[0]))
+#define MPFR_SQRHIGH_TAB_SIZE (numberof (sqrhigh_ktab))
 #endif
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
@@ -193,7 +192,7 @@ mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
 static short divhigh_ktab[MPFR_DIVHIGH_TAB_SIZE];
 #else
 static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
-#define MPFR_DIVHIGH_TAB_SIZE (sizeof(divhigh_ktab) / sizeof(divhigh_ktab[0]))
+#define MPFR_DIVHIGH_TAB_SIZE (numberof (divhigh_ktab))
 #endif
 
 #if !(defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q))

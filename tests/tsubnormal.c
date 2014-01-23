@@ -63,7 +63,7 @@ check1 (void)
   mpfr_set_emax (10);
 
   mpfr_init (x);
-  for (i = 0; i < (sizeof (tab) / sizeof (tab[0])); i++)
+  for (i = 0; i < numberof (tab); i++)
     for (s = 0; s <= (tab[i].rnd == MPFR_RNDN); s++)
       for (k = 0; k <= 1; k++)
         {

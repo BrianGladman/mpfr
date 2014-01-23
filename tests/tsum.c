@@ -363,7 +363,7 @@ cancel (void)
 
   for (i = 0; i < 8; i++)
     {
-      for (n = 0; n < sizeof (x) / sizeof (mpfr_t); n++)
+      for (n = 0; n < numberof (x); n++)
         {
           mpfr_prec_t p;
           mpfr_rnd_t rnd;
