@@ -27,6 +27,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME: mpfr_sum can take too much memory and too much time. Rewrite
+   using mpn, with additions by blocks (most significant first)? */
+
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
    it doesn't automatically cast a "mpfr_ptr []" to "mpfr_srcptr const []"
    if necessary. So the choice are:
