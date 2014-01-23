@@ -33,8 +33,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    1. Search the maximum exponent max_exp of the inputs.
    2. Compute the truncated sum in a window around max_exp + log2(N) to
       max_exp - output_prec - 128.
-   3. In case of cancellation, this determines a new maximum exponent
-      reiterate at (2), or (1) if the truncated sum is zero.
+   3. In case of cancellation, this determines a new maximum exponent;
+      so, reiterate at (2), or (1) if the truncated sum is zero (so that
+      "holes" will count for nothing).
    4. Take care of the TMD (something like above, since there can still
       be cancellations).
 */
