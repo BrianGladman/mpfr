@@ -72,7 +72,7 @@ mpfr_const_euler_bs_clear (mpfr_const_euler_bs_t s)
 }
 
 static void
-mpfr_const_euler_bs_1 (mpfr_const_euler_bs_t s, 
+mpfr_const_euler_bs_1 (mpfr_const_euler_bs_t s,
                        unsigned long n1, unsigned long n2, unsigned long N,
                        int cont)
 {
@@ -262,7 +262,7 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
 
       MPFR_ZIV_NEXT (loop, wp);
     }
-  
+
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (x, y, rnd);
 
@@ -274,4 +274,3 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
 
   return inexact; /* always inexact */
 }
-
