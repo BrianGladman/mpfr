@@ -27,8 +27,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME: mpfr_sum can take too much memory and too much time. Rewrite
-   using mpn, with additions by blocks (most significant first)? */
+/* FIXME[VL]: mpfr_sum can take too much memory and too much time.
+   Rewrite using mpn, with additions by blocks (most significant first)?
+   The algorithm could be as follows:
+   1. Search the maximum exponent max_exp of the inputs.
+   2. Compute the truncated sum in a window around max_exp + log2(N) to
+      max_exp - output_prec - 128.
+   3. In case of cancellation, this determines a new maximum exponent
+      reiterate at (2), or (1) if the truncated sum is zero.
+   4. Take care of the TMD (something like above, since there can still
+      be cancellations).
+*/
 
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
    it doesn't automatically cast a "mpfr_ptr []" to "mpfr_srcptr const []"
