@@ -13,7 +13,7 @@ AM_DEFAULT_SOURCE_EXT = .c
 
 LDADD = $(top_builddir)/src/libmpfr.la
 
-bin_PROGRAMS = mpfrbench
+EXTRA_PROGRAMS = mpfrbench
 
 
 noinst_HEADERS = benchtime.h
