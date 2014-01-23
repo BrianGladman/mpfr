@@ -40,9 +40,9 @@ enum egroupfunc
 };
 
 /* name of the group of functions */
-const char *groupname [] = { 
-"Arith  ", 
-"Special"
+const char *groupname [] = {
+  "Arith  ",
+  "Special"
 };
 
 
@@ -67,7 +67,7 @@ DECLARE_TIME_1OP (mpfr_exp)
 DECLARE_TIME_1OP (mpfr_log)
 DECLARE_TIME_1OP (mpfr_sin)
 DECLARE_TIME_1OP (mpfr_cos)
-DECLARE_TIME_1OP (mpfr_asin) 
+DECLARE_TIME_1OP (mpfr_asin)
 DECLARE_TIME_1OP (mpfr_acos)
 
 /* number of operations to score */
@@ -76,35 +76,33 @@ DECLARE_TIME_1OP (mpfr_acos)
 #define NB_RAND_FLOAT 10000
 
 /* list of functions to compute the score */
-const struct benchfunc
-      arrayfunc[NB_BENCH_OP] = {
-      {"mul", ADDR_TIME_NOP (mpfr_mul), ADDR_ACCURATE_TIME_NOP (mpfr_mul), egroup_arith, 2}, 
-      {"add", ADDR_TIME_NOP (mpfr_add), ADDR_ACCURATE_TIME_NOP (mpfr_add), egroup_arith, 2},
-      {"sub", ADDR_TIME_NOP (mpfr_sub), ADDR_ACCURATE_TIME_NOP (mpfr_sub), egroup_arith, 2},
-      {"div", ADDR_TIME_NOP (mpfr_div), ADDR_ACCURATE_TIME_NOP (mpfr_div), egroup_arith, 2},
-      {"sqrt", ADDR_TIME_NOP (mpfr_sqrt), ADDR_ACCURATE_TIME_NOP (mpfr_sqrt), egroup_special, 1},
-      {"exp", ADDR_TIME_NOP (mpfr_exp), ADDR_ACCURATE_TIME_NOP (mpfr_exp), egroup_special, 1},
-      {"log", ADDR_TIME_NOP (mpfr_log), ADDR_ACCURATE_TIME_NOP (mpfr_log), egroup_special, 1},
-      {"cos", ADDR_TIME_NOP (mpfr_cos), ADDR_ACCURATE_TIME_NOP (mpfr_cos), egroup_special, 1},
-      {"sin", ADDR_TIME_NOP (mpfr_sin), ADDR_ACCURATE_TIME_NOP (mpfr_sin), egroup_special, 1},
-      {"acos", ADDR_TIME_NOP (mpfr_acos), ADDR_ACCURATE_TIME_NOP (mpfr_acos), egroup_special, 1},
-      {"asin", ADDR_TIME_NOP (mpfr_asin), ADDR_ACCURATE_TIME_NOP (mpfr_asin), egroup_special, 1}
-    };
+const struct benchfunc arrayfunc[NB_BENCH_OP] = {
+  {"mul", ADDR_TIME_NOP (mpfr_mul), ADDR_ACCURATE_TIME_NOP (mpfr_mul), egroup_arith, 2},
+  {"add", ADDR_TIME_NOP (mpfr_add), ADDR_ACCURATE_TIME_NOP (mpfr_add), egroup_arith, 2},
+  {"sub", ADDR_TIME_NOP (mpfr_sub), ADDR_ACCURATE_TIME_NOP (mpfr_sub), egroup_arith, 2},
+  {"div", ADDR_TIME_NOP (mpfr_div), ADDR_ACCURATE_TIME_NOP (mpfr_div), egroup_arith, 2},
+  {"sqrt", ADDR_TIME_NOP (mpfr_sqrt), ADDR_ACCURATE_TIME_NOP (mpfr_sqrt), egroup_special, 1},
+  {"exp", ADDR_TIME_NOP (mpfr_exp), ADDR_ACCURATE_TIME_NOP (mpfr_exp), egroup_special, 1},
+  {"log", ADDR_TIME_NOP (mpfr_log), ADDR_ACCURATE_TIME_NOP (mpfr_log), egroup_special, 1},
+  {"cos", ADDR_TIME_NOP (mpfr_cos), ADDR_ACCURATE_TIME_NOP (mpfr_cos), egroup_special, 1},
+  {"sin", ADDR_TIME_NOP (mpfr_sin), ADDR_ACCURATE_TIME_NOP (mpfr_sin), egroup_special, 1},
+  {"acos", ADDR_TIME_NOP (mpfr_acos), ADDR_ACCURATE_TIME_NOP (mpfr_acos), egroup_special, 1},
+  {"asin", ADDR_TIME_NOP (mpfr_asin), ADDR_ACCURATE_TIME_NOP (mpfr_asin), egroup_special, 1}
+};
 
 /* the following arrays must have the same number of elements */
 
 /* list of precisions to test for the first operand */
 const int arrayprecision_op1[] =
-  { 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 
-  50, 100, 200, 350, 700, 1500, 3000, 6000, 10000, 1500, 3000, 5000,
-};
+  { 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
+    50, 100, 200, 350, 700, 1500, 3000, 6000, 10000, 1500, 3000, 5000,
+  };
 
 /* list of precisions to test for the second operand */
 const int arrayprecision_op2[] =
   { 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
-  50, 100, 200, 350, 700, 1500, 3000, 6000, 10000, 3000, 6000, 10000
-  
-};
+    50, 100, 200, 350, 700, 1500, 3000, 6000, 10000, 3000, 6000, 10000
+  };
 
 /* get the time in microseconds */
 static unsigned long
@@ -115,10 +113,10 @@ get_cputime (void)
 
   getrusage (RUSAGE_SELF, &ru);
   return ru.ru_utime.tv_sec * 1000000 + ru.ru_utime.tv_usec
-         +ru.ru_stime.tv_sec * 1000000 + ru.ru_stime.tv_usec;
+       + ru.ru_stime.tv_sec * 1000000 + ru.ru_stime.tv_usec;
 #else
-  printf("\nError, the function getrusage is not available\n");
-  exit(1);
+  printf ("\nError, the function getrusage is not available\n");
+  exit (1);
   return 0;
 #endif
 }
@@ -128,7 +126,6 @@ static mpfr_t *
 bench_random_array (int n, mpfr_prec_t precision, gmp_randstate_t randstate)
 {
   int j;
-
   mpfr_t *ptr;
 
   ptr = (mpfr_t *) malloc (n * sizeof (mpfr_t));
@@ -151,16 +148,11 @@ static void
 compute_score (mpz_t zscore, int op, gmp_randstate_t randstate)
 {
   mpfr_t *xptr, *yptr, *zptr;
-
   int i, j;
   size_t k;
-
   unsigned long niter, ti;
-
   double t;
-
   unsigned long ops_per_sec;
-
   int countprec = 0;
 
   mpz_init_set_si (zscore, 1);
@@ -169,10 +161,10 @@ compute_score (mpz_t zscore, int op, gmp_randstate_t randstate)
   for (k = 0; k < (int)sizeof (arrayprecision_op1) / sizeof (arrayprecision_op1[0]);
        k++, countprec++)
     {
-
       mpfr_prec_t precision1 = arrayprecision_op1[k];
       mpfr_prec_t precision2 = arrayprecision_op2[k];
       mpfr_prec_t precision3 = arrayprecision_op2[k];
+
       /* allocate array of random numbers */
       xptr = bench_random_array (NB_RAND_FLOAT, precision1, randstate);
       yptr = bench_random_array (NB_RAND_FLOAT, precision2, randstate);
@@ -180,13 +172,13 @@ compute_score (mpz_t zscore, int op, gmp_randstate_t randstate)
 
       /* compute the number of operations per second */
       if (arrayfunc[i].noperands==2)
-      {
+        {
           printf ("operation %5s, precision : %5lux%5lu to %5lu bits ... ", arrayfunc[i].name, precision1, precision2, precision3);
-      }
+        }
       else
-      {
+        {
           printf ("operation %5s, precision :       %5lu to %5lu bits ... ", arrayfunc[i].name, precision1, precision3);
-      }
+        }
       fflush (stdout);
 
       t = arrayfunc[i].func_init (NB_RAND_FLOAT, zptr, xptr, yptr);
@@ -226,7 +218,7 @@ compute_groupscore (mpz_t groupscore[], int countop, mpz_t zscore[])
   int op;
   enum egroupfunc group;
   int countgroupop;
- 
+
   for (group = (enum egroupfunc)0; group != egroup_last; group++)
     {
       mpz_init_set_si (groupscore[group], 1);
@@ -261,15 +253,10 @@ int
 main (void)
 {
   int i;
-
   enum egroupfunc group;
-
   mpz_t score[NB_BENCH_OP];
-
   mpz_t globalscore, groupscore[egroup_last];
-
   gmp_randstate_t randstate;
-
 
   gmp_randinit_default (randstate);
 
@@ -293,14 +280,13 @@ main (void)
   for (i = 0; i < NB_BENCH_OP; i++)
     {
       gmp_printf ("\tscore for %5s : %12Zd\n", arrayfunc[i].name, score[i]);
-      if (i == NB_BENCH_OP-1 || arrayfunc[i +1].group != arrayfunc[i].group)
+      if (i == NB_BENCH_OP-1 || arrayfunc[i+1].group != arrayfunc[i].group)
         {
           enum egroupfunc g = arrayfunc[i].group;
           gmp_printf ("group score %s : %12Zd\n\n", groupname[g], groupscore[g]);
         }
     }
   gmp_printf ("global score : %12Zd\n\n", globalscore);
-
 
   for (i = 0; i < NB_BENCH_OP; i++)
     {
@@ -309,7 +295,7 @@ main (void)
 
   for (group = (enum egroupfunc)0; group != egroup_last; group++)
     {
-     mpz_clear (groupscore[group]);
+      mpz_clear (groupscore[group]);
     }
   mpz_clear (globalscore);
   gmp_randclear (randstate);
