@@ -43,7 +43,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    considered only at the end (early overflow detection can also be done).
 
 Note: see the following paper and its references:
-http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf   
+http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
 */
 
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
