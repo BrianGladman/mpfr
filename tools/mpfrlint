@@ -56,9 +56,11 @@ grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" $srctests
 # code may be compiled incorrectly.
 grep '[^a-z_]snprintf *([^)]' $srctests
 
-# Constant checking should use MPFR_ASSERTN, not MPFR_ASSERTD.
+# Constant checking should use either MPFR_STAT_STATIC_ASSERT
+# or MPFR_ASSERTN(0) for not yet implemented corner cases.
 # This test is a heuristic.
-grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
+grep 'MPFR_ASSERT[DN][^a-z]*;' src/*.c | grep -v 'MPFR_ASSERTN *(0)' | \
+  grep -v MPFR_BLOCK_EXCEP
 
 # MPFR_ASSERTD or MPFR_ASSERTN must be used for assertions, not ASSERT.
 grep -E '[^_]ASSERT *(\(|$)' {src,tests}/*.c
