@@ -166,16 +166,16 @@ mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
 
 #ifdef WANT_mpz_realloc2
 void
-mpz_realloc2 (mpz_t X, mp_bitcnt_t N)
+mpz_realloc2 (mpz_t x, mp_bitcnt_t nbits)
 {
-  unsigned long n = (N - 1) / GMP_NUMB_BITS + 1;
+  unsigned long n = (nbits - 1) / GMP_NUMB_BITS + 1;
 
-  if (n > X->_mp_alloc)
+  if (n > x->_mp_alloc)
     {
-      X->_mp_d = gmp_default_realloc (X->_mp_d,
-                                      X->_mp_alloc * sizeof (mp_limb_t),
+      x->_mp_d = gmp_default_realloc (x->_mp_d,
+                                      x->_mp_alloc * sizeof (mp_limb_t),
                                       n * sizeof (mp_limb_t));
-      X->_mp_alloc = n;
+      x->_mp_alloc = n;
     }
 }
 #endif
@@ -192,40 +192,40 @@ random_limb (void)
 
 #ifdef WANT_mpz_urandomb
 void
-mpz_urandomb (mpz_t ROP, gmp_randstate_t STATE, mp_bitcnt_t N)
+mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
 {
   unsigned long n, i;
 
-  mpz_realloc2 (ROP, N);
+  mpz_realloc2 (rop, nbits);
   n = (N - 1) / GMP_NUMB_BITS + 1; /* number of limbs */
   for (i = n; i-- > 0;)
-    ROP->_mp_d[i] = random_limb ();
-  i = n * GMP_NUMB_BITS - N;
+    rop->_mp_d[i] = random_limb ();
+  i = n * GMP_NUMB_BITS - nbits;
   /* mask the upper i bits */
   if (i)
-    ROP->_mp_d[n-1] = (ROP->_mp_d[n-1] << i) >> i;
-  while (n > 0 && (ROP->_mp_d[n-1] == 0))
+    rop->_mp_d[n-1] = (rop->_mp_d[n-1] << i) >> i;
+  while (n > 0 && (rop->_mp_d[n-1] == 0))
     n--;
-  ROP->_mp_size = n;
+  rop->_mp_size = n;
 }
 #endif
 
 #ifdef WANT_mpn_zero
 void
-mpn_zero (mp_limb_t *RP, mp_size_t N)
+mpn_zero (mp_limb_t *rp, mp_size_t n)
 {
-  memset (RP, 0, N * sizeof (mp_limb_t));
+  memset (rp, 0, n * sizeof (mp_limb_t));
 }
 #endif
 
 #ifdef WANT_mpn_popcount
 mp_bitcnt_t
-mpn_popcount (const mp_limb_t *S1P, mp_size_t N)
+mpn_popcount (const mp_limb_t *s1p, mp_size_t n)
 {
   mpz_t t;
 
-  t->_mp_d = (mp_limb_t*) S1P;
-  t->_mp_size = N;
+  t->_mp_d = (mp_limb_t*) s1p;
+  t->_mp_size = n;
   return mpz_popcount (t);
 }
 #endif
@@ -262,54 +262,54 @@ mpn_divrem (mp_limb_t *qp, mp_size_t qn, mp_limb_t *np,
 
 #ifdef WANT_mpz_submul
 void
-mpz_submul (mpz_t ROP, const mpz_t OP1, const mpz_t OP2)
+mpz_submul (mpz_t rop, const mpz_t op1, const mpz_t op2)
 {
   mpz_t t;
 
   mpz_init (t);
-  mpz_mul (t, OP1, OP2);
-  mpz_sub (ROP, ROP, t);
+  mpz_mul (t, op1, op2);
+  mpz_sub (rop, rop, t);
   mpz_clear (t);
 }
 #endif
 
 #ifdef WANT_mpz_addmul
 void
-mpz_addmul (mpz_t ROP, const mpz_t OP1, const mpz_t OP2)
+mpz_addmul (mpz_t rop, const mpz_t op1, const mpz_t op2)
 {
   mpz_t t;
 
   mpz_init (t);
-  mpz_mul (t, OP1, OP2);
-  mpz_add (ROP, ROP, t);
+  mpz_mul (t, op1, op2);
+  mpz_add (rop, rop, t);
   mpz_clear (t);
 }
 #endif
 
 #ifdef WANT_mpn_tdiv_qr
 void
-mpn_tdiv_qr (mp_limb_t *QP, mp_limb_t *RP, mp_size_t QXN,
-             const mp_limb_t *NP, mp_size_t NN,
-             const mp_limb_t *DP, mp_size_t DN)
+mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, mp_size_t qxn,
+             const mp_limb_t *np, mp_size_t nn,
+             const mp_limb_t *dp, mp_size_t dn)
 {
   mpz_t q, r, n, d;
 
-  MPFR_ASSERTN(QXN == 0);
-  n->_mp_d = (mp_limb_t*) NP;
-  n->_mp_size = NN;
-  d->_mp_d = (mp_limb_t*) DP;
-  d->_mp_size = DN;
+  MPFR_ASSERTN(qxn == 0);
+  n->_mp_d = (mp_limb_t*) np;
+  n->_mp_size = nn;
+  d->_mp_d = (mp_limb_t*) dp;
+  d->_mp_size = dn;
   mpz_init (q);
   mpz_init (r);
   mpz_tdiv_qr (q, r, n, d);
   MPFR_ASSERTN(q->_mp_size > 0);
-  mpn_copyi (QP, q->_mp_d, q->_mp_size);
-  if (q->_mp_size < NN - DN + 1)
-    mpn_zero (QP + q->_mp_size, NN - DN + 1 - q->_mp_size);
+  mpn_copyi (qp, q->_mp_d, q->_mp_size);
+  if (q->_mp_size < nn - dn + 1)
+    mpn_zero (qp + q->_mp_size, nn - dn + 1 - q->_mp_size);
   if (r->_mp_size > 0)
-    mpn_copyi (RP, r->_mp_d, r->_mp_size);
-  if (r->_mp_size < DN)
-    mpn_zero (RP + r->_mp_size, DN - r->_mp_size);
+    mpn_copyi (rp, r->_mp_d, r->_mp_size);
+  if (r->_mp_size < dn)
+    mpn_zero (rp + r->_mp_size, dn - r->_mp_size);
   mpz_clear (q);
   mpz_clear (r);
 }
@@ -317,21 +317,21 @@ mpn_tdiv_qr (mp_limb_t *QP, mp_limb_t *RP, mp_size_t QXN,
 
 #ifdef WANT_mpn_sqrtrem
 mp_size_t
-mpn_sqrtrem (mp_limb_t *SP, mp_limb_t *RP, const mp_limb_t *NP, mp_size_t N)
+mpn_sqrtrem (mp_limb_t *sp, mp_limb_t *rp, const mp_limb_t *np, mp_size_t nn)
 {
   mpz_t s, r, n;
-  mp_size_t sn = (N + 1) >> 1, ret;
+  mp_size_t sn = (nn + 1) >> 1, ret;
 
-  MPFR_ASSERTN(RP == NULL);
-  n->_mp_d = (mp_limb_t*) NP;
-  n->_mp_size = N;
+  MPFR_ASSERTN(rp == NULL);
+  n->_mp_d = (mp_limb_t*) np;
+  n->_mp_size = nn;
   mpz_init (s);
   mpz_init (r);
   mpz_sqrtrem (s, r, n);
   if (s->_mp_size > 0)
-    mpn_copyi (SP, s->_mp_d, s->_mp_size);
+    mpn_copyi (sp, s->_mp_d, s->_mp_size);
   if (s->_mp_size < sn)
-    mpn_zero (SP + s->_mp_size, sn - s->_mp_size);
+    mpn_zero (sp + s->_mp_size, sn - s->_mp_size);
   ret = r->_mp_size;
   mpz_clear (s);
   mpz_clear (r);
