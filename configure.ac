@@ -564,6 +564,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 ]])],
    [AC_MSG_RESULT(yes)
+    MPFR_CHECK_GMP
     MPFR_CHECK_DBL2INT_BUG
     MPFR_CHECK_PRINTF_SPEC],
    [AC_MSG_RESULT(no)

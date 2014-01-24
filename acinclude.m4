@@ -540,6 +540,58 @@ CPPFLAGS="$saved_CPPFLAGS"
 dnl end of MPFR_CONFIGS
 
 
+dnl MPFR_CHECK_GMP
+dnl --------------
+dnl Check GMP library vs header. Useful if the user provides --with-gmp
+dnl with a directory containing a GMP version that doesn't have the
+dnl correct ABI: the previous tests won't trigger the error if the same
+dnl GMP version with the right ABI is installed on the system, as this
+dnl library is automatically selected by the linker, while the header
+dnl (which depends on the ABI) of the --with-gmp include directory is
+dnl used.
+dnl Note: if the error is changed to a warning due to that fact that
+dnl libtool is not used, then the same thing should be done for the
+dnl other tests based on GMP.
+AC_DEFUN([MPFR_CHECK_GMP], [
+AC_REQUIRE([MPFR_CONFIGS])dnl
+AC_CACHE_CHECK([for GMP library vs header correctness], mpfr_cv_check_gmp, [
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+#include <limits.h>
+#include <gmp.h>
+]], [[
+  fprintf (stderr, "GMP_NAIL_BITS     = %d\n", (int) GMP_NAIL_BITS);
+  fprintf (stderr, "GMP_NUMB_BITS     = %d\n", (int) GMP_NUMB_BITS);
+  fprintf (stderr, "mp_bits_per_limb  = %d\n", (int) mp_bits_per_limb);
+  fprintf (stderr, "sizeof(mp_limb_t) = %d\n", (int) sizeof(mp_limb_t));
+  if (GMP_NAIL_BITS != 0)
+    {
+      fprintf (stderr, "GMP_NAIL_BITS != 0\n");
+      return 1;
+    }
+  if (GMP_NUMB_BITS != mp_bits_per_limb)
+    {
+      fprintf (stderr, "GMP_NUMB_BITS != mp_bits_per_limb\n");
+      return 2;
+    }
+  if (GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT)
+    {
+      fprintf (stderr, "GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT\n");
+      return 3;
+    }
+  return 0;
+]])], [mpfr_cv_check_gmp="yes"],
+      [mpfr_cv_check_gmp="no (exit status is $?)"],
+      [mpfr_cv_check_gmp="cannot test, assume yes"])
+])
+case $mpfr_cv_check_gmp in
+no*)
+  AC_MSG_ERROR([bad GMP library or header - ABI problem?
+See 'config.log' for details.])
+esac
+])
+
+
 dnl MPFR_CHECK_DBL2INT_BUG
 dnl ----------------------
 dnl Check for double-to-integer conversion bug
