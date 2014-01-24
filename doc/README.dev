@@ -34,6 +34,10 @@ been released yet).
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
+Note with Automake 1.13+: to have the tests/test-suite.log output displayed
+automatically if any test fails, set the VERBOSE environment variable to 1
+before running "make check".
+
 ===========================================================================
 
 The VERSION file contains the number of the next release version, i.e.
