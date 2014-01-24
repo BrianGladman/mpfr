@@ -54,7 +54,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     {                                                                   \
       int two2emin;                                                     \
       int signx = MPFR_SIGN(x);                                         \
-      MPFR_ASSERTN (MPFR_EMIN_MIN + MPFR_EMAX_MAX == 0);                \
+      MPFR_STAT_STATIC_ASSERT (MPFR_EMIN_MIN + MPFR_EMAX_MAX == 0);     \
       if ((two2emin = mpfr_get_exp (x) == __gmpfr_emin + 1 &&           \
            mpfr_powerof2_raw (x)))                                      \
         {                                                               \

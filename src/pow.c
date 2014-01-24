@@ -364,7 +364,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
            * obtain the correct result and exceptions by replacing z by
            * nextabove(z).
            */
-          MPFR_ASSERTN (MPFR_PREC_MIN > 1);
+          MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN > 1);
           mpfr_nextabove (z);
         }
       MPFR_CLEAR_FLAGS ();

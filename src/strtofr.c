@@ -821,7 +821,7 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
   MPFR_SET_ZERO (x);
   MPFR_SET_POS (x);
 
-  MPFR_ASSERTN (MPFR_MAX_BASE >= 62);
+  MPFR_STAT_STATIC_ASSERT (MPFR_MAX_BASE >= 62);
   res = parse_string (x, &pstr, &string, base);
   /* If res == 0, then it was exact (NAN or INF),
      so it is also the ternary value */

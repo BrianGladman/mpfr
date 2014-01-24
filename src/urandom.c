@@ -75,7 +75,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   /* Exponent */
 #define DRAW_BITS 8 /* we draw DRAW_BITS at a time */
   cnt = DRAW_BITS;
-  MPFR_ASSERTN(DRAW_BITS <= GMP_NUMB_BITS);
+  MPFR_STAT_STATIC_ASSERT (DRAW_BITS <= GMP_NUMB_BITS);
   while (cnt == DRAW_BITS)
     {
       /* generate DRAW_BITS in rp[0] */

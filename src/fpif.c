@@ -548,7 +548,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
     return -1;
   if (precision > MPFR_PREC_MAX)
     return -1;
-  MPFR_ASSERTN (MPFR_PREC_MIN <= 8);
+  MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN <= 8);
   if (precision < MPFR_PREC_MIN)
     precision = MPFR_PREC_MIN;
   mpfr_set_prec (x, precision);
