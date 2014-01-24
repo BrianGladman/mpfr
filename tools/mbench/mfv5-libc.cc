@@ -186,6 +186,7 @@ bool libc_test<T>::test (const vector<string> &base, const option_test &opt) {
     b = table[i];
     TIMP_OVERHEAD ();
     m = TIMP_MEASURE(a = f.func (b) ); 
+    b = a;
     cont = tim->update (i, m) || cont;
   }
 
