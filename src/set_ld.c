@@ -127,9 +127,9 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
   k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
   count_leading_zeros (cnt, tmpmant[i - 1]);
-  if (MPFR_LIKELY (cnt != 0))
+  if (MPFR_UNLIKELY (cnt != 0))
     mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-  else if (k != 0)
+  else if (MPFR_UNLIKELY (k != 0))
     MPN_COPY (tmpmant + k, tmpmant, i);
   if (MPFR_UNLIKELY (k != 0))
     MPN_ZERO (tmpmant, k);

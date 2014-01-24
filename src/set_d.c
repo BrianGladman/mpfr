@@ -232,9 +232,9 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 
   count_leading_zeros (cnt, tmpmant[i - 1]);
 
-  if (MPFR_LIKELY(cnt != 0))
+  if (MPFR_UNLIKELY(cnt != 0))
     mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-  else if (k != 0)
+  else if (MPFR_UNLIKELY (k != 0))
     MPN_COPY (tmpmant + k, tmpmant, i);
 
   if (MPFR_UNLIKELY(k != 0))

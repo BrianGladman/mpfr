@@ -658,8 +658,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Final exponent -1 since we have shifted the mantissa */
           bx--;
           /* Update bcp and bcp1 */
-          MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
-          MPFR_ASSERTN(bbcp1 != (mp_limb_t) -1);
+          MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
+          MPFR_ASSERTD(bbcp1 != (mp_limb_t) -1);
           bcp  = bbcp;
           bcp1 = bbcp1;
           /* We don't have anymore a valid Cp+1!
@@ -706,7 +706,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0));
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit!*/
-      MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
+      MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
       if ( (rnd_mode == MPFR_RNDZ && bcp==0)
            || (rnd_mode==MPFR_RNDN && bbcp==0)
            || (bcp && bcp1==0) ) /*Exact result*/
@@ -756,8 +756,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             bbcp=0;
           DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
                  bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
-          MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
-          MPFR_ASSERTN((rnd_mode != MPFR_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
+          MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
+          MPFR_ASSERTD((rnd_mode != MPFR_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
           if (((rnd_mode != MPFR_RNDZ) && bcp)
               ||
               ((rnd_mode == MPFR_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
@@ -775,11 +775,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
   /* Calcul of Inexact flag.*/
-  inexact = MPFR_LIKELY(bcp || bcp1) ? 1 : 0;
+  inexact = (bcp != 0 || bcp1 != 0);
 
  end_of_sub:
-  /* Update Expo */
-  /* FIXME: Is this test really useful?
+  /* Update Exponent */
+  /* bx >= emin. Proof:
       If d==0      : Exact case. This is never called.
       if 1 < d < p : bx=MPFR_EXP(b) or MPFR_EXP(b)-1 > MPFR_EXP(c) > emin
       if d == 1    : bx=MPFR_EXP(b). If we could lose any bits, the exact
@@ -791,18 +791,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if d >=  p   : bx >= MPFR_EXP(b)-1 > emin since p>=2.
   */
   MPFR_ASSERTD( bx >= __gmpfr_emin);
-  /*
-    if (MPFR_UNLIKELY(bx < __gmpfr_emin))
-    {
-      DEBUG( printf("(Final Underflow)\n") );
-      if (rnd_mode == MPFR_RNDN &&
-          (bx < __gmpfr_emin - 1 ||
-           (inexact >= 0 && mpfr_powerof2_raw (a))))
-        rnd_mode = MPFR_RNDZ;
-      MPFR_TMP_FREE(marker);
-      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
-    }
-  */
   MPFR_SET_EXP (a, bx);
 
   MPFR_TMP_FREE(marker);

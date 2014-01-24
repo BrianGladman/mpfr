@@ -308,7 +308,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           for (i = 0; i < oldn0; i++)
             mpz_init (tabz[i]);
         }
-      else if (MPFR_UNLIKELY (oldn0 < 3 * (n0 + 1)))
+      else if (oldn0 < 3 * (n0 + 1))
         {
           tabz = (mpz_t *) (*__gmp_reallocate_func)
             (tabz, oldn0 * sizeof (mpz_t), 3 * (n0 + 1)*sizeof (mpz_t));

@@ -62,7 +62,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
       bn = (MPFR_PREC(b) - 1) / GMP_NUMB_BITS;
       cn = (MPFR_PREC(c) - 1) / GMP_NUMB_BITS; /* # of limbs of c minus 1 */
 
-      if (MPFR_UNLIKELY( diff_exp == 0 ))
+      if (diff_exp == 0)
         {
           while (bn >= 0 && cn >= 0 && bp[bn] == cp[cn])
             {

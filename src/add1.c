@@ -153,7 +153,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         MPN_COPY(a2p - difn, cp + (cn - difn), difn);
 
       /* add b to a */
-      cc = MPFR_UNLIKELY(an > bn)
+      cc = an > bn
         ? mpn_add_n(ap + (an - bn), ap + (an - bn), bp, bn)
         : mpn_add_n(ap, ap, bp + (bn - an), an);
 
