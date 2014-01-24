@@ -730,6 +730,8 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #elif _MPFR_EXP_FORMAT == 4
+/* Note: MPFR_EXP_MAX and MPFR_EXP_MIN must not be used in #if directives
+   if _MPFR_EXP_FORMAT == 4 and MPFR_HAVE_INTMAX_MAX is not defined. */
 # define MPFR_EXP_MAX (MPFR_INTMAX_MAX)
 # define MPFR_EXP_MIN (MPFR_INTMAX_MIN)
 #else
@@ -740,18 +742,16 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
    nonnegative. */
 #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 
-#if MPFR_EXP_MIN >= LONG_MIN && MPFR_EXP_MAX <= LONG_MAX
+#if _MPFR_EXP_FORMAT <= 3
 typedef long int mpfr_eexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
 # define MPFR_EXP_FSPEC "l"
-#elif defined (_MPFR_H_HAVE_INTMAX_T)
+#else
 typedef intmax_t mpfr_eexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_sj((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_sj((x),(e),(r))
 # define MPFR_EXP_FSPEC "j"
-#else
-# error "Cannot define mpfr_get_exp_t and mpfr_set_exp_t"
 #endif
 
 /* Invalid exponent value (to track bugs...) */
