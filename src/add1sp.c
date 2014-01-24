@@ -154,8 +154,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Away:    Add 1
              Nearest: Trunc
              Zero:    Trunc */
-          if (MPFR_LIKELY (rnd_mode == MPFR_RNDN
-                           || MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b))))
+          if (rnd_mode == MPFR_RNDN
+              || MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b)))
             {
             copy_set_exponent:
               ap = MPFR_MANT (a);
