@@ -20,13 +20,13 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include "mpfr-impl.h"
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef HAVE_GETRUSAGE
 #include <sys/time.h>
 #include <sys/resource.h>
 #endif
+#include "mpfr.h"
 #include "benchtime.h"
 
 static unsigned long get_cputime (void);
@@ -158,7 +158,8 @@ compute_score (mpz_t zscore, int op, gmp_randstate_t randstate)
   mpz_init_set_si (zscore, 1);
 
   i = op;
-  for (k = 0; k < numberof (arrayprecision_op1); k++, countprec++)
+  for (k = 0; k < (int) sizeof (arrayprecision_op1) / sizeof (arrayprecision_op1[0]);
+       k++, countprec++)
     {
       mpfr_prec_t precision1 = arrayprecision_op1[k];
       mpfr_prec_t precision2 = arrayprecision_op2[k];
