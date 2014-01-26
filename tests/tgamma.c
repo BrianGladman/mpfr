@@ -824,7 +824,7 @@ tiny_aux (int stop, mpfr_exp_t e)
                 {
                   printf ("Error in tiny for s = %d, r = %s, emax = %"
                           MPFR_EXP_FSPEC "d%s\n  on ",
-                          s, mpfr_print_rnd_mode (rr), emax,
+                          s, mpfr_print_rnd_mode (rr), (mpfr_eexp_t) emax,
                           exponent > emax ? " (overflow)" : "");
                   mpfr_dump (x);
                   printf ("  expected inex = %2d, ", expected_inex);
