@@ -28,8 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <string.h>
 
-#include "gmp.h"
-#include "mpfr.h"
+#include "mpfr-impl.h"
 #ifdef MPFR
 #include "mpf2mpfr.h"
 #endif
@@ -37,6 +36,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
+
+#if defined (MPFR) && _MPFR_EXP_FORMAT != 3 /* because exp is a long below */
+
+  return 77;
+
+#else
+
   unsigned long int prec;
   unsigned long int prec2;
   mpf_t x, y;
@@ -233,4 +239,7 @@ main (void)
   mpf_clear (x);
 
   return 0;
+
+#endif
+
 }
