@@ -114,7 +114,8 @@ print_binary (long double d, int flag)
   /* now e <= d < 2e */
   if (flag == 1)
     printf ("0.");
-  if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%lu\n", d, e, prec);
+  if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
+                         (long) prec);
   while (d > (long double) 0.0)
     {
       prec++;
@@ -130,7 +131,8 @@ print_binary (long double d, int flag)
             printf ("0");
         }
       e *= (long double) 0.5;
-      if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%lu\n", d, e, prec);
+      if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%ld\n", d, e,
+                             (long) prec);
     }
   if (flag == 1)
     printf ("e%ld\n", exp);
