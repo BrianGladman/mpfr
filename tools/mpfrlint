@@ -59,7 +59,13 @@ grep '[^a-z_]snprintf *([^)]' $srctests
 # Constant checking should use either MPFR_STAT_STATIC_ASSERT
 # or MPFR_ASSERTN(0) for not yet implemented corner cases.
 # This test is a heuristic.
+# Note: as long as the support of _MPFR_EXP_FORMAT = 4 is not complete,
+# run-time assertions involving MPFR_EMAX_MAX, LONG_MAX, etc. should be
+# used instead of static assertions to allow testing and correction of
+# the code (then the removal of the assertions).
 grep 'MPFR_ASSERT[DN][^a-z]*;' src/*.c | grep -v 'MPFR_ASSERTN *(0)' | \
+  grep -v '\(MPFR_EMAX_MAX\|MPFR_EXP_MAX\).*LONG_MAX' | \
+  grep -v '\(MPFR_EMIN_MIN\|MPFR_EXP_MIN\).*LONG_MIN' | \
   grep -v MPFR_BLOCK_EXCEP
 
 # MPFR_ASSERTD or MPFR_ASSERTN must be used for assertions, not ASSERT.
