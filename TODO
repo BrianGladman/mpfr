@@ -409,6 +409,13 @@ Table of contents:
         z = round(y, p, TO_NEAREST_EVEN), then
         z = round(x, p, TO_NEAREST_EVEN)
   so it avoids the double-rounding problem.
+  VL: I prefer the (original?) term "sticky rounding", as used in
+    J Strother Moore, Tom Lynch, Matt Kaufmann. A Mechanically Checked
+    Proof of the Correctness of the Kernel of the AMD5K86 Floating-Point
+    Division Algorithm. IEEE Transactions on Computers, 1996.
+  and
+    http://www.russinoff.com/libman/text/node26.html
+
 - new rounding mode MPFR_RNDE when the result is known to be exact?
   * In normal mode, this would allow MPFR to optimize using
     this information.
