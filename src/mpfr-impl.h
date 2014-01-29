@@ -249,6 +249,9 @@ __MPFR_DECLSPEC extern const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2];
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_one;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_two;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
+__MPFR_DECLSPEC extern const mpfr_t __gmpfr_mone;
+__MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDD;
+__MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
 
 #if defined (__cplusplus)

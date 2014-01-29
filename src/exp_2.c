@@ -106,8 +106,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       mp_limb_t r_limb[(sizeof (long) -1) / sizeof(mp_limb_t) + 1];
       MPFR_TMP_INIT1(r_limb, r, sizeof (long) * CHAR_BIT);
-      mpfr_const_log2 (r, MPFR_RNDZ);
-      mpfr_div (r, x, r, MPFR_RNDN);
+      mpfr_div (r, x, __gmpfr_const_log2_RNDD, MPFR_RNDN);
       n = mpfr_get_si (r, MPFR_RNDN);
     }
   /* we have |x| <= (|n|+1)*log(2) */

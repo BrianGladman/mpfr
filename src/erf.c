@@ -110,9 +110,8 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   MPFR_TMP_INIT1(xf_limb, xf, 53);
-  mpfr_const_log2 (xf, MPFR_RNDU);
-  mpfr_div (xf, x, xf, MPFR_RNDZ); /* round to zero ensures we get a lower
-                                     bound of |x/log(2)| */
+  mpfr_div (xf, x, __gmpfr_const_log2_RNDU, MPFR_RNDZ); /* round to zero
+                        ensures we get a lower bound of |x/log(2)| */
   mpfr_mul (xf, xf, x, MPFR_RNDZ);
   large = mpfr_cmp_ui (xf, MPFR_PREC (y) + 1) > 0;
 

@@ -86,8 +86,9 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
-      mpfr_const_log2 (bound_emax, expo.saved_emax < 0 ? MPFR_RNDD : MPFR_RNDU);
-      mpfr_mul (bound_emax, bound_emax, e, MPFR_RNDU);
+      mpfr_mul (bound_emax, expo.saved_emax < 0 ?
+                __gmpfr_const_log2_RNDD : __gmpfr_const_log2_RNDU,
+                e, MPFR_RNDU);
       previous_emax = expo.saved_emax;
       MPFR_SAVE_EXPO_FREE (expo);
     }
