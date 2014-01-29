@@ -1989,8 +1989,23 @@ __MPFR_DECLSPEC void mpfr_div_ui2 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr,
 
 __MPFR_DECLSPEC void mpfr_gamma_one_and_two_third _MPFR_PROTO((mpfr_ptr, mpfr_ptr, mpfr_prec_t));
 
+__MPFR_DECLSPEC void mpfr_mpz_init _MPFR_PROTO((mpz_ptr));
+__MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
+
 #if defined (__cplusplus)
 }
+#endif
+
+/******************************************************
+ **************  Internal mpz caching *****************
+ ******************************************************/
+
+/* Cache for mpz_t */
+#if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
+# undef mpz_init
+# undef mpz_clear
+# define mpz_init mpfr_mpz_init
+# define mpz_clear mpfr_mpz_clear
 #endif
 
 #endif

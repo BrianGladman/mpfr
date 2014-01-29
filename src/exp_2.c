@@ -194,7 +194,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_POS (r));
           mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
-          mpz_init2 (ss, q+GMP_NUMB_BITS);
+          mpz_init (ss);
           /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
           MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
           l = (precy < MPFR_EXP_2_THRESHOLD)
@@ -263,8 +263,8 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
 
   expt = 0;
   *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
-  mpz_init2 (t, 2*q + GMP_NUMB_BITS);
-  mpz_init2 (rr, q + GMP_NUMB_BITS);
+  mpz_init (t);
+  mpz_init (rr);
   mpz_set_ui(t, 1);
   mpz_set_ui(s, 1);
   mpz_mul_2exp(s, s, q-1);
