@@ -90,7 +90,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
         mpfr_mul_2ui (S, S, k, MPFR_RNDN);
         mpfr_sub (D, D, S, MPFR_RNDN);
         /* stop when |A_k - B_k| <= 2^(k-p) i.e. cancel >= p-k */
-        if (cancel + k >= p)
+        if (cancel >= p - k)
           break;
       }
 #undef b
