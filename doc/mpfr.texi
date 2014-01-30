@@ -499,7 +499,7 @@ You also have to explain what is wrong; if you get a crash, or if the results
 you get are incorrect and in that case, in what way.
 
 Please include compiler version information in your bug report. This can
-be extracted using @samp{cc -V} on some machines, or, if you're using GCC,
+be extracted using @samp{cc -V} on some machines, or, if you are using GCC,
 @samp{gcc -v}. Also, include the output from @samp{uname -a} and the MPFR
 version (the GMP version may be useful too).
 If you get a failure while running @samp{make} or @samp{make check}, please
@@ -681,7 +681,7 @@ to represent a group of flags (or a mask).
 @section MPFR Variable Conventions
 
 Before you can assign to a MPFR variable, you need to initialize it by calling
-one of the special initialization functions.  When you're done with a
+one of the special initialization functions.  When you are done with a
 variable, you need to clear it out, using one of the functions for that
 purpose.
 A variable should only be initialized once, or at least cleared out between
