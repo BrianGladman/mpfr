@@ -217,15 +217,27 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
      ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
 
-  /* FIXME: for x large, use the asymptotic expansion:
-     https://en.wikipedia.org/wiki/Digamma_function#Computation_and_approximation
-  */
-
   /* compute a precision q such that x+1 is exact */
   if (MPFR_PREC(x) < MPFR_EXP(x))
     q = MPFR_EXP(x);
   else
     q = MPFR_PREC(x) + 1;
+
+  /* for very large x, use |digamma(x) - log(x)| < 1/x < 2^(1-EXP(x)) */
+  if (MPFR_PREC(y) + 10 < MPFR_EXP(x))
+    {
+      /* this ensures EXP(x) >= 3, thus x >= 4, thus log(x) > 1 */
+      mpfr_init2 (t, MPFR_PREC(y) + 10);
+      mpfr_log (t, x, MPFR_RNDZ);
+      if (MPFR_CAN_ROUND (t, MPFR_PREC(y) + 10, MPFR_PREC(y), rnd_mode))
+        {
+          inex = mpfr_set (y, t, rnd_mode);
+          mpfr_clear (t);
+          return inex;
+        }
+      mpfr_clear (t);
+    }
+
   mpfr_init2 (x_plus_j, q);
 
   mpfr_init2 (t, p);
