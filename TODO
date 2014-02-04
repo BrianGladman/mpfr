@@ -363,6 +363,10 @@ Table of contents:
   https://sympa.inria.fr/sympa/arc/mpfr/2013-09/msg00000.html
   https://sympa.inria.fr/sympa/arc/mpfr/2013-09/msg00002.html
 
+- for various functions, check the timings as a function of the magnitude
+  of the input (and the input and/or output precisions?), and use better
+  thresholds for asymptotic expansions.
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################
