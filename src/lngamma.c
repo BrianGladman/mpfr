@@ -173,8 +173,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
   mpz_t *B;
-  int compared;
-  int inexact = 0;  /* 0 means: result y not set yet */
+  int compared, inexact;
   mpfr_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
   unsigned long oldBm;
@@ -196,6 +195,47 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
     {
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_set_ui (y, 0, MPFR_RNDN);  /* lngamma(1 or 2) = +0 */
+    }
+
+  /* Deal with very large inputs: according to [6.1.42], if we denote
+     R_n(z) = lngamma(z) - (z-1/2)*log(z) + z - 1/2*log(2*Pi), we have
+     |R_n(z)| <= B_2/2/z, thus for z >= 2 we have
+     |lngamma(z) - [z*(log(z) - 1)]| < 1/2*log(z) + 1. */
+  if (compared > 0 && MPFR_GET_EXP (z0) >= (mpfr_exp_t) MPFR_PREC(y) + 2)
+    {
+      /* Since PREC(y) >= 2, this ensures EXP(z0) >= 4, thus |z0| >= 8,
+         thus 1/2*log(z0) + 1 < log(z0).
+         Since the largest possible z is < 2^(2^62) on a 64-bit machine,
+         the largest value of log(z) is 2^62*log(2.) < 3.2e18 < 2^62,
+         thus if we use at least 62 bits of precision, then log(t)-1 will
+         be exact */
+      mpfr_init2 (t, MPFR_PREC(y) >= 52 ? MPFR_PREC(y) + 10 : 62);
+      mpfr_log (t, z0, MPFR_RNDU); /* error < 1 ulp */
+      inexact = mpfr_sub_ui (t, t, 1, MPFR_RNDU); /* err < 2 ulps, since the
+                                                     exponent of t might have
+                                                     decreased */
+      MPFR_ASSERTD(inexact == 0);
+      mpfr_mul (t, z0, t, MPFR_RNDU); /* err < 1+2*2=5 ulps according to
+                                        "Generic error on multiplication"
+                                        in algorithms.tex */
+      if (MPFR_IS_INF(t))
+        {
+          inexact = mpfr_overflow (y, rnd, 1);
+          mpfr_clear (t);
+          return inexact;
+        }
+      if (MPFR_GET_EXP(t) - MPFR_PREC(t) >= 62)
+        {
+          /* then ulp(t) >= 2^62 > log(z0) thus the total error is bounded
+             by 6 ulp(t) */
+          if (MPFR_CAN_ROUND (t, MPFR_PREC(t) - 3, MPFR_PREC(y), rnd))
+            {
+              inexact = mpfr_set (y, t, rnd);
+              mpfr_clear (t);
+              return inexact;
+            }
+        }
+      mpfr_clear (t);
     }
 
   /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
@@ -379,6 +419,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   /* now z0 > 1 */
 
   MPFR_ASSERTD (compared > 0);
+
+  inexact = 0; /* 0 means: result y not set yet */
 
   /* since k is O(w), the value of log(z0*...*(z0+k-1)) is about w*log(w),
      so there is a cancellation of ~log(w) in the argument reconstruction */
