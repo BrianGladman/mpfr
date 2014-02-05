@@ -318,6 +318,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_init2 (v, MPFR_PREC_MIN);
   mpfr_init2 (z, MPFR_PREC_MIN);
 
+  inexact = 0; /* 0 means: result y not set yet */
+
   if (compared < 0)
     {
       mpfr_exp_t err_u;
@@ -419,8 +421,6 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   /* now z0 > 1 */
 
   MPFR_ASSERTD (compared > 0);
-
-  inexact = 0; /* 0 means: result y not set yet */
 
   /* since k is O(w), the value of log(z0*...*(z0+k-1)) is about w*log(w),
      so there is a cancellation of ~log(w) in the argument reconstruction */
