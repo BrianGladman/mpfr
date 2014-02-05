@@ -268,8 +268,8 @@ To make a release (for the MPFR team):
      then "make check".
 
      Also test with different environment variables set
-     (GMP_CHECK_RANDOMIZE, MPFR_CHECK_MAX, MPFR_CHECK_LIBC_PRINTF,
-     MPFR_CHECK_LARGEMEM, MPFR_SUSPICIOUS_OVERFLOW).
+     (GMP_CHECK_RANDOMIZE, MPFR_CHECK_LIBC_PRINTF, MPFR_CHECK_LARGEMEM,
+     MPFR_SUSPICIOUS_OVERFLOW).
 
   7) For the release itself (not the release candidates), if no problems
      have been found, create a tag with:

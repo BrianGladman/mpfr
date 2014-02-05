@@ -209,8 +209,6 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 }
               else  /* 2 <= n <= 3 */
                 {
-                  if (getenv ("MPFR_CHECK_MAX") == NULL)
-                    goto next_n;
                   mpfr_set_si (x, n == 2 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
