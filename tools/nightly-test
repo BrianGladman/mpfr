@@ -40,7 +40,7 @@ export MPFR_SUSPICIOUS_OVERFLOW=1
 export MPFR_CHECK_LIBC_PRINTF=1
 make check
 cd tools/bench
-make
+make mpfrbench
 ./mpfrbench
 cd /tmp
 /bin/rm -fr "$DIR"
