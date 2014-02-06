@@ -165,6 +165,10 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
+  /* Note: according to the ISO C standard, there may be finite numbers
+     larger than LDBL_MAX, among the values that are not floating-point
+     numbers. If the following fails on some platform, a test d - d != 0
+     could be used. */
   if (d > MPFR_LDBL_MAX)
     {
       mpfr_set_inf (r, 1);
