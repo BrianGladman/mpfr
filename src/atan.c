@@ -38,7 +38,7 @@ static void
 mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 {
   mpz_t *S, *Q, *ptoj;
-  unsigned long n, i, k, j, l;
+  mp_bitcnt_t n, i, k, j, l;  /* unsigned type, which is >= unsigned long */
   mpfr_exp_t diff, expo;
   int im, done;
   mpfr_prec_t mult, *accu, *log2_nb_terms;
@@ -90,6 +90,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
         mpz_mul (ptoj[im], ptoj[im - 1], ptoj[im - 1]);
       /* main loop */
       n = 1UL << m;
+      MPFR_ASSERTN (n != 0);  /* no overflow */
       /* the ith term being X^i/(2i+1) with X=p/2^r, we can stop when
          p^i/2^(r*i) < 2^(-precy), i.e. r*i > precy + log2(p^i) */
       for (i = k = done = 0; (i < n) && (done == 0); i += 2, k ++)
@@ -127,6 +128,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
           we can stop when r*i > precy i.e. i > precy/r */
     {
       n = 1UL << m;
+      MPFR_ASSERTN (n != 0);  /* no overflow */
       for (i = k = 0; (i < n) && (i <= precy / r); i += 2, k ++)
         {
           mpz_set_ui (Q[k + 1], 2 * i + 3);
@@ -183,7 +185,9 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 
   mpz_tdiv_q (S[0], S[0], Q[0]);
   mpfr_set_z (y, S[0], MPFR_RNDD);
-  MPFR_SET_EXP (y, MPFR_EXP(y) + expo - r * (i - 1));
+  /* TODO: Check/prove that the following expression doesn't overflow. */
+  expo = MPFR_GET_EXP (y) + expo - r * (i - 1);
+  MPFR_SET_EXP (y, expo);
 }
 
 int
