@@ -42,7 +42,7 @@ static void
 mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
                    mpz_t *Q, mpfr_prec_t *mult)
 {
-  unsigned long n, i, j;
+  mp_bitcnt_t n, i, j;  /* unsigned type, which is >= unsigned long */
   mpz_t *S, *ptoj;
   mpfr_prec_t *log2_nb_terms;
   mpfr_exp_t diff, expo;
@@ -58,8 +58,9 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   /* Normalize p */
   MPFR_ASSERTD (mpz_cmp_ui (p, 0) != 0);
   n = mpz_scan1 (p, 0); /* number of trailing zeros in p */
+  MPFR_ASSERTN (n <= LONG_MAX); /* This is a limitation. */
   mpz_tdiv_q_2exp (p, p, n);
-  r -= n; /* since |p/2^r| < 1 and p >= 1, r >= 1 */
+  r -= (long) n; /* since |p/2^r| < 1 and p >= 1, r >= 1 */
 
   /* Set initial var */
   mpz_set (ptoj[0], p);
@@ -75,6 +76,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   /* Main Loop */
   n = 1UL << m;
+  MPFR_ASSERTN (n != 0);  /* no overflow */
   for (i = 1; (prec_i_have < precy) && (i < n); i++)
     {
       /* invariant: Q[0]*Q[1]*...*Q[k] equals i! */
@@ -144,7 +146,9 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   mpz_tdiv_q (S[0], S[0], Q[0]);
   mpfr_set_z (y, S[0], MPFR_RNDD);
-  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo - r * (i - 1) );
+  /* TODO: Check/prove that the following expression doesn't overflow. */
+  expo = MPFR_GET_EXP (y) + expo - r * (i - 1);
+  MPFR_SET_EXP (y, expo);
 }
 
 #define shift (GMP_NUMB_BITS/2)
