@@ -527,7 +527,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   ax2 = ax + (mpfr_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
   MPFR_TMP_FREE (marker);
-  MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
+  MPFR_EXP (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
   MPFR_SET_SIGN (a, sign);
   if (MPFR_UNLIKELY (ax2 > __gmpfr_emax))
     return mpfr_overflow (a, rnd_mode, sign);
