@@ -218,11 +218,12 @@ highest_bit_idx (unsigned long x)
   /* this test should be evaluated at compile time */
   if (sizeof (mp_limb_t) >= sizeof (unsigned long))
     {
-      unsigned long cnt;
+      int cnt;
 
       if (x == 0)
         return -1;
       count_leading_zeros (cnt, (mp_limb_t) x);
+      MPFR_ASSERTD (cnt <= GMP_NUMB_BITS - 1);
       return GMP_NUMB_BITS - 1 - cnt;
     }
   else
