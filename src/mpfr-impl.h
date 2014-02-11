@@ -784,7 +784,9 @@ typedef intmax_t mpfr_eexp_t;
 
 #ifdef MPFR_EXP_CHECK
 # define MPFR_GET_EXP(x)          (mpfr_get_exp) (x)
-# define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
+# define MPFR_SET_EXP(x, exp)     (MPFR_ASSERTN ((exp) >= __gmpfr_emin && \
+                                                 (exp) <= __gmpfr_emax),  \
+                                   (void) (MPFR_EXP (x) = (exp)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
 # define MPFR_GET_EXP(x)          MPFR_EXP (x)
