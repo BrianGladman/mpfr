@@ -37,7 +37,7 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mpfr_exp_t e, mpfr_rnd_t rnd_mode
   else
     {
       mp_size_t xn;
-      unsigned int cnt, nbits;
+      int cnt, nbits;
       mp_limb_t *xp;
       int inex = 0;
 
