@@ -41,8 +41,8 @@ mpfr_set_uj (mpfr_t x, uintmax_t j, mpfr_rnd_t rnd)
 int
 mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
 {
-  unsigned int cnt, i;
-  mp_size_t k;
+  int cnt;
+  mp_size_t i, k;
   mp_limb_t limb;
   mp_limb_t yp[uintmaxpml];
   mpfr_t y;
