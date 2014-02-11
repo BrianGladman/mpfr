@@ -135,7 +135,7 @@ int
 mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 {
   int signd, inexact;
-  unsigned int cnt;
+  int cnt;
   mp_size_t i, k;
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_DOUBLE];
