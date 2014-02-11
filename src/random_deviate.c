@@ -223,6 +223,7 @@ highest_bit_idx (unsigned long x)
       if (x == 0)
         return -1;
       count_leading_zeros (cnt, (mp_limb_t) x);
+      MPFR_ASSERTD (cnt <= GMP_NUMB_BITS - 1);
       return GMP_NUMB_BITS - 1 - cnt;
     }
   else
