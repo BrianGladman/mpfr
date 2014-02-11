@@ -28,7 +28,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
 {
   mpfr_t uu;
   mp_limb_t up[1];
-  unsigned long cnt;
+  int cnt;
 
   MPFR_LOG_FUNC
     (("u=%lu x[%Pu]=%.*Rg rnd=%d",

@@ -31,7 +31,7 @@ mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
     {
       mpfr_t uu;
       mp_limb_t up[1];
-      unsigned long cnt;
+      int cnt;
       int inex;
 
       MPFR_SAVE_EXPO_DECL (expo);
