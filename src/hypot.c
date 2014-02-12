@@ -110,7 +110,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
             }
           else
             {
-              MPFR_EXP (z) = Ex;
+              MPFR_SET_EXP (z, Ex);
               MPFR_SET_SIGN (z, 1);
               MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), N, rnd_mode, 1,
                                goto addoneulp,
