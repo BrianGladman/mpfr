@@ -327,6 +327,38 @@ check_subnormal (void)
   mpfr_clear (x);
 }
 
+/* issue reported by Sisyphus on powerpc */
+static void
+test_20140212 (void)
+{
+  mpfr_t fr1, fr2;
+  long double ld, h, l;
+  int i, c1, c2;
+
+  mpfr_init2 (fr1, 106);
+  mpfr_init2 (fr2, 2098);
+
+  for (h = 1.0L, i = 0; i < 1023; i++)
+    h *= 2.0L;
+  for (l = 1.0L, i = 0; i < 1074; i++)
+    l *= 0.5L;
+  ld = h + l; /* rounding of 2^1023 + 2^(-1074) */
+
+  mpfr_set_ld (fr1, ld, MPFR_RNDN);
+  mpfr_set_ld (fr2, ld, MPFR_RNDN);
+
+  c1 = mpfr_cmp_ld (fr1, ld);
+  c2 = mpfr_cmp_ld (fr2, ld);
+
+  /* If long double is binary64, then ld = fr1 = fr2 = 2^1023.
+     If long double is double-double, then ld = 2^1023 + 2^(-1074),
+     fr1 = 2^1023 and fr2 = 2^1023 + 2^(-1074) */
+  MPFR_ASSERTN((c1 == 0 && c2 == 0) || (c1 < 0 && c2 == 0));
+
+  mpfr_clear (fr1);
+  mpfr_clear (fr2);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -450,6 +482,8 @@ main (int argc, char *argv[])
   test_small ();
 
   check_subnormal ();
+
+  test_20140212 ();
 
   tests_end_mpfr ();
 
