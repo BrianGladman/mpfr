@@ -231,13 +231,13 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
 }
 
 /*
- * buffer : OUT : store the kind of the MPFR number x, his sign, the size of
- *                his exponent and his exponent value in a binary format,
- *                can be NULL (maybe reallocated if too small)
+ * buffer : OUT : store the kind of the MPFR number x, its sign, the size of
+ *                its exponent and its exponent value in a binary format,
+ *                can be null (may be reallocated if too small)
  * buffer_size : IN/OUT : size of the buffer => size used in the buffer
  * x : IN : MPFR number
- * return pointer to a buffer storing the kind of the MPFR number x, his sign,
- *        the size of his exponent and his exponent value in a binary format,
+ * return pointer to a buffer storing the kind of the MPFR number x, its sign,
+ *        the size of its exponent and its exponent value in a binary format,
  */
 /* TODO
  *   exponents that use more than 16 bytes are not managed
@@ -530,7 +530,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
 }
 
 /*
- * x : IN/OUT : MPFR number extracted from the file, his precision is reset to
+ * x : IN/OUT : MPFR number extracted from the file, its precision is reset to
  *              be able to hold the number
  * fh : IN : file hander
  * Return 0 if the import was successful.
