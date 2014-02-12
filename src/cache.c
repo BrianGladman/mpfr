@@ -78,7 +78,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
   /* we assume all cached constants are positive */
   MPFR_ASSERTN (MPFR_IS_POS (cache->x)); /* TODO... */
   sign = MPFR_SIGN (cache->x);
-  MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
+  MPFR_EXP (dest) = MPFR_GET_EXP (cache->x);
   MPFR_SET_SIGN (dest, sign);
 
   /* round cache->x from precision pold down to precision prec */
