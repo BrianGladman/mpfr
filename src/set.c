@@ -57,8 +57,9 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, int signb)
 
       /* Else Round B inside a */
       MPFR_RNDRAW (inex, a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode, signb,
-                   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax))
-                    return mpfr_overflow (a, rnd_mode, signb) );
+                   if (MPFR_UNLIKELY (++ MPFR_EXP (a) > __gmpfr_emax))
+                     return mpfr_overflow (a, rnd_mode, signb)
+                   );
       MPFR_RET (inex);
     }
 }
