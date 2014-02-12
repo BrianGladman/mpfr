@@ -780,11 +780,19 @@ typedef intmax_t mpfr_eexp_t;
    setting the exponent before calling mpfr_check_range.
    MPFR_EXP_CHECK is defined when MPFR_WANT_ASSERT is defined, but if you
    don't use MPFR_WANT_ASSERT (for speed reasons), you can still define
-   MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
+   MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS.
+   Note about MPFR_SET_EXP:
+     The exp expression is required to have a signed type. To avoid spurious
+     failures, we could cast (exp) to mpfr_exp_t, but this wouldn't allow us
+     to detect some bugs that can occur on particular platforms. Anyway, an
+     unsigned type for exp is suspicious and should be regarded as a bug.
+*/
 
 #ifdef MPFR_EXP_CHECK
 # define MPFR_GET_EXP(x)          (mpfr_get_exp) (x)
-# define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
+# define MPFR_SET_EXP(x, exp)     (MPFR_ASSERTN ((exp) >= __gmpfr_emin && \
+                                                 (exp) <= __gmpfr_emax),  \
+                                   (void) (MPFR_EXP (x) = (exp)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
 # define MPFR_GET_EXP(x)          MPFR_EXP (x)

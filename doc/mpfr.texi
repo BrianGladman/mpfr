@@ -2835,10 +2835,9 @@ infinity or zero is undefined.
 @end deftypefun
 
 @deftypefun int mpfr_set_exp (mpfr_t @var{x}, mpfr_exp_t @var{e})
-Set the exponent of @var{x} if @var{e} is in the current exponent range,
-and return 0 (even if @var{x} is not a non-zero ordinary number);
-otherwise, return a non-zero value.
-The significand is assumed to be in [1/2,1).
+Set the exponent of @var{x} to @var{e} if @var{x} is a non-zero ordinary
+number and @var{e} is in the current exponent range, and return 0;
+otherwise, return a non-zero value (@var{x} is not changed).
 @end deftypefun
 
 @deftypefun int mpfr_signbit (mpfr_t @var{op})
@@ -3645,6 +3644,16 @@ is set were unspecified.
 Note: this function has been renamed to @code{mpfr_get_z_2exp}
 in MPFR 3.0, but @code{mpfr_get_z_exp} is still available for
 compatibility reasons.
+
+@item @code{mpfr_set_exp} changed in MPFR 3.2.
+Before MPFR 3.2, the exponent was set whatever the contents of the MPFR
+object in argument. In practice, this could be useful as a low-level
+function when the MPFR number was being constructed by setting the fields
+of its internal structure, but the API does not provide a way to do this
+except by using internals. Thus, for the API, this behavior was useless
+and could quickly lead to undefined behavior due to the fact that the
+generated value could have an invalid format if the MPFR object contained
+a special value (NaN, infinity or zero).
 
 @item @code{mpfr_strtofr} changed in MPFR 2.3.1 and MPFR 2.4.
 This was actually a bug fix since the code and the documentation did

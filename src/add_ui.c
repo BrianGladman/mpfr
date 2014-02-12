@@ -41,14 +41,14 @@ mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 
       MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
       MPFR_ASSERTD (u == (mp_limb_t) u);
-      count_leading_zeros(cnt, (mp_limb_t) u);
+      count_leading_zeros (cnt, (mp_limb_t) u);
       up[0] = (mp_limb_t) u << cnt;
 
       /* Optimization note: Exponent save/restore operations may be
          removed if mpfr_add works even when uu is out-of-range. */
       MPFR_SAVE_EXPO_MARK (expo);
       MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
-      inex = mpfr_add(y, x, uu, rnd_mode);
+      inex = mpfr_add (y, x, uu, rnd_mode);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range(y, inex, rnd_mode);
     }

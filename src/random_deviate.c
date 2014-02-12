@@ -218,7 +218,7 @@ highest_bit_idx (unsigned long x)
   /* this test should be evaluated at compile time */
   if (sizeof (mp_limb_t) >= sizeof (unsigned long))
     {
-      unsigned long cnt;
+      int cnt;
 
       if (x == 0)
         return -1;

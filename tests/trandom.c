@@ -46,8 +46,9 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
   for (k = 0; k < nbtests; k++)
     {
       mpfr_urandomb (x, RANDS);
+      MPFR_ASSERTN (MPFR_IS_FP (x));
       /* check that lower bits are zero */
-      if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh))
+      if (MPFR_NOTZERO(x) && (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh)))
         {
           printf ("Error: mpfr_urandomb() returns invalid numbers:\n");
           mpfr_print_binary (x); puts ("");

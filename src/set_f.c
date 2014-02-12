@@ -28,7 +28,8 @@ int
 mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t *my, *mx, *tmp;
-  unsigned long cnt, sx, sy;
+  int cnt;
+  mp_size_t sx, sy;
   int inexact, carry = 0;
   MPFR_TMP_DECL(marker);
 
@@ -52,7 +53,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
 
   if (sy <= sx) /* we may have to round even when sy = sx */
     {
-      unsigned long xprec = sx * GMP_NUMB_BITS;
+      mpfr_prec_t xprec = (mpfr_prec_t) sx * GMP_NUMB_BITS;
 
       MPFR_TMP_MARK(marker);
       tmp = MPFR_TMP_LIMBS_ALLOC (sx);
@@ -93,7 +94,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
   else
     {
       /* Do not use MPFR_SET_EXP as the exponent may be out of range. */
-      MPFR_EXP (y) = EXP (x) * GMP_NUMB_BITS - (mpfr_exp_t) cnt + carry;
+      MPFR_EXP (y) = EXP (x) * GMP_NUMB_BITS - cnt + carry;
     }
 
   return mpfr_check_range (y, inexact, rnd_mode);
