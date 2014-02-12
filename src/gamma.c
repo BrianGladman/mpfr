@@ -258,6 +258,10 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_exp_t expxp;
       MPFR_BLOCK_DECL (flags);
 
+      /* quick test for the default exponent range */
+      if (mpfr_get_emax () >= 1073741823UL && MPFR_GET_EXP(x) <= 25)
+        return mpfr_gamma_aux (gamma, x, rnd_mode);
+
       /* 1/e rounded down to 53 bits */
 #define EXPM1_STR "0.010111100010110101011000110110001011001110111100111"
       mpfr_init2 (xp, 53);

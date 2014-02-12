@@ -437,10 +437,13 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          with respect to z0, and k = n, we get 1/(Pi*e)^(2n) ~ 2^(-w), i.e.,
          k ~ w*log(2)/2/log(Pi*e) ~ 0.1616 * w.
          However, since the series is more expensive to compute, the optimal
-         value seems to be k ~ 4.5 * w experimentally. */
+         value seems to be k ~ 4.5 * w experimentally.
+         Note added February 12, 2014: for a target precision of 1000 bits,
+         gamma(pi^2) with k = 4.5*w gives m=55 and k=4639 which is about 60%
+         slower than k=1.5*w (m=69 and k=1540), thus we change for 1.5*w. */
       mpfr_set_prec (s, 53);
       mpfr_gamma_alpha (s, w);
-      mpfr_set_ui_2exp (s, 9, -1, MPFR_RNDU);
+      mpfr_set_ui_2exp (s, 3, -1, MPFR_RNDU);
       mpfr_mul_ui (s, s, w, MPFR_RNDU);
       if (mpfr_cmp (z0, s) < 0)
         {
