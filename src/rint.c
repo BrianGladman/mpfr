@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Merge the following mpfr_rint code with mpfr_round_raw_generic? */
 
+/* FIXME: handle reduced exponent range (and add regression tests). */
+
 int
 mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
