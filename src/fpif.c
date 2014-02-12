@@ -31,7 +31,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_KIND_INF 120
 #define MPFR_KIND_NAN 121
 #define MPFR_MAX_EMBEDDED_PRECISION 248
-#define MPFR_MIN_EMBEDDED_EXPONENT -47
 #define MPFR_MAX_EMBEDDED_EXPONENT 47
 #define MPFR_EXTERNAL_EXPONENT 94
 
@@ -73,14 +72,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    copy data_size bytes from the end of data[]. */
 static void
 #if defined (HAVE_BIG_ENDIAN)
-putLittleEndianData (unsigned char * result, unsigned char * data,
+putLittleEndianData (unsigned char *result, unsigned char *data,
                      size_t data_max_size, size_t data_size)
 #elif defined (HAVE_LITTLE_ENDIAN)
-putBigEndianData (unsigned char * result, unsigned char * data,
+putBigEndianData (unsigned char *result, unsigned char *data,
                   size_t data_max_size, size_t data_size)
 #endif
 {
-  unsigned int j;
+  size_t j;
 
   MPFR_ASSERTD (data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
@@ -90,10 +89,10 @@ putBigEndianData (unsigned char * result, unsigned char * data,
 /* copy in result[] the values in data[] with the same endianness */
 static void
 #if defined (HAVE_BIG_ENDIAN)
-putBigEndianData (unsigned char * result, unsigned char * data,
+putBigEndianData (unsigned char *result, unsigned char *data,
                   size_t data_max_size, size_t data_size)
 #elif defined (HAVE_LITTLE_ENDIAN)
-putLittleEndianData (unsigned char * result, unsigned char * data,
+putLittleEndianData (unsigned char *result, unsigned char *data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
@@ -107,14 +106,14 @@ putLittleEndianData (unsigned char * result, unsigned char * data,
    left untouched). */
 static void
 #if defined (HAVE_BIG_ENDIAN)
-getLittleEndianData (unsigned char * result, unsigned char * data,
+getLittleEndianData (unsigned char *result, unsigned char *data,
                      size_t data_max_size, size_t data_size)
 #elif defined (HAVE_LITTLE_ENDIAN)
-getBigEndianData (unsigned char * result, unsigned char * data,
+getBigEndianData (unsigned char *result, unsigned char *data,
                   size_t data_max_size, size_t data_size)
 #endif
 {
-  unsigned int j;
+  size_t j;
 
   MPFR_ASSERTD (data_size <= data_max_size);
   for (j = 0; j < data_size; j++)
@@ -124,10 +123,10 @@ getBigEndianData (unsigned char * result, unsigned char * data,
 /* copy in result[] the values in data[] with the same endianness */
 static void
 #if defined (HAVE_BIG_ENDIAN)
-getBigEndianData (unsigned char * result, unsigned char * data,
+getBigEndianData (unsigned char *result, unsigned char *data,
                   size_t data_max_size, size_t data_size)
 #elif defined (HAVE_LITTLE_ENDIAN)
-getLittleEndianData (unsigned char * result, unsigned char * data,
+getLittleEndianData (unsigned char *result, unsigned char *data,
                      size_t data_max_size, size_t data_size)
 #endif
 {
@@ -139,17 +138,17 @@ getLittleEndianData (unsigned char * result, unsigned char * data,
 
 /* Internal Function */
 /*
- * buffer : OUT : store the precision in binary format, can be NULL
- *               (maybe reallocated if too small)
+ * buffer : OUT : store the precision in binary format, can be null
+ *               (may be reallocated if too small)
  * buffer_size : IN/OUT : size of the buffer => size used in the buffer
  * precision : IN : precision to store
  * return pointer to a buffer storing the precision in binary format
  */
-static unsigned char*
-mpfr_fpif_store_precision (unsigned char * buffer, size_t * buffer_size,
+static unsigned char *
+mpfr_fpif_store_precision (unsigned char *buffer, size_t *buffer_size,
                            mpfr_prec_t precision)
 {
-  unsigned char * result;
+  unsigned char *result;
   size_t size_precision;
 
   size_precision = 0;
@@ -188,13 +187,11 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
   mpfr_prec_t precision;
   size_t precision_size;
   unsigned char buffer[8];
-  size_t status;
 
   if (fh == NULL)
     return 0;
 
-  status = fread (buffer, 1, 1, fh);
-  if (status != 1)
+  if (fread (buffer, 1, 1, fh) != 1)
     return 0;
 
   precision_size = buffer[0];
@@ -204,8 +201,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
   precision_size++;
 
   /* Read the precision in little-endian format. */
-  status = fread (buffer, precision_size, 1, fh);
-  if (status != 1)
+  if (fread (buffer, precision_size, 1, fh) != 1)
     return 0;
 
   while (precision_size > sizeof(mpfr_prec_t))
@@ -247,35 +243,30 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
 {
   unsigned char *result;
   mpfr_exp_t exponent;
+  mpfr_uexp_t uexp;
   size_t exponent_size;
-  char exponent_sign, sign;
 
   exponent = mpfr_get_exp (x);
-  exponent_sign = 0;
   exponent_size = 0;
 
   if (mpfr_regular_p (x))
     {
-      if ((exponent > MPFR_MAX_EMBEDDED_EXPONENT) ||
-          (exponent < MPFR_MIN_EMBEDDED_EXPONENT))
+      if (exponent > MPFR_MAX_EMBEDDED_EXPONENT ||
+          exponent < -MPFR_MAX_EMBEDDED_EXPONENT)
         {
           mpfr_exp_t copy_exponent;
 
-          if (exponent < 0)
-            {
-              exponent = -exponent;
-              exponent_sign = 1;
-            }
+          uexp = SAFE_ABS (mpfr_uexp_t, exponent)
+            - MPFR_MAX_EMBEDDED_EXPONENT;
 
-          exponent -= MPFR_MAX_EMBEDDED_EXPONENT;
-
-          copy_exponent = exponent << 1;
+          copy_exponent = uexp << 1;
           COUNT_NB_BYTE(copy_exponent, exponent_size);
 
-          exponent |= exponent_sign << ((exponent_size << 3) - 1);
+          if (exponent < 0)
+            uexp |= (mpfr_uexp_t) 1 << (8 * exponent_size - 1);
         }
       else
-        exponent += MPFR_MAX_EMBEDDED_EXPONENT;
+        uexp = exponent + MPFR_MAX_EMBEDDED_EXPONENT;
     }
 
   result = buffer;
@@ -284,12 +275,12 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
   if (mpfr_regular_p (x))
     {
       if (exponent_size == 0)
-        result[0] = exponent;
+        result[0] = uexp;
       else
         {
           result[0] = MPFR_EXTERNAL_EXPONENT + exponent_size;
 
-          putLittleEndianData (result + 1, (unsigned char *) &exponent,
+          putLittleEndianData (result + 1, (unsigned char *) &uexp,
                                sizeof(mpfr_exp_t), exponent_size);
         }
     }
@@ -297,16 +288,14 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
     result[0] = MPFR_KIND_ZERO;
   else if (mpfr_inf_p (x))
     result[0] = MPFR_KIND_INF;
-  else if (mpfr_nan_p (x))
-    result[0] = MPFR_KIND_NAN;
   else
     {
-      result = NULL;
-      *buffer_size = 0;
+      MPFR_ASSERTD (mpfr_nan_p (x));
+      result[0] = MPFR_KIND_NAN;
     }
 
-  sign = mpfr_sgn (x) > 0 ? 0 : 1;
-  result[0] |= sign << 7;
+  if (MPFR_IS_NEG (x))
+    result[0] |= 0x80;
 
   return result;
 }
@@ -323,52 +312,48 @@ static int
 mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 {
   mpfr_exp_t exponent;
+  mpfr_uexp_t uexp;
   size_t exponent_size;
   int sign;
   unsigned char buffer[sizeof(mpfr_exp_t)];
-  int status;
-  size_t statusFile;
-
-  status = 0;
 
   if (fh == NULL)
     return 1;
 
-  statusFile = fread (buffer, 1, 1, fh);
-  if (statusFile != 1)
+  if (fread (buffer, 1, 1, fh) != 1)
     return 1;
 
-  sign = (buffer[0] & 0x80) ? -1 : 0;
+  sign = (buffer[0] & 0x80) ? -1 : 1;
   exponent = buffer[0] & 0x7F;
   exponent_size = 1;
 
-  if ((exponent > MPFR_EXTERNAL_EXPONENT) && (exponent < MPFR_KIND_ZERO))
+  if (exponent > MPFR_EXTERNAL_EXPONENT && exponent < MPFR_KIND_ZERO)
     {
-      mpfr_exp_t exponent_sign;
+      mpfr_uexp_t exponent_sign;
 
       exponent_size = exponent - MPFR_EXTERNAL_EXPONENT;
 
       if (exponent_size > sizeof(mpfr_exp_t))
         return 1;
 
-      statusFile = fread (buffer, exponent_size, 1, fh);
-      if (statusFile != 1)
+      if (fread (buffer, exponent_size, 1, fh) != 1)
         return 1;
 
-      exponent = 0;
-      getLittleEndianData ((unsigned char *) &exponent, buffer,
+      uexp = 0;
+      getLittleEndianData ((unsigned char *) &uexp, buffer,
                            sizeof(mpfr_exp_t), exponent_size);
 
-      exponent_sign = exponent & (1 << ((exponent_size << 3) - 1));
+      exponent_sign = uexp & ((mpfr_uexp_t) 1 << (8 * exponent_size - 1));
 
-      exponent &= ~exponent_sign;
-      exponent += MPFR_MAX_EMBEDDED_EXPONENT;
+      uexp &= ~exponent_sign;
+      uexp += MPFR_MAX_EMBEDDED_EXPONENT;
 
-      if (exponent_sign != 0)
-        exponent = -exponent;
+      exponent = exponent_sign ? - (mpfr_exp_t) uexp : (mpfr_exp_t) uexp;
+      if (exponent < __gmpfr_emin || exponent > __gmpfr_emax)
+        return 1;
+      MPFR_EXP (x) = exponent;
 
-      mpfr_setsign (x, x, sign, MPFR_RNDN);
-      status = mpfr_set_exp (x, exponent);
+      MPFR_SET_SIGN (x, sign);
 
       exponent_size++;
     }
@@ -379,16 +364,22 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   else if (exponent == MPFR_KIND_NAN)
     mpfr_set_nan (x);
   else if (exponent < 95)
-    status = mpfr_set_exp (x, exponent - MPFR_MAX_EMBEDDED_EXPONENT);
+    {
+      /* FIXME: no sign set. Is this normal? Check with a testcase. */
+      exponent -= MPFR_MAX_EMBEDDED_EXPONENT;
+      if (exponent < __gmpfr_emin || exponent > __gmpfr_emax)
+        return 1;
+      MPFR_EXP (x) = exponent;
+    }
   else
     return 1;
 
-  return status;
+  return 0;
 }
 
 /*
  * buffer : OUT : store the limb of the MPFR number x in a binary format,
- *                can be NULL (maybe reallocated if too small)
+ *                can be null (may be reallocated if too small)
  * buffer_size : IN/OUT : size of the buffer => size used in the buffer
  * x : IN : MPFR number
  * return pointer to a buffer storing the limb of the MPFR number x in a binary
