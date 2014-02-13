@@ -129,6 +129,8 @@ mpfr_round_raw_generic(
             goto rnd_RNDZ; /* yes, behave like rounding toward zero */
           /* Rounding to nearest with rounding bit = 1 */
           if (MPFR_UNLIKELY (rnd_mode == MPFR_RNDNA))
+            /* FIXME: *inexp is not set. First, add a testcase that
+               triggers the bug (at least with a sanitizer). */
             goto rnd_RNDN_add_one_ulp; /* like rounding away from zero */
           sb &= ~rbmask; /* first bits after the rounding bit */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
