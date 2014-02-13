@@ -35,12 +35,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Then C[n] = -sum(binomial(n+1,k)*C[k]*n!/(k+1)!,  k=0..n-1),
    which proves that the C[n] are integers.
 */
-mpz_t*
+void
 mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
 {
   if (n == 0)
     {
-      b = (mpz_t *) (*__gmp_allocate_func) (sizeof (mpz_t));
       mpz_init_set_ui (b[0], 1);
     }
   else
@@ -48,8 +47,6 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       mpz_t t;
       unsigned long k;
 
-      b = (mpz_t *) (*__gmp_reallocate_func)
-        (b, n * sizeof (mpz_t), (n + 1) * sizeof (mpz_t));
       mpz_init (b[n]);
       /* b[n] = -sum(binomial(2n+1,2k)*C[k]*(2n)!/(2k+1)!,  k=0..n-1) */
       mpz_init_set_ui (t, 2 * n + 1);
@@ -76,5 +73,55 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       mpz_neg (b[n], b[n]);
       mpz_clear (t);
     }
-  return b;
+  return;
+}
+
+static MPFR_THREAD_ATTR mpz_t *bernoulli_table = NULL;
+static MPFR_THREAD_ATTR unsigned long bernoulli_size = 0;
+static MPFR_THREAD_ATTR unsigned long bernoulli_alloc = 0;
+
+mpz_srcptr
+mpfr_bernoulli_cache (unsigned long n)
+{
+  unsigned long i;
+
+  if (n >= bernoulli_size) {
+    if (bernoulli_alloc == 0)
+      {
+	bernoulli_alloc = MAX(16, n + n/4);
+	bernoulli_table = (mpz_t *) 
+	  (*__gmp_allocate_func) (bernoulli_alloc * sizeof (mpz_t));
+	bernoulli_size  = 0;
+      }
+    else if (n >= bernoulli_alloc)
+      {
+	bernoulli_table = (mpz_t *) (*__gmp_reallocate_func)
+	  (bernoulli_table, bernoulli_alloc * sizeof (mpz_t),
+	   (n + n/4) * sizeof (mpz_t));
+	bernoulli_alloc = n + n/4;
+      }
+    MPFR_ASSERTD(bernoulli_alloc > n);
+    MPFR_ASSERTD(bernoulli_size >= 0);
+    for(i = bernoulli_size; i <= n; i++)
+      mpfr_bernoulli_internal(bernoulli_table, i);
+    bernoulli_size = n+1;
+  }
+  MPFR_ASSERTD(bernoulli_size > n);
+  return bernoulli_table[n];
+}
+
+void
+mpfr_bernoulli_freecache(void)
+{
+  unsigned long i;
+
+  if (bernoulli_table != NULL) {
+    for(i = 0; i < bernoulli_size; i++) {
+      mpz_clear (bernoulli_table[i]);
+    }
+    (*__gmp_free_func) (bernoulli_table, bernoulli_alloc * sizeof (mpz_t)); 
+    bernoulli_table = NULL;
+    bernoulli_alloc = 0;
+    bernoulli_size = 0;
+  }
 }

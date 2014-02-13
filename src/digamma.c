@@ -34,8 +34,7 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
   mpfr_prec_t p = MPFR_PREC (s);
   mpfr_t t, u, invxx;
   mpfr_exp_t e, exps, f, expu;
-  mpz_t *INITIALIZED(B);  /* variable B declared as initialized */
-  unsigned long n0, n; /* number of allocated B[] */
+  unsigned long n;
 
   MPFR_ASSERTN(MPFR_IS_POS(x) && (MPFR_EXP(x) >= 2));
 
@@ -59,12 +58,9 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
   /* in the following we note err=xxx when the ratio between the approximation
      and the exact result can be written (1 + theta)^xxx for |theta| <= 2^(-p),
      following Higham's method */
-  B = mpfr_bernoulli_internal ((mpz_t *) 0, 0);
   mpfr_set_ui (t, 1, MPFR_RNDN); /* err = 0 */
   for (n = 1;; n++)
     {
-      /* compute next Bernoulli number */
-      B = mpfr_bernoulli_internal (B, n);
       /* The main term is Bernoulli[2n]/(2n)/x^(2n) = B[n]/(2n+1)!(2n)/x^(2n)
          = B[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2. */
       mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
@@ -72,7 +68,7 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
       /* we thus have err = 5n here */
       mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
-      mpfr_mul_z (u, u, B[n], MPFR_RNDU);       /* err = 5n+2, and the
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);/* err = 5n+2, and the
                                                    absolute error is bounded
                                                    by 10n+4 ulp(u) [Rule 11] */
       /* if the terms 'u' are decreasing by a factor two at least,
@@ -94,11 +90,6 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
         }
       e += f; /* total rounding error coming from 'u' term */
     }
-
-  n0 = ++n;
-  while (n--)
-    mpz_clear (B[n]);
-  (*__gmp_free_func) (B, n0 * sizeof (mpz_t));
 
   mpfr_clear (t);
   mpfr_clear (u);

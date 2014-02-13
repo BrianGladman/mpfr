@@ -172,11 +172,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
   mpfr_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
-  mpz_t *B;
   int compared, inexact;
   mpfr_exp_t err_s, err_t;
-  unsigned long Bm = 0; /* number of allocated B[] */
-  unsigned long oldBm;
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -436,14 +433,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          and we need k steps of argument reconstruction. Assuming k is large
          with respect to z0, and k = n, we get 1/(Pi*e)^(2n) ~ 2^(-w), i.e.,
          k ~ w*log(2)/2/log(Pi*e) ~ 0.1616 * w.
-         However, since the series is more expensive to compute, the optimal
-         value seems to be k ~ 4.5 * w experimentally.
-         Note added February 12, 2014: for a target precision of 1000 bits,
-         gamma(pi^2) with k = 4.5*w gives m=55 and k=4639 which is about 60%
-         slower than k=1.5*w (m=69 and k=1540), thus we change for 1.5*w. */
+         However, since the series is slightly more expensive to compute,
+         the optimal value seems to be k ~ 0.25 * w experimentally (with
+         caching of Bernoulli numbers). */
       mpfr_set_prec (s, 53);
       mpfr_gamma_alpha (s, w);
-      mpfr_set_ui_2exp (s, 3, -1, MPFR_RNDU);
+      mpfr_set_ui_2exp (s, 1, -2, MPFR_RNDU);
       mpfr_mul_ui (s, s, w, MPFR_RNDU);
       if (mpfr_cmp (z0, s) < 0)
         {
@@ -491,13 +486,6 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 
       mpfr_mul (u, u, u, MPFR_RNDN); /* 1/z^2 * (1+u)^3 */
 
-      if (Bm == 0)
-        {
-          B = mpfr_bernoulli_internal ((mpz_t *) 0, 0);
-          B = mpfr_bernoulli_internal (B, 1);
-          Bm = 2;
-        }
-
       /* m <= maxm ensures that 2*m*(2*m+1) <= ULONG_MAX */
       maxm = 1UL << (GMP_NUMB_BITS / 2 - 1);
 
@@ -523,12 +511,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
             }
           /* (1+u)^(10m-8) */
           /* invariant: t=1/(2m)/(2m-1)/z^(2m-1)/(2m+1)! */
-          if (Bm <= m)
-            {
-              B = mpfr_bernoulli_internal (B, m); /* B[2m]*(2m+1)!, exact */
-              Bm ++;
-            }
-          mpfr_mul_z (v, t, B[m], MPFR_RNDN); /* (1+u)^(10m-7) */
+          mpfr_mul_z (v, t, mpfr_bernoulli_cache(m), MPFR_RNDN); /* (1+u)^(10m-7) */
           MPFR_ASSERTD(MPFR_GET_EXP(v) <= - (2 * m + 3));
           mpfr_add (s, s, v, MPFR_RNDN);
         }
@@ -630,10 +613,6 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 #ifdef IS_GAMMA
  end0:
 #endif
-  oldBm = Bm;
-  while (Bm--)
-    mpz_clear (B[Bm]);
-  (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
 
  end:
   if (inexact == 0)

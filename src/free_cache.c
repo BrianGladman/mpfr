@@ -74,6 +74,9 @@ mpfr_mpz_clear (mpz_t z)
 void
 mpfr_free_cache (void)
 {
+  /* Before mpz caching */
+  mpfr_bernoulli_freecache();
+
 #if MPFR_MY_MPZ_INIT
   int i;
   MPFR_ASSERTD (n_alloc >= 0 && n_alloc <= numberof (mpz_tab));
