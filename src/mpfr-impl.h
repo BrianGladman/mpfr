@@ -1988,8 +1988,8 @@ __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mpfr_limb_ptr, gmp_randstate_t,
 
 __MPFR_DECLSPEC void mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
                                                             unsigned long));
-  __MPFR_DECLSPEC  mpz_srcptr mpfr_bernoulli_cache (unsigned long n);
-  __MPFR_DECLSPEC  void mpfr_bernoulli_freecache(void);
+__MPFR_DECLSPEC mpz_srcptr mpfr_bernoulli_cache _MPFR_PROTO ((unsigned long));
+__MPFR_DECLSPEC void mpfr_bernoulli_freecache _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC int mpfr_sincos_fast _MPFR_PROTO((mpfr_t, mpfr_t,
                                                   mpfr_srcptr, mpfr_rnd_t));

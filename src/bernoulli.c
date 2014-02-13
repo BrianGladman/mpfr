@@ -85,43 +85,46 @@ mpfr_bernoulli_cache (unsigned long n)
 {
   unsigned long i;
 
-  if (n >= bernoulli_size) {
-    if (bernoulli_alloc == 0)
-      {
-	bernoulli_alloc = MAX(16, n + n/4);
-	bernoulli_table = (mpz_t *) 
-	  (*__gmp_allocate_func) (bernoulli_alloc * sizeof (mpz_t));
-	bernoulli_size  = 0;
-      }
-    else if (n >= bernoulli_alloc)
-      {
-	bernoulli_table = (mpz_t *) (*__gmp_reallocate_func)
-	  (bernoulli_table, bernoulli_alloc * sizeof (mpz_t),
-	   (n + n/4) * sizeof (mpz_t));
-	bernoulli_alloc = n + n/4;
-      }
-    MPFR_ASSERTD(bernoulli_alloc > n);
-    MPFR_ASSERTD(bernoulli_size >= 0);
-    for(i = bernoulli_size; i <= n; i++)
-      mpfr_bernoulli_internal(bernoulli_table, i);
-    bernoulli_size = n+1;
-  }
-  MPFR_ASSERTD(bernoulli_size > n);
+  if (n >= bernoulli_size)
+    {
+      if (bernoulli_alloc == 0)
+        {
+          bernoulli_alloc = MAX(16, n + n/4);
+          bernoulli_table = (mpz_t *)
+            (*__gmp_allocate_func) (bernoulli_alloc * sizeof (mpz_t));
+          bernoulli_size  = 0;
+        }
+      else if (n >= bernoulli_alloc)
+        {
+          bernoulli_table = (mpz_t *) (*__gmp_reallocate_func)
+            (bernoulli_table, bernoulli_alloc * sizeof (mpz_t),
+             (n + n/4) * sizeof (mpz_t));
+          bernoulli_alloc = n + n/4;
+        }
+      MPFR_ASSERTD (bernoulli_alloc > n);
+      MPFR_ASSERTD (bernoulli_size >= 0);
+      for(i = bernoulli_size; i <= n; i++)
+        mpfr_bernoulli_internal (bernoulli_table, i);
+      bernoulli_size = n+1;
+    }
+  MPFR_ASSERTD (bernoulli_size > n);
   return bernoulli_table[n];
 }
 
 void
-mpfr_bernoulli_freecache(void)
+mpfr_bernoulli_freecache (void)
 {
   unsigned long i;
 
-  if (bernoulli_table != NULL) {
-    for(i = 0; i < bernoulli_size; i++) {
-      mpz_clear (bernoulli_table[i]);
+  if (bernoulli_table != NULL)
+    {
+      for (i = 0; i < bernoulli_size; i++)
+        {
+          mpz_clear (bernoulli_table[i]);
+        }
+      (*__gmp_free_func) (bernoulli_table, bernoulli_alloc * sizeof (mpz_t));
+      bernoulli_table = NULL;
+      bernoulli_alloc = 0;
+      bernoulli_size = 0;
     }
-    (*__gmp_free_func) (bernoulli_table, bernoulli_alloc * sizeof (mpz_t)); 
-    bernoulli_table = NULL;
-    bernoulli_alloc = 0;
-    bernoulli_size = 0;
-  }
 }
