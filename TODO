@@ -383,6 +383,11 @@ Table of contents:
   of the input (and the input and/or output precisions?), and use better
   thresholds for asymptotic expansions.
 
+- improve the special case of mpfr_{add,sub} (x, x, y, ...) when |x| > |y|
+  to do the addition in-place and have a complexity of O(prec(y)) in most
+  cases. The mpfr_{add,sub}_{d,ui} functions should automatically benefit
+  from this change.
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################
