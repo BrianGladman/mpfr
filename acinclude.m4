@@ -984,6 +984,29 @@ BEGIN {
               found = 1
               exit
             }
+
+          if (got[23] == "000" && \
+              got[22] == "000" && \
+              got[21] == "000" && \
+              got[20] == "124" && \
+              got[19] == "064" && \
+              got[18] == "157" && \
+              got[17] == "235" && \
+              got[16] == "301" && \
+              got[15] == "000" && \
+              got[14] == "000" && \
+              got[13] == "000" && \
+              got[12] == "000" && \
+              got[11] == "000" && \
+              got[10] == "000" && \
+              got[9]  == "000" && \
+              got[8]  == "000")
+            {
+              # format used on ppc64le
+              print "possibly double-double, little endian"
+              found = 1
+              exit
+            }
         }
     }
 }
