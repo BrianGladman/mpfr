@@ -1066,6 +1066,12 @@ case $mpfr_cv_c_long_double_format in
     AC_MSG_WARN([You can safely ignore this warning, though.])
     AC_DEFINE(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE, 1)
     ;;
+  "possibly double-double, little endian")
+    AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
+    AC_MSG_WARN([but due to GCC PR26374, we can't test further.])
+    AC_MSG_WARN([You can safely ignore this warning, though.])
+    AC_DEFINE(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE, 1)
+    ;;
   unknown* | "not available")
     ;;
   *)
