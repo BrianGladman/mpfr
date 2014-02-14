@@ -131,18 +131,17 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           /* Assume double-double format (as found with the PowerPC ABI).
              The generic code below isn't used because numbers with
              precision > 106 would not be supported. */
+	  sh = 0; /* force sh to 0 otherwise if say x = 2^1023 + 2^(-1074)
+		     then after shifting mpfr_get_d (y, rnd_mode) will
+		     underflow to 0 */
           mpfr_init2 (y, mpfr_get_prec (x));
           mpfr_init2 (z, IEEE_DBL_MANT_DIG); /* keep the precision small */
           mpfr_set (y, x, rnd_mode); /* exact */
-          sh = MPFR_GET_EXP (y);
-          sign = MPFR_SIGN (y);
-          MPFR_SET_EXP (y, 0);
-          MPFR_SET_POS (y);
-          s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
+          s = mpfr_get_d (x, MPFR_RNDN); /* high part of x */
           mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
-          mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+          mpfr_sub (y, x, z, MPFR_RNDN); /* exact */
           /* Add the second part of y (in the correct rounding mode). */
-          r = (long double) s + mpfr_get_d (y, rnd_mode);
+          r = (long double) s + (long double) mpfr_get_d (y, rnd_mode);
         }
       else
 #endif

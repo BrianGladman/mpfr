@@ -30,6 +30,14 @@ mpfr_cmp_ld (mpfr_srcptr b, long double d)
 
   mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
   res = mpfr_set_ld (tmp, d, MPFR_RNDN);
+  if (res != 0) /* can happen when "long double" is double-double */
+    {
+      /* since the smallest value is 2^(-1074) and the largest is
+         < 2^1024, every double-double is exactly representable with
+         1024 + 1074 bits */
+      mpfr_set_prec (tmp, 1024 + 1074);
+      res = mpfr_set_ld (tmp, d, MPFR_RNDN);
+    }
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (b, tmp);
   mpfr_clear (tmp);

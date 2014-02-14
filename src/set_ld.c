@@ -150,6 +150,68 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   return mpfr_check_range (r, inexact, rnd_mode);
 }
 
+#elif defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
+
+/* double-double code */
+int
+mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
+{
+  mpfr_t t, u;
+  int inexact, shift_exp;
+  double h, l;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* Check for NAN */
+  LONGDOUBLE_NAN_ACTION (d, goto nan);
+
+  /* Check for INF */
+  /* Note: according to the ISO C standard, there may be finite numbers
+     larger than LDBL_MAX, among the values that are not floating-point
+     numbers. If the following fails on some platform, a test d - d != 0
+     could be used. */
+  if (d > MPFR_LDBL_MAX)
+    {
+      mpfr_set_inf (r, 1);
+      return 0;
+    }
+  else if (d < -MPFR_LDBL_MAX)
+    {
+      mpfr_set_inf (r, -1);
+      return 0;
+    }
+  /* Check for ZERO */
+  else if (d == 0.0)
+    return mpfr_set_d (r, (double) d, rnd_mode);
+
+  if (d >= (long double) MPFR_LDBL_MAX || d <= (long double) -MPFR_LDBL_MAX)
+    h = (d >= (long double) MPFR_LDBL_MAX) ? MPFR_LDBL_MAX : -MPFR_LDBL_MAX;
+  else
+    h = (double) d; /* should not overflow */
+  l = (double) (d - (long double) h);
+  
+  MPFR_SAVE_EXPO_MARK (expo);
+
+  mpfr_init2 (t, IEEE_DBL_MANT_DIG);
+  mpfr_init2 (u, IEEE_DBL_MANT_DIG);
+
+  inexact = mpfr_set_d (t, h, MPFR_RNDN);
+  MPFR_ASSERTN(inexact == 0);
+  inexact = mpfr_set_d (u, l, MPFR_RNDN);
+  MPFR_ASSERTN(inexact == 0);
+  inexact = mpfr_add (r, t, u, rnd_mode);
+
+  mpfr_clear (t);
+  mpfr_clear (u);
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  inexact = mpfr_check_range (r, inexact, rnd_mode);
+  return inexact;
+
+ nan:
+  MPFR_SET_NAN(r);
+  MPFR_RET_NAN;
+}
+
 #else
 
 /* Generic code */
