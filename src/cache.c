@@ -54,22 +54,26 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (prec > pold))
     {
-      /* No previous result in the cache or the precision of the
-         previous result is not sufficient. */
+      /* No previous result in the cache or the precision of the previous
+         result is not sufficient. We increase the cache size by at least
+         10% to avoid invalidating the cache many times if one performs
+         several computations with small increase of precision. */
 
       if (MPFR_UNLIKELY (pold == 0))  /* No previous result. */
-        mpfr_init2 (cache->x, prec);
+        mpfr_init2 (cache->x, prec);  /* as pold = prec below */
+      else
+        pold += pold / 10;
 
-      /* Update the cache. We add prec/10 to avoid invalidating the cache
-         many times if one performs several computations with increasing
-         precision. */
-      pold = prec + (prec / 10);
+      if (pold < prec)
+        pold = prec;
+
       /* no need to keep the previous value */
       mpfr_set_prec (cache->x, pold);
       cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
     }
 
-  /* now pold >= prec is the precision of cache->x */
+  MPFR_ASSERTD (pold >= prec);
+  MPFR_ASSERTD (MPFR_PREC (cache->x) == pold);
 
   /* First, check if the cache has the exact value (unlikely).
      Else the exact value is between (assuming x=cache->x > 0):
