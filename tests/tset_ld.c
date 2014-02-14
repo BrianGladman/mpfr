@@ -332,7 +332,7 @@ static void
 test_20140212 (void)
 {
   mpfr_t fr1, fr2;
-  long double ld, h, l;
+  long double ld, h, l, ld2;
   int i, c1, c2;
 
   mpfr_init2 (fr1, 106);
@@ -353,7 +353,16 @@ test_20140212 (void)
   /* If long double is binary64, then ld = fr1 = fr2 = 2^1023.
      If long double is double-double, then ld = 2^1023 + 2^(-1074),
      fr1 = 2^1023 and fr2 = 2^1023 + 2^(-1074) */
-  MPFR_ASSERTN((c1 == 0 && c2 == 0) || (c1 < 0 && c2 == 0));
+#ifndef HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE
+  MPFR_ASSERTN(c1 == 0);
+#else
+  MPFR_ASSERTN(c1 < 0);
+#endif
+
+  MPFR_ASSERTN(c2 == 0);
+  
+  ld2 = mpfr_get_ld (fr2, MPFR_RNDN);
+  MPFR_ASSERTN(ld2 == ld);
 
   mpfr_clear (fr1);
   mpfr_clear (fr2);
