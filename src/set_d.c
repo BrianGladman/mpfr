@@ -26,8 +26,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* extracts the bits of d in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
-   Assumes d finite and > 0.
+/* Extracts the bits of |d| in rp[0..n-1] where n=ceil(53/GMP_NUMB_BITS).
+   Assumes d finite and <> 0.
+   Returns the corresponding exponent such that |d| = {rp, n} * 2^exp,
+   with the value of {rp, n} in [1/2, 1).
    The int type should be sufficient for exp.
 */
 static int
@@ -43,7 +45,7 @@ extract_double (mpfr_limb_ptr rp, double d)
 
   MPFR_ASSERTD(!DOUBLE_ISNAN(d));
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
-  MPFR_ASSERTD(d > 0.0);
+  MPFR_ASSERTD(d != 0.0);
 
 #if _GMP_IEEE_FLOATS
 
@@ -66,15 +68,26 @@ extract_double (mpfr_limb_ptr rp, double d)
       }
     else /* subnormal number */
       {
+        unsigned int cnt;
 #if GMP_NUMB_BITS >= 64
         manl = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
                 ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
+        count_leading_zeros (cnt, manl);
 #else
         manh = (x.s.manh << 11) /* high 21 bits */
           | (x.s.manl >> 21); /* middle 11 bits */
         manl = x.s.manl << 11; /* low 21 bits */
+        if (manh == 0)
+          {
+            manh = manl;
+            manl = 0;
+            exp -= GMP_NUMB_BITS;
+          }
+        count_leading_zeros (cnt, manh);
+        manh = (manh << cnt) | (manl >> (GMP_NUMB_BITS - cnt));
 #endif
-        exp = -1021;
+        manl <<= cnt;
+        exp = -1021 - cnt;
       }
   }
 
@@ -83,6 +96,7 @@ extract_double (mpfr_limb_ptr rp, double d)
   {
     /* Unknown (or known to be non-IEEE) double format.  */
     exp = 0;
+    d = ABS (d);
     if (d >= 1.0)
       {
         while (d >= 32768.0)
@@ -126,6 +140,8 @@ extract_double (mpfr_limb_ptr rp, double d)
   rp[1] = manh;
 #endif
 
+  MPFR_ASSERTD((rp[MPFR_LIMBS_PER_DOUBLE - 1] & MPFR_LIMB_HIGHBIT) != 0);
+
   return exp;
 }
 
@@ -134,9 +150,7 @@ extract_double (mpfr_limb_ptr rp, double d)
 int
 mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 {
-  int signd, inexact;
-  int cnt;
-  mp_size_t i, k;
+  int inexact;
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_DOUBLE];
   MPFR_SAVE_EXPO_DECL (expo);
@@ -206,9 +220,6 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
   MPFR_MANT(tmp) = tmpmant;
   MPFR_PREC(tmp) = IEEE_DBL_MANT_DIG;
 
-  signd = (d < 0) ? MPFR_SIGN_NEG : MPFR_SIGN_POS;
-  d = ABS (d);
-
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
   MPFR_EXP(tmp) = extract_double (tmpmant, d);
 
@@ -224,27 +235,9 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
     }
 #endif
 
-  /* determine the index i-1 of the most significant non-zero limb
-     and the number k of zero high limbs */
-  i = MPFR_LIMBS_PER_DOUBLE;
-  MPN_NORMALIZE_NOT_ZERO(tmpmant, i);
-  k = MPFR_LIMBS_PER_DOUBLE - i;
-
-  count_leading_zeros (cnt, tmpmant[i - 1]);
-
-  if (MPFR_UNLIKELY(cnt != 0))
-    mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-  else if (MPFR_UNLIKELY (k != 0))
-    MPN_COPY (tmpmant + k, tmpmant, i);
-
-  if (MPFR_UNLIKELY(k != 0))
-    MPN_ZERO (tmpmant, k);
-
-  /* don't use MPFR_SET_EXP here since the exponent may be out of range */
-  MPFR_EXP(tmp) -= (mpfr_exp_t) (cnt + k * GMP_NUMB_BITS);
-
   /* tmp is exact since PREC(tmp)=53 */
-  inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
+  inexact = mpfr_set4 (r, tmp, rnd_mode,
+                       (d < 0) ? MPFR_SIGN_NEG : MPFR_SIGN_POS);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
