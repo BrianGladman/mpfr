@@ -227,12 +227,14 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
   /* Failed assertion if the stored value is 0 (e.g., if the exponent range
      has been reduced at the wrong moment and an underflow to 0 occurred).
      Probably a bug in the C implementation if this happens. */
-  i = 0;
-  while (tmpmant[i] == 0)
-    {
-      i++;
-      MPFR_ASSERTN(i < MPFR_LIMBS_PER_DOUBLE);
-    }
+  {
+    mp_size_t i = 0;
+    while (tmpmant[i] == 0)
+      {
+        i++;
+        MPFR_ASSERTN(i < MPFR_LIMBS_PER_DOUBLE);
+      }
+  }
 #endif
 
   /* tmp is exact since PREC(tmp)=53 */
