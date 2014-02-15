@@ -316,7 +316,7 @@ tests_limit_start (void)
 static void
 tests_rand_start (void)
 {
-  gmp_randstate_ptr  rands;
+  mpfr_gmp_randstate_ptr  rands;
   char           *perform_seed;
   unsigned long  seed;
 

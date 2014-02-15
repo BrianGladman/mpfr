@@ -196,7 +196,7 @@ __MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
       }                                 \
   } while (0)
 
-typedef __gmp_randstate_struct *gmp_randstate_ptr;
+typedef __gmp_randstate_struct *mpfr_gmp_randstate_ptr;
 
 /* Allocation */
 __MPFR_DECLSPEC void *mpfr_default_allocate _MPFR_PROTO ((size_t));
