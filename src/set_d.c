@@ -68,7 +68,7 @@ extract_double (mpfr_limb_ptr rp, double d)
       }
     else /* subnormal number */
       {
-        unsigned int cnt;
+        int cnt;
 #if GMP_NUMB_BITS >= 64
         manl = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
                 ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
