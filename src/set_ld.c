@@ -188,7 +188,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   else
     h = (double) d; /* should not overflow */
   l = (double) (d - (long double) h);
-  
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   mpfr_init2 (t, IEEE_DBL_MANT_DIG);
