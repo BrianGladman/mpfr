@@ -123,7 +123,7 @@ main (int argc, char *argv[])
 
   /* checks that subnormals are not flushed to zero */
   d = DBL_MIN; /* 2^(-1022) */
-  for (n = 0; n < 52; n++, d /= 2.0)
+  for (n = 0; n < 53; n++, d /= 2.0)
     if (d != 0.0) /* should be 2^(-1022-n) */
       {
         mpfr_set_d (x, d, MPFR_RNDN);

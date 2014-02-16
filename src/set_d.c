@@ -69,6 +69,7 @@ extract_double (mpfr_limb_ptr rp, double d)
     else /* subnormal number */
       {
         int cnt;
+        exp = -1021;
 #if GMP_NUMB_BITS >= 64
         manl = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
                 ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
@@ -87,7 +88,7 @@ extract_double (mpfr_limb_ptr rp, double d)
         manh = (manh << cnt) | (manl >> (GMP_NUMB_BITS - cnt));
 #endif
         manl <<= cnt;
-        exp = -1021 - cnt;
+        exp -= cnt;
       }
   }
 
@@ -222,20 +223,6 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
   MPFR_EXP(tmp) = extract_double (tmpmant, d);
-
-#ifdef MPFR_WANT_ASSERT
-  /* Failed assertion if the stored value is 0 (e.g., if the exponent range
-     has been reduced at the wrong moment and an underflow to 0 occurred).
-     Probably a bug in the C implementation if this happens. */
-  {
-    mp_size_t i = 0;
-    while (tmpmant[i] == 0)
-      {
-        i++;
-        MPFR_ASSERTN(i < MPFR_LIMBS_PER_DOUBLE);
-      }
-  }
-#endif
 
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode,
