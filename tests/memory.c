@@ -41,6 +41,7 @@ struct header {
 };
 
 static struct header  *tests_memory_list;
+static size_t tests_total_size = 0;
 
 /* Return a pointer to a pointer to the found block (so it can be updated
    when unlinking). */
@@ -66,6 +67,20 @@ tests_memory_valid (void *ptr)
 }
 */
 
+static void
+tests_addsize (size_t size)
+{
+  tests_total_size += size;
+  if (tests_total_size > 1UL << 22)
+    {
+      /* The total size taken by MPFR on the heap is more than 4 MB:
+         either a bug or a huge inefficiency. */
+      printf ("MPFR: too much memory (%lu bytes)\n",
+              (unsigned long) tests_total_size);
+      abort ();
+    }
+}
+
 static void *
 tests_allocate (size_t size)
 {
@@ -76,6 +91,8 @@ tests_allocate (size_t size)
       printf ("tests_allocate(): attempt to allocate 0 bytes\n");
       abort ();
     }
+
+  tests_addsize (size);
 
   h = (struct header *) mpfr_default_allocate (sizeof (*h));
   h->next = tests_memory_list;
@@ -115,6 +132,9 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
               (unsigned long) old_size, (unsigned long) h->size);
       abort ();
     }
+
+  tests_total_size -= old_size;
+  tests_addsize (new_size);
 
   h->size = new_size;
   h->ptr = mpfr_default_reallocate (ptr, old_size, new_size);
@@ -161,6 +181,7 @@ tests_free (void *ptr, size_t size)
       abort ();
     }
 
+  tests_total_size -= size;
   tests_free_nosize (ptr);
 }
 
