@@ -80,11 +80,11 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       prec = __gmpfr_ceil_log2 (7.0 * (double) n); /* bound 2*pi by 7 */
       prec = (prec + 1) >> 1; /* sqrt(2*pi*n) <= 2^prec */
       mpfr_init2 (z, 53);
-      mpfr_set_d (z, 0.0586, MPFR_RNDU); /* 1/e/2/pi <= 0.0586 */
+      mpfr_set_ui_2exp (z, 251469612, -32, MPFR_RNDU); /* 1/e/2/pi <= z */
       mpfr_mul_ui (z, z, n, MPFR_RNDU);
       mpfr_log2 (z, z, MPFR_RNDU);
       mpfr_mul_ui (z, z, n, MPFR_RNDU);
-      p = mpfr_get_d (z, MPFR_RNDU); /* (n/e/2/pi)^n <= 2^p */
+      p = mpfr_get_ui (z, MPFR_RNDU); /* (n/e/2/pi)^n <= 2^p */
       mpfr_clear (z);
       /* the +14 term ensures no rounding failure up to n=10000 */
       prec += p + mpz_sizeinbase (den, 2) + 14;
@@ -192,7 +192,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
   mpz_clear (t);
   mpz_clear (u);
 
-  if (ok == 0)
+  if (!ok)
     {
       prec += prec / 10;
       goto try_again;
@@ -228,7 +228,7 @@ mpfr_bernoulli_cache (unsigned long n)
         }
       MPFR_ASSERTD (bernoulli_alloc > n);
       MPFR_ASSERTD (bernoulli_size >= 0);
-      for(i = bernoulli_size; i <= n; i++)
+      for (i = bernoulli_size; i <= n; i++)
         mpfr_bernoulli_internal (bernoulli_table, i);
       bernoulli_size = n+1;
     }
