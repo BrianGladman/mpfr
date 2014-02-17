@@ -28,8 +28,7 @@ isprime (unsigned long p)
 {
   unsigned long q;
 
-  if ((p & 1) == 0)
-    return 0;
+  MPFR_ASSERTD (p >= 5 && (p & 1) != 0);
   for (q = 3; q * q <= p; q += 2)
     if ((p % q) == 0)
       return 0;
