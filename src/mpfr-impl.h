@@ -1986,8 +1986,6 @@ __MPFR_DECLSPEC MPFR_COLD_FUNCTION_ATTR MPFR_NORETURN void
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mpfr_limb_ptr, gmp_randstate_t,
                                                 mpfr_prec_t));
 
-__MPFR_DECLSPEC void mpfr_bernoulli_internal _MPFR_PROTO((mpz_t*,
-                                                            unsigned long));
 __MPFR_DECLSPEC mpz_srcptr mpfr_bernoulli_cache _MPFR_PROTO ((unsigned long));
 __MPFR_DECLSPEC void mpfr_bernoulli_freecache _MPFR_PROTO ((void));
 
