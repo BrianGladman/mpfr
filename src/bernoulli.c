@@ -45,7 +45,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
 {
   unsigned long p, err, zn;
   mpz_t s, t, u, den;
-  mpz_srcptr num;
+  mpz_ptr num;
   mpfr_t y, z;
   int ok;
   /* Prec[n/2] is minimal precision so that result is correct for B[n] */
@@ -63,7 +63,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
     }
 
   /* compute denominator */
-  num = b + n;
+  num = b[n];
   n = 2 * n;
   mpz_init_set_ui (den, 6);
   for (p = 5; p <= n+1; p += 2)
