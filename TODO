@@ -280,22 +280,9 @@ Table of contents:
   gamma(x+k). One could also use the series for 1/gamma(x), see for example
   http://dlmf.nist.gov/5/7/ or formula (36) from
   http://mathworld.wolfram.com/GammaFunction.html
-  See https://groups.google.com/forum/#!topic/sage-devel/1PJ0Oh5XuuQ:
-  ┌────────────────────────────────────────────────────────────────────┐
-  │ Sage Version 6.0, Release Date: 2013-12-17                         │
-  │ Type "notebook()" for the browser-based notebook interface.        │
-  │ Type "help()" for help.                                            │
-  └────────────────────────────────────────────────────────────────────┘
-  sage: a = RealField(1000)(pi^2)
-  sage: b = ComplexField(1000)(pi^2)
-  sage: %timeit a.gamma() # using MPFR 3.1.2
-  100 loops, best of 3: 3.81 ms per loop
-  sage: %timeit b.gamma() # using Pari/GP
-  1000 loops, best of 3: 505 us per loop
-  (The issue here is that MPFR computes the Bernoulli numbers exactly. With
-  k=152 and m=169 in lngamma.c, which is what Pari/GP uses, the Bernoulli
-  number B[168] needs 3800 bits to store. It would be faster to store them
-  as floating-point numbers, but then the error analysis needs to be redone.)
+- improve the computation of Bernoulli numbers: instead of computing just one
+  B[2n] at a time in mpfr_bernoulli_internal, we could compute several at a
+  time, sharing the expensive computation of the 1/p^(2n) series.
 - fix regression with mpfr_mpz_root (from Keith Briggs, 5 July 2006), for
    example on 3Ghz P4 with gmp-4.2, x=12.345:
    prec=50000    k=2   k=3   k=10  k=100
