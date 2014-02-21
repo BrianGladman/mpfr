@@ -81,8 +81,8 @@ build_base (vector<string> &base, const option_test &opt)
 
   for (i = 0 ; i < n ; i++) {
     mpfr_urandomb (x, state);
-    mpfr_mul_2si  (x, x, (rand()%GMP_NUMB_BITS)-(GMP_NUMB_BITS/2), GMP_RNDN);
-    str = mpfr_get_str (NULL, &e, 10, 0, x, GMP_RNDN);
+    mpfr_mul_2si  (x, x, (rand()%GMP_NUMB_BITS)-(GMP_NUMB_BITS/2), MPFR_RNDN);
+    str = mpfr_get_str (NULL, &e, 10, 0, x, MPFR_RNDN);
     if (str == 0)
       abort ();
     buffer = (char *) malloc (strlen(str)+50);

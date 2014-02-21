@@ -236,17 +236,17 @@ bool mpfr_test<T>::test (const vector<string> &base, const option_test &opt) {
     table = new mpfr_t[size];
     for (i = 0 ; i < size ; i++) {
       mpfr_init2 (table[i], opt.prec);
-      mpfr_set_str (table[i], base[i].c_str(), 10, GMP_RNDN);
+      mpfr_set_str (table[i], base[i].c_str(), 10, MPFR_RNDN);
     }
     mpfr_inits2 (opt.prec, a, b, c, NULL);
   }
 
   /* Do Measure */
   for(i = 0 ; i < (size-1) ; i++) {
-    mpfr_set (b, table[i], GMP_RNDN);
-    mpfr_set (c, table[i+1], GMP_RNDN);
+    mpfr_set (b, table[i], MPFR_RNDN);
+    mpfr_set (c, table[i+1], MPFR_RNDN);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, GMP_RNDN) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, MPFR_RNDN) ); 
     cont = tim->update (i, m) || cont;
   }
 

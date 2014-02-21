@@ -175,8 +175,8 @@ bool libc_test<T>::test (const vector<string> &base, const option_test &opt) {
     table = new double[size];
     mpfr_init2 (x, 530);
     for (i = 0 ; i < size ; i++) {
-      mpfr_set_str (x, base[i].c_str(), 10, GMP_RNDN);
-      table[i] = mpfr_get_d (x, GMP_RNDN);
+      mpfr_set_str (x, base[i].c_str(), 10, MPFR_RNDN);
+      table[i] = mpfr_get_d (x, MPFR_RNDN);
     }
     mpfr_clear (x);
   }

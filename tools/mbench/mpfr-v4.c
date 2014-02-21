@@ -49,16 +49,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 #define TEST_LIST \
   BENCH("MPFR::::::::::", ; ); \
-  BENCH("add", mpfr_add(a,b,c,GMP_RNDN)); \
-  BENCH("sub", mpfr_sub(a,b,c,GMP_RNDN)); \
-  BENCH("mul", mpfr_mul(a,b,c,GMP_RNDN)); \
-  BENCH("div", mpfr_div(a,b,c,GMP_RNDN)); \
-  BENCH("sqrt", mpfr_sqrt(a,b,GMP_RNDN)); \
+  BENCH("add", mpfr_add(a,b,c,MPFR_RNDN)); \
+  BENCH("sub", mpfr_sub(a,b,c,MPFR_RNDN)); \
+  BENCH("mul", mpfr_mul(a,b,c,MPFR_RNDN)); \
+  BENCH("div", mpfr_div(a,b,c,MPFR_RNDN)); \
+  BENCH("sqrt", mpfr_sqrt(a,b,MPFR_RNDN)); \
   BENCH("cmp", mpfr_cmp(b,c)); \
-  BENCH("set", mpfr_set(a,b, GMP_RNDN)); \
-  BENCH("set0", mpfr_set_ui(a,0,GMP_RNDN)); \
-  BENCH("set1", mpfr_set_ui(a,1,GMP_RNDN)); \
-  BENCH("setz", mpfr_set_z(a,zz,GMP_RNDN)); \
+  BENCH("set", mpfr_set(a,b, MPFR_RNDN)); \
+  BENCH("set0", mpfr_set_ui(a,0,MPFR_RNDN)); \
+  BENCH("set1", mpfr_set_ui(a,1,MPFR_RNDN)); \
+  BENCH("setz", mpfr_set_z(a,zz,MPFR_RNDN)); \
   BENCH("swap", mpfr_swap(b,c)); \
   BENCH("MPF:::::::::::", ; ); \
   BENCH("add", mpf_add(x,y,z)); \
@@ -108,15 +108,15 @@ void mpfr_bench(mpfr_prec_t prec_a, mpfr_prec_t prec_b, mpfr_prec_t prec_c,
     mpf_set_str(z, c_str, 10);
   else
     mpf_urandomb(z, state, prec_c);
-  mpfr_set_f(b, y, GMP_RNDN);
-  mpfr_set_f(c, z, GMP_RNDN);
+  mpfr_set_f(b, y, MPFR_RNDN);
+  mpfr_set_f(c, z, MPFR_RNDN);
   mpz_init (zz);
   mpz_urandomb (zz, state, 2*prec_b);
 
   if (verbose)
     {
-      printf("B="); mpfr_out_str(stdout, 10, 0, b, GMP_RNDD);
-      printf("\nC="); mpfr_out_str(stdout, 10, 0, c, GMP_RNDD);
+      printf("B="); mpfr_out_str(stdout, 10, 0, b, MPFR_RNDD);
+      printf("\nC="); mpfr_out_str(stdout, 10, 0, c, MPFR_RNDD);
       putchar('\n');
     }
   TIMP_OVERHEAD ();
@@ -185,8 +185,8 @@ void mpfr_stats (unsigned long num, mpfr_prec_t prec_a, mpfr_prec_t prec_b,
 	  op = 0;
 	  mpf_set(y,yt[i]);
 	  mpf_set(z,zt[i]);
-	  mpfr_set_f(b, yt[i], GMP_RNDN);
-	  mpfr_set_f(c, zt[i], GMP_RNDN);
+	  mpfr_set_f(b, yt[i], MPFR_RNDN);
+	  mpfr_set_f(c, zt[i], MPFR_RNDN);
 #undef BENCH
 #define BENCH(TEST_STR, TEST)                                           \
  m = TIMP_MEASURE(TEST); if (m < mc[i][op]) {mc[i][op] = m; cont = 4;} op++;

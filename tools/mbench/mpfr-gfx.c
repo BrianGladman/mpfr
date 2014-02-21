@@ -53,23 +53,23 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #undef EXTRA_TEST_LIST
 # define EXTRA_TEST_LIST \
-  BENCH("mpfr_exp", mpfr_exp(a,b,GMP_RNDN)); \
-  BENCH("mpfr_log", mpfr_log(a,b,GMP_RNDN)); \
-  BENCH("mpfr_sin", mpfr_sin(a,b,GMP_RNDN)); \
-  BENCH("mpfr_cos", mpfr_cos(a,b,GMP_RNDN)); \
-  BENCH("mpfr_tan", mpfr_tan(a,b,GMP_RNDN)); \
-  BENCH("mpfr_asin", mpfr_asin(a,b,GMP_RNDN)); \
-  BENCH("mpfr_acos", mpfr_acos(a,b,GMP_RNDN)); \
-  BENCH("mpfr_atan", mpfr_atan(a,b,GMP_RNDN)); \
-  BENCH("mpfr_agm", mpfr_agm(a,b,c,GMP_RNDN)); \
-  BENCH("mpfr_const_log2", (mpfr_const_log2) (a, GMP_RNDN)); \
-  BENCH("mpfr_const_pi", (mpfr_const_pi)(a, GMP_RNDN)); \
-  BENCH("mpfr_sinh", mpfr_sinh(a,b,GMP_RNDN)); \
-  BENCH("mpfr_cosh", mpfr_cosh(a,b,GMP_RNDN)); \
-  BENCH("mpfr_tanh", mpfr_tanh(a,b,GMP_RNDN)); \
-  BENCH("mpfr_asinh", mpfr_asinh(a,b,GMP_RNDN)); \
-  BENCH("mpfr_acosh", mpfr_acosh(a,b,GMP_RNDN)); \
-  BENCH("mpfr_atanh", mpfr_atanh(a,b,GMP_RNDN)); 
+  BENCH("mpfr_exp", mpfr_exp(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_log", mpfr_log(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_sin", mpfr_sin(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_cos", mpfr_cos(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_tan", mpfr_tan(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_asin", mpfr_asin(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_acos", mpfr_acos(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_atan", mpfr_atan(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_agm", mpfr_agm(a,b,c,MPFR_RNDN)); \
+  BENCH("mpfr_const_log2", (mpfr_const_log2) (a, MPFR_RNDN)); \
+  BENCH("mpfr_const_pi", (mpfr_const_pi)(a, MPFR_RNDN)); \
+  BENCH("mpfr_sinh", mpfr_sinh(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_cosh", mpfr_cosh(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_tanh", mpfr_tanh(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_asinh", mpfr_asinh(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_acosh", mpfr_acosh(a,b,MPFR_RNDN)); \
+  BENCH("mpfr_atanh", mpfr_atanh(a,b,MPFR_RNDN)); 
 
 
 
@@ -89,16 +89,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 #define TEST_LIST \
   BENCH("MPFR::::::::::", ; ); \
-  BENCH("mpfr_add", mpfr_add(a,b,c,GMP_RNDN)); \
-  BENCH("mpfr_sub", mpfr_sub(a,b,c,GMP_RNDN)); \
-  BENCH("mpfr_mul", mpfr_mul(a,b,c,GMP_RNDN)); \
-  BENCH("mpfr_div", mpfr_div(a,b,c,GMP_RNDN)); \
-  BENCH("mpfr_sqrt", mpfr_sqrt(a,b,GMP_RNDN)); \
+  BENCH("mpfr_add", mpfr_add(a,b,c,MPFR_RNDN)); \
+  BENCH("mpfr_sub", mpfr_sub(a,b,c,MPFR_RNDN)); \
+  BENCH("mpfr_mul", mpfr_mul(a,b,c,MPFR_RNDN)); \
+  BENCH("mpfr_div", mpfr_div(a,b,c,MPFR_RNDN)); \
+  BENCH("mpfr_sqrt", mpfr_sqrt(a,b,MPFR_RNDN)); \
   BENCH("mpfr_cmp", mpfr_cmp(b,c)); \
   BENCH("mpfr_sgn", mpfr_sgn(b)); \
-  BENCH("mpfr_set", mpfr_set(a,b, GMP_RNDN)); \
-  BENCH("mpfr_set0", mpfr_set_si(a,0,GMP_RNDN)); \
-  BENCH("mpfr_set1", mpfr_set_si(a,1,GMP_RNDN)); \
+  BENCH("mpfr_set", mpfr_set(a,b, MPFR_RNDN)); \
+  BENCH("mpfr_set0", mpfr_set_si(a,0,MPFR_RNDN)); \
+  BENCH("mpfr_set1", mpfr_set_si(a,1,MPFR_RNDN)); \
   BENCH("mpfr_swap", mpfr_swap(b,c)); \
   BENCH("MPF:::::::::::", ; ); \
   BENCH("mpf_add", mpf_add(x,y,z)); \
@@ -198,8 +198,8 @@ double get_speed(mpfr_prec_t p, int select)
 	  /* Set var for tests */
 	  mpf_set(y, yt[i]);
 	  mpf_set(z, zt[i]);
-	  mpfr_set_f(b, yt[i], GMP_RNDN);
-	  mpfr_set_f(c, zt[i], GMP_RNDN);
+	  mpfr_set_f(b, yt[i], MPFR_RNDN);
+	  mpfr_set_f(c, zt[i], MPFR_RNDN);
 	  SCS(( scs_set_mpfr(sc2, b), scs_set_mpfr(sc3, c) ));
 	  /* if the measured time m is smaller than the smallest one
 	     observed so far mc[i] for the i-th random number, we start
