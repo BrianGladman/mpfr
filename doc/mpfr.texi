@@ -2691,8 +2691,6 @@ in particular for the powers of two.  If you use this function together
 with @code{mpfr_prec_round} in order to reduce the memory space occupied
 by a number, you may need to take the maximum of the returned precision
 and @code{MPFR_PREC_MIN} for @code{mpfr_prec_round}.
-
-The function name is subject to change.
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
