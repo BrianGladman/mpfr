@@ -171,7 +171,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 {
   mpfr_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
-  unsigned long m, k, maxm;
+  unsigned long m, k, maxm, l;
   int compared, inexact;
   mpfr_exp_t err_s, err_t;
   double d;
@@ -435,10 +435,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          k ~ w*log(2)/2/log(Pi*e) ~ 0.1616 * w.
          However, since the series is slightly more expensive to compute,
          the optimal value seems to be k ~ 0.25 * w experimentally (with
-         caching of Bernoulli numbers). */
+         caching of Bernoulli numbers).
+         For only one computation of gamma with large precision, it is better
+         to set k to a larger value, say k ~ w. */
       mpfr_set_prec (s, 53);
       mpfr_gamma_alpha (s, w);
-      mpfr_set_ui_2exp (s, 1, -2, MPFR_RNDU);
+      mpfr_set_ui_2exp (s, 4, -4, MPFR_RNDU);
       mpfr_mul_ui (s, s, w, MPFR_RNDU);
       if (mpfr_cmp (z0, s) < 0)
         {
@@ -535,22 +537,92 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       /* add 1/2*log(2*Pi) and subtract log(z0*(z0+1)*...*(z0+k-1)) */
       mpfr_const_pi (v, MPFR_RNDN); /* v = Pi*(1+u) */
       mpfr_mul_2ui (v, v, 1, MPFR_RNDN); /* v = 2*Pi * (1+u) */
-      if (k)
+      /* k >= 3 */
+      mpfr_set (t, z0, MPFR_RNDN); /* t = z0*(1+u) */
+      l = 1;
+
+/* replace #if 1 by #if 0 for the naive argument reconstruction */
+#if 1
+
+      /* We multiply by (z0+1)*(z0+2)*...*(z0+k-1) by blocks of j consecutive
+         terms where j ~ sqrt(k).
+         If we multiply naively by z0+1, then by z0+2, ..., then by z0+j,
+         the multiplicative term for the rounding error is (1+u)^(2j).
+         The multiplicative term is not larger when we multiply by
+         Z[j] + c[j-1]*Z[j-1] + ... + c[2]*Z[2] + c[1]*z0 + c[0]
+         with c[p] integers, and Z[p] = z0^p * (1+u)^(p-1).
+         Note that all terms are positive.
+         Indeed, since c[1] is exact, c[1]*z0 corresponds to (1+u),
+         then c[1]*z0 + c[0] corresponds to (1+u)^2,
+         c[2]*Z[2] + c[1]*z0 + c[0] to (1+u)^3, ...,
+         c[j-1]*Z[j-1] + ... + c[0] to (1+u)^j,
+         and Z[j] + c[j-1]*Z[j-1] + ... + c[1]*z0 + c[0] to (1+u)^(j+1).
+         With the accumulation in t, we get (1+u)^(j+2) and j+2 <= 2j. */
+      {
+        unsigned long j, i, p;
+        mpfr_t *Z;
+        mpz_t *c;
+        for (j = 2; (j + 1) * (j + 1) < k; j++);
+        /* Z[i] stores z0^i for i <= j */
+        Z = malloc ((j + 1) * sizeof (mpfr_t));
+        for (i = 2; i <= j; i++)
+          mpfr_init2 (Z[i], w);
+        mpfr_sqr (Z[2], z0, MPFR_RNDN);
+        for (i = 3; i <= j; i++)
+          if ((i & 1) == 0)
+            mpfr_sqr (Z[i], Z[i >> 1], MPFR_RNDN);
+          else
+            mpfr_mul (Z[i], Z[i-1], z0, MPFR_RNDN);
+        c = malloc ((j + 1) * sizeof (mpz_t));
+        for (i = 0; i <= j; i++)
+          mpz_init (c[i]);
+        for (; l + j <= k; l += j)
+          {
+            /* c[i] is the coefficient of x^i in (x+l)*...*(x+l+j-1) */
+            mpz_set_ui (c[0], 1);
+            for (i = 0; i < j; i++)
+              /* multiply (x+l)*(x+l+1)*...*(x+l+i-1) by x+l+i:
+                 (b[i]*x^i + b[i-1]*x^(i-1) + ... + b[0])*(x+l+i) =
+                 b[i]*x^(i+1) + (b[i-1]+(l+i)*b[i])*x^i + ... 
+                 + (b[0]+(l+i)*b[1])*x + i*b[0] */
+              {
+                mpz_set (c[i+1], c[i]); /* b[i]*x^(i+1) */
+                for (p = i; p > 0; p--)
+                  {
+                    mpz_mul_ui (c[p], c[p], l + i);
+                    mpz_add (c[p], c[p], c[p-1]); /* b[p-1]+(l+i)*b[p] */
+                  }
+                mpz_mul_ui (c[0], c[0], l+i); /* i*b[0] */
+              }
+            /* now compute z0^j + c[j-1]*z0^(j-1) + ... + c[1]*z0 + c[0] */
+            mpfr_set_z (u, c[0], MPFR_RNDN);
+            for (i = 0; i < j; i++)
+              {
+                mpfr_mul_z (z, (i == 0) ? z0 : Z[i+1], c[i+1], MPFR_RNDN);
+                mpfr_add (u, u, z, MPFR_RNDN);
+              }
+            mpfr_mul (t, t, u, MPFR_RNDN);
+          }
+        for (i = 0; i <= j; i++)
+          mpz_clear (c[i]);
+        free (c);
+        for (i = 2; i <= j; i++)
+          mpfr_clear (Z[i]);
+        free (Z);
+      }
+#endif /* end of fast argument reconstruction */
+
+      for (; l < k; l++)
         {
-          unsigned long l;
-          mpfr_set (t, z0, MPFR_RNDN); /* t = z0*(1+u) */
-          for (l = 1; l < k; l++)
-            {
-              mpfr_add_ui (u, z0, l, MPFR_RNDN); /* u = (z0+l)*(1+u) */
-              mpfr_mul (t, t, u, MPFR_RNDN);     /* (1+u)^(2l+1) */
-            }
-          /* now t: (1+u)^(2k-1) */
-          /* instead of computing log(sqrt(2*Pi)/t), we compute
-             1/2*log(2*Pi/t^2), which trades a square root for a square */
-          mpfr_mul (t, t, t, MPFR_RNDN); /* (z0*...*(z0+k-1))^2, (1+u)^(4k-1) */
-          mpfr_div (v, v, t, MPFR_RNDN);
-          /* 2*Pi/(z0*...*(z0+k-1))^2 (1+u)^(4k+1) */
+          mpfr_add_ui (u, z0, l, MPFR_RNDN); /* u = (z0+l)*(1+u) */
+          mpfr_mul (t, t, u, MPFR_RNDN);     /* (1+u)^(2l+1) */
         }
+      /* now t: (1+u)^(2k-1) */
+      /* instead of computing log(sqrt(2*Pi)/t), we compute
+         1/2*log(2*Pi/t^2), which trades a square root for a square */
+      mpfr_mul (t, t, t, MPFR_RNDN); /* (z0*...*(z0+k-1))^2, (1+u)^(4k-1) */
+      mpfr_div (v, v, t, MPFR_RNDN);
+      /* 2*Pi/(z0*...*(z0+k-1))^2 (1+u)^(4k+1) */
 #ifdef IS_GAMMA
       err_s = MPFR_GET_EXP(s);
       mpfr_exp (s, s, MPFR_RNDN);
