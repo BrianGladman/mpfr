@@ -83,21 +83,26 @@ foo2 (mpfr_ptr x, mpz_srcptr y, mpfr_srcptr z, mpfr_rnd_t r,
 int
 mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
-  return foo (y, x, z, r, mpfr_mul);
+  if (mpz_fits_slong_p (z))
+    return mpfr_mul_si (y, x, mpz_get_si (z), r);
+  else
+    return foo (y, x, z, r, mpfr_mul);
 }
 
 int
 mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
-  return foo (y, x, z, r, mpfr_div);
+  if (mpz_fits_slong_p (z))
+    return mpfr_div_si (y, x, mpz_get_si (z), r);
+  else
+    return foo (y, x, z, r, mpfr_div);
 }
 
 int
 mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
-  /* Mpz 0 is unsigned */
-  if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
-    return mpfr_set (y, x, r);
+  if (mpz_fits_slong_p (z))
+    return mpfr_add_si (y, x, mpz_get_si (z), r);
   else
     return foo (y, x, z, r, mpfr_add);
 }
@@ -105,9 +110,8 @@ mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 int
 mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
-  /* Mpz 0 is unsigned */
-  if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
-    return mpfr_set (y, x, r);
+  if (mpz_fits_slong_p (z))
+    return mpfr_sub_si (y, x, mpz_get_si (z), r);
   else
     return foo (y, x, z, r, mpfr_sub);
 }
@@ -115,9 +119,8 @@ mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 int
 mpfr_z_sub (mpfr_ptr y, mpz_srcptr x, mpfr_srcptr z, mpfr_rnd_t r)
 {
-  /* Mpz 0 is unsigned */
-  if (MPFR_UNLIKELY (mpz_sgn (x) == 0))
-    return mpfr_neg (y, z, r);
+  if (mpz_fits_slong_p (x))
+    return mpfr_si_sub (y, mpz_get_si (x), z, r);
   else
     return foo2 (y, x, z, r, mpfr_sub);
 }
@@ -132,6 +135,9 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return mpfr_cmp_si (x, mpz_sgn (z));
+
+  if (mpz_fits_slong_p (z))
+    return mpfr_cmp_si (x, mpz_get_si (z));
 
   if (mpz_size (z) <= 1)
     p = GMP_NUMB_BITS;
