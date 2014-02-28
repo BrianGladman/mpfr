@@ -277,7 +277,9 @@ Table of contents:
   atanh(x) = 1/2*log((1+x)/(1-x)).
 - improve mpfr_gamma (see http://code.google.com/p/fastfunlib/). A possible
   idea is to implement a fast algorithm for the argument reconstruction
-  gamma(x+k). One could also use the series for 1/gamma(x), see for example
+  gamma(x+k): instead of performing k products by x+i, we could precompute
+  x^2, ..., x^m for m ~ sqrt(k), and perform only sqrt(k) products.
+  One could also use the series for 1/gamma(x), see for example
   http://dlmf.nist.gov/5/7/ or formula (36) from
   http://mathworld.wolfram.com/GammaFunction.html
 - improve the computation of Bernoulli numbers: instead of computing just one
