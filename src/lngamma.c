@@ -583,7 +583,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
             for (i = 0; i < j; i++)
               /* multiply (x+l)*(x+l+1)*...*(x+l+i-1) by x+l+i:
                  (b[i]*x^i + b[i-1]*x^(i-1) + ... + b[0])*(x+l+i) =
-                 b[i]*x^(i+1) + (b[i-1]+(l+i)*b[i])*x^i + ... 
+                 b[i]*x^(i+1) + (b[i-1]+(l+i)*b[i])*x^i + ...
                  + (b[0]+(l+i)*b[1])*x + i*b[0] */
               {
                 mpz_set (c[i+1], c[i]); /* b[i]*x^(i+1) */
