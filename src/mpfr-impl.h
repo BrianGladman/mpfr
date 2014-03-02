@@ -258,11 +258,15 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
  }
 #endif
 
-/* Replace some common functions for direct access to the global vars */
-#define mpfr_get_emin() (__gmpfr_emin + 0)
-#define mpfr_get_emax() (__gmpfr_emax + 0)
-#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
-#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
+/* Replace some common functions for direct access to the global vars.
+   The casts prevent these macros from being used as a lvalue (and this
+   method makes sure that the expressions have the correct type). */
+#define mpfr_get_emin() ((mpfr_exp_t) __gmpfr_emin)
+#define mpfr_get_emax() ((mpfr_exp_t) __gmpfr_emax)
+#define mpfr_get_default_rounding_mode() \
+  ((mpfr_rnd_t) __gmpfr_default_rounding_mode)
+#define mpfr_get_default_prec() \
+  ((mpfr_prec_t) __gmpfr_default_fp_bit_precision)
 
 /* Flags related macros. */
 /* Note: Function-like macros that modify __gmpfr_flags are not defined
