@@ -542,8 +542,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       l = 1;
 
 /* replace #if 1 by #if 0 for the naive argument reconstruction */
-/* FIXME: the code below currently fails to compile with g++ */
-#if 0
+#if 1
 
       /* We multiply by (z0+1)*(z0+2)*...*(z0+k-1) by blocks of j consecutive
          terms where j ~ sqrt(k).
@@ -565,7 +564,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
         mpz_t *c;
         for (j = 2; (j + 1) * (j + 1) < k; j++);
         /* Z[i] stores z0^i for i <= j */
-        Z = malloc ((j + 1) * sizeof (mpfr_t));
+        Z = (mpfr_t *) (*__gmp_allocate_func) ((j + 1) * sizeof (mpfr_t));
         for (i = 2; i <= j; i++)
           mpfr_init2 (Z[i], w);
         mpfr_sqr (Z[2], z0, MPFR_RNDN);
@@ -574,7 +573,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
             mpfr_sqr (Z[i], Z[i >> 1], MPFR_RNDN);
           else
             mpfr_mul (Z[i], Z[i-1], z0, MPFR_RNDN);
-        c = malloc ((j + 1) * sizeof (mpz_t));
+        c = (mpz_t *) (*__gmp_allocate_func) ((j + 1) * sizeof (mpz_t));
         for (i = 0; i <= j; i++)
           mpz_init (c[i]);
         for (; l + j <= k; l += j)
@@ -606,10 +605,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
           }
         for (i = 0; i <= j; i++)
           mpz_clear (c[i]);
-        free (c);
+        (*__gmp_free_func) (c, (j + 1) * sizeof (mpz_t));
         for (i = 2; i <= j; i++)
           mpfr_clear (Z[i]);
-        free (Z);
+        (*__gmp_free_func) (Z, (j + 1) * sizeof (mpfr_t));
       }
 #endif /* end of fast argument reconstruction */
 
