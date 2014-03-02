@@ -542,7 +542,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       l = 1;
 
 /* replace #if 1 by #if 0 for the naive argument reconstruction */
-#if 1
+/* FIXME: the code below currently fails to compile with g++ */
+#if 0
 
       /* We multiply by (z0+1)*(z0+2)*...*(z0+k-1) by blocks of j consecutive
          terms where j ~ sqrt(k).
