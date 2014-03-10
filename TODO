@@ -377,6 +377,9 @@ Table of contents:
   cases. The mpfr_{add,sub}_{d,ui} functions should automatically benefit
   from this change.
 
+- in gmp_op.c, for functions with mpz_srcptr, check whether mpz_fits_slong_p
+  is really useful in all cases (see TODO in this file).
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################

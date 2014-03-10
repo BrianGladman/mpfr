@@ -23,6 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* TODO: for functions with mpz_srcptr, check whether mpz_fits_slong_p
+   is really useful in all cases. For instance, concerning the addition,
+   one now has mpz_t -> long -> unsigned long -> mpfr_t then mpfr_add
+   instead of mpz_t -> mpfr_t then mpfr_add. */
+
 /* Init and set a mpfr_t with enough precision to store a mpz.
    This function should be called in the extended exponent range. */
 static void
