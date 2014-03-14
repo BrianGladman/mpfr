@@ -20,10 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* Reference: James Demmel and Yozo Hida, Fast and accurate floating-point
-   summation with application to computational geometry, Numerical Algorithms,
-   volume 37, number 1-4, pages 101--112, 2004. */
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -265,12 +261,9 @@ sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mpfr_prec_t F)
   return error_trap;
 }
 
-/* Sum a list of floating-point numbers.
- * If the return value is 0, then the sum is exact.
- * Otherwise the return value gives no information.
- */
-int
-mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
+/* The following function will disappear in the final code. */
+static int
+mpfr_sum_old (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
 {
   mpfr_t cur_sum;
   mpfr_prec_t prec;
@@ -343,4 +336,81 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
   return error_trap; /* It doesn't return the ternary value */
 }
 
-/* __END__ */
+int
+mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
+{
+  if (MPFR_UNLIKELY (n <= 1))
+    {
+      if (n < 1)
+        {
+          MPFR_SET_ZERO (sum);
+          MPFR_SET_POS (sum);
+          return 0;
+        }
+      else
+        return mpfr_set (sum, p[0], rnd);
+    }
+  else
+    {
+      mpfr_exp_t maxexp = MPFR_EXP_MIN;  /* not a valid exponent */
+      int sign_inf = 0, sign_zero = 0, reuse = 0;
+      unsigned long i;
+
+      for (i = 0; i < n; i++)
+        {
+          if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p[i])))
+            {
+              if (MPFR_IS_NAN (p[i]))
+                {
+                nan:
+                  MPFR_SET_NAN (sum);
+                  MPFR_RET_NAN;
+                }
+              else if (MPFR_IS_INF (p[i]))
+                {
+                  if (!sign_inf)
+                    sign_inf = MPFR_SIGN (p[i]);
+                  else if (MPFR_SIGN (p[i]) != sign_inf)
+                    goto nan;
+                }
+              else
+                {
+                  MPFR_ASSERTD (MPFR_IS_ZERO (p[i]));
+                  if (!sign_zero)
+                    sign_zero = MPFR_SIGN (p[i]);
+                  else if (MPFR_SIGN (p[i]) != sign_zero)
+                    sign_zero = rnd == MPFR_RNDD ? -1 : 1;
+                }
+            }
+          else
+            {
+              mpfr_exp_t e = MPFR_GET_EXP (p[i]);
+              if (e > maxexp)
+                maxexp = e;
+            }
+          if (p[i] == sum)
+            reuse = 1;
+        }
+
+      if (MPFR_UNLIKELY (maxexp == MPFR_EXP_MIN))
+        {
+          /* All numbers were singular -> infinity or zero. */
+          if (sign_inf)
+            {
+              /* At least one infinity. All of them have the same sign. */
+              MPFR_SET_INF (sum);
+              MPFR_SET_SIGN (sum, sign_inf);
+            }
+          else
+            {
+              /* All zeros (thus at least one). */
+              MPFR_ASSERTD (sign_zero != 0);
+              MPFR_SET_ZERO (sum);
+              MPFR_SET_SIGN (sum, sign_zero);
+            }
+          MPFR_RET (0);
+        }
+
+      return mpfr_sum_old (sum, p, n, rnd);
+    }
+}
