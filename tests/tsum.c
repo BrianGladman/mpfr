@@ -318,29 +318,27 @@ void check_special (void)
   mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
 }
 
+#define NC 7
 #define NS 6
 
 static void
 check_more_special (void)
 {
+  char *str[NC] = { "NaN", "+Inf", "-Inf", "+0", "-0", "+1", "-1" };
   int i, r, k[NS];
-  mpfr_t c[5], s[NS], sum;
+  mpfr_t c[NC], s[NS], sum;
   mpfr_ptr p[NS];
 
-  i = mpfr_init_set_str (c[0], "NaN", 0, MPFR_RNDN);
-  MPFR_ASSERTN (i == 0);
-  i = mpfr_init_set_str (c[1], "+Inf", 0, MPFR_RNDN);
-  MPFR_ASSERTN (i == 0);
-  i = mpfr_init_set_str (c[2], "-Inf", 0, MPFR_RNDN);
-  MPFR_ASSERTN (i == 0);
-  i = mpfr_init_set_str (c[3], "+0", 0, MPFR_RNDN);
-  MPFR_ASSERTN (i == 0);
-  i = mpfr_init_set_str (c[4], "-0", 0, MPFR_RNDN);
-  MPFR_ASSERTN (i == 0);
-
+  for (i = 0; i < NC; i++)
+    {
+      int ret;
+      mpfr_init2 (c[i], 8);
+      ret = mpfr_set_str (c[i], str[i], 0, MPFR_RNDN);
+      MPFR_ASSERTN (ret == 0);
+    }
   for (i = 0; i < NS; i++)
-    mpfr_init2 (s[i], 2);
-  mpfr_init2 (sum, 2);
+    mpfr_init2 (s[i], 8);
+  mpfr_init2 (sum, 8);
 
   RND_LOOP(r)
     {
@@ -365,7 +363,7 @@ check_more_special (void)
               printf (" with\n");
               for (i = 0; i < NS; i++)
                 {
-                  printf ("  p[%d] = ", i);
+                  printf ("  p[%d] = %s = ", i, str[k[i]]);
                   mpfr_dump (p[i]);
                 }
               printf ("Expected ");
@@ -374,7 +372,7 @@ check_more_special (void)
               mpfr_dump (sum);
               exit (1);
             }
-          while (k[--i] == 4)
+          while (k[--i] == NC-1)
             if (i == 0)
               goto next_rnd;
           p[i] = c[++k[i]];
@@ -387,8 +385,10 @@ check_more_special (void)
     next_rnd: ;
     }
 
-  for (i = 0; i < 5; i++)
+  for (i = 0; i < NC; i++)
     mpfr_clear (c[i]);
+  for (i = 0; i < NS; i++)
+    mpfr_clear (s[i]);
   mpfr_clear (sum);
 }
 
