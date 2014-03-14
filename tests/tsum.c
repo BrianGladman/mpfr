@@ -318,6 +318,80 @@ void check_special (void)
   mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
 }
 
+#define NS 6
+
+static void
+check_more_special (void)
+{
+  int i, r, k[NS];
+  mpfr_t c[5], s[NS], sum;
+  mpfr_ptr p[NS];
+
+  i = mpfr_init_set_str (c[0], "NaN", 0, MPFR_RNDN);
+  MPFR_ASSERTN (i == 0);
+  i = mpfr_init_set_str (c[1], "+Inf", 0, MPFR_RNDN);
+  MPFR_ASSERTN (i == 0);
+  i = mpfr_init_set_str (c[2], "-Inf", 0, MPFR_RNDN);
+  MPFR_ASSERTN (i == 0);
+  i = mpfr_init_set_str (c[3], "+0", 0, MPFR_RNDN);
+  MPFR_ASSERTN (i == 0);
+  i = mpfr_init_set_str (c[4], "-0", 0, MPFR_RNDN);
+  MPFR_ASSERTN (i == 0);
+
+  for (i = 0; i < NS; i++)
+    mpfr_init2 (s[i], 2);
+  mpfr_init2 (sum, 2);
+
+  RND_LOOP(r)
+    {
+      i = 0;
+      while (1)
+        {
+          while (i < NS)
+            {
+              p[i] = c[0];
+              mpfr_set_nan (s[i]);
+              k[i++] = 0;
+            }
+          mpfr_sum (sum, p, NS, (mpfr_rnd_t) r);
+          if (! ((MPFR_IS_NAN (sum) && MPFR_IS_NAN (s[NS-1])) ||
+                 (mpfr_equal_p (sum, s[NS-1]) &&
+                  MPFR_SIGN (sum) == MPFR_SIGN (s[NS-1]))))
+            {
+              printf ("Error in check_more_special on %s",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              for (i = 0; i < NS; i++)
+                printf (" %d", k[i]);
+              printf (" with\n");
+              for (i = 0; i < NS; i++)
+                {
+                  printf ("  p[%d] = ", i);
+                  mpfr_dump (p[i]);
+                }
+              printf ("Expected ");
+              mpfr_dump (s[NS-1]);
+              printf ("Got      ");
+              mpfr_dump (sum);
+              exit (1);
+            }
+          while (k[--i] == 4)
+            if (i == 0)
+              goto next_rnd;
+          p[i] = c[++k[i]];
+          if (i == 0)
+            mpfr_set (s[i], p[i], (mpfr_rnd_t) r);
+          else
+            mpfr_add (s[i], s[i-1], p[i], (mpfr_rnd_t) r);
+          i++;
+        }
+    next_rnd: ;
+    }
+
+  for (i = 0; i < 5; i++)
+    mpfr_clear (c[i]);
+  mpfr_clear (sum);
+}
+
 /* bug reported by Joseph S. Myers on 2013-10-27
    https://sympa.inria.fr/sympa/arc/mpfr/2013-10/msg00015.html */
 static void
@@ -460,6 +534,7 @@ main (void)
   tests_start_mpfr ();
 
   check_special ();
+  check_more_special ();
   bug20131027 ();
   test_sort (1764, 1026);
   for (p = 2 ; p < 444 ; p += 17)
