@@ -26,17 +26,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* FIXME[VL]: mpfr_sum can take too much memory and too much time.
    Rewrite using mpn, with additions by blocks (most significant first)?
    The algorithm could be as follows:
-   1. Search the maximum exponent max_exp of the inputs.
-   2. Compute the truncated sum in a window around max_exp + log2(N) to
-      max_exp - output_prec - 128.
+   1. In a first pass, just look at the exponent field of each input
+      (this is fast). This allows us to detect the singular cases
+      (at least a NaN or an Inf in the inputs, or all zeros) and to
+      determine the maximum exponent maxexp of the regular inputs.
+   2. Compute the truncated sum in a window around maxexp + log2(N) to
+      maxexp - output_prec - 128.
    3. In case of cancellation, this determines a new maximum exponent;
       so, reiterate at (2), or (1) if the truncated sum is zero (so that
       "holes" will count for nothing).
    4. Take care of the TMD (something like above, since there can still
       be cancellations).
-   As a bonus, this will also solve overflow and underflow issues, since
-   everything is done in fixed point and the output exponent will be
-   considered only at the end (early overflow detection can also be done).
+   5. Copy the computed result to the destination.
+   As a bonus, this will also solve overflow, underflow and normalization
+   issues, since everything is done in fixed point and the output exponent
+   will be considered only at the end (early overflow detection could also
+   be done).
 
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
@@ -353,7 +358,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
   else
     {
       mpfr_exp_t maxexp = MPFR_EXP_MIN;  /* not a valid exponent */
-      int sign_inf = 0, sign_zero = 0, reuse = 0;
+      int sign_inf = 0, sign_zero = 0;
       unsigned long i;
 
       for (i = 0; i < n; i++)
@@ -388,26 +393,23 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
               if (e > maxexp)
                 maxexp = e;
             }
-          if (p[i] == sum)
-            reuse = 1;
+        }
+
+      if (MPFR_UNLIKELY (sign_inf))
+        {
+          /* At least one infinity. And all of them have the same sign.
+             The result is the infinity of this sign. */
+          MPFR_SET_INF (sum);
+          MPFR_SET_SIGN (sum, sign_inf);
+          MPFR_RET (0);
         }
 
       if (MPFR_UNLIKELY (maxexp == MPFR_EXP_MIN))
         {
-          /* All numbers were singular -> infinity or zero. */
-          if (sign_inf)
-            {
-              /* At least one infinity. All of them have the same sign. */
-              MPFR_SET_INF (sum);
-              MPFR_SET_SIGN (sum, sign_inf);
-            }
-          else
-            {
-              /* All zeros (thus at least one). */
-              MPFR_ASSERTD (sign_zero != 0);
-              MPFR_SET_ZERO (sum);
-              MPFR_SET_SIGN (sum, sign_zero);
-            }
+          /* All the numbers were zeros (and there is at least one). */
+          MPFR_ASSERTD (sign_zero != 0);
+          MPFR_SET_ZERO (sum);
+          MPFR_SET_SIGN (sum, sign_zero);
           MPFR_RET (0);
         }
 
