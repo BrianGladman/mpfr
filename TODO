@@ -101,6 +101,12 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
+- implement mpfr_log_ui to compute log(n) for an unsigned long n.
+  We can write for argument reduction n = 2^k * n/2^k, where
+  2/3 <= n/2^k < 4/3, i.e., k = floor(log2(3n))-1, thus
+  log(n) = k*log(2) + log(n/2^k), and we can use binary splitting on the
+  Taylor expansion of log(1+x) to compute log(n/2^k), where at most
+  p*log(2)/log(3) terms are needed for precision p.
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement mpfr_pow_q and variants with two integers (native or mpz)
   instead of a rational? See IEEE P1788.
