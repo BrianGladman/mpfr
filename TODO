@@ -265,6 +265,10 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- for exp(x), Fredrik Johansson reports a 20% speed improvement starting from
+  4000 bits, and up to a 75% memory improvement in his Arb implementation, by
+  using recursive instead of iterative binary splitting:
+  https://github.com/fredrik-johansson/arb/blob/master/elefun/exp_sum_bs_powtab.c
 - improve mpfr_grandom using the algorithm in http://arxiv.org/abs/1303.6257
 - use the src/x86_64/corei5/mparam.h file once GMP recognizes correctly the
   Core i5 processors (note that gcc -mtune=native gives __tune_corei7__
