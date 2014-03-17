@@ -4295,14 +4295,16 @@ $$  \wprec = \precc + 1 + 4 + \lceil \log_2(4\kvar)\rceil + \cond - \Exp(\svar).
 
 \subsection{Radix Conversion}
 
-% FIXME: correct the following when b is a power of two.
-
 The \texttt{mpfr\_get\_str} function with size $0$ and base $b$ chooses an
 output precision of $1 + \lceil e \log(2)/\log(b) \rceil$ for a precision
-of $e$ bits if $b$ is not a power of two.\cite{Mat68}
+of $e$ bits if $b$ is not a power of two \cite{Mat68}.
 However the code uses instead $1 + \lceil e y \rceil$, where $y$ is
 an upper $76$-bit approximation of $\log(2)/\log(b)$. When do both values
 differ?
+In the case $b=2^k$, the worst case is when the first output digit contains
+only one significant bit, thus
+$1 + \lceil (e-1) \log(2)/\log(b) \rceil$ digits are necessary, and also
+sufficient.
 
 Let $y$ be the $76$-bit upper approximation of $x=\log(2)/\log(b)$.
 Both values differ when there is an integer $n$ such that
