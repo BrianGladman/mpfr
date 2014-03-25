@@ -1189,8 +1189,9 @@ do {                                                                  \
    mp_size_t _size;                             \
    MPFR_ASSERTD (mpz_sgn (z) != 0);             \
    _size = ABSIZ(z);                            \
+   MPFR_ASSERTD (_size >= 1);                   \
    count_leading_zeros (_cnt, PTR(z)[_size-1]); \
-   (r) = _size * GMP_NUMB_BITS - _cnt;       \
+   (r) = _size * GMP_NUMB_BITS - _cnt;          \
   } while (0)
 
 /* MPFR_LCONV_DPTS can also be forced to 0 or 1 by the user. */
