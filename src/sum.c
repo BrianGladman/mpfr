@@ -360,6 +360,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       mpfr_exp_t maxexp = MPFR_EXP_MIN;  /* not a valid exponent */
       int sign_inf = 0, sign_zero = 0;
       unsigned long i;
+      int logn;       /* ceil(log2(n)) */
+      mp_limb_t *wp;  /* pointer to the window */
+      mp_size_t wn;   /* size of the window */
+      MPFR_TMP_DECL (marker);
 
       for (i = 0; i < n; i++)
         {
@@ -412,6 +416,32 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           MPFR_SET_SIGN (sum, sign_zero);
           MPFR_RET (0);
         }
+
+      logn = MPFR_INT_CEIL_LOG2 (n);
+
+      /* Determine an upper bound on the exponent of each intermediate
+         result. Note that truncation sums will be computed; that's why
+         we do not add "+1" for the final rounding.
+         TODO: add the "+1" if really needed at the end. */
+      maxexp += logn;
+
+      MPFR_TMP_MARK (marker);
+
+      /* Determine the window size wn and allocate the corresponding memory.
+         The most significant bit of the window wp will have the exponent
+         maxexp. One logn is for the maxexp increment (see above), the
+         other one is for the ignored limbs of each number.
+         TODO: We may want to add some margin (a small constant). Check
+         whether this would be useful in practical cases. */
+      wn = (MPFR_GET_PREC (sum) + 2 * logn) / GMP_NUMB_BITS + 1;
+      wp = MPFR_TMP_LIMBS_ALLOC (wn);
+
+      MPN_ZERO (wp, wn);
+      /* This will be in a loop. And there will be an associated sign... */
+
+      MPFR_TMP_FREE (marker);
+
+      /* ... */
 
       return mpfr_sum_old (sum, p, n, rnd);
     }
