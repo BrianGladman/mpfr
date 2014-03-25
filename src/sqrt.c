@@ -226,8 +226,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     MPN_COPY (rp0, rp + 1, rsize - 1);
 
  end:
-  MPFR_ASSERTN (expr >= MPFR_EMIN_MIN && expr <= MPFR_EMAX_MAX);
-  MPFR_EXP (r) = expr;
+  MPFR_SET_EXP (r, expr);
   MPFR_TMP_FREE(marker);
 
   return mpfr_check_range (r, inexact, rnd_mode);
