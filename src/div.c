@@ -48,6 +48,7 @@ mpfr_mpn_print3 (mpfr_limb_ptr ap, mp_size_t n, mp_limb_t cy)
 static int
 mpfr_mpn_cmpzero (mpfr_limb_ptr ap, mp_size_t an)
 {
+  MPFR_ASSERTD (an >= 0);
   while (an > 0)
     if (MPFR_LIKELY(ap[--an] != MPFR_LIMB_ZERO))
       return 1;
@@ -65,6 +66,10 @@ mpfr_mpn_cmp_aux (mpfr_limb_ptr ap, mp_size_t an,
   int cmp = 0;
   mp_size_t k;
   mp_limb_t bb;
+
+  MPFR_ASSERTD (an >= 0);
+  MPFR_ASSERTD (bn >= 0);
+  MPFR_ASSERTD (extra == 0 || extra == 1);
 
   if (an >= bn)
     {
@@ -122,6 +127,8 @@ mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
   mp_limb_t bb, rp;
 
   MPFR_ASSERTD (cy <= 1);
+  MPFR_ASSERTD (n >= 0);
+
   while (n--)
     {
       bb = (extra) ? ((bp[1] << (GMP_NUMB_BITS-1)) | (bp[0] >> 1)) : bp[0];
@@ -252,10 +259,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       l = vsize - 1;
       while (k != 0 && l != 0 && up[--k] == vp[--l]);
       /* now k=0 or l=0 or up[k] != vp[l] */
-      if (up[k] > vp[l])
-        extra_bit = 1;
-      else if (up[k] < vp[l])
-        extra_bit = 0;
+      if (up[k] != vp[l])
+        extra_bit = (up[k] > vp[l]);
       /* now up[k] = vp[l], thus either k=0 or l=0 */
       else if (l == 0) /* no more divisor limb */
         extra_bit = 1;
