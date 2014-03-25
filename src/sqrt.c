@@ -142,7 +142,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     tsize = __gmpn_rootrem (rp, NULL, sp, rrsize, 2);
   else
 #endif
-  tsize = mpn_sqrtrem (rp, NULL, sp, rrsize);
+  tsize = mpn_sqrtrem (rp, sp, sp, rrsize);
 
   /* a return value of zero in mpn_sqrtrem indicates a perfect square */
   sticky = sticky0 || tsize != 0;
