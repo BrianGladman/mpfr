@@ -49,7 +49,7 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
   /* p=1 is not allowed since the rounding to nearest even rule requires at
      least two bits of mantissa: the neighbors of 3/2 are 1*2^0 and 1*2^1,
      which both have an odd mantissa */
-  MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
+  MPFR_ASSERTN (MPFR_PREC_COND (p));
 
   xsize = MPFR_PREC2LIMBS (p);
   tmp   = (mpfr_limb_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));

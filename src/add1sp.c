@@ -106,7 +106,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_GET_EXP(b) >= MPFR_GET_EXP(c));
 
   /* Read prec and num of limbs */
-  p = MPFR_PREC(b);
+  p = MPFR_GET_PREC (b);
   n = MPFR_PREC2LIMBS (p);
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
   bx = MPFR_GET_EXP(b);

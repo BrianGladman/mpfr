@@ -137,7 +137,7 @@ main (int argc, char *argv[])
   if (argc > 1)
     {
       long a = atol (argv[1]);
-      if (a >= MPFR_PREC_MIN && a <= MPFR_PREC_MAX)
+      if (MPFR_PREC_COND (a))
         p = a;
     }
 

@@ -701,6 +701,9 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  **************** mpfr_t properties *******************
  ******************************************************/
 
+#define MPFR_PREC_COND(p) ((p) >= MPFR_PREC_MIN && (p) <= MPFR_PREC_MAX)
+#define MPFR_PREC_IN_RANGE(p) (MPFR_ASSERTD (MPFR_PREC_COND(p)), (p))
+
 /* In the following macro, p is usually a mpfr_prec_t, but this macro
    works with other integer types (without integer overflow). Checking
    that p >= 1 in debug mode is useful here because this macro can be
@@ -717,7 +720,8 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #define MPFR_PREC(x)      ((x)->_mpfr_prec)
 #define MPFR_EXP(x)       ((x)->_mpfr_exp)
 #define MPFR_MANT(x)      ((x)->_mpfr_d)
-#define MPFR_LAST_LIMB(x) ((MPFR_PREC (x) - 1) / GMP_NUMB_BITS)
+#define MPFR_GET_PREC(x)  MPFR_PREC_IN_RANGE (MPFR_PREC (x))
+#define MPFR_LAST_LIMB(x) ((MPFR_GET_PREC (x) - 1) / GMP_NUMB_BITS)
 #define MPFR_LIMB_SIZE(x) (MPFR_LAST_LIMB (x) + 1)
 
 
@@ -1299,6 +1303,8 @@ typedef struct {
     /* Check Trivial Case when Dest Mantissa has more bits than source */   \
     _srcprec = (sprec);                                                     \
     _destprec = MPFR_PREC (dest);                                           \
+    MPFR_ASSERTD (_srcprec >= MPFR_PREC_MIN);                               \
+    MPFR_ASSERTD (_destprec >= MPFR_PREC_MIN);                              \
     _destp = MPFR_MANT (dest);                                              \
     if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
       {                                                                     \

@@ -29,7 +29,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
   mpfr_limb_ptr tmp;
 
   /* first, check if p is correct */
-  MPFR_ASSERTN (p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
+  MPFR_ASSERTN (MPFR_PREC_COND (p));
 
   /* Calculate the new number of limbs */
   xsize = MPFR_PREC2LIMBS (p);

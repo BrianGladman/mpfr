@@ -289,8 +289,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                            sign);
 #endif
 
-  bq = MPFR_PREC (b);
-  cq = MPFR_PREC (c);
+  bq = MPFR_GET_PREC (b);
+  cq = MPFR_GET_PREC (c);
 
   MPFR_ASSERTN ((mpfr_uprec_t) bq + cq <= MPFR_PREC_MAX);
 

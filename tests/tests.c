@@ -789,8 +789,8 @@ data_check (const char *f, int (*foo) (FLIST), const char *name)
           ungetc (c, fp);
 
           c = fscanf (fp, "%ld %ld %c", &xprec, &yprec, &r);
-          MPFR_ASSERTN (xprec >= MPFR_PREC_MIN && xprec <= MPFR_PREC_MAX);
-          MPFR_ASSERTN (yprec >= MPFR_PREC_MIN && yprec <= MPFR_PREC_MAX);
+          MPFR_ASSERTN (MPFR_PREC_COND (xprec));
+          MPFR_ASSERTN (MPFR_PREC_COND (yprec));
           if (c == EOF)
             {
               perror ("data_check");

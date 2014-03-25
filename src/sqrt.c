@@ -84,7 +84,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_SET_POS(r);
 
   MPFR_TMP_MARK (marker);
-  MPFR_UNSIGNED_MINUS_MODULO(sh,MPFR_PREC(r));
+  MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_GET_PREC (r));
   if (sh == 0 && rnd_mode == MPFR_RNDN)
     sh = GMP_NUMB_BITS; /* ugly case */
   rsize = MPFR_LIMB_SIZE(r) + (sh == GMP_NUMB_BITS);
