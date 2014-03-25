@@ -56,7 +56,7 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
   mpfr_prec_t nw, ow;
   MPFR_TMP_DECL(marker);
 
-  MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
+  MPFR_ASSERTN (MPFR_PREC_COND (prec));
 
   nw = MPFR_PREC2LIMBS (prec); /* needed allocated limbs */
 

@@ -73,8 +73,8 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 
   /* both signs and exponents are equal */
 
-  bn = (MPFR_PREC(b)-1)/GMP_NUMB_BITS;
-  cn = (MPFR_PREC(c)-1)/GMP_NUMB_BITS;
+  bn = MPFR_LAST_LIMB (b);
+  cn = MPFR_LAST_LIMB (c);
 
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);

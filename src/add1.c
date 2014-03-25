@@ -40,9 +40,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_TMP_MARK(marker);
 
-  aq = MPFR_PREC(a);
-  bq = MPFR_PREC(b);
-  cq = MPFR_PREC(c);
+  aq = MPFR_GET_PREC (a);
+  bq = MPFR_GET_PREC (b);
+  cq = MPFR_GET_PREC (c);
 
   an = MPFR_PREC2LIMBS (aq); /* number of limbs of a */
   aq2 = (mpfr_prec_t) an * GMP_NUMB_BITS;

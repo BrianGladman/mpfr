@@ -41,8 +41,7 @@ mpfr_check (mpfr_srcptr x)
     return 0;
   /* Check precision */
   prec = MPFR_PREC(x);
-  if (prec < MPFR_PREC_MIN ||
-      prec > MPFR_PREC_MAX)
+  if (! MPFR_PREC_COND (prec))
     return 0;
   /* Check mantissa */
   xm = MPFR_MANT(x);

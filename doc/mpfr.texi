@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.2.0-dev
-@set UPDATED-MONTH February 2014
+@set UPDATED-MONTH March 2014
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -1256,7 +1256,7 @@ is a valid number in base @var{base}; otherwise it is @minus{}1, and
 @var{rop} may have changed (users interested in the @ref{ternary value}
 should use @code{mpfr_strtofr} instead).
 
-Note: it is preferable to use @code{mpfr_set_str} if one wants to distinguish
+Note: it is preferable to use @code{mpfr_strtofr} if one wants to distinguish
 between an infinite @var{rop} value coming from an infinite @var{s} or from
 an overflow.
 @end deftypefun
