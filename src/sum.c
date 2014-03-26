@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       (at least a NaN or an Inf in the inputs, or all zeros) and to
       determine the maximum exponent maxexp of the regular inputs.
    2. Compute the truncated sum in a window around maxexp + log2(N) to
-      maxexp - output_prec - 128.
+      maxexp - output_prec - log2(N).
    3. In case of cancellation, this determines a new maximum exponent;
       so, reiterate at (2), or (1) if the truncated sum is zero (so that
       "holes" will count for nothing).
@@ -359,10 +359,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
     {
       mpfr_exp_t maxexp = MPFR_EXP_MIN;  /* not a valid exponent */
       int sign_inf = 0, sign_zero = 0;
-      unsigned long i;
-      int logn;       /* ceil(log2(n)) */
+      unsigned long i, rn = 0;
+      int logn;       /* ceil(log2(rn)) */
       mp_limb_t *wp;  /* pointer to the window */
       mp_size_t wn;   /* size of the window */
+      mpfr_prec_t wq; /* precision of the window */
       MPFR_TMP_DECL (marker);
 
       for (i = 0; i < n; i++)
@@ -396,6 +397,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
               mpfr_exp_t e = MPFR_GET_EXP (p[i]);
               if (e > maxexp)
                 maxexp = e;
+              rn++;
             }
         }
 
@@ -408,7 +410,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           MPFR_RET (0);
         }
 
-      if (MPFR_UNLIKELY (maxexp == MPFR_EXP_MIN))
+      if (MPFR_UNLIKELY (rn == 0))
         {
           /* All the numbers were zeros (and there is at least one). */
           MPFR_ASSERTD (sign_zero != 0);
@@ -417,27 +419,43 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           MPFR_RET (0);
         }
 
-      logn = MPFR_INT_CEIL_LOG2 (n);
-
-      /* Determine an upper bound on the exponent of each intermediate
-         result. Note that truncation sums will be computed; that's why
-         we do not add "+1" for the final rounding.
-         TODO: add the "+1" if really needed at the end. */
-      maxexp += logn;
+      /* rn is the number of regular numbers (the singular numbers
+         will be ignored). Compute logn = ceil(log2(rn)). */
+      logn = MPFR_INT_CEIL_LOG2 (rn);
 
       MPFR_TMP_MARK (marker);
 
       /* Determine the window size wn and allocate the corresponding memory.
-         The most significant bit of the window wp will have the exponent
-         maxexp. One logn is for the maxexp increment (see above), the
-         other one is for the ignored limbs of each number.
+         One logn is for the potential carries, the other one is due to the
+         approximations (ignored limbs of each number).
          TODO: We may want to add some margin (a small constant). Check
          whether this would be useful in practical cases. */
       wn = (MPFR_GET_PREC (sum) + 2 * logn) / GMP_NUMB_BITS + 1;
       wp = MPFR_TMP_LIMBS_ALLOC (wn);
+      wq = wn * GMP_NUMB_BITS;
 
-      MPN_ZERO (wp, wn);
-      /* This will be in a loop. And there will be an associated sign... */
+      do
+        {
+          /* We will consider only the bits of exponent < maxexp of each
+             input number. Thus the sum S will satisfy:
+               |S| < rn * 2^maxexp <= 2^(maxexp+logn)
+             So, computing the partial sum modulo 2^(maxexp+logn+1), with
+             a two's complement representation, is sufficient to retrieve
+             the corresponding truncated sum. Thus the most significant bit
+             of the window will have the exponent maxexp+logn, and it will
+             be the sign of the truncated result. And we will ignore the
+             bits of exponent <= maxexp+logn-wq. */
+
+          /* Initial truncated sum: 0 */
+          MPN_ZERO (wp, wn);
+
+          for (i = 0; i < n; i++)
+            if (! MPFR_IS_SINGULAR (p[i]))
+              {
+              }
+
+        }
+      while (0); /* the condition will be determined later */
 
       MPFR_TMP_FREE (marker);
 
