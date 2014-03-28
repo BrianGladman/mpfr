@@ -593,7 +593,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
           if (MPFR_UNLIKELY (signif == 0))
             {
-              /* There may be a hole! */
+              /* There may be a big hole between numbers! We need to
+                 determine a new maximum exponent among the numbers
+                 with at least a represented bit of exponent <= rexp.
+                 Note that there may be no such numbers, in which case
+                 the exact sum is 0. */
 
             }
 
