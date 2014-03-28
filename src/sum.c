@@ -344,13 +344,17 @@ mpfr_sum_old (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t r
 int
 mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 {
+  MPFR_LOG_FUNC
+    (("n=%lu rnd=%d", n, rnd),
+     ("sum[%Pu]=%.*Rg", mpfr_get_prec (sum), mpfr_log_prec, sum));
+
   if (MPFR_UNLIKELY (n <= 1))
     {
       if (n < 1)
         {
           MPFR_SET_ZERO (sum);
           MPFR_SET_POS (sum);
-          return 0;
+          MPFR_RET (0);
         }
       else
         return mpfr_set (sum, p[0], rnd);
@@ -362,6 +366,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       unsigned long i, rn = 0;
       int logn;       /* ceil(log2(rn)) */
       mp_limb_t *wp;  /* pointer to the window */
+      mp_limb_t *tp;  /* pointer to a temporary area (same size + 1) */
       mp_size_t wn;   /* size of the window */
       mpfr_prec_t wq; /* precision of the window */
       MPFR_TMP_DECL (marker);
@@ -401,6 +406,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             }
         }
 
+      MPFR_LOG_MSG (("rn=%lu sign_inf=%d sign_zero=%d\n",
+                     rn, sign_inf, sign_zero));
+
       if (MPFR_UNLIKELY (sign_inf))
         {
           /* At least one infinity. And all of them have the same sign.
@@ -423,6 +431,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
          will be ignored). Compute logn = ceil(log2(rn)). */
       logn = MPFR_INT_CEIL_LOG2 (rn);
 
+      MPFR_LOG_MSG (("logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
+                     logn, (mpfr_eexp_t) maxexp));
+
       MPFR_TMP_MARK (marker);
 
       /* Determine the window size wn and allocate the corresponding memory.
@@ -431,11 +442,17 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
          TODO: We may want to add some margin (a small constant). Check
          whether this would be useful in practical cases. */
       wn = (MPFR_GET_PREC (sum) + 2 * logn) / GMP_NUMB_BITS + 1;
-      wp = MPFR_TMP_LIMBS_ALLOC (wn);
+      wp = MPFR_TMP_LIMBS_ALLOC (2 * wn + 1);
       wq = wn * GMP_NUMB_BITS;
+      tp = wp + wn;
 
       do
         {
+          mpfr_exp_t rexp;
+          mpfr_prec_t signif;
+          mp_size_t wi;
+          int neg;
+
           /* We will consider only the bits of exponent < maxexp of each
              input number. Thus the sum S will satisfy:
                |S| < rn * 2^maxexp <= 2^(maxexp+logn)
@@ -444,7 +461,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
              the corresponding truncated sum. Thus the most significant bit
              of the window will have the exponent maxexp+logn, and it will
              be the sign of the truncated result. And we will ignore the
-             bits of exponent <= maxexp+logn-wq. */
+             bits of exponent <= maxexp + logn - wq. */
+          rexp = maxexp + logn - wq;
 
           /* Initial truncated sum: 0 */
           MPN_ZERO (wp, wn);
@@ -452,7 +470,132 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
               {
+                mp_limb_t *vp;
+                mp_size_t vn;
+                mpfr_exp_t vsh;
+
+                vp = MPFR_MANT (p[i]);
+                vn = MPFR_PREC2LIMBS (MPFR_GET_PREC (p[i]));
+                vsh = MPFR_GET_EXP (p[i]) - vn * GMP_NUMB_BITS - rexp;
+                /* vsh is the exponent of the least significant represented
+                   bit of p[i] (including the trailing bits at 0) minus the
+                   exponent of the least significant bit of the window. */
+
+                if (vsh <= 0)
+                  {
+                    mp_size_t shn;
+
+                    /* We need to ignore the least |vsh| significant bits
+                       of p[i]. First, let's ignore the least
+                       shn = |vsh| / GMP_NUMB_BITS limbs. */
+                    vsh = - vsh;
+                    shn = vsh / GMP_NUMB_BITS;
+                    vn -= shn;
+                    if (vn <= 0)  /* No overlapping between p[i] */
+                      continue;   /* and the window.             */
+                    vp += shn;
+                    vsh -= shn * GMP_NUMB_BITS;
+                    MPFR_ASSERTD (vsh >= 0 && vsh < GMP_NUMB_BITS);
+
+                    if (vsh != 0)
+                      {
+                        mpn_rshift (tp, vp, vn > wn ? (vn = wn, wn + 1) : vn,
+                                    vsh);
+                        vp = tp;
+                      }
+                    else if (vn > wn)
+                      vn = wn;
+                    MPFR_ASSERTD (vn <= wn);
+
+                    if (MPFR_IS_POS (p[i]))
+                      {
+                        mp_limb_t carry;
+
+                        carry = mpn_add_n (wp, wp, vp, vn);
+                        if (carry != 0 && vn < wn)
+                          mpn_add_1 (wp + vn, wp + vn, wn - vn, carry);
+                      }
+                    else
+                      {
+                        mp_limb_t borrow;
+
+                        borrow = mpn_sub_n (wp, wp, vp, vn);
+                        if (borrow != 0 && vn < wn)
+                          mpn_sub_1 (wp + vn, wp + vn, wn - vn, borrow);
+                      }
+                  }
+                else
+                  {
+                    mp_limb_t *dp;
+                    mp_size_t dn, shn;
+
+                    /* We need to ignore the least vsh significant bits
+                       of the window. First, let's ignore the least
+                       shn = vsh / GMP_NUMB_BITS limbs. -> (dp,dn) */
+                    shn = vsh / GMP_NUMB_BITS;
+                    dn = wn - shn;
+                    if (dn <= 0)
+                      continue;
+                    dp = wp + shn;
+                    vsh -= shn * GMP_NUMB_BITS;
+                    MPFR_ASSERTD (vsh >= 0 && vsh < GMP_NUMB_BITS);
+
+                    if (vn > dn)
+                      vn = dn;
+                    if (vsh != 0)
+                      {
+                        mpn_lshift (tp, vp, vn, vsh);
+                        vp = tp;
+                      }
+
+                    if (MPFR_IS_POS (p[i]))
+                      {
+                        mp_limb_t carry;
+
+                        carry = mpn_add_n (dp, dp, vp, vn);
+                        if (carry != 0 && vn < dn)
+                          mpn_add_1 (dp + vn, dp + vn, dn - vn, carry);
+                      }
+                    else
+                      {
+                        mp_limb_t borrow;
+
+                        borrow = mpn_sub_n (dp, dp, vp, vn);
+                        if (borrow != 0 && vn < dn)
+                          mpn_sub_1 (dp + vn, dp + vn, dn - vn, borrow);
+                      }
+                  }
               }
+
+          /* The truncated sum has been computed. Let's determine its
+             sign, absolute value, and the number of significant bits
+             (starting from the most significant 1).
+             Note: the mpn_neg may be useless, but it doesn't waste
+             much time, it's simpler and it makes the code shorter
+             than analyzing different cases. */
+          wi = wn - 1;
+          neg = MPFR_LIMB_MSB (wp[wi]) != 0;
+          if (neg)
+            mpn_neg (wp, wp, wn);
+          signif = wq;
+          for (; wi >= 0; wi--)
+            {
+              if (wp[wi] != 0)
+                {
+                  int cnt;
+                  count_leading_zeros (cnt, wp[wi]);
+                  signif -= cnt;
+                  break;
+                }
+              signif -= GMP_NUMB_BITS;
+            }
+          MPFR_LOG_MSG (("neg=%d signif=%Pu\n", neg, signif));
+
+          if (MPFR_UNLIKELY (signif == 0))
+            {
+              /* There may be a hole! */
+
+            }
 
         }
       while (0); /* the condition will be determined later */
