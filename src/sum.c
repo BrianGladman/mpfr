@@ -34,7 +34,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       maxexp - output_prec - log2(N).
    3. In case of cancellation, this determines a new maximum exponent;
       so, reiterate at (2), or (1) if the truncated sum is zero (so that
-      "holes" will count for nothing).
+      "holes" will count for nothing). The truncated sum will be kept
+      for accumulation in the next iteration, but shifted to the left
+      of the window.
    4. Take care of the TMD (something like above, since there can still
       be cancellations).
    5. Copy the computed result to the destination.
@@ -446,6 +448,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       wq = wn * GMP_NUMB_BITS;
       tp = wp + wn;
 
+      /* Initial truncated sum: 0 */
+      MPN_ZERO (wp, wn);
+
       do
         {
           mpfr_exp_t rexp;
@@ -463,9 +468,6 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
              be the sign of the truncated result. And we will ignore the
              bits of exponent <= maxexp + logn - wq. */
           rexp = maxexp + logn - wq;
-
-          /* Initial truncated sum: 0 */
-          MPN_ZERO (wp, wn);
 
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
@@ -575,6 +577,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
              than analyzing different cases. */
           wi = wn - 1;
           neg = MPFR_LIMB_MSB (wp[wi]) != 0;
+          /* FIXME: Do not do the mpn_neg inside the loop since in
+             case of another iteration, we want to keep the number
+             in the same representation, but shifted to the left of
+             the window. */
           if (neg)
             mpn_neg (wp, wp, wn);
           signif = wq;
