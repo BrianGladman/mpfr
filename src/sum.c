@@ -60,6 +60,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    issues, since everything is done in fixed point and the output exponent
    will be considered only at the end (early overflow detection could also
    be done).
+   Both windows will occupy the same area, but the limit between them
+   (thus their sizes) will possibly change at some iterations. At worst,
+   the size of the window for (2) will be around output_prec + 2*log2(N)
+   at the first iterations (as long as a full cancellation is possible),
+   then will become something intermediate at some iteration, then will
+   be around 2*log2(N) at the next iterations.
 
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
