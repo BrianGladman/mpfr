@@ -30,16 +30,32 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       (this is fast). This allows us to detect the singular cases
       (at least a NaN or an Inf in the inputs, or all zeros) and to
       determine the maximum exponent maxexp of the regular inputs.
-   2. Compute the truncated sum in a window around maxexp + log2(N) to
-      maxexp - output_prec - log2(N).
-   3. In case of cancellation, this determines a new maximum exponent;
-      so, reiterate at (2), or (1) if the truncated sum is zero (so that
-      "holes" will count for nothing). The truncated sum will be kept
-      for accumulation in the next iteration, but shifted to the left
-      of the window.
-   4. Take care of the TMD (something like above, since there can still
-      be cancellations).
-   5. Copy the computed result to the destination.
+   2. Compute the truncated sum in two's complement in a window around
+      maxexp + log2(N) to maxexp - output_prec - log2(N). The log2(N)
+      term for the MSB avoids overflows. The log2(N) term for the LSB
+      allows one to take into account the accumulation of errors (i.e.
+      from everything less significant than the window LSB); one may
+      need an exponent a bit smaller to handle partial cancellation,
+      but important cancellation will lead to another iteration.
+      At the same time, use the same loop to determine the exponent
+      maxexp2 of the most significant bit that has been ignored.
+   3. In applicable (see below), add both windows.
+   4. Determine the number of cancelled bits.
+   5. If the truncated sum is 0, reiterate at (2) with maxexp = maxexp2.
+   6. If the error is too large, shift the truncated sum to the left of
+      the window, and reiterate at (2) with a second window. Using a
+      second window is necessary to avoid carry propagations to the
+      full window, as it is expected that in general, the second window
+      will be small (small cancellation). The cumulated size of both
+      windows should be no more than: output_prec + k * log2(N), where
+      k is a small constant.
+   7. If only the sign of the error term is unknown, reiterate at (2)
+      to compute it using a second window where output_prec = 0, i.e.
+      around maxexp + log2(N) to maxexp - log2(N).
+      Note: the sign of the error term is needed to round the result in
+      the right direction and/or to determine the ternary value.
+   8. Copy the rounded result to the destination, and exit with the
+      correct ternary value.
    As a bonus, this will also solve overflow, underflow and normalization
    issues, since everything is done in fixed point and the output exponent
    will be considered only at the end (early overflow detection could also
