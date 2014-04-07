@@ -63,6 +63,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
+VL: This is very different:
+          In MPFR             In the paper & references
+    arbitrary precision            fixed precision
+     correct rounding        just reproducible rounding
+    integer operations        floating-point operations
+        sequencial             parallel (& sequential)
 */
 
 /* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
