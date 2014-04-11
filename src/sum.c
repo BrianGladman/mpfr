@@ -23,49 +23,105 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME[VL]: mpfr_sum can take too much memory and too much time.
-   Rewrite using mpn, with additions by blocks (most significant first)?
-   The algorithm could be as follows:
-   1. In a first pass, just look at the exponent field of each input
-      (this is fast). This allows us to detect the singular cases
-      (at least a NaN or an Inf in the inputs, or all zeros) and to
-      determine the maximum exponent maxexp of the regular inputs.
-   2. Compute the truncated sum in two's complement in a window around
-      maxexp + log2(N) to maxexp - output_prec - log2(N). The log2(N)
-      term for the MSB avoids overflows. The log2(N) term for the LSB
-      allows one to take into account the accumulation of errors (i.e.
-      from everything less significant than the window LSB); one may
-      need an exponent a bit smaller to handle partial cancellation,
-      but important cancellation will lead to another iteration.
-      At the same time, use the same loop to determine the exponent
-      maxexp2 of the most significant bit that has been ignored.
-   3. In applicable (see below), add both windows.
-   4. Determine the number of cancelled bits.
-   5. If the truncated sum is 0, reiterate at (2) with maxexp = maxexp2.
-   6. If the error is too large, shift the truncated sum to the left of
-      the window, and reiterate at (2) with a second window. Using a
-      second window is necessary to avoid carry propagations to the
-      full window, as it is expected that in general, the second window
-      will be small (small cancellation). The cumulated size of both
-      windows should be no more than: output_prec + k * log2(N), where
-      k is a small constant.
-   7. If only the sign of the error term is unknown, reiterate at (2)
-      to compute it using a second window where output_prec = 0, i.e.
-      around maxexp + log2(N) to maxexp - log2(N).
-      Note: the sign of the error term is needed to round the result in
-      the right direction and/or to determine the ternary value.
-   8. Copy the rounded result to the destination, and exit with the
-      correct ternary value.
-   As a bonus, this will also solve overflow, underflow and normalization
-   issues, since everything is done in fixed point and the output exponent
-   will be considered only at the end (early overflow detection could also
-   be done).
-   Both windows will occupy the same area, but the limit between them
-   (thus their sizes) will possibly change at some iterations. At worst,
-   the size of the window for (2) will be around output_prec + 2*log2(N)
-   at the first iterations (as long as a full cancellation is possible),
-   then will become something intermediate at some iteration, then will
-   be around 2*log2(N) at the next iterations.
+/* FIXME[VL].
+
+Preliminary note: The previous mpfr_sum algorithm was a high-level one
+and could take too much memory and too much time in cases with numbers
+of different magnitudes and cancellation. Here we will use functions
+from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
+on additions by blocks, involving virtual splitting of MPFR numbers.
+
+The general ideas of the algorithm:
+
+0. Handle the case n <= 1 separately (+0 for n = 0, mpfr_set for n = 1).
+   Now assume that n >= 2.
+
+1. Look at the exponent field of each mpfr_t input (this is fast); also
+   track the signs of Inf's and zeros. This step allows one to:
+   * detect the singular cases, i.e. when there is either at least a NaN
+     or an Inf in the inputs (in case of a NaN or two Inf's of different
+     signs, we can immediately return NaN), or all inputs are zeros;
+   * determine the maximum exponent maxexp of the regular inputs.
+
+2. Compute the truncated sum in two's complement in a window around
+   maxexp + log2(N) to minexp = maxexp - output_prec - log2(N). The
+   log2(N) term for the MSB avoids overflows due to the accumulation
+   of large numbers (in magnitude). The "- log2(N)" term for the LSB
+   (minexp) allows one to take into account the accumulation of errors,
+   i.e. from everything less significant than minexp; the final choice
+   should be done after testing: in practice, one may need a bit more
+   precision to handle partial cancellation at this iteration, but
+   important cancellation will always lead to other iterations.
+   In the same loop over the inputs, determine the maximum exponent
+   maxexp2 of the numbers formed starting with the most significant
+   represented bit that has been ignored: one will get either minexp
+   (if an input has been truncated at this iteration) or the maximum
+   exponent of the numbers that have been completely ignored.
+
+3. If applicable (see below), add both windows.
+
+4. Determine the number of cancelled bits.
+
+5. If the truncated sum is 0, reiterate at (2) with maxexp = maxexp2,
+   rounded above to a multiple of GMP_NUMB_BITS (see below).
+
+6. If the error is too large, shift the truncated sum to the left of
+   the window (most significant part), and reiterate at (2) with a
+   second window (less significant part). Using a second window is
+   useful to avoid a carry propagation (potentially for each add/sub)
+   to the full window: it is expected that in general, the second
+   window will be small (small cancellation). The cumulated size of
+   both windows should be no more than: output_prec + k * log2(N),
+   where k is a small constant.
+
+7. If only the sign of the error term is unknown, reiterate at (2)
+   to compute it using a second window where output_prec = 0, i.e.
+   around maxexp + log2(N) to maxexp - log2(N).
+   Note: the sign of the error term is needed to round the result in
+   the right direction and/or to determine the ternary value.
+
+8. Copy the rounded result to the destination, and exit with the
+   correct ternary value.
+
+To simplify the code, the window boundaries will be limits between words
+(mp_limb_t). This will not change the time and memory complexity. Thus
+maxexp, minexp, and the shift in (6) will be multiples of GMP_NUMB_BITS.
+
+An example:
+
+              [1]    [2]   A  [3]
+  u0 = *****   |      |    .   |
+  u1 =   ******|**    |    .   |
+  u2 = ********|***** |    .   |
+  u3 =         | *****|    .   |
+  u4 =         |      |    ****|**
+  u5 =         |      |     ***|*
+
+At iteration 1, minexp is determined to be [1]; thus u0, a part of u1,
+and a part of u2 are taken into account for the truncated sum. Then it
+appears that an important cancellation occurred, and another step (2)
+is needed. Since u1 was truncated, the new maxexp will be minexp, i.e.
+[1]. At iteration 2, minexp is determined to be [2]; thus a part of u1,
+a part of u2, and u3 are taken into account for the truncated sum. Now
+assume that on this example, the error is small enough, but its sign is
+unknown. Thus another step (2) is needed, with the conditions of (7).
+Since no numbers were truncated at the previous iteration, maxexp is
+the maximum exponent of the remaining numbers, here the one of u4, and
+minexp is determined to be [3]. Assume that the sign of the error can
+be determined now, so that we can return the rounded result with the
+ternary value.
+
+As a bonus, this will also solve overflow, underflow and normalization
+issues, since everything is done in fixed point and the output exponent
+will be considered only at the end (early overflow detection could also
+be done).
+
+Both windows will occupy the same area, but the limit between them
+(thus their sizes) will possibly change at some iterations. At worst,
+the size of the window for (2) will be around output_prec + 2*log2(N)
+at the first iterations (as long as a full cancellation is possible),
+then will become something intermediate at some iteration, then will
+be around 2*log2(N) at the next iterations.
 
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
