@@ -78,11 +78,13 @@ mpfr_free_cache (void)
   mpfr_bernoulli_freecache();
 
 #if MPFR_MY_MPZ_INIT
-  int i;
-  MPFR_ASSERTD (n_alloc >= 0 && n_alloc <= numberof (mpz_tab));
-  for (i = 0; i < n_alloc; i++)
-    (__gmpz_clear)(&mpz_tab[i]);
-  n_alloc = 0;
+  { /* Avoid mixed declarations and code for ISO C90 support. */
+    int i;
+    MPFR_ASSERTD (n_alloc >= 0 && n_alloc <= numberof (mpz_tab));
+    for (i = 0; i < n_alloc; i++)
+      (__gmpz_clear)(&mpz_tab[i]);
+    n_alloc = 0;
+  }
 #endif
 
 #ifndef MPFR_USE_LOGGING
