@@ -80,6 +80,8 @@ For patches from MPFR developers, e.g. for MPFR 3.1.0:
    without changing the timestamps (e.g. with cp -a).
 6. In mpfr-3.1.0-b, apply the patch obtained with "svn diff", e.g.
      patch --no-backup-if-mismatch -p0 < /path/to/new_patch
+   If an autotool file has been modified, run "autoreconf" and remove
+   the autom4te.cache directory.
 7. In mpfr-3.1.0-b, update the version information:
      tools/update-version 3 1 0 p<n> -
    where <n> is the patch number.
