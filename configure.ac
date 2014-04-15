@@ -509,6 +509,30 @@ if test "$use_gmp_build" = yes ; then
    ])
 fi
 
+dnl Check for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency.
+dnl Problems may occur if gmp.h was generated with some ABI
+dnl and is used with another ABI (or if nails are used).
+dnl This test doesn't need to link with libgmp (at least it shouldn't).
+AC_MSG_CHECKING(for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+#include <limits.h>
+#include "gmp.h"
+]], [[
+  if (GMP_NUMB_BITS == sizeof(mp_limb_t) * CHAR_BIT)
+    return 0;
+  fprintf (stderr, "GMP_NUMB_BITS     = %ld\n", (long) GMP_NUMB_BITS);
+  fprintf (stderr, "sizeof(mp_limb_t) = %ld\n", (long) sizeof(mp_limb_t));
+  fprintf (stderr, "sizeof(mp_limb_t) * CHAR_BIT = %ld != GMP_NUMB_BITS\n",
+           (long) (sizeof(mp_limb_t) * CHAR_BIT));
+  return 1;
+]])], [AC_MSG_RESULT(yes)], [
+       AC_MSG_RESULT(no)
+       AC_MSG_ERROR([GMP_NUMB_BITS and sizeof(mp_limb_t) are not consistent.
+You probably need to change some of the GMP or MPFR compile options.
+See 'config.log' for details (search for GMP_NUMB_BITS).])],
+       [AC_MSG_RESULT([can't test])])
+
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
