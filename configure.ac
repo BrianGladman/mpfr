@@ -509,24 +509,6 @@ if test "$use_gmp_build" = yes ; then
    ])
 fi
 
-dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
-dnl This test doesn't need to link with libgmp (at least it shouldn't).
-if test "$use_gmp_build" = yes ; then
-  AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <limits.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-]], [[
-  return GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
-         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
-]])], [AC_MSG_RESULT(yes)], [
-       AC_MSG_RESULT(no)
-       AC_MSG_ERROR([GMP_NUMB_BITS is incorrect.
-You probably need to change some of the GMP or MPFR compile options.])],
-       [AC_MSG_RESULT([can't test])])
-fi
-
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).

@@ -30,11 +30,11 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 
   /* Check if we can represent the number of limbs
    * associated to the maximum of mpfr_prec_t*/
-  MPFR_STAT_STATIC_ASSERT( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
+  MPFR_STAT_STATIC_ASSERT( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/MPFR_BYTES_PER_MP_LIMB) );
 
-  /* Check for correct GMP_NUMB_BITS and BYTES_PER_MP_LIMB */
-  MPFR_STAT_STATIC_ASSERT( GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
-                      && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
+  /* Check for correct GMP_NUMB_BITS and MPFR_BYTES_PER_MP_LIMB */
+  MPFR_STAT_STATIC_ASSERT( GMP_NUMB_BITS == MPFR_BYTES_PER_MP_LIMB * CHAR_BIT
+                      && sizeof(mp_limb_t) == MPFR_BYTES_PER_MP_LIMB );
   /* Check for mp_bits_per_limb (a global variable inside GMP library) */
   MPFR_ASSERTN (mp_bits_per_limb == GMP_NUMB_BITS);
 

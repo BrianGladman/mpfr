@@ -129,7 +129,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-
+#define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
 /******************************************************
  ************** Attributes definition *****************
@@ -985,7 +985,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_SET_ALLOC_SIZE(x, n) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_MALLOC_SIZE(s) \
-  ( sizeof(mpfr_size_limb_t) + BYTES_PER_MP_LIMB * ((size_t) s) )
+  ( sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * ((size_t) s) )
 #define MPFR_SET_MANT_PTR(x,p) \
    (MPFR_MANT(x) = (mp_limb_t*) ((mpfr_size_limb_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
@@ -1006,7 +1006,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #endif
 
 #define MPFR_TMP_LIMBS_ALLOC(N) \
-  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * BYTES_PER_MP_LIMB))
+  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * MPFR_BYTES_PER_MP_LIMB))
 
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter

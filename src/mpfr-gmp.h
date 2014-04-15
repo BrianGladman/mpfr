@@ -110,7 +110,6 @@ void *alloca (size_t);
 #endif
 
 /* Define some macros */
-#define BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
 #define MP_LIMB_T_MAX (~(mp_limb_t)0)
 
@@ -130,19 +129,19 @@ void *alloca (size_t);
 #endif
 
 /* MP_LIMB macros */
-#define MPN_ZERO(dst, n) memset((dst), 0, (n)*BYTES_PER_MP_LIMB)
-#define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
-#define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
+#define MPN_ZERO(dst, n) memset((dst), 0, (n)*MPFR_BYTES_PER_MP_LIMB)
+#define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
+#define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
 #define MPN_COPY(dst,src,n) \
   do                                                                  \
     {                                                                 \
       if ((dst) != (src))                                             \
         {                                                             \
           MPFR_ASSERTD ((char *) (dst) >= (char *) (src) +            \
-                                          (n) * BYTES_PER_MP_LIMB ||  \
+                                     (n) * MPFR_BYTES_PER_MP_LIMB ||  \
                         (char *) (src) >= (char *) (dst) +            \
-                                          (n) * BYTES_PER_MP_LIMB);   \
-          memcpy ((dst), (src), (n) * BYTES_PER_MP_LIMB);             \
+                                     (n) * MPFR_BYTES_PER_MP_LIMB);   \
+          memcpy ((dst), (src), (n) * MPFR_BYTES_PER_MP_LIMB);        \
         }                                                             \
     }                                                                 \
   while (0)
