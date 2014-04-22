@@ -1551,11 +1551,6 @@ bug20110320 (void)
   set_emin (emin);
 }
 
-/* This corresponds to buggy output on
-   http://ex-cs.sist.ac.jp/~tkouya/try_mpfr.html
-   See: https://sympa.inria.fr/sympa/arc/mpfr/2014-04/msg00010.html
-   but everything is OK in r9038.
-*/
 static void
 tst20140422 (void)
 {
