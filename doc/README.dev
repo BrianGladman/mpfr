@@ -245,8 +245,8 @@ To make a release (for the MPFR team):
      Bug report: http://llvm.org/bugs/show_bug.cgi?id=17000
 
      GCC 4.9 also supports "-fsanitize=undefined", but it just gives
-     diagnostic messages at runtime (no -fno-sanitize-recover option
-     like in clang).
+     diagnostic messages at runtime, not a failure; GCC trunk supports
+     -fno-sanitize-recover like clang.
 
      Test with both "make check" and the worst cases.
 
