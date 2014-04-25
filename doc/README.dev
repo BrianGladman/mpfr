@@ -256,7 +256,7 @@ To make a release (for the MPFR team):
      -Wmissing-field-initializers". They can easily be checked in
      automatic tests by adding "-Werror -Wno-error=unused-function",
      but this needs:
-       * GCC 4.9 (at the time of writing, a GCC trunk snapshot)
+       * GCC 4.9+
        * a patched autoconf:
      http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
 
