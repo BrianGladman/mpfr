@@ -239,10 +239,10 @@ To make a release (for the MPFR team):
      clang unconditionally regards the floating-point division by zero
      as an error with "-fsanitize=undefined"; this is detected by a
      configure test, which sets MPFR_ERRDIVZERO to disable the tests
-     involving a floating-point division by zero. Alternatively, on
-     systems supporting IEC 60559 / IEEE 754 division by zero, one can
-     also provide the -fno-sanitize=float-divide-by-zero option *after*
-     the -fsanitize=undefined one.
+     involving a floating-point division by zero. Alternatively, on systems
+     supporting IEC 60559 / IEEE 754 division by zero, one can also provide
+     the -fno-sanitize=float-cast-overflow,float-divide-by-zero option
+     *after* the -fsanitize=undefined one.
 
      GCC 4.9 also supports "-fsanitize=undefined", but it just gives
      diagnostic messages at runtime, not a failure; GCC trunk supports
