@@ -290,7 +290,7 @@ To make a release (for the MPFR team):
      (for mpfr.html, use "makeinfo --html --no-split mpfr.texi" from
      the doc directory).
      Upload the tarballs and the signatures to the MPFR web server
-     (via svn), to INRIAGForge and to the GNU FTP site.
+     (via svn), to InriaForge and to the GNU FTP site.
      Update the mpfr-current symbolic link and the history page.
      Update the old current page to point to the new release; see
      examples for 3.0.1 (latest version of the branch) and 3.1.0
@@ -299,8 +299,8 @@ To make a release (for the MPFR team):
      Run the tools/announce-text script to do some checking and get
      the announce text. Edit this text if need be.
      Announce the release in the mpfr-announce, mpfr, gmp-discuss, gcc
-     and info-gnu[1] mailing-lists, and on INRIAGForge (MPFR News, and
-     contact the INRIAGForge administrators[2] to have the announce
+     and info-gnu[1] mailing-lists, and on InriaForge (MPFR News, and
+     contact the InriaForge administrators[2] to have the announce
      published on the main page).
      In case of a new patchlevel release, add a link from the web page
      of the previous release.

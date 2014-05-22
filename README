@@ -62,7 +62,7 @@ For any copyright year range specified as YYYY-ZZZZ in this package,
 note that the range specifies every single year in that closed interval.
 
 
-You can get the latest source code by Subversion at INRIAGForge:
+You can get the latest source code by Subversion at InriaForge:
 
   svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
 

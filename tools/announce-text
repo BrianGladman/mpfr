@@ -13,7 +13,7 @@
 #   root=<repository_root>
 #   vers=<mpfr_version>
 #   nopgpsig=1  to disable checking of the PGP signatures.
-#   nogforge=1  to disable checking of the tarballs on INRIAGForge.
+#   nogforge=1  to disable checking of the tarballs on InriaForge.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
 
 set -e
@@ -81,7 +81,7 @@ sha1sum mpfr-$vers.* > sha1sum.out
 rm mpfr-*
 
 if [ -z "$nogforge" ]; then
-  echo "Comparing with INRIAGForge..." >&2
+  echo "Comparing with InriaForge..." >&2
   gforge="https://gforge.inria.fr"
   wget -O files.html "$gforge/frs/?group_id=136"
   for i in $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\".*/\1/p" \
@@ -136,7 +136,7 @@ is now available for download from the MPFR web site:
 
   http://www.mpfr.org/mpfr-$vers/
 
-from INRIAGForge:
+from InriaForge:
 
   https://gforge.inria.fr/projects/mpfr/
 
