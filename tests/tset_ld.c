@@ -440,8 +440,9 @@ main (int argc, char *argv[])
      long double values, not regarded as being in the subset of
      the floating-point values of the system. As a consequence
      (assuming b = 2), LDBL_MAX must be exactly representable on
-     LDBL_MANT_DIG bits. Some systems are buggy, though... Perhaps
-     we should test? */
+     LDBL_MANT_DIG bits. GCC is currently buggy[*], but LDBL_MAX
+     is still representable on LDBL_MANT_DIG bits.
+     [*] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61399 */
   d = LDBL_MAX;
   check_set_get (d);
   check_set_get (-d);
