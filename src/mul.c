@@ -392,7 +392,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 MPFR_ASSERTD (cn > 0);
               } /* This must end since the most significant limb is != 0 */
 
-            /* It is not the faster way, but it is safer */
+            /* It is not the fastest way, but it is safer. */
             MPFR_SET_SAME_SIGN (b_tmp, b);
             MPFR_SET_EXP (b_tmp, MPFR_GET_EXP (b));
             MPFR_PREC (b_tmp) = bn * GMP_NUMB_BITS;
