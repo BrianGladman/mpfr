@@ -338,7 +338,8 @@ To check the coverage of the Test Suite, you can use GCOV.
 
 For each source file, there is a .c.gcov file which contains much more
 information.
-Another solution is to run the script 'coverage' from MPFR source directory.
+
+Another solution is to run the script 'coverage' within the 'tools' directory.
 
 ===========================================================================
 
