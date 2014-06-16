@@ -41,17 +41,30 @@ The general ideas of the algorithm:
    * detect the singular cases, i.e. when there is either at least a NaN
      or an Inf in the inputs (in case of a NaN or two Inf's of different
      signs, we can immediately return NaN), or all inputs are zeros;
-   * determine the maximum exponent maxexp of the regular inputs.
+   * determine the maximum exponent maxexp of the regular inputs and
+     the number n' of regular inputs.
 
-2. Compute the truncated sum in two's complement in a window around
-   maxexp + log2(N) to minexp = maxexp - output_prec - log2(N). The
-   log2(N) term for the MSB avoids overflows due to the accumulation
-   of large numbers (in magnitude). The "- log2(N)" term for the LSB
-   (minexp) allows one to take into account the accumulation of errors,
-   i.e. from everything less significant than minexp; the final choice
-   should be done after testing: in practice, one may need a bit more
-   precision to handle partial cancellation at this iteration, but
-   important cancellation will always lead to other iterations.
+2. Compute the truncated sum in two's complement by taking into account
+   the part of the inputs in a window [minexp,maxexp[ (we choose not to
+   include maxexp in order to match the floating-point representation
+   chosen in MPFR, where the significand is in [1/2,1[; this also means
+   that minexp will be the next maxexp, unless there is a hole in the
+   inputs, as explained below).
+   Due to the accumulation of values and the choice of two's complement
+   (a way to represent the sign), we will need some extra bits to avoid
+   overflows. The absolute value of the sum is less than n' * 2^maxexp,
+   taken up to ceil(log2(n')) extra bits, and one needs one more bit to
+   be able to determine the sign, so that cq = ceil(log2(n')) + 1 extra
+   bits will be considered.
+   Moreover we will choose minexp = maxexp - output_prec - dq, where dq
+   will be chosen around log2(n') to take into account the accumulation
+   of errors, i.e. from everything less significant than minexp. The
+   final choice for dq should be done after testing: in practice, one
+   may need a little more precision to handle partial cancellation at
+   this iteration, but important cancellation will always lead to other
+   iterations. For instance, we will choose the smallest dq > log2(n')
+   such that the window bitsize, which is maxexp + cq - minexp, i.e.
+   cq + output_prec + dq, is a multiple of GMP_NUMB_BITS.
    In the same loop over the inputs, determine the maximum exponent
    maxexp2 of the numbers formed starting with the most significant
    represented bit that has been ignored: one will get either minexp
@@ -67,25 +80,21 @@ The general ideas of the algorithm:
 
 6. If the error is too large, shift the truncated sum to the left of
    the window (most significant part), and reiterate at (2) with a
-   second window (less significant part). Using a second window is
-   useful to avoid a carry propagation (potentially for each add/sub)
+   second window (least significant part). Using a second window is
+   useful to avoid carry propagation (potentially for each add/sub)
    to the full window: it is expected that in general, the second
    window will be small (small cancellation). The cumulated size of
-   both windows should be no more than: output_prec + k * log2(N),
+   both windows should be no more than: output_prec + k * log2(n'),
    where k is a small constant.
 
 7. If only the sign of the error term is unknown, reiterate at (2)
    to compute it using a second window where output_prec = 0, i.e.
-   around maxexp + log2(N) to maxexp - log2(N).
+   around maxexp + cq to maxexp - dq.
    Note: the sign of the error term is needed to round the result in
    the right direction and/or to determine the ternary value.
 
 8. Copy the rounded result to the destination, and exit with the
    correct ternary value.
-
-To simplify the code, the window boundaries will be limits between words
-(mp_limb_t). This will not change the time and memory complexity. Thus
-maxexp, minexp, and the shift in (6) will be multiples of GMP_NUMB_BITS.
 
 An example:
 
@@ -118,10 +127,36 @@ be done).
 
 Both windows will occupy the same area, but the limit between them
 (thus their sizes) will possibly change at some iterations. At worst,
-the size of the window for (2) will be around output_prec + 2*log2(N)
+the size of the window for (2) will be around output_prec + 2*log2(n')
 at the first iterations (as long as a full cancellation is possible),
 then will become something intermediate at some iteration, then will
-be around 2*log2(N) at the next iterations.
+be around 2*log2(n') at the next iterations.
+
+A limb L = *zp in memory will generally contain a part of a significand.
+One can define its exponent ze, such that the actual value of this limb
+is L * 2^(ze-GMP_NUMB_BITS), i.e. ze is its exponent where the limb is
+regarded as a number in [1/2,1[. If an array of limbs zp[] is regarded
+as a significand in [1/2,1[, then the exponent of its actual value is
+also ze.
+
+Variables:
+  tp: pointer to a temporary area that will contain a shifted value.
+  xp: pointer to the main window.
+  yp: pointer to the secondary window (yp = xp at iteration 1).
+  ts: the maximum size of the temporary area, in limbs; then xp = tp+ts.
+  ws: the maximum size of both main & secondary windows, in limbs.
+  xs: number of limbs of the main window already determined;
+      the secondary window will point at xp+xs.
+  ys: number of limbs of the secondary window; check that xs + ys <= ws.
+  rn: number n' of inputs that are regular numbers (regular inputs).
+  logn: ceil(log2(rn)).
+  cq: logn + 1.
+  dq: > logn, such that the window bitsize is a multiple of GMP_NUMB_BITS.
+  sq: output precision (precision of the sum).
+  maxexp: the maximum exponent of the bit-window of the inputs that is
+          taken into account (for the current iteration), excluded.
+  minexp: the minimum exponent of the bit-window of the inputs that is
+          taken into account (for the current iteration), included.
 
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
@@ -447,80 +482,151 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
     }
   else
     {
-      mpfr_exp_t maxexp = MPFR_EXP_MIN;  /* not a valid exponent */
-      int sign_inf = 0, sign_zero = 0;
-      unsigned long i, rn = 0;
+      mp_limb_t *tp;  /* pointer to a temporary area (fixed) */
+      mp_limb_t *xp;  /* pointer to the main window (fixed) */
+      mp_limb_t *yp;  /* pointer to the secondary window (variable) */
+      mp_size_t ts;   /* maximum size of the temporary area, in limbs */
+      mp_size_t ws;   /* maximum size of both main & secondary windows */
+      mp_size_t xs;   /* #limbs of the main window already determined */
+      mp_size_t ys;   /* number of limbs of the secondary window */
+      mpfr_exp_t maxexp, minexp;
+      unsigned long i, rn;
       int logn;       /* ceil(log2(rn)) */
-      mp_limb_t *wp;  /* pointer to the window */
-      mp_limb_t *tp;  /* pointer to a temporary area (same size + 1) */
-      mp_size_t wn;   /* size of the window */
-      mpfr_prec_t wq; /* precision of the window */
+      int cq, dq;
+      mpfr_prec_t sq;
       MPFR_TMP_DECL (marker);
 
-      for (i = 0; i < n; i++)
-        {
-          if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p[i])))
-            {
-              if (MPFR_IS_NAN (p[i]))
-                {
-                nan:
-                  MPFR_SET_NAN (sum);
-                  MPFR_RET_NAN;
-                }
-              else if (MPFR_IS_INF (p[i]))
-                {
-                  if (!sign_inf)
-                    sign_inf = MPFR_SIGN (p[i]);
-                  else if (MPFR_SIGN (p[i]) != sign_inf)
-                    goto nan;
-                }
-              else
-                {
-                  MPFR_ASSERTD (MPFR_IS_ZERO (p[i]));
-                  if (!sign_zero)
-                    sign_zero = MPFR_SIGN (p[i]);
-                  else if (MPFR_SIGN (p[i]) != sign_zero)
-                    sign_zero = rnd == MPFR_RNDD ? -1 : 1;
-                }
-            }
-          else
-            {
-              mpfr_exp_t e = MPFR_GET_EXP (p[i]);
-              if (e > maxexp)
-                maxexp = e;
-              rn++;
-            }
-        }
+      /* Pre-iteration (Step 1) */
+      {
+        /* sign of infinities and zeros (0: currently unknown) */
+        int sign_inf = 0, sign_zero = 0;
 
-      MPFR_LOG_MSG (("rn=%lu sign_inf=%d sign_zero=%d\n",
-                     rn, sign_inf, sign_zero));
+        rn = 0;  /* will be the number of regular inputs */
+        maxexp = MPFR_EXP_MIN;  /* max(Empty), <= any valid exponent */
+        for (i = 0; i < n; i++)
+          {
+            if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p[i])))
+              {
+                if (MPFR_IS_NAN (p[i]))
+                  {
+                    /* The current value p[i] is NaN. Then the sum is NaN. */
+                  nan:
+                    MPFR_SET_NAN (sum);
+                    MPFR_RET_NAN;
+                  }
+                else if (MPFR_IS_INF (p[i]))
+                  {
+                    /* The current value p[i] is an infinity.
+                       There are two cases:
+                       1. This is the first infinity value (sign_inf == 0).
+                          Then set sign_inf to its sign, and go on.
+                       2. All the infinities found until now have the same
+                          sign sign_inf. If this new infinity has a different
+                          sign, then return NaN immediately, else go on. */
+                    if (sign_inf == 0)
+                      sign_inf = MPFR_SIGN (p[i]);
+                    else if (MPFR_SIGN (p[i]) != sign_inf)
+                      goto nan;
+                  }
+                else if (MPFR_UNLIKELY (rn == 0))
+                  {
+                    /* The current value p[i] is a zero. The code below
+                       matters only when all values found until now are
+                       zeros, otherwise it is harmless (the test rn == 0
+                       above is just a minor optimization).
+                       Here we track the sign of the zero result when all
+                       inputs are zeros: if all zeros have the same sign,
+                       the result will have this sign, otherwise (i.e. if
+                       there is at least a zero of each sign), the sign of
+                       the zero result depends only on the rounding mode
+                       (note that this choice is sticky when new zeros are
+                       considered). */
+                    MPFR_ASSERTD (MPFR_IS_ZERO (p[i]));
+                    if (sign_zero == 0)
+                      sign_zero = MPFR_SIGN (p[i]);
+                    else if (MPFR_SIGN (p[i]) != sign_zero)
+                      sign_zero = rnd == MPFR_RNDD ? -1 : 1;
+                  }
+              }
+            else
+              {
+                /* The current value p[i] is a regular number. */
+                mpfr_exp_t e = MPFR_GET_EXP (p[i]);
+                if (e > maxexp)
+                  maxexp = e;  /* maximum exponent found until now */
+                rn++;  /* current number of regular inputs */
+              }
+          }
 
-      if (MPFR_UNLIKELY (sign_inf))
-        {
-          /* At least one infinity. And all of them have the same sign.
-             The result is the infinity of this sign. */
-          MPFR_SET_INF (sum);
-          MPFR_SET_SIGN (sum, sign_inf);
-          MPFR_RET (0);
-        }
+        MPFR_LOG_MSG (("rn=%lu sign_inf=%d sign_zero=%d\n",
+                       rn, sign_inf, sign_zero));
 
-      if (MPFR_UNLIKELY (rn == 0))
-        {
-          /* All the numbers were zeros (and there is at least one). */
-          MPFR_ASSERTD (sign_zero != 0);
-          MPFR_SET_ZERO (sum);
-          MPFR_SET_SIGN (sum, sign_zero);
-          MPFR_RET (0);
-        }
+        /* At this point the result cannot be NaN (this case has already
+           been filtered out). */
 
-      /* rn is the number of regular numbers (the singular numbers
-         will be ignored). Compute logn = ceil(log2(rn)). */
+        if (MPFR_UNLIKELY (sign_inf != 0))
+          {
+            /* At least one infinity, and all of them have the same sign
+               sign_inf. The sum is the infinity of this sign. */
+            MPFR_SET_INF (sum);
+            MPFR_SET_SIGN (sum, sign_inf);
+            MPFR_RET (0);
+          }
+
+        /* At this point, all the inputs are finite numbers. */
+
+        if (MPFR_UNLIKELY (rn == 0))
+          {
+            /* All the numbers were zeros (and there is at least one).
+               The sum is zero with sign sign_zero. */
+            MPFR_ASSERTD (sign_zero != 0);
+            MPFR_SET_ZERO (sum);
+            MPFR_SET_SIGN (sum, sign_zero);
+            MPFR_RET (0);
+          }
+
+      } /* End of the pre-iteration (Step 1) */
+
+      /* Generic case: all the inputs are finite numbers, with at least
+         a regular number. */
+
+      /* rn is the number of regular inputs (the singular ones will be
+         ignored). Compute logn = ceil(log2(rn)). */
       logn = MPFR_INT_CEIL_LOG2 (rn);
 
       MPFR_LOG_MSG (("logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
                      logn, (mpfr_eexp_t) maxexp));
 
+      sq = MPFR_GET_PREC (sum);
+      cq = logn + 1;
+
+      /* First determine the maximum size of the main window. */
+      ws = MPFR_PREC2LIMBS (cq + sq + logn + 1);
+
+      /* We now choose dq so that cq + sq + dq = maximum bitsize of the
+         main window. */
+      dq = (mpfr_prec_t) ws * GMP_NUMB_BITS - (cq + sq);
+
+      /* Take the secondary window into account. Mainly for Step 7. */
+      /* TODO: check this in the final code... */
+      ws += MPFR_PREC2LIMBS (cq + dq);
+
+      /* An input block will have up to sq + dq bits, and its shifted
+         value (to be correctly aligned) may take GMP_NUMB_BITS - 1
+         additional bits. */
+      ts = MPFR_PREC2LIMBS (sq + dq + GMP_NUMB_BITS - 1);
+
       MPFR_TMP_MARK (marker);
+
+      tp = MPFR_TMP_LIMBS_ALLOC (ts + ws);
+      xp = tp + ts;
+
+      /* TODO: implement steps 2 to 8. */
+
+
+
+
+      /* Obsolete code below. */
 
       /* Determine the window size wn and allocate the corresponding memory.
          One logn is for the potential carries, the other one is due to the
