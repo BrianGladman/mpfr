@@ -73,7 +73,7 @@ test_compare (long nbtests, int verbose)
           t2 = mpfr_random_deviate_less (u, v, RANDS);
           if (t1 != t2)
             {
-              printf ("Error: mpfr_random_deviate_less() result inconsistent.\n");
+              printf ("Error: mpfr_random_deviate_less() inconsistent.\n");
               exit (1);
             }
           if (t1)
@@ -99,7 +99,7 @@ test_compare (long nbtests, int verbose)
   if (verbose)
     printf ("Fraction of true random_deviate_less = %.4f"
             " (should be about 0.5)\n",
-            (double) count / (double) (10 * nbtests));
+            count / (double) (10 * nbtests));
 }
 
 /* Test mpfr_random_deviate_value.  Check for the leading bit in the number in
@@ -110,7 +110,7 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
 {
   mpfr_t x;
   mpfr_random_deviate_t u;
-  int inexact, inexactc;
+  int inexact, exact;
   int i, k, b, neg;
   unsigned long e, f, n;
   long count, sum;
@@ -119,7 +119,7 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   mpfr_init2 (x, prec);
 
   count = 0; sum = 0;
-  inexactc = 1;
+  exact = 0;
 
   for (k = 0; k < nbtests; ++k)
     {
@@ -129,7 +129,8 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
           n = gmp_urandomb_ui (RANDS, b);
           neg = gmp_urandomb_ui (RANDS, 1);
           inexact = mpfr_random_deviate_value (neg, n, u, x, RANDS, rnd);
-          inexactc *= inexact;
+          if (!inexact)
+            exact = 1;
           if (inexact > 0)
             ++count;
           ++sum;
@@ -142,12 +143,13 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
           mpfr_random_deviate_ldexp (u, f, e);
           neg = gmp_urandomb_ui (RANDS, 1);
           inexact = mpfr_random_deviate_value (neg, 0, u, x, RANDS, rnd);
-          inexactc *= inexact;
+          if (!inexact)
+            exact = 1;
           if (inexact > 0)
             ++count;
           ++sum;
         }
-      if (inexactc == 0)
+      if (exact)
         {
           printf ("Error: random_deviate() returns a zero ternary value.\n");
           exit (1);
@@ -156,9 +158,10 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
     }
   mpfr_random_deviate_clear (u);
   mpfr_clear (x);
+
   if (verbose)
     {
-      printf ("Fraction of inexact > 0 = %.4f", count / (double)(sum));
+      printf ("Fraction of inexact > 0 = %.4f", count / (double) (sum));
       if (rnd == MPFR_RNDD)
         printf (" should be exactly 0\n");
       else if (rnd ==  MPFR_RNDU)
@@ -173,6 +176,7 @@ main (int argc, char *argv[])
 {
   long nbtests;
   int verbose;
+  long a;
 
   tests_start_mpfr ();
 
@@ -180,7 +184,7 @@ main (int argc, char *argv[])
   nbtests = 10;
   if (argc > 1)
     {
-      long a = atol (argv[1]);
+      a = atol (argv[1]);
       verbose = 1;
       if (a != 0)
         nbtests = a;
