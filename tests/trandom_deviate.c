@@ -83,11 +83,9 @@ test_compare (long nbtests, int verbose)
     }
   mpfr_random_deviate_clear (v);
   mpfr_random_deviate_clear (u);
-#ifdef HAVE_STDARG
   if (verbose)
     printf ("Fraction of true random_deviate_less = %.4f\n",
             count / (double) (10 * nbtests));
-#endif /* HAVE_STDARG */
 }
 
 /* Test mpfr_random_deviate_value.  Check for the leading bit in the number in
@@ -158,10 +156,8 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   }
   mpfr_random_deviate_clear (u);
   mpfr_clear (x);
-#ifdef HAVE_STDARG
   if (verbose)
     printf ("Fraction of inexact > 0 = %.4f\n", count / (double) (sum));
-#endif /* HAVE_STDARG */
 }
 
 int
