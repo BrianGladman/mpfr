@@ -40,7 +40,7 @@ mpfr_random_deviate_set (mpfr_random_deviate_t rop, mpfr_random_deviate_t op)
    of W and cannot be 0.  fract must be in [0,2^W) */
 static void
 mpfr_random_deviate_ldexp (mpfr_random_deviate_t rop,
-			   unsigned long fract, unsigned long expt)
+                           unsigned long fract, unsigned long expt)
 {
   rop->h = (expt > W ? 0ul : fract);
   mpz_set_ui(rop->f, expt > W ? fract: 0ul);
@@ -84,7 +84,7 @@ test_compare (long nbtests, int verbose)
 #ifdef HAVE_STDARG
   if (verbose)
     printf ("Fraction of true random_deviate_less = %.4f\n",
-	    count / (double)(10 * nbtests));
+            count / (double)(10 * nbtests));
 #endif /* HAVE_STDARG */
 }
 
