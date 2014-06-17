@@ -969,6 +969,11 @@ and the exact behavior may change in the future. So, it is not correct
 to multiply ternary values returned by arbitrary functions as this may
 overflow.
 
+To work with ternary values, mpfr-impl.h provides the following macros:
+
+#define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
+
 ===========================================================================
 
 Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
