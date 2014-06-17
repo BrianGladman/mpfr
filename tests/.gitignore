@@ -124,6 +124,7 @@
 /tpow_z
 /tprintf
 /trandom
+/trandom_deviate
 /trec_sqrt
 /tremquo
 /trint
