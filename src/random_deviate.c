@@ -380,38 +380,14 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   if (neg)
     mpz_neg (t, t);
   /* Is -x->e representable as a mpfr_exp_t? */
-  if (x->e <= (mpfr_uexp_t)(-1) >> 1)
-    {
-      /*
-       * Let mpfr_set_z_2exp do all the work of rounding to the requested
-       * precision, setting overflow/underflow flags, and returning the right
-       * inexact value.
-       */
-      inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
-      mpz_clear (t);
-    }
-  else
-    {
-      /*
-       * Cannot convert to mpfr in a single call to mpfr_set_z_2exp because the
-       * shift is too big (implies that the number of leading zeros in the
-       * fraction and the requested precision are both large).  So form an
-       * rational number q = t/2^(x->e) and convert that.
-       */
-      mpq_t q;
-      mpz_ptr qn, qd;
-      mpq_init (q);             /* q = 0/1 */
-      qn = mpq_numref(q);
-      mpz_swap (qn, t);         /* numerator = t */
-      mpz_clear (t);
-      qd = mpq_denref(q);       /* initially equal to 1 */
-      /* we know that x->e fits into a mp_bitcnt_t */
-      mpz_mul_2exp (qd, qd, x->e); /* denominator = 2^(x->e) */
-      /* no need to call mpq_canonicalize because qn is odd and qd is
-       * positive and a power of 2 */
-      inex = mpfr_set_q (z, q, rnd);
-      mpq_clear (q);
-    }
+  MPFR_ASSERTN (x->e <= (mpfr_uexp_t)(-1) >> 1);
+  /*
+   * Let mpfr_set_z_2exp do all the work of rounding to the requested
+   * precision, setting overflow/underflow flags, and returning the right
+   * inexact value.
+   */
+  inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
+  mpz_clear (t);
   return inex;
 }
 #endif

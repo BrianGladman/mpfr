@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define W 32                    /* Must match value in random_deviate.c */
 
-/* set random deviates rop from op */
+/* set random deviate rop from op */
 static void
 mpfr_random_deviate_set (mpfr_random_deviate_t rop, mpfr_random_deviate_t op)
 {
@@ -37,7 +37,7 @@ mpfr_random_deviate_set (mpfr_random_deviate_t rop, mpfr_random_deviate_t op)
 }
 
 /* set random deviate to fract * 2^-expt.  expt must be a multiple
-   of W and cannot be 0.  fract must be in [0,2^W) */
+ * of W and cannot be 0.  fract must be in [0,2^W) */
 static void
 mpfr_random_deviate_ldexp (mpfr_random_deviate_t rop,
                            unsigned long fract, unsigned long expt)
@@ -47,11 +47,11 @@ mpfr_random_deviate_ldexp (mpfr_random_deviate_t rop,
   rop->e = expt;
 }
 
-/* Test mpfr_random_deviate_less.  With two initially equal deviates
-   this should return true half the time.  In order to execute
-   additional code paths, the two deviates are repeatedly set equal and
-   the test repeated (with now a longer fraction and with the test now
-   triggering the sampling of an additional chunk. */
+/* Test mpfr_random_deviate_less.  With two initially equal deviates this
+ * should return true half the time.  In order to execute additional code
+ * paths, the two deviates are repeatedly set equal and the test repeated (with
+ * now a longer fraction and with the test now triggering the sampling of an
+ * additional chunk. */
 static void
 test_compare (long nbtests, int verbose)
 {
@@ -62,34 +62,45 @@ test_compare (long nbtests, int verbose)
   long count;
 
   count = 0;
-  for (k = 0; k < nbtests; ++k)
-    {
-      mpfr_random_deviate_reset (u);
-      mpfr_random_deviate_reset (v);
-      for (i = 0; i < 10; ++i)
-        {
-          t1 = mpfr_random_deviate_less (u, v, RANDS);
-          t2 = mpfr_random_deviate_less (u, v, RANDS);
-          if (t1 != t2)
-            {
-              printf ("Error: mpfr_random_deviate_less() result inconsistent.\n");
-              exit (1);
-            }
-          if (t1)
-            ++count;
-          /* Force the test to sample an additional chunk */
-          mpfr_random_deviate_set(u, v);
-        }
-    }
+  for (k = 0; k < nbtests; ++k) {
+    mpfr_random_deviate_reset (u);
+    mpfr_random_deviate_reset (v);
+    for (i = 0; i < 10; ++i)
+      {
+        t1 = mpfr_random_deviate_less (u, v, RANDS);
+        t2 = mpfr_random_deviate_less (u, v, RANDS);
+        if (t1 != t2)
+          {
+            printf ("Error: mpfr_random_deviate_less() result inconsistent.\n");
+            exit (1);
+          }
+        if (t1) ++count;
+        /* Force the test to sample an additional chunk */
+        mpfr_random_deviate_set (u, v);
+      }
+    t1 = mpfr_random_deviate_less (u, u, RANDS);
+    if (t1)
+      {
+        printf ("Error: mpfr_random_deviate_less() gives u < u.\n");
+        exit (1);
+      }
+    t1 = mpfr_random_deviate_tstbit (u, 0, RANDS);
+    if (t1)
+      {
+        printf ("Error: mpfr_random_deviate_tstbit() says 1 bit is on.\n");
+        exit (1);
+      }
+  }
   mpfr_random_deviate_clear (v);
   mpfr_random_deviate_clear (u);
   if (verbose)
-    printf ("Fraction of true random_deviate_less = %.4f\n",
-            count / (double) (10 * nbtests));
+    printf ("Fraction of true random_deviate_less = %.4f"
+            " (should be about 0.5)\n",
+            (double) count / (double) (10 * nbtests));
 }
 
 /* Test mpfr_random_deviate_value.  Check for the leading bit in the number in
-   various positions. */
+ * various positions. */
 static void
 test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
             int verbose)
@@ -97,56 +108,35 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   mpfr_t x;
   mpfr_random_deviate_t u;
   int inexact, inexactc;
+  mpfr_random_deviate_init (u);
+  mpfr_init2 (x, prec);
   int i, k, b, neg;
   unsigned long e, f, n;
   long count, sum;
   count = 0; sum = 0;
   inexactc = 1;
 
-  mpfr_random_deviate_init (u);
-  mpfr_init2 (x, prec);
-
-  for (k = 0; k < nbtests; ++k)
-    {
-      for (i = 0; i < 32; ++i)
-        {
-          b = gmp_urandomm_ui (RANDS, 32) + 1; /* bits to sample in integer */
-          n = gmp_urandomb_ui (RANDS, b);
-          neg = gmp_urandomb_ui (RANDS, 1);
-          inexact = mpfr_random_deviate_value (neg, n, u, x, RANDS, rnd);
-          inexactc *= inexact;
-          if (inexact > 0)
-            ++count;
-          ++sum;
-        }
-    for (i = 0; i < 32; ++i)
-      {
-        b = gmp_urandomm_ui (RANDS, W) + 1; /* bits to sample in fraction */
-        f = gmp_urandomb_ui (RANDS, b);
-        e = W * (gmp_urandomm_ui (RANDS, 3) + 1);
-        mpfr_random_deviate_ldexp (u, f, e);
-        neg = gmp_urandomb_ui (RANDS, 1);
-        inexact = mpfr_random_deviate_value (neg, 0, u, x, RANDS, rnd);
-        inexactc *= inexact;
-        if (inexact > 0)
-          ++count;
-        ++sum;
-      }
-    /* this tests the else clause for "if (x->e <= (mpfr_uexp_t)(-1) >> 1)" in
-       mpfr_random_deviate_value.  However this immediately leads to a gmp:
-       overflow in mpz type in "mpz_mul_2exp (qd, qd, x->e)".  The probability
-       that this else branch is taken is very close to zero...  So skip this
-       test for now. */
-    /*
-      e = ((((mpfr_uexp_t)(-1) >> 1) + W) / W) * W;
-      f = gmp_urandomb_ui (RANDS, W);
+  for (k = 0; k < nbtests; ++k) {
+    for (i = 0; i < 32; ++i) {
+      b = gmp_urandomm_ui (RANDS, 32) + 1; /* bits to sample in integer */
+      n = gmp_urandomb_ui (RANDS, b);
+      neg = gmp_urandomb_ui (RANDS, 1);
+      inexact = mpfr_random_deviate_value (neg, n, u, x, RANDS, rnd);
+      inexactc *= inexact;
+      if (inexact > 0) ++count;
+      ++sum;
+    }
+    for (i = 0; i < 32; ++i) {
+      b = gmp_urandomm_ui (RANDS, W) + 1; /* bits to sample in fraction */
+      f = gmp_urandomb_ui (RANDS, b);
+      e = W * (gmp_urandomm_ui (RANDS, 3) + 1);
       mpfr_random_deviate_ldexp (u, f, e);
       neg = gmp_urandomb_ui (RANDS, 1);
       inexact = mpfr_random_deviate_value (neg, 0, u, x, RANDS, rnd);
       inexactc *= inexact;
       if (inexact > 0) ++count;
       ++sum;
-    */
+    }
     if (inexactc == 0)
       {
         printf ("Error: random_deviate() returns a zero ternary value.\n");
@@ -157,7 +147,15 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   mpfr_random_deviate_clear (u);
   mpfr_clear (x);
   if (verbose)
-    printf ("Fraction of inexact > 0 = %.4f\n", count / (double) (sum));
+    {
+      printf ("Fraction of inexact > 0 = %.4f", count / (double)(sum));
+      if (rnd == MPFR_RNDD)
+        printf (" should be exactly 0\n");
+      else if (rnd ==  MPFR_RNDU)
+        printf (" should be exactly 1\n");
+      else
+        printf (" should be about 0.5\n");
+    }
 }
 
 int
@@ -165,7 +163,6 @@ main (int argc, char *argv[])
 {
   long nbtests;
   int verbose;
-
   tests_start_mpfr ();
 
   verbose = 0;
