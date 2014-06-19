@@ -160,6 +160,28 @@ Variables:
   minexp: the minimum exponent of the bit-window of the inputs that is
           taken into account (for the current iteration), included.
 
+*** TODO ***
+It seems that carry propagation (mpn_add_1 & mpn_sub_1 in the code) is
+most often limited. But consider the following cases, where all inputs
+have the minimal precision 2, and the output precision is p:
+  u0 = 1
+  u_i = (-1)^i * 2^(-p) for i > 0
+Here long carry propagation will occur for each addition of the initial
+iteration, so that the complexity will be O(n*p) instead of O(n+p) if
+we choose to delay carry propagation (however such a choice may slower
+the average case and take more memory, such as around 3*p instead of
+2*p). Using a second window when a new iteration is needed can help in
+some cases, such as:
+  u0 = 2^q with some q > 0
+  u1 = 1
+  u2 = -2^q
+  u_i = (-1)^i * 2^(-p) for i > 2
+but such examples are very specific cases, and as seen with the first
+example, a better way (e.g. delaying carry propagation) must be found
+if one wants to avoid long carry propagation in all cases.
+
+--------
+
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
 VL: This is very different:
