@@ -49,7 +49,9 @@ The general ideas of the algorithm:
    include maxexp in order to match the floating-point representation
    chosen in MPFR, where the significand is in [1/2,1[; this also means
    that minexp will be the next maxexp, unless there is a hole in the
-   inputs, as explained below).
+   inputs, as explained below). Each operation adds a part of an input
+   to a fixed memory area, called accumulator, whose characteristics
+   are determined below.
    Due to the accumulation of values and the choice of two's complement
    (a way to represent the sign), we will need some extra bits to avoid
    overflows. The absolute value of the sum is less than n' * 2^maxexp,
@@ -70,33 +72,31 @@ The general ideas of the algorithm:
    represented bit that has been ignored: one will get either minexp
    (if an input has been truncated at this iteration) or the maximum
    exponent of the numbers that have been completely ignored.
-   Note: for simplicity of the maxexp2 computation, any value > minexp
-   will be regarded as equivalent to minexp during the iteration.
 
-3. If applicable (see below), add both windows.
+3. Determine the number of cancelled bits.
 
-4. Determine the number of cancelled bits.
+4. If the truncated sum (i.e. the value of the accumulator) is 0, then
+   reiterate at (2) with maxexp = maxexp2.
 
-5. If the truncated sum is 0, reiterate at (2) with maxexp = maxexp2,
-   rounded above to a multiple of GMP_NUMB_BITS (see below).
+5. If, because of cancellation, the correctly rounded sum cannot be
+   determined possibly by using the sign of the error term, then shift
+   the truncated sum to the left boundary (most significant part) of
+   the accumulator, and reiterate at (2), where:
+   * the shift count is determined in such a way to avoid overflows
+     at the next iteration, i.e. to be able to retrieve the sum with
+     its sign;
+   * the new value of cq is implied by this shift count.
+   Note: It is expected that in general, the cancellation is small,
+   so that the new additions in (2) will occur only in a small part
+   of the accumulator. But see below about long carry propagation.
 
-6. If the error is too large, shift the truncated sum to the left of
-   the window (most significant part), and reiterate at (2) with a
-   second window (least significant part). Using a second window is
-   useful to avoid carry propagation (potentially for each add/sub)
-   to the full window: it is expected that in general, the second
-   window will be small (small cancellation). The cumulated size of
-   both windows should be no more than: output_prec + k * log2(n'),
-   where k is a small constant.
+6. If the sign of the error term is needed to determine the returned
+   result (correctly rounded sum and ternary value), then reiterate
+   at (2) to compute it using a specific window with output_prec = 0,
+   i.e. around maxexp + cq to maxexp - dq.
 
-7. If only the sign of the error term is unknown, reiterate at (2)
-   to compute it using a second window where output_prec = 0, i.e.
-   around maxexp + cq to maxexp - dq.
-   Note: the sign of the error term is needed to round the result in
-   the right direction and/or to determine the ternary value.
-
-8. Copy the rounded result to the destination, and exit with the
-   correct ternary value.
+7. Copy the correctly rounded result to the destination and exit with
+   the correct ternary value.
 
 An example:
 
@@ -115,7 +115,7 @@ is needed. Since u1 was truncated, the new maxexp will be minexp, i.e.
 [1]. At iteration 2, minexp is determined to be [2]; thus a part of u1,
 a part of u2, and u3 are taken into account for the truncated sum. Now
 assume that on this example, the error is small enough, but its sign is
-unknown. Thus another step (2) is needed, with the conditions of (7).
+unknown. Thus another step (2) is needed, with the conditions of (6).
 Since no numbers were truncated at the previous iteration, maxexp is
 the maximum exponent of the remaining numbers, here the one of u4, and
 minexp is determined to be [3]. Assume that the sign of the error can
@@ -127,13 +127,6 @@ issues, since everything is done in fixed point and the output exponent
 will be considered only at the end (early overflow detection could also
 be done).
 
-Both windows will occupy the same area, but the limit between them
-(thus their sizes) will possibly change at some iterations. At worst,
-the size of the window for (2) will be around output_prec + 2*log2(n')
-at the first iterations (as long as a full cancellation is possible),
-then will become something intermediate at some iteration, then will
-be around 2*log2(n') at the next iterations.
-
 A limb L = *zp in memory will generally contain a part of a significand.
 One can define its exponent ze, such that the actual value of this limb
 is L * 2^(ze-GMP_NUMB_BITS), i.e. ze is its exponent where the limb is
@@ -143,24 +136,27 @@ also ze.
 
 Variables:
   tp: pointer to a temporary area that will contain a shifted value.
-  xp: pointer to the main window.
-  yp: pointer to the secondary window (yp = xp at iteration 1).
-  ts: the maximum size of the temporary area, in limbs; then xp = tp+ts.
-  ws: the maximum size of both main & secondary windows, in limbs.
-  xs: number of limbs of the main window already determined;
-      the secondary window will point at xp+xs.
-  ys: number of limbs of the secondary window; check that xs + ys <= ws.
+  wp: pointer to the accumulator.
+  ts: the size of the temporary area, in limbs; then wp = tp + ts.
+  ws: the size of the accumulator, in limbs.
   rn: number n' of inputs that are regular numbers (regular inputs).
   logn: ceil(log2(rn)).
   cq: logn + 1.
-  dq: > logn, such that the window bitsize is a multiple of GMP_NUMB_BITS.
   sq: output precision (precision of the sum).
+  dq: > logn, such that cq + sq + dq is a multiple of GMP_NUMB_BITS.
   maxexp: the maximum exponent of the bit-window of the inputs that is
           taken into account (for the current iteration), excluded.
   minexp: the minimum exponent of the bit-window of the inputs that is
           taken into account (for the current iteration), included.
 
-*** TODO ***
+Note: Data locality can be improved after the first iteration if the
+shifted values are stored at the end of the temporary area instead of
+the beginning. The reason is that only the least significant part of
+the accumulator will be used once a good approximate value of the sum
+is known, and the accumulator lies just after the temporary area. But
+the gain would probably not be noticeable in practice.
+
+*** To be considered in future versions ***
 It seems that carry propagation (mpn_add_1 & mpn_sub_1 in the code) is
 most often limited. But consider the following cases, where all inputs
 have the minimal precision 2, and the output precision is p:
@@ -170,15 +166,23 @@ Here long carry propagation will occur for each addition of the initial
 iteration, so that the complexity will be O(n*p) instead of O(n+p) if
 we choose to delay carry propagation (however such a choice may slower
 the average case and take more memory, such as around 3*p instead of
-2*p). Using a second window when a new iteration is needed can help in
-some cases, such as:
+2*p).
+When a new iteration is needed due to cancellation, a second accumulator
+was considered in some early version of the algorithm: the temporary
+results of the computations during the new iteration would be stored in
+this second accumulator, which would generally be small, thus limiting
+carry propagation; this method is actually equivalent to delaying carry
+propagation. It could help in some cases, such as:
   u0 = 2^q with some q > 0
   u1 = 1
   u2 = -2^q
   u_i = (-1)^i * 2^(-p) for i > 2
 but such examples are very specific cases, and as seen with the first
-example, a better way (e.g. delaying carry propagation) must be found
-if one wants to avoid long carry propagation in all cases.
+example, a better way must be chosen if avoiding long carry propagation
+is regarded as important (in all cases). Moreover, while the use of two
+accumulators does not take much more memory (since both accumulators can
+occupy the same area, with a flexible limit between them), it probably
+makes the code a bit more complex, and noticeably slower if n is small.
 
 --------
 
@@ -506,12 +510,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
     }
   else
     {
-      mp_limb_t *tp;  /* pointer to a temporary area (fixed) */
-      mp_limb_t *xp;  /* pointer to the main window (fixed) */
-      mp_size_t ts;   /* maximum size of the temporary area, in limbs */
-      mp_size_t ws;   /* maximum size of both main & secondary windows */
-      mp_size_t xs;   /* #limbs of the main window already determined */
-      mp_size_t ys;   /* number of limbs of the secondary window */
+      mp_limb_t *tp;  /* pointer to a temporary area */
+      mp_limb_t *wp;  /* pointer to the accumulator */
+      mp_size_t ts;   /* size of the temporary area, in limbs */
+      mp_size_t ws;   /* size of the accumulator, in limbs */
       mpfr_exp_t maxexp;
       unsigned long i, rn;
       int logn;       /* ceil(log2(rn)) */
@@ -623,17 +625,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       sq = MPFR_GET_PREC (sum);
       cq = logn + 1;
 
-      /* First determine the maximum size of the main window; it will also
-         be the size of the secondary window at the first iteration. */
-      ys = MPFR_PREC2LIMBS (cq + sq + logn + 1);
+      /* First determine the size of the accumulator. */
+      ws = MPFR_PREC2LIMBS (cq + sq + logn + 1);
 
-      /* We now choose dq so that cq + sq + dq = maximum bitsize of the
-         main window. */
-      dq = (mpfr_prec_t) ys * GMP_NUMB_BITS - (cq + sq);
-
-      /* Take the secondary window into account. Mainly for Step 7. */
-      /* TODO: check this in the final code... */
-      ws = ys + MPFR_PREC2LIMBS (cq + dq);
+      /* We now choose dq so that cq + sq + dq = accumulator bitsize. */
+      dq = (mpfr_prec_t) ws * GMP_NUMB_BITS - (cq + sq);
 
       /* An input block will have up to sq + dq bits, and its shifted
          value (to be correctly aligned) may take GMP_NUMB_BITS - 1
@@ -642,48 +638,45 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
       MPFR_TMP_MARK (marker);
 
+      /* TODO: one may need a bit more memory later for Step 6.
+         Should it be allocated here? */
       tp = MPFR_TMP_LIMBS_ALLOC (ts + ws);
-      xp = tp + ts;
-      xs = 0;   /* initial size of the main window: 0 */
+      wp = tp + ts;
+
+      MPN_ZERO (wp, ws);  /* zero the accumulator */
 
       do
         {
-          mp_limb_t *yp = xp + xs;  /* pointer to the secondary window */
           mpfr_exp_t minexp = maxexp - (sq + dq);
           mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
-
-          MPFR_ASSERTD (xs + ys <= ws);
-
-          /* TODO: this may not be necessary if the condition of Step 5
-             is satisfied. */
-          MPN_ZERO (yp, ys);  /* zero the secondary window */
 
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
               {
                 mp_limb_t *vp;
                 mp_size_t vs;
-                mpfr_exp_t pexp, vd;
+                mpfr_exp_t pe, vd;
+                mpfr_prec_t pq;
 
-                pexp = MPFR_GET_EXP (p[i]);
+                pe = MPFR_GET_EXP (p[i]);
+                pq = MPFR_GET_PREC (p[i]);
 
                 vp = MPFR_MANT (p[i]);
-                vs = MPFR_PREC2LIMBS (MPFR_GET_PREC (p[i]));
-                vd = pexp - vs * GMP_NUMB_BITS - minexp;
+                vs = MPFR_PREC2LIMBS (pq);
+                vd = pe - vs * GMP_NUMB_BITS - minexp;
                 /* vd is the exponent of the least significant represented
-                   bit of p[i] (including the trailing bits at 0) minus the
-                   exponent of the least significant bit of the window. */
+                   bit of p[i] (including the trailing bits, whose value
+                   is 0) minus the exponent of the least significant bit
+                   of the accumulator. */
 
                 if (vd < 0)
                   {
                     mp_size_t vds;
 
-                    /* At least one bit of p[i] will be ignored. Let's
-                       update maxexp2. Note: any value > minexp will be
-                       changed to minexp after the iteration if maxexp2
-                       needs to be taken into account. */
-                    if (pexp > maxexp2)
-                      maxexp2 = pexp;
+                    /* A part of p[i] may be ignored. Let's set
+                       maxexp2 to minexp if this is the case. */
+                    if (pe - pq < minexp)
+                      maxexp2 = minexp;
 
                     /* We need to ignore the least |vd| significant bits
                        of p[i]. First, let's ignore the least
@@ -697,31 +690,34 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
+                    /* TODO: at the first iteration, this is correct,
+                       but for the following ones, we need to ignore
+                       the bits of exponent >= maxexp. */
                     if (vd != 0)
                       {
-                        mpn_rshift (tp, vp, vs > ys ? (vs = ys, ys + 1) : vs,
+                        mpn_rshift (tp, vp, vs > ws ? (vs = ws, ws + 1) : vs,
                                     vd);
                         vp = tp;
                       }
-                    else if (vs > ys)
-                      vs = ys;
-                    MPFR_ASSERTD (vs <= ys);
+                    else if (vs > ws)
+                      vs = ws;
+                    MPFR_ASSERTD (vs <= ws);
 
                     if (MPFR_IS_POS (p[i]))
                       {
                         mp_limb_t carry;
 
-                        carry = mpn_add_n (yp, yp, vp, vs);
-                        if (carry != 0 && vs < ys)
-                          mpn_add_1 (yp + vs, yp + vs, ys - vs, carry);
+                        carry = mpn_add_n (wp, wp, vp, vs);
+                        if (carry != 0 && vs < ws)
+                          mpn_add_1 (wp + vs, wp + vs, ws - vs, carry);
                       }
                     else
                       {
                         mp_limb_t borrow;
 
-                        borrow = mpn_sub_n (yp, yp, vp, vs);
-                        if (borrow != 0 && vs < ys)
-                          mpn_sub_1 (yp + vs, yp + vs, ys - vs, borrow);
+                        borrow = mpn_sub_n (wp, wp, vp, vs);
+                        if (borrow != 0 && vs < ws)
+                          mpn_sub_1 (wp + vs, wp + vs, ws - vs, borrow);
                       }
                   }
                 else
@@ -730,16 +726,19 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                     mp_size_t ds, vds;
 
                     /* We need to ignore the least vd significant bits
-                       of the window. First, let's ignore the least
+                       of the accumulator. First, let's ignore the least
                        vds = vd / GMP_NUMB_BITS limbs. -> (dp,ds) */
                     vds = vd / GMP_NUMB_BITS;
-                    ds = ys - vds;
+                    ds = ws - vds;
                     if (ds <= 0)
                       continue;
-                    dp = yp + vds;
+                    dp = wp + vds;
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
+                    /* TODO: at the first iteration, this is correct,
+                       but for the following ones, we need to ignore
+                       the bits of exponent >= maxexp. */
                     if (vs > ds)
                       vs = ds;
                     if (vd != 0)
@@ -767,12 +766,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                   }
               }
 
-          /* TODO: implement steps 3 to 8. */
+          /* TODO: implement steps 3 to 7. */
 
 
 
 
-
+#if 0
           /* Obsolete code, to be updated... */
 
           /* The truncated sum has been computed. Let's determine its
@@ -781,21 +780,21 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
              Note: the mpn_neg may be useless, but it doesn't waste
              much time, it's simpler and it makes the code shorter
              than analyzing different cases. */
-          wi = ys - 1;
-          neg = MPFR_LIMB_MSB (yp[wi]) != 0;
+          wi = ws - 1;
+          neg = MPFR_LIMB_MSB (wp[wi]) != 0;
           /* FIXME: Do not do the mpn_neg inside the loop since in
              case of another iteration, we want to keep the number
              in the same representation, but shifted to the left of
              the window. */
           if (neg)
-            mpn_neg (yp, yp, ys);
+            mpn_neg (wp, wp, ws);
           signif = wq;
           for (; wi >= 0; wi--)
             {
-              if (yp[wi] != 0)
+              if (wp[wi] != 0)
                 {
                   int cnt;
-                  count_leading_zeros (cnt, yp[wi]);
+                  count_leading_zeros (cnt, wp[wi]);
                   signif -= cnt;
                   break;
                 }
@@ -812,6 +811,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                  the exact sum is 0. */
 
             }
+#endif
 
         }
       while (0); /* the condition will be determined later */
