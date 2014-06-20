@@ -518,6 +518,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       unsigned long i, rn;
       int logn;       /* ceil(log2(rn)) */
       int cq, dq;
+      int truncflag;
       mpfr_prec_t sq;
       MPFR_TMP_DECL (marker);
 
@@ -644,11 +645,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       wp = tp + ts;
 
       MPN_ZERO (wp, ws);  /* zero the accumulator */
+      truncflag = 0;  /* no truncated inputs */
 
       do
         {
           mpfr_exp_t minexp = maxexp - (sq + dq);
           mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
+          int next_truncflag = 0;
 
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
@@ -673,10 +676,30 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                   {
                     mp_size_t vds;
 
-                    /* A part of p[i] may be ignored. Let's set
-                       maxexp2 to minexp if this is the case. */
-                    if (pe - pq < minexp)
-                      maxexp2 = minexp;
+                    /* This covers the following cases:
+                     *     [-+- accumulator ---]
+                     *   [---|----- p[i] ------|--]
+                     *       |   [----- p[i] --|--]
+                     *       |                 |[----- p[i] -----]
+                     *       |                 |    [----- p[i] -----]
+                     *     maxexp           minexp
+                     */
+
+                    if (pe <= minexp)
+                      {
+                        /* p[i] is entirely after the LSB of the accumulator,
+                           so that it will be ignored at this iteration. */
+                        if (pe > maxexp2)
+                          maxexp2 = pe;
+                        continue;
+                      }
+
+                    /* Set next_truncflag if some significant bits of
+                       p[i] are after the LSB of the accumulator, i.e.
+                       at the possible next iteration, p[i] will be
+                       truncated on its most significant part. */
+                    if (MPFR_LIKELY (pe - pq < minexp))
+                      next_truncflag = 1;
 
                     /* We need to ignore the least |vd| significant bits
                        of p[i]. First, let's ignore the least
@@ -684,15 +707,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                     vd = - vd;
                     vds = vd / GMP_NUMB_BITS;
                     vs -= vds;
-                    if (vs <= 0)  /* No overlapping between p[i] */
-                      continue;   /* and the window.             */
+                    MPFR_ASSERTD (vs > 0);  /* see pe <= minexp test above */
                     vp += vds;
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
-                    /* TODO: at the first iteration, this is correct,
-                       but for the following ones, we need to ignore
-                       the bits of exponent >= maxexp. */
+                    /* TODO: we need to ignore the bits of exponent >= maxexp
+                       if truncflag is set. */
                     if (vd != 0)
                       {
                         mpn_rshift (tp, vp, vs > ws ? (vs = ws, ws + 1) : vs,
@@ -720,10 +741,18 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                           mpn_sub_1 (wp + vs, wp + vs, ws - vs, borrow);
                       }
                   }
-                else
+                else  /* vd >= 0 */
                   {
                     mp_limb_t *dp;
                     mp_size_t ds, vds;
+
+                    /* This covers the following cases:
+                     *     [-+- accumulator ---]
+                     *   [---|-- p[i] ------]  |
+                     *    [--|---- p[i] -------]
+                     *       |   [- p[i] -]    |
+                     *     maxexp           minexp
+                     */
 
                     /* We need to ignore the least vd significant bits
                        of the accumulator. First, let's ignore the least
@@ -736,9 +765,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
-                    /* TODO: at the first iteration, this is correct,
-                       but for the following ones, we need to ignore
-                       the bits of exponent >= maxexp. */
+                    /* TODO: we need to ignore the bits of exponent >= maxexp
+                       if truncflag is set. */
                     if (vs > ds)
                       vs = ds;
                     if (vd != 0)
@@ -764,7 +792,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                           mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
                       }
                   }
-              }
+              }  /* end of the iteration (Step 2) */
+
+          truncflag = next_truncflag;
+          if (truncflag)
+            maxexp2 = minexp;
 
           /* TODO: implement steps 3 to 7. */
 
