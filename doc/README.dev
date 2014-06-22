@@ -830,8 +830,8 @@ MPFR manual (mpfr.texi):
     read Section "Inserting Space" in the Texinfo manual.
   * Follow the English typography, not the French one!
   * Beware of the following texinfo bug:
-      http://savannah.gnu.org/bugs/?33329
-      http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
+      https://savannah.gnu.org/bugs/?33329
+      https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
 
 ===========================================================================
 
@@ -839,9 +839,9 @@ Running "make" outputs a lot of information, and warnings are not very
 visible. The following tool "eet" allows a copy of warning messages to
 be output to a different window (e.g. xterm or zenity):
 
-  http://www.vinc17.net/unix/#eet
+  https://www.vinc17.net/unix/#eet
 
-Direct link to the tarball: http://www.vinc17.net/unix/eet.tar.bz2
+Direct link to the tarball: https://www.vinc17.net/unix/eet.tar.bz2
 
 ===========================================================================
 
@@ -862,7 +862,7 @@ The INITIALIZED macro can be used to avoid such warnings with gcc, e.g.
 It uses the "int i = i;" pseudo-initialization trick, disabled with other
 compilers as this is undefined behavior. See:
 
-    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
 
 If a dummy initialization must be added, use preferably an "invalid" value
 (e.g. NULL for pointers, or a value that can be checked with MPFR_ASSERTN
@@ -1050,7 +1050,7 @@ whether they work with ICC. The following paper can give useful information:
 
 To detect compilers, see
 
-  http://sourceforge.net/p/predef/wiki/Compilers/
+  https://sourceforge.net/p/predef/wiki/Compilers/
 
 ===========================================================================
 
