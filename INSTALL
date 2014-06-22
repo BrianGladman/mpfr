@@ -406,8 +406,8 @@ the library of the old GMP version will be used! The best solution
 is to make sure that the dynamic linker configuration is consistent
 with GCC's behavior, for instance by having /usr/local/lib in
 /etc/ld.so.conf or in some file from /etc/ld.so.conf.d (as Debian
-did: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=395177). See
-also http://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html for more
+did: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=395177). See
+also https://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html for more
 information. Alternatively you can use:
   * environment variables. This may sometimes be necessary. If DIR
     is the installation directory of GMP, add DIR/include to your
@@ -620,7 +620,7 @@ a. Using MinGW64
 
 The MinGW64 version of the GCC compiler is now available here:
 
-http://sourceforge.net/projects/mingw-w64/
+https://sourceforge.net/projects/mingw-w64/
 
 It can build both GMP and MPFR for 64-bit Windows applications.
 

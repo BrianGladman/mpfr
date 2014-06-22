@@ -37,7 +37,7 @@ check_gcc33_bug (void)
   printf
     ("Detected optimization bug of gcc 3.3 on Alpha concerning long double\n"
      "comparisons; set_ld tests might fail (set_ld won't work correctly).\n"
-     "See http://gcc.gnu.org/ml/gcc-bugs/2003-10/msg00853.html for more\n"
+     "See https://gcc.gnu.org/ml/gcc-bugs/2003-10/msg00853.html for more\n"
      "information.\n");
 }
 

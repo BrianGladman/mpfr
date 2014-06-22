@@ -264,9 +264,9 @@ AM_PROG_AR
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
 dnl be disabled in the GCC build). See:
-dnl   http://gcc.gnu.org/gcc-4.3/changes.html
+dnl   https://gcc.gnu.org/gcc-4.3/changes.html
 dnl _Decimal64 is not yet defined in GCC for C++:
-dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
+dnl   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
 dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
 dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
 dnl is detected by the x != x test below.
@@ -345,7 +345,7 @@ dnl     even when the -icc option is used (contrary to what is documented
 dnl     on the icc man page).
 dnl   * When ICC is correctly detected (__ICC macro defined), unsetting
 dnl     the GCC variable confuses libtool. See:
-dnl       http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
+dnl       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 dnl   * If need be, the gcc predefined macros __GNUC_* can be disabled
 dnl     thanks to the -no-gcc option.
 dnl   * Now use -mieee-fp instead of -mp (ICC 13 says: option '-mp' is
@@ -546,7 +546,7 @@ dnl programs (such as the compiler), because the behavior could be
 dnl incorrect and even have security implications.
 dnl WARNING! LD_RUN_PATH is not taken into account by the GNU gold ld,
 dnl e.g. from binutils-gold 2.22-5 under Debian; see
-dnl   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
+dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
 saved_LD_RUN_PATH="$LD_RUN_PATH"
 LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
 export LD_RUN_PATH

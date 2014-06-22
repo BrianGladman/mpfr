@@ -116,7 +116,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Let's try to fix UINTMAX_MAX and INTMAX_MAX if these macros don't work
    (e.g. with gcc -ansi -pedantic-errors in 32-bit mode under GNU/Linux),
-   see <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698>. */
+   see <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698>. */
 #ifdef _MPFR_H_HAVE_INTMAX_T
 # ifdef MPFR_HAVE_INTMAX_MAX
 #  define MPFR_UINTMAX_MAX UINTMAX_MAX
@@ -1067,7 +1067,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 
 /* Declare that some variable is initialized before being used (without a
    dummy initialization) in order to avoid some compiler warnings. Use the
-   VAR = VAR trick (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
+   VAR = VAR trick (see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
    only with gcc as this is undefined behavior, and we don't know what other
    compilers do (they may also be smarter). This self-initialization trick
    could be disabled with future gcc versions.
@@ -1080,7 +1080,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
      __clang_minor__ 0
      __clang_patchlevel__ 0
      __clang_version__ "3.0 (tags/RELEASE_30/final)"
-   (see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=705583 for this
+   (see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=705583 for this
    problem with clang). */
 #if defined(__GNUC__) && !defined(__clang__)
 # define INITIALIZED(VAR) VAR = VAR

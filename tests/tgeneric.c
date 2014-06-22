@@ -54,7 +54,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MAKE_STR(S) STR(S)
 
 /* The (void *) below is needed to avoid a warning with gcc 4.2+ and functions
- * with 2 arguments. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
+ * with 2 arguments. See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
  */
 #define TGENERIC_FAIL(S, X, U)                                          \
   do                                                                    \

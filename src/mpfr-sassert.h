@@ -48,7 +48,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #  if __MPFR_GNUC(4,8)
 /* Get rid of annoying warnings "typedef '...' locally defined but not used"
    (new in GCC 4.8). Thanks to Jonathan Wakely for this solution:
-   http://gcc.gnu.org/ml/gcc-help/2013-07/msg00142.html */
+   https://gcc.gnu.org/ml/gcc-help/2013-07/msg00142.html */
 #   define MPFR_TYPEDEF_UNUSED __attribute__ ((unused))
 #  else
 #   define MPFR_TYPEDEF_UNUSED

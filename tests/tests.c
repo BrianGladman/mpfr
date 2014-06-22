@@ -159,7 +159,7 @@ test_version (void)
       printf ("  * A bad configuration in your include/library search paths.\n"
               "  * An inconsistency in the include/library search paths of\n"
               "    your development environment; an example:\n"
-              "      http://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
+              "      https://gcc.gnu.org/ml/gcc-help/2010-11/msg00359.html\n"
               "  * GMP has been upgraded after the first \"make check\".\n"
               "    In such a case, try again after a \"make clean\".\n"
               "  * A new or non-standard version naming is used in GMP.\n"

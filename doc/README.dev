@@ -810,7 +810,7 @@ be difficult when it is in some macro expansion. For GCC users, a new
 experimental -ftrack-macro-expansion option has been added in GCC 4.7.
 "It allows the compiler to emit diagnostic about the current macro
 expansion stack when a compilation error occurs in a macro expansion."
-<http://gcc.gnu.org/gcc-4.7/changes.html>
+<https://gcc.gnu.org/gcc-4.7/changes.html>
 
 ===========================================================================
 

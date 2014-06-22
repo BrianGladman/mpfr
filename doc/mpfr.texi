@@ -13,7 +13,7 @@
 
 @c Note: avoid using non-ASCII characters directly when possible,
 @c as the "info" utility cannot currently handle them.
-@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
+@c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
 
 @copying
 This manual documents how to install and use the Multiple Precision
@@ -603,7 +603,7 @@ gcc myprogram.c -lmpfr -lgmp
 MPFR is built using Libtool and an application can use that to link if
 desired, @MPFRpxreftop{libtool.info, GNU Libtool}
 @c Note: the .info extension has been added to avoid the following bug:
-@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
+@c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
 @c which occurs when reading the info file from the build directory:
 @c   info ./mpfr    or    info -f ./mpfr.info
 @c Due to a poor design, the "info" utility will not find the correct
