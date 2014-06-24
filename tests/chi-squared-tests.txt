@@ -1,0 +1,61 @@
+[About the new t[ne]random_chisq.c tests by Charles Karney]
+
+Here is a patch which:
+
+* Expands the tests carried out by trandom_deviate.c beyond the
+  simplistic goal of improving the code coverage.  Specifically, it now
+  checks
+
+  * that the values provided by mpfr_random_deviate_value at a given
+    precision does not change if additional random words are added to
+    the deviate;
+
+  * that the values provided by mpfr_random_deviate_value at a given
+    precision but different rounding modes are consistent.
+
+* Provides chi-squared tests for mpfr_[ne]random.  Two type of tests are
+  performed
+
+  * using equal width bins at moderate precision (prec = 64) treating
+    the deviates are continuous quantities;
+
+  * assigning a bin to each possible random deviates (within a range) at
+    low precisions (prec = 2, 3, 4).
+
+  By default, these tests are run with 100000 samples.  This value is
+  high enough to catch most glaring problems with the algorithms and is
+  small enough that program completes in a under a second.  More subtle
+  errors in the implementation would be uncovered by running the test
+  with an argument of 10^6 or more.
+
+  These programs abort with status 1 if any of the chi-squared values
+  are too large or too small.  But by the nature of the tests, extreme
+  values are expected occasionally, and I've set the the "too large" and
+  "too small" thresholds to be hit with probability 1/1000.  Since there
+  are 8 such tests in each program (the low+high test on 4 separate
+  chi-squared runs), each test will fail about 8 times out of 1000.  I'm
+  not sure how these tests are best integrated into MPFR's testing
+  framework.  If the automatic tests are run with fixed seeds then it
+  will be easy to ensure that they don't fail.
+
+  The chief virtue of the chi-squared test will be to catch nearly all
+  mistakes made by a maintainer trying to improve the implementations in
+  some way.  In my experience, any such mistake leads to enormous
+  chi-squared values.
+
+  It might also be sensible to eliminate the tests for low values of
+  chi-squared.  Low values are only possible if the deviates are too
+  close to ideally distributed and that is only possible if the deviates
+  are correlated in some way.  This in turn is only possible if gmp's
+  random numbers are correlated and I assume that you have evidence (and
+  tests) that this is not so.
+
+  I've left t[ne]random as is, even though t[ne]random_chisq are
+  performing the same tests in a more comprehensive fashion.  There's
+  some utility in having a set of really simple tests.
+
+At this point, I think you have a comprehensive set of tests for
+mpre_[ne]random.  So I don't have any plans to add more tests.  Let me
+know if have any questions.
+
+  --Charles

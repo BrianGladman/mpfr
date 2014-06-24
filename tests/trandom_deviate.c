@@ -102,6 +102,122 @@ test_compare (long nbtests, int verbose)
             count / (double) (10 * nbtests));
 }
 
+/* A random_deviate should consistently return the same value at a given
+ * precision, even if intervening operations have caused the fraction to be
+ * extended. */
+static void
+test_value_consistency (long nbtests)
+{
+  mpfr_t a1, a2, a3, b1, b2, b3;
+  mpfr_random_deviate_t u;
+  int inexa1, inexa2, inexa3, inexb1, inexb2, inexb3;
+  mpfr_prec_t prec1, prec2, prec3;
+  mpfr_rnd_t rnd;
+  long i;
+  unsigned n;
+  int neg;
+
+  /* Pick prec{1,2,3} random in [2,101] */
+  prec1 = 2 + gmp_urandomm_ui (RANDS, 100);
+  prec2 = 2 + gmp_urandomm_ui (RANDS, 100);
+  prec3 = 2 + gmp_urandomm_ui (RANDS, 100);
+
+  rnd = MPFR_RNDN;
+  mpfr_random_deviate_init (u);
+  mpfr_init2 (a1, prec1);
+  mpfr_init2 (b1, prec1);
+  mpfr_init2 (a2, prec2);
+  mpfr_init2 (b2, prec2);
+  mpfr_init2 (a3, prec3);
+  mpfr_init2 (b3, prec3);
+
+  for (i = 0; i < nbtests; ++i)
+    {
+      mpfr_random_deviate_reset (u);
+      n = gmp_urandomb_ui (RANDS, 4);
+      neg = gmp_urandomb_ui (RANDS, 1);
+      inexa1 = mpfr_random_deviate_value (neg, n, u, a1, RANDS, rnd);
+      inexa2 = mpfr_random_deviate_value (neg, n, u, a2, RANDS, rnd);
+      inexa3 = mpfr_random_deviate_value (neg, n, u, a3, RANDS, rnd);
+      inexb1 = mpfr_random_deviate_value (neg, n, u, b1, RANDS, rnd);
+      inexb2 = mpfr_random_deviate_value (neg, n, u, b2, RANDS, rnd);
+      inexb3 = mpfr_random_deviate_value (neg, n, u, b3, RANDS, rnd);
+      /* Of course a1, a2, and a3 should all be nearly equal.  But more
+       * crucially (and easier to test), we need a1 == b1, etc.  (This is not a
+       * trivial issue because the detailed mpfr operations giving b1 will be
+       * different than for a1, if, e.g., prec2 > prec1. */
+      if ( !( inexa1 == inexb1 && mpfr_equal_p (a1, b1) &&
+              inexa2 == inexb2 && mpfr_equal_p (a2, b2) &&
+              inexa3 == inexb3 && mpfr_equal_p (a3, b3) ) )
+        {
+          printf ("Error: random_deviate values are inconsistent.\n");
+          exit (1);
+        }
+    }
+  mpfr_random_deviate_clear (u);
+  mpfr_clears (a1, a2, a3, b1, b2, b3, (mpfr_ptr) 0);
+}
+
+/* Check that the values from random_deviate with different rounding modes are
+ * consistent. */
+static void
+test_value_round (long nbtests, mpfr_prec_t prec)
+{
+  mpfr_t xn, xd, xu, xz, xa, t;
+  mpfr_random_deviate_t u;
+  int inexn, inexd, inexu, inexz, inexa, inext;
+  long i;
+  unsigned n;
+  int neg, s;
+
+  mpfr_random_deviate_init (u);
+  mpfr_inits2 (prec, xn, xd, xu, xz, xa, t, (mpfr_ptr) 0);
+
+  for (i = 0; i < nbtests; ++i)
+    {
+      mpfr_random_deviate_reset (u);
+      n = gmp_urandomb_ui (RANDS, 4);
+      neg = gmp_urandomb_ui (RANDS, 1);
+      s = neg ? -1 : 1;
+      inexn = mpfr_random_deviate_value (neg, n, u, xn, RANDS, MPFR_RNDN);
+      inexd = mpfr_random_deviate_value (neg, n, u, xd, RANDS, MPFR_RNDD);
+      inexu = mpfr_random_deviate_value (neg, n, u, xu, RANDS, MPFR_RNDU);
+      inexz = mpfr_random_deviate_value (neg, n, u, xz, RANDS, MPFR_RNDZ);
+      inexa = mpfr_random_deviate_value (neg, n, u, xa, RANDS, MPFR_RNDA);
+      inext = mpfr_set (t, xn, MPFR_RNDN);
+      /* Check inexact values */
+      if ( !( inexn != 0 && inext == 0 &&
+              inexd     < 0 && inexu     > 0 &&
+              inexz * s < 0 && inexa * s > 0 ) )
+        {
+          printf ("n %d t %d d %d u %d z %d a %d s %d\n",
+                  inexn, inext, inexd, inexu, inexz, inexa, s);
+          printf ("Error: random_deviate has wrong values for inexact.\n");
+          exit (1);
+        }
+      if (inexn < 0)
+        mpfr_nextabove (t);
+      else
+        mpfr_nextbelow (t);
+      /* Check that x{d,u,z,a} == xn is the inexact flags match, else
+       * x{d,u,z,a} == t */
+      if ( !( mpfr_equal_p(xd, SAME_SIGN(inexn, inexd) ? xn : t) &&
+              mpfr_equal_p(xu, SAME_SIGN(inexn, inexu) ? xn : t) &&
+              mpfr_equal_p(xz, SAME_SIGN(inexn, inexz) ? xn : t) &&
+              mpfr_equal_p(xa, SAME_SIGN(inexn, inexa) ? xn : t) ) )
+        {
+          printf ("n %d t %d d %d u %d z %d a %d s %d\n",
+                  inexn, inext, inexd, inexu, inexz, inexa, s);
+          mpfr_printf ("n %.4Rf t %.4Rf d %.4Rf u %.4Rf z %.4Rf a %.4Rf\n",
+                       xn, t, xd, xu, xz, xa);
+          printf ("Error: random_deviate rounds inconsistently.\n");
+          exit (1);
+        }
+    }
+  mpfr_random_deviate_clear (u);
+  mpfr_clears (xn, xd, xu, xz, xa, t, (mpfr_ptr) 0);
+}
+
 /* Test mpfr_random_deviate_value.  Check for the leading bit in the number in
  * various positions. */
 static void
@@ -191,6 +307,9 @@ main (int argc, char *argv[])
     }
 
   test_compare (nbtests, verbose);
+  test_value_consistency (nbtests);
+  test_value_round (nbtests, 2);
+  test_value_round (nbtests, 64);
   test_value (nbtests,  2, MPFR_RNDD, verbose);
   test_value (nbtests,  5, MPFR_RNDU, verbose);
   test_value (nbtests, 24, MPFR_RNDN, verbose);
