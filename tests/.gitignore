@@ -62,6 +62,7 @@
 /teint
 /teq
 /terandom
+/terandom_chisq
 /terf
 /texceptions
 /texp
@@ -116,6 +117,7 @@
 /tmul_ui
 /tnext
 /tnrandom
+/tnrandom_chisq
 /tout_str
 /toutimpl
 /tpow
