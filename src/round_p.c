@@ -77,7 +77,7 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
   /* Check first limb */
   bp += bn-1-k;
   tmp = *bp--;
-  mask = s == GMP_NUMB_BITS ? MP_LIMB_T_MAX : MPFR_LIMB_MASK (s);
+  mask = s == GMP_NUMB_BITS ? MPFR_LIMB_MAX : MPFR_LIMB_MASK (s);
   tmp &= mask;
 
   if (MPFR_LIKELY (n == 0))
@@ -106,14 +106,14 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
     {
       /* Check if all (n-1) limbs are 11111111111111111 */
       while (--n)
-        if (*bp-- != MP_LIMB_T_MAX)
+        if (*bp-- != MPFR_LIMB_MAX)
           return 1;
       /* Check if final error limb is 0 */
       s = GMP_NUMB_BITS - err % GMP_NUMB_BITS;
       if (s == GMP_NUMB_BITS)
         return 0;
       tmp = *bp >> s;
-      return tmp != (MP_LIMB_T_MAX >> s);
+      return tmp != (MPFR_LIMB_MAX >> s);
     }
   else
     {

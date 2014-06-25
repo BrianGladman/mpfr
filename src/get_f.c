@@ -64,7 +64,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           SIZ (x) = sx;
           xp = PTR (x);
           for (i = 0; i < sx; i++)
-            xp[i] = MP_LIMB_T_MAX;
+            xp[i] = MPFR_LIMB_MAX;
 
           if (MPFR_IS_POS (y))
             return -1;

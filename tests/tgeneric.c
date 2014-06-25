@@ -162,7 +162,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           xprec = prec;
           if (randlimb () & 1)
             {
-              xprec *= (double) randlimb () / MP_LIMB_T_MAX;
+              xprec *= (double) randlimb () / MPFR_LIMB_MAX;
               if (xprec < MPFR_PREC_MIN)
                 xprec = MPFR_PREC_MIN;
             }

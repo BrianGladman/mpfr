@@ -948,29 +948,17 @@ typedef intmax_t mpfr_eexp_t;
  ******************* Limb Macros **********************
  ******************************************************/
 
- /* Definition of MPFR_LIMB_HIGHBIT */
-#if defined(GMP_LIMB_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
-#elif defined(MP_LIMB_T_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
-#else
-# error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
-#endif
+/* Definition of simple mp_limb_t constants */
+#define MPFR_LIMB_ZERO    ((mp_limb_t) 0)
+#define MPFR_LIMB_ONE     ((mp_limb_t) 1)
+#define MPFR_LIMB_HIGHBIT (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1))
+#define MPFR_LIMB_MAX     ((mp_limb_t) -1)
 
 /* Mask to get the Most Significant Bit of a limb */
-#define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
-
-/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO */
-#ifdef CNST_LIMB
-# define MPFR_LIMB_ONE  CNST_LIMB(1)
-# define MPFR_LIMB_ZERO CNST_LIMB(0)
-#else
-# define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
-# define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
-#endif
+#define MPFR_LIMB_MSB(l) ((l) & MPFR_LIMB_HIGHBIT)
 
 /* Mask for the low 's' bits of a limb */
-#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE<<(s))-MPFR_LIMB_ONE)
+#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
 
 

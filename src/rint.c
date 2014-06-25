@@ -278,7 +278,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
 
       if (sh != 0)
-        rp[0] &= MP_LIMB_T_MAX << sh;
+        rp[0] &= MPFR_LIMB_MAX << sh;
 
       /* If u is a representable integer, there is no rounding. */
       if (uflags == 0)

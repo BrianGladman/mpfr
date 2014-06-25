@@ -59,9 +59,9 @@ mpfr_nexttozero (mpfr_ptr x)
             {
               mp_size_t i;
               MPFR_SET_EXP (x, exp - 1);
-              xp[0] = MP_LIMB_T_MAX << sh;
+              xp[0] = MPFR_LIMB_MAX << sh;
               for (i = 1; i < xn; i++)
-                xp[i] = MP_LIMB_T_MAX;
+                xp[i] = MPFR_LIMB_MAX;
             }
         }
     }
