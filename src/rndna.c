@@ -55,7 +55,7 @@ typedef enum {
 
 #define MPFR_MALLOC_EXTENDED_SIZE(s) \
   (MANTISSA * sizeof(mpfr_size_limb_extended_t) + \
-   BYTES_PER_MP_LIMB * (size_t) (s))
+   MPFR_BYTES_PER_MP_LIMB * (size_t) (s))
 
 /* This function is called before the applied function
    and prepares rop to give it one more bit of precision

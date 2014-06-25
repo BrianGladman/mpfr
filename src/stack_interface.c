@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 size_t
 mpfr_custom_get_size (mpfr_prec_t prec)
 {
-  return MPFR_PREC2LIMBS (prec) * BYTES_PER_MP_LIMB;
+  return MPFR_PREC2LIMBS (prec) * MPFR_BYTES_PER_MP_LIMB;
 }
 
 #undef mpfr_custom_init

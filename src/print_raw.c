@@ -91,7 +91,7 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mpfr_prec_t r)
     {
       for(i = GMP_NUMB_BITS-1 ; i >=0 ; i--)
         {
-          c = (p[n] & (((mp_limb_t)1L)<<i)) ? '1' : '0';
+          c = (p[n] & (MPFR_LIMB_ONE << i)) ? '1' : '0';
           putchar(c);
           count++;
           if (count == r)

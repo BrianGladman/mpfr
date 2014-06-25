@@ -1134,7 +1134,7 @@ dnl  Needed for mpfr-longlong.h; this is currently necessary for s390.
 dnl
 dnl  TODO: Replace this with a cleaner type size detection, as this
 dnl  solution only works with gcc and assumes CHAR_BIT == 8. Probably use
-dnl  <stdint.h>, and <http://gcc.gnu.org/viewcvs/trunk/config/stdint.m4>
+dnl  <stdint.h>, and <https://gcc.gnu.org/viewcvs/gcc/trunk/config/stdint.m4>
 dnl  as a fallback.
 
 AC_DEFUN([GMP_C_ATTRIBUTE_MODE],

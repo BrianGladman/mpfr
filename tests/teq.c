@@ -37,7 +37,7 @@ teq (mpfr_t x)
     {
       mpfr_set (y, x, MPFR_RNDN);
 
-      MPFR_MANT(y) [mx] ^= (mp_limb_t) 1 << px;
+      MPFR_MANT(y) [mx] ^= MPFR_LIMB_ONE << px;
 
       if (mpfr_eq(y, x, k) || !mpfr_eq(y, x, k - 1))
         {

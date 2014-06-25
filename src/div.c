@@ -240,6 +240,29 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
    *                                                                        *
    **************************************************************************/
 
+  /* when the divisor has one limb, we can use mpfr_div_ui, which should be
+     faster, assuming there is no intermediate overflow or underflow.
+     The divisor interpreted as an integer satisfies
+     2^(GMP_NUMB_BITS-1) <= vm < 2^GMP_NUMB_BITS, thus the quotient
+     satisfies 2^(EXP(u)-1-GMP_NUMB_BITS) < u/vm < 2^(EXP(u)-GMP_NUMB_BITS+1)
+     and its exponent is either EXP(u)-GMP_NUMB_BITS or one more. */
+  if (vsize <= 1 && __gmpfr_emin <= MPFR_EXP(u) - GMP_NUMB_BITS
+      && MPFR_EXP(u) - GMP_NUMB_BITS + 1 <= __gmpfr_emax
+      && vp[0] <= ULONG_MAX)
+    {
+      mpfr_exp_t exp_v = MPFR_EXP(v); /* save it in case q=v */
+      if (MPFR_SIGN(v) > 0)
+        inex = mpfr_div_ui (q, u, vp[0], rnd_mode);
+      else
+        {
+          inex = -mpfr_div_ui (q, u, vp[0], MPFR_INVERT_RND(rnd_mode));
+          MPFR_CHANGE_SIGN(q);
+        }
+      /* q did not under/overflow */
+      MPFR_EXP(q) -= exp_v - GMP_NUMB_BITS;
+      return mpfr_check_range (q, inex, rnd_mode);
+    }
+
   MPFR_TMP_MARK(marker);
 
   /* set sign */
@@ -551,7 +574,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               if (qh)
                 qh2 = mpn_add_n (sp + qsize, sp + qsize, vp, k);
               else
-                qh2 = (mp_limb_t) 0;
+                qh2 = MPFR_LIMB_ZERO;
               qp[0] ^= sticky3orig; /* restore truncated quotient */
 
               /* compare qh2 + {sp, k + qsize} to {ap, qsize} + low(u) */

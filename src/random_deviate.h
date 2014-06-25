@@ -44,33 +44,40 @@ typedef __mpfr_random_deviate_struct *mpfr_random_deviate_ptr;
 extern "C" {
 #endif
 
-  /* allocate and set to (0,1) */
-  void mpfr_random_deviate_init(mpfr_random_deviate_ptr x);
+/* allocate and set to (0,1) */
+__MPFR_DECLSPEC void
+  mpfr_random_deviate_init _MPFR_PROTO((mpfr_random_deviate_ptr));
 
-  /* reset to (0,1) */
-  void mpfr_random_deviate_reset(mpfr_random_deviate_ptr x);
+/* reset to (0,1) */
+__MPFR_DECLSPEC void
+  mpfr_random_deviate_reset _MPFR_PROTO((mpfr_random_deviate_ptr));
 
-  /* deallocate */
-  void mpfr_random_deviate_clear(mpfr_random_deviate_ptr x);
+/* deallocate */
+__MPFR_DECLSPEC void
+  mpfr_random_deviate_clear _MPFR_PROTO((mpfr_random_deviate_ptr));
 
-  /* swap two random deviates */
-  void mpfr_random_deviate_swap(mpfr_random_deviate_ptr x,
-                                mpfr_random_deviate_ptr y);
+/* swap two random deviates */
+__MPFR_DECLSPEC void
+  mpfr_random_deviate_swap _MPFR_PROTO((mpfr_random_deviate_ptr,
+                                        mpfr_random_deviate_ptr));
 
-  /* return kth bit of fraction, representing 2^-k */
-  int mpfr_random_deviate_tstbit(mpfr_random_deviate_ptr x,
-                                 mpfr_random_size_t k,
-                                 gmp_randstate_t r);
+/* return kth bit of fraction, representing 2^-k */
+__MPFR_DECLSPEC int
+  mpfr_random_deviate_tstbit _MPFR_PROTO((mpfr_random_deviate_ptr,
+                                          mpfr_random_size_t,
+                                          gmp_randstate_t));
 
-  /* compare two random deviates, x < y */
-  int mpfr_random_deviate_less(mpfr_random_deviate_ptr x,
-                               mpfr_random_deviate_ptr y,
-                               gmp_randstate_t r);
+/* compare two random deviates, x < y */
+__MPFR_DECLSPEC int
+  mpfr_random_deviate_less _MPFR_PROTO((mpfr_random_deviate_ptr,
+                                        mpfr_random_deviate_ptr,
+                                        gmp_randstate_t));
 
-  /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
-  int mpfr_random_deviate_value(int neg, unsigned long n,
-                                mpfr_random_deviate_ptr x, mpfr_t z,
-                                gmp_randstate_t r, mpfr_rnd_t rnd);
+/* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
+__MPFR_DECLSPEC int
+  mpfr_random_deviate_value _MPFR_PROTO((int, unsigned long,
+                                         mpfr_random_deviate_ptr, mpfr_t,
+                                         gmp_randstate_t, mpfr_rnd_t));
 
 #if defined(__cplusplus)
 }

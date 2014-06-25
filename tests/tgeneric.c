@@ -54,7 +54,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MAKE_STR(S) STR(S)
 
 /* The (void *) below is needed to avoid a warning with gcc 4.2+ and functions
- * with 2 arguments. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
+ * with 2 arguments. See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
  */
 #define TGENERIC_FAIL(S, X, U)                                          \
   do                                                                    \
@@ -162,7 +162,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           xprec = prec;
           if (randlimb () & 1)
             {
-              xprec *= (double) randlimb () / MP_LIMB_T_MAX;
+              xprec *= (double) randlimb () / MPFR_LIMB_MAX;
               if (xprec < MPFR_PREC_MIN)
                 xprec = MPFR_PREC_MIN;
             }

@@ -1212,6 +1212,39 @@ This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 (Note: the algorithm from Paterson and Stockmeyer was rediscovered by Smith,
 who named it ``concurrent series'' in \cite{Smith91}.)
 
+\subsection{The logarithm function}
+
+The logarithm function \verb!mpfr_log! is defined using this
+approximated formula~\cite{Muller97} based on the arithmetic-geometric
+mean (denoted by AG):
+$$ \log x \approx \frac{\pi}{\mbox{2~AG(1,4/s)}} - m \log 2  + o(\log x ~2^{-p})$$
+with $ s = x \cdot 2^m > 2^{p/2}$.\\
+
+
+First, the arithmetic-geometric mean $\mbox{AG}(u_0,v_0)$ is computed as in
+mathematics with rounding to nearest:
+$$ {\tilde u_{n+1}} = {\mathcal N} \left( \sqrt{{\mathcal N}({\tilde u_n}~{\tilde v_n})}~\right) \qquad
+ {\tilde v_{n+1}} = \frac{{\mathcal N} ({\tilde u_n} + {\tilde v_n})}{2} $$
+
+We denote by $u_n$ and $v_n$ the exact mathematical values. By
+induction, it can be proved that:
+$$ u_n~ {\left(1-\frac{\ulp(1)}{2}\right)}^{\frac{3}{2}n+1} \leq {\tilde u_n} \leq  u_n~ {\left(1+\frac{\ulp(1)}{2}\right)}^{\frac{3}{2}n+1}$$
+$$ v_n~ {\left(1-\frac{\ulp(1)}{2}\right)}^{\frac{3}{2}n+1} \leq {\tilde v_n} \leq  {\tilde v_n}~ {\left(1+\frac{\ulp(1)}{2}\right)}^{\frac{3}{2}n+1}$$
+
+Then, if $n \ge \lceil \log \left( \frac{v_0 - u_0}{2~u_0}\right) \rceil$,
+$$\frac{|{\tilde v_n} - AG(u_0,v_0)|}{v_0} \le n~2^{\frac{3}{2}n+2-p}+8 \cdot 4^{- \frac{2^n~u_0}{v_0 - u_0}}.$$
+Therefore the arithmetic-geometric mean can be computed using the
+previous error bound and the \verb!mpfr_can_round! function. It
+should be noted that the arithmetic-geometric mean of two different
+non-zero floating-point numbers is transcendental, therefore there is
+no table maker's dilemma here.
+
+
+From the arithmetic-geometric mean, we deduce the logarithm, naively
+bounding the round-off errors. The only point is that the subtraction
+may be a cancellation: a maximum of $\log \left(\frac{p \log
+  2}{|x-1|}\right)$ bits can be lost.
+
 \subsection{The error function}
 
 Let $n$ be the target precision, and $x$ be the input value.

@@ -75,7 +75,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (mpfr_get_emax() != previous_emax))
     {
       /* Recompute the emax bound */
-      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
+      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / MPFR_BYTES_PER_MP_LIMB + 1];
       mpfr_t e;
 
       /* We extend the exponent range and save the flags. */
@@ -102,7 +102,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* emin bound is cached. Check if the value in cache is ok */
   if (MPFR_UNLIKELY (mpfr_get_emin() != previous_emin))
     {
-      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / BYTES_PER_MP_LIMB + 1];
+      mp_limb_t e_limb[(sizeof (mpfr_exp_t) - 1) / MPFR_BYTES_PER_MP_LIMB + 1];
       mpfr_t e;
 
       /* We extend the exponent range and save the flags. */

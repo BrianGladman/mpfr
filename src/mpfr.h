@@ -410,7 +410,7 @@ __MPFR_DECLSPEC int mpfr_set_d _MPFR_PROTO ((mpfr_ptr, double, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_set_flt _MPFR_PROTO ((mpfr_ptr, float, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 /* _Decimal64 is not defined in C++,
-   cf http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364 */
+   cf https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364 */
 __MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, _Decimal64,
                                                      mpfr_rnd_t));
 #endif
@@ -892,8 +892,8 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    are OK since if X is a constant expression, then (unsigned long) X is
    also a constant expression, so that the optimizations still work. The
    warnings are probably related to the following two bugs:
-     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210
-     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38470 (possibly a variant)
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=38470 (possibly a variant)
    and the casts could be removed once these bugs are fixed.
    Casts shouldn't be used on the generic calls (to the ..._2exp functions),
    where implicit conversions are performed. Indeed, having at least one

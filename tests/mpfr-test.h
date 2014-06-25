@@ -40,7 +40,7 @@ extern "C" {
 
 /* generates a random long int, a random double,
    and corresponding seed initializing */
-#define DBL_RAND() ((double) randlimb() / (double) MP_LIMB_T_MAX)
+#define DBL_RAND() ((double) randlimb() / (double) MPFR_LIMB_MAX)
 
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */

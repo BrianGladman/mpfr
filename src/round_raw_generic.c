@@ -114,8 +114,8 @@ mpfr_round_raw_generic(
         }
       else
         {
-          lomask = ~(mp_limb_t) 0;
-          himask = ~(mp_limb_t) 0;
+          lomask = MPFR_LIMB_MAX;
+          himask = MPFR_LIMB_MAX;
         }
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
@@ -239,7 +239,7 @@ mpfr_round_raw_generic(
           himask = ~MPFR_LIMB_MASK (GMP_NUMB_BITS - rw);
         }
       else
-        himask = ~(mp_limb_t) 0;
+        himask = MPFR_LIMB_MAX;
       MPN_COPY_INCR(yp, xp + xsize - nw, nw);
       yp[0] &= himask;
 #endif

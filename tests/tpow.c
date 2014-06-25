@@ -1551,6 +1551,36 @@ bug20110320 (void)
   set_emin (emin);
 }
 
+static void
+tst20140422 (void)
+{
+  mpfr_t x, y, z1, z2;
+  int inex, rnd;
+  unsigned int flags;
+
+  mpfr_inits2 (128, x, y, z1, z2, (mpfr_ptr) 0);
+  mpfr_set_ui (x, 1296, MPFR_RNDN);
+  mpfr_set_ui_2exp (y, 3, -2, MPFR_RNDN);
+  mpfr_set_ui (z2, 216, MPFR_RNDN);
+  RND_LOOP (rnd)
+    {
+      mpfr_clear_flags ();
+      inex = mpfr_pow (z1, x, y, (mpfr_rnd_t) rnd);
+      flags = __gmpfr_flags;
+      if (inex != 0 || flags != 0 || ! mpfr_equal_p (z1, z2))
+        {
+          printf ("Error in bug20140422 with %s\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          printf ("Expected inex = 0, flags = 0, z = ");
+          mpfr_dump (z2);
+          printf ("Got      inex = %d, flags = %u, z = ", inex, flags);
+          mpfr_dump (z1);
+          exit (1);
+        }
+    }
+  mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1579,6 +1609,7 @@ main (int argc, char **argv)
   bug20080721 ();
   bug20080820 ();
   bug20110320 ();
+  tst20140422 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);

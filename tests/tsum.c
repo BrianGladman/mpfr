@@ -432,8 +432,11 @@ static void
 check_extreme (void)
 {
   mpfr_t u, v, w, x, y;
-  mpfr_ptr t[] = { u, v };
+  mpfr_ptr t[2];
   int i, inex, r;
+
+  t[0] = u;
+  t[1] = v;
 
   mpfr_inits2 (32, u, v, w, x, y, (mpfr_ptr) 0);
   mpfr_setmin (u, mpfr_get_emax ());

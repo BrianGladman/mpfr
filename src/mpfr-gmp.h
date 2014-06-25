@@ -110,15 +110,10 @@ void *alloca (size_t);
 #endif
 
 /* Define some macros */
-#define BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
-
-#define MP_LIMB_T_MAX (~(mp_limb_t)0)
 
 #define ULONG_HIGHBIT (ULONG_MAX ^ ((unsigned long) ULONG_MAX >> 1))
 #define UINT_HIGHBIT  (UINT_MAX ^ ((unsigned) UINT_MAX >> 1))
 #define USHRT_HIGHBIT ((unsigned short) (USHRT_MAX ^ ((unsigned short) USHRT_MAX >> 1)))
-
-#define GMP_LIMB_HIGHBIT (MP_LIMB_T_MAX ^ (MP_LIMB_T_MAX >> 1))
 
 
 #if __GMP_MP_SIZE_T_INT
@@ -130,19 +125,19 @@ void *alloca (size_t);
 #endif
 
 /* MP_LIMB macros */
-#define MPN_ZERO(dst, n) memset((dst), 0, (n)*BYTES_PER_MP_LIMB)
-#define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
-#define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
+#define MPN_ZERO(dst, n) memset((dst), 0, (n)*MPFR_BYTES_PER_MP_LIMB)
+#define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
+#define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
 #define MPN_COPY(dst,src,n) \
   do                                                                  \
     {                                                                 \
       if ((dst) != (src))                                             \
         {                                                             \
           MPFR_ASSERTD ((char *) (dst) >= (char *) (src) +            \
-                                          (n) * BYTES_PER_MP_LIMB ||  \
+                                     (n) * MPFR_BYTES_PER_MP_LIMB ||  \
                         (char *) (src) >= (char *) (dst) +            \
-                                          (n) * BYTES_PER_MP_LIMB);   \
-          memcpy ((dst), (src), (n) * BYTES_PER_MP_LIMB);             \
+                                     (n) * MPFR_BYTES_PER_MP_LIMB);   \
+          memcpy ((dst), (src), (n) * MPFR_BYTES_PER_MP_LIMB);        \
         }                                                             \
     }                                                                 \
   while (0)
@@ -236,7 +231,7 @@ typedef unsigned int UHWtype;
 /* Use (4.0 * ...) instead of (2.0 * ...) to work around buggy compilers
    that don't convert ulong->double correctly (eg. SunOS 4 native cc).  */
 #undef MP_BASE_AS_DOUBLE
-#define MP_BASE_AS_DOUBLE (4.0 * ((mp_limb_t) 1 << (GMP_NUMB_BITS - 2)))
+#define MP_BASE_AS_DOUBLE (4.0 * (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 2)))
 
 /* Structure for conversion between internal binary format and
    strings in base 2..36.  */
@@ -337,7 +332,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
   do {                                                    \
     mp_limb_t dummy MPFR_MAYBE_UNUSED;                    \
     MPFR_ASSERTD ((xl) != 0);                             \
-    udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
+    udiv_qrnnd (invxl, dummy, ~(xl), MPFR_LIMB_MAX, xl);  \
   } while (0)
 #endif
 

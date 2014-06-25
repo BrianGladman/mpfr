@@ -62,7 +62,7 @@ For any copyright year range specified as YYYY-ZZZZ in this package,
 note that the range specifies every single year in that closed interval.
 
 
-You can get the latest source code by Subversion at INRIAGForge:
+You can get the latest source code by Subversion at InriaForge:
 
   svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
 
@@ -81,7 +81,7 @@ can now use the "https:" scheme (a.k.a. DAV) instead of "svn:".
 For more information about Subversion, please see:
 
   * http://svnbook.red-bean.com/ (the official Subversion book);
-  * http://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
+  * https://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
     but interesting general information can be found there);
   * http://subversion.apache.org/faq.html (the Subversion FAQ).
 

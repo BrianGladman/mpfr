@@ -62,7 +62,7 @@ mpfr_check (mpfr_srcptr x)
   if (MPFR_IS_SINGULAR (x))
     return MPFR_IS_ZERO(x) || MPFR_IS_NAN(x) || MPFR_IS_INF(x);
   /* Check the most significant limb (its MSB must be 1) */
-  if ((xm[MPFR_LAST_LIMB(x)] & MPFR_LIMB_HIGHBIT) == 0)
+  if (! MPFR_IS_NORMALIZED (x))
     return 0;
   /* Check the least significant limb (the trailing bits must be 0) */
   rw = prec % GMP_NUMB_BITS;

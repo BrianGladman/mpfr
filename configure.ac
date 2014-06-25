@@ -264,9 +264,9 @@ AM_PROG_AR
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
 dnl be disabled in the GCC build). See:
-dnl   http://gcc.gnu.org/gcc-4.3/changes.html
+dnl   https://gcc.gnu.org/gcc-4.3/changes.html
 dnl _Decimal64 is not yet defined in GCC for C++:
-dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
+dnl   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
 dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
 dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
 dnl is detected by the x != x test below.
@@ -345,7 +345,7 @@ dnl     even when the -icc option is used (contrary to what is documented
 dnl     on the icc man page).
 dnl   * When ICC is correctly detected (__ICC macro defined), unsetting
 dnl     the GCC variable confuses libtool. See:
-dnl       http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
+dnl       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 dnl   * If need be, the gcc predefined macros __GNUC_* can be disabled
 dnl     thanks to the -no-gcc option.
 dnl   * Now use -mieee-fp instead of -mp (ICC 13 says: option '-mp' is
@@ -509,23 +509,29 @@ if test "$use_gmp_build" = yes ; then
    ])
 fi
 
-dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
+dnl Check for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency.
+dnl Problems may occur if gmp.h was generated with some ABI
+dnl and is used with another ABI (or if nails are used).
 dnl This test doesn't need to link with libgmp (at least it shouldn't).
-if test "$use_gmp_build" = yes ; then
-  AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+AC_MSG_CHECKING(for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
 #include <limits.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 ]], [[
-  return GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
-         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+  if (GMP_NUMB_BITS == sizeof(mp_limb_t) * CHAR_BIT)
+    return 0;
+  fprintf (stderr, "GMP_NUMB_BITS     = %ld\n", (long) GMP_NUMB_BITS);
+  fprintf (stderr, "sizeof(mp_limb_t) = %ld\n", (long) sizeof(mp_limb_t));
+  fprintf (stderr, "sizeof(mp_limb_t) * CHAR_BIT = %ld != GMP_NUMB_BITS\n",
+           (long) (sizeof(mp_limb_t) * CHAR_BIT));
+  return 1;
 ]])], [AC_MSG_RESULT(yes)], [
        AC_MSG_RESULT(no)
-       AC_MSG_ERROR([GMP_NUMB_BITS is incorrect.
-You probably need to change some of the GMP or MPFR compile options.])],
+       AC_MSG_ERROR([GMP_NUMB_BITS and sizeof(mp_limb_t) are not consistent.
+You probably need to change some of the GMP or MPFR compile options.
+See 'config.log' for details (search for GMP_NUMB_BITS).])],
        [AC_MSG_RESULT([can't test])])
-fi
 
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
@@ -540,7 +546,7 @@ dnl programs (such as the compiler), because the behavior could be
 dnl incorrect and even have security implications.
 dnl WARNING! LD_RUN_PATH is not taken into account by the GNU gold ld,
 dnl e.g. from binutils-gold 2.22-5 under Debian; see
-dnl   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
+dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
 saved_LD_RUN_PATH="$LD_RUN_PATH"
 LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
 export LD_RUN_PATH

@@ -161,9 +161,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           mpn_lshift (yp, tmp + 1, yn, shlz);
           yp[0] += tmp[0] >> (GMP_NUMB_BITS - shlz);
 
-          if (w > (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
+          if (w > MPFR_LIMB_HIGHBIT)
             { middle = 1; }
-          else if (w < (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
+          else if (w < MPFR_LIMB_HIGHBIT)
             { middle = -1; }
           else
             { middle = (c != 0); }

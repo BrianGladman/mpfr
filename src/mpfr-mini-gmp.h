@@ -31,10 +31,6 @@ extern char gmp_version[];
 #define GMP_NUMB_BITS 64
 #endif
 
-#ifndef GMP_NUMB_MASK
-#define GMP_NUMB_MASK (~((mp_limb_t) 0))
-#endif
-
 #ifndef mp_bits_per_limb
 extern const int mp_bits_per_limb;
 #endif

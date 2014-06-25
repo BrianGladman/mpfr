@@ -47,8 +47,9 @@ Changes from versions 3.1.* to version 3.2.0:
 - Improved MPFR manual.
 - New MPFRbench program (see the tools/bench directory).
 - Speedup in the mpfr_const_euler function (contributed by Fredrik Johansson),
-  and in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
-  mpfr_digamma, mpfr_lngamma and mpfr_lgamma).
+  in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
+  mpfr_digamma, mpfr_lngamma and mpfr_lgamma), and in mpfr_div when the
+  divisor has one limb.
 - Bug fixes. In particular, a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC.
 

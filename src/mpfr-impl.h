@@ -116,7 +116,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Let's try to fix UINTMAX_MAX and INTMAX_MAX if these macros don't work
    (e.g. with gcc -ansi -pedantic-errors in 32-bit mode under GNU/Linux),
-   see <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698>. */
+   see <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698>. */
 #ifdef _MPFR_H_HAVE_INTMAX_T
 # ifdef MPFR_HAVE_INTMAX_MAX
 #  define MPFR_UINTMAX_MAX UINTMAX_MAX
@@ -129,7 +129,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-
+#define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
 /******************************************************
  ************** Attributes definition *****************
@@ -827,11 +827,13 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_SET_ZERO(x) (MPFR_EXP(x) =  MPFR_EXP_ZERO)
 #define MPFR_NOTZERO(x)  (MPFR_EXP(x) != MPFR_EXP_ZERO)
 
+#define MPFR_IS_NORMALIZED(x) \
+  (MPFR_LIMB_MSB (MPFR_MANT(x)[MPFR_LAST_LIMB(x)]) != 0)
+
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
-#define MPFR_IS_PURE_FP(x)  (!MPFR_IS_SINGULAR(x) && \
-  (MPFR_ASSERTD ((MPFR_MANT(x)[MPFR_LAST_LIMB(x)]  \
-                  & MPFR_LIMB_HIGHBIT) != 0), 1))
+#define MPFR_IS_PURE_FP(x) \
+  (!MPFR_IS_SINGULAR(x) && (MPFR_ASSERTD (MPFR_IS_NORMALIZED (x)), 1))
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
@@ -948,29 +950,17 @@ typedef intmax_t mpfr_eexp_t;
  ******************* Limb Macros **********************
  ******************************************************/
 
- /* Definition of MPFR_LIMB_HIGHBIT */
-#if defined(GMP_LIMB_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
-#elif defined(MP_LIMB_T_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
-#else
-# error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
-#endif
+/* Definition of simple mp_limb_t constants */
+#define MPFR_LIMB_ZERO    ((mp_limb_t) 0)
+#define MPFR_LIMB_ONE     ((mp_limb_t) 1)
+#define MPFR_LIMB_HIGHBIT (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1))
+#define MPFR_LIMB_MAX     ((mp_limb_t) -1)
 
 /* Mask to get the Most Significant Bit of a limb */
-#define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
-
-/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO */
-#ifdef CNST_LIMB
-# define MPFR_LIMB_ONE  CNST_LIMB(1)
-# define MPFR_LIMB_ZERO CNST_LIMB(0)
-#else
-# define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
-# define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
-#endif
+#define MPFR_LIMB_MSB(l) ((l) & MPFR_LIMB_HIGHBIT)
 
 /* Mask for the low 's' bits of a limb */
-#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE<<(s))-MPFR_LIMB_ONE)
+#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
 
 
@@ -985,7 +975,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_SET_ALLOC_SIZE(x, n) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_MALLOC_SIZE(s) \
-  ( sizeof(mpfr_size_limb_t) + BYTES_PER_MP_LIMB * ((size_t) s) )
+  ( sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * ((size_t) s) )
 #define MPFR_SET_MANT_PTR(x,p) \
    (MPFR_MANT(x) = (mp_limb_t*) ((mpfr_size_limb_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
@@ -1006,7 +996,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #endif
 
 #define MPFR_TMP_LIMBS_ALLOC(N) \
-  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * BYTES_PER_MP_LIMB))
+  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * MPFR_BYTES_PER_MP_LIMB))
 
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
@@ -1067,7 +1057,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 
 /* Declare that some variable is initialized before being used (without a
    dummy initialization) in order to avoid some compiler warnings. Use the
-   VAR = VAR trick (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
+   VAR = VAR trick (see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
    only with gcc as this is undefined behavior, and we don't know what other
    compilers do (they may also be smarter). This self-initialization trick
    could be disabled with future gcc versions.
@@ -1080,7 +1070,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
      __clang_minor__ 0
      __clang_patchlevel__ 0
      __clang_version__ "3.0 (tags/RELEASE_30/final)"
-   (see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=705583 for this
+   (see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=705583 for this
    problem with clang). */
 #if defined(__GNUC__) && !defined(__clang__)
 # define INITIALIZED(VAR) VAR = VAR

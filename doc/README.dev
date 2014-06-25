@@ -80,6 +80,8 @@ For patches from MPFR developers, e.g. for MPFR 3.1.0:
    without changing the timestamps (e.g. with cp -a).
 6. In mpfr-3.1.0-b, apply the patch obtained with "svn diff", e.g.
      patch --no-backup-if-mismatch -p0 < /path/to/new_patch
+   If an autotools file has been modified, run "autoreconf" and remove
+   the autom4te.cache directory.
 7. In mpfr-3.1.0-b, update the version information:
      tools/update-version 3 1 0 p<n> -
    where <n> is the patch number.
@@ -234,13 +236,17 @@ To make a release (for the MPFR team):
      e.g.: ./configure CC=clang CFLAGS='-fsanitize=undefined'
      The -fno-sanitize-recover option can give more visibility by making
      the corresponding tests fail (useful for automated tests). However
-     clang currently regards the floating-point division by zero as an
-     error with "-fsanitize=undefined", even when IEC 60559 / IEEE 754
-     (Annex F of ISO C) is claimed to be supported. This is detected by
-     a configure test, which sets MPFR_ERRDIVZERO to disable the tests
-     involving a floating-point division by zero. Alternatively, one can
-     use a list of individual -fsanitize checks instead of "undefined".
-     Bug report: http://llvm.org/bugs/show_bug.cgi?id=17000
+     clang unconditionally regards the floating-point division by zero
+     as an error with "-fsanitize=undefined"; this is detected by a
+     configure test, which sets MPFR_ERRDIVZERO to disable the tests
+     involving a floating-point division by zero. Alternatively, on systems
+     supporting IEC 60559 / IEEE 754 division by zero, one can also provide
+     the -fno-sanitize=float-cast-overflow,float-divide-by-zero option
+     *after* the -fsanitize=undefined one.
+
+     GCC 4.9 also supports "-fsanitize=undefined", but it just gives
+     diagnostic messages at runtime, not a failure; GCC trunk supports
+     -fno-sanitize-recover like clang.
 
      Test with both "make check" and the worst cases.
 
@@ -250,7 +256,7 @@ To make a release (for the MPFR team):
      -Wmissing-field-initializers". They can easily be checked in
      automatic tests by adding "-Werror -Wno-error=unused-function",
      but this needs:
-       * GCC 4.9 (at the time of writing, a GCC trunk snapshot)
+       * GCC 4.9+
        * a patched autoconf:
      http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
 
@@ -284,7 +290,7 @@ To make a release (for the MPFR team):
      (for mpfr.html, use "makeinfo --html --no-split mpfr.texi" from
      the doc directory).
      Upload the tarballs and the signatures to the MPFR web server
-     (via svn), to INRIAGForge and to the GNU FTP site.
+     (via svn), to InriaForge and to the GNU FTP site.
      Update the mpfr-current symbolic link and the history page.
      Update the old current page to point to the new release; see
      examples for 3.0.1 (latest version of the branch) and 3.1.0
@@ -293,8 +299,8 @@ To make a release (for the MPFR team):
      Run the tools/announce-text script to do some checking and get
      the announce text. Edit this text if need be.
      Announce the release in the mpfr-announce, mpfr, gmp-discuss, gcc
-     and info-gnu[1] mailing-lists, and on INRIAGForge (MPFR News, and
-     contact the INRIAGForge administrators[2] to have the announce
+     and info-gnu[1] mailing-lists, and on InriaForge (MPFR News, and
+     contact the InriaForge administrators[2] to have the announce
      published on the main page).
      In case of a new patchlevel release, add a link from the web page
      of the previous release.
@@ -332,7 +338,8 @@ To check the coverage of the Test Suite, you can use GCOV.
 
 For each source file, there is a .c.gcov file which contains much more
 information.
-Another solution is to run the script 'coverage' from MPFR source directory.
+
+Another solution is to run the script 'coverage' within the 'tools' directory.
 
 ===========================================================================
 
@@ -803,7 +810,7 @@ be difficult when it is in some macro expansion. For GCC users, a new
 experimental -ftrack-macro-expansion option has been added in GCC 4.7.
 "It allows the compiler to emit diagnostic about the current macro
 expansion stack when a compilation error occurs in a macro expansion."
-<http://gcc.gnu.org/gcc-4.7/changes.html>
+<https://gcc.gnu.org/gcc-4.7/changes.html>
 
 ===========================================================================
 
@@ -823,8 +830,8 @@ MPFR manual (mpfr.texi):
     read Section "Inserting Space" in the Texinfo manual.
   * Follow the English typography, not the French one!
   * Beware of the following texinfo bug:
-      http://savannah.gnu.org/bugs/?33329
-      http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
+      https://savannah.gnu.org/bugs/?33329
+      https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
 
 ===========================================================================
 
@@ -832,9 +839,9 @@ Running "make" outputs a lot of information, and warnings are not very
 visible. The following tool "eet" allows a copy of warning messages to
 be output to a different window (e.g. xterm or zenity):
 
-  http://www.vinc17.net/unix/#eet
+  https://www.vinc17.net/unix/#eet
 
-Direct link to the tarball: http://www.vinc17.net/unix/eet.tar.bz2
+Direct link to the tarball: https://www.vinc17.net/unix/eet.tar.bz2
 
 ===========================================================================
 
@@ -855,7 +862,7 @@ The INITIALIZED macro can be used to avoid such warnings with gcc, e.g.
 It uses the "int i = i;" pseudo-initialization trick, disabled with other
 compilers as this is undefined behavior. See:
 
-    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
 
 If a dummy initialization must be added, use preferably an "invalid" value
 (e.g. NULL for pointers, or a value that can be checked with MPFR_ASSERTN
@@ -955,6 +962,20 @@ For implementation details, see the mpfr.h and mpfr-impl.h files.
 
 ===========================================================================
 
+Be careful that the ternary value (a.k.a. "inexact") is not guaranteed
+to be -1, 0, or 1, in general (for some functions, the exact value may
+contain other information, such as midpoint cases with MPFR_EVEN_INEX),
+and the exact behavior may change in the future. So, it is not correct
+to multiply ternary values returned by arbitrary functions as this may
+overflow.
+
+To work with ternary values, mpfr-impl.h provides the following macros:
+
+#define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
+
+===========================================================================
+
 Because of a bug in the Mac OS X 10.5 linker, avoid tentative definitions
 (C99, 6.9.2). Depending on the context, use either a simple declaration
 (with the "extern" storage-class specifier) or an external definition.
@@ -1029,7 +1050,7 @@ whether they work with ICC. The following paper can give useful information:
 
 To detect compilers, see
 
-  http://sourceforge.net/p/predef/wiki/Compilers/
+  https://sourceforge.net/p/predef/wiki/Compilers/
 
 ===========================================================================
 
