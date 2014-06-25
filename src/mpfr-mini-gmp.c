@@ -85,7 +85,7 @@ mpn_scan1 (const mp_limb_t *s, mp_bitcnt_t n)
 {
   while (1)
     {
-      if (s[n / GMP_NUMB_BITS] & ((mp_limb_t) 1 << (n % GMP_NUMB_BITS)))
+      if (s[n / GMP_NUMB_BITS] & (MPFR_LIMB_ONE << (n % GMP_NUMB_BITS)))
         return n;
       n ++;
     }

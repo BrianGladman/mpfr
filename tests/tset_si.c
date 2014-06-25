@@ -265,8 +265,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 3);
   inex = mpfr_set_si (x, 77617, MPFR_RNDD); /* should be 65536 */
-  if (MPFR_MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))
-      || inex >= 0)
+  if (MPFR_MANT(x)[0] != MPFR_LIMB_HIGHBIT || inex >= 0)
     {
       printf ("Error in mpfr_set_si(x:3, 77617, MPFR_RNDD)\n");
       mpfr_print_binary (x);
@@ -274,8 +273,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   inex = mpfr_set_ui (x, 77617, MPFR_RNDD); /* should be 65536 */
-  if (MPFR_MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))
-      || inex >= 0)
+  if (MPFR_MANT(x)[0] != MPFR_LIMB_HIGHBIT || inex >= 0)
     {
       printf ("Error in mpfr_set_ui(x:3, 77617, MPFR_RNDD)\n");
       mpfr_print_binary (x);

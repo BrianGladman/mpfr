@@ -231,7 +231,7 @@ typedef unsigned int UHWtype;
 /* Use (4.0 * ...) instead of (2.0 * ...) to work around buggy compilers
    that don't convert ulong->double correctly (eg. SunOS 4 native cc).  */
 #undef MP_BASE_AS_DOUBLE
-#define MP_BASE_AS_DOUBLE (4.0 * ((mp_limb_t) 1 << (GMP_NUMB_BITS - 2)))
+#define MP_BASE_AS_DOUBLE (4.0 * (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 2)))
 
 /* Structure for conversion between internal binary format and
    strings in base 2..36.  */
@@ -332,7 +332,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
   do {                                                    \
     mp_limb_t dummy MPFR_MAYBE_UNUSED;                    \
     MPFR_ASSERTD ((xl) != 0);                             \
-    udiv_qrnnd (invxl, dummy, ~(xl), ~(mp_limb_t)0, xl);  \
+    udiv_qrnnd (invxl, dummy, ~(xl), MPFR_LIMB_MAX, xl);  \
   } while (0)
 #endif
 

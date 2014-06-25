@@ -98,7 +98,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
               xp[ri--] = acc | (((mp_limb_t) 2 << bit_pos) - 1);
               bit_pos += GMP_NUMB_BITS;
               bit_pos -= nb;
-              acc = (~(mp_limb_t) 1) << bit_pos;
+              acc = (~MPFR_LIMB_ONE) << bit_pos;
             }
           else
             {

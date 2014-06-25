@@ -574,7 +574,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               if (qh)
                 qh2 = mpn_add_n (sp + qsize, sp + qsize, vp, k);
               else
-                qh2 = (mp_limb_t) 0;
+                qh2 = MPFR_LIMB_ZERO;
               qp[0] ^= sticky3orig; /* restore truncated quotient */
 
               /* compare qh2 + {sp, k + qsize} to {ap, qsize} + low(u) */

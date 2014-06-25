@@ -1942,7 +1942,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
                 while (--n != 0)
                   {
                     q++;
-                    *q = (mp_limb_t) 0;
+                    *q = MPFR_LIMB_ZERO;
                   }
               }
               break;

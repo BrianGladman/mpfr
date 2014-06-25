@@ -34,9 +34,9 @@ set_bit (mpfr_t x, unsigned int n, int b)
   n %= mp_bits_per_limb;
   n = mp_bits_per_limb - 1 - n;
   if (b)
-    MPFR_MANT(x)[xn - l] |= (mp_limb_t) 1 << n;
+    MPFR_MANT(x)[xn - l] |= MPFR_LIMB_ONE << n;
   else
-    MPFR_MANT(x)[xn - l] &= ~((mp_limb_t) 1 << n);
+    MPFR_MANT(x)[xn - l] &= ~(MPFR_LIMB_ONE << n);
 }
 
 /* check that for x = 1.u 1 v 0^k low(x)

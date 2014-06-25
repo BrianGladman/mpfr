@@ -142,7 +142,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t limb;
   int inexact;
   mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
-  mp_limb_t bbcp = (mp_limb_t) -1, bbcp1 = (mp_limb_t) -1; /* Cp+1 and C'p+2,
+  mp_limb_t bbcp = MPFR_LIMB_MAX, bbcp1 = MPFR_LIMB_MAX; /* Cp+1 and C'p+2,
     gcc claims that they might be used uninitialized. We fill them with invalid
     values, which should produce a failure if so. See README.dev file. */
 
@@ -658,8 +658,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Final exponent -1 since we have shifted the mantissa */
           bx--;
           /* Update bcp and bcp1 */
-          MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
-          MPFR_ASSERTD(bbcp1 != (mp_limb_t) -1);
+          MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
+          MPFR_ASSERTD(bbcp1 != MPFR_LIMB_MAX);
           bcp  = bbcp;
           bcp1 = bbcp1;
           /* We don't have anymore a valid Cp+1!
@@ -706,7 +706,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0));
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit!*/
-      MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
+      MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
       if ( (rnd_mode == MPFR_RNDZ && bcp==0)
            || (rnd_mode==MPFR_RNDN && bbcp==0)
            || (bcp && bcp1==0) ) /*Exact result*/
@@ -756,8 +756,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             bbcp=0;
           DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
                  bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
-          MPFR_ASSERTD(bbcp != (mp_limb_t) -1);
-          MPFR_ASSERTD((rnd_mode != MPFR_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
+          MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
+          MPFR_ASSERTD(rnd_mode != MPFR_RNDN || bcp != 0 ||
+                       bbcp == 0 || bbcp1 != MPFR_LIMB_MAX);
           if (((rnd_mode != MPFR_RNDZ) && bcp)
               ||
               ((rnd_mode == MPFR_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))

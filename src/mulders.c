@@ -241,7 +241,7 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
       /* warning: we can have np[n-1]=d1 and np[n-2]=d0, but since {np,n} < D,
          the largest possible partial quotient is B-1 */
       if (MPFR_UNLIKELY(np[n - 1] == d1 && np[n - 2] == d0))
-        q2 = ~ (mp_limb_t) 0;
+        q2 = MPFR_LIMB_MAX;
       else
         udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
                       d1, d0, dinv2.inv32);

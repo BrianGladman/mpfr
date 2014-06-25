@@ -99,7 +99,7 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
       if (len != 0)
         {
           if (len == 1)
-            yp[0] = (mp_limb_t) 0;
+            yp[0] = MPFR_LIMB_ZERO;
           else
             MPN_ZERO (yp, len);   /* Zero the last limbs */
         }
