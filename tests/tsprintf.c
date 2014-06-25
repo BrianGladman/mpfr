@@ -1197,19 +1197,23 @@ check_emin_aux (mpfr_exp_t e)
   char *s1, s2[256];
   int i;
   mpfr_exp_t emin;
+  mpz_t ee;
 
   MPFR_ASSERTN (e >= LONG_MIN);
   emin = mpfr_get_emin ();
   set_emin (e);
 
   mpfr_init2 (x, 16);
+  mpz_init (ee);
 
   mpfr_setmin (x, e);
+  mpz_set_si (ee, e);
+  mpz_sub_ui (ee, ee, 1);
 
   i = mpfr_asprintf (&s1, "%Ra", x);
   MPFR_ASSERTN (i > 0);
 
-  mpfr_snprintf (s2, 256, "0x1p%ld", e-1);
+  gmp_snprintf (s2, 256, "0x1p%Zd", ee);
 
   if (strcmp (s1, s2) != 0)
     {
@@ -1224,7 +1228,7 @@ check_emin_aux (mpfr_exp_t e)
   i = mpfr_asprintf (&s1, "%Rb", x);
   MPFR_ASSERTN (i > 0);
 
-  mpfr_snprintf (s2, 256, "1p%ld", e-1);
+  gmp_snprintf (s2, 256, "1p%Zd", ee);
 
   if (strcmp (s1, s2) != 0)
     {
@@ -1237,6 +1241,7 @@ check_emin_aux (mpfr_exp_t e)
   mpfr_free_str (s1);
 
   mpfr_clear (x);
+  mpz_clear (ee);
   set_emin (emin);
 }
 
