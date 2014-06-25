@@ -1096,6 +1096,55 @@ test_20070628 (void)
   mpfr_set_emax (old_emax);
 }
 
+/* test a random division of p+extra bits divided by p+extra bits,
+   with quotient of p bits only, where the p+extra bit approximation
+   of the quotient is very near a rounding frontier. */
+static void
+test_bad_aux (mpfr_prec_t p, mpfr_prec_t extra)
+{
+  mpfr_t u, v, w, q0, q;
+
+  mpfr_init2 (u, p + extra);
+  mpfr_init2 (v, p + extra);
+  mpfr_init2 (w, p + extra);
+  mpfr_init2 (q0, p);
+  mpfr_init2 (q, p);
+  do mpfr_urandomb (q0, RANDS); while (mpfr_zero_p (q0));
+  do mpfr_urandomb (v, RANDS); while (mpfr_zero_p (v));
+
+  mpfr_set (w, q0, MPFR_RNDN); /* exact */
+  mpfr_nextabove (w); /* now w > q0 */
+  mpfr_mul (u, v, w, MPFR_RNDU); /* thus u > v*q0 */
+  mpfr_div (q, u, v, MPFR_RNDU); /* should have q > q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) > 0);
+  mpfr_div (q, u, v, MPFR_RNDZ); /* should have q = q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) == 0);
+
+  mpfr_set (w, q0, MPFR_RNDN); /* exact */
+  mpfr_nextbelow (w); /* now w < q0 */
+  mpfr_mul (u, v, w, MPFR_RNDZ); /* thus u < v*q0 */
+  mpfr_div (q, u, v, MPFR_RNDZ); /* should have q < q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) < 0);
+  mpfr_div (q, u, v, MPFR_RNDU); /* should have q = q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) == 0);
+
+  mpfr_clear (u);
+  mpfr_clear (v);
+  mpfr_clear (w);
+  mpfr_clear (q0);
+  mpfr_clear (q);
+}
+
+static void
+test_bad (void)
+{
+  mpfr_prec_t p, extra;
+
+  for (p = MPFR_PREC_MIN; p <= 1024; p += 17)
+    for (extra = 2; extra <= 64; extra++)
+      test_bad_aux (p, extra);
+}
+
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -1127,6 +1176,7 @@ main (int argc, char *argv[])
   test_20070603 ();
   test_20070628 ();
   test_generic (2, 800, 50);
+  test_bad ();
 
   tests_end_mpfr ();
   return 0;
