@@ -76,7 +76,7 @@ mpfr_explgamma (mpfr_ptr y, mpfr_srcptr x, mpfr_save_expo_t *pexpo,
   /* s1 = RNDD(lngamma(x)), inexact */
   if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags1)))
     {
-      if (MPFR_SIGN (s1) > 0)
+      if (MPFR_IS_POS (s1))
         {
           MPFR_SAVE_EXPO_UPDATE_FLAGS (*pexpo, MPFR_FLAGS_OVERFLOW);
           return mpfr_overflow (y, rnd, sign);

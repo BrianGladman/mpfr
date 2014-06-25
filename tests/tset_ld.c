@@ -406,7 +406,7 @@ main (int argc, char *argv[])
 
   /* check that the sign of -0.0 is set */
   mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
-  if (MPFR_SIGN(x) > 0)
+  if (MPFR_IS_POS (x))
     {
 #if _GMP_IEEE_FLOATS
       printf ("Error: sign of -0.0 is not set correctly\n");

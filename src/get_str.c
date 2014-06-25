@@ -2278,7 +2278,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       return s;
     }
 
-  neg = MPFR_SIGN(x) < 0; /* 0 if positive, 1 if negative */
+  neg = MPFR_IS_NEG (x); /* 0 if positive, 1 if negative */
 
   if (MPFR_UNLIKELY (MPFR_IS_INF (x)))
     {

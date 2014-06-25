@@ -867,7 +867,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_abs(a,b,r)  mpfr_set4(a,b,r,1)
 #define mpfr_copysign(a,b,c,r) mpfr_set4(a,b,r,MPFR_SIGN(c))
 #define mpfr_setsign(a,b,s,r) mpfr_set4(a,b,r,(s) ? -1 : 1)
-#define mpfr_signbit(x)  (MPFR_SIGN(x) < 0)
+#define mpfr_signbit(x)  (MPFR_IS_NEG (x))
 #define mpfr_cmp(b, c)   mpfr_cmp3(b, c, 1)
 #define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))

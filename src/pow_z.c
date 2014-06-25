@@ -286,7 +286,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
       /* We will compute rnd(rnd1(1/x) ^ (-z)), where rnd1 is the rounding
          toward sign(x), to avoid spurious overflow or underflow. */
       rnd1 = MPFR_EXP (x) < 1 ? MPFR_RNDZ :
-        (MPFR_SIGN (x) > 0 ? MPFR_RNDU : MPFR_RNDD);
+        (MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD);
 
       MPFR_ZIV_INIT (loop, Nt);
       for (;;)

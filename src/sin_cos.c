@@ -147,7 +147,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_mul_2ui (c, c, 1, MPFR_RNDN);
           mpfr_remainder (xr, x, c, MPFR_RNDN);
           mpfr_div_2ui (c, c, 1, MPFR_RNDN);
-          if (MPFR_SIGN (xr) > 0)
+          if (MPFR_IS_POS (xr))
             mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
             mpfr_add (c, c, xr, MPFR_RNDZ);

@@ -135,7 +135,7 @@ mpfr_print_raw (mpfr_srcptr x)
       return;
     }
 
-  if (MPFR_SIGN (x) < 0)
+  if (MPFR_IS_NEG (x))
     printf ("-");
 
   if (MPFR_IS_INF (x))

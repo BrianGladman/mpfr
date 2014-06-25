@@ -130,7 +130,7 @@ check_pow_ui (void)
   /* Check overflow */
   mpfr_set_str_binary (a, "1E10");
   res = mpfr_pow_ui (a, a, ULONG_MAX, MPFR_RNDN);
-  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) < 0)
+  if (!MPFR_IS_INF (a) || MPFR_IS_NEG (a))
     {
       printf ("Error for (1e10)^ULONG_MAX\n");
       exit (1);
@@ -143,7 +143,7 @@ check_pow_ui (void)
   mpfr_set_str_binary (a, "-1E10");
   n = (ULONG_MAX ^ (ULONG_MAX >> 1)) + 1;
   res = mpfr_pow_ui (a, a, n, MPFR_RNDN);
-  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) > 0)
+  if (!MPFR_IS_INF (a) || MPFR_IS_POS (a))
     {
       printf ("Error for (-1e10)^%lu, expected -Inf,\ngot ", n);
       mpfr_dump (a);
@@ -1250,7 +1250,7 @@ bug20071103 (void)
   mpfr_set_exp (y, mpfr_get_emax ());
   mpfr_clear_flags ();
   mpfr_pow (z, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_zero_p (z) && MPFR_SIGN (z) > 0 &&
+  MPFR_ASSERTN (mpfr_zero_p (z) && MPFR_IS_POS (z) &&
                 __gmpfr_flags == (MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT));
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 
@@ -1277,7 +1277,7 @@ bug20071104 (void)
   mpfr_set_si (y, -2, MPFR_RNDN);  /* y = -2 */
   mpfr_clear_flags ();
   inex = mpfr_pow (z, x, y, MPFR_RNDN);
-  if (! mpfr_inf_p (z) || MPFR_SIGN (z) < 0)
+  if (! mpfr_inf_p (z) || MPFR_IS_NEG (z))
     {
       printf ("Error in bug20071104: expected +Inf, got ");
       mpfr_dump (z);
@@ -1373,7 +1373,7 @@ bug20071128 (void)
       mpfr_set_si_2exp (y, -1, i, MPFR_RNDN);
       mpfr_add_si (y, y, 1, MPFR_RNDN);
       tern = mpfr_pow (z, x, y, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_SIGN(z) < 0);
+      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_IS_NEG (z));
     }
 
   mpfr_clear (x);

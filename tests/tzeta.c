@@ -248,7 +248,7 @@ main (int argc, char *argv[])
   mpfr_set_ui (s, 1, MPFR_RNDN);
   mpfr_clear_divby0();
   mpfr_zeta (z, s, MPFR_RNDN);
-  if (!mpfr_inf_p (z) || MPFR_SIGN (z) < 0 || !mpfr_divby0_p())
+  if (!mpfr_inf_p (z) || MPFR_IS_NEG (z) || !mpfr_divby0_p())
     {
       printf ("Error in mpfr_zeta for s = 1 (should be +inf) with divby0 flag\n");
       exit (1);
@@ -340,14 +340,14 @@ main (int argc, char *argv[])
 
   mpfr_set_str (s, "-400000001", 10, MPFR_RNDZ);
   mpfr_zeta (z, s, MPFR_RNDN);
-  if (!(mpfr_inf_p (z) && MPFR_SIGN(z) < 0))
+  if (!(mpfr_inf_p (z) && MPFR_IS_NEG (z)))
     {
       printf ("Error in mpfr_zeta (-400000001)\n");
       exit (1);
     }
   mpfr_set_str (s, "-400000003", 10, MPFR_RNDZ);
   mpfr_zeta (z, s, MPFR_RNDN);
-  if (!(mpfr_inf_p (z) && MPFR_SIGN(z) > 0))
+  if (!(mpfr_inf_p (z) && MPFR_IS_POS (z)))
     {
       printf ("Error in mpfr_zeta (-400000003)\n");
       exit (1);
@@ -385,7 +385,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (z, 128);
   mpfr_set_str_binary (s, "-0.1000000000000000000000000000000000000000000000000000000000000001E64");
   inex = mpfr_zeta (z, s, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (z) && MPFR_SIGN (z) < 0 && inex < 0);
+  MPFR_ASSERTN (mpfr_inf_p (z) && MPFR_IS_NEG (z) && inex < 0);
   inex = mpfr_zeta (z, s, MPFR_RNDU);
   mpfr_set_inf (s, -1);
   mpfr_nextabove (s);

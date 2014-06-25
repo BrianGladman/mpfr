@@ -1076,7 +1076,7 @@ test_20070628 (void)
   mpfr_set_si_2exp (y, 1, -256, MPFR_RNDN);
   mpfr_clear_flags ();
   inex = mpfr_div (x, x, y, MPFR_RNDD);
-  if (MPFR_SIGN (x) >= 0 || ! mpfr_inf_p (x))
+  if (MPFR_IS_POS (x) || ! mpfr_inf_p (x))
     {
       printf ("Error in test_20070628: expected -Inf, got\n");
       mpfr_dump (x);

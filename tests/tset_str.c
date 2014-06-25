@@ -284,21 +284,21 @@ main (int argc, char *argv[])
 
       /*
       if (mpfr_set_str (x, "@Inf@garbage", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+          !mpfr_inf_p(x) || MPFR_IS_NEG (x))
         {
           printf ("mpfr_set_str failed on @Inf@garbage\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "-@Inf@garbage", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
+          !mpfr_inf_p(x) || MPFR_IS_POS (x))
         {
           printf ("mpfr_set_str failed on -@Inf@garbage\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "+@Inf@garbage", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+          !mpfr_inf_p(x) || MPFR_IS_NEG (x))
         {
           printf ("mpfr_set_str failed on +@Inf@garbage\n");
           exit (1);
@@ -316,21 +316,21 @@ main (int argc, char *argv[])
         }
 
       if (mpfr_set_str (x, "Inf", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+          !mpfr_inf_p(x) || MPFR_IS_NEG (x))
         {
           printf ("mpfr_set_str failed on Inf\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "-Inf", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
+          !mpfr_inf_p(x) || MPFR_IS_POS (x))
         {
           printf ("mpfr_set_str failed on -Inf\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "+Inf", i, MPFR_RNDN) != 0 ||
-          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+          !mpfr_inf_p(x) || MPFR_IS_NEG (x))
         {
           printf ("mpfr_set_str failed on +Inf\n");
           exit (1);

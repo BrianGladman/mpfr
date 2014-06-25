@@ -197,7 +197,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     {
       /* the following is an upper 32-bit approximation to exp(1)/2 */
       mpfr_set_str_binary (y, "1.0101101111110000101010001011001");
-      if (MPFR_SIGN(z) > 0)
+      if (MPFR_IS_POS (z))
         mpfr_mul (y, y, z, MPFR_RNDU);
       else
         {

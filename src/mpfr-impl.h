@@ -849,8 +849,8 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
 
-#define MPFR_IS_STRICTPOS(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
-#define MPFR_IS_STRICTNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
+#define MPFR_IS_STRICTPOS(x)  (MPFR_NOTZERO (x) && MPFR_IS_POS (x))
+#define MPFR_IS_STRICTNEG(x)  (MPFR_NOTZERO (x) && MPFR_IS_NEG (x))
 
 #define MPFR_IS_NEG(x) (MPFR_SIGN(x) < 0)
 #define MPFR_IS_POS(x) (MPFR_SIGN(x) > 0)

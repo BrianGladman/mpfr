@@ -222,7 +222,7 @@ special_overflow (void)
   mpfr_set_prec (y, 29);
   mpfr_set_str (x, "-200000000.5", 10, MPFR_RNDN); /* exact */
   mpfr_gamma (y, x, MPFR_RNDN);
-  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+  if (!(mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
       printf ("Error for gamma(-200000000.5)\n");
       printf ("expected -0");
@@ -235,7 +235,7 @@ special_overflow (void)
   mpfr_set_prec (y, 53);
   mpfr_set_str (x, "-200000000.1", 10, MPFR_RNDN);
   mpfr_gamma (y, x, MPFR_RNDN);
-  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+  if (!(mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
       printf ("Error for gamma(-200000000.1), prec=53\n");
       printf ("expected -0");
@@ -349,7 +349,7 @@ special_overflow (void)
   mpfr_set_prec (y, 71);
   mpfr_set_str (x, "-200000000.1", 10, MPFR_RNDN);
   mpfr_gamma (y, x, MPFR_RNDN);
-  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+  if (!(mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
       printf ("Error for gamma (test 8)\n");
       printf ("expected "); mpfr_dump (x);

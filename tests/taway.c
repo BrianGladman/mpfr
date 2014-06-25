@@ -111,7 +111,7 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
       set_special (ref3, i/SPECIAL_MAX);
 
       inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res1) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -166,7 +166,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
               set_special (op3, k);
 
               inexa = testfunc (res, op1, op2, op3, MPFR_RNDA);
-              r = MPFR_SIGN(res) > 0 ? MPFR_RNDU : MPFR_RNDD;
+              r = MPFR_IS_POS (res) ? MPFR_RNDU : MPFR_RNDD;
               inexd = testfunc (ref, op1, op2, op3, r);
 
               if (mpfr_compare (res, ref) || inexa != inexd)
@@ -214,7 +214,7 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
       ref3 = i / SPECIAL_MAX == 0 ? 0 : randlimb ();
 
       inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res1) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -257,7 +257,7 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
       ref2 = i / SPECIAL_MAX == 0 ? 0 : randlimb ();
 
       inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res1) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -299,7 +299,7 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t), const char *foo)
       /* first round to away */
       inexa = testfunc (res1, ref2, MPFR_RNDA);
 
-      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res1) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, r);
       if (mpfr_compare (res1, ref1) || inexa != inexd)
         {
@@ -344,7 +344,7 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
       inexa = testfunc (res1, res2, ref3, MPFR_RNDA);
 
       /* first check wrt the first operand */
-      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res1) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
       /* the low 2 bits of the inexact flag concern the 1st operand */
       if (mpfr_compare (res1, ref1) || (inexa & 3) != (inexd & 3))
@@ -358,7 +358,7 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
         }
 
       /* now check wrt the second operand */
-      r = MPFR_SIGN(res2) > 0 ? MPFR_RNDU : MPFR_RNDD;
+      r = MPFR_IS_POS (res2) ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
       /* bits 2..3 of the inexact flag concern the 2nd operand */
       if (mpfr_compare (res2, ref2) || (inexa >> 2) != (inexd >> 2))

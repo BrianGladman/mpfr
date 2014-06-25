@@ -251,7 +251,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       && vp[0] <= ULONG_MAX)
     {
       mpfr_exp_t exp_v = MPFR_EXP(v); /* save it in case q=v */
-      if (MPFR_SIGN(v) > 0)
+      if (MPFR_IS_POS (v))
         inex = mpfr_div_ui (q, u, vp[0], rnd_mode);
       else
         {

@@ -107,7 +107,7 @@ test_sign (void)
         mpfr_set_prec (x, p);
         mpfr_mul_ui (x, pid, k, MPFR_RNDD);
         test_sin (y, x, MPFR_RNDN);
-        if (MPFR_SIGN(y) > 0)
+        if (MPFR_IS_POS (y))
           {
             printf ("Error in test_sign for sin(%dpi-epsilon), prec = %d"
                     " for argument.\nResult should have been negative.\n",
@@ -116,7 +116,7 @@ test_sign (void)
           }
         mpfr_mul_ui (x, piu, k, MPFR_RNDU);
         test_sin (y, x, MPFR_RNDN);
-        if (MPFR_SIGN(y) < 0)
+        if (MPFR_IS_NEG (y))
           {
             printf ("Error in test_sign for sin(%dpi+epsilon), prec = %d"
                     " for argument.\nResult should have been positive.\n",

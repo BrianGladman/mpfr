@@ -87,7 +87,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      |2^x - 1| <= x < 2^EXP(x). If x > 0 we must round away from 0 (dir=1);
      if x < 0 we must round toward 0 (dir=0). */
   MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, - MPFR_GET_EXP (x), 0,
-                                    MPFR_SIGN(x) > 0, rnd_mode, expo, {});
+                                    MPFR_IS_POS (x), rnd_mode, expo, {});
 
   xint = mpfr_get_si (x, MPFR_RNDZ);
   mpfr_init2 (xfrac, MPFR_PREC (x));
