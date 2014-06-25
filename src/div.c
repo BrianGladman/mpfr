@@ -247,7 +247,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      satisfies 2^(EXP(u)-1-GMP_NUMB_BITS) < u/vm < 2^(EXP(u)-GMP_NUMB_BITS+1)
      and its exponent is either EXP(u)-GMP_NUMB_BITS or one more. */
   if (vsize <= 1 && __gmpfr_emin <= MPFR_EXP(u) - GMP_NUMB_BITS
-      && MPFR_EXP(u) - GMP_NUMB_BITS + 1 <= __gmpfr_emax)
+      && MPFR_EXP(u) - GMP_NUMB_BITS + 1 <= __gmpfr_emax
+      && vp[0] <= ULONG_MAX)
     {
       mpfr_exp_t exp_v = MPFR_EXP(v); /* save it in case q=v */
       if (MPFR_SIGN(v) > 0)
