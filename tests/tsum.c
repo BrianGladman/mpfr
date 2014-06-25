@@ -468,7 +468,10 @@ main (void)
   for (p = 2 ; p < 444 ; p += 17)
     for (n = 2 ; n < 1026 ; n += 42 + p)
       test_sum (p, n);
-  check_extreme ();
+  /* FIXME: remove the MPFR_SKIP_TSUM test once the new mpfr_sum version
+     is out. */
+  if (getenv ("MPFR_SKIP_EXTREME") == NULL)
+    check_extreme ();
   cancel ();
 
   tests_end_mpfr ();
