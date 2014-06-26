@@ -873,7 +873,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
            first digit, we want the exponent for radix two and the decimal
            point AFTER the first digit. */
         {
-          /* An overflow is normally not possible since MPFR_EXP_MIN
+          /* An integer overflow is normally not possible since MPFR_EXP_MIN
              is twice as large as MPFR_EMIN_MIN. */
           MPFR_ASSERTN (exp > (MPFR_EXP_MIN + 3) / 4);
           exp = (exp - 1) * 4;
@@ -882,7 +882,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         /* EXP is the exponent for decimal point BEFORE the first digit, we
            want the exponent for decimal point AFTER the first digit. */
         {
-          /* An overflow is normally not possible since MPFR_EXP_MIN
+          /* An integer overflow is normally not possible since MPFR_EXP_MIN
              is twice as large as MPFR_EMIN_MIN. */
           MPFR_ASSERTN (exp > MPFR_EXP_MIN);
           --exp;
