@@ -1202,6 +1202,7 @@ test_extreme (void)
                           flags_out (flags);
                           printf ("z = ");
                           mpfr_dump (z);
+                          exit (1);
                         }
                       mpfr_clear_flags ();
                       mpfr_div (z, y, x, (mpfr_rnd_t) r);
@@ -1223,6 +1224,7 @@ test_extreme (void)
                           flags_out (flags);
                           printf ("z = ");
                           mpfr_dump (z);
+                          exit (1);
                         }
                     }
                   mpfr_clear (z);
