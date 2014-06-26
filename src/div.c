@@ -889,7 +889,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
  truncate_check_qh:
   if (qh)
     {
-      qexp ++;
+      if (MPFR_LIKELY (qexp < MPFR_EXP_MAX))
+        qexp ++;
+      /* else qexp is now incorrect, but one will still get an overflow */
       q0p[q0size - 1] = MPFR_LIMB_HIGHBIT;
     }
   goto truncate;
@@ -904,7 +906,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   inex = 1; /* always here */
   if (mpn_add_1 (q0p, q0p, q0size, MPFR_LIMB_ONE << sh))
     {
-      qexp ++;
+      if (MPFR_LIKELY (qexp < MPFR_EXP_MAX))
+        qexp ++;
+      /* else qexp is now incorrect, but one will still get an overflow */
       q0p[q0size - 1] = MPFR_LIMB_HIGHBIT;
     }
 
