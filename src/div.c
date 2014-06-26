@@ -366,7 +366,13 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
           MPFR_CHANGE_SIGN(q);
         }
       /* q did not under/overflow */
-      MPFR_EXP(q) -= exp_v - GMP_NUMB_BITS;
+      MPFR_EXP(q) -= exp_v;
+      /* The following test is needed, otherwise the next addition
+         on the exponent may overflow, e.g. when dividing the
+         largest finite MPFR number by the smallest positive one. */
+      if (MPFR_UNLIKELY (MPFR_EXP(q) > __gmpfr_emax - GMP_NUMB_BITS))
+        return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+      MPFR_EXP(q) += GMP_NUMB_BITS;
       return mpfr_check_range (q, inex, rnd_mode);
     }
 
