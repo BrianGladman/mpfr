@@ -15,8 +15,8 @@ if [[ $# -gt 3 || $1 == -* ]] then
   exit 1
 fi
 
-: ${MPFR_CURRENT_DIR:=$(realpath ~/mpfr-misc/www/mpfr-current)}
-base=$MPFR_CURRENT_DIR:t
+mpfrdir=$(realpath ${MPFR_CURRENT_DIR:-$HOME/mpfr-misc/www/mpfr-current})
+base=$mpfrdir:t
 version=${base#mpfr-}
 
 if [[ -z "$version" ]] then
@@ -36,10 +36,10 @@ checkobj "$base-a"
 checkobj "$base-b"
 checkobj "base-patch"
 
-atool -eqx -- "$MPFR_CURRENT_DIR/$base.tar.xz"
+atool -eqx -- "$mpfrdir/$base.tar.xz"
 pushd "$base"
-touch -a "$MPFR_CURRENT_DIR/allpatches"
-patch -N -Z -p1 < "$MPFR_CURRENT_DIR/allpatches"
+touch -a "$mpfrdir/allpatches"
+patch -N -Z -p1 < "$mpfrdir/allpatches"
 : > PATCHES
 popd
 mv -T "$base" "$base-a"
