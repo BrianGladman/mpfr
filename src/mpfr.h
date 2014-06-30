@@ -905,6 +905,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    be used. */
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
+
 #undef mpfr_cmp_ui
 /* We use the fact that mpfr_sgn on NaN sets the erange flag and returns 0.
    But warning! mpfr_sgn is specified as a macro in the API, thus the macro
@@ -913,11 +914,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
   (__builtin_constant_p (_u) && (mpfr_ulong) (_u) == 0 ?        \
    (mpfr_sgn) (_f) :                                            \
    mpfr_cmp_ui_2exp ((_f), (_u), 0))
+
 #undef mpfr_cmp_si
 #define mpfr_cmp_si(_f,_s)                                      \
   (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
    mpfr_cmp_ui ((_f), (mpfr_ulong) (mpfr_long) (_s)) :          \
    mpfr_cmp_si_2exp ((_f), (_s), 0))
+
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #undef mpfr_set_ui
 #define mpfr_set_ui(_f,_u,_r)                                   \
@@ -929,11 +932,43 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
        (mpfr_void) (_r); 0; }) :                                \
    mpfr_set_ui_2exp ((_f), (_u), 0, (_r)))
 #endif
+
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)                                   \
   (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?         \
    mpfr_set_ui ((_f), (mpfr_ulong) (mpfr_long) (_s), (_r)) :    \
    mpfr_set_si_2exp ((_f), (_s), 0, (_r)))
+
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+/* If the source is a constant number that is a power of 2,
+   optimize the call */
+#undef mpfr_mul_ui
+#define mpfr_mul_ui(_f, _g, _u,_r)                              \
+  (__builtin_constant_p (_u) && (mpfr_ulong) (_u) >= 1 &&       \
+   ((mpfr_ulong) (_u) & ((mpfr_ulong) (_u) - 1)) == 0 ?         \
+   mpfr_mul_2si((_f), (_g), __builtin_ctzl (_u), (_r)) :        \
+   mpfr_mul_ui ((_f), (_g), (_u), (_r)))
+#undef mpfr_div_ui
+#define mpfr_div_ui(_f, _g, _u,_r)                              \
+  (__builtin_constant_p (_u) && (mpfr_ulong) (_u) >= 1 &&       \
+   ((mpfr_ulong) (_u) & ((mpfr_ulong) (_u) - 1)) == 0 ?         \
+   mpfr_mul_2si((_f), (_g), -__builtin_ctzl (_u), (_r)) :       \
+   mpfr_div_ui ((_f), (_g), (_u), (_r)))
+#endif
+
+/* If the source is a constant number that is positive,
+   optimize the call */
+#undef mpfr_mul_si
+#define mpfr_mul_si(_f, _g, _s,_r)                                      \
+  (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?                 \
+   mpfr_mul_ui ((_f), (_g), (mpfr_ulong) (mpfr_long) (_s), (_r)) :      \
+   mpfr_mul_si ((_f), (_g), (_s), (_r)))
+#undef mpfr_div_si
+#define mpfr_div_si(_f, _g, _s,_r)                                      \
+  (__builtin_constant_p (_s) && (mpfr_long) (_s) >= 0 ?                 \
+   mpfr_div_ui ((_f), (_g), (mpfr_ulong) (mpfr_long) (_s), (_r)) :      \
+   mpfr_div_si ((_f), (_g), (_s), (_r)))
+
 #endif
 #endif
 

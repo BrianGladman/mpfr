@@ -145,9 +145,16 @@ main (int argc, char *argv[])
   emax = mpfr_get_emax ();
   set_emax (0);
   mpfr_set_str_binary (x, "0.1E0");
-  mpfr_mul_ui (x, x, 2, MPFR_RNDN);
+  (mpfr_mul_ui) (x, x, 2, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && MPFR_IS_POS(x));
   set_emax (emax);
+
+  /* To check the macros call */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_ui (x, x, 2, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui(x, 2) == 0);
+  mpfr_mul_si (x, x, 4, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui(x, 8) == 0);
 
   mpfr_set_str (x, /*1.0/3.0*/
                 "0.333333333333333333333333333333333", 10, MPFR_RNDZ);
