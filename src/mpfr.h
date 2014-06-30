@@ -956,7 +956,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    mpfr_div_ui ((_f), (_g), (_u), (_r)))
 #endif
 
-/* If the source is a constant number that is positive,
+/* If the source is a constant number that is non-negative,
    optimize the call */
 #undef mpfr_mul_si
 #define mpfr_mul_si(_f, _g, _s,_r)                                      \
