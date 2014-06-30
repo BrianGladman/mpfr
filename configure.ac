@@ -59,17 +59,21 @@ dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
+
 unset gmp_lib_path GMP_CFLAGS GMP_CC
+
 AC_ARG_WITH(gmp_include,
    [  --with-gmp-include=DIR  GMP include directory ],
    MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    CPPFLAGS="$CPPFLAGS -I$withval")
+
 AC_ARG_WITH(gmp_lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], [
    MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    LDFLAGS="$LDFLAGS -L$withval"
    gmp_lib_path="$withval"
   ])
+
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    MPFR_PARSE_DIRECTORY(["$withval"],[withval])
@@ -130,6 +134,7 @@ AC_ARG_ENABLE(assert,
       full) AC_DEFINE([MPFR_WANT_ASSERT],2,[Want assertion]) ;;
       *) AC_MSG_ERROR([bad value for --enable-assert: yes, no, none or full]) ;;
      esac])
+
 AC_ARG_ENABLE(logging,
    [  --enable-logging        enable MPFR logging (the system must support it)
                           [[default=no]]],
@@ -138,6 +143,7 @@ AC_ARG_ENABLE(logging,
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
+
 AC_ARG_ENABLE(thread-safe,
    [  --disable-thread-safe   explicitly disable TLS support
   --enable-thread-safe    build MPFR as thread safe, i.e. with TLS support
@@ -147,6 +153,7 @@ AC_ARG_ENABLE(thread-safe,
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-thread-safe: yes or no]) ;;
      esac])
+
 AC_ARG_ENABLE(warnings,
    [  --enable-warnings       allow MPFR to output warnings to stderr [[default=no]]],
    [ case $enableval in
@@ -156,9 +163,11 @@ AC_ARG_ENABLE(warnings,
      esac])
 
 AC_ARG_ENABLE(tests-timeout,
-   [  --enable-tests-timeout=NUM    enable timeout (NUM seconds) for test programs
-                          (NUM <= 9999) [[default=no]]; if enabled, env variable
-                          $MPFR_TESTS_TIMEOUT overrides NUM (0: no timeout).],
+   [  --enable-tests-timeout=NUM
+                          [[for developers]] enable timeout for test programs
+                          (NUM seconds, <= 9999) [[default=no]]; if this is
+                          enabled, the environment variable $MPFR_TESTS_TIMEOUT
+                          overrides NUM (0: no timeout)],
    [ case $enableval in
       no)   ;;
       yes)  AC_DEFINE([MPFR_TESTS_TIMEOUT], 0, [timeout limit]) ;;
@@ -168,7 +177,8 @@ AC_ARG_ENABLE(tests-timeout,
      esac])
 
 AC_ARG_ENABLE(tune-for-coverage,
-   [  --tune-for-coverage     tune MPFR for coverage tests.],
+   [  --enable-tune-for-coverage
+                          [[for developers]] tune MPFR for coverage tests],
    [ case $enableval in
       no)   ;;
       yes)  AC_DEFINE([MPFR_TUNE_COVERAGE], 1, [tune for coverage]) ;;
