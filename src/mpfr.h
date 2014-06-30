@@ -952,7 +952,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_div_ui(_f, _g, _u,_r)                              \
   (__builtin_constant_p (_u) && (mpfr_ulong) (_u) >= 1 &&       \
    ((mpfr_ulong) (_u) & ((mpfr_ulong) (_u) - 1)) == 0 ?         \
-   mpfr_mul_2si((_f), (_g), -__builtin_ctzl (_u), (_r)) :       \
+   mpfr_mul_2si((_f), (_g), - __builtin_ctzl (_u), (_r)) :      \
    mpfr_div_ui ((_f), (_g), (_u), (_r)))
 #endif
 
