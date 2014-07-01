@@ -211,7 +211,7 @@ test_value_round (long nbtests, mpfr_prec_t prec)
         {
           fprintf (stderr, "n %d t %d d %d u %d z %d a %d s %d\n",
                   inexn, inext, inexd, inexu, inexz, inexa, s);
-          fprintf (stderr, "n %.4Rf t %.4Rf d %.4Rf u %.4Rf z %.4Rf a %.4Rf\n",
+          fprintf (stderr, "n %.4f t %.4f d %.4f u %.4f z %.4f a %.4f\n",
                    mpfr_get_d (xn, MPFR_RNDN), mpfr_get_d (t, MPFR_RNDN),
                    mpfr_get_d (xd, MPFR_RNDN), mpfr_get_d (xu, MPFR_RNDN),
                    mpfr_get_d (xz, MPFR_RNDN), mpfr_get_d (xa, MPFR_RNDN));
