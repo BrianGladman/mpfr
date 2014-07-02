@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 
 /* Return Phi(x) = 1 - exp(-x), the cumulative probability function for the
  * exponential distribution.  We only take differences of this function so the

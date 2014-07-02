@@ -53,7 +53,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* this file cannot be compiled with mini-gmp since it relies on
    mpfr_random_deviate_value which needs mpq_t */
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 #include "random_deviate.h"
 
 /* Algorithm H: true with probability exp(-1/2). */

@@ -77,7 +77,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
     }
 
-#if defined(HAVE_STDARG) && !defined(WANT_MINI_GMP)
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
   if (verbose)
     {
       mpfr_init2 (av, prec);

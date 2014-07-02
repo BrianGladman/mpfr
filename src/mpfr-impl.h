@@ -92,7 +92,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #  include "gmp.h"
 # endif
 /* if using mini-gmp, include missing definitions in mini-gmp */
-# ifdef WANT_MINI_GMP
+# ifdef MPFR_USE_MINI_GMP
 #  include "mpfr-mini-gmp.h"
 # endif
 # ifndef __MPFR_H

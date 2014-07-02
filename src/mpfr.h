@@ -430,7 +430,7 @@ __MPFR_DECLSPEC void mpfr_set_nan _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 __MPFR_DECLSPEC void mpfr_set_zero _MPFR_PROTO ((mpfr_ptr, int));
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
   /* mini-gmp does not provide mpf_t, we disable the following functions */
 __MPFR_DECLSPEC int
   mpfr_set_f _MPFR_PROTO ((mpfr_ptr, mpf_srcptr, mpfr_rnd_t));
@@ -445,7 +445,7 @@ __MPFR_DECLSPEC int
   mpfr_set_si_2exp _MPFR_PROTO ((mpfr_ptr, long, mpfr_exp_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set_ui_2exp _MPFR_PROTO ((mpfr_ptr,unsigned long,mpfr_exp_t,mpfr_rnd_t));
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
   /* mini-gmp does not provide mpq_t, we disable the following functions */
 __MPFR_DECLSPEC int
   mpfr_set_q _MPFR_PROTO ((mpfr_ptr, mpq_srcptr, mpfr_rnd_t));
