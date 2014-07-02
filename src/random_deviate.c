@@ -36,8 +36,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * is undefined if e <= RANDOM_CHUNK.
  */
 
-/* this file cannot compile with mini-gmp since it uses mpq_t */
-#ifndef MPFR_USE_MINI_GMP
 #define MPFR_NEED_LONGLONG_H
 #include "random_deviate.h"
 
@@ -125,12 +123,6 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
   MPFR_STAT_STATIC_ASSERT (sizeof (mpfr_random_size_t) * CHAR_BIT >= 32 &&
                            sizeof (mpfr_random_size_t) >=
                            sizeof (mpfr_uprec_t));
-
-  /* Check that a mp_bitcnt_t can hold a mpfr_random_size_t (both unsigned).
-   * This test is needed in case the conversion to an mpfr_t is via an mpq_t in
-   * mpfr_random_deviate_value (which is extremely unlikely). */
-  MPFR_STAT_STATIC_ASSERT (sizeof (mp_bitcnt_t) >=
-                           sizeof (mpfr_random_size_t));
 
   /* Finally, at runtime, check that k is not too big.  e is set to ceil(k/W)*W
    * and we require that this allows x->e + 1 in random_deviate_leading_bit to
@@ -390,4 +382,3 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   mpz_clear (t);
   return inex;
 }
-#endif

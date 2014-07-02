@@ -507,12 +507,10 @@ __MPFR_DECLSPEC int mpfr_urandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_grandom _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
-#ifndef MPFR_USE_MINI_GMP
 __MPFR_DECLSPEC int mpfr_nrandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_erandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
-#endif
 __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));

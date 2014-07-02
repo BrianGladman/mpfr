@@ -22,9 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-/* mpfr_erandom is not defined with mini-gmp, see src/erandom.c */
-#ifndef MPFR_USE_MINI_GMP
-
 static void
 test_special (mpfr_prec_t p)
 {
@@ -131,13 +128,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else
-
-int
-main (void)
-{
-  return 77;
-}
-
-#endif
