@@ -465,6 +465,17 @@ For identifiers defined in MPFR, do not use the GMP namespaces
 
 ===========================================================================
 
+You are allowed to use the mpn and mpz classes of GMP functions (types
+and functions starting with "mpn_" and "mpz_"). However, except for some
+conversion functions where they may be needed,
+  * the mpq class and GMP's formatted output and input functions (i.e.,
+    printf and scanf style) can only be used in an alternative method
+    by testing MPFR_USE_MINI_GMP (and only if there is a real benefit),
+    since they are not available in mini-gmp;
+  * the mpf class must not be used at all.
+
+===========================================================================
+
 The headers <limits.h>, <stdio.h>, <stdlib.h> and <string.h> are always
 included in mpfr-impl.h; thus you need not (and should not) include them
 in usual source and test files.
