@@ -36,3 +36,7 @@ $ diff gmp.h.orig gmp.h
 
 4) extract the MPFR tarball in say /tmp/mpfr-3.1.2
    ./configure --with-gmp=/tmp --enable-mini-gmp
+
+Note: to use this version of the MPFR library, you need to define
+the MPFR_USE_MINI_GMP macro before including mpfr.h (alternatively,
+you can modify mpfr.h to define this macro at the beginning).
