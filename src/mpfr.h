@@ -1022,8 +1022,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
  ( mpfr_init(x), mpfr_set_ld((x), (d), (rnd)) )
 #define mpfr_init_set_z(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_z((x), (i), (rnd)) )
+#ifndef MPFR_USE_MINI_GMP
 #define mpfr_init_set_q(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_q((x), (i), (rnd)) )
+#endif
 #define mpfr_init_set(x, y, rnd) \
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
