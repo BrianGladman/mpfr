@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
-
 static void
 test_special (mpfr_prec_t p)
 {
@@ -72,7 +70,7 @@ test_erandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
     }
 
-#ifdef HAVE_STDARG
+#ifdef HAVE_STDARG && !defined(WANT_MINI_GMP)
   if (verbose)
     {
       mpfr_init2 (av, prec);
@@ -130,13 +128,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else
-
-int
-main (void)
-{
-  return 77;
-}
-
-#endif
