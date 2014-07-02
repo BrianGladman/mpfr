@@ -73,7 +73,7 @@ test_erandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
     }
 
-#ifdef HAVE_STDARG
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
   if (verbose)
     {
       mpfr_init2 (av, prec);
