@@ -22,6 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* mpfr_nrandom is not defined with mini-gmp, see src/nrandom.c */
+#ifndef MPFR_USE_MINI_GMP
+
 static void
 test_special (mpfr_prec_t p)
 {
@@ -70,7 +73,7 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
     }
 
-#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
+#ifdef HAVE_STDARG
   if (verbose)
     {
       mpfr_init2 (av, prec);
@@ -128,3 +131,13 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
+
+#else
+
+int
+main (void)
+{
+  return 77;
+}
+
+#endif
