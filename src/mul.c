@@ -384,7 +384,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 MPFR_ASSERTD (bn > 0);
               } /* This must end since the most significant limb is != 0 */
 
-            /* Check for c too: if b ==c, will do nothing */
+            /* Check for c too: if b == c, this will do nothing */
             while (*cp == 0)
               {
                 cp++;
