@@ -507,16 +507,19 @@ __MPFR_DECLSPEC int mpfr_urandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_grandom _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
+#ifndef MPFR_USE_MINI_GMP
 __MPFR_DECLSPEC int mpfr_nrandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_erandom _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t,
                                                mpfr_rnd_t));
+#endif
 __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nextbelow _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nexttoward _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
 
+#ifndef MPFR_USE_MINI_GMP
 __MPFR_DECLSPEC int mpfr_printf _MPFR_PROTO ((const char*, ...));
 __MPFR_DECLSPEC int mpfr_asprintf _MPFR_PROTO ((char**, const char*,
                                                 ...));
@@ -524,6 +527,7 @@ __MPFR_DECLSPEC int mpfr_sprintf _MPFR_PROTO ((char*, const char*,
                                                ...));
 __MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t,
                                                 const char*, ...));
+#endif
 
 __MPFR_DECLSPEC int mpfr_pow _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                            mpfr_srcptr, mpfr_rnd_t));
@@ -1025,11 +1029,11 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #ifndef MPFR_USE_MINI_GMP
 #define mpfr_init_set_q(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_q((x), (i), (rnd)) )
+#define mpfr_init_set_f(x, y, rnd) \
+ ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 #endif
 #define mpfr_init_set(x, y, rnd) \
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
-#define mpfr_init_set_f(x, y, rnd) \
- ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
 /* Compatibility layer -- obsolete functions and macros */
 /* Note: it is not possible to output warnings, unless one defines
@@ -1127,9 +1131,11 @@ __MPFR_DECLSPEC size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE*, int,
                                                   mpfr_rnd_t));
 __MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
                                                   mpfr_srcptr, mpfr_rnd_t));
+#ifndef MPFR_USE_MINI_GMP
 #define mpfr_fprintf __gmpfr_fprintf
 __MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, const char*,
                                                ...));
+#endif
 #define mpfr_fpif_export __gmpfr_fpif_export
 #define mpfr_fpif_import __gmpfr_fpif_import
 __MPFR_DECLSPEC int    mpfr_fpif_export _MPFR_PROTO ((FILE*, mpfr_ptr));
