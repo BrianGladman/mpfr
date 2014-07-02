@@ -22,9 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP /* mini-gmp does not support the gmp*printf functions,
-                         and thus the mpfr_printf ones */
-
 static void
 test_special (mpfr_prec_t p)
 {
@@ -73,7 +70,7 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
     }
 
-#ifdef HAVE_STDARG
+#ifdef HAVE_STDARG && !defined(WANT_MINI_GMP)
   if (verbose)
     {
       mpfr_init2 (av, prec);
@@ -131,13 +128,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else
-
-int
-main (void)
-{
-  return 77;
-}
-
-#endif
