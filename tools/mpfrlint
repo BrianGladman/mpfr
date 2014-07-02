@@ -6,6 +6,15 @@
 dir=`pwd`
 [ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
 
+# Detect the possible use of forbidden macros in mpfr.h, such as those
+# starting with "HAVE_" or "WANT_". Public macros defined by MPFR must
+# start with "MPFR_".
+perl -ne '/^#/ && ! /^# *error / or next; while (/\b([_A-Z]+)\b/g)
+  { my $m = $1;
+    $m =~ /^(_*MPFR_|_*GMP_|__(GNUC|ICC|STDC)(_|$)|_MSC_|U?INTMAX_C$)/
+      and next;
+    print "Forbidden macro in mpfr.h line $.: $m\n" }' src/mpfr.h
+
 grep '^# *include *<math\.h>' src/*.c
 
 flaglist="underflow|overflow|divby0|nanflag|inexflag|erangeflag"
