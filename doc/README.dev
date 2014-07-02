@@ -228,6 +228,8 @@ To make a release (for the MPFR team):
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.
 
+     Test with mini-gmp.
+
      Test with valgrind by setting the environment variable:
        VALGRIND="valgrind -q --error-exitcode=1 --leak-check=full"
      See below for more information about valgrind.
