@@ -49,7 +49,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * a natural generalization. Indeed, a number with 1-bit precision can
  * be seen as a subnormal number with more precision.
  *
- * MPFR_RNDNA is now supported, but needs to be tested [TODO].
+ * MPFR_RNDNA is now supported, but needs to be tested [TODO] and is
+ * still not part of the API. In particular, the MPFR_RNDNA value (-1)
+ * may change in the future without notice, and this will be the case
+ * when this rounding mode will be supported officially.
  */
 
 int
