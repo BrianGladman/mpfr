@@ -372,41 +372,48 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
  ******************** Assertions **********************
  ******************************************************/
 
-/* Compile with -DMPFR_WANT_ASSERT to check all assert statements */
+/* MPFR_WANT_ASSERT can take 4 values (the default value is 0):
+   -1 (or below): Do not check any assertion. Discouraged, in particular
+     for a shared library (for time-critical applications, LTO with a
+     static library should also be used anyway).
+   0: Check normal assertions.
+   1: Check debugging assertions too.
+   2 (or above): Additional checks that may take time. For instance,
+     some functions may be tested by using two different implementations
+     and comparing the results.
+*/
 
 /* Note: do not use GMP macros ASSERT_ALWAYS and ASSERT as they are not
    expressions, and as a consequence, they cannot be used in a for(),
    with a comma operator and so on. */
 
-/* MPFR_ASSERTN(expr): assertions that should always be checked */
-#define MPFR_ASSERTN(expr)  \
-  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
-
-/* MPFR_ASSERTD(expr): assertions that should be checked when testing.
+/* MPFR_ASSERTN(expr): assertions that should normally be checked,
+     otherwise give a hint to the compiler.
+   MPFR_ASSERTD(expr): assertions that should be checked when testing,
+     otherwise give a hint to the compiler.
    MPFR_DBGRES(assignment): to be used when the result is tested only
      in an MPFR_ASSERTD expression (in order to avoid a warning, e.g.
      with GCC's -Wunused-but-set-variable, in non-debug mode).
  */
-#ifdef MPFR_WANT_ASSERT
+#ifndef MPFR_WANT_ASSERT
+# define MPFR_WANT_ASSERT 0
+#endif
+
+#if MPFR_WANT_ASSERT < 0
+# undef MPFR_EXP_CHECK
+# define MPFR_ASSERTN(expr)  MPFR_ASSUME (expr)
+#else
+# define MPFR_ASSERTN(expr)  \
+  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
+#endif
+
+#if MPFR_WANT_ASSERT > 0
 # define MPFR_EXP_CHECK 1
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 # define MPFR_DBGRES(A)      (A)
 #else
 # define MPFR_ASSERTD(expr)  MPFR_ASSUME (expr)
 # define MPFR_DBGRES(A)      ((void) (A))
-#endif
-
-/* Check if the user requested absolutely no assertion (including MPFR_ASSERTN) */
-#if defined(MPFR_WANT_ASSERT)
-# if MPFR_WANT_ASSERT < 0
-#  undef MPFR_ASSERTN
-#  undef MPFR_ASSERTD
-#  undef MPFR_DBGRES
-#  undef MPFR_EXP_CHECK
-# define MPFR_ASSERTN(expr)  ((void) 0)
-# define MPFR_ASSERTD(expr)  ((void) 0)
-# define MPFR_DBGRES(A)      ((void) (A))
-# endif
 #endif
 
 /* MPFR_ASSUME is like assert(), but it is a hint to a compiler about a

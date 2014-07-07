@@ -28,8 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Check if we have to check the result of mpfr_mul.
    TODO: Find a better (and faster?) check than using old implementation */
-#ifdef MPFR_WANT_ASSERT
-# if MPFR_WANT_ASSERT >= 3
+#if MPFR_WANT_ASSERT >= 2
 
 int mpfr_mul2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode);
 static int
@@ -171,9 +170,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTN (mpfr_set (tc, c, MPFR_RNDN) == 0);
 
   inexact2 = mpfr_mul3 (ta, tb, tc, rnd_mode);
-  inexact1  = mpfr_mul2 (a, b, c, rnd_mode);
-  if (mpfr_cmp (ta, a) || inexact1*inexact2 < 0
-      || (inexact1*inexact2 == 0 && (inexact1|inexact2) != 0))
+  inexact1 = mpfr_mul2 (a, b, c, rnd_mode);
+  if (MPFR_IS_NAN (ta) && MPFR_IS_NAN (a))
+    {
+      /* Both NaN is OK. */
+    }
+  else if (mpfr_cmp (ta, a) != 0 || ! SAME_SIGN (inexact1, inexact2))
     {
       fprintf (stderr, "mpfr_mul return different values for %s\n"
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
@@ -196,8 +198,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 }
 
 # define mpfr_mul mpfr_mul2
-# endif
-#endif
+
+#endif  /* MPFR_WANT_ASSERT >= 2 */
 
 /****** END OF CHECK *******/
 
