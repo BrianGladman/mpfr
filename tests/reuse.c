@@ -675,6 +675,11 @@ main (void)
     test3a (mpfr_modf, "mpfr_modf", p, (mpfr_rnd_t) rnd);
     test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, (mpfr_rnd_t) rnd);
 #endif
+
+#if MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0)
+    test2 (mpfr_ai, "mpfr_ai", p, (mpfr_rnd_t) rnd);
+    test2 (mpfr_digamma, "mpfr_digamma", p, (mpfr_rnd_t) rnd);
+#endif
   }
 
   tests_end_mpfr ();
