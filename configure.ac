@@ -345,6 +345,21 @@ AC_ARG_ENABLE(mini-gmp,
       *) AC_MSG_ERROR([bad value for --enable-mini-gmp: yes or no]) ;;
      esac])
 
+AC_ARG_ENABLE(debug-prediction,
+   [  --enable-debug-prediction
+                          [[for developers]] enable debug of branch prediction
+                          (for x86 and x86-64 with GCC, static libs)],
+   [ case $enableval in
+      yes)  if test "$enable_shared" != no; then
+              AC_MSG_ERROR([--enable-debug-prediction can only work in static mode (--disable-shared)])
+            fi
+            AC_DEFINE([MPFR_DEBUG_PREDICTION],1,
+	       [Enable debug of branch prediction]) ;;
+      no)   ;;
+      *)    AC_MSG_ERROR([bad value for --enable-debug-prediction: yes or no]) ;;
+     esac])
+
+
 dnl Check if compiler is ICC, and if such a case, disable GCC
 dnl And add some specific flags.
 dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).

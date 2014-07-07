@@ -1047,12 +1047,54 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 /* Theses macros help the compiler to determine if a test is
    likely or unlikely. The !! is necessary in case x is larger
    than a long. */
-#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-# define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
-# define MPFR_UNLIKELY(x) (__builtin_expect(!!(x),0))
+#if defined MPFR_DEBUG_PREDICTION && __MPFR_GNUC(3,0)
+
+/* Code to debug branch prediction, based on Ulrich Drepper's paper
+ * "What Every Programmer Should Know About Memory":
+ *   http://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+ */
+asm (".section predict_data, \"aw\"; .previous\n"
+     ".section predict_line, \"a\"; .previous\n"
+     ".section predict_file, \"a\"; .previous");
+# if defined __x86_64__
+#  define MPFR_DEBUGPRED__(e,E)                                         \
+  ({ long int _e = !!(e);                                               \
+    asm volatile (".pushsection predict_data\n"                         \
+                  "..predictcnt%=: .quad 0; .quad 0\n"                  \
+                  ".section predict_line; .quad %c1\n"                  \
+                  ".section predict_file; .quad %c2; .popsection\n"     \
+                  "addq $1,..predictcnt%=(,%0,8)"                       \
+                  : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__));   \
+    __builtin_expect (_e, E);                                           \
+  })
+# elif defined __i386__
+#  define MPFR_DEBUGPRED__(e,E)                                         \
+  ({ long int _e = !!(e);                                               \
+    asm volatile (".pushsection predict_data\n"                         \
+                  "..predictcnt%=: .long 0; .long 0\n"                  \
+                  ".section predict_line; .long %c1\n"                  \
+                  ".section predict_file; .long %c2; .popsection\n"     \
+                  "incl ..predictcnt%=(,%0,4)"                          \
+                  : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__));   \
+    __builtin_expect (_e, E);                                           \
+  })
+# else
+#  error "MPFR_DEBUGPRED__ definition missing"
+# endif
+
+# define MPFR_LIKELY(x) MPFR_DEBUGPRED__ ((x), 1)
+# define MPFR_UNLIKELY(x) MPFR_DEBUGPRED__ ((x), 0)
+
+#elif __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+
+# define MPFR_LIKELY(x) (__builtin_expect(!!(x), 1))
+# define MPFR_UNLIKELY(x) (__builtin_expect(!!(x), 0))
+
 #else
+
 # define MPFR_LIKELY(x) (x)
 # define MPFR_UNLIKELY(x) (x)
+
 #endif
 
 /* Declare that some variable is initialized before being used (without a
