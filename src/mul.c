@@ -173,9 +173,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   inexact1 = mpfr_mul2 (a, b, c, rnd_mode);
   if (MPFR_IS_NAN (ta) && MPFR_IS_NAN (a))
     {
-      /* Both NaN is OK. */
+      /* Getting both NaN is OK. */
     }
-  else if (mpfr_cmp (ta, a) != 0 || ! SAME_SIGN (inexact1, inexact2))
+  else if (! mpfr_equal_p (ta, a) || ! SAME_SIGN (inexact1, inexact2))
     {
       fprintf (stderr, "mpfr_mul return different values for %s\n"
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
