@@ -221,9 +221,9 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1 in order
-     to detect whether tests can fail due to a FP division by 0 on
-     platforms where such an operation fails (e.g. trap).
+     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO in order to detect
+     whether tests can fail due to a FP division by 0 on platforms where
+     such an operation fails (e.g. trap).
 
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.

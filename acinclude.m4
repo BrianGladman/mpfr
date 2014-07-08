@@ -281,7 +281,7 @@ dnl Check the FP division by 0 fails (e.g. on a non-IEEE-754 platform).
 dnl In such a case, MPFR_ERRDIVZERO is defined to disable the tests
 dnl involving a FP division by 0.
 dnl For the developers: to check whether all these tests are disabled,
-dnl configure MPFR with "-DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1".
+dnl configure MPFR with "-DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO".
 AC_CACHE_CHECK([if the FP division by 0 fails], mpfr_cv_errdivzero, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int main (void) {

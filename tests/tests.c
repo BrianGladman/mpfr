@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
-#ifdef MPFR_TEST_DIVBYZERO
+#ifdef MPFR_TESTS_DIVBYZERO
 # include <fenv.h>
 #endif
 
@@ -224,7 +224,7 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
-#ifdef MPFR_TEST_DIVBYZERO
+#ifdef MPFR_TESTS_DIVBYZERO
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
 #endif
@@ -263,7 +263,7 @@ tests_end_mpfr (void)
   tests_memory_end ();
 #endif
 
-#ifdef MPFR_TEST_DIVBYZERO
+#ifdef MPFR_TESTS_DIVBYZERO
   /* Define to test the use of MPFR_ERRDIVZERO */
   if (fetestexcept (FE_DIVBYZERO|FE_INVALID))
     {
