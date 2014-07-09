@@ -183,7 +183,7 @@ AC_CACHE_CHECK([for __builtin_unreachable], mpfr_cv_have_builtin_unreachable,
 ])
 if test "$mpfr_cv_have_builtin_unreachable" = "yes"; then
   AC_DEFINE(MPFR_HAVE_BUILTIN_UNREACHABLE, 1,
-   [Define if the _Builtin_unreachable function is supported.])
+   [Define if the __builtin_unreachable GCC built-in is supported.])
 fi
 
 dnl Check for fesetround
