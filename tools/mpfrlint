@@ -38,11 +38,17 @@ grconf '="`'
 grconf '[^a-z][ef]?grep[^a-z]'
 grconf '[^a-z]sed[^a-z]'
 
-srctests=`find src tests -name '*.[ch]'`
+srctests=`find src tests -name '*.[ch]' ! -name 'mini-gmp.*'`
 
 grep GMP_LIMB_BITS $srctests
 
 grep GMP_RND $srctests | grep -v '#define GMP_RND'
+
+# Note: exceptions __gmpn_rootrem and __gmpn_sbpi1_divappr_q
+# are normally used only if WANT_GMP_INTERNALS is defined.
+grep '__gmp[nz]_' $srctests | \
+  grep -v __gmpn_rootrem | \
+  grep -v __gmpn_sbpi1_divappr_q
 
 grep -E 'mp_(src)?ptr' $srctests
 
@@ -99,6 +105,7 @@ done
 for file in src/*.c
 do
   [ "$file" = src/jyn_asympt.c ] || \
+    [ "$file" = src/mini-gmp.c ] || \
     [ "$file" = src/round_raw_generic.c ] || \
     grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\|random_deviate\)\.h"' $file || \
     echo "Missing '#include \"mpfr-impl.h\"' in $file?"
