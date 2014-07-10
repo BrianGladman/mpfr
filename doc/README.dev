@@ -209,6 +209,7 @@ To make a release (for the MPFR team):
      Check with "-UHAVE_BIG_ENDIAN -UHAVE_LITTLE_ENDIAN" to simulate
      platforms where the endianness is unknown (or can't be specified
      without AC_CONFIG_HEADERS).
+     Check also without mpz_t caching (-DMPFR_MY_MPZ_INIT=0).
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
