@@ -72,32 +72,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
-# ifndef __GMP_H__
-#  include "gmp.h"
-# endif
-# ifndef __GMP_IMPL_H__
-#  include "gmp-impl.h"
-# endif
+# include "gmp.h"
+# include "gmp-impl.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  include "longlong.h"
 # endif
-# ifndef __MPFR_H
-#  include "mpfr.h"
-# endif
+# include "mpfr.h"
 # include "mpfr-gmp.h"
 
 #else /* Build without gmp internals */
 
-# ifndef __GMP_H__
-#  include "gmp.h"
-# endif
+# include "gmp.h"
 /* if using mini-gmp, include missing definitions in mini-gmp */
 # ifdef MPFR_USE_MINI_GMP
 #  include "mpfr-mini-gmp.h"
 # endif
-# ifndef __MPFR_H
-#  include "mpfr.h"
-# endif
+# include "mpfr.h"
 # include "mpfr-gmp.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  define LONGLONG_STANDALONE
