@@ -23,13 +23,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME[VL].
-
+/*
 Preliminary note: The previous mpfr_sum algorithm was a high-level one
 and could take too much memory and too much time in cases with numbers
 of different magnitudes and cancellation. Here we will use functions
 from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
 on additions by blocks, involving virtual splitting of MPFR numbers.
+
+Let sq be the output precision.
 
 The general ideas of the algorithm:
 
@@ -44,21 +45,28 @@ The general ideas of the algorithm:
    * determine the maximum exponent maxexp of the regular inputs and
      the number n' of regular inputs.
 
-2. Compute the truncated sum in two's complement by taking into account
-   the part of the inputs in a window [minexp,maxexp[ (we choose not to
-   include maxexp in order to match the floating-point representation
-   chosen in MPFR, where the significand is in [1/2,1[; this also means
-   that minexp will be the next maxexp, unless there is a hole in the
-   inputs, as explained below). Each operation adds a part of an input
-   to a fixed memory area, called accumulator, whose characteristics
-   are determined below.
+2. A truncated sum will be computed in two's complement, stored in a
+   fixed memory area, called "accumulator", whose characteristics are
+   determined here.
+
+   Only a fixed part of the inputs will be taken into account for the
+   truncated sum: the bits whose exponent is in some window (interval)
+   denoted [minexp,maxexp[.
+
+   We choose not to include maxexp in the interval in order to match the
+   floating-point representation chosen in MPFR, where the significand
+   is in [1/2,1[; this also means that the current minexp will be maxexp
+   at the next iteration, unless there is a "hole" between the inputs,
+   as explained below.
+
    Due to the accumulation of values and the choice of two's complement
    (a way to represent the sign), we will need some extra bits to avoid
    overflows. The absolute value of the sum is less than n' * 2^maxexp,
    taken up to ceil(log2(n')) extra bits, and one needs one more bit to
    be able to determine the sign, so that cq = ceil(log2(n')) + 1 extra
    bits will be considered.
-   Moreover we will choose minexp = maxexp - output_prec - dq, where dq
+
+   For the other side, we define minexp = maxexp - sq - dq, where dq
    will be chosen around log2(n') to take into account the accumulation
    of errors, i.e. from everything less significant than minexp. The
    final choice for dq should be done after testing: in practice, one
@@ -66,37 +74,56 @@ The general ideas of the algorithm:
    this iteration, but important cancellation will always lead to other
    iterations. For instance, we will choose the smallest dq > log2(n')
    such that the window bitsize, which is maxexp + cq - minexp, i.e.
-   cq + output_prec + dq, is a multiple of GMP_NUMB_BITS.
+   cq + sq + dq, is a multiple of GMP_NUMB_BITS.
+
+3. Compute the truncated sum in two's complement by taking into account
+   the part of the inputs in the window [minexp,maxexp[.
+
    In the same loop over the inputs, determine the maximum exponent
    maxexp2 of the numbers formed starting with the most significant
    represented bit that has been ignored: one will get either minexp
    (if an input has been truncated at this iteration) or the maximum
    exponent of the numbers that have been completely ignored.
 
-3. Determine the number of cancelled bits.
+4. Determine the number of cancelled bits.
 
-4. If the truncated sum (i.e. the value of the accumulator) is 0, then
-   reiterate at (2) with maxexp = maxexp2.
+5. If the truncated sum (i.e. the value of the accumulator) is 0, then
+   reiterate at (3) with maxexp = maxexp2.
 
-5. If, because of cancellation, the correctly rounded sum cannot be
+6. If, because of cancellation, the correctly rounded sum cannot be
    determined possibly by using the sign of the error term, then shift
    the truncated sum to the left boundary (most significant part) of
-   the accumulator, and reiterate at (2), where:
+   the accumulator, and reiterate at (3), where:
    * the shift count is determined in such a way to avoid overflows
      at the next iteration, i.e. to be able to retrieve the sum with
      its sign;
-   * the new value of cq is implied by this shift count.
+   * the new value of cq is implied by this shift count and maxexp2
+     (the value of maxexp at the next iteration).
    Note: It is expected that in general, the cancellation is small,
-   so that the new additions in (2) will occur only in a small part
+   so that the new additions in (3) will occur only in a small part
    of the accumulator. But see below about long carry propagation.
 
-6. If the sign of the error term is needed to determine the returned
-   result (correctly rounded sum and ternary value), then reiterate
-   at (2) to compute it using a specific window with output_prec = 0,
-   i.e. around maxexp + cq to maxexp - dq.
+7. Copy the rounded significand to the destination; one goal is to free
+   the accumulator in case there is work to do in (8).
 
-7. Copy the correctly rounded result to the destination and exit with
-   the correct ternary value.
+8. If the sign of the error term is needed to determine the returned
+   result (correctly rounded sum and ternary value), then reiterate
+   at (3) to compute it using a specific window as if sq were 0, i.e.
+   around maxexp + cq to maxexp - dq.
+
+9. Correct the significand if need be (+ or - 1 ulp), determine the
+   exponent, and exit with the correct ternary value.
+
+Accumulator at the first iteration:
+
+                 [------]---------------------------------------]
+                    cq  ^- maxexp        sq + dq        minexp -^
+
+If there is a second iteration with maxexp2 = minexp - 3 and a shift
+of 20 bits:
+                                             <---- 20 zeros ---->
+                 [---------------------------0000000000000000000]
+                                       maxexp -^        minexp -^
 
 An example:
 
@@ -110,12 +137,12 @@ An example:
 
 At iteration 1, minexp is determined to be [1]; thus u0, a part of u1,
 and a part of u2 are taken into account for the truncated sum. Then it
-appears that an important cancellation occurred, and another step (2)
+appears that an important cancellation occurred, and another step (3)
 is needed. Since u1 was truncated, the new maxexp will be minexp, i.e.
 [1]. At iteration 2, minexp is determined to be [2]; thus a part of u1,
 a part of u2, and u3 are taken into account for the truncated sum. Now
 assume that on this example, the error is small enough, but its sign is
-unknown. Thus another step (2) is needed, with the conditions of (6).
+unknown. Thus another step (3) is needed, with the conditions of (7).
 Since no numbers were truncated at the previous iteration, maxexp is
 the maximum exponent of the remaining numbers, here the one of u4, and
 minexp is determined to be [3]. Assume that the sign of the error can
@@ -149,12 +176,31 @@ Variables:
   minexp: the minimum exponent of the bit-window of the inputs that is
           taken into account (for the current iteration), included.
 
-Note: Data locality can be improved after the first iteration if the
+Note 1: Data locality can be improved after the first iteration if the
 shifted values are stored at the end of the temporary area instead of
 the beginning. The reason is that only the least significant part of
 the accumulator will be used once a good approximate value of the sum
 is known, and the accumulator lies just after the temporary area. But
 the gain would probably not be noticeable in practice.
+
+Note 2: At step (4), it was considered to determine the number of
+cancelled limbs instead of the number of cancelled bits in order to
+avoid a non-trivial shift at step (6), making this step a bit faster.
+However this choice would have required a larger value of dq (with
+an increment of up to something like GMP_NUMB_BITS - 1) at the first
+iteration to be able to handle a number of cancelled bits just below
+GMP_NUMB_BITS (similar problem to the one of small leading digit in
+high-radix floating-point representations).
+
+Note 3: Compared with Ziv's strategy, the issue here is not really
+exact values that are very close to a breakpoint, but cancellation.
+Moreover, we do not need to recompute everything at each iteration.
+The issue with the value very close to a breakpoint actually occurs
+at step (8); however, contrary to the usual case, we do not want to
+reiterate with more precision as this could take too much time and
+memory. Indeed, due to a possible "hole" between the inputs, the
+distance between the exact value and a breakpoint can be extremely
+small.
 
 *** To be considered in future versions ***
 It seems that carry propagation (mpn_add_1 & mpn_sub_1 in the code) is
@@ -196,300 +242,6 @@ VL: This is very different:
         sequencial             parallel (& sequential)
 */
 
-/* I would really like to use "mpfr_srcptr const []" but the norm is buggy:
-   it doesn't automatically cast a "mpfr_ptr []" to "mpfr_srcptr const []"
-   if necessary. So the choice are:
-     mpfr_s **                : OK
-     mpfr_s *const*           : OK
-     mpfr_s **const           : OK
-     mpfr_s *const*const      : OK
-     const mpfr_s *const*     : no
-     const mpfr_s **const     : no
-     const mpfr_s *const*const: no
-   VL: this is not a bug, but a feature. See the reason here:
-     http://c-faq.com/ansi/constmismatch.html
-*/
-static void heap_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *);
-static void count_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *,
-                        mpfr_exp_t, mpfr_uexp_t);
-
-/* Either sort the tab in perm and returns 0
-   Or returns 1 for +INF, -1 for -INF and 2 for NAN.
-   Also set *maxprec to the maximal precision of tab[0..n-1] and of the
-   initial value of *maxprec.
-*/
-int
-mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm,
-               mpfr_prec_t *maxprec)
-{
-  mpfr_exp_t min, max;
-  mpfr_uexp_t exp_num;
-  unsigned long i;
-  int sign_inf;
-
-  sign_inf = 0;
-  min = MPFR_EMIN_MAX;
-  max = MPFR_EMAX_MIN;
-  for (i = 0; i < n; i++)
-    {
-      if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tab[i])))
-        {
-          if (MPFR_IS_NAN (tab[i]))
-            return 2; /* Return NAN code */
-          else if (MPFR_IS_INF (tab[i]))
-            {
-              if (sign_inf == 0) /* No previous INF */
-                sign_inf = MPFR_SIGN (tab[i]);
-              else if (sign_inf != MPFR_SIGN (tab[i]))
-                return 2; /* Return NAN */
-            }
-        }
-      else
-        {
-          MPFR_ASSERTD (MPFR_IS_PURE_FP (tab[i]));
-          if (MPFR_GET_EXP (tab[i]) < min)
-            min = MPFR_GET_EXP(tab[i]);
-          if (MPFR_GET_EXP (tab[i]) > max)
-            max = MPFR_GET_EXP(tab[i]);
-        }
-      if (MPFR_PREC (tab[i]) > *maxprec)
-        *maxprec = MPFR_PREC (tab[i]);
-    }
-  if (MPFR_UNLIKELY (sign_inf != 0))
-    return sign_inf;
-
-  exp_num = max - min + 1;
-  /* FIXME : better test */
-  if (exp_num > n * MPFR_INT_CEIL_LOG2 (n))
-    heap_sort (tab, n, perm);
-  else
-    count_sort (tab, n, perm, min, exp_num);
-  return 0;
-}
-
-#define GET_EXP1(x) (MPFR_IS_ZERO (x) ? min : MPFR_GET_EXP (x))
-/* Performs a count sort of the entries */
-static void
-count_sort (mpfr_srcptr *const tab, unsigned long n,
-            mpfr_srcptr *perm, mpfr_exp_t min, mpfr_uexp_t exp_num)
-{
-  unsigned long *account;
-  unsigned long target_rank, i;
-  MPFR_TMP_DECL(marker);
-
-  /* Reserve a place for potential 0 (with EXP min-1)
-     If there is no zero, we only lose one unused entry */
-  min--;
-  exp_num++;
-
-  /* Performs a counting sort of the entries */
-  MPFR_TMP_MARK (marker);
-  account = (unsigned long *) MPFR_TMP_ALLOC (exp_num * sizeof *account);
-  for (i = 0; i < exp_num; i++)
-    account[i] = 0;
-  for (i = 0; i < n; i++)
-    account[GET_EXP1 (tab[i]) - min]++;
-  for (i = exp_num - 1; i >= 1; i--)
-    account[i - 1] += account[i];
-  for (i = 0; i < n; i++)
-    {
-      target_rank = --account[GET_EXP1 (tab[i]) - min];
-      perm[target_rank] = tab[i];
-    }
-  MPFR_TMP_FREE (marker);
-}
-
-
-#define GET_EXP2(x) (MPFR_IS_ZERO (x) ? MPFR_EMIN_MIN : MPFR_GET_EXP (x))
-
-/* Performs a heap sort of the entries */
-static void
-heap_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
-{
-  unsigned long dernier_traite;
-  unsigned long i, pere;
-  mpfr_srcptr tmp;
-  unsigned long fils_gauche, fils_droit, fils_indigne;
-  /* Reminder of a heap structure :
-     node(i) has for left son node(2i +1) and right son node(2i)
-     and father(node(i)) = node((i - 1) / 2)
-  */
-
-  /* initialize the permutation to identity */
-  for (i = 0; i < n; i++)
-    perm[i] = tab[i];
-
-  /* insertion phase */
-  for (dernier_traite = 1; dernier_traite < n; dernier_traite++)
-    {
-      i = dernier_traite;
-      while (i > 0)
-        {
-          pere = (i - 1) / 2;
-          if (GET_EXP2 (perm[pere]) > GET_EXP2 (perm[i]))
-            {
-              tmp = perm[pere];
-              perm[pere] = perm[i];
-              perm[i] = tmp;
-              i = pere;
-            }
-          else
-            break;
-        }
-    }
-
-  /* extraction phase */
-  for (dernier_traite = n - 1; dernier_traite > 0; dernier_traite--)
-    {
-      tmp = perm[0];
-      perm[0] = perm[dernier_traite];
-      perm[dernier_traite] = tmp;
-
-      i = 0;
-      while (1)
-        {
-          fils_gauche = 2 * i + 1;
-          fils_droit = fils_gauche + 1;
-          if (fils_gauche < dernier_traite)
-            {
-              if (fils_droit < dernier_traite)
-                {
-                  if (GET_EXP2(perm[fils_droit]) < GET_EXP2(perm[fils_gauche]))
-                    fils_indigne = fils_droit;
-                  else
-                    fils_indigne = fils_gauche;
-
-                  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_indigne]))
-                    {
-                      tmp = perm[i];
-                      perm[i] = perm[fils_indigne];
-                      perm[fils_indigne] = tmp;
-                      i = fils_indigne;
-                    }
-                  else
-                    break;
-                }
-              else /* on a un fils gauche, pas de fils droit */
-                {
-                  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_gauche]))
-                    {
-                      tmp = perm[i];
-                      perm[i] = perm[fils_gauche];
-                      perm[fils_gauche] = tmp;
-                    }
-                  break;
-                }
-            }
-          else /* on n'a pas de fils */
-            break;
-        }
-    }
-}
-
-
-/* Sum a list of float with order given by permutation perm,
- * intermediate size set to F. Return non-zero if at least one of
- * the operations is inexact (thus 0 implies that the sum is exact).
- * Internal use function.
- */
-static int
-sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mpfr_prec_t F)
-{
-  mpfr_t sum;
-  unsigned long i;
-  int error_trap;
-
-  MPFR_ASSERTD (n >= 2);
-
-  mpfr_init2 (sum, F);
-  error_trap = mpfr_set (sum, tab[0], MPFR_RNDN);
-  for (i = 1; i < n - 1; i++)
-    {
-      MPFR_ASSERTD (!MPFR_IS_NAN (sum) && !MPFR_IS_INF (sum));
-      if (mpfr_add (sum, sum, tab[i], MPFR_RNDN))
-        error_trap = 1;
-    }
-  if (mpfr_add (ret, sum, tab[n - 1], MPFR_RNDN))
-    error_trap = 1;
-  mpfr_clear (sum);
-  return error_trap;
-}
-
-/* The following function will disappear in the final code. */
-static int
-mpfr_sum_old (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mpfr_rnd_t rnd)
-{
-  mpfr_t cur_sum;
-  mpfr_prec_t prec;
-  mpfr_srcptr *perm, *const tab = (mpfr_srcptr *) tab_p;
-  int k, error_trap;
-  MPFR_ZIV_DECL (loop);
-  MPFR_SAVE_EXPO_DECL (expo);
-  MPFR_TMP_DECL (marker);
-
-  if (MPFR_UNLIKELY (n <= 1))
-    {
-      if (n < 1)
-        {
-          MPFR_SET_ZERO (ret);
-          MPFR_SET_POS (ret);
-          return 0;
-        }
-      else
-        return mpfr_set (ret, tab[0], rnd);
-    }
-
-  /* Sort and treat special cases */
-  MPFR_TMP_MARK (marker);
-  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof *perm);
-  prec = MPFR_PREC (ret);
-  error_trap = mpfr_sum_sort (tab, n, perm, &prec);
-  /* Check if there was a NAN or a INF */
-  if (MPFR_UNLIKELY (error_trap != 0))
-    {
-      MPFR_TMP_FREE (marker);
-      if (error_trap == 2)
-        {
-          MPFR_SET_NAN (ret);
-          MPFR_RET_NAN;
-        }
-      MPFR_SET_INF (ret);
-      MPFR_SET_SIGN (ret, error_trap);
-      MPFR_RET (0);
-    }
-
-  /* Initial precision is max(prec(ret),prec(tab[0]),...,prec(tab[n-1])) */
-  k = MPFR_INT_CEIL_LOG2 (n) + 1;
-  prec += k + 2;
-  mpfr_init2 (cur_sum, prec);
-
-  /* Ziv Loop */
-  MPFR_SAVE_EXPO_MARK (expo);
-  MPFR_ZIV_INIT (loop, prec);
-  for (;;)
-    {
-      error_trap = sum_once (cur_sum, perm, n, prec + k);
-      if (MPFR_LIKELY (error_trap == 0 ||
-                       (!MPFR_IS_ZERO (cur_sum) &&
-                        mpfr_can_round (cur_sum, prec - 2,
-                                        MPFR_RNDN, rnd, MPFR_PREC (ret)))))
-        break;
-      MPFR_ZIV_NEXT (loop, prec);
-      mpfr_set_prec (cur_sum, prec);
-    }
-  MPFR_ZIV_FREE (loop);
-  MPFR_TMP_FREE (marker);
-
-  if (mpfr_set (ret, cur_sum, rnd))
-    error_trap = 1;
-  mpfr_clear (cur_sum);
-
-  MPFR_SAVE_EXPO_FREE (expo);
-  if (mpfr_check_range (ret, 0, rnd))
-    error_trap = 1;
-  return error_trap; /* It doesn't return the ternary value */
-}
-
 int
 mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 {
@@ -519,6 +271,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       int logn;       /* ceil(log2(rn)) */
       int cq, dq;
       mpfr_prec_t sq;
+      int inex;
       MPFR_TMP_DECL (marker);
 
       /* Pre-iteration (Step 1) */
@@ -615,6 +368,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       /* Generic case: all the inputs are finite numbers, with at least
          a regular number. */
 
+      /* Step 2: set up some variables and the accumulator. */
+
       /* rn is the number of regular inputs (the singular ones will be
          ignored). Compute logn = ceil(log2(rn)). */
       logn = MPFR_INT_CEIL_LOG2 (rn);
@@ -645,10 +400,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
       MPN_ZERO (wp, ws);  /* zero the accumulator */
 
-      do
+      while (1)
         {
           mpfr_exp_t minexp = maxexp - (sq + dq);
           mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
+
+          /* Step 3: compute the truncated sum. */
 
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
@@ -844,62 +601,67 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                           mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
                       }
                   }
-              }  /* end of the iteration (Step 2) */
+              }  /* end of the iteration (Step 3) */
 
-          /* TODO: implement steps 3 to 7. */
+          {
+            mpfr_prec_t cancel;  /* number of cancelled bits */
+            mp_size_t wi;        /* index in the accumulator */
+            mp_limb_t msl;       /* most significant limb */
+            mpfr_exp_t e;        /* temporary exponent of the result */
+
+            /* Step 4: determine the number of cancelled bits. */
+
+            cancel = 0;
+            wi = ws - 1;
+            MPFR_ASSERTD (wi >= 0);
+            msl = wp[wi];
+
+            /* Limbs whose bits are identical (000...00 or 111...11). */
+            if (MPFR_UNLIKELY (msl == MPFR_LIMB_ZERO || msl == MPFR_LIMB_MAX))
+              {
+                while (wi >= 0 && wp[wi] == msl)
+                  {
+                    cancel += GMP_NUMB_BITS;
+                    wi--;
+                  }
+
+                if (wi < 0 && msl == MPFR_LIMB_ZERO)
+                  {
+                    /* Step 5: the truncated sum is zero. Reiterate with
+                     * maxexp = maxexp2. Note: we do not need to zero the
+                     * accumulator since it is already 0 in this case.
+                     */
+                    maxexp = maxexp2;
+                    continue;
+                  }
+              }
+
+            /* Let's count the number of identical leading bits of
+               the next limb, if there is one. */
+            if (MPFR_LIKELY (wi >= 0))
+              {
+                int cnt;
+
+                msl = wp[wi];
+                if (msl & MPFR_LIMB_HIGHBIT)
+                  msl ^= MPFR_LIMB_MAX;
+                count_leading_zeros (cnt, msl);
+                cancel += cnt;
+              }
+
+            /* Step 6 */
+
+            e = maxexp + cq - cancel;
+
+            /* The truncated sum is in the binade [2^(e-1),2^e]
+               (closed on both ends due to two's complement).
+               The error is less than 2^(minexp+logn). */
 
 
-
-
-#if 0
-          /* Obsolete code, to be updated... */
-
-          /* The truncated sum has been computed. Let's determine its
-             sign, absolute value, and the number of significant bits
-             (starting from the most significant 1).
-             Note: the mpn_neg may be useless, but it doesn't waste
-             much time, it's simpler and it makes the code shorter
-             than analyzing different cases. */
-          wi = ws - 1;
-          neg = MPFR_LIMB_MSB (wp[wi]) != 0;
-          /* FIXME: Do not do the mpn_neg inside the loop since in
-             case of another iteration, we want to keep the number
-             in the same representation, but shifted to the left of
-             the window. */
-          if (neg)
-            mpn_neg (wp, wp, ws);
-          signif = wq;
-          for (; wi >= 0; wi--)
-            {
-              if (wp[wi] != 0)
-                {
-                  int cnt;
-                  count_leading_zeros (cnt, wp[wi]);
-                  signif -= cnt;
-                  break;
-                }
-              signif -= GMP_NUMB_BITS;
-            }
-          MPFR_LOG_MSG (("neg=%d signif=%Pu\n", neg, signif));
-
-          if (MPFR_UNLIKELY (signif == 0))
-            {
-              /* There may be a big hole between numbers! We need to
-                 determine a new maximum exponent among the numbers
-                 with at least a represented bit of exponent <= minexp.
-                 Note that there may be no such numbers, in which case
-                 the exact sum is 0. */
-
-            }
-#endif
-
+          }
         }
-      while (0); /* the condition will be determined later */
 
       MPFR_TMP_FREE (marker);
-
-      /* ... */
-
-      return mpfr_sum_old (sum, p, n, rnd);
+      return mpfr_check_range (sum, inex, rnd);
     }
 }
