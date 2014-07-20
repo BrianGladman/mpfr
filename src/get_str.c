@@ -2308,7 +2308,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
     }
 
   /* the code below for non-power-of-two bases works for m=1 */
-  MPFR_ASSERTN (m >= 2 || (IS_POW2(b) == 0 && m >= 1));
+  MPFR_ASSERTN (m >= 2 || (!IS_POW2(b) && m >= 1));
 
   /* x is a floating-point number */
 
