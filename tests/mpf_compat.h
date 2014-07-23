@@ -34,7 +34,7 @@ main (void)
 
 #else
 
-  unsigned long int prec;
+  unsigned long int prec, old_prec;
   unsigned long int prec2;
   mpf_t x, y;
   mpz_t z;
@@ -82,6 +82,7 @@ main (void)
       exit (1);
     }
 
+  old_prec = mpf_get_prec (x);
   mpf_set_prec_raw (x, prec);
   prec2 = mpf_get_prec (x);
   if (prec2 < prec)
@@ -91,6 +92,7 @@ main (void)
       mpf_clear (x);
       exit (1);
     }
+  mpf_set_prec_raw (x, old_prec);  /* needed with MPF (see GMP manual) */
 
   /* Assignment Functions */
 
