@@ -20,15 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#if defined (__cplusplus)
-#include <cstdio>
-#else
-#include <stdio.h>
-#endif
-#include <stdlib.h>
-#include <string.h>
-
-#include "mpfr-impl.h"
 #ifdef MPFR
 #include "mpf2mpfr.h"
 #endif
@@ -56,6 +47,8 @@ main (void)
   int i;
   FILE *f;
   gmp_randstate_t state;
+
+  tests_start_mpfr ();
 
   /* Initialization Functions */
   prec = 53;
@@ -238,6 +231,7 @@ main (void)
   mpf_clear (y);
   mpf_clear (x);
 
+  tests_end_mpfr ();
   return 0;
 
 #endif
