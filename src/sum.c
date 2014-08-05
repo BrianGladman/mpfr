@@ -407,6 +407,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
           /* Step 3: compute the truncated sum. */
 
+          MPFR_LOG_MSG (("Step 3 with"
+                         " maxexp=%" MPFR_EXP_FSPEC "d"
+                         " minexp=%" MPFR_EXP_FSPEC "d\n",
+                         (mpfr_eexp_t) maxexp,
+                         (mpfr_eexp_t) minexp));
+
           for (i = 0; i < n; i++)
             if (! MPFR_IS_SINGULAR (p[i]))
               {
@@ -616,6 +622,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             MPFR_ASSERTD (wi >= 0);
             msl = wp[wi];
 
+            MPFR_LOG_MSG (("Step 4 with msl=%Mx\n", msl));
+
             /* Limbs whose bits are identical (000...00 or 111...11). */
             if (MPFR_UNLIKELY (msl == MPFR_LIMB_ZERO || msl == MPFR_LIMB_MAX))
               {
@@ -631,6 +639,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                      * maxexp = maxexp2. Note: we do not need to zero the
                      * accumulator since it is already 0 in this case.
                      */
+                    MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
+                                   " maxexp=%" MPFR_EXP_FSPEC "d\n",
+                                   (mpfr_eexp_t) maxexp));
                     maxexp = maxexp2;
                     continue;
                   }
@@ -652,6 +663,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             /* Step 6 */
 
             e = maxexp + cq - cancel;
+
+            MPFR_LOG_MSG (("Step 6 with cancel=%Pd e=%" MPFR_EXP_FSPEC "d\n",
+                           cancel, (mpfr_eexp_t) e));
 
             /* The truncated sum is in the binade [2^(e-1),2^e]
                (closed on both ends due to two's complement).
