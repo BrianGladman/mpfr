@@ -62,8 +62,14 @@ do
     grep -v "\[mp_${i}_t\]"
 done
 
-sp="[[:space:]]*"
-grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" $srctests
+for file in $srctests
+do
+  perl -e 'my $f = do { local $/; <> };
+           while ($f =~ /MPFR_LOG_MSG\s*\(\s*\(.*?\)\s*\)/gs) {
+             my $s = $&; print "$ARGV: $s\n" if
+               index($s,"\\n\"") < 0 || $s =~ /"\s*\)\s*\)/
+           }' $file
+done
 
 # Do not use snprintf as it is not available in ISO C90.
 # Even on platforms where it is available, the prototype
