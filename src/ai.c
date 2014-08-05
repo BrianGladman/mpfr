@@ -268,8 +268,9 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           if (correct_bits < prec)
             { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)", 0));
-              MPFR_LOG_MSG ((" (E=%ld)\n", (long) MPFR_GET_EXP (s)));
+              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"
+                             " (E=%" MPFR_EXP_FSPEC "d)\n",
+                             (mpfr_eexp_t) MPFR_GET_EXP (s)));
               wprec = prec + err + 1;
             }
           else
@@ -557,8 +558,9 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       {
         if (correctBits < prec)
           { /* The precision was badly chosen */
-            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai (x)", 0));
-            MPFR_LOG_MSG ((" (E=%ld)\n", (long) (MPFR_GET_EXP (result))));
+            MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"
+                           " (E=%" MPFR_EXP_FSPEC "d)\n",
+                           (mpfr_eexp_t) MPFR_GET_EXP (result)));
             wprec = prec + err + 1;
           }
         else
