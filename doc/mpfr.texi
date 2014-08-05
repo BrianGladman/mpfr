@@ -2322,10 +2322,11 @@ not be used with other types.
 With conversion specification not involving @samp{P} and @samp{R} types,
 @code{mpfr_printf} behaves exactly as @code{gmp_printf}.
 
-The @samp{P} type specifies that a following @samp{o}, @samp{u}, @samp{x}, or
-@samp{X} conversion specifier applies to a @code{mpfr_prec_t} argument.
+The @samp{P} type specifies that a following @samp{d}, @samp{i},
+@samp{o}, @samp{u}, @samp{x}, or @samp{X} conversion specifier applies
+to a @code{mpfr_prec_t} argument.
 It is needed because the @code{mpfr_prec_t} type does not necessarily
-correspond to an @code{unsigned int} or any fixed standard type.
+correspond to an @code{int} or any fixed standard type.
 The @samp{precision} field specifies the minimum number of digits to
 appear. The default @samp{precision} is 1.
 For example:

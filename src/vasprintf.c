@@ -1979,7 +1979,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
-          /* construct format string, like "%*.*hu" "%*.*u" or "%*.*lu" */
+          /* construct format string, like "%*.*hd" "%*.*d" or "%*.*ld" */
           format[0] = '%';
           format[1] = '*';
           format[2] = '.';
