@@ -1076,7 +1076,7 @@ test_20070628 (void)
   mpfr_set_si_2exp (y, 1, -256, MPFR_RNDN);
   mpfr_clear_flags ();
   inex = mpfr_div (x, x, y, MPFR_RNDD);
-  if (MPFR_SIGN (x) >= 0 || ! mpfr_inf_p (x))
+  if (MPFR_IS_POS (x) || ! mpfr_inf_p (x))
     {
       printf ("Error in test_20070628: expected -Inf, got\n");
       mpfr_dump (x);
@@ -1096,10 +1096,149 @@ test_20070628 (void)
   mpfr_set_emax (old_emax);
 }
 
+/* test a random division of p+extra bits divided by p+extra bits,
+   with quotient of p bits only, where the p+extra bit approximation
+   of the quotient is very near a rounding frontier. */
+static void
+test_bad_aux (mpfr_prec_t p, mpfr_prec_t extra)
+{
+  mpfr_t u, v, w, q0, q;
+
+  mpfr_init2 (u, p + extra);
+  mpfr_init2 (v, p + extra);
+  mpfr_init2 (w, p + extra);
+  mpfr_init2 (q0, p);
+  mpfr_init2 (q, p);
+  do mpfr_urandomb (q0, RANDS); while (mpfr_zero_p (q0));
+  do mpfr_urandomb (v, RANDS); while (mpfr_zero_p (v));
+
+  mpfr_set (w, q0, MPFR_RNDN); /* exact */
+  mpfr_nextabove (w); /* now w > q0 */
+  mpfr_mul (u, v, w, MPFR_RNDU); /* thus u > v*q0 */
+  mpfr_div (q, u, v, MPFR_RNDU); /* should have q > q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) > 0);
+  mpfr_div (q, u, v, MPFR_RNDZ); /* should have q = q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) == 0);
+
+  mpfr_set (w, q0, MPFR_RNDN); /* exact */
+  mpfr_nextbelow (w); /* now w < q0 */
+  mpfr_mul (u, v, w, MPFR_RNDZ); /* thus u < v*q0 */
+  mpfr_div (q, u, v, MPFR_RNDZ); /* should have q < q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) < 0);
+  mpfr_div (q, u, v, MPFR_RNDU); /* should have q = q0 */
+  MPFR_ASSERTN (mpfr_cmp (q, q0) == 0);
+
+  mpfr_clear (u);
+  mpfr_clear (v);
+  mpfr_clear (w);
+  mpfr_clear (q0);
+  mpfr_clear (q);
+}
+
+static void
+test_bad (void)
+{
+  mpfr_prec_t p, extra;
+
+  for (p = MPFR_PREC_MIN; p <= 1024; p += 17)
+    for (extra = 2; extra <= 64; extra++)
+      test_bad_aux (p, extra);
+}
+
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
 #include "tgeneric.c"
+
+static void
+test_extreme (void)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t emin, emax;
+  mpfr_prec_t p[4] = { 8, 32, 64, 256 };
+  int xi, yi, zi, j, r;
+  unsigned int flags, ex_flags;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+
+  for (xi = 0; xi < 4; xi++)
+    {
+      mpfr_init2 (x, p[xi]);
+      mpfr_setmax (x, MPFR_EMAX_MAX);
+      MPFR_ASSERTN (mpfr_check (x));
+      for (yi = 0; yi < 4; yi++)
+        {
+          mpfr_init2 (y, p[yi]);
+          mpfr_setmin (y, MPFR_EMIN_MIN);
+          for (j = 0; j < 2; j++)
+            {
+              MPFR_ASSERTN (mpfr_check (y));
+              for (zi = 0; zi < 4; zi++)
+                {
+                  mpfr_init2 (z, p[zi]);
+                  RND_LOOP (r)
+                    {
+                      mpfr_clear_flags ();
+                      mpfr_div (z, x, y, (mpfr_rnd_t) r);
+                      flags = __gmpfr_flags;
+                      MPFR_ASSERTN (mpfr_check (z));
+                      ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+                      if (flags != ex_flags)
+                        {
+                          printf ("Bad flags in test_extreme on z = a/b"
+                                  " with %s and\n",
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                          printf ("a = ");
+                          mpfr_dump (x);
+                          printf ("b = ");
+                          mpfr_dump (y);
+                          printf ("Expected flags:");
+                          flags_out (ex_flags);
+                          printf ("Got flags:     ");
+                          flags_out (flags);
+                          printf ("z = ");
+                          mpfr_dump (z);
+                          exit (1);
+                        }
+                      mpfr_clear_flags ();
+                      mpfr_div (z, y, x, (mpfr_rnd_t) r);
+                      flags = __gmpfr_flags;
+                      MPFR_ASSERTN (mpfr_check (z));
+                      ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+                      if (flags != ex_flags)
+                        {
+                          printf ("Bad flags in test_extreme on z = a/b"
+                                  " with %s and\n",
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                          printf ("a = ");
+                          mpfr_dump (y);
+                          printf ("b = ");
+                          mpfr_dump (x);
+                          printf ("Expected flags:");
+                          flags_out (ex_flags);
+                          printf ("Got flags:     ");
+                          flags_out (flags);
+                          printf ("z = ");
+                          mpfr_dump (z);
+                          exit (1);
+                        }
+                    }
+                  mpfr_clear (z);
+                }  /* zi */
+              mpfr_nextabove (y);
+            }  /* j */
+          mpfr_clear (y);
+        }  /* yi */
+      mpfr_clear (x);
+    }  /* xi */
+
+  set_emin (emin);
+  set_emax (emax);
+}
 
 int
 main (int argc, char *argv[])
@@ -1127,6 +1266,8 @@ main (int argc, char *argv[])
   test_20070603 ();
   test_20070628 ();
   test_generic (2, 800, 50);
+  test_bad ();
+  test_extreme ();
 
   tests_end_mpfr ();
   return 0;

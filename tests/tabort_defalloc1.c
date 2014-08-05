@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 
 int
 main (int argc, char **argv)

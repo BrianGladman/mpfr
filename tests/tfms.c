@@ -156,7 +156,7 @@ test_overflow2 (void)
                     i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
-        else if (MPFR_SIGN (r) >= 0)
+        else if (MPFR_IS_POS (r))
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong sign "
                     "(+ instead of -)\n", i,

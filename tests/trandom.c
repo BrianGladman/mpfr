@@ -175,7 +175,7 @@ main (int argc, char *argv[])
       test_urandomb (nbtests, 2, 0);
     }
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
   /* since this test assumes a deterministic random generator, and this is not
      implemented in mini-gmp, we omit it with mini-gmp */
   bug20100914 ();

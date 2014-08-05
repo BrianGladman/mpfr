@@ -209,6 +209,7 @@ To make a release (for the MPFR team):
      Check with "-UHAVE_BIG_ENDIAN -UHAVE_LITTLE_ENDIAN" to simulate
      platforms where the endianness is unknown (or can't be specified
      without AC_CONFIG_HEADERS).
+     Check also without mpz_t caching (-DMPFR_MY_MPZ_INIT=0).
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
@@ -221,12 +222,14 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1 in order
-     to detect whether tests can fail due to a FP division by 0 on
-     platforms where such an operation fails (e.g. trap).
+     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO in order to detect
+     whether tests can fail due to a FP division by 0 on platforms where
+     such an operation fails (e.g. trap).
 
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.
+
+     Test with mini-gmp.
 
      Test with valgrind by setting the environment variable:
        VALGRIND="valgrind -q --error-exitcode=1 --leak-check=full"
@@ -343,53 +346,98 @@ Another solution is to run the script 'coverage' within the 'tools' directory.
 
 ===========================================================================
 
-List of the used macros for building MPFR:
+Here is a non-exhaustive list of macros used for building and checking MPFR.
+Most of them are automatically set up by the configure script and its options.
 
-+ HAVE_STRCASECMP:      Define if the system supports 'strcasecmp' function.
-+ HAVE_STRNCASECMP:     Define if the system supports 'strncasecmp' function.
+List of macros used for building MPFR (also used for checking):
 
 + HAVE_CONFIG_H:        Define if we have to include 'config.h' first.
 + MPFR_HAVE_GMP_IMPL:   Define if we have the gmp internal files.
-                         ('gmp-impl.h', 'gmp-maparam.h', ...).
+                        ('gmp-impl.h', 'gmp-maparam.h', ...).
++ MPFR_USE_MINI_GMP:    Define to use mini-gmp.
 
-+ HAVE_ALLOCA_H:        Define if the function 'alloca' is in alloca.h.
-+ HAVE_LONG_LONG:       Define if the system supports 'long long'
++ HAVE_ALLOCA_H:        Define if the function alloca() is in alloca.h.
++ HAVE_LOCALE_H:        Define if <locale.h> is available.
++ HAVE_LONG_LONG:       Define if the system supports 'long long'.
 
 + HAVE_STDARG:          Define if the system supports 'stdarg.h'.
-                         Otherwise it is assumed it is 'vararg.h'.
+                        Otherwise it is assumed it is 'vararg.h'.
 
 + HAVE_INTTYPES_H:      Define if <inttypes.h> is available (ISO C99).
 + HAVE_STDINT_H:        Define if <stdint.h> is available (ISO C99).
 + MPFR_HAVE_INTMAX_MAX: Define if the INTMAX_MAX macro works correctly
-                         (if 'intmax_t' is supported).
+                        (if 'intmax_t' is supported).
 
- Define format of long double.
+Format of long double.
++ HAVE_LDOUBLE_IS_DOUBLE:               IEEE double.
++ HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian.
 + HAVE_LDOUBLE_IEEE_EXT_LITTLE:         IEEE extended, little endian.
 + HAVE_LDOUBLE_IEEE_QUAD_BIG:           IEEE quad, big endian.
++ HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
++ HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
 
++ DEBUG:                For debugging messages in some functions.
 + XDEBUG:               Use generic 'double' code instead of IEEE specific one.
                         The IEEE code for double needs GMP internal files.
-+ MPFR_WANT_ASSERT:     Define to 1 to turn on the assertions, 2 for complete
-                        assertions (debugging mode), -1 to disable assertions
-                        entirely.
-
++ MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
-+ MPFR_PREC_FORMAT:     Define the internal format of prec field
-                         (For experimented users).
++ _MPFR_PREC_FORMAT:    Used to define the mpfr_prec_t type.
++ _MPFR_EXP_FORMAT:     Used to define the mpfr_exp_t type.
+                        Note: these two macros are for internal use,
+                        testing and experimented users only; they must
+                        not be changed when the MPFR library is to be
+                        installed in a system directory.
 
-+ IEEE_DBL_MANT_DIG:    Number of bits in the mantissa of a double.
-                        (Default: 53).
-+ LDBL_MANT_DIG:        Number of bits in the mantissa of a long double
++ IEEE_DBL_MANT_DIG:    Number of bits in the significand (mantissa) of a
+                        double (default: 53).
++ MPFR_LDBL_MANT_DIG:   Number of bits in the significand (mantissa) of a
+                        long double (generally based on the standard macro
+                        LDBL_MANT_DIG). Note: be careful with formats such
+                        as double-double (a.k.a. IBM long double).
 
-List of the used macros for checking MPFR:
++ MPFR_USE_LOGGING:     Define to enable logging.
++ MPFR_WANT_DECIMAL_FLOATS: Define to build conversion functions from/to
+                        decimal floats.
++ MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
+                        __float128.
 
-+ MPFR_HAVE_FESETROUND: Define if the fesetround function is defined
-                         (and in header fenv.h).
++ MPFR_USE_THREAD_SAFE: Define to build MPFR as thread safe (TLS).
++ MPFR_USE_C11_THREAD_SAFE: Define to implement TLS in the C11 way.
+
++ MPFR_HAVE_NORETURN:   Define if the _Noreturn function specifier is
+                        supported.
++ MPFR_HAVE_BUILTIN_UNREACHABLE: Define if the __builtin_unreachable
+                        GCC built-in is supported.
+
+List of macros used for checking MPFR:
+
++ MPFR_HAVE_FESETROUND: Define if the function fesetround() is available
+                        (and in header <fenv.h>).
++ MPFR_FPU_PREC:        Allows to test MPFR on x86 processors when the
+                        x87 FPU rounding precision has been changed (see
+                        tests/tests.c for its usage).
 + HAVE_DENORMS:         Define if subnormal (denormalized) floats work.
++ HAVE_SIGNEDZ:         Define if signed zeros are supported.
 + HAVE_SYS_TIME_H:      Define if the header sys/time.h is usable.
-+ HAVE_GETTIMEOFDAY:    Define if the function gettimeofday is present.
-+ MPFR_HAVE_TESTS_x86:  Define if we are on x86.
++ HAVE_GETTIMEOFDAY:    Define if the function gettimeofday() is available.
++ HAVE_SETLOCALE:       Define if the function setlocale() is available.
++ MPFR_ERRDIVZERO:      Define if the floating-point division by 0 fails
+                        (e.g. because a SIGFPE signal is generated, or
+                        because it is regarded as undefined behavior by
+                        a sanitizer). This disables the tests involving
+                        such operations.
++ MPFR_TESTS_DIVBYZERO: Define to check whether there has been a
+                        floating-point division by 0. This is normally
+                        used together with MPFR_ERRDIVZERO, in order to
+                        check that all divisions by 0 have been protected
+                        in the tests (so that tests can pass on platforms
+                        where the floating-point division by 0 fails).
++ MPFR_TESTS_TIMEOUT:   Define to enable timeout in the tests. Its value
+                        contains the default timeout (in seconds), or 0
+                        for no timeout by default, and can be overridden
+                        at "make check" time with the MPFR_TESTS_TIMEOUT
+                        environment variable.
 
 ===========================================================================
 
@@ -460,6 +508,17 @@ some fonts.
 
 For identifiers defined in MPFR, do not use the GMP namespaces
 (gmp_..., GMP_...).
+
+===========================================================================
+
+You are allowed to use the mpn and mpz classes of GMP functions (types
+and functions starting with "mpn_" and "mpz_"). However, except for some
+conversion functions where they may be needed,
+  * the mpq class and GMP's formatted output and input functions (i.e.,
+    printf and scanf style) can only be used in an alternative method
+    by testing MPFR_USE_MINI_GMP (and only if there is a real benefit),
+    since they are not available in mini-gmp;
+  * the mpf class must not be used at all.
 
 ===========================================================================
 

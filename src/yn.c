@@ -170,7 +170,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
          0. We choose to return +0 in that case. */
       else if (MPFR_IS_INF (z))
         {
-          if (MPFR_SIGN(z) > 0)
+          if (MPFR_IS_POS (z))
             return mpfr_set_ui (res, 0, r);
           else /* y(n,-Inf) = NaN */
             {
@@ -193,7 +193,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 
   /* for z < 0, y(n,z) is imaginary except when j(n,|z|) = 0, which we
      assume does not happen for a rational z. */
-  if (MPFR_SIGN(z) < 0)
+  if (MPFR_IS_NEG (z))
     {
       MPFR_SET_NAN (res);
       MPFR_RET_NAN;

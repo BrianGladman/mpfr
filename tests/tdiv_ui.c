@@ -95,6 +95,8 @@ special (void)
   mpfr_nextabove (x);
   mpfr_div_ui (y, x, 2, MPFR_RNDN); /* exactly in the middle */
   MPFR_ASSERTN(mpfr_cmp_ui (y, 2) == 0);
+  (mpfr_div_ui) (y, x, 2, MPFR_RNDN); /* exactly in the middle */
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 2) == 0);
 
   mpfr_set_prec (x, 3 * mp_bits_per_limb);
   mpfr_set_prec (y, 2);
@@ -102,12 +104,16 @@ special (void)
   mpfr_nextabove (x);
   mpfr_div_ui (y, x, 2, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  (mpfr_div_ui) (y, x, 2, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 
   mpfr_set_prec (x, 3 * mp_bits_per_limb);
   mpfr_set_prec (y, 2);
   mpfr_set_si (x, -4, MPFR_RNDN);
   mpfr_nextbelow (x);
   mpfr_div_ui (y, x, 2, MPFR_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_si (y, -3) == 0);
+  (mpfr_div_ui) (y, x, 2, MPFR_RNDD);
   MPFR_ASSERTN(mpfr_cmp_si (y, -3) == 0);
 
   for (xprec = 53; xprec <= 128; xprec++)
@@ -132,6 +138,8 @@ special (void)
   mpfr_set_si (x, 0, MPFR_RNDN);
   mpfr_set_si (y, -1, MPFR_RNDN);
   mpfr_div_ui (y, x, 4, MPFR_RNDN);
+  MPFR_ASSERTN(MPFR_IS_ZERO(y) && MPFR_IS_POS(y));
+  (mpfr_div_ui) (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(MPFR_IS_ZERO(y) && MPFR_IS_POS(y));
 
   mpfr_clear (x);

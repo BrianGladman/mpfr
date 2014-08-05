@@ -109,7 +109,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_div_2ui (c, c, 1, MPFR_RNDN);
           /* Since c approximates Pi with an error <= 2^(2-expx-m) <= 2^(-m),
              it suffices to check that c - |xr| >= 2^(2-m). */
-          if (MPFR_SIGN (xr) > 0)
+          if (MPFR_IS_POS (xr))
             mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
             mpfr_add (c, c, xr, MPFR_RNDZ);

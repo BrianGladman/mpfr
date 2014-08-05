@@ -167,7 +167,7 @@ overflowed_fac0 (void)
                       mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               err = 1;
             }
-          if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
+          if (! (mpfr_inf_p (x) && MPFR_IS_POS (x)))
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
                       "  Got ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));

@@ -32,7 +32,7 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
       return;
     }
 
-  if (MPFR_SIGN (x) < 0)
+  if (MPFR_IS_NEG (x))
     fprintf (stream, "-");
 
   if (MPFR_IS_INF (x))

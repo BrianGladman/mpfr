@@ -179,7 +179,7 @@ main (void)
   mpfr_set_str_binary (x, "0.111");
   mpfr_set_prec (y, 2);
   mpfr_set (y, x, MPFR_RNDU);
-  if (!(MPFR_IS_INF (y) && MPFR_SIGN (y) > 0))
+  if (!(MPFR_IS_INF (y) && MPFR_IS_POS (y)))
     {
       printf ("Error for y=x=0.111 with px=3, py=2 and emax=0\nx=");
       mpfr_dump (x);

@@ -51,9 +51,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * asserts would be that the hardware generator was broken.)
  */
 
-/* this file cannot be compiled with mini-gmp since it relies on
-   mpfr_random_deviate_value which needs mpq_t */
-#ifndef WANT_MINI_GMP
 #include "random_deviate.h"
 
 /* Algorithm H: true with probability exp(-1/2). */
@@ -180,10 +177,3 @@ mpfr_nrandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
   mpfr_random_deviate_clear (x);
   return inex;
 }
-
-#else
-
-/* Avoid an empty translation unit (see ISO C99, 6.9) */
-typedef int foo;
-
-#endif

@@ -165,7 +165,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
            toward sign(x), to avoid spurious overflow or underflow, as in
            mpfr_pow_z. */
         rnd1 = MPFR_EXP (x) < 1 ? MPFR_RNDZ :
-          (MPFR_SIGN (x) > 0 ? MPFR_RNDU : MPFR_RNDD);
+          (MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD);
 
         MPFR_ZIV_INIT (loop, Nt);
         for (;;)

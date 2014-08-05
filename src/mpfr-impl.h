@@ -72,32 +72,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
-# ifndef __GMP_H__
-#  include "gmp.h"
-# endif
-# ifndef __GMP_IMPL_H__
-#  include "gmp-impl.h"
-# endif
+# include "gmp.h"
+# include "gmp-impl.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  include "longlong.h"
 # endif
-# ifndef __MPFR_H
-#  include "mpfr.h"
-# endif
+# include "mpfr.h"
 # include "mpfr-gmp.h"
 
 #else /* Build without gmp internals */
 
-# ifndef __GMP_H__
-#  include "gmp.h"
-# endif
+# include "gmp.h"
 /* if using mini-gmp, include missing definitions in mini-gmp */
-# ifdef WANT_MINI_GMP
+# ifdef MPFR_USE_MINI_GMP
 #  include "mpfr-mini-gmp.h"
 # endif
-# ifndef __MPFR_H
-#  include "mpfr.h"
-# endif
+# include "mpfr.h"
 # include "mpfr-gmp.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  define LONGLONG_STANDALONE
@@ -372,41 +362,48 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
  ******************** Assertions **********************
  ******************************************************/
 
-/* Compile with -DMPFR_WANT_ASSERT to check all assert statements */
+/* MPFR_WANT_ASSERT can take 4 values (the default value is 0):
+   -1 (or below): Do not check any assertion. Discouraged, in particular
+     for a shared library (for time-critical applications, LTO with a
+     static library should also be used anyway).
+   0: Check normal assertions.
+   1: Check debugging assertions too.
+   2 (or above): Additional checks that may take time. For instance,
+     some functions may be tested by using two different implementations
+     and comparing the results.
+*/
 
 /* Note: do not use GMP macros ASSERT_ALWAYS and ASSERT as they are not
    expressions, and as a consequence, they cannot be used in a for(),
    with a comma operator and so on. */
 
-/* MPFR_ASSERTN(expr): assertions that should always be checked */
-#define MPFR_ASSERTN(expr)  \
-  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
-
-/* MPFR_ASSERTD(expr): assertions that should be checked when testing.
+/* MPFR_ASSERTN(expr): assertions that should normally be checked,
+     otherwise give a hint to the compiler.
+   MPFR_ASSERTD(expr): assertions that should be checked when testing,
+     otherwise give a hint to the compiler.
    MPFR_DBGRES(assignment): to be used when the result is tested only
      in an MPFR_ASSERTD expression (in order to avoid a warning, e.g.
      with GCC's -Wunused-but-set-variable, in non-debug mode).
  */
-#ifdef MPFR_WANT_ASSERT
+#ifndef MPFR_WANT_ASSERT
+# define MPFR_WANT_ASSERT 0
+#endif
+
+#if MPFR_WANT_ASSERT < 0
+# undef MPFR_EXP_CHECK
+# define MPFR_ASSERTN(expr)  MPFR_ASSUME (expr)
+#else
+# define MPFR_ASSERTN(expr)  \
+  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
+#endif
+
+#if MPFR_WANT_ASSERT > 0
 # define MPFR_EXP_CHECK 1
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 # define MPFR_DBGRES(A)      (A)
 #else
 # define MPFR_ASSERTD(expr)  MPFR_ASSUME (expr)
 # define MPFR_DBGRES(A)      ((void) (A))
-#endif
-
-/* Check if the user requested absolutely no assertion (including MPFR_ASSERTN) */
-#if defined(MPFR_WANT_ASSERT)
-# if MPFR_WANT_ASSERT < 0
-#  undef MPFR_ASSERTN
-#  undef MPFR_ASSERTD
-#  undef MPFR_DBGRES
-#  undef MPFR_EXP_CHECK
-# define MPFR_ASSERTN(expr)  ((void) 0)
-# define MPFR_ASSERTD(expr)  ((void) 0)
-# define MPFR_DBGRES(A)      ((void) (A))
-# endif
 #endif
 
 /* MPFR_ASSUME is like assert(), but it is a hint to a compiler about a
@@ -849,8 +846,8 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
 
-#define MPFR_IS_STRICTPOS(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
-#define MPFR_IS_STRICTNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
+#define MPFR_IS_STRICTPOS(x)  (MPFR_NOTZERO (x) && MPFR_IS_POS (x))
+#define MPFR_IS_STRICTNEG(x)  (MPFR_NOTZERO (x) && MPFR_IS_NEG (x))
 
 #define MPFR_IS_NEG(x) (MPFR_SIGN(x) < 0)
 #define MPFR_IS_POS(x) (MPFR_SIGN(x) > 0)
@@ -1047,12 +1044,54 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 /* Theses macros help the compiler to determine if a test is
    likely or unlikely. The !! is necessary in case x is larger
    than a long. */
-#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-# define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
-# define MPFR_UNLIKELY(x) (__builtin_expect(!!(x),0))
+#if defined MPFR_DEBUG_PREDICTION && __MPFR_GNUC(3,0)
+
+/* Code to debug branch prediction, based on Ulrich Drepper's paper
+ * "What Every Programmer Should Know About Memory":
+ *   http://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+ */
+asm (".section predict_data, \"aw\"; .previous\n"
+     ".section predict_line, \"a\"; .previous\n"
+     ".section predict_file, \"a\"; .previous");
+# if defined __x86_64__
+#  define MPFR_DEBUGPRED__(e,E)                                         \
+  ({ long int _e = !!(e);                                               \
+    asm volatile (".pushsection predict_data\n"                         \
+                  "..predictcnt%=: .quad 0; .quad 0\n"                  \
+                  ".section predict_line; .quad %c1\n"                  \
+                  ".section predict_file; .quad %c2; .popsection\n"     \
+                  "addq $1,..predictcnt%=(,%0,8)"                       \
+                  : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__));   \
+    __builtin_expect (_e, E);                                           \
+  })
+# elif defined __i386__
+#  define MPFR_DEBUGPRED__(e,E)                                         \
+  ({ long int _e = !!(e);                                               \
+    asm volatile (".pushsection predict_data\n"                         \
+                  "..predictcnt%=: .long 0; .long 0\n"                  \
+                  ".section predict_line; .long %c1\n"                  \
+                  ".section predict_file; .long %c2; .popsection\n"     \
+                  "incl ..predictcnt%=(,%0,4)"                          \
+                  : : "r" (_e == E), "i" (__LINE__), "i" (__FILE__));   \
+    __builtin_expect (_e, E);                                           \
+  })
+# else
+#  error "MPFR_DEBUGPRED__ definition missing"
+# endif
+
+# define MPFR_LIKELY(x) MPFR_DEBUGPRED__ ((x), 1)
+# define MPFR_UNLIKELY(x) MPFR_DEBUGPRED__ ((x), 0)
+
+#elif __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+
+# define MPFR_LIKELY(x) (__builtin_expect(!!(x), 1))
+# define MPFR_UNLIKELY(x) (__builtin_expect(!!(x), 0))
+
 #else
+
 # define MPFR_LIKELY(x) (x)
 # define MPFR_UNLIKELY(x) (x)
+
 #endif
 
 /* Declare that some variable is initialized before being used (without a

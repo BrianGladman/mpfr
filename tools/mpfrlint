@@ -6,6 +6,15 @@
 dir=`pwd`
 [ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
 
+# Detect the possible use of forbidden macros in mpfr.h, such as those
+# starting with "HAVE_" or "WANT_". Public macros defined by MPFR must
+# start with "MPFR_".
+perl -ne '/^#/ && ! /^# *error / or next; while (/\b([_A-Z]+)\b/g)
+  { my $m = $1;
+    $m =~ /^(_*MPFR_|_*GMP_|__(GNUC|ICC|STDC)(_|$)|_MSC_|U?INTMAX_C$)/
+      and next;
+    print "Forbidden macro in mpfr.h line $.: $m\n" }' src/mpfr.h
+
 grep '^# *include *<math\.h>' src/*.c
 
 flaglist="underflow|overflow|divby0|nanflag|inexflag|erangeflag"
@@ -29,11 +38,17 @@ grconf '="`'
 grconf '[^a-z][ef]?grep[^a-z]'
 grconf '[^a-z]sed[^a-z]'
 
-srctests=`find src tests -name '*.[ch]'`
+srctests=`find src tests -name '*.[ch]' ! -name 'mini-gmp.*'`
 
 grep GMP_LIMB_BITS $srctests
 
 grep GMP_RND $srctests | grep -v '#define GMP_RND'
+
+# Note: exceptions __gmpn_rootrem and __gmpn_sbpi1_divappr_q
+# are normally used only if WANT_GMP_INTERNALS is defined.
+grep '__gmp[nz]_' $srctests | \
+  grep -v __gmpn_rootrem | \
+  grep -v __gmpn_sbpi1_divappr_q
 
 grep -E 'mp_(src)?ptr' $srctests
 
@@ -42,13 +57,19 @@ grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
 
 for i in exp prec rnd
 do
-  grep mp_${i}_t {src,tests}/*.{c,h} | \
+  grep mp_${i}_t $srctests | \
     grep -v "\(# *define\|# *ifndef\|typedef\) *mp_${i}_t" | \
     grep -v "\[mp_${i}_t\]"
 done
 
-sp="[[:space:]]*"
-grep "MPFR_LOG_MSG$sp($sp($sp\".*\"$sp)$sp)$sp;" $srctests
+for file in $srctests
+do
+  perl -e 'my $f = do { local $/; <> };
+           while ($f =~ /MPFR_LOG_MSG\s*\(\s*\(.*?\)\s*\)/gs) {
+             my $s = $&; print "$ARGV: $s\n" if
+               index($s,"\\n\"") < 0 || $s =~ /"\s*\)\s*\)/
+           }' $file
+done
 
 # Do not use snprintf as it is not available in ISO C90.
 # Even on platforms where it is available, the prototype
@@ -74,6 +95,9 @@ grep -E '[^_]ASSERT *(\(|$)' {src,tests}/*.c
 # Use MPFR_TMP_LIMBS_ALLOC.
 grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
 
+# Use simple mp_limb_t constants: MPFR_LIMB_ZERO, MPFR_LIMB_ONE, etc.
+grep '(mp_limb_t) *-\?[01]' $srctests | grep -v '#define MPFR_LIMB_'
+
 for file in $srctests */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case
@@ -87,6 +111,7 @@ done
 for file in src/*.c
 do
   [ "$file" = src/jyn_asympt.c ] || \
+    [ "$file" = src/mini-gmp.c ] || \
     [ "$file" = src/round_raw_generic.c ] || \
     grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\|random_deviate\)\.h"' $file || \
     echo "Missing '#include \"mpfr-impl.h\"' in $file?"
@@ -144,7 +169,7 @@ EOF
 # In case of problems, one can also skip files or use "grep -v"...
 which codespell > /dev/null 2> /dev/null &&
   codespell -q3 -S algorithm2e.sty,algorithms.tex,texinfo.tex \
-    AUTHORS BUGS INSTALL NEWS README TODO doc examples {src,tests}/*.{c,h}
+    AUTHORS BUGS INSTALL NEWS README TODO doc examples $srctests
 
 cd "$dir"
 "`dirname -- "$0"`"/check_inits_clears

@@ -386,21 +386,21 @@ main (int argc, char *argv[])
   mpfr_set_si (x, -1, MPFR_RNDN);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_remainder (r, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0 && MPFR_SIGN (r) < 0);
+  MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0 && MPFR_IS_NEG (r));
 
   /* check argument reuse */
   mpfr_set_si (x, -1, MPFR_RNDN);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_remainder (x, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp_si (x, 0) == 0 && MPFR_SIGN (x) < 0);
+  MPFR_ASSERTN (mpfr_cmp_si (x, 0) == 0 && MPFR_IS_NEG (x));
 
   mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
   mpfr_set_ui_2exp (y, 1, mpfr_get_emin (), MPFR_RNDN);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_SIGN (r) > 0);
+  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_IS_POS (r));
   MPFR_ASSERTN (q[0] == 0);
   mpfr_fmodquo (r, q, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_SIGN (r) > 0);
+  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_IS_POS (r));
   MPFR_ASSERTN (q[0] == 0);
 
   mpfr_clear (x);

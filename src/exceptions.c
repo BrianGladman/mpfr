@@ -1,4 +1,4 @@
-/* Exception flags and utilities.
+/* Exception flags and utilities. Constructors and destructors (debug).
 
 Copyright 2001-2014 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -413,3 +413,46 @@ mpfr_overflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
   return sign > 0 ? inex : -inex;
 }
+
+/**************************************************************************/
+
+/* Code related to constructors and destructors (for debugging) should
+   be put here. The reason is that such code must be in an object file
+   that will be kept by the linker for symbol resolution, and symbols
+   __gmpfr_emin and __gmpfr_emax from this file will be used by every
+   program calling a MPFR math function (where rounding is involved). */
+
+#if defined MPFR_DEBUG_PREDICTION
+
+/* Print prediction statistics at the end of a program.
+ *
+ * Code to debug branch prediction, based on Ulrich Drepper's paper
+ * "What Every Programmer Should Know About Memory":
+ *   http://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+ */
+
+extern long int __start_predict_data;
+extern long int __stop_predict_data;
+extern long int __start_predict_line;
+extern const char *__start_predict_file;
+
+static void __attribute__ ((destructor))
+predprint (void)
+{
+  long int *s = &__start_predict_data;
+  long int *e = &__stop_predict_data;
+  long int *sl = &__start_predict_line;
+  const char **sf = &__start_predict_file;
+
+  while (s < e)
+    {
+      printf("%s:%ld: incorrect=%ld, correct=%ld%s\n",
+             *sf, *sl, s[0], s[1],
+             s[0] > s[1] ? " <==== WARNING" : "");
+      ++sl;
+      ++sf;
+      s += 2;
+    }
+}
+
+#endif

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* The mpfr_printf-like functions are defined only if <stdarg.h> exists.
    Since they use mpf_t, they cannot be defined with mini-gmp. */
-#if defined(HAVE_STDARG) && !defined(WANT_MINI_GMP)
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
 
 #include <stdarg.h>
 
@@ -873,14 +873,18 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
            first digit, we want the exponent for radix two and the decimal
            point AFTER the first digit. */
         {
-          MPFR_ASSERTN (exp > MPFR_EMIN_MIN /4); /* possible overflow */
+          /* An integer overflow is normally not possible since MPFR_EXP_MIN
+             is twice as large as MPFR_EMIN_MIN. */
+          MPFR_ASSERTN (exp > (MPFR_EXP_MIN + 3) / 4);
           exp = (exp - 1) * 4;
         }
       else
         /* EXP is the exponent for decimal point BEFORE the first digit, we
            want the exponent for decimal point AFTER the first digit. */
         {
-          MPFR_ASSERTN (exp > MPFR_EMIN_MIN); /* possible overflow */
+          /* An integer overflow is normally not possible since MPFR_EXP_MIN
+             is twice as large as MPFR_EMIN_MIN. */
+          MPFR_ASSERTN (exp > MPFR_EXP_MIN);
           --exp;
         }
     }
@@ -1975,7 +1979,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
-          /* construct format string, like "%*.*hu" "%*.*u" or "%*.*lu" */
+          /* construct format string, like "%*.*hd" "%*.*d" or "%*.*ld" */
           format[0] = '%';
           format[1] = '*';
           format[2] = '.';

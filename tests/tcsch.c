@@ -44,7 +44,7 @@ check_specials (void)
 
   mpfr_set_inf (x, 1);
   mpfr_csch (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) >0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: csch(+Inf) != +0\n");
       exit (1);
@@ -52,7 +52,7 @@ check_specials (void)
 
   mpfr_set_inf (x, -1);
   mpfr_csch (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) <0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
       printf ("Error: csch(-0) != -0\n");
       exit (1);
@@ -77,14 +77,14 @@ check_specials (void)
   /* check huge x */
   mpfr_set_str (x, "8e8", 10, MPFR_RNDN);
   mpfr_csch (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: csch(8e8) != +0\n");
       exit (1);
     }
   mpfr_set_str (x, "-8e8", 10, MPFR_RNDN);
   mpfr_csch (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
       printf ("Error: csch(-8e8) != -0\n");
       exit (1);

@@ -149,7 +149,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         return mpfr_set_ui (y, 1, rnd);
     }
 
-  if (MPFR_SIGN (x) > 0)
+  if (MPFR_IS_POS (x))
     {
       /* by default, emin = 1-2^30, thus the smallest representable
          number is 1/2*2^emin = 2^(-2^30):
@@ -168,7 +168,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* Init stuff */
   MPFR_SAVE_EXPO_MARK (expo);
 
-  if (MPFR_SIGN (x) < 0)
+  if (MPFR_IS_NEG (x))
     {
       mpfr_exp_t e = MPFR_EXP(x);
       /* For x < 0 going to -infinity, erfc(x) tends to 2 by below.
@@ -220,7 +220,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   /* erfc(x) ~ 1, with error < 2^(EXP(x)+1) */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, - MPFR_GET_EXP (x) - 1,
-                                    0, MPFR_SIGN(x) < 0,
+                                    0, MPFR_IS_NEG (x),
                                     rnd, inex = _inexact; goto end);
 
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
@@ -234,7 +234,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     {
       /* use asymptotic formula only whenever x^2 >= p*log(2),
          otherwise it will not converge */
-      if (MPFR_SIGN (x) > 0 &&
+      if (MPFR_IS_POS (x) &&
           2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
         /* we have x^2 >= p in that case */
         {

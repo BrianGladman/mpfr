@@ -217,7 +217,7 @@ overflowed_cos0 (void)
                           i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
-              if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
+              if (! (mpfr_inf_p (x) && MPFR_IS_POS (x)))
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));

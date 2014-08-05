@@ -23,8 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef __MPFR_TEST_H__
 #define __MPFR_TEST_H__
 
-#include <stdio.h>
-
 /* The no assertion request doesn't apply to the tests */
 #if defined(MPFR_WANT_ASSERT)
 # if MPFR_WANT_ASSERT < 0
@@ -135,7 +133,7 @@ mpfr_print_raw (mpfr_srcptr x)
       return;
     }
 
-  if (MPFR_SIGN (x) < 0)
+  if (MPFR_IS_NEG (x))
     printf ("-");
 
   if (MPFR_IS_INF (x))

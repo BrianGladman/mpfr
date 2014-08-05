@@ -20,7 +20,9 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#ifndef WANT_MINI_GMP
+#include "mpfr-test.h"
+
+#ifndef MPFR_USE_MINI_GMP
 
 #define MPF
 #define mpf_free_str mpfr_free_str

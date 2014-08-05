@@ -36,6 +36,9 @@ do
     tests/RRTest.c)
       # This file doesn't have a copyright notice, but isn't distributed.
       continue ;;
+    src/mini-gmp.[ch])
+      # These files may have been added by the user or 3rd party.
+      continue ;;
     src/mpfr-longlong.h)
       # This file (which comes from GMP) has a specific copyright notice.
       continue ;;

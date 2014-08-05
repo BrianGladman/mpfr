@@ -562,7 +562,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
              to round y*o(log2(x)) toward zero too;
          (ii) if x < 0, we first compute t = o(-x), with rounding toward 1,
               and then follow as in case (1). */
-      if (MPFR_SIGN (x) > 0)
+      if (MPFR_IS_POS (x))
         mpfr_log2 (t, x, MPFR_RNDZ);
       else
         {
@@ -576,7 +576,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       if (overflow)
         {
           MPFR_LOG_MSG (("early overflow detection\n", 0));
-          negative = MPFR_SIGN(x) < 0 && is_odd (y);
+          negative = MPFR_IS_NEG (x) && is_odd (y);
           return mpfr_overflow (z, rnd_mode, negative ? -1 : 1);
         }
     }
@@ -619,7 +619,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           MPFR_LOG_MSG (("early underflow detection\n", 0));
           return mpfr_underflow (z,
                                  rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
-                                 MPFR_SIGN (x) < 0 && is_odd (y) ? -1 : 1);
+                                 MPFR_IS_NEG (x) && is_odd (y) ? -1 : 1);
         }
     }
 
@@ -703,7 +703,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     mpfr_clear (t);
     MPFR_CLEAR_FLAGS ();
     MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (z, __gmpfr_one, - err, 0,
-                                      (MPFR_SIGN (y) > 0) ^ (cmp_x_1 < 0),
+                                      (MPFR_IS_POS (y)) ^ (cmp_x_1 < 0),
                                       rnd_mode, expo, {});
   }
 

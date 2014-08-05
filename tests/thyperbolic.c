@@ -217,13 +217,13 @@ check_INF (void)
 
   MPFR_SET_INF(t);
 
-  if(MPFR_SIGN(t)<0)
+  if(MPFR_IS_NEG (t))
     MPFR_CHANGE_SIGN(t);
 
   /******cosh********/
 
   tester = mpfr_cosh(ch,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0 || tester!=0)
+  if (!MPFR_IS_INF(ch) || MPFR_IS_NEG (ch) || tester!=0)
     {
       printf("cosh(INF) \n");
       fail = 1;
@@ -233,7 +233,7 @@ check_INF (void)
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(sh) || MPFR_SIGN(sh) < 0  || tester!=0)
+  if (!MPFR_IS_INF(sh) || MPFR_IS_NEG (sh)  || tester!=0)
     {
       printf("sinh(INF) \n");
       fail = 1;
@@ -253,7 +253,7 @@ check_INF (void)
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || tester!=0)
+  if (!MPFR_IS_INF(ach) || MPFR_IS_NEG (ach)  || tester!=0)
     {
       printf("acosh(INF) \n");
       fail = 1;
@@ -263,7 +263,7 @@ check_INF (void)
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) < 0  || tester!=0)
+  if (!MPFR_IS_INF(ash) || MPFR_IS_NEG (ash)  || tester!=0)
     {
       printf("asinh(INF) \n");
       fail = 1;
@@ -285,7 +285,7 @@ check_INF (void)
   /******cosh********/
 
   tester=mpfr_cosh(ch,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0  || tester!=0)
+  if (!MPFR_IS_INF(ch) || MPFR_IS_NEG (ch)  || tester!=0)
     {
       printf("cosh(-INF) \n");
       fail = 1;
@@ -295,7 +295,7 @@ check_INF (void)
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(sh)  || MPFR_SIGN(sh) > 0 || tester!=0)
+  if (!MPFR_IS_INF(sh)  || MPFR_IS_POS (sh) || tester!=0)
     {
       printf("sinh(-INF) \n");
       fail = 1;
@@ -325,7 +325,7 @@ check_INF (void)
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,MPFR_RNDD);
-  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) > 0  || tester!=0)
+  if (!MPFR_IS_INF(ash) || MPFR_IS_POS (ash)  || tester!=0)
     {
       printf("asinh(-INF) \n");
       fail = 1;

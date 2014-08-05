@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* The mpfr_printf-like functions are defined only if <stdarg.h> exists.
    Since they use mpf_t, they cannot be defined with mini-gmp. */
-#if defined(HAVE_STDARG) && !defined(WANT_MINI_GMP)
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
 
 #include <stdarg.h>
 

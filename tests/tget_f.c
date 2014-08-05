@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 
 /* Test that there is no lost of accuracy when converting a mpfr_t number
    into a mpf_t number (test with various precisions and exponents). */

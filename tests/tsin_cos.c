@@ -194,7 +194,7 @@ overflowed_sin_cos0 (void)
                       mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               err = 1;
             }
-          if (! (mpfr_zero_p (x) && MPFR_SIGN (x) < 0))
+          if (! (mpfr_zero_p (x) && MPFR_IS_NEG (x)))
             {
               printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                       "  Got sin = ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
@@ -230,7 +230,7 @@ overflowed_sin_cos0 (void)
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
-              if (! (mpfr_inf_p (y) && MPFR_SIGN (y) > 0))
+              if (! (mpfr_inf_p (y) && MPFR_IS_POS (y)))
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                           "  Got cos = ",

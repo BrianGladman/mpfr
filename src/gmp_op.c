@@ -244,7 +244,7 @@ mpfr_muldiv_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr n, mpz_srcptr d,
     }
 }
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 int
 mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
@@ -479,7 +479,7 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr q)
 }
 #endif
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 int
 mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
 {

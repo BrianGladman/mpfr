@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 
 /* Return Phi(x) = erf(x / sqrt(2)) / 2, the cumulative probability function
  * for the normal distribution.  We only take differences of this function so
@@ -34,6 +34,39 @@ normal_cumulative (mpfr_t z, mpfr_t x, mpfr_rnd_t rnd)
   mpfr_div (z, x, z, rnd);
   mpfr_erf (z, z, rnd);
   mpfr_div_ui (z, z, 2, rnd);
+}
+
+/* Given nu and chisqp, compute probability that chisq > chisqp.  This uses,
+ * A&S 26.4.16,
+ *
+ * Q(nu,chisqp) =
+ *     erfc( (3/2)*sqrt(nu) * ( cbrt(chisqp/nu) - 1 + 2/(9*nu) ) ) / 2
+ *
+ * which is valid for nu > 30.  This is the basis for the formula in Knuth,
+ * TAOCP, Vol 2, 3.3.1, Table 1.  It more accurate than the similar formula,
+ * DLMF 8.11.10. */
+static void
+chisq_prob (mpfr_t q, long nu, mpfr_t chisqp)
+{
+  mpfr_t t;
+  mpfr_rnd_t rnd;
+
+  rnd = MPFR_RNDN;  /* This uses an approx formula.  Might as well use RNDN. */
+  mpfr_init2 (t, mpfr_get_prec (q));
+
+  mpfr_div_si (q, chisqp, nu, rnd); /* chisqp/nu */
+  mpfr_cbrt (q, q, rnd);            /* (chisqp/nu)^(1/3) */
+  mpfr_sub_ui (q, q, 1, rnd);       /* (chisqp/nu)^(1/3) - 1 */
+  mpfr_set_ui (t, 2, rnd);
+  mpfr_div_si (t, t, 9*nu, rnd); /* 2/(9*nu) */
+  mpfr_add (q, q, t, rnd);       /* (chisqp/nu)^(1/3) - 1 + 2/(9*nu) */
+  mpfr_sqrt_ui (t, nu, rnd);     /* sqrt(nu) */
+  mpfr_mul_d (t, t, 1.5, rnd);   /* (3/2)*sqrt(nu) */
+  mpfr_mul (q, q, t, rnd);       /* arg to erfc */
+  mpfr_erfc (q, q, rnd);         /* erfc(...) */
+  mpfr_div_ui (q, q, 2, rnd);    /* erfc(...)/2 */
+
+  mpfr_clear (t);
 }
 
 /* The continuous chi-squared test on with a set of bins of equal width.
@@ -50,7 +83,7 @@ normal_cumulative (mpfr_t z, mpfr_t x, mpfr_rnd_t rnd)
  *
  * The testing of low precision normal deviates is done by
  * test_nrandom_chisq_disc. */
-static void
+static double
 test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
                          double xmin, double xmax, int verbose)
 {
@@ -59,7 +92,7 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
   int i, inexact;
   long k;
   mpfr_rnd_t rnd, rndd;
-  double chilim, xp, sqrt2dof;
+  double Q, chisq;
 
   rnd = MPFR_RNDN;              /* For chi-squared calculation */
   rndd = MPFR_RNDD;             /* For sampling and figuring the bins */
@@ -85,7 +118,8 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
       if (inexact == 0)
         {
           /* one call in the loop pretended to return an exact number! */
-          printf ("Error: mpfr_nrandom() returns a zero ternary value.\n");
+          fprintf (stderr,
+                   "Error: mpfr_nrandom() returns a zero ternary value.\n");
           exit (1);
         }
       mpfr_sub (x, x, a, rndd);
@@ -118,32 +152,19 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
       mpfr_swap (pa, pb);       /* i.e., pa = pb */
     }
 
+  chisq = mpfr_get_d (t, rnd);
+  chisq_prob (t, nu, t);
+  Q = mpfr_get_d (t, rnd);
   if (verbose)
-    mpfr_printf ("num = %ld, discrete (prec = %ld) bins in [%.2f, %.2f], "
-                 "nu = %d: chi2 = %.2Rf\n", num, prec, xmin, xmax, nu, t);
-
-  /* See Knuth, TAOCP, Vol 2, 3.3.1, Table 1, approx formula for nu > 30; xp =
-   * +/- 3.1 gives 0.1% and 99.9% percentile points. */
-  mpfr_set_si (pa, 2*nu, rnd);
-  mpfr_sqrt (pa, pa, rnd);
-  sqrt2dof = mpfr_get_d (pa, rnd);
-  xp = 3.1;
-  chilim = nu - sqrt2dof * xp  +   2 * xp * xp / 3;
-  if (mpfr_cmp_d (t, chilim) < 0)
     {
-      mpfr_printf ("chi2 = %.2Rf is less than %.2f"
-                   " should only happen 1 in 1000 times\n", t, chilim);
-      exit (1);
-    }
-  chilim = nu + sqrt2dof * xp  +   2 * xp * xp / 3;
-  if (mpfr_cmp_d (t, chilim) > 0)
-    {
-      mpfr_printf ("chi2 = %.2Rf is greater than %.2f"
-                   " should only happen 1 in 1000 times\n", t, chilim);
-      exit (1);
+      printf ("num = %ld, equal bins in [%.2f, %.2f], nu = %d: chisq = %.2f\n",
+              num, xmin, xmax, nu, chisq);
+      if (Q < 0.05)
+        printf ("    WARNING: probability (less than 5%%) = %.2e\n", Q);
     }
 
   mpfr_clears (x, a, b, dx, z, pa, pb, ps, t, (mpfr_ptr) 0);
+  return Q;
 }
 
 /* Return a sequential number for a positive low-precision x.  x is altered by
@@ -184,8 +205,8 @@ sequential (mpfr_t x)
  * MPFR_RNDN.  This is the rounding mode which elicits the most information.
  * trandom_deviate includes checks on the consistency of the results extracted
  * from a random_deviate with other rounding modes.  */
-static void
-test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, mpfr_prec_t prec,
+static double
+test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, int prec,
                          double xmin, double xmax, int verbose)
 {
   mpfr_t x, v, pa, pb, z, t;
@@ -193,7 +214,7 @@ test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, mpfr_prec_t prec,
   int i, inexact, nu;
   long *counts;
   long k, seqmin, seqmax, seq;
-  double chilim, xp, sqrt2dof;
+  double Q, chisq;
 
   rnd = MPFR_RNDN;
   mpfr_init2 (x, prec);
@@ -262,33 +283,54 @@ test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, mpfr_prec_t prec,
       mpfr_add (t, t, z, rnd);
       mpfr_swap (pa, pb);       /* i.e., pa = pb */
     }
-  if (verbose)
-    mpfr_printf ("num = %ld, discrete (prec = %ld) bins in [%.6f, %.2f], "
-                 "nu = %d: chi2 = %.2Rf\n", num, prec, xmin, xmax, nu, t);
 
-  /* See Knuth, TAOCP, Vol 2, 3.3.1, Table 1, approx formula for nu > 30; xp =
-   * +/- 3.1 gives 0.1% and 99.9% percentile points. */
-  mpfr_set_si (pa, 2*nu, rnd);
-  mpfr_sqrt (pa, pa, rnd);
-  sqrt2dof = mpfr_get_d (pa, rnd);
-  xp = 3.1;
-  chilim = nu - sqrt2dof * xp  +   2 * xp * xp / 3;
-  if (mpfr_cmp_d (t, chilim) < 0)
+  chisq = mpfr_get_d (t, rnd);
+  chisq_prob (t, nu, t);
+  Q = mpfr_get_d (t, rnd);
+  if (verbose)
     {
-      mpfr_printf ("chi2 = %.2Rf is less than %.2f"
-                   " should only happen 1 in 1000 times\n", t, chilim);
-      exit (1);
-    }
-  chilim = nu + sqrt2dof * xp  +   2 * xp * xp / 3;
-  if (mpfr_cmp_d (t, chilim) > 0)
-    {
-      mpfr_printf ("chi2 = %.2Rf is greater than %.2f"
-                   " should only happen 1 in 1000 times\n", t, chilim);
-      exit (1);
+      printf ("num = %ld, discrete (prec = %d) bins in [%.6f, %.2f], "
+              "nu = %d: chisq = %.2f\n", num, prec, xmin, xmax, nu, chisq);
+      if (Q < 0.05)
+        printf ("    WARNING: probability (less than 5%%) = %.2e\n", Q);
     }
 
   free (counts);
   mpfr_clears (x, v, pa, pb, z, t, (mpfr_ptr) 0);
+  return Q;
+}
+
+static void
+run_chisq ( double (*f)(long, mpfr_prec_t, int, double, double, int),
+            long num, mpfr_prec_t prec, int bin,
+            double xmin, double xmax, int verbose)
+{
+  double Q, Qcum, Qbad, Qthresh;
+  int i;
+  Qcum = 1;
+  Qbad = 1.e-9;
+  Qthresh = 0.01;
+  for (i = 0; i < 3; ++i)
+    {
+      Q = (*f)(num, prec, bin, xmin, xmax, verbose);
+      Qcum *= Q;
+      if (Q > Qthresh)
+        return;
+      else if (Q < Qbad)
+        {
+          fprintf (stderr, "Error: mpfr_nrandom chi-squared failure "
+                   "(prob = %.2e)\n", Q);
+          exit (1);
+        }
+      num *= 10;
+      Qthresh /= 10;
+    }
+  if (Qcum < Qbad)              /* Presumably this is true */
+    {
+      fprintf (stderr, "Error: mpfr_nrandom combined chi-squared failure "
+               "(prob = %.2e)\n", Qcum);
+      exit (1);
+    }
 }
 
 int
@@ -308,10 +350,10 @@ main (int argc, char *argv[])
         nbtests = a;
     }
 
-  test_nrandom_chisq_cont (nbtests, 64, 60, -4, 4, verbose);
-  test_nrandom_chisq_disc (nbtests, 64, 2, 0.0005, 3, verbose);
-  test_nrandom_chisq_disc (nbtests, 64, 3, 0.002, 4, verbose);
-  test_nrandom_chisq_disc (nbtests, 64, 4, 0.004, 4, verbose);
+  run_chisq (test_nrandom_chisq_cont, nbtests, 64, 60, -4, 4, verbose);
+  run_chisq (test_nrandom_chisq_disc, nbtests, 64, 2, 0.0005, 3, verbose);
+  run_chisq (test_nrandom_chisq_disc, nbtests, 64, 3, 0.002, 4, verbose);
+  run_chisq (test_nrandom_chisq_disc, nbtests, 64, 4, 0.004, 4, verbose);
 
   tests_end_mpfr ();
   return 0;

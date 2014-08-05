@@ -45,7 +45,7 @@ check_specials (void)
 
   mpfr_set_inf (x, 1);
   mpfr_sech (y, x, MPFR_RNDN);
-  if (! (MPFR_IS_ZERO (y) && MPFR_SIGN (y) > 0))
+  if (! (MPFR_IS_ZERO (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: sech(+Inf) != +0\n");
       exit (1);
@@ -53,7 +53,7 @@ check_specials (void)
 
   mpfr_set_inf (x, -1);
   mpfr_sech (y, x, MPFR_RNDN);
-  if (! (MPFR_IS_ZERO (y) && MPFR_SIGN (y) > 0))
+  if (! (MPFR_IS_ZERO (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: sech(-Inf) != +0\n");
       exit (1);
@@ -78,14 +78,14 @@ check_specials (void)
   /* check huge x */
   mpfr_set_str (x, "8e8", 10, MPFR_RNDN);
   mpfr_sech (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: sech(8e8) != +0\n");
       exit (1);
     }
   mpfr_set_str (x, "-8e8", 10, MPFR_RNDN);
   mpfr_sech (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
+  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
     {
       printf ("Error: sech(-8e8) != +0\n");
       exit (1);
@@ -154,7 +154,7 @@ overflowed_sech0 (void)
                             i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                     err = 1;
                   }
-                if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
+                if (! (mpfr_inf_p (x) && MPFR_IS_POS (x)))
                   {
                     printf ("Error in overflowed_sech0 (i = %d, rnd = %s):\n"
                             "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));

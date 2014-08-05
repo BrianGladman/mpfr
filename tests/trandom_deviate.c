@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef WANT_MINI_GMP
+#ifndef MPFR_USE_MINI_GMP
 #include "random_deviate.h"
 
 #define W 32                    /* Must match value in random_deviate.c */
@@ -73,7 +73,8 @@ test_compare (long nbtests, int verbose)
           t2 = mpfr_random_deviate_less (u, v, RANDS);
           if (t1 != t2)
             {
-              printf ("Error: mpfr_random_deviate_less() inconsistent.\n");
+              fprintf (stderr,
+                       "Error: mpfr_random_deviate_less() inconsistent.\n");
               exit (1);
             }
           if (t1)
@@ -84,13 +85,14 @@ test_compare (long nbtests, int verbose)
       t1 = mpfr_random_deviate_less (u, u, RANDS);
       if (t1)
         {
-          printf ("Error: mpfr_random_deviate_less() gives u < u.\n");
+          fprintf (stderr, "Error: mpfr_random_deviate_less() gives u < u.\n");
           exit (1);
         }
       t1 = mpfr_random_deviate_tstbit (u, 0, RANDS);
       if (t1)
         {
-          printf ("Error: mpfr_random_deviate_tstbit() says 1 bit is on.\n");
+          fprintf (stderr,
+                   "Error: mpfr_random_deviate_tstbit() says 1 bit is on.\n");
           exit (1);
         }
     }
@@ -150,7 +152,7 @@ test_value_consistency (long nbtests)
               inexa2 == inexb2 && mpfr_equal_p (a2, b2) &&
               inexa3 == inexb3 && mpfr_equal_p (a3, b3) ) )
         {
-          printf ("Error: random_deviate values are inconsistent.\n");
+          fprintf (stderr, "Error: random_deviate values are inconsistent.\n");
           exit (1);
         }
     }
@@ -190,9 +192,10 @@ test_value_round (long nbtests, mpfr_prec_t prec)
               inexd     < 0 && inexu     > 0 &&
               inexz * s < 0 && inexa * s > 0 ) )
         {
-          printf ("n %d t %d d %d u %d z %d a %d s %d\n",
+          fprintf (stderr, "n %d t %d d %d u %d z %d a %d s %d\n",
                   inexn, inext, inexd, inexu, inexz, inexa, s);
-          printf ("Error: random_deviate has wrong values for inexact.\n");
+          fprintf (stderr,
+                   "Error: random_deviate has wrong values for inexact.\n");
           exit (1);
         }
       if (inexn < 0)
@@ -206,11 +209,13 @@ test_value_round (long nbtests, mpfr_prec_t prec)
               mpfr_equal_p(xz, SAME_SIGN(inexn, inexz) ? xn : t) &&
               mpfr_equal_p(xa, SAME_SIGN(inexn, inexa) ? xn : t) ) )
         {
-          printf ("n %d t %d d %d u %d z %d a %d s %d\n",
+          fprintf (stderr, "n %d t %d d %d u %d z %d a %d s %d\n",
                   inexn, inext, inexd, inexu, inexz, inexa, s);
-          mpfr_printf ("n %.4Rf t %.4Rf d %.4Rf u %.4Rf z %.4Rf a %.4Rf\n",
-                       xn, t, xd, xu, xz, xa);
-          printf ("Error: random_deviate rounds inconsistently.\n");
+          fprintf (stderr, "n %.4f t %.4f d %.4f u %.4f z %.4f a %.4f\n",
+                   mpfr_get_d (xn, MPFR_RNDN), mpfr_get_d (t, MPFR_RNDN),
+                   mpfr_get_d (xd, MPFR_RNDN), mpfr_get_d (xu, MPFR_RNDN),
+                   mpfr_get_d (xz, MPFR_RNDN), mpfr_get_d (xa, MPFR_RNDN));
+          fprintf (stderr, "Error: random_deviate rounds inconsistently.\n");
           exit (1);
         }
     }
@@ -267,7 +272,8 @@ test_value (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
         }
       if (exact)
         {
-          printf ("Error: random_deviate() returns a zero ternary value.\n");
+          fprintf (stderr,
+                   "Error: random_deviate() returns a zero ternary value.\n");
           exit (1);
         }
       mpfr_random_deviate_reset (u);

@@ -40,7 +40,7 @@ check_nans (void)
   mpfr_clear_flags ();
   inexact = mpfr_d_sub (y, 1.0, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
-  MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   /* 1.0 - +inf == -inf */

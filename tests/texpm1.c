@@ -103,21 +103,21 @@ special (void)
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "1.1E1000000000");
   i = test_expm1 (x, x, MPFR_RNDN);
-  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_IS_POS (x));
   MPFR_ASSERTN (mpfr_overflow_p ());
   MPFR_ASSERTN (i == 1);
 
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "1.1E1000000000");
   i = test_expm1 (x, x, MPFR_RNDU);
-  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_IS_POS (x));
   MPFR_ASSERTN (mpfr_overflow_p ());
   MPFR_ASSERTN (i == 1);
 
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "1.1E1000000000");
   i = test_expm1 (x, x, MPFR_RNDD);
-  MPFR_ASSERTN (!MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (!MPFR_IS_INF (x) && MPFR_IS_POS (x));
   MPFR_ASSERTN (mpfr_overflow_p ());
   MPFR_ASSERTN (i == -1);
 

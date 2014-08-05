@@ -38,7 +38,17 @@ make
 export GMP_CHECK_RANDOMIZE=1
 export MPFR_SUSPICIOUS_OVERFLOW=1
 export MPFR_CHECK_LIBC_PRINTF=1
+export MPFR_SKIP_EXTREME=1
 make check
+# reconfigure for mpfrbench
+make distclean
+if [ "$CC" == "g++" ]; then
+   ./configure --with-gmp="$GMP" --disable-shared CC="$CC"
+else
+# removed -ansi since it is incompatible with --enable-decimal-float
+   ./configure --with-gmp="$GMP" --disable-shared
+fi
+make
 cd tools/bench
 make mpfrbench
 ./mpfrbench
