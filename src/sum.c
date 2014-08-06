@@ -134,7 +134,19 @@ The general ideas of the algorithm:
 
 8. If one cannot determine the correctly rounded sum and ternary value
    yet (due to the TMD), then reiterate at (3) using a specific window
-   as if sq were 0, i.e. around maxexp + cq to maxexp - dq.
+   as if sq were 0, i.e. around maxexp + cq to maxexp - dq; basically,
+   one determines the sign of an error term related to a breakpoint.
+   There are 3 cases leading to additional reiterations:
+            Rounding mode       Breakpoint
+     A.       to nearest         midpoint
+     B.       to nearest      machine number
+     C.        directed       machine number
+   A machine number is a number whose significand fits on sq bits, and
+   a midpoint is a midpoint between two consecutive machine numbers.
+   The correctly rounded sum (except in case B) and the ternary value
+   will depend on the sign of the error term.
+   Note: In particular if the rounding mode is to nearest, one needs
+   to remember whether one is in case A or B.
 
 9. Correct the significand if need be (+ or - 1 ulp), determine the
    exponent, and exit with the correct ternary value.
