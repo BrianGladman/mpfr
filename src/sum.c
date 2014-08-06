@@ -85,31 +85,56 @@ The general ideas of the algorithm:
    (if an input has been truncated at this iteration) or the maximum
    exponent of the numbers that have been completely ignored.
 
-4. Determine the number of cancelled bits.
+4. Determine the number of cancelled bits, more precisely, define the
+   variable cancel = number of identical bits on the most significant
+   part of the accumulator.
 
-5. If the truncated sum (i.e. the value of the accumulator) is 0, then
-   reiterate at (3) with maxexp = maxexp2.
+5. If the truncated sum (i.e. the value of the accumulator) is 0, i.e.
+   if all the words are 0, then reiterate at (3) with maxexp = maxexp2.
 
-6. If, because of cancellation, the correctly rounded sum cannot be
-   determined possibly by using the sign of the error term, then shift
-   the truncated sum to the left boundary (most significant part) of
-   the accumulator, and reiterate at (3), where:
+6. Let e = maxexp + cq - cancel, q = e - sq, and err = minexp + logn.
+   Then the absolute value of the truncated sum is in [2^(e-1),2^e]
+   (binade closed on both ends due to two's complement), q is the
+   quantum exponent in the destination (except in the exact case -2^e),
+   and the error is strictly less than 2^err. Here's a representation
+   of the accumulator and the cancel bits, with the two cases depending
+   on the sign of the truncated sum, where the x's correspond to the
+   represented bits following the initial 1 (0 if negative), r is the
+   rounding bit, and the f's are the following bits:
+
+     ][------------------- accumulator -------------------]
+     ][---- cancel ----]----------------------------------]
+     ]0000000000000000001xxxxxxxxxxxxxxxxxxxxxrffffffffffff
+     ]1111111111111111110xxxxxxxxxxxxxxxxxxxxxrffffffffffff
+     ^- maxexp + cq    ^- e               q -^    minexp -^
+
+   The exponent and related values may change due to the error, but
+   this doesn't really matter here.
+
+   If the cancellation is important, e.g. so that err > q - 3, then
+   one reiterates at (3) after shifting the truncated sum to the
+   left boundary (most significant part) of the accumulator, where:
    * the shift count is determined in such a way to avoid overflows
      at the next iteration, i.e. to be able to retrieve the sum with
      its sign;
    * the new value of cq is implied by this shift count and maxexp2
      (the value of maxexp at the next iteration).
-   Note: It is expected that in general, the cancellation is small,
-   so that the new additions in (3) will occur only in a small part
-   of the accumulator. But see below about long carry propagation.
+   Note: It is expected that in general, the cancellation is not very
+   large, so that the new additions in (3) will occur only in a small
+   part of the accumulator, except in case of long carry propagation
+   (see below).
 
-7. Copy the rounded significand to the destination; one goal is to free
-   the accumulator in case there is work to do in (8).
+7. Now, the accumulator contains a good approximation to the exact sum.
+   Copy the rounded significand to the destination. One goal is to free
+   the accumulator in case there is work to do in (8). Another reason is
+   that if the correctly rounded result cannot be determined yet due to
+   the table maker's dilemma (TMD), one cannot continue to accumulate
+   since after some iterations, the required intermediate precision may
+   become greater than the accumulator size.
 
-8. If the sign of the error term is needed to determine the returned
-   result (correctly rounded sum and ternary value), then reiterate
-   at (3) to compute it using a specific window as if sq were 0, i.e.
-   around maxexp + cq to maxexp - dq.
+8. If one cannot determine the correctly rounded sum and ternary value
+   yet (due to the TMD), then reiterate at (3) using a specific window
+   as if sq were 0, i.e. around maxexp + cq to maxexp - dq.
 
 9. Correct the significand if need be (+ or - 1 ulp), determine the
    exponent, and exit with the correct ternary value.
@@ -614,6 +639,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             mp_size_t wi;        /* index in the accumulator */
             mp_limb_t msl;       /* most significant limb */
             mpfr_exp_t e;        /* temporary exponent of the result */
+            mpfr_exp_t q;        /* temporary quantum (ulp) exponent */
+            mpfr_exp_t err;      /* exponent of the error bound */
 
             /* Step 4: determine the number of cancelled bits. */
 
@@ -663,14 +690,19 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             /* Step 6 */
 
             e = maxexp + cq - cancel;
+            q = e - sq;
+            err = minexp + logn;
 
-            MPFR_LOG_MSG (("Step 6 with cancel=%Pd e=%" MPFR_EXP_FSPEC "d\n",
-                           cancel, (mpfr_eexp_t) e));
+            MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
+                           " e=%" MPFR_EXP_FSPEC "d"
+                           " q=%" MPFR_EXP_FSPEC "d"
+                           " err=%" MPFR_EXP_FSPEC "d\n",
+                           cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) q,
+                           (mpfr_eexp_t) err));
 
-            /* The truncated sum is in the binade [2^(e-1),2^e]
-               (closed on both ends due to two's complement).
-               The error is less than 2^(minexp+logn). */
-
+            /* The absolute value of the truncated sum is in the binade
+               [2^(e-1),2^e] (closed on both ends due to two's complement).
+               The error is strictly less than 2^err. */
 
           }
         }
