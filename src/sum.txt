@@ -97,7 +97,7 @@ The general ideas of the algorithm:
 5. If the truncated sum (i.e. the value of the accumulator) is 0, i.e.
    if all the words are 0, then reiterate at (3) with maxexp = maxexp2.
 
-6. Let e = maxexp + cq - cancel, q = e - sq, and err = minexp + logn.
+6. Let e = maxexp + cq - cancel, q = e - sq, and err = maxexp2 + logn.
    Then the absolute value of the truncated sum is in [2^(e-1),2^e]
    (binade closed on both ends due to two's complement), q is the
    quantum exponent in the destination (except in the exact case -2^e),
@@ -179,9 +179,9 @@ The general ideas of the algorithm:
 
    The condition err > q - 3 is equivalent to:
 
-     minexp + logn > maxexp + cq - cancel - sq - 3
+     maxexp2 + logn > maxexp + cq - cancel - sq - 3
 
-   Therefore
+   Therefore, since maxexp2 ≤ minexp,
 
      cancel ≥ accumulator_bitsize - sq - 2 - logn
             ≥ logn + 1 + dq - 2 - logn = dq - 1
@@ -336,4 +336,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 71941 2014-08-08 12:50:00Z vinc17/xvii $
+$Id: sum 71942 2014-08-08 13:55:36Z vinc17/xvii $
