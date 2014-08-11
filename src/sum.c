@@ -43,16 +43,18 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
     (("n=%lu rnd=%d", n, rnd),
      ("sum[%Pu]=%.*Rg", mpfr_get_prec (sum), mpfr_log_prec, sum));
 
-  if (MPFR_UNLIKELY (n <= 1))
+  if (MPFR_UNLIKELY (n <= 2))
     {
-      if (n < 1)
+      if (n == 0)
         {
           MPFR_SET_ZERO (sum);
           MPFR_SET_POS (sum);
           MPFR_RET (0);
         }
-      else
+      else if (n == 1)
         return mpfr_set (sum, p[0], rnd);
+      else
+        return mpfr_add (sum, p[0], p[1], rnd);
     }
   else
     {
@@ -60,10 +62,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
       mp_limb_t *wp;  /* pointer to the accumulator */
       mp_size_t ts;   /* size of the temporary area, in limbs */
       mp_size_t ws;   /* size of the accumulator, in limbs */
+      mpfr_prec_t wq; /* size of the accumulator, in bits */
       mpfr_exp_t maxexp;
       unsigned long i, rn;
       int logn;       /* ceil(log2(rn)) */
-      int cq, dq;
+      int cq, cq0;
       mpfr_prec_t sq;
       int inex;
       MPFR_TMP_DECL (marker);
@@ -159,31 +162,47 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
       } /* End of the pre-iteration (Step 1) */
 
+      if (MPFR_UNLIKELY (rn <= 2))
+        {
+          unsigned long h = ULONG_MAX;
+
+          for (i = 0; i < n; i++)
+            if (! MPFR_IS_SINGULAR (p[i]))
+              {
+                if (rn == 1)
+                  return mpfr_set (sum, p[i], rnd);
+                if (h != ULONG_MAX)
+                  return mpfr_add (sum, p[h], p[i], rnd);
+                h = i;
+              }
+        }
+
       /* Generic case: all the inputs are finite numbers, with at least
-         a regular number. */
+         3 regular numbers. */
 
       /* Step 2: set up some variables and the accumulator. */
 
       /* rn is the number of regular inputs (the singular ones will be
          ignored). Compute logn = ceil(log2(rn)). */
       logn = MPFR_INT_CEIL_LOG2 (rn);
+      MPFR_ASSERTD (logn >= 2);
 
       MPFR_LOG_MSG (("logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
                      logn, (mpfr_eexp_t) maxexp));
 
       sq = MPFR_GET_PREC (sum);
       cq = logn + 1;
+      cq0 = cq;
 
       /* First determine the size of the accumulator. */
-      ws = MPFR_PREC2LIMBS (cq + sq + logn + 1);
+      ws = MPFR_PREC2LIMBS (cq + sq + logn + 2);
+      wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
+      MPFR_ASSERTD (wq - cq - sq >= 4);
 
-      /* We now choose dq so that cq + sq + dq = accumulator bitsize. */
-      dq = (mpfr_prec_t) ws * GMP_NUMB_BITS - (cq + sq);
-
-      /* An input block will have up to sq + dq bits, and its shifted
+      /* An input block will have up to wq - cq bits, and its shifted
          value (to be correctly aligned) may take GMP_NUMB_BITS - 1
          additional bits. */
-      ts = MPFR_PREC2LIMBS (sq + dq + GMP_NUMB_BITS - 1);
+      ts = MPFR_PREC2LIMBS (wq - cq + GMP_NUMB_BITS - 1);
 
       MPFR_TMP_MARK (marker);
 
@@ -196,7 +215,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
       while (1)
         {
-          mpfr_exp_t minexp = maxexp - (sq + dq);
+          mpfr_exp_t minexp = maxexp + cq - wq;
           mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
 
           /* Step 3: compute the truncated sum. */
@@ -439,6 +458,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                                    " maxexp=%" MPFR_EXP_FSPEC "d\n",
                                    (mpfr_eexp_t) maxexp));
                     maxexp = maxexp2;
+                    cq = cq0;
                     continue;
                   }
               }
@@ -460,7 +480,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
             e = maxexp + cq - cancel;
             q = e - sq;
-            err = minexp + logn;
+            err = maxexp2 + logn;
 
             MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
                            " e=%" MPFR_EXP_FSPEC "d"
@@ -475,6 +495,32 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
             if (err > q - 3)
               {
+                mpfr_exp_t diffexp;
+                mpfr_prec_t shiftq;
+                mpfr_size_t shifts;
+                int shiftc;
+
+                diffexp = maxexp2 + logn - e;
+                if (diffexp < 0)
+                  diffexp = 0;
+                MPFR_ASSERTD (diffexp <= cancel - 2);
+                shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
+                MPFR_ASSERTD (shiftq >= 0);
+                shifts = shiftq / GMP_NUMB_BITS;
+                shiftc = shiftq % GMP_NUMB_BITS;
+                MPFR_LOG_MSG (("shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
+                               shiftq, (mpfr_prec_t) shifts, shiftc));
+                if (MPFR_LIKELY (shiftc != 0))
+                  mpn_lshift (wp + shifts, wp, ws - shifts, shiftc);
+                else
+                  MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
+                MPN_ZERO (wp, shifts);
+                maxexp = maxexp2;
+                MPFR_ASSERTD (minexp - maxexp2 < shiftq);
+                /* therefore minexp - maxexp2 fits in mpfr_prec_t */
+                cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp2);
+                MPFR_ASSERTD (cq < wq);
+                continue;
               }
 
           }

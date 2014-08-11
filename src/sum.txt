@@ -61,8 +61,8 @@ The general ideas of the algorithm:
    may need a little more precision to handle partial cancellation at
    this iteration, but important cancellation will always lead to other
    iterations. For instance, we will choose for dq the smallest value
-   such that dq ≥ max(logn,3) (the bound 3 will be explained later),
-   and the accumulator bitsize, which is maxexp + cq - minexp, i.e.
+   such that dq ≥ max(logn,4) (the bound 4 will be explained later),
+   and the accumulator bitsize wq, which is maxexp + cq - minexp, i.e.
    cq + sq + dq, is a multiple of GMP_NUMB_BITS.
 
    Accumulator:  [--------]-----------------------------------]
@@ -125,9 +125,9 @@ The general ideas of the algorithm:
    * the new value of cq is implied by this shift count and maxexp2
      (the value of maxexp at the next iteration).
 
-   Concerning the choice of the shift count, letting only one identical
-   bit in the most significant part may not be sufficient; for instance,
-   if maxexp2 = minexp and the accumulator
+   Concerning the choice of the shift count shiftq, letting only one
+   identical bit in the most significant part may not be sufficient;
+   for instance, if maxexp2 = minexp and the accumulator
 
         0000000011111111111111111111111111110101
    This iteration:                     minexp ─┘
@@ -173,31 +173,40 @@ The general ideas of the algorithm:
    is incorrect as a 1 could appear in the MSB (making the accumulator
    value negative) just with additions of positive numbers.
 
-   Now, one needs to prove that this choice is possible, i.e. that
+   So, we have: shiftq = cancel - 2 - max(0, maxexp2 + logn - e). And
+   at the next iteration,
 
-     cancel ≥ 2 + max(0, maxexp2 + logn - e)
+     cq' = wq - shiftq + (minexp - maxexp2)
 
-   The condition err > q - 3 is equivalent to:
+   Now one needs to prove that this makes sense, i.e. that shiftq > 0
+   and that cq' < wq; otherwise all the inputs will be ignored, making
+   a new iteration useless, with a possible infinite loop. So, shiftq
+   must be chosen so that
+
+     shiftq > minexp - maxexp2
+
+   Note that since maxexp2 ≤ minexp, this will also yield shiftq > 0.
+   The condition err > q - 3 gives:
 
      maxexp2 + logn > maxexp + cq - cancel - sq - 3
 
-   Therefore, since maxexp2 ≤ minexp,
+   Therefore, since maxexp - minexp = sq + dq,
 
-     cancel ≥ accumulator_bitsize - sq - 2 - logn
-            ≥ logn + 1 + dq - 2 - logn = dq - 1
+     cancel - 2 > minexp - maxexp2 - logn + cq + dq - 5
 
-   so that if dq ≥ 3, the condition cancel ≥ 2 is satisfied. One also
-   has:
+   And since cq = logn + 1 and dq ≥ 4,
 
-     maxexp + cq - minexp = accumulator_bitsize ≥ logn + 2
+     cancel - 2 > minexp - maxexp2                              [A]
 
-   so that
+   We also have:
 
-     2 + maxexp2 + logn - e
-       ≤ 2 + minexp + logn - (maxexp + cq - cancel)
-       ≤ cancel
+     cancel - 2 - logn + e = maxexp - 2 - logn + cq > minexp
 
-   proving the second part of the inequality.
+   Therefore
+
+     cancel - 2 - (maxexp2 + logn - e) > minexp - maxexp2       [B]
+
+   [A] and [B] give: shiftq > minexp - maxexp2. QED.
 
    Note: It is expected that in general, the cancellation is not very
    large, so that the new additions in (3) will occur only in a small
@@ -272,6 +281,7 @@ Variables:
   wp: pointer to the accumulator.
   ts: the size of the temporary area, in limbs; then wp = tp + ts.
   ws: the size of the accumulator, in limbs.
+  wq: the size of the accumulator, in bits.
   rn: number n' of inputs that are regular numbers (regular inputs).
   logn: ceil(log2(rn)).
   cq: logn + 1.
@@ -336,4 +346,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 71942 2014-08-08 13:55:36Z vinc17/xvii $
+$Id: sum 72021 2014-08-10 23:43:18Z vinc17/xvii $
