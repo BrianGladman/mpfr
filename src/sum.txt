@@ -101,11 +101,12 @@ The general ideas of the algorithm:
    Then the absolute value of the truncated sum is in [2^(e-1),2^e]
    (binade closed on both ends due to two's complement), q is the
    quantum exponent in the destination (except in the exact case -2^e),
-   and the error is strictly less than 2^err. Here's a representation
-   of the accumulator and the cancel bits, with the two cases depending
-   on the sign of the truncated sum, where the x's correspond to the
-   represented bits following the initial 1 (0 if negative), r is the
-   rounding bit, and the f's are the following bits:
+   and the absolute value of the error is strictly less than 2^err.
+   Here's a representation of the accumulator and the cancel bits,
+   with the two cases depending on the sign of the truncated sum,
+   where the x's correspond to the sq-1 represented bits following
+   the initial 1 (0 if negative), r is the rounding bit, and the
+   bits f are the following bits:
 
      ][------------------- accumulator -------------------]
      ][---- cancel ----]----------------------------------]
@@ -213,19 +214,27 @@ The general ideas of the algorithm:
    part of the accumulator, except in case of long carry propagation
    (see below).
 
-7. Now, the accumulator contains a good approximation to the exact sum.
-   Copy the rounded significand to the destination. One goal is to free
-   the accumulator in case there is work to do in (8). Another reason is
-   that if the correctly rounded result cannot be determined yet due to
-   the table maker's dilemma (TMD), one cannot continue to accumulate
-   since after some iterations, the required intermediate precision may
-   become greater than the accumulator size.
+7. Now, the accumulator contains a good approximation to the exact sum,
+   the absolute value of the error being < ulp(computed value) * 2^(-3).
+   One can now round the result except if:
+     * the 3 bits following the ulp are identical;
+     * the 2 bits following the rounding bit are identical,
+       if the rounding mode is to nearest.
+   Copy the rounded significand to the destination, assuming that the
+   first 3 bits are correct and the following bit are not all equal, as
+   this is the most probable correctly rounded result. One goal is to
+   free the accumulator in case there is work to do in (8), though the
+   needed memory is limited. This could be less efficient in supposedly
+   rare cases (e.g. if an exponent change is needed in high precision),
+   but this choice makes the code simpler, and probably better for most
+   cases. See also Note 3 below.
 
 8. If one cannot determine the correctly rounded sum and ternary value
    yet (due to the TMD), then reiterate at (3) using a specific window
    as if sq were 0, i.e. around maxexp + cq to maxexp - dq; basically,
-   one determines the sign of an error term related to a breakpoint.
-   There are 3 cases leading to additional reiterations:
+   one determines the sign of an error term related to a breakpoint, or
+   equivalently, the sticky bit. Similarly to what was said in (7), one
+   can see 3 cases leading to additional reiterations:
             Rounding mode       Breakpoint
      A.       to nearest         midpoint
      B.       to nearest      machine number
@@ -314,9 +323,9 @@ Moreover, we do not need to recompute everything at each iteration.
 The issue with the value very close to a breakpoint actually occurs
 at step (8); however, contrary to the usual case, we do not want to
 reiterate with more precision as this could take too much time and
-memory. Indeed, due to a possible "hole" between the inputs, the
-distance between the exact value and a breakpoint can be extremely
-small.
+memory (a much wider accumulator could be needed). Indeed, due to a
+possible "hole" between the inputs, the distance between the exact
+value and a breakpoint can be extremely small.
 
 *** To be considered in future versions ***
 It seems that carry propagation (mpn_add_1 & mpn_sub_1 in the code) is
@@ -346,4 +355,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72021 2014-08-10 23:43:18Z vinc17/xvii $
+$Id: sum 72064 2014-08-12 08:42:41Z vinc17/xvii $
