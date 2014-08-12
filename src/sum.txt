@@ -105,8 +105,8 @@ The general ideas of the algorithm:
    Here's a representation of the accumulator and the cancel bits,
    with the two cases depending on the sign of the truncated sum,
    where the x's correspond to the sq-1 represented bits following
-   the initial 1 (0 if negative), r is the rounding bit, and the
-   bits f are the following bits:
+   the initial value bit 1 (0 if negative), r is the rounding bit,
+   and the bits f are the following bits:
 
      ][------------------- accumulator -------------------]
      ][---- cancel ----]----------------------------------]
@@ -216,38 +216,63 @@ The general ideas of the algorithm:
 
 7. Now, the accumulator contains a good approximation to the exact sum,
    the absolute value of the error being < ulp(computed value) * 2^(-3).
-   One can now round the result except if:
-     * the 3 bits following the ulp are identical;
-     * the 2 bits following the rounding bit are identical,
-       if the rounding mode is to nearest.
-   Copy the rounded significand to the destination, assuming that the
-   first 3 bits are correct and the following bit are not all equal, as
-   this is the most probable correctly rounded result. One goal is to
-   free the accumulator in case there is work to do in (8), though the
-   needed memory is limited. This could be less efficient in supposedly
-   rare cases (e.g. if an exponent change is needed in high precision),
-   but this choice makes the code simpler, and probably better for most
-   cases. See also Note 3 below.
 
-8. If one cannot determine the correctly rounded sum and ternary value
-   yet (due to the TMD), then reiterate at (3) using a specific window
-   as if sq were 0, i.e. around maxexp + cq to maxexp - dq; basically,
-   one determines the sign of an error term related to a breakpoint, or
-   equivalently, the sticky bit. Similarly to what was said in (7), one
-   can see 3 cases leading to additional reiterations:
+   One will copy the rounded significand to the destination, assuming
+   that the first 3 bits after the last represented one be correct and
+   the following bits be not all equal: this yields the most probable
+   correctly rounded result, based on a symmetrical distribution of the
+   error centered on 0. The corresponding exponent can be determined
+   too and stored in the destination.
+
+   A change of representation is needed since the sum has been computed
+   using two's complement representation while regular MPFR numbers are
+   represented in sign + absolute value (normalized). The sign bit is
+   directly obtained from the cancel bits. For the absolute value:
+
+     * If the cancel bits are 0's, the value is positive, so that the
+       absolute value is represented in the same way.
+
+     * If the cancel bits are 1's, the value is negative, so that the
+       absolute value is obtained by inverting all the bits.
+       Note: The conventional "+1" is not done here since this will be
+       considered as part of the error term, which can be regarded as
+       virtually inverted. The positive case may also have a "+1" due
+       to the error term on the truncated sum.
+
+   One goal of this early copy/rounding is to free the accumulator in
+   case there is work to do in (8), though the needed memory for that
+   is limited. This could be slightly less efficient in supposedly
+   rare cases (e.g. if an exponent change is needed in high precision)
+   compared to a delayed copy, but this choice makes the code simpler,
+   and probably better for most cases. See also Note 3 below.
+
+8. One can determine both the correctly rounding sum and ternary value
+   except when:
+     * the 3 bits following the last represented one are identical;
+     * the 2 bits following the rounding bit are identical, if the
+       rounding mode is to nearest;
+   in which case one reiterates like in (3) one or more times using
+   a specific window as if sq were 0, i.e. around maxexp + logn to
+   maxexp - logn; in short, one determines the sign of an error term
+   relative to a breakpoint.
+
+   Similarly to what is said just above, one can see 3 cases leading
+   to additional reiterations:
+
             Rounding mode       Breakpoint
+     ---------------------------------------
      A.       to nearest         midpoint
      B.       to nearest      machine number
      C.        directed       machine number
+
    A machine number is a number whose significand fits on sq bits, and
    a midpoint is a midpoint between two consecutive machine numbers.
-   The correctly rounded sum (except in case B) and the ternary value
-   will depend on the sign of the error term.
    Note: In particular if the rounding mode is to nearest, one needs
    to remember whether one is in case A or B.
 
-9. Correct the significand if need be (+ or - 1 ulp), determine the
-   exponent, and exit with the correct ternary value.
+9. Depending on the sign of the error term, correct the destination if
+   need be (+ or - 1 ulp), determine the corresponding ternary value,
+   check the range (as usual), and return.
 
 An example:
 
@@ -355,4 +380,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72064 2014-08-12 08:42:41Z vinc17/xvii $
+$Id: sum 72074 2014-08-12 15:58:18Z vinc17/xvii $
