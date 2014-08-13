@@ -114,10 +114,16 @@ The general ideas of the algorithm:
      ]1111111111111111110xxxxxxxxxxxxxxxxxxxxxrffffffffffff
      └─ maxexp + cq    └─ e               q ─┘    minexp ─┘
 
-   The exponent and related values may change due to the error, but
-   this doesn't really matter here.
+   If the cancellation is important, the bit r and some of the least
+   significant bits x may fall outside of the accumulator, in which
+   case they are considered to be 0. In the implementation, one must
+   make sure that one does not try to read such non-represented bits.
 
-   If the cancellation is important, e.g. so that err > q - 3, then
+   The exponent and related values may change later due to the error,
+   but this doesn't really matter here.
+
+   If the error bound is too large due to the cancellation, e.g. if
+   err > q - 3 (the proofs below are done with this choice), then
    one reiterates at (3) after shifting the truncated sum to the
    left boundary (most significant part) of the accumulator, where:
    * the shift count is determined in such a way to avoid overflows
@@ -128,18 +134,20 @@ The general ideas of the algorithm:
 
    Concerning the choice of the shift count shiftq, letting only one
    identical bit in the most significant part may not be sufficient;
-   for instance, if maxexp2 = minexp and the accumulator
+   for instance, if
+   a. maxexp2 = minexp;
+   b. the accumulator contains:
 
         0000000011111111111111111111111111110101
    This iteration:                     minexp ─┘
 
-   is shifted to
+   c. the accumulator is shifted to:
 
         0111111111111111111111111111101010000000
    Next iteration:                      └─ maxexp
 
-   and there are at least 12 numbers to add at the next iteration, then
-   one could end up with something like:
+   d. there are at least 12 numbers to add at the next iteration;
+   then one could end up with something like:
 
         1000000000000000000000000000000000010001
                                         └─ maxexp
@@ -238,6 +246,10 @@ The general ideas of the algorithm:
        considered as part of the error term, which can be regarded as
        virtually inverted. The positive case may also have a "+1" due
        to the error term on the truncated sum.
+
+   Let us recall that in case of an important cancellation, some bits
+   may not be represented. Such a case is possible even in this step,
+   when maxexp2 is much smaller than minexp.
 
    One goal of this early copy/rounding is to free the accumulator in
    case there is work to do in (8), though the needed memory for that
@@ -380,4 +392,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72074 2014-08-12 15:58:18Z vinc17/xvii $
+$Id: sum 72101 2014-08-13 12:17:33Z vinc17/xvii $
