@@ -25,11 +25,12 @@ The general ideas of the algorithm:
 
 1. Look at the exponent field of each mpfr_t input (this is fast); also
    track the signs of Inf's and zeros. This step allows one to:
-   * detect the singular cases, i.e. when there is either at least a NaN
-     or an Inf in the inputs (in case of a NaN or two Inf's of different
-     signs, we can immediately return NaN), or all inputs are zeros;
-   * determine the maximum exponent maxexp of the regular inputs and
-     the number n' of regular inputs.
+     * detect the singular cases, i.e. when there is either at least
+       a NaN or an Inf in the inputs (in case of a NaN or two Inf's of
+       different signs, we can immediately return NaN), or all inputs
+       are zeros;
+     * determine the maximum exponent maxexp of the regular inputs and
+       the number n' of regular inputs.
 
 2. A truncated sum will be computed in two's complement, stored in a
    fixed memory area, called "accumulator", whose characteristics are
@@ -114,10 +115,24 @@ The general ideas of the algorithm:
      ]1111111111111111110xxxxxxxxxxxxxxxxxxxxxrffffffffffff
      └─ maxexp + cq    └─ e               q ─┘    minexp ─┘
 
-   If the cancellation is important, the bit r and some of the least
-   significant bits x may fall outside of the accumulator, in which
-   case they are considered to be 0. In the implementation, one must
-   make sure that one does not try to read such non-represented bits.
+   If the cancellation is important, then the bit r and some of the
+   least significant bits x may fall outside of the accumulator, in
+   which case they are considered to be 0. The most degenerate case
+   is the following:
+
+     * If the cancel bits are 0's, then due to (5), e = minexp + 1,
+       i.e. a single bit (the leading 1) is represented.
+
+     * If the cancel bits are 1's, all the bits of the accumulator are
+       1's. Since the non-represented bits are considered to be 0, the
+       following bit is a 0; this implies that the computed value of
+       cancel is the right one, i.e. as if the following bits were
+       represented in the accumulator, and proves the above assertion
+       "the absolute value of the truncated sum is in [2^(e-1),2^e]".
+       Here we have e = minexp, and none of the bits are represented.
+
+   In the implementation, one must make sure that one does not try to
+   read non-represented bits.
 
    The exponent and related values may change later due to the error,
    but this doesn't really matter here.
@@ -126,11 +141,11 @@ The general ideas of the algorithm:
    err > q - 3 (the proofs below are done with this choice), then
    one reiterates at (3) after shifting the truncated sum to the
    left boundary (most significant part) of the accumulator, where:
-   * the shift count is determined in such a way to avoid overflows
-     at the next iteration, i.e. to be able to retrieve the sum with
-     its sign;
-   * the new value of cq is implied by this shift count and maxexp2
-     (the value of maxexp at the next iteration).
+     * the shift count is determined in such a way to avoid overflows
+       at the next iteration, i.e. to be able to retrieve the sum with
+       its sign;
+     * the new value of cq is implied by this shift count and maxexp2
+       (the value of maxexp at the next iteration).
 
    Concerning the choice of the shift count shiftq, letting only one
    identical bit in the most significant part may not be sufficient;
@@ -228,9 +243,11 @@ The general ideas of the algorithm:
    One will copy the rounded significand to the destination, assuming
    that the first 3 bits after the last represented one be correct and
    the following bits be not all equal: this yields the most probable
-   correctly rounded result, based on a symmetrical distribution of the
-   error centered on 0. The corresponding exponent can be determined
-   too and stored in the destination.
+   correctly rounded result if q - minexp > 2 (the most general case),
+   based on a symmetrical distribution of the error centered on 0.
+
+   The corresponding exponent can be determined too and stored in the
+   destination.
 
    A change of representation is needed since the sum has been computed
    using two's complement representation while regular MPFR numbers are
@@ -250,6 +267,16 @@ The general ideas of the algorithm:
    Let us recall that in case of an important cancellation, some bits
    may not be represented. Such a case is possible even in this step,
    when maxexp2 is much smaller than minexp.
+
+   With the mpn layer of GMP, two passes are involved for the copy of
+   the significand:
+     * one for the shift (i.e., alignment), if the shift count is
+       non-zero (this is the most probable case);
+     * one for the initial rounding, together with the bit inversion
+       if the value is negative.
+   It is better to do these two passes in this order, so that all the
+   bits are represented for the initial rounding. If the shift count
+   is zero, these passes can be merged.
 
    One goal of this early copy/rounding is to free the accumulator in
    case there is work to do in (8), though the needed memory for that
@@ -392,4 +419,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72101 2014-08-13 12:17:33Z vinc17/xvii $
+$Id: sum 72108 2014-08-13 15:24:27Z vinc17/xvii $
