@@ -268,15 +268,17 @@ The general ideas of the algorithm:
    may not be represented. Such a case is possible even in this step,
    when maxexp2 is much smaller than minexp.
 
-   With the mpn layer of GMP, two passes are involved for the copy of
-   the significand:
-     * one for the shift (i.e., alignment), if the shift count is
-       non-zero (this is the most probable case);
-     * one for the initial rounding, together with the bit inversion
-       if the value is negative.
-   It is better to do these two passes in this order, so that all the
-   bits are represented for the initial rounding. If the shift count
-   is zero, these passes can be merged.
+   With the mpn layer of GMP, up to 3 operations are involved for the
+   handling of the significand:
+     * a shift (for the alignment), if the shift count is non-zero
+       (this is the most probable case);
+     * a negation if the value is negative;
+     * the initial rounding.
+   The shift is done before the initial rounding so that all the bits
+   are represented for the rounding. The last two operations cannot be
+   merged due to the lack of a negation with borrow in GMP. The copy
+   itself should be done together the shift or the negation, because
+   this is where most of the limbs are changed in general.
 
    One goal of this early copy/rounding is to free the accumulator in
    case there is work to do in (8), though the needed memory for that
@@ -419,4 +421,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72108 2014-08-13 15:24:27Z vinc17/xvii $
+$Id: sum 72145 2014-08-14 15:51:52Z vinc17/xvii $

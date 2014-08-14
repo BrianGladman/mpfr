@@ -58,6 +58,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
     }
   else
     {
+      mp_limb_t *sump;
       mp_limb_t *tp;  /* pointer to a temporary area */
       mp_limb_t *wp;  /* pointer to the accumulator */
       mp_size_t ts;   /* size of the temporary area, in limbs */
@@ -181,6 +182,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
          3 regular numbers. */
 
       /* Step 2: set up some variables and the accumulator. */
+
+      sump = MPFR_MANT (sum);
 
       /* rn is the number of regular inputs (the singular ones will be
          ignored). Compute logn = ceil(log2(rn)). */
@@ -479,6 +482,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
             /* Step 6 */
 
             e = maxexp + cq - cancel;
+            MPFR_ASSERTD (e >= minexp);
             q = e - sq;
             err = maxexp2 + logn;
 
@@ -520,11 +524,85 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                 /* therefore minexp - maxexp2 fits in mpfr_prec_t */
                 cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp2);
                 MPFR_ASSERTD (cq < wq);
-                continue;
               }
+            else
+              {
+                mp_limb_t carry;
+                int sd, sh;
+                mp_size_t sn;
 
-          }
-        }
+                /* Step 7 */
+
+                /* Let's determine carry (how to round). */
+                switch (rnd)
+                  {
+                  case MPFR_RNDD:
+                    carry = 0;
+                    break;
+                  case MPFR_RNDU:
+                    carry = 1;
+                    break;
+                  case MPFR_RNDZ:
+                    carry = msl != MPFR_LIMB_ZERO;
+                    break;
+                  case MPFR_RNDA:
+                    carry = msl == MPFR_LIMB_ZERO;
+                    break;
+                  default:
+                    MPFR_ASSERTN (rnd == MPFR_RNDN);
+                    carry = q > minexp &&
+                      (wp[(q - minexp - 1) / GMP_NUMB_BITS] &
+                       (MPFR_LIMB_ONE << (q - minexp - 1) % GMP_NUMB_BITS));
+                  }
+
+                /* Let's copy/shift the bits [max(q,minexp),e) to the
+                   most significant part of the destination, and zero
+                   the least significant part. Then take the absolute
+                   value, and do an initial rounding.
+                   TODO: This may be improved by merging some operations
+                   is particular case. The average speed-up may not be
+                   significant, though. To be tested... */
+                sn = MPFR_PREC2LIMBS (sq);
+                sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
+                sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
+                if (MPFR_LIKELY (q > minexp))
+                  {
+                    mp_size_t ei, fi, qi;
+
+                    qi = (q - minexp) / GMP_NUMB_BITS;
+                    if (MPFR_LIKELY (sh != 0))
+                      {
+                        ei = (e - minexp) / GMP_NUMB_BITS;
+                        fi = ei - (sn - 1);
+                        MPFR_ASSERTD (fi == qi || fi == qi + 1);
+                        mpn_lshift (sump, wp + fi, sn, sh);
+                        if (fi != qi)
+                          sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
+                      }
+                    else
+                      MPN_COPY (sump, wp + qi, sn);
+                    sump[0] &= ~ MPFR_LIMB_MASK (sd);
+                  }
+                else  /* q <= minexp */
+                  {
+                    mp_size_t en;
+
+                    en = (e - minexp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
+                    if (MPFR_LIKELY (sh != 0))
+                      mpn_lshift (sump + sn - en, wp, en, sh);
+                    else if (MPFR_UNLIKELY (en > 0))
+                      MPN_COPY (sump + sn - en, wp, en);
+                    if (sn > en)
+                      MPN_ZERO (sump, sn - en);
+                  }
+                if (msl != MPFR_LIMB_ZERO)
+                  mpn_neg (sump, sump, sn);
+                mpn_add_1 (sump, sump, sn, carry << sd);
+
+
+              }
+          }  /* Step 4+ block */
+        }  /* main loop */
 
       MPFR_TMP_FREE (marker);
       return mpfr_check_range (sum, inex, rnd);
