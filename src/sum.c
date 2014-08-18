@@ -37,7 +37,7 @@ VL: This is very different:
 */
 
 int
-mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
+mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 {
   MPFR_LOG_FUNC
     (("n=%lu rnd=%d", n, rnd),
@@ -52,9 +52,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           MPFR_RET (0);
         }
       else if (n == 1)
-        return mpfr_set (sum, p[0], rnd);
+        return mpfr_set (sum, x[0], rnd);
       else
-        return mpfr_add (sum, p[0], p[1], rnd);
+        return mpfr_add (sum, x[0], x[1], rnd);
     }
   else
     {
@@ -81,18 +81,18 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
         maxexp = MPFR_EXP_MIN;  /* max(Empty), <= any valid exponent */
         for (i = 0; i < n; i++)
           {
-            if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p[i])))
+            if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x[i])))
               {
-                if (MPFR_IS_NAN (p[i]))
+                if (MPFR_IS_NAN (x[i]))
                   {
-                    /* The current value p[i] is NaN. Then the sum is NaN. */
+                    /* The current value x[i] is NaN. Then the sum is NaN. */
                   nan:
                     MPFR_SET_NAN (sum);
                     MPFR_RET_NAN;
                   }
-                else if (MPFR_IS_INF (p[i]))
+                else if (MPFR_IS_INF (x[i]))
                   {
-                    /* The current value p[i] is an infinity.
+                    /* The current value x[i] is an infinity.
                        There are two cases:
                        1. This is the first infinity value (sign_inf == 0).
                           Then set sign_inf to its sign, and go on.
@@ -100,13 +100,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                           sign sign_inf. If this new infinity has a different
                           sign, then return NaN immediately, else go on. */
                     if (sign_inf == 0)
-                      sign_inf = MPFR_SIGN (p[i]);
-                    else if (MPFR_SIGN (p[i]) != sign_inf)
+                      sign_inf = MPFR_SIGN (x[i]);
+                    else if (MPFR_SIGN (x[i]) != sign_inf)
                       goto nan;
                   }
                 else if (MPFR_UNLIKELY (rn == 0))
                   {
-                    /* The current value p[i] is a zero. The code below
+                    /* The current value x[i] is a zero. The code below
                        matters only when all values found until now are
                        zeros, otherwise it is harmless (the test rn == 0
                        above is just a minor optimization).
@@ -117,17 +117,17 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                        the zero result depends only on the rounding mode
                        (note that this choice is sticky when new zeros are
                        considered). */
-                    MPFR_ASSERTD (MPFR_IS_ZERO (p[i]));
+                    MPFR_ASSERTD (MPFR_IS_ZERO (x[i]));
                     if (sign_zero == 0)
-                      sign_zero = MPFR_SIGN (p[i]);
-                    else if (MPFR_SIGN (p[i]) != sign_zero)
+                      sign_zero = MPFR_SIGN (x[i]);
+                    else if (MPFR_SIGN (x[i]) != sign_zero)
                       sign_zero = rnd == MPFR_RNDD ? -1 : 1;
                   }
               }
             else
               {
-                /* The current value p[i] is a regular number. */
-                mpfr_exp_t e = MPFR_GET_EXP (p[i]);
+                /* The current value x[i] is a regular number. */
+                mpfr_exp_t e = MPFR_GET_EXP (x[i]);
                 if (e > maxexp)
                   maxexp = e;  /* maximum exponent found until now */
                 rn++;  /* current number of regular inputs */
@@ -168,12 +168,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
           unsigned long h = ULONG_MAX;
 
           for (i = 0; i < n; i++)
-            if (! MPFR_IS_SINGULAR (p[i]))
+            if (! MPFR_IS_SINGULAR (x[i]))
               {
                 if (rn == 1)
-                  return mpfr_set (sum, p[i], rnd);
+                  return mpfr_set (sum, x[i], rnd);
                 if (h != ULONG_MAX)
-                  return mpfr_add (sum, p[h], p[i], rnd);
+                  return mpfr_add (sum, x[h], x[i], rnd);
                 h = i;
               }
         }
@@ -230,21 +230,21 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                          (mpfr_eexp_t) minexp));
 
           for (i = 0; i < n; i++)
-            if (! MPFR_IS_SINGULAR (p[i]))
+            if (! MPFR_IS_SINGULAR (x[i]))
               {
                 mp_limb_t *vp;
                 mp_size_t vs;
-                mpfr_exp_t pe, vd;
-                mpfr_prec_t pq;
+                mpfr_exp_t xe, vd;
+                mpfr_prec_t xq;
 
-                pe = MPFR_GET_EXP (p[i]);
-                pq = MPFR_GET_PREC (p[i]);
+                xe = MPFR_GET_EXP (x[i]);
+                xq = MPFR_GET_PREC (x[i]);
 
-                vp = MPFR_MANT (p[i]);
-                vs = MPFR_PREC2LIMBS (pq);
-                vd = pe - vs * GMP_NUMB_BITS - minexp;
+                vp = MPFR_MANT (x[i]);
+                vs = MPFR_PREC2LIMBS (xq);
+                vd = xe - vs * GMP_NUMB_BITS - minexp;
                 /* vd is the exponent of the least significant represented
-                   bit of p[i] (including the trailing bits, whose value
+                   bit of x[i] (including the trailing bits, whose value
                    is 0) minus the exponent of the least significant bit
                    of the accumulator. */
 
@@ -255,43 +255,43 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
                     /* This covers the following cases:
                      *     [-+- accumulator ---]
-                     *   [---|----- p[i] ------|--]
-                     *       |   [----- p[i] --|--]
-                     *       |                 |[----- p[i] -----]
-                     *       |                 |    [----- p[i] -----]
+                     *   [---|----- x[i] ------|--]
+                     *       |   [----- x[i] --|--]
+                     *       |                 |[----- x[i] -----]
+                     *       |                 |    [----- x[i] -----]
                      *     maxexp           minexp
                      */
 
-                    if (pe <= minexp)
+                    if (xe <= minexp)
                       {
-                        /* p[i] is entirely after the LSB of the accumulator,
+                        /* x[i] is entirely after the LSB of the accumulator,
                            so that it will be ignored at this iteration. */
-                        if (pe > maxexp2)
-                          maxexp2 = pe;
+                        if (xe > maxexp2)
+                          maxexp2 = xe;
                         continue;
                       }
 
-                    /* If some significant bits of p[i] are after the LSB
+                    /* If some significant bits of x[i] are after the LSB
                        of the accumulator, then maxexp2 will necessarily
                        be minexp. */
-                    if (MPFR_LIKELY (pe - pq < minexp))
+                    if (MPFR_LIKELY (xe - xq < minexp))
                       maxexp2 = minexp;
 
                     /* We need to ignore the least |vd| significant bits
-                       of p[i]. First, let's ignore the least
+                       of x[i]. First, let's ignore the least
                        vds = |vd| / GMP_NUMB_BITS limbs. */
                     vd = - vd;
                     vds = vd / GMP_NUMB_BITS;
                     vs -= vds;
-                    MPFR_ASSERTD (vs > 0);  /* see pe <= minexp test above */
+                    MPFR_ASSERTD (vs > 0);  /* see xe <= minexp test above */
                     vp += vds;
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
-                    if (pe > maxexp)
+                    if (xe > maxexp)
                       {
-                        vs -= (pe - maxexp) / GMP_NUMB_BITS;
-                        tr = (pe - maxexp) % GMP_NUMB_BITS;
+                        vs -= (xe - maxexp) / GMP_NUMB_BITS;
+                        tr = (xe - maxexp) % GMP_NUMB_BITS;
                       }
                     else
                       tr = 0;
@@ -328,7 +328,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                         vs--;
                       }
 
-                    if (MPFR_IS_POS (p[i]))
+                    if (MPFR_IS_POS (x[i]))
                       {
                         mp_limb_t carry;
 
@@ -359,10 +359,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
 
                     /* This covers the following cases:
                      *               [-+- accumulator ---]
-                     *   [- p[i] -]    |
-                     *             [---|-- p[i] ------]  |
-                     *          [------|-- p[i] ---------]
-                     *                 |   [- p[i] -]    |
+                     *   [- x[i] -]    |
+                     *             [---|-- x[i] ------]  |
+                     *          [------|-- x[i] ---------]
+                     *                 |   [- x[i] -]    |
                      *               maxexp           minexp
                      */
 
@@ -377,10 +377,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                     vd -= vds * GMP_NUMB_BITS;
                     MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
 
-                    if (pe > maxexp)
+                    if (xe > maxexp)
                       {
-                        vs -= (pe - maxexp) / GMP_NUMB_BITS;
-                        tr = (pe - maxexp) % GMP_NUMB_BITS;
+                        vs -= (xe - maxexp) / GMP_NUMB_BITS;
+                        tr = (xe - maxexp) % GMP_NUMB_BITS;
                         if (tr > vd || (vd != 0 && tr == vd))
                           {
                             vs--;
@@ -402,7 +402,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                         tr = 0;
                       }
 
-                    if (MPFR_IS_POS (p[i]))
+                    if (MPFR_IS_POS (x[i]))
                       {
                         mp_limb_t carry;
 
