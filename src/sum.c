@@ -36,6 +36,213 @@ VL: This is very different:
         sequencial             parallel (& sequential)
 */
 
+static mpfr_exp_t
+sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
+         mpfr_exp_t minexp, mpfr_exp_t maxexp, mp_limb_t *tp, mp_size_t ts)
+{
+  mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
+  unsigned long i;
+
+  MPFR_LOG_FUNC
+    (("[Step 3]"
+      " maxexp=%" MPFR_EXP_FSPEC "d"
+      " minexp=%" MPFR_EXP_FSPEC "d",
+      (mpfr_eexp_t) maxexp,
+      (mpfr_eexp_t) minexp),
+     (" maxexp2=%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) maxexp2));
+
+  for (i = 0; i < n; i++)
+    if (! MPFR_IS_SINGULAR (x[i]))
+      {
+        mp_limb_t *vp;
+        mp_size_t vs;
+        mpfr_exp_t xe, vd;
+        mpfr_prec_t xq;
+
+        xe = MPFR_GET_EXP (x[i]);
+        xq = MPFR_GET_PREC (x[i]);
+
+        vp = MPFR_MANT (x[i]);
+        vs = MPFR_PREC2LIMBS (xq);
+        vd = xe - vs * GMP_NUMB_BITS - minexp;
+        /* vd is the exponent of the least significant represented bit of
+           x[i] (including the trailing bits, whose value is 0) minus the
+           exponent of the least significant bit of the accumulator. */
+
+        if (vd < 0)
+          {
+            mp_size_t vds;
+            int tr;
+
+            /* This covers the following cases:
+             *     [-+- accumulator ---]
+             *   [---|----- x[i] ------|--]
+             *       |   [----- x[i] --|--]
+             *       |                 |[----- x[i] -----]
+             *       |                 |    [----- x[i] -----]
+             *     maxexp           minexp
+             */
+
+            if (xe <= minexp)
+              {
+                /* x[i] is entirely after the LSB of the accumulator,
+                   so that it will be ignored at this iteration. */
+                if (xe > maxexp2)
+                  maxexp2 = xe;
+                continue;
+              }
+
+            /* If some significant bits of x[i] are after the LSB of the
+               accumulator, then maxexp2 will necessarily be minexp. */
+            if (MPFR_LIKELY (xe - xq < minexp))
+              maxexp2 = minexp;
+
+            /* We need to ignore the least |vd| significant bits of x[i].
+               First, let's ignore the least vds = |vd| / GMP_NUMB_BITS
+               limbs. */
+            vd = - vd;
+            vds = vd / GMP_NUMB_BITS;
+            vs -= vds;
+            MPFR_ASSERTD (vs > 0);  /* see xe <= minexp test above */
+            vp += vds;
+            vd -= vds * GMP_NUMB_BITS;
+            MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
+
+            if (xe > maxexp)
+              {
+                vs -= (xe - maxexp) / GMP_NUMB_BITS;
+                tr = (xe - maxexp) % GMP_NUMB_BITS;
+              }
+            else
+              tr = 0;
+
+            if (vd != 0)
+              {
+                MPFR_ASSERTD (vs <= ts);
+                mpn_rshift (tp, vp, vs, vd);
+                vp = tp;
+                tr += vd;
+                if (tr >= GMP_NUMB_BITS)
+                  {
+                    vs--;
+                    tr -= GMP_NUMB_BITS;
+                  }
+                MPFR_ASSERTD (tr >= 0 && tr < GMP_NUMB_BITS);
+                if (tr != 0)
+                  {
+                    tp[vs-1] &= MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
+                    tr = 0;
+                  }
+                /* Truncation has now been taken into account. */
+                MPFR_ASSERTD (tr == 0);
+              }
+
+            MPFR_ASSERTD (vs <= ws);
+
+            /* We can't truncate the most significant limb of the input.
+               So, let's ignore it now. It will be taken into account
+               after the addition. */
+            if (tr != 0)
+              vs--;
+
+            if (MPFR_IS_POS (x[i]))
+              {
+                mp_limb_t carry;
+
+                carry = mpn_add_n (wp, wp, vp, vs);
+                if (tr != 0)
+                  carry += vp[vs] & MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
+                if (carry != 0 && vs < ws)
+                  mpn_add_1 (wp + vs, wp + vs, ws - vs, carry);
+              }
+            else
+              {
+                mp_limb_t borrow;
+
+                borrow = mpn_sub_n (wp, wp, vp, vs);
+                if (tr != 0)
+                  borrow += vp[vs] & MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
+                if (borrow != 0 && vs < ws)
+                  mpn_sub_1 (wp + vs, wp + vs, ws - vs, borrow);
+              }
+          }
+        else  /* vd >= 0 */
+          {
+            mp_limb_t *dp;
+            mp_size_t ds, vds;
+            int tr;
+
+            /* This covers the following cases:
+             *               [-+- accumulator ---]
+             *   [- x[i] -]    |
+             *             [---|-- x[i] ------]  |
+             *          [------|-- x[i] ---------]
+             *                 |   [- x[i] -]    |
+             *               maxexp           minexp
+             */
+
+            /* We need to ignore the least vd significant bits
+               of the accumulator. First, let's ignore the least
+               vds = vd / GMP_NUMB_BITS limbs. -> (dp,ds) */
+            vds = vd / GMP_NUMB_BITS;
+            ds = ws - vds;
+            if (ds <= 0)
+              continue;
+            dp = wp + vds;
+            vd -= vds * GMP_NUMB_BITS;
+            MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
+
+            if (xe > maxexp)
+              {
+                vs -= (xe - maxexp) / GMP_NUMB_BITS;
+                tr = (xe - maxexp) % GMP_NUMB_BITS;
+                if (tr > vd || (vd != 0 && tr == vd))
+                  {
+                    vs--;
+                    tr -= GMP_NUMB_BITS;
+                  }
+              }
+            else
+              tr = 0;
+            MPFR_ASSERTD (tr >= 1 - GMP_NUMB_BITS && tr <= vd);
+
+            if (vd != 0)
+              {
+                MPFR_ASSERTD (vs + 1 <= ts);
+                tp[vs] = mpn_lshift (tp, vp, vs, vd);
+                MPFR_ASSERTD (vd - tr > 0);
+                if (vd - tr < GMP_NUMB_BITS)
+                  tp[vs] &= MPFR_LIMB_MASK (vd - tr);
+                vp = tp;
+                tr = 0;
+              }
+
+            if (MPFR_IS_POS (x[i]))
+              {
+                mp_limb_t carry;
+
+                carry = mpn_add_n (dp, dp, vp, vs);
+                if (tr != 0)
+                  carry += vp[vs] & MPFR_LIMB_MASK (- tr);
+                if (carry != 0 && vs < ds)
+                  mpn_add_1 (dp + vs, dp + vs, ds - vs, carry);
+              }
+            else
+              {
+                mp_limb_t borrow;
+
+                borrow = mpn_sub_n (dp, dp, vp, vs);
+                if (tr != 0)
+                  borrow += vp[vs] & MPFR_LIMB_MASK (- tr);
+                if (borrow != 0 && vs < ds)
+                  mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
+              }
+          }
+      }
+
+  return maxexp2;
+}
+
 int
 mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 {
@@ -219,211 +426,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
       while (1)
         {
           mpfr_exp_t minexp = maxexp + cq - wq;
-          mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
+          mpfr_exp_t maxexp2;
 
           /* Step 3: compute the truncated sum. */
-
-          MPFR_LOG_MSG (("Step 3 with"
-                         " maxexp=%" MPFR_EXP_FSPEC "d"
-                         " minexp=%" MPFR_EXP_FSPEC "d\n",
-                         (mpfr_eexp_t) maxexp,
-                         (mpfr_eexp_t) minexp));
-
-          for (i = 0; i < n; i++)
-            if (! MPFR_IS_SINGULAR (x[i]))
-              {
-                mp_limb_t *vp;
-                mp_size_t vs;
-                mpfr_exp_t xe, vd;
-                mpfr_prec_t xq;
-
-                xe = MPFR_GET_EXP (x[i]);
-                xq = MPFR_GET_PREC (x[i]);
-
-                vp = MPFR_MANT (x[i]);
-                vs = MPFR_PREC2LIMBS (xq);
-                vd = xe - vs * GMP_NUMB_BITS - minexp;
-                /* vd is the exponent of the least significant represented
-                   bit of x[i] (including the trailing bits, whose value
-                   is 0) minus the exponent of the least significant bit
-                   of the accumulator. */
-
-                if (vd < 0)
-                  {
-                    mp_size_t vds;
-                    int tr;
-
-                    /* This covers the following cases:
-                     *     [-+- accumulator ---]
-                     *   [---|----- x[i] ------|--]
-                     *       |   [----- x[i] --|--]
-                     *       |                 |[----- x[i] -----]
-                     *       |                 |    [----- x[i] -----]
-                     *     maxexp           minexp
-                     */
-
-                    if (xe <= minexp)
-                      {
-                        /* x[i] is entirely after the LSB of the accumulator,
-                           so that it will be ignored at this iteration. */
-                        if (xe > maxexp2)
-                          maxexp2 = xe;
-                        continue;
-                      }
-
-                    /* If some significant bits of x[i] are after the LSB
-                       of the accumulator, then maxexp2 will necessarily
-                       be minexp. */
-                    if (MPFR_LIKELY (xe - xq < minexp))
-                      maxexp2 = minexp;
-
-                    /* We need to ignore the least |vd| significant bits
-                       of x[i]. First, let's ignore the least
-                       vds = |vd| / GMP_NUMB_BITS limbs. */
-                    vd = - vd;
-                    vds = vd / GMP_NUMB_BITS;
-                    vs -= vds;
-                    MPFR_ASSERTD (vs > 0);  /* see xe <= minexp test above */
-                    vp += vds;
-                    vd -= vds * GMP_NUMB_BITS;
-                    MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
-
-                    if (xe > maxexp)
-                      {
-                        vs -= (xe - maxexp) / GMP_NUMB_BITS;
-                        tr = (xe - maxexp) % GMP_NUMB_BITS;
-                      }
-                    else
-                      tr = 0;
-
-                    if (vd != 0)
-                      {
-                        MPFR_ASSERTD (vs <= ts);
-                        mpn_rshift (tp, vp, vs, vd);
-                        vp = tp;
-                        tr += vd;
-                        if (tr >= GMP_NUMB_BITS)
-                          {
-                            vs--;
-                            tr -= GMP_NUMB_BITS;
-                          }
-                        MPFR_ASSERTD (tr >= 0 && tr < GMP_NUMB_BITS);
-                        if (tr != 0)
-                          {
-                            tp[vs-1] &=
-                              MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
-                            tr = 0;
-                          }
-                        /* Truncation has now been taken into account. */
-                        MPFR_ASSERTD (tr == 0);
-                      }
-
-                    MPFR_ASSERTD (vs <= ws);
-
-                    if (tr != 0)
-                      {
-                        /* We can't truncate the most significant limb of
-                           the input. So, let's ignore it now. It will be
-                           taken into account after the addition. */
-                        vs--;
-                      }
-
-                    if (MPFR_IS_POS (x[i]))
-                      {
-                        mp_limb_t carry;
-
-                        carry = mpn_add_n (wp, wp, vp, vs);
-                        if (tr != 0)
-                          carry += vp[vs] &
-                            MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
-                        if (carry != 0 && vs < ws)
-                          mpn_add_1 (wp + vs, wp + vs, ws - vs, carry);
-                      }
-                    else
-                      {
-                        mp_limb_t borrow;
-
-                        borrow = mpn_sub_n (wp, wp, vp, vs);
-                        if (tr != 0)
-                          borrow += vp[vs] &
-                            MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
-                        if (borrow != 0 && vs < ws)
-                          mpn_sub_1 (wp + vs, wp + vs, ws - vs, borrow);
-                      }
-                  }
-                else  /* vd >= 0 */
-                  {
-                    mp_limb_t *dp;
-                    mp_size_t ds, vds;
-                    int tr;
-
-                    /* This covers the following cases:
-                     *               [-+- accumulator ---]
-                     *   [- x[i] -]    |
-                     *             [---|-- x[i] ------]  |
-                     *          [------|-- x[i] ---------]
-                     *                 |   [- x[i] -]    |
-                     *               maxexp           minexp
-                     */
-
-                    /* We need to ignore the least vd significant bits
-                       of the accumulator. First, let's ignore the least
-                       vds = vd / GMP_NUMB_BITS limbs. -> (dp,ds) */
-                    vds = vd / GMP_NUMB_BITS;
-                    ds = ws - vds;
-                    if (ds <= 0)
-                      continue;
-                    dp = wp + vds;
-                    vd -= vds * GMP_NUMB_BITS;
-                    MPFR_ASSERTD (vd >= 0 && vd < GMP_NUMB_BITS);
-
-                    if (xe > maxexp)
-                      {
-                        vs -= (xe - maxexp) / GMP_NUMB_BITS;
-                        tr = (xe - maxexp) % GMP_NUMB_BITS;
-                        if (tr > vd || (vd != 0 && tr == vd))
-                          {
-                            vs--;
-                            tr -= GMP_NUMB_BITS;
-                          }
-                      }
-                    else
-                      tr = 0;
-                    MPFR_ASSERTD (tr >= 1 - GMP_NUMB_BITS && tr <= vd);
-
-                    if (vd != 0)
-                      {
-                        MPFR_ASSERTD (vs + 1 <= ts);
-                        tp[vs] = mpn_lshift (tp, vp, vs, vd);
-                        MPFR_ASSERTD (vd - tr > 0);
-                        if (vd - tr < GMP_NUMB_BITS)
-                          tp[vs] &= MPFR_LIMB_MASK (vd - tr);
-                        vp = tp;
-                        tr = 0;
-                      }
-
-                    if (MPFR_IS_POS (x[i]))
-                      {
-                        mp_limb_t carry;
-
-                        carry = mpn_add_n (dp, dp, vp, vs);
-                        if (tr != 0)
-                          carry += vp[vs] & MPFR_LIMB_MASK (- tr);
-                        if (carry != 0 && vs < ds)
-                          mpn_add_1 (dp + vs, dp + vs, ds - vs, carry);
-                      }
-                    else
-                      {
-                        mp_limb_t borrow;
-
-                        borrow = mpn_sub_n (dp, dp, vp, vs);
-                        if (tr != 0)
-                          borrow += vp[vs] & MPFR_LIMB_MASK (- tr);
-                        if (borrow != 0 && vs < ds)
-                          mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
-                      }
-                  }
-              }  /* end of the iteration (Step 3) */
+          maxexp2 = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
 
           {
             mpfr_prec_t cancel;  /* number of cancelled bits */
