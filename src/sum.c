@@ -427,190 +427,187 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
         {
           mpfr_exp_t minexp = maxexp + cq - wq;
           mpfr_exp_t maxexp2;
+          mpfr_prec_t cancel;  /* number of cancelled bits */
+          mp_size_t wi;        /* index in the accumulator */
+          mp_limb_t msl;       /* most significant limb */
+          mpfr_exp_t e;        /* temporary exponent of the result */
+          mpfr_exp_t q;        /* temporary quantum (ulp) exponent */
+          mpfr_exp_t err;      /* exponent of the error bound */
 
           /* Step 3: compute the truncated sum. */
           maxexp2 = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
 
-          {
-            mpfr_prec_t cancel;  /* number of cancelled bits */
-            mp_size_t wi;        /* index in the accumulator */
-            mp_limb_t msl;       /* most significant limb */
-            mpfr_exp_t e;        /* temporary exponent of the result */
-            mpfr_exp_t q;        /* temporary quantum (ulp) exponent */
-            mpfr_exp_t err;      /* exponent of the error bound */
+          /* Step 4: determine the number of cancelled bits. */
 
-            /* Step 4: determine the number of cancelled bits. */
+          cancel = 0;
+          wi = ws - 1;
+          MPFR_ASSERTD (wi >= 0);
+          msl = wp[wi];
 
-            cancel = 0;
-            wi = ws - 1;
-            MPFR_ASSERTD (wi >= 0);
-            msl = wp[wi];
+          MPFR_LOG_MSG (("Step 4 with msl=%Mx\n", msl));
 
-            MPFR_LOG_MSG (("Step 4 with msl=%Mx\n", msl));
+          /* Limbs whose bits are identical (000...00 or 111...11). */
+          if (MPFR_UNLIKELY (msl == MPFR_LIMB_ZERO || msl == MPFR_LIMB_MAX))
+            {
+              while (wi >= 0 && wp[wi] == msl)
+                {
+                  cancel += GMP_NUMB_BITS;
+                  wi--;
+                }
 
-            /* Limbs whose bits are identical (000...00 or 111...11). */
-            if (MPFR_UNLIKELY (msl == MPFR_LIMB_ZERO || msl == MPFR_LIMB_MAX))
-              {
-                while (wi >= 0 && wp[wi] == msl)
-                  {
-                    cancel += GMP_NUMB_BITS;
-                    wi--;
-                  }
+              if (wi < 0 && msl == MPFR_LIMB_ZERO)
+                {
+                  /* Step 5: the truncated sum is zero. Reiterate with
+                   * maxexp = maxexp2. Note: we do not need to zero the
+                   * accumulator since it is already 0 in this case.
+                   */
+                  MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
+                                 " maxexp=%" MPFR_EXP_FSPEC "d\n",
+                                 (mpfr_eexp_t) maxexp));
+                  maxexp = maxexp2;
+                  cq = cq0;
+                  continue;
+                }
+            }
 
-                if (wi < 0 && msl == MPFR_LIMB_ZERO)
-                  {
-                    /* Step 5: the truncated sum is zero. Reiterate with
-                     * maxexp = maxexp2. Note: we do not need to zero the
-                     * accumulator since it is already 0 in this case.
-                     */
-                    MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
-                                   " maxexp=%" MPFR_EXP_FSPEC "d\n",
-                                   (mpfr_eexp_t) maxexp));
-                    maxexp = maxexp2;
-                    cq = cq0;
-                    continue;
-                  }
-              }
+          /* Let's count the number of identical leading bits of
+             the next limb, if there is one. */
+          if (MPFR_LIKELY (wi >= 0))
+            {
+              int cnt;
 
-            /* Let's count the number of identical leading bits of
-               the next limb, if there is one. */
-            if (MPFR_LIKELY (wi >= 0))
-              {
-                int cnt;
+              msl = wp[wi];
+              if (msl & MPFR_LIMB_HIGHBIT)
+                msl ^= MPFR_LIMB_MAX;
+              count_leading_zeros (cnt, msl);
+              cancel += cnt;
+            }
 
-                msl = wp[wi];
-                if (msl & MPFR_LIMB_HIGHBIT)
-                  msl ^= MPFR_LIMB_MAX;
-                count_leading_zeros (cnt, msl);
-                cancel += cnt;
-              }
+          /* Step 6 */
 
-            /* Step 6 */
+          e = maxexp + cq - cancel;
+          MPFR_ASSERTD (e >= minexp);
+          q = e - sq;
+          err = maxexp2 + logn;
 
-            e = maxexp + cq - cancel;
-            MPFR_ASSERTD (e >= minexp);
-            q = e - sq;
-            err = maxexp2 + logn;
+          MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
+                         " e=%" MPFR_EXP_FSPEC "d"
+                         " q=%" MPFR_EXP_FSPEC "d"
+                         " err=%" MPFR_EXP_FSPEC "d\n",
+                         cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) q,
+                         (mpfr_eexp_t) err));
 
-            MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
-                           " e=%" MPFR_EXP_FSPEC "d"
-                           " q=%" MPFR_EXP_FSPEC "d"
-                           " err=%" MPFR_EXP_FSPEC "d\n",
-                           cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) q,
-                           (mpfr_eexp_t) err));
+          /* The absolute value of the truncated sum is in the binade
+             [2^(e-1),2^e] (closed on both ends due to two's complement).
+             The error is strictly less than 2^err. */
 
-            /* The absolute value of the truncated sum is in the binade
-               [2^(e-1),2^e] (closed on both ends due to two's complement).
-               The error is strictly less than 2^err. */
+          if (err > q - 3)
+            {
+              mpfr_exp_t diffexp;
+              mpfr_prec_t shiftq;
+              mpfr_size_t shifts;
+              int shiftc;
 
-            if (err > q - 3)
-              {
-                mpfr_exp_t diffexp;
-                mpfr_prec_t shiftq;
-                mpfr_size_t shifts;
-                int shiftc;
+              diffexp = maxexp2 + logn - e;
+              if (diffexp < 0)
+                diffexp = 0;
+              MPFR_ASSERTD (diffexp <= cancel - 2);
+              shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
+              MPFR_ASSERTD (shiftq >= 0);
+              shifts = shiftq / GMP_NUMB_BITS;
+              shiftc = shiftq % GMP_NUMB_BITS;
+              MPFR_LOG_MSG (("shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
+                             shiftq, (mpfr_prec_t) shifts, shiftc));
+              if (MPFR_LIKELY (shiftc != 0))
+                mpn_lshift (wp + shifts, wp, ws - shifts, shiftc);
+              else
+                MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
+              MPN_ZERO (wp, shifts);
+              maxexp = maxexp2;
+              MPFR_ASSERTD (minexp - maxexp2 < shiftq);
+              /* therefore minexp - maxexp2 fits in mpfr_prec_t */
+              cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp2);
+              MPFR_ASSERTD (cq < wq);
+            }
+          else
+            {
+              mp_limb_t carry;
+              int sd, sh;
+              mp_size_t sn;
 
-                diffexp = maxexp2 + logn - e;
-                if (diffexp < 0)
-                  diffexp = 0;
-                MPFR_ASSERTD (diffexp <= cancel - 2);
-                shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
-                MPFR_ASSERTD (shiftq >= 0);
-                shifts = shiftq / GMP_NUMB_BITS;
-                shiftc = shiftq % GMP_NUMB_BITS;
-                MPFR_LOG_MSG (("shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
-                               shiftq, (mpfr_prec_t) shifts, shiftc));
-                if (MPFR_LIKELY (shiftc != 0))
-                  mpn_lshift (wp + shifts, wp, ws - shifts, shiftc);
-                else
-                  MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
-                MPN_ZERO (wp, shifts);
-                maxexp = maxexp2;
-                MPFR_ASSERTD (minexp - maxexp2 < shiftq);
-                /* therefore minexp - maxexp2 fits in mpfr_prec_t */
-                cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp2);
-                MPFR_ASSERTD (cq < wq);
-              }
-            else
-              {
-                mp_limb_t carry;
-                int sd, sh;
-                mp_size_t sn;
+              /* Step 7 */
 
-                /* Step 7 */
+              /* Let's determine carry (how to round). */
+              switch (rnd)
+                {
+                case MPFR_RNDD:
+                  carry = 0;
+                  break;
+                case MPFR_RNDU:
+                  carry = 1;
+                  break;
+                case MPFR_RNDZ:
+                  carry = msl != MPFR_LIMB_ZERO;
+                  break;
+                case MPFR_RNDA:
+                  carry = msl == MPFR_LIMB_ZERO;
+                  break;
+                default:
+                  MPFR_ASSERTN (rnd == MPFR_RNDN);
+                  carry = q > minexp &&
+                    (wp[(q - minexp - 1) / GMP_NUMB_BITS] &
+                     (MPFR_LIMB_ONE << (q - minexp - 1) % GMP_NUMB_BITS));
+                }
 
-                /* Let's determine carry (how to round). */
-                switch (rnd)
-                  {
-                  case MPFR_RNDD:
-                    carry = 0;
-                    break;
-                  case MPFR_RNDU:
-                    carry = 1;
-                    break;
-                  case MPFR_RNDZ:
-                    carry = msl != MPFR_LIMB_ZERO;
-                    break;
-                  case MPFR_RNDA:
-                    carry = msl == MPFR_LIMB_ZERO;
-                    break;
-                  default:
-                    MPFR_ASSERTN (rnd == MPFR_RNDN);
-                    carry = q > minexp &&
-                      (wp[(q - minexp - 1) / GMP_NUMB_BITS] &
-                       (MPFR_LIMB_ONE << (q - minexp - 1) % GMP_NUMB_BITS));
-                  }
+              /* Let's copy/shift the bits [max(q,minexp),e) to the
+                 most significant part of the destination, and zero
+                 the least significant part. Then take the absolute
+                 value, and do an initial rounding.
+                 TODO: This may be improved by merging some operations
+                 is particular case. The average speed-up may not be
+                 significant, though. To be tested... */
+              sn = MPFR_PREC2LIMBS (sq);
+              sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
+              sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
+              if (MPFR_LIKELY (q > minexp))
+                {
+                  mp_size_t ei, fi, qi;
 
-                /* Let's copy/shift the bits [max(q,minexp),e) to the
-                   most significant part of the destination, and zero
-                   the least significant part. Then take the absolute
-                   value, and do an initial rounding.
-                   TODO: This may be improved by merging some operations
-                   is particular case. The average speed-up may not be
-                   significant, though. To be tested... */
-                sn = MPFR_PREC2LIMBS (sq);
-                sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
-                sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
-                if (MPFR_LIKELY (q > minexp))
-                  {
-                    mp_size_t ei, fi, qi;
+                  qi = (q - minexp) / GMP_NUMB_BITS;
+                  if (MPFR_LIKELY (sh != 0))
+                    {
+                      ei = (e - minexp) / GMP_NUMB_BITS;
+                      fi = ei - (sn - 1);
+                      MPFR_ASSERTD (fi == qi || fi == qi + 1);
+                      mpn_lshift (sump, wp + fi, sn, sh);
+                      if (fi != qi)
+                        sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
+                    }
+                  else
+                    MPN_COPY (sump, wp + qi, sn);
+                  sump[0] &= ~ MPFR_LIMB_MASK (sd);
+                }
+              else  /* q <= minexp */
+                {
+                  mp_size_t en;
 
-                    qi = (q - minexp) / GMP_NUMB_BITS;
-                    if (MPFR_LIKELY (sh != 0))
-                      {
-                        ei = (e - minexp) / GMP_NUMB_BITS;
-                        fi = ei - (sn - 1);
-                        MPFR_ASSERTD (fi == qi || fi == qi + 1);
-                        mpn_lshift (sump, wp + fi, sn, sh);
-                        if (fi != qi)
-                          sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
-                      }
-                    else
-                      MPN_COPY (sump, wp + qi, sn);
-                    sump[0] &= ~ MPFR_LIMB_MASK (sd);
-                  }
-                else  /* q <= minexp */
-                  {
-                    mp_size_t en;
+                  en = (e - minexp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
+                  if (MPFR_LIKELY (sh != 0))
+                    mpn_lshift (sump + sn - en, wp, en, sh);
+                  else if (MPFR_UNLIKELY (en > 0))
+                    MPN_COPY (sump + sn - en, wp, en);
+                  if (sn > en)
+                    MPN_ZERO (sump, sn - en);
+                }
+              if (msl != MPFR_LIMB_ZERO)
+                mpn_neg (sump, sump, sn);
+              mpn_add_1 (sump, sump, sn, carry << sd);
 
-                    en = (e - minexp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
-                    if (MPFR_LIKELY (sh != 0))
-                      mpn_lshift (sump + sn - en, wp, en, sh);
-                    else if (MPFR_UNLIKELY (en > 0))
-                      MPN_COPY (sump + sn - en, wp, en);
-                    if (sn > en)
-                      MPN_ZERO (sump, sn - en);
-                  }
-                if (msl != MPFR_LIMB_ZERO)
-                  mpn_neg (sump, sump, sn);
-                mpn_add_1 (sump, sump, sn, carry << sd);
-
-                /* Step 8 */
+              /* Step 8 */
 
 
 
-              }  /* Steps 7 & 8 block */
-          }  /* Steps 4+ block */
+            }  /* Steps 7 & 8 block */
         }  /* main loop */
 
       MPFR_TMP_FREE (marker);
