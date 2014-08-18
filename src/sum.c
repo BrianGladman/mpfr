@@ -599,9 +599,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const p, unsigned long n, mpfr_rnd_t rnd)
                   mpn_neg (sump, sump, sn);
                 mpn_add_1 (sump, sump, sn, carry << sd);
 
+                /* Step 8 */
 
-              }
-          }  /* Step 4+ block */
+
+
+              }  /* Steps 7 & 8 block */
+          }  /* Steps 4+ block */
         }  /* main loop */
 
       MPFR_TMP_FREE (marker);
