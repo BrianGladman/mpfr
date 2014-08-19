@@ -36,6 +36,20 @@ VL: This is very different:
         sequencial             parallel (& sequential)
 */
 
+/* Accumulate a new [minexp,maxexp[ block into (wp,ws).
+ *   wp: pointer to the accumulator (least significant limb first).
+ *   ws: size of the accumulator.
+ *   x: array of the input numbers.
+ *   n: size of this array (number of inputs).
+ *   minexp: exponent of the least significant bit of the block.
+ *   maxexp: exponent of the block (maximum exponent + 1).
+ *   tp: pointer to a temporary area.
+ *   ts: size of this temporary area.
+ * Notes:
+ * - minexp is also the least significant bit of the accumulator;
+ * - the value of ts is used only when the full assertions are checked
+ *   (i.e. with the --enable-assert configure option).
+ */
 static mpfr_exp_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
          mpfr_exp_t minexp, mpfr_exp_t maxexp, mp_limb_t *tp, mp_size_t ts)
