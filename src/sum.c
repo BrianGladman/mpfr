@@ -625,6 +625,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   carry = 0;  /* for MPFR_RNDN */
                 }
 
+              /* Sign handling (-> absolute value and sign). */
               if (msl != MPFR_LIMB_ZERO)
                 {
                   mpn_neg (sump, sump, sn);
@@ -635,7 +636,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   MPFR_SET_POS (sum);
                 }
 
-              /* Let's determine carry (how to round). */
+              /* Initial rounding. */
               switch (rnd)
                 {
                 case MPFR_RNDD:
