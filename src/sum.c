@@ -47,8 +47,10 @@ VL: This is very different:
  *   ts: size of this temporary area.
  * Notes:
  * - minexp is also the least significant bit of the accumulator;
- * - the value of ts is used only when the full assertions are checked
- *   (i.e. with the --enable-assert configure option).
+ * - the temporary area must be large enough to hold a shifted input
+ *   block, and the value of ts is used only when the full assertions
+ *   are checked (i.e. with the --enable-assert configure option), to
+ *   check that a buffer overflow doesn't occur.
  */
 static mpfr_exp_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
