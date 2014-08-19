@@ -547,11 +547,93 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
             }
           else
             {
-              mp_limb_t carry;
-              int sd, sh;
-              mp_size_t sn;
+              mp_limb_t carry;  /* carry for the initial rounding (0 or 1) */
+              int ok;           /* true when the result can be determined */
+              int sd, sh;       /* shift counts */
+              mp_size_t sn;     /* size of the output number */
 
               /* Step 7 */
+
+              /* Note: We will no longer iterate in the main loop.
+                 We choose not to break now since we still needs the
+                 values of some loop-local variables. */
+
+              /* Let's copy/shift the bits [max(q,minexp),e) to the
+                 most significant part of the destination, and zero
+                 the least significant part. Then take the absolute
+                 value, and do an initial rounding.
+                 TODO: This may be improved by merging some operations
+                 is particular case. The average speed-up may not be
+                 significant, though. To be tested... */
+              sn = MPFR_PREC2LIMBS (sq);
+              sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
+              sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
+              if (MPFR_LIKELY (q > minexp))
+                {
+                  mpfr_prec_t tq;
+                  mp_size_t ei, fi, qi;
+                  int td;
+
+                  tq = q - minexp;
+                  MPFR_ASSERTD (tq > 0); /* number of trailing bits */
+
+                  qi = tq / GMP_NUMB_BITS;
+
+                  if (MPFR_LIKELY (sh != 0))
+                    {
+                      ei = (e - minexp) / GMP_NUMB_BITS;
+                      fi = ei - (sn - 1);
+                      MPFR_ASSERTD (fi == qi || fi == qi + 1);
+                      mpn_lshift (sump, wp + fi, sn, sh);
+                      if (fi != qi)
+                        sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
+                    }
+                  else
+                    MPN_COPY (sump, wp + qi, sn);
+                  sump[0] &= ~ MPFR_LIMB_MASK (sd);
+
+                  td = tq % GMP_NUMB_BITS;
+                  if (td >= 3)
+                    {
+                      carry = wp[qi] >> (td - 3);
+                    }
+                  else
+                    {
+                      carry = wp[qi] << (3 - td);
+                      if (qi >= 1)
+                        carry |= wp[qi-1] >> (GMP_NUMB_BITS - (3 - td));
+                    }
+                  carry &= 7;
+                  /* The least 3 significant bits of carry contain the
+                     rounding bit and the following 2 bits. */
+                  ok = ((carry + 1) >> 1) & (rnd == MPFR_RNDN ? 1 : 3);
+                  carry >>= 2;
+                }
+              else  /* q <= minexp */
+                {
+                  mp_size_t en;
+
+                  en = (e - minexp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
+                  if (MPFR_LIKELY (sh != 0))
+                    mpn_lshift (sump + sn - en, wp, en, sh);
+                  else if (MPFR_UNLIKELY (en > 0))
+                    MPN_COPY (sump + sn - en, wp, en);
+                  if (sn > en)
+                    MPN_ZERO (sump, sn - en);
+
+                  ok = 0;
+                  carry = 0;  /* for MPFR_RNDN */
+                }
+
+              if (msl != MPFR_LIMB_ZERO)
+                {
+                  mpn_neg (sump, sump, sn);
+                  MPFR_SET_NEG (sum);
+                }
+              else
+                {
+                  MPFR_SET_POS (sum);
+                }
 
               /* Let's determine carry (how to round). */
               switch (rnd)
@@ -570,59 +652,25 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   break;
                 default:
                   MPFR_ASSERTN (rnd == MPFR_RNDN);
-                  carry = q > minexp &&
-                    (wp[(q - minexp - 1) / GMP_NUMB_BITS] &
-                     (MPFR_LIMB_ONE << (q - minexp - 1) % GMP_NUMB_BITS));
+                  /* The value of carry has already been determined. */
                 }
-
-              /* Let's copy/shift the bits [max(q,minexp),e) to the
-                 most significant part of the destination, and zero
-                 the least significant part. Then take the absolute
-                 value, and do an initial rounding.
-                 TODO: This may be improved by merging some operations
-                 is particular case. The average speed-up may not be
-                 significant, though. To be tested... */
-              sn = MPFR_PREC2LIMBS (sq);
-              sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
-              sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
-              if (MPFR_LIKELY (q > minexp))
-                {
-                  mp_size_t ei, fi, qi;
-
-                  qi = (q - minexp) / GMP_NUMB_BITS;
-                  if (MPFR_LIKELY (sh != 0))
-                    {
-                      ei = (e - minexp) / GMP_NUMB_BITS;
-                      fi = ei - (sn - 1);
-                      MPFR_ASSERTD (fi == qi || fi == qi + 1);
-                      mpn_lshift (sump, wp + fi, sn, sh);
-                      if (fi != qi)
-                        sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
-                    }
-                  else
-                    MPN_COPY (sump, wp + qi, sn);
-                  sump[0] &= ~ MPFR_LIMB_MASK (sd);
-                }
-              else  /* q <= minexp */
-                {
-                  mp_size_t en;
-
-                  en = (e - minexp + (GMP_NUMB_BITS - 1)) / GMP_NUMB_BITS;
-                  if (MPFR_LIKELY (sh != 0))
-                    mpn_lshift (sump + sn - en, wp, en, sh);
-                  else if (MPFR_UNLIKELY (en > 0))
-                    MPN_COPY (sump + sn - en, wp, en);
-                  if (sn > en)
-                    MPN_ZERO (sump, sn - en);
-                }
-              if (msl != MPFR_LIMB_ZERO)
-                mpn_neg (sump, sump, sn);
               mpn_add_1 (sump, sump, sn, carry << sd);
 
               /* Step 8 */
 
+              if (ok)
+                {
+                  inex = carry ? 1 : -1;
+                  break;
+                }
 
+              /* ... */
 
+              while (!ok)
+                {
+                }
+
+              break;
             }  /* Steps 7 & 8 block */
         }  /* main loop */
 
