@@ -407,12 +407,16 @@ the gain would probably not be noticeable in practice.
 
 Note 2: At step (4), it was considered to determine the number of
 cancelled limbs instead of the number of cancelled bits in order to
-avoid a non-trivial shift at step (6), making this step a bit faster.
-However this choice would have required a larger value of dq (with
-an increment of up to something like GMP_NUMB_BITS - 1) at the first
-iteration to be able to handle a number of cancelled bits just below
-GMP_NUMB_BITS (similar problem to the one of small leading digit in
-high-radix floating-point representations).
+avoid a non-trivial shift at step (6), making this step a bit faster
+(but particularly in small precisions, with some possible drawbacks).
+Moreover, on platforms with a MMU, thus most platforms where GNU MPFR
+would be used, we could arrange to reserve a specific address space
+for the accumulator and choose the shift count to be a multiple of a
+memory block size, so that the shift (copy) of the accumulator contents
+could just be MMU related changes, without any physical memory copy.
+However only large precisions would benefit from such a choice, which
+would require non portable code, and the relative speedup would remain
+small since the sum itself is expected to take most of the time.
 
 Note 3: Compared with Ziv's strategy, the issue here is not really
 exact values that are very close to a breakpoint, but cancellation.
@@ -452,4 +456,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72368 2014-08-21 13:11:51Z vinc17/xvii $
+$Id: sum 72374 2014-08-21 22:33:33Z vinc17/xvii $
