@@ -56,7 +56,7 @@ static mpfr_exp_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
          mpfr_exp_t minexp, mpfr_exp_t maxexp, mp_limb_t *tp, mp_size_t ts)
 {
-  mpfr_exp_t maxexp2 = MPFR_EXP_MIN;  /* < any valid exponent */
+  mpfr_exp_t maxexp2 = MPFR_EXP_MIN;
   unsigned long i;
 
   MPFR_LOG_FUNC
@@ -65,7 +65,9 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
       " minexp=%" MPFR_EXP_FSPEC "d",
       (mpfr_eexp_t) maxexp,
       (mpfr_eexp_t) minexp),
-     (" maxexp2=%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) maxexp2));
+     (" maxexp2=%" MPFR_EXP_FSPEC "d%s", (mpfr_eexp_t) maxexp2,
+      maxexp2 == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" :
+      maxexp2 == minexp ? " (minexp)" : ""));
 
   for (i = 0; i < n; i++)
     if (! MPFR_IS_SINGULAR (x[i]))
@@ -447,8 +449,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           mp_size_t wi;        /* index in the accumulator */
           mp_limb_t msl;       /* most significant limb */
           mpfr_exp_t e;        /* temporary exponent of the result */
-          mpfr_exp_t q;        /* temporary quantum (ulp) exponent */
+          mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
           mpfr_exp_t err;      /* exponent of the error bound */
+          int neg;
 
           /* Step 3: compute the truncated sum. */
           maxexp2 = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
@@ -459,6 +462,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           wi = ws - 1;
           MPFR_ASSERTD (wi >= 0);
           msl = wp[wi];
+          neg = msl >> (GMP_NUMB_BITS - 1);
 
           MPFR_LOG_MSG (("Step 4 with msl=%Mx\n", msl));
 
@@ -473,16 +477,39 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               if (wi < 0 && msl == MPFR_LIMB_ZERO)
                 {
-                  /* Step 5: the truncated sum is zero. Reiterate with
-                   * maxexp = maxexp2. Note: we do not need to zero the
-                   * accumulator since it is already 0 in this case.
-                   */
+                  /* Step 5: the truncated sum is zero. */
+
                   MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
-                                 " maxexp=%" MPFR_EXP_FSPEC "d\n",
-                                 (mpfr_eexp_t) maxexp));
-                  maxexp = maxexp2;
-                  cq = cq0;
-                  continue;
+                                 " maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
+                                 (mpfr_eexp_t) maxexp2,
+                                 maxexp2 == MPFR_EXP_MIN ?
+                                 " (MPFR_EXP_MIN)" : ""));
+
+                  if (maxexp2 == MPFR_EXP_MIN)
+                    {
+                      /* All bits have been taken into account. This means
+                       * that the accumulator contains the exact sum, which
+                       * is 0. Since not all inputs are 0, it +0 except in
+                       * MPFR_RNDD, as specified according to the IEEE 754
+                       * rules for the addition of two numbers.
+                       */
+                      MPFR_SET_SIGN (sum, (rnd != MPFR_RNDD ?
+                                           MPFR_SIGN_POS : MPFR_SIGN_NEG));
+                      MPFR_SET_ZERO (sum);
+                      MPFR_TMP_FREE (marker);
+                      MPFR_RET (0);
+                    }
+                  else
+                    {
+                      /* There are still bits not yet taken into account.
+                       * Reiterate with maxexp = maxexp2. Note: we do not
+                       * need to zero the accumulator since it is already
+                       * 0 in this case.
+                       */
+                      maxexp = maxexp2;
+                      cq = cq0;
+                      continue;
+                    }
                 }
             }
 
@@ -490,12 +517,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
              the next limb, if there is one. */
           if (MPFR_LIKELY (wi >= 0))
             {
+              mp_limb_t m;
               int cnt;
 
-              msl = wp[wi];
-              if (msl & MPFR_LIMB_HIGHBIT)
-                msl ^= MPFR_LIMB_MAX;
-              count_leading_zeros (cnt, msl);
+              m = wp[wi];
+              if (neg)
+                m ^= MPFR_LIMB_MAX;
+              MPFR_ASSERTD (m != 0);
+              count_leading_zeros (cnt, m);
               cancel += cnt;
             }
 
@@ -503,33 +532,39 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
           e = maxexp + cq - cancel;
           MPFR_ASSERTD (e >= minexp);
-          q = e - sq;
-          err = maxexp2 + logn;
+          /* Detect a potential integer overflow in extreme cases
+             (only 32-bit machines may be concerned in practice). */
+          MPFR_ASSERTN (e >= 0 ||
+                        (mpfr_uexp_t) -e + sq <= (-3) - MPFR_EXP_MIN);
+          u = e - sq;
+          err = maxexp2 + logn;  /* OK even if maxexp2 == MPFR_EXP_MIN */
 
           MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
                          " e=%" MPFR_EXP_FSPEC "d"
-                         " q=%" MPFR_EXP_FSPEC "d"
+                         " u=%" MPFR_EXP_FSPEC "d"
                          " err=%" MPFR_EXP_FSPEC "d\n",
-                         cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) q,
+                         cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) u,
                          (mpfr_eexp_t) err));
 
           /* The absolute value of the truncated sum is in the binade
              [2^(e-1),2^e] (closed on both ends due to two's complement).
-             The error is strictly less than 2^err. */
+             The error is strictly less than 2^err (and is 0 if
+             maxexp2 == MPFR_EXP_MIN). */
 
-          if (err > q - 3)
+          if (maxexp2 != MPFR_EXP_MIN && err > u - 3)
             {
               mpfr_exp_t diffexp;
               mpfr_prec_t shiftq;
               mpfr_size_t shifts;
               int shiftc;
 
-              diffexp = maxexp2 + logn - e;
+              diffexp = err - e;
               if (diffexp < 0)
                 diffexp = 0;
-              MPFR_ASSERTD (diffexp <= cancel - 2);
+              /* diffexp = max(0, err - e) */
+              MPFR_ASSERTD (diffexp < cancel - 2);
               shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
-              MPFR_ASSERTD (shiftq >= 0);
+              MPFR_ASSERTD (shiftq > 0);
               shifts = shiftq / GMP_NUMB_BITS;
               shiftc = shiftq % GMP_NUMB_BITS;
               MPFR_LOG_MSG (("shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
@@ -548,17 +583,20 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           else
             {
               mp_limb_t carry;  /* carry for the initial rounding (0 or 1) */
-              int ok;           /* true when the result can be determined */
               int sd, sh;       /* shift counts */
               mp_size_t sn;     /* size of the output number */
 
               /* Step 7 */
 
+              MPFR_LOG_MSG (("Step 7 with maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
+                             (mpfr_eexp_t) maxexp2, maxexp2 == MPFR_EXP_MIN ?
+                             " (MPFR_EXP_MIN)" : ""));
+
               /* Note: We will no longer iterate in the main loop.
                  We choose not to break now since we still needs the
                  values of some loop-local variables. */
 
-              /* Let's copy/shift the bits [max(q,minexp),e) to the
+              /* Let's copy/shift the bits [max(u,minexp),e) to the
                  most significant part of the destination, and zero
                  the least significant part. Then take the absolute
                  value, and do an initial rounding.
@@ -568,48 +606,62 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               sn = MPFR_PREC2LIMBS (sq);
               sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
               sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
-              if (MPFR_LIKELY (q > minexp))
+              if (MPFR_LIKELY (u > minexp))
                 {
                   mpfr_prec_t tq;
-                  mp_size_t ei, fi, qi;
+                  mp_size_t ei, fi;
                   int td;
 
-                  tq = q - minexp;
+                  tq = u - minexp;
                   MPFR_ASSERTD (tq > 0); /* number of trailing bits */
 
-                  qi = tq / GMP_NUMB_BITS;
+                  wi = tq / GMP_NUMB_BITS;
 
                   if (MPFR_LIKELY (sh != 0))
                     {
                       ei = (e - minexp) / GMP_NUMB_BITS;
                       fi = ei - (sn - 1);
-                      MPFR_ASSERTD (fi == qi || fi == qi + 1);
+                      MPFR_ASSERTD (fi == wi || fi == wi + 1);
                       mpn_lshift (sump, wp + fi, sn, sh);
-                      if (fi != qi)
-                        sump[0] |= wp[qi] >> (GMP_NUMB_BITS - sh);
+                      if (fi != wi)
+                        sump[0] |= wp[wi] >> (GMP_NUMB_BITS - sh);
                     }
                   else
-                    MPN_COPY (sump, wp + qi, sn);
+                    MPN_COPY (sump, wp + wi, sn);
                   sump[0] &= ~ MPFR_LIMB_MASK (sd);
 
+                  /* Determine the rounding bit, which is represented. */
                   td = tq % GMP_NUMB_BITS;
-                  if (td >= 3)
+                  carry = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
+                    (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
+
+                  if (maxexp2 == MPFR_EXP_MIN)
                     {
-                      carry = wp[qi] >> (td - 3);
+                      if (MPFR_LIKELY (rnd == MPFR_RNDN || carry == 0))
+                        {
+                          inex = td > 1 ?
+                            (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0 : 0;
+
+                          if (inex == 0)
+                            {
+                              mp_size_t wj = wi;
+
+                              while (inex == 0 && wj > 0)
+                                inex = wp[--wj] != 0;
+                              if (rnd == MPFR_RNDN && carry != 0 &&
+                                  inex == 0 && ((wp[wi] >> td) & 1) == 0)
+                                {
+                                  /* Even rounding to below. */
+                                  carry = 0;
+                                  inex = 1;
+                                }
+                            }
+                        }
+                      else
+                        inex = 1;
                     }
-                  else
-                    {
-                      carry = wp[qi] << (3 - td);
-                      if (qi >= 1)
-                        carry |= wp[qi-1] >> (GMP_NUMB_BITS - (3 - td));
-                    }
-                  carry &= 7;
-                  /* The least 3 significant bits of carry contain the
-                     rounding bit and the following 2 bits. */
-                  ok = ((carry + 1) >> 1) & (rnd == MPFR_RNDN ? 1 : 3);
-                  carry >>= 2;
                 }
-              else  /* q <= minexp */
+              else  /* u <= minexp */
                 {
                   mp_size_t en;
 
@@ -621,8 +673,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   if (sn > en)
                     MPN_ZERO (sump, sn - en);
 
-                  ok = 0;
-                  carry = 0;  /* for MPFR_RNDN */
+                  /* The exact value has been copied. */
+                  carry = 0;
+                  inex = 0;
                 }
 
               /* Sign handling (-> absolute value and sign). */
@@ -637,6 +690,15 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                 }
 
               /* Initial rounding. */
+              /* FIXME: Say, we have a number r = a + b in two's complement
+               * where a is a truncation (regarded as an integer) and b the
+               * infinite fractional part. The rounded sum will be of the
+               * form a + c, where c = 0 (= .00000...) or 1 (= .11111...).
+               * If r is negative, then
+               *   |a + c| = rnd(-r) = rnd(~r) = ~a + ~c = -a + (~c - 1).
+               * It seems that it is better to take the carry into account
+               * before doing the negation...
+               */
               switch (rnd)
                 {
                 case MPFR_RNDD:
@@ -657,19 +719,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                 }
               mpn_add_1 (sump, sump, sn, carry << sd);
 
+              if (maxexp2 == MPFR_EXP_MIN)
+                {
+                }
+
               /* Step 8 */
 
-              if (ok)
-                {
-                  inex = carry ? 1 : -1;
-                  break;
-                }
 
-              /* ... */
-
-              while (!ok)
-                {
-                }
 
               break;
             }  /* Steps 7 & 8 block */

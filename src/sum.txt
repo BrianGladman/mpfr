@@ -16,6 +16,21 @@ of different magnitudes and cancellation. Here we will use functions
 from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
 on additions by blocks, involving virtual splitting of MPFR numbers.
 
+Concerning the sign of a zero result, the specification is:
+  * if n = 0, then the result is +0 (this choice is consistent with
+    IEEE 754-2008's sum reduction operation of vector length 0, and
+    with mpfr_set_ui and mpfr_set_si on the integer 0); otherwise
+  * if all the inputs have the same sign (i.e. all +0 or all -0),
+    then the result has the same sign as the inputs (for n = 1 or 2,
+    this choice is consistent with mpfr_set and mpfr_add respectively);
+  * otherwise, either because all inputs are zeros with at least a +0
+    and a -0, or because some inputs are non-zero (but they globally
+    cancel), the result is +0, except for the MPFR_RNDD rounding mode,
+    where it is -0 (this choice is consistent with mpfr_add for n = 2,
+    and more generally with a sequence of mpfr_add's).
+Additional details on:
+  https://sympa.inria.fr/sympa/arc/mpfr/2014-03/msg00000.html
+
 Let sq be the output precision.
 
 The general ideas of the algorithm:
@@ -76,7 +91,10 @@ The general ideas of the algorithm:
    maxexp2 of the numbers formed starting with the most significant
    represented bit that has been ignored: one will get either minexp
    (if an input has been truncated at this iteration) or the maximum
-   exponent of the numbers that have been completely ignored.
+   exponent of the numbers that have been completely ignored. If no
+   bits have been ignored any longer, then maxexp2 has the special
+   value MPFR_EXP_MIN, which is the minimum value of the mpfr_exp_t
+   type and not a valid exponent; and the truncated sum is exact.
 
    The accumulator during this iteration:
 
@@ -96,13 +114,19 @@ The general ideas of the algorithm:
    part of the accumulator.
 
 5. If the truncated sum (i.e. the value of the accumulator) is 0, i.e.
-   if all the words are 0, then reiterate at (3) with maxexp = maxexp2.
+   if all the words are 0, then:
+     * if maxexp2 == MPFR_EXP_MIN, then return with the exact value ±0
+       (its sign is determined from the rounding mode, as specified);
+     * else reiterate at (3) with maxexp = maxexp2.
 
-6. Let e = maxexp + cq - cancel, q = e - sq, and err = maxexp2 + logn.
+6. Let e = maxexp + cq - cancel, u = e - sq, and err = maxexp2 + logn.
    Then the absolute value of the truncated sum is in [2^(e-1),2^e]
-   (binade closed on both ends due to two's complement), q is the
-   quantum exponent in the destination (except in the exact case -2^e),
-   and the absolute value of the error is strictly less than 2^err.
+   (binade closed on both ends due to two's complement), u is the
+   exponent of the ulp (a.k.a., quantum exponent) in the destination
+   (except in the exact case -2^e), and the absolute value of the error
+   is strictly less than the bound 2^err; if maxexp2 == MPFR_EXP_MIN,
+   then the error is 0, i.e. the sum in the accumulator is exact.
+
    Here's a representation of the accumulator and the cancel bits,
    with the two cases depending on the sign of the truncated sum,
    where the x's correspond to the sq-1 represented bits following
@@ -113,7 +137,7 @@ The general ideas of the algorithm:
      ][---- cancel ----]----------------------------------]
      ]0000000000000000001xxxxxxxxxxxxxxxxxxxxxrffffffffffff
      ]1111111111111111110xxxxxxxxxxxxxxxxxxxxxrffffffffffff
-     └─ maxexp + cq    └─ e               q ─┘    minexp ─┘
+     └─ maxexp + cq    └─ e               u ─┘    minexp ─┘
 
    If the cancellation is important, then the bit r and some of the
    least significant bits x may fall outside of the accumulator, in
@@ -138,7 +162,7 @@ The general ideas of the algorithm:
    but this doesn't really matter here.
 
    If the error bound is too large due to the cancellation, e.g. if
-   err > q - 3 (the proofs below are done with this choice), then
+   err > u - 3 (the proofs below are done with this choice), then
    one reiterates at (3) after shifting the truncated sum to the
    left boundary (most significant part) of the accumulator, where:
      * the shift count is determined in such a way to avoid overflows
@@ -168,37 +192,37 @@ The general ideas of the algorithm:
                                         └─ maxexp
 
    i.e. an overflow in two's complement. But leaving at least
-   2 + max(0, maxexp2 + logn - e) itentical bits in the most
-   significant part, such as
+   2 + max(0, err - e) itentical bits in the most significant part,
+   such as
 
         0011111111111111111111111111110101000000
                                          └─ maxexp
 
    is sufficient. The second term of the max covers cases like:
 
-                                       ┌─ maxexp2 + logn
+                                       ┌─ err = maxexp2 + logn
         0000000000000000000000000000000000000111
                                          e ─┘
 
-   (2^(maxexp2 + logn) being a bound on the error term, thus a bound
-   on the value that will be added at the next iteration), which can
-   be shifted to:
+   (2^err being a bound on the error term, thus a bound on the value
+   that will be added to the accumulator at the next iteration), for
+   which the accumulator can be shifted to:
 
-         ┌─ maxexp2 + logn
+         ┌─ err
         0000000111000000000000000000000000000000
            e ─┘
 
    without triggering an overflow at the next iteration, but
 
-        ┌─ maxexp2 + logn
+        ┌─ err
         0000001110000000000000000000000000000000
           e ─┘
 
    is incorrect as a 1 could appear in the MSB (making the accumulator
    value negative) just with additions of positive numbers.
 
-   So, we have: shiftq = cancel - 2 - max(0, maxexp2 + logn - e). And
-   at the next iteration,
+   So, we have: shiftq = cancel - 2 - max(0, err - e). And at the next
+   iteration,
 
      cq' = wq - shiftq + (minexp - maxexp2)
 
@@ -210,7 +234,7 @@ The general ideas of the algorithm:
      shiftq > minexp - maxexp2
 
    Note that since maxexp2 ≤ minexp, this will also yield shiftq > 0.
-   The condition err > q - 3 gives:
+   The condition err > u - 3 gives:
 
      maxexp2 + logn > maxexp + cq - cancel - sq - 3
 
@@ -228,7 +252,7 @@ The general ideas of the algorithm:
 
    Therefore
 
-     cancel - 2 - (maxexp2 + logn - e) > minexp - maxexp2       [B]
+     cancel - 2 - (err - e) > minexp - maxexp2                  [B]
 
    [A] and [B] give: shiftq > minexp - maxexp2. QED.
 
@@ -240,11 +264,14 @@ The general ideas of the algorithm:
 7. Now, the accumulator contains a good approximation to the exact sum,
    the absolute value of the error being < ulp(computed value) * 2^(-3).
 
-   One will copy the rounded significand to the destination, assuming
-   that the first 3 bits after the last represented one be correct and
-   the following bits be not all equal: this yields the most probable
-   correctly rounded result if q - minexp > 2 (the most general case),
-   based on a symmetrical distribution of the error centered on 0.
+   One will copy the rounded significand to the destination. If the
+   significand is exact (maxexp2 == MPFR_EXP_MIN), then one can round
+   it correctly. Otherwise one assumes that the first 3 bits after the
+   last represented one be correct and the following bits be not all
+   equal: this yields the most probable correctly rounded result if
+   u - minexp > 2 (the most general case), based on a symmetrical
+   distribution of the error centered on 0; the value will be corrected
+   later if need be.
 
    The corresponding exponent can be determined too and stored in the
    destination.
@@ -287,10 +314,14 @@ The general ideas of the algorithm:
    compared to a delayed copy, but this choice makes the code simpler,
    and probably better for most cases. See also Note 3 below.
 
-8. One can determine both the correctly rounding sum and ternary value
-   except when:
-     * the 3 bits following the last represented one are identical;
-     * the 2 bits following the rounding bit are identical, if the
+   If the maxexp2 == MPFR_EXP_MIN, determine the ternary value, then
+   check the range and return as in (9).
+
+8. Let d = u - err, which is ≥ 3 (and can be very large). One can
+   determine both the correctly rounding sum and ternary value except
+   when:
+     * the d bits following the last represented one are identical;
+     * the d-1 bits following the rounding bit are identical, if the
        rounding mode is to nearest;
    in which case one reiterates like in (3) one or more times using
    a specific window as if sq were 0, i.e. around maxexp + logn to
@@ -354,9 +385,9 @@ also ze.
 Variables:
   tp: pointer to a temporary area that will contain a shifted value.
   wp: pointer to the accumulator.
-  ts: the size of the temporary area, in limbs; then wp = tp + ts.
-  ws: the size of the accumulator, in limbs.
-  wq: the size of the accumulator, in bits.
+  ts: size of the temporary area, in limbs; then wp = tp + ts.
+  ws: size of the accumulator, in limbs.
+  wq: size of the accumulator, in bits.
   rn: number n' of inputs that are regular numbers (regular inputs).
   logn: ceil(log2(rn)).
   cq: logn + 1.
@@ -421,4 +452,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72145 2014-08-14 15:51:52Z vinc17/xvii $
+$Id: sum 72368 2014-08-21 13:11:51Z vinc17/xvii $
