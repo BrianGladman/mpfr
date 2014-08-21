@@ -409,7 +409,7 @@ mpfr_overflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)
       MPFR_SET_INF(x);
       inex = 1;
     }
-  MPFR_SET_SIGN(x,sign);
+  MPFR_SET_SIGN(x, sign);
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
   return sign > 0 ? inex : -inex;
 }

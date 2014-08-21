@@ -56,7 +56,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         {
           if (MPFR_IS_INF(c) || MPFR_NOTZERO(c))
             {
-              MPFR_SET_SIGN(a,sign_product);
+              MPFR_SET_SIGN(a, sign_product);
               MPFR_SET_INF(a);
               MPFR_RET(0); /* exact */
             }

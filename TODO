@@ -498,6 +498,10 @@ Table of contents:
   a constant (see README.dev). Also check the use of MPFR_EMIN_MIN
   and MPFR_EMAX_MAX.
 
+- add a test checking that no mpfr.h macros depend on mpfr-impl.h
+  (the current tests cannot check that since mpfr-impl.h is always
+  included).
+
 
 ##############################################################################
 7. Portability
