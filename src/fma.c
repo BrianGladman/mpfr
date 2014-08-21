@@ -75,11 +75,11 @@ mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
         {
           int sign_p;
           sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-          MPFR_SET_SIGN(s,(rnd_mode != MPFR_RNDD ?
-                           ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
-                            ? -1 : 1) :
-                           ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
-                            ? 1 : -1)));
+          MPFR_SET_SIGN(s, (rnd_mode != MPFR_RNDD ?
+                            (MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z) ?
+                             MPFR_SIGN_NEG : MPFR_SIGN_POS) :
+                            (MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z) ?
+                             MPFR_SIGN_POS : MPFR_SIGN_NEG)));
           MPFR_SET_ZERO(s);
           MPFR_RET(0);
         }
