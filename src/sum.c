@@ -451,7 +451,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           mpfr_exp_t e;        /* temporary exponent of the result */
           mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
           mpfr_exp_t err;      /* exponent of the error bound */
-          int neg;
+          int neg;             /* 1 if negative sum, 0 if positive */
 
           /* Step 3: compute the truncated sum. */
           maxexp2 = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
@@ -628,7 +628,6 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                     }
                   else
                     MPN_COPY (sump, wp + wi, sn);
-                  sump[0] &= ~ MPFR_LIMB_MASK (sd);
 
                   /* Determine the rounding bit, which is represented. */
                   td = tq % GMP_NUMB_BITS;
@@ -660,6 +659,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                       else
                         inex = 1;
                     }
+                  else
+                    inex = 1;
                 }
               else  /* u <= minexp */
                 {
@@ -678,49 +679,76 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   inex = 0;
                 }
 
-              /* Sign handling (-> absolute value and sign). */
-              if (msl != MPFR_LIMB_ZERO)
-                {
-                  mpn_neg (sump, sump, sn);
-                  MPFR_SET_NEG (sum);
-                }
-              else
-                {
-                  MPFR_SET_POS (sum);
-                }
+              /* Here, if the final sum is known to be exact, inex = 0,
+                 otherwise inex = 1. */
 
-              /* Initial rounding. */
-              /* FIXME: Say, we have a number r = a + b in two's complement
-               * where a is a truncation (regarded as an integer) and b the
-               * infinite fractional part. The rounded sum will be of the
-               * form a + c, where c = 0 (= .00000...) or 1 (= .11111...).
-               * If r is negative, then
-               *   |a + c| = rnd(-r) = rnd(~r) = ~a + ~c = -a + (~c - 1).
-               * It seems that it is better to take the carry into account
-               * before doing the negation...
-               */
+              /* Determine carry for the initial rounding. */
               switch (rnd)
                 {
                 case MPFR_RNDD:
                   carry = 0;
                   break;
                 case MPFR_RNDU:
-                  carry = 1;
+                  carry = inex;
                   break;
                 case MPFR_RNDZ:
-                  carry = msl != MPFR_LIMB_ZERO;
+                  carry = inex && neg;
                   break;
                 case MPFR_RNDA:
-                  carry = msl == MPFR_LIMB_ZERO;
+                  carry = inex && !neg;
                   break;
                 default:
                   MPFR_ASSERTN (rnd == MPFR_RNDN);
                   /* The value of carry has already been determined. */
                 }
-              mpn_add_1 (sump, sump, sn, carry << sd);
+
+              /* Sign handling (-> absolute value and sign), together
+                 with initial rounding. */
+              if (neg)
+                {
+                  MPFR_SET_NEG (sum);
+                  if (carry)
+                    {
+                      mpn_com (sump, sump, sn);
+                      sump[0] &= ~ MPFR_LIMB_MASK (sd);
+                      MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == 1);
+                    }
+                  else
+                    {
+                      mp_limb_t borrow_out;
+
+                      sump[0] &= ~ MPFR_LIMB_MASK (sd);
+                      borrow_out = mpn_neg (sump, sump, sn);
+                      MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) ==
+                                    borrow_out);
+                      if (!borrow_out)
+                        {
+                          e++;
+                          sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                        }
+                    }
+                }
+              else
+                {
+                  mp_limb_t carry_out;
+
+                  MPFR_SET_POS (sum);
+                  sump[0] &= ~ MPFR_LIMB_MASK (sd);
+                  carry_out = mpn_add_1 (sump, sump, sn, carry << sd);
+                  MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) ==
+                                !carry_out);
+                  if (carry_out)
+                    {
+                      e++;
+                      sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                    }
+                }
 
               if (maxexp2 == MPFR_EXP_MIN)
                 {
+                  if (carry)  /* two's complement significand increased */
+                    inex = -1;
+                  break;
                 }
 
               /* Step 8 */
