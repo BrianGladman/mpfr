@@ -67,7 +67,7 @@ do
   perl -e 'my $f = do { local $/; <> };
            while ($f =~ /MPFR_LOG_MSG\s*\(\s*\(.*?\)\s*\)/gs) {
              my $s = $&; print "$ARGV: $s\n" if
-               index($s,"\\n\"") < 0 || $s =~ /"\s*\)\s*\)/
+               index($s,"\\n\"") < 0 || $s !~ /"\s*,/
            }' $file
 done
 
