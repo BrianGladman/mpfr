@@ -637,12 +637,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   if (maxexp2 == MPFR_EXP_MIN)
                     {
                       /* The sum in the accumulator is exact. Determine
-                         inex = 0 if the final sum is exact, else 1; and
+                         inex = 0 if the final sum is exact, else 1,
+                         i.e. inex = rounding bit || sticky bit; and
                          carry = rounding direction if MPFR_RNDN. */
                       if (MPFR_LIKELY (rnd == MPFR_RNDN || carry == 0))
                         {
-                          inex = td > 1 ?
-                            (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0 : 0;
+                          inex = td >= 1 ?
+                            (wp[wi] & MPFR_LIMB_MASK (td)) != 0 : 0;
 
                           if (inex == 0)
                             {
