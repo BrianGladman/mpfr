@@ -757,8 +757,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                   /* The exact value has been copied. */
                   carry = 0;
-                  inex = 0;
-                  tmd = maxexp2 != MPFR_EXP_MIN;
+                  inex = tmd = maxexp2 != MPFR_EXP_MIN;
                 }
 
               /* Here, if the final sum is known to be exact, inex = 0,
