@@ -261,20 +261,44 @@ The general ideas of the algorithm:
    part of the accumulator, except in case of long carry propagation
    (see below).
 
-7. Now, the accumulator contains a good approximation to the exact sum,
-   the absolute value of the error being < ulp(computed value) * 2^(-3).
+7. Now, the accumulator contains the significand of a good approximation
+   to the exact sum, since the absolute value of the error is strictly
+   less than ulp(computed value) * 2^(-3). The corresponding exponent is
+   e and the sign is determined from the cancel bits. One will copy the
+   rounded significand to the destination, together with the exponent
+   and the sign. One has different cases:
 
-   One will copy the rounded significand to the destination. If the
-   significand is exact (maxexp2 == MPFR_EXP_MIN), then one can round
-   it correctly. Otherwise one assumes that the first 3 bits after the
-   last represented one be correct and the following bits be not all
-   equal: this yields the most probable correctly rounded result if
-   u - minexp > 2 (the most general case), based on a symmetrical
-   distribution of the error centered on 0; the value will be corrected
-   later if need be.
+     * If all the bits of the inputs have been taken into account, then
+       the significand is exact (maxexp2 == MPFR_EXP_MIN), so that one
+       can round it correctly. Note: The TMD does not occur here.
 
-   The corresponding exponent can be determined too and stored in the
-   destination.
+     * If the error bound is non-zero (because not all the bits of the
+       inputs have been taken into account) but the TMD does not occur,
+       then one can also round the significand correctly.
+
+     * Otherwise, one will round the significand, assuming that this is
+       the correct truncation up to the rounding bit and that the sticky
+       bit is 1: this yields the most probable correctly rounded result
+       if u - minexp > 2 (the most general case), based on a symmetrical
+       distribution of the error centered on 0; the destination will be
+       corrected later if need be.
+
+   For the last two cases, and before the rounding is done, one needs
+   to determine whether the TMD occurs. Let d = u - err, which is ≥ 3
+   and can be very large; however d is representable in a mpfr_exp_t
+   since u ≤ emax, err ≥ emin, and this type can hold the sum of two
+   valid exponents. The TMD occurs when:
+     * the d bits following the ulp one are identical;
+     * the d-1 bits following the rounding bit are identical, if the
+       rounding mode is to nearest.
+
+   At the same time, one determines whether the correctly rounded sum
+   is exact. If the TMD occurs, it is currently assumed to be inexact
+   as said above (sticky bit = 1).
+
+   Let us recall that in case of an important cancellation, some bits
+   may not be represented in the accumulator. Such a case is possible
+   even in this step, when maxexp2 is much smaller than minexp.
 
    A change of representation is needed since the sum has been computed
    using two's complement representation while regular MPFR numbers are
@@ -285,11 +309,11 @@ The general ideas of the algorithm:
        absolute value is represented in the same way.
 
      * If the cancel bits are 1's, the value is negative, so that the
-       absolute value is formally obtained by inverting all the bits.
-
-   Let us recall that in case of an important cancellation, some bits
-   may not be represented. Such a case is possible even in this step,
-   when maxexp2 is much smaller than minexp.
+       absolute value is formally obtained by inverting all the bits
+       (this infinite binary expansion is not the canonical one, but
+       this does not matter as this is just for the discussion below).
+       Since there is no carry propagation at this point, the exponent
+       is not changed.
 
    With the mpn layer of GMP, up to 3 operations are involved for the
    handling of the significand:
@@ -327,10 +351,11 @@ The general ideas of the algorithm:
    could merge these two multiple-operations in a single one; but this
    is not the case. However one can notice that either c or ~c is 0, so
    that one can select the operation depending on the value of c. As a
-   summary, considering all the cases:
+   summary, consider the following cases:
      * r positive:        |i + c| = i + c with mpn_add_1;
      * r negative, c = 0: |i + c| = -i with mpn_neg ([1]/[2]);
      * r negative, c = 1: |i + c| = ~i with mpn_com ([3]).
+   The first two cases can yield an increment of the exponent e.
 
    One goal of this early copy/rounding is to free the accumulator in
    case there is work to do in (8), though the needed memory for that
@@ -339,23 +364,18 @@ The general ideas of the algorithm:
    compared to a delayed copy, but this choice makes the code simpler,
    and probably better for most cases. See also Note 3 below.
 
-   If the maxexp2 == MPFR_EXP_MIN, determine the ternary value, then
-   check the range and return as in (9).
+   If the TMD did not occur:
+     * Determine the ternary value as follows: if the sum is exact
+       (already known), the ternary value is 0; otherwise it is -1
+       if c = 0, and 1 if c = 1.
+     * Check the range and return as in (9).
 
-8. Let d = u - err, which is ≥ 3 (and can be very large, but since
-   u ≤ emax and err ≥ emin, d is representable in a mpfr_exp_t as this
-   type can hold the sum of two valid exponents). One can determine
-   both the correctly rounding sum and ternary value except when:
-     * the d bits following the last represented one are identical;
-     * the d-1 bits following the rounding bit are identical, if the
-       rounding mode is to nearest;
-   in which case one reiterates like in (3) one or more times using
-   a specific window as if sq were 0, i.e. around maxexp + logn to
-   maxexp - logn; in short, one determines the sign of an error term
-   relative to a breakpoint.
+8. Reiterate like in (3) one or more times using a specific window as
+   if sq were 0, i.e. around maxexp + logn to maxexp - logn; in short,
+   determine the sign of an error term relative to a breakpoint.
 
-   Similarly to what is said just above, one can see 3 cases leading
-   to additional reiterations:
+   Similarly to what is said in (7) about the TMD, one can see 3 cases
+   leading to additional reiterations:
 
             Rounding mode       Breakpoint
      ---------------------------------------
@@ -485,4 +505,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72485 2014-08-25 08:41:55Z vinc17/xvii $
+$Id: sum 72490 2014-08-25 13:54:19Z vinc17/xvii $

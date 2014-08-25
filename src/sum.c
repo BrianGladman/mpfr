@@ -673,9 +673,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                       inex = 1; /* We do not know whether the sum is exact. */
 
-                      /* The following is a part of Step 8.
-                         It seems to be better to do that now:
-                         Let's see whether the TMD occurs. */
+                      /* Let's see whether the TMD occurs. */
                       MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
                       MPFR_ASSERTD (err >= MPFR_EMIN_MIN);
                       d = u - err;  /* representable */
@@ -702,6 +700,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                           mask = MPFR_LIMB_MASK (td - 1);
                           nbits = td - 1;
                         }
+
                       if (nbits > d - 1)
                         {
                           limb >>= nbits - (d - 1);
@@ -713,12 +712,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                           d -= 1 + nbits;
                           MPFR_ASSERTD (d >= 0);
                         }
+
                       limb &= mask;
                       tmd = ((limb == MPFR_LIMB_ZERO &&
                               (rnd == MPFR_RNDN || carry == 0)) ||
                              (limb == mask &&
                               (rnd == MPFR_RNDN || carry != 0) &&
                               (limb = MPFR_LIMB_MAX, 1)));
+
                       while (tmd && d != 0)
                         {
                           mp_limb_t limb2;
