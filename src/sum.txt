@@ -342,9 +342,10 @@ The general ideas of the algorithm:
    If the maxexp2 == MPFR_EXP_MIN, determine the ternary value, then
    check the range and return as in (9).
 
-8. Let d = u - err, which is ≥ 3 (and can be very large). One can
-   determine both the correctly rounding sum and ternary value except
-   when:
+8. Let d = u - err, which is ≥ 3 (and can be very large, but since
+   u ≤ emax and err ≥ emin, d is representable in a mpfr_exp_t as this
+   type can hold the sum of two valid exponents). One can determine
+   both the correctly rounding sum and ternary value except when:
      * the d bits following the last represented one are identical;
      * the d-1 bits following the rounding bit are identical, if the
        rounding mode is to nearest;
@@ -484,4 +485,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72396 2014-08-22 13:13:37Z vinc17/xvii $
+$Id: sum 72485 2014-08-25 08:41:55Z vinc17/xvii $
