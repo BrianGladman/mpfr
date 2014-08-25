@@ -585,6 +585,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               mp_limb_t carry;  /* carry for the initial rounding (0 or 1) */
               int sd, sh;       /* shift counts */
               mp_size_t sn;     /* size of the output number */
+              int tmd;          /* Table Maker's Dilemma (boolean) */
 
               /* Step 7 */
 
@@ -660,24 +661,87 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                                 }
                             }
                         }
-                      else  /* maxexp2 > MPFR_EXP_MIN */
+                      else
+                        inex = 1;
+                      tmd = 0;  /* We can round correctly -> no TMD. */
+                    }
+                  else  /* maxexp2 > MPFR_EXP_MIN */
+                    {
+                      mpfr_exp_t d;
+                      mp_limb_t limb, mask;
+                      int nbits;
+
+                      inex = 1; /* We do not know whether the sum is exact. */
+
+                      /* The following is a part of Step 8.
+                         It seems to be better to do that now:
+                         Let's see whether the TMD occurs. */
+                      MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
+                      MPFR_ASSERTD (err >= MPFR_EMIN_MIN);
+                      d = u - err;  /* representable */
+                      MPFR_ASSERTD (d >= 3);
+
+                      /* First chunk after the rounding bit... */
+                      if (td == 0)
                         {
-                          mpfr_exp_t d;
+                          MPFR_ASSERTD (wi >= 1);
+                          limb = wp[--wi];
+                          mask = MPFR_LIMB_MASK (GMP_NUMB_BITS - 1);
+                          nbits = GMP_NUMB_BITS - 1;
+                        }
+                      else if (td == 1)
+                        {
+                          limb = wi >= 1 ? wp[--wi] : MPFR_LIMB_ZERO;
+                          mask = MPFR_LIMB_MAX;
+                          nbits = GMP_NUMB_BITS;
+                        }
+                      else  /* td >= 2 */
+                        {
+                          MPFR_ASSERTD (td >= 2);
+                          limb = wp[wi];
+                          mask = MPFR_LIMB_MASK (td - 1);
+                          nbits = td - 1;
+                        }
+                      if (nbits > d - 1)
+                        {
+                          limb >>= nbits - (d - 1);
+                          mask >>= nbits - (d - 1);
+                          d = 0;
+                        }
+                      else
+                        {
+                          d -= 1 + nbits;
+                          MPFR_ASSERTD (d >= 0);
+                        }
+                      limb &= mask;
+                      tmd = ((limb == MPFR_LIMB_ZERO &&
+                              (rnd == MPFR_RNDN || carry == 0)) ||
+                             (limb == mask &&
+                              (rnd == MPFR_RNDN || carry != 0) &&
+                              (limb = MPFR_LIMB_MAX, 1)));
+                      while (tmd && d != 0)
+                        {
+                          mp_limb_t limb2;
 
-                          inex = 1;
-
-                          /* The following is a part of Step 8.
-                             It seems to be better to do that now:
-                             Let's see whether the TMD occurs. */
-                          MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
-                          MPFR_ASSERTD (err >= MPFR_EMIN_MIN);
-                          d = u - err;  /* representable */
-
-
+                          MPFR_ASSERTD (d > 0);
+                          if (wi == 0)
+                            {
+                              /* The non-represented bits are 0's. */
+                              if (limb != MPFR_LIMB_ZERO)
+                                tmd = 0;
+                              break;
+                            }
+                          MPFR_ASSERTD (wi > 0);
+                          limb2 = wp[--wi];
+                          if (d < GMP_NUMB_BITS)
+                            {
+                              tmd = (limb2 >> d) == (limb >> d);
+                              break;
+                            }
+                          tmd = limb2 == limb;
+                          d -= GMP_NUMB_BITS;
                         }
                     }
-                  else
-                    inex = 1; /* We do not know whether the sum is exact. */
                 }
               else  /* u <= minexp */
                 {
@@ -694,6 +758,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   /* The exact value has been copied. */
                   carry = 0;
                   inex = 0;
+                  tmd = maxexp2 != MPFR_EXP_MIN;
                 }
 
               /* Here, if the final sum is known to be exact, inex = 0,
@@ -762,7 +827,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                     }
                 }
 
-              if (maxexp2 == MPFR_EXP_MIN)
+              if (!tmd)
                 {
                   if (carry)  /* two's complement significand increased */
                     inex = -1;
@@ -771,7 +836,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               /* Step 8 */
 
-              MPFR_ASSERTD (u > minexp && maxexp2 > MPFR_EXP_MIN);
+              MPFR_ASSERTD (maxexp2 > MPFR_EXP_MIN);
 
 
               break;
