@@ -659,8 +659,21 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                                 }
                             }
                         }
-                      else
-                        inex = 1;
+                      else  /* maxexp2 > MPFR_EXP_MIN */
+                        {
+                          mpfr_exp_t d;
+
+                          inex = 1;
+
+                          /* The following is a part of Step 8.
+                             It seems to be better to do that now:
+                             Let's see whether the TMD occurs. */
+                          MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
+                          MPFR_ASSERTD (err >= MPFR_EMIN_MIN);
+                          d = u - err;  /* representable */
+
+
+                        }
                     }
                   else
                     inex = 1; /* We do not know whether the sum is exact. */
@@ -757,6 +770,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               /* Step 8 */
 
+              MPFR_ASSERTD (u > minexp && maxexp2 > MPFR_EXP_MIN);
 
 
               break;
