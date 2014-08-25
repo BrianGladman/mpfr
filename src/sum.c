@@ -636,6 +636,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                   if (maxexp2 == MPFR_EXP_MIN)
                     {
+                      /* The sum in the accumulator is exact. Determine
+                         inex = 0 if the final sum is exact, else 1; and
+                         carry = rounding direction if MPFR_RNDN. */
                       if (MPFR_LIKELY (rnd == MPFR_RNDN || carry == 0))
                         {
                           inex = td > 1 ?
@@ -660,7 +663,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                         inex = 1;
                     }
                   else
-                    inex = 1;
+                    inex = 1; /* We do not know whether the sum is exact. */
                 }
               else  /* u <= minexp */
                 {
@@ -682,7 +685,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               /* Here, if the final sum is known to be exact, inex = 0,
                  otherwise inex = 1. */
 
-              /* Determine carry for the initial rounding. */
+              /* Determine carry for the initial rounding. Note that in
+                 case of exact value (inex == 0), carry is set to 0. */
               switch (rnd)
                 {
                 case MPFR_RNDD:
