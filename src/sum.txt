@@ -221,6 +221,15 @@ The general ideas of the algorithm:
    is incorrect as a 1 could appear in the MSB (making the accumulator
    value negative) just with additions of positive numbers.
 
+   Said otherwise, leaving at least i identical bits allows one to
+   represent numbers in [-2^(e+i-1),2^(e+i-1)[. The current sum is in
+   [-2^e,2^e[, and taking into account the error terms, one wants to
+   be able to represent arbitrary numbers in ]-2^e-2^err,2^e+2^err[.
+   So, i must be chosen in such a way that 2^e + 2^err ≤ 2^(e+i-1),
+   i.e. 2^0 + 2^(err-e) ≤ 2^(i-1). The smallest power of two larger
+   than or equal to 2^0 + 2^(err-e) has exponent 1 + max(0, err - e).
+   Hence the choice i ≥ 2 + max(0, err - e).
+
    So, we have: shiftq = cancel - 2 - max(0, err - e). And at the next
    iteration,
 
@@ -287,10 +296,23 @@ The general ideas of the algorithm:
    to determine whether the TMD occurs. Let d = u - err, which is ≥ 3
    and can be very large; however d is representable in a mpfr_exp_t
    since u ≤ emax, err ≥ emin, and this type can hold the sum of two
-   valid exponents. The TMD occurs when:
-     * the d bits following the ulp one are identical;
-     * the d-1 bits following the rounding bit are identical, if the
-       rounding mode is to nearest.
+   valid exponents. The TMD occurs when the sum is close enough to a
+   breakpoint, which is either a machine number (i.e. a number whose
+   significand fits on sq bits) or a midpoint between two consecutive
+   machine numbers, depending on the rounding mode:
+                   ┌───────────────┬────────────────┐
+                   │ Rounding mode │   Breakpoint   │
+                   ├───────────────┼────────────────┤
+                   │  to nearest   │    midpoint    │
+                   │  to nearest   │ machine number │
+                   │   directed    │ machine number │
+                   └───────────────┴────────────────┘
+   (in the second case, the correctly rounded sum can be determined,
+   but not the ternary value). More precisely, the TMD occurs when:
+     * the d bits following the ulp one are identical in directed
+       rounding modes;
+     * the d-1 bits following the rounding bit are identical, in the
+       rounding-to-nearest mode.
 
    At the same time, one determines whether the correctly rounded sum
    is exact. If the TMD occurs, it is currently assumed to be inexact
@@ -374,19 +396,20 @@ The general ideas of the algorithm:
    if sq were 0, i.e. around maxexp + logn to maxexp - logn; in short,
    determine the sign of an error term relative to a breakpoint.
 
-   Similarly to what is said in (7) about the TMD, one can see 3 cases
-   leading to additional reiterations:
+   During the iterations, when there are several identical bits on the
+   left (most significant part) of the accumulator, only one bit needs
+   to be represented during the computations. But to avoid overflows,
+   one will keep 2 or more at the start of an iteration, like what is
+   done in (6).
 
-            Rounding mode       Breakpoint
-     ---------------------------------------
-     A.       to nearest         midpoint
-     B.       to nearest      machine number
-     C.        directed       machine number
-
-   A machine number is a number whose significand fits on sq bits, and
-   a midpoint is a midpoint between two consecutive machine numbers.
-   Note: In particular if the rounding mode is to nearest, one needs
-   to remember whether one is in case A or B.
+   Let us see what needs to be done to prepare the first iteration.
+   Since d ≥ 3 and the TMD occurs,
+     * in directed rounding modes, the error term is the fractional
+       part after the ulp, and its first 3 bits are identical;
+     * in rounding to nearest, the error term is the fractional part
+       after the rounding bit, and its first 2 bits are identical;
+   and one can consider the fractional part after the rounding bit,
+   in all rounding modes.
 
 9. Depending on the sign of the error term, correct the destination if
    need be (+ or - 1 ulp), determine the corresponding ternary value,
@@ -505,4 +528,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72490 2014-08-25 13:54:19Z vinc17/xvii $
+$Id: sum 72519 2014-08-26 10:06:31Z vinc17/xvii $
