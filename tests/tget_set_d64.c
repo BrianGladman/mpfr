@@ -20,6 +20,10 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"       /* for a build within gmp */
+#endif
+
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
 #include "mpfr-test.h"
