@@ -350,12 +350,13 @@ The general ideas of the algorithm:
    with the shift, and see below for the other two operations.
 
    The rounding and change of representation (as a whole) can be seen
-   in the following way: a number r = i + f in two's complement, where
-   i is the integer part and f the infinite fractional part, has to be
-   rounded to one of the enclosing integers. The rounding consists in
-   replacing f by an integer c = 0 or 1 (like a carry): the rounding
-   is the integer i + c. When r is negative, the following forms are
-   equivalent:
+   in the following way: after scaling, a number written r = i + f in
+   two's complement, where i is the integer part and f the infinite
+   fractional part, has to be rounded to one of the enclosing integers
+   i and i + 1. Thus the rounding operation consists in replacing f
+   by an integer c = 0 or 1 (like a carry): the rounded value is the
+   integer i + c. When r is negative (i.e. the MSB of i is 1), the
+   following forms are equivalent:
 
      |i + c| = - (i + c)                        [1]
              = (- i) - c                        [2]
@@ -394,7 +395,13 @@ The general ideas of the algorithm:
 
 8. Reiterate like in (3) one or more times using a specific window as
    if sq were 0, i.e. around maxexp + logn to maxexp - logn; in short,
-   determine the sign of an error term relative to a breakpoint.
+   determine the sign of a secondary term, which is the difference
+   between the exact sum and the closest breakpoint.
+
+   In rounding to nearest, both kinds of breakpoints (midpoints and
+   machine numbers) are taken into account. Since the final rounding
+   and ternary value will depend on the kind of breakpoint, one needs
+   to remember this information in a variable.
 
    During the iterations, when there are several identical bits on the
    left (most significant part) of the accumulator, only one bit needs
@@ -403,13 +410,12 @@ The general ideas of the algorithm:
    done in (6).
 
    Let us see what needs to be done to prepare the first iteration.
-   Since d ≥ 3 and the TMD occurs,
-     * in directed rounding modes, the error term is the fractional
-       part after the ulp, and its first 3 bits are identical;
-     * in rounding to nearest, the error term is the fractional part
-       after the rounding bit, and its first 2 bits are identical;
-   and one can consider the fractional part after the rounding bit,
-   in all rounding modes.
+   Since d ≥ 3 and the TMD occurs, the secondary term is, in absolute
+   value, less than half the weight of the rounding bit, so that it can
+   be seen as the fractional part after the rounding bit; the leading
+   d-1 bits of the truncated secondary term are identical and give its
+   sign. Similarly to (6), over the d-1 identical bits, one can keep 2
+   in the representation.
 
 9. Depending on the sign of the error term, correct the destination if
    need be (+ or - 1 ulp), determine the corresponding ternary value,
@@ -451,7 +457,7 @@ regarded as a number in [1/2,1[. If an array of limbs zp[] is regarded
 as a significand in [1/2,1[, then the exponent of its actual value is
 also ze.
 
-Variables:
+Variables used in the implementation:
   tp: pointer to a temporary area that will contain a shifted value.
   wp: pointer to the accumulator.
   ts: size of the temporary area, in limbs; then wp = tp + ts.
@@ -461,9 +467,10 @@ Variables:
   logn: ceil(log2(rn)).
   cq: logn + 1.
   sq: output precision (precision of the sum).
-  dq: > logn, such that cq + sq + dq is a multiple of GMP_NUMB_BITS.
   maxexp: the maximum exponent of the bit-window of the inputs that is
-          taken into account (for the current iteration), excluded.
+          taken into account (for the current iteration), excluded;
+          after the sum, it gets the value of maxexp2 until the next
+          iteration.
   minexp: the minimum exponent of the bit-window of the inputs that is
           taken into account (for the current iteration), included.
 
@@ -528,4 +535,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 72519 2014-08-26 10:06:31Z vinc17/xvii $
+$Id: sum 73690 2014-10-06 13:17:15Z vinc17/xvii $

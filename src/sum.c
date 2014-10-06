@@ -444,7 +444,6 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
       while (1)
         {
           mpfr_exp_t minexp = maxexp + cq - wq;
-          mpfr_exp_t maxexp2;
           mpfr_prec_t cancel;  /* number of cancelled bits */
           mp_size_t wi;        /* index in the accumulator */
           mp_limb_t msl;       /* most significant limb */
@@ -454,7 +453,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           int neg;             /* 1 if negative sum, 0 if positive */
 
           /* Step 3: compute the truncated sum. */
-          maxexp2 = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
+          maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
 
           /* Step 4: determine the number of cancelled bits. */
 
@@ -480,12 +479,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   /* Step 5: the truncated sum is zero. */
 
                   MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
-                                 " maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
-                                 (mpfr_eexp_t) maxexp2,
-                                 maxexp2 == MPFR_EXP_MIN ?
+                                 " maxexp=%" MPFR_EXP_FSPEC "d%s\n",
+                                 (mpfr_eexp_t) maxexp,
+                                 maxexp == MPFR_EXP_MIN ?
                                  " (MPFR_EXP_MIN)" : ""));
 
-                  if (maxexp2 == MPFR_EXP_MIN)
+                  if (maxexp == MPFR_EXP_MIN)
                     {
                       /* All bits have been taken into account. This means
                        * that the accumulator contains the exact sum, which
@@ -502,11 +501,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   else
                     {
                       /* There are still bits not yet taken into account.
-                       * Reiterate with maxexp = maxexp2. Note: we do not
-                       * need to zero the accumulator since it is already
-                       * 0 in this case.
+                       * Reiterate. Note: we do not need to zero the
+                       * accumulator since it is already 0 in this case.
                        */
-                      maxexp = maxexp2;
                       cq = cq0;
                       continue;
                     }
@@ -530,14 +527,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
           /* Step 6 */
 
-          e = maxexp + cq - cancel;
+          e = minexp + wq - cancel;
           MPFR_ASSERTD (e >= minexp);
           /* Detect a potential integer overflow in extreme cases
              (only 32-bit machines may be concerned in practice). */
           MPFR_ASSERTN (e >= 0 ||
                         (mpfr_uexp_t) -e + sq <= (-3) - MPFR_EXP_MIN);
           u = e - sq;
-          err = maxexp2 + logn;  /* OK even if maxexp2 == MPFR_EXP_MIN */
+          err = maxexp + logn;  /* OK even if maxexp == MPFR_EXP_MIN */
 
           MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
                          " e=%" MPFR_EXP_FSPEC "d"
@@ -549,9 +546,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
           /* The absolute value of the truncated sum is in the binade
              [2^(e-1),2^e] (closed on both ends due to two's complement).
              The error is strictly less than 2^err (and is 0 if
-             maxexp2 == MPFR_EXP_MIN). */
+             maxexp == MPFR_EXP_MIN). */
 
-          if (maxexp2 != MPFR_EXP_MIN && err > u - 3)
+          if (maxexp != MPFR_EXP_MIN && err > u - 3)
             {
               mpfr_exp_t diffexp;
               mpfr_prec_t shiftq;
@@ -574,10 +571,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               else
                 MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
               MPN_ZERO (wp, shifts);
-              maxexp = maxexp2;
-              MPFR_ASSERTD (minexp - maxexp2 < shiftq);
-              /* therefore minexp - maxexp2 fits in mpfr_prec_t */
-              cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp2);
+              MPFR_ASSERTD (minexp - maxexp < shiftq);
+              /* therefore minexp - maxexp fits in mpfr_prec_t */
+              cq = wq - shiftq + (mpfr_prec_t) (minexp - maxexp);
               MPFR_ASSERTD (cq < wq);
             }
           else
@@ -589,8 +585,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               /* Step 7 */
 
-              MPFR_LOG_MSG (("Step 7 with maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
-                             (mpfr_eexp_t) maxexp2, maxexp2 == MPFR_EXP_MIN ?
+              MPFR_LOG_MSG (("Step 7 with maxexp=%" MPFR_EXP_FSPEC "d%s\n",
+                             (mpfr_eexp_t) maxexp, maxexp == MPFR_EXP_MIN ?
                              " (MPFR_EXP_MIN)" : ""));
 
               /* Note: We will no longer iterate in the main loop.
@@ -635,7 +631,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   carry = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
                     (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
 
-                  if (maxexp2 == MPFR_EXP_MIN)
+                  if (maxexp == MPFR_EXP_MIN)
                     {
                       /* The sum in the accumulator is exact. Determine
                          inex = 0 if the final sum is exact, else 1,
@@ -665,7 +661,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                         inex = 1;
                       tmd = 0;  /* We can round correctly -> no TMD. */
                     }
-                  else  /* maxexp2 > MPFR_EXP_MIN */
+                  else  /* maxexp > MPFR_EXP_MIN */
                     {
                       mpfr_exp_t d;
                       mp_limb_t limb, mask;
@@ -758,7 +754,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                   /* The exact value has been copied. */
                   carry = 0;
-                  inex = tmd = maxexp2 != MPFR_EXP_MIN;
+                  inex = tmd = maxexp != MPFR_EXP_MIN;
                 }
 
               /* Here, if the final sum is known to be exact, inex = 0,
@@ -836,7 +832,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               /* Step 8 */
 
-              MPFR_ASSERTD (maxexp2 > MPFR_EXP_MIN);
+              MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
 
               break;
