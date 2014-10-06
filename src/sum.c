@@ -675,7 +675,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                       d = u - err;  /* representable */
                       MPFR_ASSERTD (d >= 3);
 
-                      /* First chunk after the rounding bit... */
+                      /* First chunk after the rounding bit... It starts at:
+                         (wi,td-2) if td >= 2,
+                         (wi-1,td-2+GMP_NUMB_BITS) if td < 2. */
                       if (td == 0)
                         {
                           MPFR_ASSERTD (wi >= 1);
