@@ -192,16 +192,22 @@ test_version (void)
               buffer, version);
     }
   else
-    printf ("%sIncorrect MPFR version! (%s header vs %s library)\n"
-            "Nothing else has been tested since for this reason,\n"
-            "any other test may fail. Please fix this one first.\n\n"
-            "You can try to avoid this problem by changing the value of\n"
-            "shlibpath_overrides_runpath in the libtool file and rebuild\n"
-            "MPFR (make clean && make && make check).\n"
-            "Otherwise this error may be due to a corrupted mpfr.h, an\n"
-            "incomplete build (try to rebuild MPFR from scratch and/or\n"
-            "use 'make clean'), or something wrong in the system.\n",
-            err ? "\n" : "", MPFR_VERSION_STRING, version);
+    printf (
+      "%sIncorrect MPFR version! (%s header vs %s library)\n"
+      "Nothing else has been tested since for this reason, any other test\n"
+      "may fail.  Please fix this problem first, as suggested below.  It\n"
+      "probably comes from libtool (included in the MPFR tarball), which\n"
+      "is responsible for setting up the search paths depending on the\n"
+      "platform.\n"
+      "  * First look at http://www.mpfr.org/mpfr-current/ for any update.\n"
+      "  * Try again on a completely clean source (some errors might come\n"
+      "    from a previous build or previous source changes).\n"
+      "  * If the error still occurs, you can try to change the value of\n"
+      "    shlibpath_overrides_runpath ('yes' or 'no') in the \"libtool\"\n"
+      "    file and rebuild MPFR (make clean && make && make check).  You\n"
+      "    may want to report the problem to the libtool developers, with\n"
+      "    the effect of this change.\n",
+      err ? "\n" : "", MPFR_VERSION_STRING, version);
   exit (1);
 }
 
