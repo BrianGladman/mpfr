@@ -92,5 +92,6 @@ TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 #   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00065.html
 # and
 #   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=9728
+#   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=18662
 #
 AM_LDFLAGS = -no-install -L$(top_builddir)/src/.libs
