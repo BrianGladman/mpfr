@@ -198,15 +198,15 @@ test_version (void)
       "may fail.  Please fix this problem first, as suggested below.  It\n"
       "probably comes from libtool (included in the MPFR tarball), which\n"
       "is responsible for setting up the search paths depending on the\n"
-      "platform.\n"
+      "platform, or automake.\n"
       "  * First look at http://www.mpfr.org/mpfr-current/ for any update.\n"
       "  * Try again on a completely clean source (some errors might come\n"
       "    from a previous build or previous source changes).\n"
       "  * If the error still occurs, you can try to change the value of\n"
       "    shlibpath_overrides_runpath ('yes' or 'no') in the \"libtool\"\n"
       "    file and rebuild MPFR (make clean && make && make check).  You\n"
-      "    may want to report the problem to the libtool developers, with\n"
-      "    the effect of this change.\n",
+      "    may want to report the problem to the libtool and/or automake\n"
+      "    developers, with the effect of this change.\n",
       err ? "\n" : "", MPFR_VERSION_STRING, version);
   exit (1);
 }
