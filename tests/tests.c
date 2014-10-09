@@ -199,7 +199,12 @@ test_version (void)
       "probably comes from libtool (included in the MPFR tarball), which\n"
       "is responsible for setting up the search paths depending on the\n"
       "platform, or automake.\n"
-      "  * First look at http://www.mpfr.org/mpfr-current/ for any update.\n"
+      "  * On some platforms such as Solaris, $LD_LIBRARY_PATH overrides\n"
+      "    the rpath, and if the MPFR library is already installed in a\n"
+      "    $LD_LIBRARY_PATH directory, you typically get this error. Do\n"
+      "    not use $LD_LIBRARY_PATH on such platforms; it may also break\n"
+      "    other things.\n"
+      "  * Then look at http://www.mpfr.org/mpfr-current/ for any update.\n"
       "  * Try again on a completely clean source (some errors might come\n"
       "    from a previous build or previous source changes).\n"
       "  * If the error still occurs, you can try to change the value of\n"
@@ -208,6 +213,10 @@ test_version (void)
       "    may want to report the problem to the libtool and/or automake\n"
       "    developers, with the effect of this change.\n",
       err ? "\n" : "", MPFR_VERSION_STRING, version);
+  /* Note about $LD_LIBRARY_PATH under Solaris:
+   *   https://en.wikipedia.org/wiki/Rpath#Solaris_ld.so
+   * This cause has been confirmed by a user who got this error.
+   */
   exit (1);
 }
 
