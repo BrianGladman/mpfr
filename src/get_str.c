@@ -2240,7 +2240,8 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
    the memory space allocated, with free(s, strlen(s)).
 */
 char*
-mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t rnd)
+mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
+              mpfr_rnd_t rnd)
 {
   const char *num_to_text;
   int exact;                      /* exact result */
@@ -2259,7 +2260,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
   int ret; /* return value of mpfr_get_str_aux */
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  MPFR_TMP_DECL(marker);
+  MPFR_TMP_DECL (marker);
 
   /* if exact = 1 then err is undefined */
   /* otherwise err is such that |x*b^(m-g)-a*2^exp_a| < 2^(err+exp_a) */
@@ -2312,10 +2313,10 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
 
   /* x is a floating-point number */
 
-  if (MPFR_IS_ZERO(x))
+  if (MPFR_IS_ZERO (x))
     {
       if (s == NULL)
-        s = (char*) (*__gmp_allocate_func) (neg + m + 1);
+        s = (char *) (*__gmp_allocate_func) (neg + m + 1);
       s0 = s;
       if (neg)
         *s++ = '-';
@@ -2327,14 +2328,14 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
     }
 
   if (s == NULL)
-    s = (char*) (*__gmp_allocate_func) (neg + m + 1);
+    s = (char *) (*__gmp_allocate_func) (neg + m + 1);
   s0 = s;
   if (neg)
     *s++ = '-';
 
-  xp = MPFR_MANT(x);
+  xp = MPFR_MANT (x);
 
-  if (IS_POW2(b))
+  if (IS_POW2 (b))
     {
       int pow2;
       mpfr_exp_t f, r;
@@ -2389,22 +2390,22 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
             n --;
         }
 
-      mpn_get_str ((unsigned char*) s, b, x1, n);
-      for (i=0; i<m; i++)
+      mpn_get_str ((unsigned char *) s, b, x1, n);
+      for (i = 0; i < m; i++)
         s[i] = num_to_text[(int) s[i]];
       s[m] = 0;
 
       /* the exponent of s is f + 1 */
       *e = f + 1;
 
-      MPFR_TMP_FREE(marker);
+      MPFR_TMP_FREE (marker);
       MPFR_SAVE_EXPO_FREE (expo);
-      return (s0);
+      return s0;
     }
 
   /* if x < 0, reduce to x > 0 */
   if (neg)
-    rnd = MPFR_INVERT_RND(rnd);
+    rnd = MPFR_INVERT_RND (rnd);
 
   g = mpfr_ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
   exact = 1;
@@ -2417,7 +2418,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
-      MPFR_TMP_MARK(marker);
+      MPFR_TMP_MARK (marker);
 
       exact = 1;
 
@@ -2526,30 +2527,30 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
           /* too large error: increment the working precision */
           MPFR_ZIV_NEXT (loop, prec);
         }
-      else if (ret == -MPFR_ROUND_FAILED)
+      else if (ret == - MPFR_ROUND_FAILED)
         {
           /* too many digits in mantissa: exp = |m-g| */
           if ((mpfr_exp_t) m > g) /* exp = m - g, multiply by b^exp */
             {
-              g++;
+              g ++;
               exp --;
             }
           else /* exp = g - m, divide by b^exp */
             {
-              g++;
+              g ++;
               exp ++;
             }
         }
       else
         break;
 
-      MPFR_TMP_FREE(marker);
+      MPFR_TMP_FREE (marker);
     }
   MPFR_ZIV_FREE (loop);
 
   *e += g;
 
-  MPFR_TMP_FREE(marker);
+  MPFR_TMP_FREE (marker);
   MPFR_SAVE_EXPO_FREE (expo);
   return s0;
 }
