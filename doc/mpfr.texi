@@ -1467,7 +1467,7 @@ Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
 The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
 do not exist in MPF@.  If @var{op} is NaN, then @var{rop} is undefined.
-If @var{op} is an +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
+If @var{op} is +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
 the maximum (resp.@: minimum) value in the precision of the MPF number;
 if a future MPF version supports infinities, this behavior will be
 considered incorrect and will change (portable programs should assume
