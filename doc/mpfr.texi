@@ -1486,7 +1486,8 @@ number of significant digits output in the string; in the latter case,
 otherwise the function does nothing and immediately returns a null pointer.
 If the input number is an ordinary number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
-written).
+written); the type @code{mpfr_exp_t} is large enough to hold the exponent
+in all cases.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
