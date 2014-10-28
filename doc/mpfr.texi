@@ -1481,9 +1481,9 @@ than in MPFR, so that an overflow or underflow is not possible.
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
-number of significant digits output in the string;
-in the latter case, @var{n} must be greater
-or equal to 2. The base may vary from 2 to 62.
+number of significant digits output in the string; in the latter case,
+@var{n} must be greater or equal to 2. The base may vary from 2 to 62;
+otherwise the function does nothing and immediately returns a null pointer.
 If the input number is an ordinary number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
 written).
@@ -1521,17 +1521,16 @@ but in some very rare cases, it might be @math{m+1}
 for bases 7 and 49).
 
 If @var{str} is a null pointer, space for the significand is allocated using
-the current allocation function, and a pointer to the string is returned.
+the current allocation function and a pointer to the string is returned
+(unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
-plus the terminating null character.
-
-A pointer to the string is returned, unless there is an error, in which
-case a null pointer is returned.
+plus the terminating null character. The pointer to the string @var{str}
+is returned (unless the base is invalid).
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
