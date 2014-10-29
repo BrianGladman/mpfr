@@ -1012,10 +1012,16 @@ check_large (void)
   mpfr_free_str (s);
 
   mpfr_set_nan (x);
+  mpfr_clear_flags ();
   s = mpfr_get_str (NULL, &e, 10, 1000, x, MPFR_RNDN);
   if (strcmp (s, "@NaN@"))
     {
-      printf ("Error for NaN\n");
+      printf ("Error for NaN (incorrect string)\n");
+      exit (1);
+    }
+  if (__gmpfr_flags != MPFR_FLAGS_NAN)
+    {
+      printf ("Error for NaN (incorrect flags)\n");
       exit (1);
     }
   mpfr_free_str (s);

@@ -49,8 +49,9 @@ Changes from versions 3.1.* to version 3.2.0:
 - Speedup in the mpfr_const_euler function (contributed by Fredrik Johansson),
   in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
   mpfr_digamma, mpfr_lngamma and mpfr_lgamma), and in mpfr_div.
-- Bug fixes. In particular, a speed improvement when the --enable-assert
-  or --enable-assert=full configure option is used with GCC.
+- Bug fixes. In particular: a speed improvement when the --enable-assert
+  or --enable-assert=full configure option is used with GCC; mpfr_get_str
+  now sets the NaN flag on NaN input.
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.

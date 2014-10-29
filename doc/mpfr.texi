@@ -1484,7 +1484,12 @@ the direction @var{rnd}, where @var{n} is either zero (see below) or the
 number of significant digits output in the string; in the latter case,
 @var{n} must be greater or equal to 2. The base may vary from 2 to 62;
 otherwise the function does nothing and immediately returns a null pointer.
-If the input number is an ordinary number, the exponent is written through
+
+If the input is NaN, then the returned string is @code{@@NaN@@} and the
+NaN flag is set. If the input is +Inf (resp.@: @minus{}Inf), then the
+returned string is @code{@@Inf@@} (resp.@: @code{-@@Inf@@}).
+
+If the input number is a finite number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
 written); the type @code{mpfr_exp_t} is large enough to hold the exponent
 in all cases.
@@ -1532,6 +1537,9 @@ The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
 plus the terminating null character. The pointer to the string @var{str}
 is returned (unless the base is invalid).
+
+Note: The inexact flag is currently not set when the conversion is inexact;
+this is regarded as a bug.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
@@ -3609,6 +3617,11 @@ and @code{mpfr_get_f} now returns the usual ternary value.
 and @code{mpfr_get_uj} changed in MPFR 3.0.
 In previous MPFR versions, the cases where the @emph{erange} flag
 is set were unspecified.
+
+@item @code{mpfr_get_str} changed in MPFR 3.2.
+This function now sets the NaN flag on NaN input (to follow the usual MPFR
+rules on NaN and IEEE 754-2008 recommendations on string conversions from
+Subclause 5.12.1). The previous behavior was regarded as a bug.
 
 @item @code{mpfr_get_z} changed in MPFR 3.0.
 The return type was @code{void}; it is now @code{int}, and the usual

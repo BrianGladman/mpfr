@@ -2276,6 +2276,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       if (s == NULL)
         s = (char *) (*__gmp_allocate_func) (6);
       strcpy (s, "@NaN@");
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return s;
     }
 
