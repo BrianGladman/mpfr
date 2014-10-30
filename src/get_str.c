@@ -2218,6 +2218,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   mpfr_exp_t r;
 
   p = &__gmpfr_l2b[beta-2][i];
+  MPFR_ASSERTD (mpfr_check (p));
   mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_set_exp_t (t, e, MPFR_RNDU);
   mpfr_mul (t, t, p, MPFR_RNDU);
@@ -2265,6 +2266,11 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   /* if exact = 1 then err is undefined */
   /* otherwise err is such that |x*b^(m-g)-a*2^exp_a| < 2^(err+exp_a) */
 
+  MPFR_LOG_FUNC
+    (("b=%d m=%zu x[%Pu]=%.*Rg rnd=%d",
+      b, m, mpfr_get_prec (x), mpfr_log_prec, x, rnd),
+     ("flags=%lx", (unsigned long) __gmpfr_flags));
+
   /* is the base valid? */
   if (b < 2 || b > 62)
     return NULL;
@@ -2276,6 +2282,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       if (s == NULL)
         s = (char *) (*__gmp_allocate_func) (6);
       strcpy (s, "@NaN@");
+      MPFR_LOG_MSG (("%s\n", s));
       __gmpfr_flags |= MPFR_FLAGS_NAN;
       return s;
     }
@@ -2287,6 +2294,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       if (s == NULL)
         s = (char *) (*__gmp_allocate_func) (neg + 6);
       strcpy (s, (neg) ? "-@Inf@" : "@Inf@");
+      MPFR_LOG_MSG (("%s\n", s));
       return s;
     }
 
@@ -2308,6 +2316,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       if (m < 2)
         m = 2;
     }
+
+  MPFR_LOG_MSG (("m=%zu\n", m));
 
   /* the code below for non-power-of-two bases works for m=1 */
   MPFR_ASSERTN (m >= 2 || (!IS_POW2(b) && m >= 1));
@@ -2398,6 +2408,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
       /* the exponent of s is f + 1 */
       *e = f + 1;
+
+      MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) *e));
 
       MPFR_TMP_FREE (marker);
       MPFR_SAVE_EXPO_FREE (expo);
@@ -2550,6 +2562,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   MPFR_ZIV_FREE (loop);
 
   *e += g;
+
+  MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) *e));
 
   MPFR_TMP_FREE (marker);
   MPFR_SAVE_EXPO_FREE (expo);
