@@ -2323,25 +2323,20 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
   /* x is a floating-point number */
 
+  if (s == NULL)
+    s = (char *) (*__gmp_allocate_func) (neg + m + 1);
+  s0 = s;
+  if (neg)
+    *s++ = '-';
+
   if (MPFR_IS_ZERO (x))
     {
-      if (s == NULL)
-        s = (char *) (*__gmp_allocate_func) (neg + m + 1);
-      s0 = s;
-      if (neg)
-        *s++ = '-';
       memset (s, '0', m);
       s[m] = '\0';
       *e = 0; /* a bit like frexp() in ISO C99 */
       MPFR_SAVE_EXPO_FREE (expo);
       return s0; /* strlen(s0) = neg + m */
     }
-
-  if (s == NULL)
-    s = (char *) (*__gmp_allocate_func) (neg + m + 1);
-  s0 = s;
-  if (neg)
-    *s++ = '-';
 
   xp = MPFR_MANT (x);
 
