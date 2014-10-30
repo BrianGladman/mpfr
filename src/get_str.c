@@ -2528,7 +2528,11 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       /* check if rounding is possible */
       if (exact)
         err = -1;
+
       ret = mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd);
+
+      MPFR_TMP_FREE (marker);
+
       if (ret == MPFR_ROUND_FAILED)
         {
           /* too large error: increment the working precision */
@@ -2550,8 +2554,6 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
         }
       else
         break;
-
-      MPFR_TMP_FREE (marker);
     }
   MPFR_ZIV_FREE (loop);
 
@@ -2559,7 +2561,6 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
   MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) *e));
 
-  MPFR_TMP_FREE (marker);
   MPFR_SAVE_EXPO_FREE (expo);
   return s0;
 }
