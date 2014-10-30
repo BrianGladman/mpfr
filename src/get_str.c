@@ -2218,7 +2218,6 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   mpfr_exp_t r;
 
   p = &__gmpfr_l2b[beta-2][i];
-  MPFR_ASSERTD (mpfr_check (p));
   mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_set_exp_t (t, e, MPFR_RNDU);
   mpfr_mul (t, t, p, MPFR_RNDU);
