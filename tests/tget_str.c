@@ -1085,6 +1085,8 @@ check_special (int b, mpfr_prec_t p)
   int r;
   size_t m;
 
+  mpfr_init2 (x, p);
+
   /* check for invalid base */
   if (mpfr_get_str (s, &e, 1, 10, x, MPFR_RNDN) != NULL)
     {
@@ -1101,7 +1103,6 @@ check_special (int b, mpfr_prec_t p)
   for (i=1; i<MAX_DIGITS+2; i++)
     s2[i] = '0';
 
-  mpfr_init2 (x, p);
   mpfr_set_ui (x, 1, MPFR_RNDN);
   for (i=1; i<MAX_DIGITS && mpfr_mul_ui (x, x, b, MPFR_RNDN) == 0; i++)
     {
