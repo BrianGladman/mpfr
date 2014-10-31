@@ -48,15 +48,18 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 #define MPFR_ROUND_FAILED 3
 
-/* Input: an approximation r*2^f of a real Y, with |r*2^f-Y| <= 2^(e+f).
-   Returns if possible in the string s the mantissa corresponding to
-   the integer nearest to Y, within the direction rnd, and returns the
-   exponent in exp.
+/* Input: an approximation r*2^f to a real Y, with |r*2^f - Y| <= 2^(e+f).
+
+   If rounding is possible, returns:
+   - in s: a string representing the significand corresponding to
+     the integer nearest to Y, within the direction rnd;
+   - in exp: the exponent.
+
    n is the number of limbs of r.
-   e represents the maximal error in the approximation of Y
+   e represents the maximal error in the approximation to Y (see above),
       (e < 0 iff the approximation is exact, i.e., r*2^f = Y).
    b is the wanted base (2 <= b <= 62).
-   m is the number of wanted digits in the mantissa.
+   m is the number of wanted digits in the significand.
    rnd is the rounding mode.
    It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value
    satisfies b^(m-1) <= rnd(Y) < b^(m+1).
@@ -104,7 +107,7 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
      the bits from R are referenced by pairs (i,j) */
 
   /* check if is possible to round r with rnd mode
-     where |r*2^f-Y| <= 2^(e+f)
+     where |r*2^f - Y| <= 2^(e+f)
      the exponent of R is: f + n*GMP_NUMB_BITS
      we must have e + f == f + n*GMP_NUMB_BITS - err
      err = n*GMP_NUMB_BITS - e
@@ -2438,7 +2441,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       nx = MPFR_LIMB_SIZE (x);
 
       if ((mpfr_exp_t) m == g) /* final exponent is 0, no multiplication or
-                                division to perform */
+                                  division to perform */
         {
           if (nx > n)
             exact = mpn_scan1 (xp, 0) >= (nx - n) * GMP_NUMB_BITS;
