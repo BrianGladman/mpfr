@@ -2219,13 +2219,13 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   mpfr_srcptr p;
   mpfr_t t;
   mpfr_exp_t r;
+  mp_limb_t tmpmant[(sizeof (mpfr_exp_t) - 1 ) / sizeof (mp_limb_t) + 1];
 
   p = &__gmpfr_l2b[beta-2][i];
-  mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
+  MPFR_TMP_INIT1(tmpmant, t, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_set_exp_t (t, e, MPFR_RNDU);
   mpfr_mul (t, t, p, MPFR_RNDU);
   r = mpfr_get_exp_t (t, MPFR_RNDU);
-  mpfr_clear (t);
   return r;
 }
 
