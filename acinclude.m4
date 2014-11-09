@@ -40,6 +40,7 @@ AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
+AC_REQUIRE([MPFR_CHECK_LIBQUADMATH])
 AC_REQUIRE([AC_HEADER_TIME])
 AC_REQUIRE([AC_CANONICAL_HOST])
 
@@ -1108,6 +1109,19 @@ case $host in
 esac
 ])
 
+dnl  MPFR_CHECK_LIBQUADMATH
+dnl  ---------------
+dnl  Determine a math library -lquadmath to use.
+
+AC_DEFUN([MPFR_CHECK_LIBQUADMATH],
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_SUBST(MPFR_LIBQUADMATH,'')
+case $host in
+  *)
+    AC_CHECK_LIB(quadmath, main, MPFR_LIBQUADMATH="-lquadmath")
+    ;;
+esac
+])
 
 dnl  MPFR_LD_SEARCH_PATHS_FIRST
 dnl  --------------------------
