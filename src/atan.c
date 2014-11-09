@@ -41,13 +41,12 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mp_bitcnt_t n, i, k, j, l;  /* unsigned type, which is >= unsigned long */
   mpfr_exp_t diff, expo;
   int im, done;
-  mpfr_prec_t mult, *accu, *log2_nb_terms;
+  mpfr_prec_t mult;
+  mpfr_prec_t accu[MPFR_PREC_BITS], log2_nb_terms[MPFR_PREC_BITS];
   mpfr_prec_t precy = MPFR_PREC(y);
 
   MPFR_ASSERTD(mpz_cmp_ui (p, 0) != 0);
-
-  accu = (mpfr_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mpfr_prec_t));
-  log2_nb_terms = accu + m + 1;
+  MPFR_ASSERTD (m+1 <= MPFR_PREC_BITS);
 
   /* Set Tables */
   S    = tab;           /* S */
@@ -61,9 +60,12 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 
   /* Normalize p */
   n = mpz_scan1 (p, 0);
-  mpz_tdiv_q_2exp (p, p, n); /* exact */
-  MPFR_ASSERTD (r > n);
-  r -= n;
+  if (n > 0)
+    {
+      mpz_tdiv_q_2exp (p, p, n); /* exact */
+      MPFR_ASSERTD (r > n);
+      r -= n;
+    }
   /* since |p/2^r| < 1, and p is a non-zero integer, necessarily r > 0 */
 
   MPFR_ASSERTD (mpz_sgn (p) > 0);
@@ -116,7 +118,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
               log2_nb_terms[k-1] = l + 1;
               /* now S[k-1]/Q[k-1] corresponds to 2^(l+1) terms */
               MPFR_MPZ_SIZEINBASE2(mult, ptoj[l+1]);
-              /* FIXME: precompute bits(ptoj[l+1]) outside the loop? */
               mult = (r << (l + 1)) - mult - 1;
               accu[k-1] = (k == 1) ? mult : accu[k-2] + mult;
               if (accu[k-1] > precy)
@@ -165,7 +166,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
     }
-  (*__gmp_free_func) (accu, (2 * m + 2) * sizeof (mpfr_prec_t));
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2 * precy;
@@ -195,7 +195,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp, arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
-  mpz_t *tabz;
+  mpz_t tabz[3*(MPFR_PREC_BITS+1)];
   mpfr_exp_t exptol;
   mpfr_prec_t prec, realprec, est_lost, lost;
   unsigned long twopoweri, log2p, red;
@@ -277,7 +277,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpz_init (ukz);
   MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
-  tabz = (mpz_t *) 0;
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -305,17 +304,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
+      MPFR_ASSERTD (n0 <= MPFR_PREC_BITS);
       if (MPFR_LIKELY (oldn0 == 0))
         {
           oldn0 = 3 * (n0 + 1);
-          tabz = (mpz_t *) (*__gmp_allocate_func) (oldn0 * sizeof (mpz_t));
           for (i = 0; i < oldn0; i++)
             mpz_init (tabz[i]);
         }
       else if (oldn0 < 3 * (n0 + 1))
         {
-          tabz = (mpz_t *) (*__gmp_reallocate_func)
-            (tabz, oldn0 * sizeof (mpz_t), 3 * (n0 + 1)*sizeof (mpz_t));
           for (i = oldn0; i < 3 * (n0 + 1); i++)
             mpz_init (tabz[i]);
           oldn0 = 3 * (n0 + 1);
@@ -338,7 +335,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       for (red = 0; MPFR_GET_EXP(sk) > - (mpfr_exp_t) log2p; red ++)
         {
           lost = 9 - 2 * MPFR_EXP(sk);
-          mpfr_mul (tmp, sk, sk, MPFR_RNDN);
+          mpfr_sqr (tmp, sk, MPFR_RNDN);
           mpfr_add_ui (tmp, tmp, 1, MPFR_RNDN);
           mpfr_sqrt (tmp, tmp, MPFR_RNDN);
           mpfr_sub_ui (tmp, tmp, 1, MPFR_RNDN);
@@ -432,7 +429,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   for (i = 0 ; i < oldn0 ; i++)
     mpz_clear (tabz[i]);
   mpz_clear (ukz);
-  (*__gmp_free_func) (tabz, oldn0 * sizeof (mpz_t));
   MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);
