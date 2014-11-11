@@ -631,6 +631,8 @@ dnl (see above).
 dnl Same for __gmpn_sbpi1_divappr_q.
 AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
 
+MPFR_CHECK_MP_LIMB_T_VS_LONG
+
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])
 
