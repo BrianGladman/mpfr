@@ -116,7 +116,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         /* Read the long directly (faster than using mpfr_get_si
            since it fits, it is not singular, it can't be zero
            and there is no conversion to do) */
-        MPFR_ASSERTD (!MPFR_IS_ZERO (r));
+        MPFR_ASSERTD (MPFR_NOTZERO (r));
         exp = MPFR_GET_EXP (r);
         MPFR_ASSERTD (exp <= GMP_NUMB_BITS);
         if (exp >= 1)
@@ -129,7 +129,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       }
 #else
       /* Use generic way to get the long */
-      n = mpfr_get_si(r, MPFR_RNDN);
+      n = mpfr_get_si (r, MPFR_RNDN);
 #endif
     }
   /* we have |x| <= (|n|+1)*log(2) */
@@ -140,7 +140,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     error_r = 0;
   else
     {
-      count_leading_zeros (error_r, (mp_limb_t) SAFE_ABS (unsigned long, n) + 1);
+      count_leading_zeros (error_r,
+                           (mp_limb_t) SAFE_ABS (unsigned long, n) + 1);
       error_r = GMP_NUMB_BITS - error_r;
       /* we have |x| <= 2^error_r * log(2) */
     }

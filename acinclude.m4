@@ -651,7 +651,7 @@ esac
 ])
 
 dnl MPFR_CHECK_MP_LIMB_T_VS_LONG
-dnl ----------------------
+dnl ----------------------------
 dnl Check that a long can fit in a mp_limb_t.
 dnl If so, it set the define MPFR_LONG_WITHIN_LIMB
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
@@ -663,7 +663,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
 #include "mpfr-sassert.h"
 ]], [[
-  MPFR_STAT_STAT_ASSERT ((mp_limb_t)-1 >= (unsigned long) -1);
+  MPFR_STAT_STAT_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
   return 0;
 ]])], [mpfr_cv_long_within_limb="yes"],
       [mpfr_cv_long_within_limb="no"],
