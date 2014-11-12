@@ -281,44 +281,46 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   *exps = 1 - (mpfr_exp_t) q;                   /* s = 2^(q-1) */
   mpz_init (t);
   mpz_init (rr);
-  mpz_set_ui(t, 1);
-  mpz_set_ui(s, 1);
-  mpz_mul_2exp(s, s, q-1);
-  expr = mpfr_get_z_2exp(rr, r);               /* no error here */
+  mpz_set_ui (t, 1);
+  mpz_set_ui (s, 1);
+  mpz_mul_2exp (s, s, q-1);
+  expr = mpfr_get_z_2exp (rr, r);               /* no error here */
 
   l = 0;
-  for (;;) {
-    l++;
-    mpz_mul(t, t, rr);
-    expt += expr;
-    MPFR_MPZ_SIZEINBASE2 (sbit, s);
-    MPFR_MPZ_SIZEINBASE2 (tbit, t);
-    dif = *exps + sbit - expt - tbit;
-    /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
-    expt += mpz_normalize(t, t, (mpfr_exp_t) q-dif); /* error at most 2^(1-q) */
-    if (l > 1)
-      {
-        /* GMP doesn't optimize the case of power of 2 */
-        if (IS_POW2(l))
-          {
-            int bits = MPFR_INT_CEIL_LOG2(l);
-            mpz_fdiv_q_2exp (t, t, bits);        /* error at most 2^(1-q) */
-          }
-        else
-          {
-            mpz_fdiv_q_ui (t, t, l);             /* error at most 2^(1-q) */
-          }
-        /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
-        MPFR_ASSERTD (expt == *exps);
-        if (mpz_sgn (t) == 0)
-          break;
-      }
-    mpz_add(s, s, t);                      /* no error here: exact */
-    /* ensures rr has the same size as t: after several shifts, the error
-       on rr is still at most ulp(t)=ulp(s) */
-    MPFR_MPZ_SIZEINBASE2 (tbit, t);
-    expr += mpz_normalize(rr, rr, tbit);
-  }
+  for (;;)
+    {
+      l++;
+      mpz_mul(t, t, rr);
+      expt += expr;
+      MPFR_MPZ_SIZEINBASE2 (sbit, s);
+      MPFR_MPZ_SIZEINBASE2 (tbit, t);
+      dif = *exps + sbit - expt - tbit;
+      /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
+      expt += mpz_normalize (t, t, (mpfr_exp_t) q - dif);
+      /* error at most 2^(1-q) */
+      if (l > 1)
+        {
+          /* GMP doesn't optimize the case of power of 2 */
+          if (IS_POW2(l))
+            {
+              int bits = MPFR_INT_CEIL_LOG2(l);
+              mpz_fdiv_q_2exp (t, t, bits);     /* error at most 2^(1-q) */
+            }
+          else
+            {
+              mpz_fdiv_q_ui (t, t, l);          /* error at most 2^(1-q) */
+            }
+          /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
+          MPFR_ASSERTD (expt == *exps);
+          if (mpz_sgn (t) == 0)
+            break;
+        }
+      mpz_add (s, s, t);                        /* no error here: exact */
+      /* ensures rr has the same size as t: after several shifts, the error
+         on rr is still at most ulp(t)=ulp(s) */
+      MPFR_MPZ_SIZEINBASE2 (tbit, t);
+      expr += mpz_normalize (rr, rr, tbit);
+    }
 
   mpz_clear (t);
   mpz_clear (rr);
