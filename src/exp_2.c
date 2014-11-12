@@ -298,6 +298,8 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
       /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
       expt += mpz_normalize (t, t, (mpfr_exp_t) q - dif);
       /* error at most 2^(1-q) */
+      if (mpz_sgn (t) == 0)
+        break;
       if (l > 1)
         {
           /* GMP doesn't optimize the case of power of 2 */
