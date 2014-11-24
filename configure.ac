@@ -474,7 +474,7 @@ error
 #endif
      ]], [[]])],[AC_MSG_RESULT(DLL)],[
   AC_MSG_RESULT(static)
-  AC_MSG_ERROR([gmp.h isn't a DLL: use --enable-static --disable-shared]) ])
+  AC_MSG_ERROR([libgmp isn't provided as a DLL: use --enable-static --disable-shared]) ])
    else
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
@@ -484,7 +484,7 @@ error
 #endif
      ]], [[]])],[AC_MSG_RESULT(static)],[
   AC_MSG_RESULT(DLL)
-  AC_MSG_ERROR([gmp.h is a DLL: use --disable-static --enable-shared]) ])
+  AC_MSG_ERROR([libgmp is provided as a DLL: use --disable-static --enable-shared]) ])
   fi
   ;;
 esac
