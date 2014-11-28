@@ -45,16 +45,22 @@ VL: This is very different:
  *   maxexp: exponent of the block (maximum exponent + 1).
  *   tp: pointer to a temporary area.
  *   ts: size of this temporary area.
+ *   cancelp: pointer to a mpfr_prec_t (see below).
  * Notes:
  * - minexp is also the least significant bit of the accumulator;
  * - the temporary area must be large enough to hold a shifted input
  *   block, and the value of ts is used only when the full assertions
  *   are checked (i.e. with the --enable-assert configure option), to
  *   check that a buffer overflow doesn't occur.
+ * This function returns:
+ * - return value: the new value of maxexp.
+ * - in cancelp: the number of cancelled bits (>= 1),
+ *               or 0 if the accumulator is 0.
  */
 static mpfr_exp_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
-         mpfr_exp_t minexp, mpfr_exp_t maxexp, mp_limb_t *tp, mp_size_t ts)
+         mpfr_exp_t minexp, mpfr_exp_t maxexp, mp_limb_t *tp, mp_size_t ts,
+         mpfr_prec_t *cancelp)
 {
   mpfr_exp_t maxexp2 = MPFR_EXP_MIN;
   unsigned long i;
@@ -258,7 +264,34 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
           }
       }
 
-  return maxexp2;
+  {
+    mpfr_prec_t cancel;  /* number of cancelled bits */
+    mp_size_t wi;        /* index in the accumulator */
+    mp_limb_t a, b;
+    int cnt;
+
+    cancel = 0;
+    wi = ws - 1;
+    MPFR_ASSERTD (wi >= 0);
+    a = wp[wi] >> (GMP_NUMB_BITS - 1) ? MPFR_LIMB_MAX : MPFR_LIMB_ZERO;
+
+    while ((b = wp[wi]) == a)
+      {
+        cancel += GMP_NUMB_BITS;
+        if (MPFR_UNLIKELY (wi == 0))
+          {
+            *cancelp = a == MPFR_LIMB_ZERO ? 0 : cancel;
+            return maxexp2;
+          }
+        wi--;
+      }
+    b ^= a;
+    MPFR_ASSERTD (b != 0 && b < MPFR_LIMB_HIGHBIT);
+    count_leading_zeros (cnt, b);
+    MPFR_ASSERTD (cnt >= 1);
+    *cancelp = cancel + cnt;
+    return maxexp2;
+  }
 }
 
 int
@@ -445,84 +478,47 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
         {
           mpfr_exp_t minexp = maxexp + cq - wq;
           mpfr_prec_t cancel;  /* number of cancelled bits */
-          mp_size_t wi;        /* index in the accumulator */
-          mp_limb_t msl;       /* most significant limb */
           mpfr_exp_t e;        /* temporary exponent of the result */
           mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
           mpfr_exp_t err;      /* exponent of the error bound */
-          int neg;             /* 1 if negative sum, 0 if positive */
 
-          /* Step 3: compute the truncated sum. */
-          maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts);
+          /* Steps 3 and 4: compute the truncated sum and determine
+             the number of cancelled bits. */
+          maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts, &cancel);
 
-          /* Step 4: determine the number of cancelled bits. */
-
-          cancel = 0;
-          wi = ws - 1;
-          MPFR_ASSERTD (wi >= 0);
-          msl = wp[wi];
-          neg = msl >> (GMP_NUMB_BITS - 1);
-
-          MPFR_LOG_MSG (("Step 4 with msl=%Mx\n", msl));
-
-          /* Limbs whose bits are identical (000...00 or 111...11). */
-          if (MPFR_UNLIKELY (msl == MPFR_LIMB_ZERO || msl == MPFR_LIMB_MAX))
+          if (MPFR_UNLIKELY (cancel == 0))
             {
-              while (wi >= 0 && wp[wi] == msl)
+              /* Step 5: the truncated sum is zero. */
+
+              MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
+                             " maxexp=%" MPFR_EXP_FSPEC "d%s\n",
+                             (mpfr_eexp_t) maxexp,
+                             maxexp == MPFR_EXP_MIN ?
+                             " (MPFR_EXP_MIN)" : ""));
+
+              if (maxexp == MPFR_EXP_MIN)
                 {
-                  cancel += GMP_NUMB_BITS;
-                  wi--;
+                  /* All bits have been taken into account. This means
+                   * that the accumulator contains the exact sum, which
+                   * is 0. Since not all inputs are 0, it +0 except in
+                   * MPFR_RNDD, as specified according to the IEEE 754
+                   * rules for the addition of two numbers.
+                   */
+                  MPFR_SET_SIGN (sum, (rnd != MPFR_RNDD ?
+                                       MPFR_SIGN_POS : MPFR_SIGN_NEG));
+                  MPFR_SET_ZERO (sum);
+                  MPFR_TMP_FREE (marker);
+                  MPFR_RET (0);
                 }
-
-              if (wi < 0 && msl == MPFR_LIMB_ZERO)
+              else
                 {
-                  /* Step 5: the truncated sum is zero. */
-
-                  MPFR_LOG_MSG (("Step 5 (truncated sum = 0) with"
-                                 " maxexp=%" MPFR_EXP_FSPEC "d%s\n",
-                                 (mpfr_eexp_t) maxexp,
-                                 maxexp == MPFR_EXP_MIN ?
-                                 " (MPFR_EXP_MIN)" : ""));
-
-                  if (maxexp == MPFR_EXP_MIN)
-                    {
-                      /* All bits have been taken into account. This means
-                       * that the accumulator contains the exact sum, which
-                       * is 0. Since not all inputs are 0, it +0 except in
-                       * MPFR_RNDD, as specified according to the IEEE 754
-                       * rules for the addition of two numbers.
-                       */
-                      MPFR_SET_SIGN (sum, (rnd != MPFR_RNDD ?
-                                           MPFR_SIGN_POS : MPFR_SIGN_NEG));
-                      MPFR_SET_ZERO (sum);
-                      MPFR_TMP_FREE (marker);
-                      MPFR_RET (0);
-                    }
-                  else
-                    {
-                      /* There are still bits not yet taken into account.
-                       * Reiterate. Note: we do not need to zero the
-                       * accumulator since it is already 0 in this case.
-                       */
-                      cq = cq0;
-                      continue;
-                    }
+                  /* There are still bits not yet taken into account.
+                   * Reiterate. Note: we do not need to zero the
+                   * accumulator since it is already 0 in this case.
+                   */
+                  cq = cq0;
+                  continue;
                 }
-            }
-
-          /* Let's count the number of identical leading bits of
-             the next limb, if there is one. */
-          if (MPFR_LIKELY (wi >= 0))
-            {
-              mp_limb_t m;
-              int cnt;
-
-              m = wp[wi];
-              if (neg)
-                m ^= MPFR_LIMB_MAX;
-              MPFR_ASSERTD (m != 0);
-              count_leading_zeros (cnt, m);
-              cancel += cnt;
             }
 
           /* Step 6 */
@@ -582,6 +578,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               int sd, sh;       /* shift counts */
               mp_size_t sn;     /* size of the output number */
               int tmd;          /* Table Maker's Dilemma (boolean) */
+              int neg;          /* 1 if negative sum, 0 if positive */
 
               /* Step 7 */
 
@@ -606,7 +603,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               if (MPFR_LIKELY (u > minexp))
                 {
                   mpfr_prec_t tq;
-                  mp_size_t ei, fi;
+                  mp_size_t ei, fi, wi;
                   int td;
 
                   tq = u - minexp;
@@ -759,6 +756,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   inex = tmd = maxexp != MPFR_EXP_MIN;
                 }
 
+              neg = sump[sn-1] >> (GMP_NUMB_BITS - 1);
+
+              MPFR_LOG_MSG (("inex = %d, neg = %d\n", inex, neg));
+
               /* Here, if the final sum is known to be exact, inex = 0,
                  otherwise inex = 1. */
 
@@ -845,6 +846,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   if (err >= minexp)
                     {
                       mpfr_prec_t tq;
+                      mp_size_t wi;
                       int td;
 
                       /* Let's keep the last 2 over the d-1 identical bits
