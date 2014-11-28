@@ -395,9 +395,10 @@ The general ideas of the algorithm:
      * Check the range and return as in (9).
 
 8. Reiterate like in (3) one or more times using a specific window as
-   if sq were 0, i.e. around maxexp + logn to maxexp - logn; in short,
-   determine the sign of a secondary term, which is the difference
-   between the exact sum and the closest breakpoint.
+   if sq were 0, i.e. around maxexp + logn to maxexp - logn (wq - sq
+   may be a good choice); in short, determine the sign of a secondary
+   term, which is the difference between the exact sum and the closest
+   breakpoint.
 
    In rounding to nearest, both kinds of breakpoints (midpoints and
    machine numbers) are taken into account. Since the final rounding
@@ -415,10 +416,16 @@ The general ideas of the algorithm:
    value, less than half the weight of the rounding bit, so that it can
    be seen as the fractional part after the rounding bit; the leading
    d-1 bits of the truncated secondary term are identical and give its
-   sign. If all the represented bits are 0, the accumulator is zeroed
-   and minexp is determined from the initial value of cq, like in (5)
-   and the first iteration. Otherwise, similarly to (6), one can shift
-   the trailing bits, keeping the last 2 over the d-1 identical bits.
+   sign (in the two's complement meaning). Now, if err < minexp, then
+   at least one of these identical bits is not represented, meaning that
+   it is 0 and all these bits are 0's; thus, under this condition, the
+   accumulator is zeroed and minexp is determined from maxexp2 and the
+   initial value of cq, like in (5) and the first iteration. Otherwise
+   the identical bits are all represented, and similarly to (6), one
+   shifts the trailing bits, keeping the last 2 over the d-1 identical
+   bits, i.e. one shifts the bits from err+1 to minexp, and zeros the
+   remaining bits of the accumulator; the new minexp is obtained by
+   subtracting the shift count from it.
 
 9. Depending on the sign of the error term, correct the destination if
    need be (+ or - 1 ulp), determine the corresponding ternary value,
@@ -538,4 +545,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 73692 2014-10-06 15:02:28Z vinc17/xvii $
+$Id: sum 75033 2014-11-28 13:59:31Z vinc17/xvii $

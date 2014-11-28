@@ -533,7 +533,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
              (only 32-bit machines may be concerned in practice). */
           MPFR_ASSERTN (e >= 0 ||
                         (mpfr_uexp_t) -e + sq <= (-3) - MPFR_EXP_MIN);
-          u = e - sq;
+          u = e - sq;  /* e being the exponent, u is the ulp of the target */
           err = maxexp + logn;  /* OK even if maxexp == MPFR_EXP_MIN */
 
           MPFR_LOG_MSG (("Step 6 with cancel=%Pd"
@@ -829,13 +829,68 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                 {
                   if (carry)  /* two's complement significand increased */
                     inex = -1;
-                  break;
                 }
+              else  /* Step 8 */
+                {
+                  mp_size_t zs;
 
-              /* Step 8 */
+                  MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
-              MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
+                  /* New accumulator size */
+                  ws = MPFR_PREC2LIMBS (wq - sq);
+                  wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
 
+                  /* The d-1 bits from u-2 to u-d (= err) are identical. */
+
+                  if (err >= minexp)
+                    {
+                      mpfr_prec_t tq;
+                      int td;
+
+                      /* Let's keep the last 2 over the d-1 identical bits
+                         and the following bits, i.e. the bits from err+1
+                         to minexp. */
+                      tq = err - minexp + 2;  /* tq = number of such bits */
+                      MPFR_ASSERTD (tq >= 2);
+
+                      wi = tq / GMP_NUMB_BITS;
+                      td = tq % GMP_NUMB_BITS;
+
+                      if (td != 0)
+                        {
+                          wi++;  /* number of words with represented bits */
+                          td = GMP_NUMB_BITS - td;
+                          zs = ws - wi;
+                          MPFR_ASSERTD (zs >= 0 && zs < ws);
+                          mpn_lshift (wp + zs, wp, wi, td);
+                        }
+                      else
+                        {
+                          MPFR_ASSERTD (wi > 0);
+                          zs = ws - wi;
+                          MPFR_ASSERTD (zs >= 0 && zs < ws);
+                          if (zs > 0)
+                            MPN_COPY_INCR (wp + zs, wp, wi);
+                        }
+
+                      minexp -= zs * GMP_NUMB_BITS + td;
+                    }
+                  else  /* err < minexp */
+                    {
+                      /* At least one of the identical bits is not
+                         represented, meaning that it is 0 and all
+                         these bits are 0's. Thus the accumulator
+                         will be 0. The new minexp is determined
+                         from maxexp, where cq0 bits reserved to
+                         avoid an overflow (as in the early steps). */
+                      zs = ws;
+                      minexp = maxexp + cq0 - wq;
+                    }
+
+                  MPN_ZERO (wp, zs);
+
+
+                }  /* Step 8 block */
 
               break;
             }  /* Steps 7 & 8 block */
