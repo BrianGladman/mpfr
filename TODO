@@ -309,13 +309,7 @@ Table of contents:
         for sparse input?
 - speed up const_euler for large precision [for x=1.1, prec=16610, it takes
         75% of the total time of eint(x)!]
-- speed up mpfr_atan for large arguments (to speed up mpc_log)
-        [from Mark Watkins on Fri, 18 Mar 2005]
-  Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
-  Example on a Athlon for 10^5 bits: x=1.1 takes 3s, whereas 2.1 takes 1.8s.
-  The current implementation does not give monotonous timing for the following:
-  mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, MPFR_RNDN);
-  for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
+- speed up mpfr_atan for large arguments (to speed up mpc_log) see FR #6198
 - improve mpfr_sin on values like ~pi (do not compute sin from cos, because
   of the cancellation). For instance, reduce the input modulo pi/2 in
   [-pi/4,pi/4], and define auxiliary functions for which the argument is
