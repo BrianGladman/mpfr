@@ -88,6 +88,8 @@ For patches from MPFR developers, e.g. for MPFR 3.1.0:
 8. In mpfr-3.1.0-b, update PATCHES file: echo >> PATCHES <patch_name>
 9. Make the patch: TZ=UTC diff -Naurd mpfr-3.1.0-a mpfr-3.1.0-b
 
+The tools/build-patch script can be used to ease the process.
+
 Note: if autotools files are modified, the corresponding changes in the
 distributed files depending on them must be included in the patch, and
 the timestamps of such autotools files should be reset so that they do
