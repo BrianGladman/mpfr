@@ -51,6 +51,14 @@ The general ideas of the algorithm:
    fixed memory area, called "accumulator", whose characteristics are
    determined here.
 
+   Two's complement is preferred to the sign + magnitude representation
+   because the signs of the temporary (and final) results are not known
+   in advanced, and the computations (additions and subtractions) in
+   two's complement are more natural in this context. There will be a
+   conversion to sign + magnitude (representation used by MPFR numbers)
+   at the end, but this is be done at the same time of the copy, so that
+   this choice does not have any drawback.
+
    Only a fixed part of the inputs will be taken into account for the
    truncated sum: the bits whose exponent is in some window (interval)
    denoted [minexp,maxexp[.
@@ -383,12 +391,22 @@ The general ideas of the algorithm:
 
    One goal of this early copy/rounding is to free the accumulator in
    case there is work to do in (8), though the needed memory for that
-   is limited. This could be slightly less efficient in supposedly
-   rare cases (e.g. if an exponent change is needed in high precision)
-   compared to a delayed copy, but this choice makes the code simpler,
-   and probably better for most cases. See also Note 3 below.
+   is limited. An alternative solution would be to reserve a bit more
+   memory for (8), and determine the way of rounding before the copy;
+   this could be slightly more efficient in supposedly rare cases
+   (when the correction yields a long carry propagation).
 
-   If the TMD did not occur:
+   As said above, in rounding to nearest, both kinds of breakpoints
+   (machine numbers and midpoints) are taken into account for the TMD.
+   Since the final rounding and ternary value will depend on the kind
+   of breakpoint, one needs to remember this information in a variable
+   (as the accumulator will be overwritten). Thus a variable tmd will
+   contain:
+     * 0: the TMD does not occur;
+     * 1: the TMD occurs on a machine number;
+     * 2: the TMD occurs on a midpoint.
+
+   If the TMD does not occur (tmd = 0):
      * Determine the ternary value as follows: if the sum is exact
        (already known), the ternary value is 0; otherwise it is -1
        if c = 0, and 1 if c = 1.
@@ -399,11 +417,6 @@ The general ideas of the algorithm:
    may be a good choice); in short, determine the sign of a secondary
    term, which is the difference between the exact sum and the closest
    breakpoint.
-
-   In rounding to nearest, both kinds of breakpoints (midpoints and
-   machine numbers) are taken into account. Since the final rounding
-   and ternary value will depend on the kind of breakpoint, one needs
-   to remember this information in a variable.
 
    During the iterations, when there are several identical bits on the
    left (most significant part) of the accumulator, only one bit needs
@@ -427,7 +440,8 @@ The general ideas of the algorithm:
    remaining bits of the accumulator; the new minexp is obtained by
    subtracting the shift count from it.
 
-9. Depending on the sign of the error term, correct the destination if
+9. Depending on the rounding mode, the value of tmd and the sign of the
+   error term (negative, zero, or positive), correct the destination if
    need be (+ or - 1 ulp), determine the corresponding ternary value,
    check the range (as usual), and return.
 
@@ -545,4 +559,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 75033 2014-11-28 13:59:31Z vinc17/xvii $
+$Id: sum 75409 2014-12-11 15:53:52Z vinc17/ypig $

@@ -577,7 +577,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               mp_limb_t carry;  /* carry for the initial rounding (0 or 1) */
               int sd, sh;       /* shift counts */
               mp_size_t sn;     /* size of the output number */
-              int tmd;          /* Table Maker's Dilemma (boolean) */
+              int tmd;          /* 0: the TMD does not occur
+                                   1: the TMD occurs on a machine number
+                                   2: the TMD occurs on a midpoint */
               int neg;          /* 1 if negative sum, 0 if positive */
 
               /* Step 7 */
@@ -587,7 +589,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                              " (MPFR_EXP_MIN)" : ""));
 
               /* Note: We will no longer iterate in the main loop.
-                 We choose not to break now since we still needs the
+                 We cannot to break now since we still need the
                  values of some loop-local variables. */
 
               /* Let's copy/shift the bits [max(u,minexp),e) to the
@@ -709,13 +711,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                         }
 
                       limb &= mask;
-                      tmd = ((limb == MPFR_LIMB_ZERO &&
-                              (rnd == MPFR_RNDN || carry == 0)) ||
-                             (limb == mask &&
-                              (rnd == MPFR_RNDN || carry != 0) &&
-                              (limb = MPFR_LIMB_MAX, 1)));
+                      tmd =
+                        limb == MPFR_LIMB_ZERO ?
+                          (carry == 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) :
+                        limb == mask ?
+                          (limb = MPFR_LIMB_MAX,
+                           carry != 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) : 0;
 
-                      while (tmd && d != 0)
+                      while (tmd != 0 && d != 0)
                         {
                           mp_limb_t limb2;
 
@@ -731,10 +734,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                           limb2 = wp[--wi];
                           if (d < GMP_NUMB_BITS)
                             {
-                              tmd = (limb2 >> d) == (limb >> d);
+                              if ((limb2 >> d) != (limb >> d))
+                                tmd = 0;
                               break;
                             }
-                          tmd = limb2 == limb;
+                          if (limb2 != limb)
+                            tmd = 0;
                           d -= GMP_NUMB_BITS;
                         }
                     }
@@ -751,7 +756,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   if (sn > en)
                     MPN_ZERO (sump, sn - en);
 
-                  /* The exact value has been copied. */
+                  /* The exact value of the accumulator has been copied.
+                   * The TMD occurs if and only if there are bits still
+                   * not taken into account, and if it occurs, this is
+                   * necessarily on a machine number (-> tmd = 1).
+                   */
                   carry = 0;
                   inex = tmd = maxexp != MPFR_EXP_MIN;
                 }
@@ -826,7 +835,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                     }
                 }
 
-              if (!tmd)
+              if (tmd == 0)  /* no TMD */
                 {
                   if (carry)  /* two's complement significand increased */
                     inex = -1;
@@ -890,6 +899,22 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                     }
 
                   MPN_ZERO (wp, zs);
+
+                  while (1)
+                    {
+                      maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts,
+                                        &cancel);
+
+                      if (maxexp == MPFR_EXP_MIN)
+                        {
+                          /* The secondary term is now exact. */
+
+                          break;
+                        }
+                      else
+                        {
+                        }
+                    }
 
 
                 }  /* Step 8 block */
