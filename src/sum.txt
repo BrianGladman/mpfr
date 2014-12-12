@@ -324,8 +324,8 @@ The general ideas of the algorithm:
        rounding-to-nearest mode.
 
    At the same time, one determines whether the correctly rounded sum
-   is exact. If the TMD occurs, it is currently assumed to be inexact
-   as said above (sticky bit = 1).
+   is exact. If the TMD occurs, this value is currently assumed to be
+   inexact, as said above.
 
    Let us recall that in case of an important cancellation, some bits
    may not be represented in the accumulator. Such a case is possible
@@ -410,7 +410,7 @@ The general ideas of the algorithm:
      * Determine the ternary value as follows: if the sum is exact
        (already known), the ternary value is 0; otherwise it is -1
        if c = 0, and 1 if c = 1.
-     * Check the range and return as in (9).
+     * Check the range and return as in (10).
 
 8. Reiterate like in (3) one or more times using a specific window as
    if sq were 0, i.e. around maxexp + logn to maxexp - logn (wq - sq
@@ -440,10 +440,53 @@ The general ideas of the algorithm:
    remaining bits of the accumulator; the new minexp is obtained by
    subtracting the shift count from it.
 
-9. Depending on the rounding mode, the value of tmd and the sign of the
-   error term (negative, zero, or positive), correct the destination if
-   need be (+ or - 1 ulp), determine the corresponding ternary value,
-   check the range (as usual), and return.
+9. Depending on:
+     * the rounding mode rnd (equivalent to N, D, U),
+     * the value of tmd (1 or 2 in rounding to nearest),
+     * the rounding bit R (0 or 1),
+     * the sign of the error term (negative, zero, or positive),
+   correct the sum if need be (± 1 ulp) and determine the corresponding
+   ternary value, as in the table below; a question mark means that the
+   exact value is the middle of two consecutive machine numbers, and a
+   special rule is used to determine the rounding, equivalent to one of
+   the enclosing lines (the ones where error is - or +):
+     * For nearest-even:
+         - last significand bit = 0: choose line where correction = 0;
+         - last significand bit = 1: choose line where correction ≠ 0.
+     * For nearest-away: choose line where error = +.
+
+     rnd   tmd    R   error     correction   ternary
+     ───────────────────────────────────────────────
+      N     1     0     -           0           +
+      N     1     0     0           0           0
+      N     1     0     +           0           -
+      N     1     1     -           0           +
+      N     1     1     0           0           0
+      N     1     1     +           0           -
+     ───────────────────────────────────────────────
+      N     2     0     -           0           -
+      N     2     0     0           ?           ?     (halfway case)
+      N     2     0     +           +           +
+      N     2     1     -           -           -
+      N     2     1     0           ?           ?     (halfway case)
+      N     2     1     +           0           +
+     ───────────────────────────────────────────────
+      D     1     0     -           -           -
+      D     1     0     0           0           0
+      D     1     0     +           0           -
+      D     1     1     -           0           -
+      D     1     1     0           +           0
+      D     1     1     +           +           -
+     ───────────────────────────────────────────────
+      U     1     0     -           -           +
+      U     1     0     0           -           0
+      U     1     0     +           0           +
+      U     1     1     -           0           +
+      U     1     1     0           0           0
+      U     1     1     +           +           +
+     ───────────────────────────────────────────────
+
+10. Check the range (as usual), and return.
 
 An example:
 
@@ -559,4 +602,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 75442 2014-12-12 15:51:41Z vinc17/xvii $
+$Id: sum 75443 2014-12-12 17:09:57Z vinc17/ypig $
