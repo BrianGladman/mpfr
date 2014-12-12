@@ -56,8 +56,8 @@ The general ideas of the algorithm:
    in advanced, and the computations (additions and subtractions) in
    two's complement are more natural in this context. There will be a
    conversion to sign + magnitude (representation used by MPFR numbers)
-   at the end, but this is be done at the same time of the copy, so that
-   this choice does not have any drawback.
+   at the end, but this should not take much time compared to the other
+   calculations.
 
    Only a fixed part of the inputs will be taken into account for the
    truncated sum: the bits whose exponent is in some window (interval)
@@ -559,4 +559,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 75409 2014-12-11 15:53:52Z vinc17/ypig $
+$Id: sum 75442 2014-12-12 15:51:41Z vinc17/xvii $
