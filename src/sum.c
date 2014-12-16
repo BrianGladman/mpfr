@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* See the sum.txt file for the algorithm and a part of its proof
+/* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
 Note: see the following paper and its references:
