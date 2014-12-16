@@ -37,6 +37,9 @@ Changes from versions 3.1.* to version 3.2.0:
   rounding to nearest-away (as defined in IEEE 754-2008).
 - New functions mpfr_nrandom and mpfr_erandom to generate random numbers
   following normal and exponential distributions respectively.
+- The behavior of the mpfr_set_exp function changed, as it could easily
+  yield undefined behavior in some cases (this modifies both the API and
+  the ABI).
 - Function mpfr_grandom is deprecated and will be removed in a future release.
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
