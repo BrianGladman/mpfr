@@ -923,6 +923,9 @@ MPFR functions may create caches, e.g., when computing constants such
 as @m{\pi,Pi}, either because the user has called a function like
 @code{mpfr_const_pi} directly or because such a function was called
 internally by the MPFR library itself to compute some other function.
+When more precision is needed, the value is automatically recomputed;
+a minimum of 10% increase of the precision is guaranteed to avoid too
+many recomputations.
 
 At any time, the user can free the various caches with
 @code{mpfr_free_cache}. It is strongly advised to do that before
