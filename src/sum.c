@@ -574,6 +574,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
             }
           else
             {
+              mp_limb_t rbit;   /* rounding bit (corrected in halfway case) */
               mp_limb_t carry;  /* carry for the initial rounding (0 or 1) */
               int sd, sh;       /* shift counts */
               mp_size_t sn;     /* size of the output number */
@@ -627,17 +628,21 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                   /* Determine the rounding bit, which is represented. */
                   td = tq % GMP_NUMB_BITS;
-                  carry = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
+                  rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
                     (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
 
                   if (maxexp == MPFR_EXP_MIN)
                     {
                       /* The sum in the accumulator is exact. Determine
                          inex = 0 if the final sum is exact, else 1,
-                         i.e. inex = rounding bit || sticky bit; and
-                         carry = rounding direction if MPFR_RNDN. */
-                      if (MPFR_LIKELY (rnd == MPFR_RNDN || carry == 0))
+                         i.e. inex = rounding bit || sticky bit. In
+                         round to nearest, also determine the rounding
+                         direction: obtained from the rounding bit
+                         possibly except in halfway cases. */
+                      if (MPFR_LIKELY (rnd == MPFR_RNDN || rbit == 0))
                         {
+                          /* We need to determine the sticky bit in order
+                             to set inex and possibly "correct" rbit. */
                           inex = td >= 1 ?
                             (wp[wi] & MPFR_LIMB_MASK (td)) != 0 : 0;
 
@@ -647,12 +652,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                               while (inex == 0 && wj > 0)
                                 inex = wp[--wj] != 0;
-                              if (rnd == MPFR_RNDN && carry != 0 &&
-                                  inex == 0 && ((wp[wi] >> td) & 1) == 0)
+                              if (inex == 0 && rbit != 0)
                                 {
-                                  /* Even rounding to below. */
-                                  carry = 0;
+                                  /* sticky bit = 0, rounding bit = 1,
+                                     i.e. halfway case. */
+                                  MPFR_ASSERTD (rnd == MPFR_RNDN);
                                   inex = 1;
+                                  if (((wp[wi] >> td) & 1) == 0)
+                                    rbit = 0;  /* even rounding downward */
                                 }
                             }
                         }
@@ -713,10 +720,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                       limb &= mask;
                       tmd =
                         limb == MPFR_LIMB_ZERO ?
-                          (carry == 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) :
+                          (rbit == 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) :
                         limb == mask ?
                           (limb = MPFR_LIMB_MAX,
-                           carry != 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) : 0;
+                           rbit != 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) : 0;
 
                       while (tmd != 0 && d != 0)
                         {
@@ -761,7 +768,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                    * not taken into account, and if it occurs, this is
                    * necessarily on a machine number (-> tmd = 1).
                    */
-                  carry = 0;
+                  rbit = 0;
                   inex = tmd = maxexp != MPFR_EXP_MIN;
                 }
 
@@ -790,7 +797,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   break;
                 default:
                   MPFR_ASSERTN (rnd == MPFR_RNDN);
-                  /* The value of carry has already been determined. */
+                  /* Note: for known halfway cases (maxexp == MPFR_EXP_MIN)
+                     that are rounded downward, rbit has been changed to 0
+                     so that carry is set correctly. */
+                  carry = rbit;
                 }
 
               /* Sign handling (-> absolute value and sign), together
