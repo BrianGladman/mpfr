@@ -934,6 +934,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                         }
                       else
                         {
+                          /* TODO: The loop caused by the possible
+                             cancellations is a bit similar to the main one.
+                             So, one may consider to include this loop in
+                             the sum_raw() function (with updated prototype),
+                             though the stop test is different. The way
+                             minexp is updated in case of shift could be
+                             improved by doing minexp -= shiftq (then get
+                             rid of cq, and rename cq0 to cq). */
                         }
                     }
 
