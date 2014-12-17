@@ -639,10 +639,15 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                          round to nearest, also determine the rounding
                          direction: obtained from the rounding bit
                          possibly except in halfway cases. */
-                      if (MPFR_LIKELY (rnd == MPFR_RNDN || rbit == 0))
+                      if (MPFR_LIKELY (rbit == 0 ||
+                                       (rnd == MPFR_RNDN &&
+                                        ((wp[wi] >> td) & 1) == 0))
                         {
-                          /* We need to determine the sticky bit in order
-                             to set inex and possibly "correct" rbit. */
+                          /* We need to determine the sticky bit, either
+                             to set inex (if the rounding bit is 0) or
+                             to possibly "correct" rbit (round to nearest,
+                             halfway case rounded downward) from which
+                             the rounding direction will be determined. */
                           inex = td >= 1 ?
                             (wp[wi] & MPFR_LIMB_MASK (td)) != 0 : 0;
 
@@ -655,11 +660,11 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                               if (inex == 0 && rbit != 0)
                                 {
                                   /* sticky bit = 0, rounding bit = 1,
-                                     i.e. halfway case. */
+                                     i.e. halfway case, which will be
+                                     rounded downward (see earlier if). */
                                   MPFR_ASSERTD (rnd == MPFR_RNDN);
                                   inex = 1;
-                                  if (((wp[wi] >> td) & 1) == 0)
-                                    rbit = 0;  /* even rounding downward */
+                                  rbit = 0;  /* even rounding downward */
                                 }
                             }
                         }
