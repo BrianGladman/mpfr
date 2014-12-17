@@ -444,18 +444,18 @@ The general ideas of the algorithm:
      * the rounding mode rnd (equivalent to N, D, U),
      * the value of tmd (1 or 2 in rounding to nearest),
      * the rounding bit R (0 or 1),
-     * the sign sgn of the secondary term (negative, zero, positive),
+     * the sign sst of the secondary term (negative, zero, positive),
    correct the sum if need be (± 1 ulp) and determine the corresponding
    ternary value, as in the table below; a question mark means that the
    exact value is the middle of two consecutive machine numbers, and a
    special rule is used to determine the rounding, equivalent to one of
-   the enclosing lines (the ones where sgn is - or +):
+   the enclosing lines (the ones where sst is - or +):
      * For nearest-even:
          - last significand bit = 0: choose line where correction = 0;
          - last significand bit = 1: choose line where correction ≠ 0.
      * For nearest-away: choose line where error = +.
 
-     rnd   tmd    R    sgn      correction   ternary
+     rnd   tmd    R    sst      correction   ternary
      ───────────────────────────────────────────────
       N     1     0     -           0           +
       N     1     0     0           0           0
@@ -602,4 +602,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 75578 2014-12-17 15:47:52Z vinc17/ypig $
+$Id: sum 75579 2014-12-17 15:59:34Z vinc17/ypig $
