@@ -641,7 +641,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                          possibly except in halfway cases. */
                       if (MPFR_LIKELY (rbit == 0 ||
                                        (rnd == MPFR_RNDN &&
-                                        ((wp[wi] >> td) & 1) == 0))
+                                        ((wp[wi] >> td) & 1) == 0)))
                         {
                           /* We need to determine the sticky bit, either
                              to set inex (if the rounding bit is 0) or
@@ -858,6 +858,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               else  /* Step 8 */
                 {
                   mp_size_t zs;
+                  int sst;  /* sign of the secondary term */
 
                   MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
@@ -923,7 +924,12 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                       if (maxexp == MPFR_EXP_MIN)
                         {
                           /* The secondary term is now exact. */
-
+                          if ((wp[ws-1] & MPFR_LIMB_HIGHBIT) != 0)
+                            sst = -1;
+                          else
+                            do
+                              sst = wp[ws] != 0;
+                            while (sst == 0 && ws-- > 0);
                           break;
                         }
                       else
