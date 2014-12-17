@@ -410,7 +410,7 @@ The general ideas of the algorithm:
      * Determine the ternary value as follows: if the sum is exact
        (already known), the ternary value is 0; otherwise it is -1
        if c = 0, and 1 if c = 1.
-     * Check the range and return as in (10).
+     * Check the range and return as in (9).
 
 8. Reiterate like in (3) one or more times using a specific window as
    if sq were 0, i.e. around maxexp + logn to maxexp - logn (wq - sq
@@ -440,22 +440,22 @@ The general ideas of the algorithm:
    remaining bits of the accumulator; the new minexp is obtained by
    subtracting the shift count from it.
 
-9. Depending on:
+   Once the sign of the secondary term is known, depending on:
      * the rounding mode rnd (equivalent to N, D, U),
      * the value of tmd (1 or 2 in rounding to nearest),
      * the rounding bit R (0 or 1),
-     * the sign of the error term (negative, zero, or positive),
+     * the sign sgn of the secondary term (negative, zero, positive),
    correct the sum if need be (± 1 ulp) and determine the corresponding
    ternary value, as in the table below; a question mark means that the
    exact value is the middle of two consecutive machine numbers, and a
    special rule is used to determine the rounding, equivalent to one of
-   the enclosing lines (the ones where error is - or +):
+   the enclosing lines (the ones where sgn is - or +):
      * For nearest-even:
          - last significand bit = 0: choose line where correction = 0;
          - last significand bit = 1: choose line where correction ≠ 0.
      * For nearest-away: choose line where error = +.
 
-     rnd   tmd    R   error     correction   ternary
+     rnd   tmd    R    sgn      correction   ternary
      ───────────────────────────────────────────────
       N     1     0     -           0           +
       N     1     0     0           0           0
@@ -486,7 +486,7 @@ The general ideas of the algorithm:
       U     1     1     +           +           +
      ───────────────────────────────────────────────
 
-10. Check the range (as usual), and return.
+9. Check the range (as usual), and return.
 
 An example:
 
@@ -602,4 +602,4 @@ accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
 
-$Id: sum 75443 2014-12-12 17:09:57Z vinc17/ypig $
+$Id: sum 75578 2014-12-17 15:47:52Z vinc17/ypig $
