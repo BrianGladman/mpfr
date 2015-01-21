@@ -108,6 +108,11 @@ do
     \"Line \$. of file '$file' has more than 2046 bytes.\n\"" "$file"
 done
 
+# Code style: a sign decimal constant for mpfr_set_inf and mpfr_set_zero
+# should be either 1 or -1 (except for the tests in tset.c).
+grep -E 'mpfr_set_(inf|zero) *\([^,]*, *[-+]?([02-9]|1[^)])' $srctests | \
+  grep -v tests/tset\\.c:
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in src/*.c
