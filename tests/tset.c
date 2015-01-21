@@ -59,7 +59,13 @@ check_special (void)
 
   mpfr_set_inf (x, 1);
   PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) < 0,
-                  "ERROR: mpfr_set_inf failed to set variable to +infinity.\n");
+                  "ERROR: mpfr_set_inf failed to set variable to +inf [1].\n");
+  mpfr_set_inf (x, INT_MAX);
+  PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_inf failed to set variable to +inf [2].\n");
+  mpfr_set_inf (x, 0);
+  PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_inf failed to set variable to +inf [3].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_inf_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to +infinity.\n");
@@ -70,7 +76,10 @@ check_special (void)
 
   mpfr_set_inf (x, -1);
   PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) > 0,
-                  "ERROR: mpfr_set_inf failed to set variable to -infinity.\n");
+                  "ERROR: mpfr_set_inf failed to set variable to -inf [1].\n");
+  mpfr_set_inf (x, INT_MIN);
+  PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) > 0,
+                  "ERROR: mpfr_set_inf failed to set variable to -inf [2].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_inf_p (y) || mpfr_sgn (y) > 0 || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to -infinity.\n");
