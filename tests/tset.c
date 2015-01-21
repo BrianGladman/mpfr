@@ -77,14 +77,23 @@ check_special (void)
 
   mpfr_set_zero (x, 1);
   PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
-                  "ERROR: mpfr_set_zero failed to set variable to +0.\n");
+                  "ERROR: mpfr_set_zero failed to set variable to +0 [1].\n");
+  mpfr_set_zero (x, INT_MAX);
+  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_zero failed to set variable to +0 [2].\n");
+  mpfr_set_zero (x, 0);
+  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_zero failed to set variable to +0 [3].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to +0.\n");
 
   mpfr_set_zero (x, -1);
   PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) > 0,
-                  "ERROR: mpfr_set_zero failed to set variable to -0.\n");
+                  "ERROR: mpfr_set_zero failed to set variable to -0 [1].\n");
+  mpfr_set_zero (x, INT_MIN);
+  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_zero failed to set variable to -0 [2].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) > 0 || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to -0.\n");
