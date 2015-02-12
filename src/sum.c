@@ -36,6 +36,17 @@ VL: This is very different:
         sequencial             parallel (& sequential)
 */
 
+/* Update minexp after detecting a potential integer overflow in extreme
+   cases (only 32-bit machines may be concerned in practice). */
+#define UPDATE_MINEXP(E,SH)                     \
+  do                                            \
+    {                                           \
+      mpfr_prec_t sh = (SH);                    \
+      MPFR_ASSERTN ((E) >= MPFR_EXP_MIN + sh);  \
+      minexp = (E) - sh;                        \
+    }                                           \
+  while (0)
+
 /* Accumulate a new [minexp,maxexp[ block into (wp,ws).
  *   wp: pointer to the accumulator (least significant limb first).
  *   ws: size of the accumulator.
@@ -47,7 +58,8 @@ VL: This is very different:
  *   ts: size of this temporary area.
  *   cancelp: pointer to a mpfr_prec_t (see below).
  * Notes:
- * - minexp is also the least significant bit of the accumulator;
+ * - minexp is also the exponent of the least significant bit of the
+ *   accumulator;
  * - the temporary area must be large enough to hold a shifted input
  *   block, and the value of ts is used only when the full assertions
  *   are checked (i.e. with the --enable-assert configure option), to
@@ -476,11 +488,14 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
       while (1)
         {
-          mpfr_exp_t minexp = maxexp + cq - wq;
+          mpfr_exp_t minexp;   /* exponent of the LSB of the block */
           mpfr_prec_t cancel;  /* number of cancelled bits */
           mpfr_exp_t e;        /* temporary exponent of the result */
           mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
           mpfr_exp_t err;      /* exponent of the error bound */
+
+          /* minexp = maxexp + cq - wq */
+          UPDATE_MINEXP (maxexp, wq - cq);
 
           /* Steps 3 and 4: compute the truncated sum and determine
              the number of cancelled bits. */
@@ -911,7 +926,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                             MPN_COPY_INCR (wp + zs, wp, wi);
                         }
 
-                      minexp -= zs * GMP_NUMB_BITS + td;
+                      UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
                     }
                   else  /* err < minexp */
                     {
@@ -923,7 +938,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                          avoid an overflow (as in the early steps). */
                       MPFR_LOG_MSG (("[Step 8] err < minexp\n", 0));
                       zs = ws;
-                      minexp = maxexp + cq0 - wq;
+
+                      /* minexp = maxexp + cq0 - wq */
+                      UPDATE_MINEXP (maxexp, wq - cq0);
                     }
 
                   MPN_ZERO (wp, zs);
@@ -953,7 +970,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                         }
                       else if (MPFR_UNLIKELY (cancel == 0))
                         {
-                          minexp = maxexp + cq0 - wq;
+                          /* minexp = maxexp + cq0 - wq */
+                          UPDATE_MINEXP (maxexp, wq - cq0);
                         }
                       else
                         {
