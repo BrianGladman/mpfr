@@ -927,6 +927,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
                   MPN_ZERO (wp, zs);
 
+                  /* TODO: The loop caused by the possible cancellations is
+                     a bit similar to the main one. So, one may consider to
+                     include this loop in the sum_raw() function (with
+                     updated prototype), though the stop test is different.
+                     The way minexp is updated in case of shift could be
+                     improved by doing minexp -= shiftq (then get rid of
+                     cq, and rename cq0 to cq). */
                   while (1)
                     {
                       maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts,
@@ -943,16 +950,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                             while (sst == 0 && ws-- > 0);
                           break;
                         }
+                      else if (MPFR_UNLIKELY (cancel == 0))
+                        {
+                          minexp = maxexp + cq0 - wq;
+                        }
                       else
                         {
-                          /* TODO: The loop caused by the possible
-                             cancellations is a bit similar to the main one.
-                             So, one may consider to include this loop in
-                             the sum_raw() function (with updated prototype),
-                             though the stop test is different. The way
-                             minexp is updated in case of shift could be
-                             improved by doing minexp -= shiftq (then get
-                             rid of cq, and rename cq0 to cq). */
+
                         }
                     }
 
