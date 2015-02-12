@@ -66,12 +66,11 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
   unsigned long i;
 
   MPFR_LOG_FUNC
-    (("[Step 3]"
-      " maxexp=%" MPFR_EXP_FSPEC "d"
-      " minexp=%" MPFR_EXP_FSPEC "d",
+    (("maxexp=%" MPFR_EXP_FSPEC "d "
+      "minexp=%" MPFR_EXP_FSPEC "d",
       (mpfr_eexp_t) maxexp,
       (mpfr_eexp_t) minexp),
-     (" maxexp2=%" MPFR_EXP_FSPEC "d%s", (mpfr_eexp_t) maxexp2,
+     ("maxexp2=%" MPFR_EXP_FSPEC "d%s", (mpfr_eexp_t) maxexp2,
       maxexp2 == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" :
       maxexp2 == minexp ? " (minexp)" : ""));
 
@@ -392,7 +391,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               }
           }
 
-        MPFR_LOG_MSG (("rn=%lu sign_inf=%d sign_zero=%d\n",
+        MPFR_LOG_MSG (("[Step 1] rn=%lu sign_inf=%d sign_zero=%d\n",
                        rn, sign_inf, sign_zero));
 
         /* At this point the result cannot be NaN (this case has already
@@ -448,7 +447,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
       logn = MPFR_INT_CEIL_LOG2 (rn);
       MPFR_ASSERTD (logn >= 2);
 
-      MPFR_LOG_MSG (("logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
+      MPFR_LOG_MSG (("Step 2 with logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
                      logn, (mpfr_eexp_t) maxexp));
 
       sq = MPFR_GET_PREC (sum);
@@ -484,6 +483,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
           /* Steps 3 and 4: compute the truncated sum and determine
              the number of cancelled bits. */
+          MPFR_LOG_MSG (("Steps 3 and 4\n", 0));
           maxexp = sum_raw (wp, ws, x, n, minexp, maxexp, tp, ts, &cancel);
 
           if (MPFR_UNLIKELY (cancel == 0))
@@ -560,7 +560,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
               MPFR_ASSERTD (shiftq > 0);
               shifts = shiftq / GMP_NUMB_BITS;
               shiftc = shiftq % GMP_NUMB_BITS;
-              MPFR_LOG_MSG (("shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
+              MPFR_LOG_MSG (("[Step 6] "
+                             "shiftq = %Pd = %Pd * GMP_NUMB_BITS + %d\n",
                              shiftq, (mpfr_prec_t) shifts, shiftc));
               if (MPFR_LIKELY (shiftc != 0))
                 mpn_lshift (wp + shifts, wp, ws - shifts, shiftc);
@@ -779,7 +780,8 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 
               neg = sump[sn-1] >> (GMP_NUMB_BITS - 1);
 
-              MPFR_LOG_MSG (("inex = %d, neg = %d\n", inex, neg));
+              MPFR_LOG_MSG (("[Step 7] tmd=%d rbit=%d inex=%d neg=%d\n",
+                             tmd, rbit != 0, inex, neg));
 
               /* Here, if the final sum is known to be exact, inex = 0,
                  otherwise inex = 1. */
@@ -866,6 +868,13 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                   ws = MPFR_PREC2LIMBS (wq - sq);
                   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
 
+                  MPFR_LOG_MSG (("Step 8 with"
+                                 " maxexp=%" MPFR_EXP_FSPEC "d"
+                                 " ws=%Pd"
+                                 " wq=%Pd\n",
+                                 (mpfr_eexp_t) maxexp,
+                                 (mpfr_prec_t) ws, wq));
+
                   /* The d-1 bits from u-2 to u-d (= err) are identical. */
 
                   if (err >= minexp)
@@ -878,6 +887,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                          and the following bits, i.e. the bits from err+1
                          to minexp. */
                       tq = err - minexp + 2;  /* tq = number of such bits */
+                      MPFR_LOG_MSG (("[Step 8] tq=%Pd\n", tq));
                       MPFR_ASSERTD (tq >= 2);
 
                       wi = tq / GMP_NUMB_BITS;
@@ -910,6 +920,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                          will be 0. The new minexp is determined
                          from maxexp, where cq0 bits reserved to
                          avoid an overflow (as in the early steps). */
+                      MPFR_LOG_MSG (("[Step 8] err < minexp\n", 0));
                       zs = ws;
                       minexp = maxexp + cq0 - wq;
                     }
@@ -944,6 +955,10 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
                              rid of cq, and rename cq0 to cq). */
                         }
                     }
+
+                  MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
+                                 tmd, rbit != 0, sst));
+
 
 
                 }  /* Step 8 block */
