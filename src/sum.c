@@ -70,9 +70,10 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
       "minexp=%" MPFR_EXP_FSPEC "d",
       (mpfr_eexp_t) maxexp,
       (mpfr_eexp_t) minexp),
-     ("maxexp2=%" MPFR_EXP_FSPEC "d%s", (mpfr_eexp_t) maxexp2,
+     ("maxexp2=%" MPFR_EXP_FSPEC "d%s cancel=%Pd",
+      (mpfr_eexp_t) maxexp2,
       maxexp2 == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" :
-      maxexp2 == minexp ? " (minexp)" : ""));
+      maxexp2 == minexp ? " (minexp)" : "", *cancelp));
 
   for (i = 0; i < n; i++)
     if (! MPFR_IS_SINGULAR (x[i]))
