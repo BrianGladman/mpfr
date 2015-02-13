@@ -1,4 +1,4 @@
-# Copyright 2000-2014 Free Software Foundation, Inc.
+# Copyright 2000-2015 Free Software Foundation, Inc.
 # This Makefile.am is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -50,7 +50,7 @@ AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.dat tmul.dat \
 	mpfrtest.dat
 
-LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/src/libmpfr.la
+LDADD = libfrtests.la $(MPFR_LIBM) $(MPFR_LIBQUADMATH) $(top_builddir)/src/libmpfr.la
 AM_CPPFLAGS += -I$(top_srcdir)/src -I$(top_builddir)/src
 
 # LOADLIBES (documented in the "GNU make" manual and equivalent to LDLIBS)
@@ -92,5 +92,6 @@ TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 #   https://sympa.inria.fr/sympa/arc/mpfr/2011-10/msg00065.html
 # and
 #   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=9728
+#   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=18662
 #
 AM_LDFLAGS = -no-install -L$(top_builddir)/src/.libs

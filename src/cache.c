@@ -1,6 +1,6 @@
 /* mpfr_cache -- cache interface for multiple-precision constants in MPFR.
 
-Copyright 2004-2014 Free Software Foundation, Inc.
+Copyright 2004-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -37,9 +37,11 @@ mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mpfr_rnd_t))
 void
 mpfr_clear_cache (mpfr_cache_t cache)
 {
-  if (MPFR_PREC (cache->x) != 0)
-    mpfr_clear (cache->x);
-  MPFR_PREC (cache->x) = 0;
+  if (MPFR_UNLIKELY (MPFR_PREC (cache->x) != 0))
+    {
+      mpfr_clear (cache->x);
+      MPFR_PREC (cache->x) = 0;
+    }
 }
 
 int

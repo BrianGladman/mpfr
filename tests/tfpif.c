@@ -1,6 +1,6 @@
 /* Test file for mpfr_fpif.
 
-Copyright 2012-2014 Free Software Foundation, Inc.
+Copyright 2012-2015 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
 
 This file is part of the GNU MPFR Library.
@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   mpfr_set_str1 (x[2], "45.2564215000000018562786863185465335845947265625");
   mpfr_set_exp (x[2], -48000);
   mpfr_set_inf (x[3], -1);
-  mpfr_set_zero (x[4], 0);
+  mpfr_set_zero (x[4], 1);
   mpfr_set_nan (x[5]);
   mpfr_set_ui (x[6], 104348, MPFR_RNDN);
   mpfr_set_ui (x[7], 33215, MPFR_RNDN);

@@ -1,6 +1,6 @@
 dnl  MPFR specific autoconf macros
 
-dnl  Copyright 2000, 2002-2014 Free Software Foundation, Inc.
+dnl  Copyright 2000, 2002-2015 Free Software Foundation, Inc.
 dnl  Contributed by the AriC and Caramel projects, INRIA.
 dnl
 dnl  This file is part of the GNU MPFR Library.
@@ -40,6 +40,7 @@ AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
+AC_REQUIRE([MPFR_CHECK_LIBQUADMATH])
 AC_REQUIRE([AC_HEADER_TIME])
 AC_REQUIRE([AC_CANONICAL_HOST])
 
@@ -649,6 +650,32 @@ You need to use another compiler (or lower the optimization level).])
 esac
 ])
 
+dnl MPFR_CHECK_MP_LIMB_T_VS_LONG
+dnl ----------------------------
+dnl Check that a long can fit in a mp_limb_t.
+dnl If so, it set the define MPFR_LONG_WITHIN_LIMB
+AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
+AC_REQUIRE([MPFR_CONFIGS])
+AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
+saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <gmp.h>
+#include "mpfr-sassert.h"
+]], [[
+  MPFR_STAT_STAT_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
+  return 0;
+]])], [mpfr_cv_long_within_limb="yes"],
+      [mpfr_cv_long_within_limb="no"],
+      [mpfr_cv_long_within_limb="cannot test, assume not present"])
+])
+case $mpfr_cv_long_within_limb in
+yes*)
+      AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t])
+esac
+CPPFLAGS="$saved_CPPFLAGS"
+])
+
 dnl MPFR_PARSE_DIRECTORY
 dnl Input:  $1 = a string to a relative or absolute directory
 dnl Output: $2 = the variable to set with the absolute directory
@@ -1108,6 +1135,19 @@ case $host in
 esac
 ])
 
+dnl  MPFR_CHECK_LIBQUADMATH
+dnl  ---------------
+dnl  Determine a math library -lquadmath to use.
+
+AC_DEFUN([MPFR_CHECK_LIBQUADMATH],
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_SUBST(MPFR_LIBQUADMATH,'')
+case $host in
+  *)
+    AC_CHECK_LIB(quadmath, main, MPFR_LIBQUADMATH="-lquadmath")
+    ;;
+esac
+])
 
 dnl  MPFR_LD_SEARCH_PATHS_FIRST
 dnl  --------------------------

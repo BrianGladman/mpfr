@@ -1,6 +1,6 @@
 /* Test file for multiple mpfr.h inclusion and intmax_t related functions
 
-Copyright 2010-2014 Free Software Foundation, Inc.
+Copyright 2010-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

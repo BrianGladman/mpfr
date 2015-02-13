@@ -1,4 +1,4 @@
-# Copyright 2000-2014 Free Software Foundation, Inc.
+# Copyright 2000-2015 Free Software Foundation, Inc.
 # This Makefile.am is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -79,8 +79,8 @@ libmpfr_la_LIBADD = @LIBOBJS@
 #        2.4.x    3:x:2
 #        3.0.x    4:x:0
 #        3.1.x    5:x:1
-#        3.2.x    6:x:2
-libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:2
+#        3.2.x    6:x:0
+libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:0
 
 # Important note: If for some reason, srcdir is read-only at build time
 # (and you use objdir != srcdir), then you need to rebuild get_patches.c

@@ -1,6 +1,6 @@
 /* mpfr_cmp_d -- compare a floating-point number with a double
 
-Copyright 2003-2004, 2006-2014 Free Software Foundation, Inc.
+Copyright 2003-2004, 2006-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -27,12 +27,12 @@ mpfr_cmp_d (mpfr_srcptr b, double d)
 {
   mpfr_t tmp;
   int res;
+  mp_limb_t tmp_man[MPFR_LIMBS_PER_DOUBLE];
 
-  mpfr_init2 (tmp, IEEE_DBL_MANT_DIG);
+  MPFR_TMP_INIT1(tmp_man, tmp, IEEE_DBL_MANT_DIG);
   res = mpfr_set_d (tmp, d, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (b, tmp);
-  mpfr_clear (tmp);
 
   return res;
 }

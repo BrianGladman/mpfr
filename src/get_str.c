@@ -1,6 +1,6 @@
 /* mpfr_get_str -- output a floating-point number to a string
 
-Copyright 1999-2014 Free Software Foundation, Inc.
+Copyright 1999-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -48,15 +48,18 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 #define MPFR_ROUND_FAILED 3
 
-/* Input: an approximation r*2^f of a real Y, with |r*2^f-Y| <= 2^(e+f).
-   Returns if possible in the string s the mantissa corresponding to
-   the integer nearest to Y, within the direction rnd, and returns the
-   exponent in exp.
+/* Input: an approximation r*2^f to a real Y, with |r*2^f - Y| <= 2^(e+f).
+
+   If rounding is possible, returns:
+   - in s: a string representing the significand corresponding to
+     the integer nearest to Y, within the direction rnd;
+   - in exp: the exponent.
+
    n is the number of limbs of r.
-   e represents the maximal error in the approximation of Y
+   e represents the maximal error in the approximation to Y (see above),
       (e < 0 iff the approximation is exact, i.e., r*2^f = Y).
    b is the wanted base (2 <= b <= 62).
-   m is the number of wanted digits in the mantissa.
+   m is the number of wanted digits in the significand.
    rnd is the rounding mode.
    It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value
    satisfies b^(m-1) <= rnd(Y) < b^(m+1).
@@ -104,7 +107,7 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
      the bits from R are referenced by pairs (i,j) */
 
   /* check if is possible to round r with rnd mode
-     where |r*2^f-Y| <= 2^(e+f)
+     where |r*2^f - Y| <= 2^(e+f)
      the exponent of R is: f + n*GMP_NUMB_BITS
      we must have e + f == f + n*GMP_NUMB_BITS - err
      err = n*GMP_NUMB_BITS - e
@@ -2216,13 +2219,13 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   mpfr_srcptr p;
   mpfr_t t;
   mpfr_exp_t r;
+  mp_limb_t tmpmant[(sizeof (mpfr_exp_t) - 1 ) / sizeof (mp_limb_t) + 1];
 
   p = &__gmpfr_l2b[beta-2][i];
-  mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
+  MPFR_TMP_INIT1(tmpmant, t, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_set_exp_t (t, e, MPFR_RNDU);
   mpfr_mul (t, t, p, MPFR_RNDU);
   r = mpfr_get_exp_t (t, MPFR_RNDU);
-  mpfr_clear (t);
   return r;
 }
 
@@ -2240,7 +2243,8 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
    the memory space allocated, with free(s, strlen(s)).
 */
 char*
-mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t rnd)
+mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
+              mpfr_rnd_t rnd)
 {
   const char *num_to_text;
   int exact;                      /* exact result */
@@ -2259,10 +2263,15 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
   int ret; /* return value of mpfr_get_str_aux */
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  MPFR_TMP_DECL(marker);
+  MPFR_TMP_DECL (marker);
 
   /* if exact = 1 then err is undefined */
   /* otherwise err is such that |x*b^(m-g)-a*2^exp_a| < 2^(err+exp_a) */
+
+  MPFR_LOG_FUNC
+    (("b=%d m=%zu x[%Pu]=%.*Rg rnd=%d",
+      b, m, mpfr_get_prec (x), mpfr_log_prec, x, rnd),
+     ("flags=%lx", (unsigned long) __gmpfr_flags));
 
   /* is the base valid? */
   if (b < 2 || b > 62)
@@ -2275,6 +2284,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       if (s == NULL)
         s = (char *) (*__gmp_allocate_func) (6);
       strcpy (s, "@NaN@");
+      MPFR_LOG_MSG (("%s\n", s));
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return s;
     }
 
@@ -2285,6 +2296,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       if (s == NULL)
         s = (char *) (*__gmp_allocate_func) (neg + 6);
       strcpy (s, (neg) ? "-@Inf@" : "@Inf@");
+      MPFR_LOG_MSG (("%s\n", s));
       return s;
     }
 
@@ -2307,18 +2319,21 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
         m = 2;
     }
 
+  MPFR_LOG_MSG (("m=%zu\n", m));
+
   /* the code below for non-power-of-two bases works for m=1 */
   MPFR_ASSERTN (m >= 2 || (!IS_POW2(b) && m >= 1));
 
   /* x is a floating-point number */
 
-  if (MPFR_IS_ZERO(x))
+  if (s == NULL)
+    s = (char *) (*__gmp_allocate_func) (neg + m + 1);
+  s0 = s;
+  if (neg)
+    *s++ = '-';
+
+  if (MPFR_IS_ZERO (x))
     {
-      if (s == NULL)
-        s = (char*) (*__gmp_allocate_func) (neg + m + 1);
-      s0 = s;
-      if (neg)
-        *s++ = '-';
       memset (s, '0', m);
       s[m] = '\0';
       *e = 0; /* a bit like frexp() in ISO C99 */
@@ -2326,15 +2341,9 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       return s0; /* strlen(s0) = neg + m */
     }
 
-  if (s == NULL)
-    s = (char*) (*__gmp_allocate_func) (neg + m + 1);
-  s0 = s;
-  if (neg)
-    *s++ = '-';
+  xp = MPFR_MANT (x);
 
-  xp = MPFR_MANT(x);
-
-  if (IS_POW2(b))
+  if (IS_POW2 (b))
     {
       int pow2;
       mpfr_exp_t f, r;
@@ -2389,22 +2398,24 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
             n --;
         }
 
-      mpn_get_str ((unsigned char*) s, b, x1, n);
-      for (i=0; i<m; i++)
+      mpn_get_str ((unsigned char *) s, b, x1, n);
+      for (i = 0; i < m; i++)
         s[i] = num_to_text[(int) s[i]];
       s[m] = 0;
 
       /* the exponent of s is f + 1 */
       *e = f + 1;
 
-      MPFR_TMP_FREE(marker);
+      MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) *e));
+
+      MPFR_TMP_FREE (marker);
       MPFR_SAVE_EXPO_FREE (expo);
-      return (s0);
+      return s0;
     }
 
   /* if x < 0, reduce to x > 0 */
   if (neg)
-    rnd = MPFR_INVERT_RND(rnd);
+    rnd = MPFR_INVERT_RND (rnd);
 
   g = mpfr_ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
   exact = 1;
@@ -2417,7 +2428,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
-      MPFR_TMP_MARK(marker);
+      MPFR_TMP_MARK (marker);
 
       exact = 1;
 
@@ -2430,7 +2441,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       nx = MPFR_LIMB_SIZE (x);
 
       if ((mpfr_exp_t) m == g) /* final exponent is 0, no multiplication or
-                                division to perform */
+                                  division to perform */
         {
           if (nx > n)
             exact = mpn_scan1 (xp, 0) >= (nx - n) * GMP_NUMB_BITS;
@@ -2520,36 +2531,39 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t
       /* check if rounding is possible */
       if (exact)
         err = -1;
+
       ret = mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd);
+
+      MPFR_TMP_FREE (marker);
+
       if (ret == MPFR_ROUND_FAILED)
         {
           /* too large error: increment the working precision */
           MPFR_ZIV_NEXT (loop, prec);
         }
-      else if (ret == -MPFR_ROUND_FAILED)
+      else if (ret == - MPFR_ROUND_FAILED)
         {
           /* too many digits in mantissa: exp = |m-g| */
           if ((mpfr_exp_t) m > g) /* exp = m - g, multiply by b^exp */
             {
-              g++;
+              g ++;
               exp --;
             }
           else /* exp = g - m, divide by b^exp */
             {
-              g++;
+              g ++;
               exp ++;
             }
         }
       else
         break;
-
-      MPFR_TMP_FREE(marker);
     }
   MPFR_ZIV_FREE (loop);
 
   *e += g;
 
-  MPFR_TMP_FREE(marker);
+  MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) *e));
+
   MPFR_SAVE_EXPO_FREE (expo);
   return s0;
 }

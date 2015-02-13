@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_COPYRIGHT([
-Copyright 1999-2014 Free Software Foundation, Inc.
+Copyright 1999-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -474,7 +474,7 @@ error
 #endif
      ]], [[]])],[AC_MSG_RESULT(DLL)],[
   AC_MSG_RESULT(static)
-  AC_MSG_ERROR([gmp.h isn't a DLL: use --enable-static --disable-shared]) ])
+  AC_MSG_ERROR([libgmp isn't provided as a DLL: use --enable-static --disable-shared]) ])
    else
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
@@ -484,7 +484,7 @@ error
 #endif
      ]], [[]])],[AC_MSG_RESULT(static)],[
   AC_MSG_RESULT(DLL)
-  AC_MSG_ERROR([gmp.h is a DLL: use --disable-static --enable-shared]) ])
+  AC_MSG_ERROR([libgmp is provided as a DLL: use --disable-static --enable-shared]) ])
   fi
   ;;
 esac
@@ -630,6 +630,8 @@ dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
 dnl Same for __gmpn_sbpi1_divappr_q.
 AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
+
+MPFR_CHECK_MP_LIMB_T_VS_LONG
 
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])

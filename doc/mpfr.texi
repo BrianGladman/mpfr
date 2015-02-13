@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.2.0-dev
-@set UPDATED-MONTH August 2014
+@set UPDATED-MONTH February 2015
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -19,7 +19,7 @@
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
 
-Copyright 1991, 1993-2014 Free Software Foundation, Inc.
+Copyright 1991, 1993-2015 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License, Version 1.2 or any later
@@ -923,6 +923,9 @@ MPFR functions may create caches, e.g., when computing constants such
 as @m{\pi,Pi}, either because the user has called a function like
 @code{mpfr_const_pi} directly or because such a function was called
 internally by the MPFR library itself to compute some other function.
+When more precision is needed, the value is automatically recomputed;
+a minimum of 10% increase of the precision is guaranteed to avoid too
+many recomputations.
 
 At any time, the user can free the various caches with
 @code{mpfr_free_cache}. It is strongly advised to do that before
@@ -1467,7 +1470,7 @@ Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
 The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
 do not exist in MPF@.  If @var{op} is NaN, then @var{rop} is undefined.
-If @var{op} is an +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
+If @var{op} is +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
 the maximum (resp.@: minimum) value in the precision of the MPF number;
 if a future MPF version supports infinities, this behavior will be
 considered incorrect and will change (portable programs should assume
@@ -1481,12 +1484,18 @@ than in MPFR, so that an overflow or underflow is not possible.
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
-number of significant digits output in the string;
-in the latter case, @var{n} must be greater
-or equal to 2. The base may vary from 2 to 62.
-If the input number is an ordinary number, the exponent is written through
+number of significant digits output in the string; in the latter case,
+@var{n} must be greater or equal to 2. The base may vary from 2 to 62;
+otherwise the function does nothing and immediately returns a null pointer.
+
+If the input is NaN, then the returned string is @code{@@NaN@@} and the
+NaN flag is set. If the input is +Inf (resp.@: @minus{}Inf), then the
+returned string is @code{@@Inf@@} (resp.@: @code{-@@Inf@@}).
+
+If the input number is a finite number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
-written).
+written); the type @code{mpfr_exp_t} is large enough to hold the exponent
+in all cases.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
@@ -1521,17 +1530,19 @@ but in some very rare cases, it might be @math{m+1}
 for bases 7 and 49).
 
 If @var{str} is a null pointer, space for the significand is allocated using
-the current allocation function, and a pointer to the string is returned.
+the current allocation function and a pointer to the string is returned
+(unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
-plus the terminating null character.
+plus the terminating null character. The pointer to the string @var{str}
+is returned (unless the base is invalid).
 
-A pointer to the string is returned, unless there is an error, in which
-case a null pointer is returned.
+Note: The inexact flag is currently not set when the conversion is inexact;
+this is regarded as a bug.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
@@ -3609,6 +3620,11 @@ and @code{mpfr_get_f} now returns the usual ternary value.
 and @code{mpfr_get_uj} changed in MPFR 3.0.
 In previous MPFR versions, the cases where the @emph{erange} flag
 is set were unspecified.
+
+@item @code{mpfr_get_str} changed in MPFR 3.2.
+This function now sets the NaN flag on NaN input (to follow the usual MPFR
+rules on NaN and IEEE 754-2008 recommendations on string conversions from
+Subclause 5.12.1). The previous behavior was regarded as a bug.
 
 @item @code{mpfr_get_z} changed in MPFR 3.0.
 The return type was @code{void}; it is now @code{int}, and the usual

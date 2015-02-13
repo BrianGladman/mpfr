@@ -1,4 +1,4 @@
-Copyright 2000-2014 Free Software Foundation, Inc.
+Copyright 2000-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -37,7 +37,13 @@ Changes from versions 3.1.* to version 3.2.0:
   rounding to nearest-away (as defined in IEEE 754-2008).
 - New functions mpfr_nrandom and mpfr_erandom to generate random numbers
   following normal and exponential distributions respectively.
+- The behavior of the mpfr_set_exp function changed, as it could easily
+  yield undefined behavior in some cases (this modifies both the API and
+  the ABI).
 - Function mpfr_grandom is deprecated and will be removed in a future release.
+- Internally, improved caching: a minimum of 10% increase of the precision
+  is guaranteed to avoid too many recomputations; added mpz_t caching.
+  [TODO: add shared caches; note that the ABI can be changed.]
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
   --with-gmp-build.
@@ -49,8 +55,9 @@ Changes from versions 3.1.* to version 3.2.0:
 - Speedup in the mpfr_const_euler function (contributed by Fredrik Johansson),
   in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
   mpfr_digamma, mpfr_lngamma and mpfr_lgamma), and in mpfr_div.
-- Bug fixes. In particular, a speed improvement when the --enable-assert
-  or --enable-assert=full configure option is used with GCC.
+- Bug fixes. In particular: a speed improvement when the --enable-assert
+  or --enable-assert=full configure option is used with GCC; mpfr_get_str
+  now sets the NaN flag on NaN input.
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.

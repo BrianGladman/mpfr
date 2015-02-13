@@ -1,6 +1,6 @@
 /* Miscellaneous support for test programs.
 
-Copyright 2001-2014 Free Software Foundation, Inc.
+Copyright 2001-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -192,16 +192,31 @@ test_version (void)
               buffer, version);
     }
   else
-    printf ("%sIncorrect MPFR version! (%s header vs %s library)\n"
-            "Nothing else has been tested since for this reason,\n"
-            "any other test may fail. Please fix this one first.\n\n"
-            "You can try to avoid this problem by changing the value of\n"
-            "shlibpath_overrides_runpath in the libtool file and rebuild\n"
-            "MPFR (make clean && make && make check).\n"
-            "Otherwise this error may be due to a corrupted mpfr.h, an\n"
-            "incomplete build (try to rebuild MPFR from scratch and/or\n"
-            "use 'make clean'), or something wrong in the system.\n",
-            err ? "\n" : "", MPFR_VERSION_STRING, version);
+    printf (
+      "%sIncorrect MPFR version! (%s header vs %s library)\n"
+      "Nothing else has been tested since for this reason, any other test\n"
+      "may fail.  Please fix this problem first, as suggested below.  It\n"
+      "probably comes from libtool (included in the MPFR tarball), which\n"
+      "is responsible for setting up the search paths depending on the\n"
+      "platform, or automake.\n"
+      "  * On some platforms such as Solaris, $LD_LIBRARY_PATH overrides\n"
+      "    the rpath, and if the MPFR library is already installed in a\n"
+      "    $LD_LIBRARY_PATH directory, you typically get this error.  Do\n"
+      "    not use $LD_LIBRARY_PATH on such platforms; it may also break\n"
+      "    other things.\n"
+      "  * Then look at http://www.mpfr.org/mpfr-current/ for any update.\n"
+      "  * Try again on a completely clean source (some errors might come\n"
+      "    from a previous build or previous source changes).\n"
+      "  * If the error still occurs, you can try to change the value of\n"
+      "    shlibpath_overrides_runpath ('yes' or 'no') in the \"libtool\"\n"
+      "    file and rebuild MPFR (make clean && make && make check).  You\n"
+      "    may want to report the problem to the libtool and/or automake\n"
+      "    developers, with the effect of this change.\n",
+      err ? "\n" : "", MPFR_VERSION_STRING, version);
+  /* Note about $LD_LIBRARY_PATH under Solaris:
+   *   https://en.wikipedia.org/wiki/Rpath#Solaris_ld.so
+   * This cause has been confirmed by a user who got this error.
+   */
   exit (1);
 }
 

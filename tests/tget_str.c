@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_str.
 
-Copyright 1999, 2001-2014 Free Software Foundation, Inc.
+Copyright 1999, 2001-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -1012,10 +1012,16 @@ check_large (void)
   mpfr_free_str (s);
 
   mpfr_set_nan (x);
+  mpfr_clear_flags ();
   s = mpfr_get_str (NULL, &e, 10, 1000, x, MPFR_RNDN);
   if (strcmp (s, "@NaN@"))
     {
-      printf ("Error for NaN\n");
+      printf ("Error for NaN (incorrect string)\n");
+      exit (1);
+    }
+  if (__gmpfr_flags != MPFR_FLAGS_NAN)
+    {
+      printf ("Error for NaN (incorrect flags)\n");
       exit (1);
     }
   mpfr_free_str (s);
@@ -1079,6 +1085,8 @@ check_special (int b, mpfr_prec_t p)
   int r;
   size_t m;
 
+  mpfr_init2 (x, p);
+
   /* check for invalid base */
   if (mpfr_get_str (s, &e, 1, 10, x, MPFR_RNDN) != NULL)
     {
@@ -1092,16 +1100,15 @@ check_special (int b, mpfr_prec_t p)
     }
 
   s2[0] = '1';
-  for (i=1; i<MAX_DIGITS+2; i++)
+  for (i = 1; i < MAX_DIGITS + 2; i++)
     s2[i] = '0';
 
-  mpfr_init2 (x, p);
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  for (i=1; i<MAX_DIGITS && mpfr_mul_ui (x, x, b, MPFR_RNDN) == 0; i++)
+  for (i = 1; i < MAX_DIGITS && mpfr_mul_ui (x, x, b, MPFR_RNDN) == 0; i++)
     {
       /* x = b^i (exact) */
       for (r = 0; r < MPFR_RND_MAX; r++)
-        for (m= (i<3)? 2 : i-1 ; (int) m <= i+1 ; m++)
+        for (m = i < 3 ? 2 : i-1 ; (int) m <= i+1 ; m++)
           {
             mpfr_get_str (s, &e, b, m, x, (mpfr_rnd_t) r);
             /* s should be 1 followed by (m-1) zeros, and e should be i+1 */

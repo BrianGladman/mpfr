@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_decimal64 and mpfr_set_decimal64.
 
-Copyright 2006-2014 Free Software Foundation, Inc.
+Copyright 2006-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -19,6 +19,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"       /* for a build within gmp */
+#endif
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 

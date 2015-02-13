@@ -1,6 +1,6 @@
 /* Chi-squared test for mpfr_erandom
 
-Copyright 2011-2014 Free Software Foundation, Inc.
+Copyright 2011-2015 Free Software Foundation, Inc.
 Contributed by Charles Karney <charles@karney.com>, SRI International.
 
 This file is part of the GNU MPFR Library.

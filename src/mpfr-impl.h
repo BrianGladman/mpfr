@@ -1,6 +1,6 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999-2014 Free Software Foundation, Inc.
+Copyright 1999-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -2058,5 +2058,32 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 # define mpz_init mpfr_mpz_init
 # define mpz_clear mpfr_mpz_clear
 #endif
+
+/******************************************************
+ ********** Compute LOG2(LOG2(MPFR_PREC_MAX))**********
+ ******************************************************/
+#if   _MPFR_PREC_FORMAT == 1
+# define MPFR_PREC_MAX_TEMP USHRT_MAX
+#elif _MPFR_PREC_FORMAT == 2
+# define MPFR_PREC_MAX_TEMP UINT_MAX
+#elif _MPFR_PREC_FORMAT == 3
+# define MPFR_PREC_MAX_TEMP ULONG_MAX
+#endif
+
+#if MPFR_PREC_MAX_TEMP == 255UL
+# define MPFR_PREC_BITS 8
+# define MPFR_LOG2_PREC_BITS 3
+#elif MPFR_PREC_MAX_TEMP == 65535UL
+# define MPFR_PREC_BITS 16
+# define MPFR_LOG2_PREC_BITS 4
+#elif MPFR_PREC_MAX_TEMP == 4294967295UL
+# define MPFR_PREC_BITS 32
+# define MPFR_LOG2_PREC_BITS 5
+#else
+/* Assume MPFR_PREC_MAX_TEMP == 18446744073709551615ULL */
+# define MPFR_PREC_BITS 64
+# define MPFR_LOG2_PREC_BITS 6
+#endif
+
 
 #endif
