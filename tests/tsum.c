@@ -42,17 +42,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 static int
-check_is_sorted (unsigned long n, mpfr_srcptr *perm)
-{
-  unsigned long i;
-
-  for (i = 0; i < n - 1; i++)
-    if (MPFR_GET_EXP(perm[i]) < MPFR_GET_EXP(perm[i+1]))
-      return 0;
-  return 1;
-}
-
-static int
 sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mpfr_rnd_t rnd)
 {
   mpfr_ptr *tabtmp;
@@ -133,47 +122,6 @@ algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mpfr_prec_t f)
           exit (1);
         }
     }
-}
-
-/* Test the sorting function */
-static void
-test_sort (mpfr_prec_t f, unsigned long n)
-{
-  mpfr_t *tab;
-  mpfr_ptr *tabtmp;
-  mpfr_srcptr *perm;
-  unsigned long i;
-  mpfr_prec_t prec = MPFR_PREC_MIN;
-
-  /* Init stuff */
-  tab = (mpfr_t *) (*__gmp_allocate_func) (n * sizeof (mpfr_t));
-  for (i = 0; i < n; i++)
-    mpfr_init2 (tab[i], f);
-  tabtmp = (mpfr_ptr *) (*__gmp_allocate_func) (n * sizeof(mpfr_ptr));
-  perm = (mpfr_srcptr *) (*__gmp_allocate_func) (n * sizeof(mpfr_srcptr));
-
-  for (i = 0; i < n; i++)
-    {
-      mpfr_urandomb (tab[i], RANDS);
-      tabtmp[i] = tab[i];
-    }
-
-  mpfr_sum_sort ((mpfr_srcptr *)tabtmp, n, perm, &prec);
-
-  if (check_is_sorted (n, perm) == 0)
-    {
-      printf ("mpfr_sum_sort incorrect.\n");
-      for (i = 0; i < n; i++)
-        mpfr_dump (perm[i]);
-      exit (1);
-    }
-
-  /* Clear stuff */
-  for (i = 0; i < n; i++)
-    mpfr_clear (tab[i]);
-  (*__gmp_free_func) (tab, n * sizeof (mpfr_t));
-  (*__gmp_free_func) (tabtmp, n * sizeof(mpfr_ptr));
-  (*__gmp_free_func) (perm, n * sizeof(mpfr_srcptr));
 }
 
 static void
@@ -539,7 +487,6 @@ main (void)
   check_special ();
   check_more_special ();
   bug20131027 ();
-  test_sort (1764, 1026);
   for (p = 2 ; p < 444 ; p += 17)
     for (n = 2 ; n < 1026 ; n += 42 + p)
       test_sum (p, n);
