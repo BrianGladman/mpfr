@@ -1,6 +1,6 @@
 /* mpfr_sech - Hyperbolic secant function = 1/cosh.
 
-Copyright 2005-2014 Free Software Foundation, Inc.
+Copyright 2005-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

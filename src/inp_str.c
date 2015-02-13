@@ -1,7 +1,7 @@
 /* mpfr_inp_str -- input a number in base BASE from stdio stream STREAM
                    and store the result in ROP
 
-Copyright 1999, 2001-2002, 2004, 2006-2014 Free Software Foundation, Inc.
+Copyright 1999, 2001-2002, 2004, 2006-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

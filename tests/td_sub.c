@@ -1,6 +1,6 @@
 /* Test file for mpfr_d_sub
 
-Copyright 2007-2014 Free Software Foundation, Inc.
+Copyright 2007-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

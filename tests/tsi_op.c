@@ -1,7 +1,7 @@
 /* Test file for mpfr_add_si, mpfr_sub_si, mpfr_si_sub, mpfr_mul_si,
    mpfr_div_si, mpfr_si_div
 
-Copyright 2004, 2006-2014 Free Software Foundation, Inc.
+Copyright 2004, 2006-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

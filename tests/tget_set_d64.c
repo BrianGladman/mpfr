@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_decimal64 and mpfr_set_decimal64.
 
-Copyright 2006-2014 Free Software Foundation, Inc.
+Copyright 2006-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

@@ -1,7 +1,7 @@
 /* Generic test file for functions with one or two arguments (the second being
    either mpfr_t or double).
 
-Copyright 2001-2014 Free Software Foundation, Inc.
+Copyright 2001-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

@@ -1,6 +1,6 @@
 /* Test file for mpfr_rint, mpfr_trunc, mpfr_floor, mpfr_ceil, mpfr_round.
 
-Copyright 2002-2014 Free Software Foundation, Inc.
+Copyright 2002-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
