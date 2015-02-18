@@ -492,14 +492,17 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
           /* Let's copy/shift the bits [max(u,minexp),e) to the
              most significant part of the destination, and zero
-             the least significant part. Then take the absolute
-             value, and do an initial rounding.
+             the least significant part (there can be one only if
+             u < minexp). The trailing bits of the destination may
+             contain garbage at this point. Then, at the same time,
+             take the absolute value and do an initial rounding,
+             zeroing the trailing bits at this point.
              TODO: This may be improved by merging some operations
              is particular case. The average speed-up may not be
              significant, though. To be tested... */
           sn = MPFR_PREC2LIMBS (sq);
           sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
-          sh = (mpfr_uexp_t) e % GMP_NUMB_BITS;
+          sh = cancel % GMP_NUMB_BITS;
           if (MPFR_LIKELY (u > minexp))
             {
               mpfr_prec_t tq;
@@ -521,7 +524,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                     sump[0] |= wp[wi] >> (GMP_NUMB_BITS - sh);
                 }
               else
-                MPN_COPY (sump, wp + wi, sn);
+                {
+                  MPFR_ASSERTD ((mpfr_prec_t) (ws - (wi + sn)) * GMP_NUMB_BITS
+                                == cancel);
+                  MPN_COPY (sump, wp + wi, sn);
+                }
 
               /* Determine the rounding bit, which is represented. */
               td = tq % GMP_NUMB_BITS;
@@ -864,6 +871,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
             }  /* Step 8 block */
 
+          MPFR_SET_EXP (sum, e);
           break;
         }  /* Steps 7 & 8 block */
     }  /* main loop */
