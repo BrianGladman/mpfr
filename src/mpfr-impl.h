@@ -1627,11 +1627,15 @@ typedef struct {
   static const char *_x ## _fname = __func__;                           \
   auto void __attribute__ ((destructor)) x ## _f  (void);               \
   void __attribute__ ((destructor)) x ## _f  (void) {                   \
-    if (_x ## _loop != 0 && (MPFR_LOG_STAT_F & mpfr_log_type))          \
+    if (_x ## _loop != 0 && (MPFR_LOG_STAT_F & mpfr_log_type)) {        \
       fprintf (mpfr_log_file,                                           \
                "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n",  \
                _x ## _fname, (double) 100.0 * _x ## _bad / _x ## _loop, \
-               _x ## _bad, _x ## _loop ); }
+               _x ## _bad, _x ## _loop );                               \
+      if (mpfr_log_flush)                                               \
+        fflush (mpfr_log_file);                                         \
+    }                                                                   \
+  }
 
 #define MPFR_ZIV_INIT(_x, _p)                                           \
   do                                                                    \
@@ -1695,6 +1699,7 @@ extern "C" {
 #endif
 
 __MPFR_DECLSPEC extern FILE *mpfr_log_file;
+__MPFR_DECLSPEC extern int   mpfr_log_flush;
 __MPFR_DECLSPEC extern int   mpfr_log_type;
 __MPFR_DECLSPEC extern int   mpfr_log_level;
 __MPFR_DECLSPEC extern int   mpfr_log_current;
@@ -1715,6 +1720,8 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
         __gmpfr_cache_const_pi = __gmpfr_logging_pi;                    \
         __gmpfr_cache_const_log2 = __gmpfr_logging_log2;                \
         mpfr_fprintf (mpfr_log_file, format, __VA_ARGS__);              \
+        if (mpfr_log_flush)                                             \
+          fflush (mpfr_log_file);                                       \
         mpfr_log_level = old_level;                                     \
         __gmpfr_cache_const_pi = __gmpfr_normal_pi;                     \
         __gmpfr_cache_const_log2 = __gmpfr_normal_log2;                 \
