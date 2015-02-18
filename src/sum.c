@@ -79,9 +79,9 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
 
   MPFR_LOG_FUNC
     (("maxexp=%" MPFR_EXP_FSPEC "d "
-      "minexp=%" MPFR_EXP_FSPEC "d",
-      (mpfr_eexp_t) maxexp,
-      (mpfr_eexp_t) minexp),
+      "minexp=%" MPFR_EXP_FSPEC "d ws=%Pd ts=%Pd",
+      (mpfr_eexp_t) maxexp, (mpfr_eexp_t) minexp,
+      (mpfr_prec_t) ws, (mpfr_prec_t) ts),
      ("maxexp2=%" MPFR_EXP_FSPEC "d%s cancel=%Pd",
       (mpfr_eexp_t) maxexp2,
       maxexp2 == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" :
@@ -355,6 +355,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   ws = MPFR_PREC2LIMBS (cq + sq + logn + 2);
   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
   MPFR_ASSERTD (wq - cq - sq >= 4);
+
+  MPFR_LOG_MSG (("cq=%d sq=%Pd logn=%d wq=%Pd\n", cq, sq, logn, wq));
 
   /* An input block will have up to wq - cq bits, and its shifted value
      (to be correctly aligned) may take GMP_NUMB_BITS - 1 additional bits. */
