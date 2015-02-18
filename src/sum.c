@@ -286,6 +286,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_ptr *const x, unsigned long n,
     wi = ws - 1;
     MPFR_ASSERTD (wi >= 0);
     a = wp[wi] >> (GMP_NUMB_BITS - 1) ? MPFR_LIMB_MAX : MPFR_LIMB_ZERO;
+    MPFR_LOG_MSG (("accumulator %s 0\n",
+                   wp[wi] >> (GMP_NUMB_BITS - 1) ? "<" : ">="));
 
     while ((b = wp[wi]) == a)
       {
