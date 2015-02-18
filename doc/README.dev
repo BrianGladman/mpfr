@@ -643,8 +643,11 @@ the source code of the function to understand its real meaning.
 You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
-MPFR_LOG_PREC: # of digits of the output (set the internal variable
-               mpfr_log_prec, default: 6).
+MPFR_LOG_FLUSH: When this variable is set, flush the log stream after
+                each log output (useful to get the latest logs in case
+                of crash, but this makes logging slower).
+MPFR_LOG_PREC:  Number of digits of the output (set the internal variable
+                mpfr_log_prec, default: 6).
 MPFR_LOG_LEVEL: Max recursive level (default: 7).
 
 MPFR_LOG_INPUT:    Log the input
