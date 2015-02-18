@@ -476,7 +476,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
           int tmd;          /* 0: the TMD does not occur
                                1: the TMD occurs on a machine number
                                2: the TMD occurs on a midpoint */
-          int neg;          /* 1 if negative sum, 0 if positive */
+          int pos;          /* 0 if negative sum, 1 if positive */
 
           /* Step 7 */
 
@@ -671,10 +671,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               inex = tmd = maxexp != MPFR_EXP_MIN;
             }
 
-          neg = sump[sn-1] >> (GMP_NUMB_BITS - 1);
+          /* Leading bit: 1 if positive, 0 if negative. */
+          pos = sump[sn-1] >> (GMP_NUMB_BITS - 1);
 
-          MPFR_LOG_MSG (("[Step 7] tmd=%d rbit=%d inex=%d neg=%d\n",
-                         tmd, rbit != 0, inex, neg));
+          MPFR_LOG_MSG (("[Step 7] tmd=%d rbit=%d inex=%d pos=%d\n",
+                         tmd, rbit != 0, inex, pos));
 
           /* Here, if the final sum is known to be exact, inex = 0,
              otherwise inex = 1. */
@@ -690,10 +691,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               carry = inex;
               break;
             case MPFR_RNDZ:
-              carry = inex && neg;
+              carry = inex && !pos;
               break;
             case MPFR_RNDA:
-              carry = inex && !neg;
+              carry = inex && pos;
               break;
             default:
               MPFR_ASSERTN (rnd == MPFR_RNDN);
@@ -705,7 +706,22 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
           /* Sign handling (-> absolute value and sign), together with
              initial rounding. */
-          if (neg)
+          if (pos)
+            {
+              mp_limb_t carry_out;
+
+              MPFR_SET_POS (sum);
+              sump[0] &= ~ MPFR_LIMB_MASK (sd);
+              carry_out = mpn_add_1 (sump, sump, sn, carry << sd);
+              MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) ==
+                            !carry_out);
+              if (carry_out)
+                {
+                  e++;
+                  sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                }
+            }
+          else
             {
               MPFR_SET_NEG (sum);
               if (carry)
@@ -727,21 +743,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                       e++;
                       sump[sn-1] = MPFR_LIMB_HIGHBIT;
                     }
-                }
-            }
-          else
-            {
-              mp_limb_t carry_out;
-
-              MPFR_SET_POS (sum);
-              sump[0] &= ~ MPFR_LIMB_MASK (sd);
-              carry_out = mpn_add_1 (sump, sump, sn, carry << sd);
-              MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) ==
-                            !carry_out);
-              if (carry_out)
-                {
-                  e++;
-                  sump[sn-1] = MPFR_LIMB_HIGHBIT;
                 }
             }
 
