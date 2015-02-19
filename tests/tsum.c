@@ -345,7 +345,7 @@ check_more_special (void)
 static void
 bug20131027 (void)
 {
-  mpfr_t r, t[4];
+  mpfr_t sum, t[4];
   mpfr_ptr p[4];
   char *s[4] = {
     "0x1p1000",
@@ -353,27 +353,37 @@ bug20131027 (void)
     "-0x1p947",
     "0x1p880"
   };
-  int i;
+  int i, r;
 
-  mpfr_init2 (r, 53);
+  mpfr_init2 (sum, 53);
+
   for (i = 0; i < 4; i++)
     {
       mpfr_init2 (t[i], i == 0 ? 53 : 1000);
       mpfr_set_str (t[i], s[i], 0, MPFR_RNDN);
       p[i] = t[i];
     }
-  mpfr_sum (r, p, 4, MPFR_RNDN);
 
-  if (MPFR_NOTZERO (r))
+  RND_LOOP(r)
     {
-      printf ("mpfr_sum incorrect in bug20131027: expected 0, got\n");
-      mpfr_dump (r);
-      exit (1);
+      int expected_sign = (mpfr_rnd_t) r == MPFR_RNDD ? -1 : 1;
+
+      mpfr_sum (sum, p, 4, (mpfr_rnd_t) r);
+
+      if (MPFR_NOTZERO (sum) || MPFR_SIGN (sum) != expected_sign)
+        {
+          printf ("mpfr_sum incorrect in bug20131027 for %s:\n"
+                  "expected %c0, got ",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                  expected_sign > 0 ? '+' : '-');
+          mpfr_dump (sum);
+          exit (1);
+        }
     }
 
   for (i = 0; i < 4; i++)
     mpfr_clear (t[i]);
-  mpfr_clear (r);
+  mpfr_clear (sum);
 }
 
 static void
