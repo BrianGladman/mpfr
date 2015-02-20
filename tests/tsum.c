@@ -41,146 +41,104 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NCANCEL 10
 #endif
 
-static int
-sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mpfr_rnd_t rnd)
-{
-  mpfr_ptr *tabtmp;
-  unsigned long i;
-  int inexact;
-  MPFR_TMP_DECL(marker);
-
-  MPFR_TMP_MARK(marker);
-  tabtmp = (mpfr_ptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr));
-  for (i = 0; i < n; i++)
-    tabtmp[i] = tab[i];
-
-  inexact = mpfr_sum (ret, tabtmp, n, rnd);
-  MPFR_TMP_FREE(marker);
-  return inexact;
-}
-
-
 static mpfr_prec_t
-get_prec_max (mpfr_t *tab, unsigned long n, mpfr_prec_t f)
+get_prec_max (mpfr_t *t, int n)
 {
-  mpfr_prec_t res;
-  mpfr_exp_t min, max;
-  unsigned long i;
+  mpfr_exp_t e, min, max;
+  int i;
 
-  i = 0;
-  while (MPFR_IS_ZERO (tab[i]))
-    {
-      i++;
-      if (i == n)
-        return MPFR_PREC_MIN;  /* all values are 0 */
-    }
-
-  if (! mpfr_check (tab[i]))
-    {
-      printf ("tab[%lu] is not valid.\n", i);
-      exit (1);
-    }
-  MPFR_ASSERTN (MPFR_IS_FP (tab[i]));
-  min = max = MPFR_GET_EXP(tab[i]);
-  for (i++; i < n; i++)
-    {
-      if (! mpfr_check (tab[i]))
-        {
-          printf ("tab[%lu] is not valid.\n", i);
-          exit (1);
-        }
-      MPFR_ASSERTN (MPFR_IS_FP (tab[i]));
-      if (! MPFR_IS_ZERO (tab[i]))
-        {
-          if (MPFR_GET_EXP(tab[i]) > max)
-            max = MPFR_GET_EXP(tab[i]);
-          if (MPFR_GET_EXP(tab[i]) < min)
-            min = MPFR_GET_EXP(tab[i]);
-        }
-    }
-  res = max - min;
-  res += f;
-  res += __gmpfr_ceil_log2 (n) + 1;
-  return res;
-}
-
-
-static void
-algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mpfr_prec_t f)
-{
-  unsigned long i;
-  mpfr_prec_t prec_max;
-
-  prec_max = get_prec_max(tab, n, f);
-  mpfr_set_prec (somme, prec_max);
-  mpfr_set_ui (somme, 0, MPFR_RNDN);
+  min = MPFR_EMAX_MAX;
+  max = MPFR_EMIN_MIN;
   for (i = 0; i < n; i++)
-    {
-      if (mpfr_add(somme, somme, tab[i], MPFR_RNDN))
-        {
-          printf ("FIXME: algo_exact is buggy.\n");
-          exit (1);
-        }
-    }
+    if (MPFR_IS_PURE_FP (t[i]))
+      {
+        e = MPFR_GET_EXP (t[i]);
+        if (e > max)
+          max = e;
+        e -= MPFR_GET_PREC (t[i]);
+        if (e < min)
+          min = e;
+      }
+
+  return min > max ? MPFR_PREC_MIN /* no pure FP values */
+    : max - min + __gmpfr_ceil_log2 (n);
 }
 
 static void
-test_sum (mpfr_prec_t f, unsigned long n)
+get_exact_sum (mpfr_t sum, mpfr_t *tab, int n)
 {
-  mpfr_t sum, real_sum, real_non_rounded;
-  mpfr_t *tab;
-  unsigned long i;
+  int i;
+
+  mpfr_set_prec (sum, get_prec_max (tab, n));
+  mpfr_set_ui (sum, 0, MPFR_RNDN);
+  for (i = 0; i < n; i++)
+    if (mpfr_add (sum, sum, tab[i], MPFR_RNDN))
+      {
+        printf ("FIXME: get_exact_sum is buggy.\n");
+        exit (1);
+      }
+}
+
+static void
+generic_tests (void)
+{
+  mpfr_t exact_sum, sum1, sum2;
+  mpfr_t *t;
+  mpfr_ptr *p;
+  mpfr_prec_t precmax = 444;
+  int i, m, nmax = 500;
   int rnd_mode;
 
-  /* Init */
-  tab = (mpfr_t *) (*__gmp_allocate_func) (n * sizeof(mpfr_t));
-  for (i = 0; i < n; i++)
-    mpfr_init2 (tab[i], f);
-  mpfr_inits2 (f, sum, real_sum, real_non_rounded, (mpfr_ptr) 0);
-
-  /* First Uniform */
-  for (i = 0; i < n; i++)
-    mpfr_urandomb (tab[i], RANDS);
-  algo_exact (real_non_rounded, tab, n, f);
-  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
+  t = (mpfr_t *) (*__gmp_allocate_func) (nmax * sizeof(mpfr_t));
+  p = (mpfr_ptr *) (*__gmp_allocate_func) (nmax * sizeof(mpfr_ptr));
+  for (i = 0; i < nmax; i++)
     {
-      sum_tab (sum, tab, n, (mpfr_rnd_t) rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, (mpfr_rnd_t) rnd_mode);
-      if (mpfr_cmp (real_sum, sum) != 0)
+      mpfr_init2 (t[i], precmax);
+      p[i] = t[i];
+    }
+  mpfr_inits2 (precmax, exact_sum, sum1, sum2, (mpfr_ptr) 0);
+
+  for (m = 1; m < 1000; m++)
+    {
+      int non_uniform, n;
+      mpfr_prec_t prec;
+
+      non_uniform = randlimb () % 10;
+      n = (randlimb () % nmax) + 1;
+      prec = MPFR_PREC_MIN + (randlimb () % (precmax - MPFR_PREC_MIN + 1));
+      mpfr_set_prec (sum1, prec);
+      mpfr_set_prec (sum2, prec);
+
+      for (i = 0; i < n; i++)
         {
-          printf ("mpfr_sum incorrect.\n");
-          mpfr_dump (real_sum);
-          mpfr_dump (sum);
-          exit (1);
+          mpfr_set_prec (t[i], MPFR_PREC_MIN +
+                         (randlimb () % (precmax - MPFR_PREC_MIN + 1)));
+          mpfr_urandomb (t[i], RANDS);
+          if (non_uniform && MPFR_NOTZERO (t[i]))
+            mpfr_set_exp (t[i], randlimb () % 1000);
+        }
+      get_exact_sum (exact_sum, t, n);
+      RND_LOOP (rnd_mode)
+        {
+          mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
+          mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
+          if (! mpfr_equal_p (sum1, sum2))
+            {
+              printf ("mpfr_sum incorrect.\n");
+              printf ("Expected ");
+              mpfr_dump (sum1);
+              printf ("Got      ");
+              mpfr_dump (sum2);
+              exit (1);
+            }
         }
     }
 
-  /* Then non uniform */
-  for (i = 0; i < n; i++)
-    {
-      mpfr_urandomb (tab[i], RANDS);
-      if (! mpfr_zero_p (tab[i]))
-        mpfr_set_exp (tab[i], randlimb () % 1000);
-    }
-  algo_exact (real_non_rounded, tab, n, f);
-  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
-    {
-      sum_tab (sum, tab, n, (mpfr_rnd_t) rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, (mpfr_rnd_t) rnd_mode);
-      if (mpfr_cmp (real_sum, sum) != 0)
-        {
-          printf ("mpfr_sum incorrect.\n");
-          mpfr_dump (real_sum);
-          mpfr_dump (sum);
-          exit (1);
-        }
-    }
-
-  /* Clear stuff */
-  for (i = 0; i < n; i++)
-    mpfr_clear (tab[i]);
-  mpfr_clears (sum, real_sum, real_non_rounded, (mpfr_ptr) 0);
-  (*__gmp_free_func) (tab, n * sizeof(mpfr_t));
+  for (i = 0; i < nmax; i++)
+    mpfr_clear (t[i]);
+  mpfr_clears (exact_sum, sum1, sum2, (mpfr_ptr) 0);
+  (*__gmp_free_func) (t, nmax * sizeof(mpfr_t));
+  (*__gmp_free_func) (p, nmax * sizeof(mpfr_ptr));
 }
 
 static
@@ -489,17 +447,12 @@ cancel (void)
 int
 main (void)
 {
-  mpfr_prec_t p;
-  unsigned long n;
-
   tests_start_mpfr ();
 
   check_special ();
   check_more_special ();
   bug20131027 ();
-  for (p = 2 ; p < 444 ; p += 17)
-    for (n = 2 ; n < 1026 ; n += 42 + p)
-      test_sum (p, n);
+  generic_tests ();
   check_extreme ();
   cancel ();
 
