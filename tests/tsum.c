@@ -98,7 +98,7 @@ generic_tests (void)
     }
   mpfr_inits2 (precmax, exact_sum, sum1, sum2, (mpfr_ptr) 0);
 
-  for (m = 1; m < 1000; m++)
+  for (m = 1; m < 4000; m++)
     {
       int non_uniform, n;
       mpfr_prec_t prec;
@@ -124,7 +124,8 @@ generic_tests (void)
           mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
           if (! mpfr_equal_p (sum1, sum2))
             {
-              printf ("mpfr_sum incorrect.\n");
+              printf ("generic_tests failed on m = %d, %s\n", m,
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
               printf ("Expected ");
               mpfr_dump (sum1);
               printf ("Got      ");
