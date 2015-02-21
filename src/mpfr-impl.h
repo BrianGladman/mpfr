@@ -862,8 +862,8 @@ typedef intmax_t mpfr_eexp_t;
  (MPFR_ASSERTD((s) == MPFR_SIGN_POS || (s) == MPFR_SIGN_NEG))
 #define MPFR_SET_SIGN(x, s) \
   (MPFR_ASSERT_SIGN(s), MPFR_SIGN(x) = s)
-#define MPFR_IS_POS_SIGN(s1) (s1 > 0)
-#define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
+#define MPFR_IS_POS_SIGN(s1) ((s1) > 0)
+#define MPFR_IS_NEG_SIGN(s1) ((s1) < 0)
 #define MPFR_MULT_SIGN(s1, s2) ((s1) * (s2))
 /* Transform a sign to 1 or -1 */
 #define MPFR_FROM_SIGN_TO_INT(s) (s)
@@ -913,33 +913,37 @@ typedef intmax_t mpfr_eexp_t;
 /* We want to test if rnd = Zero, or Away.
    'test' is 1 if negative, and 0 if positive. */
 #define MPFR_IS_LIKE_RNDZ(rnd, test) \
-  ((rnd==MPFR_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+  ((rnd) == MPFR_RNDZ || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
-#define MPFR_IS_LIKE_RNDU(rnd, sign) \
-  ((rnd==MPFR_RNDU) || (rnd==MPFR_RNDZ && sign<0) || (rnd==MPFR_RNDA && sign>0))
+#define MPFR_IS_LIKE_RNDU(rnd, sign)                    \
+  (((rnd) == MPFR_RNDU) ||                              \
+   ((rnd) == MPFR_RNDZ && MPFR_IS_NEG_SIGN (sign)) ||   \
+   ((rnd) == MPFR_RNDA && MPFR_IS_POS_SIGN (sign)))
 
-#define MPFR_IS_LIKE_RNDD(rnd, sign) \
-  ((rnd==MPFR_RNDD) || (rnd==MPFR_RNDZ && sign>0) || (rnd==MPFR_RNDA && sign<0))
+#define MPFR_IS_LIKE_RNDD(rnd, sign)                    \
+  (((rnd) == MPFR_RNDD) ||                              \
+   ((rnd) == MPFR_RNDZ && MPFR_IS_POS_SIGN (sign)) ||   \
+   ((rnd) == MPFR_RNDA && MPFR_IS_NEG_SIGN (sign)))
 
 /* Invert a rounding mode, RNDZ and RNDA are unchanged */
-#define MPFR_INVERT_RND(rnd) ((rnd == MPFR_RNDU) ? MPFR_RNDD : \
-                             ((rnd == MPFR_RNDD) ? MPFR_RNDU : rnd))
+#define MPFR_INVERT_RND(rnd) ((rnd) == MPFR_RNDU ? MPFR_RNDD :          \
+                              (rnd) == MPFR_RNDD ? MPFR_RNDU : (rnd))
 
 /* Transform RNDU and RNDD to RNDZ according to test */
-#define MPFR_UPDATE_RND_MODE(rnd, test)                            \
-  do {                                                             \
-    if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
+#define MPFR_UPDATE_RND_MODE(rnd, test)                             \
+  do {                                                              \
+    if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test)))  \
       rnd = MPFR_RNDZ;                                              \
   } while (0)
 
 /* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
    leave the other modes unchanged */
-#define MPFR_UPDATE2_RND_MODE(rnd, sign)        \
-  do {                                          \
-  if (rnd == MPFR_RNDU)                          \
-    rnd = (sign > 0) ? MPFR_RNDA : MPFR_RNDZ;     \
-  else if (rnd == MPFR_RNDD)                     \
-    rnd = (sign < 0) ? MPFR_RNDA : MPFR_RNDZ;     \
+#define MPFR_UPDATE2_RND_MODE(rnd, sign)                       \
+  do {                                                         \
+    if (rnd == MPFR_RNDU)                                      \
+      rnd = MPFR_IS_POS_SIGN (sign) ? MPFR_RNDA : MPFR_RNDZ;   \
+    else if (rnd == MPFR_RNDD)                                 \
+      rnd = MPFR_IS_NEG_SIGN (sign) ? MPFR_RNDA : MPFR_RNDZ;   \
   } while (0)
 
 
