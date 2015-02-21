@@ -850,7 +850,14 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
                        tmd, rbit != 0, sst));
 
+        inex =
+          MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
+          MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) ? (sst ?  1 : 0) :
+          (MPFR_ASSERTD (rnd == MPFR_RNDN),
+           tmd == 1 ? - sst : sst);
+        /* Note: halfway cases may have to be corrected. */
 
+        /* TODO: possible correction of the value (+/- 1 ulp)... */
 
       }  /* Step 8 block */
 
