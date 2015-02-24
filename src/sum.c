@@ -81,7 +81,7 @@ VL: This is very different:
  *   block, and the value of ts is used only when the full assertions
  *   are checked (i.e. with the --enable-assert configure option), to
  *   check that a buffer overflow doesn't occur;
- * - one has: *errp <= *ep - prec if the accumulator is not 0.
+ * - one has: *errp <= *ep - prec if the accumulator is not 0;
  * - contrary to the returned value of minexp (the value in the last
  *   iteration), the returned value of maxexp is the one for the next
  *   iteration (= maxexp2 of the last iteration).
@@ -794,9 +794,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       {
         if (carry)  /* two's complement significand increased */
           inex = -1;
-        MPFR_LOG_MSG (("Set exponent e=%" MPFR_EXP_FSPEC "d\n",
-                       (mpfr_eexp_t) e));
-        MPFR_SET_EXP (sum, e);
+        MPFR_LOG_MSG (("No TMD, inex=%d\n", inex));
       }
     else  /* Step 8 */
       {
@@ -913,6 +911,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
            ((MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst <= 0) ||
             (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst < 0))) ?
           (pos ? -1 : 1) : 0;
+
+        MPFR_LOG_MSG (("[Step 8] inex=%d corr=%d\n", inex, corr));
 
         if (corr > 0 &&
             MPFR_UNLIKELY (mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
