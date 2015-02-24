@@ -1213,9 +1213,10 @@ do {                                                                  \
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
 #define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
 
-/* Safe absolute value (to avoid possible integer overflow) */
+/* Safe absolute value and difference (to avoid possible integer overflow) */
 /* type is the target (unsigned) type */
 #define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
+#define SAFE_DIFF(type,x,y) (MPFR_ASSERTD((x) >= (y)), (type)(x) - (type)(y))
 
 #define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
 
