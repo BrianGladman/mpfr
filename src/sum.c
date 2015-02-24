@@ -571,6 +571,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         td = tq % GMP_NUMB_BITS;
         rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
           (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
+        MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
         if (maxexp == MPFR_EXP_MIN)
           {
@@ -717,8 +718,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     /* Leading bit: 1 if positive, 0 if negative. */
     pos = sump[sn-1] >> (GMP_NUMB_BITS - 1);
 
+    MPFR_ASSERTD (rbit == 0 || rbit == 1);
+
     MPFR_LOG_MSG (("[Step 7] tmd=%d rbit=%d inex=%d pos=%d\n",
-                   tmd, rbit != 0, inex, pos));
+                   tmd, (int) rbit, inex, pos));
 
     /* Here, if the final sum is known to be exact, inex = 0,
        otherwise inex = 1. */
@@ -791,11 +794,15 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       {
         if (carry)  /* two's complement significand increased */
           inex = -1;
+        MPFR_LOG_MSG (("Set exponent e=%" MPFR_EXP_FSPEC "d\n",
+                       (mpfr_eexp_t) e));
+        MPFR_SET_EXP (sum, e);
       }
     else  /* Step 8 */
       {
         mp_size_t zs;
         int sst;  /* sign of the secondary term */
+        int corr;
 
         MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
@@ -881,13 +888,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    which depends on the last bit of the pre-rounded
                    result and the sign. */
                 MPFR_ASSERTD (rnd == MPFR_RNDN);
-                sst = (sump[0] & MPFR_LIMB_ONE) ?
+                sst = (sump[0] & (MPFR_LIMB_ONE << sd)) ?
                   (pos ? 1 : -1) : (pos ? -1 : 1);
               }
           }
 
         MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
-                       tmd, rbit != 0, sst));
+                       tmd, (int) rbit, sst));
 
         inex =
           MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
@@ -895,10 +902,37 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
           (MPFR_ASSERTD (rnd == MPFR_RNDN),
            tmd == 1 ? - sst : sst);
 
-        /* TODO: possible correction of the value (+/- 1 ulp)... */
+        corr =
+          (tmd == 2 && rbit == 0 && sst > 0) ||
+          (rbit == 1 &&
+           ((MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst >= 0) ||
+            (MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst > 0))) ?
+          (pos ? 1 : -1) :
+          (tmd == 2 && rbit != 0 && sst < 0) ||
+          (rbit == 0 &&
+           ((MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst <= 0) ||
+            (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst < 0))) ?
+          (pos ? -1 : 1) : 0;
+
+        if (corr > 0 &&
+            MPFR_UNLIKELY (mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
+          {
+            /* FIXME: Terminate the implementation, but first, add a
+               testcase that will make the following assertion fail. */
+            MPFR_ASSERTN (0);
+          }
+
+        if (corr < 0 &&
+            MPFR_UNLIKELY (mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
+          {
+            /* FIXME: Terminate the implementation, but first, add a
+               testcase that will make the following assertion fail. */
+            MPFR_ASSERTN (0);
+          }
 
       }  /* Step 8 block */
 
+    MPFR_LOG_MSG (("Set exponent e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
     MPFR_SET_EXP (sum, e);
   }  /* main block */
 
