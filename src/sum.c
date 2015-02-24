@@ -523,6 +523,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         tq = u - minexp;
         MPFR_ASSERTD (tq > 0); /* number of trailing bits */
+        MPFR_LOG_MSG (("[Step 7] tq=%Pd\n", tq));
 
         wi = tq / GMP_NUMB_BITS;
 
