@@ -72,8 +72,8 @@ VL: This is very different:
  * In the former case, the function also returns:
  * - in ep: the exponent e of the computed result;
  * - in errp: the exponent err of the error bound;
- * - in minexpp: the new value of minexp.
- * - in maxexpp: the new value of maxexp.
+ * - in minexpp: the last value of minexp.
+ * - in maxexpp: the new value of maxexp (for the next iteration).
  * Notes:
  * - minexp is also the exponent of the least significant bit of the
  *   accumulator;
@@ -82,6 +82,9 @@ VL: This is very different:
  *   are checked (i.e. with the --enable-assert configure option), to
  *   check that a buffer overflow doesn't occur;
  * - one has: *errp <= *ep - prec if the accumulator is not 0.
+ * - contrary to the returned value of minexp (the value in the last
+ *   iteration), the returned value of maxexp is the one of the next
+ *   iteration (= maxexp2 of the last iteration).
  */
 static mpfr_prec_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
@@ -321,7 +324,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
             mpfr_exp_t e;        /* exponent of the computed result */
             mpfr_exp_t err;      /* exponent of the error bound */
 
-            MPFR_LOG_MSG (("accumulator %s 0, cancel = %Pd\n",
+            MPFR_LOG_MSG (("accumulator %s 0, cancel=%Pd\n",
                            a != MPFR_LIMB_ZERO ? "<" : ">", cancel));
 
             MPFR_ASSERTD (cancel > 0);
@@ -335,7 +338,10 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                maxexp2 == MPFR_EXP_MIN). */
 
             MPFR_LOG_MSG (("e = %" MPFR_EXP_FSPEC "d err= %" MPFR_EXP_FSPEC
-                           "d\n", (mpfr_eexp_t) e, (mpfr_eexp_t) err));
+                           "d maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
+                           (mpfr_eexp_t) e, (mpfr_eexp_t) err,
+                           (mpfr_eexp_t) maxexp2, maxexp2 == MPFR_EXP_MIN ?
+                           " (MPFR_EXP_MIN)" : ""));
 
             /* This basically tests whether err <= e - prec without
                potential integer overflow... */
