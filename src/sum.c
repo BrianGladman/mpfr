@@ -97,6 +97,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
     (("ws=%Pd ts=%Pd prec=%Pd", (mpfr_prec_t) ws, (mpfr_prec_t) ts, prec),
      ("", 0));
 
+  MPFR_ASSERTD (prec >= 0);
+
   /* Consistency checks. */
   MPFR_ASSERTD (wq == (mpfr_prec_t) ws * GMP_NUMB_BITS);
   MPFR_ASSERTD (cq == logn + 1);
@@ -338,9 +340,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                maxexp2 == MPFR_EXP_MIN). */
 
             /* This basically tests whether err <= e - prec without
-               potential integer overflow... */
-            if (e >= 0 ? (err <= e - prec) :
-                (err <= e && (mpfr_uexp_t) -e + prec >= -err))
+               potential integer overflow (since prec >= 0)... */
+            if (err <= e && (mpfr_uexp_t) e - (mpfr_uexp_t) err >= prec)
               {
                 MPFR_LOG_MSG (("(err=%" MPFR_EXP_FSPEC "d) <= (e=%"
                                MPFR_EXP_FSPEC "d) - (prec=%Pd)\n",
