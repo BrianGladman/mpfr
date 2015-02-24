@@ -65,12 +65,14 @@ VL: This is very different:
  *   prec: minimal value of e - err (see below).
  *   ep: pointer to mpfr_exp_t (see below), or a null pointer.
  *   errp: pointer to mpfr_exp_t (see below), or a null pointer.
+ *   minexpp: pointer to mpfr_exp_t (see below).
  *   maxexpp: pointer to mpfr_exp_t (see below).
  * This function returns the number of cancelled bits (>= 1), or 0
  * if the accumulator is 0 (then the exact sum is necessarily 0).
  * In the former case, the function also returns:
  * - in ep: the exponent e of the computed result;
  * - in errp: the exponent err of the error bound;
+ * - in minexpp: the new value of minexp.
  * - in maxexpp: the new value of maxexp.
  * Notes:
  * - minexp is also the exponent of the least significant bit of the
@@ -85,7 +87,8 @@ static mpfr_prec_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
          unsigned long n, mpfr_exp_t minexp, mpfr_exp_t maxexp,
          mp_limb_t *tp, mp_size_t ts, int logn, int cq, mpfr_prec_t prec,
-         mpfr_exp_t *ep, mpfr_exp_t *errp, mpfr_exp_t *maxexpp)
+         mpfr_exp_t *ep, mpfr_exp_t *errp,
+         mpfr_exp_t *minexpp, mpfr_exp_t *maxexpp)
 {
   MPFR_LOG_FUNC
     (("ws=%Pd ts=%Pd prec=%Pd", (mpfr_prec_t) ws, (mpfr_prec_t) ts, prec),
@@ -343,6 +346,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                   *ep = e;
                 if (errp != NULL)
                   *errp = err;
+                *minexpp = minexp;
                 *maxexpp = maxexp2;
                 return cancel;
               }
@@ -469,7 +473,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     UPDATE_MINEXP (maxexp, wq - cq);
     cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                      logn, cq, sq + 3, &e, &err, &maxexp);
+                      logn, cq, sq + 3, &e, &err, &minexp, &maxexp);
 
     if (MPFR_UNLIKELY (cancel == 0))
       {
@@ -839,7 +843,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPN_ZERO (wp, zs);
 
         cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                          logn, cq, 0, NULL, NULL, &maxexp);
+                          logn, cq, 0, NULL, NULL, &minexp, &maxexp);
 
         if ((wp[ws-1] & MPFR_LIMB_HIGHBIT) != 0)
           sst = -1;
