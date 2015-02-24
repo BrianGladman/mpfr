@@ -83,7 +83,7 @@ VL: This is very different:
  *   check that a buffer overflow doesn't occur;
  * - one has: *errp <= *ep - prec if the accumulator is not 0.
  * - contrary to the returned value of minexp (the value in the last
- *   iteration), the returned value of maxexp is the one of the next
+ *   iteration), the returned value of maxexp is the one for the next
  *   iteration (= maxexp2 of the last iteration).
  */
 static mpfr_prec_t
