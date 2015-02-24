@@ -337,23 +337,25 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                The error is strictly less than 2^err (and is 0 if
                maxexp2 == MPFR_EXP_MIN). */
 
-            MPFR_LOG_MSG (("e = %" MPFR_EXP_FSPEC "d err= %" MPFR_EXP_FSPEC
-                           "d maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
-                           (mpfr_eexp_t) e, (mpfr_eexp_t) err,
-                           (mpfr_eexp_t) maxexp2, maxexp2 == MPFR_EXP_MIN ?
-                           " (MPFR_EXP_MIN)" : ""));
-
             /* This basically tests whether err <= e - prec without
                potential integer overflow... */
             if (e >= 0 ? (err <= e - prec) :
                 (err <= e && (mpfr_uexp_t) -e + prec >= -err))
               {
+                MPFR_LOG_MSG (("(err=%" MPFR_EXP_FSPEC "d) <= (e=%"
+                               MPFR_EXP_FSPEC "d) - (prec=%Pd)\n",
+                               (mpfr_eexp_t) err, (mpfr_eexp_t) e, prec));
                 if (ep != NULL)
                   *ep = e;
                 if (errp != NULL)
                   *errp = err;
                 *minexpp = minexp;
                 *maxexpp = maxexp2;
+                MPFR_LOG_MSG (("return with minexp=%" MPFR_EXP_FSPEC
+                               "d maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
+                               (mpfr_eexp_t) minexp, (mpfr_eexp_t) maxexp2,
+                               maxexp2 == MPFR_EXP_MIN ?
+                               " (MPFR_EXP_MIN)" : ""));
                 return cancel;
               }
             else
@@ -363,10 +365,21 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                 mpfr_size_t shifts;
                 int shiftc;
 
+                MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d err=%" MPFR_EXP_FSPEC
+                               "d maxexp2=%" MPFR_EXP_FSPEC "d%s\n",
+                               (mpfr_eexp_t) e, (mpfr_eexp_t) err,
+                               (mpfr_eexp_t) maxexp2,
+                               maxexp2 == MPFR_EXP_MIN ?
+                               " (MPFR_EXP_MIN)" : ""));
+
                 diffexp = err - e;
                 if (diffexp < 0)
                   diffexp = 0;
                 /* diffexp = max(0, err - e) */
+
+                MPFR_LOG_MSG (("diffexp=%" MPFR_EXP_FSPEC "d\n",
+                                (mpfr_eexp_t) diffexp));
+
                 MPFR_ASSERTD (diffexp < cancel - 2);
                 shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
                 MPFR_ASSERTD (shiftq > 0);
