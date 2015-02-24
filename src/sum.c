@@ -341,7 +341,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 
             /* This basically tests whether err <= e - prec without
                potential integer overflow (since prec >= 0)... */
-            if (err <= e && (mpfr_uexp_t) e - (mpfr_uexp_t) err >= prec)
+            if (err <= e && SAFE_DIFF (mpfr_uexp_t, e, err) >= prec)
               {
                 MPFR_LOG_MSG (("(err=%" MPFR_EXP_FSPEC "d) <= (e=%"
                                MPFR_EXP_FSPEC "d) - (prec=%Pd)\n",
