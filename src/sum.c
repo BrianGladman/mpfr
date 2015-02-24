@@ -843,9 +843,21 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         else if (maxexp != MPFR_EXP_MIN)
           sst = 1;
         else
-          do
-            sst = wp[ws] != 0;
-          while (sst == 0 && ws-- > 0);
+          {
+            do
+              sst = wp[ws] != 0;
+            while (sst == 0 && ws-- > 0);
+            if (sst == 0 && tmd == 2)
+              {
+                /* For halfway cases, let's virtually eliminate them
+                   by setting a sst equivalent to a non-halfway case,
+                   which depends on the last bit of the pre-rounded
+                   result and the sign. */
+                MPFR_ASSERTD (rnd == MPFR_RNDN);
+                sst = (sump[0] & MPFR_LIMB_ONE) ?
+                  (pos ? 1 : -1) : (pos ? -1 : 1);
+              }
+          }
 
         MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
                        tmd, rbit != 0, sst));
@@ -855,7 +867,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
           MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) ? (sst ?  1 : 0) :
           (MPFR_ASSERTD (rnd == MPFR_RNDN),
            tmd == 1 ? - sst : sst);
-        /* Note: halfway cases may have to be corrected. */
 
         /* TODO: possible correction of the value (+/- 1 ulp)... */
 
