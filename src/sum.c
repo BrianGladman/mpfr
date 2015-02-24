@@ -63,8 +63,8 @@ VL: This is very different:
  *   logn: ceil(log2(rn)), where rn is the number of regular inputs.
  *   cq: value of cq in the main code (logn + 1).
  *   prec: minimal value of e - err (see below).
- *   ep: pointer to mpfr_exp_t (see below).
- *   errp: pointer to mpfr_exp_t (see below).
+ *   ep: pointer to mpfr_exp_t (see below), or a null pointer.
+ *   errp: pointer to mpfr_exp_t (see below), or a null pointer.
  *   maxexpp: pointer to mpfr_exp_t (see below).
  * This function returns the number of cancelled bits (>= 1), or 0
  * if the accumulator is 0 (then the exact sum is necessarily 0).
@@ -339,8 +339,10 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
             if (e >= 0 ? (err <= e - prec) :
                 (err <= e && (mpfr_uexp_t) -e + prec >= -err))
               {
-                *ep = e;
-                *errp = err;
+                if (ep != NULL)
+                  *ep = e;
+                if (errp != NULL)
+                  *errp = err;
                 *maxexpp = maxexp2;
                 return cancel;
               }
@@ -836,7 +838,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPN_ZERO (wp, zs);
 
         cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                          logn, cq, 0, &e, &err, &maxexp);
+                          logn, cq, 0, NULL, NULL, &maxexp);
 
         if ((wp[ws-1] & MPFR_LIMB_HIGHBIT) != 0)
           sst = -1;
