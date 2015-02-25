@@ -591,16 +591,17 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (if the rounding bit is 0) or to possibly "correct" rbit
                    (round to nearest, halfway case rounded downward) from
                    which the rounding direction will be determined. */
+                MPFR_LOG_MSG (("[Step 7] Determine the sticky bit...\n", 0));
 
-                inex = td >= 1 ? (wp[wi] & MPFR_LIMB_MASK (td)) != 0 : 0;
+                inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0 : 0;
 
-                if (inex == 0)
+                if (!inex)
                   {
                     mp_size_t wj = wi;
 
-                    while (inex == 0 && wj > 0)
+                    while (!inex && wj > 0)
                       inex = wp[--wj] != 0;
-                    if (inex == 0 && rbit != 0)
+                    if (!inex && rbit != 0)
                       {
                         /* sticky bit = 0, rounding bit = 1,
                            i.e. halfway case, which will be
@@ -733,8 +734,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     /* Here, if the final sum is known to be exact, inex = 0,
        otherwise inex = 1. */
 
-    /* Determine carry for the initial rounding. Note that in
-       case of exact value (inex == 0), carry is set to 0. */
+    /* Determine carry for the initial rounding. Note that in case of
+       value known to be exact (i.e. inex = 0), carry is set to 0. */
     switch (rnd)
       {
       case MPFR_RNDD:
