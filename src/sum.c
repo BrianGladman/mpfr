@@ -575,6 +575,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
           (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
         MPFR_ASSERTD (rbit == 0 || rbit == 1);
+        MPFR_LOG_MSG (("[Step 7] rbit=%d\n", (int) rbit));
 
         if (maxexp == MPFR_EXP_MIN)
           {
@@ -590,6 +591,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (if the rounding bit is 0) or to possibly "correct" rbit
                    (round to nearest, halfway case rounded downward) from
                    which the rounding direction will be determined. */
+
                 inex = td >= 1 ? (wp[wi] & MPFR_LIMB_MASK (td)) != 0 : 0;
 
                 if (inex == 0)
@@ -606,6 +608,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                         MPFR_ASSERTD (rnd == MPFR_RNDN);
                         inex = 1;
                         rbit = 0;  /* even rounding downward */
+                        MPFR_LOG_MSG (("[Step 7] Halfway case rounded "
+                                       "downward; set inex=1 rbit=0\n", 0));
                       }
                   }
               }
