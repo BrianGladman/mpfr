@@ -36,6 +36,10 @@ VL: This is very different:
         sequencial             parallel (& sequential)
 */
 
+#ifdef MPFR_COV_CHECK
+int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3] = { 0 };
+#endif
+
 /* Update minexp after detecting a potential integer overflow in extreme
    cases (only 32-bit machines may be concerned in practice). */
 #define UPDATE_MINEXP(E,SH)                     \
@@ -892,6 +896,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
                        tmd, (int) rbit, sst));
+
+        MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit][sst+1]);
 
         inex =
           MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
