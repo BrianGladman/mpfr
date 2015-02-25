@@ -878,25 +878,19 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
                           logn, cq, 0, NULL, NULL, &minexp, &maxexp);
 
-        if ((wp[ws-1] & MPFR_LIMB_HIGHBIT) != 0)
-          sst = -1;
-        else if (maxexp != MPFR_EXP_MIN)
-          sst = 1;
+        if (cancel != 0)
+          sst = (wp[ws-1] & MPFR_LIMB_HIGHBIT) == 0 ? 1 : -1;
+        else if (tmd == 1)
+          sst = 0;
         else
           {
-            do
-              sst = wp[ws] != 0;
-            while (sst == 0 && ws-- > 0);
-            if (sst == 0 && tmd == 2)
-              {
-                /* For halfway cases, let's virtually eliminate them
-                   by setting a sst equivalent to a non-halfway case,
-                   which depends on the last bit of the pre-rounded
-                   result and the sign. */
-                MPFR_ASSERTD (rnd == MPFR_RNDN);
-                sst = (sump[0] & (MPFR_LIMB_ONE << sd)) ?
-                  (pos ? 1 : -1) : (pos ? -1 : 1);
-              }
+            /* For halfway cases, let's virtually eliminate them
+               by setting a sst equivalent to a non-halfway case,
+               which depends on the last bit of the pre-rounded
+               result and the sign. */
+            MPFR_ASSERTD (rnd == MPFR_RNDN && tmd == 2);
+            sst = (sump[0] & (MPFR_LIMB_ONE << sd)) ?
+              (pos ? 1 : -1) : (pos ? -1 : 1);
           }
 
         MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
