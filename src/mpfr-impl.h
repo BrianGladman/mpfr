@@ -2093,7 +2093,7 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 extern "C" {
 #endif
 
-__MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3];
+__MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2];
 
 #if defined (__cplusplus)
 }
