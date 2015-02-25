@@ -791,7 +791,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     if (tmd == 0)  /* no TMD */
       {
-        if (carry)  /* two's complement significand increased */
+        if (inex && !carry)  /* two's complement significand decreased */
           inex = -1;
         MPFR_LOG_MSG (("No TMD, inex=%d\n", inex));
       }
