@@ -98,7 +98,7 @@ generic_tests (void)
     }
   mpfr_inits2 (precmax, exact_sum, sum1, sum2, (mpfr_ptr) 0);
 
-  for (m = 1; m < 4000; m++)
+  for (m = 0; m < 4000; m++)
     {
       int non_uniform, n;
       mpfr_prec_t prec;
@@ -114,9 +114,13 @@ generic_tests (void)
           mpfr_set_prec (t[i], MPFR_PREC_MIN +
                          (randlimb () % (precmax - MPFR_PREC_MIN + 1)));
           mpfr_urandomb (t[i], RANDS);
+          if (m % 8 != 0 && (m % 8 == 1 || (randlimb () & 1)))
+            mpfr_neg (t[i], t[i], MPFR_RNDN);
           if (non_uniform && MPFR_NOTZERO (t[i]))
             mpfr_set_exp (t[i], randlimb () % 1000);
+          /* putchar ("-0+"[SIGN (mpfr_sgn (t[i])) + 1]); */
         }
+      /* putchar ('\n'); */
       get_exact_sum (exact_sum, t, n);
       RND_LOOP (rnd_mode)
         {
