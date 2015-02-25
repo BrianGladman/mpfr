@@ -440,6 +440,9 @@ List of macros used for checking MPFR:
                         for no timeout by default, and can be overridden
                         at "make check" time with the MPFR_TESTS_TIMEOUT
                         environment variable.
++ MPFR_COV_CHECK:       Define to enable value coverage checking (must not
+                        be used in production). This macro is for the MPFR
+                        developers, in order to improve the testsuite.
 
 ===========================================================================
 
