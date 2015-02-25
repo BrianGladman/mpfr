@@ -120,16 +120,20 @@ generic_tests (void)
       get_exact_sum (exact_sum, t, n);
       RND_LOOP (rnd_mode)
         {
-          mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
-          mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
-          if (! mpfr_equal_p (sum1, sum2))
+          int inex1, inex2;
+
+          inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
+          inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
+          if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
             {
               printf ("generic_tests failed on m = %d, %s\n", m,
                       mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
               printf ("Expected ");
               mpfr_dump (sum1);
+              printf ("with inex = %d\n", inex1);
               printf ("Got      ");
               mpfr_dump (sum2);
+              printf ("with inex = %d\n", inex2);
               exit (1);
             }
         }
@@ -235,6 +239,7 @@ check_more_special (void)
   int i, r, k[NS];
   mpfr_t c[NC], s[NS], sum;
   mpfr_ptr p[NS];
+  int inex;
 
   for (i = 0; i < NC; i++)
     {
@@ -258,10 +263,10 @@ check_more_special (void)
               mpfr_set_nan (s[i]);
               k[i++] = 0;
             }
-          mpfr_sum (sum, p, NS, (mpfr_rnd_t) r);
+          inex = mpfr_sum (sum, p, NS, (mpfr_rnd_t) r);
           if (! ((MPFR_IS_NAN (sum) && MPFR_IS_NAN (s[NS-1])) ||
                  (mpfr_equal_p (sum, s[NS-1]) &&
-                  MPFR_SIGN (sum) == MPFR_SIGN (s[NS-1]))))
+                  MPFR_SIGN (sum) == MPFR_SIGN (s[NS-1]))) || inex != 0)
             {
               printf ("Error in check_more_special on %s",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -275,8 +280,10 @@ check_more_special (void)
                 }
               printf ("Expected ");
               mpfr_dump (s[NS-1]);
+              printf ("with inex = 0\n");
               printf ("Got      ");
               mpfr_dump (sum);
+              printf ("with inex = %d\n", inex);
               exit (1);
             }
           while (k[--i] == NC-1)
@@ -326,16 +333,18 @@ bug20131027 (void)
   RND_LOOP(r)
     {
       int expected_sign = (mpfr_rnd_t) r == MPFR_RNDD ? -1 : 1;
+      int inex;
 
-      mpfr_sum (sum, p, 4, (mpfr_rnd_t) r);
+      inex = mpfr_sum (sum, p, 4, (mpfr_rnd_t) r);
 
-      if (MPFR_NOTZERO (sum) || MPFR_SIGN (sum) != expected_sign)
+      if (MPFR_NOTZERO (sum) || MPFR_SIGN (sum) != expected_sign || inex != 0)
         {
           printf ("mpfr_sum incorrect in bug20131027 for %s:\n"
-                  "expected %c0, got ",
+                  "expected %c0 with inex = 0, got ",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r),
                   expected_sign > 0 ? '+' : '-');
           mpfr_dump (sum);
+          printf ("with inex = %d\n", inex);
           exit (1);
         }
     }
@@ -345,12 +354,13 @@ bug20131027 (void)
   mpfr_clear (sum);
 }
 
+/* TODO: A test with more inputs (but can't be compared to mpfr_add). */
 static void
 check_extreme (void)
 {
   mpfr_t u, v, w, x, y;
   mpfr_ptr t[2];
-  int i, inex, r;
+  int i, inex1, inex2, r;
 
   t[0] = u;
   t[1] = v;
@@ -362,19 +372,21 @@ check_extreme (void)
   RND_LOOP (r)
     for (i = 0; i < 2; i++)
       {
-        mpfr_sum (x, t, 2, (mpfr_rnd_t) r);
-        mpfr_set_prec (y, 64);
-        inex = mpfr_add (y, u, w, MPFR_RNDN);
-        MPFR_ASSERTN (inex == 0);
-        mpfr_prec_round (y, 32, (mpfr_rnd_t) r);
-        if (! mpfr_equal_p (x, y))
+        mpfr_set_prec (x, 64);
+        inex1 = mpfr_add (x, u, w, MPFR_RNDN);
+        MPFR_ASSERTN (inex1 == 0);
+        inex1 = mpfr_prec_round (x, 32, (mpfr_rnd_t) r);
+        inex2 = mpfr_sum (y, t, 2, (mpfr_rnd_t) r);
+        if (! mpfr_equal_p (x, y) || inex1 != inex2)
           {
             printf ("Error in check_extreme (%s, i = %d)\n",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
             printf ("Expected ");
-            mpfr_dump (y);
-            printf ("Got      ");
             mpfr_dump (x);
+            printf ("with inex = %d\n", inex1);
+            printf ("Got      ");
+            mpfr_dump (y);
+            printf ("with inex = %d\n", inex2);
             exit (1);
           }
         mpfr_neg (v, v, MPFR_RNDN);
