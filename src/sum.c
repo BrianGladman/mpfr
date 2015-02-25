@@ -314,9 +314,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
           else
             {
               b ^= a;
-              MPFR_ASSERTD (b != 0 && b < MPFR_LIMB_HIGHBIT);
+              MPFR_ASSERTD (b != 0);
               count_leading_zeros (cnt, b);
-              MPFR_ASSERTD (cnt >= 1);
               cancel += cnt;
               break;
             }
