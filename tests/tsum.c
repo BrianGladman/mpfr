@@ -390,10 +390,6 @@ cancel (void)
   mpfr_ptr px[2 * MPFR_NCANCEL];
   int i, j, n;
 
-  /* FIXME: re-enable and improve once mpfr_sum has been fixed.
-     check_extreme() is currently sufficient to show problems. */
-  return;
-
   for (i = 0; i < 8; i++)
     {
       for (n = 0; n < numberof (x); n++)
