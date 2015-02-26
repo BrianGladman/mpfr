@@ -387,7 +387,8 @@ check1 (void)
   mpfr_clears (sum1, sum2, s1, s2, s3, (mpfr_ptr) 0);
 }
 
-/* i * 2^66 + j + k * 2^(-1) + f1 * 2^(-90) + f2 * 2^(-90),
+/* With N = 2 * GMP_NUMB_BITS:
+   i * 2^N + j + k * 2^(-1) + f1 * 2^(-N) + f2 * 2^(-N),
    with i = -1 or 1, j = 0 or i, -1 <= k <= 1, -1 <= f1 <= 1, -1 <= f2 <= 1
    ulp(exact sum) = 2^0. */
 static void
@@ -397,12 +398,14 @@ check2 (void)
   mpfr_ptr p[5];
   int i, j, k, f1, f2, prec, r, inex1, inex2;
 
-  mpfr_init2 (sum1, 47);
-  mpfr_init2 (sum2, 47);
-  mpfr_init2 (s1, 67);
-  mpfr_init2 (s2, 68);
-  mpfr_init2 (s3, 157);
-  mpfr_init2 (s4, 157);
+#define N (2 * GMP_NUMB_BITS)
+
+  mpfr_init2 (sum1, N+1);
+  mpfr_init2 (sum2, N+1);
+  mpfr_init2 (s1, N+1);
+  mpfr_init2 (s2, N+2);
+  mpfr_init2 (s3, 2*N+1);
+  mpfr_init2 (s4, 2*N+1);
   for (i = 0; i < 5; i++)
     {
       mpfr_init2 (t[i], 2);
@@ -411,7 +414,7 @@ check2 (void)
 
   for (i = -1; i <= 1; i += 2)
     {
-      mpfr_set_si_2exp (t[0], i, 66, MPFR_RNDN);
+      mpfr_set_si_2exp (t[0], i, N, MPFR_RNDN);
       for (j = 0; j != 2*i; j += i)
         {
           mpfr_set_si (t[1], j, MPFR_RNDN);
@@ -424,12 +427,12 @@ check2 (void)
               MPFR_ASSERTN (inex1 == 0);
               for (f1 = -1; f1 <= 1; f1++)
                 {
-                  mpfr_set_si_2exp (t[3], f1, -90, MPFR_RNDN);
+                  mpfr_set_si_2exp (t[3], f1, -N, MPFR_RNDN);
                   inex1 = mpfr_add (s3, s2, t[3], MPFR_RNDN);
                   MPFR_ASSERTN (inex1 == 0);
                   for (f2 = -1; f2 <= 1; f2++)
                     {
-                      mpfr_set_si_2exp (t[4], f2, -90, MPFR_RNDN);
+                      mpfr_set_si_2exp (t[4], f2, -N, MPFR_RNDN);
                       inex1 = mpfr_add (s4, s3, t[4], MPFR_RNDN);
                       MPFR_ASSERTN (inex1 == 0);
                       prec = mpfr_get_exp (s4);
