@@ -798,6 +798,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
           }
       }
 
+    MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
+
     if (tmd == 0)  /* no TMD */
       {
         if (inex && !carry)  /* two's complement significand decreased */
@@ -879,7 +881,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                           logn, cq, 0, NULL, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
-          sst = (wp[ws-1] & MPFR_LIMB_HIGHBIT) == 0 ? 1 : -1;
+          sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
         else if (tmd == 1)
           sst = 0;
         else
@@ -921,17 +923,22 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         if (corr > 0 &&
             MPFR_UNLIKELY (mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
           {
-            /* FIXME: Terminate the implementation, but first, add a
-               testcase that will make the following assertion fail. */
-            MPFR_ASSERTN (0);
+            sump[sn-1] = MPFR_LIMB_HIGHBIT;
+            e++;
           }
 
-        if (corr < 0 &&
-            MPFR_UNLIKELY (mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
+        if (corr < 0)
           {
-            /* FIXME: Terminate the implementation, but first, add a
-               testcase that will make the following assertion fail. */
-            MPFR_ASSERTN (0);
+            mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
+            if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
+              {
+                mp_size_t i;
+
+                sump[0] = MPFR_LIMB_MAX << sd;
+                for (i = 1; i < sn; i++)
+                  sump[i] = MPFR_LIMB_MAX;
+                e--;
+              }
           }
 
       }  /* Step 8 block */
