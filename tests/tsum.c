@@ -359,6 +359,8 @@ check1 (void)
                         {
                           inex1 = mpfr_set (sum1, s3, (mpfr_rnd_t) r);
                           inex2 = mpfr_sum (sum2, p, 4, (mpfr_rnd_t) r);
+                          MPFR_ASSERTN (mpfr_check (sum1));
+                          MPFR_ASSERTN (mpfr_check (sum2));
                           if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
                             {
                               printf ("Error in check1 on %s, prec = %d, "
@@ -373,6 +375,79 @@ check1 (void)
                               printf ("with inex = %d\n", inex2);
                               exit (1);
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+  for (i = 0; i < 4; i++)
+    mpfr_clear (t[i]);
+  mpfr_clears (sum1, sum2, s1, s2, s3, (mpfr_ptr) 0);
+}
+
+/* i * 2^66 + j + k * 2^(-1) + f * 2^(-90),
+   with i = -1 or 1, j = 0 or i, -1 <= k <= 1, -1 <= f <= 1
+   ulp(exact sum) = 2^0. */
+static void
+check2 (void)
+{
+  mpfr_t sum1, sum2, s1, s2, s3, t[4];
+  mpfr_ptr p[4];
+  int i, j, k, f, prec, r, inex1, inex2;
+
+  mpfr_init2 (sum1, 47);
+  mpfr_init2 (sum2, 47);
+  mpfr_init2 (s1, 67);
+  mpfr_init2 (s2, 68);
+  mpfr_init2 (s3, 157);
+  for (i = 0; i < 4; i++)
+    {
+      mpfr_init2 (t[i], 2);
+      p[i] = t[i];
+    }
+
+  for (i = -1; i <= 1; i += 2)
+    {
+      mpfr_set_si_2exp (t[0], i, 66, MPFR_RNDN);
+      for (j = 0; j != 2*i; j += i)
+        {
+          mpfr_set_si (t[1], j, MPFR_RNDN);
+          inex1 = mpfr_add (s1, t[0], t[1], MPFR_RNDN);
+          MPFR_ASSERTN (inex1 == 0);
+          for (k = -1; k <= 1; k++)
+            {
+              mpfr_set_si_2exp (t[2], k, -1, MPFR_RNDN);
+              inex1 = mpfr_add (s2, s1, t[2], MPFR_RNDN);
+              MPFR_ASSERTN (inex1 == 0);
+              for (f = -1; f <= 1; f++)
+                {
+                  mpfr_set_si_2exp (t[3], f, -90, MPFR_RNDN);
+                  inex1 = mpfr_add (s3, s2, t[3], MPFR_RNDN);
+                  MPFR_ASSERTN (inex1 == 0);
+                  prec = mpfr_get_exp (s3);
+                  mpfr_set_prec (sum1, prec);
+                  mpfr_set_prec (sum2, prec);
+                  RND_LOOP (r)
+                    {
+                      inex1 = mpfr_set (sum1, s3, (mpfr_rnd_t) r);
+                      inex2 = mpfr_sum (sum2, p, 4, (mpfr_rnd_t) r);
+                      MPFR_ASSERTN (mpfr_check (sum1));
+                      MPFR_ASSERTN (mpfr_check (sum2));
+                      if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                        {
+                          printf ("Error in check2 on %s, prec = %d, "
+                                  "i = %d, j = %d, k = %d, f = %d\n",
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                                  prec, i, j, k, f);
+                          printf ("Expected ");
+                          mpfr_dump (sum1);
+                          printf ("with inex = %d\n", inex1);
+                          printf ("Got      ");
+                          mpfr_dump (sum2);
+                          printf ("with inex = %d\n", inex2);
+                          exit (1);
                         }
                     }
                 }
@@ -565,6 +640,7 @@ main (void)
   check_special ();
   check_more_special ();
   check1 ();
+  check2 ();
   bug20131027 ();
   generic_tests ();
   check_extreme ();
