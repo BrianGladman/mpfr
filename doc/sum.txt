@@ -39,6 +39,8 @@ sum_raw (obtained from code refactoring for steps 3 to 6, and 8) should
 be introduced and described. Pre-rounding in (7) and rounding in (8)
 have been merged, and this [previously pre-rounding in (7)] is still
 done at the same time as sign handling with a single mpn operation.
+The table concerning the correction term is also incorrect (the initial
+truncation also has an influence, but it isn't taken into account yet).
 
 The general ideas of the algorithm:
 
@@ -608,5 +610,3 @@ is regarded as important (in all cases). Moreover, while the use of two
 accumulators does not take much more memory (since both accumulators can
 occupy the same area, with a flexible limit between them), it probably
 makes the code a bit more complex, and noticeably slower if n is small.
-
-$Id: sum 75579 2014-12-17 15:59:34Z vinc17/ypig $
