@@ -57,11 +57,9 @@ mpfr_nexttozero (mpfr_ptr x)
             MPFR_SET_ZERO(x);
           else
             {
-              mp_size_t i;
               MPFR_SET_EXP (x, exp - 1);
-              xp[0] = MPFR_LIMB_MAX << sh;
-              for (i = 1; i < xn; i++)
-                xp[i] = MPFR_LIMB_MAX;
+              /* The following is valid whether xn = 1 or xn > 1. */
+              xp[xn-1] |= MPFR_LIMB_HIGHBIT;
             }
         }
     }
