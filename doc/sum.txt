@@ -33,6 +33,13 @@ Additional details on:
 
 Let sq be the output precision.
 
+*** TODO ***
+The following is a bit obsolete. In particular the new helper function
+sum_raw (obtained from code refactoring for steps 3 to 6, and 8) should
+be introduced and described. Pre-rounding in (7) and rounding in (8)
+have been merged, and this [previously pre-rounding in (7)] is still
+done at the same time as sign handling with a single mpn operation.
+
 The general ideas of the algorithm:
 
 0. Handle the case n <= 1 separately (+0 for n = 0, mpfr_set for n = 1).
