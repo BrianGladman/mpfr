@@ -108,8 +108,6 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
   MPFR_ASSERTD (cq == logn + 1);
   MPFR_ASSERTD (maxexp - minexp == wq - cq);
 
-  MPFR_ASSERTD (ts >= (wq - cq - 2) / GMP_NUMB_BITS + 2);
-
   while (1)
     {
       mpfr_exp_t maxexp2 = MPFR_EXP_MIN;
@@ -432,7 +430,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   mp_size_t ts;   /* size of the temporary area, in limbs */
   mp_size_t ws;   /* size of the accumulator, in limbs */
   mpfr_prec_t wq; /* size of the accumulator, in bits */
-  mp_size_t ys;   /* size of the new accumulator in TMD code, in limbs */
   int logn;       /* ceil(log2(rn)) */
   int cq;
   mpfr_prec_t sq;
@@ -466,21 +463,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
   MPFR_ASSERTD (wq - cq - sq >= 4);
 
-  MPFR_ASSERTD (wq - sq <= cq + logn + GMP_NUMB_BITS + 1);
-  ys = MPFR_PREC2LIMBS (wq - sq);  /* no more than 3 in practice */
-
   MPFR_LOG_MSG (("cq=%d sq=%Pd logn=%d wq=%Pd\n", cq, sq, logn, wq));
 
   /* An input block will have up to wq - cq bits, and its shifted value
      (to be correctly aligned) may take GMP_NUMB_BITS - 1 additional bits. */
   ts = MPFR_PREC2LIMBS (wq - cq + GMP_NUMB_BITS - 1);
-
-  /* Make sure that the temporary area can be split in case of TMD. */
-  if (ts < 2 * ys + 1)
-    ts = 2 * ys + 1;
-
-  MPFR_LOG_MSG (("ws=%Pd ys=%Pd ts=%Pd\n",
-                 (mpfr_prec_t) ws, (mpfr_prec_t) ys, (mpfr_prec_t) ts));
 
   MPFR_TMP_MARK (marker);
 
@@ -775,38 +762,28 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       }
     else
       {
-        mp_limb_t *yp;   /* pointer to the new accumulator */
-        mpfr_prec_t yq;  /* size of the new accumulator, in bits */
         mp_size_t zs;
         int sst;  /* sign of the secondary term */
 
         MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
-        /* The TMD will be solved by doing further computations on
-           the remaining bits of the inputs, in a precision that is
-           low enough so that we can split the temporary area into
-           the new accumulator and a new temporary area. */
-
-        ts = ys + 1;
-        yp = tp + ts;
-        MPFR_ASSERTD (yp + ys <= wp);
-
-        /* New accumulator size in bits */
-        yq = (mpfr_prec_t) ys * GMP_NUMB_BITS;
+        /* New accumulator size */
+        ws = MPFR_PREC2LIMBS (wq - sq);
+        wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
 
         MPFR_LOG_MSG (("TMD with"
                        " maxexp=%" MPFR_EXP_FSPEC "d"
-                       " ys=%Pd"
-                       " yq=%Pd\n",
+                       " ws=%Pd"
+                       " wq=%Pd\n",
                        (mpfr_eexp_t) maxexp,
-                       (mpfr_prec_t) ys, yq));
+                       (mpfr_prec_t) ws, wq));
 
         /* The d-1 bits from u-2 to u-d (= err) are identical. */
 
         if (err >= minexp)
           {
             mpfr_prec_t tq;
-            mp_size_t yi;
+            mp_size_t wi;
             int td;
 
             /* Let's keep the last 2 over the d-1 identical bits and the
@@ -815,24 +792,24 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             MPFR_LOG_MSG (("[TMD] tq=%Pd\n", tq));
             MPFR_ASSERTD (tq >= 2);
 
-            yi = tq / GMP_NUMB_BITS;
+            wi = tq / GMP_NUMB_BITS;
             td = tq % GMP_NUMB_BITS;
 
             if (td != 0)
               {
-                yi++;  /* number of words with represented bits */
+                wi++;  /* number of words with represented bits */
                 td = GMP_NUMB_BITS - td;
-                zs = ys - yi;
-                MPFR_ASSERTD (zs >= 0 && zs < ys);
-                mpn_lshift (yp + zs, yp, yi, td);
+                zs = ws - wi;
+                MPFR_ASSERTD (zs >= 0 && zs < ws);
+                mpn_lshift (wp + zs, wp, wi, td);
               }
             else
               {
-                MPFR_ASSERTD (yi > 0);
-                zs = ys - yi;
-                MPFR_ASSERTD (zs >= 0 && zs < ys);
+                MPFR_ASSERTD (wi > 0);
+                zs = ws - wi;
+                MPFR_ASSERTD (zs >= 0 && zs < ws);
                 if (zs > 0)
-                  MPN_COPY_INCR (yp + zs, yp, yi);
+                  MPN_COPY_INCR (wp + zs, wp, wi);
               }
 
             UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
@@ -845,19 +822,19 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                from maxexp, with cq bits reserved to avoid an overflow
                (as in the early steps). */
             MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
-            zs = ys;
+            zs = ws;
 
-            /* minexp = maxexp + cq - yq */
-            UPDATE_MINEXP (maxexp, yq - cq);
+            /* minexp = maxexp + cq - wq */
+            UPDATE_MINEXP (maxexp, wq - cq);
           }
 
-        MPN_ZERO (yp, zs);
+        MPN_ZERO (wp, zs);
 
-        cancel = sum_raw (yp, ys, yq, x, n, minexp, maxexp, tp, ts,
+        cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
                           logn, cq, 0, NULL, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
-          sst = MPFR_LIMB_MSB (yp[ys-1]) == 0 ? 1 : -1;
+          sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
         else if (tmd == 1)
           sst = 0;
         else
