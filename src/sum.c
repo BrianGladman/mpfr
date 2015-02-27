@@ -106,6 +106,9 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
   /* Consistency checks. */
   MPFR_ASSERTD (wq == (mpfr_prec_t) ws * GMP_NUMB_BITS);
   MPFR_ASSERTD (cq == logn + 1);
+  MPFR_ASSERTD (maxexp - minexp == wq - cq);
+
+  MPFR_ASSERTD (ts >= (wq - cq - 2) / GMP_NUMB_BITS + 2);
 
   while (1)
     {
@@ -429,6 +432,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   mp_size_t ts;   /* size of the temporary area, in limbs */
   mp_size_t ws;   /* size of the accumulator, in limbs */
   mpfr_prec_t wq; /* size of the accumulator, in bits */
+  mp_size_t ys;   /* size of the new accumulator in TMD code, in limbs */
   int logn;       /* ceil(log2(rn)) */
   int cq;
   mpfr_prec_t sq;
@@ -442,7 +446,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
   MPFR_ASSERTD (rn >= 3 && rn <= n);
 
-  /* Step 2: set up some variables and the accumulator. */
+  /* Set up some variables and the accumulator. */
 
   sump = MPFR_MANT (sum);
 
@@ -451,7 +455,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   logn = MPFR_INT_CEIL_LOG2 (rn);
   MPFR_ASSERTD (logn >= 2);
 
-  MPFR_LOG_MSG (("Step 2 with logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
+  MPFR_LOG_MSG (("logn=%d maxexp=%" MPFR_EXP_FSPEC "d\n",
                  logn, (mpfr_eexp_t) maxexp));
 
   sq = MPFR_GET_PREC (sum);
@@ -462,16 +466,24 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
   MPFR_ASSERTD (wq - cq - sq >= 4);
 
+  MPFR_ASSERTD (wq - sq <= cq + logn + GMP_NUMB_BITS + 1);
+  ys = MPFR_PREC2LIMBS (wq - sq);  /* no more than 3 in practice */
+
   MPFR_LOG_MSG (("cq=%d sq=%Pd logn=%d wq=%Pd\n", cq, sq, logn, wq));
 
   /* An input block will have up to wq - cq bits, and its shifted value
      (to be correctly aligned) may take GMP_NUMB_BITS - 1 additional bits. */
   ts = MPFR_PREC2LIMBS (wq - cq + GMP_NUMB_BITS - 1);
 
+  /* Make sure that the temporary area can be split in case of TMD. */
+  if (ts < 2 * ys + 1)
+    ts = 2 * ys + 1;
+
+  MPFR_LOG_MSG (("ws=%Pd ys=%Pd ts=%Pd\n",
+                 (mpfr_prec_t) ws, (mpfr_prec_t) ys, (mpfr_prec_t) ts));
+
   MPFR_TMP_MARK (marker);
 
-  /* TODO: one may need a bit more memory later for Step 6.
-     Should it be allocated here? */
   tp = MPFR_TMP_LIMBS_ALLOC (ts + ws);
   wp = tp + ts;
 
@@ -484,7 +496,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
     mpfr_exp_t err;      /* exponent of the error bound */
     mp_limb_t rbit;      /* rounding bit (corrected in halfway case) */
-    mp_limb_t carry;     /* carry for the initial rounding (0 or 1) */
+    int corr;            /* correction term (-1, 0 or 1) */
     int sd, sh;          /* shift counts */
     mp_size_t sn;        /* size of the output number */
     int tmd;             /* 0: the TMD does not occur
@@ -492,7 +504,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                             2: the TMD occurs on a midpoint */
     int pos;             /* 0 if negative sum, 1 if positive */
 
-    MPFR_LOG_MSG (("Steps 3 to 6\n", 0));
+    MPFR_LOG_MSG (("Compute an approximation with sum_raw...\n", 0));
 
     UPDATE_MINEXP (maxexp, wq - cq);
     cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
@@ -518,7 +530,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     u = e - sq;  /* e being the exponent, u is the ulp of the target */
 
-    MPFR_LOG_MSG (("Step 7 with cancel=%Pd"
+    MPFR_LOG_MSG (("cancel=%Pd"
                    " e=%" MPFR_EXP_FSPEC "d"
                    " u=%" MPFR_EXP_FSPEC "d"
                    " err=%" MPFR_EXP_FSPEC "d"
@@ -550,7 +562,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         tq = u - minexp;
         MPFR_ASSERTD (tq > 0); /* number of trailing bits */
-        MPFR_LOG_MSG (("[Step 7] tq=%Pd\n", tq));
+        MPFR_LOG_MSG (("tq=%Pd\n", tq));
 
         wi = tq / GMP_NUMB_BITS;
 
@@ -575,7 +587,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
           (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
         MPFR_ASSERTD (rbit == 0 || rbit == 1);
-        MPFR_LOG_MSG (("[Step 7] rbit=%d\n", (int) rbit));
+        MPFR_LOG_MSG (("rbit=%d\n", (int) rbit));
 
         if (maxexp == MPFR_EXP_MIN)
           {
@@ -591,7 +603,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (if the rounding bit is 0) or to possibly "correct" rbit
                    (round to nearest, halfway case rounded downward) from
                    which the rounding direction will be determined. */
-                MPFR_LOG_MSG (("[Step 7] Determine the sticky bit...\n", 0));
+                MPFR_LOG_MSG (("Determine the sticky bit...\n", 0));
 
                 inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0 : 0;
 
@@ -609,8 +621,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                         MPFR_ASSERTD (rnd == MPFR_RNDN);
                         inex = 1;
                         rbit = 0;  /* even rounding downward */
-                        MPFR_LOG_MSG (("[Step 7] Halfway case rounded "
-                                       "downward; set inex=1 rbit=0\n", 0));
+                        MPFR_LOG_MSG (("Halfway case rounded downward;"
+                                       " set inex=1 rbit=0\n", 0));
                       }
                   }
               }
@@ -728,135 +740,99 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
-    MPFR_LOG_MSG (("[Step 7] tmd=%d rbit=%d inex=%d pos=%d\n",
+    MPFR_LOG_MSG (("tmd=%d rbit=%d inex=%d pos=%d\n",
                    tmd, (int) rbit, inex, pos));
 
     /* Here, if the final sum is known to be exact, inex = 0,
        otherwise inex = 1. */
 
-    /* Determine carry for the initial rounding. Note that in case of
-       value known to be exact (i.e. inex = 0), carry is set to 0. */
-    switch (rnd)
-      {
-      case MPFR_RNDD:
-        carry = 0;
-        break;
-      case MPFR_RNDU:
-        carry = inex;
-        break;
-      case MPFR_RNDZ:
-        carry = inex && !pos;
-        break;
-      case MPFR_RNDA:
-        carry = inex && pos;
-        break;
-      default:
-        MPFR_ASSERTN (rnd == MPFR_RNDN);
-        /* Note: for known halfway cases (maxexp == MPFR_EXP_MIN)
-           that are rounded downward, rbit has been changed to 0
-           so that carry is set correctly. */
-        carry = rbit;
-      }
-
-    /* Sign handling (-> absolute value and sign), together with
-       initial rounding. */
-    if (pos)
-      {
-        mp_limb_t carry_out;
-
-        MPFR_SET_POS (sum);
-        sump[0] &= ~ MPFR_LIMB_MASK (sd);
-        carry_out = mpn_add_1 (sump, sump, sn, carry << sd);
-        MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == !carry_out);
-        if (carry_out)
-          {
-            e++;
-            sump[sn-1] = MPFR_LIMB_HIGHBIT;
-          }
-      }
-    else
-      {
-        MPFR_SET_NEG (sum);
-        if (carry)
-          {
-            mpn_com (sump, sump, sn);
-            sump[0] &= ~ MPFR_LIMB_MASK (sd);
-            MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == 1);
-          }
-        else
-          {
-            mp_limb_t borrow_out;
-
-            sump[0] &= ~ MPFR_LIMB_MASK (sd);
-            borrow_out = mpn_neg (sump, sump, sn);
-            MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == borrow_out);
-            if (!borrow_out)
-              {
-                e++;
-                sump[sn-1] = MPFR_LIMB_HIGHBIT;
-              }
-          }
-      }
-
-    MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
-
     if (tmd == 0)  /* no TMD */
       {
-        if (inex && !carry)  /* two's complement significand decreased */
+        switch (rnd)
+          {
+          case MPFR_RNDD:
+            corr = 0;
+            break;
+          case MPFR_RNDU:
+            corr = inex;
+            break;
+          case MPFR_RNDZ:
+            corr = inex && !pos;
+            break;
+          case MPFR_RNDA:
+            corr = inex && pos;
+            break;
+          default:
+            MPFR_ASSERTN (rnd == MPFR_RNDN);
+            /* Note: for halfway cases (maxexp == MPFR_EXP_MIN) that are
+               rounded downward, rbit has been changed to 0 so that corr
+               is set correctly. */
+            corr = rbit;
+          }
+        if (inex && !corr)  /* two's complement significand decreased */
           inex = -1;
         MPFR_LOG_MSG (("No TMD, inex=%d\n", inex));
       }
-    else  /* Step 8 */
+    else
       {
+        mp_limb_t *yp;   /* pointer to the new accumulator */
+        mpfr_prec_t yq;  /* size of the new accumulator, in bits */
         mp_size_t zs;
         int sst;  /* sign of the secondary term */
-        int corr;
 
         MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
 
-        /* New accumulator size */
-        ws = MPFR_PREC2LIMBS (wq - sq);
-        wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
+        /* The TMD will be solved by doing further computations on
+           the remaining bits of the inputs, in a precision that is
+           low enough so that we can split the temporary area into
+           the new accumulator and a new temporary area. */
 
-        MPFR_LOG_MSG (("Step 8 with"
+        ts = ys + 1;
+        yp = tp + ts;
+        MPFR_ASSERTD (yp + ys <= wp);
+
+        /* New accumulator size in bits */
+        yq = (mpfr_prec_t) ys * GMP_NUMB_BITS;
+
+        MPFR_LOG_MSG (("TMD with"
                        " maxexp=%" MPFR_EXP_FSPEC "d"
-                       " ws=%Pd"
-                       " wq=%Pd\n",
+                       " ys=%Pd"
+                       " yq=%Pd\n",
                        (mpfr_eexp_t) maxexp,
-                       (mpfr_prec_t) ws, wq));
+                       (mpfr_prec_t) ys, yq));
 
         /* The d-1 bits from u-2 to u-d (= err) are identical. */
 
         if (err >= minexp)
           {
             mpfr_prec_t tq;
-            mp_size_t wi;
+            mp_size_t yi;
             int td;
 
             /* Let's keep the last 2 over the d-1 identical bits and the
                following bits, i.e. the bits from err+1 to minexp. */
             tq = err - minexp + 2;  /* tq = number of such bits */
-            MPFR_LOG_MSG (("[Step 8] tq=%Pd\n", tq));
+            MPFR_LOG_MSG (("[TMD] tq=%Pd\n", tq));
             MPFR_ASSERTD (tq >= 2);
 
-            wi = tq / GMP_NUMB_BITS;
+            yi = tq / GMP_NUMB_BITS;
             td = tq % GMP_NUMB_BITS;
 
             if (td != 0)
               {
-                wi++;  /* number of words with represented bits */
+                yi++;  /* number of words with represented bits */
                 td = GMP_NUMB_BITS - td;
-                zs = ws - wi;
-                MPFR_ASSERTD (zs >= 0 && zs < ws);
-                mpn_lshift (wp + zs, wp, wi, td);
+                zs = ys - yi;
+                MPFR_ASSERTD (zs >= 0 && zs < ys);
+                mpn_lshift (yp + zs, yp, yi, td);
               }
             else
               {
-                MPFR_ASSERTD (wi > 0);
-                zs = ws - wi;
-                MPFR_ASSERTD (zs >= 0 && zs < ws);
+                MPFR_ASSERTD (yi > 0);
+                zs = ys - yi;
+                MPFR_ASSERTD (zs >= 0 && zs < ys);
                 if (zs > 0)
-                  MPN_COPY_INCR (wp + zs, wp, wi);
+                  MPN_COPY_INCR (yp + zs, yp, yi);
               }
 
             UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
@@ -868,20 +844,20 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                the accumulator will be 0. The new minexp is determined
                from maxexp, with cq bits reserved to avoid an overflow
                (as in the early steps). */
-            MPFR_LOG_MSG (("[Step 8] err < minexp\n", 0));
-            zs = ws;
+            MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
+            zs = ys;
 
-            /* minexp = maxexp + cq - wq */
-            UPDATE_MINEXP (maxexp, wq - cq);
+            /* minexp = maxexp + cq - yq */
+            UPDATE_MINEXP (maxexp, yq - cq);
           }
 
-        MPN_ZERO (wp, zs);
+        MPN_ZERO (yp, zs);
 
-        cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
+        cancel = sum_raw (yp, ys, yq, x, n, minexp, maxexp, tp, ts,
                           logn, cq, 0, NULL, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
-          sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
+          sst = MPFR_LIMB_MSB (yp[ys-1]) == 0 ? 1 : -1;
         else if (tmd == 1)
           sst = 0;
         else
@@ -895,7 +871,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               (pos ? 1 : -1) : (pos ? -1 : 1);
           }
 
-        MPFR_LOG_MSG (("[Step 8] tmd=%d rbit=%d sst=%d\n",
+        MPFR_LOG_MSG (("[TMD] tmd=%d rbit=%d sst=%d\n",
                        tmd, (int) rbit, sst));
 
         MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit][sst+1][pos]);
@@ -917,14 +893,27 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
            ((MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst <= 0) ||
             (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst < 0))) ?
           (pos ? -1 : 1) : 0;
+      }
 
-        MPFR_LOG_MSG (("[Step 8] inex=%d corr=%d\n", inex, corr));
+    /* Sign handling (-> absolute value and sign), together with
+       rounding. */
+    if (pos)
+      {
+        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
+        MPFR_SET_POS (sum);
+        sump[0] &= ~ MPFR_LIMB_MASK (sd);
 
-        if (corr > 0 &&
-            MPFR_UNLIKELY (mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd)))
+        if (corr > 0)
           {
-            sump[sn-1] = MPFR_LIMB_HIGHBIT;
-            e++;
+            mp_limb_t carry_out;
+
+            carry_out = mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
+            MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == !carry_out);
+            if (MPFR_UNLIKELY (carry_out))
+              {
+                sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                e++;
+              }
           }
 
         if (corr < 0)
@@ -932,17 +921,50 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
             if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
               {
-                mp_size_t i;
-
-                sump[0] = MPFR_LIMB_MAX << sd;
-                for (i = 1; i < sn; i++)
-                  sump[i] = MPFR_LIMB_MAX;
+                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
                 e--;
               }
           }
+      }
+    else
+      {
+        mp_limb_t corr2;
 
-      }  /* Step 8 block */
+        /* abs(x + corr) = - (x + corr) = com(x) + (1 - corr) */
 
+        /* We want to avoid separate mpn_com (or mpn_neg) and mpn_add_1
+           (or mpn_sub_1) operations, as they could yield two loops in
+           some particular cases involving a long sequence of 0's in the
+           low significant bits (except the least significant bit, which
+           doesn't matter). But we can just do the correction operation
+           on the least significant limb, then do either a mpn_com or a
+           mpn_neg on the remaining limbs, depending on the carry (BTW,
+           mpn_neg is just a mpn_com with an initial carry propagation:
+           after some point, mpn_neg does a complement). */
+
+        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
+        MPFR_SET_NEG (sum);
+
+        MPFR_ASSERTD (corr >= -1 && corr <= 1);
+        corr2 = (mp_limb_t) (1 - corr) << sd;
+        /* Note: If corr = -1, this can overflow to corr2 = 0.
+           This case is taken into account below. */
+
+        sump[0] = (~ (sump[0] | MPFR_LIMB_MASK (sd))) + corr2;
+
+        if (sump[0] < corr2 || (corr2 == 0 && corr < 0))
+          {
+            if (sn == 1 || ! mpn_neg (sump + 1, sump + 1, sn - 1))
+              {
+                e++;
+                sump[sn-1] = MPFR_LIMB_HIGHBIT;
+              }
+          }
+        else if (sn > 1)
+          mpn_com (sump + 1, sump + 1, sn - 1);
+      }
+
+    MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
     MPFR_LOG_MSG (("Set exponent e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
     MPFR_SET_EXP (sum, e);
   }  /* main block */
@@ -981,7 +1003,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
       /* sign of infinities and zeros (0: currently unknown) */
       int sign_inf = 0, sign_zero = 0;
 
-      MPFR_LOG_MSG (("Step 1 with n = %lu >= 3\n", n));
+      MPFR_LOG_MSG (("Check for special inputs (n = %lu >= 3)\n", n));
 
       for (i = 0; i < n; i++)
         {
@@ -1037,7 +1059,7 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
             }
         }
 
-      MPFR_LOG_MSG (("[Step 1] rn=%lu sign_inf=%d sign_zero=%d\n",
+      MPFR_LOG_MSG (("rn=%lu sign_inf=%d sign_zero=%d\n",
                      rn, sign_inf, sign_zero));
 
       /* At this point the result cannot be NaN (this case has already
