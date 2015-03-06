@@ -501,6 +501,21 @@ Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
 C-Reduce may be useful to try to identify whether a bug comes from the
 compiler.
 
+   =====================================================================
+
+To do type punning (i.e. store a value of some type and reinterpret
+it as another type), use a union. This is valid in ISO C99 and above
+(in C99, see 6.5#7 and Note 82 of 6.5.2.3#3 for the clarification),
+but not in C++. So, users of a C++ compilers should make sure that
+their compiler supports type punning via a union. If some problem is
+reported, we should address it either by making the code compatible
+or by adding a configure test to reject the compiler.
+
+Some references:
+* https://en.wikipedia.org/wiki/Type_punning#Use_of_union
+* http://stackoverflow.com/questions/346622/opinions-on-type-punning-in-c
+  "Opinions on type-punning in C++?"
+
 ===========================================================================
 
 Avoid variable names "l", "I" and "O", which look like "1" and "0" with
