@@ -483,7 +483,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
     mpfr_exp_t err;      /* exponent of the error bound */
     mp_limb_t rbit;      /* rounding bit (corrected in halfway case) */
-    int corr;            /* correction term (-1, 0 or 1) */
+    int corr;            /* correction term (from -1 to 2) */
     int sd, sh;          /* shift counts */
     mp_size_t sn;        /* size of the output number */
     int tmd;             /* 0: the TMD does not occur
@@ -730,8 +730,20 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     MPFR_LOG_MSG (("tmd=%d rbit=%d inex=%d pos=%d\n",
                    tmd, (int) rbit, inex, pos));
 
-    /* Here, if the final sum is known to be exact, inex = 0,
-       otherwise inex = 1. */
+    /* Here, if the final sum is known to be exact, inex = 0, otherwise
+     * inex = 1. We have a truncated significand, a trailing term t such
+     * that 0 <= t < 1 ulp, and an error on the trailing term bounded by
+     * t' in absolute value. Thus the error e on the truncated significand
+     * satisfies -t' <= e < 1 ulp + t'. Thus one has 4 correction cases
+     * denoted by a corr value between -1 and 2 depending on e, pos, rbit,
+     * and the rounding mode:
+     *   -1: equivalent to nextbelow;
+     *    0: the truncated significand is not corrected;
+     *    1: add 1 ulp;
+     *    2: add 1 ulp, then nextabove.
+     * The nextbelow and nextabove are used here since there may be a
+     * change of the binade.
+     */
 
     if (tmd == 0)  /* no TMD */
       {
@@ -756,9 +768,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                is set correctly. */
             corr = rbit;
           }
-        if (inex && !corr)  /* two's complement significand decreased */
+        MPFR_ASSERTD (corr == 0 || corr == 1);
+        if (inex && corr == 0)  /* two's complement significand decreased */
           inex = -1;
-        MPFR_LOG_MSG (("No TMD, inex=%d\n", inex));
+        MPFR_LOG_MSG (("No TMD, corr=%d inex=%d\n", corr, inex));
       }
     else
       {
@@ -853,6 +866,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit][sst+1][pos]);
 
+        /* FIXME: Update the following. */
+
         inex =
           MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
           MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) ? (sst ?  1 : 0) :
@@ -873,7 +888,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       }
 
     /* Sign handling (-> absolute value and sign), together with
-       rounding. */
+       rounding. The most common cases are corr = 0 and corr = 1
+       as this is necessarily the case when the TMD did not occur. */
+    MPFR_ASSERTD (corr >= -1 && corr <= 2);
+
+    /* FIXME: Support the case corr == 2. Fix the case corr == -1 on a
+       negative number with a change of the binade. */
+
     if (pos)
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
