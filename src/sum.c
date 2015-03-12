@@ -541,6 +541,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
     sh = cancel % GMP_NUMB_BITS;
 
+    MPFR_ASSERTD (sd >= 0 && sd < GMP_NUMB_BITS);
+
     if (MPFR_LIKELY (u > minexp))
       {
         mpfr_prec_t tq;
@@ -779,6 +781,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         int sst;  /* sign of the secondary term */
 
         MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
+        MPFR_ASSERTD (tmd == 1 || tmd == 2);
 
         /* New accumulator size */
         ws = MPFR_PREC2LIMBS (wq - sq);
@@ -855,10 +858,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             /* For halfway cases, let's virtually eliminate them
                by setting a sst equivalent to a non-halfway case,
                which depends on the last bit of the pre-rounded
-               result and the sign. */
+               result. */
             MPFR_ASSERTD (rnd == MPFR_RNDN && tmd == 2);
-            sst = (sump[0] & (MPFR_LIMB_ONE << sd)) ?
-              (pos ? 1 : -1) : (pos ? -1 : 1);
+            sst = (sump[0] & (MPFR_LIMB_ONE << sd)) ? 1 : -1;
           }
 
         MPFR_LOG_MSG (("[TMD] tmd=%d rbit=%d sst=%d\n",
@@ -866,34 +868,26 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit][sst+1][pos]);
 
-        /* FIXME: Update the following. */
-
         inex =
           MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
           MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) ? (sst ?  1 : 0) :
           (MPFR_ASSERTD (rnd == MPFR_RNDN),
            tmd == 1 ? - sst : sst);
 
-        corr =
-          (tmd == 2 && rbit == 0 && sst > 0) ||
-          (rbit == 1 &&
-           ((MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst >= 0) ||
-            (MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst > 0))) ?
-          (pos ? 1 : -1) :
-          (tmd == 2 && rbit != 0 && sst < 0) ||
-          (rbit == 0 &&
-           ((MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst <= 0) ||
-            (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst < 0))) ?
-          (pos ? -1 : 1) : 0;
+        if (tmd == 2 && sst == (rbit ? -1 : 1))
+          corr = 1 - (int) rbit;
+        else if (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst == -1)
+          corr = (int) rbit - 1;
+        else if (MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst == +1)
+          corr = (int) rbit + 1;
+        else
+          corr = (int) rbit;
       }
 
     /* Sign handling (-> absolute value and sign), together with
        rounding. The most common cases are corr = 0 and corr = 1
        as this is necessarily the case when the TMD did not occur. */
     MPFR_ASSERTD (corr >= -1 && corr <= 2);
-
-    /* FIXME: Support the case corr == 2. Fix the case corr == -1 on a
-       negative number with a change of the binade. */
 
     if (pos)
       {
@@ -903,13 +897,24 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         if (corr > 0)
           {
-            mp_limb_t carry_out;
+            mp_limb_t corr2, carry_out;
 
-            carry_out = mpn_add_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
+            corr2 = (mp_limb_t) corr << sd;
+            /* If corr == 2 && sd == GMP_NUMB_BITS - 1, this overflows
+               to corr2 = 0. This case is taken into account below. */
+
+            carry_out = corr2 != 0 ? mpn_add_1 (sump, sump, sn, corr2) :
+              (MPFR_ASSERTD (sn > 1),
+               mpn_add_1 (sump + 1, sump + 1, sn - 1, MPFR_LIMB_ONE));
+
             MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == !carry_out);
+
             if (MPFR_UNLIKELY (carry_out))
               {
-                sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                /* Note: The | is important when sump[sn-1] is not 0
+                   (this can occur with sn = 1 and corr = 2). TODO:
+                   Add something to make sure that this is tested. */
+                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
                 e++;
               }
           }
@@ -917,6 +922,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         if (corr < 0)
           {
             mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
+
             if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
               {
                 sump[sn-1] |= MPFR_LIMB_HIGHBIT;
@@ -926,40 +932,74 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       }
     else
       {
-        mp_limb_t corr2;
+        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
+        MPFR_SET_NEG (sum);
 
         /* abs(x + corr) = - (x + corr) = com(x) + (1 - corr) */
 
         /* We want to avoid separate mpn_com (or mpn_neg) and mpn_add_1
            (or mpn_sub_1) operations, as they could yield two loops in
-           some particular cases involving a long sequence of 0's in the
-           low significant bits (except the least significant bit, which
-           doesn't matter). But we can just do the correction operation
-           on the least significant limb, then do either a mpn_com or a
-           mpn_neg on the remaining limbs, depending on the carry (BTW,
-           mpn_neg is just a mpn_com with an initial carry propagation:
-           after some point, mpn_neg does a complement). */
+           some particular cases involving a long sequence of 0's in
+           the low significant bits (except the least significant bit,
+           which doesn't matter). */
 
-        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
-        MPFR_SET_NEG (sum);
-
-        MPFR_ASSERTD (corr >= -1 && corr <= 1);
-        corr2 = (mp_limb_t) (1 - corr) << sd;
-        /* Note: If corr = -1, this can overflow to corr2 = 0.
-           This case is taken into account below. */
-
-        sump[0] = (~ (sump[0] | MPFR_LIMB_MASK (sd))) + corr2;
-
-        if (sump[0] < corr2 || (corr2 == 0 && corr < 0))
+        if (corr <= 1)
           {
-            if (sn == 1 || ! mpn_neg (sump + 1, sump + 1, sn - 1))
+            mp_limb_t corr2;
+
+            /* Here we can just do the correction operation on the
+               least significant limb, then do either a mpn_com or
+               a mpn_neg on the remaining limbs, depending on the
+               carry (BTW, mpn_neg is just a mpn_com with an initial
+               carry propagation: after some point, mpn_neg does a
+               complement). */
+
+            corr2 = (mp_limb_t) (1 - corr) << sd;
+            /* Note: If corr = -1, this can overflow to corr2 = 0.
+               This case is taken into account below. */
+
+            sump[0] = (~ (sump[0] | MPFR_LIMB_MASK (sd))) + corr2;
+
+            if (sump[0] < corr2 || (corr2 == 0 && corr < 0))
               {
-                e++;
-                sump[sn-1] = MPFR_LIMB_HIGHBIT;
+                if (sn == 1 || ! mpn_neg (sump + 1, sump + 1, sn - 1))
+                  {
+                    /* Note: The | is important when sump[sn-1] is not 0
+                       (this can occur with sn = 1 and corr = -1). TODO:
+                       Add something to make sure that this is tested. */
+                    sump[sn-1] |= MPFR_LIMB_HIGHBIT;
+                    e++;
+                  }
               }
+            else if (sn > 1)
+              mpn_com (sump + 1, sump + 1, sn - 1);
           }
-        else if (sn > 1)
-          mpn_com (sump + 1, sump + 1, sn - 1);
+        else  /* corr == 2 */
+          {
+            mp_limb_t corr2, c;
+            mp_size_t i = 1;
+
+            /* We want to compute com(x) - 1, but GMP doesn't have an
+               operation for that. The fact is that a sequence of low
+               significant bits 1 is invariant. Starting at the first
+               low significant bit 0, we can do the complement with
+               mpn_com. */
+
+            corr2 = MPFR_LIMB_ONE << sd;
+            c = ~ (sump[0] | MPFR_LIMB_MASK (sd));
+            sump[0] = c - corr2;
+
+            if (c == 0)
+              {
+                while (MPFR_ASSERTD (i < sn), sump[i] == MPFR_LIMB_MAX)
+                  i++;
+                sump[i] = (~ sump[i]) - 1;
+                i++;
+              }
+
+            if (i < sn)
+              mpn_com (sump + i, sump + i, sn - i);
+          }
       }
 
     MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
