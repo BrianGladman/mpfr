@@ -762,7 +762,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPFR_ASSERTD (corr == 0 || corr == 1);
         if (inex && corr == 0)  /* two's complement significand decreased */
           inex = -1;
-        MPFR_LOG_MSG (("No TMD, corr=%d inex=%d\n", corr, inex));
       }
     else
       {
@@ -879,9 +878,12 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
           corr = (int) rbit;
       }
 
+    MPFR_LOG_MSG (("pos=%d corr=%d inex=%d\n", pos, corr, inex));
+
     /* Sign handling (-> absolute value and sign), together with
        rounding. The most common cases are corr = 0 and corr = 1
        as this is necessarily the case when the TMD did not occur. */
+
     MPFR_ASSERTD (corr >= -1 && corr <= 2);
 
     if (pos)
