@@ -65,17 +65,14 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2] = { 0 };
  *   tp: pointer to a temporary area.
  *   ts: size of this temporary area.
  *   logn: ceil(log2(rn)), where rn is the number of regular inputs.
- *   cq: value of cq in the main code (logn + 1).
  *   prec: minimal value of e - err (see below).
  *   ep: pointer to mpfr_exp_t (see below), or a null pointer.
- *   errp: pointer to mpfr_exp_t (see below), or a null pointer.
  *   minexpp: pointer to mpfr_exp_t (see below).
  *   maxexpp: pointer to mpfr_exp_t (see below).
  * This function returns the number of cancelled bits (>= 1), or 0
  * if the accumulator is 0 (then the exact sum is necessarily 0).
  * In the former case, the function also returns:
  * - in ep: the exponent e of the computed result;
- * - in errp: the exponent err of the error bound;
  * - in minexpp: the last value of minexp.
  * - in maxexpp: the new value of maxexp (for the next iteration).
  * Notes:
@@ -85,7 +82,6 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2] = { 0 };
  *   block, and the value of ts is used only when the full assertions
  *   are checked (i.e. with the --enable-assert configure option), to
  *   check that a buffer overflow doesn't occur;
- * - one has: *errp <= *ep - prec if the accumulator is not 0;
  * - contrary to the returned value of minexp (the value in the last
  *   iteration), the returned value of maxexp is the one for the next
  *   iteration (= maxexp2 of the last iteration).
@@ -93,9 +89,8 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2] = { 0 };
 static mpfr_prec_t
 sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
          unsigned long n, mpfr_exp_t minexp, mpfr_exp_t maxexp,
-         mp_limb_t *tp, mp_size_t ts, int logn, int cq, mpfr_prec_t prec,
-         mpfr_exp_t *ep, mpfr_exp_t *errp,
-         mpfr_exp_t *minexpp, mpfr_exp_t *maxexpp)
+         mp_limb_t *tp, mp_size_t ts, int logn, mpfr_prec_t prec,
+         mpfr_exp_t *ep, mpfr_exp_t *minexpp, mpfr_exp_t *maxexpp)
 {
   MPFR_LOG_FUNC
     (("ws=%Pd ts=%Pd prec=%Pd", (mpfr_prec_t) ws, (mpfr_prec_t) ts, prec),
@@ -103,10 +98,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 
   MPFR_ASSERTD (prec >= 0);
 
-  /* Consistency checks. */
+  /* Consistency check. */
   MPFR_ASSERTD (wq == (mpfr_prec_t) ws * GMP_NUMB_BITS);
-  MPFR_ASSERTD (cq == logn + 1);
-  MPFR_ASSERTD (maxexp - minexp == wq - cq);
 
   while (1)
     {
@@ -352,8 +345,6 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                                (mpfr_eexp_t) err, (mpfr_eexp_t) e, prec));
                 if (ep != NULL)
                   *ep = e;
-                if (errp != NULL)
-                  *errp = err;
                 *minexpp = minexp;
                 *maxexpp = maxexp2;
                 MPFR_LOG_MSG (("return with minexp=%" MPFR_EXP_FSPEC
@@ -408,7 +399,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
         else
           {
             MPFR_LOG_MSG (("accumulator = 0, reiterate\n", 0));
-            UPDATE_MINEXP (maxexp2, wq - cq);
+            UPDATE_MINEXP (maxexp2, wq - (logn + 1));
+            /* Note: the logn + 1 corresponds to cq in the main code. */
           }
       }
 
@@ -481,7 +473,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     mpfr_prec_t cancel;  /* number of cancelled bits */
     mpfr_exp_t e;        /* temporary exponent of the result */
     mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
-    mpfr_exp_t err;      /* exponent of the error bound */
     mp_limb_t rbit;      /* rounding bit (corrected in halfway case) */
     int corr;            /* correction term (from -1 to 2) */
     int sd, sh;          /* shift counts */
@@ -495,7 +486,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     UPDATE_MINEXP (maxexp, wq - cq);
     cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                      logn, cq, sq + 3, &e, &err, &minexp, &maxexp);
+                      logn, sq + 3, &e, &minexp, &maxexp);
 
     if (MPFR_UNLIKELY (cancel == 0))
       {
@@ -512,18 +503,17 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     /* The absolute value of the truncated sum is in the binade
        [2^(e-1),2^e] (closed on both ends due to two's complement).
-       The error is strictly less than 2^err (and is 0 if
-       maxexp == MPFR_EXP_MIN). */
+       The error is strictly less than 2^(maxexp + logn) (and is 0
+       if maxexp == MPFR_EXP_MIN). */
 
     u = e - sq;  /* e being the exponent, u is the ulp of the target */
 
     MPFR_LOG_MSG (("cancel=%Pd"
                    " e=%" MPFR_EXP_FSPEC "d"
                    " u=%" MPFR_EXP_FSPEC "d"
-                   " err=%" MPFR_EXP_FSPEC "d"
                    " maxexp=%" MPFR_EXP_FSPEC "d%s\n",
                    cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) u,
-                   (mpfr_eexp_t) err, (mpfr_eexp_t) maxexp,
+                   (mpfr_eexp_t) maxexp,
                    maxexp == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" : ""));
 
     /* Let's copy/shift the bits [max(u,minexp),e) to the
@@ -629,8 +619,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
             /* Let's see whether the TMD occurs. */
             MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
-            MPFR_ASSERTD (err >= MPFR_EMIN_MIN);
-            d = u - err;  /* representable */
+            d = u - (maxexp + logn);  /* representable */
             MPFR_ASSERTD (d >= 3);
 
             /* First chunk after the rounding bit... It starts at:
@@ -777,6 +766,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
       }
     else
       {
+        mpfr_exp_t err;  /* exponent of the error bound */
         mp_size_t zs;
         int sst;  /* sign of the secondary term */
 
@@ -787,11 +777,14 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         ws = MPFR_PREC2LIMBS (wq - sq);
         wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
 
+        err = maxexp + logn;
+
         MPFR_LOG_MSG (("TMD with"
                        " maxexp=%" MPFR_EXP_FSPEC "d"
+                       " err=%" MPFR_EXP_FSPEC "d"
                        " ws=%Pd"
                        " wq=%Pd\n",
-                       (mpfr_eexp_t) maxexp,
+                       (mpfr_eexp_t) maxexp, (mpfr_eexp_t) err,
                        (mpfr_prec_t) ws, wq));
 
         /* The d-1 bits from u-2 to u-d (= err) are identical. */
@@ -829,6 +822,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               }
 
             UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
+            MPFR_ASSERTD (minexp == err + 2 - wq);
           }
         else  /* err < minexp */
           {
@@ -842,12 +836,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
             /* minexp = maxexp + cq - wq */
             UPDATE_MINEXP (maxexp, wq - cq);
+            MPFR_ASSERTD (minexp == err + 1 - wq);
           }
 
         MPN_ZERO (wp, zs);
 
         cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                          logn, cq, 0, NULL, NULL, &minexp, &maxexp);
+                          logn, 0, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
           sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
