@@ -626,7 +626,7 @@ check_coverage (void)
   int err = 0;
 
   for (r = 0; r < MPFR_RND_MAX; r++)
-    for (i = 0; i < 2; i++)
+    for (i = 0; i < 1 + ((mpfr_rnd_t) r == MPFR_RNDN); i++)
       for (j = 0; j < 2; j++)
         for (k = 0; k < 3; k++)
           for (p = 0; p < 2; p++)
