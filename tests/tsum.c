@@ -472,7 +472,7 @@ check2 (void)
 }
 
 /* t[i] = (2^17 - 1) * 2^(17*(i-8)) for 0 <= i <= 16.
- * t[17] = 2^(17*9+1) * j for 4 <= j <= 7.
+ * t[17] = 2^(17*9+1) * j for -4 <= j <= 4.
  * t[18] = 2^(-17*8) * k for -3 <= k <= 3.
  * prec = 17*9+4
  */
@@ -504,9 +504,9 @@ check3 (void)
 
   for (s = 1; s >= -1; s -= 2)
     {
-      for (j = 4; j <= 7; j++)
+      for (j = -4; j <= 4; j++)
         {
-          mpfr_set_si_2exp (t[17], s*j, 17*9+1, MPFR_RNDN);
+          mpfr_set_si_2exp (t[17], j, 17*9+1, MPFR_RNDN);
           inex1 = mpfr_add (s2, s1, t[17], MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
           for (k = -3; k <= 3; k++)
