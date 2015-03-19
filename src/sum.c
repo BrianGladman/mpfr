@@ -860,7 +860,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPFR_LOG_MSG (("[TMD] tmd=%d rbit=%d sst=%d\n",
                        tmd, (int) rbit, sst));
 
-        MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit][sst+1][pos]);
+        /* Do not consider the corrected sst for MPFR_COV_SET */
+        MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit]
+                      [cancel == 0 ? 1 : sst+1][pos]);
 
         inex =
           MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
