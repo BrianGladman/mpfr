@@ -886,7 +886,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (corr >= -1 && corr <= 2);
 
-    if (pos)
+    if (pos)  /* positive result */
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
         MPFR_SET_POS (sum);
@@ -927,7 +927,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               }
           }
       }
-    else
+    else  /* negative result */
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
         MPFR_SET_NEG (sum);
