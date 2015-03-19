@@ -996,6 +996,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
             if (i < sn)
               mpn_com (sump + i, sump + i, sn - i);
+            else if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
+              {
+                /* Happens on 01111...111, whose complement is
+                   10000...000, and com(x) - 1 is 01111...111. */
+                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
+                e--;
+              }
           }
       }
 
