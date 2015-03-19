@@ -473,24 +473,26 @@ check2 (void)
 
 /* t[i] = (2^17 - 1) * 2^(17*(i-8)) for 0 <= i <= 16.
  * t[17] = 2^(17*9+1) * j for -4 <= j <= 4.
- * t[18] = 2^(-17*8) * k for -3 <= k <= 3.
+ * t[18] = 2^(-1) * k for -1 <= k <= 1.
+ * t[19] = 2^(-17*8) * m for -3 <= m <= 3.
  * prec = 17*9+4
  */
 static void
 check3 (void)
 {
-  mpfr_t sum1, sum2, s1, s2, s3, t[19];
-  mpfr_ptr p[19];
-  int i, s, j, k, r, inex1, inex2;
+  mpfr_t sum1, sum2, s1, s2, s3, s4, t[20];
+  mpfr_ptr p[20];
+  int i, s, j, k, m, r, inex1, inex2;
   int prec = 17*9+4;
 
   mpfr_init2 (sum1, prec);
   mpfr_init2 (sum2, prec);
   mpfr_init2 (s1, 17*17);
   mpfr_init2 (s2, 17*17+4);
-  mpfr_init2 (s3, 17*17+5);
+  mpfr_init2 (s3, 17*17+4);
+  mpfr_init2 (s4, 17*17+5);
   mpfr_set_ui (s1, 0, MPFR_RNDN);
-  for (i = 0; i < 19; i++)
+  for (i = 0; i < 20; i++)
     {
       mpfr_init2 (t[i], 20);
       p[i] = t[i];
@@ -509,30 +511,36 @@ check3 (void)
           mpfr_set_si_2exp (t[17], j, 17*9+1, MPFR_RNDN);
           inex1 = mpfr_add (s2, s1, t[17], MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
-          for (k = -3; k <= 3; k++)
+          for (k = -1; k <= 1; k++)
             {
-              mpfr_set_si_2exp (t[18], k, -17*8, MPFR_RNDN);
+              mpfr_set_si_2exp (t[18], k, -1, MPFR_RNDN);
               inex1 = mpfr_add (s3, s2, t[18], MPFR_RNDN);
               MPFR_ASSERTN (inex1 == 0);
-              RND_LOOP (r)
+              for (m = -3; m <= 3; m++)
                 {
-                  inex1 = mpfr_set (sum1, s3, (mpfr_rnd_t) r);
-                  inex2 = mpfr_sum (sum2, p, 19, (mpfr_rnd_t) r);
-                  MPFR_ASSERTN (mpfr_check (sum1));
-                  MPFR_ASSERTN (mpfr_check (sum2));
-                  if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                  mpfr_set_si_2exp (t[19], m, -17*8, MPFR_RNDN);
+                  inex1 = mpfr_add (s4, s3, t[19], MPFR_RNDN);
+                  MPFR_ASSERTN (inex1 == 0);
+                  RND_LOOP (r)
                     {
-                      printf ("Error in check3 on %s, "
-                              "s = %d, j = %d, k = %d\n",
-                              mpfr_print_rnd_mode ((mpfr_rnd_t) r),
-                              s, j, k);
-                      printf ("Expected ");
-                      mpfr_dump (sum1);
-                      printf ("with inex = %d\n", inex1);
-                      printf ("Got      ");
-                      mpfr_dump (sum2);
-                      printf ("with inex = %d\n", inex2);
-                      exit (1);
+                      inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
+                      inex2 = mpfr_sum (sum2, p, 20, (mpfr_rnd_t) r);
+                      MPFR_ASSERTN (mpfr_check (sum1));
+                      MPFR_ASSERTN (mpfr_check (sum2));
+                      if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                        {
+                          printf ("Error in check3 on %s, "
+                                  "s = %d, j = %d, k = %d, m = %d\n",
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                                  s, j, k, m);
+                          printf ("Expected ");
+                          mpfr_dump (sum1);
+                          printf ("with inex = %d\n", inex1);
+                          printf ("Got      ");
+                          mpfr_dump (sum2);
+                          printf ("with inex = %d\n", inex2);
+                          exit (1);
+                        }
                     }
                 }
             }
@@ -542,9 +550,9 @@ check3 (void)
       mpfr_neg (s1, s1, MPFR_RNDN);
     }
 
-  for (i = 0; i < 19; i++)
+  for (i = 0; i < 20; i++)
     mpfr_clear (t[i]);
-  mpfr_clears (sum1, sum2, s1, s2, s3, (mpfr_ptr) 0);
+  mpfr_clears (sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
 }
 
 /* bug reported by Joseph S. Myers on 2013-10-27
