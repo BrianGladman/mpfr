@@ -617,10 +617,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
             inex = 1;  /* We do not know whether the sum is exact. */
 
-            /* Let's see whether the TMD occurs. */
             MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
             d = u - (maxexp + logn);  /* representable */
             MPFR_ASSERTD (d >= 3);
+
+            /* Let's see whether the TMD occurs by looking at the d bits
+               following the ulp bit, or the d-1 bits after the rounding
+               bit. */
 
             /* First chunk after the rounding bit... It starts at:
                (wi,td-2) if td >= 2,
@@ -630,31 +633,35 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                 MPFR_ASSERTD (wi >= 1);
                 limb = wp[--wi];
                 mask = MPFR_LIMB_MASK (GMP_NUMB_BITS - 1);
-                nbits = GMP_NUMB_BITS - 1;
+                nbits = GMP_NUMB_BITS;
               }
             else if (td == 1)
               {
                 limb = wi >= 1 ? wp[--wi] : MPFR_LIMB_ZERO;
                 mask = MPFR_LIMB_MAX;
-                nbits = GMP_NUMB_BITS;
+                nbits = GMP_NUMB_BITS + 1;
               }
             else  /* td >= 2 */
               {
                 MPFR_ASSERTD (td >= 2);
                 limb = wp[wi];
                 mask = MPFR_LIMB_MASK (td - 1);
-                nbits = td - 1;
+                nbits = td;
               }
 
-            if (nbits > d - 1)
+            /* nbits: number of bits of the first chunk + 1
+               (the +1 is for the rounding bit). */
+
+            if (nbits > d)
               {
-                limb >>= nbits - (d - 1);
-                mask >>= nbits - (d - 1);
+                /* Some low significant bits must be ignored. */
+                limb >>= nbits - d;
+                mask >>= nbits - d;
                 d = 0;
               }
             else
               {
-                d -= 1 + nbits;
+                d -= nbits;
                 MPFR_ASSERTD (d >= 0);
               }
 
@@ -682,7 +689,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                 limb2 = wp[--wi];
                 if (d < GMP_NUMB_BITS)
                   {
-                    if ((limb2 >> d) != (limb >> d))
+                    int c = GMP_NUMB_BITS - d;
+                    MPFR_ASSERTD (c > 0 && c < GMP_NUMB_BITS);
+                    if ((limb2 >> c) != (limb >> c))
                       tmd = 0;
                     break;
                   }
