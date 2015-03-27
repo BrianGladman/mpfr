@@ -606,6 +606,57 @@ bug20131027 (void)
   mpfr_clear (sum);
 }
 
+/* Occurs in branches/new-sum/src/sum.c@9344 on a 64-bit machine. */
+static void
+bug20150327 (void)
+{
+  mpfr_t sum1, sum2, t[3];
+  mpfr_ptr p[3];
+  char *s[3] = { "0.10000111110101000010101011100001", "1E-100", "0.1E95" };
+  int i, r;
+
+  mpfr_inits2 (58, sum1, sum2, (mpfr_ptr) 0);
+
+  for (i = 0; i < 3; i++)
+    {
+      mpfr_init2 (t[i], 64);
+      mpfr_set_str (t[i], s[i], 2, MPFR_RNDN);
+      p[i] = t[i];
+    }
+
+  RND_LOOP(r)
+    {
+      int inex1, inex2;
+
+      mpfr_set (sum1, t[2], MPFR_RNDN);
+      inex1 = -1;
+      if (MPFR_IS_LIKE_RNDU ((mpfr_rnd_t) r, 1))
+        {
+          mpfr_nextabove (sum1);
+          inex1 = 1;
+        }
+
+      inex2 = mpfr_sum (sum2, p, 3, (mpfr_rnd_t) r);
+
+      if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
+        {
+          printf ("mpfr_sum incorrect in bug20150327 for %s:\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          printf ("Expected ");
+          mpfr_dump (sum1);
+          printf ("with inex = %d\n", inex1);
+          printf ("Got      ");
+          mpfr_dump (sum2);
+          printf ("with inex = %d\n", inex2);
+          exit (1);
+        }
+    }
+
+  for (i = 0; i < 3; i++)
+    mpfr_clear (t[i]);
+  mpfr_clears (sum1, sum2, (mpfr_ptr) 0);
+}
+
 /* TODO: A test with more inputs (but can't be compared to mpfr_add). */
 static void
 check_extreme (void)
@@ -741,6 +792,7 @@ main (void)
   check2 ();
   check3 ();
   bug20131027 ();
+  bug20150327 ();
   generic_tests ();
   check_extreme ();
   cancel ();
