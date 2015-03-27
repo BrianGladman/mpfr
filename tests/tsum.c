@@ -128,7 +128,7 @@ generic_tests (void)
 
           inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
           inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
-          if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+          if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
             {
               printf ("generic_tests failed on m = %d, %s\n", m,
                       mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
@@ -361,7 +361,8 @@ check1 (void)
                           inex2 = mpfr_sum (sum2, p, 4, (mpfr_rnd_t) r);
                           MPFR_ASSERTN (mpfr_check (sum1));
                           MPFR_ASSERTN (mpfr_check (sum2));
-                          if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                          if (!(mpfr_equal_p (sum1, sum2) &&
+                                SAME_SIGN (inex1, inex2)))
                             {
                               printf ("Error in check1 on %s, prec = %d, "
                                       "i = %d, j = %d, k = %d, f = %d\n",
@@ -444,7 +445,8 @@ check2 (void)
                           inex2 = mpfr_sum (sum2, p, 5, (mpfr_rnd_t) r);
                           MPFR_ASSERTN (mpfr_check (sum1));
                           MPFR_ASSERTN (mpfr_check (sum2));
-                          if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                          if (!(mpfr_equal_p (sum1, sum2) &&
+                                SAME_SIGN (inex1, inex2)))
                             {
                               printf ("Error in check2 on %s, prec = %d, "
                                       "i = %d, j = %d, k = %d, f1 = %d, "
@@ -527,7 +529,8 @@ check3 (void)
                       inex2 = mpfr_sum (sum2, p, 20, (mpfr_rnd_t) r);
                       MPFR_ASSERTN (mpfr_check (sum1));
                       MPFR_ASSERTN (mpfr_check (sum2));
-                      if (! mpfr_equal_p (sum1, sum2) || inex1 != inex2)
+                      if (!(mpfr_equal_p (sum1, sum2) &&
+                            SAME_SIGN (inex1, inex2)))
                         {
                           printf ("Error in check3 on %s, "
                                   "s = %d, j = %d, k = %d, m = %d\n",
@@ -626,7 +629,7 @@ check_extreme (void)
         MPFR_ASSERTN (inex1 == 0);
         inex1 = mpfr_prec_round (x, 32, (mpfr_rnd_t) r);
         inex2 = mpfr_sum (y, t, 2, (mpfr_rnd_t) r);
-        if (! mpfr_equal_p (x, y) || inex1 != inex2)
+        if (!(mpfr_equal_p (x, y) && SAME_SIGN (inex1, inex2)))
           {
             printf ("Error in check_extreme (%s, i = %d)\n",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
