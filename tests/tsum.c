@@ -558,6 +558,75 @@ check3 (void)
   mpfr_clears (sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
 }
 
+/* Try to check MPFR_RNDN, tmd=2, rbit=0, sst=0 or 1, negative with:
+ * s * (2^n - 2^k) - 1 + 2^(-1) * i + 2^(-1) * j, with -1 <= i, j <= 1,
+ * s = -1 or 1, prec n-k.
+ */
+static void
+check4 (void)
+{
+  mpfr_t sum1, sum2, s1, s2, s3, t[5];
+  mpfr_ptr p[5];
+  int i, j, k, n, s, prec, inex1, inex2;
+
+  mpfr_inits2 (256, sum1, sum2, s1, s2, s3, (mpfr_ptr) 0);
+  for (i = 0; i < 5; i++)
+    {
+      mpfr_init2 (t[i], 2);
+      p[i] = t[i];
+    }
+
+  mpfr_set_si (t[0], -1, MPFR_RNDN);
+  for (i = -1; i <= 1; i++)
+    {
+      mpfr_set_si (t[1], i, MPFR_RNDN);
+      inex1 = mpfr_add (s1, t[0], t[1], MPFR_RNDN);
+      MPFR_ASSERTN (inex1 == 0);
+      for (j = -1; j <= 1; j++)
+        {
+          mpfr_set_si (t[2], j, MPFR_RNDN);
+          inex1 = mpfr_add (s2, s1, t[2], MPFR_RNDN);
+          MPFR_ASSERTN (inex1 == 0);
+          for (s = -1; s <= 1; s += 2)
+            for (k = 1; k <= 240; k++)
+              {
+                mpfr_set_si_2exp (t[3], -s, k, MPFR_RNDN);
+                inex1 = mpfr_add (s3, s2, t[3], MPFR_RNDN);
+                MPFR_ASSERTN (inex1 == 0);
+                for (n = k + 2; n <= 255; n++)
+                  {
+                    prec = n - k;
+                    mpfr_set_prec (sum1, prec);
+                    mpfr_set_prec (sum2, prec);
+                    mpfr_set_si_2exp (t[4], s, n, MPFR_RNDN);
+                    inex1 = mpfr_add (sum1, s3, t[4], MPFR_RNDN);
+                    inex2 = mpfr_sum (sum2, p, 5, MPFR_RNDN);
+                    MPFR_ASSERTN (mpfr_check (sum1));
+                    MPFR_ASSERTN (mpfr_check (sum2));
+                    if (!(mpfr_equal_p (sum1, sum2) &&
+                          SAME_SIGN (inex1, inex2)))
+                      {
+                        printf ("Error in check4 on prec = %d, "
+                                "i = %d, j = %d, k = %d, n = %d\n",
+                                prec, i, j, k, n);
+                        printf ("Expected ");
+                        mpfr_dump (sum1);
+                        printf ("with inex = %d\n", inex1);
+                        printf ("Got      ");
+                        mpfr_dump (sum2);
+                        printf ("with inex = %d\n", inex2);
+                        exit (1);
+                      }
+                  }
+              }
+        }
+    }
+
+  for (i = 0; i < 5; i++)
+    mpfr_clear (t[i]);
+  mpfr_clears (sum1, sum2, s1, s2, s3, (mpfr_ptr) 0);
+}
+
 /* bug reported by Joseph S. Myers on 2013-10-27
    https://sympa.inria.fr/sympa/arc/mpfr/2013-10/msg00015.html */
 static void
@@ -791,6 +860,7 @@ main (void)
   check1 ();
   check2 ();
   check3 ();
+  check4 ();
   bug20131027 ();
   bug20150327 ();
   generic_tests ();
