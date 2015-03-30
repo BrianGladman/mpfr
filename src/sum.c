@@ -584,7 +584,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    which the rounding direction will be determined. */
                 MPFR_LOG_MSG (("Determine the sticky bit...\n", 0));
 
-                inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0 : 0;
+                inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0
+                  : td == 0 ?
+                  (MPFR_ASSERTD (wi >= 1),
+                   (wp[--wi] & MPFR_LIMB_MASK (GMP_NUMB_BITS - 1)) != 0)
+                  : 0;
 
                 if (!inex)
                   {
