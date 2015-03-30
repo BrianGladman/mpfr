@@ -611,10 +611,11 @@ check4 (void)
                   if (!(mpfr_equal_p (sum1, sum2) &&
                         SAME_SIGN (inex1, inex2)))
                     {
-                      printf ("Error in check4 on %s, k = %d, n = %d "
-                              "(prec %d), q = %d, s = %d, i = %d, j = %d\n",
+                      printf ("Error in check4 on %s, "
+                              "k = %d, n = %d (prec %d), "
+                              "q = %d, s = %d, h = %d, i = %d, j = %d\n",
                               mpfr_print_rnd_mode ((mpfr_rnd_t) r),
-                              k, n, prec, q, s, i, j);
+                              k, n, prec, q, s, h, i, j);
                       printf ("Expected ");
                       mpfr_dump (sum1);
                       printf ("with inex = %d\n", inex1);
