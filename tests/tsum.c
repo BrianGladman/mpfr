@@ -569,7 +569,7 @@ check4 (void)
   mpfr_ptr p[5];
   int h, i, j, k, n, q, r, s, prec, inex1, inex2;
 
-  mpfr_inits2 (256, sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
+  mpfr_inits2 (257, sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
   for (i = 0; i < 5; i++)
     {
       mpfr_init2 (t[i], 2);
