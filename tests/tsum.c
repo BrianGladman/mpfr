@@ -558,7 +558,7 @@ check3 (void)
   mpfr_clears (sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
 }
 
-/* Try to check MPFR_RNDN, tmd=2, rbit=0, sst=0 or 1, negative with:
+/* Check MPFR_RNDN, tmd=2, rbit=0, sst=0, negative (and other tests) with:
  *   s * (q * 2^(n-1) - 2^k) + h + 2^(-1) * i + 2^(-1) * j,
  * with -1 <= h, i, j <= 1, 2 <= q <= 3, s = -1 or 1, prec n-k.
  */
