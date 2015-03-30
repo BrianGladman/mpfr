@@ -596,11 +596,11 @@ check4 (void)
             inex1 = mpfr_add (s2, s1, t[2], MPFR_RNDN);
             MPFR_ASSERTN (inex1 == 0);
             for (i = -1; i <= 1; i++) {
-              mpfr_set_si (t[3], i, MPFR_RNDN);
+              mpfr_set_si_2exp (t[3], i, -1, MPFR_RNDN);
               inex1 = mpfr_add (s3, s2, t[3], MPFR_RNDN);
               MPFR_ASSERTN (inex1 == 0);
               for (j = -1; j <= 1; j++) {
-                mpfr_set_si (t[4], j, MPFR_RNDN);
+                mpfr_set_si_2exp (t[4], j, -1, MPFR_RNDN);
                 inex1 = mpfr_add (s4, s3, t[4], MPFR_RNDN);
                 MPFR_ASSERTN (inex1 == 0);
                 RND_LOOP (r) {
