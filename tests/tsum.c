@@ -20,20 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* TODO: add some generic random test with cancellations. Something like:
-   1. Generate random numbers with random precisions.
-   2. Compute the sum s at some random precision and some rounding mode.
-   3. While s != 0:
-   4. Include -s in the array.
-   5. Reorder the terms randomly.
-   6. Recompute a new sum s' at some random precision and some rounding mode.
-   7. Check that |s'| < ulp(s), with a factor 1/2 for MPFR_RNDN.
-   8. Reiterate at (3) with s = s'.
-   Also add tests with intermediate overflows and tests with underflows
-   (this matters here as we don't have subnormals).
-   Note: partly done in the cancel() test (r8857); the result is not tested
-   yet, but this test already shows an efficiency problem.
-*/
+/* TODO: Add tests with intermediate overflows and tests with underflows
+   (this matters here as we don't have subnormals). */
 
 #include "mpfr-test.h"
 
@@ -783,15 +771,19 @@ check_extreme (void)
   mpfr_clears (u, v, w, x, y, (mpfr_ptr) 0);
 }
 
+/* Generic random tests with cancellations */
 static void
 cancel (void)
 {
-  mpfr_t x[2 * MPFR_NCANCEL];
+  mpfr_t x[2 * MPFR_NCANCEL], bound;
   mpfr_ptr px[2 * MPFR_NCANCEL];
   int i, j, n;
 
+  mpfr_init2 (bound, 2);
+
   for (i = 0; i < 8; i++)
     {
+      mpfr_set_inf (bound, 1);
       for (n = 0; n < numberof (x); n++)
         {
           mpfr_prec_t p;
@@ -832,13 +824,31 @@ cancel (void)
                       mpfr_print_rnd_mode (rnd), mpfr_get_prec (x[n]));
 #endif
               mpfr_sum (x[n], px, n, rnd);
+              if (mpfr_zero_p (x[n]))
+                {
+                  n++;
+                  break;
+                }
               mpfr_neg (x[n], x[n], MPFR_RNDN);
+              if (mpfr_greater_p (x[n], bound))
+                {
+                  printf ("Error in cancel on i = %d, n = %d\n", i, n);
+                  exit (1);
+                }
+              mpfr_set_ui_2exp (bound, 1,
+                                mpfr_get_exp (x[n]) - p - (rnd == MPFR_RNDN),
+                                MPFR_RNDN);
+              /* The next sum will be <= bound in absolute value
+                 (the equality can be obtained in all rounding modes
+                 since the sum will be rounded). */
             }
         }
 
       while (--n >= 0)
         mpfr_clear (x[n]);
     }
+
+  mpfr_clear (bound);
 }
 
 static void
