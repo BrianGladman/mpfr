@@ -558,9 +558,14 @@ check3 (void)
   mpfr_clears (sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
 }
 
-/* Check MPFR_RNDN, tmd=2, rbit=0, sst=0, negative (and other tests) with:
- *   s * (q * 2^(n-1) - 2^k) + h + 2^(-1) * i + 2^(-1) * j,
- * with -1 <= h, i, j <= 1, 2 <= q <= 3, s = -1 or 1, prec n-k.
+/* Test of s * (q * 2^(n-1) - 2^k) + h + i * 2^(-2) + j * 2^(-2)
+ * with h = -1 or 1, -1 <= i odd <= j <= 3, 2 <= q <= 3, s = -1 or 1,
+ * prec n-k.
+ * On a 64-bit machine:
+ * MPFR_RNDN, tmd=2, rbit=0, sst=0, negative is checked with the inputs
+ *   -3*2^58, 2^5, -1, 2^(-2), 3*2^(-2)
+ * MPFR_RNDN, tmd=2, rbit=0, sst=1, negative is checked with the inputs
+ *   -3*2^58, 2^5, -1, 3*2^(-2), 3*2^(-2)
  */
 static void
 check4 (void)
@@ -591,16 +596,16 @@ check4 (void)
           mpfr_neg (t[0], t[0], MPFR_RNDN);
           mpfr_neg (t[1], t[1], MPFR_RNDN);
           mpfr_neg (s1, s1, MPFR_RNDN);
-          for (h = -1; h <= 1; h++) {
+          for (h = -1; h <= 1; h += 2) {
             mpfr_set_si (t[2], h, MPFR_RNDN);
             inex1 = mpfr_add (s2, s1, t[2], MPFR_RNDN);
             MPFR_ASSERTN (inex1 == 0);
-            for (i = -1; i <= 1; i++) {
-              mpfr_set_si_2exp (t[3], i, -1, MPFR_RNDN);
+            for (i = -1; i <= 3; i += 2) {
+              mpfr_set_si_2exp (t[3], i, -2, MPFR_RNDN);
               inex1 = mpfr_add (s3, s2, t[3], MPFR_RNDN);
               MPFR_ASSERTN (inex1 == 0);
-              for (j = -1; j <= 1; j++) {
-                mpfr_set_si_2exp (t[4], j, -1, MPFR_RNDN);
+              for (j = i; j <= 3; j++) {
+                mpfr_set_si_2exp (t[4], j, -2, MPFR_RNDN);
                 inex1 = mpfr_add (s4, s3, t[4], MPFR_RNDN);
                 MPFR_ASSERTN (inex1 == 0);
                 RND_LOOP (r) {
