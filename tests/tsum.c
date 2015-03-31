@@ -577,9 +577,9 @@ check4 (void)
     }
 
   /* No GNU style for the many nested loops... */
-  for (k = 1; k <= 240; k++) {
+  for (k = 1; k <= 64; k++) {
     mpfr_set_si_2exp (t[0], -1, k, MPFR_RNDN);
-    for (n = k + 2; n <= 255; n++) {
+    for (n = k + 2; n <= k + 65; n++) {
       prec = n - k;
       mpfr_set_prec (sum1, prec);
       mpfr_set_prec (sum2, prec);
