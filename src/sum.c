@@ -435,6 +435,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
   MPFR_ASSERTD (rn >= 3 && rn <= n);
 
+  /* In practice, no integer overflow on the exponent. */
+  MPFR_STAT_STATIC_ASSERT (MPFR_EXP_MAX - MPFR_EMAX_MAX >=
+                           sizeof (unsigned long) * CHAR_BIT);
+
   /* Set up some variables and the accumulator. */
 
   sump = MPFR_MANT (sum);
@@ -1023,7 +1027,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
     MPFR_LOG_MSG (("Set exponent e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
-    MPFR_SET_EXP (sum, e);
+    /* e may be outside the current exponent range, but this will be checked
+       with mpfr_check_range below. */
+    MPFR_EXP (sum) = e;
   }  /* main block */
 
   MPFR_TMP_FREE (marker);
