@@ -20,8 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* TODO: Add tests with intermediate overflows and tests with underflows
-   (this matters here as we don't have subnormals). */
+/* TODO: Add tests with underflows (this matters here as we don't have
+   subnormals). */
 
 #include "mpfr-test.h"
 
@@ -873,6 +873,10 @@ check_overflow (void)
   for (i = 0; i < 2 * NOVFL; i++)
     t[i] = i < NOVFL ? x : y;
 
+  /* Two kinds of test:
+   *   i = 1: overflow.
+   *   i = 2: intermediate overflow (exact sum is 0).
+   */
   for (i = 1; i <= 2; i++)
     RND_LOOP(r)
       {
