@@ -851,6 +851,57 @@ cancel (void)
   mpfr_clear (bound);
 }
 
+#define NOVFL 30
+
+static void
+check_overflow (void)
+{
+  mpfr_t sum1, sum2, x, y;
+  mpfr_ptr t[2 * NOVFL];
+  mpfr_exp_t emin, emax;
+  int i, r;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_inits2 (32, sum1, sum2, x, y, (mpfr_ptr) 0);
+  mpfr_setmax (x, mpfr_get_emax ());
+  mpfr_neg (y, x, MPFR_RNDN);
+
+  for (i = 0; i < 2 * NOVFL; i++)
+    t[i] = i < NOVFL ? x : y;
+
+  for (i = 1; i <= 2; i++)
+    RND_LOOP(r)
+      {
+        int inex1, inex2;
+
+        inex1 = mpfr_add (sum1, x, i == 1 ? x : y, (mpfr_rnd_t) r);
+        inex2 = mpfr_sum (sum2, t, i * NOVFL, (mpfr_rnd_t) r);
+        MPFR_ASSERTN (mpfr_check (sum1));
+        MPFR_ASSERTN (mpfr_check (sum2));
+        if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
+          {
+            printf ("Error in check_overflow on %s, i = %d\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+            printf ("Expected ");
+            mpfr_dump (sum1);
+            printf ("with inex = %d\n", inex1);
+            printf ("Got      ");
+            mpfr_dump (sum2);
+            printf ("with inex = %d\n", inex2);
+            exit (1);
+          }
+      }
+
+  mpfr_clears (sum1, sum2, x, y, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 static void
 check_coverage (void)
 {
@@ -892,6 +943,7 @@ main (void)
   generic_tests ();
   check_extreme ();
   cancel ();
+  check_overflow ();
 
   check_coverage ();
   tests_end_mpfr ();
