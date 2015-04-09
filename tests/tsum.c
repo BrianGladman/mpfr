@@ -20,9 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* TODO: Add tests with underflows (this matters here as we don't have
-   subnormals). */
-
 #include "mpfr-test.h"
 
 #ifndef MPFR_NCANCEL
@@ -851,7 +848,9 @@ cancel (void)
   mpfr_clear (bound);
 }
 
-#define NOVFL 30
+#ifndef NOVFL
+# define NOVFL 30
+#endif
 
 static void
 check_overflow (void)
@@ -906,6 +905,125 @@ check_overflow (void)
   set_emax (emax);
 }
 
+#ifndef NUNFL
+# define NUNFL 9
+#endif
+
+/* t[0] = 2^(-k) - sum(t[i],i=1..n)
+ */
+static void
+check_underflow (void)
+{
+  mpfr_t sum1, sum2, t[NUNFL];
+  mpfr_ptr p[NUNFL];
+  mpfr_prec_t precmax = 444;
+  mpfr_exp_t emin, emax;
+  unsigned int ex_flags, flags;
+  int c, i;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+
+  mpfr_init2 (sum1, MPFR_PREC_MIN);
+  mpfr_init2 (sum2, precmax);
+
+  for (i = 0; i < NUNFL; i++)
+    {
+      mpfr_init2 (t[i], precmax);
+      p[i] = t[i];
+    }
+
+  for (c = 0; c < 8; c++)
+    {
+      mpfr_prec_t fprec;
+      int n, neg, r;
+
+      fprec = MPFR_PREC_MIN + (randlimb () % (precmax - MPFR_PREC_MIN + 1));
+      n = 3 + (randlimb () % (NUNFL - 2));
+      MPFR_ASSERTN (n <= NUNFL);
+
+      mpfr_set_prec (sum2, (randlimb () & 1) ? MPFR_PREC_MIN : precmax);
+      mpfr_set_prec (t[0], fprec + 64);
+      mpfr_set_zero (t[0], 1);
+
+      for (i = 1; i < n; i++)
+        {
+          int inex;
+
+          mpfr_set_prec (t[i], MPFR_PREC_MIN +
+                         (randlimb () % (fprec - MPFR_PREC_MIN + 1)));
+          do
+            mpfr_urandomb (t[i], RANDS);
+          while (MPFR_IS_ZERO (t[i]));
+          mpfr_set_exp (t[i], MPFR_EMIN_MIN);
+          inex = mpfr_sub (t[0], t[0], t[i], MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+        }
+
+      neg = randlimb () & 1;
+      if (neg)
+        mpfr_nextbelow (t[0]);
+      else
+        mpfr_nextabove (t[0]);
+
+      RND_LOOP(r)
+        {
+          int inex1, inex2;
+
+          mpfr_set_zero (sum1, 1);
+          if (neg)
+            mpfr_nextbelow (sum1);
+          else
+            mpfr_nextabove (sum1);
+          inex1 = mpfr_div_2ui (sum1, sum1, 2, (mpfr_rnd_t) r);
+
+          mpfr_clear_flags ();
+          inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) r);
+          flags = __gmpfr_flags;
+
+          MPFR_ASSERTN (mpfr_check (sum1));
+          MPFR_ASSERTN (mpfr_check (sum2));
+
+          if (flags != ex_flags)
+            {
+              printf ("Bad flags in check_underflow on %s, c = %d\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), c);
+              printf ("Expected flags:");
+              flags_out (ex_flags);
+              printf ("Got flags:     ");
+              flags_out (flags);
+              printf ("sum = ");
+              mpfr_dump (sum2);
+              exit (1);
+            }
+
+          if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
+            {
+              printf ("Error in check_underflow on %s, c = %d\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), c);
+              printf ("Expected ");
+              mpfr_dump (sum1);
+              printf ("with inex = %d\n", inex1);
+              printf ("Got      ");
+              mpfr_dump (sum2);
+              printf ("with inex = %d\n", inex2);
+              exit (1);
+            }
+        }
+    }
+
+  for (i = 0; i < NUNFL; i++)
+    mpfr_clear (t[i]);
+  mpfr_clears (sum1, sum2, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 static void
 check_coverage (void)
 {
@@ -948,6 +1066,7 @@ main (void)
   check_extreme ();
   cancel ();
   check_overflow ();
+  check_underflow ();
 
   check_coverage ();
   tests_end_mpfr ();
