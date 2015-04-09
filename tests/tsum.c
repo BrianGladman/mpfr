@@ -171,7 +171,7 @@ void check_special (void)
   mpfr_ptr tabp[3];
   int i;
 
-  mpfr_inits (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
+  mpfr_inits2 (53, tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
   tabp[0] = tab[0];
   tabp[1] = tab[1];
   tabp[2] = tab[2];
