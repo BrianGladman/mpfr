@@ -909,8 +909,6 @@ check_overflow (void)
 # define NUNFL 9
 #endif
 
-/* t[0] = 2^(-k) - sum(t[i],i=1..n)
- */
 static void
 check_underflow (void)
 {
