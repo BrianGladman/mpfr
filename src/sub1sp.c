@@ -694,7 +694,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
       /* ap was a power of 2, and we lose a bit */
       /* Now it is 0111111111111111111[00000 */
-      mpn_lshift(ap, ap, n, 1);
+      /* The following 2 lines are equivalent to: mpn_lshift(ap, ap, n, 1); */
+      ap[0] <<= 1;
+      ap[n-1] |= MPFR_LIMB_HIGHBIT;
       bx--;
       /* And the lost bit x depends on Cp+1, and Cp */
       /* Compute Cp+1 if it isn't already compute (ie d==1) */
@@ -742,10 +744,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(ap[n-1] == MPFR_LIMB_HIGHBIT))
     {
       mp_size_t k = n-1;
-      do {
+      do
         k--;
-      } while (k>=0 && ap[k]==0);
-      if (MPFR_UNLIKELY(k<0))
+      while (k >= 0 && ap[k] == 0);
+      if (MPFR_UNLIKELY (k < 0))
         {
           /* It is a power of 2! */
           /* Compute Cp+1 if it isn't already compute (ie d==1) */
@@ -763,11 +765,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               DEBUG( printf("(Truncate) Do sub\n") );
               mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
-              mpn_lshift(ap, ap, n, 1);
-              ap[0] |= MPFR_LIMB_ONE<<sh;
+              ap[n-1] |= MPFR_LIMB_HIGHBIT;
               bx--;
               /* FIXME: Explain why it works (or why not)... */
-              inexact = (bcp1 == 0) ? 0 : (rnd_mode==MPFR_RNDN) ? -1 : 1;
+              inexact = (bcp1 == 0) ? 0 : (rnd_mode == MPFR_RNDN) ? -1 : 1;
               goto end_of_sub;
             }
         }
