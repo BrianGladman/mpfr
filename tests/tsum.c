@@ -135,6 +135,35 @@ generic_tests (void)
   (*__gmp_free_func) (p, nmax * sizeof(mpfr_ptr));
 }
 
+/* glibc free() error or segmentation fault when configured
+ * with GMP 6.0.0 built with "--disable-alloca ABI=32".
+ * GCC's address sanitizer shows a heap-buffer-overflow.
+ */
+static
+void check_simple (void)
+{
+  mpfr_t tab[3], r;
+  mpfr_ptr tabp[3];
+  int i;
+
+  mpfr_init2 (r, 16);
+  for (i = 0; i < 3; i++)
+    {
+      mpfr_init2 (tab[i], 16);
+      mpfr_set_ui (tab[i], 1, MPFR_RNDN);
+      tabp[i] = tab[i];
+    }
+
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
+  if (mpfr_cmp_ui (r, 3) || i != 0)
+    {
+      printf ("Error in check_simple\n");
+      exit (1);
+    }
+
+  mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
+}
+
 static
 void check_special (void)
 {
@@ -1052,6 +1081,7 @@ main (void)
 {
   tests_start_mpfr ();
 
+  check_simple ();
   check_special ();
   check_more_special ();
   check1 ();
