@@ -190,6 +190,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                         vs--;
                         tr -= GMP_NUMB_BITS;
                       }
+                    MPFR_ASSERTD (vs >= 1);
                     MPFR_ASSERTD (tr >= 0 && tr < GMP_NUMB_BITS);
                     if (tr != 0)
                       {
@@ -278,7 +279,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                 MPFR_ASSERTD (carry <= 1);
                 if (tr != 0)
                   carry += vp[vs] & MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
-                mpn_add_1 (dp + vs, dp + vs, ds - vs, carry);
+                if (ds > vs)
+                  mpn_add_1 (dp + vs, dp + vs, ds - vs, carry);
               }
             else
               {
@@ -288,7 +290,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                 MPFR_ASSERTD (borrow <= 1);
                 if (tr != 0)
                   borrow += vp[vs] & MPFR_LIMB_MASK (GMP_NUMB_BITS - tr);
-                mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
+                if (ds > vs)
+                  mpn_sub_1 (dp + vs, dp + vs, ds - vs, borrow);
               }
           }
 
