@@ -138,6 +138,10 @@ generic_tests (void)
 /* glibc free() error or segmentation fault when configured
  * with GMP 6.0.0 built with "--disable-alloca ABI=32".
  * GCC's address sanitizer shows a heap-buffer-overflow.
+ * Fixed in r9369 (before the merge into the trunk). The problem was due
+ * to the fact that mpn functions do not accept a zero size argument, and
+ * since mpn_add_1 is here a macro in GMP, there's no assertion even when
+ * GMP was built with assertion checking (--enable-assert).
  */
 static
 void check_simple (void)
