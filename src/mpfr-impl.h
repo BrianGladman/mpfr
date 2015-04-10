@@ -2079,4 +2079,31 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 #endif
 
 
+/******************************************************
+ *************  Value Coverage Checking  **************
+ ******************************************************/
+
+#ifdef MPFR_COV_CHECK
+
+/* Variable names should start with the __gmpfr_cov_ prefix. */
+
+#define MPFR_COV_SET(X) (__gmpfr_cov_ ## X = 1)
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+__MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2];
+
+#if defined (__cplusplus)
+}
+#endif
+
+#else
+
+#define MPFR_COV_SET(X) ((void) 0)
+
+#endif
+
+
 #endif

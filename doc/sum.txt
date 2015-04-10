@@ -1,0 +1,643 @@
+Implementation of mpfr_sum: sum of n mpfr_t values
+══════════════════════════════════════════════════
+
+About the time/memory complexity: The original mpfr_sum algorithm was
+inefficient on some inputs, and in some simple cases with inputs of
+different orders of magnitude, it could be very slow and take all the
+memory, making the whole program (and possibly other programs on the
+system too, due to the lack of memory at some critical point) crash.
+The time/memory complexity must no longer depend on the value of the
+exponents of the inputs, i.e. their order of magnitude. Moreover, be
+careful with the carry propagation.
+
+Preliminary note: The previous mpfr_sum algorithm was a high-level one
+and could take too much memory and too much time in cases with numbers
+of different magnitudes and cancellation. Here we will use functions
+from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
+on additions by blocks, involving virtual splitting of MPFR numbers.
+
+Concerning the sign of a zero result, the specification is:
+  * if n = 0, then the result is +0 (this choice is consistent with
+    IEEE 754-2008's sum reduction operation of vector length 0, and
+    with mpfr_set_ui and mpfr_set_si on the integer 0); otherwise
+  * if all the inputs have the same sign (i.e. all +0 or all -0),
+    then the result has the same sign as the inputs (for n = 1 or 2,
+    this choice is consistent with mpfr_set and mpfr_add respectively);
+  * otherwise, either because all inputs are zeros with at least a +0
+    and a -0, or because some inputs are non-zero (but they globally
+    cancel), the result is +0, except for the MPFR_RNDD rounding mode,
+    where it is -0 (this choice is consistent with mpfr_add for n = 2,
+    and more generally with a sequence of mpfr_add's).
+Additional details on:
+  https://sympa.inria.fr/sympa/arc/mpfr/2014-03/msg00000.html
+
+Let sq be the output precision.
+
+*** TODO ***
+The following is a bit obsolete. In particular the new helper function
+sum_raw (obtained from code refactoring for steps 3 to 6, and 8) should
+be introduced and described. Pre-rounding in (7) and rounding in (8)
+have been merged, and this [previously pre-rounding in (7)] is still
+done at the same time as sign handling with a single mpn operation.
+The table concerning the correction term and the ternary value in case
+of TMD should be changed to:
+
+     rnd   tmd    R    sst      correction   ternary
+     ───────────────────────────────────────────────
+      N     1     0     -            0          +
+      N     1     0     0            0          0
+      N     1     0     +            0          -
+      N     1     1     -           +1          +
+      N     1     1     0           +1          0
+      N     1     1     +           +1          -
+     ───────────────────────────────────────────────
+      N     2     0     -            0          -
+      N     2     0     0            ?          ?     (halfway case)
+      N     2     0     +           +1          +
+      N     2     1     -            0          -
+      N     2     1     0            ?          ?     (halfway case)
+      N     2     1     +           +1          +
+     ───────────────────────────────────────────────
+      D     1     0     -           -1          -
+      D     1     0     0            0          0
+      D     1     0     +            0          -
+      D     1     1     -            0          -
+      D     1     1     0           +1          0
+      D     1     1     +           +1          -
+     ───────────────────────────────────────────────
+      U     1     0     -            0          +
+      U     1     0     0            0          0
+      U     1     0     +           +1          +
+      U     1     1     -           +1          +
+      U     1     1     0           +1          0
+      U     1     1     +           +2          +
+     ───────────────────────────────────────────────
+
+The general ideas of the algorithm:
+
+0. Handle the case n <= 1 separately (+0 for n = 0, mpfr_set for n = 1).
+   Now assume that n >= 2.
+
+1. Look at the exponent field of each mpfr_t input (this is fast); also
+   track the signs of Inf's and zeros. This step allows one to:
+     * detect the singular cases, i.e. when there is either at least
+       a NaN or an Inf in the inputs (in case of a NaN or two Inf's of
+       different signs, we can immediately return NaN), or all inputs
+       are zeros;
+     * determine the maximum exponent maxexp of the regular inputs and
+       the number n' of regular inputs.
+
+2. A truncated sum will be computed in two's complement, stored in a
+   fixed memory area, called "accumulator", whose characteristics are
+   determined here.
+
+   Two's complement is preferred to the sign + magnitude representation
+   because the signs of the temporary (and final) results are not known
+   in advanced, and the computations (additions and subtractions) in
+   two's complement are more natural in this context. There will be a
+   conversion to sign + magnitude (representation used by MPFR numbers)
+   at the end, but this should not take much time compared to the other
+   calculations.
+
+   Only a fixed part of the inputs will be taken into account for the
+   truncated sum: the bits whose exponent is in some window (interval)
+   denoted [minexp,maxexp[.
+
+   We choose not to include maxexp in the interval in order to match the
+   floating-point representation chosen in MPFR, where the significand
+   is in [1/2,1[; this also means that the current minexp will be maxexp
+   at the next iteration, unless there is a "hole" between the inputs,
+   as explained below.
+
+   Let us define logn = ceil(log2(n')).
+
+   Due to the accumulation of values and the choice of two's complement
+   (a way to represent the sign), we will need some extra bits to avoid
+   overflows. The absolute value of the sum is less than n' * 2^maxexp,
+   taken up to logn extra bits, and one needs one more bit to be able
+   to determine the sign, so that cq = logn + 1 extra bits will be
+   considered.
+
+   For the other side, we define minexp = maxexp - sq - dq, where dq
+   will be chosen around logn to take into account the accumulation
+   of errors, i.e. from everything less significant than minexp. The
+   final choice for dq should be done after testing: in practice, one
+   may need a little more precision to handle partial cancellation at
+   this iteration, but important cancellation will always lead to other
+   iterations. For instance, we will choose for dq the smallest value
+   such that dq ≥ max(logn,4) (the bound 4 will be explained later),
+   and the accumulator bitsize wq, which is maxexp + cq - minexp, i.e.
+   cq + sq + dq, is a multiple of GMP_NUMB_BITS.
+
+   Accumulator:  [--------]-----------------------------------]
+                     cq   └─ maxexp      sq + dq      minexp ─┘
+
+3. Compute the truncated sum in two's complement by taking into account
+   the part of the inputs in the window [minexp,maxexp[.
+
+   In the same loop over the inputs, determine the maximum exponent
+   maxexp2 of the numbers formed starting with the most significant
+   represented bit that has been ignored: one will get either minexp
+   (if an input has been truncated at this iteration) or the maximum
+   exponent of the numbers that have been completely ignored. If no
+   bits have been ignored any longer, then maxexp2 has the special
+   value MPFR_EXP_MIN, which is the minimum value of the mpfr_exp_t
+   type and not a valid exponent; and the truncated sum is exact.
+
+   The accumulator during this iteration:
+
+                 [--------]-----------------------------------]
+                     cq   └─ maxexp                   minexp ─┘
+
+   If there is a additional iteration with maxexp2 = minexp - 4 and
+   a shift of 26 bits, here's the accumulator after the shift:
+
+                                     <------- 26 zeros ------->
+                 [-------------------0000000000000000000000000]
+   This iteration:          minexp ─┘   ├─ maxexp2            │
+   Next iteration:                      └─ maxexp     minexp ─┘
+
+4. Determine the number of cancelled bits, more precisely, define the
+   variable cancel = number of identical bits on the most significant
+   part of the accumulator.
+
+5. If the truncated sum (i.e. the value of the accumulator) is 0, i.e.
+   if all the words are 0, then:
+     * if maxexp2 == MPFR_EXP_MIN, then return with the exact value ±0
+       (its sign is determined from the rounding mode, as specified);
+     * else reiterate at (3) with maxexp = maxexp2 and minexp determined
+       from the initial value of cq (like in the first iteration).
+
+6. Let e = maxexp + cq - cancel, u = e - sq, and err = maxexp2 + logn.
+   Then the absolute value of the truncated sum is in [2^(e-1),2^e]
+   (binade closed on both ends due to two's complement), u is the
+   exponent of the ulp (a.k.a., quantum exponent) in the destination
+   (except in the exact case -2^e), and the absolute value of the error
+   is strictly less than the bound 2^err; if maxexp2 == MPFR_EXP_MIN,
+   then the error is 0, i.e. the sum in the accumulator is exact.
+
+   Here's a representation of the accumulator and the cancel bits,
+   with the two cases depending on the sign of the truncated sum,
+   where the x's correspond to the sq-1 represented bits following
+   the initial value bit 1 (0 if negative), r is the rounding bit,
+   and the bits f are the following bits:
+
+     ][------------------- accumulator -------------------]
+     ][---- cancel ----]----------------------------------]
+     ]0000000000000000001xxxxxxxxxxxxxxxxxxxxxrffffffffffff
+     ]1111111111111111110xxxxxxxxxxxxxxxxxxxxxrffffffffffff
+     └─ maxexp + cq    └─ e               u ─┘    minexp ─┘
+
+   If the cancellation is important, then the bit r and some of the
+   least significant bits x may fall outside of the accumulator, in
+   which case they are considered to be 0. The most degenerate case
+   is the following:
+
+     * If the cancel bits are 0's, then due to (5), e = minexp + 1,
+       i.e. a single bit (the leading 1) is represented.
+
+     * If the cancel bits are 1's, all the bits of the accumulator are
+       1's. Since the non-represented bits are considered to be 0, the
+       following bit is a 0; this implies that the computed value of
+       cancel is the right one, i.e. as if the following bits were
+       represented in the accumulator, and proves the above assertion
+       "the absolute value of the truncated sum is in [2^(e-1),2^e]".
+       Here we have e = minexp, and none of the bits are represented.
+
+   In the implementation, one must make sure that one does not try to
+   read non-represented bits.
+
+   The exponent and related values may change later due to the error,
+   but this doesn't really matter here.
+
+   If the error bound is too large due to the cancellation, e.g. if
+   err > u - 3 (the proofs below are done with this choice), then
+   one reiterates at (3) after shifting the truncated sum to the
+   left boundary (most significant part) of the accumulator, where:
+     * the shift count is determined in such a way to avoid overflows
+       at the next iteration, i.e. to be able to retrieve the sum with
+       its sign;
+     * the new value of cq is implied by this shift count and maxexp2
+       (the value of maxexp at the next iteration).
+
+   Concerning the choice of the shift count shiftq, letting only one
+   identical bit in the most significant part may not be sufficient;
+   for instance, if
+   a. maxexp2 = minexp;
+   b. the accumulator contains:
+
+        0000000011111111111111111111111111110101
+   This iteration:                     minexp ─┘
+
+   c. the accumulator is shifted to:
+
+        0111111111111111111111111111101010000000
+   Next iteration:                      └─ maxexp
+
+   d. there are at least 12 numbers to add at the next iteration;
+   then one could end up with something like:
+
+        1000000000000000000000000000000000010001
+                                        └─ maxexp
+
+   i.e. an overflow in two's complement. But leaving at least
+   2 + max(0, err - e) itentical bits in the most significant part,
+   such as
+
+        0011111111111111111111111111110101000000
+                                         └─ maxexp
+
+   is sufficient. The second term of the max covers cases like:
+
+                                       ┌─ err = maxexp2 + logn
+        0000000000000000000000000000000000000111
+                                         e ─┘
+
+   (2^err being a bound on the error term, thus a bound on the value
+   that will be added to the accumulator at the next iteration), for
+   which the accumulator can be shifted to:
+
+         ┌─ err
+        0000000111000000000000000000000000000000
+           e ─┘
+
+   without triggering an overflow at the next iteration, but
+
+        ┌─ err
+        0000001110000000000000000000000000000000
+          e ─┘
+
+   is incorrect as a 1 could appear in the MSB (making the accumulator
+   value negative) just with additions of positive numbers.
+
+   Said otherwise, leaving at least i identical bits allows one to
+   represent numbers in [-2^(e+i-1),2^(e+i-1)[. The current sum is in
+   [-2^e,2^e[, and taking into account the error terms, one wants to
+   be able to represent arbitrary numbers in ]-2^e-2^err,2^e+2^err[.
+   So, i must be chosen in such a way that 2^e + 2^err ≤ 2^(e+i-1),
+   i.e. 2^0 + 2^(err-e) ≤ 2^(i-1). The smallest power of two larger
+   than or equal to 2^0 + 2^(err-e) has exponent 1 + max(0, err - e).
+   Hence the choice i ≥ 2 + max(0, err - e).
+
+   So, we have: shiftq = cancel - 2 - max(0, err - e). And at the next
+   iteration,
+
+     cq' = wq - shiftq + (minexp - maxexp2)
+
+   Now one needs to prove that this makes sense, i.e. that shiftq > 0
+   and that cq' < wq; otherwise all the inputs will be ignored, making
+   a new iteration useless, with a possible infinite loop. So, shiftq
+   must be chosen so that
+
+     shiftq > minexp - maxexp2
+
+   Note that since maxexp2 ≤ minexp, this will also yield shiftq > 0.
+   The condition err > u - 3 gives:
+
+     maxexp2 + logn > maxexp + cq - cancel - sq - 3
+
+   Therefore, since maxexp - minexp = sq + dq,
+
+     cancel - 2 > minexp - maxexp2 - logn + cq + dq - 5
+
+   And since cq = logn + 1 and dq ≥ 4,
+
+     cancel - 2 > minexp - maxexp2                              [A]
+
+   We also have:
+
+     cancel - 2 - logn + e = maxexp - 2 - logn + cq > minexp
+
+   Therefore
+
+     cancel - 2 - (err - e) > minexp - maxexp2                  [B]
+
+   [A] and [B] give: shiftq > minexp - maxexp2. QED.
+
+   Note: It is expected that in general, the cancellation is not very
+   large, so that the new additions in (3) will occur only in a small
+   part of the accumulator, except in case of long carry propagation
+   (see below).
+
+7. Now, the accumulator contains the significand of a good approximation
+   to the exact sum, since the absolute value of the error is strictly
+   less than ulp(computed value) * 2^(-3). The corresponding exponent is
+   e and the sign is determined from the cancel bits. One will copy the
+   rounded significand to the destination, together with the exponent
+   and the sign. One has different cases:
+
+     * If all the bits of the inputs have been taken into account, then
+       the significand is exact (maxexp2 == MPFR_EXP_MIN), so that one
+       can round it correctly. Note: The TMD does not occur here.
+
+     * If the error bound is non-zero (because not all the bits of the
+       inputs have been taken into account) but the TMD does not occur,
+       then one can also round the significand correctly.
+
+     * Otherwise, one will round the significand, assuming that this is
+       the correct truncation up to the rounding bit and that the sticky
+       bit is 1: this yields the most probable correctly rounded result
+       if u - minexp > 2 (the most general case), based on a symmetrical
+       distribution of the error centered on 0; the destination will be
+       corrected later if need be.
+
+   For the last two cases, and before the rounding is done, one needs
+   to determine whether the TMD occurs. Let d = u - err, which is ≥ 3
+   and can be very large; however d is representable in a mpfr_exp_t
+   since u ≤ emax, err ≥ emin, and this type can hold the sum of two
+   valid exponents. The TMD occurs when the sum is close enough to a
+   breakpoint, which is either a machine number (i.e. a number whose
+   significand fits on sq bits) or a midpoint between two consecutive
+   machine numbers, depending on the rounding mode:
+                   ┌───────────────┬────────────────┐
+                   │ Rounding mode │   Breakpoint   │
+                   ├───────────────┼────────────────┤
+                   │  to nearest   │    midpoint    │
+                   │  to nearest   │ machine number │
+                   │   directed    │ machine number │
+                   └───────────────┴────────────────┘
+   (in the second case, the correctly rounded sum can be determined,
+   but not the ternary value). More precisely, the TMD occurs when:
+     * the d bits following the ulp one are identical in directed
+       rounding modes;
+     * the d-1 bits following the rounding bit are identical, in the
+       rounding-to-nearest mode.
+
+   At the same time, one determines whether the correctly rounded sum
+   is exact. If the TMD occurs, this value is currently assumed to be
+   inexact, as said above.
+
+   Let us recall that in case of an important cancellation, some bits
+   may not be represented in the accumulator. Such a case is possible
+   even in this step, when maxexp2 is much smaller than minexp.
+
+   A change of representation is needed since the sum has been computed
+   using two's complement representation while regular MPFR numbers are
+   represented in sign + absolute value (normalized). The sign bit is
+   directly obtained from the cancel bits. For the absolute value:
+
+     * If the cancel bits are 0's, the value is positive, so that the
+       absolute value is represented in the same way.
+
+     * If the cancel bits are 1's, the value is negative, so that the
+       absolute value is formally obtained by inverting all the bits
+       (this infinite binary expansion is not the canonical one, but
+       this does not matter as this is just for the discussion below).
+       Since there is no carry propagation at this point, the exponent
+       is not changed.
+
+   With the mpn layer of GMP, up to 3 operations are involved for the
+   handling of the significand:
+     * a shift (for the alignment), if the shift count is non-zero
+       (this is the most probable case);
+     * a negation if the value is negative;
+     * the initial rounding.
+   The shift should be done before the initial rounding, so that all
+   the bits are represented for the rounding. The copy itself should
+   be done together with the shift or the negation, because this is
+   where most of the limbs are changed in general. It will be done
+   with the shift, and see below for the other two operations.
+
+   The rounding and change of representation (as a whole) can be seen
+   in the following way: after scaling, a number written r = i + f in
+   two's complement, where i is the integer part and f the infinite
+   fractional part, has to be rounded to one of the enclosing integers
+   i and i + 1. Thus the rounding operation consists in replacing f
+   by an integer c = 0 or 1 (like a carry): the rounded value is the
+   integer i + c. When r is negative (i.e. the MSB of i is 1), the
+   following forms are equivalent:
+
+     |i + c| = - (i + c)                        [1]
+             = (- i) - c                        [2]
+             = rnd(-r) = rnd(~r) = ~i + ~c      [3]
+
+   This can lead to various possible implementations. In each of these
+   3 cases, one has two potentially multiple-precision operations.
+     [1] addition of a carry, followed by a negation;
+     [2] negation, followed by a subtraction of a carry;
+     [3] bit inversion, followed by an addition of a carry.
+   In average, the operation with a carry is in constant time; it is an
+   operation on a single word in most cases. But in the worst case, due
+   to possible long carry propagation, it may need a read/write on the
+   whole significand. If GMP had a negation-with-borrow operation, one
+   could merge these two multiple-operations in a single one; but this
+   is not the case. However one can notice that either c or ~c is 0, so
+   that one can select the operation depending on the value of c. As a
+   summary, consider the following cases:
+     * r positive:        |i + c| = i + c with mpn_add_1;
+     * r negative, c = 0: |i + c| = -i with mpn_neg ([1]/[2]);
+     * r negative, c = 1: |i + c| = ~i with mpn_com ([3]).
+   The first two cases can yield an increment of the exponent e.
+
+   One goal of this early copy/rounding is to free the accumulator in
+   case there is work to do in (8), though the needed memory for that
+   is limited. An alternative solution would be to reserve a bit more
+   memory for (8), and determine the way of rounding before the copy;
+   this could be slightly more efficient in supposedly rare cases
+   (when the correction yields a long carry propagation).
+
+   As said above, in rounding to nearest, both kinds of breakpoints
+   (machine numbers and midpoints) are taken into account for the TMD.
+   Since the final rounding and ternary value will depend on the kind
+   of breakpoint, one needs to remember this information in a variable
+   (as the accumulator will be overwritten). Thus a variable tmd will
+   contain:
+     * 0: the TMD does not occur;
+     * 1: the TMD occurs on a machine number;
+     * 2: the TMD occurs on a midpoint.
+
+   If the TMD does not occur (tmd = 0):
+     * Determine the ternary value as follows: if the sum is exact
+       (already known), the ternary value is 0; otherwise it is -1
+       if c = 0, and 1 if c = 1.
+     * Check the range and return as in (9).
+
+8. Reiterate like in (3) one or more times using a specific window as
+   if sq were 0, i.e. around maxexp + logn to maxexp - logn (wq - sq
+   may be a good choice); in short, determine the sign of a secondary
+   term, which is the difference between the exact sum and the closest
+   breakpoint.
+
+   During the iterations, when there are several identical bits on the
+   left (most significant part) of the accumulator, only one bit needs
+   to be represented during the computations. But to avoid overflows,
+   one will keep 2 or more at the start of an iteration, like what is
+   done in (6).
+
+   Let us see what needs to be done to prepare the first iteration.
+   Since d ≥ 3 and the TMD occurs, the secondary term is, in absolute
+   value, less than half the weight of the rounding bit, so that it can
+   be seen as the fractional part after the rounding bit; the leading
+   d-1 bits of the truncated secondary term are identical and give its
+   sign (in the two's complement meaning). Now, if err < minexp, then
+   at least one of these identical bits is not represented, meaning that
+   it is 0 and all these bits are 0's; thus, under this condition, the
+   accumulator is zeroed and minexp is determined from maxexp2 and the
+   initial value of cq, like in (5) and the first iteration. Otherwise
+   the identical bits are all represented, and similarly to (6), one
+   shifts the trailing bits, keeping the last 2 over the d-1 identical
+   bits, i.e. one shifts the bits from err+1 to minexp, and zeros the
+   remaining bits of the accumulator; the new minexp is obtained by
+   subtracting the shift count from it.
+
+   Once the sign of the secondary term is known, depending on:
+     * the rounding mode rnd (equivalent to N, D, U),
+     * the value of tmd (1 or 2 in rounding to nearest),
+     * the rounding bit R (0 or 1),
+     * the sign sst of the secondary term (negative, zero, positive),
+   correct the sum if need be (± 1 ulp) and determine the corresponding
+   ternary value, as in the table below; a question mark means that the
+   exact value is the middle of two consecutive machine numbers, and a
+   special rule is used to determine the rounding, equivalent to one of
+   the enclosing lines (the ones where sst is - or +):
+     * For nearest-even:
+         - last significand bit = 0: choose line where correction = 0;
+         - last significand bit = 1: choose line where correction ≠ 0.
+     * For nearest-away: choose line where error = +.
+
+     rnd   tmd    R    sst      correction   ternary
+     ───────────────────────────────────────────────
+      N     1     0     -           0           +
+      N     1     0     0           0           0
+      N     1     0     +           0           -
+      N     1     1     -           0           +
+      N     1     1     0           0           0
+      N     1     1     +           0           -
+     ───────────────────────────────────────────────
+      N     2     0     -           0           -
+      N     2     0     0           ?           ?     (halfway case)
+      N     2     0     +           +           +
+      N     2     1     -           -           -
+      N     2     1     0           ?           ?     (halfway case)
+      N     2     1     +           0           +
+     ───────────────────────────────────────────────
+      D     1     0     -           -           -
+      D     1     0     0           0           0
+      D     1     0     +           0           -
+      D     1     1     -           0           -
+      D     1     1     0           +           0
+      D     1     1     +           +           -
+     ───────────────────────────────────────────────
+      U     1     0     -           -           +
+      U     1     0     0           -           0
+      U     1     0     +           0           +
+      U     1     1     -           0           +
+      U     1     1     0           0           0
+      U     1     1     +           +           +
+     ───────────────────────────────────────────────
+
+9. Check the range (as usual), and return.
+
+An example:
+
+              [1]    [2]   A  [3]
+  u0 = *****   |      |    .   |
+  u1 =   ******|**    |    .   |
+  u2 = ********|***** |    .   |
+  u3 =         | *****|    .   |
+  u4 =         |      |    ****|**
+  u5 =         |      |     ***|*
+
+At iteration 1, minexp is determined to be [1]; thus u0, a part of u1,
+and a part of u2 are taken into account for the truncated sum. Then it
+appears that an important cancellation occurred, and another step (3)
+is needed. Since u1 was truncated, the new maxexp will be minexp, i.e.
+[1]. At iteration 2, minexp is determined to be [2]; thus a part of u1,
+a part of u2, and u3 are taken into account for the truncated sum. Now
+assume that on this example, the error is small enough, but its sign is
+unknown. Thus another step (3) is needed, with the conditions of (7).
+Since no numbers were truncated at the previous iteration, maxexp is
+the maximum exponent of the remaining numbers, here the one of u4, and
+minexp is determined to be [3]. Assume that the sign of the error can
+be determined now, so that we can return the rounded result with the
+ternary value.
+
+As a bonus, this will also solve overflow, underflow and normalization
+issues, since everything is done in fixed point and the output exponent
+will be considered only at the end (early overflow detection could also
+be done).
+
+A limb L = *zp in memory will generally contain a part of a significand.
+One can define its exponent ze, such that the actual value of this limb
+is L * 2^(ze-GMP_NUMB_BITS), i.e. ze is its exponent where the limb is
+regarded as a number in [1/2,1[. If an array of limbs zp[] is regarded
+as a significand in [1/2,1[, then the exponent of its actual value is
+also ze.
+
+Variables used in the implementation:
+  tp: pointer to a temporary area that will contain a shifted value.
+  wp: pointer to the accumulator.
+  ts: size of the temporary area, in limbs; then wp = tp + ts.
+  ws: size of the accumulator, in limbs.
+  wq: size of the accumulator, in bits.
+  rn: number n' of inputs that are regular numbers (regular inputs).
+  logn: ceil(log2(rn)).
+  cq: logn + 1.
+  sq: output precision (precision of the sum).
+  maxexp: the maximum exponent of the bit-window of the inputs that is
+          taken into account (for the current iteration), excluded;
+          after the sum, it gets the value of maxexp2 until the next
+          iteration.
+  minexp: the minimum exponent of the bit-window of the inputs that is
+          taken into account (for the current iteration), included.
+
+Note 1: Data locality can be improved after the first iteration if the
+shifted values are stored at the end of the temporary area instead of
+the beginning. The reason is that only the least significant part of
+the accumulator will be used once a good approximate value of the sum
+is known, and the accumulator lies just after the temporary area. But
+the gain would probably not be noticeable in practice.
+
+Note 2: At step (4), it was considered to determine the number of
+cancelled limbs instead of the number of cancelled bits in order to
+avoid a non-trivial shift at step (6), making this step a bit faster
+(but particularly in small precisions, with some possible drawbacks).
+Moreover, on platforms with a MMU, thus most platforms where GNU MPFR
+would be used, we could arrange to reserve a specific address space
+for the accumulator and choose the shift count to be a multiple of a
+memory block size (or actually not to do any shift/copy at all, just
+free the most significant part and allocate a new part when need be),
+so that the shift (copy) of the accumulator contents could just be
+MMU related changes, without any physical memory copy. However, in
+practice, only large precisions with specific inputs would benefit
+from such a choice, which would require non portable code, and the
+relative speedup would remain small since the sum itself is expected
+to take most of the time.
+
+Note 3: Compared with Ziv's strategy, the issue here is not really
+exact values that are very close to a breakpoint, but cancellation.
+Moreover, we do not need to recompute everything at each iteration.
+The issue with the value very close to a breakpoint actually occurs
+at step (8); however, contrary to the usual case, we do not want to
+reiterate with more precision as this could take too much time and
+memory (a much wider accumulator could be needed). Indeed, due to a
+possible "hole" between the inputs, the distance between the exact
+value and a breakpoint can be extremely small.
+
+*** To be considered in future versions ***
+It seems that carry propagation (mpn_add_1 & mpn_sub_1 in the code) is
+most often limited. But consider the following cases, where all inputs
+have the minimal precision 2, and the output precision is p:
+  u0 = 1
+  u_i = (-1)^i * 2^(-p) for i > 0
+Here long carry propagation will occur for each addition of the initial
+iteration, so that the complexity will be O(n*p) instead of O(n+p) if
+we choose to delay carry propagation (however such a choice may slower
+the average case and take more memory, such as around 3*p instead of
+2*p).
+When a new iteration is needed due to cancellation, a second accumulator
+was considered in some early version of the algorithm: the temporary
+results of the computations during the new iteration would be stored in
+this second accumulator, which would generally be small, thus limiting
+carry propagation; this method is actually equivalent to delaying carry
+propagation. It could help in some cases, such as:
+  u0 = 2^q with some q > 0
+  u1 = 1
+  u2 = -2^q
+  u_i = (-1)^i * 2^(-p) for i > 2
+but such examples are very specific cases, and as seen with the first
+example, a better way must be chosen if avoiding long carry propagation
+is regarded as important (in all cases). Moreover, while the use of two
+accumulators does not take much more memory (since both accumulators can
+occupy the same area, with a flexible limit between them), it probably
+makes the code a bit more complex, and noticeably slower if n is small.
