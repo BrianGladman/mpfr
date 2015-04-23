@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.2.0-dev
-@set UPDATED-MONTH February 2015
+@set UPDATED-MONTH April 2015
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -378,13 +378,22 @@ for more information, in particular if you get error messages.
 
 This will compile MPFR, and create a library archive file @file{libmpfr.a}.
 On most platforms, a dynamic library will be produced too.
+
 @item
 @samp{make check}
 
-This will make sure MPFR was built correctly.
-If you get error messages, please report this to the MPFR mailing-list
-@samp{mpfr@@inria.fr}.  (@xref{Reporting Bugs}, for
-information on what to include in useful bug reports.)
+This will make sure that MPFR was built correctly.
+If any test fails, information about this failure can be found in the
+@file{tests/test-suite.log} file. If you want the contents of this file to
+be automatically output in case of failure, you can set the @samp{VERBOSE}
+environment variable to 1 before running @samp{make check}, for instance
+by typing:
+
+@samp{VERBOSE=1 make check}
+
+In case of failure, you may want to check whether the problem is already
+known. If not, please report this failure to the MPFR mailing-list
+@samp{mpfr@@inria.fr}. For details, @xref{Reporting Bugs}.
 
 @item
 @samp{make install}
@@ -503,7 +512,8 @@ be extracted using @samp{cc -V} on some machines, or, if you are using GCC,
 @samp{gcc -v}. Also, include the output from @samp{uname -a} and the MPFR
 version (the GMP version may be useful too).
 If you get a failure while running @samp{make} or @samp{make check}, please
-include the @samp{config.log} file in your bug report.
+include the @file{config.log} file in your bug report, and in case of test
+failure, the @file{tests/test-suite.log} file too.
 
 If your bug report is good, we will do our best to help you to get a corrected
 version of the library; if the bug report is poor, we will not do anything

@@ -72,6 +72,14 @@ MPFR).
 5. To check the built library (runs the test files), type:
      make check
 
+   Note: If any test fails, information about this failure can be found in
+   the tests/test-suite.log file; you should provide this file in your bug
+   reports (in addition to other useful information, as mentioned later).
+   If you want the contents of this file to be automatically output in case
+   of failure, you can set the VERBOSE environment variable to 1 before
+   running "make check", for instance by typing:
+     VERBOSE=1 make check
+
 6. To install it (default "/usr/local" | see "--prefix" option), type:
      make install
 
@@ -447,7 +455,8 @@ mailing-list <mpfr@inria.fr>, indicating the machine and operating system
 used (uname -a), the compiler and version used (gcc -v if you use gcc),
 the configure options used if any (including variables such as CC and
 CFLAGS), the version of GMP and MPFR used, and a description of the
-problem encountered. Please send us also the log of the "configure"
+problem encountered, in particular the tests/test-suite.log file if
+"make check" failed. Please send us also the log of the "configure"
 (config.log).
 
 
