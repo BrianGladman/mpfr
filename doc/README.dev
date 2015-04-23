@@ -34,10 +34,6 @@ been released yet).
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
-Note with Automake 1.13+: to have the tests/test-suite.log contents output
-automatically if any test fails, set the VERBOSE environment variable to 1
-before running "make check".
-
 ===========================================================================
 
 The VERSION file contains the number of the next release version, i.e.
@@ -335,19 +331,6 @@ $ autoreconf
 
 ===========================================================================
 
-To check the coverage of the Test Suite, you can use GCOV.
-   ./configure CFLAGS="-fprofile-arcs -ftest-coverage"
-   make clean
-   make check
-   find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
-
-For each source file, there is a .c.gcov file which contains much more
-information.
-
-Another solution is to run the script 'coverage' within the 'tools' directory.
-
-===========================================================================
-
 Here is a non-exhaustive list of macros used for building and checking MPFR.
 Most of them are automatically set up by the configure script and its options.
 
@@ -442,7 +425,7 @@ List of macros used for checking MPFR:
                         environment variable.
 + MPFR_COV_CHECK:       Define to enable value coverage checking (must not
                         be used in production). This macro is for the MPFR
-                        developers, in order to improve the testsuite.
+                        developers, in order to improve the test suite.
 
 ===========================================================================
 
@@ -582,40 +565,6 @@ in Turkish tr_TR.iso88599 locales.
 
 ===========================================================================
 
-In the tests, do not use `mpfr_set_d` (except when testing it), as the
-result will depend on the floating-point arithmetic of the system;
-this has shown many problems in the past and problems may still occur
-with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
-
-To check the result of some function, use mpfr_equal_p rather than
-mpfr_cmp, as mpfr_cmp will return 0 (equality) if the result is NaN.
-
-Do not use functions that need optional features (except in a context
-where such features are required). For instance, the mpfr_printf-like
-functions need <stdarg.h> (HAVE_STDARG defined), thus should not be
-used, except for testing them.
-
-Also, make sure that the tests run against previous MPFR versions,
-possibly by disabling some tests with code like
-
-  #if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
-
-Indeed one can now easily run the trunk tests in a branch by executing
-
-  svn switch .../svn/mpfr/trunk/tests tests
-
-from the working copy. One can know when the tests directory has been
-switched, thanks to
-
-  $ svn status
-      S  tests
-
-In case of failure, freeing the memory explicitly is not necessary.
-We do this in case of success just to be able to detect memory leaks
-in MPFR.
-
-===========================================================================
-
 If you have to mix TMP_DECL and MPFR_SAVE_EXPO_DECL in the declaring
 section of your function, please declare MPFR_SAVE_EXPO_DECL before
 TMP_DECL, since TMP_DECL may be replace by nothing:
@@ -682,7 +631,7 @@ Define them. Run your program, and view `mpfr.log`.
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
 
 Note: The running time may be much longer. If logging is used on the
-testsuite with a default timeout, it may be necessary to increase the
+test suite with a default timeout, it may be necessary to increase the
 timeout time by setting the environment variable MPFR_TESTS_TIMEOUT
 to the new timeout value in seconds (or 0 to disable the timeout).
 
@@ -1070,6 +1019,35 @@ Use assertions (MPFR_ASSERTN) instead.
 
 ===========================================================================
 
+When using GNU extensions (based on the value of the __GNUC_* macros), check
+whether they work with ICC. The following paper can give useful information:
+"Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
+<http://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
+
+To detect compilers, see
+
+  https://sourceforge.net/p/predef/wiki/Compilers/
+
+===========================================================================
+
+For developers - Use of the svn:eol-style Subversion property
+
+The svn:eol-style Subversion property is traditionally set to "native" on
+text files, but this has drawbacks:
+  * On systems where the end-of-line (EOL) sequence is not LF, the obtained
+    files are different from those from the tarballs. This makes maintenance
+    harder.
+  * Some tools under Windows (such as makeinfo of MinGW/MSYS) don't support
+    the MS-Windows EOL sequence CRLF, and the MPFR build fails.
+
+For these reasons, the svn:eol-style Subversion property should never be set
+to "native".
+
+===========================================================================
+
+About the test suite
+--------------------
+
 When adding a test file for a new function (say mpfr_func), you can use
 the following prototype tfunc.c (to put in the directory 'tests').
 This file performs random tests for values of x between -5 and 5, with
@@ -1081,7 +1059,7 @@ if this function is buggy, the test will be wrong and the function will
 remain buggy.
 
 Do not forget to add 'tfunc' in the variable check_PROGRAMS
-of tests/Makefile.am
+of the tests/Makefile.am file.
 
 /* Test file for mpfr_func.
 
@@ -1123,76 +1101,89 @@ main (int argc, char *argv[])
   return 0;
 }
 
-===========================================================================
+   ---------------------------------------------------------------------
 
-When using GNU extensions (based on the value of the __GNUC_* macros), check
-whether they work with ICC. The following paper can give useful information:
-"Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
-<http://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
+Here is how the test suite works since the full Automake 1.13 support
+(merge of the vl-am113 branch in r8821).
 
-To detect compilers, see
+The tests_start_mpfr function, which should be called at the beginning
+of each test program (unless nothing is tested and main() just contains
+"return 77;"), starts by calling the test_version function, whose goal
+is to do various header/library version checks of GMP and MPFR. In case
+of mismatch between a header and a library, an error message is output
+("make check" will redirect it to a log file). Then there are 3 cases:
 
-  https://sourceforge.net/p/predef/wiki/Compilers/
+1. An error in the MPFR version check is a fatal error: test_version()
+   exits with an error (exit status = 1). The reason is that a different
+   MPFR library (somewhere in some library search path) would probably
+   be tested, so that the results of the test would be meaningless.
 
-===========================================================================
+2. An error in the GMP version check is a non-fatal error: if there are
+   no errors in MPFR version check, test_version() returns with value 1.
+   However the tversion test program will regard this as a fatal error
+   (thus "make check" will fail). The probable reason of the mismatch is
+   that the GMP library has been upgraded while the MPFR test suite has
+   not been rebuilt; otherwise there is probably something wrong in the
+   GMP installation.
 
-NOTE: with "AM_LDFLAGS = -no-install" in tests/Makefile.am, the following
-is obsolete, as libtool no longer generates wrapper scripts; but it is left
-here in case negative effects of "AM_LDFLAGS = -no-install" are seen or for
-users with a special setup.
+3. Otherwise test_version() returns with value 0 (everything is fine).
 
-To debug some test program, e.g. tadd, with gdb, you cannot run "gdb tadd"
-since libtool has generated a wrapper script to link the program against
-the correct MPFR library. Instead, run:
+With Automake 1.13+, the tests are run in parallel if a -j make option
+is used. In case of failure, information can be found in the log file
+of each failed test program and in the global tests/test-suite.log file
+(which is output automatically if the VERBOSE environment variable is
+set to 1). If no tests fail, then the tests/tversion.log file is output
+after the "testsuite summary"; it contains various useful information
+about the MPFR build.
 
-  libtool --mode=execute gdb tadd
+   ---------------------------------------------------------------------
 
-Alternatively, something like
+In the tests, do not use `mpfr_set_d` (except when testing it), as the
+result will depend on the floating-point arithmetic of the system;
+this has shown many problems in the past and problems may still occur
+with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
 
-  LD_PRELOAD=../src/.libs/libmpfr.so gdb .libs/tadd
+To check the result of some function, use mpfr_equal_p rather than
+mpfr_cmp, as mpfr_cmp will return 0 (equality) if the result is NaN.
 
-may also work (example for GNU/Linux).
+Do not use functions that need optional features (except in a context
+where such features are required). For instance, the mpfr_printf-like
+functions need <stdarg.h> (HAVE_STDARG defined), thus should not be
+used, except for testing them.
 
-Note: for test programs not listed in Makefile.am (check_PROGRAMS),
-libtool is not used (a static link against MPFR is done via LOADLIBES
-in Makefile.am), so that gdb should be used in the conventional way.
-You can use the following wrapper script to have a command that works
-with both:
+Also, make sure that the tests run against previous MPFR versions,
+possibly by disabling some tests with code like
 
-------------------------------------------------------------
-#!/bin/sh
+  #if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
 
-unset cmd
-case $1 in
-  -*) ;;
-  ?*) test "x$(head -c 2 "$1")" = 'x#!' && \
-      grep -q "^# Generated by libtool" "$1" && \
-      cmd="libtool --mode=execute" ;;
-esac
+Indeed one can now easily run the trunk tests in a branch by executing
 
-exec $cmd gdb "$@"
-------------------------------------------------------------
+  svn switch .../svn/mpfr/trunk/tests tests
 
-and
+from the working copy. One can know when the tests directory has been
+switched, thanks to
 
-  alias gdb='/path/to/the/wrapper/script'
+  $ svn status
+      S  tests
 
-===========================================================================
+In case of failure, freeing the memory explicitly is not necessary.
+We do this in case of success just to be able to detect memory leaks
+in MPFR.
 
-For developers - Use of the svn:eol-style Subversion property
+   ---------------------------------------------------------------------
 
-The svn:eol-style Subversion property is traditionally set to "native" on
-text files, but this has drawbacks:
-  * On systems where the end-of-line (EOL) sequence is not LF, the obtained
-    files are different from those from the tarballs. This makes maintenance
-    harder.
-  * Some tools under Windows (such as makeinfo of MinGW/MSYS) don't support
-    the MS-Windows EOL sequence CRLF, and the MPFR build fails.
+To check the coverage of the test suite, you can use gcov.
+   ./configure CFLAGS="-fprofile-arcs -ftest-coverage"
+   make clean
+   make check
+   find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
 
-For these reasons, the svn:eol-style Subversion property should never be set
-to "native".
+For each source file, there is a .c.gcov file which contains much more
+information.
 
-===========================================================================
+Another solution is to run the script 'coverage' within the 'tools' directory.
+
+   ---------------------------------------------------------------------
 
 To run the MPFR test suite under valgrind, you may need to do several
 things.
@@ -1254,6 +1245,49 @@ or zsh:
     '/= Command: [^ ]*\/\.libs\/lt-/,/= ERROR SUMMARY:/p' > vg.out)
 
 if you do not mind about the buffering delays.
+
+   ---------------------------------------------------------------------
+
+NOTE: with "AM_LDFLAGS = -no-install" in tests/Makefile.am, the following
+is obsolete, as libtool no longer generates wrapper scripts; but it is left
+here in case negative effects of "AM_LDFLAGS = -no-install" are seen or for
+users with a special setup.
+
+To debug some test program, e.g. tadd, with gdb, you cannot run "gdb tadd"
+since libtool has generated a wrapper script to link the program against
+the correct MPFR library. Instead, run:
+
+  libtool --mode=execute gdb tadd
+
+Alternatively, something like
+
+  LD_PRELOAD=../src/.libs/libmpfr.so gdb .libs/tadd
+
+may also work (example for GNU/Linux).
+
+Note: for test programs not listed in Makefile.am (check_PROGRAMS),
+libtool is not used (a static link against MPFR is done via LOADLIBES
+in Makefile.am), so that gdb should be used in the conventional way.
+You can use the following wrapper script to have a command that works
+with both:
+
+------------------------------------------------------------
+#!/bin/sh
+
+unset cmd
+case $1 in
+  -*) ;;
+  ?*) test "x$(head -c 2 "$1")" = 'x#!' && \
+      grep -q "^# Generated by libtool" "$1" && \
+      cmd="libtool --mode=execute" ;;
+esac
+
+exec $cmd gdb "$@"
+------------------------------------------------------------
+
+and
+
+  alias gdb='/path/to/the/wrapper/script'
 
 ===========================================================================
 
