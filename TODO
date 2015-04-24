@@ -496,6 +496,10 @@ Table of contents:
   (the current tests cannot check that since mpfr-impl.h is always
   included).
 
+- move some macro definitions from acinclude.m4 to the m4 directory
+  as suggested by the Automake manual? The reason is that the
+  acinclude.m4 file is big and a bit difficult to read.
+
 
 ##############################################################################
 7. Portability
