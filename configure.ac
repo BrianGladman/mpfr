@@ -27,7 +27,8 @@ AC_INIT([MPFR],[3.2.0-dev])
 
 dnl Older Automake versions than 1.13 may still be supported, but no longer
 dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
-dnl and MPFR manual assume that MPFR has been built using Automake 1.13+.
+dnl and MPFR manual assume that MPFR has been built using Automake 1.13+
+dnl (due to parallel tests, introduced by default in Automake 1.13).
 AM_INIT_AUTOMAKE([1.13 no-define dist-bzip2 dist-xz dist-zip])
 AM_MAINTAINER_MODE(enable)
 
