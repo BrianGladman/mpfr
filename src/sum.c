@@ -26,6 +26,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
+TODO [VL, after a discussion with James Demmel]: Compared to
+  James Demmel and Yozo Hida, Fast and accurate floating-point summation
+  with application to computational geometry, Numerical Algorithms,
+  volume 37, number 1-4, pages 101--112, 2004.
+sorting is not necessary here. It is not done because in the most common
+cases (where big cancellations are rare), it would take time and be
+useless. However the lack of sorting increases the worst case complexity.
+For instance, consider many inputs that cancel one another (two by two).
+One would need n/2 iterations, where each iteration reads the exponent
+of each input, therefore n*n/2 read operations. Using a worst-case sort
+in O(n log n) could give a O(n log n) worst-case complexity. As we don't
+want to slow down the most common cases, this could be done at the 3rd
+iteration. But are there practical applications which would be used as
+tests?
+
 Note: see the following paper and its references:
 http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
 VL: This is very different:

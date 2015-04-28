@@ -73,6 +73,8 @@ of TMD should be changed to:
       U     1     1     +           +2          +
      ───────────────────────────────────────────────
 
+Note also the TODO in the src/sum.c file...
+
 The general ideas of the algorithm:
 
 0. Handle the case n <= 1 separately (+0 for n = 0, mpfr_set for n = 1).
