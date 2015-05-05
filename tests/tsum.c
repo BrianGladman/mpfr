@@ -811,7 +811,7 @@ cancel (void)
 
   mpfr_init2 (bound, 2);
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 1000; i++)
     {
       mpfr_set_inf (bound, 1);
       for (n = 0; n < numberof (x); n++)
