@@ -860,14 +860,21 @@ cancel (void)
                   break;
                 }
               mpfr_neg (x[n], x[n], MPFR_RNDN);
-              if (mpfr_greater_p (x[n], bound))
+              if (mpfr_cmpabs (x[n], bound) > 0)
                 {
                   printf ("Error in cancel on i = %d, n = %d\n", i, n);
+                  printf ("Expected bound: ");
+                  mpfr_dump (bound);
+                  printf ("x[n]: ");
+                  mpfr_dump (x[n]);
                   exit (1);
                 }
+              /* For the bound, use MPFR_RNDU due to possible underflow.
+                 It would be nice to add some specific underflow checks,
+                 though there are already ones in check_underflow(). */
               mpfr_set_ui_2exp (bound, 1,
                                 mpfr_get_exp (x[n]) - p - (rnd == MPFR_RNDN),
-                                MPFR_RNDN);
+                                MPFR_RNDU);
               /* The next sum will be <= bound in absolute value
                  (the equality can be obtained in all rounding modes
                  since the sum will be rounded). */
