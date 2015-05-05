@@ -594,17 +594,17 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax)
   MPFR_ASSERTN (emax <= MPFR_EMAX_MAX);
   /* but it isn't required that emin and emax are in the current
      exponent range (see below), so that underflow/overflow checks
-     can be done on 64-bit machines. */
+     can be done on 64-bit machines without a manual change of the
+     exponent range (well, this is a bit ugly...). */
 
   mpfr_urandomb (x, RANDS);
   if (MPFR_IS_PURE_FP (x) && (emin >= 1 || (randlimb () & 1)))
     {
       mpfr_exp_t e;
-      e = MPFR_GET_EXP (x) +
-        (emin + (mpfr_exp_t) (randlimb () % (emax - emin + 1)));
+      e = emin + (mpfr_exp_t) (randlimb () % (emax - emin + 1));
       /* Note: There should be no overflow here because both terms are
-         between MPFR_EMIN_MIN and MPFR_EMAX_MAX, but the sum e isn't
-         necessarily between MPFR_EMIN_MIN and MPFR_EMAX_MAX. */
+         between MPFR_EMIN_MIN and MPFR_EMAX_MAX. */
+      MPFR_ASSERTD (e >= emin && e <= emax);
       if (mpfr_set_exp (x, e))
         {
           /* The random number doesn't fit in the current exponent range.
