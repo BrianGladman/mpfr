@@ -249,6 +249,8 @@ To make a release (for the MPFR team):
      diagnostic messages at runtime, not a failure; GCC trunk supports
      -fno-sanitize-recover like clang.
 
+     Test with GCC's AddressSanitizer (-fsanitize=address).
+
      Test with both "make check" and the worst cases.
 
      Check various warnings, in particular for obsolescent features.
