@@ -163,6 +163,7 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
         printf ("    WARNING: probability (less than 5%%) = %.2e\n", Q);
     }
 
+  free (counts);
   mpfr_clears (x, a, b, dx, z, pa, pb, ps, t, (mpfr_ptr) 0);
   return Q;
 }
