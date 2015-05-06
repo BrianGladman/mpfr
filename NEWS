@@ -43,7 +43,9 @@ Changes from versions 3.1.* to version 3.2.0:
 - Function mpfr_grandom is deprecated and will be removed in a future release.
 - Complete rewrite of function mpfr_sum, which now works in all cases (the
   old one could take all the memory and/or crash with inputs of different
-  magnitudes in case of huge cancellation or table maker's dilemma).
+  magnitudes in case of huge cancellation or table maker's dilemma). The
+  sign of an exact zero result is now specified, and the return value is
+  now the usual ternary value.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
   [TODO: add shared caches; note that the ABI can be changed.]
