@@ -23,7 +23,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-test.h"
 
-#ifndef MPFR_USE_MINI_GMP
+/* Don't test with mini-gmp, which does not fully implement GMP
+ * memory functions.
+ *
+ * Don't test if GCC's AddressSanitizer is used because it reports
+ * the error before GMP can do the abort.
+ */
+
+#if !defined(MPFR_USE_MINI_GMP) && !defined(__SANITIZE_ADDRESS__)
 
 int
 main (int argc, char **argv)
