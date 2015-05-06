@@ -16,7 +16,7 @@ of different magnitudes and cancellation. Here we will use functions
 from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
 on additions by blocks, involving virtual splitting of MPFR numbers.
 
-Concerning the sign of a zero result, the specification is:
+Concerning the sign of an exact zero result, the specification is:
   * if n = 0, then the result is +0 (this choice is consistent with
     IEEE 754-2008's sum reduction operation of vector length 0, and
     with mpfr_set_ui and mpfr_set_si on the integer 0); otherwise
