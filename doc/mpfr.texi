@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.2.0-dev
-@set UPDATED-MONTH April 2015
+@set UPDATED-MONTH May 2015
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -2168,9 +2168,19 @@ Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
 @var{tab} is an array of pointers
 to @code{mpfr_t}, not an array of @code{mpfr_t}.
-If the returned @code{int} value is zero, @var{rop} is guaranteed to
-be the exact sum; a non-zero value gives no information (unlike with
-most functions).
+If @var{n} = 0, then the result is +0, and if @var{n} = 1, then the function
+is equivalent to @code{mpfr_set}.
+For the special exact cases, the result is the same as the one obtained
+with a succession of additions (@code{mpfr_add}) in infinite precision.
+In particular, if the result is an exact zero and @math{@var{n} @ge{} 1}:
+@itemize @bullet
+@item if all the inputs have the same sign (i.e., all +0 or all @minus{}0),
+then the result has the same sign as the inputs;
+@item otherwise, either because all inputs are zeros with at least a +0 and
+a @minus{}0, or because some inputs are non-zero (but they globally cancel),
+the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
+@minus{}0.
+@end itemize
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
@@ -3702,6 +3712,13 @@ it did not follow the generic rule concerning the inexact flag (and no
 special behavior was specified). The case of the underflow flag was more
 a lack of specification.
 
+@item @code{mpfr_sum} changed in MPFR 3.2.
+The @code{mpfr_sum} function has completely been rewritten for MPFR 3.2,
+with an update of the specification: the sign of an exact zero result
+is now specified, and the return value is now the usual ternary value.
+The old @code{mpfr_sum} implementation could also take all the memory
+and crash on inputs of very different magnitude.
+
 @item @code{mpfr_urandom} and @code{mpfr_urandomb} changed in MPFR 3.1.
 Their behavior no longer depends on the platform (assuming this is also true
 for GMP's random generator, which is not the case between GMP 4.1 and 4.2 if
@@ -3777,7 +3794,8 @@ Alain Delplanque contributed the new version of the @code{mpfr_get_str}
 function.
 Mathieu Dutour contributed the functions @code{mpfr_acos}, @code{mpfr_asin}
 and @code{mpfr_atan}, and a previous version of @code{mpfr_gamma}.
-Laurent Fousse contributed the @code{mpfr_sum} function.
+Laurent Fousse contributed the original version of the @code{mpfr_sum}
+function (used up to MPFR 3.1).
 Emmanuel Jeandel, from ENS-Lyon too,
 contributed the generic hypergeometric code,
 as well as the internal function @code{mpfr_exp3},
