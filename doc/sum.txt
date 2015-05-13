@@ -1,35 +1,100 @@
 Implementation of mpfr_sum: sum of n mpfr_t values
 ══════════════════════════════════════════════════
 
-About the time/memory complexity: The original mpfr_sum algorithm was
-inefficient on some inputs, and in some simple cases with inputs of
-different orders of magnitude, it could be very slow and take all the
-memory, making the whole program (and possibly other programs on the
-system too, due to the lack of memory at some critical point) crash.
+Introduction
+────────────
+
+The original mpfr_sum algorithm, used up to MPFR 3.1.x, was very
+inefficient on some inputs and could take all the memory, making the
+whole program crash (and possibly other programs on the system too,
+due to the lack of memory at some critical point). It was based on
+the article:
+
+  James Demmel and Yozo Hida, Fast and accurate floating-point summation
+  with application to computational geometry, Numerical Algorithms,
+  volume 37, number 1-4, pages 101--112, 2004.
+
+which consists in adding the inputs one by one in decreasing magnitude.
+But in MPFR, each number has its own precision and the exponent range is
+large, so that this algorithm doesn't work well. The computation of the
+sum was done with mpfr_add's in some fixed precision, in a conventional
+Ziv loop. The inefficiency (with possible crash) was seen when a large
+precision was needed due to the Table Maker's Dilemma. A huge precision
+could be needed in case of internal cancellations and numbers of very
+different order of magnitudes. This problem was not easily fixable to
+handle all the possible cases.
+
+Moreover it was decided to drop Demmel's algorithm because it is based
+on floating-point operations while the basic blocks of MPFR are integer
+operations, and they could be used directly to compute a sum. Another
+drawback of Demmel's algorithm for the particular case of MPFR is that
+there is no good way to avoid the Ziv loop:
+
+  * One could consider the largest precision among all the numbers
+    (each input and the output), but this could mean computations in
+    an internal precision much larger than actually necessary.
+
+  * Split the inputs so that all the values have the same precision
+    (suggestion from Demmel), but, in particular in small precision,
+    this introduces an important overhead.
+
 The time/memory complexity must no longer depend on the value of the
-exponents of the inputs, i.e. their order of magnitude. Moreover, be
-careful with the carry propagation.
+exponents of the inputs, i.e. their order of magnitude.
 
-Preliminary note: The previous mpfr_sum algorithm was a high-level one
-and could take too much memory and too much time in cases with numbers
-of different magnitudes and cancellation. Here we will use functions
-from the mpn layer of GMP only (no mpfr_add), as the algorithm is based
-on additions by blocks, involving virtual splitting of MPFR numbers.
+Instead of being high level (based on mpfr_add), the algorithm and
+implementation should be low level, based on integer operations,
+equivalently seen as fixed-point operations. They must be efficient
+both for the "general case" and for particular cases, with global
+cancellations (the result being much smaller than some of the inputs)
+and/or the Table Maker's Dilemma. So, we will use functions from the
+mpn layer of GMP only, involving virtual splitting of MPFR numbers.
 
-Concerning the sign of an exact zero result, the specification is:
-  * if n = 0, then the result is +0 (this choice is consistent with
-    IEEE 754-2008's sum reduction operation of vector length 0, and
-    with mpfr_set_ui and mpfr_set_si on the integer 0); otherwise
-  * if all the inputs have the same sign (i.e. all +0 or all -0),
-    then the result has the same sign as the inputs (for n = 1 or 2,
-    this choice is consistent with mpfr_set and mpfr_add respectively);
-  * otherwise, either because all inputs are zeros with at least a +0
-    and a -0, or because some inputs are non-zero (but they globally
-    cancel), the result is +0, except for the MPFR_RNDD rounding mode,
-    where it is -0 (this choice is consistent with mpfr_add for n = 2,
-    and more generally with a sequence of mpfr_add's).
-Additional details on:
+Specification
+─────────────
+
+If n = 0, then the result is +0, whatever the rounding mode. This is
+equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
+choice is consistent with IEEE 754-2008's sum reduction operation of
+vector length 0.
+
+Otherwise the result must be the same as the one that would have been
+obtained with
+  * if n = 1, mpfr_set;
+  * if n > 1, a succession of additions (mpfr_add) done in infinite
+    precision, then rounded (the order of these additions doesn't
+    matter).
+
+Indeed, this is equivalent to apply the following steps:
+
+1. If an input is NaN, then the result is NaN.
+
+2. If there are at least a +inf and a -inf, then the result is NaN.
+
+3. If there is at least an infinity (in which case all the infinities
+   have the same sign), then the result is this infinity.
+
+4. If the result is an exact zero:
+     * if all the inputs have the same sign (i.e. all +0 or all -0),
+       then the result has the same sign as the inputs;
+     * otherwise, either because all inputs are zeros with at least
+       a +0 and a -0, or because some inputs are non-zero (but they
+       globally cancel), the result is +0, except for the MPFR_RNDD
+       rounding mode, where it is -0.
+
+5. Otherwise the exact result is a non-zero real number, and the
+   conventional rounding function is applied.
+
+Concerning the exceptions, one generates a NaN exception in cases (1)
+and (2). Case (5) potentially yields inexact / underflow / overflow
+exceptions, as specified by the rounding rules.
+
+See also:
   https://sympa.inria.fr/sympa/arc/mpfr/2014-03/msg00000.html
+
+Algorithm and Implementation
+────────────────────────────
+
+[TODO: rewrite the following.]
 
 Let sq be the output precision.
 
