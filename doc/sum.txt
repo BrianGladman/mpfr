@@ -52,6 +52,15 @@ mpn layer of GMP only, involving virtual splitting of MPFR numbers.
 Specification
 ─────────────
 
+The prototype:
+
+int
+mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
+
+where sum will contain the result, x is an array of pointers to the
+inputs, n is the length of this array, and rnd is the rounding mode.
+The return value of type int will be the usual ternary value.
+
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
 choice is consistent with IEEE 754-2008's sum reduction operation of
@@ -91,8 +100,83 @@ exceptions, as specified by the rounding rules.
 See also:
   https://sympa.inria.fr/sympa/arc/mpfr/2014-03/msg00000.html
 
-Algorithm and Implementation
-────────────────────────────
+Algorithm and Implementation: Preliminary Steps
+───────────────────────────────────────────────
+
+We start by detecting the special cases. The mpfr_sum function does the
+following.
+
+1. If n ≤ 2, we can use existing MPFR functions and macros, mainly for
+   better efficiency since the algorithm described below can work with
+   any number of inputs (only minor changes would be needed).
+     * If n = 0, return +0 (by using MPFR macros).
+     * If n = 1, use mpfr_set.
+     * If n = 2, use mpfr_add.
+
+2. Iterate on the n input numbers to:
+     (A) detect special values (NaN, infinity, zero);
+     (B) for regular values, get the maximum exponent.
+
+   Such information can be retrieved very quickly and this does not need
+   to look at the significand. Moreover, in the current internal number
+   representation, the kind of a special value is represented as special
+   values of the exponent field, so that (B) does not need to fetch more
+   data in the memory after doing (A).
+
+   In detail, during this iteration, 4 variables will be set, but the
+   loop will be terminated earlier in case of NaN result, either because
+   of a NaN input or because of infinities of different signs:
+
+     * maxexp, which will contain the maximum exponent of the inputs.
+       Thus it is initially MPFR_EXP_MIN.
+
+     * rn, which will contain the number n' of regular inputs, i.e.
+       those which are non-zero finite numbers.
+
+     * sign_inf, which will contain the sign of an infinity result.
+       It is initially 0 (unknown sign, because no infinities yet).
+       If the sign is known (+1 or -1) and an infinity of different
+       sign is encountered, then the loop is immediately terminated
+       and a NaN result is returned.
+
+     * sign_zero, which will contain the sign of the zero result, in
+       the case where all the inputs are zeros. Thanks to the IEEE 754
+       rules, this can be tracked with this variable alone: There is a
+       weak sign (-1, except for MPFR_RNDD, where it is +1), which can
+       be obtained only when all the inputs are a zero of this sign,
+       and a strong sign (+1, except for MPFR_RNDD, where it is -1),
+       which is obtained in all the other cases, i.e. when there is
+       at least a zero of this sign. One could have initialized the
+       value of sign_zero to the weak sign. But we have chosen to
+       initialize it to 0, which means that the sign is currently
+       unknown, and do an additional test in the loop. In practice,
+       one should not see the difference; this second solution was
+       chosen just because it was implemented first, and on a test,
+       it appears that it makes the code slightly shorter.
+
+   After the loop, one does in the following order:
+
+     1. If sign_inf ≠ 0, then the result is an infinity of this sign.
+
+     2. If rn = 0, then all the inputs are zeros, so that the result
+        is a zero whose sign is given by sign_zero.
+
+     3. If rn ≤ 2, then one can use mpfr_set (if rn = 1) or mpfr_add
+        (if rn = 2) as an optimization, similarly to what was done for
+        n ≤ 2. We reiterate in order to find the concerned inputs.
+
+     4. Otherwise one calls a function sum_aux implementing the generic
+        case, more precisely:
+          sum_aux (sum, x, n, rnd, maxexp, rn);
+        i.e. in addition to the parameters of mpfr_sum, we pass:
+          * the maximum exponent;
+          * the number of regular inputs, i.e. the number of non-zero
+            inputs. This number will be used instead of n to determine
+            bounds on the sum (to avoid internal overflows) and error
+            bounds.
+
+Algorithm and Implementation: The Generic Case
+──────────────────────────────────────────────
 
 [TODO: rewrite the following.]
 
@@ -141,18 +225,6 @@ of TMD should be changed to:
 Note also the TODO in the src/sum.c file...
 
 The general ideas of the algorithm:
-
-0. Handle the case n <= 1 separately (+0 for n = 0, mpfr_set for n = 1).
-   Now assume that n >= 2.
-
-1. Look at the exponent field of each mpfr_t input (this is fast); also
-   track the signs of Inf's and zeros. This step allows one to:
-     * detect the singular cases, i.e. when there is either at least
-       a NaN or an Inf in the inputs (in case of a NaN or two Inf's of
-       different signs, we can immediately return NaN), or all inputs
-       are zeros;
-     * determine the maximum exponent maxexp of the regular inputs and
-       the number n' of regular inputs.
 
 2. A truncated sum will be computed in two's complement, stored in a
    fixed memory area, called "accumulator", whose characteristics are
