@@ -29,7 +29,9 @@ license is included in @ref{GNU Free Documentation License}.
 @end copying
 
 
-@c  Texinfo version 4.2 or up will be needed to process this file.
+@c  Texinfo version 4.2 or later will be needed to process this file.
+@c  Texinfo version 5.0 or later should be used since the formatting
+@c  has been modified for this version (tested with 5.2).
 @c
 @c  A suitable texinfo.tex is supplied, a newer one should work
 @c  equally well.
@@ -270,14 +272,18 @@ precise semantics. The main characteristics of MPFR, which make it differ
 from most arbitrary precision floating-point software tools, are:
 
 @itemize @bullet
+
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
 @code{mp_bits_per_limb} (64 on most current processors);
+
 @item the precision in bits can be set @emph{exactly} to any valid value
 for each variable (including very small precision);
+
 @item MPFR provides the four rounding modes from the IEEE 754-1985
 standard, plus away-from-zero, as well as for basic operations as for other
 mathematical functions.
+
 @end itemize
 
 In particular, with a precision of 53 bits, MPFR is able to
@@ -412,6 +418,7 @@ as argument to @samp{--prefix} instead of @file{/usr/local}).
 There are some other useful make targets:
 
 @itemize @bullet
+
 @item
 @samp{mpfr.info} or @samp{info}
 
@@ -456,6 +463,7 @@ Delete all generated files not included in the distribution.
 @samp{uninstall}
 
 Delete all files copied by @samp{make install}.
+
 @end itemize
 
 
@@ -720,7 +728,6 @@ and puts the result back in @var{x}.
 @section Rounding Modes
 
 The following five rounding modes are supported:
-
 @itemize @bullet
 @item @code{MPFR_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008),
 @item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008),
@@ -1105,12 +1112,16 @@ This macro is much faster than using @code{mpfr_init2} but has some
 drawbacks:
 
 @itemize @bullet
+
 @item You @strong{must not} call @code{mpfr_clear} with variables
 created with this macro (the storage is allocated at the point of declaration
 and deallocated when the brace-level is exited).
+
 @item You @strong{cannot} change their precision.
+
 @item You @strong{should not} create variables with huge precision with this
 macro.
+
 @item Your compiler must support @samp{Non-Constant Initializers} (standard
 in C++ and ISO C99) and @samp{Token Pasting}
 (standard in ISO C89). If @var{prec} is not a constant expression, your
@@ -1119,6 +1130,7 @@ in ISO C99). GCC 2.95.3 and above supports all these features.
 If you compile your program with GCC in C89 mode and with @samp{-pedantic},
 you may want to define the @code{MPFR_USE_EXTENSION} macro to avoid warnings
 due to the @code{MPFR_DECL_INIT} implementation.
+
 @end itemize
 @end defmac
 
@@ -1178,7 +1190,8 @@ In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_prec_round} instead.
 
 Warning! You must not use this function if @var{x} was initialized
-with @code{MPFR_DECL_INIT} or with the @ref{Custom Interface}.
+with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
+(@pxref{Custom Interface}).
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_get_prec (mpfr_t @var{x})
@@ -1278,7 +1291,6 @@ an overflow.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mpfr_rnd_t @var{rnd})
-
 Read a floating-point number from a string @var{nptr} in base @var{base},
 rounded in the direction @var{rnd}; @var{base} must be either 0 (to
 detect the base, as described below) or a number from 2 to 62 (otherwise
@@ -1363,7 +1375,7 @@ assignments. Moreover, since the significand pointers are also exchanged,
 you must not use this function if the allocation method used for @var{x}
 and/or @var{y} does not permit it. This is the case when @var{x} and/or
 @var{y} were declared and initialized with @code{MPFR_DECL_INIT}, and
-possibly with the @ref{Custom Interface}.
+possibly with @code{mpfr_custom_init_set} (@pxref{Custom Interface}).
 @end deftypefun
 
 @node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, MPFR Interface
@@ -2695,7 +2707,8 @@ already an approximation to @var{n} bits:
 @end example
 
 Warning! You must not use this function if @var{x} was initialized
-with @code{MPFR_DECL_INIT} or with the @ref{Custom Interface}.
+with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
+(@pxref{Custom Interface}).
 @end deftypefun
 
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
@@ -2714,10 +2727,11 @@ is twice as large as with a directed rounding for @var{rnd1}.
 Note: if one wants to also determine the correct @ref{ternary value} when
 rounding @var{b} to precision @var{prec} with rounding mode @var{rnd},
 a useful trick is the following:
-@verbatim
-if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ, prec + (rnd == MPFR_RNDN)))
+@example
+if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
+    prec + (rnd == MPFR_RNDN)))
    ...
-@end verbatim
+@end example
 Indeed, if @var{rnd} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
@@ -2743,7 +2757,7 @@ Return a string ("MPFR_RNDD", "MPFR_RNDU", "MPFR_RNDN", "MPFR_RNDZ",
 if @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
-@defmac int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
+@deftypefn Macro int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
 Given a function @var{foo} and one or more values @var{op} (which may be
 a @code{mpfr_t}, a @code{long}, a @code{double}, etc.), put in @var{rop}
 the round-to-nearest-away rounding of @var{foo}(@var{op},...).
@@ -2770,7 +2784,7 @@ mpfr_t f, r;
 /* Code that inits and sets ul, f and r */
 int i = mpfr_round_nearest_away(mpfr_add_ui, r, f, ul);
 @end example
-@end defmac
+@end deftypefn
 
 @node Miscellaneous Functions, Exception Related Functions, Rounding Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
@@ -3179,10 +3193,10 @@ in @var{flags}.
 A header file @file{mpf2mpfr.h} is included in the distribution of MPFR for
 compatibility with the GNU MP class MPF@.
 By inserting the following two lines after the @code{#include <gmp.h>} line,
-@verbatim
+@example
 #include <mpfr.h>
 #include <mpf2mpfr.h>
-@end verbatim
+@end example
 @noindent
 any program written for
 MPF can be compiled directly with MPFR without any changes
@@ -3244,12 +3258,17 @@ such applications are able to use MPFR, an auxiliary memory interface has
 been created: the Custom Interface.
 
 The following interface allows one to use MPFR in two ways:
+
 @itemize
+
 @item Either directly store a floating-point number as a @code{mpfr_t}
 on the stack.
+
 @item Either store its own representation on the
 stack and construct a new temporary @code{mpfr_t} each time it is needed.
+
 @end itemize
+
 Nothing has to be done to destroy the floating-point
 numbers except garbaging the used
 memory: all the memory management (allocating, destroying, garbaging) is left
