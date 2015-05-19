@@ -1176,6 +1176,9 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_prec_round} instead.
+
+Warning! You must not use this function if @var{x} was initialized
+with @code{MPFR_DECL_INIT} or with the @ref{Custom Interface}.
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_get_prec (mpfr_t @var{x})
@@ -2690,6 +2693,9 @@ already an approximation to @var{n} bits:
   mpfr_prec_round (x, 2 * n, MPFR_RNDN); /* exact */
   mpfr_add (x, x, t, MPFR_RNDN);      /* x is correct to 2n bits */
 @end example
+
+Warning! You must not use this function if @var{x} was initialized
+with @code{MPFR_DECL_INIT} or with the @ref{Custom Interface}.
 @end deftypefun
 
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
