@@ -1367,8 +1367,8 @@ in @code{mpfr_set_nan}, the sign bit of the result is unspecified.
 
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})
 Swap the structures pointed to by @var{x} and @var{y}. In particular,
-the values are exchanged exactly (which may be different from three
-@code{mpfr_set} calls using a third auxiliary variable).
+the values are exchanged without rounding (this may be different from
+three @code{mpfr_set} calls using a third auxiliary variable).
 
 Warning! Since the precisions are exchanged, this will affect future
 assignments. Moreover, since the significand pointers are also exchanged,
