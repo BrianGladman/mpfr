@@ -1351,10 +1351,16 @@ in @code{mpfr_set_nan}, the sign bit of the result is unspecified.
 @end deftypefun
 
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})
-Swap the values @var{x} and @var{y} efficiently. Warning: the
-precisions are exchanged too; in case the precisions are different,
-@code{mpfr_swap} is thus not equivalent to three @code{mpfr_set} calls
-using a third auxiliary variable.
+Swap the structures pointed to by @var{x} and @var{y}. In particular,
+the values are exchanged exactly (which may be different from three
+@code{mpfr_set} calls using a third auxiliary variable).
+
+Warning! Since the precisions are exchanged, this will affect future
+assignments. Moreover, since the significand pointers are also exchanged,
+you must not use this function if the allocation method used for @var{x}
+and/or @var{y} does not permit it. This is the case when @var{x} and/or
+@var{y} were declared and intialized with @code{MPFR_DECL_INIT}, and
+possibly with the @ref{Custom Interface}.
 @end deftypefun
 
 @node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, MPFR Interface
