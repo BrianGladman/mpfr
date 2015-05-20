@@ -387,7 +387,6 @@ tests_rand_end (void)
 void
 mpfr_test_init (void)
 {
-  double d;
 #ifdef HAVE_FPC_CSR
   /* to get subnormal numbers on IRIX64 */
   union fpc_csr exp;
@@ -396,13 +395,16 @@ mpfr_test_init (void)
   exp.fc_struct.flush = 0;
   set_fpc_csr(exp.fc_word);
 #endif
+
 #ifdef HAVE_DENORMS
-  d = DBL_MIN;
-  if (2.0 * (d / 2.0) != d)
-    {
-      printf ("Error: HAVE_DENORMS defined, but no subnormals.\n");
-      exit (1);
-    }
+  {
+    double d = DBL_MIN;
+    if (2.0 * (d / 2.0) != d)
+      {
+        printf ("Error: HAVE_DENORMS defined, but no subnormals.\n");
+        exit (1);
+      }
+  }
 #endif
 
   /* generate DBL_EPSILON with a loop to avoid that the compiler
