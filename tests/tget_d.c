@@ -185,11 +185,11 @@ check_min(void)
 static void
 check_get_d_2exp_inf_nan (void)
 {
+#if !defined(MPFR_ERRDIVZERO)
+
   double var_d;
   long exp;
   mpfr_t var;
-
-#if !defined(MPFR_ERRDIVZERO)
 
   mpfr_init2 (var, MPFR_PREC_MIN);
 

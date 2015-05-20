@@ -26,7 +26,6 @@ int
 main (void)
 {
   mpfr_t x;
-  int c;
 
   tests_start_mpfr ();
 
@@ -67,31 +66,35 @@ main (void)
 
 #if !defined(MPFR_ERRDIVZERO)
   /* Check NAN */
-  mpfr_clear_erangeflag ();
-  c = mpfr_cmp_d (x, DBL_NAN);
-  if (c != 0 || !mpfr_erangeflag_p ())
-    {
-      printf ("ERROR for NAN (1)\n");
+  {
+    int c;
+
+    mpfr_clear_erangeflag ();
+    c = mpfr_cmp_d (x, DBL_NAN);
+    if (c != 0 || !mpfr_erangeflag_p ())
+      {
+        printf ("ERROR for NAN (1)\n");
 #ifdef MPFR_NANISNAN
-      printf ("The reason is that NAN == NAN. Please look at the configure "
-              "output\nand Section \"In case of problem\" of the INSTALL "
-              "file.\n");
+        printf ("The reason is that NAN == NAN. Please look at the configure "
+                "output\nand Section \"In case of problem\" of the INSTALL "
+                "file.\n");
 #endif
-      exit (1);
-    }
-  mpfr_set_nan (x);
-  mpfr_clear_erangeflag ();
-  c = mpfr_cmp_d (x, 2.0);
-  if (c != 0 || !mpfr_erangeflag_p ())
-    {
-      printf ("ERROR for NAN (2)\n");
+        exit (1);
+      }
+    mpfr_set_nan (x);
+    mpfr_clear_erangeflag ();
+    c = mpfr_cmp_d (x, 2.0);
+    if (c != 0 || !mpfr_erangeflag_p ())
+      {
+        printf ("ERROR for NAN (2)\n");
 #ifdef MPFR_NANISNAN
-      printf ("The reason is that NAN == NAN. Please look at the configure "
-              "output\nand Section \"In case of problem\" of the INSTALL "
-              "file.\n");
+        printf ("The reason is that NAN == NAN. Please look at the configure "
+                "output\nand Section \"In case of problem\" of the INSTALL "
+                "file.\n");
 #endif
-      exit (1);
-    }
+        exit (1);
+      }
+  }
 #endif  /* MPFR_ERRDIVZERO */
 
   mpfr_clear(x);
