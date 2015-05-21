@@ -53,7 +53,7 @@ Changes from versions 3.1.* to version 3.2.0:
 - The --enable-decimal-float configure option no longer requires
   --with-gmp-build.
 - Updated tuning parameters.
-- Better Automake 1.13 support.
+- Better support for Automake 1.13+ (now used to generate the tarball).
 - Dropped K&R C compatibility.
 - Improved MPFR manual.
 - New MPFRbench program (see the tools/bench directory).
