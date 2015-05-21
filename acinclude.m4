@@ -104,12 +104,10 @@ dnl with "gcc -std=c99".
 AC_MSG_CHECKING(for sigaction and its associated structure)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <signal.h>
-int f (int (*func)(int, const struct sigaction *, struct sigaction *))
+static int f (int (*func)(int, const struct sigaction *, struct sigaction *))
 { return 0; }
 ]], [[
- struct sigaction act;
- f (sigaction);
- return 0;
+ return f(sigaction);
 ]])], [
    AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_SIGACTION, 1,
@@ -146,7 +144,10 @@ if test "$ac_cv_type_intmax_t" = yes; then
   AC_CACHE_CHECK([for working INTMAX_MAX], mpfr_cv_have_intmax_max, [
     saved_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "mpfr-intmax.h"]], [[intmax_t x = INTMAX_MAX;]])],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+        [[#include "mpfr-intmax.h"]],
+        [[intmax_t x = INTMAX_MAX; (void) x;]]
+      )],
       mpfr_cv_have_intmax_max=yes, mpfr_cv_have_intmax_max=no)
     CPPFLAGS="$saved_CPPFLAGS"
   ])
@@ -368,66 +369,56 @@ dnl AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
 AC_MSG_CHECKING(for math/round)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
-int f (double (*func)(double)) { return 0;}
+static int f (double (*func)(double)) { return 0; }
 ]], [[
- double a = 17.42;
- a = f (round);
- return 0;
+ return f(round);
 ]])], [
    AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_ROUND, 1,[Have ISO-C99 round function])
+   AC_DEFINE(HAVE_ROUND, 1,[Have ISO C99 round function])
 ],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for math/trunc)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
-int f (double (*func)(double)) { return 0;}
+static int f (double (*func)(double)) { return 0; }
 ]], [[
- double a = 17.42;
- a = f(trunc);
- return 0;
+ return f(trunc);
 ]])], [
    AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_TRUNC, 1,[Have ISO-C99 trunc function])
+   AC_DEFINE(HAVE_TRUNC, 1,[Have ISO C99 trunc function])
 ],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for math/floor)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
-int f (double (*func)(double)) { return 0;}
+static int f (double (*func)(double)) { return 0; }
 ]], [[
- double a = 17.42;
- a = f(floor);
- return 0;
+ return f(floor);
 ]])], [
    AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_FLOOR, 1,[Have ISO-C99 floor function])
+   AC_DEFINE(HAVE_FLOOR, 1,[Have ISO C99 floor function])
 ],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for math/ceil)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
-int f (double (*func)(double)) { return 0;}
+static int f (double (*func)(double)) { return 0; }
 ]], [[
- double a = 17.42;
- a = f(ceil);
- return 0;
+ return f(ceil);
 ]])], [
    AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_CEIL, 1,[Have ISO-C99 ceil function])
+   AC_DEFINE(HAVE_CEIL, 1,[Have ISO C99 ceil function])
 ],[AC_MSG_RESULT(no)])
 
-AC_MSG_CHECKING(for math/rint)
+AC_MSG_CHECKING(for math/nearbyint)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
-int f (double (*func)(double)) { return 0;}
+static int f (double (*func)(double)) { return 0; }
 ]], [[
- double a = 17.42;
- a = f(nearbyint);
- return 0;
+ return f(nearbyint);
 ]])], [
    AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO-C99 rint function])
+   AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO C99 nearbyint function])
 ],[AC_MSG_RESULT(no)])
 
 LIBS="$saved_LIBS"
@@ -663,7 +654,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
 #include "mpfr-sassert.h"
 ]], [[
-  MPFR_STAT_STAT_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
+  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
   return 0;
 ]])], [mpfr_cv_long_within_limb="yes"],
       [mpfr_cv_long_within_limb="no"],
@@ -1201,6 +1192,7 @@ AC_DEFUN([MPFR_FUNC_GMP_PRINTF_SPEC],[
 AC_MSG_CHECKING(if gmp_printf supports "%$1")
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
+#include <string.h>
 $3
 #include <gmp.h>
 ]], [[
