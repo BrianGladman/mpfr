@@ -94,6 +94,16 @@ dnl FIXME: The functions memmove, memset and strtol are really needed by
 dnl MPFR, but if they are implemented as macros, this is also OK (in our
 dnl case).  So, we do not return an error, but their tests are currently
 dnl useless.
+dnl Moreover, for memmove and memset, when gcc -Werror is used, these
+dnl functions are considered to be missing because of a "conflicting
+dnl types for built-in function" error. Possible workarounds if the
+dnl results of this test are used (thus one doesn't want an error):
+dnl   * If "$GCC" is set, disable built-ins by adding -fno-builtin
+dnl     to $CFLAGS for this test (this would yield a failure if such
+dnl     functions are defined only as built-ins, but does this occur
+dnl     in practice?).
+dnl   * Enable -Werror only for the main compilation (and possibly
+dnl     some particular tests) via a new configure option.
 dnl gettimeofday is not defined for MinGW
 AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday signal])
 
