@@ -6,8 +6,11 @@
 mv -f INSTALL INSTALL.$$.tmp
 
 autoreconf -v -f -i -W all
+status=$?
 
 rm -f INSTALL
 mv -f INSTALL.$$.tmp INSTALL
 
 rm -rf autom4te.cache
+
+exit $status
