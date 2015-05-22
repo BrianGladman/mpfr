@@ -36,12 +36,13 @@ static void *
 new_st (size_t s)
 {
   void *p = (void *) stack;
-  stack += ALIGNED (s);
-  if (MPFR_UNLIKELY (stack > (char *) &Buffer[BUFFER_SIZE]))
+
+  if (MPFR_UNLIKELY (s > (char *) &Buffer[BUFFER_SIZE] - stack))
     {
       printf ("[INTERNAL TEST ERROR] Stack overflow.\n");
       exit (1);
     }
+  stack += ALIGNED (s);
   return p;
 }
 
