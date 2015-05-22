@@ -59,7 +59,9 @@ test (FILE *fout, const char *fmt, ...)
 int
 main (void)
 {
+  tests_start_mpfr ();
   test (stdout, "%d\n", 0);
+  tests_end_mpfr ();
   return 0;
 }
 

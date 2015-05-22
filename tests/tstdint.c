@@ -44,10 +44,19 @@ main (void)
   mpfr_t x;
   intmax_t j;
 
+  tests_start_mpfr ();
+
   mpfr_init_set_ui (x, 1, MPFR_RNDN);
   j = mpfr_get_uj (x, MPFR_RNDN);
   mpfr_clear (x);
-  return j == 1 ? 0 : 1;
+  if (j != 1)
+    {
+      printf ("Error: got %jd instead of 1.\n", j);
+      exit (1);
+    }
+
+  tests_end_mpfr ();
+  return 0;
 }
 
 #else  /* HAVE_STDINT_H */
