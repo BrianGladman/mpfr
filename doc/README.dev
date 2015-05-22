@@ -389,6 +389,11 @@ Format of long double.
 + MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
                         __float128.
 
++ MPFR_ALLOCA_MAX:      Maximum size for the use of alloca by temporary
+                        allocations (default: 16384).
+                        This macro is not used when MPFR is built with
+                        the GMP build directory (--with-gmp-build).
+
 + MPFR_USE_THREAD_SAFE: Define to build MPFR as thread safe (TLS).
 + MPFR_USE_C11_THREAD_SAFE: Define to implement TLS in the C11 way.
 

@@ -296,8 +296,13 @@ __MPFR_DECLSPEC void *mpfr_tmp_allocate _MPFR_PROTO ((struct tmp_marker **,
                                                       size_t));
 __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 
+/* Can be overriden at configure time. Useful for checking buffer overflow. */
+#ifndef MPFR_ALLOCA_MAX
+# define MPFR_ALLOCA_MAX 16384
+#endif
+
 /* Do not define TMP_SALLOC (see the test in mpfr-impl.h)! */
-#define TMP_ALLOC(n) (MPFR_LIKELY ((n) < 16384) ?       \
+#define TMP_ALLOC(n) (MPFR_LIKELY ((n) <= MPFR_ALLOCA_MAX) ?       \
                       alloca (n) : mpfr_tmp_allocate (&tmp_marker, (n)))
 #define TMP_DECL(m) struct tmp_marker *tmp_marker
 #define TMP_MARK(m) (tmp_marker = 0)
