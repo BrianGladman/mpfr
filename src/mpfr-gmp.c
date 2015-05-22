@@ -308,7 +308,7 @@ mpfr_assert_fail (const char *filename, int linenum,
    Note that using ranlib -c or libtool -c is another fix.
 */
 void * (*mpfr_allocate_func) (size_t) = 0;
-void * (*mpfr_reallocate_func) (void *,size_t, size_t) = 0;
+void * (*mpfr_reallocate_func) (void *, size_t, size_t) = 0;
 void   (*mpfr_free_func) (void *, size_t) = 0;
 
 void *
