@@ -38,6 +38,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_USE_INTMAX_T
 #include <mpfr.h>
 
+#include "mpfr-test.h"
+
 int
 main (void)
 {

@@ -41,6 +41,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_USE_FILE /* necessary due to GMP bug concerning inclusions */
 #include <mpfr.h>
 
+#include "mpfr-test.h"
+
 static void
 test (FILE *fout, const char *fmt, ...)
 {
