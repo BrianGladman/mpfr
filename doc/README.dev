@@ -331,6 +331,10 @@ running "make distcheck":
 $ patch m4/libtool.m4 libtool-tcc-wl.patch
 $ autoreconf
 
+And for libtool 2.4.3 to 2.4.6, the following is needed:
+$ patch m4/libtool.m4 libtool-tcc-rpath.patch
+$ autoreconf
+
 ===========================================================================
 
 Here is a non-exhaustive list of macros used for building and checking MPFR.
