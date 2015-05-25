@@ -26,6 +26,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    default value: we do not want to make the test fail if the user has
    redefined MPFR_ALLOCA_MAX to a very large value. */
 
+/* Needed with --with-gmp-build */
+#ifndef MPFR_ALLOCA_MAX
+# define MPFR_ALLOCA_MAX 16384
+#endif
+
 #if __MPFR_STDC (199901L) && MPFR_ALLOCA_MAX <= 16384
 
 int
