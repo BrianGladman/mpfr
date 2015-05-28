@@ -70,6 +70,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
+/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
+   no longer used, as they sometimes gave incorrect information about
+   the support of thread-local variables. A configure check is now done. */
+#include "mpfr-thread.h"
+
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
 # include "gmp.h"
@@ -124,11 +129,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /******************************************************
  ************** Attributes definition *****************
  ******************************************************/
-
-/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
-   no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done. */
-#include "mpfr-thread.h"
 
 #if defined(MPFR_HAVE_NORETURN)
 /* _Noreturn is specified by ISO C11 (Section 6.7.4);
