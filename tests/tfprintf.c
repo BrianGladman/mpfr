@@ -311,7 +311,7 @@ check_random (FILE *fout, int nb_tests)
       char fmt[FMT_SIZE]; /* at most something like "%-+ #0'.*R*f" */
       char *ptr = fmt;
 
-      tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
+      tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX, 0);
       rnd = RND_RAND ();
 
       spec = (int) (randlimb () % 5);

@@ -828,7 +828,8 @@ cancel (void)
 
               e = (i & 1) ? 0 : mpfr_get_emin ();
               tests_default_random (x[n], 256, e,
-                                    ((i & 2) ? e + 2000 : mpfr_get_emax ()));
+                                    ((i & 2) ? e + 2000 : mpfr_get_emax ()),
+                                    0);
             }
           else
             {

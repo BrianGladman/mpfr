@@ -97,7 +97,8 @@ void ld_trace _MPFR_PROTO ((const char *, long double));
 FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
 void set_emin _MPFR_PROTO ((mpfr_exp_t));
 void set_emax _MPFR_PROTO ((mpfr_exp_t));
-void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mpfr_exp_t, mpfr_exp_t));
+void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mpfr_exp_t, mpfr_exp_t,
+                                        int));
 void data_check _MPFR_PROTO ((const char *, int (*) (FLIST), const char *));
 void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
                              const char *, int, mpfr_exp_t, mpfr_exp_t,

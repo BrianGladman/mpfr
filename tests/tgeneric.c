@@ -43,6 +43,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TEST_RANDOM_EMAX 255
 #endif
 
+#ifndef TEST_RANDOM_ALWAYS_SCALE
+#define TEST_RANDOM_ALWAYS_SCALE 0
+#endif
+
 /* If the MPFR_SUSPICIOUS_OVERFLOW test fails but this is not a bug,
    then define TGENERIC_SO_TEST with an adequate test (possibly 0) to
    omit this particular case. */
@@ -182,10 +186,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
 #else
               tests_default_random (x, TEST_RANDOM_POS,
-                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
+                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX,
+                                    TEST_RANDOM_ALWAYS_SCALE);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               tests_default_random (u, TEST_RANDOM_POS2,
-                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
+                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX,
+                                    TEST_RANDOM_ALWAYS_SCALE);
 #endif
 #endif
             }
@@ -497,6 +503,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #undef TEST_RANDOM_POS2
 #undef TEST_RANDOM_EMIN
 #undef TEST_RANDOM_EMAX
+#undef TEST_RANDOM_ALWAYS_SCALE
 #undef RAND_FUNCTION
 #undef TWO_ARGS
 #undef TWO_ARGS_UI
