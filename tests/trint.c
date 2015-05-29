@@ -1,4 +1,5 @@
-/* Test file for mpfr_rint, mpfr_trunc, mpfr_floor, mpfr_ceil, mpfr_round.
+/* Test file for mpfr_rint, mpfr_trunc, mpfr_floor, mpfr_ceil, mpfr_round,
+   mpfr_rint_trunc, mpfr_rint_floor, mpfr_rint_ceil.
 
 Copyright 2002-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -288,6 +289,30 @@ coverage_03032011 (void)
   mpfr_clear (in);
 }
 
+#define TEST_FUNCTION mpfr_rint_trunc
+#define TEST_RANDOM_EMIN -20
+#define TEST_RANDOM_ALWAYS_SCALE 1
+#define test_generic test_generic_trunc
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_rint_floor
+#define TEST_RANDOM_EMIN -20
+#define TEST_RANDOM_ALWAYS_SCALE 1
+#define test_generic test_generic_floor
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_rint_ceil
+#define TEST_RANDOM_EMIN -20
+#define TEST_RANDOM_ALWAYS_SCALE 1
+#define test_generic test_generic_ceil
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_rint_round
+#define TEST_RANDOM_EMIN -20
+#define TEST_RANDOM_ALWAYS_SCALE 1
+#define test_generic test_generic_round
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -436,6 +461,11 @@ main (int argc, char *argv[])
 
   special ();
   coverage_03032011 ();
+
+  test_generic_trunc (2, 300, 20);
+  test_generic_floor (2, 300, 20);
+  test_generic_ceil (2, 300, 20);
+  test_generic_round (2, 300, 20);
 
 #if __MPFR_STDC (199901L)
   if (argc > 1 && strcmp (argv[1], "-s") == 0)
