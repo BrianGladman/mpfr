@@ -2610,7 +2610,10 @@ mathematical function).
 Contrary to @code{mpfr_rint}, those functions do perform a double rounding:
 first @var{op} is rounded to the nearest integer in the direction given by
 the function name, then this nearest integer (if not representable) is
-rounded in the given direction @var{rnd}.
+rounded in the given direction @var{rnd}.  Thus these round-to-integer
+functions behave more like the other mathematical functions, i.e., the
+returned result is the correct rounding of the exact result of the function
+in the real numbers.
 For example, @code{mpfr_rint_round} with rounding to nearest and a precision
 of two bits rounds 6.5 to 7 (halfway cases away from zero), then 7 is
 rounded to 8 by the round-even rule, despite the fact that 6 is also
