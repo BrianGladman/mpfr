@@ -170,7 +170,31 @@ special (void)
           exit (1);                                                     \
         }                                                               \
     }                                                                   \
- while (0)
+  while (0)
+
+#define BASIC_TEST2(F,J,INEX)                                           \
+  do                                                                    \
+    {                                                                   \
+      int inex;                                                         \
+      inex = mpfr_set_si (y, J, MPFR_RNDN);                             \
+      MPFR_ASSERTN (inex == 0);                                         \
+      inex = mpfr_##F (z, x);                                           \
+      if (!(mpfr_equal_p (y, z) && inex == (INEX)))                     \
+        {                                                               \
+          printf ("Basic test failed on mpfr_" #F ", prec = %d, i = %d" \
+                  ", %s\n", prec, s * i, mpfr_print_rnd_mode (r));      \
+          printf ("i.e. x = ");                                         \
+          mpfr_dump (x);                                                \
+          printf ("Expected ");                                         \
+          mpfr_dump (y);                                                \
+          printf ("with inex = %d\n", (INEX));                          \
+          printf ("Got      ");                                         \
+          mpfr_dump (z);                                                \
+          printf ("with inex = %d\n", inex);                            \
+          exit (1);                                                     \
+        }                                                               \
+    }                                                                   \
+  while (0)
 
 /* Test mpfr_rint_* on i/4 with |i| between 56 and 72. */
 static void
@@ -186,6 +210,17 @@ basic_tests (void)
       for (s = 1; s >= -1; s -= 2)
         for (i = 56; i <= 72; i++)
           {
+            int k, t, u, v, f;
+
+            for (t = i/4, k = 0; t >= 1 << prec; t >>= 1, k++)
+              ;
+            t <<= k;
+            for (u = (i+3)/4, k = 0; u >= 1 << prec; u = (u+1)/2, k++)
+              ;
+            u <<= k;
+            v = i < (t+u) << 1 ? t : u;
+            f = t == u ? 0 : i % 4 == 0 ? 1 : 2;
+
             mpfr_set_si_2exp (x, s * i, -2, MPFR_RNDN);
             RND_LOOP(r)
               {
@@ -194,6 +229,10 @@ basic_tests (void)
                 BASIC_TEST (ceil, s > 0 ? (i+3)/4 : - (i/4));
                 BASIC_TEST (round, s * ((i+2)/4));
               }
+            BASIC_TEST2 (trunc, s * t, - s * f);
+            BASIC_TEST2 (floor, s > 0 ? t : - u, - f);
+            BASIC_TEST2 (ceil, s > 0 ? u : - t, f);
+            BASIC_TEST2 (round, s * v, v == t ? - s * f : s * f);
           }
       mpfr_clears (y, z, (mpfr_ptr) 0);
     }
