@@ -149,6 +149,57 @@ special (void)
   mpfr_clear (y);
 }
 
+#define BASIC_TEST(F,J)                                                 \
+  do                                                                    \
+    {                                                                   \
+      int inex1, inex2;                                                 \
+      inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);                       \
+      inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);                     \
+      if (!(mpfr_equal_p (y, z) && SAME_SIGN (inex1, inex2)))           \
+        {                                                               \
+          printf ("Basic test failed on mpfr_" #F ", prec = %d, i = %d" \
+                  ", %s\n", prec, s * i, mpfr_print_rnd_mode (r));      \
+          printf ("i.e. x = ");                                         \
+          mpfr_dump (x);                                                \
+          printf ("Expected ");                                         \
+          mpfr_dump (y);                                                \
+          printf ("with inex = %d (or equivalent)\n", inex1);           \
+          printf ("Got      ");                                         \
+          mpfr_dump (z);                                                \
+          printf ("with inex = %d (or equivalent)\n", inex2);           \
+          exit (1);                                                     \
+        }                                                               \
+    }                                                                   \
+ while (0)
+
+/* Test mpfr_rint_* on i/4 with |i| between 56 and 72. */
+static void
+basic_tests (void)
+{
+  mpfr_t x, y, z;
+  int prec, s, i, r;
+
+  mpfr_init2 (x, 16);
+  for (prec = 2; prec <= 7; prec++)
+    {
+      mpfr_inits2 (prec, y, z, (mpfr_ptr) 0);
+      for (s = 1; s >= -1; s -= 2)
+        for (i = 56; i <= 72; i++)
+          {
+            mpfr_set_si_2exp (x, s * i, -2, MPFR_RNDN);
+            RND_LOOP(r)
+              {
+                BASIC_TEST (trunc, s * (i/4));
+                BASIC_TEST (floor, s > 0 ? i/4 : - ((i+3)/4));
+                BASIC_TEST (ceil, s > 0 ? (i+3)/4 : - (i/4));
+                BASIC_TEST (round, s * ((i+2)/4));
+              }
+          }
+      mpfr_clears (y, z, (mpfr_ptr) 0);
+    }
+  mpfr_clear (x);
+}
+
 #if __MPFR_STDC (199901L)
 
 static void
@@ -460,6 +511,7 @@ main (int argc, char *argv[])
   mpfr_clear (v);
 
   special ();
+  basic_tests ();
   coverage_03032011 ();
 
   test_generic_trunc (2, 300, 20);
