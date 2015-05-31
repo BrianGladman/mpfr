@@ -394,7 +394,21 @@ error
 dnl If compiler is gcc, then use some specific flags.
 dnl But don't touch user other flags.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
-  CFLAGS="-Wall -Wmissing-prototypes -Wpointer-arith $CFLAGS"
+  CFLAGS="-Wpointer-arith $CFLAGS"
+  AC_MSG_CHECKING(whether the selected language is C++)
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#if defined (__cplusplus)
+# error "C++"
+error
+#endif
+  ]], [[]])],[
+    AC_MSG_RESULT(no)
+    CFLAGS="-Wmissing-prototypes $CFLAGS"
+  ],[
+    AC_MSG_RESULT(yes)
+    CFLAGS="-Wmissing-declarations -Wno-sign-compare $CFLAGS"
+  ])
+  CFLAGS="-Wall $CFLAGS"
 fi
 
 AM_PROG_CC_C_O
