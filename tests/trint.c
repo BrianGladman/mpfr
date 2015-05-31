@@ -149,51 +149,52 @@ special (void)
   mpfr_clear (y);
 }
 
-#define BASIC_TEST(F,J)                                                 \
-  do                                                                    \
-    {                                                                   \
-      int inex1, inex2;                                                 \
-      inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);                       \
-      inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);                     \
-      if (!(mpfr_equal_p (y, z) && SAME_SIGN (inex1, inex2)))           \
-        {                                                               \
-          printf ("Basic test failed on mpfr_" #F ", prec = %d, i = %d" \
-                  ", %s\n", prec, s * i, mpfr_print_rnd_mode (r));      \
-          printf ("i.e. x = ");                                         \
-          mpfr_dump (x);                                                \
-          printf ("Expected ");                                         \
-          mpfr_dump (y);                                                \
-          printf ("with inex = %d (or equivalent)\n", inex1);           \
-          printf ("Got      ");                                         \
-          mpfr_dump (z);                                                \
-          printf ("with inex = %d (or equivalent)\n", inex2);           \
-          exit (1);                                                     \
-        }                                                               \
-    }                                                                   \
+#define BASIC_TEST(F,J)                                         \
+  do                                                            \
+    {                                                           \
+      int inex1, inex2;                                         \
+      inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);               \
+      inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);             \
+      if (!(mpfr_equal_p (y, z) && SAME_SIGN (inex1, inex2)))   \
+        {                                                       \
+          printf ("Basic test failed on mpfr_rint_" #F          \
+                  ", prec = %d, i = %d, %s\n", prec, s * i,     \
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));        \
+          printf ("i.e. x = ");                                 \
+          mpfr_dump (x);                                        \
+          printf ("Expected ");                                 \
+          mpfr_dump (y);                                        \
+          printf ("with inex = %d (or equivalent)\n", inex1);   \
+          printf ("Got      ");                                 \
+          mpfr_dump (z);                                        \
+          printf ("with inex = %d (or equivalent)\n", inex2);   \
+          exit (1);                                             \
+        }                                                       \
+    }                                                           \
   while (0)
 
-#define BASIC_TEST2(F,J,INEX)                                           \
-  do                                                                    \
-    {                                                                   \
-      int inex;                                                         \
-      inex = mpfr_set_si (y, J, MPFR_RNDN);                             \
-      MPFR_ASSERTN (inex == 0);                                         \
-      inex = mpfr_##F (z, x);                                           \
-      if (!(mpfr_equal_p (y, z) && inex == (INEX)))                     \
-        {                                                               \
-          printf ("Basic test failed on mpfr_" #F ", prec = %d, i = %d" \
-                  ", %s\n", prec, s * i, mpfr_print_rnd_mode (r));      \
-          printf ("i.e. x = ");                                         \
-          mpfr_dump (x);                                                \
-          printf ("Expected ");                                         \
-          mpfr_dump (y);                                                \
-          printf ("with inex = %d\n", (INEX));                          \
-          printf ("Got      ");                                         \
-          mpfr_dump (z);                                                \
-          printf ("with inex = %d\n", inex);                            \
-          exit (1);                                                     \
-        }                                                               \
-    }                                                                   \
+#define BASIC_TEST2(F,J,INEX)                                   \
+  do                                                            \
+    {                                                           \
+      int inex;                                                 \
+      inex = mpfr_set_si (y, J, MPFR_RNDN);                     \
+      MPFR_ASSERTN (inex == 0);                                 \
+      inex = mpfr_##F (z, x);                                   \
+      if (!(mpfr_equal_p (y, z) && inex == (INEX)))             \
+        {                                                       \
+          printf ("Basic test failed on mpfr_" #F               \
+                  ", prec = %d, i = %d\n", prec, s * i);        \
+          printf ("i.e. x = ");                                 \
+          mpfr_dump (x);                                        \
+          printf ("Expected ");                                 \
+          mpfr_dump (y);                                        \
+          printf ("with inex = %d\n", (INEX));                  \
+          printf ("Got      ");                                 \
+          mpfr_dump (z);                                        \
+          printf ("with inex = %d\n", inex);                    \
+          exit (1);                                             \
+        }                                                       \
+    }                                                           \
   while (0)
 
 /* Test mpfr_rint_* on i/4 with |i| between 56 and 72. */
