@@ -153,9 +153,15 @@ special (void)
   do                                                            \
     {                                                           \
       int inex1, inex2;                                         \
+      unsigned int ex_flags, flags;                             \
       inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);               \
+      ex_flags = inex1 != 0 ? MPFR_FLAGS_INEXACT : 0;           \
+      mpfr_clear_flags ();                                      \
       inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);             \
-      if (!(mpfr_equal_p (y, z) && SAME_SIGN (inex1, inex2)))   \
+      flags = __gmpfr_flags;                                    \
+      if (! (mpfr_equal_p (y, z) &&                             \
+             SAME_SIGN (inex1, inex2) &&                        \
+             flags == ex_flags))                                \
         {                                                       \
           printf ("Basic test failed on mpfr_rint_" #F          \
                   ", prec = %d, i = %d, %s\n", prec, s * i,     \
@@ -165,9 +171,13 @@ special (void)
           printf ("Expected ");                                 \
           mpfr_dump (y);                                        \
           printf ("with inex = %d (or equivalent)\n", inex1);   \
+          printf ("     flags:");                               \
+          flags_out (ex_flags);                                 \
           printf ("Got      ");                                 \
           mpfr_dump (z);                                        \
           printf ("with inex = %d (or equivalent)\n", inex2);   \
+          printf ("     flags:");                               \
+          flags_out (flags);                                    \
           exit (1);                                             \
         }                                                       \
     }                                                           \
@@ -177,10 +187,16 @@ special (void)
   do                                                            \
     {                                                           \
       int inex;                                                 \
+      unsigned int ex_flags, flags;                             \
       inex = mpfr_set_si (y, J, MPFR_RNDN);                     \
       MPFR_ASSERTN (inex == 0);                                 \
+      mpfr_clear_flags ();                                      \
       inex = mpfr_##F (z, x);                                   \
-      if (!(mpfr_equal_p (y, z) && inex == (INEX)))             \
+      ex_flags = inex != 0 ? MPFR_FLAGS_INEXACT : 0;            \
+      flags = __gmpfr_flags;                                    \
+      if (! (mpfr_equal_p (y, z) &&                             \
+             inex == (INEX) &&                                  \
+             flags == ex_flags))                                \
         {                                                       \
           printf ("Basic test failed on mpfr_" #F               \
                   ", prec = %d, i = %d\n", prec, s * i);        \
@@ -189,9 +205,13 @@ special (void)
           printf ("Expected ");                                 \
           mpfr_dump (y);                                        \
           printf ("with inex = %d\n", (INEX));                  \
+          printf ("     flags:");                               \
+          flags_out (ex_flags);                                 \
           printf ("Got      ");                                 \
           mpfr_dump (z);                                        \
           printf ("with inex = %d\n", inex);                    \
+          printf ("     flags:");                               \
+          flags_out (flags);                                    \
           exit (1);                                             \
         }                                                       \
     }                                                           \
