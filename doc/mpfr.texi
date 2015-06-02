@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 3.2.0-dev
-@set UPDATED-MONTH May 2015
+@set UPDATED-MONTH June 2015
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -2580,6 +2580,14 @@ More precisely, the returned value is 0 when @var{op} is an integer
 representable in @var{rop}, 1 or @minus{}1 when @var{op} is an integer
 that is not representable in @var{rop}, 2 or @minus{}2 when @var{op} is
 not an integer.
+
+When @var{op} is NaN, the NaN flag is set as usual. In the other cases,
+the inexact flag is set when @var{rop} differs from @var{op}, following
+the ISO C99 rule for the @code{rint} function. If you want the behavior to
+be more like IEEE 754 / ISO TS 18661-1, i.e., the usual behavior where the
+round-to-integer function is regarded as any other mathematical function,
+you should use one the @code{mpfr_rint_*} functions instead (however it is
+not possible to round to nearest with the even rounding rule yet).
 
 Note that @code{mpfr_round} is different from @code{mpfr_rint} called with
 the rounding to nearest mode (where halfway cases are rounded to an even
