@@ -149,38 +149,54 @@ special (void)
   mpfr_clear (y);
 }
 
-#define BASIC_TEST(F,J)                                         \
-  do                                                            \
-    {                                                           \
-      int inex1, inex2;                                         \
-      unsigned int ex_flags, flags;                             \
-      inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);               \
-      ex_flags = inex1 != 0 ? MPFR_FLAGS_INEXACT : 0;           \
-      mpfr_clear_flags ();                                      \
-      inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);             \
-      flags = __gmpfr_flags;                                    \
-      if (! (mpfr_equal_p (y, z) &&                             \
-             SAME_SIGN (inex1, inex2) &&                        \
-             flags == ex_flags))                                \
-        {                                                       \
-          printf ("Basic test failed on mpfr_rint_" #F          \
-                  ", prec = %d, i = %d, %s\n", prec, s * i,     \
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));        \
-          printf ("i.e. x = ");                                 \
-          mpfr_dump (x);                                        \
-          printf ("Expected ");                                 \
-          mpfr_dump (y);                                        \
-          printf ("with inex = %d (or equivalent)\n", inex1);   \
-          printf ("     flags:");                               \
-          flags_out (ex_flags);                                 \
-          printf ("Got      ");                                 \
-          mpfr_dump (z);                                        \
-          printf ("with inex = %d (or equivalent)\n", inex2);   \
-          printf ("     flags:");                               \
-          flags_out (flags);                                    \
-          exit (1);                                             \
-        }                                                       \
-    }                                                           \
+#define BASIC_TEST(F,J)                                                 \
+  do                                                                    \
+    {                                                                   \
+      int red;                                                          \
+      for (red = 0; red <= 1; red++)                                    \
+        {                                                               \
+          int inex1, inex2;                                             \
+          unsigned int ex_flags, flags;                                 \
+                                                                        \
+          if (red)                                                      \
+            {                                                           \
+              set_emin (e);                                             \
+              set_emax (e);                                             \
+            }                                                           \
+                                                                        \
+          mpfr_clear_flags ();                                          \
+          inex1 = mpfr_set_si (y, J, (mpfr_rnd_t) r);                   \
+          ex_flags = __gmpfr_flags;                                     \
+          mpfr_clear_flags ();                                          \
+          inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);                 \
+          flags = __gmpfr_flags;                                        \
+          if (! (mpfr_equal_p (y, z) &&                                 \
+                 SAME_SIGN (inex1, inex2) &&                            \
+                 flags == ex_flags))                                    \
+            {                                                           \
+              printf ("Basic test failed on mpfr_rint_" #F              \
+                      ", prec = %d, i = %d, %s\n", prec, s * i,         \
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));            \
+              printf ("i.e. x = ");                                     \
+              mpfr_dump (x);                                            \
+              if (red)                                                  \
+                printf ("with emin = emax = %d\n", e);                  \
+              printf ("Expected ");                                     \
+              mpfr_dump (y);                                            \
+              printf ("with inex = %d (or equivalent)\n", inex1);       \
+              printf ("     flags:");                                   \
+              flags_out (ex_flags);                                     \
+              printf ("Got      ");                                     \
+              mpfr_dump (z);                                            \
+              printf ("with inex = %d (or equivalent)\n", inex2);       \
+              printf ("     flags:");                                   \
+              flags_out (flags);                                        \
+              exit (1);                                                 \
+            }                                                           \
+        }                                                               \
+      set_emin (emin);                                                  \
+      set_emax (emax);                                                  \
+    }                                                                   \
   while (0)
 
 #define BASIC_TEST2(F,J,INEX)                                   \
