@@ -186,34 +186,52 @@ special (void)
 #define BASIC_TEST2(F,J,INEX)                                   \
   do                                                            \
     {                                                           \
-      int inex;                                                 \
-      unsigned int ex_flags, flags;                             \
-      inex = mpfr_set_si (y, J, MPFR_RNDN);                     \
-      MPFR_ASSERTN (inex == 0);                                 \
-      mpfr_clear_flags ();                                      \
-      inex = mpfr_##F (z, x);                                   \
-      ex_flags = inex != 0 ? MPFR_FLAGS_INEXACT : 0;            \
-      flags = __gmpfr_flags;                                    \
-      if (! (mpfr_equal_p (y, z) &&                             \
-             inex == (INEX) &&                                  \
-             flags == ex_flags))                                \
+      int red;                                                  \
+      for (red = 0; red <= 1; red++)                            \
         {                                                       \
-          printf ("Basic test failed on mpfr_" #F               \
-                  ", prec = %d, i = %d\n", prec, s * i);        \
-          printf ("i.e. x = ");                                 \
-          mpfr_dump (x);                                        \
-          printf ("Expected ");                                 \
-          mpfr_dump (y);                                        \
-          printf ("with inex = %d\n", (INEX));                  \
-          printf ("     flags:");                               \
-          flags_out (ex_flags);                                 \
-          printf ("Got      ");                                 \
-          mpfr_dump (z);                                        \
-          printf ("with inex = %d\n", inex);                    \
-          printf ("     flags:");                               \
-          flags_out (flags);                                    \
-          exit (1);                                             \
+          int inex;                                             \
+          unsigned int ex_flags, flags;                         \
+                                                                \
+          if (red)                                              \
+            {                                                   \
+              set_emin (e);                                     \
+              set_emax (e);                                     \
+            }                                                   \
+                                                                \
+          mpfr_clear_flags ();                                  \
+          inex = mpfr_set_si (y, J, MPFR_RNDN);                 \
+          MPFR_ASSERTN (inex == 0 || mpfr_overflow_p ());       \
+          ex_flags = __gmpfr_flags;                             \
+          mpfr_clear_flags ();                                  \
+          inex = mpfr_##F (z, x);                               \
+          if (inex != 0)                                        \
+            ex_flags |= MPFR_FLAGS_INEXACT;                     \
+          flags = __gmpfr_flags;                                \
+          if (! (mpfr_equal_p (y, z) &&                         \
+                 inex == (INEX) &&                              \
+                 flags == ex_flags))                            \
+            {                                                   \
+              printf ("Basic test failed on mpfr_" #F           \
+                      ", prec = %d, i = %d\n", prec, s * i);    \
+              printf ("i.e. x = ");                             \
+              mpfr_dump (x);                                    \
+              if (red)                                          \
+                printf ("with emin = emax = %d\n", e);          \
+              printf ("Expected ");                             \
+              mpfr_dump (y);                                    \
+              printf ("with inex = %d\n", (INEX));              \
+              printf ("     flags:");                           \
+              flags_out (ex_flags);                             \
+              printf ("Got      ");                             \
+              mpfr_dump (z);                                    \
+              printf ("with inex = %d\n", inex);                \
+              printf ("     flags:");                           \
+              flags_out (flags);                                \
+              exit (1);                                         \
+            }                                                   \
         }                                                       \
+      set_emin (emin);                                          \
+      set_emax (emax);                                          \
     }                                                           \
   while (0)
 
@@ -223,6 +241,10 @@ basic_tests (void)
 {
   mpfr_t x, y, z;
   int prec, s, i, r;
+  mpfr_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 16);
   for (prec = 2; prec <= 7; prec++)
@@ -231,7 +253,7 @@ basic_tests (void)
       for (s = 1; s >= -1; s -= 2)
         for (i = 56; i <= 72; i++)
           {
-            int k, t, u, v, f;
+            int k, t, u, v, f, e;
 
             for (t = i/4, k = 0; t >= 1 << prec; t >>= 1, k++)
               ;
@@ -243,6 +265,7 @@ basic_tests (void)
             f = t == u ? 0 : i % 4 == 0 ? 1 : 2;
 
             mpfr_set_si_2exp (x, s * i, -2, MPFR_RNDN);
+            e = mpfr_get_exp (x);
             RND_LOOP(r)
               {
                 BASIC_TEST (trunc, s * (i/4));
