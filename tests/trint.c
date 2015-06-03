@@ -251,7 +251,7 @@ special (void)
     }                                                           \
   while (0)
 
-/* Test mpfr_rint_* on i/4 with |i| between 56 and 72. */
+/* Test mpfr_rint_* on i/4 with |i| between 1 and 72. */
 static void
 basic_tests (void)
 {
@@ -267,7 +267,7 @@ basic_tests (void)
     {
       mpfr_inits2 (prec, y, z, (mpfr_ptr) 0);
       for (s = 1; s >= -1; s -= 2)
-        for (i = 56; i <= 72; i++)
+        for (i = 1; i <= 72; i++)
           {
             int k, t, u, v, f, e;
 
