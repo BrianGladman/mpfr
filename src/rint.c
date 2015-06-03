@@ -338,6 +338,10 @@ mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
  * the flag setting for intermediate overflow in the test suite without
  * involving huge non-integer numbers (thus in huge precision). This
  * should also be faster.
+ *
+ * Moreover we need to save the flags and restore them after calling the
+ * mpfr_round, mpfr_trunc, mpfr_ceil, mpfr_floor functions because these
+ * functions set the inexact flag when the argument is not an integer.
  */
 
 #undef mpfr_rint_round
