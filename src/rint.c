@@ -333,6 +333,13 @@ mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
   return mpfr_rint (r, u, MPFR_RNDD);
 }
 
+/* For the round-to-integer functions below, we don't need to extend the
+ * exponent range. And it is better not to do so, so that we can test
+ * the flag setting for intermediate overflow in the test suite without
+ * involving huge non-integer numbers (thus in huge precision). This
+ * should also be faster.
+ */
+
 #undef mpfr_rint_round
 
 int
@@ -344,19 +351,18 @@ mpfr_rint_round (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       int inex;
-      MPFR_SAVE_EXPO_DECL (expo);
+      mpfr_flags_t saved_flags = __gmpfr_flags;
       MPFR_BLOCK_DECL (flags);
 
-      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_init2 (tmp, MPFR_PREC (u));
       /* round(u) is representable in tmp unless an overflow occurs */
       MPFR_BLOCK (flags, mpfr_round (tmp, u));
+      __gmpfr_flags = saved_flags;
       inex = (MPFR_OVERFLOW (flags)
               ? mpfr_overflow (r, rnd_mode, MPFR_SIGN (u))
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (r, inex, rnd_mode);
+      return inex;
     }
 }
 
@@ -371,16 +377,15 @@ mpfr_rint_trunc (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       int inex;
-      MPFR_SAVE_EXPO_DECL (expo);
+      mpfr_flags_t saved_flags = __gmpfr_flags;
 
-      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_init2 (tmp, MPFR_PREC (u));
       /* trunc(u) is always representable in tmp */
       mpfr_trunc (tmp, u);
+      __gmpfr_flags = saved_flags;
       inex = mpfr_set (r, tmp, rnd_mode);
       mpfr_clear (tmp);
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (r, inex, rnd_mode);
+      return inex;
     }
 }
 
@@ -395,19 +400,18 @@ mpfr_rint_ceil (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       int inex;
-      MPFR_SAVE_EXPO_DECL (expo);
+      mpfr_flags_t saved_flags = __gmpfr_flags;
       MPFR_BLOCK_DECL (flags);
 
-      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_init2 (tmp, MPFR_PREC (u));
       /* ceil(u) is representable in tmp unless an overflow occurs */
       MPFR_BLOCK (flags, mpfr_ceil (tmp, u));
+      __gmpfr_flags = saved_flags;
       inex = (MPFR_OVERFLOW (flags)
               ? mpfr_overflow (r, rnd_mode, MPFR_SIGN_POS)
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (r, inex, rnd_mode);
+      return inex;
     }
 }
 
@@ -422,18 +426,17 @@ mpfr_rint_floor (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       int inex;
-      MPFR_SAVE_EXPO_DECL (expo);
+      mpfr_flags_t saved_flags = __gmpfr_flags;
       MPFR_BLOCK_DECL (flags);
 
-      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_init2 (tmp, MPFR_PREC (u));
       /* floor(u) is representable in tmp unless an overflow occurs */
       MPFR_BLOCK (flags, mpfr_floor (tmp, u));
+      __gmpfr_flags = saved_flags;
       inex = (MPFR_OVERFLOW (flags)
               ? mpfr_overflow (r, rnd_mode, MPFR_SIGN_NEG)
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (r, inex, rnd_mode);
+      return inex;
     }
 }
