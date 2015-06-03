@@ -24,7 +24,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Merge the following mpfr_rint code with mpfr_round_raw_generic? */
 
-/* FIXME: handle reduced exponent range (and add regression tests). */
+/* For all the round-to-integer functions, we don't need to extend the
+ * exponent range. And it is better not to do so, so that we can test
+ * the flag setting for intermediate overflow in the test suite without
+ * involving huge non-integer numbers (thus in huge precision). This
+ * should also be faster.
+ *
+ * We also need to be careful with the flags.
+ */
 
 int
 mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
@@ -79,14 +86,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
            (exp == 0 && (rnd_mode == MPFR_RNDNA ||
                          !mpfr_powerof2_raw (u)))))
         {
-          mp_limb_t *rp;
-          mp_size_t rm;
-
-          rp = MPFR_MANT(r);
-          rm = (MPFR_PREC(r) - 1) / GMP_NUMB_BITS;
-          rp[rm] = MPFR_LIMB_HIGHBIT;
-          MPN_ZERO(rp, rm);
-          MPFR_SET_EXP (r, 1);  /* |r| = 1 */
+          /* The flags will correctly be set and overflow will correctly
+             be handled by mpfr_set_si. */
+          mpfr_set_si (r, sign, rnd_mode);
           MPFR_RET(sign > 0 ? 2 : -2);
         }
       else
@@ -116,6 +118,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       rn = MPFR_LIMB_SIZE(r);
       MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (r));
 
+      /* exp is in the current exponent range: obtained from the input. */
       MPFR_SET_EXP (r, exp); /* Does nothing if r==u */
 
       if ((exp - 1) / GMP_NUMB_BITS >= un)
@@ -288,9 +291,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       if (rnd_away && mpn_add_1(rp, rp, rn, MPFR_LIMB_ONE << sh))
         {
           if (exp == __gmpfr_emax)
-            return mpfr_overflow(r, rnd_mode, MPFR_SIGN(r)) >= 0 ?
+            return mpfr_overflow (r, rnd_mode, sign) >= 0 ?
               uflags : -uflags;
-          else
+          else  /* no overflow */
             {
               MPFR_SET_EXP(r, exp + 1);
               rp[rn-1] = MPFR_LIMB_HIGHBIT;
@@ -333,15 +336,9 @@ mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
   return mpfr_rint (r, u, MPFR_RNDD);
 }
 
-/* For the round-to-integer functions below, we don't need to extend the
- * exponent range. And it is better not to do so, so that we can test
- * the flag setting for intermediate overflow in the test suite without
- * involving huge non-integer numbers (thus in huge precision). This
- * should also be faster.
- *
- * Moreover we need to save the flags and restore them after calling the
- * mpfr_round, mpfr_trunc, mpfr_ceil, mpfr_floor functions because these
- * functions set the inexact flag when the argument is not an integer.
+/* We need to save the flags and restore them after calling the mpfr_round,
+ * mpfr_trunc, mpfr_ceil, mpfr_floor functions because these functions set
+ * the inexact flag when the argument is not an integer.
  */
 
 #undef mpfr_rint_round
