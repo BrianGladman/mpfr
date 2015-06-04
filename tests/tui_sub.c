@@ -165,7 +165,7 @@ check_two_sum (mpfr_prec_t p)
   unsigned int x;
   mpfr_t y, u, v, w;
   mpfr_rnd_t rnd;
-  int inexact;
+  int inexact, cmp;
 
   mpfr_inits2 (p, y, u, v, w, (mpfr_ptr) 0);
   do
@@ -178,18 +178,17 @@ check_two_sum (mpfr_prec_t p)
   inexact = mpfr_ui_sub (u, x, y, rnd);
   mpfr_sub_ui (v, u, x, rnd);
   mpfr_add (w, v, y, rnd);
+  cmp = mpfr_cmp_ui (w, 0);
   /* as u = (x-y) + w, we should have inexact and w of same sign */
-  if (((inexact == 0) && mpfr_cmp_ui (w, 0)) ||
-      ((inexact > 0) && (mpfr_cmp_ui (w, 0) <= 0)) ||
-      ((inexact < 0) && (mpfr_cmp_ui (w, 0) >= 0)))
+  if (! SAME_SIGN (inexact, cmp))
     {
       printf ("Wrong inexact flag for prec=%u, rnd=%s\n",
               (unsigned int) p, mpfr_print_rnd_mode (rnd));
-      printf ("x=%u\n", x);
-      printf ("y="); mpfr_print_binary(y); puts ("");
-      printf ("u="); mpfr_print_binary(u); puts ("");
-      printf ("v="); mpfr_print_binary(v); puts ("");
-      printf ("w="); mpfr_print_binary(w); puts ("");
+      printf ("x = %u\n", x);
+      printf ("y = "); mpfr_dump (y);
+      printf ("u = "); mpfr_dump (u);
+      printf ("v = "); mpfr_dump (v);
+      printf ("w = "); mpfr_dump (w);
       printf ("inexact = %d\n", inexact);
       exit (1);
     }
