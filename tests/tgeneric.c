@@ -1,5 +1,5 @@
 /* Generic test file for functions with one or two arguments (the second being
-   either mpfr_t or double).
+   either mpfr_t or double or unsigned long).
 
 Copyright 2001-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
@@ -21,9 +21,16 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* define TWO_ARGS for two-argument functions like mpfr_pow
-   define DOUBLE_ARG1 or DOUBLE_ARG2 for function with a double operand in
-   first or second place like sub_d or d_sub */
+/* Define TWO_ARGS for two-argument functions like mpfr_pow.
+   Define DOUBLE_ARG1 or DOUBLE_ARG2 for function with a double operand in
+   first or second place like sub_d or d_sub.
+   Define ULONG_ARG1 or ULONG_ARG2 for function with an unsigned long
+   operand in first or second place like sub_ui or ui_sub. */
+
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2) || \
+  defined(ULONG_ARG1) || defined(ULONG_ARG2)
+#define TWO_ARGS_ALL
+#endif
 
 #ifndef TEST_RANDOM_POS
 /* For the random function: one number on two is negative. */
@@ -63,30 +70,29 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TGENERIC_FAIL(S, X, U)                                          \
   do                                                                    \
     {                                                                   \
-      printf ("%s\nx = ", (S));                                         \
-      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                      \
-      printf ("\n");                                                    \
-      if ((void *) U != 0)                                              \
+      printf ("tgeneric: %s\nx = ", (S));                               \
+      mpfr_dump (X);;                                                   \
+      if ((void *) (U) != 0)                                            \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                  \
-          printf ("\n");                                                \
+          mpfr_dump (U);                                                \
         }                                                               \
-      printf ("yprec = %u, rnd_mode = %s, inexact = %d, flags = %u\n",  \
-              (unsigned int) yprec, mpfr_print_rnd_mode (rnd), compare, \
-              (unsigned int) __gmpfr_flags);                            \
+      printf ("yprec = %u, rnd_mode = %s, inexact = %d\nflags =",       \
+              (unsigned int) yprec, mpfr_print_rnd_mode (rnd),          \
+              compare);                                                 \
+      flags_out (flags);                                                \
       exit (1);                                                         \
     }                                                                   \
   while (0)
 
-#define TGENERIC_CHECK_AUX(S, EXPR, U)                        \
-  do                                                          \
-    if (!(EXPR))                                              \
-      TGENERIC_FAIL (S " in " MAKE_STR(TEST_FUNCTION), x, U); \
+#define TGENERIC_CHECK_AUX(S, EXPR, U)                          \
+  do                                                            \
+    if (!(EXPR))                                                \
+      TGENERIC_FAIL (S " for " MAKE_STR(TEST_FUNCTION), x, U);  \
   while (0)
 
 #undef TGENERIC_CHECK
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
 #define TGENERIC_CHECK(S, EXPR) TGENERIC_CHECK_AUX(S, EXPR, u)
 #else
 #define TGENERIC_CHECK(S, EXPR) TGENERIC_CHECK_AUX(S, EXPR, 0)
@@ -99,23 +105,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       printf ("tgeneric: testing function " STR(F)                      \
               ", %s, target prec = %lu\nx = ",                          \
               mpfr_print_rnd_mode (rnd), (unsigned long) (P));          \
-      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                      \
-      printf ("\n");                                                    \
-      if (U)                                                            \
+      mpfr_dump (X);                                                    \
+      if ((void *) (U) != 0)                                            \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                  \
-          printf ("\n");                                                \
+          mpfr_dump (U);                                                \
         }                                                               \
     }                                                                   \
   while (0)
 #undef TGENERIC_INFO
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
 #define TGENERIC_INFO(F,P) TGENERIC_IAUX(F,P,x,u)
 #else
 #define TGENERIC_INFO(F,P) TGENERIC_IAUX(F,P,x,0)
 #endif
-#endif
+#endif  /* DEBUG_TGENERIC */
 
 /* For some functions (for example cos), the argument reduction is too
    expensive when using mpfr_get_emax(). Then simply define REDUCE_EMAX
@@ -129,11 +133,14 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 {
   mpfr_prec_t prec, xprec, yprec;
   mpfr_t x, y, z, t, w;
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS_ALL)
   mpfr_t u;
-#elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-  mpfr_t u;
+#endif
+#if defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
   double d;
+#endif
+#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
+  unsigned long i;
 #endif
   mpfr_rnd_t rnd;
   int inexact, compare, compare2;
@@ -145,7 +152,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
   old_emax = mpfr_get_emax ();
 
   mpfr_inits2 (MPFR_PREC_MIN, x, y, z, t, w, (mpfr_ptr) 0);
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
   mpfr_init2 (u, MPFR_PREC_MIN);
 #endif
 
@@ -162,6 +169,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
       for (n = 0; n < (prec == p1 ? nmax + 4 : nmax); n++)
         {
           int infinite_input = 0;
+          mpfr_flags_t flags;
 
           xprec = prec;
           if (randlimb () & 1)
@@ -171,10 +179,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 xprec = MPFR_PREC_MIN;
             }
           mpfr_set_prec (x, xprec);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS)
           mpfr_set_prec (u, xprec);
 #elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
           mpfr_set_prec (u, IEEE_DBL_MANT_DIG);
+#elif defined(ULONG_ARG1) || defined(ULONG_ARG2)
+          mpfr_set_prec (u, sizeof (unsigned long) * CHAR_BIT);
 #endif
 
           if (n > 3 || prec < p1)
@@ -184,7 +194,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               RAND_FUNCTION (u);
 #endif
-#else
+#else  /* ! defined(RAND_FUNCTION) */
               tests_default_random (x, TEST_RANDOM_POS,
                                     TEST_RANDOM_EMIN, TEST_RANDOM_EMAX,
                                     TEST_RANDOM_ALWAYS_SCALE);
@@ -193,13 +203,20 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                                     TEST_RANDOM_EMIN, TEST_RANDOM_EMAX,
                                     TEST_RANDOM_ALWAYS_SCALE);
 #endif
+#endif  /* ! defined(RAND_FUNCTION) */
+
+#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
+              i = randlimb ();
+              inexact = mpfr_set_ui (u, i, MPFR_RNDN);
+              MPFR_ASSERTN (inexact == 0);
 #endif
             }
           else
             {
               /* Special cases tested in precision p1 if n <= 3. They are
                  useful really in the extended exponent range. */
-#if (defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)) && defined(MPFR_ERRDIVZERO)
+#if ((defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)) && \
+     defined(MPFR_ERRDIVZERO)) || defined(ULONG_ARG1) || defined(ULONG_ARG2)
               goto next_n;
 #endif
               set_emin (MPFR_EMIN_MIN);
@@ -208,7 +225,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, mpfr_get_emin ());
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (u, mpfr_get_emin ());
 #endif
@@ -217,7 +234,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   mpfr_set_si (x, n == 2 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (u, mpfr_get_emax ());
 #endif
@@ -241,10 +258,15 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           compare = TEST_FUNCTION (y, x, d, rnd);
           /* d can be infinite due to overflow in mpfr_get_d */
           infinite_input |= DOUBLE_ISINF (d);
+#elif defined(ULONG_ARG1)
+          compare = TEST_FUNCTION (y, i, x, rnd);
+#elif defined(ULONG_ARG2)
+          compare = TEST_FUNCTION (y, x, i, rnd);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
-          TGENERIC_CHECK ("Bad inexact flag",
+          flags = __gmpfr_flags;
+          TGENERIC_CHECK ("bad inexact flag",
                           (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
           /* Consistency test in a reduced exponent range. Doing it
@@ -252,7 +274,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
              some special cases) should be sufficient. */
           if (ctrt <= 10 || prec == p1)
             {
-              unsigned int flags, oldflags = __gmpfr_flags;
+              mpfr_flags_t oldflags = flags;
               mpfr_exp_t e, emin, emax, oemin, oemax;
 
               /* Determine the smallest exponent range containing the
@@ -305,6 +327,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               inexact = TEST_FUNCTION (w, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
               inexact = TEST_FUNCTION (w, x, d, rnd);
+#elif defined(ULONG_ARG1)
+              inexact = TEST_FUNCTION (w, i, x, rnd);
+#elif defined(ULONG_ARG2)
+              inexact = TEST_FUNCTION (w, x, i, rnd);
 #else
               inexact = TEST_FUNCTION (w, x, rnd);
 #endif
@@ -315,13 +341,13 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                      SAME_SIGN (inexact, compare) &&
                      flags == oldflags))
                 {
-                  printf ("Error in " MAKE_STR(TEST_FUNCTION)
+                  printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
                           ", reduced exponent range [%"
                           MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d] on:\n",
                           (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
                   printf ("x = ");
                   mpfr_dump (x);
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
                   printf ("u = ");
                   mpfr_dump (u);
 #endif
@@ -329,55 +355,55 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                           (unsigned int) yprec, mpfr_print_rnd_mode (rnd));
                   printf ("Expected:\n  y = ");
                   mpfr_dump (y);
-                  printf ("  inex = %d, flags = %u\n",
-                          SIGN (compare), oldflags);
+                  printf ("  inex = %d, flags =", compare);
+                  flags_out (oldflags);
                   printf ("Got:\n  w = ");
                   mpfr_dump (w);
-                  printf ("  inex = %d, flags = %u\n",
-                          SIGN (inexact), flags);
+                  printf ("  inex = %d, flags =", inexact);
+                  flags_out (flags);
                   exit (1);
                 }
             }
           if (MPFR_IS_SINGULAR (y))
             {
               if (MPFR_IS_NAN (y) || mpfr_nanflag_p ())
-                TGENERIC_CHECK ("Bad NaN flag",
+                TGENERIC_CHECK ("bad NaN flag",
                                 MPFR_IS_NAN (y) && mpfr_nanflag_p ());
               else if (MPFR_IS_INF (y))
                 {
-                  TGENERIC_CHECK ("Bad overflow flag",
+                  TGENERIC_CHECK ("bad overflow flag",
                                   (compare != 0) ^ (mpfr_overflow_p () == 0));
-                  TGENERIC_CHECK ("Bad divide-by-zero flag",
+                  TGENERIC_CHECK ("bad divide-by-zero flag",
                                   (compare == 0 && !infinite_input) ^
                                   (mpfr_divby0_p () == 0));
                 }
               else if (MPFR_IS_ZERO (y))
-                TGENERIC_CHECK ("Bad underflow flag",
+                TGENERIC_CHECK ("bad underflow flag",
                                 (compare != 0) ^ (mpfr_underflow_p () == 0));
             }
           else if (mpfr_divby0_p ())
             {
-              TGENERIC_CHECK ("Both overflow and divide-by-zero",
+              TGENERIC_CHECK ("both overflow and divide-by-zero",
                               ! mpfr_overflow_p ());
-              TGENERIC_CHECK ("Both underflow and divide-by-zero",
+              TGENERIC_CHECK ("both underflow and divide-by-zero",
                               ! mpfr_underflow_p ());
-              TGENERIC_CHECK ("Bad compare value (divide-by-zero)",
+              TGENERIC_CHECK ("bad compare value (divide-by-zero)",
                               compare == 0);
             }
           else if (mpfr_overflow_p ())
             {
-              TGENERIC_CHECK ("Both underflow and overflow",
+              TGENERIC_CHECK ("both underflow and overflow",
                               ! mpfr_underflow_p ());
-              TGENERIC_CHECK ("Bad compare value (overflow)", compare != 0);
+              TGENERIC_CHECK ("bad compare value (overflow)", compare != 0);
               mpfr_nexttoinf (y);
-              TGENERIC_CHECK ("Should have been max MPFR number",
+              TGENERIC_CHECK ("should have been max MPFR number (overflow)",
                               MPFR_IS_INF (y));
             }
           else if (mpfr_underflow_p ())
             {
-              TGENERIC_CHECK ("Bad compare value (underflow)", compare != 0);
+              TGENERIC_CHECK ("bad compare value (underflow)", compare != 0);
               mpfr_nexttozero (y);
-              TGENERIC_CHECK ("Should have been min MPFR number",
+              TGENERIC_CHECK ("should have been min MPFR number (underflow)",
                               MPFR_IS_ZERO (y));
             }
           else if (mpfr_can_round (y, yprec, rnd, rnd, prec))
@@ -407,33 +433,32 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               inexact = TEST_FUNCTION (z, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
               inexact = TEST_FUNCTION (z, x, d, rnd);
+#elif defined(ULONG_ARG1)
+              inexact = TEST_FUNCTION (z, i, x, rnd);
+#elif defined(ULONG_ARG2)
+              inexact = TEST_FUNCTION (z, x, i, rnd);
 #else
               inexact = TEST_FUNCTION (z, x, rnd);
 #endif
               if (mpfr_erangeflag_p ())
                 goto next_n;
-              if (mpfr_nan_p (z) || mpfr_cmp (t, z) != 0)
+              if (! mpfr_equal_p (t, z))
                 {
-                  printf ("results differ for x=");
-                  mpfr_out_str (stdout, 2, xprec, x, MPFR_RNDN);
-#ifdef TWO_ARGS
-                  printf ("\nu=");
-                  mpfr_out_str (stdout, 2, xprec, u, MPFR_RNDN);
-#elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-                  printf ("\nu=");
-                  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, MPFR_RNDN);
+                  printf ("tgeneric: results differ for "
+                          MAKE_STR(TEST_FUNCTION) " on\n  x = ");
+                  mpfr_dump (x);
+#if defined(TWO_ARGS_ALL)
+                  printf ("  u = ");
+                  mpfr_dump (u);
 #endif
-                  printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
-                          mpfr_print_rnd_mode (rnd));
-                  printf ("got      ");
-                  mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
-                  puts ("");
-                  printf ("expected ");
-                  mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
-                  puts ("");
-                  printf ("approx   ");
-                  mpfr_print_binary (y);
-                  puts ("");
+                  printf ("  prec = %u, rnd_mode = %s\n",
+                          (unsigned int) prec, mpfr_print_rnd_mode (rnd));
+                  printf ("Got      ");
+                  mpfr_dump (z);
+                  printf ("Expected ");
+                  mpfr_dump (t);
+                  printf ("Approx   ");
+                  mpfr_dump (y);
                   exit (1);
                 }
               compare2 = mpfr_cmp (t, y);
@@ -443,18 +468,20 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 compare = compare + compare2;
               else
                 compare = inexact; /* cannot determine sign(t-f(x)) */
-              if (((inexact == 0) && (compare != 0)) ||
-                  ((inexact > 0) && (compare <= 0)) ||
-                  ((inexact < 0) && (compare >= 0)))
+              if (! SAME_SIGN (inexact, compare))
                 {
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-                  printf ("u="); mpfr_print_binary (u); puts ("");
+                  printf ("x = ");
+                  mpfr_dump (x);
+#if defined(TWO_ARGS_ALL)
+                  printf ("u = ");
+                  mpfr_dump (u);
 #endif
-                  printf ("y="); mpfr_print_binary (y); puts ("");
-                  printf ("t="); mpfr_print_binary (t); puts ("");
+                  printf ("y = ");
+                  mpfr_dump (y);
+                  printf ("t = ");
+                  mpfr_dump (t);
                   exit (1);
                 }
             }
@@ -471,9 +498,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                           " (%s). Thus there is a very probable overflow,\n"
                           "but the overflow flag is not set!\n",
                           mpfr_print_rnd_mode (rnd));
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-                  printf ("u="); mpfr_print_binary (u); puts ("");
+                  printf ("x = ");
+                  mpfr_dump (x);
+#if defined(TWO_ARGS_ALL)
+                  printf ("u = ");
+                  mpfr_dump (u);
 #endif
                   exit (1);
                 }
@@ -494,7 +523,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
 
   mpfr_clears (x, y, z, t, w, (mpfr_ptr) 0);
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(TWO_ARGS_ALL)
   mpfr_clear (u);
 #endif
 }
@@ -506,6 +535,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #undef TEST_RANDOM_ALWAYS_SCALE
 #undef RAND_FUNCTION
 #undef TWO_ARGS
-#undef TWO_ARGS_UI
+#undef TWO_ARGS_ALL
+#undef DOUBLE_ARG1
+#undef DOUBLE_ARG2
+#undef ULONG_ARG1
+#undef ULONG_ARG2
 #undef TEST_FUNCTION
 #undef test_generic
