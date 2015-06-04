@@ -145,7 +145,7 @@ check_nans (void)
   mpfr_clear (y);
 }
 
-#define TEST_FUNCTION mpfr_d_sub
+#define TEST_FUNCTION mpfr_d_div
 #define DOUBLE_ARG1
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #include "tgeneric.c"
