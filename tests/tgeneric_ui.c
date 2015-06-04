@@ -100,16 +100,14 @@ test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                 compare = compare + compare2;
               else
                 compare = inexact; /* cannot determine sign(t-f(x)) */
-              if (((inexact == 0) && (compare != 0)) ||
-                  ((inexact > 0) && (compare <= 0)) ||
-                  ((inexact < 0) && (compare >= 0)))
+              if (! SAME_SIGN (inexact, compare))
                 {
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("u=%lu", (unsigned long) u);
-                  printf ("y="); mpfr_print_binary (y); puts ("");
-                  printf ("t="); mpfr_print_binary (t); puts ("");
+                  printf ("x = "); mpfr_dump (x);
+                  printf ("u = %lu\n", (unsigned long) u);
+                  printf ("y = "); mpfr_dump (y);
+                  printf ("t = "); mpfr_dump (t);
                   exit (1);
                 }
             }
