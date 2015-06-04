@@ -30,21 +30,24 @@ check (long int n, long int d, mpfr_rnd_t rnd, const char *ys)
   mpq_t q;
   mpfr_t x, t;
   int inexact, compare;
+  mpfr_flags_t flags, ex_flags;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (t, mpfr_get_prec (x) + mp_bits_per_limb);
   mpq_init (q);
   mpq_set_si (q, n, d);
+  mpfr_clear_flags ();
   inexact = mpfr_set_q (x, q, rnd);
+  flags = __gmpfr_flags;
 
   /* check values */
-  if (mpfr_cmp_str1(x, ys))
+  if (mpfr_cmp_str1 (x, ys))
     {
-      printf ("Error for q=%ld/%ld and rnd=%s\n", n, d,
+      printf ("Error for q = %ld/%ld and rnd = %s\n", n, d,
               mpfr_print_rnd_mode (rnd));
       printf ("correct result is %s, mpfr_set_q gives ", ys);
-      mpfr_out_str(stdout, 10, 0, x, MPFR_RNDN);
-      putchar('\n');
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      putchar ('\n');
       exit (1);
     }
 
@@ -55,12 +58,23 @@ check (long int n, long int d, mpfr_rnd_t rnd, const char *ys)
       exit (1);
     }
   compare = mpfr_cmp_si (t, n);
-  if (((inexact == 0) && (compare != 0)) ||
-      ((inexact < 0) && (compare >= 0)) ||
-      ((inexact > 0) && (compare <= 0)))
+  if (! SAME_SIGN (inexact, compare))
     {
-      printf ("wrong inexact flag: expected %d, got %d\n", compare,
-              inexact);
+      printf ("Wrong ternary value for q = %ld/%ld and rnd = %s:\n"
+              "expected %d or equivalent, got %d\n",
+              n, d, mpfr_print_rnd_mode (rnd), compare, inexact);
+      exit (1);
+    }
+
+  ex_flags = compare == 0 ? 0 : MPFR_FLAGS_INEXACT;
+  if (flags != ex_flags)
+    {
+      printf ("Wrong flags for q = %ld/%ld and rnd = %s:\n",
+              n, d, mpfr_print_rnd_mode (rnd));
+      printf ("Expected flags:");
+      flags_out (ex_flags);
+      printf ("Got flags:     ");
+      flags_out (flags);
       exit (1);
     }
 
@@ -83,8 +97,10 @@ check0 (void)
   mpq_set_si (y, 0, 1);
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
-      inexact = mpfr_set_q(x, y, (mpfr_rnd_t) r);
-      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
+      mpfr_clear_flags ();
+      inexact = mpfr_set_q (x, y, (mpfr_rnd_t) r);
+      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact ||
+          __gmpfr_flags != 0)
         {
           printf("mpfr_set_q(x,0) failed for %s\n",
                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
