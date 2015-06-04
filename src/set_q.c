@@ -105,11 +105,13 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
   sn -= sd;
   if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / GMP_NUMB_BITS))
     {
+      MPFR_SAVE_EXPO_FREE (expo);
       inexact = mpfr_overflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }
   if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / GMP_NUMB_BITS -1))
     {
+      MPFR_SAVE_EXPO_FREE (expo);
       if (rnd == MPFR_RNDN)
         rnd = MPFR_RNDZ;
       inexact = mpfr_underflow (f, rnd, MPFR_SIGN (f));
