@@ -116,7 +116,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   MPFR_SET_EXP (y, MPFR_GET_EXP (x) + cnt);
   MPFR_SET_SAME_SIGN (y, x);
 
-  return inexact;
+  MPFR_RET (inexact);
 }
 
 #undef mpfr_mul_si
