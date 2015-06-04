@@ -128,6 +128,6 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
  end:
   mpfr_clear (d);
   mpfr_clear (n);
-  return inexact;
+  MPFR_RET (inexact);
 }
 #endif
