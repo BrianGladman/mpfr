@@ -55,7 +55,7 @@ check_inexact (void)
   mpfr_init (y);
   mpfr_init (z);
 
-  for (px=2; px<300; px++)
+  for (px = 2; px < 300; px++)
     {
       mpfr_set_prec (x, px);
       do
@@ -64,7 +64,7 @@ check_inexact (void)
         }
       while (mpfr_cmp_ui (x, 0) == 0);
       u = randlimb ();
-      for (py=2; py<300; py++)
+      for (py = 2; py < 300; py++)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + px);
@@ -77,16 +77,14 @@ check_inexact (void)
                   exit (1);
                 }
               cmp = mpfr_cmp_ui (z, u);
-              if (((inexact == 0) && (cmp != 0)) ||
-                  ((inexact > 0) && (cmp <= 0)) ||
-                  ((inexact < 0) && (cmp >= 0)))
+              if (! SAME_SIGN (inexact, cmp))
                 {
                   printf ("Wrong inexact flag for u=%lu, rnd=%s\n",
                           u, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   printf ("expected %d, got %d\n", cmp, inexact);
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("y="); mpfr_print_binary (y); puts ("");
-                  printf ("y*x="); mpfr_print_binary (z); puts ("");
+                  printf ("x = "); mpfr_dump (x);
+                  printf ("y = "); mpfr_dump (y);
+                  printf ("y*x = "); mpfr_dump (z);
                   exit (1);
                 }
             }
