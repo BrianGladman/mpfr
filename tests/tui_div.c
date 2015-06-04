@@ -175,6 +175,11 @@ mpfr_inv (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
   return mpfr_ui_div (y, 1, x, r);
 }
 
+#define TEST_FUNCTION mpfr_ui_div
+#define ULONG_ARG1
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -192,6 +197,8 @@ main (int argc, char *argv[])
         "1.3178666932321966062e285");
   check(1476599377, "-2.14191393656148625995e+305", MPFR_RNDD,
         "-6.8938315017943889615e-297");
+
+  test_generic (2, 1000, 100);
 
   /* inv is for 1/x */
   data_check ("data/inv", mpfr_inv, "mpfr_ui_div(1,x)");

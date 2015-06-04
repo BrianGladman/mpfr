@@ -259,6 +259,10 @@ static void check_neg (void)
   mpfr_clear (ysub);
 }
 
+#define TEST_FUNCTION mpfr_ui_sub
+#define ULONG_ARG1
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -292,6 +296,8 @@ main (int argc, char *argv[])
         "3.5426723608382362e8");
 
   check_neg ();
+
+  test_generic (2, 1000, 100);
 
   tests_end_mpfr ();
   return 0;
