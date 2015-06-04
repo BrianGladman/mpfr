@@ -114,9 +114,9 @@ check_nans (void)
 }
 
 #define TEST_FUNCTION mpfr_sub_ui
-#define INTEGER_TYPE  unsigned long
+#define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
-#include "tgeneric_ui.c"
+#include "tgeneric.c"
 
 int
 main (int argc, char *argv[])
@@ -135,7 +135,7 @@ main (int argc, char *argv[])
   check3 ("0.9999999999", 1, MPFR_RNDN,
           "-10000000827403709990903735160827636718750e-50");
 
-  test_generic_ui (2, 1000, 100);
+  test_generic (2, 1000, 100);
 
   tests_end_mpfr ();
   return 0;

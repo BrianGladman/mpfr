@@ -203,9 +203,9 @@ check_inexact (void)
 }
 
 #define TEST_FUNCTION mpfr_div_ui
-#define INTEGER_TYPE  unsigned long
+#define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
-#include "tgeneric_ui.c"
+#include "tgeneric.c"
 
 int
 main (int argc, char **argv)
@@ -236,7 +236,7 @@ main (int argc, char **argv)
     }
   mpfr_clear (x);
 
-  test_generic_ui (2, 200, 100);
+  test_generic (2, 200, 100);
 
   tests_end_mpfr ();
   return 0;
