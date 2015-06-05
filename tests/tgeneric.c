@@ -204,19 +204,13 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                                     TEST_RANDOM_ALWAYS_SCALE);
 #endif
 #endif  /* ! defined(RAND_FUNCTION) */
-
-#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
-              i = randlimb ();
-              inexact = mpfr_set_ui (u, i, MPFR_RNDN);
-              MPFR_ASSERTN (inexact == 0);
-#endif
             }
           else
             {
               /* Special cases tested in precision p1 if n <= 3. They are
                  useful really in the extended exponent range. */
 #if ((defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)) && \
-     defined(MPFR_ERRDIVZERO)) || defined(ULONG_ARG1) || defined(ULONG_ARG2)
+     defined(MPFR_ERRDIVZERO))
               goto next_n;
 #endif
               set_emin (MPFR_EMIN_MIN);
@@ -225,7 +219,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, mpfr_get_emin ());
-#if defined(TWO_ARGS_ALL)
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (u, mpfr_get_emin ());
 #endif
@@ -234,12 +228,18 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   mpfr_set_si (x, n == 2 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
-#if defined(TWO_ARGS_ALL)
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (u, mpfr_get_emax ());
 #endif
                 }
             }
+
+#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
+          i = randlimb ();
+          inexact = mpfr_set_ui (u, i, MPFR_RNDN);
+          MPFR_ASSERTN (inexact == 0);
+#endif
 
           rnd = RND_RAND ();
           mpfr_clear_flags ();
