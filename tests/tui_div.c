@@ -175,6 +175,51 @@ mpfr_inv (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
   return mpfr_ui_div (y, 1, x, r);
 }
 
+static void
+check_overflow (void)
+{
+  mpfr_exp_t emin, emax;
+  mpfr_t x, y1, y2;
+  int inex1, inex2, rnd_mode;
+  mpfr_flags_t flags1, flags2;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_inits2 (32, x, y1, y2, (mpfr_ptr) 0);
+  mpfr_setmin (x, MPFR_EMIN_MIN);
+  RND_LOOP (rnd_mode)
+    {
+      inex1 = mpfr_overflow (y1, (mpfr_rnd_t) rnd_mode, 1);
+      flags1 = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      inex2 = mpfr_ui_div (y2, 1, x, (mpfr_rnd_t) rnd_mode);
+      flags2 = __gmpfr_flags;
+      if (!(mpfr_equal_p (y1, y2) &&
+            SAME_SIGN (inex1, inex2) &&
+            flags1 == flags2))
+        {
+          printf ("Error in check_overflow for %s\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
+          printf ("Expected ");
+          mpfr_dump (y1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
+          printf ("Got      ");
+          mpfr_dump (y2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
+          exit (1);
+        }
+    }
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 #define TEST_FUNCTION mpfr_ui_div
 #define ULONG_ARG1
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -197,6 +242,7 @@ main (int argc, char *argv[])
         "1.3178666932321966062e285");
   check(1476599377, "-2.14191393656148625995e+305", MPFR_RNDD,
         "-6.8938315017943889615e-297");
+  check_overflow ();
 
   test_generic (2, 1000, 100);
 
