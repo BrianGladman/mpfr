@@ -209,8 +209,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
             {
               /* Special cases tested in precision p1 if n <= 3. They are
                  useful really in the extended exponent range. */
-#if ((defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)) && \
-     defined(MPFR_ERRDIVZERO))
+#if (defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)) && defined(MPFR_ERRDIVZERO)
               goto next_n;
 #endif
               set_emin (MPFR_EMIN_MIN);
