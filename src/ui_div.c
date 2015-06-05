@@ -28,10 +28,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mpfr_t uu;
-  mp_limb_t up[1];
-  int cnt;
-
   MPFR_LOG_FUNC
     (("u=%lu x[%Pu]=%.*Rg rnd=%d",
       u, mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
@@ -71,12 +67,26 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     }
   else if (MPFR_LIKELY(u != 0))
     {
+      mpfr_t uu;
+      mp_limb_t up[1];
+      int cnt;
+      int inex;
+
+      MPFR_SAVE_EXPO_DECL (expo);
+
       MPFR_TMP_INIT1(up, uu, GMP_NUMB_BITS);
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros(cnt, (mp_limb_t) u);
       up[0] = (mp_limb_t) u << cnt;
+
+      /* Optimization note: Exponent save/restore operations may be
+         removed if mpfr_div works even when uu is out-of-range. */
+      MPFR_SAVE_EXPO_MARK (expo);
       MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
-      return mpfr_div (y, uu, x, rnd_mode);
+      inex = mpfr_div (y, uu, x, rnd_mode);
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (y, inex, rnd_mode);
     }
   else /* u = 0, and x != 0 */
     {
