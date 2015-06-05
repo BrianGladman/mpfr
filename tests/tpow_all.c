@@ -107,16 +107,19 @@ cmpres (int spx, const void *px, const char *sy, mpfr_rnd_t rnd,
   printf ("Expected ");
   if (z1 == NULL)
     {
-      printf ("pure FP value, flags = %u\n", flags1);
+      printf ("pure FP value, flags =");
+      flags_out (flags1);
     }
   else
     {
       mpfr_out_str (stdout, 16, 0, z1, MPFR_RNDN);
-      printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
+      printf (", inex = %d,\n         flags =", SIGN (inex1));
+      flags_out (flags1);
     }
   printf ("Got      ");
   mpfr_out_str (stdout, 16, 0, z2, MPFR_RNDN);
-  printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
+  printf (", inex = %d,\n         flags =", SIGN (inex2));
+  flags_out (flags2);
   if (all_cmpres_errors != 0)
     all_cmpres_errors = -1;
   else
