@@ -30,10 +30,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
 
   if (m == 0)
     {
-      mpfr_set_ui (z, 1, r);
-      mpfr_div_2ui (z, z, 1, r);
-      MPFR_CHANGE_SIGN (z);
-      MPFR_RET (0);
+      return mpfr_set_si_2exp (z, -1, -1, r);
     }
   else if (m == 1)
     {
