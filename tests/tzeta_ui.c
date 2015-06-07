@@ -36,7 +36,6 @@ main (int argc, char *argv[])
   mpfr_exp_t emin, emax;
   mpfr_flags_t flags, ex_flags;
   int i;
-  int rnd_mode;
 
   tests_start_mpfr ();
 
@@ -76,19 +75,19 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (inex == 0 && mpfr_cmp_si_2exp (x, -1, -1) == 0 && flags == 0);
 
   for (i = -2; i <= 2; i += 2)
-    RND_LOOP (rnd_mode)
+    RND_LOOP (rnd)
       {
         int ex_inex;
 
         set_emin (i);
         set_emax (i);
         mpfr_clear_flags ();
-        inex = mpfr_zeta_ui (x, 0, (mpfr_rnd_t) rnd_mode);
+        inex = mpfr_zeta_ui (x, 0, (mpfr_rnd_t) rnd);
         flags = __gmpfr_flags;
         if (i < 0)
           {
             mpfr_set_inf (y, -1);
-            if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDZ)
+            if (rnd == MPFR_RNDU || rnd == MPFR_RNDZ)
               {
                 mpfr_nextabove (y);
                 ex_inex = 1;
@@ -102,7 +101,7 @@ main (int argc, char *argv[])
         else if (i > 0)
           {
             mpfr_set_zero (y, -1);
-            if (rnd_mode == MPFR_RNDD || rnd_mode == MPFR_RNDA)
+            if (rnd == MPFR_RNDD || rnd == MPFR_RNDA)
               {
                 mpfr_nextbelow (y);
                 ex_inex = -1;
@@ -125,7 +124,7 @@ main (int argc, char *argv[])
                SAME_SIGN (inex, ex_inex) && flags == ex_flags))
           {
             printf ("Failure for zeta(0) in %s, exponent range [%d,%d]\n",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode), i, i);
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), i, i);
             printf ("Expected ");
             mpfr_dump (y);
             printf ("  with inex ~ %d, flags =", ex_inex);
@@ -152,7 +151,7 @@ main (int argc, char *argv[])
       mpfr_set_prec (y, yprec);
 
       for (n = 0; n < 50; n++)
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           {
             mpfr_zeta_ui (y, n, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
@@ -162,9 +161,8 @@ main (int argc, char *argv[])
                 mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
                 if (mpfr_cmp (t, z))
                   {
-                    printf ("results differ for n=%lu", n);
-                    printf (" prec=%u rnd_mode=%s\n", prec,
-                            mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                    printf ("results differ for n = %lu, prec = %u, %s\n",
+                            n, prec, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                     printf ("   got      ");
                     mpfr_dump (z);
                     printf ("   expected ");
