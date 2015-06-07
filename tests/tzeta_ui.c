@@ -36,6 +36,7 @@ main (int argc, char *argv[])
   mpfr_exp_t emin, emax;
   mpfr_flags_t flags, ex_flags;
   int i;
+  int rnd_mode;
 
   tests_start_mpfr ();
 
@@ -75,50 +76,67 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (inex == 0 && mpfr_cmp_si_2exp (x, -1, -1) == 0 && flags == 0);
 
   for (i = -2; i <= 2; i += 2)
-    {
-      int ex_inex, err;
-      char *s;
+    RND_LOOP (rnd_mode)
+      {
+        int ex_inex;
 
-      set_emin (i);
-      set_emax (i);
-      mpfr_clear_flags ();
-      inex = mpfr_zeta_ui (x, 0, MPFR_RNDN);
-      flags = __gmpfr_flags;
-      set_emin (emin);
-      set_emax (emax);
-      if (i < 0)
-        {
-          s = "-@Inf@";
-          ex_inex = -1;
-          ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
-          err = !(mpfr_inf_p (x) && MPFR_IS_NEG (x));
-        }
-      else if (i > 0)
-        {
-          s = "-0";
-          ex_inex = 1;
-          ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-          err = !(mpfr_zero_p (x) && MPFR_IS_NEG (x));
-        }
-      else
-        {
-          s = "-1/2";
-          ex_inex = 0;
-          ex_flags = 0;
-          err = mpfr_cmp_si_2exp (x, -1, -1) != 0;
-        }
-      if (err || ! SAME_SIGN (inex, ex_inex) || flags != ex_flags)
-        {
-          printf ("Failure for zeta(0) in exponent range [%d,%d]\n", i, i);
-          printf ("Expected %s, sign(inex) = %d, flags =", s, ex_inex);
-          flags_out (ex_flags);
-          printf ("Got      ");
-          mpfr_dump (x);
-          printf ("with inex = %d, flags =", inex);
-          flags_out (flags);
-          exit (1);
-        }
-    }
+        set_emin (i);
+        set_emax (i);
+        mpfr_clear_flags ();
+        inex = mpfr_zeta_ui (x, 0, (mpfr_rnd_t) rnd_mode);
+        flags = __gmpfr_flags;
+        if (i < 0)
+          {
+            mpfr_set_inf (y, -1);
+            if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDZ)
+              {
+                mpfr_nextabove (y);
+                ex_inex = 1;
+              }
+            else
+              {
+                ex_inex = -1;
+              }
+            ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+          }
+        else if (i > 0)
+          {
+            mpfr_set_zero (y, -1);
+            if (rnd_mode == MPFR_RNDD || rnd_mode == MPFR_RNDA)
+              {
+                mpfr_nextbelow (y);
+                ex_inex = -1;
+              }
+            else
+              {
+                ex_inex = 1;
+              }
+            ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+          }
+        else
+          {
+            mpfr_set_str_binary (y, "-1e-1");
+            ex_inex = 0;
+            ex_flags = 0;
+          }
+        set_emin (emin);
+        set_emax (emax);
+        if (! (mpfr_equal_p (x, y) && MPFR_IS_NEG (x) &&
+               SAME_SIGN (inex, ex_inex) && flags == ex_flags))
+          {
+            printf ("Failure for zeta(0) in %s, exponent range [%d,%d]\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode), i, i);
+            printf ("Expected ");
+            mpfr_dump (y);
+            printf ("  with inex ~ %d, flags =", ex_inex);
+            flags_out (ex_flags);
+            printf ("Got      ");
+            mpfr_dump (x);
+            printf ("  with inex = %d, flags =", inex);
+            flags_out (flags);
+            exit (1);
+          }
+      }
 
   mpfr_clear_divby0 ();
   inex = mpfr_zeta_ui (x, 1, MPFR_RNDN);
