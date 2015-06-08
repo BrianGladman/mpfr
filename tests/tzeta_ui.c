@@ -158,18 +158,38 @@ main (int argc, char *argv[])
                                 + (rnd == MPFR_RNDN)))
               {
                 mpfr_set (t, y, (mpfr_rnd_t) rnd);
-                mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
-                if (mpfr_cmp (t, z))
+                for (i = 0; i <= 1; i++)
                   {
-                    printf ("results differ for n = %lu, prec = %u, %s\n",
-                            n, prec, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                    printf ("   got      ");
-                    mpfr_dump (z);
-                    printf ("   expected ");
-                    mpfr_dump (t);
-                    printf ("   approx   ");
-                    mpfr_dump (y);
-                    exit (1);
+                    if (i)
+                      {
+                        mpfr_exp_t e;
+
+                        if (MPFR_IS_SINGULAR (t))
+                          break;
+                        e = mpfr_get_exp (t);
+                        set_emin (e);
+                        set_emax (e);
+                      }
+                    mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
+                    if (i)
+                      {
+                        set_emin (emin);
+                        set_emax (emax);
+                      }
+                    if (mpfr_cmp (t, z))
+                      {
+                        printf ("results differ for n = %lu, prec = %u,"
+                                " %s%s\n", n, prec,
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
+                                i ? ", reduced exponent range" : "");
+                        printf ("  got      ");
+                        mpfr_dump (z);
+                        printf ("  expected ");
+                        mpfr_dump (t);
+                        printf ("  approx   ");
+                        mpfr_dump (y);
+                        exit (1);
+                      }
                   }
               }
           }
