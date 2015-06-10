@@ -217,8 +217,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
                                         in algorithms.tex */
       if (MPFR_IS_INF(t))
         {
-          inexact = mpfr_overflow (y, rnd, 1);
           mpfr_clear (t);
+          MPFR_SAVE_EXPO_FREE (expo);
+          inexact = mpfr_overflow (y, rnd, 1);
           return inexact;
         }
       if (MPFR_GET_EXP(t) - MPFR_PREC(t) >= 62)
@@ -229,7 +230,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
             {
               inexact = mpfr_set (y, t, rnd);
               mpfr_clear (t);
-              return inexact;
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_check_range (y, inexact, rnd);
             }
         }
       mpfr_clear (t);
