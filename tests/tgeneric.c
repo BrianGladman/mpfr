@@ -171,6 +171,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
         {
           int infinite_input = 0;
           mpfr_flags_t flags;
+          mpfr_exp_t oemin, oemax;
 
           xprec = prec;
           if (randlimb () & 1)
@@ -241,6 +242,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           MPFR_ASSERTN (inexact == 0);
 #endif
 
+          /* Exponent range for the test. */
+          oemin = mpfr_get_emin ();
+          oemax = mpfr_get_emax ();
+
           rnd = RND_RAND ();
           mpfr_clear_flags ();
 #ifdef DEBUG_TGENERIC
@@ -266,6 +271,13 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
           flags = __gmpfr_flags;
+          if (mpfr_get_emin () != oemin ||
+              mpfr_get_emax () != oemax)
+            {
+              printf ("tgeneric: the exponent range has been modified"
+                      " by the tested function!\n");
+              exit (1);
+            }
           TGENERIC_CHECK ("bad inexact flag",
                           (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
@@ -273,10 +285,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           /* Tests in a reduced exponent range. */
           {
             mpfr_flags_t oldflags = flags;
-            mpfr_exp_t e, emin, emax, oemin, oemax;
-
-            oemin = mpfr_get_emin ();
-            oemax = mpfr_get_emax ();
+            mpfr_exp_t e, emin, emax;
 
             /* Determine the smallest exponent range containing the
                exponents of the mpfr_t inputs (x, and u if TWO_ARGS)
