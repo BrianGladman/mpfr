@@ -22,10 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-static mpfr_exp_t smallest_exp = 0;
-
 static void
-test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
+test_urandomb (long nbtests, mpfr_prec_t prec, int verbose, char *s)
 {
   mpfr_t x;
   int *tab, size_tab, k, sh, xn;
@@ -55,10 +53,17 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
           mpfr_print_binary (x); puts ("");
           exit (1);
         }
-      if (MPFR_NOTZERO(x) && MPFR_GET_EXP(x) < smallest_exp)
-        smallest_exp = MPFR_GET_EXP(x);
       d = mpfr_get_d1 (x); av += d; var += d*d;
       tab[(int)(size_tab * d)]++;
+    }
+
+  if (s != NULL && mpfr_cmp_str (x, s, 2, MPFR_RNDN) != 0)
+    {
+      printf ("Error in test_urandomb:\n");
+      printf ("Expected %s\n", s);
+      printf ("Got      ");
+      mpfr_dump (x);
+      exit (1);
     }
 
   /* coverage test */
@@ -171,35 +176,30 @@ main (int argc, char *argv[])
   else
     prec = atol(argv[2]);
 
-  test_urandomb (nbtests, prec, verbose);
+  test_urandomb (nbtests, prec, verbose, NULL);
 
   if (argc == 1)  /* check also small precision */
     {
-      test_urandomb (nbtests, 2, 0);
+      test_urandomb (nbtests, 2, 0, NULL);
     }
 
 #ifndef MPFR_USE_MINI_GMP
-  /* since this test assumes a deterministic random generator, and this is not
-     implemented in mini-gmp, we omit it with mini-gmp */
-  bug20100914 ();
-#endif
 
+  /* Since these tests assume a deterministic random generator, and this
+     is not implemented in mini-gmp, we omit them with mini-gmp. */
+
+  bug20100914 ();
+
+#if __MPFR_GMP(4,2,0)
   /* Get a non-zero fixed-point number whose first 32 bits are 0 with the
      default GMP PRNG. This corresponds to the case cnt == 0 && k != 0 in
      src/urandomb.c (fixed in r8762) with the 32-bit ABI. */
   gmp_randseed_ui (mpfr_rands, 4518);
-  test_urandomb (575123, 40, 0);
-
-  if (smallest_exp > -32)
-    {
-      printf ("Warning! The minimum exponent is %d, which is > -32.\n",
-              (int) smallest_exp);
-      printf ("Has the default PRNG changed?\n");
-      /* Make this fatal only when coverage is checked. */
-#ifdef MPFR_COV_CHECK
-      exit (1);
+  test_urandomb (575123, 40, 0,
+                 "0.1010111100000000000000000000000000000000E-32");
 #endif
-    }
+
+#endif
 
   tests_end_mpfr ();
   return 0;
