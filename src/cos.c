@@ -169,8 +169,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   if (precy >= MPFR_SINCOS_THRESHOLD)
     {
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_cos_fast (y, x, rnd_mode);
+      inexact = mpfr_cos_fast (y, x, rnd_mode);
+      goto end;
     }
 
   K0 = __gmpfr_isqrt (precy / 3);
@@ -293,6 +293,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_clear (c);
     }
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }

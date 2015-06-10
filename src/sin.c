@@ -75,7 +75,10 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   precy = MPFR_PREC (y);
 
   if (precy >= MPFR_SINCOS_THRESHOLD)
-    return mpfr_sin_fast (y, x, rnd_mode);
+    {
+      inexact = mpfr_sin_fast (y, x, rnd_mode);
+      goto end;
+    }
 
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
   expx = MPFR_GET_EXP (x);
@@ -177,6 +180,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (c);
   mpfr_clear (xr);
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
