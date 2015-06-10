@@ -227,6 +227,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  end:
   /* Do not use MPFR_SET_EXP because the range has not been checked yet. */
+  MPFR_ASSERTN (expr >= MPFR_EMIN_MIN && expr <= MPFR_EMAX_MAX);
   MPFR_EXP (r) = expr;
   MPFR_TMP_FREE(marker);
 
