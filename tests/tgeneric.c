@@ -315,109 +315,97 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 e = MPFR_GET_EXP (y);
                 if (test_of && e - 1 >= emax)
                   {
-                    int r;
-                    RND_LOOP (r)
-                      {
-                        mpfr_flags_t ex_flags;
-                        mpfr_rnd_t rr = (mpfr_rnd_t) r;
+                    mpfr_flags_t ex_flags;
 
-                        mpfr_set_emax (e - 1);
-                        mpfr_clear_flags ();
+                    mpfr_set_emax (e - 1);
+                    mpfr_clear_flags ();
 #if defined(TWO_ARGS)
-                        inexact = TEST_FUNCTION (w, x, u, rr);
+                    inexact = TEST_FUNCTION (w, x, u, rnd);
 #elif defined(DOUBLE_ARG1)
-                        inexact = TEST_FUNCTION (w, d, x, rr);
+                    inexact = TEST_FUNCTION (w, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
-                        inexact = TEST_FUNCTION (w, x, d, rr);
+                    inexact = TEST_FUNCTION (w, x, d, rnd);
 #elif defined(ULONG_ARG1)
-                        inexact = TEST_FUNCTION (w, i, x, rr);
+                    inexact = TEST_FUNCTION (w, i, x, rnd);
 #elif defined(ULONG_ARG2)
-                        inexact = TEST_FUNCTION (w, x, i, rr);
+                    inexact = TEST_FUNCTION (w, x, i, rnd);
 #else
-                        inexact = TEST_FUNCTION (w, x, rr);
+                    inexact = TEST_FUNCTION (w, x, rnd);
 #endif
-                        flags = __gmpfr_flags;
-                        mpfr_set_emax (oemax);
-                        ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
-                        if (flags != ex_flags)
-                          {
-                            printf ("tgeneric: error for "
-                                    MAKE_STR(TEST_FUNCTION)
-                                    ", reduced exponent range [%"
-                                    MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
-                                    "d] (overflow test) on:\n",
-                                    (mpfr_eexp_t) oemin, (mpfr_eexp_t) e - 1);
-                            printf ("x = ");
-                            mpfr_dump (x);
+                    flags = __gmpfr_flags;
+                    mpfr_set_emax (oemax);
+                    ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+                    if (flags != ex_flags)
+                      {
+                        printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
+                                ", reduced exponent range [%"
+                                MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
+                                "d] (overflow test) on:\n",
+                                (mpfr_eexp_t) oemin, (mpfr_eexp_t) e - 1);
+                        printf ("x = ");
+                        mpfr_dump (x);
 #if defined(TWO_ARGS_ALL)
-                            printf ("u = ");
-                            mpfr_dump (u);
+                        printf ("u = ");
+                        mpfr_dump (u);
 #endif
-                            printf ("yprec = %u, rnd_mode = %s\n",
-                                    (unsigned int) yprec,
-                                    mpfr_print_rnd_mode (rr));
-                            printf ("Expected flags =");
-                            flags_out (ex_flags);
-                            printf ("     got flags =");
-                            flags_out (flags);
-                            printf ("inex = %d, w = ", inexact);
-                            mpfr_dump (w);
-                            exit (1);
-                          }
+                        printf ("yprec = %u, rnd_mode = %s\n",
+                                (unsigned int) yprec,
+                                mpfr_print_rnd_mode (rnd));
+                        printf ("Expected flags =");
+                        flags_out (ex_flags);
+                        printf ("     got flags =");
+                        flags_out (flags);
+                        printf ("inex = %d, w = ", inexact);
+                        mpfr_dump (w);
+                        exit (1);
                       }
                     test_of = 0;  /* Overflow is tested only once. */
                   }
                 if (test_uf && e + 1 <= emin)
                   {
-                    int r;
-                    RND_LOOP (r)
-                      {
-                        mpfr_flags_t ex_flags;
-                        mpfr_rnd_t rr = (mpfr_rnd_t) r;
+                    mpfr_flags_t ex_flags;
 
-                        mpfr_set_emin (e + 1);
-                        mpfr_clear_flags ();
+                    mpfr_set_emin (e + 1);
+                    mpfr_clear_flags ();
 #if defined(TWO_ARGS)
-                        inexact = TEST_FUNCTION (w, x, u, rr);
+                    inexact = TEST_FUNCTION (w, x, u, rnd);
 #elif defined(DOUBLE_ARG1)
-                        inexact = TEST_FUNCTION (w, d, x, rr);
+                    inexact = TEST_FUNCTION (w, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
-                        inexact = TEST_FUNCTION (w, x, d, rr);
+                    inexact = TEST_FUNCTION (w, x, d, rnd);
 #elif defined(ULONG_ARG1)
-                        inexact = TEST_FUNCTION (w, i, x, rr);
+                    inexact = TEST_FUNCTION (w, i, x, rnd);
 #elif defined(ULONG_ARG2)
-                        inexact = TEST_FUNCTION (w, x, i, rr);
+                    inexact = TEST_FUNCTION (w, x, i, rnd);
 #else
-                        inexact = TEST_FUNCTION (w, x, rr);
+                    inexact = TEST_FUNCTION (w, x, rnd);
 #endif
-                        flags = __gmpfr_flags;
-                        mpfr_set_emin (oemin);
-                        ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-                        if (flags != ex_flags)
-                          {
-                            printf ("tgeneric: error for "
-                                    MAKE_STR(TEST_FUNCTION)
-                                    ", reduced exponent range [%"
-                                    MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
-                                    "d] (underflow test) on:\n",
-                                    (mpfr_eexp_t) e + 1, (mpfr_eexp_t) oemax);
-                            printf ("x = ");
-                            mpfr_dump (x);
+                    flags = __gmpfr_flags;
+                    mpfr_set_emin (oemin);
+                    ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+                    if (flags != ex_flags)
+                      {
+                        printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
+                                ", reduced exponent range [%"
+                                MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
+                                "d] (underflow test) on:\n",
+                                (mpfr_eexp_t) e + 1, (mpfr_eexp_t) oemax);
+                        printf ("x = ");
+                        mpfr_dump (x);
 #if defined(TWO_ARGS_ALL)
-                            printf ("u = ");
-                            mpfr_dump (u);
+                        printf ("u = ");
+                        mpfr_dump (u);
 #endif
-                            printf ("yprec = %u, rnd_mode = %s\n",
-                                    (unsigned int) yprec,
-                                    mpfr_print_rnd_mode (rr));
-                            printf ("Expected flags =");
-                            flags_out (ex_flags);
-                            printf ("     got flags =");
-                            flags_out (flags);
-                            printf ("inex = %d, w = ", inexact);
-                            mpfr_dump (w);
-                            exit (1);
-                          }
+                        printf ("yprec = %u, rnd_mode = %s\n",
+                                (unsigned int) yprec,
+                                mpfr_print_rnd_mode (rnd));
+                        printf ("Expected flags =");
+                        flags_out (ex_flags);
+                        printf ("     got flags =");
+                        flags_out (flags);
+                        printf ("inex = %d, w = ", inexact);
+                        mpfr_dump (w);
+                        exit (1);
                       }
                     test_uf = 0;  /* Underflow is tested only once. */
                   }
