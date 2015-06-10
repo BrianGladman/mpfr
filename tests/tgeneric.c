@@ -146,6 +146,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
   int inexact, compare, compare2;
   unsigned int n;
   unsigned long ctrt = 0, ctrn = 0;
+  int test_of = 1, test_uf = 1;
   mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
@@ -268,101 +269,216 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           TGENERIC_CHECK ("bad inexact flag",
                           (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
-          /* Consistency test in a reduced exponent range. Doing it
-             for the first 10 samples and for prec == p1 (which has
-             some special cases) should be sufficient. */
-          if (ctrt <= 10 || prec == p1)
-            {
-              mpfr_flags_t oldflags = flags;
-              mpfr_exp_t e, emin, emax, oemin, oemax;
 
-              /* Determine the smallest exponent range containing the
-                 exponents of the mpfr_t inputs (x, and u if TWO_ARGS)
-                 and output (y). */
-              emin = MPFR_EMAX_MAX;
-              emax = MPFR_EMIN_MIN;
-              if (MPFR_IS_PURE_FP (x))
-                {
-                  e = MPFR_GET_EXP (x);
-                  if (e < emin)
-                    emin = e;
-                  if (e > emax)
-                    emax = e;
-                }
-              if (MPFR_IS_PURE_FP (y))
-                {
-                  e = MPFR_GET_EXP (y);
-                  if (e < emin)
-                    emin = e;
-                  if (e > emax)
-                    emax = e;
-                }
+          /* Tests in a reduced exponent range. */
+          {
+            mpfr_flags_t oldflags = flags;
+            mpfr_exp_t e, emin, emax, oemin, oemax;
+
+            oemin = mpfr_get_emin ();
+            oemax = mpfr_get_emax ();
+
+            /* Determine the smallest exponent range containing the
+               exponents of the mpfr_t inputs (x, and u if TWO_ARGS)
+               and output (y). */
+            emin = MPFR_EMAX_MAX;
+            emax = MPFR_EMIN_MIN;
+            if (MPFR_IS_PURE_FP (x))
+              {
+                e = MPFR_GET_EXP (x);
+                if (e < emin)
+                  emin = e;
+                if (e > emax)
+                  emax = e;
+              }
 #if defined(TWO_ARGS)
-              if (MPFR_IS_PURE_FP (u))
-                {
-                  e = MPFR_GET_EXP (u);
-                  if (e < emin)
-                    emin = e;
-                  if (e > emax)
-                    emax = e;
-                }
+            if (MPFR_IS_PURE_FP (u))
+              {
+                e = MPFR_GET_EXP (u);
+                if (e < emin)
+                  emin = e;
+                if (e > emax)
+                  emax = e;
+              }
 #endif
-              if (emin > emax)
-                emin = emax;  /* case where all values are singular */
-              oemin = mpfr_get_emin ();
-              oemax = mpfr_get_emax ();
-              mpfr_set_emin (emin);
-              mpfr_set_emax (emax);
-#ifdef DEBUG_TGENERIC
-              /* Useful information in case of assertion failure. */
-              printf ("tgeneric: reduced exponent range [%"
-                      MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n",
-                      (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
-#endif
-              mpfr_clear_flags ();
+            if (MPFR_IS_PURE_FP (y))
+              {
+                e = MPFR_GET_EXP (y);
+                if (test_of && e - 1 >= emax)
+                  {
+                    int r;
+                    RND_LOOP (r)
+                      {
+                        mpfr_flags_t ex_flags;
+                        mpfr_rnd_t rr = (mpfr_rnd_t) r;
+
+                        mpfr_set_emax (e - 1);
+                        mpfr_clear_flags ();
 #if defined(TWO_ARGS)
-              inexact = TEST_FUNCTION (w, x, u, rnd);
+                        inexact = TEST_FUNCTION (w, x, u, rr);
 #elif defined(DOUBLE_ARG1)
-              inexact = TEST_FUNCTION (w, d, x, rnd);
+                        inexact = TEST_FUNCTION (w, d, x, rr);
 #elif defined(DOUBLE_ARG2)
-              inexact = TEST_FUNCTION (w, x, d, rnd);
+                        inexact = TEST_FUNCTION (w, x, d, rr);
 #elif defined(ULONG_ARG1)
-              inexact = TEST_FUNCTION (w, i, x, rnd);
+                        inexact = TEST_FUNCTION (w, i, x, rr);
 #elif defined(ULONG_ARG2)
-              inexact = TEST_FUNCTION (w, x, i, rnd);
+                        inexact = TEST_FUNCTION (w, x, i, rr);
 #else
-              inexact = TEST_FUNCTION (w, x, rnd);
+                        inexact = TEST_FUNCTION (w, x, rr);
 #endif
-              flags = __gmpfr_flags;
-              mpfr_set_emin (oemin);
-              mpfr_set_emax (oemax);
-              if (! (SAME_VAL (w, y) &&
-                     SAME_SIGN (inexact, compare) &&
-                     flags == oldflags))
-                {
-                  printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
-                          ", reduced exponent range [%"
-                          MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d] on:\n",
-                          (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
-                  printf ("x = ");
-                  mpfr_dump (x);
+                        flags = __gmpfr_flags;
+                        mpfr_set_emax (oemax);
+                        ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+                        if (flags != ex_flags)
+                          {
+                            printf ("tgeneric: error for "
+                                    MAKE_STR(TEST_FUNCTION)
+                                    ", reduced exponent range [%"
+                                    MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
+                                    "d] (overflow test) on:\n",
+                                    (mpfr_eexp_t) oemin, (mpfr_eexp_t) e - 1);
+                            printf ("x = ");
+                            mpfr_dump (x);
 #if defined(TWO_ARGS_ALL)
-                  printf ("u = ");
-                  mpfr_dump (u);
+                            printf ("u = ");
+                            mpfr_dump (u);
 #endif
-                  printf ("yprec = %u, rnd_mode = %s\n",
-                          (unsigned int) yprec, mpfr_print_rnd_mode (rnd));
-                  printf ("Expected:\n  y = ");
-                  mpfr_dump (y);
-                  printf ("  inex = %d, flags =", compare);
-                  flags_out (oldflags);
-                  printf ("Got:\n  w = ");
-                  mpfr_dump (w);
-                  printf ("  inex = %d, flags =", inexact);
-                  flags_out (flags);
-                  exit (1);
-                }
-            }
+                            printf ("yprec = %u, rnd_mode = %s\n",
+                                    (unsigned int) yprec,
+                                    mpfr_print_rnd_mode (rr));
+                            printf ("Expected flags =");
+                            flags_out (ex_flags);
+                            printf ("     got flags =");
+                            flags_out (flags);
+                            printf ("inex = %d, w = ", inexact);
+                            mpfr_dump (w);
+                            exit (1);
+                          }
+                      }
+                    test_of = 0;  /* Overflow is tested only once. */
+                  }
+                if (test_uf && e + 1 <= emin)
+                  {
+                    int r;
+                    RND_LOOP (r)
+                      {
+                        mpfr_flags_t ex_flags;
+                        mpfr_rnd_t rr = (mpfr_rnd_t) r;
+
+                        mpfr_set_emin (e + 1);
+                        mpfr_clear_flags ();
+#if defined(TWO_ARGS)
+                        inexact = TEST_FUNCTION (w, x, u, rr);
+#elif defined(DOUBLE_ARG1)
+                        inexact = TEST_FUNCTION (w, d, x, rr);
+#elif defined(DOUBLE_ARG2)
+                        inexact = TEST_FUNCTION (w, x, d, rr);
+#elif defined(ULONG_ARG1)
+                        inexact = TEST_FUNCTION (w, i, x, rr);
+#elif defined(ULONG_ARG2)
+                        inexact = TEST_FUNCTION (w, x, i, rr);
+#else
+                        inexact = TEST_FUNCTION (w, x, rr);
+#endif
+                        flags = __gmpfr_flags;
+                        mpfr_set_emin (oemin);
+                        ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+                        if (flags != ex_flags)
+                          {
+                            printf ("tgeneric: error for "
+                                    MAKE_STR(TEST_FUNCTION)
+                                    ", reduced exponent range [%"
+                                    MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC
+                                    "d] (underflow test) on:\n",
+                                    (mpfr_eexp_t) e + 1, (mpfr_eexp_t) oemax);
+                            printf ("x = ");
+                            mpfr_dump (x);
+#if defined(TWO_ARGS_ALL)
+                            printf ("u = ");
+                            mpfr_dump (u);
+#endif
+                            printf ("yprec = %u, rnd_mode = %s\n",
+                                    (unsigned int) yprec,
+                                    mpfr_print_rnd_mode (rr));
+                            printf ("Expected flags =");
+                            flags_out (ex_flags);
+                            printf ("     got flags =");
+                            flags_out (flags);
+                            printf ("inex = %d, w = ", inexact);
+                            mpfr_dump (w);
+                            exit (1);
+                          }
+                      }
+                    test_uf = 0;  /* Underflow is tested only once. */
+                  }
+                if (e < emin)
+                  emin = e;
+                if (e > emax)
+                  emax = e;
+              }
+            if (emin > emax)
+              emin = emax;  /* case where all values are singular */
+            /* Consistency test in a reduced exponent range. Doing it
+               for the first 10 samples and for prec == p1 (which has
+               some special cases) should be sufficient. */
+            if (ctrt <= 10 || prec == p1)
+              {
+                mpfr_set_emin (emin);
+                mpfr_set_emax (emax);
+#ifdef DEBUG_TGENERIC
+                /* Useful information in case of assertion failure. */
+                printf ("tgeneric: reduced exponent range [%"
+                        MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n",
+                        (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
+#endif
+                mpfr_clear_flags ();
+#if defined(TWO_ARGS)
+                inexact = TEST_FUNCTION (w, x, u, rnd);
+#elif defined(DOUBLE_ARG1)
+                inexact = TEST_FUNCTION (w, d, x, rnd);
+#elif defined(DOUBLE_ARG2)
+                inexact = TEST_FUNCTION (w, x, d, rnd);
+#elif defined(ULONG_ARG1)
+                inexact = TEST_FUNCTION (w, i, x, rnd);
+#elif defined(ULONG_ARG2)
+                inexact = TEST_FUNCTION (w, x, i, rnd);
+#else
+                inexact = TEST_FUNCTION (w, x, rnd);
+#endif
+                flags = __gmpfr_flags;
+                mpfr_set_emin (oemin);
+                mpfr_set_emax (oemax);
+                if (! (SAME_VAL (w, y) &&
+                       SAME_SIGN (inexact, compare) &&
+                       flags == oldflags))
+                  {
+                    printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
+                            ", reduced exponent range [%"
+                            MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d] on:\n",
+                            (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
+                    printf ("x = ");
+                    mpfr_dump (x);
+#if defined(TWO_ARGS_ALL)
+                    printf ("u = ");
+                    mpfr_dump (u);
+#endif
+                    printf ("yprec = %u, rnd_mode = %s\n",
+                            (unsigned int) yprec, mpfr_print_rnd_mode (rnd));
+                    printf ("Expected:\n  y = ");
+                    mpfr_dump (y);
+                    printf ("  inex = %d, flags =", compare);
+                    flags_out (oldflags);
+                    printf ("Got:\n  w = ");
+                    mpfr_dump (w);
+                    printf ("  inex = %d, flags =", inexact);
+                    flags_out (flags);
+                    exit (1);
+                  }
+              }
+            __gmpfr_flags = oldflags;  /* restore the flags */
+          }
+
           if (MPFR_IS_SINGULAR (y))
             {
               if (MPFR_IS_NAN (y) || mpfr_nanflag_p ())
