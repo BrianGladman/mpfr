@@ -22,6 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+static mpfr_exp_t smallest_exp = 0;
 
 static void
 test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
@@ -54,6 +55,8 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
           mpfr_print_binary (x); puts ("");
           exit (1);
         }
+      if (MPFR_NOTZERO(x) && MPFR_GET_EXP(x) < smallest_exp)
+        smallest_exp = MPFR_GET_EXP(x);
       d = mpfr_get_d1 (x); av += d; var += d*d;
       tab[(int)(size_tab * d)]++;
     }
@@ -180,6 +183,23 @@ main (int argc, char *argv[])
      implemented in mini-gmp, we omit it with mini-gmp */
   bug20100914 ();
 #endif
+
+  /* Get a non-zero fixed-point number whose first 32 bits are 0 with the
+     default GMP PRNG. This corresponds to the case cnt == 0 && k != 0 in
+     src/urandomb.c (fixed in r8762) with the 32-bit ABI. */
+  gmp_randseed_ui (mpfr_rands, 4518);
+  test_urandomb (575123, 40, 0);
+
+  if (smallest_exp > -32)
+    {
+      printf ("Warning! The minimum exponent is %d, which is > -32.\n",
+              (int) smallest_exp);
+      printf ("Has the default PRNG changed?\n");
+      /* Make this fatal only when coverage is checked. */
+#ifdef MPFR_COV_CHECK
+      exit (1);
+#endif
+    }
 
   tests_end_mpfr ();
   return 0;
