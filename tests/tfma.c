@@ -336,6 +336,60 @@ test_underflow2 (void)
 }
 
 static void
+test_underflow3 (int n)
+{
+  mpfr_t x, y, z, t1, t2;
+  int k, rnd, inex1, inex2;
+  mpfr_exp_t e;
+  mpfr_flags_t flags1, flags2;
+
+  mpfr_inits2 (8, x, y, z, t1, t2, (mpfr_ptr) 0);
+
+  e = mpfr_get_emin ();
+
+  for (k = 1; k <= 4; k++)
+    {
+      mpfr_set_si_2exp (x, 1, e, MPFR_RNDN);
+      mpfr_set_si_2exp (y, (1 << k) + 1, - k, MPFR_RNDN);
+      mpfr_neg (z, x, MPFR_RNDN);
+      /* x = 2^emin
+         y = 1 + 2^(-k)
+         z = -2^emin
+         FMA(x,y,z) = 2^(emin-k) exactly */
+
+      RND_LOOP (rnd)
+        {
+          mpfr_clear_flags ();
+          inex1 = mpfr_set_si_2exp (t1, 1, e - k, (mpfr_rnd_t) rnd);
+          flags1 = __gmpfr_flags;
+
+          mpfr_clear_flags ();
+          inex2 = mpfr_fma (t2, x, y, z, (mpfr_rnd_t) rnd);
+          flags2 = __gmpfr_flags;
+
+          if (! (mpfr_equal_p (t1, t2) &&
+                 SAME_SIGN (inex1, inex2) &&
+                 flags1 == flags2))
+            {
+              printf ("Error in test_underflow3, n = %d, k = %d, %s\n",
+                      n, k, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              printf ("Expected ");
+              mpfr_dump (t1);
+              printf ("  with inex ~ %d, flags =", inex1);
+              flags_out (flags1);
+              printf ("Got      ");
+              mpfr_dump (t2);
+              printf ("  with inex ~ %d, flags =", inex2);
+              flags_out (flags2);
+              exit (1);
+            }
+        }
+    }
+
+  mpfr_clears (x, y, z, t1, t2, (mpfr_ptr) 0);
+}
+
+static void
 bug20101018 (void)
 {
   mpfr_t x, y, z, t, u;
@@ -427,8 +481,12 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y, z, s;
+  mpfr_exp_t emin, emax;
 
   tests_start_mpfr ();
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   bug20101018 ();
 
@@ -720,6 +778,12 @@ main (int argc, char *argv[])
   test_overflow2 ();
   test_underflow1 ();
   test_underflow2 ();
+  test_underflow3 (1);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+  test_underflow3 (2);
+  set_emin (emin);
+  set_emax (emax);
 
   tests_end_mpfr ();
   return 0;
