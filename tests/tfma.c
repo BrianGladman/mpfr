@@ -427,7 +427,6 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y, z, s;
-  MPFR_SAVE_EXPO_DECL (expo);
 
   tests_start_mpfr ();
 
@@ -719,12 +718,10 @@ main (int argc, char *argv[])
 
   test_exact ();
 
-  MPFR_SAVE_EXPO_MARK (expo);
   test_overflow1 ();
   test_overflow2 ();
   test_underflow1 ();
   test_underflow2 ();
-  MPFR_SAVE_EXPO_FREE (expo);
 
   tests_end_mpfr ();
   return 0;
