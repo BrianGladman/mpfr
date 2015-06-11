@@ -64,7 +64,7 @@ test_exact (void)
                         i, j, k, rnd);
                 exit (1);
               }
-            if (mpfr_cmp (r1, r2) || MPFR_SIGN (r1) != MPFR_SIGN (r2))
+            if (! mpfr_equal_p (r1, r2) || MPFR_SIGN (r1) != MPFR_SIGN (r2))
               {
                 printf ("test_exact(%d,%d,%d,%d):\nexpected ", i, j, k, rnd);
                 mpfr_out_str (stdout, 10, 0, r1, MPFR_RNDN);
@@ -352,7 +352,7 @@ bug20101018 (void)
   mpfr_set_str (z, "0x8.3ffffffffffe3ffp-14443", 16, MPFR_RNDN);
   mpfr_set_str (t, "0x8.7ffffffffffc7ffp-14444", 16, MPFR_RNDN);
   i = mpfr_fma (u, x, y, z, MPFR_RNDN);
-  if (mpfr_cmp (u, t) != 0)
+  if (! mpfr_equal_p (u, t))
     {
       printf ("Wrong result in bug20101018 (a)\n");
       printf ("Expected ");
@@ -375,7 +375,7 @@ bug20101018 (void)
   mpfr_set_str (z, "0x8.fffff80ffffffffp-1551", 16, MPFR_RNDN);
   mpfr_set_str (t, "0x9.fffff01ffffffffp-1552", 16, MPFR_RNDN);
   i = mpfr_fma (u, x, y, z, MPFR_RNDN);
-  if (mpfr_cmp (u, t) != 0)
+  if (! mpfr_equal_p (u, t))
     {
       printf ("Wrong result in bug20101018 (b)\n");
       printf ("Expected ");
@@ -398,7 +398,7 @@ bug20101018 (void)
   mpfr_set_str (z, "0x8p-8119", 16, MPFR_RNDN);
   mpfr_set_str (t, "0x8.000000000000001p-8120", 16, MPFR_RNDN);
   i = mpfr_fma (u, x, y, z, MPFR_RNDN);
-  if (mpfr_cmp (u, t) != 0)
+  if (! mpfr_equal_p (u, t))
     {
       printf ("Wrong result in bug20101018 (c)\n");
       printf ("Expected ");
@@ -611,7 +611,7 @@ main (int argc, char *argv[])
   mpfr_urandomb (y, RANDS);
   mpfr_urandomb (z, RANDS);
   mpfr_fma (s, x, y, z, MPFR_RNDN);
-  if (mpfr_cmp (s, z))
+  if (! mpfr_equal_p (s, z))
     {
       printf ("evaluation of function in x=0 does not return z\n");
       exit (1);
@@ -621,7 +621,7 @@ main (int argc, char *argv[])
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (z, RANDS);
   mpfr_fma (s, x, y, z, MPFR_RNDN);
-  if (mpfr_cmp (s, z))
+  if (! mpfr_equal_p (s, z))
     {
       printf ("evaluation of function in y=0 does not return z\n");
       exit (1);
@@ -671,7 +671,7 @@ main (int argc, char *argv[])
               }
             compare = mpfr_add (t, slong, z, rnd);
             inexact = mpfr_fma (s, x, y, z, rnd);
-            if (mpfr_cmp (s, t))
+            if (! mpfr_equal_p (s, t))
               {
                 printf ("results differ for x=");
                 mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
@@ -692,9 +692,7 @@ main (int argc, char *argv[])
                 puts ("");
                 exit (1);
               }
-            if (((inexact == 0) && (compare != 0)) ||
-                ((inexact < 0) && (compare >= 0)) ||
-                ((inexact > 0) && (compare <= 0)))
+            if (! SAME_SIGN (inexact, compare))
               {
                 printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
                         mpfr_print_rnd_mode (rnd), compare, inexact);
