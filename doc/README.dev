@@ -159,6 +159,10 @@ To make a release (for the MPFR team):
      coverage of each source file might also be published on the release web
      page.
 
+     Also test with -DMPFR_COV_CHECK, which allows one to check the coverage
+     of some combinations of variable values (as defined in the MPFR source
+     and test suite).
+
   2) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
@@ -181,13 +185,16 @@ To make a release (for the MPFR team):
 
   6) Test the release version on different machines, with --enable-assert
      set to yes, no (default), none and full respectively, with and
-     without GMP's --disable-alloca configure option (or compile GMP with
-     --enable-alloca=debug and MPFR with --with-gmp-build to be able to
-     get the memory leak errors), with and without -DXDEBUG in $CFLAGS,
-     with and without gmp internal files (--enable-gmp-internals), with
-     and without GMP built as a shared library, with objdir equal to and
-     different from srcdir (e.g. ../mpfr-source/configure after making
-     mpfr-source read-only), with and without --enable-logging.
+     without -DXDEBUG in $CFLAGS, with and without gmp internal files
+     (--enable-gmp-internals), with and without GMP built as a shared
+     library, with objdir equal to and different from srcdir (e.g.
+     ../mpfr-source/configure after making mpfr-source read-only), with
+     and without --enable-logging.
+
+     Try different temporary allocation methods: GMP's --disable-alloca
+     configure option (or compile GMP with --enable-alloca=debug and MPFR
+     with --with-gmp-build to be able to get the memory leak errors); and
+     -DMPFR_ALLOCA_MAX=0.
 
      Try different gcc versions with different options: with and without
      "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and without "-ansi" (which
