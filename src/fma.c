@@ -281,6 +281,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             MPFR_BLOCK_DECL (flags);
 
             MPFR_BLOCK (flags, inexact = mpfr_add (s, u, new_z, rnd_mode));
+            MPFR_LOG_MSG (("inexact=%d\n", inexact));
             MPFR_GROUP_CLEAR (group);
             if (scale != 0)
               {
@@ -292,9 +293,15 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                    is not possible, but let's check that anyway. */
                 MPFR_ASSERTN (! MPFR_OVERFLOW (flags));  /* TODO... */
                 MPFR_ASSERTN (! MPFR_UNDERFLOW (flags));  /* not possible */
+                if (rnd_mode == MPFR_RNDN &&
+                    MPFR_GET_EXP (s) == __gmpfr_emin - 1 + scale &&
+                    mpfr_powerof2_raw (s))
+                  {
+                    MPFR_LOG_MSG (("Double rounding\n", 0));
+                    rnd_mode = (MPFR_IS_NEG (s) ? inexact <= 0 : inexact >= 0)
+                      ? MPFR_RNDZ : MPFR_RNDA;
+                  }
                 inex2 = mpfr_div_2ui (s, s, scale, rnd_mode);
-                /* FIXME: Handle the double rounding case:
-                   s / 2^scale = 2^(emin - 2) in MPFR_RNDN. */
                 MPFR_LOG_MSG (("inex2=%d\n", inex2));
                 if (inex2)  /* underflow */
                   inexact = inex2;
