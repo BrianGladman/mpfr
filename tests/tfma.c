@@ -779,8 +779,13 @@ main (int argc, char *argv[])
   test_underflow1 ();
   test_underflow2 ();
   test_underflow3 (1);
+
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
+  test_overflow1 ();
+  test_overflow2 ();
+  test_underflow1 ();
+  test_underflow2 ();
   test_underflow3 (2);
   set_emin (emin);
   set_emax (emax);
