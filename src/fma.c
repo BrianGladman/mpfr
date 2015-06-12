@@ -292,9 +292,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                    is not possible, but let's check that anyway. */
                 MPFR_ASSERTN (! MPFR_OVERFLOW (flags));  /* TODO... */
                 MPFR_ASSERTN (! MPFR_UNDERFLOW (flags));  /* not possible */
-                inex2 = mpfr_div_2ui (s, s, scale, MPFR_RNDN);
-                /* FIXME: this seems incorrect. MPFR_RNDN -> rnd_mode?
-                   Also, handle the double rounding case:
+                inex2 = mpfr_div_2ui (s, s, scale, rnd_mode);
+                /* FIXME: Handle the double rounding case:
                    s / 2^scale = 2^(emin - 2) in MPFR_RNDN. */
                 MPFR_LOG_MSG (("inex2=%d\n", inex2));
                 if (inex2)  /* underflow */
