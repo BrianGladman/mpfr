@@ -128,8 +128,11 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
          It is an overflow iff u is an infinity (since MPFR_RNDN was used).
          Alternatively, we could test the overflow flag, but in this case,
          mpfr_clear_flags would have been necessary. */
+
       if (MPFR_IS_INF (u))  /* overflow */
         {
+          MPFR_LOG_MSG (("Overflow on x*y\n", 0));
+
           /* Let's eliminate the obvious case where x*y and z have the
              same sign. No possible cancellation -> real overflow.
              Also, we know that |z| < 2^emax. If E(x) + E(y) >= emax+3,
@@ -215,11 +218,15 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           mpfr_prec_t pzs;
           int xy_underflows;
 
+          MPFR_LOG_MSG (("Underflow on x*y\n", 0));
+
           /* Let's scale z so that ulp(z) > 2^emin and ulp(s) > 2^emin
              (the + 1 on MPFR_PREC (s) is necessary because the exponent
              of the result can be EXP(z) - 1). */
           diffexp = MPFR_GET_EXP (z) - __gmpfr_emin;
           pzs = MAX (MPFR_PREC (z), MPFR_PREC (s) + 1);
+          MPFR_LOG_MSG (("diffexp=%" MPFR_EXP_FSPEC "d pzs=%Pd\n",
+                         diffexp, pzs));
           if (diffexp <= pzs)
             {
               mpfr_uexp_t uscale;
@@ -258,6 +265,9 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               xy_underflows = 1;
             }
 
+          MPFR_LOG_MSG (("scale=%lu xy_underflows=%d\n",
+                         scale, xy_underflows));
+
           if (xy_underflows)
             {
               /* Let's replace xy by sign(xy) * 2^(emin-1). */
@@ -286,6 +296,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                 /* FIXME: this seems incorrect. MPFR_RNDN -> rnd_mode?
                    Also, handle the double rounding case:
                    s / 2^scale = 2^(emin - 2) in MPFR_RNDN. */
+                MPFR_LOG_MSG (("inex2=%d\n", inex2));
                 if (inex2)  /* underflow */
                   inexact = inex2;
               }
