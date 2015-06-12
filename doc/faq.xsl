@@ -18,8 +18,7 @@ the faq.html file on the MPFR web site. See the update-faq script.
 <xsl:output method="xml"
             encoding="iso-8859-1"
             doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-            doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-            indent="no"/>
+            doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 
 <xsl:template match="/">
   <xsl:text>&#10;</xsl:text>
