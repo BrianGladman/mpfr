@@ -345,22 +345,22 @@ test_underflow3 (int n)
 
   mpfr_inits2 (8, x, y, z, t1, t2, (mpfr_ptr) 0);
 
-  e = mpfr_get_emin ();
+  e = mpfr_get_emin () - 1;
 
-  for (k = 1; k <= 4; k++)
+  for (k = 1; k <= 7; k++)
     {
       mpfr_set_si_2exp (x, 1, e, MPFR_RNDN);
-      mpfr_set_si_2exp (y, (1 << k) + 1, - k, MPFR_RNDN);
+      mpfr_set_si_2exp (y, k, -3, MPFR_RNDN);
       mpfr_neg (z, x, MPFR_RNDN);
-      /* x = 2^emin
-         y = 1 + 2^(-k)
-         z = -2^emin
-         FMA(x,y,z) = 2^(emin-k) exactly */
+      /* x = 2^(emin-1)
+         y = k/8
+         z = -2^(emin-1)
+         FMA(x,y,z) = (k-8) * 2^(emin-4) exactly */
 
       RND_LOOP (rnd)
         {
           mpfr_clear_flags ();
-          inex1 = mpfr_set_si_2exp (t1, 1, e - k, (mpfr_rnd_t) rnd);
+          inex1 = mpfr_set_si_2exp (t1, k - 8, e - 3, (mpfr_rnd_t) rnd);
           flags1 = __gmpfr_flags;
 
           mpfr_clear_flags ();
