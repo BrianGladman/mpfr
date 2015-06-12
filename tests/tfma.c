@@ -339,7 +339,7 @@ static void
 test_underflow3 (int n)
 {
   mpfr_t x, y, z, t1, t2;
-  int k, s, rnd, inex1, inex2;
+  int sign, k, s, rnd, inex1, inex2;
   mpfr_exp_t e;
   mpfr_flags_t flags1, flags2;
 
@@ -348,47 +348,50 @@ test_underflow3 (int n)
 
   e = mpfr_get_emin () - 1;
 
-  for (k = 1; k <= 7; k++)
-    for (s = -1; s <= 1; s++)
-      {
-        mpfr_set_si_2exp (x, 1, e, MPFR_RNDN);
-        mpfr_set_si_2exp (y, 8*k+s, -6, MPFR_RNDN);
-        mpfr_neg (z, x, MPFR_RNDN);
-        /* x = 2^(emin-1)
-           y = (8 * k + s) * 2^(-6) = k / 8 + s * 2^(-6)
-           z = -2^(emin-1)
-           FMA(x,y,z) = (k-8) * 2^(emin-4) + s * 2^(emin-7) exactly.
-           Note: The purpose of the s * 2^(emin-7) term is to yield
-           double rounding when scaling for k = 4, s != 0, MPFR_RNDN. */
+  for (sign = 1; sign >= -1; sign -= 2)
+    for (k = 1; k <= 7; k++)
+      for (s = -1; s <= 1; s++)
+        {
+          mpfr_set_si_2exp (x, sign, e, MPFR_RNDN);
+          mpfr_set_si_2exp (y, 8*k+s, -6, MPFR_RNDN);
+          mpfr_neg (z, x, MPFR_RNDN);
+          /* x = sign * 2^(emin-1)
+             y = (8 * k + s) * 2^(-6) = k / 8 + s * 2^(-6)
+             z = -x = -sign * 2^(emin-1)
+             FMA(x,y,z) = sign * ((k-8) * 2^(emin-4) + s * 2^(emin-7)) exactly.
+             Note: The purpose of the s * 2^(emin-7) term is to yield
+             double rounding when scaling for k = 4, s != 0, MPFR_RNDN. */
 
-        RND_LOOP (rnd)
-          {
-            mpfr_clear_flags ();
-            inex1 = mpfr_set_si_2exp (t1, 8*k+s-64, e-6, (mpfr_rnd_t) rnd);
-            flags1 = __gmpfr_flags;
+          RND_LOOP (rnd)
+            {
+              mpfr_clear_flags ();
+              inex1 = mpfr_set_si_2exp (t1, sign * (8*k+s-64), e-6,
+                                        (mpfr_rnd_t) rnd);
+              flags1 = __gmpfr_flags;
 
-            mpfr_clear_flags ();
-            inex2 = mpfr_fma (t2, x, y, z, (mpfr_rnd_t) rnd);
-            flags2 = __gmpfr_flags;
+              mpfr_clear_flags ();
+              inex2 = mpfr_fma (t2, x, y, z, (mpfr_rnd_t) rnd);
+              flags2 = __gmpfr_flags;
 
-            if (! (mpfr_equal_p (t1, t2) &&
-                   SAME_SIGN (inex1, inex2) &&
-                   flags1 == flags2))
-              {
-                printf ("Error in test_underflow3, n = %d, k = %d, s = %d, %s"
-                        "\n", n, k, s, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                printf ("Expected ");
-                mpfr_dump (t1);
-                printf ("  with inex ~ %d, flags =", inex1);
-                flags_out (flags1);
-                printf ("Got      ");
-                mpfr_dump (t2);
-                printf ("  with inex ~ %d, flags =", inex2);
-                flags_out (flags2);
-                exit (1);
-              }
-          }
-      }
+              if (! (mpfr_equal_p (t1, t2) &&
+                     SAME_SIGN (inex1, inex2) &&
+                     flags1 == flags2))
+                {
+                  printf ("Error in test_underflow3, n = %d, sign = %d,"
+                          " k = %d, s = %d, %s\n", n, sign, k, s,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                  printf ("Expected ");
+                  mpfr_dump (t1);
+                  printf ("  with inex ~ %d, flags =", inex1);
+                  flags_out (flags1);
+                  printf ("Got      ");
+                  mpfr_dump (t2);
+                  printf ("  with inex ~ %d, flags =", inex2);
+                  flags_out (flags2);
+                  exit (1);
+                }
+            }
+        }
 
   mpfr_clears (x, y, z, t1, t2, (mpfr_ptr) 0);
 }
