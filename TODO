@@ -500,6 +500,8 @@ Table of contents:
   as suggested by the Automake manual? The reason is that the
   acinclude.m4 file is big and a bit difficult to read.
 
+- use symbol versioning.
+
 
 ##############################################################################
 7. Portability
