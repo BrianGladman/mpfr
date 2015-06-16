@@ -963,6 +963,17 @@ with an implementation-defined TLS specifier).
 @c is just a GCC extension. There is currently no clear documentation
 @c about TLS variable initialization.
 
+Writers of libraries using MPFR should be aware that the application and/or
+another library used by the application may also use MPFR, so that changing
+the exponent range, the default precision, or the default rounding mode may
+have an effect on this other use of MPFR since these data are not duplicated
+(unless they are in a different thread). Therefore any such value changed in
+a library function should be restored before the function returns (unless
+the purpose of the function is to do such a change). Writers of software
+using MPFR should also be careful when changing such a value if they use
+a library using MPFR (directly or indirectly), in order to make sure that
+such a change is compatible with the library.
+
 @node MPFR Interface, API Compatibility, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
