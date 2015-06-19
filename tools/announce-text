@@ -84,8 +84,9 @@ if [ -z "$nogforge" ]; then
   echo "Comparing with InriaForge..." >&2
   gforge="https://gforge.inria.fr"
   wget -O files.html "$gforge/frs/?group_id=136"
-  for i in $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\".*/\1/p" \
-             files.html)
+  for i in \
+    $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\">mpfr-.*/\1/p" \
+          files.html)
   do
     wget "$gforge$i"
   done
