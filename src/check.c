@@ -56,7 +56,7 @@ mpfr_check (mpfr_srcptr x)
   if (s <= 0 || s > MP_SIZE_T_MAX ||
       prec > (mpfr_prec_t) s * GMP_NUMB_BITS)
     return 0;
-  /* Acces all the mp_limb of the mantissa: may do a seg fault */
+  /* Access all the mp_limb of the mantissa: may do a seg fault */
   for (i = 0 ; i < s ; i++)
     tmp = xm[i];
   /* Check singular numbers (do not use MPFR_IS_PURE_FP() in order to avoid
