@@ -49,7 +49,7 @@ mpfr_div_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN(y));
         }
-      else if (MPFR_UNLIKELY(n < 0 && (__gmpfr_emax < MPFR_EMIN_MIN - n ||
+      else if (MPFR_UNLIKELY(n <= 0 && (__gmpfr_emax < MPFR_EMIN_MIN - n ||
                                        exp > __gmpfr_emax + n)) )
         return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));
 
