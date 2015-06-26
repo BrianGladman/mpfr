@@ -239,14 +239,14 @@ large0 (void)
   large (MPFR_EMAX_MAX);
 }
 
-/* Cases where mpfr_div_2ui and mpfr_div_2si overflow when rounding
-   is like away from zero. */
+/* Cases where the function overflows when rounding is like away from zero. */
 static void
 div_overflow (mpfr_exp_t e)
 {
   mpfr_exp_t emax;
   mpfr_t x, y1, y2;
-  int neg, r, si;
+  int neg, r, op;
+  static char *sop[4] = { "mul_2ui", "mul_2si", "div_2ui", "div_2si" };
 
   emax = mpfr_get_emax ();
   set_emax (e);
@@ -270,20 +270,22 @@ div_overflow (mpfr_exp_t e)
           flags1 = MPFR_FLAGS_INEXACT;
           if (mpfr_inf_p (y1))
             flags1 |= MPFR_FLAGS_OVERFLOW;
-          for (si = 0; si <= 1; si++)
+          for (op = 0; op < 4; op++)
             {
               mpfr_clear_flags ();
-              inex2 = si ?
-                mpfr_div_2si (y2, x, 0, (mpfr_rnd_t) r) :
-                mpfr_div_2ui (y2, x, 0, (mpfr_rnd_t) r);
+              inex2 =
+                op == 0 ? mpfr_mul_2ui (y2, x, 0, (mpfr_rnd_t) r) :
+                op == 1 ? mpfr_mul_2si (y2, x, 0, (mpfr_rnd_t) r) :
+                op == 2 ? mpfr_div_2ui (y2, x, 0, (mpfr_rnd_t) r) :
+                op == 3 ? mpfr_div_2si (y2, x, 0, (mpfr_rnd_t) r) :
+                (MPFR_ASSERTN (0), 0);
               flags2 = __gmpfr_flags;
               if (!(mpfr_equal_p (y1, y2) &&
                     SAME_SIGN (inex1, inex2) &&
                     flags1 == flags2))
                 {
-                  printf ("Error in div_overflow for %s, mpfr_div_2%s, x = ",
-                          mpfr_print_rnd_mode ((mpfr_rnd_t) r),
-                          si ? "si" : "ui");
+                  printf ("Error in div_overflow for %s, mpfr_%s, x = ",
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r), sop[op]);
                   mpfr_dump (x);
                   printf ("Expected ");
                   mpfr_dump (y1);
