@@ -26,6 +26,13 @@ int
 mpfr_frexp (mpfr_exp_t *exp, mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
+  mpfr_flags_t saved_flags = __gmpfr_flags;
+  MPFR_BLOCK_DECL (flags);
+
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd),
+     ("y[%Pu]=%.*Rg exp=%" MPFR_EXP_FSPEC "d inex=%d", mpfr_get_prec (y),
+      mpfr_log_prec, y, (mpfr_eexp_t) *exp, inex));
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -49,7 +56,28 @@ mpfr_frexp (mpfr_exp_t *exp, mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
     }
 
-  inex = mpfr_set (y, x, rnd);
+  MPFR_BLOCK (flags, inex = mpfr_set (y, x, rnd));
+  __gmpfr_flags = saved_flags;
+
+  if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
+    {
+      int inex2;
+
+      /* An overflow here means that the exponent of y would be larger than
+         the one of x, thus x would be rounded to the next power of 2, and
+         the returned y should be 1/2 in absolute value, rounded (i.e. with
+         possible underflow or overflow). This also implies that x and y are
+         different objects, so that the exponent of x has not been lost. */
+      MPFR_LOG_MSG (("Internal overflow\n", 0));
+      MPFR_ASSERTD (x != y);
+      *exp = MPFR_GET_EXP (x) + 1;
+      inex2 = mpfr_set_si_2exp (y, MPFR_INT_SIGN (x), -1, rnd);
+      MPFR_LOG_MSG (("inex=%d inex2=%d\n", inex, inex2));
+      if (inex2 != 0)
+        inex = inex2;
+      MPFR_RET (inex);
+    }
+
   *exp = MPFR_GET_EXP (y);
   /* Do not use MPFR_SET_EXP because the range has not been checked yet. */
   MPFR_EXP (y) = 0;
