@@ -32,7 +32,7 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
      rnd_mode),
     ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inexact));
 
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+  if (MPFR_UNLIKELY (n == 0 || MPFR_IS_SINGULAR (x)))
     return mpfr_set (y, x, rnd_mode);
   else
     {
