@@ -226,6 +226,7 @@ static void check1 (void)
                       flags_out (flags1);
                       printf ("Got flags:     ");
                       flags_out (flags2);
+                      exit (1);
                     }
                 }
             }
