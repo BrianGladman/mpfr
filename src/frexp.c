@@ -51,6 +51,7 @@ mpfr_frexp (mpfr_exp_t *exp, mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   inex = mpfr_set (y, x, rnd);
   *exp = MPFR_GET_EXP (y);
-  MPFR_SET_EXP (y, 0);
+  /* Do not use MPFR_SET_EXP because the range has not been checked yet. */
+  MPFR_EXP (y) = 0;
   return mpfr_check_range (y, inex, rnd);
 }
