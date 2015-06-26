@@ -239,6 +239,36 @@ large0 (void)
   large (MPFR_EMAX_MAX);
 }
 
+/* Cases where mpfr_div_2ui overflows. */
+static void
+div_overflow (mpfr_exp_t e)
+{
+  mpfr_exp_t emax;
+  mpfr_t x, y;
+  int neg, r;
+
+  emax = mpfr_get_emax ();
+  set_emax (e);
+
+  mpfr_init2 (x, 8);
+  mpfr_init2 (y, 6);
+
+  mpfr_set_inf (x, 1);
+  mpfr_nextbelow (x);
+
+  for (neg = 0; neg <= 1; neg++)
+    {
+      RND_LOOP (r)
+        {
+          mpfr_div_2ui (y, x, 0, (mpfr_rnd_t) r);
+        }
+      mpfr_neg (x, x, MPFR_RNDN);
+    }
+
+  mpfr_clears (x, y, (mpfr_ptr) 0);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -330,6 +360,11 @@ main (int argc, char *argv[])
 
   underflow0 ();
   large0 ();
+
+  if (mpfr_get_emax () != MPFR_EMAX_MAX)
+    div_overflow (mpfr_get_emax ());
+  div_overflow (MPFR_EMAX_MAX);
+  div_overflow (-1);
 
   tests_end_mpfr ();
   return 0;
