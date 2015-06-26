@@ -239,17 +239,18 @@ large0 (void)
   large (MPFR_EMAX_MAX);
 }
 
-/* Cases where the function overflows when rounding is like away from zero. */
+/* Cases where the function overflows on n = 0 when rounding is like
+   away from zero. */
 static void
-div_overflow (mpfr_exp_t e)
+overflow0 (mpfr_exp_t emax)
 {
-  mpfr_exp_t emax;
+  mpfr_exp_t old_emax;
   mpfr_t x, y1, y2;
   int neg, r, op;
   static char *sop[4] = { "mul_2ui", "mul_2si", "div_2ui", "div_2si" };
 
-  emax = mpfr_get_emax ();
-  set_emax (e);
+  old_emax = mpfr_get_emax ();
+  set_emax (emax);
 
   mpfr_init2 (x, 8);
   mpfr_inits2 (6, y1, y2, (mpfr_ptr) 0);
@@ -284,8 +285,10 @@ div_overflow (mpfr_exp_t e)
                     SAME_SIGN (inex1, inex2) &&
                     flags1 == flags2))
                 {
-                  printf ("Error in div_overflow for %s, mpfr_%s, x = ",
-                          mpfr_print_rnd_mode ((mpfr_rnd_t) r), sop[op]);
+                  printf ("Error in overflow0 for %s, mpfr_%s, emax = %"
+                          MPFR_EXP_FSPEC "d,\nx = ",
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r), sop[op],
+                          (mpfr_eexp_t) emax);
                   mpfr_dump (x);
                   printf ("Expected ");
                   mpfr_dump (y1);
@@ -303,7 +306,7 @@ div_overflow (mpfr_exp_t e)
     }
 
   mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
-  set_emax (emax);
+  set_emax (old_emax);
 }
 
 int
@@ -399,9 +402,9 @@ main (int argc, char *argv[])
   large0 ();
 
   if (mpfr_get_emax () != MPFR_EMAX_MAX)
-    div_overflow (mpfr_get_emax ());
-  div_overflow (MPFR_EMAX_MAX);
-  div_overflow (-1);
+    overflow0 (mpfr_get_emax ());
+  overflow0 (MPFR_EMAX_MAX);
+  overflow0 (-1);
 
   tests_end_mpfr ();
   return 0;
