@@ -134,6 +134,13 @@ do
     echo "$file contains unprotected mpfr_printf-like function calls"
 done
 
+# Check a Texinfo rule (Section "Ending a Sentence") with common words
+# that end with a capital letter:
+#   Use '@.' instead of a period, '@!' instead of an exclamation point,
+#   and '@?' instead of a question mark at the end of a sentence that
+#   does end with a capital letter.
+grep -E '(LIP|MPFR?|NaN)\)?[.!?]' doc/mpfr.texi | grep -v '^\* .*::'
+
 fdlv1="`sed -n '/Version / {
   s/.*Version //
   s/,.*//
