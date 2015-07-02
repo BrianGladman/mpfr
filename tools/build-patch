@@ -78,6 +78,11 @@ if [[ $# -ge 1 ]] then
       echo $3 >> PATCHES
     fi
   fi
+  if ! cmp --quiet $mpfrdir/$base-{a,b}/doc/mpfr.texi; then
+    ./configure
+    make info
+    make distclean
+  fi
   popd
   set +e
   TZ=UTC diff -Naurd $base-a $base-b > $newpatch
