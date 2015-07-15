@@ -59,6 +59,8 @@ mpfr_frexp (mpfr_exp_t *exp, mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_BLOCK (flags, inex = mpfr_set (y, x, rnd));
   __gmpfr_flags = saved_flags;
 
+  /* Possible overflow due to the rounding, no possible underflow. */
+
   if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
     {
       int inex2;
