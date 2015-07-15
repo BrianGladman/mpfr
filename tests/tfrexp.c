@@ -191,14 +191,6 @@ static void check1 (void)
                       mpfr_dump (y2);
                       exit (1);
                     }
-                  if (! SAME_SIGN (inex1, inex2))
-                    {
-                      printf ("Error in check1 for %s, red = %d, x = ",
-                              mpfr_print_rnd_mode ((mpfr_rnd_t) r), red);
-                      mpfr_dump (x);
-                      printf ("Expected inex ~= %d, got %d\n", inex1, inex2);
-                      exit (1);
-                    }
                   if (!red)
                     {
                       if (e2 > 0)
@@ -206,7 +198,9 @@ static void check1 (void)
                       else if (e2 < 0)
                         mpfr_div_2ui (y2, y2, -e2, MPFR_RNDN);
                     }
-                  if (! mpfr_equal_p (y1, y2))
+                  if (! (SAME_SIGN (inex1, inex2) &&
+                         mpfr_equal_p (y1, y2) &&
+                         flags1 == flags2))
                     {
                       printf ("Error in check1 for %s, red = %d, x = ",
                               mpfr_print_rnd_mode ((mpfr_rnd_t) r), red);
@@ -215,13 +209,7 @@ static void check1 (void)
                       mpfr_dump (y1);
                       printf ("Got      y2 = ");
                       mpfr_dump (y2);
-                      exit (1);
-                    }
-                  if (flags1 != flags2)
-                    {
-                      printf ("Error in check1 for %s, red = %d, x = ",
-                              mpfr_print_rnd_mode ((mpfr_rnd_t) r), red);
-                      mpfr_dump (x);
+                      printf ("Expected inex ~= %d, got %d\n", inex1, inex2);
                       printf ("Expected flags:");
                       flags_out (flags1);
                       printf ("Got flags:     ");
