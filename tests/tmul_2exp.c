@@ -47,77 +47,82 @@ underflow (mpfr_exp_t e)
 {
   mpfr_t x, y, z1, z2;
   mpfr_exp_t emin;
-  int i, k;
+  int i, k, s;
   int prec;
   int rnd;
   int div;
   int inex1, inex2;
   unsigned int flags1, flags2;
 
-  /* Test mul_2si(x, e - k), div_2si(x, k - e) and div_2ui(x, k - e)
-   * with emin = e, x = 1 + i/16, i in { -1, 0, 1 }, and k = 1 to 4,
-   * by comparing the result with the one of a simple division.
+  /* Test mul_2si(x, e - k), div_2si(x, k - e) and div_2ui(x, k - e) with
+   * emin = e, x = s * (1 + i/16), i in { -1, 0, 1 }, s in { -1, 1 }, and
+   * k = 1 to 4, by comparing the result with the one of a simple division.
    */
   emin = mpfr_get_emin ();
   set_emin (e);
   mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
   for (i = 15; i <= 17; i++)
-    {
-      inex1 = mpfr_set_ui_2exp (x, i, -4, MPFR_RNDN);
-      MPFR_ASSERTN (inex1 == 0);
-      for (prec = 6; prec >= 3; prec -= 3)
-        {
-          mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
-          RND_LOOP (rnd)
-            for (k = 1; k <= 4; k++)
-              {
-                /* The following one is assumed to be correct. */
-                inex1 = mpfr_mul_2si (y, x, e, MPFR_RNDN);
-                MPFR_ASSERTN (inex1 == 0);
-                inex1 = mpfr_set_ui (z1, 1 << k, MPFR_RNDN);
-                MPFR_ASSERTN (inex1 == 0);
-                mpfr_clear_flags ();
-                /* Do not use mpfr_div_ui to avoid the optimization
-                   by mpfr_div_2si. */
-                inex1 = mpfr_div (z1, y, z1, (mpfr_rnd_t) rnd);
-                flags1 = __gmpfr_flags;
-
-              for (div = 0; div <= 2; div++)
+    for (s = 1; s >= -1; s -= 2)
+      {
+        inex1 = mpfr_set_si_2exp (x, s * i, -4, MPFR_RNDN);
+        MPFR_ASSERTN (inex1 == 0);
+        for (prec = 6; prec >= 3; prec -= 3)
+          {
+            mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
+            RND_LOOP (rnd)
+              for (k = 1; k <= 4; k++)
                 {
+                  /* The following one is assumed to be correct. */
+                  inex1 = mpfr_mul_2si (y, x, e, MPFR_RNDN);
+                  MPFR_ASSERTN (inex1 == 0);
+                  inex1 = mpfr_set_ui (z1, 1 << k, MPFR_RNDN);
+                  MPFR_ASSERTN (inex1 == 0);
                   mpfr_clear_flags ();
-                  inex2 = div == 0 ?
-                    mpfr_mul_2si (z2, x, e - k, (mpfr_rnd_t) rnd) : div == 1 ?
-                    mpfr_div_2si (z2, x, k - e, (mpfr_rnd_t) rnd) :
-                    mpfr_div_2ui (z2, x, k - e, (mpfr_rnd_t) rnd);
-                  flags2 = __gmpfr_flags;
-                  if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
-                      mpfr_equal_p (z1, z2))
-                    continue;
-                  printf ("Error in underflow(");
-                  if (e == MPFR_EMIN_MIN)
-                    printf ("MPFR_EMIN_MIN");
-                  else if (e == emin)
-                    printf ("default emin");
-                  else if (e >= LONG_MIN)
-                    printf ("%ld", (long) e);
-                  else
-                    printf ("<LONG_MIN");
-                  printf (") with mpfr_%s,\nx = %d/16, prec = %d, k = %d, "
-                          "%s\n", div == 0 ? "mul_2si" : div == 1 ?
-                          "div_2si" : "div_2ui", i, prec, k,
-                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  printf ("Expected ");
-                  mpfr_out_str (stdout, 16, 0, z1, MPFR_RNDN);
-                  printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
-                  printf ("Got      ");
-                  mpfr_out_str (stdout, 16, 0, z2, MPFR_RNDN);
-                  printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
-                  exit (1);
-                }  /* div */
-              }  /* k */
-          mpfr_clears (z1, z2, (mpfr_ptr) 0);
-        }  /* prec */
-    }  /* i */
+                  /* Do not use mpfr_div_ui to avoid the optimization
+                     by mpfr_div_2si. */
+                  inex1 = mpfr_div (z1, y, z1, (mpfr_rnd_t) rnd);
+                  flags1 = __gmpfr_flags;
+
+                  for (div = 0; div <= 2; div++)
+                    {
+                      mpfr_clear_flags ();
+                      inex2 =
+                        div == 0 ?
+                        mpfr_mul_2si (z2, x, e - k, (mpfr_rnd_t) rnd) :
+                        div == 1 ?
+                        mpfr_div_2si (z2, x, k - e, (mpfr_rnd_t) rnd) :
+                        mpfr_div_2ui (z2, x, k - e, (mpfr_rnd_t) rnd);
+                      flags2 = __gmpfr_flags;
+                      if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                          mpfr_equal_p (z1, z2))
+                        continue;
+                      printf ("Error in underflow(");
+                      if (e == MPFR_EMIN_MIN)
+                        printf ("MPFR_EMIN_MIN");
+                      else if (e == emin)
+                        printf ("default emin");
+                      else if (e >= LONG_MIN)
+                        printf ("%ld", (long) e);
+                      else
+                        printf ("<LONG_MIN");
+                      printf (") with mpfr_%s,\nx = %d/16, prec = %d, k = %d,"
+                              " %s\n", div == 0 ? "mul_2si" : div == 1 ?
+                              "div_2si" : "div_2ui", s * i, prec, k,
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                      printf ("Expected ");
+                      mpfr_out_str (stdout, 16, 0, z1, MPFR_RNDN);
+                      printf (", inex = %d, flags = %u\n",
+                              SIGN (inex1), flags1);
+                      printf ("Got      ");
+                      mpfr_out_str (stdout, 16, 0, z2, MPFR_RNDN);
+                      printf (", inex = %d, flags = %u\n",
+                              SIGN (inex2), flags2);
+                      exit (1);
+                    }  /* div */
+                }  /* k */
+            mpfr_clears (z1, z2, (mpfr_ptr) 0);
+          }  /* prec */
+      }  /* i */
   mpfr_clears (x, y, (mpfr_ptr) 0);
   set_emin (emin);
 }
