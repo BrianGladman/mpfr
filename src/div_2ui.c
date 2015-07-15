@@ -44,7 +44,9 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (n >= diffexp))  /* exp - n <= emin - 1 */
         {
           if (rnd_mode == MPFR_RNDN &&
-              (n > diffexp || (inexact >= 0 && mpfr_powerof2_raw (y))))
+              (n > diffexp ||
+               ((MPFR_IS_NEG (y) ? inexact <= 0 : inexact >= 0) &&
+                mpfr_powerof2_raw (y))))
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN (y));
         }
