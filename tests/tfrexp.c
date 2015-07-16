@@ -147,9 +147,9 @@ static void check1 (void)
     {
       /* Test the exponents up to 3 and with the maximum exponent
          (to check potential intermediate overflow). */
-      if (mpfr_get_exp (x) == 4)
+      if (MPFR_GET_EXP (x) == 4)
         mpfr_set_exp (x, MPFR_EMAX_MAX);
-      e = mpfr_get_exp (x);
+      e = MPFR_GET_EXP (x);
       for (neg = 0; neg < 2; neg++)
         {
           RND_LOOP (r)
@@ -162,6 +162,8 @@ static void check1 (void)
                 {
                   if (red)
                     {
+                      /* e1: exponent of the rounded value of x. */
+                      MPFR_ASSERTN (e1 == e || e1 == e + 1);
                       set_emin (e);
                       set_emax (e);
                       mpfr_clear_flags ();
@@ -173,7 +175,7 @@ static void check1 (void)
                   else
                     {
                       inex1 = mpfr_set (y1, x, (mpfr_rnd_t) r);
-                      e1 = mpfr_get_exp (y1);
+                      e1 = MPFR_IS_INF (y1) ? e + 1 : MPFR_GET_EXP (y1);
                       flags1 = inex1 != 0 ? MPFR_FLAGS_INEXACT : 0;
                     }
                   mpfr_clear_flags ();
@@ -182,7 +184,7 @@ static void check1 (void)
                   set_emin (MPFR_EMIN_MIN);
                   set_emax (MPFR_EMAX_MAX);
                   if ((!red || e == 0) &&
-                      (! mpfr_regular_p (y2) || mpfr_get_exp (y2) != 0))
+                      (! mpfr_regular_p (y2) || MPFR_GET_EXP (y2) != 0))
                     {
                       printf ("Error in check1 for %s, red = %d, x = ",
                               mpfr_print_rnd_mode ((mpfr_rnd_t) r), red);
