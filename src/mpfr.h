@@ -852,8 +852,12 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define MPFR_VALUE_OF(x)  (0 ? (x) : (x))
 #define mpfr_get_prec(_x) MPFR_VALUE_OF((_x)->_mpfr_prec)
 #define mpfr_get_exp(_x)  MPFR_VALUE_OF((_x)->_mpfr_exp)
-/* Note: if need be, the MPFR_VALUE_OF can be used for other expressions
-   (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
+/* Note 1: If need be, the MPFR_VALUE_OF can be used for other expressions
+   (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea.
+   Note 2: Defining mpfr_get_exp() as a macro has the effect to disable
+   the check that the argument is a pure FP number (done in the function);
+   this increases the risk of undetected error and makes debugging more
+   complex. Is it really worth in practice? (Potential FIXME) */
 
 #define mpfr_round(a,b) mpfr_rint((a), (b), MPFR_RNDNA)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), MPFR_RNDZ)
