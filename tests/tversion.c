@@ -45,6 +45,44 @@ main (void)
           gmp_version);
 #endif
 
+  if (
+#ifdef MPFR_USE_THREAD_SAFE
+      !
+#endif
+      mpfr_buildopt_tls_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_tls_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
+#ifdef MPFR_WANT_DECIMAL_FLOATS
+      !
+#endif
+      mpfr_buildopt_decimal_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_decimal_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
+#if defined(MPFR_HAVE_GMP_IMPL) || defined(WANT_GMP_INTERNALS)
+      !
+#endif
+      mpfr_buildopt_gmpinternals_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_gmpinternals_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  printf ("[tversion] TLS = %s, decimal = %s, GMP internals = %s\n",
+          mpfr_buildopt_tls_p () ? "yes" : "no",
+          mpfr_buildopt_decimal_p () ? "yes" : "no",
+          mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
+
   if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
     {
       printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
