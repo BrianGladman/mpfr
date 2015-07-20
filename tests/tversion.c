@@ -31,6 +31,8 @@ main (void)
   if (test_version ())
     exit (1);
 
+  printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING);
+
 #ifdef __GNUC__
   printf ("[tversion] GCC: %d.%d.%d\n",
           __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
