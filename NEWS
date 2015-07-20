@@ -33,6 +33,9 @@ Changes from versions 3.1.* to version 3.2.0:
   mpfr_flags_save and mpfr_flags_restore to operate on groups of flags.
 - New functions mpfr_set_float128 and mpfr_get_float128 to convert from/to
   the __float128 type (requires --enable-float128 and compiler support).
+- New functions mpfr_rint_roundeven and mpfr_roundeven, completing the
+  other similar round-to-integer functions for rounding to nearest with
+  the even-rounding rule.
 - New macro mpfr_round_nearest_away to add partial emulation of the
   rounding to nearest-away (as defined in IEEE 754-2008).
 - New functions mpfr_nrandom and mpfr_erandom to generate random numbers

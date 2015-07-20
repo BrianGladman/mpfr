@@ -304,6 +304,14 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }  /* exp > 0, |u| >= 1 */
 }
 
+#undef mpfr_roundeven
+
+int
+mpfr_roundeven (mpfr_ptr r, mpfr_srcptr u)
+{
+  return mpfr_rint (r, u, MPFR_RNDN);
+}
+
 #undef mpfr_round
 
 int
@@ -340,6 +348,32 @@ mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
  * mpfr_trunc, mpfr_ceil, mpfr_floor functions because these functions set
  * the inexact flag when the argument is not an integer.
  */
+
+#undef mpfr_rint_roundeven
+
+int
+mpfr_rint_roundeven (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ) || mpfr_integer_p (u))
+    return mpfr_set (r, u, rnd_mode);
+  else
+    {
+      mpfr_t tmp;
+      int inex;
+      mpfr_flags_t saved_flags = __gmpfr_flags;
+      MPFR_BLOCK_DECL (flags);
+
+      mpfr_init2 (tmp, MPFR_PREC (u));
+      /* round(u) is representable in tmp unless an overflow occurs */
+      MPFR_BLOCK (flags, mpfr_roundeven (tmp, u));
+      __gmpfr_flags = saved_flags;
+      inex = (MPFR_OVERFLOW (flags)
+              ? mpfr_overflow (r, rnd_mode, MPFR_SIGN (u))
+              : mpfr_set (r, tmp, rnd_mode));
+      mpfr_clear (tmp);
+      return inex;
+    }
+}
 
 #undef mpfr_rint_round
 

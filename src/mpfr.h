@@ -649,10 +649,13 @@ __MPFR_DECLSPEC int mpfr_div_2si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                long, mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_rint _MPFR_PROTO((mpfr_ptr,mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_roundeven _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_round _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_trunc _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_ceil _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_floor _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
+__MPFR_DECLSPEC int mpfr_rint_roundeven _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                                      mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_rint_round _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                   mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_rint_trunc _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,

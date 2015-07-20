@@ -2573,15 +2573,26 @@ the null-terminator, or a negative value if an error occurred.
 @deftypefunx int mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
 @deftypefunx int mpfr_floor (mpfr_t @var{rop}, mpfr_t @var{op})
 @deftypefunx int mpfr_round (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx int mpfr_roundeven (mpfr_t @var{rop}, mpfr_t @var{op})
 @deftypefunx int mpfr_trunc (mpfr_t @var{rop}, mpfr_t @var{op})
 Set @var{rop} to @var{op} rounded to an integer.
 @code{mpfr_rint} rounds to the nearest representable integer in the
-given direction @var{rnd}, @code{mpfr_ceil} rounds
-to the next higher or equal representable integer, @code{mpfr_floor} to
-the next lower or equal representable integer, @code{mpfr_round} to the
-nearest representable integer, rounding halfway cases away from zero
-(as in the roundTiesToAway mode of IEEE 754-2008),
-and @code{mpfr_trunc} to the next representable integer toward zero.
+given direction @var{rnd}, and the other five functions behave in a
+similar way with some fixed rounding mode:
+@itemize @bullet
+@item @code{mpfr_ceil}: to the next higher or equal representable integer
+      (like @code{mpfr_rint} with @code{MPFR_RNDU});
+@item @code{mpfr_floor} to the next lower or equal representable integer
+      (like @code{mpfr_rint} with @code{MPFR_RNDD});
+@item @code{mpfr_round} to the nearest representable integer,
+      rounding halfway cases away from zero
+      (as in the roundTiesToAway mode of IEEE 754-2008);
+@item @code{mpfr_roundeven} to the nearest representable integer,
+      rounding halfway cases with the even-rounding rule
+      (like @code{mpfr_rint} with @code{MPFR_RNDN});
+@item @code{mpfr_trunc} to the next representable integer toward zero
+      (like @code{mpfr_rint} with @code{MPFR_RNDZ}).
+@end itemize
 When @var{op} is a zero or an infinity, set @var{rop} to the same value
 (with the same sign).
 
@@ -2597,14 +2608,10 @@ the inexact flag is set when @var{rop} differs from @var{op}, following
 the ISO C99 rule for the @code{rint} function. If you want the behavior to
 be more like IEEE 754 / ISO TS 18661-1, i.e., the usual behavior where the
 round-to-integer function is regarded as any other mathematical function,
-you should use one the @code{mpfr_rint_*} functions instead (however it is
-not possible to round to nearest with the even rounding rule yet).
+you should use one the @code{mpfr_rint_*} functions instead.
 
-Note that @code{mpfr_round} is different from @code{mpfr_rint} called with
-the rounding to nearest mode (where halfway cases are rounded to an even
-integer or significand). Note also that no double rounding is performed; for
-instance, 10.5 (1010.1 in binary) is rounded by @code{mpfr_rint} with
-rounding to nearest to 12 (1100
+Note that no double rounding is performed; for instance, 10.5 (1010.1 in
+binary) is rounded by @code{mpfr_rint} with rounding to nearest to 12 (1100
 in binary) in 2-bit precision, because the two enclosing numbers representable
 on two bits are 8 and 12, and the closest is 12.
 (If one first rounded to an integer, one would round 10.5 to 10 with
@@ -2614,12 +2621,18 @@ even rounding, and then 10 would be rounded to 8 again with even rounding.)
 @deftypefun int mpfr_rint_ceil (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_rint_floor (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_rint_round (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_rint_roundeven (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_rint_trunc (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @var{op} rounded to an integer.
-@code{mpfr_rint_ceil} rounds to the next higher or equal integer,
-@code{mpfr_rint_floor} to the next lower or equal integer,
-@code{mpfr_rint_round} to the nearest integer, rounding halfway cases away
-from zero, and @code{mpfr_rint_trunc} to the next integer toward zero.
+Set @var{rop} to @var{op} rounded to an integer:
+@itemize @bullet
+@item @code{mpfr_rint_ceil}: to the next higher or equal integer;
+@item @code{mpfr_rint_floor}: to the next lower or equal integer;
+@item @code{mpfr_rint_round}: to the nearest integer,
+      rounding halfway cases away from zero;
+@item @code{mpfr_rint_roundeven}: to the nearest integer,
+      rounding halfway cases to the nearest even integer;
+@item @code{mpfr_rint_trunc} to the next integer toward zero.
+@end itemize
 If the result is not representable, it is rounded in the direction @var{rnd}.
 When @var{op} is a zero or an infinity, set @var{rop} to the same value
 (with the same sign).
@@ -3635,6 +3648,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_regular_p} in MPFR 3.0.
 
 @item @code{mpfr_remainder} and @code{mpfr_remquo} in MPFR 2.3.
+
+@item @code{mpfr_rint_roundeven} and @code{mpfr_roundeven} in MPFR 3.2.
 
 @item @code{mpfr_round_nearest_away} in MPFR 3.2.
 
