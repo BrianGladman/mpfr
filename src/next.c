@@ -21,6 +21,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* Note concerning the exceptions: In case of NaN result, the NaN flag is
+ * set as usual. No underflow or overflow is generated (this contradicts
+ * the obsolete IEEE 754-1985 standard for Nextafter, but conforms to the
+ * current standard IEEE 754-2008 for nextUp and nextDown).
+ */
+
 #include "mpfr-impl.h"
 
 void
