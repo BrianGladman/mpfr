@@ -271,13 +271,6 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_allocate_func)   _MPFR_PRO
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
 
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_ROOTREM)
-#ifndef __gmpn_rootrem
-  __MPFR_DECLSPEC mp_size_t __gmpn_rootrem _MPFR_PROTO ((mp_limb_t*,
-                    mp_limb_t*, mp_limb_t*, mp_size_t, mp_limb_t));
-#endif
-#endif
-
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q
   __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q _MPFR_PROTO ((mp_limb_t*,

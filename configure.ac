@@ -633,7 +633,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 )
 LD_RUN_PATH="$saved_LD_RUN_PATH"
 
-dnl Warning! __gmpn_rootrem is an internal GMP symbol; thus its behavior
+dnl __gmpn_sbpi1_divappr_q is an internal GMP symbol; thus its behavior
 dnl may change or this symbol may be removed in the future (without being
 dnl handled by the library versioning system, which is even worse, as this
 dnl can mean undetected incompatibilities in case of GMP library upgrade,
@@ -642,8 +642,7 @@ dnl WANT_GMP_INTERNALS is defined. Only the GMP public API should be used
 dnl by default, in particular by binary distributions. Moreover the check
 dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
-dnl Same for __gmpn_sbpi1_divappr_q.
-AC_CHECK_FUNCS([__gmpn_rootrem __gmpn_sbpi1_divappr_q])
+AC_CHECK_FUNCS([__gmpn_sbpi1_divappr_q])
 
 MPFR_CHECK_MP_LIMB_T_VS_LONG
 
