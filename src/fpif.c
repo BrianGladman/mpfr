@@ -177,6 +177,8 @@ mpfr_fpif_store_precision (unsigned char *buffer, size_t *buffer_size,
   return result;
 }
 
+#define BUFFER_SIZE 8
+
 /*
  * fh : IN : file handler
  * return the precision stored in the binary buffer, 0 in case of error
@@ -186,7 +188,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
 {
   mpfr_prec_t precision;
   size_t precision_size;
-  unsigned char buffer[8];
+  unsigned char buffer[BUFFER_SIZE];
 
   if (fh == NULL)
     return 0;
@@ -199,6 +201,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
     return precision_size - 7;
 
   precision_size++;
+  MPFR_ASSERTD (precision_size <= BUFFER_SIZE);
 
   /* Read the precision in little-endian format. */
   if (fread (buffer, precision_size, 1, fh) != 1)
