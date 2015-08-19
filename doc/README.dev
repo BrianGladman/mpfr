@@ -174,8 +174,14 @@ To make a release (for the MPFR team):
   3) Update the NEWS file, in particular say if the release is binary
      and/or API compatible (or not) with previous releases.
      Also update the "API Compatibility" section in the manual (mpfr.texi).
+     Check with abi-compliance-checker (ABI Compliance Checker)[*], on the
+     latest MPFR releases built with no configure options (except --prefix),
+     that no changes have been missed. Note that abi-compliance-checker can
+     only check the symbols, types and constants; it cannot detect just a
+     change in the behavior, thus may miss some incompatibilities.
      Update the FAQ.html file with update-faq (and check it) in the doc
      directory.
+     [*] http://lvc.github.io/abi-compliance-checker/
 
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
