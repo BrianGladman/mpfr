@@ -533,6 +533,23 @@ error
  AC_MSG_ERROR([GMP 4.2.0 or newer is required])
 ])
 
+dnl Check if gmp.h is usable at link time; this may detect errors such as
+dnl with GMP 4.1, which uses "extern __inline__" unconditionally with all
+dnl GCC versions, which breaks by default with GCC 5 (this problem with
+dnl GMP 4.1 is no longer possible as we now require GMP 4.2.0 or newer,
+dnl but the same kind of problem may occur in the future).
+dnl Note: No linking is done against the GMP library at this time, as we
+dnl do not use any GMP symbol. The goal of this test is to avoid obscure
+dnl errors with the following gmp.h tests.
+AC_MSG_CHECKING(usable gmp.h at link time)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+]],[[]])],[AC_MSG_RESULT(yes)],[
+ AC_MSG_RESULT(no)
+ AC_MSG_ERROR([There is an incompatibility between gmp.h and the compiler.
+See 'config.log' for details.])
+])
+
 dnl Check if we can use internal header files of GMP (only --with-gmp-build)
 if test "$use_gmp_build" = yes ; then
    AC_MSG_CHECKING(for gmp internal files)
