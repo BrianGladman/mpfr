@@ -538,16 +538,16 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_nan (x);
-  mpfr_clear_erangeflag ();
+  mpfr_clear_flags ();
   d = mpfr_get_ui (x, MPFR_RNDN);
-  if (d != 0 || !mpfr_erangeflag_p ())
+  if (d != 0 || __gmpfr_flags != MPFR_FLAGS_ERANGE)
     {
       printf ("ERROR for get_ui + NaN\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   d = mpfr_get_si (x, MPFR_RNDN);
-  if (d != 0 || !mpfr_erangeflag_p ())
+  if (d != 0 || __gmpfr_flags != MPFR_FLAGS_ERANGE)
     {
       printf ("ERROR for get_si + NaN\n");
       exit (1);
