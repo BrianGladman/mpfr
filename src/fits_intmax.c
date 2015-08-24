@@ -33,6 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
+  mpfr_flags_t saved_flags;
   mpfr_exp_t e;
   int prec;
   mpfr_t x, y;
@@ -85,6 +86,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   MPFR_ASSERTD (e == prec);
 
   /* hard case: first round to prec bits, then check */
+  saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
   mpfr_set (x, f, rnd);
 
@@ -101,6 +103,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
     }
 
   mpfr_clear (x);
+  __gmpfr_flags = saved_flags;
   return res;
 }
 

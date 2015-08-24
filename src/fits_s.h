@@ -29,6 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
+  mpfr_flags_t saved_flags;
   mpfr_exp_t e;
   int prec;
   mpfr_t x;
@@ -81,9 +82,11 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   MPFR_ASSERTD (e == prec);
 
   /* hard case: first round to prec bits, then check */
+  saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
   mpfr_set (x, f, rnd);
   res = neg ? (mpfr_cmp_si (x, MINIMUM) >= 0) : (MPFR_GET_EXP (x) == e);
   mpfr_clear (x);
+  __gmpfr_flags = saved_flags;
   return res;
 }
