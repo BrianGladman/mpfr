@@ -45,13 +45,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/x86/core2/mparam.h"
 #include "x86/core2/mparam.h"
 
-#elif defined (__tune_k8__) || defined (__amd64__) /* AMD 64, a.k.a. x86_64 */
-/* FIXME: The path is misleading since once may think that an AMD processor
-   has been detected, while __amd64__ is generic to all x86 processors with
-   a 64-bit ABI (amd64, a.k.a. x86_64). Move the file to some other place?
-   e.g. src/generic/amd64/mparam.h, or perhaps move subdirectories of "amd"
-   into x86_64 as done by GMP ("k8" wouldn't be wrong as this is the default
-   x86_64 architecture for GCC). */
+#elif defined (__tune_k8__) && defined (__amd64__) /* AMD K8 */
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
 
