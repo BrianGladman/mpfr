@@ -129,25 +129,43 @@ main (void)
         mpfr_mul_2exp (x, x, 40, MPFR_RNDN);
         CHECK_ALL (9, !!);
 
-        /* Check min/max of the types (except 0 for unsigned types) */
+        /* Check the limits of the types (except 0 for unsigned types) */
         mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
         FTEST (10, !, mpfr_fits_ulong_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (11, !!, mpfr_fits_ulong_p);
         mpfr_set_si (x, LONG_MAX, MPFR_RNDN);
-        FTEST (11, !, mpfr_fits_slong_p);
-        mpfr_set_si (x, LONG_MIN, MPFR_RNDN);
         FTEST (12, !, mpfr_fits_slong_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (13, !!, mpfr_fits_slong_p);
+        mpfr_set_si (x, LONG_MIN, MPFR_RNDN);
+        FTEST (14, !, mpfr_fits_slong_p);
+        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+        FTEST (15, !!, mpfr_fits_slong_p);
         mpfr_set_ui (x, UINT_MAX, MPFR_RNDN);
-        FTEST (13, !, mpfr_fits_uint_p);
+        FTEST (16, !, mpfr_fits_uint_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (17, !!, mpfr_fits_uint_p);
         mpfr_set_si (x, INT_MAX, MPFR_RNDN);
-        FTEST (14, !, mpfr_fits_sint_p);
+        FTEST (18, !, mpfr_fits_sint_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (19, !!, mpfr_fits_sint_p);
         mpfr_set_si (x, INT_MIN, MPFR_RNDN);
-        FTEST (15, !, mpfr_fits_sint_p);
+        FTEST (20, !, mpfr_fits_sint_p);
+        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+        FTEST (21, !!, mpfr_fits_sint_p);
         mpfr_set_ui (x, USHRT_MAX, MPFR_RNDN);
-        FTEST (16, !, mpfr_fits_ushort_p);
+        FTEST (22, !, mpfr_fits_ushort_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (23, !!, mpfr_fits_ushort_p);
         mpfr_set_si (x, SHRT_MAX, MPFR_RNDN);
-        FTEST (17, !, mpfr_fits_sshort_p);
+        FTEST (24, !, mpfr_fits_sshort_p);
+        mpfr_add_ui (x, x, 1, MPFR_RNDN);
+        FTEST (25, !!, mpfr_fits_sshort_p);
         mpfr_set_si (x, SHRT_MIN, MPFR_RNDN);
-        FTEST (18, !, mpfr_fits_sshort_p);
+        FTEST (26, !, mpfr_fits_sshort_p);
+        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+        FTEST (27, !!, mpfr_fits_sshort_p);
 
         /* Check negative op */
         for (i = 1; i <= 4; i++)
@@ -157,12 +175,12 @@ main (void)
             mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
             mpfr_rint (y, x, (mpfr_rnd_t) r);
             inv = MPFR_NOTZERO (y);
-            FTEST (19, inv ^ !, mpfr_fits_ulong_p);
-            FTEST (19,       !, mpfr_fits_slong_p);
-            FTEST (19, inv ^ !, mpfr_fits_uint_p);
-            FTEST (19,       !, mpfr_fits_sint_p);
-            FTEST (19, inv ^ !, mpfr_fits_ushort_p);
-            FTEST (19,       !, mpfr_fits_sshort_p);
+            FTEST (40, inv ^ !, mpfr_fits_ulong_p);
+            FTEST (40,       !, mpfr_fits_slong_p);
+            FTEST (40, inv ^ !, mpfr_fits_uint_p);
+            FTEST (40,       !, mpfr_fits_sint_p);
+            FTEST (40, inv ^ !, mpfr_fits_ushort_p);
+            FTEST (40,       !, mpfr_fits_sshort_p);
           }
       }
 
@@ -204,7 +222,7 @@ main (void)
       mpfr_set_ui_2exp (x, 42, sizeof (uintmax_t) * 32, MPFR_RNDN);
       CHECK_MAX (8, !!);
 
-      /* Check all other values */
+      /* Check the limits of the types (except 0 for uintmax_t) */
       mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
       FTEST (10, !, mpfr_fits_uintmax_p);
       mpfr_add_ui (x, x, 1, MPFR_RNDN);
@@ -226,8 +244,8 @@ main (void)
           mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
           mpfr_rint (y, x, (mpfr_rnd_t) r);
           inv = MPFR_NOTZERO (y);
-          FTEST (19, inv ^ !, mpfr_fits_uintmax_p);
-          FTEST (19,       !, mpfr_fits_intmax_p);
+          FTEST (40, inv ^ !, mpfr_fits_uintmax_p);
+          FTEST (40,       !, mpfr_fits_intmax_p);
         }
     }
 
