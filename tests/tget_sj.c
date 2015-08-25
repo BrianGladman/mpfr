@@ -49,45 +49,48 @@ check_sj (intmax_t s, mpfr_ptr x)
     {
       int rnd;
       int inex;
-      mpfr_flags_t ex_flags, flags;
+      int fi;
+      mpfr_flags_t flags[2] = { 0, MPFR_FLAGS_ALL }, ex_flags, gt_flags;
 
       inex = mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
       inex = mpfr_add (y, y, x, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
       /* y = x + i/4, with -1 <= i <= 1 */
-      ex_flags = i != 0 ? MPFR_FLAGS_INEXACT : 0;
       RND_LOOP (rnd)
-        {
-          intmax_t r;
+        for (fi = 0; fi < numberof (flags); fi++)
+          {
+            intmax_t r;
 
-          if (rnd == MPFR_RNDZ && i < 0 && s >= 0)
-            continue;
-          if (rnd == MPFR_RNDZ && i > 0 && s <= 0)
-            continue;
-          if (rnd == MPFR_RNDD && i < 0)
-            continue;
-          if (rnd == MPFR_RNDU && i > 0)
-            continue;
-          if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
-                                   (MPFR_IS_NEG(y) && i < 0)))
-            continue;
-          /* rint (y) == x == s */
-          mpfr_clear_flags ();
-          r = mpfr_get_sj (y, (mpfr_rnd_t) rnd);
-          flags = __gmpfr_flags;
-          if (r != s || flags != ex_flags)
-            {
-              printf ("Error in check_sj for y = ");
-              mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
-              printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              printf ("Expected: %jd,", s);
-              flags_out (ex_flags);
-              printf ("Got:      %jd,", r);
-              flags_out (flags);
-              exit (1);
-            }
-        }
+            if (rnd == MPFR_RNDZ && i < 0 && s >= 0)
+              continue;
+            if (rnd == MPFR_RNDZ && i > 0 && s <= 0)
+              continue;
+            if (rnd == MPFR_RNDD && i < 0)
+              continue;
+            if (rnd == MPFR_RNDU && i > 0)
+              continue;
+            if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+                                     (MPFR_IS_NEG(y) && i < 0)))
+              continue;
+            /* rint (y) == x == s */
+            __gmpfr_flags = ex_flags = flags[fi];
+            if (i != 0)
+              ex_flags |= MPFR_FLAGS_INEXACT;
+            r = mpfr_get_sj (y, (mpfr_rnd_t) rnd);
+            gt_flags = __gmpfr_flags;
+            if (r != s || gt_flags != ex_flags)
+              {
+                printf ("Error in check_sj for fi = %d, y = ", fi);
+                mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+                printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                printf ("Expected: %jd,", s);
+                flags_out (ex_flags);
+                printf ("Got:      %jd,", r);
+                flags_out (gt_flags);
+                exit (1);
+              }
+          }
     }
 
   mpfr_clear (y);
@@ -99,49 +102,52 @@ check_uj (uintmax_t u, mpfr_ptr x)
   mpfr_t y;
   int i;
 
-  mpfr_init2 (y, MPFR_PREC (x));
+  mpfr_init2 (y, MPFR_PREC (x) + 2);
 
   for (i = -1; i <= 1; i++)
     {
       int rnd;
       int inex;
-      mpfr_flags_t ex_flags, flags;
+      int fi;
+      mpfr_flags_t flags[2] = { 0, MPFR_FLAGS_ALL }, ex_flags, gt_flags;
 
       inex = mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
       inex = mpfr_add (y, y, x, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
       /* y = x + i/4, with -1 <= i <= 1 */
-      ex_flags = i != 0 ? MPFR_FLAGS_INEXACT : 0;
       RND_LOOP (rnd)
-        {
-          uintmax_t r;
+        for (fi = 0; fi < numberof (flags); fi++)
+          {
+            uintmax_t r;
 
-          if (rnd == MPFR_RNDZ && i < 0)
-            continue;
-          if (rnd == MPFR_RNDD && i < 0)
-            continue;
-          if (rnd == MPFR_RNDU && i > 0)
-            continue;
-          if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
-                                   (MPFR_IS_NEG(y) && i < 0)))
-            continue;
-          /* rint (y) == x == u */
-          mpfr_clear_flags ();
-          r = mpfr_get_uj (y, (mpfr_rnd_t) rnd);
-          flags = __gmpfr_flags;
-          if (r != u || flags != ex_flags)
-            {
-              printf ("Error in check_uj for y = ");
-              mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
-              printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              printf ("Expected: %ju,", u);
-              flags_out (ex_flags);
-              printf ("Got:      %ju,", r);
-              flags_out (flags);
-              exit (1);
-            }
-        }
+            if (rnd == MPFR_RNDZ && i < 0)
+              continue;
+            if (rnd == MPFR_RNDD && i < 0)
+              continue;
+            if (rnd == MPFR_RNDU && i > 0)
+              continue;
+            if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+                                     (MPFR_IS_NEG(y) && i < 0)))
+              continue;
+            /* rint (y) == x == u */
+            __gmpfr_flags = ex_flags = flags[fi];
+            if (i != 0)
+              ex_flags |= MPFR_FLAGS_INEXACT;
+            r = mpfr_get_uj (y, (mpfr_rnd_t) rnd);
+            gt_flags = __gmpfr_flags;
+            if (r != u || gt_flags != ex_flags)
+              {
+                printf ("Error in check_uj for fi = %d, y = ", fi);
+                mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+                printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                printf ("Expected: %ju,", u);
+                flags_out (ex_flags);
+                printf ("Got:      %ju,", r);
+                flags_out (gt_flags);
+                exit (1);
+              }
+          }
     }
 
   mpfr_clear (y);
