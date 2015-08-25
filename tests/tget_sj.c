@@ -37,6 +37,12 @@ main (void)
 
 #else
 
+#ifdef MPFR_PRINTF_MAXLM
+#define PRMAX(SPEC,V) printf (" %" MPFR_PRINTF_MAXLM SPEC ",", V)
+#else
+#define PRMAX(SPEC,V) (void) 0
+#endif
+
 static void
 check_sj (intmax_t s, mpfr_ptr x)
 {
@@ -84,9 +90,11 @@ check_sj (intmax_t s, mpfr_ptr x)
                 printf ("Error in check_sj for fi = %d, y = ", fi);
                 mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
                 printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                printf ("Expected: %jd,", s);
+                printf ("Expected:");
+                PRMAX ("d", s);
                 flags_out (ex_flags);
-                printf ("Got:      %jd,", r);
+                printf ("Got:     ");
+                PRMAX ("d", r);
                 flags_out (gt_flags);
                 exit (1);
               }
@@ -141,9 +149,11 @@ check_uj (uintmax_t u, mpfr_ptr x)
                 printf ("Error in check_uj for fi = %d, y = ", fi);
                 mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
                 printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                printf ("Expected: %ju,", u);
+                printf ("Expected:");
+                PRMAX ("u", u);
                 flags_out (ex_flags);
-                printf ("Got:      %ju,", r);
+                printf ("Got:     ");
+                PRMAX ("u", r);
                 flags_out (gt_flags);
                 exit (1);
               }
@@ -165,9 +175,11 @@ check_uj (uintmax_t u, mpfr_ptr x)
         continue;                                                       \
       printf ("Error in check_erange for %s, %s, fi = %d on %s\n",      \
               #F, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), fi, INPUT);   \
-      printf ("Expected: %j" FMT ",", VALUE);                           \
+      printf ("Expected:");                                             \
+      PRMAX (FMT, VALUE);                                               \
       flags_out (ex_flags);                                             \
-      printf ("Got:      %j" FMT ",", RES);                             \
+      printf ("Got:     ");                                             \
+      PRMAX (FMT, RES);                                                 \
       flags_out (gt_flags);                                             \
       exit (1);                                                         \
     }                                                                   \
@@ -251,7 +263,9 @@ test_get_uj_smallneg (void)
               printf ("ERROR for get_uj + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-              printf ("Expected 0, got %ju\n", u);
+#ifdef MPFR_PRINTF_MAXLM
+              printf ("Expected 0, got %" MPFR_PRINTF_MAXLM "u\n", u);
+#endif
               exit (1);
             }
           if ((s == 0) ^ !mpfr_erangeflag_p ())
@@ -261,9 +275,12 @@ test_get_uj_smallneg (void)
               printf ("ERROR for get_uj + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-              printf ("The rounded integer (%jd) is%s representable in "
-                      "unsigned long,\nbut the erange flag is%s set.\n",
-                      s, Not, Not);
+              printf ("The rounded integer ");
+#ifdef MPFR_PRINTF_MAXLM
+              printf("(%" MPFR_PRINTF_MAXLM "d) ", s);
+#endif
+              printf("is%s representable in unsigned long,\n"
+                     "but the erange flag is%s set.\n", Not, Not);
               exit (1);
             }
         }
