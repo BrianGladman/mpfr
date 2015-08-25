@@ -164,6 +164,25 @@ if test "$ac_cv_type_intmax_t" = yes; then
   if test "$mpfr_cv_have_intmax_max" = "yes"; then
     AC_DEFINE(MPFR_HAVE_INTMAX_MAX,1,[Define if you have a working INTMAX_MAX.])
   fi
+  AC_CACHE_CHECK([for working 'j' printf length modifier],
+                 mpfr_cv_have_printf_j, [
+    saved_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+    AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <string.h>
+#include "mpfr-intmax.h"
+]],[[
+  char s[64];
+  sprintf (s, "%jd %ju", (intmax_t) -17, (uintmax_t) 42);
+  return strcmp (s, "-17 42") != 0;
+]])],
+      mpfr_cv_have_printf_j=yes, mpfr_cv_have_printf_j=no)
+    CPPFLAGS="$saved_CPPFLAGS"
+  ])
+  if test "$mpfr_cv_have_printf_j" = "yes"; then
+    AC_DEFINE(MPFR_HAVE_PRINTF_J,1,
+              [Define if you have a working 'j' printf length modifier])
+  fi
 fi
 
 AC_CHECK_TYPE( [union fpc_csr],
