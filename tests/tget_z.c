@@ -151,34 +151,59 @@ special (void)
   int inex;
   mpfr_t x;
   mpz_t z;
-  int i;
+  int i, fi;
+  int rnd;
   mpfr_exp_t e;
+  mpfr_flags_t flags[3] = { 0, MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE,
+                            MPFR_FLAGS_ALL }, ex_flags, gt_flags;
 
   mpfr_init2 (x, 2);
   mpz_init (z);
 
-  for (i = -1; i <= 1; i++)
-    {
-      if (i != 0)
-        mpfr_set_nan (x);
-      else
-        mpfr_set_inf (x, i);
-      mpfr_clear_flags ();
-      inex = mpfr_get_z (z, x, MPFR_RNDN);
-      if (!mpfr_erangeflag_p () || inex != 0 || mpz_cmp_ui (z, 0) != 0)
+  RND_LOOP (rnd)
+    for (i = -1; i <= 1; i++)
+      for (fi = 0; fi < numberof (flags); fi++)
         {
-          printf ("special() failed on mpfr_get_z for i = %d\n", i);
-          exit (1);
+          ex_flags = flags[fi] | MPFR_FLAGS_ERANGE;
+          if (i != 0)
+            mpfr_set_nan (x);
+          else
+            mpfr_set_inf (x, i);
+          __gmpfr_flags = flags[fi];
+          inex = mpfr_get_z (z, x, (mpfr_rnd_t) rnd);
+          gt_flags = __gmpfr_flags;
+          if (gt_flags != ex_flags || inex != 0 || mpz_cmp_ui (z, 0) != 0)
+            {
+              printf ("special() failed on mpfr_get_z"
+                      " for %s, i = %d, fi = %d\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), i, fi);
+              printf ("Expected z = 0, inex = 0,");
+              flags_out (ex_flags);
+              printf ("Got      z = ");
+              mpz_out_str (stdout, 10, z);
+              printf (", inex = %d,", inex);
+              flags_out (gt_flags);
+              exit (1);
+            }
+          __gmpfr_flags = flags[fi];
+          e = mpfr_get_z_2exp (z, x);
+          gt_flags = __gmpfr_flags;
+          if (gt_flags != ex_flags || e != __gmpfr_emin ||
+              mpz_cmp_ui (z, 0) != 0)
+            {
+              printf ("special() failed on mpfr_get_z_2exp"
+                      " for %s, i = %d, fi = %d\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), i, fi);
+              printf ("Expected z = 0, e = %" MPFR_EXP_FSPEC "d,",
+                      (mpfr_eexp_t) __gmpfr_emin);
+              flags_out (ex_flags);
+              printf ("Got      z = ");
+              mpz_out_str (stdout, 10, z);
+              printf (", e = %" MPFR_EXP_FSPEC "d,", (mpfr_eexp_t) e);
+              flags_out (gt_flags);
+              exit (1);
+            }
         }
-      mpfr_clear_flags ();
-      e = mpfr_get_z_2exp (z, x);
-      if (!mpfr_erangeflag_p () || e != __gmpfr_emin ||
-          mpz_cmp_ui (z, 0) != 0)
-        {
-          printf ("special() failed on mpfr_get_z_2exp for i = %d\n", i);
-          exit (1);
-        }
-    }
 
   mpfr_clear (x);
   mpz_clear (z);
