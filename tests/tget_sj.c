@@ -261,7 +261,7 @@ test_get_uj_smallneg (void)
               printf ("ERROR for get_uj + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-              printf ("The rounding integer (%jd) is%s representable in "
+              printf ("The rounded integer (%jd) is%s representable in "
                       "unsigned long,\nbut the erange flag is%s set.\n",
                       s, Not, Not);
               exit (1);
