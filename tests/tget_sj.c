@@ -43,15 +43,21 @@ check_sj (intmax_t s, mpfr_ptr x)
   mpfr_t y;
   int i;
 
-  mpfr_init2 (y, MPFR_PREC (x));
+  mpfr_init2 (y, MPFR_PREC (x) + 2);
 
   for (i = -1; i <= 1; i++)
     {
       int rnd;
+      int inex;
+      mpfr_flags_t ex_flags, flags;
 
-      mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
-      mpfr_add (y, y, x, MPFR_RNDN);
-      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+      inex = mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_add (y, y, x, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      /* y = x + i/4, with -1 <= i <= 1 */
+      ex_flags = i != 0 ? MPFR_FLAGS_INEXACT : 0;
+      RND_LOOP (rnd)
         {
           intmax_t r;
 
@@ -64,16 +70,21 @@ check_sj (intmax_t s, mpfr_ptr x)
           if (rnd == MPFR_RNDU && i > 0)
             continue;
           if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
-                                  (MPFR_IS_NEG(y) && i < 0)))
+                                   (MPFR_IS_NEG(y) && i < 0)))
             continue;
           /* rint (y) == x == s */
+          mpfr_clear_flags ();
           r = mpfr_get_sj (y, (mpfr_rnd_t) rnd);
-          if (r != s)
+          flags = __gmpfr_flags;
+          if (r != s || flags != ex_flags)
             {
               printf ("Error in check_sj for y = ");
               mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              printf ("Got %jd instead of %jd.\n", r, s);
+              printf ("Expected: %jd,", s);
+              flags_out (ex_flags);
+              printf ("Got:      %jd,", r);
+              flags_out (flags);
               exit (1);
             }
         }
@@ -93,10 +104,16 @@ check_uj (uintmax_t u, mpfr_ptr x)
   for (i = -1; i <= 1; i++)
     {
       int rnd;
+      int inex;
+      mpfr_flags_t ex_flags, flags;
 
-      mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
-      mpfr_add (y, y, x, MPFR_RNDN);
-      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+      inex = mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_add (y, y, x, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      /* y = x + i/4, with -1 <= i <= 1 */
+      ex_flags = i != 0 ? MPFR_FLAGS_INEXACT : 0;
+      RND_LOOP (rnd)
         {
           uintmax_t r;
 
@@ -107,16 +124,21 @@ check_uj (uintmax_t u, mpfr_ptr x)
           if (rnd == MPFR_RNDU && i > 0)
             continue;
           if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
-                                  (MPFR_IS_NEG(y) && i < 0)))
+                                   (MPFR_IS_NEG(y) && i < 0)))
             continue;
           /* rint (y) == x == u */
+          mpfr_clear_flags ();
           r = mpfr_get_uj (y, (mpfr_rnd_t) rnd);
-          if (r != u)
+          flags = __gmpfr_flags;
+          if (r != u || flags != ex_flags)
             {
               printf ("Error in check_uj for y = ");
               mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" in %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              printf ("Got %ju instead of %ju.\n", r, u);
+              printf ("Expected: %ju,", u);
+              flags_out (ex_flags);
+              printf ("Got:      %ju,", r);
+              flags_out (flags);
               exit (1);
             }
         }
