@@ -164,24 +164,33 @@ if test "$ac_cv_type_intmax_t" = yes; then
   if test "$mpfr_cv_have_intmax_max" = "yes"; then
     AC_DEFINE(MPFR_HAVE_INTMAX_MAX,1,[Define if you have a working INTMAX_MAX.])
   fi
-  AC_CACHE_CHECK([for working 'j' printf length modifier],
-                 mpfr_cv_have_printf_j, [
+  AC_CACHE_CHECK([for working printf length modifier for intmax_t],
+                 mpfr_cv_printf_maxlm, [
     saved_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-    AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+    for modifier in j ll l
+    do
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
 #include <string.h>
 #include "mpfr-intmax.h"
 ]],[[
   char s[64];
-  sprintf (s, "%jd %ju", (intmax_t) -17, (uintmax_t) 42);
+  sprintf (s, "%${modifier}d %${modifier}u",
+           (intmax_t) -17, (uintmax_t) 42);
   return strcmp (s, "-17 42") != 0;
 ]])],
-      mpfr_cv_have_printf_j=yes, mpfr_cv_have_printf_j=no)
+       mpfr_cv_printf_maxlm=${modifier}; break,
+       mpfr_cv_printf_maxlm=none,
+dnl We assume that j is working when cross-compiling.
+       mpfr_cv_printf_maxlm=j; break
+      )
+    done
     CPPFLAGS="$saved_CPPFLAGS"
   ])
-  if test "$mpfr_cv_have_printf_j" = "yes"; then
-    AC_DEFINE(MPFR_HAVE_PRINTF_J,1,
-              [Define if you have a working 'j' printf length modifier])
+  if test "$mpfr_cv_printf_maxlm" != "none"; then
+    AC_DEFINE_UNQUOTED([MPFR_PRINTF_MAXLM],["$mpfr_cv_printf_maxlm"],
+      [Define to a working printf length modifier for intmax_t])
   fi
 fi
 
