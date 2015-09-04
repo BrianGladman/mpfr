@@ -15,6 +15,8 @@ LDADD = $(top_builddir)/src/libmpfr.la
 
 EXTRA_PROGRAMS = mpfrbench
 
+EXTRA_DIST = README
+
 noinst_HEADERS = benchtime.h
 
 bench : mpfrbench
