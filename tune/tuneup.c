@@ -280,9 +280,10 @@ speed_mpfr_sincos (struct speed_params *s)
 }
 
 /* Setup mpfr_mul, mpfr_sqr and mpfr_div */
-/* since mpfr_mul() deals with both mul and sqr, and contains an assert that
+/* Since mpfr_mul() deals with both mul and sqr, and contains an assert that
    the thresholds are >= 1, we initialize both values to 1 to avoid a failed
-   assertion */
+   assertion (let's recall that static assertions are replaced by normal
+   dynamic assertions here). */
 mpfr_prec_t mpfr_mul_threshold = 1;
 mpfr_prec_t mpfr_sqr_threshold = 1;
 mpfr_prec_t mpfr_div_threshold;
