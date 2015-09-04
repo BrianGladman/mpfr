@@ -60,6 +60,8 @@ do
       continue ;;
     src/get_patches.c)
       file="tools/get_patches.sh" ;;
+    src/mparam.h)
+      file="src/mparam_h.in" ;;
     */mparam.h)
       y="2005-" ;;
   esac
