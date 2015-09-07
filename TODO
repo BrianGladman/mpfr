@@ -526,8 +526,9 @@ Table of contents:
   and mpz_clear (just at the end). So, the differences in the timings are
   very surprising, even with a bad malloc implementation. Or is the reason
   due to that due to mpz_t caching, the mpz_t's are preallocated with a
-  size that is large enough, thus avoiding internal reallocations in GMP?
-  (In such a case, mpz_t caching would not be the solution.)
+  size that is large enough, thus avoiding internal reallocations in GMP
+  (with memory copies)? In such a case, mpz_t caching would not be the
+  solution, but mpz_init2 (see GMP manual, 3.11 "Efficiency").
 
 
 ##############################################################################
