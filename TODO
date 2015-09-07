@@ -502,6 +502,33 @@ Table of contents:
 
 - use symbol versioning.
 
+- check whether mpz_t caching is necessary. Timings with -static with
+  details about the C / C library implementation should be put somewhere
+  as a comment in the source or in the doc. Using -static is important
+  because otherwise the cache saves the dynamic call to mpz_init and
+  mpz_clear; so, what we're measuring is not clear. See thread:
+    https://gmplib.org/list-archives/gmp-devel/2015-September/004147.html
+  Summary: It will not be integrated in GMP because 1) This yields
+  problems with threading (in MPFR, we have TLS variables, but this is
+  not the case of GMP). 2) The gain (if confirmed with -static) would
+  be due to a poor malloc implementation (timings would depend on the
+  platform). 3) Applications would use more RAM.
+  Additional notes [VL]: the major differences in the timings given
+  by Patrick in 2014-01 were:
+    Before:
+    arccos(x)  took 0.054689 ms (32767 eval in 1792 ms)
+    arctan(x)  took 0.042116 ms (32767 eval in 1380 ms)
+    After:
+    arccos(x)  took 0.043580 ms (32767 eval in 1428 ms)
+    arctan(x)  took 0.035401 ms (32767 eval in 1160 ms)
+  mpfr_acos doesn't use mpz, but calls mpfr_atan, so that the issue comes
+  from mpfr_atan, which uses mpz a lot. But there are very few mpz_init
+  and mpz_clear (just at the end). So, the differences in the timings are
+  very surprising, even with a bad malloc implementation. Or is the reason
+  due to that due to mpz_t caching, the mpz_t's are preallocated with a
+  size that is large enough, thus avoiding internal reallocations in GMP?
+  (In such a case, mpz_t caching would not be the solution.)
+
 
 ##############################################################################
 7. Portability
