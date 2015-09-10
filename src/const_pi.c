@@ -31,6 +31,16 @@ MPFR_DECL_INIT_CACHE(__gmpfr_logging_pi, mpfr_const_pi_internal);
 MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi = __gmpfr_normal_pi;
 #endif
 
+#ifdef MPFR_WIN_THREAD_SAFE_DLL
+# ifndef MPFR_USE_LOGGING
+mpfr_cache_t   * __gmpfr_cache_const_pi_f() { return &__gmpfr_cache_const_pi; }
+# else
+mpfr_cache_t   * __gmpfr_normal_pi_f()      { return &__gmpfr_normal_pi; }
+mpfr_cache_t   * __gmpfr_logging_pi_f()     { return &__gmpfr_logging_pi; }
+mpfr_cache_ptr * __gmpfr_cache_const_pi_f() { return &__gmpfr_cache_const_pi; }
+# endif
+#endif
+
 /* Set User Interface */
 #undef mpfr_const_pi
 int
