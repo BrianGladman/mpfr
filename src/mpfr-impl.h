@@ -23,6 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
+/* Include config.h before using ANY configure macros if needed. */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 /* Let's include some standard headers unconditionally as they are
    already needed by several source files or when some options are
    enabled/disabled, and it is easy to forget them (some configure
@@ -63,12 +68,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /******************************************************
  ****************** Include files *********************
  ******************************************************/
-
-/* Include 'config.h' before using ANY configure macros if needed
-   NOTE: It isn't MPFR 'config.h', but GMP's one! */
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
 
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
