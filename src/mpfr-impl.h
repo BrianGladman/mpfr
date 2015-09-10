@@ -204,28 +204,86 @@ struct __gmpfr_cache_s {
 typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
 
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
+#if defined(MPFR_USE_THREAD_SAFE) && __GMP_LIBGMP_DLL
+# define MPFR_WIN_THREAD_SAFE_DLL 1
+#endif
 
-#ifndef MPFR_USE_LOGGING
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
-#else
+/* Detect some possible inconsistencies under Unix. */
+#if defined(__unix__)
+# if defined(_WIN32)
+#  error "Both __unix__ and _WIN32 are defined"
+# endif
+# if __GMP_LIBGMP_DLL
+#  error "__unix__ is defined and __GMP_LIBGMP_DLL is true"
+# endif
+# if defined(MPFR_WIN_THREAD_SAFE_DLL)
+#  error "Both __unix__ and MPFR_WIN_THREAD_SAFE_DLL are defined"
+# endif
+#endif
+
+#if defined(__MPFR_WITHIN_MPFR) || !defined(MPFR_WIN_THREAD_SAFE_DLL)
+extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
+extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
+extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
+extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
+extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
+# ifndef MPFR_USE_LOGGING
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
+# else
 /* Two constants are used by the logging functions (via mpfr_fprintf,
    then mpfr_log, for the base conversion): pi and log(2). Since the
    mpfr_cache function isn't re-entrant when working on the same cache,
    we need to define two caches for each constant. */
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_normal_pi;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_normal_log2;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_logging_pi;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_logging_log2;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi;
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2;
+extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_normal_pi;
+extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_normal_log2;
+extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_logging_pi;
+extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_logging_log2;
+extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi;
+extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2;
+# endif
+#endif
+
+#ifdef MPFR_WIN_THREAD_SAFE_DLL
+__MPFR_DECLSPEC mpfr_flags_t * __gmpfr_flags_f();
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f();
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f();
+__MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f();
+__MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f();
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f();
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f();
+# ifndef MPFR_USE_LOGGING
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_pi_f();
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_log2_f();
+# else
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_pi_f();
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_log2_f();
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_pi_f();
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_log2_f();
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_pi_f();
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f();
+# endif
+# ifndef __MPFR_WITHIN_MPFR
+#  define __gmpfr_flags                    (*__gmpfr_flags_f())
+#  define __gmpfr_emin                     (*__gmpfr_emin_f())
+#  define __gmpfr_emax                     (*__gmpfr_emax_f())
+#  define __gmpfr_default_fp_bit_precision (*__gmpfr_default_fp_bit_precision_f())
+#  define __gmpfr_default_rounding_mode    (*__gmpfr_default_rounding_mode_f())
+#  define __gmpfr_cache_const_euler        (*__gmpfr_cache_const_euler_f())
+#  define __gmpfr_cache_const_catalan      (*__gmpfr_cache_const_catalan_f())
+#  ifndef MPFR_USE_LOGGING
+#   define __gmpfr_cache_const_pi         (*__gmpfr_cache_const_pi_f())
+#   define __gmpfr_cache_const_log2       (*__gmpfr_cache_const_log2_f())
+#  else
+#   define __gmpfr_normal_pi              (*__gmpfr_normal_pi_f())
+#   define __gmpfr_logging_pi             (*__gmpfr_logging_pi_f())
+#   define __gmpfr_logging_log2           (*__gmpfr_logging_log2_f())
+#   define __gmpfr_cache_const_pi         (*__gmpfr_cache_const_pi_f())
+#   define __gmpfr_cache_const_log2       (*__gmpfr_cache_const_log2_f())
+#  endif
+# endif
 #endif
 
 #define BASE_MAX 62

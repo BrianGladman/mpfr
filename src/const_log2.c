@@ -32,6 +32,16 @@ MPFR_DECL_INIT_CACHE(__gmpfr_logging_log2, mpfr_const_log2_internal);
 MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2 = __gmpfr_normal_log2;
 #endif
 
+#ifdef MPFR_WIN_THREAD_SAFE_DLL
+# ifndef MPFR_USE_LOGGING
+mpfr_cache_t   * __gmpfr_cache_const_log2_f() { return &__gmpfr_cache_const_log2; }
+# else
+mpfr_cache_t   * __gmpfr_normal_log2_f()      { return &__gmpfr_normal_log2; }
+mpfr_cache_t   * __gmpfr_logging_log2_f()     { return &__gmpfr_logging_log2; }
+mpfr_cache_ptr * __gmpfr_cache_const_log2_f() { return &__gmpfr_cache_const_log2; }
+# endif
+#endif
+
 /* Set User interface */
 #undef mpfr_const_log2
 int

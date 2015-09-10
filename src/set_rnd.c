@@ -25,6 +25,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 MPFR_THREAD_ATTR mpfr_rnd_t __gmpfr_default_rounding_mode = MPFR_RNDN;
 
+#ifdef MPFR_WIN_THREAD_SAFE_DLL
+mpfr_rnd_t *
+__gmpfr_default_rounding_mode_f()
+{
+  return &__gmpfr_default_rounding_mode;
+}
+#endif
+
 void
 mpfr_set_default_rounding_mode (mpfr_rnd_t rnd_mode)
 {
