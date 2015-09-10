@@ -23,6 +23,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef __MPFR_TEST_H__
 #define __MPFR_TEST_H__
 
+/* Include config.h before using ANY configure macros if needed. */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 /* The no assertion request doesn't apply to the tests */
 #if defined(MPFR_WANT_ASSERT)
 # if MPFR_WANT_ASSERT < 0
