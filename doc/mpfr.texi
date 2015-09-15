@@ -2602,9 +2602,9 @@ similar way with some fixed rounding mode:
 When @var{op} is a zero or an infinity, set @var{rop} to the same value
 (with the same sign).
 
-The returned value is zero when the result is exact, positive when it is
+The return value is zero when the result is exact, positive when it is
 greater than the original value of @var{op}, and negative when it is smaller.
-More precisely, the returned value is 0 when @var{op} is an integer
+More precisely, the return value is 0 when @var{op} is an integer
 representable in @var{rop}, 1 or @minus{}1 when @var{op} is an integer
 that is not representable in @var{rop}, 2 or @minus{}2 when @var{op} is
 not an integer.
@@ -2642,7 +2642,7 @@ Set @var{rop} to @var{op} rounded to an integer:
 If the result is not representable, it is rounded in the direction @var{rnd}.
 When @var{op} is a zero or an infinity, set @var{rop} to the same value
 (with the same sign).
-The returned value is the ternary value associated with the considered
+The return value is the ternary value associated with the considered
 round-to-integer function (regarded in the same way as any other
 mathematical function).
 
@@ -2787,7 +2787,7 @@ be the case when @var{b} is near from a value exactly representable on
 Return the minimal number of bits required to store the significand of
 @var{x}, and 0 for special values, including 0.
 
-Warning!  The returned value can be less than @code{MPFR_PREC_MIN},
+Warning!  The return value can be less than @code{MPFR_PREC_MIN},
 in particular for the powers of two.  If you use this function together
 with @code{mpfr_prec_round} in order to reduce the memory space occupied
 by a number, you may need to take the maximum of the returned precision
