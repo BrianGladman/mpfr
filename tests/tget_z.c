@@ -72,13 +72,14 @@ check_diff (void)
 static void
 check_one (mpz_ptr z)
 {
-  int    inex;
+  int    inex, ex_inex, same;
   int    sh, neg;
   mpfr_t f;
-  mpz_t  got;
+  mpz_t  got, ex;
 
   mpfr_init2 (f, MAX (mpz_sizeinbase (z, 2), MPFR_PREC_MIN));
   mpz_init (got);
+  mpz_init (ex);
 
   for (sh = -2*GMP_NUMB_BITS ; sh < 2*GMP_NUMB_BITS ; sh++)
     {
@@ -87,46 +88,57 @@ check_one (mpz_ptr z)
 
       if (sh < 0)
         {
-          mpz_tdiv_q_2exp (z, z, -sh);
-          mpfr_div_2exp (f, f, -sh, MPFR_RNDN);
+          mpz_tdiv_q_2exp (ex, z, -sh);
+          inex = mpfr_div_2exp (f, f, -sh, MPFR_RNDN);
         }
       else
         {
-          mpz_mul_2exp (z, z, sh);
-          mpfr_mul_2exp (f, f, sh, MPFR_RNDN);
+          mpz_mul_2exp (ex, z, sh);
+          inex = mpfr_mul_2exp (f, f, sh, MPFR_RNDN);
         }
+      MPFR_ASSERTN (inex == 0);
 
       for (neg = 0; neg <= 1; neg++)
         {
           /* Test (-1)^neg * z * 2^sh */
+          int fi;
+          mpfr_flags_t flags[3] = { 0, MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE,
+                                    MPFR_FLAGS_ALL }, ex_flags, gt_flags;
 
-          inex = mpfr_get_z (got, f, MPFR_RNDZ);
-
-          if (mpz_cmp (got, z) != 0)
+          for (fi = 0; fi < numberof (flags); fi++)
             {
-              printf ("Wrong result for shift=%d\n", sh);
-              printf ("     f "); mpfr_dump (f);
-              printf ("   got "); mpz_dump (got);
-              printf ("  want "); mpz_dump (z);
-              exit (1);
+              ex_inex = - mpfr_cmp_z (f, ex);
+              ex_flags = __gmpfr_flags = flags[fi];
+              if (ex_inex != 0)
+                ex_flags |= MPFR_FLAGS_INEXACT;
+              inex = mpfr_get_z (got, f, MPFR_RNDZ);
+              gt_flags = __gmpfr_flags;
+              same = SAME_SIGN (inex, ex_inex);
+
+              if (mpz_cmp (got, ex) != 0 || !same || gt_flags != ex_flags)
+                {
+                  printf ("Error in check_one for sh=%d, fi=%d\n", sh, fi);
+                  printf ("     f = "); mpfr_dump (f);
+                  printf ("expected "); mpz_dump (ex);
+                  printf ("     got "); mpz_dump (got);
+                  printf ("Expected inex ~ %d, got %d (%s)\n",
+                          inex, ex_inex, same ? "OK" : "wrong");
+                  printf ("Flags:\n");
+                  printf ("      in"); flags_out (gt_flags);
+                  printf ("expected"); flags_out (ex_flags);
+                  printf ("     got"); flags_out (gt_flags);
+                  exit (1);
+                }
             }
 
-          if (! SAME_SIGN (inex, - mpfr_cmp_z (f, z)))
-            {
-              printf ("Wrong inexact value for shift=%d\n", sh);
-              printf ("    f "); mpfr_dump (f);
-              printf ("  got %+d\n", inex);
-              printf (" want %+d\n", -mpfr_cmp_z (f, z));
-              exit (1);
-            }
-
-          mpz_neg (z, z);
+          mpz_neg (ex, ex);
           mpfr_neg (f, f, MPFR_RNDN);
         }
     }
 
   mpfr_clear (f);
   mpz_clear (got);
+  mpz_clear (ex);
 }
 
 static void
