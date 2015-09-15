@@ -1449,6 +1449,19 @@ or the minimum of the corresponding C type, depending on the direction
 of the overflow; the @emph{erange} flag is set too.
 When there is no such range error, if the return value differs from
 @var{op}, i.e., if @var{op} is not an integer, the inexact flag is set.
+@c For the flag specification, we simply followed the historical behavior.
+@c See <https://sympa.inria.fr/sympa/arc/mpfr/2015-07/msg00010.html>.
+@c In summary, this was a consequence of the use of mpfr_rint in case of
+@c no range error. IEEE 754-2008 specifies two kinds of operations: with
+@c inexact flag either affected or not. Here this is the former kind of
+@c operations. The easiest way to get the latter kind of operations is to
+@c save the status of the inexact flag just before the call and restore it
+@c just after (but in user code, there may be other possibilities); this
+@c can be done with mpfr_inexflag_p and mpfr_set_inexflag (knowing that
+@c the inexact flag can only be set, never cleared). A more readable way
+@c with MPFR 3.2+ is to use mpfr_flags_test or mpfr_flags_save to save
+@c the status of the inexact flag, and mpfr_flags_restore to restore it.
+@c The mpfr_get_z function follows the same specification.
 See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
