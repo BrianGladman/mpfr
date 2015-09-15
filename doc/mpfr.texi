@@ -1447,7 +1447,7 @@ If @var{op} is NaN, 0 is returned and the @emph{erange} flag is set.
 If @var{op} is too big for the return type, the function returns the maximum
 or the minimum of the corresponding C type, depending on the direction
 of the overflow; the @emph{erange} flag is set too.
-When there is no such range error, if the returned value differs from
+When there is no such range error, if the return value differs from
 @var{op}, i.e., if @var{op} is not an integer, the inexact flag is set.
 See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
@@ -1506,7 +1506,7 @@ is set and the minimal value of the @code{mpfr_exp_t} type is returned.
 @deftypefun int mpfr_get_z (mpz_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
 @var{rnd}. If @var{op} is NaN or an infinity, the @emph{erange} flag is
-set, @var{rop} is set to 0, and 0 is returned. Otherwise the returned
+set, @var{rop} is set to 0, and 0 is returned. Otherwise the return
 value is zero when @var{rop} is equal to @var{op} (i.e., when @var{op}
 is an integer), positive when it is greater than @var{op}, and negative
 when it is smaller than @var{op}; moreover, if @var{rop} differs from
