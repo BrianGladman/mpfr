@@ -66,30 +66,40 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2] = { 0 };
     }                                           \
   while (0)
 
-/* Accumulate a new [minexp,maxexp[ block into (wp,ws). If e and err denote
+/* Function sum_raw
+ * ================
+ *
+ * Accumulate a new [minexp,maxexp[ block into (wp,ws). If e and err denote
  * the exponents of the computed result and of the error bound respectively,
  * while e - err is less than some given bound (due to cancellation), shift
  * the accumulator and reiterate.
+ *
+ * Inputs:
  *   wp: pointer to the accumulator (least significant limb first).
- *   ws: size of the accumulator.
+ *   ws: size of the accumulator (in limbs).
  *   wq: precision of the accumulator (ws * GMP_NUMB_BITS).
  *   x: array of the input numbers.
- *   n: size of this array (number of inputs).
- *   minexp: exponent of the least significant bit of the block.
- *   maxexp: exponent of the block (maximum exponent + 1).
- *   tp: pointer to a temporary area.
+ *   n: size of this array (number of inputs, regular or not).
+ *   minexp: exponent of the least significant bit of the first block.
+ *   maxexp: exponent of the first block (exponent of its MSB + 1).
+ *   tp: pointer to a temporary area (pre-allocated).
  *   ts: size of this temporary area.
  *   logn: ceil(log2(rn)), where rn is the number of regular inputs.
- *   prec: minimal value of e - err (see below).
+ *   prec: lower bound for e - err (as described above).
  *   ep: pointer to mpfr_exp_t (see below), or a null pointer.
  *   minexpp: pointer to mpfr_exp_t (see below).
  *   maxexpp: pointer to mpfr_exp_t (see below).
- * This function returns the number of cancelled bits (>= 1), or 0
- * if the accumulator is 0 (then the exact sum is necessarily 0).
- * In the former case, the function also returns:
- * - in ep: the exponent e of the computed result;
- * - in minexpp: the last value of minexp.
- * - in maxexpp: the new value of maxexp (for the next iteration).
+ *
+ * This function returns 0 if the accumulator is 0 (which implies that
+ * the exact sum for this sum_raw invocation is 0), otherwise the number
+ * of cancelled bits (>= 1), defined as the number of identical bits on
+ * the most significant part of the accumulator. In the latter case, it
+ * also returns the following data in variables passed by reference:
+ * - in ep: the exponent e of the computed result (unless ep is NULL);
+ * - in minexpp: the last value of minexp;
+ * - in maxexpp: the new value of maxexp (for the next iteration after
+ *   the first invocation of sum_raw in the main code).
+ *
  * Notes:
  * - minexp is also the exponent of the least significant bit of the
  *   accumulator;
