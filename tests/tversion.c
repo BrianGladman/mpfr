@@ -33,9 +33,8 @@ main (void)
 
   printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING);
 
-#ifdef __GNUC__
-  printf ("[tversion] GCC: %d.%d.%d\n",
-          __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#if defined(__GNUC__) && defined(__VERSION__)
+  printf ("[tversion] GCC: %s\n", __VERSION__);
 #endif
 #ifdef __MPIR_VERSION
   printf ("[tversion] MPIR: header %d.%d.%d, library %s\n",
