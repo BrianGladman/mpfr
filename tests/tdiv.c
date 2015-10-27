@@ -1096,6 +1096,67 @@ test_20070628 (void)
   mpfr_set_emax (old_emax);
 }
 
+/* Bug in mpfr_divhigh_n_basecase when all limbs of q (except the most
+   significant one) are B-1 where B=2^GMP_NUMB_BITS. Since we truncate
+   the divisor at each step, it might happen at some point that
+   (np[n-1],np[n-2]) > (d1,d0), and not only the equality.
+   Reported by Ricky Farr
+   (https://sympa.inria.fr/sympa/arc/mpfr/2015-10/msg00023.html) */
+static void
+test_20151023 (void)
+{
+  mpfr_prec_t p;
+  mpfr_t n, d, q, q0;
+  int inex, i;
+  
+  for (p = GMP_NUMB_BITS; p <= 2000; p++)
+    {
+      mpfr_init2 (n, 2*p);
+      mpfr_init2 (d, p);
+      mpfr_init2 (q, p);
+      mpfr_init2 (q0, GMP_NUMB_BITS);
+
+      /* generate a random divisor of p bits */
+      mpfr_urandomb (d, RANDS);
+      /* generate a random quotient of GMP_NUMB_BITS bits */
+      mpfr_urandomb (q0, RANDS);
+      /* zero-pad the quotient to p bits */
+      inex = mpfr_prec_round (q0, p, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+
+      for (i = 0; i < 3; i++)
+        {
+          /* i=0: try with the original quotient xxx000...000
+             i=1: try with the original quotient minus one ulp
+             i=2: try with the original quotient plus one ulp */
+          if (i == 1)
+            mpfr_nextbelow (q0);
+          else if (i == 2)
+            {
+              mpfr_nextabove (q0);
+              mpfr_nextabove (q0);
+            }
+
+          inex = mpfr_mul (n, d, q0, MPFR_RNDN);
+          MPFR_ASSERTN(inex == 0);
+          mpfr_nextabove (n);
+          mpfr_div (q, n, d, MPFR_RNDN);
+          MPFR_ASSERTN(mpfr_cmp (q, q0) == 0);
+
+          inex = mpfr_mul (n, d, q0, MPFR_RNDN);
+          MPFR_ASSERTN(inex == 0);
+          mpfr_nextbelow (n);
+          mpfr_div (q, n, d, MPFR_RNDN);
+          MPFR_ASSERTN(mpfr_cmp (q, q0) == 0);
+        }
+
+      mpfr_clear (n);
+      mpfr_clear (d);
+      mpfr_clear (q);
+      mpfr_clear (q0);
+    }
+}
+
 /* test a random division of p+extra bits divided by p+extra bits,
    with quotient of p bits only, where the p+extra bit approximation
    of the quotient is very near a rounding frontier. */
@@ -1265,6 +1326,7 @@ main (int argc, char *argv[])
   consistency ();
   test_20070603 ();
   test_20070628 ();
+  test_20151023 ();
   test_generic (2, 800, 50);
   test_bad ();
   test_extreme ();

@@ -238,9 +238,10 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
          that in addition to the limb np[n-1] to reduce, we have at least 2
          extra limbs, thus accessing np[n-3] is valid. */
 
-      /* warning: we can have np[n-1]=d1 and np[n-2]=d0, but since {np,n} < D,
-         the largest possible partial quotient is B-1 */
-      if (MPFR_UNLIKELY(np[n - 1] == d1 && np[n - 2] == d0))
+      /* Warning: we can have np[n-1]>d1 or (np[n-1]=d1 and np[n-2]>=d0) here,
+         since we truncate the divisor at each step, but since {np,n} < D
+         originally, the largest possible partial quotient is B-1. */
+      if (MPFR_UNLIKELY(np[n-1] > d1 || (np[n-1] == d1 && np[n-2] >= d0)))
         q2 = MPFR_LIMB_MAX;
       else
         udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
