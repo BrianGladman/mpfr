@@ -246,7 +246,7 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
       mpz_mul (u, sum->T, sum->T);
       mpz_mul (u, u, sum->D);
       mpz_mul_2exp (t, t, wp);
-      mpz_div (t, t, u);
+      mpz_tdiv_q (t, t, u);
       /* t * 2^-wp = U/I^2 with error < 1 */
 
       /* gamma = S/I - U/I^2 - log(n) with error at most 2^-wp */
