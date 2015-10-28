@@ -24,7 +24,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Default value for the cache of mpz_t */
 #ifndef MPFR_MY_MPZ_INIT
-# define MPFR_MY_MPZ_INIT 32
+# ifndef MPFR_USE_MINI_GMP
+#  define MPFR_MY_MPZ_INIT 32
+# else
+#  define MPFR_MY_MPZ_INIT 0
+# endif
 #endif
 
 /* If the number of value to cache is not zero */

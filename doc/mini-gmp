@@ -2,6 +2,7 @@ How to compile GNU MPFR with mini-gmp
 =====================================
 
 (this was tested with MPFR 3.1.2 and GMP 5.1.3 on x86_64 GNU/Linux machine)
+(also with MPFR svn 9700 and GMP 6.1.0-rc1: some GMP functions are missing)
 
 1) extract the GMP tarball in say /tmp/gmp-5.1.3
    go into /tmp/gmp-5.1.3/mini-gmp
@@ -33,6 +34,11 @@ $ diff gmp.h.orig gmp.h
 > #ifndef gmp_randstate_t
 > typedef long int __gmp_randstate_struct;
 > typedef __gmp_randstate_struct gmp_randstate_t[1];
+
+You also need to define GMP_NUMB_BITS and GMP_NAIL_BITS, for example:
+
+#define GMP_NUMB_BITS 64
+#define GMP_NAIL_BITS 0
 
 4) extract the MPFR tarball in say /tmp/mpfr-3.1.2
    ./configure --with-gmp=/tmp --enable-mini-gmp

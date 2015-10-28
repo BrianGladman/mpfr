@@ -29,10 +29,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-mini-gmp.h"
 
-#ifndef mp_bits_per_limb
-const int mp_bits_per_limb = GMP_NUMB_BITS;
-#endif
-
 #ifdef WANT_gmp_randinit_default
 void
 gmp_randinit_default (gmp_randstate_t state)
@@ -79,49 +75,15 @@ gmp_default_free (void *x, size_t s)
 }
 #endif
 
-#ifdef WANT_mpn_scan1
-mp_bitcnt_t
-mpn_scan1 (const mp_limb_t *s, mp_bitcnt_t n)
+#ifdef WANT_mpn_neg
+mp_limb_t
+mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
 {
-  while (1)
-    {
-      if (s[n / GMP_NUMB_BITS] & (MPFR_LIMB_ONE << (n % GMP_NUMB_BITS)))
-        return n;
-      n ++;
-    }
-}
-#endif
+  mp_size_t i;
 
-#ifdef WANT_mpz_perfect_square_p
-int
-mpz_perfect_square_p (const mpz_t z)
-{
-  mpz_t s, r;
-  int ret;
-
-  if (mpz_sgn (z) < 0)
-    return 0;
-
-  mpz_init (s);
-  mpz_init (r);
-  mpz_sqrtrem (s, r, z);
-  ret = mpz_sgn (r) == 0;
-  mpz_clear (s);
-  mpz_clear (r);
-  return ret;
-}
-#endif
-
-#ifdef WANT_mpz_addmul_ui
-void
-mpz_addmul_ui (mpz_t a, const mpz_t b, unsigned long c)
-{
-  mpz_t t;
-
-  mpz_init (t);
-  mpz_mul_ui (t, b, c);
-  mpz_add (a, a, t);
-  mpz_clear (t);
+  for (i = 0; i < n; i++)
+    rp[i] = ~sp[i];
+  return mpn_add_1 (rp, rp, n, (mp_limb_t) 1);
 }
 #endif
 
@@ -164,29 +126,13 @@ mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
 }
 #endif
 
-#ifdef WANT_mpz_realloc2
-void
-mpz_realloc2 (mpz_t x, mp_bitcnt_t nbits)
-{
-  unsigned long n = (nbits - 1) / GMP_NUMB_BITS + 1;
-
-  if (n > x->_mp_alloc)
-    {
-      x->_mp_d = gmp_default_realloc (x->_mp_d,
-                                      x->_mp_alloc * sizeof (mp_limb_t),
-                                      n * sizeof (mp_limb_t));
-      x->_mp_alloc = n;
-    }
-}
-#endif
-
 static mp_limb_t
 random_limb (void)
 {
 #if GMP_NUMB_BITS == 32
   return lrand48 ();
 #else
-  return ((mp_limb_t) lrand48 ()) << 32 + lrand48 ();
+  return (((mp_limb_t) lrand48 ()) << 32) + lrand48 ();
 #endif
 }
 
@@ -197,7 +143,7 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
   unsigned long n, i;
 
   mpz_realloc2 (rop, nbits);
-  n = (N - 1) / GMP_NUMB_BITS + 1; /* number of limbs */
+  n = (nbits - 1) / GMP_NUMB_BITS + 1; /* number of limbs */
   for (i = n; i-- > 0;)
     rop->_mp_d[i] = random_limb ();
   i = n * GMP_NUMB_BITS - nbits;
@@ -207,26 +153,6 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
   while (n > 0 && (rop->_mp_d[n-1] == 0))
     n--;
   rop->_mp_size = n;
-}
-#endif
-
-#ifdef WANT_mpn_zero
-void
-mpn_zero (mp_limb_t *rp, mp_size_t n)
-{
-  memset (rp, 0, n * sizeof (mp_limb_t));
-}
-#endif
-
-#ifdef WANT_mpn_popcount
-mp_bitcnt_t
-mpn_popcount (const mp_limb_t *s1p, mp_size_t n)
-{
-  mpz_t t;
-
-  t->_mp_d = (mp_limb_t*) s1p;
-  t->_mp_size = n;
-  return mpz_popcount (t);
 }
 #endif
 
@@ -257,32 +183,6 @@ mpn_divrem (mp_limb_t *qp, mp_size_t qn, mp_limb_t *np,
   mpz_clear (q);
   mpz_clear (r);
   return ret;
-}
-#endif
-
-#ifdef WANT_mpz_submul
-void
-mpz_submul (mpz_t rop, const mpz_t op1, const mpz_t op2)
-{
-  mpz_t t;
-
-  mpz_init (t);
-  mpz_mul (t, op1, op2);
-  mpz_sub (rop, rop, t);
-  mpz_clear (t);
-}
-#endif
-
-#ifdef WANT_mpz_addmul
-void
-mpz_addmul (mpz_t rop, const mpz_t op1, const mpz_t op2)
-{
-  mpz_t t;
-
-  mpz_init (t);
-  mpz_mul (t, op1, op2);
-  mpz_add (rop, rop, t);
-  mpz_clear (t);
 }
 #endif
 

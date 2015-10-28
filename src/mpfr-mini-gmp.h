@@ -31,10 +31,6 @@ extern char gmp_version[];
 #define GMP_NUMB_BITS 64
 #endif
 
-#ifndef mp_bits_per_limb
-extern const int mp_bits_per_limb;
-#endif
-
 #ifndef __gmp_allocate_func
 #define __gmp_allocate_func gmp_default_alloc
 #define __gmp_reallocate_func gmp_default_realloc
@@ -74,6 +70,11 @@ void gmp_default_free (void *, size_t);
 #ifndef mpn_scan1
 #define WANT_mpn_scan1
 mp_bitcnt_t mpn_scan1 (const mp_limb_t *, mp_bitcnt_t);
+#endif
+
+#ifndef mpn_neg
+#define WANT_mpn_neg
+mp_limb_t mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
 #endif
 
 #ifndef mpz_perfect_square_p
@@ -132,11 +133,6 @@ void mpz_addmul (mpz_t, const mpz_t, const mpz_t);
 #define WANT_mpn_tdiv_qr
 void mpn_tdiv_qr (mp_limb_t *, mp_limb_t *, mp_size_t,
                   const mp_limb_t *, mp_size_t, const mp_limb_t *, mp_size_t);
-#endif
-
-#ifndef mpn_sqrtrem
-#define WANT_mpn_sqrtrem
-mp_size_t mpn_sqrtrem (mp_limb_t *, mp_limb_t *, const mp_limb_t *, mp_size_t);
 #endif
 
 #ifndef mpz_dump
