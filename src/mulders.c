@@ -1,4 +1,4 @@
-/* Mulders' MulHigh function (short product)
+/* Mulders' short product, square and division.
 
 Copyright 2005-2015 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
