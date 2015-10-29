@@ -1103,8 +1103,8 @@ test_20070628 (void)
    Reported by Ricky Farr
    <https://sympa.inria.fr/sympa/arc/mpfr/2015-10/msg00023.html>
    To get a failure, a MPFR_DIVHIGH_TAB entry below the MPFR_DIV_THRESHOLD
-   limit must have a value 0. In most cases, this doesn't occur. To make
-   the bug appear, one can configure MPFR with -DMPFR_TUNE_COVERAGE. */
+   limit must have a value 0. With most mparam.h files, this cannot occur. To
+   make the bug appear, one can configure MPFR with -DMPFR_TUNE_COVERAGE. */
 static void
 test_20151023 (void)
 {
