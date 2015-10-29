@@ -59,7 +59,9 @@ mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
 
   for (i = 0; i < n; i++)
     rp[i] = ~sp[i];
-  return mpn_add_1 (rp, rp, n, (mp_limb_t) 1);
+  /* the return value of mpn_neg is the borrow as if we subtracted
+     {sp, n} from {0, n}, i.e., it is always 1 unless {sp, n} is zero */
+  return 1 - mpn_add_1 (rp, rp, n, (mp_limb_t) 1);
 }
 #endif
 
