@@ -38,7 +38,8 @@ grconf '="`'
 grconf '[^a-z][ef]?grep[^a-z]'
 grconf '[^a-z]sed[^a-z]'
 
-srctests=`find src tests -name '*.[ch]' ! -name 'mini-gmp.*'`
+# Note: In the source, ignore everything related to mini-gmp.
+srctests=`find src tests -name '*.[ch]' ! -name '*mini-gmp.*'`
 
 grep GMP_LIMB_BITS $srctests
 
