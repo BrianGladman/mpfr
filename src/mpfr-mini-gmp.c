@@ -66,7 +66,7 @@ mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
 #endif
 
 #ifdef WANT_mpn_com
-mp_limb_t
+void
 mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
 {
   mp_size_t i;
@@ -118,10 +118,12 @@ mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
 static mp_limb_t
 random_limb (void)
 {
+  /* lrand48() only gives 31 bits */
 #if GMP_NUMB_BITS == 32
-  return lrand48 ();
+  return lrand48 () + (lrand48 () << 31);
 #else
-  return (((mp_limb_t) lrand48 ()) << 32) + lrand48 ();
+  return lrand48 () + (((mp_limb_t) lrand48 ()) << 31)
+    + (((mp_limb_t) lrand48 ()) << 62);
 #endif
 }
 

@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * the error before GMP can do the abort.
  */
 
-#if !defined(MPFR_USE_MINI_GMP) && !defined(__SANITIZE_ADDRESS__)
+#if !defined(__SANITIZE_ADDRESS__)
 
 int
 main (int argc, char **argv)

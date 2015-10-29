@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifndef MPFR_USE_MINI_GMP
-
 /* Return Phi(x) = erf(x / sqrt(2)) / 2, the cumulative probability function
  * for the normal distribution.  We only take differences of this function so
  * the offset doesn't matter; here Phi(0) = 0. */
@@ -359,13 +357,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else
-
-int
-main (void)
-{
-  return 77;
-}
-
-#endif

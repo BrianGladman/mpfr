@@ -64,7 +64,7 @@ mp_limb_t mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
 
 #ifndef mpn_com
 #define WANT_mpn_com
-mp_limb_t mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
+void mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
 #endif
 
 #ifndef mpz_perfect_square_p
