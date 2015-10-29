@@ -36,16 +36,16 @@ mpfr_rand_raw (mpfr_limb_ptr mp, gmp_randstate_t rstate,
   mpz_t z;
 
   MPFR_ASSERTN (nbits >= 1);
-  /* To be sure to avoid the potential allocation of mpz_urandomb */
-  ALLOC(z) = SIZ(z) = MPFR_PREC2LIMBS (nbits);
-  PTR(z)   = mp;
 #if __MPFR_GMP(5,0,0)
   /* Check for integer overflow (unless mp_bitcnt_t is signed,
      but according to the GMP manual, this shouldn't happen).
      Note: mp_bitcnt_t has been introduced in GMP 5.0.0. */
   MPFR_ASSERTN ((mp_bitcnt_t) -1 < 0 || nbits <= (mp_bitcnt_t) -1);
 #endif
+  mpz_init (z);
   mpz_urandomb (z, rstate, nbits);
+  MPN_COPY(mp, PTR(z), MPFR_PREC2LIMBS (nbits));
+  mpz_clear (z);
 }
 
 int

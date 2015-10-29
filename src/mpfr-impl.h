@@ -2101,6 +2101,11 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
  **************  Internal mpz caching *****************
  ******************************************************/
 
+/* don't use mpz caching with mini-gmp */
+#ifdef MPFR_USE_MINI_GMP
+#define MPFR_MY_MPZ_INIT 0
+#endif
+
 /* Cache for mpz_t */
 #if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
 # undef mpz_init

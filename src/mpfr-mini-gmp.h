@@ -52,21 +52,6 @@ void gmp_randseed_ui (gmp_randstate_t, unsigned long int);
 void gmp_randclear (gmp_randstate_t);
 #endif
 
-#ifndef gmp_default_alloc
-#define WANT_gmp_default_alloc
-void *gmp_default_alloc (size_t);
-#endif
-
-#ifndef gmp_default_realloc
-#define WANT_gmp_default_realloc
-void *gmp_default_realloc (void *, size_t, size_t);
-#endif
-
-#ifndef gmp_default_free
-#define WANT_gmp_default_free
-void gmp_default_free (void *, size_t);
-#endif
-
 #ifndef mpn_scan1
 #define WANT_mpn_scan1
 mp_bitcnt_t mpn_scan1 (const mp_limb_t *, mp_bitcnt_t);
@@ -75,6 +60,11 @@ mp_bitcnt_t mpn_scan1 (const mp_limb_t *, mp_bitcnt_t);
 #ifndef mpn_neg
 #define WANT_mpn_neg
 mp_limb_t mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
+#endif
+
+#ifndef mpn_com
+#define WANT_mpn_com
+mp_limb_t mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
 #endif
 
 #ifndef mpz_perfect_square_p
@@ -93,11 +83,6 @@ mp_limb_t mpn_divrem_1 (mp_limb_t*, mp_size_t, mp_limb_t*, mp_size_t,
                         mp_limb_t);
 #endif
 
-#ifndef mpz_realloc2
-#define WANT_mpz_realloc2
-void mpz_realloc2 (mpz_t, mp_bitcnt_t);
-#endif
-
 #ifndef mpz_urandomb
 #define WANT_mpz_urandomb
 void mpz_urandomb (mpz_t, gmp_randstate_t, mp_bitcnt_t);
@@ -111,6 +96,16 @@ void mpn_zero (mp_limb_t *, mp_size_t);
 #ifndef mpn_popcount
 #define WANT_mpn_popcount
 mp_bitcnt_t mpn_popcount (const mp_limb_t *, mp_size_t);
+#endif
+
+#ifndef gmp_urandomm_ui
+#define WANT_gmp_urandomm_ui
+unsigned long gmp_urandomm_ui (gmp_randstate_t state, unsigned long n);
+#endif
+
+#ifndef gmp_urandomb_ui
+#define WANT_gmp_urandomb_ui
+unsigned long gmp_urandomb_ui (gmp_randstate_t state, unsigned long n);
 #endif
 
 #ifndef mpn_divrem

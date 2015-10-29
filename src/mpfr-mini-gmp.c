@@ -51,30 +51,6 @@ gmp_randclear (gmp_randstate_t state)
 }
 #endif
 
-#ifdef WANT_gmp_default_alloc
-void *
-gmp_default_alloc (size_t s)
-{
-  return malloc (s);
-}
-#endif
-
-#ifdef WANT_gmp_default_realloc
-void *
-gmp_default_realloc (void *x, size_t olds, size_t s)
-{
-  return realloc (x, s);
-}
-#endif
-
-#ifdef WANT_gmp_default_free
-void
-gmp_default_free (void *x, size_t s)
-{
-  free (x);
-}
-#endif
-
 #ifdef WANT_mpn_neg
 mp_limb_t
 mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
@@ -84,6 +60,17 @@ mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
   for (i = 0; i < n; i++)
     rp[i] = ~sp[i];
   return mpn_add_1 (rp, rp, n, (mp_limb_t) 1);
+}
+#endif
+
+#ifdef WANT_mpn_com
+mp_limb_t
+mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
+{
+  mp_size_t i;
+
+  for (i = 0; i < n; i++)
+    rp[i] = ~sp[i];
 }
 #endif
 
@@ -153,6 +140,22 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
   while (n > 0 && (rop->_mp_d[n-1] == 0))
     n--;
   rop->_mp_size = n;
+}
+#endif
+
+#ifdef WANT_gmp_urandomm_ui
+unsigned long
+gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
+{
+  return random_limb () % n;
+}
+#endif
+
+#ifdef WANT_gmp_urandomb_ui
+unsigned long
+gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
+{
+  return random_limb () % (1UL << n);
 }
 #endif
 
