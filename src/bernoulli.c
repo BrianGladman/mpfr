@@ -122,7 +122,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
   /* add 1 which is 2^prec */
   mpz_add (s, s, u);
   /* add 1/2^n which is 2^(prec-n) */
-  mpz_div_2exp (u, u, n);
+  mpz_cdiv_q_2exp (u, u, n);
   mpz_add (s, s, u);
   /* now 2^prec * zeta(n) - p < s <= 2^prec * zeta(n) */
   /* multiply by n! */

@@ -174,7 +174,7 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
   if (vp > wp)
     {
       k = vp - wp; /* truncate k bits of vm */
-      mpz_div_2exp (vm, vm, k);
+      mpz_tdiv_q_2exp (vm, vm, k);
       ve += k;
       vp -= k;
     }
@@ -186,7 +186,7 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
   if (up > vp + wp)
     {
       k = up - (vp + wp); /* truncate k bits of um */
-      mpz_div_2exp (um, um, k);
+      mpz_tdiv_q_2exp (um, um, k);
       ue += k;
       up -= k;
     }
