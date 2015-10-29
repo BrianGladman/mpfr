@@ -157,7 +157,8 @@ To make a release (for the MPFR team):
      (or clearly justify any value under this threshold), and publish (for
      example in NEWS) the global coverage of this release. The individual
      coverage of each source file might also be published on the release web
-     page.
+     page. There is a specific mparam.h file to improve coverage; it should
+     be tested by configuring MPFR with -DMPFR_TUNE_COVERAGE.
 
      Also test with -DMPFR_COV_CHECK, which allows one to check the coverage
      of some combinations of variable values (as defined in the MPFR source
