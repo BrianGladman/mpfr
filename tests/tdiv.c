@@ -1101,14 +1101,17 @@ test_20070628 (void)
    the divisor at each step, it might happen at some point that
    (np[n-1],np[n-2]) > (d1,d0), and not only the equality.
    Reported by Ricky Farr
-   (https://sympa.inria.fr/sympa/arc/mpfr/2015-10/msg00023.html) */
+   <https://sympa.inria.fr/sympa/arc/mpfr/2015-10/msg00023.html>
+   To get a failure, a MPFR_DIVHIGH_TAB entry below the MPFR_DIV_THRESHOLD
+   limit must have a value 0. In most cases, this doesn't occur. To make
+   the bug appear, one can configure MPFR with -DMPFR_TUNE_COVERAGE. */
 static void
 test_20151023 (void)
 {
   mpfr_prec_t p;
   mpfr_t n, d, q, q0;
   int inex, i;
-  
+
   for (p = GMP_NUMB_BITS; p <= 2000; p++)
     {
       mpfr_init2 (n, 2*p);
