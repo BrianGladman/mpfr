@@ -233,7 +233,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
               {
                 /* This covers the following cases:
                  *               [-+- accumulator ---]
-                 *   [- x[i] -]    |
+                 *   [- x[i] -]    |                 |
                  *             [---|-- x[i] ------]  |
                  *          [------|-- x[i] ---------]
                  *                 |   [- x[i] -]    |
