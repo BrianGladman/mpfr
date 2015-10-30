@@ -28,7 +28,9 @@ extern char gmp_version[];
 #endif
 
 #ifndef GMP_NUMB_BITS
-#define GMP_NUMB_BITS 64
+/* see https://gmplib.org/list-archives/gmp-bugs/2015-October/003755.html */
+#include <limits.h>
+#define GMP_NUMB_BITS (CHAR_BIT * sizeof(mp_limb_t))
 #endif
 
 #ifndef __gmp_allocate_func
