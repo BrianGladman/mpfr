@@ -31,6 +31,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Assume that this is in fact a header inclusion for some library
    that uses MPFR, i.e. this inclusion is hidden in another one.
    MPFR currently (rev 6704) fails to handle this case. */
+#ifdef MPFR_USE_MINI_GMP
+#include "mpfr-impl.h"
+#endif
 #include <mpfr.h>
 
 #include <stdarg.h>

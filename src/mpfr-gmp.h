@@ -56,7 +56,7 @@ extern "C" {
  ******************** Check GMP ***********************
  ******************************************************/
 
-#if !__MPFR_GMP(4,2,0)
+#if !__MPFR_GMP(4,2,0) && !defined(MPFR_USE_MINI_GMP)
 # error "GMP 4.2.0 or newer needed"
 #endif
 

@@ -46,9 +46,13 @@ main (void)
           __MPIR_VERSION, __MPIR_VERSION_MINOR, __MPIR_VERSION_PATCHLEVEL,
           mpir_version);
 #else
+#ifdef MPFR_USE_MINI_GMP
+  printf ("[tversion] mini-gmp\n");
+#else
   printf ("[tversion] GMP: header %d.%d.%d, library %s\n",
           __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR, __GNU_MP_VERSION_PATCHLEVEL,
           gmp_version);
+#endif
 #endif
 
   if (

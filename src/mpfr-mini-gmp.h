@@ -39,6 +39,11 @@ extern char gmp_version[];
 #define __gmp_free_func gmp_default_free
 #endif
 
+#ifndef gmp_randstate_t
+typedef long int __gmp_randstate_struct;
+typedef __gmp_randstate_struct gmp_randstate_t[1];
+#endif
+
 #ifndef gmp_randinit_default
 #define WANT_gmp_randinit_default
 void gmp_randinit_default (gmp_randstate_t);
