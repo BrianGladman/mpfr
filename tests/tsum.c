@@ -584,6 +584,11 @@ check3 (void)
  *   -3*2^58, 2^5, -1, 2^(-2), 3*2^(-2)
  * MPFR_RNDN, tmd=2, rbit=0, sst=1, negative is checked with the inputs
  *   -3*2^58, 2^5, -1, 3*2^(-2), 3*2^(-2)
+ *
+ * Note: This test detects an error in a result when "sq + 3" is replaced
+ * by "sq + 2" (11th argument of the first sum_raw invocation) and the
+ * corresponding assertion d >= 3 is removed, confirming that one cannot
+ * decrease this proved error bound.
  */
 static void
 check4 (void)
