@@ -121,7 +121,11 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
     (("ws=%Pd ts=%Pd prec=%Pd", (mpfr_prec_t) ws, (mpfr_prec_t) ts, prec),
      ("", 0));
 
-  MPFR_ASSERTD (prec >= 0);
+  /* The C code below requires prec >= 0 due to the use of unsigned
+     integer arithmetic on it. Actually the computation makes sense
+     only with prec >= 1 (otherwise one can't even know the sign of
+     the result), hence the following assertion. */
+  MPFR_ASSERTD (prec >= 1);
 
   /* Consistency check. */
   MPFR_ASSERTD (wq == (mpfr_prec_t) ws * GMP_NUMB_BITS);
@@ -885,8 +889,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         MPN_ZERO (wp, zs);
 
+        /* We need to determine the sign sst of the secondary term.
+           In sum_raw, since the truncated sum corresponding to this
+           secondary term will be in [2^(e-1),2^e] and the error
+           strictly less than 2^err, we can stop the iterations when
+           e - err >= 1 (this bound is the 11th argument of sum_raw). */
         cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
-                          logn, 0, NULL, &minexp, &maxexp);
+                          logn, 1, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
           sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
