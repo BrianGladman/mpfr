@@ -530,6 +530,10 @@ Table of contents:
   (with memory copies)? In such a case, mpz_t caching would not be the
   solution, but mpz_init2 (see GMP manual, 3.11 "Efficiency").
 
+- in tsum, add testcases for mpfr_sum triggering the bug fixed in r9722,
+  that is, with a large error during the computation of the secondary term
+  (when the TMD occurs).
+
 
 ##############################################################################
 7. Portability
