@@ -495,7 +495,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   sq = MPFR_GET_PREC (sum);
   cq = logn + 1;
 
-  /* First determine the size of the accumulator. */
+  /* First determine the size of the accumulator.
+   * cq + sq + logn + 2 >= logn + sq + 5, which will be used later.
+   * The assertion wq - cq - sq >= 4 is another way to check that.
+   */
   ws = MPFR_PREC2LIMBS (cq + sq + logn + 2);
   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
   MPFR_ASSERTD (wq - cq - sq >= 4);
@@ -530,6 +533,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     MPFR_LOG_MSG (("Compute an approximation with sum_raw...\n", 0));
 
     UPDATE_MINEXP (maxexp, wq - cq);
+    MPFR_ASSERTD (wq >= logn + sq + 5);
     cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
                       logn, sq + 3, &e, &minexp, &maxexp);
 
