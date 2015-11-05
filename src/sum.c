@@ -90,6 +90,10 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2] = { 0 };
  *   minexpp: pointer to mpfr_exp_t (see below).
  *   maxexpp: pointer to mpfr_exp_t (see below).
  *
+ * Preconditions:
+ *   prec >= 1
+ *   wq >= logn + prec + 2
+ *
  * This function returns 0 if the accumulator is 0 (which implies that
  * the exact sum for this sum_raw invocation is 0), otherwise the number
  * of cancelled bits (>= 1), defined as the number of identical bits on
@@ -129,6 +133,10 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 
   /* Consistency check. */
   MPFR_ASSERTD (wq == (mpfr_prec_t) ws * GMP_NUMB_BITS);
+
+  /* The following precondition together with prec >= 1 will imply:
+     minexp - shiftq < maxexp2, as required by the algorithm. */
+  MPFR_ASSERTD (wq >= logn + prec + 2);
 
   while (1)
     {
@@ -421,6 +429,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                   MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
                 MPN_ZERO (wp, shifts);
                 minexp -= shiftq;
+                MPFR_ASSERTD (minexp < maxexp2);
               }
           }
         else if (maxexp2 == MPFR_EXP_MIN)
