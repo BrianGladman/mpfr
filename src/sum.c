@@ -573,7 +573,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
        take the absolute value and do an initial rounding,
        zeroing the trailing bits at this point.
        TODO: This may be improved by merging some operations
-       is particular case. The average speed-up may not be
+       in particular cases. The average speed-up may not be
        significant, though. To be tested... */
 
     sn = MPFR_PREC2LIMBS (sq);
