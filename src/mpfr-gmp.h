@@ -56,8 +56,8 @@ extern "C" {
  ******************** Check GMP ***********************
  ******************************************************/
 
-#if !__MPFR_GMP(4,2,0) && !defined(MPFR_USE_MINI_GMP)
-# error "GMP 4.2.0 or newer needed"
+#if !__MPFR_GMP(5,0,0) && !defined(MPFR_USE_MINI_GMP)
+# error "GMP 5.0.0 or newer is required"
 #endif
 
 #if GMP_NAIL_BITS != 0
