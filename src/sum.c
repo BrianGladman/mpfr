@@ -879,7 +879,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                 zs = ws - wi;
                 MPFR_ASSERTD (zs >= 0 && zs < ws);
                 if (zs > 0)
-                  MPN_COPY_INCR (wp + zs, wp, wi);
+                  MPN_COPY_DECR (wp + zs, wp, wi);
               }
 
             UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
