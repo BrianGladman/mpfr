@@ -23,6 +23,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME: In the case where one or several input pointers point to the
+   output variable, we need to store the significand in a new temporary
+   area, because these inputs may still need to be read for the possible
+   TMD resolution. Alternatively, since this is not necessarily a rare
+   case (doing s += sum(x[i],0<=i<n) should not be regarded as uncommon),
+   it may be better to optimize it by allocating a bit more for the second
+   sum_raw invocation and delaying the copy of the significand when this
+   occurs. Add a testcase to "tsum.c". */
+
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
