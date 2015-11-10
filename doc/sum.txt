@@ -296,7 +296,7 @@ During the accumulation, the bits of an input x[i] whose exponents are
 less than minexp form the "tail" of this input. When the tail of x[i]
 is not empty, its exponent is defined as e[i] = min(E(x[i]),minexp).
 The absolute value of each tail is strictly less than 2^e[i]. This will
-give an error bound on the computed sum.
+give an error bound on the computed sum at each iteration.
 
 If the computed result is 0 (meaning full cancellation), set maxexp to
 the maximum exponent of the tails, set minexp so that it corresponds to
