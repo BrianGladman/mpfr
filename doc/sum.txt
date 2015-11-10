@@ -680,7 +680,7 @@ as 0's (still due to truncation). In the following, we will make sure
 that we do not try to read non-represented bits.
 
 When maxexp (value returned by sum_raw) is different from MPFR_EXP_MIN,
-i.e. when some bits of the inputs still not have been considered, we
+i.e. when some bits of the inputs have still not been considered, we
 will need to determine whether the TMD occurs. Let d = u − err, which
 is ≥ 3, and can be very large if maxexp is very small; however d is
 representable in a mpfr_exp_t since u ≤ emax, err ≥ emin, and this
