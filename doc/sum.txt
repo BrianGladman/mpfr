@@ -380,9 +380,10 @@ Thus it is initialized to the minimum value of the exponent type:
 MPFR_EXP_MIN; this choice means that at the end of the loop below,
 maxexp2 will be MPFR_EXP_MIN iff there are no more tails (this case
 implies that the truncated sum is exact). If a new iteration is needed,
-then maxexp2 will be the maxexp of this new iteration.
+then maxexp2 will be assigned to the maxexp variable for this new
+iteration.
 
-Then one has a loop over the inputs x[i]. Each iteration consists in
+Then one has a loop over the inputs x[i]. Each iteration consists of
 the following steps:
 
 1. If the input is not regular, skip it (go to the next iteration).
