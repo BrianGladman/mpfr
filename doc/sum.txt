@@ -383,17 +383,18 @@ implies that the truncated sum is exact). If a new iteration is needed,
 then maxexp2 will be assigned to the maxexp variable for this new
 iteration.
 
-Then one has a loop over the inputs x[i]. Each iteration consists of
+Then one has a loop over the inputs x[i]. Each input is processed with
 the following steps:
 
-1. If the input is not regular, skip it (go to the next iteration).
+1. If the input is not regular, skip it.
    Note: if there are many non-regular inputs, it may be more efficient
    to have an array pointing to the regular inputs only, but such a
-   case is assumed to be rare, and the number on iterations is also
-   limited by the relatively small number of regular inputs.
+   case is assumed to be rare, and the number of iterations of this
+   inner loop is also limited by the relatively small number of regular
+   inputs.
 
 2. If E(x[i]) ≤ minexp, then no bits of x[i] need to be considered here.
-   We set maxexp2 ← max(maxexp2,E(x[i])), then go to the next iteration.
+   We set maxexp2 ← max(maxexp2,E(x[i])), then go to the next input.
 
 3. Now, we have: E(x[i]) > minexp. If the tail of x[i] is not empty,
    i.e. if Q(x[i]) < minexp, then we set maxexp2 ← minexp.
