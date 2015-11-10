@@ -640,7 +640,7 @@ needed by sum_raw. For performance reasons, the allocation is done in
 the stack if the size is small enough (see MPFR_TMP_LIMBS_ALLOC macro).
 No other memory allocation will be needed (except for auto variables).
 
-The accumulator is zeroed and the sum_raw is invoked to compute an
+The accumulator is zeroed and sum_raw is invoked to compute an
 accurate approximation of the sum. Among its parameters, maxexp was
 computed during the preliminary steps, minexp = maxexp − (wq − cq),
 and prec = sq + 3, which satisfies the wq ≥ logn + prec + 2 sum_raw
