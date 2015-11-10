@@ -54,6 +54,18 @@ issues, since everything is done in fixed point and the output exponent
 will be considered only at the end (early overflow detection could also
 be done, but this would probably not be very useful in practice).
 
+The idea is the following. After handling special cases (NaN, infinities,
+only zeros, and fewer than 3 regular inputs), we apply the generic case,
+which more or less consists in a fixed-point accumulation by blocks: we
+take into account the bits of the inputs whose weight is in some window
+⟦minexp,maxexp⟦, and if this is not sufficient due to cancellation, we
+reiterate with some less significant window. Once we have obtained an
+accurate sum, if one still cannot round correctly because the result is
+too close to a rounding boundary (i.e. a machine number or the middle
+of two consecutive machine numbers), which is the problem known as the
+Table Maker's Dilemma (TMD), then this problem is solved by determining
+the sign of the remainder by using the same method in a low precision.
+
 Specification
 ─────────────
 
@@ -65,6 +77,9 @@ mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
 where sum will contain the result, x is an array of pointers to the
 inputs, n is the length of this array, and rnd is the rounding mode.
 The return value of type int will be the usual ternary value.
+
+FIXME: It is currently assumed that no input pointers point to sum,
+i.e. that the output sum is not shared with an input.
 
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
@@ -78,7 +93,7 @@ obtained with
     precision, then rounded (the order of these additions doesn't
     matter).
 
-Indeed, this is equivalent to apply the following steps:
+This is equivalent to apply the following steps:
 
 1. If an input is NaN, then the result is NaN.
 
@@ -108,11 +123,12 @@ See also:
 Preliminaries About the Representation of MPFR Numbers
 ──────────────────────────────────────────────────────
 
-In MPFR, exponents are stored in an integer type called mpfr_exp_t.
-If this type has N value bits (the sign bit is not included), then
+In MPFR, exponents are stored in a signed integer type mpfr_exp_t.
+If this type has N value bits, i.e. the maximum value is 2^N−1, then
 the maximum exponent range is defined so that any valid exponent fits
-in N−1 bits. This implies a huge gap between the minimum value of the
-type, MPFR_EXP_MIN, and the minimum valid exponent, MPFR_EMIN_MIN.
+in N−1 bits (sign bit excluded), i.e. it is ⟦1−2^(N−1),2^(N−1)−1⟧.
+This implies a huge gap between the minimum value MPFR_EXP_MIN of
+the type and the minimum valid exponent MPFR_EMIN_MIN.
 
 We assume that each represented bit of a regular MPFR number has an
 exponent value representable in the mpfr_exp_t type, i.e. a value
@@ -137,14 +153,14 @@ following.
      * If n = 2, use mpfr_add.
 
 2. Iterate on the n input numbers to:
-     (A) detect special values (NaN, infinity, zero);
+     (A) detect singular values (NaN, infinity, zero);
      (B) among the regular values, get the maximum exponent.
 
    Such information can be retrieved very quickly and this does not need
    to look at the significand. Moreover, in the current internal number
-   representation, the kind of a special value is represented as special
+   representation, the kind of a singular value is represented as special
    values of the exponent field, so that (B) does not need to fetch more
-   data in the memory after doing (A).
+   data in memory after doing (A).
 
    In detail, during this iteration, 4 variables will be set, but the
    loop will terminate earlier if one can determine that the result
@@ -269,7 +285,7 @@ In summary:
 
 The sum_raw function will work in a fixed-point accumulator, having a
 fixed precision (= size in limbs * GMP_NUMB_BITS). It will accumulate
-the bits of the inputs whose exponents are in [[minexp,maxexp[[, where
+the bits of the inputs whose exponents are in ⟦minexp,maxexp⟦, where
 maxexp − minexp is less that the precision of the accumulator: as said
 above, we need some additional bits in order to avoid overflows during
 the accumulation. On the entry, the accumulator may already contain a
@@ -297,7 +313,7 @@ and one would get an infinite loop. Details and formal definitions are
 given later.
 
 Basically, this can be regarded as a sum by block, where each block
-has the form [[minexp,maxexp[[.
+has the form ⟦minexp,maxexp⟦.
 
 Notes:
   * The reiterations will end when there are no more tails, but in the
@@ -711,7 +727,7 @@ precision), so that negation/complement and rounding can naturally be
 merged, as detailed later.
 
 We start by doing the first two operations at the same time: the bits
-of exponents in [max(u,minexp),e[ are copied with a possible shift to
+of exponents in ⟦max(u,minexp),e⟦ are copied with a possible shift to
 the most significant part of the destination, and the least significant
 limbs (if any) are zeroed.
 
