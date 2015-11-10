@@ -556,10 +556,11 @@ Now, let us prove that for this value, (1) is satisfied.
 
 QED.
 
-Note: It is expected that in general, the cancellation is not very
-large, so that the new additions in the new iteration will occur
-only in a small part of the accumulator, except in case of long
-carry propagation (see below).
+Note: It is expected in general that when a cancellation occurs so that
+a new iteration is needed, the cancellation is not very large (but this
+really depends on the problem), in which case the new additions will
+take place only in a small part of the accumulator, except in case of
+long carry propagation (see the end of this file).
 
 Old discussion about the choice of the shift count (not much useful
 any longer, but it can help to understand, with its examples):
