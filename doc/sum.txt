@@ -833,7 +833,8 @@ We distinguish two cases:
       * err < minexp. Here at least one of the identical bits is not
         represented, meaning that it is 0 and all these bits are 0's.
         Thus the accumulator set to 0. The new minexp is determined
-        from maxexp, with cq bits reserved to avoid an overflow.
+        from maxexp, with cq bits reserved to avoid overflows, just
+        like in the main sum.
 
     Once the accumulator is set up, sum_raw is called with prec = 1,
     satisfying the first sum_raw precondition. And we have:
