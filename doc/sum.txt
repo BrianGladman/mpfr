@@ -786,7 +786,7 @@ All this is done by considering two cases:
     occurs on a machine number).
 
 Now we seek to determine how the value will be rounded, more precisely,
-what correction will be done to the significand that have been copied
+what correction will be done to the significand that has been copied
 just above. We currently have a significand, a trailing term t in the
 accumulator such that 0 ≤ t < 1 ulp, and an error on the trailing term
 bounded by some value t' in absolute value, so that the error e on the
