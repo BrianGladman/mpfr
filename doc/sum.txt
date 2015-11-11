@@ -804,8 +804,9 @@ second argument of mpfr_check_range.
 We distinguish two cases:
 
   * tmd = 0. The TMD does not occur, so that t' has no influence on
-    the rounding and the ternary value (one can assume t' = 0). In
-    the directed rounding modes, inex = 0 iff t = 0. Therefore:
+    the rounding and the ternary value (one can assume t' = 0). One
+    has inex = 0 if and only if t = 0, so that inex is currently the
+    absolute value of the ternary value. Therefore:
       * for MPFR_RNDD, corr ← 0;
       * for MPFR_RNDU, corr ← inex;
       * for MPFR_RNDZ, corr ← inex && !pos;
