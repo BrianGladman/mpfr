@@ -566,11 +566,11 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 /* Visual C++ doesn't support +1.0/0.0, -1.0/0.0 and 0.0/0.0
    at compile time.
    Clang with -fsanitize=undefined is a bit similar due to a bug:
-     http://llvm.org/bugs/show_bug.cgi?id=17381
+     https://llvm.org/bugs/show_bug.cgi?id=17381 (fixed on 2015-12-03)
    but even without its sanitizer, it may be better to use the
    double_zero version until IEEE 754 division by zero is properly
    supported:
-     http://llvm.org/bugs/show_bug.cgi?id=17000
+     https://llvm.org/bugs/show_bug.cgi?id=17005
 */
 #if (defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)) || \
     defined(__clang__)
