@@ -260,7 +260,12 @@ check_mixed (void)
   saved_p = p;
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   if (p != 20)
-    mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, saved_p);
+    {
+      mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, saved_p);
+      /* under MinGW, -D__USE_MINGW_ANSI_STDIO is required to support %td
+         see https://gcc.gnu.org/ml/gcc/2013-03/msg00103.html */
+      fprintf (stderr, "Under MinGW, -D__USE_MINGW_ANSI_STDIO might be required\n");
+    }
   check_length (8, (long) p, 20, ld); /* no format specifier '%td' in C89 */
 #endif
 

@@ -832,6 +832,8 @@ mixed (void)
     }
 
 #ifdef PRINTF_L
+  /* under MinGW, -D__USE_MINGW_ANSI_STDIO is required to support %Lf
+     see https://gcc.gnu.org/ml/gcc/2013-03/msg00103.html */
   check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
