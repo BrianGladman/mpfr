@@ -559,7 +559,9 @@ a. Using MinGW
     For example, with MinGW versions 3.15 and later you can get an
     ISO-compliant printf() if you compile your application with either
     '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. For example, you can
-    compile and test MPFR with CC="gcc -D__USE_MINGW_ANSI_STDIO".
+    compile and test MPFR with CC="gcc -D__USE_MINGW_ANSI_STDIO" (for those
+    printf modifiers which are passed to GMP, say %Ld and %td, you should
+    compile GMP with -D__USE_MINGW_ANSI_STDIO too).
 
     For example under Win32, the following problem has been experienced with
     MPFR 2.4.0 RC1 and the MSVC runtime (msvcrt.dll):
