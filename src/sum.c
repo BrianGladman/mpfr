@@ -30,7 +30,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    case (doing s += sum(x[i],0<=i<n) should not be regarded as uncommon),
    it may be better to optimize it by allocating a bit more for the second
    sum_raw invocation and delaying the copy of the significand when this
-   occurs. Add a testcase to "tsum.c". */
+   occurs. Add a testcase to "tsum.c".
+   Remove the sentences about overlapping from doc/mpfr.texi once this is
+   fixed. */
 
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
