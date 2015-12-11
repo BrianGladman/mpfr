@@ -21,10 +21,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
+#include <sys/types.h>
+#include <sys/resource.h>
 
 #ifndef MPFR_NCANCEL
 #define MPFR_NCANCEL 10
 #endif
+
+static int
+cputime ()
+{
+  struct rusage rus;
+
+  getrusage (0, &rus);
+  return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
+}
 
 static mpfr_prec_t
 get_prec_max (mpfr_t *t, int n)
@@ -1093,10 +1104,87 @@ check_coverage (void)
 #endif
 }
 
-int
-main (void)
+static int
+mpfr_sum_naive (mpfr_t s, mpfr_t *x, int n, mpfr_rnd_t rnd)
 {
+  int ret, i;
+  switch (n)
+    {
+    case 0:
+      return mpfr_set_ui (s, 0, rnd);
+    case 1:
+      return mpfr_set (s, x[0], rnd);
+    default:
+      ret = mpfr_add (s, x[0], x[1], rnd);
+      for (i = 2; i < n; i++)
+        ret = mpfr_add (s, s, x[i], rnd);
+      return ret;
+    }
+}
+
+/* check adding n random numbers, iterated k times */
+static void
+check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
+{
+  mpfr_t *x, s, ref_s;
+  mpfr_ptr *y;
+  int i, st, ret = 0, ref_ret = 0;
+  gmp_randstate_t state;
+
+  gmp_randinit_default (state);
+  mpfr_init2 (s, prec);
+  mpfr_init2 (ref_s, prec);
+  x = malloc (n * sizeof (mpfr_t));
+  y = malloc (n * sizeof (mpfr_ptr));
+  for (i = 0; i < n; i++)
+    {
+      y[i] = x[i];
+      mpfr_init2 (x[i], prec);
+      mpfr_urandom (x[i], state, rnd);
+    }
+
+  st = cputime ();
+  for (i = 0; i < k; i++)
+    ref_ret = mpfr_sum_naive (ref_s, x, n, rnd);
+  printf ("mpfr_sum_naive took %dms\n", cputime () - st);
+
+  st = cputime ();
+  for (i = 0; i < k; i++)
+    ret = mpfr_sum (s, y, n, rnd);
+  printf ("mpfr_sum took %dms\n", cputime () - st);
+
+  if (n <= 2)
+    {
+      MPFR_ASSERTN (mpfr_cmp (ref_s, s) == 0);
+      MPFR_ASSERTN (ref_ret == ret);
+    }
+
+  for (i = 0; i < n; i++)
+    mpfr_clear (x[i]);
+  free (x);
+  free (y);
+  mpfr_clear (s);
+  mpfr_clear (ref_s);
+  gmp_randclear (state);
+}
+
+int
+main (int argc, char *argv[])
+{
+  if (argc == 5)
+    {
+      check_random (atoi (argv[1]), atoi (argv[2]), atoi (argv[3]),
+                    atoi (argv[4]));
+      return 0;
+    }
+
   tests_start_mpfr ();
+
+  if (argc != 1)
+    {
+      fprintf (stderr, "Usage: tsum\n       tsum n k prec rnd\n");
+      exit (1);
+    }
 
   check_simple ();
   check_special ();
