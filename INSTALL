@@ -528,6 +528,8 @@ a. Using MinGW
 1 - We advise to use MinGW (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
     Windows code.
+    Note however that users reported some test failures test with TLS support,
+    in this case it is recommended to build MPFR with --disable-thread-safe.
 
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux.
@@ -632,6 +634,8 @@ The MinGW64 version of the GCC compiler is now available here:
 https://sourceforge.net/projects/mingw-w64/
 
 It can build both GMP and MPFR for 64-bit Windows applications.
+Note however that users reported some test failures test with TLS support,
+in this case it is recommended to build MPFR with --disable-thread-safe.
 
 b. Using Visual C++ 2008/2010
 =============================
