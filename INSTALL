@@ -608,7 +608,7 @@ In case of failure, you may need to pass LDFLAGS='-shared-libgcc' at the
 end of the configure line due to a bug in GCC. Otherwise, if threading
 support is not needed, you can configure MPFR with --disable-thread-safe.
 
-c. Using Microsoft Visual C++ and Intel® C++ Compilers
+c. Using Microsoft Visual C++ and IntelÂ® C++ Compilers
 =============================
 
 32- and 64-bit versions of the MPFR library can be built using Microsoft
@@ -616,7 +616,7 @@ Visual Studio:
 
 https://www.visualstudio.com/
 
-with or without integration with Intel® Parallel Studio XE:
+with or without integration with IntelÂ® Parallel Studio XE:
 
 https://software.intel.com/en-us/intel-parallel-studio-xe
 
