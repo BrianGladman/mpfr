@@ -608,26 +608,21 @@ In case of failure, you may need to pass LDFLAGS='-shared-libgcc' at the
 end of the configure line due to a bug in GCC. Otherwise, if threading
 support is not needed, you can configure MPFR with --disable-thread-safe.
 
-c. Using Microsoft Visual C++ and Intel® C++ Compilers
-=============================
+c. Using Microsoft Visual C++ and Intel C++ Compilers
+=====================================================
 
-32- and 64-bit versions of the MPFR library can be built using Microsoft
-Visual Studio:
+Static and dynamic MPFR libraries for the 32- and 64-bit versions of
+Windows can be built with Microsoft Visual Studio 2015 using the
+Microsoft Visual C++ compiler, see:
 
-https://www.visualstudio.com/
+  https://www.visualstudio.com/
 
-with or without integration with Intel® Parallel Studio XE:
+The Intel C++ compiler provided as a part of Intel Parallel Studio XE
+can also be used:
 
-https://software.intel.com/en-us/intel-parallel-studio-xe
+  https://software.intel.com/en-us/intel-parallel-studio-xe
 
-using the build projects available here:
+The relevant build projects are available here:
 
-http://www.gladman.me.uk/computing/gmp4win.php
-https://github.com/BrianGladman
+  https://github.com/BrianGladman
 
-Visual C++ may require Windows SDK:
-
-https://dev.windows.com/en-us/downloads/windows-10-sdk
-
-In this case, once Windows SDK has been installed, users have to select it
-manually in projects properties menu.
