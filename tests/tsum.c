@@ -21,12 +21,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
-#include <sys/types.h>
-#include <sys/resource.h>
 
 #ifndef MPFR_NCANCEL
 #define MPFR_NCANCEL 10
 #endif
+
+#if defined(__unix__)
+
+#include <sys/types.h>
+#include <sys/resource.h>
 
 static int
 cputime ()
@@ -36,6 +39,8 @@ cputime ()
   getrusage (0, &rus);
   return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
 }
+
+#endif
 
 static mpfr_prec_t
 get_prec_max (mpfr_t *t, int n)
@@ -1104,6 +1109,8 @@ check_coverage (void)
 #endif
 }
 
+#if defined(__unix__)
+
 static int
 mpfr_sum_naive (mpfr_t s, mpfr_t *x, int n, mpfr_rnd_t rnd)
 {
@@ -1168,15 +1175,19 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
   gmp_randclear (state);
 }
 
+#endif
+
 int
 main (int argc, char *argv[])
 {
+#if defined(__unix__)
   if (argc == 5)
     {
       check_random (atoi (argv[1]), atoi (argv[2]), atoi (argv[3]),
                     atoi (argv[4]));
       return 0;
     }
+#endif
 
   tests_start_mpfr ();
 
