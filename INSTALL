@@ -525,7 +525,7 @@ approach depending on how you intend to use the resulting libraries.
 a. Using MinGW
 ==============
 
-1 - We advise to use MinGW (http://www.mingw.org/ for 32-bit, and 
+1 - We advise to use MinGW (http://www.mingw.org/ for 32-bit, and
     https://sourceforge.net/projects/mingw-w64/ for 32- and 64-bit),
     which is simpler and less demanding than Cygwin. Contrary to Cygwin,
     it also provides native Windows code.
@@ -574,4 +574,3 @@ can also be used:
 The relevant build projects are available here:
 
   https://github.com/BrianGladman
-
