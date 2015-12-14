@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* return the cpu time in milliseconds */
 static int
-cputime ()
+cputime (void)
 {
   return clock () / (CLOCKS_PER_SEC / 1000);
 }
