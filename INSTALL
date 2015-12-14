@@ -526,7 +526,7 @@ a. Using MinGW
 ==============
 
 1 - We advise to use MinGW (http://www.mingw.org/ for 32-bit, and 
-    https://sourceforge.net/projects/mingw-w64 for 32- and 64-bit),
+    https://sourceforge.net/projects/mingw-w64/ for 32- and 64-bit),
     which is simpler and less demanding than Cygwin. Contrary to Cygwin,
     it also provides native Windows code.
     Note however that users reported some test failures test with TLS support,
@@ -608,33 +608,26 @@ In case of failure, you may need to pass LDFLAGS='-shared-libgcc' at the
 end of the configure line due to a bug in GCC. Otherwise, if threading
 support is not needed, you can configure MPFR with --disable-thread-safe.
 
-c. Using Visual C++ 2008/2010
+c. Using Microsoft Visual C++ and Intel® C++ Compilers
 =============================
 
-Win32 and win64 versions of the MPFR library can be built using Microsoft
-Visual C++ 2008 or 2010 using the build projects available here:
+32- and 64-bit versions of the MPFR library can be built using Microsoft
+Visual Studio:
+
+https://www.visualstudio.com/
+
+with or without integration with Intel® Parallel Studio XE:
+
+https://software.intel.com/en-us/intel-parallel-studio-xe
+
+using the build projects available here:
 
 http://www.gladman.me.uk/computing/gmp4win.php
+https://github.com/BrianGladman
 
-These build projects contain both win32 and win64 builds but the latter
-can only be built if your version of Visual C++ contains the 64-bit
-compiler and tools.  On Visual C++ 2008, the 64-bit tools are an
-option during installation so if you don't have them you will need
-to start the Visual Studio installer and add them to your IDE
-configuration.  On Visual C++ 2010 they are installed by default.
+Visual C++ may require Windows SDK:
 
-As delivered, Visual C++ Express 2008 SP1 cannot build x64 projects
-but the Windows SDK can be added to it to allow this. The IDE then
-needs to be configured as described here:
+https://dev.windows.com/en-us/downloads/windows-10-sdk
 
-http://msdn.microsoft.com/en-us/library/9yb4317s(VS.80).aspx
-
-to allow x64 builds.
-
-Visual C++ Express 2010 requires the Windows 7 SDK to be installed
-in order to build x64 projects. This SDK is available here:
-
-http://tinyurl.com/25zz8r6
-
-In this case, once this SDK has been installed, Visual C++ Express 2010
-will build x64 projects without further changes.
+In this case, once Windows SDK has been installed, users have to select it
+manually in projects properties menu.
