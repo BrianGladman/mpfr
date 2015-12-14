@@ -516,8 +516,8 @@ due to the early compiler tests, as gcc will not compile any program if
 OBJECT_MODE is 64 and the -maix64 option is not provided.
 
 
-MPFR for use with 32-bit Windows Applications (win32)
-=====================================================
+MPFR for use with Windows Applications
+======================================
 
 There are several ways of building MPFR on Windows, the most appropriate
 approach depending on how you intend to use the resulting libraries.
@@ -525,9 +525,10 @@ approach depending on how you intend to use the resulting libraries.
 a. Using MinGW
 ==============
 
-1 - We advise to use MinGW (http://www.mingw.org/), which is simpler and
-    less demanding than Cygwin. Contrary to Cygwin, it also provides native
-    Windows code.
+1 - We advise to use MinGW (http://www.mingw.org/ for 32-bit, and 
+    https://sourceforge.net/projects/mingw-w64 for 32- and 64-bit),
+    which is simpler and less demanding than Cygwin. Contrary to Cygwin,
+    it also provides native Windows code.
     Note however that users reported some test failures test with TLS support,
     in this case it is recommended to build MPFR with --disable-thread-safe.
 
@@ -538,7 +539,7 @@ a. Using MinGW
     a typical error is _P_WAIT being undeclared).
 
 3 - If you want to make libraries work under another Windows compiler
-    like Visual C / C++, since the unix-like *.a library files are compatible
+    like Visual C / C++, since the Unix-like *.a library files are compatible
     with Windows *.lib files, you can simply rename all *.a libraries to *.lib.
 
     With gmp-4.1.3, the only remaining problem seems to be the "alloca" calls
@@ -546,7 +547,7 @@ a. Using MinGW
     should work (if you build MPFR with GMP internal files).
 
     Or you could add the library
-     "$MINGWIN$/lib/gcc-lib/mingw32/$VERSION$/libgcc.a"
+     "$MINGWIN$/lib/gcc-lib/mingw32/$VERSION$/libgcc.a" [or mingw64]
     to your project: it contains all the extra-functions needed by a program
     compiled by gcc (division of 64-bit integer, bcopy, alloca...).
     Of course, include it if and only if your compiler is not gcc.
@@ -610,43 +611,12 @@ support is not needed, you can configure MPFR with --disable-thread-safe.
 c. Using Visual C++ 2008/2010
 =============================
 
-Win32 versions of the MPFR library can be built using Microsoft Visual
-C++ 2008 or 2010 using the build projects available here:
+Win32 and win64 versions of the MPFR library can be built using Microsoft
+Visual C++ 2008 or 2010 using the build projects available here:
 
-http://gladman.plushost.co.uk/oldsite/computing/gmp4win.php
+http://www.gladman.me.uk/computing/gmp4win.php
 
-These build projects contain both win32 and x64 builds but the latter
-will give errors if your version of Visual C++ lacks the 64-bit
-compiler and tools.   The 32-bit build projects should however work
-on Visual C++ 2008, Visual C++ Express 2008 (SP1), Visual C++ 2010
-and Visual C++ Express 2010.
-
-MPFR for use with 64-bit Windows Applications (x64)
-===================================================
-
-There are two ways of building MPFR for use with 64-bit Windows
-applications.
-
-a. Using MinGW64
-================
-
-The MinGW64 version of the GCC compiler is now available here:
-
-https://sourceforge.net/projects/mingw-w64/
-
-It can build both GMP and MPFR for 64-bit Windows applications.
-Note however that users reported some test failures test with TLS support,
-in this case it is recommended to build MPFR with --disable-thread-safe.
-
-b. Using Visual C++ 2008/2010
-=============================
-
-x64 versions of the MPFR library can be built using Microsoft Visual
-C++ 2008 or 2010 using the build projects available here:
-
-http://gladman.plushost.co.uk/oldsite/computing/gmp4win.php
-
-These build projects contain both win32 and x64 builds but the latter
+These build projects contain both win32 and win64 builds but the latter
 can only be built if your version of Visual C++ contains the 64-bit
 compiler and tools.  On Visual C++ 2008, the 64-bit tools are an
 option during installation so if you don't have them you will need
