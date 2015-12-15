@@ -1132,8 +1132,8 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
   gmp_randinit_default (state);
   mpfr_init2 (s, prec);
   mpfr_init2 (ref_s, prec);
-  x = malloc (n * sizeof (mpfr_t));
-  y = malloc (n * sizeof (mpfr_ptr));
+  x = (mpfr_t *) malloc (n * sizeof (mpfr_t));
+  y = (mpfr_ptr *) malloc (n * sizeof (mpfr_ptr));
   for (i = 0; i < n; i++)
     {
       y[i] = x[i];
@@ -1172,7 +1172,7 @@ main (int argc, char *argv[])
   if (argc == 5)
     {
       check_random (atoi (argv[1]), atoi (argv[2]), atoi (argv[3]),
-                    atoi (argv[4]));
+                    (mpfr_rnd_t) atoi (argv[4]));
       return 0;
     }
 
