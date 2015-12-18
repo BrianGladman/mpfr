@@ -180,8 +180,8 @@ mpfr_print_raw (mpfr_srcptr x)
 #endif
 
 /* Random */
-__MPFR_DECLSPEC extern char             mpfr_rands_initialized;
-__MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
+extern char             mpfr_rands_initialized;
+extern gmp_randstate_t  mpfr_rands;
 
 #undef RANDS
 #define RANDS                                   \
@@ -203,10 +203,10 @@ __MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
 typedef __gmp_randstate_struct *mpfr_gmp_randstate_ptr;
 
 /* Allocation */
-__MPFR_DECLSPEC void *mpfr_default_allocate _MPFR_PROTO ((size_t));
-__MPFR_DECLSPEC void *mpfr_default_reallocate _MPFR_PROTO ((void *, size_t,
+void *mpfr_default_allocate _MPFR_PROTO ((size_t));
+void *mpfr_default_reallocate _MPFR_PROTO ((void *, size_t,
                                                              size_t));
-__MPFR_DECLSPEC void mpfr_default_free _MPFR_PROTO ((void *, size_t));
+void mpfr_default_free _MPFR_PROTO ((void *, size_t));
 
 
 #if defined (__cplusplus)
