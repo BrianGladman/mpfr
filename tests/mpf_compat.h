@@ -185,7 +185,7 @@ main (void)
   /* We may use src_fopen instead of fopen, but it is defined
      in mpfr-test, and not in mpfr.h and gmp.h, and we want
      to test theses includes files. */
-  f = fopen ("inp_str.data", "r");
+  f = fopen ("inp_str.dat", "r");
   if (f != NULL)
     {
       i = mpf_inp_str (x, f, 10);
