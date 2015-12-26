@@ -110,7 +110,7 @@ main (void)
   mpf_set_q (x, q);
   mpq_clear (q);
 
-  mpf_set_str (x, "3.1415e1", 10);
+  mpf_set_str (x, "31415e-3", 10);
   mpf_swap (x, y);
 
   /* Combined Initialization and Assignment Functions */
@@ -124,7 +124,7 @@ main (void)
   mpf_clear (x);
   mpf_init_set_d (x, 17.0);
   mpf_clear (x);
-  mpf_init_set_str (x, "3.1415e1", 10);
+  mpf_init_set_str (x, "31415e-3", 10);
 
   /* Conversion Functions */
 
