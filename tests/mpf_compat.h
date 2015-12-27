@@ -189,7 +189,7 @@ main (void)
   if (f != NULL)
     {
       i = mpf_inp_str (x, f, 10);
-      if ((i == 0) || mpf_cmp_ui (x, 31415))
+      if ((i == 0) || mpf_cmp_si (x, -1700))
         {
           printf ("Error in reading 1st line from file inp_str.data\n");
           exit (1);

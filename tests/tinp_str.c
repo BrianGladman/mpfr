@@ -28,7 +28,7 @@ main (int argc, char *argv[])
   mpfr_t x;
   mpfr_t y;
   FILE *f;
-  int i;
+  int i, n;
   tests_start_mpfr ();
 
   mpfr_init (x);
@@ -42,15 +42,14 @@ main (int argc, char *argv[])
       exit (1);
     }
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if (i == 0 || mpfr_cmp_ui (x, 31415))
+  if (i == 0 || mpfr_cmp_si (x, -1700))
     {
       printf ("Error in reading 1st line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
-  getc (f);
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if ((i == 0) || mpfr_cmp_ui (x, 31416))
+  if (i == 0 || mpfr_cmp_ui (x, 31415))
     {
       printf ("Error in reading 2nd line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
@@ -58,9 +57,17 @@ main (int argc, char *argv[])
     }
   getc (f);
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if (i != 0)
+  if (i == 0 || mpfr_cmp_ui (x, 31416))
     {
       printf ("Error in reading 3rd line from file inp_str.dat (%d)\n", i);
+      mpfr_dump (x);
+      exit (1);
+    }
+  getc (f);
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
+  if (i != 0)
+    {
+      printf ("Error in reading 4th line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
@@ -69,12 +76,14 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 53);
   mpfr_set_str (y, "1.0010010100001110100101001110011010111011100001110010e226",
                 2, MPFR_RNDN);
-  for (i = 2; i < 63; i++)
+  for (n = 2; n < 63; n++)
     {
       getc (f);
-      if (mpfr_inp_str (x, f, i, MPFR_RNDN) == 0 || !mpfr_equal_p (x, y))
+      i = mpfr_inp_str (x, f, n, MPFR_RNDN);
+      if (i == 0 || !mpfr_equal_p (x, y))
         {
-          printf ("Error in reading %dth line from file inp_str.dat\n", i+2);
+          printf ("Error in reading %dth line from file inp_str.dat (%d)\n",
+                  n+3, i);
           mpfr_dump (x);
           exit (1);
         }
