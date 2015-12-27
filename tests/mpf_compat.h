@@ -182,20 +182,20 @@ main (void)
 
   mpf_set_prec (x, 15);
   mpf_set_prec (y, 15);
-  /* We may use src_fopen instead of fopen, but it is defined
-     in mpfr-test, and not in mpfr.h and gmp.h, and we want
-     to test theses includes files. */
-  f = fopen ("inp_str.dat", "r");
-  if (f != NULL)
+
+  f = src_fopen ("inp_str.dat", "r");
+  if (f == NULL)
     {
-      i = mpf_inp_str (x, f, 10);
-      if ((i == 0) || mpf_cmp_si (x, -1700))
-        {
-          printf ("Error in reading 1st line from file inp_str.data\n");
-          exit (1);
-        }
-      fclose (f);
+      printf ("cannot open file \"inp_str.dat\"\n");
+      exit (1);
     }
+  i = mpf_inp_str (x, f, 10);
+  if (i == 0 || mpf_cmp_si (x, -1700))
+    {
+      printf ("Error in reading 1st line from file \"inp_str.dat\"\n");
+      exit (1);
+    }
+  fclose (f);
 
   /* Miscellaneous Functions */
 
