@@ -104,6 +104,8 @@ set_fpu_prec (void)
 char             mpfr_rands_initialized = 0;
 gmp_randstate_t  mpfr_rands;
 
+char *locale = NULL;
+
 static mpfr_exp_t default_emin, default_emax;
 
 static void tests_rand_start (void);
@@ -234,7 +236,7 @@ tests_start_mpfr (void)
   /* Added on 2005-07-09. This allows to test MPFR under various
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
-  setlocale (LC_ALL, "");
+  locale = setlocale (LC_ALL, "");
 #endif
 
 #ifdef MPFR_FPU_PREC

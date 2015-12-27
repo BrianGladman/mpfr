@@ -179,6 +179,8 @@ mpfr_print_raw (mpfr_srcptr x)
 }
 #endif
 
+extern char *locale;
+
 /* Random */
 extern char             mpfr_rands_initialized;
 extern gmp_randstate_t  mpfr_rands;
