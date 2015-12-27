@@ -29,6 +29,7 @@ main (int argc, char *argv[])
   mpfr_t y;
   FILE *f;
   int i, n;
+
   tests_start_mpfr ();
 
   mpfr_init (x);
