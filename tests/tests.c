@@ -540,7 +540,10 @@ ld_trace (const char *name, long double ld)
   printf ("] %.20Lg\n", ld);
 }
 
-/* Open a file in the src directory - can't use fopen directly */
+/* Open a file in the SRCDIR directory, i.e. the "tests" source directory,
+   which is different from the current directory when objdir is different
+   from srcdir. One should generally use this function instead of fopen
+   directly. */
 FILE *
 src_fopen (const char *filename, const char *mode)
 {
