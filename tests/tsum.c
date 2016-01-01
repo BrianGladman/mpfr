@@ -1,6 +1,6 @@
 /* tsum -- test file for the list summation function
 
-Copyright 2004-2015 Free Software Foundation, Inc.
+Copyright 2004-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.

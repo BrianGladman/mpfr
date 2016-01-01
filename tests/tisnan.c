@@ -1,7 +1,7 @@
 /* Test file for mpfr_nan_p, mpfr_inf_p, mpfr_number_p, mpfr_zero_p and
    mpfr_regular_p.
 
-Copyright 2001-2004, 2006-2015 Free Software Foundation, Inc.
+Copyright 2001-2004, 2006-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
