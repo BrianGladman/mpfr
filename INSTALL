@@ -154,6 +154,8 @@ by Libtool's versioning system.
 Tuning MPFR
 ===========
 
+[For the current GMP version (6.1.0), a Unix-like OS is required.]
+
 For this, you need to build MPFR with a GMP build directory (see above).
 In the GMP build directory, you also need to go into the "tune" subdirectory
 and type "make speed". This will build the GMP speed library, which is used
