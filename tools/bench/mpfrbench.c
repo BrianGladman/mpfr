@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef HAVE_GETRUSAGE
 #include <sys/time.h>
 #include <sys/resource.h>
+#else
+#include <time.h>
 #endif
 #include "mpfr.h"
 #include "benchtime.h"
@@ -115,9 +117,7 @@ get_cputime (void)
   return ru.ru_utime.tv_sec * 1000000 + ru.ru_utime.tv_usec
        + ru.ru_stime.tv_sec * 1000000 + ru.ru_stime.tv_usec;
 #else
-  printf ("\nError, the function getrusage is not available\n");
-  exit (1);
-  return 0;
+  return (unsigned long) ((double) clock () / ((double) CLOCKS_PER_SEC / 1e6));
 #endif
 }
 
