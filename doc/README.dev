@@ -244,7 +244,7 @@ To make a release (for the MPFR team):
      Test with mini-gmp.
 
      Test with valgrind by setting the environment variable:
-       VALGRIND="valgrind -q --error-exitcode=1 --leak-check=full"
+       LOG_COMPILER="valgrind -q --error-exitcode=1 --leak-check=full"
      See below for more information about valgrind.
 
      Test with "clang -fsanitize=undefined" (available as of Clang 3.3),
@@ -1222,13 +1222,13 @@ a large value; this can be done at run time, e.g. with
 to disable the timeout, so that you do not need to rebuild MPFR for
 this purpose.
 
-Then just set the VALGRIND environment variable to something like
+Then just set the LOG_COMPILER environment variable to something like
 
   valgrind -q --error-exitcode=1 --leak-check=full
 
 before running "make check", or type directly:
 
-  VALGRIND="valgrind -q --error-exitcode=1 --leak-check=full" make check
+  LOG_COMPILER="valgrind -q --error-exitcode=1 --leak-check=full" make check
 
 NOTE: with the new tests/Makefile.am file, the following is obsolete;
 but it might still be useful under some occasions, e.g. if all the

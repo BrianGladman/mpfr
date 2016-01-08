@@ -72,6 +72,11 @@ $(top_builddir)/src/libmpfr.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libmpfr.la
 
 TESTS = $(check_PROGRAMS)
+
+# $(VALGRIND) is still there to be able to use a wrapper such as valgrind
+# in case old Automake. With Automake 1.13+, where a parallel test harness
+# is generated, use LOG_COMPILER instead. For additional information, see:
+# http://www.gnu.org/software/automake/manual/automake.html#Parallel-Test-Harness
 TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 
 # The -no-install option prevents libtool from generating wrapper scripts
