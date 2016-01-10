@@ -2151,6 +2151,17 @@ separate addition or subtraction.  That is, the fused operation matters only
 for rounding.
 @end deftypefun
 
+@deftypefun int mpfr_fmma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fmms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + (@var{op3} @GMPtimes{} @var{op4})}
+(resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - (@var{op3} @GMPtimes{} @var{op4})})
+rounded in the direction @var{rnd}.
+In case the computation of @math{@var{op1} @GMPtimes{} @var{op2}} overflows or
+underflows (or that of @math{@var{op3} @GMPtimes{} @var{op4}}), the result
+@var{rop} is computed as if the two intermediate products were computed with
+rounding toward zero.
+@end deftypefun
+
 @deftypefun int mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded in the direction @var{rnd}.

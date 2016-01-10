@@ -72,7 +72,34 @@ public:
 class mpfr_fma_test {
 public:
   int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
-    return mpfr_fma (a,b,b,c,r);
+    /* prefer mpfr_fma (a,b,c,c,r) which computes b*c + c to
+       mpfr_fma (a,b,b,c,r) which computes b*b + c, where b*b
+       might be computed by a square */
+    return mpfr_fma (a,b,c,c,r);
+  }
+};
+
+class mpfr_fms_test {
+public:
+  int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    /* prefer mpfr_fms (a,b,c,c,r) which computes b*c - c to
+       mpfr_fms (a,b,b,c,r) which computes b*b - c, where b*b
+       might be computed by a square */
+    return mpfr_fms (a,b,c,c,r);
+  }
+};
+
+class mpfr_fmma_test {
+public:
+  int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_fmma (a,b,b,c,c,r);
+  }
+};
+
+class mpfr_fmms_test {
+public:
+  int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_fmms (a,b,b,c,c,r);
   }
 };
 
@@ -197,6 +224,9 @@ static mpfr_test<mpfr_add_test> test1 ("mpfr_add");
 static mpfr_test<mpfr_sub_test> test2 ("mpfr_sub");
 static mpfr_test<mpfr_mul_test> test3 ("mpfr_mul");
 static mpfr_test<mpfr_fma_test> test10 ("mpfr_fma");
+static mpfr_test<mpfr_fms_test> test11 ("mpfr_fms");
+static mpfr_test<mpfr_fmma_test> test12 ("mpfr_fmma");
+static mpfr_test<mpfr_fmms_test> test13 ("mpfr_fmms");
 static mpfr_test<mpfr_div_test> test4 ("mpfr_div");
 static mpfr_test<mpfr_set_test> test5 ("mpfr_set");
 

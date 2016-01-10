@@ -93,6 +93,7 @@ mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     }
 }
 
+/* s <- x*y + z */
 int
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           mpfr_rnd_t rnd_mode)
@@ -115,10 +116,43 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                      MPFR_IS_SINGULAR(z) ))
     return mpfr_fma_singular (s, x, y, z, rnd_mode);
 
+  /* First deal with special case where prec(x) = prec(y) and x*y does
+     not overflow nor underflow. Do it only for small sizes since for large
+     sizes x*y is faster using Mulders' algorithm (as a rule of thumb,
+     we assume mpn_mul_n is faster up to 4*MPFR_MUL_THRESHOLD).
+     Since |EXP(x)|, |EXP(y)| < 2^(k-2) on a k-bit computer,
+     |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
+  mp_size_t n = MPFR_LIMB_SIZE(x);
+  if (n <= 4 * MPFR_MUL_THRESHOLD && MPFR_PREC(x) == MPFR_PREC(y) &&
+      MPFR_EXP(x) + MPFR_EXP(y) <= __gmpfr_emax &&
+      MPFR_EXP(x) + MPFR_EXP(y) > __gmpfr_emin)
+    {
+      mp_size_t un = n + n;
+      mp_ptr up;
+      MPFR_TMP_DECL(marker);
+
+      MPFR_TMP_MARK(marker);
+      MPFR_TMP_INIT (up, u, un * GMP_NUMB_BITS, un);
+      up = MPFR_MANT(u);
+      /* multiply x*y exactly into u */
+      mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
+      if ((up[un - 1] & MPFR_LIMB_HIGHBIT) == 0)
+        {
+          mpn_lshift (up, up, un, 1);
+          MPFR_EXP(u) = MPFR_EXP(x) + MPFR_EXP(y) - 1;
+        }
+      else
+        MPFR_EXP(u) = MPFR_EXP(x) + MPFR_EXP(y);
+      MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+      inexact = mpfr_add (s, u, z, rnd_mode);
+      MPFR_TMP_FREE(marker);
+      return inexact;
+    }
+
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
-  MPFR_SAVE_EXPO_MARK (expo);
   MPFR_GROUP_INIT_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
+  MPFR_SAVE_EXPO_MARK (expo);
 
   if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
     {
