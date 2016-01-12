@@ -100,6 +100,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 {
   int inexact;
   mpfr_t u;
+  mp_size_t n;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_GROUP_DECL(group);
 
@@ -122,7 +123,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
      we assume mpn_mul_n is faster up to 4*MPFR_MUL_THRESHOLD).
      Since |EXP(x)|, |EXP(y)| < 2^(k-2) on a k-bit computer,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
-  mp_size_t n = MPFR_LIMB_SIZE(x);
+  n = MPFR_LIMB_SIZE(x);
   if (n <= 4 * MPFR_MUL_THRESHOLD && MPFR_PREC(x) == MPFR_PREC(y) &&
       MPFR_EXP(x) + MPFR_EXP(y) <= __gmpfr_emax &&
       MPFR_EXP(x) + MPFR_EXP(y) > __gmpfr_emin)
