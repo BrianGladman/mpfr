@@ -1,7 +1,7 @@
 /* mpfr_fmma, mpfr_fmms -- Compute a*b +/- c*d
 
-Copyright (C) 2002-2016 INRIA.
-Copied from the GNU MPC project.
+Copyright (C) 2014-2016 INRIA.
+Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
