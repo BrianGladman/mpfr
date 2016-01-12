@@ -128,7 +128,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       MPFR_EXP(x) + MPFR_EXP(y) > __gmpfr_emin)
     {
       mp_size_t un = n + n;
-      mp_ptr up;
+      mpfr_limb_ptr up;
       MPFR_TMP_DECL(marker);
 
       MPFR_TMP_MARK(marker);
