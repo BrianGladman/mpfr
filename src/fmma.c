@@ -52,7 +52,7 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    int inex;
    mpfr_t u, v;
    mp_size_t an, bn, cn, dn;
-   mp_ptr up, vp;
+   mpfr_limb_ptr up, vp;
    MPFR_TMP_DECL(marker);
    MPFR_SAVE_EXPO_DECL (expo);
 
@@ -114,7 +114,7 @@ int
 mpfr_fmma (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
            mpfr_srcptr d, mpfr_rnd_t rnd)
 {
-  mp_ptr zp = MPFR_MANT(z);
+  mpfr_limb_ptr zp = MPFR_MANT(z);
 
   return (mpfr_regular_p (a) && mpfr_regular_p (b) && mpfr_regular_p (c) &&
           mpfr_regular_p (d) && zp != MPFR_MANT(a) && zp != MPFR_MANT(b) &&
