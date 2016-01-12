@@ -62,7 +62,7 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   inex_ref = mpfr_sub (ref, ab, cd, rnd);
   if (inex_res != inex_ref)
     {
-      mpfr_printf ("mpfr_fmms failed for p=%u rnd=%d\n", p, rnd);
+      printf ("mpfr_fmms failed for p=%u rnd=%d\n", p, rnd);
       printf ("a="); mpfr_dump (a);
       printf ("b="); mpfr_dump (b);
       printf ("c="); mpfr_dump (c);
