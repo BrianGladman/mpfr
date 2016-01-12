@@ -42,7 +42,8 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   inex_ref = mpfr_add (ref, ab, cd, rnd);
   if (inex_res != inex_ref)
     {
-      printf ("mpfr_fmma failed for p=%ld rnd=%d\n", (long int) p, rnd);
+      printf ("mpfr_fmma failed for p=%ld rnd=%s\n",
+              (long int) p, mpfr_print_rnd_mode (rnd));
       printf ("a="); mpfr_dump (a);
       printf ("b="); mpfr_dump (b);
       printf ("c="); mpfr_dump (c);
@@ -62,7 +63,8 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   inex_ref = mpfr_sub (ref, ab, cd, rnd);
   if (inex_res != inex_ref)
     {
-      printf ("mpfr_fmms failed for p=%ld rnd=%d\n", (long int) p, rnd);
+      printf ("mpfr_fmms failed for p=%ld rnd=%s\n",
+              (long int) p, mpfr_print_rnd_mode (rnd));
       printf ("a="); mpfr_dump (a);
       printf ("b="); mpfr_dump (b);
       printf ("c="); mpfr_dump (c);
@@ -85,7 +87,7 @@ static void
 random_tests (void)
 {
   mpfr_prec_t p;
-  mpfr_rnd_t r;
+  int r;
   mpfr_t a, b, c, d;
 
   for (p = MPFR_PREC_MIN; p <= 4096; p++)
@@ -95,8 +97,8 @@ random_tests (void)
       mpfr_urandomb (b, RANDS);
       mpfr_urandomb (c, RANDS);
       mpfr_urandomb (d, RANDS);
-      for (r = 0; r < 4; r++)
-        random_test (a, b, c, d, r);
+      RND_LOOP (r)
+        random_test (a, b, c, d, (mpfr_rnd_t) r);
       mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
     }
 }
