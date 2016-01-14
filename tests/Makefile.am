@@ -24,7 +24,7 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      tgamma tget_flt tget_d tget_d_2exp tget_f tget_ld_2exp		\
      tget_set_d64 tget_sj tget_str tget_z tgmpop tgrandom thyperbolic	\
      thypot tinp_str tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog	\
-     tlog10 tlog1p tlog2 tmin_prec tminmax tmodf tmul tmul_2exp		\
+     tlog10 tlog1p tlog2 tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp	\
      tmul_d tmul_ui tnext tnrandom tnrandom_chisq tout_str toutimpl	\
      tpow tpow3 tpow_all tpow_z tprintf trandom trandom_deviate		\
      trec_sqrt tremquo trint trndna troot tround_prec tsec tsech	\
@@ -33,7 +33,7 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr tsub	\
      tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan ttanh ttrunc	\
      tui_div tui_pow tui_sub turandom tvalist ty0 ty1 tyn tzeta		\
-     tzeta_ui tlog_ui
+     tzeta_ui
 
 # Before Automake 1.13, we ran tversion at the beginning and at the end
 # of the tests, and output from tversion appeared at the same place as
