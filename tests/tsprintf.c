@@ -37,8 +37,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-
 const int prec_max_printf = 5000; /* limit for random precision in
                                      random_double() */
 #define BUF_SIZE 65536
@@ -1300,17 +1298,6 @@ main (int argc, char **argv)
   tests_end_mpfr ();
   return 0;
 }
-
-#else  /* MPFR_VERSION */
-
-int
-main (void)
-{
-  printf ("Warning! Test disabled for this MPFR version.\n");
-  return 0;
-}
-
-#endif  /* MPFR_VERSION */
 
 #else  /* HAVE_STDARG */
 

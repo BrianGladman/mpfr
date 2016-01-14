@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-
 #define TEST_FUNCTION mpfr_rec_sqrt
 #define TEST_RANDOM_POS 8 /* 8/512 = 1/64 of the tested numbers are negative */
 #include "tgeneric.c"
@@ -194,14 +192,3 @@ main (void)
   tests_end_mpfr ();
   return 0;
 }
-
-#else  /* MPFR_VERSION */
-
-int
-main (void)
-{
-  printf ("Warning! Test disabled for this MPFR version.\n");
-  return 0;
-}
-
-#endif  /* MPFR_VERSION */

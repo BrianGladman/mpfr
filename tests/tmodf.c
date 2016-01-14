@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-
 static void
 check (const char *xis, const char *xfs, const char *xs,
        mpfr_prec_t xip, mpfr_prec_t xfp, mpfr_prec_t xp,
@@ -220,14 +218,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else
-
-int
-main (void)
-{
-  printf ("Warning! Test disabled for this MPFR version.\n");
-  return 0;
-}
-
-#endif

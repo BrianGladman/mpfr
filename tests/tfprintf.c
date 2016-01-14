@@ -34,8 +34,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-
 #define QUOTE(X) NAME(X)
 #define NAME(X) #X
 
@@ -431,17 +429,6 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-#else  /* MPFR_VERSION */
-
-int
-main (void)
-{
-  printf ("Warning! Test disabled for this MPFR version.\n");
-  return 0;
-}
-
-#endif  /* MPFR_VERSION */
 
 #else  /* HAVE_STDARG */
 

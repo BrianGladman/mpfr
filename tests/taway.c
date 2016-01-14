@@ -480,13 +480,11 @@ main (void)
       test4 (mpfr_fma, "mpfr_fma");
       test4 (mpfr_fms, "mpfr_fms");
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
       test2 (mpfr_li2, "mpfr_li2");
       test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt");
       test3 (mpfr_fmod, "mpfr_fmod");
       test3a (mpfr_modf, "mpfr_modf");
       test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh");
-#endif
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0)
       test2 (mpfr_ai, "mpfr_ai");

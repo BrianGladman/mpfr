@@ -144,11 +144,7 @@ main (int argc, char **argv)
 {
   tests_start_mpfr ();
 
-  /* The tested function and macro exist in MPFR 2.2.0, but with a
-     different (incorrect, but with no effect in 2.2.0) behavior. */
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
   test_int_ceil_log2 ();
-#endif
 
   test_round_near_x ();
   test_set_prec_raw ();

@@ -668,13 +668,11 @@ main (void)
     test4 (mpfr_fma, "mpfr_fma", p, (mpfr_rnd_t) rnd);
     test4 (mpfr_fms, "mpfr_fms", p, (mpfr_rnd_t) rnd);
 
-#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
     test2 (mpfr_li2, "mpfr_li2",  p, (mpfr_rnd_t) rnd);
     test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt",  p, (mpfr_rnd_t) rnd);
     test3 (mpfr_fmod, "mpfr_fmod", p, (mpfr_rnd_t) rnd);
     test3a (mpfr_modf, "mpfr_modf", p, (mpfr_rnd_t) rnd);
     test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, (mpfr_rnd_t) rnd);
-#endif
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(3,0,0)
     test2 (mpfr_ai, "mpfr_ai", p, (mpfr_rnd_t) rnd);
