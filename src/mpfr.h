@@ -608,6 +608,8 @@ __MPFR_DECLSPEC int mpfr_log10 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                              mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_log1p _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                              mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_log_ui _MPFR_PROTO ((mpfr_ptr, unsigned long,
+                                              mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_exp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_exp2 _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
