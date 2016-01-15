@@ -145,6 +145,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       else
         MPFR_EXP(u) = MPFR_EXP(x) + MPFR_EXP(y);
       MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+      /* The above code does not generate any exception.
+         The exceptions will come only from mpfr_add. */
       inexact = mpfr_add (s, u, z, rnd_mode);
       MPFR_TMP_FREE(marker);
       return inexact;
