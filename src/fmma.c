@@ -75,10 +75,10 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    if ((up[an + bn - 1] & MPFR_LIMB_HIGHBIT) == 0)
      {
        mpn_lshift (up, up, an + bn, 1);
-       MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b) - 1;
+       MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b) - 1);
      }
    else
-     MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b);
+     MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b));
 
    /* v <- c*d */
    if (cn >= dn)
@@ -88,10 +88,10 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    if ((vp[cn + dn - 1] & MPFR_LIMB_HIGHBIT) == 0)
      {
        mpn_lshift (vp, vp, cn + dn, 1);
-       MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d) - 1;
+       MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d) - 1);
      }
    else
-     MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d);
+     MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d));
 
    MPFR_PREC(u) = (an + bn) * GMP_NUMB_BITS;
    MPFR_PREC(v) = (cn + dn) * GMP_NUMB_BITS;
