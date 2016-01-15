@@ -73,6 +73,7 @@
 /tfactorial
 /tfits
 /tfma
+/tfmma
 /tfmod
 /tfms
 /tfpif
@@ -109,6 +110,7 @@
 /tlog1p
 /tlog2
 /tlog10
+/tlog_ui
 /tminmax
 /tmin_prec
 /tmodf
