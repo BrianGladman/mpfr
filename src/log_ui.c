@@ -110,7 +110,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   k = __gmpfr_ceil_log2 (3.0 * (double) n) - 2; /* k >= 2 */
 
   /* the reduced argument is n/2^k - 1 = (n-2^k)/2^k */
-  p = (long) n - (1L << k);
+  p = (long) n - (1L << k);  /* FIXME: integer overflow for large n */
 
   MPFR_TMP_MARK(marker);
   w = MPFR_PREC(x) + 10;
