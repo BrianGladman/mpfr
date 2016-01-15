@@ -29,8 +29,8 @@ main (int argc, char *argv[])
 {
   unsigned int prec, yprec;
   int rnd;
-  mpfr_t x, y, z, t;
-  unsigned long n;
+  mpfr_t x, y, z, t, v;
+  unsigned long m, n;
   int inex;
   mpfr_exp_t emin, emax;
   int i;
@@ -40,10 +40,8 @@ main (int argc, char *argv[])
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
 
-  mpfr_init (x);
-  mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
+  mpfr_inits2 (53, x, y, z, t, (mpfr_ptr) 0);
+  mpfr_init2 (v, sizeof (unsigned long) * CHAR_BIT);
 
   if (argc >= 3) /* tlog_ui n prec [rnd] */
     {
@@ -98,13 +96,18 @@ main (int argc, char *argv[])
       mpfr_set_prec (x, prec);
       mpfr_set_prec (z, prec);
       mpfr_set_prec (t, prec);
-      yprec = prec + 10;
+      yprec = prec + 20;
       mpfr_set_prec (y, yprec);
 
-      for (n = 0; n < 50; n++)
+      for (m = 2; m < 70; m++)
         RND_LOOP (rnd)
           {
-            TEST_FUNCTION (y, n, MPFR_RNDN);
+            /* Start with n = 2 to 49 (mpfr_can_round would fail for n < 2),
+               then ULONG_MAX down to ULONG_MAX-19. */
+            n = m < 50 ? m : ULONG_MAX - (m - 50);
+            inex = mpfr_set_ui (v, n, MPFR_RNDN);
+            MPFR_ASSERTN (inex == 0);
+            mpfr_log (y, v, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))
               {
@@ -143,14 +146,19 @@ main (int argc, char *argv[])
                       }
                   }
               }
+            else
+              {
+                /* We are not doing random tests. The precision increase
+                   must have be chosen so that this case never occurs. */
+                printf ("mpfr_can_round failed for n = %lu, prec = %u, %s\n",
+                        n, prec, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                exit (1);
+              }
           }
     }
 
  clear_and_exit:
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
+  mpfr_clears (x, y, z, t, v, (mpfr_ptr) 0);
 
   tests_end_mpfr ();
   return 0;
