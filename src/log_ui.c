@@ -75,7 +75,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
 {
   unsigned long k;
   mpfr_prec_t w; /* working precision */
-  mpz_t *P, *Q;
+  mpz_t kz, *P, *Q;
   mpfr_t t, q;
   int inexact;
   unsigned long N, lgN, i;
@@ -109,8 +109,12 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   /* argument reduction: compute k such that 2/3 <= n/2^k < 4/3,
      i.e., 2^(k+1) <= 3n < 2^(k+2) */
 
-  k = __gmpfr_ceil_log2 (3.0 * (double) n) - 2;
+  mpz_init_set_ui (kz, n);
+  mpz_mul_ui (kz, kz, 3);
+  mpz_sub_ui (kz, kz, 1);
+  k = mpz_sizeinbase (kz, 2) - 2;
   MPFR_ASSERTD (k >= 2);
+  mpz_clear (kz);
 
   /* the reduced argument is n/2^k - 1 = (n-2^k)/2^k */
   p = (long) n - (1L << k);  /* FIXME: integer overflow for large n */
