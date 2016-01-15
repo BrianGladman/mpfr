@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* TODO: add more tests, with special values and exception checking. */
+
 /* check both mpfr_fmma and mpfr_fmms */
 static void
 random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
@@ -103,12 +105,77 @@ random_tests (void)
     }
 }
 
+static void
+zero_tests (void)
+{
+  mpfr_exp_t emin, emax;
+  mpfr_t a, b, c, d, res;
+  int i, r;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_inits2 (64, a, b, c, d, res, (mpfr_ptr) 0);
+  for (i = 0; i <= 4; i++)
+    {
+      switch (i)
+        {
+        case 0: case 1:
+          mpfr_set_ui (a, i, MPFR_RNDN);
+          break;
+        case 2:
+          mpfr_setmax (a, MPFR_EMAX_MAX);
+          break;
+        case 3:
+          mpfr_setmin (a, MPFR_EMIN_MIN);
+          break;
+        case 4:
+          mpfr_setmin (a, MPFR_EMIN_MIN+1);
+          break;
+        }
+      RND_LOOP (r)
+        {
+          int inex;
+          mpfr_flags_t flags;
+
+          mpfr_set (b, a, MPFR_RNDN);
+          mpfr_set (c, a, MPFR_RNDN);
+          mpfr_neg (d, a, MPFR_RNDN);
+          mpfr_clear_flags ();
+          inex = mpfr_fmma (res, a, b, c, d, (mpfr_rnd_t) r);
+          flags = __gmpfr_flags;
+          if (flags != 0 || inex != 0 || ! mpfr_zero_p (res) ||
+              (r == MPFR_RNDD ? MPFR_IS_POS (res) : MPFR_IS_NEG (res)))
+            {
+              printf ("Error in zero_tests on i = %d, %s\n",
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("Expected %c0, inex = 0\n", r == MPFR_RNDD ? '-' : '+');
+              printf ("Got ");
+              mpfr_out_str (stdout, 16, 0, res, MPFR_RNDN);
+              printf (", inex = %d\n", inex);
+              printf ("Expected flags:");
+              flags_out (0);
+              printf ("Got flags:     ");
+              flags_out (flags);
+              exit (1);
+            }
+        }
+    }
+  mpfr_clears (a, b, c, d, res, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   random_tests ();
+  zero_tests ();
 
   tests_end_mpfr ();
   return 0;
