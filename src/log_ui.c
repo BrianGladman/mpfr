@@ -33,6 +33,7 @@ static void
 S (mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2,
    long p, unsigned long k)
 {
+  MPFR_ASSERTD (n1 < n2);
   if (n2 == n1 + 1)
     {
       mpz_set_si (P[0], p);
@@ -44,6 +45,7 @@ S (mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2,
       unsigned long m = (n1 / 2) + (n2 / 2) + (n1 & 1UL & n2);
       /* m = floor((n1+n2)/2) */
 
+      MPFR_ASSERTD (n1 < m && m < n2);
       S (P, Q, n1, m, p, k);
       S (P + 1, Q + 1, m, n2, p, k);
       /* P1/Q1 + (-p)^(m-n1)/2^(k(m-n1)) P2/Q2 =
@@ -127,6 +129,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
       mpfr_init2 (tmp, 32);
       /* 1354911329/2^31 is a 32-bit upper bound for log(2)/log(3) */
       mpfr_set_ui_2exp (tmp, 1354911329, -31, MPFR_RNDU);
+      MPFR_ASSERTN (w <= ULONG_MAX);
       mpfr_mul_ui (tmp, tmp, w, MPFR_RNDU);
       N = mpfr_get_ui (tmp, MPFR_RNDU);
       lgN = MPFR_INT_CEIL_LOG2 (N) + 1;
