@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME: mpfr_log_ui is much slower than mpfr_log on some values of n,
+   e.g. something like 8 times as slow for n around ULONG_MAX/3 on an
+   x86_64 Linux machine. */
+
 /* Auxiliary function: Compute using binary splitting the sum
    -sum((-x)^(n+1-n1)/n, n = n1..n2-1) where x = p/2^k,
    -1/3 <= x <= 1/3. For n1=1 we get -sum((-x)^n/n, n = 1..n2-1).
