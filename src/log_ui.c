@@ -115,8 +115,13 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (k >= 2);
   mpz_clear (three_n);
 
-  /* the reduced argument is n/2^k - 1 = (n-2^k)/2^k */
-  p = (long) n - (1L << k);  /* FIXME: integer overflow for large n */
+  /* The reduced argument is n/2^k - 1 = (n-2^k)/2^k.
+     Compute p = n-2^k. One has: |p| = |n-2^k| < 2^k/3 < n/2 <= LONG_MAX,
+     so that p and -p both fit in a long. */
+  if (k < sizeof (unsigned long) * CHAR_BIT)
+    n -= 1UL << k;
+  /* n is now the value of p mod ULONG_MAX+1 */
+  p = n > LONG_MAX ? - (long) - n : (long) n;
 
   MPFR_TMP_MARK(marker);
   w = MPFR_PREC(x) + 10;
