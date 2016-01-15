@@ -99,14 +99,16 @@ main (int argc, char *argv[])
       yprec = prec + 20;
       mpfr_set_prec (y, yprec);
 
-      for (m = 2; m < 100; m++)
+      for (m = 2; m < 130; m++)
         RND_LOOP (rnd)
           {
             /* Start with n = 2 to 49 (mpfr_can_round would fail for n < 2),
-               then around LONG_MAX, then ULONG_MAX down to ULONG_MAX-19. */
+               then around ULONG_MAX/3, then around LONG_MAX, then
+               ULONG_MAX down to ULONG_MAX-19. */
             n = (m < 50 ? m :
-                 m < 80 ? (unsigned long) LONG_MAX + m - 65 :
-                 ULONG_MAX - (m - 80));
+                 m < 80 ? ULONG_MAX/3 + m - 65 :
+                 m < 110 ? (unsigned long) LONG_MAX + m - 95 :
+                 ULONG_MAX - (m - 110));
             inex = mpfr_set_ui (v, n, MPFR_RNDN);
             MPFR_ASSERTN (inex == 0);
             mpfr_log (y, v, MPFR_RNDN);
