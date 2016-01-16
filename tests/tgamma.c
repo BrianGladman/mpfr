@@ -1,4 +1,4 @@
-/* mpfr_tgamma -- test file for gamma function
+/* Test file for gamma function
 
 Copyright 2001-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.

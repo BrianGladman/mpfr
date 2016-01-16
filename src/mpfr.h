@@ -192,7 +192,8 @@ typedef uintmax_t mpfr_uexp_t;
 
 /* DON'T USE THIS! (For MPFR-public macros only, see below.)
    The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
-   are the smallest values. */
+   are the smallest values. For a n-bit type, EXP_MAX is 2^(n-1)-1,
+   EXP_ZERO is 1-2^(n-1), EXP_NAN is 2-2^(n-1), EXP_INF is 3-2^(n-1) */
 #define __MPFR_EXP_MAX ((mpfr_exp_t) (((mpfr_uexp_t) -1) >> 1))
 #define __MPFR_EXP_NAN  (1 - __MPFR_EXP_MAX)
 #define __MPFR_EXP_ZERO (0 - __MPFR_EXP_MAX)
@@ -742,6 +743,8 @@ __MPFR_DECLSPEC int mpfr_erfc _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_cbrt _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_root _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,unsigned long,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_gamma _MPFR_PROTO((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_gamma_inc _MPFR_PROTO((mpfr_ptr,mpfr_srcptr,
+                                                mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_lngamma _MPFR_PROTO((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_lgamma _MPFR_PROTO((mpfr_ptr,int*,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_digamma _MPFR_PROTO((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));

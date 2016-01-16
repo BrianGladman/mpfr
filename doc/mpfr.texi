@@ -2073,9 +2073,14 @@ to @var{op}}.
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the value of the Gamma function on @var{op}, rounded in the
-direction @var{rnd}. When @var{op} is a negative integer, @var{rop} is set
+@deftypefunx int mpfr_gamma_inc (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Gamma function on @var{op}, resp. the
+incomplete Gamma function on @var{op} and @var{op2},
+rounded in the direction @var{rnd}.
+For @code{mpfr_gamma}, when @var{op} is a negative integer, @var{rop} is set
 to NaN@.
+For @code{mpfr_gamma_inc}, the current implementation assumes both
+@var{op} and @var{op2} are regular positive numbers.
 @end deftypefun
 
 @deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
