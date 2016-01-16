@@ -53,6 +53,7 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    mpfr_t u, v;
    mp_size_t an, bn, cn, dn;
    mpfr_limb_ptr up, vp;
+   unsigned int saved_flags = __gmpfr_flags;
    MPFR_TMP_DECL(marker);
    MPFR_SAVE_EXPO_DECL (expo);
 
@@ -76,6 +77,8 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
      {
        mpn_lshift (up, up, an + bn, 1);
        MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b) - 1);
+       if (MPFR_UNLIKELY(MPFR_EXP(u) == __MPFR_EXP_INF))
+         goto failure;
      }
    else
      MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b));
@@ -89,6 +92,8 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
      {
        mpn_lshift (vp, vp, cn + dn, 1);
        MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d) - 1);
+       if (MPFR_UNLIKELY(MPFR_EXP(v) == __MPFR_EXP_INF))
+         goto failure;
      }
    else
      MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d));
@@ -107,6 +112,12 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    MPFR_SAVE_EXPO_FREE (expo);
 
    return mpfr_check_range (z, inex, rnd);
+   
+ failure:
+   __gmpfr_flags = saved_flags;
+   MPFR_TMP_FREE(marker);
+   MPFR_SAVE_EXPO_FREE (expo);
+   return mpfr_fmma_slow (z, a, b, c, d, rnd);
 }
 
 /* z <- a*b + c*d */

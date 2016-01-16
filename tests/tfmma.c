@@ -152,7 +152,9 @@ zero_tests (void)
               printf ("Error in zero_tests on i = %d, %s\n",
                       i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("Expected %c0, inex = 0\n", r == MPFR_RNDD ? '-' : '+');
-              printf ("Got ");
+              printf ("Got      ");
+              if (MPFR_IS_POS (res))
+                printf ("+");
               mpfr_out_str (stdout, 16, 0, res, MPFR_RNDN);
               printf (", inex = %d\n", inex);
               printf ("Expected flags:");
