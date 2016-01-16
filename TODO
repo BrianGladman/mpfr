@@ -534,6 +534,10 @@ Table of contents:
   that is, with a large error during the computation of the secondary term
   (when the TMD occurs).
 
+- add internal or public variants of some basic functions (+, -, *) with
+  mpz_t as the exponent for correctly rounded polynomials (like fmma),
+  in order to avoid internal overflow and underflow in extreme cases?
+
 
 ##############################################################################
 7. Portability
