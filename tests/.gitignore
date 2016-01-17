@@ -81,6 +81,7 @@
 /tfrac
 /tfrexp
 /tgamma
+/tgamma_inc
 /tget_d
 /tget_d_2exp
 /tget_f
