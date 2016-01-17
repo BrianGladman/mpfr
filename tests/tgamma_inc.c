@@ -28,7 +28,7 @@ test_random (mpfr_prec_t p, int k)
 {
   mpfr_t a, x, y, z, t;
 
-  mpfr_inits2 (p, a, x, y, z, NULL);
+  mpfr_inits2 (p, a, x, y, z, (mpfr_ptr) 0);
   mpfr_init2 (t, p + 20);
   while (k--)
     {
@@ -54,7 +54,7 @@ test_random (mpfr_prec_t p, int k)
             }
         }
     }
-  mpfr_clears (a, x, y, z, NULL);
+  mpfr_clears (a, x, y, z, (mpfr_ptr) 0);
   mpfr_clear (t);
 }
 
