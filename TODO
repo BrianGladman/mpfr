@@ -537,6 +537,9 @@ Table of contents:
 - add internal or public variants of some basic functions (+, -, *) with
   mpz_t as the exponent for correctly rounded polynomials (like fmma),
   in order to avoid internal overflow and underflow in extreme cases?
+  Alternatively, for fmma, modify add*.c and sub*.c code to define
+  mpfr_add_raw, which takes arrays of limbs and their precision, and the
+  positive exponent delta (as mpfr_uexp_t to be always representable).
 
 
 ##############################################################################
