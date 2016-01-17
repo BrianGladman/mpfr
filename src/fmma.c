@@ -112,7 +112,7 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    MPFR_SAVE_EXPO_FREE (expo);
 
    return mpfr_check_range (z, inex, rnd);
-   
+
  failure:
    __gmpfr_flags = saved_flags;
    MPFR_TMP_FREE(marker);
