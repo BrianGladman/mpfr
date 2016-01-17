@@ -78,6 +78,7 @@ main (int argc, char *argv[])
       printf ("\n");
       mpfr_clear (a);
       mpfr_clear (x);
+      return 0;
     }
 
   for (p = MPFR_PREC_MIN; p < 100; p++)
