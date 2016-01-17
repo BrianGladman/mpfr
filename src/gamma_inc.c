@@ -40,11 +40,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
-  MPFR_ASSERTN(mpfr_regular_p (a));
-  MPFR_ASSERTN(mpfr_regular_p (x));
-  MPFR_ASSERTN(MPFR_SIGN(a) > 0);
-  MPFR_ASSERTN(MPFR_SIGN(x) > 0);
-
   mpfr_prec_t w;
   mpfr_t s, t, u;
   int inex;
@@ -52,6 +47,14 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_exp_t e0, e1, e2;
   MPFR_GROUP_DECL(group);
   MPFR_ZIV_DECL(loop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_ASSERTN(mpfr_regular_p (a));
+  MPFR_ASSERTN(mpfr_regular_p (x));
+  MPFR_ASSERTN(MPFR_SIGN(a) > 0);
+  MPFR_ASSERTN(MPFR_SIGN(x) > 0);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   w = MPFR_PREC(y) + 13; /* working precision */
 
@@ -66,8 +69,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       */
 
       /* to ensure that u = a + k is exact, we require that ulp(u) <= 1 */
-      if (MPFR_EXP(a) > w)
-        mpfr_set_prec (u, MPFR_EXP(u));
+      if (MPFR_GET_EXP(a) > w)
+        mpfr_set_prec (u, MPFR_GET_EXP(u));
 
       /* estimate Taylor series */
       mpfr_ui_div (t, 1, a, MPFR_RNDZ); /* t = 1/a * (1 + theta) */
@@ -83,7 +86,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_add (s, s, t, MPFR_RNDZ);
           /* we stop when |t| < ulp(s) and |x/u| < 1/2, which ensures
              that the tail is at most 2*ulp(s) */
-          if (MPFR_EXP(t) + w <= MPFR_EXP(s) && MPFR_EXP(x) + 1 < MPFR_EXP(u))
+          if (MPFR_GET_EXP(t) + w <= MPFR_GET_EXP(s) &&
+              MPFR_GET_EXP(x) + 1 < MPFR_GET_EXP(u))
             break;
         }
       /* since all terms are positive, we have s = S * (1 + theta)^(2k+3)
@@ -109,10 +113,10 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
 
       /* subtract from gamma(a) */
       mpfr_gamma (t, a, MPFR_RNDZ);  /* t = gamma(a) * (1+theta) */
-      e0 = MPFR_EXP (t);
-      e1 = MPFR_EXP (s);
+      e0 = MPFR_GET_EXP (t);
+      e1 = MPFR_GET_EXP (s);
       mpfr_sub (s, t, s, MPFR_RNDZ);
-      e2 = MPFR_EXP (s);
+      e2 = MPFR_GET_EXP (s);
       /* the final error is at most 1 ulp (for the final subtraction)
          + 1 ulp * 2^(e0-e2) # for the error in t
          + 2*(2k+7) ulps * 2^(e1-e2) # for the error in gamma(a,x) */
@@ -142,5 +146,6 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   inex = mpfr_set (y, s, rnd);
   MPFR_GROUP_CLEAR(group);
 
-  return inex;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inex, rnd);
 }
