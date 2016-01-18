@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Usage: nightly-test <GMPDIR> <CC> <BRANCH> 
 set -e
 GMP="$1"
@@ -23,13 +23,15 @@ autoreconf -i
 # will give an error) and to test that MPFR can be built with a
 # C90-only compiler.
 if [ "$CC" == "g++" ]; then
-   ./configure --with-gmp="$GMP" --enable-assert=full \
+   ./configure --with-gmp="$GMP" --enable-assert=full --enable-decimal-float \
+   --enable-float128 \
    --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
    CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector -Wno-sign-compare \
    -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
 else
 # removed -ansi since it is incompatible with --enable-decimal-float
    ./configure --with-gmp="$GMP" --enable-assert=full --enable-decimal-float \
+   --enable-float128 \
    --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
    CC="$CC" CFLAGS="-Wall -Wmissing-prototypes -O2 -g -fstack-protector \
    -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -pedantic -Wlogical-op"
