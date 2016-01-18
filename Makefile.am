@@ -28,6 +28,9 @@ EXTRA_DIST = PATCHES VERSION \
   tools/ck-copyright-notice tools/ck-version-info tools/get_patches.sh \
   $(DATAFILES)
 
+bench:
+	cd tools/bench && $(MAKE) $(AM_MAKEFLAGS) bench
+
 # Various checks for "make dist".
 # * Check consistency concerning -version-info. Moreover if the VERSION
 #   file doesn't end with "-dev", check that the -version-info value is
