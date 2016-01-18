@@ -11,7 +11,7 @@ How to compile GNU MPFR with mini-gmp
 2) create a GMP install directory in say /tmp
    mkdir /tmp/include
    mkdir /tmp/lib
-   mv libgmp.a /tmp/lib
+   cp libgmp.a /tmp/lib
    cp mini-gmp.h /tmp/include/gmp.h
 
 3) extract the MPFR tarball in say /tmp/mpfr
