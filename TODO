@@ -128,11 +128,6 @@ Table of contents:
   PolylogP, PolylogD, PolylogDold: see http://arxiv.org/abs/math.CA/0702243
     and the references herein.
   JBessel(n, x) = BesselJ(n+1/2, x)
-  IncompleteGamma [also wanted by <keith.briggs@bt.com> 4 Feb 2008: Gamma(a,x),
-    gamma(a,x), P(a,x), Q(a,x); see A&S 6.5, ref. [Smith01] in algorithms.bib.
-    Also asked by Christophe Dutang on 13 Jan 2012]
-    Gamma(s,x) = x^s*exp(-x)*sum(x^k/s/(s+1)/.../(s+k), k=0..infinity)
-               = sum((-1)^k*x^(s+k)/k!/(s+k), k=0..infinity)
   KBessel, KBessel2 [2nd kind]
   JacobiTheta
   LogIntegral
