@@ -245,7 +245,8 @@ Table of contents:
 - from gnumeric (www.gnome.org/projects/gnumeric/doc/function-reference.html):
   - beta
     (also incomplete beta function, see message from Martin Maechler
-    <maechler@stat.math.ethz.ch> on 18 Jan 2016)
+    <maechler@stat.math.ethz.ch> on 18 Jan 2016, and Section 6.6 in
+    Abramowitz & Stegun)
   - betaln
   - degrees
   - radians
