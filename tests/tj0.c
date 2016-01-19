@@ -96,6 +96,18 @@ main (int argc, char *argv[])
   mpfr_j0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN (! mpfr_nan_p (y) && mpfr_cmp_ui_2exp (y, 41, -11) == 0);
 
+  /* Bug reported by Fredrik JoJohansson on 19 Jan 2016 */
+  mpfr_set_prec (x, 53);
+  mpfr_set_d (x, 4.1998291015625, MPFR_RNDN);
+  mpfr_set_prec (y, 2);
+  mpfr_j0 (y, x, MPFR_RNDD);
+  /* y should be -0.5 */
+  MPFR_ASSERTN (! mpfr_nan_p (y) && mpfr_cmp_ui_2exp (y, -1, -1) == 0);
+  mpfr_set_prec (y, 3);
+  mpfr_j0 (y, x, MPFR_RNDD);
+  /* y should be -0.4375 */
+  MPFR_ASSERTN (! mpfr_nan_p (y) && mpfr_cmp_ui_2exp (y, -7, -4) == 0);
+
   /* Case for which s = 0 in mpfr_jn */
   mpfr_set_prec (x, 44);
   mpfr_set_prec (y, 44);
