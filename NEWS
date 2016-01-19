@@ -41,7 +41,8 @@ Changes from versions 3.1.* to version 3.2.0:
 - New functions mpfr_nrandom and mpfr_erandom to generate random numbers
   following normal and exponential distributions respectively.
 - New functions mpfr_fmma and mpfr_fmms to compute a*b+c*d and a*b-c*d.
-- New function mpfr_log_ui to compute the logarithm of an integer.
+- New functions mpfr_log_ui to compute the logarithm of an integer,
+  and mpfr_gamma_inc for the incomplete Gamma function.
 - The behavior of the mpfr_set_exp function changed, as it could easily
   yield undefined behavior in some cases (this modifies both the API and
   the ABI).
