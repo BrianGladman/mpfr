@@ -49,109 +49,112 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_ZIV_DECL(loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* if a or x is NaN, return NaN */
-  if (MPFR_IS_NAN (a) || MPFR_IS_NAN (x))
+  if (MPFR_ARE_SINGULAR (a, x))
     {
-      MPFR_SET_NAN (y);
-      MPFR_RET_NAN;
-    }
-
-  if (MPFR_IS_INF (a) || MPFR_IS_INF (x))
-    {
-      if (MPFR_IS_INF (a) && MPFR_IS_INF (x))
+      /* if a or x is NaN, return NaN */
+      if (MPFR_IS_NAN (a) || MPFR_IS_NAN (x))
         {
-          if (MPFR_IS_POS (a) && MPFR_IS_POS (x))
-            {
-              /* gamma_inc(+Inf,+Inf) = NaN because
-                 gamma_inc(x,x) tends to +Inf but
-                 gamma_inc(x,x^2) tends to +0 */
-              MPFR_SET_NAN (y);
-              MPFR_RET_NAN;
-            }
-          else if (MPFR_IS_NEG (x))
-            {
-              /* gamma_inc(+/-Inf,-Inf) = NaN (complex number) */
-              MPFR_SET_NAN (y);
-              MPFR_RET_NAN;
-            }
-          else
-            {
-              /* gamma_inc(-Inf,+Inf) = +0 */
-              MPFR_SET_ZERO (y);
-              MPFR_SET_POS (y);
-              MPFR_RET (0);  /* exact */
-            }
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
         }
-      else /* only one of a, x is infinite */
+
+      if (MPFR_IS_INF (a) || MPFR_IS_INF (x))
         {
-          if (MPFR_IS_INF (a))
+          if (MPFR_IS_INF (a) && MPFR_IS_INF (x))
             {
-              if (MPFR_IS_POS (a))
+              if (MPFR_IS_POS (a) && MPFR_IS_POS (x))
                 {
-                  /* gamma_inc(+Inf, x) = +Inf */
-                  MPFR_SET_INF (y);
+                  /* gamma_inc(+Inf,+Inf) = NaN because
+                     gamma_inc(x,x) tends to +Inf but
+                     gamma_inc(x,x^2) tends to +0 */
+                  MPFR_SET_NAN (y);
+                  MPFR_RET_NAN;
+                }
+              else if (MPFR_IS_NEG (x))
+                {
+                  /* gamma_inc(+/-Inf,-Inf) = NaN (complex number) */
+                  MPFR_SET_NAN (y);
+                  MPFR_RET_NAN;
+                }
+              else
+                {
+                  /* gamma_inc(-Inf,+Inf) = +0 */
+                  MPFR_SET_ZERO (y);
                   MPFR_SET_POS (y);
                   MPFR_RET (0);  /* exact */
                 }
-              else /* a = -Inf */
+            }
+          else /* only one of a, x is infinite */
+            {
+              if (MPFR_IS_INF (a))
                 {
-                  /* gamma_inc(-Inf, x) = NaN for x < 0
-                                          +Inf for 0 <= x < 1
-                                          +0 for 1 <= x */
-                  if (mpfr_cmp_ui (x, 0) < 0)
+                  if (MPFR_IS_POS (a))
                     {
-                      MPFR_SET_NAN (y);
-                      MPFR_RET_NAN;
-                    }
-                  else if (mpfr_cmp_ui (x, 1) < 0)
-                    {
+                      /* gamma_inc(+Inf, x) = +Inf */
                       MPFR_SET_INF (y);
                       MPFR_SET_POS (y);
                       MPFR_RET (0);  /* exact */
                     }
-                  else
+                  else /* a = -Inf */
                     {
-                      MPFR_SET_ZERO (y);
-                      MPFR_SET_POS (y);
-                      MPFR_RET (0);  /* exact */
+                      /* gamma_inc(-Inf, x) = NaN for x < 0
+                                              +Inf for 0 <= x < 1
+                                              +0 for 1 <= x */
+                      if (mpfr_cmp_ui (x, 0) < 0)
+                        {
+                          MPFR_SET_NAN (y);
+                          MPFR_RET_NAN;
+                        }
+                      else if (mpfr_cmp_ui (x, 1) < 0)
+                        {
+                          MPFR_SET_INF (y);
+                          MPFR_SET_POS (y);
+                          MPFR_RET (0);  /* exact */
+                        }
+                      else
+                        {
+                          MPFR_SET_ZERO (y);
+                          MPFR_SET_POS (y);
+                          MPFR_RET (0);  /* exact */
+                        }
                     }
                 }
-            }
-          else /* x is infinite: integral tends to zero */
-            {
-              MPFR_SET_ZERO (y);
-              MPFR_SET_POS (y);
-              MPFR_RET (0);  /* exact */
+              else /* x is infinite: integral tends to zero */
+                {
+                  MPFR_SET_ZERO (y);
+                  MPFR_SET_POS (y);
+                  MPFR_RET (0);  /* exact */
+                }
             }
         }
-    }
 
-  if (MPFR_IS_ZERO (a) || MPFR_IS_ZERO (x))
-    {
-      if (MPFR_IS_ZERO (a))
+      if (MPFR_IS_ZERO (a) || MPFR_IS_ZERO (x))
         {
-          if (mpfr_cmp_ui (x, 0) < 0)
+          if (MPFR_IS_ZERO (a))
             {
-              /* gamma_inc(a,x) = NaN for x < 0 */
-              MPFR_SET_NAN (y);
-              MPFR_RET_NAN;
+              if (mpfr_cmp_ui (x, 0) < 0)
+                {
+                  /* gamma_inc(a,x) = NaN for x < 0 */
+                  MPFR_SET_NAN (y);
+                  MPFR_RET_NAN;
+                }
+              else if (MPFR_IS_ZERO (x))
+                {
+                  /* gamma_inc(a,0) = +Inf */
+                  MPFR_SET_INF (y);
+                  MPFR_SET_POS (y);
+                  MPFR_RET (0);  /* exact */
+                }
+              else
+                {
+                  /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = Ei(1,x)
+                     but the mpfr_eint function returns -Re(Ei(1,-x)) */
+                  MPFR_ASSERTN(0);
+                }
             }
-          else if (MPFR_IS_ZERO (x))
-            {
-              /* gamma_inc(a,0) = +Inf */
-              MPFR_SET_INF (y);
-              MPFR_SET_POS (y);
-              MPFR_RET (0);  /* exact */
-            }
-          else
-            {
-              /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = Ei(1,x)
-                 but the mpfr_eint function returns -Re(Ei(1,-x)) */
-              MPFR_ASSERTN(0);
-            }
+          else /* x = 0: gamma_inc(a,0) = gamma(a) */
+            return mpfr_gamma (y, a, rnd);
         }
-      else /* x = 0: gamma_inc(a,0) = gamma(a) */
-        return mpfr_gamma (y, a, rnd);
     }
 
   MPFR_ASSERTN(MPFR_SIGN(a) > 0);
