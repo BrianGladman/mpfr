@@ -577,7 +577,12 @@ bug20160120 (void)
   mpfr_init2 (x, 361);
   mpfr_init2 (y, 64);
 
-  mpfr_set_str_binary (x, "0.111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111E0");
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_sqrt (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+
+  mpfr_set_prec (y, 128);
   mpfr_sqrt (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 

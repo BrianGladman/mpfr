@@ -205,10 +205,11 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       rsize --;
       sh = 0;
     }
+  /* now rsize = MPFR_LIMB_SIZE(r) */
   if (mpn_add_1 (rp0, rp, rsize, MPFR_LIMB_ONE << sh))
     {
       expr ++;
-      rp[rsize - 1] = MPFR_LIMB_HIGHBIT;
+      rp0[rsize - 1] = MPFR_LIMB_HIGHBIT;
     }
   goto end;
 
