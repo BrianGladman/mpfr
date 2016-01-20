@@ -3133,6 +3133,30 @@ According to \cite[Section 2.6]{Pugh04}, the relative error is bounded by
 $a^{-1/2} (2\pi)^{-a-1/2}$ for $a \ge 3$ and $\Re(z) \ge 0$.
 See also \cite{Smith01}.
 
+\subsection{The incomplete gamma function}
+
+The incomplete gamma function is defined as:
+\[ \Gamma(a,x) = \int_x^{\infty} t^{a-1} \exp(-t) \, {\rm d}t
+               = \Gamma(a) - \gamma(a,x), \]
+with the complementary incomplete gamma function $\gamma(a,x)$ defined by:
+\[ \gamma(a,x) = \int_0^x t^{a-1} \exp(-t) \, {\rm d}t, \]
+and satisfying the two Taylor expansions:
+\[
+\gamma(a,x) = x^a \sum_{k=0}^{\infty} \frac{(-x)^k}{(a+k) k!}
+            = x^a \exp(-x) \sum_{k=0}^{\infty} \frac{x^k}{a (a+1) \cdots
+                  (a+k)}.
+\]
+We use the second expansion, and we stop adding terms of the series when the
+current term is less than one ulp of the current sum, and $|x/(a+k)| < 1/2$.
+The last condition ensures that the tail of the series is less than twice the
+current term, thus the approximated sum $s$ satisfies $s = S (1 + \theta)^3$
+with $S$ the exact sum, and $|\theta| < 2^{-w}$ with $w$ the working
+precision. If the series was computed up to index $k$, the error on
+$\gamma(a,x)$ is less than $4k+14$ ulps.
+Subtracting from $\Gamma(a)$ can yield a huge cancellation: we take into
+account the exact error bound, which is deduced from the different exponents
+involved. Further details can be found in the source code.
+
 \subsection{The Riemann Zeta function}
 
 The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
