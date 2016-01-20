@@ -265,6 +265,8 @@ To make a release (for the MPFR team):
 
      Test with GCC's AddressSanitizer (-fsanitize=address).
 
+     Test with i586-mingw32msvc under Wine (see below).
+
      Test with both "make check" and the worst cases.
 
      Check various warnings, in particular for obsolescent features.
@@ -1321,6 +1323,28 @@ exec $cmd gdb "$@"
 and
 
   alias gdb='/path/to/the/wrapper/script'
+
+===========================================================================
+
+To cross-compile MPFR for i586-mingw32msvc and test it under Wine:
+
+0. Install wine (at least the 32-bit version).
+
+1. Build and install GMP.
+
+In the GMP source directory:
+$ ./configure --host=i586-mingw32msvc --disable-shared --prefix=...
+$ make
+$ make check LOG_COMPILER=wine
+[If few tests fail, ignore them.]
+$ make install
+
+2. Build and check MPFR.
+
+In the MPFR source directory:
+$ ./configure --host=i586-mingw32msvc --disable-shared --with-gmp=...
+$ make
+$ make check LOG_COMPILER=wine
 
 ===========================================================================
 
