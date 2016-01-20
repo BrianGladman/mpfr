@@ -3163,7 +3163,9 @@ The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
 and Sapphorain P\'etermann \cite{PeRe06,PeRe07}. For $s < 1/2$ we use the
 functional equation
 \[ \zeta(s) = 2^s \pi^{s-1} \sin\left(\frac{\pi s}{2}\right) \Gamma(1-s)
-   \zeta(1-s). \]
+   \zeta(1-s) \]
+(in that case, one should take care of cancellation when $\sin(\pi s/2)$ is
+small, i.e., when $s$ is near an even negative integer).
 For $s \geq 1/2$ we use the Euler-MacLaurin summation formula, applied
 to the real function $f(x) = x^{-s}$ for $s > 1$:
 \[ \zeta(s) = \sum_{k=1}^{N-1} \frac{1}{k^s} + \frac{1}{2N^s}

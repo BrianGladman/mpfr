@@ -240,7 +240,6 @@ main (int argc, char *argv[])
   mpfr_set_str_binary (s, "1.10010e4");
   mpfr_zeta (z, s, MPFR_RNDZ);
 
-
   mpfr_set_prec (s, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_prec (z, 53);
@@ -390,6 +389,26 @@ main (int argc, char *argv[])
   mpfr_set_inf (s, -1);
   mpfr_nextabove (s);
   MPFR_ASSERTN (mpfr_equal_p (z, s) && inex > 0);
+
+  /* bug reported by Fredrik Johansson on 26 Oct 2007 */
+  mpfr_set_prec (s, 536);
+  mpfr_set_str (s, "-1.1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e6", 2, MPFR_RNDN);
+  for (prec = 6; prec <= 536; prec += 8) /* should go through 318 */
+    {
+      mpfr_set_prec (z, prec);
+      mpfr_zeta (z, s, MPFR_RNDD);
+      mpfr_set_prec (y, prec + 10);
+      mpfr_zeta (y, s, MPFR_RNDD);
+      mpfr_prec_round (y, prec, MPFR_RNDD);
+      if (mpfr_cmp (z, y) != 0)
+        {
+          printf ("mpfr_zeta fails near 128 for inprec=%lu outprec=%lu\n",
+                  mpfr_get_prec (s), prec);
+          printf ("expected "); mpfr_dump (y);
+          printf ("got      "); mpfr_dump (z);
+          exit (1);
+        }
+    }
 
   mpfr_clear (s);
   mpfr_clear (y);
