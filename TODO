@@ -131,14 +131,15 @@ Table of contents:
   KBessel, KBessel2 [2nd kind]
   JacobiTheta
   LogIntegral
-  ExponentialIntegralE1
+  ExponentialIntegralE1 (formula 5.1.1 of Abramowitz and Stegun)
     E1(z) = int(exp(-t)/t, t=z..infinity), |arg z| < Pi
-    mpfr_eint1: implement E1(x) for x > 0, and Ei(-x) for x < 0
+    mpfr_eint1: implement E1(x) for x > 0, and Ei(-x) for x < 0 ?
     E1(NaN)  = NaN
     E1(+Inf) = +0
     E1(-Inf) = -Inf
     E1(+0)   = +Inf
     E1(-0)   = -Inf
+  ExponentialIntegralEn (formula 5.1.4 of Abramowitz and Stegun)
   DawsonIntegral
   GammaD(x) = Gamma(x+1/2)
 - new functions of IEEE 754-2008, and more generally functions of the
