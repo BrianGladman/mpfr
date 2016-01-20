@@ -253,9 +253,9 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
         break;
       if (diverge != 0)
         {
-          mpfr_set (c, z, r); /* will force inex=0 below, which means the
-                               asymptotic expansion failed */
-          break;
+          MPFR_ZIV_FREE (loop);
+          mpfr_clear (c);
+          return 0; /* means that the asymptotic expansion failed */
         }
       MPFR_ZIV_NEXT (loop, w);
     }

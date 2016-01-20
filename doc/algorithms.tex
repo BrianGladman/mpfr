@@ -3514,10 +3514,10 @@ If we first approximate $\chi = z - (n/2 + 1/4) \pi$ with working precision
 $w$, and then approximate $\cos \chi$ and $\sin \chi$, there will be a huge
 relative error if $z > 2^w$. Instead, we use the fact that for $n$ even,
 \[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{n/2}
-   [P (\sin z + \cos z) + Q (\cos z - \sin z)], \]
+   [P(n,z) (\sin z + \cos z) + Q(n,z) (\cos z - \sin z)], \]
 and for $n$ odd,
 \[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{(n-1)/2}
-   [P (\sin z - \cos z) + Q (\cos z + \sin z)], \]
+   [P(n,z) (\sin z - \cos z) + Q(n,z) (\cos z + \sin z)], \]
 where $\cos z$ and $\sin z$ are computed accurately with
 \texttt{mpfr\_sin\_cos}, which uses in turn \texttt{mpfr\_remainder}.
 
