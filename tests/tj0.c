@@ -98,7 +98,7 @@ main (int argc, char *argv[])
 
   /* Bug reported by Fredrik JoJohansson on 19 Jan 2016 */
   mpfr_set_prec (x, 53);
-  mpfr_set_d (x, 4.1998291015625, MPFR_RNDN);
+  mpfr_set_str (x, "0x4.3328p+0", 0, MPFR_RNDN);
   mpfr_set_prec (y, 2);
   mpfr_j0 (y, x, MPFR_RNDD);
   /* y should be -0.5 */
