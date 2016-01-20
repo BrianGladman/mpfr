@@ -404,7 +404,7 @@ main (int argc, char *argv[])
       if (! mpfr_equal_p (z, y))
         {
           printf ("mpfr_zeta fails near -128 for inprec=%lu outprec=%lu\n",
-                  mpfr_get_prec (s), prec);
+                  (unsigned long) mpfr_get_prec (s), (unsigned long) prec);
           printf ("expected "); mpfr_dump (y);
           printf ("got      "); mpfr_dump (z);
           exit (1);
