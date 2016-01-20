@@ -1161,7 +1161,7 @@ set to 1). If no tests fail, then the tests/tversion.log file is output
 after the "testsuite summary"; it contains various useful information
 about the MPFR build.
 
-To use a wrapper to run the tests, such as valgring or wine, define
+To use a wrapper to run the tests, such as valgrind or wine, define
 LOG_COMPILER, e.g.:
   LOG_COMPILER="valgrind -q --error-exitcode=1 --leak-check=full" make check
   LOG_COMPILER=wine make check
