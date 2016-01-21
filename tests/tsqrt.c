@@ -568,14 +568,19 @@ test_property2 (mpfr_prec_t p, mpfr_rnd_t r)
   mpfr_clear (y);
 }
 
-/* bug reported by Fredrik Johansson */
+/* Bug reported by Fredrik Johansson, occurring when:
+   - the precision of the result is a multiple of the number of bits
+     per word (GMP_NUMB_BITS),
+   - the rounding mode is to nearest (MPFR_RNDN),
+   - internally, the result has to be rounded up to a power of 2.
+*/
 static void
 bug20160120 (void)
 {
   mpfr_t x, y;
 
-  mpfr_init2 (x, 361);
-  mpfr_init2 (y, 64);
+  mpfr_init2 (x, 4 * GMP_NUMB_BITS);
+  mpfr_init2 (y, GMP_NUMB_BITS);
 
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextbelow (x);
@@ -583,7 +588,7 @@ bug20160120 (void)
   MPFR_ASSERTN(mpfr_check (y));
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 
-  mpfr_set_prec (y, 128);
+  mpfr_set_prec (y, 2 * GMP_NUMB_BITS);
   mpfr_sqrt (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_check (y));
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
