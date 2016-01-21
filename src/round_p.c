@@ -66,14 +66,14 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
   err = MIN (err, (mpfr_uexp_t) err0);
 
   k = prec / GMP_NUMB_BITS;
-  s = GMP_NUMB_BITS - prec%GMP_NUMB_BITS;
+  s = GMP_NUMB_BITS - prec % GMP_NUMB_BITS;
   n = err / GMP_NUMB_BITS - k;
 
   MPFR_ASSERTD (n >= 0);
   MPFR_ASSERTD (bn > k);
 
   /* Check first limb */
-  bp += bn-1-k;
+  bp += bn - 1 - k;
   tmp = *bp--;
   mask = s == GMP_NUMB_BITS ? MPFR_LIMB_MAX : MPFR_LIMB_MASK (s);
   tmp &= mask;
