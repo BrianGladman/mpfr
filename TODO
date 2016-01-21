@@ -139,6 +139,10 @@ Table of contents:
     E1(-Inf) = -Inf
     E1(+0)   = +Inf
     E1(-0)   = -Inf
+  (we could extend mpfr_eint for negative values so that mpfr_eint(-x)
+   = E1(x), cf 6.2.6 of http://dlmf.nist.gov/6.2, which matches the C
+   bindings in ISO/IEC 24747:2009, cf
+   https://sympa.inria.fr/sympa/arc/mpfr/2016-01/msg00042.html)
   ExponentialIntegralEn (formula 5.1.4 of Abramowitz and Stegun)
   DawsonIntegral
   GammaD(x) = Gamma(x+1/2)
