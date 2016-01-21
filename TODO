@@ -101,6 +101,7 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
+- implement mpfr_get_decimal128 and mpfr_set_decimal128
 - implement mpfr_log_ui to compute log(n) for an unsigned long n.
   We can write for argument reduction n = 2^k * n/2^k, where
   2/3 <= n/2^k < 4/3, i.e., k = floor(log2(3n))-1, thus
