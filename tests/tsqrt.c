@@ -580,10 +580,12 @@ bug20160120 (void)
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextbelow (x);
   mpfr_sqrt (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_check (y));
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 
   mpfr_set_prec (y, 128);
   mpfr_sqrt (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_check (y));
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 
   mpfr_clear(x);
