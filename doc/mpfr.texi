@@ -2794,9 +2794,8 @@ Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
 E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
 value if one is able to round correctly @var{x} to precision @var{prec}
-with the direction @var{rnd2} (ignoring a potential overflow, i.e.,
-assuming that the exponent range is unbounded), and 0 otherwise
-(including for NaN and Inf).
+with the direction @var{rnd2} assuming an unbounded exponent range, and
+0 otherwise (including for NaN and Inf).
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN}, the error is considered to be either
