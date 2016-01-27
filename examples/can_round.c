@@ -36,9 +36,7 @@ main (void)
   /* Given an approximation of Pi to px bits computed with rounding mode r1,
      we call mpfr_can_round() to see if we can deduced the correct rounding
      of Pi to py bits with rounding mode r2.
-     The error is at most 1 ulp for directed rounding, and 1/2 ulp for rounding
-     to nearest. This translates into err = prec(x) for directed rounding,
-     and err = prec(x) + 1 for rounding to nearest. */
+     The error is at most 1 = 2^0 ulp. This translates into err = prec(x). */
   mpfr_init2 (x, px);
   mpfr_init2 (y, py);
   for (r1 = 0; r1 < 4; r1++)
@@ -49,8 +47,7 @@ main (void)
       printf ("\n");
       for (r2 = 0; r2 < 4; r2++)
         {
-          ok = mpfr_can_round (x, mpfr_get_prec (x) + (r1 == MPFR_RNDN),
-                               r1, r2, py);
+          ok = mpfr_can_round (x, mpfr_get_prec (x), r1, r2, py);
           printf ("r2=%s ok=%d", mpfr_print_rnd_mode (r2), ok);
           if (ok)
             {
