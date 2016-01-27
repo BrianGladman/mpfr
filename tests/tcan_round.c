@@ -61,6 +61,8 @@ main (void)
 {
   mpfr_t x;
   mpfr_prec_t i, j;
+  int r1, r2;
+  int n;
 
   tests_start_mpfr ();
 
@@ -110,12 +112,39 @@ main (void)
   mpfr_set_str (x, "0.ff4ca619c76ba69", 16, MPFR_RNDZ);
   for (i = 30; i < 99; i++)
     for (j = 30; j < 99; j++)
-      {
-        int r1, r2;
+      for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
+        for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
+          mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j); /* test for assertions */
+
+  /* Tests for x = 2^i (E(x) = i+1) with error at most 1 = 2^0. */
+  for (n = 0; n < 10; n++)
+    {
+      i = (randlimb() % 200) + 4;
+      mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+      for (j = i - 2; j < i + 2; j++)
         for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
           for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
-            mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j); /* test for assertions */
-      }
+            {
+              int b, expected_b;
+              b = !!
+                mpfr_can_round (x, i+1, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
+              expected_b =
+                MPFR_IS_LIKE_RNDD (r1, MPFR_SIGN_POS) ?
+                (MPFR_IS_LIKE_RNDU (r2, MPFR_SIGN_POS) ? 0 : j <= i) :
+                MPFR_IS_LIKE_RNDU (r1, MPFR_SIGN_POS) ?
+                (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : j <= i - 1) :
+                (r2 != MPFR_RNDN ? 0 : j <= i - 1);
+              if (b != expected_b)
+                {
+                  printf ("Error for x = 2^%d, j = %d, r1=%s, r2=%s\n",
+                          (int) i, (int) j,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r2));
+                  printf ("Expected %d, got %d\n", expected_b, b);
+                  exit (1);
+                }
+            }
+    }
 
   mpfr_clear (x);
 
