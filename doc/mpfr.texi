@@ -2805,7 +2805,8 @@ same value of @var{err}).
 
 Note: if one wants to also determine the correct @ref{ternary value} when
 rounding @var{b} to precision @var{prec} with rounding mode @var{rnd},
-a useful trick is the following:
+a useful trick is the following (where @code{MPFR_RNDZ} can be any directed
+rounding mode):
 @example
 if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
     prec + (rnd == MPFR_RNDN)))
