@@ -2796,6 +2796,9 @@ E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
 value if one is able to round correctly @var{x} to precision @var{prec}
 with the direction @var{rnd2} assuming an unbounded exponent range, and
 0 otherwise (including for NaN and Inf).
+In other words, if the error on @var{b} is bounded by two to the power
+@var{k} ulps, and @var{b} has precision @var{prec},
+you should give @var{err}=@var{prec}@minus{}@var{k}.
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN}, the error is considered to be either
