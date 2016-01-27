@@ -2804,18 +2804,18 @@ is twice as large as with a directed rounding for @var{rnd1} (with the
 same value of @var{err}).
 
 Note: if one wants to also determine the correct @ref{ternary value} when
-rounding @var{b} to precision @var{prec} with rounding mode @var{rnd},
+rounding @var{b} to precision @var{prec} with rounding mode @var{rnd2},
 a useful trick is the following (where @code{MPFR_RNDZ} can be replaced by
 any directed rounding mode):
 @example
-if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
-    prec + (rnd == MPFR_RNDN))) @{
+if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ, prec + (rnd2 == MPFR_RNDN)))
+@{
     /* round the approximation 'b' to the result 'r' of 'prec' bits
-       with rounding mode 'rnd' and get the ternary value 'inex' */
-    inex = mpfr_set (r, b, rnd);
+       with rounding mode 'rnd2' and get the ternary value 'inex' */
+    inex = mpfr_set (r, b, rnd2);
 @}
 @end example
-Indeed, if @var{rnd} is @code{MPFR_RNDN}, this will check if one can
+Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not
