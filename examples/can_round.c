@@ -23,7 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 #include <stdio.h>
-#include <gmp.h>
 #include <mpfr.h>
 
 int
@@ -43,8 +42,7 @@ main (void)
   for (r1 = 0; r1 < 4; r1++)
     {
       mpfr_const_pi (x, r1);
-      printf ("rnd1=%s approx=", mpfr_print_rnd_mode (r1));
-      mpfr_dump (x);
+      mpfr_printf ("rnd1=%s approx=%Rb\n", mpfr_print_rnd_mode (r1), x);
       for (r2 = 0; r2 < 4; r2++)
         {
           ok = mpfr_can_round (x, mpfr_get_prec (x) + (r1 == MPFR_RNDN),
