@@ -2798,9 +2798,10 @@ value if one is able to round correctly @var{x} to precision
 and 0 otherwise (including for NaN and Inf).
 This function @strong{does not modify} its arguments.
 
-If @var{rnd1} is @code{MPFR_RNDN}, then the sign of the error is
-unknown, but its absolute value is the same, so that the possible range
-is twice as large as with a directed rounding for @var{rnd1}.
+If @var{rnd1} is @code{MPFR_RNDN}, the error is considered to be either
+positive or negative, thus the possible range
+is twice as large as with a directed rounding for @var{rnd1} (with the
+same value of @var{err}).
 
 Note: if one wants to also determine the correct @ref{ternary value} when
 rounding @var{b} to precision @var{prec} with rounding mode @var{rnd},
