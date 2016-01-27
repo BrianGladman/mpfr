@@ -1024,7 +1024,7 @@ any MPFR function or macro, whether or not there is an error.
 * Input and Output Functions::
 * Formatted Output Functions::
 * Integer and Remainder Related Functions::
-* Rounding Related Functions::
+* Rounding-Related Functions::
 * Miscellaneous Functions::
 * Exception Related Functions::
 * Compatibility with MPF::
@@ -2604,7 +2604,7 @@ the null-terminator, or a negative value if an error occurred.
 @c @code{EOVERFLOW}.
 @end deftypefun
 
-@node Integer and Remainder Related Functions, Rounding Related Functions, Formatted Output Functions, MPFR Interface
+@node Integer and Remainder Related Functions, Rounding-Related Functions, Formatted Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Integer related functions
 @cindex Remainder related functions
@@ -2748,9 +2748,9 @@ additive argument reduction.
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
 
-@node Rounding Related Functions, Miscellaneous Functions, Integer and Remainder Related Functions, MPFR Interface
+@node Rounding-Related Functions, Miscellaneous Functions, Integer and Remainder Related Functions, MPFR Interface
 @cindex Rounding mode related functions
-@section Rounding Related Functions
+@section Rounding-Related Functions
 
 @deftypefun void mpfr_set_default_rounding_mode (mpfr_rnd_t @var{rnd})
 Set the default rounding mode to @var{rnd}.
@@ -2875,7 +2875,7 @@ int i = mpfr_round_nearest_away(mpfr_add_ui, r, f, ul);
 @end example
 @end deftypefn
 
-@node Miscellaneous Functions, Exception Related Functions, Rounding Related Functions, MPFR Interface
+@node Miscellaneous Functions, Exception Related Functions, Rounding-Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Miscellaneous float functions
 @section Miscellaneous Functions
