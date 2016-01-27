@@ -2809,8 +2809,11 @@ a useful trick is the following (where @code{MPFR_RNDZ} can be replaced by
 any directed rounding mode):
 @example
 if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
-    prec + (rnd == MPFR_RNDN)))
-   ...
+    prec + (rnd == MPFR_RNDN))) @{
+    /* round the approximation 'b' to the result 'r' of 'prec' bits
+       with rounding mode 'rnd' and get the ternary value 'inex' */
+    inex = mpfr_set (r, b, rnd);
+@}
 @end example
 Indeed, if @var{rnd} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
