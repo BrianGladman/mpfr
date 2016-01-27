@@ -2817,6 +2817,9 @@ if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not
 be the case when @var{b} is near from a value exactly representable on
 @var{prec} bits.
+
+A detailed example is available in the @file{examples} subdirectory,
+file @file{can_round.c}.
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_min_prec (mpfr_t @var{x})
