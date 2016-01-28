@@ -185,17 +185,22 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
   k = (err - 1) / GMP_NUMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(s, err);
   /* the error corresponds to bit s in limb k, the most significant limb
-     being limb 0 */
+     being limb 0; in memory, limb k is bp[bn-1-k]. */
 
   k1 = (prec - 1) / GMP_NUMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(s1, prec);
-  /* the last significant bit is bit s1 in limb k1 */
+  /* the least significant bit is bit s1 in limb k1 */
 
-  /* don't need to consider the k1 most significant limbs */
+  /* We don't need to consider the k1 most significant limbs.
+     They will be considered later only to detect when subtracting
+     the error bound yields a change of binade.
+     Warning! The number with updated bn may no longer be normalized. */
   k -= k1;
   bn -= k1;
   prec -= (mpfr_prec_t) k1 * GMP_NUMB_BITS;
 
+  /* FIXME: The following comment should be more detailed about the change
+     of binade and the effect of the rounding modes. */
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */
   MPFR_TMP_MARK(marker);
