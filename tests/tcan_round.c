@@ -69,13 +69,23 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
   mpfr_init2 (x, px);
   mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
   b = !!mpfr_can_round (x, i+1, r1, r2, prec);
-  /* TODO: check the conditions on prec below. */
+  /* Note: If mpfr_can_round succeeds for both
+     (r1,r2) = (MPFR_RNDD,MPFR_RNDN) and
+     (r1,r2) = (MPFR_RNDU,MPFR_RNDN), then it should succeed for
+     (r1,r2) = (MPFR_RNDN,MPFR_RNDN). So, the condition on prec below
+     for r1 = MPFR_RNDN should be the most restrictive between those
+     for r1 = any directed rounding mode.
+     For r1 like MPFR_RNDA, the unrounded, unknown number may be anyone
+     in [2^i-1,i]. As both 2^i-1 and 2^i fit on i bits, one cannot round
+     in any precision >= i bits, hence the condition prec < i; prec = i-1
+     will work here for r2 = MPFR_RNDN thanks to the even-rounding rule
+     (and also with rounding ties away from zero). */
   expected_b =
     MPFR_IS_LIKE_RNDD (r1, MPFR_SIGN_POS) ?
     (MPFR_IS_LIKE_RNDU (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
     MPFR_IS_LIKE_RNDU (r1, MPFR_SIGN_POS) ?
-    (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
-    (r2 != MPFR_RNDN ? 0 : prec <= i - 1);
+    (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec < i) :
+    (r2 != MPFR_RNDN ? 0 : prec < i);
   /* We only require mpfr_can_round to return 1 only when we can really
      round, it is allowed to return 0 in some rare boundary cases,
      for example when x = 2^k and the error is 0.25 ulp.
