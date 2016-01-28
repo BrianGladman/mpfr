@@ -179,7 +179,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
-     ----- k bits -- */
+                        ----- k bits -- */
   prec_x = MPFR_INT_CEIL_LOG2 (MPFR_PREC (x)) - MPFR_LOG2_GMP_NUMB_BITS;
   if (prec_x < 0)
     prec_x = 0;

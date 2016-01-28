@@ -144,12 +144,14 @@ int
 mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
                     mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
-  mpfr_prec_t err;
+  mpfr_prec_t err, prec0 = prec;
   mp_size_t k, k1, tn;
   int s, s1;
   mp_limb_t cc, cc2;
   mp_limb_t *tmp;
   MPFR_TMP_DECL(marker);
+
+  MPFR_ASSERTD(bp[bn - 1] & MPFR_LIMB_HIGHBIT);
 
   if (MPFR_UNLIKELY(err0 < 0 || (mpfr_uexp_t) err0 <= prec))
     return 0;  /* can't round */
@@ -206,33 +208,54 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       /* mpfr_round_raw2 returns 1 if one should add 1 at ulp(b,prec),
          and 0 otherwise */
       cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
-      /* cc is the new value of bit s1 in bp[bn-1] */
+      /* cc is the new value of bit s1 in bp[bn-1] after rounding 'rnd2' */
+
       /* now round b + 2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
+      mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
+      /* if there was a carry here, then necessarily bit s1 of bp[bn-1]
+         changed, thus we surely cannot round for directed rounding, but this
+         will be detected below, with cc2 != cc */
       break;
     case MPFR_RNDN:
       /* Round to nearest */
-       /* first round b+2^(MPFR_EXP(b)-err) */
-      cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
+
+      /* first round b+2^(MPFR_EXP(b)-err) */
+      mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
+      /* same remark as above in case a carry occurs in mpn_add_1() */
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+      /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
+
+    subtract_eps:
       /* now round b-2^(MPFR_EXP(b)-err) */
       cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
+      /* propagate the potential borrow up to the most significant limb
+         (it cannot propagate further since the most significant limb is
+         at least MPFR_LIMB_HIGHBIT) */
+      for (tn = 0; tn + 1 < k1 && (cc2 != 0); tn ++)
+        cc2 = bp[bn + tn] == 0;
+      /* We have an exponent decrease when either:
+           (i) k1 = 0 and tmp[bn-1] < MPFR_LIMB_HIGHBIT
+           (ii) k1 > 0 and cc <> 0 and bp[bn + tn] = MPFR_LIMB_HIGHBIT
+                (then necessarily tn = k1-1).
+         Then for directed rounding we cannot round,
+         and for rounding to nearest we cannot round when err = prec + 1.
+      */
+      if (((k1 == 0 && tmp[bn - 1] < MPFR_LIMB_HIGHBIT) ||
+           (k1 != 0 && cc2 != 0 && bp[bn + tn] == MPFR_LIMB_HIGHBIT)) &&
+          (rnd2 != MPFR_RNDN || err0 == prec0 + 1))
+        {
+          MPFR_TMP_FREE(marker);
+          return 0;
+        }
       break;
     default:
       /* Round away */
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
-      /* now round b +/- 2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
-      break;
-    }
+      /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
 
-  /* if cc2 is 1, then a carry or borrow propagates to the next limb */
-  if (cc2 && cc)
-    {
-      MPFR_TMP_FREE(marker);
-      return 0;
+      goto subtract_eps;
     }
 
   cc2 = (tmp[bn - 1] >> s1) & 1;
