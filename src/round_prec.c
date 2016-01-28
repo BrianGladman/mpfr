@@ -155,14 +155,26 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
 
   if (MPFR_UNLIKELY(err0 < 0 || (mpfr_uexp_t) err0 <= prec))
     return 0;  /* can't round */
-  else if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
-    { /* then ulp(b) < precision < error */
-      return rnd2 == MPFR_RNDN && (mpfr_uexp_t) err0 - 2 >= prec;
-      /* can round only in rounding to the nearest and err0 >= prec + 2 */
-    }
 
   MPFR_ASSERT_SIGN(neg);
   neg = MPFR_IS_NEG_SIGN(neg);
+
+  /* Transform RNDD and RNDU to Zero / Away */
+  MPFR_ASSERTD((neg == 0) || (neg == 1));
+  if (rnd1 != MPFR_RNDN)
+    rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
+  if (rnd2 != MPFR_RNDN)
+    rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
+
+  if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
+    { /* Then prec < PREC(b): we can round:
+         (i) in rounding to the nearest iff err0 >= prec + 2
+         (ii) in directed rounding mode iff rnd1 is compatible with rnd2 */
+      if (rnd2 == MPFR_RNDN)
+        return (mpfr_uexp_t) err0 - 2 >= prec;
+      else
+        return rnd1 == rnd2;
+    }
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */
@@ -194,11 +206,6 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
     MPN_COPY (tmp, bp, bn - k);
 
   MPFR_ASSERTD (k > 0);
-
-  /* Transform RNDD and RNDU to Zero / Away */
-  MPFR_ASSERTD((neg == 0) || (neg ==1));
-  if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd1, neg))
-    rnd1 = MPFR_RNDZ;
 
   switch (rnd1)
     {

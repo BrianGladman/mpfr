@@ -73,15 +73,15 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
     MPFR_IS_LIKE_RNDD (r1, MPFR_SIGN_POS) ?
     (MPFR_IS_LIKE_RNDU (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
     MPFR_IS_LIKE_RNDU (r1, MPFR_SIGN_POS) ?
-    (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec <= i - 1) :
+    (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
     (r2 != MPFR_RNDN ? 0 : prec <= i - 1);
   /* we only require mpfr_can_round to return 1 only when we can really
      round, it is allowed to return 0 in some rare boundary cases,
      for example when x = 2^k and the error is 0.25 ulp. */
   if (b != expected_b && expected_b == 0)
     {
-      printf ("Error for x=2^%d, px=%lu, r1=%s, r2=%s, prec=%d\n",
-              (int) i, px, mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
+      printf ("Error for x=2^%d, px=%lu, err=%d, r1=%s, r2=%s, prec=%d\n",
+              (int) i, px, (int) i+1, mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
               mpfr_print_rnd_mode ((mpfr_rnd_t) r2), (int) prec);
       printf ("Expected %d, got %d\n", expected_b, b);
       exit (1);
@@ -153,6 +153,9 @@ main (void)
   test_pow2 (32, 32, MPFR_RNDN, MPFR_RNDN, 32);
   test_pow2 (174, 174, MPFR_RNDN, MPFR_RNDN, 174);
   test_pow2 (174, 174, MPFR_RNDU, MPFR_RNDN, 174);
+  test_pow2 (176, 129, MPFR_RNDU, MPFR_RNDU, 174);
+  test_pow2 (176, 2, MPFR_RNDZ, MPFR_RNDZ, 174);
+  test_pow2 (176, 2, MPFR_RNDU, MPFR_RNDU, 176);
 
   /* Tests for x = 2^i (E(x) = i+1) with error at most 1 = 2^0. */
   for (n = 0; n < 100; n++)
