@@ -69,15 +69,18 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
   mpfr_init2 (x, px);
   mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
   b = !!mpfr_can_round (x, i+1, r1, r2, prec);
+  /* TODO: check the conditions on prec below. */
   expected_b =
     MPFR_IS_LIKE_RNDD (r1, MPFR_SIGN_POS) ?
     (MPFR_IS_LIKE_RNDU (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
     MPFR_IS_LIKE_RNDU (r1, MPFR_SIGN_POS) ?
     (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec <= i) :
     (r2 != MPFR_RNDN ? 0 : prec <= i - 1);
-  /* we only require mpfr_can_round to return 1 only when we can really
+  /* We only require mpfr_can_round to return 1 only when we can really
      round, it is allowed to return 0 in some rare boundary cases,
-     for example when x = 2^k and the error is 0.25 ulp. */
+     for example when x = 2^k and the error is 0.25 ulp.
+     Note: if this changes in the future, the test could be improved by
+     removing the "&& expected_b == 0" below. */
   if (b != expected_b && expected_b == 0)
     {
       printf ("Error for x=2^%d, px=%lu, err=%d, r1=%s, r2=%s, prec=%d\n",
