@@ -201,10 +201,11 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
   bn -= k1;
   prec -= (mpfr_prec_t) k1 * GMP_NUMB_BITS;
 
-  /* FIXME: The following comment should be more detailed about the change
-     of binade and the effect of the rounding modes. */
-  /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
-     change bp[bn-1] >> s1, then we can round */
+  /* We can decide of the correct rounding if rnd2(b-eps) and rnd2(b+eps)
+     give the same result to the target precision 'prec', i.e., if when
+     adding or subtracting (1 << s) in bp[bn-1-k], it does not change the
+     rounding in direction 'rnd2' at ulp-position bp[bn-1] >> s1, taking also
+     into account the possible change of binade. */
   MPFR_TMP_MARK(marker);
   tn = bn;
   k++; /* since we work with k+1 everywhere */
