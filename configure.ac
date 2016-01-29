@@ -599,7 +599,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
        AC_MSG_ERROR([GMP_NUMB_BITS and sizeof(mp_limb_t) are not consistent.
 You probably need to change some of the GMP or MPFR compile options.
 See 'config.log' for details (search for GMP_NUMB_BITS).])],
-       [AC_MSG_RESULT([can't test])])
+       [AC_MSG_RESULT([cannot test])])
 
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
@@ -659,7 +659,7 @@ if test -z "$enable_mini_gmp" ; then
     AC_MSG_WARN([LIBS="$LIBS"])
     AC_MSG_WARN([Temporary LD_RUN_PATH was "$LD_RUN_PATH".])
     AC_MSG_WARN([==========================================================])
-    ],AC_MSG_RESULT([can not test])
+    ],AC_MSG_RESULT([cannot test])
   )
   LD_RUN_PATH="$saved_LD_RUN_PATH"
 fi
