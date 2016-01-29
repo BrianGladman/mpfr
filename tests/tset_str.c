@@ -121,7 +121,7 @@ main (int argc, char *argv[])
   if (nc < 100)
     nc = 100;
 
-  str = (char *) (*__gmp_allocate_func) (nc);
+  str = (char *) tests_allocate (nc);
 
   mpfr_init2 (x, nc + 10);
 
@@ -169,7 +169,7 @@ main (int argc, char *argv[])
       mpfr_set_str_binary (x, str);
     }
 
-  (*__gmp_free_func) (str, nc);
+  tests_free (str, nc);
 
   mpfr_set_prec (x, 54);
   mpfr_set_str_binary (x, "0.100100100110110101001010010101111000001011100100101010E-529");
@@ -270,7 +270,7 @@ main (int argc, char *argv[])
           mpfr_clear (y);
           exit (1);
         }
-      (*__gmp_free_func) (str, strlen (str) + 1);
+      tests_free (str, strlen (str) + 1);
     }
 
   for (i = 2; i <= 62; i++)
@@ -784,7 +784,7 @@ main (int argc, char *argv[])
     mpfr_set_prec (x, mp_bits_per_limb); /* x and y have only one limb */
     mpfr_set_prec (y, mp_bits_per_limb);
 
-    str = (char*) (*__gmp_allocate_func) (N + 20);
+    str = (char *) tests_allocate (N + 20);
 
     mpfr_set_ui (x, 1, MPFR_RNDN); /* ensures that x is not NaN or Inf */
     for (; nb_digit < N; nb_digit *= 10)
@@ -825,7 +825,7 @@ main (int argc, char *argv[])
                 }
             }
 
-    (*__gmp_free_func) (str, N + 20);
+    tests_free (str, N + 20);
   }
 
   /* end of tests added by Alain Delplanque */

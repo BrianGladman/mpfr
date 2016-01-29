@@ -43,6 +43,41 @@ struct header {
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
 
+static void *
+mpfr_default_allocate (size_t size)
+{
+  void *ret;
+  ret = malloc (size);
+  if (MPFR_UNLIKELY (ret == NULL))
+    {
+      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
+               (unsigned long) size);
+      abort ();
+    }
+  return ret;
+}
+
+static void *
+mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
+{
+  void *ret;
+  ret = realloc (oldptr, new_size);
+  if (MPFR_UNLIKELY(ret == NULL))
+    {
+      fprintf (stderr,
+               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
+               (unsigned long) old_size, (unsigned long) new_size);
+      abort ();
+    }
+  return ret;
+}
+
+static void
+mpfr_default_free (void *blk_ptr, size_t blk_size)
+{
+  free (blk_ptr);
+}
+
 /* Return a pointer to a pointer to the found block (so it can be updated
    when unlinking). */
 /* FIXME: This is a O(n) search, while it could be done in nearly
@@ -81,7 +116,7 @@ tests_addsize (size_t size)
     }
 }
 
-static void *
+void *
 tests_allocate (size_t size)
 {
   struct header  *h;
@@ -103,7 +138,7 @@ tests_allocate (size_t size)
   return h->ptr;
 }
 
-static void *
+void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 {
   struct header  **hp, *h;
@@ -166,7 +201,7 @@ tests_free_nosize (void *ptr)
   mpfr_default_free (h, sizeof (*h));
 }
 
-static void
+void
 tests_free (void *ptr, size_t size)
 {
   struct header  **hp = tests_free_find (ptr);
@@ -183,41 +218,6 @@ tests_free (void *ptr, size_t size)
 
   tests_total_size -= size;
   tests_free_nosize (ptr);
-}
-
-void *
-mpfr_default_allocate (size_t size)
-{
-  void *ret;
-  ret = malloc (size);
-  if (MPFR_UNLIKELY (ret == NULL))
-    {
-      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
-               (unsigned long) size);
-      abort ();
-    }
-  return ret;
-}
-
-void *
-mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
-{
-  void *ret;
-  ret = realloc (oldptr, new_size);
-  if (MPFR_UNLIKELY(ret == NULL))
-    {
-      fprintf (stderr,
-               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
-               (unsigned long) old_size, (unsigned long) new_size);
-      abort ();
-    }
-  return ret;
-}
-
-void
-mpfr_default_free (void *blk_ptr, size_t blk_size)
-{
-  free (blk_ptr);
 }
 
 void

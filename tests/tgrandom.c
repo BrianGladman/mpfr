@@ -56,12 +56,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   int i, inexact;
 
   nbtests = (nbtests & 1) ? (nbtests + 1) : nbtests;
-  t = (mpfr_t *) malloc (nbtests * sizeof (mpfr_t));
-  if (t == NULL)
-    {
-      fprintf (stderr, "tgrandom: can't allocate memory in test_grandom\n");
-      exit (1);
-    }
+  t = (mpfr_t *) tests_allocate (nbtests * sizeof (mpfr_t));
 
   for (i = 0; i < nbtests; ++i)
     mpfr_init2 (t[i], prec);
@@ -106,7 +101,7 @@ test_grandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
 
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
-  free (t);
+  tests_free (t, nbtests * sizeof (mpfr_t));
   return;
 }
 

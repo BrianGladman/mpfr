@@ -49,12 +49,7 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   mpfr_t av, va, tmp;
   int i, inexact;
 
-  t = (mpfr_t *) malloc (nbtests * sizeof (mpfr_t));
-  if (t == NULL)
-    {
-      fprintf (stderr, "tnrandom: can't allocate memory in test_nrandom\n");
-      exit (1);
-    }
+  t = (mpfr_t *) tests_allocate (nbtests * sizeof (mpfr_t));
 
   for (i = 0; i < nbtests; ++i)
     mpfr_init2 (t[i], prec);
@@ -99,7 +94,7 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
 
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
-  free (t);
+  tests_free (t, nbtests * sizeof (mpfr_t));
   return;
 }
 

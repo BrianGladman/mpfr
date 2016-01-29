@@ -83,8 +83,8 @@ generic_tests (void)
   int i, m, nmax = 500;
   int rnd_mode;
 
-  t = (mpfr_t *) (*__gmp_allocate_func) (nmax * sizeof(mpfr_t));
-  p = (mpfr_ptr *) (*__gmp_allocate_func) (nmax * sizeof(mpfr_ptr));
+  t = (mpfr_t *) tests_allocate (nmax * sizeof(mpfr_t));
+  p = (mpfr_ptr *) tests_allocate (nmax * sizeof(mpfr_ptr));
   for (i = 0; i < nmax; i++)
     {
       mpfr_init2 (t[i], precmax);
@@ -140,8 +140,8 @@ generic_tests (void)
   for (i = 0; i < nmax; i++)
     mpfr_clear (t[i]);
   mpfr_clears (exact_sum, sum1, sum2, (mpfr_ptr) 0);
-  (*__gmp_free_func) (t, nmax * sizeof(mpfr_t));
-  (*__gmp_free_func) (p, nmax * sizeof(mpfr_ptr));
+  tests_free (t, nmax * sizeof(mpfr_t));
+  tests_free (p, nmax * sizeof(mpfr_ptr));
 }
 
 /* glibc free() error or segmentation fault when configured
@@ -1132,8 +1132,8 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
   gmp_randinit_default (state);
   mpfr_init2 (s, prec);
   mpfr_init2 (ref_s, prec);
-  x = (mpfr_t *) malloc (n * sizeof (mpfr_t));
-  y = (mpfr_ptr *) malloc (n * sizeof (mpfr_ptr));
+  x = (mpfr_t *) tests_allocate (n * sizeof (mpfr_t));
+  y = (mpfr_ptr *) tests_allocate (n * sizeof (mpfr_ptr));
   for (i = 0; i < n; i++)
     {
       y[i] = x[i];
@@ -1159,8 +1159,8 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
 
   for (i = 0; i < n; i++)
     mpfr_clear (x[i]);
-  free (x);
-  free (y);
+  tests_free (x, n * sizeof (mpfr_t));
+  tests_free (y, n * sizeof (mpfr_ptr));
   mpfr_clear (s);
   mpfr_clear (ref_s);
   gmp_randclear (state);

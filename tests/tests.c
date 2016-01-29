@@ -558,7 +558,7 @@ src_fopen (const char *filename, const char *mode)
   FILE *f;
 
   buffsize = strlen (filename) + strlen (srcdir) + 2;
-  buffer = (char *) (*__gmp_allocate_func) (buffsize);
+  buffer = (char *) tests_allocate (buffsize);
   if (buffer == NULL)
     {
       printf ("src_fopen: failed to alloc memory)\n");
@@ -566,7 +566,7 @@ src_fopen (const char *filename, const char *mode)
     }
   sprintf (buffer, "%s/%s", srcdir, filename);
   f = fopen (buffer, mode);
-  (*__gmp_free_func) (buffer, buffsize);
+  tests_free (buffer, buffsize);
   return f;
 #endif
 }

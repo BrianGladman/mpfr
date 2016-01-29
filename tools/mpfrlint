@@ -135,6 +135,9 @@ do
     echo "$file contains unprotected mpfr_printf-like function calls"
 done
 
+grep __gmp_ tests/*.c | grep -v '^tests/tabort_defalloc'
+grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | grep -v '^tests/memory.c:'
+
 # Check a Texinfo rule (Section "Ending a Sentence") with common words
 # that end with a capital letter:
 #   Use '@.' instead of a period, '@!' instead of an exclamation point,

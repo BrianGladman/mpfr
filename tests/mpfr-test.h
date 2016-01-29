@@ -205,11 +205,9 @@ extern gmp_randstate_t  mpfr_rands;
 typedef __gmp_randstate_struct *mpfr_gmp_randstate_ptr;
 
 /* Allocation */
-void *mpfr_default_allocate _MPFR_PROTO ((size_t));
-void *mpfr_default_reallocate _MPFR_PROTO ((void *, size_t,
-                                                             size_t));
-void mpfr_default_free _MPFR_PROTO ((void *, size_t));
-
+void *tests_allocate _MPFR_PROTO ((size_t));
+void *tests_reallocate _MPFR_PROTO ((void *, size_t, size_t));
+void tests_free _MPFR_PROTO ((void *, size_t));
 
 #if defined (__cplusplus)
 }
