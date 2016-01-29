@@ -1339,11 +1339,15 @@ To cross-compile MPFR for i586-mingw32msvc and test it under Wine:
 1. Build and install GMP.
 
 In the GMP source directory:
-$ ./configure --host=i586-mingw32msvc --disable-shared --prefix=...
+$ ./configure --host=i586-mingw32msvc --disable-shared --prefix=... \
+    CC="i586-mingw32msvc-gcc -D__USE_MINGW_ANSI_STDIO"
 $ make
 $ make check LOG_COMPILER=wine
 [If few tests fail, ignore them.]
 $ make install
+
+(the -D__USE_MINGW_ANSI_STDIO option is used to avoid some failures,
+as mentioned in MPFR's INSTALL file).
 
 2. Build and check MPFR.
 
