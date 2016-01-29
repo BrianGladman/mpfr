@@ -169,11 +169,13 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
   if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
     { /* Then prec < PREC(b): we can round:
          (i) in rounding to the nearest iff err0 >= prec + 2
-         (ii) in directed rounding mode iff rnd1 is compatible with rnd2 */
+         (ii) in directed rounding mode iff rnd1 is compatible with rnd2
+              and err0 >= prec + 1, unless b = 2^k and rnd1=rnd2=RNDA in
+              which case we need err0 >= prec + 2. */
       if (rnd2 == MPFR_RNDN)
         return (mpfr_uexp_t) err0 - 2 >= prec;
       else
-        return rnd1 == rnd2;
+        return (rnd1 == rnd2) && (mpfr_uexp_t) err0 - 2 >= prec;
     }
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
