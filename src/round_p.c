@@ -31,16 +31,23 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
   int i1, i2;
 
   i1 = mpfr_round_p_2 (bp, bn, err0, prec);
-  i2 = mpfr_can_round_raw (bp, bn, MPFR_SIGN_POS, err0,
-                           MPFR_RNDN, MPFR_RNDZ, prec);
-  if (i1 != i2)
+
+  /* mpfr_round_p accepts non-normalized inputs, but not mpfr_can_round_raw.
+     So, compare with mpfr_can_round_raw only on normalized inputs. */
+  if (bp[bn - 1] & MPFR_LIMB_HIGHBIT)
     {
-      fprintf (stderr, "mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
-               "bn = %lu, err0 = %ld, prec = %lu\nbp = ", i1, i2,
-               (unsigned long) bn, (long) err0, (unsigned long) prec);
-      gmp_fprintf (stderr, "%NX\n", bp, bn);
-      MPFR_ASSERTN (0);
+      i2 = mpfr_can_round_raw (bp, bn, MPFR_SIGN_POS, err0,
+                               MPFR_RNDN, MPFR_RNDZ, prec);
+      if (i1 != i2)
+        {
+          fprintf (stderr, "mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
+                   "bn = %lu, err0 = %ld, prec = %lu\nbp = ", i1, i2,
+                   (unsigned long) bn, (long) err0, (unsigned long) prec);
+          gmp_fprintf (stderr, "%NX\n", bp, bn);
+          MPFR_ASSERTN (0);
+        }
     }
+
   return i1;
 }
 # define mpfr_round_p mpfr_round_p_2
