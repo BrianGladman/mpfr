@@ -60,7 +60,8 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
   mp_limb_t tmp, mask;
   int s;
 
-  MPFR_ASSERTD(bp[bn - 1] & MPFR_LIMB_HIGHBIT);
+  /* Note: {bp, bn} is not always normalized, for example when called from
+     mpfr_div. */
 
   err = (mpfr_prec_t) bn * GMP_NUMB_BITS;
   if (MPFR_UNLIKELY (err0 <= 0 || (mpfr_uexp_t) err0 <= prec || prec >= err))

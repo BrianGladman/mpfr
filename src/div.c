@@ -378,7 +378,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   /* for large precisions, try using truncated division first */
   if (q0size >= 32 && mpfr_div_with_mpz_tdiv_q (q, u, v, rnd_mode, &inex))
-        return inex;
+    return inex;
 
   MPFR_TMP_MARK(marker);
 
@@ -459,9 +459,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          cf algorithms.tex */
 
       p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (2 * n + 2);
-      /* if qh is 1, then we need only PREC(q)-1 bits of {qp,n},
+      /* If qh is 1, then we need only PREC(q)-1 bits of {qp,n},
          if rnd=RNDN, we need to be able to round with a directed rounding
-            and one more bit */
+            and one more bit.
+         Note: if qh=1, the operand {qp, n} given to mpfr_round_p might not
+         be normalized: the most significant bit of qp[n-1] might be zero. */
       if (MPFR_LIKELY (mpfr_round_p (qp, n, p,
                                  MPFR_PREC(q) + (rnd_mode == MPFR_RNDN) - qh)))
         {
