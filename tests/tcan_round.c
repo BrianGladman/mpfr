@@ -1,4 +1,4 @@
-/* Test file for mpfr_can_round.
+/* Test file for mpfr_can_round and mpfr_round_p.
 
 Copyright 1999, 2001-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
