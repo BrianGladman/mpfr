@@ -460,22 +460,18 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          cf algorithms.tex */
 
       p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (2 * n + 2);
-      /* If qh is 1, then we need only PREC(q)-1 bits of {qp,n},
-         if rnd=RNDN, we need to be able to round with a directed rounding
-            and one more bit.
-         Note: if qh=1, the operand {qp, n} given to mpfr_round_p might not
-         be normalized: the most significant bit of qp[n-1] might be zero. */
+      /* If rnd=RNDN, we need to be able to round with a directed rounding
+         and one more bit. */
+      if (qh == 1)
+        {
+          mpn_rshift (qp, qp, n, 1);
+          qp[n - 1] ^= MPFR_LIMB_HIGHBIT;
+        }
       if (MPFR_LIKELY (mpfr_round_p (qp, n, p,
-                                 MPFR_PREC(q) + (rnd_mode == MPFR_RNDN) - qh)))
+                                     MPFR_PREC(q) + (rnd_mode == MPFR_RNDN))))
         {
           /* we can round correctly whatever the rounding mode */
-          if (qh == 0)
-            MPN_COPY (q0p, qp + 1, q0size);
-          else
-            {
-              mpn_rshift (q0p, qp + 1, q0size, 1);
-              q0p[q0size - 1] ^= MPFR_LIMB_HIGHBIT;
-            }
+          MPN_COPY (q0p, qp + 1, q0size);
           q0p[0] &= ~MPFR_LIMB_MASK(sh); /* put to zero low sh bits */
 
           if (rnd_mode == MPFR_RNDN) /* round to nearest */
