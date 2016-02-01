@@ -59,11 +59,11 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
  * of direction unknown, check if we can round b toward zero with
  * precision prec.
  *
- * Note: on some cases (from example in mpfr_div) we call mpfr_round_p() with
+ * Note: on some cases (for example in mpfr_div), we call mpfr_round_p() with
  * an implicit extra bit which would correspond to bp[bn], in which case
  * {bp, bn} is not necessarily normalized (the most significant bit of bp[bn-1]
- * might not be set). In that case the meaning of EXP(b), err0 and prec is as
- * if {bp, bn} was normalized.
+ * might not be set). In that case, the meaning of EXP(b), err0 and prec is as
+ * if {bp, bn} were normalized.
  */
 int
 mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
