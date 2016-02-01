@@ -64,7 +64,7 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
            mpfr_prec_t prec)
 {
   mpfr_t x;
-  int b, expected_b;
+  int b, expected_b, b2;
 
   mpfr_init2 (x, px);
   mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
@@ -94,10 +94,25 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
   if (b != expected_b && expected_b == 0)
     {
       printf ("Error for x=2^%d, px=%lu, err=%d, r1=%s, r2=%s, prec=%d\n",
-              (int) i, px, (int) i+1, mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
+              (int) i, (unsigned long) px, (int) i+1,
+              mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
               mpfr_print_rnd_mode ((mpfr_rnd_t) r2), (int) prec);
       printf ("Expected %d, got %d\n", expected_b, b);
       exit (1);
+    }
+
+  if (r1 == MPFR_RNDN && r2 == MPFR_RNDZ)
+    {
+      /* Similar test to the one done in src/round_p.c
+         for MPFR_WANT_ASSERT >= 2. */
+      b2 = !!mpfr_round_p (MPFR_MANT(x), MPFR_LIMB_SIZE(x), i+1, prec);
+      if (b2 != b)
+        {
+          printf ("Error for x=2^%d, px=%lu, err=%d, prec=%d\n",
+                  (int) i, (unsigned long) px, (int) i+1, (int) prec);
+          printf ("mpfr_can_round gave %d, mpfr_round_p gave %d\n", b, b2);
+          exit (1);
+        }
     }
 
   mpfr_clear (x);
