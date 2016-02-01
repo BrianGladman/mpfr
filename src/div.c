@@ -455,6 +455,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
       qp = MPFR_TMP_LIMBS_ALLOC (n);
       qh = mpfr_divhigh_n (qp, ap, bp, n);
+      MPFR_ASSERTD (qh == 0 || qh == 1);
       /* in all cases, the error is at most (2n+2) ulps on qh*B^n+{qp,n},
          cf algorithms.tex */
 
