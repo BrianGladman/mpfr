@@ -140,6 +140,13 @@ mpfr_can_round (mpfr_srcptr b, mpfr_exp_t err, mpfr_rnd_t rnd1,
                                MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
+/* TODO: mpfr_can_round_raw currently does a memory allocation and some
+   mpn operations. A bit inspection like for mpfr_round_p (round_p.c) may
+   be sufficient, though this would be more complex than the one done in
+   mpfr_round_p, and in particular, for some rnd1/rnd2 combinations, one
+   needs to take care of changes of binade when the value is close to a
+   power of 2. */
+
 int
 mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
                     mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
