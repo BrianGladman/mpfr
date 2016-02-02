@@ -191,8 +191,10 @@ mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
           mpz_clear (Q[i]);
         }
 
-      if (MPFR_LIKELY (ok != 0 /* if ok != 0 we know by exhaustive testing the rounding is correct */
-                       || mpfr_round_p (MPFR_MANT(t), MPFR_LIMB_SIZE (t), w - 2, n)))
+      if (MPFR_LIKELY (ok != 0 /* if ok != 0 we know by exhaustive testing
+                                  the rounding is correct */
+                       || mpfr_round_p (MPFR_MANT(t), MPFR_LIMB_SIZE (t),
+                                        w - 2, n + rnd_mode == MPFR_RNDN)))
         break;
 
       MPFR_ZIV_NEXT (loop, w);
