@@ -174,11 +174,10 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         err = m;
       else
         err = MPFR_GET_EXP (c) + (mpfr_exp_t) (m - 3);
-      if (!mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
-                           MPFR_PREC (z) + (rnd_mode == MPFR_RNDN)))
+      if (!MPFR_CAN_ROUND (c, err, MPFR_PREC (z), rnd_mode))
         goto next_step;
 
-      /* we can't set z now, because in case z = x, and the mpfr_can_round()
+      /* we can't set z now, because in case z = x, and the MPFR_CAN_ROUND()
          call below fails, we will have clobbered the input */
       mpfr_set_prec (xr, MPFR_PREC(c));
       mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
@@ -197,8 +196,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* the absolute error on c is at most 2^(err-m), which we must put
          in the form 2^(EXP(c)-err). */
       err = MPFR_GET_EXP (c) + (mpfr_exp_t) m - err;
-      if (mpfr_can_round (c, err, MPFR_RNDN, MPFR_RNDZ,
-                          MPFR_PREC (y) + (rnd_mode == MPFR_RNDN)))
+      if (MPFR_CAN_ROUND (c, err, MPFR_PREC (y), rnd_mode))
         break;
       /* check for huge cancellation */
       if (err < (mpfr_exp_t) MPFR_PREC (y))
