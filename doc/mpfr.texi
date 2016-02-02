@@ -2806,7 +2806,9 @@ positive or negative, thus the possible range
 is twice as large as with a directed rounding for @var{rnd1} (with the
 same value of @var{err}).
 
-@c FIXME: This is still incorrect as inex can be 0.
+@c FIXME: This is still incorrect as inex can be 0. But the note can
+@c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
+@c the case.
 Note: The @ref{ternary value} cannot be determined in general with this
 function. However, if it is known that the exact value is not exactly
 representable in precision @var{prec}, then one can use the following
