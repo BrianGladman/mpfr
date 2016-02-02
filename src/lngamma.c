@@ -408,8 +408,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
               err_s = (err_s >= err_u) ? err_s : err_u;
               err_s += 1 - MPFR_GET_EXP(s); /* error is 2^err_s ulp(s) */
               err_s = (err_s >= 0) ? err_s + 1 : 0;
-              if (mpfr_can_round (s, w - err_s, MPFR_RNDN, MPFR_RNDZ, precy
-                                  + (rnd == MPFR_RNDN)))
+              if (MPFR_CAN_ROUND (s, w - err_s, precy, rnd))
                 goto end;
             }
           MPFR_ZIV_NEXT (loop, w);
