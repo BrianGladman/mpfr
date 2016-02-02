@@ -30,11 +30,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * (NBS, Washington, DC, 1951), Proceedings of a symposium held June 29-July 1,
  * 1949, in Los Angeles.
  *
- * A modification to this algorithm is given in Charles F. F. Karney, Sampling
- * exactly from the normal distribution (March 2013),
- * http://arxiv.org/abs/1303.6257v1 .  Although this improves the bit
- * efficiency, in practice, it results in a slightly slower algorithm for MPFR.
- * So here the original von Neumann algorithm is used.
+ * A modification to this algorithm is given in:
+ *   Charles F. F. Karney,
+ *   "Sampling exactly from the normal distribution",
+ *   ACM Trans. Math. Software 42(1), 3:1-14 (Jan. 2016).
+ *   https://dx.doi.org/10.1145/2710016
+ *   http://arxiv.org/abs/1303.6257
+ * Although this improves the bit efficiency, in practice, it results in
+ * a slightly slower algorithm for MPFR. So here the original von Neumann
+ * algorithm is used.
  *
  * There are a few "weasel words" regarding the accuracy of this
  * implementation.  The algorithm produces exactly rounded exponential deviates

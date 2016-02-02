@@ -24,8 +24,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /*
  * Sampling from the normal distribution with zero mean and unit variance.
- * This uses Algorithm N given in Charles F. F. Karney, Sampling exactly from
- * the normal distribution (March 2013), http://arxiv.org/abs/1303.6257v1 .
+ * This uses Algorithm N given in:
+ *   Charles F. F. Karney,
+ *   "Sampling exactly from the normal distribution",
+ *   ACM Trans. Math. Software 42(1), 3:1-14 (Jan. 2016).
+ *   https://dx.doi.org/10.1145/2710016
+ *   http://arxiv.org/abs/1303.6257
  *
  * The implementation here closely follows the C++ one given in the paper
  * above.  However, here, C is simplified by using gmp_urandomm_ui; the initial
