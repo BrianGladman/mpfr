@@ -23,6 +23,20 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* TODO [discussion between VL and PZ]:
+ * - If k = 2 or 3, use mpfr_sqrt / mpfr_cbrt, but check with timings first.
+ * - If k = 4, mpfr_sqrt twice may be more interesting than the current code
+ *   (to be tested).
+ * - For large values of k, use exp(log(x)/k). Detect the exact cases a bit
+ *   like in mpfr_pow_general: if the Ziv test fails a first time, check for
+ *   exactness (first check with the sizes of the numbers from the first 1
+ *   to the last 1 in the significand, and if the sizes are compatible,
+ *   compute y^k exactly and compare).
+ * - Do timings (in low and high precision) to find the minimal k for which
+ *   this is interesting, and possibly get rid of the old code, depending on
+ *   these timings.
+ */
+
  /* The computation of y = x^(1/k) is done as follows:
 
     Let x = sign * m * 2^(k*e) where m is an integer
