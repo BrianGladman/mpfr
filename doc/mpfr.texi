@@ -1732,7 +1732,7 @@ is @minus{}Inf instead of +Inf.
 @deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
-For @var{k} = 0, set @var{rop} to NaN.
+For @var{k} = 0, set @var{rop} to NaN@.
 For @var{k} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
 set @var{rop} to a negative number (resp.@: NaN)@.
 The @var{k}th root of @minus{}0 is defined to be @minus{}0,
