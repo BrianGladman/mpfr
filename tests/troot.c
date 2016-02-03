@@ -49,7 +49,7 @@ special (void)
       exit (1);
     }
 
-  /* root(-Inf, 17) =  -Inf */
+  /* root(-Inf, 17) = -Inf */
   mpfr_set_inf (x, -1);
   mpfr_root (y, x, 17, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
@@ -66,7 +66,7 @@ special (void)
       exit (1);
     }
 
-  /* root(+/-0) =  +/-0 */
+  /* root(+/-0, k) = +/-0 for k > 0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_root (y, x, 17, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
@@ -188,6 +188,21 @@ special (void)
   if (mpfr_cmp_ui (x, 17) || i != 0)
     {
       printf ("Error in root for 17^(1/1)\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  i = mpfr_root (y, x, 0, MPFR_RNDN);
+  if (!MPFR_IS_NAN (y) || i != 0)
+    {
+      printf ("Error in root for (+0)^(1/0)\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, MPFR_RNDN);
+  i = mpfr_root (y, x, 0, MPFR_RNDN);
+  if (!MPFR_IS_NAN (y) || i != 0)
+    {
+      printf ("Error in root for (-0)^(1/0)\n");
       exit (1);
     }
 
