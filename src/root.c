@@ -42,7 +42,7 @@ int
 mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
-  mpfr_exp_t e, r, sh;
+  mpfr_exp_t e, r, sh, f;
   mpfr_prec_t n, size_m, tmp;
   int inexact, negative;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -143,24 +143,16 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   /* for rounding to nearest, we want the round bit to be in the root */
   n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
-  /* we now multiply m by 2^(r+k*sh) so that root(m,k) will give
-     exactly n bits: we want k*(n-1)+1 <= size_m + k*sh + r <= k*n
-     i.e. sh = floor ((kn-size_m-r)/k) */
-  if ((mpfr_exp_t) size_m + r > k * (mpfr_exp_t) n)
-    sh = 0; /* we already have too many bits */
+  /* we now multiply m by 2^sh so that root(m,k) will give
+     exactly n bits: we want k*(n-1)+1 <= size_m + sh <= k*n
+     i.e. sh = k*f + r with f = max(floor((k*n-size_m-r)/k),0) */
+  if ((mpfr_exp_t) size_m + r >= k * (mpfr_exp_t) n)
+    f = 0; /* we already have too many bits */
   else
-    sh = (k * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / k;
-  sh = k * sh + r;
-  if (sh >= 0)
-    {
-      mpz_mul_2exp (m, m, sh);
-      e = e - sh;
-    }
-  else if (r > 0)
-    {
-      mpz_mul_2exp (m, m, r);
-      e = e - r;
-    }
+    f = (k * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / k;
+  sh = k * f + r;
+  mpz_mul_2exp (m, m, sh);
+  e = e - sh;
 
   /* invariant: x = m*2^e, with e divisible by k */
 
