@@ -41,11 +41,11 @@ check (mpfr_prec_t p0, mpfr_prec_t p1)
     {
       mpfr_set_prec (x, p0);
       mpfr_set_prec (y, p0);
-      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+      RND_LOOP (rnd)
         {
           inex = mpfr_const_log2 (x, rnd);
           inex_ref = mpfr_set (y, z, rnd);
-          if (mpfr_can_round (z, mpfr_get_prec (z), MPFR_RNDN, rnd, p0) == 0)
+          if (! mpfr_can_round (z, mpfr_get_prec (z), MPFR_RNDN, rnd, p0))
             {
               printf ("increase guard precision in check()\n");
               exit (1);

@@ -132,14 +132,14 @@ main (void)
      bit to zero in case of equal distance */
   mpfr_init2 (x, 59);
   mpfr_set_str_binary (x, "-0.10010001010111000011110010111010111110000000111101100111111E663");
-  if (mpfr_can_round (x, 54, MPFR_RNDZ, MPFR_RNDZ, 53) != 0)
+  if (mpfr_can_round (x, 54, MPFR_RNDZ, MPFR_RNDZ, 53))
     {
       printf ("Error (1) in mpfr_can_round\n");
       exit (1);
     }
 
   mpfr_set_str_binary (x, "-Inf");
-  if (mpfr_can_round (x, 2000, MPFR_RNDZ, MPFR_RNDZ, 2000) != 0)
+  if (mpfr_can_round (x, 2000, MPFR_RNDZ, MPFR_RNDZ, 2000))
     {
       printf ("Error (2) in mpfr_can_round\n");
       exit (1);
@@ -155,7 +155,7 @@ main (void)
 
   mpfr_set_prec (x, 137);
   mpfr_set_str_binary (x, "-0.10111001101001010110011000110100111010011101101010010100101100001110000100111111011101010110001010111100100101110111100001000010000000000E-97");
-  if (mpfr_can_round (x, 132, MPFR_RNDU, MPFR_RNDZ, 128) == 0)
+  if (! mpfr_can_round (x, 132, MPFR_RNDU, MPFR_RNDZ, 128))
     {
       printf ("Error (4) in mpfr_can_round\n");
       exit (1);
@@ -164,7 +164,7 @@ main (void)
   /* in the following, we can round but cannot determine the inexact flag */
   mpfr_set_prec (x, 86);
   mpfr_set_str_binary (x, "-0.11100100010011001111011010100111101010011000000000000000000000000000000000000000000000E-80");
-  if (mpfr_can_round (x, 81, MPFR_RNDU, MPFR_RNDZ, 44) == 0)
+  if (! mpfr_can_round (x, 81, MPFR_RNDU, MPFR_RNDZ, 44))
     {
       printf ("Error (5) in mpfr_can_round\n");
       exit (1);
