@@ -135,9 +135,8 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
     mpz_neg (m, m);
   r = e % (mpfr_exp_t) k;
   if (r < 0)
-    r += k; /* now r = e (mod k) with 0 <= e < r */
-  /* FIXME: The above comment is incorrect: e can be negative.
-     When corrected, add corresponding assertions. */
+    r += k; /* now r = e (mod k) with 0 <= r < k */
+  MPFR_ASSERTD (0 <= r && r < k);
   /* x = (m*2^r) * 2^(e-r) where e-r is a multiple of k */
 
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
