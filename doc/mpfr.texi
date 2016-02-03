@@ -3654,6 +3654,8 @@ use @code{mpfr_custom_get_mantissa}.
 @code{mpfr_flags_save}, @code{mpfr_flags_set} and @code{mpfr_flags_test}
 in MPFR 3.2.
 
+@item @code{mpfr_fmma} and @code{mpfr_fmms} in MPFR 3.2.
+
 @item @code{mpfr_fmod} in MPFR 2.4.
 
 @item @code{mpfr_fmodquo} in MPFR 3.2.
@@ -3665,6 +3667,8 @@ in MPFR 3.2.
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
 @item @code{mpfr_frexp} in MPFR 3.1.
+
+@item @code{mpfr_gamma_inc} in MPFR 3.2.
 
 @item @code{mpfr_get_float128} in MPFR 3.2 if configured with
 @samp{--enable-float128}.
@@ -3689,6 +3693,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_lgamma} in MPFR 2.3.
 
 @item @code{mpfr_li2} in MPFR 2.4.
+
+@item @code{mpfr_log_ui} in MPFR 3.2.
 
 @item @code{mpfr_min_prec} in MPFR 3.0.
 
