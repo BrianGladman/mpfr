@@ -254,7 +254,7 @@ special (void)
 
 /* https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=812779
  * https://bugzilla.gnome.org/show_bug.cgi?id=756960
- * in a GNOME Calculator bug (mpfr_root applied on a negative integer,
+ * is a GNOME Calculator bug (mpfr_root applied on a negative integer,
  * which is converted to an unsigned integer), but the strange result
  * is also due to a bug in MPFR.
  */
