@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
     with 2^(k*(n-1)) <= m < 2^(k*n) where n = PREC(y)
 
-    and m = s^k + t where 0 <= r and m < (s+1)^k
+    and m = s^k + t where 0 <= t and m < (s+1)^k
 
     we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(k*(n-1))
     i.e. m must have at least k*(n-1)+1 bits
