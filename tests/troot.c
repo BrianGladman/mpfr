@@ -187,64 +187,24 @@ special (void)
   i = mpfr_root (y, x, 1, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 17) || i != 0)
     {
-      printf ("Error in root (17^(1/1))\n");
+      printf ("Error in root for 17^(1/1)\n");
       exit (1);
     }
 
-#if 0
-  /* Check for k == 0:
-     For 0 <= x < 1 => +0.
-     For x = 1      => 1.
-     For x > 1,     => +Inf.
-     For x < 0      => NaN.   */
-  i = mpfr_root (y, x, 0, MPFR_RNDN);
-  if (!MPFR_IS_INF (y) || !MPFR_IS_POS (y) || i != 0)
-    {
-      printf ("Error in root 17^(1/0)\n");
-      exit (1);
-    }
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  i = mpfr_root (y, x, 0, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 1) || i != 0)
-    {
-      printf ("Error in root 1^(1/0)\n");
-      exit (1);
-    }
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  i = mpfr_root (y, x, 0, MPFR_RNDN);
-  if (!MPFR_IS_ZERO (y) || !MPFR_IS_POS (y) || i != 0)
-    {
-      printf ("Error in root 0+^(1/0)\n");
-      exit (1);
-    }
-  MPFR_CHANGE_SIGN (x);
-  i = mpfr_root (y, x, 0, MPFR_RNDN);
-  if (!MPFR_IS_ZERO (y) || !MPFR_IS_POS (y) || i != 0)
-    {
-      printf ("Error in root 0-^(1/0)\n");
-      exit (1);
-    }
-  mpfr_set_ui_2exp (x, 17, -5, MPFR_RNDD);
-  i = mpfr_root (y, x, 0, MPFR_RNDN);
-  if (!MPFR_IS_ZERO (y) || !MPFR_IS_POS (y) || i != 0)
-    {
-      printf ("Error in root (17/2^5)^(1/0)\n");
-      exit (1);
-    }
-#endif
-  mpfr_set_ui (x, 0, MPFR_RNDN);
   i = mpfr_root (y, x, 0, MPFR_RNDN);
   if (!MPFR_IS_NAN (y) || i != 0)
     {
-      printf ("Error in root 0+^(1/0)\n");
+      printf ("Error in root for 1^(1/0)\n");
       exit (1);
     }
+
   /* Check for k==2 */
   mpfr_set_si (x, -17, MPFR_RNDD);
   i = mpfr_root (y, x, 2, MPFR_RNDN);
   if (!MPFR_IS_NAN (y) || i != 0)
     {
-      printf ("Error in root (-17)^(1/2)\n");
+      printf ("Error in root for (-17)^(1/2)\n");
       exit (1);
     }
 

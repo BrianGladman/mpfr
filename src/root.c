@@ -55,50 +55,27 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (k <= 1))
     {
-      if (k < 1) /* k==0 => y=x^(1/0)=x^(+Inf) */
-#if 0
-        /* For 0 <= x < 1 => +0.
-           For x = 1      => 1.
-           For x > 1,     => +Inf.
-           For x < 0      => NaN.
-        */
+      if (k == 0)
         {
-          if (MPFR_IS_NEG (x) && !MPFR_IS_ZERO (x))
-            {
-              MPFR_SET_NAN (y);
-              MPFR_RET_NAN;
-            }
-          inexact = mpfr_cmp (x, __gmpfr_one);
-          if (inexact == 0)
-            return mpfr_set_ui (y, 1, rnd_mode); /* 1 may be Out of Range */
-          else if (inexact < 0)
-            return mpfr_set_ui (y, 0, rnd_mode); /* 0+ */
-          else
-            {
-              mpfr_set_inf (y, 1);
-              return 0;
-            }
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
         }
-#endif
-      {
-        MPFR_SET_NAN (y);
-        MPFR_RET_NAN;
-      }
-      else /* y =x^(1/1)=x */
+      else /* y = x^(1/1) = x */
         return mpfr_set (y, x, rnd_mode);
     }
 
   /* Singular values */
-  else if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
         {
           MPFR_SET_NAN (y); /* NaN^(1/k) = NaN */
           MPFR_RET_NAN;
         }
-      else if (MPFR_IS_INF (x)) /* +Inf^(1/k) = +Inf
-                                   -Inf^(1/k) = -Inf if k odd
-                                   -Inf^(1/k) = NaN if k even */
+
+      if (MPFR_IS_INF (x)) /* +Inf^(1/k) = +Inf
+                              -Inf^(1/k) = -Inf if k odd
+                              -Inf^(1/k) = NaN if k even */
         {
           if (MPFR_IS_NEG(x) && (k % 2 == 0))
             {
@@ -106,21 +83,19 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
               MPFR_RET_NAN;
             }
           MPFR_SET_INF (y);
-          MPFR_SET_SAME_SIGN (y, x);
-          MPFR_RET (0);
         }
       else /* x is necessarily 0: (+0)^(1/k) = +0
                                   (-0)^(1/k) = -0 */
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           MPFR_SET_ZERO (y);
-          MPFR_SET_SAME_SIGN (y, x);
-          MPFR_RET (0);
         }
+      MPFR_SET_SAME_SIGN (y, x);
+      MPFR_RET (0);
     }
 
   /* Returns NAN for x < 0 and k even */
-  else if (MPFR_IS_NEG (x) && (k % 2 == 0))
+  if (MPFR_UNLIKELY (MPFR_IS_NEG (x) && (k % 2 == 0)))
     {
       MPFR_SET_NAN (y);
       MPFR_RET_NAN;
