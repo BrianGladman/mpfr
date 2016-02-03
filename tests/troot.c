@@ -252,9 +252,57 @@ special (void)
   mpfr_clear (y);
 }
 
+/* https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=812779
+ * https://bugzilla.gnome.org/show_bug.cgi?id=756960
+ * in a GNOME Calculator bug (mpfr_root applied on a negative integer,
+ * which is converted to an unsigned integer), but the strange result
+ * is also due to a bug in MPFR.
+ */
+static void
+bigint (void)
+{
+  mpfr_t x, y;
+
+  mpfr_inits2 (64, x, y, (mpfr_ptr) 0);
+
+  mpfr_set_ui (x, 10, MPFR_RNDN);
+  if (sizeof (unsigned long) * CHAR_BIT == 64)
+    {
+      mpfr_root (x, x, ULONG_MAX, MPFR_RNDN);
+      mpfr_set_ui_2exp (y, 1, -63, MPFR_RNDN);
+      mpfr_add_ui (y, y, 1, MPFR_RNDN);
+      if (! mpfr_equal_p (x, y))
+        {
+          printf ("Error in bigint for ULONG_MAX\n");
+          printf ("Expected ");
+          mpfr_dump (y);
+          printf ("Got      ");
+          mpfr_dump (x);
+          exit (1);
+        }
+    }
+
+  mpfr_set_ui (x, 10, MPFR_RNDN);
+  mpfr_root (x, x, 1234567890, MPFR_RNDN);
+  mpfr_set_str_binary (y,
+    "1.00000000000000000000000000001000000000101011000101000110010001");
+  if (! mpfr_equal_p (x, y))
+    {
+      printf ("Error in bigint for 1234567890\n");
+      printf ("Expected ");
+      mpfr_dump (y);
+      printf ("Got      ");
+      mpfr_dump (x);
+      exit (1);
+    }
+
+  mpfr_clears (x, y, (mpfr_ptr) 0);
+}
+
 #define TEST_FUNCTION mpfr_root
 #define INTEGER_TYPE unsigned long
-#define INT_RAND_FUNCTION() (INTEGER_TYPE) (randlimb () % 3 +2)
+#define INT_RAND_FUNCTION() \
+  (INTEGER_TYPE) (randlimb () & 1 ? randlimb () : randlimb () % 3 + 2)
 #include "tgeneric_ui.c"
 
 int
@@ -268,6 +316,7 @@ main (void)
   tests_start_mpfr ();
 
   special ();
+  bigint ();
 
   mpfr_init (x);
 
