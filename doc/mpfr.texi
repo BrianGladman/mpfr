@@ -3955,7 +3955,7 @@ Kevin Ryde did a tremendous job for the portability of MPFR in 2002-2004.
 The development of the MPFR library would not have been possible without
 the continuous support of INRIA, and of the LORIA (Nancy, France) and LIP
 (Lyon, France) laboratories. In particular the main authors were or are
-members of the PolKA, Spaces, Cacao and Caramel
+members of the PolKA, Spaces, Cacao, Caramel and Caramba
 project-teams at LORIA and of the
 Ar@'enaire and AriC project-teams at LIP@.
 This project was started during the Fiable (reliable in French) action
