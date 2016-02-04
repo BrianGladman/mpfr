@@ -54,7 +54,12 @@ check_invert (void)
 
   mpfr_set_ui (x, 0xC, MPFR_RNDN);
   mpfr_si_sub (x, -1, x, MPFR_RNDD); /* -0001 - 1100 = - 1101 --> -1 0000 */
-  if (mpfr_cmp_si (x, -0x10) )
+  /* If MPFR_PREC_MIN = 2, then x is first set to 12 exactly, then we get
+     -13 which is rounded down to -16.
+     If MPFR_PREC_MIN = 1, then x is first set to 16 exactly, then we get
+     -17 which is rounded down to -32. */
+  if ((MPFR_PREC_MIN == 2 && mpfr_cmp_si (x, -0x10)) ||
+      (MPFR_PREC_MIN == 1 && mpfr_cmp_si (x, -0x20)))
     {
       printf ("Special rounding error\n");
       exit (1);
