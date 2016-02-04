@@ -87,6 +87,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
             {
               if (MPFR_IS_INF (a))
                 {
+                  MPFR_ASSERTD (MPFR_IS_INF (a) && MPFR_IS_FP (x));
                   if (MPFR_IS_POS (a))
                     {
                       /* gamma_inc(+Inf, x) = +Inf */
@@ -120,6 +121,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                 }
               else
                 {
+                  MPFR_ASSERTD (MPFR_IS_FP (a) && MPFR_IS_INF (x));
                   if (MPFR_IS_POS (x))
                     {
                       /* x is +Inf: integral tends to zero */
