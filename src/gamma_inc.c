@@ -35,7 +35,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    gamma(a,x) = x^a * sum((-x)^k/k!/(a+k), k=0..infinity)
 
-   gamma(a,x) = x^a * exp(-x) * sum(x^k/(a*(a+1)*...*(a+k)), k=0..infinity) */
+   gamma(a,x) = x^a * exp(-x) * sum(x^k/(a*(a+1)*...*(a+k)), k=0..infinity)
+
+   gamma_inc(a,x) is real only for x >= 0.
+*/
 
 int
 mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
