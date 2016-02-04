@@ -68,7 +68,7 @@ main (void)
       if (mpfr_check(a))  ERROR("sgn");
       MPFR_SET_POS(a);
       /* Check prec */
-      MPFR_PREC(a) = 1;
+      MPFR_PREC(a) = MPFR_PREC_MIN - 1;
       if (mpfr_check(a))  ERROR("precmin");
 #if MPFR_VERSION_MAJOR < 3
       /* Disable the test with MPFR >= 3 since mpfr_prec_t is now signed.
