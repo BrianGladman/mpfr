@@ -1,7 +1,7 @@
 /* mpfr_set_default_prec, mpfr_get_default_prec -- set/get default precision
 
 Copyright 1999-2001, 2004-2016 Free Software Foundation, Inc.
-Contributed by the AriC and Caramel projects, INRIA.
+Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

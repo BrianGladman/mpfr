@@ -6,7 +6,7 @@ https://gcc.gnu.org/onlinedocs/gcc/Decimal-Float.html,
 and TR 24732 <http://www.open-std.org/jtc1/sc22/wg14/www/projects#24732>.
 
 Copyright 2006-2016 Free Software Foundation, Inc.
-Contributed by the AriC and Caramel projects, INRIA.
+Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

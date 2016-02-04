@@ -2,7 +2,7 @@
                  using algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
 Copyright 1999-2016 Free Software Foundation, Inc.
-Contributed by the AriC and Caramel projects, INRIA.
+Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

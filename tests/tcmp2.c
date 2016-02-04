@@ -1,7 +1,7 @@
 /* Test file for mpfr_cmp2.
 
 Copyright 1999-2003, 2006-2016 Free Software Foundation, Inc.
-Contributed by the AriC and Caramel projects, INRIA.
+Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

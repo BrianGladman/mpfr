@@ -1,7 +1,7 @@
 /* Test file for mpfr_can_round and mpfr_round_p.
 
 Copyright 1999, 2001-2016 Free Software Foundation, Inc.
-Contributed by the AriC and Caramel projects, INRIA.
+Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
