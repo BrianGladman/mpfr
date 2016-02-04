@@ -212,7 +212,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  for (prec = 2; prec <= 100; prec++)
+  for (prec = MPFR_PREC_MIN; prec <= 100; prec++)
     {
       mpfr_set_prec (x, prec);
       mpfr_set_prec (z, prec);

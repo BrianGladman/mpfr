@@ -320,7 +320,7 @@ special (void)
 
   /* case prec(result) << prec(input) */
   mpfr_set_prec (z, 2);
-  for (p = 2; p < 1000; p++)
+  for (p = mpfr_get_prec (z); p < 1000; p++)
     {
       mpfr_set_prec (x, p);
       mpfr_set_ui (x, 1, MPFR_RNDN);

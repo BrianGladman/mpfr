@@ -422,7 +422,7 @@ check_inexact (mpfr_prec_t p)
   mpfr_init (t);
   mpfr_urandomb (x, RANDS);
   u = randlimb () % 2;
-  for (q = 2; q <= p; q++)
+  for (q = MPFR_PREC_MIN; q <= p; q++)
     for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
       {
         mpfr_set_prec (y, q);
@@ -1595,7 +1595,7 @@ main (int argc, char **argv)
   check_pow_si ();
   check_special_pow_si ();
   pow_si_long_min ();
-  for (p = 2; p < 100; p++)
+  for (p = MPFR_PREC_MIN; p < 100; p++)
     check_inexact (p);
   underflows ();
   overflows ();

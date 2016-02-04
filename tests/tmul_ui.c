@@ -42,7 +42,7 @@ check_inexact (mpfr_prec_t p)
       exit (1);
     }
 
-  for (q = 2; q <= p; q++)
+  for (q = MPFR_PREC_MIN; q <= p; q++)
     for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
       {
         mpfr_set_prec (y, q);

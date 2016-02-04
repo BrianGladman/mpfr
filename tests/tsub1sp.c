@@ -33,7 +33,7 @@ main (void)
   tests_start_mpfr ();
 
   check_special ();
-  for (p = 2 ; p < 200 ; p++)
+  for (p = MPFR_PREC_MIN ; p < 200 ; p++)
     check_random (p);
 
   tests_end_mpfr ();

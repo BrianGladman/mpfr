@@ -209,11 +209,12 @@ check_exact (void)
       exit (1);
     }
 
-  for (prec = 2; prec < 100; prec++)
+  for (prec = MPFR_PREC_MIN; prec < 100; prec++)
     {
       mpfr_set_prec (a, prec);
       mpfr_set_prec (b, prec);
-      mpfr_set_prec (c, 2 * prec - 2);
+      /* for prec=1, ensure PREC(c) >= 1 */
+      mpfr_set_prec (c, 2 * prec - 2 + (prec == 1));
       mpfr_set_prec (d, 2 * prec);
       for (i = 0; i < 1000; i++)
         {

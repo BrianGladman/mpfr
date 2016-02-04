@@ -163,7 +163,7 @@ main (void)
   check_mpn_sqr ();
 
   check_special ();
-  for (p = 2; p < 200; p++)
+  for (p = MPFR_PREC_MIN; p < 200; p++)
     check_random (p);
 
   test_generic (2, 200, 15);

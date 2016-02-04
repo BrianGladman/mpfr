@@ -295,7 +295,7 @@ main (void)
 
   mpfr_init (x);
 
-  for (p = 2; p < 100; p++)
+  for (p = MPFR_PREC_MIN; p < 100; p++)
     {
       mpfr_set_prec (x, p);
       for (r = 0; r < MPFR_RND_MAX; r++)

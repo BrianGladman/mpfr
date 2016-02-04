@@ -159,7 +159,7 @@ typedef unsigned long  mpfr_uprec_t;
    also make sure that MPFR_PREC_MIN and MPFR_PREC_MAX have a signed
    integer type. The "- 256" allows more security, avoiding some
    integer overflows in extreme cases; ideally it should be useless. */
-#define MPFR_PREC_MIN 2
+#define MPFR_PREC_MIN 1
 #define MPFR_PREC_MAX ((mpfr_prec_t) ((((mpfr_uprec_t) -1) >> 1) - 256))
 
 /* Definition of sign */

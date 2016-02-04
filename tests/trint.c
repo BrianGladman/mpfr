@@ -263,7 +263,7 @@ basic_tests (void)
   emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 16);
-  for (prec = 2; prec <= 7; prec++)
+  for (prec = MPFR_PREC_MIN; prec <= 7; prec++)
     {
       mpfr_inits2 (prec, y, z, (mpfr_ptr) 0);
       for (s = 1; s >= -1; s -= 2)
@@ -494,27 +494,31 @@ main (int argc, char *argv[])
   mpfr_init (u);
   mpfr_init (v);
   mpz_set_ui (z, 1);
-  for (s = 2; s < 100; s++)
+  /* the code below works for 1 <= MPFR_PREC_MIN <= 2 */
+  MPFR_ASSERTN(1 <= MPFR_PREC_MIN && MPFR_PREC_MIN <= 2);
+  for (s = MPFR_PREC_MIN; s < 100; s++)
     {
-      /* z has exactly s bits */
-
-      mpz_mul_2exp (z, z, 1);
-      if (randlimb () % 2)
-        mpz_add_ui (z, z, 1);
+      if (s > 1)
+        {
+          mpz_mul_2exp (z, z, 1);
+          if (randlimb () % 2)
+            mpz_add_ui (z, z, 1);
+        }
+      /* now 2^(s-1) <= z < 2^s */
       mpfr_set_prec (x, s);
       mpfr_set_prec (t, s);
       mpfr_set_prec (u, s);
       if (mpfr_set_z (x, z, MPFR_RNDN))
         {
-          printf ("Error: mpfr_set_z should be exact (s = %u)\n",
-                  (unsigned int) s);
+          gmp_printf ("Error: mpfr_set_z should be exact (z = %Zd, s = %u)\n",
+                      z, (unsigned int) s);
           exit (1);
         }
       if (randlimb () % 2)
         mpfr_neg (x, x, MPFR_RNDN);
       if (randlimb () % 2)
         mpfr_div_2ui (x, x, randlimb () % s, MPFR_RNDN);
-      for (p = 2; p < 100; p++)
+      for (p = MPFR_PREC_MIN; p < 100; p++)
         {
           int trint;
           mpfr_set_prec (y, p);
