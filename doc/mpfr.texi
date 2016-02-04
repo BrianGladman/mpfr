@@ -670,7 +670,7 @@ of a floating-point number;
 the corresponding C data type is @code{mpfr_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
-is equal to 2.
+is equal to 1.
 
 Warning! MPFR needs to increase the precision internally, in order to
 provide accurate results (and in particular, correct rounding). Do not
@@ -2339,8 +2339,10 @@ versions.
 @deftypefun int mpfr_fpif_import (mpfr_t @var{op}, FILE *@var{stream})
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
-The precision of @var{op} is read from the stream. If the precision is less
-than @code{MPFR_PREC_MIN}, it is set to @code{MPFR_PREC_MIN}.
+The precision of @var{op} is read from the stream.
+@c Commented out since with MPFR_PREC_MIN=1 this is void.
+@c If the precision is less
+@c than @code{MPFR_PREC_MIN}, it is set to @code{MPFR_PREC_MIN}.
 If the precision is greater than @code{MPFR_PREC_MAX}, the function fails.
 Return 0 iff the import was successful.
 
@@ -2839,12 +2841,12 @@ file @file{can_round.c}.
 @deftypefun mpfr_prec_t mpfr_min_prec (mpfr_t @var{x})
 Return the minimal number of bits required to store the significand of
 @var{x}, and 0 for special values, including 0.
-
-Warning!  The return value can be less than @code{MPFR_PREC_MIN},
-in particular for the powers of two.  If you use this function together
-with @code{mpfr_prec_round} in order to reduce the memory space occupied
-by a number, you may need to take the maximum of the returned precision
-and @code{MPFR_PREC_MIN} for @code{mpfr_prec_round}.
+@c This warning no longer holds now that MPFR_PREC_MIN=1.
+@c Warning!  The return value can be less than @code{MPFR_PREC_MIN},
+@c in particular for the powers of two.  If you use this function together
+@c with @code{mpfr_prec_round} in order to reduce the memory space occupied
+@c by a number, you may need to take the maximum of the returned precision
+@c and @code{MPFR_PREC_MIN} for @code{mpfr_prec_round}.
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
