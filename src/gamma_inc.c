@@ -72,7 +72,9 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                 }
               else if (MPFR_IS_NEG (x))
                 {
-                  /* gamma_inc(+/-Inf,-Inf) = NaN (complex number) */
+                  /* gamma_inc(+/-Inf,-Inf) = NaN, for example
+                     gamma_inc (a+0.5, -a) is a complex number for a an
+                     integer */
                   MPFR_SET_NAN (y);
                   MPFR_RET_NAN;
                 }
@@ -119,11 +121,23 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                         }
                     }
                 }
-              else /* x is infinite: integral tends to zero */
+              else
                 {
-                  MPFR_SET_ZERO (y);
-                  MPFR_SET_POS (y);
-                  MPFR_RET (0);  /* exact */
+                  if (MPFR_IS_POS (x))
+                    {
+                      /* x is +Inf: integral tends to zero */
+                      MPFR_SET_ZERO (y);
+                      MPFR_SET_POS (y);
+                      MPFR_RET (0);  /* exact */
+                    }
+                  else
+                    {
+                      /* gamma_inc(a, -Inf) = NaN, for example
+                         gamma_inc(1.5, x) gives a complex number
+                         for negative x */
+                      MPFR_SET_NAN (y);
+                      MPFR_RET_NAN;
+                    }
                 }
             }
         }
