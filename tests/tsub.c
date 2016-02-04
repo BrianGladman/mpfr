@@ -572,8 +572,10 @@ check_rounding (void)
             mpfr_set_ui_2exp (c, 1, -l, MPFR_RNDN);
             i = mpfr_sub (a, b, c, MPFR_RNDN);
             /* b - c = 2^p + 1 + 2^(-k) - 2^(-l), should be rounded to
-               2^p for l <= k, and 2^p+2 for l < k */
-            if (l <= k)
+               2^p for l <= k, and 2^p+2 for l < k, except when p=1 and
+               k=l, in which case b - c = 3, and the round-away rule implies
+               a = 4 = 2^p+2 = 2^(p+1) */
+            if (l < k || (l == k && p > 1))
               {
                 if (mpfr_cmp_ui_2exp (a, 1, p) != 0)
                   {
@@ -596,7 +598,7 @@ check_rounding (void)
                     exit (1);
                   }
               }
-            else /* l < k */
+            else /* l < k  or (l = k and p = 1) */
               {
                 mpfr_set_ui_2exp (res, 1, p, MPFR_RNDN);
                 mpfr_add_ui (res, res, 2, MPFR_RNDN);
