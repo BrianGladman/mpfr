@@ -360,15 +360,28 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           MPFR_GET_EXP (z) == __gmpfr_emin - 1 - lk && mpfr_powerof2_raw (z))
         {
           /* Rounding to nearest, real result > z * 2^k = 2^(emin - 2),
-           * underflow case: as the minimum precision is > 1, we will
-           * obtain the correct result and exceptions by replacing z by
-           * nextabove(z).
+           * underflow case:
+           * (a) if the precision of z is > 1, we will obtain the correct
+           *     result and exceptions by replacing z by nextabove(z).
+           * (b) if the precision of z is 1, we first copy z to zcopy of
+           *     precision 2 bits and perform nextabove(zcopy).
            */
-          MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN > 1);
-          mpfr_nextabove (z);
+          if (MPFR_PREC(z) >= 2)
+            mpfr_nextabove (z);
+          else
+            {
+              mpfr_t zcopy;
+              mpfr_init2 (zcopy, MPFR_PREC(z) + 1);
+              mpfr_set (zcopy, z, MPFR_RNDZ);
+              mpfr_nextabove (zcopy);
+              inex2 = mpfr_mul_2si (z, zcopy, lk, rnd_mode);
+              mpfr_clear (zcopy);
+              goto under_over;
+            }
         }
       MPFR_CLEAR_FLAGS ();
       inex2 = mpfr_mul_2si (z, z, lk, rnd_mode);
+    under_over:
       if (inex2)  /* underflow or overflow */
         {
           inexact = inex2;
