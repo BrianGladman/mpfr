@@ -680,11 +680,13 @@ check_1111 (void)
 
       prec_a = MPFR_PREC_MIN + (randlimb () % m);
       prec_b = MPFR_PREC_MIN + (randlimb () % m);
-      prec_c = MPFR_PREC_MIN + (randlimb () % m);
+      /* we need prec_c > 1 so that % (prec_c - 1) is well defined below */
+      do prec_c = MPFR_PREC_MIN + (randlimb () % m); while (prec_c == 1);
       mpfr_init2 (a, prec_a);
       mpfr_init2 (b, prec_b);
       mpfr_init2 (c, prec_c);
-      sb = randlimb () % 3;
+      /* we need prec_b - (sb != 2) > 0 below */
+      do sb = randlimb () % 3; while (prec_b - (sb != 2) == 0);
       if (sb != 0)
         {
           tb = 1 + (randlimb () % (prec_b - (sb != 2)));
