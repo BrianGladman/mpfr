@@ -2082,8 +2082,9 @@ incomplete Gamma function on @var{op} and @var{op2},
 rounded in the direction @var{rnd}.
 For @code{mpfr_gamma}, when @var{op} is a negative integer, @var{rop} is set
 to NaN@.
-For @code{mpfr_gamma_inc}, the current implementation assumes both
-@var{op} and @var{op2} are regular positive numbers.
+For @code{mpfr_gamma_inc}, the current implementation assumes
+@var{op} is not a regular negative number, and the case where
+@var{op} equals zero and @var{op2} is positive is not implemented.
 @end deftypefun
 
 @deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

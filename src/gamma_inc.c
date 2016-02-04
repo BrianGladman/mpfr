@@ -58,23 +58,20 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
           MPFR_RET_NAN;
         }
 
+      /* Note: for x < 0, gamma_inc (a, x) is a complex number */
+
       if (MPFR_IS_INF (a) || MPFR_IS_INF (x))
         {
           if (MPFR_IS_INF (a) && MPFR_IS_INF (x))
             {
-              if (MPFR_IS_POS (a) && MPFR_IS_POS (x))
+              if ((MPFR_IS_POS (a) && MPFR_IS_POS (x)) || MPFR_IS_NEG (x))
                 {
-                  /* gamma_inc(+Inf,+Inf) = NaN because
-                     gamma_inc(x,x) tends to +Inf but
-                     gamma_inc(x,x^2) tends to +0 */
-                  MPFR_SET_NAN (y);
-                  MPFR_RET_NAN;
-                }
-              else if (MPFR_IS_NEG (x))
-                {
-                  /* gamma_inc(+/-Inf,-Inf) = NaN, for example
-                     gamma_inc (a+0.5, -a) is a complex number for a an
-                     integer */
+                  /* (a) gamma_inc(+Inf,+Inf) = NaN because
+                         gamma_inc(x,x) tends to +Inf but
+                         gamma_inc(x,x^2) tends to +0.
+                     (b) gamma_inc(+/-Inf,-Inf) = NaN, for example
+                         gamma_inc (a, -a) is a complex number
+                         for a not an integer */
                   MPFR_SET_NAN (y);
                   MPFR_RET_NAN;
                 }
@@ -130,11 +127,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                       MPFR_SET_POS (y);
                       MPFR_RET (0);  /* exact */
                     }
-                  else
+                  else /* NaN for x < 0 */
                     {
-                      /* gamma_inc(a, -Inf) = NaN, for example
-                         gamma_inc(1.5, x) gives a complex number
-                         for negative x */
                       MPFR_SET_NAN (y);
                       MPFR_RET_NAN;
                     }
@@ -171,8 +165,14 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
     }
 
+  /* for x < 0 return NaN */
+  if (MPFR_SIGN(x) < 0)
+    {
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
+    }
+
   MPFR_ASSERTN(MPFR_SIGN(a) > 0);
-  MPFR_ASSERTN(MPFR_SIGN(x) > 0);
 
   MPFR_SAVE_EXPO_MARK (expo);
 
