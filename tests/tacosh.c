@@ -184,6 +184,9 @@ huge (void)
   emax = mpfr_get_emax ();
   mpfr_set_emax (1073741823);
 
+  /* FIXME: The main purpose of this test was on 32-bit ABI,
+     but it is no longer run there. Solution: implement the
+     TODO below. */
   /* TODO: extend the exponent range and use mpfr_get_emax (). */
   mpfr_inits2 (32, x, y, z, (mpfr_ptr) 0);
   mpfr_set_ui_2exp (x, 1, 1073741822, MPFR_RNDN);
