@@ -201,7 +201,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 static int
 mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
-  int inexact;
+  int inexact, exact_root = 0;
   mpfr_prec_t w; /* working precision */
   mpfr_t t;
   MPFR_GROUP_DECL(group);
@@ -251,12 +251,30 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       if (MPFR_LIKELY (MPFR_CAN_ROUND(t, w - err, MPFR_PREC(y), rnd_mode)))
         break;
 
+      /* if we fail to round correctly, check for an exact result */
+      {
+        mpfr_t z, zk;
+        mpfr_init2 (z, MPFR_PREC(y) + (rnd_mode == MPFR_RNDN));
+        mpfr_init2 (zk, MPFR_PREC(x));
+        mpfr_set (z, t, MPFR_RNDN);
+        mpfr_pow_ui (zk, z, k, MPFR_RNDN);
+        exact_root = mpfr_cmp (zk, x) == 0;
+        if (exact_root)
+          /* z is the exact root, thus round z directly */
+          inexact = mpfr_set (y, z, rnd_mode);
+        mpfr_clear (zk);
+        mpfr_clear (z);
+        if (exact_root)
+          break;
+      }
+
       MPFR_ZIV_NEXT (loop, w);
       MPFR_GROUP_REPREC_1(group, w, t);
     }
   MPFR_ZIV_FREE (loop);
 
-  inexact = mpfr_set (y, t, rnd_mode);
+  if (exact_root == 0)
+    inexact = mpfr_set (y, t, rnd_mode);
 
   MPFR_GROUP_CLEAR(group);
   MPFR_TMP_FREE(marker);
