@@ -825,17 +825,18 @@ typedef intmax_t mpfr_eexp_t;
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and
- * 2e+1 are representable. This is useful for intermediate computations,
- * in particular the multiplication.
+ * 2e+1 are valid exponents. This is useful for intermediate computations,
+ * in particular the multiplication. We must have MPFR_EMIN_MIN >= 3-2^(n-2)
+ * = 3-MPFR_EXP_INVALID so that 2*MPFR_EMIN_MIN-1 > __MPFR_EXP_INF = 3-2^(n-1).
  */
 #undef MPFR_EMIN_MIN
 #undef MPFR_EMIN_MAX
 #undef MPFR_EMAX_MIN
 #undef MPFR_EMAX_MAX
-#define MPFR_EMIN_MIN (1-MPFR_EXP_INVALID)
-#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
-#define MPFR_EMAX_MIN (1-MPFR_EXP_INVALID)
-#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
+#define MPFR_EMIN_MIN (3-MPFR_EXP_INVALID)
+#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-3)
+#define MPFR_EMAX_MIN (3-MPFR_EXP_INVALID)
+#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-3)
 
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
    unless when the exponent may be out-of-range, for instance when

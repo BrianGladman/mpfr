@@ -1128,6 +1128,7 @@ bug20111102 (void)
  * for %Ra and %Rb is not done on the MPFR number itself (as it
  * would overflow). Note: it has been reported on comp.std.c that
  * some C libraries behave differently on %a, but this is a bug.
+ * FIXME: this function assumes e = 3 mod 4.
  */
 static void
 check_emax_aux (mpfr_exp_t e)
@@ -1136,6 +1137,9 @@ check_emax_aux (mpfr_exp_t e)
   char *s1, s2[256];
   int i;
   mpfr_exp_t emax;
+  
+  if ((e % 4) != 3)
+    return;
 
   MPFR_ASSERTN (e <= LONG_MAX);
   emax = mpfr_get_emax ();
@@ -1195,6 +1199,7 @@ check_emax (void)
   check_emax_aux (MPFR_EMAX_MAX);
 }
 
+/* FIXME: this function assumes e = 1 mod 4 */
 static void
 check_emin_aux (mpfr_exp_t e)
 {
@@ -1203,6 +1208,9 @@ check_emin_aux (mpfr_exp_t e)
   int i;
   mpfr_exp_t emin;
   mpz_t ee;
+
+  if ((e % 4) != 1)
+    return;
 
   MPFR_ASSERTN (e >= LONG_MIN);
   emin = mpfr_get_emin ();
