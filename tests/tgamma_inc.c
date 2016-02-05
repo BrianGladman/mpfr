@@ -22,6 +22,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#define TEST_FUNCTION mpfr_gamma_inc
+#define TWO_ARGS
+#define TEST_RANDOM_POS2 0 /* the 2nd argument is never negative */
+#define TGENERIC_NOWARNING 1
+#include "tgeneric.c"
+
 /* do k random tests at precision p */
 static void
 test_random (mpfr_prec_t p, int k)
@@ -33,6 +39,8 @@ test_random (mpfr_prec_t p, int k)
   while (k--)
     {
       do mpfr_urandomb (a, RANDS); while (mpfr_zero_p (a));
+      if (randlimb () & 1)
+        mpfr_neg (a, a, MPFR_RNDN);
       do mpfr_urandomb (x, RANDS); while (mpfr_zero_p (x));
       mpfr_gamma_inc (y, a, x, MPFR_RNDN);
       mpfr_gamma_inc (t, a, x, MPFR_RNDN);
@@ -83,6 +91,10 @@ main (int argc, char *argv[])
 
   for (p = MPFR_PREC_MIN; p < 100; p++)
     test_random (p, 10);
+
+  /* FIXME: once the case gamma_inc (0, x) is implemented, we can activate
+     the generic tests below */
+  // test_generic (MPFR_PREC_MIN, 100, 100);
 
   tests_end_mpfr ();
   return 0;

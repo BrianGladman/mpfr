@@ -53,7 +53,7 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #define TEST_FUNCTION test_pow
 #define TWO_ARGS
-#define TEST_RANDOM_POS 16
+#define TEST_RANDOM_POS 16 /* the 2nd argument is negative with prob. 16/512 */
 #define TGENERIC_NOWARNING 1
 #include "tgeneric.c"
 

@@ -23,7 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* The incomplete gamma function is defined as:
+/* The incomplete gamma function is defined for x >= 0 and a not a negative
+   integer by:
 
    gamma_inc(a,x) := Gamma(a,x) = int(t^(a-1) * exp(-t), t=x..infinity)
 
@@ -31,13 +32,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    gamma(a,x) = int(t^(a-1) * exp(-t), t=0..x).
 
-   The function gamma(a,x) satisfies the Taylor expansions:
+   The function gamma(a,x) satisfies the Taylor expansions (we use the second
+   one in the code below):
 
    gamma(a,x) = x^a * sum((-x)^k/k!/(a+k), k=0..infinity)
 
    gamma(a,x) = x^a * exp(-x) * sum(x^k/(a*(a+1)*...*(a+k)), k=0..infinity)
-
-   gamma_inc(a,x) is real only for x >= 0.
 */
 
 int
@@ -177,46 +177,84 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       MPFR_RET_NAN;
     }
 
-  MPFR_ASSERTN(MPFR_SIGN(a) > 0);
-
   MPFR_SAVE_EXPO_MARK (expo);
 
   w = MPFR_PREC(y) + 13; /* working precision */
 
   MPFR_GROUP_INIT_2(group, w, s, t);
-  mpfr_init2 (u, w); /* u is special (see below) */
+  mpfr_init2 (u, 2); /* u is special (see below) */
   MPFR_ZIV_INIT (loop, w);
   for (;;)
     {
+      mpfr_prec_t precu;
+      mpfr_exp_t expu;
+      mpfr_t s_abs;
+      mpfr_exp_t decay = 0;
+
       /* Note: in the error analysis below, theta represents any value of
          absolute value less than 2^(-w) where w is the working precision (two
          instances of theta may represent different values), cf Higham's book.
       */
 
-      /* to ensure that u = a + k is exact, we require that ulp(u) <= 1 */
-      if (MPFR_GET_EXP(a) > w)
-        mpfr_set_prec (u, MPFR_GET_EXP(u));
+      /* to ensure that u = a + k is exact, we have three cases:
+         (1) EXP(a) <= 0, then we need PREC(u) >= 1 - EXP(a) + PREC(a)
+         (2) EXP(a) - PREC(a) <= 0 < E(a), then PREC(u) >= PREC(a)
+         (3) 0 < EXP(a) - PREC(a), then PREC(u) >= EXP(a) */
+      precu = (MPFR_EXP(a) <= 0) ? 1 - MPFR_EXP(a) + MPFR_PREC(a)
+        : (MPFR_EXP(a) <= MPFR_PREC(a)) ? MPFR_PREC(a) : MPFR_EXP(a);
+      mpfr_set_prec (u, precu + 1);
+      expu = (MPFR_EXP(a) > 0) ? MPFR_EXP(a) : 1;
 
       /* estimate Taylor series */
-      mpfr_ui_div (t, 1, a, MPFR_RNDZ); /* t = 1/a * (1 + theta) */
-      mpfr_set (s, t, MPFR_RNDZ);       /* s = 1/a * (1 + theta) */
+      mpfr_ui_div (t, 1, a, MPFR_RNDA); /* t = 1/a * (1 + theta) */
+      mpfr_set (s, t, MPFR_RNDA);       /* s = 1/a * (1 + theta) */
+      if (MPFR_IS_NEG(a))
+        {
+          mpfr_init2 (s_abs, 32);
+          mpfr_abs (s_abs, s, MPFR_RNDU);
+        }
       for (k = 1;; k++)
         {
-          mpfr_mul (t, t, x, MPFR_RNDZ); /* t = x^k/(a * ... * (a+k-1))
+          mpfr_mul (t, t, x, MPFR_RNDU); /* t = x^k/(a * ... * (a+k-1))
                                           * (1 + theta)^(2k) */
           inex = mpfr_add_ui (u, a, k, MPFR_RNDZ); /* u = a+k exactly */
           MPFR_ASSERTD(inex == 0);
-          mpfr_div (t, t, u, MPFR_RNDZ); /* t = x^k/(a * ... * (a+k))
+          mpfr_div (t, t, u, MPFR_RNDA); /* t = x^k/(a * ... * (a+k))
                                           * (1 + theta)^(2k+1) */
           mpfr_add (s, s, t, MPFR_RNDZ);
-          /* we stop when |t| < ulp(s) and |x/u| < 1/2, which ensures
+          if (MPFR_IS_NEG(a))
+            {
+              if (MPFR_IS_POS(t))
+                mpfr_add (s_abs, s_abs, t, MPFR_RNDU);
+              else
+                mpfr_sub (s_abs, s_abs, t, MPFR_RNDU);
+            }
+          /* we stop when |t| < ulp(s), u > 0 and |x/u| < 1/2, which ensures
              that the tail is at most 2*ulp(s) */
-          if (MPFR_GET_EXP(t) + w <= MPFR_GET_EXP(s) &&
+          if (MPFR_GET_EXP(t) + w <= MPFR_GET_EXP(s) && MPFR_IS_POS(u) &&
               MPFR_GET_EXP(x) + 1 < MPFR_GET_EXP(u))
             break;
+
+          /* if there was an exponent shift in u, increase the precision of
+             u so that mpfr_add_ui (u, a, k) remains exact */
+          if (MPFR_EXP(u) > expu) /* exponent shift in u */
+            {
+              MPFR_ASSERTN(MPFR_EXP(u) == expu + 1);
+              expu = MPFR_EXP(u);
+              mpfr_set_prec (u, mpfr_get_prec (u) + 1);
+            }
         }
-      /* since all terms are positive, we have s = S * (1 + theta)^(2k+3)
-         with S being the infinite Taylor series */
+      if (MPFR_IS_NEG(a))
+        {
+          decay = MPFR_GET_EXP(s_abs) - MPFR_GET_EXP(s);
+          mpfr_clear (s_abs);
+        }
+      /* For a > 0, since all terms are positive, we have
+         s = S * (1 + theta)^(2k+3) with S being the infinite Taylor series.
+         For a < 0, the error is bounded by that on the sum s_abs of absolute
+         values of the terms, i.e., S_abs * [(1 + theta)^(2k+3) - 1]. Thus we
+         can simply use the same error analysis as for a > 0, adding an error
+         corresponding to the decay of exponent between s_abs and s. */
 
       /* multiply by exp(-x) */
       mpfr_exp (t, x, MPFR_RNDZ);    /* t = exp(x) * (1+theta) */
@@ -234,7 +272,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
          For |u| < 0.58 we have |exp(u)-1| < 1.36*|u|
          thus |(1+theta)^(2k+7) - 1| < 1.36*0.58*(2k+7)/2^w < 0.79*(2k+7)/2^w.
          Since one ulp is at worst a relative error of 2^(1-w),
-         the error on s is at most 2*(2k+7) ulps. */
+         the error on s is at most 2^(decay+1)*(2k+7) ulps. */
 
       /* subtract from gamma(a) */
       mpfr_gamma (t, a, MPFR_RNDZ);  /* t = gamma(a) * (1+theta) */
@@ -243,14 +281,17 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_sub (s, t, s, MPFR_RNDZ);
       e2 = MPFR_GET_EXP (s);
       /* the final error is at most 1 ulp (for the final subtraction)
-         + 1 ulp * 2^(e0-e2) # for the error in t
-         + 2*(2k+7) ulps * 2^(e1-e2) # for the error in gamma(a,x) */
+         + 2^(e0-e2) ulps # for the error in t
+         + 2^(decay+1)*(2k+7) ulps * 2^(e1-e2) # for the error in gamma(a,x) */
 
-      e1 += 1 + MPFR_INT_CEIL_LOG2 (2*k+7);
+      e1 += decay + 1 + MPFR_INT_CEIL_LOG2 (2*k+7);
       /* Now the error is <= 1 + 2^(e0-e2) + 2^(e1-e2).
-         Assume e0 > e1, then it is <= 1 + 1.5*2^(e0-e2)
-                                    <= 2^(e0-e2+1) if e0 > e2
-                                    <= 2^2 otherwise */
+         Since the formula is symmetric in e0 and e1, we can assume without
+         loss of generality e0 >= e1, then:
+         if e0 = e1: err <= 1 + 2*2^(e0-e2) <= 2^(e0-e2+2)
+         if e0 > e1: err <= 1 + 1.5*2^(e0-e2)
+                         <= 2^(e0-e2+1) if e0 > e2
+                         <= 2^2 otherwise */
       if (e0 == e1)
         err = e0 - e2 + 2;
       else
