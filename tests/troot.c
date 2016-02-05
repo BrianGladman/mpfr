@@ -292,10 +292,10 @@ bigint (void)
 static void
 exact_powers (unsigned long bmax, unsigned long kmax)
 {
-  unsigned long b, k;
+  long b, k;
   mpz_t z;
   mpfr_t x, y;
-  int inex;
+  int inex, neg;
 
   mpz_init (z);
   for (b = 2; b <= bmax; b++)
@@ -307,21 +307,38 @@ exact_powers (unsigned long bmax, unsigned long kmax)
         mpfr_pow_ui (x, x, k, MPFR_RNDN);
         mpz_set_ui (z, b);
         mpfr_init2 (y, mpz_sizeinbase (z, 2));
-        inex = mpfr_root (y, x, k, MPFR_RNDN);
-        if (inex != 0)
+        for (neg = 0; neg <= 1; neg++)
           {
-            printf ("Error in exact_powers, b=%lu, k=%lu\n", b, k);
-            printf ("Expected inex=0, got %d\n", inex);
-            exit (1);
-          }
-        if (mpfr_cmp_ui (y, b) != 0)
-          {
-            printf ("Error in exact_powers, b=%lu, k=%lu\n", b, k);
-            printf ("Expected y=%lu\n", b);
-            printf ("Got      ");
-            mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
-            printf ("\n");
-            exit (1);
+            inex = mpfr_root (y, x, k, MPFR_RNDN);
+            if (inex != 0)
+              {
+                printf ("Error in exact_powers, b=%ld, k=%ld\n", b, k);
+                printf ("Expected inex=0, got %d\n", inex);
+                exit (1);
+              }
+            if (neg && (k & 1) == 0)
+              {
+                if (!MPFR_IS_NAN (y))
+                  {
+                    printf ("Error in exact_powers, b=%ld, k=%ld\n", b, k);
+                    printf ("Expected y=NaN\n");
+                    printf ("Got      ");
+                    mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
+                    printf ("\n");
+                    exit (1);
+                  }
+              }
+            else if (MPFR_IS_NAN (y) || mpfr_cmp_si (y, b) != 0)
+              {
+                printf ("Error in exact_powers, b=%ld, k=%ld\n", b, k);
+                printf ("Expected y=%ld\n", b);
+                printf ("Got      ");
+                mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
+                printf ("\n");
+                exit (1);
+              }
+            mpfr_neg (x, x, MPFR_RNDN);
+            b = -b;
           }
         mpfr_clear (x);
         mpfr_clear (y);
