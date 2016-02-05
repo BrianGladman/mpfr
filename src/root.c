@@ -249,8 +249,8 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
         mpfr_init2 (z, MPFR_PREC(y) + (rnd_mode == MPFR_RNDN));
         mpfr_init2 (zk, MPFR_PREC(x));
         mpfr_set (z, t, MPFR_RNDN);
-        mpfr_pow_ui (zk, z, k, MPFR_RNDN);
-        exact_root = mpfr_equal_p (zk, x);
+        inexact = mpfr_pow_ui (zk, z, k, MPFR_RNDN);
+        exact_root = !inexact && mpfr_equal_p (zk, x);
         if (exact_root) /* z is the exact root, thus round z directly */
           inexact = mpfr_set (y, z, rnd_mode);
         mpfr_clear (zk);
