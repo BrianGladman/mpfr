@@ -24,11 +24,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <time.h>
 
-/* return the cpu time in milliseconds */
-static int
+/* return the cpu time in seconds */
+static double
 cputime (void)
 {
-  return clock () / (CLOCKS_PER_SEC / 1000);
+  return (double) clock () / (double) CLOCKS_PER_SEC;
 }
 
 static void
@@ -299,22 +299,39 @@ main (int argc, char *argv[])
 
   if (argc == 3) /* troot prec k */
     {
-      int st;
+      double st1, st2;
+      unsigned long k;
+      int l;
       mpfr_t y;
       p = strtoul (argv[1], NULL, 10);
       k = strtoul (argv[2], NULL, 10);
       mpfr_init2 (x, p);
       mpfr_init2 (y, p);
       mpfr_const_pi (y, MPFR_RNDN);
-      st = cputime ();
-      mpfr_root (x, y, k, MPFR_RNDN);
-      printf ("mpfr_root took %dms\n", cputime () - st);
+      mpfr_root (x, y, k, MPFR_RNDN); /* to warm up cache */
+      st1 = cputime ();
+      for (l = 0; cputime () - st1 < 1.0; l++)
+        mpfr_root (x, y, k, MPFR_RNDN);
+      st1 = (cputime () - st1) / l;
+      printf ("mpfr_root       took %.2es\n", st1);
+
       /* compare with x^(1/k) = exp(1/k*log(x)) */
-      st = cputime ();
-      mpfr_log (y, y, MPFR_RNDN);
+      /* first warm up cache */
+      mpfr_swap (x, y);
+      mpfr_log (y, x, MPFR_RNDN);
       mpfr_div_ui (y, y, k, MPFR_RNDN);
       mpfr_exp (y, y, MPFR_RNDN);
-      printf ("exp(1/k*log(x)) took %dms\n", cputime () - st);
+
+      st2 = cputime ();
+      for (l = 0; cputime () - st2 < 1.0; l++)
+        {
+          mpfr_log (y, x, MPFR_RNDN);
+          mpfr_div_ui (y, y, k, MPFR_RNDN);
+          mpfr_exp (y, y, MPFR_RNDN);
+        }
+      st2 = (cputime () - st2) / l;
+      printf ("exp(1/k*log(x)) took %.2es\n", st2);
+
       mpfr_clear (x);
       mpfr_clear (y);
       return 0;

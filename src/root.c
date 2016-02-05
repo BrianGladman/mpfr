@@ -52,6 +52,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     x^(1/k) = s * 2^e or (s+1) * 2^e according to the rounding mode.
  */
 
+static int
+mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k,
+               mpfr_rnd_t rnd_mode);
+
 int
 mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
@@ -116,6 +120,12 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
     }
 
   /* General case */
+
+  /* For large k, use exp(log(x)/k). The threshold of 100 seems to be quite
+     good when the precision goes to infinity. */
+  if (k > 100)
+    return mpfr_root_aux (y, x, k, rnd_mode);
+
   MPFR_SAVE_EXPO_MARK (expo);
   mpz_init (m);
 
@@ -183,5 +193,74 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 
   mpz_clear (m);
   MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inexact, rnd_mode);
+}
+
+/* Compute y <- x^(1/k) using exp(log(x)/k).
+   Assume all special cases have been eliminated before. */
+static int
+mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
+{
+  int inexact;
+  mpfr_prec_t w; /* working precision */
+  mpfr_t t;
+  MPFR_GROUP_DECL(group);
+  MPFR_TMP_DECL(marker);
+  MPFR_ZIV_DECL(loop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_TMP_MARK(marker);
+  w = MPFR_PREC(y) + 10;
+  /* Take some guard bits to prepare for the 'expt' lost bits below.
+     If x < 2^k, then log(x) < k, thus taking log2(k) bits should be fine. */
+  if (MPFR_EXP(x) > 0)
+    w += MPFR_INT_CEIL_LOG2 (MPFR_EXP(x));
+  MPFR_GROUP_INIT_1(group, w, t);
+  MPFR_SAVE_EXPO_MARK (expo);
+  MPFR_ZIV_INIT (loop, w);
+  for (;;)
+    {
+      mpfr_exp_t expt;
+      unsigned int err;
+
+      mpfr_log (t, x, MPFR_RNDN);
+      /* t = log(x) * (1 + theta) with |theta| <= 2^(-w) */
+      mpfr_div_ui (t, t, k, MPFR_RNDN);
+      expt = mpfr_get_exp (t);
+      /* t = log(x)/k * (1 + theta) + eps with |theta| <= 2^(-w)
+         and |eps| <= 1/2 ulp(t), thus the total error is bounded
+         by 1.5 * 2^(expt - w) */
+      mpfr_exp (t, t, MPFR_RNDN);
+      /* t = x^(1/k) * exp(tau) * (1 + theta1) with
+         |tau| <= 1.5 * 2^(expt - w) and |theta1| <= 2^(-w).
+         For |tau| <= 0.5 we have |exp(tau)-1| < 4/3*tau, thus
+         for w >= expt + 2 we have:
+         t = x^(1/k) * (1 + 2^(expt+2)*theta2) * (1 + theta1) with
+         |theta1|, |theta2| <= 2^(-w).
+         If expt+2 > 0, as long as w >= 1, we have:
+         t = x^(1/k) * (1 + 2^(expt+3)*theta3) with |theta3| < 2^(-w).
+         For expt+2 = 0, we have:
+         t = x^(1/k) * (1 + 2^2*theta3) with |theta3| < 2^(-w).
+         Finally for expt+2 < 0 we have:
+         t = x^(1/k) * (1 + 2*theta3) with |theta3| < 2^(-w).
+      */
+      err = (expt + 2 > 0) ? expt + 3
+        : (expt + 2 == 0) ? 2 : 1;
+      /* now t = x^(1/k) * (1 + 2^(err-w)) thus the error is at most
+         2^(EXP(t) - w + err) */
+      if (MPFR_LIKELY (MPFR_CAN_ROUND(t, w - err, MPFR_PREC(y), rnd_mode)))
+        break;
+
+      MPFR_ZIV_NEXT (loop, w);
+      MPFR_GROUP_REPREC_1(group, w, t);
+    }
+  MPFR_ZIV_FREE (loop);
+
+  inexact = mpfr_set (y, t, rnd_mode);
+
+  MPFR_GROUP_CLEAR(group);
+  MPFR_TMP_FREE(marker);
+  MPFR_SAVE_EXPO_FREE (expo);
+
   return mpfr_check_range (y, inexact, rnd_mode);
 }
