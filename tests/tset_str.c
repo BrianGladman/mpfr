@@ -64,7 +64,7 @@ check_underflow (void)
 
   /* check overflow */
   emax = mpfr_get_emax ();
-  set_emax (1073741823); /* 2^30-1 */
+  set_emax (1073741821); /* 2^30-3 */
   mpfr_set_str (a, "2E1000000000", 10, MPFR_RNDN);
   if (!mpfr_inf_p (a) || mpfr_sgn (a) < 0)
     {

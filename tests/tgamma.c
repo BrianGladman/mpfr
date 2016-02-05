@@ -357,7 +357,7 @@ special_overflow (void)
       exit (1);
     }
 
-  set_emax (1073741823);
+  set_emax (1073741821);
   mpfr_set_prec (x, 29);
   mpfr_set_prec (y, 29);
   mpfr_set_str (x, "423786866", 10, MPFR_RNDN);
