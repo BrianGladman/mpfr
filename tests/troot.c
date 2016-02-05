@@ -22,6 +22,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#include <time.h>
+
+/* return the cpu time in milliseconds */
+static int
+cputime (void)
+{
+  return clock () / (CLOCKS_PER_SEC / 1000);
+}
+
 static void
 special (void)
 {
@@ -281,12 +290,35 @@ bigint (void)
 #include "tgeneric_ui.c"
 
 int
-main (void)
+main (int argc, char *argv[])
 {
   mpfr_t x;
   int r;
   mpfr_prec_t p;
   unsigned long k;
+
+  if (argc == 3) /* troot prec k */
+    {
+      int st;
+      mpfr_t y;
+      p = strtoul (argv[1], NULL, 10);
+      k = strtoul (argv[2], NULL, 10);
+      mpfr_init2 (x, p);
+      mpfr_init2 (y, p);
+      mpfr_const_pi (y, MPFR_RNDN);
+      st = cputime ();
+      mpfr_root (x, y, k, MPFR_RNDN);
+      printf ("mpfr_root took %dms\n", cputime () - st);
+      /* compare with x^(1/k) = exp(1/k*log(x)) */
+      st = cputime ();
+      mpfr_log (y, y, MPFR_RNDN);
+      mpfr_div_ui (y, y, k, MPFR_RNDN);
+      mpfr_exp (y, y, MPFR_RNDN);
+      printf ("exp(1/k*log(x)) took %dms\n", cputime () - st);
+      mpfr_clear (x);
+      mpfr_clear (y);
+      return 0;
+    }
 
   tests_start_mpfr ();
 
