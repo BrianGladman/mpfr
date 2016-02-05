@@ -887,8 +887,11 @@ typedef intmax_t mpfr_eexp_t;
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
-#define MPFR_IS_PURE_FP(x) \
-  (!MPFR_IS_SINGULAR(x) && (MPFR_ASSERTD (MPFR_IS_NORMALIZED (x)), 1))
+#define MPFR_IS_PURE_FP(x)                          \
+  (!MPFR_IS_SINGULAR(x) &&                          \
+   (MPFR_ASSERTD (MPFR_EXP (x) >= MPFR_EMIN_MIN &&  \
+                  MPFR_EXP (x) <= MPFR_EMAX_MAX &&  \
+                  MPFR_IS_NORMALIZED (x)), 1))
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
