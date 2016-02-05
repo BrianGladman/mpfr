@@ -192,15 +192,14 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 static int
 mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
-  int neg, inexact, exact_root = 0;
+  int inexact, exact_root = 0;
   mpfr_prec_t w; /* working precision */
   mpfr_t absx, t;
   MPFR_GROUP_DECL(group);
   MPFR_TMP_DECL(marker);
   MPFR_ZIV_DECL(loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  
-  neg = MPFR_IS_NEG (x);
+
   MPFR_TMP_INIT_ABS (absx, x);
 
   MPFR_TMP_MARK(marker);
@@ -257,8 +256,7 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
         inexact = mpfr_pow_ui (zk, z, k, MPFR_RNDN);
         exact_root = !inexact && mpfr_equal_p (zk, absx);
         if (exact_root) /* z is the exact root, thus round z directly */
-          inexact = (neg == 0) ? mpfr_set (y, z, rnd_mode)
-            : mpfr_neg (y, z, rnd_mode);
+          inexact = mpfr_set4 (y, z, rnd_mode, MPFR_SIGN (x));
         mpfr_clear (zk);
         mpfr_clear (z);
         if (exact_root)
@@ -271,8 +269,7 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
 
   if (!exact_root)
-    inexact = (neg == 0) ? mpfr_set (y, t, rnd_mode)
-      : mpfr_neg (y, t, rnd_mode);
+    inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (x));
 
   MPFR_GROUP_CLEAR(group);
   MPFR_TMP_FREE(marker);
