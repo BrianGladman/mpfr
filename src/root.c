@@ -23,21 +23,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* TODO [discussion between VL and PZ]:
- * - If k = 2 or 3, use mpfr_sqrt / mpfr_cbrt, but check with timings first.
- * - If k = 4, mpfr_sqrt twice may be more interesting than the current code
- *   (to be tested).
- * - For large values of k, use exp(log(x)/k). Detect the exact cases a bit
- *   like in mpfr_pow_general: if the Ziv test fails a first time, check for
- *   exactness (first check with the sizes of the numbers from the first 1
- *   to the last 1 in the significand, and if the sizes are compatible,
- *   compute y^k exactly and compare).
- * - Do timings (in low and high precision) to find the minimal k for which
- *   this is interesting, and possibly get rid of the old code, depending on
- *   these timings.
- */
-
- /* The computation of y = x^(1/k) is done as follows:
+ /* The computation of y = x^(1/k) is done as follows, except for large
+    values of k, for which this would be inefficient or yield internal
+    integer overflows:
 
     Let x = sign * m * 2^(k*e) where m is an integer
 
@@ -197,7 +185,8 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 }
 
 /* Compute y <- x^(1/k) using exp(log(x)/k).
-   Assume all special cases have been eliminated before. */
+   Assume all special cases have been eliminated before.
+   In the extended exponent range, overflows/underflows are not possible. */
 static int
 mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
@@ -213,8 +202,8 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   w = MPFR_PREC(y) + 10;
   /* Take some guard bits to prepare for the 'expt' lost bits below.
      If x < 2^k, then log(x) < k, thus taking log2(k) bits should be fine. */
-  if (MPFR_EXP(x) > 0)
-    w += MPFR_INT_CEIL_LOG2 (MPFR_EXP(x));
+  if (MPFR_GET_EXP(x) > 0)
+    w += MPFR_INT_CEIL_LOG2 (MPFR_GET_EXP(x));
   MPFR_GROUP_INIT_1(group, w, t);
   MPFR_SAVE_EXPO_MARK (expo);
   MPFR_ZIV_INIT (loop, w);
@@ -226,7 +215,7 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       mpfr_log (t, x, MPFR_RNDN);
       /* t = log(x) * (1 + theta) with |theta| <= 2^(-w) */
       mpfr_div_ui (t, t, k, MPFR_RNDN);
-      expt = mpfr_get_exp (t);
+      expt = MPFR_GET_EXP (t);
       /* t = log(x)/k * (1 + theta) + eps with |theta| <= 2^(-w)
          and |eps| <= 1/2 ulp(t), thus the total error is bounded
          by 1.5 * 2^(expt - w) */
@@ -254,13 +243,13 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       /* if we fail to round correctly, check for an exact result */
       {
         mpfr_t z, zk;
+
         mpfr_init2 (z, MPFR_PREC(y) + (rnd_mode == MPFR_RNDN));
         mpfr_init2 (zk, MPFR_PREC(x));
         mpfr_set (z, t, MPFR_RNDN);
         mpfr_pow_ui (zk, z, k, MPFR_RNDN);
-        exact_root = mpfr_cmp (zk, x) == 0;
-        if (exact_root)
-          /* z is the exact root, thus round z directly */
+        exact_root = mpfr_equal_p (zk, x);
+        if (exact_root) /* z is the exact root, thus round z directly */
           inexact = mpfr_set (y, z, rnd_mode);
         mpfr_clear (zk);
         mpfr_clear (z);
@@ -273,7 +262,7 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
     }
   MPFR_ZIV_FREE (loop);
 
-  if (exact_root == 0)
+  if (!exact_root)
     inexact = mpfr_set (y, t, rnd_mode);
 
   MPFR_GROUP_CLEAR(group);
