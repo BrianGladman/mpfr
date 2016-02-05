@@ -1137,7 +1137,7 @@ check_emax_aux (mpfr_exp_t e)
   char *s1, s2[256];
   int i;
   mpfr_exp_t emax;
-  
+
   if ((e % 4) != 3)
     return;
 
