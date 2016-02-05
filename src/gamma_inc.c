@@ -202,7 +202,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       precu = MPFR_GET_EXP(a) <= 0 ?
         MPFR_ADD_PREC (MPFR_PREC(a), 1 - MPFR_EXP(a))
         : (MPFR_EXP(a) <= MPFR_PREC(a)) ? MPFR_PREC(a) : MPFR_EXP(a);
-      mpfr_set_prec (u, MPFR_PREC_IN_RANGE (precu) + 1);
+      MPFR_ASSERTN (precu + 1 <= MPFR_PREC_MAX);
+      mpfr_set_prec (u, precu + 1);
       expu = (MPFR_EXP(a) > 0) ? MPFR_EXP(a) : 1;
 
       /* estimate Taylor series */
