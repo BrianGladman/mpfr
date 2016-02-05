@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   check_inexact ();
   check_cmp (argc, argv);
 
-  test_generic (2, 1000, 10);
+  test_generic (MPFR_PREC_MIN, 1000, 10);
 
   tests_end_mpfr ();
   return 0;

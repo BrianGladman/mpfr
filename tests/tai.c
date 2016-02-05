@@ -98,7 +98,7 @@ main (int argc, char *argv[])
   check_large ();
   check_zero ();
 
-  test_generic (2, 100, 5);
+  test_generic (MPFR_PREC_MIN, 100, 5);
 
   tests_end_mpfr ();
   return 0;

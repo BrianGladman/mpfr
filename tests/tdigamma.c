@@ -56,7 +56,7 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_generic (2, 100, 2);
+  test_generic (MPFR_PREC_MIN, 100, 2);
 
   data_check ("data/digamma", mpfr_digamma, "mpfr_digamma");
 

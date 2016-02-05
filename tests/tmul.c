@@ -666,7 +666,7 @@ main (int argc, char *argv[])
   check_min();
 
   check_regression ();
-  test_generic (2, 500, 100);
+  test_generic (MPFR_PREC_MIN, 500, 100);
 
   data_check ("data/mulpi", mpfr_mulpi, "mpfr_mulpi");
 

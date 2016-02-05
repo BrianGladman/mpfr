@@ -72,7 +72,7 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_generic (2, 100, 30);
+  test_generic (MPFR_PREC_MIN, 100, 30);
 
   data_check ("data/log2", mpfr_log2, "mpfr_log2");
 

@@ -1065,7 +1065,7 @@ main (int argc, char *argv[])
   special_overflow ();
   exprange ();
   tiny (argc == 1);
-  test_generic (2, 100, 2);
+  test_generic (MPFR_PREC_MIN, 100, 2);
   gamma_integer ();
   test20071231 ();
   test20100709 ();

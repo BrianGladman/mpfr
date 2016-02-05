@@ -1330,7 +1330,7 @@ main (int argc, char *argv[])
   test_20070603 ();
   test_20070628 ();
   test_20151023 ();
-  test_generic (2, 800, 50);
+  test_generic (MPFR_PREC_MIN, 800, 50);
   test_bad ();
   test_extreme ();
 

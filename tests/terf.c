@@ -649,8 +649,8 @@ main (int argc, char *argv[])
   test_erfc ();
   reduced_expo_range ();
 
-  test_generic_erf (2, 100, 15);
-  test_generic_erfc (2, 100, 15);
+  test_generic_erf (MPFR_PREC_MIN, 100, 15);
+  test_generic_erfc (MPFR_PREC_MIN, 100, 15);
 
   data_check ("data/erf",  mpfr_erf,  "mpfr_erf");
   data_check ("data/erfc", mpfr_erfc, "mpfr_erfc");

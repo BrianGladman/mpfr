@@ -92,6 +92,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       previous_emax = expo.saved_emax;
       MPFR_SAVE_EXPO_FREE (expo);
     }
+
   /* mpfr_cmp works even in reduced emin,emax range */
   if (MPFR_UNLIKELY (mpfr_cmp (x, bound_emax) >= 0))
     {
@@ -120,6 +121,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       previous_emin = expo.saved_emin;
       MPFR_SAVE_EXPO_FREE (expo);
     }
+
   if (MPFR_UNLIKELY (mpfr_cmp (x, bound_emin) <= 0))
     {
       /* x < log(2^(emin - 2)), thus exp(x) < 2^(emin - 2) */
@@ -130,7 +132,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);
 
-  /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
+  /* if x < 2^(-precy), then exp(x) gives 1 +/- 1 ulp(1) */
   if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
       mpfr_exp_t emin = __gmpfr_emin;
@@ -149,17 +151,13 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       else
         {
           __gmpfr_emin = 1;
-          __gmpfr_emax = 1;
+          __gmpfr_emax = 1 + (MPFR_PREC(y) == 1);
           mpfr_setmin (y, 1);  /* y = 1 */
           if (MPFR_IS_POS_SIGN (signx) && (rnd_mode == MPFR_RNDU ||
                                            rnd_mode == MPFR_RNDA))
             {
-              mp_size_t yn;
-              int sh;
-
-              yn = MPFR_LIMB_SIZE (y);
-              sh = (mpfr_prec_t) yn * GMP_NUMB_BITS - MPFR_PREC(y);
-              MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
+              /* Warning: should work for precision 1 bit too! */
+              mpfr_nextabove (y);
               inexact = 1;
             }
           else

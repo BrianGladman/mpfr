@@ -320,7 +320,7 @@ main (int argc, char *argv[])
   test_large ();
   alltst ();
 
-  test_generic (2, 100, 10);
+  test_generic (MPFR_PREC_MIN, 100, 10);
 
   tests_end_mpfr ();
   return 0;

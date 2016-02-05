@@ -171,7 +171,7 @@ main (void)
         }
     }
 
-  test_generic (2, 100, 7);
+  test_generic (MPFR_PREC_MIN, 100, 7);
 
   mpfr_clear (x);
   mpfr_clear (y);

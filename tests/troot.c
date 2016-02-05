@@ -348,7 +348,7 @@ main (void)
     }
   mpfr_clear (x);
 
-  test_generic_ui (2, 200, 30);
+  test_generic_ui (MPFR_PREC_MIN, 200, 30);
 
   tests_end_mpfr ();
   return 0;

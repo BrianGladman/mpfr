@@ -650,7 +650,7 @@ main (void)
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
-  test_generic (2, 800, 100);
+  test_generic (MPFR_PREC_MIN, 800, 100);
 
   tests_end_mpfr ();
   return 0;

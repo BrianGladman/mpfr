@@ -279,7 +279,7 @@ main (int argc, char *argv[])
   mpfr_clear(x);
   mpfr_clear(y);
 
-  test_generic (2, 500, 100);
+  test_generic (MPFR_PREC_MIN, 500, 100);
 
   tests_end_mpfr ();
   return 0;

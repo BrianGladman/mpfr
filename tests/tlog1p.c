@@ -136,7 +136,7 @@ main (int argc, char *argv[])
   special ();
   other ();
 
-  test_generic (2, 100, 50);
+  test_generic (MPFR_PREC_MIN, 100, 50);
 
   data_check ("data/log1p", mpfr_log1p, "mpfr_log1p");
   bad_cases (mpfr_log1p, mpfr_expm1, "mpfr_log1p", 256, -64, 40,

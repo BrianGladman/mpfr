@@ -1229,25 +1229,25 @@ main (int argc, char *argv[])
   test_specialz (mpfr_add_z, mpz_add, "add");
   test_specialz (mpfr_sub_z, mpz_sub, "sub");
   test_specialz (mpfr_mul_z, mpz_mul, "mul");
-  test_genericz (2, 100, 100, mpfr_add_z, "add");
-  test_genericz (2, 100, 100, mpfr_sub_z, "sub");
-  test_genericz (2, 100, 100, mpfr_mul_z, "mul");
-  test_genericz (2, 100, 100, mpfr_div_z, "div");
+  test_genericz (MPFR_PREC_MIN, 100, 100, mpfr_add_z, "add");
+  test_genericz (MPFR_PREC_MIN, 100, 100, mpfr_sub_z, "sub");
+  test_genericz (MPFR_PREC_MIN, 100, 100, mpfr_mul_z, "mul");
+  test_genericz (MPFR_PREC_MIN, 100, 100, mpfr_div_z, "div");
   test_special2z (mpfr_z_sub, mpz_sub, "sub");
-  test_generic2z (2, 100, 100, mpfr_z_sub, "sub");
+  test_generic2z (MPFR_PREC_MIN, 100, 100, mpfr_z_sub, "sub");
 
-  test_genericq (2, 100, 100, mpfr_add_q, "add");
-  test_genericq (2, 100, 100, mpfr_sub_q, "sub");
-  test_genericq (2, 100, 100, mpfr_mul_q, "mul");
-  test_genericq (2, 100, 100, mpfr_div_q, "div");
-  test_specialq (2, 100, 100, mpfr_mul_q, mpq_mul, "mul");
-  test_specialq (2, 100, 100, mpfr_div_q, mpq_div, "div");
-  test_specialq (2, 100, 100, mpfr_add_q, mpq_add, "add");
-  test_specialq (2, 100, 100, mpfr_sub_q, mpq_sub, "sub");
+  test_genericq (MPFR_PREC_MIN, 100, 100, mpfr_add_q, "add");
+  test_genericq (MPFR_PREC_MIN, 100, 100, mpfr_sub_q, "sub");
+  test_genericq (MPFR_PREC_MIN, 100, 100, mpfr_mul_q, "mul");
+  test_genericq (MPFR_PREC_MIN, 100, 100, mpfr_div_q, "div");
+  test_specialq (MPFR_PREC_MIN, 100, 100, mpfr_mul_q, mpq_mul, "mul");
+  test_specialq (MPFR_PREC_MIN, 100, 100, mpfr_div_q, mpq_div, "div");
+  test_specialq (MPFR_PREC_MIN, 100, 100, mpfr_add_q, mpq_add, "add");
+  test_specialq (MPFR_PREC_MIN, 100, 100, mpfr_sub_q, mpq_sub, "sub");
 
-  test_cmp_z (2, 100, 100);
-  test_cmp_q (2, 100, 100);
-  test_cmp_f (2, 100, 100);
+  test_cmp_z (MPFR_PREC_MIN, 100, 100);
+  test_cmp_q (MPFR_PREC_MIN, 100, 100);
+  test_cmp_f (MPFR_PREC_MIN, 100, 100);
 
   check_for_zero ();
 

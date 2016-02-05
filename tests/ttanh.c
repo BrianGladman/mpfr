@@ -124,7 +124,7 @@ main (int argc, char *argv[])
   special_overflow ();
   special ();
 
-  test_generic (2, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   data_check ("data/tanh", mpfr_tanh, "mpfr_tanh");
   bad_cases (mpfr_tanh, mpfr_atanh, "mpfr_tanh", 256, -128, 0,

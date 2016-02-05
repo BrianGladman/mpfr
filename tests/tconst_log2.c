@@ -210,7 +210,7 @@ main (int argc, char *argv[])
   check_large ();
   check_cache ();
 
-  test_generic (2, 200, 1);
+  test_generic (MPFR_PREC_MIN, 200, 1);
 
   tests_end_mpfr ();
   return 0;

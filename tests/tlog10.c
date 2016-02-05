@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  test_generic (2, 100, 20);
+  test_generic (MPFR_PREC_MIN, 100, 20);
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);

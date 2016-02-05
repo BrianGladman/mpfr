@@ -236,7 +236,7 @@ main (int argc, char **argv)
     }
   mpfr_clear (x);
 
-  test_generic (2, 200, 100);
+  test_generic (MPFR_PREC_MIN, 200, 100);
 
   tests_end_mpfr ();
   return 0;

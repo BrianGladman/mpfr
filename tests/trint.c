@@ -651,11 +651,11 @@ main (int argc, char *argv[])
   basic_tests ();
   coverage_03032011 ();
 
-  test_generic_trunc (2, 300, 20);
-  test_generic_floor (2, 300, 20);
-  test_generic_ceil (2, 300, 20);
-  test_generic_round (2, 300, 20);
-  test_generic_roundeven (2, 300, 20);
+  test_generic_trunc (MPFR_PREC_MIN, 300, 20);
+  test_generic_floor (MPFR_PREC_MIN, 300, 20);
+  test_generic_ceil (MPFR_PREC_MIN, 300, 20);
+  test_generic_round (MPFR_PREC_MIN, 300, 20);
+  test_generic_roundeven (MPFR_PREC_MIN, 300, 20);
 
 #if __MPFR_STDC (199901L)
   if (argc > 1 && strcmp (argv[1], "-s") == 0)

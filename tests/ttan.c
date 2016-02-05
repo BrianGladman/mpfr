@@ -150,7 +150,7 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
 
-  test_generic (2, 100, 10);
+  test_generic (MPFR_PREC_MIN, 100, 10);
 
   data_check ("data/tan", mpfr_tan, "mpfr_tan");
   bad_cases (mpfr_tan, mpfr_atan, "mpfr_tan", 256, -256, 255, 4, 128, 800, 40);

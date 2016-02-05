@@ -147,7 +147,7 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_generic (2, 100, 25);
+  test_generic (MPFR_PREC_MIN, 100, 25);
 
   data_check ("data/asinh", mpfr_asinh, "mpfr_asinh");
   bad_cases (mpfr_asinh, mpfr_sinh, "mpfr_asinh", 256, -128, 29,

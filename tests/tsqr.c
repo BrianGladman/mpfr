@@ -166,7 +166,7 @@ main (void)
   for (p = MPFR_PREC_MIN; p < 200; p++)
     check_random (p);
 
-  test_generic (2, 200, 15);
+  test_generic (MPFR_PREC_MIN, 200, 15);
   data_check ("data/sqr", mpfr_sqr, "mpfr_sqr");
   bad_cases (mpfr_sqr, mpfr_sqrt, "mpfr_sqr", 8, -256, 255, 4, 128, 800, 50);
 

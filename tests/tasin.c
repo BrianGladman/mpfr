@@ -268,7 +268,7 @@ main (void)
   special_overflow ();
   reduced_expo_range ();
 
-  test_generic (2, 100, 15);
+  test_generic (MPFR_PREC_MIN, 100, 15);
 
   tests_end_mpfr ();
 

@@ -363,7 +363,7 @@ main (int argc, char *argv[])
   mpfr_clear (c);
   mpfr_clear (x);
 
-  test_generic (2, 100, 15);
+  test_generic (MPFR_PREC_MIN, 100, 15);
   test_generic (MPFR_SINCOS_THRESHOLD-1, MPFR_SINCOS_THRESHOLD+1, 2);
   test_sign ();
   check_tiny ();

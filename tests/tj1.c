@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   mpfr_clear (x);
   mpfr_clear (y);
 
-  test_generic (2, 100, 10);
+  test_generic (MPFR_PREC_MIN, 100, 10);
 
   data_check ("data/j1", mpfr_j1, "mpfr_j1");
 

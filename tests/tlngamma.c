@@ -258,7 +258,7 @@ main (void)
   tests_start_mpfr ();
 
   special ();
-  test_generic (2, 100, 2);
+  test_generic (MPFR_PREC_MIN, 100, 2);
 
   tests_end_mpfr ();
   return 0;

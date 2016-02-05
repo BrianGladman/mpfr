@@ -183,7 +183,7 @@ main (void)
   special ();
   bad_case1 ();
   bad_case2 ();
-  test_generic (2, 300, 15);
+  test_generic (MPFR_PREC_MIN, 300, 15);
 
   data_check ("data/rec_sqrt", mpfr_rec_sqrt, "mpfr_rec_sqrt");
   bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 8, -256, 255, 4, 128,

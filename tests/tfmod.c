@@ -358,7 +358,7 @@ main (int argc, char *argv[])
 
   bug20090519 ();
 
-  test_generic (2, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   special ();
   regular ();

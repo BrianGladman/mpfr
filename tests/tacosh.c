@@ -204,8 +204,8 @@ main (int argc, char *argv[])
   bug20070831 ();
   huge ();
 
-  test_generic (2, 100, 25);
-  test_generic_huge (2, 100, 5);
+  test_generic (MPFR_PREC_MIN, 100, 25);
+  test_generic_huge (MPFR_PREC_MIN, 100, 5);
 
   data_check ("data/acosh", mpfr_acosh, "mpfr_acosh");
   bad_cases (mpfr_acosh, mpfr_cosh, "mpfr_acosh", 0, -128, 29,

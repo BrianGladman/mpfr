@@ -159,7 +159,7 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_generic (2, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   data_check ("data/expm1", mpfr_expm1, "mpfr_expm1");
   bad_cases (mpfr_expm1, mpfr_log1p, "mpfr_expm1", 256, -256, 255,

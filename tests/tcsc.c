@@ -85,7 +85,7 @@ main (int argc, char *argv[])
 
   check_specials ();
 
-  test_generic (2, 100, 10);
+  test_generic (MPFR_PREC_MIN, 100, 10);
 
   tests_end_mpfr ();
   return 0;

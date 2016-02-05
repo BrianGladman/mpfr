@@ -138,10 +138,10 @@ main (int argc, char *argv[])
 
   check_invert ();
 
-  test_generic_add_si (2, 200, 17);
-  test_generic_sub_si (2, 200, 17);
-  test_generic_mul_si (2, 200, 17);
-  test_generic_div_si (2, 200, 17);
+  test_generic_add_si (MPFR_PREC_MIN, 200, 17);
+  test_generic_sub_si (MPFR_PREC_MIN, 200, 17);
+  test_generic_mul_si (MPFR_PREC_MIN, 200, 17);
+  test_generic_div_si (MPFR_PREC_MIN, 200, 17);
 
   tests_end_mpfr ();
   return 0;

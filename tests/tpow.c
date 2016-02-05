@@ -1611,9 +1611,9 @@ main (int argc, char **argv)
   bug20110320 ();
   tst20140422 ();
 
-  test_generic (2, 100, 100);
-  test_generic_ui (2, 100, 100);
-  test_generic_si (2, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 100);
+  test_generic_ui (MPFR_PREC_MIN, 100, 100);
+  test_generic_si (MPFR_PREC_MIN, 100, 100);
 
   data_check ("data/pow275", mpfr_pow275, "mpfr_pow275");
 

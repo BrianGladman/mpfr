@@ -976,7 +976,7 @@ main (int argc, char *argv[])
   check_inexact ();
   check_special ();
 
-  test_generic (2, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   compare_exp2_exp3 (20, 1000);
   check_worst_cases();

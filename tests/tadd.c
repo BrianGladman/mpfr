@@ -1146,7 +1146,7 @@ main (int argc, char *argv[])
 
   check_extreme ();
 
-  test_generic (2, 1000, 100);
+  test_generic (MPFR_PREC_MIN, 1000, 100);
 
   tests_end_mpfr ();
   return 0;

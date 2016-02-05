@@ -627,9 +627,9 @@ main (int argc, char *argv[])
   atan2_different_prec ();
   reduced_expo_range ();
 
-  test_generic_atan  (2, 200, 17);
-  test_generic_atan2 (2, 200, 17);
-  test_generic_atan2_neg (2, 200, 17);
+  test_generic_atan  (MPFR_PREC_MIN, 200, 17);
+  test_generic_atan2 (MPFR_PREC_MIN, 200, 17);
+  test_generic_atan2_neg (MPFR_PREC_MIN, 200, 17);
 
   data_check ("data/atan", mpfr_atan, "mpfr_atan");
   bad_cases (mpfr_atan, mpfr_tan, "mpfr_atan", 256, -40, 1, 4, 128, 800, 40);

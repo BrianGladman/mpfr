@@ -728,7 +728,7 @@ main (void)
   check4 ("72154663483843080704304789585920.0", MPFR_RNDA,
           "1.e2d9a51977e6e@13");
 
-  test_generic (2, 300, 15);
+  test_generic (MPFR_PREC_MIN, 300, 15);
   data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");
   bad_cases (mpfr_sqrt, mpfr_sqr, "mpfr_sqrt", 8, -256, 255, 4, 128, 800, 50);
 

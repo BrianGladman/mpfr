@@ -228,7 +228,7 @@ main (void)
   check_special ();
   check_neg_special ();
 
-  test_generic (2, 1000, 10);
+  test_generic (MPFR_PREC_MIN, 1000, 10);
 
   tests_end_mpfr ();
   return error;
