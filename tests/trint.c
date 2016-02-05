@@ -609,18 +609,22 @@ main (int argc, char *argv[])
                           err ("halfway case for mpfr_rint, result isn't "
                                "an even integer", s, x, y, p,
                                (mpfr_rnd_t) r, trint, inexact);
-                        /* If floor(x) and ceil(x) aren't both representable
-                           integers, the significand must be even. */
-                        mpfr_sub (v, v, y, MPFR_RNDN);
-                        mpfr_abs (v, v, MPFR_RNDN);
-                        if (mpfr_cmp_ui (v, 1) != 0)
+                        if (p > 1)
                           {
-                            mpfr_div_2si (y, y, MPFR_EXP (y) - MPFR_PREC (y)
-                                          + 1, MPFR_RNDN);
-                            if (!mpfr_integer_p (y))
-                              err ("halfway case for mpfr_rint, "
-                                   "significand isn't even", s, x, y, p,
-                                   (mpfr_rnd_t) r, trint, inexact);
+                            /* For p > 1, if floor(x) and ceil(x) aren't
+                               both representable integers, the significand
+                               must be even. */
+                            mpfr_sub (v, v, y, MPFR_RNDN);
+                            mpfr_abs (v, v, MPFR_RNDN);
+                            if (mpfr_cmp_ui (v, 1) != 0)
+                              {
+                                mpfr_div_2si (y, y, MPFR_EXP (y) -
+                                              MPFR_PREC (y) + 1, MPFR_RNDN);
+                                if (!mpfr_integer_p (y))
+                                  err ("halfway case for mpfr_rint, "
+                                       "significand isn't even", s, x, y, p,
+                                       (mpfr_rnd_t) r, trint, inexact);
+                              }
                           }
                       }
                     else if (trint == 3)
