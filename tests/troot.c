@@ -289,6 +289,46 @@ bigint (void)
   (INTEGER_TYPE) (randlimb () & 1 ? randlimb () : randlimb () % 3 + 2)
 #include "tgeneric_ui.c"
 
+static void
+exact_powers (unsigned long bmax, unsigned long kmax)
+{
+  unsigned long b, k;
+  mpz_t z;
+  mpfr_t x, y;
+  int inex;
+
+  mpz_init (z);
+  for (b = 2; b <= bmax; b++)
+    for (k = 1; k <= kmax; k++)
+      {
+        mpz_ui_pow_ui (z, b, k);
+        mpfr_init2 (x, mpz_sizeinbase (z, 2));
+        mpfr_set_ui (x, b, MPFR_RNDN);
+        mpfr_pow_ui (x, x, k, MPFR_RNDN);
+        mpz_set_ui (z, b);
+        mpfr_init2 (y, mpz_sizeinbase (z, 2));
+        inex = mpfr_root (y, x, k, MPFR_RNDN);
+        if (inex != 0)
+          {
+            printf ("Error in exact_powers, b=%lu, k=%lu\n", b, k);
+            printf ("Expected inex=0, got %d\n", inex);
+            exit (1);
+          }
+        if (mpfr_cmp_ui (y, b) != 0)
+          {
+            printf ("Error in exact_powers, b=%lu, k=%lu\n", b, k);
+            printf ("Expected y=%lu\n", b);
+            printf ("Got      ");
+            mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
+            printf ("\n");
+            exit (1);
+          }
+        mpfr_clear (x);
+        mpfr_clear (y);
+      }
+  mpz_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -339,6 +379,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  exact_powers (3, 1000);
   special ();
   bigint ();
 
