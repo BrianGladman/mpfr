@@ -240,7 +240,9 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       if (MPFR_LIKELY (MPFR_CAN_ROUND(t, w - err, MPFR_PREC(y), rnd_mode)))
         break;
 
-      /* if we fail to round correctly, check for an exact result */
+      /* If we fail to round correctly, check for an exact result or a
+         midpoint result with MPFR_RNDN (regarded as hard-to-round in
+         all precisions in order to determine the ternary value). */
       {
         mpfr_t z, zk;
 
