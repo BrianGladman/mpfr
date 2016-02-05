@@ -273,6 +273,8 @@ check_special (void)
     }
 
   /* Check overflow. Corner case of mpfr_exp_2 */
+  /* FIXME: The main purpose of the test below was on 32-bit ABI,
+     but it is no longer run there. */
   mpfr_set_prec (x, 64);
   if (mpfr_set_emax (1073741823) == 0)
     { /* 1073741823 is in the allowed exponent range */
