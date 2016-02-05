@@ -139,19 +139,21 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_exp_t emax = __gmpfr_emax;
       int signx = MPFR_SIGN (x);
 
+      /* Make sure that the exponent range is large enough:
+       * [0,2] is sufficient in all precisions.
+       */
+      __gmpfr_emin = 0;
+      __gmpfr_emax = 2;
+
       MPFR_SET_POS (y);
       if (MPFR_IS_NEG_SIGN (signx) && (rnd_mode == MPFR_RNDD ||
                                        rnd_mode == MPFR_RNDZ))
         {
-          __gmpfr_emin = 0;
-          __gmpfr_emax = 0;
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
           inexact = -1;
         }
       else
         {
-          __gmpfr_emin = 1;
-          __gmpfr_emax = 1 + (MPFR_PREC(y) == 1);
           mpfr_setmin (y, 1);  /* y = 1 */
           if (MPFR_IS_POS_SIGN (signx) && (rnd_mode == MPFR_RNDU ||
                                            rnd_mode == MPFR_RNDA))
