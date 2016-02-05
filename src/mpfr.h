@@ -187,7 +187,7 @@ typedef uintmax_t mpfr_uexp_t;
 #endif
 
 /* Definition of the standard exponent limits */
-#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((mpfr_ulong) 1 << 30) - 1))
+#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((mpfr_ulong) 1 << 30) - 3))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
 /* DON'T USE THIS! (For MPFR-public macros only, see below.)

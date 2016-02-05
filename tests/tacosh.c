@@ -176,6 +176,13 @@ huge (void)
 {
   mpfr_t x, y, z;
   int inex;
+  mpfr_exp_t emax;
+
+  if (mpfr_get_emax_max () < 1073741823)
+    return;
+
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1073741823);
 
   /* TODO: extend the exponent range and use mpfr_get_emax (). */
   mpfr_inits2 (32, x, y, z, (mpfr_ptr) 0);
@@ -193,6 +200,7 @@ huge (void)
   MPFR_ASSERTN (inex < 0);
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  mpfr_set_emax (emax);
 }
 
 int
