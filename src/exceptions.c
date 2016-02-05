@@ -256,16 +256,18 @@ mpfr_set_erangeflag (void)
 
 #undef mpfr_check_range
 
+/* Note: It is possible that for pure FP numbers, EXP(x) < MPFR_EMIN_MIN,
+   but the caller must make sure that the difference remains small enough
+   to avoid reaching the special exponent values. */
 int
 mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
 {
-  if (MPFR_LIKELY( MPFR_IS_PURE_FP(x)) )
+  if (MPFR_LIKELY (! MPFR_IS_SINGULAR (x)))
     { /* x is a non-zero FP */
       mpfr_exp_t exp = MPFR_EXP (x);  /* Do not use MPFR_GET_EXP */
-      /* Even if it is unlikely that exp is lower than emin,
-         this function is called by MPFR functions only if it is
-         already the case (or if exp is greater than emax) */
-      if (exp < __gmpfr_emin)
+
+      MPFR_ASSERTD (MPFR_IS_NORMALIZED (x));
+      if (MPFR_UNLIKELY (exp < __gmpfr_emin))
         {
           /* The following test is necessary because in the rounding to the
            * nearest mode, mpfr_underflow always rounds away from 0. In
@@ -279,9 +281,9 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
                (mpfr_powerof2_raw(x) &&
                 (MPFR_IS_NEG(x) ? t <= 0 : t >= 0))))
             rnd_mode = MPFR_RNDZ;
-          return mpfr_underflow(x, rnd_mode, MPFR_SIGN(x));
+          return mpfr_underflow (x, rnd_mode, MPFR_SIGN(x));
         }
-      if (exp > __gmpfr_emax)
+      if (MPFR_UNLIKELY (exp > __gmpfr_emax))
         return mpfr_overflow (x, rnd_mode, MPFR_SIGN(x));
     }
   else if (MPFR_UNLIKELY (t != 0 && MPFR_IS_INF (x)))
