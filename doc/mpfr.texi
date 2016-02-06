@@ -1896,9 +1896,13 @@ All those functions, except explicitly stated (for example
 exact return value, a positive value for a return value larger than the
 exact result, and a negative value otherwise.
 
-Important note: in some domains, computing special functions (either with
-correct or incorrect rounding) is expensive, even for small precision,
+Important note: in some domains, computing special functions (even more
+with correct rounding) is expensive, even for small precision,
 for example the trigonometric and Bessel functions for large argument.
+For some functions, the memory usage might depend not only on the output
+precision, but also on the input precision(s): it is the case of the
+@code{mpfr_root} function, an of the incomplete Gamma function (dependance on
+the precision of the first argument).
 
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_log_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
