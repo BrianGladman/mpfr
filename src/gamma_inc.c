@@ -152,12 +152,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                   MPFR_RET_NAN;
                 }
               else if (MPFR_IS_ZERO (x))
-                {
-                  /* gamma_inc(a,0) = +Inf */
-                  MPFR_SET_INF (y);
-                  MPFR_SET_POS (y);
-                  MPFR_RET (0);  /* exact */
-                }
+                /* gamma_inc(a,0) = gamma(a) */
+                return mpfr_gamma (y, a, rnd); /* a=+0->+Inf, a=-0->-Inf */
               else
                 {
                   /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = Ei(1,x)
