@@ -337,21 +337,21 @@ check_more_special (void)
   mpfr_clear (sum);
 }
 
-/* i * 2^46 + j * 2^45 + k * 2^44 + f * 2^(-2),
+/* i * 2^(46+h) + j * 2^(45+h) + k * 2^(44+h) + f * 2^(-2),
    with -1 <= i, j, k <= 1, i != 0, -3 <= f <= 3,
-   ulp(exact sum) = 2^0 and ulp(exact sum) = 2^44. */
+   ulp(exact sum) = 2^0 and ulp(exact sum) = 2^(44+h). */
 static void
-check1 (void)
+check1 (int h)
 {
   mpfr_t sum1, sum2, s1, s2, s3, t[4];
   mpfr_ptr p[4];
   int i, j, k, f, prec, r, inex1, inex2;
 
-  mpfr_init2 (sum1, 47);
-  mpfr_init2 (sum2, 47);
+  mpfr_init2 (sum1, 47 + h);
+  mpfr_init2 (sum2, 47 + h);
   mpfr_init2 (s1, 3);
   mpfr_init2 (s2, 3);
-  mpfr_init2 (s3, 49);
+  mpfr_init2 (s3, 49 + h);
   for (i = 0; i < 4; i++)
     {
       mpfr_init2 (t[i], 2);
@@ -360,15 +360,15 @@ check1 (void)
 
   for (i = -1; i <= 1; i += 2)
     {
-      mpfr_set_si_2exp (t[0], i, 46, MPFR_RNDN);
+      mpfr_set_si_2exp (t[0], i, 46 + h, MPFR_RNDN);
       for (j = -1; j <= 1; j++)
         {
-          mpfr_set_si_2exp (t[1], j, 45, MPFR_RNDN);
+          mpfr_set_si_2exp (t[1], j, 45 + h, MPFR_RNDN);
           inex1 = mpfr_add (s1, t[0], t[1], MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
           for (k = -1; k <= 1; k++)
             {
-              mpfr_set_si_2exp (t[2], k, 44, MPFR_RNDN);
+              mpfr_set_si_2exp (t[2], k, 44 + h, MPFR_RNDN);
               inex1 = mpfr_add (s2, s1, t[2], MPFR_RNDN);
               MPFR_ASSERTN (inex1 == 0);
               for (f = -3; f <= 3; f++)
@@ -378,7 +378,7 @@ check1 (void)
                   MPFR_ASSERTN (inex1 == 0);
                   for (prec = mpfr_get_exp (s3);
                        prec >= MPFR_PREC_MIN;
-                       prec -= 44)
+                       prec -= 44 + h)
                     {
                       mpfr_set_prec (sum1, prec);
                       mpfr_set_prec (sum2, prec);
@@ -392,9 +392,9 @@ check1 (void)
                                 SAME_SIGN (inex1, inex2)))
                             {
                               printf ("Error in check1 on %s, prec = %d, "
-                                      "i = %d, j = %d, k = %d, f = %d\n",
+                                      "i = %d, j = %d, k = %d, f = %d, h = %d\n",
                                       mpfr_print_rnd_mode ((mpfr_rnd_t) r),
-                                      prec, i, j, k, f);
+                                      prec, i, j, k, f, h);
                               printf ("Expected ");
                               mpfr_dump (sum1);
                               printf ("with inex = %d\n", inex1);
@@ -1169,6 +1169,8 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
 int
 main (int argc, char *argv[])
 {
+  int h;
+
   if (argc == 5)
     {
       check_random (atoi (argv[1]), atoi (argv[2]), atoi (argv[3]),
@@ -1187,7 +1189,8 @@ main (int argc, char *argv[])
   check_simple ();
   check_special ();
   check_more_special ();
-  check1 ();
+  for (h = 0; h <= 64; h++)
+    check1 (h);
   check2 ();
   check3 ();
   check4 ();
