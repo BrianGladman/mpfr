@@ -392,7 +392,8 @@ check1 (int h)
                                 SAME_SIGN (inex1, inex2)))
                             {
                               printf ("Error in check1 on %s, prec = %d, "
-                                      "i = %d, j = %d, k = %d, f = %d, h = %d\n",
+                                      "i = %d, j = %d, k = %d, f = %d, "
+                                      "h = %d\n",
                                       mpfr_print_rnd_mode ((mpfr_rnd_t) r),
                                       prec, i, j, k, f, h);
                               printf ("Expected ");
