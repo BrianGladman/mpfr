@@ -23,8 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_eint
-#define TEST_RANDOM_POS 8
-#define TEST_RANDOM_EMAX 40
 #include "tgeneric.c"
 
 static void
@@ -51,14 +49,6 @@ check_specials (void)
       exit (1);
     }
 
-  mpfr_set_inf (x, -1);
-  mpfr_eint (y, x, MPFR_RNDN);
-  if (! mpfr_nan_p (y))
-    {
-      printf ("Error: eint(-Inf) != NaN\n");
-      exit (1);
-    }
-
   /* eint(+/-0) = -Inf */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_eint (y, x, MPFR_RNDN);
@@ -72,15 +62,6 @@ check_specials (void)
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) < 0))
     {
       printf ("Error: eint(-0) != -Inf\n");
-      exit (1);
-    }
-
-  /* eint(x) = NaN for x < 0 */
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_eint (y, x, MPFR_RNDN);
-  if (! mpfr_nan_p (y))
-    {
-      printf ("Error: eint(-1) != NaN\n");
       exit (1);
     }
 

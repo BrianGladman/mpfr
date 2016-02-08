@@ -156,9 +156,10 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                 return mpfr_gamma (y, a, rnd); /* a=+0->+Inf, a=-0->-Inf */
               else
                 {
-                  /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = Ei(1,x)
-                     but the mpfr_eint function returns -Re(Ei(1,-x)) */
-                  MPFR_ASSERTN(0);
+                  /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = E1(x) */
+                  mpfr_t minus_x;
+                  MPFR_TMP_INIT_NEG(minus_x, x);
+                  return mpfr_eint (y, minus_x, rnd);
                 }
             }
           else /* x = 0: gamma_inc(a,0) = gamma(a) */

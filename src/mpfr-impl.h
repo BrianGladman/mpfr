@@ -1079,6 +1079,12 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    MPFR_SET_POS(d),                                                  \
    MPFR_EXP(d)  = MPFR_EXP(s))
 
+#define MPFR_TMP_INIT_NEG(d, s)                                      \
+ ( MPFR_PREC(d) = MPFR_PREC(s),                                      \
+   MPFR_MANT(d) = MPFR_MANT(s),                                      \
+   MPFR_SET_OPPOSITE_SIGN(d,s),                                      \
+   MPFR_EXP(d)  = MPFR_EXP(s))
+
 
 
 /******************************************************

@@ -2064,9 +2064,9 @@ $@var{op}^k/(k \cdot k!)$
 @end tex
 (see formula 5.1.10 from the Handbook of Mathematical Functions from
 Abramowitz and Stegun).
-For negative @var{op}, @var{rop} is set to NaN
-(this definition for negative argument follows formula 5.1.2 from the same
-reference, a future version might use another definition).
+For negative @var{op}, @var{rop} is set to the value of the E1 exponential
+integral (sometimes called eint1)
+at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @end deftypefun
 
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

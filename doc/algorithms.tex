@@ -3074,8 +3074,8 @@ $\sum_{k=1}^{\infty} \frac{x^k}{k \, k!}$, using working precision $w$.
 For any real $v$, we denote by ${\rm trunc}(v)$ the nearest integer
 toward zero.
 \begin{quote}
-Decompose $x$ into  $m\cdot2^e$ with $m$ integer [exact] \\
-If necessary, truncate $m$ to $w$ bits and adjust $e$ \\
+Approximate $x$ by  $m\cdot2^e$ with $m$ an integer \\
+having exactly $w$ bits, such that $|x - m\cdot2^e| \leq 2^e$ \\
 $s \leftarrow 0$ \\ % sum
 $t \leftarrow 2^w$ \\ % current term x^k/k!
 for $k := 1$ do \\
@@ -3093,7 +3093,7 @@ Let $\epsilon_k$ be the absolute difference between $t$ and
 $2^w x^k/k!$ at step $k$.
 We have $\epsilon_0=0$, and $\epsilon_k \leq 1 + \epsilon_{k-1} m 2^e/k
 + t_{k-1} m 2^{e+1-w}/k$, since the error when approximating $x$ by
-$m 2^e$ is less than $m 2^{e+1-w}$.
+$m 2^e$ is less than $2^e \leq m 2^{e+1-w}$.
 Similarly, the absolute error on $u$ at step $k$ is at most
 $\nu_k \leq 1 + \epsilon_k/k$,
 and that on $s$ at most $\tau_k \leq \tau_{k-1} + \nu_k$.
@@ -3104,6 +3104,8 @@ on the error on $s$ made so far.
 At that time, the truncation error when neglecting terms of index $k+1$
 to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 +
 \cdots) \leq (|t| + \epsilon_k) |x|/k/(k-|x|)$.
+
+\bigskip
 
 \paragraph{Asymptotic Expansion}
 
@@ -3116,6 +3118,14 @@ $k \approx x$, and is of the order of $e^{-x}$. Thus assuming the error
 term is bounded by the first neglected term, we can use that expansion
 as long as $e^{-x} \leq 2^{-p}$ where $p$ is the target precision,
 i.e.~when $x \geq p \log 2$.
+
+\bigskip
+
+For $x < 0$, the function \verb|mpfr_eint| returns the value of 
+$E_1(-x)$, defined by \cite[formula 5.1.11]{AbSt73}:
+\[ E_1(x) = -\gamma - \log(x) - \sum_{k=1}^{\infty} \frac{(-x)^k}{k \, k!}.\]
+We use the very same algorithm and error analysis as above (including the
+asymptotic expansion).
 
 \subsection{The gamma function}
 
