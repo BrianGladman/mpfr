@@ -338,8 +338,10 @@ check_more_special (void)
 }
 
 /* i * 2^(46+h) + j * 2^(45+h) + k * 2^(44+h) + f * 2^(-2),
-   with -1 <= i, j, k <= 1, i != 0, -3 <= f <= 3,
-   ulp(exact sum) = 2^0 and ulp(exact sum) = 2^(44+h) when possible.
+   with -1 <= i, j, k <= 1, i != 0, -3 <= f <= 3, and
+   * prec set up so that ulp(exact sum) = 2^0, then
+   * prec set up so that ulp(exact sum) = 2^(44+h) when possible,
+     i.e. when prec >= MPFR_PREC_MIN.
    ------
    Some explanations:
    ulp(exact sum) = 2^q means EXP(exact sum) - prec = q where prec is
