@@ -1082,7 +1082,7 @@ static void
 check_coverage (void)
 {
 #ifdef MPFR_COV_CHECK
-  int r, i, j, k, p;
+  int r, i, j, k, p, q;
   int err = 0;
 
   for (r = 0; r < MPFR_RND_MAX; r++)
@@ -1090,13 +1090,15 @@ check_coverage (void)
       for (j = 0; j < 2; j++)
         for (k = 0; k < 3; k++)
           for (p = 0; p < 2; p++)
-            if (!__gmpfr_cov_sum_tmd[r][i][j][k][p])
-              {
-                printf ("TMD not tested on %s, tmd=%d, rbit=%d, sst=%d, %s\n",
-                        mpfr_print_rnd_mode ((mpfr_rnd_t) r), i+1, j, k-1,
-                        p ? "positive" : "negative");
-                err = 1;
-              }
+            for (q = 0; q < 2; q++)
+              if (!__gmpfr_cov_sum_tmd[r][i][j][k][p][q])
+                {
+                  printf ("TMD not tested on %s, tmd=%d, rbit=%d, sst=%d,"
+                          " %s, sq %s MPFR_PREC_MIN\n",
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r), i+1, j, k-1,
+                          p ? "positive" : "negative", q ? ">" : "==");
+                  err = 1;
+                }
 
   if (err)
     exit (1);
