@@ -1096,7 +1096,7 @@ check_coverage (void)
                   printf ("TMD not tested on %s, tmd=%d, rbit=%d, sst=%d,"
                           " %s, sq %s MPFR_PREC_MIN\n",
                           mpfr_print_rnd_mode ((mpfr_rnd_t) r), i+1, j, k-1,
-                          p ? "positive" : "negative", q ? ">" : "==");
+                          p ? "pos" : "neg", q ? ">" : "==");
                   err = 1;
                 }
 
