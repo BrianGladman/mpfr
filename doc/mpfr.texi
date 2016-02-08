@@ -1902,7 +1902,7 @@ for example the trigonometric and Bessel functions for large argument.
 For some functions, the memory usage might depend not only on the output
 precision: it is the case of the @code{mpfr_root} function where the memory
 usage is also linear in the argument @var{k},
-and of the incomplete Gamma function (dependance on the precision of @var{op}).
+and of the incomplete Gamma function (dependence on the precision of @var{op}).
 
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_log_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
