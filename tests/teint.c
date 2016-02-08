@@ -104,6 +104,19 @@ check_specials (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str_binary (x, "-1");
+  mpfr_eint (x, x, MPFR_RNDN); /* eint1(1) = 0.219383934395520 */
+  mpfr_set_str_binary (y, "1e-2");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=-1, MPFR_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
   /* check large x */
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);

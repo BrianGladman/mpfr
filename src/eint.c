@@ -269,7 +269,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     {
       mpfr_div (ump, x, __gmpfr_const_log2_RNDD, MPFR_RNDU);
       MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN);
-      if (mpfr_cmp_ui (ump, __gmpfr_emin) < 0)
+      if (mpfr_cmp_si (ump, __gmpfr_emin) < 0)
         {
           mpfr_clear (tmp);
           mpfr_clear (ump);
