@@ -339,7 +339,18 @@ check_more_special (void)
 
 /* i * 2^(46+h) + j * 2^(45+h) + k * 2^(44+h) + f * 2^(-2),
    with -1 <= i, j, k <= 1, i != 0, -3 <= f <= 3,
-   ulp(exact sum) = 2^0 and ulp(exact sum) = 2^(44+h). */
+   ulp(exact sum) = 2^0 and ulp(exact sum) = 2^(44+h) when possible.
+   ------
+   Some explanations:
+   ulp(exact sum) = 2^q means EXP(exact sum) - prec = q where prec is
+   the precision of the output. Thus ulp(exact sum) = 2^0 is achieved
+   by setting prec = EXP(s3), where s3 is the exact sum (computed with
+   mpfr_add's and sufficient precision). Then ulp(exact sum) = 2^(44+h)
+   is achieved by subtracting 44+h from prec. The loop on prec does
+   this. Since EXP(s3) <= 47+h, prec <= 3 at the second iteration,
+   thus there will be at most 2 iterations. Whether a second iteration
+   is done or not depends on EXP(s3), i.e. the values of the parameters,
+   and the value of MPFR_PREC_MIN. */
 static void
 check1 (int h)
 {
