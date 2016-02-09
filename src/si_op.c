@@ -49,9 +49,8 @@ mpfr_si_sub (mpfr_ptr y, long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     return mpfr_ui_sub (y, u, x, rnd_mode);
   else
     {
-    int res = -mpfr_add_ui (y, x, -u, MPFR_INVERT_RND (rnd_mode));
-    MPFR_CHANGE_SIGN (y);
-    return res;
+      int res = - mpfr_add_ui (y, x, -u, MPFR_INVERT_RND (rnd_mode));
+      MPFR_CHANGE_SIGN (y);
+      return res;
     }
 }
-
