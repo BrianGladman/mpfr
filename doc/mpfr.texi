@@ -3771,6 +3771,10 @@ This is really what is expected in practice (and what the MPFR code
 was expecting), so that the previous behavior was regarded as a bug.
 Hence the change in MPFR 2.3.2.
 
+@item @code{mpfr_eint} changed in MPFR 3.2.
+This function now returns the value of the E1/eint1 function for
+negative argument (before MPFR 3.2, it was returning NaN).
+
 @item @code{mpfr_get_f} changed in MPFR 3.0.
 This function was returning zero, except for NaN and Inf, which do not
 exist in MPF@. The @emph{erange} flag is now set in these cases,
