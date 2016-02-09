@@ -251,7 +251,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_log (tmp, x, MPFR_RNDU);
       mpfr_sub (ump, x, tmp, MPFR_RNDD);
       mpfr_div (ump, ump, __gmpfr_const_log2_RNDU, MPFR_RNDD);
-      /* FIXME: We really need mpfr_set_exp_t and mpfr_cmpfr_exp_t functions. */
+      /* FIXME: We really need a mpfr_cmp_exp_t function. */
       MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
       if (mpfr_cmp_ui (ump, __gmpfr_emax) >= 0)
         {
