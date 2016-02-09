@@ -212,16 +212,18 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      /* exp(NaN) = exp(-Inf) = NaN */
-      if (MPFR_IS_NAN (x) || (MPFR_IS_INF (x) && MPFR_IS_NEG(x)))
+      if (MPFR_IS_NAN (x))
         {
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      /* eint(+inf) = +inf */
       else if (MPFR_IS_INF (x))
         {
-          MPFR_SET_INF(y);
+          /* eint(+inf) = +inf and eint(-inf) = +0 */
+          if (MPFR_IS_POS (x))
+            MPFR_SET_INF(y);
+          else
+            MPFR_SET_ZERO(y);
           MPFR_SET_POS(y);
           MPFR_RET(0);
         }

@@ -49,6 +49,14 @@ check_specials (void)
       exit (1);
     }
 
+  mpfr_set_inf (x, -1);
+  mpfr_eint (y, x, MPFR_RNDN);
+  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
+    {
+      printf ("Error: eint(-Inf) != +0\n");
+      exit (1);
+    }
+
   /* eint(+/-0) = -Inf */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_eint (y, x, MPFR_RNDN);
