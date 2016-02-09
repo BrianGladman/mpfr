@@ -51,9 +51,9 @@ check_specials (void)
 
   mpfr_set_inf (x, -1);
   mpfr_eint (y, x, MPFR_RNDN);
-  if (! (mpfr_zero_p (y) && MPFR_IS_POS (y)))
+  if (! (mpfr_zero_p (y) && MPFR_IS_NEG (y)))
     {
-      printf ("Error: eint(-Inf) != +0\n");
+      printf ("Error: eint(-Inf) != -0\n");
       exit (1);
     }
 
@@ -116,7 +116,7 @@ check_specials (void)
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (x, "-1");
   mpfr_eint (x, x, MPFR_RNDN); /* eint1(1) = 0.219383934395520 */
-  mpfr_set_str_binary (y, "1e-2");
+  mpfr_set_str_binary (y, "-1e-2");
   if (mpfr_cmp (x, y) != 0)
     {
       printf ("Error for x=-1, MPFR_RNDN\n");

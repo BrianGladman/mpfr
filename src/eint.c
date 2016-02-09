@@ -195,7 +195,8 @@ mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
   return err_exp;
 }
 
-/* mpfr_eint returns Ei(x) for x >= 0, and E1(-x) for x < 0 */
+/* mpfr_eint returns Ei(x) for x >= 0,
+   and -E1(-x) for x < 0, following http://dlmf.nist.gov/6.2 */
 int
 mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
@@ -219,12 +220,17 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
       else if (MPFR_IS_INF (x))
         {
-          /* eint(+inf) = +inf and eint(-inf) = +0 */
+          /* eint(+inf) = +inf and eint(-inf) = -0 */
           if (MPFR_IS_POS (x))
-            MPFR_SET_INF(y);
+            {
+              MPFR_SET_INF(y);
+              MPFR_SET_POS(y);
+            }
           else
-            MPFR_SET_ZERO(y);
-          MPFR_SET_POS(y);
+            {
+              MPFR_SET_ZERO(y);
+              MPFR_SET_NEG(y);
+            }
           MPFR_RET(0);
         }
       else /* eint(+/-0) = -Inf */
@@ -276,7 +282,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_clear (tmp);
           mpfr_clear (ump);
           MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_underflow (y, rnd, 1);
+          return mpfr_underflow (y, rnd, -1);
         }
     }
 
@@ -342,7 +348,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controller */
 
   /* Set y to the computed value */
-  inex = mpfr_set4 (y, tmp, rnd, MPFR_SIGN (x) * MPFR_SIGN (tmp));
+  inex = mpfr_set (y, tmp, rnd);
   mpfr_clear (tmp);
   mpfr_clear (ump);
 

@@ -2064,8 +2064,8 @@ $@var{op}^k/(k \cdot k!)$
 @end tex
 (see formula 5.1.10 from the Handbook of Mathematical Functions from
 Abramowitz and Stegun).
-For negative @var{op}, @var{rop} is set to the value of the E1 exponential
-integral (sometimes called eint1)
+For negative @var{op}, @var{rop} is set to the opposite of the
+E1 exponential integral (sometimes called eint1)
 at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @end deftypefun
 
