@@ -58,7 +58,7 @@ grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
 
 for i in exp prec rnd
 do
-  grep mp_${i}_t $srctests | \
+  grep "[^a-z]mp_${i}_t" $srctests | \
     grep -v "\(# *define\|# *ifndef\|typedef\) *mp_${i}_t" | \
     grep -v "\[mp_${i}_t\]"
 done
