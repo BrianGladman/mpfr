@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* TODO: Add generic tests for mpfr_si_sub and mpfr_si_div.
+   tgeneric_ui.c should probably be replaced by tgeneric.c,
+   with some changes, since tgeneric.c does more checks. */
+
 #define ERROR1(s, i, z, exp) \
 {\
   printf("Error for "s" and i=%d\n", i);\

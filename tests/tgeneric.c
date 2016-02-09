@@ -27,6 +27,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Define ULONG_ARG1 or ULONG_ARG2 for function with an unsigned long
    operand in first or second place like sub_ui or ui_sub. */
 
+/* TODO: Add support for type long and extreme integer values, as done
+   in tgeneric_ui.c; then tgeneric_ui.c could probably disappear. */
+
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2) || \
   defined(ULONG_ARG1) || defined(ULONG_ARG2)
 #define TWO_ARGS_ALL
