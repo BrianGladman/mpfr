@@ -276,7 +276,8 @@ mpfr_div_si (mpfr_ptr y, mpfr_srcptr x, long int u, mpfr_rnd_t rnd_mode)
     res = mpfr_div_ui (y, x, u, rnd_mode);
   else
     {
-      res = -mpfr_div_ui (y, x, -u, MPFR_INVERT_RND (rnd_mode));
+      res = - mpfr_div_ui (y, x, - (unsigned long) u,
+                           MPFR_INVERT_RND (rnd_mode));
       MPFR_CHANGE_SIGN (y);
     }
   return res;
