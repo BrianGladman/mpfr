@@ -159,7 +159,10 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                   /* gamma_inc (0, x) = int (exp(-t), t=x..infinity) = E1(x) */
                   mpfr_t minus_x;
                   MPFR_TMP_INIT_NEG(minus_x, x);
-                  return mpfr_eint (y, minus_x, rnd);
+                  /* mpfr_eint(x) for x < 0 returns -E1(-x) */
+                  inex = mpfr_eint (y, minus_x, MPFR_INVERT_RND(rnd));
+                  MPFR_CHANGE_SIGN(y);
+                  return -inex;
                 }
             }
           else /* x = 0: gamma_inc(a,0) = gamma(a) */
@@ -275,7 +278,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       /* subtract from gamma(a) */
       mpfr_gamma (t, a, MPFR_RNDZ);  /* t = gamma(a) * (1+theta) */
       e0 = MPFR_GET_EXP (t);
-      e1 = MPFR_GET_EXP (s);
+      e1 = (MPFR_IS_ZERO(s)) ? __gmpfr_emin : MPFR_GET_EXP (s);
       mpfr_sub (s, t, s, MPFR_RNDZ);
       e2 = MPFR_GET_EXP (s);
       /* the final error is at most 1 ulp (for the final subtraction)

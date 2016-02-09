@@ -26,6 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TWO_ARGS
 #define TEST_RANDOM_POS2 0 /* the 2nd argument is never negative */
 #define TGENERIC_NOWARNING 1
+#define TEST_RANDOM_EMAX 32
+#define TEST_RANDOM_EMIN -32
 #include "tgeneric.c"
 
 /* do k random tests at precision p */
@@ -66,6 +68,38 @@ test_random (mpfr_prec_t p, int k)
   mpfr_clear (t);
 }
 
+static void
+specials (void)
+{
+  mpfr_t a, x;
+
+  mpfr_init2 (a, 2);
+  mpfr_init2 (x, 2);
+
+  /* check gamma_inc(0,1) = 0.219383934395520 */
+  mpfr_set_ui (a, 0, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 1, -2))
+    {
+      printf ("Error for gamma_inc(0,1)\n");
+      printf ("expected 0.25\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (a, 1);
+  mpfr_set_prec (x, 1);
+  mpfr_set_ui_2exp (a, 1, 32, MPFR_RNDN);
+  mpfr_set_ui_2exp (x, 1, -32, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+
+  mpfr_clear (a);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -89,10 +123,12 @@ main (int argc, char *argv[])
       return 0;
     }
 
+  specials ();
+
   for (p = MPFR_PREC_MIN; p < 100; p++)
     test_random (p, 10);
 
-  /* FIXME: once the case gamma_inc (0, x) is implemented, we can activate
+  /* FIXME: once the case gamma_inc (-n, x) is implemented, we can activate
      the generic tests below */
   // test_generic (MPFR_PREC_MIN, 100, 100);
 
