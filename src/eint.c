@@ -340,7 +340,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controller */
 
   /* Set y to the computed value */
-  inex = (MPFR_IS_POS(x)) ? mpfr_set (y, tmp, rnd) : mpfr_neg (y, tmp, rnd);
+  inex = mpfr_set4 (y, tmp, rnd, MPFR_SIGN (x) * MPFR_SIGN (tmp));
   mpfr_clear (tmp);
   mpfr_clear (ump);
 
