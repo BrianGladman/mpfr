@@ -1,4 +1,4 @@
-/* mpfr_div_{ui,si} -- divide a floating-point number by a machine integer
+/* mpfr_div_ui -- divide a floating-point number by a machine integer
 
 Copyright 1999-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -258,27 +258,4 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   MPFR_EXP (y) = exp;
 
   return mpfr_check_range (y, inexact, rnd_mode);
-}
-
-#undef mpfr_div_si
-int
-mpfr_div_si (mpfr_ptr y, mpfr_srcptr x, long int u, mpfr_rnd_t rnd_mode)
-{
-  int res;
-
-  MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg u=%ld rnd=%d",
-      mpfr_get_prec(x), mpfr_log_prec, x, u, rnd_mode),
-     ("y[%Pu]=%.*Rg inexact=%d",
-      mpfr_get_prec(y), mpfr_log_prec, y, res));
-
-  if (u >= 0)
-    res = mpfr_div_ui (y, x, u, rnd_mode);
-  else
-    {
-      res = - mpfr_div_ui (y, x, - (unsigned long) u,
-                           MPFR_INVERT_RND (rnd_mode));
-      MPFR_CHANGE_SIGN (y);
-    }
-  return res;
 }
