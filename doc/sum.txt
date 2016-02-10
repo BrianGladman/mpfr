@@ -905,6 +905,11 @@ change the representation of the significand, i.e. do a negation or
 complement if the sum is negative, and apply the correction at the
 same time. We distinguish two cases:
 
+[FIXME for precision 1, added after this has been written: the following
+obviously does not work when the correction is equivalent to adding 2
+for precision ≥ 2 (corr = 2 if pos = 1, corr = −1 if pos = 0), as the
+significand has only 1 bit in precision 1.]
+
   * pos = 1 (positive sum). We first set the sign of the MPFR number
     to positive. Since the significand can contain garbage in the
     trailing bits (present when the precision is not a multiple of
