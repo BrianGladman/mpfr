@@ -38,6 +38,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    gamma(a,x) = x^a * sum((-x)^k/k!/(a+k), k=0..infinity)
 
    gamma(a,x) = x^a * exp(-x) * sum(x^k/(a*(a+1)*...*(a+k)), k=0..infinity)
+
+   For a negative integer, we have:
+
+   gamma(-n,x) = (-1)^n/n [E_1(x) - exp(-x) sum((-1)^j*j!/x^(j+1), j=0..n-1)]
 */
 
 int
