@@ -50,8 +50,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_prec_t w;
   mpfr_t s, t, u;
   int inex;
-  unsigned long k, err;
-  mpfr_exp_t e0, e1, e2;
+  unsigned long k;
+  mpfr_exp_t e0, e1, e2, err;
   MPFR_GROUP_DECL(group);
   MPFR_ZIV_DECL(loop);
   MPFR_SAVE_EXPO_DECL (expo);
