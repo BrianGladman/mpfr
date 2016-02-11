@@ -231,7 +231,8 @@ mpfr_muldiv_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr n, mpz_srcptr d,
                       MPFR_ASSERTN (!MPFR_BLOCK_EXCEP));
           MPFR_EXP (y) += ex;
           /* Detect highly unlikely, not supported corner cases... */
-          MPFR_ASSERTN (MPFR_EXP (y) >= __gmpfr_emin && MPFR_IS_PURE_FP (y));
+          MPFR_ASSERTN (MPFR_EXP (y) >= __gmpfr_emin);
+          MPFR_ASSERTN (! MPFR_IS_SINGULAR (y));
           /* The potential overflow will be detected by mpfr_check_range. */
         }
       else
