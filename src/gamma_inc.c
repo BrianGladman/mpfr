@@ -298,10 +298,17 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
                          <= 2^(e0-e2+1) if e0 > e2
                          <= 2^2 otherwise */
       if (e0 == e1)
-        err = e0 - e2 + 2;
+        {
+          /* Check that e0 - e2 + 2 <= MPFR_EXP_MAX */
+          MPFR_ASSERTD (e2 >= 2 || e0 <= (MPFR_EXP_MAX - 2) + e2);
+          /* Check that e0 - e2 + 2 >= MPFR_EXP_MIN */
+          MPFR_ASSERTD (e2 <= 2 || e0 >= MPFR_EXP_MIN + (e2 - 2));
+          err = e0 - e2 + 2;
+        }
       else
         {
           e0 = (e0 > e1) ? e0 : e1; /* max(e0,e1) */
+          MPFR_ASSERTD (e0 <= e2 || e2 >= 1 || e0 <= (MPFR_EXP_MAX - 1) + e2);
           err = (e0 > e2) ? e0 - e2 + 1 : 2;
         }
 
