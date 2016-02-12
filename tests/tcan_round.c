@@ -94,9 +94,8 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
   if (b != expected_b && expected_b == 0)
     {
       printf ("Error for x=2^%d, px=%lu, err=%d, r1=%s, r2=%s, prec=%d\n",
-              (int) i, (unsigned long) px, (int) i+1,
-              mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
-              mpfr_print_rnd_mode ((mpfr_rnd_t) r2), (int) prec);
+              (int) i, (unsigned long) px, (int) i + 1,
+              mpfr_print_rnd_mode (r1), mpfr_print_rnd_mode (r2), (int) prec);
       printf ("Expected %d, got %d\n", expected_b, b);
       exit (1);
     }
@@ -109,7 +108,7 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
       if (b2 != b)
         {
           printf ("Error for x=2^%d, px=%lu, err=%d, prec=%d\n",
-                  (int) i, (unsigned long) px, (int) i+1, (int) prec);
+                  (int) i, (unsigned long) px, (int) i + 1, (int) prec);
           printf ("mpfr_can_round gave %d, mpfr_round_p gave %d\n", b, b2);
           exit (1);
         }
@@ -174,9 +173,12 @@ main (void)
   mpfr_set_str (x, "0.ff4ca619c76ba69", 16, MPFR_RNDZ);
   for (i = 30; i < 99; i++)
     for (j = 30; j < 99; j++)
-      for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
-        for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
-          mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j); /* test for assertions */
+      for (r1 = 0; r1 < MPFR_RND_MAX; r1++)
+        for (r2 = 0; r2 < MPFR_RND_MAX; r2++)
+          {
+            /* test for assertions */
+            mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
+          }
 
   test_pow2 (32, 32, MPFR_RNDN, MPFR_RNDN, 32);
   test_pow2 (174, 174, MPFR_RNDN, MPFR_RNDN, 174);
@@ -190,10 +192,10 @@ main (void)
     {
       i = (randlimb() % 200) + 4;
       for (j = i - 2; j < i + 2; j++)
-        for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
-          for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
+        for (r1 = 0; r1 < MPFR_RND_MAX; r1++)
+          for (r2 = 0; r2 < MPFR_RND_MAX; r2++)
             for (k = MPFR_PREC_MIN; k <= i + 2; k++)
-              test_pow2 (i, k, r1, r2, j);
+              test_pow2 (i, k, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
     }
 
   mpfr_clear (x);
