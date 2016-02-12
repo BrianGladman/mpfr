@@ -92,8 +92,8 @@ specials (void)
 
   mpfr_set_prec (a, 1);
   mpfr_set_prec (x, 1);
-  mpfr_set_ui_2exp (a, 1, 32, MPFR_RNDN);
-  mpfr_set_ui_2exp (x, 1, -32, MPFR_RNDN);
+  mpfr_set_ui_2exp (a, 1, 25, MPFR_RNDN);
+  mpfr_set_ui_2exp (x, 1, -25, MPFR_RNDN);
   mpfr_gamma_inc (a, a, x, MPFR_RNDN);
 
   mpfr_clear (a);
