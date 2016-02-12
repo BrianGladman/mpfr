@@ -494,10 +494,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               else /* round_bit = 1 */
                 goto add_one_ulp;
             }
-          else if (like_rndz == 0) /* round away */
+          else if (! like_rndz) /* round away */
             goto add_one_ulp;
-          /* else round to zero: nothing to do */
-          else
+          else /* round to zero: nothing to do */
             {
               inex = -1;
               goto truncate;
