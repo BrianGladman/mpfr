@@ -2079,6 +2079,7 @@ to @var{op}}.
 @end deftypefun
 
 @c FIXME: Clarify the status of mpfr_gamma_inc for the MPFR 3.2 release.
+@c See also the issues with internal overflow.
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_gamma_inc (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Gamma function on @var{op}, resp. the
