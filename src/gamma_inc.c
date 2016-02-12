@@ -193,6 +193,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       mpfr_exp_t expu, precu;
       mpfr_t s_abs;
       mpfr_exp_t decay = 0;
+      MPFR_BLOCK_DECL (flags);
 
       /* Note: in the error analysis below, theta represents any value of
          absolute value less than 2^(-w) where w is the working precision (two
@@ -280,7 +281,9 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
          the error on s is at most 2^(decay+1)*(2k+7) ulps. */
 
       /* subtract from gamma(a) */
-      mpfr_gamma (t, a, MPFR_RNDZ);  /* t = gamma(a) * (1+theta) */
+      MPFR_BLOCK (flags, mpfr_gamma (t, a, MPFR_RNDZ));
+      MPFR_ASSERTN (!MPFR_OVERFLOW (flags));  /* FIXME: support overflow */
+      /* t = gamma(a) * (1+theta) */
       e0 = MPFR_GET_EXP (t);
       e1 = (MPFR_IS_ZERO(s)) ? __gmpfr_emin : MPFR_GET_EXP (s);
       mpfr_sub (s, t, s, MPFR_RNDZ);
