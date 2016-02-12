@@ -90,6 +90,8 @@ specials (void)
       exit (1);
     }
 
+  /* TODO: Once internal overflow is supported, add new tests with
+     larger exponents, e.g. 64 (in addition to 25). */
   mpfr_set_prec (a, 1);
   mpfr_set_prec (x, 1);
   mpfr_set_ui_2exp (a, 1, 25, MPFR_RNDN);
