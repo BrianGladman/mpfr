@@ -28,8 +28,7 @@ static void
 check (mpfr_prec_t p0, mpfr_prec_t p1)
 {
   mpfr_t x, y, z;
-  mpfr_rnd_t rnd;
-  int inex, inex_ref;
+  int i, inex, inex_ref;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -41,8 +40,9 @@ check (mpfr_prec_t p0, mpfr_prec_t p1)
     {
       mpfr_set_prec (x, p0);
       mpfr_set_prec (y, p0);
-      RND_LOOP (rnd)
+      RND_LOOP (i)
         {
+          mpfr_rnd_t rnd = (mpfr_rnd_t) i;
           inex = mpfr_const_log2 (x, rnd);
           inex_ref = mpfr_set (y, z, rnd);
           if (! mpfr_can_round (z, mpfr_get_prec (z), MPFR_RNDN, rnd, p0))
