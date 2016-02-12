@@ -483,6 +483,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
                 round_bit = (qp[1] >> (sh - 1)) & 1;
               else
                 round_bit = qp[0] >> (GMP_NUMB_BITS - 1);
+              /* TODO: add value coverage tests in tdiv to check that
+                 we reach this part with different values of qh and
+                 round_bit (4 cases). */
               if (round_bit == 0)
                 {
                   inex = -1;
