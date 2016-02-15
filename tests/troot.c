@@ -31,6 +31,19 @@ cputime (void)
   return (double) clock () / (double) CLOCKS_PER_SEC;
 }
 
+#define DEFN(N)                                                         \
+  static int root##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
+  { return mpfr_root (y, x, N, rnd); }                                  \
+  static int pow##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)         \
+  { return mpfr_pow_ui (y, x, N, rnd); }
+
+DEFN(2)
+DEFN(3)
+DEFN(4)
+DEFN(5)
+DEFN(17)
+DEFN(120)
+
 static void
 special (void)
 {
@@ -456,6 +469,13 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   test_generic_ui (MPFR_PREC_MIN, 200, 30);
+
+  bad_cases (root2, pow2, "mpfr_root[2]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root3, pow3, "mpfr_root[3]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root4, pow4, "mpfr_root[4]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root5, pow5, "mpfr_root[5]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root17, pow17, "mpfr_root[17]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root120, pow120, "mpfr_root[120]", 8, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;
