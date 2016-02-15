@@ -93,6 +93,9 @@ not change when the patch is applied with the -Z option. Otherwise the
 autotools would be needed to build MPFR (unless maintainer mode is
 disabled).
 
+Patches are put under the misc/www directory of the Subversion repository.
+The web server is updated and patches are also copied as InriaForge files.
+
 ===========================================================================
 
 When submitting patches, unified diffs (option -u) are recommended,
