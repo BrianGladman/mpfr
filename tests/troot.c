@@ -359,6 +359,58 @@ exact_powers (unsigned long bmax, unsigned long kmax)
   mpz_clear (z);
 }
 
+/* Compare root(x,2^h) with pow(x,2^(-h)). */
+static void
+cmp_pow (void)
+{
+  mpfr_t x, y1, y2;
+  int h;
+
+  mpfr_inits2 (128, x, y1, y2, (mpfr_ptr) 0);
+
+  for (h = 1; h < sizeof (unsigned long) * CHAR_BIT; h++)
+    {
+      unsigned long k = (unsigned long) 1 << h;
+      int i;
+
+      for (i = 0; i < 10; i++)
+        {
+          mpfr_rnd_t rnd;
+          mpfr_flags_t flags1, flags2;
+          int inex1, inex2;
+
+          tests_default_random (x, 0, __gmpfr_emin, __gmpfr_emax, 1);
+          rnd = RND_RAND ();
+          mpfr_set_ui_2exp (y1, 1, -h, MPFR_RNDN);
+          mpfr_clear_flags ();
+          inex1 = mpfr_pow (y1, x, y1, rnd);
+          flags1 = __gmpfr_flags;
+          mpfr_clear_flags ();
+          inex2 = mpfr_root (y2, x, k, rnd);
+          flags2 = __gmpfr_flags;
+          if (!(mpfr_equal_p (y1, y2) && SAME_SIGN (inex1, inex2) &&
+                flags1 == flags2))
+            {
+              printf ("Error in cmp_pow on h=%d, i=%d, rnd=%s\n",
+                      h, i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              printf ("x = ");
+              mpfr_dump (x);
+              printf ("pow  = ");
+              mpfr_dump (y1);
+              printf ("with inex = %d, flags =", inex1);
+              flags_out (flags1);
+              printf ("root = ");
+              mpfr_dump (y2);
+              printf ("with inex = %d, flags =", inex2);
+              flags_out (flags2);
+              exit (1);
+            }
+        }
+    }
+
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -412,6 +464,7 @@ main (int argc, char *argv[])
   exact_powers (3, 1000);
   special ();
   bigint ();
+  cmp_pow ();
 
   mpfr_init (x);
 
