@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
-#define FTEST(N,NOT,FCT)                                        \
+#define FTEST_AUX(N,NOT,FCT)                                    \
   do                                                            \
     {                                                           \
       __gmpfr_flags = ex_flags;                                 \
@@ -54,6 +54,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
           flags_out (flags);                                    \
           exit (1);                                             \
         }                                                       \
+    }                                                           \
+  while (0)
+
+#define FTEST(N,NOT,FCT)                                        \
+  do                                                            \
+    {                                                           \
+      mpfr_exp_t e;                                             \
+      FTEST_AUX (N,NOT,FCT);                                    \
+      if (MPFR_IS_SINGULAR (x))                                 \
+        break;                                                  \
+      e = mpfr_get_exp (x);                                     \
+      set_emin (e);                                             \
+      set_emax (e);                                             \
+      FTEST_AUX (N,NOT,FCT);                                    \
+      set_emin (emin);                                          \
+      set_emax (emax);                                          \
     }                                                           \
   while (0)
 
@@ -101,11 +117,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
+  mpfr_exp_t emin, emax;
   mpfr_t x, y;
   mpfr_flags_t flags[2] = { 0, MPFR_FLAGS_ALL }, ex_flags;
   int i, r, fi;
 
   tests_start_mpfr ();
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, sizeof (unsigned long) * CHAR_BIT + 2);
   mpfr_init2 (y, 8);
