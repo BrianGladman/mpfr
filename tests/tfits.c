@@ -170,16 +170,20 @@ main (void)
         mpfr_mul_2exp (x, x, 40, MPFR_RNDN);
         CHECK_ALL (9, !!);
 
+        /* Check a non-integer number just below a power of two. */
+        mpfr_set_ui_2exp (x, 255, -2, MPFR_RNDN);
+        CHECK_ALL (10, !);
+
         /* Check the limits of the types (except 0 for unsigned types) */
-        CHECK_LIM (10, ULONG_MAX, mpfr_set_ui, mpfr_fits_ulong_p);
-        CHECK_LIM (20, LONG_MAX, mpfr_set_si, mpfr_fits_slong_p);
-        CHECK_LIM (25, LONG_MIN, mpfr_set_si, mpfr_fits_slong_p);
-        CHECK_LIM (30, UINT_MAX, mpfr_set_ui, mpfr_fits_uint_p);
-        CHECK_LIM (40, INT_MAX, mpfr_set_si, mpfr_fits_sint_p);
-        CHECK_LIM (45, INT_MIN, mpfr_set_si, mpfr_fits_sint_p);
-        CHECK_LIM (50, USHRT_MAX, mpfr_set_ui, mpfr_fits_ushort_p);
-        CHECK_LIM (60, SHRT_MAX, mpfr_set_si, mpfr_fits_sshort_p);
-        CHECK_LIM (65, SHRT_MIN, mpfr_set_si, mpfr_fits_sshort_p);
+        CHECK_LIM (20, ULONG_MAX, mpfr_set_ui, mpfr_fits_ulong_p);
+        CHECK_LIM (30, LONG_MAX, mpfr_set_si, mpfr_fits_slong_p);
+        CHECK_LIM (35, LONG_MIN, mpfr_set_si, mpfr_fits_slong_p);
+        CHECK_LIM (40, UINT_MAX, mpfr_set_ui, mpfr_fits_uint_p);
+        CHECK_LIM (50, INT_MAX, mpfr_set_si, mpfr_fits_sint_p);
+        CHECK_LIM (55, INT_MIN, mpfr_set_si, mpfr_fits_sint_p);
+        CHECK_LIM (60, USHRT_MAX, mpfr_set_ui, mpfr_fits_ushort_p);
+        CHECK_LIM (70, SHRT_MAX, mpfr_set_si, mpfr_fits_sshort_p);
+        CHECK_LIM (75, SHRT_MIN, mpfr_set_si, mpfr_fits_sshort_p);
 
         /* Check negative op */
         for (i = 1; i <= 4; i++)
@@ -236,10 +240,14 @@ main (void)
       mpfr_set_ui_2exp (x, 42, sizeof (uintmax_t) * 32, MPFR_RNDN);
       CHECK_MAX (8, !!);
 
+      /* Check a non-integer number just below a power of two. */
+      mpfr_set_ui_2exp (x, 255, -2, MPFR_RNDN);
+      CHECK_MAX (10, !);
+
       /* Check the limits of the types (except 0 for uintmax_t) */
-      CHECK_LIM (10, MPFR_UINTMAX_MAX, mpfr_set_uj, mpfr_fits_uintmax_p);
-      CHECK_LIM (20, MPFR_INTMAX_MAX, mpfr_set_sj, mpfr_fits_intmax_p);
-      CHECK_LIM (25, MPFR_INTMAX_MIN, mpfr_set_sj, mpfr_fits_intmax_p);
+      CHECK_LIM (20, MPFR_UINTMAX_MAX, mpfr_set_uj, mpfr_fits_uintmax_p);
+      CHECK_LIM (30, MPFR_INTMAX_MAX, mpfr_set_sj, mpfr_fits_intmax_p);
+      CHECK_LIM (35, MPFR_INTMAX_MIN, mpfr_set_sj, mpfr_fits_intmax_p);
 
       /* Check negative op */
       for (i = 1; i <= 4; i++)
