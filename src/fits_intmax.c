@@ -99,7 +99,12 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
     }
   else
     {
-      res = MPFR_GET_EXP (x) == e;
+      /* Warning! Due to the rounding, x can be an infinity. Here we use
+         the fact that singular numbers have a special exponent field,
+         thus well-defined and different from e, in which case this means
+         that the number does not fit. That's why we use MPFR_EXP, not
+         MPFR_GET_EXP. */
+      res = MPFR_EXP (x) == e;
     }
 
   mpfr_clear (x);
