@@ -68,6 +68,21 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #define test_generic_ui test_generic_si
 #include "tgeneric_ui.c"
 
+#define DEFN(N)                                                         \
+  static int powu##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
+  { return mpfr_pow_ui (y, x, N, rnd); }                                \
+  static int pows##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
+  { return mpfr_pow_si (y, x, N, rnd); }                                \
+  static int root##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
+  { return mpfr_root (y, x, N, rnd); }
+
+DEFN(2)
+DEFN(3)
+DEFN(4)
+DEFN(5)
+DEFN(17)
+DEFN(120)
+
 static void
 check_pow_ui (void)
 {
@@ -1623,6 +1638,31 @@ main (int argc, char **argv)
   test_generic_si (MPFR_PREC_MIN, 100, 100);
 
   data_check ("data/pow275", mpfr_pow275, "mpfr_pow275");
+
+  bad_cases (powu2, root2, "mpfr_pow_ui[2]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows2, root2, "mpfr_pow_ui[2]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu3, root3, "mpfr_pow_ui[3]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows3, root3, "mpfr_pow_ui[3]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu4, root4, "mpfr_pow_ui[4]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows4, root4, "mpfr_pow_ui[4]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu5, root5, "mpfr_pow_ui[5]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows5, root5, "mpfr_pow_ui[5]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu17, root17, "mpfr_pow_ui[17]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows17, root17, "mpfr_pow_ui[17]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu120, root120, "mpfr_pow_ui[120]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows120, root120, "mpfr_pow_ui[120]",
+             8, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;
