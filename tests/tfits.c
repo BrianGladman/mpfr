@@ -77,6 +77,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     }                                                           \
   while (0)
 
+#define CHECK_LIM(N,V,SET,FCT)                                  \
+  do                                                            \
+    {                                                           \
+      SET (x, V, MPFR_RNDN);                                    \
+      FTEST (N, !, FCT);                                        \
+      mpfr_add_si (x, x, (V) < 0 ? -1 : 1, MPFR_RNDN);          \
+      FTEST (N+1, !!, FCT);                                     \
+    }                                                           \
+  while (0)
+
 int
 main (void)
 {
@@ -130,42 +140,15 @@ main (void)
         CHECK_ALL (9, !!);
 
         /* Check the limits of the types (except 0 for unsigned types) */
-        mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
-        FTEST (10, !, mpfr_fits_ulong_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (11, !!, mpfr_fits_ulong_p);
-        mpfr_set_si (x, LONG_MAX, MPFR_RNDN);
-        FTEST (12, !, mpfr_fits_slong_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (13, !!, mpfr_fits_slong_p);
-        mpfr_set_si (x, LONG_MIN, MPFR_RNDN);
-        FTEST (14, !, mpfr_fits_slong_p);
-        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
-        FTEST (15, !!, mpfr_fits_slong_p);
-        mpfr_set_ui (x, UINT_MAX, MPFR_RNDN);
-        FTEST (16, !, mpfr_fits_uint_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (17, !!, mpfr_fits_uint_p);
-        mpfr_set_si (x, INT_MAX, MPFR_RNDN);
-        FTEST (18, !, mpfr_fits_sint_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (19, !!, mpfr_fits_sint_p);
-        mpfr_set_si (x, INT_MIN, MPFR_RNDN);
-        FTEST (20, !, mpfr_fits_sint_p);
-        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
-        FTEST (21, !!, mpfr_fits_sint_p);
-        mpfr_set_ui (x, USHRT_MAX, MPFR_RNDN);
-        FTEST (22, !, mpfr_fits_ushort_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (23, !!, mpfr_fits_ushort_p);
-        mpfr_set_si (x, SHRT_MAX, MPFR_RNDN);
-        FTEST (24, !, mpfr_fits_sshort_p);
-        mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        FTEST (25, !!, mpfr_fits_sshort_p);
-        mpfr_set_si (x, SHRT_MIN, MPFR_RNDN);
-        FTEST (26, !, mpfr_fits_sshort_p);
-        mpfr_sub_ui (x, x, 1, MPFR_RNDN);
-        FTEST (27, !!, mpfr_fits_sshort_p);
+        CHECK_LIM (10, ULONG_MAX, mpfr_set_ui, mpfr_fits_ulong_p);
+        CHECK_LIM (12, LONG_MAX, mpfr_set_si, mpfr_fits_slong_p);
+        CHECK_LIM (14, LONG_MIN, mpfr_set_si, mpfr_fits_slong_p);
+        CHECK_LIM (16, UINT_MAX, mpfr_set_ui, mpfr_fits_uint_p);
+        CHECK_LIM (18, INT_MAX, mpfr_set_si, mpfr_fits_sint_p);
+        CHECK_LIM (20, INT_MIN, mpfr_set_si, mpfr_fits_sint_p);
+        CHECK_LIM (22, USHRT_MAX, mpfr_set_ui, mpfr_fits_ushort_p);
+        CHECK_LIM (24, SHRT_MAX, mpfr_set_si, mpfr_fits_sshort_p);
+        CHECK_LIM (26, SHRT_MIN, mpfr_set_si, mpfr_fits_sshort_p);
 
         /* Check negative op */
         for (i = 1; i <= 4; i++)
@@ -223,18 +206,9 @@ main (void)
       CHECK_MAX (8, !!);
 
       /* Check the limits of the types (except 0 for uintmax_t) */
-      mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
-      FTEST (10, !, mpfr_fits_uintmax_p);
-      mpfr_add_ui (x, x, 1, MPFR_RNDN);
-      FTEST (11, !!, mpfr_fits_uintmax_p);
-      mpfr_set_sj (x, MPFR_INTMAX_MAX, MPFR_RNDN);
-      FTEST (12, !, mpfr_fits_intmax_p);
-      mpfr_add_ui (x, x, 1, MPFR_RNDN);
-      FTEST (13, !!, mpfr_fits_intmax_p);
-      mpfr_set_sj (x, MPFR_INTMAX_MIN, MPFR_RNDN);
-      FTEST (14, !, mpfr_fits_intmax_p);
-      mpfr_sub_ui (x, x, 1, MPFR_RNDN);
-      FTEST (15, !!, mpfr_fits_intmax_p);
+      CHECK_LIM (10, MPFR_UINTMAX_MAX, mpfr_set_uj, mpfr_fits_uintmax_p);
+      CHECK_LIM (12, MPFR_INTMAX_MAX, mpfr_set_sj, mpfr_fits_intmax_p);
+      CHECK_LIM (14, MPFR_INTMAX_MIN, mpfr_set_sj, mpfr_fits_intmax_p);
 
       /* Check negative op */
       for (i = 1; i <= 4; i++)
