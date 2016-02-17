@@ -3168,6 +3168,11 @@ Subtracting from $\Gamma(a)$ can yield a huge cancellation: we take into
 account the exact error bound, which is deduced from the different exponents
 involved. Further details can be found in the source code.
 
+For negative integers $a$ we use the following formula
+\cite[formula 6.5.19]{AbSt73}:
+\[ \Gamma(-n,x) = \frac{(-1)^n}{n!} [E_1(x) - e^{-x}
+   \sum_{j=0}^{n-1} \frac{(-1)^j \, j!}{x^{j+1}}]. \]
+
 \subsection{The Riemann Zeta function}
 
 The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
