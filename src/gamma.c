@@ -73,6 +73,8 @@ bits_fac (unsigned long n)
 {
   mpfr_t x, y;
   unsigned long r, k;
+  mpfr_flags_t saved_flags = __gmpfr_flags;
+
   mpfr_init2 (x, 38);
   mpfr_init2 (y, 38);
   mpfr_set_ui (x, n, MPFR_RNDZ);
@@ -89,6 +91,10 @@ bits_fac (unsigned long n)
     r -= n / k;
   mpfr_clear (x);
   mpfr_clear (y);
+
+  /* restore flags */
+  __gmpfr_flags = saved_flags;
+
   return r;
 }
 
