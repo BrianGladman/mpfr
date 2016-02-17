@@ -131,7 +131,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
           mpz_tdiv_qr (mx, r, mx, my);
           /* 0 <= |r| <= |my|, r has the same sign as mx */
         }
-      
+
       if (rnd_q == MPFR_RNDN)
         q_is_odd = mpz_tstbit (mx, 0);
       if (quo)                  /* mx is the quotient */
