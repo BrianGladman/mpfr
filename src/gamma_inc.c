@@ -241,7 +241,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
             }
           /* we stop when |t| < ulp(s), u > 0 and |x/u| < 1/2, which ensures
              that the tail is at most 2*ulp(s) */
-          MPFR_ASSERTD (MPFR_IS_ZERO(t) == 0);
+          MPFR_ASSERTD (MPFR_NOTZERO(t));
           if (MPFR_GET_EXP(t) + w <= exps && MPFR_IS_POS(u) &&
               MPFR_GET_EXP(x) + 1 < MPFR_GET_EXP(u))
             break;
@@ -379,7 +379,7 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
 
       mpfr_ui_div (t, 1, x, MPFR_RNDN); /* t = 1/x * (1 + theta) */
       mpfr_set (s, t, MPFR_RNDN);
-      MPFR_ASSERTD(MPFR_IS_ZERO(s) == 0);
+      MPFR_ASSERTD (MPFR_NOTZERO(s));
       exp_t = exp_s = MPFR_GET_EXP(s); /* max. exponent of s/t during loop */
       new_exp_s = exp_s;
 
@@ -433,7 +433,7 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
       mpfr_mul (s, s, t, MPFR_RNDN);
       if (MPFR_IS_ZERO(s))
         {
-          MPFR_ASSERTD(MPFR_IS_ZERO(t) == 0);
+          MPFR_ASSERTD (MPFR_NOTZERO(t));
           new_exp_s += MPFR_GET_EXP(t);
         }
       /* s = exp(-x) * (S +/- 2^err_s ulp(S)) * (1 + theta)^2.
@@ -445,12 +445,12 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
 
       err_s = (err_s >= 2) ? err_s + 2 : 4;
       /* now the error on s is bounded by 2^err_s ulp(s) */
-  
+
       mpfr_eint (t, neg_x, MPFR_RNDN); /* t = -E1(-x) * (1 + theta) */
       mpfr_neg (t, t, MPFR_RNDN); /* exact */
 
       exp_s = (MPFR_IS_ZERO(s)) ? new_exp_s : MPFR_GET_EXP(s);
-      MPFR_ASSERTD(MPFR_IS_ZERO(t) == 0);
+      MPFR_ASSERTD (MPFR_NOTZERO(t));
       exp_t = MPFR_GET_EXP(t);
       mpfr_sub (s, t, s, MPFR_RNDN); /* E_1(x) - exp(-x) * S */
       if (MPFR_IS_ZERO(s)) /* cancellation: increase working precision */
@@ -463,7 +463,7 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
       exp_s += err_s;
       exp_t -= 1;
       exp_s = (exp_s >= exp_t) ? exp_s + 1 : exp_t + 1;
-      MPFR_ASSERTD(MPFR_IS_ZERO(s) == 0);
+      MPFR_ASSERTD (MPFR_NOTZERO(s));
       err_s = exp_s - MPFR_GET_EXP(s);
       /* err(s) <= 1/2 * ulp(s) + 2^err_s * ulp(s) */
 
@@ -480,7 +480,7 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
       err_s = (err_s >= 2) ? err_s + 1 : 4;
 
       /* the final error is bounded by 2^err_s * ulp(s) */
-  
+
       /* Is there a better way to compute (-1)^n? */
       mpfr_set_si (t, -1, MPFR_RNDN);
       mpfr_pow (t, t, abs_a, MPFR_RNDN);
@@ -502,5 +502,3 @@ mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inex, rnd);
 }
-
-
