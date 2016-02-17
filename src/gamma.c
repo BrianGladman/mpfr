@@ -91,7 +91,12 @@ bits_fac (unsigned long n)
   mpfr_log2 (x, x, MPFR_RNDZ);
   r = mpfr_get_ui (x, MPFR_RNDU);  /* lower bound on ceil(x) */
   for (k = 2; k <= n; k *= 2)
-    r -= n / k;
+    {
+      /* Note: the approximation is accurate enough so that the
+         subtractions do not wrap. */
+      MPFR_ASSERTD (r >= n / k);
+      r -= n / k;
+    }
   mpfr_clear (x);
   mpfr_clear (y);
   MPFR_SAVE_EXPO_FREE (expo);
