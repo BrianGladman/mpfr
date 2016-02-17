@@ -114,7 +114,7 @@ check_specials (void)
 
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 2);
-  mpfr_set_str_binary (x, "-1");
+  mpfr_set_si (x, -1, MPFR_RNDN);
   mpfr_eint (x, x, MPFR_RNDN); /* eint1(1) = 0.219383934395520 */
   mpfr_set_str_binary (y, "-1e-2");
   if (mpfr_cmp (x, y) != 0)
@@ -122,6 +122,18 @@ check_specials (void)
       printf ("Error for x=-1, MPFR_RNDN\n");
       printf ("expected "); mpfr_dump (y);
       printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 10);
+  mpfr_set_prec (y, 10);
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_eint (y, x, MPFR_RNDN); /* eint1(2) = 0.0489005107080611 */
+  if (mpfr_cmp_si_2exp (y, -801, -14) != 0)
+    {
+      printf ("Error for x=-2, MPFR_RNDN\n");
+      printf ("expected -801/2^14\n");
+      printf ("got      "); mpfr_dump (y);
       exit (1);
     }
 
@@ -185,6 +197,18 @@ check_specials (void)
   mpfr_set_prec (y, 46);
   mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN);
   mpfr_eint (y, x, MPFR_RNDN);
+
+  mpfr_set_prec (x, 10);
+  mpfr_set_prec (y, 6);
+  mpfr_set_str (x, "-7.875", 10, MPFR_RNDN);
+  mpfr_eint (y, x, MPFR_RNDN);
+  if (mpfr_cmp_si_2exp (y, -45, -20) != 0)
+    {
+      printf ("Error for x=-7.875, MPFR_RNDN\n");
+      printf ("expected -45/2^20\n");
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);

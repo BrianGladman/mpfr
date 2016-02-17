@@ -335,7 +335,8 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           err += te + 1;
           if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
             err = MAX (MPFR_GET_EXP (ump), err);
-          err = MAX(0, err - MPFR_GET_EXP (tmp));
+          /* if tmp is zero, we surely cannot round correctly */
+          err = (MPFR_IS_ZERO(tmp)) ? prec :  MAX(0, err - MPFR_GET_EXP (tmp));
         }
       /* Note: we assume here that MPFR_CAN_ROUND returns the same result
          for rnd and MPFR_INVERT_RND(rnd) */
