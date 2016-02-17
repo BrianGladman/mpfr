@@ -190,6 +190,46 @@ specials (void)
   mpfr_clear (x);
 }
 
+/* tests for negative integer a: for -n <= a <= -1, perform k tests
+   with random x in 0..|a| and precision 'prec' */
+static void
+test_negint (long n, unsigned long k, mpfr_prec_t prec)
+{
+  long i, j;
+  mpfr_t a, x, y;
+
+  mpfr_init2 (a, prec);
+  mpfr_init2 (x, prec);
+  mpfr_init2 (y, prec);
+  for (i = 1; i <= n; i++)
+    {
+      mpfr_set_si (a, -i, MPFR_RNDN);
+      for (j = 1; j <= k; j++)
+        {
+          mpfr_urandomb (x, RANDS);
+          mpfr_mul_si (x, x, j, MPFR_RNDN);
+          mpfr_set_prec (y, prec + 20);
+          mpfr_gamma_inc (y, a, x, MPFR_RNDZ);
+          mpfr_gamma_inc (x, a, x, MPFR_RNDZ);
+          mpfr_prec_round (y, prec, MPFR_RNDZ);
+          if (mpfr_cmp (x, y))
+            {
+              printf ("Error in mpfr_gamma_inc(%ld,%ld) with MPFR_RNDZ\n",
+                      -i, j);
+              printf ("expected ");
+              mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
+              printf ("\ngot      ");
+              mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+              printf ("\n");
+              exit (1);
+            }
+        }
+    }
+  mpfr_clear (a);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -214,6 +254,8 @@ main (int argc, char *argv[])
     }
 
   specials ();
+
+  test_negint (30, 10, 53);
 
   for (p = MPFR_PREC_MIN; p < 100; p++)
     test_random (p, 10);
