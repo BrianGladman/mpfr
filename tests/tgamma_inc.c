@@ -218,9 +218,7 @@ main (int argc, char *argv[])
   for (p = MPFR_PREC_MIN; p < 100; p++)
     test_random (p, 10);
 
-  /* FIXME: once the case gamma_inc (-n, x) is implemented, we can activate
-     the generic tests below */
-  test_generic (MPFR_PREC_MIN, 100, 100);
+  test_generic (MPFR_PREC_MIN, 100, 5);
 
   tests_end_mpfr ();
   return 0;
