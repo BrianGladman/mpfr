@@ -119,7 +119,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
       if (ex + (mpfr_exp_t) mpz_sizeinbase (mx, 2) <
           ey + (mpfr_exp_t) mpz_sizeinbase (my, 2))
         {
-          tiny = 0;
+          tiny = 1;
           mpz_set (r, mx);
           mpz_set_ui (mx, 0);
         }
