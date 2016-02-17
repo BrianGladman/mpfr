@@ -33,10 +33,22 @@ there is no good way to avoid the Ziv loop:
   * One could consider the largest precision among all the numbers
     (each input and the output), but this could mean computations in
     an internal precision much larger than actually necessary.
+    Note: This is what was done in the trunk in r8699, before this
+    rewrite of mpfr_sum. MPFR 3.1 is buggy:
+      https://sympa.inria.fr/sympa/arc/mpfr/2013-10/msg00015.html
+      https://sympa.inria.fr/sympa/arc/mpfr/2013-11/msg00001.html
 
   * Split the inputs so that all the values have the same precision
     (suggestion from Demmel), but, in particular in small precision,
     this introduces an important overhead.
+
+This is not sufficient as Demmel's algorithm alone does not guarantee
+correct rounding. A Ziv loop would be too costly due to the possibility
+of having an exact result very close to a breakpoint. A solution for
+this problem could be to create a new array with the opposite of the
+supposed breakpoint as an additional input and redo the sum entirely
+in order to get an approximation to some error term. This is still not
+satisfactory.
 
 The time/memory complexity must no longer depend on the value of the
 exponents of the inputs, i.e. their order of magnitude.
