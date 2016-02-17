@@ -174,8 +174,14 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
       mpfr_set_prec (y, yprec);
       mpfr_set_prec (w, yprec);
 
-      /* Note: in precision p1, we test 4 special cases. */
-      for (n = 0; n < (prec == p1 ? nmax + 4 : nmax); n++)
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#define NSPEC 8
+#else
+#define NSPEC 4
+#endif
+
+      /* Note: in precision p1, we test NSPEC special cases. */
+      for (n = 0; n < (prec == p1 ? nmax + NSPEC : nmax); n++)
         {
           int infinite_input = 0;
           mpfr_flags_t flags;
@@ -200,12 +206,6 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           mpfr_set_prec (u, IEEE_DBL_MANT_DIG);
 #elif defined(ULONG_ARG1) || defined(ULONG_ARG2)
           mpfr_set_prec (u, sizeof (unsigned long) * CHAR_BIT);
-#endif
-
-#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-#define NSPEC 8
-#else
-#define NSPEC 4
 #endif
 
           if (n >= NSPEC || prec < p1)
