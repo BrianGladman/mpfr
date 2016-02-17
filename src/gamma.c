@@ -75,6 +75,8 @@ bits_fac (unsigned long n)
   unsigned long r, k;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_ASSERTD (n >= 1);
+
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (x, 38);
   mpfr_init2 (y, 38);
@@ -87,7 +89,7 @@ bits_fac (unsigned long n)
   mpfr_sqrt (y, y, MPFR_RNDZ);
   mpfr_mul (x, x, y, MPFR_RNDZ);
   mpfr_log2 (x, x, MPFR_RNDZ);
-  r = mpfr_get_ui (x, MPFR_RNDU);
+  r = mpfr_get_ui (x, MPFR_RNDU);  /* lower bound on ceil(x) */
   for (k = 2; k <= n; k *= 2)
     r -= n / k;
   mpfr_clear (x);
@@ -242,6 +244,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       unsigned long int u;
       mpfr_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, MPFR_RNDN);
+      MPFR_ASSERTD (u >= 2);
       if (u < 44787929UL && bits_fac (u - 1) <= p + (rnd_mode == MPFR_RNDN))
         /* bits_fac: lower bound on the number of bits of m,
            where gamma(x) = (u-1)! = m*2^e with m odd. */
