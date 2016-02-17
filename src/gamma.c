@@ -73,8 +73,13 @@ bits_fac (unsigned long n)
 {
   mpfr_t x, y;
   unsigned long r, k;
+  /* save flags */
   mpfr_flags_t saved_flags = __gmpfr_flags;
+  /* save also exponents so that the upper bound of e below can be stored
+     exactly (we need emin <= 2 <= emax) */
+  MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (x, 38);
   mpfr_init2 (y, 38);
   mpfr_set_ui (x, n, MPFR_RNDZ);
@@ -92,8 +97,9 @@ bits_fac (unsigned long n)
   mpfr_clear (x);
   mpfr_clear (y);
 
-  /* restore flags */
+  /* restore flags and exponents */
   __gmpfr_flags = saved_flags;
+  MPFR_SAVE_EXPO_FREE (expo);
 
   return r;
 }
