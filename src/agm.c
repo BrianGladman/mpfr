@@ -99,10 +99,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
   /* b (op2) and a (op1) are the 2 operands but we want b >= a */
   compare = mpfr_cmp (op1, op2);
   if (MPFR_UNLIKELY( compare == 0 ))
-    {
-      mpfr_set (r, op1, rnd_mode);
-      MPFR_RET (0); /* exact */
-    }
+    return mpfr_set (r, op1, rnd_mode);
   else if (compare > 0)
     {
       mpfr_srcptr t = op1;

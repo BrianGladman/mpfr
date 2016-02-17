@@ -160,6 +160,30 @@ check_large (void)
   mpfr_set_prec (agm, 904);
   mpfr_agm (agm, a, b, MPFR_RNDZ);
 
+  if (MPFR_PREC_MIN <= 1)
+    {
+      mpfr_set_prec (a, 17);
+      mpfr_set_prec (b, 9);
+      mpfr_set_prec (agm, 1);
+      mpfr_set_str_binary (a, "0.10100000000000000E-3");
+      mpfr_set_str_binary (b, "0.101000000E-3");
+      inex = mpfr_agm (agm, a, b, MPFR_RNDU);
+      if (mpfr_cmp_ui_2exp (agm, 1, -3) != 0)
+        {
+          printf ("Error in mpfr_agm (2)\n");
+          printf ("expected 0.1E-2\n");
+          printf ("got      "); mpfr_dump (agm);
+          exit (1);
+        }
+      if (inex <= 0)
+        {
+          printf ("Wrong ternary value in mpfr_agm (2)\n");
+          printf ("expected 1\n");
+          printf ("got      %d\n", inex);
+          exit (1);
+        }
+    }
+
   mpfr_clear (a);
   mpfr_clear (b);
   mpfr_clear (agm);
