@@ -38,11 +38,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    gamma(a,x) = x^a * sum((-x)^k/k!/(a+k), k=0..infinity)
 
    gamma(a,x) = x^a * exp(-x) * sum(x^k/(a*(a+1)*...*(a+k)), k=0..infinity)
-
-   For a negative integer, we have:
-
-   gamma(-n,x) = (-1)^n/n [E_1(x) - exp(-x) sum((-1)^j*j!/x^(j+1), j=0..n-1)]
 */
+
+static int
+mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t r);
 
 int
 mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
@@ -181,6 +180,9 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       MPFR_RET_NAN;
     }
 
+  if (mpfr_integer_p (a) && MPFR_SIGN(a) < 0)
+    return mpfr_gamma_inc_negint (y, a, x, rnd);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   w = MPFR_PREC(y) + 13; /* working precision */
@@ -190,7 +192,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_ZIV_INIT (loop, w);
   for (;;)
     {
-      mpfr_exp_t expu, precu;
+      mpfr_exp_t expu, precu, exps;
       mpfr_t s_abs;
       mpfr_exp_t decay = 0;
       MPFR_BLOCK_DECL (flags);
@@ -207,7 +209,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       precu = MPFR_GET_EXP(a) <= 0 ?
         MPFR_ADD_PREC (MPFR_PREC(a), 1 - MPFR_EXP(a))
         : (MPFR_EXP(a) <= MPFR_PREC(a)) ? MPFR_PREC(a) : MPFR_EXP(a);
-      MPFR_ASSERTN (precu + 1 <= MPFR_PREC_MAX);
+      MPFR_ASSERTD (precu + 1 <= MPFR_PREC_MAX);
       mpfr_set_prec (u, precu + 1);
       expu = (MPFR_EXP(a) > 0) ? MPFR_EXP(a) : 1;
 
@@ -228,6 +230,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_div (t, t, u, MPFR_RNDA); /* t = x^k/(a * ... * (a+k))
                                           * (1 + theta)^(2k+1) */
           mpfr_add (s, s, t, MPFR_RNDZ);
+          /* when s is zero, we consider ulp(s) = ulp(t) */
+          exps = (MPFR_IS_ZERO(s)) ? MPFR_GET_EXP(t) : MPFR_GET_EXP(s);
           if (MPFR_IS_NEG(a))
             {
               if (MPFR_IS_POS(t))
@@ -237,7 +241,8 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
             }
           /* we stop when |t| < ulp(s), u > 0 and |x/u| < 1/2, which ensures
              that the tail is at most 2*ulp(s) */
-          if (MPFR_GET_EXP(t) + w <= MPFR_GET_EXP(s) && MPFR_IS_POS(u) &&
+          MPFR_ASSERTD (MPFR_IS_ZERO(t) == 0);
+          if (MPFR_GET_EXP(t) + w <= exps && MPFR_IS_POS(u) &&
               MPFR_GET_EXP(x) + 1 < MPFR_GET_EXP(u))
             break;
 
@@ -245,7 +250,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
              u so that mpfr_add_ui (u, a, k) remains exact */
           if (MPFR_EXP(u) > expu) /* exponent shift in u */
             {
-              MPFR_ASSERTN(MPFR_EXP(u) == expu + 1);
+              MPFR_ASSERTD(MPFR_EXP(u) == expu + 1);
               expu = MPFR_EXP(u);
               mpfr_set_prec (u, mpfr_get_prec (u) + 1);
             }
@@ -287,7 +292,9 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
       e0 = MPFR_GET_EXP (t);
       e1 = (MPFR_IS_ZERO(s)) ? __gmpfr_emin : MPFR_GET_EXP (s);
       mpfr_sub (s, t, s, MPFR_RNDZ);
-      e2 = MPFR_GET_EXP (s);
+      /* if s is zero, we can assume ulp(s) = ulp(t), but anyway we won't
+         be able to round */
+      e2 = (MPFR_IS_ZERO(s)) ? e0 : MPFR_GET_EXP (s);
       /* the final error is at most 1 ulp (for the final subtraction)
          + 2^(e0-e2) ulps # for the error in t
          + 2^(decay+1)*(2k+7) ulps * 2^(e1-e2) # for the error in gamma(a,x) */
@@ -330,3 +337,170 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inex, rnd);
 }
+
+/* For a negative integer, we have (formula 6.5.19):
+
+   gamma(-n,x) = (-1)^n/n! [E_1(x) - exp(-x) sum((-1)^j*j!/x^(j+1), j=0..n-1)]
+
+   See also http://arxiv.org/pdf/1407.0349v1.pdf.
+
+   Assumes 'a' is a negative integer.
+*/
+static int
+mpfr_gamma_inc_negint (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x,
+                       mpfr_rnd_t rnd)
+{
+  mpfr_t s, t, abs_a, neg_x;
+  unsigned long j;
+  mpfr_prec_t w;
+  int inex;
+  mpfr_exp_t exp_s, new_exp_s, exp_t, err_s, logj;
+  MPFR_GROUP_DECL(group);
+  MPFR_ZIV_DECL(loop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_ASSERTD(mpfr_integer_p (a));
+  MPFR_ASSERTD(mpfr_cmp_ui (a, 0) < 0);
+
+  MPFR_TMP_INIT_ABS(abs_a, a);
+
+  /* below, theta represents any value such that |theta| <= 2^(-w) */
+
+  w = MPFR_PREC(y) + 10; /* initial working precision */
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  MPFR_GROUP_INIT_2(group, w, s, t);
+  MPFR_ZIV_INIT (loop, w);
+  for (;;)
+    {
+      /* we require |a| <= 2^(w-3) for the error analysis below */
+      if (MPFR_GET_EXP(a) + 3 > w)
+        w = MPFR_GET_EXP(a) + 3;
+
+      mpfr_ui_div (t, 1, x, MPFR_RNDN); /* t = 1/x * (1 + theta) */
+      mpfr_set (s, t, MPFR_RNDN);
+      MPFR_ASSERTD(MPFR_IS_ZERO(s) == 0);
+      exp_t = exp_s = MPFR_GET_EXP(s); /* max. exponent of s/t during loop */
+      new_exp_s = exp_s;
+
+      for (j = 1; mpfr_cmp_ui (abs_a, j) > 0; j++)
+        {
+          /* invariant: t = (-1)^(j-1)*(j-1)!/x^j * (1 + theta)^(2j-1) */
+          mpfr_mul_ui (t, t, j, MPFR_RNDN);
+          mpfr_neg (t, t, MPFR_RNDN); /* exact */
+          mpfr_div (t, t, x, MPFR_RNDN);
+          /* now t = (-1)^j*j!/x^(j+1) * (1 + theta)^(2j+1).
+             We have (1 + theta)^(2j+1) = exp((2j+1)*log(1+theta)).
+             For |u| <= 1/2, we have |log(1+u)| <= 1.4 |u| thus:
+             |(1+theta)^(2j+1)-1| <= max |exp(1.4*(2j+1)*u)-1| for |u|<=2^(-w).
+             Now for |v| <= 1/2 we have |exp(v)-1| <= 0.7*|v| thus:
+             |(1+theta)^(2j+1) - 1| <= 2*(2j+1)*2^(-w)
+             as long as 1.4*(2j+1)*2^(-w) <= 1/2, which is true when j<2^(w-3).
+             Since j < |a| it suffices that |a| <= 2^(w-3).
+             In that case the rel. error on t is bounded by 2*(2j+1)*2^(-w),
+             thus the error in ulps is bounded by 2*(2j+1) ulp(t). */
+          if (MPFR_IS_ZERO(t)) /* underflow on t */
+            break;
+          if (MPFR_GET_EXP(t) > exp_t)
+            exp_t = MPFR_GET_EXP(t);
+          mpfr_add (s, s, t, MPFR_RNDN);
+          /* if s is zero, we can assume its ulp is that of t */
+          new_exp_s = (MPFR_IS_ZERO(s)) ? MPFR_GET_EXP(t) : MPFR_GET_EXP(s);
+          if (new_exp_s > exp_s)
+            exp_s = new_exp_s;
+        }
+
+      /* the error on s is bounded by (j-1) * 2^(exp_s - EXP(s)) * 1/2
+         for the mpfr_add roundings, plus
+         sum(2*(2i+1), i=1..j-1) * 2^(exp_t - EXP(s)) for the error on t.
+         The latter sum is (2*j^2-2) * 2^(exp_t - EXP(s)). */
+
+      logj = MPFR_INT_CEIL_LOG2(j);
+      exp_s += logj - 1;
+      exp_t += 1 + 2 * logj;
+
+      /* now the error on s is bounded by 2^(exp_s-EXP(s))+2^(exp_t-EXP(s)) */
+
+      exp_s = (exp_s >= exp_t) ? exp_s + 1 : exp_t + 1;
+      err_s = exp_s - new_exp_s;
+
+      /* now the error on the sum S := sum((-1)^j*j!/x^(j+1), j=0..n-1)
+         is bounded by 2^err_s ulp(s) */
+
+      MPFR_TMP_INIT_NEG(neg_x, x);
+
+      mpfr_exp (t, neg_x, MPFR_RNDN); /* t = exp(-x) * (1 + theta) */
+      mpfr_mul (s, s, t, MPFR_RNDN);
+      if (MPFR_IS_ZERO(s))
+        {
+          MPFR_ASSERTD(MPFR_IS_ZERO(t) == 0);
+          new_exp_s += MPFR_GET_EXP(t);
+        }
+      /* s = exp(-x) * (S +/- 2^err_s ulp(S)) * (1 + theta)^2.
+         = exp(-x) * (S +/- 2^err_s ulp(S)) * (1 +/- 3 ulp(1))
+         The error on s is bounded by:
+         exp(-x) * [2^err_s*ulp(S) + S*3*ulp(1) + 2^err_s*ulp(S)*3*ulp(1)]
+         <= ulp(s) * [2^(err_s+1) + 6 + 1]
+         <= ulp(s) * 2^(err_s+2) as long as err_s >= 2. */
+
+      err_s = (err_s >= 2) ? err_s + 2 : 4;
+      /* now the error on s is bounded by 2^err_s ulp(s) */
+  
+      mpfr_eint (t, neg_x, MPFR_RNDN); /* t = -E1(-x) * (1 + theta) */
+      mpfr_neg (t, t, MPFR_RNDN); /* exact */
+
+      exp_s = (MPFR_IS_ZERO(s)) ? new_exp_s : MPFR_GET_EXP(s);
+      MPFR_ASSERTD(MPFR_IS_ZERO(t) == 0);
+      exp_t = MPFR_GET_EXP(t);
+      mpfr_sub (s, t, s, MPFR_RNDN); /* E_1(x) - exp(-x) * S */
+      if (MPFR_IS_ZERO(s)) /* cancellation: increase working precision */
+        goto next_w;
+
+      /* err(s) <= 1/2 * ulp(s) [mpfr_sub]
+         + 2^err_s * 2^(exp_s-EXP(s)) * ulp(s) [previous error on s]
+         + 1/2 * 2^(exp_t-EXP(s)) * ulp(s) [error on t] */
+
+      exp_s += err_s;
+      exp_t -= 1;
+      exp_s = (exp_s >= exp_t) ? exp_s + 1 : exp_t + 1;
+      MPFR_ASSERTD(MPFR_IS_ZERO(s) == 0);
+      err_s = exp_s - MPFR_GET_EXP(s);
+      /* err(s) <= 1/2 * ulp(s) + 2^err_s * ulp(s) */
+
+      /* divide by n! */
+      mpfr_gamma (t, abs_a, MPFR_RNDN); /* t = (n-1)! * (1 + theta) */
+      mpfr_mul (t, t, abs_a, MPFR_RNDN); /* t = n! * (1 + theta)^2 */
+      mpfr_div (s, s, t, MPFR_RNDN);
+      /* since (1 + theta)^2 converts to an error of at most 3 ulps
+         for w >= 2, the final error is at most:
+         2 * (1/2 + 2^err_s) * ulp(s) [error on previous s]
+         + 2 * 3 * ulp(s)           [error on t]
+         + 1 * ulp(s)                 [product of errors]
+         = ulp(s) * (2^(err_s+1) + 8) */
+      err_s = (err_s >= 2) ? err_s + 1 : 4;
+
+      /* the final error is bounded by 2^err_s * ulp(s) */
+  
+      /* Is there a better way to compute (-1)^n? */
+      mpfr_set_si (t, -1, MPFR_RNDN);
+      mpfr_pow (t, t, abs_a, MPFR_RNDN);
+      if (MPFR_IS_NEG(t))
+        mpfr_neg (s, s, MPFR_RNDN);
+
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, w - err_s, MPFR_PREC(y), rnd)))
+        break;
+
+    next_w:
+      MPFR_ZIV_NEXT (loop, w);
+      MPFR_GROUP_REPREC_2(group, w, s, t);
+    }
+  MPFR_ZIV_FREE (loop);
+
+  inex = mpfr_set (y, s, rnd);
+  MPFR_GROUP_CLEAR(group);
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inex, rnd);
+}
+
+

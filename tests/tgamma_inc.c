@@ -26,8 +26,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TWO_ARGS
 #define TEST_RANDOM_POS2 0 /* the 2nd argument is never negative */
 #define TGENERIC_NOWARNING 1
-#define TEST_RANDOM_EMAX 32
+#define TEST_RANDOM_EMAX 8
 #define TEST_RANDOM_EMIN -32
+#define REDUCE_EMAX TEST_RANDOM_EMAX
+#define REDUCE_EMIN TEST_RANDOM_EMIN
 #include "tgeneric.c"
 
 /* do k random tests at precision p */
@@ -72,9 +74,39 @@ static void
 specials (void)
 {
   mpfr_t a, x;
+  int inex;
 
   mpfr_init2 (a, 2);
   mpfr_init2 (x, 2);
+
+  /* check gamma_inc(2,0) = 1 is exact */
+  mpfr_set_ui (a, 2, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_clear_inexflag ();
+  inex = mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui (a, 1))
+    {
+      printf ("Error for gamma_inc(2,0)\n");
+      printf ("expected 1\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  if (inex != 0)
+    {
+      printf ("Wrong ternary value for gamma_inc(2,0)\n");
+      printf ("expected 0\n");
+      printf ("got      %d\n", inex);
+      exit (1);
+    }
+  if (mpfr_inexflag_p ())
+    {
+      printf ("Wrong inexact flag for gamma_inc(2,0)\n");
+      printf ("expected 0\n");
+      printf ("got      1\n");
+      exit (1);
+    }
 
   /* check gamma_inc(0,1) = 0.219383934395520 */
   mpfr_set_ui (a, 0, MPFR_RNDN);
@@ -84,6 +116,62 @@ specials (void)
     {
       printf ("Error for gamma_inc(0,1)\n");
       printf ("expected 0.25\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  /* check gamma_inc(-1,1) = 0.148495506775922 */
+  mpfr_set_si (a, -1, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 1, -3))
+    {
+      printf ("Error for gamma_inc(-1,1)\n");
+      printf ("expected 0.125\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  /* check gamma_inc(-2,1) = 0.109691967197760 */
+  mpfr_set_si (a, -2, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 1, -3))
+    {
+      printf ("Error for gamma_inc(-2,1)\n");
+      printf ("expected 0.125\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  /* check gamma_inc(-3,1) = 0.109691967197760 */
+  mpfr_set_si (a, -3, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 3, -5))
+    {
+      printf ("Error for gamma_inc(-3,1)\n");
+      printf ("expected 3/32\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  /* check gamma_inc(-100,1) = 0.00364201018241046 */
+  mpfr_set_si (a, -100, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  if (mpfr_cmp_ui_2exp (a, 1, -8))
+    {
+      printf ("Error for gamma_inc(-100,1)\n");
+      printf ("expected 1/256\n");
       printf ("got      ");
       mpfr_out_str (stdout, 10, 0, a, MPFR_RNDN);
       printf ("\n");
@@ -132,7 +220,7 @@ main (int argc, char *argv[])
 
   /* FIXME: once the case gamma_inc (-n, x) is implemented, we can activate
      the generic tests below */
-  /* test_generic (MPFR_PREC_MIN, 100, 100); */
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   tests_end_mpfr ();
   return 0;

@@ -131,6 +131,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define REDUCE_EMAX mpfr_get_emax ()
 #endif
 
+/* same for mpfr_get_emin() */
+#ifndef REDUCE_EMIN
+#define REDUCE_EMIN mpfr_get_emin ()
+#endif
+
 static void
 test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 {
@@ -227,10 +232,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               if (n <= 1)
                 {
                   mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
-                  mpfr_set_exp (x, mpfr_get_emin ());
+                  mpfr_set_exp (x, REDUCE_EMIN);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
-                  mpfr_set_exp (u, mpfr_get_emin ());
+                  mpfr_set_exp (u, REDUCE_EMAX);
 #endif
                 }
               else  /* 2 <= n <= 3 */
@@ -239,7 +244,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
-                  mpfr_setmax (u, mpfr_get_emax ());
+                  mpfr_setmax (u, REDUCE_EMAX);
 #endif
                 }
             }
