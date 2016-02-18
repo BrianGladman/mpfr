@@ -966,10 +966,16 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (corr >= -1 && corr <= 2);
 
-    if (pos)  /* positive result */
+    MPFR_SIGN (sum) = pos ? MPFR_SIGN_POS : MPFR_SIGN_NEG;
+
+    if (MPFR_UNLIKELY (sq == 1))  /* precision 1 */
+      {
+        sump[0] = MPFR_LIMB_HIGHBIT;
+        e += pos ? corr : 1 - corr;
+      }
+    else if (pos)  /* positive result with sq > 1 */
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
-        MPFR_SET_POS (sum);
         sump[0] &= ~ MPFR_LIMB_MASK (sd);
 
         if (corr > 0)
@@ -1007,10 +1013,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               }
           }
       }
-    else  /* negative result */
+    else  /* negative result with sq > 1 */
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
-        MPFR_SET_NEG (sum);
 
         /* abs(x + corr) = - (x + corr) = com(x) + (1 - corr) */
 

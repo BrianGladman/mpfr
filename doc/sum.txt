@@ -915,12 +915,10 @@ At this point, the variable inex contains the correct ternary value
 that needs to be applied to the significand. So, the next step is to
 change the representation of the significand, i.e. do a negation or
 complement if the sum is negative, and apply the correction at the
-same time. We distinguish two cases:
+same time.
 
-[FIXME for precision 1, added after this has been written: the following
-obviously does not work when the correction is equivalent to adding 2
-for precision ≥ 2 (corr = 2 if pos = 1, corr = −1 if pos = 0), as the
-significand has only 1 bit in precision 1.]
+First, we can set the sign of the MPFR number from the value of pos.
+For the moment, let us assume that sq ≥ 2. We distinguish two cases:
 
   * pos = 1 (positive sum). We first set the sign of the MPFR number
     to positive. Since the significand can contain garbage in the
@@ -935,7 +933,7 @@ significand has only 1 bit in precision 1.]
     not hold in the variable; in this case, the value 1 is added with
     mpn_add_1 starting at the second limb, which necessarily exists,
     otherwise this would mean that the precision of the MPFR number
-    is 1, and this is not possible (MPFR_PREC_MIN = 2). In case of
+    is 1, and this is not possible (we assumed sq ≥ 2). In case of
     carry out, meaning a change of binade, the most significant bit
     of the significand is set to 1 without touching the other bits
     (this is important because if corr = 2 and the significand has
@@ -1012,6 +1010,19 @@ significand has only 1 bit in precision 1.]
         whose complement is 10000…000 and com(x) − 1 is 01111…111.
         The change of binade is handled like in the pos = 1 case for
         corr < 0.
+
+If sq = 1, the solution described above does not work when we need to
+add 2 to the significand since 2 is not representable on 1 bit. And
+as this case sq = 1 is actually simpler, we prefer to consider it
+separately. First, we can force the only limb to MPFR_LIMB_HIGHBIT,
+which is the value 1 shifted GMP_NUMB_BITS−1 bits to the left, i.e.
+with MSB = 1, the other bits being 0 (these are the trailing bits):
+this is the only possible significand in precision 1. Now we need to
+add the correction term, which corresponds to a modification of the
+exponent. In the positive case, we just add corr to the exponent e.
+In the negative case, as forcing the only limb to MPFR_LIMB_HIGHBIT
+corresponds to the computation of com(x), we just add (1 − corr) to
+the exponent e, following the formula given in the case sq > 1.
 
 Finally, we set the exponent of the MPFR number to e (not with
 MPFR_SET_EXP because this exponent may not be in the current exponent
