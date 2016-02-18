@@ -3173,6 +3173,80 @@ For negative integers $a$ we use the following formula
 \[ \Gamma(-n,x) = \frac{(-1)^n}{n!} [E_1(x) - e^{-x}
    \sum_{j=0}^{n-1} \frac{(-1)^j \, j!}{x^{j+1}}]. \]
 
+\subsubsection{Legendre's continued fraction}
+
+In \cite{Gautschi79}, Gautschi discusses the computation of $\Gamma(a,x)$
+with Legendre's continued fraction:
+\[ x^{-a} e^x \Gamma(a,x) = \frac{1}{x+} \frac{1-a}{1+} \frac{1}{x+}
+   \frac{2-a}{x+} \frac{2}{x+} \cdots \]
+where by contracting two consecutive terms we get:
+\begin{equation} \label{eq:legendre_cf}
+x^{-a} e^x \Gamma(a,x) = \sum_{k=0}^{\infty} t_k,
+\end{equation}
+with $t_k = \rho_0 \rho_1 \cdots \rho_k$,
+$\rho_0 = 1$, $\rho_k = -a_k \sigma_{k-1} / (1 + a_k \sigma_{k-1})$
+for $k \geq 1$, $\sigma_0 = 1$,
+$\sigma_k = 1 / (1 + a_k \sigma_{k-1})$ for $k \geq 1$, and for $k \geq 1$:
+\[ a_k = \frac{k (a-k)}{(x + 2k - 1 - a) (x + 2k + 1 - a)}. \]
+Gautschi proves that when  $x \geq 1/4$ and $a \leq x + 1/4$, then
+$|\rho_k| \leq 1$ for all $k \geq 1$. However this is not enough to bound
+the tail of the above series.
+
+We consider here the case where $a < 1$, thus $a_k \leq 0$
+(remember $\Gamma(a,x)$ is only defined for $x \geq 0$).
+When $k$ goes to infinity, $a_k = -1/4 + x/(4k) + O(1/k^2)$.
+More precisely, we prove that for $x \geq |a| + 1$, we have
+$a_k \leq -1/4 + x/(4k)$. Indeed,
+\[ a_k + \frac{1}{4} - \frac{x}{4k} = 
+   \frac{-k(3x^2-2xa-a^2+1)-x(x^2-2xa+a^2-1)}{4k(x+2k-1-a)(x + 2 k + 1 - a)}. \]
+The denominator is positive for $k \geq 1$ as long as $x-a+1 > 0$,
+which holds if $a < 1$.
+The coefficient of $-k$ in the numerator can be written
+$4x^2-(x+a)^2+1$, which is positive when $x > |a|$;
+if $x \geq |a| + 1$, then $x - |a| \geq 1$, thus
+$x^2 - 2 x |a| + a^2 \geq 1$, and the coefficient of $-x$ is nonnegative.
+
+Assume further that $k > x$.
+Gautschi also proved that if $k > a$ --- which holds since
+$k > x > a$ --- then $\sigma_k \leq 2$ whenever $x \geq 1/4$ ---
+which also holds since $x \geq |a| + 1$.
+It yields:
+\[ \rho_k = \frac{-a_k \sigma_{k-1}}{1 + a_k \sigma_{k-1}} \leq 1 - x/k. \]
+
+Assume now that we stop the series computation in Eq.~(\ref{eq:legendre_cf})
+after $t_k$. The neglected part is:
+\[ t_k (\rho_{k+1} + \rho_{k+1} \rho_{k+2} + \rho_{k+1} \rho_{k+2} \rho_{k+3}
+   + \cdots). \]
+Let $u_{k,\ell} := \rho_{k} \rho_{k+1} \cdots \rho_{\ell}$.
+Since $\rho_j \leq 1 - x/j$ and $\log(1-u) \leq -u$ for $0 < u < 1$:
+\[ \log u_{k,\ell} = \sum_{j=k}^{\ell} \log \rho_j
+   \leq \sum_{j=k}^{\ell} \log (1-x/j)
+   \leq -x \sum_{j=k}^{\ell} \frac{1}{j}
+   = -x (\psi(\ell+1) - \psi(k+1)). \]
+Using $\log(x-1) \leq \psi(x) \leq \log x$ yields:
+\[ \log u_{k,\ell} \leq x (\log(k+1) - \log(\ell)). \]
+Now since $\rho_k < 1$:
+\[ \rho_k + \rho_k \rho_{k+1} + \rho_k \rho_{k+1} \rho_{k+2} + \cdots
+   \leq 1 + \sum_{\ell=k+1}^{\infty} u_{k,\ell}
+   \leq 1 + \sum_{j=1}^{\infty} \exp(x \log\frac{k+1}{k+j}). \]
+We split the sum into blocks of $k+1$ consecutive terms:
+\begin{eqnarray*}
+\sum_{\ell=k+1}^{\infty} u_{k,\ell}
+   &\leq& \sum_{j=1}^{\infty} \left( \frac{k+1}{k+j} \right)^x
+   \leq (k+1) \left( \frac{k+1}{k+1} \right)^x
+   + (k+1) \left( \frac{k+1}{2k+2} \right)^x
+   + (k+1) \left( \frac{k+1}{3k+3} \right)^x + \cdots \\
+   &\leq& (k+1) (1 + (1/2)^x + (1/3)^x + \cdots) = (k+1) \zeta(x).
+\end{eqnarray*}
+
+\begin{lemma}
+Assume $a < 1$, $x \geq |a| + 1$,
+and we stop the series computation in Eq.~(\ref{eq:legendre_cf})
+after $t_k$, with $k > x$. Then the error on the sum of the right hand side
+of Eq.~(\ref{eq:legendre_cf}) is bounded by
+\[ t_k (1 + (k+1) \zeta(x)). \]
+\end{lemma}
+
 \subsection{The Riemann Zeta function}
 
 The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
