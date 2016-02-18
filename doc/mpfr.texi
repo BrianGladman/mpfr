@@ -2083,6 +2083,9 @@ to @var{op}}.
 Set @var{rop} to the value of the Gamma function on @var{op}, resp. the
 incomplete Gamma function on @var{op} and @var{op2},
 rounded in the direction @var{rnd}.
+(In the literature, @code{mpfr_gamma_inc} is called upper
+incomplete Gamma function,
+or sometimes complementary incomplete Gamma function.)
 For @code{mpfr_gamma} (and @code{mpfr_gamma_inc} when @var{op2} is zero),
 when @var{op} is a negative integer, @var{rop} is set to NaN@.
 
