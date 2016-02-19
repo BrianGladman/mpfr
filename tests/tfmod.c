@@ -299,22 +299,6 @@ special (void)
   if (!mpfr_equal_p (r, x) || inexact != 0)
     test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
 
-  mpfr_set_zero (x, 1);
-  mpfr_nextabove (x);
-  mpfr_set_inf (y, 1);
-  mpfr_nextbelow (y);
-  inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
-  if (!mpfr_equal_p (r, x) || inexact != 0)
-    {
-      printf ("Error for mpfr_fmod (r, nextabove(0), nextbelow(+inf),"
-              " MPFR_RNDN)\n");
-      printf ("Expected inex = 0, r = ");
-      mpfr_dump (x);
-      printf ("Got      inex = %d, r = ", inexact);
-      mpfr_dump (r);
-      exit (1);
-    }
-
   mpfr_set_prec (x, 380);
   mpfr_set_prec (y, 385);
   mpfr_set_str_binary (x, "0.11011010010110011101011000100100101100101011010001011100110001100101111001010100001011111110111100101110101010110011010101000100000100011101101100001011101110100111101111111010001001000010000110010110011100111000001110111010000100101001010111100100010001101001110100011110010000000001110001111001101100111011001000110110011100100011111110010100011001000001001011010111010000000000E0");
@@ -336,6 +320,7 @@ bug20090519 (void)
 {
   mpfr_t x, y, r;
   int inexact;
+
   mpfr_inits2 (100, x, y, r, (mpfr_ptr) 0);
 
   mpfr_set_prec (x, 3);
@@ -376,7 +361,46 @@ bug20090519 (void)
   mpfr_sin (y, y, MPFR_RNDN);
   check (r, x, y, MPFR_RNDN);
 
-  mpfr_clears(r, x, y, (mpfr_ptr) 0);
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
+}
+
+static void
+bug20160217 (void)
+{
+  mpfr_t x, y, r;
+  int inexact, i;
+  mpfr_exp_t emin, emax;
+
+  mpfr_inits2 (53, x, y, r, (mpfr_ptr) 0);
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  for (i = 0; i <= 1; i++)
+    {
+      mpfr_set_zero (x, 1);
+      mpfr_nextabove (x);
+      mpfr_set_inf (y, 1);
+      mpfr_nextbelow (y);
+      inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
+      if (!mpfr_equal_p (r, x) || inexact != 0)
+        {
+          printf ("Error for mpfr_fmod (r, nextabove(0), nextbelow(+inf),"
+                  " MPFR_RNDN)%s\n", i ? "extended exponent range" : "");
+          printf ("Expected inex = 0, r = ");
+          mpfr_dump (x);
+          printf ("Got      inex = %d, r = ", inexact);
+          mpfr_dump (r);
+          exit (1);
+        }
+      set_emin (MPFR_EMIN_MIN);
+      set_emax (MPFR_EMAX_MAX);
+    }
+
+  set_emin (emin);
+  set_emax (emax);
+
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
 }
 
 int
@@ -385,6 +409,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   bug20090519 ();
+  bug20160217 ();
 
   test_generic (MPFR_PREC_MIN, 100, 100);
 
