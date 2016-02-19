@@ -132,90 +132,90 @@ static void
 special (void)
 {
   int inexact;
-  mpfr_t x, y, r, mnan;
+  mpfr_t x, y, r, t;
 
-  mpfr_inits (x, y, r, mnan, (mpfr_ptr) 0);
+  mpfr_inits (x, y, r, t, (mpfr_ptr) 0);
 
-  mpfr_set_nan (mnan);
+  mpfr_set_nan (t);
 
   /* fmod (NaN, NaN) is NaN */
   mpfr_set_nan (x);
   mpfr_set_nan (y);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (NaN, +0) is NaN */
   mpfr_set_ui (y, 0, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+1, 0) is NaN */
   mpfr_set_ui (x, 1, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (0, 0) is NaN */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+inf, +0) is NaN */
   mpfr_set_inf (x, +1);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (-inf, +0) is NaN */
   mpfr_set_inf (x, -1);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (-inf, -0) is NaN */
   mpfr_neg (x, x, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (-inf, +1) is NaN */
   mpfr_set_ui (y, +1, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+inf, +1) is NaN */
   mpfr_neg (x, x, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+inf, -inf) is NaN */
   mpfr_set_inf (y, -1);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (-inf, -inf) is NaN */
   mpfr_neg (x, x, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (-inf, +inf) is NaN */
   mpfr_neg (y, y, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+inf, +inf) is NaN */
   mpfr_neg (x, x, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (x, +inf) = x, if x is finite */
   mpfr_set_ui (x, 1, MPFR_RNDN);
@@ -267,13 +267,13 @@ special (void)
   mpfr_set_ui (y, 0, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+0, -0) is NaN */
   mpfr_neg (y, y, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
-    test_failed (r, mnan, 0, inexact, x, y, MPFR_RNDN);
+    test_failed (r, t, 0, inexact, x, y, MPFR_RNDN);
 
   /* fmod (+0, +1) = +0 */
   mpfr_set_ui (y, 1, MPFR_RNDN);
@@ -321,12 +321,12 @@ special (void)
   mpfr_set_str_binary (y, "0.1100011000011101011010001100010111001110110111001101010010111100111100011010010011011101111101111001010111111110001001100001111101001000000010100101111001001110010110000111001000101010111001001000100101011111000010100110001111000110011011010101111101100110010101011010011101100001011101001000101111110110110110000001001101110111110110111110111111001001011110001110011111100000000000000E-1");
   mpfr_set_prec (r, 2);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDA);
-  mpfr_set_prec (mnan, 2);
-  mpfr_set_ui_2exp (mnan, 3, -5, MPFR_RNDN);
+  mpfr_set_prec (t, 2);
+  mpfr_set_ui_2exp (t, 3, -5, MPFR_RNDN);
   if (mpfr_cmp_ui_2exp (r, 3, -5) || inexact <= 0)
-    test_failed (r, mnan, 1, inexact, x, y, MPFR_RNDA);
+    test_failed (r, t, 1, inexact, x, y, MPFR_RNDA);
 
-  mpfr_clears (x, y, r, mnan, (mpfr_ptr) 0);
+  mpfr_clears (x, y, r, t, (mpfr_ptr) 0);
   return;
 }
 
