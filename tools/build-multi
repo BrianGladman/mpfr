@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+# Build and install multiple MPFR versions (given as tarballs),
+# and add XML library descriptors for ABI Compliance Checker.
+# See: http://lvc.github.io/abi-compliance-checker/
+#
+# Example of use after running this script:
+#   abi-compliance-checker -lib mpfr -old 3.0.1.xml -new 3.1.0.xml
+
+set -e
+
+if [[ $# -lt 2 || ! -d "$1" ]] then
+  echo "Usage: $0 <dir> <tarball1> <tarball2> ..." >&2
+  exit 1
+fi
+
+dir=$1
+shift
+
+mj()
+{
+  make ${MAKE_JOBS:+-j$MAKE_JOBS} "$@"
+}
+
+for i in "$@"
+do
+  echo "$i"
+  tar -C "$dir" -xf "$i"
+  src=$dir/$i:t:r:r
+  pushd "$src"
+  version=$(<VERSION)
+  [[ $version < 3.1.1 ]] && perl -pi -e 's/__gmp_const/const/g' **/*.{c,h}
+  prefix=$PWD:h/mpfr/$version
+  ./configure --prefix="$prefix"
+  mj
+  mj check
+  make install
+  # Remove the mpf2mpfr.h header file: it is useless here and it yields
+  # "conflicting types" errors because abi-compliance-checker includes
+  # it before mpfr.h while it should be included after.
+  rm "$prefix/include/mpf2mpfr.h"
+  popd
+  rm -r -- "$src"
+  # http://lvc.github.io/abi-compliance-checker/Xml-Descriptor.html
+  cat <<EOF > "$dir/$version.xml"
+<version>
+    $version
+</version>
+<headers>
+    $prefix/include/
+</headers>
+<libs>
+    $prefix/lib/
+</libs>
+EOF
+done
