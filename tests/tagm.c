@@ -160,33 +160,48 @@ check_large (void)
   mpfr_set_prec (agm, 904);
   mpfr_agm (agm, a, b, MPFR_RNDZ);
 
-  if (MPFR_PREC_MIN <= 1)
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (agm);
+}
+
+static void
+check_eq (void)
+{
+  mpfr_t a, b, agm;
+  int p;
+
+  mpfr_init2 (a, 17);
+  mpfr_init2 (b, 9);
+
+  mpfr_set_str_binary (b, "0.101000000E-3");
+  mpfr_set (a, b, MPFR_RNDN);
+
+  for (p = MPFR_PREC_MIN; p <= 2; p++)
     {
-      mpfr_set_prec (a, 17);
-      mpfr_set_prec (b, 9);
-      mpfr_set_prec (agm, 1);
-      mpfr_set_str_binary (a, "0.10100000000000000E-3");
-      mpfr_set_str_binary (b, "0.101000000E-3");
+      int inex;
+
+      mpfr_init2 (agm, p);
       inex = mpfr_agm (agm, a, b, MPFR_RNDU);
-      if (mpfr_cmp_ui_2exp (agm, 1, -3) != 0)
+      if (mpfr_cmp_ui_2exp (agm, 5 - p, -5) != 0)
         {
-          printf ("Error in mpfr_agm (2)\n");
-          printf ("expected 0.1E-2\n");
-          printf ("got      "); mpfr_dump (agm);
+          printf ("Error in check_eq for p = %d: expected %d*2^(-5), got ",
+                  p, 5 - p);
+          mpfr_dump (agm);
           exit (1);
         }
       if (inex <= 0)
         {
-          printf ("Wrong ternary value in mpfr_agm (2)\n");
+          printf ("Wrong ternary value in check_eq for p = %d\n", p);
           printf ("expected 1\n");
           printf ("got      %d\n", inex);
           exit (1);
         }
+      mpfr_clear (agm);
     }
 
   mpfr_clear (a);
   mpfr_clear (b);
-  mpfr_clear (agm);
 }
 
 static void
@@ -341,6 +356,7 @@ main (int argc, char* argv[])
   check_special ();
 
   check_large ();
+  check_eq ();
   check4 ("2.0", "1.0", MPFR_RNDN, "1.456791031046906869", -1);
   check4 ("6.0", "4.0", MPFR_RNDN, "4.949360872472608925", 1);
   check4 ("62.0", "61.0", MPFR_RNDN, "61.498983718845075902", -1);
