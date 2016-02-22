@@ -180,9 +180,11 @@ To make a release (for the MPFR team):
      Also update the "API Compatibility" section in the manual (mpfr.texi).
      Check with abi-compliance-checker (ABI Compliance Checker)[*], on the
      latest MPFR releases built with no configure options (except --prefix),
-     that no changes have been missed. Note that abi-compliance-checker can
-     only check the symbols, types and constants; it cannot detect just a
-     change in the behavior, thus may miss some incompatibilities.
+     that no changes have been missed. The ^/misc/build-multi script in the
+     repository may be useful to prepare data for abi-compliance-checker.
+     Note that abi-compliance-checker can only check the symbols, types
+     and constants; it cannot detect just a change in the behavior, thus
+     may miss some incompatibilities.
      Update the FAQ.html file with update-faq (and check it) in the doc
      directory.
      [*] http://lvc.github.io/abi-compliance-checker/
