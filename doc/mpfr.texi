@@ -2053,19 +2053,19 @@ Set @var{rop} to the factorial of @var{op}, rounded in the direction @var{rnd}.
 @deftypefun int mpfr_eint (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the exponential integral of @var{op},
 rounded in the direction @var{rnd}.
-For positive @var{op},
-the exponential integral is the sum of Euler's constant, of the logarithm
-of @var{op}, and of the sum for k from 1 to infinity of
+This is the sum of Euler's constant, of the logarithm
+of the absolute value of @var{op}, and of the sum for k from 1 to infinity of
 @ifnottex
-@var{op} to the power k, divided by k and factorial(k)
+@var{op} to the power k, divided by k and factorial(k).
 @end ifnottex
 @tex
-$@var{op}^k/(k \cdot k!)$
+$@var{op}^k/(k \cdot k!)$.
 @end tex
+For positive @var{op}, it corresponds to the Ei function at @var{op}
 (see formula 5.1.10 from the Handbook of Mathematical Functions from
-Abramowitz and Stegun).
-For negative @var{op}, @var{rop} is set to the opposite of the
-E1 exponential integral (sometimes called eint1)
+Abramowitz and Stegun),
+and for negative @var{op}, to the opposite of the
+E1 function (sometimes called eint1)
 at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @end deftypefun
 
