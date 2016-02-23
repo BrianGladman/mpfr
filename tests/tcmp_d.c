@@ -32,7 +32,7 @@ main (void)
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);
 
   mpfr_set_d (x, 2.34763465, MPFR_RNDN);
-  if (mpfr_cmp_d (x, 2.34763465) !=0 )
+  if (mpfr_cmp_d (x, 2.34763465) != 0)
     {
       printf ("Error in mpfr_cmp_d 2.34763465 and ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar('\n');
@@ -44,7 +44,7 @@ main (void)
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar('\n');
       exit (1);
     }
-  if (mpfr_cmp_d (x, 2.4) >=0 )
+  if (mpfr_cmp_d (x, 2.4) >= 0)
     {
       printf ("Error in mpfr_cmp_d 2.4 and ");
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar('\n');
