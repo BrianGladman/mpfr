@@ -26,8 +26,10 @@ int
 main (void)
 {
   mpfr_t x;
+  mpfr_exp_t emin;
 
   tests_start_mpfr ();
+  emin = mpfr_get_emin ();
 
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);
 
@@ -67,6 +69,16 @@ main (void)
       printf ("Error in mpfr_cmp_d (Inf, 0)\n");
       exit (1);
     }
+
+  /* Test in reduced exponent range. */
+  set_emin (1);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  if (mpfr_cmp_d (x, 0.9) <= 0)
+    {
+      printf ("Error in reduced exponent range.\n");
+      exit (1);
+    }
+  set_emin (emin);
 
 #if !defined(MPFR_ERRDIVZERO)
   /* Check NAN */
