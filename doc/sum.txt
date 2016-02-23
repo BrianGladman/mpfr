@@ -40,7 +40,12 @@ there is no good way to avoid the Ziv loop:
 
   * Split the inputs so that all the values have the same precision
     (suggestion from Demmel), but, in particular in small precision,
-    this introduces an important overhead.
+    this introduces an important overhead. Moreover, the lack of
+    subnormals makes this tricky as this could generate numbers that
+    are not representable due to a too small exponent; this might be
+    solved with internal versions of raw addition and subtraction
+    that support a wider exponent range (they are considered for a
+    correct fmma implementation).
 
 This is not sufficient as Demmel's algorithm alone does not guarantee
 correct rounding. A Ziv loop would be too costly due to the possibility
