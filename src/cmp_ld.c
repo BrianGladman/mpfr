@@ -27,6 +27,9 @@ mpfr_cmp_ld (mpfr_srcptr b, long double d)
 {
   mpfr_t tmp;
   int res;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
   res = mpfr_set_ld (tmp, d, MPFR_RNDN);
@@ -39,8 +42,12 @@ mpfr_cmp_ld (mpfr_srcptr b, long double d)
       res = mpfr_set_ld (tmp, d, MPFR_RNDN);
     }
   MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp (b, tmp);
-  mpfr_clear (tmp);
 
+  MPFR_CLEAR_FLAGS ();
+  res = mpfr_cmp (b, tmp);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+
+  mpfr_clear (tmp);
+  MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }

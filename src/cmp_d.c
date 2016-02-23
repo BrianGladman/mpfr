@@ -28,11 +28,18 @@ mpfr_cmp_d (mpfr_srcptr b, double d)
   mpfr_t tmp;
   int res;
   mp_limb_t tmp_man[MPFR_LIMBS_PER_DOUBLE];
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   MPFR_TMP_INIT1(tmp_man, tmp, IEEE_DBL_MANT_DIG);
   res = mpfr_set_d (tmp, d, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp (b, tmp);
 
+  MPFR_CLEAR_FLAGS ();
+  res = mpfr_cmp (b, tmp);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+
+  MPFR_SAVE_EXPO_FREE (expo);
   return res;
 }
