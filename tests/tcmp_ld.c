@@ -73,11 +73,16 @@ main (void)
   {
     int c;
 
-    mpfr_clear_erangeflag ();
+    mpfr_clear_flags ();
     c = mpfr_cmp_ld (x, DBL_NAN);
-    if (c != 0 || !mpfr_erangeflag_p ())
+    if (c != 0 || __gmpfr_flags != MPFR_FLAGS_ERANGE)
       {
         printf ("ERROR for NAN (1)\n");
+        printf ("Expected 0, got %d\n", c);
+        printf ("Expected flags:");
+        flags_out (MPFR_FLAGS_ERANGE);
+        printf ("Got flags:     ");
+        flags_out (__gmpfr_flags);
 #ifdef MPFR_NANISNAN
         printf ("The reason is that NAN == NAN. Please look at the configure "
                 "output\nand Section \"In case of problem\" of the INSTALL "
@@ -85,12 +90,18 @@ main (void)
 #endif
         exit (1);
       }
+
     mpfr_set_nan (x);
-    mpfr_clear_erangeflag ();
+    mpfr_clear_flags ();
     c = mpfr_cmp_ld (x, 2.0);
-    if (c != 0 || !mpfr_erangeflag_p ())
+    if (c != 0 || __gmpfr_flags != MPFR_FLAGS_ERANGE)
       {
         printf ("ERROR for NAN (2)\n");
+        printf ("Expected 0, got %d\n", c);
+        printf ("Expected flags:");
+        flags_out (MPFR_FLAGS_ERANGE);
+        printf ("Got flags:     ");
+        flags_out (__gmpfr_flags);
 #ifdef MPFR_NANISNAN
         printf ("The reason is that NAN == NAN. Please look at the configure "
                 "output\nand Section \"In case of problem\" of the INSTALL "
