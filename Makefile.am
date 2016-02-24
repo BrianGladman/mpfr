@@ -25,7 +25,8 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/version.c examples/can_round.c
 
 EXTRA_DIST = PATCHES VERSION \
-  tools/ck-copyright-notice tools/ck-version-info tools/get_patches.sh \
+  tools/ck-copyright-notice tools/ck-news tools/ck-version-info \
+  tools/get_patches.sh \
   $(DATAFILES)
 
 bench:
@@ -36,6 +37,8 @@ bench:
 #   file doesn't end with "-dev", check that the -version-info value is
 #   up-to-date. Note: this is a heuristic, to detect some mistakes.
 # * Check that copyright notices exist and appear to be correct.
+# * Check the NEWS file.
 dist-hook:
 	cd $(srcdir) && tools/ck-version-info
 	cd $(srcdir) && tools/ck-copyright-notice
+	cd $(srcdir) && tools/ck-news
