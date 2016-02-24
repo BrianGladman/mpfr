@@ -34,7 +34,7 @@ there is no good way to avoid the Ziv loop:
     (each input and the output), but this could mean computations in
     an internal precision much larger than actually necessary.
     Note: This is what was done in the trunk in r8699, before this
-    rewrite of mpfr_sum. MPFR 3.1 is buggy:
+    rewrite of mpfr_sum. MPFR 3.1.3 and earlier are buggy:
       https://sympa.inria.fr/sympa/arc/mpfr/2013-10/msg00015.html
       https://sympa.inria.fr/sympa/arc/mpfr/2013-11/msg00001.html
 
@@ -47,13 +47,21 @@ there is no good way to avoid the Ziv loop:
     that support a wider exponent range (they are considered for a
     correct fmma implementation).
 
-This is not sufficient as Demmel's algorithm alone does not guarantee
-correct rounding. A Ziv loop would be too costly due to the possibility
-of having an exact result very close to a breakpoint. A solution for
-this problem could be to create a new array with the opposite of the
-supposed breakpoint as an additional input and redo the sum entirely
-in order to get an approximation to some error term. This is still not
-satisfactory.
+This allows one to get an accurate result, but not correct rounding.
+A Ziv loop as done with the previous mpfr_sum implementation would be
+too costly due to the possibility of having an exact result extremely
+close to a breakpoint (which is either a machine number or a midpoint
+between two consecutive machine numbers, depending on the considered
+rounding mode). A simple solution for this problem could be to create
+a new array with the opposite of this breakpoint as an additional
+input and redo the sum entirely in order to get an approximation to
+the corresponding error term, thus the sign of this error term. But
+the error term may not be representable due to the lack of subnormals
+in MPFR (in this case, one would get underflows, with no information
+on the sign of the error term), unless raw addition and subtraction
+with a wider exponent range are implemented (as mentioned above). And
+even when underflows do not occur, this would have poor performance
+as all the computations need to be redone.
 
 The time/memory complexity must no longer depend on the value of the
 exponents of the inputs, i.e. their order of magnitude.
