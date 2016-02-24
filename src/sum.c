@@ -25,12 +25,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* FIXME: In the case where one or several input pointers point to the
    output variable, we need to store the significand in a new temporary
-   area, because these inputs may still need to be read for the possible
-   TMD resolution. Alternatively, since this is not necessarily a rare
-   case (doing s += sum(x[i],0<=i<n) should not be regarded as uncommon),
-   it may be better to optimize it by allocating a bit more for the second
-   sum_raw invocation and delaying the copy of the significand when this
-   occurs. Add a testcase to "tsum.c".
+   area (as usual), because these inputs may still need to be read for
+   the possible TMD resolution. Alternatively, since this is not
+   necessarily a rare case (doing s += sum(x[i],0<=i<n) should not be
+   regarded as uncommon), it may be better to optimize it by allocating
+   a bit more for the second sum_raw invocation and delaying the copy of
+   the significand when this occurs. Add a testcase to "tsum.c".
    Remove the sentences about overlapping from doc/mpfr.texi once this is
    fixed. */
 
