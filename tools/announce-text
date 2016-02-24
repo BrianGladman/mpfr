@@ -36,7 +36,7 @@ cd $tmpdir
 
 #vers=$(svn ls --xml "$root/tags" | xmlstarlet sel -T -t -v \
 #  "//entry[not(commit/@revision < //entry/commit/@revision)]/name" -)
-vers=$(svn ls -v "$root/tags" | perl -ne \
+[ -z "$vers" ] && vers=$(svn ls -v "$root/tags" | perl -ne \
   'm,^\s*(\d+)\s.*\s(\d+\.\d+\.\d+)/, && $1 > $r and ($r,$v) = ($1,$2);
    END { print $v }')
 echo "MPFR version: $vers" >&2
