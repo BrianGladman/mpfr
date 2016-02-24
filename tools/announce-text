@@ -19,6 +19,8 @@
 #   nopgpsig=1  to disable checking of the PGP signatures.
 #   nogforge=1  to disable checking of the tarballs on InriaForge.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
+#
+# When it is run from a working copy, setting $root is not necessary.
 
 set -e
 
