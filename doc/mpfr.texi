@@ -619,7 +619,7 @@ gcc myprogram.c -lmpfr -lgmp
 
 @cindex Libtool
 MPFR is built using Libtool and an application can use that to link if
-desired, @MPFRpxreftop{libtool.info, GNU Libtool}
+desired, @MPFRpxreftop{libtool, GNU Libtool}
 @c Note: the .info extension has been added to avoid the following bug:
 @c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
 @c which occurs when reading the info file from the build directory:
