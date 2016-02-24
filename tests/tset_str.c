@@ -270,7 +270,7 @@ main (int argc, char *argv[])
           mpfr_clear (y);
           exit (1);
         }
-      tests_free (str, strlen (str) + 1);
+      mpfr_free_str (str);
     }
 
   for (i = 2; i <= 62; i++)
