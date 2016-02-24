@@ -17,6 +17,7 @@
 #   root=<repository_root>
 #   vers=<mpfr_version>
 #   nopgpsig=1  to disable checking of the PGP signatures.
+#   nowebsrv=1  to disable checking of the mpfr.org web server.
 #   nogforge=1  to disable checking of the tarballs on InriaForge.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
 #
@@ -24,7 +25,7 @@
 
 set -e
 
-tmpdir=`mktemp -d /tmp/announce-text-XXXXXXXX`
+tmpdir=$(mktemp -d /tmp/announce-text-XXXXXXXX)
 trap 'rm -rf $tmpdir' 0 1 2 15
 echo "Temporary directory: $tmpdir" >&2
 
@@ -78,16 +79,33 @@ echo "Getting the files from the www directory..." >&2
 for i in tar.bz2 tar.gz tar.xz zip
 do
   svn cat "$www/mpfr-$vers.$i" > "mpfr-$vers.$i"
-  if [ -z "$nopgpsig" ]; then
-    svn cat "$www/mpfr-$vers.$i.asc" > "mpfr-$vers.$i.asc"
-    gpg --verify "mpfr-$vers.$i.asc" >&2
-    rm "mpfr-$vers.$i.asc"
-  fi
 done
 sha1sum mpfr-$vers.* > sha1sum.out
 sha256sum mpfr-$vers.* > sha256sum.out
 unzip -jq mpfr-$vers.zip '*/NEWS'
-rm mpfr-*
+
+if [ -z "$nopgpsig" ]; then
+  echo "Checking the signatures..." >&2
+  for i in mpfr-$vers.*
+  do
+    svn cat "$www/$i.asc" > "$i.asc"
+    gpg --verify "$i.asc" >&2
+  done
+fi
+
+if [ -z "$nowebsrv" ]; then
+  echo "Checking the mpfr.org web server..." >&2
+  for i in $(cat ls1)
+  do
+    echo "  [$i]" >&2
+    [ -f "$i" ] || svn cat "$www/$i" > "$i"
+    wget -O file "http://www.mpfr.org/mpfr-$base/$i"
+    cmp file "$i"
+    rm file
+  done
+fi
+
+rm mpfr*
 
 if [ $vers = $base ] && [ -z "$nogforge" ]; then
   echo "Comparing with InriaForge..." >&2
