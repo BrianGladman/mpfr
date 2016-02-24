@@ -1,12 +1,16 @@
 #!/bin/sh
 
 # This announce-text script should be run before publishing an announce
-# of a new GNU MPFR release. It does some checking, then it outputs the
-# announce text to stdout. Information messages are written to stderr.
+# of a new GNU MPFR release or release candidate. It does some checking,
+# then it outputs the announce text to stdout. Information messages are
+# written to stderr.
 #
 # Warning! The release name in the announce text may contain accented
 # letters. Make sure they are preserved if your locales are not UTF-8
 # based. Moreover, you may need to modify the text.
+#
+# Specific dependencies:
+#   GNU Coreutils (sha1sum, sha256sum, date), svn, gpg, unzip, wget.
 #
 # Usage: announce-text [ <variable_settings> ]
 # where arguments can be, for instance:
@@ -39,9 +43,11 @@ cd $tmpdir
 [ -z "$vers" ] && vers=$(svn ls -v "$root/tags" | perl -ne \
   'm,^\s*(\d+)\s.*\s(\d+\.\d+\.\d+)/, && $1 > $r and ($r,$v) = ($1,$2);
    END { print $v }')
+base=${vers%-rc*}
 echo "MPFR version: $vers" >&2
+echo "Base version: $base" >&2
 
-www="$root/misc/www/mpfr-$vers"
+www="$root/misc/www/mpfr-$base"
 echo "MPFR $vers www directory: $www" >&2
 svn ls "$www" | sort > ls1
 cat <<EOF > ls2
@@ -63,7 +69,7 @@ EOF
 missing=$(diff ls1 ls2 | sed -n 's/^> //p')
 if [ -n "$missing" ]; then
   echo "Missing files in the www directory:" $missing >&2
-  exit 1
+  [ $vers != $base ]
 fi
 
 echo "Getting the files from the www directory..." >&2
@@ -78,9 +84,10 @@ do
 done
 sha1sum mpfr-$vers.* > sha1sum.out
 sha256sum mpfr-$vers.* > sha256sum.out
+unzip -jq mpfr-$vers.zip '*/NEWS'
 rm mpfr-*
 
-if [ -z "$nogforge" ]; then
+if [ $vers = $base ] && [ -z "$nogforge" ]; then
   echo "Comparing with InriaForge..." >&2
   gforge="https://gforge.inria.fr"
   wget -O files.html "$gforge/frs/?group_id=136"
@@ -98,7 +105,7 @@ if [ -z "$nogforge" ]; then
   rm mpfr-* sums-gforge
 fi
 
-if [ -z "$nognuftp" ]; then
+if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   echo "Comparing with GNU FTP (ftp.gnu.org)..." >&2
   for i in tar.bz2 tar.gz tar.xz zip
   do
@@ -113,22 +120,24 @@ if [ -z "$nognuftp" ]; then
 fi
 
 # Do not use a pipe in order to check the exit status.
-svn cat "$root/tags/$vers/NEWS" > NEWS
-sed -n "/^Changes .* to version ${vers}:/,/^\$/p" NEWS > Changes
+#svn cat "$root/tags/$vers/NEWS" > NEWS
+
+sed -n "/^Changes .* to version ${base}:/,/^\$/p" NEWS > Changes
 if [ "$(wc -l < Changes)" -lt 3 ]; then
   echo "The Changes file is too small:" >&2
   cat Changes >&2
   exit 1
 fi
 
-rname=$(sed -n "/^Changes .* to version ${vers%.*}\.0:/,+1 {
+rname=$(sed -n "/^Changes .* to version ${base%.*}\.0:/,+1 {
     s/.*The \(\".*\"\) release.*/\1/p
   }" NEWS)
 
-pl=${vers##*.}
+pl=${base##*.}
 [ $pl -gt 0 ] && rname="$rname, patch level $pl"
 
-cat <<EOF
+if [ $vers = $base ]; then
+  cat <<EOF
 Subject: Announce: GNU MPFR $vers is released
 
 GNU MPFR $vers ($rname), a C library for
@@ -147,6 +156,23 @@ and from the GNU FTP site:
 
 Thanks very much to those who sent us bug reports and/or tested the
 release candidate.
+EOF
+else
+  cat <<EOF
+Subject: GNU MPFR $base Release Candidate
+
+The release of GNU MPFR $base ($rname)
+is imminent. Please help to make this release as good as possible
+by downloading and testing this release candidate:
+
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.zip
+EOF
+fi
+
+cat <<EOF
 
 The SHA1 digests:
 EOF
@@ -159,10 +185,10 @@ cat sha256sum.out
 cat <<EOF
 
 The signatures:
-http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.xz.asc
-http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.bz2.asc
-http://www.mpfr.org/mpfr-$vers/mpfr-$vers.tar.gz.asc
-http://www.mpfr.org/mpfr-$vers/mpfr-$vers.zip.asc
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz.asc
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2.asc
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz.asc
+http://www.mpfr.org/mpfr-$base/mpfr-$vers.zip.asc
 
 Each tarball is signed by Vincent Lefèvre. This can be verified
 using the DSA key ID 98C3739D; this key can be retrieved with:
@@ -178,8 +204,11 @@ The signatures can be verified with: gpg --verify <file.asc>
 You should check that the key fingerprint matches.
 
 EOF
+
 cat Changes
-cat <<EOF
+
+if [ $vers = $base ]; then
+  cat <<EOF
 You can send success and failure reports to <mpfr@inria.fr>, and give
 us the canonical system name (by running the "./config.guess" script),
 the processor and the compiler version, in order to complete the
@@ -187,3 +216,14 @@ the processor and the compiler version, in order to complete the
 
 Regards,
 EOF
+else
+  cat <<EOF
+Please send success and failure reports with "./config.guess" output
+to <mpfr@inria.fr>.
+
+If no problems are found, GNU MPFR $base should be released
+around $(date --iso-8601 --date='7 days').
+
+Regards,
+EOF
+fi
