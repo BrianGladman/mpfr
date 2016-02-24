@@ -76,8 +76,8 @@ do
     rm "mpfr-$vers.$i.asc"
   fi
 done
-md5sum mpfr-$vers.* > md5sum.out
 sha1sum mpfr-$vers.* > sha1sum.out
+sha256sum mpfr-$vers.* > sha256sum.out
 rm mpfr-*
 
 if [ -z "$nogforge" ]; then
@@ -90,7 +90,7 @@ if [ -z "$nogforge" ]; then
   do
     wget "$gforge$i"
   done
-  for i in md5sum sha1sum
+  for i in sha1sum sha256sum
   do
     $i mpfr-$vers.* > sums-gforge
     diff $i.out sums-gforge >&2
@@ -104,7 +104,7 @@ if [ -z "$nognuftp" ]; then
   do
     wget http://ftp.gnu.org/gnu/mpfr/mpfr-$vers.$i
   done
-  for i in md5sum sha1sum
+  for i in sha1sum sha256sum
   do
     $i mpfr-$vers.* > sums-gnu
     diff $i.out sums-gnu >&2
@@ -148,14 +148,14 @@ and from the GNU FTP site:
 Thanks very much to those who sent us bug reports and/or tested the
 release candidate.
 
-The MD5's:
-EOF
-cat md5sum.out
-cat <<EOF
-
-The SHA1's:
+The SHA1 digests:
 EOF
 cat sha1sum.out
+cat <<EOF
+
+The SHA256 digests:
+EOF
+cat sha256sum.out
 cat <<EOF
 
 The signatures:
