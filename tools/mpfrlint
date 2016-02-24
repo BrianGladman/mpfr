@@ -185,8 +185,11 @@ autoconf minimal versions differ:
 EOF
 
 # In case of problems, one can also skip files or use "grep -v"...
+# In particular, skip the openout.* files, which are created by "make pdf"
+# (they are in the doc/mpfr.t2p/mpfr.t2d/pdf/check_recorder directory, and
+# unfortunately codespell can't skip directories such as mpfr.t2p).
 which codespell > /dev/null 2> /dev/null &&
-  codespell -q3 -S algorithm2e.sty,algorithms.tex,texinfo.tex \
+  codespell -q3 -S 'algorithm2e.sty,algorithms.tex,texinfo.tex,openout.*' \
     AUTHORS BUGS INSTALL NEWS README TODO doc examples $srctests
 
 cd "$dir"
