@@ -1253,8 +1253,6 @@ system provides the @samp{_Decimal64} data type
 (recent versions of GCC support this data type);
 to use @code{mpfr_set_decimal64}, one should define the macro
 @code{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
-@c GCC 4.2.0 required to be configured with --enable-decimal-float
-@c but GCC 4.4.3 seems to have decimal support by default
 @code{mpfr_set_q} might fail if the numerator (or the
 denominator) can not be represented as a @code{mpfr_t}.
 
