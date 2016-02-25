@@ -331,6 +331,7 @@ extern "C" {
 __MPFR_DECLSPEC const char * mpfr_get_version _MPFR_PROTO ((void));
 __MPFR_DECLSPEC const char * mpfr_get_patches _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_tls_p          _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int mpfr_buildopt_float128_p     _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_decimal_p      _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_gmpinternals_p _MPFR_PROTO ((void));
 __MPFR_DECLSPEC const char * mpfr_buildopt_tune_case _MPFR_PROTO ((void));

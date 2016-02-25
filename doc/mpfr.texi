@@ -3075,6 +3075,12 @@ compiler-level Thread Local Storage (that is, MPFR was built with the
 zero otherwise.
 @end deftypefun
 
+@deftypefun int mpfr_buildopt_float128_p (void)
+Return a non-zero value if MPFR was compiled with @samp{__float128} support
+(that is, MPFR was built with the @code{--enable-float128} configure option),
+return zero otherwise.
+@end deftypefun
+
 @deftypefun int mpfr_buildopt_decimal_p (void)
 Return a non-zero value if MPFR was compiled with decimal float support (that
 is, MPFR was built with the @code{--enable-decimal-float} configure option),
@@ -3627,6 +3633,8 @@ that were added after MPFR 2.2, and in which MPFR version.
 @item @code{mpfr_asprintf} in MPFR 2.4.
 
 @item @code{mpfr_buildopt_decimal_p} and @code{mpfr_buildopt_tls_p} in MPFR 3.0.
+
+@item @code{mpfr_buildopt_float128_p} in MPFR 3.2.
 
 @item @code{mpfr_buildopt_gmpinternals_p} and @code{mpfr_buildopt_tune_case}
 in MPFR 3.1.

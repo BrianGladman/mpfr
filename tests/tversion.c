@@ -67,6 +67,17 @@ main (void)
     }
 
   if (
+#ifdef MPFR_WANT_FLOAT128
+      !
+#endif
+      mpfr_buildopt_float128_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_float128_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
 #ifdef MPFR_WANT_DECIMAL_FLOATS
       !
 #endif
@@ -88,8 +99,10 @@ main (void)
       err = 1;
     }
 
-  printf ("[tversion] TLS = %s, decimal = %s, GMP internals = %s\n",
+  printf ("[tversion] TLS = %s, float128 = %s, decimal = %s,"
+          " GMP internals = %s\n",
           mpfr_buildopt_tls_p () ? "yes" : "no",
+          mpfr_buildopt_float128_p () ? "yes" : "no",
           mpfr_buildopt_decimal_p () ? "yes" : "no",
           mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
 
