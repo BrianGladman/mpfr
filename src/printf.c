@@ -132,6 +132,7 @@ mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
   mpfr_free_str (str);
   return ret;
 }
+
 #endif /* _MPFR_H_HAVE_FILE */
 
 int
