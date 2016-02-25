@@ -116,6 +116,42 @@ main (void)
   else
     printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
 
+  printf ("[tversion] gmp_printf: hhd = "
+#if defined(NPRINTF_HH)
+          "no"
+#else
+          "yes"
+#endif
+          ", lld = "
+#if defined(NPRINTF_LL)
+          "no"
+#else
+          "yes"
+#endif
+          ", jd = "
+#if defined(NPRINTF_J)
+          "no"
+#else
+          "yes"
+#endif
+          ", td = "
+#if defined(NPRINTF_T)
+          "no"
+#elif defined(PRINTF_T)
+          "yes"
+#else
+          "?"
+#endif
+          ", Ld = "
+#if defined(NPRINTF_L)
+          "no"
+#elif defined(PRINTF_L)
+          "yes"
+#else
+          "?"
+#endif
+          "\n");
+
   if (strcmp (mpfr_get_patches (), "") != 0)
     printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
 
