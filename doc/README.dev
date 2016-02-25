@@ -461,6 +461,17 @@ List of macros used for checking MPFR:
 
 ===========================================================================
 
+Before testing any macro in a .c file, one needs:
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+except if mpfr-impl.h (for the library) or mpfr-test.h (for the tests) is
+included first, because these header files already have the above code.
+
+===========================================================================
+
 The GNU Coding standards can be read at:
   http://www.gnu.org/prep/standards_toc.html
 ISO C Names and corresponding headers:
