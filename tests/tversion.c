@@ -20,6 +20,11 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
 int
@@ -105,6 +110,20 @@ main (void)
           mpfr_buildopt_float128_p () ? "yes" : "no",
           mpfr_buildopt_decimal_p () ? "yes" : "no",
           mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
+
+  printf ("[tversion] intmax_t = "
+#if defined(_MPFR_H_HAVE_INTMAX_T)
+          "yes"
+#else
+          "no"
+#endif
+          ", printf = "
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
+          "yes"
+#else
+          "no"
+#endif
+          "\n");
 
   printf ("[tversion] gmp_printf: hhd = "
 #if defined(NPRINTF_HH)
