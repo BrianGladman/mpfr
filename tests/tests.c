@@ -21,9 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #ifdef HAVE_CONFIG_H
-# if HAVE_CONFIG_H
-#  include "config.h"     /* for a build within gmp */
-# endif
+# include "config.h"
 #endif
 
 #include <float.h>
