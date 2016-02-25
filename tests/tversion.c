@@ -106,16 +106,6 @@ main (void)
           mpfr_buildopt_decimal_p () ? "yes" : "no",
           mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
 
-  if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
-    {
-      printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
-              " do not match!\n  %s\n  %s\n",
-              mpfr_buildopt_tune_case (), MPFR_TUNE_CASE);
-      err = 1;
-    }
-  else
-    printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
-
   printf ("[tversion] gmp_printf: hhd = "
 #if defined(NPRINTF_HH)
           "no"
@@ -151,6 +141,16 @@ main (void)
           "?"
 #endif
           "\n");
+
+  if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
+    {
+      printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
+              " do not match!\n  %s\n  %s\n",
+              mpfr_buildopt_tune_case (), MPFR_TUNE_CASE);
+      err = 1;
+    }
+  else
+    printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
 
   if (strcmp (mpfr_get_patches (), "") != 0)
     printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
