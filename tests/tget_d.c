@@ -97,17 +97,17 @@ check_inf_nan (void)
 
   mpfr_set_inf (x, 1);
   d = mpfr_get_d (x, MPFR_RNDZ);
-  ASSERT_ALWAYS (d > 0);
-  ASSERT_ALWAYS (DOUBLE_ISINF (d));
+  MPFR_ASSERTN (d > 0);
+  MPFR_ASSERTN (DOUBLE_ISINF (d));
 
   mpfr_set_inf (x, -1);
   d = mpfr_get_d (x, MPFR_RNDZ);
-  ASSERT_ALWAYS (d < 0);
-  ASSERT_ALWAYS (DOUBLE_ISINF (d));
+  MPFR_ASSERTN (d < 0);
+  MPFR_ASSERTN (DOUBLE_ISINF (d));
 
   mpfr_set_nan (x);
   d = mpfr_get_d (x, MPFR_RNDZ);
-  ASSERT_ALWAYS (DOUBLE_ISNAN (d));
+  MPFR_ASSERTN (DOUBLE_ISNAN (d));
 
   mpfr_clear (x);
 #endif
