@@ -59,7 +59,7 @@ Changes from versions 3.1.* to version 3.2.0:
   now the usual ternary value.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
-  [TODO: add shared caches; note that the ABI can be changed.]
+  [TODO: add shared caches.]
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
   --with-gmp-build.
