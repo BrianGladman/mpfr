@@ -42,7 +42,8 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
 # of the make output, so that the user could no longer see information
 # from tversion. To mimic the old behavior, we now output the contents
 # of the tversion log file if this file exists (i.e. if the Makefile
-# has been generated with Automake 1.13+).
+# has been generated with Automake 1.13+); but this is done only when
+# no tests fail.
 check:
 	cat tversion.log 2> /dev/null || true
 
