@@ -75,7 +75,7 @@ Changes from versions 3.1.* to version 3.2.0:
 - Bug fixes. In particular: a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
   now sets the NaN flag on NaN input.
-- MinGW: Avoid failures in the test suite for shared builds with TLS.
+- MinGW (MS Windows): Added support for thread-safe DLL (shared library).
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.
