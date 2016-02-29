@@ -29,8 +29,8 @@ long
 __gmpfr_ceil_log2 (double d)
 {
   long exp;
-#if _GMP_IEEE_FLOATS
-  union ieee_double_extract x;
+#if _MPFR_IEEE_FLOATS
+  union mpfr_ieee_double_extract x;
 
   x.d = d;
   exp = x.s.exp - 1023;
@@ -38,7 +38,7 @@ __gmpfr_ceil_log2 (double d)
   if (x.d != 1.0) /* d: not a power of two? */
     exp++;
   return exp;
-#else
+#else /* _MPFR_IEEE_FLOATS */
   double m;
 
   if (d < 0.0)
@@ -57,7 +57,7 @@ __gmpfr_ceil_log2 (double d)
       for( m= 1.0 ; m >= d ; m *= (1.0/2.0) )
         exp--;
     }
-#endif
+#endif /* _MPFR_IEEE_FLOATS */
   return exp;
 }
 

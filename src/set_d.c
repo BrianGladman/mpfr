@@ -47,10 +47,10 @@ extract_double (mpfr_limb_ptr rp, double d)
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
   MPFR_ASSERTD(d != 0.0);
 
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 
   {
-    union ieee_double_extract x;
+    union mpfr_ieee_double_extract x;
     x.d = d;
 
     exp = x.s.exp;
@@ -92,7 +92,7 @@ extract_double (mpfr_limb_ptr rp, double d)
       }
   }
 
-#else /* _GMP_IEEE_FLOATS */
+#else /* _MPFR_IEEE_FLOATS */
 
   {
     /* Unknown (or known to be non-IEEE) double format.  */
@@ -134,7 +134,7 @@ extract_double (mpfr_limb_ptr rp, double d)
 #endif
   }
 
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* _MPFR_IEEE_FLOATS */
 
   rp[0] = manl;
 #if GMP_NUMB_BITS == 32
@@ -163,8 +163,8 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
     }
   else if (MPFR_UNLIKELY(d == 0))
     {
-#if _GMP_IEEE_FLOATS
-      union ieee_double_extract x;
+#if _MPFR_IEEE_FLOATS
+      union mpfr_ieee_double_extract x;
 
       MPFR_SET_ZERO(r);
       /* set correct sign */
@@ -173,7 +173,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
         MPFR_SET_NEG(r);
       else
         MPFR_SET_POS(r);
-#else /* _GMP_IEEE_FLOATS */
+#else /* _MPFR_IEEE_FLOATS */
       MPFR_SET_ZERO(r);
       {
         /* This is to get the sign of zero on non-IEEE hardware
@@ -198,7 +198,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
         else
           MPFR_SET_POS(r);
       }
-#endif
+#endif /* _MPFR_IEEE_FLOATS */
       return 0; /* 0 is exact */
     }
   else if (MPFR_UNLIKELY(DOUBLE_ISINF(d)))

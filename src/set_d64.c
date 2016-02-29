@@ -102,7 +102,7 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 25 characters (with the final '\0'):
    * 1 for the sign '-'
@@ -114,7 +114,7 @@ static unsigned int T[1024] = {
 static void
 decimal64_to_string (char *s, _Decimal64 d)
 {
-  union ieee_double_extract x;
+  union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
   char *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
@@ -412,7 +412,7 @@ decimal64_to_string (char *s, _Decimal64 d)
   else
     *s = '\0';
 }
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* _MPFR_IEEE_FLOATS */
 
 int
 mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mpfr_rnd_t rnd_mode)

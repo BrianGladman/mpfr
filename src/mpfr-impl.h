@@ -547,10 +547,10 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
 /* Debug non IEEE floats */
 #ifdef XDEBUG
-# undef _GMP_IEEE_FLOATS
+# undef _MPFR_IEEE_FLOATS
 #endif
-#ifndef _GMP_IEEE_FLOATS
-# define _GMP_IEEE_FLOATS 0
+#ifndef _MPFR_IEEE_FLOATS
+# define _MPFR_IEEE_FLOATS 0
 #endif
 
 #ifndef IEEE_DBL_MANT_DIG
@@ -586,7 +586,7 @@ static double double_zero = 0.0;
 # define DBL_NEG_ZERO (-0.0)
 #endif
 
-/* Note: In the past, there was specific code for _GMP_IEEE_FLOATS, which
+/* Note: In the past, there was specific code for _MPFR_IEEE_FLOATS, which
    was based on NaN and Inf memory representations. This code was breaking
    the aliasing rules (see ISO C99, 6.5#6 and 6.5#7 on the effective type)
    and for this reason it did not behave correctly with GCC 4.5.0 20091119.

@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    on alphaev56-unknown-freebsd4.3 the NaN must be 8-bytes, since that
    compiler+system was seen incorrectly converting from a "float" NaN.  */
 
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 
 /* The "d" field guarantees alignment to a suitable boundary for a double.
    Could use a union instead, if we checked the compiler supports union
@@ -71,10 +71,10 @@ static const union dbl_bytes dbl_nan  =
   { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 } };
 #endif
 
-#else /* _GMP_IEEE_FLOATS */
+#else /* _MPFR_IEEE_FLOATS */
 
 #define MPFR_DBL_INFP DBL_POS_INF
 #define MPFR_DBL_INFM DBL_NEG_INF
 #define MPFR_DBL_NAN DBL_NAN
 
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* _MPFR_IEEE_FLOATS */

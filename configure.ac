@@ -274,6 +274,40 @@ AC_LANG(C)
 dnl Support unusual archivers.
 AM_PROG_AR
 
+dnl Try to determine the double format
+AC_MSG_CHECKING(format of `double')
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdint.h>
+]], [[
+union ieee_double_extract
+{
+  double d;
+  uint32_t x[2];
+} t;
+t.d = 1.000000476837158203125; /* 1 + 1/2^21, which has manl = 2^31,
+    manh = 0, exp = 1023 and sig = 0 */
+if (t.x[0] == 2147483648UL && t.x[1] == 1072693248UL)
+   return 1; /* little endian */
+else if (t.x[0] == 1072693248UL && t.x[1] == 2147483648UL)
+   return 2; /* little endian swapped */
+else if (t.x[0] == 1024 && t.x[1] == 2147483648UL)
+   return 3; /* big endian */
+else
+   return 0; /* unknown */
+]])],
+   [mpfr_ieee_double=$?],
+   [mpfr_ieee_double=$?],
+   [mpfr_ieee_double=0])
+case "$mpfr_ieee_double" in
+  1) AC_MSG_RESULT(little endian)
+     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
+  2) AC_MSG_RESULT(little endian swapped)
+     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_SWAPPED) ;;
+  3) AC_MSG_RESULT(big endian)
+     AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
+  *) AC_MSG_ERROR(format of 'double' not recognized) ;;
+esac
+
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
 dnl be disabled in the GCC build). See:
@@ -285,7 +319,7 @@ dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
 dnl is detected by the x != x test below.
 AC_ARG_ENABLE(decimal-float,
    [  --enable-decimal-float  build conversion functions from/to decimal floats
-                          [[default=no]]],
+                          [[default=yes]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
               [Build decimal float functions])

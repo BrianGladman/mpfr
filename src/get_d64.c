@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 #else
 #include "ieee_floats.h"
 #endif
@@ -114,8 +114,8 @@ static const int T[1000] = {
 static _Decimal64
 get_decimal64_nan (void)
 {
-#if _GMP_IEEE_FLOATS
-  union ieee_double_extract x;
+#if _MPFR_IEEE_FLOATS
+  union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 
   x.s.exp = 1984; /* G[0]..G[4] = 11111: quiet NaN */
@@ -130,8 +130,8 @@ get_decimal64_nan (void)
 static _Decimal64
 get_decimal64_inf (int negative)
 {
-#if _GMP_IEEE_FLOATS
-  union ieee_double_extract x;
+#if _MPFR_IEEE_FLOATS
+  union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 
   x.s.sig = (negative) ? 1 : 0;
@@ -176,7 +176,7 @@ get_decimal64_max (int negative)
    (b2) or -398 <= e <= 369 with m integer, |m| < 10^16.
    Assumes s is neither NaN nor +Inf nor -Inf.
 */
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 static _Decimal64
 string_to_Decimal64 (char *s)
 {
@@ -184,7 +184,7 @@ string_to_Decimal64 (char *s)
   char m[17];
   long n = 0; /* mantissa length */
   char *endptr[1];
-  union ieee_double_extract x;
+  union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 #ifdef DPD_FORMAT
   unsigned int G, d1, d2, d3, d4, d5;
