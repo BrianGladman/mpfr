@@ -285,7 +285,7 @@ dnl Support unusual archivers.
 AM_PROG_AR
 
 dnl Try to determine the double format
-AC_MSG_CHECKING(format of `double')
+AC_MSG_CHECKING(format of `double' floating point)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdint.h>
 ]], [[
@@ -312,11 +312,11 @@ else
    [mpfr_ieee_double=$?],
    [mpfr_ieee_double=0])
 case "$mpfr_ieee_double" in
-  1) AC_MSG_RESULT(little endian)
+  1) AC_MSG_RESULT(IEEE little endian)
      AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
-  2) AC_MSG_RESULT(big endian)
+  2) AC_MSG_RESULT(IEEE big endian)
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_ERROR(format of 'double' not recognized) ;;
+  *) AC_MSG_ERROR(format of `double' floating-point not recognized) ;;
 esac
 
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
