@@ -57,6 +57,7 @@ main (void)
   if (f == f)
     {
       printf ("Error for mpfr_get_flt(NaN)\n");
+      printf ("got f=%f, f == f returns true\n", f);
       exit (1);
     }
   mpfr_set_flt (x, f, MPFR_RNDN);
