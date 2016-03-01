@@ -611,7 +611,12 @@ static double double_zero = 0.0;
 /* Avoid MIPSpro / IRIX64 / gcc -ffast-math (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is
    regarded as a positive number or something like that; the second
-   test catches this case. */
+   test catches this case.
+   [2016-03-01] Various tests now fail with gcc -ffast-math or just
+   -ffinite-math-only; such options are not supported, but this makes
+   difficult to test MPFR assuming x == x optimization to 1. Anyway
+   support of functions/tests of using native FP and special values for
+   non-IEEE-754 environment will always be on a case-by-case basis. */
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
 #else
