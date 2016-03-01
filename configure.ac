@@ -42,6 +42,16 @@ dnl early, even when this option is not used. In particular, it must
 dnl be put after AC_PROG_CC; another problem is that the GMP CFLAGS
 dnl and CC check may modify the compiler.
 
+dnl FIXME: Several AC_RUN_IFELSE programs can return several values
+dnl (one for each format to be detected), but the Autoconf manual says:
+dnl "This exit status might be that of a failed compilation, or it might
+dnl be that of a failed program execution." Unfortunately, we cannot
+dnl know whether a non-zero exit status comes from a failed compilation,
+dnl so that the detection may be incorrect. To avoid this problem, write
+dnl a test program for each possible format? Alternatively, the test
+dnl program could output the result of the format detection to a file
+dnl and return with the 0 exit status if it could do that successfully.
+
 test_CFLAGS=${CFLAGS+set}
 
 dnl Check if user request its CC and CFLAGS
