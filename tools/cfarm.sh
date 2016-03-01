@@ -8,12 +8,7 @@ if [ ! -d gmp-6.1.0 ]; then
    wget ftp://ftp.gmplib.org/pub/gmp-6.1.0/gmp-6.1.0.tar.bz2
    tar jxf gmp-6.1.0.tar.bz2
    cd gmp-6.1.0
-   if [ "`hostname`" = "dingo" ]; then
-      # gcc 4.3.2 miscompiles GMP
-      ./configure --prefix=$HOME CC=/opt/cfarm/release/4.4.1/bin/gcc
-   else
-      ./configure --prefix=$HOME
-   fi
+   ./configure --prefix=$HOME
    make
    make install
    cd $HOME
@@ -23,6 +18,10 @@ wget http://www.mpfr.org/mpfr-3.1.4/mpfr-3.1.4-rc2.tar.gz
 gunzip mpfr-3.1.4-rc2.tar.gz
 tar xf mpfr-3.1.4-rc2.tar
 cd mpfr-3.1.4-rc2
+if [ "`hostname`" = "power-aix" ]; then # gcc111
+   export OBJECT_MODE=64
+   # or ./configure AR="ar -X64" NM="nm -B -X64"
+fi
 ./configure --with-gmp=$HOME
 make
 make check
@@ -72,7 +71,7 @@ make check
 # gcc100 Connection timed out
 # gcc101 Connection timed out
 # gcc110 # PASS:  159 # SKIP:  1
-# gcc111 configure: error: could not determine ar interface
+# gcc111 # PASS:  159 # SKIP:  1
 # gcc112 # PASS:  159 # SKIP:  1
 # gcc113 # PASS:  159 # SKIP:  1
 # gcc114 # PASS:  159 # SKIP:  1 
