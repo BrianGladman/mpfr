@@ -68,6 +68,8 @@ Changes from versions 3.1.* to version 3.2.0:
 - Dropped K&R C compatibility.
 - Improved MPFR manual.
 - New MPFRbench program (see the tools/bench directory).
+- Speedup by a factor of almost 2 in the double <--> mpfr conversions
+  (mpfr_set_d and mpfr_get_d).
 - Speedup in the mpfr_const_euler function (contributed by Fredrik Johansson),
   in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
   mpfr_digamma, mpfr_lngamma and mpfr_lgamma), in mpfr_div, in mpfr_fma
