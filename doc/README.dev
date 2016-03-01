@@ -390,7 +390,6 @@ Format of long double.
 
 + DEBUG:                For debugging messages in some functions.
 + XDEBUG:               Use generic 'double' code instead of IEEE specific one.
-                        The IEEE code for double needs GMP internal files.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
