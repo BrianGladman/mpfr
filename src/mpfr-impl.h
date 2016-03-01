@@ -547,7 +547,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
 /* With -DXDEBUG, exercise non IEEE floats */
 #ifdef XDEBUG
-#error "17"
 # ifdef _MPFR_IEEE_FLOATS
 #  undef _MPFR_IEEE_FLOATS
 # endif
