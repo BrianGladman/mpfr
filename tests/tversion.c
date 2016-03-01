@@ -42,7 +42,11 @@ main (void)
    * http://sourceforge.net/p/predef/wiki/Compilers/
    * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
    */
-#if defined(__GNUC__) && defined(__VERSION__)
+#ifdef __ICC
+  printf ("[tversion] ICC: %d.%d.%d\n", __INTEL_COMPILER / 100,
+          __INTEL_COMPILER % 100, __INTEL_COMPILER_UPDATE);
+#endif
+#if defined(__GNUC__) && defined(__VERSION__) && !defined(__ICC)
   printf ("[tversion] GCC: %s\n", __VERSION__);
 #endif
 
