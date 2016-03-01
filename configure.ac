@@ -312,11 +312,11 @@ else
    [mpfr_ieee_double=$?],
    [mpfr_ieee_double=0])
 case "$mpfr_ieee_double" in
-  1) AC_MSG_RESULT(IEEE little endian)
+  1) AC_MSG_RESULT([IEEE little endian])
      AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
-  2) AC_MSG_RESULT(IEEE big endian)
+  2) AC_MSG_RESULT([IEEE big endian])
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_ERROR(format of `double' floating-point not recognized) ;;
+  *) AC_MSG_ERROR([format of `double' floating-point not recognized]) ;;
 esac
 
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
@@ -618,8 +618,8 @@ See 'config.log' for details (search for GMP_NUMB_BITS).])],
 
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
- [AC_MSG_ERROR(libgmp not found or uses a different ABI (including static vs shared).
-Please read the INSTALL file -- see "In case of problem".)])
+ [AC_MSG_ERROR([libgmp not found or uses a different ABI (including static vs shared).
+Please read the INSTALL file -- see "In case of problem".])])
 
 dnl Check for corresponding 'gmp.h' and libgmp
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
