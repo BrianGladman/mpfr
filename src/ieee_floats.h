@@ -54,14 +54,6 @@ static const union dbl_bytes dbl_infm =
 static const union dbl_bytes dbl_nan  =
   { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F } };
 #endif
-#if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
-static const union dbl_bytes dbl_infp =
-  { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 } };
-static const union dbl_bytes dbl_infm =
-  { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 } };
-static const union dbl_bytes dbl_nan  =
-  { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 } };
-#endif
 #if HAVE_DOUBLE_IEEE_BIG_ENDIAN
 static const union dbl_bytes dbl_infp =
   { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 } };
