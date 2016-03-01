@@ -49,9 +49,10 @@ check_special (void)
       exit (1);
     }
   f = mpfr_get_float128 (x, MPFR_RNDN);
-  if (f == f)
+  if (! DOUBLE_ISNAN (f))
     {
       printf ("Error in mpfr_get_float128(NaN)\n");
+      printf ("got %f\n", (float) f);
       exit (1);
     }
 

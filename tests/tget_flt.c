@@ -54,10 +54,10 @@ main (void)
 #if !defined(MPFR_ERRDIVZERO)
   mpfr_set_nan (x);
   f = mpfr_get_flt (x, MPFR_RNDN);
-  if (f == f)
+  if (! DOUBLE_ISNAN (f))
     {
       printf ("Error for mpfr_get_flt(NaN)\n");
-      printf ("got f=%f, f == f returns true\n", f);
+      printf ("got f=%f\n", f);
       exit (1);
     }
   mpfr_set_flt (x, f, MPFR_RNDN);
