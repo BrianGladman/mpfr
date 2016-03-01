@@ -199,10 +199,6 @@ __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
 #define PREC(x) ((x)->_mp_prec)
 #define ALLOC(x) ((x)->_mp_alloc)
 
-/* Non IEEE float supports -- needs to detect them with proper configure */
-#undef  XDEBUG
-#define XDEBUG
-
 /* For longlong.h */
 #ifdef HAVE_ATTRIBUTE_MODE
 typedef unsigned int UQItype    __attribute__ ((mode (QI)));

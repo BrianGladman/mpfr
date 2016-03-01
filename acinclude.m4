@@ -517,6 +517,40 @@ then
  fi
 fi
 
+dnl Check if decimal floats are available
+if test "$enable_decimal_float" != no; then
+   AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
+              [Build decimal float functions])
+           AC_MSG_CHECKING(if compiler knows _Decimal64)
+           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
+              [AC_MSG_RESULT(yes)],
+              [AC_MSG_RESULT(no)
+   AC_MSG_ERROR([Compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+   Please use another compiler or build MPFR with --disable-decimal-float.])]
+           )
+           AC_MSG_CHECKING(decimal float format)
+           AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdlib.h>
+]], [[
+volatile _Decimal64 x = 1;
+union { double d; _Decimal64 d64; } y;
+if (x != x) return 3;
+y.d64 = 1234567890123456.0dd;
+return y.d == 0.14894469406741037E-123 ? 0 :
+       y.d == 0.59075095508629822E-68  ? 1 : 2;
+]])], [AC_MSG_RESULT(DPD)
+       AC_DEFINE([DPD_FORMAT],1,[])],
+      [case "$?" in
+         1) AC_MSG_RESULT(BID) ;;
+         2) AC_MSG_FAILURE(neither DPD nor BID) ;;
+         3) AC_MSG_FAILURE([_Decimal64 support is broken.
+Please use another compiler or build MPFR with --disable-decimal-float.]) ;;
+         *) AC_MSG_FAILURE(internal error) ;;
+       esac],
+      [AC_MSG_RESULT(assuming DPD)
+       AC_DEFINE([DPD_FORMAT],1,[])])
+fi
+
 dnl Check if Static Assertions are supported.
 AC_MSG_CHECKING(for Static Assertion support)
 saved_CPPFLAGS="$CPPFLAGS"
