@@ -444,21 +444,6 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
 
 #ifndef _MPFR_IEEE_FLOATS
 
-#if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
-#define _MPFR_IEEE_FLOATS 1
-union mpfr_ieee_double_extract
-{
-  struct
-    {
-      unsigned long manh:20;
-      unsigned long exp:11;
-      unsigned long sig:1;
-      unsigned long manl:32;
-    } s;
-  double d;
-};
-#endif
-
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 #define _MPFR_IEEE_FLOATS 1
 union mpfr_ieee_double_extract

@@ -292,16 +292,19 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 union ieee_double_extract
 {
   double d;
-  uint32_t x[2];
+  unsigned char x[8];
 } t;
-t.d = 1.000000476837158203125; /* 1 + 1/2^21, which has manl = 2^31,
-    manh = 0, exp = 1023 and sig = 0 */
-if (t.x[0] == 2147483648UL && t.x[1] == 1072693248UL)
+t.d = 2.877939254133025759330166692961938679218292236328125; /* exact */
+if (sizeof (double) != 8)
+   return 0;
+if (sizeof (unsigned char) != 1)
+   return 0;
+if (t.x[0] == 1 && t.x[1] == 2 && t.x[2] == 3 && t.x[3] == 4 &&
+    t.x[4] == 5 && t.x[5] == 6 && t.x[6] == 7 && t.x[7] == 64)
    return 1; /* little endian */
-else if (t.x[0] == 1072693248UL && t.x[1] == 2147483648UL)
-   return 2; /* little endian swapped */
-else if (t.x[0] == 1024 && t.x[1] == 2147483648UL)
-   return 3; /* big endian */
+else if (t.x[7] == 1 && t.x[6] == 2 && t.x[5] == 3 && t.x[4] == 4 &&
+    t.x[3] == 5 && t.x[2] == 6 && t.x[1] == 7 && t.x[0] == 64)
+   return 2; /* big endian */
 else
    return 0; /* unknown */
 ]])],
@@ -311,9 +314,7 @@ else
 case "$mpfr_ieee_double" in
   1) AC_MSG_RESULT(little endian)
      AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
-  2) AC_MSG_RESULT(little endian swapped)
-     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_SWAPPED) ;;
-  3) AC_MSG_RESULT(big endian)
+  2) AC_MSG_RESULT(big endian)
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
   *) AC_MSG_ERROR(format of 'double' not recognized) ;;
 esac
