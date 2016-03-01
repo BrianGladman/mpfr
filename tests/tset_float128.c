@@ -52,7 +52,7 @@ check_special (void)
   if (! DOUBLE_ISNAN (f))
     {
       printf ("Error in mpfr_get_float128(NaN)\n");
-      printf ("got %f\n", (float) f);
+      printf ("got %f\n", (double) f);
       exit (1);
     }
 
