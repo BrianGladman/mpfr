@@ -124,26 +124,6 @@ static int f (int (*func)(int, const struct sigaction *, struct sigaction *))
     [Define if you have a working sigaction function.])
 ],[AC_MSG_RESULT(no)])
 
-dnl Check for IEEE-754 switches on Alpha
-case $host in
-alpha*-*-*)
-  saved_CFLAGS="$CFLAGS"
-  AC_CACHE_CHECK([for IEEE-754 switches], mpfr_cv_ieee_switches, [
-  if test -n "$GCC"; then
-    mpfr_cv_ieee_switches="-mfp-rounding-mode=d -mieee-with-inexact"
-  else
-    mpfr_cv_ieee_switches="-fprm d -ieee_with_inexact"
-  fi
-  CFLAGS="$CFLAGS $mpfr_cv_ieee_switches"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])], , mpfr_cv_ieee_switches="none")
-  ])
-  if test "$mpfr_cv_ieee_switches" = "none"; then
-    CFLAGS="$saved_CFLAGS"
-  else
-    CFLAGS="$saved_CFLAGS $mpfr_cv_ieee_switches"
-  fi
-esac
-
 dnl check for long long
 AC_CHECK_TYPE([long long int],
    AC_DEFINE(HAVE_LONG_LONG, 1, [Define if compiler supports long long]),,)
