@@ -69,7 +69,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Check for NAN */
-  if (MPFR_UNLIKELY (d != d))
+  if (MPFR_UNLIKELY (DOUBLE_ISNAN (d)))
     {
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;

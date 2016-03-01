@@ -36,27 +36,26 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
   __float128 x;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* Check for NaN - We assume that systems that support __float128
-     also know about NaN and won't optimize d != d incorrectly. */
-  if (d != d)
+  /* Check for NaN */
+  if (MPFR_UNLIKELY (DOUBLE_ISNAN (d)))
     {
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
 
   /* Check for INF */
-  if (d == ((__float128) 1.0 / (__float128) 0.0))
+  if (MPFR_UNLIKELY (d == ((__float128) 1.0 / (__float128) 0.0)))
     {
       mpfr_set_inf (r, 1);
       return 0;
     }
-  else if (d == ((__float128) -1.0 / (__float128) 0.0))
+  else if (MPFR_UNLIKELY (d == ((__float128) -1.0 / (__float128) 0.0)))
     {
       mpfr_set_inf (r, -1);
       return 0;
     }
   /* Check for ZERO */
-  else if (d == (__float128) 0.0)
+  else if (MPFR_UNLIKELY (d == (__float128) 0.0))
     return mpfr_set_d (r, (double) d, rnd_mode);
 
   mpfr_init2 (t, IEEE_FLOAT128_MANT_DIG);

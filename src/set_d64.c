@@ -225,17 +225,17 @@ decimal64_to_string (char *s, _Decimal64 d)
   int sign = 0, n;
   int exp = 0;
 
-  if (d != d) /* NaN */
+  if (MPFR_UNLIKELY (DOUBLE_ISNAN (d))) /* NaN */
     {
       sprintf (s, "NaN"); /* sprintf puts a final '\0' */
       return;
     }
-  else if (d > DEC64_MAX) /* +Inf */
+  else if (MPFR_UNLIKELY (d > DEC64_MAX)) /* +Inf */
     {
       sprintf (s, "Inf");
       return;
     }
-  else if (d < -DEC64_MAX) /* -Inf */
+  else if (MPFR_UNLIKELY (d < -DEC64_MAX)) /* -Inf */
     {
       sprintf (s, "-Inf");
       return;
