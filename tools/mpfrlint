@@ -56,6 +56,11 @@ grep -E 'mp_(src)?ptr' $srctests
 # Do not use __mpfr_struct structure members in .c files.
 grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
 
+# Detect some uses of "x != x" and "x == x". If this occurs in source code,
+# x is probably a native FP number (otherwise the test is useless), but in
+# such a case, the DOUBLE_ISNAN macro should be used.
+grep '( *\([^[:space:]]*\) *[!=]= *\1 *)' $srctests
+
 for i in exp prec rnd
 do
   grep "[^a-z]mp_${i}_t" $srctests | \
