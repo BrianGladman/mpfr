@@ -571,6 +571,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
    double_zero version until IEEE 754 division by zero is properly
    supported:
      https://llvm.org/bugs/show_bug.cgi?id=17005
+   Note: DBL_NAN is 0/0, thus its value is a quiet NaN (qNAN).
 */
 #if (defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)) || \
     defined(__clang__)

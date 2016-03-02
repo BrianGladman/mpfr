@@ -42,9 +42,11 @@ union dbl_bytes {
 #define MPFR_DBL_INFM  (dbl_infm.d)
 #define MPFR_DBL_NAN   (dbl_nan.d)
 
-/* Warning! dbl_nan.d is not consistently the same NaN on all the
-   processors: it can be either a qNaN (quiet) or sNaN (signaling).
-   Processors are known to differ... */
+/* Warning! The dbl_nan.d below is not consistently the same NaN on all
+   the processors: it will be a quiet NaN (qNaN) on most processors, but
+   may be a signaling NaN (sNaN) on some other processors (PA-RISC?).
+   Processors are known to differ...
+   http://grouper.ieee.org/groups/1788/email/msg03272.html */
 
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 static const union dbl_bytes dbl_infp =
