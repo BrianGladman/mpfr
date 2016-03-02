@@ -518,7 +518,7 @@ then
 fi
 
 dnl Check if decimal floats are available
-if test "$enable_decimal_float" != no; then
+if test "$enable_decimal_float" = yes; then
    AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
               [Build decimal float functions])
            AC_MSG_CHECKING(if compiler knows _Decimal64)
