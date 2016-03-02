@@ -54,7 +54,7 @@ main (void)
 # endif
   printf (COMP "ICC %d.%d.%d" ICCV "\n", __INTEL_COMPILER / 100,
           __INTEL_COMPILER % 100, __INTEL_COMPILER_UPDATE);
-#elif defined(__GNUC__) && defined(__VERSION__)
+#elif (defined(__GNUC__) || defined(__clang__)) && defined(__VERSION__)
 # ifdef __clang__
 #  define COMP2 COMP
 # else
