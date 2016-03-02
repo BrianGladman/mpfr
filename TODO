@@ -20,7 +20,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Table of contents:
 1. Documentation
-2. Installation
+2. Compiler/library detection
 3. Changes in existing functions
 4. New functions to implement
 5. Efficiency
@@ -34,7 +34,7 @@ Table of contents:
 - add a description of the algorithms used and a proof of correctness
 
 ##############################################################################
-2. Installation
+2. Compiler/library detection
 ##############################################################################
 
 - if we want to distinguish GMP and MPIR, we can check at configure time
@@ -46,6 +46,11 @@ Table of contents:
 
   There is also a library symbol mpir_version, which should match VERSION, set
   by configure, for example 0.9.0.
+
+- update ICC detection.
+  * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
+  * Possibly enable some features with ICC. For instance, removing
+    "&& !defined(__ICC)" from src/mpfr.h works with ICC 15.0.0 20140723.
 
 ##############################################################################
 3. Changes in existing functions
