@@ -330,7 +330,7 @@ dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
 dnl is detected by the x != x test below.
 AC_ARG_ENABLE(decimal-float,
    [  --enable-decimal-float  build conversion functions from/to decimal floats
-                          [[default=no]]],
+                          [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
       no)  ;;
