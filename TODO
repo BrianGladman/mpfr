@@ -100,6 +100,9 @@ Table of contents:
   * For functions that return a native floating-point value (mpfr_get_flt,
     mpfr_get_d, mpfr_get_ld, mpfr_get_decimal64), raise exception flags
     with feraiseexcept(), when supported.
+  * For testing the lack of subnormal support:
+    see the -mfpu GCC option for ARM and
+    https://en.wikipedia.org/wiki/Denormal_number#Disabling_denormal_floats_at_the_code_level
 
 
 ##############################################################################
