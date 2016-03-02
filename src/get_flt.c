@@ -49,6 +49,9 @@ mpfr_get_flt (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(rnd_mode == MPFR_RNDA))
     rnd_mode = negative ? MPFR_RNDD : MPFR_RNDU;
 
+  /* FIXME: The code below assumes the IEEE-754 binary32 format
+     with subnormal support. */
+
   /* the smallest positive normal float number is 2^(-126) = 0.5*2^(-125),
      and the smallest positive subnormal number is 2^(-149) = 0.5*2^(-148) */
   if (MPFR_UNLIKELY (e < -148))
