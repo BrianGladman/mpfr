@@ -40,29 +40,38 @@ union dbl_bytes {
 
 #define MPFR_DBL_INFP  (dbl_infp.d)
 #define MPFR_DBL_INFM  (dbl_infm.d)
-#define MPFR_DBL_NAN   (dbl_nan.d)
+#define MPFR_DBL_NAN   DBL_NAN
 
 /* Warning! The dbl_nan.d below is not consistently the same NaN on all
    the processors: it will be a quiet NaN (qNaN) on most processors, but
    may be a signaling NaN (sNaN) on some other processors (PA-RISC?).
-   Processors are known to differ...
-   http://grouper.ieee.org/groups/1788/email/msg03272.html */
+   Processors are known to differ... See for instance:
+     http://grouper.ieee.org/groups/1788/email/msg03272.html
+
+   Moreover, the right choice is to generate a qNaN in particular because
+   signaling NaNs are not supported by all compilers (note that the support
+   must be in the compiler used to build the user-end application because
+   this is where the sNaN will be obtained). */
 
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 static const union dbl_bytes dbl_infp =
   { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F } };
 static const union dbl_bytes dbl_infm =
   { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF } };
+/*
 static const union dbl_bytes dbl_nan  =
   { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F } };
+*/
 #endif
 #if HAVE_DOUBLE_IEEE_BIG_ENDIAN
 static const union dbl_bytes dbl_infp =
   { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 } };
 static const union dbl_bytes dbl_infm =
   { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 } };
+/*
 static const union dbl_bytes dbl_nan  =
   { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 } };
+*/
 #endif
 
 #else /* _MPFR_IEEE_FLOATS */
