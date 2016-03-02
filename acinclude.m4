@@ -264,7 +264,10 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
 fi
 
 dnl Check if subnormal (denormalized) numbers are supported
-AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
+dnl for the binary64 format, the smallest normal number is 2^(-1022)
+dnl for the binary32 format, the smallest normal number is 2^(-126)
+AC_CACHE_CHECK([for subnormal double-precision numbers],
+mpfr_cv_have_denorms, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
@@ -278,7 +281,25 @@ int main (void) {
    [mpfr_cv_have_denorms="cannot test, assume no"])
 ])
 if test "$mpfr_cv_have_denorms" = "yes"; then
-  AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) floats work.])
+  AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) doubles work.])
+fi
+AC_CACHE_CHECK([for subnormal single-precision numbers],
+mpfr_cv_have_denorms_flt, [
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdio.h>
+int main (void) {
+  float x = 1.17549435082229e-38;
+  fprintf (stderr, "%e\n", x / 2.0);
+  return 2.0 * (x / 2.0) != x;
+}
+]])],
+   [mpfr_cv_have_denorms_flt="yes"],
+   [mpfr_cv_have_denorms_flt="no"],
+   [mpfr_cv_have_denorms_flt="cannot test, assume no"])
+])
+if test "$mpfr_cv_have_denorms_flt" = "yes"; then
+  AC_DEFINE(HAVE_DENORMS_FLT,1,
+  [Define if subnormal (denormalized) floats work.])
 fi
 
 dnl Check if signed zeros are supported. Note: the test will fail
