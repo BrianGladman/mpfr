@@ -186,6 +186,7 @@ main (void)
       mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
     }
 
+#ifdef HAVE_DENORMS
   mpfr_set_si_2exp (x, 1, -150, MPFR_RNDN);
   g = 0.0;
   f = mpfr_get_flt (x, MPFR_RNDN);
@@ -301,6 +302,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
+#endif
 
   mpfr_set_si_2exp (x, 1, 128, MPFR_RNDN);
   g = FLT_MAX;
