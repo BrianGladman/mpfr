@@ -290,7 +290,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int main (void) {
   float x = 1.17549435082229e-38;
   fprintf (stderr, "%e\n", x / 2.0);
-  return 2.0 * (x / 2.0) != x;
+  return 2.0 * (float) (x / 2.0) != x;
 }
 ]])],
    [mpfr_cv_have_denorms_flt="yes"],
