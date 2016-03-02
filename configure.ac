@@ -346,7 +346,7 @@ AC_ARG_ENABLE(float128,
            AC_MSG_CHECKING(if compiler knows __float128)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x;]])],
               [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([Compiler doesn't know __float128; try GCC >= 4.3]
+              [AC_MSG_ERROR([compiler doesn't know __float128; try GCC >= 4.3]
            )]);;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
@@ -573,7 +573,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
 ]],[[]])],[AC_MSG_RESULT(yes)],[
  AC_MSG_RESULT(no)
- AC_MSG_ERROR([There is an incompatibility between gmp.h and the compiler.
+ AC_MSG_ERROR([there is an incompatibility between gmp.h and the compiler.
 See 'config.log' for details.])
 ])
 

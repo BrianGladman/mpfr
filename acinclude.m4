@@ -446,7 +446,7 @@ MPFR_C_LONG_DOUBLE_FORMAT
 
 if test "$enable_logging" = yes; then
   if test "$enable_thread_safe" = yes; then
-    AC_MSG_ERROR([Enable either `Logging' or `thread-safe', not both])
+    AC_MSG_ERROR([enable either `Logging' or `thread-safe', not both])
   else
     enable_thread_safe=no
   fi
@@ -541,17 +541,18 @@ return y.d == 0.14894469406741037E-123 ? 0 :
          2) AC_MSG_RESULT(neither DPD nor BID)
             if test "$enable_decimal_float" = yes; then
                AC_MSG_ERROR([unsupported decimal float format.
-Please build MPFR with --disable-decimal-float.])
+Please build MPFR without --enable-decimal-float.])
             fi ;;
-         *) AC_MSG_FAILURE(internal error) ;;
+         *) AC_MSG_RESULT(internal error)
+            AC_MSG_FAILURE(unexpected exit status) ;;
        esac],
       [AC_MSG_RESULT(assuming DPD)
        AC_DEFINE([DPD_FORMAT],1,[])])
               ],
               [AC_MSG_RESULT(no)
                if test "$enable_decimal_float" = yes; then
-                  AC_MSG_ERROR([Compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
-Please use another compiler or build MPFR with --disable-decimal-float.])
+                  AC_MSG_ERROR([compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+Please use another compiler or build MPFR without --enable-decimal-float.])
                fi])
 fi
 
