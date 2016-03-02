@@ -273,7 +273,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int main (void) {
   double x = 2.22507385850720138309e-308;
   fprintf (stderr, "%e\n", x / 2.0);
-  return 2.0 * (x / 2.0) != x;
+  return 2.0 * (double) (x / 2.0) != x;
 }
 ]])],
    [mpfr_cv_have_denorms="yes"],
