@@ -329,7 +329,8 @@ dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
 dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
 dnl is detected by the x != x test below.
 AC_ARG_ENABLE(decimal-float,
-   [  --enable-decimal-float  build conversion functions from/to decimal floats
+   [  --disable-decimal-float explicitly disable decimal floats support
+  --enable-decimal-float  build conversion functions from/to decimal floats
                           [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
@@ -340,7 +341,8 @@ AC_ARG_ENABLE(decimal-float,
 dnl GCC >= 4.3 provides __float128, but since this is not standard,
 dnl the default is "autodetect" and not "yes"
 AC_ARG_ENABLE(float128,
-   [  --enable-float128  build conversion functions from/to __float128
+   [  --disable-float128      explicitly disable __float128 support
+  --enable-float128       build conversion functions from/to __float128
                           [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
