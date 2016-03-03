@@ -337,17 +337,13 @@ AC_ARG_ENABLE(decimal-float,
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
      esac])
 
+dnl GCC >= 4.3 provides __float128, but since this is not standard,
+dnl the default is "autodetect" and not "yes"
 AC_ARG_ENABLE(float128,
-   [  --enable-float128       build conversion functions from/to __float128
-                          [[default=no]]],
+   [  --enable-float128  build conversion functions from/to __float128
+                          [[default=autodetect]]],
    [ case $enableval in
-      yes) AC_DEFINE([MPFR_WANT_FLOAT128],1,
-              [Build float128 conversion functions])
-           AC_MSG_CHECKING(if compiler knows __float128)
-           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x;]])],
-              [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([compiler doesn't know __float128; try GCC >= 4.3]
-           )]);;
+      yes) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
      esac])
