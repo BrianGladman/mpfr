@@ -62,7 +62,8 @@ Changes from versions 3.1.* to version 3.2.0:
   [TODO: add shared caches.]
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
-  --with-gmp-build.
+  --with-gmp-build, and support for decimal floats is now automatically
+  detected by default (similarly for support for __float128).
 - Updated tuning parameters.
 - Better support for Automake 1.13+ (now used to generate the tarball).
 - Dropped K&R C compatibility.
