@@ -537,9 +537,12 @@ a. Using MinGW
     you can use the MinGW runtime package (which is an integral part of MinGW).
     For example, with MinGW versions 3.15 and later you can get an
     ISO-compliant printf() if you compile your application with either
-    '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. For example, you should
-    compile GMP (not MPFR) with CC="gcc -D__USE_MINGW_ANSI_STDIO" (since the
-    printf modifiers %Ld and %td are passed to GMP).
+    '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. In order to have the
+    MPFR formatted output functions based on ISO-compliant printf(), you
+    need to compile GMP (not MPFR) with CC="gcc -D__USE_MINGW_ANSI_STDIO"
+    (since the standard printf modifiers %Ld and %td are passed to GMP).
+    Building MPFR with -D__USE_MINGW_ANSI_STDIO is useless except for some
+    error messages in the test suite.
 
 b. Using Cygwin
 ===============
