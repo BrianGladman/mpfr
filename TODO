@@ -555,3 +555,5 @@ Table of contents:
   couple of places already.  Arrays of chars are not much fun.
 
 - use https://gcc.gnu.org/viewcvs/gcc/trunk/config/stdint.m4 for mpfr-gmp.h
+
+- with MinGW, build with -D__USE_MINGW_ANSI_STDIO by default?
