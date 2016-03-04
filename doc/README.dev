@@ -1361,8 +1361,9 @@ $ make check LOG_COMPILER=wine
 [If few tests fail, ignore them.]
 $ make install
 
-(the -D__USE_MINGW_ANSI_STDIO option is used to avoid some failures,
-as mentioned in MPFR's INSTALL file).
+(the -D__USE_MINGW_ANSI_STDIO option is used to allow an ISO-compliant
+printf as mentioned in MPFR's INSTALL file, otherwise MPFR needs to be
+configured with "CPPFLAGS=-DNPRINTF_J -DNPRINTF_L -DNPRINTF_T").
 
 2. Build and check MPFR.
 
