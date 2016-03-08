@@ -265,7 +265,7 @@ memory area.
 
 Two's complement is preferred to the sign + magnitude representation
 because the signs of the temporary (and final) results are not known
-in advanced, and the computations (additions and subtractions) in
+in advance, and the computations (additions and subtractions) in
 two's complement are more natural here; the usual sign + magnitude
 representation for the accumulator would have been possible with about
 the same number of elementary operations (even in case of cancellation),
@@ -328,7 +328,7 @@ In summary:
 The sum_raw function will work in a fixed-point accumulator, having a
 fixed precision (= size in limbs * GMP_NUMB_BITS). It will accumulate
 the bits of the inputs whose exponents are in ⟦minexp,maxexp⟦, where
-maxexp − minexp is less that the precision of the accumulator: as said
+maxexp − minexp is less than the precision of the accumulator: as said
 above, we need some additional bits in order to avoid overflows during
 the accumulation. On the entry, the accumulator may already contain a
 value from previous computations (it is the caller that clears it if
