@@ -255,13 +255,16 @@ memory area.
 Two's complement is preferred to the sign + magnitude representation
 because the signs of the temporary (and final) results are not known
 in advanced, and the computations (additions and subtractions) in
-two's complement are more natural in this context; the usual sign +
-magnitude representation for the accumulator would have been possible
-with about the same number of operations (even in case of cancellation),
-but the code would have been more complex, with more subcases. There
-will be a conversion to sign + magnitude (the representation used by
-MPFR numbers) at the end, but this should not take much time compared
-to the other calculations.
+two's complement are more natural here; the usual sign + magnitude
+representation for the accumulator would have been possible with about
+the same number of elementary operations (even in case of cancellation),
+but the code would have been more complex, with more subcases; it is not
+obvious which choice would have led to faster code, and this may depend
+on many factors (the input data, the processor, the GMP version, the
+compiler, etc.), but in any case, the difference probably remains small.
+There will be a conversion to sign + magnitude (i.e. the representation
+used by MPFR numbers) at the end, but in general, this should not take
+much time compared to the other calculations.
 
 The precision of the accumulator needs to be a bit larger than the
 output precision, denoted sq, for two reasons:
