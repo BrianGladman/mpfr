@@ -109,7 +109,8 @@ i.e. that the output sum is not shared with an input.
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
 choice is consistent with IEEE 754-2008's sum reduction operation of
-vector length 0.
+vector length 0 (this result +0 for n = 0 is the only requirement of
+IEEE 754-2008 for the sum reduction operation).
 
 Otherwise the result must be the same as the one that would have been
 obtained with
@@ -144,6 +145,16 @@ exceptions, as specified by the rounding rules.
 
 See also:
   https://sympa.inria.fr/sympa/arc/mpfr/2014-03/msg00000.html
+
+Note: The final standard IEEE 1788-2015 specifies in §12.12.12:
+
+  An exact zero shall be returned as +0 in all rounding directions,
+  except for roundTowardNegative, where −0 shall be returned.
+
+However, such a choice for MPFR would not have been consistent with
+the extension of the usual IEEE 754 and MPFR rules (see above).
+Moreover, IEEE 1788-2015 is already incompatible with IEEE 754-2008
+on the case n = 0 and roundTowardNegative.
 
 Preliminaries About the Representation of MPFR Numbers
 ──────────────────────────────────────────────────────
