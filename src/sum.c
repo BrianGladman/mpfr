@@ -162,7 +162,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
       MPFR_ASSERTD (maxexp > minexp);
 
       for (i = 0; i < n; i++)
-        if (! MPFR_IS_SINGULAR (x[i]))  /* Step 1 of sum.txt */
+        if (! MPFR_IS_SINGULAR (x[i]))  /* Step 1 (see sum_raw in sum.txt) */
           {
             mp_limb_t *dp, *vp;
             mp_size_t ds, vs, vds;
@@ -182,7 +182,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                make the code simpler, we won't try to filter out the trailing
                bits of x[i]. */
 
-            /* Steps 2, 3, 4 of sum.txt */
+            /* Steps 2, 3, 4 (see sum_raw in sum.txt) */
 
             if (vd < 0)
               {
@@ -333,7 +333,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
             if (tr != 0)
               vs--;
 
-            /* Step 5 of sum.txt */
+            /* Step 5 (see sum_raw in sum.txt) */
 
             if (MPFR_IS_POS (x[i]))
               {
