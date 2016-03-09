@@ -459,11 +459,11 @@ the following steps:
        to be masked. Masking may be needed if the input was not shifted
        because in such as case, this is regarded as a read-only area.
 
-5. If x[i] is positive: an addition is done with mpn_add_n; if the most
-   significant limb needs to be masked, it isn't taken into account in
-   the addition, but the masked part is just added to the carry; carry
-   propagation is done with mpn_add_1 if the size of the destination is
-   larger than the size of the block.
+5. If x[i] is positive: an addition with carry out is done with
+   mpn_add_n; if the most significant limb needs to be masked, then it
+   isn't taken into account in the addition, but the masked part is just
+   added to the carry; carry propagation is done with mpn_add_1 if the
+   size of the destination is larger than the size of the block.
    Note: There may be still be a carry out, but it is just ignored. This
    occurs when a negative value in the accumulator becomes non-negative,
    and this fact is part of the usual two's complement arithmetic.
