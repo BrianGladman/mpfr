@@ -540,9 +540,27 @@ a. Using MinGW
     '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. In order to have the
     MPFR formatted output functions based on ISO-compliant printf(), you
     need to compile GMP (not MPFR) with CC="gcc -D__USE_MINGW_ANSI_STDIO"
-    (since the standard printf modifiers %Ld and %td are passed to GMP).
-    Building MPFR with -D__USE_MINGW_ANSI_STDIO is useless except for some
-    error messages in the test suite.
+    (since the standard printf modifiers %e, %Ld and %td are passed to GMP).
+    Not doing so may result in failures of some of the printf-related tests.
+    For instance, the following error on some Windows machine has been
+    reported:
+
+      https://sympa.inria.fr/sympa/arc/mpfr/2016-02/msg00053.html
+
+      Error in mpfr_vsprintf (s, "%e", ...);
+      expected: "-1.250000e+000"
+      got:      "-1.250000e+00"
+      FAIL tsprintf.exe (exit status: 1)
+
+    The cause is that here the C functions vsnprintf and vsprintf used
+    internally in GMP do not produce the same output:
+
+      https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00045.html
+      https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00051.html
+      https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00053.html
+
+    Building MPFR with -D__USE_MINGW_ANSI_STDIO is currently useless except
+    for some error messages in the test suite.
 
 b. Using Cygwin
 ===============
