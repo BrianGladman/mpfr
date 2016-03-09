@@ -763,7 +763,8 @@ Several things need to be considered, in arbitrary order:
 Some of these operations will be merged, i.e., done at the same time,
 for performance reasons, and this depends on the operations provided
 by the mpn layer of GMP. Ideally, all these operations should be
-merged together, but this is not possible with GMP.
+merged together, but this is not possible with the current version of
+GMP (6.1.0).
 
 For practical reasons, the shift should be done before the rounding,
 so that all the bits are represented for the rounding. The copy itself
