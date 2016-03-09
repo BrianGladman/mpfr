@@ -275,7 +275,11 @@ on many factors (the input data, the processor, the GMP version, the
 compiler, etc.), but in any case, the difference probably remains small.
 There will be a conversion to sign + magnitude (i.e., the representation
 used by MPFR numbers) at the end, but in general, this should not take
-much time compared to the other calculations.
+much time compared to the other calculations. Two's complement will also
+make some internal parts of the algorithm simpler: we will use the fact
+that a number starting with a sequence of 1's is close to 0 (secondary
+term when the TMD occurs) and that each bit except the first one has a
+positive value (for the error bound).
 
 The precision of the accumulator needs to be a bit larger than the
 output precision, denoted sq, for two reasons:
@@ -830,10 +834,11 @@ All this is done by considering two cases:
 Now we seek to determine how the value will be rounded, more precisely,
 what correction will be done to the significand that has been copied
 just above. We currently have a significand, a trailing term t in the
-accumulator such that 0 ≤ t < 1 ulp, and an error on the trailing term
-bounded by some value t' in absolute value, so that the error e on the
+accumulator such that 0 ≤ t < 1 ulp (non-negative thanks to the two's
+complement representation), and an error on the trailing term bounded
+by some value t' in absolute value, so that the error e on the
 significand satisfies −t' ≤ e < 1 ulp + t'. Thus one has 4 correction
-cases, denoted by a corr integer value between −1 and 2, which depends
+cases, denoted by an integer value corr between −1 and 2, which depends
 on e, the sign of the significand, rbit, and the rounding mode:
   −1: equivalent to nextbelow;
    0: no correction;
