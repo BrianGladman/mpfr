@@ -505,7 +505,7 @@ then we return 0, otherwise we reiterate at the beginning of sum_raw
 with:
   * minexp = cq + maxexp2 − wq
   * maxexp = maxexp2
-so that we still have: wq = cq + maxexp - minexp.
+so that we still have in this subcase: wq = cq + maxexp - minexp.
 
 We can now assume that the truncated sum is not 0.
 
