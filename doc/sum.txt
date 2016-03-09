@@ -501,8 +501,11 @@ starting with the most significant one in the accumulator. At the
 same time, we can determine whether the truncated sum is 0 (all the
 bits are identical and their value is 0). If it is 0, we have two
 cases: if maxexp2 is equal to MPFR_EXP_MIN (meaning no more tails),
-then we return 0, otherwise we reiterate with maxexp = maxexp2 and
-minexp = cq + maxexp − wq (at the beginning of sum_raw).
+then we return 0, otherwise we reiterate at the beginning of sum_raw
+with:
+  * minexp = cq + maxexp2 − wq
+  * maxexp = maxexp2
+so that we still have: wq = cq + maxexp - minexp.
 
 We can now assume that the truncated sum is not 0.
 
