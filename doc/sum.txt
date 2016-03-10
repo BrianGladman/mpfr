@@ -710,8 +710,12 @@ and return with ternary value = 0.
 Now, the accumulator contains the significand of a good approximation
 to the non-zero exact sum. The corresponding exponent is e and the sign
 is determined from one of the cancelled bits. The exponent of the ulp
-for the target precision is u = e − sq. The absolute value of the error
-is strictly less than ulp(computed value) × 2^(−3) = 2^(u−3).
+for the target precision is u = e − sq. We have:
+  * err = maxexp + logn (where maxexp is the maxexp2 value returned by
+    sum_raw) as in sum_raw;
+  * e − err ≥ prec = sq + 3.
+Thus err ≤ u − 3, i.e. the absolute value of the error is strictly less
+than ulp(computed value) × 2^(−3) = 2^(u−3).
 
 Here is a representation of the accumulator and the cancelled bits,
 with the two cases depending on the sign of the truncated sum, where
@@ -727,21 +731,35 @@ and the bits f are the following bits:
 
 Note that the iterations in sum_raw could have stopped even in case
 of important cancellation: it suffices that the error term be small
-enough (err ≤ e − prec), i.e., maxexp2 be much smaller than minexp.
-In such a case, the bit r and some of the least significant bits x
-may fall outside of the accumulator, in which case they are regarded
-as 0's (still due to truncation). In the following, we will make sure
-that we do not try to read non-represented bits.
+enough, i.e. where the tails for the last iteration consisted only of
+inputs x[i] whose exponent was very small compared to minexp. In such
+a case, the bit r and some of the least significant bits x may fall
+outside of the accumulator, in which case they are regarded as 0's
+(still due to truncation). In the following, we will make sure that
+we do not try to read non-represented bits.
 
 When maxexp (value returned by sum_raw) is different from MPFR_EXP_MIN,
 i.e., when some bits of the inputs have still not been considered, we
-will need to determine whether the TMD occurs. Let d = u − err, which
-is ≥ 3, and can be very large if maxexp is very small; however d is
-representable in a mpfr_exp_t since u ≤ emax, err ≥ emin, and this
-type can hold the sum of two valid exponents. The TMD occurs when the
-sum is close enough to a breakpoint, which is either a machine number
-(i.e., a number whose significand fits on sq bits) or a midpoint between
-two consecutive machine numbers, depending on the rounding mode:
+will need to determine whether the TMD occurs. In this case, we will
+compute d = u − err, which is ≥ 3, and can be very large if maxexp is
+very small; nevertheless, d is representable in a mpfr_exp_t since:
+
+  * If maxexp < minexp, then maxexp is the exponent of an input x[i],
+    so that maxpexp ≥ MPFR_EMIN_MIN; and since u ≤ MPFR_EMAX_MAX, we
+    have d ≤ MPFR_EMAX_MAX − MPFR_EMIN_MIN, which is representable in
+    a mpfr_exp_t as per definition of MPFR_EMIN_MIN and MPFR_EMAX_MAX
+    in MPFR (this choice was made to simplify internal computations).
+
+  * If maxexp = minexp, then d ≤ (minexp + wq) − maxexp = wq, which
+    is representable in a mpfr_exp_t since this type can contain all
+    precision values (type mpfr_prec_t).
+
+The TMD occurs when the sum is close enough to a "breakpoint", which is
+defined as a discontinuity point of the function that maps a real input
+to the correctly rounded value and the ternary value. This is either a
+machine number (i.e., a number whose significand fits on sq bits) or a
+midpoint between two consecutive machine numbers, depending on the
+rounding mode:
   ┌───────────────┬────────────────┐
   │ Rounding mode │   Breakpoint   │
   ├───────────────┼────────────────┤
