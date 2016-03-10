@@ -513,7 +513,12 @@ Let us note that our computation of the number of cancelled bits
 (variable cancel) was limited to the accumulator representation,
 while from a mathematical point of view, the binary expansion is
 unlimited and the bits of exponent less than minexp are regarded
-as 0's. So, we need to check that the value of cancel matches this
+as 0's:
+
+  [--- accumulator ---]000000...
+              minexp ─┘└─ first non-represented bit = 0
+
+So, we need to check that the computed value of cancel matches this
 mathematical point of view:
   * If the cancelled bits are 0's, then, since the truncated sum is
     not 0, there must be at least a bit 1 in the accumulator.
