@@ -166,14 +166,18 @@ in N−1 bits (sign bit excluded), i.e., it is ⟦1−2^(N−1),2^(N−1)−1⟧
 This implies a huge gap between the minimum value MPFR_EXP_MIN of
 the type and the minimum valid exponent MPFR_EMIN_MIN.
 
-We assume that each represented bit of a regular MPFR number has an
-exponent value representable in the mpfr_exp_t type, i.e., a value
-that is ≥ MPFR_EXP_MIN. MPFR code of some other functions have similar
-requirements (often not documented). However, unless the precision of
-a MPFR number is huge, such requirements are satisfied. In practice,
-they are always satisfied on 64-bit machines due to memory limits. On
-32-bit machines, users would probably reach other system limits first
-(mainly due to the limit on the address space).
+This allows the following algorithm & implementation to be valid in
+practical cases. Assertion failures could occur in cases involving
+extremely huge precisions (detected mainly for security reasons).
+In practice, these failures are not possible with a 64-bit ABI due
+to memory limits. With a 32-bit ABI, users would probably reach other
+system limits first (mainly due to the limit on the address space);
+the best solution would be to switch to a 64-bit for such computations.
+MPFR code of some other functions have similar requirements, which are
+often not documented.
+
+TODO: Give more details (e.g. a bound on the precision, but this also
+depends on the exponents of the numbers).
 
 Algorithm and Implementation: Preliminary Steps
 ───────────────────────────────────────────────
