@@ -202,7 +202,11 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                     /* x[i] is entirely after the LSB of the accumulator,
                        so that it will be ignored at this iteration. */
                     if (xe > maxexp2)
-                      maxexp2 = xe;
+                      {
+                        maxexp2 = xe;
+                        /* And since the exponent of x[i] is valid... */
+                        MPFR_ASSERTD (maxexp2 >= MPFR_EMIN_MIN);
+                      }
                     continue;
                   }
 
@@ -404,8 +408,14 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                maxexp2 == MPFR_EXP_MIN). */
 
             /* This basically tests whether err <= e - prec without
-               potential integer overflow (since prec >= 0)... */
-            if (err <= e && SAFE_DIFF (mpfr_uexp_t, e, err) >= prec)
+               potential integer overflow (since prec >= 0)...
+               Note that the maxexp2 == MPFR_EXP_MIN test is there just for
+               the potential corner case e - prec < MPFR_EXP_MIN + logn.
+               Such corner cases, involving specific huge-precision numbers,
+               are probably not supported in many places in MPFR, but this
+               test doesn't hurt... */
+            if (maxexp2 == MPFR_EXP_MIN ||
+                (err <= e && SAFE_DIFF (mpfr_uexp_t, e, err) >= prec))
               {
                 MPFR_LOG_MSG (("(err=%" MPFR_EXP_FSPEC "d) <= (e=%"
                                MPFR_EXP_FSPEC "d) - (prec=%Pd)\n",
@@ -695,11 +705,15 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             mp_limb_t limb, mask;
             int nbits;
 
+            /* Since maxexp was set to either the exponent of a x[i] or
+               to minexp... */
+            MPFR_ASSERTD (maxexp >= MPFR_EMIN_MIN || maxexp == minexp);
+
             inex = 1;  /* We do not know whether the sum is exact. */
 
-            MPFR_ASSERTD (u <= MPFR_EMAX_MAX);
+            MPFR_ASSERTD (u <= MPFR_EMAX_MAX && u <= minexp + wq);
             d = u - (maxexp + logn);  /* representable */
-            MPFR_ASSERTD (d >= 3);
+            MPFR_ASSERTD (d >= 3);  /* due to prec = sq + 3 in sum_raw */
 
             /* Let's see whether the TMD occurs by looking at the d bits
                following the ulp bit, or the d-1 bits after the rounding
