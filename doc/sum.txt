@@ -785,7 +785,7 @@ the most significant part of the destination, and the least significant
 limbs (if any) are zeroed.
 
 Note: By definition of e, the most significant bit that is copied is
-the opposite of the value of the cancelled bits. A variable pos will
+the complement of the value of the cancelled bits. A variable pos will
 contain its value, i.e., pos = 1 for a positive number, pos = 0 for a
 negative number.
 
@@ -888,7 +888,7 @@ We distinguish two cases:
         like in the main sum.
 
     Once the accumulator is set up, sum_raw is called with prec = 1,
-    satisfying the first sum_raw precondition. And we have:
+    satisfying the first sum_raw precondition (prec ≥ 1). And we have:
 
       wq ≥ cq + dq ≥ logn + 3 = logn + prec + 2,
 
