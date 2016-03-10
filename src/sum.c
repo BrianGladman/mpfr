@@ -475,7 +475,8 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
                 else
                   MPN_COPY_DECR (wp + shifts, wp, ws - shifts);
                 MPN_ZERO (wp, shifts);
-                minexp -= shiftq;
+                /* Compute minexp = minexp - shiftq safely. */
+                UPDATE_MINEXP (minexp, shiftq);
                 MPFR_ASSERTD (minexp < maxexp2);
               }
           }
@@ -487,6 +488,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
         else
           {
             MPFR_LOG_MSG (("accumulator = 0, reiterate\n", 0));
+            /* Compute minexp = maxexp2 - (wq - (logn + 1)) safely. */
             UPDATE_MINEXP (maxexp2, wq - (logn + 1));
             /* Note: the logn + 1 corresponds to cq in the main code. */
           }
@@ -579,6 +581,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_LOG_MSG (("Compute an approximation with sum_raw...\n", 0));
 
+    /* Compute minexp = maxexp - (wq - cq) safely. */
     UPDATE_MINEXP (maxexp, wq - cq);
     MPFR_ASSERTD (wq >= logn + sq + 5);
     cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
@@ -933,6 +936,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                   MPN_COPY_DECR (wp + zs, wp, wi);
               }
 
+            /* Compute minexp = minexp - (zs * GMP_NUMB_BITS + td) safely. */
             UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
             MPFR_ASSERTD (minexp == err + 2 - wq);
           }
@@ -946,7 +950,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
             zs = ws;
 
-            /* minexp = maxexp + cq - wq */
+            /* Compute minexp = maxexp - (wq - cq) safely. */
             UPDATE_MINEXP (maxexp, wq - cq);
             MPFR_ASSERTD (minexp == err + 1 - wq);
           }
