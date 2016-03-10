@@ -67,7 +67,17 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2] = { 0 };
 #endif
 
 /* Update minexp after detecting a potential integer overflow in extreme
-   cases (only 32-bit machines may be concerned in practice). */
+   cases (only 32-bit machines may be concerned in practice).
+   Instead of an assertion failure below, we could
+   1. check that the ulp of each regular input has an exponent >= MPFR_EXP_MIN
+      (with an assertion failure if this is not the case);
+   2. set minexp to MPFR_EXP_MIN and shift the accumulator accordingly
+      (the sum will then be exact).
+   However, such cases, which involve huge precisions, will probably
+   never occur in practice (at least on 64-bit machines) and are not
+   easily testable due to these huge precisions. Moreover, switching
+   to a 64-bit machine would be a better solution for such computations.
+   So, let's leave this unimplemented. */
 #define UPDATE_MINEXP(E,SH)                     \
   do                                            \
     {                                           \
