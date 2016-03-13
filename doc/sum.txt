@@ -346,7 +346,8 @@ During the accumulation, the bits of an input x[i] whose exponents are
 less than minexp form the "tail" of this input. When the tail of x[i]
 is not empty, its exponent is defined as e[i] = min(E(x[i]),minexp).
 The absolute value of each tail is strictly less than 2^e[i]. This will
-give an error bound on the computed sum at each iteration.
+give an error bound on the computed sum at each iteration:
+rn · 2^(sup(e[i])) ≤ 2^(sup(e[i]) + logn).
 
 If the computed result is 0 (meaning full cancellation), set maxexp to
 the maximum exponent of the tails, set minexp so that it corresponds to
@@ -418,6 +419,22 @@ Notes:
   * Contrary to the returned value of minexp (the value in the last
     iteration), the returned value of maxexp is the one for the next
     iteration (= maxexp2 of the last iteration, see below).
+  * By definition, the exponent of a positive number is the one of the
+    least significant 0 in the semi-infinite leading string of 0's of
+    the significand. But in two's complement, the negative significands
+    are represented with a leading string of 1's, and we keep a similar,
+    simple definition for the exponent of a negative number: it is the
+    one of the least significant 1 in the leading string of 1's. Thus
+    a value represented by a finite number of bits is in [2^(e−1),2^e[
+    for positive values, and in [−2^e,−2^(e−1)[ for negative values;
+    the interval for the sign + magnitude representation would be:
+    ]−2^e,−2^(e−1)]. Note: this definition can also be justified by
+    the fact that a conversion to sign + magnitude is equivalent to
+    complement all bits of the infinite series; the difference between
+    the bounds is due to the fact that the canonical representations
+    are different for sign + magnitude and for two's complement: the
+    semi-infinite trailing string of 0's is converted to a trailing
+    string of 1's after complement.
 
 Details about the sum_raw implementation are given below. Here is some
 notation:
@@ -538,7 +555,7 @@ Let us denote:
 
 Then e is the exponent of the least significant cancelled bit, thus the
 absolute value of the truncated sum is in [2^(e−1),2^e] (binade closed
-on both ends due to two's complement). And since there are at most logn
+on both ends due to two's complement). Since there are at most 2^logn
 regular inputs and the absolute value of each tail is < 2^maxexp2, the
 absolute value of the error is strictly less than 2^err. If maxexp2 is
 equal to MPFR_EXP_MIN (meaning no more tails), then the error is 0.
