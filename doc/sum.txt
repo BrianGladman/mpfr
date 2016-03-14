@@ -415,7 +415,13 @@ Notes:
   * The temporary area must be large enough to hold a shifted input
     block, and the value of ts is used only when the full assertions
     are checked (i.e., with the --enable-assert configure option), to
-    check that a buffer overflow doesn't occur.
+    check that a buffer overflow doesn't occur. In the code, ts will
+    be chosen to hold at least wq − cq + GMP_NUMB_BITS − 1 bits (it
+    will not be modified for the second sum_raw invocation, but this
+    is fine as wq is not increased for the second sum_raw invocation).
+    We just need to check that this choice is correct each time the
+    accumulator is shifted. Here for sum_raw, we will need to prove
+    that maxexp − minexp ≤ wq − cq at each iteration.
   * Contrary to the returned value of minexp (the value in the last
     iteration), the returned value of maxexp is the one for the next
     iteration (= maxexp2 of the last iteration, see below).
@@ -617,13 +623,19 @@ can choose:
 
   shiftq = cancel − 2 − max(0, err − e).
 
-Now, let us prove that for this value, (1) is satisfied.
+Now, let us prove that for this value, (1) is satisfied. At the same
+time, let us also prove that maxexp2 − (minexp − shiftq) ≤ wq − cq to
+guarantee that the chosen size ts is still sufficient (intuitively,
+this is implied by the impossibility of overflow).
 
   * If err − e ≥ 0, then:
       shiftq = cancel − 2 − (err − e)
              = cancel − 2 − (maxexp2 + logn) + (minexp + wq − cancel)
              = minexp − maxexp2 + (wq − logn − 2) > minexp − maxexp2
     since wq ≥ logn + prec + 2 ≥ logn + 3 on input.
+
+    Starting with the above equality,
+      maxexp2 − (minexp − shiftq) = wq − logn − 2 ≤ wq − cq.
 
   * If err − e < 0, then this is the case where the error can be
     potentially small: to be able to prove the inequality, we need
@@ -634,6 +646,11 @@ Now, let us prove that for this value, (1) is satisfied.
       shiftq − (minexp − maxexp2) = cancel − 2 − (minexp − maxexp2)
         > wq − logn − prec − 2 ≥ 0
     since wq ≥ logn + prec + 2 on input.
+
+    Since err − e < 0 and cancel = shiftq + 2, we have:
+      (maxexp2 + logn) − (minexp + wq − shiftq − 2) < 0,
+    thus
+      maxexp2 − (minexp − shiftq) < wq − logn − 2 ≤ wq − cq.
 
 QED.
 
@@ -929,7 +946,10 @@ We distinguish two cases:
     are identical. We distinguish two subcases:
 
       * err ≥ minexp. We keep the last 2 over the d−1 identical bits and
-        the following bits, i.e., the bits from err+1 to minexp.
+        the following bits, i.e., the bits from err+1 to minexp. After
+        the shift, we have minexp = err + 2 − wq, so that:
+          maxexp − minexp = wq − logn − 2 ≤ wq − cq,
+        satisfying the condition for ts.
 
       * err < minexp. Here at least one of the identical bits is not
         represented, meaning that it is 0 and all these bits are 0's.
