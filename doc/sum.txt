@@ -889,8 +889,8 @@ Now we seek to determine how the value will be rounded, more precisely,
 what correction will be done to the significand that has been copied
 just above. We currently have a significand, a trailing term t in the
 accumulator such that 0 ≤ t < 1 ulp (non-negative thanks to the two's
-complement representation), and an error on the trailing term bounded
-by some value t' in absolute value, so that the error e on the
+complement representation), and an error on the trailing term bounded by
+t' ≤ 2^(u−3) = 2^(−3) ulp in absolute value, so that the error e on the
 significand satisfies −t' ≤ e < 1 ulp + t'. Thus one has 4 correction
 cases, denoted by an integer value corr between −1 and 2, which depends
 on e, the sign of the significand, rbit, and the rounding mode:
@@ -904,8 +904,8 @@ second argument of mpfr_check_range.
 
 We distinguish two cases:
 
-  * tmd = 0. The TMD does not occur, so that t' has no influence on
-    the rounding and the ternary value (one can assume t' = 0). One
+  * tmd = 0. The TMD does not occur, so that the error has no influence
+    on the rounding and the ternary value (one can assume t' = 0). One
     has inex = 0 if and only if t = 0, so that inex is currently the
     absolute value of the ternary value. Therefore:
       * for MPFR_RNDD, corr ← 0;
