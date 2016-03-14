@@ -935,19 +935,24 @@ We distinguish two cases:
 
   * tmd ≠ 0. The TMD occurs and will be solved by determining the sign
     (−1, 0 or +1) of a secondary term with a second sum_raw invocation
-    with a small-precision accumulator. Since the truncated sum in the
-    accumulator was already copied to the destination, we can reuse the
+    with a small-precision accumulator.
+
+    Since the uncorrected significand (which consists of the bits of
+    exponents in ⟦max(u,minexp),e⟦ as mentioned above) has already been
+    copied from the accumulator to the destination, we can reuse the
     memory of the accumulator, but its precision is now set to cq + dq
     rounded up to the next multiple of the word size (GMP_NUMB_BITS).
-    There may remain some bits following the truncated sum, but they
-    will be taken into account as described below.
+    There may remain some bits that have not been copied, but they will
+    be taken into account as described below.
 
     Let us recall that the d−1 bits from exponent u−2 to u−d (= err)
     are identical. We distinguish two subcases:
 
-      * err ≥ minexp. We keep the last 2 over the d−1 identical bits and
-        the following bits, i.e., the bits from err+1 to minexp. After
-        the shift, we have minexp = err + 2 − wq, so that:
+      * err ≥ minexp. The last two over the d−1 identical bits and the
+        following bits, i.e., the bits from err+1 to minexp, are shifted
+        to the most significant part of the accumulator.
+
+        After this shift, we have minexp = err + 2 − wq, so that:
           maxexp − minexp = wq − logn − 2 ≤ wq − cq,
         satisfying the condition for ts.
 
