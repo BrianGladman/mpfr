@@ -428,13 +428,19 @@ Notes:
     a value represented by a finite number of bits is in [2^(e−1),2^e[
     for positive values, and in [−2^e,−2^(e−1)[ for negative values;
     the interval for the sign + magnitude representation would be:
-    ]−2^e,−2^(e−1)]. Note: this definition can also be justified by
-    the fact that a conversion to sign + magnitude is equivalent to
-    complement all bits of the infinite series; the difference between
-    the bounds is due to the fact that the canonical representations
-    are different for sign + magnitude and for two's complement: the
-    semi-infinite trailing string of 0's is converted to a trailing
-    string of 1's after complement.
+    ]−2^e,−2^(e−1)] for negative values.
+    Note: This definition can also be justified as follows. Negating a
+    number in two's complement (in order to obtain its magnitude) can
+    be done by complementing all the bits of the infinite series, and
+    the intervals would be the same if one considered non-canonical
+    binary expansions, i.e. with an infinite trailing string of 1's:
+    [−2^e,−2^(e−1)]. The difference between the open/closed bounds for
+    [−2^e,−2^(e−1)[ and ]−2^e,−2^(e−1)] is due to the fact that a number
+    represented by a finite number of bits (i.e., a canonical binary
+    expansion) is changed to a non-canonical binary expansion after
+    complement: the infinite trailing string of 0's is changed to an
+    infinite trailing string of 1's, and the conversion to a canonical
+    binary expansion could change the exponent.
 
 Details about the sum_raw implementation are given below. Here is some
 notation:
