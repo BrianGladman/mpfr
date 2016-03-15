@@ -1183,7 +1183,11 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
 }
 
 /* This bug appears when porting sum.c for MPFR 3.1.4 (0.11E826 is returned),
-   but does not appear in the trunk. TODO: find why. */
+   but does not appear in the trunk. It was due to buggy MPFR_IS_LIKE_RNDD
+   and MPFR_IS_LIKE_RNDU macros. The fix was done in r9295 in the trunk and
+   it has been merged in r10234 in the 3.1 branch. Note: the bug would have
+   been caught by generic_tests anyway, but a simple testcase is easier for
+   checking with log messages (MPFR_LOG_ALL=1). */
 static void
 bug20160315 (void)
 {
