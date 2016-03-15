@@ -1182,6 +1182,38 @@ check_random (int n, int k, mpfr_prec_t prec, mpfr_rnd_t rnd)
   gmp_randclear (state);
 }
 
+/* This bug appears when porting sum.c for MPFR 3.1.4 (0.11E826 is returned),
+   but does not appear in the trunk. TODO: find why. */
+static void
+bug20160315 (void)
+{
+  mpfr_t r, t[4];
+  mpfr_ptr p[4];
+  char *s[4] = { "0.10E20", "0", "0.11E382", "0.10E826" };
+  int i;
+
+  mpfr_init2 (r, 2);
+  for (i = 0; i < 4; i++)
+    {
+      mpfr_init2 (t[i], 2);
+      mpfr_set_str_binary (t[i], s[i]);
+      p[i] = t[i];
+    }
+  mpfr_sum (r, p, 4, MPFR_RNDN);
+  if (! mpfr_equal_p (r, t[3]))
+    {
+      printf ("Error in bug20160315.\n");
+      printf ("Expected ");
+      mpfr_dump (t[3]);
+      printf ("Got      ");
+      mpfr_dump (r);
+      exit (1);
+    }
+  for (i = 0; i < 4; i++)
+    mpfr_clear (t[i]);
+  mpfr_clear (r);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1212,6 +1244,7 @@ main (int argc, char *argv[])
   check4 ();
   bug20131027 ();
   bug20150327 ();
+  bug20160315 ();
   generic_tests ();
   check_extreme ();
   cancel ();
