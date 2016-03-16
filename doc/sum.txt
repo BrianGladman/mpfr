@@ -1145,6 +1145,65 @@ the current exponent range and handle a possible overflow/underflow.
 
 ────────────────────────────────────────────────────────────────────────
 
+Summary of the timings copied from:
+  ^/misc/sum-timings/results/ReadMe@10244
+
+Below, ~ means "more or less equivalent", and > means faster, with
+several > if it is really much faster.
+
+Summary of the timings with:
+  * sum_old: mpfr_sum from MPFR 3.1.4 (old algo).
+  * sum_new: mpfr_sum from the trunk patched for MPFR 3.1.4 (new algo).
+  * sum_add: basic sum implementation with mpfr_add, inaccurate and
+             sensitive to the order of the arguments.
+
+  size  precx  precy  emax  Cancel
+  --------------------------------
+  10^1   10^1  10^7   10^0      sum_new >> sum_add > sum_old
+                      10^8      sum_new > sum_add >> sum_old
+  10^1   10^7  10^1         N   sum_new >>>> sum_add >> sum_old
+                            Y   sum_add >> sum_old >> sum_new
+  10^1   10^7  10^7   10^0      sum_add ~ sum_new > sum_old
+                      10^8  N   sum_add >> sum_new >> sum_old [1]
+                      10^8  Y   sum_add >> sum_new >> sum_old
+  10^3   10^1  10^5   10^0      sum_new >>> sum_add ~ sum_old
+                      10^8      sum_new >> sum_add >> sum_old
+  10^3   10^5  10^1   10^0  N   sum_new >> sum_add > sum_old
+                      10^0  Y   sum_add > sum_old >> sum_new
+                      10^8  N   sum_new > sum_add >> sum_old
+                      10^8  Y   sum_add >> sum_old >> sum_new
+  10^3   10^5  10^5   10^0      sum_new > sum_add > sum_old
+                      10^8  N   sum_new > sum_add >>> sum_old
+                      10^8  Y   sum_add ~ sum_new >> sum_old [2]
+  10^5   10^1  10^1   10^0      sum_add ~ sum_new > sum_old
+                      10^8  N   sum_new >> sum_add >> sum_old
+                      10^8  Y   sum_add ~ sum_new >> sum_old
+  10^5   10^1  10^3   10^0      sum_new > sum_add > sum_old
+                      10^8      sum_new > sum_add >> sum_old
+  10^5   10^3  10^1   10^0  N   sum_add ~ sum_new > sum_old
+                      10^0  Y   sum_add > sum_old >> sum_new
+                      10^8  N   sum_new >> sum_add >> sum_old
+                      10^8  Y   sum_add >> sum_new > sum_old
+  10^5   10^3  10^3   10^0      sum_add ~ sum_new > sum_old
+                      10^8      sum_new > sum_add >> sum_old
+
+[1] In some cases, sum_new is faster than sum_add.
+[2] In some cases, sum_new is much faster than sum_add, or the opposite!
+
+Conclusion:
+  * Depending on the cases, sum_new is faster or slower than sum_add.
+    The fact that it can be much faster shows the importance of the
+    low-level algorithm.
+  * In most cases, sum_new is much faster than sum_old. The only cases
+    where it is (much) slower is when precy << precx and there is a
+    cancellation, due to the fact that the reiterations are always done
+    in a small precision, which is regarded as sufficient with a large
+    probability. Such pathological cases might be solved in the future
+    without much slowing down the common cases thanks to auto-detection,
+    but this may need a reallocation.
+
+────────────────────────────────────────────────────────────────────────
+
 An example:
 
               [1]    [2]   A  [3]
