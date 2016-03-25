@@ -500,6 +500,12 @@ MPFR tests related to long double's may fail. If you cannot upgrade
 the system, you can still use MPFR with FreeBSD 4.3, but you should
 not use conversions with the long double type.
 
+Notes on NetBSD/alpha
+=====================
+
+Autoconf might add -mieee to CFLAGS, which seems to be buggy (see the
+thread https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00070.html).
+Removing CFLAGS solves the problem.
 
 Notes on AIX/PowerPC
 ====================
