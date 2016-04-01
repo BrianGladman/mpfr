@@ -241,6 +241,8 @@ Table of contents:
   Standard: http://www.iso.org/iso/catalogue_detail.htm?csnumber=38857
   Draft: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1292.pdf
   Rationale: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1244.pdf
+  See also: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3060.pdf
+  (similar, for C++).
   Also check whether the functions that are already implemented in MPFR
   match this standard.
 
