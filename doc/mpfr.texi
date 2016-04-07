@@ -2277,9 +2277,9 @@ stream, and functions that output to an input/output stream.
 Passing a null pointer for a @code{stream} to any of these functions will make
 them read from @code{stdin} and write to @code{stdout}, respectively.
 
-When using any of these functions, you must include the @code{<stdio.h>}
-standard header before @file{mpfr.h}, to allow @file{mpfr.h} to define
-prototypes for these functions.
+When using a function that takes a @code{FILE *} argument, you must
+include the @code{<stdio.h>} standard header before @file{mpfr.h},
+to allow @file{mpfr.h} to define prototypes for these functions.
 
 @deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Output @var{op} on stream @var{stream}, as a string of digits in
@@ -2353,6 +2353,14 @@ Return 0 iff the import was successful.
 
 Note: this function is experimental and its interface might change in future
 versions.
+@end deftypefun
+
+@deftypefun void mpfr_dump (mpfr_t @var{op})
+Output @var{op} on @code{stdout} in some unspecified format, then a newline
+character. This function is mainly for debugging purpose. Thus invalid data
+may be supported. Everything that is not specified may change without
+breaking the ABI and may depend on the environment.
+@c TODO: say more for the *current* version of MPFR.
 @end deftypefun
 
 @node Formatted Output Functions, Integer and Remainder Related Functions, Input and Output Functions, MPFR Interface
