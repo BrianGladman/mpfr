@@ -134,7 +134,7 @@ check_nan_inf_mpq (void)
       mpfr_print_binary (mpfr_cmp);
       printf (" got ");
       mpfr_print_binary (mpfr_value);
-      printf ("\n trinary value is %d\n", status);
+      printf ("\n ternary value is %d\n", status);
       exit (1);
     }
 
@@ -153,7 +153,7 @@ check_nan_inf_mpq (void)
       mpfr_print_binary (mpfr_cmp);
       printf (" got ");
       mpfr_print_binary (mpfr_value);
-      printf ("\n trinary value is %d\n", status);
+      printf ("\n ternary value is %d\n", status);
       exit (1);
     }
 

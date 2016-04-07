@@ -1209,7 +1209,7 @@ coverage_mpfr_mul_q_20110218 (void)
       mpfr_print_binary (cmp);
       printf (" got ");
       mpfr_print_binary (res);
-      printf ("\n trinary value is %d\n", status);
+      printf ("\n ternary value is %d\n", status);
       exit (1);
     }
 
