@@ -280,7 +280,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPN_ZERO (ap, an);
 
 #ifdef DEBUG
-  printf("after copying high(b), a="); mpfr_print_binary(a); putchar('\n');
+  printf("after copying high(b), a="); mpfr_dump (a);
 #endif
 
   /* subtract high(c) */
@@ -659,7 +659,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   MPFR_TMP_FREE(marker);
 #ifdef DEBUG
-  printf ("result is a="); mpfr_print_binary(a); putchar('\n');
+  printf ("result is a="); mpfr_dump (a);
 #endif
   /* check that result is msb-normalized */
   MPFR_ASSERTD(ap[an-1] > ~ap[an-1]);

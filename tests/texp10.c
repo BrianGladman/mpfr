@@ -235,7 +235,7 @@ main (int argc, char *argv[])
     {
       printf ("Error for emin = -11, x = -4, RNDN\n");
       printf ("Expected +0\n");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
   /* restore emin */
@@ -250,7 +250,7 @@ main (int argc, char *argv[])
     {
       printf ("Error for emax = 13, x = 4, RNDN\n");
       printf ("Expected +inf\n");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
   /* restore emax */

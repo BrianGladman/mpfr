@@ -101,7 +101,7 @@ special (void)
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_atanh(+Inf) <> NaN\n");
-      mpfr_print_binary (y); printf ("\n");
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -159,7 +159,7 @@ special (void)
   if (mpfr_cmp (y, z))
     {
       printf ("Error: mpfr_atanh (3)\n");
-      mpfr_print_binary (y); printf ("\n");
+      mpfr_dump (y);
       exit (1);
     }
 

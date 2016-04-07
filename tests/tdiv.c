@@ -322,8 +322,8 @@ check_convergence (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_div for prec=64, rnd=MPFR_RNDN\n");
-      printf ("got        "); mpfr_print_binary(x); puts ("");
-      printf ("instead of "); mpfr_print_binary(y); puts ("");
+      printf ("got        "); mpfr_dump (x);
+      printf ("instead of "); mpfr_dump (y);
       exit(1);
     }
 
@@ -340,7 +340,7 @@ check_convergence (void)
             {
               printf ("mpfr_div failed for x=1.0, y=1.0, prec=%d rnd=%s\n",
                       i, mpfr_print_rnd_mode ((mpfr_rnd_t) j));
-              printf ("got "); mpfr_print_binary(y); puts ("");
+              printf ("got "); mpfr_dump (y);
               exit (1);
             }
         }
@@ -472,8 +472,8 @@ check_lowr (void)
       if (c || mpfr_cmp (z2, z))
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDN\n");
-          printf ("got        "); mpfr_print_binary(z2); puts ("");
-          printf ("instead of "); mpfr_print_binary(z); puts ("");
+          printf ("got        "); mpfr_dump (z2);
+          printf ("instead of "); mpfr_dump (z);
           printf ("inex flag = %d, expected 0\n", c);
           exit (1);
         }
@@ -498,8 +498,8 @@ check_lowr (void)
       if ((mpfr_cmp (z2, z) == 0 && c) || inex_cmp (c, c2))
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDN\n");
-          printf ("got        "); mpfr_print_binary(z2); puts ("");
-          printf ("instead of "); mpfr_print_binary(z); puts ("");
+          printf ("got        "); mpfr_dump (z2);
+          printf ("instead of "); mpfr_dump (z);
           printf ("inex flag = %d, expected %d\n", c, c2);
           exit (1);
         }
@@ -510,8 +510,8 @@ check_lowr (void)
             {
               printf ("Error in mpfr_div [even rnd?] rnd=MPFR_RNDN\n");
               printf ("Dividing ");
-              printf ("got        "); mpfr_print_binary(z2); puts ("");
-              printf ("instead of "); mpfr_print_binary(z); puts ("");
+              printf ("got        "); mpfr_dump (z2);
+              printf ("instead of "); mpfr_dump (z);
               printf ("inex flag = %d\n", 1);
               exit (1);
             }
@@ -523,8 +523,8 @@ check_lowr (void)
             {
               printf ("Error in mpfr_div [even rnd?] rnd=MPFR_RNDN\n");
               printf ("Dividing ");
-              printf ("got        "); mpfr_print_binary(z2); puts ("");
-              printf ("instead of "); mpfr_print_binary(z); puts ("");
+              printf ("got        "); mpfr_dump (z2);
+              printf ("instead of "); mpfr_dump (z);
               printf ("inex flag = %d\n", 1);
               exit (1);
             }
@@ -561,8 +561,8 @@ check_lowr (void)
       if (c != -1 || mpfr_cmp(z2, z))
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDD\n");
-          printf ("got        "); mpfr_print_binary(z2); puts ("");
-          printf ("instead of "); mpfr_print_binary(z); puts ("");
+          printf ("got        "); mpfr_dump (z2);
+          printf ("instead of "); mpfr_dump (z);
           printf ("inex flag = %d\n", c);
           exit (1);
         }
@@ -576,8 +576,8 @@ check_lowr (void)
           printf ("Error in mpfr_div rnd=MPFR_RNDU\n");
           printf ("u="); mpfr_dump (x);
           printf ("v="); mpfr_dump (y);
-          printf ("got        "); mpfr_print_binary (z2); puts ("");
-          printf ("instead of "); mpfr_print_binary (z); puts ("");
+          printf ("got        "); mpfr_dump (z2);
+          printf ("instead of "); mpfr_dump (z);
           printf ("inex flag = %d\n", c);
           exit (1);
         }
@@ -691,10 +691,10 @@ check_inexact (void)
                       printf ("Wrong inexact flag for rnd=%s\n",
                               mpfr_print_rnd_mode(rnd));
                       printf ("expected %d, got %d\n", cmp, inexact);
-                      printf ("x="); mpfr_print_binary (x); puts ("");
-                      printf ("u="); mpfr_print_binary (u); puts ("");
-                      printf ("y="); mpfr_print_binary (y); puts ("");
-                      printf ("y*u="); mpfr_print_binary (z); puts ("");
+                      printf ("x="); mpfr_dump (x);
+                      printf ("u="); mpfr_dump (u);
+                      printf ("y="); mpfr_dump (y);
+                      printf ("y*u="); mpfr_dump (z);
                       exit (1);
                     }
                 }

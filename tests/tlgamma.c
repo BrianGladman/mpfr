@@ -144,9 +144,9 @@ special (void)
     {
       printf ("mpfr_lgamma("CHECK_X1") is wrong:\n"
               "expected ");
-      mpfr_print_binary (x); putchar ('\n');
+      mpfr_dump (x);
       printf ("got      ");
-      mpfr_print_binary (y); putchar ('\n');
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -160,9 +160,9 @@ special (void)
     {
       printf ("mpfr_lgamma("CHECK_X2") is wrong:\n"
               "expected ");
-      mpfr_print_binary (x); putchar ('\n');
+      mpfr_dump (x);
       printf ("got      ");
-      mpfr_print_binary (y); putchar ('\n');
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -189,8 +189,8 @@ special (void)
   if (mpfr_equal_p (x, y) == 0 || sign != 1)
     {
       printf ("Error in mpfr_lgamma (120)\n");
-      printf ("Expected "); mpfr_print_binary (y); puts ("");
-      printf ("Got      "); mpfr_print_binary (x); puts ("");
+      printf ("Expected "); mpfr_dump (y);
+      printf ("Got      "); mpfr_dump (x);
       exit (1);
     }
 

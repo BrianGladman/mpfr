@@ -120,8 +120,8 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
         {
           printf ("Error for %s(a, a, c) for ", foo);
           DISP("a=",ref2); DISP2(", c=",ref3);
-          printf ("expected "); mpfr_print_binary (ref1); puts ("");
-          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          printf ("expected "); mpfr_dump (ref1);
+          printf ("got      "); mpfr_dump (res1);
           exit (1);
         }
 
@@ -320,8 +320,8 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
         {
           printf ("Error for %s(a, a, c) for c=%u\n", foo, ref3);
           DISP2("a=",ref2);
-          printf ("expected "); mpfr_print_binary (ref1); puts ("");
-          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          printf ("expected "); mpfr_dump (ref1);
+          printf ("got      "); mpfr_dump (res1);
           exit (1);
         }
     }
@@ -556,8 +556,8 @@ pow_int (mpfr_rnd_t rnd)
         {
           printf ("Error for pow_int(a, a, c) for ");
           DISP("a=",ref2); DISP2(", c=",ref3);
-          printf ("expected "); mpfr_print_binary (ref1); puts ("");
-          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          printf ("expected "); mpfr_dump (ref1);
+          printf ("got      "); mpfr_dump (res1);
           exit (1);
         }
     }

@@ -63,14 +63,14 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
       if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh) && !MPFR_IS_ZERO (x))
         {
           printf ("Error: mpfr_urandom() returns invalid numbers:\n");
-          mpfr_print_binary (x); puts ("");
+          mpfr_dump (x);
           exit (1);
         }
       /* check that the value is in [0,1] */
       if (mpfr_cmp_ui (x, 0) < 0 || mpfr_cmp_ui (x, 1) > 0)
         {
           printf ("Error: mpfr_urandom() returns number outside [0, 1]:\n");
-          mpfr_print_binary (x); puts ("");
+          mpfr_dump (x);
           exit (1);
         }
 
@@ -107,7 +107,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
           printf ("Error: mpfr_urandom() do not handle correctly a restricted"
                   " exponent range.\nrounding mode: %s\nternary value: %d\n"
                   "random value: ", mpfr_print_rnd_mode (rnd), inex);
-          mpfr_print_binary (x); puts ("");
+          mpfr_dump (x);
           exit (1);
         }
     }

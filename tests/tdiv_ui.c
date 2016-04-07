@@ -127,8 +127,8 @@ special (void)
           if (mpfr_cmp(x,y))
             {
               printf ("division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
-              printf ("expected "); mpfr_print_binary (x); puts ("");
-              printf ("got      "); mpfr_print_binary (y); puts ("");
+              printf ("expected "); mpfr_dump (x);
+              printf ("got      "); mpfr_dump (y);
               exit (1);
             }
         }
@@ -178,8 +178,8 @@ check_inexact (void)
               if (mpfr_mul_ui (z, y, u, (mpfr_rnd_t) rnd))
                 {
                   printf ("z <- y * u should be exact for u=%lu\n", u);
-                  printf ("y="); mpfr_print_binary (y); puts ("");
-                  printf ("z="); mpfr_print_binary (z); puts ("");
+                  printf ("y="); mpfr_dump (y);
+                  printf ("z="); mpfr_dump (z);
                   exit (1);
                 }
               cmp = mpfr_cmp (z, x);
@@ -189,8 +189,8 @@ check_inexact (void)
                 {
                   printf ("Wrong inexact flag for u=%lu, rnd=%s\n", u,
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("y="); mpfr_print_binary (y); puts ("");
+                  printf ("x="); mpfr_dump (x);
+                  printf ("y="); mpfr_dump (y);
                   exit (1);
                 }
             }

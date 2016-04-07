@@ -452,10 +452,10 @@ check_inexact (mpfr_prec_t p)
               {
                 printf ("results differ for u=%lu rnd=%s\n",
                         u, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                printf ("x="); mpfr_print_binary (x); puts ("");
-                printf ("y="); mpfr_print_binary (y); puts ("");
-                printf ("t="); mpfr_print_binary (t); puts ("");
-                printf ("z="); mpfr_print_binary (z); puts ("");
+                printf ("x="); mpfr_dump (x);
+                printf ("y="); mpfr_dump (y);
+                printf ("t="); mpfr_dump (t);
+                printf ("z="); mpfr_dump (z);
                 exit (1);
               }
             if (((inexact == 0) && (cmp != 0)) ||
@@ -465,8 +465,8 @@ check_inexact (mpfr_prec_t p)
                         (unsigned int) p, (unsigned int) q,
                         mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 printf ("expected %d, got %d\n", cmp, inexact);
-                printf ("u=%lu x=", u); mpfr_print_binary (x); puts ("");
-                printf ("y="); mpfr_print_binary (y); puts ("");
+                printf ("u=%lu x=", u); mpfr_dump (x);
+                printf ("y="); mpfr_dump (y);
                 exit (1);
               }
           }

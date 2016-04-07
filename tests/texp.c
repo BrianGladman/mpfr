@@ -366,7 +366,7 @@ check_special (void)
     {
       printf ("Error for exp(-9) for emin=-10\n");
       printf ("Expected +0\n");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
   set_emin (emin);

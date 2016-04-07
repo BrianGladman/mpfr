@@ -49,7 +49,7 @@ special (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_acos (2)\n");
-      mpfr_print_binary (y); printf ("\n");
+      mpfr_dump (y);
       exit (1);
     }
 

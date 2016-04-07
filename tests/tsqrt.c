@@ -252,7 +252,7 @@ special (void)
         {
           printf ("Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n",
                   (unsigned int) p);
-          printf ("got "); mpfr_print_binary (x); puts ("");
+          printf ("got "); mpfr_dump (x);
           exit (1);
         }
     }
@@ -446,7 +446,7 @@ check_inexact (mpfr_prec_t p)
       printf ("x=");
       mpfr_print_binary (x);
       printf (" rnd=%s\n", mpfr_print_rnd_mode (rnd));
-      printf ("y="); mpfr_print_binary (y); puts ("");
+      printf ("y="); mpfr_dump (y);
       exit (1);
     }
   mpfr_clear (x);

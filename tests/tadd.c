@@ -107,9 +107,9 @@ check2b (const char *xs, int px,
     {
       printf ("(2) x=%s,%d y=%s,%d pz=%d,rnd=%s\n",
               xs, px, ys, py, pz, mpfr_print_rnd_mode (rnd_mode));
-      printf ("got        "); mpfr_print_binary(zz); puts ("");
+      printf ("got        "); mpfr_dump (zz);
       mpfr_set_str(zz, rs, 2, MPFR_RNDN);
-      printf ("instead of "); mpfr_print_binary(zz); puts ("");
+      printf ("instead of "); mpfr_dump (zz);
       exit (1);
     }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
@@ -150,7 +150,7 @@ check64 (void)
   if (MPFR_MANT(u)[0] << 2)
     {
       printf ("result not normalized for prec=2\n");
-      mpfr_print_binary (u); puts ("");
+      mpfr_dump (u);
       exit (1);
     }
   mpfr_set_str_binary (t, "-1.0e-1");
@@ -205,7 +205,7 @@ check64 (void)
   mpfr_set_str_binary(t, "0.1011000101110010000101111111011100111111101010011011110110101011101000000100");
   if (mpfr_cmp(u,t))
     {
-      printf ("expect "); mpfr_print_binary(t); puts ("");
+      printf ("expect "); mpfr_dump (t);
       printf ("mpfr_add failed for precisions 53-76\n");
       exit (1);
     }
@@ -216,7 +216,7 @@ check64 (void)
   mpfr_set_str_binary(t, "0.101100010111001000010111111101110011111110101001101111011010101110100000001011000010101110011000000000111111");
   if (mpfr_cmp(u,t))
     {
-      printf ("expect "); mpfr_print_binary(t); puts ("");
+      printf ("expect "); mpfr_dump (t);
       printf ("mpfr_add failed for precisions 53-108\n");
       exit (1);
     }
@@ -270,9 +270,9 @@ check64 (void)
   if ((MPFR_MANT(u)[0] & 1) != 1)
     {
       printf ("error in mpfr_add with rnd_mode=MPFR_RNDU\n");
-      printf ("b=  "); mpfr_print_binary(x); puts ("");
-      printf ("c=  "); mpfr_print_binary(t); puts ("");
-      printf ("b+c="); mpfr_print_binary(u); puts ("");
+      printf ("b=  "); mpfr_dump (x);
+      printf ("c=  "); mpfr_dump (t);
+      printf ("b+c="); mpfr_dump (u);
       exit (1);
     }
 
@@ -390,9 +390,9 @@ check_case_1b (void)
                 {
                   printf ("case (1b) failed for prec_a=%u, prec_b=%u,"
                           " prec_c=%u\n", prec_a, prec_b, prec_c);
-                  printf ("b="); mpfr_print_binary(b); puts ("");
-                  printf ("c="); mpfr_print_binary(c); puts ("");
-                  printf ("a="); mpfr_print_binary(a); puts ("");
+                  printf ("b="); mpfr_dump (b);
+                  printf ("c="); mpfr_dump (c);
+                  printf ("a="); mpfr_dump (a);
                   exit (1);
                 }
             }
@@ -521,9 +521,9 @@ check_inexact (void)
               if (test_add (z, x, u, rnd))
                 {
                   printf ("z <- x + u should be exact\n");
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("u="); mpfr_print_binary (u); puts ("");
-                  printf ("z="); mpfr_print_binary (z); puts ("");
+                  printf ("x="); mpfr_dump (x);
+                  printf ("u="); mpfr_dump (u);
+                  printf ("z="); mpfr_dump (z);
                   exit (1);
                 }
                 {
@@ -537,10 +537,10 @@ check_inexact (void)
                       printf ("Wrong inexact flag for rnd=%s\n",
                               mpfr_print_rnd_mode(rnd));
                       printf ("expected %d, got %d\n", cmp, inexact);
-                      printf ("x="); mpfr_print_binary (x); puts ("");
-                      printf ("u="); mpfr_print_binary (u); puts ("");
-                      printf ("y=  "); mpfr_print_binary (y); puts ("");
-                      printf ("x+u="); mpfr_print_binary (z); puts ("");
+                      printf ("x="); mpfr_dump (x);
+                      printf ("u="); mpfr_dump (u);
+                      printf ("y=  "); mpfr_dump (y);
+                      printf ("x+u="); mpfr_dump (z);
                       exit (1);
                     }
                 }
@@ -727,8 +727,8 @@ check_1111 (void)
                   (int) tb, (int) tc, (int) diff,
                   mpfr_print_rnd_mode (rnd_mode));
           printf ("sb = %d, sc = %d\n", sb, sc);
-          printf ("a = "); mpfr_print_binary (a); puts ("");
-          printf ("s = "); mpfr_print_binary (s); puts ("");
+          printf ("a = "); mpfr_dump (a);
+          printf ("s = "); mpfr_dump (s);
           printf ("inex_a = %d, inex_s = %d\n", inex_a, inex_s);
           exit (1);
         }

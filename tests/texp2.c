@@ -290,7 +290,7 @@ main (int argc, char *argv[])
     {
       printf ("Error for x=emin-2, RNDN\n");
       printf ("Expected +0\n");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
   /* restore emin */

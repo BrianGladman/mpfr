@@ -30,10 +30,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   if (mpfr_cmp (x, y)) \
     { \
       printf ("Error in mpfr_set_str (%d):\nexpected ", n); \
-      mpfr_print_binary (x); \
-      printf ("\ngot      "); \
-      mpfr_print_binary (y); \
-      puts (""); \
+      mpfr_dump (x); \
+      printf ("got      "); \
+      mpfr_dump (y); \
       mpfr_clear (x); \
       mpfr_clear (y); \
       exit (1); \
@@ -178,10 +177,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (1a):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -192,10 +189,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (1b):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -260,12 +255,10 @@ main (int argc, char *argv[])
           printf ("mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
                   mpfr_print_rnd_mode (rnd));
           printf ("x=");
-          mpfr_print_binary (x);
-          puts ("");
+          mpfr_dump (x);
           printf ("s=%s, exp=%d, base=%d\n", str, (int) e, base);
           printf ("y=");
-          mpfr_print_binary (y);
-          puts ("");
+          mpfr_dump (y);
           mpfr_clear (x);
           mpfr_clear (y);
           exit (1);
@@ -356,10 +349,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (2):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -377,10 +368,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (3):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -401,10 +390,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (4):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -420,10 +407,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (5):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -437,10 +422,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (6):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -454,10 +437,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (7):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -472,10 +453,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (8):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -486,10 +465,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (9):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -500,10 +477,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (10):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -514,10 +489,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (11):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -528,10 +501,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (12):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -542,10 +513,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (13):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -556,10 +525,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (14):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -570,10 +537,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (15):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -584,10 +549,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (16):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -598,10 +561,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (17):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -612,10 +573,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (18):\n");
-      mpfr_print_binary (x);
-      puts ("");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -816,11 +775,9 @@ main (int argc, char *argv[])
                           "rnd=%s:\n", (unsigned int) nb_digit, base[cbase],
                           mpfr_print_rnd_mode (rnd[crnd]));
                   printf ("instead of: ");
-                  mpfr_print_binary (x);
-                  puts ("");
+                  mpfr_dump (x);
                   printf ("return    : ");
-                  mpfr_print_binary (y);
-                  puts ("");
+                  mpfr_dump (y);
                   exit (1);
                 }
             }

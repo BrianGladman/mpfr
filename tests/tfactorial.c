@@ -247,7 +247,7 @@ main (int argc, char *argv[])
                       {
                         printf ("Wrong inexact flag: expected inexact\n");
                         printf ("n=%u prec=%u\n", n, prec);
-                        mpfr_print_binary(z); puts ("");
+                        mpfr_dump (z);
                         exit (1);
                       }
                   }

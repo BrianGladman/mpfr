@@ -145,14 +145,14 @@ main (int argc, char *argv[])
    if (mpfr_cmp_ui (x, 4))
      {
        printf ("Error in tset_d: expected 4.0, got ");
-       mpfr_print_binary (x); putchar('\n');
+       mpfr_dump (x);
        exit (1);
      }
    mpfr_set_d (x, -5.0, MPFR_RNDN);
    if (mpfr_cmp_si (x, -4))
      {
        printf ("Error in tset_d: expected -4.0, got ");
-       mpfr_print_binary (x); putchar('\n');
+       mpfr_dump (x);
        exit (1);
      }
 
@@ -160,7 +160,7 @@ main (int argc, char *argv[])
    if (mpfr_cmp_ui (x, 1))
      {
        printf ("Error in tset_d: expected 1.0, got ");
-       mpfr_print_binary (x); putchar('\n');
+       mpfr_dump (x);
        exit (1);
      }
 
@@ -168,7 +168,7 @@ main (int argc, char *argv[])
   mpfr_set_d (z, 1.0, (mpfr_rnd_t) 0);
   if (mpfr_cmp_ui (z, 1))
     {
-      mpfr_print_binary (z); puts ("");
+      mpfr_dump (z);
       printf ("Error: 1.0 != 1.0\n");
       exit (1);
     }
@@ -177,7 +177,7 @@ main (int argc, char *argv[])
   mpfr_set_d (x, d=-1.08007920352320089721e+150, (mpfr_rnd_t) 0);
   if (mpfr_get_d1 (x) != d)
     {
-      mpfr_print_binary (x); puts ("");
+      mpfr_dump (x);
       printf ("Error: get_d o set_d <> identity for d = %1.20e %1.20e\n",
               d, mpfr_get_d1 (x));
       exit (1);

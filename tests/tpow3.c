@@ -101,9 +101,9 @@ main (int argc, char *argv[])
                 {
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("y="); mpfr_print_binary (y); puts ("");
-                  printf ("t="); mpfr_print_binary (t); puts ("");
+                  printf ("x="); mpfr_dump (x);
+                  printf ("y="); mpfr_dump (y);
+                  printf ("t="); mpfr_dump (t);
                   exit (1);
                 }
             }

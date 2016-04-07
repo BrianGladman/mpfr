@@ -105,8 +105,8 @@ check_diverse (void)
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (5)\n");
-      printf ("expected "); mpfr_print_binary (y); puts ("");
-      printf ("got      "); mpfr_print_binary (z); puts ("");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (z);
       exit (1);
     }
 
@@ -118,8 +118,8 @@ check_diverse (void)
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (7)\n");
-      printf ("expected "); mpfr_print_binary (y); puts ("");
-      printf ("got      "); mpfr_print_binary (z); puts ("");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (z);
       exit (1);
     }
 
@@ -131,8 +131,8 @@ check_diverse (void)
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (6)\n");
-      printf ("expected "); mpfr_print_binary (y); puts ("");
-      printf ("got      "); mpfr_print_binary (z); puts ("");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (z);
       exit (1);
     }
 
@@ -165,8 +165,8 @@ check_diverse (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_sub (1 - 1E-33) with prec=33\n");
-      printf ("Expected "); mpfr_print_binary (y); puts ("");
-      printf ("got      "); mpfr_print_binary (x); puts ("");
+      printf ("Expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
       exit (1);
     }
 
@@ -178,7 +178,7 @@ check_diverse (void)
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_sub (1 - 1E-33) with prec=32\n");
-      printf ("Expected 1.0, got "); mpfr_print_binary (x); puts ("");
+      printf ("Expected 1.0, got "); mpfr_dump (x);
       exit (1);
     }
 
@@ -198,8 +198,8 @@ check_diverse (void)
   if (mpfr_cmp (z, x))
     {
       printf ("Error in mpfr_sub (2)\n");
-      printf ("Expected "); mpfr_print_binary (x); puts ("");
-      printf ("Got      "); mpfr_print_binary (z); puts ("");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (z);
       exit (1);
     }
   mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
@@ -257,8 +257,8 @@ check_diverse (void)
   test_sub (z, x, y, MPFR_RNDN);
   if (mpfr_cmp (z, x)) {
     printf ("mpfr_sub(z, x, y) failed for prec(x)=112, prec(y)=98\n");
-    printf ("expected "); mpfr_print_binary (x); puts ("");
-    printf ("got      "); mpfr_print_binary (z); puts ("");
+    printf ("expected "); mpfr_dump (x);
+    printf ("got      "); mpfr_dump (z);
     exit (1);
   }
 
@@ -335,8 +335,8 @@ bug_ddefour(void)
     if (mpfr_cmp(ex2, ex3))
       {
         printf ("Error in ddefour test.\n");
-        printf ("ex2="); mpfr_print_binary (ex2); puts ("");
-        printf ("ex3="); mpfr_print_binary (ex3); puts ("");
+        printf ("ex2="); mpfr_dump (ex2);
+        printf ("ex3="); mpfr_dump (ex3);
         exit (1);
       }
 
@@ -376,11 +376,11 @@ check_two_sum (mpfr_prec_t p)
     {
       printf ("Wrong inexact flag for prec=%u, rnd=%s\n", (unsigned)p,
                mpfr_print_rnd_mode (rnd));
-      printf ("x="); mpfr_print_binary(x); puts ("");
-      printf ("y="); mpfr_print_binary(y); puts ("");
-      printf ("u="); mpfr_print_binary(u); puts ("");
-      printf ("v="); mpfr_print_binary(v); puts ("");
-      printf ("w="); mpfr_print_binary(w); puts ("");
+      printf ("x="); mpfr_dump (x);
+      printf ("y="); mpfr_dump (y);
+      printf ("u="); mpfr_dump (u);
+      printf ("v="); mpfr_dump (v);
+      printf ("w="); mpfr_dump (w);
       printf ("inexact = %d\n", inexact);
       exit (1);
     }
@@ -460,10 +460,10 @@ check_inexact (void)
                       printf ("Wrong inexact flag for rnd=%s\n",
                               mpfr_print_rnd_mode(rnd));
                       printf ("expected %d, got %d\n", cmp, inexact);
-                      printf ("x="); mpfr_print_binary (x); puts ("");
-                      printf ("u="); mpfr_print_binary (u); puts ("");
-                      printf ("y=  "); mpfr_print_binary (y); puts ("");
-                      printf ("x-u="); mpfr_print_binary (z); puts ("");
+                      printf ("x="); mpfr_dump (x);
+                      printf ("u="); mpfr_dump (u);
+                      printf ("y=  "); mpfr_dump (y);
+                      printf ("x-u="); mpfr_dump (z);
                       exit (1);
                     }
                 }
@@ -581,19 +581,19 @@ check_rounding (void)
                   {
                     printf ("Wrong result in check_rounding\n");
                     printf ("p=%lu k=%ld l=%ld\n", (unsigned long) p, k, l);
-                    printf ("b="); mpfr_print_binary (b); puts ("");
-                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("b="); mpfr_dump (b);
+                    printf ("c="); mpfr_dump (c);
                     printf ("Expected 2^%lu\n", (unsigned long) p);
-                    printf ("Got      "); mpfr_print_binary (a); puts ("");
+                    printf ("Got      "); mpfr_dump (a);
                     exit (1);
                   }
                 if (i >= 0)
                   {
                     printf ("Wrong ternary value in check_rounding\n");
                     printf ("p=%lu k=%ld l=%ld\n", (unsigned long) p, k, l);
-                    printf ("b="); mpfr_print_binary (b); puts ("");
-                    printf ("c="); mpfr_print_binary (c); puts ("");
-                    printf ("a="); mpfr_print_binary (a); puts ("");
+                    printf ("b="); mpfr_dump (b);
+                    printf ("c="); mpfr_dump (c);
+                    printf ("a="); mpfr_dump (a);
                     printf ("Expected < 0, got %d\n", i);
                     exit (1);
                   }
@@ -605,17 +605,17 @@ check_rounding (void)
                 if (mpfr_cmp (a, res) != 0)
                   {
                     printf ("Wrong result in check_rounding\n");
-                    printf ("b="); mpfr_print_binary (b); puts ("");
-                    printf ("c="); mpfr_print_binary (c); puts ("");
-                    printf ("Expected "); mpfr_print_binary (res); puts ("");
-                    printf ("Got      "); mpfr_print_binary (a); puts ("");
+                    printf ("b="); mpfr_dump (b);
+                    printf ("c="); mpfr_dump (c);
+                    printf ("Expected "); mpfr_dump (res);
+                    printf ("Got      "); mpfr_dump (a);
                     exit (1);
                   }
                 if (i <= 0)
                   {
                     printf ("Wrong ternary value in check_rounding\n");
-                    printf ("b="); mpfr_print_binary (b); puts ("");
-                    printf ("c="); mpfr_print_binary (c); puts ("");
+                    printf ("b="); mpfr_dump (b);
+                    printf ("c="); mpfr_dump (c);
                     printf ("Expected > 0, got %d\n", i);
                     exit (1);
                   }

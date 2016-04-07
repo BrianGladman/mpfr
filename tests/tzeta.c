@@ -42,12 +42,12 @@ test1 (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error for input on 40 bits, output on 50 bits\n");
-      printf ("Expected "); mpfr_print_binary (x); puts ("");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
       mpfr_set_str_binary (x, "1.001101001101000010011010110100110000101e-1");
       mpfr_zeta (y, x, MPFR_RNDU);
-      mpfr_print_binary (x); puts ("");
-      mpfr_print_binary (y); puts ("");
+      mpfr_dump (x);
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -60,8 +60,8 @@ test1 (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_zeta (1)\n");
-      printf ("Expected "); mpfr_print_binary (x); puts ("");
-      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
@@ -170,14 +170,14 @@ test2 (void)
           printf("Wrong result for zeta(%s=", val[i]);
           mpfr_print_binary (x);
           printf (").\nGot     : ");
-          mpfr_print_binary(y); putchar('\n');
+          mpfr_dump (y);
           printf("Expected: ");
           mpfr_set_str (y, val[i+1], 2, MPFR_RNDZ);
-          mpfr_print_binary(y); putchar('\n');
+          mpfr_dump (y);
           mpfr_set_prec(y, 65);
           mpfr_zeta(y, x, MPFR_RNDZ);
           printf("+ Prec  : ");
-          mpfr_print_binary(y); putchar('\n');
+          mpfr_dump (y);
           exit(1);
         }
     }

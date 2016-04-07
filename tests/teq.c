@@ -42,8 +42,8 @@ teq (mpfr_t x)
       if (mpfr_eq(y, x, k) || !mpfr_eq(y, x, k - 1))
         {
           printf ("Error in eq.\n");
-          printf ("x = "); mpfr_print_binary (x); printf ("\n");
-          printf ("y = "); mpfr_print_binary (y); printf ("\n");
+          printf ("x = "); mpfr_dump (x);
+          printf ("y = "); mpfr_dump (y);
           printf ("k = %lu\n", k);
           printf ("mpfr_eq(y, x, k) = %d\nmpfr_eq(y, x, k - 1) = %d\n",
                   mpfr_eq (y, x, k), mpfr_eq (y, x, k - 1));

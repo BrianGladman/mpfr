@@ -61,9 +61,9 @@ check_inexact (void)
                 {
                   printf ("Wrong inexact flag: expected %d, got %d\n",
                           cmp, inexact);
-                  printf ("x="); mpfr_print_binary (x); puts ("");
-                  printf ("absx="); mpfr_print_binary (absx); puts ("");
-                  printf ("y="); mpfr_print_binary (y); puts ("");
+                  printf ("x="); mpfr_dump (x);
+                  printf ("absx="); mpfr_dump (absx);
+                  printf ("y="); mpfr_dump (y);
                   exit (1);
                 }
             }

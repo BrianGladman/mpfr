@@ -233,7 +233,7 @@ special_erf (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error: erf for prec=32 (2)\n");
-      mpfr_print_binary (x); printf ("\n");
+      mpfr_dump (x);
       exit (1);
     }
 

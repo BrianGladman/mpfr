@@ -50,7 +50,7 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
       if (MPFR_NOTZERO(x) && (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh)))
         {
           printf ("Error: mpfr_urandomb() returns invalid numbers:\n");
-          mpfr_print_binary (x); puts ("");
+          mpfr_dump (x);
           exit (1);
         }
       d = mpfr_get_d1 (x); av += d; var += d*d;

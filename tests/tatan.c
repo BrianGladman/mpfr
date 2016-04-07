@@ -139,8 +139,8 @@ special (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_atan (2)\n");
-      mpfr_print_binary (x); printf ("\n");
-      mpfr_print_binary (y); printf ("\n");
+      mpfr_dump (x);
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -153,8 +153,8 @@ special (void)
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_atan (3)\n");
-      printf ("Expected "); mpfr_print_binary (y); printf ("\n");
-      printf ("Got      "); mpfr_print_binary (z); printf ("\n");
+      printf ("Expected "); mpfr_dump (y);
+      printf ("Got      "); mpfr_dump (z);
       exit (1);
     }
 
@@ -557,8 +557,8 @@ atan2_pow_of_2 (void)
       if (mpfr_equal_p (r, g) == 0)
         {
           printf ("Error in mpfr_atan2 (5)\n");
-          printf ("Expected "); mpfr_print_binary (g); printf ("\n");
-          printf ("Got      "); mpfr_print_binary (r); printf ("\n");
+          printf ("Expected "); mpfr_dump (g);
+          printf ("Got      "); mpfr_dump (r);
           exit (1);
         }
     }

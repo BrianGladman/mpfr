@@ -141,8 +141,8 @@ special (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error: mpfr_asin (2)\n");
-      mpfr_print_binary (x); printf ("\n");
-      mpfr_print_binary (y); printf ("\n");
+      mpfr_dump (x);
+      mpfr_dump (y);
       exit (1);
     }
 

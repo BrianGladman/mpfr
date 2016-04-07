@@ -75,11 +75,10 @@ main (void)
     {                                                                   \
       printf("ERROR: for %s and p=%lu and i=%d:\nB=",                   \
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
-      mpfr_print_binary(b);                                             \
-      printf("\nC="); mpfr_print_binary(c);                             \
-      printf("\nadd1  : "); mpfr_print_binary(a1);                      \
-      printf("\nadd1sp: "); mpfr_print_binary(a2);                      \
-      putchar('\n');                                                    \
+      mpfr_dump (b);                                                    \
+      printf ("C="); mpfr_dump (c);                                     \
+      printf ("add1  : "); mpfr_dump (a1);                              \
+      printf ("add1sp: "); mpfr_dump (a2);                              \
       exit(1);                                                          \
     }                                                                   \
   while (0)
@@ -89,11 +88,10 @@ main (void)
     {                                                                   \
       printf("ERROR: Wrong inexact flag for %s and p=%lu and i=%d:\nB=", \
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
-      mpfr_print_binary(b);                                             \
-      printf("\nC="); mpfr_print_binary(c);                             \
-      printf("\nA="); mpfr_print_binary(a1);                            \
-      printf("\nAdd1: %d. Add1sp: %d\n",                                \
-             inexact1, inexact2);                                       \
+      mpfr_dump (b);                                                    \
+      printf ("C="); mpfr_dump (c);                                     \
+      printf ("A="); mpfr_dump (a1);                                    \
+      printf ("Add1: %d. Add1sp: %d\n", inexact1, inexact2);            \
       exit(1);                                                          \
     }                                                                   \
  while (0)

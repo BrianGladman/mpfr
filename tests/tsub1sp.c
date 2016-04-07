@@ -45,11 +45,10 @@ main (void)
     {                                                                   \
       printf("ERROR: for %s and p=%lu and i=%d:\nY=",                   \
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
-      mpfr_print_binary(y);                                             \
-      printf("\nZ="); mpfr_print_binary(z);                             \
-      printf("\nReal: "); mpfr_print_binary(x2);                        \
-      printf("\nGot : "); mpfr_print_binary(x);                         \
-      putchar('\n');                                                    \
+      mpfr_dump (y);                                                    \
+      printf ("Z="); mpfr_dump (z);                                     \
+      printf ("Real: "); mpfr_dump (x2);                                \
+      printf ("Got : "); mpfr_dump (x);                                 \
       exit(1);                                                          \
     }                                                                   \
  while (0)
@@ -59,11 +58,11 @@ main (void)
     {                                                                   \
       printf("ERROR: for %s and p=%lu and i=%d:\nY=",                   \
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
-      mpfr_print_binary(y);                                             \
-      printf("\nZ="); mpfr_print_binary(z);                             \
-      printf("\nR="); mpfr_print_binary(x);                             \
-      printf("\nWrong inexact flag. Real: %d. Got: %d\n",               \
-             inexact1, inexact2);                                       \
+      mpfr_dump (y);                                                    \
+      printf ("Z="); mpfr_dump (z);                                     \
+      printf ("R="); mpfr_dump (x);                                     \
+      printf ("Wrong inexact flag. Real: %d. Got: %d\n",                \
+              inexact1, inexact2);                                      \
       exit(1);                                                          \
     }                                                                   \
  while (0)
@@ -123,7 +122,7 @@ check_special (void)
         {
           printf("Error for x-x with p=%lu. Expected 0. Got:",
                  (unsigned long) p);
-          mpfr_print_binary(x);
+          mpfr_dump (x);
           exit(1);
         }
 
@@ -133,7 +132,7 @@ check_special (void)
         {
           printf("Error for x-y with y=x and p=%lu. Expected 0. Got:",
                  (unsigned long) p);
-          mpfr_print_binary(x);
+          mpfr_dump (x);
           exit(1);
         }
       /* diff = 0 */
