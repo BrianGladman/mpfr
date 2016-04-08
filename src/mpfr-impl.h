@@ -208,19 +208,6 @@ typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
 # define MPFR_WIN_THREAD_SAFE_DLL 1
 #endif
 
-/* Detect some possible inconsistencies under Unix. */
-#if defined(__unix__)
-# if defined(_WIN32)
-#  error "Both __unix__ and _WIN32 are defined"
-# endif
-# if __GMP_LIBGMP_DLL
-#  error "__unix__ is defined and __GMP_LIBGMP_DLL is true"
-# endif
-# if defined(MPFR_WIN_THREAD_SAFE_DLL)
-#  error "Both __unix__ and MPFR_WIN_THREAD_SAFE_DLL are defined"
-# endif
-#endif
-
 #if defined(__MPFR_WITHIN_MPFR) || !defined(MPFR_WIN_THREAD_SAFE_DLL)
 extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
 extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
