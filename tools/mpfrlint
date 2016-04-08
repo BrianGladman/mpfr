@@ -6,8 +6,8 @@ set -e
 setopt EXTENDED_GLOB
 
 # mpfrlint can be run from the tools directory
-dir=$PWD
-[[ -d src ]] || [[ $dir:t != tools ]] || cd ..
+oldpwd=$PWD
+[[ -d src ]] || [[ $oldpwd:t != tools ]] || cd ..
 err=0
 
 if [[ -t 1 ]] then
@@ -315,7 +315,7 @@ else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
 
-cd $dir
+cd $oldpwd
 $0:h/check_inits_clears
 
 ############################################################################
