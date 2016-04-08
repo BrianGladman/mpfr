@@ -27,6 +27,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
+#define STRINGIZE(S) #S
+#define MAKE_STR(S) STRINGIZE(S)
+
 int
 main (void)
 {
@@ -76,6 +79,25 @@ main (void)
           gmp_version);
 #endif
 #endif
+
+  /* The following output is also useful under Unix, where one should get:
+     WinDLL: __GMP_LIBGMP_DLL = 0, MPFR_WIN_THREAD_SAFE_DLL = undef
+     If this is not the case, something is probably broken. We cannot test
+     automatically as some MS Windows implementations may declare some Unix
+     compatibility (e.g., Cygwin defines __unix__). */
+  printf ("[tversion] WinDLL: __GMP_LIBGMP_DLL = "
+#if defined(__GMP_LIBGMP_DLL)
+          MAKE_STR(__GMP_LIBGMP_DLL)
+#else
+          "undef"
+#endif
+          ", MPFR_WIN_THREAD_SAFE_DLL = "
+#if defined(MPFR_WIN_THREAD_SAFE_DLL)
+          MAKE_STR(MPFR_WIN_THREAD_SAFE_DLL)
+#else
+          "undef"
+#endif
+          "\n");
 
   if (
 #ifdef MPFR_USE_THREAD_SAFE
