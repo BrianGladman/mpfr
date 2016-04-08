@@ -277,10 +277,10 @@ GFDL versions differ:
   mpfr.texi: $fdlv2
 EOF
 
-tools/ck-copyright-notice
+err-if-output "ck-copyright-notice" tools/ck-copyright-notice
 
 if which gcc > /dev/null 2> /dev/null; then
-  tools/ck-mparam
+  err-if-output "ck-mparam" tools/ck-mparam
 else
   echo "Warning! gcc is not installed. Cannot run ck-mparam." >&2
 fi
@@ -316,7 +316,7 @@ else
 fi
 
 cd $oldpwd
-$0:h/check_inits_clears
+err-if-output "check_inits_clears" $0:h/check_inits_clears
 
 ############################################################################
 
