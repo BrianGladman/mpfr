@@ -40,7 +40,8 @@ err-if-output()
   done
   [[ -n $dir ]] && pushd $dir
   set +e
-  output=(${(f)"$($@[2,-1] 2>&1)"})
+  # Note: the double quotes for $@[2,-1] are important to pass empty args.
+  output=(${(f)"$("$@[2,-1]" 2>&1)"})
   st=$?
   if [[ ( -n "$checkstatus" && $st -ne 0 ) ||
         ( -n "$checkoutput" && -n "$output" ) ]] then
