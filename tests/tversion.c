@@ -84,7 +84,10 @@ main (void)
      WinDLL: __GMP_LIBGMP_DLL = 0, MPFR_WIN_THREAD_SAFE_DLL = undef
      If this is not the case, something is probably broken. We cannot test
      automatically as some MS Windows implementations may declare some Unix
-     compatibility (e.g., Cygwin defines __unix__). */
+     (POSIX) compatibility; for instance, Cygwin32 defines __unix__ (but
+     Cygwin64 does not, probably because providing both MS Windows API and
+     POSIX API is not possible with a 64-bit ABI, since MS Windows is LLP64
+     and Unix is LP64). */
   printf ("[tversion] WinDLL: __GMP_LIBGMP_DLL = "
 #if defined(__GMP_LIBGMP_DLL)
           MAKE_STR(__GMP_LIBGMP_DLL)
