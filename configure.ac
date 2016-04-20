@@ -315,7 +315,7 @@ case "$mpfr_ieee_double" in
      AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
   2) AC_MSG_RESULT([IEEE big endian])
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_ERROR([format of `double' floating-point not recognized]) ;;
+  *) AC_MSG_WARN([format of `double' floating-point not recognized]) ;;
 esac
 
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
