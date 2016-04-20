@@ -287,7 +287,6 @@ AM_PROG_AR
 dnl Try to determine the double format
 AC_MSG_CHECKING(format of `double' floating point)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <stdint.h>
 ]], [[
 union ieee_double_extract
 {
