@@ -1184,7 +1184,7 @@ case $mpfr_cv_c_long_double_format in
   unknown* | "not available")
     ;;
   *)
-    AC_MSG_WARN([oops, unrecognised float format: $mpfr_cv_c_long_double_format])
+    AC_MSG_WARN([oops, unrecognized float format: $mpfr_cv_c_long_double_format])
     ;;
 esac
 ])
