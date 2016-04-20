@@ -428,7 +428,7 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
 
 /* mpfr_ieee_double_extract structure (copied from GMP 6.1.0, gmp-impl.h, with
    ieee_double_extract changed into mpfr_ieee_double_extract, and
-   _GMP_IEEE_FLOATS changed into _MPFR_IEEE_FLOATS. */
+   _GMP_IEEE_FLOATS changed into _MPFR_IEEE_FLOATS). */
 
 /* Define mpfr_ieee_double_extract and _MPFR_IEEE_FLOATS.
 
