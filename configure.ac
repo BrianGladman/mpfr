@@ -233,7 +233,7 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
        *cpp*) ;;
        *) cpp="$cpp -E" ;;
      esac
-     echo foo > conftest.c
+     echo "#include \"gmp.h\"" > conftest.c
      if $cpp $CPPFLAGS conftest.c > /dev/null 2> /dev/null ; then
        # Get CC
        echo "#include \"gmp.h\"" >  conftest.c
@@ -250,11 +250,11 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    done
    rm -f conftest*
    if test "x$GMP_CC" = "x__GMP_CC" || test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" ; then
-      AC_MSG_RESULT(no)
+      AC_MSG_RESULT(failed)
       GMP_CFLAGS=
       GMP_CC=
    else
-      AC_MSG_RESULT(yes [CC=$GMP_CC CFLAGS=$GMP_CFLAGS])
+      AC_MSG_RESULT([CC=$GMP_CC CFLAGS=$GMP_CFLAGS])
    fi
 fi
 
