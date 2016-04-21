@@ -47,6 +47,7 @@ install-sh      - installation file
 ltmain.sh       - auxiliary installation file
 m4/             - directory containing additional configuration files
 missing         - auxiliary installation file
+mpfr.pc.in      - auxiliary pkg-config file
 src/            - directory containing the MPFR source
 test-driver     - auxiliary installation file
 tests/          - directory containing the testsuite (for "make check")

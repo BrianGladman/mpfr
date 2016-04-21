@@ -20,6 +20,9 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = doc src tests tune tools/bench
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = mpfr.pc
+
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
   examples/version.c examples/can_round.c

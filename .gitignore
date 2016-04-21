@@ -33,4 +33,5 @@
 /libtool
 /ltmain.sh
 /missing
+/mpfr.pc
 /test-driver

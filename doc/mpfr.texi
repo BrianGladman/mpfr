@@ -636,6 +636,13 @@ also be necessary to set up some sort of run-time library path (e.g.,
 @samp{LD_LIBRARY_PATH}) on some systems. Please read the @file{INSTALL}
 file for additional information.
 
+Alternatively, it is possible to use @samp{pkg-config} (a file
+@samp{mpfr.pc} is provided as of MPFR 3.2):
+
+@example
+cc myprogram.c $(pkg-config --cflags --libs mpfr)
+@end example
+
 @node Nomenclature and Types, MPFR Variable Conventions, Headers and Libraries, MPFR Basics
 @comment  node-name,  next,  previous,  up
 @section Nomenclature and Types
