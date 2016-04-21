@@ -79,6 +79,7 @@ Changes from versions 3.1.* to version 3.2.0:
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
   now sets the NaN flag on NaN input.
 - MinGW (MS Windows): Added support for thread-safe DLL (shared library).
+- Limited pkg-config support.
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.
