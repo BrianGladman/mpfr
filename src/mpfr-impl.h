@@ -28,6 +28,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
+
+/******************************************************
+ *****************  Standard headers  *****************
+ ******************************************************/
+
 /* Let's include some standard headers unconditionally as they are
    already needed by several source files or when some options are
    enabled/disabled, and it is easy to forget them (some configure
@@ -36,15 +41,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    (which is very unlikely and probably means something broken in
    this source file), we should do that with some macro (that would
    also force to disable incompatible features). */
+
 #if defined (__cplusplus)
-#include <cstdio>
-#include <cstring>
+# include <cstdio>
+# include <cstring>
 #else
-#include <stdio.h>
-#include <string.h>
+# include <stdio.h>
+# include <string.h>
 #endif
+
 #include <stdlib.h>
 #include <limits.h>
+
+
+/******************************************************
+ *****************  Include files  ********************
+ ******************************************************/
 
 /* The macros defined in mpfr-cvers.h do not depend on anything,
    so that it is better to include this header file early: then
@@ -63,18 +75,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __MPFR_WITHIN_MPFR 1
 #endif
 
-
-
-/******************************************************
- ****************** Include files *********************
- ******************************************************/
-
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
    the support of thread-local variables. A configure check is now done. */
 #include "mpfr-thread.h"
 
-#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
+#ifdef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
 # include "gmp.h"
 # include "gmp-impl.h"
@@ -103,9 +109,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef MPFR_NEED_LONGLONG_H
 
 
-
 /******************************************************
- ****************** (U)INTMAX_MAX *********************
+ *****************  (U)INTMAX_MAX  ********************
  ******************************************************/
 
 /* Let's try to fix UINTMAX_MAX and INTMAX_MAX if these macros don't work
@@ -123,10 +128,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-#define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
 /******************************************************
- ************** Attributes definition *****************
+ *************  Attribute definitions  ****************
  ******************************************************/
 
 #if defined(MPFR_HAVE_NORETURN)
@@ -188,7 +192,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 
 /******************************************************
- ************* Global Internal Variables **************
+ ***  Global internal variables and related macros  ***
  ******************************************************/
 
 #if defined (__cplusplus)
@@ -287,7 +291,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_mone;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDD;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
-
 #if defined (__cplusplus)
  }
 #endif
@@ -295,6 +298,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 /* Replace some common functions for direct access to the global vars.
    The casts prevent these macros from being used as a lvalue (and this
    method makes sure that the expressions have the correct type). */
+
 #define mpfr_get_emin() ((mpfr_exp_t) __gmpfr_emin)
 #define mpfr_get_emax() ((mpfr_exp_t) __gmpfr_emax)
 #define mpfr_get_default_rounding_mode() \
@@ -403,7 +407,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
 
 /******************************************************
- ******************** Assertions **********************
+ *******************  Assertions  *********************
  ******************************************************/
 
 /* MPFR_WANT_ASSERT can take 4 values (the default value is 0):
@@ -486,8 +490,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 # define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
 #endif
 
+
 /******************************************************
- ******************** Warnings ************************
+ *******************  Warnings  ***********************
  ******************************************************/
 
 /* MPFR_WARNING is no longer useful, but let's keep the macro in case
@@ -508,7 +513,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 
 
 /******************************************************
- ****************** double macros *********************
+ *****************  double macros  ********************
  ******************************************************/
 
 /* Precision used for lower precision computations */
@@ -611,8 +616,9 @@ static double double_zero = 0.0;
 # define DOUBLE_ISNAN(x) (LVALUE(x) && (x) != (x))
 #endif
 
+
 /******************************************************
- *************** Long double macros *******************
+ **********  long double macros and typedef  **********
  ******************************************************/
 
 /* We try to get the exact value of the precision of long double
@@ -637,7 +643,7 @@ static double double_zero = 0.0;
 #define MPFR_LIMBS_PER_LONG_DOUBLE \
   ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
 
-/* this is standardized by IEEE 754 */
+/* This is standardized by IEEE 754-2008. */
 #define IEEE_FLOAT128_MANT_DIG 113
 
 /* LONGDOUBLE_NAN_ACTION executes the code "action" if x is a NaN. */
@@ -735,8 +741,9 @@ typedef union {
 
 #endif
 
+
 /******************************************************
- *************** _Decimal64 support *******************
+ ****************  _Decimal64 support  ****************
  ******************************************************/
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
@@ -744,8 +751,9 @@ typedef union {
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
+
 /******************************************************
- **************** mpfr_t properties *******************
+ ****************  mpfr_t properties  *****************
  ******************************************************/
 
 #define MPFR_PREC_COND(p) ((p) >= MPFR_PREC_MIN && (p) <= MPFR_PREC_MAX)
@@ -773,7 +781,7 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 
 /******************************************************
- **************** exponent properties *****************
+ ***************  Exponent properties  ****************
  ******************************************************/
 
 /* Limits of the mpfr_exp_t type (NOT those of valid exponent values).
@@ -857,9 +865,8 @@ typedef intmax_t mpfr_eexp_t;
 #endif
 
 
-
 /******************************************************
- ********** Singular Values (NAN, INF, ZERO) **********
+ *********  Singular values (NAN, INF, ZERO)  *********
  ******************************************************/
 
 /* Enum special value of exponent. */
@@ -894,8 +901,10 @@ typedef intmax_t mpfr_eexp_t;
 
 
 /******************************************************
- ********************* Sign Macros ********************
+ ********************  Sign macros  *******************
  ******************************************************/
+
+/* These are sign macros for MPFR numbers only. */
 
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
@@ -924,9 +933,8 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_INT_SIGN(x) MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(x))
 
 
-
 /******************************************************
- ***************** Ternary Value Macros ***************
+ ***************  Ternary value macros  ***************
  ******************************************************/
 
 /* Special inexact value */
@@ -947,9 +955,8 @@ typedef intmax_t mpfr_eexp_t;
 #define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
 
 
-
 /******************************************************
- ************** Rounding mode macros  *****************
+ ***************  Rounding mode macros  ***************
  ******************************************************/
 
 /* MPFR_RND_MAX gives the number of supported rounding modes by all functions.
@@ -1002,7 +1009,7 @@ typedef intmax_t mpfr_eexp_t;
 
 
 /******************************************************
- ******************* Limb Macros **********************
+ ******************  Limb macros  *********************
  ******************************************************/
 
 /* Definition of simple mp_limb_t constants */
@@ -1018,23 +1025,24 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
 
-
 /******************************************************
- ********************** Memory ************************
+ **********************  Memory  **********************
  ******************************************************/
+
+#define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
 /* Heap memory handling */
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
- ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
+  (((mp_size_t *) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
- ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
+  (((mp_size_t *) MPFR_MANT(x))[-1] = (n))
 #define MPFR_MALLOC_SIZE(s) \
-  ( sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * ((size_t) s) )
+  (sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * (size_t) (s))
 #define MPFR_SET_MANT_PTR(x,p) \
-   (MPFR_MANT(x) = (mp_limb_t*) ((mpfr_size_limb_t*) p + 1))
+  (MPFR_MANT(x) = (mp_limb_t *) ((mpfr_size_limb_t *) (p) + 1))
 #define MPFR_GET_REAL_PTR(x) \
-   ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
+  ((mp_limb_t *) ((mpfr_size_limb_t *) MPFR_MANT(x) - 1))
 
 /* Temporary memory handling */
 #ifndef TMP_SALLOC
@@ -1079,9 +1087,8 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    MPFR_EXP(d)  = MPFR_EXP(s))
 
 
-
 /******************************************************
- *****************  Cache macros **********************
+ *******************  Cache macros  *******************
  ******************************************************/
 
 #define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi,_r)
@@ -1094,15 +1101,15 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
     {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 
-
 /******************************************************
- *******************  Threshold ***********************
+ ***************  Threshold parameters  ***************
  ******************************************************/
 
 #include "mparam.h"
 
+
 /******************************************************
- *****************  Useful macros *********************
+ ******************  Useful macros  *******************
  ******************************************************/
 
 /* Theses macros help the compiler to determine if a test is
@@ -1333,7 +1340,7 @@ do {                                                                  \
 
 
 /******************************************************
- **************  Save exponent macros  ****************
+ ************  Save exponent/flags macros  ************
  ******************************************************/
 
 /* See README.dev for details on how to use the macros.
@@ -1372,7 +1379,7 @@ typedef struct {
 
 
 /******************************************************
- *****************  Inline Rounding *******************
+ *****************  Inline rounding  ******************
  ******************************************************/
 
 /*
@@ -1643,8 +1650,9 @@ typedef struct {
       }                                                                 \
   } while (0)
 
+
 /******************************************************
- ***************  Ziv Loop Macro  *********************
+ *****************  Ziv loop macros  ******************
  ******************************************************/
 
 /* To safely increase some precision, detecting integer overflows.
@@ -1737,7 +1745,7 @@ typedef struct {
 
 
 /******************************************************
- ***************  Logging Macros  *********************
+ ******************  Logging macros  ******************
  ******************************************************/
 
 /* The different kind of LOG */
@@ -1963,7 +1971,7 @@ struct mpfr_group_t {
 
 
 /******************************************************
- ***************  Internal Functions  *****************
+ ***************  Internal functions  *****************
  ******************************************************/
 
 #if defined (__cplusplus)
@@ -2097,7 +2105,7 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 #endif
 
 /******************************************************
- **************  Internal mpz caching *****************
+ ***************  Internal mpz caching  ***************
  ******************************************************/
 
 /* don't use mpz caching with mini-gmp */
@@ -2114,7 +2122,7 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 #endif
 
 /******************************************************
- ********** Compute LOG2(LOG2(MPFR_PREC_MAX))**********
+ ********  Compute LOG2(LOG2(MPFR_PREC_MAX))  *********
  ******************************************************/
 #if   _MPFR_PREC_FORMAT == 1
 # define MPFR_PREC_MAX_TEMP USHRT_MAX
@@ -2141,7 +2149,7 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 
 
 /******************************************************
- *************  Value Coverage Checking  **************
+ *************  Value coverage checking  **************
  ******************************************************/
 
 #ifdef MPFR_COV_CHECK
@@ -2160,11 +2168,11 @@ __MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2];
 }
 #endif
 
-#else
+#else /* MPFR_COV_CHECK */
 
 #define MPFR_COV_SET(X) ((void) 0)
 
-#endif
+#endif /* MPFR_COV_CHECK */
 
 
-#endif
+#endif /* __MPFR_IMPL_H__ */
