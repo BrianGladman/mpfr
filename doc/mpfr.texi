@@ -643,7 +643,7 @@ Alternatively, it is possible to use @samp{pkg-config} (a file
 cc myprogram.c $(pkg-config --cflags --libs mpfr)
 @end example
 
-Note that the @samp{MPFR_} and @samp{mpfr_} prefixes are reserved for MPFR.
+Note that the @samp{MPFR_} and @samp{mpfr_} prefixes are reserved for MPFR@.
 As a general rule, in order to avoid clashes, software using MPFR (directly
 or indirectly) and system headers/libraries should not define macros and
 symbols using these prefixes.
