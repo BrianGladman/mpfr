@@ -45,3 +45,4 @@ dist-hook:
 	cd $(srcdir) && tools/ck-version-info
 	cd $(srcdir) && tools/ck-copyright-notice
 	cd $(srcdir) && tools/ck-news
+	cd $(srcdir)/doc && ./check-typography
