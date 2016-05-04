@@ -1,6 +1,6 @@
 #!/bin/sh
 
-o=$(grep -E '([A-Z])\)?[.!?]( |$)' mpfr.texi | grep -Ev '^(\* .*::|@c )')
+o=$(grep -E '[A-Z]\)?[.!?]( |$)' mpfr.texi | grep -Ev '^(\* .*::|@c )')
 [ -z "$o" ] && exit
 
 cat <<EOF
