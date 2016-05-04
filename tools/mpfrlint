@@ -252,13 +252,7 @@ grep __gmp_ tests/*.c | \
 grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
   err-if-output -t "alloc" grep -v '^tests/memory.c:'
 
-# Check a Texinfo rule (Section "Ending a Sentence") with common words
-# that end with a capital letter:
-#   Use '@.' instead of a period, '@!' instead of an exclamation point,
-#   and '@?' instead of a question mark at the end of a sentence that
-#   does end with a capital letter.
-grep -E '(LIP|MPFR?|NaN)\)?[.!?]' doc/mpfr.texi | \
-  err-if-output -t "mpfr.texi punctuation" grep -Ev '^(\* .*::|@c )'
+err-if-output --dir=doc "check-typography" ./check-typography
 
 fdlv1="`sed -n '/Version / {
   s/.*Version //

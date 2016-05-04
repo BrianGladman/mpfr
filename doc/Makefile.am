@@ -16,3 +16,11 @@ info_TEXINFOS = mpfr.texi
 mpfr_TEXINFOS = fdl.texi
 
 MAKEINFOFLAGS = --enable-encoding
+
+
+mpfr.info: check-typography
+
+check-typography:
+	cd $(srcdir) && ./check-typography
+
+.PHONY: check-typography
