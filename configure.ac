@@ -230,7 +230,7 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    for cpp in cpp gcc /lib/cpp cc c99
    do
      case $cpp in
-       *cpp*) ;;
+       *cpp*) cpp="$cpp -P" ;;
        *) cpp="$cpp -E" ;;
      esac
      echo "#include \"gmp.h\"" > conftest.c
