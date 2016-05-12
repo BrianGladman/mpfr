@@ -226,7 +226,9 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    # /lib/cpp under Solaris doesn't support some environment variables
    # used by GCC, such as C_INCLUDE_PATH. If the user has set up such
    # environment variables, he probably wants to use them. So, let us
-   # prefer cpp and gcc to /lib/cpp.
+   # prefer cpp and gcc to /lib/cpp. However, note that this won't
+   # work if GCC has been installed with versioned names only (e.g.
+   # with cpp-5 and gcc-5).
    for cpp in "cpp -P" "cpp" "gcc -P -E" "gcc -E" "/lib/cpp -P" "/lib/cpp" "cc -P -E" "cc -E" "c99 -P -E" "c99 -E"
    do
      # Get CC
