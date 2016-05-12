@@ -227,26 +227,23 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
    # used by GCC, such as C_INCLUDE_PATH. If the user has set up such
    # environment variables, he probably wants to use them. So, let us
    # prefer cpp and gcc to /lib/cpp.
-   for cpp in cpp gcc /lib/cpp cc c99
+   for cpp in "cpp -P" "cpp" "gcc -P -E" "gcc -E" "/lib/cpp -P" "/lib/cpp" "cc -P -E" "cc -E" "c99 -P -E" "c99 -E"
    do
-     case $cpp in
-       *cpp*) cpp="$cpp -P" ;;
-       *) cpp="$cpp -E" ;;
-     esac
+     # Get CC
      echo "#include \"gmp.h\"" > conftest.c
-     if $cpp $CPPFLAGS conftest.c > /dev/null 2> /dev/null ; then
-       # Get CC
-       echo "#include \"gmp.h\"" >  conftest.c
-       echo "MPFR_OPTION __GMP_CC"           >> conftest.c
-       GMP_CC=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g;s/ *" *//g'`
-       # Get CFLAGS
-       echo "#include \"gmp.h\"" >  conftest.c
-       echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
-       unset rmpedantic
-       [test "$enable_logging" = yes && rmpedantic='s/[ "]-pedantic[ "]/ /g;']
-       GMP_CFLAGS=`$cpp $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e "$rmpedantic"'s/MPFR_OPTION //g;s/ *" *//g'`
-       break
-     fi
+     echo "MPFR_OPTION __GMP_CC" >> conftest.c
+     $cpp $CPPFLAGS conftest.c 2> /dev/null > conftest.txt
+     test $? -ne 0 && continue
+     GMP_CC=`$EGREP MPFR_OPTION conftest.txt | $SED -e 's/MPFR_OPTION //g;s/ *" *//g'`
+     # Get CFLAGS
+     echo "#include \"gmp.h\"" >  conftest.c
+     echo "MPFR_OPTION __GMP_CFLAGS" >> conftest.c
+     unset rmpedantic
+     [test "$enable_logging" = yes && rmpedantic='s/[ "]-pedantic[ "]/ /g;']
+     $cpp $CPPFLAGS conftest.c 2> /dev/null > conftest.txt
+     test $? -ne 0 && continue
+     GMP_CFLAGS=`$EGREP MPFR_OPTION conftest.txt | $SED -e "$rmpedantic"'s/MPFR_OPTION //g;s/ *" *//g'`
+     break
    done
    rm -f conftest*
    if test "x$GMP_CC" = "x__GMP_CC" || test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" ; then
