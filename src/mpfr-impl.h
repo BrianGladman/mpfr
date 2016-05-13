@@ -2104,6 +2104,7 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 }
 #endif
 
+
 /******************************************************
  ***************  Internal mpz caching  ***************
  ******************************************************/
@@ -2121,30 +2122,40 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 # define mpz_clear mpfr_mpz_clear
 #endif
 
+
 /******************************************************
  ********  Compute LOG2(LOG2(MPFR_PREC_MAX))  *********
  ******************************************************/
+
 #if   _MPFR_PREC_FORMAT == 1
 # define MPFR_PREC_MAX_TEMP USHRT_MAX
 #elif _MPFR_PREC_FORMAT == 2
 # define MPFR_PREC_MAX_TEMP UINT_MAX
 #elif _MPFR_PREC_FORMAT == 3
 # define MPFR_PREC_MAX_TEMP ULONG_MAX
+#else
+# error "Invalid MPFR Prec format"
 #endif
 
-#if MPFR_PREC_MAX_TEMP == 255UL
+/* Note: In the constants below, it is sufficient to use the suffix U.
+ * A large enough unsigned type will be chosen automatically, but the
+ * exact type doesn't matter here.
+ */
+
+#if MPFR_PREC_MAX_TEMP == 255U
 # define MPFR_PREC_BITS 8
 # define MPFR_LOG2_PREC_BITS 3
-#elif MPFR_PREC_MAX_TEMP == 65535UL
+#elif MPFR_PREC_MAX_TEMP == 65535U
 # define MPFR_PREC_BITS 16
 # define MPFR_LOG2_PREC_BITS 4
-#elif MPFR_PREC_MAX_TEMP == 4294967295UL
+#elif MPFR_PREC_MAX_TEMP == 4294967295U
 # define MPFR_PREC_BITS 32
 # define MPFR_LOG2_PREC_BITS 5
-#else
-/* Assume MPFR_PREC_MAX_TEMP == 18446744073709551615ULL */
+#elif MPFR_PREC_MAX_TEMP == 18446744073709551615U
 # define MPFR_PREC_BITS 64
 # define MPFR_LOG2_PREC_BITS 6
+#else
+# error "Unsupported MPFR_PREC_MAX_TEMP value"
 #endif
 
 
