@@ -57,7 +57,9 @@ print_decimal64 (_Decimal64 d)
   printf ("|\n");
 }
 #else
-/* portable version, assuming long double has at least 55 bits */
+/* Portable version, assuming long double has at least 55 bits.
+   Note: __STDC_WANT_IEC_60559_DFP_EXT__ or __STDC_WANT_DEC_FP__
+   might allow to use printf("%.15De\n", d) */
 static void
 print_decimal64 (_Decimal64 d)
 {
