@@ -603,13 +603,14 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
    */
   if (MPFR_IS_NEG (y) ? (MPFR_GET_EXP (x) > 1) : (MPFR_GET_EXP (x) < 0))
     {
+      mp_limb_t tmp_limb[MPFR_EXP_LIMB_SIZE];
       mpfr_t tmp;
       mpfr_eexp_t ebound;
       int inex2;
 
       /* We must restore the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
-      mpfr_init2 (tmp, sizeof (mpfr_exp_t) * CHAR_BIT);
+      MPFR_TMP_INIT1 (tmp_limb, tmp, sizeof (mpfr_exp_t) * CHAR_BIT);
       inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), MPFR_RNDN);
       MPFR_ASSERTN (inex2 == 0);
       if (MPFR_IS_NEG (y))
@@ -623,7 +624,6 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       /* tmp doesn't necessarily fit in ebound, but that doesn't matter
          since we get the minimum value in such a case. */
       ebound = mpfr_get_exp_t (tmp, MPFR_RNDU);
-      mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);
       if (MPFR_UNLIKELY (ebound <=
                          __gmpfr_emin - (rnd_mode == MPFR_RNDN ? 2 : 1)))

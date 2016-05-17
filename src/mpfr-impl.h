@@ -820,6 +820,10 @@ typedef intmax_t mpfr_eexp_t;
 # define MPFR_EXP_FSPEC "j"
 #endif
 
+/* Size of mpfr_exp_t in limbs */
+#define MPFR_EXP_LIMB_SIZE \
+  ((sizeof (mpfr_exp_t) - 1) / MPFR_BYTES_PER_MP_LIMB + 1)
+
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
  ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))

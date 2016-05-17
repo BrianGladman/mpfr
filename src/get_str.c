@@ -2219,7 +2219,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   mpfr_srcptr p;
   mpfr_t t;
   mpfr_exp_t r;
-  mp_limb_t tmpmant[(sizeof (mpfr_exp_t) - 1 ) / sizeof (mp_limb_t) + 1];
+  mp_limb_t tmpmant[MPFR_EXP_LIMB_SIZE];
 
   p = &__gmpfr_l2b[beta-2][i];
   MPFR_TMP_INIT1(tmpmant, t, sizeof (mpfr_exp_t) * CHAR_BIT);
