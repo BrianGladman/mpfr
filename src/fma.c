@@ -101,6 +101,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   int inexact;
   mpfr_t u;
   mp_size_t n;
+  mpfr_exp_t e;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_GROUP_DECL(group);
 
@@ -117,6 +118,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                      MPFR_IS_SINGULAR(z) ))
     return mpfr_fma_singular (s, x, y, z, rnd_mode);
 
+  e = MPFR_GET_EXP (x) + MPFR_GET_EXP (y);
+
   /* First deal with special case where prec(x) = prec(y) and x*y does
      not overflow nor underflow. Do it only for small sizes since for large
      sizes x*y is faster using Mulders' algorithm (as a rule of thumb,
@@ -125,8 +128,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
   n = MPFR_LIMB_SIZE(x);
   if (n <= 4 * MPFR_MUL_THRESHOLD && MPFR_PREC(x) == MPFR_PREC(y) &&
-      MPFR_EXP(x) + MPFR_EXP(y) <= __gmpfr_emax &&
-      MPFR_EXP(x) + MPFR_EXP(y) > __gmpfr_emin)
+      e <= __gmpfr_emax && e > __gmpfr_emin)
     {
       mp_size_t un = n + n;
       mpfr_limb_ptr up;
@@ -137,13 +139,13 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       up = MPFR_MANT(u);
       /* multiply x*y exactly into u */
       mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
-      if ((up[un - 1] & MPFR_LIMB_HIGHBIT) == 0)
+      if (MPFR_LIMB_MSB (up[un - 1]) == 0)
         {
           mpn_lshift (up, up, un, 1);
-          MPFR_EXP(u) = MPFR_EXP(x) + MPFR_EXP(y) - 1;
+          MPFR_EXP(u) = e - 1;
         }
       else
-        MPFR_EXP(u) = MPFR_EXP(x) + MPFR_EXP(y);
+        MPFR_EXP(u) = e;
       MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
       /* The above code does not generate any exception.
          The exceptions will come only from mpfr_add. */
@@ -175,8 +177,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
              Also, we know that |z| < 2^emax. If E(x) + E(y) >= emax+3,
              then |x*y| >= 2^(emax+1), and |x*y + z| >= 2^emax. This case
              is also an overflow. */
-          if (MPFR_SIGN (u) == MPFR_SIGN (z) ||
-              MPFR_GET_EXP (x) + MPFR_GET_EXP (y) >= __gmpfr_emax + 3)
+          if (MPFR_SIGN (u) == MPFR_SIGN (z) || e >= __gmpfr_emax + 3)
             {
               MPFR_GROUP_CLEAR (group);
               MPFR_SAVE_EXPO_FREE (expo);
