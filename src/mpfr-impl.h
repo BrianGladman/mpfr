@@ -856,15 +856,16 @@ typedef intmax_t mpfr_eexp_t;
      unsigned type for exp is suspicious and should be regarded as a bug.
 */
 
+#define MPFR_EXP_IN_RANGE(e) ((e) >= __gmpfr_emin && (e) <= __gmpfr_emax)
+
 #ifdef MPFR_EXP_CHECK
 # define MPFR_GET_EXP(x)          (mpfr_get_exp) (x)
-# define MPFR_SET_EXP(x, exp)     (MPFR_ASSERTN ((exp) >= __gmpfr_emin && \
-                                                 (exp) <= __gmpfr_emax),  \
-                                   (void) (MPFR_EXP (x) = (exp)))
+# define MPFR_SET_EXP(x,e)        (MPFR_ASSERTN (MPFR_EXP_IN_RANGE (e)), \
+                                   (void) (MPFR_EXP (x) = (e)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
 # define MPFR_GET_EXP(x)          MPFR_EXP (x)
-# define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
+# define MPFR_SET_EXP(x,e)        ((void) (MPFR_EXP (x) = (e)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
@@ -1377,9 +1378,9 @@ typedef struct {
 
 /* Speed up final checking */
 #define mpfr_check_range(x,t,r) \
- (MPFR_LIKELY (MPFR_EXP (x) >= __gmpfr_emin && MPFR_EXP (x) <= __gmpfr_emax) \
-  ? ((t) ? (__gmpfr_flags |= MPFR_FLAGS_INEXACT, (t)) : 0)                   \
-  : mpfr_check_range(x,t,r))
+  (MPFR_LIKELY (MPFR_EXP_IN_RANGE (MPFR_EXP (x)))                \
+   ? ((t) ? (__gmpfr_flags |= MPFR_FLAGS_INEXACT, (t)) : 0)      \
+   : mpfr_check_range(x,t,r))
 
 
 /******************************************************

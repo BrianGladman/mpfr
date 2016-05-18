@@ -86,7 +86,7 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
       count_leading_zeros (cnt, rp[nlimbs - 1]);
       /* Normalization */
       exp -= cnt;
-      if (MPFR_UNLIKELY (exp < __gmpfr_emin || exp > __gmpfr_emax))
+      if (MPFR_UNLIKELY (! MPFR_EXP_IN_RANGE (exp)))
         {
           /* If the exponent is not in the current exponent range, we
              choose to return a NaN as this is probably a user error.

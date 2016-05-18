@@ -77,8 +77,5 @@ mpfr_check (mpfr_srcptr x)
         return 0;
     }
   /* Check exponent range */
-  if (MPFR_EXP (x) < __gmpfr_emin ||
-      MPFR_EXP (x) > __gmpfr_emax)
-    return 0;
-  return 1;
+  return MPFR_EXP_IN_RANGE (MPFR_EXP (x));
 }
