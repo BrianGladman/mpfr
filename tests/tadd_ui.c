@@ -67,7 +67,9 @@ check_nans (void)
 
   /* nan + 2394875 == nan */
   mpfr_set_nan (x);
+  mpfr_clear_nanflag ();
   mpfr_add_ui (y, x, 2394875L, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nanflag_p() != 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   /* +inf + 2394875 == +inf */
