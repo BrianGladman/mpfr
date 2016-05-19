@@ -31,6 +31,10 @@ mpfr_fmma_slow (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   mpfr_init2 (ab, MPFR_PREC(a) + MPFR_PREC(b));
   mpfr_init2 (cd, MPFR_PREC(c) + MPFR_PREC(d));
+  /* FIXME: The following multiplications may overflow or underflow
+     (even more often with the fact that the exponent range is not
+     extended), in which case the result is not exact. This should
+     be solved with future unbounded floats. */
   mpfr_mul (ab, a, b, MPFR_RNDZ); /* exact */
   mpfr_mul (cd, c, d, MPFR_RNDZ); /* exact */
   inex = mpfr_add (z, ab, cd, rnd);
@@ -107,6 +111,9 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    /* tentatively compute z as u+v; here we need z to be distinct
       from a, b, c, d to avoid losing the input values in case we
       need to call mpfr_fmma_slow */
+   /* FIXME: The above comment is no longer valid. Anyway, with
+      unbounded floats (based on an exact multiplication like above),
+      it will no longer be necessary to distinguish fast and slow. */
    inex = mpfr_add (z, u, v, rnd);
 
    MPFR_TMP_FREE(marker);
