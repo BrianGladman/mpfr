@@ -175,9 +175,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
       mpfr_set_prec (w, yprec);
 
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-#define NSPEC 8
+#define NSPEC 9
 #else
-#define NSPEC 4
+#define NSPEC 5
 #endif
 
       /* Note: in precision p1, we test NSPEC special cases. */
@@ -235,18 +235,33 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
               set_emin (MPFR_EMIN_MIN);
               set_emax (MPFR_EMAX_MAX);
-              if (n <= 1)
+              if (n == 0)
                 {
-                  mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_nan (x);
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+#if defined(RAND_FUNCTION)
+                  RAND_FUNCTION (u);
+#else
+                  tests_default_random (u, TEST_RANDOM_POS2,
+                                        TEST_RANDOM_EMIN, TEST_RANDOM_EMAX,
+                                        TEST_RANDOM_ALWAYS_SCALE);
+#endif
+#endif
+                }
+              else if (n <= 2)
+                {
+                  MPFR_ASSERTN (n == 1 || n == 2);
+                  mpfr_set_si (x, n == 1 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, REDUCE_EMIN);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (u, REDUCE_EMIN);
 #endif
                 }
-              else if (n <= 3)
+              else if (n <= 4)
                 {
-                  mpfr_set_si (x, n == 2 ? 1 : -1, MPFR_RNDN);
+                  MPFR_ASSERTN (n == 3 || n == 4);
+                  mpfr_set_si (x, n == 3 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
@@ -254,9 +269,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
                 }
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-              else if (n <= 5)
+              else if (n <= 6)
                 {
-                  mpfr_set_si (x, n == 4 ? 1 : -1, MPFR_RNDN);
+                  MPFR_ASSERTN (n == 5 || n == 6);
+                  mpfr_set_si (x, n == 5 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, REDUCE_EMIN);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
@@ -265,14 +281,15 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 }
               else
                 {
-                  mpfr_set_si (x, n == 6 ? 1 : -1, MPFR_RNDN);
+                  MPFR_ASSERTN (n == 7 || n == 8);
+                  mpfr_set_si (x, n == 7 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (u, REDUCE_EMIN);
 #endif
                 }
-#endif
+#endif  /* two arguments */
             }
 
 #if defined(ULONG_ARG1) || defined(ULONG_ARG2)
