@@ -94,7 +94,9 @@ check_nans (void)
 
   /* nan - 1 == nan */
   mpfr_set_nan (x);
+  mpfr_clear_nanflag ();
   mpfr_sub_ui (y, x, 1L, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nanflag_p ());
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   /* +inf - 1 == +inf */
