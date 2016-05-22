@@ -56,7 +56,7 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   if (mpfr_nan_p (res))
     MPFR_ASSERTN (mpfr_nan_p (ref));
   else
-    MPFR_ASSERTN (mpfr_cmp (res, ref) == 0);
+    MPFR_ASSERTN (mpfr_equal_p (res, ref));
 
   /* then check fmms */
   inex_res = mpfr_fmms (res, a, b, c, d, rnd);
@@ -77,7 +77,7 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   if (mpfr_nan_p (res))
     MPFR_ASSERTN (mpfr_nan_p (ref));
   else
-    MPFR_ASSERTN (mpfr_cmp (res, ref) == 0);
+    MPFR_ASSERTN (mpfr_equal_p (res, ref));
 
   mpfr_clear (ab);
   mpfr_clear (cd);
