@@ -849,14 +849,15 @@ typedef intmax_t mpfr_eexp_t;
    MPFR_EXP_CHECK is defined when MPFR_WANT_ASSERT is defined, but if you
    don't use MPFR_WANT_ASSERT (for speed reasons), you can still define
    MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS.
-   Note about MPFR_SET_EXP:
+   Note about MPFR_EXP_IN_RANGE and MPFR_SET_EXP:
      The exp expression is required to have a signed type. To avoid spurious
      failures, we could cast (exp) to mpfr_exp_t, but this wouldn't allow us
      to detect some bugs that can occur on particular platforms. Anyway, an
      unsigned type for exp is suspicious and should be regarded as a bug.
 */
 
-#define MPFR_EXP_IN_RANGE(e) ((e) >= __gmpfr_emin && (e) <= __gmpfr_emax)
+#define MPFR_EXP_IN_RANGE(e)                                          \
+  (MPFR_ASSERTD (IS_SIGNED (e)), (e) >= __gmpfr_emin && (e) <= __gmpfr_emax)
 
 #ifdef MPFR_EXP_CHECK
 # define MPFR_GET_EXP(x)          (mpfr_get_exp) (x)
@@ -1289,6 +1290,12 @@ do {                                                                  \
 /* type is the target (unsigned) type */
 #define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
 #define SAFE_DIFF(type,x,y) (MPFR_ASSERTD((x) >= (y)), (type)(x) - (type)(y))
+
+/* Check whether an integer type (after integer promotion) is signed.
+   This can be determined at compilation time, but unfortunately this
+   is not a constant expression, so that this cannot be used for a
+   static assertion. */
+#define IS_SIGNED(X) ((X) * 0 - 1 < 0)
 
 #define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
 
