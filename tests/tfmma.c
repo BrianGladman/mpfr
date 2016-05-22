@@ -42,7 +42,9 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
   mpfr_mul (ab, a, b, rnd);
   mpfr_mul (cd, c, d, rnd);
   inex_ref = mpfr_add (ref, ab, cd, rnd);
-  if (inex_res != inex_ref)
+  if (! SAME_SIGN (inex_res, inex_ref) ||
+      mpfr_nan_p (res) || mpfr_nan_p (ref) ||
+      ! mpfr_equal_p (res, ref))
     {
       printf ("mpfr_fmma failed for p=%ld rnd=%s\n",
               (long int) p, mpfr_print_rnd_mode (rnd));
@@ -50,20 +52,23 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
       printf ("b="); mpfr_dump (b);
       printf ("c="); mpfr_dump (c);
       printf ("d="); mpfr_dump (d);
-      printf ("expected inex %d, got %d\n", inex_ref, inex_res);
+      printf ("Expected\n  ");
+      mpfr_dump (ref);
+      printf ("  with inex = %d\n", inex_ref);
+      printf ("Got\n  ");
+      mpfr_dump (res);
+      printf ("  with inex = %d\n", inex_res);
       exit (1);
     }
-  if (mpfr_nan_p (res))
-    MPFR_ASSERTN (mpfr_nan_p (ref));
-  else
-    MPFR_ASSERTN (mpfr_equal_p (res, ref));
 
   /* then check fmms */
   inex_res = mpfr_fmms (res, a, b, c, d, rnd);
   mpfr_mul (ab, a, b, rnd);
   mpfr_mul (cd, c, d, rnd);
   inex_ref = mpfr_sub (ref, ab, cd, rnd);
-  if (inex_res != inex_ref)
+  if (! SAME_SIGN (inex_res, inex_ref) ||
+      mpfr_nan_p (res) || mpfr_nan_p (ref) ||
+      ! mpfr_equal_p (res, ref))
     {
       printf ("mpfr_fmms failed for p=%ld rnd=%s\n",
               (long int) p, mpfr_print_rnd_mode (rnd));
@@ -71,13 +76,14 @@ random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
       printf ("b="); mpfr_dump (b);
       printf ("c="); mpfr_dump (c);
       printf ("d="); mpfr_dump (d);
-      printf ("expected inex %d, got %d\n", inex_ref, inex_res);
+      printf ("Expected\n  ");
+      mpfr_dump (ref);
+      printf ("  with inex = %d\n", inex_ref);
+      printf ("Got\n  ");
+      mpfr_dump (res);
+      printf ("  with inex = %d\n", inex_res);
       exit (1);
     }
-  if (mpfr_nan_p (res))
-    MPFR_ASSERTN (mpfr_nan_p (ref));
-  else
-    MPFR_ASSERTN (mpfr_equal_p (res, ref));
 
   mpfr_clear (ab);
   mpfr_clear (cd);
