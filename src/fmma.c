@@ -57,6 +57,7 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    mpfr_t u, v;
    mp_size_t an, bn, cn, dn;
    mpfr_limb_ptr up, vp;
+   unsigned int saved_flags = __gmpfr_flags;
    MPFR_TMP_DECL(marker);
    MPFR_SAVE_EXPO_DECL (expo);
 
@@ -118,6 +119,12 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    MPFR_SAVE_EXPO_FREE (expo);
 
    return mpfr_check_range (z, inex, rnd);
+
+ failure:
+   __gmpfr_flags = saved_flags;
+   MPFR_TMP_FREE(marker);
+   MPFR_SAVE_EXPO_FREE (expo);
+   return mpfr_fmma_slow (z, a, b, c, d, rnd);
 }
 
 /* z <- a*b + c*d */
