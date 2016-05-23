@@ -167,6 +167,17 @@ AC_ARG_ENABLE(thread-safe,
       *)   AC_MSG_ERROR([bad value for --enable-thread-safe: yes or no]) ;;
      esac])
 
+AC_ARG_ENABLE(shared-cache,
+   [  --enable-shared-cache   enable use of caches shared by all threads,
+                          for all MPFR constants.  It usually makes MPFR
+                          dependent on PTHREAD [[default=no]]],
+   [ case $enableval in
+      yes) mpfr_want_shared_cache=yes
+         AC_DEFINE([WANT_SHARED_CACHE],1,[Want shared cache]) ;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-shared-cache: yes or no]) ;;
+     esac])
+
 AC_ARG_ENABLE(warnings,
    [  --enable-warnings       allow MPFR to output warnings to stderr [[default=no]]],
    [ case $enableval in

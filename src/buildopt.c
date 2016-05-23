@@ -63,6 +63,16 @@ mpfr_buildopt_gmpinternals_p (void)
 #endif
 }
 
+int
+mpfr_buildopt_sharedcache_p (void)
+{
+#if defined (WANT_SHARED_CACHE)
+  return 1;
+#else
+  return 0;
+#endif
+}
+
 const char *mpfr_buildopt_tune_case (void)
 {
   /* MPFR_TUNE_CASE is always defined (can be "default"). */

@@ -42,6 +42,7 @@ struct header {
 
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
+MPFR_LOCK_DECL(mpfr_lock_memory)
 
 static void *
 mpfr_default_allocate (size_t size)
@@ -121,6 +122,8 @@ tests_allocate (size_t size)
 {
   struct header  *h;
 
+  MPFR_LOCK_WRITE(mpfr_lock_memory);
+
   if (size == 0)
     {
       printf ("tests_allocate(): attempt to allocate 0 bytes\n");
@@ -135,6 +138,9 @@ tests_allocate (size_t size)
 
   h->size = size;
   h->ptr = mpfr_default_allocate (size);
+
+  MPFR_UNLOCK_WRITE(mpfr_lock_memory);
+
   return h->ptr;
 }
 
@@ -142,6 +148,8 @@ void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 {
   struct header  **hp, *h;
+
+  MPFR_LOCK_WRITE(mpfr_lock_memory);
 
   if (new_size == 0)
     {
@@ -173,6 +181,9 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 
   h->size = new_size;
   h->ptr = mpfr_default_reallocate (ptr, old_size, new_size);
+
+  MPFR_UNLOCK_WRITE(mpfr_lock_memory);
+
   return h->ptr;
 }
 
@@ -204,8 +215,13 @@ tests_free_nosize (void *ptr)
 void
 tests_free (void *ptr, size_t size)
 {
-  struct header  **hp = tests_free_find (ptr);
-  struct header  *h = *hp;
+  struct header  **hp;
+  struct header  *h;
+
+  MPFR_LOCK_WRITE(mpfr_lock_memory);
+
+  hp = tests_free_find (ptr);
+  h = *hp;
 
   if (h->size != size)
     {
@@ -218,6 +234,8 @@ tests_free (void *ptr, size_t size)
 
   tests_total_size -= size;
   tests_free_nosize (ptr);
+
+  MPFR_UNLOCK_WRITE(mpfr_lock_memory);
 }
 
 void

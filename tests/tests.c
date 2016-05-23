@@ -275,6 +275,7 @@ tests_end_mpfr (void)
     }
 
   mpfr_free_cache ();
+  mpfr_free_cache2 (MPFR_FREE_GLOBAL_CACHE);
   tests_rand_end ();
 #ifndef MPFR_USE_MINI_GMP
   tests_memory_end ();

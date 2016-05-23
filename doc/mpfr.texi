@@ -2246,12 +2246,18 @@ use @code{mpfr_free_cache}.
 @end deftypefun
 
 @deftypefun void mpfr_free_cache (void)
-Free various caches used by MPFR internally, in particular the
-caches used by the functions computing constants (@code{mpfr_const_log2},
-@code{mpfr_const_pi},
-@code{mpfr_const_euler} and @code{mpfr_const_catalan}).
+Free various caches used by MPFR internally, which are local to the
+current thread.
 You should call this function before terminating a thread, even if you did
 not call these functions directly (they could have been called internally).
+@end deftypefun
+
+@deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
+Free various caches used by MPFR internally,
+either the caches local to the current thread (if @var{way} is
+@code{MPFR_FREE_LOCAL_CACHE}
+or the caches common to all threads (if @var{way} is
+@code{MPFR_FREE_GLOBAL_CACHE}.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
@@ -3112,6 +3118,15 @@ return zero otherwise.
 Return a non-zero value if MPFR was compiled with GMP internals
 (that is, MPFR was built with either @code{--with-gmp-build} or
 @code{--enable-gmp-internals} configure option), return zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_buildopt_sharedcache_p (void)
+Return a non-zero value if MPFR was compiled so that all threads share the same
+cache for one MPFR constant - like @code{mpfr_const_pi} or @code{mpfr_const_log2}
+(that is, MPFR was built with the @code{--enable-shared-cache} configure option),
+return zero otherwise.
+If the return value is non-zero, MPFR applications may need to be compiled with
+@code{-pthread} option.
 @end deftypefun
 
 @deftypefun {const char *} mpfr_buildopt_tune_case (void)
