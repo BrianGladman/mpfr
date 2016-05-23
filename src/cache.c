@@ -39,7 +39,7 @@ mpfr_clear_cache (mpfr_cache_t cache)
 {
   if (MPFR_UNLIKELY (MPFR_PREC (cache->x) != 0))
     {
-      /* Get the cache in read write mode */
+      /* Get the cache in read-write mode */
       MPFR_LOCK_WRITE(cache->lock);
 
       if (MPFR_LIKELY (MPFR_PREC (cache->x) != 0))
@@ -48,7 +48,7 @@ mpfr_clear_cache (mpfr_cache_t cache)
           MPFR_PREC (cache->x) = 0;
         }
 
-      /* Free the cache in read write mode */
+      /* Free the cache in read-write mode */
       MPFR_UNLOCK_WRITE(cache->lock);
     }
 }
@@ -66,14 +66,14 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* Get the cache in read only mode */
+  /* Get the cache in read-only mode */
   MPFR_LOCK_READ(cache->lock);
   /* Read the precision within the cache */
   pold = MPFR_PREC (cache->x);
   if (MPFR_UNLIKELY (prec > pold))
     {
-      /* Free the cache in read only mode */
-      /* And get the cache in read write mode */
+      /* Free the cache in read-only mode */
+      /* And get the cache in read-write mode */
       MPFR_LOCK_READ2WRITE(cache->lock);
 
       /* Retest the precision once we get the lock.
@@ -99,8 +99,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
           cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
         }
 
-      /* Free the cache in read write mode */
-      /* Get the cache in read only mode */
+      /* Free the cache in read-write mode */
+      /* Get the cache in read-only mode */
       MPFR_LOCK_WRITE2READ(cache->lock);
     }
 
@@ -183,7 +183,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 
   MPFR_SAVE_EXPO_FREE (expo);
 
-  /* Free the cache in read  mode */
+  /* Free the cache in read-only mode */
   MPFR_UNLOCK_READ(cache->lock);
 
   return mpfr_check_range (dest, inexact, rnd);
