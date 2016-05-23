@@ -958,10 +958,10 @@ When more precision is needed, the value is automatically recomputed;
 a minimum of 10% increase of the precision is guaranteed to avoid too
 many recomputations.
 
-At any time, the user can free the various caches with
-@code{mpfr_free_cache}. It is strongly advised to do that before
-terminating a thread, or before exiting when using tools like
-@samp{valgrind} (to avoid memory leaks being reported).
+At any time, the user can free various caches with @code{mpfr_free_cache}
+and @code{mpfr_free_cache2}. It is strongly advised to free thread-local
+caches before terminating a thread and global caches before exiting when
+using tools like @samp{valgrind} (to avoid memory leaks being reported).
 
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
@@ -2242,22 +2242,23 @@ of Euler's constant 0.577@dots{}, of Catalan's constant 0.915@dots{},
 respectively, rounded in the direction
 @var{rnd}. These functions cache the computed values to avoid other
 calculations if a lower or equal precision is requested. To free these caches,
-use @code{mpfr_free_cache}.
+use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
 @deftypefun void mpfr_free_cache (void)
-Free various caches used by MPFR internally, which are local to the
-current thread.
+Free various caches used by MPFR internally, only those that are local
+to the current thread.
 You should call this function before terminating a thread, even if you did
-not call these functions directly (they could have been called internally).
+not call @code{mpfr_const_*} functions directly (they could have been called
+internally).
 @end deftypefun
 
 @deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
 Free various caches used by MPFR internally,
 either the caches local to the current thread (if @var{way} is
-@code{MPFR_FREE_LOCAL_CACHE}
+@code{MPFR_FREE_LOCAL_CACHE})
 or the caches common to all threads (if @var{way} is
-@code{MPFR_FREE_GLOBAL_CACHE}.
+@code{MPFR_FREE_GLOBAL_CACHE}).
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
