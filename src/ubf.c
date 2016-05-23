@@ -197,7 +197,10 @@ mpfr_ubf_diff_exp (mpfr_srcptr x, mpfr_srcptr y)
   mpz_clear (ye);
   n = ABSIZ(xe); /* limb size of xe */
   if (n == 0)
-    return 0;
+    {
+      mpz_clear (xe);
+      return 0;
+    }
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (d, n * GMP_NUMB_BITS);
   MPFR_DBGRES (inex = mpfr_set_z (d, xe, MPFR_RNDN));
