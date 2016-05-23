@@ -62,9 +62,8 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
                 {
                   mpfr_exp_t ex;
 
-                  ex = MPFR_GET_EXP (x);
-                  MPFR_ASSERTN (ex >= LONG_MIN && ex <= LONG_MAX);
-                  fprintf (stream, "E%ld", (long) ex);
+                  ex = MPFR_EXP (x);
+                  fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) ex);
                   return;
                 }
             }
