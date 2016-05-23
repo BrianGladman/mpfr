@@ -27,8 +27,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* TODO: add tests for precision 1 and for precisions > MPFR_PREC_MAX. */
 
-int
-main (int argc, char *argv[])
+static int
+doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
   char *filenameCompressed = FILE_NAME_RW;
   char *data = FILE_NAME_R;
@@ -49,9 +49,9 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  mpfr_init2 (x[0], 130);
-  mpfr_init2 (x[8], 130);
-  mpfr_inits2 (2048, x[1], x[2], x[3], x[4], x[5], x[6], x[7], (mpfr_ptr) 0);
+  mpfr_init2 (x[0], p1);
+  mpfr_init2 (x[8], p1);
+  mpfr_inits2 (p2, x[1], x[2], x[3], x[4], x[5], x[6], x[7], (mpfr_ptr) 0);
   mpfr_set_str1 (x[0], "45.2564215000000018562786863185465335845947265625");
   mpfr_set_str1 (x[1], "45.2564215000000018562786863185465335845947265625");
   mpfr_set_str1 (x[2], "45.2564215000000018562786863185465335845947265625");
@@ -119,7 +119,8 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  for (i = 0; i < 9; i++)
+  /* the fixed file FILE_NAME_R assumes p1=130 and p2=2048 */
+  for (i = 0; i < 9 && (p1 == 130 && p2 == 2048); i++)
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
@@ -243,4 +244,14 @@ main (int argc, char *argv[])
 
   tests_end_mpfr ();
   return 0;
+}
+
+int
+main (int argc, char *argv[])
+{
+  int ret;
+
+  ret = doit (argc, argv, 130, 2048);
+  ret = ret || doit (argc, argv, 1, 53);
+  return ret;
 }
