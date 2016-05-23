@@ -1518,8 +1518,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             }
         }
       else
-        /* p == 0 */
         {
+          MPFR_ASSERTD (MPFR_IS_ZERO (p));
           /* note: for 'g' spec, zero is always displayed with 'f'-style with
              precision spec.prec - 1 and the trailing zeros are removed unless
              the flag '#' is used. */
