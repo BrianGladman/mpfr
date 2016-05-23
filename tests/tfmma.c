@@ -177,6 +177,51 @@ zero_tests (void)
   set_emax (emax);
 }
 
+static void
+max_tests (void)
+{
+  mpfr_exp_t emin, emax;
+  mpfr_t x, y1, y2;
+  int r;
+  int inex1, inex2;
+  mpfr_flags_t flags1, flags2;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_inits2 (64, x, y1, y2, (mpfr_ptr) 0);
+  mpfr_setmax (x, MPFR_EMAX_MAX);
+  flags1 = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+  RND_LOOP (r)
+    {
+      inex1 = mpfr_mul (y1, x, x, (mpfr_rnd_t) r);
+      mpfr_clear_flags ();
+      inex2 = mpfr_fmma (y2, x, x, x, x, (mpfr_rnd_t) r);
+      flags2 = __gmpfr_flags;
+      if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+             mpfr_equal_p (y1, y2)))
+        {
+          printf ("Error in max_tests for %s",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          printf ("Expected ");
+          mpfr_dump (y1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
+          printf ("Got      ");
+          mpfr_dump (y2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
+          exit (1);
+        }
+    }
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -184,6 +229,7 @@ main (int argc, char *argv[])
 
   random_tests ();
   zero_tests ();
+  max_tests ();
 
   tests_end_mpfr ();
   return 0;
