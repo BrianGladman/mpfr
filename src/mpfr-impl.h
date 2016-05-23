@@ -2136,6 +2136,10 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 # undef mpz_clear
 # define mpz_init mpfr_mpz_init
 # define mpz_clear mpfr_mpz_clear
+# undef mpz_init_set_ui
+# define mpz_init_set_ui(a,b) do { mpz_init (a); mpz_set_ui (a, b); } while (0)
+# undef mpz_init_set
+# define mpz_init_set(a,b) do { mpz_init (a); mpz_set (a, b); } while (0)
 #endif
 
 
