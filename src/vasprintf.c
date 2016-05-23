@@ -1553,8 +1553,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         }
     }
   else
-    /* regular p, p != 0 */
     {
+      MPFR_ASSERTD (MPFR_IS_PURE_FP (p));
       if (spec.spec == 'a' || spec.spec == 'A' || spec.spec == 'b')
         {
           if (regular_ab (np, p, spec) == -1)
