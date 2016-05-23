@@ -2249,6 +2249,8 @@ __MPFR_DECLSPEC void
 __MPFR_DECLSPEC int
   mpfr_ubf_exp_less_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 __MPFR_DECLSPEC mpfr_exp_t
+  mpfr_ubf_zexp2exp _MPFR_PROTO ((mpz_ptr));
+__MPFR_DECLSPEC mpfr_exp_t
   mpfr_ubf_diff_exp _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 
 #if defined (__cplusplus)

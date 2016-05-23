@@ -35,8 +35,17 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_uexp_t diff_exp;
   MPFR_TMP_DECL(marker);
 
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
+
+  if (MPFR_UNLIKELY (MPFR_IS_UBF (b)))
+    {
+      exp = mpfr_ubf_zexp2exp (MPFR_ZEXP (b));
+      if (exp > __gmpfr_emax)
+        return mpfr_overflow (a, rnd_mode, MPFR_SIGN (b));;
+    }
+  else
+    exp = MPFR_GET_EXP (b);
 
   MPFR_TMP_MARK(marker);
 
@@ -68,7 +77,6 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPN_COPY(cp, ap, cn);
     }
 
-  exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
   /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
