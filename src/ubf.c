@@ -178,3 +178,37 @@ mpfr_ubf_exp_less_p (mpfr_srcptr x, mpfr_srcptr y)
   mpz_clear (ye);
   return c;
 }
+
+/* Return the difference of the exponents of x and y, restricted to
+   the interval [MPFR_EXP_MIN,MPFR_EXP_MAX]. */
+mpfr_exp_t
+mpfr_ubf_diff_exp (mpfr_srcptr x, mpfr_srcptr y)
+{
+  mpz_t xe, ye;
+  mp_size_t n;
+  mpfr_eexp_t e;
+  mpfr_t d;
+  int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  mpfr_get_zexp (xe, x);
+  mpfr_get_zexp (ye, y);
+  mpz_sub (xe, xe, ye);
+  mpz_clear (ye);
+  n = ABSIZ(xe); /* limb size of xe */
+  if (n == 0)
+    return 0;
+  MPFR_SAVE_EXPO_MARK (expo);
+  mpfr_init2 (d, n * GMP_NUMB_BITS);
+  MPFR_DBGRES (inex = mpfr_set_z (d, xe, MPFR_RNDN));
+  MPFR_ASSERTD (inex == 0);
+  mpz_clear (xe);
+  e = mpfr_get_exp_t (d, MPFR_RNDZ);
+  mpfr_clear (d);
+  MPFR_SAVE_EXPO_FREE (expo);
+  if (MPFR_UNLIKELY (e < MPFR_EXP_MIN))
+    return MPFR_EXP_MIN;
+  if (MPFR_UNLIKELY (e > MPFR_EXP_MAX))
+    return MPFR_EXP_MAX;
+  return e;
+}
