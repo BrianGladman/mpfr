@@ -170,7 +170,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #else
 
 /* TODO: Win32 */
-# error No thread lock / unsupported OS.
+# error "No thread lock / unsupported OS."
 
 #endif
 
