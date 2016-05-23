@@ -43,14 +43,17 @@ mpfr_get_zexp (mpz_ptr ez, mpfr_srcptr x)
       mp_limb_t e_limb[MPFR_EXP_LIMB_SIZE];
       mpfr_t e;
       int inex;
+      MPFR_SAVE_EXPO_DECL (expo);
 
       /* TODO: Once this has been tested, optimize based on whether
          _MPFR_EXP_FORMAT <= 3. */
       MPFR_TMP_INIT1 (e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
+      MPFR_SAVE_EXPO_MARK (expo);
       MPFR_DBGRES (inex = mpfr_set_exp_t (e, MPFR_GET_EXP (x), MPFR_RNDN));
       MPFR_ASSERTD (inex == 0);
       MPFR_DBGRES (inex = mpfr_get_z (ez, e, MPFR_RNDN));
       MPFR_ASSERTD (inex == 0);
+      MPFR_SAVE_EXPO_FREE (expo);
     }
 }
 
