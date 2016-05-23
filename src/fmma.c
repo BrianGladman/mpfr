@@ -79,16 +79,12 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    if ((up[an + bn - 1] & MPFR_LIMB_HIGHBIT) == 0)
      {
        mpn_lshift (up, up, an + bn, 1);
-       /* EXP(a) and EXP(b) are in [1-2^(n-2), 2^(n-2)-1] where
-          mpfr_exp_t has is n-bit wide, thus EXP(a)+EXP(b) is in
-          [2-2^(n-1), 2^(n-1)-2]. We use the fact here that 2*MPFR_EMIN_MIN-1
-          is a valid exponent (see mpfr-impl.h). However we don't use
-          MPFR_SET_EXP() which only allows the restricted exponent range
-          [1-2^(n-2), 2^(n-2)-1]. */
-       MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b) - 1;
+       MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b) - 1);
+       if (MPFR_UNLIKELY(MPFR_EXP(u) == __MPFR_EXP_INF))
+         goto failure;
      }
    else
-     MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b);
+     MPFR_SET_EXP (u, MPFR_EXP(a) + MPFR_EXP(b));
 
    /* v <- c*d */
    if (cn >= dn)
@@ -98,10 +94,12 @@ mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
    if ((vp[cn + dn - 1] & MPFR_LIMB_HIGHBIT) == 0)
      {
        mpn_lshift (vp, vp, cn + dn, 1);
-       MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d) - 1;
+       MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d) - 1);
+       if (MPFR_UNLIKELY(MPFR_EXP(v) == __MPFR_EXP_INF))
+         goto failure;
      }
    else
-     MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d);
+     MPFR_SET_EXP (v, MPFR_EXP(c) + MPFR_EXP(d));
 
    MPFR_PREC(u) = (an + bn) * GMP_NUMB_BITS;
    MPFR_PREC(v) = (cn + dn) * GMP_NUMB_BITS;
