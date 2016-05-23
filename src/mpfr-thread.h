@@ -161,8 +161,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_ONCE_INIT_VALUE PTHREAD_ONCE_INIT
 
 #define MPFR_ONCE_CALL(_once, _func) do {               \
-    int error_code = pthread_once(&(_once), (_func));   \
-    MPFR_ASSERTD(error_code == 0);                     \
+    int error_code = pthread_once (&(_once), (_func));  \
+    MPFR_ASSERTD (error_code == 0);                     \
   } while (0)
 
 #define MPFR_NEED_DEFERRED_INIT 1
