@@ -1114,17 +1114,29 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define mpfr_const_catalan(_d,_r) mpfr_cache(_d,__gmpfr_cache_const_catalan,_r)
 
 /* Declare a global cache for a MPFR constant.
-   If the shared cache is enables, and if the constructor/destructor
+   If the shared cache is enabled, and if the constructor/destructor
    attributes are available, we need to initialize the shared lock of
    the cache with a constructor. It is the goal of the macro
-   MPFR_DEFERRED_INIT_MASTER_DECL */
+   MPFR_DEFERRED_INIT_MASTER_DECL.
+   FIXME: When MPFR is built with shared cache, the field "lock" is
+   not explicitly initialized, which can yield a warning, e.g. with
+   GCC's -Wmissing-field-initializers (and an error with -Werror).
+   Since one does not know what is behind the associated typedef name,
+   one cannot provide an explicit initialization for such a type. Two
+   possible solutions:
+     1. Use a union whose first member is a char and initialize the
+        union with: { 0 }
+     2. Use designated initializers when supported. But this needs a
+        configure test.
+*/
 #define MPFR_DECL_INIT_CACHE(_cache,_func)                           \
   MPFR_DEFERRED_INIT_MASTER_DECL(_func,                              \
                                  MPFR_LOCK_INIT( (_cache)->lock),    \
                                  MPFR_LOCK_CLEAR((_cache)->lock))    \
-  MPFR_CACHE_ATTR mpfr_cache_t _cache =                              \
-    {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func                    \
-      MPFR_DEFERRED_INIT_SLAVE_VALUE(_func) }};
+  MPFR_CACHE_ATTR mpfr_cache_t _cache = {{                           \
+      {{ 0, MPFR_SIGN_POS, 0, (mp_limb_t *) 0 }}, 0, _func           \
+      MPFR_DEFERRED_INIT_SLAVE_VALUE(_func)                          \
+    }};
 
 /******************************************************
  ***************  Threshold parameters  ***************
