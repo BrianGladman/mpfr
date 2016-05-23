@@ -79,8 +79,8 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (b));
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (c));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
 
   if (MPFR_LIKELY (MPFR_SIGN (b) == MPFR_SIGN (c)))
     { /* signs are equal, it's a real subtraction */
@@ -92,7 +92,7 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else
     { /* signs differ, it's an addition */
-      if (MPFR_GET_EXP (b) < MPFR_GET_EXP (c))
+      if (MPFR_EXP_LESS_P (b, c))
          { /* exchange rounding modes toward +/- infinity */
           int inexact;
           rnd_mode = MPFR_INVERT_RND (rnd_mode);

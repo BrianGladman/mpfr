@@ -85,8 +85,8 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (b));
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (c));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
 
   if (MPFR_UNLIKELY(MPFR_SIGN(b) != MPFR_SIGN(c)))
     { /* signs differ, it is a subtraction */
@@ -100,12 +100,12 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     { /* signs are equal, it's an addition */
       if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
                       && MPFR_PREC(b) == MPFR_PREC(c)))
-        if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+        if (MPFR_EXP_LESS_P (b, c))
           return mpfr_add1sp(a, c, b, rnd_mode);
         else
           return mpfr_add1sp(a, b, c, rnd_mode);
       else
-        if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+        if (MPFR_EXP_LESS_P (b, c))
           return mpfr_add1(a, c, b, rnd_mode);
         else
           return mpfr_add1(a, b, c, rnd_mode);
