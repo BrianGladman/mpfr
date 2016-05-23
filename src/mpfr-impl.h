@@ -2126,6 +2126,10 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 #define MPFR_MY_MPZ_INIT 0
 #endif
 
+/* define MPFR_MY_MPZ_INIT to 0 here to disable the mpz_t pool
+   (see src/free_cache.c) */
+/* #define MPFR_MY_MPZ_INIT 0 */
+
 /* Cache for mpz_t */
 #if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
 # undef mpz_init
