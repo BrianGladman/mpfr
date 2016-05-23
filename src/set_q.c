@@ -38,7 +38,7 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 
   /* Remove useless ending 0 */
-  for (p = PTR (z), s = *zs = ABS (SIZ (z)) ; *p == 0; p++, s--)
+  for (p = PTR (z), s = *zs = ABSIZ (z) ; *p == 0; p++, s--)
     MPFR_ASSERTD (s >= 0);
 
   /* Get working precision */

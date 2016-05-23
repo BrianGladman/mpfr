@@ -52,7 +52,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd, int cr)
     return mpfr_set (y, x, rnd);
 
   absz[0] = z[0];
-  SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
+  SIZ (absz) = ABSIZ (absz); /* Hack to get abs(z) */
   MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
   /* round toward 1 (or -1) to avoid spurious overflow or underflow,
@@ -128,7 +128,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd, int cr)
           MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
                                           MPFR_EXP (x) - 1) != 0);
           mpfr_init2 (y2, 2);
-          mpfr_init2 (zz, ABS (SIZ (z)) * GMP_NUMB_BITS);
+          mpfr_init2 (zz, ABSIZ (z) * GMP_NUMB_BITS);
           inexact = mpfr_set_z (zz, z, MPFR_RNDN);
           MPFR_ASSERTN (inexact == 0);
           inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
@@ -336,7 +336,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
                   MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
                                                   MPFR_EXP (x) - 1) != 0);
                   mpfr_init2 (y2, 2);
-                  mpfr_init2 (zz, ABS (SIZ (z)) * GMP_NUMB_BITS);
+                  mpfr_init2 (zz, ABSIZ (z) * GMP_NUMB_BITS);
                   inexact = mpfr_set_z (zz, z, MPFR_RNDN);
                   MPFR_ASSERTN (inexact == 0);
                   inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
