@@ -71,6 +71,22 @@ mpfr_mpz_clear (mpz_t z)
 
 #endif
 
+static void
+mpfr_free_const_caches (void)
+{
+#ifndef MPFR_USE_LOGGING
+  mpfr_clear_cache (__gmpfr_cache_const_pi);
+  mpfr_clear_cache (__gmpfr_cache_const_log2);
+#else
+  mpfr_clear_cache (__gmpfr_normal_pi);
+  mpfr_clear_cache (__gmpfr_normal_log2);
+  mpfr_clear_cache (__gmpfr_logging_pi);
+  mpfr_clear_cache (__gmpfr_logging_log2);
+#endif
+  mpfr_clear_cache (__gmpfr_cache_const_euler);
+  mpfr_clear_cache (__gmpfr_cache_const_catalan);
+}
+
 void
 mpfr_free_cache (void)
 {
@@ -88,17 +104,7 @@ mpfr_free_cache (void)
 #endif
 
 #if !defined (WANT_SHARED_CACHE)
-# ifndef MPFR_USE_LOGGING
-  mpfr_clear_cache (__gmpfr_cache_const_pi);
-  mpfr_clear_cache (__gmpfr_cache_const_log2);
-# else
-  mpfr_clear_cache (__gmpfr_normal_pi);
-  mpfr_clear_cache (__gmpfr_normal_log2);
-  mpfr_clear_cache (__gmpfr_logging_pi);
-  mpfr_clear_cache (__gmpfr_logging_log2);
-# endif
-  mpfr_clear_cache (__gmpfr_cache_const_euler);
-  mpfr_clear_cache (__gmpfr_cache_const_catalan);
+  mpfr_free_const_caches ();
 #endif
 }
 
@@ -112,18 +118,8 @@ mpfr_free_cache2 (mpfr_free_cache_t way)
       break;
     case MPFR_FREE_GLOBAL_CACHE:
 #if defined (WANT_SHARED_CACHE)
-# ifndef MPFR_USE_LOGGING
-      mpfr_clear_cache (__gmpfr_cache_const_pi);
-      mpfr_clear_cache (__gmpfr_cache_const_log2);
-# else
-      mpfr_clear_cache (__gmpfr_normal_pi);
-      mpfr_clear_cache (__gmpfr_normal_log2);
-      mpfr_clear_cache (__gmpfr_logging_pi);
-      mpfr_clear_cache (__gmpfr_logging_log2);
-# endif
-      mpfr_clear_cache (__gmpfr_cache_const_euler);
-      mpfr_clear_cache (__gmpfr_cache_const_catalan);
-# endif
+      mpfr_free_const_caches ();
+#endif
       break;
     default:
       break;
