@@ -26,6 +26,7 @@ Changes from versions 3.1.* to version 4.0.0:
 - Mini-gmp support via the --enable-mini-gmp configure option (experimental).
 - The minimum precision MPFR_PREC_MIN is now 1, with rounding defined as
   in the next IEEE 754 revision (ties rounded away from zero).
+- Shared caches for multithread applications.
 - New functions: mpfr_fpif_export and mpfr_fpif_import to export and import
   numbers in a floating-point interchange format, independent both on the
   number of bits per word and on the endianness.
@@ -59,7 +60,6 @@ Changes from versions 3.1.* to version 4.0.0:
   now the usual ternary value.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
-  [TODO: add shared caches.]
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
   --with-gmp-build, and support for decimal floats is now automatically
