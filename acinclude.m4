@@ -210,7 +210,7 @@ dnl Check for attribute constructor and destructor
 MPFR_CHECK_CONSTRUCTOR_ATTR()
 
 dnl Check for POSIX Thread.
-ACX_PTHREAD()
+AX_PTHREAD([])
 
 dnl Check for ISO C11 Thread
 MPFR_CHECK_C11_THREAD()
