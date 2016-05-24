@@ -220,13 +220,7 @@ max_tests (void)
   set_emax (emax);
 }
 
-/* a^2 - (a+k)(a-k) = k^2 where a^2 overflows but k^2 usually doesn't.
- * With MPFR r10337 and gcc -fsanitize=undefined -fno-sanitize-recover,
- * this triggers the following error on a 64-bit machine:
- *   /usr/local/gmp-6.0.0-debug/include/gmp.h:2142:3:
- *   runtime error: store to null pointer of type 'mp_limb_t'
- * (mpn_add_1 is called on a null pointer).
- */
+/* a^2 - (a+k)(a-k) = k^2 where a^2 overflows but k^2 usually doesn't. */
 static void
 near_overflow_tests (void)
 {
@@ -240,7 +234,7 @@ near_overflow_tests (void)
       mpfr_exp_t emax;
       mpfr_t a, k, c, d, z1, z2;
       mpfr_rnd_t rnd;
-      mpfr_prec_t prec_a;
+      mpfr_prec_t prec_a, prec_z;
       int add = i & 1, inex, inex1, inex2;
       mpfr_flags_t flags1, flags2;
 
@@ -250,6 +244,7 @@ near_overflow_tests (void)
 
       rnd = RND_RAND ();
       prec_a = 64 + randlimb () % 100;
+      prec_z = MPFR_PREC_MIN + randlimb () % 160;
 
       mpfr_init2 (a, prec_a);
       mpfr_urandom (a, RANDS, MPFR_RNDN);
@@ -269,10 +264,12 @@ near_overflow_tests (void)
       if (add)
         mpfr_neg (d, d, MPFR_RNDN);
 
+      mpfr_init2 (z1, prec_z);
       mpfr_clear_flags ();
       inex1 = mpfr_sqr (z1, k, rnd);
       flags1 = __gmpfr_flags;
 
+      mpfr_init2 (z2, prec_z);
       mpfr_clear_flags ();
       inex2 = add ?
         mpfr_fmma (z2, a, a, c, d, rnd) :
@@ -294,6 +291,8 @@ near_overflow_tests (void)
           flags_out (flags2);
           exit (1);
         }
+
+      mpfr_clears (a, k, c, d, z1, z2, (mpfr_ptr) 0);
     }
 
   set_emax (old_emax);
