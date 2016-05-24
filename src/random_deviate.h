@@ -46,38 +46,38 @@ extern "C" {
 
 /* allocate and set to (0,1) */
 __MPFR_DECLSPEC void
-  mpfr_random_deviate_init _MPFR_PROTO((mpfr_random_deviate_ptr));
+  mpfr_random_deviate_init (mpfr_random_deviate_ptr);
 
 /* reset to (0,1) */
 __MPFR_DECLSPEC void
-  mpfr_random_deviate_reset _MPFR_PROTO((mpfr_random_deviate_ptr));
+  mpfr_random_deviate_reset (mpfr_random_deviate_ptr);
 
 /* deallocate */
 __MPFR_DECLSPEC void
-  mpfr_random_deviate_clear _MPFR_PROTO((mpfr_random_deviate_ptr));
+  mpfr_random_deviate_clear (mpfr_random_deviate_ptr);
 
 /* swap two random deviates */
 __MPFR_DECLSPEC void
-  mpfr_random_deviate_swap _MPFR_PROTO((mpfr_random_deviate_ptr,
-                                        mpfr_random_deviate_ptr));
+  mpfr_random_deviate_swap (mpfr_random_deviate_ptr,
+                            mpfr_random_deviate_ptr);
 
 /* return kth bit of fraction, representing 2^-k */
 __MPFR_DECLSPEC int
-  mpfr_random_deviate_tstbit _MPFR_PROTO((mpfr_random_deviate_ptr,
-                                          mpfr_random_size_t,
-                                          gmp_randstate_t));
+  mpfr_random_deviate_tstbit (mpfr_random_deviate_ptr,
+                              mpfr_random_size_t,
+                              gmp_randstate_t);
 
 /* compare two random deviates, x < y */
 __MPFR_DECLSPEC int
-  mpfr_random_deviate_less _MPFR_PROTO((mpfr_random_deviate_ptr,
-                                        mpfr_random_deviate_ptr,
-                                        gmp_randstate_t));
+  mpfr_random_deviate_less (mpfr_random_deviate_ptr,
+                            mpfr_random_deviate_ptr,
+                            gmp_randstate_t);
 
 /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
 __MPFR_DECLSPEC int
-  mpfr_random_deviate_value _MPFR_PROTO((int, unsigned long,
-                                         mpfr_random_deviate_ptr, mpfr_t,
-                                         gmp_randstate_t, mpfr_rnd_t));
+  mpfr_random_deviate_value (int, unsigned long,
+                             mpfr_random_deviate_ptr, mpfr_t,
+                             gmp_randstate_t, mpfr_rnd_t);
 
 #if defined(__cplusplus)
 }
