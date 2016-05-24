@@ -286,9 +286,8 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
 
-dnl Support unusual archivers.
-AM_PROG_AR
-AC_PROG_RANLIB
+dnl This must done before MPFR_CONFIGS.
+LT_INIT(win32-dll)
 
 dnl Try to determine the double format
 AC_MSG_CHECKING(format of `double' floating point)
@@ -513,7 +512,6 @@ dnl but it's "ar" format and cannot be used by the MS linker.  There
 dnl doesn't seem to be any GNU tool for generating or converting to .lib.
 AC_SUBST(MPFR_LDFLAGS)
 AC_SUBST(LIBMPFR_LDFLAGS)
-LT_INIT(win32-dll)
 case $host in
   *-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-os2*)
    AC_MSG_CHECKING(for DLL/static GMP)
