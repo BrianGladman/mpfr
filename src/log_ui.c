@@ -128,7 +128,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   p = n > LONG_MAX ? - (long) - n : (long) n;
 
   MPFR_TMP_MARK(marker);
-  w = MPFR_PREC(x) + 10;
+  w = MPFR_PREC(x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC(x)) + 10;
   MPFR_GROUP_INIT_2(group, w, t, q);
   MPFR_SAVE_EXPO_MARK (expo);
 
@@ -137,13 +137,16 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       unsigned int err;
-      /* we need at most w*log(2)/log(3) terms for an accuracy of w bits */
+      /* we need at most w/log2(2^k/|p|) terms for an accuracy of w bits */
       mpfr_init2 (tmp, 32);
-      /* 1354911329/2^31 is a 32-bit upper bound for log(2)/log(3) */
-      mpfr_set_ui_2exp (tmp, 1354911329, -31, MPFR_RNDU);
+      mpfr_set_ui (tmp, (p > 0) ? p : -p, MPFR_RNDU);
+      mpfr_log2 (tmp, tmp, MPFR_RNDU);
+      mpfr_ui_sub (tmp, k, tmp, MPFR_RNDD);
       MPFR_ASSERTN (w <= ULONG_MAX);
-      mpfr_mul_ui (tmp, tmp, w, MPFR_RNDU);
+      mpfr_ui_div (tmp, w, tmp, MPFR_RNDU);
       N = mpfr_get_ui (tmp, MPFR_RNDU);
+      if (N < 2)
+        N = 2;
       lgN = MPFR_INT_CEIL_LOG2 (N) + 1;
       mpfr_clear (tmp);
       P = (mpz_t *) MPFR_TMP_ALLOC (2 * lgN * sizeof (mpz_t));
@@ -159,6 +162,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
       mpfr_div (t, t, q, MPFR_RNDN);   /* t = P[0]/Q[0] * (1 + theta_3)^3
                                             = log(n/2^k) * (1 + theta_4)^4
                                             for |theta_i| < 2^(-w) */
+
       /* argument reconstruction: add k*log(2) */
       mpfr_const_log2 (q, MPFR_RNDN);
       mpfr_mul_ui (q, q, k, MPFR_RNDN);
