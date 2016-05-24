@@ -37,11 +37,6 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
 
-dnl FIXME: The AC_ARG_ENABLE(decimal-float...) part does things too
-dnl early, even when this option is not used. In particular, it must
-dnl be put after AC_PROG_CC; another problem is that the GMP CFLAGS
-dnl and CC check may modify the compiler.
-
 dnl FIXME: Several AC_RUN_IFELSE programs can return several values
 dnl (one for each format to be detected), but the Autoconf manual says:
 dnl "This exit status might be that of a failed compilation, or it might
