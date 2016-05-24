@@ -63,7 +63,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    it can be used by any other header. */
 #include "mpfr-cvers.h"
 
-#if _MPFR_EXP_FORMAT == 4
+#if defined(_MPFR_EXP_FORMAT) && _MPFR_EXP_FORMAT == 4
 /* mpfr_exp_t will be defined as intmax_t */
 # include "mpfr-intmax.h"
 #endif

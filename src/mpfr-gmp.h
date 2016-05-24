@@ -444,7 +444,7 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
 
 #ifndef _MPFR_IEEE_FLOATS
 
-#if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
+#ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 #define _MPFR_IEEE_FLOATS 1
 union mpfr_ieee_double_extract
 {
@@ -459,7 +459,7 @@ union mpfr_ieee_double_extract
 };
 #endif
 
-#if HAVE_DOUBLE_IEEE_BIG_ENDIAN
+#ifdef HAVE_DOUBLE_IEEE_BIG_ENDIAN
 #define _MPFR_IEEE_FLOATS 1
 union mpfr_ieee_double_extract
 {
