@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-/* TODO: add more tests, with special values and exception checking. */
-
 /* check both mpfr_fmma and mpfr_fmms */
 static void
 random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
@@ -222,6 +220,85 @@ max_tests (void)
   set_emax (emax);
 }
 
+/* a^2 - (a+k)(a-k) = k^2 where a^2 overflows but k^2 usually doesn't.
+ * With MPFR r10337 and gcc -fsanitize=undefined -fno-sanitize-recover,
+ * this triggers the following error on a 64-bit machine:
+ *   /usr/local/gmp-6.0.0-debug/include/gmp.h:2142:3:
+ *   runtime error: store to null pointer of type 'mp_limb_t'
+ * (mpn_add_1 is called on a null pointer).
+ */
+static void
+near_overflow_tests (void)
+{
+  mpfr_exp_t old_emax;
+  int i;
+
+  old_emax = mpfr_get_emax ();
+
+  for (i = 0; i < 40; i++)
+    {
+      mpfr_exp_t emax;
+      mpfr_t a, k, c, d, z1, z2;
+      mpfr_rnd_t rnd;
+      mpfr_prec_t prec_a;
+      int add = i & 1, inex, inex1, inex2;
+      mpfr_flags_t flags1, flags2;
+
+      /* In most cases, we do the test with the maximum exponent. */
+      emax = i % 8 != 0 ? MPFR_EMAX_MAX : 64 + (randlimb () % 1);
+      set_emax (emax);
+
+      rnd = RND_RAND ();
+      prec_a = 64 + randlimb () % 100;
+
+      mpfr_init2 (a, prec_a);
+      mpfr_urandom (a, RANDS, MPFR_RNDN);
+      mpfr_set_exp (a, emax/2 + 32);
+
+      mpfr_init2 (k, prec_a - 32);
+      mpfr_urandom (k, RANDS, MPFR_RNDN);
+      mpfr_set_exp (k, emax/2);
+
+      mpfr_init2 (c, prec_a + 1);
+      inex = mpfr_add (c, a, k, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+
+      mpfr_init2 (d, prec_a);
+      inex = mpfr_sub (d, a, k, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      if (add)
+        mpfr_neg (d, d, MPFR_RNDN);
+
+      mpfr_clear_flags ();
+      inex1 = mpfr_sqr (z1, k, rnd);
+      flags1 = __gmpfr_flags;
+
+      mpfr_clear_flags ();
+      inex2 = add ?
+        mpfr_fmma (z2, a, a, c, d, rnd) :
+        mpfr_fmms (z2, a, a, c, d, rnd);
+      flags2 = __gmpfr_flags;
+
+      if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+             mpfr_equal_p (z1, z2)))
+        {
+          printf ("Error in near_overflow_tests for %s",
+                  mpfr_print_rnd_mode (rnd));
+          printf ("Expected ");
+          mpfr_dump (z1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
+          printf ("Got      ");
+          mpfr_dump (z2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
+          exit (1);
+        }
+    }
+
+  set_emax (old_emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -230,6 +307,8 @@ main (int argc, char *argv[])
   random_tests ();
   zero_tests ();
   max_tests ();
+  near_overflow_tests ();
+  /* TODO: near_underflow_tests (); */
 
   tests_end_mpfr ();
   return 0;
