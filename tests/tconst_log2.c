@@ -160,7 +160,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   p = (argc>1) ? atoi(argv[1]) : 53;
-  rnd = (argc>2) ? (mpfr_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
+  rnd = (argc>2) ? (mpfr_rnd_t) atoi(argv[2]) : MPFR_RNDN;
 
   mpfr_init (x);
 
@@ -180,11 +180,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  if (argc>=2)
+  if (argc >= 2)
     {
       mpfr_set_prec (x, p);
       mpfr_const_log2 (x, rnd);
-      printf ("log(2)=");
       mpfr_out_str (stdout, 10, 0, x, rnd);
       puts ("");
     }
