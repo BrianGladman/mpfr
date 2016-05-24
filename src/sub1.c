@@ -28,11 +28,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    a positive value otherwise.
 */
 
+/* TODO: check the code in case exp_b == MPFR_EXP_MAX. */
+
 int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign;
-  mpfr_exp_t diff_exp;
+  mpfr_exp_t diff_exp, exp_b;
   mpfr_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
@@ -87,7 +89,17 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     MPFR_SET_SAME_SIGN (a,b);
 
-  diff_exp = MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+  if (MPFR_UNLIKELY (MPFR_IS_UBF (b) || MPFR_IS_UBF (c)))
+    {
+      exp_b = MPFR_IS_UBF (b) ?
+        mpfr_ubf_zexp2exp (MPFR_ZEXP (b)) : MPFR_GET_EXP (b);
+      diff_exp = mpfr_ubf_diff_exp (b, c);
+    }
+  else
+    {
+      exp_b = MPFR_GET_EXP (b);
+      diff_exp = exp_b - MPFR_GET_EXP (c);
+    }
   MPFR_ASSERTD (diff_exp >= 0);
 
   aq = MPFR_GET_PREC (a);
@@ -104,7 +116,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          = B.BBBBBBBBBBBBBBB
           -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
-      MPFR_SET_EXP (a, MPFR_GET_EXP (b));
+      /* FIXME: The following is incorrect when exp_b > __gmpfr_emax,
+         but we need to add a test first for complete coverage. */
+      MPFR_SET_EXP (a, exp_b);
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
                         rnd_mode, MPFR_SIGN (a),
                         if (MPFR_UNLIKELY (++ MPFR_EXP (a) > __gmpfr_emax))
@@ -614,7 +628,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpfr_exp_t exp_a;
 
       cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
-      exp_a = MPFR_GET_EXP (b) - cancel;
+      exp_a = exp_b - cancel;
       if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
           MPFR_TMP_FREE(marker);
@@ -631,10 +645,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* in case cancel = 0, add_exp can still be 1, in case b is just
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
-      mpfr_exp_t exp_b;
-
-      exp_b = MPFR_GET_EXP (b);
-      if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))
+      if (MPFR_UNLIKELY(add_exp && exp_b >= __gmpfr_emax))
         {
           MPFR_TMP_FREE(marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
