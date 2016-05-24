@@ -1561,6 +1561,9 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         /* change to right justification padding with left spaces */
         np->pad_type = LEFT;
 
+      if (MPFR_IS_NEG (p))
+        np->sign = '-';
+
       np->ip_size = 3;
       str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
       strcpy (str, uppercase ? "UBF" : "ubf");
