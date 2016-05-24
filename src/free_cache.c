@@ -71,6 +71,7 @@ mpfr_mpz_clear (mpz_t z)
 
 #endif
 
+/* Theses caches may be global to all threads or local to the current */
 static void
 mpfr_free_const_caches (void)
 {
@@ -87,8 +88,9 @@ mpfr_free_const_caches (void)
   mpfr_clear_cache (__gmpfr_cache_const_catalan);
 }
 
-void
-mpfr_free_cache (void)
+/* Theses caches are always local to a thread */
+static void
+mpfr_free_local_cache (void)
 {
   /* Before mpz caching */
   mpfr_bernoulli_freecache();
@@ -102,26 +104,29 @@ mpfr_free_cache (void)
     n_alloc = 0;
   }
 #endif
+}
 
-#if !defined (WANT_SHARED_CACHE)
+void
+mpfr_free_cache (void)
+{
+  mpfr_free_local_cache();
   mpfr_free_const_caches ();
-#endif
 }
 
 void
 mpfr_free_cache2 (mpfr_free_cache_t way)
 {
-  switch (way)
+  if (way & MPFR_FREE_LOCAL_CACHE)
     {
-    case MPFR_FREE_LOCAL_CACHE:
-      mpfr_free_cache ();
-      break;
-    case MPFR_FREE_GLOBAL_CACHE:
+      mpfr_free_local_cache();
+#if !defined (WANT_SHARED_CACHE)
+      mpfr_free_const_caches ();
+#endif
+    }
+  if (way & MPFR_FREE_GLOBAL_CACHE)
+    {
 #if defined (WANT_SHARED_CACHE)
       mpfr_free_const_caches ();
 #endif
-      break;
-    default:
-      break;
     }
 }
