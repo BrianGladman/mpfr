@@ -335,8 +335,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
           inexact = - (bcp1 != 0);
-          if (MPFR_LIKELY(bcp == 0))
-            { goto set_exponent; }
+          if (bcp == 0)
+            goto set_exponent;
           else if (MPFR_UNLIKELY(bcp1==0) && (ap[0]&(MPFR_LIMB_ONE<<sh))==0)
             { inexact = -1; goto set_exponent; }
           else

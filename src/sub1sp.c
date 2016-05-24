@@ -159,7 +159,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Fast cmp of |b| and |c|*/
   bx = MPFR_GET_EXP (b);
   cx = MPFR_GET_EXP (c);
-  if (MPFR_UNLIKELY(bx == cx))
+  if (bx == cx)
     {
       mp_size_t k = n - 1;
       /* Check mantissa since exponent are equals */
@@ -208,7 +208,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   d = (mpfr_uexp_t) bx - cx;
   DEBUG (printf ("New with diff=%lu\n", (unsigned long) d));
 
-  if (MPFR_UNLIKELY(d <= 1))
+  if (d <= 1)
     {
       if (MPFR_LIKELY(d < 1))
         {
@@ -250,8 +250,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               k++;
               len = n - k; /* Number of last limb */
               MPFR_ASSERTD(k >= 0);
-              if (MPFR_LIKELY(cnt))
-                mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
+              if (cnt)
+                mpn_lshift (ap + len, ap, k, cnt); /* Normalize the High Limb*/
               else
                 {
                   /* Must use DECR since src and dest may overlap & dest>=src*/
@@ -530,7 +530,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         {
           /* Try to compute them from C' rather than C (FIXME: Faster?) */
           bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1))) ;
-          if (MPFR_LIKELY( cp[0] & MPFR_LIMB_MASK(sh-1) ))
+          if (cp[0] & MPFR_LIMB_MASK(sh-1))
             bcp1 = 1;
           else
             {
@@ -538,7 +538,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Start from bit x=p-d+sh in mantissa C
                  (+sh since we have already looked sh bits in C'!) */
               mpfr_prec_t x = p-d+sh-1;
-              if (MPFR_LIKELY(x>p))
+              if (x > p)
                 /* We are already looked at all the bits of c, so C'p+1 = 0*/
                 bcp1 = 0;
               else

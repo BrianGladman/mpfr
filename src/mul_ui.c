@@ -61,7 +61,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           MPFR_RET (0); /* zero is exact */
         }
     }
-  else if (MPFR_UNLIKELY (u <= 1))
+  else if (u <= 1)
     {
       if (u < 1)
         {

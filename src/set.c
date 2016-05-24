@@ -43,7 +43,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, int signb)
       else
         MPFR_RET (0);
     }
-  else if (MPFR_LIKELY (MPFR_PREC (b) == MPFR_PREC (a)))
+  else if (MPFR_PREC (b) == MPFR_PREC (a))
     {
       /* Same precision and b is not singular:
        * just copy the mantissa, and set the exponent and the sign

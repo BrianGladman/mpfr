@@ -318,7 +318,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cn = zn;
     }
   MPFR_ASSERTD (bn >= cn);
-  if (MPFR_LIKELY (bn <= 2))
+  if (bn <= 2)
     {
       /* The 3 cases perform the same first operation. */
       umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);

@@ -62,7 +62,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (ap == cp)
         { cp = bp; }
     }
-  else if (MPFR_UNLIKELY(ap == cp))
+  else if (ap == cp)
     {
       cp = MPFR_TMP_LIMBS_ALLOC (cn);
       MPN_COPY(cp, ap, cn);

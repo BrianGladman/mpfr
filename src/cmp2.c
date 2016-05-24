@@ -200,7 +200,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
     }
 
   /* now result is res + (low(b) < low(c)) */
-  while (MPFR_UNLIKELY (bn >= 0 && (cn >= 0 || lastc != 0)))
+  while (bn >= 0 && (cn >= 0 || lastc != 0))
     {
       if (diff_exp >= GMP_NUMB_BITS)
         diff_exp -= GMP_NUMB_BITS;

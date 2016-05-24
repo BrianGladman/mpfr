@@ -336,7 +336,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
 
-  if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+  if (rnd_mode == MPFR_RNDN)
     {
       if (MPFR_LIKELY(sh))
         {

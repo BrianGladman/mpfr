@@ -1485,9 +1485,8 @@ typedef struct {
             _mask = MPFR_LIMB_ONE << (_sh - 1);                             \
             _rb = _sp[0] & _mask;                                           \
             _sb = _sp[0] & (_mask - 1);                                     \
-            if (MPFR_UNLIKELY (_sb == 0) &&                                 \
-                ((rnd) == MPFR_RNDN || _rb == 0))                           \
-              { /* TODO: Improve it */                                      \
+            if ((rnd) == MPFR_RNDN || _rb == 0)                             \
+              {                                                             \
                 mp_limb_t *_tmp;                                            \
                 mp_size_t _n;                                               \
                 for (_tmp = _sp, _n = _srcs - _dests ;                      \
@@ -1502,8 +1501,7 @@ typedef struct {
             /* Compute Rounding Bit and Sticky Bit - see note above */      \
             _rb = _sp[-1] & MPFR_LIMB_HIGHBIT;                              \
             _sb = _sp[-1] & (MPFR_LIMB_HIGHBIT-1);                          \
-            if (MPFR_UNLIKELY (_sb == 0) &&                                 \
-                ((rnd) == MPFR_RNDN || _rb == 0))                           \
+            if ((rnd) == MPFR_RNDN || _rb == 0)                             \
               {                                                             \
                 mp_limb_t *_tmp;                                            \
                 mp_size_t _n;                                               \
@@ -1514,7 +1512,7 @@ typedef struct {
             _ulp = MPFR_LIMB_ONE;                                           \
           }                                                                 \
         /* Rounding */                                                      \
-        if (MPFR_LIKELY (rnd == MPFR_RNDN))                                 \
+        if (rnd == MPFR_RNDN)                                               \
           {                                                                 \
             if (_rb == 0)                                                   \
               {                                                             \
@@ -1545,8 +1543,7 @@ typedef struct {
           }                                                                 \
         else                                                                \
           { /* Directed rounding mode */                                    \
-            if (MPFR_LIKELY (MPFR_IS_LIKE_RNDZ (rnd,                        \
-                                                MPFR_IS_NEG_SIGN (sign))))  \
+            if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN (sign)))           \
               goto trunc;                                                   \
              else if (MPFR_UNLIKELY ((_sb | _rb) == 0))                     \
                {                                                            \
@@ -1605,10 +1602,10 @@ typedef struct {
 
 /* Copy the sign and the significand, and handle the exponent in exp. */
 #define MPFR_SETRAW(inexact,dest,src,exp,rnd)                           \
-  if (MPFR_UNLIKELY (dest != src))                                      \
+  if (dest != src)                                                      \
     {                                                                   \
       MPFR_SET_SIGN (dest, MPFR_SIGN (src));                            \
-      if (MPFR_LIKELY (MPFR_PREC (dest) == MPFR_PREC (src)))            \
+      if (MPFR_PREC (dest) == MPFR_PREC (src))                          \
         {                                                               \
           MPN_COPY (MPFR_MANT (dest), MPFR_MANT (src),                  \
                     MPFR_LIMB_SIZE (src));                              \
@@ -1914,7 +1911,7 @@ struct mpfr_group_t {
  MPFR_LOG_MSG (("GROUP_CLEAR: ptr = 0x%lX, size = %lu\n",        \
                 (unsigned long) (g).mant,                        \
                 (unsigned long) (g).alloc));                     \
- if (MPFR_UNLIKELY ((g).alloc != 0)) {                           \
+ if ((g).alloc != 0) {                                           \
    MPFR_ASSERTD ((g).mant != (g).tab);                           \
    (*__gmp_free_func) ((g).mant, (g).alloc);                     \
  }} while (0)
@@ -1926,7 +1923,7 @@ struct mpfr_group_t {
  if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX))                             \
    mpfr_abort_prec_max ();                                              \
  _size = MPFR_PREC2LIMBS (_prec);                                       \
- if (MPFR_UNLIKELY (_size * (num) > MPFR_GROUP_STATIC_SIZE))            \
+ if (_size * (num) > MPFR_GROUP_STATIC_SIZE)                            \
    {                                                                    \
      (g).alloc = (num) * _size * sizeof (mp_limb_t);                    \
      (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);       \
@@ -1978,7 +1975,7 @@ struct mpfr_group_t {
    mpfr_abort_prec_max ();                                              \
  _size = MPFR_PREC2LIMBS (_prec);                                       \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
- if (MPFR_LIKELY (_oalloc == 0))                                        \
+ if (_oalloc == 0)                                                      \
    (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
  else                                                                   \
    (g).mant = (mp_limb_t *)                                             \
