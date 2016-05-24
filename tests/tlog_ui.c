@@ -27,15 +27,19 @@ compare_with_log (unsigned long n, mpfr_prec_t p)
 {
   mpfr_t x, y;
   int inex1, inex2;
-  mpfr_inits2 (p, x, y, (mpfr_ptr) 0);
-  mpfr_set_prec (x, sizeof (unsigned long) * CHAR_BIT);
+  mpfr_flags_t flags1;
+
+  mpfr_init2 (x, sizeof (unsigned long) * CHAR_BIT);
+  mpfr_init2 (y, p);
   inex1 = mpfr_set_ui (x, n, MPFR_RNDN);
   MPFR_ASSERTN(inex1 == 0);
   inex1 = mpfr_log (y, x, MPFR_RNDN);
+  flags1 = __gmpfr_flags;
   mpfr_set_prec (x, p);
   inex2 = mpfr_log_ui (x, n, MPFR_RNDN);
   MPFR_ASSERTN(inex1 == inex2);
-  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+  MPFR_ASSERTN(flags1 == __gmpfr_flags);
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
   mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
