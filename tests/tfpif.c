@@ -241,13 +241,19 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 static void
 extra (void)
 {
+  char *data = FILE_NAME_R2;
   mpfr_t x;
   FILE *fp;
   int ret;
 
   mpfr_init2 (x, 17);
   mpfr_set_ui (x, 42, MPFR_RNDN);
-  fp = fopen (FILE_NAME_R2, "r");
+  fp = src_fopen (data, "r");
+  if (fp == NULL)
+    {
+      printf ("Failed to open for reading %s in srcdir, exiting...\n", data);
+      exit (1);
+    }
   ret = mpfr_fpif_import (x, fp);
   MPFR_ASSERTN(ret != 0);
   MPFR_ASSERTN(mpfr_get_prec (x) == 17);
