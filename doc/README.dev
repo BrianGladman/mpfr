@@ -302,6 +302,11 @@ To make a release (for the MPFR team):
      (GMP_CHECK_RANDOMIZE, MPFR_CHECK_LIBC_PRINTF, MPFR_CHECK_LARGEMEM,
      MPFR_SUSPICIOUS_OVERFLOW).
 
+     Check there is no branch misprediction due to wrong MPFR_LIKELY or
+     MPFR_UNLIKELY statements. For that test, configure with 
+     --enable-debug-prediction, run "timings-mpfr 100", and check that
+     the output contains no WARNING.
+
   7) For the release itself (not the release candidates), if no problems
      have been found, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z

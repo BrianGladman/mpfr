@@ -123,7 +123,7 @@ mpfr_round_raw_generic(
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
       /* Rounding to nearest? */
-      if (MPFR_LIKELY (rnd_mode == MPFR_RNDN || rnd_mode == MPFR_RNDNA))
+      if (rnd_mode == MPFR_RNDN || rnd_mode == MPFR_RNDNA)
         {
           /* Rounding to nearest */
           mp_limb_t rbmask = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1 - rw);

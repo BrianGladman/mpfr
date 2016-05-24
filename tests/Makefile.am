@@ -50,7 +50,7 @@ check:
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.dat tmul.dat \
-	mpfrtest.dat
+	mpfrtest.dat mpfrtest2.dat
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(MPFR_LIBQUADMATH) $(top_builddir)/src/libmpfr.la
 AM_CPPFLAGS += -I$(top_srcdir)/src -I$(top_builddir)/src

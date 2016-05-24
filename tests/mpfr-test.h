@@ -77,40 +77,40 @@ extern "C" {
 
 #define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
-int test_version _MPFR_PROTO ((void));
+int test_version (void);
 
-void tests_memory_start _MPFR_PROTO ((void));
-void tests_memory_end _MPFR_PROTO ((void));
+void tests_memory_start (void);
+void tests_memory_end (void);
 
-void tests_start_mpfr _MPFR_PROTO ((void));
-void tests_end_mpfr _MPFR_PROTO ((void));
+void tests_start_mpfr (void);
+void tests_end_mpfr (void);
 
-void tests_expect_abort _MPFR_PROTO ((void));
+void tests_expect_abort (void);
 
-int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mpfr_rnd_t));
-void mpfr_test_init _MPFR_PROTO ((void));
-mp_limb_t randlimb _MPFR_PROTO ((void));
-void randseed _MPFR_PROTO ((unsigned int));
-void mpfr_random2 _MPFR_PROTO ((mpfr_ptr, mp_size_t, mpfr_exp_t, gmp_randstate_t));
-int ulp _MPFR_PROTO ((double, double));
-double dbl _MPFR_PROTO ((double, int));
-double Ulp _MPFR_PROTO ((double));
-int Isnan _MPFR_PROTO ((double));
-void d_trace _MPFR_PROTO ((const char *, double));
-void ld_trace _MPFR_PROTO ((const char *, long double));
+int mpfr_set_machine_rnd_mode (mpfr_rnd_t);
+void mpfr_test_init (void);
+mp_limb_t randlimb (void);
+void randseed (unsigned int);
+void mpfr_random2 (mpfr_ptr, mp_size_t, mpfr_exp_t, gmp_randstate_t);
+int ulp (double, double);
+double dbl (double, int);
+double Ulp (double);
+int Isnan (double);
+void d_trace (const char *, double);
+void ld_trace (const char *, long double);
 
-FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
-void set_emin _MPFR_PROTO ((mpfr_exp_t));
-void set_emax _MPFR_PROTO ((mpfr_exp_t));
-void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mpfr_exp_t, mpfr_exp_t,
-                                        int));
-void data_check _MPFR_PROTO ((const char *, int (*) (FLIST), const char *));
-void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
-                             const char *, int, mpfr_exp_t, mpfr_exp_t,
-                             mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int));
-void flags_out _MPFR_PROTO ((unsigned int));
+FILE *src_fopen (const char *, const char *);
+void set_emin (mpfr_exp_t);
+void set_emax (mpfr_exp_t);
+void tests_default_random (mpfr_ptr, int, mpfr_exp_t, mpfr_exp_t,
+                           int);
+void data_check (const char *, int (*) (FLIST), const char *);
+void bad_cases (int (*)(FLIST), int (*)(FLIST),
+                const char *, int, mpfr_exp_t, mpfr_exp_t,
+                mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int);
+void flags_out (unsigned int);
 
-int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
+int mpfr_cmp_str (mpfr_srcptr x, const char *, int, mpfr_rnd_t);
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,MPFR_RNDN)
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,MPFR_RNDN)
 
@@ -205,9 +205,9 @@ extern gmp_randstate_t  mpfr_rands;
 typedef __gmp_randstate_struct *mpfr_gmp_randstate_ptr;
 
 /* Allocation */
-void *tests_allocate _MPFR_PROTO ((size_t));
-void *tests_reallocate _MPFR_PROTO ((void *, size_t, size_t));
-void tests_free _MPFR_PROTO ((void *, size_t));
+void *tests_allocate (size_t);
+void *tests_reallocate (void *, size_t, size_t);
+void tests_free (void *, size_t);
 
 #if defined (__cplusplus)
 }

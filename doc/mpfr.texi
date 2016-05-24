@@ -2246,8 +2246,8 @@ use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
 @deftypefun void mpfr_free_cache (void)
-Free various caches used by MPFR internally, only those that are local
-to the current thread.
+Free various caches used by MPFR internally (thoses local to the
+current thread and shared by all threads).
 You should call this function before terminating a thread, even if you did
 not call @code{mpfr_const_*} functions directly (they could have been called
 internally).
@@ -2368,7 +2368,8 @@ The precision of @var{op} is read from the stream.
 @c Commented out since with MPFR_PREC_MIN=1 this is void.
 @c If the precision is less
 @c than @code{MPFR_PREC_MIN}, it is set to @code{MPFR_PREC_MIN}.
-If the precision is greater than @code{MPFR_PREC_MAX}, the function fails.
+If the stored precision is greater than @code{MPFR_PREC_MAX}, the function
+fails (it returns non-zero and @var{op} is unchanged).
 Return 0 iff the import was successful.
 
 Note: this function is experimental and its interface might change in future

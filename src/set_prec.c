@@ -36,7 +36,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
 
   /* Realloc only if the new size is greater than the old */
   xoldsize = MPFR_GET_ALLOC_SIZE (x);
-  if (MPFR_UNLIKELY (xsize > xoldsize))
+  if (xsize > xoldsize)
     {
       tmp = (mpfr_limb_ptr) (*__gmp_reallocate_func)
         (MPFR_GET_REAL_PTR(x), MPFR_MALLOC_SIZE(xoldsize), MPFR_MALLOC_SIZE(xsize));

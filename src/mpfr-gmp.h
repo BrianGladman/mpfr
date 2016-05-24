@@ -184,8 +184,8 @@ void *alloca (size_t);
 #endif
 
 /* ASSERT */
-__MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
-                                                   const char *));
+__MPFR_DECLSPEC void mpfr_assert_fail (const char *, int,
+                                       const char *);
 
 #define ASSERT_FAIL(expr)  mpfr_assert_fail (__FILE__, __LINE__, #expr)
 /* ASSERT() is for mpfr-longlong.h only. */
@@ -265,14 +265,14 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 #define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
 #define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
 #define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_allocate_func)   (size_t);
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_reallocate_func) (void *, size_t, size_t);
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       (void *, size_t);
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q
-  __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q _MPFR_PROTO ((mp_limb_t*,
-                mp_limb_t*, mp_size_t, mp_limb_t*, mp_size_t, mp_limb_t));
+  __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q (mp_limb_t*,
+                mp_limb_t*, mp_size_t, mp_limb_t*, mp_size_t, mp_limb_t);
 #endif
 #endif
 
@@ -285,9 +285,9 @@ struct tmp_marker
   struct tmp_marker *next;
 };
 
-__MPFR_DECLSPEC void *mpfr_tmp_allocate _MPFR_PROTO ((struct tmp_marker **,
-                                                      size_t));
-__MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
+__MPFR_DECLSPEC void *mpfr_tmp_allocate (struct tmp_marker **,
+                                         size_t);
+__MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 
 /* Can be overriden at configure time. Useful for checking buffer overflow. */
 #ifndef MPFR_ALLOCA_MAX
@@ -444,7 +444,7 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
 
 #ifndef _MPFR_IEEE_FLOATS
 
-#if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
+#ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 #define _MPFR_IEEE_FLOATS 1
 union mpfr_ieee_double_extract
 {
@@ -459,7 +459,7 @@ union mpfr_ieee_double_extract
 };
 #endif
 
-#if HAVE_DOUBLE_IEEE_BIG_ENDIAN
+#ifdef HAVE_DOUBLE_IEEE_BIG_ENDIAN
 #define _MPFR_IEEE_FLOATS 1
 union mpfr_ieee_double_extract
 {

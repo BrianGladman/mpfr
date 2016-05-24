@@ -210,7 +210,7 @@ dnl Check for attribute constructor and destructor
 MPFR_CHECK_CONSTRUCTOR_ATTR()
 
 dnl Check for POSIX Thread.
-ACX_PTHREAD()
+AX_PTHREAD([])
 
 dnl Check for ISO C11 Thread
 MPFR_CHECK_C11_THREAD()
@@ -630,6 +630,9 @@ int main (void) {
      ])
 CPPFLAGS="$saved_CPPFLAGS"
 
+if test "$enable_lto" = "yes" ; then
+   MPFR_LTO
+fi
 
 dnl Check if the shared cache was requested and its requirements are ok.
 if test "$mpfr_want_shared_cache" = yes ;then
@@ -1365,6 +1368,62 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])
 
+dnl MPFR_LTO
+dnl --------
+dnl To be representative, we need:
+dnl * to compile a source,
+dnl * to generate a library archive,
+dnl * to generate a program with this archive.
+AC_DEFUN([MPFR_LTO],[
+dnl Check for -flto support
+CFLAGS="$CFLAGS -flto"
+
+AC_MSG_CHECKING([if Link Time Optimisation flag '-flto' is supported...])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+int main(void) { return 0; }
+  ]])],
+     [AC_MSG_RESULT(yes)
+     ],
+     [AC_MSG_RESULT(no)
+      AC_MSG_ERROR([Link Time Optimisation flag '-flto' is not supported.])
+     ])
+
+dnl Check if it works...
+mpfr_compile_and_link()
+{
+   echo "int f(int); int f(int n) { return n; }" > conftest-f.c
+   echo "int f(int); int main() { return f(0); }" > conftest-m.c
+   echo "$CC $CFLAGS -c -o conftest-f.o conftest-f.c" >&2
+   $CC $CFLAGS -c -o conftest-f.o conftest-f.c || return 1
+   echo "$AR cru conftest-lib.a conftest-f.o" >&2
+   $AR cru conftest-lib.a conftest-f.o || return 1
+   echo "$RANLIB conftest-lib.a" >&2
+   $RANLIB conftest-lib.a || return 1
+   echo "$CC $CFLAGS conftest-m.c conftest-lib.a" >&2
+   $CC $CFLAGS conftest-m.c conftest-lib.a || return 1
+   return 0
+}
+   AC_MSG_CHECKING([if Link Time Optimisation works with AR=$AR])
+   if mpfr_compile_and_link 2> conftest-log1.txt ; then
+      cat conftest-log1.txt >&AS_MESSAGE_LOG_FD
+      AC_MSG_RESULT(yes)
+   else
+      cat conftest-log1.txt >&AS_MESSAGE_LOG_FD
+      AC_MSG_RESULT(no)
+      AR=gcc-ar
+      RANLIB=gcc-ranlib
+      AC_MSG_CHECKING([if Link Time Optimisation works with AR=$AR])
+      if mpfr_compile_and_link 2> conftest-log2.txt; then
+         cat conftest-log2.txt >&AS_MESSAGE_LOG_FD
+         AC_MSG_RESULT(yes)
+      else
+        cat conftest-log2.txt >&AS_MESSAGE_LOG_FD
+        AC_MSG_RESULT(no)
+        AC_MSG_ERROR([Link Time Optimisation is not supported (see config.log for details).])
+      fi
+   fi
+rm -f conftest*
+])
 
 dnl MPFR_CHECK_SHARED_CACHE
 dnl ----------------------
