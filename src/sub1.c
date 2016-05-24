@@ -32,7 +32,7 @@ int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign;
-  mpfr_uexp_t diff_exp;
+  mpfr_exp_t diff_exp;
   mpfr_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
@@ -87,7 +87,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     MPFR_SET_SAME_SIGN (a,b);
 
-  MPFR_ASSERTD (MPFR_GET_EXP(b) >= MPFR_GET_EXP(c));
+  diff_exp = MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+  MPFR_ASSERTD (diff_exp >= 0);
 
   aq = MPFR_GET_PREC (a);
   bq = MPFR_GET_PREC (b);
@@ -96,8 +97,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
      A more precise test is to replace 2 by
       (rnd == MPFR_RNDN) + mpfr_power2_raw (b)
       but it is more expensive and not very useful */
-  if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b)
-                     - (mpfr_exp_t) MAX (aq, bq) - 2))
+  if (MPFR_UNLIKELY (MAX (aq, bq) + 2 <= diff_exp))
     {
       /* Remember, we can't have an exact result! */
       /*   A.AAAAAAAAAAAAAAAAA
@@ -144,7 +144,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1)
              which means we get a wrong rounded result if x==1,
              i.e. inexact= MPFR_EVEN_INEX */
-          if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX*MPFR_INT_SIGN (a)))
+          if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX * MPFR_INT_SIGN (a)))
             {
               mpfr_nexttozero (a);
               inexact = -MPFR_INT_SIGN (a);
@@ -153,11 +153,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
-
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % GMP_NUMB_BITS to the right */
-  bn      = MPFR_LIMB_SIZE (b);
+  bn = MPFR_LIMB_SIZE (b);
   MPFR_UNSIGNED_MINUS_MODULO (shift_b, cancel);
   cancel1 = (cancel + shift_b) / GMP_NUMB_BITS;
 
@@ -179,21 +177,21 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
   /* reserve a space to store c aligned with the result, i.e. shifted by
-      (diff_exp-cancel) % GMP_NUMB_BITS to the right */
-  cn      = MPFR_LIMB_SIZE(c);
-  if ((UINT_MAX % GMP_NUMB_BITS) == (GMP_NUMB_BITS-1)
-      && ((-(unsigned) 1)%GMP_NUMB_BITS > 0))
+     (diff_exp-cancel) % GMP_NUMB_BITS to the right */
+  cn = MPFR_LIMB_SIZE (c);
+  if (IS_POW2 (GMP_NUMB_BITS))
     shift_c = ((mpfr_uexp_t) diff_exp - cancel) % GMP_NUMB_BITS;
   else
     {
+      /* The above operation does not work if diff_exp - cancel < 0. */
       shift_c = diff_exp - (cancel % GMP_NUMB_BITS);
       shift_c = (shift_c + GMP_NUMB_BITS) % GMP_NUMB_BITS;
     }
-  MPFR_ASSERTD( shift_c >= 0 && shift_c < GMP_NUMB_BITS);
+  MPFR_ASSERTD (shift_c >= 0 && shift_c < GMP_NUMB_BITS);
 
   if (MPFR_UNLIKELY(shift_c == 0))
     {
-       cp = MPFR_MANT(c);
+      cp = MPFR_MANT(c);
       /* Ensure ap != cp */
       if (ap == cp)
         {
@@ -207,11 +205,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 
-#ifdef DEBUG
-  printf ("rnd=%s shift_b=%d shift_c=%d diffexp=%lu\n",
-          mpfr_print_rnd_mode (rnd_mode), shift_b, shift_c,
-          (unsigned long) diff_exp);
-#endif
+  MPFR_LOG_MSG (("rnd=%s shift_b=%d shift_c=%d diffexp=%" MPFR_EXP_FSPEC
+                 "d\n", mpfr_print_rnd_mode (rnd_mode), shift_b, shift_c,
+                 (mpfr_eexp_t) diff_exp));
 
   MPFR_ASSERTD (ap != cp);
   MPFR_ASSERTD (bp != cp);
@@ -240,10 +236,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
   /* the high cancel2 limbs from b should not be taken into account */
-#ifdef DEBUG
-  printf ("cancel=%lu cancel1=%lu cancel2=%ld\n",
-          (unsigned long) cancel, (unsigned long) cancel1, (long) cancel2);
-#endif
+  MPFR_LOG_MSG (("cancel=%Pd cancel1=%Pd cancel2=%Pd\n",
+                 cancel, cancel1, cancel2));
 
   /*               ap[an-1]        ap[0]
              <----------------+-----------|---->
@@ -279,9 +273,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     else
       MPN_ZERO (ap, an);
 
-#ifdef DEBUG
-  printf("after copying high(b), a="); mpfr_dump (a);
-#endif
+  MPFR_LOG_VAR (a);
 
   /* subtract high(c) */
   if (MPFR_LIKELY(an + cancel2 > 0)) /* otherwise c does not overlap with a */
@@ -324,11 +316,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-#ifdef DEBUG
-  printf("after subtracting high(c), a=");
-  mpfr_print_binary(a);
-  putchar('\n');
-#endif
+  MPFR_LOG_VAR (a);
 
   /* now perform rounding */
   sh = (mpfr_prec_t) an * GMP_NUMB_BITS - aq;
@@ -377,10 +365,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn0 = cn;
   cn -= an + cancel2;
 
-#ifdef DEBUG
-  printf ("last sh=%d bits from a are %lu, bn=%ld, cn=%ld\n",
-          sh, (unsigned long) carry, (long) bn, (long) cn);
-#endif
+  MPFR_LOG_MSG (("last sh=%d bits from a are %Mu, bn=%Pd, cn=%Pd\n",
+                 sh, carry, (mpfr_prec_t) bn, (mpfr_prec_t) cn));
 
   /* for rounding to nearest, we couldn't conclude up to here in the following
      cases:
@@ -470,10 +456,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
 
-#ifdef DEBUG
-      printf ("k=%u bb=%lu cc=%lu cmp_low=%d\n", k,
-              (unsigned long) bb, (unsigned long) cc, cmp_low);
-#endif
+      MPFR_LOG_MSG (("k=%d bb=%Mu cc=%Mu cmp_low=%d\n", k, bb, cc, cmp_low));
+
       if (cmp_low < 0) /* low(b) - low(c) < 0: either truncate or subtract
                           one ulp */
         {
@@ -658,9 +642,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_SET_EXP (a, exp_b + add_exp);
     }
   MPFR_TMP_FREE(marker);
-#ifdef DEBUG
-  printf ("result is a="); mpfr_dump (a);
-#endif
   /* check that result is msb-normalized */
   MPFR_ASSERTD(ap[an-1] > ~ap[an-1]);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
