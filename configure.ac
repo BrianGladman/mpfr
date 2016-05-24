@@ -293,6 +293,7 @@ AC_LANG(C)
 
 dnl Support unusual archivers.
 AM_PROG_AR
+AC_PROG_RANLIB
 
 dnl Try to determine the double format
 AC_MSG_CHECKING(format of `double' floating point)
@@ -391,6 +392,18 @@ AC_ARG_ENABLE(debug-prediction,
       *)    AC_MSG_ERROR([bad value for --enable-debug-prediction: yes or no]) ;;
      esac])
 
+AC_ARG_ENABLE(lto,
+   [  --enable-lto            build MPFR with link-time-optimization
+                          (experimental) [[default: no]]],
+   [ case $enableval in
+      yes)  if test "$enable_shared" != "no"; then
+              AC_MSG_ERROR([--enable-lto can only work in static mode (--disable-shared)])
+            fi
+            enable_lto=yes
+            ;;
+      no)   ;;
+      *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
+     esac])
 
 dnl Check if compiler is ICC, and if such a case, disable GCC
 dnl And add some specific flags.
