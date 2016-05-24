@@ -24,10 +24,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define __MPFR_H
 
 /* Define MPFR version number */
-#define MPFR_VERSION_MAJOR 3
-#define MPFR_VERSION_MINOR 2
+#define MPFR_VERSION_MAJOR 4
+#define MPFR_VERSION_MINOR 0
 #define MPFR_VERSION_PATCHLEVEL 0
-#define MPFR_VERSION_STRING "3.2.0-dev"
+#define MPFR_VERSION_STRING "4.0.0-dev"
 
 /* User macros:
    MPFR_USE_FILE:        Define it to make MPFR define functions dealing
@@ -247,6 +247,12 @@ typedef enum {
   MPFR_INF_KIND = 1, MPFR_ZERO_KIND = 2, MPFR_REGULAR_KIND = 3
 } mpfr_kind_t;
 
+/* Free cache policy */
+typedef enum {
+  MPFR_FREE_LOCAL_CACHE = 1,
+  MPFR_FREE_GLOBAL_CACHE = 2
+} mpfr_free_cache_t;
+
 /* GMP defines:
     + size_t:                Standard size_t
     + __GMP_NOTHROW          For C++: can't throw .
@@ -334,6 +340,7 @@ __MPFR_DECLSPEC int mpfr_buildopt_tls_p          _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_float128_p     _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_decimal_p      _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int mpfr_buildopt_gmpinternals_p _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int mpfr_buildopt_sharedcache_p  _MPFR_PROTO ((void));
 __MPFR_DECLSPEC const char * mpfr_buildopt_tune_case _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_get_emin     _MPFR_PROTO ((void));
@@ -800,6 +807,7 @@ __MPFR_DECLSPEC int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr *const,
                                            unsigned long, mpfr_rnd_t));
 
 __MPFR_DECLSPEC void mpfr_free_cache _MPFR_PROTO ((void));
+__MPFR_DECLSPEC void mpfr_free_cache2 _MPFR_PROTO ((mpfr_free_cache_t));
 
 __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
                                                      mpfr_rnd_t));

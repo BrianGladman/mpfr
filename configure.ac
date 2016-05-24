@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ])
 
 dnl Add check-news when it checks for more than 15 lines
-AC_INIT([MPFR],[3.2.0-dev])
+AC_INIT([MPFR],[4.0.0-dev])
 
 dnl Older Automake versions than 1.13 may still be supported, but no longer
 dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
@@ -165,6 +165,17 @@ AC_ARG_ENABLE(thread-safe,
       yes) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-thread-safe: yes or no]) ;;
+     esac])
+
+AC_ARG_ENABLE(shared-cache,
+   [  --enable-shared-cache   enable use of caches shared by all threads,
+                          for all MPFR constants.  It usually makes MPFR
+                          dependent on PTHREAD [[default=no]]],
+   [ case $enableval in
+      yes) mpfr_want_shared_cache=yes
+         AC_DEFINE([WANT_SHARED_CACHE],1,[Want shared cache]) ;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-shared-cache: yes or no]) ;;
      esac])
 
 AC_ARG_ENABLE(warnings,

@@ -78,6 +78,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
    the support of thread-local variables. A configure check is now done. */
+#if defined (WANT_SHARED_CACHE)
+# define MPFR_NEED_THREAD_LOCK 1
+#endif
 #include "mpfr-thread.h"
 
 #ifdef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
@@ -199,11 +202,18 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
-/* Cache struct */
+#if defined(WANT_SHARED_CACHE)
+# define MPFR_CACHE_ATTR
+#else
+# define MPFR_CACHE_ATTR MPFR_THREAD_ATTR
+#endif
+
 struct __gmpfr_cache_s {
   mpfr_t x;
   int inexact;
   int (*func)(mpfr_ptr, mpfr_rnd_t);
+  MPFR_DEFERRED_INIT_SLAVE_DECL()
+  MPFR_LOCK_DECL(lock)
 };
 typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
@@ -218,22 +228,22 @@ extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
 extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
 extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
 extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
-extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
-extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
+extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_euler;
+extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_catalan;
 # ifndef MPFR_USE_LOGGING
-extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
-extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
+extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_pi;
+extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_log2;
 # else
 /* Two constants are used by the logging functions (via mpfr_fprintf,
    then mpfr_log, for the base conversion): pi and log(2). Since the
    mpfr_cache function isn't re-entrant when working on the same cache,
    we need to define two caches for each constant. */
-extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_normal_pi;
-extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_normal_log2;
-extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_logging_pi;
-extern MPFR_THREAD_ATTR mpfr_cache_t   __gmpfr_logging_log2;
-extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_pi;
-extern MPFR_THREAD_ATTR mpfr_cache_ptr __gmpfr_cache_const_log2;
+extern MPFR_CACHE_ATTR  mpfr_cache_t   __gmpfr_normal_pi;
+extern MPFR_CACHE_ATTR  mpfr_cache_t   __gmpfr_normal_log2;
+extern MPFR_CACHE_ATTR  mpfr_cache_t   __gmpfr_logging_pi;
+extern MPFR_CACHE_ATTR  mpfr_cache_t   __gmpfr_logging_log2;
+extern MPFR_CACHE_ATTR  mpfr_cache_ptr __gmpfr_cache_const_pi;
+extern MPFR_CACHE_ATTR  mpfr_cache_ptr __gmpfr_cache_const_log2;
 # endif
 #endif
 
@@ -1109,15 +1119,36 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
  *******************  Cache macros  *******************
  ******************************************************/
 
+/* Cache struct */
 #define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi,_r)
 #define mpfr_const_log2(_d,_r)  mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 #define mpfr_const_catalan(_d,_r) mpfr_cache(_d,__gmpfr_cache_const_catalan,_r)
 
+/* Declare a global cache for a MPFR constant.
+   If the shared cache is enabled, and if the constructor/destructor
+   attributes are available, we need to initialize the shared lock of
+   the cache with a constructor. It is the goal of the macro
+   MPFR_DEFERRED_INIT_MASTER_DECL.
+   FIXME: When MPFR is built with shared cache, the field "lock" is
+   not explicitly initialized, which can yield a warning, e.g. with
+   GCC's -Wmissing-field-initializers (and an error with -Werror).
+   Since one does not know what is behind the associated typedef name,
+   one cannot provide an explicit initialization for such a type. Two
+   possible solutions:
+     1. Use a union whose first member is a char and initialize the
+        union with: { 0 }
+     2. Use designated initializers when supported. But this needs a
+        configure test.
+*/
 #define MPFR_DECL_INIT_CACHE(_cache,_func)                           \
-  MPFR_THREAD_ATTR mpfr_cache_t _cache =                             \
-    {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
-
+  MPFR_DEFERRED_INIT_MASTER_DECL(_func,                              \
+                                 MPFR_LOCK_INIT( (_cache)->lock),    \
+                                 MPFR_LOCK_CLEAR((_cache)->lock))    \
+  MPFR_CACHE_ATTR mpfr_cache_t _cache = {{                           \
+      {{ 0, MPFR_SIGN_POS, 0, (mp_limb_t *) 0 }}, 0, _func           \
+      MPFR_DEFERRED_INIT_SLAVE_VALUE(_func)                          \
+    }};
 
 /******************************************************
  ***************  Threshold parameters  ***************
@@ -2148,6 +2179,10 @@ __MPFR_DECLSPEC void mpfr_mpz_clear _MPFR_PROTO((mpz_ptr));
 # undef mpz_clear
 # define mpz_init mpfr_mpz_init
 # define mpz_clear mpfr_mpz_clear
+# undef mpz_init_set_ui
+# define mpz_init_set_ui(a,b) do { mpz_init (a); mpz_set_ui (a, b); } while (0)
+# undef mpz_init_set
+# define mpz_init_set(a,b) do { mpz_init (a); mpz_set (a, b); } while (0)
 #endif
 
 

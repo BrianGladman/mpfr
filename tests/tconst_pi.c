@@ -22,6 +22,70 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#if defined (WANT_SHARED_CACHE) && defined(HAVE_PTHREAD)
+
+# include <pthread.h>
+
+#define MAX_THREAD 100
+
+static void *
+start_routine (void *arg)
+{
+  mpfr_prec_t p;
+  mpfr_t x;
+  mpfr_prec_t inc = *(int *) arg;
+  mp_limb_t *m;
+
+  for (p = 100; p < 20000; p += 64 + 100 * (inc % 10))
+    {
+      mpfr_init2 (x, p);
+      m = MPFR_MANT (x);
+      mpfr_const_pi (x, MPFR_RNDD);
+      mpfr_prec_round (x, 53, MPFR_RNDD);
+      if (mpfr_cmp_str1 (x, "3.141592653589793116"))
+        {
+          printf ("mpfr_const_pi failed with threading\n");
+          mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar('\n');
+          exit (1);
+        }
+      /* Check that no reallocation has been performed */
+      MPFR_ASSERTN (m == MPFR_MANT (x));
+      mpfr_clear (x);
+    }
+
+  pthread_exit (NULL);
+}
+
+static void
+run_pthread_test (void)
+{
+  int i;
+  int error_code;
+  pthread_t thread_id[MAX_THREAD];
+  int table[MAX_THREAD];
+
+  for (i = 0; i < MAX_THREAD; i++)
+    {
+      table[i] = i;
+      error_code = pthread_create(&thread_id[i],
+                                  NULL, start_routine, &table[i]);
+      MPFR_ASSERTN (error_code == 0);
+    }
+
+  for (i = 0; i < MAX_THREAD; i++)
+    {
+      error_code = pthread_join (thread_id[i], NULL);
+      MPFR_ASSERTN (error_code == 0);
+    }
+}
+
+# define RUN_PTHREAD_TEST()                                             \
+  (MPFR_ASSERTN(mpfr_buildopt_sharedcache_p() == 1), run_pthread_test())
+#else
+# define RUN_PTHREAD_TEST() \
+  (MPFR_ASSERTN(mpfr_buildopt_sharedcache_p() == 0))
+#endif
+
 /* tconst_pi [prec] [rnd] [0 = no print] */
 
 static void
@@ -176,6 +240,8 @@ main (int argc, char *argv[])
   check_large ();
 
   test_generic (MPFR_PREC_MIN, 200, 1);
+
+  RUN_PTHREAD_TEST();
 
   tests_end_mpfr ();
 

@@ -39,8 +39,17 @@ mpfr_clear_cache (mpfr_cache_t cache)
 {
   if (MPFR_UNLIKELY (MPFR_PREC (cache->x) != 0))
     {
-      mpfr_clear (cache->x);
-      MPFR_PREC (cache->x) = 0;
+      /* Get the cache in read-write mode */
+      MPFR_LOCK_WRITE(cache->lock);
+
+      if (MPFR_LIKELY (MPFR_PREC (cache->x) != 0))
+        {
+          mpfr_clear (cache->x);
+          MPFR_PREC (cache->x) = 0;
+        }
+
+      /* Free the cache in read-write mode */
+      MPFR_UNLOCK_WRITE(cache->lock);
     }
 }
 
@@ -48,32 +57,54 @@ int
 mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 {
   mpfr_prec_t prec = MPFR_PREC (dest);
-  mpfr_prec_t pold = MPFR_PREC (cache->x);
+  mpfr_prec_t pold;
   int inexact, sign;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  /* Call the initialisation function of the cache if it's needed */
+  MPFR_DEFERRED_INIT_CALL(cache);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
+  /* Get the cache in read-only mode */
+  MPFR_LOCK_READ(cache->lock);
+  /* Read the precision within the cache */
+  pold = MPFR_PREC (cache->x);
   if (MPFR_UNLIKELY (prec > pold))
     {
-      /* No previous result in the cache or the precision of the previous
-         result is not sufficient. We increase the cache size by at least
-         10% to avoid invalidating the cache many times if one performs
-         several computations with small increase of precision. */
+      /* Free the cache in read-only mode */
+      /* And get the cache in read-write mode */
+      MPFR_LOCK_READ2WRITE(cache->lock);
 
-      if (MPFR_UNLIKELY (pold == 0))  /* No previous result. */
-        mpfr_init2 (cache->x, prec);  /* as pold = prec below */
-      else
-        pold += pold / 10;
+      /* Retest the precision once we get the lock.
+         If there is no lock, there is no harm in this code */
+      pold = MPFR_PREC (cache->x);
+      if (MPFR_LIKELY (prec > pold))
+        {
+          /* No previous result in the cache or the precision of the previous
+             result is not sufficient. We increase the cache size by at least
+             10% to avoid invalidating the cache many times if one performs
+             several computations with small increase of precision. */
+          if (MPFR_UNLIKELY (pold == 0))  /* No previous result. */
+            mpfr_init2 (cache->x, prec);  /* as pold = prec below */
+          else
+            pold += pold / 10;
 
-      if (pold < prec)
-        pold = prec;
+          /* Update the cache. */
+          if (pold < prec)
+            pold = prec;
 
-      /* no need to keep the previous value */
-      mpfr_set_prec (cache->x, pold);
-      cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
+          /* no need to keep the previous value */
+          mpfr_set_prec (cache->x, pold);
+          cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
+        }
+
+      /* Free the cache in read-write mode */
+      /* Get the cache in read-only mode */
+      MPFR_LOCK_WRITE2READ(cache->lock);
     }
 
+  /* now pold >= prec is the precision of cache->x */
   MPFR_ASSERTD (pold >= prec);
   MPFR_ASSERTD (MPFR_PREC (cache->x) == pold);
 
@@ -151,5 +182,9 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
     }
 
   MPFR_SAVE_EXPO_FREE (expo);
+
+  /* Free the cache in read-only mode */
+  MPFR_UNLOCK_READ(cache->lock);
+
   return mpfr_check_range (dest, inexact, rnd);
 }

@@ -42,7 +42,7 @@ mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
     }
   MPFR_ASSERTD (sign_z == MPFR_SIGN_POS || sign_z == MPFR_SIGN_NEG);
 
-  zn = ABS(SIZ(z)); /* limb size of z */
+  zn = ABSIZ(z); /* limb size of z */
   /* compute en = floor(e/GMP_NUMB_BITS) */
   en = (e >= 0) ? e / GMP_NUMB_BITS : (e + 1) / GMP_NUMB_BITS - 1;
   MPFR_ASSERTD (zn >= 1);
