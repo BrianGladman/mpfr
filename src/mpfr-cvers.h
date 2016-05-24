@@ -45,7 +45,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define __MPFR_ICC(a,b,c) 0
 #endif
 
-#define __MPFR_MAJMIN(a,i) (((a) << 8) | (b))
+#define __MPFR_MAJMIN(a,i) (((a) << 8) | (i))
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && ! __MPFR_ICC(0,0,0)
 # define __MPFR_GNUC(a,i) \
