@@ -286,6 +286,11 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
 
+dnl AM_PROG_AR is needed so that ar-lib (wrapper for Microsoft lib.exe)
+dnl gets installed by "automake -i" (if absent, "automake --warnings=all"
+dnl gives a warning).
+AM_PROG_AR
+
 dnl This must done before MPFR_CONFIGS.
 LT_INIT(win32-dll)
 
