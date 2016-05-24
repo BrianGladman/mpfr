@@ -20,7 +20,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 ##############################################################################
 
-Changes from versions 3.1.* to version 3.2.0:
+Changes from versions 3.1.* to version 4.0.0:
 - The "dinde aux marrons" release.
 - MPFR now depends on GMP 5.0+ instead of 4.1+.
 - Mini-gmp support via the --enable-mini-gmp configure option (experimental).

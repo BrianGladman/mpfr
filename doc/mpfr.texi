@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename mpfr.info
 @documentencoding UTF-8
-@set VERSION 3.2.0-dev
+@set VERSION 4.0.0-dev
 @set UPDATED-MONTH May 2016
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
@@ -480,7 +480,7 @@ specific to MPFR)@. Problems are also mentioned in the FAQ
 Please report problems to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
-MPFR 3.2.0 web page @url{http://www.mpfr.org/mpfr-3.2.0/}.
+MPFR 4.0.0 web page @url{http://www.mpfr.org/mpfr-4.0.0/}.
 
 @section Getting the Latest Version of MPFR
 
@@ -495,7 +495,7 @@ The latest version of MPFR is available from
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
 If you think you have found a bug in the MPFR library, first have a look
-on the MPFR 3.2.0 web page @url{http://www.mpfr.org/mpfr-3.2.0/} and the
+on the MPFR 4.0.0 web page @url{http://www.mpfr.org/mpfr-4.0.0/} and the
 FAQ @url{http://www.mpfr.org/faq.html}:
 perhaps this bug is already known, in which case you may find there
 a workaround for it.
@@ -637,7 +637,7 @@ also be necessary to set up some sort of run-time library path (e.g.,
 file for additional information.
 
 Alternatively, it is possible to use @samp{pkg-config} (a file
-@samp{mpfr.pc} is provided as of MPFR 3.2):
+@samp{mpfr.pc} is provided as of MPFR 4.0):
 
 @example
 cc myprogram.c $(pkg-config --cflags --libs mpfr)
@@ -1471,7 +1471,7 @@ When there is no such range error, if the return value differs from
 @c just after (but in user code, there may be other possibilities); this
 @c can be done with mpfr_inexflag_p and mpfr_set_inexflag (knowing that
 @c the inexact flag can only be set, never cleared). A more readable way
-@c with MPFR 3.2+ is to use mpfr_flags_test or mpfr_flags_save to save
+@c with MPFR 4.0+ is to use mpfr_flags_test or mpfr_flags_save to save
 @c the status of the inexact flag, and mpfr_flags_restore to restore it.
 @c The mpfr_get_z function follows the same specification.
 See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
@@ -3647,7 +3647,7 @@ The rounding mode ``round away from zero'' (@code{MPFR_RNDA}) was added in
 MPFR 3.0 (however no rounding mode @code{GMP_RNDA} exists).
 
 The flags-related macros, whose name starts with @code{MPFR_FLAGS_},
-were added in MPFR 3.2 (for the new functions @code{mpfr_flags_clear},
+were added in MPFR 4.0 (for the new functions @code{mpfr_flags_clear},
 @code{mpfr_flags_restore}, @code{mpfr_flags_set} and @code{mpfr_flags_test},
 in particular).
 
@@ -3671,11 +3671,11 @@ that were added after MPFR 2.2, and in which MPFR version.
 
 @item @code{mpfr_buildopt_decimal_p} in MPFR 3.0.
 
-@item @code{mpfr_buildopt_float128_p} in MPFR 3.2.
+@item @code{mpfr_buildopt_float128_p} in MPFR 4.0.
 
 @item @code{mpfr_buildopt_gmpinternals_p} in MPFR 3.1.
 
-@item @code{mpfr_buildopt_sharedcache_p} in MPFR 3.2.
+@item @code{mpfr_buildopt_sharedcache_p} in MPFR 4.0.
 
 @item @code{mpfr_buildopt_tls_p} in MPFR 3.0.
 
@@ -3707,29 +3707,29 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_div_d} in MPFR 2.4.
 
-@item @code{mpfr_erandom} in MPFR 3.2.
+@item @code{mpfr_erandom} in MPFR 4.0.
 
 @item @code{mpfr_flags_clear}, @code{mpfr_flags_restore},
 @code{mpfr_flags_save}, @code{mpfr_flags_set} and @code{mpfr_flags_test}
-in MPFR 3.2.
+in MPFR 4.0.
 
-@item @code{mpfr_fmma} and @code{mpfr_fmms} in MPFR 3.2.
+@item @code{mpfr_fmma} and @code{mpfr_fmms} in MPFR 4.0.
 
 @item @code{mpfr_fmod} in MPFR 2.4.
 
-@item @code{mpfr_fmodquo} in MPFR 3.2.
+@item @code{mpfr_fmodquo} in MPFR 4.0.
 
 @item @code{mpfr_fms} in MPFR 2.3.
 
-@item @code{mpfr_fpif_export} and @code{mpfr_fpif_import} in MPFR 3.2.
+@item @code{mpfr_fpif_export} and @code{mpfr_fpif_import} in MPFR 4.0.
 
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
 @item @code{mpfr_frexp} in MPFR 3.1.
 
-@item @code{mpfr_gamma_inc} in MPFR 3.2.
+@item @code{mpfr_gamma_inc} in MPFR 4.0.
 
-@item @code{mpfr_get_float128} in MPFR 3.2 if configured with
+@item @code{mpfr_get_float128} in MPFR 4.0 if configured with
 @samp{--enable-float128}.
 
 @item @code{mpfr_get_flt} in MPFR 3.0.
@@ -3753,7 +3753,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_li2} in MPFR 2.4.
 
-@item @code{mpfr_log_ui} in MPFR 3.2.
+@item @code{mpfr_log_ui} in MPFR 4.0.
 
 @item @code{mpfr_min_prec} in MPFR 3.0.
 
@@ -3761,7 +3761,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_mul_d} in MPFR 2.4.
 
-@item @code{mpfr_nrandom} in MPFR 3.2.
+@item @code{mpfr_nrandom} in MPFR 4.0.
 
 @item @code{mpfr_printf} in MPFR 2.4.
 
@@ -3771,13 +3771,13 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_remainder} and @code{mpfr_remquo} in MPFR 2.3.
 
-@item @code{mpfr_rint_roundeven} and @code{mpfr_roundeven} in MPFR 3.2.
+@item @code{mpfr_rint_roundeven} and @code{mpfr_roundeven} in MPFR 4.0.
 
-@item @code{mpfr_round_nearest_away} in MPFR 3.2.
+@item @code{mpfr_round_nearest_away} in MPFR 4.0.
 
 @item @code{mpfr_set_divby0} in MPFR 3.1 (new divide-by-zero exception).
 
-@item @code{mpfr_set_float128} in MPFR 3.2 if configured with
+@item @code{mpfr_set_float128} in MPFR 4.0 if configured with
 @samp{--enable-float128}.
 
 @item @code{mpfr_set_flt} in MPFR 3.0.
@@ -3823,9 +3823,9 @@ This is really what is expected in practice (and what the MPFR code
 was expecting), so that the previous behavior was regarded as a bug.
 Hence the change in MPFR 2.3.2.
 
-@item @code{mpfr_eint} changed in MPFR 3.2.
+@item @code{mpfr_eint} changed in MPFR 4.0.
 This function now returns the value of the E1/eint1 function for
-negative argument (before MPFR 3.2, it was returning NaN)@.
+negative argument (before MPFR 4.0, it was returning NaN)@.
 
 @item @code{mpfr_get_f} changed in MPFR 3.0.
 This function was returning zero, except for NaN and Inf, which do not
@@ -3837,7 +3837,7 @@ and @code{mpfr_get_uj} changed in MPFR 3.0.
 In previous MPFR versions, the cases where the @emph{erange} flag
 is set were unspecified.
 
-@item @code{mpfr_get_str} changed in MPFR 3.2.
+@item @code{mpfr_get_str} changed in MPFR 4.0.
 This function now sets the NaN flag on NaN input (to follow the usual MPFR
 rules on NaN and IEEE 754-2008 recommendations on string conversions from
 Subclause 5.12.1). The previous behavior was regarded as a bug.
@@ -3876,8 +3876,8 @@ Note: this function has been renamed to @code{mpfr_get_z_2exp}
 in MPFR 3.0, but @code{mpfr_get_z_exp} is still available for
 compatibility reasons.
 
-@item @code{mpfr_set_exp} changed in MPFR 3.2.
-Before MPFR 3.2, the exponent was set whatever the contents of the MPFR
+@item @code{mpfr_set_exp} changed in MPFR 4.0.
+Before MPFR 4.0, the exponent was set whatever the contents of the MPFR
 object in argument. In practice, this could be useful as a low-level
 function when the MPFR number was being constructed by setting the fields
 of its internal structure, but the API does not provide a way to do this
@@ -3908,8 +3908,8 @@ it did not follow the generic rule concerning the inexact flag (and no
 special behavior was specified). The case of the underflow flag was more
 a lack of specification.
 
-@item @code{mpfr_sum} changed in MPFR 3.2.
-The @code{mpfr_sum} function has completely been rewritten for MPFR 3.2,
+@item @code{mpfr_sum} changed in MPFR 4.0.
+The @code{mpfr_sum} function has completely been rewritten for MPFR 4.0,
 with an update of the specification: the sign of an exact zero result
 is now specified, and the return value is now the usual ternary value.
 The old @code{mpfr_sum} implementation could also take all the memory
@@ -3935,7 +3935,7 @@ MPFR 3.0 or later).
 (The function @code{mpfr_random} had been deprecated since at least MPFR 2.2.0,
 and @code{mpfr_random2} since MPFR 2.4.0.)
 
-Function @code{mpfr_grandom} is marked as deprecated in MPFR 3.2.
+Function @code{mpfr_grandom} is marked as deprecated in MPFR 4.0.
 It will be removed in a future release.
 
 @node Other Changes, , Removed Functions, API Compatibility
