@@ -24,10 +24,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define FILE_NAME_RW "mpfrtest.txt" /* temporary name (written then read) */
 #define FILE_NAME_R  "mpfrtest.dat" /* fixed file name (read only) */
+#define FILE_NAME_R2 "mpfrtest2.dat" /* fixed file name (read only) with a
+                                        precision > MPFR_PREC_MAX */
 
 /* TODO: add tests for precision 1 and for precisions > MPFR_PREC_MAX. */
 
-static int
+static void
 doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
   char *filenameCompressed = FILE_NAME_RW;
@@ -40,14 +42,6 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
   int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
   int i;
-
-  if (argc != 1)
-    {
-      printf ("Usage: %s\n", argv[0]);
-      exit (1);
-    }
-
-  tests_start_mpfr ();
 
   mpfr_init2 (x[0], p1);
   mpfr_init2 (x[8], p1);
@@ -241,17 +235,43 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   remove (filenameCompressed);
 
   mpfr_clear (y);
+}
 
-  tests_end_mpfr ();
-  return 0;
+/* exercise error when precision > MPFR_PREC_MAX */
+static void
+extra (void)
+{
+  mpfr_t x;
+  FILE *fp;
+  int ret;
+
+  mpfr_init2 (x, 17);
+  mpfr_set_ui (x, 42, MPFR_RNDN);
+  fp = fopen (FILE_NAME_R2, "r");
+  ret = mpfr_fpif_import (x, fp);
+  MPFR_ASSERTN(ret != 0);
+  MPFR_ASSERTN(mpfr_get_prec (x) == 17);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 42) == 0);
+  fclose (fp);
+  mpfr_clear (x);
 }
 
 int
 main (int argc, char *argv[])
 {
-  int ret;
+  if (argc != 1)
+    {
+      printf ("Usage: %s\n", argv[0]);
+      exit (1);
+    }
 
-  ret = doit (argc, argv, 130, 2048);
-  ret = ret || doit (argc, argv, 1, 53);
-  return ret;
+  tests_start_mpfr ();
+
+  extra ();
+  doit (argc, argv, 130, 2048);
+  doit (argc, argv, 1, 53);
+
+  tests_end_mpfr ();
+
+  return 0;
 }
