@@ -209,7 +209,11 @@ fi
 dnl Check for attribute constructor and destructor
 MPFR_CHECK_CONSTRUCTOR_ATTR()
 
-dnl Check for POSIX Thread.
+dnl Check for POSIX Thread. Since the AX_PTHREAD macro is not standard
+dnl (it is provided by autoconf-archive), we need to detect whether it
+dnl is left unexpanded, otherwise the configure script won't fail and
+dnl "make distcheck" won't give any error, yielding buggy tarballs!
+m4_pattern_forbid(AX_PTHREAD)
 AX_PTHREAD([])
 
 dnl Check for ISO C11 Thread
