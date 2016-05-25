@@ -92,7 +92,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   mpz_t three_n, *P, *B, *T;
   mpfr_t t, q;
   int inexact;
-  unsigned long N, lgN, i;
+  unsigned long N, lgN, i, kk;
   long p;
   MPFR_GROUP_DECL(group);
   MPFR_TMP_DECL(marker);
@@ -142,7 +142,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   MPFR_GROUP_INIT_2(group, w, t, q);
   MPFR_SAVE_EXPO_MARK (expo);
 
-  unsigned long kk = k;
+  kk = k;
   if (p != 0)
     while ((p % 2) == 0) /* replace p/2^kk by (p/2)/2^(kk-1) */
       {
@@ -155,6 +155,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
     {
       mpfr_t tmp;
       unsigned int err;
+      unsigned long q0;
 
       /* we need at most w/log2(2^kk/|p|) terms for an accuracy of w bits */
       mpfr_init2 (tmp, 32);
@@ -178,10 +179,9 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
           mpz_init (T[i]);
         }
 
-      unsigned long q0;
       S (P, &q0, B, T, 1, N, p, kk, 0);
-      // mpz_mul (Q[0], B[0], Q[0]);
-      // mpz_mul_2exp (B[0], B[0], q0);
+      /* mpz_mul (Q[0], B[0], Q[0]); */
+      /* mpz_mul_2exp (B[0], B[0], q0); */
 
       mpfr_set_z (t, T[0], MPFR_RNDN); /* t = P[0] * (1 + theta_1) */
       mpfr_set_z (q, B[0], MPFR_RNDN); /* q = B[0] * (1 + theta_2) */
