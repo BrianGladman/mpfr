@@ -47,6 +47,7 @@ S (mpz_t *P, unsigned long *q, mpz_t *B, mpz_t *T, unsigned long n1,
    unsigned long n2, long p, unsigned long k, int need_P)
 {
   MPFR_ASSERTD (n1 < n2);
+  MPFR_ASSERTD (p == 0 || ((unsigned long) p & 1) != 0);
   if (n2 == n1 + 1)
     {
       mpz_set_si (P[0], (n1 == 1) ? p : -p);
