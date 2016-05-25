@@ -442,6 +442,21 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
    float endianness, this is true everywhere we know of and it'd be a fairly
    strange system that did anything else.  */
 
+/* Note for MPFR: building with "gcc -std=c89 -pedantic -pedantic-errors"
+   fails if the bit-field type is unsigned long:
+
+     error: type of bit-field '...' is a GCC extension [-Wpedantic]
+
+   Though with -std=c99 no errors are obtained, this is still an extension
+   in C99, which says:
+
+     A bit-field shall have a type that is a qualified or unqualified version
+     of _Bool, signed int, unsigned int, or some other implementation-defined
+     type.
+
+   So, unsigned int should be better.
+*/
+
 #ifndef _MPFR_IEEE_FLOATS
 
 #ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
@@ -450,10 +465,10 @@ union mpfr_ieee_double_extract
 {
   struct
     {
-      unsigned long manl:32;
-      unsigned long manh:20;
-      unsigned long exp:11;
-      unsigned long sig:1;
+      unsigned int manl:32;
+      unsigned int manh:20;
+      unsigned int exp:11;
+      unsigned int sig:1;
     } s;
   double d;
 };
@@ -465,10 +480,10 @@ union mpfr_ieee_double_extract
 {
   struct
     {
-      unsigned long sig:1;
-      unsigned long exp:11;
-      unsigned long manh:20;
-      unsigned long manl:32;
+      unsigned int sig:1;
+      unsigned int exp:11;
+      unsigned int manh:20;
+      unsigned int manl:32;
     } s;
   double d;
 };
