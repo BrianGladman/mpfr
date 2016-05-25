@@ -270,7 +270,8 @@ Table of contents:
 ##############################################################################
 
 - Fredrik Johansson reports that mpfr_ai is slow for large arguments: an
-  asymptotic expansion should be used
+  asymptotic expansion should be used (once done, remove REDUCE_EMAX from
+  tests/tai.c).
 - for exp(x), Fredrik Johansson reports a 20% speed improvement starting from
   4000 bits, and up to a 75% memory improvement in his Arb implementation, by
   using recursive instead of iterative binary splitting:
