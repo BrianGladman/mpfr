@@ -15,8 +15,7 @@ mkdir "$DIR"
 test ! -h "$DIR"
 svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
 cd "$DIR"
-libtoolize
-autoreconf -i
+./autogen.sh
 # -Wmissing-prototypes is not valid for C++
 # add -Wno-sign-conversion because of a bug in g++
 # -pedantic-errors (instead of just -pedantic) below allows us to
