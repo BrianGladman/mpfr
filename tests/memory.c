@@ -103,6 +103,9 @@ tests_memory_valid (void *ptr)
 }
 */
 
+/* FIXME: we might have an environment variable MPFR_TESTS_NO_MEMORY_LIMIT
+   to disable the memory limit check, for example if we want to compute
+   zillions of digits of Pi with ./tconst_pi 1000000000000 */
 static void
 tests_addsize (size_t size)
 {
