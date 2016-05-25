@@ -29,7 +29,7 @@ autoconf 2.60 (at least), libtoolize, and the AX_PTHREAD macro from
 As some files like "configure" are not part of the Subversion
 repository, you first need to run "autoreconf -i" (or ./autogen.sh,
 which could be used later to update the config files). Then you can
-run "configure" in the usual way (see the INSTALL file, but note that
+run ./configure in the usual way (see the INSTALL file, but note that
 there are no patches to apply, and the URLs are not valid since the
 corresponding version has not been released yet).
 
