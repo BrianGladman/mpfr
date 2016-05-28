@@ -126,6 +126,8 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
    most 2^(MPFR_EXP(b)-err), returns 1 if one is able to round exactly
    x to precision prec with direction rnd2, and 0 otherwise.
 
+   rnd1 = RNDN and RNDF are similar: the sign of the error is unknown.
+
    Side effects: none.
 */
 
@@ -168,6 +170,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
 
   /* Transform RNDD and RNDU to Zero / Away */
   MPFR_ASSERTD((neg == 0) || (neg == 1));
+  /* transform RNDF to RNDN */
+  if (rnd1 == MPFR_RNDF)
+    rnd1 = MPFR_RNDN;
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
   if (rnd2 != MPFR_RNDN)

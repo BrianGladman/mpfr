@@ -280,7 +280,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
 
-  /* FIXME: Useful since we do an exponent check after ?
+  /* FIXME: Useful since we do an exponent check after?
    * It is useful iff the precision is big, there is an overflow
    * and we are doing further mults...*/
 #ifdef HUGE
@@ -501,8 +501,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
-        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1, MPFR_PREC(a)
-                                          + (rnd_mode == MPFR_RNDN))))
+        if (rnd_mode == MPFR_RNDF && p + b1 - 1 >= MPFR_PREC(a))
+          {
+            /* we can round */
+          }
+        else if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
+                                      MPFR_PREC(a) + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
             goto full_multiply;

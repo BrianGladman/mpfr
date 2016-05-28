@@ -104,6 +104,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          = B.BBBBBBBBBBBBBBB
           -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
+
+      if (rnd_mode == MPFR_RNDF)
+        return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a));
+
       MPFR_SET_EXP (a, MPFR_GET_EXP (b));
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
                         rnd_mode, MPFR_SIGN (a),
@@ -324,7 +328,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
 
-  if (rnd_mode == MPFR_RNDN)
+  if (rnd_mode == MPFR_RNDF)
+    {
+      inexact = 0;
+      goto truncate;
+    }
+  else if (rnd_mode == MPFR_RNDN)
     {
       if (MPFR_LIKELY(sh))
         {

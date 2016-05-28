@@ -53,14 +53,16 @@ check_inexact (void)
           mpfr_set_prec (y, q);
           RND_LOOP (rnd)
             {
+              if (rnd == MPFR_RNDF)
+                continue; /* the test below makes no sense for RNDF */
               inexact = mpfr_abs (y, x, (mpfr_rnd_t) rnd);
               cmp = mpfr_cmp (y, absx);
               if (((inexact == 0) && (cmp != 0)) ||
                   ((inexact > 0) && (cmp <= 0)) ||
                   ((inexact < 0) && (cmp >= 0)))
                 {
-                  printf ("Wrong inexact flag: expected %d, got %d\n",
-                          cmp, inexact);
+                  printf ("Wrong inexact flag for %s: expected %d, got %d\n",
+                          mpfr_print_rnd_mode (rnd), cmp, inexact);
                   printf ("x="); mpfr_dump (x);
                   printf ("absx="); mpfr_dump (absx);
                   printf ("y="); mpfr_dump (y);

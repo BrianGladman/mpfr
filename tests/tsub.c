@@ -443,14 +443,16 @@ check_inexact (void)
                 : MPFR_EXP(u) - MPFR_EXP(x);
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
               mpfr_set_prec (z, pz);
-              rnd = RND_RAND ();
+              /* for RNDF, inexact makes no sense */
+              do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
               if (test_sub (z, x, u, rnd))
                 {
                   printf ("z <- x - u should be exact\n");
                   exit (1);
                 }
                 {
-                  rnd = RND_RAND ();
+                  /* for RNDF, inexact makes no sense */
+                  do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
                   inexact = test_sub (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||

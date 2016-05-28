@@ -83,6 +83,9 @@ check_random (mpfr_prec_t p)
       if (MPFR_IS_PURE_FP(y) && MPFR_IS_PURE_FP(z))
         for(r = 0 ; r < MPFR_RND_MAX ; r++)
           {
+            if (r == MPFR_RNDF)
+              continue; /* mpfr_sub1 and mpfr_sub1sp could differ,
+                           and inexact makes no sense */
             inexact1 = mpfr_sub1(x2, y, z, (mpfr_rnd_t) r);
             inexact2 = mpfr_sub1sp(x, y, z, (mpfr_rnd_t) r);
             if (mpfr_cmp(x, x2))
@@ -108,6 +111,9 @@ check_special (void)
 
   for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
+      if (r == MPFR_RNDF)
+        continue; /* comparison between sub1 and sub1sp makes no sense here */
+
       p = 53;
       mpfr_set_prec(x, 53);
       mpfr_set_prec(x2, 53);

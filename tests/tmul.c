@@ -232,7 +232,7 @@ check_exact (void)
               printf ("inexact=0 but results differ\n");
               exit (1);
             }
-          else if (inexact && (mpfr_cmp (c, d) == 0))
+          else if (inexact && (mpfr_cmp (c, d) == 0) && rnd != MPFR_RNDF)
             {
               printf ("inexact!=0 but results agree\n");
               printf ("prec=%u rnd=%s a=", (unsigned int) prec,

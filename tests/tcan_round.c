@@ -68,6 +68,8 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
 
   mpfr_init2 (x, px);
   mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+  /* for mpfr_can_round, r1=RNDF is equivalent to r1=RNDN (the sign of the
+     error is not known) */
   b = !!mpfr_can_round (x, i+1, r1, r2, prec);
   /* Note: If mpfr_can_round succeeds for both
      (r1,r2) = (MPFR_RNDD,MPFR_RNDN) and

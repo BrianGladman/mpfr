@@ -138,14 +138,17 @@ check_ternary_value (void)
           mpfr_set_prec (y, q);
           for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
             {
+              if (rnd == MPFR_RNDF) /* the test below makes no sense */
+                continue;
               inexact = mpfr_set (y, x, (mpfr_rnd_t) rnd);
               cmp = mpfr_cmp (y, x);
               if (((inexact == 0) && (cmp != 0)) ||
                   ((inexact > 0) && (cmp <= 0)) ||
                   ((inexact < 0) && (cmp >= 0)))
                 {
-                  printf ("Wrong ternary value in mpfr_set: expected %d,"
-                          " got %d\n", cmp, inexact);
+                  printf ("Wrong ternary value in mpfr_set for %s: expected"
+                          " %d, got %d\n", mpfr_print_rnd_mode (rnd), cmp,
+                          inexact);
                   exit (1);
                 }
               /* Test mpfr_set function too */

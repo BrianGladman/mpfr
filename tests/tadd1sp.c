@@ -123,6 +123,10 @@ check_random (mpfr_prec_t p)
           if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
             for (r = 0 ; r < MPFR_RND_MAX ; r++)
               {
+                if (r == MPFR_RNDF) /* inexact makes no sense, moreover
+                                       mpfr_add1 and mpfr_add1sp could
+                                       return different values */
+                  continue;
                 inexact1 = mpfr_add1(a1, b, c, (mpfr_rnd_t) r);
                 inexact2 = mpfr_add1sp(a2, b, c, (mpfr_rnd_t) r);
                 if (mpfr_cmp(a1, a2))
@@ -148,6 +152,9 @@ check_special (void)
 
   for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
+      if (r == MPFR_RNDF)
+        continue; /* inexact makes no sense, mpfr_add1 and mpfr_add1sp
+                     could differ */
       SET_PREC(53);
       mpfr_set_str1 (b, "1@100");
       mpfr_set_str1 (c, "1@1");

@@ -517,7 +517,9 @@ check_inexact (void)
                  abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
               mpfr_set_prec (z, pz);
-              rnd = RND_RAND ();
+              do
+                rnd = RND_RAND ();
+              while (rnd == MPFR_RNDF);
               if (test_add (z, x, u, rnd))
                 {
                   printf ("z <- x + u should be exact\n");
@@ -527,7 +529,10 @@ check_inexact (void)
                   exit (1);
                 }
                 {
-                  rnd = RND_RAND ();
+                  do
+                    rnd = RND_RAND ();
+                  while (rnd == MPFR_RNDF);
+                  /* the inexact return value has no sense with RNDF */
                   inexact = test_add (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
@@ -705,7 +710,10 @@ check_1111 (void)
       test_add (c, c, one, MPFR_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, MPFR_RNDN);
-      rnd_mode = RND_RAND ();
+      /* the inex return value has no sense with RNDF */
+      do
+        rnd_mode = RND_RAND ();
+      while (rnd_mode == MPFR_RNDF);
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
       inex_s = test_add (s, b, c, MPFR_RNDN); /* exact */
@@ -774,6 +782,9 @@ check_1minuseps (void)
             {
               mpfr_t s;
               int inex_a, inex_s;
+
+              if (rnd_mode == MPFR_RNDF)
+                continue; /* inex_a, inex_s make no sense */
 
               mpfr_set_ui (c, 1, MPFR_RNDN);
               mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], MPFR_RNDN);
@@ -1110,10 +1121,15 @@ check_extreme (void)
         inex = mpfr_add (y, u, w, MPFR_RNDN);
         MPFR_ASSERTN (inex == 0);
         mpfr_prec_round (y, 32, (mpfr_rnd_t) r);
-        if (! mpfr_equal_p (x, y))
+        /* for RNDF, the rounding directions are not necessarily consistent */
+        if (! mpfr_equal_p (x, y) && r != MPFR_RNDF)
           {
-            printf ("Error in check_extreme (%s, i = %d)\n",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+            printf ("Error in u + v (%s)\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+            printf ("u = ");
+            mpfr_dump (u);
+            printf ("v = ");
+            mpfr_dump (v);
             printf ("Expected ");
             mpfr_dump (y);
             printf ("Got      ");

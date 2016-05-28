@@ -71,7 +71,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
-  /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
+  /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ, MPFR_RNDA or MPFR_RNDF. */
   /* Note: exponents can be negative, but the unsigned subtraction is
      a modular subtraction, so that one gets the correct result. */
   diff_exp = (mpfr_uexp_t) exp - MPFR_GET_EXP(c);
@@ -185,7 +185,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         } /* cc */
     } /* aq2 > diff_exp */
 
-  /* non-significant bits of a */
+  /* zero the non-significant bits of a */
   if (MPFR_LIKELY(rb < 0 && sh))
     {
       mp_limb_t mask, bb;
@@ -473,6 +473,21 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     } /* fb != 1 */
 
  rounding:
+  /* fast track for faithful rounding */
+  if (rnd_mode == MPFR_RNDF)
+    {
+      /* The exact value of b + c is now in [a, a + 2[ where 2 stands for
+         the value of the lowest bit of ap[0]. If sh > 0, the difference
+         is less than ulp(a), thus we can return a. Note: we could return
+         add_one_ulp in all cases, which would give a simpler code here,
+         but the "add_one_ulp" code is more expensive. */
+      inex = 0;
+      if (sh)
+        goto set_exponent;
+      else /* we can return a+1 */
+        goto add_one_ulp;
+    }
+
   /* rnd_mode should be one of MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
   if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
     {

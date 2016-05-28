@@ -56,10 +56,10 @@ check_default_rnd (void)
         }
     }
   mpfr_set_default_rounding_mode ((mpfr_rnd_t) MPFR_RND_MAX);
-  if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
+  if (mpfr_get_default_rounding_mode() != MPFR_RNDF)
     ERROR("ERROR in setting / getting default rounding mode (2)");
   mpfr_set_default_rounding_mode((mpfr_rnd_t) -1);
-  if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
+  if (mpfr_get_default_rounding_mode() != MPFR_RNDF)
     ERROR("ERROR in setting / getting default rounding mode (3)");
 }
 
@@ -210,7 +210,25 @@ test_set_underflow (void)
 
           j = s < 0 && i > 1 ? 5 - i : i;
           inex = mpfr_underflow (x, (mpfr_rnd_t) i, s);
-          if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
+          /* for RNDF, inex has no meaning, just check that x is either
+             min or zero */
+          if (i == MPFR_RNDF)
+            {
+              if (mpfr_cmp (x, min) && mpfr_cmp (x, zero))
+                {
+                  printf ("Error in test_set_underflow, sign = %d,"
+                          " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));
+                  printf ("Got\n");
+                  mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
+                  printf ("\ninstead of\n");
+                  mpfr_out_str (stdout, 2, 0, zero, MPFR_RNDN);
+                  printf ("\nor\n");
+                  mpfr_out_str (stdout, 2, 0, min, MPFR_RNDN);
+                  printf ("\n");
+                  exit (1);
+                }
+            }
+          else if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_underflow, sign = %d,"
                       " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));
@@ -252,7 +270,25 @@ test_set_overflow (void)
 
           j = s < 0 && i > 1 ? 5 - i : i;
           inex = mpfr_overflow (x, (mpfr_rnd_t) i, s);
-          if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
+          /* for RNDF, inex has no meaning, just check that x is either
+             max or inf */
+          if (i == MPFR_RNDF)
+            {
+              if (mpfr_cmp (x, max) && mpfr_cmp (x, inf))
+                {
+                  printf ("Error in test_set_overflow, sign = %d,"
+                          " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));
+                  printf ("Got\n");
+                  mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
+                  printf ("\ninstead of\n");
+                  mpfr_out_str (stdout, 2, 0, max, MPFR_RNDN);
+                  printf ("\nor\n");
+                  mpfr_out_str (stdout, 2, 0, inf, MPFR_RNDN);
+                  printf ("\n");
+                  exit (1);
+                }
+            }
+          else if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_overflow, sign = %d,"
                       " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));

@@ -325,7 +325,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Rounding is necessary since c0 = 1*/
               /* Cp =-1 and C'p+1=0 */
               bcp = 1; bcp1 = 0;
-              if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+
+              if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+                goto truncate;
+              else if (rnd_mode == MPFR_RNDN)
                 {
                   /* Even Rule apply: Check Ap-1 */
                   if (MPFR_LIKELY( (ap[0] & (MPFR_LIMB_ONE<<sh)) == 0) )
@@ -429,7 +432,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           bp = MPFR_MANT (b);
 
           /* Even if src and dest overlap, it is OK using MPN_COPY */
-          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+          if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+            goto truncate;
+          else if (rnd_mode == MPFR_RNDN)
             {
               if (MPFR_UNLIKELY( bcp && bcp1==0 ))
                 /* Cp=-1 and C'p+1=0: Even rule Apply! */
@@ -479,7 +484,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Copy mantissa B in A */
           MPN_COPY(ap, MPFR_MANT(b), n);
           /* Round */
-          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+          if (rnd_mode == MPFR_RNDF || rnd_mode == MPFR_RNDN)
             goto truncate;
           MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
           if (rnd_mode == MPFR_RNDZ)
@@ -666,7 +671,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
       /* Rounding */
-      if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+        goto truncate;
+      else if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
           if (MPFR_LIKELY(bcp==0))
             goto truncate;
@@ -686,6 +693,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Sub one ulp to the result */
  sub_one_ulp:
+  MPFR_ASSERTD(rnd_mode != MPFR_RNDF);
   mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
   /* Result should be smaller than exact value: inexact=-1 */
   inexact = -1;

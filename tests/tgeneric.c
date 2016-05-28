@@ -307,8 +307,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           /* Exponent range for the test. */
           oemin = mpfr_get_emin ();
           oemax = mpfr_get_emax ();
-
-          rnd = RND_RAND ();
+          
+          do
+            rnd = RND_RAND ();
+          while (rnd == MPFR_RNDF); /* inex makes no sense */
           mpfr_clear_flags ();
 #ifdef DEBUG_TGENERIC
           TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (y));
