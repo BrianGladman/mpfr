@@ -201,7 +201,7 @@ max_tests (void)
       if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
              mpfr_equal_p (y1, y2)))
         {
-          printf ("Error in max_tests for %s",
+          printf ("Error in max_tests for %s\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           printf ("Expected ");
           mpfr_dump (y1);
@@ -283,7 +283,7 @@ overflow_tests (void)
       if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
              mpfr_equal_p (z1, z2)))
         {
-          printf ("Error 1 in overflow_tests for %s",
+          printf ("Error 1 in overflow_tests for %s\n",
                   mpfr_print_rnd_mode (rnd));
           printf ("Expected ");
           mpfr_dump (z1);
@@ -320,7 +320,7 @@ overflow_tests (void)
       if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
              mpfr_equal_p (z1, z2)))
         {
-          printf ("Error 2 in overflow_tests for %s",
+          printf ("Error 2 in overflow_tests for %s\n",
                   mpfr_print_rnd_mode (rnd));
           printf ("Expected ");
           mpfr_dump (z1);
