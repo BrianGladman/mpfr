@@ -220,9 +220,12 @@ max_tests (void)
   set_emax (emax);
 }
 
-/* a^2 - (a+k)(a-k) = k^2 where a^2 overflows but k^2 usually doesn't. */
+/* a^2 - (a+k)(a-k) = k^2 where a^2 overflows but k^2 usually doesn't.
+ * a^2 + cd where a^2 overflows and cd doesn't affect the overflow
+ * (and cd may even underflow).
+ */
 static void
-near_overflow_tests (void)
+overflow_tests (void)
 {
   mpfr_exp_t old_emax;
   int i;
@@ -231,7 +234,7 @@ near_overflow_tests (void)
 
   for (i = 0; i < 40; i++)
     {
-      mpfr_exp_t emax;
+      mpfr_exp_t emax, exp_a;
       mpfr_t a, k, c, d, z1, z2;
       mpfr_rnd_t rnd;
       mpfr_prec_t prec_a, prec_z;
@@ -241,18 +244,19 @@ near_overflow_tests (void)
       /* In most cases, we do the test with the maximum exponent. */
       emax = i % 8 != 0 ? MPFR_EMAX_MAX : 64 + (randlimb () % 1);
       set_emax (emax);
+      exp_a = emax/2 + 32;
 
       rnd = RND_RAND ();
       prec_a = 64 + randlimb () % 100;
       prec_z = MPFR_PREC_MIN + randlimb () % 160;
 
       mpfr_init2 (a, prec_a);
-      mpfr_urandom (a, RANDS, MPFR_RNDN);
-      mpfr_set_exp (a, emax/2 + 32);
+      mpfr_urandom (a, RANDS, MPFR_RNDU);
+      mpfr_set_exp (a, exp_a);
 
       mpfr_init2 (k, prec_a - 32);
-      mpfr_urandom (k, RANDS, MPFR_RNDN);
-      mpfr_set_exp (k, emax/2);
+      mpfr_urandom (k, RANDS, MPFR_RNDU);
+      mpfr_set_exp (k, exp_a - 32);
 
       mpfr_init2 (c, prec_a + 1);
       inex = mpfr_add (c, a, k, MPFR_RNDN);
@@ -279,7 +283,44 @@ near_overflow_tests (void)
       if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
              mpfr_equal_p (z1, z2)))
         {
-          printf ("Error in near_overflow_tests for %s",
+          printf ("Error 1 in overflow_tests for %s",
+                  mpfr_print_rnd_mode (rnd));
+          printf ("Expected ");
+          mpfr_dump (z1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
+          printf ("Got      ");
+          mpfr_dump (z2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
+          exit (1);
+        }
+
+      /* c and d such that a^2 +/- cd ~= a^2 (overflow) */
+      mpfr_urandom (c, RANDS, MPFR_RNDU);
+      mpfr_set_exp (c, randlimb () % 1 ? exp_a - 2 : __gmpfr_emin);
+      if (randlimb () % 1)
+        mpfr_neg (c, c, MPFR_RNDN);
+      mpfr_urandom (d, RANDS, MPFR_RNDU);
+      mpfr_set_exp (d, randlimb () % 1 ? exp_a - 2 : __gmpfr_emin);
+      if (randlimb () % 1)
+        mpfr_neg (d, d, MPFR_RNDN);
+
+      mpfr_clear_flags ();
+      inex1 = mpfr_sqr (z1, a, rnd);
+      flags1 = __gmpfr_flags;
+      MPFR_ASSERTN (flags1 == (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT));
+
+      mpfr_clear_flags ();
+      inex2 = add ?
+        mpfr_fmma (z2, a, a, c, d, rnd) :
+        mpfr_fmms (z2, a, a, c, d, rnd);
+      flags2 = __gmpfr_flags;
+
+      if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+             mpfr_equal_p (z1, z2)))
+        {
+          printf ("Error 2 in overflow_tests for %s",
                   mpfr_print_rnd_mode (rnd));
           printf ("Expected ");
           mpfr_dump (z1);
@@ -306,7 +347,7 @@ main (int argc, char *argv[])
   random_tests ();
   zero_tests ();
   max_tests ();
-  near_overflow_tests ();
+  overflow_tests ();
   /* TODO: near_underflow_tests (); */
 
   tests_end_mpfr ();
