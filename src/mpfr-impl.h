@@ -1148,7 +1148,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
   MPFR_CACHE_ATTR mpfr_cache_t _cache = {{                           \
       {{ 0, MPFR_SIGN_POS, 0, (mp_limb_t *) 0 }}, 0, _func           \
       MPFR_DEFERRED_INIT_SLAVE_VALUE(_func)                          \
-    }};
+    }}
 
 /******************************************************
  ***************  Threshold parameters  ***************

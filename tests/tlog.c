@@ -67,17 +67,15 @@ check2 (const char *as, mpfr_rnd_t rnd_mode, const char *res1s)
 }
 
 static void
-check3 (double d, unsigned long prec, mpfr_rnd_t rnd)
+check3 (char *s, unsigned long prec, mpfr_rnd_t rnd)
 {
   mpfr_t x, y;
 
   mpfr_init2 (x, prec);
   mpfr_init2 (y, prec);
-  mpfr_set_d (x, d, rnd);
+  mpfr_set_str (x, s, 10, rnd);
   test_log (y, x, rnd);
   mpfr_out_str (stdout, 10, 0, y, rnd);
-  puts ("");
-  mpfr_print_binary (y);
   puts ("");
   mpfr_clear (x);
   mpfr_clear (y);
@@ -274,9 +272,10 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  if (argc==4)
+  if (argc == 3 || argc == 4)
     {   /* tlog x prec rnd */
-      check3 (atof(argv[1]), atoi(argv[2]), (mpfr_rnd_t) atoi(argv[3]));
+      check3 (argv[1], strtoul (argv[2], NULL, 10),
+              (argc == 4) ? atoi (argv[3]) : MPFR_RNDN);
       goto done;
     }
 
