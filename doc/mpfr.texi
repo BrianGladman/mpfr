@@ -765,8 +765,11 @@ that corresponding to @code{MPFR_RNDD} or that corresponding to
 in which case the two adjacent floating-point numbers can also be returned.
 In summary the error is always at most one unit-in-last-place of the computed
 result, which can take two or three possible values.
-For @code{MPFR_RNDF} the ternary value makes no sense.
-Should the flags be correctly set?
+For @code{MPFR_RNDF} the ternary value makes no sense,
+the inexact flag is undefined, the divide-by-zero flag is as with other
+roundings, and the underflow and overflow flags match what would be obtained
+in the case the computed value would is @code{MPFR_RNDD} (resp.
+@code{MPFR_RNDU}).
 
 @anchor{ternary value}@cindex Ternary value
 Most MPFR functions take as first argument the destination variable, as
