@@ -29,6 +29,8 @@ check_equal (mpfr_srcptr a, mpfr_srcptr a2, char *s,
   if ((MPFR_IS_NAN (a) && MPFR_IS_NAN (a2)) ||
       mpfr_equal_p (a, a2))
     return;
+  if (r == MPFR_RNDF) /* RNDF might return different values */
+    return;
   printf ("Error in %s\n", mpfr_print_rnd_mode (r));
   printf ("b  = ");
   mpfr_dump (b);
@@ -88,7 +90,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_div_ui (a2, b, mpfr_get_ui (c, MPFR_RNDN), r);
-          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_div_ui", b, c, r);
         }
@@ -96,7 +98,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_div_si (a2, b, mpfr_get_si (c, MPFR_RNDN), r);
-          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_div_si", b, c, r);
         }
@@ -412,6 +414,9 @@ check_hard (void)
                 {
                   RND_LOOP(rnd)
                     {
+                      if (rnd == MPFR_RNDF)
+                        continue; /* inexact is undefined */
+
                       inex = test_div (q, u, v, (mpfr_rnd_t) rnd);
                       inex2 = get_inexact (q, u, v);
                       if (inex_cmp (inex, inex2))
@@ -676,7 +681,8 @@ check_inexact (void)
               mpfr_set_prec (y, py);
               mpfr_set_prec (z, py + pu);
                 {
-                  rnd = RND_RAND ();
+                  /* inexact is undefined for RNDF */
+                  do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
                   inexact = test_div (y, x, u, rnd);
                   if (mpfr_mul (z, y, u, rnd))
                     {
@@ -975,7 +981,8 @@ consistency (void)
       mpfr_prec_t px, py, pz, p;
       int inex1, inex2;
 
-      rnd = RND_RAND ();
+      /* inex is undefined for RNDF */
+      do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
       px = (randlimb () % 256) + 2;
       py = (randlimb () % 128) + 2;
       pz = (randlimb () % 256) + 2;
@@ -1000,7 +1007,8 @@ consistency (void)
       MPFR_ASSERTN (!MPFR_IS_NAN (z2));
       if (inex1 != inex2 || mpfr_cmp (z1, z2) != 0)
         {
-          printf ("Consistency error for i = %d\n", i);
+          printf ("Consistency error for i = %d (rnd = %s)\n", i,
+                  mpfr_print_rnd_mode (rnd));
           exit (1);
         }
     }

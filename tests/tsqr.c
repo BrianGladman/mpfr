@@ -73,7 +73,8 @@ check_random (mpfr_prec_t p)
             inexact2 = mpfr_sqr (z, x, (mpfr_rnd_t) r);
             if (mpfr_cmp (y, z))
               error1 ((mpfr_rnd_t) r,p,x,y,z);
-            if (inexact_sign (inexact1) != inexact_sign (inexact2))
+            if (inexact_sign (inexact1) != inexact_sign (inexact2) &&
+                r != MPFR_RNDF)
               error2 ((mpfr_rnd_t) r,p,x,y,inexact1,inexact2);
           }
     }

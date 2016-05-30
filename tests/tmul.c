@@ -227,9 +227,19 @@ check_exact (void)
               printf ("unexpected inexact return value\n");
               exit (1);
             }
-          if ((inexact == 0) && mpfr_cmp (c, d))
+          if ((inexact == 0) && mpfr_cmp (c, d) && rnd != MPFR_RNDF)
             {
-              printf ("inexact=0 but results differ\n");
+              printf ("rnd=%s: inexact=0 but results differ\n",
+                      mpfr_print_rnd_mode (rnd));
+              printf ("a=");
+              mpfr_out_str (stdout, 2, 0, a, rnd);
+              printf ("\nb=");
+              mpfr_out_str (stdout, 2, 0, b, rnd);
+              printf ("\nc=");
+              mpfr_out_str (stdout, 2, 0, c, rnd);
+              printf ("\nd=");
+              mpfr_out_str (stdout, 2, 0, d, rnd);
+              printf ("\n");
               exit (1);
             }
           else if (inexact && (mpfr_cmp (c, d) == 0) && rnd != MPFR_RNDF)

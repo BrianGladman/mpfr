@@ -741,13 +741,14 @@ input and output.)
 @comment  node-name,  next,  previous,  up
 @section Rounding Modes
 
-The following five rounding modes are supported:
+The following rounding modes are supported:
 @itemize @bullet
 @item @code{MPFR_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008),
 @item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008),
 @item @code{MPFR_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008),
 @item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008),
 @item @code{MPFR_RNDA}: round away from zero.
+@item @code{MPFR_RNDF}: faithful rounding.
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
@@ -757,6 +758,15 @@ For example, the number 2.5, which is represented by (10.1) in binary, is
 rounded to (10.0)=2 with a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section 4.2.2).
+
+The @code{MPFR_RNDF} mode works as follows: the computed value is either
+that corresponding to @code{MPFR_RNDD} or that corresponding to
+@code{MPFR_RNDU}, except in the case where those values are identical,
+in which case the two adjacent floating-point numbers can also be returned.
+In summary the error is always at most one unit-in-last-place of the computed
+result, which can take two or three possible values.
+For @code{MPFR_RNDF} the ternary value makes no sense.
+Should the flags be correctly set?
 
 @anchor{ternary value}@cindex Ternary value
 Most MPFR functions take as first argument the destination variable, as
