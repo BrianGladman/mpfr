@@ -164,7 +164,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* We need to take the value preceding |a|. We can't use
          mpfr_nexttozero due to a possible out-of-range exponent.
          But this will allow us to have more specific code. */
-      MPFR_LOG_MSG (("correcting the value of a", 0));
+      MPFR_LOG_MSG (("correcting the value of a\n", 0));
       sh = (mpfr_prec_t) an * GMP_NUMB_BITS - aq;
       mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
       if (MPFR_UNLIKELY (MPFR_LIMB_MSB (ap[an-1]) == 0))
