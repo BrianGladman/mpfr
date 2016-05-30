@@ -629,6 +629,26 @@ check_rounding (void)
     }
 }
 
+/* Check a = b - c, where the significand of b has all 1's, c is small
+   compared to b, and PREC(a) = PREC(b) - 1. Thus b is a midpoint for
+   the precision of the result a. The test is done with the extended
+   exponent range and with some reduced exponent range. Two choices
+   are made for the exponent of b: the maximum exponent - 1 (similar
+   to some normal case) and the maximum exponent (overflow case or
+   near overflow case, depending on the rounding mode).
+   This test is useful to trigger a bug in r10382: Since c is small,
+   the computation in sub1.c was done by first rounding b in the
+   precision of a, then correcting the result if b was a breakpoint
+   for this precision (exactly representable number for the directed
+   rounding modes, or midpoint for the round-to-nearest mode). The
+   problem was that for a midpoint in the round-to-nearest mode, the
+   rounding of b gave a spurious overflow; not only the overflow flag
+   was incorrect, but the result could not be corrected, since due to
+   this overflow, the "even rounding" information was lost.
+   In the case of reduced exponent range, an additional test is done
+   for consistency checks: the subtraction is done in the extended
+   exponent range (no overflow), then the result is converted to the
+   initial exponent range with mpfr_check_range. */
 static void
 check_max_almosteven (void)
 {
@@ -668,6 +688,7 @@ check_max_almosteven (void)
                   mpfr_flags_t flags1, flags2;
                   int inex1, inex2;
 
+                  /* Expected result. */
                   flags1 = MPFR_FLAGS_INEXACT;
                   if (rnd == MPFR_RNDN || MPFR_IS_LIKE_RNDZ (rnd, neg))
                     {
@@ -689,6 +710,7 @@ check_max_almosteven (void)
                     }
                   MPFR_SET_SIGN (a1, neg ? -1 : 1);
 
+                  /* Computed result. */
                   mpfr_clear_flags ();
                   inex2 = mpfr_sub (a2, b, c, (mpfr_rnd_t) rnd);
                   flags2 = __gmpfr_flags;
@@ -716,6 +738,7 @@ check_max_almosteven (void)
                   if (i == 0)
                     break;
 
+                  /* Additional test for the reduced exponent range. */
                   mpfr_clear_flags ();
                   set_emin (MPFR_EMIN_MIN);
                   set_emax (MPFR_EMAX_MAX);
