@@ -121,7 +121,7 @@ zero_tests (void)
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
-  mpfr_inits2 (64, a, b, c, d, res, (mpfr_ptr) 0);
+  mpfr_inits2 (64, a, b, c, d, (mpfr_ptr) 0);
   for (i = 0; i <= 4; i++)
     {
       switch (i)
@@ -141,35 +141,44 @@ zero_tests (void)
         }
       RND_LOOP (r)
         {
-          int inex;
+          int j, inex;
           mpfr_flags_t flags;
 
           mpfr_set (b, a, MPFR_RNDN);
           mpfr_set (c, a, MPFR_RNDN);
           mpfr_neg (d, a, MPFR_RNDN);
-          mpfr_clear_flags ();
-          inex = mpfr_fmma (res, a, b, c, d, (mpfr_rnd_t) r);
-          flags = __gmpfr_flags;
-          if (flags != 0 || inex != 0 || ! mpfr_zero_p (res) ||
-              (r == MPFR_RNDD ? MPFR_IS_POS (res) : MPFR_IS_NEG (res)))
+          /* We also want to test cases where the precision of the
+             result is twice the precision of each input, in case
+             add1sp.c and/or sub1sp.c could be involved. */
+          for (j = 1; j <= 2; j++)
             {
-              printf ("Error in zero_tests on i = %d, %s\n",
-                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-              printf ("Expected %c0, inex = 0\n", r == MPFR_RNDD ? '-' : '+');
-              printf ("Got      ");
-              if (MPFR_IS_POS (res))
-                printf ("+");
-              mpfr_out_str (stdout, 16, 0, res, MPFR_RNDN);
-              printf (", inex = %d\n", inex);
-              printf ("Expected flags:");
-              flags_out (0);
-              printf ("Got flags:     ");
-              flags_out (flags);
-              exit (1);
-            }
-        }
-    }
-  mpfr_clears (a, b, c, d, res, (mpfr_ptr) 0);
+              mpfr_init2 (res, 64 * j);
+              mpfr_clear_flags ();
+              inex = mpfr_fmma (res, a, b, c, d, (mpfr_rnd_t) r);
+              flags = __gmpfr_flags;
+              if (flags != 0 || inex != 0 || ! mpfr_zero_p (res) ||
+                  (r == MPFR_RNDD ? MPFR_IS_POS (res) : MPFR_IS_NEG (res)))
+                {
+                  printf ("Error in zero_tests on i = %d, %s\n",
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("Expected %c0, inex = 0\n",
+                          r == MPFR_RNDD ? '-' : '+');
+                  printf ("Got      ");
+                  if (MPFR_IS_POS (res))
+                    printf ("+");
+                  mpfr_out_str (stdout, 16, 0, res, MPFR_RNDN);
+                  printf (", inex = %d\n", inex);
+                  printf ("Expected flags:");
+                  flags_out (0);
+                  printf ("Got flags:     ");
+                  flags_out (flags);
+                  exit (1);
+                }
+              mpfr_clear (res);
+            } /* j */
+        } /* r */
+    } /* i */
+  mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
 
   set_emin (emin);
   set_emax (emax);
@@ -181,7 +190,7 @@ max_tests (void)
   mpfr_exp_t emin, emax;
   mpfr_t x, y1, y2;
   int r;
-  int inex1, inex2;
+  int i, inex1, inex2;
   mpfr_flags_t flags1, flags2;
 
   emin = mpfr_get_emin ();
@@ -189,32 +198,40 @@ max_tests (void)
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
-  mpfr_inits2 (64, x, y1, y2, (mpfr_ptr) 0);
+  mpfr_init2 (x, 64);
   mpfr_setmax (x, MPFR_EMAX_MAX);
   flags1 = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
   RND_LOOP (r)
     {
-      inex1 = mpfr_mul (y1, x, x, (mpfr_rnd_t) r);
-      mpfr_clear_flags ();
-      inex2 = mpfr_fmma (y2, x, x, x, x, (mpfr_rnd_t) r);
-      flags2 = __gmpfr_flags;
-      if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
-             mpfr_equal_p (y1, y2)))
+      /* We also want to test cases where the precision of the
+         result is twice the precision of each input, in case
+         add1sp.c and/or sub1sp.c could be involved. */
+      for (i = 1; i <= 2; i++)
         {
-          printf ("Error in max_tests for %s\n",
-                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          printf ("Expected ");
-          mpfr_dump (y1);
-          printf ("  with inex = %d, flags =", inex1);
-          flags_out (flags1);
-          printf ("Got      ");
-          mpfr_dump (y2);
-          printf ("  with inex = %d, flags =", inex2);
-          flags_out (flags2);
-          exit (1);
-        }
-    }
-  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+          mpfr_inits2 (64 * i, y1, y2, (mpfr_ptr) 0);
+          inex1 = mpfr_mul (y1, x, x, (mpfr_rnd_t) r);
+          mpfr_clear_flags ();
+          inex2 = mpfr_fmma (y2, x, x, x, x, (mpfr_rnd_t) r);
+          flags2 = __gmpfr_flags;
+          if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                 mpfr_equal_p (y1, y2)))
+            {
+              printf ("Error in max_tests for %s\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("Expected ");
+              mpfr_dump (y1);
+              printf ("  with inex = %d, flags =", inex1);
+              flags_out (flags1);
+              printf ("Got      ");
+              mpfr_dump (y2);
+              printf ("  with inex = %d, flags =", inex2);
+              flags_out (flags2);
+              exit (1);
+            }
+          mpfr_clears (y1, y2, (mpfr_ptr) 0);
+        } /* i */
+    } /* r */
+  mpfr_clear (x);
 
   set_emin (emin);
   set_emax (emax);
