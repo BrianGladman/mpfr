@@ -581,7 +581,7 @@ overflowed_exp0 (void)
                   err = 1;
                 }
             }
-          else
+          else if (rnd != MPFR_RNDF)
             {
               if (inex <= 0)
                 {
