@@ -734,8 +734,8 @@ underflow_up (int extended_emin)
                         printf (" and extended emin");
                       printf ("\nfor precx = %d, precy = %d, %s\n",
                               precx, precy, e3 ? "mpfr_exp_3" : "mpfr_exp");
-                      mpfr_printf ("x = %Re\n", x);
-                      mpfr_printf ("y = %Re\n", y);
+                      printf ("x="); mpfr_dump (x);
+                      printf ("y="); mpfr_dump (y);
                       printf ("Got %u instead of %u.\n",
                               (unsigned int) __gmpfr_flags,
                               (unsigned int) MPFR_FLAGS_INEXACT);
