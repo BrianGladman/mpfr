@@ -265,5 +265,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     : mpfr_neg (res, c, r);
   mpfr_clear (c);
 
-  return inex;
+  /* for RNDF, mpfr_set or mpfr_neg may return 0, but if we return 0, it
+     would mean the asymptotic expansion failed, thus we return 1 instead */
+  return (r != MPFR_RNDF) ? inex : 1;
 }
