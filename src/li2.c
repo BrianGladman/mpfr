@@ -201,7 +201,7 @@ mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (h);
 
   /* for MPFR_RNDF, we should return non-zero, except if y is NaN */
-  return (rnd_mode != MPFR_RNDF) ? inex : mpfr_nan_p (y) == 0;
+  return (rnd_mode != MPFR_RNDF) ? inex : !mpfr_nan_p (y);
 }
 
 /* Compute the real part of the dilogarithm defined by
