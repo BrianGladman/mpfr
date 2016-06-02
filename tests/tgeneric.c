@@ -349,8 +349,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                       " by the tested function!\n");
               exit (1);
             }
-          TGENERIC_CHECK ("bad inexact flag",
-                          (compare != 0) ^ (mpfr_inexflag_p () == 0));
+          if (rnd != MPFR_RNDF)
+            TGENERIC_CHECK ("bad inexact flag",
+                            (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
 
           /* If rnd = RNDF, check that we obtain the same result as
