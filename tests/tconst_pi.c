@@ -170,7 +170,7 @@ bug20091030 (void)
       mpfr_set_prec (x_ref, p);
       for (r = 0; r < MPFR_RND_MAX; r++)
         {
-          if (r == MPFR_RNDF)
+          if ((mpfr_rnd_t) r == MPFR_RNDF)
             continue; /* the test below makes no sense */
           inex = mpfr_const_pi (x, (mpfr_rnd_t) r);
           inex_ref = mpfr_const_pi_internal (x_ref, (mpfr_rnd_t) r);
