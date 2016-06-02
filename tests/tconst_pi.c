@@ -170,13 +170,13 @@ bug20091030 (void)
       mpfr_set_prec (x_ref, p);
       for (r = 0; r < MPFR_RND_MAX; r++)
         {
-          if ((mpfr_rnd_t) r == MPFR_RNDF)
+          if (r == MPFR_RNDF)
             continue; /* the test below makes no sense */
           inex = mpfr_const_pi (x, (mpfr_rnd_t) r);
           inex_ref = mpfr_const_pi_internal (x_ref, (mpfr_rnd_t) r);
           if (inex != inex_ref || mpfr_cmp (x, x_ref) != 0)
             {
-              printf ("mpfr_const_pi and mpfr_const_pi_internal disagree for rnd=%s\n", mpfr_print_rnd_mode (r));
+              printf ("mpfr_const_pi and mpfr_const_pi_internal disagree for rnd=%s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("mpfr_const_pi gives ");
               mpfr_dump (x);
               printf ("mpfr_const_pi_internal gives ");
