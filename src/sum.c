@@ -857,6 +857,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         switch (rnd)
           {
           case MPFR_RNDD:
+          case MPFR_RNDF:
             corr = 0;
             break;
           case MPFR_RNDU:

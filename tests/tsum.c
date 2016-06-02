@@ -120,6 +120,8 @@ generic_tests (void)
         {
           int inex1, inex2;
 
+          if (rnd_mode == MPFR_RNDF)
+            continue; /* the test below makes no sense */
           inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
           inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
           if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
@@ -397,6 +399,8 @@ check1 (int h)
                       mpfr_set_prec (sum2, prec);
                       RND_LOOP (r)
                         {
+                          if (r == MPFR_RNDF)
+                            continue; /* the test below makes no sense */
                           inex1 = mpfr_set (sum1, s3, (mpfr_rnd_t) r);
                           inex2 = mpfr_sum (sum2, p, 4, (mpfr_rnd_t) r);
                           MPFR_ASSERTN (mpfr_check (sum1));
@@ -482,6 +486,8 @@ check2 (void)
                       mpfr_set_prec (sum2, prec);
                       RND_LOOP (r)
                         {
+                          if (r == MPFR_RNDF)
+                            continue; /* the test below makes no sense */
                           inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
                           inex2 = mpfr_sum (sum2, p, 5, (mpfr_rnd_t) r);
                           MPFR_ASSERTN (mpfr_check (sum1));
@@ -566,6 +572,8 @@ check3 (void)
                   MPFR_ASSERTN (inex1 == 0);
                   RND_LOOP (r)
                     {
+                      if (r == MPFR_RNDF)
+                        continue; /* the test below makes no sense */
                       inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
                       inex2 = mpfr_sum (sum2, p, 20, (mpfr_rnd_t) r);
                       MPFR_ASSERTN (mpfr_check (sum1));
@@ -655,6 +663,8 @@ check4 (void)
                 inex1 = mpfr_add (s4, s3, t[4], MPFR_RNDN);
                 MPFR_ASSERTN (inex1 == 0);
                 RND_LOOP (r) {
+                  if (r == MPFR_RNDF)
+                    continue; /* the test below makes no sense */
                   inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
                   inex2 = mpfr_sum (sum2, p, 5, (mpfr_rnd_t) r);
                   MPFR_ASSERTN (mpfr_check (sum1));
@@ -806,6 +816,8 @@ check_extreme (void)
   RND_LOOP (r)
     for (i = 0; i < 2; i++)
       {
+        if (r == MPFR_RNDF)
+          continue; /* the test below makes no sense */
         mpfr_set_prec (x, 64);
         inex1 = mpfr_add (x, u, w, MPFR_RNDN);
         MPFR_ASSERTN (inex1 == 0);
