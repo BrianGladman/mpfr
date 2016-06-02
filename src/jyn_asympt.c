@@ -36,6 +36,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    (z can be negative only for jn).
    Return 0 if the expansion does not converge enough (the value 0 as inexact
    flag should not happen for normal input).
+   Note: for MPFR_RNDF, it returns 0 if the expansion failed, and a non-zero
+   value otherwise (with no other meaning).
 */
 static int
 FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)

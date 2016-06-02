@@ -43,6 +43,8 @@ check (mpfr_prec_t p0, mpfr_prec_t p1)
       RND_LOOP (i)
         {
           mpfr_rnd_t rnd = (mpfr_rnd_t) i;
+          if (rnd == MPFR_RNDF)
+            continue; /* the test below makes no sense */
           inex = mpfr_const_log2 (x, rnd);
           inex_ref = mpfr_set (y, z, rnd);
           if (! mpfr_can_round (z, mpfr_get_prec (z), MPFR_RNDN, rnd, p0))
