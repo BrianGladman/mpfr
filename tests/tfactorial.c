@@ -196,7 +196,7 @@ main (int argc, char *argv[])
   int rnd;
   mpfr_t x, y, z, t;
   int inexact;
-  mpfr_prec_t prec, yprec;
+  unsigned long prec, yprec;
 
   tests_start_mpfr ();
 
