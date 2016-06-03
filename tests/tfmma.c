@@ -121,7 +121,7 @@ zero_tests (void)
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
-  mpfr_inits2 (64, a, b, c, d, (mpfr_ptr) 0);
+  mpfr_inits2 (GMP_NUMB_BITS, a, b, c, d, (mpfr_ptr) 0);
   for (i = 0; i <= 4; i++)
     {
       switch (i)
@@ -152,7 +152,7 @@ zero_tests (void)
              add1sp.c and/or sub1sp.c could be involved. */
           for (j = 1; j <= 2; j++)
             {
-              mpfr_init2 (res, 64 * j);
+              mpfr_init2 (res, GMP_NUMB_BITS * j);
               mpfr_clear_flags ();
               inex = mpfr_fmma (res, a, b, c, d, (mpfr_rnd_t) r);
               flags = __gmpfr_flags;
@@ -198,7 +198,7 @@ max_tests (void)
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
-  mpfr_init2 (x, 64);
+  mpfr_init2 (x, GMP_NUMB_BITS);
   mpfr_setmax (x, MPFR_EMAX_MAX);
   flags1 = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
   RND_LOOP (r)
@@ -208,7 +208,7 @@ max_tests (void)
          add1sp.c and/or sub1sp.c could be involved. */
       for (i = 1; i <= 2; i++)
         {
-          mpfr_inits2 (64 * i, y1, y2, (mpfr_ptr) 0);
+          mpfr_inits2 (GMP_NUMB_BITS * i, y1, y2, (mpfr_ptr) 0);
           inex1 = mpfr_mul (y1, x, x, (mpfr_rnd_t) r);
           mpfr_clear_flags ();
           inex2 = mpfr_fmma (y2, x, x, x, x, (mpfr_rnd_t) r);
