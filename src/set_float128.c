@@ -44,6 +44,10 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
     }
 
   /* Check for INF */
+  /* FIXME: The code below generates a divide-by-zero exception, thus
+     will fail if this exception is trapped. Replace it by > and <
+     comparisons with the maximum positive (resp. negative) finite
+     binary128 numbers? */
   if (MPFR_UNLIKELY (d == ((__float128) 1.0 / (__float128) 0.0)))
     {
       mpfr_set_inf (r, 1);
