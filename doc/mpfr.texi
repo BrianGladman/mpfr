@@ -1658,6 +1658,10 @@ respectively @code{unsigned long}, @code{long}, @code{unsigned int},
 @code{intmax_t}, when rounded to an integer in the direction @var{rnd}.
 For instance, with the @code{MPFR_RNDU} rounding mode on @minus{}0.5,
 the result will be non-zero for all these functions.
+For @code{MPFR_RNDF}, those functions return non-zero when it is guaranteed
+that the corresponding conversion function (for example @code{mpfr_get_ui}
+for @code{mpfr_fits_ulong_p}), when called with faithful rounding,
+will always return a number that is representable in the corresponding type.
 @end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
