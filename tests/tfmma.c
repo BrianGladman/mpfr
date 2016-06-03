@@ -411,7 +411,7 @@ half_plus_half (void)
         }
     }
 
-  mpfr_clears (h, x1, x2, y, (mpfr_ptr) 0);
+  mpfr_clears (h, x1, x2, (mpfr_ptr) 0);
   set_emin (emin);
 }
 
