@@ -101,13 +101,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   do                                                            \
     {                                                           \
       SET (x, V, MPFR_RNDN);                                    \
-      FTEST (N, !, FCT);                                        \
+      FTEST (N, (r != MPFR_RNDF) ^ !!, FCT);                    \
       mpfr_set_si_2exp (y, (V) < 0 ? -1 : 1, -2, MPFR_RNDN);    \
       mpfr_add (x, x, y, MPFR_RNDN);                            \
       FTEST (N+1, (r == MPFR_RNDN ||                            \
                    MPFR_IS_LIKE_RNDZ (r, (V) < 0)) ^ !!, FCT);  \
       mpfr_add (x, x, y, MPFR_RNDN);                            \
       mpfr_add (x, x, y, MPFR_RNDN);                            \
+      if (r != MPFR_RNDF)                                       \
       FTEST (N+3, MPFR_IS_LIKE_RNDZ (r, (V) < 0) ^ !!, FCT);    \
       mpfr_add (x, x, y, MPFR_RNDN);                            \
       FTEST (N+4, !!, FCT);                                     \
@@ -149,11 +150,17 @@ main (void)
 
         /* Check +0 */
         mpfr_set_zero (x, 1);
-        CHECK_ALL (4, !);
+        if (r != MPFR_RNDF)
+          CHECK_ALL (4, !);
+        else
+          CHECK_ALL (4, !!); /* +0 does not fit for RNDF */
 
         /* Check -0 */
         mpfr_set_zero (x, -1);
-        CHECK_ALL (5, !);
+        if (r != MPFR_RNDF)
+          CHECK_ALL (5, !);
+        else
+          CHECK_ALL (5, !!);
 
         /* Check small positive op */
         mpfr_set_str1 (x, "1@-1");
@@ -193,11 +200,20 @@ main (void)
             mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
             mpfr_rint (y, x, (mpfr_rnd_t) r);
             inv = MPFR_NOTZERO (y);
-            FTEST (80, inv ^ !, mpfr_fits_ulong_p);
+            if (r != MPFR_RNDF)
+              FTEST (80, inv ^ !, mpfr_fits_ulong_p);
+            else
+              FTEST (80, !!, mpfr_fits_ulong_p);
             FTEST (81,       !, mpfr_fits_slong_p);
-            FTEST (82, inv ^ !, mpfr_fits_uint_p);
+            if (r != MPFR_RNDF)
+              FTEST (82, inv ^ !, mpfr_fits_uint_p);
+            else
+              FTEST (82, !!, mpfr_fits_uint_p);
             FTEST (83,       !, mpfr_fits_sint_p);
-            FTEST (84, inv ^ !, mpfr_fits_ushort_p);
+            if (r != MPFR_RNDF)
+              FTEST (84, inv ^ !, mpfr_fits_ushort_p);
+            else
+              FTEST (84, !!, mpfr_fits_ushort_p);
             FTEST (85,       !, mpfr_fits_sshort_p);
           }
       }
@@ -222,11 +238,17 @@ main (void)
 
       /* Check +0 */
       mpfr_set_zero (x, 1);
-      CHECK_MAX (4, !);
+      if (r != MPFR_RNDF)
+        CHECK_MAX (4, !);
+      else
+        CHECK_MAX (4, !!); /* +0 does not fit for RNDF */
 
       /* Check -0 */
       mpfr_set_zero (x, -1);
-      CHECK_MAX (5, !);
+      if (r != MPFR_RNDF)
+        CHECK_MAX (5, !);
+      else
+        CHECK_MAX (5, !!);
 
       /* Check small positive op */
       mpfr_set_str1 (x, "1@-1");
@@ -257,7 +279,10 @@ main (void)
           mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
           mpfr_rint (y, x, (mpfr_rnd_t) r);
           inv = MPFR_NOTZERO (y);
-          FTEST (80, inv ^ !, mpfr_fits_uintmax_p);
+          if (r != MPFR_RNDF)
+            FTEST (80, inv ^ !, mpfr_fits_uintmax_p);
+          else
+            FTEST (80, !!, mpfr_fits_uintmax_p);
           FTEST (81,       !, mpfr_fits_intmax_p);
         }
     }

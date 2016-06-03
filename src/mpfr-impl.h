@@ -988,7 +988,7 @@ typedef intmax_t mpfr_eexp_t;
 /* We want to test if rnd = Zero, or Away.
    'test' is 1 if negative, and 0 if positive. */
 #define MPFR_IS_LIKE_RNDZ(rnd, test) \
-  ((rnd) == MPFR_RNDZ || (rnd) == MPFR_RNDF || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+  ((rnd) == MPFR_RNDZ || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
 #define MPFR_IS_LIKE_RNDU(rnd, sign)                    \
   (((rnd) == MPFR_RNDU) ||                              \
