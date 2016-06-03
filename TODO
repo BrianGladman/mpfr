@@ -234,6 +234,13 @@ Table of contents:
   + Lambert W Functions, W(x) are defined to be solutions of the equation:
      W(x) \exp(W(x)) = x.
     This function has multiple branches for x < 0 (2 funcs W0(x) and Wm1(x))
+    From Fredrik Johansson:
+    See https://cs.uwaterloo.ca/research/tr/1993/03/W.pdf, in particular
+    formulas 5.2 and 5.3 for the error bound: one first computes an
+    approximation w, and then evaluates the residual w e^w - x. There is an
+    expression for the error in terms of the residual and the derivative W'(t),
+    where the derivative can be bounded by piecewise simple functions,
+    something like min(1, 1/t) when t >= 0.
   + Trigamma Function psi'(x).
     and Polygamma Function: psi^{(m)}(x) for m >= 0, x > 0.
 - functions from ISO/IEC 24747:2009 (Extensions to the C Library,
