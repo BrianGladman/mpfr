@@ -393,7 +393,7 @@ half_plus_half (void)
                   if (! (flags == 0 && inex == 0 && mpfr_equal_p (y, x2)))
                     {
                       printf ("Error in half_plus_half for %s\n",
-                              mpfr_print_rnd_mode (r));
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) r));
                       printf ("Expected ");
                       mpfr_dump (x2);
                       printf ("  with inex = 0, flags =");
