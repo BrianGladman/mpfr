@@ -909,6 +909,7 @@ typedef intmax_t mpfr_eexp_t;
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
+#define MPFR_IS_SINGULAR_OR_UBF(x) (MPFR_EXP(x) <= MPFR_EXP_UBF)
 #define MPFR_IS_PURE_FP(x)                          \
   (!MPFR_IS_SINGULAR(x) &&                          \
    (MPFR_ASSERTD (MPFR_EXP (x) >= MPFR_EMIN_MIN &&  \
@@ -923,6 +924,10 @@ typedef intmax_t mpfr_eexp_t;
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
+
+#define MPFR_ARE_SINGULAR_OR_UBF(x,y)           \
+  (MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(x)) || \
+   MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(y)))
 
 #define MPFR_IS_POWER_OF_2(x) \
   (mpfr_cmp_ui_2exp ((x), 1, MPFR_GET_EXP (x) - 1) == 0)
