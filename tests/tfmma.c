@@ -356,6 +356,65 @@ overflow_tests (void)
   set_emax (old_emax);
 }
 
+/* (1/2)x + (1/2)x = x tested near underflow */
+static void
+half_plus_half (void)
+{
+  mpfr_exp_t emin;
+  mpfr_t h, x1, x2, y;
+  int neg, r, i, inex;
+  mpfr_flags_t flags;
+
+  emin = mpfr_get_emin ();
+  set_emin (MPFR_EMIN_MIN);
+  mpfr_inits2 (4, h, x1, (mpfr_ptr) 0);
+  mpfr_init2 (x2, GMP_NUMB_BITS);
+  mpfr_set_ui_2exp (h, 1, -1, MPFR_RNDN);
+
+  for (mpfr_setmin (x1, __gmpfr_emin);
+       MPFR_GET_EXP (x1) < __gmpfr_emin + 2;
+       mpfr_nextabove (x1))
+    {
+      inex = mpfr_set (x2, x1, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      for (neg = 0; neg < 2; neg++)
+        {
+          RND_LOOP (r)
+            {
+              /* We also want to test cases where the precision of the
+                 result is twice the precision of each input, in case
+                 add1sp.c and/or sub1sp.c could be involved. */
+              for (i = 1; i <= 2; i++)
+                {
+                  mpfr_init2 (y, GMP_NUMB_BITS * i);
+                  mpfr_clear_flags ();
+                  inex = mpfr_fmma (y, h, x2, h, x2, (mpfr_rnd_t) r);
+                  flags = __gmpfr_flags;
+                  if (! (flags == 0 && inex == 0 && mpfr_equal_p (y, x2)))
+                    {
+                      printf ("Error in half_plus_half for %s\n",
+                              mpfr_print_rnd_mode (r));
+                      printf ("Expected ");
+                      mpfr_dump (x2);
+                      printf ("  with inex = 0, flags =");
+                      flags_out (0);
+                      printf ("Got      ");
+                      mpfr_dump (y);
+                      printf ("  with inex = %d, flags =", inex);
+                      flags_out (flags);
+                      exit (1);
+                    }
+                  mpfr_clear (y);
+                }
+            }
+          mpfr_neg (x2, x2, MPFR_RNDN);
+        }
+    }
+
+  mpfr_clears (h, x1, x2, y, (mpfr_ptr) 0);
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -365,7 +424,7 @@ main (int argc, char *argv[])
   zero_tests ();
   max_tests ();
   overflow_tests ();
-  /* TODO: near_underflow_tests (); */
+  half_plus_half ();
 
   tests_end_mpfr ();
   return 0;
