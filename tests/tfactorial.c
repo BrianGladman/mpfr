@@ -90,6 +90,8 @@ test_int (void)
           mpfr_set_prec (y, p);
           for (r = 0; r < MPFR_RND_MAX; r++)
             {
+              if ((mpfr_rnd_t) r == MPFR_RNDF)
+                continue;
               inex1 = mpfr_fac_ui (x, n, (mpfr_rnd_t) r);
               inex2 = mpfr_set_z (y, f, (mpfr_rnd_t) r);
               if (mpfr_cmp (x, y))
@@ -103,6 +105,7 @@ test_int (void)
                 {
                   printf ("Wrong inexact flag for n=%lu prec=%lu rnd=%s\n",
                           n, (unsigned long) p, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("Expected %d, got %d\n", inex2, inex1);
                   exit (1);
                 }
             }
@@ -158,7 +161,7 @@ overflowed_fac0 (void)
               err = 1;
             }
         }
-      else
+      else if (rnd != MPFR_RNDF)
         {
           if (inex <= 0)
             {
@@ -188,10 +191,12 @@ overflowed_fac0 (void)
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, err, yprec, n, k, zeros;
+  unsigned int err, k, zeros;
+  unsigned long n;
   int rnd;
   mpfr_t x, y, z, t;
   int inexact;
+  mpfr_prec_t prec, yprec;
 
   tests_start_mpfr ();
 
@@ -223,6 +228,8 @@ main (int argc, char *argv[])
       for (n = 0; n < 50; n++)
         for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
           {
+            if ((mpfr_rnd_t) rnd == MPFR_RNDF)
+              continue;
             inexact = mpfr_fac_ui (y, n, (mpfr_rnd_t) rnd);
             err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
             if (mpfr_can_round (y, err, (mpfr_rnd_t) rnd, (mpfr_rnd_t) rnd, prec))
@@ -238,6 +245,9 @@ main (int argc, char *argv[])
                     if (inexact)
                       {
                         printf ("Wrong inexact flag: expected exact\n");
+                        printf ("n=%lu prec=%lu rnd=%s\n",
+                                n, prec, mpfr_print_rnd_mode (rnd));
+                        mpfr_dump (z);
                         exit (1);
                       }
                   }
@@ -246,7 +256,8 @@ main (int argc, char *argv[])
                     if (!inexact)
                       {
                         printf ("Wrong inexact flag: expected inexact\n");
-                        printf ("n=%u prec=%u\n", n, prec);
+                        printf ("n=%lu prec=%lu rnd=%s\n",
+                                n, prec, mpfr_print_rnd_mode (rnd));
                         mpfr_dump (z);
                         exit (1);
                       }
@@ -255,7 +266,7 @@ main (int argc, char *argv[])
                   {
                     printf ("results differ for x=");
                     mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
-                    printf (" prec=%u rnd_mode=%s\n", prec,
+                    printf (" prec=%lu rnd_mode=%s\n", prec,
                             mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                     printf ("   got ");
                     mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
