@@ -125,7 +125,7 @@ check_large (void)
   __float128 f, e;
   int i;
   mpfr_t x, y;
-  mpfr_rnd_t r;
+  int r;
 
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
@@ -139,22 +139,22 @@ check_large (void)
   mpfr_sub_ui (y, y, 1, MPFR_RNDN);
   for (i = 113; i < 16384; i++)
     {
-      for (r = 0; r < MPFR_RND_MAX; r++)
+      RND_LOOP (r)
         {
-          mpfr_set_float128 (x, f, r);
+          mpfr_set_float128 (x, f, (mpfr_rnd_t) r);
           if (! mpfr_equal_p (x, y))
             {
               printf ("mpfr_set_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
-          e =  mpfr_get_float128 (x, r);
+          e =  mpfr_get_float128 (x, (mpfr_rnd_t) r);
           if (e != f)
             {
               printf ("mpfr_get_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               exit (1);
             }
         }
@@ -162,22 +162,22 @@ check_large (void)
       /* check with opposite number */
       f = -f;
       mpfr_neg (y, y, MPFR_RNDN);
-      for (r = 0; r < MPFR_RND_MAX; r++)
+      RND_LOOP (r)
         {
-          mpfr_set_float128 (x, f, r);
+          mpfr_set_float128 (x, f, (mpfr_rnd_t) r);
           if (! mpfr_equal_p (x, y))
             {
               printf ("mpfr_set_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
-          e =  mpfr_get_float128 (x, r);
+          e =  mpfr_get_float128 (x, (mpfr_rnd_t) r);
           if (e != f)
             {
               printf ("mpfr_get_float128 failed for -2^%d*(1-2^(-113)) rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               exit (1);
             }
         }
@@ -198,7 +198,7 @@ check_small (void)
   __float128 f, e;
   int i;
   mpfr_t x, y;
-  mpfr_rnd_t r;
+  int r;
 
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
@@ -208,32 +208,32 @@ check_small (void)
   mpfr_set_ui (y, 1, MPFR_RNDN);
   for (i = 0; f != 0.0; i--)
     {
-      for (r = 0; r < MPFR_RND_MAX; r++)
+      RND_LOOP (r)
         {
-          mpfr_set_float128 (x, f, r);
+          mpfr_set_float128 (x, f, (mpfr_rnd_t) r);
           if (! mpfr_equal_p (x, y))
             {
               printf ("mpfr_set_float128 failed for 2^%d rnd=%s\n", i,
-                      mpfr_print_rnd_mode (r));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("got ");
               mpfr_dump (x);
               exit (1);
             }
-          e =  mpfr_get_float128 (x, r);
+          e =  mpfr_get_float128 (x, (mpfr_rnd_t) r);
           if (e != f)
             {
               printf ("mpfr_get_float128 failed for 2^%d rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               exit (1);
             }
 
           /* check with opposite number */
-          mpfr_set_float128 (x, -f, r);
+          mpfr_set_float128 (x, -f, (mpfr_rnd_t) r);
           mpfr_neg  (y, y, MPFR_RNDN);
           if (! mpfr_equal_p (x, y))
             {
               printf ("mpfr_set_float128 failed for -2^%d rnd=%s\n", i,
-                      mpfr_print_rnd_mode (r));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               printf ("got ");
               mpfr_dump (x);
               exit (1);
@@ -241,11 +241,11 @@ check_small (void)
           if (e != f)
             {
               printf ("mpfr_get_float128 failed for -2^%d rnd=%s\n",
-                      i, mpfr_print_rnd_mode (r));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               exit (1);
             }
 
-          mpfr_neg  (y, y, MPFR_RNDN);
+          mpfr_neg (y, y, MPFR_RNDN);
         }
       f =  0.5 * f;
       mpfr_div_2exp (y, y, 1, MPFR_RNDN);
