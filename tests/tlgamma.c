@@ -385,10 +385,29 @@ mpfr_lgamma1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
   return mpfr_lgamma (y, &sign, x, r);
 }
 
+/* Since r10377, the following test causes a "too much memory" error
+   when MPFR is built with Debian's tcc 0.9.27~git20151227.933c223-1
+   on x86_64. */
+static void
+tcc_bug20160606 (void)
+{
+  mpfr_t x, y;
+  int sign;
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+  mpfr_lgamma (y, &sign, x, MPFR_RNDN);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
+
+  tcc_bug20160606 ();
 
   special ();
   test_generic (MPFR_PREC_MIN, 100, 2);
