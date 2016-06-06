@@ -235,11 +235,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           if (fb > 0)
             {
               if (bb != MPFR_LIMB_MAX)
-                {
-                  fb = 1; /* c hasn't been taken into account
-                             ==> sticky bit != 0 */
-                  goto rounding;
-                }
+                goto rounding;
             }
           else /* fb not initialized yet */
             {
