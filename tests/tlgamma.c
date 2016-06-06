@@ -387,7 +387,8 @@ mpfr_lgamma1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
 
 /* Since r10377, the following test causes a "too much memory" error
    when MPFR is built with Debian's tcc 0.9.27~git20151227.933c223-1
-   on x86_64. */
+   on x86_64. This was due to a bug in __gmpfr_ceil_log2, now fixed
+   in r10443. */
 static void
 tcc_bug20160606 (void)
 {
