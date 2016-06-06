@@ -28,6 +28,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_FLOAT128
 
+/* The q suffix is a GNU C extension, but so is __float128. */
+#define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383q
+
 int
 mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
 {
@@ -44,18 +47,16 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
     }
 
   /* Check for INF */
-  /* FIXME: The code below generates a divide-by-zero exception, thus
-     will fail if this exception is trapped. Replace it by > and <
-     comparisons with the maximum positive (resp. negative) finite
-     binary128 numbers? */
-  if (MPFR_UNLIKELY (d == ((__float128) 1.0 / (__float128) 0.0)))
+  if (MPFR_UNLIKELY (d > MPFR_FLOAT128_MAX))
     {
-      mpfr_set_inf (r, 1);
+      MPFR_SET_INF (r);
+      MPFR_SET_POS (r);
       return 0;
     }
-  else if (MPFR_UNLIKELY (d == ((__float128) -1.0 / (__float128) 0.0)))
+  else if (MPFR_UNLIKELY (d < -MPFR_FLOAT128_MAX))
     {
-      mpfr_set_inf (r, -1);
+      MPFR_SET_INF (r);
+      MPFR_SET_NEG (r);
       return 0;
     }
   /* Check for ZERO */
