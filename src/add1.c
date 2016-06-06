@@ -207,7 +207,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* determine rounding and sticky bits (and possible carry) */
+  /* Determine rounding and sticky bits (and possible carry).
+     In faithful rounding, we may stop two bits after ulp(a):
+     the error is < 1/2 ulp of the unrounded result. */
 
   difw = (mpfr_exp_t) an - (mpfr_exp_t) (diff_exp / GMP_NUMB_BITS);
   /* difw is the number of limbs from b (regarded as having an infinite
@@ -234,7 +236,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD(fb != 0);
           if (fb > 0)
             {
-              if (bb != MPFR_LIMB_MAX)
+              /* Note: Here, we can round to nearest, but the loop may still
+                 be necessary to determine whether there is a carry from c,
+                 which will have an effect on the ternary value. However, in
+                 faithful rounding, we do not have to determine the ternary
+                 value, so that we can end the loop here. */
+              if (bb != MPFR_LIMB_MAX || rnd_mode == MPFR_RNDF)
                 goto rounding;
             }
           else /* fb not initialized yet */
@@ -317,6 +324,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               if (fb && bb != MPFR_LIMB_MAX)
                 goto rounding;
             } /* fb < 0 */
+
+          /* At least two bits after ulp(a) have been read, which is
+             sufficient for faithful rounding, as we do not need to
+             determine on which side of a breakpoint the result is. */
+          if (rnd_mode == MPFR_RNDF)
+            goto rounding;
 
           while (bk > 0)
             {
@@ -402,7 +415,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
               fb = bb != 0;
             } /* fb < 0 */
-          if (fb)
+          if (fb || rnd_mode == MPFR_RNDF)
             goto rounding;
           while (bk)
             {
@@ -454,6 +467,11 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   rb = cc >> (GMP_NUMB_BITS - 1);
                   cc &= ~MPFR_LIMB_HIGHBIT;
                 }
+              if (cc == 0 && rnd_mode == MPFR_RNDF)
+                {
+                  fb = 0;
+                  goto rounding;
+                }
               while (cc == 0)
                 {
                   if (ck == 0)
@@ -469,23 +487,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     } /* fb != 1 */
 
  rounding:
-  /* fast track for faithful rounding */
-  if (rnd_mode == MPFR_RNDF)
-    {
-      /* The exact value of b + c is now in [a, a + 2[ where 2 stands for
-         the value of the lowest bit of ap[0]. If sh > 0, the difference
-         is less than ulp(a), thus we can return a. Note: we could return
-         add_one_ulp in all cases, which would give a simpler code here,
-         but the "add_one_ulp" code is more expensive. */
-      inex = 0;
-      if (sh)
-        goto set_exponent;
-      else /* we can return a+1 */
-        goto add_one_ulp;
-    }
-
-  /* rnd_mode should be one of MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
-  if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+  /* rnd_mode should be one of MPFR_RNDN, MPFR_RNDF, MPFR_RNDZ or MPFR_RNDA */
+  if (MPFR_LIKELY(rnd_mode == MPFR_RNDN || rnd_mode == MPFR_RNDF))
     {
       if (fb == 0)
         {
