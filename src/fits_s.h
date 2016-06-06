@@ -37,7 +37,7 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   int res;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
-    /* Zero always fit */
+    /* Zero always fits */
     return MPFR_IS_ZERO (f) ? 1 : 0;
 
   /* now it fits if either
