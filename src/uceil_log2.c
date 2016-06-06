@@ -33,7 +33,7 @@ __gmpfr_ceil_log2 (double d)
   union mpfr_ieee_double_extract x;
 
   x.d = d;
-  exp = x.s.exp - 1023;
+  exp = (long) x.s.exp - 1023;
   x.s.exp = 1023; /* value for 1 <= d < 2 */
   if (x.d != 1.0) /* d: not a power of two? */
     exp++;
