@@ -275,7 +275,7 @@ main (int argc, char *argv[])
   if (argc == 3 || argc == 4)
     {   /* tlog x prec rnd */
       check3 (argv[1], strtoul (argv[2], NULL, 10),
-              (argc == 4) ? atoi (argv[3]) : MPFR_RNDN);
+              (argc == 4) ? (mpfr_rnd_t) atoi (argv[3]) : MPFR_RNDN);
       goto done;
     }
 

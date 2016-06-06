@@ -110,16 +110,15 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       MPFR_SET_EXP (a, MPFR_GET_EXP (b));
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
-                        rnd_mode, MPFR_SIGN (a),
-                        if (MPFR_UNLIKELY (++ MPFR_EXP (a) > __gmpfr_emax))
-                        inexact = mpfr_overflow (a, rnd_mode, MPFR_SIGN (a)));
-      /* inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a));  */
+                        rnd_mode, MPFR_SIGN (a), ++ MPFR_EXP (a));
       if (inexact == 0)
         {
           /* a = b (Exact)
              But we know it isn't (Since we have to remove `c')
              So if we round to Zero, we have to remove one ulp.
              Otherwise the result is correctly rounded. */
+          /* An overflow is not possible. */
+          MPFR_ASSERTD (MPFR_EXP (a) <= __gmpfr_emax);
           if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
             {
               mpfr_nexttozero (a);
@@ -135,8 +134,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* It isn't exact so Prec(b) > Prec(a) and the last
              Prec(b)-Prec(a) bits of `b' are not zeros.
              Which means that removing c from b can't generate a carry
-             execpt in case of even rounding.
-             In all other case the result and the inexact flag should be
+             except in case of even rounding.
+             In all other cases the result and the inexact flag should be
              correct (We can't have an exact result).
              In case of EVEN rounding:
                1.BBBBBBBBBBBBBx10
@@ -150,9 +149,14 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              i.e. inexact= MPFR_EVEN_INEX */
           if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX * MPFR_INT_SIGN (a)))
             {
-              mpfr_nexttozero (a);
+              if (MPFR_UNLIKELY (MPFR_EXP (a) > __gmpfr_emax))
+                mpfr_setmax (a, __gmpfr_emax);
+              else
+                mpfr_nexttozero (a);
               inexact = -MPFR_INT_SIGN (a);
             }
+          else if (MPFR_UNLIKELY (MPFR_EXP (a) > __gmpfr_emax))
+            inexact = mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
           MPFR_RET (inexact);
         }
     }
@@ -209,9 +213,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 
+#ifdef DEBUG
   MPFR_LOG_MSG (("rnd=%s shift_b=%d shift_c=%d diffexp=%" MPFR_EXP_FSPEC
                  "d\n", mpfr_print_rnd_mode (rnd_mode), shift_b, shift_c,
                  (mpfr_eexp_t) diff_exp));
+#endif
 
   MPFR_ASSERTD (ap != cp);
   MPFR_ASSERTD (bp != cp);
@@ -240,8 +246,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
   /* the high cancel2 limbs from b should not be taken into account */
+#ifdef DEBUG
   MPFR_LOG_MSG (("cancel=%Pd cancel1=%Pd cancel2=%Pd\n",
                  cancel, cancel1, cancel2));
+#endif
 
   /*               ap[an-1]        ap[0]
              <----------------+-----------|---->
@@ -276,8 +284,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       }
     else
       MPN_ZERO (ap, an);
-
-  MPFR_LOG_VAR (a);
 
   /* subtract high(c) */
   if (MPFR_LIKELY(an + cancel2 > 0)) /* otherwise c does not overlap with a */
@@ -319,8 +325,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_sub_1 (ap2, ap2, -cancel2, borrow);
         }
     }
-
-  MPFR_LOG_VAR (a);
 
   /* now perform rounding */
   sh = (mpfr_prec_t) an * GMP_NUMB_BITS - aq;
@@ -374,8 +378,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn0 = cn;
   cn -= an + cancel2;
 
+#ifdef DEBUG
   MPFR_LOG_MSG (("last sh=%d bits from a are %Mu, bn=%Pd, cn=%Pd\n",
                  sh, carry, (mpfr_prec_t) bn, (mpfr_prec_t) cn));
+#endif
 
   /* for rounding to nearest, we couldn't conclude up to here in the following
      cases:
@@ -465,7 +471,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
 
+#ifdef DEBUG
       MPFR_LOG_MSG (("k=%d bb=%Mu cc=%Mu cmp_low=%d\n", k, bb, cc, cmp_low));
+#endif
 
       if (cmp_low < 0) /* low(b) - low(c) < 0: either truncate or subtract
                           one ulp */
