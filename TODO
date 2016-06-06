@@ -451,6 +451,24 @@ Table of contents:
   * In debug mode, MPFR would check that the result is exact
     (i.e. that the ternary value is 0).
 
+- new "rounding mode" MPFR_RNDF (faithful rounding)?
+  This is not really a rounding mode since it is non-deterministic. The
+  goal is to avoid the Table Maker's Dilemma in internal computations.
+  The definition of faithful rounding of a real number x is: return either
+  RNDD(x) or RNDU(x). This means that if x is exactly representable, one
+  returns x exactly. In MPFR, the ternary value should be unspecified for
+  efficiency reasons.
+  Note: One typically implements faithful rounding by computing an
+  approximation to the result with some adequately chosen error bound,
+  then by rounding this approximation to nearest.
+  Concerning the choice of the error bound, if the result x is equal to
+  1 + t, where t is a very small positive number, then the error bound
+  needs to be at most ulp(1)/4 + t. Since t can be arbitrarily small,
+  the error bound needs to be at most ulp(1)/4. And this error bound
+  is sufficient in all cases. Note that with the even rounding rule or
+  rounding away from zero, it is not needed to relax the condition when
+  x is exactly representable.
+
 - add tests of the ternary value for constants
 
 - When doing Extensive Check (--enable-assert=full), since all the
