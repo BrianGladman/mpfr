@@ -209,7 +209,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Determine rounding and sticky bits (and possible carry).
      In faithful rounding, we may stop two bits after ulp(a):
-     the error is < 1/2 ulp of the unrounded result. */
+     the approximation is regarded as the number formed by a,
+     the rounding bit rb and an additional bit fb; and the
+     corresponding error is < 1/2 ulp of the unrounded result. */
 
   difw = (mpfr_exp_t) an - (mpfr_exp_t) (diff_exp / GMP_NUMB_BITS);
   /* difw is the number of limbs from b (regarded as having an infinite
