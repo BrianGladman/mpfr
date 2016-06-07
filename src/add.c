@@ -31,7 +31,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
      ("a[%Pu]=%.*Rg", mpfr_get_prec (a), mpfr_log_prec, a));
 
-  if (MPFR_ARE_SINGULAR(b,c))
+  if (MPFR_ARE_SINGULAR_OR_UBF (b, c))
     {
       if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
         {
@@ -59,7 +59,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             MPFR_SET_SAME_SIGN(a, c);
             MPFR_RET(0); /* exact */
           }
-      /* now either b or c is zero */
+      /* now both b and c are finite numbers */
       else if (MPFR_IS_ZERO(b))
         {
           if (MPFR_IS_ZERO(c))
@@ -78,10 +78,22 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           return mpfr_set (a, c, rnd_mode);
         }
+      else if (MPFR_IS_ZERO(c))
+        {
+          return mpfr_set (a, b, rnd_mode);
+        }
       else
         {
-          MPFR_ASSERTD(MPFR_IS_ZERO(c));
-          return mpfr_set (a, b, rnd_mode);
+          MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+          MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
+          /* mpfr_sub1sp and mpfr_add1sp are not intended to support UBF,
+             for which optimization is less important. */
+          if (MPFR_SIGN(b) != MPFR_SIGN(c))
+            return mpfr_sub1 (a, b, c, rnd_mode);
+          else if (MPFR_EXP_LESS_P (b, c))
+            return mpfr_add1 (a, c, b, rnd_mode);
+          else
+            return mpfr_add1 (a, b, c, rnd_mode);
         }
     }
 

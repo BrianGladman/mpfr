@@ -30,13 +30,21 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t *ap, *bp, *cp;
   mpfr_prec_t aq, bq, cq, aq2;
   mp_size_t an, bn, cn;
-  mpfr_exp_t difw, exp;
+  mpfr_exp_t difw, exp, diff_exp;
   int sh, rb, fb, inex;
-  mpfr_uexp_t diff_exp;
   MPFR_TMP_DECL(marker);
 
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
-  MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
+
+  if (MPFR_UNLIKELY (MPFR_IS_UBF (b)))
+    {
+      exp = mpfr_ubf_zexp2exp (MPFR_ZEXP (b));
+      if (exp > __gmpfr_emax)
+        return mpfr_overflow (a, rnd_mode, MPFR_SIGN (b));;
+    }
+  else
+    exp = MPFR_GET_EXP (b);
 
   MPFR_TMP_MARK(marker);
 
@@ -68,13 +76,18 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPN_COPY(cp, ap, cn);
     }
 
-  exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
   /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
-  /* Note: exponents can be negative, but the unsigned subtraction is
-     a modular subtraction, so that one gets the correct result. */
-  diff_exp = (mpfr_uexp_t) exp - MPFR_GET_EXP(c);
+  if (MPFR_UNLIKELY (MPFR_IS_UBF (c)))
+    {
+      MPFR_STAT_STATIC_ASSERT (MPFR_EXP_MAX > MPFR_PREC_MAX);
+      diff_exp = mpfr_ubf_diff_exp (b, c);
+    }
+  else
+    diff_exp = exp - MPFR_GET_EXP (c);
+
+  MPFR_ASSERTD (diff_exp >= 0);
 
   /*
    * 1. Compute the significant part A', the non-significant bits of A

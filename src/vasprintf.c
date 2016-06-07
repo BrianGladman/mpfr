@@ -1552,6 +1552,24 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             }
         }
     }
+  else if (MPFR_UNLIKELY (MPFR_IS_UBF (p)))
+    {
+      /* mpfr_get_str does not support UBF, so that UBF numbers are regarded
+         as special cases here. This is not much a problem since UBF numbers
+         are internal to MPFR and here, they only for logging. */
+      if (np->pad_type == LEADING_ZEROS)
+        /* change to right justification padding with left spaces */
+        np->pad_type = LEFT;
+
+      if (MPFR_IS_NEG (p))
+        np->sign = '-';
+
+      np->ip_size = 3;
+      str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+      strcpy (str, uppercase ? "UBF" : "ubf");
+      np->ip_ptr = register_string (np->sl, str);
+      /* TODO: output more information (e.g. the exponent) if need be. */
+    }
   else
     {
       MPFR_ASSERTD (MPFR_IS_PURE_FP (p));
