@@ -2268,7 +2268,9 @@ extern "C" {
    makes mpfr_t to UBF conversion unnecessary.
    When an input of a public function is a UBF, the semantic remains
    internal to MPFR and can change in the future.
-   Note that functions used for logging need to support UBF. *FIXME* */
+   Note that functions used for logging need to support UBF (currently
+   done by printing that a number is a UBF, as it may be difficult to
+   do more without significant changes). */
 
 typedef struct {
   mpfr_prec_t  _mpfr_prec;
