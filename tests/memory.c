@@ -40,9 +40,16 @@ struct header {
   struct header  *next;
 };
 
+/* The memory limit can be changed with the MPFR_TESTS_MEMORY_LIMIT
+   environment variable. This is normally not necessary (a failure
+   would mean a bug), thus not recommended, for "make check". But
+   some test programs can take arguments for particular tests, which
+   may need more memory. This variable is exported, so that such
+   programs may also change the memory limit. */
+size_t tests_memory_limit = DEFAULT_MEMORY_LIMIT;
+
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
-static size_t tests_memory_limit = 1UL << 22;  /* default memory limit */
 MPFR_LOCK_DECL(mpfr_lock_memory)
 
 static void *
@@ -247,11 +254,6 @@ tests_memory_start (void)
   tests_memory_list = NULL;
   mp_set_memory_functions (tests_allocate, tests_reallocate, tests_free);
 
-  /* The memory limit can be changed with the MPFR_TESTS_MEMORY_LIMIT
-     environment variable. This is normally not necessary (a failure
-     would mean a bug), thus not recommended, for "make check". But
-     some test programs can take arguments for particular tests, which
-     may need more memory. */
   p = getenv ("MPFR_TESTS_MEMORY_LIMIT");
   if (p != NULL)
     {

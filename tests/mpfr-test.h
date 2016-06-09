@@ -79,6 +79,9 @@ extern "C" {
 
 int test_version (void);
 
+/* Memory handling */
+#define DEFAULT_MEMORY_LIMIT (1UL << 22)
+extern size_t tests_memory_limit;
 void tests_memory_start (void);
 void tests_memory_end (void);
 

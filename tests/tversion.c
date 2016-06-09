@@ -219,6 +219,11 @@ main (void)
   tests_start_mpfr ();
   if (locale != NULL)
     printf ("[tversion] Locale: %s\n", locale);
+  /* The memory limit should not be changed for "make check".
+     The warning below signals a possible user mistake. */
+  if (tests_memory_limit != DEFAULT_MEMORY_LIMIT)
+    printf ("[tversion] Warning! Memory limit changed to %zu\n",
+            tests_memory_limit);
   tests_end_mpfr ();
 
   return err;
