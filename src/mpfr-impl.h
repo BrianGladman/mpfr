@@ -820,11 +820,13 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 #if _MPFR_EXP_FORMAT <= 3
 typedef long int mpfr_eexp_t;
+typedef unsigned long int mpfr_ueexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
 # define MPFR_EXP_FSPEC "l"
 #else
 typedef intmax_t mpfr_eexp_t;
+typedef uintmax_t mpfr_ueexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_sj((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_sj((x),(e),(r))
 # define MPFR_EXP_FSPEC "j"
