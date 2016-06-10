@@ -924,7 +924,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         MPFR_LOG_MSG (("TMD with"
                        " maxexp=%" MPFR_EXP_FSPEC "d"
                        " err=%" MPFR_EXP_FSPEC "d"
-                       " zs=%Pd",
+                       " zs=%Pd"
                        " zq=%Pd\n",
                        (mpfr_eexp_t) maxexp, (mpfr_eexp_t) err,
                        (mpfr_prec_t) zs, zq));
