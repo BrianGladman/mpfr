@@ -511,6 +511,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   mp_limb_t *wp;  /* pointer to the accumulator */
   mp_size_t ts;   /* size of the temporary area, in limbs */
   mp_size_t ws;   /* size of the accumulator, in limbs */
+  mp_size_t zs;   /* size of the TMD accumulator, in limbs */
   mpfr_prec_t wq; /* size of the accumulator, in bits */
   int logn;       /* ceil(log2(rn)) */
   int cq;
@@ -552,6 +553,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
   MPFR_ASSERTD (wq - cq - sq >= 4);
 
+  /* TODO: timings, comparing with a larger zs. */
+  zs = MPFR_PREC2LIMBS (wq - sq);
+
   MPFR_LOG_MSG (("cq=%d sq=%Pd logn=%d wq=%Pd\n", cq, sq, logn, wq));
 
   /* An input block will have up to wq - cq bits, and its shifted value
@@ -560,7 +564,28 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
   MPFR_TMP_MARK (marker);
 
-  tp = MPFR_TMP_LIMBS_ALLOC (ts + ws);
+  /* Note: If the TMD does not occur, which should be the case for most
+     sums, allocating zs limbs is not necessary. However, we choose to
+     do this now (thus in all cases) because zs is very small, so that
+     the difference on the memory footprint will not be noticeable.
+     More precisely, zs is at most 2 in practice with the current code;
+     we may want to increase it in order to avoid performance issues in
+     some unlikely corner cases, but even in this case, it will remain
+     small.
+     One will have:
+       [------ ts ------][------ ws ------][- zs -]
+     The following would probably be better:
+       [------ ts ------]  [------ ws ------]
+                   [- zs -]
+     i.e. where the TMD accumulator (partially or completely) takes
+     some unneeded part of the temporary area in order to improve
+     data locality. But
+       * in low precision, data locality is regarded as ensured even
+         with the actual choice;
+       * in high precision, data locality for TMD resolution may not
+         be that important.
+  */
+  tp = MPFR_TMP_LIMBS_ALLOC (ts + ws + zs);
   wp = tp + ts;
 
   MPN_ZERO (wp, ws);  /* zero the accumulator */
@@ -882,25 +907,27 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     else
       {
         mpfr_exp_t err;  /* exponent of the error bound */
-        mp_size_t zs;
-        int sst;  /* sign of the secondary term */
+        mp_size_t zz;    /* number of limbs to zero in the TMD accumulator */
+        mp_limb_t *zp;   /* pointer to the TMD accumulator */
+        mpfr_prec_t zq;  /* size of the TMD accumulator, in bits */
+        int sst;         /* sign of the secondary term */
 
         MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
         MPFR_ASSERTD (tmd == 1 || tmd == 2);
 
-        /* New accumulator size */
-        ws = MPFR_PREC2LIMBS (wq - sq);
-        wq = (mpfr_prec_t) ws * GMP_NUMB_BITS;
+        /* TMD accumulator */
+        zp = wp + ws;
+        zq = (mpfr_prec_t) zs * GMP_NUMB_BITS;
 
         err = maxexp + logn;
 
         MPFR_LOG_MSG (("TMD with"
                        " maxexp=%" MPFR_EXP_FSPEC "d"
                        " err=%" MPFR_EXP_FSPEC "d"
-                       " ws=%Pd"
-                       " wq=%Pd\n",
+                       " zs=%Pd",
+                       " zq=%Pd\n",
                        (mpfr_eexp_t) maxexp, (mpfr_eexp_t) err,
-                       (mpfr_prec_t) ws, wq));
+                       (mpfr_prec_t) zs, zq));
 
         /* The d-1 bits from u-2 to u-d (= err) are identical. */
 
@@ -923,22 +950,22 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               {
                 wi++;  /* number of words with represented bits */
                 td = GMP_NUMB_BITS - td;
-                zs = ws - wi;
-                MPFR_ASSERTD (zs >= 0 && zs < ws);
-                mpn_lshift (wp + zs, wp, wi, td);
+                zz = zs - wi;
+                MPFR_ASSERTD (zz >= 0 && zz < zs);
+                mpn_lshift (zp + zz, wp, wi, td);
               }
             else
               {
                 MPFR_ASSERTD (wi > 0);
-                zs = ws - wi;
-                MPFR_ASSERTD (zs >= 0 && zs < ws);
-                if (zs > 0)
-                  MPN_COPY_DECR (wp + zs, wp, wi);
+                zz = zs - wi;
+                MPFR_ASSERTD (zz >= 0 && zz < zs);
+                if (zz > 0)
+                  MPN_COPY_DECR (zp + zz, wp, wi);
               }
 
             /* Compute minexp = minexp - (zs * GMP_NUMB_BITS + td) safely. */
-            UPDATE_MINEXP (minexp, zs * GMP_NUMB_BITS + td);
-            MPFR_ASSERTD (minexp == err + 2 - wq);
+            UPDATE_MINEXP (minexp, zz * GMP_NUMB_BITS + td);
+            MPFR_ASSERTD (minexp == err + 2 - zq);
           }
         else  /* err < minexp */
           {
@@ -948,25 +975,25 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                from maxexp, with cq bits reserved to avoid an overflow
                (as in the early steps). */
             MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
-            zs = ws;
+            zz = zs;
 
-            /* Compute minexp = maxexp - (wq - cq) safely. */
-            UPDATE_MINEXP (maxexp, wq - cq);
-            MPFR_ASSERTD (minexp == err + 1 - wq);
+            /* Compute minexp = maxexp - (zq - cq) safely. */
+            UPDATE_MINEXP (maxexp, zq - cq);
+            MPFR_ASSERTD (minexp == err + 1 - zq);
           }
 
-        MPN_ZERO (wp, zs);
+        MPN_ZERO (zp, zz);
 
         /* We need to determine the sign sst of the secondary term.
            In sum_raw, since the truncated sum corresponding to this
            secondary term will be in [2^(e-1),2^e] and the error
            strictly less than 2^err, we can stop the iterations when
            e - err >= 1 (this bound is the 11th argument of sum_raw). */
-        cancel = sum_raw (wp, ws, wq, x, n, minexp, maxexp, tp, ts,
+        cancel = sum_raw (zp, zs, zq, x, n, minexp, maxexp, tp, ts,
                           logn, 1, NULL, &minexp, &maxexp);
 
         if (cancel != 0)
-          sst = MPFR_LIMB_MSB (wp[ws-1]) == 0 ? 1 : -1;
+          sst = MPFR_LIMB_MSB (zp[zs-1]) == 0 ? 1 : -1;
         else if (tmd == 1)
           sst = 0;
         else

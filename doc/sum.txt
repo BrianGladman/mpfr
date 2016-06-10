@@ -733,6 +733,8 @@ Accumulator:  [--------]-----------------------------------]
 
 where cq = logn + 1, sq is the target precision, and dq ≥ logn + 2.
 
+TODO: Update for code supporting reuse.
+
 Memory is allocated both for the accumulator and for the temporary area
 needed by sum_raw. For performance reasons, the allocation is done in
 the stack if the size is small enough (see MPFR_TMP_LIMBS_ALLOC macro).
@@ -936,6 +938,9 @@ We distinguish two cases:
   * tmd ≠ 0. The TMD occurs and will be solved by determining the sign
     (−1, 0 or +1) of a secondary term with a second sum_raw invocation
     with a small-precision accumulator.
+
+    TODO: Update for code supporting reuse. Still explain what was done
+    before.
 
     Since the uncorrected significand (which consists of the bits of
     exponents in ⟦max(u,minexp),e⟦ as mentioned above) has already been
