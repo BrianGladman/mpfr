@@ -591,7 +591,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
   MPN_ZERO (wp, ws);  /* zero the accumulator */
 
   {
-    mpfr_exp_t minexp;   /* exponent of the LSB of the block */
+    mpfr_exp_t minexp;   /* exponent of the LSB of the block for sum_raw */
     mpfr_prec_t cancel;  /* number of cancelled bits */
     mpfr_exp_t e;        /* temporary exponent of the result */
     mpfr_exp_t u;        /* temporary exponent of the ulp (quantum) */
