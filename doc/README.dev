@@ -266,7 +266,7 @@ To make a release (for the MPFR team):
      *after* the -fsanitize=undefined one.
 
      GCC 4.9 also supports "-fsanitize=undefined", but it just gives
-     diagnostic messages at runtime, not a failure; GCC trunk supports
+     diagnostic messages at runtime, not a failure; GCC 5 supports
      -fno-sanitize-recover like clang.
 
      Test with GCC's AddressSanitizer (-fsanitize=address).
