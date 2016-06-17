@@ -567,6 +567,18 @@ Table of contents:
   The exponent delta should be sufficient for now since it can be bounded
   by MPFR_PREC_MAX+1 if need be.
 
+- use the keyword "static" in array indices of parameter declarations with
+  C99 compilers (6.7.5.3p7) when the pointer is expected not to be null?
+  For instance, if mpfr.h is changed to have:
+    __MPFR_DECLSPEC void mpfr_dump (const __mpfr_struct [static 1]);
+  and one calls
+    mpfr_dump (NULL);
+  one gets a warning with Clang. This is just an example; this needs to be
+  done in a clean way.
+  See:
+    http://stackoverflow.com/a/3430353/3782797
+    https://hamberg.no/erlend/posts/2013-02-18-static-array-indices.html
+
 
 ##############################################################################
 7. Portability
