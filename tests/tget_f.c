@@ -189,9 +189,12 @@ ternary_test (void)
       {
         inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
-        if (inex != 0 || mpfr_cmp_f (y, x) !=0)
+        if (rnd == MPFR_RNDF)
+          continue;
+
+        if (inex != 0 || mpfr_cmp_f (y, x) != 0)
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (1) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");
@@ -220,10 +223,13 @@ ternary_test (void)
 
         inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
+        if (rnd == MPFR_RNDF)
+          continue;
+
         if (! SAME_SIGN (expected_inex, inex)
             || SAME_SIGN (expected_inex, mpfr_cmp_f (y, x)))
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (2) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");
@@ -243,9 +249,12 @@ ternary_test (void)
       {
         inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
+        if (rnd == MPFR_RNDF)
+          continue;
+
         if (! SAME_SIGN (inex, -mpfr_cmp_f (y, x)))
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (3) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");

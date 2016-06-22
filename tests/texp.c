@@ -866,6 +866,9 @@ underflow_up (int extended_emin)
                                 (unsigned int) __gmpfr_flags, flags);
                         err = 1;
                       }
+                    if (rnd == MPFR_RNDF)
+                      continue; /* the test below makes no sense, since RNDF
+                                   does not give a deterministic result */
                     if (rnd == MPFR_RNDU || rnd == MPFR_RNDA || rnd == MPFR_RNDN ?
                         mpfr_cmp0 (y, minpos) != 0 : MPFR_NOTZERO (y))
                       {

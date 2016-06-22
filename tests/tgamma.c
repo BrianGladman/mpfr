@@ -802,6 +802,9 @@ tiny_aux (int stop, mpfr_exp_t e)
           mpfr_rnd_t rr = (mpfr_rnd_t) r;
           mpfr_exp_t exponent, emax;
 
+          if (rr == MPFR_RNDF)
+            continue;
+
           /* Exponent of the rounded value in unbounded exponent range. */
           exponent = expected_dir[s][r] < 0 && s == 0 ? - e : 1 - e;
 

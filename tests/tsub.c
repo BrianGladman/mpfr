@@ -690,6 +690,9 @@ check_max_almosteven (void)
                   mpfr_flags_t flags1, flags2;
                   int inex1, inex2;
 
+                  if (rnd == MPFR_RNDF)
+                    continue;
+
                   /* Expected result. */
                   flags1 = MPFR_FLAGS_INEXACT;
                   if (rnd == MPFR_RNDN || MPFR_IS_LIKE_RNDZ (rnd, neg))

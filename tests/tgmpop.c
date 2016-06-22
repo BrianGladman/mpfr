@@ -571,13 +571,13 @@ test_genericz (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
           mpz_urandomb (arg2, RANDS, 1024);
-          rnd = RND_RAND ();
+          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
           mpfr_set_prec (dst_big, 2*prec);
-          compare = func(dst_big, arg1, arg2, rnd);
+          compare = func (dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, 2*prec, rnd, rnd, prec))
             {
               mpfr_set (tmp, dst_big, rnd);
-              inexact = func(dst_small, arg1, arg2, rnd);
+              inexact = func (dst_small, arg1, arg2, rnd);
               if (mpfr_cmp (tmp, dst_small))
                 {
                   printf ("Results differ for prec=%u rnd_mode=%s and %s_z:\n"
@@ -648,7 +648,7 @@ test_generic2z (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
           mpz_urandomb (arg2, RANDS, 1024);
-          rnd = RND_RAND ();
+          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
           mpfr_set_prec (dst_big, 2*prec);
           compare = func(dst_big, arg2, arg1, rnd);
           if (mpfr_can_round (dst_big, 2*prec, rnd, rnd, prec))
@@ -726,7 +726,7 @@ test_genericq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
           mpfr_urandomb (arg1, RANDS);
           mpq_set_ui (arg2, randlimb (), randlimb() );
           mpq_canonicalize (arg2);
-          rnd = RND_RAND ();
+          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
           mpfr_set_prec (dst_big, prec+10);
           compare = func(dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, prec+10, rnd, rnd, prec))

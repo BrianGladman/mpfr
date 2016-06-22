@@ -37,14 +37,12 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   int res;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
-    /* Zero always fit, except for RNDF, since 0 might be rounded to -1 */
-    return MPFR_IS_ZERO (f) ? (rnd != MPFR_RNDF) : 0;
+    /* Zero always fit */
+    return MPFR_IS_ZERO (f) ? 1 : 0;
 
   /* now it fits if either
      (a) MINIMUM <= f <= MAXIMUM
-     (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM
-     except or rnd = RNDF: when f = MINIMUM or MAXIMUM, it might be
-     rounded to MINIMUM-1 or MAXIMUM+1 */
+     (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM */
 
   e = MPFR_GET_EXP (f);
   if (e < 1)
@@ -86,17 +84,14 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   /* hard case: first round to prec bits, then check */
   saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
-  mpfr_set (x, f, rnd);
+  /* for RNDF, it suffices to check it fits when rounded away from zero */
+  mpfr_set (x, f, (rnd == MPFR_RNDF) ? MPFR_RNDA : rnd);
   /* Warning! Due to the rounding, x can be an infinity. Here we use
      the fact that singular numbers have a special exponent field,
      thus well-defined and different from e, in which case this means
      that the number does not fit. That's why we use MPFR_EXP, not
      MPFR_GET_EXP. */
   res = neg ? (mpfr_cmp_si (x, MINIMUM) >= 0) : (MPFR_EXP (x) == e);
-  /* special case for RNDF and x = MINIMUM or MAXIMUM */
-  if (MPFR_UNLIKELY(rnd == MPFR_RNDF && (mpfr_cmp_si (x, MINIMUM) == 0 ||
-                                         mpfr_cmp_si (x, MAXIMUM) == 0)))
-      res = 0;
   mpfr_clear (x);
   __gmpfr_flags = saved_flags;
   return res;

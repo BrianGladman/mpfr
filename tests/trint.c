@@ -171,8 +171,8 @@ special (void)
           inex2 = mpfr_rint_##F (z, x, (mpfr_rnd_t) r);                 \
           flags = __gmpfr_flags;                                        \
           if (! (mpfr_equal_p (y, z) &&                                 \
-                 (r == MPFR_RNDF || (SAME_SIGN (inex1, inex2) &&        \
-                                     flags == ex_flags))))              \
+                 SAME_SIGN (inex1, inex2) &&                            \
+                 flags == ex_flags))                                    \
             {                                                           \
               printf ("Basic test failed on mpfr_rint_" #F              \
                       ", prec = %d, i = %d, %s\n", prec, s * i,         \
@@ -287,6 +287,8 @@ basic_tests (void)
             e = mpfr_get_exp (x);
             RND_LOOP(r)
               {
+                if (r == MPFR_RNDF)
+                  continue;
                 BASIC_TEST (trunc, s * (i/4));
                 BASIC_TEST (floor, s > 0 ? i/4 : - ((i+3)/4));
                 BASIC_TEST (ceil, s > 0 ? (i+3)/4 : - (i/4));

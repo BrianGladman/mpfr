@@ -41,14 +41,12 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   int res;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
-    /* Zero always fit, except for RNDF, since 0 might be rounded to -1 */
-    return MPFR_IS_ZERO (f) ? (rnd != MPFR_RNDF) : 0;
+    /* Zero always fit */
+    return MPFR_IS_ZERO (f) ? 1 : 0;
 
   /* now it fits if either
      (a) MINIMUM <= f <= MAXIMUM
-     (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM
-     except or rnd = RNDF: when f = MINIMUM or MAXIMUM, it might be
-     rounded to MINIMUM-1 or MAXIMUM+1 */
+     (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM */
 
   e = MPFR_EXP (f);
   if (e < 1)
@@ -90,14 +88,15 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   /* hard case: first round to prec bits, then check */
   saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
-  mpfr_set (x, f, rnd);
+  /* for RNDF, it is necessary and sufficient to check it fitst when rounding
+     away from zero */
+  mpfr_set (x, f, (rnd == MPFR_RNDF) ? MPFR_RNDA : rnd);
 
   if (neg)
     {
       mpfr_init2 (y, prec);
       mpfr_set_sj (y, MPFR_INTMAX_MIN, MPFR_RNDN);
-      res = (rnd != MPFR_RNDF) ? mpfr_cmp (x, y) >= 0
-        : mpfr_cmp (x, y) > 0;
+      res = mpfr_cmp (x, y) >= 0;
       mpfr_clear (y);
     }
   else
@@ -107,15 +106,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
          thus well-defined and different from e, in which case this means
          that the number does not fit. That's why we use MPFR_EXP, not
          MPFR_GET_EXP. */
-      if (rnd != MPFR_RNDF)
-        res = MPFR_EXP (x) == e;
-      else
-        {
-          mpfr_init2 (y, prec);
-          mpfr_set_sj (y, MPFR_INTMAX_MAX, MPFR_RNDN);
-          res = mpfr_cmp (x, y) < 0;
-          mpfr_clear (y);
-        }
+      res = MPFR_EXP (x) == e;
     }
 
   mpfr_clear (x);

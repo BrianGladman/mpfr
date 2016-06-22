@@ -85,7 +85,7 @@ check_sj (intmax_t s, mpfr_ptr x)
               ex_flags |= MPFR_FLAGS_INEXACT;
             r = mpfr_get_sj (y, (mpfr_rnd_t) rnd);
             gt_flags = __gmpfr_flags;
-            if (r != s || gt_flags != ex_flags)
+            if ((r != s || gt_flags != ex_flags) && rnd != MPFR_RNDF)
               {
                 printf ("Error in check_sj for fi = %d, y = ", fi);
                 mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
@@ -144,7 +144,7 @@ check_uj (uintmax_t u, mpfr_ptr x)
               ex_flags |= MPFR_FLAGS_INEXACT;
             r = mpfr_get_uj (y, (mpfr_rnd_t) rnd);
             gt_flags = __gmpfr_flags;
-            if (r != u || gt_flags != ex_flags)
+            if ((r != u || gt_flags != ex_flags) && rnd != MPFR_RNDF)
               {
                 printf ("Error in check_uj for fi = %d, y = ", fi);
                 mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
@@ -249,7 +249,7 @@ test_get_uj_smallneg (void)
           uintmax_t u;
 
           mpfr_clear_erangeflag ();
-          s = mpfr_get_sj (x, (mpfr_rnd_t) r);
+          s = mpfr_get_sj (x, (mpfr_rnd_t) (r != MPFR_RNDF) ? r : MPFR_RNDA);
           if (mpfr_erangeflag_p ())
             {
               printf ("ERROR for get_sj + ERANGE + small negative op"

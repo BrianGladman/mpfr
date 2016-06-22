@@ -33,8 +33,7 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   int res;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
-  /* Zero always fits except for RNDF, since 0 might be rounded to -1 */
-    return MPFR_IS_ZERO (f) ? (rnd != MPFR_RNDF) : 0;
+    return MPFR_IS_ZERO (f) ? 1 : 0;  /* Zero always fits */
 
   e = MPFR_GET_EXP (f);
 
@@ -42,15 +41,11 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
     return e >= 1 ? 0  /* f <= -1 does not fit */
       : rnd != MPFR_RNDN ? MPFR_IS_LIKE_RNDU (rnd, -1)  /* directed mode */
       : e < 0 ? 1  /* f > -1/2 fits in MPFR_RNDN */
-      : (rnd != MPFR_RNDF)
-      ? mpfr_powerof2_raw(f)  /* -1/2 fits, -1 < f < -1/2 don't */
-      : 0; /* a negative number can be rounded to -1 for RNDF */
+      : mpfr_powerof2_raw(f);  /* -1/2 fits, -1 < f < -1/2 don't */
 
-  /* Now it fits if either
+  /* Now it fits if
      (a) f <= MAXIMUM
-     (b) round(f, prec(slong), rnd) <= MAXIMUM
-     except when f = MAXIMUM and rnd = RNDF, where it might be rounded to
-     MAXIMUM+1 */
+     (b) round(f, prec(slong), rnd) <= MAXIMUM */
 
   /* first compute prec(MAXIMUM); fits in an int */
   for (s = MAXIMUM, prec = 0; s != 0; s /= 2, prec ++);
@@ -70,6 +65,7 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   /* hard case: first round to prec bits, then check */
   saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
+  /* For MPFR_RNDF, if f > 0 fits with RNDU, it will also fit with RNDD. */
   mpfr_set (x, f, (rnd != MPFR_RNDF) ? rnd : MPFR_RNDU);
   /* Warning! Due to the rounding, x can be an infinity. Here we use
      the fact that singular numbers have a special exponent field,
@@ -77,8 +73,6 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
      that the number does not fit. That's why we use MPFR_EXP, not
      MPFR_GET_EXP. */
   res = MPFR_EXP (x) == e;
-  if (MPFR_UNLIKELY(rnd == MPFR_RNDF && mpfr_cmp_ui (x, MAXIMUM) == 0))
-    res = 0;
   mpfr_clear (x);
   __gmpfr_flags = saved_flags;
   return res;

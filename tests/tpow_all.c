@@ -373,6 +373,9 @@ tst (void)
           int exact, inex;
           unsigned int flags;
 
+          if (rnd == MPFR_RNDF)
+            continue;
+
           if (my_setstr (x, val[i]) || my_setstr (y, val[j]))
             {
               printf ("internal error for (%d,%d,%d)\n", i, j, rnd);
@@ -512,6 +515,9 @@ underflow_up1 (void)
         {
           int zero;
 
+          if (rnd == MPFR_RNDF)
+            continue;
+
           zero = (i > 4 && (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)) ||
             (i >= 8 && rnd == MPFR_RNDN);
 
@@ -582,6 +588,9 @@ underflow_up2 (void)
       int expected_inex;
       char sy[256];
 
+      if (rnd == MPFR_RNDF)
+        continue;
+
       mpfr_set_ui (z0, 0, MPFR_RNDN);
       expected_inex = rnd == MPFR_RNDN || rnd == MPFR_RNDU || rnd == MPFR_RNDA ?
         (mpfr_nextabove (z0), 1) : -1;
@@ -618,6 +627,9 @@ underflow_up3 (void)
       {
         unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
         int expected_inex;
+
+        if (rnd == MPFR_RNDF)
+          continue;
 
         mpfr_set_ui (x, 2, MPFR_RNDN);
         if (i < 0)
@@ -694,6 +706,9 @@ overflow_inv (void)
                 {
                   int inf, overflow;
                   mpfr_rnd_t rnd2;
+
+                  if (rnd == MPFR_RNDF)
+                    continue;
 
                   if (rnd == MPFR_RNDA)
                     rnd2 = s < 0 ? MPFR_RNDD : MPFR_RNDU;

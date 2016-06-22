@@ -78,6 +78,9 @@ main (int argc, char *argv[])
       {
         int ex_inex;
 
+        if (rnd == MPFR_RNDF)
+          continue;
+
         set_emin (i);
         set_emax (i);
         mpfr_clear_flags ();
@@ -152,6 +155,9 @@ main (int argc, char *argv[])
       for (n = 0; n < 50; n++)
         RND_LOOP (rnd)
           {
+            if (rnd == MPFR_RNDF)
+              continue;
+            
             mpfr_zeta_ui (y, n, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))

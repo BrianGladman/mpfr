@@ -46,8 +46,10 @@ test_exact (void)
                 mpfr_mul (r1, a, b, (mpfr_rnd_t) rnd) ||
                 mpfr_sub (r1, r1, c, (mpfr_rnd_t) rnd))
               {
-                printf ("test_exact internal error for (%d,%d,%d,%d)\n",
-                        i, j, k, rnd);
+                if (rnd == MPFR_RNDF)
+                  break;
+                printf ("test_exact internal error for (%d,%d,%d,%d,%s)\n",
+                        i, j, k, rnd, mpfr_print_rnd_mode (rnd));
                 exit (1);
               }
             if (mpfr_fms (r2, a, b, c, (mpfr_rnd_t) rnd))
@@ -127,6 +129,9 @@ test_overflow2 (void)
     RND_LOOP (rnd)
       {
         int inf, overflow;
+
+        if (rnd == MPFR_RNDF)
+          continue;
 
         inf = rnd == MPFR_RNDN || rnd == MPFR_RNDD || rnd == MPFR_RNDA;
         overflow = inf || i <= 0;

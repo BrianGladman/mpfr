@@ -355,7 +355,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           ctrt++;
 
           /* If rnd = RNDF, check that we obtain the same result as
-             RNDD or RNDU, except when RNDD and RNDU are exact */
+             RNDD or RNDU. */
           if (rnd == MPFR_RNDF)
             {
               int ok;
@@ -386,12 +386,6 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               TEST_FUNCTION (yu, x, MPFR_RNDU);
 #endif
               ok = EQUAL (y, yd) || EQUAL (y, yu);
-              if (compare == 0 && ok == 0)
-                {
-                   mpfr_nextbelow (yd);
-                   mpfr_nextabove (yu);
-                   ok = EQUAL (y, yd) || EQUAL (y, yu);
-                }
               if (ok == 0)
                 {
                    printf ("For RNDF, result does not match RNDD nor RNDU\n");
@@ -464,7 +458,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     flags = __gmpfr_flags;
                     mpfr_set_emax (oemax);
                     ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
-                    /* for RNDF, this test makes no sense, since RNDF
+                    /* For RNDF, this test makes no sense, since RNDF
                        might return either the maximal floating-point
                        value or infinity, and the flags might differ in
                        those two cases. */
@@ -518,7 +512,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     flags = __gmpfr_flags;
                     mpfr_set_emin (oemin);
                     ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-                    /* for RNDF, this test makes no sense, since RNDF
+                    /* For RNDF, this test makes no sense, since RNDF
                        might return either the maximal floating-point
                        value or infinity, and the flags might differ in
                        those two cases. */
@@ -587,7 +581,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 flags = __gmpfr_flags;
                 mpfr_set_emin (oemin);
                 mpfr_set_emax (oemax);
-                /* that test makes no sense for RNDF */
+                /* That test makes no sense for RNDF. */
                 if (rnd != MPFR_RNDF && ! (SAME_VAL (w, y) &&
                        SAME_SIGN (inexact, compare) &&
                        flags == oldflags))

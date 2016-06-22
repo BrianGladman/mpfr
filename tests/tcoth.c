@@ -143,6 +143,9 @@ underflowed_cothinf (void)
   for (i = -1; i <= 1; i += 2)
     RND_LOOP (rnd)
       {
+        if (rnd == MPFR_RNDF)
+          continue; /* this test does not make sense, since RNDF does not
+                       give deterministic results */
         mpfr_set_inf (x, i);
         mpfr_clear_flags ();
         set_emin (2);  /* 1 is not representable. */

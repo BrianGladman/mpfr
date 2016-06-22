@@ -438,7 +438,7 @@ check_inexact (mpfr_prec_t p)
   mpfr_urandomb (x, RANDS);
   u = randlimb () % 2;
   for (q = MPFR_PREC_MIN; q <= p; q++)
-    for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+    RND_LOOP(rnd)
       {
         mpfr_set_prec (y, q);
         mpfr_set_prec (z, q + 10);
@@ -1485,6 +1485,10 @@ bug20080721 (void)
       inex0 = i ? -1 : 1;
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
+
+      if (rnd == MPFR_RNDF)
+        continue;
+
       if (__gmpfr_flags != MPFR_FLAGS_INEXACT || ! SAME_SIGN (inex, inex0)
           || MPFR_IS_NAN (z) || mpfr_cmp (z, t[i]) != 0)
         {

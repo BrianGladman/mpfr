@@ -116,6 +116,9 @@ overflowed_sech0 (void)
       for (i = -1; i <= 1; i++)
         RND_LOOP (rnd)
           {
+            if (rnd == MPFR_RNDF)
+              continue;
+
             mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
             mpfr_clear_flags ();
             inex = mpfr_sech (x, x, (mpfr_rnd_t) rnd);

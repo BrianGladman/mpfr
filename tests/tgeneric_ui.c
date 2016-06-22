@@ -74,7 +74,7 @@ test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
               else  /* unsigned */
                 u = n == 2 ? 0 : -1;
             }
-          rnd = RND_RAND ();
+          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
           mpfr_set_prec (y, yprec);
           compare = TEST_FUNCTION (y, x, u, rnd);
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))
@@ -109,7 +109,7 @@ test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                 compare = compare + compare2;
               else
                 compare = inexact; /* cannot determine sign(t-f(x)) */
-              if (! SAME_SIGN (inexact, compare))
+              if (! SAME_SIGN (inexact, compare) && rnd != MPFR_RNDF)
                 {
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);

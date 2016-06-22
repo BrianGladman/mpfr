@@ -128,6 +128,9 @@ test_overflow2 (void)
       {
         int inf, overflow;
 
+        if (rnd == MPFR_RNDF)
+          continue;
+
         inf = rnd == MPFR_RNDN || rnd == MPFR_RNDD || rnd == MPFR_RNDA;
         overflow = inf || i <= 0;
 

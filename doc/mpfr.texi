@@ -761,14 +761,16 @@ of The Art of Computer Programming (Section 4.2.2).
 
 The @code{MPFR_RNDF} mode works as follows: the computed value is either
 that corresponding to @code{MPFR_RNDD} or that corresponding to
-@code{MPFR_RNDU}, except in the case where those values are identical,
-in which case the two adjacent floating-point numbers can also be returned.
+@code{MPFR_RNDU}.
+In particular when those values are identical,
+i.e., when the result of the corresponding operation is exactly
+representable, that exact result is returned.
 In summary the error is always at most one unit-in-last-place of the computed
-result, which can take two or three possible values.
+result, which can take at most two possible values.
 For @code{MPFR_RNDF} the ternary value makes no sense,
 the inexact flag is undefined, the divide-by-zero flag is as with other
 roundings, and the underflow and overflow flags match what would be obtained
-in the case the computed value would is @code{MPFR_RNDD} (resp.
+in the case the computed value is the same as with @code{MPFR_RNDD} (resp.
 @code{MPFR_RNDU}).
 
 @anchor{ternary value}@cindex Ternary value
@@ -1663,7 +1665,7 @@ that the corresponding conversion function (for example @code{mpfr_get_ui}
 for @code{mpfr_fits_ulong_p}), when called with faithful rounding,
 will always return a number that is representable in the corresponding type.
 As a consequence, for @code{MPFR_RNDF}, @code{mpfr_fits_ulong_p} will return
-non-zero for a positive number less than @code{ULONG_MAX}.
+non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 @end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface

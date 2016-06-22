@@ -1161,6 +1161,9 @@ bug20120829 (void)
         {
           mpfr_rnd_t rnd = (mpfr_rnd_t) r;
 
+          if (r == MPFR_RNDF)
+            continue;
+
           inex1 = mpfr_exp10 (x1, e, rnd);
           inex1 = SIGN (inex1);
           inex2 = mpfr_strtofr (x2, s, NULL, 0, rnd);
