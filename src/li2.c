@@ -164,9 +164,7 @@ mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    |Li2(x) - g(x)| <= 1/|x|.
    Assumes x <= -7, which ensures |log(-x)^2/2| >= Pi^2/6, and g(x) <= -3.5.
    Return 0 if asymptotic expansion failed (unable to round), otherwise
-   returns correct ternary value (except for MPFR_RNDF where 0 means that
-   the asymptotic expansion failed, and non-zero means that it succeeded,
-   with no other meaning).
+   returns correct ternary value.
 */
 static int
 mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -200,8 +198,7 @@ mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (g);
   mpfr_clear (h);
 
-  /* for MPFR_RNDF, we should return non-zero, except if y is NaN */
-  return (rnd_mode != MPFR_RNDF) ? inex : !mpfr_nan_p (y);
+  return inex;
 }
 
 /* Compute the real part of the dilogarithm defined by
