@@ -68,7 +68,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_ui_div (a2, mpfr_get_ui (b, MPFR_RNDN), c, r);
-          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_ui_div", b, c, r);
         }
@@ -76,7 +76,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_si_div (a2, mpfr_get_si (b, MPFR_RNDN), c, r);
-          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_si_div", b, c, r);
         }
