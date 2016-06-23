@@ -118,7 +118,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
    thus |Li2(x) - g(x)| <= 2/x.
    Assumes x >= 38, which ensures log(x)^2/2 >= 2*Pi^2/3, and g(x) <= -3.3.
    Return 0 if asymptotic expansion failed (unable to round), otherwise
-   returns correct ternary value.
+   returns 1 for RNDF, and correct ternary value otherwise.
 */
 static int
 mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -150,7 +150,11 @@ mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                                    bounded by 16 ulp(g). */
   if ((MPFR_EXP (x) >= (mpfr_exp_t) w - MPFR_EXP (g)) &&
       MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
-    inex = mpfr_set (y, g, rnd_mode);
+    {
+      inex = mpfr_set (y, g, rnd_mode);
+      if (rnd_mode == MPFR_RNDF)
+        inex = 1;
+    }
 
   mpfr_clear (g);
   mpfr_clear (h);
@@ -164,7 +168,7 @@ mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    |Li2(x) - g(x)| <= 1/|x|.
    Assumes x <= -7, which ensures |log(-x)^2/2| >= Pi^2/6, and g(x) <= -3.5.
    Return 0 if asymptotic expansion failed (unable to round), otherwise
-   returns correct ternary value.
+   returns 1 for RNDF, and correct ternary value otherwise.
 */
 static int
 mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -193,7 +197,11 @@ mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                                    total error is bounded by 16 ulp(g). */
   if ((MPFR_EXP (x) >= (mpfr_exp_t) (w - 2) - MPFR_EXP (g)) &&
       MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
-    inex = mpfr_neg (y, g, rnd_mode);
+    {
+      inex = mpfr_neg (y, g, rnd_mode);
+      if (rnd_mode == MPFR_RNDF)
+        inex = 1;
+    }
 
   mpfr_clear (g);
   mpfr_clear (h);
