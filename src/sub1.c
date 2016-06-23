@@ -122,7 +122,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (rnd_mode == MPFR_RNDF)
         return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a));
 
-      MPFR_SET_EXP (a, MPFR_GET_EXP (b));
+      MPFR_EXP (a) = exp_b;  /* may be up to MPFR_EXP_MAX */
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
                         rnd_mode, MPFR_SIGN (a),
                         if (MPFR_EXP (a) != MPFR_EXP_MAX)
