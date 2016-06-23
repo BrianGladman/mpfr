@@ -1455,6 +1455,10 @@ typedef struct {
  * In rounding to nearest mode, execute MIDDLE_HANDLER when the value
  * is the middle of two consecutive numbers in dest precision.
  * Execute OVERFLOW_HANDLER in case of overflow when rounding.
+ *
+ * Note: the exponent field of dest is not used, possibly except by the
+ * handlers. It is the caller (via the handlers) who entirely decides
+ * how to handle it.
  */
 #define MPFR_RNDRAW_GEN(inexact, dest, srcp, sprec, rnd, sign,              \
                         MIDDLE_HANDLER, OVERFLOW_HANDLER)                   \
