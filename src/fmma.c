@@ -23,103 +23,43 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 static int
-mpfr_fmma_slow (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
-                   mpfr_srcptr d, mpfr_rnd_t rnd)
+mpfr_fmma_aux (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
+               mpfr_srcptr d, mpfr_rnd_t rnd, int neg)
 {
-  mpfr_t ab, cd;
+  mpfr_ubf_t u, v;
+  mp_size_t un, vn;
+  mpfr_limb_ptr up, vp;
   int inex;
+  MPFR_TMP_DECL(marker);
 
-  mpfr_init2 (ab, MPFR_PREC(a) + MPFR_PREC(b));
-  mpfr_init2 (cd, MPFR_PREC(c) + MPFR_PREC(d));
-  /* FIXME: The following multiplications may overflow or underflow
-     (even more often with the fact that the exponent range is not
-     extended), in which case the result is not exact. This should
-     be solved with future unbounded floats. */
-  mpfr_mul (ab, a, b, MPFR_RNDZ); /* exact */
-  mpfr_mul (cd, c, d, MPFR_RNDZ); /* exact */
-  inex = mpfr_add (z, ab, cd, rnd);
-  mpfr_clear (ab);
-  mpfr_clear (cd);
+  MPFR_LOG_FUNC
+    (("a[%Pu]=%.*Rg b[%Pu]=%.*Rg c[%Pu]=%.*Rg d[%Pu]=%.*Rg rnd=%d neg=%d",
+      mpfr_get_prec (a), mpfr_log_prec, a,
+      mpfr_get_prec (b), mpfr_log_prec, b,
+      mpfr_get_prec (c), mpfr_log_prec, c,
+      mpfr_get_prec (d), mpfr_log_prec, d, rnd, neg),
+     ("z[%Pu]=%.*Rg inex=%d",
+      mpfr_get_prec (z), mpfr_log_prec, z, inex));
+
+  MPFR_TMP_MARK (marker);
+
+  un = MPFR_LIMB_SIZE (a) + MPFR_LIMB_SIZE (b);
+  vn = MPFR_LIMB_SIZE (c) + MPFR_LIMB_SIZE (d);
+  MPFR_TMP_INIT (up, u, (mpfr_prec_t) un * GMP_NUMB_BITS, un);
+  MPFR_TMP_INIT (vp, v, (mpfr_prec_t) vn * GMP_NUMB_BITS, vn);
+
+  mpfr_ubf_mul_exact (u, a, b);
+  mpfr_ubf_mul_exact (v, c, d);
+  if (neg)
+    MPFR_CHANGE_SIGN (v);
+  inex = mpfr_add (z, (mpfr_srcptr) u, (mpfr_srcptr) v, rnd);
+
+  MPFR_UBF_CLEAR_EXP (u);
+  MPFR_UBF_CLEAR_EXP (v);
+
+  MPFR_TMP_FREE (marker);
+
   return inex;
-}
-
-/* z <- a*b + c*d */
-static int
-mpfr_fmma_fast (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
-                mpfr_srcptr d, mpfr_rnd_t rnd)
-{
-   /* Assumes that a, b, c, d are finite and non-zero; so any multiplication
-      of two of them yielding an infinity is an overflow, and a
-      multiplication yielding 0 is an underflow.
-      Assumes further that z is distinct from a, b, c, d. */
-
-   int inex;
-   mpfr_t u, v;
-   mp_size_t an, bn, cn, dn;
-   mpfr_limb_ptr up, vp;
-   MPFR_TMP_DECL(marker);
-   MPFR_SAVE_EXPO_DECL (expo);
-
-   MPFR_TMP_MARK(marker);
-   MPFR_SAVE_EXPO_MARK (expo);
-
-   /* u=a*b, v=c*d exactly */
-   an = MPFR_LIMB_SIZE(a);
-   bn = MPFR_LIMB_SIZE(b);
-   cn = MPFR_LIMB_SIZE(c);
-   dn = MPFR_LIMB_SIZE(d);
-   MPFR_TMP_INIT (up, u, (an + bn) * GMP_NUMB_BITS, an + bn);
-   MPFR_TMP_INIT (vp, v, (cn + dn) * GMP_NUMB_BITS, cn + dn);
-
-   /* u <- a*b */
-   if (an >= bn)
-     mpn_mul (up, MPFR_MANT(a), an, MPFR_MANT(b), bn);
-   else
-     mpn_mul (up, MPFR_MANT(b), bn, MPFR_MANT(a), an);
-   if ((up[an + bn - 1] & MPFR_LIMB_HIGHBIT) == 0)
-     {
-       mpn_lshift (up, up, an + bn, 1);
-       /* EXP(a) and EXP(b) are in [1-2^(n-2), 2^(n-2)-1] where
-          mpfr_exp_t has is n-bit wide, thus EXP(a)+EXP(b) is in
-          [2-2^(n-1), 2^(n-1)-2]. We use the fact here that 2*MPFR_EMIN_MIN-1
-          is a valid exponent (see mpfr-impl.h). However we don't use
-          MPFR_SET_EXP() which only allows the restricted exponent range
-          [1-2^(n-2), 2^(n-2)-1]. */
-       MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b) - 1;
-     }
-   else
-     MPFR_EXP(u) = MPFR_EXP(a) + MPFR_EXP(b);
-
-   /* v <- c*d */
-   if (cn >= dn)
-     mpn_mul (vp, MPFR_MANT(c), cn, MPFR_MANT(d), dn);
-   else
-     mpn_mul (vp, MPFR_MANT(d), dn, MPFR_MANT(c), cn);
-   if ((vp[cn + dn - 1] & MPFR_LIMB_HIGHBIT) == 0)
-     {
-       mpn_lshift (vp, vp, cn + dn, 1);
-       MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d) - 1;
-     }
-   else
-     MPFR_EXP(v) = MPFR_EXP(c) + MPFR_EXP(d);
-
-   MPFR_PREC(u) = (an + bn) * GMP_NUMB_BITS;
-   MPFR_PREC(v) = (cn + dn) * GMP_NUMB_BITS;
-   MPFR_SIGN(u) = MPFR_MULT_SIGN(MPFR_SIGN(a), MPFR_SIGN(b));
-   MPFR_SIGN(v) = MPFR_MULT_SIGN(MPFR_SIGN(c), MPFR_SIGN(d));
-
-   /* tentatively compute z as u+v; here we need z to be distinct
-      from a, b, c, d to avoid losing the input values in case we
-      need to call mpfr_fmma_slow */
-   /* FIXME: The above comment is no longer valid. Anyway, with
-      unbounded floats (based on an exact multiplication like above),
-      it will no longer be necessary to distinguish fast and slow. */
-   inex = mpfr_add (z, u, v, rnd);
-
-   MPFR_TMP_FREE(marker);
-   MPFR_SAVE_EXPO_FREE (expo);
-
-   return mpfr_check_range (z, inex, rnd);
 }
 
 /* z <- a*b + c*d */
@@ -127,13 +67,7 @@ int
 mpfr_fmma (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
            mpfr_srcptr d, mpfr_rnd_t rnd)
 {
-  mpfr_limb_ptr zp = MPFR_MANT(z);
-
-  return (mpfr_regular_p (a) && mpfr_regular_p (b) && mpfr_regular_p (c) &&
-          mpfr_regular_p (d) && zp != MPFR_MANT(a) && zp != MPFR_MANT(b) &&
-          zp != MPFR_MANT(c) && zp != MPFR_MANT(d))
-    ? mpfr_fmma_fast (z, a, b, c, d, rnd)
-    : mpfr_fmma_slow (z, a, b, c, d, rnd);
+  return mpfr_fmma_aux (z, a, b, c, d, rnd, 0);
 }
 
 /* z <- a*b - c*d */
@@ -141,8 +75,5 @@ int
 mpfr_fmms (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
            mpfr_srcptr d, mpfr_rnd_t rnd)
 {
-  mpfr_t minus_c;
-
-  MPFR_ALIAS (minus_c, c, -MPFR_SIGN(c), MPFR_EXP(c));
-  return mpfr_fmma (z, a, b, minus_c, d, rnd);
+  return mpfr_fmma_aux (z, a, b, c, d, rnd, 1);
 }

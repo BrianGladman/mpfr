@@ -1406,13 +1406,7 @@ bug20071218 (void)
 {
   mpfr_t x, y, z, t;
   int tern;
-  mpfr_exp_t emin;
 
-  if (mpfr_get_emin_min () > -1073741823)
-    return;
-
-  emin = mpfr_get_emin ();
-  mpfr_set_emin (-1073741823);
   mpfr_inits2 (64, x, y, z, t, (mpfr_ptr) 0);
   mpfr_set_str (x, "0x.80000000000002P-1023", 0, MPFR_RNDN);
   mpfr_set_str (y, "100000.000000002", 16, MPFR_RNDN);
@@ -1448,7 +1442,6 @@ bug20071218 (void)
       exit (1);
     }
   mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
-  mpfr_set_emin (emin);
 }
 
 /* With revision 5429, this gives:

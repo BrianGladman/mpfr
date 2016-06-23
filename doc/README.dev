@@ -266,7 +266,7 @@ To make a release (for the MPFR team):
      *after* the -fsanitize=undefined one.
 
      GCC 4.9 also supports "-fsanitize=undefined", but it just gives
-     diagnostic messages at runtime, not a failure; GCC trunk supports
+     diagnostic messages at runtime, not a failure; GCC 5 supports
      -fno-sanitize-recover like clang.
 
      Test with GCC's AddressSanitizer (-fsanitize=address).
@@ -463,6 +463,35 @@ List of macros used for checking MPFR:
 + MPFR_COV_CHECK:       Define to enable value coverage checking (must not
                         be used in production). This macro is for the MPFR
                         developers, in order to improve the test suite.
+
+===========================================================================
+
+Environment variables that affect the tests:
+
++ GMP_CHECK_RANDOMIZE:  Seed for the random functions, except for 0 or 1,
+                        in which case a random (time based) seed is used.
+                        By default, a fixed seed is used. Only developers
+                        and testers should change the seed.
+
++ MPFR_CHECK_LARGEMEM:  Define to enable expensive tests.
+
++ MPFR_CHECK_LIBC_PRINTF: Define to enable comparisons with the printf
+                        function of the C library. These comparisons are
+                        disabled by default as failures could be due to
+                        the C library itself on some machines, and they
+                        do not affect MPFR.
+
++ MPFR_DEBUG_BADCASES:  For debugging (see tests.c, function bad_cases).
+
++ MPFR_SUSPICIOUS_OVERFLOW: Define to check suspicious overflow in the
+                        generic tests (tgeneric.c). For developers and
+                        testers.
+
++ MPFR_TESTS_MEMORY_LIMIT: The memory limit for the tests (default is
+                        2^22 = 4 MB). Set to 0 for unlimited.
+
++ MPFR_TESTS_TIMEOUT:   When timeout in the tests is enabled, this
+                        overrides the value of the macro.
 
 ===========================================================================
 

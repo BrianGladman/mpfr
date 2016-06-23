@@ -820,11 +820,13 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 #if _MPFR_EXP_FORMAT <= 3
 typedef long int mpfr_eexp_t;
+typedef unsigned long int mpfr_ueexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
 # define MPFR_EXP_FSPEC "l"
 #else
 typedef intmax_t mpfr_eexp_t;
+typedef uintmax_t mpfr_ueexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_sj((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_sj((x),(e),(r))
 # define MPFR_EXP_FSPEC "j"
@@ -840,18 +842,17 @@ typedef intmax_t mpfr_eexp_t;
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and
- * 2e+1 are valid exponents. This is useful for intermediate computations,
- * in particular the multiplication. We must have MPFR_EMIN_MIN >= 3-2^(n-2)
- * = 3-MPFR_EXP_INVALID so that 2*MPFR_EMIN_MIN-1 > __MPFR_EXP_INF = 3-2^(n-1).
+ * 2e+1 are representable. This is useful for intermediate computations,
+ * in particular the multiplication.
  */
 #undef MPFR_EMIN_MIN
 #undef MPFR_EMIN_MAX
 #undef MPFR_EMAX_MIN
 #undef MPFR_EMAX_MAX
-#define MPFR_EMIN_MIN (3-MPFR_EXP_INVALID)
-#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-3)
-#define MPFR_EMAX_MIN (3-MPFR_EXP_INVALID)
-#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-3)
+#define MPFR_EMIN_MIN (1-MPFR_EXP_INVALID)
+#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
+#define MPFR_EMAX_MIN (1-MPFR_EXP_INVALID)
+#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
 
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
    unless when the exponent may be out-of-range, for instance when
@@ -880,6 +881,10 @@ typedef intmax_t mpfr_eexp_t;
 # define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
+#define MPFR_EXP_LESS_P(x,y) \
+  (MPFR_UNLIKELY (MPFR_IS_UBF (x) || MPFR_IS_UBF (y)) ? \
+   mpfr_ubf_exp_less_p (x, y) : MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
+
 
 /******************************************************
  *********  Singular values (NAN, INF, ZERO)  *********
@@ -889,6 +894,7 @@ typedef intmax_t mpfr_eexp_t;
 # define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
 # define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
 # define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
+# define MPFR_EXP_UBF  (MPFR_EXP_MIN+4)
 
 #define MPFR_IS_NAN(x)   (MPFR_EXP(x) == MPFR_EXP_NAN)
 #define MPFR_SET_NAN(x)  (MPFR_EXP(x) =  MPFR_EXP_NAN)
@@ -897,20 +903,33 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_IS_ZERO(x)  (MPFR_EXP(x) == MPFR_EXP_ZERO)
 #define MPFR_SET_ZERO(x) (MPFR_EXP(x) =  MPFR_EXP_ZERO)
 #define MPFR_NOTZERO(x)  (MPFR_EXP(x) != MPFR_EXP_ZERO)
+#define MPFR_IS_UBF(x)   (MPFR_EXP(x) == MPFR_EXP_UBF)
+#define MPFR_SET_UBF(x)  (MPFR_EXP(x) =  MPFR_EXP_UBF)
 
 #define MPFR_IS_NORMALIZED(x) \
   (MPFR_LIMB_MSB (MPFR_MANT(x)[MPFR_LAST_LIMB(x)]) != 0)
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
+#define MPFR_IS_SINGULAR_OR_UBF(x) (MPFR_EXP(x) <= MPFR_EXP_UBF)
 #define MPFR_IS_PURE_FP(x)                          \
   (!MPFR_IS_SINGULAR(x) &&                          \
    (MPFR_ASSERTD (MPFR_EXP (x) >= MPFR_EMIN_MIN &&  \
                   MPFR_EXP (x) <= MPFR_EMAX_MAX &&  \
                   MPFR_IS_NORMALIZED (x)), 1))
+#define MPFR_IS_PURE_UBF(x)                             \
+  (!MPFR_IS_SINGULAR(x) &&                              \
+   (MPFR_ASSERTD ((MPFR_IS_UBF (x) ||                   \
+                   (MPFR_EXP (x) >= MPFR_EMIN_MIN &&    \
+                    MPFR_EXP (x) <= MPFR_EMAX_MAX)) &&  \
+                  MPFR_IS_NORMALIZED (x)), 1))
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
+
+#define MPFR_ARE_SINGULAR_OR_UBF(x,y)           \
+  (MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(x)) || \
+   MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(y)))
 
 #define MPFR_IS_POWER_OF_2(x) \
   (mpfr_cmp_ui_2exp ((x), 1, MPFR_GET_EXP (x) - 1) == 0)
@@ -2236,5 +2255,54 @@ __MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2];
 
 #endif /* MPFR_COV_CHECK */
 
+
+/******************************************************
+ *****************  Unbounded Floats  *****************
+ ******************************************************/
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+/* An UBF is like a MPFR number, but with an additional mpz_t member,
+   which is assumed to be present (with a value in it) when the usual
+   exponent field has the value MPFR_EXP_UBF. The goal of this compatible
+   representation is to easily be able to support UBF in "normal" code
+   and hopefully avoid aliasing issues at the same time. And code that
+   accepts UBF in input should also accept mpfr_t as a consequence; this
+   makes mpfr_t to UBF conversion unnecessary.
+   When an input of a public function is a UBF, the semantic remains
+   internal to MPFR and can change in the future.
+   Note that functions used for logging need to support UBF (currently
+   done by printing that a number is a UBF, as it may be difficult to
+   do more without significant changes). */
+
+typedef struct {
+  mpfr_prec_t  _mpfr_prec;
+  mpfr_sign_t  _mpfr_sign;
+  mpfr_exp_t   _mpfr_exp;
+  mp_limb_t   *_mpfr_d;
+  mpz_t        _mpfr_zexp;
+} __mpfr_ubf_struct;
+
+typedef __mpfr_ubf_struct mpfr_ubf_t[1];
+typedef __mpfr_ubf_struct *mpfr_ubf_ptr;
+
+__MPFR_DECLSPEC void mpfr_ubf_mul_exact (mpfr_ubf_ptr,
+                                         mpfr_srcptr, mpfr_srcptr);
+__MPFR_DECLSPEC int mpfr_ubf_exp_less_p (mpfr_srcptr, mpfr_srcptr);
+__MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_zexp2exp (mpz_ptr);
+__MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
+
+#if defined (__cplusplus)
+}
+#endif
+
+#define MPFR_ZEXP(x)                                                    \
+  ((void) (x)->_mpfr_exp /* to check that x has a correct type */,      \
+   ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
+
+#define MPFR_UBF_CLEAR_EXP(x) \
+  ((void) (MPFR_IS_UBF (u) && (mpz_clear (MPFR_ZEXP (x)), 0)))
 
 #endif /* __MPFR_IMPL_H__ */

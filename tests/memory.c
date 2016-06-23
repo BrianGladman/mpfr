@@ -40,6 +40,14 @@ struct header {
   struct header  *next;
 };
 
+/* The memory limit can be changed with the MPFR_TESTS_MEMORY_LIMIT
+   environment variable. This is normally not necessary (a failure
+   would mean a bug), thus not recommended, for "make check". But
+   some test programs can take arguments for particular tests, which
+   may need more memory. This variable is exported, so that such
+   programs may also change the memory limit. */
+size_t tests_memory_limit = DEFAULT_MEMORY_LIMIT;
+
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
 MPFR_LOCK_DECL(mpfr_lock_memory)
@@ -103,14 +111,11 @@ tests_memory_valid (void *ptr)
 }
 */
 
-/* FIXME: we might have an environment variable MPFR_TESTS_NO_MEMORY_LIMIT
-   to disable the memory limit check, for example if we want to compute
-   zillions of digits of Pi with ./tconst_pi 1000000000000 */
 static void
 tests_addsize (size_t size)
 {
   tests_total_size += size;
-  if (tests_total_size > 1UL << 22)
+  if (tests_total_size > tests_memory_limit)
     {
       /* The total size taken by MPFR on the heap is more than 4 MB:
          either a bug or a huge inefficiency. */
@@ -244,8 +249,18 @@ tests_free (void *ptr, size_t size)
 void
 tests_memory_start (void)
 {
+  char *p;
+
   tests_memory_list = NULL;
   mp_set_memory_functions (tests_allocate, tests_reallocate, tests_free);
+
+  p = getenv ("MPFR_TESTS_MEMORY_LIMIT");
+  if (p != NULL)
+    {
+      tests_memory_limit = strtoul (p, NULL, 0);
+      if (tests_memory_limit == 0)
+        tests_memory_limit = (size_t) -1;  /* no memory limit */
+    }
 }
 
 void

@@ -219,6 +219,13 @@ main (void)
   tests_start_mpfr ();
   if (locale != NULL)
     printf ("[tversion] Locale: %s\n", locale);
+  /* The memory limit should not be changed for "make check".
+     The warning below signals a possible user mistake.
+     Do not use "%zu" because it is not available in C90;
+     the type mpfr_ueexp_t should be sufficiently large. */
+  if (tests_memory_limit != DEFAULT_MEMORY_LIMIT)
+    printf ("[tversion] Warning! Memory limit changed to %" MPFR_EXP_FSPEC
+            "u\n", (mpfr_ueexp_t) tests_memory_limit);
   tests_end_mpfr ();
 
   return err;

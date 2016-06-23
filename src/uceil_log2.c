@@ -33,7 +33,9 @@ __gmpfr_ceil_log2 (double d)
   union mpfr_ieee_double_extract x;
 
   x.d = d;
-  exp = x.s.exp - 1023;
+  /* The cast below is useless in theory, but let us not depend on the
+     integer promotion rules (for instance, tcc is currently wrong). */
+  exp = (long) x.s.exp - 1023;
   x.s.exp = 1023; /* value for 1 <= d < 2 */
   if (x.d != 1.0) /* d: not a power of two? */
     exp++;
@@ -42,19 +44,19 @@ __gmpfr_ceil_log2 (double d)
   double m;
 
   if (d < 0.0)
-    return __gmpfr_floor_log2(-d)+1;
+    return __gmpfr_floor_log2 (-d) + 1;
   else if (d == 0.0)
     return -1023;
   else if (d >= 1.0)
     {
       exp = 0;
-      for( m= 1.0 ; m < d ; m *=2.0 )
+      for (m = 1.0; m < d; m *= 2.0)
         exp++;
     }
   else
     {
       exp = 1;
-      for( m= 1.0 ; m >= d ; m *= (1.0/2.0) )
+      for (m = 1.0; m >= d; m *= 0.5)
         exp--;
     }
 #endif /* _MPFR_IEEE_FLOATS */

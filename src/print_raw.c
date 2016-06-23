@@ -49,25 +49,22 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
       px = MPFR_PREC (x);
 
       fprintf (stream, "0.");
-      for (n = (px - 1) / GMP_NUMB_BITS; ; n--)
+      for (n = (px - 1) / GMP_NUMB_BITS; n >= 0; n--)
         {
           mp_limb_t wd, t;
 
-          MPFR_ASSERTN (n >= 0);
           wd = mx[n];
           for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
             {
               putc ((wd & t) == 0 ? '0' : '1', stream);
               if (--px == 0)
-                {
-                  mpfr_exp_t ex;
-
-                  ex = MPFR_EXP (x);
-                  fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) ex);
-                  return;
-                }
+                break;
             }
         }
+      if (MPFR_IS_UBF (x))
+        gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
+      else
+        fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) MPFR_EXP (x));
     }
 }
 

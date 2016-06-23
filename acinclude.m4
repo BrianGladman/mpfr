@@ -592,15 +592,17 @@ Please use another compiler or build MPFR without --enable-decimal-float.])
                fi])
 fi
 
-dnl Check if __float128 is available
+dnl Check if __float128 is available. We also require the compiler
+dnl to support C99 constants (this prevents the __float128 support
+dnl with GCC's -std=c90, but who cares?).
 if test "$enable_float128" != no; then
-   AC_MSG_CHECKING(if compiler knows __float128)
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x;]])],
+   AC_MSG_CHECKING(if compiler knows __float128 with C99 constants)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[__float128 x = 0x1.fp+16383q;]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT128],1,[Build float128 functions])],
       [AC_MSG_RESULT(no)
        if test "$enable_float128" = yes; then
-          AC_MSG_ERROR([compiler doesn't know __float128
+          AC_MSG_ERROR([compiler doesn't know __float128 with C99 constants
 Please use another compiler or build MPFR without --enable-float128.])
        fi])
 fi

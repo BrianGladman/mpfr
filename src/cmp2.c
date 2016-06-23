@@ -38,6 +38,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 {
   mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
   mp_size_t bn, cn;
+  mpfr_exp_t sdiff_exp;
   mpfr_uexp_t diff_exp;
   mpfr_prec_t res = 0;
   int sign;
@@ -48,13 +49,21 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
   /* the cases b=0 or c=0 are also treated apart in agm and sub
      (which calls sub1) */
-  MPFR_ASSERTD (MPFR_IS_PURE_FP(b));
-  MPFR_ASSERTD (MPFR_IS_PURE_FP(c));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
+  MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
 
-  if (MPFR_GET_EXP (b) >= MPFR_GET_EXP (c))
+  sdiff_exp = MPFR_UNLIKELY (MPFR_IS_UBF (b) || MPFR_IS_UBF (c)) ?
+    mpfr_ubf_diff_exp (b, c) : MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+
+  /* The returned result is restricted to [MPFR_EXP_MIN,MPFR_EXP_MAX],
+     which is the range of the mpfr_exp_t type. But under the condition
+     below, the value of cancel will not be affected. */
+  MPFR_STAT_STATIC_ASSERT (MPFR_EXP_MAX > MPFR_PREC_MAX);
+
+  if (sdiff_exp >= 0)
     {
       sign = 1;
-      diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+      diff_exp = sdiff_exp;
 
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
@@ -85,7 +94,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
           if (MPFR_UNLIKELY (cn < 0))
             /* c discards exactly the upper part of b */
             {
-              unsigned int z;
+              int z;
 
               MPFR_ASSERTD (bn >= 0);
 
@@ -96,7 +105,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
                   res += GMP_NUMB_BITS;
                 }
 
-              count_leading_zeros(z, bp[bn]); /* bp[bn] <> 0 */
+              count_leading_zeros (z, bp[bn]); /* bp[bn] <> 0 */
               *cancel = res + z;
               return sign;
             }
@@ -118,7 +127,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   else /* MPFR_EXP(b) < MPFR_EXP(c) */
     {
       sign = -1;
-      diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (c) - MPFR_GET_EXP (b);
+      diff_exp = - (mpfr_uexp_t) sdiff_exp;
 
       bp = MPFR_MANT(c);
       cp = MPFR_MANT(b);
@@ -152,6 +161,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
                         && (high_dif == 0) && (dif == 1)))
     { /* dif=1 implies diff_exp = 0 or 1 */
+      MPFR_ASSERTD (diff_exp <= 1);
       bb = (bn >= 0) ? bp[bn] : 0;
       cc = lastc;
       if (cn >= 0)
@@ -160,8 +170,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
             {
               cc += cp[cn];
             }
-          else /* diff_exp = 1 */
+          else
             {
+              MPFR_ASSERTD (diff_exp == 1);
               cc += cp[cn] >> 1;
               lastc = cp[cn] << (GMP_NUMB_BITS - 1);
             }
@@ -188,9 +199,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
     }
   else /* high_dif == 0 */
     {
-      unsigned int z;
+      int z;
 
-      count_leading_zeros(z, dif); /* dif > 1 here */
+      count_leading_zeros (z, dif); /* dif > 1 here */
       res += z;
       if (MPFR_LIKELY(dif != (MPFR_LIMB_ONE << (GMP_NUMB_BITS - z - 1))))
         { /* dif is not a power of two */
