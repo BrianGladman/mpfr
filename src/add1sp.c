@@ -131,7 +131,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          precision and the same exponent, the neglected value is either
          0 or 1/2 ulp(a), thus returning a is fine. */
       if (rnd_mode == MPFR_RNDF)
-        { inexact = 1; goto set_exponent; }
+        { inexact = 0; goto set_exponent; }
 
       if ((limb & (MPFR_LIMB_ONE << sh)) == 0) /* Check exact case */
         { inexact = 0; goto set_exponent; }
@@ -353,7 +353,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                    Add 1 if C'p+1 !=0,
                    Even rule else */
       if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
-        { inexact = 1; goto set_exponent; }
+        { inexact = 0; goto set_exponent; }
       else if (rnd_mode == MPFR_RNDN)
         {
           inexact = - (bcp1 != 0);
