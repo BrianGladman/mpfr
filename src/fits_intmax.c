@@ -88,7 +88,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   /* hard case: first round to prec bits, then check */
   saved_flags = __gmpfr_flags;
   mpfr_init2 (x, prec);
-  /* for RNDF, it is necessary and sufficient to check it fitst when rounding
+  /* for RNDF, it is necessary and sufficient to check it fits when rounding
      away from zero */
   mpfr_set (x, f, (rnd == MPFR_RNDF) ? MPFR_RNDA : rnd);
 

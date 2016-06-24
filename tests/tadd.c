@@ -1196,6 +1196,79 @@ testall_rndf (mpfr_prec_t pmax)
     }
 }
 
+static void
+test_rndf_exact (mp_size_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      /* only check pa mod GMP_NUMB_BITS = -2, -1, 0, 1, 2 */
+      if ((pa + 2) % GMP_NUMB_BITS > 4)
+        continue;
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          if ((pb + 2) % GMP_NUMB_BITS > 4)
+            continue;
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_urandomb (b, RANDS);
+              mpfr_mul_2exp (b, b, eb, MPFR_RNDN);
+              for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                {
+                  if ((pc + 2) % GMP_NUMB_BITS > 4)
+                    continue;
+                  mpfr_init2 (c, pc);
+                  mpfr_urandomb (c, RANDS);
+                  mpfr_add (a, b, c, MPFR_RNDF);
+                  mpfr_add (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_add (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_add(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  /* now make the low bits from c match those from b */
+                  mpfr_sub (c, b, d, MPFR_RNDN);
+                  mpfr_add (a, b, c, MPFR_RNDF);
+                  mpfr_add (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_add (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_add(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  mpfr_clear (c);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
 #define TEST_FUNCTION test_add
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -1214,6 +1287,7 @@ main (int argc, char *argv[])
   tests ();
 #endif
 
+  test_rndf_exact (200);
   testall_rndf (7);
   check_extreme ();
 

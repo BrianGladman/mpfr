@@ -326,8 +326,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Cp =-1 and C'p+1=0 */
               bcp = 1; bcp1 = 0;
 
-              if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
-                goto truncate;
+              if (rnd_mode == MPFR_RNDF)
+                goto truncate; /* low(b) = 0 and low(c) is 0 or 1/2 ulp(b), thus
+                                  low(b) - low(c) = 0 or -1/2 ulp(b) */
               else if (rnd_mode == MPFR_RNDN)
                 {
                   /* Even Rule apply: Check Ap-1 */
