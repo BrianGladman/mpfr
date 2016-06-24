@@ -202,6 +202,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
       switch (rnd_mode)
         {
         case MPFR_RNDZ:
+        case MPFR_RNDF:
           inexact = - MPFR_INT_SIGN (y);  /* result is inexact */
           nexttoinf = 0;
           break;
