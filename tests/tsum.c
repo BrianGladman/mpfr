@@ -841,31 +841,67 @@ check_extreme (void)
   mpfr_clears (u, v, w, x, y, (mpfr_ptr) 0);
 }
 
-/* Generic random tests with cancellations */
+/* Generic random tests with cancellations.
+ *
+ * In summary, we do 4000 tests of the following form:
+ * 1. We set the first MPFR_NCANCEL members of an array to random values,
+ *    with a random exponent taken in 4 ranges, depending on the value of
+ *    i % 4 (see code below).
+ * 2. For each of the next MPFR_NCANCEL iterations:
+ *    A. we randomly permute some terms of the array (to make sure that a
+ *       particular order doesn't have an influence on the result);
+ *    B. we compute the sum in a random rounding mode;
+ *    C. if this sum is zero, we end the current test (there is no longer
+ *       anything interesting to test);
+ *    D. we check that this sum is below some bound (chosen as infinite
+ *       for the first iteration of (2), i.e. this test will be useful
+ *       only for the next iterations, after cancellations);
+ *    E. we put the opposite of this sum in the array, the goal being to
+ *       introduce a chain of cancellations;
+ *    F. we compute the bound for the next iteration, derived from (E).
+ * 3. We do another iteration like (2), but with reusing a random element
+ *    of the array. This last test allows one to check the support of
+ *    reused arguments. Before this support (r10467), it triggers an
+ *    assertion failure with (almost?) all seeds, and if assertions are
+ *    not checked, tsum fails in most cases but not all.
+ */
 static void
 cancel (void)
 {
   mpfr_t x[2 * MPFR_NCANCEL], bound;
   mpfr_ptr px[2 * MPFR_NCANCEL];
-  int i, j, n;
+  int i, j, k, n;
 
   mpfr_init2 (bound, 2);
 
-  for (i = 0; i < 1000; i++)
+  /* With 4000 tests, tsum will fail in most cases without support of
+     reused arguments (before r10467). */
+  for (i = 0; i < 4000; i++)
     {
       mpfr_set_inf (bound, 1);
-      for (n = 0; n < numberof (x); n++)
+      for (n = 0; n <= numberof (x); n++)
         {
           mpfr_prec_t p;
           mpfr_rnd_t rnd;
 
-          px[n] = x[n];
-          p = MPFR_PREC_MIN + (randlimb () % 256);
-          mpfr_init2 (x[n], p);
+          if (n < numberof (x))
+            {
+              px[n] = x[n];
+              p = MPFR_PREC_MIN + (randlimb () % 256);
+              mpfr_init2 (x[n], p);
+              k = n;
+            }
+          else
+            {
+              /* Reuse of a random member of the array. */
+              k = randlimb () % n;
+            }
+
           if (n < MPFR_NCANCEL)
             {
               mpfr_exp_t e;
 
+              MPFR_ASSERTN (n < numberof (x));
               e = (i & 1) ? 0 : mpfr_get_emin ();
               tests_default_random (x[n], 256, e,
                                     ((i & 2) ? e + 2000 : mpfr_get_emax ()),
@@ -882,7 +918,9 @@ cancel (void)
                   k2 = randlimb () % (n-1);
                   mpfr_swap (x[k1], x[k2]);
                 }
+
               rnd = RND_RAND ();
+
 #if DEBUG
               printf ("mpfr_sum cancellation test\n");
               for (j = 0; j < n; j++)
@@ -894,22 +932,29 @@ cancel (void)
               printf ("  rnd = %s, output prec = %ld\n",
                       mpfr_print_rnd_mode (rnd), mpfr_get_prec (x[n]));
 #endif
-              mpfr_sum (x[n], px, n, rnd);
-              if (mpfr_zero_p (x[n]))
+
+              mpfr_sum (x[k], px, n, rnd);
+
+              if (mpfr_zero_p (x[k]))
                 {
-                  n++;
+                  if (k == n)
+                    n++;
                   break;
                 }
-              mpfr_neg (x[n], x[n], MPFR_RNDN);
-              if (mpfr_cmpabs (x[n], bound) > 0)
+
+              if (mpfr_cmpabs (x[k], bound) > 0)
                 {
                   printf ("Error in cancel on i = %d, n = %d\n", i, n);
                   printf ("Expected bound: ");
                   mpfr_dump (bound);
-                  printf ("x[n]: ");
-                  mpfr_dump (x[n]);
+                  printf ("x[%d]: ", k);
+                  mpfr_dump (x[k]);
                   exit (1);
                 }
+
+              if (k != n)
+                break;
+
               /* For the bound, use MPFR_RNDU due to possible underflow.
                  It would be nice to add some specific underflow checks,
                  though there are already ones in check_underflow(). */
@@ -919,6 +964,8 @@ cancel (void)
               /* The next sum will be <= bound in absolute value
                  (the equality can be obtained in all rounding modes
                  since the sum will be rounded). */
+
+              mpfr_neg (x[n], x[n], MPFR_RNDN);
             }
         }
 

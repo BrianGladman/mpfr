@@ -27,11 +27,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Check if we have to check the result of mpfr_sub1sp with mpfr_sub1 */
 #if MPFR_WANT_ASSERT >= 2
 
-int mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode);
+int mpfr_sub1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmpa, tmpb, tmpc;
+  mpfr_flags_t old_flags, flags, flags2;
   int inexb, inexc, inexact, inexact2;
+
+  old_flags = __gmpfr_flags;
 
   mpfr_init2 (tmpa, MPFR_PREC (a));
   mpfr_init2 (tmpb, MPFR_PREC (b));
@@ -43,24 +46,33 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   inexc = mpfr_set (tmpc, c, MPFR_RNDN);
   MPFR_ASSERTN (inexc == 0);
 
-  inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode);
-  inexact  = mpfr_sub1sp2(a, b, c, rnd_mode);
+  MPFR_ASSERTN (__gmpfr_flags == old_flags);
 
-  if (mpfr_cmp (tmpa, a) || inexact != inexact2)
+  inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode);
+  flags2 = __gmpfr_flags;
+
+  __gmpfr_flags = old_flags;
+  inexact  = mpfr_sub1sp2 (a, b, c, rnd_mode);
+  flags = __gmpfr_flags;
+
+  if (! mpfr_equal_p (tmpa, a) || inexact != inexact2 || flags != flags2)
     {
       fprintf (stderr, "sub1 & sub1sp return different values for %s\n"
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
-               mpfr_print_rnd_mode (rnd_mode), (unsigned long) MPFR_PREC (a),
-               (unsigned long) MPFR_PREC (b), (unsigned long) MPFR_PREC (c));
+               mpfr_print_rnd_mode (rnd_mode),
+               (unsigned long) MPFR_PREC (a),
+               (unsigned long) MPFR_PREC (b),
+               (unsigned long) MPFR_PREC (c));
       mpfr_fprint_binary (stderr, tmpb);
       fprintf (stderr, "\nC = ");
       mpfr_fprint_binary (stderr, tmpc);
-      fprintf (stderr, "\nSub1  : ");
+      fprintf (stderr, "\nsub1  : ");
       mpfr_fprint_binary (stderr, tmpa);
-      fprintf (stderr, "\nSub1sp: ");
+      fprintf (stderr, "\nsub1sp: ");
       mpfr_fprint_binary (stderr, a);
-      fprintf (stderr, "\nInexact sp = %d | Inexact = %d\n",
-               inexact, inexact2);
+      fprintf (stderr, "\nInexact sp = %d | Inexact = %d\n"
+               "Flags sp = %u | Flags = %u\n",
+               inexact, inexact2, flags, flags2);
       MPFR_ASSERTN (0);
     }
   mpfr_clears (tmpa, tmpb, tmpc, (mpfr_ptr) 0);

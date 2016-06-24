@@ -23,16 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME/TODO: Support reused arguments. This should now be done, but
-   has not been tested yet. Some things remain to do:
-   - Check that there are no regressions in timings.
-   - Add test cases to "tsum.c" (make sure that at least one fails with
-     the previous code, which implies that an input argument used as the
-     output is read to resolve the TMD).
-   - Remove the sentences about overlapping from doc/mpfr.texi once the
-     support for reused arguments has been confirmed.
-*/
-
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
@@ -613,7 +603,8 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     int tmd;             /* 0: the TMD does not occur
                             1: the TMD occurs on a machine number
                             2: the TMD occurs on a midpoint */
-    int pos;             /* 0 if negative sum, 1 if positive */
+    int neg;             /* 0 if positive sum, 1 if negative */
+    int sgn;             /* +1 if positive sum, -1 if negative */
 
     MPFR_LOG_MSG (("Compute an approximation with sum_raw...\n", 0));
 
@@ -838,21 +829,24 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         inex = tmd = maxexp != MPFR_EXP_MIN;
       }
 
-    /* pos = 1 if positive, 0 if negative. */
-    /* TODO: change to neg? */
-    pos = ! (wp[ws-1] >> (GMP_NUMB_BITS - 1));
-
     MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
-    MPFR_LOG_MSG (("tmd=%d lbit=%d rbit=%d inex=%d pos=%d\n",
-                   tmd, (int) lbit, (int) rbit, inex, pos));
+    /* neg = 0 if negative, 1 if positive. */
+    neg = wp[ws-1] >> (GMP_NUMB_BITS - 1);
+    MPFR_ASSERTD (neg == 0 || neg == 1);
+
+    sgn = neg ? -1 : 1;
+    MPFR_ASSERTN (sgn == (neg ? MPFR_SIGN_NEG : MPFR_SIGN_POS));
+
+    MPFR_LOG_MSG (("tmd=%d lbit=%d rbit=%d inex=%d neg=%d\n",
+                   tmd, (int) lbit, (int) rbit, inex, neg));
 
     /* Here, if the final sum is known to be exact, inex = 0, otherwise
      * inex = 1. We have a truncated significand, a trailing term t such
      * that 0 <= t < 1 ulp, and an error on the trailing term bounded by
      * t' in absolute value. Thus the error e on the truncated significand
      * satisfies -t' <= e < 1 ulp + t'. Thus one has 4 correction cases
-     * denoted by a corr value between -1 and 2 depending on e, pos, rbit,
+     * denoted by a corr value between -1 and 2 depending on e, neg, rbit,
      * and the rounding mode:
      *   -1: equivalent to nextbelow;
      *    0: the truncated significand is not corrected;
@@ -874,10 +868,10 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
             corr = inex;
             break;
           case MPFR_RNDZ:
-            corr = inex && !pos;
+            corr = inex && neg;
             break;
           case MPFR_RNDA:
-            corr = inex && pos;
+            corr = inex && !neg;
             break;
           default:
             MPFR_ASSERTN (rnd == MPFR_RNDN);
@@ -1003,25 +997,25 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         /* Do not consider the corrected sst for MPFR_COV_SET */
         MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit]
-                      [cancel2 == 0 ? 1 : sst+1][pos][sq > MPFR_PREC_MIN]);
+                      [cancel2 == 0 ? 1 : sst+1][neg][sq > MPFR_PREC_MIN]);
 
         inex =
-          MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) ? (sst ? -1 : 0) :
-          MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) ? (sst ?  1 : 0) :
+          MPFR_IS_LIKE_RNDD (rnd, sgn) ? (sst ? -1 : 0) :
+          MPFR_IS_LIKE_RNDU (rnd, sgn) ? (sst ?  1 : 0) :
           (MPFR_ASSERTD (rnd == MPFR_RNDN),
            tmd == 1 ? - sst : sst);
 
         if (tmd == 2 && sst == (rbit != 0 ? -1 : 1))
           corr = 1 - (int) rbit;
-        else if (MPFR_IS_LIKE_RNDD (rnd, pos ? 1 : -1) && sst == -1)
+        else if (MPFR_IS_LIKE_RNDD (rnd, sgn) && sst == -1)
           corr = (int) rbit - 1;
-        else if (MPFR_IS_LIKE_RNDU (rnd, pos ? 1 : -1) && sst == +1)
+        else if (MPFR_IS_LIKE_RNDU (rnd, sgn) && sst == +1)
           corr = (int) rbit + 1;
         else
           corr = (int) rbit;
       }
 
-    MPFR_LOG_MSG (("pos=%d corr=%d inex=%d\n", pos, corr, inex));
+    MPFR_LOG_MSG (("neg=%d corr=%d inex=%d\n", neg, corr, inex));
 
     /* Sign handling (-> absolute value and sign), together with
        rounding. The most common cases are corr = 0 and corr = 1
@@ -1029,7 +1023,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (corr >= -1 && corr <= 2);
 
-    MPFR_SIGN (sum) = pos ? MPFR_SIGN_POS : MPFR_SIGN_NEG;
+    MPFR_SIGN (sum) = sgn;
 
     if (MPFR_LIKELY (u > minexp))
       {
@@ -1070,49 +1064,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
     if (MPFR_UNLIKELY (sq == 1))  /* precision 1 */
       {
         sump[0] = MPFR_LIMB_HIGHBIT;
-        e += pos ? corr : 1 - corr;
+        e += neg ? 1 - corr : corr;
       }
-    else if (pos)  /* positive result with sq > 1 */
-      {
-        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
-        sump[0] &= ~ MPFR_LIMB_MASK (sd);
-
-        if (corr > 0)
-          {
-            mp_limb_t corr2, carry_out;
-
-            corr2 = (mp_limb_t) corr << sd;
-            /* If corr == 2 && sd == GMP_NUMB_BITS - 1, this overflows
-               to corr2 = 0. This case is taken into account below. */
-
-            carry_out = corr2 != 0 ? mpn_add_1 (sump, sump, sn, corr2) :
-              (MPFR_ASSERTD (sn > 1),
-               mpn_add_1 (sump + 1, sump + 1, sn - 1, MPFR_LIMB_ONE));
-
-            MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == !carry_out);
-
-            if (MPFR_UNLIKELY (carry_out))
-              {
-                /* Note: The | is important when sump[sn-1] is not 0
-                   (this can occur with sn = 1 and corr = 2). TODO:
-                   Add something to make sure that this is tested. */
-                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
-                e++;
-              }
-          }
-
-        if (corr < 0)
-          {
-            mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
-
-            if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
-              {
-                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
-                e--;
-              }
-          }
-      }
-    else  /* negative result with sq > 1 */
+    else if (neg)  /* negative result with sq > 1 */
       {
         MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) == 0);
 
@@ -1184,6 +1138,46 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
               {
                 /* Happens on 01111...111, whose complement is
                    10000...000, and com(x) - 1 is 01111...111. */
+                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
+                e--;
+              }
+          }
+      }
+    else  /* positive result with sq > 1 */
+      {
+        MPFR_ASSERTD (MPFR_LIMB_MSB (sump[sn-1]) != 0);
+        sump[0] &= ~ MPFR_LIMB_MASK (sd);
+
+        if (corr > 0)
+          {
+            mp_limb_t corr2, carry_out;
+
+            corr2 = (mp_limb_t) corr << sd;
+            /* If corr == 2 && sd == GMP_NUMB_BITS - 1, this overflows
+               to corr2 = 0. This case is taken into account below. */
+
+            carry_out = corr2 != 0 ? mpn_add_1 (sump, sump, sn, corr2) :
+              (MPFR_ASSERTD (sn > 1),
+               mpn_add_1 (sump + 1, sump + 1, sn - 1, MPFR_LIMB_ONE));
+
+            MPFR_ASSERTD (sump[sn-1] >> (GMP_NUMB_BITS - 1) == !carry_out);
+
+            if (MPFR_UNLIKELY (carry_out))
+              {
+                /* Note: The | is important when sump[sn-1] is not 0
+                   (this can occur with sn = 1 and corr = 2). TODO:
+                   Add something to make sure that this is tested. */
+                sump[sn-1] |= MPFR_LIMB_HIGHBIT;
+                e++;
+              }
+          }
+
+        if (corr < 0)
+          {
+            mpn_sub_1 (sump, sump, sn, MPFR_LIMB_ONE << sd);
+
+            if (MPFR_UNLIKELY (MPFR_LIMB_MSB (sump[sn-1]) == 0))
+              {
                 sump[sn-1] |= MPFR_LIMB_HIGHBIT;
                 e--;
               }
