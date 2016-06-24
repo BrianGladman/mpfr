@@ -52,7 +52,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   flags2 = __gmpfr_flags;
 
   __gmpfr_flags = old_flags;
-  inexact  = mpfr_add1sp2 (a, b, c, rnd_mode);
+  inexact = mpfr_add1sp2 (a, b, c, rnd_mode);
   flags = __gmpfr_flags;
 
   if (! mpfr_equal_p (tmpa, a) || inexact != inexact2 || flags != flags2)
