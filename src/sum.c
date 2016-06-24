@@ -856,12 +856,13 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
      * change of the binade.
      */
 
-    if (tmd == 0)  /* no TMD */
+    if (rnd == MPFR_RNDF)
+      corr = 0;
+    else if (tmd == 0)  /* no TMD */
       {
         switch (rnd)
           {
           case MPFR_RNDD:
-          case MPFR_RNDF:
             corr = 0;
             break;
           case MPFR_RNDU:
