@@ -314,7 +314,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           /* Exponent range for the test. */
           oemin = mpfr_get_emin ();
           oemax = mpfr_get_emax ();
-          
+
           rnd = RND_RAND ();
           mpfr_clear_flags ();
 #ifdef DEBUG_TGENERIC

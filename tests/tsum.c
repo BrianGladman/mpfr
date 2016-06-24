@@ -119,7 +119,7 @@ generic_tests (void)
       RND_LOOP (rnd_mode)
         {
           int inex1, inex2;
-          
+
           if (rnd_mode == MPFR_RNDF)
             continue; /* the test below makes no sense */
           inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);

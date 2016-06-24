@@ -157,7 +157,7 @@ main (int argc, char *argv[])
           {
             if (rnd == MPFR_RNDF)
               continue;
-            
+
             mpfr_zeta_ui (y, n, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))
