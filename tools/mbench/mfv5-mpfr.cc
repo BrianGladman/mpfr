@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr.h"
 #include "timp.h"
 
+#define RND MPFR_RNDN /* rounding used for the tests */
+
 using namespace std;
 
 /* Register New Test */
@@ -315,7 +317,7 @@ bool mpfr_test<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (b, table[i], MPFR_RNDN);
     mpfr_set (c, table[i+1], MPFR_RNDN);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, MPFR_RNDN) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, RND) ); 
     cont = tim->update (i, m) || cont;
   }
 
@@ -349,7 +351,7 @@ bool mpfr_test3<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (c, table[i+1], MPFR_RNDN);
     mpfr_set (d, table[i+2], MPFR_RNDN);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, d, MPFR_RNDN) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, d, RND) );
     //cout << "m = " << m << endl;
     cont = tim->update (i, m) || cont;
   }
@@ -385,7 +387,7 @@ bool mpfr_test4<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (d, table[i+2], MPFR_RNDN);
     mpfr_set (e, table[i+3], MPFR_RNDN);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, d, e, MPFR_RNDN) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, d, e, RND) ); 
     //cout << "m = " << m << endl;
     cont = tim->update (i, m) || cont;
   }
