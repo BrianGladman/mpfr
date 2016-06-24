@@ -786,6 +786,38 @@ check_max_almosteven (void)
   set_emax (old_emax);
 }
 
+static void
+test_rndf (void)
+{
+  mpfr_t a, b, c, d;
+
+  mpfr_init2 (a, 7);
+  mpfr_init2 (b, 7);
+  mpfr_init2 (c, 7);
+  mpfr_init2 (d, 7);
+  mpfr_set_str_binary (b, "-1.000000e-7");
+  mpfr_set_str_binary (c, "-1.000000");
+  mpfr_sub (a, b, c, MPFR_RNDF);
+  MPFR_ASSERTN(MPFR_IS_NORMALIZED(a));
+  mpfr_sub (d, b, c, MPFR_RNDD);
+  if (mpfr_cmp (a, d))
+    {
+      mpfr_sub (d, b, c, MPFR_RNDU);
+      if (mpfr_cmp (a, d))
+        {
+          printf ("Error: mpfr_sub(a,b,c,RNDF) does not match RNDD/RNDU\n");
+          printf ("b="); mpfr_dump (b);
+          printf ("c="); mpfr_dump (c);
+          printf ("a="); mpfr_dump (a);
+          exit (1);
+        }
+    }
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+  mpfr_clear (d);
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -799,6 +831,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  test_rndf ();
   bug20101017 ();
   check_rounding ();
   check_diverse ();

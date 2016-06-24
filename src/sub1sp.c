@@ -399,7 +399,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
     }
-  else if (MPFR_UNLIKELY(d >= p))
+  else if (MPFR_UNLIKELY(d >= p)) /* the difference of exponents is larger
+                                     than the precision of all operands, thus
+                                     the result is either b or b - 1 ulp,
+                                     with a possible exact result when
+                                     d = p, b = 2^e and c = 1/2 ulp(b) */
     {
       ap = MPFR_MANT(a);
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
@@ -433,10 +437,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
           /* Even if src and dest overlap, it is OK using MPN_COPY */
           if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
-            goto truncate;
+            /* then d = p, and subtracting one ulp of b is ok even in the
+               exact case b = 2^e and c = 1/2 ulp(b) */
+            {
+              MPN_COPY(ap, bp, n);
+              goto sub_one_ulp;
+            }
           else if (rnd_mode == MPFR_RNDN)
             {
-              if (MPFR_UNLIKELY( bcp && bcp1==0 ))
+              if (MPFR_UNLIKELY( bcp && bcp1 == 0 ))
                 /* Cp=-1 and C'p+1=0: Even rule Apply! */
                 /* Check Ap-1 = Bp-1 */
                 if ((bp[0] & (MPFR_LIMB_ONE<<sh)) == 0)
@@ -693,7 +702,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Sub one ulp to the result */
  sub_one_ulp:
-  MPFR_ASSERTD(rnd_mode != MPFR_RNDF);
   mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
   /* Result should be smaller than exact value: inexact=-1 */
   inexact = -1;
@@ -715,9 +723,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit!*/
       MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
-      if ( (rnd_mode == MPFR_RNDZ && bcp==0)
-           || (rnd_mode==MPFR_RNDN && bbcp==0)
-           || (bcp && bcp1==0) ) /*Exact result*/
+      if ( (rnd_mode == MPFR_RNDZ && bcp == 0)
+           || (rnd_mode == MPFR_RNDN && bbcp == 0)
+           || (bcp && bcp1 == 0) ) /*Exact result*/
         {
           ap[0] |= MPFR_LIMB_ONE<<sh;
           if (rnd_mode == MPFR_RNDN)
@@ -727,7 +735,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Result could be exact if C'p+1 = 0 and rnd == Zero
          since we have had one more bit to the result */
       /* Fixme: rnd_mode == MPFR_RNDZ needed ? */
-      if (bcp1==0 && rnd_mode==MPFR_RNDZ)
+      if (bcp1 == 0 && rnd_mode == MPFR_RNDZ)
         {
           DEBUG( printf("(SubOneUlp) Exact result\n") );
           inexact = 0;
