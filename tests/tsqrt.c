@@ -615,10 +615,10 @@ testall_rndf (mpfr_prec_t pmax)
             {
               mpfr_sqrt (a, b, MPFR_RNDF);
               mpfr_sqrt (d, b, MPFR_RNDD);
-              if (mpfr_cmp (a, d))
+              if (!mpfr_equal_p (a, d))
                 {
                   mpfr_sqrt (d, b, MPFR_RNDU);
-                  if (mpfr_cmp (a, d))
+                  if (!mpfr_equal_p (a, d))
                     {
                       printf ("Error: mpfr_sqrt(a,b,RNDF) does not "
                               "match RNDD/RNDU\n");

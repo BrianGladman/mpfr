@@ -800,10 +800,10 @@ test_rndf (void)
   mpfr_sub (a, b, c, MPFR_RNDF);
   MPFR_ASSERTN(MPFR_IS_NORMALIZED(a));
   mpfr_sub (d, b, c, MPFR_RNDD);
-  if (mpfr_cmp (a, d))
+  if (!mpfr_equal_p (a, d))
     {
       mpfr_sub (d, b, c, MPFR_RNDU);
-      if (mpfr_cmp (a, d))
+      if (!mpfr_equal_p (a, d))
         {
           printf ("Error: mpfr_sub(a,b,c,RNDF) does not match RNDD/RNDU\n");
           printf ("b="); mpfr_dump (b);
@@ -845,10 +845,10 @@ testall_rndf (mpfr_prec_t pmax)
                         {
                           mpfr_sub (a, b, c, MPFR_RNDF);
                           mpfr_sub (d, b, c, MPFR_RNDD);
-                          if (mpfr_cmp (a, d))
+                          if (!mpfr_equal_p (a, d))
                             {
                               mpfr_sub (d, b, c, MPFR_RNDU);
-                              if (mpfr_cmp (a, d))
+                              if (!mpfr_equal_p (a, d))
                                 {
                                   printf ("Error: mpfr_sub(a,b,c,RNDF) does not "
                                           "match RNDD/RNDU\n");

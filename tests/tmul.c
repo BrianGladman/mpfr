@@ -658,10 +658,10 @@ testall_rndf (mpfr_prec_t pmax)
                     {
                       mpfr_mul (a, b, c, MPFR_RNDF);
                       mpfr_mul (d, b, c, MPFR_RNDD);
-                      if (mpfr_cmp (a, d))
+                      if (!mpfr_equal_p (a, d))
                         {
                           mpfr_mul (d, b, c, MPFR_RNDU);
-                          if (mpfr_cmp (a, d))
+                          if (!mpfr_equal_p (a, d))
                             {
                               printf ("Error: mpfr_mul(a,b,c,RNDF) does not "
                                       "match RNDD/RNDU\n");
