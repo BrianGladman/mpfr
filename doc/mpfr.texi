@@ -734,8 +734,6 @@ expression.  For example, the main function for floating-point multiplication,
 @code{mpfr_mul}, can be used like this: @code{mpfr_mul (x, x, x, rnd)}.
 This computes the square of @var{x} with rounding mode @code{rnd}
 and puts the result back in @var{x}.
-(As an exception, @code{mpfr_sum} currently doesn't allow overlapping between
-input and output.)
 
 @node Rounding Modes, Floating-Point Values on Special Numbers, MPFR Variable Conventions, MPFR Basics
 @comment  node-name,  next,  previous,  up
@@ -2279,9 +2277,6 @@ a @minus{}0, or because some inputs are non-zero (but they globally cancel),
 the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
 @minus{}0.
 @end itemize
-
-Note: @code{mpfr_sum} currently doesn't allow overlapping between
-some input @var{tab}[i] and the output @var{rop}.
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface

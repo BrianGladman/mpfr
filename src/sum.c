@@ -23,16 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME/TODO: Support reused arguments. This should now be done, but
-   has not been tested yet. Some things remain to do:
-   - Check that there are no regressions in timings.
-   - Add test cases to "tsum.c" (make sure that at least one fails with
-     the previous code, which implies that an input argument used as the
-     output is read to resolve the TMD).
-   - Remove the sentences about overlapping from doc/mpfr.texi once the
-     support for reused arguments has been confirmed.
-*/
-
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
