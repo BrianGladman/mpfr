@@ -597,6 +597,45 @@ bug20160120 (void)
   mpfr_clear(y);
 }
 
+static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, d;
+  mpfr_prec_t pa, pb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          while (mpfr_cmp_ui (b, 4) < 0)
+            {
+              mpfr_sqrt (a, b, MPFR_RNDF);
+              mpfr_sqrt (d, b, MPFR_RNDD);
+              if (mpfr_cmp (a, d))
+                {
+                  mpfr_sqrt (d, b, MPFR_RNDU);
+                  if (mpfr_cmp (a, d))
+                    {
+                      printf ("Error: mpfr_sqrt(a,b,RNDF) does not "
+                              "match RNDD/RNDU\n");
+                      printf ("b="); mpfr_dump (b);
+                      printf ("a="); mpfr_dump (a);
+                      exit (1);
+                    }
+                }
+              mpfr_nextabove (b);
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -609,6 +648,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  testall_rndf (16);
   for (p = MPFR_PREC_MIN; p <= 128; p++)
     {
       test_property1 (p, MPFR_RNDN, 0);

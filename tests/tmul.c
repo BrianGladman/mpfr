@@ -634,11 +634,62 @@ valgrind20110503 (void)
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
 }
 
+static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          while (mpfr_cmp_ui (b, 2) < 0)
+            {
+              for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                {
+                  mpfr_init2 (c, pc);
+                  mpfr_set_ui (c, 1, MPFR_RNDN);
+                  while (mpfr_cmp_ui (c, 2) < 0)
+                    {
+                      mpfr_mul (a, b, c, MPFR_RNDF);
+                      mpfr_mul (d, b, c, MPFR_RNDD);
+                      if (mpfr_cmp (a, d))
+                        {
+                          mpfr_mul (d, b, c, MPFR_RNDU);
+                          if (mpfr_cmp (a, d))
+                            {
+                              printf ("Error: mpfr_mul(a,b,c,RNDF) does not "
+                                      "match RNDD/RNDU\n");
+                              printf ("b="); mpfr_dump (b);
+                              printf ("c="); mpfr_dump (c);
+                              printf ("a="); mpfr_dump (a);
+                              exit (1);
+                            }
+                        }
+                      mpfr_nextabove (c);
+                    }
+                  mpfr_clear (c);
+                }
+              mpfr_nextabove (b);
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  testall_rndf (9);
   check_nans ();
   check_exact ();
   check_float ();

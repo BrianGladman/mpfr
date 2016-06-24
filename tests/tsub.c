@@ -818,6 +818,60 @@ test_rndf (void)
   mpfr_clear (d);
 }
 
+static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_set_ui_2exp (b, 1, eb, MPFR_RNDN);
+              while (mpfr_cmp_ui_2exp (b, 1, eb + 1) < 0)
+                {
+                  for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                    {
+                      mpfr_init2 (c, pc);
+                      mpfr_set_ui (c, 1, MPFR_RNDN);
+                      while (mpfr_cmp_ui (c, 2) < 0)
+                        {
+                          mpfr_sub (a, b, c, MPFR_RNDF);
+                          mpfr_sub (d, b, c, MPFR_RNDD);
+                          if (mpfr_cmp (a, d))
+                            {
+                              mpfr_sub (d, b, c, MPFR_RNDU);
+                              if (mpfr_cmp (a, d))
+                                {
+                                  printf ("Error: mpfr_sub(a,b,c,RNDF) does not "
+                                          "match RNDD/RNDU\n");
+                                  printf ("b="); mpfr_dump (b);
+                                  printf ("c="); mpfr_dump (c);
+                                  printf ("a="); mpfr_dump (a);
+                                  exit (1);
+                                }
+                            }
+                          mpfr_nextabove (c);
+                        }
+                      mpfr_clear (c);
+                    }
+                  mpfr_nextabove (b);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -832,6 +886,7 @@ main (void)
   tests_start_mpfr ();
 
   test_rndf ();
+  testall_rndf (7);
   bug20101017 ();
   check_rounding ();
   check_diverse ();

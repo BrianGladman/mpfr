@@ -118,7 +118,8 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
 
       if (mpfr_compare (res1, ref1))
         {
-          printf ("Error for %s(a, a, c) for ", foo);
+          printf ("Error for %s(a, a, c) with %s for ", foo,
+                  mpfr_print_rnd_mode (rnd));
           DISP("a=",ref2); DISP2(", c=",ref3);
           printf ("expected "); mpfr_dump (ref1);
           printf ("got      "); mpfr_dump (res1);
