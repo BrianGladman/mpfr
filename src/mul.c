@@ -163,6 +163,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_t ta, tb, tc;
   int inexact1, inexact2;
 
+  if (rnd_mode == MPFR_RNDF)
+    return mpfr_mul2 (a, b, c, rnd_mode);
+
   mpfr_init2 (ta, MPFR_PREC (a));
   mpfr_init2 (tb, MPFR_PREC (b));
   mpfr_init2 (tc, MPFR_PREC (c));
