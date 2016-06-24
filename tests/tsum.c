@@ -524,18 +524,17 @@ check2 (void)
  * t[17] = 2^(17*9+1) * j for -4 <= j <= 4.
  * t[18] = 2^(-1) * k for -1 <= k <= 1.
  * t[19] = 2^(-17*8) * m for -3 <= m <= 3.
- * prec = 17*9+4
+ * prec = MPFR_PREC_MIN and 17*9+4
  */
 static void
 check3 (void)
 {
   mpfr_t sum1, sum2, s1, s2, s3, s4, t[20];
   mpfr_ptr p[20];
-  int i, s, j, k, m, r, inex1, inex2;
-  int prec = 17*9+4;
+  mpfr_flags_t flags1, flags2;
+  int i, s, j, k, m, q, r, inex1, inex2;
+  int prec[2] = { MPFR_PREC_MIN, 17*9+4 };
 
-  mpfr_init2 (sum1, prec);
-  mpfr_init2 (sum2, prec);
   mpfr_init2 (s1, 17*17);
   mpfr_init2 (s2, 17*17+4);
   mpfr_init2 (s3, 17*17+4);
@@ -570,41 +569,53 @@ check3 (void)
                   mpfr_set_si_2exp (t[19], m, -17*8, MPFR_RNDN);
                   inex1 = mpfr_add (s4, s3, t[19], MPFR_RNDN);
                   MPFR_ASSERTN (inex1 == 0);
-                  RND_LOOP (r)
+                  for (q = 0; q < 2; q++)
                     {
-                      if (r == MPFR_RNDF)
-                        continue; /* the test below makes no sense */
-                      inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
-                      inex2 = mpfr_sum (sum2, p, 20, (mpfr_rnd_t) r);
-                      MPFR_ASSERTN (mpfr_check (sum1));
-                      MPFR_ASSERTN (mpfr_check (sum2));
-                      if (!(mpfr_equal_p (sum1, sum2) &&
-                            SAME_SIGN (inex1, inex2)))
+                      mpfr_inits2 (prec[q], sum1, sum2, (mpfr_ptr) 0);
+                      RND_LOOP (r)
                         {
-                          printf ("Error in check3 on %s, "
-                                  "s = %d, j = %d, k = %d, m = %d\n",
-                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
-                                  s, j, k, m);
-                          printf ("Expected ");
-                          mpfr_dump (sum1);
-                          printf ("with inex = %d\n", inex1);
-                          printf ("Got      ");
-                          mpfr_dump (sum2);
-                          printf ("with inex = %d\n", inex2);
-                          exit (1);
+                          if (r == MPFR_RNDF)
+                            continue; /* the test below makes no sense */
+                          mpfr_clear_flags ();
+                          inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
+                          flags1 = __gmpfr_flags;
+                          mpfr_clear_flags ();
+                          inex2 = mpfr_sum (sum2, p, 20, (mpfr_rnd_t) r);
+                          flags2 = __gmpfr_flags;
+                          MPFR_ASSERTN (mpfr_check (sum1));
+                          MPFR_ASSERTN (mpfr_check (sum2));
+                          if (!(mpfr_equal_p (sum1, sum2) &&
+                                SAME_SIGN (inex1, inex2) &&
+                                flags1 == flags2))
+                            {
+                              printf ("Error in check3 on %s, "
+                                      "s = %d, j = %d, k = %d, m = %d\n",
+                                      mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                                      s, j, k, m);
+                              printf ("Expected ");
+                              mpfr_dump (sum1);
+                              printf ("with inex = %d and flags =", inex1);
+                              flags_out (flags1);
+                              printf ("Got      ");
+                              mpfr_dump (sum2);
+                              printf ("with inex = %d and flags =", inex2);
+                              flags_out (flags2);
+                              exit (1);
+                            }
                         }
-                    }
-                }
-            }
-        }
+                      mpfr_clears (sum1, sum2, (mpfr_ptr) 0);
+                    }  /* q */
+                }  /* m */
+            }  /* k */
+        }  /* j */
       for (i = 0; i < 17; i++)
         mpfr_neg (t[i], t[i], MPFR_RNDN);
       mpfr_neg (s1, s1, MPFR_RNDN);
-    }
+    }  /* s */
 
   for (i = 0; i < 20; i++)
     mpfr_clear (t[i]);
-  mpfr_clears (sum1, sum2, s1, s2, s3, s4, (mpfr_ptr) 0);
+  mpfr_clears (s1, s2, s3, s4, (mpfr_ptr) 0);
 }
 
 /* Test of s * (q * 2^(n-1) - 2^k) + h + i * 2^(-2) + j * 2^(-2)
@@ -638,7 +649,7 @@ check4 (void)
   /* No GNU style for the many nested loops... */
   for (k = 1; k <= 64; k++) {
     mpfr_set_si_2exp (t[0], -1, k, MPFR_RNDN);
-    for (n = k + 2; n <= k + 65; n++) {
+    for (n = k + MPFR_PREC_MIN; n <= k + 65; n++) {
       prec = n - k;
       mpfr_set_prec (sum1, prec);
       mpfr_set_prec (sum2, prec);
@@ -768,6 +779,9 @@ bug20150327 (void)
   RND_LOOP(r)
     {
       int inex1, inex2;
+
+      if (r == MPFR_RNDF)
+        continue; /* the test below makes no sense */
 
       mpfr_set (sum1, t[2], MPFR_RNDN);
       inex1 = -1;
@@ -1158,19 +1172,20 @@ check_coverage (void)
   int err = 0;
 
   for (r = 0; r < MPFR_RND_MAX; r++)
-    for (i = 0; i < 1 + ((mpfr_rnd_t) r == MPFR_RNDN); i++)
-      for (j = 0; j < 2; j++)
-        for (k = 0; k < 3; k++)
-          for (p = 0; p < 2; p++)
-            for (q = 0; q < 2; q++)
-              if (!__gmpfr_cov_sum_tmd[r][i][j][k][p][q])
-                {
-                  printf ("TMD not tested on %s, tmd=%d, rbit=%d, sst=%d,"
-                          " %s, sq %s MPFR_PREC_MIN\n",
-                          mpfr_print_rnd_mode ((mpfr_rnd_t) r), i+1, j, k-1,
-                          p ? "pos" : "neg", q ? ">" : "==");
-                  err = 1;
-                }
+    if (r != MPFR_RNDF)
+      for (i = 0; i < 1 + ((mpfr_rnd_t) r == MPFR_RNDN); i++)
+        for (j = 0; j < 2; j++)
+          for (k = 0; k < 3; k++)
+            for (p = 0; p < 2; p++)
+              for (q = 0; q < 2; q++)
+                if (!__gmpfr_cov_sum_tmd[r][i][j][k][p][q])
+                  {
+                    printf ("TMD not tested on %s, tmd=%d, rbit=%d, sst=%d,"
+                            " %s, sq %s MPFR_PREC_MIN\n",
+                            mpfr_print_rnd_mode ((mpfr_rnd_t) r), i+1, j, k-1,
+                            p ? "pos" : "neg", q ? ">" : "==");
+                    err = 1;
+                  }
 
   if (err)
     exit (1);
