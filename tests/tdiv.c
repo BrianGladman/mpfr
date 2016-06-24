@@ -53,7 +53,9 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
   oldflags = __gmpfr_flags;
   inex = mpfr_div (a, b, c, r);
 
-  if (a == b || a == c)
+  /* this test makes no sense for RNDF, since it compares the ternary value
+     and the flags */
+  if (a == b || a == c || r == MPFR_RNDF)
     return inex;
 
   newflags = __gmpfr_flags;
@@ -68,7 +70,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_ui_div (a2, mpfr_get_ui (b, MPFR_RNDN), c, r);
-          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_ui_div", b, c, r);
         }
@@ -76,7 +78,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_si_div (a2, mpfr_get_si (b, MPFR_RNDN), c, r);
-          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_si_div", b, c, r);
         }
@@ -90,7 +92,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_div_ui (a2, b, mpfr_get_ui (c, MPFR_RNDN), r);
-          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_div_ui", b, c, r);
         }
@@ -98,7 +100,7 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
         {
           __gmpfr_flags = oldflags;
           inex2 = mpfr_div_si (a2, b, mpfr_get_si (c, MPFR_RNDN), r);
-          MPFR_ASSERTN (r == MPFR_RNDF || SAME_SIGN (inex2, inex));
+          MPFR_ASSERTN (SAME_SIGN (inex2, inex));
           MPFR_ASSERTN (__gmpfr_flags == newflags);
           check_equal (a, a2, "mpfr_div_si", b, c, r);
         }
