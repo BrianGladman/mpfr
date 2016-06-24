@@ -1221,6 +1221,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               switch (spec.rnd_mode)
                 {
                 case MPFR_RNDA:
+                case MPFR_RNDF:  /* round_away = 1 needed for spec_g */
                   round_away = 1;
                   break;
                 case MPFR_RNDD:
