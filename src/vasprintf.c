@@ -1224,18 +1224,25 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 case MPFR_RNDF:  /* round_away = 1 needed for spec_g */
                   round_away = 1;
                   break;
+                case MPFR_RNDZ:
+                  round_away = 0;
+                  break;
                 case MPFR_RNDD:
                   round_away = MPFR_IS_NEG (p);
                   break;
                 case MPFR_RNDU:
                   round_away = MPFR_IS_POS (p);
                   break;
-                case MPFR_RNDN:
+                default:
                   {
                     /* compare |p| to y = 0.5*10^(-spec.prec) */
                     mpfr_t y;
                     mpfr_exp_t e = MAX (MPFR_PREC (p), 56);
+                    int cmp;
+
+                    MPFR_ASSERTN (spec.rnd_mode == MPFR_RNDN);
                     mpfr_init2 (y, e + 8);
+
                     do
                       {
                         /* find a lower approximation of
@@ -1245,14 +1252,14 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                         mpfr_set_si (y, -spec.prec, MPFR_RNDN);
                         mpfr_exp10 (y, y, MPFR_RNDD);
                         mpfr_div_2ui (y, y, 1, MPFR_RNDN);
-                      } while (mpfr_cmpabs (y, p) == 0);
+                        cmp = mpfr_cmpabs (y, p);
+                      }
+                    while (cmp == 0);
 
-                    round_away = mpfr_cmpabs (y, p) < 0;
+                    round_away = cmp < 0;
                     mpfr_clear (y);
                   }
                   break;
-                default:
-                  round_away = 0;
                 }
 
               if (round_away)

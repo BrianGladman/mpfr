@@ -19,7 +19,7 @@ rm -f INSTALL.$$.tmp
 trap cleanup $signals
 mv -f INSTALL INSTALL.$$.tmp
 
-autoreconf -v -f -i -W all
+autoreconf -v -f -i --warnings=all,error
 status=$?
 
 rm -rf autom4te.cache
