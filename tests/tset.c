@@ -147,7 +147,8 @@ check_ternary_value (void)
                   ((inexact < 0) && (cmp >= 0)))
                 {
                   printf ("Wrong ternary value in mpfr_set for %s: expected"
-                          " %d, got %d\n", mpfr_print_rnd_mode (rnd), cmp,
+                          " %d, got %d\n",
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), cmp,
                           inexact);
                   exit (1);
                 }

@@ -249,7 +249,7 @@ test_get_uj_smallneg (void)
           uintmax_t u;
 
           mpfr_clear_erangeflag ();
-          s = mpfr_get_sj (x, (mpfr_rnd_t) (r != MPFR_RNDF) ? r : MPFR_RNDA);
+          s = mpfr_get_sj (x, r != MPFR_RNDF ? (mpfr_rnd_t) r : MPFR_RNDA);
           if (mpfr_erangeflag_p ())
             {
               printf ("ERROR for get_sj + ERANGE + small negative op"

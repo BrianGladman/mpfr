@@ -245,8 +245,8 @@ main (int argc, char *argv[])
                     if (inexact)
                       {
                         printf ("Wrong inexact flag: expected exact\n");
-                        printf ("n=%lu prec=%lu rnd=%s\n",
-                                n, prec, mpfr_print_rnd_mode (rnd));
+                        printf ("n=%lu prec=%lu rnd=%s\n", n, prec,
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                         mpfr_dump (z);
                         exit (1);
                       }
@@ -256,8 +256,8 @@ main (int argc, char *argv[])
                     if (!inexact)
                       {
                         printf ("Wrong inexact flag: expected inexact\n");
-                        printf ("n=%lu prec=%lu rnd=%s\n",
-                                n, prec, mpfr_print_rnd_mode (rnd));
+                        printf ("n=%lu prec=%lu rnd=%s\n", n, prec,
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                         mpfr_dump (z);
                         exit (1);
                       }

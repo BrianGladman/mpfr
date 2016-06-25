@@ -49,7 +49,7 @@ test_exact (void)
                 if (rnd == MPFR_RNDF)
                   break;
                 printf ("test_exact internal error for (%d,%d,%d,%d,%s)\n",
-                        i, j, k, rnd, mpfr_print_rnd_mode (rnd));
+                        i, j, k, rnd, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 exit (1);
               }
             if (mpfr_fms (r2, a, b, c, (mpfr_rnd_t) rnd))
@@ -599,7 +599,7 @@ main (int argc, char *argv[])
               printf ("  z=");
               mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
               printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
-                      mpfr_print_rnd_mode (rnd));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               printf ("got      ");
               mpfr_out_str (stdout, 2, prec, s, MPFR_RNDN);
               puts ("");
@@ -616,7 +616,8 @@ main (int argc, char *argv[])
               ((inexact > 0) && (compare <= 0)))
             {
               printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-                      mpfr_print_rnd_mode (rnd), compare, inexact);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
+                      compare, inexact);
               printf (" x="); mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (" y="); mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" z="); mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);
