@@ -132,13 +132,21 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("B= ", MPFR_MANT(b), p) );
       bx++;                                /* exp + 1 */
       ap = MPFR_MANT(a);
-      limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
-      DEBUG( mpfr_print_mant_binary("A= ", ap, p) );
-      MPFR_ASSERTD(limb != 0);             /* There must be a carry */
-      limb = ap[0];                        /* Get LSB (In fact, LSW) */
-      mpn_rshift (ap, ap, n, 1);           /* Shift mantissa A */
-      ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
-      ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
+      if (n == 1)
+        {
+          limb = MPFR_MANT(b)[0] +  MPFR_MANT(c)[0];
+          ap[0] = (MPFR_LIMB_HIGHBIT | (limb >> 1)) & ~MPFR_LIMB_MASK(sh);
+        }
+      else
+        {
+          limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+          DEBUG( mpfr_print_mant_binary("A= ", ap, p) );
+          MPFR_ASSERTD(limb != 0);             /* There must be a carry */
+          limb = ap[0];                        /* Get LSB (In fact, LSW) */
+          mpn_rshift (ap, ap, n, 1);           /* Shift mantissa A */
+          ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
+          ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
+        }
 
       /* Fast track for faithful rounding: since b and c have the same
          precision and the same exponent, the neglected value is either
@@ -182,7 +190,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
             copy_set_exponent:
               ap = MPFR_MANT (a);
-              MPN_COPY (ap, MPFR_MANT(b), n);
+              if (n == 1)
+                ap[0] = MPFR_MANT(b)[0];
+              else
+                MPN_COPY (ap, MPFR_MANT(b), n);
               inexact = -1;
               goto set_exponent;
             }
