@@ -369,14 +369,14 @@ has the form ⟦minexp,maxexp⟦.
 Notes:
   * The reiterations will end when there are no more tails, but in the
     code, this is detected only when needed.
-  * The definition of the tails allows one to skip holes between inputs
+  * The definition of the tails allows one to skip gaps between inputs
     in case of full cancellation (e.g. 1 + (−1) + 2^tiny_exponent).
   * We choose not to include maxexp in the exponent interval in order
     to match the convention chosen to represent floating-point numbers
     in MPFR, where the significand is in [1/2,1[, i.e., the exponent of
     a floating-point number is the one of the most significant bit + 1.
     This also means that the current minexp will be maxexp at the next
-    iteration, unless there is a hole between the inputs, as explained
+    iteration, unless there is a gap between the inputs, as explained
     above.
 
 Inputs of the sum_raw function (see the code for the types):
