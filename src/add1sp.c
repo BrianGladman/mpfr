@@ -48,7 +48,9 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTN (__gmpfr_flags == old_flags);
 
-  inexact2 = mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
+  inexact2 = MPFR_GET_EXP (tmpb) < MPFR_GET_EXP (tmpc) ?
+    mpfr_add1 (tmpa, tmpc, tmpb, rnd_mode) :
+    mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
   flags2 = __gmpfr_flags;
 
   __gmpfr_flags = old_flags;
