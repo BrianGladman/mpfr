@@ -25,6 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* Check if we have to check the result of mpfr_add1sp with mpfr_add1 */
+#define MPFR_WANT_ASSERT 2
 #if MPFR_WANT_ASSERT >= 2
 
 int mpfr_add1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
@@ -33,6 +34,13 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_t tmpa, tmpb, tmpc;
   mpfr_flags_t old_flags, flags, flags2;
   int inexb, inexc, inexact, inexact2;
+
+  if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+    {
+      mpfr_srcptr t = b;
+      b = c;
+      c = t;
+    }
 
   if (rnd_mode == MPFR_RNDF)
     return mpfr_add1sp2 (a, b, c, rnd_mode);
@@ -92,7 +100,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define DEBUG(x) /**/
 #endif
 
-/* compute sign(b) * (|b| + |c|), assuming EXP(b) >= EXP(c).
+/* compute sign(b) * (|b| + |c|).
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
    a positive value otherwise. */
@@ -114,13 +122,21 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
-  MPFR_ASSERTD(MPFR_GET_EXP(b) >= MPFR_GET_EXP(c));
+
+  bx = MPFR_GET_EXP(b);
+  if (bx < MPFR_GET_EXP(c))
+    {
+      mpfr_srcptr t = b;
+      bx = MPFR_GET_EXP(c);
+      b = c;
+      c = t;
+    }
+  MPFR_ASSERTD(bx >= MPFR_GET_EXP(c));
 
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
   n = MPFR_PREC2LIMBS (p);
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-  bx = MPFR_GET_EXP(b);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
 
   DEBUG (printf ("New add1sp with diff=%lu\n", (unsigned long) d));
