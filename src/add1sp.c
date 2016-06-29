@@ -111,13 +111,21 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
-  MPFR_ASSERTD(MPFR_GET_EXP(b) >= MPFR_GET_EXP(c));
+
+  bx = MPFR_GET_EXP(b);
+  if (bx < MPFR_GET_EXP(c))
+    {
+      mpfr_srcptr t = b;
+      bx = MPFR_GET_EXP(c);
+      b = c;
+      c = t;
+    }
+  MPFR_ASSERTD(bx >= MPFR_GET_EXP(c));
 
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
   n = MPFR_PREC2LIMBS (p);
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-  bx = MPFR_GET_EXP(b);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
 
   DEBUG (printf ("New add1sp with diff=%lu\n", (unsigned long) d));
