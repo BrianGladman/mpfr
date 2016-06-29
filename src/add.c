@@ -90,7 +90,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              for which optimization is less important. */
           if (MPFR_SIGN(b) != MPFR_SIGN(c))
             return mpfr_sub1 (a, b, c, rnd_mode);
-          else if (MPFR_EXP_LESS_P (b, c))
+          else if (MPFR_UBF_EXP_LESS_P (b, c))
             return mpfr_add1 (a, c, b, rnd_mode);
           else
             return mpfr_add1 (a, b, c, rnd_mode);

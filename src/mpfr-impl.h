@@ -881,7 +881,7 @@ typedef uintmax_t mpfr_ueexp_t;
 # define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
-#define MPFR_EXP_LESS_P(x,y) \
+#define MPFR_UBF_EXP_LESS_P(x,y) \
   (MPFR_UNLIKELY (MPFR_IS_UBF (x) || MPFR_IS_UBF (y)) ? \
    mpfr_ubf_exp_less_p (x, y) : MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
 
