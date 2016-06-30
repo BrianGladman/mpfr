@@ -168,18 +168,18 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   p = MPFR_GET_PREC (b);
   n = MPFR_PREC2LIMBS (p);
 
-  /* Fast cmp of |b| and |c|*/
+  /* Fast cmp of |b| and |c| */
   bx = MPFR_GET_EXP (b);
   cx = MPFR_GET_EXP (c);
   if (bx == cx)
     {
       mp_size_t k = n - 1;
-      /* Check mantissa since exponent are equals */
+      /* Check mantissa since exponents are equal */
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
       while (k>=0 && MPFR_UNLIKELY(bp[k] == cp[k]))
         k--;
-      if (MPFR_UNLIKELY(k < 0))
+      if (k < 0)
         /* b == c ! */
         {
           /* Return exact number 0 */
@@ -198,7 +198,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           goto CGreater;
         }
     }
-  else if (MPFR_UNLIKELY(bx < cx))
+  else if (bx < cx)
     {
       /* Swap b and c and set sign */
       mpfr_srcptr t;
@@ -222,16 +222,26 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (d <= 1)
     {
-      if (MPFR_LIKELY(d < 1))
+      if (d < 1)
         {
           /* <-- b -->
              <-- c --> : exact sub */
           ap = MPFR_MANT(a);
-          mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+          if (n == 1)
+            ap[0] = MPFR_MANT(b)[0] - MPFR_MANT(c)[0];
+          else
+            mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
           /* Normalize */
         ExactNormalize:
           limb = ap[n-1];
-          if (MPFR_LIKELY(limb))
+          if (n == 1)
+            {
+              /* limb <> 0 since b > c */
+              count_leading_zeros(cnt, limb);
+              ap[0] <<= cnt;
+              bx -= cnt;
+            }
+          else if (MPFR_LIKELY(limb))
             {
               /* First limb is not zero. */
               count_leading_zeros(cnt, limb);

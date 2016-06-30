@@ -132,7 +132,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   DEBUG (printf ("New add1sp with diff=%lu\n", (unsigned long) d));
 
-  if (MPFR_UNLIKELY(d == 0))
+  if (d == 0)
     {
       /* d==0 */
       DEBUG( mpfr_print_mant_binary("C= ", MPFR_MANT(c), p) );
@@ -277,11 +277,20 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Compute bcp=Cp and bcp1=C'p+1: bcp is the first neglected bit
          (round bit), and bcp1 corresponds to the remaining bits (sticky bit).
       */
-      if (MPFR_LIKELY (sh > 0))
+      if (sh > 0)
         {
           /* Try to compute them from C' rather than C */
           bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1)));
-          if (MPFR_LIKELY (cp[0] & MPFR_LIMB_MASK (sh - 1)))
+          if (MPFR_LIKELY(n == 1))
+            {
+              /* We have already taken into account the p + 1 - d
+                 most significant bits from MPFR_MANT(c)[0], it remains
+                 to consider the low sh + d - 1 bits.
+                 And since (p + 1 - d) + (sh + d - 1) = p + sh =
+                 GMP_NUMB_BITS, and 1 <= d < p, sh + d - 1 < GMP_NUMB_BITS. */
+              bcp1 = (MPFR_MANT(c)[0] & MPFR_LIMB_MASK (sh + d - 1));
+            }
+          else if (MPFR_LIKELY (cp[0] & MPFR_LIMB_MASK (sh - 1)))
             bcp1 = 1;
           else
             {
@@ -345,22 +354,36 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* Add the mantissa c from b in a */
       ap = MPFR_MANT(a);
-      limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
-      DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
-
-      /* Check for overflow */
-      if (MPFR_UNLIKELY (limb))
+      if (n == 1)
         {
-          limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
-          mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
-          bx++;                               /* Fix exponent */
-          ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
-          ap[0]   &= mask;                    /* Clear LSB bit */
-          bcp1    |= bcp;                     /* Recompute C'p+1 */
-          bcp      = limb;                    /* Recompute Cp */
-          DEBUG (printf ("(Overflow) Cp=%lu C'p+1=%lu\n",
-                         (unsigned long) bcp, (unsigned long) bcp1));
-          DEBUG (mpfr_print_mant_binary ("Add=  ", ap, p));
+          ap[0] = MPFR_MANT(b)[0] + cp[0];
+          if (ap[0] < cp[0]) /* carry out */
+            {
+              bcp1 |= bcp;
+              bcp = ap[0] & (MPFR_LIMB_ONE<<sh);
+              ap[0] = (MPFR_LIMB_HIGHBIT | (ap[0] >> 1)) & mask;
+              bx++;
+            }
+        }
+      else
+        {
+          limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
+          DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
+
+          /* Check for overflow */
+          if (MPFR_UNLIKELY (limb))
+            {
+              limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
+              mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
+              bx++;                               /* Fix exponent */
+              ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
+              ap[0]   &= mask;                    /* Clear LSB bit */
+              bcp1    |= bcp;                     /* Recompute C'p+1 */
+              bcp      = limb;                    /* Recompute Cp */
+              DEBUG (printf ("(Overflow) Cp=%lu C'p+1=%lu\n",
+                             (unsigned long) bcp, (unsigned long) bcp1));
+              DEBUG (mpfr_print_mant_binary ("Add=  ", ap, p));
+            }
         }
 
       /* Round:
@@ -391,7 +414,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  add_one_ulp:
   /* add one unit in last place to a */
   DEBUG( printf("AddOneUlp\n") );
-  if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
+  if (n == 1)
+    {
+      ap[0] += MPFR_LIMB_ONE<<sh;
+      if (ap[0] == 0)
+        {
+          bx++;
+          ap[0] = MPFR_LIMB_HIGHBIT;
+        }
+    }
+  else if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
     {
       /* Case 100000x0 = 0x1111x1 + 1*/
       DEBUG( printf("Pow of 2\n") );
