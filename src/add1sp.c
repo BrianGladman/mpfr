@@ -139,9 +139,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("B= ", MPFR_MANT(b), p) );
       bx++;                                /* exp + 1 */
       ap = MPFR_MANT(a);
+      /* The case n == 1 is just a faster version of the "else" case. */
       if (n == 1)
         {
-          limb = MPFR_MANT(b)[0] +  MPFR_MANT(c)[0];
+          limb = MPFR_MANT(b)[0] + MPFR_MANT(c)[0];
           ap[0] = (MPFR_LIMB_HIGHBIT | (limb >> 1)) & ~MPFR_LIMB_MASK(sh);
         }
       else
@@ -154,7 +155,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
           ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
         }
-      
+
       if ((limb & (MPFR_LIMB_ONE << sh)) == 0) /* Check exact case */
         { inexact = 0; goto set_exponent; }
       /* Zero: Truncate
@@ -186,6 +187,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
             copy_set_exponent:
               ap = MPFR_MANT (a);
+              /* FIXME: There's no reason to have a particular case for
+                 add1sp.c; it would be better to fix the macro globally
+                 (and call it, e.g. MPFR_MPN_COPY or MPFR_LIMB_COPY). */
               if (n == 1)
                 ap[0] = MPFR_MANT(b)[0];
               else
