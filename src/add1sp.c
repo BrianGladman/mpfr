@@ -247,32 +247,32 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (n == 1)
         cp[0] = MPFR_MANT(c)[0] >> d;
       else
-      {
-        mpfr_uexp_t dm;
-        mp_size_t m;
+        {
+          mpfr_uexp_t dm;
+          mp_size_t m;
 
-        dm = d % GMP_NUMB_BITS;
-        m = d / GMP_NUMB_BITS;
-        if (MPFR_UNLIKELY (dm == 0))
-          {
-            /* dm = 0 and m > 0: Just copy */
-            MPFR_ASSERTD (m != 0);
-            MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
-            MPN_ZERO(cp+n-m, m);
-          }
-        else if (MPFR_LIKELY(m == 0))
-          {
-            /* dm >=1 and m == 0: just shift */
-            MPFR_ASSERTD(dm >= 1);
-            mpn_rshift(cp, MPFR_MANT(c), n, dm);
-          }
-        else
-          {
-            /* dm > 0 and m > 0: shift and zero  */
-            mpn_rshift(cp, MPFR_MANT(c)+m, n-m, dm);
-            MPN_ZERO(cp+n-m, m);
-          }
-      }
+          dm = d % GMP_NUMB_BITS;
+          m = d / GMP_NUMB_BITS;
+          if (MPFR_UNLIKELY (dm == 0))
+            {
+              /* dm = 0 and m > 0: Just copy */
+              MPFR_ASSERTD (m != 0);
+              MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
+              MPN_ZERO(cp+n-m, m);
+            }
+          else if (MPFR_LIKELY(m == 0))
+            {
+              /* dm >=1 and m == 0: just shift */
+              MPFR_ASSERTD(dm >= 1);
+              mpn_rshift(cp, MPFR_MANT(c), n, dm);
+            }
+          else
+            {
+              /* dm > 0 and m > 0: shift and zero  */
+              mpn_rshift(cp, MPFR_MANT(c)+m, n-m, dm);
+              MPN_ZERO(cp+n-m, m);
+            }
+        }
 
       DEBUG( mpfr_print_mant_binary("Before", MPFR_MANT(c), p) );
       DEBUG( mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p) );
