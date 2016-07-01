@@ -227,6 +227,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* <-- b -->
              <-- c --> : exact sub */
           ap = MPFR_MANT(a);
+          /* FIXME: There's no reason to have a particular case for
+             sub1sp.c; it would be better to introduce a wrapper macro
+             to mpn_sub_n. */
           if (n == 1)
             ap[0] = MPFR_MANT(b)[0] - MPFR_MANT(c)[0];
           else
@@ -234,6 +237,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Normalize */
         ExactNormalize:
           limb = ap[n-1];
+          /* The case n == 1 is just a faster version of the "else" case
+             with limb <> 0. */
           if (n == 1)
             {
               /* limb <> 0 since b > c */
@@ -241,7 +246,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               ap[0] <<= cnt;
               bx -= cnt;
             }
-          else if (MPFR_LIKELY(limb))
+          else if (MPFR_LIKELY (limb != 0))
             {
               /* First limb is not zero. */
               count_leading_zeros(cnt, limb);
