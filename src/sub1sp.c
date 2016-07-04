@@ -236,20 +236,16 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else /* d >= GMP_NUMB_BITS */
         {
-          /* behaviour is the same as with d=GMP_NUMB_BITS and low = 111...111 */
+          /* We compute b - ulp(b), and the remainder ulp(b) - c satisfies:
+             1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1. */
           if (MPFR_LIKELY(bp[0] > MPFR_LIMB_HIGHBIT))
-            {
-              ap[0] = bp[0] - (MPFR_LIMB_ONE << sh);
-              rb = 1;
-              sb = 1;
-            }
+            ap[0] = bp[0] - (MPFR_LIMB_ONE << sh);
           else
             {
               ap[0] = ~mask;
               bx --;
-              rb = 1; /* always */
-              sb = 1; /* always */
             }
+          rb = sb = 1;
         }
     }
   else /* cx > bx */
