@@ -387,13 +387,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* <-- b -->
              <-- c --> : exact sub */
           ap = MPFR_MANT(a);
-          /* FIXME: There's no reason to have a particular case for
-             sub1sp.c; it would be better to introduce a wrapper macro
-             to mpn_sub_n. */
-          if (n == 1)
-            ap[0] = MPFR_MANT(b)[0] - MPFR_MANT(c)[0];
-          else
-            mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+          mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
           /* Normalize */
         ExactNormalize:
           limb = ap[n-1];
