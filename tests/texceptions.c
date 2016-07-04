@@ -486,7 +486,7 @@ main (int argc, char *argv[])
     {
       printf ("Error: y-x rounded to zero should give 0"
               " for y=3/2*2^(-1022), x=2^(-1022)\n");
-      printf ("y="); mpfr_dump (y);
+      printf ("Got "); mpfr_dump (y);
       exit (1);
     }
 

@@ -142,9 +142,169 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  */
 
 MPFR_HOT_FUNCTION_ATTR int
+mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+              mpfr_prec_t p)
+{
+  mpfr_exp_t bx = MPFR_GET_EXP (b);
+  mpfr_exp_t cx = MPFR_GET_EXP (c);
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp = MPFR_MANT(b);
+  mp_limb_t *cp = MPFR_MANT(c);
+  mpfr_prec_t cnt, sh;
+  mp_limb_t rb; /* round bit */
+  mp_limb_t sb; /* sticky bit */
+  mp_limb_t mask;
+  mpfr_uexp_t d;
+
+  MPFR_ASSERTD(p < GMP_NUMB_BITS);
+
+  if (bx == cx)
+    {
+      mp_limb_t b0 = bp[0]; /* save bp[0] if a = b */
+
+      ap[0] = b0 - cp[0];
+      /* if borrow, c was larger */
+      if (ap[0] == 0) /* result is zero */
+        {
+          if (rnd_mode == MPFR_RNDD)
+            MPFR_SET_NEG(a);
+          else
+            MPFR_SET_POS(a);
+          MPFR_SET_ZERO(a);
+          return 0; /* same as MPFR_RET(0) but faster */
+        }
+      else if (ap[0] > b0) /* borrow: cp[0] > bp[0] */
+        {
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+          ap[0] = ~ap[0] + 1;
+        }
+      else /* bp[0] > cp[0] */
+        MPFR_SET_SAME_SIGN (a, b);
+      /* now ap[0] != 0 */
+      MPFR_ASSERTD(ap[0] != 0);
+      count_leading_zeros (cnt, ap[0]);
+      ap[0] <<= cnt;
+      bx -= cnt;
+      rb = sb = 0;
+      /* goto rounding */
+    }
+  else if (bx > cx)
+    {
+      MPFR_SET_SAME_SIGN (a, b);
+    BGreater1:
+      d = (mpfr_uexp_t) bx - cx;
+      sh = GMP_NUMB_BITS - p;
+      mask = MPFR_LIMB_MASK(sh);
+      if (d <= sh)
+        {
+          /* we can shift c by d bits to the right without losing any bit */
+          ap[0] = bp[0] - (cp[0] >> d);
+          count_leading_zeros (cnt, ap[0]);
+          ap[0] <<= cnt;
+          bx -= cnt;
+          MPFR_SET_EXP (a, bx - cnt);
+          rb = ap[0] & (MPFR_LIMB_ONE<<(sh-1)); /* sh > 0 by p < GMP_NUMB_BITS */
+          sb = (ap[0] & mask) ^ rb;
+          ap[0] = ap[0] & ~mask;
+          /* goto rounding */
+        }
+      else if (d < GMP_NUMB_BITS)
+        {
+          mp_limb_t low;
+
+          low = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
+          ap[0] = bp[0] - (cp[0] >> d);
+          if (low)
+            {
+              ap[0] --;
+              /* ap[0] cannot become zero here since:
+                 a) if d >= 2, then ap[0] >= 2^w - (2^(w-1)-1) with
+                    w = GMP_NUMB_BITS, thus ap[0] - 1 >= 2^(w-1),
+                 b) if d = 1, then since p < GMP_NUMB_BITS we have low=0.
+              */
+              low = -low;
+            }
+          count_leading_zeros (cnt, ap[0]);
+          if (cnt)
+            ap[0] = (ap[0] << cnt) | (low >> (GMP_NUMB_BITS - cnt));
+          low <<= cnt;
+          bx -= cnt;
+          rb = ap[0] & (MPFR_LIMB_ONE<<(sh-1));
+          sb = ((ap[0] & mask) ^ rb) | low;
+          ap[0] = ap[0] & ~mask;
+          /* goto rounding */
+        }
+      else /* d >= GMP_NUMB_BITS */
+        {
+          /* behaviour is the same as with d=GMP_NUMB_BITS and low = 111...111 */
+          if (MPFR_LIKELY(bp[0] > MPFR_LIMB_HIGHBIT))
+            {
+              ap[0] = bp[0] - (MPFR_LIMB_ONE << sh);
+              rb = 1;
+              sb = 1;
+            }
+          else
+            {
+              ap[0] = ~mask;
+              bx --;
+              rb = 1; /* always */
+              sb = 1; /* always */
+            }
+        }
+    }
+  else /* cx > bx */
+    {
+      mpfr_exp_t tx;
+      mp_limb_t *tp;
+      tx = bx; bx = cx; cx = tx;
+      tp = bp; bp = cp; cp = tp;
+      MPFR_SET_OPPOSITE_SIGN (a, b);
+      goto BGreater1;
+    }
+
+  /* now perform rounding */
+  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
+    {
+      /* for RNDN, mpfr_underflow always rounds away, thus for |a|<=2^(emin-2)
+         we have to chenge to RNDZ */
+      if (rnd_mode == MPFR_RNDN &&
+          (bx < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT))
+        rnd_mode = MPFR_RNDZ;
+      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+    }
+  MPFR_SET_EXP (a, bx);
+  if (rb == 0 && sb == 0)
+    return 0; /* idem than MPFR_RET(0) and faster */
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE << sh;
+      if (ap[0] == 0)
+        {
+          ap[0] = MPFR_LIMB_HIGHBIT;
+          MPFR_SET_EXP (a, bx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
+MPFR_HOT_FUNCTION_ATTR int
 mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
-  mpfr_exp_t bx,cx;
+  mpfr_exp_t bx, cx;
   mpfr_uexp_t d;
   mpfr_prec_t p, sh, cnt;
   mp_size_t n;
@@ -158,19 +318,23 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_TMP_DECL(marker);
 
-  MPFR_TMP_MARK(marker);
-
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
-  n = MPFR_PREC2LIMBS (p);
 
+  if (p < GMP_NUMB_BITS)
+    return mpfr_sub1sp1 (a, b, c, rnd_mode, p);
+
+  n = MPFR_PREC2LIMBS (p);
   /* Fast cmp of |b| and |c| */
   bx = MPFR_GET_EXP (b);
   cx = MPFR_GET_EXP (c);
+  
+  MPFR_TMP_MARK(marker);
+
   if (bx == cx)
     {
       mp_size_t k = n - 1;
@@ -295,10 +459,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               MPFR_TMP_FREE(marker);
               /* inexact=0 */
+              MPFR_ASSERTD(inexact == 0);
               DEBUG( printf("(D==0 Underflow)\n") );
+              /* for MPFR_RNDN, mpfr_underflow always rounds away from zero,
+                 thus for |a| <= 2^(emin-2) we change to RNDZ. */
               if (rnd_mode == MPFR_RNDN &&
-                  (bx < __gmpfr_emin - 1 ||
-                   (/*inexact >= 0 &&*/ mpfr_powerof2_raw (a))))
+                  (bx < __gmpfr_emin - 1 || mpfr_powerof2_raw (a)))
                 rnd_mode = MPFR_RNDZ;
               return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
             }
