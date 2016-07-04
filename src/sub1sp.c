@@ -450,6 +450,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               MPFR_TMP_FREE(marker);
               /* inexact=0 */
+              /* FIXME: inexact has not been set. If it is implicitly 0,
+                 the MPFR_ASSERTD below should be removed and an explanation
+                 should be given. */
               MPFR_ASSERTD(inexact == 0);
               DEBUG( printf("(D==0 Underflow)\n") );
               /* for MPFR_RNDN, mpfr_underflow always rounds away from zero,
