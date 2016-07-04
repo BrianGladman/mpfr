@@ -150,7 +150,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mp_limb_t *ap = MPFR_MANT(a);
   mp_limb_t *bp = MPFR_MANT(b);
   mp_limb_t *cp = MPFR_MANT(c);
-  mpfr_prec_t cnt, sh;
+  mpfr_prec_t cnt, INITIALIZED(sh);
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
   mp_limb_t mask;
@@ -186,6 +186,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       ap[0] <<= cnt;
       bx -= cnt;
       rb = sb = 0;
+      /* Note: sh is not initialized, but will not be used in this case. */
       /* goto rounding */
     }
   else if (bx > cx)
