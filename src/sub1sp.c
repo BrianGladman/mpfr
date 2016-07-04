@@ -328,7 +328,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Fast cmp of |b| and |c| */
   bx = MPFR_GET_EXP (b);
   cx = MPFR_GET_EXP (c);
-  
+
   MPFR_TMP_MARK(marker);
 
   if (bx == cx)
