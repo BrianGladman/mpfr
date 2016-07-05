@@ -562,7 +562,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                       /* If carry then necessarily the precision is an exact
                          multiple of GMP_NUMB_BITS, and we lose one bit,
                          thus the (exact) result is a power of 2 minus 1. */
-                      memset (ap, ~0, n * MPFR_BYTES_PER_MP_LIMB);
+                      memset (ap, -1, n * MPFR_BYTES_PER_MP_LIMB);
                       MPFR_SET_EXP (a, bx - 1);
                       /* No underflow is possible since cx = bx-1 is a valid
                          exponent. */
