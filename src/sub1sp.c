@@ -141,7 +141,7 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  *
  */
 
-MPFR_HOT_FUNCTION_ATTR int
+MPFR_HOT_FUNCTION_ATTR static int
 mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
