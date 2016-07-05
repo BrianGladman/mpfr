@@ -101,7 +101,6 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mp_limb_t *ap = MPFR_MANT(a);
   mp_limb_t *bp = MPFR_MANT(b);
   mp_limb_t *cp = MPFR_MANT(c);
-  mpfr_prec_t cnt;
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
