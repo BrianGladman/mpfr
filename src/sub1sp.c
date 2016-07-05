@@ -203,7 +203,6 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           count_leading_zeros (cnt, ap[0]);
           ap[0] <<= cnt;
           bx -= cnt;
-          MPFR_SET_EXP (a, bx - cnt);
           rb = ap[0] & (MPFR_LIMB_ONE<<(sh-1)); /* sh > 0 by p < GMP_NUMB_BITS */
           sb = (ap[0] & mask) ^ rb;
           ap[0] = ap[0] & ~mask;
