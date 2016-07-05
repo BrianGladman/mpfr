@@ -371,19 +371,19 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* b > c */
+      /* |b| > |c| */
     BGreater:
       MPFR_SET_SAME_SIGN(a,b);
     }
 
-  /* Now b > c */
+  /* Now |b| > |c| */
   MPFR_ASSERTD(bx >= cx);
   d = (mpfr_uexp_t) bx - cx;
   DEBUG (printf ("New with diff=%lu\n", (unsigned long) d));
 
   if (d <= 1)
     {
-      if (d < 1)
+      if (d == 0)
         {
           /* <-- b -->
              <-- c --> : exact sub */
@@ -419,8 +419,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               /* First limb is zero */
               mp_size_t k = n-1, len;
-              /* Find the first limb not equal to zero.
-                 FIXME:It is assume it exists (since |b| > |c| and same prec)*/
+              /* Find the first limb not equal to zero. It necessarily exists
+                 since |b| > |c|. */
               do
                 {
                   MPFR_ASSERTD( k > 0 );
@@ -449,11 +449,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
             {
               MPFR_TMP_FREE(marker);
-              /* inexact=0 */
-              /* FIXME: inexact has not been set. If it is implicitly 0,
-                 the MPFR_ASSERTD below should be removed and an explanation
-                 should be given. */
-              MPFR_ASSERTD(inexact == 0);
+              /* since b and c have same sign, exponent and precision, the
+                 subtraction is exact */
               DEBUG( printf("(D==0 Underflow)\n") );
               /* for MPFR_RNDN, mpfr_underflow always rounds away from zero,
                  thus for |a| <= 2^(emin-2) we change to RNDZ. */
