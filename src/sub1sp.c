@@ -551,9 +551,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               do
                 {
                   carry = cp[k] << (GMP_NUMB_BITS - 1);
-                  k--;
+                  if (--k < 0)
+                    break;
+                  carry += cp[k] / 2;
                 }
-              while (k >= 0 && bp[k] == (carry = cp[k] / 2 + carry));
+              while (bp[k] == carry);
               if (MPFR_UNLIKELY(k < 0))
                 {
                   ap = MPFR_MANT (a);
