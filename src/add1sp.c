@@ -91,6 +91,120 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define DEBUG(x) /**/
 #endif
 
+/* same as mpfr_add1sp, but for p < GMP_NUMB_BITS */
+MPFR_HOT_FUNCTION_ATTR int
+mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+              mpfr_prec_t p)
+{
+  mpfr_exp_t bx = MPFR_GET_EXP (b);
+  mpfr_exp_t cx = MPFR_GET_EXP (c);
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp = MPFR_MANT(b);
+  mp_limb_t *cp = MPFR_MANT(c);
+  mpfr_prec_t cnt;
+  mpfr_prec_t sh = GMP_NUMB_BITS - p;
+  mp_limb_t rb; /* round bit */
+  mp_limb_t sb; /* sticky bit */
+  mp_limb_t mask;
+  mpfr_uexp_t d;
+
+  MPFR_ASSERTD(p < GMP_NUMB_BITS);
+
+  MPFR_SET_SAME_SIGN (a, b);
+
+  if (bx == cx)
+    {
+      /* since bp[0], cp[0] >= MPFR_LIMB_HIGHBIT, a carry always occurs */
+      ap[0] = MPFR_LIMB_HIGHBIT | ((bp[0] + cp[0]) >> 1);
+      bx ++;
+      rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
+      ap[0] ^= rb;
+      sb = 0;
+    }
+  else if (bx > cx)
+    {
+    BGreater1:
+      d = (mpfr_uexp_t) bx - cx;
+      mask = MPFR_LIMB_MASK(sh);
+      if (d < sh)
+        {
+          /* we can shift c by d bits to the right without losing any bit,
+             moreover we can shift one more if there is an exponent increase */
+          rb = bp[0];
+          ap[0] = rb + (cp[0] >> d);
+          if (ap[0] < rb) /* carry */
+            {
+              ap[0] = MPFR_LIMB_HIGHBIT | (ap[0] >> 1);
+              bx ++;
+            }
+          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
+          sb = (ap[0] & mask) ^ rb;
+          ap[0] = ap[0] & ~mask;
+        }
+      else if (d < GMP_NUMB_BITS) /* sh <= d < GMP_NUMB_BITS */
+        {
+          rb = bp[0];
+          sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
+          ap[0] = rb + (cp[0] >> d);
+          if (ap[0] < rb)
+            {
+              ap[0] = MPFR_LIMB_HIGHBIT | (ap[0] >> 1);
+              bx ++;
+            }
+          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (ap[0] & mask) ^ rb;
+          ap[0] = ap[0] & ~mask;
+        }
+      else /* d >= GMP_NUMB_BITS */
+        {
+          ap[0] = bp[0];
+          rb = 0; /* since p < GMP_NUMB_BITS */
+          sb = 1; /* since c <> 0 */
+        }
+    }
+  else /* bx < cx: swap b and c */
+    {
+      mpfr_exp_t tx;
+      mp_limb_t *tp;
+      tx = bx; bx = cx; cx = tx;
+      tp = bp; bp = cp; cp = tp;
+      goto BGreater1;
+    }
+
+  /* now perform rounding */
+  if (MPFR_UNLIKELY(bx > __gmpfr_emax))
+    return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+
+  MPFR_SET_EXP (a, bx);
+  if (rb == 0 && sb == 0)
+    return 0; /* idem than MPFR_RET(0) and faster */
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE << sh;
+      if (ap[0] == 0)
+        {
+          ap[0] = MPFR_LIMB_HIGHBIT;
+          /* FIXME: can bx+1 cause an overflow here? */
+          MPFR_SET_EXP (a, bx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
 /* compute sign(b) * (|b| + |c|).
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
@@ -114,6 +228,11 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
+  /* Read prec and num of limbs */
+  p = MPFR_GET_PREC (b);
+  if (p < GMP_NUMB_BITS)
+    return mpfr_add1sp1 (a, b, c, rnd_mode, p);
+
   bx = MPFR_GET_EXP(b);
   if (bx < MPFR_GET_EXP(c))
     {
@@ -124,8 +243,6 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   MPFR_ASSERTD(bx >= MPFR_GET_EXP(c));
 
-  /* Read prec and num of limbs */
-  p = MPFR_GET_PREC (b);
   n = MPFR_PREC2LIMBS (p);
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
