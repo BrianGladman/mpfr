@@ -528,9 +528,10 @@ check_underflow (mpfr_prec_t p)
       inexact = mpfr_sub (x, y, z, MPFR_RNDN);
       if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
         {
-          printf ("4*2^(emin-2) - 3*2^(emin-2) with RNDN failed for p=%lu\n", p);
+          printf ("4*2^(emin-2) - 3*2^(emin-2) with RNDN failed for p=%lu\n",
+                  p);
           printf ("Expected inexact < 0 with x=0\n");
-          printf ("Got inexact=%d with x=");
+          printf ("Got inexact=%d with x=", inexact);
           mpfr_dump (x);
           exit (1);
         }
@@ -543,9 +544,10 @@ check_underflow (mpfr_prec_t p)
       inexact = mpfr_sub (x, y, z, MPFR_RNDN);
       if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
         {
-          printf ("5*2^(emin-2) - 4*2^(emin-2) with RNDN failed for p=%lu\n", p);
+          printf ("5*2^(emin-2) - 4*2^(emin-2) with RNDN failed for p=%lu\n",
+                  p);
           printf ("Expected inexact < 0 with x=0\n");
-          printf ("Got inexact=%d with x=");
+          printf ("Got inexact=%d with x=", inexact);
           mpfr_dump (x);
           exit (1);
         }
