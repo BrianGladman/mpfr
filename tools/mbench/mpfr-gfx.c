@@ -268,7 +268,7 @@ write_data (const char *filename,
       lets_end ();
       abort ();
     }
-  fprintf (g, "set data style lines\n");
+  fprintf (g, "set style data lines\n");
   if (postscript)
     fprintf (g, "set terminal postscript\n");
 #undef BENCH
