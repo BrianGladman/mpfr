@@ -197,7 +197,7 @@ check_special (void)
   mpfr_set_str_binary (c, "0.101111111101110000001100001000011000011011010001010011111100111E-4");
   mpfr_clear_inexflag ();
   mpfr_add1sp (a1, b, c, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_inexflag_p () != 0);
+  MPFR_ASSERTN (mpfr_inexflag_p ());
 
   mpfr_clears (a1, a2, b, c, (mpfr_ptr) 0);
 }
