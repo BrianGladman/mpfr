@@ -106,11 +106,11 @@ main (void)
 static void
 check_random (mpfr_prec_t p)
 {
-  mpfr_t a1,b,c,a2;
+  mpfr_t a1, a2, b, c;
   int r;
   int i, inexact1, inexact2;
 
-  mpfr_inits2 (p, a1, b, c, a2, (mpfr_ptr) 0);
+  mpfr_inits2 (p, a1, a2, b, c, (mpfr_ptr) 0);
 
   for (i = 0 ; i < 500 ; i++)
     {
@@ -124,23 +124,22 @@ check_random (mpfr_prec_t p)
             mpfr_neg (c, c, MPFR_RNDN);
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
             mpfr_swap (b, c);
-          if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
-            for (r = 0 ; r < MPFR_RND_MAX ; r++)
-              {
-                mpfr_flags_t flags1, flags2;
+          for (r = 0 ; r < MPFR_RND_MAX ; r++)
+            {
+              mpfr_flags_t flags1, flags2;
 
-                mpfr_clear_flags ();
-                inexact1 = mpfr_add1 (a1, b, c, (mpfr_rnd_t) r);
-                flags1 = __gmpfr_flags;
-                mpfr_clear_flags ();
-                inexact2 = mpfr_add1sp (a2, b, c, (mpfr_rnd_t) r);
-                flags2 = __gmpfr_flags;
-                if (! mpfr_equal_p (a1, a2))
-                  STD_ERROR;
-                if (inexact1 != inexact2)
-                  STD_ERROR2;
-                MPFR_ASSERTN (flags1 == flags2);
-              }
+              mpfr_clear_flags ();
+              inexact1 = mpfr_add1 (a1, b, c, (mpfr_rnd_t) r);
+              flags1 = __gmpfr_flags;
+              mpfr_clear_flags ();
+              inexact2 = mpfr_add1sp (a2, b, c, (mpfr_rnd_t) r);
+              flags2 = __gmpfr_flags;
+              if (! mpfr_equal_p (a1, a2))
+                STD_ERROR;
+              if (inexact1 != inexact2)
+                STD_ERROR2;
+              MPFR_ASSERTN (flags1 == flags2);
+            }
         }
     }
 
