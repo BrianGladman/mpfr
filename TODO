@@ -579,6 +579,10 @@ Table of contents:
     http://stackoverflow.com/a/3430353/3782797
     https://hamberg.no/erlend/posts/2013-02-18-static-array-indices.html
 
+- change most mpfr_urandomb occurrences to mpfr_urandom in the tests?
+  (The one done in r10573 allowed us to find a bug even without
+  assertion checking.)
+
 
 ##############################################################################
 7. Portability
