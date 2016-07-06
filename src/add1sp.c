@@ -118,7 +118,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       bx ++;
       rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
       ap[0] ^= rb;
-      sb = 0;
+      sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
   else if (bx > cx)
     {
