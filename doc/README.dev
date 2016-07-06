@@ -1140,7 +1140,9 @@ a precision varying from 2 to 100.
 You can add your own tests to this basic file. When adding the expected
 result, do NOT use the one obtained from the MPFR function! Otherwise,
 if this function is buggy, the test will be wrong and the function will
-remain buggy.
+remain buggy. For random tests, avoid mpfr_urandomb as its values are
+not truly random due to how it is specified (if the exponent is less
+than 0, some of the trailing bits will necessarily be 0).
 
 Do not forget to add 'tfunc' in the variable check_PROGRAMS
 of the tests/Makefile.am file.
