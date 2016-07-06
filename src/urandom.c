@@ -53,6 +53,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   rp = MPFR_MANT (rop);
   nbits = MPFR_PREC (rop);
 
+  emin = mpfr_get_emin ();
+
   /* special code for nbits = 1 */
   if (nbits == 1)
     {
@@ -71,7 +73,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
   exp = 0;
-  emin = mpfr_get_emin ();
   if (MPFR_UNLIKELY (emin > 0))
     {
       if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
