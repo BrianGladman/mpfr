@@ -118,14 +118,18 @@ check_random (mpfr_prec_t p)
       mpfr_urandomb (c, RANDS);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
         {
+          if (randlimb () & 1)
+            mpfr_neg (b, b, MPFR_RNDN);
+          if (randlimb () & 1)
+            mpfr_neg (c, c, MPFR_RNDN);
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-            mpfr_swap(b, c);
+            mpfr_swap (b, c);
           if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
             for (r = 0 ; r < MPFR_RND_MAX ; r++)
               {
-                inexact1 = mpfr_add1(a1, b, c, (mpfr_rnd_t) r);
-                inexact2 = mpfr_add1sp(a2, b, c, (mpfr_rnd_t) r);
-                if (mpfr_cmp(a1, a2))
+                inexact1 = mpfr_add1 (a1, b, c, (mpfr_rnd_t) r);
+                inexact2 = mpfr_add1sp (a2, b, c, (mpfr_rnd_t) r);
+                if (! mpfr_equal_p (a1, a2))
                   STD_ERROR;
                 if (inexact1 != inexact2)
                   STD_ERROR2;
