@@ -92,7 +92,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #endif
 
 /* same as mpfr_add1sp, but for p < GMP_NUMB_BITS */
-MPFR_HOT_FUNCTION_ATTR static int
+static int
 mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
