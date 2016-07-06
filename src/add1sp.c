@@ -147,6 +147,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           ap[0] = rb + (cp[0] >> d);
           if (ap[0] < rb)
             {
+              sb |= ap[0] & 1;
               ap[0] = MPFR_LIMB_HIGHBIT | (ap[0] >> 1);
               bx ++;
             }
@@ -197,8 +198,10 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       if (ap[0] == 0)
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
-          /* FIXME: can bx+1 cause an overflow here? */
-          MPFR_SET_EXP (a, bx + 1);
+          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+            MPFR_SET_EXP (a, bx + 1);
+          else /* overflow */
+            return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
         }
       MPFR_RET(MPFR_SIGN(a));
     }
@@ -508,7 +511,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( printf("Overflow\n") );
       MPFR_TMP_FREE(marker);
       MPFR_SET_SAME_SIGN(a,b);
-      return mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+      return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
   MPFR_SET_SAME_SIGN (a, b);
