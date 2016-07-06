@@ -105,9 +105,9 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
               && (!MPFR_IS_ZERO (x) || inex != -1)))
         {
           printf ("Error: mpfr_urandom() does not handle correctly"
-                  " a restricted exponent range.\nrounding mode: %s\n"
-                  "ternary value: %d\nrandom value: ",
-                  mpfr_print_rnd_mode (rnd), inex);
+                  " a restricted exponent range.\nemin = %d\n"
+                  "rounding mode: %s\nternary value: %d\nrandom value: ",
+                  k+1, mpfr_print_rnd_mode (rnd), inex);
           mpfr_dump (x);
           exit (1);
         }
