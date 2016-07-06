@@ -237,7 +237,7 @@ main (int argc, char *argv[])
 
       if (argc == 1)  /* check also small precision */
         {
-          test_urandom (nbtests, 2, (mpfr_rnd_t) rnd, -1, 0);
+          test_urandom (nbtests, MPFR_PREC_MIN, (mpfr_rnd_t) rnd, -1, 0);
         }
     }
 
