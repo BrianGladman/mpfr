@@ -56,31 +56,16 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   /* special code for nbits = 1 */
   if (nbits == 1)
     {
-      mpfr_exp_t e = 0;
+      exp = 0;
       while (random_rounding_bit (rstate) == 0)
-        e --;
+        exp --;
+
       /* we assume the number is 0.000...0001xxx with e consecutive 0's after
          the binary point */
 
-      /* for RNDN, we choose MPFR_RNDZ or MPFR_RNDA at random, since the rounding
-         boundary is at the middle of the current interval */
-      if (rnd_mode == MPFR_RNDN)
-        rnd_mode = (random_rounding_bit (rstate) == 0) ? MPFR_RNDZ : MPFR_RNDA;
-
-      if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD)
-        {
-          /* generate 1/2 with probability 1/2, 1/4 with probability 1/4, ... */
-          mpfr_set_ui_2exp (rop, 1, e - 1, rnd_mode);
-          return -1;
-        }
-      else if (rnd_mode == MPFR_RNDA || rnd_mode == MPFR_RNDU)
-        {
-          /* generate 1 with probability 1/2, 1/2 with probability 1/4, ... */
-          mpfr_set_ui_2exp (rop, 1, e, rnd_mode);
-          return 1;
-        }
-      else
-        MPFR_ASSERTN(0);
+      MPFR_EXP (rop) = exp; /* may be outside the current exponent range */
+      rp[0] = MPFR_LIMB_HIGHBIT;
+      goto rounding;
     }
 
   nlimbs = MPFR_LIMB_SIZE (rop);
@@ -147,7 +132,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   MPFR_EXP (rop) = exp; /* Warning: may be outside the current
                            exponent range */
 
-
   /* Significand: we need generate only nbits-1 bits, since the most
      significant is 1 */
   mpfr_rand_raw (rp, rstate, nbits - 1);
@@ -158,18 +142,30 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   /* Set the msb to 1 since it was fixed by the exponent choice */
   rp[nlimbs - 1] |= MPFR_LIMB_HIGHBIT;
 
+ rounding:
   /* Rounding */
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
       /* Take care of the exponent range: it may have been reduced */
       if (exp < emin)
-        mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+        {
+          /* since we expect a number in [0,1], for RNDN when emin > 1
+             we should return 0 */
+          inex = mpfr_set_ui_2exp (rop, 1, ((emin > 1) ? 1 : emin) - 1, rnd_mode);
+          if (inex == 0)
+            inex = +1;
+        }
       else if (exp > mpfr_get_emax ())
-        mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
+        {
+          mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
+          inex = +1;
+        }
       else
-        mpfr_nextabove (rop);
-      inex = +1;
+        {
+          mpfr_nextabove (rop);
+          inex = +1;
+        }
     }
   else
     inex = -1;
