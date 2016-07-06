@@ -114,8 +114,8 @@ check_random (mpfr_prec_t p)
 
   for (i = 0 ; i < 500 ; i++)
     {
-      mpfr_urandomb (b, RANDS);
-      mpfr_urandomb (c, RANDS);
+      mpfr_urandom (b, RANDS, MPFR_RNDA);
+      mpfr_urandom (c, RANDS, MPFR_RNDA);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
         {
           if (randlimb () & 1)
