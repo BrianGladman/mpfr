@@ -255,22 +255,13 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("B= ", MPFR_MANT(b), p) );
       bx++;                                /* exp + 1 */
       ap = MPFR_MANT(a);
-      /* The case n == 1 is just a faster version of the "else" case. */
-      if (n == 1)
-        {
-          limb = MPFR_MANT(b)[0] + MPFR_MANT(c)[0];
-          ap[0] = (MPFR_LIMB_HIGHBIT | (limb >> 1)) & ~MPFR_LIMB_MASK(sh);
-        }
-      else
-        {
-          limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
-          DEBUG( mpfr_print_mant_binary("A= ", ap, p) );
-          MPFR_ASSERTD(limb != 0);             /* There must be a carry */
-          limb = ap[0];                        /* Get LSB (In fact, LSW) */
-          mpn_rshift (ap, ap, n, 1);           /* Shift mantissa A */
-          ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
-          ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
-        }
+      limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+      DEBUG( mpfr_print_mant_binary("A= ", ap, p) );
+      MPFR_ASSERTD(limb != 0);             /* There must be a carry */
+      limb = ap[0];                        /* Get LSB (In fact, LSW) */
+      mpn_rshift (ap, ap, n, 1);           /* Shift mantissa A */
+      ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
+      ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
 
       if ((limb & (MPFR_LIMB_ONE << sh)) == 0) /* Check exact case */
         { inexact = 0; goto set_exponent; }
@@ -303,13 +294,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
             copy_set_exponent:
               ap = MPFR_MANT (a);
-              /* FIXME: There's no reason to have a particular case for
-                 add1sp.c; it would be better to fix the macro globally
-                 (and call it, e.g. MPFR_MPN_COPY or MPFR_LIMB_COPY). */
-              if (n == 1)
-                ap[0] = MPFR_MANT(b)[0];
-              else
-                MPN_COPY (ap, MPFR_MANT(b), n);
+              MPN_COPY (ap, MPFR_MANT(b), n);
               inexact = -1;
               goto set_exponent;
             }
@@ -360,35 +345,32 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp = MPFR_TMP_LIMBS_ALLOC (n);
 
       /* Shift c in temporary allocated place */
-      if (n == 1)
-        cp[0] = MPFR_MANT(c)[0] >> d;
-      else
-        {
-          mpfr_uexp_t dm;
-          mp_size_t m;
+      {
+        mpfr_uexp_t dm;
+        mp_size_t m;
 
-          dm = d % GMP_NUMB_BITS;
-          m = d / GMP_NUMB_BITS;
-          if (MPFR_UNLIKELY (dm == 0))
-            {
-              /* dm = 0 and m > 0: Just copy */
-              MPFR_ASSERTD (m != 0);
-              MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
-              MPN_ZERO(cp+n-m, m);
-            }
-          else if (MPFR_LIKELY(m == 0))
-            {
-              /* dm >=1 and m == 0: just shift */
-              MPFR_ASSERTD(dm >= 1);
-              mpn_rshift(cp, MPFR_MANT(c), n, dm);
-            }
-          else
-            {
-              /* dm > 0 and m > 0: shift and zero  */
-              mpn_rshift(cp, MPFR_MANT(c)+m, n-m, dm);
-              MPN_ZERO(cp+n-m, m);
-            }
-        }
+        dm = d % GMP_NUMB_BITS;
+        m = d / GMP_NUMB_BITS;
+        if (MPFR_UNLIKELY (dm == 0))
+          {
+            /* dm = 0 and m > 0: Just copy */
+            MPFR_ASSERTD (m != 0);
+            MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
+            MPN_ZERO(cp+n-m, m);
+          }
+        else if (MPFR_LIKELY(m == 0))
+          {
+            /* dm >=1 and m == 0: just shift */
+            MPFR_ASSERTD(dm >= 1);
+            mpn_rshift(cp, MPFR_MANT(c), n, dm);
+          }
+        else
+          {
+            /* dm > 0 and m > 0: shift and zero  */
+            mpn_rshift(cp, MPFR_MANT(c)+m, n-m, dm);
+            MPN_ZERO(cp+n-m, m);
+          }
+      }
 
       DEBUG( mpfr_print_mant_binary("Before", MPFR_MANT(c), p) );
       DEBUG( mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p) );
@@ -401,16 +383,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         {
           /* Try to compute them from C' rather than C */
           bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1)));
-          if (MPFR_LIKELY(n == 1))
-            {
-              /* We have already taken into account the p + 1 - d
-                 most significant bits from MPFR_MANT(c)[0], it remains
-                 to consider the low sh + d - 1 bits.
-                 And since (p + 1 - d) + (sh + d - 1) = p + sh =
-                 GMP_NUMB_BITS, and 1 <= d < p, sh + d - 1 < GMP_NUMB_BITS. */
-              bcp1 = (MPFR_MANT(c)[0] & MPFR_LIMB_MASK (sh + d - 1));
-            }
-          else if (MPFR_LIKELY (cp[0] & MPFR_LIMB_MASK (sh - 1)))
+          if (MPFR_LIKELY (cp[0] & MPFR_LIMB_MASK (sh - 1)))
             bcp1 = 1;
           else
             {
@@ -474,36 +447,22 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* Add the mantissa c from b in a */
       ap = MPFR_MANT(a);
-      if (n == 1)
-        {
-          ap[0] = MPFR_MANT(b)[0] + cp[0];
-          if (ap[0] < cp[0]) /* carry out */
-            {
-              bcp1 |= bcp;
-              bcp = ap[0] & (MPFR_LIMB_ONE<<sh);
-              ap[0] = (MPFR_LIMB_HIGHBIT | (ap[0] >> 1)) & mask;
-              bx++;
-            }
-        }
-      else
-        {
-          limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
-          DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
+      limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
+      DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
 
-          /* Check for overflow */
-          if (MPFR_UNLIKELY (limb))
-            {
-              limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
-              mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
-              bx++;                               /* Fix exponent */
-              ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
-              ap[0]   &= mask;                    /* Clear LSB bit */
-              bcp1    |= bcp;                     /* Recompute C'p+1 */
-              bcp      = limb;                    /* Recompute Cp */
-              DEBUG (printf ("(Overflow) Cp=%lu C'p+1=%lu\n",
-                             (unsigned long) bcp, (unsigned long) bcp1));
-              DEBUG (mpfr_print_mant_binary ("Add=  ", ap, p));
-            }
+      /* Check for overflow */
+      if (MPFR_UNLIKELY (limb))
+        {
+          limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
+          mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
+          bx++;                               /* Fix exponent */
+          ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
+          ap[0]   &= mask;                    /* Clear LSB bit */
+          bcp1    |= bcp;                     /* Recompute C'p+1 */
+          bcp      = limb;                    /* Recompute Cp */
+          DEBUG (printf ("(Overflow) Cp=%lu C'p+1=%lu\n",
+                         (unsigned long) bcp, (unsigned long) bcp1));
+          DEBUG (mpfr_print_mant_binary ("Add=  ", ap, p));
         }
 
       /* Round:
@@ -534,16 +493,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  add_one_ulp:
   /* add one unit in last place to a */
   DEBUG( printf("AddOneUlp\n") );
-  if (n == 1)
-    {
-      ap[0] += MPFR_LIMB_ONE<<sh;
-      if (ap[0] == 0)
-        {
-          bx++;
-          ap[0] = MPFR_LIMB_HIGHBIT;
-        }
-    }
-  else if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
+  if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
     {
       /* Case 100000x0 = 0x1111x1 + 1*/
       DEBUG( printf("Pow of 2\n") );
