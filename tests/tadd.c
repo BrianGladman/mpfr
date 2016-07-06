@@ -647,7 +647,7 @@ check_overflow (void)
             mpfr_set_ui_2exp (c, 1, mpfr_get_emax () - prec_b / 2, MPFR_RNDN);
             mpfr_nextbelow (c);
             mpfr_clear_overflow ();
-            mpfr_add (a, b, c, (mpfr_rnd_t) r);
+            test_add (a, b, c, (mpfr_rnd_t) r);
             if (!mpfr_overflow_p () || (up && !mpfr_inf_p (a)))
               {
                 printf ("No overflow (1) in check_overflow for rnd=%s\n",
@@ -666,7 +666,7 @@ check_overflow (void)
             mpfr_set_ui_2exp (c, 1, mpfr_get_emax () - prec_b, MPFR_RNDN);
             mpfr_nextbelow (c);
             mpfr_clear_overflow ();
-            mpfr_add (a, b, c, (mpfr_rnd_t) r);
+            test_add (a, b, c, (mpfr_rnd_t) r);
             /* b + c is exactly representable iff prec_a >= prec_b + prec_c */
             if (!mpfr_overflow_p () || !mpfr_inf_p (a))
               {
