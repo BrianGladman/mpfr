@@ -394,16 +394,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Normalize */
         ExactNormalize:
           limb = ap[n-1];
-          /* The case n == 1 is just a faster version of the "else" case
-             with limb <> 0. */
-          if (n == 1)
-            {
-              /* limb <> 0 since b > c */
-              count_leading_zeros(cnt, limb);
-              ap[0] <<= cnt;
-              bx -= cnt;
-            }
-          else if (MPFR_LIKELY (limb != 0))
+          if (MPFR_LIKELY (limb != 0))
             {
               /* First limb is not zero. */
               count_leading_zeros(cnt, limb);
