@@ -293,7 +293,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           ap[0] = MPFR_LIMB_HIGHBIT;
           /* Note: bx+1 cannot exceed __gmpfr_emax, since |a| <= |b|, thus
              bx+1 is at most equal to the original exponent of b. */
-             
+
           MPFR_SET_EXP (a, bx + 1);
         }
       MPFR_RET(MPFR_SIGN(a));

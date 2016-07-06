@@ -587,7 +587,7 @@ check_corner (mpfr_prec_t p)
       inex = mpfr_sub (x, y, z, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
       MPFR_ASSERTN(mpfr_get_exp (x) == 1);
-      
+
       /* restore initial z */
       mpfr_mul_2exp (z, z, e, MPFR_RNDN);
       inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
@@ -599,7 +599,7 @@ check_corner (mpfr_prec_t p)
       inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
       mpfr_div_2exp (z, z, e, MPFR_RNDN);
-      
+
       /* ensure last significant bit of z is 0 so that y-z is exact */
       odd = mpfr_min_prec (z) == p;
       if (odd) /* add one ulp to z */
@@ -609,7 +609,7 @@ check_corner (mpfr_prec_t p)
       inex = mpfr_sub (x, y, z, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
       MPFR_ASSERTN(mpfr_get_exp (x) == 2);
-      
+
       /* restore initial z */
       if (odd)
         mpfr_nextbelow (z);
