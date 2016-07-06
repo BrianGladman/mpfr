@@ -52,6 +52,37 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
 
   rp = MPFR_MANT (rop);
   nbits = MPFR_PREC (rop);
+
+  /* special code for nbits = 1 */
+  if (nbits == 1)
+    {
+      mpfr_exp_t e = 0;
+      while (random_rounding_bit (rstate) == 0)
+        e --;
+      /* we assume the number is 0.000...0001xxx with e consecutive 0's after
+         the binary point */
+
+      /* for RNDN, we choose MPFR_RNDZ or MPFR_RNDA at random, since the rounding
+         boundary is at the middle of the current interval */
+      if (rnd_mode == MPFR_RNDN)
+        rnd_mode = (random_rounding_bit (rstate) == 0) ? MPFR_RNDZ : MPFR_RNDA;
+
+      if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD)
+        {
+          /* generate 1/2 with probability 1/2, 1/4 with probability 1/4, ... */
+          mpfr_set_ui_2exp (rop, 1, e - 1, rnd_mode);
+          return -1;
+        }
+      else if (rnd_mode == MPFR_RNDA || rnd_mode == MPFR_RNDU)
+        {
+          /* generate 1 with probability 1/2, 1/2 with probability 1/4, ... */
+          mpfr_set_ui_2exp (rop, 1, e, rnd_mode);
+          return 1;
+        }
+      else
+        MPFR_ASSERTN(0);
+    }
+
   nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
   exp = 0;
