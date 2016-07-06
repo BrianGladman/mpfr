@@ -651,7 +651,7 @@ check_overflow (void)
             if (!mpfr_overflow_p () || (up && !mpfr_inf_p (a)))
               {
                 printf ("No overflow (1) in check_overflow for rnd=%s\n",
-                        mpfr_print_rnd_mode (r));
+                        mpfr_print_rnd_mode ((mpfr_rnd_t) r));
                 printf ("b="); mpfr_dump (b);
                 printf ("c="); mpfr_dump (c);
                 printf ("a="); mpfr_dump (a);
@@ -671,7 +671,7 @@ check_overflow (void)
             if (!mpfr_overflow_p () || !mpfr_inf_p (a))
               {
                 printf ("No overflow (2) in check_overflow for rnd=%s\n",
-                        mpfr_print_rnd_mode (r));
+                        mpfr_print_rnd_mode ((mpfr_rnd_t) r));
                 printf ("b="); mpfr_dump (b);
                 printf ("c="); mpfr_dump (c);
                 printf ("a="); mpfr_dump (a);
