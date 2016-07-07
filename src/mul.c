@@ -205,6 +205,78 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 /* Multiply 2 mpfr_t */
 
+/* special code for prec(b), prec(c) <= GMP_NUMB_BITS
+   and prec(a) < GMP_NUMB_BITS */
+static int
+mpfr_mul1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+              mpfr_prec_t p)
+{
+  mp_limb_t h;
+  mp_ptr ap = MPFR_MANT(a);
+  mpfr_exp_t ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
+  mpfr_prec_t sh = GMP_NUMB_BITS - p;
+  mp_limb_t rb, sb, mask = MPFR_LIMB_MASK(sh);
+
+  umul_ppmm (h, sb, MPFR_MANT(b)[0], MPFR_MANT(c)[0]);
+  if ((h & MPFR_LIMB_HIGHBIT) == 0)
+    {
+      ax --;
+      h = (h << 1) | (sb >> (GMP_NUMB_BITS - 1));
+      sb = sb << 1;
+    }
+  ap[0] = h;
+  rb = h & (MPFR_LIMB_ONE << (sh - 1));
+  sb |= (h & mask) ^ rb;
+  ap[0] = h & ~mask;
+
+  MPFR_SIGN(a) = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
+
+  /* rounding */
+  if (MPFR_UNLIKELY(ax > __gmpfr_emax))
+    return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+
+  if (MPFR_UNLIKELY(ax < __gmpfr_emin))
+    {
+      /* for RNDN, mpfr_underflow always rounds away, thus for |a|<=2^(emin-2)
+         we have to chenge to RNDZ */
+      if (rnd_mode == MPFR_RNDN &&
+          (ax < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT))
+        rnd_mode = MPFR_RNDZ;
+      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+    }
+
+  MPFR_SET_EXP (a, ax);
+  if (rb == 0 && sb == 0)
+    return 0; /* idem than MPFR_RET(0) but faster */
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE << sh;
+      if (ap[0] == 0)
+        {
+          ap[0] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_UNLIKELY(ax + 1 > __gmpfr_emax))
+            return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+          MPFR_ASSERTD(ax + 1 <= __gmpfr_emax);
+          MPFR_SET_EXP (a, ax + 1);
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
 /* Note: mpfr_sqr will call mpfr_mul if bn > MPFR_SQR_THRESHOLD,
    in order to use Mulders' mulhigh, which is handled only here
    to avoid partial code duplication. There is some overhead due
@@ -274,6 +346,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPFR_RET (0);
         }
     }
+
+  bq = MPFR_GET_PREC (b);
+  cq = MPFR_GET_PREC (c);
+  if (MPFR_LIKELY(MPFR_PREC(a) < GMP_NUMB_BITS &&
+                  bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS))
+    return mpfr_mul1sp1 (a, b, c, rnd_mode, MPFR_PREC(a));
+
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
   ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);
@@ -290,9 +369,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     return mpfr_underflow (a, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                            sign);
 #endif
-
-  bq = MPFR_GET_PREC (b);
-  cq = MPFR_GET_PREC (c);
 
   MPFR_ASSERTN ((mpfr_uprec_t) bq + cq <= MPFR_PREC_MAX);
 
