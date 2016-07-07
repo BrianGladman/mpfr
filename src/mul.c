@@ -349,8 +349,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   bq = MPFR_GET_PREC (b);
   cq = MPFR_GET_PREC (c);
-  if (MPFR_LIKELY(MPFR_PREC(a) < GMP_NUMB_BITS &&
-                  bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS))
+  if (MPFR_PREC(a) < GMP_NUMB_BITS &&
+      bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS)
     return mpfr_mul1sp1 (a, b, c, rnd_mode, MPFR_PREC(a));
 
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
