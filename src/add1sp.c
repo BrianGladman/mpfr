@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int mpfr_add1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
-  mpfr_t tmpa, tmpb, tmpc;
+  mpfr_t tmpa, tmpb, tmpc, tmpd;
   mpfr_flags_t old_flags, flags, flags2;
   int inexb, inexc, inexact, inexact2;
 
@@ -48,9 +48,17 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTN (__gmpfr_flags == old_flags);
 
-  inexact2 = MPFR_GET_EXP (tmpb) < MPFR_GET_EXP (tmpc) ?
-    mpfr_add1 (tmpa, tmpc, tmpb, rnd_mode) :
-    mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
+  if (MPFR_GET_EXP (tmpb) < MPFR_GET_EXP (tmpc))
+    {
+      /* The sign for the result will be taken from the second argument
+         (= first input value, which is tmpb). */
+      MPFR_ALIAS (tmpd, tmpc, MPFR_SIGN (tmpb), MPFR_EXP (tmpc));
+      inexact2 = mpfr_add1 (tmpa, tmpd, tmpb, rnd_mode);
+    }
+  else
+    {
+      inexact2 = mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
+    }
   flags2 = __gmpfr_flags;
 
   __gmpfr_flags = old_flags;
@@ -108,8 +116,6 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mpfr_uexp_t d;
 
   MPFR_ASSERTD(p < GMP_NUMB_BITS);
-
-  MPFR_SET_SAME_SIGN (a, b);
 
   if (bx == cx)
     {
@@ -222,6 +228,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_exp_t bx;
   mp_limb_t limb;
   int inexact;
+  int neg;
   MPFR_TMP_DECL(marker);
 
   MPFR_TMP_MARK(marker);
@@ -230,10 +237,15 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
+  MPFR_SET_SAME_SIGN (a, b);
+
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
   if (p < GMP_NUMB_BITS)
     return mpfr_add1sp1 (a, b, c, rnd_mode, p);
+
+  /* We need to get the sign before the possible exchange. */
+  neg = MPFR_IS_NEG (b);
 
   bx = MPFR_GET_EXP(b);
   if (bx < MPFR_GET_EXP(c))
@@ -278,7 +290,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             goto add_one_ulp;
         }
-      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
+      MPFR_UPDATE_RND_MODE(rnd_mode, neg);
       if (rnd_mode == MPFR_RNDZ)
         { inexact = -1; goto set_exponent; }
       else
@@ -292,8 +304,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Away:    Add 1
              Nearest: Trunc
              Zero:    Trunc */
-          if (rnd_mode == MPFR_RNDN
-              || MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b)))
+          if (rnd_mode == MPFR_RNDN || MPFR_IS_LIKE_RNDZ (rnd_mode, neg))
             {
             copy_set_exponent:
               ap = MPFR_MANT (a);
@@ -333,7 +344,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Not a Power of 2 */
               goto copy_add_one_ulp;
             }
-          else if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b)))
+          else if (MPFR_IS_LIKE_RNDZ (rnd_mode, neg))
             goto copy_set_exponent;
           else
             goto copy_add_one_ulp;
@@ -484,7 +495,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             goto add_one_ulp;
         }
-      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
+      MPFR_UPDATE_RND_MODE(rnd_mode, neg);
       inexact = -(bcp != 0 || bcp1 != 0);
       if (rnd_mode == MPFR_RNDZ || inexact == 0)
         goto set_exponent;
@@ -510,11 +521,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
       DEBUG( printf("Overflow\n") );
       MPFR_TMP_FREE(marker);
-      MPFR_SET_SAME_SIGN(a,b);
       return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
-  MPFR_SET_SAME_SIGN (a, b);
 
   MPFR_TMP_FREE(marker);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
