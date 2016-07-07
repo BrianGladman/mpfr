@@ -212,7 +212,7 @@ mpfr_mul1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
   mp_limb_t h;
-  mp_ptr ap = MPFR_MANT(a);
+  mpfr_limb_ptr ap = MPFR_MANT(a);
   mpfr_exp_t ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, mask = MPFR_LIMB_MASK(sh);
