@@ -624,6 +624,52 @@ valgrind20110503 (void)
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
 }
 
+/* check underflow flag corresponds to *after* rounding */
+static void
+test_underflow (mpfr_prec_t pmax)
+{
+  mpfr_prec_t p;
+  mpfr_t a, b, c;
+  int inex;
+
+  /* we want b*c < 0.5*2^emin but round(b*c, p) >= 0.5*2^emin thus
+     b*c >= (0.5 - 1/4*ulp_p(0.5))*2^emin */
+  for (p = MPFR_PREC_MIN; p <= pmax; p++)
+    {
+      mpfr_init2 (a, p + 1);
+      mpfr_init2 (b, p + 10);
+      mpfr_init2 (c, p + 10);
+      mpfr_urandomb (b, RANDS);
+      mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDZ); /* a = 0.5 */
+      mpfr_nextbelow (a); /* 0.5 - 1/2*ulp_{p+1}(0.5) = 0.5 - 1/4*ulp_p(0.5) */
+      inex = mpfr_div (c, a, b, MPFR_RNDU);
+      /* 0.5 - 1/4*ulp_p(0.5) <= b * c < 0.5 */
+      mpfr_mul_2si (b, b, mpfr_get_emin () / 2, MPFR_RNDZ);
+      mpfr_mul_2si (c, c, (mpfr_get_emin () - 1) / 2, MPFR_RNDZ);
+      if (inex)
+        mpfr_nextabove (c);
+      mpfr_set_prec (a, p);
+      mpfr_clear_underflow ();
+      mpfr_mul (a, b, c, MPFR_RNDN);
+      if (!mpfr_zero_p (a) && mpfr_underflow_p ())
+        {
+          printf ("Error, underflow flag incorrectly set for emin=%ld\n",
+                  mpfr_get_emin ());
+          printf ("b="); mpfr_dump (b);
+          printf ("c="); mpfr_dump (c);
+          printf ("a="); mpfr_dump (a);
+          mpfr_set_prec (a, mpfr_get_prec (b) + mpfr_get_prec (c));
+          mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+          mpfr_mul (a, b, c, MPFR_RNDN);
+          printf ("2*a="); mpfr_dump (a);
+          exit (1);
+        }
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (c);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -671,6 +717,7 @@ main (int argc, char *argv[])
   data_check ("data/mulpi", mpfr_mulpi, "mpfr_mulpi");
 
   valgrind20110503 ();
+  test_underflow (128);
 
   tests_end_mpfr ();
   return 0;
