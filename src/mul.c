@@ -249,7 +249,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           if (ax < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT)
             rnd_mode = MPFR_RNDZ;
         }
-      else if (MPFR_IS_LIKE_RNDU(rnd_mode, MPFR_SIGN(a)))
+      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)))
         {
           if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) && (rb | sb))
             goto rounding; /* no underflow */
