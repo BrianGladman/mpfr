@@ -262,10 +262,17 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   /* now perform rounding */
+
+  /* Warning: MPFR considers underflow *after* rounding with an unbounded
+     exponent range. However since b and c have same precision p, they are
+     multiples of 2^(__gmpfr_emin-p), likewise for b-c. Thus if bx < emin,
+     the subtraction is exact, and it is not possible that rounding with an
+     unbounded exponent range increases the exponent to bx+1 (in which case we
+     would signal a false underflow by dealing with underflow before rounding). */
   if (MPFR_UNLIKELY(bx < __gmpfr_emin))
     {
-      /* for RNDN, mpfr_underflow always rounds away, thus for |a|<=2^(emin-2)
-         we have to chenge to RNDZ */
+      /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
+         we have to change to RNDZ */
       if (rnd_mode == MPFR_RNDN &&
           (bx < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT))
         rnd_mode = MPFR_RNDZ;
