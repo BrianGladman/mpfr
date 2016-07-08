@@ -684,7 +684,7 @@ test_underflow (mpfr_prec_t pmax)
       if (inex)
         mpfr_nextabove (c); /* ensures that b*c > (0.5 - 1/2*ulp_p(0.5))*2^emin */
       mpfr_clear_underflow ();
-      mpfr_mul (a, b, c, MPFR_RNDN);
+      mpfr_mul (a, b, c, MPFR_RNDU);
       if (!mpfr_zero_p (a) && mpfr_underflow_p ())
         {
           printf ("Error, underflow flag incorrectly set for emin=%ld, rnd=%s\n",
