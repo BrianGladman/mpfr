@@ -349,9 +349,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   bq = MPFR_GET_PREC (b);
   cq = MPFR_GET_PREC (c);
-  if (MPFR_PREC(a) < GMP_NUMB_BITS &&
+  if (MPFR_GET_PREC(a) < GMP_NUMB_BITS &&
       bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS)
-    return mpfr_mul1sp1 (a, b, c, rnd_mode, MPFR_PREC(a));
+    return mpfr_mul1sp1 (a, b, c, rnd_mode, MPFR_GET_PREC(a));
 
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
@@ -504,14 +504,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
         /* Check if MulHigh can produce a roundable result.
            We may lose 1 bit due to RNDN, 1 due to final shift. */
-        if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
+        if (MPFR_UNLIKELY (MPFR_GET_PREC (a) > p - 5))
           {
-            if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + GMP_NUMB_BITS
+            if (MPFR_UNLIKELY (MPFR_GET_PREC (a) > p - 5 + GMP_NUMB_BITS
                                || bn <= threshold + 1))
               {
                 /* MulHigh can't produce a roundable result. */
                 MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",
-                               MPFR_PREC (a), p));
+                               MPFR_GET_PREC (a), p));
                 goto full_multiply;
               }
             /* Add one extra limb to mantissa of b and c. */
@@ -540,7 +540,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                Mulders' short product */
             p = n * GMP_NUMB_BITS - MPFR_INT_CEIL_LOG2 (n + 2);
             /* Due to some nasty reasons we can have only 4 bits */
-            MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
+            MPFR_ASSERTD (MPFR_GET_PREC (a) <= p - 4);
 
             if (MPFR_LIKELY (k < 2*n))
               {
@@ -548,7 +548,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
               }
           }
-        MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
+        MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_GET_PREC (a), p));
         /* Compute an approximation of the product of b and c */
         if (b != c)
           mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
@@ -577,7 +577,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
-        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1, MPFR_PREC(a)
+        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1, MPFR_GET_PREC(a)
                                           + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
