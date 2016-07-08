@@ -3,7 +3,8 @@
 Copyright 1991-1994, 1996, 1997, 1999-2005, 2007-2009, 2011-2016 Free Software Foundation, Inc.
 
 This file is part of the GNU MPFR Library and has been copied from
-GNU MP 6.1.0 (the FIXME's come from GNU MP).
+GNU MP 6.1.0 (the FIXME's come from GNU MP), except the parts marked
+beginning of code specific to MPFR ... end of code specific to MPFR.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -2092,6 +2093,38 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     (q) = __q1 * __ll_B | __q0;						\
     (r) = __r0;								\
   } while (0)
+
+/* beginning of code specific to MPFR */
+/* Same as __udiv_qrnnd_c, using "long double" (assuming 64-bit significant),
+   and assuming n0 = 0. */
+#define __udiv_qrnnd_ld(q, r, n1, d)                                    \
+  do {									\
+    UWtype __q, __h, __l;                                               \
+    long double __Q, __N1, __D;                                         \
+									\
+    ASSERT ((d) != 0);							\
+    ASSERT ((n1) < (d));						\
+									\
+    __N1 = 0x1p64 * (long double) (n1);                                 \
+    __D = (long double) (d);                                            \
+									\
+    __Q = __N1 / __D;							\
+    /* either __Q is the quotient rounded toward zero, in which case */ \
+    /* it is exactly what we want, or it is rounded away from zero,  */ \
+    /* then subtracting 1 to __q should give the quotient rounded    */ \
+    /* toward zero. */                                                  \
+    __q = (UWtype) __Q;                                                 \
+    umul_ppmm (__h, __l, __q, (d));                                     \
+    if (__h > (n1) || (__h == (n1) && __l > 0))                         \
+      {                                                                 \
+        __q--;                                                          \
+        __h -= (__l < (d));                                             \
+        __l -= (d);                                                     \
+      }                                                                 \
+    (q) = __q;                                                          \
+    (r) = -__l;                                                         \
+  } while (0)
+/* end of code specific to MPFR */
 
 /* If the processor has no udiv_qrnnd but sdiv_qrnnd, go through
    __udiv_w_sdiv (defined in libgcc or elsewhere).  */
