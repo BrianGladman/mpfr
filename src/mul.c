@@ -246,7 +246,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) && rb)
             goto rounding; /* no underflow */
-          if (ax < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT)
+          if (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
       else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)))
@@ -258,9 +258,13 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
  rounding:
-  MPFR_SET_EXP (a, ax);
+  MPFR_EXP (a) = ax; /* Don't use MPFR_SET_EXP since ax might be < __gmpfr_emin
+                        in the cases "goto rounding" above. */
   if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+    {
+      MPFR_ASSERTD(ax >= __gmpfr_emin);
+      return 0; /* idem than MPFR_RET(0) but faster */
+    }
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (rb && sb == 0 &&
@@ -272,6 +276,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
     {
     truncate:
+      MPFR_ASSERTD(ax >= __gmpfr_emin);
       MPFR_RET(-MPFR_SIGN(a));
     }
   else /* round away from zero */
@@ -284,6 +289,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           if (MPFR_UNLIKELY(ax + 1 > __gmpfr_emax))
             return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
           MPFR_ASSERTD(ax + 1 <= __gmpfr_emax);
+          MPFR_ASSERTD(ax + 1 >= __gmpfr_emin);
           MPFR_SET_EXP (a, ax + 1);
         }
       MPFR_RET(MPFR_SIGN(a));

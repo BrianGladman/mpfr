@@ -250,27 +250,122 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
   return ok;
 }
 
+/* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
+static int
+mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t p = MPFR_GET_PREC(q);
+  mpfr_limb_ptr up = MPFR_MANT(u);
+  mpfr_limb_ptr vp = MPFR_MANT(v);
+  mpfr_limb_ptr qp = MPFR_MANT(q);
+  mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
+  mpfr_prec_t sh = GMP_NUMB_BITS - p;
+  mp_limb_t h, rb, sb, mask = MPFR_LIMB_MASK(sh);
+
+  if (up[0] >= vp[0])
+    {
+      udiv_qrnnd (h, sb, up[0] - vp[0], 0, vp[0]);
+      /* Noting W = 2^GMP_NUMB_BITS, we have up[0]*W = (W + h) * vp[0] + sb,
+         thus up[0]/vp[0] = 1 + h/W + sb/vp[0]/W, with 0 <= sb < vp[0]. */
+      qx ++;
+      sb |= h & 1;
+      h = MPFR_LIMB_HIGHBIT | (h >> 1);
+      rb = h & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= (h & mask) ^ rb;
+      qp[0] = h & ~mask;
+    }
+  else
+    {
+      udiv_qrnnd (h, sb, up[0], 0, vp[0]);
+      rb = h & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= (h & mask) ^ rb;
+      qp[0] = h & ~mask;
+    }
+  
+  MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
+
+  /* rounding */
+  if (qx > __gmpfr_emax)
+    return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+
+  /* Warning: underflow should be checked *after* rounding, thus when rounding
+     away and when q > 0.111...111*2^(emin-1), or when rounding to nearest and
+     q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
+  if (qx < __gmpfr_emin)
+    {
+      /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
+         we have to change to RNDZ */
+      if (rnd_mode == MPFR_RNDN)
+        {
+          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && rb)
+            goto rounding; /* no underflow */
+          if (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+            rnd_mode = MPFR_RNDZ;
+        }
+      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
+        {
+          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && (rb | sb))
+            goto rounding; /* no underflow */
+        }
+      return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
+    }
+
+ rounding:
+  MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
+                        in the cases "goto rounding" above. */
+  if (rb == 0 && sb == 0)
+    {
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      return 0; /* idem than MPFR_RET(0) but faster */
+    }
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(q)))
+    {
+    truncate:
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      MPFR_RET(-MPFR_SIGN(q));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      qp[0] += MPFR_LIMB_ONE << sh;
+      if (qp[0] == 0)
+        {
+          qp[0] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
+            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
+          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
+          MPFR_SET_EXP (q, qx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(q));
+    }
+}
+
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
-  mp_size_t q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
-  mp_size_t usize = MPFR_LIMB_SIZE(u);
-  mp_size_t vsize = MPFR_LIMB_SIZE(v);
+  mp_size_t q0size, usize, vsize;
   mp_size_t qsize; /* number of limbs wanted for the computed quotient */
   mp_size_t qqsize;
   mp_size_t k;
-  mpfr_limb_ptr q0p = MPFR_MANT(q), qp;
-  mpfr_limb_ptr up = MPFR_MANT(u);
-  mpfr_limb_ptr vp = MPFR_MANT(v);
+  mpfr_limb_ptr q0p, qp;
+  mpfr_limb_ptr up, vp;
   mpfr_limb_ptr ap;
   mpfr_limb_ptr bp;
   mp_limb_t qh;
-  mp_limb_t sticky_u = MPFR_LIMB_ZERO;
+  mp_limb_t sticky_u, sticky_v;
   mp_limb_t low_u;
-  mp_limb_t sticky_v = MPFR_LIMB_ZERO;
   mp_limb_t sticky;
   mp_limb_t sticky3;
-  mp_limb_t round_bit = MPFR_LIMB_ZERO;
+  mp_limb_t round_bit;
   mpfr_exp_t qexp;
   int sign_quotient;
   int extra_bit;
@@ -340,6 +435,20 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
           MPFR_RET (0);
         }
     }
+
+  if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && MPFR_GET_PREC(u) <= GMP_NUMB_BITS
+      && MPFR_GET_PREC(v) <= GMP_NUMB_BITS)
+    return mpfr_divsp1 (q, u, v, rnd_mode);
+
+  q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
+  usize = MPFR_LIMB_SIZE(u);
+  vsize = MPFR_LIMB_SIZE(v);
+  q0p = MPFR_MANT(q);
+  up = MPFR_MANT(u);
+  vp = MPFR_MANT(v);
+  sticky_u = MPFR_LIMB_ZERO;
+  sticky_v = MPFR_LIMB_ZERO;
+  round_bit = MPFR_LIMB_ZERO;
 
   /**************************************************************************
    *                                                                        *
