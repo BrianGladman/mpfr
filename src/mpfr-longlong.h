@@ -2095,7 +2095,7 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
   } while (0)
 
 /* beginning of code specific to MPFR */
-/* Same as __udiv_qrnnd_c, using "long double" (assuming 64-bit significant),
+/* Same as __udiv_qrnnd_c, using "long double" (assuming 64-bit significand),
    and assuming n0 = 0. */
 #define __udiv_qrnnd_ld(q, r, n1, d)                                    \
   do {									\
