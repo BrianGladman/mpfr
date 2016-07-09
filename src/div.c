@@ -251,6 +251,12 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
 }
 
 /* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
+/* Do not use __udiv_qrnnd_ld for MPFR_LDBL_MANT_DIG > 64, as in practice,
+   this will probably be slower than udiv_qrnnd.
+   FIXME: __udiv_qrnnd_ld may give an incorrect result on processors
+   where the rounding precision is dynamic. Moreover, do not use
+   __udiv_qrnnd_ld on processors without a hardware FPU, otherwise
+   it would be slow. */
 static int
 mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -264,7 +270,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   if (up[0] >= vp[0])
     {
-      if (MPFR_LDBL_MANT_DIG >= 64)
+      if (MPFR_LDBL_MANT_DIG == 64)
         __udiv_qrnnd_ld (h, sb, up[0] - vp[0], vp[0]);
       else
         udiv_qrnnd (h, sb, up[0] - vp[0], 0, vp[0]);
@@ -279,7 +285,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      if (MPFR_LDBL_MANT_DIG >= 64)
+      if (MPFR_LDBL_MANT_DIG == 64)
         __udiv_qrnnd_ld (h, sb, up[0], vp[0]);
       else
         udiv_qrnnd (h, sb, up[0], 0, vp[0]);
@@ -287,7 +293,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       sb |= (h & mask) ^ rb;
       qp[0] = h & ~mask;
     }
-  
+
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
