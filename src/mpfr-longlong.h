@@ -2105,7 +2105,7 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     ASSERT ((d) != 0);							\
     ASSERT ((n1) < (d));						\
 									\
-    __N1 = 0x1p64 * (long double) (n1);                                 \
+    __N1 = 18446744073709551616.0 /* 2^64 */ * (long double) (n1);      \
     __D = (long double) (d);                                            \
 									\
     __Q = __N1 / __D;							\
