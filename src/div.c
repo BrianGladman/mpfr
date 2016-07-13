@@ -251,12 +251,6 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
 }
 
 /* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
-/* Do not use __udiv_qrnnd_ld for MPFR_LDBL_MANT_DIG > 64, as in practice,
-   this will probably be slower than udiv_qrnnd.
-   FIXME: __udiv_qrnnd_ld may give an incorrect result on processors
-   where the rounding precision is dynamic. Moreover, do not use
-   __udiv_qrnnd_ld on processors without a hardware FPU, otherwise
-   it would be slow. */
 static int
 mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
