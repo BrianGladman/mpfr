@@ -270,10 +270,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   if (up[0] >= vp[0])
     {
-      if (MPFR_LDBL_MANT_DIG == 64)
-        __udiv_qrnnd_ld (h, sb, up[0] - vp[0], vp[0]);
-      else
-        udiv_qrnnd (h, sb, up[0] - vp[0], 0, vp[0]);
+      __udiv_qrnnd_preinv (h, sb, up[0] - vp[0], 0, vp[0]);
       /* Noting W = 2^GMP_NUMB_BITS, we have up[0]*W = (W + h) * vp[0] + sb,
          thus up[0]/vp[0] = 1 + h/W + sb/vp[0]/W, with 0 <= sb < vp[0]. */
       qx ++;
@@ -285,10 +282,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      if (MPFR_LDBL_MANT_DIG == 64)
-        __udiv_qrnnd_ld (h, sb, up[0], vp[0]);
-      else
-        udiv_qrnnd (h, sb, up[0], 0, vp[0]);
+      __udiv_qrnnd_preinv (h, sb, up[0], 0, vp[0]);
       rb = h & (MPFR_LIMB_ONE << (sh - 1));
       sb |= (h & mask) ^ rb;
       qp[0] = h & ~mask;

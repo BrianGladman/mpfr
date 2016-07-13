@@ -2095,34 +2095,57 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
   } while (0)
 
 /* beginning of code specific to MPFR */
-/* Same as __udiv_qrnnd_c, using "long double" (assuming 64-bit significand),
-   and assuming n0 = 0. */
-#define __udiv_qrnnd_ld(q, r, n1, d)                                    \
+/* Same as __udiv_qrnnd_c, but using a single UWtype/UWtype division */
+/* instead of two. */
+#define __udiv_qrnnd_preinv(q, r, n1, n0, d) \
   do {									\
-    UWtype __q, __h, __l;                                               \
-    long double __Q, __N1, __D;                                         \
+    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m, __i;                \
 									\
     ASSERT ((d) != 0);							\
     ASSERT ((n1) < (d));						\
 									\
-    __N1 = 18446744073709551616.0 /* 2^64 */ * (long double) (n1);      \
-    __D = (long double) (d);                                            \
+    __d1 = __ll_highpart (d);						\
+    __d0 = __ll_lowpart (d);						\
+    __i = ~(UWtype) 0 / __d1;                                           \
 									\
-    __Q = __N1 / __D;							\
-    /* either __Q is the quotient rounded toward zero, in which case */ \
-    /* it is exactly what we want, or it is rounded away from zero,  */ \
-    /* then subtracting 1 to __q should give the quotient rounded    */ \
-    /* toward zero. */                                                  \
-    __q = (UWtype) __Q;                                                 \
-    umul_ppmm (__h, __l, __q, (d));                                     \
-    if (__h > (n1) || (__h == (n1) && __l > 0))                         \
+    __q1 = (((n1) >> (W_TYPE_SIZE / 2)) * __i) >> (W_TYPE_SIZE / 2);    \
+    __r1 = (n1) - __q1 * __d1;						\
+    while (__r1 >= __d1)                                                \
       {                                                                 \
-        __q--;                                                          \
-        __h -= (__l < (d));                                             \
-        __l -= (d);                                                     \
+        __q1 ++;                                                        \
+        __r1 -= __d1;                                                   \
       }                                                                 \
-    (q) = __q;                                                          \
-    (r) = -__l;                                                         \
+    __m = __q1 * __d0;							\
+    __r1 = __r1 << (W_TYPE_SIZE / 2) | __ll_highpart (n0);              \
+    if (__r1 < __m)							\
+      {									\
+	__q1--, __r1 += (d);						\
+	if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
+	  if (__r1 < __m)						\
+	    __q1--, __r1 += (d);					\
+      }									\
+    __r1 -= __m;							\
+									\
+    __q0 = ((__r1 >> (W_TYPE_SIZE / 2)) * __i) >> (W_TYPE_SIZE / 2);    \
+    __r0 = __r1  - __q0 * __d1;						\
+    while (__r0 >= __d1)                                                \
+      {                                                                 \
+        __q0 ++;                                                        \
+        __r0 -= __d1;                                                   \
+      }                                                                 \
+    __m = __q0 * __d0;							\
+    __r0 = __r0 << (W_TYPE_SIZE / 2) | __ll_lowpart (n0);               \
+    if (__r0 < __m)							\
+      {									\
+	__q0--, __r0 += (d);						\
+	if (__r0 >= (d))						\
+	  if (__r0 < __m)						\
+	    __q0--, __r0 += (d);					\
+      }									\
+    __r0 -= __m;							\
+									\
+    (q) = __q1 * __ll_B | __q0;						\
+    (r) = __r0;								\
   } while (0)
 /* end of code specific to MPFR */
 
