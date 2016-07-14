@@ -217,6 +217,13 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, mask = MPFR_LIMB_MASK(sh);
 
+  /* When prec(b), prec(c) <= GMP_NUMB_BITS / 2, we could replace umul_ppmm
+     by a limb multiplication as follows, but we assume umul_ppmm is as fast
+     as a limb multiplication on modern processors:
+      h = (MPFR_MANT(b)[0] >> (GMP_NUMB_BITS / 2))
+        * (MPFR_MANT(c)[0] >> (GMP_NUMB_BITS / 2));
+      sb = 0;
+  */
   umul_ppmm (h, sb, MPFR_MANT(b)[0], MPFR_MANT(c)[0]);
   if ((h & MPFR_LIMB_HIGHBIT) == 0)
     {
