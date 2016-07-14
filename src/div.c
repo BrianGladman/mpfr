@@ -29,6 +29,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME: __gmpn_invert_limb is a GMP internal, thus should be used only
+   if WANT_GMP_INTERNALS is defined and the function is available (see
+   code related to HAVE___GMPN_SBPI1_DIVAPPR_Q as an example of what to
+   do). Otherwise it may break library versioning. */
+
 extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
 
 /* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
