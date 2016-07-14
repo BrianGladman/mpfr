@@ -21,7 +21,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <float.h>
+#include <float.h> /* needed so that MPFR_LDBL_MANT_DIG is correctly defined */
 
 #include "mpfr-impl.h"
 
