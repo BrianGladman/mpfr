@@ -2094,61 +2094,6 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     (r) = __r0;								\
   } while (0)
 
-/* beginning of code specific to MPFR */
-/* Same as __udiv_qrnnd_c, but using a single UWtype/UWtype division */
-/* instead of two. */
-#define __udiv_qrnnd_preinv(q, r, n1, n0, d) \
-  do {									\
-    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m, __i;                \
-									\
-    ASSERT ((d) != 0);							\
-    ASSERT ((n1) < (d));						\
-									\
-    __d1 = __ll_highpart (d);						\
-    __d0 = __ll_lowpart (d);						\
-    __i = ~(UWtype) 0 / __d1;                                           \
-									\
-    __q1 = (((n1) >> (W_TYPE_SIZE / 2)) * __i) >> (W_TYPE_SIZE / 2);    \
-    __r1 = (n1) - __q1 * __d1;						\
-    while (__r1 >= __d1)                                                \
-      {                                                                 \
-        __q1 ++;                                                        \
-        __r1 -= __d1;                                                   \
-      }                                                                 \
-    __m = __q1 * __d0;							\
-    __r1 = __r1 << (W_TYPE_SIZE / 2) | __ll_highpart (n0);              \
-    if (__r1 < __m)							\
-      {									\
-	__q1--, __r1 += (d);						\
-	if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
-	  if (__r1 < __m)						\
-	    __q1--, __r1 += (d);					\
-      }									\
-    __r1 -= __m;							\
-									\
-    __q0 = ((__r1 >> (W_TYPE_SIZE / 2)) * __i) >> (W_TYPE_SIZE / 2);    \
-    __r0 = __r1  - __q0 * __d1;						\
-    while (__r0 >= __d1)                                                \
-      {                                                                 \
-        __q0 ++;                                                        \
-        __r0 -= __d1;                                                   \
-      }                                                                 \
-    __m = __q0 * __d0;							\
-    __r0 = __r0 << (W_TYPE_SIZE / 2) | __ll_lowpart (n0);               \
-    if (__r0 < __m)							\
-      {									\
-	__q0--, __r0 += (d);						\
-	if (__r0 >= (d))						\
-	  if (__r0 < __m)						\
-	    __q0--, __r0 += (d);					\
-      }									\
-    __r0 -= __m;							\
-									\
-    (q) = __q1 * __ll_B | __q0;						\
-    (r) = __r0;								\
-  } while (0)
-/* end of code specific to MPFR */
-
 /* If the processor has no udiv_qrnnd but sdiv_qrnnd, go through
    __udiv_w_sdiv (defined in libgcc or elsewhere).  */
 #if !defined (udiv_qrnnd) && defined (sdiv_qrnnd)
