@@ -533,13 +533,21 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               /* |b| - |c| <= (W/2-1)*W^k + W^k-1 = 1/2*W^n - 1 */
               /* The exponent decreases by one. */
-              /* Compute 2*b-c (Exact) */
-              /* Shift b in the allocated temporary block */
             SubD1Lose:
-              bp = MPFR_TMP_LIMBS_ALLOC (n);
-              mpn_lshift (bp, MPFR_MANT(b), n, 1);
               ap = MPFR_MANT(a);
+              /* Compute 2*b-c (Exact) */
+              /* Experiments with __gmpn_rsblsh_n show that it is not always
+                 faster than mpn_lshift + mpn_sub_n, thus we don't enable it
+                 for now (HAVE___GMPN_RSBLSH_N -> HAVE___GMPN_RSBLSH_Nxxx). */
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH_Nxxx)
+              /* {ap, n} = 2*{bp, n} - {cp, n} */
+              __gmpn_rsblsh_n (ap, MPFR_MANT(c), MPFR_MANT(b), n, 1);
+#else
+              bp = MPFR_TMP_LIMBS_ALLOC (n);
+              /* Shift b in the allocated temporary block */
+              mpn_lshift (bp, MPFR_MANT(b), n, 1);
               mpn_sub_n (ap, bp, cp, n);
+#endif
               bx--;
               goto ExactNormalize;
             }
