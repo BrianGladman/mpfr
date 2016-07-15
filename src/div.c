@@ -114,6 +114,7 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
           if (__r0 < __m)                                               \
             __q0--, __r0 += (d);                                        \
       }                                                                 \
+    /* FIXME: The following assertion fails on 64-bit machines. */      \
     MPFR_ASSERTD(__r0 >= __m);                                          \
     __r0 -= __m;                                                        \
     /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
