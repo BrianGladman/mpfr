@@ -707,6 +707,8 @@ dnl by default, in particular by binary distributions. Moreover the check
 dnl below may yield an incorrect result as libtool isn't used in configure
 dnl (see above).
 AC_CHECK_FUNCS([__gmpn_sbpi1_divappr_q])
+dnl same for __gmpn_invert_limb
+AC_CHECK_FUNCS([__gmpn_invert_limb])
 
 MPFR_CHECK_MP_LIMB_T_VS_LONG
 
