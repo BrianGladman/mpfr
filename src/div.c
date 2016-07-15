@@ -41,7 +41,7 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
     mp_limb_t _qh, _ql, _r, _mask, _di;                                 \
                                                                         \
     MPFR_ASSERTD ((d) != 0);                                            \
-    MPFR_ASSERTD ((nh) < (d));						\
+    MPFR_ASSERTD ((nh) < (d));                                          \
     MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
                                                                         \
     _di = __gmpn_invert_limb (d);                                       \
@@ -58,69 +58,69 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
 /* Same as __udiv_qrnnd_c from longlong.h, but using a single UWType/UWtype
    division instead of two, and with n0=0. The analysis below assumes a limb
    has 64 bits for simplicity. */
-#define __udiv_qrnnd_preinv(q, r, n1, d) \
-  do {									\
+#define __udiv_qrnnd_preinv(q, r, n1, d)                                \
+  do {                                                                  \
     UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m, __i;                \
-									\
+                                                                        \
     MPFR_ASSERTD ((d) != 0);                                            \
-    MPFR_ASSERTD ((n1) < (d));						\
+    MPFR_ASSERTD ((n1) < (d));                                          \
     MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
-									\
-    __d1 = __ll_highpart (d);						\
+                                                                        \
+    __d1 = __ll_highpart (d);                                           \
     /* 2^31 <= d1 < 2^32 */                                             \
-    __d0 = __ll_lowpart (d);						\
+    __d0 = __ll_lowpart (d);                                            \
     /* 0 <= d0 < 2^32 */                                                \
     __i = ~(UWtype) 0 / __d1;                                           \
     /* 2^32 < i < 2^33 with i < 2^64/d1 */                              \
-									\
+                                                                        \
     __q1 = (((n1) / __ll_B) * __i) / __ll_B;                            \
     /* Since n1 < d, high(n1) <= d1 = high(d), thus */                  \
     /* q1 <= high(n1) * (2^64/d1) / 2^32 <= 2^32 */                     \
     /* and also q1 <= n1/d1 thus r1 >= 0 below */                       \
-    __r1 = (n1) - __q1 * __d1;						\
+    __r1 = (n1) - __q1 * __d1;                                          \
     while (__r1 >= __d1)                                                \
       __q1 ++, __r1 -= __d1;                                            \
     /* by construction, we have n1 = q1*d1+r1, and 0 <= r1 < d1 */      \
     /* thus q1 <= n1/d1 < 2^32+2 */                                     \
-    __m = __q1 * __d0;							\
+    __m = __q1 * __d0;                                                  \
     /* q1*d0 <= (2^32+1)*(2^32-1) <= 2^64-1 thus m fits in a limb. */   \
     __r1 = __r1 * __ll_B;                                               \
     /* At most two corrections are needed like in __udiv_qrnnd_c. */    \
-    if (__r1 < __m)							\
-      {									\
-	__q1--, __r1 += (d);						\
-	if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
-	  if (__r1 < __m)						\
-	    __q1--, __r1 += (d);                                        \
-      }									\
+    if (__r1 < __m)                                                     \
+      {                                                                 \
+        __q1--, __r1 += (d);                                            \
+        if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
+          if (__r1 < __m)                                               \
+            __q1--, __r1 += (d);                                        \
+      }                                                                 \
     /* Now we should have r1 >= m. */                                   \
     MPFR_ASSERTD(__r1 >= __m);                                          \
-    __r1 -= __m;							\
+    __r1 -= __m;                                                        \
     /* Now we have n1*2^32 = q1*d + r1, with 0 <= r1 < d. */            \
     MPFR_ASSERTD(__r1 < (d));                                           \
-									\
+                                                                        \
     /* The same analysis as above applies, with n1 replaced by r1, */   \
     /* q1 by q0, r1 by r0. */                                           \
     __q0 = ((__r1 / __ll_B) * __i) / __ll_B;                            \
-    __r0 = __r1  - __q0 * __d1;						\
+    __r0 = __r1  - __q0 * __d1;                                         \
     while (__r0 >= __d1)                                                \
       __q0 ++, __r0 -= __d1;                                            \
-    __m = __q0 * __d0;							\
+    __m = __q0 * __d0;                                                  \
     __r0 = __r0 * __ll_B;                                               \
-    if (__r0 < __m)							\
-      {									\
-	__q0--, __r0 += (d);						\
-	if (__r0 >= (d))						\
-	  if (__r0 < __m)						\
-	    __q0--, __r0 += (d);					\
-      }									\
+    if (__r0 < __m)                                                     \
+      {                                                                 \
+        __q0--, __r0 += (d);                                            \
+        if (__r0 >= (d))                                                \
+          if (__r0 < __m)                                               \
+            __q0--, __r0 += (d);                                        \
+      }                                                                 \
     MPFR_ASSERTD(__r0 >= __m);                                          \
     __r0 -= __m;                                                        \
     /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
     MPFR_ASSERTD(__r0 < (d));                                           \
                                                                         \
-    (q) = __q1 * __ll_B | __q0;						\
-    (r) = __r0;								\
+    (q) = __q1 * __ll_B | __q0;                                         \
+    (r) = __r0;                                                         \
   } while (0)
 #endif
 
