@@ -93,8 +93,8 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
           if (__r1 < __m)                                               \
             __q1--, __r1 += (d);                                        \
       }                                                                 \
-    /* Now we should have r1 >= m. */                                   \
-    MPFR_ASSERTD(__r1 >= __m);                                          \
+    /* We can have r1 < m here, but in this case the true remainder */  \
+    /* is 2^64+r1, which is > m (same analysis as below for r0). */     \
     __r1 -= __m;                                                        \
     /* Now we have n1*2^32 = q1*d + r1, with 0 <= r1 < d. */            \
     MPFR_ASSERTD(__r1 < (d));                                           \
@@ -107,15 +107,20 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
       __q0 ++, __r0 -= __d1;                                            \
     __m = __q0 * __d0;                                                  \
     __r0 = __r0 * __ll_B;                                               \
+    /* We know the quotient floor(r1*2^64/d) is q0, q0-1 or q0-2.*/     \
     if (__r0 < __m)                                                     \
       {                                                                 \
+        /* The quotient is either q0-1 or q0-2. */                      \
         __q0--, __r0 += (d);                                            \
         if (__r0 >= (d))                                                \
+          /* If r0 >= d, then the addition r0+d didn't carry out, */    \
+          /* thus if we still have r0 < m, the quotient is q0-2.  */    \
+          /* Otherwise the remainder is 2^64+r0 > m. */                 \
           if (__r0 < __m)                                               \
             __q0--, __r0 += (d);                                        \
       }                                                                 \
-    /* FIXME: The following assertion fails on 64-bit machines. */      \
-    MPFR_ASSERTD(__r0 >= __m);                                          \
+    /* We can have r0 < m here, but in this case the true remainder */  \
+    /* is 2^64+r0, which is > m (see above). */                         \
     __r0 -= __m;                                                        \
     /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
     MPFR_ASSERTD(__r0 < (d));                                           \
