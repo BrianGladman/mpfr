@@ -34,8 +34,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    macro udiv_qrnnd_preinv, and specialized to the case nl=0.
    It computes q and r such that nh*2^GMP_NUMB_BITS = q*d + r,
    with 0 <= r < d. */
-extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
-
 #define __udiv_qrnnd_preinv(q, r, nh, d)                                \
   do {                                                                  \
     mp_limb_t _qh, _ql, _r, _mask, _di;                                 \
