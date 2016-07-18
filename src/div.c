@@ -89,8 +89,7 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
     if (__r1 < __m)                                                     \
       {                                                                 \
         __q1--, __r1 += (d);                                            \
-        if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
-          if (__r1 < __m)                                               \
+        if (__r1 < __m && __r1 >= (d))                                  \
             __q1--, __r1 += (d);                                        \
       }                                                                 \
     /* We can have r1 < m here, but in this case the true remainder */  \
@@ -112,12 +111,13 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
       {                                                                 \
         /* The quotient is either q0-1 or q0-2. */                      \
         __q0--, __r0 += (d);                                            \
-        if (__r0 >= (d))                                                \
+        if (__r0 < __m && __r0 >= (d))                                  \
           /* If r0 >= d, then the addition r0+d didn't carry out, */    \
           /* thus if we still have r0 < m, the quotient is q0-2.  */    \
-          /* Otherwise the remainder is 2^64+r0 > m. */                 \
-          if (__r0 < __m)                                               \
-            __q0--, __r0 += (d);                                        \
+          /* Otherwise the remainder is 2^64+r0 > m. We put the test */ \
+          /* r0 < m first because it has a lower probability (24%) */   \
+          /* than r0 >= d (42%). */                                     \
+          __q0--, __r0 += (d);                                          \
       }                                                                 \
     /* We can have r0 < m here, but in this case the true remainder */  \
     /* is 2^64+r0, which is > m (see above). */                         \
