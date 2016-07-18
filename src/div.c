@@ -60,7 +60,7 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
    has 64 bits for simplicity. */
 #define __udiv_qrnnd_preinv(q, r, n1, d)                                \
   do {                                                                  \
-    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m, __i;                \
+    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __i;                     \
                                                                         \
     MPFR_ASSERTD ((d) != 0);                                            \
     MPFR_ASSERTD ((n1) < (d));                                          \
@@ -82,19 +82,18 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
       __q1 ++, __r1 -= __d1;                                            \
     /* by construction, we have n1 = q1*d1+r1, and 0 <= r1 < d1 */      \
     /* thus q1 <= n1/d1 < 2^32+2 */                                     \
-    __m = __q1 * __d0;                                                  \
-    /* q1*d0 <= (2^32+1)*(2^32-1) <= 2^64-1 thus m fits in a limb. */   \
-    __r1 = __r1 * __ll_B;                                               \
+    /* q1*d0 <= (2^32+1)*(2^32-1) <= 2^64-1 thus it fits in a limb. */  \
+    __r0 = __r1 * __ll_B;                                               \
+    __r1 = __r0 - __q1 * __d0;                                          \
     /* At most two corrections are needed like in __udiv_qrnnd_c. */    \
-    if (__r1 < __m)                                                     \
+    if (__r1 > __r0) /* borrow when subtracting q1*d0 */                \
       {                                                                 \
         __q1--, __r1 += (d);                                            \
-        if (__r1 < __m && __r1 >= (d))                                  \
-            __q1--, __r1 += (d);                                        \
+        if (__r1 > (d)) /* no carry when adding d */                    \
+          __q1--, __r1 += (d);                                          \
       }                                                                 \
     /* We can have r1 < m here, but in this case the true remainder */  \
     /* is 2^64+r1, which is > m (same analysis as below for r0). */     \
-    __r1 -= __m;                                                        \
     /* Now we have n1*2^32 = q1*d + r1, with 0 <= r1 < d. */            \
     MPFR_ASSERTD(__r1 < (d));                                           \
                                                                         \
@@ -104,24 +103,16 @@ extern mp_limb_t __gmpn_invert_limb (mp_limb_t);
     __r0 = __r1  - __q0 * __d1;                                         \
     while (__r0 >= __d1)                                                \
       __q0 ++, __r0 -= __d1;                                            \
-    __m = __q0 * __d0;                                                  \
-    __r0 = __r0 * __ll_B;                                               \
+    __r1 = __r0 * __ll_B;                                               \
+    __r0 = __r1 - __q0 * __d0;                                          \
     /* We know the quotient floor(r1*2^64/d) is q0, q0-1 or q0-2.*/     \
-    if (__r0 < __m)                                                     \
+    if (__r0 > __r1) /* borrow when subtracting q0*d0 */                \
       {                                                                 \
         /* The quotient is either q0-1 or q0-2. */                      \
         __q0--, __r0 += (d);                                            \
-        if (__r0 < __m && __r0 >= (d))                                  \
-          /* If r0 >= d, then the addition r0+d didn't carry out, */    \
-          /* thus if we still have r0 < m, the quotient is q0-2.  */    \
-          /* Otherwise the remainder is 2^64+r0 > m. We put the test */ \
-          /* r0 < m first because it has a lower probability (24%) */   \
-          /* than r0 >= d (42%). */                                     \
+        if (__r0 > (d)) /* no carry when adding d */                    \
           __q0--, __r0 += (d);                                          \
       }                                                                 \
-    /* We can have r0 < m here, but in this case the true remainder */  \
-    /* is 2^64+r0, which is > m (see above). */                         \
-    __r0 -= __m;                                                        \
     /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
     MPFR_ASSERTD(__r0 < (d));                                           \
                                                                         \
