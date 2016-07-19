@@ -275,18 +275,21 @@ from most arbitrary precision floating-point software tools, are:
 
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
-@code{mp_bits_per_limb} (64 on most current processors);
+@code{mp_bits_per_limb} (64 on most current processors), possibly
+except in faithful rounding;
 
 @item the precision in bits can be set @emph{exactly} to any valid value
 for each variable (including very small precision);
 
 @item MPFR provides the four rounding modes from the IEEE 754-1985
 standard, plus away-from-zero, as well as for basic operations as for other
-mathematical functions.
+mathematical functions. Faithful rounding is provided too, but the results
+may no longer be reproducible.
 
 @end itemize
 
-In particular, with a precision of 53 bits, MPFR is able to
+In particular, with a precision of 53 bits and in any of the four standard
+rounding modes, MPFR is able to
 exactly reproduce all computations with double-precision machine
 floating-point numbers (e.g., @code{double} type in C, with a C
 implementation that rigorously follows Annex F of the ISO C99 standard
@@ -763,13 +766,16 @@ that corresponding to @code{MPFR_RNDD} or that corresponding to
 In particular when those values are identical,
 i.e., when the result of the corresponding operation is exactly
 representable, that exact result is returned.
-In summary the error is always at most one unit-in-last-place of the computed
-result, which can take at most two possible values.
-For @code{MPFR_RNDF} the ternary value makes no sense,
-the inexact flag is undefined, the divide-by-zero flag is as with other
-roundings, and the underflow and overflow flags match what would be obtained
-in the case the computed value is the same as with @code{MPFR_RNDD} (resp.
-@code{MPFR_RNDU}).
+In summary, the error is always at most one unit-in-last-place of the
+computed result, which can take at most two possible values.
+For @code{MPFR_RNDF}, the ternary value (defined below) and the inexact flag
+(defined later, as with the other flags) are unspecified, the divide-by-zero
+flag is as with other roundings, and the underflow and overflow flags match
+what would be obtained in the case the computed value is the same as with
+@code{MPFR_RNDD} or @code{MPFR_RNDU}.
+The results may not be reproducible.
+@c Or should one guarantee reproducibility under some condition?
+@c But this may be non-obvious if the caches may have an influence.
 
 @anchor{ternary value}@cindex Ternary value
 Most MPFR functions take as first argument the destination variable, as
