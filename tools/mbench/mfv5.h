@@ -36,14 +36,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <sys/time.h>
 #include <sys/resource.h>
 
+#include "mpfr.h"
+
 struct option_test {
   unsigned long prec;
   unsigned long seed;
   unsigned long stat;
   bool verbose;
+  mpfr_rnd_t rnd;
   std::string export_base;
   std::string import_base;
-  option_test () : prec (53), seed (14528596), stat (100), verbose (false), export_base("") {}
+  option_test () : prec (53), seed (14528596), stat (100), verbose (false), rnd(MPFR_RNDN), export_base("") {}
 };
 
 class registered_test;

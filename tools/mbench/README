@@ -9,7 +9,7 @@ To use the mbench program:
    Build it:
       make GMP=/dir/to/gmp MPFR=/dir/to/mpfr
    Run it by specifying the functions you want to bench:
-      ./mfv5 mpfr_add mpfr_sub mpfr_mul mpfr_div mpfr_sqrt
+      ./mfv5 mpfr_add mpfr_mul mpfr_sub mpfr_div mpfr_sqrt
    To have the lists of the available functions:
       ./mfv5 -l
    Help usage:

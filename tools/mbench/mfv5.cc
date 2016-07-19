@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define USAGE                                                           \
  "Bench functions for Pentium (V5++).\n"                                \
  __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"                \
- "Usage: mfv5 [-pPREC] [-sSEED] [-mSIZE] [-iPRIO] [-lLIST] [-xEXPORT_BASE] [-XIMPORT_BASE] tests ...\n"
+ "Usage: mfv5 [-pPREC] [-sSEED] [-mSIZE] [-iPRIO] [-lLIST] [-xEXPORT_BASE] [-XIMPORT_BASE] [-rROUNDING_MODE] tests ...\n"
 
 using namespace std;
 
@@ -152,6 +152,37 @@ int main (int argc, const char *argv[])
 	    case 'i':
 	      prio = atol (argv[i]+2);
 	      break;
+            case 'r':
+              {
+                switch (argv[i][2])
+		  {
+		  case 'n':
+		  case 'N':
+		    options.rnd = MPFR_RNDN;
+		    break;
+		  case 'z':
+		  case 'Z':
+		    options.rnd = MPFR_RNDZ;
+		    break;
+		  case 'u':
+		  case 'U':
+		    options.rnd = MPFR_RNDU;
+		    break;
+		  case 'd':
+		  case 'D':
+		    options.rnd = MPFR_RNDD;
+		    break;
+		  case 'f':
+		  case 'F':
+		    options.rnd = MPFR_RNDF;
+		    break;
+		  default:
+		    cerr << "Unkown rounding mode." << endl;
+		    exit(1);
+		    break;
+		  }
+              }
+              break;
 	    case 'l':
 	      list_test ();
 	      exit (0);
