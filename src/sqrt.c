@@ -28,7 +28,7 @@ static const unsigned short T1[] = {8160, 8098, 8037, 7977, 7919, 7861, 7805, 77
 static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141, -194, -248, -302, -356, -410, 307, 267, 226, 185, 145, 104, 63, 21, -24, -65, -105, -145, -185, -224, -263, -303, 237, 205, 174, 142, 111, 79, 48, 16, -16, -45, -75, -105, -136, -167, -198, -229, 187, 161, 136, 110, 85, 61, 36, 12, -15, -41, -67, -92, -117, -142, -167, -192, 159, 138, 117, 96, 76, 54, 33, 12, -10, -30, -51, -71, -92, -113, -134, -154, 130, 112, 95, 77, 60, 43, 26, 9, -10, -28, -46, -64, -81, -98, -116, -133, 115, 100, 85, 70, 54, 39, 23, 8, -7, -22, -37, -52, -66, -82, -96, -111, 99, 86, 73, 60, 46, 32, 19, 6, -8, -21, -34, -47, -60, -73, -86, -100, 86, 75, 63, 52, 40, 28, 17, 5, -7, -19, -31, -43, -54, -66, -78, -90, 77, 66, 56, 46, 35, 25, 16, 6, -5, -15, -26, -36, -47, -57, -67, -77, 70, 60, 51, 42, 33, 23, 14, 5, -5, -14, -24, -33, -43, -52, -62, -72, 65, 57, 49, 40, 31, 23, 14, 6, -3, -12, -20, -28, -37, -45, -54, -62};
 
 static mp_limb_t
-mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
+mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
 {
   mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
   mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
@@ -38,7 +38,7 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
   x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
   /* now x0 is a 16-bit approximation, with maximal error 2^(-9.46) */
 
-  a1 = a0 >> (GMP_LIMB_BITS - 32);
+  a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
   t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
@@ -56,7 +56,7 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
      y = approx(a0*x0) [19-bit accuracy is enough]
      t = a - y^2 [target accuracy, high 19 bits are zero]
      y = y + x0/2 * t [target accuracy] */
-  
+
   /* a1*x0^2 is near 2^94, thus a1*x0 is near 2^94/x0 */
   y = (a1 * x0) >> 31; /* y is near 2^63/x0, with 32 bits */
   t = (mp_limb_signed_t) (a0 - y * y) >> 14;
@@ -77,8 +77,8 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
 }
 
 /* Return a (1+40)-bit approximation x0 of 2^72/sqrt(a0).
-   Assume a0 >= 2^(GMP_LIMB_BITS-2), thus x0 has 41 bits.
-   Assume GMP_LIMB_BITS=64.
+   Assume a0 >= 2^(GMP_NUMB_BITS-2), thus x0 has 41 bits.
+   Assume GMP_NUMB_BITS=64.
 */
 static mp_limb_t
 mpn_rsqrtrem1 (mp_limb_t a0)
@@ -88,13 +88,13 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
   mp_limb_t x0, a1, t;
 
-  MPFR_ASSERTD(GMP_LIMB_BITS == 64);
+  MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
 
   x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
   /* now x0 is a 16-bit approximation, with maximal error 2^(-9.46):
      -2^(-9.46) <= x0/2^16 - 1/sqrt(a/2^4) <= 2^(-9.46) */
 
-  a1 = a0 >> (GMP_LIMB_BITS - 32);
+  a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
   t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
@@ -102,7 +102,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   /* now x0 is a 31-bit approximation (32 bits, 1 <= x0/2^31 <= 2),
      with maximal error 2^(-19.19) */
 
-  a1 = a0 >> (GMP_LIMB_BITS - 40); /* a1 has 40 bits */
+  a1 = a0 >> (GMP_NUMB_BITS - 40); /* a1 has 40 bits */
   t = (x0 * x0) >> 22; /* t has 40 bits */
   /* a1 * t has 80 bits, but we know the upper 19 bits cancel with 1 */
   t = (mp_limb_signed_t) (-a1 * t) >> 31; /* it remains 49 bits in theory,
@@ -153,7 +153,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
      non-negative, so that all right shifts round towards -infinity.
 */
 static mp_limb_t
-mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
+mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 {
   mp_limb_t x, y, t, high, low;
 
@@ -188,11 +188,11 @@ mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
   MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
   MPFR_ASSERTD((double) low * (double) x < 18446744073709551616.0);
   t = high * x + ((low * x) >> 23); /* approximates t*x/2^23 */
-  
+
   y = (y << (GMP_NUMB_BITS / 2)) + (t >> 18);
   if (y < (1UL << 63))
     y = 1UL << 63; /* the correction code below assumes y >= 2^63 */
-  
+
   umul_ppmm (x, t, y, y);
   MPFR_ASSERTD(x < np[1] || (x == np[1] && t <= np[0])); /* y should not be too large */
   sub_ddmmss (x, t, np[1], np[0], x, t);
