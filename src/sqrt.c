@@ -235,7 +235,10 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
   else
     {
-      mp_limb_t sp[2] = {0, u0};
+      mp_limb_t sp[2];
+
+      sp[0] = 0;
+      sp[1] = u0;
       sb |= mpn_sqrtrem2 (&r0, &sb, sp);
     }
 
