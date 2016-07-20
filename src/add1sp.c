@@ -99,7 +99,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define DEBUG(x) /**/
 #endif
 
-/* compute sign(b) * (|b| + |c|).
+/* compute sign(b) * (|b| + |c|)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
    a positive value otherwise. */
@@ -113,7 +113,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t *ap, *cp;
   mpfr_exp_t bx;
   mp_limb_t limb;
-  int inexact = 0;
+  int inexact;
   MPFR_TMP_DECL(marker);
 
   MPFR_TMP_MARK(marker);
@@ -140,7 +140,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   DEBUG (printf ("New add1sp with diff=%lu\n", (unsigned long) d));
 
-  if (d == 0)
+  if (MPFR_UNLIKELY(d == 0))
     {
       /* d==0 */
       DEBUG( mpfr_print_mant_binary("C= ", MPFR_MANT(c), p) );
@@ -154,11 +154,11 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       else
         {
-          limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+          limb = mpn_add_n(ap, MPFR_MANT(b), MPFR_MANT(c), n);
           DEBUG( mpfr_print_mant_binary("A= ", ap, p) );
           MPFR_ASSERTD(limb != 0);             /* There must be a carry */
           limb = ap[0];                        /* Get LSB (In fact, LSW) */
-          mpn_rshift (ap, ap, n, 1);           /* Shift mantissa A */
+          mpn_rshift(ap, ap, n, 1);            /* Shift mantissa A */
           ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
           ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
         }
@@ -167,10 +167,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          precision and the same exponent, the neglected value is either
          0 or 1/2 ulp(a), thus returning a is fine. */
       if (rnd_mode == MPFR_RNDF)
-        goto set_exponent;
+        { inexact = 0; goto set_exponent; }
 
       if ((limb & (MPFR_LIMB_ONE << sh)) == 0) /* Check exact case */
-        goto set_exponent; /* inexact was initialized to 0 */
+        { inexact = 0; goto set_exponent; }
 
       /* Zero: Truncate
          Nearest: Even Rule => truncate or add 1
@@ -272,7 +272,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
             MPN_ZERO(cp+n-m, m);
           }
-        else if (m == 0)
+        else if (MPFR_LIKELY(m == 0))
           {
             /* dm >=1 and m == 0: just shift */
             MPFR_ASSERTD(dm >= 1);
@@ -376,7 +376,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (limb))
         {
           limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
-          mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
+          mpn_rshift (ap, ap, n, 1);          /* Shift mantissa*/
           bx++;                               /* Fix exponent */
           ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
           ap[0]   &= mask;                    /* Clear LSB bit */
@@ -394,7 +394,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                    Add 1 if C'p+1 !=0,
                    Even rule else */
       if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
-        goto set_exponent;
+        { inexact = 0; goto set_exponent; }
       else if (rnd_mode == MPFR_RNDN)
         {
           inexact = - (bcp1 != 0);
@@ -435,7 +435,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       return mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
-  MPFR_SET_SAME_SIGN (a, b);
+  MPFR_SET_SAME_SIGN(a, b);
 
   MPFR_TMP_FREE(marker);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
