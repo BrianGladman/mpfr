@@ -23,109 +23,50 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* the following routine is copied from GMP 6.1.1, file mpn/generic/sqrtrem.c */
+static const unsigned short T1[] = {8160, 8098, 8037, 7977, 7919, 7861, 7805, 7751, 7697, 7644, 7593, 7542, 7493, 7445, 7397, 7350, 7304, 7260, 7215, 7172, 7129, 7088, 7047, 7006, 6966, 6927, 6889, 6851, 6814, 6778, 6742, 6706, 6671, 6637, 6603, 6570, 6537, 6505, 6473, 6442, 6411, 6381, 6351, 6321, 6292, 6263, 6235, 6206, 6179, 6152, 6125, 6098, 6072, 6046, 6020, 5995, 5970, 5946, 5921, 5897, 5874, 5850, 5827, 5804, 5781, 5759, 5737, 5715, 5693, 5672, 5651, 5630, 5609, 5589, 5569, 5549, 5529, 5509, 5490, 5471, 5452, 5433, 5415, 5396, 5378, 5360, 5342, 5324, 5307, 5290, 5273, 5256, 5239, 5222, 5206, 5189, 5173, 5157, 5141, 5125, 5110, 5094, 5079, 5064, 5049, 5034, 5019, 5004, 4990, 4975, 4961, 4947, 4933, 4919, 4905, 4892, 4878, 4865, 4851, 4838, 4825, 4812, 4799, 4786, 4773, 4761, 4748, 4736, 4724, 4711, 4699, 4687, 4675, 4663, 4652, 4640, 4628, 4617, 4605, 4594, 4583, 4572, 4561, 4550, 4539, 4528, 4517, 4506, 4496, 4485, 4475, 4464, 4454, 4444, 4434, 4423, 4413, 4403, 4394, 4384, 4374, 4364, 4355, 4345, 4335, 4326, 4317, 4307, 4298, 4289, 4280, 4271, 4262, 4253, 4244, 4235, 4226, 4217, 4208, 4200, 4191, 4183, 4174, 4166, 4157, 4149, 4141, 4132, 4124, 4116, 4108, 4100};
 
-/* invsqrttab[x] ~ sqrt(2^25/x)-2^8 for 2^7 <= x < 2^9 */
-static const unsigned char invsqrttab[384] = /* The common 0x100 was removed */
-{
-  0xff,0xfd,0xfb,0xf9,0xf7,0xf5,0xf3,0xf2, /* sqrt(1/80)..sqrt(1/87) */
-  0xf0,0xee,0xec,0xea,0xe9,0xe7,0xe5,0xe4, /* sqrt(1/88)..sqrt(1/8f) */
-  0xe2,0xe0,0xdf,0xdd,0xdb,0xda,0xd8,0xd7, /* sqrt(1/90)..sqrt(1/97) */
-  0xd5,0xd4,0xd2,0xd1,0xcf,0xce,0xcc,0xcb, /* sqrt(1/98)..sqrt(1/9f) */
-  0xc9,0xc8,0xc6,0xc5,0xc4,0xc2,0xc1,0xc0, /* sqrt(1/a0)..sqrt(1/a7) */
-  0xbe,0xbd,0xbc,0xba,0xb9,0xb8,0xb7,0xb5, /* sqrt(1/a8)..sqrt(1/af) */
-  0xb4,0xb3,0xb2,0xb0,0xaf,0xae,0xad,0xac, /* sqrt(1/b0)..sqrt(1/b7) */
-  0xaa,0xa9,0xa8,0xa7,0xa6,0xa5,0xa4,0xa3, /* sqrt(1/b8)..sqrt(1/bf) */
-  0xa2,0xa0,0x9f,0x9e,0x9d,0x9c,0x9b,0x9a, /* sqrt(1/c0)..sqrt(1/c7) */
-  0x99,0x98,0x97,0x96,0x95,0x94,0x93,0x92, /* sqrt(1/c8)..sqrt(1/cf) */
-  0x91,0x90,0x8f,0x8e,0x8d,0x8c,0x8c,0x8b, /* sqrt(1/d0)..sqrt(1/d7) */
-  0x8a,0x89,0x88,0x87,0x86,0x85,0x84,0x83, /* sqrt(1/d8)..sqrt(1/df) */
-  0x83,0x82,0x81,0x80,0x7f,0x7e,0x7e,0x7d, /* sqrt(1/e0)..sqrt(1/e7) */
-  0x7c,0x7b,0x7a,0x79,0x79,0x78,0x77,0x76, /* sqrt(1/e8)..sqrt(1/ef) */
-  0x76,0x75,0x74,0x73,0x72,0x72,0x71,0x70, /* sqrt(1/f0)..sqrt(1/f7) */
-  0x6f,0x6f,0x6e,0x6d,0x6d,0x6c,0x6b,0x6a, /* sqrt(1/f8)..sqrt(1/ff) */
-  0x6a,0x69,0x68,0x68,0x67,0x66,0x66,0x65, /* sqrt(1/100)..sqrt(1/107) */
-  0x64,0x64,0x63,0x62,0x62,0x61,0x60,0x60, /* sqrt(1/108)..sqrt(1/10f) */
-  0x5f,0x5e,0x5e,0x5d,0x5c,0x5c,0x5b,0x5a, /* sqrt(1/110)..sqrt(1/117) */
-  0x5a,0x59,0x59,0x58,0x57,0x57,0x56,0x56, /* sqrt(1/118)..sqrt(1/11f) */
-  0x55,0x54,0x54,0x53,0x53,0x52,0x52,0x51, /* sqrt(1/120)..sqrt(1/127) */
-  0x50,0x50,0x4f,0x4f,0x4e,0x4e,0x4d,0x4d, /* sqrt(1/128)..sqrt(1/12f) */
-  0x4c,0x4b,0x4b,0x4a,0x4a,0x49,0x49,0x48, /* sqrt(1/130)..sqrt(1/137) */
-  0x48,0x47,0x47,0x46,0x46,0x45,0x45,0x44, /* sqrt(1/138)..sqrt(1/13f) */
-  0x44,0x43,0x43,0x42,0x42,0x41,0x41,0x40, /* sqrt(1/140)..sqrt(1/147) */
-  0x40,0x3f,0x3f,0x3e,0x3e,0x3d,0x3d,0x3c, /* sqrt(1/148)..sqrt(1/14f) */
-  0x3c,0x3b,0x3b,0x3a,0x3a,0x39,0x39,0x39, /* sqrt(1/150)..sqrt(1/157) */
-  0x38,0x38,0x37,0x37,0x36,0x36,0x35,0x35, /* sqrt(1/158)..sqrt(1/15f) */
-  0x35,0x34,0x34,0x33,0x33,0x32,0x32,0x32, /* sqrt(1/160)..sqrt(1/167) */
-  0x31,0x31,0x30,0x30,0x2f,0x2f,0x2f,0x2e, /* sqrt(1/168)..sqrt(1/16f) */
-  0x2e,0x2d,0x2d,0x2d,0x2c,0x2c,0x2b,0x2b, /* sqrt(1/170)..sqrt(1/177) */
-  0x2b,0x2a,0x2a,0x29,0x29,0x29,0x28,0x28, /* sqrt(1/178)..sqrt(1/17f) */
-  0x27,0x27,0x27,0x26,0x26,0x26,0x25,0x25, /* sqrt(1/180)..sqrt(1/187) */
-  0x24,0x24,0x24,0x23,0x23,0x23,0x22,0x22, /* sqrt(1/188)..sqrt(1/18f) */
-  0x21,0x21,0x21,0x20,0x20,0x20,0x1f,0x1f, /* sqrt(1/190)..sqrt(1/197) */
-  0x1f,0x1e,0x1e,0x1e,0x1d,0x1d,0x1d,0x1c, /* sqrt(1/198)..sqrt(1/19f) */
-  0x1c,0x1b,0x1b,0x1b,0x1a,0x1a,0x1a,0x19, /* sqrt(1/1a0)..sqrt(1/1a7) */
-  0x19,0x19,0x18,0x18,0x18,0x18,0x17,0x17, /* sqrt(1/1a8)..sqrt(1/1af) */
-  0x17,0x16,0x16,0x16,0x15,0x15,0x15,0x14, /* sqrt(1/1b0)..sqrt(1/1b7) */
-  0x14,0x14,0x13,0x13,0x13,0x12,0x12,0x12, /* sqrt(1/1b8)..sqrt(1/1bf) */
-  0x12,0x11,0x11,0x11,0x10,0x10,0x10,0x0f, /* sqrt(1/1c0)..sqrt(1/1c7) */
-  0x0f,0x0f,0x0f,0x0e,0x0e,0x0e,0x0d,0x0d, /* sqrt(1/1c8)..sqrt(1/1cf) */
-  0x0d,0x0c,0x0c,0x0c,0x0c,0x0b,0x0b,0x0b, /* sqrt(1/1d0)..sqrt(1/1d7) */
-  0x0a,0x0a,0x0a,0x0a,0x09,0x09,0x09,0x09, /* sqrt(1/1d8)..sqrt(1/1df) */
-  0x08,0x08,0x08,0x07,0x07,0x07,0x07,0x06, /* sqrt(1/1e0)..sqrt(1/1e7) */
-  0x06,0x06,0x06,0x05,0x05,0x05,0x04,0x04, /* sqrt(1/1e8)..sqrt(1/1ef) */
-  0x04,0x04,0x03,0x03,0x03,0x03,0x02,0x02, /* sqrt(1/1f0)..sqrt(1/1f7) */
-  0x02,0x02,0x01,0x01,0x01,0x01,0x00,0x00  /* sqrt(1/1f8)..sqrt(1/1ff) */
-};
-
-#if GMP_NUMB_BITS > 32
-#define MAGIC 0x10000000000	/* 0xffe7debbfc < MAGIC < 0x232b1850f410 */
-#else
-#define MAGIC 0x100000		/* 0xfee6f < MAGIC < 0x29cbc8 */
-#endif
+static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141, -194, -248, -302, -356, -410, 307, 267, 226, 185, 145, 104, 63, 21, -24, -65, -105, -145, -185, -224, -263, -303, 237, 205, 174, 142, 111, 79, 48, 16, -16, -45, -75, -105, -136, -167, -198, -229, 187, 161, 136, 110, 85, 61, 36, 12, -15, -41, -67, -92, -117, -142, -167, -192, 159, 138, 117, 96, 76, 54, 33, 12, -10, -30, -51, -71, -92, -113, -134, -154, 130, 112, 95, 77, 60, 43, 26, 9, -10, -28, -46, -64, -81, -98, -116, -133, 115, 100, 85, 70, 54, 39, 23, 8, -7, -22, -37, -52, -66, -82, -96, -111, 99, 86, 73, 60, 46, 32, 19, 6, -8, -21, -34, -47, -60, -73, -86, -100, 86, 75, 63, 52, 40, 28, 17, 5, -7, -19, -31, -43, -54, -66, -78, -90, 77, 66, 56, 46, 35, 25, 16, 6, -5, -15, -26, -36, -47, -57, -67, -77, 70, 60, 51, 42, 33, 23, 14, 5, -5, -14, -24, -33, -43, -52, -62, -72, 65, 57, 49, 40, 31, 23, 14, 6, -3, -12, -20, -28, -37, -45, -54, -62};
 
 static mp_limb_t
 mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
 {
-#if GMP_NUMB_BITS > 32
-  mp_limb_t a1;
-#endif
-  mp_limb_t x0, t2, t, x2;
-  unsigned abits;
+  mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
+  mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
+  mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
+  mp_limb_t x0, a1, t, y, x2;
 
-  /* Use Newton iterations for approximating 1/sqrt(a) instead of sqrt(a),
-     since we can do the former without division.  As part of the last
-     iteration convert from 1/sqrt(a) to sqrt(a).  */
+  x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
+  /* now x0 is a 16-bit approximation, with maximal error 2^(-9.46) */
 
-  abits = a0 >> (GMP_LIMB_BITS - 1 - 8);	/* extract bits for table lookup */
-  x0 = 0x100 | invsqrttab[abits - 0x80];	/* initial 1/sqrt(a) */
+  a1 = a0 >> (GMP_LIMB_BITS - 32);
+  /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
+  t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 32;
+  /* t has 32 bits now */
+  x0 = (x0 << 15) - ((mp_limb_signed_t) (x0 * t) >> (17+1));
 
-  /* x0 is now an 8 bits approximation of 1/sqrt(a0) */
+  /* now x0 is a 31-bit approximation (32 bits, 1 <= x0/2^31 <= 2),
+     with maximal error 2^(-19.19). More precisely by exhaustive search
+     on all 32-bit values of a1:
+     -1.665416e-06 <= x0/2^31 - 1/sqrt(a1/2^32) <= 6.959122e-10,
+     with the left worst case for a1=1326448622, x0=3864240766,
+     and the right worst case for a1=1081715548, x0=4279108124. */
 
-#if GMP_NUMB_BITS > 32
-  a1 = a0 >> (GMP_LIMB_BITS - 1 - 32);
-  t = (mp_limb_signed_t) ((0x2000000000000) - 0x30000 - a1 * x0 * x0) >> 16;
-  x0 = (x0 << 16) + ((mp_limb_signed_t) (x0 * t) >> (16+2));
+  /* we now use Karp-Markstein's trick to get a 32-bit approximation of the
+     square root of a0:
+     y = approx(a0*x0) [19-bit accuracy is enough]
+     t = a - y^2 [target accuracy, high 19 bits are zero]
+     y = y + x0/2 * t [target accuracy] */
+  
+  /* a1*x0^2 is near 2^94, thus a1*x0 is near 2^94/x0 */
+  y = (a1 * x0) >> 31; /* y is near 2^63/x0, with 32 bits */
+  t = (mp_limb_signed_t) (a0 - y * y) >> 14;
+  /* t should have at most 64-14-19=31 significant bits */
+  x0 = y + ((mp_limb_signed_t) (x0 * t) >> (49+1));
 
-  /* x0 is now a 16 bits approximation of 1/sqrt(a0) */
-
-  t2 = x0 * (a0 >> (32-8));
-  t = t2 >> 25;
-  t = ((mp_limb_signed_t) ((a0 << 14) - t * t - MAGIC) >> (32-8));
-  x0 = t2 + ((mp_limb_signed_t) (x0 * t) >> 15);
-  x0 >>= 32;
-#else
-  t2 = x0 * (a0 >> (16-8));
-  t = t2 >> 13;
-  t = ((mp_limb_signed_t) ((a0 << 6) - t * t - MAGIC) >> (16-8));
-  x0 = t2 + ((mp_limb_signed_t) (x0 * t) >> 7);
-  x0 >>= 16;
-#endif
-
-  /* x0 is now a full limb approximation of sqrt(a0) */
+  /* x0 is now a 32-bit approximation of sqrt(a0) */
 
   x2 = x0 * x0;
-  if (x2 + 2*x0 <= a0 - 1)
+  while (x2 + 2*x0 < a0)
     {
       x2 += 2*x0 + 1;
       x0++;
@@ -134,28 +75,143 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
   *rp = a0 - x2;
   return x0;
 }
-/* end of code copied from GMP 6.1.1 */
 
-/* return s such that a*2^GMP_NUMB_BITS = s^2 + r with 0 <= r <= 2*s,
-   and *inexact = 0 iff r <> 0. */
+/* Return a (1+40)-bit approximation x0 of 2^72/sqrt(a0).
+   Assume a0 >= 2^(GMP_LIMB_BITS-2), thus x0 has 41 bits.
+   Assume GMP_LIMB_BITS=64.
+*/
 static mp_limb_t
-mpfr_sqrt_limb2 (mp_limb_t a, mp_limb_t *inexact)
+mpn_rsqrtrem1 (mp_limb_t a0)
 {
-  mp_limb_t s, r, q, h, l;
+  mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
+  mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
+  mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
+  mp_limb_t x0, a1, t;
 
-  s = mpn_sqrtrem1 (&r, a);
-  /* now a = s^2 + r[1], with 0 <= r[1] <= 2*s, and s < 2^32 */
-  q = (r << 31) / s;
-  s = (s << 32) + q;
-  umul_ppmm (h, l, s, s);
-  if (h > a || (h == a && l > 0))
+  MPFR_ASSERTD(GMP_LIMB_BITS == 64);
+
+  x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
+  /* now x0 is a 16-bit approximation, with maximal error 2^(-9.46):
+     -2^(-9.46) <= x0/2^16 - 1/sqrt(a/2^4) <= 2^(-9.46) */
+
+  a1 = a0 >> (GMP_LIMB_BITS - 32);
+  /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
+  t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
+  /* t has 32 bits now */
+  x0 = (x0 << 15) + ((mp_limb_signed_t) (x0 * t) >> (17+1));
+  /* now x0 is a 31-bit approximation (32 bits, 1 <= x0/2^31 <= 2),
+     with maximal error 2^(-19.19) */
+
+  a1 = a0 >> (GMP_LIMB_BITS - 40); /* a1 has 40 bits */
+  t = (x0 * x0) >> 22; /* t has 40 bits */
+  /* a1 * t has 80 bits, but we know the upper 19 bits cancel with 1 */
+  t = (mp_limb_signed_t) (-a1 * t) >> 31; /* it remains 49 bits in theory,
+                                             but t has only 31 bits at most */
+  x0 = (x0 << 9) + ((mp_limb_signed_t) (x0 * t) >> (31+1+49-40));
+
+  /* now x0 is a 1+40-bit approximation,
+     more precisely we have (experimentally):
+     -3.157551e-12 <= x0/2^40 - 2^32/sqrt(a0) <= 3.834848e-12
+  */
+
+  return x0;
+}
+
+/* Comments below are for GMP_NUMB_BITS=64 for simplicity, but the code is valid
+   for any even value of GMP_NUMB_BITS.
+   The algorithm used is the following, and uses Karp-Markstein's trick:
+   - start from x, a 33-bit approximation of 2^64/sqrt(n1), with x <= 2^64/sqrt(n1)
+   - y = floor(n1*x/2^64), which is an approximation of sqrt(n1)
+   - t = n1 - y^2
+   - u = (x * t) >> 33
+   - y = (y << 32) + u
+   Proof:
+   * we know that Newton's iteration for the reciprocal square root,
+
+                x' = x + (x/2) (1 - a*x^2),                         (1)
+
+     if evaluated with infinite precision, always produces x' <= 1/sqrt(a).
+     See for example Lemma 3.14 in "Modern Computer Arithmetic" by Brent and
+     Zimmermann.
+
+   * if we multiply both sides of equation (1) by a, and write y0 = a*x
+     and y0' = a*x', we get:
+
+                y0' = y0 + (x/2)*(a - y0^2)                         (2)
+
+     and since x' <= 1/sqrt(a), y0' <= sqrt(a).
+
+   * now assume we replace y0 in (2) by y = y0 - e for some e >= 0.
+     Equation (2) becomes:
+
+                y' = y0 + (x/2)*(a - y0^2) - e*(1-x*y0+x*e/2)       (3)
+
+     Since y0 = a*x, the term 1-x*y0+x*e/2 equals 1-a*x^2+x*e/2,
+     which is non-negative since x <= 1/sqrt(a). Thus y' <= y0' <= sqrt(a).
+
+     In practice, we should ensure y <= n1*x/2^64, so that t and u are
+     non-negative, so that all right shifts round towards -infinity.
+*/
+static mp_limb_t
+mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
+{
+  mp_limb_t x, y, t, high, low;
+
+  x = mpn_rsqrtrem1 (np[1]);
+  /* x is an approximation of 2^72/sqrt(n1), x has 41 bits */
+
+  /* We know x/2^40 <= 2^32/sqrt(n1) + 3.9e-12 <= 2^32/sqrt(n1) + 2^(-37)
+     thus n1*x/2^72 <= sqrt(n1) + 2^(-37)*n1/2^32 <= sqrt(n1) + 2^(-5). */
+
+  /* compute y = floor(np[1]*x/2^72), cutting the upper 48 bits of n1 in two
+     parts of 24 and 23 bits, which can be multiplied by x without overflow
+     (warning: if we take 24 bits from low, it might overflow with x */
+  high = np[1] >> 40; /* upper 24 bits from n1 */
+  MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
+  low = (np[1] >> 17) & 0x7fffff; /* next 23 bits */
+  MPFR_ASSERTD((double) low * (double) x < 18446744073709551616.0);
+  y = high * x + ((low * x) >> 23); /* y approximates n1*x/2^40 */
+  /* y-1 takes into account the 2^(-31) error term, to ensure y <= sqrt(n1)
+     after the right shift below */
+  y = (y - 0x8000000) >> 32; /* the constant 0x8000000 = 2^(72-5-40) takes
+                                into account the 2^(-5) error above, to ensure
+                                y <= sqrt(n1) */
+  /* y is an approximation of sqrt(n1), with y <= sqrt(n1) */
+
+  t = np[1] - y * y;
+  MPFR_ASSERTD((mp_limb_signed_t) t >= 0);
+
+  /* we now compute t = (x * t) >> (40 + 1), but x * t might have
+     more than 64 bits thus we cut t in two parts of 24 and 23 bits */
+  high = t >> 23;
+  low = t & 0x7fffff;
+  MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
+  MPFR_ASSERTD((double) low * (double) x < 18446744073709551616.0);
+  t = high * x + ((low * x) >> 23); /* approximates t*x/2^23 */
+  
+  y = (y << (GMP_NUMB_BITS / 2)) + (t >> 18);
+  if (y < (1UL << 63))
+    y = 1UL << 63; /* the correction code below assumes y >= 2^63 */
+  
+  umul_ppmm (x, t, y, y);
+  MPFR_ASSERTD(x < np[1] || (x == np[1] && t <= np[0])); /* y should not be too large */
+  sub_ddmmss (x, t, np[1], np[0], x, t);
+
+  /* Remainder x*2^GMP_NUMB_BITS+t should be <= 2*y (which implies x <= 1).
+     If x = 1, it suffices to check t > 2*y mod 2^GMP_NUMB_BITS. */
+  while (x > 1 || (x == 1 && t > 2 * y))
     {
-      h -= (l < 2 * s - 1);
-      l -= 2 * s - 1;
-      s--;
+      /* (y+1)^2 = y^2 + 2*y + 1 */
+      x -= 1 + (t < (2 * y + 1));
+      t -= 2 * y + 1;
+      y ++;
+      /* maximal number of loops observed is 3, for n1=4651405965214438987,
+         n0=18443926066120424952, average is 0.576 */
     }
-  *inexact = (h != a) || (l != 0);
-  return s;
+
+  sp[0] = y;
+  rp[0] = t;
+  return x;
 }
 
 /* Special code for prec(r), prec(u) < GMP_NUMB_BITS. */
@@ -178,7 +234,10 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (p < GMP_NUMB_BITS / 2)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
   else
-    r0 = mpfr_sqrt_limb2 (u0, &sb);
+    {
+      mp_limb_t sp[2] = {0, u0};
+      sb |= mpn_sqrtrem2 (&r0, &sb, sp);
+    }
 
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
