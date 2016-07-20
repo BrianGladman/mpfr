@@ -18,12 +18,14 @@ fi
 
 err-if-output()
 {
-  local dir checkoutput=1 checkstatus=1 output st h line
+  local dir msg checkoutput=1 checkstatus=1 output st h line
   while [[ $1 = -* ]]
   do
     case $1 in
       --dir=*)
         dir=${1#--dir=} ;;
+      --msg=*)
+        msg=${1#--msg=} ;;
       -o)
         # The command generates output even in case of success;
         # do not regard this as an error.
@@ -54,6 +56,7 @@ err-if-output()
     do
       printf "%s%s\n" $h $line
     done
+    [[ -n "$msg" ]] && printf "%s %s\n" "$pfx-->$sfx" "$msg"
     err=1
   fi
   set -e
@@ -136,7 +139,8 @@ grconf '[^a-z]sed[^a-z]'
 srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
 #srctests=(`find src tests -name '*.[ch]' ! -name '*mini-gmp.*'`)
 
-err-if-output -t "GMP_LIMB_BITS" grep GMP_LIMB_BITS $srctests
+err-if-output --msg="Use GMP_NUMB_BITS instead." \
+  -t "GMP_LIMB_BITS" grep GMP_LIMB_BITS $srctests
 
 grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 
@@ -150,7 +154,8 @@ grep '__gmp[nz]_' $srctests | \
   grep -v __gmpn_rsblsh_n | \
   err-if-output "GMP internals" cat
 
-err-if-output -t "mp_ptr and mp_srcptr" grep -E 'mp_(src)?ptr' $srctests
+err-if-output --msg="Use mpfr_limb_ptr and mpfr_limb_srcptr instead." \
+  -t "mp_ptr and mp_srcptr" grep -E 'mp_(src)?ptr' $srctests
 
 # Do not use __mpfr_struct structure members in .c files.
 err-if-output -t "__mpfr_struct members" \
@@ -197,7 +202,8 @@ grep 'MPFR_ASSERT[DN][^a-z]*;' src/*.c | grep -v 'MPFR_ASSERTN *(0)' | \
   grep -v '\(MPFR_EMAX_MAX\|MPFR_EXP_MAX\).*LONG_MAX' | \
   grep -v '\(MPFR_EMIN_MIN\|MPFR_EXP_MIN\).*LONG_MIN' | \
   grep -v MPFR_BLOCK_EXCEP | \
-  err-if-output -t "Constant checking" cat
+  err-if-output --msg="Use MPFR_STAT_STATIC_ASSERT in general." \
+    -t "Constant checking" cat
 
 # ASSERT and ASSERT_ALWAYS must not be used for assertion checking.
 # Use MPFR_STAT_STATIC_ASSERT for static assertions, otherwise either
