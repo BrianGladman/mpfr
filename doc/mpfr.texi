@@ -766,8 +766,10 @@ that corresponding to @code{MPFR_RNDD} or that corresponding to
 In particular when those values are identical,
 i.e., when the result of the corresponding operation is exactly
 representable, that exact result is returned.
-In summary, the error is always at most one unit-in-last-place of the
-computed result, which can take at most two possible values.
+Thus, the computed result can take at most two possible values, and
+in absence of underflow/overflow, the corresponding error is strictly
+less than one ulp (unit in the last place) of that result and of the
+exact result.
 For @code{MPFR_RNDF}, the ternary value (defined below) and the inexact flag
 (defined later, as with the other flags) are unspecified, the divide-by-zero
 flag is as with other roundings, and the underflow and overflow flags match
