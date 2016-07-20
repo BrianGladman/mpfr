@@ -40,6 +40,7 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
 
   a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
+  /* FIXME: This is invalid on 32-bit machines. */
   t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
   x0 = (x0 << 15) - ((mp_limb_signed_t) (x0 * t) >> (17+1));
@@ -96,6 +97,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 
   a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
+  /* FIXME: This is invalid on 32-bit machines. */
   t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
   x0 = (x0 << 15) + ((mp_limb_signed_t) (x0 * t) >> (17+1));
@@ -173,6 +175,7 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   y = high * x + ((low * x) >> 23); /* y approximates n1*x/2^40 */
   /* y-1 takes into account the 2^(-31) error term, to ensure y <= sqrt(n1)
      after the right shift below */
+  /* FIXME: This is invalid on 32-bit machines. */
   y = (y - 0x8000000) >> 32; /* the constant 0x8000000 = 2^(72-5-40) takes
                                 into account the 2^(-5) error above, to ensure
                                 y <= sqrt(n1) */
