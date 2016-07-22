@@ -29,6 +29,96 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
+/* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
+   macro udiv_qrnnd_preinv, and specialized to the case nl=0.
+   It computes q and r such that nh*2^GMP_NUMB_BITS = q*d + r,
+   with 0 <= r < d. */
+#define __udiv_qrnnd_preinv(q, r, nh, d)                                \
+  do {                                                                  \
+    mp_limb_t _qh, _ql, _r, _mask, _di;                                 \
+                                                                        \
+    MPFR_ASSERTD ((d) != 0);                                            \
+    MPFR_ASSERTD ((nh) < (d));                                          \
+    MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
+                                                                        \
+    _di = __gmpn_invert_limb (d);                                       \
+    umul_ppmm (_qh, _ql, (nh), _di);                                    \
+    _qh += (nh) + 1;                                                    \
+    _r = - _qh * (d);                                                   \
+    _mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */         \
+    _qh += _mask;                                                       \
+    _r += _mask & (d);                                                  \
+    (r) = _r;                                                           \
+    (q) = _qh;                                                          \
+  } while (0)
+#else
+/* Same as __udiv_qrnnd_c from longlong.h, but using a single UWType/UWtype
+   division instead of two, and with n0=0. The analysis below assumes a limb
+   has 64 bits for simplicity. */
+#define __udiv_qrnnd_preinv(q, r, n1, d)                                \
+  do {                                                                  \
+    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __i;                     \
+                                                                        \
+    MPFR_ASSERTD ((d) != 0);                                            \
+    MPFR_ASSERTD ((n1) < (d));                                          \
+    MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
+                                                                        \
+    __d1 = __ll_highpart (d);                                           \
+    /* 2^31 <= d1 < 2^32 */                                             \
+    __d0 = __ll_lowpart (d);                                            \
+    /* 0 <= d0 < 2^32 */                                                \
+    __i = ~(UWtype) 0 / __d1;                                           \
+    /* 2^32 < i < 2^33 with i < 2^64/d1 */                              \
+                                                                        \
+    __q1 = (((n1) / __ll_B) * __i) / __ll_B;                            \
+    /* Since n1 < d, high(n1) <= d1 = high(d), thus */                  \
+    /* q1 <= high(n1) * (2^64/d1) / 2^32 <= 2^32 */                     \
+    /* and also q1 <= n1/d1 thus r1 >= 0 below */                       \
+    __r1 = (n1) - __q1 * __d1;                                          \
+    while (__r1 >= __d1)                                                \
+      __q1 ++, __r1 -= __d1;                                            \
+    /* by construction, we have n1 = q1*d1+r1, and 0 <= r1 < d1 */      \
+    /* thus q1 <= n1/d1 < 2^32+2 */                                     \
+    /* q1*d0 <= (2^32+1)*(2^32-1) <= 2^64-1 thus it fits in a limb. */  \
+    __r0 = __r1 * __ll_B;                                               \
+    __r1 = __r0 - __q1 * __d0;                                          \
+    /* At most two corrections are needed like in __udiv_qrnnd_c. */    \
+    if (__r1 > __r0) /* borrow when subtracting q1*d0 */                \
+      {                                                                 \
+        __q1--, __r1 += (d);                                            \
+        if (__r1 > (d)) /* no carry when adding d */                    \
+          __q1--, __r1 += (d);                                          \
+      }                                                                 \
+    /* We can have r1 < m here, but in this case the true remainder */  \
+    /* is 2^64+r1, which is > m (same analysis as below for r0). */     \
+    /* Now we have n1*2^32 = q1*d + r1, with 0 <= r1 < d. */            \
+    MPFR_ASSERTD(__r1 < (d));                                           \
+                                                                        \
+    /* The same analysis as above applies, with n1 replaced by r1, */   \
+    /* q1 by q0, r1 by r0. */                                           \
+    __q0 = ((__r1 / __ll_B) * __i) / __ll_B;                            \
+    __r0 = __r1  - __q0 * __d1;                                         \
+    while (__r0 >= __d1)                                                \
+      __q0 ++, __r0 -= __d1;                                            \
+    __r1 = __r0 * __ll_B;                                               \
+    __r0 = __r1 - __q0 * __d0;                                          \
+    /* We know the quotient floor(r1*2^64/d) is q0, q0-1 or q0-2.*/     \
+    if (__r0 > __r1) /* borrow when subtracting q0*d0 */                \
+      {                                                                 \
+        /* The quotient is either q0-1 or q0-2. */                      \
+        __q0--, __r0 += (d);                                            \
+        if (__r0 > (d)) /* no carry when adding d */                    \
+          __q0--, __r0 += (d);                                          \
+      }                                                                 \
+    /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
+    MPFR_ASSERTD(__r0 < (d));                                           \
+                                                                        \
+    (q) = __q1 * __ll_B | __q0;                                         \
+    (r) = __r0;                                                         \
+  } while (0)
+#endif
+
 #ifdef DEBUG2
 #define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
 static void
@@ -250,27 +340,141 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
   return ok;
 }
 
+/* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
+static int
+mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t p = MPFR_GET_PREC(q);
+  mpfr_limb_ptr up = MPFR_MANT(u);
+  mpfr_limb_ptr vp = MPFR_MANT(v);
+  mpfr_limb_ptr qp = MPFR_MANT(q);
+  mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
+  mpfr_prec_t sh = GMP_NUMB_BITS - p;
+  mp_limb_t h, rb, sb, mask = MPFR_LIMB_MASK(sh);
+
+  if (up[0] >= vp[0])
+    {
+      if (p < GMP_NUMB_BITS / 2 && MPFR_PREC(v) <= GMP_NUMB_BITS / 2)
+        {
+          mp_limb_t v = vp[0] >> (GMP_NUMB_BITS / 2);
+          h = (up[0] - vp[0]) / v;
+          sb = (up[0] - vp[0]) % v;
+          h <<= GMP_NUMB_BITS / 2;
+          sb <<= GMP_NUMB_BITS / 2;
+        }
+      else
+        __udiv_qrnnd_preinv (h, sb, up[0] - vp[0], vp[0]);
+      /* Noting W = 2^GMP_NUMB_BITS, we have up[0]*W = (W + h) * vp[0] + sb,
+         thus up[0]/vp[0] = 1 + h/W + sb/vp[0]/W, with 0 <= sb < vp[0]. */
+      qx ++;
+      sb |= h & 1;
+      h = MPFR_LIMB_HIGHBIT | (h >> 1);
+      rb = h & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= (h & mask) ^ rb;
+      qp[0] = h & ~mask;
+    }
+  else
+    {
+      if (p < GMP_NUMB_BITS / 2 && MPFR_PREC(v) <= GMP_NUMB_BITS / 2)
+        {
+          mp_limb_t v = vp[0] >> (GMP_NUMB_BITS / 2);
+          h = up[0] / v;
+          sb = up[0] % v;
+          h <<= GMP_NUMB_BITS / 2;
+          sb <<= GMP_NUMB_BITS / 2;
+        }
+      else
+        __udiv_qrnnd_preinv (h, sb, up[0], vp[0]);
+      /* now up[0]*2^GMP_NUMB_BITS = h*vp[0] + sb */
+      rb = h & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= (h & mask) ^ rb;
+      qp[0] = h & ~mask;
+    }
+
+  MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
+
+  /* rounding */
+  if (qx > __gmpfr_emax)
+    return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+
+  /* Warning: underflow should be checked *after* rounding, thus when rounding
+     away and when q > 0.111...111*2^(emin-1), or when rounding to nearest and
+     q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
+  if (qx < __gmpfr_emin)
+    {
+      /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
+         we have to change to RNDZ */
+      if (rnd_mode == MPFR_RNDN)
+        {
+          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && rb)
+            goto rounding; /* no underflow */
+          if (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+            rnd_mode = MPFR_RNDZ;
+        }
+      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
+        {
+          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && (rb | sb))
+            goto rounding; /* no underflow */
+        }
+      return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
+    }
+
+ rounding:
+  MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
+                        in the cases "goto rounding" above. */
+  if (rb == 0 && sb == 0)
+    {
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      return 0; /* idem than MPFR_RET(0) but faster */
+    }
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(q)))
+    {
+    truncate:
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      MPFR_RET(-MPFR_SIGN(q));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      qp[0] += MPFR_LIMB_ONE << sh;
+      if (qp[0] == 0)
+        {
+          qp[0] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
+            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
+          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
+          MPFR_SET_EXP (q, qx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(q));
+    }
+}
+
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
-  mp_size_t q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
-  mp_size_t usize = MPFR_LIMB_SIZE(u);
-  mp_size_t vsize = MPFR_LIMB_SIZE(v);
+  mp_size_t q0size, usize, vsize;
   mp_size_t qsize; /* number of limbs wanted for the computed quotient */
   mp_size_t qqsize;
   mp_size_t k;
-  mpfr_limb_ptr q0p = MPFR_MANT(q), qp;
-  mpfr_limb_ptr up = MPFR_MANT(u);
-  mpfr_limb_ptr vp = MPFR_MANT(v);
+  mpfr_limb_ptr q0p, qp;
+  mpfr_limb_ptr up, vp;
   mpfr_limb_ptr ap;
   mpfr_limb_ptr bp;
   mp_limb_t qh;
-  mp_limb_t sticky_u = MPFR_LIMB_ZERO;
+  mp_limb_t sticky_u, sticky_v;
   mp_limb_t low_u;
-  mp_limb_t sticky_v = MPFR_LIMB_ZERO;
   mp_limb_t sticky;
   mp_limb_t sticky3;
-  mp_limb_t round_bit = MPFR_LIMB_ZERO;
+  mp_limb_t round_bit;
   mpfr_exp_t qexp;
   int sign_quotient;
   int extra_bit;
@@ -340,6 +544,20 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
           MPFR_RET (0);
         }
     }
+
+  if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && MPFR_GET_PREC(u) <= GMP_NUMB_BITS
+      && MPFR_GET_PREC(v) <= GMP_NUMB_BITS)
+    return mpfr_divsp1 (q, u, v, rnd_mode);
+
+  q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
+  usize = MPFR_LIMB_SIZE(u);
+  vsize = MPFR_LIMB_SIZE(v);
+  q0p = MPFR_MANT(q);
+  up = MPFR_MANT(u);
+  vp = MPFR_MANT(v);
+  sticky_u = MPFR_LIMB_ZERO;
+  sticky_v = MPFR_LIMB_ZERO;
+  round_bit = MPFR_LIMB_ZERO;
 
   /**************************************************************************
    *                                                                        *

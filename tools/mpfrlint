@@ -140,11 +140,14 @@ err-if-output -t "GMP_LIMB_BITS" grep GMP_LIMB_BITS $srctests
 
 grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 
-# Note: exceptions __gmpn_rootrem and __gmpn_sbpi1_divappr_q
-# are normally used only if WANT_GMP_INTERNALS is defined.
+# Note: GMP internals should not be used. There are some exceptions,
+# normally used only if WANT_GMP_INTERNALS is defined (this should be
+# checked manually).
 grep '__gmp[nz]_' $srctests | \
   grep -v __gmpn_rootrem | \
   grep -v __gmpn_sbpi1_divappr_q | \
+  grep -v __gmpn_invert_limb | \
+  grep -v __gmpn_rsblsh_n | \
   err-if-output "GMP internals" cat
 
 err-if-output -t "mp_ptr and mp_srcptr" grep -E 'mp_(src)?ptr' $srctests

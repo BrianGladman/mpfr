@@ -271,11 +271,16 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       (void *, 
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q
-  __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q (mp_limb_t*,
+__MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q (mp_limb_t*,
                 mp_limb_t*, mp_size_t, mp_limb_t*, mp_size_t, mp_limb_t);
 #endif
 #endif
 
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
+#ifndef __gmpn_invert_limb
+__MPFR_DECLSPEC mp_limb_t __gmpn_invert_limb (mp_limb_t);
+#endif
+#endif
 
 /* Temp memory allocate */
 struct tmp_marker
