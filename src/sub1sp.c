@@ -340,7 +340,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Check mantissa since exponents are equal */
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
-      while (k>=0 && MPFR_UNLIKELY(bp[k] == cp[k]))
+      while (k >= 0 && MPFR_UNLIKELY(bp[k] == cp[k]))
         k--;
       if (k < 0)
         /* b == c ! */
@@ -357,7 +357,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         goto BGreater;
       else
         {
-          MPFR_ASSERTD(bp[k]<cp[k]);
+          MPFR_ASSERTD(bp[k] < cp[k]);
           goto CGreater;
         }
     }
@@ -444,8 +444,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
               bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
               /* Last limb should be OK */
-              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((unsigned int) (-p)
-                                                    % GMP_NUMB_BITS)));
+              MPFR_ASSERTD(!(ap[len] & MPFR_LIMB_MASK((unsigned int) (-p)
+                                                      % GMP_NUMB_BITS)));
             }
           /* Check expo underflow */
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
@@ -555,10 +555,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* If k==-1 => We don't lose any bit
                  AND the result is 100000000000 0000000000 00000000000 */
               mp_limb_t carry;
-              do {
-                carry = cp[k] << (GMP_NUMB_BITS - 1);
-                k--;
-              } while (k >= 0 && bp[k] == (carry = cp[k] / 2 + carry));
+              do
+                {
+                  carry = cp[k] << (GMP_NUMB_BITS - 1);
+                  k--;
+                }
+              while (k >= 0 && bp[k] == (carry = cp[k] / 2 + carry));
               if (MPFR_UNLIKELY(k < 0))
                 {
                   ap = MPFR_MANT (a);
@@ -620,10 +622,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
                 {
                   mp_size_t k = n-1;
-                  do {
+                  do
                     k--;
-                  } while (k>=0 && cp[k]==0);
-                  bcp1 = (k>=0);
+                  while (k >= 0 && cp[k] == 0);
+                  bcp1 = (k >= 0);
                 }
               else
                 bcp1 = 1;
@@ -641,10 +643,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           else if (rnd_mode == MPFR_RNDN)
             {
-              if (MPFR_UNLIKELY( bcp && bcp1 == 0 ))
+              if (MPFR_UNLIKELY (bcp != 0 && bcp1 == 0))
                 /* Cp=-1 and C'p+1=0: Even rule Apply! */
                 /* Check Ap-1 = Bp-1 */
-                if ((bp[0] & (MPFR_LIMB_ONE<<sh)) == 0)
+                if ((bp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                   {
                     MPN_COPY(ap, bp, n);
                     goto truncate;
@@ -677,10 +679,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
                 {
                   mp_size_t k = n-1;
-                  do {
+                  do
                     k--;
-                  } while (k>=0 && cp[k]==0);
-                  bbcp1 = (k>=0);
+                  while (k >= 0 && cp[k] == 0);
+                  bbcp1 = (k >= 0);
                 }
               else
                 bbcp1 = 1;
@@ -713,7 +715,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY(dm == 0))
         {
           /* dm = 0 and m > 0: Just copy */
-          MPFR_ASSERTD(m!=0);
+          MPFR_ASSERTD(m != 0);
           MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
           MPN_ZERO(cp+n-m, m);
         }
@@ -765,9 +767,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                     {
                       /*kx += (sx==0);*/
                       /*If sx==0, tp[kx] hasn't been checked*/
-                      do {
+                      do
                         kx--;
-                      } while (kx>=0 && tp[kx]==0);
+                      while (kx >= 0 && tp[kx] == 0);
                       bcp1 = (kx >= 0);
                     }
                 }
@@ -789,17 +791,17 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             {
               /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
-              do {
+              do
                 kx--;
-              } while (kx>=0 && tp[kx]==0);
-              bcp1 = (kx>=0);
+              while (kx >= 0 && tp[kx] == 0);
+              bcp1 = (kx >= 0);
             }
         }
       DEBUG( printf("sh=%lu Cp=%d C'p+1=%d\n", sh, bcp!=0, bcp1!=0) );
 
       /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
       bp = MPFR_MANT(b);
-      if (MPFR_UNLIKELY((bp[n-1]-cp[n-1]) <= MPFR_LIMB_HIGHBIT))
+      if (MPFR_UNLIKELY (bp[n-1] - cp[n-1] <= MPFR_LIMB_HIGHBIT))
         {
           /* We can lose a bit so we precompute Cp+1 and C'p+2 */
           /* Test for trivial case: since C'p+1=0, Cp+1=0 and C'p+2 =0 */
@@ -815,8 +817,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               mp_limb_t *tp = MPFR_MANT(c);
               /* Start from bit x=(p+1)-d in mantissa C */
               mpfr_prec_t x  = p+1-d;
-              mp_size_t kx = n-1 - (x/GMP_NUMB_BITS);
-              mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
+              mp_size_t kx = n-1 - (x / GMP_NUMB_BITS);
+              mpfr_prec_t sx = GMP_NUMB_BITS-1 - (x % GMP_NUMB_BITS);
+
               MPFR_ASSERTD(p > d);
               DEBUG (printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
                              (unsigned long) x, (long) kx,
@@ -824,15 +827,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               bbcp = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
               /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
               /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
-              if (MPFR_LIKELY(bbcp==0 || (tp[kx]&MPFR_LIMB_MASK(sx))))
+              if (MPFR_LIKELY (bbcp == 0 || (tp[kx] & MPFR_LIMB_MASK(sx))))
                 bbcp1 = 1;
               else
                 {
                   /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
-                  do {
+                  do
                     kx--;
-                  } while (kx>=0 && tp[kx]==0);
-                  bbcp1 = (kx>=0);
+                  while (kx >= 0 && tp[kx] == 0);
+                  bbcp1 = (kx >= 0);
                   DEBUG (printf ("(Pre) Scan done for %ld\n", (long) kx));
                 }
             } /*End of Bcp1 != 0*/
@@ -855,7 +858,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Ap >= 010000xxx001 */
           mpn_lshift(ap, ap, n, 1);
           /* Ap >= 100000xxx010 */
-          if (MPFR_UNLIKELY(bcp!=0)) /* Check if Cp = -1 */
+          if (MPFR_UNLIKELY(bcp != 0)) /* Check if Cp = -1 */
             /* Since Cp == -1, we have to subtract one more */
             {
               mpn_sub_1(ap, ap, n, MPFR_LIMB_ONE<<sh);
@@ -879,9 +882,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         goto truncate;
       else if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
-          if (MPFR_LIKELY(bcp==0))
+          if (MPFR_LIKELY(bcp == 0))
             goto truncate;
-          else if ((bcp1) || ((ap[0] & (MPFR_LIMB_ONE<<sh)) != 0))
+          else if (bcp1 != 0 || (ap[0] & (MPFR_LIMB_ONE << sh)) != 0)
             goto sub_one_ulp;
           else
             goto truncate;
@@ -889,7 +892,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* Update rounding mode */
       MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-      if (rnd_mode == MPFR_RNDZ && (MPFR_LIKELY(bcp || bcp1)))
+      if (rnd_mode == MPFR_RNDZ && MPFR_LIKELY (bcp != 0 || bcp1 != 0))
         goto sub_one_ulp;
       goto truncate;
     }
@@ -919,11 +922,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit! */
       MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
-      if ( (rnd_mode == MPFR_RNDZ && bcp == 0)
-           || (rnd_mode == MPFR_RNDN && bbcp == 0)
-           || (bcp && bcp1 == 0) ) /*Exact result*/
+      if ((rnd_mode == MPFR_RNDZ && bcp == 0) ||
+          (rnd_mode == MPFR_RNDN && bbcp == 0) ||
+          (bcp != 0 && bcp1 == 0)) /* Exact result */
         {
-          ap[0] |= MPFR_LIMB_ONE<<sh;
+          ap[0] |= MPFR_LIMB_ONE << sh;
           if (rnd_mode == MPFR_RNDN)
             inexact = 1;
           DEBUG( printf("(SubOneUlp) Last bit set\n") );
@@ -931,7 +934,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Result could be exact if C'p+1 = 0 and rnd == Zero
          since we have had one more bit to the result */
       /* Fixme: rnd_mode == MPFR_RNDZ needed ? */
-      if (bcp1 == 0 && rnd_mode == MPFR_RNDZ)
+      if (rnd_mode == MPFR_RNDZ && bcp1 == 0)
         {
           DEBUG( printf("(SubOneUlp) Exact result\n") );
           inexact = 0;
@@ -969,9 +972,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
           MPFR_ASSERTD(rnd_mode != MPFR_RNDN || bcp != 0 ||
                        bbcp == 0 || bbcp1 != MPFR_LIMB_MAX);
-          if (((rnd_mode != MPFR_RNDZ) && bcp)
-              ||
-              ((rnd_mode == MPFR_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
+          if ((rnd_mode != MPFR_RNDZ && bcp != 0) ||
+              (rnd_mode == MPFR_RNDN && bcp == 0 && bbcp != 0 && bbcp1 != 0))
             {
               DEBUG( printf("(Truncate) Do sub\n") );
               mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
