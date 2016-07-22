@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* If the precisions are the same, we want to test both mpfr_add1sp
    and mpfr_add1. */
 
+/* FIXME: modify check() to test the ternary value and the flags. */
+
 static int usesp;
 
 static int

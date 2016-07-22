@@ -144,7 +144,7 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  *
  */
 
-MPFR_HOT_FUNCTION_ATTR int
+static int
 mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
@@ -294,6 +294,9 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       if (ap[0] == 0)
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
+          /* Note: bx+1 cannot exceed __gmpfr_emax, since |a| <= |b|, thus
+             bx+1 is at most equal to the original exponent of b. */
+             
           MPFR_SET_EXP (a, bx + 1);
         }
       MPFR_RET(MPFR_SIGN(a));
@@ -558,9 +561,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               do
                 {
                   carry = cp[k] << (GMP_NUMB_BITS - 1);
-                  k--;
+                  if (--k < 0)
+                    break;
+                  carry += cp[k] >> 1;
                 }
-              while (k >= 0 && bp[k] == (carry = cp[k] / 2 + carry));
+              while (bp[k] == carry);
               if (MPFR_UNLIKELY(k < 0))
                 {
                   ap = MPFR_MANT (a);
@@ -569,7 +574,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                       /* If carry then necessarily the precision is an exact
                          multiple of GMP_NUMB_BITS, and we lose one bit,
                          thus the (exact) result is a power of 2 minus 1. */
-                      memset (ap, ~0, n * MPFR_BYTES_PER_MP_LIMB);
+                      memset (ap, -1, n * MPFR_BYTES_PER_MP_LIMB);
                       MPFR_SET_EXP (a, bx - 1);
                       /* No underflow is possible since cx = bx-1 is a valid
                          exponent. */
