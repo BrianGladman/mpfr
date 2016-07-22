@@ -409,7 +409,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       return mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
-  MPFR_SET_SAME_SIGN(a, b);
+  MPFR_SET_SAME_SIGN(a,b);
 
   MPFR_TMP_FREE(marker);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
