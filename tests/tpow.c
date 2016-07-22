@@ -1470,7 +1470,7 @@ bug20080721 (void)
   MPFR_ASSERTN (inex == 0);
   mpfr_set_str_binary (t[0], "-0.10101101e2");
   mpfr_set_str_binary (t[1], "-0.10101110e2");
-  RND_LOOP (rnd)
+  RND_LOOP_NO_RNDF (rnd)
     {
       int i, inex0;
 
@@ -1478,9 +1478,6 @@ bug20080721 (void)
       inex0 = i ? -1 : 1;
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
-
-      if (rnd == MPFR_RNDF)
-        continue;
 
       if (__gmpfr_flags != MPFR_FLAGS_INEXACT || ! SAME_SIGN (inex, inex0)
           || MPFR_IS_NAN (z) || mpfr_cmp (z, t[i]) != 0)

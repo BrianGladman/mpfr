@@ -443,16 +443,14 @@ check_inexact (void)
                 : MPFR_EXP(u) - MPFR_EXP(x);
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
               mpfr_set_prec (z, pz);
-              /* for RNDF, inexact makes no sense */
-              do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+              rnd = RND_RAND_NO_RNDF ();
               if (test_sub (z, x, u, rnd))
                 {
                   printf ("z <- x - u should be exact\n");
                   exit (1);
                 }
                 {
-                  /* for RNDF, inexact makes no sense */
-                  do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+                  rnd = RND_RAND_NO_RNDF ();
                   inexact = test_sub (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
@@ -685,13 +683,10 @@ check_max_almosteven (void)
           for (j = 1; j >= 0; j--)
             {
               mpfr_set_exp (b, __gmpfr_emax - j);
-              RND_LOOP (rnd)
+              RND_LOOP_NO_RNDF (rnd)
                 {
                   mpfr_flags_t flags1, flags2;
                   int inex1, inex2;
-
-                  if (rnd == MPFR_RNDF)
-                    continue;
 
                   /* Expected result. */
                   flags1 = MPFR_FLAGS_INEXACT;

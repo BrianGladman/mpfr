@@ -244,7 +244,7 @@ main (int argc, char *argv[])
           int nt;
           nt = randlimb () & INT_MAX;
           mpfr_urandomb (x, RANDS);
-          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+          rnd = RND_RAND_NO_RNDF ();
           check1 (x, prec, nt, rnd);
         }
     }

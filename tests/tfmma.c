@@ -263,7 +263,7 @@ overflow_tests (void)
       set_emax (emax);
       exp_a = emax/2 + 32;
 
-      do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+      rnd = RND_RAND_NO_RNDF ();
       prec_a = 64 + randlimb () % 100;
       prec_z = MPFR_PREC_MIN + randlimb () % 160;
 

@@ -67,13 +67,8 @@ test_round_near_x (void)
            mpfr_neg (x, x, MPFR_RNDN), p++, neg++)
         for (err = 2; err <= 6; err++)
           for (dir = 0; dir <= 1; dir++)
-            RND_LOOP(r)
+            RND_LOOP_NO_RNDF (r)
               {
-                /* the test below takes into account the ternary value,
-                   which has no sense for RNDF */
-                if (r == MPFR_RNDF)
-                  continue;
-
                 inex = mpfr_round_near_x (y, x, err, dir, (mpfr_rnd_t) r);
 
                 if (inex == 0 && err < 6)
@@ -85,7 +80,6 @@ test_round_near_x (void)
 
                 inex2 = ((dir ^ neg) ? mpfr_add : mpfr_sub)
                   (z, x, eps, (mpfr_rnd_t) r);
-                /* MPFR_RNDF has no specified ternary value */
                 if (inex * inex2 <= 0)
                   printf ("Bad return value (%d instead of %d) for:\n",
                           inex, inex2);

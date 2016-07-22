@@ -74,12 +74,9 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (inex == 0 && mpfr_cmp_si_2exp (x, -1, -1) == 0 && flags == 0);
 
   for (i = -2; i <= 2; i += 2)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         int ex_inex;
-
-        if (rnd == MPFR_RNDF)
-          continue;
 
         set_emin (i);
         set_emax (i);
@@ -153,11 +150,8 @@ main (int argc, char *argv[])
       mpfr_set_prec (y, yprec);
 
       for (n = 0; n < 50; n++)
-        RND_LOOP (rnd)
+        RND_LOOP_NO_RNDF (rnd)
           {
-            if (rnd == MPFR_RNDF)
-              continue;
-
             mpfr_zeta_ui (y, n, MPFR_RNDN);
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))

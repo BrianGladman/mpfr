@@ -74,7 +74,7 @@ test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
               else  /* unsigned */
                 u = n == 2 ? 0 : -1;
             }
-          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+          rnd = RND_RAND_NO_RNDF ();
           mpfr_set_prec (y, yprec);
           compare = TEST_FUNCTION (y, x, u, rnd);
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))

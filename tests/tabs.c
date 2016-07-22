@@ -51,10 +51,8 @@ check_inexact (void)
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          RND_LOOP (rnd)
+          RND_LOOP_NO_RNDF (rnd)
             {
-              if (rnd == MPFR_RNDF)
-                continue; /* the test below makes no sense for RNDF */
               inexact = mpfr_abs (y, x, (mpfr_rnd_t) rnd);
               cmp = mpfr_cmp (y, absx);
               if (((inexact == 0) && (cmp != 0)) ||

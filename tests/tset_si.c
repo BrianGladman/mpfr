@@ -220,13 +220,10 @@ static void get_tests (void)
           {
             ctr++;
             /* x = t?[i] + j/4 */
-            RND_LOOP (r)
+            RND_LOOP_NO_RNDF (r)
               {
                 mpfr_flags_t ex_flags, flags;
                 int k, overflow;
-
-                if (r == MPFR_RNDF)
-                  continue;
 
                 k = (j + 8 +
                      (MPFR_IS_LIKE_RNDD (r, MPFR_SIGN (x)) ? 0 :

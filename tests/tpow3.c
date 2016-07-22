@@ -61,7 +61,7 @@ main (int argc, char *argv[])
           mpfr_urandomb (s, RANDS);
           if (randlimb () % 2)
             mpfr_neg (s, s, MPFR_RNDN);
-          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+          rnd = RND_RAND_NO_RNDF ();
           mpfr_set_prec (y, yprec);
           compare = mpfr_pow (y, x, s, rnd);
           err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;

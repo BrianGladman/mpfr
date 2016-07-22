@@ -588,7 +588,7 @@ consistency (void)
       else
         {
           tests_default_random (x, 256, -5, 50, 0);
-          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+          rnd = RND_RAND_NO_RNDF ();
           flags_before = (randlimb () & 1) ?
             (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
             (unsigned int) 0;

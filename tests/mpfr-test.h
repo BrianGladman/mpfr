@@ -51,11 +51,18 @@ extern "C" {
 /* Generates a random rounding mode */
 #define RND_RAND() ((mpfr_rnd_t) (randlimb() % MPFR_RND_MAX))
 
+/* Ditto, excluding RNDF, assumed to be the last rounding mode */
+#define RND_RAND_NO_RNDF() ((mpfr_rnd_t) (randlimb() % MPFR_RNDF))
+
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
 
 /* Loop for all rounding modes */
 #define RND_LOOP(_r) for((_r) = 0 ; (_r) < MPFR_RND_MAX ; (_r)++)
+
+/* Loop for all rounding modes except RNDF (assumed to be the last one),
+   which must be excluded from tests that rely on deterministic results. */
+#define RND_LOOP_NO_RNDF(_r) for((_r) = 0 ; (_r) < MPFR_RNDF ; (_r)++)
 
 /* Test whether two floating-point data have the same value,
    seen as an element of the set of the floating-point data

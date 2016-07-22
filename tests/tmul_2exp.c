@@ -69,12 +69,9 @@ underflow (mpfr_exp_t e)
         for (prec = 6; prec >= 3; prec -= 3)
           {
             mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
-            RND_LOOP (rnd)
+            RND_LOOP_NO_RNDF (rnd)
               for (k = 1; k <= 4; k++)
                 {
-                  if (rnd == MPFR_RNDF)
-                    continue; /* the test below makes no sense for RNDF */
-
                   /* The following one is assumed to be correct. */
                   inex1 = mpfr_mul_2si (y, x, e, MPFR_RNDN);
                   MPFR_ASSERTN (inex1 == 0);
@@ -268,13 +265,10 @@ overflow0 (mpfr_exp_t emax)
 
   for (neg = 0; neg <= 1; neg++)
     {
-      RND_LOOP (r)
+      RND_LOOP_NO_RNDF (r)
         {
           int inex1, inex2;
           mpfr_flags_t flags1, flags2;
-
-          if (r == MPFR_RNDF)
-            continue; /* the test below makes no sense for RNDF */
 
           /* Even if there isn't an overflow (rounding ~ toward zero),
              the result is the same as the one of an overflow. */

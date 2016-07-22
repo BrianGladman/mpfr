@@ -1157,12 +1157,9 @@ bug20120829 (void)
       s[4+i] = 0;
       inex1 = mpfr_mul_ui (e, e, 10, MPFR_RNDN);
       MPFR_ASSERTN (inex1 == 0);
-      RND_LOOP(r)
+      RND_LOOP_NO_RNDF (r)
         {
           mpfr_rnd_t rnd = (mpfr_rnd_t) r;
-
-          if (r == MPFR_RNDF)
-            continue;
 
           inex1 = mpfr_exp10 (x1, e, rnd);
           inex1 = SIGN (inex1);

@@ -519,9 +519,7 @@ check_inexact (void)
                  abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
               mpfr_set_prec (z, pz);
-              do
-                rnd = RND_RAND ();
-              while (rnd == MPFR_RNDF);
+              rnd = RND_RAND_NO_RNDF ();
               if (test_add (z, x, u, rnd))
                 {
                   printf ("z <- x + u should be exact\n");
@@ -531,10 +529,7 @@ check_inexact (void)
                   exit (1);
                 }
                 {
-                  do
-                    rnd = RND_RAND ();
-                  while (rnd == MPFR_RNDF);
-                  /* the inexact return value has no sense with RNDF */
+                  rnd = RND_RAND_NO_RNDF ();
                   inexact = test_add (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
@@ -635,7 +630,7 @@ check_overflow (void)
   mpfr_init (b);
   mpfr_init (c);
 
-  RND_LOOP(r)
+  RND_LOOP_NO_RNDF (r)
     for (prec_a = 2; prec_a <= 128; prec_a += 2)
       for (prec_b = 2; prec_b <= 128; prec_b += 2)
         for (prec_c = 2; prec_c <= 128; prec_c += 2)
@@ -751,10 +746,7 @@ check_1111 (void)
       test_add (c, c, one, MPFR_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, MPFR_RNDN);
-      /* the inex return value has no sense with RNDF */
-      do
-        rnd_mode = RND_RAND ();
-      while (rnd_mode == MPFR_RNDF);
+      rnd_mode = RND_RAND_NO_RNDF ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
       inex_s = test_add (s, b, c, MPFR_RNDN); /* exact */

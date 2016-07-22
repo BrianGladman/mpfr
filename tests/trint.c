@@ -285,10 +285,8 @@ basic_tests (void)
 
             mpfr_set_si_2exp (x, s * i, -2, MPFR_RNDN);
             e = mpfr_get_exp (x);
-            RND_LOOP(r)
+            RND_LOOP_NO_RNDF (r)
               {
-                if (r == MPFR_RNDF)
-                  continue;
                 BASIC_TEST (trunc, s * (i/4));
                 BASIC_TEST (floor, s > 0 ? i/4 : - ((i+3)/4));
                 BASIC_TEST (ceil, s > 0 ? (i+3)/4 : - (i/4));

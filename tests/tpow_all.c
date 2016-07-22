@@ -368,13 +368,10 @@ tst (void)
 
   for (i = 0; i < sv; i++)
     for (j = 0; j < sv; j++)
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
         {
           int exact, inex;
           unsigned int flags;
-
-          if (rnd == MPFR_RNDF)
-            continue;
 
           if (my_setstr (x, val[i]) || my_setstr (y, val[j]))
             {
@@ -511,12 +508,9 @@ underflow_up1 (void)
 
       sprintf (sy, "emin - %d/4", i);
 
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
         {
           int zero;
-
-          if (rnd == MPFR_RNDF)
-            continue;
 
           zero = (i > 4 && (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)) ||
             (i >= 8 && rnd == MPFR_RNDN);
@@ -582,14 +576,11 @@ underflow_up2 (void)
   /* 0 < eps < 1 / (2n), thus (1 - eps)^n > 1/2,
      and 1/2 (1/2)^n < (1/2 - eps/2)^n < (1/2)^n. */
   mpfr_inits2 (64, z, z0, (mpfr_ptr) 0);
-  RND_LOOP (rnd)
+  RND_LOOP_NO_RNDF (rnd)
     {
       unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
       int expected_inex;
       char sy[256];
-
-      if (rnd == MPFR_RNDF)
-        continue;
 
       mpfr_set_ui (z0, 0, MPFR_RNDN);
       expected_inex = rnd == MPFR_RNDN || rnd == MPFR_RNDU || rnd == MPFR_RNDA ?
@@ -623,13 +614,10 @@ underflow_up3 (void)
   inex = mpfr_set_exp_t (y, mpfr_get_emin () - 2, MPFR_RNDN);
   MPFR_ASSERTN (inex == 0);
   for (i = -1; i <= 1; i++)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
         int expected_inex;
-
-        if (rnd == MPFR_RNDF)
-          continue;
 
         mpfr_set_ui (x, 2, MPFR_RNDN);
         if (i < 0)
@@ -702,13 +690,10 @@ overflow_inv (void)
                * t = 0: always overflow
                * t > 0: overflow for MPFR_RNDN and MPFR_RNDU.
                */
-              RND_LOOP (rnd)
+              RND_LOOP_NO_RNDF (rnd)
                 {
                   int inf, overflow;
                   mpfr_rnd_t rnd2;
-
-                  if (rnd == MPFR_RNDF)
-                    continue;
 
                   if (rnd == MPFR_RNDA)
                     rnd2 = s < 0 ? MPFR_RNDD : MPFR_RNDU;

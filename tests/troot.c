@@ -380,7 +380,7 @@ cmp_pow (void)
           int inex1, inex2;
 
           tests_default_random (x, 0, __gmpfr_emin, __gmpfr_emax, 1);
-          do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+          rnd = RND_RAND_NO_RNDF ();
           mpfr_set_ui_2exp (y1, 1, -h, MPFR_RNDN);
           mpfr_clear_flags ();
           inex1 = mpfr_pow (y1, x, y1, rnd);

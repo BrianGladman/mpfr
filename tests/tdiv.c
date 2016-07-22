@@ -414,11 +414,8 @@ check_hard (void)
               mpfr_nextbelow (u);
               for (i = 0; i <= 2; i++)
                 {
-                  RND_LOOP(rnd)
+                  RND_LOOP_NO_RNDF (rnd)
                     {
-                      if (rnd == MPFR_RNDF)
-                        continue; /* inexact is undefined */
-
                       inex = test_div (q, u, v, (mpfr_rnd_t) rnd);
                       inex2 = get_inexact (q, u, v);
                       if (inex_cmp (inex, inex2))
@@ -684,7 +681,7 @@ check_inexact (void)
               mpfr_set_prec (z, py + pu);
                 {
                   /* inexact is undefined for RNDF */
-                  do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+                  rnd = RND_RAND_NO_RNDF ();
                   inexact = test_div (y, x, u, rnd);
                   if (mpfr_mul (z, y, u, rnd))
                     {
@@ -984,7 +981,7 @@ consistency (void)
       int inex1, inex2;
 
       /* inex is undefined for RNDF */
-      do rnd = RND_RAND (); while (rnd == MPFR_RNDF);
+      rnd = RND_RAND_NO_RNDF ();
       px = (randlimb () % 256) + 2;
       py = (randlimb () % 128) + 2;
       pz = (randlimb () % 256) + 2;
