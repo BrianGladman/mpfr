@@ -104,9 +104,10 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
               && (k > 0 || mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
               && (!MPFR_IS_ZERO (x) || inex != -1)))
         {
-          printf ("Error: mpfr_urandom() do not handle correctly a restricted"
-                  " exponent range.\nrounding mode: %s\nternary value: %d\n"
-                  "random value: ", mpfr_print_rnd_mode (rnd), inex);
+          printf ("Error: mpfr_urandom() does not handle correctly"
+                  " a restricted exponent range.\nemin = %d\n"
+                  "rounding mode: %s\nternary value: %d\nrandom value: ",
+                  k+1, mpfr_print_rnd_mode (rnd), inex);
           mpfr_dump (x);
           exit (1);
         }
@@ -237,7 +238,7 @@ main (int argc, char *argv[])
 
       if (argc == 1)  /* check also small precision */
         {
-          test_urandom (nbtests, 2, (mpfr_rnd_t) rnd, -1, 0);
+          test_urandom (nbtests, MPFR_PREC_MIN, (mpfr_rnd_t) rnd, -1, 0);
         }
     }
 

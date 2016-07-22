@@ -22,8 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* compute sign(b) * (|b| + |c|), assuming b and c have same sign,
-   and are not NaN, Inf, nor zero. Assumes EXP(b) >= EXP(c).
+/* compute sign(b) * (|b| + |c|), assuming that b and c
+   are not NaN, Inf, nor zero. Assumes EXP(b) >= EXP(c).
 */
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)

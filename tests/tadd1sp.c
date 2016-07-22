@@ -106,7 +106,7 @@ main (void)
 static void
 check_random (mpfr_prec_t p)
 {
-  mpfr_t a1, a2, b, c;
+  mpfr_t a1, a2, b, bs, c, cs;
   int r;
   int i, inexact1, inexact2;
 
@@ -114,8 +114,8 @@ check_random (mpfr_prec_t p)
 
   for (i = 0 ; i < 500 ; i++)
     {
-      mpfr_urandomb (b, RANDS);
-      mpfr_urandomb (c, RANDS);
+      mpfr_urandom (b, RANDS, MPFR_RNDA);
+      mpfr_urandom (c, RANDS, MPFR_RNDA);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
         {
           if (randlimb () & 1)
@@ -123,7 +123,17 @@ check_random (mpfr_prec_t p)
           if (randlimb () & 1)
             mpfr_neg (c, c, MPFR_RNDN);
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-            mpfr_swap (b, c);
+            {
+              /* Exchange b and c, except the signs (actually, the sign
+                 of cs doesn't matter). */
+              MPFR_ALIAS (bs, c, MPFR_SIGN (b), MPFR_EXP (c));
+              MPFR_ALIAS (cs, b, MPFR_SIGN (c), MPFR_EXP (b));
+            }
+          else
+            {
+              MPFR_ALIAS (bs, b, MPFR_SIGN (b), MPFR_EXP (b));
+              MPFR_ALIAS (cs, c, MPFR_SIGN (c), MPFR_EXP (c));
+            }
           for (r = 0 ; r < MPFR_RND_MAX ; r++)
             {
               mpfr_flags_t flags1, flags2;
@@ -134,7 +144,7 @@ check_random (mpfr_prec_t p)
                 continue;
 
               mpfr_clear_flags ();
-              inexact1 = mpfr_add1 (a1, b, c, (mpfr_rnd_t) r);
+              inexact1 = mpfr_add1 (a1, bs, cs, (mpfr_rnd_t) r);
               flags1 = __gmpfr_flags;
               mpfr_clear_flags ();
               inexact2 = mpfr_add1sp (a2, b, c, (mpfr_rnd_t) r);
@@ -154,7 +164,7 @@ check_random (mpfr_prec_t p)
 static void
 check_special (void)
 {
-  mpfr_t a1,a2,b,c;
+  mpfr_t a1, a2, b, c;
   int r;
   mpfr_prec_t p;
   int i = -1, inexact1, inexact2;
@@ -197,6 +207,15 @@ check_special (void)
       printf ("Regression reuse test failed!\n");
       exit (1);
     }
+
+  mpfr_set_prec (a1, 63);
+  mpfr_set_prec (b, 63);
+  mpfr_set_prec (c, 63);
+  mpfr_set_str_binary (b, "0.111111101010110111010100110101010110000101111011011011100011001E-3");
+  mpfr_set_str_binary (c, "0.101111111101110000001100001000011000011011010001010011111100111E-4");
+  mpfr_clear_inexflag ();
+  mpfr_add1sp (a1, b, c, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_inexflag_p ());
 
   mpfr_clears (a1, a2, b, c, (mpfr_ptr) 0);
 }
