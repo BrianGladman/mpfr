@@ -176,8 +176,12 @@ int main (int argc, const char *argv[])
 		  case 'F':
 		    options.rnd = MPFR_RNDF;
 		    break;
+		  case 'a':
+		  case 'A':
+		    options.rnd = MPFR_RNDA;
+		    break;
 		  default:
-		    cerr << "Unkown rounding mode." << endl;
+		    cerr << "Unknown rounding mode." << endl;
 		    exit(1);
 		    break;
 		  }
