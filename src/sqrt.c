@@ -90,6 +90,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
   mp_limb_t x0, a1, t;
 
+  /* FIXME: This is incorrect on 32-bit machines!!! */
   MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
 
   x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
