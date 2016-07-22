@@ -245,15 +245,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp = MPFR_TMP_LIMBS_ALLOC (n);
 
       /* Shift c in temporary allocated place */
+      if (n == 1)
+        cp[0] = MPFR_MANT(c)[0] >> d;
+      else
       {
         mpfr_uexp_t dm;
         mp_size_t m;
 
         dm = d % GMP_NUMB_BITS;
         m = d / GMP_NUMB_BITS;
-        if (n == 1)
-          cp[0] = MPFR_MANT(c)[0] >> dm;
-        else if (MPFR_UNLIKELY (dm == 0))
+        if (MPFR_UNLIKELY (dm == 0))
           {
             /* dm = 0 and m > 0: Just copy */
             MPFR_ASSERTD (m != 0);
@@ -287,11 +288,13 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           goto clean;
         }
 
-      /* Compute bcp=Cp and bcp1=C'p+1 */
+      /* Compute bcp=Cp and bcp1=C'p+1: bcp is the first neglected bit
+         (round bit), and bcp1 corresponds to the remaining bits (sticky bit).
+      */
       if (MPFR_LIKELY (sh > 0))
         {
           /* Try to compute them from C' rather than C */
-          bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1))) ;
+          bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1)));
           if (MPFR_LIKELY (cp[0] & MPFR_LIMB_MASK (sh - 1)))
             bcp1 = 1;
           else
