@@ -141,7 +141,8 @@ To make a release (for the MPFR team):
         the version of GMP and the compiler used)
 
      You can produce time graphs to check the thresholds are correct (and
-     compare to the corresponding mpf functions) with mbench. For example:
+     compare to the corresponding mpf functions) with mbench. For example
+     (-x1 corresponds to add, -x2 to sub, -x3 to mul, ...):
 
      $ cd mpfr/tools/mbench
      $ make mpfr-gfx GMP=... MPFR=...

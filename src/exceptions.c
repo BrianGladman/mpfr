@@ -375,7 +375,11 @@ mpfr_erangeflag_p (void)
 /* Note: In the rounding to the nearest mode, mpfr_underflow
    always rounds away from 0. In this rounding mode, you must call
    mpfr_underflow with rnd_mode = MPFR_RNDZ if the exact result
-   is <= 2^(emin-2) in absolute value. */
+   is <= 2^(emin-2) in absolute value.
+   We chose the default to round away from zero instead of toward zero
+   because rounding away from zero (MPFR_RNDA) wasn't supported at that
+   time (r1910), so that the caller had no way to change rnd_mode to
+   this mode. */
 
 MPFR_COLD_FUNCTION_ATTR int
 mpfr_underflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)

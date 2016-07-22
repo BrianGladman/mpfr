@@ -24,6 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 static void check_special (void);
 static void check_random (mpfr_prec_t p);
+static void check_underflow (mpfr_prec_t p);
+static void check_corner (mpfr_prec_t p);
 
 int
 main (void)
@@ -34,7 +36,11 @@ main (void)
 
   check_special ();
   for (p = MPFR_PREC_MIN ; p < 200 ; p++)
-    check_random (p);
+    {
+      check_underflow (p);
+      check_random (p);
+      check_corner (p);
+    }
 
   tests_end_mpfr ();
   return 0;
@@ -49,7 +55,7 @@ main (void)
       printf ("Z="); mpfr_dump (z);                                     \
       printf ("Real: "); mpfr_dump (x2);                                \
       printf ("Got : "); mpfr_dump (x);                                 \
-      exit(1);                                                          \
+      abort();                                                          \
     }                                                                   \
  while (0)
 
@@ -514,4 +520,109 @@ check_special (void)
     }
 
   mpfr_clears (x, y, z, x2, (mpfr_ptr) 0);
+}
+
+static void
+check_underflow (mpfr_prec_t p)
+{
+  mpfr_t x, y, z;
+  int inexact;
+
+  mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
+
+  if (p >= 2) /* we need p >= 2 so that 3 is exact */
+    {
+      mpfr_set_ui_2exp (y, 4, mpfr_get_emin () - 2, MPFR_RNDN);
+      mpfr_set_ui_2exp (z, 3, mpfr_get_emin () - 2, MPFR_RNDN);
+      inexact = mpfr_sub (x, y, z, MPFR_RNDN);
+      if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
+        {
+          printf ("4*2^(emin-2) - 3*2^(emin-2) with RNDN failed for p=%lu\n",
+                  p);
+          printf ("Expected inexact < 0 with x=0\n");
+          printf ("Got inexact=%d with x=", inexact);
+          mpfr_dump (x);
+          exit (1);
+        }
+    }
+
+  if (p >= 3) /* we need p >= 3 so that 5 is exact */
+    {
+      mpfr_set_ui_2exp (y, 5, mpfr_get_emin () - 2, MPFR_RNDN);
+      mpfr_set_ui_2exp (z, 4, mpfr_get_emin () - 2, MPFR_RNDN);
+      inexact = mpfr_sub (x, y, z, MPFR_RNDN);
+      if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
+        {
+          printf ("5*2^(emin-2) - 4*2^(emin-2) with RNDN failed for p=%lu\n",
+                  p);
+          printf ("Expected inexact < 0 with x=0\n");
+          printf ("Got inexact=%d with x=", inexact);
+          mpfr_dump (x);
+          exit (1);
+        }
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
+/* check corner cases of mpfr_sub1sp in case d = 1 and limb = MPFR_LIMB_HIGHBIT */
+static void
+check_corner (mpfr_prec_t p)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t e;
+  int inex, odd;
+
+  if (p < 4) /* ensures that the initial value of z is > 1 below */
+    return;
+
+  mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
+  mpfr_const_pi (y, MPFR_RNDN);
+  mpfr_set_ui (z, 2, MPFR_RNDN);
+  inex = mpfr_sub (z, y, z, MPFR_RNDN); /* z is near pi-2, thus y-z is near 2 */
+  MPFR_ASSERTN(inex == 0);
+  for (e = 0; e < p; e++)
+    {
+      /* add 2^(-e) to z */
+      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      inex = mpfr_add_ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+
+      /* compute x = y - z which should be exact, near 2-2^(-e) */
+      inex = mpfr_sub (x, y, z, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      MPFR_ASSERTN(mpfr_get_exp (x) == 1);
+      
+      /* restore initial z */
+      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+
+      /* subtract 2^(-e) to z */
+      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+      
+      /* ensure last significant bit of z is 0 so that y-z is exact */
+      odd = mpfr_min_prec (z) == p;
+      if (odd) /* add one ulp to z */
+        mpfr_nextabove (z);
+
+      /* compute x = y - z which should be exact, near 2+2^(-e) */
+      inex = mpfr_sub (x, y, z, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      MPFR_ASSERTN(mpfr_get_exp (x) == 2);
+      
+      /* restore initial z */
+      if (odd)
+        mpfr_nextbelow (z);
+      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      inex = mpfr_add_ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+    }
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }

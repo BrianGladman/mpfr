@@ -310,6 +310,8 @@ else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
 
+err-if-output "ck-clz_tab" tools/ck-clz_tab
+
 cd $oldpwd
 err-if-output "check_inits_clears" $0:h/check_inits_clears
 

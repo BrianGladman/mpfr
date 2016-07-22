@@ -881,7 +881,7 @@ typedef uintmax_t mpfr_ueexp_t;
 # define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
-#define MPFR_EXP_LESS_P(x,y) \
+#define MPFR_UBF_EXP_LESS_P(x,y) \
   (MPFR_UNLIKELY (MPFR_IS_UBF (x) || MPFR_IS_UBF (y)) ? \
    mpfr_ubf_exp_less_p (x, y) : MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
 
@@ -2057,6 +2057,8 @@ __MPFR_DECLSPEC int mpfr_add1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_sub1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_sub1sp1 (mpfr_ptr, mpfr_srcptr,
+                                  mpfr_srcptr, mpfr_rnd_t, mpfr_prec_t);
 __MPFR_DECLSPEC int mpfr_can_round_raw (const mp_limb_t *,
              mp_size_t, int, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t);
 
