@@ -477,9 +477,11 @@ check_inexact (void)
   mpfr_set_prec (u, 33);
   mpfr_set_str_binary (u, "0.101110100101101100000000111100000E-1");
   mpfr_set_prec (y, 31);
-  if ((inexact = test_add (y, x, u, MPFR_RNDN)))
+  inexact = test_add (y, x, u, MPFR_RNDN);
+
+  if (inexact != 0)
     {
-      printf ("Wrong inexact flag (2): expected 0, got %d\n", inexact);
+      printf ("Wrong ternary value (2): expected 0, got %d\n", inexact);
       exit (1);
     }
 
@@ -488,64 +490,70 @@ check_inexact (void)
   mpfr_set_prec (u, 33);
   mpfr_set_str_binary (u, "0.101110100101101100000000111100000E-1");
   mpfr_set_prec (y, 28);
-  if ((inexact = test_add (y, x, u, MPFR_RNDN)))
+  inexact = test_add (y, x, u, MPFR_RNDN);
+
+  if (inexact != 0)
     {
-      printf ("Wrong inexact flag (1): expected 0, got %d\n", inexact);
+      printf ("Wrong ternary value (1): expected 0, got %d\n", inexact);
       exit (1);
     }
 
-  for (px=2; px<MAX_PREC; px++)
+  for (px = 2; px < MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
+
       do
         {
           mpfr_urandomb (x, RANDS);
         }
       while (mpfr_cmp_ui (x, 0) == 0);
-      for (pu=2; pu<MAX_PREC; pu++)
+
+      for (pu = 2; pu < MAX_PREC; pu++)
         {
           mpfr_set_prec (u, pu);
+
           do
             {
               mpfr_urandomb (u, RANDS);
             }
           while (mpfr_cmp_ui (u, 0) == 0);
-          {
-              py = MPFR_PREC_MIN + (randlimb () % (MAX_PREC - 1));
-              mpfr_set_prec (y, py);
-              pz =  (mpfr_cmpabs (x, u) >= 0) ? MPFR_EXP(x) - MPFR_EXP(u)
-                : MPFR_EXP(u) - MPFR_EXP(x);
-              /* x + u is exactly representable with precision
-                 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
-              pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
-              mpfr_set_prec (z, pz);
-              rnd = RND_RAND_NO_RNDF ();
-              if (test_add (z, x, u, rnd))
-                {
-                  printf ("z <- x + u should be exact\n");
-                  printf ("x="); mpfr_dump (x);
-                  printf ("u="); mpfr_dump (u);
-                  printf ("z="); mpfr_dump (z);
-                  exit (1);
-                }
-                {
-                  rnd = RND_RAND_NO_RNDF ();
-                  inexact = test_add (y, x, u, rnd);
-                  cmp = mpfr_cmp (y, z);
-                  if (((inexact == 0) && (cmp != 0)) ||
-                      ((inexact > 0) && (cmp <= 0)) ||
-                      ((inexact < 0) && (cmp >= 0)))
-                    {
-                      printf ("Wrong inexact flag for rnd=%s\n",
-                              mpfr_print_rnd_mode(rnd));
-                      printf ("expected %d, got %d\n", cmp, inexact);
-                      printf ("x="); mpfr_dump (x);
-                      printf ("u="); mpfr_dump (u);
-                      printf ("y=  "); mpfr_dump (y);
-                      printf ("x+u="); mpfr_dump (z);
-                      exit (1);
-                    }
-                }
+
+          py = MPFR_PREC_MIN + (randlimb () % (MAX_PREC - 1));
+          mpfr_set_prec (y, py);
+          pz = mpfr_cmpabs (x, u) >= 0 ?
+            MPFR_EXP(x) - MPFR_EXP(u) :
+            MPFR_EXP(u) - MPFR_EXP(x);
+          /* x + u is exactly representable with precision
+             abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
+          pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
+          mpfr_set_prec (z, pz);
+
+          rnd = RND_RAND_NO_RNDF ();
+          inexact = test_add (z, x, u, rnd);
+          if (inexact != 0)
+            {
+              printf ("z <- x + u should be exact\n");
+              printf ("x="); mpfr_dump (x);
+              printf ("u="); mpfr_dump (u);
+              printf ("z="); mpfr_dump (z);
+              exit (1);
+            }
+
+          rnd = RND_RAND_NO_RNDF ();
+          inexact = test_add (y, x, u, rnd);
+          cmp = mpfr_cmp (y, z);
+          if ((inexact == 0 && cmp != 0) ||
+              (inexact > 0 && cmp <= 0) ||
+              (inexact < 0 && cmp >= 0))
+            {
+              printf ("Wrong ternary value for rnd=%s\n",
+                      mpfr_print_rnd_mode (rnd));
+              printf ("expected %d, got %d\n", cmp, inexact);
+              printf ("x="); mpfr_dump (x);
+              printf ("u="); mpfr_dump (u);
+              printf ("y=  "); mpfr_dump (y);
+              printf ("x+u="); mpfr_dump (z);
+              exit (1);
             }
         }
     }
