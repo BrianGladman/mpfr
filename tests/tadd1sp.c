@@ -127,16 +127,24 @@ check_random (mpfr_prec_t p)
           if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
             for (r = 0 ; r < MPFR_RND_MAX ; r++)
               {
+                mpfr_flags_t flags1, flags2;
+
                 if (r == MPFR_RNDF) /* inexact makes no sense, moreover
                                        mpfr_add1 and mpfr_add1sp could
                                        return different values */
                   continue;
+
+                mpfr_clear_flags ();
                 inexact1 = mpfr_add1 (a1, b, c, (mpfr_rnd_t) r);
+                flags1 = __gmpfr_flags;
+                mpfr_clear_flags ();
                 inexact2 = mpfr_add1sp (a2, b, c, (mpfr_rnd_t) r);
+                flags2 = __gmpfr_flags;
                 if (! mpfr_equal_p (a1, a2))
                   STD_ERROR;
                 if (inexact1 != inexact2)
                   STD_ERROR2;
+                MPFR_ASSERTN (flags1 == flags2);
               }
         }
     }
