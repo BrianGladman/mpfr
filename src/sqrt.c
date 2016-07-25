@@ -41,7 +41,6 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
 
   a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
-  /* FIXME: This is invalid on 32-bit machines. */
   t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
   x0 = (x0 << 15) - ((mp_limb_signed_t) (x0 * t) >> (17+1));
@@ -63,7 +62,6 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
   y = (a1 * x0) >> 31; /* y is near 2^63/x0, with 32 bits */
   t = (mp_limb_signed_t) (a0 - y * y) >> 14;
   /* t should have at most 64-14-19=31 significant bits */
-  /* FIXME: This is invalid on 32-bit machines. */
   x0 = y + ((mp_limb_signed_t) (x0 * t) >> (49+1));
 
   /* x0 is now a 32-bit approximation of sqrt(a0) */
@@ -91,7 +89,6 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
   mp_limb_t x0, a1, t;
 
-  /* FIXME: This is incorrect on 32-bit machines!!! */
   MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
 
   x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
@@ -100,7 +97,6 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 
   a1 = a0 >> (GMP_NUMB_BITS - 32);
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
-  /* FIXME: This is invalid on 32-bit machines. */
   t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
   /* t has 32 bits now */
   x0 = (x0 << 15) + ((mp_limb_signed_t) (x0 * t) >> (17+1));
@@ -112,7 +108,6 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   /* a1 * t has 80 bits, but we know the upper 19 bits cancel with 1 */
   t = (mp_limb_signed_t) (-a1 * t) >> 31; /* it remains 49 bits in theory,
                                              but t has only 31 bits at most */
-  /* FIXME: This is invalid on 32-bit machines. */
   x0 = (x0 << 9) + ((mp_limb_signed_t) (x0 * t) >> (31+1+49-40));
 
   /* now x0 is a 1+40-bit approximation,
@@ -172,7 +167,6 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   /* compute y = floor(np[1]*x/2^72), cutting the upper 48 bits of n1 in two
      parts of 24 and 23 bits, which can be multiplied by x without overflow
      (warning: if we take 24 bits from low, it might overflow with x */
-  /* FIXME: This is invalid on 32-bit machines. */
   high = np[1] >> 40; /* upper 24 bits from n1 */
   MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
   low = (np[1] >> 17) & 0x7fffff; /* next 23 bits */
@@ -180,7 +174,6 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   y = high * x + ((low * x) >> 23); /* y approximates n1*x/2^40 */
   /* y-1 takes into account the 2^(-31) error term, to ensure y <= sqrt(n1)
      after the right shift below */
-  /* FIXME: This is invalid on 32-bit machines. */
   y = (y - 0x8000000) >> 32; /* the constant 0x8000000 = 2^(72-5-40) takes
                                 into account the 2^(-5) error above, to ensure
                                 y <= sqrt(n1) */
@@ -198,7 +191,6 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   t = high * x + ((low * x) >> 23); /* approximates t*x/2^23 */
 
   y = (y << (GMP_NUMB_BITS / 2)) + (t >> 18);
-  /* FIXME: This is invalid on 32-bit machines. */
   if (y < (1UL << 63))
     y = 1UL << 63; /* the correction code below assumes y >= 2^63 */
 
@@ -241,7 +233,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   exp_r = exp_u >> 1;
 
-#if GMP_NUMB_BITS == 64  
+#if GMP_NUMB_BITS == 64
   if (p < GMP_NUMB_BITS / 2)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
   else
@@ -252,8 +244,9 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       sp[1] = u0;
       sb |= mpn_sqrtrem2 (&r0, &sb, sp);
     }
-#endif  
+#endif
 
+  /* FIXME: r0 nad sb are not initialized if GMP_NUMB_BITS != 64. */
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
   sb |= (r0 & mask) ^ rb;
