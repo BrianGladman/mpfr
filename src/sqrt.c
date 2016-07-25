@@ -214,7 +214,6 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   rp[0] = t;
   return x;
 }
-#endif
 
 /* Special code for prec(r), prec(u) < GMP_NUMB_BITS. */
 static int
@@ -233,7 +232,6 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   exp_r = exp_u >> 1;
 
-#if GMP_NUMB_BITS == 64
   if (p < GMP_NUMB_BITS / 2)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
   else
@@ -244,9 +242,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       sp[1] = u0;
       sb |= mpn_sqrtrem2 (&r0, &sb, sp);
     }
-#endif
 
-  /* FIXME: r0 and sb are not initialized if GMP_NUMB_BITS != 64. */
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
   sb |= (r0 & mask) ^ rb;
@@ -313,6 +309,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       MPFR_RET(1);
     }
 }
+#endif
 
 int
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
@@ -375,8 +372,10 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   MPFR_SET_POS(r);
 
+#if GMP_NUMB_BITS == 64  
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
+#endif  
 
   MPFR_TMP_MARK (marker);
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_GET_PREC (r));
