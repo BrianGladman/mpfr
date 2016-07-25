@@ -246,7 +246,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
 #endif
 
-  /* FIXME: r0 nad sb are not initialized if GMP_NUMB_BITS != 64. */
+  /* FIXME: r0 and sb are not initialized if GMP_NUMB_BITS != 64. */
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
   sb |= (r0 & mask) ^ rb;
