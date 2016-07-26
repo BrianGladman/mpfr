@@ -229,6 +229,9 @@ To make a release (for the MPFR team):
      platforms where the endianness is unknown (or can't be specified
      without AC_CONFIG_HEADERS).
      Check also without mpz_t caching (-DMPFR_MY_MPZ_INIT=0).
+     Check with -DMPFR_GENERIC_ABI to test the generic code, not tied to
+     a particular ABI; this is useful when there is specific MPFR code
+     for both GMP_NUMB_BITS == 32 and GMP_NUMB_BITS == 64.
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
@@ -304,7 +307,7 @@ To make a release (for the MPFR team):
      MPFR_SUSPICIOUS_OVERFLOW).
 
      Check there is no branch misprediction due to wrong MPFR_LIKELY or
-     MPFR_UNLIKELY statements. For that test, configure with 
+     MPFR_UNLIKELY statements. For that test, configure with
      --enable-debug-prediction, run "timings-mpfr 100", and check that
      the output contains no WARNING.
 
@@ -432,6 +435,9 @@ Format of long double.
                         supported.
 + MPFR_HAVE_BUILTIN_UNREACHABLE: Define if the __builtin_unreachable
                         GCC built-in is supported.
+
++ MPFR_GENERIC_ABI:     Define to disable code that is tied to a specific
+                        ABI (e.g. GMP_NUMB_BITS value).
 
 List of macros used for checking MPFR:
 

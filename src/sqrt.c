@@ -27,7 +27,7 @@ static const unsigned short T1[] = {8160, 8098, 8037, 7977, 7919, 7861, 7805, 77
 
 static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141, -194, -248, -302, -356, -410, 307, 267, 226, 185, 145, 104, 63, 21, -24, -65, -105, -145, -185, -224, -263, -303, 237, 205, 174, 142, 111, 79, 48, 16, -16, -45, -75, -105, -136, -167, -198, -229, 187, 161, 136, 110, 85, 61, 36, 12, -15, -41, -67, -92, -117, -142, -167, -192, 159, 138, 117, 96, 76, 54, 33, 12, -10, -30, -51, -71, -92, -113, -134, -154, 130, 112, 95, 77, 60, 43, 26, 9, -10, -28, -46, -64, -81, -98, -116, -133, 115, 100, 85, 70, 54, 39, 23, 8, -7, -22, -37, -52, -66, -82, -96, -111, 99, 86, 73, 60, 46, 32, 19, 6, -8, -21, -34, -47, -60, -73, -86, -100, 86, 75, 63, 52, 40, 28, 17, 5, -7, -19, -31, -43, -54, -66, -78, -90, 77, 66, 56, 46, 35, 25, 16, 6, -5, -15, -26, -36, -47, -57, -67, -77, 70, 60, 51, 42, 33, 23, 14, 5, -5, -14, -24, -33, -43, -52, -62, -72, 65, 57, 49, 40, 31, 23, 14, 6, -3, -12, -20, -28, -37, -45, -54, -62};
 
-#if GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64
+#if !defined(MPFR_GENERIC_ABI) || GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64
 /* return x0 and write rp[0] such that a0 = x0^2 + rp[0]
    with x0^2 <= a0 < (x0+1)^2 */
 static mp_limb_t
@@ -249,7 +249,7 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 }
 #endif
 
-#if GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64
+#if !defined(MPFR_GENERIC_ABI) || GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64
 /* Special code for prec(r), prec(u) < GMP_NUMB_BITS. */
 static int
 mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
@@ -409,12 +409,14 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   MPFR_SET_POS(r);
 
-#if GMP_NUMB_BITS == 32
+#if !defined(MPFR_GENERIC_ABI)
+# if GMP_NUMB_BITS == 32
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS/2 && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
-#elif GMP_NUMB_BITS == 64
+# elif GMP_NUMB_BITS == 64
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
+# endif
 #endif
 
   MPFR_TMP_MARK (marker);
