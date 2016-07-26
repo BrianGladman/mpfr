@@ -32,7 +32,7 @@ static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141,
 /* return x0 and write rp[0] such that a0 = x0^2 + rp[0]
    with x0^2 <= a0 < (x0+1)^2 */
 static mp_limb_t
-mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
+mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
 {
   mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
   mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
