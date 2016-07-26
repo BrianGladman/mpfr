@@ -415,6 +415,8 @@ main (int argc, char *argv[])
   mpfr_clear (y);
   mpfr_clear (z);
 
+  /* FIXME: change the last argument back to 5 once the mpfr_zeta issue
+     has been found (see TODO). */
   test_generic (MPFR_PREC_MIN, 70, 1);
   test2 ();
 
