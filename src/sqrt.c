@@ -31,7 +31,7 @@ static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141,
 /* return x0 and write rp[0] such that a0 = x0^2 + rp[0]
    with x0^2 <= a0 < (x0+1)^2 */
 static mp_limb_t
-mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
+mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
 {
   mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
   mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
@@ -44,15 +44,15 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
 
 #if GMP_NUMB_BITS == 32
   x0 -= 89; /* x0 -= 93 ensures that x0/2^16 <= 2^16/sqrt(a0) (proof by
-	       exhaustive search), which ensures that t = a0-y^2 >= below, and
-	       thus that the truncated Karp-Markstein trick gives x0 <= sqrt(a0
-	       at the end. However (still by exhaustive search) x0 -= 89 is
-	       enough to guarantee x0^2 <= a0 at the end, and at most one
-	       correction is needed. With x0 -= 89 the probability of correction
-	       is 0.097802, with x0 -= 93 it is 0.106486. */
+               exhaustive search), which ensures that t = a0-y^2 >= below, and
+               thus that the truncated Karp-Markstein trick gives x0 <= sqrt(a0
+               at the end. However (still by exhaustive search) x0 -= 89 is
+               enough to guarantee x0^2 <= a0 at the end, and at most one
+               correction is needed. With x0 -= 89 the probability of correction
+               is 0.097802, with x0 -= 93 it is 0.106486. */
   a1 = a0 >> (GMP_NUMB_BITS - 16); /* a1 has 16 bits */
   y = (a1 * (x0 >> 1)) >> 15; /* y is near 2^32/x0, with 16 bits, and should be
-				 an approximation of sqrt(a0) */
+                                 an approximation of sqrt(a0) */
   /* |a0 - y^2| <= 13697110 < 2^24 (by exhaustive search) */
   /* a0 >= y^2 (proof by exhaustive search) */
   t = (a0 - y * y) >> 8;
@@ -89,7 +89,7 @@ mpn_sqrtrem1 (mp_ptr rp, mp_limb_t a0)
      a0 = 2^32*a1+(2^32-1) */
   /* since x0 < 2^33 and t < 2^31, x0*t does not overflow */
   x0 = y + ((x0 * t) >> (64-13+1));
-#endif  
+#endif
 
   /* x0 is now a (GMP_NUMB_BITS/2)-bit approximation of sqrt(a0),
      with x0 <= sqrt(a0) */
@@ -269,7 +269,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   if (p < GMP_NUMB_BITS / 2)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
-#if GMP_NUMB_BITS == 64  
+#if GMP_NUMB_BITS == 64
   else
     {
       mp_limb_t sp[2];
@@ -278,7 +278,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       sp[1] = u0;
       sb |= mpn_sqrtrem2 (&r0, &sb, sp);
     }
-#endif  
+#endif
 
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
@@ -412,10 +412,10 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 #if GMP_NUMB_BITS == 32
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS/2 && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
-#elif GMP_NUMB_BITS == 64  
+#elif GMP_NUMB_BITS == 64
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
-#endif  
+#endif
 
   MPFR_TMP_MARK (marker);
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_GET_PREC (r));
