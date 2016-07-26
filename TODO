@@ -583,6 +583,11 @@ Table of contents:
   (The one done in r10573 allowed us to find a bug even without
   assertion checking.)
 
+- after the fix of mpfr_can_round in r9883, tzeta is much slower
+  (e.g. 58% in 64-bit ABI, 87% in 32-bit ABI, on some machines).
+  Find the real cause, whether a wrong result could be obtained before
+  the fix, and whether the slowdown can be avoided.
+
 
 ##############################################################################
 7. Portability
