@@ -532,8 +532,8 @@ a. Using MinGW
 
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux. (It is
-    recommended to pass --build=arch-pc-mingw64 or --build=xxx with xxx
-    containing mingw to the GMP configure command.)
+    recommended to pass --build=xxx-yyy-mingw64 to the GMP configure command,
+    or --build=xxx with xxx containing mingw.)
 
 3 - To avoid using the Microsoft runtime (which might not be conform to ISO C),
     you can use the MinGW runtime package (which is an integral part of MinGW).
