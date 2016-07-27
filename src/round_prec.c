@@ -151,7 +151,7 @@ int
 mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
                     mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
-  mpfr_prec_t err, prec0 = prec;
+  mpfr_prec_t err, prec2;
   mp_size_t k, k1, tn;
   int s, s1;
   mp_limb_t cc, cc2;
@@ -204,7 +204,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
      Warning! The number with updated bn may no longer be normalized. */
   k -= k1;
   bn -= k1;
-  prec -= (mpfr_prec_t) k1 * GMP_NUMB_BITS;
+  prec2 = prec - (mpfr_prec_t) k1 * GMP_NUMB_BITS;
 
   /* We can decide of the correct rounding if rnd2(b-eps) and rnd2(b+eps)
      give the same result to the target precision 'prec', i.e., if when
@@ -227,7 +227,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       cc = (bp[bn - 1] >> s1) & 1;
       /* mpfr_round_raw2 returns 1 if one should add 1 at ulp(b,prec),
          and 0 otherwise */
-      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
+      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec2);
       /* cc is the new value of bit s1 in bp[bn-1] after rounding 'rnd2' */
 
       /* now round b + 2^(MPFR_EXP(b)-err) */
@@ -243,7 +243,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       /* same remark as above in case a carry occurs in mpn_add_1() */
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
-      cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+      cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2);
       /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
 
     subtract_eps:
@@ -266,7 +266,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       */
       if (((k1 == 0 && tmp[bn - 1] < MPFR_LIMB_HIGHBIT) ||
            (k1 != 0 && cc2 != 0 && bp[bn + tn] == MPFR_LIMB_HIGHBIT)) &&
-          !((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err0 != prec0 + 1))
+          !((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err0 != prec + 1))
         {
           MPFR_TMP_FREE(marker);
           return 0;
@@ -278,14 +278,14 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       cc = (bp[bn - 1] >> s1) & 1;
       /* the mpfr_round_raw2() call below returns whether one should add 1 or
          not for rounding */
-      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
+      cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec2);
       /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
 
       goto subtract_eps;
     }
 
   cc2 = (tmp[bn - 1] >> s1) & 1;
-  cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+  cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2);
 
   MPFR_TMP_FREE(marker);
   return cc == cc2;
