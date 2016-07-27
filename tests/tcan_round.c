@@ -22,6 +22,43 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* Simple cases where err - prec is large enough.
+   One can get failures as a consequence of r9883. */
+static void
+test_simple (void)
+{
+  int t[4] = { 2, 3, -2, -3 };  /* test powers of 2 and non-powers of 2 */
+  int i;
+  int r1, r2;
+
+  for (i = 0; i < 4; i++)
+    RND_LOOP (r1)
+      RND_LOOP (r2)
+        {
+          mpfr_t b;
+          int p, err, prec, inex, c;
+
+          p = 12 + (randlimb() % (2 * GMP_NUMB_BITS));
+          err = p - 3;
+          prec = 4;
+          mpfr_init2 (b, p);
+          inex = mpfr_set_si (b, t[i], MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          c = mpfr_can_round (b, err, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, prec);
+          /* If r1 == r2, we can round.
+             TODO: complete this test for r1 != r2. */
+          if (r1 == r2 && !c)
+            {
+              printf ("Error in test_simple for i=%d (b=%d),"
+                      " r1=%s, r2=%s, p=%d\n", i, t[i],
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p);
+              exit (1);
+            }
+          mpfr_clear (b);
+        }
+}
+
 #define MAX_LIMB_SIZE 100
 
 static void
@@ -126,6 +163,8 @@ main (void)
   int n;
 
   tests_start_mpfr ();
+
+  test_simple ();
 
   /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
