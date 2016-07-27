@@ -225,7 +225,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
   switch (rnd1)
     {
     case MPFR_RNDZ:
-      /* Round to Zero */
+      /* rnd1 = Round to Zero */
       cc = (bp[bn - 1] >> s1) & 1;
       /* mpfr_round_raw2 returns 1 if one should add 1 at ulp(b,prec),
          and 0 otherwise */
@@ -239,7 +239,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
          will be detected below, with cc2 != cc */
       break;
     case MPFR_RNDN:
-      /* Round to nearest */
+      /* rnd1 = Round to nearest */
 
       /* first round b+2^(MPFR_EXP(b)-err) */
       mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
@@ -260,20 +260,25 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
            (i) k1 = 0 and tmp[bn-1] < MPFR_LIMB_HIGHBIT
            (ii) k1 > 0 and cc <> 0 and bp[bn + tn] = MPFR_LIMB_HIGHBIT
                 (then necessarily tn = k1-1).
-         Then for directed rounding we cannot round,
-         and for rounding to nearest we cannot round when err = prec + 1.
+         Then we cannot round when (rnd1,rnd2) = (RNDZ,RNDA) or (RNDA,RNDZ),
+         or rnd1 = RNDN and rnd2 = RNDZ or RNDA,
+         and in the other cases we cannot round when err = prec + 1.
+         In other words we can round when either rnd1 = rnd2 or rnd2 = RNDN,
+         and err > prec + 1.
       */
       if (((k1 == 0 && tmp[bn - 1] < MPFR_LIMB_HIGHBIT) ||
            (k1 != 0 && cc2 != 0 && bp[bn + tn] == MPFR_LIMB_HIGHBIT)) &&
-          (rnd2 != MPFR_RNDN || err0 == prec0 + 1))
+          !((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err0 != prec0 + 1))
         {
           MPFR_TMP_FREE(marker);
           return 0;
         }
       break;
     default:
-      /* Round away */
+      /* rnd1 = Round away */
       cc = (bp[bn - 1] >> s1) & 1;
+      /* the mpfr_round_raw2() call below returns whether one should add 1 or
+         not for rounding */
       cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec);
       /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
 

@@ -49,10 +49,11 @@ test_simple (void)
              TODO: complete this test for r1 != r2. */
           if (r1 == r2 && !c)
             {
-              printf ("Error in test_simple for i=%d (b=%d),"
-                      " r1=%s, r2=%s, p=%d\n", i, t[i],
+              printf ("Error in test_simple for i=%d,"
+                      " err=%d r1=%s, r2=%s, prec=%d\n", i, err,
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), prec);
+              printf ("b="); mpfr_dump (b);
               exit (1);
             }
           mpfr_clear (b);
