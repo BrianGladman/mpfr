@@ -148,19 +148,23 @@ mpfr_can_round (mpfr_srcptr b, mpfr_exp_t err, mpfr_rnd_t rnd1,
    power of 2. */
 
 int
-mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
+mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
                     mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)
 {
-  mpfr_prec_t err, prec2;
+  mpfr_prec_t prec2;
   mp_size_t k, k1, tn;
   int s, s1;
   mp_limb_t cc, cc2;
   mp_limb_t *tmp;
   MPFR_TMP_DECL(marker);
 
+  /* Since mpfr_can_round is a function in the API, use MPFR_ASSERTN.
+     The specification makes sense only for prec >= 1. */
+  MPFR_ASSERTN (prec >= 1);
+
   MPFR_ASSERTD(bp[bn - 1] & MPFR_LIMB_HIGHBIT);
 
-  if (MPFR_UNLIKELY(err0 < 0 || (mpfr_uexp_t) err0 <= prec))
+  if (MPFR_UNLIKELY (err <= prec))
     return 0;  /* can't round */
 
   MPFR_ASSERT_SIGN(neg);
@@ -175,24 +179,27 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
 
   if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
     { /* Then prec < PREC(b): we can round:
-         (i) in rounding to the nearest iff err0 >= prec + 2
+         (i) in rounding to the nearest iff err >= prec + 2
          (ii) in directed rounding mode iff rnd1 is compatible with rnd2
-              and err0 >= prec + 1, unless b = 2^k and rnd1=rnd2=RNDA in
-              which case we need err0 >= prec + 2. */
-      return (rnd1 == rnd2 || rnd2 == MPFR_RNDN) &&
-        (mpfr_uexp_t) err0 - 2 >= prec;
+              and err >= prec + 1, unless b = 2^k and rnd1=rnd2=RNDA in
+              which case we need err >= prec + 2.
+         Use the form err - 2 >= prec to avoid a potential integer overflow.
+      */
+      return (rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err - 2 >= prec;
     }
 
-  /* if the error is smaller than ulp(b), then anyway it will propagate
-     up to ulp(b) */
-  err = ((mpfr_uexp_t) err0 > (mpfr_prec_t) bn * GMP_NUMB_BITS) ?
-    (mpfr_prec_t) bn * GMP_NUMB_BITS : (mpfr_prec_t) err0;
+  {
+    /* if the error is smaller than ulp(b), then anyway it will propagate
+       up to ulp(b) */
+    mpfr_prec_t err2 = (err > (mpfr_prec_t) bn * GMP_NUMB_BITS) ?
+      (mpfr_prec_t) bn * GMP_NUMB_BITS : (mpfr_prec_t) err;
 
-  /* warning: if k = m*GMP_NUMB_BITS, consider limb m-1 and not m */
-  k = (err - 1) / GMP_NUMB_BITS;
-  MPFR_UNSIGNED_MINUS_MODULO(s, err);
-  /* the error corresponds to bit s in limb k, the most significant limb
-     being limb 0; in memory, limb k is bp[bn-1-k]. */
+    /* warning: if k = m*GMP_NUMB_BITS, consider limb m-1 and not m */
+    k = (err2 - 1) / GMP_NUMB_BITS;
+    MPFR_UNSIGNED_MINUS_MODULO(s, err2);
+    /* the error corresponds to bit s in limb k, the most significant limb
+       being limb 0; in memory, limb k is bp[bn-1-k]. */
+  }
 
   k1 = (prec - 1) / GMP_NUMB_BITS;
   MPFR_UNSIGNED_MINUS_MODULO(s1, prec);
@@ -266,7 +273,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       */
       if (((k1 == 0 && tmp[bn - 1] < MPFR_LIMB_HIGHBIT) ||
            (k1 != 0 && cc2 != 0 && bp[bn + tn] == MPFR_LIMB_HIGHBIT)) &&
-          !((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err0 != prec + 1))
+          !((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err - 2 >= prec))
         {
           MPFR_TMP_FREE(marker);
           return 0;
