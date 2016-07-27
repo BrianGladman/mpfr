@@ -276,6 +276,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       break;
     default:
       /* rnd1 = Round away */
+      MPFR_ASSERTD (rnd1 == MPFR_RNDA);
       cc = (bp[bn - 1] >> s1) & 1;
       /* the mpfr_round_raw2() call below returns whether one should add 1 or
          not for rounding */
