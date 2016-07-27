@@ -167,7 +167,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
   neg = MPFR_IS_NEG_SIGN(neg);
 
   /* Transform RNDD and RNDU to Zero / Away */
-  MPFR_ASSERTD((neg == 0) || (neg == 1));
+  MPFR_ASSERTD (neg == 0 || neg == 1);
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
   if (rnd2 != MPFR_RNDN)
@@ -182,7 +182,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       if (rnd2 == MPFR_RNDN)
         return (mpfr_uexp_t) err0 - 2 >= prec;
       else
-        return (rnd1 == rnd2) && (mpfr_uexp_t) err0 - 2 >= prec;
+        return rnd1 == rnd2 && (mpfr_uexp_t) err0 - 2 >= prec;
     }
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
@@ -254,7 +254,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err0,
       /* propagate the potential borrow up to the most significant limb
          (it cannot propagate further since the most significant limb is
          at least MPFR_LIMB_HIGHBIT) */
-      for (tn = 0; tn + 1 < k1 && (cc2 != 0); tn ++)
+      for (tn = 0; tn + 1 < k1 && cc2 != 0; tn ++)
         cc2 = bp[bn + tn] == 0;
       /* We have an exponent decrease when either:
            (i) k1 = 0 and tmp[bn-1] < MPFR_LIMB_HIGHBIT
