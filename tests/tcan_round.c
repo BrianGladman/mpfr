@@ -50,9 +50,9 @@ test_simple (void)
           if (r1 == r2 && !c)
             {
               printf ("Error in test_simple for i=%d,"
-                      " err=%d r1=%s, r2=%s, prec=%d\n", i, err,
+                      " err=%d r1=%s, r2=%s, p=%d\n", i, err,
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), prec);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p);
               printf ("b="); mpfr_dump (b);
               exit (1);
             }
