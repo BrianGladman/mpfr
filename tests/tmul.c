@@ -646,12 +646,14 @@ test_underflow (mpfr_prec_t pmax)
       /* 0.5 - 1/4*ulp_p(0.5) <= b * c < 0.5 */
       mpfr_mul_2si (b, b, mpfr_get_emin () / 2, MPFR_RNDZ);
       mpfr_mul_2si (c, c, (mpfr_get_emin () - 1) / 2, MPFR_RNDZ);
+      /* now (0.5 - 1/4*ulp_p(0.5))*2^emin <= b*c < 0.5*2^emin,
+         thus b*c should be rounded to 0.5*2^emin */
       mpfr_set_prec (a, p);
       mpfr_clear_underflow ();
       mpfr_mul (a, b, c, MPFR_RNDN);
-      if (!mpfr_zero_p (a) && mpfr_underflow_p ())
+      if (mpfr_zero_p (a) || mpfr_underflow_p ())
         {
-          printf ("Error, underflow flag incorrectly set for emin=%ld, rnd=%s\n",
+          printf ("Error, a=0 or underflow flag incorrectly set for emin=%ld, rnd=%s\n",
                   mpfr_get_emin (), mpfr_print_rnd_mode (MPFR_RNDN));
           printf ("b="); mpfr_dump (b);
           printf ("c="); mpfr_dump (c);
@@ -681,13 +683,16 @@ test_underflow (mpfr_prec_t pmax)
       /* 0.5 - 1/2*ulp_p(0.5) <= b * c < 0.5 */
       mpfr_mul_2si (b, b, mpfr_get_emin () / 2, MPFR_RNDZ);
       mpfr_mul_2si (c, c, (mpfr_get_emin () - 1) / 2, MPFR_RNDZ);
-      if (inex)
-        mpfr_nextabove (c); /* ensures that b*c > (0.5 - 1/2*ulp_p(0.5))*2^emin */
+      if (inex == 0)
+        mpfr_nextabove (c); /* ensures b*c > (0.5 - 1/2*ulp_p(0.5))*2^emin.
+                               Warning: for p=1, 0.5 - 1/2*ulp_p(0.5)
+                               = 0.25, thus b*c > 0.25*2^emin, which should
+                               be rounded up with p=1 to 0.5*2^emin. */
       mpfr_clear_underflow ();
       mpfr_mul (a, b, c, MPFR_RNDU);
-      if (!mpfr_zero_p (a) && mpfr_underflow_p ())
+      if (mpfr_zero_p (a) || mpfr_underflow_p ())
         {
-          printf ("Error, underflow flag incorrectly set for emin=%ld, rnd=%s\n",
+          printf ("Error, a=0 or underflow flag incorrectly set for emin=%ld, rnd=%s\n",
                   mpfr_get_emin (), mpfr_print_rnd_mode (MPFR_RNDU));
           printf ("b="); mpfr_dump (b);
           printf ("c="); mpfr_dump (c);
