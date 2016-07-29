@@ -405,8 +405,10 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else if (d < 2 * GMP_NUMB_BITS)
         {  /* GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS */
+          /* warning: the most significant bit of sb might become the least
+             significant bit of ap[0] below */
           sb = (d == GMP_NUMB_BITS) ? cp[0]
-            : (cp[1] << (2*GMP_NUMB_BITS-d)) | (cp[0] >> (d - GMP_NUMB_BITS));
+            : (cp[1] << (2*GMP_NUMB_BITS - d)) | (cp[0] != 0);
           ap[0] = b0 - (cp[1] >> (d - GMP_NUMB_BITS)) - (sb != 0);
           ap[1] = b1 - (ap[0] >= b0); /* since cp[1] has its most significant bit
                                          set, and d-GMP_NUMB_BITS < GMP_NUMB_BITS,
