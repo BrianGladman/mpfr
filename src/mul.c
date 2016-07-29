@@ -225,7 +225,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       sb = 0;
   */
   umul_ppmm (h, sb, MPFR_MANT(b)[0], MPFR_MANT(c)[0]);
-  if ((h & MPFR_LIMB_HIGHBIT) == 0)
+  if (h < MPFR_LIMB_HIGHBIT)
     {
       ax --;
       h = (h << 1) | (sb >> (GMP_NUMB_BITS - 1));
