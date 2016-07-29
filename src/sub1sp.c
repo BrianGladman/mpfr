@@ -196,21 +196,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       d = (mpfr_uexp_t) bx - cx;
       sh = GMP_NUMB_BITS - p;
       mask = MPFR_LIMB_MASK(sh);
-      if (d <= sh)
-        {
-          /* we can shift c by d bits to the right without losing any bit */
-          MPFR_ASSERTD((cp[0] << (GMP_NUMB_BITS - d)) == 0);
-          ap[0] = bp[0] - (cp[0] >> d);
-          count_leading_zeros (cnt, ap[0]);
-          ap[0] <<= cnt;
-          bx -= cnt;
-          /* sh > 0 since p < GMP_NUMB_BITS */
-          MPFR_ASSERTD(sh > 0);
-          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-          sb = (ap[0] & mask) ^ rb;
-          ap[0] = ap[0] & ~mask;
-        }
-      else if (d < GMP_NUMB_BITS)
+      if (d < GMP_NUMB_BITS)
         {
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
           ap[0] = bp[0] - (cp[0] >> d);
