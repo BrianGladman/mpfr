@@ -39,7 +39,7 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
   mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
   mp_limb_t x0, a1, t, y, x2;
 
-  x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
+  x0 = ((mp_limb_t) T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
   /* now x0/2^16 is a (1+16)-bit approximation of 2^6/sqrt(a*2^8+b*2^4+c),
      thus of 2^(GMP_NUMB_BITS/2)/sqrt(a0), with maximal error 2^(-9.46) */
 
@@ -122,7 +122,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 
   MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64);
 
-  x0 = (T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
+  x0 = ((mp_limb_t) T1[(a-4)*16+b] << 4) + T2[(a-4)*16+c];
   /* now x0 is a 16-bit approximation, with maximal error 2^(-9.46):
      -2^(-9.46) <= x0/2^16 - 1/sqrt(a/2^4) <= 2^(-9.46) */
 
