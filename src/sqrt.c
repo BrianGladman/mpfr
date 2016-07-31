@@ -66,7 +66,8 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
   /* a1*x^0 might exceed 2^64, but we are only interested in
      a1*x^0 - 2^64, which is small */
-  /* FIXME: The cast below is not portable. Ditto for the other ones later. */
+  /* FIXME: The cast below is not portable. Ditto for the other ones later.
+     Moreover, the shift on a negative value is not portable either. */
   t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 9;
   /* |t| < 2^46 (proof by exhaustive search on all possible values of a1,
      since x0 depends on a1 only) */
