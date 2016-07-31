@@ -174,10 +174,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
         }
       else
         { /* this happens only if u == 1 and xp[xn-1] >=
-             1<<(GMP_NUMB_BITS-1). It might be better to handle the
-             u == 1 case separately?
+             MPFR_LIMB_ONE << (GMP_NUMB_BITS-1). It might be better to
+             handle the u == 1 case separately?
           */
-
              MPN_COPY (yp, tmp + 1, yn);
         }
     }
