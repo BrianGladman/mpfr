@@ -318,12 +318,13 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mpfr_limb_ptr rp = MPFR_MANT(r);
 
   u0 = MPFR_MANT(u)[0];
-  if (exp_u & 1)
+  if (((unsigned int) exp_u & 1) != 0)
     {
       u0 >>= 1;
       exp_u ++;
     }
-  exp_r = exp_u >> 1;
+  MPFR_ASSERTD (((unsigned int) exp_u & 1) == 0);
+  exp_r = exp_u / 2;
 
   if (p < GMP_NUMB_BITS / 2)
     r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
