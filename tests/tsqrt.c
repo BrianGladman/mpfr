@@ -66,20 +66,20 @@ check3 (const char *as, mpfr_rnd_t rnd_mode, const char *qs)
 }
 
 static void
-check4 (const char *as, mpfr_rnd_t rnd_mode, const char *Qs)
+check4 (const char *as, mpfr_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
 
   mpfr_init2 (q, 53);
   mpfr_set_str1 (q, as);
   test_sqrt (q, q, rnd_mode);
-  if (mpfr_cmp_str (q, Qs, 16, MPFR_RNDN))
+  if (mpfr_cmp_str (q, qs, 16, MPFR_RNDN))
     {
       printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
-              as, mpfr_print_rnd_mode(rnd_mode));
-      printf ("expected ");
+              as, mpfr_print_rnd_mode (rnd_mode));
+      printf ("expected %s\ngot      ", qs);
       mpfr_out_str (stdout, 16, 0, q, MPFR_RNDN);
-      printf ("\ngot      %s\n", Qs);
+      printf ("\n");
       mpfr_clear (q);
       exit (1);
     }
