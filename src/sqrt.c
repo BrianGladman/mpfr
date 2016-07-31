@@ -281,8 +281,8 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 #endif
 
   /* the correction code below assumes y >= 2^(GMP_NUMB_BITS - 1) */
-  if (y < (1UL << (GMP_NUMB_BITS - 1)))
-    y = 1UL << (GMP_NUMB_BITS - 1);
+  if (y < (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
+    y = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1);
 
   umul_ppmm (x, t, y, y);
   MPFR_ASSERTD(x < np[1] || (x == np[1] && t <= np[0])); /* y should not be too large */
