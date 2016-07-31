@@ -221,6 +221,14 @@ grep '(mp_limb_t) *-\?[01]' $srctests | grep -v '#define MPFR_LIMB_' | \
   err-if-output -t "Use simple mp_limb_t constants" \
     grep -v MPFR_STAT_STATIC_ASSERT
 
+# Code possibly wrong with some C/GMP implementations. In short, if the
+# right operand of a shift depends on GMP_NUMB_BITS, then the left operand
+# should be of type mp_limb_t. There might be false positives.
+err-if-output \
+  --msg="Use a constant of type mp_limb_t instead of unsigned long?" \
+  -t "Suspicious code" \
+  grep -E '[^A_Za-z_][0-9]+[UL]* *<<.*GMP_NUMB_BITS' src/*.c
+
 for file in $srctests */Makefile.am acinclude.m4 configure.ac
 do
   # Note: this is one less that the POSIX minimum limit in case
