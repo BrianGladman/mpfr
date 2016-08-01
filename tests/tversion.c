@@ -114,7 +114,7 @@ main (void)
 #endif
 
 #if defined(_WIN32) || defined(_MSC_VER)
-  printf ("[tversion] MS Windows: "
+  printf ("[tversion] MS Windows: _WIN32 = "
 #if defined(_WIN32)
           MAKE_STR(_WIN32)
 #else
