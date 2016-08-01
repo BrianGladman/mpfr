@@ -55,6 +55,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   compilers that declare a compatibility with GCC). A configure test
   might be an alternative solution (but without any guarantee, in case
   the result may also depend on the context).
+
+  Warning! The right shift of a negative value corresponds to an integer
+  division by a power of two, with rounding toward negative.
+
+  TODO: Complete the comments when a right shift of a negative value
+  may be involved, so that the rounding toward negative appears in the
+  proof. There has been at least an error with a proof of a bound!
 */
 
 #define MPFR_NEED_LONGLONG_H
@@ -171,7 +178,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
      it mod 2^32 and interpret as a signed number in [-2^31, 2^31-1], we get
      the correct remainder (a0>>10)*(x0^2)>>12 - 2^40 */
   t = (mp_limb_signed_t) ((a0 >> 10) * ((x0 * x0) >> 12)) >> 8;
-  /* |t| < 6742843 < 2^23 (by exhaustive search) */
+  /* |t| < 6742843 <= 2^23 - 256 (by exhaustive search) */
   t = (mp_limb_signed_t) t >> 8; /* now |t| < 2^15, thus |x0*t| < 2^31 */
   x0 = (x0 << 5) - ((mp_limb_signed_t) (x0 * t) >> 20);
 
