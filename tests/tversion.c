@@ -104,6 +104,7 @@ main (void)
 #else
           "undef"
 #endif
+          ", __INTEL_COMPILER = "
 #if defined(__INTEL_COMPILER)
           MAKE_STR(__INTEL_COMPILER)
 #else
@@ -119,6 +120,7 @@ main (void)
 #else
           "undef"
 #endif
+          ", _MSC_VER = "
 #if defined(_MSC_VER)
           MAKE_STR(_MSC_VER)
 #else
