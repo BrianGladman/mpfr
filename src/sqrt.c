@@ -20,6 +20,43 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/*
+*** Note ***
+
+  The code of mpfr_sqrt1 and/or functions it calls depends on
+  implementation-defined features of the C standard. See lines with a
+  cast to mp_limb_signed_t, associated with a shift to the right '>>'.
+  Such features are known to behave as the code below expects with GCC,
+  according to the GCC manual (excerpt from the GCC 4.9.3 manual):
+
+    4 C Implementation-defined behavior
+    ***********************************
+
+    4.5 Integers
+    ============
+
+    * 'The result of, or the signal raised by, converting an integer to
+      a signed integer type when the value cannot be represented in an
+      object of that type (C90 6.2.1.2, C99 and C11 6.3.1.3).'
+
+      For conversion to a type of width N, the value is reduced modulo
+      2^N to be within range of the type; no signal is raised.
+
+    * 'The results of some bitwise operations on signed integers (C90
+      6.3, C99 and C11 6.5).'
+
+      Bitwise operators act on the representation of the value including
+      both the sign and value bits, where the sign bit is considered
+      immediately above the highest-value value bit.  Signed '>>' acts
+      on negative numbers by sign extension.
+
+  It is not known whether it works with other compilers. Thus this code
+  is currently enabled only when __GNUC__ is defined (which includes
+  compilers that declare a compatibility with GCC). A configure test
+  might be an alternative solution (but without any guarantee, in case
+  the result may also depend on the context).
+*/
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -66,8 +103,6 @@ mpn_sqrtrem1 (mpfr_limb_ptr rp, mp_limb_t a0)
   /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
   /* a1*x^0 might exceed 2^64, but we are only interested in
      a1*x^0 - 2^64, which is small */
-  /* FIXME: The cast below is not portable. Ditto for the other ones later.
-     Moreover, the shift on a negative value is not portable either. */
   t = (mp_limb_signed_t) (a1 * (x0 * x0)) >> 9;
   /* |t| < 2^46 (proof by exhaustive search on all possible values of a1,
      since x0 depends on a1 only) */
@@ -467,7 +502,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   MPFR_SET_POS(r);
 
-#if !defined(MPFR_GENERIC_ABI) && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
+  /* See the note at the beginning of this file about __GNUC__. */
+#if !defined(MPFR_GENERIC_ABI) && defined(__GNUC__) && \
+    (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
 #endif
