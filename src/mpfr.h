@@ -313,6 +313,11 @@ typedef enum {
 #else
 # define MPFR_DEPRECATED
 #endif
+/* TODO: Also define MPFR_EXPERIMENTAL for experimental functions?
+   See SVN_EXPERIMENTAL in Subversion 1.9+ as an example:
+   __attribute__((warning("..."))) can be used with GCC 4.3.1+ but
+   not __llvm__, and __declspec(deprecated("...")) can be used with
+   MSC as above. */
 
 /* Note: In order to be declared, some functions need a specific
    system header to be included *before* "mpfr.h". If the user
