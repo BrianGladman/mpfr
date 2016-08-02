@@ -512,7 +512,7 @@ __MPFR_DECLSPEC void mpfr_free_str (char *);
 __MPFR_DECLSPEC int mpfr_urandom (mpfr_ptr, gmp_randstate_t,
                                   mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_grandom (mpfr_ptr, mpfr_ptr, gmp_randstate_t,
-                                  mpfr_rnd_t);
+                                  mpfr_rnd_t) MPFR_DEPRECATED;
 __MPFR_DECLSPEC int mpfr_nrandom (mpfr_ptr, gmp_randstate_t,
                                   mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_erandom (mpfr_ptr, gmp_randstate_t,
