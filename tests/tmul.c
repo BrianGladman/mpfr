@@ -624,44 +624,57 @@ valgrind20110503 (void)
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
 }
 
-/* check underflow flag corresponds to *after* rounding */
+/* Check underflow flag corresponds to *after* rounding.
+ *
+ * More precisely, we want to test mpfr_mul on inputs b and c such that
+ * EXP(b*c) < emin but EXP(round(b*c, p, rnd)) = emin. Thus an underflow
+ * must not be generated.
+ */
 static void
 test_underflow (mpfr_prec_t pmax)
 {
+  mpfr_exp_t emin;
   mpfr_prec_t p;
-  mpfr_t a, b, c;
+  mpfr_t a0, a, b, c;
   int inex;
 
-  /* for RNDN, we want b*c < 0.5*2^emin but round(b*c, p) = 0.5*2^emin thus
-     b*c >= (0.5 - 1/4*ulp_p(0.5))*2^emin */
+  mpfr_init2 (a0, MPFR_PREC_MIN);
+  emin = mpfr_get_emin ();
+  mpfr_setmin (a0, emin);  /* 0.5 * 2^emin */
+
+  /* for RNDN, we want b*c < 0.5 * 2^emin but RNDN(b*c, p) = 0.5 * 2^emin,
+     thus b*c >= (0.5 - 1/4 * ulp_p(0.5)) * 2^emin */
   for (p = MPFR_PREC_MIN; p <= pmax; p++)
     {
       mpfr_init2 (a, p + 1);
       mpfr_init2 (b, p + 10);
       mpfr_init2 (c, p + 10);
-      mpfr_urandomb (b, RANDS);
-      mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDZ); /* a = 0.5 */
+      do mpfr_urandomb (b, RANDS); while (MPFR_IS_ZERO (b));
+      inex = mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDZ); /* a = 0.5 */
+      MPFR_ASSERTN (inex == 0);
       mpfr_nextbelow (a); /* 0.5 - 1/2*ulp_{p+1}(0.5) = 0.5 - 1/4*ulp_p(0.5) */
       inex = mpfr_div (c, a, b, MPFR_RNDU);
-      /* 0.5 - 1/4*ulp_p(0.5) <= b * c < 0.5 */
-      mpfr_mul_2si (b, b, mpfr_get_emin () / 2, MPFR_RNDZ);
-      mpfr_mul_2si (c, c, (mpfr_get_emin () - 1) / 2, MPFR_RNDZ);
-      /* now (0.5 - 1/4*ulp_p(0.5))*2^emin <= b*c < 0.5*2^emin,
-         thus b*c should be rounded to 0.5*2^emin */
+      /* 0.5 - 1/4 * ulp_p(0.5) = a <= b*c < 0.5 */
+      mpfr_mul_2si (b, b, emin / 2, MPFR_RNDZ);
+      mpfr_mul_2si (c, c, (emin - 1) / 2, MPFR_RNDZ);
+      /* now (0.5 - 1/4 * ulp_p(0.5)) * 2^emin <= b*c < 0.5 * 2^emin,
+         thus b*c should be rounded to 0.5 * 2^emin */
       mpfr_set_prec (a, p);
       mpfr_clear_underflow ();
       mpfr_mul (a, b, c, MPFR_RNDN);
-      if (mpfr_zero_p (a) || mpfr_underflow_p ())
+      if (mpfr_underflow_p () || ! mpfr_equal_p (a, a0))
         {
-          printf ("Error, a=0 or underflow flag incorrectly set for emin=%ld, rnd=%s\n",
-                  mpfr_get_emin (), mpfr_print_rnd_mode (MPFR_RNDN));
+          printf ("Error, b*c incorrect or underflow flag incorrectly set"
+                  " for emin=%" MPFR_EXP_FSPEC "d, rnd=%s\n",
+                  (mpfr_eexp_t) emin, mpfr_print_rnd_mode (MPFR_RNDN));
           printf ("b="); mpfr_dump (b);
           printf ("c="); mpfr_dump (c);
           printf ("a="); mpfr_dump (a);
           mpfr_set_prec (a, mpfr_get_prec (b) + mpfr_get_prec (c));
           mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
-          mpfr_mul (a, b, c, MPFR_RNDN);
-          printf ("2*a="); mpfr_dump (a);
+          inex = mpfr_mul (a, b, c, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          printf ("Exact 2*a="); mpfr_dump (a);
           exit (1);
         }
       mpfr_clear (a);
@@ -669,44 +682,50 @@ test_underflow (mpfr_prec_t pmax)
       mpfr_clear (c);
     }
 
-  /* for RNDU, we want b*c < 0.5*2^emin but round(b*c, p) = 0.5*2^emin thus
-     b*c > (0.5 - 1/2*ulp_p(0.5))*2^emin */
+  /* for RNDU, we want b*c < 0.5*2^emin but RNDU(b*c, p) = 0.5*2^emin thus
+     b*c > (0.5 - 1/2 * ulp_p(0.5)) * 2^emin */
   for (p = MPFR_PREC_MIN; p <= pmax; p++)
     {
       mpfr_init2 (a, p);
       mpfr_init2 (b, p + 10);
       mpfr_init2 (c, p + 10);
-      mpfr_urandomb (b, RANDS);
-      mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDZ); /* a = 0.5 */
-      mpfr_nextbelow (a); /* 0.5 - 1/2*ulp_p(0.5) */
+      do mpfr_urandomb (b, RANDS); while (MPFR_IS_ZERO (b));
+      inex = mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDZ); /* a = 0.5 */
+      MPFR_ASSERTN (inex == 0);
+      mpfr_nextbelow (a); /* 0.5 - 1/2 * ulp_p(0.5) */
       inex = mpfr_div (c, a, b, MPFR_RNDU);
-      /* 0.5 - 1/2*ulp_p(0.5) <= b * c < 0.5 */
-      mpfr_mul_2si (b, b, mpfr_get_emin () / 2, MPFR_RNDZ);
-      mpfr_mul_2si (c, c, (mpfr_get_emin () - 1) / 2, MPFR_RNDZ);
+      /* 0.5 - 1/2 * ulp_p(0.5) <= b*c < 0.5 */
+      mpfr_mul_2si (b, b, emin / 2, MPFR_RNDZ);
+      mpfr_mul_2si (c, c, (emin - 1) / 2, MPFR_RNDZ);
       if (inex == 0)
-        mpfr_nextabove (c); /* ensures b*c > (0.5 - 1/2*ulp_p(0.5))*2^emin.
-                               Warning: for p=1, 0.5 - 1/2*ulp_p(0.5)
-                               = 0.25, thus b*c > 0.25*2^emin, which should
-                               be rounded up with p=1 to 0.5*2^emin. */
+        mpfr_nextabove (c); /* ensures b*c > (0.5 - 1/2 * ulp_p(0.5)) * 2^emin.
+                               Warning: for p=1, 0.5 - 1/2 * ulp_p(0.5)
+                               = 0.25, thus b*c > 2^(emin-2), which should
+                               also be rounded up with p=1 to 0.5 * 2^emin
+                               with an unbounded exponent range. */
       mpfr_clear_underflow ();
       mpfr_mul (a, b, c, MPFR_RNDU);
-      if (mpfr_zero_p (a) || mpfr_underflow_p ())
+      if (mpfr_underflow_p () || ! mpfr_equal_p (a, a0))
         {
-          printf ("Error, a=0 or underflow flag incorrectly set for emin=%ld, rnd=%s\n",
-                  mpfr_get_emin (), mpfr_print_rnd_mode (MPFR_RNDU));
+          printf ("Error, b*c incorrect or underflow flag incorrectly set"
+                  " for emin=%" MPFR_EXP_FSPEC "d, rnd=%s\n",
+                  (mpfr_eexp_t) emin, mpfr_print_rnd_mode (MPFR_RNDU));
           printf ("b="); mpfr_dump (b);
           printf ("c="); mpfr_dump (c);
           printf ("a="); mpfr_dump (a);
           mpfr_set_prec (a, mpfr_get_prec (b) + mpfr_get_prec (c));
           mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
-          mpfr_mul (a, b, c, MPFR_RNDN);
-          printf ("2*a="); mpfr_dump (a);
+          inex = mpfr_mul (a, b, c, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          printf ("Exact 2*a="); mpfr_dump (a);
           exit (1);
         }
       mpfr_clear (a);
       mpfr_clear (b);
       mpfr_clear (c);
     }
+
+  mpfr_clear (a0);
 }
 
 int
