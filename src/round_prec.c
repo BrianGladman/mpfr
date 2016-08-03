@@ -167,6 +167,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   if (MPFR_UNLIKELY (err <= prec))
     return 0;  /* can't round */
 
+  /* As a consequence... */
+  MPFR_ASSERTD (err >= 2);
+
   MPFR_ASSERT_SIGN(neg);
   neg = MPFR_IS_NEG_SIGN(neg);
 
@@ -177,9 +180,26 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
+  /* The bound c on the error |x-b| is: c = 2^(MPFR_EXP(b)-err) <= b/2.
+   * So, we now know that x and b have the same sign. By symmetry,
+   * assume x > 0 and b > 0. We have: L <= x <= U, where, depending
+   * on rnd1:
+   *   MPFR_RNDN: L = b-c, U = b+c
+   *   MPFR_RNDZ: L = b,   U = b+c
+   *   MPFR_RNDA: L = b-c, U = b
+   *
+   * We can round x iff round(L,prec,rnd2) = round(U,prec,rnd2).
+   */
+
   if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
-    { /* Then prec < PREC(b): we can round:
+    { /* Then prec > PREC(b): we can round:
          (i) in rounding to the nearest iff err >= prec + 2
+             [FIXME?] It seems that if err = prec + 1 and b is not a power
+             of two (so that a change of binade cannot occur), then one
+             can round to nearest thanks to the even rounding rule (in the
+             target precision prec, the significand of b ends with a 0).
+             Note: the "iff" should read "(for every b) (... iff ...)"
+             to avoid different behaviors depending on GMP_NUMB_BITS.
          (ii) in directed rounding mode iff rnd1 is compatible with rnd2
               and err >= prec + 1, unless b = 2^k and rnd1=rnd2=RNDA in
               which case we need err >= prec + 2.
