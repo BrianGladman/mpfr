@@ -203,6 +203,8 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
          (ii) in directed rounding mode iff rnd1 is compatible with rnd2
               and err >= prec + 1, unless b = 2^k and rnd1=rnd2=RNDA in
               which case we need err >= prec + 2.
+              [FIXME] The test b = 2^k is not done, so that we will
+              return 0 while the true result may be 1.
          Use the form err - 2 >= prec to avoid a potential integer overflow.
       */
       return (rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err - 2 >= prec;
