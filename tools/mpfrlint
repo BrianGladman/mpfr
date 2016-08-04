@@ -185,6 +185,24 @@ do
     }' $file
 done
 
+# Macros of the form:
+#   #define FOO { ... }
+# may be unsafe and could yield obscure failures where writing "FOO;" as
+# this is here a block followed by a null statement. The following form
+# is preferred in most of the cases:
+#   #define FOO do { ... } while (0)
+# so that "FOO;" is a single statement.
+for file in $srctests
+do
+  err-if-output "Missing 'do ... while (0)'" perl -e '
+    while (<>) {
+      my $s = $_;
+      while ($s =~ s/\\\n//) { $s .= <> }
+      $s =~ /^#\s*define\s+\w+(\([^)]*\))?\s*{/
+        and $s =~ tr/ \t/ /s, print "$ARGV: $s";
+    }' $file
+done
+
 # Do not use snprintf as it is not available in ISO C90.
 # Even on platforms where it is available, the prototype
 # may not be included (e.g. with gcc -ansi), so that the
