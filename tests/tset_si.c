@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define ERROR(str) {printf("Error for "str"\n"); exit(1);}
+#define ERROR(str) { printf ("Error for " str "\n"); exit (1); }
 
 static void
 test_2exp (void)

@@ -27,14 +27,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    tgeneric_ui.c should probably be replaced by tgeneric.c,
    with some changes, since tgeneric.c does more checks. */
 
-#define ERROR1(s, i, z, exp) \
-{\
-  printf("Error for "s" and i=%d\n", i);\
-  printf("Expected %s\n", exp);\
-  printf("Got      "); mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);\
-  putchar ('\n');\
-  exit(1);\
-}
+#define ERROR1(s,i,z,exp)                                               \
+  {                                                                     \
+    printf ("Error for " s " and i=%d\n", i);                           \
+    printf ("Expected %s\n", exp);                                      \
+    printf ("Got      "); mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);   \
+    putchar ('\n');                                                     \
+    exit(1);                                                            \
+  }
 
 const struct {
   const char * op1;
