@@ -192,6 +192,8 @@ done
 # is preferred in most of the cases:
 #   #define FOO do { ... } while (0)
 # so that "FOO;" is a single statement.
+# To avoid false positives, a comment can be inserted, e.g.:
+#   #define FOO /* initializer */ { 0, 17 }
 for file in $srctests
 do
   err-if-output "Missing 'do ... while (0)'" perl -e '
