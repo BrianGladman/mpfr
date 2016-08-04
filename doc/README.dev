@@ -566,6 +566,13 @@ Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
   or field names. Explicit casts should be used to convert between
   void* and other pointer types.
 
+When a string literal ("...") is followed by a macro name, there
+must be white space between them, otherwise this is parsed as a
+user-defined string literal in C++11:
+
+  http://en.cppreference.com/w/cpp/language/user_literal
+  http://stackoverflow.com/a/6402166/3782797
+
    =====================================================================
 
 C-Reduce may be useful to try to identify whether a bug comes from the
