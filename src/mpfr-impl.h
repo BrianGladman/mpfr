@@ -495,9 +495,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
    "-Werror=return-type".
    WARNING: It doesn't use do { } while (0) for Insure++ */
 #if defined(HAVE_BUILTIN_UNREACHABLE)
-# define MPFR_RET_NEVER_GO_HERE() { __builtin_unreachable(); }
+# define MPFR_RET_NEVER_GO_HERE() do { __builtin_unreachable(); } while (0)
 #else
-# define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
+# define MPFR_RET_NEVER_GO_HERE() do { MPFR_ASSERTN(0); return 0; } while (0)
 #endif
 
 
