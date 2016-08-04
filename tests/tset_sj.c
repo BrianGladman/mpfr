@@ -57,7 +57,7 @@ check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
 
   mpfr_inits2 (pmax, x, y, (mpfr_ptr) 0);
 
-  for ( p = pmin ; p < pmax ; p++)
+  for (p = pmin ; p < pmax ; p++)
     {
       mpfr_set_prec (x, p);
       mpfr_set_prec (y, p);
@@ -91,7 +91,7 @@ check_set_uj (mpfr_prec_t pmin, mpfr_prec_t pmax, int N)
     ERROR ("inexact / UINTMAX_MAX");
   inex1 = mpfr_add_ui (x, x, 1, MPFR_RNDN);
   if (inex1 != 0 || !mpfr_powerof2_raw (x)
-      || MPFR_EXP (x) != (sizeof(uintmax_t)*CHAR_BIT+1) )
+      || MPFR_EXP (x) != sizeof(uintmax_t) * CHAR_BIT + 1)
     ERROR ("power of 2");
   mpfr_set_uj (x, 0, MPFR_RNDN);
   if (!MPFR_IS_ZERO (x))
@@ -110,22 +110,22 @@ check_set_uj_2exp (void)
 
   inex = mpfr_set_uj_2exp (x, 1, 0, MPFR_RNDN);
   if (inex || mpfr_cmp_ui(x, 1))
-    ERROR("(1U,0)");
+    ERROR ("(1U,0)");
 
   inex = mpfr_set_uj_2exp (x, 1024, -10, MPFR_RNDN);
   if (inex || mpfr_cmp_ui(x, 1))
-    ERROR("(1024U,-10)");
+    ERROR ("(1024U,-10)");
 
   inex = mpfr_set_uj_2exp (x, 1024, 10, MPFR_RNDN);
   if (inex || mpfr_cmp_ui(x, 1024L * 1024L))
-    ERROR("(1024U,+10)");
+    ERROR ("(1024U,+10)");
 
   inex = mpfr_set_uj_2exp (x, MPFR_UINTMAX_MAX, 1000, MPFR_RNDN);
   inex |= mpfr_div_2ui (x, x, 1000, MPFR_RNDN);
   inex |= mpfr_add_ui (x, x, 1, MPFR_RNDN);
   if (inex || !mpfr_powerof2_raw (x)
-      || MPFR_EXP (x) != (sizeof(uintmax_t)*CHAR_BIT+1) )
-    ERROR("(UINTMAX_MAX)");
+      || MPFR_EXP (x) != sizeof(uintmax_t) * CHAR_BIT + 1)
+    ERROR ("(UINTMAX_MAX)");
 
   inex = mpfr_set_uj_2exp (x, MPFR_UINTMAX_MAX, MPFR_EMAX_MAX-10, MPFR_RNDN);
   if (inex == 0 || !mpfr_inf_p (x))
@@ -149,8 +149,8 @@ check_set_sj (void)
   inex = mpfr_set_sj (x, -MPFR_INTMAX_MAX, MPFR_RNDN);
   inex |= mpfr_add_si (x, x, -1, MPFR_RNDN);
   if (inex || mpfr_sgn (x) >=0 || !mpfr_powerof2_raw (x)
-      || MPFR_EXP (x) != (sizeof(intmax_t)*CHAR_BIT) )
-    ERROR("set_sj (-INTMAX_MAX)");
+      || MPFR_EXP (x) != sizeof(intmax_t) * CHAR_BIT)
+    ERROR ("set_sj (-INTMAX_MAX)");
 
   inex = mpfr_set_sj (x, 1742, MPFR_RNDN);
   if (inex || mpfr_cmp_ui (x, 1742))
@@ -169,8 +169,8 @@ check_set_sj_2exp (void)
 
   inex = mpfr_set_sj_2exp (x, MPFR_INTMAX_MIN, 1000, MPFR_RNDN);
   if (inex || mpfr_sgn (x) >=0 || !mpfr_powerof2_raw (x)
-      || MPFR_EXP (x) != (sizeof(intmax_t)*CHAR_BIT+1000) )
-    ERROR("set_sj_2exp (INTMAX_MIN)");
+      || MPFR_EXP (x) != sizeof(intmax_t) * CHAR_BIT + 1000)
+    ERROR ("set_sj_2exp (INTMAX_MIN)");
 
   mpfr_clear (x);
 }

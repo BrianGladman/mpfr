@@ -33,36 +33,36 @@ test_2exp (void)
   mpfr_init2 (x, 32);
 
   mpfr_set_ui_2exp (x, 1, 0, MPFR_RNDN);
-  if (mpfr_cmp_ui(x, 1))
-    ERROR("(1U,0)");
+  if (mpfr_cmp_ui (x, 1) != 0)
+    ERROR ("(1U,0)");
 
   mpfr_set_ui_2exp (x, 1024, -10, MPFR_RNDN);
-  if (mpfr_cmp_ui(x, 1))
-    ERROR("(1024U,-10)");
+  if (mpfr_cmp_ui(x, 1) != 0)
+    ERROR ("(1024U,-10)");
 
   mpfr_set_ui_2exp (x, 1024, 10, MPFR_RNDN);
-  if (mpfr_cmp_ui(x, 1024*1024))
-    ERROR("(1024U,+10)");
+  if (mpfr_cmp_ui (x, 1024 * 1024) != 0)
+    ERROR ("(1024U,+10)");
 
   mpfr_set_si_2exp (x, -1024L * 1024L, -10, MPFR_RNDN);
-  if (mpfr_cmp_si(x, -1024))
-    ERROR("(1M,-10)");
+  if (mpfr_cmp_si (x, -1024) != 0)
+    ERROR ("(1M,-10)");
 
   mpfr_set_ui_2exp (x, 0x92345678, 16, MPFR_RNDN);
-  if (mpfr_cmp_str (x, "92345678@4", 16, MPFR_RNDN))
-    ERROR("(x92345678U,+16)");
+  if (mpfr_cmp_str (x, "92345678@4", 16, MPFR_RNDN) != 0)
+    ERROR ("(x92345678U,+16)");
 
   mpfr_set_si_2exp (x, -0x1ABCDEF0, -256, MPFR_RNDN);
-  if (mpfr_cmp_str (x, "-1ABCDEF0@-64", 16, MPFR_RNDN))
-    ERROR("(-x1ABCDEF0,-256)");
+  if (mpfr_cmp_str (x, "-1ABCDEF0@-64", 16, MPFR_RNDN) != 0)
+    ERROR ("(-x1ABCDEF0,-256)");
 
   mpfr_set_prec (x, 2);
   res = mpfr_set_si_2exp (x, 7, 10, MPFR_RNDU);
-  if (mpfr_cmp_ui (x, 1<<13) || res <= 0)
+  if (mpfr_cmp_ui (x, 1<<13) != 0 || res <= 0)
     ERROR ("Prec 2 + si_2exp");
 
   res = mpfr_set_ui_2exp (x, 7, 10, MPFR_RNDU);
-  if (mpfr_cmp_ui (x, 1<<13) || res <= 0)
+  if (mpfr_cmp_ui (x, 1<<13) != 0 || res <= 0)
     ERROR ("Prec 2 + ui_2exp");
 
   mpfr_clear_flags ();
@@ -95,6 +95,9 @@ test_macros (void)
   mpfr_t x[3];
   mpfr_ptr p;
   int r;
+
+  /* Note: the ++'s below allow one to check that the corresponding
+     arguments are evaluated only once by the macros. */
 
   mpfr_inits (x[0], x[1], x[2], (mpfr_ptr) 0);
   p = x[0];
@@ -299,7 +302,7 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, 100);
 
-  N = (argc==1) ? 100000 : atol (argv[1]);
+  N = (argc == 1) ? 100000 : atol (argv[1]);
 
   for (k = 1; k <= N; k++)
     {
