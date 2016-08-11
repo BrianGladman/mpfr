@@ -3,6 +3,13 @@
 # to compute the coverage of mpfr-x.y.z, just copy this script
 # into mpfr-x.y.z/tools and run it
 
+# Warning! Do not run this script on a machine shared with other users,
+# otherwise your account can easily be compromised:
+#   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=21951
+#
+# To avoid being affected by this libtool bug, this script could be modified
+# to use a subdirectory of /tmp/ompfr-gcov for the MPFR build.
+
 # Set up the right directoy
 cd $(dirname $0)/..
 
