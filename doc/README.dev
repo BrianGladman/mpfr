@@ -679,6 +679,11 @@ Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
 In the tests, use only tests_allocate, tests_reallocate and tests_free
 (there may be some rare exceptions, such as in tabort_defalloc*.c).
 
+Avoid code that would yield unnecessary reallocations, which can be very
+expensive. In particular, for code that is based on the mpz layer of GMP,
+do not use mpz_init, but mpz_init2 with the estimated maximum size; it is
+better to overestimate this size a bit than underestimating it.
+
 ===========================================================================
 
 Do not use C99-only features, such as empty macro arguments or C++-style
