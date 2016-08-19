@@ -516,6 +516,19 @@ you should set the OBJECT_MODE environment variable to 64, e.g., with:
 line: AR="ar -X64" NM="nm -B -X64".
 
 
+Notes on Solaris
+================
+
+Do not put a -R<dir> option in the LD_OPTIONS environment variable, at least
+if the directory <dir> can contain an MPFR library. Otherwise this MPFR
+library may be chosen for the tests (make check) instead of the one that has
+just been built, in which case, either you will get errors due to unmatched
+versions or this problem may remain undetected. The reason is that this
+option will appear before the -R options added by libtool, such as the one
+to the src/.libs directory containing the MPFR library that has just been
+built, and will have the precedence.
+
+
 MPFR for use with Windows Applications
 ======================================
 
