@@ -559,14 +559,25 @@ Table of contents:
         /* ... */
         mpfr_clear (x);
         /* followed by code using only small precision */
-      while contrary to real caches, they contain no data. Thus this is not
-      valuable memory. This also potentially destroys the data locality.
+      while contrary to real caches, they contain no data. This is not
+      valuable memory: freeing/allocating a large block of memory is
+      much faster than the actual computations, so that mpz_t caching
+      has no impact on the performance in such cases. A pool with large
+      blocks also potentially destroys the data locality.
     * It assumes that the real GMP functions are __gmpz_init and
       __gmpz_clear, which are not part of the official GMP API, thus
       is based on GMP internals, which may change in the future or
       may be different in forks / compatible libraries / etc. This
       can be solved if MPFR code calls mpfr_mpz_init / mpfr_mpz_clear
       directly, avoiding the #define's.
+  If it is decided to keep some form of mpz_t caching, a possible solution
+  for both issues: define mpfr_mpz_init2 and mpfr_mpz_clear2, which both
+  take 2 arguments like mpz_init2, where mpfr_mpz_init2 behaves in a way
+  similar to mpz_init2, and mpfr_mpz_clear2 behaves in a way similar to
+  mpz_clear but where the size argument is a hint for the pool; if it is
+  too large, then the mpz_t should not be pushed back to the pool. The
+  size argument of mpfr_mpz_init2 could also be a hint to decide which
+  element to pull from the pool.
 
 - in tsum, add testcases for mpfr_sum triggering the bug fixed in r9722,
   that is, with a large error during the computation of the secondary term
