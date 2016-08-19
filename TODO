@@ -551,6 +551,22 @@ Table of contents:
   reallocations in GMP because mpz_init is used instead of mpz_init2 with
   the estimated maximum size. Other places in the code that uses mpz_init
   may be concerned.
+  Issues with mpz_t caching:
+    * The pool can take much memory, which may no longer be useful.
+      For instance:
+        mpfr_init2 (x, 10000000);
+        mpfr_log_ui (x, 17, MPFR_RNDN);
+        /* ... */
+        mpfr_clear (x);
+        /* followed by code using only small precision */
+      while contrary to real caches, they contain no data. Thus this is not
+      valuable memory. This also potentially destroys the data locality.
+    * It assumes that the real GMP functions are __gmpz_init and
+      __gmpz_clear, which are not part of the official GMP API, thus
+      is based on GMP internals, which may change in the future or
+      may be different in forks / compatible libraries / etc. This
+      can be solved if MPFR code calls mpfr_mpz_init / mpfr_mpz_clear
+      directly, avoiding the #define's.
 
 - in tsum, add testcases for mpfr_sum triggering the bug fixed in r9722,
   that is, with a large error during the computation of the secondary term
