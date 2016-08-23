@@ -217,6 +217,7 @@ check_can_round (void)
                                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd1),
                                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd2),
                                     got);
+                            printf ("x="); mpfr_dump (x);
                             exit (1);
                           }
                       }
