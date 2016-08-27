@@ -620,6 +620,10 @@ Table of contents:
   Find the real cause, whether a wrong result could be obtained before
   the fix r9883, and whether the slowdown can be avoided.
 
+- unify is_power_of_two() from src/round_prec.c and mpfr_powerof2_raw()
+  from src/powerof2.c (the latter could use the former)? The code isn't
+  even written in the same way!
+
 
 ##############################################################################
 7. Portability
