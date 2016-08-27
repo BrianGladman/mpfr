@@ -154,7 +154,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* When x is a power of two, we call directly atan(y/x) since y/x is
      exact. */
-  if (MPFR_UNLIKELY (MPFR_IS_POWER_OF_2 (x)))
+  if (MPFR_UNLIKELY (MPFR_IS_POS (x) && mpfr_powerof2_raw (x)))
     {
       int r;
       mpfr_t yoverx;

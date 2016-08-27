@@ -942,9 +942,6 @@ typedef uintmax_t mpfr_ueexp_t;
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(x)) || \
    MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(y)))
 
-#define MPFR_IS_POWER_OF_2(x) \
-  (mpfr_cmp_ui_2exp ((x), 1, MPFR_GET_EXP (x) - 1) == 0)
-
 
 /******************************************************
  ********************  Sign macros  *******************
