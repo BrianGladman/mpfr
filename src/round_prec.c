@@ -167,6 +167,8 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   int s, s1;
   mp_limb_t cc, cc2;
   mp_limb_t *tmp;
+  mp_limb_t cy = 0, tmp_hi;
+  int res;
   MPFR_TMP_DECL(marker);
 
   /* Since mpfr_can_round is a function in the API, use MPFR_ASSERTN.
@@ -185,15 +187,16 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
-  /* For err < prec (+1 for rnd1=RNDN), we can never round correctly, since the
-     error is at least 2*ulp(b) >= ulp(round(b)).
+  /* For err < prec (+1 for rnd1=RNDN), we can never round correctly, since
+     the error is at least 2*ulp(b) >= ulp(round(b)).
      However for err = prec (+1 for rnd1=RNDN), we can round correctly in some
      rare cases where ulp(b) = 1/2*ulp(U) [see below for the definition of U],
      which implies rnd1 = RNDZ or RNDN, and rnd2 = RNDA or RNDN. */
 
   if (MPFR_UNLIKELY (err < prec + (rnd1 == MPFR_RNDN) ||
-                     (err == prec + (rnd1 == MPFR_RNDN) && (rnd1 == MPFR_RNDA ||
-                                                            rnd2 == MPFR_RNDZ))))
+                     (err == prec + (rnd1 == MPFR_RNDN) &&
+                      (rnd1 == MPFR_RNDA ||
+                       rnd2 == MPFR_RNDZ))))
     return 0;  /* can't round */
 
   /* As a consequence... */
@@ -225,7 +228,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       */
       if ((rnd1 == rnd2 || rnd2 == MPFR_RNDN) && err >= prec + 1)
         {
-          if (rnd1 != MPFR_RNDZ && err == prec + 1 && is_power_of_two (bp, bn))
+          if (rnd1 != MPFR_RNDZ &&
+              err == prec + 1 &&
+              is_power_of_two (bp, bn))
             return 0;
           else
             return 1;
@@ -283,19 +288,17 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
             return 0; /* err == prec + 1 implies prec = bn * GMP_NUMB_BITS */
           if (prec < (mpfr_prec_t) bn * GMP_NUMB_BITS)
             {
-              k1 = (prec + 1 - 1) / GMP_NUMB_BITS;
+              k1 = MPFR_PREC2LIMBS (prec + 1);
               MPFR_UNSIGNED_MINUS_MODULO(s1, prec + 1);
-              if (((bp[bn - 1 - k1] >> s1) & 1) &&
+              if (((bp[bn - k1] >> s1) & 1) &&
                   mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec + 1) == 0)
                 { /* b is the middle of two representable numbers */
                   if (rnd1 == MPFR_RNDN)
                     return 0;
-                  k1 = (prec - 1) / GMP_NUMB_BITS;
+                  k1 = MPFR_PREC2LIMBS (prec);
                   MPFR_UNSIGNED_MINUS_MODULO(s1, prec);
-                  if (rnd1 == MPFR_RNDZ)
-                    return ((bp[bn - 1 - k1] >> s1) & 1) != 0;
-                  else
-                    return ((bp[bn - 1 - k1] >> s1) & 1) == 0;
+                  return (rnd1 == MPFR_RNDZ) ^
+                    (((bp[bn - k1] >> s1) & 1) == 0);
                 }
             }
           return 1;
@@ -306,11 +309,11 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
             {
               /* then rnd2 = RNDN, and for prec = bn * GMP_NUMB_BITS we cannot
                  have b the middle of two representable numbers */
-              k1 = (prec + 1 - 1) / GMP_NUMB_BITS;
+              k1 = MPFR_PREC2LIMBS (prec + 1);
               MPFR_UNSIGNED_MINUS_MODULO(s1, prec + 1);
-              if (((bp[bn - 1 - k1] >> s1) & 1) &&
+              if (((bp[bn - k1] >> s1) & 1) &&
                   mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec + 1) == 0)
-                /* b is representable in precision prec+1 and ends with a '1' */
+                /* b is representable in precision prec+1 and ends with a 1 */
                 return 0;
               else
                 return 1;
@@ -356,7 +359,6 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
 
   MPFR_ASSERTD (k > 0);
 
-  mp_limb_t cy = 0, tmp_hi;
   switch (rnd1)
     {
     case MPFR_RNDZ:
@@ -373,7 +375,10 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       for (tn = 0; tn + 1 < k1 && cy != 0; tn ++)
         cy = ~bp[bn + tn] == 0;
       if (cy == 0 && err == prec)
-        goto cannot_round;
+        {
+          res = 0;
+          goto end;
+        }
       if (MPFR_UNLIKELY(cy))
         {
           /* when a carry occurs, we have b < 2^h <= b+c, we can round iff:
@@ -385,10 +390,10 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
                           c <= ulp(b) = 1/2*ulp(2^h), thus b+c rounds to 2^h,
                           and b+c >= 2^h implies that bit 'prec' of b is 1,
                           thus cc = 0 means that b is rounded to 2^h too. */
-          MPFR_TMP_FREE(marker);
-          return (rnd2 == MPFR_RNDZ) ? 0
+          res = (rnd2 == MPFR_RNDZ) ? 0
             : (rnd2 == MPFR_RNDA) ? (err > prec && k == bn && tmp[0] == 0)
             : cc == 0;
+          goto end;
         }
       break;
     case MPFR_RNDN:
@@ -402,25 +407,29 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2);
       /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
-      if (MPFR_UNLIKELY(cy))
+      if (MPFR_UNLIKELY (cy != 0))
         {
-          /* when a carry occurs, we have b-c < b < 2^h <= b+c, we can round iff:
+          /* when a carry occurs, we have b-c < b < 2^h <= b+c, we can round
+             iff:
              rnd2 = RNDZ: never, since b-c and b+c round to different values;
-             rnd2 = RNDA: when b+c is an exact power of two, and err > prec + 1
-                          (since for err <= prec + 1, b-c <= 2^h - 1/2*ulp(2^h) is
-                          exactly representable and thus rounds to itself);
+             rnd2 = RNDA: when b+c is an exact power of two, and
+                          err > prec + 1 (since for err <= prec + 1,
+                          b-c <= 2^h - 1/2*ulp(2^h) is exactly representable
+                          and thus rounds to itself);
              rnd2 = RNDN: whenever err > prec + 1, since for err = prec + 1,
                           b+c rounds to 2^h, and b-c rounds to nextbelow(2^h).
                           For err > prec + 1, c <= 1/4*ulp(b) <= 1/8*ulp(2^h),
-                          thus 2^h - 1/4*ulp(b) <= b-c < b+c <= 2^h + 1/8*ulp(2^h),
+                          thus
+                          2^h - 1/4*ulp(b) <= b-c < b+c <= 2^h + 1/8*ulp(2^h),
                           therefore both b-c and b+c round to 2^h. */
-          MPFR_TMP_FREE(marker);
-          return (rnd2 == MPFR_RNDZ) ? 0
+          res = (rnd2 == MPFR_RNDZ) ? 0
             : (rnd2 == MPFR_RNDA) ? (err > prec + 1 && k == bn && tmp[0] == 0)
             : err > prec + 1;
+          goto end;
         }
     subtract_eps:
-      /* now round b-2^(MPFR_EXP(b)-err), this happens for rnd1 = RNDN or RNDA */
+      /* now round b-2^(MPFR_EXP(b)-err), this happens for
+         rnd1 = RNDN or RNDA */
       MPFR_ASSERTD(rnd1 == MPFR_RNDN || rnd1 == MPFR_RNDA);
       cy = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       /* propagate the potential borrow up to the most significant limb
@@ -431,51 +440,54 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       for (tn = 0; tn < k1 && cy != 0; tn ++)
         cy = mpn_sub_1 (&tmp_hi, bp + bn + tn, 1, cy);
       /* We have an exponent decrease when tn = k1 and
-         tmp[bn-1] < MPFR_LIMB_HIGHBIT: b-c < 2^h <= b (for RNDA) or b+c (RNDN).
+         tmp[bn-1] < MPFR_LIMB_HIGHBIT:
+         b-c < 2^h <= b (for RNDA) or b+c (for RNDN).
          Then we surely cannot round when rnd2 = RNDZ, since b or b+c round to
          a value >= 2^h, and b-c rounds to a value < 2^h.
          We also surely cannot round when (rnd1,rnd2) = (RNDN,RNDA), since
          b-c rounds to a value <= 2^h, and b+c > 2^h rounds to a value > 2^h.
-         It thus remains (rnd1,rnd2) = (RNDA,RNDA), (RNDA,RNDN) and (RNDN,RNDN).
+         It thus remains:
+         (rnd1,rnd2) = (RNDA,RNDA), (RNDA,RNDN) and (RNDN,RNDN).
          For (RNDA,RNDA) we can round only when b-c and b round to 2^h, which
          implies b = 2^h and err > prec (which is true in that case):
          a necessary condition is that cc = 0.
          For (RNDA,RNDN) we can round only when b-c and b round to 2^h, which
          implies b-c >= 2^h - 1/4*ulp(2^h), and b <= 2^h + 1/2*ulp(2^h);
-         since ulp(2^h) = ulp(b), this implies c <= 3/4*ulp(b), thus err > prec.
-         For (RNDN,RNDN) we can round only when b-c and b+c round to 2^h, which
-         implies b-c >= 2^h - 1/4*ulp(2^h), and b+c <= 2^h + 1/2*ulp(2^h);
-         since ulp(2^h) = ulp(b), this implies 2*c <= 3/4*ulp(b), thus err>prec+1.
+         since ulp(2^h) = ulp(b), this implies c <= 3/4*ulp(b), thus
+         err > prec.
+         For (RNDN,RNDN) we can round only when b-c and b+c round to 2^h,
+         which implies b-c >= 2^h - 1/4*ulp(2^h), and
+         b+c <= 2^h + 1/2*ulp(2^h);
+         since ulp(2^h) = ulp(b), this implies 2*c <= 3/4*ulp(b), thus
+         err > prec+1.
       */
       if (tn == k1 && tmp_hi < MPFR_LIMB_HIGHBIT) /* exponent decrease */
         {
-          if (rnd2 == MPFR_RNDZ || (rnd1 == MPFR_RNDN && rnd2 == MPFR_RNDA))
-            goto cannot_round;
-          else if (cc != 0) /* b or b+c does not round to 2^h */
-            goto cannot_round;
-          /* in that case since the most significant bit of tmp is 0, we should
-             consider one more bit */
-          cc2 = mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2 + 1);
-          if (cc2 == 0) /* then b-c does not round to 2^h */
-            goto cannot_round;
-          MPFR_TMP_FREE(marker);
-          return 1;
+          if (rnd2 == MPFR_RNDZ || (rnd1 == MPFR_RNDN && rnd2 == MPFR_RNDA) ||
+              cc != 0 /* b or b+c does not round to 2^h */)
+            {
+              res = 0;
+              goto end;
+            }
+          /* in that case since the most significant bit of tmp is 0, we
+             should consider one more bit; res = 0 when b-c does not round
+             to 2^h. */
+          res = mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2 + 1) != 0;
+          goto end;
         }
       if (err == prec + (rnd1 == MPFR_RNDN))
         {
           /* No exponent increase nor decrease, thus we have |U-L| = ulp(b).
              For rnd2 = RNDZ or RNDA, either [L,U] contains one representable
-             number in the target precision, and then L and U round differently;
-             or both L and U are representable: they round differently too;
-             thus in all cases we cannot round.
-             For rnd2 = RNDN, the only case where we can round is when the middle
-             of [L,U] (i.e. b) is representable, and ends with a '0'. */
-          if (rnd2 == MPFR_RNDN && (((bp[bn - 1] >> s1) & 1) == 0) &&
-              mpfr_round_raw2 (bp, bn, neg, MPFR_RNDZ, prec2) ==
-              mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec2))
-            goto can_round;
-          else
-            goto cannot_round;
+             number in the target precision, and then L and U round
+             differently; or both L and U are representable: they round
+             differently too; thus in all cases we cannot round.
+             For rnd2 = RNDN, the only case where we can round is when the
+             middle of [L,U] (i.e. b) is representable, and ends with a 0. */
+          res = (rnd2 == MPFR_RNDN && (((bp[bn - 1] >> s1) & 1) == 0) &&
+                 mpfr_round_raw2 (bp, bn, neg, MPFR_RNDZ, prec2) ==
+                 mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec2));
+          goto end;
         }
       break;
     default:
@@ -491,16 +503,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     }
 
   cc2 = (tmp[bn - 1] >> s1) & 1;
-  cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2);
+  res = cc == (cc2 ^ mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2));
 
+ end:
   MPFR_TMP_FREE(marker);
-  return cc == cc2;
-
- cannot_round:
-  MPFR_TMP_FREE(marker);
-  return 0;
-
- can_round:
-  MPFR_TMP_FREE(marker);
-  return 1;
+  return res;
 }
