@@ -259,7 +259,10 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
    mp_set_memory_functions(). This is fine as long as the user who wants to use
    different memory allocation functions first calls mp_set_memory_functions()
    before any call to mpfr_init or mpfr_init2.
-   For more complex usages, change #if 1 into #if 0. */
+   For more complex usages, change #if 1 into #if 0. Warning! But in this
+   case, the user must make sure that there are no data internal to MPFR
+   allocated with the previous allocator. Freeing all the caches may be
+   necessary, but this is not guaranteed to be sufficient. */
 
 #if 1
 #undef __gmp_allocate_func
