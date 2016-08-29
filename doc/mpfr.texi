@@ -2243,6 +2243,17 @@ calculations if a lower or equal precision is requested. To free these caches,
 use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
+@c FIXME: It would be better to have a dedicated function concerning
+@c mp_set_memory_functions (mpfr_free_cache is there mainly to free some
+@c memory, not to solve issues with mp_set_memory_functions, even if
+@c these issues are currently solved exactly by calling mpfr_free_cache),
+@c in case we want to change things in the future (new features, etc.).
+@c Moreover, a documentation of memory allocation in MPFR should be given
+@c (the user should know how memory is allocated if this can affect his
+@c programs). Recommendations for libraries using MPFR should also be
+@c given: if they keep MPFR objects on their side, a clean-up is needed,
+@c while mpfr_free_cache (or the dedicated function) would not touch
+@c them.
 @deftypefun void mpfr_free_cache (void)
 Free various caches used by MPFR internally (thoses local to the
 current thread and shared by all threads).
