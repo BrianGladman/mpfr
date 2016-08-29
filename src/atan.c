@@ -274,8 +274,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   prec = realprec + GMP_NUMB_BITS;
 
   /* Initialisation */
-  /* TODO: determine a bound on the maximum size and use mpz_init2. */
-  mpz_init (ukz);
+  mpz_init2 (ukz, prec); /* ukz will need 'prec' bits below */
   MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
 
@@ -306,20 +305,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
       MPFR_ASSERTD (n0 <= MPFR_PREC_BITS);
-      if (MPFR_LIKELY (oldn0 == 0))
-        {
-          oldn0 = 3 * (n0 + 1);
-          /* TODO: determine a bound on the maximum size and use mpz_init2. */
-          for (i = 0; i < oldn0; i++)
-            mpz_init (tabz[i]);
-        }
-      else if (oldn0 < 3 * (n0 + 1))
-        {
-          /* TODO: determine a bound on the maximum size and use mpz_init2. */
-          for (i = oldn0; i < 3 * (n0 + 1); i++)
-            mpz_init (tabz[i]);
-          oldn0 = 3 * (n0 + 1);
-        }
+      /* Note: the tabz[] entries are used to get a rational approximation
+         of atan(x) to precision 'prec', thus allocating them to 'prec' bits
+         should be good enough. */
+      for (i = oldn0; i < 3 * (n0 + 1); i++)
+        mpz_init2 (tabz[i], prec);
+      oldn0 = 3 * (n0 + 1);
 
       /* The mpfr_ui_div below mustn't underflow. This is guaranteed by
          MPFR_SAVE_EXPO_MARK, but let's check that for maintainability. */
