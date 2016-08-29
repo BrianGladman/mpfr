@@ -69,6 +69,60 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(MPFR_GENERIC_ABI) && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
 
+/* The tables T1[] and T2[] below were generated using the Sage code below,
+   with T1,T2 = bipartite(4,4,4,12,16). Note: we would get a slightly smaller
+   error using an approximation of the form T1[a,b] * (1 + T2[a,b]), but this
+   would make the code more complex, and the approximation would not always fit
+   on p2 bits (assuming p2 >= p1).
+# bi-partite method, using a table T1 of p1 bits, and T2 of p2 bits
+# approximate sqrt(a:b:c) with T1[a,b] + T2[a,c]
+def bipartite(pa,pb,pc,p1,p2):
+   T1 = dict()
+   T2 = dict()
+   maxerr = maxnum = 0
+   for a in range(2^(pa-2),2^pa):
+      for b in range(2^pb):
+         A1 = (a*2^pb+b)/2^(pa+pb)
+         A2 = (a*2^pb+b+1)/2^(pa+pb)
+         X = (1/sqrt(A1) + 1/sqrt(A2))/2
+         X = round(X*2^p1)/2^p1
+         T1[a,b] = X*2^p1
+         maxnum = max(maxnum, abs(T1[a,b]))
+         # print "a=", a, "b=", b, "T1=", x
+         maxerr = max(maxerr, n(abs(1/sqrt(A1) - X)))
+         maxerr = max(maxerr, n(abs(1/sqrt(A2) - X)))
+   print "maxerr1 =", maxerr, log(maxerr)/log(2.0), "maxnum=", maxnum
+   maxerr = maxnum = 0
+   for a in range(2^(pa-2),2^pa):
+      for c in range(2^pc):
+         Xmin = infinity
+         Xmax = -infinity
+         for b in range(2^pb):
+            A = (a*2^(pb+pc)+b*2^pc+c)/2^(pa+pb+pc)
+            X = 1/sqrt(A) - T1[a,b]/2^p1
+            X = round(X*2^p2)/2^p2
+            Xmin = min (Xmin, X)
+            Xmax = max (Xmax, X)
+            A = (a*2^(pb+pc)+b*2^pc+c+1)/2^(pa+pb+pc)
+            X = 1/sqrt(A) - T1[a,b]/2^p1
+            X = round(X*2^p2)/2^p2
+            Xmin = min (Xmin, X)
+            Xmax = max (Xmax, X)
+         T2[a,c] = round((Xmin + Xmax)/2*2^p2)
+         maxnum = max(maxnum, abs(T2[a,c]))
+         # print "a=", a, "c=", c, "T2=", T2[a,c]
+         for b in range(2^pb):
+            A = (a*2^(pb+pc)+b*2^pc+c)/2^(pa+pb+pc)
+            X = 1/sqrt(A)
+            maxerr = max(maxerr, n(abs(X - (T1[a,b]/2^p1 + T2[a,c]/2^p2))))
+            A = (a*2^(pb+pc)+b*2^pc+c+1)/2^(pa+pb+pc)
+            X = 1/sqrt(A)
+            maxerr = max(maxerr, n(abs(X - (T1[a,b]/2^p1 + T2[a,c]/2^p2))))
+   print "maxerr2 =", maxerr, log(maxerr)/log(2.0), "maxnum=", maxnum
+   return [T1[a,b] for a in range(2^(pa-2),2^pa) for b in range(2^pb)], \
+          [T2[a,c] for a in range(2^(pa-2),2^pa) for c in range(2^pc)]
+*/
+
 static const unsigned short T1[] = {8160, 8098, 8037, 7977, 7919, 7861, 7805, 7751, 7697, 7644, 7593, 7542, 7493, 7445, 7397, 7350, 7304, 7260, 7215, 7172, 7129, 7088, 7047, 7006, 6966, 6927, 6889, 6851, 6814, 6778, 6742, 6706, 6671, 6637, 6603, 6570, 6537, 6505, 6473, 6442, 6411, 6381, 6351, 6321, 6292, 6263, 6235, 6206, 6179, 6152, 6125, 6098, 6072, 6046, 6020, 5995, 5970, 5946, 5921, 5897, 5874, 5850, 5827, 5804, 5781, 5759, 5737, 5715, 5693, 5672, 5651, 5630, 5609, 5589, 5569, 5549, 5529, 5509, 5490, 5471, 5452, 5433, 5415, 5396, 5378, 5360, 5342, 5324, 5307, 5290, 5273, 5256, 5239, 5222, 5206, 5189, 5173, 5157, 5141, 5125, 5110, 5094, 5079, 5064, 5049, 5034, 5019, 5004, 4990, 4975, 4961, 4947, 4933, 4919, 4905, 4892, 4878, 4865, 4851, 4838, 4825, 4812, 4799, 4786, 4773, 4761, 4748, 4736, 4724, 4711, 4699, 4687, 4675, 4663, 4652, 4640, 4628, 4617, 4605, 4594, 4583, 4572, 4561, 4550, 4539, 4528, 4517, 4506, 4496, 4485, 4475, 4464, 4454, 4444, 4434, 4423, 4413, 4403, 4394, 4384, 4374, 4364, 4355, 4345, 4335, 4326, 4317, 4307, 4298, 4289, 4280, 4271, 4262, 4253, 4244, 4235, 4226, 4217, 4208, 4200, 4191, 4183, 4174, 4166, 4157, 4149, 4141, 4132, 4124, 4116, 4108, 4100};
 
 static const short T2[] = {420, 364, 308, 252, 196, 140, 84, 28, -31, -87, -141, -194, -248, -302, -356, -410, 307, 267, 226, 185, 145, 104, 63, 21, -24, -65, -105, -145, -185, -224, -263, -303, 237, 205, 174, 142, 111, 79, 48, 16, -16, -45, -75, -105, -136, -167, -198, -229, 187, 161, 136, 110, 85, 61, 36, 12, -15, -41, -67, -92, -117, -142, -167, -192, 159, 138, 117, 96, 76, 54, 33, 12, -10, -30, -51, -71, -92, -113, -134, -154, 130, 112, 95, 77, 60, 43, 26, 9, -10, -28, -46, -64, -81, -98, -116, -133, 115, 100, 85, 70, 54, 39, 23, 8, -7, -22, -37, -52, -66, -82, -96, -111, 99, 86, 73, 60, 46, 32, 19, 6, -8, -21, -34, -47, -60, -73, -86, -100, 86, 75, 63, 52, 40, 28, 17, 5, -7, -19, -31, -43, -54, -66, -78, -90, 77, 66, 56, 46, 35, 25, 16, 6, -5, -15, -26, -36, -47, -57, -67, -77, 70, 60, 51, 42, 33, 23, 14, 5, -5, -14, -24, -33, -43, -52, -62, -72, 65, 57, 49, 40, 31, 23, 14, 6, -3, -12, -20, -28, -37, -45, -54, -62};
