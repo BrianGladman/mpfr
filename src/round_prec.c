@@ -140,17 +140,6 @@ mpfr_can_round (mpfr_srcptr b, mpfr_exp_t err, mpfr_rnd_t rnd1,
                                MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
-static int
-is_power_of_two (const mp_limb_t *bp, mp_size_t bn)
-{
-  if (bp[--bn] != MPFR_LIMB_HIGHBIT)
-    return 0;
-  while (bn--)
-    if (bp[bn] != 0)
-      return 0;
-  return 1;
-}
-
 /* TODO: mpfr_can_round_raw currently does a memory allocation and some
    mpn operations. A bit inspection like for mpfr_round_p (round_p.c) may
    be sufficient, though this would be more complex than the one done in
@@ -230,7 +219,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
         {
           if (rnd1 != MPFR_RNDZ &&
               err == prec + 1 &&
-              is_power_of_two (bp, bn))
+              mpfr_powerof2_raw2 (bp, bn))
             return 0;
           else
             return 1;
@@ -253,7 +242,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
          RNDN RNDZ no
          RNDN RNDA no
          RNDN RNDN ok except when err = prec + 1 */
-      if (is_power_of_two (bp, bn))
+      if (mpfr_powerof2_raw2 (bp, bn))
         {
           if ((rnd2 == MPFR_RNDZ || rnd2 == MPFR_RNDA) && rnd1 != rnd2)
             return 0;

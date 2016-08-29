@@ -2080,6 +2080,7 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ceil_mul (mpfr_exp_t, int, int);
 __MPFR_DECLSPEC int mpfr_exp_2 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_exp_3 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_powerof2_raw (mpfr_srcptr);
+__MPFR_DECLSPEC int mpfr_powerof2_raw2 (const mp_limb_t *, mp_size_t);
 
 __MPFR_DECLSPEC int mpfr_pow_general (mpfr_ptr, mpfr_srcptr,
                            mpfr_srcptr, mpfr_rnd_t, int, mpfr_save_expo_t *);
