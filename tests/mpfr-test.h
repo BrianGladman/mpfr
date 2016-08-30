@@ -207,7 +207,8 @@ extern gmp_randstate_t  mpfr_rands;
 
 typedef __gmp_randstate_struct *mpfr_gmp_randstate_ptr;
 
-/* Allocation */
+/* Memory Allocation */
+extern int tests_memory_disabled;
 void *tests_allocate (size_t);
 void *tests_reallocate (void *, size_t, size_t);
 void tests_free (void *, size_t);
