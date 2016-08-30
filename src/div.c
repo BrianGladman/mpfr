@@ -37,32 +37,32 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    It computes q and r such that nh*2^GMP_NUMB_BITS + nl = q*d + r,
    with 0 <= r < d, assuming di = __gmpn_invert_limb (d). */
 #define __udiv_qrnnd_preinv(q, r, nh, nl, d, di)                        \
-  do {									\
-    mp_limb_t _qh, _ql, _r, _mask;					\
-    umul_ppmm (_qh, _ql, (nh), (di));					\
-    if (__builtin_constant_p (nl) && (nl) == 0)				\
-      {									\
-	_qh += (nh) + 1;						\
-	_r = - _qh * (d);						\
-	_mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */	\
-	_qh += _mask;							\
-	_r += _mask & (d);						\
-      }									\
-    else								\
-      {									\
-	add_ssaaaa (_qh, _ql, _qh, _ql, (nh) + 1, (nl));		\
-	_r = (nl) - _qh * (d);						\
-	_mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */	\
-	_qh += _mask;							\
-	_r += _mask & (d);						\
-	if (MPFR_UNLIKELY (_r >= (d)))					\
-	  {								\
-	    _r -= (d);							\
-	    _qh++;							\
-	  }								\
-      }									\
-    (r) = _r;								\
-    (q) = _qh;								\
+  do {                                                                  \
+    mp_limb_t _qh, _ql, _r, _mask;                                      \
+    umul_ppmm (_qh, _ql, (nh), (di));                                   \
+    if (__builtin_constant_p (nl) && (nl) == 0)                         \
+      {                                                                 \
+        _qh += (nh) + 1;                                                \
+        _r = - _qh * (d);                                               \
+        _mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */     \
+        _qh += _mask;                                                   \
+        _r += _mask & (d);                                              \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        add_ssaaaa (_qh, _ql, _qh, _ql, (nh) + 1, (nl));                \
+        _r = (nl) - _qh * (d);                                          \
+        _mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */     \
+        _qh += _mask;                                                   \
+        _r += _mask & (d);                                              \
+        if (MPFR_UNLIKELY (_r >= (d)))                                  \
+          {                                                             \
+            _r -= (d);                                                  \
+            _qh++;                                                      \
+          }                                                             \
+      }                                                                 \
+    (r) = _r;                                                           \
+    (q) = _qh;                                                          \
   } while (0)
 
 /* specialized version for nl = 0, with di computed inside */
@@ -81,7 +81,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Same as __udiv_qrnnd_c from longlong.h, but using a single UWType/UWtype
    division instead of two, and with n0=0. The analysis below assumes a limb
    has 64 bits for simplicity. */
-#define __udiv_qrnd_preinv(q, r, n1, d)                                \
+#define __udiv_qrnd_preinv(q, r, n1, d)                                 \
   do {                                                                  \
     UWtype __d1, __d0, __q1, __q0, __r1, __r0, __i;                     \
                                                                         \
@@ -144,7 +144,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   } while (0)
 #endif
 
-/* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
+/* special code for p=PREC(q) < GMP_NUMB_BITS,
+   and PREC(u), PREC(v) <= GMP_NUMB_BITS */
 static int
 mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -284,7 +285,7 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     sub_ddmmss (r3, r2, up[1], up[0], vp[1], vp[0]);
   else
     r3 = up[1], r2 = up[0];
-  
+
   MPFR_ASSERTD(r3 < vp[1] || (r3 == vp[1] && r2 < vp[0]));
 
   if (MPFR_UNLIKELY(r3 == vp[1])) /* can occur in some rare cases */
@@ -324,7 +325,7 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
 
   /* now (u-extra*v)*B = q1 * v + r2:r1 with 0 <= r2:r1 < v */
-  
+
   MPFR_ASSERTD(r2 < vp[1] || (r2 == vp[1] && r1 < vp[0]));
 
   if (MPFR_UNLIKELY(r2 == vp[1]))
@@ -348,7 +349,8 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       r0 = -l;
       r1 -= h + (l != 0);
 
-      while (r1 > t) /* borrow when subtracting h + (l != 0), q0 was too large */
+      while (r1 > t) /* borrow when subtracting h + (l != 0),
+                        q0 was too large */
         {
           q0 --;
           /* add v1:v0 to r1:r0 */
@@ -396,7 +398,8 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               (qp[1] == ~MPFR_LIMB_ZERO && qp[0] == ~mask) && rb)
             goto rounding; /* no underflow */
           if (qx < __gmpfr_emin - 1 ||
-              (qp[1] == MPFR_LIMB_HIGHBIT && qp[0] == MPFR_LIMB_ZERO && sb == 0))
+              (qp[1] == MPFR_LIMB_HIGHBIT &&
+               qp[0] == MPFR_LIMB_ZERO && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
       else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
