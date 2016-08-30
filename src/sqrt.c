@@ -266,7 +266,15 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 #endif
 }
 
-/* This comment is for GMP_NUMB_BITS=64 for simplicity, but the code is valid
+/* Given as input np[0] and np[1], with B/4 <= np[1] (where B = 2^GMP_NUMB_BITS),
+   mpn_sqrtrem2 returns a value x, 0 <= x <= 1, and stores values s in sp[0] and
+   r in rp[0] such that:
+
+   n := np[1]*B + np[0] = s^2 + x*B + r, with n < (s+1)^2
+
+   or equivalently x*B + r <= 2*s.
+
+   This comment is for GMP_NUMB_BITS=64 for simplicity, but the code is valid
    for any even value of GMP_NUMB_BITS.
    The algorithm used is the following, and uses Karp-Markstein's trick:
    - start from x, a 33-bit approximation of 2^64/sqrt(n1), with x <= 2^64/sqrt(n1)
@@ -274,6 +282,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
    - t = n1 - y^2
    - u = (x * t) >> 33
    - y = (y << 32) + u
+
    Proof:
    * we know that Newton's iteration for the reciprocal square root,
 
