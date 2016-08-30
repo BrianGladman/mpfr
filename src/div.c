@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#if !defined(MPFR_GENERIC_ABI)
+
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
 /* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
    macro udiv_qrnnd_preinv.
@@ -141,227 +143,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     (r) = __r0;                                                         \
   } while (0)
 #endif
-
-#ifdef DEBUG2
-#define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
-static void
-mpfr_mpn_print3 (mpfr_limb_ptr ap, mp_size_t n, mp_limb_t cy)
-{
-  mp_size_t i;
-  for (i = 0; i < n; i++)
-    printf ("+%lu*2^%lu", (unsigned long) ap[i], (unsigned long)
-            (GMP_NUMB_BITS * i));
-  if (cy)
-    printf ("+2^%lu", (unsigned long) (GMP_NUMB_BITS * n));
-  printf ("\n");
-}
-#endif
-
-/* check if {ap, an} is zero */
-static int
-mpfr_mpn_cmpzero (mpfr_limb_ptr ap, mp_size_t an)
-{
-  MPFR_ASSERTD (an >= 0);
-  while (an > 0)
-    if (MPFR_LIKELY(ap[--an] != MPFR_LIMB_ZERO))
-      return 1;
-  return 0;
-}
-
-/* compare {ap, an} and {bp, bn} >> extra,
-   aligned by the more significant limbs.
-   Takes into account bp[0] for extra=1.
-*/
-static int
-mpfr_mpn_cmp_aux (mpfr_limb_ptr ap, mp_size_t an,
-                  mpfr_limb_ptr bp, mp_size_t bn, int extra)
-{
-  int cmp = 0;
-  mp_size_t k;
-  mp_limb_t bb;
-
-  MPFR_ASSERTD (an >= 0);
-  MPFR_ASSERTD (bn >= 0);
-  MPFR_ASSERTD (extra == 0 || extra == 1);
-
-  if (an >= bn)
-    {
-      k = an - bn;
-      while (cmp == 0 && bn > 0)
-        {
-          bn --;
-          bb = (extra) ? ((bp[bn+1] << (GMP_NUMB_BITS - 1)) | (bp[bn] >> 1))
-            : bp[bn];
-          cmp = (ap[k + bn] > bb) ? 1 : ((ap[k + bn] < bb) ? -1 : 0);
-        }
-      bb = (extra) ? bp[0] << (GMP_NUMB_BITS - 1) : MPFR_LIMB_ZERO;
-      while (cmp == 0 && k > 0)
-        {
-          k--;
-          cmp = (ap[k] > bb) ? 1 : ((ap[k] < bb) ? -1 : 0);
-          bb = MPFR_LIMB_ZERO; /* ensure we consider only once bp[0] & 1 */
-        }
-      if (cmp == 0 && bb != MPFR_LIMB_ZERO)
-        cmp = -1;
-    }
-  else /* an < bn */
-    {
-      k = bn - an;
-      while (cmp == 0 && an > 0)
-        {
-          an --;
-          bb = (extra) ? ((bp[k+an+1] << (GMP_NUMB_BITS - 1)) | (bp[k+an] >> 1))
-            : bp[k+an];
-          if (ap[an] > bb)
-            cmp = 1;
-          else if (ap[an] < bb)
-            cmp = -1;
-        }
-      while (cmp == 0 && k > 0)
-        {
-          k--;
-          bb = (extra) ? ((bp[k+1] << (GMP_NUMB_BITS - 1)) | (bp[k] >> 1))
-            : bp[k];
-          cmp = (bb != MPFR_LIMB_ZERO) ? -1 : 0;
-        }
-      if (cmp == 0 && extra && (bp[0] & MPFR_LIMB_ONE))
-        cmp = -1;
-    }
-  return cmp;
-}
-
-/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy = 0 or 1.
-   Return borrow out.
-*/
-static mp_limb_t
-mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
-                  mp_limb_t cy, int extra)
-{
-  mp_limb_t bb, rp;
-
-  MPFR_ASSERTD (cy <= 1);
-  MPFR_ASSERTD (n >= 0);
-
-  while (n--)
-    {
-      bb = (extra) ? ((bp[1] << (GMP_NUMB_BITS-1)) | (bp[0] >> 1)) : bp[0];
-      rp = ap[0] - bb - cy;
-      cy = (ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO) ?
-        MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
-      ap[0] = rp;
-      ap ++;
-      bp ++;
-    }
-  MPFR_ASSERTD (cy <= 1);
-  return cy;
-}
-
-/* For large precision, mpz_tdiv_q (which computes only quotient)
-   is faster than mpn_divrem (which computes also the remainder).
-   Unfortunately as of GMP 6.0.0 the corresponding mpn_div_q function
-   is not in the public interface, thus we call mpz_tdiv_q.
-
-   If this function succeeds in computing the correct rounding, return 1,
-   and put the ternary value in inex.
-
-   Otherwise return 0 (and inex is undefined).
-*/
-static int
-mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
-                          mpfr_rnd_t rnd_mode, int *inex)
-{
-  mpz_t qm, um, vm;
-  mpfr_exp_t ue, ve;
-  mpfr_prec_t qp = MPFR_PREC(q), wp = qp + GMP_NUMB_BITS;
-  mp_size_t up, vp, k;
-  int ok;
-
-  mpz_init (qm);
-  mpz_init (um);
-  mpz_init (vm);
-
-  ue = mpfr_get_z_2exp (um, u); /* u = um * 2^ue */
-  ve = mpfr_get_z_2exp (vm, v); /* v = vm * 2^ve */
-
-  vp = mpz_sizeinbase (vm, 2);
-  if (vp > wp)
-    {
-      k = vp - wp; /* truncate k bits of vm */
-      mpz_tdiv_q_2exp (vm, vm, k);
-      ve += k;
-      vp -= k;
-    }
-
-  /* we want about qp + GMP_NUMB_BITS bits of the quotient, thus um should
-     have qp + GMP_NUMB_BITS more bits than vm */
-
-  up = mpz_sizeinbase (um, 2);
-  if (up > vp + wp)
-    {
-      k = up - (vp + wp); /* truncate k bits of um */
-      mpz_tdiv_q_2exp (um, um, k);
-      ue += k;
-      up -= k;
-    }
-  else if (up < vp + wp) /* we need more bits */
-    {
-      k = (vp + wp) - up;
-      mpz_mul_2exp (um, um, k);
-      ue -= k;
-      up += k;
-    }
-
-  /* now um has exactly wp more bits than vp */
-  mpz_tdiv_q (qm, um, vm);
-  /* qm has either wp or wp+1 bits, and we have:
-     (a) um = u/2^ue*(1-tu) with tu=0 if no truncation of um,
-                            and 0 <= tu < 2^(1-wp) otherwise;
-     (b) vm = v/2^ve*(1-tv) with tv=0 if no truncation of vm,
-                             and 0 <= tv < 2^(1-wp) otherwise;
-     (c) um/vm - 1 < qm <= um/vm, thus qm = um/vm*(1-tq) with
-         0 <= tw < 2^(1-wp) since um/vm >= 2^(wp-1)
-     Altogether we have:
-     q = u/v*2^(ve-ue)*(1-tu)/(1-tv)*(1-tq)
-     Thus:
-     u/v*2^(ve-ue)*(1-2^(2-wp)) < q < u/v*2^(ve-ue)*(1+2^(2-wp)).
-     If q has wp bits, the error is less than 2^(wp-1)*2^(2-wp) <= 2.
-     If q has wp+1 bits, the error is less than 2^wp*2^(2-wp) <= 4.
-  */
-
-  k = mpz_sizeinbase (qm, 2) - wp; /* 0 or 1 */
-  /* Assume qm has wp bits (i.e. k=0) and a directed rounding: if the first
-     set bit after position 1 has position less than GMP_NUMB_BITS, then
-     subtracting 2 to qm will not change the bits beyond the GMP_NUMB_BITS
-     low ones, thus we get correct rounding.
-     For k=1, we need to start at position 2, and the first set bit has to be
-     in posiiton less than GMP_NUMB_BITS+1.
-     For rounding to nearest, the first set bit has to be in position less
-     than GMP_NUMB_BITS-1 for k=0 (or less than GMP_NUMB_BITS for k=1).
-  */
-  if (mpz_scan1 (qm, k + 1) < GMP_NUMB_BITS + k - (rnd_mode == MPFR_RNDN) &&
-      mpz_scan0 (qm, k + 1) < GMP_NUMB_BITS + k - (rnd_mode == MPFR_RNDN))
-    {
-      MPFR_SAVE_EXPO_DECL (expo);
-      ok = 1;
-      MPFR_SAVE_EXPO_MARK (expo);
-      *inex = mpfr_set_z (q, qm, rnd_mode);
-      MPFR_SAVE_EXPO_FREE (expo);
-      /* if we got an underflow or overflow, the result is not valid */
-      if (MPFR_IS_SINGULAR(q) || MPFR_EXP(q) == MPFR_EXT_EMIN ||
-          MPFR_EXP(q) == MPFR_EXT_EMAX)
-        ok =  0;
-      MPFR_EXP(q) += ue - ve;
-      *inex = mpfr_check_range (q, *inex, rnd_mode);
-    }
-  else
-    ok = 0;
-
-  mpz_clear (qm);
-  mpz_clear (um);
-  mpz_clear (vm);
-
-  return ok;
-}
 
 /* special code for p=PREC(q) < GMP_NUMB_BITS, PREC(u), PREC(v) <= GMP_NUMB_BITS */
 static int
@@ -668,6 +449,229 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 }
 #endif
 
+#endif /* !defined(MPFR_GENERIC_ABI) */
+
+#ifdef DEBUG2
+#define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
+static void
+mpfr_mpn_print3 (mpfr_limb_ptr ap, mp_size_t n, mp_limb_t cy)
+{
+  mp_size_t i;
+  for (i = 0; i < n; i++)
+    printf ("+%lu*2^%lu", (unsigned long) ap[i], (unsigned long)
+            (GMP_NUMB_BITS * i));
+  if (cy)
+    printf ("+2^%lu", (unsigned long) (GMP_NUMB_BITS * n));
+  printf ("\n");
+}
+#endif
+
+/* check if {ap, an} is zero */
+static int
+mpfr_mpn_cmpzero (mpfr_limb_ptr ap, mp_size_t an)
+{
+  MPFR_ASSERTD (an >= 0);
+  while (an > 0)
+    if (MPFR_LIKELY(ap[--an] != MPFR_LIMB_ZERO))
+      return 1;
+  return 0;
+}
+
+/* compare {ap, an} and {bp, bn} >> extra,
+   aligned by the more significant limbs.
+   Takes into account bp[0] for extra=1.
+*/
+static int
+mpfr_mpn_cmp_aux (mpfr_limb_ptr ap, mp_size_t an,
+                  mpfr_limb_ptr bp, mp_size_t bn, int extra)
+{
+  int cmp = 0;
+  mp_size_t k;
+  mp_limb_t bb;
+
+  MPFR_ASSERTD (an >= 0);
+  MPFR_ASSERTD (bn >= 0);
+  MPFR_ASSERTD (extra == 0 || extra == 1);
+
+  if (an >= bn)
+    {
+      k = an - bn;
+      while (cmp == 0 && bn > 0)
+        {
+          bn --;
+          bb = (extra) ? ((bp[bn+1] << (GMP_NUMB_BITS - 1)) | (bp[bn] >> 1))
+            : bp[bn];
+          cmp = (ap[k + bn] > bb) ? 1 : ((ap[k + bn] < bb) ? -1 : 0);
+        }
+      bb = (extra) ? bp[0] << (GMP_NUMB_BITS - 1) : MPFR_LIMB_ZERO;
+      while (cmp == 0 && k > 0)
+        {
+          k--;
+          cmp = (ap[k] > bb) ? 1 : ((ap[k] < bb) ? -1 : 0);
+          bb = MPFR_LIMB_ZERO; /* ensure we consider only once bp[0] & 1 */
+        }
+      if (cmp == 0 && bb != MPFR_LIMB_ZERO)
+        cmp = -1;
+    }
+  else /* an < bn */
+    {
+      k = bn - an;
+      while (cmp == 0 && an > 0)
+        {
+          an --;
+          bb = (extra) ? ((bp[k+an+1] << (GMP_NUMB_BITS - 1)) | (bp[k+an] >> 1))
+            : bp[k+an];
+          if (ap[an] > bb)
+            cmp = 1;
+          else if (ap[an] < bb)
+            cmp = -1;
+        }
+      while (cmp == 0 && k > 0)
+        {
+          k--;
+          bb = (extra) ? ((bp[k+1] << (GMP_NUMB_BITS - 1)) | (bp[k] >> 1))
+            : bp[k];
+          cmp = (bb != MPFR_LIMB_ZERO) ? -1 : 0;
+        }
+      if (cmp == 0 && extra && (bp[0] & MPFR_LIMB_ONE))
+        cmp = -1;
+    }
+  return cmp;
+}
+
+/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy = 0 or 1.
+   Return borrow out.
+*/
+static mp_limb_t
+mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
+                  mp_limb_t cy, int extra)
+{
+  mp_limb_t bb, rp;
+
+  MPFR_ASSERTD (cy <= 1);
+  MPFR_ASSERTD (n >= 0);
+
+  while (n--)
+    {
+      bb = (extra) ? ((bp[1] << (GMP_NUMB_BITS-1)) | (bp[0] >> 1)) : bp[0];
+      rp = ap[0] - bb - cy;
+      cy = (ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO) ?
+        MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
+      ap[0] = rp;
+      ap ++;
+      bp ++;
+    }
+  MPFR_ASSERTD (cy <= 1);
+  return cy;
+}
+
+/* For large precision, mpz_tdiv_q (which computes only quotient)
+   is faster than mpn_divrem (which computes also the remainder).
+   Unfortunately as of GMP 6.0.0 the corresponding mpn_div_q function
+   is not in the public interface, thus we call mpz_tdiv_q.
+
+   If this function succeeds in computing the correct rounding, return 1,
+   and put the ternary value in inex.
+
+   Otherwise return 0 (and inex is undefined).
+*/
+static int
+mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
+                          mpfr_rnd_t rnd_mode, int *inex)
+{
+  mpz_t qm, um, vm;
+  mpfr_exp_t ue, ve;
+  mpfr_prec_t qp = MPFR_PREC(q), wp = qp + GMP_NUMB_BITS;
+  mp_size_t up, vp, k;
+  int ok;
+
+  mpz_init (qm);
+  mpz_init (um);
+  mpz_init (vm);
+
+  ue = mpfr_get_z_2exp (um, u); /* u = um * 2^ue */
+  ve = mpfr_get_z_2exp (vm, v); /* v = vm * 2^ve */
+
+  vp = mpz_sizeinbase (vm, 2);
+  if (vp > wp)
+    {
+      k = vp - wp; /* truncate k bits of vm */
+      mpz_tdiv_q_2exp (vm, vm, k);
+      ve += k;
+      vp -= k;
+    }
+
+  /* we want about qp + GMP_NUMB_BITS bits of the quotient, thus um should
+     have qp + GMP_NUMB_BITS more bits than vm */
+
+  up = mpz_sizeinbase (um, 2);
+  if (up > vp + wp)
+    {
+      k = up - (vp + wp); /* truncate k bits of um */
+      mpz_tdiv_q_2exp (um, um, k);
+      ue += k;
+      up -= k;
+    }
+  else if (up < vp + wp) /* we need more bits */
+    {
+      k = (vp + wp) - up;
+      mpz_mul_2exp (um, um, k);
+      ue -= k;
+      up += k;
+    }
+
+  /* now um has exactly wp more bits than vp */
+  mpz_tdiv_q (qm, um, vm);
+  /* qm has either wp or wp+1 bits, and we have:
+     (a) um = u/2^ue*(1-tu) with tu=0 if no truncation of um,
+                            and 0 <= tu < 2^(1-wp) otherwise;
+     (b) vm = v/2^ve*(1-tv) with tv=0 if no truncation of vm,
+                             and 0 <= tv < 2^(1-wp) otherwise;
+     (c) um/vm - 1 < qm <= um/vm, thus qm = um/vm*(1-tq) with
+         0 <= tw < 2^(1-wp) since um/vm >= 2^(wp-1)
+     Altogether we have:
+     q = u/v*2^(ve-ue)*(1-tu)/(1-tv)*(1-tq)
+     Thus:
+     u/v*2^(ve-ue)*(1-2^(2-wp)) < q < u/v*2^(ve-ue)*(1+2^(2-wp)).
+     If q has wp bits, the error is less than 2^(wp-1)*2^(2-wp) <= 2.
+     If q has wp+1 bits, the error is less than 2^wp*2^(2-wp) <= 4.
+  */
+
+  k = mpz_sizeinbase (qm, 2) - wp; /* 0 or 1 */
+  /* Assume qm has wp bits (i.e. k=0) and a directed rounding: if the first
+     set bit after position 1 has position less than GMP_NUMB_BITS, then
+     subtracting 2 to qm will not change the bits beyond the GMP_NUMB_BITS
+     low ones, thus we get correct rounding.
+     For k=1, we need to start at position 2, and the first set bit has to be
+     in posiiton less than GMP_NUMB_BITS+1.
+     For rounding to nearest, the first set bit has to be in position less
+     than GMP_NUMB_BITS-1 for k=0 (or less than GMP_NUMB_BITS for k=1).
+  */
+  if (mpz_scan1 (qm, k + 1) < GMP_NUMB_BITS + k - (rnd_mode == MPFR_RNDN) &&
+      mpz_scan0 (qm, k + 1) < GMP_NUMB_BITS + k - (rnd_mode == MPFR_RNDN))
+    {
+      MPFR_SAVE_EXPO_DECL (expo);
+      ok = 1;
+      MPFR_SAVE_EXPO_MARK (expo);
+      *inex = mpfr_set_z (q, qm, rnd_mode);
+      MPFR_SAVE_EXPO_FREE (expo);
+      /* if we got an underflow or overflow, the result is not valid */
+      if (MPFR_IS_SINGULAR(q) || MPFR_EXP(q) == MPFR_EXT_EMIN ||
+          MPFR_EXP(q) == MPFR_EXT_EMAX)
+        ok =  0;
+      MPFR_EXP(q) += ue - ve;
+      *inex = mpfr_check_range (q, *inex, rnd_mode);
+    }
+  else
+    ok = 0;
+
+  mpz_clear (qm);
+  mpz_clear (um);
+  mpz_clear (vm);
+
+  return ok;
+}
+
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -758,6 +762,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   usize = MPFR_LIMB_SIZE(u);
   vsize = MPFR_LIMB_SIZE(v);
 
+  /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
+#if !defined(MPFR_GENERIC_ABI)
+
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
     return mpfr_divsp1 (q, u, v, rnd_mode);
 
@@ -766,6 +773,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       && usize == 2 && vsize == 2)
     return mpfr_divsp2 (q, u, v, rnd_mode);
 #endif
+
+#endif /* !defined(MPFR_GENERIC_ABI) */
 
   q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
   q0p = MPFR_MANT(q);
