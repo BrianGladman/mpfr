@@ -1001,6 +1001,9 @@ consistency (void)
       if (inex1 != inex2 || mpfr_cmp (z1, z2) != 0)
         {
           printf ("Consistency error for i = %d\n", i);
+          printf ("inex1=%d inex2=%d\n", inex1, inex2);
+          printf ("z1="); mpfr_dump (z1);
+          printf ("z2="); mpfr_dump (z2);
           exit (1);
         }
     }
@@ -1304,6 +1307,28 @@ test_extreme (void)
   set_emax (emax);
 }
 
+static void
+test_mpfr_divsp2 (void)
+{
+  mpfr_t u, v, q;
+
+  /* test to exercise r2 = v1 in mpfr_divsp2 */
+  mpfr_init2 (u, 128);
+  mpfr_init2 (v, 128);
+  mpfr_init2 (q, 83);
+
+  mpfr_set_str (u, "286677858044426991425771529092412636160", 10, MPFR_RNDN);
+  mpfr_set_str (v, "241810647971575979588130185988987264768", 10, MPFR_RNDN);
+  mpfr_div (q, u, v, MPFR_RNDN);
+  mpfr_set_str (u, "5732952910203749289426944", 10, MPFR_RNDN);
+  mpfr_div_2exp (u, u, 82, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (q, u));
+  
+  mpfr_clear (u);
+  mpfr_clear (v);
+  mpfr_clear (q);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1333,6 +1358,7 @@ main (int argc, char *argv[])
   test_generic (MPFR_PREC_MIN, 800, 50);
   test_bad ();
   test_extreme ();
+  test_mpfr_divsp2 ();
 
   tests_end_mpfr ();
   return 0;
