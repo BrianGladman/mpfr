@@ -299,8 +299,8 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD(extra == 0);
       q1 = ~MPFR_LIMB_ZERO;
       r1 = vp[0];
-      t = vp[0] - up[0]; /* t >= 0 since u < v */
-      r2 = vp[1] - t; /* should give the exact result */
+      t = vp[0] - up[0]; /* t > 0 since u < v */
+      r2 = vp[1] - t;
       if (t > vp[1]) /* q1 = B-1 is too large, we need q1 = B-2, which is ok
                         since u*B - q1*v >= v1*B^2-(B-2)*(v1*B+B-1) =
                         -B^2 + 2*B*v1 + 3*B - 2 >= 0 since v1>=B/2 and B>=2 */
@@ -349,7 +349,15 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       /* r2:r1:0 - q0*(v1:v0) = v1:r1:0 - (B-1)*(v1:v0)
          = r1:0 - v0:0 + v1:v0 */
       r0 = vp[0];
-      r1 = r1 - vp[0] + vp[1]; /* should give the exact result */
+      t = vp[0] - r1; /* t > 0 since r2:r1 < v1:v0 */
+      r1 = vp[1] - t;
+      if (t > vp[1])
+        {
+          q0 --;
+          /* add v to r1:r0 */
+          r0 += vp[0];
+          r1 += vp[1] + (r0 < vp[0]);
+        }
     }
   else
     {
