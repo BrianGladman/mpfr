@@ -1344,6 +1344,15 @@ test_20160831 (void)
   mpfr_set_str (u, "0xfffffffffffffffecp-134", 16, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_equal_p (q, u));
 
+  mpfr_set_prec (u, 128);
+  mpfr_set_prec (v, 128);
+  mpfr_set_str (u, "186127091671619245460026015088243485690", 10, MPFR_RNDN);
+  mpfr_set_str (v, "205987256581218236405412302590110119580", 10, MPFR_RNDN);
+  mpfr_div (q, u, v, MPFR_RNDN);
+  mpfr_set_str (u, "19217137613667309953639458782352244736", 10, MPFR_RNDN);
+  mpfr_div_2exp (u, u, 124, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_equal_p (q, u));
+
   mpfr_clears (u, v, q, (mpfr_ptr) 0);
 }
 

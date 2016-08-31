@@ -378,6 +378,8 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
         }
     }
 
+  MPFR_ASSERTD(r1 < vp[1] || (r1 == vp[1] && r0 < vp[0]));
+
   /* now (u-extra*v)*B^2 = (q1:q0) * v + r1:r0 */
 
   sb = r1 | r0;
