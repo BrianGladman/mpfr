@@ -290,11 +290,26 @@ mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(r3 == vp[1])) /* can occur in some rare cases */
     {
+      /* This can only occur in case extra=0, since otherwise we would have
+         u_old >= u_new + v >= B^2/2 + B^2/2 = B^2. In this case we have
+         r3 = u1 and r2 = u0, thus the remainder u*B-q1*v is
+         v1*B^2+u0*B-(B-1)*(v1*B+v0) = (u0-v0+v1)*B+v0.
+         Warning: in this case q1 = B-1 can be too large, for example with
+         u = B^2/2 and v = B^2/2 + B - 1, then u*B-(B-1)*u = -1/2*B^2+2*B-1. */
+      MPFR_ASSERTD(extra == 0);
       q1 = ~MPFR_LIMB_ZERO;
-      /* r3:r2:0 - q1*(v1:v0) = v1:r2:0 - (B-1)*(v1:v0)
-         = r2:0 - v0:0 + v1:v0 */
       r1 = vp[0];
-      r2 = r2 - vp[0] + vp[1]; /* should give the exact result */
+      t = vp[0] - up[0]; /* t >= 0 since u < v */
+      r2 = vp[1] - t; /* should give the exact result */
+      if (t > vp[1]) /* q1 = B-1 is too large, we need q1 = B-2, which is ok
+                        since u*B - q1*v >= v1*B^2-(B-2)*(v1*B+B-1) =
+                        -B^2 + 2*B*v1 + 3*B - 2 >= 0 since v1>=B/2 and B>=2 */
+        {
+          q1 --;
+          /* add v to r2:r1 */
+          r1 += vp[0];
+          r2 += vp[1] + (r1 < vp[0]);
+        }
     }
   else
     {
