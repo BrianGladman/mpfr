@@ -1323,10 +1323,28 @@ test_mpfr_divsp2 (void)
   mpfr_set_str (u, "5732952910203749289426944", 10, MPFR_RNDN);
   mpfr_div_2exp (u, u, 82, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_equal_p (q, u));
-  
+
   mpfr_clear (u);
   mpfr_clear (v);
   mpfr_clear (q);
+}
+
+/* Assertion failure in r10769 with --enable-assert --enable-gmp-internals
+   (same failure in tatan on a similar example). */
+static void
+test_20160831 (void)
+{
+  mpfr_t u, v, q;
+
+  mpfr_inits2 (124, u, v, q, (mpfr_ptr) 0);
+
+  mpfr_set_ui (u, 1, MPFR_RNDN);
+  mpfr_set_str (v, "0x40000000000000005", 16, MPFR_RNDN);
+  mpfr_div (q, u, v, MPFR_RNDN);
+  mpfr_set_str (u, "0xfffffffffffffffecp-134", 16, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_equal_p (q, u));
+
+  mpfr_clears (u, v, q, (mpfr_ptr) 0);
 }
 
 int
@@ -1355,6 +1373,7 @@ main (int argc, char *argv[])
   test_20070603 ();
   test_20070628 ();
   test_20151023 ();
+  test_20160831 ();
   test_generic (MPFR_PREC_MIN, 800, 50);
   test_bad ();
   test_extreme ();
