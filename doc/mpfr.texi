@@ -2885,7 +2885,7 @@ same value of @var{err}).
 
 When @var{rnd2} is @code{MPFR_RNDF}, let @var{rnd3} be the opposite direction
 if @var{rnd1} is a directed rounding, and @code{MPFR_RNDN}
-if @var{rnd1} is @code{MPFR_RNDN}.
+if @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF}.
 The returned value is @code{mpfr_can_round (b, err, rnd1, rnd3, prec)}.
 As a consequence, if @code{mpfr_can_round} returns a non-zero value,
 the call @code{mpfr_set (y, b, rnd3)} will return a faithful rounding of
