@@ -2277,6 +2277,11 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   if (b < 2 || b > 62)
     return NULL;
 
+  /* map RNDF to RNDN, to avoid problems with specification of mpfr_can_round
+     or mpfr_can_round_raw */
+  if (rnd == MPFR_RNDF)
+    rnd = MPFR_RNDN;
+
   num_to_text = b < 37 ? num_to_text36 : num_to_text62;
 
   if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
