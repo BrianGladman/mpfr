@@ -519,15 +519,15 @@ mpn_rsqrtrem2 (mpfr_limb_ptr xp, mpfr_limb_srcptr ap)
   mp_limb_t t1, t0, u1, u0, r0, r1, r2;
 
   MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
-  
+
   xp[1] = mpn_rsqrtrem1 (ap[1]);
 
   /* now we should compute x + (x/2) * (1 - a*x^2), where the upper ~40 bits of
      a*x^2 should cancel with 1, thus we only need the following 40 bits */
-  
+
   /* xp[1] has 1+40 bits, with xp[1] <= 2^72/sqrt(ap[1]) */
   umul_ppmm (t1, t0, xp[1], xp[1]);
-  
+
   /* now t1 has at most 18 bits, with least 16 bits being its fractional value */
 
   u1 = ap[1] >> 48;
@@ -564,7 +564,7 @@ mpn_rsqrtrem2 (mpfr_limb_ptr xp, mpfr_limb_srcptr ap)
    n := ap[3]*B^3 + ap[2]*B^2 + ap[1]*B + ap[0] = s^2 + x*B + r, with n < (s+1)^2
 
    or equivalently x*B + r <= 2*s.
-   
+
    This code currently assumes GMP_NUMB_BITS = 64. */
 static mp_limb_t
 mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
@@ -582,7 +582,7 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
 
   t1 = ap[3] >> 48;
   t0 = (ap[3] << 16) | (ap[2] >> 48);
-  
+
   /* now t1:t0 is a (16+64)-bit approximation of a,
      (x1*B+x0) * (t1*B+t0) = (x1*t1)*B^2 + (x1*t0+x0*t1)*B + x0*t0 */
   r2 = x[1] * t1; /* r2 has 32 bits */
