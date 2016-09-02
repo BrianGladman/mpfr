@@ -2877,11 +2877,19 @@ In other words, if the error on @var{b} is bounded by two to the power
 you should give @var{err}=@var{prec}@minus{}@var{k}.
 This function @strong{does not modify} its arguments.
 
-If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
+If @var{rnd1} is @code{MPFR_RNDN},
 the error is considered to be either
 positive or negative, thus the possible range
 is twice as large as with a directed rounding for @var{rnd1} (with the
 same value of @var{err}).
+
+When @var{rnd2} is @code{MPFR_RNDF}, let @var{rnd3} be the opposite direction
+if @var{rnd1} is a directed rounding, and @code{MPFR_RNDN}
+if @var{rnd1} is @code{MPFR_RNDN}.
+The returned value is @code{mpfr_can_round (b, err, rnd1, rnd3, prec)}.
+As a consequence, if @code{mpfr_can_round} returns a non-zero value,
+the call @code{mpfr_set (y, b, rnd3)} will return a faithful rounding of
+the unknown number @var{x}.
 
 @c FIXME: This is still incorrect as inex can be 0. But the note can
 @c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
