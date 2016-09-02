@@ -2890,6 +2890,10 @@ The returned value is @code{mpfr_can_round (b, err, rnd1, rnd3, prec)}.
 As a consequence, if @code{mpfr_can_round} returns a non-zero value,
 the call @code{mpfr_set (y, b, rnd3)} will return a faithful rounding of
 the unknown number @var{x}.
+@c FIXME: The specification should be:
+@c Assuming that @code{mpfr_set (y, b, rnd3)} will be called, return a
+@c non-zero value if @var{y} is guaranteed to be a faithful rounding of
+@c @var{x}, 0 otherwise.
 
 @c FIXME: This is still incorrect as inex can be 0. But the note can
 @c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
