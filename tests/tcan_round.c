@@ -38,6 +38,8 @@ test_simple (void)
           mpfr_t b;
           int p, err, prec, inex, c;
 
+          if (r2 == MPFR_RNDF)
+            continue;
           p = 12 + (randlimb() % (2 * GMP_NUMB_BITS));
           err = p - 3;
           prec = 4;
@@ -46,8 +48,9 @@ test_simple (void)
           MPFR_ASSERTN (inex == 0);
           c = mpfr_can_round (b, err, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, prec);
           /* If r1 == r2, we can round.
+             Note: For r1, RNDF is equivalent to RNDN.
              TODO: complete this test for r1 != r2. */
-          if (r1 == r2 && !c)
+          if ((r1 == MPFR_RNDF ? MPFR_RNDN : r1) == r2 && !c)
             {
               printf ("Error in test_simple for i=%d,"
                       " err=%d r1=%s, r2=%s, p=%d\n", i, err,
@@ -198,6 +201,8 @@ check_can_round (void)
                   RND_LOOP (rnd1)
                     RND_LOOP (rnd2)
                       {
+                        if (rnd2 == MPFR_RNDF)
+                          continue;
                         mpfr_set (yinf, MPFR_IS_LIKE_RNDD (rnd1, 1) ?
                                   x : xinf, (mpfr_rnd_t) rnd2);
                         mpfr_set (ysup, MPFR_IS_LIKE_RNDU (rnd1, 1) ?
@@ -284,12 +289,13 @@ main (void)
   mpfr_set_str (x, "0.ff4ca619c76ba69", 16, MPFR_RNDZ);
   for (i = 30; i < 99; i++)
     for (j = 30; j < 99; j++)
-      for (r1 = 0; r1 < MPFR_RND_MAX; r1++)
-        for (r2 = 0; r2 < MPFR_RND_MAX; r2++)
-          {
-            /* test for assertions */
-            mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
-          }
+      RND_LOOP (r1)
+        RND_LOOP (r2)
+          if (r2 != MPFR_RNDF)
+            {
+              /* test for assertions */
+              mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
+            }
 
   test_pow2 (32, 32, MPFR_RNDN, MPFR_RNDN, 32);
   test_pow2 (174, 174, MPFR_RNDN, MPFR_RNDN, 174);
@@ -303,10 +309,11 @@ main (void)
     {
       i = (randlimb() % 200) + 4;
       for (j = i - 2; j < i + 2; j++)
-        for (r1 = 0; r1 < MPFR_RND_MAX; r1++)
-          for (r2 = 0; r2 < MPFR_RND_MAX; r2++)
-            for (k = MPFR_PREC_MIN; k <= i + 2; k++)
-              test_pow2 (i, k, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
+        RND_LOOP (r1)
+          RND_LOOP (r2)
+            if (r2 != MPFR_RNDF)
+              for (k = MPFR_PREC_MIN; k <= i + 2; k++)
+                test_pow2 (i, k, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
     }
 
   mpfr_clear (x);

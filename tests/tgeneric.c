@@ -654,7 +654,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               TGENERIC_CHECK ("should have been min MPFR number (underflow)",
                               MPFR_IS_ZERO (y));
             }
-          else if (compare == 0 || mpfr_can_round (y, yprec, rnd, rnd, prec))
+          else if (compare == 0 || rnd == MPFR_RNDF ||
+                   mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
               ctrn++;
               mpfr_set (t, y, rnd);
