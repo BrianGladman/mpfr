@@ -72,8 +72,8 @@ Changes from versions 3.1.* to version 4.0.0:
 - Major speedup in mpfr_add, mpfr_sub, mpfr_mul, mpfr_div and mpfr_sqrt when
   all operands have the same precision and this precision is less than the
   number of bits per word, e.g., less than 64 on a 64-bit computer.
-- Major speedup in mpfr_add and mpfr_sub when all operands have the same
-  precision and this precision is less than two words, e.g., at most 127
+- Major speedup in mpfr_add, mpfr_sub and mpfr_mul when all operands have the
+  same precision and this precision is less than two words, e.g., at most 127
   on a 64-bit computer.
 - Speedup by a factor of almost 2 in the double <--> mpfr conversions
   (mpfr_set_d and mpfr_get_d).
