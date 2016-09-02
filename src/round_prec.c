@@ -128,15 +128,9 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 
    rnd1 = RNDN and RNDF are similar: the sign of the error is unknown.
 
-   rnd2 = RNDF is forbidden as it does not make much sense: these
-   functions do not return the rounded result, while in RNDF, the
-   result may depend on the chosen rounded result. Said otherwise,
-   even if it is possible to do a faithful rounding, the user may
-   not know in which direction he should round in order to ensure
-   that the returned value is a faithful rounding. Alternatively,
-   assume that the user will round the approximation b toward the
+   rnd2 = RNDF: assume that the user will round the approximation b toward the
    direction of x, i.e. the opposite of rnd1 in directed rounding
-   modes, otherwise RNDN (and document this choice).
+   modes, otherwise RNDN.
 
    Side effects: none.
 */
@@ -176,9 +170,6 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
      The specification makes sense only for prec >= 1. */
   MPFR_ASSERTN (prec >= 1);
 
-  /* Forbidden: see explanation above. */
-  MPFR_ASSERTN (rnd2 != MPFR_RNDF);
-
   MPFR_ASSERTD(bp[bn - 1] & MPFR_LIMB_HIGHBIT);
 
   MPFR_ASSERT_SIGN(neg);
@@ -191,6 +182,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     rnd1 = MPFR_RNDN;
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
+  if (rnd2 == MPFR_RNDF)
+    rnd2 = (rnd1 == MPFR_RNDN) ? MPFR_RNDN :
+      MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDA : MPFR_RNDZ;
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
