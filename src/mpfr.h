@@ -301,7 +301,10 @@ typedef enum {
 #endif
 
 /* Use MPFR_DEPRECATED to mark MPFR functions, types or variables as
-   deprecated. Code inspired by Apache Subversion's svn_types.h file. */
+   deprecated. Code inspired by Apache Subversion's svn_types.h file.
+   For compatibility with MSVC, MPFR_DEPRECATED must be put before
+   __MPFR_DECLSPEC (not at the end of the function declaration as
+   documented in the GCC manual); GCC does not seem to care. */
 #if defined(__GNUC__) && \
   (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 # define MPFR_DEPRECATED __attribute__ ((deprecated))
@@ -310,6 +313,11 @@ typedef enum {
 #else
 # define MPFR_DEPRECATED
 #endif
+/* TODO: Also define MPFR_EXPERIMENTAL for experimental functions?
+   See SVN_EXPERIMENTAL in Subversion 1.9+ as an example:
+   __attribute__((warning("..."))) can be used with GCC 4.3.1+ but
+   not __llvm__, and __declspec(deprecated("...")) can be used with
+   MSC as above. */
 
 /* Note: In order to be declared, some functions need a specific
    system header to be included *before* "mpfr.h". If the user
@@ -503,6 +511,7 @@ __MPFR_DECLSPEC void mpfr_free_str (char *);
 
 __MPFR_DECLSPEC int mpfr_urandom (mpfr_ptr, gmp_randstate_t,
                                   mpfr_rnd_t);
+MPFR_DEPRECATED
 __MPFR_DECLSPEC int mpfr_grandom (mpfr_ptr, mpfr_ptr, gmp_randstate_t,
                                   mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_nrandom (mpfr_ptr, gmp_randstate_t,

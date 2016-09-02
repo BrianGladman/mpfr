@@ -185,6 +185,26 @@ do
     }' $file
 done
 
+# Macros of the form:
+#   #define FOO { ... }
+# may be unsafe and could yield obscure failures where writing "FOO;" as
+# this is here a block followed by a null statement. The following form
+# is preferred in most of the cases:
+#   #define FOO do { ... } while (0)
+# so that "FOO;" is a single statement.
+# To avoid false positives, a comment can be inserted, e.g.:
+#   #define FOO /* initializer */ { 0, 17 }
+for file in $srctests
+do
+  err-if-output "Missing 'do ... while (0)'" perl -e '
+    while (<>) {
+      my $s = $_;
+      while ($s =~ s/\\\n//) { $s .= <> }
+      $s =~ /^#\s*define\s+\w+(\([^)]*\))?\s*{/
+        and $s =~ tr/ \t/ /s, print "$ARGV: $s";
+    }' $file
+done
+
 # Do not use snprintf as it is not available in ISO C90.
 # Even on platforms where it is available, the prototype
 # may not be included (e.g. with gcc -ansi), so that the
@@ -220,6 +240,14 @@ err-if-output -t "Use MPFR_TMP_LIMBS_ALLOC" \
 grep '(mp_limb_t) *-\?[01]' $srctests | grep -v '#define MPFR_LIMB_' | \
   err-if-output -t "Use simple mp_limb_t constants" \
     grep -v MPFR_STAT_STATIC_ASSERT
+
+# Code possibly wrong with some C/GMP implementations. In short, if the
+# right operand of a shift depends on GMP_NUMB_BITS, then the left operand
+# should be of type mp_limb_t. There might be false positives.
+err-if-output \
+  --msg="Use a constant of type mp_limb_t instead of unsigned long?" \
+  -t "Suspicious code" \
+  grep -E '[^A_Za-z_][0-9]+[UL]* *<<.*GMP_NUMB_BITS' src/*.c
 
 for file in $srctests */Makefile.am acinclude.m4 configure.ac
 do
@@ -259,7 +287,7 @@ grep __gmp_ tests/*.c | \
   err-if-output -t "__gmp_" grep -v '^tests/tabort_defalloc'
 
 grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
-  err-if-output -t "alloc" grep -v '^tests/memory.c:'
+  err-if-output -t "alloc" grep -Ev '^tests/(memory|talloc-cache).c:'
 
 err-if-output --dir=doc "check-typography" ./check-typography
 

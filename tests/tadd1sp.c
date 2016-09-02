@@ -96,12 +96,14 @@ main (void)
     }                                                                   \
  while (0)
 
-#define SET_PREC(_p) \
-  { \
-    p = _p; \
-    mpfr_set_prec(a1, _p); mpfr_set_prec(a2, _p); \
-    mpfr_set_prec(b,  _p); mpfr_set_prec(c,  _p); \
-  }
+#define SET_PREC(_p)                                    \
+  do                                                    \
+    {                                                   \
+      p = _p;                                           \
+      mpfr_set_prec(a1, _p); mpfr_set_prec(a2, _p);     \
+      mpfr_set_prec(b,  _p); mpfr_set_prec(c,  _p);     \
+    }                                                   \
+  while (0)
 
 static void
 check_random (mpfr_prec_t p)

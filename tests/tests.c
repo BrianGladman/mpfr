@@ -104,6 +104,15 @@ gmp_randstate_t  mpfr_rands;
 
 char *locale = NULL;
 
+/* Programs that test GMP's mp_set_memory_functions() need to set
+   tests_memory_disabled before calling tests_start_mpfr(). */
+#ifdef MPFR_USE_MINI_GMP
+/* disable since mini-gmp does not keep track of old_size in realloc/free */
+int tests_memory_disabled = 1;
+#else
+int tests_memory_disabled = 0;
+#endif
+
 static mpfr_exp_t default_emin, default_emax;
 
 static void tests_rand_start (void);
@@ -206,6 +215,10 @@ test_version (void)
       "    $LD_LIBRARY_PATH directory, you typically get this error.  Do\n"
       "    not use $LD_LIBRARY_PATH on such platforms; it may also break\n"
       "    other things.\n"
+      "  * You may have an ld option that specifies a library search path\n"
+      "    where MPFR can be found, taking the precedence over the path\n"
+      "    added by libtool.  Check your environment variables, such as\n"
+      "    LD_OPTIONS under Solaris.\n"
       "  * Then look at http://www.mpfr.org/mpfr-current/ for any update.\n"
       "  * Try again on a completely clean source (some errors might come\n"
       "    from a previous build or previous source changes).\n"
@@ -246,10 +259,8 @@ tests_start_mpfr (void)
   feclearexcept (FE_ALL_EXCEPT);
 #endif
 
-#ifndef MPFR_USE_MINI_GMP
-  /* disable since mini-gmp does not keep track of old_size in realloc/free */
-  tests_memory_start ();
-#endif
+  if (!tests_memory_disabled)
+    tests_memory_start ();
   tests_rand_start ();
   tests_limit_start ();
 
@@ -277,9 +288,8 @@ tests_end_mpfr (void)
   mpfr_free_cache ();
   mpfr_free_cache2 (MPFR_FREE_GLOBAL_CACHE);
   tests_rand_end ();
-#ifndef MPFR_USE_MINI_GMP
-  tests_memory_end ();
-#endif
+  if (!tests_memory_disabled)
+    tests_memory_end ();
 
 #ifdef MPFR_TESTS_DIVBYZERO
   /* Define to test the use of MPFR_ERRDIVZERO */

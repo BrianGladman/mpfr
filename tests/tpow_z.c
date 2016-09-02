@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define ERROR(str) do { printf("Error for "str"\n"); exit (1); } while (0)
+#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
 
 static void
 check_special (void)

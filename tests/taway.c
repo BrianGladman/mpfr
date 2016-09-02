@@ -22,8 +22,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, MPFR_RNDN); }
-#define DISP2(s,t) {DISP(s,t); putchar('\n');}
+#define DISP(s,t)                                       \
+  do                                                    \
+    {                                                   \
+      printf (s);                                       \
+      mpfr_out_str (stdout, 2, 0, t, MPFR_RNDN);        \
+    }                                                   \
+  while (0)
+
+#define DISP2(s,t) do { DISP(s,t); putchar ('\n'); } while (0)
 
 #define SPECIAL_MAX 12
 

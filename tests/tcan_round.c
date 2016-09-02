@@ -22,6 +22,44 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* Simple cases where err - prec is large enough.
+   One can get failures as a consequence of r9883. */
+static void
+test_simple (void)
+{
+  int t[4] = { 2, 3, -2, -3 };  /* test powers of 2 and non-powers of 2 */
+  int i;
+  int r1, r2;
+
+  for (i = 0; i < 4; i++)
+    RND_LOOP (r1)
+      RND_LOOP (r2)
+        {
+          mpfr_t b;
+          int p, err, prec, inex, c;
+
+          p = 12 + (randlimb() % (2 * GMP_NUMB_BITS));
+          err = p - 3;
+          prec = 4;
+          mpfr_init2 (b, p);
+          inex = mpfr_set_si (b, t[i], MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          c = mpfr_can_round (b, err, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, prec);
+          /* If r1 == r2, we can round.
+             TODO: complete this test for r1 != r2. */
+          if (r1 == r2 && !c)
+            {
+              printf ("Error in test_simple for i=%d,"
+                      " err=%d r1=%s, r2=%s, p=%d\n", i, err,
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p);
+              printf ("b="); mpfr_dump (b);
+              exit (1);
+            }
+          mpfr_clear (b);
+        }
+}
+
 #define MAX_LIMB_SIZE 100
 
 static void
@@ -88,12 +126,7 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
     MPFR_IS_LIKE_RNDU (r1, MPFR_SIGN_POS) ?
     (MPFR_IS_LIKE_RNDD (r2, MPFR_SIGN_POS) ? 0 : prec < i) :
     (r2 != MPFR_RNDN ? 0 : prec < i);
-  /* We only require mpfr_can_round to return 1 when we can really
-     round, it is allowed to return 0 in some rare boundary cases,
-     for example when x = 2^k and the error is 0.25 ulp.
-     Note: if this changes in the future, the test could be improved by
-     removing the "&& expected_b == 0" below. */
-  if (b != expected_b && expected_b == 0)
+  if (b != expected_b)
     {
       printf ("Error for x=2^%d, px=%lu, err=%d, r1=%s, r2=%s, prec=%d\n",
               (int) i, (unsigned long) px, (int) i + 1,
@@ -119,6 +152,80 @@ test_pow2 (mpfr_exp_t i, mpfr_prec_t px, mpfr_rnd_t r1, mpfr_rnd_t r2,
   mpfr_clear (x);
 }
 
+static void
+check_can_round (void)
+{
+  mpfr_t x, xinf, xsup, yinf, ysup;
+  int precx, precy, err;
+  int rnd1, rnd2;
+  int i, u[3] = { 0, 1, 256 };
+  int inex;
+  int expected, got;
+
+  mpfr_inits2 (4 * GMP_NUMB_BITS, x, xinf, xsup, yinf, ysup, (mpfr_ptr) 0);
+
+  for (precx = 3 * GMP_NUMB_BITS - 3; precx <= 3 * GMP_NUMB_BITS + 3; precx++)
+    {
+      mpfr_set_prec (x, precx);
+      for (precy = precx - 4; precy <= precx + 4; precy++)
+        {
+          mpfr_set_prec (yinf, precy);
+          mpfr_set_prec (ysup, precy);
+
+          for (i = 0; i <= 3; i++)
+            {
+              if (i <= 2)
+                {
+                  /* Test x = 2^(precx - 1) + u */
+                  mpfr_set_ui_2exp (x, 1, precx - 1, MPFR_RNDN);
+                  mpfr_add_ui (x, x, u[i], MPFR_RNDN);
+                }
+              else
+                {
+                  /* Test x = 2^precx - 1 */
+                  mpfr_set_ui_2exp (x, 1, precx, MPFR_RNDN);
+                  mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+                }
+              MPFR_ASSERTN (mpfr_get_exp (x) == precx);
+
+              for (err = precy; err <= precy + 3; err++)
+                {
+                  mpfr_set_ui_2exp (xinf, 1, precx - err, MPFR_RNDN);
+                  inex = mpfr_add (xsup, x, xinf, MPFR_RNDN);
+                  MPFR_ASSERTN (inex == 0);
+                  inex = mpfr_sub (xinf, x, xinf, MPFR_RNDN);
+                  MPFR_ASSERTN (inex == 0);
+                  RND_LOOP (rnd1)
+                    RND_LOOP (rnd2)
+                      {
+                        mpfr_set (yinf, MPFR_IS_LIKE_RNDD (rnd1, 1) ?
+                                  x : xinf, (mpfr_rnd_t) rnd2);
+                        mpfr_set (ysup, MPFR_IS_LIKE_RNDU (rnd1, 1) ?
+                                  x : xsup, (mpfr_rnd_t) rnd2);
+                        expected = !! mpfr_equal_p (yinf, ysup);
+                        got = !! mpfr_can_round (x, err, (mpfr_rnd_t) rnd1,
+                                                 (mpfr_rnd_t) rnd2, precy);
+                        if (got != expected)
+                          {
+                            printf ("Error in check_can_round on:\n"
+                                    "precx=%d, precy=%d, i=%d, err=%d, "
+                                    "rnd1=%s, rnd2=%s: got %d\n",
+                                    precx, precy, i, err,
+                                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd1),
+                                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd2),
+                                    got);
+                            printf ("x="); mpfr_dump (x);
+                            exit (1);
+                          }
+                      }
+                }
+            }
+        }
+    }
+
+  mpfr_clears (x, xinf, xsup, yinf, ysup, (mpfr_ptr) 0);
+}
+
 int
 main (void)
 {
@@ -128,6 +235,8 @@ main (void)
   int n;
 
   tests_start_mpfr ();
+
+  test_simple ();
 
   /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
@@ -201,6 +310,8 @@ main (void)
     }
 
   mpfr_clear (x);
+
+  check_can_round ();
 
   check_round_p ();
 

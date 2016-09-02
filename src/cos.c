@@ -49,7 +49,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 
   /* compute minimal i such that i*(i+1) does not fit in an unsigned long,
      assuming that there are no padding bits. */
-  maxi = 1UL << (CHAR_BIT * sizeof(unsigned long) / 2);
+  maxi = 1UL << (sizeof(unsigned long) * CHAR_BIT / 2);
   if (maxi * (maxi / 2) == 0) /* test checked at compile time */
     {
       /* can occur only when there are padding bits. */

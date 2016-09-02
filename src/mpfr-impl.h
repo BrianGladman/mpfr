@@ -495,9 +495,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
    "-Werror=return-type".
    WARNING: It doesn't use do { } while (0) for Insure++ */
 #if defined(HAVE_BUILTIN_UNREACHABLE)
-# define MPFR_RET_NEVER_GO_HERE() { __builtin_unreachable(); }
+# define MPFR_RET_NEVER_GO_HERE() do { __builtin_unreachable(); } while (0)
 #else
-# define MPFR_RET_NEVER_GO_HERE()  { MPFR_ASSERTN(0); return 0; }
+# define MPFR_RET_NEVER_GO_HERE() do { MPFR_ASSERTN(0); return 0; } while (0)
 #endif
 
 
@@ -941,9 +941,6 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_ARE_SINGULAR_OR_UBF(x,y)           \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(x)) || \
    MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(y)))
-
-#define MPFR_IS_POWER_OF_2(x) \
-  (mpfr_cmp_ui_2exp ((x), 1, MPFR_GET_EXP (x) - 1) == 0)
 
 
 /******************************************************
@@ -2086,6 +2083,7 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ceil_mul (mpfr_exp_t, int, int);
 __MPFR_DECLSPEC int mpfr_exp_2 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_exp_3 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_powerof2_raw (mpfr_srcptr);
+__MPFR_DECLSPEC int mpfr_powerof2_raw2 (const mp_limb_t *, mp_size_t);
 
 __MPFR_DECLSPEC int mpfr_pow_general (mpfr_ptr, mpfr_srcptr,
                            mpfr_srcptr, mpfr_rnd_t, int, mpfr_save_expo_t *);

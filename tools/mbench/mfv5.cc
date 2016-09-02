@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define USAGE                                                           \
  "Bench functions for Pentium (V5++).\n"                                \
- __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"                \
+ __FILE__ " " __DATE__ " " __TIME__ " GCC " __VERSION__ "\n"		\
  "Usage: mfv5 [-pPREC] [-sSEED] [-mSIZE] [-iPRIO] [-lLIST] [-xEXPORT_BASE] [-XIMPORT_BASE] [-rROUNDING_MODE] tests ...\n"
 
 using namespace std;

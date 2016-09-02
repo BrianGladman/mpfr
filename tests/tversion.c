@@ -66,6 +66,81 @@ main (void)
   printf (COMP2 "%s\n", __VERSION__);
 #endif
 
+  /************** More information about the C implementation **************/
+
+  /* The following macros are currently used by src/mpfr-cvers.h and/or
+     src/mpfr-impl.h; they may have an influcence on how MPFR is compiled. */
+
+#if defined(__STDC__) || defined(__STDC_VERSION__)
+  printf ("[tversion] C standard: __STDC__ = "
+#if defined(__STDC__)
+          MAKE_STR(__STDC__)
+#else
+          "undef"
+#endif
+          ", __STDC_VERSION__ = "
+#if defined(__STDC_VERSION__)
+          MAKE_STR(__STDC_VERSION__)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(__GNUC__)
+  printf ("[tversion] __GNUC__ = " MAKE_STR(__GNUC__) ", __GNUC_MINOR__ = "
+#if defined(__GNUC_MINOR__)
+          MAKE_STR(__GNUC_MINOR__)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+  printf ("[tversion] Intel compiler: __ICC = "
+#if defined(__ICC)
+          MAKE_STR(__ICC)
+#else
+          "undef"
+#endif
+          ", __INTEL_COMPILER = "
+#if defined(__INTEL_COMPILER)
+          MAKE_STR(__INTEL_COMPILER)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(_WIN32) || defined(_MSC_VER)
+  printf ("[tversion] MS Windows: _WIN32 = "
+#if defined(_WIN32)
+          MAKE_STR(_WIN32)
+#else
+          "undef"
+#endif
+          ", _MSC_VER = "
+#if defined(_MSC_VER)
+          MAKE_STR(_MSC_VER)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(__GLIBC__)
+  printf ("[tversion] __GLIBC__ = " MAKE_STR(__GLIBC__) ", __GLIBC_MINOR__ = "
+#if defined(__GLIBC_MINOR__)
+          MAKE_STR(__GLIBC_MINOR__)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+  /*************************************************************************/
+
 #ifdef __MPIR_VERSION
   printf ("[tversion] MPIR: header %d.%d.%d, library %s\n",
           __MPIR_VERSION, __MPIR_VERSION_MINOR, __MPIR_VERSION_PATCHLEVEL,

@@ -229,6 +229,9 @@ To make a release (for the MPFR team):
      platforms where the endianness is unknown (or can't be specified
      without AC_CONFIG_HEADERS).
      Check also without mpz_t caching (-DMPFR_MY_MPZ_INIT=0).
+     Check with -DMPFR_GENERIC_ABI to test the generic code, not tied to
+     a particular ABI; this is useful when there is specific MPFR code
+     for both GMP_NUMB_BITS == 32 and GMP_NUMB_BITS == 64.
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
@@ -304,7 +307,7 @@ To make a release (for the MPFR team):
      MPFR_SUSPICIOUS_OVERFLOW).
 
      Check there is no branch misprediction due to wrong MPFR_LIKELY or
-     MPFR_UNLIKELY statements. For that test, configure with 
+     MPFR_UNLIKELY statements. For that test, configure with
      --enable-debug-prediction, run "timings-mpfr 100", and check that
      the output contains no WARNING.
 
@@ -433,6 +436,9 @@ Format of long double.
 + MPFR_HAVE_BUILTIN_UNREACHABLE: Define if the __builtin_unreachable
                         GCC built-in is supported.
 
++ MPFR_GENERIC_ABI:     Define to disable code that is tied to a specific
+                        ABI (e.g. GMP_NUMB_BITS value).
+
 List of macros used for checking MPFR:
 
 + MPFR_HAVE_FESETROUND: Define if the function fesetround() is available
@@ -560,6 +566,13 @@ Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
   or field names. Explicit casts should be used to convert between
   void* and other pointer types.
 
+When a string literal ("...") is followed by a macro name, there
+must be white space between them, otherwise this is parsed as a
+user-defined string literal in C++11:
+
+  http://en.cppreference.com/w/cpp/language/user_literal
+  http://stackoverflow.com/a/6402166/3782797
+
    =====================================================================
 
 C-Reduce may be useful to try to identify whether a bug comes from the
@@ -665,6 +678,11 @@ Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
 
 In the tests, use only tests_allocate, tests_reallocate and tests_free
 (there may be some rare exceptions, such as in tabort_defalloc*.c).
+
+Avoid code that would yield unnecessary reallocations, which can be very
+expensive. In particular, for code that is based on the mpz layer of GMP,
+do not use mpz_init, but mpz_init2 with the estimated maximum size; it is
+better to overestimate this size a bit than underestimating it.
 
 ===========================================================================
 

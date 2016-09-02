@@ -490,7 +490,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       mpfr_mul (u, u, u, MPFR_RNDN); /* 1/z^2 * (1+u)^3 */
 
       /* m <= maxm ensures that 2*m*(2*m+1) <= ULONG_MAX */
-      maxm = 1UL << (GMP_NUMB_BITS / 2 - 1);
+      maxm = 1UL << (sizeof(unsigned long) * CHAR_BIT / 2 - 1);
 
       /* s:(1+u)^15, t:(1+u)^2, t <= 3/128 */
 
