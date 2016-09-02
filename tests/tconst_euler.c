@@ -74,11 +74,14 @@ main (int argc, char *argv[])
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
 
-      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+      RND_LOOP_NO_RNDF (rnd)
         {
           mpfr_set_prec (y, yprec);
           mpfr_const_euler (y, (mpfr_rnd_t) rnd);
           err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
+          /* Note: for rnd = RNDF, rnd1 = RNDF is equivalent to rnd1 = RNDN
+             in mpfr_can_round, thus rnd2 = RNDF reduces to rnd2 = RNDN in that
+             case, we are duplicating the test for rnd = RNDN. */
           if (mpfr_can_round (y, err, (mpfr_rnd_t) rnd, (mpfr_rnd_t) rnd, prec))
             {
               mpfr_set (t, y, (mpfr_rnd_t) rnd);
