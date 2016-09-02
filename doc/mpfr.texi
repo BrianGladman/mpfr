@@ -2877,7 +2877,7 @@ In other words, if the error on @var{b} is bounded by two to the power
 you should give @var{err}=@var{prec}@minus{}@var{k}.
 This function @strong{does not modify} its arguments.
 
-If @var{rnd1} is @code{MPFR_RNDN},
+If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
 the error is considered to be either
 positive or negative, thus the possible range
 is twice as large as with a directed rounding for @var{rnd1} (with the
