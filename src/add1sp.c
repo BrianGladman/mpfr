@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Check if we have to check the result of mpfr_add1sp with mpfr_add1 */
 #if MPFR_WANT_ASSERT >= 2
 
-int mpfr_add1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
+int mpfr_add1sp_ref (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmpa, tmpb, tmpc, tmpd;
@@ -35,7 +35,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   int inexb, inexc, inexact, inexact2;
 
   if (rnd_mode == MPFR_RNDF)
-    return mpfr_add1sp2 (a, b, c, rnd_mode);
+    return mpfr_add1sp_ref (a, b, c, rnd_mode);
 
   old_flags = __gmpfr_flags;
 
@@ -65,7 +65,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   flags2 = __gmpfr_flags;
 
   __gmpfr_flags = old_flags;
-  inexact = mpfr_add1sp2 (a, b, c, rnd_mode);
+  inexact = mpfr_add1sp_ref (a, b, c, rnd_mode);
   flags = __gmpfr_flags;
 
   if (! mpfr_equal_p (tmpa, a) || inexact != inexact2 || flags != flags2)
@@ -91,7 +91,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_clears (tmpa, tmpb, tmpc, (mpfr_ptr) 0);
   return inexact;
 }
-# define mpfr_add1sp mpfr_add1sp2
+# define mpfr_add1sp mpfr_add1sp_ref
 #endif  /* MPFR_WANT_ASSERT >= 2 */
 
 /* Debugging support */
@@ -216,6 +216,130 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 }
 
+/* same as mpfr_add1sp, but for GMP_NUMB_BITS < p < 2*GMP_NUMB_BITS */
+static int
+mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+              mpfr_prec_t p)
+{
+  mpfr_exp_t bx = MPFR_GET_EXP (b);
+  mpfr_exp_t cx = MPFR_GET_EXP (c);
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp = MPFR_MANT(b);
+  mp_limb_t *cp = MPFR_MANT(c);
+  mpfr_prec_t sh = 2*GMP_NUMB_BITS - p;
+  mp_limb_t rb; /* round bit */
+  mp_limb_t sb; /* sticky bit */
+  mp_limb_t a1, a0;
+  mp_limb_t mask;
+  mpfr_uexp_t d;
+
+  MPFR_ASSERTD(GMP_NUMB_BITS < p && p < 2 * GMP_NUMB_BITS);
+
+  if (bx == cx)
+    {
+      /* since bp[1], cp[1] >= MPFR_LIMB_HIGHBIT, a carry always occurs */
+      a0 = bp[0] + cp[0];
+      a1 = bp[1] + cp[1] + (a0 < bp[0]);
+      ap[0] = (a0 >> 1) | (a1 << (GMP_NUMB_BITS - 1));
+      ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
+      bx ++;
+      rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
+      ap[0] ^= rb;
+      sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
+    }
+  else if (bx > cx)
+    {
+    BGreater2:
+      d = (mpfr_uexp_t) bx - cx;
+      mask = MPFR_LIMB_MASK(sh);
+      if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
+        {
+          a0 = bp[0];
+          a1 = bp[1];
+          sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
+          a0 += (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
+          ap[1] = a1 + (cp[1] >> d);
+          if (a0 < bp[0]) /* carry in low word */
+            ap[1] ++;
+          if (ap[1] < a1) /* carry in high word */
+            {
+            exponent_shift:
+              sb |= a0 & 1;
+              /* shift a by 1 */
+              a0 = (ap[1] << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
+              ap[1] = MPFR_LIMB_HIGHBIT | (ap[1] >> 1);
+              bx ++;
+            }
+          rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (a0 & mask) ^ rb;
+          ap[0] = a0 & ~mask;
+        }
+      else if (d < 2*GMP_NUMB_BITS) /* GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS */
+        {
+          sb = (d == GMP_NUMB_BITS) ? cp[0]
+            : cp[0] | (cp[1] << (2*GMP_NUMB_BITS-d));
+          a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
+          ap[1] = bp[1] + (a0 < bp[0]);
+          if (ap[1] == 0)
+            goto exponent_shift;
+          rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (a0 & mask) ^ rb;
+          ap[0] = a0 & ~mask;
+        }
+      else /* d >= 2*GMP_NUMB_BITS */
+        {
+          ap[0] = bp[0];
+          ap[1] = bp[1];
+          rb = 0; /* since p < 2*GMP_NUMB_BITS */
+          sb = 1; /* since c <> 0 */
+        }
+    }
+  else /* bx < cx: swap b and c */
+    {
+      mpfr_exp_t tx;
+      mp_limb_t *tp;
+      tx = bx; bx = cx; cx = tx;
+      tp = bp; bp = cp; cp = tp;
+      goto BGreater2;
+    }
+
+  /* now perform rounding */
+  if (MPFR_UNLIKELY(bx > __gmpfr_emax))
+    return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+
+  MPFR_SET_EXP (a, bx);
+  if (rb == 0 && sb == 0)
+    return 0; /* idem than MPFR_RET(0) and faster */
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 &&
+                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE << sh;
+      ap[1] += (ap[0] == 0);
+      if (ap[1] == 0)
+        {
+          ap[1] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+            MPFR_SET_EXP (a, bx + 1);
+          else /* overflow */
+            return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
 /* compute sign(b) * (|b| + |c|).
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
@@ -246,6 +370,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   p = MPFR_GET_PREC (b);
   if (p < GMP_NUMB_BITS)
     return mpfr_add1sp1 (a, b, c, rnd_mode, p);
+
+  if (GMP_NUMB_BITS < p && p < 2 * GMP_NUMB_BITS)
+    return mpfr_add1sp2 (a, b, c, rnd_mode, p);
 
   /* We need to get the sign before the possible exchange. */
   neg = MPFR_IS_NEG (b);
