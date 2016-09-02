@@ -178,6 +178,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     rnd1 = MPFR_RNDN;
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
+  /* FIXME: rnd2 == MPFR_RNDF is not supported yet. */
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
