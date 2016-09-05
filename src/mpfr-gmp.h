@@ -348,13 +348,20 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
    It returns invxl = floor((B^2-1)/xl)-B, where B=2^BITS_PER_LIMB,
    assuming the most significant bit of xl is set. */
 #ifndef invert_limb
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
+#define invert_limb(invxl,xl)                             \
+  do {                                                    \
+    invxl = __gmpn_invert_limb (xl);                      \
+  } while (0)
+#else
 #define invert_limb(invxl,xl)                             \
   do {                                                    \
     mp_limb_t dummy MPFR_MAYBE_UNUSED;                    \
     MPFR_ASSERTD ((xl) != 0);                             \
     udiv_qrnnd (invxl, dummy, ~(xl), MPFR_LIMB_MAX, xl);  \
   } while (0)
-#endif
+#endif /* defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB) */
+#endif /* ifndef invert_limb */
 
 /* udiv_qr_3by2 macro, adapted from GMP 5.0.2, file gmp-impl.h.
    Compute quotient the quotient and remainder for n / d. Requires d
@@ -435,7 +442,118 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
 # define mpn_copyd MPN_COPY
 #endif
 
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
+/* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
+   macro udiv_qrnnd_preinv.
+   It computes q and r such that nh*2^GMP_NUMB_BITS + nl = q*d + r,
+   with 0 <= r < d, assuming di = __gmpn_invert_limb (d). */
+#define __udiv_qrnnd_preinv(q, r, nh, nl, d, di)                        \
+  do {                                                                  \
+    mp_limb_t _qh, _ql, _r, _mask;                                      \
+    umul_ppmm (_qh, _ql, (nh), (di));                                   \
+    if (__builtin_constant_p (nl) && (nl) == 0)                         \
+      {                                                                 \
+        _qh += (nh) + 1;                                                \
+        _r = - _qh * (d);                                               \
+        _mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */     \
+        _qh += _mask;                                                   \
+        _r += _mask & (d);                                              \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        add_ssaaaa (_qh, _ql, _qh, _ql, (nh) + 1, (nl));                \
+        _r = (nl) - _qh * (d);                                          \
+        _mask = -(mp_limb_t) (_r > _ql); /* both > and >= are OK */     \
+        _qh += _mask;                                                   \
+        _r += _mask & (d);                                              \
+        if (MPFR_UNLIKELY (_r >= (d)))                                  \
+          {                                                             \
+            _r -= (d);                                                  \
+            _qh++;                                                      \
+          }                                                             \
+      }                                                                 \
+    (r) = _r;                                                           \
+    (q) = _qh;                                                          \
+  } while (0)
 
+/* specialized version for nl = 0, with di computed inside */
+#define __udiv_qrnd_preinv(q, r, nh, d)                                 \
+  do {                                                                  \
+    mp_limb_t _di;                                                      \
+                                                                        \
+    MPFR_ASSERTD ((d) != 0);                                            \
+    MPFR_ASSERTD ((nh) < (d));                                          \
+    MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
+                                                                        \
+    _di = __gmpn_invert_limb (d);                                       \
+    __udiv_qrnnd_preinv (q, r, nh, 0, d, _di);                          \
+  } while (0)
+#else
+/* Same as __udiv_qrnnd_c from longlong.h, but using a single UWType/UWtype
+   division instead of two, and with n0=0. The analysis below assumes a limb
+   has 64 bits for simplicity. */
+#define __udiv_qrnd_preinv(q, r, n1, d)                                 \
+  do {                                                                  \
+    UWtype __d1, __d0, __q1, __q0, __r1, __r0, __i;                     \
+                                                                        \
+    MPFR_ASSERTD ((d) != 0);                                            \
+    MPFR_ASSERTD ((n1) < (d));                                          \
+    MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
+                                                                        \
+    __d1 = __ll_highpart (d);                                           \
+    /* 2^31 <= d1 < 2^32 */                                             \
+    __d0 = __ll_lowpart (d);                                            \
+    /* 0 <= d0 < 2^32 */                                                \
+    __i = ~(UWtype) 0 / __d1;                                           \
+    /* 2^32 < i < 2^33 with i < 2^64/d1 */                              \
+                                                                        \
+    __q1 = (((n1) / __ll_B) * __i) / __ll_B;                            \
+    /* Since n1 < d, high(n1) <= d1 = high(d), thus */                  \
+    /* q1 <= high(n1) * (2^64/d1) / 2^32 <= 2^32 */                     \
+    /* and also q1 <= n1/d1 thus r1 >= 0 below */                       \
+    __r1 = (n1) - __q1 * __d1;                                          \
+    while (__r1 >= __d1)                                                \
+      __q1 ++, __r1 -= __d1;                                            \
+    /* by construction, we have n1 = q1*d1+r1, and 0 <= r1 < d1 */      \
+    /* thus q1 <= n1/d1 < 2^32+2 */                                     \
+    /* q1*d0 <= (2^32+1)*(2^32-1) <= 2^64-1 thus it fits in a limb. */  \
+    __r0 = __r1 * __ll_B;                                               \
+    __r1 = __r0 - __q1 * __d0;                                          \
+    /* At most two corrections are needed like in __udiv_qrnnd_c. */    \
+    if (__r1 > __r0) /* borrow when subtracting q1*d0 */                \
+      {                                                                 \
+        __q1--, __r1 += (d);                                            \
+        if (__r1 > (d)) /* no carry when adding d */                    \
+          __q1--, __r1 += (d);                                          \
+      }                                                                 \
+    /* We can have r1 < m here, but in this case the true remainder */  \
+    /* is 2^64+r1, which is > m (same analysis as below for r0). */     \
+    /* Now we have n1*2^32 = q1*d + r1, with 0 <= r1 < d. */            \
+    MPFR_ASSERTD(__r1 < (d));                                           \
+                                                                        \
+    /* The same analysis as above applies, with n1 replaced by r1, */   \
+    /* q1 by q0, r1 by r0. */                                           \
+    __q0 = ((__r1 / __ll_B) * __i) / __ll_B;                            \
+    __r0 = __r1  - __q0 * __d1;                                         \
+    while (__r0 >= __d1)                                                \
+      __q0 ++, __r0 -= __d1;                                            \
+    __r1 = __r0 * __ll_B;                                               \
+    __r0 = __r1 - __q0 * __d0;                                          \
+    /* We know the quotient floor(r1*2^64/d) is q0, q0-1 or q0-2.*/     \
+    if (__r0 > __r1) /* borrow when subtracting q0*d0 */                \
+      {                                                                 \
+        /* The quotient is either q0-1 or q0-2. */                      \
+        __q0--, __r0 += (d);                                            \
+        if (__r0 > (d)) /* no carry when adding d */                    \
+          __q0--, __r0 += (d);                                          \
+      }                                                                 \
+    /* Now we have n1*2^64 = (q1*2^32+q0)*d + r0, with 0 <= r0 < d. */  \
+    MPFR_ASSERTD(__r0 < (d));                                           \
+                                                                        \
+    (q) = __q1 * __ll_B | __q0;                                         \
+    (r) = __r0;                                                         \
+  } while (0)
+#endif
 
 /******************************************************
  ************* GMP Basic Pointer Types ****************
