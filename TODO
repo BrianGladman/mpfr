@@ -608,8 +608,12 @@ Table of contents:
   (The one done in r10573 allowed us to find a bug even without
   assertion checking.)
 
-- tzeta has been much slower due to r9848, at least with the x86 32-bit ABI;
-  see whether this was expected.
+- tzeta has been much slower since r9848 (which increases the precision
+  of the input for the low output precisions), at least with the x86
+  32-bit ABI. This seems to come from the fact that the working precision
+  in the mpfr_zeta implementation depends on the precision of the input.
+  Once mpfr_zeta has improved, change the last argument of test_generic
+  in tzeta.c back to 5 (as it was before r10667).
 
 
 ##############################################################################
