@@ -120,8 +120,16 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
 
   /* here n >= 3 */
 
-  /* argument reduction: compute k such that 2/3 <= n/2^k < 4/3,
-     i.e., 2^(k+1) <= 3n < 2^(k+2) */
+  /* Argument reduction: compute k such that 2/3 <= n/2^k < 4/3,
+     i.e., 2^(k+1) <= 3n < 2^(k+2).
+
+     FIXME: we could do better by considering n/(2^k*3^i*5^j),
+     which reduces the maximal distance to 1 from 1/3 to 1/8,
+     thus needing about 1.89 less terms in the Taylor expansion of
+     the reduced argument. Then log(2^k*3^i*5^j) can be computed
+     using a combination of log(16/15), log(25/24) and log(81/80),
+     see Section 6.5 of "A Fortran Multiple-Precision Arithmetic Package",
+     Richard P. Brent, ACM Transactions on Mathematical Software, 1978. */
 
   mpz_init_set_ui (three_n, n);
   mpz_mul_ui (three_n, three_n, 3);
