@@ -414,6 +414,10 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       /* add = 1 + floor(log(c*c*c*(13 + m1))/log(2)); */
       add = __gmpfr_ceil_log2 (c * c * c * (13.0 + m1));
       prec1 = precz + add;
+      /* FIXME: to avoid that the working precision (prec1) depends on the input
+         precision, one would need to take into account the error made when s1
+         is not exactly 1-s when computing zeta(s1) and gamma(s1) below, and also
+         in the case y=Inf. */
       prec1 = MAX (prec1, precs1) + 10;
 
       MPFR_GROUP_INIT_4 (group, prec1, z_pre, s1, y, p);
