@@ -557,6 +557,71 @@ mpn_rsqrtrem2 (mpfr_limb_ptr xp, mpfr_limb_srcptr ap)
   xp[1] = xp[1] >> 24;
 }
 
+#if 0
+/* this code seems to be slightly slower than the one below, for precision
+   113 bits on a 64-bit machine, and in addition it requires GMP internals
+   (for __gmpn_invert_limb) */
+static mp_limb_t
+mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
+{
+  mp_limb_t x, r, t;
+
+  x = mpn_sqrtrem2 (sp + 1, rp + 1, ap + 2);
+
+  /* now a1 = s1^2 + x*B + r1, with a1 = {ap+2,2}, s1 = sp[1], r1 = rp[1],
+     with 0 <= x*B + r1 <= 2*s1 */
+
+  /* use Newton's iteration for the square root, x' = 1/2 * (x + a/x), which
+     rewrites as:
+     
+     x' = x + (a - x^2)/(2x)
+
+     Since x' - sqrt(a) = (x-sqrt(a))^2/(2x), we have x' >= sqrt(a).
+     If we round (a - x^2)/(2x) downwards, then we will still get
+     an upper approximation of floor(sqrt(a)). */
+
+  t = rp[1] << (GMP_NUMB_BITS - 1);
+  rp[1] = (x << (GMP_NUMB_BITS - 1)) | (rp[1] >> 1); /* rp[1] = floor((a-x^2)/2) */
+  /* Since x*B + r1 <= 2*s1, we now have rp[1] <= s1, and since __udiv_qrnnd_preinv
+     requires its 3rd argument to be smaller than its 5th argument, we must
+     distinguish the case rp[1] == s1. */
+  if (MPFR_UNLIKELY(rp[1] == sp[1]))
+    {
+      /* Necessarily t=0 since x*B + r1 <= 2*s1 initially.
+         Taking sp[0] = 2^GMP_NUMB_BITS (if representable) would be too large
+         since it would mean sp[1] = sp[1]+1, and the remainder rp[1] would
+         become negative. */
+      sp[0] = ~MPFR_LIMB_ZERO;
+      r = sp[1];
+    }
+  else
+    {
+      r = __gmpn_invert_limb (sp[1]);
+      __udiv_qrnnd_preinv (sp[0], r, rp[1], t, sp[1], r);
+    }
+
+  /* now sp[0] = floor((a-x^2)/(2x)) = floor((x*B+r1)/2/s1) */
+
+  /* r1*B = 2*s1*s0 + 2*r
+     a - s^2 = a1*B^2 + a0 - (s1*B+s0)^2
+     = (s1^2+r1)*B^2 + a0 - s1^2*B^2 - 2*s1*s0*B - s0^2
+     = r1*B^2 + a0 - 2*s1*s0*B - s0^2
+     = 2*r*B + a0 - s0^2 */
+  umul_ppmm (rp[1], rp[0], sp[0], sp[0]); /* s0^2 */
+  t = -mpn_sub_n (rp, ap, rp, 2); /* a0 - s0^2 */
+  t += 2 * (r >> (GMP_NUMB_BITS - 1));
+  r <<= 1;
+  rp[1] += r;
+  t += rp[1] < r;
+  if ((mp_limb_signed_t) t < 0)
+    {
+      mpn_sub_1 (sp, sp, 2, 1);
+      t += mpn_addmul_1 (rp, sp, 2, 2);
+      t += mpn_add_1 (rp, rp, 2, 1);
+    }
+  return t;
+}
+#else
 /* Given as input ap[0-3], with B/4 <= ap[3] (where B = 2^GMP_NUMB_BITS),
    mpn_sqrtrem4 returns a value x, 0 <= x <= 1, and stores values s in sp[0-1] and
    r in rp[0-1] such that:
@@ -565,7 +630,8 @@ mpn_rsqrtrem2 (mpfr_limb_ptr xp, mpfr_limb_srcptr ap)
 
    or equivalently x*B + r <= 2*s.
 
-   This code currently assumes GMP_NUMB_BITS = 64. */
+   This code currently assumes GMP_NUMB_BITS = 64, and takes on average
+   135.68 cycles on an Intel i5-6500 for precision 113 bits */
 static mp_limb_t
 mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
 {
@@ -674,6 +740,7 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
 
   return b[2];
 }
+#endif
 
 /* Special code for GMP_NUMB_BITS < prec(r) < 2*GMP_NUMB_BITS,
    and GMP_NUMB_BITS < prec(u) <= 2*GMP_NUMB_BITS.
