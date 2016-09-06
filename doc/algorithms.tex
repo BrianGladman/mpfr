@@ -4763,16 +4763,16 @@ $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le
 \ulp(1/2) = 2^{-{\rm prec}}$, i.e.\ $n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
 $s \leftarrow S'(n)$ \\
-$l \leftarrow \log(n)$ \\
+$\ell \leftarrow \log(n)$ \\
 $r \leftarrow R'(n)$ \\
-return $(s - l) - r$
+return $(s - \ell) - r$
 \end{quote}
 Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le
 \frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
 If the target precision is $m$, and
-we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
-then the error on $s-l$ will be at most $3 \ulp(1/2)$,
-so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
+we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $\ell$,
+then the error on $s-\ell$ will be at most $3 \ulp(1/2)$,
+so the error on $(s - \ell) - r$ is at most $5 \ulp(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
 $8 \ulp(1/2)$.
 [\textbf{FIXME: check with new method to compute S}]
