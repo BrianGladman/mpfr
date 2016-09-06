@@ -216,7 +216,8 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   mp_limb_t a = a0 >> (GMP_NUMB_BITS - 4);
   mp_limb_t b = (a0 >> (GMP_NUMB_BITS - 8)) & 0xf;
   mp_limb_t c = (a0 >> (GMP_NUMB_BITS - 12)) & 0xf;
-  mp_limb_t x0, a1, t;
+  mp_limb_t x0, t;
+
 
   MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64);
 
@@ -243,19 +244,23 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 
   return x0 - 4; /* ensures x0 <= 2^36/sqrt(a0) */
 #else /* GMP_NUMB_BITS = 64 */
-  a1 = a0 >> (GMP_NUMB_BITS - 32);
-  /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
-  t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
-  /* t has 32 bits now */
+  {
+    mp_limb_t a1 = a0 >> (GMP_NUMB_BITS - 32);
+    /* a1 has 32 bits, thus a1*x0^2 has 64 bits */
+    t = (mp_limb_signed_t) (-a1 * (x0 * x0)) >> 32;
+    /* t has 32 bits now */
+  }
   x0 = (x0 << 15) + ((mp_limb_signed_t) (x0 * t) >> (17+1));
   /* now x0 is a 31-bit approximation (32 bits, 1 <= x0/2^31 <= 2),
      with maximal error 2^(-19.19) */
 
-  a1 = a0 >> (GMP_NUMB_BITS - 40); /* a1 has 40 bits */
-  t = (x0 * x0) >> 22; /* t has 40 bits */
-  /* a1 * t has 80 bits, but we know the upper 19 bits cancel with 1 */
-  t = (mp_limb_signed_t) (-a1 * t) >> 31; /* it remains 49 bits in theory,
-                                             but t has only 31 bits at most */
+  {
+    mp_limb_t a1 = a0 >> (GMP_NUMB_BITS - 40); /* a1 has 40 bits */
+    t = (x0 * x0) >> 22; /* t has 40 bits */
+    /* a1 * t has 80 bits, but we know the upper 19 bits cancel with 1 */
+    t = (mp_limb_signed_t) (-a1 * t) >> 31;
+    /* it remains 49 bits in theory, but t has only 31 bits at most */
+  }
   x0 = (x0 << 9) + ((mp_limb_signed_t) (x0 * t) >> (31+1+49-40));
 
   /* now x0 is a 1+40-bit approximation,
@@ -573,7 +578,7 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
 
   /* use Newton's iteration for the square root, x' = 1/2 * (x + a/x), which
      rewrites as:
-     
+
      x' = x + (a - x^2)/(2x)
 
      Since x' - sqrt(a) = (x-sqrt(a))^2/(2x), we have x' >= sqrt(a).
