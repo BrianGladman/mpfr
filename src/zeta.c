@@ -430,6 +430,8 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           if (MPFR_IS_INF (y)) /* Zeta(s) < 0 for -4k-2 < s < -4k,
                                   Zeta(s) > 0 for -4k < s < -4k+2 */
             {
+              /* FIXME: An overflow in gamma(s1) does not imply that
+                 Zeta(s) will overflow. */
               mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
               mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
               overflow = (mpfr_cmp_si_2exp (s1, -1, -1) > 0) ? -1 : 1;

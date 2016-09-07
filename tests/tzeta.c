@@ -184,6 +184,48 @@ test2 (void)
   mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
+/* The following test attempts to trigger an intermediate overflow in
+   Gamma(s1) in the reflection formula with a 32-bit ABI (the example
+   depends on the extended exponent range): r10804 fails when the
+   exponent field is on 32 bits. */
+static void
+interm_overflow (void)
+{
+  mpfr_t x, y1, y2;
+  mpfr_flags_t flags1, flags2;
+  int inex1, inex2;
+
+  mpfr_inits2 (64, x, y1, y2, (mpfr_ptr) 0);
+
+  mpfr_set_si (x, -44787928, MPFR_RNDN);
+  mpfr_nextabove (x);
+
+  mpfr_set_str (y1, "0x3.0a6ab0ab281742acp+954986780", 0, MPFR_RNDN);
+  inex1 = -1;
+  flags1 = MPFR_FLAGS_INEXACT;
+
+  mpfr_clear_flags ();
+  inex2 = mpfr_zeta (y2, x, MPFR_RNDN);
+  flags2 = __gmpfr_flags;
+
+  if (!(mpfr_equal_p (y1, y2) &&
+        SAME_SIGN (inex1, inex2) &&
+        flags1 == flags2))
+    {
+      printf ("Error in interm_overflow\n");
+      printf ("Expected ");
+      mpfr_dump (y1);
+      printf ("with inex = %d and flags =", inex1);
+      flags_out (flags1);
+      printf ("Got      ");
+      mpfr_dump (y2);
+      printf ("with inex = %d and flags =", inex2);
+      flags_out (flags2);
+      exit (1);
+    }
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+}
+
 #define TEST_FUNCTION mpfr_zeta
 #define TEST_RANDOM_EMIN -48
 #define TEST_RANDOM_EMAX 31
@@ -420,6 +462,8 @@ main (int argc, char *argv[])
      the input. */
   test_generic (MPFR_PREC_MIN, 70, 1);
   test2 ();
+
+  interm_overflow ();
 
   tests_end_mpfr ();
   return 0;
