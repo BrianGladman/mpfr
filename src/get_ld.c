@@ -35,7 +35,6 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 }
 
 #elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE)
-
 /* special code for IEEE 754 little-endian extended format */
 long double
 mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -50,7 +49,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
   inex = mpfr_set (tmp, x, rnd_mode);
 
-  mpfr_set_emin (-16382-63);
+  mpfr_set_emin (-16382-62); /* emin=-16444, see below */
   mpfr_set_emax (16384);
   mpfr_subnormalize (tmp, mpfr_check_range (tmp, inex, rnd_mode), rnd_mode);
   mpfr_prec_round (tmp, 64, MPFR_RNDZ); /* exact */
