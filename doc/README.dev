@@ -273,7 +273,11 @@ To make a release (for the MPFR team):
      diagnostic messages at runtime, not a failure; GCC 5 supports
      -fno-sanitize-recover like clang.
 
-     Test with GCC's AddressSanitizer (-fsanitize=address).
+     Test with GCC's AddressSanitizer (-fsanitize=address). One needs to
+     unset LD_PRELOAD to avoid failures. Alternatively, -static-libasan
+     could be used, but there are currently issues with it:
+       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=836855
+       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=836864
 
      Test with i586-mingw32msvc under Wine (see below).
 
