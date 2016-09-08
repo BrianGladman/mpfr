@@ -34,7 +34,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* special code for p=PREC(q) < GMP_NUMB_BITS,
    and PREC(u), PREC(v) <= GMP_NUMB_BITS */
 static int
-mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
+mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(q);
   mpfr_limb_ptr up = MPFR_MANT(u);
@@ -154,7 +154,7 @@ mpfr_divsp1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 /* special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < PREC(u), PREC(v) <= 2*GMP_NUMB_BITS */
 static int
-mpfr_divsp2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
+mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(q);
   mpfr_limb_ptr up = MPFR_MANT(u);
@@ -681,12 +681,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 #if !defined(MPFR_GENERIC_ABI)
 
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
-    return mpfr_divsp1 (q, u, v, rnd_mode);
+    return mpfr_div_1 (q, u, v, rnd_mode);
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
   if (GMP_NUMB_BITS < MPFR_GET_PREC(q) && MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS
       && usize == 2 && vsize == 2)
-    return mpfr_divsp2 (q, u, v, rnd_mode);
+    return mpfr_div_2 (q, u, v, rnd_mode);
 #endif
 
 #endif /* !defined(MPFR_GENERIC_ABI) */
