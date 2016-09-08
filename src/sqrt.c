@@ -420,7 +420,7 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 
 /* Special code for prec(r), prec(u) < GMP_NUMB_BITS. We cannot have
    prec(u) = GMP_NUMB_BITS here, since when the exponent of u is odd,
-   we need to shift u by one bit to the right without loosing any bit. */
+   we need to shift u by one bit to the right without losing any bit. */
 static int
 mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
