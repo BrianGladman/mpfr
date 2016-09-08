@@ -427,7 +427,7 @@ bug_20160907 (void)
 int
 main (int argc, char *argv[])
 {
-  volatile long double d, e;
+  volatile long double d, e, maxp2;
   mpfr_t x;
   int i;
   mpfr_exp_t emax;
@@ -489,9 +489,11 @@ main (int argc, char *argv[])
 #endif
 
   /* check the largest power of two */
-  d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
-  check_set_get (d);
-  check_set_get (-d);
+  maxp2 = 1.0;
+  while (maxp2 < LDBL_MAX / 2.0)
+    maxp2 *= 2.0;
+  check_set_get (maxp2);
+  check_set_get (-maxp2);
 
   /* check LDBL_MAX; according to the C standard, LDBL_MAX must be
      exactly (1-b^(-LDBL_MANT_DIG)).b^LDBL_MAX_EXP, where b is the
@@ -503,8 +505,13 @@ main (int argc, char *argv[])
      is still representable on LDBL_MANT_DIG bits.
      [*] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61399 */
   d = LDBL_MAX;
-  check_set_get (d);
-  check_set_get (-d);
+  e = d / 2.0;
+  if (e != maxp2)  /* false under NetBSD/x86 */
+    {
+      /* d = LDBL_MAX does not have excess precision. */
+      check_set_get (d);
+      check_set_get (-d);
+    }
 
   /* check the smallest power of two */
   d = 1.0;
