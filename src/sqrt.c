@@ -418,7 +418,9 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   return x;
 }
 
-/* Special code for prec(r), prec(u) < GMP_NUMB_BITS. */
+/* Special code for prec(r), prec(u) < GMP_NUMB_BITS. We cannot have
+   prec(u) = GMP_NUMB_BITS here, since when the exponent of u is odd,
+   we need to shift u by one bit to the right without loosing any bit. */
 static int
 mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
@@ -739,8 +741,8 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
       mpn_add_1 (sp, sp, 2, 1);
       /* add 2 to t0*B + {b, 2}: t0 += mpn_add_1 (b, b, 2, 2) */
       b[0] += 2;
-      if (b[0] < 2)
-        t0 += (b[1]++ == 0);
+      if (b[0] == 0)
+        t0 += (++b[1] == 0);
     }
 
   return b[2];
@@ -762,18 +764,20 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (((unsigned int) exp_u & 1) != 0)
     {
       np[3] = up[1] >> 1;
-      np[2] = (up[1] << (GMP_NUMB_BITS-1)) | (up[0] >> 1);
+      np[2] = (up[1] << (GMP_NUMB_BITS - 1)) | (up[0] >> 1);
+      np[1] = up[0] << (GMP_NUMB_BITS - 1);
       exp_u ++;
     }
   else
     {
       np[3] = up[1];
       np[2] = up[0];
+      np[1] = 0;
     }
   MPFR_ASSERTD (((unsigned int) exp_u & 1) == 0);
   exp_r = exp_u / 2;
 
-  np[1] = np[0] = 0;
+  np[0] = 0;
   sb = mpn_sqrtrem4 (rp, tp, np);
   sb |= tp[0] | tp[1];
   rb = rp[0] & (MPFR_LIMB_ONE << (sh - 1));

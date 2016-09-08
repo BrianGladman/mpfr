@@ -597,6 +597,25 @@ bug20160120 (void)
   mpfr_clear(y);
 }
 
+/* Bug in mpfr_sqrt2 when prec(u) = 2*GMP_NUMB_BITS and the exponent of u is
+   odd: the last bit of u is lost. */
+static void
+bug20160908 (void)
+{
+  mpfr_t r, u;
+  int n = GMP_NUMB_BITS, ret;
+
+  mpfr_init2 (r, 2*n - 1);
+  mpfr_init2 (u, 2 * n);
+  mpfr_set_ui_2exp (u, 1, 2*n-2, MPFR_RNDN); /* u=2^(2n-2) with exp(u)=2n-1 */
+  mpfr_nextabove (u);
+  /* now u = 2^(2n-2) + 1/2 */
+  ret = mpfr_sqrt (r, u, MPFR_RNDZ);
+  MPFR_ASSERTN(ret == -1 && mpfr_cmp_ui_2exp (r, 1, n-1) == 0);
+  mpfr_clear (r);
+  mpfr_clear (u);
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -733,6 +752,7 @@ main (void)
   bad_cases (mpfr_sqrt, mpfr_sqr, "mpfr_sqrt", 8, -256, 255, 4, 128, 800, 50);
 
   bug20160120 ();
+  bug20160908 ();
 
   tests_end_mpfr ();
   return 0;
