@@ -227,8 +227,7 @@ mpfr_get_ld_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     return (long double) mpfr_get_d_2exp (expptr, src, rnd_mode);
 
-  tmp[0] = *src;        /* Hack copy mpfr_t */
-  MPFR_SET_EXP (tmp, 0);
+  MPFR_ALIAS (tmp, src, MPFR_SIGN (src), 0);
   ret = mpfr_get_ld (tmp, rnd_mode);
 
   if (MPFR_IS_PURE_FP(src))
