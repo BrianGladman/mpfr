@@ -370,15 +370,17 @@ static void
 bug_20160907 (void)
 {
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-  long double dn = 1.0, ld;
+  long double dn, ld, t = 1.0;
   mpfr_t mp;
-  long e = 0;
+  long e = 1;
 
-  while (dn * (long double) 0.5 != 0)
+  do
     {
-      dn = dn * (long double) 0.5;
-      e --;
+      e--;
+      dn = t;
+      t = dn * (long double) 0.5;
     }
+  while (t != 0);
   /* dn=2^e is now the smallest subnormal */
 
   mpfr_init2 (mp, 64);
