@@ -61,7 +61,7 @@ Isnan_ld (long double d)
 static mpfr_prec_t
 print_binary (long double d, int flag)
 {
-  long double e;
+  long double e, f;
   long exp = 1;
   mpfr_prec_t prec = 0;
 
@@ -96,7 +96,7 @@ print_binary (long double d, int flag)
         printf ("0.0\n");
       return prec;
     }
-  /* now d > 0 */
+  MPFR_ASSERTN (d > 0);
   e = (long double) 1.0;
   while (e > d)
     {
@@ -104,14 +104,16 @@ print_binary (long double d, int flag)
       exp --;
     }
   if (flag == 2) printf ("1: e=%.36Le\n", e);
-  /* now d >= e */
-  while (d >= e + e)
+  MPFR_ASSERTN (d >= e);
+  /* FIXME: There can be an overflow here, which may not be supported
+     on all platforms. */
+  while (f = e + e, d >= f)
     {
-      e = e + e;
+      e = f;
       exp ++;
     }
   if (flag == 2) printf ("2: e=%.36Le\n", e);
-  /* now e <= d < 2e */
+  MPFR_ASSERTN (e <= d && d < f);
   if (flag == 1)
     printf ("0.");
   if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
