@@ -161,7 +161,6 @@ check_cmp (int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
-  mpfr_test_init ();
   tests_start_mpfr ();
 
   check_inexact ();
