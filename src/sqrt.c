@@ -456,7 +456,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (exp_r > __gmpfr_emax)
     return mpfr_overflow (r, rnd_mode, 1);
 
-  /* See comments in mpfr_divsp1 */
+  /* See comments in mpfr_div_1 */
   if (exp_r < __gmpfr_emin)
     {
       if (rnd_mode == MPFR_RNDN)
@@ -785,7 +785,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (exp_r > __gmpfr_emax)
     return mpfr_overflow (r, rnd_mode, 1);
 
-  /* See comments in mpfr_divsp1 */
+  /* See comments in mpfr_div_1 */
   if (exp_r < __gmpfr_emin)
     {
       if (rnd_mode == MPFR_RNDN)
