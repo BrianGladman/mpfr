@@ -372,7 +372,7 @@ bug_20160907 (void)
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
   long double dn = 1.0, ld;
   mpfr_t mp;
-  mpfr_exp_t e = 0;
+  long e = 0;
 
   while (dn * (long double) 0.5 != 0)
     {
