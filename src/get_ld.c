@@ -38,7 +38,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
 /* FIXME: This code assumes that a 64-bit precision is available while
    the processor may be configured to round on 53 bits or less. This
-   yields a failure in tset_ld on NetBSD (the test is correct). */
+   yields a failure in tset_ld on NetBSD 5.1 (the test is correct). */
 
 /* special code for IEEE 754 little-endian extended format */
 long double
