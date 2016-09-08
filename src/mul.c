@@ -208,7 +208,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 /* special code for prec(a) < GMP_NUMB_BITS and
    prec(b), prec(c) <= GMP_NUMB_BITS */
 static int
-mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
   mp_limb_t h;
@@ -305,7 +305,7 @@ mpfr_mulsp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 /* special code for GMP_NUMB_BITS < prec(a) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < prec(b), prec(c) <= 2*GMP_NUMB_BITS */
 static int
-mpfr_mulsp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
+mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
   mp_limb_t h, l, u, v;
@@ -483,12 +483,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cq = MPFR_GET_PREC (c);
   if (MPFR_GET_PREC(a) < GMP_NUMB_BITS &&
       bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS)
-    return mpfr_mulsp1 (a, b, c, rnd_mode, MPFR_GET_PREC(a));
+    return mpfr_mul_1 (a, b, c, rnd_mode, MPFR_GET_PREC(a));
 
   if (GMP_NUMB_BITS < MPFR_GET_PREC(a) && MPFR_GET_PREC(a) < 2 * GMP_NUMB_BITS
       && GMP_NUMB_BITS < bq && bq <= 2 * GMP_NUMB_BITS
       && GMP_NUMB_BITS < cq && cq <= 2 * GMP_NUMB_BITS)
-    return mpfr_mulsp2 (a, b, c, rnd_mode, MPFR_GET_PREC(a));
+    return mpfr_mul_2 (a, b, c, rnd_mode, MPFR_GET_PREC(a));
 
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
