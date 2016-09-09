@@ -21,9 +21,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <float.h>
-#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-#include <math.h> /* for nextafterl and ilogbl */
-#endif
 #ifdef WITH_FPU_CONTROL
 #include <fpu_control.h>
 #endif
@@ -390,11 +387,18 @@ bug_20160907 (void)
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
   long double dn, ld;
   mpfr_t mp;
-  long e = 1;
+  long e;
+  mpfr_long_double_t x;
 
-  /* FIXME: nextafterl and ilogbl are C99 only. */
-  dn = nextafterl ((long double) 0.0, (long double) 1.0);
-  e = ilogbl (dn);
+  /* the following is the encoding of the smallest subnormal number
+     for HAVE_LDOUBLE_IEEE_EXT_LITTLE */
+  x.s.manl = 1;
+  x.s.manh = 0;
+  x.s.expl = 0;
+  x.s.exph = 0;
+  x.s.sign= 0;
+  dn = x.ld;
+  e = -16445;
   /* dn=2^e is now the smallest subnormal. */
 
   mpfr_init2 (mp, 64);
