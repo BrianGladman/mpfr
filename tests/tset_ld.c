@@ -21,6 +21,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <float.h>
+#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
+#include <math.h> /* for nextafterl and ilogbl */
+#endif
 #ifdef WITH_FPU_CONTROL
 #include <fpu_control.h>
 #endif
@@ -389,16 +392,9 @@ bug_20160907 (void)
   mpfr_t mp;
   long e = 1;
 
-  do
-    {
-      e--;
-      dn = t;
-      t = dn / (long double) 2.0;
-    }
-  while (t != 0);
-  /* dn=2^e is now the smallest subnormal. Warning: this does not seem to be
-     true when the rounding precision is smaller than the precision of long
-     double (for example using -mpc64 under Linux). */
+  dn = nextafterl ((long double) 0.0, (long double) 1.0);
+  e = ilogbl (dn);
+  /* dn=2^e is now the smallest subnormal. */
 
   mpfr_init2 (mp, 64);
   mpfr_set_ui_2exp (mp, 1, e - 1, MPFR_RNDN);
