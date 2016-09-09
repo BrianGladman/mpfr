@@ -388,7 +388,7 @@ static void
 bug_20160907 (void)
 {
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-  long double dn, ld, t = 1.0;
+  long double dn, ld;
   mpfr_t mp;
   long e = 1;
 
