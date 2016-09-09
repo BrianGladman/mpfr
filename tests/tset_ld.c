@@ -392,6 +392,7 @@ bug_20160907 (void)
   mpfr_t mp;
   long e = 1;
 
+  /* FIXME: nextafterl and ilogbl are C99 only. */
   dn = nextafterl ((long double) 0.0, (long double) 1.0);
   e = ilogbl (dn);
   /* dn=2^e is now the smallest subnormal. */
