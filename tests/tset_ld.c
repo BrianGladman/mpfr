@@ -62,7 +62,7 @@ Isnan_ld (long double d)
 static mpfr_prec_t
 print_binary (long double d, int flag)
 {
-  long double e, f;
+  long double e, f, r;
   long exp = 1;
   mpfr_prec_t prec = 0;
 
@@ -119,14 +119,25 @@ print_binary (long double d, int flag)
     printf ("0.");
   if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                          (long) prec);
-  while (d > (long double) 0.0)
+  f = 0.0; /* will hold accumulated powers of 2 */
+  r = d;   /* invariant: r = d - f */
+  while (r > (long double) 0.0)
     {
       prec++;
-      if (d >= e)
+      if (r >= e)
         {
+          volatile long double g, h;
           if (flag == 1)
             printf ("1");
-          d = (long double) ((long double) d - (long double) e);
+          g = f + e;
+          h = g - e;
+          if (!(f != g && g != h && f == h)) /* f+e is not exact */
+            {
+              r = d = d - f; /* should be exact */
+              f = 0.0;
+            }
+          f = f + e;
+          r = d - f;
         }
       else
         {
@@ -187,6 +198,7 @@ check_set_get (long double d)
           printf ("  x = ");
           mpfr_dump (x);
           printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
+          printf ("  prec=%lu\n", prec);
           print_binary (d, 2);
           exit (1);
         }
@@ -397,6 +409,7 @@ bug_20160907 (void)
       printf ("mp=");
       mpfr_out_str (stdout, 10, 0, mp, MPFR_RNDN);
       printf ("\n");
+      printf ("mp="); mpfr_dump (mp);
       exit (1);
     }
 
