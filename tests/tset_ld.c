@@ -393,10 +393,12 @@ bug_20160907 (void)
     {
       e--;
       dn = t;
-      t = dn * (long double) 0.5;
+      t = dn / (long double) 2.0;
     }
   while (t != 0);
-  /* dn=2^e is now the smallest subnormal */
+  /* dn=2^e is now the smallest subnormal. Warning: this does not seem to be
+     true when the rounding precision is smaller than the precision of long
+     double (for example using -mpc64 under Linux). */
 
   mpfr_init2 (mp, 64);
   mpfr_set_ui_2exp (mp, 1, e - 1, MPFR_RNDN);
