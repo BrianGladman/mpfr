@@ -58,6 +58,7 @@ Isnan_ld (long double d)
 
 /* Return the minimal number of bits to represent d exactly (0 for zero).
    If flag is non-zero, also print d. */
+/* FIXME: This function doesn't work if the rounding precision is reduced. */
 static mpfr_prec_t
 print_binary (long double d, int flag)
 {
