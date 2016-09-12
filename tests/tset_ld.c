@@ -119,14 +119,14 @@ print_binary (long double d, int flag)
     printf ("0.");
   if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                          (long) prec);
-  /* Note: the method we use here to extract the bits of r is the following,
+  /* Note: the method we use here to extract the bits of d is the following,
      to deal with the case where the rounding precision is less than the
-     precision of r:
-     (1) we accumulate the upper bits of r into f
+     precision of d:
+     (1) we accumulate the upper bits of d into f
      (2) when accumulating a new bit into f is not exact, we subtract
-         f from r and reset f to 0
+         f from d and reset f to 0
      This is guaranteed to work only when the rounding precision is at least
-     half the precision of r, since otherwise r-f might not be exact.
+     half the precision of d, since otherwise d-f might not be exact.
      This method does not work with flush-to-zero on underflow. */
   f = 0.0; /* will hold accumulated powers of 2 */
   r = d;   /* invariant: r = d - f */
