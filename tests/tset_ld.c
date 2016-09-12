@@ -129,28 +129,25 @@ print_binary (long double d, int flag)
      half the precision of d, since otherwise d-f might not be exact.
      This method does not work with flush-to-zero on underflow. */
   f = 0.0; /* will hold accumulated powers of 2 */
-  r = d;   /* invariant: r = d - f */
-  while (r > (long double) 0.0)
+  while (1)
     {
       prec++;
-      if (r >= e)
+      r = f + e;
+      /* r is close to f (in particular in the cases where f+e may
+         not be exact), so that r - f should be exact. */
+      if (r - f != e) /* f+e is not exact */
         {
-          volatile long double g;
+          d -= f; /* should be exact */
+          f = 0.0;
+          r = e;
+        }
+      if (d >= r)
+        {
           if (flag == 1)
             printf ("1");
-          g = f + e;
-          /* g is close to f (in particular in the cases where f+e may
-             not be exact), so that g - f should be exact. */
-          if (g - f != e) /* f+e is not exact */
-            {
-              r = d = d - f; /* should be exact */
-              f = 0.0;
-            }
-          f = f + e;
-          /* FIXME: d - f may not be exact, so that the r >= e test in
-             the next iteration may be wrong. Example: 2^56-2^54-1 is
-             output as "0.11e56". */
-          r = d - f;
+          if (d == r)
+            break;
+          f = r;
         }
       else
         {
@@ -159,7 +156,7 @@ print_binary (long double d, int flag)
         }
       e *= (long double) 0.5;
       /* The following assertion may fail with flush-to-zero on underflow. */
-      MPFR_ASSERTN (r == 0 || e != 0);
+      MPFR_ASSERTN (e != 0);
       if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                              (long) prec);
     }
