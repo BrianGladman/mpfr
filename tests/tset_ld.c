@@ -134,12 +134,13 @@ print_binary (long double d, int flag)
       prec++;
       if (r >= e)
         {
-          volatile long double g, h;
+          volatile long double g;
           if (flag == 1)
             printf ("1");
           g = f + e;
-          h = g - e;
-          if (f == g || g == h || f != h) /* f+e is not exact */
+          /* g is close to f (in particular in the cases where f+e may
+             not be exact), so that g - f should be exact. */
+          if (g - f != e) /* f+e is not exact */
             {
               r = d = d - f; /* should be exact */
               f = 0.0;
