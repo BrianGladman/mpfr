@@ -119,33 +119,38 @@ print_binary (long double d, int flag)
     printf ("0.");
   if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                          (long) prec);
-  /* Note: the method we use here to extract the bits of d is the following,
+  /* Note: the method we use here to extract the bits of r is the following,
      to deal with the case where the rounding precision is less than the
-     precision of d:
-     (1) we accumulate the upper bits of d into f
+     precision of r:
+     (1) we accumulate the upper bits of r into f
      (2) when accumulating a new bit into f is not exact, we subtract
-         f from d and reset f to 0
+         f from r and reset f to 0
      This is guaranteed to work only when the rounding precision is at least
-     half the precision of d, since otherwise d-f might not be exact.
+     half the precision of r, since otherwise r-f might not be exact.
      This method does not work with flush-to-zero on underflow. */
   f = 0.0; /* will hold accumulated powers of 2 */
+  r = d;   /* invariant: r = d - f */
   while (r > (long double) 0.0)
     {
       prec++;
-      r = f + e;
-      /* r is close to f (in particular in the cases where f+e may
-         not be exact), so that r - f should be exact. */
-      if (r - f != e) /* f+e is not exact */
+      if (r >= e)
         {
-          d -= f; /* should be exact */
-          f = 0.0;
-          r = e;
-        }
-      if (d >= r)
-        {
-          f = r;
+          volatile long double g;
           if (flag == 1)
             printf ("1");
+          g = f + e;
+          /* g is close to f (in particular in the cases where f+e may
+             not be exact), so that g - f should be exact. */
+          if (g - f != e) /* f+e is not exact */
+            {
+              r = d = d - f; /* should be exact */
+              f = 0.0;
+            }
+          f = f + e;
+          /* FIXME: d - f may not be exact, so that the r >= e test in
+             the next iteration may be wrong. Example: 2^56-2^54-1 is
+             output as "0.11e56". */
+          r = d - f;
         }
       else
         {
