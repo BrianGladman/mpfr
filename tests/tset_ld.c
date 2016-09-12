@@ -555,8 +555,24 @@ main (int argc, char *argv[])
     {
       d = 2.0 * d; /* d = 2^i */
       check_set_get (d);
-      check_set_get (d + 1.0);
-      check_set_get (d - 1.0);
+      if (d + 1.0 != d)
+        check_set_get (d + 1.0);
+      else
+        {
+          mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+          mpfr_add_ui (x, x, 1, MPFR_RNDN);
+          e = mpfr_get_ld (x, MPFR_RNDN);
+          check_set_get (e);
+        }
+      if (d - 1.0 != d)
+        check_set_get (d - 1.0);
+      else
+        {
+          mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+          mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+          e = mpfr_get_ld (x, MPFR_RNDN);
+          check_set_get (e);
+        }
     }
 
   for (i = 0; i < 10000; i++)
