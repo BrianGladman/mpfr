@@ -155,8 +155,7 @@ print_binary (long double d, int flag)
             printf ("0");
         }
       e *= (long double) 0.5;
-      /* The following assertion may fail with flush-to-zero on underflow. */
-      MPFR_ASSERTN (e != 0);
+      MPFR_ASSERTN (e != 0); /* may fail with flush-to-zero on underflow */
       if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                              (long) prec);
     }
