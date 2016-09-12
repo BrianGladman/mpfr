@@ -126,7 +126,8 @@ print_binary (long double d, int flag)
      (2) when accumulating a new bit into f is not exact, we subtract
          f from r and reset f to 0
      This is guaranteed to work only when the rounding precision is at least
-     half the precision of r, since otherwise r-f might not be exact. */
+     half the precision of r, since otherwise r-f might not be exact.
+     This method does not work with flush-to-zero on underflow. */
   f = 0.0; /* will hold accumulated powers of 2 */
   r = d;   /* invariant: r = d - f */
   while (r > (long double) 0.0)
@@ -154,6 +155,8 @@ print_binary (long double d, int flag)
             printf ("0");
         }
       e *= (long double) 0.5;
+      /* The following assertion may fail with flush-to-zero on underflow. */
+      MPFR_ASSERTN (r == 0 || e != 0);
       if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                              (long) prec);
     }
