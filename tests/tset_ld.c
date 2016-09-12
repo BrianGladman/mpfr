@@ -549,7 +549,7 @@ main (int argc, char *argv[])
   check_set_get (d);
   check_set_get (-d);
 
-  /* check that 2^i, 2^i+1 and 2^i-1 are correctly converted */
+  /* check that 2^i, 2^i+1, 2^i-1 and 2^i-2^(i-2)-1 are correctly converted */
   d = 1.0;
   for (i = 1; i < MPFR_LDBL_MANT_DIG + 8; i++)
     {
@@ -573,6 +573,14 @@ main (int argc, char *argv[])
           e = mpfr_get_ld (x, MPFR_RNDN);
           check_set_get (e);
         }
+      if (i < 3)
+        continue;
+      /* The following test triggers a failure in r10844 for i = 56,
+         with gcc -mpc64 on x86 (64-bit ABI). */
+      mpfr_set_ui_2exp (x, 3, i-2, MPFR_RNDN);
+      mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+      e = mpfr_get_ld (x, MPFR_RNDN);
+      check_set_get (e);
     }
 
   for (i = 0; i < 10000; i++)
