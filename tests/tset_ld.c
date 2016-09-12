@@ -147,6 +147,9 @@ print_binary (long double d, int flag)
               f = 0.0;
             }
           f = f + e;
+          /* FIXME: d - f may not be exact, so that the r >= e test in
+             the next iteration may be wrong. Example: 2^56-2^54-1 is
+             output as "0.11e56". */
           r = d - f;
         }
       else
