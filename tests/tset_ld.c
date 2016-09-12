@@ -139,7 +139,7 @@ print_binary (long double d, int flag)
             printf ("1");
           g = f + e;
           h = g - e;
-          if (!(f != g && g != h && f == h)) /* f+e is not exact */
+          if (f == g || g == h || f != h) /* f+e is not exact */
             {
               r = d = d - f; /* should be exact */
               f = 0.0;
