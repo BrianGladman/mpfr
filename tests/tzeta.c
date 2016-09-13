@@ -240,6 +240,7 @@ main (int argc, char *argv[])
   mpfr_t s, y, z;
   mpfr_prec_t prec;
   mpfr_rnd_t rnd_mode;
+  mpfr_flags_t flags;
   int inex;
 
   tests_start_mpfr ();
@@ -451,6 +452,24 @@ main (int argc, char *argv[])
           printf ("got      "); mpfr_dump (z);
           exit (1);
         }
+    }
+
+  /* The following test yields an overflow in the error computation.
+     With r10864, this is detected and one gets an assertion failure. */
+  mpfr_set_prec (s, 1025);
+  mpfr_set_si_2exp (s, -1, 1024, MPFR_RNDN);
+  mpfr_nextbelow (s);  /* -(2^1024 + 1) */
+  mpfr_clear_flags ();
+  inex = mpfr_zeta (z, s, MPFR_RNDN);
+  flags = __gmpfr_flags;
+  if (flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT) ||
+      ! mpfr_inf_p (z) || MPFR_IS_POS (z) || inex >= 0)
+    {
+      printf ("Error in mpfr_zeta for s = -(2^1024 + 1)\nGot ");
+      mpfr_dump (z);
+      printf ("with inex = %d and flags =", inex);
+      flags_out (flags);
+      exit (1);
     }
 
   mpfr_clear (s);

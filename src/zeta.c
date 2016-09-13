@@ -402,6 +402,11 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       /* Precision precs1 needed to represent 1 - s, and s + 2,
          without any truncation */
       precs1 = precs + 2 + MAX (0, - MPFR_GET_EXP (s));
+      /* FIXME: For the error analysis, use MPFR instead of the native
+         double type. The code below can yield overflows on double's
+         when s is large enough (its precision also needs to be large
+         enough, otherwise s is an even integer, which has already been
+         taken into account). */
       sd = mpfr_get_d (s, MPFR_RNDN) - 1.0;
       if (sd < 0.0)
         sd = -sd; /* now sd = abs(s-1.0) */
