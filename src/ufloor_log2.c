@@ -26,13 +26,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 long
 __gmpfr_floor_log2 (double d)
 {
+  long exp;
 #if _MPFR_IEEE_FLOATS
   union mpfr_ieee_double_extract x;
 
   x.d = d;
-  return (long) x.s.exp - 1023;
+  /* The cast below is useless in theory, but let us not depend on the
+     integer promotion rules (for instance, tcc is currently wrong). */
+  exp = (long) x.s.exp - 1023;
+  MPFR_ASSERTN (exp < 1023);  /* fail on infinities */
+  return exp;
 #else /* _MPFR_IEEE_FLOATS */
-  long exp;
   double m;
 
   MPFR_ASSERTD (d >= 0);

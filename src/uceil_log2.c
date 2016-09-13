@@ -37,6 +37,7 @@ __gmpfr_ceil_log2 (double d)
   /* The cast below is useless in theory, but let us not depend on the
      integer promotion rules (for instance, tcc is currently wrong). */
   exp = (long) x.s.exp - 1023;
+  MPFR_ASSERTN (exp < 1023);  /* fail on infinities */
   x.s.exp = 1023; /* value for 1 <= d < 2 */
   if (x.d != 1.0) /* d: not a power of two? */
     exp++;
