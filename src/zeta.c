@@ -439,7 +439,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
               /* FIXME: An overflow in gamma(s1) does not imply that
                  zeta(s) will overflow. A solution:
                  1. Compute
-                   log(|zeta(s)|/2) = (s-1)*log(2*pi) + log(gamma(1-s))
+                   log(|zeta(s)|/2) = (s-1)*log(2*pi) + lngamma(1-s)
                      + log(abs(sin(Pi*s/2)) * zeta(1-s))
                  (possibly sharing computations with the normal case)
                  with a rather good accuracy (see (2)).
