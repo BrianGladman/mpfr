@@ -424,6 +424,8 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, prec1);
       for (;;)
         {
+          mpfr_exp_t ey;
+
           mpfr_sub (s1, __gmpfr_one, s, MPFR_RNDN); /* s1 = 1-s */
           mpfr_zeta_pos (z_pre, s1, MPFR_RNDN);   /* zeta(1-s)  */
           mpfr_gamma (y, s1, MPFR_RNDN);          /* gamma(1-s) */
@@ -438,7 +440,10 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                  already appears in the expression: compute
                  log(...) - log(2), then the exponential, round
                  correctly, then multiply by 2 (exact, with possible
-                 overflow generation). */
+                 overflow generation).
+                 Note: in theory, an underflow is even possible, but
+                 only if mpfr_sin underflows, but probably not possible
+                 in practice due to the limited precision. */
               mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
               mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
               overflow = (mpfr_cmp_si_2exp (s1, -1, -1) > 0) ? -1 : 1;
@@ -459,12 +464,18 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           mpfr_mul (y, s, p, MPFR_RNDN);
           mpfr_div_2ui (p, y, 1, MPFR_RNDN);      /* p = s*Pi/2 */
           /* FIXME: sinpi will be available, we should replace the mpfr_sin
-             call below by mpfr_sinpi(s/2), where s/2 will be exact */
+             call below by mpfr_sinpi(s/2), where s/2 will be exact.
+             Can mpfr_sin underflow? Moreover, the code below should be
+             improved so that the "if" condition becomes unlikely, e.g.
+             by taking a slightly larger working precision. */
           mpfr_sin (y, p, MPFR_RNDN);             /* y = sin(Pi*s/2) */
-          if (MPFR_GET_EXP(y) < 0) /* take account of cancellation in sin(p) */
+          ey = MPFR_GET_EXP (y);
+          if (ey < 0) /* take account of cancellation in sin(p) */
             {
               mpfr_t t;
-              mpfr_init2 (t, prec1 - MPFR_GET_EXP(y));
+
+              MPFR_ASSERTN (- ey < MPFR_PREC_MAX - prec1);
+              mpfr_init2 (t, prec1 - ey);
               mpfr_const_pi (t, MPFR_RNDD);
               mpfr_mul (t, s, t, MPFR_RNDN);
               mpfr_div_2ui (t, t, 1, MPFR_RNDN);
