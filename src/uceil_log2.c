@@ -24,7 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* returns ceil(log(d)/log(2)) if d > 0,
    -1023 if d = +0,
-   and floor(log(-d)/log(2))+1 if d < 0*/
+   and floor(log(-d)/log(2))+1 if d < 0
+*/
 long
 __gmpfr_ceil_log2 (double d)
 {
