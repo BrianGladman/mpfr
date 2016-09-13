@@ -39,13 +39,13 @@ __gmpfr_floor_log2 (double d)
   if (d >= 1.0)
     {
       exp = -1;
-      for( m= 1.0 ; m <= d ; m *=2.0 )
+      for (m = 1.0; m <= d; m *= 2.0)
         exp++;
     }
   else
     {
       exp = 0;
-      for( m= 1.0 ; m > d ; m *= (1.0/2.0) )
+      for (m = 1.0; m > d; m *= 0.5)
         exp--;
     }
   return exp;
