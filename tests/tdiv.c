@@ -641,7 +641,7 @@ check_inexact (void)
   mpfr_set_prec (u, 2);
   mpfr_set_str_binary (u, "0.1E0");
   mpfr_set_prec (y, 28);
-  if ((inexact = test_div (y, x, u, MPFR_RNDN) >= 0))
+  if ((inexact = test_div (y, x, u, MPFR_RNDN)) >= 0)
     {
       printf ("Wrong inexact flag (1): expected -1, got %d\n",
               inexact);
