@@ -3328,7 +3328,14 @@ For $s < 1/2$, we use the reflection formula:
 \[ \zeta(s) = 2^s \pi^{s-1} \sin\left(\frac{\pi s}{2}\right) \Gamma(1-s)
    \zeta(1-s). \]
 
-(WORK IN PROGRESS) % To be removed when complete and correctly implemented.
+For simplicity, to avoid taking into account the error from the
+$\Gamma$ and $\zeta$ inputs, we will ensure that $1-s$ is represented
+exactly. Thus its precision may need to be much larger than the target
+precision. However, for efficiency reasons, the internal working
+precision will still be based only on the target precision as usual.
+
+% To be removed when complete and correctly implemented.
+(WORK IN PROGRESS -- May not correspond to the implementation yet.)
 
 \subsubsection{The integer argument case}
 In case of an integer argument $s \geq 2$,
