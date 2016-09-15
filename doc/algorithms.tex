@@ -3263,14 +3263,11 @@ of Eq.~(\ref{eq:legendre_cf}) is bounded by
 
 \subsection{The Riemann Zeta function}
 
-The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
-and Sapphorain P\'etermann \cite{PeRe06,PeRe07}. For $s < 1/2$ we use the
-functional equation
-\[ \zeta(s) = 2^s \pi^{s-1} \sin\left(\frac{\pi s}{2}\right) \Gamma(1-s)
-   \zeta(1-s) \]
-(in that case, one should take care of cancellation when $\sin(\pi s/2)$ is
-small, i.e., when $s$ is near an even negative integer).
-For $s \geq 1/2$ we use the Euler-MacLaurin summation formula, applied
+\subsubsection{Case $s \geq 1/2$}
+
+The algorithm for the Riemann Zeta function for $s \geq 1/2$ is due to
+Jean-Luc R\'emy and Sapphorain P\'etermann \cite{PeRe06,PeRe07}.
+We use the Euler-MacLaurin summation formula, applied
 to the real function $f(x) = x^{-s}$ for $s > 1$:
 \[ \zeta(s) = \sum_{k=1}^{N-1} \frac{1}{k^s} + \frac{1}{2N^s}
 + \frac{1}{(s-1)N^{s-1}} + \sum_{k=1}^p \frac{B_{2k}}{2k}
@@ -3302,7 +3299,38 @@ the approximation computed, we have
 \[ |\zeta(s) - z| \leq 2^{-\Pi} |\zeta(s)|. \]
 \end{theorem}
 
-\subsubsection{The integer argument case.}
+\subsubsection{Case $s$ close to $0$}
+
+First, let us recall that the subcase $s = 0$ has already been taken
+into account as a special input.
+
+In theory, this case could be handled by the reflection formula
+(\textsection\ref{zeta:reflection}), but as the term $\zeta(1-s)$ is
+close to the pole of $\zeta$ at $1$, it would be slow (and could even
+yield an internal overflow for tiny $s$), while the correctly rounded
+result can be determined very quickly when $s$ is close enough to $0$.
+We have around $0$:
+\[ \zeta(s) = -\frac{1}{2} - \frac{1}{2} \log(2 \pi) s + \ldots \]
+and for $|s| \leq 2^{-4}$, we have $|\zeta(s) + 1/2| \leq |s|$. Thus
+if $|s| \leq 2^{-4}$ and $|s| \leq \frac{1}{4} \ulp(1/2)$ in the target
+precision $p$, we can deduce the correct rounding for any rounding mode.
+The second condition can be rewritten: $|s| \leq 2^{-2-p}$. For $p \geq 2$,
+the second condition implies the first one, and it is sufficient to have
+$\Exp(s) \leq -2-p$. For $p = 1$, if we assume $\Exp(s) \leq -2-p$, then
+$|s| \leq \frac{1}{2} 2^{-2-p} = 2^{-4}$, so that both conditions are
+also satisfied. Thus, for any target precision $p \geq 1$, a sufficient
+condition is $\Exp(s) \leq -2-p$, or equivalently $\Exp(s) + 1 < -p$.
+
+\subsubsection{Case $s < 1/2$}
+\label{zeta:reflection}
+
+For $s < 1/2$, we use the reflection formula:
+\[ \zeta(s) = 2^s \pi^{s-1} \sin\left(\frac{\pi s}{2}\right) \Gamma(1-s)
+   \zeta(1-s). \]
+
+(WORK IN PROGRESS) % To be removed when complete and correctly implemented.
+
+\subsubsection{The integer argument case}
 In case of an integer argument $s \geq 2$,
 the \texttt{mpfr\_zeta\_ui} function computes
 $\zeta(s)$ using the following formula from \cite{Borwein95}:

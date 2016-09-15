@@ -328,10 +328,9 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   /* s is neither Nan, nor Inf, nor Zero */
 
   /* check tiny s: we have zeta(s) = -1/2 - 1/2 log(2 Pi) s + ... around s=0,
-     and for |s| <= 0.074, we have |zeta(s) + 1/2| <= |s|.
-     Thus if |s| <= 1/4*ulp(1/2), we can deduce the correct rounding
-     (the 1/4 covers the case where |zeta(s)| < 1/2 and rounding to nearest).
-     A sufficient condition is that EXP(s) + 1 < -PREC(z). */
+     and for |s| <= 2^(-4), we have |zeta(s) + 1/2| <= |s|.
+     EXP(s) + 1 < -PREC(z) is a sufficient condition to be able to round
+     correctly, for any PREC(z) >= 1 (see algorithms.tex for details). */
   if (MPFR_GET_EXP (s) + 1 < - (mpfr_exp_t) MPFR_PREC(z))
     {
       int signs = MPFR_SIGN(s);
