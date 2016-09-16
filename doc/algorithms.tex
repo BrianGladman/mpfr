@@ -3263,6 +3263,30 @@ of Eq.~(\ref{eq:legendre_cf}) is bounded by
 
 \subsection{The Riemann Zeta function}
 
+\subsubsection{Special cases}
+
+As usual, special inputs are first taken into account: NaN, infinities,
+zeros, but also values close enough to $0$ (see below), even negative
+integers, and $1$ (pole).
+
+Let us focus on $\zeta(s)$, where $s$ has a small exponent.
+In theory, this case could be handled by the reflection formula
+(\textsection\ref{zeta:reflection}), but as the term $\zeta(1-s)$
+of this formula is close to the pole of $\zeta$ at $1$, this method would
+be slow (and could even yield an internal overflow for tiny $s$), while
+the correctly rounded result can be determined very quickly when $s$ is
+close enough to $0$. We have around $0$:
+\[ \zeta(s) = -\frac{1}{2} - \frac{1}{2} \log(2 \pi) s + \ldots \]
+and for $|s| \leq 2^{-4}$, we have $|\zeta(s) + 1/2| \leq |s|$. Thus
+if $|s| \leq 2^{-4}$ and $|s| \leq \frac{1}{4} \ulp(1/2)$ in the target
+precision $p$, we can deduce the correct rounding for any rounding mode.
+The second condition can be rewritten: $|s| \leq 2^{-2-p}$. For $p \geq 2$,
+the second condition implies the first one, and it is sufficient to have
+$\Exp(s) \leq -2-p$. For $p = 1$, if we assume $\Exp(s) \leq -2-p$, then
+$|s| \leq \frac{1}{2} 2^{-2-p} = 2^{-4}$, so that both conditions are
+also satisfied. Thus, for any target precision $p \geq 1$, a sufficient
+condition is $\Exp(s) \leq -2-p$, or equivalently $\Exp(s) + 1 < -p$.
+
 \subsubsection{Case $s \geq 1/2$}
 
 The algorithm for the Riemann Zeta function for $s \geq 1/2$ is due to
@@ -3299,28 +3323,6 @@ the approximation computed, we have
 \[ |\zeta(s) - z| \leq 2^{-\Pi} |\zeta(s)|. \]
 \end{theorem}
 
-\subsubsection{Case $s$ close to $0$}
-
-First, let us recall that the subcase $s = 0$ has already been taken
-into account as a special input.
-
-In theory, this case could be handled by the reflection formula
-(\textsection\ref{zeta:reflection}), but as the term $\zeta(1-s)$ is
-close to the pole of $\zeta$ at $1$, it would be slow (and could even
-yield an internal overflow for tiny $s$), while the correctly rounded
-result can be determined very quickly when $s$ is close enough to $0$.
-We have around $0$:
-\[ \zeta(s) = -\frac{1}{2} - \frac{1}{2} \log(2 \pi) s + \ldots \]
-and for $|s| \leq 2^{-4}$, we have $|\zeta(s) + 1/2| \leq |s|$. Thus
-if $|s| \leq 2^{-4}$ and $|s| \leq \frac{1}{4} \ulp(1/2)$ in the target
-precision $p$, we can deduce the correct rounding for any rounding mode.
-The second condition can be rewritten: $|s| \leq 2^{-2-p}$. For $p \geq 2$,
-the second condition implies the first one, and it is sufficient to have
-$\Exp(s) \leq -2-p$. For $p = 1$, if we assume $\Exp(s) \leq -2-p$, then
-$|s| \leq \frac{1}{2} 2^{-2-p} = 2^{-4}$, so that both conditions are
-also satisfied. Thus, for any target precision $p \geq 1$, a sufficient
-condition is $\Exp(s) \leq -2-p$, or equivalently $\Exp(s) + 1 < -p$.
-
 \subsubsection{Case $s < 1/2$}
 \label{zeta:reflection}
 
@@ -3332,7 +3334,31 @@ For simplicity, to avoid taking into account the error from the
 $\Gamma$ and $\zeta$ inputs, we will ensure that $1-s$ is represented
 exactly. Thus its precision may need to be much larger than the target
 precision. However, for efficiency reasons, the internal working
-precision will still be based only on the target precision as usual.
+precision $q$ will still be based only on the target precision as usual.
+
+So, assuming that no underflows nor overflows occur, the terms
+$\Gamma(1-s)$ and $\zeta(1-s)$ will each have an error factor of
+the form $1+\theta$, with $|\theta| \leq 2^{-q}$.
+
+Assuming that $\Gamma$ and $\zeta$ have a larger complexity than
+the other terms, we would like the other error factors not to be
+significantly larger than $1+2^{-q}$. Otherwise we would have wasted
+time by computing $\Gamma(1-s)$ and $\zeta(1-s)$ with more precision
+than really needed.
+
+Concerning the term $\pi^{s-1}$, if the constant $\pi$ is represented
+by a variable $x$ with a precision $p_x$ to the nearest, then
+$(1-2^{-p_x}) x \leq \pi \leq (1+2^{-p_x}) x$. So,
+\[ (1+2^{-p_x})^{s-1} x^{s-1} \leq \pi^{s-1} \leq
+   (1-2^{-p_x})^{s-1} x^{s-1}, \]
+i.e.,
+\[ (1-2^{-p_x})^{1-s} \pi^{s-1} \leq x^{s-1} \leq
+   (1+2^{-p_x})^{1-s} \pi^{s-1}. \]
+We want $(1-s) 2^{-p_x}$ to be small and of the order of $2^{-q}$.
+We will choose $p_x = q - \Exp(1-s)$, so that $(1-s) 2^{-p_x} < 2^{-q}$.
+The value $x^{s-1}$ will be computed and rounded to the working precision
+by the \texttt{mpfr\_pow} function, giving another error term of the form
+$1+\theta$, with $|\theta| \leq 2^{-q}$.
 
 % To be removed when complete and correctly implemented.
 (WORK IN PROGRESS -- May not correspond to the implementation yet.)
