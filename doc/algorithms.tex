@@ -3360,6 +3360,11 @@ The value $x^{s-1}$ will be computed and rounded to the working precision
 by the \texttt{mpfr\_pow} function, giving another error term of the form
 $1+\theta$, with $|\theta| \leq 2^{-q}$.
 
+Concerning the term $\sin\left(\frac{\pi s}{2}\right)$, because of the
+factor $\pi$ in the argument, we will do the range reduction ourselves:
+it will much simpler and faster than the one in \texttt{mpfr\_sin}, and
+this will allow us to select the intermediate precision more accurately.
+
 % To be removed when complete and correctly implemented.
 (WORK IN PROGRESS -- May not correspond to the implementation yet.)
 
