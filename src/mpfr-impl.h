@@ -991,7 +991,7 @@ typedef uintmax_t mpfr_ueexp_t;
    following two macros, unless the flag comes from another function
    returning the ternary inexact value */
 #define MPFR_RET(I) return \
-  (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
+  (I) != 0 ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 #define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
