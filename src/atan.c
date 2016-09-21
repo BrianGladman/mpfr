@@ -38,9 +38,9 @@ static void
 mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 {
   mpz_t *S, *Q, *ptoj;
-  mp_bitcnt_t n, i, k, j, l;  /* unsigned type, which is >= unsigned long */
+  mp_bitcnt_t n, h, j;  /* unsigned type, which is >= unsigned long */
   mpfr_exp_t diff, expo;
-  int im, done;
+  int im, i, k, l, done;
   mpfr_prec_t mult;
   mpfr_prec_t accu[MPFR_PREC_BITS], log2_nb_terms[MPFR_PREC_BITS];
   mpfr_prec_t precy = MPFR_PREC(y);
@@ -151,18 +151,17 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
     }
 
   /* we need to combine S[0]/Q[0]...S[k-1]/Q[k-1] */
-  l = 0; /* number of terms accumulated in S[k]/Q[k] */
+  h = 0; /* number of terms accumulated in S[k]/Q[k] */
   while (k > 1)
     {
       k --;
       /* combine S[k-1]/Q[k-1] and S[k]/Q[k] */
-      j = log2_nb_terms[k-1];
       mpz_mul (S[k], S[k], Q[k-1]);
       if (mpz_cmp_ui (p, 1) != 0)
-        mpz_mul (S[k], S[k], ptoj[j]);
+        mpz_mul (S[k], S[k], ptoj[log2_nb_terms[k-1]]);
       mpz_mul (S[k-1], S[k-1], Q[k]);
-      l += (mp_bitcnt_t) 1 << log2_nb_terms[k];
-      mpz_mul_2exp (S[k-1], S[k-1], r * l);
+      h += (mp_bitcnt_t) 1 << log2_nb_terms[k];
+      mpz_mul_2exp (S[k-1], S[k-1], r * h);
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
     }
