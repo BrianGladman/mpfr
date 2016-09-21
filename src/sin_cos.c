@@ -394,7 +394,7 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
       j = log2_nb_terms[k-1];
       mpz_mul (T[k], T[k], ptoj[j]);
       mpz_mul (T[k-1], T[k-1], Q[k]);
-      l += 1 << log2_nb_terms[k];
+      l += (mpfr_prec_t) 1 << log2_nb_terms[k];
       mpz_mul_2exp (T[k-1], T[k-1], r * l);
       mpz_add (T[k-1], T[k-1], T[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);

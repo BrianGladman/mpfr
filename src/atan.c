@@ -161,7 +161,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       if (mpz_cmp_ui (p, 1) != 0)
         mpz_mul (S[k], S[k], ptoj[j]);
       mpz_mul (S[k-1], S[k-1], Q[k]);
-      l += 1 << log2_nb_terms[k];
+      l += (mp_bitcnt_t) 1 << log2_nb_terms[k];
       mpz_mul_2exp (S[k-1], S[k-1], r * l);
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
