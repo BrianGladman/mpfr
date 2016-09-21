@@ -286,9 +286,10 @@ To make a release (for the MPFR team):
      Check various warnings, in particular for obsolescent features.
      With GCC: "-Wall -Wold-style-declaration -Wold-style-definition
      -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
-     -Wmissing-field-initializers". They can easily be checked in
-     automatic tests by adding "-Werror -Wno-error=unused-function",
-     but this needs:
+     -Wmissing-field-initializers". The -Wint-in-bool-context option
+     could be added once available. These warnings can easily be checked
+     in automatic tests by adding "-Werror -Wno-error=unused-function
+     -Wno-error=deprecated-declarations", but this needs:
        * GCC 4.9+
        * a patched autoconf:
      http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
