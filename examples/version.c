@@ -49,6 +49,12 @@ static void failure_test (void)
   mpfr_clear (x);
 }
 
+static void patches (void)
+{
+  const char *p = mpfr_get_patches ();
+  printf ("MPFR patches: %s\n", p[0] ? p : "[none]");
+}
+
 int main (void)
 {
   unsigned long c;
@@ -66,20 +72,19 @@ int main (void)
           mpfr_get_version (), MPFR_VERSION_STRING, MPFR_VERSION_MAJOR,
           MPFR_VERSION_MINOR, MPFR_VERSION_PATCHLEVEL);
 
-#if MPFR_VERSION_MAJOR >= 3
   printf ("MPFR features: TLS = %s, decimal = %s",
           mpfr_buildopt_tls_p () ? "yes" : "no",
           mpfr_buildopt_decimal_p () ? "yes" : "no");
-# if MPFR_VERSION_MAJOR > 3 || MPFR_VERSION_MINOR >= 1
+#if MPFR_VERSION_MAJOR > 3 || MPFR_VERSION_MINOR >= 1
   printf (", GMP internals = %s\nMPFR tuning: %s",
           mpfr_buildopt_gmpinternals_p () ? "yes" : "no",
           mpfr_buildopt_tune_case ());
-# endif
+#endif  /* 3.1 */
   printf ("\n");
-#endif
 
-  printf ("MPFR patches: %s\n\n", mpfr_get_patches ());
+  patches ();
 
+  printf ("\n");
 #ifdef __GMP_CC
   printf ("__GMP_CC = \"%s\"\n", __GMP_CC);
 #endif
@@ -105,10 +110,8 @@ int main (void)
   printf ("\n");
   printf ("sizeof(mpfr_prec_t) = %d (%s type)\n", (int) sizeof(mpfr_prec_t),
           SIGNED_STR((mpfr_prec_t) -1));
-#if MPFR_VERSION_MAJOR >= 3
   printf ("sizeof(mpfr_exp_t)  = %d (%s type)\n", (int) sizeof(mpfr_exp_t),
           SIGNED_STR((mpfr_exp_t) -1));
-#endif
 #ifdef _MPFR_PREC_FORMAT
   printf ("_MPFR_PREC_FORMAT = %d\n", (int) _MPFR_PREC_FORMAT);
 #endif
@@ -122,7 +125,7 @@ int main (void)
   printf ("_MPFR_EXP_FORMAT = %d\n", (int) _MPFR_EXP_FORMAT);
 #endif
   printf ("sizeof(mpfr_t) = %d\n", (int) sizeof(mpfr_t));
-
+  printf ("sizeof(mpfr_ptr) = %d\n", (int) sizeof(mpfr_ptr));
   failure_test ();
 
   return 0;
