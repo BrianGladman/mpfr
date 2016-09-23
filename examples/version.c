@@ -29,9 +29,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <gmp.h>
 #include <mpfr.h>
 
-#define SIGNED_STR(V) ((V) < 0 ? "signed" : "unsigned")
-#define SIGNED(I) SIGNED_STR((I) - (I) - 1)
-
 /* The following failure can occur if GMP has been rebuilt with
  * a different ABI, e.g.
  *   1. GMP built with ABI=mode32.
@@ -55,18 +52,128 @@ static void patches (void)
   printf ("MPFR patches: %s\n", p[0] ? p : "[none]");
 }
 
+#define STRINGIZE(S) #S
+#define MAKE_STR(S) STRINGIZE(S)
+
+#define SIGNED_STR(V) ((V) < 0 ? "signed" : "unsigned")
+#define SIGNED(I) SIGNED_STR((I) - (I) - 1)
+
 int main (void)
 {
   unsigned long c;
-  mp_limb_t t[4] = { -1, -1, -1, -1 };
+  mp_limb_t t[4];
+  int i;
 
-#if defined(__cplusplus)
-  printf ("A C++ compiler is used.\n");
+  /* Casts are for C++ compilers. */
+  for (i = 0; i < (int) (sizeof (t) / sizeof (mp_limb_t)); i++)
+    t[i] = (mp_limb_t) -1;
+
+  /**************** Information about the C implementation ****************/
+
+  /* This is useful, as this can affect the behavior of MPFR. */
+
+#define COMP "Compiler: "
+#ifdef __INTEL_COMPILER
+# ifdef __VERSION__
+#  define ICCV " [" __VERSION__ "]"
+# else
+#  define ICCV ""
+# endif
+  printf (COMP "ICC %d.%d.%d" ICCV "\n", __INTEL_COMPILER / 100,
+          __INTEL_COMPILER % 100, __INTEL_COMPILER_UPDATE);
+#elif (defined(__GNUC__) || defined(__clang__)) && defined(__VERSION__)
+# ifdef __clang__
+#  define COMP2 COMP
+# else
+#  define COMP2 COMP "GCC "
+# endif
+  printf (COMP2 "%s\n", __VERSION__);
 #endif
 
+#if defined(__STDC__) || defined(__STDC_VERSION__)
+  printf ("C/C++: __STDC__ = "
+#if defined(__STDC__)
+          MAKE_STR(__STDC__)
+#else
+          "undef"
+#endif
+          ", __STDC_VERSION__ = "
+#if defined(__STDC_VERSION__)
+          MAKE_STR(__STDC_VERSION__)
+#else
+          "undef"
+#endif
+#if defined(__cplusplus)
+          ", C++"
+#endif
+          "\n");
+#endif
+
+#if defined(__GNUC__)
+  printf ("__GNUC__ = " MAKE_STR(__GNUC__) ", __GNUC_MINOR__ = "
+#if defined(__GNUC_MINOR__)
+          MAKE_STR(__GNUC_MINOR__)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+  printf ("Intel compiler: __ICC = "
+#if defined(__ICC)
+          MAKE_STR(__ICC)
+#else
+          "undef"
+#endif
+          ", __INTEL_COMPILER = "
+#if defined(__INTEL_COMPILER)
+          MAKE_STR(__INTEL_COMPILER)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(_WIN32) || defined(_MSC_VER)
+  printf ("MS Windows: _WIN32 = "
+#if defined(_WIN32)
+          MAKE_STR(_WIN32)
+#else
+          "undef"
+#endif
+          ", _MSC_VER = "
+#if defined(_MSC_VER)
+          MAKE_STR(_MSC_VER)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+#if defined(__GLIBC__)
+  printf ("__GLIBC__ = " MAKE_STR(__GLIBC__) ", __GLIBC_MINOR__ = "
+#if defined(__GLIBC_MINOR__)
+          MAKE_STR(__GLIBC_MINOR__)
+#else
+          "undef"
+#endif
+          "\n");
+#endif
+
+  printf ("\n");
+
+  /************************************************************************/
+
+#if defined(__MPIR_VERSION)
+  printf ("MPIR ....  Library: %-12s  Header: %d.%d.%d\n",
+          mpir_version, __MPIR_VERSION, __MPIR_VERSION_MINOR,
+          __MPIR_VERSION_PATCHLEVEL);
+#else
   printf ("GMP .....  Library: %-12s  Header: %d.%d.%d\n",
           gmp_version, __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
           __GNU_MP_VERSION_PATCHLEVEL);
+#endif
 
   printf ("MPFR ....  Library: %-12s  Header: %s (based on %d.%d.%d)\n",
           mpfr_get_version (), MPFR_VERSION_STRING, MPFR_VERSION_MAJOR,
