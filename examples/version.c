@@ -110,7 +110,8 @@ int main (void)
 #endif
 
 #if defined(__GNUC__)
-  printf ("__GNUC__ = " MAKE_STR(__GNUC__) ", __GNUC_MINOR__ = "
+  printf ("GNU compatibility: __GNUC__ = " MAKE_STR(__GNUC__)
+          ", __GNUC_MINOR__ = "
 #if defined(__GNUC_MINOR__)
           MAKE_STR(__GNUC_MINOR__)
 #else
@@ -152,7 +153,8 @@ int main (void)
 #endif
 
 #if defined(__GLIBC__)
-  printf ("__GLIBC__ = " MAKE_STR(__GLIBC__) ", __GLIBC_MINOR__ = "
+  printf ("GNU C library: __GLIBC__ = " MAKE_STR(__GLIBC__)
+          ", __GLIBC_MINOR__ = "
 #if defined(__GLIBC_MINOR__)
           MAKE_STR(__GLIBC_MINOR__)
 #else
