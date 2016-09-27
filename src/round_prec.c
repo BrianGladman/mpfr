@@ -71,8 +71,10 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
       ow = MPFR_GET_ALLOC_SIZE(x);
       if (nw > ow)
        {
+         mpfr_size_limb_t *tmpx;
+
          /* Realloc significand */
-         mpfr_limb_ptr tmpx = (mpfr_limb_ptr) (*__gmp_reallocate_func)
+         tmpx = (mpfr_size_limb_t *) (*__gmp_reallocate_func)
            (MPFR_GET_REAL_PTR(x), MPFR_MALLOC_SIZE(ow), MPFR_MALLOC_SIZE(nw));
          MPFR_SET_MANT_PTR(x, tmpx); /* mant ptr must be set
                                         before alloc size */

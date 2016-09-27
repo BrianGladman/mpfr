@@ -1074,12 +1074,28 @@ typedef uintmax_t mpfr_ueexp_t;
 
 #define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
-/* Heap memory handling */
+/* Heap memory handling
+   --------------------
+   Memory allocated for a significand (mantissa) has the following
+   format:
+     * A mp_size_t in a mpfr_size_limb_t union (see below).
+     * An array of mp_limb_t (not all of them are necessarily used,
+       as the precision can change without a reallocation).
+   The goal of the mpfr_size_limb_t union is to make sure that
+   size and alignment requirements are satisfied if mp_size_t and
+   mp_limb_t have different sizes and/or alignment requirements.
+   Moreover, pointer conversions are not fully specified by the
+   C standard, and the use of a union (and the double casts below)
+   might help even if mp_size_t and mp_limb_t have the same size
+   and the same alignment requirements. Still, there is currently
+   no guarantee that this code is portable. Note that union members
+   are not used at all.
+*/
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
-  (((mp_size_t *) MPFR_MANT(x))[-1] + 0)
+  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
-  (((mp_size_t *) MPFR_MANT(x))[-1] = (n))
+  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] = (n))
 #define MPFR_MALLOC_SIZE(s) \
   (sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * (size_t) (s))
 #define MPFR_SET_MANT_PTR(x,p) \
