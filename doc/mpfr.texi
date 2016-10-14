@@ -2893,8 +2893,9 @@ the unknown number @var{x}.
 @c FIXME: The specification should be:
 @c Assuming that @code{mpfr_set (y, b, rnd3)} will be called, return a
 @c non-zero value if @var{y} is guaranteed to be the correct rounding
-@c of @var{x} to nearest, return 0 if @var{y} is not a faithful rounding
-@c of @var{x}, otherwise either result can be returned.
+@c of @var{x} to nearest, return 0 if @var{y} is not guaranteed to be
+@c a faithful rounding of @var{x}, otherwise either result can be
+@c returned.
 
 @c FIXME: This is still incorrect as inex can be 0. But the note can
 @c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
