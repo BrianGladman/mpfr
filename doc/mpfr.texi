@@ -2892,10 +2892,13 @@ the call @code{mpfr_set (y, b, rnd3)} will return a faithful rounding of
 the unknown number @var{x}.
 @c FIXME: The specification should be:
 @c Assuming that @code{mpfr_set (y, b, rnd3)} will be called, return a
-@c non-zero value if @var{y} is guaranteed to be the correct rounding
-@c of @var{x} to nearest, return 0 if @var{y} is not guaranteed to be
-@c a faithful rounding of @var{x}, otherwise either result can be
-@c returned.
+@c non-zero value if @var{y} is guaranteed to be a faithful rounding of
+@c @var{x}, 0 otherwise.
+@c Note: This spec is better than one avoiding "hard cases" (leaving
+@c such cases indeterminate to have a mpfr_can_round in constant time).
+@c Indeed, the time gained by having a mpfr_can_round without hard cases
+@c would be lost by making the user recompute everything in a larger
+@c precision if one could have returned non-zero instead of 0.
 
 @c FIXME: This is still incorrect as inex can be 0. But the note can
 @c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
