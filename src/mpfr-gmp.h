@@ -594,7 +594,11 @@ typedef const mp_limb_t *mpfr_limb_srcptr;
      of _Bool, signed int, unsigned int, or some other implementation-defined
      type.
 
-   So, unsigned int should be better.
+   So, unsigned int should be better. This will fail with implementations
+   having 16-bit int's, but such implementations are not required to
+   support bit-fields of size > 16 anyway; if ever an implementation with
+   16-bit int's is found, the appropriate minimal changes could still be
+   done in the future.
 */
 
 #ifndef _MPFR_IEEE_FLOATS
