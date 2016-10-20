@@ -588,7 +588,7 @@ inequality ensures that the value of the accumulator will not change
 with the updated minexp: shiftq is subtracted from minexp at the same
 time. The reiteration is done with maxexp = maxexp2, as said above.
 
-Example. If there is a additional iteration with maxexp2 = minexp − 4
+Example. If there is an additional iteration with maxexp2 = minexp − 4
 and a shift of 26 bits (due to cancellation), here is the accumulator
 before and after the shift:
 
