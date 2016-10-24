@@ -290,7 +290,7 @@ __MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f (void);
 #endif
 
 # define MPFR_THREAD_VAR(T,N,V)    \
-  MPFR_THREAD_ATTR T N = V;        \
+  MPFR_THREAD_ATTR T N = (V);      \
   MPFR_MAKE_VARFCT (T,N)
 
 #define BASE_MAX 62
