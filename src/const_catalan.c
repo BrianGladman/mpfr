@@ -24,15 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* Declare the cache */
-MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_catalan, mpfr_const_catalan_internal);
-
-#ifdef MPFR_WIN_THREAD_SAFE_DLL
-mpfr_cache_t *
-__gmpfr_cache_const_catalan_f()
-{
-  return &__gmpfr_cache_const_catalan;
-}
-#endif
+MPFR_DECL_INIT_CACHE (__gmpfr_cache_const_catalan, mpfr_const_catalan_internal)
 
 /* Set User Interface */
 #undef mpfr_const_catalan

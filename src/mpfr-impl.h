@@ -223,6 +223,7 @@ typedef struct __gmpfr_cache_s *mpfr_cache_ptr;
 #endif
 
 #if defined(__MPFR_WITHIN_MPFR) || !defined(MPFR_WIN_THREAD_SAFE_DLL)
+# define MPFR_MAKE_VARFCT(T,N)
 extern MPFR_THREAD_ATTR mpfr_flags_t __gmpfr_flags;
 extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
 extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
@@ -248,23 +249,24 @@ extern MPFR_CACHE_ATTR  mpfr_cache_ptr __gmpfr_cache_const_log2;
 #endif
 
 #ifdef MPFR_WIN_THREAD_SAFE_DLL
-__MPFR_DECLSPEC mpfr_flags_t * __gmpfr_flags_f();
-__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f();
-__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f();
-__MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f();
-__MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f();
+# define MPFR_MAKE_VARFCT(T,N) T * N ## _f (void) { return &N; }
+__MPFR_DECLSPEC mpfr_flags_t * __gmpfr_flags_f (void);
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f (void);
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f (void);
+__MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f (void);
+__MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f (void);
 # ifndef MPFR_USE_LOGGING
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_log2_f();
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_log2_f (void);
 # else
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_log2_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_log2_f();
-__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_pi_f();
-__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f();
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_log2_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_log2_f (void);
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f (void);
 # endif
 # ifndef __MPFR_WITHIN_MPFR
 #  define __gmpfr_flags                    (*__gmpfr_flags_f())
@@ -286,6 +288,10 @@ __MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f();
 #  endif
 # endif
 #endif
+
+# define MPFR_THREAD_VAR(T,N,V)    \
+  MPFR_THREAD_ATTR T N = V;        \
+  MPFR_MAKE_VARFCT (T,N)
 
 #define BASE_MAX 62
 __MPFR_DECLSPEC extern const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2];
@@ -1179,7 +1185,8 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
   MPFR_CACHE_ATTR mpfr_cache_t _cache = {{                           \
       {{ 0, MPFR_SIGN_POS, 0, (mp_limb_t *) 0 }}, 0, _func           \
       MPFR_DEFERRED_INIT_SLAVE_VALUE(_func)                          \
-    }}
+    }};                                                              \
+  MPFR_MAKE_VARFCT (mpfr_cache_t,_cache)
 
 /******************************************************
  ***************  Threshold parameters  ***************
