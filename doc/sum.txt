@@ -733,12 +733,25 @@ Accumulator:  [--------]-----------------------------------]
 
 where cq = logn + 1, sq is the target precision, and dq ≥ logn + 2.
 
-TODO: Update for code supporting reuse.
+A single chunk of memory is allocated both for the accumulator and for
+the temporary area needed by sum_raw. We also chose to allocate memory
+for the possible TMD resolution (as explained later) in the same chunk;
+this second accumulator will be useless in most cases (it is necessary
+only if the TMD occurs and some input is reused as the output), but in
+the current implementation, it takes at most two limbs in practice,
+so that this does not make a noticeable difference. For performance
+reasons, the memory is allocated in the stack instead of the heap if
+its size is small enough (see MPFR_TMP_LIMBS_ALLOC macro). No other
+memory allocation will be needed (except for auto variables).
 
-Memory is allocated both for the accumulator and for the temporary area
-needed by sum_raw. For performance reasons, the allocation is done in
-the stack if the size is small enough (see MPFR_TMP_LIMBS_ALLOC macro).
-No other memory allocation will be needed (except for auto variables).
+Note: Having a small-size accumulator for sum_raw, either for the main
+computation or for the TMD resolution, is not the best choice for the
+worst-case complexity. For the time being, we focus on correctness and
+make sure that the implementation is fast on almost all cases and not
+too slow on corner cases. In the future, we may want to fix a minimal
+size for the accumulator or allow it to grow dynamically, for instance
+in a geometric progression after a few iterations (similarly to what is
+done for Ziv loops in the TMD resolution for mathematical functions).
 
 The accumulator is zeroed and sum_raw is invoked to compute an
 accurate approximation of the sum. Among its parameters, maxexp was
@@ -821,8 +834,11 @@ the TMD occurs when:
   * round-to-nearest mode: the d−1 bits following the rounding bit are
     identical.
 
+TODO: Update for code supporting reuse. Reorder like the code?
+
 Several things need to be considered, in arbitrary order:
-  * the copy to the destination;
+  * the copy to the destination (if the destination is used by an input,
+    the TMD may need to be resolved first);
   * a shift (for the alignment), if the shift count is non-zero
     (this is the most probable case);
   * a negation/complement if the value is negative (cancelled bits = 1),
