@@ -820,7 +820,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
-    /* neg = 0 if negative, 1 if positive. */
+    /* neg = 1 if negative, 0 if positive. */
     neg = wp[ws-1] >> (GMP_NUMB_BITS - 1);
     MPFR_ASSERTD (neg == 0 || neg == 1);
 
