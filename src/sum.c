@@ -642,17 +642,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (mpfr_eexp_t) maxexp,
                    maxexp == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" : ""));
 
-    /* Let's copy/shift the bits [max(u,minexp),e) to the
-       most significant part of the destination, and zero
-       the least significant part (there can be one only if
-       u < minexp). The trailing bits of the destination may
-       contain garbage at this point. Then, at the same time,
-       take the absolute value and do an initial rounding,
-       zeroing the trailing bits at this point.
-       TODO: This may be improved by merging some operations
-       in particular cases. The average speed-up may not be
-       significant, though. To be tested... */
-
     sn = MPFR_PREC2LIMBS (sq);
     sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
     sh = cancel % GMP_NUMB_BITS;
@@ -1024,6 +1013,12 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_SIGN (sum) = sgn;
 
+    /* Let's copy/shift the bits [max(u,minexp),e) to the
+       most significant part of the destination, and zero
+       the least significant part (there can be one only if
+       u < minexp). The trailing bits of the destination may
+       contain garbage at this point. */
+
     if (MPFR_LIKELY (u > minexp))
       {
         mp_size_t wi;
@@ -1059,6 +1054,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         if (sn > en)
           MPN_ZERO (sump, sn - en);
       }
+
+    /* Let's take the complement if the result is negative, and at
+       the same time, do the rounding and zero the trailing bits.
+       As this is valid only for precisions >= 2, there is special
+       code for precision 1 first. */
 
     if (MPFR_UNLIKELY (sq == 1))  /* precision 1 */
       {
