@@ -684,7 +684,7 @@ any longer, but it can help to understand, with its examples):
                                         └─ maxexp
 
    i.e., an overflow in two's complement. But leaving at least
-   2 + max(0, err - e) itentical bits in the most significant part,
+   2 + max(0, err - e) identical bits in the most significant part,
    such as
 
         0011111111111111111111111111110101000000
@@ -804,7 +804,7 @@ compute d = u − err, which is ≥ 3, and can be very large if maxexp is
 very small; nevertheless, d is representable in a mpfr_exp_t since:
 
   * If maxexp < minexp, then maxexp is the exponent of an input x[i],
-    so that maxpexp ≥ MPFR_EMIN_MIN; and since u ≤ MPFR_EMAX_MAX, we
+    so that maxexp ≥ MPFR_EMIN_MIN; and since u ≤ MPFR_EMAX_MAX, we
     have d ≤ MPFR_EMAX_MAX − MPFR_EMIN_MIN, which is representable in
     a mpfr_exp_t as per definition of MPFR_EMIN_MIN and MPFR_EMAX_MAX
     in MPFR (this choice was made to simplify internal computations).
