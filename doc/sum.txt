@@ -103,9 +103,6 @@ where sum will contain the result, x is an array of pointers to the
 inputs, n is the length of this array, and rnd is the rounding mode.
 The return value of type int will be the usual ternary value.
 
-FIXME: It is currently assumed that no input pointers point to sum,
-i.e., that the output sum is not shared with an input.
-
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
 choice is consistent with IEEE 754-2008's sum reduction operation of
@@ -392,8 +389,8 @@ Inputs of the sum_raw function (see the code for the types):
   * logn: ceil(log2(rn)), where rn is the number of regular inputs.
   * prec: lower bound for e − err (as described above).
   * ep: pointer to mpfr_exp_t (see below), or a null pointer.
-  * minexpp: pointer to mpfr_exp_t (see below).
-  * maxexpp: pointer to mpfr_exp_t (see below).
+  * minexpp: pointer to mpfr_exp_t (see below), or a null pointer.
+  * maxexpp: pointer to mpfr_exp_t (see below), or a null pointer.
 
 We require as preconditions (explanations are given later):
   * prec ≥ 1
@@ -403,8 +400,10 @@ This function returns 0 if the accumulator is 0 (which implies that
 the exact sum for this sum_raw invocation is 0), otherwise the number
 of cancelled bits (>= 1), defined as the number of identical bits on
 the most significant part of the accumulator. In the latter case, it
-also returns the following data in variables passed by reference:
-  * in ep: the exponent e of the computed result (unless ep is NULL);
+also returns the following data in variables passed by reference,
+unless ep, minexpp and maxexpp are null pointers (such data are useful
+only after the first invocation of sum_raw):
+  * in ep: the exponent e of the computed result;
   * in minexpp: the last value of minexp;
   * in maxexpp: the new value of maxexp (for the next iteration after
     the first invocation of sum_raw in the main code).
@@ -834,8 +833,6 @@ the TMD occurs when:
   * round-to-nearest mode: the d−1 bits following the rounding bit are
     identical.
 
-TODO: Update for code supporting reuse. Reorder like the code?
-
 Several things need to be considered, in arbitrary order:
   * the copy to the destination (if the destination is used by an input,
     the TMD may need to be resolved first);
@@ -864,18 +861,31 @@ and complement is similar to the difference between rounding directions
 precision), so that negation/complement and rounding can naturally be
 merged, as detailed later.
 
-We start by doing the first two operations at the same time: the bits
-of exponents in ⟦max(u,minexp),e⟦ are copied with a possible shift to
-the most significant part of the destination, and the least significant
-limbs (if any) are zeroed.
+We will do the following:
 
-Note: By definition of e, the most significant bit that is copied is
-the complement of the value of the cancelled bits. A variable pos will
-contain its value, i.e., pos = 1 for a positive number, pos = 0 for a
-negative number.
+1. Determine how the result will be rounded. If the TMD occurs, it is
+   resolved at this step.
 
-The values of 3 variables are also determined:
-  * inex: 0 if the final sum is known to be exact, otherwise 1.
+2. Copy the truncated accumulator (shifted) to the destination. For
+   simplicity, after this step, the trailing bits of the destination
+   (present when the precision is not a multiple of GMP_NUMB_BITS)
+   contain garbage. Since rounding needs a specific operation on the
+   least significant limb, these trailing bits (located in this limb)
+   will be zeroed in the next step.
+
+3. Take the complement if the result is negative, and at the same time,
+   do the rounding and zero the trailing bits.
+
+4. Set the exponent and handle a possible overflow/underflow.
+
+Details for each of these 4 steps are given below.
+
+Algorithm and Implementation: Rounding Information
+──────────────────────────────────────────────────
+
+The values of 3 variables are determined:
+  * inex: 0 if the final sum is known to be exact (which can be the
+    case only if maxexp = MPFR_EXP_MIN), otherwise 1.
   * rbit: the rounding bit (0 or 1) of the truncated sum, corrected
     in some halfway cases (see below).
   * tmd: three possible values:
@@ -883,12 +893,14 @@ The values of 3 variables are also determined:
             1: the TMD occurs on a machine number.
             2: the TMD occurs on a midpoint.
 
-All this is done by considering two cases:
+Note: The value of inex will be used only if the TMD does not occur
+(i.e. tmd = 0). So, inex could be left indeterminate when tmd ≠ 0,
+but this would not simplify the current code.
 
-  * u > minexp. One just has a shift (mpn_lshift) or a copy (MPN_COPY).
-    There are no least significant limbs to zero. In this case, the
-    rounding bit, which is represented, is read. Then there are two
-    subcases:
+This is done by considering two cases:
+
+  * u > minexp. The rounding bit, which is represented, is read. Then
+    there are two subcases:
 
       * maxexp = MPFR_EXP_MIN. The sum in the accumulator is exact.
         Thus inex will be the value of rounding bit || sticky bit.
@@ -911,14 +923,11 @@ All this is done by considering two cases:
         we need to take into account the fact that not all the bits are
         represented).
 
-  * u ≤ minexp. One just has a shift (bits that are shifted in are 0's,
-    which is what we want) or a copy, and if there are remaining low
-    significant limbs in the destination, they are zeroed with MPN_ZERO.
-    We set rbit to 0 because the rounding bit is not represented, thus
-    its value is 0. If maxexp = MPFR_EXP_MIN, then both inex and tmd are
-    set to 0; otherwise they are set to 1 (the bits following the ulp
-    bit are not represented, thus are all 0's, implying that the TMD
-    occurs on a machine number).
+  * u ≤ minexp. The rounding bit is not represented (its value is 0),
+    thus rbit is set to 0. If maxexp = MPFR_EXP_MIN, then both inex and
+    tmd are set to 0; otherwise they are set to 1 (the bits following
+    the ulp bit are not represented, thus are all 0's, implying that
+    the TMD occurs on a machine number).
 
 Now we seek to determine how the value will be rounded, more precisely,
 what correction will be done to the significand that has been copied
@@ -945,36 +954,45 @@ We distinguish two cases:
     absolute value of the ternary value. Therefore:
       * for MPFR_RNDD, corr ← 0;
       * for MPFR_RNDU, corr ← inex;
-      * for MPFR_RNDZ, corr ← inex && !pos;
-      * for MPFR_RNDA, corr ← inex && pos;
+      * for MPFR_RNDZ, corr ← inex && neg;
+      * for MPFR_RNDA, corr ← inex && !neg;
       * for MPFR_RNDN, corr ← rbit.
     If inex ≠ 0 and corr = 0, we set inex to −1. The variable inex now
     contains the ternary value.
 
   * tmd ≠ 0. The TMD occurs and will be solved by determining the sign
     (−1, 0 or +1) of a secondary term with a second sum_raw invocation
-    with a small-precision accumulator.
+    using a small-precision accumulator.
 
-    TODO: Update for code supporting reuse. Still explain what was done
-    before.
+    Note: In the code written before the support of reused inputs as the
+    output, the accumulator had already been copied to the destination,
+    so that a part of the memory of this accumulator could be reused for
+    the small-size accumulator for the TMD resolution. This is no longer
+    possible, but currently not a problem since the accumulator for the
+    TMD resolution takes at most only 2 limbs in practice; however, in
+    the future, we might want the accumulators to grow dynamically, as
+    explained above.
 
-    Since the uncorrected significand (which consists of the bits of
-    exponents in ⟦max(u,minexp),e⟦ as mentioned above) has already been
-    copied from the accumulator to the destination, we can reuse the
-    memory of the accumulator, but its precision is now set to cq + dq
-    rounded up to the next multiple of the word size (GMP_NUMB_BITS).
-    There may remain some bits that have not been copied, but they will
-    be taken into account as described below.
+    We set up a new accumulator of size cq + dq (= wq − sq) rounded up
+    to the next multiple of the word size (GMP_NUMB_BITS); let us call
+    this size zq (it will correspond to wq in sum_raw). From the old
+    accumulator, bits whose exponent is in ⟦minexp,u⟦ (when u > minexp)
+    have not been copied to the destination; these bits will be taken
+    into account as described below.
 
     Let us recall that the d−1 bits from exponent u−2 to u−d (= err)
     are identical. We distinguish two subcases:
 
       * err ≥ minexp. The last two over the d−1 identical bits and the
-        following bits, i.e., the bits from err+1 to minexp, are shifted
-        to the most significant part of the accumulator.
+        following bits, i.e., the bits from err+1 to minexp, are copied
+        (with a possibly shift) to the most significant part of the new
+        accumulator.
 
-        After this shift, we have minexp = err + 2 − wq, so that:
-          maxexp − minexp = wq − logn − 2 ≤ wq − cq,
+        The minexp value of this new accumulator is thus defined as:
+          minexp = err + 2 − zq,
+        so that:
+          maxexp − minexp = (err − logn) − (err + 2 − zq)
+                          = zq − logn − 2 ≤ zq − cq,
         satisfying the condition for ts.
 
       * err < minexp. Here at least one of the identical bits is not
@@ -983,8 +1001,8 @@ We distinguish two cases:
         from maxexp, with cq bits reserved to avoid overflows, just
         like in the main sum.
 
-    Once the accumulator is set up, sum_raw is called with prec = 1,
-    satisfying the first sum_raw precondition (prec ≥ 1). And we have:
+    Then sum_raw is called with prec = 1, satisfying the first sum_raw
+    precondition (prec ≥ 1). And we have:
 
       wq ≥ cq + dq ≥ logn + 3 = logn + prec + 2,
 
@@ -1003,15 +1021,15 @@ We distinguish two cases:
 
     Then, from the values of the variables rnd (rounding mode), tmd,
     rbit (rounding bit), sst (sign of the secondary term, corrected
-    for the halfway cases), and pos (sign of the sum), we determine:
-      * the correction case (between −1 and +2);
-      * the ternary value (negative, zero, or positive).
+    for the halfway cases), and sgn (sign of the sum), we determine:
+      * the ternary value (negative, zero, or positive);
+      * the correction case (between −1 and +2).
 
     The different cases are summarized in the table below. The two lines
     corresponding to halfway cases are not possible since sst has been
     changed to an equivalent non-zero value as said above. The rounding
     modes MPFR_RNDZ and MPFR_RNDA are not in this table since they are
-    handled like MPFR_RNDD and MPFR_RNDU depending on the value of pos
+    handled like MPFR_RNDD and MPFR_RNDU depending on the value of sgn
     (see the MPFR_IS_LIKE_RNDD and MPFR_IS_LIKE_RNDU macros).
 
       rnd   tmd   rbit  sst      correction   ternary
@@ -1047,15 +1065,50 @@ We distinguish two cases:
 
 At this point, the variable inex contains the correct ternary value
 (before the overflow/underflow detection) and we know the correction
-that needs to be applied to the significand. So, the next step is to
-change the representation of the significand, i.e., do a negation or
-complement if the sum is negative, and apply the correction at the
-same time.
+that needs to be applied to the significand.
 
-First, we can set the sign of the MPFR number from the value of pos.
+We also determine the sign of the result: a variable neg is set to the
+value of the most significant bit of the accumulator, and a variable
+sgn to the corresponding sign. In short:
+  ┌──────────┬─────┬─────┐
+  │  number  │ neg │ sgn │
+  ├──────────┼─────┼─────┤
+  │ positive │  0  │  1  │
+  │ negative │  1  │ −1  │
+  └──────────┴─────┴─────┘
+
+Algorithm and Implementation: Copy/Shift to the Destination
+───────────────────────────────────────────────────────────
+
+First, we can set the sign of the MPFR number from the value of sgn.
+
+The bits of the accumulator that need to be taken into account for the
+destination are those of exponents in ⟦max(u,minexp),e⟦ (if u < minexp,
+the non-represented bits are seen as 0's). We distinguish two cases:
+
+  * u > minexp. We need to copy the bits of exponents in ⟦u,e⟦, i.e.
+    all the bits are represented in the accumulator. One just has a
+    shift (mpn_lshift) or a copy (MPN_COPY). In the process, some bits
+    of exponent < u can be copied to the trailing bits; they are seen
+    as garbage. Since rounding will need a specific operation on the
+    least significant limb, these trailing bits (located in this limb)
+    will be zeroed at the same time in the next step.
+
+  * u ≤ minexp. We just have a shift (bits that are shifted in are 0's
+    as specified by GMP, which is what we want) or a copy, and if there
+    are remaining low significant limbs in the destination, they are
+    zeroed with MPN_ZERO.
+
+Note: By definition of e, the most significant bit that is copied is
+the first bit after the cancelled bits: 1 for a positive number, 0 for
+a negative number.
+
+Algorithm and Implementation: Complement and Rounding
+─────────────────────────────────────────────────────
+
 For the moment, let us assume that sq ≥ 2. We distinguish two cases:
 
-  * pos = 1 (positive sum). We first set the sign of the MPFR number
+  * neg = 0 (positive sum). We first set the sign of the MPFR number
     to positive. Since the significand can contain garbage in the
     trailing bits (present when the precision is not a multiple of
     GMP_NUMB_BITS), we set these trailing bits to 0 as required by
@@ -1079,7 +1132,7 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
     of the significand is set to 1 so that all the (non-trailing)
     bits of the significand are 1's, and e is decremented.
 
-  * pos = 0 (negative sum). We first set the sign of the MPFR number
+  * neg = 1 (negative sum). We first set the sign of the MPFR number
     to negative. Contrary to the positive case, where we could do
     MPN number + limb (with mpn_add_1) or MPN number − limb (with
     mpn_sub_1), GMP does not provide a function to do an operation
@@ -1121,7 +1174,7 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
             (if the significand has more than one limb). If there is
             still a carry, i.e., if the significand has exactly one
             limb or if there is no borrow out of the mpn_neg, then
-            we handle the change of binade just like in the pos = 1
+            we handle the change of binade just like in the positive
             case for corr > 0.
           * If there is no carry, we apply mpn_com on the next limbs
             (if the significand has more than one limb). There cannot
@@ -1143,7 +1196,7 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
         the most significant limb can lead to a change of binade;
         more precisely, this happens on the significand 01111…111,
         whose complement is 10000…000 and com(x) − 1 is 01111…111.
-        The change of binade is handled like in the pos = 1 case for
+        The change of binade is handled like in the positive case for
         corr < 0.
 
 If sq = 1, the solution described above does not work when we need to
@@ -1158,6 +1211,9 @@ exponent. In the positive case, we just add corr to the exponent e.
 In the negative case, as forcing the only limb to MPFR_LIMB_HIGHBIT
 corresponds to the computation of com(x), we just add (1 − corr) to
 the exponent e, following the formula given in the case sq > 1.
+
+Algorithm and Implementation: Exponent Consideration
+────────────────────────────────────────────────────
 
 Finally, we set the exponent of the MPFR number to e (not with
 MPFR_SET_EXP because this exponent may not be in the current exponent
