@@ -1106,6 +1106,9 @@ a negative number.
 Algorithm and Implementation: Complement and Rounding
 ─────────────────────────────────────────────────────
 
+Note: The various cases below are not in the same order as in the code,
+but this is better for the explanations.
+
 For the moment, let us assume that sq ≥ 2. We distinguish two cases:
 
   * neg = 0 (positive sum). We first set the sign of the MPFR number
