@@ -934,7 +934,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                 zz = zs - wi;
                 MPFR_ASSERTD (zz >= 0 && zz < zs);
                 if (zz > 0)
-                  MPN_COPY_DECR (zp + zz, wp, wi);
+                  MPN_COPY (zp + zz, wp, wi);
               }
 
             /* Compute minexp2 = minexp - (zs * GMP_NUMB_BITS + td) safely. */
