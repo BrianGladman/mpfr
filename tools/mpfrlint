@@ -317,7 +317,10 @@ else
   echo "Warning! gcc is not installed. Cannot run ck-mparam." >&2
 fi
 
-texisvnd=`LC_ALL=C TZ=UTC svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
+# Note about the TZ value: GMT0 and UTC0 are both specified by POSIX,
+# and UTC0 is the preferred value, but old systems only accept GMT0.
+# The "0" is important ("GMT" alone does not work on Tru64 Unix).
+texisvnd=`LC_ALL=C TZ=GMT0 svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [[ $? -eq 0 ]] && [[ -n "$texisvnd" ]] then
   texidate=`sed -n 's/@set UPDATED-MONTH \([A-Z][a-z][a-z]\).*\( [0-9][0-9][0-9][0-9]\)/\1\2/p' doc/mpfr.texi`
   [[ $texidate == $texisvnd ]] || { cat <<EOF && err=1 }
