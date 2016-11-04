@@ -307,10 +307,11 @@ output precision, denoted sq, for two reasons:
     accumulator is a multiple of GMP_NUMB_BITS. Since logn ≥ 2, we have
     dq ≥ 4 as wanted.
 
+Accumulator precision: wq = cq + maxexp − minexp = cq + sq + dq.
+
+              ┌──────────────────── wq ────────────────────┐
 Accumulator:  [--------]-----------------------------------]
                   cq   └─ maxexp      sq + dq      minexp ─┘
-
-Accumulator precision: wq = cq + maxexp − minexp = cq + sq + dq.
 
 This idea is not sufficient because if the Table Maker's Dilemma occurs,
 the needed precision for the truncated sum will grow. In particular, one
