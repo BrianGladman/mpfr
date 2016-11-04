@@ -406,8 +406,9 @@ unless ep, minexpp and maxexpp are null pointers (such data are useful
 only after the first invocation of sum_raw):
   * in ep: the exponent e of the computed result;
   * in minexpp: the last value of minexp;
-  * in maxexpp: the new value of maxexp (for the next iteration after
-    the first invocation of sum_raw in the main code).
+  * in maxexpp: the last value of maxexp2 (which would be the new value
+    of maxexp for the next iteration, i.e. the first iteration of the
+    second invocation of sum_raw in case of TMD resolution).
 
 Notes:
   * All the bits of the accumulator are meaningful; minexp is also
@@ -797,11 +798,12 @@ outside of the accumulator, in which case they are regarded as 0's
 (still due to truncation). In the following, we will make sure that
 we do not try to read nonrepresented bits.
 
-When maxexp (value returned by sum_raw) is different from MPFR_EXP_MIN,
-i.e., when some bits of the inputs have still not been considered, we
-will need to determine whether the TMD occurs. In this case, we will
-compute d = u − err, which is ≥ 3, and can be very large if maxexp is
-very small; nevertheless, d is representable in a mpfr_exp_t since:
+When maxexp (corresponding to the maxexp2 value returned by sum_raw)
+is different from MPFR_EXP_MIN, i.e., when some bits of the inputs
+have still not been considered, we will need to determine whether the
+TMD occurs. In this case, we will compute d = u − err, which is ≥ 3,
+and can be very large if maxexp is very small; nevertheless, d is
+representable in a mpfr_exp_t since:
 
   * If maxexp < minexp, then maxexp is the exponent of an input x[i],
     so that maxexp ≥ MPFR_EMIN_MIN; and since u ≤ MPFR_EMAX_MAX, we
