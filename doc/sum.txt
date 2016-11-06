@@ -845,11 +845,12 @@ Several things need to be considered, in arbitrary order:
     since the significand of MPFR numbers uses the conventional
     sign + absolute value representation;
   * rounding (the TMD needs to be resolved first if it occurs).
-Some of these operations will be merged, i.e., done at the same time,
-for performance reasons, and this depends on the operations provided
-by the mpn layer of GMP. Ideally, all these operations should be
-merged together, but this is not possible with the current version of
-GMP (6.1.0).
+
+It is more efficient to merge some of these operations, i.e., do them at
+the same time, and this possibility depends on the operations provided
+by the mpn layer of GMP. Ideally, all these operations should be merged
+together, but this is not possible with the current version of GMP
+(6.1.1).
 
 For practical reasons, the shift should be done before the rounding,
 so that all the bits are represented for the rounding. The copy itself
@@ -858,8 +859,8 @@ is where most of the limbs are changed in general. We chose to do it
 with the shift as it is assumed that the proportion of nonzero shift
 counts is higher than the proportion of negations.
 
-Moreover, when the value is negative, the difference between negation
-and complement is similar to the difference between rounding directions
+Moreover, for negative values, the difference between negation and
+complement is similar to the difference between rounding directions
 (these operations are identical on the real numbers, i.e., in infinite
 precision), so that negation/complement and rounding can naturally be
 merged, as detailed later.
