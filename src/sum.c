@@ -662,7 +662,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         /* Determine the rounding bit, which is represented. */
         td = tq % GMP_NUMB_BITS;
-        lbit = (wp[wi] >> td) & 1;
+        lbit = (wp[wi] >> td) & MPFR_LIMB_ONE;
         rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
           (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
         MPFR_ASSERTD (rbit == 0 || rbit == 1);
@@ -813,7 +813,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
          * not taken into account, and if it occurs, this is
          * necessarily on a machine number (-> tmd = 1).
          */
-        lbit = u == minexp ? wp[0] & 1 : 0;
+        lbit = u == minexp ? wp[0] & MPFR_LIMB_ONE : 0;
         rbit = 0;
         inex = tmd = maxexp != MPFR_EXP_MIN;
       }
