@@ -891,9 +891,9 @@ The values of 3 variables are determined:
   * inex: 0 if the final sum is known to be exact (which can be the
     case only if maxexp = MPFR_EXP_MIN), otherwise 1.
   * rbit: the rounding bit (0 or 1) of the truncated sum, changed to 0
-    for halfway cases that round toward −infinity if the rounding mode
-    is to nearest (so that this bit gives the rounding direction), as
-    explained below.
+    for halfway cases that will round toward −infinity if the rounding
+    mode is to nearest (so that this bit gives the rounding direction),
+    as explained below.
   * tmd: three possible values:
             0: the TMD does not occur.
             1: the TMD occurs on a machine number.
