@@ -950,6 +950,16 @@ This is done by considering two cases:
     the ulp bit are not represented, thus are all 0's, implying that
     the TMD occurs on a machine number).
 
+We also determine the sign of the result: a variable neg is set to the
+value of the most significant bit of the accumulator, and a variable
+sgn to the corresponding sign. In short:
+  ┌──────────┬─────┬─────┐
+  │  number  │ neg │ sgn │
+  ├──────────┼─────┼─────┤
+  │ positive │  0  │  1  │
+  │ negative │  1  │ −1  │
+  └──────────┴─────┴─────┘
+
 Now we seek to determine how the value will be rounded, more precisely,
 what correction will be done to the significand that has been copied
 just above. We currently have a significand, a trailing term t in the
@@ -958,7 +968,7 @@ complement representation), and an error on the trailing term bounded by
 t' ≤ 2^(u−3) = 2^(−3) ulp in absolute value, so that the error ε on the
 significand satisfies −t' ≤ ε < 1 ulp + t'. Thus one has 4 correction
 cases, denoted by an integer value corr between −1 and 2, which depends
-on ε, the sign of the significand, rbit, and the rounding mode:
+on ε, the sign of the result (neg / sgn), rbit, and the rounding mode:
   −1: equivalent to nextbelow;
    0: no correction;
   +1: equivalent to nextabove.
@@ -1087,16 +1097,6 @@ We distinguish two cases:
 At this point, the variable inex contains the correct ternary value
 (before the overflow/underflow detection) and we know the correction
 that needs to be applied to the significand.
-
-We also determine the sign of the result: a variable neg is set to the
-value of the most significant bit of the accumulator, and a variable
-sgn to the corresponding sign. In short:
-  ┌──────────┬─────┬─────┐
-  │  number  │ neg │ sgn │
-  ├──────────┼─────┼─────┤
-  │ positive │  0  │  1  │
-  │ negative │  1  │ −1  │
-  └──────────┴─────┴─────┘
 
 Algorithm and Implementation: Copy/Shift to the Destination
 ───────────────────────────────────────────────────────────
