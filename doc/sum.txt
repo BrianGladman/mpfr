@@ -890,8 +890,10 @@ Algorithm and Implementation: Rounding Information
 The values of 3 variables are determined:
   * inex: 0 if the final sum is known to be exact (which can be the
     case only if maxexp = MPFR_EXP_MIN), otherwise 1.
-  * rbit: the rounding bit (0 or 1) of the truncated sum, corrected
-    in some halfway cases (see below).
+  * rbit: the rounding bit (0 or 1) of the truncated sum, changed to 0
+    for halfway cases that round toward −infinity if the rounding mode
+    is to nearest (so that this bit gives the rounding direction), as
+    explained below.
   * tmd: three possible values:
             0: the TMD does not occur.
             1: the TMD occurs on a machine number.
@@ -909,15 +911,30 @@ This is done by considering two cases:
       * maxexp = MPFR_EXP_MIN. The sum in the accumulator is exact.
         Thus inex will be the value of rounding bit || sticky bit.
         In round to nearest, rbit = 1 will mean that the value is
-        to be rounded toward +inf; therefore we need to detect and
-        handle halfway cases now (information on the trailing bits
-        will not be kept). More precisely we need to determine the
-        sticky bit if
+        to be rounded toward +infinity, even for halfway cases as
+        it is easier to handle these cases now. The variable rbit
+        is initially set to the value of the rounding bit. We need
+        to determine the sticky bit if
           * rbit = 0, or
           * rbit = 1 and rnd = MPFR_RNDN and the least significant bit
-            of the truncated sq-bit significand is 0. In this case, if
-            the sticky bit is 0, this halfway value will have to be
-            rounded toward −infinity; so, rbit is changed to 0.
+            of the truncated sq-bit significand (i.e., the bit before
+            the rounding bit) is 0; if the sticky bit is 0, this
+            halfway value will have to be rounded toward −infinity,
+            so that rbit is changed to 0. Note that the parity of the
+            rounded significand does not depend on the representation
+            (two's complement or sign + magnitude); that is why, even
+            though the significand is currently represented in two's
+            complement, we round to even. To illustrate this point,
+            let us give an example with a negative value:
+              …1110.1100[100000]  (two's complement)
+              …1110.1100          (rounded with rbit = 0, to even)
+              …0001.0100          (magnitude)
+            where the bits inside the brackets are those after the
+            truncated sq-bit significand. If we had converted the
+            accumulator first, we would have obtained:
+              …0001.0011[100000]  (magnitude)
+              …0001.0100          (rounded with rbit = 1, to even)
+            i.e., the same result.
         And tmd is set to 0 because one can round correctly, knowing
         the exact sum.
 
