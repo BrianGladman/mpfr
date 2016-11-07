@@ -920,12 +920,13 @@ This is done by considering two cases:
             of the truncated sq-bit significand (i.e., the bit before
             the rounding bit) is 0; if the sticky bit is 0, this
             halfway value will have to be rounded toward −infinity,
-            so that rbit is changed to 0. Note that the parity of the
-            rounded significand does not depend on the representation
-            (two's complement or sign + magnitude); that is why, even
-            though the significand is currently represented in two's
-            complement, we round to even. To illustrate this point,
-            let us give an example with a negative value:
+            so that rbit is changed to 0. Note that for sq ≥ 2, the
+            parity of the rounded significand does not depend on the
+            representation (two's complement or sign + magnitude);
+            that is why, even though the significand is currently
+            represented in two's complement, we round to even. To
+            illustrate this point, let us give an example with a
+            negative value:
               …1110.1100[100000]  (two's complement)
               …1110.1100          (rounded with rbit = 0, to even)
               …0001.0100          (magnitude)
@@ -935,6 +936,17 @@ This is done by considering two cases:
               …0001.0011[100000]  (magnitude)
               …0001.0100          (rounded with rbit = 1, to even)
             i.e., the same result.
+            For sq = 1, the IEEE 754 rule for halfway cases is to choose
+            the value larger in magnitude, i.e., round away from zero.
+            Discussion about this rule and errata:
+              http://grouper.ieee.org/groups/754/email/msg03907.html
+              http://speleotrove.com/misc/IEEE754-errata.html
+            therefore, in this case, we want to keep rbit to 1 for
+            positive values, and set it to 0 for negative values; but
+            it happens that this corresponds to the rule chosen for
+            sq ≥ 2 (since the only bit of the truncated significand
+            is $1$ for positive values and $0$ for negative values),
+            so that there is no need to distinguish cases in the code.
         And tmd is set to 0 because one can round correctly, knowing
         the exact sum.
 
