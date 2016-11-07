@@ -1016,7 +1016,7 @@ We distinguish two cases:
 
       * err ≥ minexp. The last two over the d−1 identical bits and the
         following bits, i.e., the bits from err+1 to minexp, are copied
-        (with a possibly shift) to the most significant part of the new
+        (possibly with a shift) to the most significant part of the new
         accumulator.
 
         The minexp value of this new accumulator is thus defined as:
