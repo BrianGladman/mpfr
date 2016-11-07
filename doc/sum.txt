@@ -1108,17 +1108,17 @@ destination are those of exponents in ⟦max(u,minexp),e⟦ (if u < minexp,
 the nonrepresented bits are seen as 0's). We distinguish two cases:
 
   * u > minexp. We need to copy the bits of exponents in ⟦u,e⟦, i.e.
-    all the bits are represented in the accumulator. One just has a
-    shift (mpn_lshift) or a copy (MPN_COPY). In the process, some bits
-    of exponent < u can be copied to the trailing bits; they are seen
-    as garbage. Since rounding will need a specific operation on the
-    least significant limb, these trailing bits (located in this limb)
-    will be zeroed at the same time in the next step.
+    all the bits are represented in the accumulator. We just have a
+    left shift (mpn_lshift) or a copy (MPN_COPY). In the process, some
+    bits of exponent < u can have been copied to the trailing bits; they
+    are seen as garbage. Since rounding will need a specific operation
+    on the least significant limb, these trailing bits (located in this
+    limb) will be zeroed at the same time in the next step.
 
-  * u ≤ minexp. We just have a shift (bits that are shifted in are 0's
-    as specified by GMP, which is what we want) or a copy, and if there
-    are remaining low significant limbs in the destination, they are
-    zeroed with MPN_ZERO.
+  * u ≤ minexp. We just have a left shift (bits that are shifted in are
+    0's as specified by GMP, which is what we want) or a copy, and if
+    there are remaining low significant limbs in the destination, they
+    are zeroed with MPN_ZERO.
 
 Note: By definition of e, the most significant bit that is copied is
 the first bit after the cancelled bits: 1 for a positive number, 0 for
@@ -1132,10 +1132,9 @@ but this is better for the explanations.
 
 For the moment, let us assume that sq ≥ 2. We distinguish two cases:
 
-  * neg = 0 (positive sum). We first set the sign of the MPFR number
-    to positive. Since the significand can contain garbage in the
-    trailing bits (present when the precision is not a multiple of
-    GMP_NUMB_BITS), we set these trailing bits to 0 as required by
+  * neg = 0 (positive sum). Since the significand can contain garbage
+    in the trailing bits (present when the precision is not a multiple
+    of GMP_NUMB_BITS), we set these trailing bits to 0 as required by
     the format of MPFR numbers. If corr > 0, we need to add corr to
     the significand (we can see that this works even if corr = 2 and
     the significand contains all 1's, which was not obvious). This is
@@ -1156,10 +1155,9 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
     of the significand is set to 1 so that all the (nontrailing) bits
     of the significand are 1's, and e is decremented.
 
-  * neg = 1 (negative sum). We first set the sign of the MPFR number
-    to negative. Contrary to the positive case, where we could do
-    MPN number + limb (with mpn_add_1) or MPN number − limb (with
-    mpn_sub_1), GMP does not provide a function to do an operation
+  * neg = 1 (negative sum). Contrary to the positive case, where we
+    could do MPN number + limb (with mpn_add_1) or MPN number − limb
+    (with mpn_sub_1), GMP does not provide a function to do an operation
     like: limb − MPN number. However, we will show that this can be
     emulated with mpn_neg, which does a negation, and mpn_com, which
     does a complement. This allows us to avoid separate mpn_com (or
