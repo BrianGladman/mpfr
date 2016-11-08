@@ -594,10 +594,11 @@ and a shift of 26 bits (due to cancellation), here is the accumulator
 before and after the shift:
 
   Before shift: [--------]-----------------------------------]
-                         └─ maxexp                   minexp ─┘
-
+                    cq   ├─ maxexp      sq + dq      minexp ─┤
+                00000000000000000000000000001----------------]
+                <--- identical bits (0) --->
                                     <------- 26 zeros ------->
-  After shift:  [-------------------00000000000000000000000000
+  After shift:  001-----------------00000000000000000000000000
   This iteration:          minexp ─┘   ├─ maxexp2            │
   Next iteration:                      └─ maxexp     minexp ─┘
 
