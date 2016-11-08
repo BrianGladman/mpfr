@@ -189,7 +189,7 @@ following.
      * If n = 1, use mpfr_set.
      * If n = 2, use mpfr_add.
 
-2. Iterate on the n input numbers to:
+2. Iterate over the n input numbers to:
      (A) detect singular values (NaN, infinity, zero);
      (B) among the regular values, get the maximum exponent.
 
