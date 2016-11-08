@@ -674,7 +674,14 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                inex = 0 if the final sum is exact, else 1, i.e.
                inex = rounding bit || sticky bit. In round to nearest,
                also determine the rounding direction: obtained from
-               the rounding bit possibly except in halfway cases. */
+               the rounding bit possibly except in halfway cases.
+               Halfway cases are rounded toward -inf iff the last bit
+               of the truncated significand in two's complement is 0
+               (in precision > 1, because the parity after rounding is
+               the same in two's complement and sign + magnitude; in
+               precision 1, one checks that the rule works for both
+               positive (lbit == 1) and negative (lbit == 0) numbers,
+               rounding halfway cases away from zero). */
             if (MPFR_LIKELY (rbit == 0 || (rnd == MPFR_RNDN && lbit == 0)))
               {
                 /* We need to determine the sticky bit, either to set inex
