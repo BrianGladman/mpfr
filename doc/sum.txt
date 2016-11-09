@@ -1021,7 +1021,7 @@ We distinguish two cases:
     to the next multiple of the word size (GMP_NUMB_BITS); let us call
     this size zq (it will correspond to wq in sum_raw). From the old
     accumulator, bits whose exponent is in ⟦minexp,u⟦ (when u > minexp)
-    have not been copied to the destination; these bits will be taken
+    will not be copied to the destination; these bits will be taken
     into account as described below.
 
     Let us recall that the d−1 bits from exponent u−2 to u−d (= err)
