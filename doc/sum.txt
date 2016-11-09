@@ -354,7 +354,7 @@ let e and err denote the exponents of the computed result and of the
 error bound respectively. While e − err is less than some given bound
 denoted prec, shift the accumulator, update maxexp and minexp, and
 reiterate. For the caller, this bound must be large enough in order to
-reach some wanted accuracy. However it cannot be too large since the
+reach some wanted accuracy. However, it cannot be too large since the
 accumulator has a limited precision: we will need to make sure that
 if a reiteration is needed, then the cause is a partial cancellation,
 so that the shift count is nonzero, otherwise minexp would not change
@@ -1163,10 +1163,10 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
     (this is important because if corr = 2 and the significand has
     only one limb, the least significant nontrailing bit may be 1),
     and e is incremented. If corr < 0, then it is −1, so that we
-    subtract 1 from the significand with mpn_sub_1. In case of
-    borrow out, meaning a change of binade, the most significant bit
-    of the significand is set to 1 so that all the (nontrailing) bits
-    of the significand are 1's, and e is decremented.
+    subtract 1 from the significand with mpn_sub_1. If the MSB of the
+    significand becomes 0, meaning a change of binade, then it is set
+    back to 1 so that all the (nontrailing) bits of the significand
+    are 1's, and e is decremented.
 
   * neg = 1 (negative sum). Contrary to the positive case, where we
     could do MPN number + limb (with mpn_add_1) or MPN number − limb
@@ -1220,8 +1220,8 @@ For the moment, let us assume that sq ≥ 2. We distinguish two cases:
         Here we want to compute com(x) − 1, but GMP does not provide
         an operation for that. The fact is that a sequence of low
         significant bits 1 is invariant, and we need to do the loop
-        ourselves in C instead of uses an optimized assembly version
-        from GMP. However this may not be a problem in practice, as
+        ourselves in C instead of using an optimized assembly version
+        from GMP. However, this may not be a problem in practice, as
         the difference is probably not noticeable. When a limb with
         a zero is reached (there is at least one since the most
         significant bit of the significand is a 0), we compute its
@@ -1370,7 +1370,7 @@ have the minimal precision 2, and the output precision is p:
 
 Here long carry propagation will occur for each addition of the initial
 iteration, so that the complexity will be O(n·p) instead of O(n+p) if we
-choose to delay carry propagation (however such a choice may slower the
+choose to delay carry propagation (however, such a choice may slower the
 average case and take more memory, such as around 3p instead of 2p).
 
 When a new iteration is needed due to cancellation, a second accumulator
