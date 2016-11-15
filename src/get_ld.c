@@ -141,7 +141,12 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                      then after shifting mpfr_get_d (y, rnd_mode) will
                      underflow to 0 */
           s = mpfr_get_d (x, MPFR_RNDN); /* high part of x */
-          if (DOUBLE_ISINF (s))
+          /* Let's first consider special cases separately. The test for
+             infinity is really needed to avoid a NaN result. The test
+             for NaN is mainly for optimization. The test for 0 is useful
+             to get the correct sign (assuming mpfr_get_d supports signed
+             zeros on the implementation). */
+          if (s == 0 || DOUBLE_ISNAN (s) || DOUBLE_ISINF (s))
             r = (long double) s;
           else
             {
