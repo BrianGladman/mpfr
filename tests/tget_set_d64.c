@@ -34,11 +34,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* #define DEBUG */
 
-#if _GMP_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS
 static void
 print_decimal64 (_Decimal64 d)
 {
-  union ieee_double_extract x;
+  union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
   unsigned int Gh, i;
 
@@ -65,7 +65,7 @@ print_decimal64 (_Decimal64 d)
 {
   printf ("%.15Le\n", (long double) d);
 }
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* _MPFR_IEEE_FLOATS */
 
 #define ERR_MISC(V)                                         \
   do                                                        \

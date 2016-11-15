@@ -495,7 +495,7 @@ main (int argc, char *argv[])
   mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
   if (MPFR_IS_POS (x))
     {
-#if _GMP_IEEE_FLOATS
+#if defined(HAVE_SIGNEDZ)
       printf ("Error: sign of -0.0 is not set correctly\n");
       exit (1);
 #else
