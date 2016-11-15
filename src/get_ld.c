@@ -140,14 +140,20 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           sh = 0; /* force sh to 0 otherwise if say x = 2^1023 + 2^(-1074)
                      then after shifting mpfr_get_d (y, rnd_mode) will
                      underflow to 0 */
-          mpfr_init2 (y, mpfr_get_prec (x));
-          mpfr_init2 (z, IEEE_DBL_MANT_DIG); /* keep the precision small */
-          mpfr_set (y, x, rnd_mode); /* exact */
           s = mpfr_get_d (x, MPFR_RNDN); /* high part of x */
-          mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
-          mpfr_sub (y, x, z, MPFR_RNDN); /* exact */
-          /* Add the second part of y (in the correct rounding mode). */
-          r = (long double) s + (long double) mpfr_get_d (y, rnd_mode);
+          if (DOUBLE_ISINF (s))
+            r = (long double) s;
+          else
+            {
+              mpfr_init2 (y, mpfr_get_prec (x));
+              mpfr_init2 (z, IEEE_DBL_MANT_DIG); /* keep the precision small */
+              mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
+              mpfr_sub (y, x, z, MPFR_RNDN); /* exact */
+              /* Add the second part of y (in the correct rounding mode). */
+              r = (long double) s + (long double) mpfr_get_d (y, rnd_mode);
+              mpfr_clear (z);
+              mpfr_clear (y);
+            }
         }
       else
 #endif
@@ -181,10 +187,10 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
             }
           while (!MPFR_IS_ZERO (y));
-        }
 
-      mpfr_clear (z);
-      mpfr_clear (y);
+          mpfr_clear (z);
+          mpfr_clear (y);
+        }
 
       /* we now have to multiply back by 2^sh */
       MPFR_ASSERTD (r > 0);
