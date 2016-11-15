@@ -347,6 +347,7 @@ check_subnormal (void)
           printf ("d=%Le\n", d);
           printf ("x="); mpfr_dump (x);
           printf ("e=%Le\n", e);
+          exit (1);
         }
       d *= 0.5;
     }
