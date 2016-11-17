@@ -45,6 +45,12 @@ static const union {
 #define MPFR_LDBL_MAX   LDBL_MAX
 #endif
 
+/* To check for +inf, one can use the test x > MPFR_LDBL_MAX, as LDBL_MAX
+   is the maximum finite number representable in a long double, according
+   to DR 467; see
+     http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2092.htm
+   If this fails on some platform, a test x - x != 0 might be used. */
+
 #if defined(HAVE_LDOUBLE_IS_DOUBLE)
 
 /* the "long double" format is the same as "double" */
@@ -165,10 +171,6 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
-  /* Note: according to the ISO C standard, there may be finite numbers
-     larger than LDBL_MAX, among the values that are not floating-point
-     numbers. If the following fails on some platform, a test d - d != 0
-     could be used. */
   if (d > MPFR_LDBL_MAX)
     {
       mpfr_set_inf (r, 1);
@@ -227,10 +229,6 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
-  /* Note: according to the ISO C standard, there may be finite numbers
-     larger than LDBL_MAX, among the values that are not floating-point
-     numbers. If the following fails on some platform, a test d - d != 0
-     could be used. */
   if (d > MPFR_LDBL_MAX)
     {
       mpfr_set_inf (r, 1);

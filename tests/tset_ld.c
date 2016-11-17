@@ -164,9 +164,9 @@ print_binary (long double d, int flag)
   return prec;
 }
 
-/* checks that a long double converted to a mpfr (with precision
-   MPFR_LDBL_MANT_DIG), then converted back to a long double gives the initial
-   value, or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
+/* Checks that a long double converted exactly to a MPFR number, then
+   converted back to a long double gives the initial value, or in other
+   words, mpfr_get_ld(mpfr_set_ld(d)) = d.
 */
 static void
 check_set_get (long double d)
@@ -177,6 +177,7 @@ check_set_get (long double d)
   long double e;
   int inex;
 
+  /* Select a precision to ensure that the conversion of d to x be exact. */
   prec = print_binary (d, 0);
   if (prec < MPFR_PREC_MIN)
     prec = MPFR_PREC_MIN;
@@ -550,15 +551,6 @@ main (int argc, char *argv[])
   check_set_get (maxp2);
   check_set_get (-maxp2);
 
-  /* check LDBL_MAX; according to the C standard, LDBL_MAX must be
-     exactly (1-b^(-LDBL_MANT_DIG)).b^LDBL_MAX_EXP, where b is the
-     radix (in practice, b = 2), even though there can be larger
-     long double values, not regarded as being in the subset of
-     the floating-point values of the system. As a consequence
-     (assuming b = 2), LDBL_MAX must be exactly representable on
-     LDBL_MANT_DIG bits. GCC is currently buggy[*], but LDBL_MAX
-     is still representable on LDBL_MANT_DIG bits.
-     [*] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61399 */
   d = LDBL_MAX;
   e = d / 2.0;
   if (e != maxp2)  /* false under NetBSD/x86 */
