@@ -248,23 +248,24 @@ extern MPFR_CACHE_ATTR  mpfr_cache_ptr __gmpfr_cache_const_log2;
 #endif
 
 #ifdef MPFR_WIN_THREAD_SAFE_DLL
-__MPFR_DECLSPEC mpfr_flags_t * __gmpfr_flags_f();
-__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f();
-__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f();
-__MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f();
-__MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f();
+# define MPFR_MAKE_VARFCT(T,N) T * N ## _f (void) { return &N; }
+__MPFR_DECLSPEC mpfr_flags_t * __gmpfr_flags_f (void);
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f (void);
+__MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f (void);
+__MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f (void);
+__MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f (void);
 # ifndef MPFR_USE_LOGGING
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_log2_f();
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_log2_f (void);
 # else
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_log2_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_pi_f();
-__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_log2_f();
-__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_pi_f();
-__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f();
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_normal_log2_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_t *   __gmpfr_logging_log2_f (void);
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_pi_f (void);
+__MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f (void);
 # endif
 # ifndef __MPFR_WITHIN_MPFR
 #  define __gmpfr_flags                    (*__gmpfr_flags_f())
@@ -285,7 +286,13 @@ __MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f();
 #   define __gmpfr_cache_const_log2       (*__gmpfr_cache_const_log2_f())
 #  endif
 # endif
+#else
+# define MPFR_MAKE_VARFCT(T,N)
 #endif
+
+# define MPFR_THREAD_VAR(T,N,V)    \
+  MPFR_THREAD_ATTR T N = (V);      \
+  MPFR_MAKE_VARFCT (T,N)
 
 #define BASE_MAX 62
 __MPFR_DECLSPEC extern const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2];
@@ -991,7 +998,7 @@ typedef uintmax_t mpfr_ueexp_t;
    following two macros, unless the flag comes from another function
    returning the ternary inexact value */
 #define MPFR_RET(I) return \
-  (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
+  (I) != 0 ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 #define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
@@ -1072,12 +1079,28 @@ typedef uintmax_t mpfr_ueexp_t;
 
 #define MPFR_BYTES_PER_MP_LIMB (GMP_NUMB_BITS/CHAR_BIT)
 
-/* Heap memory handling */
+/* Heap memory handling
+   --------------------
+   Memory allocated for a significand (mantissa) has the following
+   format:
+     * A mp_size_t in a mpfr_size_limb_t union (see below).
+     * An array of mp_limb_t (not all of them are necessarily used,
+       as the precision can change without a reallocation).
+   The goal of the mpfr_size_limb_t union is to make sure that
+   size and alignment requirements are satisfied if mp_size_t and
+   mp_limb_t have different sizes and/or alignment requirements.
+   Moreover, pointer conversions are not fully specified by the
+   C standard, and the use of a union (and the double casts below)
+   might help even if mp_size_t and mp_limb_t have the same size
+   and the same alignment requirements. Still, there is currently
+   no guarantee that this code is portable. Note that union members
+   are not used at all.
+*/
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
-  (((mp_size_t *) MPFR_MANT(x))[-1] + 0)
+  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
-  (((mp_size_t *) MPFR_MANT(x))[-1] = (n))
+  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] = (n))
 #define MPFR_MALLOC_SIZE(s) \
   (sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * (size_t) (s))
 #define MPFR_SET_MANT_PTR(x,p) \
@@ -1161,7 +1184,8 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
   MPFR_CACHE_ATTR mpfr_cache_t _cache = {{                           \
       {{ 0, MPFR_SIGN_POS, 0, (mp_limb_t *) 0 }}, 0, _func           \
       MPFR_DEFERRED_INIT_SLAVE_VALUE(_func)                          \
-    }}
+    }};                                                              \
+  MPFR_MAKE_VARFCT (mpfr_cache_t,_cache)
 
 /******************************************************
  ***************  Threshold parameters  ***************

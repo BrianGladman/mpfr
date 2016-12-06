@@ -543,6 +543,18 @@ a. Using MinGW
     which is simpler and less demanding than Cygwin. Contrary to Cygwin,
     it also provides native Windows code.
 
+    If you also use MSYS, you should use "make" for MSYS instead of
+    the "make" utility from MinGW-W64 or from GCC, which causes the
+    following error:
+
+      libtool: warning: libobj name 'extract.Tpo -c -o extract.lo extract.lo'
+      may not contain shell special characters.
+      rm: unknown option -- c
+
+    References about this issue and solution:
+      https://sourceforge.net/p/msys2/tickets/223/
+      https://sympa.inria.fr/sympa/arc/mpfr/2016-07/msg00009.html
+
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux. (It is
     recommended to pass --build=xxx-yyy-mingw64 to the GMP configure command,

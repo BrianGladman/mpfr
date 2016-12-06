@@ -42,7 +42,7 @@ static void
 mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
                    mpz_t *Q, mpfr_prec_t *mult)
 {
-  mp_bitcnt_t n, i, j;  /* unsigned type, which is >= unsigned long */
+  mp_bitcnt_t n, h, i, j;  /* unsigned type, which is >= unsigned long */
   mpz_t *S, *ptoj;
   mpfr_prec_t *log2_nb_terms;
   mpfr_exp_t diff, expo;
@@ -114,14 +114,14 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   /* accumulate all products in S[0] and Q[0]. Warning: contrary to above,
      here we do not have log2_nb_terms[k-1] = log2_nb_terms[k]+1. */
-  l = 0; /* number of accumulated terms in the right part S[k]/Q[k] */
+  h = 0; /* number of accumulated terms in the right part S[k]/Q[k] */
   while (k > 0)
     {
       j = log2_nb_terms[k-1];
       mpz_mul (S[k], S[k], ptoj[j]);
       mpz_mul (S[k-1], S[k-1], Q[k]);
-      l += 1 << log2_nb_terms[k];
-      mpz_mul_2exp (S[k-1], S[k-1], r * l);
+      h += (mp_bitcnt_t) 1 << log2_nb_terms[k];
+      mpz_mul_2exp (S[k-1], S[k-1], r * h);
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
       k--;

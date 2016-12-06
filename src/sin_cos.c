@@ -289,9 +289,9 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
   mpz_t T[GMP_NUMB_BITS], Q[GMP_NUMB_BITS], ptoj[GMP_NUMB_BITS], pp;
   mpfr_prec_t log2_nb_terms[GMP_NUMB_BITS], mult[GMP_NUMB_BITS];
   mpfr_prec_t accu[GMP_NUMB_BITS], size_ptoj[GMP_NUMB_BITS];
-  mpfr_prec_t prec_i_have, r0 = r, pp_s, p_s;
-  unsigned long alloc, i, j, k;
-  mpfr_prec_t l;
+  mpfr_prec_t prec_i_have, h, r0 = r, pp_s, p_s;
+  unsigned long i, j, m;
+  int alloc, k, l;
 
   if (MPFR_UNLIKELY(mpz_cmp_ui (p, 0) == 0)) /* sin(x)/x -> 1 */
     {
@@ -307,10 +307,10 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
   mpz_init (pp);
 
   /* normalize p (non-zero here) */
-  l = mpz_scan1 (p, 0);
-  mpz_fdiv_q_2exp (pp, p, l); /* p = pp * 2^l */
+  h = mpz_scan1 (p, 0);
+  mpz_fdiv_q_2exp (pp, p, h); /* p = pp * 2^h */
   mpz_mul (pp, pp, pp);
-  r = 2 * (r - l);            /* x^2 = (p/2^r0)^2 = pp / 2^r */
+  r = 2 * (r - h);            /* x^2 = (p/2^r0)^2 = pp / 2^r */
 
   /* now p is odd */
   alloc = 2;
@@ -388,46 +388,45 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
 
   /* accumulate all products in T[0] and Q[0]. Warning: contrary to above,
      here we do not have log2_nb_terms[k-1] = log2_nb_terms[k]+1. */
-  l = 0; /* number of accumulated terms in the right part T[k]/Q[k] */
+  h = 0; /* number of accumulated terms in the right part T[k]/Q[k] */
   while (k > 0)
     {
-      j = log2_nb_terms[k-1];
-      mpz_mul (T[k], T[k], ptoj[j]);
+      mpz_mul (T[k], T[k], ptoj[log2_nb_terms[k-1]]);
       mpz_mul (T[k-1], T[k-1], Q[k]);
-      l += 1 << log2_nb_terms[k];
-      mpz_mul_2exp (T[k-1], T[k-1], r * l);
+      h += (mpfr_prec_t) 1 << log2_nb_terms[k];
+      mpz_mul_2exp (T[k-1], T[k-1], r * h);
       mpz_add (T[k-1], T[k-1], T[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
       k--;
     }
 
-  l = r0 + r * (i - 1); /* implicit multiplier 2^r for Q0 */
-  /* at this point T[0]/(2^l*Q[0]) is an approximation of sin(x) where the 1st
+  m = r0 + r * (i - 1); /* implicit multiplier 2^r for Q0 */
+  /* at this point T[0]/(2^m*Q[0]) is an approximation of sin(x) where the 1st
      neglected term has contribution < 1/2^prec, thus since the series has
      alternate signs, the error is < 1/2^prec */
 
   /* we truncate Q0 to prec bits: the relative error is at most 2^(1-prec),
      which means that Q0 = Q[0] * (1+theta) with |theta| <= 2^(1-prec)
      [up to a power of two] */
-  l += reduce (Q0, Q[0], prec);
-  l -= reduce (T[0], T[0], prec);
-  /* multiply by x = p/2^l */
+  m += reduce (Q0, Q[0], prec);
+  m -= reduce (T[0], T[0], prec);
+  /* multiply by x = p/2^m */
   mpz_mul (S0, T[0], p);
-  l -= reduce (S0, S0, prec); /* S0 = T[0] * (1 + theta)^2 up to power of 2 */
+  m -= reduce (S0, S0, prec); /* S0 = T[0] * (1 + theta)^2 up to power of 2 */
   /* sin(X) ~ S0/Q0*(1 + theta)^3 + err with |theta| <= 2^(1-prec) and
               |err| <= 2^(-prec), thus since |S0/Q0| <= 1:
      |sin(X) - S0/Q0| <= 4*|theta*S0/Q0| + |err| <= 9*2^(-prec) */
 
   mpz_clear (pp);
-  for (j = 0; j < alloc; j ++)
+  for (k = 0; k < alloc; k ++)
     {
-      mpz_clear (T[j]);
-      mpz_clear (Q[j]);
-      mpz_clear (ptoj[j]);
+      mpz_clear (T[k]);
+      mpz_clear (Q[k]);
+      mpz_clear (ptoj[k]);
     }
 
   /* compute cos(X) from sin(X): sqrt(1-(S/Q)^2) = sqrt(Q^2-S^2)/Q
-     = sqrt(Q0^2*2^(2l)-S0^2)/Q0.
+     = sqrt(Q0^2*2^(2m)-S0^2)/Q0.
      Write S/Q = sin(X) + eps with |eps| <= 9*2^(-prec),
      then sqrt(Q^2-S^2) = sqrt(Q^2-Q^2*(sin(X)+eps)^2)
                         = sqrt(Q^2*cos(X)^2-Q^2*(2*sin(X)*eps+eps^2))
@@ -441,14 +440,14 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
                         = Q*cos(X)*(1+eps3+eps2/(Q*cos(X)))
                         = Q*cos(X)*(1+eps4) with |eps4| <= 9*2^(-prec)
                           since |Q| >= 2^(prec-1) */
-  /* we assume that Q0*2^l >= 2^(prec-1) */
-  MPFR_ASSERTN(l + mpz_sizeinbase (Q0, 2) >= prec);
+  /* we assume that Q0*2^m >= 2^(prec-1) */
+  MPFR_ASSERTN(m + mpz_sizeinbase (Q0, 2) >= prec);
   mpz_mul (C0, Q0, Q0);
-  mpz_mul_2exp (C0, C0, 2 * l);
+  mpz_mul_2exp (C0, C0, 2 * m);
   mpz_submul (C0, S0, S0);
   mpz_sqrt (C0, C0);
 
-  return l;
+  return m;
 }
 
 /* Put in s and c approximations of sin(x) and cos(x) respectively.

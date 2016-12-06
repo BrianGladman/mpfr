@@ -611,17 +611,12 @@ Table of contents:
   (The one done in r10573 allowed us to find a bug even without
   assertion checking.)
 
-- after the fix of mpfr_can_round in r9883, tzeta has a different trace
-  from r9882, which may be expected as mpfr_can_round has an influence
-  in tgeneric.c, but a closer look is needed: check only the first
-  difference (with various GMP_CHECK_RANDOMIZE values), since after it,
-  the random numbers do not match.
-  With the 32-bit ABI, tzeta r9955 is even 2.17 times as slow as r9954;
-  the corresponding change:
-    -  test_generic (2, 70, 5);
-    +  test_generic (MPFR_PREC_MIN, 70, 5);
-  Find the real cause, whether a wrong result could be obtained before
-  the fix r9883, and whether the slowdown can be avoided.
+- tzeta has been much slower since r9848 (which increases the precision
+  of the input for the low output precisions), at least with the x86
+  32-bit ABI. This seems to come from the fact that the working precision
+  in the mpfr_zeta implementation depends on the precision of the input.
+  Once mpfr_zeta has improved, change the last argument of test_generic
+  in tzeta.c back to 5 (as it was before r10667).
 
 
 ##############################################################################

@@ -77,8 +77,7 @@ check_round (void)
 static void
 check_inf_nan (void)
 {
-  /* only if nans and infs are available */
-#if _GMP_IEEE_FLOATS
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_t  x;
   double  d;
   long    exp;

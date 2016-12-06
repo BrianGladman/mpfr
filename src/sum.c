@@ -642,17 +642,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (mpfr_eexp_t) maxexp,
                    maxexp == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" : ""));
 
-    /* Let's copy/shift the bits [max(u,minexp),e) to the
-       most significant part of the destination, and zero
-       the least significant part (there can be one only if
-       u < minexp). The trailing bits of the destination may
-       contain garbage at this point. Then, at the same time,
-       take the absolute value and do an initial rounding,
-       zeroing the trailing bits at this point.
-       TODO: This may be improved by merging some operations
-       in particular cases. The average speed-up may not be
-       significant, though. To be tested... */
-
     sn = MPFR_PREC2LIMBS (sq);
     sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
     sh = cancel % GMP_NUMB_BITS;
@@ -673,7 +662,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
         /* Determine the rounding bit, which is represented. */
         td = tq % GMP_NUMB_BITS;
-        lbit = (wp[wi] >> td) & 1;
+        lbit = (wp[wi] >> td) & MPFR_LIMB_ONE;
         rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
           (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
         MPFR_ASSERTD (rbit == 0 || rbit == 1);
@@ -685,7 +674,14 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                inex = 0 if the final sum is exact, else 1, i.e.
                inex = rounding bit || sticky bit. In round to nearest,
                also determine the rounding direction: obtained from
-               the rounding bit possibly except in halfway cases. */
+               the rounding bit possibly except in halfway cases.
+               Halfway cases are rounded toward -inf iff the last bit
+               of the truncated significand in two's complement is 0
+               (in precision > 1, because the parity after rounding is
+               the same in two's complement and sign + magnitude; in
+               precision 1, one checks that the rule works for both
+               positive (lbit == 1) and negative (lbit == 0) numbers,
+               rounding halfway cases away from zero). */
             if (MPFR_LIKELY (rbit == 0 || (rnd == MPFR_RNDN && lbit == 0)))
               {
                 /* We need to determine the sticky bit, either to set inex
@@ -824,14 +820,14 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
          * not taken into account, and if it occurs, this is
          * necessarily on a machine number (-> tmd = 1).
          */
-        lbit = u == minexp ? wp[0] & 1 : 0;
+        lbit = u == minexp ? wp[0] & MPFR_LIMB_ONE : 0;
         rbit = 0;
         inex = tmd = maxexp != MPFR_EXP_MIN;
       }
 
     MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
-    /* neg = 0 if negative, 1 if positive. */
+    /* neg = 1 if negative, 0 if positive. */
     neg = wp[ws-1] >> (GMP_NUMB_BITS - 1);
     MPFR_ASSERTD (neg == 0 || neg == 1);
 
@@ -947,7 +943,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                 zz = zs - wi;
                 MPFR_ASSERTD (zz >= 0 && zz < zs);
                 if (zz > 0)
-                  MPN_COPY_DECR (zp + zz, wp, wi);
+                  MPN_COPY (zp + zz, wp, wi);
               }
 
             /* Compute minexp2 = minexp - (zs * GMP_NUMB_BITS + td) safely. */
@@ -1026,6 +1022,12 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_SIGN (sum) = sgn;
 
+    /* Let's copy/shift the bits [max(u,minexp),e) to the
+       most significant part of the destination, and zero
+       the least significant part (there can be one only if
+       u < minexp). The trailing bits of the destination may
+       contain garbage at this point. */
+
     if (MPFR_LIKELY (u > minexp))
       {
         mp_size_t wi;
@@ -1061,6 +1063,11 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         if (sn > en)
           MPN_ZERO (sump, sn - en);
       }
+
+    /* Let's take the complement if the result is negative, and at
+       the same time, do the rounding and zero the trailing bits.
+       As this is valid only for precisions >= 2, there is special
+       code for precision 1 first. */
 
     if (MPFR_UNLIKELY (sq == 1))  /* precision 1 */
       {

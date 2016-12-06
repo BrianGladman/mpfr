@@ -27,15 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /* Declare the cache */
-MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_euler, mpfr_const_euler_internal);
-
-#ifdef MPFR_WIN_THREAD_SAFE_DLL
-mpfr_cache_t *
-__gmpfr_cache_const_euler_f()
-{
-  return &__gmpfr_cache_const_euler;
-}
-#endif
+MPFR_DECL_INIT_CACHE (__gmpfr_cache_const_euler, mpfr_const_euler_internal)
 
 /* Set User Interface */
 #undef mpfr_const_euler

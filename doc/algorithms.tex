@@ -4253,7 +4253,7 @@ where
 \subsection{The Digamma Function}
 
 The Digamma function \texttt{mpfr\_digamma} is defined by:
-\[ \psi(x) = \frac{d}{dx} \log\Gamma(x), \]
+\[ \psi(x) = \frac{d}{{\mathrm d}x} \log\Gamma(x), \]
 and is computed from the asymptotic series \cite{Smith01}
 \[ \psi(x) \sim \log x - \frac{1}{2x} - \sum_{n=1}^{\infty}
    \frac{B_{2n}}{2n x^{2n}}. \]
@@ -4629,7 +4629,7 @@ $|\epsilon''| \leq 2 \epsilon + \epsilon' \leq (26 + 2^{k+7}) 2^{k-p}
 Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
 where:
 \[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
-   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du \sim \frac{\exp(-n)}{n}
+   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} {\mathrm d}u \sim \frac{\exp(-n)}{n}
         \sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
 This identity is attributed to Sweeney by Brent \cite{Brent78}.
 (See also \cite{Smith01}.)
@@ -4702,7 +4702,7 @@ as in \cite{Brent78}:
 % and $n^{n-1}$ within at most $n-2$ ulps.
 % The division by $n^{n-1}$ and the multiplication introduce one more ulp of
 % error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
-Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} du$.
+Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} {\mathrm d}u$.
 We have $R(n) = I_1$ and the recurrence $I_k = \frac{e^{-n}}{n^k} - k I_{k+1}$,
 which gives
 \[ R(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
@@ -4716,7 +4716,7 @@ $e^t < 1+2t$ for $0 < t < 1$, thus
 $(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
 for $n \ge 1$, we have:
 \[ |R(n) - R'(n)| = (n-1)! I_n
-        \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
+        \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} {\mathrm d}u
         \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1)
         n^{n-1}} \]
 and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
@@ -4763,16 +4763,16 @@ $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le
 \ulp(1/2) = 2^{-{\rm prec}}$, i.e.\ $n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
 $s \leftarrow S'(n)$ \\
-$l \leftarrow \log(n)$ \\
+$\ell \leftarrow \log(n)$ \\
 $r \leftarrow R'(n)$ \\
-return $(s - l) - r$
+return $(s - \ell) - r$
 \end{quote}
 Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le
 \frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
 If the target precision is $m$, and
-we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
-then the error on $s-l$ will be at most $3 \ulp(1/2)$,
-so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
+we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $\ell$,
+then the error on $s-\ell$ will be at most $3 \ulp(1/2)$,
+so the error on $(s - \ell) - r$ is at most $5 \ulp(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
 $8 \ulp(1/2)$.
 [\textbf{FIXME: check with new method to compute S}]

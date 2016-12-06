@@ -254,6 +254,12 @@ public:
     return mpfr_atanh (a,b,r);
   }
 };
+class mpfr_pow_test {
+public:
+  int func (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_pow (a,b,c,r);
+  }
+};
 class mpfr_get_ld_test {
   long double ld;
 public:
@@ -295,6 +301,7 @@ static mpfr_test<mpfr_tanh_test>  testCh ("mpfr_tanh");
 static mpfr_test<mpfr_acosh_test> testDh ("mpfr_acosh");
 static mpfr_test<mpfr_asinh_test> testEh ("mpfr_asinh");
 static mpfr_test<mpfr_atanh_test> testFh ("mpfr_atanh");
+static mpfr_test<mpfr_pow_test>   testGh ("mpfr_pow");
 
 static mpfr_test<mpfr_get_ld_test> testFj ("mpfr_get_ld");
 

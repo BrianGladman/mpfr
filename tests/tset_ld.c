@@ -58,10 +58,11 @@ Isnan_ld (long double d)
 
 /* Return the minimal number of bits to represent d exactly (0 for zero).
    If flag is non-zero, also print d. */
+/* FIXME: This function doesn't work if the rounding precision is reduced. */
 static mpfr_prec_t
 print_binary (long double d, int flag)
 {
-  long double e;
+  long double e, f, r;
   long exp = 1;
   mpfr_prec_t prec = 0;
 
@@ -96,7 +97,7 @@ print_binary (long double d, int flag)
         printf ("0.0\n");
       return prec;
     }
-  /* now d > 0 */
+  MPFR_ASSERTN (d > 0);
   e = (long double) 1.0;
   while (e > d)
     {
@@ -104,26 +105,49 @@ print_binary (long double d, int flag)
       exp --;
     }
   if (flag == 2) printf ("1: e=%.36Le\n", e);
-  /* now d >= e */
-  while (d >= e + e)
+  MPFR_ASSERTN (d >= e);
+  /* FIXME: There can be an overflow here, which may not be supported
+     on all platforms. */
+  while (f = e + e, d >= f)
     {
-      e = e + e;
+      e = f;
       exp ++;
     }
   if (flag == 2) printf ("2: e=%.36Le\n", e);
-  /* now e <= d < 2e */
+  MPFR_ASSERTN (e <= d && d < f);
   if (flag == 1)
     printf ("0.");
   if (flag == 2) printf ("3: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                          (long) prec);
-  while (d > (long double) 0.0)
+  /* Note: the method we use here to extract the bits of d is the following,
+     to deal with the case where the rounding precision is less than the
+     precision of d:
+     (1) we accumulate the upper bits of d into f
+     (2) when accumulating a new bit into f is not exact, we subtract
+         f from d and reset f to 0
+     This is guaranteed to work only when the rounding precision is at least
+     half the precision of d, since otherwise d-f might not be exact.
+     This method does not work with flush-to-zero on underflow. */
+  f = 0.0; /* will hold accumulated powers of 2 */
+  while (1)
     {
       prec++;
-      if (d >= e)
+      r = f + e;
+      /* r is close to f (in particular in the cases where f+e may
+         not be exact), so that r - f should be exact. */
+      if (r - f != e) /* f+e is not exact */
+        {
+          d -= f; /* should be exact */
+          f = 0.0;
+          r = e;
+        }
+      if (d >= r)
         {
           if (flag == 1)
             printf ("1");
-          d = (long double) ((long double) d - (long double) e);
+          if (d == r)
+            break;
+          f = r;
         }
       else
         {
@@ -131,6 +155,7 @@ print_binary (long double d, int flag)
             printf ("0");
         }
       e *= (long double) 0.5;
+      MPFR_ASSERTN (e != 0); /* may fail with flush-to-zero on underflow */
       if (flag == 2) printf ("4: d=%.36Le e=%.36Le prec=%ld\n", d, e,
                              (long) prec);
     }
@@ -139,9 +164,9 @@ print_binary (long double d, int flag)
   return prec;
 }
 
-/* checks that a long double converted to a mpfr (with precision
-   MPFR_LDBL_MANT_DIG), then converted back to a long double gives the initial
-   value, or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
+/* Checks that a long double converted exactly to a MPFR number, then
+   converted back to a long double gives the initial value, or in other
+   words, mpfr_get_ld(mpfr_set_ld(d)) = d.
 */
 static void
 check_set_get (long double d)
@@ -152,6 +177,7 @@ check_set_get (long double d)
   long double e;
   int inex;
 
+  /* Select a precision to ensure that the conversion of d to x be exact. */
   prec = print_binary (d, 0);
   if (prec < MPFR_PREC_MIN)
     prec = MPFR_PREC_MIN;
@@ -184,6 +210,7 @@ check_set_get (long double d)
           printf ("  x = ");
           mpfr_dump (x);
           printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
+          printf ("  prec=%lu\n", prec);
           print_binary (d, 2);
           exit (1);
         }
@@ -321,8 +348,35 @@ check_subnormal (void)
           printf ("d=%Le\n", d);
           printf ("x="); mpfr_dump (x);
           printf ("e=%Le\n", e);
+          exit (1);
         }
       d *= 0.5;
+    }
+  mpfr_clear (x);
+}
+
+static void
+check_overflow (void)
+{
+  long double d, e;
+  mpfr_t x;
+  int i;
+
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+  for (i = 0; i < 2; i++)
+    {
+      d = i == 0 ? LDBL_MAX : -LDBL_MAX;
+      mpfr_set_ld (x, d, MPFR_RNDN);
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
+      e = mpfr_get_ld (x, MPFR_RNDN);
+      if (! DOUBLE_ISINF (e) || (i == 0 ? (e < 0) : (e > 0)))
+        {
+          printf ("Error in check_overflow.\n");
+          printf ("d=%Le\n", d);
+          printf ("x="); mpfr_dump (x);
+          printf ("e=%Le\n", e);
+          exit (1);
+        }
     }
   mpfr_clear (x);
 }
@@ -364,10 +418,72 @@ test_20140212 (void)
   mpfr_clear (fr2);
 }
 
+/* bug reported by Walter Mascarenhas
+   https://sympa.inria.fr/sympa/arc/mpfr/2016-09/msg00005.html */
+static void
+bug_20160907 (void)
+{
+#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
+  long double dn, ld;
+  mpfr_t mp;
+  long e;
+  mpfr_long_double_t x;
+
+  /* the following is the encoding of the smallest subnormal number
+     for HAVE_LDOUBLE_IEEE_EXT_LITTLE */
+  x.s.manl = 1;
+  x.s.manh = 0;
+  x.s.expl = 0;
+  x.s.exph = 0;
+  x.s.sign= 0;
+  dn = x.ld;
+  e = -16445;
+  /* dn=2^e is now the smallest subnormal. */
+
+  mpfr_init2 (mp, 64);
+  mpfr_set_ui_2exp (mp, 1, e - 1, MPFR_RNDN);
+  ld = mpfr_get_ld (mp, MPFR_RNDU);
+  /* since mp = 2^(e-1) and ld is rounded upwards, we should have
+     ld = 2^e */
+  if (ld != dn)
+    {
+      printf ("Error, ld = %Le <> dn = %Le\n", ld, dn);
+      printf ("mp=");
+      mpfr_out_str (stdout, 10, 0, mp, MPFR_RNDN);
+      printf ("\n");
+      printf ("mp="); mpfr_dump (mp);
+      exit (1);
+    }
+
+  /* check a few more numbers */
+  for (e = -16446; e <= -16381; e++)
+    {
+      mpfr_set_ui_2exp (mp, 1, e, MPFR_RNDN);
+      ld = mpfr_get_ld (mp, MPFR_RNDU);
+      mpfr_set_ld (mp, ld, MPFR_RNDU);
+      /* mp is 2^e rounded up, thus should be >= 2^e */
+      MPFR_ASSERTN(mpfr_cmp_ui_2exp (mp, 1, e) >= 0);
+
+      mpfr_set_ui_2exp (mp, 1, e, MPFR_RNDN);
+      ld = mpfr_get_ld (mp, MPFR_RNDD);
+      mpfr_set_ld (mp, ld, MPFR_RNDD);
+      /* mp is 2^e rounded down, thus should be <= 2^e */
+      if (mpfr_cmp_ui_2exp (mp, 3, e) > 0)
+        {
+          printf ("Error, expected value <= 2^%ld\n", e);
+          printf ("got "); mpfr_dump (mp);
+          exit (1);
+        }
+    }
+
+  mpfr_clear (mp);
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
-  volatile long double d, e;
+  volatile long double d, e, maxp2;
   mpfr_t x;
   int i;
   mpfr_exp_t emax;
@@ -383,11 +499,10 @@ main (int argc, char *argv[])
 #endif
 
   tests_start_mpfr ();
+  mpfr_test_init ();
 
   check_gcc33_bug ();
   test_fixed_bugs ();
-
-  mpfr_test_init ();
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG + 64);
 
@@ -408,7 +523,7 @@ main (int argc, char *argv[])
   mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
   if (MPFR_IS_POS (x))
     {
-#if _GMP_IEEE_FLOATS
+#if defined(HAVE_SIGNEDZ)
       printf ("Error: sign of -0.0 is not set correctly\n");
       exit (1);
 #else
@@ -430,22 +545,20 @@ main (int argc, char *argv[])
 #endif
 
   /* check the largest power of two */
-  d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
-  check_set_get (d);
-  check_set_get (-d);
+  maxp2 = 1.0;
+  while (maxp2 < LDBL_MAX / 2.0)
+    maxp2 *= 2.0;
+  check_set_get (maxp2);
+  check_set_get (-maxp2);
 
-  /* check LDBL_MAX; according to the C standard, LDBL_MAX must be
-     exactly (1-b^(-LDBL_MANT_DIG)).b^LDBL_MAX_EXP, where b is the
-     radix (in practice, b = 2), even though there can be larger
-     long double values, not regarded as being in the subset of
-     the floating-point values of the system. As a consequence
-     (assuming b = 2), LDBL_MAX must be exactly representable on
-     LDBL_MANT_DIG bits. GCC is currently buggy[*], but LDBL_MAX
-     is still representable on LDBL_MANT_DIG bits.
-     [*] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61399 */
   d = LDBL_MAX;
-  check_set_get (d);
-  check_set_get (-d);
+  e = d / 2.0;
+  if (e != maxp2)  /* false under NetBSD/x86 */
+    {
+      /* d = LDBL_MAX does not have excess precision. */
+      check_set_get (d);
+      check_set_get (-d);
+    }
 
   /* check the smallest power of two */
   d = 1.0;
@@ -454,14 +567,38 @@ main (int argc, char *argv[])
   check_set_get (d);
   check_set_get (-d);
 
-  /* check that 2^i, 2^i+1 and 2^i-1 are correctly converted */
+  /* check that 2^i, 2^i+1, 2^i-1 and 2^i-2^(i-2)-1 are correctly converted */
   d = 1.0;
   for (i = 1; i < MPFR_LDBL_MANT_DIG + 8; i++)
     {
       d = 2.0 * d; /* d = 2^i */
       check_set_get (d);
-      check_set_get (d + 1.0);
-      check_set_get (d - 1.0);
+      if (d + 1.0 != d)
+        check_set_get (d + 1.0);
+      else
+        {
+          mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+          mpfr_add_ui (x, x, 1, MPFR_RNDN);
+          e = mpfr_get_ld (x, MPFR_RNDN);
+          check_set_get (e);
+        }
+      if (d - 1.0 != d)
+        check_set_get (d - 1.0);
+      else
+        {
+          mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+          mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+          e = mpfr_get_ld (x, MPFR_RNDN);
+          check_set_get (e);
+        }
+      if (i < 3)
+        continue;
+      /* The following test triggers a failure in r10844 for i = 56,
+         with gcc -mpc64 on x86 (64-bit ABI). */
+      mpfr_set_ui_2exp (x, 3, i-2, MPFR_RNDN);
+      mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+      e = mpfr_get_ld (x, MPFR_RNDN);
+      check_set_get (e);
     }
 
   for (i = 0; i < 10000; i++)
@@ -488,8 +625,10 @@ main (int argc, char *argv[])
   test_small ();
 
   check_subnormal ();
+  check_overflow ();
 
   test_20140212 ();
+  bug_20160907 ();
 
   tests_end_mpfr ();
 

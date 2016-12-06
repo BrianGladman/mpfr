@@ -26,7 +26,7 @@ MPFR_HOT_FUNCTION_ATTR void
 mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 {
   mp_size_t xsize;
-  mpfr_limb_ptr tmp;
+  mpfr_size_limb_t *tmp;
 
   /* Check if we can represent the number of limbs
    * associated to the maximum of mpfr_prec_t*/
@@ -52,7 +52,7 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
   MPFR_ASSERTN (MPFR_PREC_COND (p));
 
   xsize = MPFR_PREC2LIMBS (p);
-  tmp   = (mpfr_limb_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
+  tmp   = (mpfr_size_limb_t *) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
 
   MPFR_PREC(x) = p;                /* Set prec */
   MPFR_EXP (x) = MPFR_EXP_INVALID; /* make sure that the exp field has a

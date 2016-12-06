@@ -19,7 +19,7 @@ fi
 err-if-output()
 {
   local dir msg checkoutput=1 checkstatus=1 output st h line
-  while [[ $1 = -* ]]
+  while [[ $1 == -* ]]
   do
     case $1 in
       --dir=*)
@@ -61,9 +61,11 @@ err-if-output()
   fi
   set -e
   [[ -n $dir ]] && popd
+  # Do not fail.
+  true
 }
 
-if [[ $1 = test ]] then
+if [[ $1 == test ]] then
   export LC_ALL=C
   err-if-output Err-e exit 17
   err-if-output Err-f false
@@ -267,7 +269,7 @@ grep -E 'mpfr_set_(inf|zero) *\([^,]*, *[-+]?([02-9]|1[^)])' $srctests | \
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in src/*.c
 do
-  [[ "$file" = src/(jyn_asympt|mini-gmp|round_raw_generic).c ]] || \
+  [[ "$file" == src/(jyn_asympt|mini-gmp|round_raw_generic).c ]] || \
     grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\|random_deviate\)\.h"' $file || \
     { echo "Missing '#include \"mpfr-impl.h\"' in $file?" && err=1 }
 done
@@ -303,7 +305,7 @@ fdlv2="`sed -n '/GNU Free Documentation License/ {
   p
   q
   }' doc/mpfr.texi`"
-[[ $fdlv1 = $fdlv2 ]] || { cat <<EOF && err=1 }
+[[ $fdlv1 == $fdlv2 ]] || { cat <<EOF && err=1 }
 GFDL versions differ:
    fdl.texi: $fdlv1
   mpfr.texi: $fdlv2
@@ -317,10 +319,13 @@ else
   echo "Warning! gcc is not installed. Cannot run ck-mparam." >&2
 fi
 
-texisvnd=`LC_ALL=C TZ=UTC svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
+# Note about the TZ value: GMT0 and UTC0 are both specified by POSIX,
+# and UTC0 is the preferred value, but old systems only accept GMT0.
+# The "0" is important ("GMT" alone does not work on Tru64 Unix).
+texisvnd=`LC_ALL=C TZ=GMT0 svn info doc/mpfr.texi 2> /dev/null | sed -n 's/Last Changed Date:.*, [0-9]* \([A-Z][a-z][a-z] [0-9][0-9][0-9][0-9]\)).*/\1/p'`
 if [[ $? -eq 0 ]] && [[ -n "$texisvnd" ]] then
   texidate=`sed -n 's/@set UPDATED-MONTH \([A-Z][a-z][a-z]\).*\( [0-9][0-9][0-9][0-9]\)/\1\2/p' doc/mpfr.texi`
-  [[ $texidate = $texisvnd ]] || { cat <<EOF && err=1 }
+  [[ $texidate == $texisvnd ]] || { cat <<EOF && err=1 }
 mpfr.texi's UPDATED-MONTH seems to be incorrect:
   mpfr.texi's UPDATED-MONTH: $texidate
   Last Changed Date in WC:   $texisvnd
@@ -329,7 +334,7 @@ fi
 
 acv1=`sed -n 's/.*autoconf \([0-9.]\+\) (at least).*/\1/p' doc/README.dev`
 acv2=`sed -n 's/AC_PREREQ(\([0-9.]\+\).*/\1/p' acinclude.m4`
-[[ $acv1 = $acv2 ]] || { cat <<EOF && err=1 }
+[[ $acv1 == $acv2 ]] || { cat <<EOF && err=1 }
 autoconf minimal versions differ:
   README.dev:   $acv1
   acinclude.m4: $acv2

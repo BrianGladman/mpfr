@@ -218,8 +218,8 @@ To make a release (for the MPFR team):
      with and without -std=c11, with and without --enable-thread-safe, in
      various FPU precisions (double, double extended and single) if the
      platform supports that (e.g. under Linux/x86, with GCC and its -mpc64
-     option to simulate the FreeBSD/NetBSD behavior, where by default, the
-     x87 FPU is configured to round on 53 bits), and in various locales
+     option to simulate the FreeBSD / NetBSD 6- behavior, where by default,
+     the x87 FPU is configured to round on 53 bits), and in various locales
      (LC_ALL=tr_TR in particular, if installed).
      On x86, test with -m96bit-long-double and -m128bit-long-double.
      Try also with gcc's -fno-common option.
@@ -273,7 +273,11 @@ To make a release (for the MPFR team):
      diagnostic messages at runtime, not a failure; GCC 5 supports
      -fno-sanitize-recover like clang.
 
-     Test with GCC's AddressSanitizer (-fsanitize=address).
+     Test with GCC's AddressSanitizer (-fsanitize=address). One needs to
+     unset LD_PRELOAD to avoid failures. Alternatively, -static-libasan
+     could be used, but there are currently issues with it:
+       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=836855
+       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=836864
 
      Test with i586-mingw32msvc under Wine (see below).
 
@@ -282,9 +286,10 @@ To make a release (for the MPFR team):
      Check various warnings, in particular for obsolescent features.
      With GCC: "-Wall -Wold-style-declaration -Wold-style-definition
      -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
-     -Wmissing-field-initializers". They can easily be checked in
-     automatic tests by adding "-Werror -Wno-error=unused-function",
-     but this needs:
+     -Wmissing-field-initializers". The -Wint-in-bool-context option
+     could be added once available. These warnings can easily be checked
+     in automatic tests by adding "-Werror -Wno-error=unused-function
+     -Wno-error=deprecated-declarations", but this needs:
        * GCC 4.9+
        * a patched autoconf:
      http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html

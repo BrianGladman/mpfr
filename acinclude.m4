@@ -213,7 +213,15 @@ dnl Check for POSIX Thread. Since the AX_PTHREAD macro is not standard
 dnl (it is provided by autoconf-archive), we need to detect whether it
 dnl is left unexpanded, otherwise the configure script won't fail and
 dnl "make distcheck" won't give any error, yielding buggy tarballs!
-m4_pattern_forbid([AX_PTHREAD])
+dnl The \b is necessary to avoid an error with recent ax_pthread.m4
+dnl (such as with Debian's autoconf-archive 20160320-1), which contains
+dnl AX_PTHREAD_ZOS_MISSING, etc. It is not documented, but see:
+dnl   https://lists.gnu.org/archive/html/autoconf/2015-03/msg00011.html
+dnl
+dnl Note: each time a change is done in m4_pattern_forbid, autogen.sh
+dnl should be tested with and without ax_pthread.m4 availability (in
+dnl the latter case, there should be an error).
+m4_pattern_forbid([AX_PTHREAD\b])
 AX_PTHREAD([])
 
 dnl Check for ISO C11 Thread

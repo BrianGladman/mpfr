@@ -24,7 +24,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* returns ceil(log(d)/log(2)) if d > 0,
    -1023 if d = +0,
-   and floor(log(-d)/log(2))+1 if d < 0*/
+   and floor(log(-d)/log(2))+1 if d < 0
+*/
 long
 __gmpfr_ceil_log2 (double d)
 {
@@ -36,6 +37,7 @@ __gmpfr_ceil_log2 (double d)
   /* The cast below is useless in theory, but let us not depend on the
      integer promotion rules (for instance, tcc is currently wrong). */
   exp = (long) x.s.exp - 1023;
+  MPFR_ASSERTN (exp < 1023);  /* fail on infinities */
   x.s.exp = 1023; /* value for 1 <= d < 2 */
   if (x.d != 1.0) /* d: not a power of two? */
     exp++;
