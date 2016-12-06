@@ -61,6 +61,8 @@ err-if-output()
   fi
   set -e
   [[ -n $dir ]] && popd
+  # Do not fail.
+  true
 }
 
 if [[ $1 == test ]] then
