@@ -195,8 +195,11 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
     }
 
   /* compute the precision of intermediary variable */
-  /* the optimal number of bits : see algorithms.tex */
-  Nt = Nz + 5 + MPFR_INT_CEIL_LOG2 (Nz);
+  /* the increment 9 + MPFR_INT_CEIL_LOG2 (Nz) gives few Ziv failures
+     in binary64 and binary128 formats:
+     mfv5 -p53  -e1 mpfr_pow:  5903 /  6469.59 /  6686
+     mfv5 -p113 -e1 mpfr_pow: 10913 / 11989.46 / 12321 */
+  Nt = Nz + 9 + MPFR_INT_CEIL_LOG2 (Nz);
 
   /* initialize of intermediary variable */
   mpfr_init2 (t, Nt);
