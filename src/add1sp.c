@@ -186,8 +186,8 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return 0; /* idem than MPFR_RET(0) and faster */
   else if (rnd_mode == MPFR_RNDN)
     {
-      /* the condition below should be rb == 0 || (rb != 0 & ...), but this is
-         equivalent to rb == 0 || (...) */
+      /* the condition below should be rb == 0 || (rb != 0 && ...), but this
+         is equivalent to rb == 0 || (...) */
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
