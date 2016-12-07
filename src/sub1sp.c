@@ -267,8 +267,9 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+  if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))
+    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
+                 inexact flag are unspecified */
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (rb && sb == 0 &&
@@ -476,8 +477,9 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+  if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))
+    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
+                 inexact flag are unspecified */
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (rb && sb == 0 &&

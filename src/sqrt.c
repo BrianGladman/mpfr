@@ -478,7 +478,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  rounding:
   MPFR_EXP (r) = exp_r;
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
@@ -812,7 +812,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  rounding:
   MPFR_EXP (r) = exp_r;
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
