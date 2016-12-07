@@ -1286,6 +1286,12 @@ asm (".section predict_data, \"aw\"; .previous\n"
    macro, either directly or indirectly via other macros, otherwise it can
    yield an error due to a too large stringized expression in ASSERT_FAIL.
    A static inline function could be a better solution than this macro. */
+/* FIXME: The current code assumes that x fits in an unsigned long
+   (used by __gmpfr_int_ceil_log2) while MPFR_INT_CEIL_LOG2 is used on
+   values that might be larger than ULONG_MAX on some platforms and/or
+   with some build options; a loop could be used if x > ULONG_MAX. If
+   the type of x is <= unsigned long, then no additional code will be
+   generated thanks to obvious compiler optimization. */
 # define MPFR_INT_CEIL_LOG2(x)                            \
     (MPFR_UNLIKELY ((x) == 1) ? 0 :                       \
      __extension__ ({ int _b; mp_limb_t _limb;            \
@@ -1295,7 +1301,8 @@ asm (".section predict_data, \"aw\"; .previous\n"
       count_leading_zeros (_b, _limb);                    \
       (GMP_NUMB_BITS - _b); }))
 #else
-# define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
+# define MPFR_INT_CEIL_LOG2(x) \
+  (MPFR_ASSERTN (x <= ULONG_MAX), __gmpfr_int_ceil_log2(x))
 #endif
 
 /* Add two integers with overflow handling */
