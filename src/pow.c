@@ -188,10 +188,14 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* We will compute the absolute value of the result. So, let's
      invert the rounding mode if the result is negative (in which case
      y not an integer was already filtered out). */
-  if (MPFR_IS_NEG (x) && is_odd (y))
+  if (MPFR_IS_NEG (x))
     {
-      neg_result = 1;
-      rnd_mode = MPFR_INVERT_RND (rnd_mode);
+      MPFR_ASSERTD (y_is_integer);
+      if (is_odd (y))
+        {
+          neg_result = 1;
+          rnd_mode = MPFR_INVERT_RND (rnd_mode);
+        }
     }
 
   /* compute the precision of intermediary variable */
