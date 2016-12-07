@@ -204,8 +204,8 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             {
               ap[0] --;
               /* ap[0] cannot become zero here since:
-                 a) if d >= 2, then ap[0] >= 2^w - (2^(w-1)-1) with
-                    w = GMP_NUMB_BITS, thus ap[0] - 1 >= 2^(w-1),
+                 a) if d >= 2, then ap[0] >= 2^(w-1) - (2^(w-2)-1) with
+                    w = GMP_NUMB_BITS, thus ap[0] - 1 >= 2^(w-2),
                  b) if d = 1, then since p < GMP_NUMB_BITS we have sb=0.
               */
               MPFR_ASSERTD(ap[0] > 0);
@@ -375,9 +375,12 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             {
               ap[1] -= (ap[0] == 0);
               ap[0] --;
-              /* a = ap[1],ap[0] cannot become zero here */
+              /* a = ap[1],ap[0] cannot become zero here, since:
+                 a) if d >= 2, then ap[1] >= 2^(w-1) - (2^(w-2)-1) with
+                    w = GMP_NUMB_BITS, thus ap[1] - 1 >= 2^(w-2),
+                 b) if d = 1, then since p < 2*GMP_NUMB_BITS we have sb=0. */
               MPFR_ASSERTD(ap[1] > 0 || ap[0] > 0);
-              sb = -sb;
+              sb = -sb; /* 2^GMP_NUMB_BITS - sb */
             }
           if (ap[1] == 0)
             {
