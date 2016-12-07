@@ -268,8 +268,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return 0; /* idem than MPFR_RET(0) but faster */
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
@@ -477,8 +476,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return 0; /* idem than MPFR_RET(0) but faster */
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
