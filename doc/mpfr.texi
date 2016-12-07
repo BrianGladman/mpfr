@@ -2886,14 +2886,29 @@ same value of @var{err}).
 When @var{rnd2} is @code{MPFR_RNDF}, let @var{rnd3} be the opposite direction
 if @var{rnd1} is a directed rounding, and @code{MPFR_RNDN}
 if @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF}.
-The returned value is @code{mpfr_can_round (b, err, rnd1, rnd3, prec)}.
-As a consequence, if @code{mpfr_can_round} returns a non-zero value,
-the call @code{mpfr_set (y, b, rnd3)} will return a faithful rounding of
-the unknown number @var{x}.
-@c FIXME: The specification should be:
-@c Assuming that @code{mpfr_set (y, b, rnd3)} will be called, return a
-@c non-zero value if @var{y} is guaranteed to be a faithful rounding of
-@c @var{x}, 0 otherwise.
+The returned value of @code{mpfr_can_round (b, err, rnd1, MPFR_RNDF, prec)}
+is non-zero iff after
+the call @code{mpfr_set (y, b, rnd3)} with @var{y} of precision @var{prec},
+@var{y} is guaranteed to be a faithful rounding of @var{x}.
+@c
+@c For rnd1=RNDN, let [u,v] be the interval where x can lie, then mpfr_can_round
+@c returns 1 exactly when either:
+@c a) [u,v] contains a unique representable number y in precision prec,
+@c    and both u and v round to y with RNDN
+@c b) [u,v] contains no representable number y in precision prec, then mpfr_set
+@c    will return either down(u) or up(v) which are both faithful roundings of x
+@c (With rnd2=RNDN instead, mpfr_can_round would only return 1 in case a).
+@c
+@c For rnd1=RNDU, let [u,b] be the interval where x can lie (we have v=b since
+@c rnd1=RNDU implies x <= b), then mpfr_can_round returns 1 exactly when either:
+@c a) [u,b] contains a (unique) representable number y in precision prec,
+@c    then b rounds to y with rnd3=RNDD
+@c b) [u,b] contains no representable number y in precision prec, then mpfr_set
+@c    will return down(u) which is a faithful rounding of x
+@c (With rnd2 a directed rounding instead of RNDF, mpfr_can_round would only return
+@c 1 in case b, apart from special cases where u or b are representable in precision
+@c prec).
+@c 
 @c Note: This spec is better than one avoiding "hard cases" (leaving
 @c such cases indeterminate to have a mpfr_can_round in constant time).
 @c Indeed, the time gained by having a mpfr_can_round without hard cases
