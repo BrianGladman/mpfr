@@ -155,7 +155,9 @@ is_odd (mpfr_srcptr y)
 }
 
 /* Assumes that the exponent range has already been extended and if y is
-   an integer, then the result is not exact in unbounded exponent range. */
+   an integer, then the result is not exact in unbounded exponent range.
+   If x < 0, assumes y is an integer.
+*/
 int
 mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                   mpfr_rnd_t rnd_mode, int y_is_integer, mpfr_save_expo_t *expo)
@@ -184,7 +186,8 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   MPFR_ALIAS(absx, x, /*sign=*/ 1, /*EXP=*/ MPFR_EXP(x));
 
   /* We will compute the absolute value of the result. So, let's
-     invert the rounding mode if the result is negative. */
+     invert the rounding mode if the result is negative (in which case
+     y not an integer was already filtered out). */
   if (MPFR_IS_NEG (x) && is_odd (y))
     {
       neg_result = 1;
@@ -563,7 +566,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      Otherwise, it should enable one to check only underflow or overflow,
      instead of both cases as in the present case.
   */
-  
+
   /* fast check for cases where no overflow nor underflow is possible:
      if |y| <= 2^15, and -32767 < EXP(x) <= 32767, then
      |y*log2(x)| <= 2^15*32767 < 1073741823, thus for the default
@@ -716,7 +719,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       expx = mpfr_cmp_si (x, -1) > 0 ? 1 - MPFR_EXP(x) : MPFR_EXP(x);
     MPFR_ASSERTD(expx >= 0);
     /* now |log(x)| < expx */
-    for (logt = 0; expx > 1; logt++, expx = (expx + 1) >> 1);
+    logt = MPFR_INT_CEIL_LOG2 (expx);
     /* now expx <= 2^logt */
     err = MPFR_GET_EXP (y) + logt;
     MPFR_CLEAR_FLAGS ();
