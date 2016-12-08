@@ -122,8 +122,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ({ unsigned long long int x;                      \
    __asm__ volatile ("rpcc %0\n\t" : "=r" (x));   \
    x; })
-#define timp_rdtsc_before(time) (time = tpp_rdtsc())
-#define timp_rdtsc_after(time)  (time = tpp_rdtsc())
+#define timp_rdtsc_before(time) (time = timp_rdtsc())
+#define timp_rdtsc_after(time)  (time = timp_rdtsc())
 
 #else
 # error Unsupported CPU
