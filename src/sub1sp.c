@@ -154,6 +154,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mpfr_prec_t cnt, INITIALIZED(sh);
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
+  mp_limb_t a0;
   mp_limb_t mask;
   mpfr_uexp_t d;
 
@@ -161,10 +162,8 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   if (bx == cx)
     {
-      mp_limb_t b0 = bp[0]; /* save bp[0] if a = b */
-
-      ap[0] = b0 - cp[0];
-      if (ap[0] == 0) /* result is zero */
+      a0 = bp[0] - cp[0];
+      if (a0 == 0) /* result is zero */
         {
           if (rnd_mode == MPFR_RNDD)
             MPFR_SET_NEG(a);
@@ -173,18 +172,18 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           MPFR_SET_ZERO(a);
           return 0; /* same as MPFR_RET(0) but faster */
         }
-      else if (ap[0] > b0) /* borrow: |c| > |b| */
+      else if (a0 > bp[0]) /* borrow: |c| > |b| */
         {
           MPFR_SET_OPPOSITE_SIGN (a, b);
-          ap[0] = -ap[0];
+          a0 = -a0;
         }
       else /* bp[0] > cp[0] */
         MPFR_SET_SAME_SIGN (a, b);
 
-      /* now ap[0] != 0 */
-      MPFR_ASSERTD(ap[0] != 0);
-      count_leading_zeros (cnt, ap[0]);
-      ap[0] <<= cnt;
+      /* now a0 != 0 */
+      MPFR_ASSERTD(a0 != 0);
+      count_leading_zeros (cnt, a0);
+      ap[0] = a0 << cnt;
       bx -= cnt;
       rb = sb = 0;
       /* Note: sh is not initialized, but will not be used in this case. */
@@ -199,28 +198,28 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       if (d < GMP_NUMB_BITS)
         {
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
-          ap[0] = bp[0] - (cp[0] >> d);
+          a0 = bp[0] - (cp[0] >> d);
           if (sb)
             {
-              ap[0] --;
-              /* ap[0] cannot become zero here since:
-                 a) if d >= 2, then ap[0] >= 2^(w-1) - (2^(w-2)-1) with
-                    w = GMP_NUMB_BITS, thus ap[0] - 1 >= 2^(w-2),
+              a0 --;
+              /* a0 cannot become zero here since:
+                 a) if d >= 2, then a0 >= 2^(w-1) - (2^(w-2)-1) with
+                    w = GMP_NUMB_BITS, thus a0 - 1 >= 2^(w-2),
                  b) if d = 1, then since p < GMP_NUMB_BITS we have sb=0.
               */
-              MPFR_ASSERTD(ap[0] > 0);
+              MPFR_ASSERTD(a0 > 0);
               sb = -sb;
             }
-          count_leading_zeros (cnt, ap[0]);
+          count_leading_zeros (cnt, a0);
           if (cnt)
-            ap[0] = (ap[0] << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
+            a0 = (a0 << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
           sb <<= cnt;
           bx -= cnt;
           /* sh > 0 since p < GMP_NUMB_BITS */
           MPFR_ASSERTD(sh > 0);
-          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-          sb |= (ap[0] & mask) ^ rb;
-          ap[0] = ap[0] & ~mask;
+          rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (a0 & mask) ^ rb;
+          ap[0] = a0 & ~mask;
         }
       else /* d >= GMP_NUMB_BITS */
         {
@@ -348,9 +347,14 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       count_leading_zeros (cnt, a1);
       if (cnt)
         {
-          a1 = (a1 << cnt) | (a0 >> (GMP_NUMB_BITS - cnt));
-          a0 = a0 << cnt;
+          ap[1] = (a1 << cnt) | (a0 >> (GMP_NUMB_BITS - cnt));
+          ap[0] = a0 << cnt;
           bx -= cnt;
+        }
+      else
+        {
+          ap[1] = a1;
+          ap[0] = a0;
         }
       rb = sb = 0;
       /* Note: sh is not initialized, but will not be used in this case. */
@@ -392,16 +396,18 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           count_leading_zeros (cnt, a1);
           if (cnt)
             {
-              a1 = (a1 << cnt) | (a0 >> (GMP_NUMB_BITS - cnt));
+              ap[1] = (a1 << cnt) | (a0 >> (GMP_NUMB_BITS - cnt));
               a0 = (a0 << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
               sb <<= cnt;
               bx -= cnt;
             }
+          else
+            ap[1] = a1;
           /* sh > 0 since p < 2*GMP_NUMB_BITS */
           MPFR_ASSERTD(sh > 0);
           rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (a0 & mask) ^ rb;
-          a0 = a0 & ~mask;
+          ap[0] = a0 & ~mask;
         }
       else if (d < 2 * GMP_NUMB_BITS)
         {  /* GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS */
@@ -419,13 +425,15 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              decrease of at most one */
           if (a1 < MPFR_LIMB_HIGHBIT)
             {
-              a1 = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
+              ap[1] = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
               a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
               bx --;
             }
+          else
+            ap[1] = a1;
           rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (a0 & mask) ^ rb;
-          a0 = a0 & ~mask;
+          ap[0] = a0 & ~mask;
         }
       else /* d >= 2*GMP_NUMB_BITS */
         {
@@ -436,9 +444,14 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           if (a1 < MPFR_LIMB_HIGHBIT)
             {
               /* necessarily we had b = 1000...000 */
-              a0 = ~mask;
-              a1 = ~0;
+              ap[0] = ~mask;
+              ap[1] = ~0;
               bx --;
+            }
+          else
+            {
+              ap[0] = a0;
+              ap[1] = a1;
             }
           rb = sb = 1;
         }
@@ -452,9 +465,6 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       MPFR_SET_OPPOSITE_SIGN (a, b);
       goto BGreater2;
     }
-
-  ap[1] = a1;
-  ap[0] = a0;
 
   /* now perform rounding */
 
