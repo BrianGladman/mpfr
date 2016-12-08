@@ -125,7 +125,7 @@ int main (int argc, const char *argv[])
   vector<string> base;
   int i, j, cont, prio;
 
-  options.max_exp = GMP_NUMB_BITS; /* default value */
+  options.max_exp = 1; /* default value */
 
   /* Parse option */
   prio = 19;
