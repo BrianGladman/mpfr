@@ -93,7 +93,7 @@ build_base (vector<string> &base, const option_test &opt)
       fprintf (f, "%s\n", buffer);
     base.push_back (buffer);
     if (opt.verbose)
-      cout << "[" << i << "] = " << buffer << endl;
+      mpfr_printf ("[%lu] = %Re\n", i, x);
     free (buffer);
     mpfr_free_str ((char*)str);
   }
