@@ -445,7 +445,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             {
               /* necessarily we had b = 1000...000 */
               ap[0] = ~mask;
-              ap[1] = ~0;
+              ap[1] = MPFR_LIMB_MAX;
               bx --;
             }
           else
