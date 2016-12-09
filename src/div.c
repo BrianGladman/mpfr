@@ -66,13 +66,13 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
-  if (qx > __gmpfr_emax)
+  if (MPFR_UNLIKELY(qx > __gmpfr_emax))
     return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
 
   /* Warning: underflow should be checked *after* rounding, thus when rounding
      away and when q > 0.111...111*2^(emin-1), or when rounding to nearest and
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
-  if (qx < __gmpfr_emin)
+  if (MPFR_UNLIKELY(qx < __gmpfr_emin))
     {
       /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ */
