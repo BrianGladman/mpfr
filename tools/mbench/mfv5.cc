@@ -88,7 +88,7 @@ build_base (vector<string> &base, const option_test &opt)
     buffer = (char *) malloc (strlen(str)+50);
     if (buffer == 0)
       abort ();
-    sprintf (buffer, "%sE%ld", str, (unsigned long) e-strlen(str));
+    sprintf (buffer, "%sE%ld", str, (long) e - (long) strlen(str));
     if (f)
       fprintf (f, "%s\n", buffer);
     base.push_back (buffer);
