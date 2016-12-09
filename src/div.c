@@ -74,20 +74,15 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(qx < __gmpfr_emin))
     {
+      if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
+          ((rnd_mode == MPFR_RNDN && rb) ||
+           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+        goto rounding; /* no underflow */
       /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ */
-      if (rnd_mode == MPFR_RNDN)
-        {
-          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
-          if (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+      if (rnd_mode == MPFR_RNDN &&
+          (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0)))
             rnd_mode = MPFR_RNDZ;
-        }
-      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
-        {
-          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && (rb | sb))
-            goto rounding; /* no underflow */
-        }
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
