@@ -253,13 +253,9 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
         {
-          a0 = bp[0];
-          a1 = bp[1];
           sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
-          a0 += (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
-          a1 = a1 + (cp[1] >> d);
-          if (a0 < bp[0]) /* carry in low word */
-            a1 ++;
+          a0 = bp[0] + ((cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d));
+          a1 = bp[1] + (cp[1] >> d) + (a0 < bp[0]);
           if (a1 < bp[1]) /* carry in high word */
             {
             exponent_shift:
