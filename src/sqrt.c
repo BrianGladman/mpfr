@@ -426,9 +426,10 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(r);
   mpfr_prec_t exp_u = MPFR_EXP(u), exp_r, sh = GMP_NUMB_BITS - p;
-  mp_limb_t u0, r0, rb, sb, mask;
+  mp_limb_t u0, r0, rb, sb, mask, sp[2];
   mpfr_limb_ptr rp = MPFR_MANT(r);
 
+  /* first make the exponent even */
   u0 = MPFR_MANT(u)[0];
   if (((unsigned int) exp_u & 1) != 0)
     {
@@ -438,16 +439,10 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (((unsigned int) exp_u & 1) == 0);
   exp_r = exp_u / 2;
 
-  if (p < GMP_NUMB_BITS / 2)
-    r0 = mpn_sqrtrem1 (&sb, u0) << (GMP_NUMB_BITS / 2);
-  else
-    {
-      mp_limb_t sp[2];
-
-      sp[0] = 0;
-      sp[1] = u0;
-      sb |= mpn_sqrtrem2 (&r0, &sb, sp);
-    }
+  /* then compute the integer square root of u0*2^GMP_NUMB_BITS */
+  sp[0] = 0;
+  sp[1] = u0;
+  sb |= mpn_sqrtrem2 (&r0, &sb, sp);
 
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
   mask = MPFR_LIMB_MASK(sh);
@@ -455,6 +450,8 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   rp[0] = r0 & ~mask;
 
   /* rounding */
+
+  /* Note: if 0 is in [emin,emax], no overflow nor underflow is possible */
   if (MPFR_UNLIKELY (exp_r > __gmpfr_emax))
     return mpfr_overflow (r, rnd_mode, 1);
 
