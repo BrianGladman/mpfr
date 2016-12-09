@@ -794,8 +794,8 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = MPFR_LIMB_MAX &&
-                                              rp[0] == ~mask) && rb)
+          if (exp_r == __gmpfr_emin - 1 && (rp[1] == MPFR_LIMB_MAX &&
+                                            rp[0] == ~mask) && rb)
             goto rounding; /* no underflow */
           if (exp_r < __gmpfr_emin - 1 || (rp[1] == MPFR_LIMB_HIGHBIT &&
                                            rp[0] == MPFR_LIMB_ZERO && sb == 0))
@@ -803,8 +803,8 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
       else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, 0))
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = MPFR_LIMB_MAX &&
-                                              rp[0] == ~mask) && (rb | sb))
+          if (exp_r == __gmpfr_emin - 1 && (rp[1] == MPFR_LIMB_MAX &&
+                                            rp[0] == ~mask) && (rb | sb))
             goto rounding; /* no underflow */
         }
       return mpfr_underflow (r, rnd_mode, 1);
