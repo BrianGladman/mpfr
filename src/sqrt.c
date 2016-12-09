@@ -451,7 +451,8 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   /* rounding */
 
-  /* Note: if 0 is in [emin,emax], no overflow nor underflow is possible */
+  /* Note: if 1 and 2 are in [emin,emax], no overflow nor underflow
+     is possible */
   if (MPFR_UNLIKELY (exp_r > __gmpfr_emax))
     return mpfr_overflow (r, rnd_mode, 1);
 
