@@ -834,6 +834,16 @@ bug20161209a (void)
   mpfr_mul (z, x, y, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_zero_p (z));
 
+  /* similar test for mpfr_mul_2 (we only check rb = sb = 1 here) */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_prec (z, 65);
+  /* 2^67-1 = 193707721 * 761838257287 */
+  mpfr_set_str_binary (x, "0.1011100010111011111011001001E-1");
+  mpfr_set_str_binary (y, "0.1011000101100001000110010100010010000111");
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
