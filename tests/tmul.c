@@ -737,6 +737,8 @@ bug20161209 (void)
 
   emin = mpfr_get_emin ();
   set_emin (-1);
+
+  /* test for mpfr_mul_1 for 64-bit limb, mpfr_mul_2 for 32-bit limb */
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
@@ -746,6 +748,36 @@ bug20161209 (void)
   /* x * y = (2^53+1)/2^56 = 0.001...000[1]000..., and should round to 0.25 */
   mpfr_mul (z, x, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* test for mpfr_mul_2 for 64-bit limb */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_prec (z, 65);
+  mpfr_set_str_binary (x, "0.101101000010010110100001E-1"); /* 11806113/2^25 */
+  mpfr_set_str_binary (y, "0.101101011110010101011010001111111001100001E-1");
+  /* y = 3124947910241/2^43 */
+  /* x * y = (2^65+1)/2^68 = 0.001...000[1]000..., and should round to 0.25 */
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* test for the generic code */
+  mpfr_set_prec (x, 54);
+  mpfr_set_prec (y, 55);
+  mpfr_set_prec (z, 53);
+  mpfr_set_str_binary (x, "0.101000001E-1");
+  mpfr_set_str_binary (y, "0.110011000010100101111000011011000111011000001E-1");
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* another test for the generic code */
+  mpfr_set_prec (x, 66);
+  mpfr_set_prec (y, 67);
+  mpfr_set_prec (z, 65);
+  mpfr_set_str_binary (x, "0.101101000010010110100001E-1");
+  mpfr_set_str_binary (y, "0.101101011110010101011010001111111001100001E-1");
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
