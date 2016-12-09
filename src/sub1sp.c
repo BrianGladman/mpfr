@@ -254,11 +254,17 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      also the exponent after rounding with an unbounded exponent range. */
   if (MPFR_UNLIKELY(bx < __gmpfr_emin))
     {
-      /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
-         we have to change to RNDZ */
+      /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either bx < emin - 1
+         (b) or bx = emin - 1 and ap[0] = 1000....000 (in this case necessarily
+             rb = sb = 0 since b-c is multiple of 2^(emin-p) */
       if (rnd_mode == MPFR_RNDN &&
           (bx < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT))
-        rnd_mode = MPFR_RNDZ;
+        {
+          MPFR_ASSERTD(rb == 0 && sb == 0);
+          rnd_mode = MPFR_RNDZ;
+        }
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
 
