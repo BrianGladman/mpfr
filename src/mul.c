@@ -348,7 +348,9 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) && (~ap[1] == 0) && (ap[0] == ~mask) &&
+      if ((ax == __gmpfr_emin - 1) &&
+          (ap[1] == MPFR_LIMB_MAX) &&
+          (ap[0] == ~mask) &&
           (rb || (sb && !MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)))))
         goto rounding; /* no underflow */
       /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
