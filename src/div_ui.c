@@ -189,7 +189,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 
   MPFR_TMP_FREE (marker);
 
-  if (exp < __gmpfr_emin - 1)
+  if (MPFR_UNLIKELY (exp < __gmpfr_emin - 1))
     return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                            MPFR_SIGN (y));
 
