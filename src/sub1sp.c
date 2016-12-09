@@ -314,8 +314,10 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   /* save b0, b1 in case a and b are the same variable */
   if (bx == cx) /* subtraction is exact in this case */
     {
-      a1 = bp[1] - cp[1] - (bp[0] < cp[0]);
+      /* first compute a0: if the compiler is smart enough, it will use the generated
+         borrow to get for free the term (bp[0] < cp[0]) */
       a0 = bp[0] - cp[0];
+      a1 = bp[1] - cp[1] - (bp[0] < cp[0]);
       if (a1 == 0 && a0 == 0) /* result is zero */
         {
           if (rnd_mode == MPFR_RNDD)
@@ -329,8 +331,8 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           MPFR_SET_OPPOSITE_SIGN (a, b);
           /* a = b-c mod 2^(2*GMP_NUMB_BITS) */
-          a1 = -a1 - (a0 != 0);
           a0 = -a0;
+          a1 = -a1 - (a0 != 0);
         }
       else /* bp[0] > cp[0] */
         MPFR_SET_SAME_SIGN (a, b);
@@ -361,6 +363,8 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
   else if (bx > cx)
     {
+      mp_limb_t t;
+
       MPFR_SET_SAME_SIGN (a, b);
     BGreater2:
       d = (mpfr_uexp_t) bx - cx;
@@ -368,9 +372,10 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS)
         {
+          t = (cp[0] >> d) | (cp[1] << (GMP_NUMB_BITS - d));
+          a0 = bp[0] - t;
+          a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
-          a0 = bp[0] - ((cp[0] >> d) | (cp[1] << (GMP_NUMB_BITS - d)));
-          a1 = bp[1] - (cp[1] >> d) - (a0 > bp[0]);
           if (sb)
             {
               a1 -= (a0 == 0);
@@ -415,11 +420,9 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              significant bit of a0 below */
           sb = (d == GMP_NUMB_BITS) ? cp[0]
             : (cp[1] << (2*GMP_NUMB_BITS - d)) | (cp[0] != 0);
-          a0 = bp[0] - (cp[1] >> (d - GMP_NUMB_BITS)) - (sb != 0);
-          a1 = bp[1] - (a0 >= bp[0]); /* since cp[1] has its most significant bit
-                                         set, and d-GMP_NUMB_BITS < GMP_NUMB_BITS,
-                                         cp[1] >> (d - GMP_NUMB_BITS) is non-zero,
-                                         thus a borrow occurs iff a0 >= b0 */
+          t = (cp[1] >> (d - GMP_NUMB_BITS)) + (sb != 0);
+          a0 = bp[0] - t;
+          a1 = bp[1] - (bp[0] < t);
           sb = -sb;
           /* since has its most significant bit set, we can have an exponent
              decrease of at most one */
@@ -439,8 +442,9 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           /* We compute b - ulp(b), and the remainder ulp(b) - c satisfies:
              1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1. */
-          a0 = bp[0] - (MPFR_LIMB_ONE << sh);
-          a1 = bp[1] - (a0 > bp[0]);
+          t = MPFR_LIMB_ONE << sh;
+          a0 = bp[0] - t;
+          a1 = bp[1] - (bp[0] < t);
           if (a1 < MPFR_LIMB_HIGHBIT)
             {
               /* necessarily we had b = 1000...000 */
