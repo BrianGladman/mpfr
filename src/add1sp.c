@@ -178,6 +178,10 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       goto BGreater1;
     }
 
+  /* Note: we could keep the output significand in a0 for the rounding, and only
+     store it in ap[0] at the very end, but this seems slower on average (but better
+     for the worst case). */
+
   /* now perform rounding */
   if (MPFR_UNLIKELY(bx > __gmpfr_emax))
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
