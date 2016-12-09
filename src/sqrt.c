@@ -598,7 +598,7 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
          Taking sp[0] = 2^GMP_NUMB_BITS (if representable) would be too large
          since it would mean sp[1] = sp[1]+1, and the remainder rp[1] would
          become negative. */
-      sp[0] = ~MPFR_LIMB_ZERO;
+      sp[0] = MPFR_LIMB_MAX;
       r = sp[1];
     }
   else
@@ -794,7 +794,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = ~MPFR_LIMB_ZERO &&
+          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = MPFR_LIMB_MAX &&
                                               rp[0] == ~mask) && rb)
             goto rounding; /* no underflow */
           if (exp_r < __gmpfr_emin - 1 || (rp[1] == MPFR_LIMB_HIGHBIT &&
@@ -803,7 +803,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
       else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, 0))
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = ~MPFR_LIMB_ZERO &&
+          if ((exp_r == __gmpfr_emin - 1) && (rp[1] = MPFR_LIMB_MAX &&
                                               rp[0] == ~mask) && (rb | sb))
             goto rounding; /* no underflow */
         }
@@ -985,7 +985,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   /* truncate low bits of rp[0] */
   sticky1 = rp[0] & ((sh < GMP_NUMB_BITS) ? MPFR_LIMB_MASK(sh)
-                     : ~MPFR_LIMB_ZERO);
+                     : MPFR_LIMB_MAX);
   rp[0] -= sticky1;
 
   sticky = sticky || sticky1;

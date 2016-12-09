@@ -163,7 +163,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          Warning: in this case q1 = B-1 can be too large, for example with
          u = B^2/2 and v = B^2/2 + B - 1, then u*B-(B-1)*u = -1/2*B^2+2*B-1. */
       MPFR_ASSERTD(extra == 0);
-      q1 = ~MPFR_LIMB_ZERO;
+      q1 = MPFR_LIMB_MAX;
       r1 = v0;
       t = v0 - r2; /* t > 0 since r3:r2 < v1:v0 */
       r2 = v1 - t;
@@ -213,7 +213,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(r2 == v1))
     {
-      q0 = ~MPFR_LIMB_ZERO;
+      q0 = MPFR_LIMB_MAX;
       /* r2:r1:0 - q0*(v1:v0) = v1:r1:0 - (B-1)*(v1:v0)
          = r1:0 - v0:0 + v1:v0 */
       r0 = v0;
@@ -285,7 +285,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   if (qx < __gmpfr_emin)
     {
       if ((qx == __gmpfr_emin - 1) &&
-          (qp[1] == ~MPFR_LIMB_ZERO) && (qp[0] == ~mask) &&
+          (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
         goto rounding; /* no underflow */
