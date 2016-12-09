@@ -1439,6 +1439,9 @@ do {                                                                  \
       MPFR_MANT(y) = MPFR_MANT(x);              \
     } while (0)
 
+/* Size of an array, as a constant expression. */
+#define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
+
 
 /******************************************************
  ************  Save exponent/flags macros  ************
