@@ -728,6 +728,30 @@ test_underflow (mpfr_prec_t pmax)
   mpfr_clear (a0);
 }
 
+/* checks special case where no underflow should occur */
+static void
+bug20161209 (void)
+{
+  mpfr_exp_t emin;
+  mpfr_t x, y, z;
+
+  emin = mpfr_get_emin ();
+  set_emin (-1);
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_init2 (z, 53);
+  mpfr_set_str_binary (x, "0.101000001E-1"); /* x = 321/2^10 */
+  mpfr_set_str_binary (y, "0.110011000010100101111000011011000111011000001E-1");
+  /* y = 28059810762433/2^46 */
+  /* x * y = (2^53+1)/2^56 = 0.001...000[1]000..., and should round to 0.25 */
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -776,6 +800,7 @@ main (int argc, char *argv[])
 
   valgrind20110503 ();
   test_underflow (128);
+  bug20161209 ();
 
   tests_end_mpfr ();
   return 0;
