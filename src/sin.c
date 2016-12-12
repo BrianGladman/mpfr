@@ -87,8 +87,8 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* since we compute sin(x) as sqrt(1-cos(x)^2), and for x small we have
      cos(x)^2 ~ 1 - x^2, when subtracting cos(x)^2 from 1 we will lose
      about -2*expx bits if expx < 0 */
-  /* FIXME: In the following operation, the can be around 2*precy, thus
-     an integer overflow is possible. */
+  /* FIXME: In the following operation, the result can be around 2*precy,
+     thus an integer overflow is possible. */
   if (expx < 0)
     m += err1;
 
