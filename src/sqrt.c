@@ -202,6 +202,7 @@ mpn_rsqrtrem1 (mp_limb_t a0)
   */
   x0 = x0 - 4; /* ensures x0 <= 2^72/sqrt(a0) */
   /* x0-2 fails for example for a0=4967732205162787840 (gives x0=2118754313105) */
+  /* now -2^(-36.30) < x0/2^40 - 2^32/sqrt(a0) < 0 */
   return x0;
 #endif
 }
@@ -281,24 +282,33 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 #else /* GMP_NUMB_BITS = 64 */
   MPFR_ASSERTD ((double) x * (double) x * (double) np[1]
                 < 2.2300745198530623e43);
-  /* x is an approximation of 2^72/sqrt(n1), x has 1+40 bits */
+  /* x is an approximation of 2^72/sqrt(n1), x < 2^41 */
 
-  /* We know x/2^40 <= 2^32/sqrt(n1) + 3.9e-12 <= 2^32/sqrt(n1) + 2^(-37)
-     thus n1*x/2^72 <= sqrt(n1) + 2^(-37)*n1/2^32 <= sqrt(n1) + 2^(-5). */
+  /* We know 2^32/sqrt(n1) - 2^(-36.30) <= x/2^40 <= 2^32/sqrt(n1) */
 
-  /* compute y = floor(np[1]*x/2^72), cutting the upper 48 bits of n1 in two
-     parts of 24 and 23 bits, which can be multiplied by x without overflow
-     (warning: if we take 24 bits from low, it might overflow with x) */
+  /* compute y = floor(np[1]*x/2^72): we cut the upper 48 bits of n1 in two parts of
+     24 and 23 bits, which can be multiplied by x without overflow (warning: if we
+     take 24 bits from low, it might overflow with x). We could simply write
+     umul_ppmm (high, low, np[1], x) followed by y = high >> 8 but the following
+     code is faster. */
   high = np[1] >> 40; /* upper 24 bits from n1 */
   MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
   low = (np[1] >> 17) & 0x7fffff; /* next 23 bits */
   MPFR_ASSERTD((double) low * (double) x < 18446744073709551616.0);
   y = high * x + ((low * x) >> 23); /* y approximates n1*x/2^40 */
-  y = (y - 0x8000000) >> 32; /* the constant 0x8000000 = 2^(72-5-40) takes
-                                into account the 2^(-5) error above, to ensure
-                                y <= sqrt(n1) */
+  y = y >> 32;
 #endif
-  /* y is an approximation of sqrt(n1), with y <= sqrt(n1) */
+
+  /* Now y is an approximation of sqrt(n1), with y <= sqrt(n1). The errors are:
+     (a) mathematical error: according to Lemma 3.14 from "Modern Computer
+         Arithmetic", it is bounded by 3/2*x^3/theta^4*2^(-2*36.30), where
+         x <= theta + 2^(-36.30), thus x/theta <= 1 + 2^(-36.30), thus the
+         mathematical error is bounded by 2^(-72.01), thus 2^(-40.01) for a
+         value normalized by 2^32;
+     (b) truncation error in Newton's floor(np[1]*x/2^72): it is bounded by
+         2^17*x/2^72 for the neglected part of np[1], and 1 in (low * x) >> 23.
+     Thus we have:
+     sqrt(np[1]) - 1 - 2^(-13.99) < y <= sqrt(np[1]) */
 
   t = np[1] - y * y;
   MPFR_ASSERTD((mp_limb_signed_t) t >= 0);
