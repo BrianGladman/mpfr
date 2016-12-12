@@ -80,8 +80,14 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       goto end;
     }
 
-  m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
+  m = precy + MPFR_INT_CEIL_LOG2 (precy) + 7;
   expx = MPFR_GET_EXP (x);
+
+  /* since we compute sin(x) as sqrt(1-cos(x)^2), and for x small we have
+     cos(x)^2 ~ 1 - x^2, when subtracting cos(x)^2 from 1 we will lose
+     about -2*expx bits if expx < 0 */
+  if (expx < 0)
+    m += 2 * (-expx);
 
   mpfr_init (c);
   mpfr_init (xr);
