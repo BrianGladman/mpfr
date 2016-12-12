@@ -159,7 +159,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   l = (precy - 1) / K + 1;
   err = K + MPFR_INT_CEIL_LOG2 (2 * l + 18);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
-  q = precy + err + K + 8;
+  q = precy + err + K + 10;
   /* if |x| >> 1, take into account the cancelled bits */
   if (expx > 0)
     q += expx;
@@ -255,7 +255,6 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               break;
             }
         }
-
       MPFR_ZIV_NEXT (loop, q);
       MPFR_GROUP_REPREC_2(group, q+error_r, r, s);
     }

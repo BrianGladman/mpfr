@@ -103,8 +103,8 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
 
   q = MPFR_PREC (r);
 
-  /* use initial precision about q+lg(q)+5 */
-  p = q + 5 + 2 * MPFR_INT_CEIL_LOG2 (q);
+  /* use initial precision about q+2*lg(q)+cte */
+  p = q + 2 * MPFR_INT_CEIL_LOG2 (q) + 10;
   /* % ~(mpfr_prec_t)GMP_NUMB_BITS  ;
      m=q; while (m) { p++; m >>= 1; }  */
   /* if (MPFR_LIKELY(p % GMP_NUMB_BITS != 0))
@@ -143,19 +143,19 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
           /* we have 7 ulps of error from the above roundings,
              4 ulps from the 4/s^2 second order term,
              plus the canceled bits */
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p-cancel-4, q, rnd_mode)))
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p - cancel - 4, q, rnd_mode)))
             break;
 
           /* VL: I think it is better to have an increment that it isn't
              too low; in particular, the increment must be positive even
              if cancel = 0 (can this occur?). */
-          p += cancel >= 8 ? cancel : 8;
+          p += cancel + MPFR_INT_CEIL_LOG2 (p);
         }
       else
         {
           /* TODO: find why this case can occur and what is best to do
              with it. */
-          p += 32;
+          p += MPFR_INT_CEIL_LOG2 (p);
         }
 
       MPFR_ZIV_NEXT (loop, p);
