@@ -282,8 +282,8 @@ mpn_rsqrtrem1 (mp_limb_t a0)
    This comment is for GMP_NUMB_BITS=64 for simplicity, but the code is valid
    for any even value of GMP_NUMB_BITS.
    The algorithm used is the following, and uses Karp-Markstein's trick:
-   - start from x, a 33-bit approximation of 2^64/sqrt(n1), with x <= 2^64/sqrt(n1)
-   - y = floor(n1*x/2^64), which is an approximation of sqrt(n1)
+   - start from x, a 41-bit approximation of 2^72/sqrt(n1), with x <= 2^72/sqrt(n1)
+   - y = floor(n1*x/2^72), which is a 32-bit approximation of sqrt(n1)
    - t = n1 - y^2
    - u = (x * t) >> 33
    - y = (y << 32) + u
@@ -353,7 +353,7 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 
   /* compute y = floor(np[1]*x/2^72), cutting the upper 48 bits of n1 in two
      parts of 24 and 23 bits, which can be multiplied by x without overflow
-     (warning: if we take 24 bits from low, it might overflow with x */
+     (warning: if we take 24 bits from low, it might overflow with x) */
   high = np[1] >> 40; /* upper 24 bits from n1 */
   MPFR_ASSERTD((double) high * (double) x < 18446744073709551616.0);
   low = (np[1] >> 17) & 0x7fffff; /* next 23 bits */
