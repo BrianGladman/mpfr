@@ -2094,6 +2094,9 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     (r) = __r0;								\
   } while (0)
 
+/* For inclusing in MPFR, we undefine the following, since it does not work:
+https://gforge.inria.fr/tracker/?func=detail&atid=619&aid=21053&group_id=136 */
+#if 0
 /* If the processor has no udiv_qrnnd but sdiv_qrnnd, go through
    __udiv_w_sdiv (defined in libgcc or elsewhere).  */
 #if !defined (udiv_qrnnd) && defined (sdiv_qrnnd)
@@ -2104,6 +2107,7 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     (r) = __r;								\
   } while (0)
 __GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
+#endif
 #endif
 
 /* If udiv_qrnnd was not defined for this processor, use __udiv_qrnnd_c.  */
