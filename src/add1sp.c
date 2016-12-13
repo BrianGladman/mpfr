@@ -207,10 +207,11 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     {
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
-      if (ap[0] == 0)
+      if (MPFR_UNLIKELY(ap[0] == 0))
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+          /* no need to have MPFR_LIKELY here, since we are in a rare branch */
+          if (bx + 1 <= __gmpfr_emax)
             MPFR_SET_EXP (a, bx + 1);
           else /* overflow */
             return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
@@ -329,10 +330,11 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
       ap[1] += (ap[0] == 0);
-      if (ap[1] == 0)
+      if (MPFR_UNLIKELY(ap[1] == 0))
         {
           ap[1] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+          /* no need to have MPFR_LIKELY here, since we are in a rare branch */
+          if (bx + 1 <= __gmpfr_emax)
             MPFR_SET_EXP (a, bx + 1);
           else /* overflow */
             return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));

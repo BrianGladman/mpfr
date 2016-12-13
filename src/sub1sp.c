@@ -287,7 +287,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     {
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
-      if (ap[0] == 0)
+      if (MPFR_UNLIKELY(ap[0] == 0))
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
           /* Note: bx+1 cannot exceed __gmpfr_emax, since |a| <= |b|, thus
@@ -514,7 +514,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
       ap[1] += (ap[0] == 0);
-      if (ap[1] == 0)
+      if (MPFR_UNLIKELY(ap[1] == 0))
         {
           ap[1] = MPFR_LIMB_HIGHBIT;
           /* Note: bx+1 cannot exceed __gmpfr_emax, since |a| <= |b|, thus
