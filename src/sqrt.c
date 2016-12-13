@@ -250,9 +250,12 @@ mpn_rsqrtrem1 (mp_limb_t a0)
 
      In practice, we should ensure y <= n1*x/2^64, so that t and u are
      non-negative, so that all right shifts round towards -infinity.
+
+     If approx is non-zero, instead of the exact square root y, an approximation
+     y' is returned, with y - err <= y' <= y, where err is the return value.
 */
 static mp_limb_t
-mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
+mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np, int approx)
 {
   mp_limb_t x, y, t, high, low;
 
@@ -336,8 +339,16 @@ mpn_sqrtrem2 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 #endif
 
   /* the correction code below assumes y >= 2^(GMP_NUMB_BITS - 1) */
-  if (y < (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)))
-    y = MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1);
+  if (MPFR_UNLIKELY(y < MPFR_LIMB_HIGHBIT))
+    y = MPFR_LIMB_HIGHBIT;
+
+#if GMP_NUMB_BITS == 64
+  if (approx)
+    {
+      sp[0] = y;
+      return 2; /* y <= sqrt(np[1]*2^64+np[0]) < y+2 */
+    }
+#endif
 
   umul_ppmm (x, t, y, y);
   MPFR_ASSERTD(x < np[1] || (x == np[1] && t <= np[0])); /* y should not be too large */
@@ -371,7 +382,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(r);
   mpfr_prec_t exp_u = MPFR_EXP(u), exp_r, sh = GMP_NUMB_BITS - p;
-  mp_limb_t u0, r0, rb, sb, mask, sp[2];
+  mp_limb_t u0, r0, rb, sb, mask = MPFR_LIMB_MASK(sh), sp[2];
   mpfr_limb_ptr rp = MPFR_MANT(r);
 
   /* first make the exponent even */
@@ -385,12 +396,23 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   exp_r = exp_u / 2;
 
   /* then compute the integer square root of u0*2^GMP_NUMB_BITS */
-  sp[0] = 0;
   sp[1] = u0;
-  sb |= mpn_sqrtrem2 (&r0, &sb, sp);
+#if GMP_NUMB_BITS == 64
+  sb = mpn_sqrtrem2 (&r0, NULL, sp, 1);
+
+  /* since the error is at most sb ulps, we can round correctly except when the last
+     sh-1 bits of r0+sb are <= sb (this includes the case where the last sh-1 bits of
+     r0 are 000...000 since we might have an exact result or not) */
+  if (MPFR_UNLIKELY(((r0 + sb) & (mask >> 1)) <= sb))
+#endif
+    {
+      sp[0] = 0;
+      sb |= mpn_sqrtrem2 (&r0, &sb, sp, 0);
+    }
+  /* Note: when we can round correctly with the approximation, the sticky bit will
+     be non-zero below */
 
   rb = r0 & (MPFR_LIMB_ONE << (sh - 1));
-  mask = MPFR_LIMB_MASK(sh);
   sb |= (r0 & mask) ^ rb;
   rp[0] = r0 & ~mask;
 
@@ -516,7 +538,7 @@ mpn_sqrtrem4 (mpfr_limb_ptr sp, mpfr_limb_ptr rp, mpfr_limb_srcptr ap)
 {
   mp_limb_t x, r, t;
 
-  x = mpn_sqrtrem2 (sp + 1, rp + 1, ap + 2);
+  x = mpn_sqrtrem2 (sp + 1, rp + 1, ap + 2, 0);
 
   /* now a1 = s1^2 + x*B + r1, with a1 = {ap+2,2}, s1 = sp[1], r1 = rp[1],
      with 0 <= x*B + r1 <= 2*s1 */
