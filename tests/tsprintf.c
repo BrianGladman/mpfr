@@ -1258,6 +1258,25 @@ check_emin (void)
   check_emin_aux (MPFR_EMIN_MIN);
 }
 
+static void
+test20161214 (void)
+{
+  mpfr_t x;
+  char buf[32];
+  const char s[] = "0x0.fffffffffffff8p+1024";
+  int r;
+
+  mpfr_init2 (x, 64);
+  mpfr_set_str (x, s, 16, MPFR_RNDN);
+  r = mpfr_snprintf (buf, 32, "%.*RDf", -2, x);
+  MPFR_ASSERTN(r == 316);
+  r = mpfr_snprintf (buf, 32, "%.*RDf", INT_MIN + 1, x);
+  MPFR_ASSERTN(r == 316);
+  r = mpfr_snprintf (buf, 32, "%.*RDf", INT_MIN, x);
+  MPFR_ASSERTN(r == 316);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1278,6 +1297,7 @@ main (int argc, char **argv)
   mixed ();
   check_emax ();
   check_emin ();
+  test20161214 ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #if MPFR_LCONV_DPTS
