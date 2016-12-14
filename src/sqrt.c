@@ -434,7 +434,9 @@ mpn_sqrtrem2_approx (mp_limb_t n)
   umul_ppmm (h, l, u[2] - h, x);
   /* the error on h is less than 1 + 2^-8 * 2 <= 2 */
   umul_ppmm (h, l, u[1] - h, x);
-  /* the error on h, l is less than 2^-8 * 2 <= 2^-7 */
+  /* The truncation error on h + l/2^64 is less than 2^-8 * 2 <= 2^-7.
+     With the mathematical error less than 0.49991, this makes a global
+     error less than 0.50773. */
   return u[0] + h + (l >> 63); /* round to nearest: error < 0.5 + 2^-7 */
 }
 #endif /* GMP_NUMB_BITS == 64 */
