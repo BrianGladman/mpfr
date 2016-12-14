@@ -1587,7 +1587,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         }
       else if (spec.spec == 'f' || spec.spec == 'F')
         {
-          if (spec.prec == -1)
+          if (spec.prec < 0)
             spec.prec = 6;
           if (regular_fg (np, p, spec, NULL) == -1)
             goto error;
