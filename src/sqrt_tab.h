@@ -1,3 +1,25 @@
+/* sqrt_tab.h - array for sqrt.c with GMP_NUMB_BITS == 64
+
+Copyright 2016 Free Software Foundation, Inc.
+Contributed by the AriC and Caramba projects, INRIA.
+
+This file is part of the GNU MPFR Library.
+
+The GNU MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+The GNU MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
 static const mp_limb_t U[192][9] = {
 /*64*/ {9223372036854775808UL,216172782113783808UL,18446744073709551211UL,72057594037919409UL,562949953352959UL,5497557869691UL,60128965900UL,703958331UL,8224883UL},
 /*65*/ {9295150333696574040UL,9655717601082343424UL,18304296041740945442UL,70401138622072963UL,541547220108952UL,5207184569501UL,56076861514UL,646436672UL,7442144UL},
