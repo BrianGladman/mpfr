@@ -87,10 +87,15 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* since we compute sin(x) as sqrt(1-cos(x)^2), and for x small we have
      cos(x)^2 ~ 1 - x^2, when subtracting cos(x)^2 from 1 we will lose
      about -2*expx bits if expx < 0 */
-  /* FIXME: In the following operation, the result can be around 2*precy,
-     thus an integer overflow is possible. */
   if (expx < 0)
-    m += err1;
+    {
+      /* The following assertion includes a check for integer overflow.
+         At this point, precy < MPFR_SINCOS_THRESHOLD, so that both m and
+         err1 should be small enough. But the assertion makes the code
+         safer (a smart compiler might be able to remove it). */
+      MPFR_ASSERTN (err1 <= MPFR_PREC_MAX - m);
+      m += err1;
+    }
 
   mpfr_init (c);
   mpfr_init (xr);
