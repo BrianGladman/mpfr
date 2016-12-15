@@ -428,7 +428,7 @@ check_inexact (mpfr_prec_t p)
   mpfr_init2 (y, p);
   mpfr_init2 (z, 2*p);
   mpfr_urandomb (x, RANDS);
-  rnd = RND_RAND ();
+  rnd = RND_RAND_NO_RNDF ();
   inexact = test_sqrt (y, x, rnd);
   if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
     {
