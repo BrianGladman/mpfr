@@ -33,6 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <string>
 #include <fstream>
 
+#include <assert.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -42,6 +43,7 @@ struct option_test {
   unsigned long prec;
   unsigned long seed;
   unsigned long stat;
+  long max_exp;
   bool verbose;
   mpfr_rnd_t rnd;
   std::string export_base;

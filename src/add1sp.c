@@ -115,6 +115,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
+  mp_limb_t a0; /* to store the result */
   mp_limb_t mask;
   mpfr_uexp_t d;
 
@@ -123,10 +124,10 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   if (bx == cx)
     {
       /* since bp[0], cp[0] >= MPFR_LIMB_HIGHBIT, a carry always occurs */
-      ap[0] = MPFR_LIMB_HIGHBIT | ((bp[0] + cp[0]) >> 1);
+      a0 = MPFR_LIMB_HIGHBIT | ((bp[0] + cp[0]) >> 1);
       bx ++;
-      rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-      ap[0] ^= rb;
+      rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+      ap[0] = a0 ^ rb;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
   else if (bx > cx)
@@ -139,30 +140,30 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           /* we can shift c by d bits to the right without losing any bit,
              moreover we can shift one more if there is an exponent increase */
           rb = bp[0];
-          ap[0] = rb + (cp[0] >> d);
-          if (ap[0] < rb) /* carry */
+          a0 = rb + (cp[0] >> d);
+          if (a0 < rb) /* carry */
             {
-              ap[0] = MPFR_LIMB_HIGHBIT | (ap[0] >> 1);
+              a0 = MPFR_LIMB_HIGHBIT | (a0 >> 1);
               bx ++;
             }
-          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-          sb = (ap[0] & mask) ^ rb;
-          ap[0] = ap[0] & ~mask;
+          rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+          sb = (a0 & mask) ^ rb;
+          ap[0] = a0 & ~mask;
         }
       else if (d < GMP_NUMB_BITS) /* sh <= d < GMP_NUMB_BITS */
         {
           rb = bp[0];
           sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
-          ap[0] = rb + (cp[0] >> d);
-          if (ap[0] < rb)
+          a0 = rb + (cp[0] >> d);
+          if (a0 < rb)
             {
-              sb |= ap[0] & 1;
-              ap[0] = MPFR_LIMB_HIGHBIT | (ap[0] >> 1);
+              sb |= a0 & 1;
+              a0 = MPFR_LIMB_HIGHBIT | (a0 >> 1);
               bx ++;
             }
-          rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-          sb |= (ap[0] & mask) ^ rb;
-          ap[0] = ap[0] & ~mask;
+          rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (a0 & mask) ^ rb;
+          ap[0] = a0 & ~mask;
         }
       else /* d >= GMP_NUMB_BITS */
         {
@@ -180,6 +181,10 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       goto BGreater1;
     }
 
+  /* Note: we could keep the output significand in a0 for the rounding, and only
+     store it in ap[0] at the very end, but this seems slower on average (but better
+     for the worst case). */
+
   /* now perform rounding */
   if (MPFR_UNLIKELY(bx > __gmpfr_emax))
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
@@ -190,8 +195,9 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
                  are unspecified for MPFR_RNDF */
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* the condition below should be rb == 0 || (rb != 0 && ...), but this
+         is equivalent to rb == 0 || (...) */
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
@@ -205,10 +211,11 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     {
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
-      if (ap[0] == 0)
+      if (MPFR_UNLIKELY(ap[0] == 0))
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+          /* no need to have MPFR_LIKELY here, since we are in a rare branch */
+          if (bx + 1 <= __gmpfr_emax)
             MPFR_SET_EXP (a, bx + 1);
           else /* overflow */
             return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
@@ -241,11 +248,11 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       /* since bp[1], cp[1] >= MPFR_LIMB_HIGHBIT, a carry always occurs */
       a0 = bp[0] + cp[0];
       a1 = bp[1] + cp[1] + (a0 < bp[0]);
-      ap[0] = (a0 >> 1) | (a1 << (GMP_NUMB_BITS - 1));
-      ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
+      a0 = (a0 >> 1) | (a1 << (GMP_NUMB_BITS - 1));
       bx ++;
-      rb = ap[0] & (MPFR_LIMB_ONE << (sh - 1));
-      ap[0] ^= rb;
+      rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+      ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
+      ap[0] = a0 ^ rb;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
   else if (bx > cx)
@@ -255,22 +262,20 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
         {
-          a0 = bp[0];
-          a1 = bp[1];
           sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
-          a0 += (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
-          ap[1] = a1 + (cp[1] >> d);
-          if (a0 < bp[0]) /* carry in low word */
-            ap[1] ++;
-          if (ap[1] < a1) /* carry in high word */
+          a0 = bp[0] + ((cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d));
+          a1 = bp[1] + (cp[1] >> d) + (a0 < bp[0]);
+          if (a1 < bp[1]) /* carry in high word */
             {
             exponent_shift:
               sb |= a0 & 1;
               /* shift a by 1 */
-              a0 = (ap[1] << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
-              ap[1] = MPFR_LIMB_HIGHBIT | (ap[1] >> 1);
+              a0 = (a1 << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
+              ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
               bx ++;
             }
+          else
+            ap[1] = a1;
           rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (a0 & mask) ^ rb;
           ap[0] = a0 & ~mask;
@@ -280,12 +285,13 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           sb = (d == GMP_NUMB_BITS) ? cp[0]
             : cp[0] | (cp[1] << (2*GMP_NUMB_BITS-d));
           a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
-          ap[1] = bp[1] + (a0 < bp[0]);
-          if (ap[1] == 0)
+          a1 = bp[1] + (a0 < bp[0]);
+          if (a1 == 0)
             goto exponent_shift;
           rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (a0 & mask) ^ rb;
           ap[0] = a0 & ~mask;
+          ap[1] = a1;
         }
       else /* d >= 2*GMP_NUMB_BITS */
         {
@@ -314,8 +320,7 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
                  are unspecified for RNDF */
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
@@ -330,10 +335,11 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
       ap[1] += (ap[0] == 0);
-      if (ap[1] == 0)
+      if (MPFR_UNLIKELY(ap[1] == 0))
         {
           ap[1] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_LIKELY(bx + 1 <= __gmpfr_emax))
+          /* no need to have MPFR_LIKELY here, since we are in a rare branch */
+          if (bx + 1 <= __gmpfr_emax)
             MPFR_SET_EXP (a, bx + 1);
           else /* overflow */
             return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));

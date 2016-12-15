@@ -214,29 +214,32 @@ static int
 mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
-  mp_limb_t h;
+  mp_limb_t a0;
   mpfr_limb_ptr ap = MPFR_MANT(a);
-  mpfr_exp_t ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
+  mpfr_limb_ptr bp = MPFR_MANT(b);
+  mpfr_limb_ptr cp = MPFR_MANT(c);
+  mpfr_exp_t ax;
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, mask = MPFR_LIMB_MASK(sh);
 
   /* When prec(b), prec(c) <= GMP_NUMB_BITS / 2, we could replace umul_ppmm
      by a limb multiplication as follows, but we assume umul_ppmm is as fast
      as a limb multiplication on modern processors:
-      h = (MPFR_MANT(b)[0] >> (GMP_NUMB_BITS / 2))
-        * (MPFR_MANT(c)[0] >> (GMP_NUMB_BITS / 2));
+      a0 = (bp[0] >> (GMP_NUMB_BITS / 2))
+        * (cp[0] >> (GMP_NUMB_BITS / 2));
       sb = 0;
   */
-  umul_ppmm (h, sb, MPFR_MANT(b)[0], MPFR_MANT(c)[0]);
-  if (h < MPFR_LIMB_HIGHBIT)
+  ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
+  umul_ppmm (a0, sb, bp[0], cp[0]);
+  if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
-      h = (h << 1) | (sb >> (GMP_NUMB_BITS - 1));
+      a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
       sb = sb << 1;
     }
-  rb = h & (MPFR_LIMB_ONE << (sh - 1));
-  sb |= (h & mask) ^ rb;
-  ap[0] = h & ~mask;
+  rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
+  sb |= (a0 & mask) ^ rb;
+  ap[0] = a0 & ~mask;
 
   MPFR_SIGN(a) = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
@@ -249,20 +252,17 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
-         we have to change to RNDZ */
-      if (rnd_mode == MPFR_RNDN)
-        {
-          if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
-          if (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && sb == 0))
-            rnd_mode = MPFR_RNDZ;
-        }
-      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)))
-        {
-          if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) && (rb | sb))
-            goto rounding; /* no underflow */
-        }
+      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) &&
+          ((rnd_mode == MPFR_RNDN && rb) ||
+           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+        goto rounding; /* no underflow */
+      /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either ax < emin - 1
+         (b) or ax = emin - 1 and ap[0] = 1000....000 and rb = sb = 0 */
+      if (rnd_mode == MPFR_RNDN &&
+          (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
 
@@ -276,8 +276,7 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
@@ -353,22 +352,18 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
+      if ((ax == __gmpfr_emin - 1) &&
+          (ap[1] == MPFR_LIMB_MAX) &&
+          (ap[0] == ~mask) &&
+          ((rnd_mode == MPFR_RNDN && rb) ||
+           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+        goto rounding; /* no underflow */
       /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
          we have to change to RNDZ */
-      if (rnd_mode == MPFR_RNDN)
-        {
-          if ((ax == __gmpfr_emin - 1) && (~ap[1] == 0) && (ap[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
-          if (ax < __gmpfr_emin - 1 ||
-              (ap[1] == MPFR_LIMB_HIGHBIT && ap[0] == 0 && sb == 0))
+      if (rnd_mode == MPFR_RNDN &&
+          (ax < __gmpfr_emin - 1 ||
+           (ap[1] == MPFR_LIMB_HIGHBIT && ap[0] == 0 && (rb | sb) == 0)))
             rnd_mode = MPFR_RNDZ;
-        }
-      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (a)))
-        {
-          if ((ax == __gmpfr_emin - 1) && (~ap[1] == 0) && (ap[0] == ~mask)
-              && (rb | sb))
-            goto rounding; /* no underflow */
-        }
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
 
@@ -382,8 +377,7 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;

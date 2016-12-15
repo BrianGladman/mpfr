@@ -174,7 +174,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   K0 = __gmpfr_isqrt (precy / 3);
-  m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy) + 2 * K0;
+  m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy) + 2 * K0 + 4;
 
   if (expx >= 3)
     {
@@ -245,7 +245,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       l = 2 * l + 1;
       if (reduce)
         l += (K == 0) ? 4 : 1;
-      k = MPFR_INT_CEIL_LOG2 (l) + 2*K;
+      k = MPFR_INT_CEIL_LOG2 (l) + 2 * K;
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
       exps = MPFR_GET_EXP (s);

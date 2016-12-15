@@ -250,9 +250,6 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 #define MIN(l,o) ((l) < (o) ? (l) : (o))
 #define MAX(h,i) ((h) > (i) ? (h) : (i))
 
-/* Size of an array, as a constant expression. */
-#define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
-
 /* Size of an array, safe version but not a constant expression:
    Since an array can silently be converted to a pointer, we check
    that this macro is applied on an array, not a pointer. */

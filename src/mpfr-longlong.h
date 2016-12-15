@@ -2096,7 +2096,7 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
 
 /* If the processor has no udiv_qrnnd but sdiv_qrnnd, go through
    __udiv_w_sdiv (defined in libgcc or elsewhere).  */
-#if !defined (udiv_qrnnd) && defined (sdiv_qrnnd)
+#if !defined (udiv_qrnnd) && defined (sdiv_qrnnd) && !defined(LONGLONG_STANDALONE)
 #define udiv_qrnnd(q, r, nh, nl, d) \
   do {									\
     UWtype __r;								\

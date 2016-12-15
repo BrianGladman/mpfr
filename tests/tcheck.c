@@ -107,7 +107,7 @@ main (void)
       tmp = MPFR_MANT(a)[0];
       if ((pr % GMP_NUMB_BITS) != 0)
         {
-          MPFR_MANT(a)[0] = ~0;
+          MPFR_MANT(a)[0] = MPFR_LIMB_MAX;
           if (mpfr_check(a))  ERROR("last bits non 0");
         }
       MPFR_MANT(a)[0] = tmp;

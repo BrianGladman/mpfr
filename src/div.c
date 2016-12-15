@@ -37,77 +37,57 @@ static int
 mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(q);
-  mpfr_limb_ptr up = MPFR_MANT(u);
-  mpfr_limb_ptr vp = MPFR_MANT(v);
   mpfr_limb_ptr qp = MPFR_MANT(q);
   mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
-  mp_limb_t h, rb, sb, mask = MPFR_LIMB_MASK(sh);
+  mp_limb_t u0 = MPFR_MANT(u)[0];
+  mp_limb_t v0 = MPFR_MANT(v)[0];
+  mp_limb_t q0, rb, sb, mask = MPFR_LIMB_MASK(sh);
 
-  if (up[0] >= vp[0])
+  if (u0 >= v0)
     {
-      if (p < GMP_NUMB_BITS / 2 && MPFR_PREC(v) <= GMP_NUMB_BITS / 2)
-        {
-          mp_limb_t v = vp[0] >> (GMP_NUMB_BITS / 2);
-          h = (up[0] - vp[0]) / v;
-          sb = (up[0] - vp[0]) % v;
-          h <<= GMP_NUMB_BITS / 2;
-          sb <<= GMP_NUMB_BITS / 2;
-        }
-      else
-        __udiv_qrnd_preinv (h, sb, up[0] - vp[0], vp[0]);
-      /* Noting W = 2^GMP_NUMB_BITS, we have up[0]*W = (W + h) * vp[0] + sb,
-         thus up[0]/vp[0] = 1 + h/W + sb/vp[0]/W, with 0 <= sb < vp[0]. */
+      __udiv_qrnd_preinv (q0, sb, u0 - v0, v0);
+      /* Noting W = 2^GMP_NUMB_BITS, we have u0*W = (W + q0) * v0 + sb,
+         thus u0/v0 = 1 + q0/W + sb/v0/W, with 0 <= sb < v0. */
       qx ++;
-      sb |= h & 1;
-      h = MPFR_LIMB_HIGHBIT | (h >> 1);
-      rb = h & (MPFR_LIMB_ONE << (sh - 1));
-      sb |= (h & mask) ^ rb;
-      qp[0] = h & ~mask;
+      rb = q0 & (MPFR_LIMB_ONE << sh);
+      sb |= q0 & mask;
+      qp[0] = (MPFR_LIMB_HIGHBIT | (q0 >> 1)) & ~mask;
     }
   else
     {
-      if (p < GMP_NUMB_BITS / 2 && MPFR_PREC(v) <= GMP_NUMB_BITS / 2)
-        {
-          mp_limb_t v = vp[0] >> (GMP_NUMB_BITS / 2);
-          h = up[0] / v;
-          sb = up[0] % v;
-          h <<= GMP_NUMB_BITS / 2;
-          sb <<= GMP_NUMB_BITS / 2;
-        }
-      else
-        __udiv_qrnd_preinv (h, sb, up[0], vp[0]);
-      /* now up[0]*2^GMP_NUMB_BITS = h*vp[0] + sb */
-      rb = h & (MPFR_LIMB_ONE << (sh - 1));
-      sb |= (h & mask) ^ rb;
-      qp[0] = h & ~mask;
+      __udiv_qrnd_preinv (q0, sb, u0, v0);
+      /* now u0*2^GMP_NUMB_BITS = q0*v0 + sb */
+      rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= (q0 & mask) ^ rb;
+      qp[0] = q0 & ~mask;
     }
-
+  
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
-  if (qx > __gmpfr_emax)
+  if (MPFR_UNLIKELY(qx > __gmpfr_emax))
     return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
 
   /* Warning: underflow should be checked *after* rounding, thus when rounding
      away and when q > 0.111...111*2^(emin-1), or when rounding to nearest and
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
-  if (qx < __gmpfr_emin)
+  if (MPFR_UNLIKELY(qx < __gmpfr_emin))
     {
-      /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
-         we have to change to RNDZ */
-      if (rnd_mode == MPFR_RNDN)
-        {
-          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
-          if (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
-            rnd_mode = MPFR_RNDZ;
-        }
-      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
-        {
-          if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) && (rb | sb))
-            goto rounding; /* no underflow */
-        }
+      if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
+          ((rnd_mode == MPFR_RNDN && rb) ||
+           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+        goto rounding; /* no underflow */
+      /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either qx < emin - 1
+         (b) or qx = emin - 1 and qp[0] = 1000....000 and rb = sb = 0.
+         Note: in case (b), it suffices to check whether sb = 0, since rb = 1
+         and sb = 0 is not possible (the exact quotient would have p+1 bits, thus
+         u would need at least p+1 bits). */
+      if (rnd_mode == MPFR_RNDN &&
+          (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0)))
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
@@ -121,8 +101,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      if (rb == 0 || (sb == 0 && (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
         goto truncate;
       else
         goto add_one_ulp;
@@ -157,25 +136,25 @@ static int
 mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t p = MPFR_GET_PREC(q);
-  mpfr_limb_ptr up = MPFR_MANT(u);
-  mpfr_limb_ptr vp = MPFR_MANT(v);
   mpfr_limb_ptr qp = MPFR_MANT(q);
   mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
   mpfr_prec_t sh = 2*GMP_NUMB_BITS - p;
   mp_limb_t inv, h, rb, sb, mask = MPFR_LIMB_MASK(sh);
+  mp_limb_t v1 = MPFR_MANT(v)[1], v0 = MPFR_MANT(v)[0];
   mp_limb_t q1, q0, r3, r2, r1, r0, l, t;
   int extra;
 
-  inv = __gmpn_invert_limb (vp[1]);
-  extra = up[1] > vp[1] || (up[1] == vp[1] && up[0] >= vp[0]);
+  inv = __gmpn_invert_limb (v1);
+  r3 = MPFR_MANT(u)[1];
+  r2 = MPFR_MANT(u)[0];
+  extra = r3 > v1 || (r3 == v1 && r2 >= v0);
   if (extra)
-    sub_ddmmss (r3, r2, up[1], up[0], vp[1], vp[0]);
-  else
-    r3 = up[1], r2 = up[0];
+    sub_ddmmss (r3, r2, r3, r2, v1, v0);
 
-  MPFR_ASSERTD(r3 < vp[1] || (r3 == vp[1] && r2 < vp[0]));
+  MPFR_ASSERTD(r3 < v1 || (r3 == v1 && r2 < v0));
 
-  if (MPFR_UNLIKELY(r3 == vp[1])) /* can occur in some rare cases */
+  /* now r3:r2 < v1:v0 */
+  if (MPFR_UNLIKELY(r3 == v1)) /* can occur in some rare cases */
     {
       /* This can only occur in case extra=0, since otherwise we would have
          u_old >= u_new + v >= B^2/2 + B^2/2 = B^2. In this case we have
@@ -184,27 +163,28 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          Warning: in this case q1 = B-1 can be too large, for example with
          u = B^2/2 and v = B^2/2 + B - 1, then u*B-(B-1)*u = -1/2*B^2+2*B-1. */
       MPFR_ASSERTD(extra == 0);
-      q1 = ~MPFR_LIMB_ZERO;
-      r1 = vp[0];
-      t = vp[0] - up[0]; /* t > 0 since u < v */
-      r2 = vp[1] - t;
-      if (t > vp[1]) /* q1 = B-1 is too large, we need q1 = B-2, which is ok
+      q1 = MPFR_LIMB_MAX;
+      r1 = v0;
+      t = v0 - r2; /* t > 0 since r3:r2 < v1:v0 */
+      r2 = v1 - t;
+      if (t > v1) /* q1 = B-1 is too large, we need q1 = B-2, which is ok
                         since u*B - q1*v >= v1*B^2-(B-2)*(v1*B+B-1) =
                         -B^2 + 2*B*v1 + 3*B - 2 >= 0 since v1>=B/2 and B>=2 */
         {
           q1 --;
           /* add v to r2:r1 */
-          r1 += vp[0];
-          r2 += vp[1] + (r1 < vp[0]);
+          r1 += v0;
+          r2 += v1 + (r1 < v0);
         }
     }
   else
     {
-      __udiv_qrnnd_preinv (q1, r2, r3, r2, vp[1], inv);
+      /* divide r3:r2 by v1: requires r3 < v1 */
+      __udiv_qrnnd_preinv (q1, r2, r3, r2, v1, inv);
       /* u-extra*v = q1 * v1 + r2 */
 
       /* now subtract q1*v0 to r2:0 */
-      umul_ppmm (h, l, q1, vp[0]);
+      umul_ppmm (h, l, q1, v0);
       t = r2; /* save old value of r2 */
       r1 = -l;
       r2 -= h + (l != 0);
@@ -213,14 +193,15 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       /* we have r2:r1 = oldr2:0 - q1*v0 mod 2^(2*GMP_NUMB_BITS)
          thus (u-extra*v)*B = q1 * v + r2:r1 mod 2^(2*GMP_NUMB_BITS) */
 
+      /* this while loop should be run at most twice */
       while (r2 > t) /* borrow when subtracting h + (l != 0), q1 too large */
         {
           q1 --;
           /* add v1:v0 to r2:r1 */
           t = r2;
-          r1 += vp[0];
-          r2 += vp[1] + (r1 < vp[0]);
-          /* note: since 2^(GMP_NUMB_BITS-1) <= vp[1] + (r1 < vp[0])
+          r1 += v0;
+          r2 += v1 + (r1 < v0);
+          /* note: since 2^(GMP_NUMB_BITS-1) <= v1 + (r1 < v0)
              <= 2^GMP_NUMB_BITS, it suffices to check if r2 <= t to see
              if there was a carry or not. */
         }
@@ -228,52 +209,53 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   /* now (u-extra*v)*B = q1 * v + r2:r1 with 0 <= r2:r1 < v */
 
-  MPFR_ASSERTD(r2 < vp[1] || (r2 == vp[1] && r1 < vp[0]));
+  MPFR_ASSERTD(r2 < v1 || (r2 == v1 && r1 < v0));
 
-  if (MPFR_UNLIKELY(r2 == vp[1]))
+  if (MPFR_UNLIKELY(r2 == v1))
     {
-      q0 = ~MPFR_LIMB_ZERO;
+      q0 = MPFR_LIMB_MAX;
       /* r2:r1:0 - q0*(v1:v0) = v1:r1:0 - (B-1)*(v1:v0)
          = r1:0 - v0:0 + v1:v0 */
-      r0 = vp[0];
-      t = vp[0] - r1; /* t > 0 since r2:r1 < v1:v0 */
-      r1 = vp[1] - t;
-      if (t > vp[1])
+      r0 = v0;
+      t = v0 - r1; /* t > 0 since r2:r1 < v1:v0 */
+      r1 = v1 - t;
+      if (t > v1)
         {
           q0 --;
           /* add v to r1:r0 */
-          r0 += vp[0];
-          r1 += vp[1] + (r0 < vp[0]);
+          r0 += v0;
+          r1 += v1 + (r0 < v0);
         }
     }
   else
     {
-      /* divide r2:r1 by v1 */
-      __udiv_qrnnd_preinv (q0, r1, r2, r1, vp[1], inv);
+      /* divide r2:r1 by v1: requires r2 < v1 */
+      __udiv_qrnnd_preinv (q0, r1, r2, r1, v1, inv);
 
       /* r2:r1 = q0*v1 + r1 */
 
       /* subtract q0*v0 to r1:0 */
-      umul_ppmm (h, l, q0, vp[0]);
+      umul_ppmm (h, l, q0, v0);
       t = r1;
       r0 = -l;
       r1 -= h + (l != 0);
 
+      /* this while loop should be run at most twice */
       while (r1 > t) /* borrow when subtracting h + (l != 0),
                         q0 was too large */
         {
           q0 --;
           /* add v1:v0 to r1:r0 */
           t = r1;
-          r0 += vp[0];
-          r1 += vp[1] + (r0 < vp[0]);
-          /* note: since 2^(GMP_NUMB_BITS-1) <= vp[1] + (r0 < vp[0])
+          r0 += v0;
+          r1 += v1 + (r0 < v0);
+          /* note: since 2^(GMP_NUMB_BITS-1) <= v1 + (r0 < v0)
              <= 2^GMP_NUMB_BITS, it suffices to check if r1 <= t to see
              if there was a carry or not. */
         }
     }
 
-  MPFR_ASSERTD(r1 < vp[1] || (r1 == vp[1] && r0 < vp[0]));
+  MPFR_ASSERTD(r1 < v1 || (r1 == v1 && r0 < v0));
 
   /* now (u-extra*v)*B^2 = (q1:q0) * v + r1:r0 */
 
@@ -302,24 +284,22 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (qx < __gmpfr_emin)
     {
-      /* for RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
-         we have to change to RNDZ */
-      if (rnd_mode == MPFR_RNDN)
-        {
-          if ((qx == __gmpfr_emin - 1) &&
-              (qp[1] == ~MPFR_LIMB_ZERO && qp[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
-          if (qx < __gmpfr_emin - 1 ||
-              (qp[1] == MPFR_LIMB_HIGHBIT &&
-               qp[0] == MPFR_LIMB_ZERO && sb == 0))
-            rnd_mode = MPFR_RNDZ;
-        }
-      else if (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)))
-        {
-          if ((qx == __gmpfr_emin - 1) &&
-              (qp[1] == ~MPFR_LIMB_ZERO && qp[0] == ~mask) && (rb | sb))
-            goto rounding; /* no underflow */
-        }
+      if ((qx == __gmpfr_emin - 1) &&
+          (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
+          ((rnd_mode == MPFR_RNDN && rb) ||
+           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+        goto rounding; /* no underflow */
+      /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either qx < emin - 1
+         (b) or qx = emin - 1 and qp[1] = 100....000, qp[0] = 0 and rb = sb = 0.
+         Note: in case (b), it suffices to check whether sb = 0, since rb = 1
+         and sb = 0 is not possible (the exact quotient would have p+1 bits, thus
+         u would need at least p+1 bits). */
+      if (rnd_mode == MPFR_RNDN &&
+          (qx < __gmpfr_emin - 1 ||
+           (qp[1] == MPFR_LIMB_HIGHBIT && qp[0] == MPFR_LIMB_ZERO && sb == 0)))
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 

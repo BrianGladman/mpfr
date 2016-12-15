@@ -788,6 +788,128 @@ test_underflow (mpfr_prec_t pmax)
   mpfr_clear (a0);
 }
 
+/* checks special case where no underflow should occur */
+static void
+bug20161209 (void)
+{
+  mpfr_exp_t emin;
+  mpfr_t x, y, z;
+
+  emin = mpfr_get_emin ();
+  set_emin (-1);
+
+  /* test for mpfr_mul_1 for 64-bit limb, mpfr_mul_2 for 32-bit limb */
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_init2 (z, 53);
+  mpfr_set_str_binary (x, "0.101000001E-1"); /* x = 321/2^10 */
+  mpfr_set_str_binary (y, "0.110011000010100101111000011011000111011000001E-1");
+  /* y = 28059810762433/2^46 */
+  /* x * y = (2^53+1)/2^56 = 0.001...000[1]000..., and should round to 0.25 */
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* test for mpfr_mul_2 for 64-bit limb */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_prec (z, 65);
+  mpfr_set_str_binary (x, "0.101101000010010110100001E-1"); /* 11806113/2^25 */
+  mpfr_set_str_binary (y, "0.101101011110010101011010001111111001100001E-1");
+  /* y = 3124947910241/2^43 */
+  /* x * y = (2^65+1)/2^68 = 0.001...000[1]000..., and should round to 0.25 */
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* test for the generic code */
+  mpfr_set_prec (x, 54);
+  mpfr_set_prec (y, 55);
+  mpfr_set_prec (z, 53);
+  mpfr_set_str_binary (x, "0.101000001E-1");
+  mpfr_set_str_binary (y, "0.110011000010100101111000011011000111011000001E-1");
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* another test for the generic code */
+  mpfr_set_prec (x, 66);
+  mpfr_set_prec (y, 67);
+  mpfr_set_prec (z, 65);
+  mpfr_set_str_binary (x, "0.101101000010010110100001E-1");
+  mpfr_set_str_binary (y, "0.101101011110010101011010001111111001100001E-1");
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  set_emin (emin);
+}
+
+/* test for case in mpfr_mul_1() where:
+   ax = __gmpfr_emin - 1
+   ap[0] == ~mask
+   rnd_mode = MPFR_RNDZ.
+   Whatever the values of rb and sb, we should round to zero (underflow). */
+static void
+bug20161209a (void)
+{
+  mpfr_exp_t emin;
+  mpfr_t x, y, z;
+
+  emin = mpfr_get_emin ();
+  set_emin (-1);
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_init2 (z, 53);
+
+  /* case rb = sb = 0 */
+  mpfr_set_str_binary (x, "0.11010010100110000110110011111E-1");
+  mpfr_set_str_binary (y, "0.1001101110011000110100001");
+  /* x = 441650591/2^30, y = 20394401/2^25 */
+  /* x * y = (2^53-1)/2^55 = 0.00111...111[0]000..., and should round to 0 */
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
+  /* case rb = 1, sb = 0 */
+  mpfr_set_str_binary (x, "0.111111111000000000000000000111111111E-1");
+  mpfr_set_str_binary (y, "0.1000000001000000001");
+  /* x = 68585259519/2^37, y = 262657/2^19 */
+  /* x * y = (2^54-1)/2^56 = 0.00111...111[1]000..., and should round to 0 */
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
+  /* case rb = 0, sb = 1 */
+  mpfr_set_str_binary (x, "0.110010011001011110001100100001000001E-1");
+  mpfr_set_str_binary (y, "0.10100010100010111101");
+  /* x = 541144371852^37, y = 665789/2^20 */
+  /* x * y = (2^55-3)/2^57 = 0.00111...111[0]100..., and should round to 0 */
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
+  /* case rb = sb = 1 */
+  mpfr_set_str_binary (x, "0.10100110001001001010001111110010100111E-1");
+  mpfr_set_str_binary (y, "0.110001010011101001");
+  /* x = 178394823847/2^39, y = 201961/2^18 */
+  /* x * y = (2^55-1)/2^57 = 0.00111...111[1]100..., and should round to 0 */
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
+  /* similar test for mpfr_mul_2 (we only check rb = sb = 1 here) */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_prec (z, 65);
+  /* 2^67-1 = 193707721 * 761838257287 */
+  mpfr_set_str_binary (x, "0.1011100010111011111011001001E-1");
+  mpfr_set_str_binary (y, "0.1011000101100001000110010100010010000111");
+  mpfr_mul (z, x, y, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (z));
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -837,6 +959,8 @@ main (int argc, char *argv[])
 
   valgrind20110503 ();
   test_underflow (128);
+  bug20161209 ();
+  bug20161209a ();
 
   tests_end_mpfr ();
   return 0;

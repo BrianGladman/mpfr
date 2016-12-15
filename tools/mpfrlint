@@ -243,6 +243,21 @@ grep '(mp_limb_t) *-\?[01]' $srctests | grep -v '#define MPFR_LIMB_' | \
   err-if-output -t "Use simple mp_limb_t constants" \
     grep -v MPFR_STAT_STATIC_ASSERT
 
+# "~0;" has already been seen in the code. Check also a bit more.
+# Such code is either an error or poorly written, and in this case, quite
+# fragile. In practice, this may work because most (or all) platforms use
+# two's complement, and 0 being of type int (signed), this will give -1;
+# then when converted to a larger unsigned type, this will give the maximum
+# value as expected. However the reader may not know this explanation, and
+# a small change of the code can easily make it incorrect. The correct way
+# to obtain this result is to cast the constant to the expected type, then
+# do the bitwise complement; alternatively, cast -1 to the expected type.
+# For limbs, the macro MPFR_LIMB_MAX should be used.
+err-if-output \
+  --msg="Possibly incorrect type for ~ (use MPFR_LIMB_MAX for limbs)" \
+  -t "Suspicious code" \
+  grep '~[0-9] *[-+*&|;]' $srctests
+
 # Code possibly wrong with some C/GMP implementations. In short, if the
 # right operand of a shift depends on GMP_NUMB_BITS, then the left operand
 # should be of type mp_limb_t. There might be false positives.
