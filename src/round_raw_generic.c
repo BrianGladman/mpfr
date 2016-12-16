@@ -51,8 +51,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *
  * MPFR_RNDNA is now supported, but needs to be tested [TODO] and is
  * still not part of the API. In particular, the MPFR_RNDNA value (-1)
- * may change in the future without notice, and this will be the case
- * when this rounding mode will be supported officially.
+ * may change in the future without notice.
  */
 
 int
@@ -132,9 +131,7 @@ mpfr_round_raw_generic(
             goto rnd_RNDZ; /* yes, behave like rounding toward zero */
           /* Rounding to nearest with rounding bit = 1 */
           if (MPFR_UNLIKELY (rnd_mode == MPFR_RNDNA))
-            /* FIXME: *inexp is not set. First, add a testcase that
-               triggers the bug (at least with a sanitizer). */
-            goto rnd_RNDN_add_one_ulp; /* like rounding away from zero */
+            goto away_addone_ulp; /* like rounding away from zero */
           sb &= ~rbmask; /* first bits after the rounding bit */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
@@ -156,6 +153,7 @@ mpfr_round_raw_generic(
                 }
               else
                 {
+                away_addone_ulp:
                   /* sb != 0 && rnd_mode == MPFR_RNDN */
                   if (use_inexp)
                     *inexp = MPFR_EVEN_INEX-2*MPFR_EVEN_INEX*neg;
