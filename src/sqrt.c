@@ -255,16 +255,18 @@ mpn_sqrtrem2_approx (mp_limb_t n)
 /* put in rh,rl the upper 2 limbs of the product xh,xl * yh,yl,
    with error less than 3 ulps */
 #define umul_ppmm2(rh,rl,xh,xl,yh,yl)    \
-  {                                      \
-    mp_limb_t _h, _l;                    \
-    umul_ppmm (rh, rl, xh, yh);          \
-    umul_ppmm (_h, _l, xh, yl);          \
-    rl += _h;                            \
-    rh += (rl < _h);                     \
-    umul_ppmm (_h, _l, xl, yh);          \
-    rl += _h;                            \
-    rh += (rl < _h);                     \
-   }
+  do                                     \
+    {                                    \
+      mp_limb_t _h, _l;                  \
+      umul_ppmm (rh, rl, xh, yh);        \
+      umul_ppmm (_h, _l, xh, yl);        \
+      rl += _h;                          \
+      rh += (rl < _h);                   \
+      umul_ppmm (_h, _l, xl, yh);        \
+      rl += _h;                          \
+      rh += (rl < _h);                   \
+    }                                    \
+  while (0)
 
 /* Put in rp[1]*2^64+rp[0] an approximation of sqrt(2^128*n),
    with 2^126 <= n := np[1]*2^64 + np[0] < 2^128.
