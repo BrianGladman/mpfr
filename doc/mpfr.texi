@@ -2921,8 +2921,8 @@ versions.
 @example
 unsigned long ul;
 mpfr_t f, r;
-/* Code that inits and sets ul, f and r */
-int i = mpfr_round_nearest_away(mpfr_add_ui, r, f, ul);
+/* Code that inits and sets r, f, and ul, and if needed sets emin */
+int i = mpfr_round_nearest_away (mpfr_add_ui, r, f, ul);
 @end example
 @end deftypefn
 
