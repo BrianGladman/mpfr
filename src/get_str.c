@@ -115,8 +115,8 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
      to determine the nearest integer, we thus need a precision of
      n * GMP_NUMB_BITS + f */
 
-  if (exact || mpfr_can_round_raw (r, n, (mp_size_t) 1,
-            n * GMP_NUMB_BITS - e, MPFR_RNDN, rnd, n * GMP_NUMB_BITS + f))
+  if (exact || mpfr_round_p (r, n, n * GMP_NUMB_BITS - e,
+                             n * GMP_NUMB_BITS + f + (rnd == MPFR_RNDN)))
     {
       /* compute the nearest integer to R */
 
