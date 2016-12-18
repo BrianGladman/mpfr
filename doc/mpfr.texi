@@ -2418,7 +2418,9 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
 the standard @code{printf} (in particular, notice that the @samp{precision} is
 related to the number of digits displayed in the base chosen by @samp{conv}
-and not related to the internal precision of the @code{mpfr_t} variable).
+and not related to the internal precision of the @code{mpfr_t} variable), but
+note that for @samp{Re}, the default precision is not the same as the one for
+@samp{e}.
 @code{mpfr_printf} accepts the same @samp{type} specifiers as GMP (except the
 non-standard and deprecated @samp{q}, use @samp{ll} instead), namely the
 length modifiers defined in the C standard:
