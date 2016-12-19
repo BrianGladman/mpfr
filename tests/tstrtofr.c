@@ -1201,7 +1201,7 @@ bug20161217 (void)
   inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001101E-9");
-  MPFR_ASSERTN(mpfr_cmp (fp, z) == 0);
+  MPFR_ASSERTN(mpfr_equal_p (fp, z));
   mpfr_clear (fp);
   mpfr_clear (z);
 }
