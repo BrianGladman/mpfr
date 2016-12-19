@@ -2574,5 +2574,5 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
 void mpfr_free_str (char *str)
 {
-   (*__gmp_free_func) (str, strlen (str) + 1);
+  (*__gmp_free_func) (str, strlen (str) + 1);
 }
