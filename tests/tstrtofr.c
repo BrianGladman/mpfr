@@ -1189,6 +1189,7 @@ bug20120829 (void)
   mpfr_clears (e, x1, x2, (mpfr_ptr) 0);
 }
 
+/* Note: the number is 5^47/2^9. */
 static void
 bug20161217 (void)
 {
