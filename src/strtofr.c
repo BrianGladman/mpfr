@@ -743,12 +743,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          equality in case exact is non-zero. */
 
       /* test if rounding is possible, and if so exit the loop.
-         Note: we use mpfr_round_p instead of mpfr_can_round_raw here,
-         since we not only need to know if we can round correctly,
-         but we need to know the correct ternary value.
+         Note: we also need to be able to determine the correct ternary value,
+         thus we use the MPFR_PREC(x) + (rnd == MPFR_RNDN) trick.
          For example if result = xxx...xxx111...111 and rnd = RNDN,
-         then mpfr_can_round_raw might return 1, while mpfr_round_p
-         will return 0. */
+         then we know the correct rounding is xxx...xx(x+1), but we cannot know
+         the correct ternary value. */
       if (exact || mpfr_round_p (result, ysize,
         ysize_bits - err - 1, MPFR_PREC(x) + (rnd == MPFR_RNDN)))
         break;
