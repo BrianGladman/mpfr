@@ -118,9 +118,6 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
   if (exact || mpfr_round_p (r, n, n * GMP_NUMB_BITS - e,
                              n * GMP_NUMB_BITS + f + (rnd == MPFR_RNDN)))
     {
-      if (exact == 0) /* set the inexact flag */
-        __gmpfr_flags |= MPFR_FLAGS_INEXACT;
-      
       /* compute the nearest integer to R */
 
       /* bit of weight 0 in R has position j0 in limb r[i0] */
@@ -2559,7 +2556,11 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
             }
         }
       else
-        break;
+        {
+          if (err >= 0)
+            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_INEXACT);
+          break;
+        }
     }
   MPFR_ZIV_FREE (loop);
 
