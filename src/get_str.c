@@ -128,9 +128,6 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
                             n * GMP_NUMB_BITS + f, rnd, &dir);
       MPFR_ASSERTD(dir != MPFR_ROUND_FAILED);
 
-      /* warning: mpfr_round_raw_generic returns MPFR_EVEN_INEX (2) or
-         -MPFR_EVEN_INEX (-2) in case of even rounding */
-
       if (ret) /* Y is a power of 2 */
         {
           if (j0)
