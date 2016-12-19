@@ -748,8 +748,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          For example if result = xxx...xxx111...111 and rnd = RNDN,
          then we know the correct rounding is xxx...xx(x+1), but we cannot know
          the correct ternary value. */
-      if (exact || mpfr_round_p (result, ysize,
-        ysize_bits - err - 1, MPFR_PREC(x) + (rnd == MPFR_RNDN)))
+      if (exact || mpfr_round_p (result, ysize, ysize_bits - err - 1,
+                                 MPFR_PREC(x) + (rnd == MPFR_RNDN)))
         break;
 
     next_loop:
