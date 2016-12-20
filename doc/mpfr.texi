@@ -1611,6 +1611,8 @@ The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
 plus the terminating null character. The pointer to the string @var{str}
 is returned (unless the base is invalid).
+
+Like in usual functions, the inexact flag is set iff the result is inexact.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
@@ -3848,7 +3850,7 @@ is set were unspecified.
 @item @code{mpfr_get_str} changed in MPFR 4.0.
 This function now sets the NaN flag on NaN input (to follow the usual MPFR
 rules on NaN and IEEE 754-2008 recommendations on string conversions from
-Subclause 5.12.1). The previous behavior was regarded as a bug.
+Subclause 5.12.1) and sets the inexact flag when the conversion is inexact.
 
 @item @code{mpfr_get_z} changed in MPFR 3.0.
 The return type was @code{void}; it is now @code{int}, and the usual
