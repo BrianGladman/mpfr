@@ -769,9 +769,19 @@ IEEE 754 rules (positive, except for MPFR_RNDD, where it is negative),
 and return with ternary value = 0.
 
 Now, the accumulator contains the significand of a good approximation
-to the nonzero exact sum. The corresponding exponent is e and the sign
-is determined from one of the cancelled bits. The exponent of the ulp
-for the target precision is u = e − sq. We have:
+to the nonzero exact sum. In particular, it has the sign of the result,
+which is determined from the most significant bit of the accumulator
+(this is one of the cancelled bits): a variable neg is set to this bit
+and a variable sgn to the corresponding sign. In short:
+  ┌──────────┬─────┬─────┐
+  │  number  │ neg │ sgn │
+  ├──────────┼─────┼─────┤
+  │ positive │  0  │  1  │
+  │ negative │  1  │ −1  │
+  └──────────┴─────┴─────┘
+
+The exponent of this approximation is e. The exponent of the ulp for the
+target precision is u = e − sq. We have:
   * err = maxexp + logn (where maxexp is the maxexp2 value returned by
     sum_raw) as in sum_raw;
   * e − err ≥ prec = sq + 3.
@@ -888,6 +898,10 @@ Details for each of these 4 steps are given below.
 Algorithm and Implementation: Rounding Information
 ──────────────────────────────────────────────────
 
+As per design, the case of faithful rounding (MPFR_RNDF) can be handled
+easily; its description is given at the end of this section, though in
+sum.c, its code appears first.
+
 The values of 3 variables are determined:
   * inex: 0 if the final sum is known to be exact (which can be the
     case only if maxexp = MPFR_EXP_MIN), otherwise 1.
@@ -962,16 +976,6 @@ This is done by considering two cases:
     tmd are set to 0; otherwise they are set to 1 (the bits following
     the ulp bit are not represented, thus are all 0's, implying that
     the TMD occurs on a machine number).
-
-We also determine the sign of the result: a variable neg is set to the
-value of the most significant bit of the accumulator, and a variable
-sgn to the corresponding sign. In short:
-  ┌──────────┬─────┬─────┐
-  │  number  │ neg │ sgn │
-  ├──────────┼─────┼─────┤
-  │ positive │  0  │  1  │
-  │ negative │  1  │ −1  │
-  └──────────┴─────┴─────┘
 
 Now we seek to determine how the value will be rounded, more precisely,
 what correction will be done to the significand that will be copied.
@@ -1110,6 +1114,17 @@ We distinguish two cases:
 At this point, the variable inex contains the correct ternary value
 (before the overflow/underflow detection) and we know the correction
 that needs to be applied to the significand.
+
+Let us now describe the case of faithful rounding (MPFR_RNDF). The
+approximation is good enough, so that we will just need to round it
+to nearest (halfway values can be rounded in either direction). The
+direction can be determined just from the rounding bit, i.e. we have
+corr ← rbit like above with no TMD (but with uncorrected rbit). Note
+that we can check from the table above that this rounding corresponds
+to MPFR_RNDD and/or MPFR_RNDU in each of the 6 cases for (rbit,sst).
+The variable inex is set to 0 just because it needs to have as value,
+but the value itself does not matter.
+
 
 Algorithm and Implementation: Copy/Shift to the Destination
 ───────────────────────────────────────────────────────────
