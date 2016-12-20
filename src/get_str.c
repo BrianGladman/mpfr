@@ -57,7 +57,8 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
    n is the number of limbs of r.
    e represents the maximal error in the approximation to Y (see above),
-      (e < 0 iff the approximation is exact, i.e., r*2^f = Y).
+      (e < 0 means that the approximation is known to be exact, i.e.,
+      r*2^f = Y).
    b is the wanted base (2 <= b <= 62).
    m is the number of wanted digits in the significand.
    rnd is the rounding mode.
@@ -2554,7 +2555,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
         }
       else
         {
-          if (err >= 0)
+          if (ret != 0)
             MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_INEXACT);
           break;
         }
