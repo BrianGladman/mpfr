@@ -642,12 +642,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
                    (mpfr_eexp_t) maxexp,
                    maxexp == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" : ""));
 
-    sn = MPFR_PREC2LIMBS (sq);
-    sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
-    sh = cancel % GMP_NUMB_BITS;
-
-    MPFR_ASSERTD (sd >= 0 && sd < GMP_NUMB_BITS);
-
     if (MPFR_LIKELY (u > minexp))
       {
         mpfr_prec_t tq;
@@ -1027,6 +1021,12 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
        the least significant part (there can be one only if
        u < minexp). The trailing bits of the destination may
        contain garbage at this point. */
+
+    sn = MPFR_PREC2LIMBS (sq);
+    sd = (mpfr_prec_t) sn * GMP_NUMB_BITS - sq;
+    sh = cancel % GMP_NUMB_BITS;
+
+    MPFR_ASSERTD (sd >= 0 && sd < GMP_NUMB_BITS);
 
     if (MPFR_LIKELY (u > minexp))
       {
