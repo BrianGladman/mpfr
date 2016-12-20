@@ -634,13 +634,39 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     u = e - sq;  /* e being the exponent, u is the ulp of the target */
 
-    MPFR_LOG_MSG (("cancel=%Pd"
+    /* neg = 1 if negative, 0 if positive. */
+    neg = wp[ws-1] >> (GMP_NUMB_BITS - 1);
+    MPFR_ASSERTD (neg == 0 || neg == 1);
+
+    sgn = neg ? -1 : 1;
+    MPFR_ASSERTN (sgn == (neg ? MPFR_SIGN_NEG : MPFR_SIGN_POS));
+
+    MPFR_LOG_MSG (("neg=%d sgn=%d cancel=%Pd"
                    " e=%" MPFR_EXP_FSPEC "d"
                    " u=%" MPFR_EXP_FSPEC "d"
                    " maxexp=%" MPFR_EXP_FSPEC "d%s\n",
-                   cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) u,
+                   neg, sgn, cancel, (mpfr_eexp_t) e, (mpfr_eexp_t) u,
                    (mpfr_eexp_t) maxexp,
                    maxexp == MPFR_EXP_MIN ? " (MPFR_EXP_MIN)" : ""));
+
+    if (rnd == MPFR_RNDF)
+      {
+        /* FIXME: The following is like MPFR_RNDD on the approximate
+           value. This means that one may not get a faithfully rounded
+           result. One needs to take the rounding bit into account.
+           Reusing the generic code by delaying the rnd == MPFR_RNDF
+           test is not a good idea, because this code does more than
+           necessary for a faithful rounding; just copy some parts
+           from it.
+           However, the tests currently pass. We need to trigger a failure
+           first. */
+        corr = 0;
+        inex = 0;  /* not meaningful, but needs to have a value */
+      }
+    else  /* rnd != MPFR_RNDF */
+      {
+    /* Note: This block has not been reindented after this test
+       for MPFR_RNDF has been added in the faithful branch. */
 
     if (MPFR_LIKELY (u > minexp))
       {
@@ -821,13 +847,6 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 
     MPFR_ASSERTD (rbit == 0 || rbit == 1);
 
-    /* neg = 1 if negative, 0 if positive. */
-    neg = wp[ws-1] >> (GMP_NUMB_BITS - 1);
-    MPFR_ASSERTD (neg == 0 || neg == 1);
-
-    sgn = neg ? -1 : 1;
-    MPFR_ASSERTN (sgn == (neg ? MPFR_SIGN_NEG : MPFR_SIGN_POS));
-
     MPFR_LOG_MSG (("tmd=%d lbit=%d rbit=%d inex=%d neg=%d\n",
                    tmd, (int) lbit, (int) rbit, inex, neg));
 
@@ -846,9 +865,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
      * change of the binade.
      */
 
-    if (rnd == MPFR_RNDF)
-      corr = 0;
-    else if (tmd == 0)  /* no TMD */
+    if (tmd == 0)  /* no TMD */
       {
         switch (rnd)
           {
@@ -1005,6 +1022,9 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
         else
           corr = (int) rbit;
       }
+
+    /* Note: The above block has not be reindented. */
+      }  /* rnd != MPFR_RNDF */
 
     MPFR_LOG_MSG (("neg=%d corr=%d inex=%d\n", neg, corr, inex));
 
