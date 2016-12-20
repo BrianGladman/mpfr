@@ -92,7 +92,7 @@ generic_tests (void)
     }
   mpfr_inits2 (precmax, exact_sum, sum1, sum2, (mpfr_ptr) 0);
 
-  for (m = 0; m < 4000; m++)
+  for (m = 0; m < 20000; m++)
     {
       int non_uniform, n;
       mpfr_prec_t prec;
