@@ -1189,6 +1189,24 @@ bug20120829 (void)
   mpfr_clears (e, x1, x2, (mpfr_ptr) 0);
 }
 
+/* Note: the number is 5^47/2^9. */
+static void
+bug20161217 (void)
+{
+  mpfr_t fp, z;
+  static const char * num = "0.1387778780781445675529539585113525390625e31";
+  int inex;
+
+  mpfr_init2 (fp, 110);
+  mpfr_init2 (z, 110);
+  inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001101E-9");
+  MPFR_ASSERTN(mpfr_equal_p (fp, z));
+  mpfr_clear (fp);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1203,6 +1221,7 @@ main (int argc, char *argv[])
   test20100310 ();
   bug20120814 ();
   bug20120829 ();
+  bug20161217 ();
 
   tests_end_mpfr ();
   return 0;

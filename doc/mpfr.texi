@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 4.0.0-dev
-@set UPDATED-MONTH August 2016
+@set UPDATED-MONTH December 2016
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -1635,8 +1635,7 @@ character, and the value 7 accounts for @code{-@@Inf@@}
 plus the terminating null character. The pointer to the string @var{str}
 is returned (unless the base is invalid).
 
-Note: The inexact flag is currently not set when the conversion is inexact;
-this is regarded as a bug.
+Like in usual functions, the inexact flag is set iff the result is inexact.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
@@ -2447,7 +2446,9 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
 the standard @code{printf} (in particular, notice that the @samp{precision} is
 related to the number of digits displayed in the base chosen by @samp{conv}
-and not related to the internal precision of the @code{mpfr_t} variable).
+and not related to the internal precision of the @code{mpfr_t} variable), but
+note that for @samp{Re}, the default precision is not the same as the one for
+@samp{e}.
 @code{mpfr_printf} accepts the same @samp{type} specifiers as GMP (except the
 non-standard and deprecated @samp{q}, use @samp{ll} instead), namely the
 length modifiers defined in the C standard:
@@ -2983,8 +2984,8 @@ versions.
 @example
 unsigned long ul;
 mpfr_t f, r;
-/* Code that inits and sets ul, f and r */
-int i = mpfr_round_nearest_away(mpfr_add_ui, r, f, ul);
+/* Code that inits and sets r, f, and ul, and if needed sets emin */
+int i = mpfr_round_nearest_away (mpfr_add_ui, r, f, ul);
 @end example
 @end deftypefn
 
@@ -3911,7 +3912,7 @@ is set were unspecified.
 @item @code{mpfr_get_str} changed in MPFR 4.0.
 This function now sets the NaN flag on NaN input (to follow the usual MPFR
 rules on NaN and IEEE 754-2008 recommendations on string conversions from
-Subclause 5.12.1). The previous behavior was regarded as a bug.
+Subclause 5.12.1) and sets the inexact flag when the conversion is inexact.
 
 @item @code{mpfr_get_z} changed in MPFR 3.0.
 The return type was @code{void}; it is now @code{int}, and the usual

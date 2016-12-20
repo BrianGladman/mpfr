@@ -1204,6 +1204,50 @@ check_reduced_exprange (void)
   mpfr_clear (x);
 }
 
+static void
+check_inex (void)
+{
+  mpfr_t x;
+  int i;
+
+  mpfr_init2 (x, 8);
+  mpfr_set_str (x, "0.11111111E-17", 2, MPFR_RNDN);
+  for (i = 1; i <= 25; i++)
+    {
+      char *s[2];
+      int r, inex = 0;
+
+      RND_LOOP (r)
+        {
+          mpfr_exp_t e;
+          mpfr_flags_t flags;
+
+          mpfr_clear_flags ();
+          s[r != 0] = mpfr_get_str (NULL, &e, 10, i, x, (mpfr_rnd_t) r);
+          MPFR_ASSERTN (e == -5);
+          flags = __gmpfr_flags;
+          if ((i >= 20) ^ (! mpfr_inexflag_p ()))
+            {
+              printf ("Error in check_inex on i=%d and %s\n",
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("Got %s\n", s[r != 0]);
+              printf ("Flags:");
+              flags_out (flags);
+              exit (1);
+            }
+          if (r != 0)
+            {
+              inex |= strcmp (s[0], s[1]) != 0;
+              mpfr_free_str (s[1]);
+            }
+        }
+
+      MPFR_ASSERTN ((i >= 20) ^ inex);
+      mpfr_free_str (s[0]);
+    }
+  mpfr_clear (x);
+}
+
 #define ITER 1000
 
 int
@@ -1268,6 +1312,7 @@ main (int argc, char *argv[])
 
   check_bug_base2k ();
   check_reduced_exprange ();
+  check_inex ();
 
   tests_end_mpfr ();
   return 0;

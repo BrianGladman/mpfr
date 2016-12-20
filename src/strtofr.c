@@ -742,11 +742,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          of the pstr_size most significant digits of pstr->mant, with
          equality in case exact is non-zero. */
 
-      /* test if rounding is possible, and if so exit the loop */
-      if (exact || mpfr_can_round_raw (result, ysize,
-                                       (pstr->negative) ? -1 : 1,
-                                       ysize_bits - err - 1,
-                                       MPFR_RNDN, rnd, MPFR_PREC(x)))
+      /* test if rounding is possible, and if so exit the loop.
+         Note: we also need to be able to determine the correct ternary value,
+         thus we use the MPFR_PREC(x) + (rnd == MPFR_RNDN) trick.
+         For example if result = xxx...xxx111...111 and rnd = RNDN,
+         then we know the correct rounding is xxx...xx(x+1), but we cannot know
+         the correct ternary value. */
+      if (exact || mpfr_round_p (result, ysize, ysize_bits - err - 1,
+                                 MPFR_PREC(x) + (rnd == MPFR_RNDN)))
         break;
 
     next_loop:

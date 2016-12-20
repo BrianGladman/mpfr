@@ -62,7 +62,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       sb |= (q0 & mask) ^ rb;
       qp[0] = q0 & ~mask;
     }
-  
+
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
