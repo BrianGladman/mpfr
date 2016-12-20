@@ -116,25 +116,44 @@ generic_tests (void)
         }
       /* putchar ('\n'); */
       get_exact_sum (exact_sum, t, n);
-      RND_LOOP_NO_RNDF (rnd_mode)
-        {
-          int inex1, inex2;
+      RND_LOOP (rnd_mode)
+        if (rnd_mode == MPFR_RNDF)
+          {
+            int inex;
 
-          inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
-          inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
-          if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
-            {
-              printf ("generic_tests failed on m = %d, %s\n", m,
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
-              printf ("Expected ");
-              mpfr_dump (sum1);
-              printf ("with inex = %d\n", inex1);
-              printf ("Got      ");
-              mpfr_dump (sum2);
-              printf ("with inex = %d\n", inex2);
-              exit (1);
-            }
-        }
+            inex = mpfr_set (sum1, exact_sum, MPFR_RNDD);
+            mpfr_sum (sum2, p, n, MPFR_RNDF);
+            if (! mpfr_equal_p (sum1, sum2) &&
+                (inex == 0 ||
+                 (mpfr_nextabove (sum1), ! mpfr_equal_p (sum1, sum2))))
+              {
+                printf ("generic_tests failed on m = %d, MPFR_RNDF\n", m);
+                printf ("Exact sum = ");
+                mpfr_dump (exact_sum);
+                printf ("Got         ");
+                mpfr_dump (sum2);
+                exit (1);
+              }
+          }
+        else
+          {
+            int inex1, inex2;
+
+            inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
+            inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
+            if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
+              {
+                printf ("generic_tests failed on m = %d, %s\n", m,
+                        mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
+                printf ("Expected ");
+                mpfr_dump (sum1);
+                printf ("with inex = %d\n", inex1);
+                printf ("Got      ");
+                mpfr_dump (sum2);
+                printf ("with inex = %d\n", inex2);
+                exit (1);
+              }
+          }
     }
 
   for (i = 0; i < nmax; i++)
