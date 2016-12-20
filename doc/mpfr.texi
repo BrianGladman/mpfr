@@ -2909,7 +2909,7 @@ the call @code{mpfr_set (y, b, rnd3)} with @var{y} of precision @var{prec},
 @c (With rnd2 a directed rounding instead of RNDF, mpfr_can_round would only return
 @c 1 in case b, apart from special cases where u or b are representable in precision
 @c prec).
-@c 
+@c
 @c Note: This spec is better than one avoiding "hard cases" (leaving
 @c such cases indeterminate to have a mpfr_can_round in constant time).
 @c Indeed, the time gained by having a mpfr_can_round without hard cases
