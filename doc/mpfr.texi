@@ -1611,9 +1611,6 @@ The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
 plus the terminating null character. The pointer to the string @var{str}
 is returned (unless the base is invalid).
-
-Note: The inexact flag is currently not set when the conversion is inexact;
-this is regarded as a bug.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
