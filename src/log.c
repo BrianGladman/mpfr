@@ -121,11 +121,18 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
-      long m;
+      mpfr_exp_t m;
       mpfr_exp_t cancel;
 
-      /* Calculus of m (depends on p) */
+      /* Calculus of m (depends on p)
+         If mpfr_exp_t has N bits, then both (p + 1) / 2 and |exp_a| fit
+         on N-2 bits, so that there cannot be an overflow. */
       m = (p + 1) / 2 - exp_a + 1;
+
+      /* In standard configuration (_MPFR_EXP_FORMAT <= 3), one has
+         mpfr_exp_t <= long, so that the following assertion is always
+         true. */
+      MPFR_ASSERTN (m >= LONG_MIN && m <= LONG_MAX);
 
       mpfr_mul_2si (tmp2, a, m, MPFR_RNDN);    /* s=a*2^m,        err<=1 ulp  */
       mpfr_div (tmp1, __gmpfr_four, tmp2, MPFR_RNDN);/* 4/s,      err<=2 ulps */
