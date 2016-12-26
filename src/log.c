@@ -44,6 +44,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
   int inexact;
   mpfr_prec_t p, q;
   mpfr_t tmp1, tmp2;
+  mpfr_exp_t exp_a;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
   MPFR_GROUP_DECL(group);
@@ -87,14 +88,18 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
           MPFR_RET (0); /* log(0) is an exact -infinity */
         }
     }
+
   /* If a is negative, the result is NaN */
-  else if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
+  if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
     {
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
+
+  exp_a = MPFR_GET_EXP (a);
+
   /* If a is 1, the result is +0 */
-  else if (MPFR_UNLIKELY (MPFR_GET_EXP (a) == 1 && mpfr_cmp_ui (a, 1) == 0))
+  if (MPFR_UNLIKELY (exp_a == 1 && mpfr_cmp_ui (a, 1) == 0))
     {
       MPFR_SET_ZERO (r);
       MPFR_SET_POS (r);
@@ -120,7 +125,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
       mpfr_exp_t cancel;
 
       /* Calculus of m (depends on p) */
-      m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
+      m = (p + 1) / 2 - exp_a + 1;
 
       mpfr_mul_2si (tmp2, a, m, MPFR_RNDN);    /* s=a*2^m,        err<=1 ulp  */
       mpfr_div (tmp1, __gmpfr_four, tmp2, MPFR_RNDN);/* 4/s,      err<=2 ulps */
