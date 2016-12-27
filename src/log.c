@@ -134,6 +134,9 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
          true. */
       MPFR_ASSERTN (m >= LONG_MIN && m <= LONG_MAX);
 
+      /* FIXME: Why 1 ulp and not 1/2 ulp? Ditto with some other ones
+         below. The error concerning the AGM should be explained since
+         4/s is inexact (one needs a bound on its derivative). */
       mpfr_mul_2si (tmp2, a, m, MPFR_RNDN);    /* s=a*2^m,        err<=1 ulp  */
       MPFR_ASSERTD (MPFR_EXP (tmp2) >= (p + 3) / 2);
       /* [FIXME] and one can have the equality, even if p is even.
