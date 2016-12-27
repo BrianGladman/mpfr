@@ -125,10 +125,9 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
       mpfr_exp_t cancel;
 
       /* Calculus of m (depends on p)
-         If mpfr_exp_t has N bits, then both (p + 1) / 2 and |exp_a| fit
-         on N-2 bits, so that there cannot be an overflow.
-         Note that exp_a - 1 is a constant in the loop (thus grouped). */
-      m = (p + 1) / 2 - (exp_a - 1);
+         If mpfr_exp_t has N bits, then both (p + 3) / 2 and |exp_a| fit
+         on N-2 bits, so that there cannot be an overflow. */
+      m = (p + 3) / 2 - exp_a;
 
       /* In standard configuration (_MPFR_EXP_FORMAT <= 3), one has
          mpfr_exp_t <= long, so that the following assertion is always
