@@ -2909,8 +2909,8 @@ penultimate argument(s), the argument list given after @var{rop},
 a rounding mode as final argument,
 puts in its first argument the value @var{foo}(@var{op},...) rounded according
 to this rounding mode, and returns the corresponding ternary value
-(which should be correct, otherwise @code{mpfr_round_nearest_away} might not
-work as desired).
+(which is expected to be correct, otherwise @code{mpfr_round_nearest_away}
+will not work as desired).
 Due to implementation constraints, this function must not be called when
 the minimal exponent @code{emin} is the smallest possible one.
 This macro has been made such that the compiler is able to detect
