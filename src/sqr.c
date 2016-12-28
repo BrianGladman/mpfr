@@ -53,9 +53,16 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
         ( MPFR_ASSERTD(MPFR_IS_ZERO(b)), MPFR_SET_ZERO(a) );
       MPFR_RET(0);
     }
-  ax = 2 * MPFR_GET_EXP (b);
   bq = MPFR_PREC(b);
 
+  if (MPFR_GET_PREC(a) < GMP_NUMB_BITS && bq <= GMP_NUMB_BITS)
+    return mpfr_mul_1 (a, b, b, rnd_mode, MPFR_GET_PREC(a));
+
+  if (GMP_NUMB_BITS < MPFR_GET_PREC(a) && MPFR_GET_PREC(a) < 2 * GMP_NUMB_BITS
+      && GMP_NUMB_BITS < bq && bq <= 2 * GMP_NUMB_BITS)
+    return mpfr_mul_2 (a, b, b, rnd_mode, MPFR_GET_PREC(a));
+
+  ax = 2 * MPFR_GET_EXP (b);
   MPFR_ASSERTN (2 * (mpfr_uprec_t) bq <= MPFR_PREC_MAX);
 
   bn = MPFR_LIMB_SIZE (b); /* number of limbs of b */

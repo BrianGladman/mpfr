@@ -114,6 +114,13 @@ public:
   }
 };
 
+class mpfr_sqr_test {
+public:
+  int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_sqr (a,b,r);
+  }
+};
+
 class mpfr_fma_test {
 public:
   int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_srcptr d, mp_rnd_t r) {
@@ -280,6 +287,7 @@ static mpfr_test4<mpfr_fmma_test> test12 ("mpfr_fmma");
 #ifdef mpfr_fmms
 static mpfr_test4<mpfr_fmms_test> test13 ("mpfr_fmms");
 #endif
+static mpfr_test<mpfr_sqr_test> test14 ("mpfr_sqr");
 static mpfr_test<mpfr_div_test> test4 ("mpfr_div");
 static mpfr_test<mpfr_set_test> test5 ("mpfr_set");
 
