@@ -153,7 +153,7 @@ mpfr_invert_limb (mp_limb_t d)
   d63 = ((d - 1) >> 1) + 1;
   e = - v2 * d63 + ((v2 & -d0) >> 1);
 #ifdef HAVE_MULX_U64
-  _mulx_u64 (v2, e, (long long unsigned int *) &h);
+  _mulx_u64 (v2, e, (unsigned long long *) &h);
 #else
   umul_ppmm (h, l, v2, e);
 #endif
