@@ -481,6 +481,17 @@ static int f (double (*func)(double)) { return 0; }
    AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO C99 nearbyint function])
 ],[AC_MSG_RESULT(no)])
 
+dnl Check if _mulx_u64 is provided
+AC_MSG_CHECKING([for _mulx_u64])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <immintrin.h>
+]], [[
+ return _mulx_u64(17, 42, NULL);
+]])], [
+   AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_MULX_U64, 1,[Have _mulx_u64 function])
+],[AC_MSG_RESULT(no)])
+
 LIBS="$saved_LIBS"
 
 dnl Now try to check the long double format
@@ -1533,3 +1544,5 @@ if test "$mpfr_c11_thread_ok" = "yes"; then
    [Define if the ISO C11 Thread is supported.])
 fi
 ])
+
+
