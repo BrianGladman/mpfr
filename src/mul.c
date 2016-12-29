@@ -208,9 +208,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 /* Multiply 2 mpfr_t */
 
-/* special code for prec(a) < GMP_NUMB_BITS and
-   prec(b), prec(c) <= GMP_NUMB_BITS */
-static int
+/* Special code for prec(a) < GMP_NUMB_BITS and
+   prec(b), prec(c) <= GMP_NUMB_BITS.
+   We export it since it is called from mpfr_sqr too. */
+int
 mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {
@@ -304,9 +305,10 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 }
 
-/* special code for GMP_NUMB_BITS < prec(a) < 2*GMP_NUMB_BITS and
-   GMP_NUMB_BITS < prec(b), prec(c) <= 2*GMP_NUMB_BITS */
-static int
+/* Special code for GMP_NUMB_BITS < prec(a) < 2*GMP_NUMB_BITS and
+   GMP_NUMB_BITS < prec(b), prec(c) <= 2*GMP_NUMB_BITS.
+   It is exported since called from mpfr_sqr too. */
+int
 mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               mpfr_prec_t p)
 {

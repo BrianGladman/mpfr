@@ -61,6 +61,7 @@ check2 (const char *as, mpfr_rnd_t rnd_mode, const char *res1s)
       printf ("correct result is        %s\n mpfr_log gives          ",
               res1s);
       mpfr_out_str(stdout, 10, 0, tres, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
   mpfr_clears (ta, tres, (mpfr_ptr) 0);

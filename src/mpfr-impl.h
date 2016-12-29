@@ -2099,6 +2099,10 @@ __MPFR_DECLSPEC int mpfr_add1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_sub1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_mul_1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t,
+                                mpfr_prec_t);
+__MPFR_DECLSPEC int mpfr_mul_2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t,
+                                mpfr_prec_t);
 __MPFR_DECLSPEC int mpfr_can_round_raw (const mp_limb_t *,
              mp_size_t, int, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t);
 

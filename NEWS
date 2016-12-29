@@ -83,7 +83,8 @@ Changes from versions 3.1.* to version 4.0.0:
   and mpfr_fms.
 - Bug fixes. In particular: a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
-  now sets the NaN flag on NaN input.
+  now sets the NaN flag on NaN input and the inexact flag when the conversion
+  is inexact.
 - MinGW (MS Windows): Added support for thread-safe DLL (shared library).
 - Limited pkg-config support.
 
