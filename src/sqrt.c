@@ -171,7 +171,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mp_limb_t u0, r0, rb, sb, mask = MPFR_LIMB_MASK(sh);
   mpfr_limb_ptr rp = MPFR_MANT(r);
 
-  MPFR_ASSERTD(GMP_NUMB_BITS == 64);
+  MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
 
   /* first make the exponent even */
   u0 = MPFR_MANT(u)[0];
@@ -292,7 +292,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mp_limb_t np[4], rb, sb, mask;
   mpfr_prec_t exp_u = MPFR_EXP(u), exp_r, sh = 2 * GMP_NUMB_BITS - p;
 
-  MPFR_ASSERTD(GMP_NUMB_BITS == 64);
+  MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
 
   if (((unsigned int) exp_u & 1) != 0)
     {
