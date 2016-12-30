@@ -462,7 +462,6 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
 # define mpn_copyd MPN_COPY
 #endif
 
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
 /* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
    macro udiv_qrnnd_preinv.
    It computes q and r such that nh*2^GMP_NUMB_BITS + nl = q*d + r,
@@ -496,6 +495,20 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
     (q) = _qh;                                                          \
   } while (0)
 
+#if GMP_NUMB_BITS == 64
+/* specialized version for nl = 0, with di computed inside */
+#define __udiv_qrnd_preinv(q, r, nh, d)                                 \
+  do {                                                                  \
+    mp_limb_t _di;                                                      \
+                                                                        \
+    MPFR_ASSERTD ((d) != 0);                                            \
+    MPFR_ASSERTD ((nh) < (d));                                          \
+    MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
+                                                                        \
+    _di = __gmpfr_invert_limb (d);                                      \
+    __udiv_qrnnd_preinv (q, r, nh, 0, d, _di);                          \
+  } while (0)
+#elif defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
 /* specialized version for nl = 0, with di computed inside */
 #define __udiv_qrnd_preinv(q, r, nh, d)                                 \
   do {                                                                  \
