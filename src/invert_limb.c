@@ -62,5 +62,28 @@ __gmpfr_invert_limb (mp_limb_t d)
   return v3 - h;
 }
 
+/* same algorithm, but return the value v3, which is such that
+   v3 <= invert_limb (d) <= v3 + 1 */
+mp_limb_t
+__gmpfr_invert_limb_approx (mp_limb_t d)
+{
+  mp_limb_t d0, d9, d40, d63, v0, v1, v2, e, v3, h, l;
+
+  d9 = d >> 55;
+  v0 = invert_limb_table[d9 - 256];
+  d40 = (d >> 24) + 1;
+  v1 = (v0 << 11) - ((v0 * v0 * d40) >> 40) - 1;
+  v2 = (v1 << 13) + ((v1 * (0x1000000000000000 - v1 * d40)) >> 47);
+  d0 = d & 1;
+  d63 = ((d - 1) >> 1) + 1;
+  e = - v2 * d63 + ((v2 & -d0) >> 1);
+#ifdef HAVE_MULX_U64
+  _mulx_u64 (v2, e, (unsigned long long *) &h);
+#else
+  umul_ppmm (h, l, v2, e);
+#endif
+  return (v2 << 31) + (h >> 1);
+}
+
 #endif
 
