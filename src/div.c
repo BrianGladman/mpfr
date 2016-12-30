@@ -43,25 +43,14 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t u0 = MPFR_MANT(u)[0];
   mp_limb_t v0 = MPFR_MANT(v)[0];
   mp_limb_t q0, rb, sb, mask = MPFR_LIMB_MASK(sh);
+  int extra;
 
-  if (u0 >= v0)
-    {
-      __udiv_qrnd_preinv (q0, sb, u0 - v0, v0);
-      /* Noting W = 2^GMP_NUMB_BITS, we have u0*W = (W + q0) * v0 + sb,
-         thus u0/v0 = 1 + q0/W + sb/v0/W, with 0 <= sb < v0. */
-      qx ++;
-      rb = q0 & (MPFR_LIMB_ONE << sh);
-      sb |= q0 & mask;
-      qp[0] = (MPFR_LIMB_HIGHBIT | (q0 >> 1)) & ~mask;
-    }
-  else
-    {
-      __udiv_qrnd_preinv (q0, sb, u0, v0);
-      /* now u0*2^GMP_NUMB_BITS = q0*v0 + sb */
-      rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
-      sb |= (q0 & mask) ^ rb;
-      qp[0] = q0 & ~mask;
-    }
+  extra = (u0 >= v0);
+  __udiv_qrnd_preinv (q0, sb, (extra) ? u0 - v0 : u0, v0);
+  qx += extra;
+  rb = q0 & (MPFR_LIMB_ONE << (sh + extra - 1));
+  sb |= (q0 ^ rb) & mask;
+  qp[0] = (((mp_limb_t) extra << (GMP_NUMB_BITS - 1)) | (q0 >> extra)) & ~mask;
 
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
