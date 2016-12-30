@@ -45,13 +45,35 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t q0, rb, sb, mask = MPFR_LIMB_MASK(sh);
   int extra;
 
-  extra = (u0 >= v0);
-  __udiv_qrnd_preinv (q0, sb, (extra) ? u0 - v0 : u0, v0);
-  qx += extra;
-  rb = q0 & (MPFR_LIMB_ONE << (sh + extra - 1));
-  sb |= (q0 ^ rb) & mask;
-  qp[0] = (((mp_limb_t) extra << (GMP_NUMB_BITS - 1)) | (q0 >> extra)) & ~mask;
+  if ((extra = (u0 >= v0)))
+    u0 -= v0;
 
+#if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb only exists for 64-bit for now */
+  /* first try with an approximate quotient */
+  mp_limb_t inv = __gmpfr_invert_limb (v0);
+  umul_ppmm (q0, sb, u0, inv);
+  q0 = (q0 + u0) >> extra;
+  /* before the >> extra shift, q0 + u0 does not exceed the true quotient
+     floor(u'0*2^GMP_NUMB_BITS/v0), with error at most 1, which means the rational
+     quotient q satisfies q0 + u0 <= q < q0 + u0 + 2. We can round correctly except
+     when the last sh-1 bits of q0 are now 000..000 or 111..111. */
+  if (MPFR_LIKELY(((q0 + 1) & (mask >> 1)) > 1))
+    {
+      rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
+      sb = 1; /* result cannot be exact when we can round with an approximation */
+    }
+  else /* compute exact quotient and remainder */
+#endif
+    {
+      __udiv_qrnd_preinv (q0, sb, u0, v0);
+      sb |= q0 & extra;
+      q0 >>= extra;
+      rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
+      sb |= q0 & (mask >> 1);
+    }
+
+  qp[0] = (MPFR_LIMB_HIGHBIT | q0) & ~mask;
+  qx += extra;
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
