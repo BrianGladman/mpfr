@@ -1,4 +1,4 @@
-/* sqrt_tab.h - array for sqrt.c (mpn_sqrtrem2_approx) with GMP_NUMB_BITS == 64
+/* sqrt_tab.h - tables for sqrt.c with GMP_NUMB_BITS == 64
 
 Copyright 2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
