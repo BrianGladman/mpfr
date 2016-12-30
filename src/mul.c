@@ -313,24 +313,44 @@ static int
 mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             mpfr_prec_t p)
 {
-  mp_limb_t h, l, u, v;
+  mp_limb_t h, l, u, v, w;
   mpfr_limb_ptr ap = MPFR_MANT(a);
   mpfr_exp_t ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
   mpfr_prec_t sh = 2 * GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, sb2, mask = MPFR_LIMB_MASK(sh);
   mp_limb_t *bp = MPFR_MANT(b), *cp = MPFR_MANT(c);
+  int intra;
 
   /* we store the 4-limb product in h=ap[1], l=ap[0], sb=ap[-1], sb2=ap[-2] */
   umul_ppmm (h, l, bp[1], cp[1]);
-  umul_ppmm (sb, sb2, bp[0], cp[0]);
   umul_ppmm (u, v, bp[1], cp[0]);
-  add_ssaaaa (l, sb, l, sb, u, v);
-  /* warning: (l < u) is incorrect to detect a carry out of add_ssaaaa, since we
-     might have u = 111...111, a carry coming from sb+v, thus l = u */
-  h += (l < u) || (l == u && sb < v);
-  umul_ppmm (u, v, bp[0], cp[1]);
-  add_ssaaaa (l, sb, l, sb, u, v);
-  h += (l < u) || (l == u && sb < v);
+  l += u;
+  h += (l < u);
+  umul_ppmm (u, w, bp[0], cp[1]);
+  l += u;
+  h += (l < u);
+
+  /* now the full product is {h, l, v + w + high(b0*c0), low(b0*c0)},
+     where the lower part contribute to less then 3 ulps to {h, l} */
+
+  intra = (h < MPFR_LIMB_HIGHBIT);
+  /* if intra = 0 and the low sh-1 bits of l are not 000...000 nor 111...111 nor
+     111...110, then we can round correctly;
+     if intra = 1, we have to shift left h and l, thus if the low sh-2 bits are not
+     000...000 nor 111...111 nor 111...110, then we can round correctly */
+  if (MPFR_LIKELY(((l + 2) & (mask >> (1 + intra))) > 2))
+    sb = sb2 = 1; /* result cannot be exact in that case */
+  else
+    {
+      umul_ppmm (sb, sb2, bp[0], cp[0]);
+      /* the full product is {h, l, sb + v + w, sb2} */
+      sb += v;
+      l += (sb < v);
+      h += (l == 0) && (sb < v);
+      sb += w;
+      l += (sb < w);
+      h += (l == 0) && (sb < w);
+    }
   if (h < MPFR_LIMB_HIGHBIT)
     {
       ax --;
