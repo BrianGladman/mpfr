@@ -326,7 +326,7 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   umul_ppmm (u, v, bp[1], cp[0]);
   add_ssaaaa (l, sb, l, sb, u, v);
   /* warning: (l < u) is incorrect to detect a carry out of add_ssaaaa, since we
-     might have u = 111...111, a carry coming from l+v, thus l = u */
+     might have u = 111...111, a carry coming from sb+v, thus l = u */
   h += (l < u) || (l == u && sb < v);
   umul_ppmm (u, v, bp[0], cp[1]);
   add_ssaaaa (l, sb, l, sb, u, v);
