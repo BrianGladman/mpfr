@@ -207,10 +207,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 /* Special code for prec(a) < GMP_NUMB_BITS and
    prec(b), prec(c) <= GMP_NUMB_BITS.
-   We export it since it is called from mpfr_sqr too. */
-int
+   Note: this code was copied in sqr.c, function mpfr_sqr_1 (this saves a few cycles
+   with respect to have this function exported). As a consequence, any change here
+   should be reported in mpfr_sqr_1. */
+static int
 mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
-              mpfr_prec_t p)
+            mpfr_prec_t p)
 {
   mp_limb_t a0;
   mpfr_limb_ptr ap = MPFR_MANT(a);
@@ -304,10 +306,12 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
 /* Special code for GMP_NUMB_BITS < prec(a) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < prec(b), prec(c) <= 2*GMP_NUMB_BITS.
-   It is exported since called from mpfr_sqr too. */
-int
+   Note: this code was copied in sqr.c, function mpfr_sqr_2 (this saves a few cycles
+   with respect to have this function exported). As a consequence, any change here
+   should be reported in mpfr_sqr_2. */
+static int
 mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
-              mpfr_prec_t p)
+            mpfr_prec_t p)
 {
   mp_limb_t h, l, u, v;
   mpfr_limb_ptr ap = MPFR_MANT(a);
