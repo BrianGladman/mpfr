@@ -50,8 +50,10 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
   /* first try with an approximate quotient */
-  mp_limb_t inv = __gmpfr_invert_limb_approx (v0);
-  umul_ppmm (q0, sb, u0, inv);
+  {
+    mp_limb_t inv = __gmpfr_invert_limb_approx (v0);
+    umul_ppmm (q0, sb, u0, inv);
+  }
   q0 = (q0 + u0) >> extra;
   /* before the >> extra shift, q0 + u0 does not exceed the true quotient
      floor(u'0*2^GMP_NUMB_BITS/v0), with error at most 2, which means the rational
