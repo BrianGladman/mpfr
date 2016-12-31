@@ -95,6 +95,7 @@ mpn_sqrtrem4_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   int i = np[1] >> 56;
   mp_limb_t x, r1, r0, h, l, t;
   const mp_limb_t *u;
+  const mp_limb_t magic = 0xda9fbe76c8b43800; /* ceil(0.854*2^64) */
 
   x = np[1] << 8 | (np[0] >> 56);
   u = V[i - 64];
@@ -115,8 +116,7 @@ mpn_sqrtrem4_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
                                          truncation error on h+l/2^64 is <= 6/2^6 */
   sub_ddmmss (h, l, u[0], u[1], h, l);
   /* Since the mathematical error is < 0.412e-19*2^64, the total error on
-     h + l/2^64 is less than 0.854 */
-  const mp_limb_t magic = 0xda9fbe76c8b43800UL; /* ceil(0.854*2^64) */
+     h + l/2^64 is less than 0.854; magic = ceil(0.854*2^64). */
   x = h - (l < magic && h != 0);
 
   /* now 2^64 + x is an approximation of 2^96/sqrt(np[1]),
