@@ -67,7 +67,7 @@ __gmpfr_invert_limb (mp_limb_t d)
 mp_limb_t
 __gmpfr_invert_limb_approx (mp_limb_t d)
 {
-  mp_limb_t d0, d9, d40, d63, v0, v1, v2, e, v3, h, l;
+  mp_limb_t d0, d9, d40, d63, v0, v1, v2, e, h, l;
 
   d9 = d >> 55;
   v0 = invert_limb_table[d9 - 256];
