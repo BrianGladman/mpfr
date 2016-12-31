@@ -42,7 +42,7 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       a0 = (bp[0] >> (GMP_NUMB_BITS / 2)) * (bp[0] >> (GMP_NUMB_BITS / 2));
       sb = 0;
   */
-  ax = MPFR_GET_EXP(b) << 1;
+  ax = MPFR_GET_EXP(b) * 2;
   umul_ppmm (a0, sb, bp[0], bp[0]);
   if (a0 < MPFR_LIMB_HIGHBIT)
     {
@@ -126,7 +126,7 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
 {
   mp_limb_t h, l, u, v;
   mpfr_limb_ptr ap = MPFR_MANT(a);
-  mpfr_exp_t ax = MPFR_GET_EXP(b) << 1;
+  mpfr_exp_t ax = MPFR_GET_EXP(b) * 2;
   mpfr_prec_t sh = 2 * GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, sb2, mask = MPFR_LIMB_MASK(sh);
   mp_limb_t *bp = MPFR_MANT(b);
