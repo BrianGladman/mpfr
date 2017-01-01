@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_si, mpfr_set_ui, mpfr_get_si and mpfr_get_ui.
 
-Copyright 1999, 2001-2016 Free Software Foundation, Inc.
+Copyright 1999, 2001-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
