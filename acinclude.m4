@@ -1,6 +1,6 @@
 dnl  MPFR specific autoconf macros
 
-dnl  Copyright 2000, 2002-2016 Free Software Foundation, Inc.
+dnl  Copyright 2000, 2002-2017 Free Software Foundation, Inc.
 dnl  Contributed by the AriC and Caramba projects, INRIA.
 dnl
 dnl  This file is part of the GNU MPFR Library.
@@ -479,6 +479,20 @@ static int f (double (*func)(double)) { return 0; }
 ]])], [
    AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO C99 nearbyint function])
+],[AC_MSG_RESULT(no)])
+
+dnl Check if _mulx_u64 is provided
+dnl Note: This intrinsic is not standard, and ideally more checks should
+dnl be done to make sure that the MPFR code matches what is expected on
+dnl all compilers that provide it.
+AC_MSG_CHECKING([for _mulx_u64])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <immintrin.h>
+]], [[
+ return _mulx_u64(17, 42, (unsigned long long *) 0);
+]])], [
+   AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_MULX_U64, 1,[Have _mulx_u64 function])
 ],[AC_MSG_RESULT(no)])
 
 LIBS="$saved_LIBS"
@@ -1533,3 +1547,5 @@ if test "$mpfr_c11_thread_ok" = "yes"; then
    [Define if the ISO C11 Thread is supported.])
 fi
 ])
+
+

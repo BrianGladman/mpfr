@@ -1,6 +1,6 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999-2016 Free Software Foundation, Inc.
+Copyright 1999-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -2099,10 +2099,6 @@ __MPFR_DECLSPEC int mpfr_add1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_sub1sp (mpfr_ptr, mpfr_srcptr,
                                  mpfr_srcptr, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_mul_1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t,
-                                mpfr_prec_t);
-__MPFR_DECLSPEC int mpfr_mul_2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t,
-                                mpfr_prec_t);
 __MPFR_DECLSPEC int mpfr_can_round_raw (const mp_limb_t *,
              mp_size_t, int, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t);
 
@@ -2115,6 +2111,8 @@ __MPFR_DECLSPEC double        __gmpfr_ceil_exp2     (double);
 __MPFR_DECLSPEC unsigned long __gmpfr_isqrt     (unsigned long);
 __MPFR_DECLSPEC unsigned long __gmpfr_cuberoot  (unsigned long);
 __MPFR_DECLSPEC int       __gmpfr_int_ceil_log2 (unsigned long);
+__MPFR_DECLSPEC mp_limb_t __gmpfr_invert_limb (mp_limb_t);
+__MPFR_DECLSPEC mp_limb_t __gmpfr_invert_limb_approx (mp_limb_t);
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_ceil_mul (mpfr_exp_t, int, int);
 

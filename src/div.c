@@ -1,6 +1,6 @@
 /* mpfr_div -- divide two floating-point numbers
 
-Copyright 1999, 2001-2016 Free Software Foundation, Inc.
+Copyright 1999, 2001-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -43,26 +43,39 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t u0 = MPFR_MANT(u)[0];
   mp_limb_t v0 = MPFR_MANT(v)[0];
   mp_limb_t q0, rb, sb, mask = MPFR_LIMB_MASK(sh);
+  int extra;
 
-  if (u0 >= v0)
+  if ((extra = (u0 >= v0)))
+    u0 -= v0;
+
+#if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
+  /* first try with an approximate quotient */
+  {
+    mp_limb_t inv = __gmpfr_invert_limb_approx (v0);
+    umul_ppmm (q0, sb, u0, inv);
+  }
+  q0 = (q0 + u0) >> extra;
+  /* before the >> extra shift, q0 + u0 does not exceed the true quotient
+     floor(u'0*2^GMP_NUMB_BITS/v0), with error at most 2, which means the rational
+     quotient q satisfies q0 + u0 <= q < q0 + u0 + 3. We can round correctly except
+     when the last sh-1 bits of q0 are 000..000 or 111..111 or 111..110. */
+  if (MPFR_LIKELY(((q0 + 2) & (mask >> 1)) > 2))
     {
-      __udiv_qrnd_preinv (q0, sb, u0 - v0, v0);
-      /* Noting W = 2^GMP_NUMB_BITS, we have u0*W = (W + q0) * v0 + sb,
-         thus u0/v0 = 1 + q0/W + sb/v0/W, with 0 <= sb < v0. */
-      qx ++;
-      rb = q0 & (MPFR_LIMB_ONE << sh);
-      sb |= q0 & mask;
-      qp[0] = (MPFR_LIMB_HIGHBIT | (q0 >> 1)) & ~mask;
+      rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
+      sb = 1; /* result cannot be exact when we can round with an approximation */
     }
-  else
+  else /* compute exact quotient and remainder */
+#endif
     {
       __udiv_qrnd_preinv (q0, sb, u0, v0);
-      /* now u0*2^GMP_NUMB_BITS = q0*v0 + sb */
+      sb |= q0 & extra;
+      q0 >>= extra;
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
-      sb |= (q0 & mask) ^ rb;
-      qp[0] = q0 & ~mask;
+      sb |= q0 & (mask >> 1);
     }
 
+  qp[0] = (MPFR_LIMB_HIGHBIT | q0) & ~mask;
+  qx += extra;
   MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
 
   /* rounding */
@@ -129,7 +142,6 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
 }
 
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
 /* special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < PREC(u), PREC(v) <= 2*GMP_NUMB_BITS */
 static int
@@ -139,12 +151,14 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mpfr_limb_ptr qp = MPFR_MANT(q);
   mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
   mpfr_prec_t sh = 2*GMP_NUMB_BITS - p;
-  mp_limb_t inv, h, rb, sb, mask = MPFR_LIMB_MASK(sh);
+  mp_limb_t h, rb, sb, mask = MPFR_LIMB_MASK(sh);
   mp_limb_t v1 = MPFR_MANT(v)[1], v0 = MPFR_MANT(v)[0];
   mp_limb_t q1, q0, r3, r2, r1, r0, l, t;
   int extra;
+#if GMP_NUMB_BITS == 64
+  mp_limb_t inv = __gmpfr_invert_limb (v1);
+#endif
 
-  inv = __gmpn_invert_limb (v1);
   r3 = MPFR_MANT(u)[1];
   r2 = MPFR_MANT(u)[0];
   extra = r3 > v1 || (r3 == v1 && r2 >= v0);
@@ -180,7 +194,11 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* divide r3:r2 by v1: requires r3 < v1 */
+#if GMP_NUMB_BITS == 64 /* use __gmpfr_invert_limb */
       __udiv_qrnnd_preinv (q1, r2, r3, r2, v1, inv);
+#else
+      udiv_qrnnd (q1, r2, r3, r2, v1);
+#endif
       /* u-extra*v = q1 * v1 + r2 */
 
       /* now subtract q1*v0 to r2:0 */
@@ -230,7 +248,11 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* divide r2:r1 by v1: requires r2 < v1 */
+#if GMP_NUMB_BITS == 64 /* use __gmpfr_invert_limb */
       __udiv_qrnnd_preinv (q0, r1, r2, r1, v1, inv);
+#else
+      udiv_qrnnd (q0, r1, r2, r1, v1);
+#endif
 
       /* r2:r1 = q0*v1 + r1 */
 
@@ -342,8 +364,6 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       MPFR_RET(MPFR_SIGN(q));
     }
 }
-#endif
-
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
 #ifdef DEBUG2
@@ -663,12 +683,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
     return mpfr_div_1 (q, u, v, rnd_mode);
 
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
   if (GMP_NUMB_BITS < MPFR_GET_PREC(q) && MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS
       && usize == 2 && vsize == 2)
     return mpfr_div_2 (q, u, v, rnd_mode);
-#endif
-
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
   q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */

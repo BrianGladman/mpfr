@@ -1,4 +1,4 @@
-# Copyright 2000-2016 Free Software Foundation, Inc.
+# Copyright 2000-2017 Free Software Foundation, Inc.
 # This Makefile.am is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -59,7 +59,8 @@ buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
 scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
 grandom.c fpif.c set_float128.c get_float128.c rndna.c nrandom.c        \
 random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
-mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c sqrt_tab.h
+mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c sqrt_tab.h		\
+invert_limb.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 

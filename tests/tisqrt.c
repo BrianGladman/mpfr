@@ -1,6 +1,6 @@
 /* Test file for __gmpfr_isqrt and __gmpfr_cuberoot internal functions.
 
-Copyright 2007-2016 Free Software Foundation, Inc.
+Copyright 2007-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
