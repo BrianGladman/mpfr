@@ -2108,8 +2108,6 @@ __MPFR_DECLSPEC double        __gmpfr_ceil_exp2     (double);
 __MPFR_DECLSPEC unsigned long __gmpfr_isqrt     (unsigned long);
 __MPFR_DECLSPEC unsigned long __gmpfr_cuberoot  (unsigned long);
 __MPFR_DECLSPEC int       __gmpfr_int_ceil_log2 (unsigned long);
-__MPFR_DECLSPEC mp_limb_t __gmpfr_invert_limb (mp_limb_t);
-__MPFR_DECLSPEC mp_limb_t __gmpfr_invert_limb_approx (mp_limb_t);
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_ceil_mul (mpfr_exp_t, int, int);
 

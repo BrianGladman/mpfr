@@ -31,6 +31,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(MPFR_GENERIC_ABI)
 
+#include "invert_limb.h"
+
 /* special code for p=PREC(q) < GMP_NUMB_BITS,
    and PREC(u), PREC(v) <= GMP_NUMB_BITS */
 static int
@@ -51,7 +53,8 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
   /* first try with an approximate quotient */
   {
-    mp_limb_t inv = __gmpfr_invert_limb_approx (v0);
+    mp_limb_t inv;
+    __gmpfr_invert_limb_approx (inv, v0);
     umul_ppmm (q0, sb, u0, inv);
   }
   q0 = (q0 + u0) >> extra;
@@ -67,7 +70,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else /* compute exact quotient and remainder */
 #endif
     {
-      __udiv_qrnd_preinv (q0, sb, u0, v0);
+      udiv_qrnnd (q0, sb, u0, 0, v0);
       sb |= q0 & extra;
       q0 >>= extra;
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
@@ -156,7 +159,8 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t q1, q0, r3, r2, r1, r0, l, t;
   int extra;
 #if GMP_NUMB_BITS == 64
-  mp_limb_t inv = __gmpfr_invert_limb (v1);
+  mp_limb_t inv;
+  __gmpfr_invert_limb (inv, v1);
 #endif
 
   r3 = MPFR_MANT(u)[1];
