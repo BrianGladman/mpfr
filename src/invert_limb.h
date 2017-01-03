@@ -98,7 +98,7 @@ static const mp_limb_t invert_limb_table[256] = {2045, 2037, 2029, 2021, 2013, 2
 #else
 #define __gmpfr_invert_limb_approx(r, d)                                \
     do {                                                                \
-      mp_limb_t _d, _d0, _d9, _d40, _d63, _v0, _v1, _v2, _e, _v3, _h, _l; \
+      mp_limb_t _d, _d0, _d9, _d40, _d63, _v0, _v1, _v2, _e, _h, _l;    \
       _d = (d);                                                         \
       _d9 = _d >> 55;                                                   \
       _v0 = invert_limb_table[_d9 - 256];                               \
