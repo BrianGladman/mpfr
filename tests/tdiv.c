@@ -1358,6 +1358,29 @@ test_20160831 (void)
   mpfr_clears (u, v, q, (mpfr_ptr) 0);
 }
 
+/* With r11138, on a 64-bit machine:
+   div.c:128: MPFR assertion failed: qx >= __gmpfr_emin
+*/
+static void
+test_20170104 (void)
+{
+  mpfr_t u, v, q;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
+  set_emin (-42);
+
+  mpfr_init2 (u, 12);
+  mpfr_init2 (v, 12);
+  mpfr_init2 (q, 11);
+  mpfr_set_str_binary (u, "0.111111111110E-29");
+  mpfr_set_str_binary (v, "0.111111111111E14");
+  mpfr_div (q, u, v, MPFR_RNDN);
+  mpfr_clears (u, v, q, (mpfr_ptr) 0);
+
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1385,6 +1408,7 @@ main (int argc, char *argv[])
   test_20070628 ();
   test_20151023 ();
   test_20160831 ();
+  test_20170104 ();
   test_generic (MPFR_PREC_MIN, 800, 50);
   test_bad ();
   test_extreme ();
