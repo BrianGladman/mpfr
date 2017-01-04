@@ -202,6 +202,23 @@ check_inexact (void)
   mpfr_clear (z);
 }
 
+static void
+bug20170104 (void)
+{
+  mpfr_t a, b;
+  int inex;
+
+  mpfr_init2 (a, 11);
+  mpfr_init2 (b, 12);
+  mpfr_set_str_binary (b, "0.111111111110E-29");
+  inex = mpfr_div_ui (a, b, 16380, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 2047, -11-43) == 0);
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+}
+
 #define TEST_FUNCTION mpfr_div_ui
 #define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -224,6 +241,7 @@ main (int argc, char **argv)
   check("1.0", 3, MPFR_RNDD, "3.3333333333333331483e-1");
   check("1.0", 2116118, MPFR_RNDN, "4.7256343927890600483e-7");
   check("1.098612288668109782", 5, MPFR_RNDN, "0.21972245773362195087");
+  bug20170104 ();
 
   mpfr_init2 (x, 53);
   mpfr_set_ui (x, 3, MPFR_RNDD);
