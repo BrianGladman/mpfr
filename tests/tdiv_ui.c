@@ -202,6 +202,7 @@ check_inexact (void)
   mpfr_clear (z);
 }
 
+/* does not actually trigger a failure */
 static void
 bug20170104 (void)
 {
