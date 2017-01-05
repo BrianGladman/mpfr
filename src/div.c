@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#if !defined(MPFR_GENERIC_ABI)
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
 
 #include "invert_limb.h"
 
@@ -43,7 +43,7 @@ mpfr_div2_approx (mp_ptr v1, mp_ptr v0, mp_limb_t u1, mp_limb_t u0,
                   mp_limb_t d1, mp_limb_t d0)
 {
   mp_limb_t x, y, dummy, z2, z1, z0;
-  
+
   if (MPFR_UNLIKELY(d1 + 1 == MPFR_LIMB_ZERO))
     x = 0;
   else
@@ -407,6 +407,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       MPFR_RET(MPFR_SIGN(q));
     }
 }
+
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
 #ifdef DEBUG2
@@ -721,7 +722,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   vsize = MPFR_LIMB_SIZE(v);
 
   /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
-#if !defined(MPFR_GENERIC_ABI)
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
 
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
     return mpfr_div_1 (q, u, v, rnd_mode);
