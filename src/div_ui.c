@@ -134,7 +134,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   /* If we believe that we are right in the middle or exact, we should check
      that we did not neglect any word of x (division large / 1 -> small). */
 
-  for (i=0; ((inexact == 0) || (middle == 0)) && (i < -dif); i++)
+  for (i = 0; (inexact == 0 || middle == 0) && i < -dif; i++)
     if (xp[i])
       inexact = middle = 1; /* larger than middle */
 
