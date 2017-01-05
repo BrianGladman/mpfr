@@ -1002,7 +1002,8 @@ consistency (void)
       MPFR_ASSERTN (!MPFR_IS_NAN (z2));
       if (inex1 != inex2 || mpfr_cmp (z1, z2) != 0)
         {
-          printf ("Consistency error for i = %d\n", i);
+          printf ("Consistency error for i = %d, rnd = %s\n", i,
+                  mpfr_print_rnd_mode (rnd));
           printf ("inex1=%d inex2=%d\n", inex1, inex2);
           printf ("z1="); mpfr_dump (z1);
           printf ("z2="); mpfr_dump (z2);
@@ -1381,11 +1382,35 @@ test_20170104 (void)
   set_emin (emin);
 }
 
+/* With r11140, on a 64-bit machine with GMP_CHECK_RANDOMIZE=1484406128:
+   Consistency error for i = 2577
+*/
+static void
+test_20170105 (void)
+{
+  mpfr_t x, y, z, t;
+
+  mpfr_init2 (x, 138);
+  mpfr_init2 (y, 6);
+  mpfr_init2 (z, 128);
+  mpfr_init2 (t, 128);
+  mpfr_set_str_binary (x, "0.100110111001001000101111010010011101111110111111110001110100000001110111010100111010100011101010110000010100000011100100110101101011000000E-6");
+  mpfr_set_str_binary (y, "0.100100E-2");
+  /* up to exponents, x/y is exactly 367625553447399614694201910705139062483,
+     which has 129 bits, thus we are in the round-to-nearest-even case, and since
+     the penultimate bit of x/y is 1, we should round upwards */
+  mpfr_set_str_binary (t, "0.10001010010010010000110110010110111111111100011011101010000000000110101000010001011110011011010000111010000000001100101101101010E-3");
+  mpfr_div (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (z, t));
+  mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  test_20170105 ();
   check_inexact ();
   check_hard ();
   check_special ();

@@ -104,7 +104,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
   c = (mp_limb_t) u;
-  MPFR_ASSERTN (u == c);
+  MPFR_ASSERTN (u == c); /* FIXME: why MPFR_ASSERTD and not a static assertion
+                            that sizeof(mp_limb_t) >= sizeof(unsigned long)? */
   if (dif >= 0)
     c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
@@ -160,7 +161,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           mp_limb_t w = tmp[0] << shlz;
 
           mpn_lshift (yp, tmp + 1, yn, shlz);
-          yp[0] += tmp[0] >> (GMP_NUMB_BITS - shlz);
+          yp[0] |= tmp[0] >> (GMP_NUMB_BITS - shlz);
+          /* now {yp, yn} is the approximate quotient, w is the next limb */
 
           if (w > MPFR_LIMB_HIGHBIT)
             { middle = 1; }
@@ -184,8 +186,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
   /* it remains sh bits in less significant limb of y */
 
-  d = *yp & MPFR_LIMB_MASK (sh);
-  *yp ^= d; /* set to zero lowest sh bits */
+  d = yp[0] & MPFR_LIMB_MASK (sh);
+  yp[0] ^= d; /* set to zero lowest sh bits */
 
   MPFR_TMP_FREE (marker);
 
@@ -232,7 +234,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
                  The third is the true even rounding.
               */
               if ((sh && inexact) || (!sh && middle > 0) ||
-                  (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
+                  (middle == 0 && (yp[0] & (MPFR_LIMB_ONE << sh))))
                 {
                   inexact = MPFR_INT_SIGN (y);
                   nexttoinf = 1;
