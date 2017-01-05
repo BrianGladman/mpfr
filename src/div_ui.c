@@ -33,7 +33,11 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   mp_size_t xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mpfr_exp_t exp;
-  int inexact, middle = 1, nexttoinf;
+  int inexact, nexttoinf;
+  int middle = 1; /* middle = 0 if the next bit after {yp, yn} is 1 and others are
+                     zero, middle = -1 if the next bit after {yp, yn} is 0, and
+                     middle = 1 if the next bit after {yp, yn} is 1, and next bits
+                     are not all zero */
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC
@@ -231,10 +235,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
                  indicate even rounding, but the result is inexact, so up) ;
                  The second case is the case where middle should be used to
                  decide the direction of rounding (no further bit computed) ;
-                 The third is the true even rounding.
+                 The third is the true even rounding:
+                 (a) either sh > 0 and inexact = 0
+                 (a) or sh = 0 and middle = 0
               */
               if ((sh && inexact) || (!sh && middle > 0) ||
-                  (middle == 0 && (yp[0] & (MPFR_LIMB_ONE << sh))))
+                  (((sh && !inexact) || (!sh && middle == 0))
+                   && (yp[0] & (MPFR_LIMB_ONE << sh))))
                 {
                   inexact = MPFR_INT_SIGN (y);
                   nexttoinf = 1;
