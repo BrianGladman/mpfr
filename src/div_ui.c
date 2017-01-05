@@ -108,12 +108,10 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
   MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
-  c = (mp_limb_t) u;
-
   if (dif >= 0)
-    c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
+    c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
-    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
+    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
 
   inexact = (c != 0);
 
