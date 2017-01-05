@@ -256,7 +256,9 @@ main (int argc, char **argv)
   check("1.0", 3, MPFR_RNDD, "3.3333333333333331483e-1");
   check("1.0", 2116118, MPFR_RNDN, "4.7256343927890600483e-7");
   check("1.098612288668109782", 5, MPFR_RNDN, "0.21972245773362195087");
+#if GMP_NUMB_BITS == 64
   test_20170105 ();
+#endif
 
   mpfr_init2 (x, 53);
   mpfr_set_ui (x, 3, MPFR_RNDD);
