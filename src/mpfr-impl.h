@@ -1022,9 +1022,12 @@ typedef uintmax_t mpfr_ueexp_t;
   (((rnd) + (test)) == MPFR_RNDD)
 
 /* We want to test if rnd = Zero, or Away.
-   'test' is 1 if negative, and 0 if positive. */
-#define MPFR_IS_LIKE_RNDZ(rnd, test) \
-  ((rnd) == MPFR_RNDZ || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+   'neg' is 1 if negative, and 0 if positive. */
+#define MPFR_IS_LIKE_RNDZ(rnd, neg) \
+  ((rnd) == MPFR_RNDZ || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, neg))
+
+#define MPFR_IS_LIKE_RNDA(rnd, neg) \
+  ((rnd) == MPFR_RNDA || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, (neg) == 0))
 
 #define MPFR_IS_LIKE_RNDU(rnd, sign)                    \
   (((rnd) == MPFR_RNDU) ||                              \

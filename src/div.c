@@ -92,7 +92,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
       if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
@@ -313,7 +313,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       if ((qx == __gmpfr_emin - 1) &&
           (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
