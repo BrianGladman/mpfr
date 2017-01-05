@@ -39,7 +39,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
    B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16. */
 static void
-mpfr_div2_approx (mp_ptr v1, mp_ptr v0, mp_limb_t u1, mp_limb_t u0,
+mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
+                  mp_limb_t u1, mp_limb_t u0,
                   mp_limb_t d1, mp_limb_t d0)
 {
   mp_limb_t x, y, dummy, z2, z1, z0;
