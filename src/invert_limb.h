@@ -113,5 +113,4 @@ static const mp_limb_t invert_limb_table[256] = {2045, 2037, 2029, 2021, 2013, 2
     } while (0)
 #endif /* HAVE_MULX_U64 */
 
-#endif
-
+#endif /* GMP_NUMB_BITS == 64 */
