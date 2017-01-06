@@ -31,13 +31,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
+#if !defined(MPFR_GENERIC_ABI)
+
+#if GMP_NUMB_BITS == 64
 
 #include "invert_limb.h"
 
 /* Given u = u1*B+u0 < d = d1*B+d0 with d normalized (high bit of d1 set),
    put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
-   B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16. */
+   B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16.
+   Note: this function requires __gmpfr_invert_limb (from invert_limb.h)
+   which is only provided so far for 64-bit limb. */
 static void
 mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
                   mp_limb_t u1, mp_limb_t u0,
@@ -75,7 +79,9 @@ mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
     }
 }
 
-/* special code for p=PREC(q) < GMP_NUMB_BITS,
+#endif /* GMP_NUMB_BITS == 64 */
+
+/* Special code for p=PREC(q) < GMP_NUMB_BITS,
    and PREC(u), PREC(v) <= GMP_NUMB_BITS */
 static int
 mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
@@ -187,7 +193,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
 }
 
-/* special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
+/* Special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < PREC(u), PREC(v) <= 2*GMP_NUMB_BITS */
 static int
 mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
@@ -209,6 +215,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   MPFR_ASSERTD(r3 < v1 || (r3 == v1 && r2 < v0));
 
+#if GMP_NUMB_BITS == 64
   mpfr_div2_approx (&q1, &q0, r3, r2, v1, v0);
   /* we know q1*B+q0 is smaller or equal to the exact quotient, with
      difference at most 16 */
@@ -217,6 +224,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       sb = 1; /* result is not exact when we can round with an approximation */
       goto round_div2;
     }
+#endif
 
   /* now r3:r2 < v1:v0 */
   if (MPFR_UNLIKELY(r3 == v1)) /* can occur in some rare cases */
@@ -326,7 +334,9 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   sb = r1 | r0;
 
+#if GMP_NUMB_BITS == 64
  round_div2:
+#endif
   if (extra)
     {
       qx ++;
@@ -723,7 +733,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   vsize = MPFR_LIMB_SIZE(v);
 
   /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
-#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
+#if !defined(MPFR_GENERIC_ABI)
 
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
     return mpfr_div_1 (q, u, v, rnd_mode);
