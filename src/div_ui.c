@@ -33,7 +33,11 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   mp_size_t xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mpfr_exp_t exp;
-  int inexact, middle = 1, nexttoinf;
+  int inexact, nexttoinf;
+  int middle = 1; /* middle = 0 if the next bit after {yp, yn} is 1 and others are
+                     zero, middle = -1 if the next bit after {yp, yn} is 0, and
+                     middle = 1 if the next bit after {yp, yn} is 1, and next bits
+                     are not all zero */
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC
@@ -103,12 +107,11 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
-  c = (mp_limb_t) u;
-  MPFR_ASSERTN (u == c);
+  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
   if (dif >= 0)
-    c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
+    c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
-    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
+    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
 
   inexact = (c != 0);
 
@@ -131,7 +134,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   /* If we believe that we are right in the middle or exact, we should check
      that we did not neglect any word of x (division large / 1 -> small). */
 
-  for (i=0; ((inexact == 0) || (middle == 0)) && (i < -dif); i++)
+  for (i = 0; (inexact == 0 || middle == 0) && i < -dif; i++)
     if (xp[i])
       inexact = middle = 1; /* larger than middle */
 
@@ -160,7 +163,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           mp_limb_t w = tmp[0] << shlz;
 
           mpn_lshift (yp, tmp + 1, yn, shlz);
-          yp[0] += tmp[0] >> (GMP_NUMB_BITS - shlz);
+          yp[0] |= tmp[0] >> (GMP_NUMB_BITS - shlz);
+          /* now {yp, yn} is the approximate quotient, w is the next limb */
 
           if (w > MPFR_LIMB_HIGHBIT)
             { middle = 1; }
@@ -184,8 +188,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
   /* it remains sh bits in less significant limb of y */
 
-  d = *yp & MPFR_LIMB_MASK (sh);
-  *yp ^= d; /* set to zero lowest sh bits */
+  d = yp[0] & MPFR_LIMB_MASK (sh);
+  yp[0] ^= d; /* set to zero lowest sh bits */
 
   MPFR_TMP_FREE (marker);
 
@@ -230,10 +234,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
                  indicate even rounding, but the result is inexact, so up) ;
                  The second case is the case where middle should be used to
                  decide the direction of rounding (no further bit computed) ;
-                 The third is the true even rounding.
+                 The third is the true even rounding:
+                 (a) either sh > 0 and inexact = 0
+                 (a) or sh = 0 and middle = 0
               */
               if ((sh && inexact) || (!sh && middle > 0) ||
-                  (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
+                  (((sh && !inexact) || (!sh && middle == 0))
+                   && (yp[0] & (MPFR_LIMB_ONE << sh))))
                 {
                   inexact = MPFR_INT_SIGN (y);
                   nexttoinf = 1;

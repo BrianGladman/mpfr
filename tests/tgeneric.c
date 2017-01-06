@@ -439,6 +439,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     mpfr_flags_t ex_flags;
 
                     mpfr_set_emax (e - 1);
+#ifdef DEBUG_TGENERIC
+                    printf ("tgeneric: overflow test (emax = %"
+                            MPFR_EXP_FSPEC "d)\n",
+                            (mpfr_eexp_t) __gmpfr_emax);
+#endif
                     mpfr_clear_flags ();
 #if defined(TWO_ARGS)
                     inexact = TEST_FUNCTION (w, x, u, rnd);
@@ -493,6 +498,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     mpfr_flags_t ex_flags;
 
                     mpfr_set_emin (e + 1);
+#ifdef DEBUG_TGENERIC
+                    printf ("tgeneric: underflow test (emin = %"
+                            MPFR_EXP_FSPEC "d)\n",
+                            (mpfr_eexp_t) __gmpfr_emin);
+#endif
                     mpfr_clear_flags ();
 #if defined(TWO_ARGS)
                     inexact = TEST_FUNCTION (w, x, u, rnd);

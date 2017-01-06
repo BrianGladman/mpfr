@@ -24,12 +24,56 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    [1] Short Division of Long Integers, David Harvey and Paul Zimmermann,
        Proceedings of the 20th Symposium on Computer Arithmetic (ARITH-20),
        July 25-27, 2011, pages 7-14.
+   [2] Improved Division by Invariant Integers, Niels Möller and Torbjörn Granlund,
+       IEEE Transactions on Computers, volume 60, number 2, pages 165-175, 2011.
 */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#if !defined(MPFR_GENERIC_ABI)
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
+
+#include "invert_limb.h"
+
+/* Given u = u1*B+u0 < d = d1*B+d0 with d normalized (high bit of d1 set),
+   put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
+   B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16. */
+static void
+mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
+                  mp_limb_t u1, mp_limb_t u0,
+                  mp_limb_t d1, mp_limb_t d0)
+{
+  mp_limb_t x, y, dummy, z2, z1, z0;
+
+  if (MPFR_UNLIKELY(d1 + 1 == MPFR_LIMB_ZERO))
+    x = 0;
+  else
+    __gmpfr_invert_limb (x, d1 + 1); /* B + x = floor((B^2-1)/(d1+1)) */
+  umul_ppmm (y, dummy, u1, x);
+  y += u1;
+  /* now y = floor(B*u1/d1) with y < B*u1/d1, thus even when
+     u1=d1, y < B */
+  umul_ppmm (dummy, z0, y, d0);
+  umul_ppmm (z2, z1, y, d1);
+  z1 += dummy;
+  z2 += (z1 < dummy);
+  z1 += (z0 != 0);
+  z2 += (z1 == 0 && z0 != 0);
+  /* now z = z2*B+z1 = ceil(y*d/B), and should cancel with u */
+  sub_ddmmss (z2, z1, u1, u0, z2, z1);
+  *v1 = y;
+  /* y*B + (B+x)*(z2*B+z1)/B */
+  umul_ppmm (*v0, dummy, x, z1);
+  /* add z1 */
+  *v0 += z1;
+  *v1 += (*v0 < z1);
+  /* add (B+x)*z2 */
+  while (z2--)
+    {
+      *v0 += x;
+      *v1 += 1 + (*v0 < x);
+    }
+}
 
 /* special code for p=PREC(q) < GMP_NUMB_BITS,
    and PREC(u), PREC(v) <= GMP_NUMB_BITS */
@@ -51,7 +95,8 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
   /* first try with an approximate quotient */
   {
-    mp_limb_t inv = __gmpfr_invert_limb_approx (v0);
+    mp_limb_t inv;
+    __gmpfr_invert_limb_approx (inv, v0);
     umul_ppmm (q0, sb, u0, inv);
   }
   q0 = (q0 + u0) >> extra;
@@ -67,7 +112,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else /* compute exact quotient and remainder */
 #endif
     {
-      __udiv_qrnd_preinv (q0, sb, u0, v0);
+      udiv_qrnnd (q0, sb, u0, 0, v0);
       sb |= q0 & extra;
       q0 >>= extra;
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
@@ -89,7 +134,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
       if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
@@ -155,9 +200,6 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t v1 = MPFR_MANT(v)[1], v0 = MPFR_MANT(v)[0];
   mp_limb_t q1, q0, r3, r2, r1, r0, l, t;
   int extra;
-#if GMP_NUMB_BITS == 64
-  mp_limb_t inv = __gmpfr_invert_limb (v1);
-#endif
 
   r3 = MPFR_MANT(u)[1];
   r2 = MPFR_MANT(u)[0];
@@ -166,6 +208,15 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     sub_ddmmss (r3, r2, r3, r2, v1, v0);
 
   MPFR_ASSERTD(r3 < v1 || (r3 == v1 && r2 < v0));
+
+  mpfr_div2_approx (&q1, &q0, r3, r2, v1, v0);
+  /* we know q1*B+q0 is smaller or equal to the exact quotient, with
+     difference at most 16 */
+  if (MPFR_LIKELY(((q0 + 16) & (mask >> 1)) > 16))
+    {
+      sb = 1; /* result is not exact when we can round with an approximation */
+      goto round_div2;
+    }
 
   /* now r3:r2 < v1:v0 */
   if (MPFR_UNLIKELY(r3 == v1)) /* can occur in some rare cases */
@@ -194,11 +245,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* divide r3:r2 by v1: requires r3 < v1 */
-#if GMP_NUMB_BITS == 64 /* use __gmpfr_invert_limb */
-      __udiv_qrnnd_preinv (q1, r2, r3, r2, v1, inv);
-#else
       udiv_qrnnd (q1, r2, r3, r2, v1);
-#endif
       /* u-extra*v = q1 * v1 + r2 */
 
       /* now subtract q1*v0 to r2:0 */
@@ -248,11 +295,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* divide r2:r1 by v1: requires r2 < v1 */
-#if GMP_NUMB_BITS == 64 /* use __gmpfr_invert_limb */
-      __udiv_qrnnd_preinv (q0, r1, r2, r1, v1, inv);
-#else
       udiv_qrnnd (q0, r1, r2, r1, v1);
-#endif
 
       /* r2:r1 = q0*v1 + r1 */
 
@@ -283,6 +326,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   sb = r1 | r0;
 
+ round_div2:
   if (extra)
     {
       qx ++;
@@ -309,7 +353,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       if ((qx == __gmpfr_emin - 1) &&
           (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (!MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
@@ -364,6 +408,7 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       MPFR_RET(MPFR_SIGN(q));
     }
 }
+
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
 #ifdef DEBUG2
@@ -678,7 +723,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   vsize = MPFR_LIMB_SIZE(v);
 
   /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
-#if !defined(MPFR_GENERIC_ABI)
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
 
   if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
     return mpfr_div_1 (q, u, v, rnd_mode);

@@ -505,7 +505,7 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
     MPFR_ASSERTD ((nh) < (d));                                          \
     MPFR_ASSERTD ((d) & MPFR_LIMB_HIGHBIT);                             \
                                                                         \
-    _di = __gmpfr_invert_limb (d);                                      \
+    __gmpfr_invert_limb (_di, d);                                       \
     __udiv_qrnnd_preinv (q, r, nh, 0, d, _di);                          \
   } while (0)
 #elif defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_INVERT_LIMB)
