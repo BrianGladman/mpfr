@@ -113,6 +113,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
 
+  /* the quotient x/u is formed by {tmp, yn+1}
+     + (c + {xp, dif}/B^dif) / u, where B = 2^GMP_NUMB_BITS */
+
   inexact = (c != 0);
 
   /* First pass in estimating next bit of the quotient, in case of RNDN    *
