@@ -478,7 +478,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   MPFR_SET_POS(r);
 
-  /* See the note at the beginning of this file about __GNUC__. */
 #if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
   if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
     return mpfr_sqrt1 (r, u, rnd_mode);
