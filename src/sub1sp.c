@@ -378,7 +378,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS)
         {
-          t = (cp[0] >> d) | (cp[1] << (GMP_NUMB_BITS - d));
+          t = (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
           a0 = bp[0] - t;
           a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */

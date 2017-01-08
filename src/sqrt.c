@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    and error < 1 ulp (in unknown direction).
    We use a Taylor polynomial of degree 7. */
 static mp_limb_t
-mpn_sqrtrem2_approx (mp_limb_t n)
+mpfr_sqrt1_approx (mp_limb_t n)
 {
   int i = n >> 56;
   mp_limb_t x, h, l;
@@ -90,7 +90,7 @@ mpn_sqrtrem2_approx (mp_limb_t n)
    The error on {rp, 2} is less than 43 ulps (in unknown direction).
 */
 static void
-mpn_sqrtrem4_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
+mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 {
   int i = np[1] >> 56;
   mp_limb_t x, r1, r0, h, l, t;
@@ -184,7 +184,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   exp_r = exp_u / 2;
 
   /* then compute the integer square root of u0*2^GMP_NUMB_BITS */
-  r0 = mpn_sqrtrem2_approx (u0);
+  r0 = mpfr_sqrt1_approx (u0);
   sb = 1; /* when we can round correctly with the approximation, the sticky bit
              is non-zero */
 
@@ -311,7 +311,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   mask = MPFR_LIMB_MASK(sh);
 
-  mpn_sqrtrem4_approx (rp, np + 2);
+  mpfr_sqrt2_approx (rp, np + 2);
   /* the error is less than 43 ulps on rp[0] */
   if (((rp[0] + 42) & (mask >> 1)) > 84)
     sb = 1;
