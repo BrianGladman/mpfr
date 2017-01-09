@@ -514,7 +514,7 @@ mpfr_mul_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     {
       if ((ax == __gmpfr_emin - 1) &&
           (ap[2] == MPFR_LIMB_MAX) &&
-          (ap[1] == ~mask) &&
+          (ap[1] == MPFR_LIMB_MAX) &&
           (ap[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
