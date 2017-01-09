@@ -1437,7 +1437,8 @@ Note: Due to bugs in autoconf[1] and dash[2], the configure script
 may create files with a binary filename or have any other arbitrary
 behavior if /bin/sh is dash. The cause is that it tries to execute
 a MS Windows executable, which is interpreted as a shell script by
-dash (thus with random, meaningless commands).
+dash (thus with random, meaningless commands). This will confuse
+Subversion, and these files need to be removed manually.
 
 [1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=850329
 [2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=816313
