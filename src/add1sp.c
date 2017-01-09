@@ -430,7 +430,9 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else if (d < 3*GMP_NUMB_BITS) /* 2*GMP_NUMB_BITS<=d<3*GMP_NUMB_BITS */
         {
-          sb = (cp[2] << (3*GMP_NUMB_BITS - d)) | cp[1] | cp[0];
+          MPFR_ASSERTD (2*GMP_NUMB_BITS <= d && d < 3*GMP_NUMB_BITS);
+          sb = (d == 2*GMP_NUMB_BITS ? 0 : cp[2] << (3*GMP_NUMB_BITS - d))
+            | cp[1] | cp[0];
           a0 = bp[0] + (cp[2] >> (d - 2*GMP_NUMB_BITS));
           a1 = bp[1] + (a0 < bp[0]);
           a2 = bp[2] + (a1 < bp[1]);
