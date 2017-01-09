@@ -16,7 +16,9 @@ To use the mbench program:
       ./mfv5 -h
    To build MFV5 with PARI/NTL/CLN/MAPM/ARPREC/CRLIBM support, build it with:
      make GMP=/dir/to/gmp MPFR=/dir/to/mpfr PARI=/dir/to/pari ...
-   (It autodetects which library is available.)
+   (It autodetects which library is available. Thus a non-existent directory
+   can be given to disable a library installed on the system if it yields a
+   build failure.)
    Then use ./mfv5 -l to have the lists of the available functions.
    To add a new function in MPFR (mpfr_toto), edit mfv5-mpfr.cc and add:
 

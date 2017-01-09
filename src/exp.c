@@ -109,7 +109,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* We extend the exponent range and save the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
 
-      MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT);
+      /* avoid using a full limb since arithmetic might be slower */
+      MPFR_TMP_INIT1(e_limb, e, sizeof (mpfr_exp_t) * CHAR_BIT - 1);
       MPFR_TMP_INIT1(bound_emin_limb, bound_emin, 32);
 
       inexact = mpfr_set_exp_t (e, expo.saved_emin, MPFR_RNDN);

@@ -382,7 +382,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS)
         {
-          t = (cp[0] >> d) | (cp[1] << (GMP_NUMB_BITS - d));
+          t = (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
           a0 = bp[0] - t;
           a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
@@ -431,11 +431,12 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           sb = (d == GMP_NUMB_BITS) ? cp[0]
             : (cp[1] << (2*GMP_NUMB_BITS - d)) | (cp[0] != 0);
           t = (cp[1] >> (d - GMP_NUMB_BITS)) + (sb != 0);
+          /* warning: t might overflow to 0 if d=GMP_NUMB_BITS and sb <> 0 */
           a0 = bp[0] - t;
-          a1 = bp[1] - (bp[0] < t);
+          a1 = bp[1] - (bp[0] < t) - (t == 0 && sb != 0);
           sb = -sb;
-          /* since has its most significant bit set, we can have an exponent
-             decrease of at most one */
+          /* since bp[1] has its most significant bit set, we can have an
+             exponent decrease of at most one */
           if (a1 < MPFR_LIMB_HIGHBIT)
             {
               ap[1] = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
