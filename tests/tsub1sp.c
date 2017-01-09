@@ -27,10 +27,11 @@ static void check_random (mpfr_prec_t p);
 static void check_underflow (mpfr_prec_t p);
 static void check_corner (mpfr_prec_t p);
 
-static int
+static void
 bug20170109 (void)
 {
   mpfr_t a, b, c;
+
   mpfr_init2 (a, 111);
   mpfr_init2 (b, 111);
   mpfr_init2 (c, 111);
