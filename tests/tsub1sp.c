@@ -27,6 +27,23 @@ static void check_random (mpfr_prec_t p);
 static void check_underflow (mpfr_prec_t p);
 static void check_corner (mpfr_prec_t p);
 
+static int
+bug20170109 (void)
+{
+  mpfr_t a, b, c;
+  mpfr_init2 (a, 111);
+  mpfr_init2 (b, 111);
+  mpfr_init2 (c, 111);
+  mpfr_set_str_binary (b, "0.110010010000111111011010101000100010000101101000110000100011010011000100110001100110001010001011100000001101110E1");
+  mpfr_set_str_binary (c, "0.111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111E-63");
+  mpfr_sub (a, b, c, MPFR_RNDN);
+  mpfr_set_str_binary (b, "0.110010010000111111011010101000100010000101101000110000100011001111000100110001100110001010001011100000001101110E1");
+  MPFR_ASSERTN(mpfr_equal_p (a, b));
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 int
 main (void)
 {
@@ -34,6 +51,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  bug20170109 ();
   check_special ();
   for (p = MPFR_PREC_MIN ; p < 200 ; p++)
     {
