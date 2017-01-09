@@ -865,7 +865,7 @@ small_prec (void)
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
 
-  /* The mpfr_mul implementation doesn't extended the exponent range,
+  /* The mpfr_mul implementation doesn't extend the exponent range,
      so that it is OK to reduce it here for the test to make sure that
      mpfr_mul_2si can be used. */
   set_emin (-1000);
