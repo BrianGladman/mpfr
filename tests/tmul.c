@@ -850,6 +850,110 @@ bug20161209a (void)
   set_emin (emin);
 }
 
+/* Test for 1 to 3 limbs. */
+static void
+small_prec (void)
+{
+  mpfr_exp_t emin, emax;
+  mpfr_t x, y, z1, z2, zz;
+  int xq, yq, zq;
+  mpfr_rnd_t rnd;
+  mpfr_flags_t flags1, flags2;
+  int inex1, inex2;
+  int i, j, r, s, ediff;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  /* The mpfr_mul implementation doesn't extended the exponent range,
+     so that it is OK to reduce it here for the test to make sure that
+     mpfr_mul_2si can be used. */
+  set_emin (-1000);
+  set_emax (1000);
+
+  mpfr_inits2 (3 * GMP_NUMB_BITS, x, y, z1, z2, (mpfr_ptr) 0);
+  mpfr_init2 (zz, 6 * GMP_NUMB_BITS);
+  for (i = 0; i < 3; i++)
+    for (j = 0; j < 10000; j++)
+      {
+        xq = i * GMP_NUMB_BITS + 1 + randlimb () % GMP_NUMB_BITS;
+        mpfr_set_prec (x, xq);
+        yq = i * GMP_NUMB_BITS + 1 + randlimb () % GMP_NUMB_BITS;
+        mpfr_set_prec (y, yq);
+        zq = i * GMP_NUMB_BITS + 1 + randlimb () % (GMP_NUMB_BITS-1);
+        mpfr_set_prec (z1, zq);
+        mpfr_set_prec (z2, zq);
+        s = r = randlimb () & 0x7f;
+        do mpfr_urandomb (x, RANDS); while (mpfr_zero_p (x));
+        if (s & 1)
+          mpfr_neg (x, x, MPFR_RNDN);
+        s >>= 1;
+        if (s & 1)
+          {
+            do mpfr_urandomb (y, RANDS); while (mpfr_zero_p (y));
+          }
+        else
+          {
+            mpfr_ui_div (y, 1, x, MPFR_RNDN);
+            mpfr_set_exp (y, 0);
+          }
+        s >>= 1;
+        if (s & 1)
+          mpfr_neg (y, y, MPFR_RNDN);
+        s >>= 1;
+        rnd = RND_RAND ();
+        inex1 = mpfr_mul (zz, x, y, MPFR_RNDN);
+        MPFR_ASSERTN (inex1 == 0);
+        if (s == 0)
+          {
+            ediff = __gmpfr_emin - MPFR_EXP (x);
+            mpfr_set_exp (x, __gmpfr_emin);
+          }
+        else if (s == 1)
+          {
+            ediff = __gmpfr_emax - MPFR_EXP (x) + 1;
+            mpfr_set_exp (x, __gmpfr_emax);
+            mpfr_mul_2ui (y, y, 1, MPFR_RNDN);
+          }
+        else
+          ediff = 0;
+        mpfr_clear_flags ();
+        inex1 = mpfr_mul_2si (z1, zz, ediff, rnd);
+        flags1 = __gmpfr_flags;
+        mpfr_clear_flags ();
+        inex2 = mpfr_mul (z2, x, y, rnd);
+        flags2 = __gmpfr_flags;
+        if (!(mpfr_equal_p (z1, z2) &&
+              SAME_SIGN (inex1, inex2) &&
+              flags1 == flags2))
+          {
+            printf ("Error in small_prec on i = %d, j = %d\n", i, j);
+            printf ("r = 0x%x, xq = %d, yq = %d, zq = %d, rnd = %s\n",
+                    r, xq, yq, zq, mpfr_print_rnd_mode (rnd));
+            printf ("x = ");
+            mpfr_dump (x);
+            printf ("y = ");
+            mpfr_dump (y);
+            printf ("ediff = %d\n", ediff);
+            printf ("zz = ");
+            mpfr_dump (zz);
+            printf ("Expected ");
+            mpfr_dump (z1);
+            printf ("with inex = %d and flags =", inex1);
+            flags_out (flags1);
+            printf ("Got      ");
+            mpfr_dump (z2);
+            printf ("with inex = %d and flags =", inex2);
+            flags_out (flags2);
+            exit (1);
+          }
+      }
+  mpfr_clears (x, y, z1, z2, zz, (mpfr_ptr) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -890,6 +994,7 @@ main (int argc, char *argv[])
         49, 3, 2, "0.09375");
   check_max();
   check_min();
+  small_prec ();
 
   check_regression ();
   test_generic (MPFR_PREC_MIN, 500, 100);
