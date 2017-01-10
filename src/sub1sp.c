@@ -567,7 +567,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           /* a = b-c mod 2^(3*GMP_NUMB_BITS) */
           a0 = -a0;
           a1 = -a1 - (a0 != 0);
-          a2 = -a2 - (a1 != 0 || (a1 == 0 && a0 != 0));
+          a2 = -a2 - (a0 != 0 || a1 != 0);
         }
       else /* bp[0] > cp[0] */
         MPFR_SET_SAME_SIGN (a, b);
