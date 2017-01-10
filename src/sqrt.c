@@ -87,7 +87,7 @@ mpfr_sqrt1_approx (mp_limb_t n)
 
 /* Put in rp[1]*2^64+rp[0] an approximation of sqrt(2^128*n),
    with 2^126 <= n := np[1]*2^64 + np[0] < 2^128.
-   The error on {rp, 2} is less than 43 ulps (in unknown direction).
+   The error on {rp, 2} is less than 35 ulps, with {rp, 2} <= sqrt(2^128*n).
 */
 static void
 mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
@@ -312,8 +312,10 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mask = MPFR_LIMB_MASK(sh);
 
   mpfr_sqrt2_approx (rp, np + 2);
-  /* the error is less than 43 ulps on rp[0] */
-  if (((rp[0] + 42) & (mask >> 1)) > 84)
+  /* the error is less than 35 ulps on rp[0], with {rp, 2} smaller of equal
+     to the exact square root, thus we can round correctly except when the
+     last sh-1 bits of rp[0] are 0, -1, -2, ..., -34. */
+  if (((rp[0] + 35) & (mask >> 1)) > 35)
     sb = 1;
   else
     {
