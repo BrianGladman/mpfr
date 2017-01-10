@@ -1445,6 +1445,9 @@ do {                                                                  \
 /* Size of an array, as a constant expression. */
 #define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
 
+/* Addition with carry (detected by GCC and other good compilers). */
+#define ADD_LIMB(u,v,c) ((u) += (v), (c) = (u) < (v))
+
 
 /******************************************************
  ************  Save exponent/flags macros  ************

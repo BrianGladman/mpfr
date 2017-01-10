@@ -152,14 +152,16 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
     sb = sb2 = 1; /* result cannot be exact in that case */
   else
     {
+      mp_limb_t carry1, carry2;
+
       umul_ppmm (sb, sb2, bp[0], bp[0]);
       /* the full product is {h, l, sb + v + w, sb2} */
-      sb += v;
-      l += (sb < v);
-      h += (l == 0) && (sb < v);
-      sb += v;
-      l += (sb < v);
-      h += (l == 0) && (sb < v);
+      ADD_LIMB (sb, v, carry1);
+      ADD_LIMB (l, carry1, carry2);
+      h += carry2;
+      ADD_LIMB (sb, v, carry1);
+      ADD_LIMB (l, carry1, carry2);
+      h += carry2;
     }
   if (h < MPFR_LIMB_HIGHBIT)
     {
