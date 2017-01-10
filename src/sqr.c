@@ -119,28 +119,48 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
 
 /* Special code for GMP_NUMB_BITS < prec(a) < 2*GMP_NUMB_BITS and
    GMP_NUMB_BITS < prec(b) <= 2*GMP_NUMB_BITS.
-   Note: this function was copied from mpfr_mul_2 in file mul.c, thus any change
-   here should be done also in mpfr_mul_2. */
+   Note: this function was copied and optimized from mpfr_mul_2 in file mul.c,
+   thus any change here should be done also in mpfr_mul_2, if applicable. */
 static int
 mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
 {
   mp_limb_t h, l, u, v;
   mpfr_limb_ptr ap = MPFR_MANT(a);
-  mpfr_exp_t ax = MPFR_GET_EXP(b) * 2;
+  mpfr_exp_t ax = 2 * MPFR_GET_EXP(b);
   mpfr_prec_t sh = 2 * GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, sb2, mask = MPFR_LIMB_MASK(sh);
   mp_limb_t *bp = MPFR_MANT(b);
 
   /* we store the 4-limb product in h=ap[1], l=ap[0], sb=ap[-1], sb2=ap[-2] */
   umul_ppmm (h, l, bp[1], bp[1]);
-  umul_ppmm (sb, sb2, bp[0], bp[0]);
   umul_ppmm (u, v, bp[1], bp[0]);
-  add_ssaaaa (l, sb, l, sb, u, v);
-  /* warning: (l < u) is incorrect to detect a carry out of add_ssaaaa, since we
-     might have u = 111...111, a carry coming from sb+v, thus l = u */
-  h += (l < u) || (l == u && sb < v);
-  add_ssaaaa (l, sb, l, sb, u, v);
-  h += (l < u) || (l == u && sb < v);
+  l += u << 1;
+  h += (l < (u << 1)) + (u >> (GMP_NUMB_BITS - 1));
+
+  /* now the full square is {h, l, 2*v + high(b0*c0), low(b0*c0)},
+     where the lower part contributes to less than 3 ulps to {h, l} */
+
+  /* If h has its most significant bit set and the low sh-1 bits of l are not
+     000...000 nor 111...111 nor 111...110, then we can round correctly;
+     if h has zero as most significant bit, we have to shift left h and l,
+     thus if the low sh-2 bits are not 000...000 nor 111...111 nor 111...110,
+     then we can round correctly. To avoid an extra test we consider the latter
+     case (if we can round, we can also round in the former case).
+     For sh <= 3, we have mask <= 7, thus (mask>>2) <= 1, and the approximation
+     cannot be enough. */
+  if (MPFR_LIKELY(((l + 2) & (mask >> 2)) > 2))
+    sb = sb2 = 1; /* result cannot be exact in that case */
+  else
+    {
+      umul_ppmm (sb, sb2, bp[0], bp[0]);
+      /* the full product is {h, l, sb + v + w, sb2} */
+      sb += v;
+      l += (sb < v);
+      h += (l == 0) && (sb < v);
+      sb += v;
+      l += (sb < v);
+      h += (l == 0) && (sb < v);
+    }
   if (h < MPFR_LIMB_HIGHBIT)
     {
       ax --;
