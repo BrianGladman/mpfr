@@ -615,6 +615,8 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       if (d < GMP_NUMB_BITS)
         {
           mp_limb_t cy;
+          /* warning: we must have the most significant bit of sb correct
+             since it might become the round bit below */
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
           a0 = bp[0] - ((cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d));
           a1 = bp[1] - ((cp[2] << (GMP_NUMB_BITS - d)) | (cp[1] >> d))
@@ -676,6 +678,8 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       else if (d < 2 * GMP_NUMB_BITS)
         {
           mp_limb_t c0shifted;
+          /* warning: we must have the most significant bit of sb correct
+             since it might become the round bit below */
           sb = (d == GMP_NUMB_BITS) ? cp[0]
             : (cp[1] << (2*GMP_NUMB_BITS - d)) | (cp[0] != 0);
           c0shifted = (d == GMP_NUMB_BITS) ? cp[1]

@@ -99,7 +99,10 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     u0 -= v0;
 
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
-  /* first try with an approximate quotient */
+  /* First try with an approximate quotient.
+     FIXME: for p<=62 we have sh-1<2 and will never be able to round correctly.
+     Even for p=61 we have sh-1=2 and we can round correctly only when the two
+     last bist of q0 are 01, which happens with probability 25% only. */
   {
     mp_limb_t inv;
     __gmpfr_invert_limb_approx (inv, v0);
