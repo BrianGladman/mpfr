@@ -704,6 +704,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               ap[2] = (a2 << 1) | (a1 >> (GMP_NUMB_BITS - 1));
               ap[1] = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
               a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
+              sb <<= 1;
               bx --;
             }
           else
@@ -724,7 +725,8 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             sb = cp[1] | (cp[0] != 0);
           else
             sb = cp[2] << (3*GMP_NUMB_BITS - d) | (cp[1] != 0) | (cp[0] != 0);
-          a0 = bp[0] - (cp[2] >> (d - 2*GMP_NUMB_BITS));
+          sb = -sb;
+          a0 = bp[0] - (cp[2] >> (d - 2*GMP_NUMB_BITS)) - (sb != 0);
           a1 = bp[1] - (a0 > bp[0]);
           a2 = bp[2] - (a1 > bp[1]);
           if (a2 < MPFR_LIMB_HIGHBIT)
@@ -732,6 +734,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               ap[2] = (a2 << 1) | (a1 >> (GMP_NUMB_BITS - 1));
               ap[1] = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
               a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
+              sb <<= 1;
               bx --;
             }
           else
