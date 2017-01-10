@@ -681,8 +681,10 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           c0shifted = (d == GMP_NUMB_BITS) ? cp[1]
             : (cp[2] << (2*GMP_NUMB_BITS-d)) | (cp[1] >> (d - GMP_NUMB_BITS));
           a0 = bp[0] - c0shifted;
+          /* TODO: add a non-regression test for cp[2] == MPFR_LIMB_MAX,
+             d == GMP_NUMB_BITS and a0 > bp[0]. */
           a1 = bp[1] - (cp[2] >> (d - GMP_NUMB_BITS)) - (a0 > bp[0]);
-          a2 = bp[2] - (a1 > bp[1]);
+          a2 = bp[2] - (a1 > bp[1] || (a1 == bp[1] && a0 > bp[0]));
           /* if sb is non-zero, subtract 1 from a2, a1, a0 since we want a
              non-negative neglected part */
           if (sb)
@@ -726,8 +728,10 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           else
             sb = cp[2] << (3*GMP_NUMB_BITS - d) | (cp[1] != 0) | (cp[0] != 0);
           sb = -sb;
+          /* TODO: add a non-regression test for cp[2] == MPFR_LIMB_MAX,
+             d == 2*GMP_NUMB_BITS and sb != 0. */
           a0 = bp[0] - (cp[2] >> (d - 2*GMP_NUMB_BITS)) - (sb != 0);
-          a1 = bp[1] - (a0 > bp[0]);
+          a1 = bp[1] - (a0 > bp[0] || (a0 == bp[0] && sb != 0));
           a2 = bp[2] - (a1 > bp[1]);
           if (a2 < MPFR_LIMB_HIGHBIT)
             {
