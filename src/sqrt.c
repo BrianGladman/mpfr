@@ -312,9 +312,9 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mask = MPFR_LIMB_MASK(sh);
 
   mpfr_sqrt2_approx (rp, np + 2);
-  /* the error is less than 35 ulps on rp[0], with {rp, 2} smaller of equal
+  /* the error is less than 35 ulps on rp[0], with {rp, 2} smaller or equal
      to the exact square root, thus we can round correctly except when the
-     last sh-1 bits of rp[0] are 0, -1, -2, ..., -34. */
+     number formed by the last sh-1 bits of rp[0] is 0, -1, -2, ..., -34. */
   if (((rp[0] + 35) & (mask >> 1)) > 35)
     sb = 1;
   else
