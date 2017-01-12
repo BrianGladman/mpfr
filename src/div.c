@@ -249,10 +249,39 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   /* we know q1*B+q0 is smaller or equal to the exact quotient, with
      difference at most 16 */
   if (MPFR_LIKELY(((q0 + 16) & (mask >> 1)) > 16))
+    sb = 1; /* result is not exact when we can round with an approximation */
+  else
     {
-      sb = 1; /* result is not exact when we can round with an approximation */
-      goto round_div2;
+      /* we know q1:q0 is a good-enough approximation, use it! */
+      mp_limb_t qq[2] = {q0, q1}, uu[4];
+      /* FIXME: instead of using mpn_mul_n, we can use 3 umul_ppmm calls,
+         since we know the difference should at most 16*(v1:v0) after the
+         subtraction below, thus at most 16*2^128. */
+      mpn_mul_n (uu, qq, MPFR_MANT(v), 2);
+      /* we now should have uu[3]:uu[2] <= r3:r2 */
+      MPFR_ASSERTD(uu[3] < r3 || (uu[3] == r3 && uu[2] <= r2));
+      /* subtract {uu,4} from r3:r2:0:0, with result in {uu,4} */
+      uu[2] = r2 - uu[2];
+      uu[3] = r3 - uu[3] - (uu[2] > r2);
+      /* now negate uu[1]:uu[0] */
+      uu[0] = -uu[0];
+      uu[1] = -uu[1] - (uu[0] != 0);
+      /* there is a borrow in uu[2] when uu[0] and uu[1] are not both zero */
+      uu[3] -= (uu[1] != 0 || uu[0] != 0) && (uu[2] == 0);
+      uu[2] -= (uu[1] != 0 || uu[0] != 0);
+      MPFR_ASSERTD(uu[3] == MPFR_LIMB_ZERO);
+      while (uu[2] > 0 || (uu[1] > v1) || (uu[1] == v1 && uu[0] >= v0))
+        {
+          /* add 1 to q1:q0 */
+          q0 ++;
+          q1 += (q0 == 0);
+          /* subtract v1:v0 to u2:u1:u0 */
+          uu[2] -= (uu[1] < v1) || (uu[1] == v1 && uu[0] < v0);
+          sub_ddmmss (uu[1], uu[0], uu[1], uu[0], v1, v0);
+        }
+      sb = uu[1] | uu[0];
     }
+  goto round_div2;
 #endif
 
   /* now r3:r2 < v1:v0 */
@@ -362,6 +391,9 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   /* now (u-extra*v)*B^2 = (q1:q0) * v + r1:r0 */
 
   sb = r1 | r0;
+
+  /* here, q1:q0 should be an approximation of the quotient (or the exact
+     quotient), and sb the sticky bit */
 
 #if GMP_NUMB_BITS == 64
  round_div2:
