@@ -120,6 +120,8 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   if (bx == cx)
     {
+      /* TODO: a0 = (bp[0] >> 1) + (cp[0] >> 1) is probably better
+         (no long constant to load in a register). */
       /* since bp[0], cp[0] >= MPFR_LIMB_HIGHBIT, a carry always occurs */
       a0 = MPFR_LIMB_HIGHBIT | ((bp[0] + cp[0]) >> 1);
       bx ++;
