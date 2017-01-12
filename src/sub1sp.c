@@ -978,8 +978,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 mpn_lshift (ap + len, ap, k, cnt); /* Normalize the High Limb*/
               else
                 {
-                  /* Must use DECR since src and dest may overlap & dest>=src*/
-                  MPN_COPY_DECR(ap+len, ap, k);
+                  /* Must use copyd since src and dst may overlap & dst>=src */
+                  mpn_copyd (ap+len, ap, k);
                 }
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
               bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */

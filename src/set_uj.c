@@ -95,7 +95,7 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
       if (MPFR_LIKELY (cnt != 0))
         mpn_lshift (yp+len, yp, k, cnt);  /* Normalize the high limb */
       else if (len != 0)
-        MPN_COPY_DECR (yp+len, yp, k);    /* Must use DECR */
+        mpn_copyd (yp+len, yp, k);    /* Must use copyd */
       if (len != 0)
         {
           if (len == 1)
