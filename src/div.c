@@ -81,8 +81,7 @@ mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
 
 #endif /* GMP_NUMB_BITS == 64 */
 
-/* Special code for p=PREC(q) < GMP_NUMB_BITS,
-   and PREC(u), PREC(v) <= GMP_NUMB_BITS */
+/* Special code for PREC(q) = PREC(u) = PREC(v) = p < GMP_NUMB_BITS */
 static int
 mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -117,7 +116,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   if (MPFR_LIKELY(((q0 + 2) & (mask >> 1)) > 2))
     {
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
-      sb = 1; /* result cannot be exact when we can round with an approximation */
+      sb = 1; /* result cannot be exact in this case */
     }
   else /* the true quotient is rb, rb+1 or rb+2 */
     {
@@ -194,7 +193,12 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (sb == 0 && (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* It is not possible to have rb <> 0 and sb = 0 here, since it would
+         mean a n-bit by n-bit division gives an exact (n+1)-bit number.
+         And since the case rb = sb = 0 was already dealt with, we cannot
+         have sb = 0. Thus we cannot be in the middle of two numbers. */
+      MPFR_ASSERTD(sb != 0);
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -223,7 +227,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 }
 
 /* Special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
-   GMP_NUMB_BITS < PREC(u), PREC(v) <= 2*GMP_NUMB_BITS */
+   PREC(u) = PREC(v) = PREC(q) */
 static int
 mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -450,8 +454,9 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* See the comment in mpfr_div_1. */
+      MPFR_ASSERTD(sb != 0);
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -790,20 +795,22 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
         }
     }
 
-  usize = MPFR_LIMB_SIZE(u);
-  vsize = MPFR_LIMB_SIZE(v);
-
   /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
 #if !defined(MPFR_GENERIC_ABI)
+  if (MPFR_GET_PREC(u) == MPFR_GET_PREC(q) &&
+      MPFR_GET_PREC(v) == MPFR_GET_PREC(q))
+    {
+      if (MPFR_GET_PREC(q) < GMP_NUMB_BITS)
+        return mpfr_div_1 (q, u, v, rnd_mode);
 
-  if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
-    return mpfr_div_1 (q, u, v, rnd_mode);
-
-  if (GMP_NUMB_BITS < MPFR_GET_PREC(q) && MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS
-      && usize == 2 && vsize == 2)
+      if (GMP_NUMB_BITS < MPFR_GET_PREC(q) &&
+          MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS)
     return mpfr_div_2 (q, u, v, rnd_mode);
+    }
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
+  usize = MPFR_LIMB_SIZE(u);
+  vsize = MPFR_LIMB_SIZE(v);
   q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
   q0p = MPFR_MANT(q);
   up = MPFR_MANT(u);
