@@ -192,7 +192,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) and faster */
+    MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
       /* the condition below should be rb == 0 || (rb != 0 && ...), but this
@@ -316,7 +316,7 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) and faster */
+    MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -472,7 +472,7 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) and faster */
+    MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
