@@ -134,14 +134,17 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     BGreater1:
       d = (mpfr_uexp_t) bx - cx;
       mask = MPFR_LIMB_MASK(sh);
+      /* TODO: Should the case d < sh be removed, i.e. seen as a particular
+         case of d < GMP_NUMB_BITS? This case would do a bit more operations
+         but a test would be removed, avoiding pipeline stall issues. */
       if (d < sh)
         {
           /* we can shift c by d bits to the right without losing any bit,
              moreover we can shift one more if there is an exponent increase */
-          rb = bp[0];
-          a0 = rb + (cp[0] >> d);
-          if (a0 < rb) /* carry */
+          a0 = bp[0] + (cp[0] >> d);
+          if (a0 < bp[0]) /* carry */
             {
+              MPFR_ASSERTD ((a0 & 1) == 0);
               a0 = MPFR_LIMB_HIGHBIT | (a0 >> 1);
               bx ++;
             }
@@ -151,10 +154,9 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else if (d < GMP_NUMB_BITS) /* sh <= d < GMP_NUMB_BITS */
         {
-          rb = bp[0];
           sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
-          a0 = rb + (cp[0] >> d);
-          if (a0 < rb)
+          a0 = bp[0] + (cp[0] >> d);
+          if (a0 < bp[0]) /* carry */
             {
               sb |= a0 & 1;
               a0 = MPFR_LIMB_HIGHBIT | (a0 >> 1);
@@ -180,9 +182,9 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       goto BGreater1;
     }
 
-  /* Note: we could keep the output significand in a0 for the rounding, and only
-     store it in ap[0] at the very end, but this seems slower on average (but better
-     for the worst case). */
+  /* Note: we could keep the output significand in a0 for the rounding,
+     and only store it in ap[0] at the very end, but this seems slower
+     on average (but better for the worst case). */
 
   /* now perform rounding */
   if (MPFR_UNLIKELY(bx > __gmpfr_emax))
