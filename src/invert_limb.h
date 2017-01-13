@@ -123,16 +123,16 @@ static const mp_limb_t invert_limb_table[512] = {32737, 32673, 32609, 32546, 324
    volume 60, number 2, pages 165-175, 2011. */
 #define __gmpfr_invert_limb(r, d)                                       \
     do {                                                                \
-        mp_limb_t _d, _d0, _d10, _d21, _d31, _v0, _v1, _v2, _e, _h, _l; \
-      _d0 = _d & 1;                                                     \
+      mp_limb_t _d, _d0, _d10, _d21, _d31, _v0, _v1, _v2, _e, _h, _l;   \
       _d = (d);                                                         \
+      _d0 = _d & 1;                                                     \
       _d10 = _d >> 22;                                                  \
       _d21 = (_d >> 11) + 1;                                            \
       _d31 = ((_d - 1) >> 1) + 1;                                       \
       _v0 = invert_limb_table[_d10 - 512];                              \
       umul_ppmm (_h, _l, _v0 * _v0, _d21);                              \
       _v1 = (_v0 << 4) - _h - 1;                                        \
-      _e = - _v1 * _d31 + ((_v1 & -_d0) >> 1);                          \
+      _e = - _v1 * _d31 + ((_v1 & - _d0) >> 1);                         \
       umul_ppmm (_h, _l, _v1, _e);                                      \
       _v2 = (_v1 << 15) + (_h >> 1);                                    \
       umul_ppmm (_h, _l, _v2, d);                                       \
