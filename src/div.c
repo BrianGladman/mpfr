@@ -99,7 +99,7 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   /* now inv <= B^2/(v1+1) - B */
   umul_ppmm (q1, q0, u1, inv);
   q1 += u1;
-  
+
   /* we have q1 <= floor(u1*2^GMP_NUMB_BITS/v1) <= q1 + 2 */
 
   umul_ppmm (r2, r1, q1, v1);
@@ -141,7 +141,7 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
           q1 ++;
         }
     }
-  
+
   /* now u1:u0:0 = q1 * d1:d0 + r1:r0, with 0 <= r1:r0 < d1:d0 */
   MPFR_ASSERTD(r2 == MPFR_LIMB_ZERO);
   MPFR_ASSERTD(r1 < v1 || (r1 == v1 && r0 < v0));
@@ -335,7 +335,10 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* we know q1:q0 is a good-enough approximation, use it! */
-      mp_limb_t qq[2] = {q0, q1}, uu[4];
+      mp_limb_t qq[2], uu[4];
+
+      qq[0] = q0;
+      qq[1] = q1;
       /* FIXME: instead of using mpn_mul_n, we can use 3 umul_ppmm calls,
          since we know the difference should at most 16*(v1:v0) after the
          subtraction below, thus at most 16*2^128. */
