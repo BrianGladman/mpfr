@@ -37,61 +37,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "invert_limb.h"
 
-#if 1
-/* Given u = u1*B+u0 < d = d1*B+d0 with d normalized (high bit of d1 set),
-   put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
-   B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16.
-   Note: this function requires __gmpfr_invert_limb (from invert_limb.h)
-   which is only provided so far for 64-bit limb. */
-static void
-mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
-                  mp_limb_t u1, mp_limb_t u0,
-                  mp_limb_t d1, mp_limb_t d0)
-{
-  mp_limb_t x, y, dummy, z2, z1, z0;
-
-  if (MPFR_UNLIKELY(d1 + 1 == MPFR_LIMB_ZERO))
-    x = 0;
-  else
-    __gmpfr_invert_limb (x, d1 + 1); /* B + x = floor((B^2-1)/(d1+1)) */
-  umul_ppmm (y, dummy, u1, x);
-  y += u1;
-  /* now y = floor(B*u1/d1) with y < B*u1/d1, thus even when
-     u1=d1, y < B */
-  umul_ppmm (dummy, z0, y, d0);
-  umul_ppmm (z2, z1, y, d1);
-  z1 += dummy;
-  z2 += (z1 < dummy);
-  z1 += (z0 != 0);
-  z2 += (z1 == 0 && z0 != 0);
-  /* now z = z2*B+z1 = ceil(y*d/B), and should cancel with u */
-  sub_ddmmss (z2, z1, u1, u0, z2, z1);
-  *v1 = y;
-  /* y*B + (B+x)*(z2*B+z1)/B */
-  umul_ppmm (*v0, dummy, x, z1);
-  /* add z1 */
-  *v0 += z1;
-  *v1 += (*v0 < z1);
-  /* add (B+x)*z2 */
-  while (z2--)
-    {
-      *v0 += x;
-      *v1 += 1 + (*v0 < x);
-    }
-}
-#else
-/* the following is some experimental code, not fully proven correct,
-   and which does not seem to be faster, unless we find a way to speed up
-   the while loop (if 'while' is replaced by 'if' it becomes faster than
-   the above code, but is then wrong) */
+/* Given u = u1*B+u0 < v = v1*B+v0 with v normalized (high bit of v1 set),
+   put in q = Q1*B+Q0 an approximation of floor(u*B^2/v), with:
+   B = 2^GMP_NUMB_BITS and q <= floor(u*B^2/v) <= q + 21.
+   Note: this function requires __gmpfr_invert_limb_approx (from invert_limb.h)
+   which is only provided so far for 64-bit limb.
+   Note: __gmpfr_invert_limb_approx can be replaced by __gmpfr_invert_limb,
+   in that case the bound 21 reduces to 16. */
 static void
 mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
                   mp_limb_t u1, mp_limb_t u0,
                   mp_limb_t v1, mp_limb_t v0)
 {
-  mp_limb_t inv, q1, q0, r2, r1, r0, cy;
+  mp_limb_t inv, q1, q0, r1, r0, cy, xx, yy;
 
-  /* first compute an approximation of q1 */
+  /* first compute an approximation of q1, using a lower approximation of
+     B^2/(v1+1) - B */
   if (MPFR_UNLIKELY(v1 == MPFR_LIMB_MAX))
     inv = MPFR_LIMB_ZERO;
   else
@@ -99,63 +60,45 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   /* now inv <= B^2/(v1+1) - B */
   umul_ppmm (q1, q0, u1, inv);
   q1 += u1;
+  /* now q1 <= u1*B/(v1+1) < (u1*B+u0)*B/(v1*B+v0) */
 
-  /* we have q1 <= floor(u1*2^GMP_NUMB_BITS/v1) <= q1 + 2 */
+  /* compute q1*(v1*B+v0) into r1:r0:yy and subtract from u1:u0:0 */
+  umul_ppmm (r1, r0, q1, v1);
+  umul_ppmm (xx, yy, q1, v0);
 
-  umul_ppmm (r2, r1, q1, v1);
-  umul_ppmm (cy, r0, q1, v0);
+  ADD_LIMB (r0, xx, cy);
   r1 += cy;
-  r2 += (r1 < cy);
 
-  /* Now r2:r1:r0 = q1 * v1:v0. While q1*v1 <= u1:0, it might be that
-     r2:r1 > u1:u0. First subtract r2:r1:r0 from u1:u0:0, with result
-     in r2:r1:r0. */
-  r0 = -r0;
-  r1 = u0 - r1 - (r0 != 0);
-  r2 = u1 - r2 - (r1 > u0 || (r1 == u0 && r0 != 0));
+  /* we ignore yy below, but first increment r0, to ensure we get a lower
+     approximation of the remainder */
+  r0 += (yy != 0);
+  r0 = u0 - r0;
+  r1 = u1 - r1 - (r0 > u0);
 
-  /* u1:u0:0 - q1 * v1:v0 >= u1*B^2 - q1*(v1*B+B-1) >= -q1*B > -B^2
-     thus r2 can be 0 or -1 here. */
-  if (r2 & MPFR_LIMB_HIGHBIT) /* correction performed at most two times */
+  /* r1:r0 should be nonnegative */
+  MPFR_ASSERTD((r1 & MPFR_LIMB_HIGHBIT) == 0);
+
+  /* the second quotient limb is approximated by (r1*B^2+r0*B) / v1,
+     and since (B+inv)/B approximates B/v1, this is in turn approximated
+     by (r1*B+r0)*(B+inv)/B = r1*B*r1*inv+r0+(r0*inv/B) */
+
+  q0 = r0;
+  q1 += r1;
+  /* add floor(r0*inv/B) to q0 */
+  umul_ppmm (xx, yy, r0, inv);
+  ADD_LIMB (q0, xx, cy);
+  q1 += cy;
+  while (r1) /* the number of loops is at most 4 */
     {
-      ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
-      ADD_LIMB(r1, v1, cy);
-      r2 += cy;
-      q1 --;
-      if (r2 & MPFR_LIMB_HIGHBIT)
-        {
-          ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
-          ADD_LIMB(r1, v1, cy);
-          r2 += cy;
-          q1 --;
-        }
+      /* add B+inv */
+      q0 += inv;
+      q1 += (q0 < inv);
+      r1 --;
     }
-  else
-    {
-      /* experimentally, the number of loops is <= 5 */
-      while (r2 || r1 > v1 || (r1 == v1 && r0 >= v0))
-        {
-          r2 -= (r1 < v1 || (r1 == v1 && r0 < v0));
-          r1 -= v1 + (r0 < v0);
-          r0 -= v0;
-          q1 ++;
-        }
-    }
-
-  /* now u1:u0:0 = q1 * d1:d0 + r1:r0, with 0 <= r1:r0 < d1:d0 */
-  MPFR_ASSERTD(r2 == MPFR_LIMB_ZERO);
-  MPFR_ASSERTD(r1 < v1 || (r1 == v1 && r0 < v0));
-
-  /* the second quotient limb is approximated by r1*B / d1,
-     which is itself approximated by r1+(r1*inv/B) */
-  umul_ppmm (q0, r0, r1, inv);
 
   *Q1 = q1;
-  *Q0 = r1 + q0;
-
-  /* experimentally: q1:q0 <= floor(B^2*u/v) <= q1:q0 + 5 */
+  *Q0 = q0;
 }
-#endif
 
 #endif /* GMP_NUMB_BITS == 64 */
 
@@ -329,8 +272,8 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 #if GMP_NUMB_BITS == 64
   mpfr_div2_approx (&q1, &q0, r3, r2, v1, v0);
   /* we know q1*B+q0 is smaller or equal to the exact quotient, with
-     difference at most 16 */
-  if (MPFR_LIKELY(((q0 + 16) & (mask >> 1)) > 16))
+     difference at most 21 */
+  if (MPFR_LIKELY(((q0 + 21) & (mask >> 1)) > 21))
     sb = 1; /* result is not exact when we can round with an approximation */
   else
     {
