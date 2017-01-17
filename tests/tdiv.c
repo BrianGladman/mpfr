@@ -1405,6 +1405,28 @@ test_20170105 (void)
   mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
 }
 
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
+/* exercise mpfr_div2_approx */
+static void
+test_mpfr_div2_approx (unsigned long n)
+{
+  mpfr_t x, y, z;
+  
+  mpfr_init2 (x, 113);
+  mpfr_init2 (y, 113);
+  mpfr_init2 (z, 113);
+  while (n--)
+    {
+      mpfr_urandomb (x, RANDS);
+      mpfr_urandomb (y, RANDS);
+      mpfr_div (z, x, y, MPFR_RNDN);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+#endif
+
 int
 main (int argc, char *argv[])
 {
@@ -1438,6 +1460,9 @@ main (int argc, char *argv[])
   test_bad ();
   test_extreme ();
   test_mpfr_divsp2 ();
+#if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
+  test_mpfr_div2_approx (1000000);
+#endif
 
   tests_end_mpfr ();
   return 0;
