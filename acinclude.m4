@@ -813,10 +813,11 @@ AC_DEFUN([MPFR_PARSE_DIRECTORY],
 [
  dnl Check if argument is a directory
  if test -d $1 ; then
-    dnl Get the absolute path of the directory
-    dnl in case of relative directory.
-    dnl If realpath is not a valid command,
-    dnl an error is produced and we keep the given path.
+    dnl Get the absolute path of the directory in case of relative directory
+    dnl with the realpath command. If the output is empty, the cause may be
+    dnl that this command has not been found, and we do an alternate test,
+    dnl the same as what autoconf does for the generated configure script to
+    dnl determine whether a pathname is absolute or relative.
     local_tmp=`realpath $1 2>/dev/null`
     if test "$local_tmp" != "" ; then
        if test -d "$local_tmp" ; then
@@ -825,7 +826,15 @@ AC_DEFUN([MPFR_PARSE_DIRECTORY],
            $2=$1
        fi
     else
-       $2=$1
+       dnl The quadrigraphs @<:@, @:>@ and @:}@ produce [, ] and )
+       dnl respectively (see Autoconf manual). We cannot use quoting here
+       dnl as the result depends on the context in which this macro is
+       dnl invoked! To detect that, one needs to look at every instance
+       dnl of the macro expansion in the generated configure script.
+       case $1 in
+         @<:@\\/@:>@* | ?:@<:@\\/@:>@* @:}@ $2=$1 ;;
+         *@:}@ $2="$PWD"/$1 ;;
+       esac
     fi
     dnl Check for space in the directory
     if test `echo $1|cut -d' ' -f1` != $1 ; then
