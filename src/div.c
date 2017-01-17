@@ -90,9 +90,9 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   q1 += cy;
   while (r1) /* the number of loops is at most 4 */
     {
-      /* add B+inv */
-      q0 += inv;
-      q1 += (q0 < inv);
+      /* add inv to q0 */
+      ADD_LIMB (q0, inv, cy);
+      q1 += cy;
       r1 --;
     }
 
