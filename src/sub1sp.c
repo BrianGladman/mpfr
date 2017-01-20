@@ -388,7 +388,10 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           t = (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
           /* TODO: Change the code to generate a full subtraction with borrow,
-             avoiding the test on sb and the corresponding correction. */
+             avoiding the test on sb and the corresponding correction. Note
+             that Clang has builtins:
+             http://clang.llvm.org/docs/LanguageExtensions.html#multiprecision-arithmetic-builtins
+          */
           a0 = bp[0] - t;
           a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
