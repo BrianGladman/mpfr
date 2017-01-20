@@ -197,6 +197,11 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS)
         {
+          /* Temporary MPFR_FULLSUB test for testing. In the alternate code,
+             instead of a test on sb, one just does a 2-limb subtraction.
+             GCC and Clang recognize the second line as a subtraction with
+             borrow. */
+#ifndef MPFR_FULLSUB
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
           a0 = bp[0] - (cp[0] >> d);
           if (sb)
@@ -210,6 +215,10 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               MPFR_ASSERTD(a0 > 0);
               sb = -sb;
             }
+#else
+          sb = - (cp[0] << (GMP_NUMB_BITS - d)); /* neglected part of -c */
+          a0 = bp[0] - (cp[0] >> d) - (sb != 0);
+#endif
           count_leading_zeros (cnt, a0);
           if (cnt)
             a0 = (a0 << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
@@ -378,6 +387,8 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       if (d < GMP_NUMB_BITS)
         {
           t = (cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d);
+          /* TODO: Change the code to generate a full subtraction with borrow,
+             avoiding the test on sb and the corresponding correction. */
           a0 = bp[0] - t;
           a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
