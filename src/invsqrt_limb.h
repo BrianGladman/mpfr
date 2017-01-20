@@ -261,7 +261,7 @@ static const mp_limb_t T3[] =
     /* in _h + 2, one +1 accounts for the lower neglected part of */    \
     /* v2^2*d. the other +1 is t compute ceil((h+1)/2) */               \
     /* but we can replace (1<<61) - (h+2)/2 by (1<<61)-1-(h/2) */       \
-    _e2 = (1UL << 61) - 1 - (_h >> 1);                                  \
+    _e2 = (MPFR_LIMB_ONE << 61) - 1 - (_h >> 1);                        \
     _h = _v2 * _e2;                                                     \
     (r) = (_v2 << 33) + (_h >> 29);                                     \
   } while (0)
