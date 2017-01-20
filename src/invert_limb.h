@@ -144,7 +144,7 @@ static const mp_limb_t invert_limb_table2[256] =
       _d63 = ((_d - 1) >> 1) + 1;                                       \
       _e = - _v2 * _d63 + ((_v2 & -_d0) >> 1);                          \
       umul_hi (_h, _v2, _e);                                            \
-        (r) = (_v2 << 31) + (_h >> 1);                                  \
+      (r) = (_v2 << 31) + (_h >> 1);                                    \
     } while (0)
 
 #elif GMP_NUMB_BITS == 32

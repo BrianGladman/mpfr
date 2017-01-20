@@ -25,65 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
 
-/* The Taylor coefficient of order 0 of sqrt(i/2^8+x) is
-   U[i-64][0]/2^64 + U[i-64][1]/2^128, then the Taylor coefficient of order j is
-   (up to sign) U[i-64][j+1]/2^(64-8*j).
-   The maximal number of bits is:
-   j=1:64 j=2:56 j=3:49 j=4:43 j=5:36 j=6:30 j=7:23
-   The sign is implicit: u[j] < 0 for j even except j=0.
-   The maximal error is < .927e-21 (attained for i=64). */
-
 #include "sqrt_tab.h"
-
-/* Return an approximation of sqrt(2^64*n), with 2^62 <= n < 2^64,
-   and error < 1 ulp (in unknown direction).
-   We use a Taylor polynomial of degree 7. */
-static mp_limb_t
-mpfr_sqrt1_approx (mp_limb_t n)
-{
-  int i = n >> 56;
-  mp_limb_t x, h, l;
-  const mp_limb_t *u;
-
-  x = n << 8;
-  u = U[i - 64];
-  umul_ppmm (h, l, u[8], x);
-  /* the truncation error on h is at most 1 here */
-  umul_ppmm (h, l, u[7] - h, x);
-  /* the truncation error on h is at most 2 */
-  umul_ppmm (h, l, u[6] - h, x);
-  /* the truncation error on h is at most 3 */
-  umul_ppmm (h, l, u[5] - h, x);
-  /* the truncation error on h is at most 4 */
-  umul_ppmm (h, l, u[4] - h, x);
-  /* the truncation error on h is at most 5 */
-  umul_ppmm (h, l, u[3] - h, x);
-  /* the truncation error on h is at most 6 */
-  umul_ppmm (h, l, u[2] - h, x >> 8); /* here we shift by 8 since u[0] has weight
-                                         1/2^64 and u[2] has weight 1/2^72, the
-                                         truncation error on h+l/2^64 is <= 6/2^8 */
-  add_ssaaaa (h, l, h, l, u[0], u[1]);
-  /* Since the above addition is exact, the truncation error on h + l/2^64
-     is still at most 6/2^8. Together with the mathematical error < .927e-21*2^64,
-     the total error on h + l/2^64 is < 0.0406 */
-  return h + (l >> 63); /* round to nearest */
-}
-
-/* put in rh,rl the upper 2 limbs of the product xh,xl * yh,yl,
-   with error less than 3 ulps */
-#define umul_ppmm2(rh,rl,xh,xl,yh,yl)    \
-  do                                     \
-    {                                    \
-      mp_limb_t _h, _l;                  \
-      umul_ppmm (rh, rl, xh, yh);        \
-      umul_ppmm (_h, _l, xh, yl);        \
-      rl += _h;                          \
-      rh += (rl < _h);                   \
-      umul_ppmm (_h, _l, xl, yh);        \
-      rl += _h;                          \
-      rh += (rl < _h);                   \
-    }                                    \
-  while (0)
+#include "invsqrt_limb.h"
 
 /* Put in rp[1]*2^64+rp[0] an approximation of floor(sqrt(2^128*n)),
    with 2^126 <= n := np[1]*2^64 + np[0] < 2^128.
@@ -195,30 +138,39 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (((unsigned int) exp_u & 1) == 0);
   exp_r = exp_u / 2;
 
-  /* then compute the integer square root of u0*2^GMP_NUMB_BITS */
-  r0 = mpfr_sqrt1_approx (u0);
+  /* then compute an approximation of the integer square root of
+     u0*2^GMP_NUMB_BITS */
+  {
+    mp_limb_t s, h, l;
+    __gmpfr_invsqrt_limb (s, u0);
+    /* s approximates floor(2^96/sqrt(u0))-2^64 */
+    umul_ppmm (h, l, s, u0);
+    /* now h approximates sqrt(2^64*u0) - u0 */
+    r0 = h + u0;
+  }
+  
   sb = 1; /* when we can round correctly with the approximation, the sticky bit
              is non-zero */
 
-  /* Since the exact square root is in [r0 - 0.5406, r0 + 0.5406], we can round
-     correctly except when the last sh-1 bits of r0 are 000...000. */
-  if (MPFR_UNLIKELY((r0 & (mask >> 1)) == 0))
+  /* the exact square root is in [r0, r0 + 15] */
+  if (MPFR_UNLIKELY(((r0 + 15) & (mask >> 1)) <= 15))
     {
+      /* first ensure r0 has its most significant bit set */
+      if (MPFR_UNLIKELY(r0 < MPFR_LIMB_HIGHBIT))
+        r0 = MPFR_LIMB_HIGHBIT;
       umul_ppmm (rb, sb, r0, r0);
-      /* for the exact square root, we should have 0 <= (u0-rb)*2^64 - sb <= 2*r0 */
-      if (rb > u0 || (rb == u0 && sb > 0)) /* r0 is too large */
-        {
-          r0 --;
-          umul_ppmm (rb, sb, r0, r0);
-        }
-      /* if u0 <= rb + 1, then (u0-rb)*2^64 - sb <= 2^64 <= 2*r0
-         if u0 >= rb + 3, then (u0-rb)*2^64 - sb > 2*2*64 > 2*r0 */
-      else if (u0 > rb + 2 || (u0 == rb + 2 && -sb > 2 * r0))
-        {
-          r0 ++;
-          umul_ppmm (rb, sb, r0, r0);
-        }
       sub_ddmmss (rb, sb, u0, 0, rb, sb);
+      /* for the exact square root, we should have 0 <= rb:sb <= 2*r0 */
+      while (!(rb == 0 || (rb == 1 && sb <= 2 * r0)))
+        {
+          /* subtract 2*r0+1 from rb:sb: subtract r0 before incrementing r0,
+             then r0 after (which is r0+1) */
+          rb -= (sb < r0);
+          sb -= r0;
+          r0 ++;
+          rb -= (sb < r0);
+          sb -= r0;
+        }
       /* now we should have rb*2^64 + sb <= 2*r0 */
       MPFR_ASSERTN(rb == 0 || (rb == 1 && sb <= 2 * r0));
       sb = rb | sb;
