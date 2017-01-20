@@ -266,4 +266,51 @@ static const mp_limb_t T3[] =
     (r) = (_v2 << 33) + (_h >> 29);                                     \
   } while (0)
 
+/* given 2^62 <= u < 2^64, put in s the value floor(sqrt(2^64*u)),
+   and in rh in rl the remainder: 2^64*u - s^2 = 2^64*rh + rl, with
+   2^64*rh + rl <= 2*s, and in invs the approximation of 2^96/sqrt(u) */
+#define __gmpfr_sqrt_limb(s, rh, rl, invs, u)                   \
+  do {                                                          \
+    mp_limb_t _u, _invs, _r, _h, _l;                            \
+    _u = (u);                                                   \
+    __gmpfr_invsqrt_limb_approx (_invs, _u);                    \
+    umul_hi (_h, _invs, _u);                                    \
+    _r = _h + _u;                                               \
+    /* make sure _r has its most significant bit set */         \
+    if (MPFR_UNLIKELY(_r < MPFR_LIMB_HIGHBIT))                  \
+      _r = MPFR_LIMB_HIGHBIT;                                   \
+    /* we know _r <= sqrt(2^64*u) <= _r + 15 */                 \
+    umul_ppmm (_h, _l, _r, _r);                                 \
+    sub_ddmmss (_h, _l, _u, 0, _h, _l);                         \
+    /* now h:l <= 30*_r */                                      \
+    MPFR_ASSERTD(_h < 30);                                      \
+    if (_h >= 16)                                               \
+      { /* subtract 16r+64 to h:l, add 8 to _r */               \
+        sub_ddmmss (_h, _l, _h, _l, _r >> 60, _r << 4);         \
+        sub_ddmmss (_h, _l, _h, _l, 0, 64);                     \
+        _r += 8;                                                \
+      }                                                         \
+    if (_h >= 8)                                                \
+      { /* subtract 8r+16 to h:l, add 4 to _r */                \
+        sub_ddmmss (_h, _l, _h, _l, _r >> 61, _r << 3);         \
+        sub_ddmmss (_h, _l, _h, _l, 0, 16);                     \
+        _r += 4;                                                \
+      }                                                         \
+    if (_h >= 4)                                                \
+      { /* subtract 4r+4 to h:l, add 2 to _r */                 \
+        sub_ddmmss (_h, _l, _h, _l, _r >> 62, _r << 2);         \
+        sub_ddmmss (_h, _l, _h, _l, 0, 4);                      \
+        _r += 2;                                                \
+      }                                                         \
+    while (_h > 1 || ((_h == 1) && (_l > 2 * _r)))              \
+      { /* subtract 2r+1 to h:l, add 1 to _r */                 \
+        sub_ddmmss (_h, _l, _h, _l, _r >> 63, (_r << 1) + 1);   \
+        _r ++;                                                  \
+      }                                                         \
+    (s) = _r;                                                   \
+    (h) = _h;                                                   \
+    (l) = _l;                                                   \
+    (invs) = _invs;                                             \
+  } while (0)
+
 #endif /* GMP_NUMB_BITS == 64 */

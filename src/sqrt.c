@@ -25,7 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
 
-#include "sqrt_tab.h"
 #include "invsqrt_limb.h"
 
 /* Put in rp[1]*2^64+rp[0] an approximation of floor(sqrt(2^128*n)),
@@ -35,74 +34,30 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 {
-  int i;
   mp_limb_t x, r1, r0, h, l, t;
-  const mp_limb_t *u;
-  const mp_limb_t magic = 0xda9fbe76c8b43800; /* ceil(0.854*2^64) */
 
-  /* We round x upward to ensure {np,2} >= r1^2 below. Since we consider also the upper 8
-     bits of np[0] into x, we have to deal separately with the case np[1] = 2^64-1 and the
-     upper 8 bits of np[0] are all 1. */
-  l = np[0] + MPFR_LIMB_MASK(56);
-  h = np[1] + (l < np[0]);
-  i = h >> 56;
-  x = (h << 8) | (l >> 56);
-  if (MPFR_UNLIKELY(i == 0))
-    /* this happens when np[1] = 2^64-1, the upper 8 bits of np[0] are all 1, and the lower
-       56 bits of np[0] are not all zero */
-    {
-      MPFR_ASSERTD(x == MPFR_LIMB_ZERO);
-      goto compute_r1;
-    }
-  MPFR_ASSERTD(64 <= i && i < 256);
-  u = V[i - 64];
-  umul_ppmm (h, l, u[8], x);
-  /* the truncation error on h is at most 1 here */
-  umul_ppmm (h, l, u[7] - h, x);
-  /* the truncation error on h is at most 2 */
-  umul_ppmm (h, l, u[6] - h, x);
-  /* the truncation error on h is at most 3 */
-  umul_ppmm (h, l, u[5] - h, x);
-  /* the truncation error on h is at most 4 */
-  umul_ppmm (h, l, u[4] - h, x);
-  /* the truncation error on h is at most 5 */
-  umul_ppmm (h, l, u[3] - h, x);
-  /* the truncation error on h is at most 6 */
-  umul_ppmm (h, l, u[2] - h, x >> 6); /* here we shift by 6 since u[0] has weight
-                                         1/2^64 and u[2] has weight 1/2^70, the
-                                         truncation error on h+l/2^64 is <= 6/2^6 */
-  sub_ddmmss (h, l, u[0], u[1], h, l);
-  /* Since the mathematical error is < 0.412e-19*2^64, the total error on
-     h + l/2^64 is less than 0.854; magic = ceil(0.854*2^64). We subtract it,
-     while keeping x >= 0. */
-  x = h - (l < magic && h != 0);
+  __gmpfr_sqrt_limb (r1, h, l, x, np[1]);
 
-  /* now 2^64 + x is an approximation of 2^96/sqrt(np[1]+1),
-     with 2^64 + x <= 2^96/sqrt(np[1]+1) */
+  /* now r1 = floor(sqrt(n1)) and h:l = n1^2 - r1^2 with h:l <= 2*r1,
+     thus h <= 1 */
+
+  l += np[0];
+  h += (l < np[0]);
   
- compute_r1:
-  umul_ppmm (r1, l, np[1], x);
-  r1 += np[1];
+  /* now h <= 2 */
 
-  /* now r1 is an approximation of sqrt(2^64*np[1]), with r1 < sqrt(2^64*np[1]) */
-
-  /* make sure r1 >= 2^63 */
-  if (r1 < MPFR_LIMB_HIGHBIT)
-    r1 = MPFR_LIMB_HIGHBIT;
-
-  umul_ppmm (h, l, r1, r1);
-  MPFR_ASSERTD(h < np[1] || (h == np[1] && l <= np[0]));
-  sub_ddmmss (h, l, np[1], np[0], h, l);
   /* divide by 2 */
   l = (h << 63) | (l >> 1);
   h = h >> 1;
+
+  /* now h <= 1 */
 
   /* now add (2^64+x) * (h*2^64+l) / 2^64 to [r1*2^64, 0] */
 
   umul_ppmm (r0, t, x, l); /* x * l */
   r0 += l;
   r1 += h + (r0 < l); /* now we have added 2^64 * (h*2^64+l) */
-  while (h--)
+  if (h)
     {
       r0 += x;
       r1 += (r0 < x); /* add x */
