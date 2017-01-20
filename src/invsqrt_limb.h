@@ -1,4 +1,4 @@
-/* __gmpfr_invsqrt_limb -- reciprocal approximate square root of a limb
+/* __gmpfr_invsqrt_limb_approx -- reciprocal approximate square root of a limb
 
 Copyright 2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -242,7 +242,7 @@ static const mp_limb_t T3[] =
 
 /* given 2^62 <= d < 2^64, put in r an approximation of
    s = floor(2^96/sqrt(r)) - 2^64, with r <= s <= r + 7 */
-#define __gmpfr_invsqrt_limb(r, d)                                      \
+#define __gmpfr_invsqrt_limb_approx(r, d)                               \
   do {                                                                  \
     mp_limb_t _d, _i, _v0, _e0, _d37, _v1, _e1, _h, _v2, _e2;           \
     _d = (d);                                                           \
