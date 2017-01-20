@@ -116,7 +116,8 @@ static const mp_limb_t invert_limb_table2[256] =
       _v0 = invert_limb_table[_i];                                      \
       _d40 = (_d >> 24) + 1;                                            \
       _v1 = _v0 - ((invert_limb_table2[_i] * _d40) >> 40) - 1;          \
-      _v2 = (_v1 << 13) + ((_v1 * ((1UL << 60) - _v1 * _d40)) >> 47);   \
+      _v2 = (_v1 << 13) +                                               \
+        ((_v1 * ((MPFR_LIMB_ONE << 60) - _v1 * _d40)) >> 47);           \
       _d0 = _d & 1;                                                     \
       _d63 = ((_d - 1) >> 1) + 1;                                       \
       _e = - _v2 * _d63 + ((_v2 & -_d0) >> 1);                          \
@@ -139,7 +140,8 @@ static const mp_limb_t invert_limb_table2[256] =
       _v0 = invert_limb_table[_i];                                      \
       _d40 = (_d >> 24) + 1;                                            \
       _v1 = _v0 - ((invert_limb_table2[_i] * _d40) >> 40) - 1;          \
-      _v2 = (_v1 << 13) + ((_v1 * ((1UL << 60) - _v1 * _d40)) >> 47);   \
+      _v2 = (_v1 << 13) +                                               \
+        ((_v1 * ((MPFR_LIMB_ONE << 60) - _v1 * _d40)) >> 47);           \
       _d0 = _d & 1;                                                     \
       _d63 = ((_d - 1) >> 1) + 1;                                       \
       _e = - _v2 * _d63 + ((_v2 & -_d0) >> 1);                          \
