@@ -446,7 +446,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   tmp = MPFR_TMP_LIMBS_ALLOC (2 * bn);
 
   /* Multiplies the mantissa in temporary allocated space */
-  mpn_sqr_n (tmp, MPFR_MANT(b), bn);
+  mpn_sqr (tmp, MPFR_MANT(b), bn);
   b1 = tmp[2 * bn - 1];
 
   /* now tmp[0]..tmp[2*bn-1] contains the product of both mantissa,
