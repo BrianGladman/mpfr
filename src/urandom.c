@@ -104,19 +104,20 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
           count_leading_zeros (cnt, rp[0]);
           cnt -= GMP_NUMB_BITS - DRAW_BITS;
         }
+      exp -= cnt;  /* no integer overflow */
 
-      if (MPFR_UNLIKELY (exp < emin + cnt))
+      if (MPFR_UNLIKELY (exp < emin))
         {
           /* To get here, we have been drawing more than -emin zeros
              in a row, then return 0 or the smallest representable
              positive number.
 
              The rounding to nearest mode is subtle:
-             If exp - cnt == emin - 1, the rounding bit is set, except
+             If exp == emin - 1, the rounding bit is set, except
              if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-              || (rnd_mode == MPFR_RNDN && cnt == exp - (emin - 1)
+              || (rnd_mode == MPFR_RNDN && exp == emin - 1
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
@@ -128,7 +129,6 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
               return -1;
             }
         }
-      exp -= cnt;
     }
   MPFR_EXP (rop) = exp; /* Warning: may be outside the current
                            exponent range */
