@@ -201,24 +201,20 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              instead of a test on sb, one just does a 2-limb subtraction.
              GCC and Clang recognize the second line as a subtraction with
              borrow. */
+          sb = - (cp[0] << (GMP_NUMB_BITS - d)); /* neglected part of -c */
 #ifndef MPFR_FULLSUB
-          sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
           a0 = bp[0] - (cp[0] >> d);
           if (sb)
-            {
-              a0 --;
-              /* a0 cannot become zero here since:
-                 a) if d >= 2, then a0 >= 2^(w-1) - (2^(w-2)-1) with
-                    w = GMP_NUMB_BITS, thus a0 - 1 >= 2^(w-2),
-                 b) if d = 1, then since p < GMP_NUMB_BITS we have sb=0.
-              */
-              MPFR_ASSERTD(a0 > 0);
-              sb = -sb;
-            }
+            a0 --;
 #else
-          sb = - (cp[0] << (GMP_NUMB_BITS - d)); /* neglected part of -c */
           a0 = bp[0] - (cp[0] >> d) - (sb != 0);
 #endif
+          /* a0 cannot be zero here since:
+             a) if d >= 2, then a0 >= 2^(w-1) - (2^(w-2)-1) with
+                w = GMP_NUMB_BITS, thus a0 - 1 >= 2^(w-2),
+             b) if d = 1, then since p < GMP_NUMB_BITS we have sb=0.
+          */
+          MPFR_ASSERTD(a0 > 0);
           count_leading_zeros (cnt, a0);
           if (cnt)
             a0 = (a0 << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
