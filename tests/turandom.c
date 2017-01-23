@@ -191,6 +191,24 @@ bug20100914 (void)
   gmp_randclear (s);
 }
 
+/* non-regression test for bug reported by Trevor Spiteri
+   https://sympa.inria.fr/sympa/arc/mpfr/2017-01/msg00020.html */
+static void
+bug20170123 (void)
+{
+  mpfr_t x;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-7);
+  mpfr_init2 (x, 53);
+  gmp_randseed_ui (mpfr_rands, 398);
+  mpfr_urandom (x, mpfr_rands, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -8) == 0);
+  mpfr_clear (x);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -247,6 +265,8 @@ main (int argc, char *argv[])
      implemented in mini-gmp, we omit it with mini-gmp */
   bug20100914 ();
 #endif
+
+  bug20170123 ();
 
   tests_end_mpfr ();
   return 0;
