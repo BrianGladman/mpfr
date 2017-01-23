@@ -116,7 +116,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-              || (rnd_mode == MPFR_RNDN && cnt == exp - emin - 1
+              || (rnd_mode == MPFR_RNDN && cnt == exp - (emin - 1)
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
