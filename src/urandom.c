@@ -37,6 +37,9 @@ random_rounding_bit (gmp_randstate_t rstate)
   return r & MPFR_LIMB_ONE;
 }
 
+/* FIXME: Generate exceptions (flags) when need be, as usual? The current
+   behavior is inconsistent as when reached, mpfr_check_range will detect
+   some exceptions and set the corresponding flag. */
 
 int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
