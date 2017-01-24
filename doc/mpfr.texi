@@ -3258,7 +3258,7 @@ subnormal range), the underflow flag is set.
 
 Warning! If you change @code{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
-in the current exponent range of MPFR. But it is better to change
+in the current exponent range of MPFR@. But it is better to change
 @code{emin} before any computation, if possible.
 @c Note: not necessarily possible if the user wants to emulate different
 @c floating-point systems in the same code.
