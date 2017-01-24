@@ -3031,6 +3031,10 @@ Other characteristics are identical to @code{mpfr_nrandom}.
 Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
 number and the significand is considered in [1/2,1). The behavior for NaN,
 infinity or zero is undefined.
+@c FIXME: Be clear on the behavior (undefined or documented) when x
+@c is not in the current exponent range. This should be allowed as
+@c the goal of using this function may be to test whether x is in
+@c the current exponent range. Add tests.
 @end deftypefun
 
 @deftypefun int mpfr_set_exp (mpfr_t @var{x}, mpfr_exp_t @var{e})
@@ -3169,11 +3173,22 @@ Set the smallest and largest exponents allowed for a floating-point variable.
 Return a non-zero value when @var{exp} is not in the range accepted by the
 implementation (in that case the smallest or largest exponent is not changed),
 and zero otherwise.
-If the user changes the exponent range, it is her/his responsibility to check
-that all current floating-point variables are in the new allowed range
-(for example using @code{mpfr_check_range}), otherwise the subsequent
-behavior will be undefined, in the sense of the ISO C standard.
-@c It is also her/his responsibility to check that @m {emin <= emax}.
+
+For the subsequent operations, it is the user's responsibility to check
+that any floating-point value used as an input is in the new exponent range
+(for example using @code{mpfr_check_range}). If a floating-point value
+outside the new exponent range is used as an input, the default behavior
+is undefined, in the sense of the ISO C standard; the behavior may also be
+explicitly documented, such as for @code{mpfr_check_range}.
+
+Note: Caches may still have values outside the current exponent range.
+This is not an issue as the user cannot use these caches directly via
+the API (MPFR extends the exponent range internally when need be).
+
+If @math{@code{emin} > @code{emax}} and a floating-point value needs to
+be produced as output, the behavior is undefined (@code{mpfr_set_emin}
+and @code{mpfr_set_emax} do not check this condition as it might occur
+between successive calls to these two functions).
 @end deftypefun
 
 @deftypefun mpfr_exp_t mpfr_get_emin_min (void)
@@ -3215,7 +3230,8 @@ been set due to internal computations.
 
 @deftypefun int mpfr_subnormalize (mpfr_t @var{x}, int @var{t}, mpfr_rnd_t @var{rnd})
 This function rounds @var{x} emulating subnormal number arithmetic:
-if @var{x} is outside the subnormal exponent range, it just propagates the
+if @var{x} is outside the subnormal exponent range of the emulated
+floating-point system, this function just propagates the
 @ref{ternary value} @var{t}; otherwise, it rounds @var{x} to precision
 @code{EXP(x)-emin+1} according to rounding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
@@ -3231,7 +3247,7 @@ is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
 and the returned ternary value used when computing @var{x}
 (as in @code{mpfr_check_range}).
 The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
-If the result cannot be represented in the current exponent range
+If the result cannot be represented in the current exponent range of MPFR
 (due to a too small @code{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
@@ -3239,6 +3255,13 @@ not the input value @var{x}, i.e., the ternary value is propagated.
 As usual, if the returned ternary value is non zero, the inexact flag is set.
 Moreover, if a second rounding occurred (because the input @var{x} was in the
 subnormal range), the underflow flag is set.
+
+Warning! If you change @code{emin} (with @code{mpfr_set_emin}) just before
+calling @code{mpfr_subnormalize}, you need to make sure that the value is
+in the current exponent range of MPFR. But it is better to change
+@code{emin} before any computation, if possible.
+@c Note: not necessarily possible if the user wants to emulate different
+@c floating-point systems in the same code.
 @end deftypefun
 
 This is an example of how to emulate binary double IEEE 754 arithmetic
@@ -3264,7 +3287,11 @@ This is an example of how to emulate binary double IEEE 754 arithmetic
 @}
 @end example
 
-Warning: this emulates a double IEEE 754 arithmetic with correct rounding
+Note that @code{mpfr_set_emin} and @code{mpfr_set_emax} are called early
+enough in order to make sure that all computed values are in the current
+exponent range.
+
+Warning! This emulates a double IEEE 754 arithmetic with correct rounding
 in the subnormal range, which may not be the case for your hardware.
 
 @deftypefun void mpfr_clear_underflow (void)
@@ -3363,7 +3390,7 @@ MPF can be compiled directly with MPFR without any changes
 All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
 
-Warning: the @code{mpf_init} and @code{mpf_init2} functions initialize
+Warning! The @code{mpf_init} and @code{mpf_init2} functions initialize
 to zero, whereas the corresponding MPFR functions initialize to NaN:
 this is useful to detect uninitialized values, but is slightly incompatible
 with MPF@.
