@@ -107,8 +107,8 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   sb = 1; /* when we can round correctly with the approximation, the sticky bit
              is non-zero */
 
-  /* the exact square root is in [r0, r0 + 15] */
-  if (MPFR_UNLIKELY(((r0 + 15) & (mask >> 1)) <= 15))
+  /* the exact square root is in [r0, r0 + 16] */
+  if (MPFR_UNLIKELY(((r0 + 16) & (mask >> 1)) <= 16))
     {
       /* first ensure r0 has its most significant bit set */
       if (MPFR_UNLIKELY(r0 < MPFR_LIMB_HIGHBIT))

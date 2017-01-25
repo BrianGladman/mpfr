@@ -241,7 +241,7 @@ static const mp_limb_t T3[768] =
 #endif
 
 /* given 2^62 <= d < 2^64, put in r an approximation of
-   s = floor(2^96/sqrt(r)) - 2^64, with r <= s <= r + 7 */
+   s = floor(2^96/sqrt(r)) - 2^64, with r <= s <= r + 16 */
 #define __gmpfr_invsqrt_limb_approx(r, d)                               \
   do {                                                                  \
     mp_limb_t _d, _i, _v0, _e0, _d37, _v1, _e1, _h, _v2, _e2;           \
@@ -259,9 +259,8 @@ static const mp_limb_t T3[768] =
     _v2 = (_v1 << 10) + (_h >> 6);                                      \
     umul_hi (_h, _v2 * _v2, _d);                                        \
     /* in _h + 2, one +1 accounts for the lower neglected part of */    \
-    /* v2^2*d. the other +1 is t compute ceil((h+1)/2) */               \
-    /* but we can replace (1<<61) - (h+2)/2 by (1<<61)-1-(h/2) */       \
-    _e2 = (MPFR_LIMB_ONE << 61) - 1 - (_h >> 1);                        \
+    /* v2^2*d. the other +1 is to compute ceil((h+1)/2) */              \
+    _e2 = (MPFR_LIMB_ONE << 61) - ((_h + 2) >> 1);                      \
     _h = _v2 * _e2;                                                     \
     (r) = (_v2 << 33) + (_h >> 29);                                     \
   } while (0)
@@ -279,7 +278,7 @@ static const mp_limb_t T3[768] =
     /* make sure _r has its most significant bit set */         \
     if (MPFR_UNLIKELY(_r < MPFR_LIMB_HIGHBIT))                  \
       _r = MPFR_LIMB_HIGHBIT;                                   \
-    /* we know _r <= sqrt(2^64*u) <= _r + 15 */                 \
+    /* we know _r <= sqrt(2^64*u) <= _r + 16 */                 \
     umul_ppmm (_h, _l, _r, _r);                                 \
     sub_ddmmss (_h, _l, _u, 0, _h, _l);                         \
     /* now h:l <= 30*_r */                                      \
