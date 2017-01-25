@@ -392,6 +392,12 @@ Table of contents:
 - in gmp_op.c, for functions with mpz_srcptr, check whether mpz_fits_slong_p
   is really useful in all cases (see TODO in this file).
 
+- optimize code that uses a test based on the fact that x >> s is
+  undefined in C for s == width of x but the result is expected to
+  be 0. ARM and PowerPC could benefit from such an optimization,
+  but not x86. This needs support from the compiler.
+  For PowerPC: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79233
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################
