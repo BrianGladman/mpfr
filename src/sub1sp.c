@@ -203,7 +203,10 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              the first subtraction. In the future, make sure that the code
              is recognized as a *single* subtraction with borrow and/or use
              a builtin when available (currently provided by Clang, but not
-             by GCC); create a new macro for that. See the TODO later. */
+             by GCC); create a new macro for that. See the TODO later.
+             Note also that with Clang, the constant 0 for the first
+             subtraction instead of a variable breaks the optimization:
+             https://llvm.org/bugs/show_bug.cgi?id=31754 */
           a0 = bp[0] - (sb != 0) - (cp[0] >> d);
           /* a0 cannot be zero here since:
              a) if d >= 2, then a0 >= 2^(w-1) - (2^(w-2)-1) with
@@ -391,6 +394,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
                3. sbb $0x0,%rbx for the second subtraction in a1, i.e. just
                   subtracting the borrow out from (2).
              So, Clang recognizes the borrow, but doesn't merge (1) and (3).
+             Bug: https://llvm.org/bugs/show_bug.cgi?id=25858
              For GCC: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79173
           */
           a0 = bp[0] - t;
