@@ -93,5 +93,6 @@ For f2:
   2c:   48 83 d2 00             adc    $0x0,%rdx
   30:   e9 00 00 00 00          jmpq   35 <f2+0x15>
 
-The f2 solution is better in both cases!
+The f2 solution is better in both cases! But Clang could have done better.
+Bug report: https://llvm.org/bugs/show_bug.cgi?id=31755
 */
