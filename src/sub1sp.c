@@ -397,6 +397,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              Bug: https://llvm.org/bugs/show_bug.cgi?id=25858
              For GCC: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79173
           */
+#ifndef MPFR_FULLSUB
           a0 = bp[0] - t;
           a1 = bp[1] - (cp[1] >> d) - (bp[0] < t);
           sb = cp[0] << (GMP_NUMB_BITS - d); /* neglected part of c */
@@ -411,6 +412,11 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               MPFR_ASSERTD(a1 > 0 || a0 > 0);
               sb = -sb; /* 2^GMP_NUMB_BITS - sb */
             }
+#else
+          sb = - (cp[0] << (GMP_NUMB_BITS - d));
+          a0 = bp[0] - t - (sb != 0);
+          a1 = bp[1] - (cp[1] >> d) - (bp[0] < t || (bp[0] == t && sb != 0));
+#endif
           if (a1 == 0)
             {
               /* this implies d=1, which in turn implies sb=0 */
