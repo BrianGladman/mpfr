@@ -205,7 +205,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           if (sb)
             a0 --;
 #else
-          a0 = bp[0] - (cp[0] >> d) - (sb != 0);
+          a0 = bp[0] - (sb != 0) - (cp[0] >> d);
 #endif
           /* a0 cannot be zero here since:
              a) if d >= 2, then a0 >= 2^(w-1) - (2^(w-2)-1) with
