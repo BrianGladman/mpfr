@@ -241,7 +241,7 @@ static const mp_limb_t T3[768] =
 #endif
 
 /* given 2^62 <= d < 2^64, put in r an approximation of
-   s = floor(2^96/sqrt(r)) - 2^64, with r <= s <= r + 16 */
+   s = floor(2^96/sqrt(r)) - 2^64, with r <= s <= r + 15 */
 #define __gmpfr_invsqrt_limb_approx(r, d)                               \
   do {                                                                  \
     mp_limb_t _d, _i, _v0, _e0, _d37, _v1, _e1, _h, _v2, _e2;           \
