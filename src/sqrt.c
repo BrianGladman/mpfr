@@ -28,9 +28,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "invsqrt_limb.h"
 
 /* Put in rp[1]*2^64+rp[0] an approximation of floor(sqrt(2^128*n)),
-   with 2^126 <= n := np[1]*2^64 + np[0] < 2^128.
-   The error on {rp, 2} is at most 27 ulps, with {rp, 2} <= floor(sqrt(2^128*n)).
-*/
+   with 2^126 <= n := np[1]*2^64 + np[0] < 2^128. We have:
+   {rp, 2} - 4 <= floor(sqrt(2^128*n)) <= {rp, 2} + 26. */
 static void
 mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 {
@@ -231,10 +230,11 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   mask = MPFR_LIMB_MASK(sh);
 
   mpfr_sqrt2_approx (rp, np + 2);
-  /* the error is at most 27 ulps on rp[0], with {rp, 2} smaller or equal
-     to the exact square root, thus we can round correctly except when the
-     number formed by the last sh-1 bits of rp[0] is 0, -1, -2, ..., -27. */
-  if (((rp[0] + 27) & (mask >> 1)) > 27)
+  /* with n = np[3]*2^64+np[2], we have:
+     {rp, 2} - 4 <= floor(sqrt(2^128*n)) <= {rp, 2} + 26,
+     thus we can round correctly except when the number formed by the last sh-1 bits
+     of rp[0] is in the range [-26, 4]. */
+  if (((rp[0] + 26) & (mask >> 1)) > 30)
     sb = 1;
   else
     {
