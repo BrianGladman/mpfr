@@ -234,9 +234,9 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
-      /* TODO: This is actually an addition with carry (no shifts needed in
-         asm). Make sure that GCC generates optimized code once it supports
-         carry-in. */
+      /* TODO: This is actually an addition with carry (no shifts and no OR
+         needed in asm). Make sure that GCC generates optimized code once
+         it supports carry-in. */
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
       sb = sb << 1;
     }
