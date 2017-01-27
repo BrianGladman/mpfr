@@ -646,6 +646,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   aq = MPFR_GET_PREC (a);
   bq = MPFR_GET_PREC (b);
   cq = MPFR_GET_PREC (c);
+
+#if !defined(MPFR_GENERIC_ABI)
   if (aq < GMP_NUMB_BITS && bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS)
     return mpfr_mul_1 (a, b, c, rnd_mode, aq);
 
@@ -658,6 +660,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       2 * GMP_NUMB_BITS < bq && bq <= 3 * GMP_NUMB_BITS &&
       2 * GMP_NUMB_BITS < cq && cq <= 3 * GMP_NUMB_BITS)
     return mpfr_mul_3 (a, b, c, rnd_mode, aq);
+#endif
 
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
