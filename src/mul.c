@@ -255,7 +255,7 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 && ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
@@ -264,7 +264,8 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
          (a) either ax < emin - 1
          (b) or ax = emin - 1 and ap[0] = 1000....000 and rb = sb = 0 */
       if (rnd_mode == MPFR_RNDN &&
-          (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
+          (ax < __gmpfr_emin - 1 ||
+           (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
@@ -380,9 +381,9 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
@@ -515,10 +516,10 @@ mpfr_mul_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[2] == MPFR_LIMB_MAX) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[2] == MPFR_LIMB_MAX &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
