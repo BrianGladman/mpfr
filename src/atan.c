@@ -211,8 +211,10 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
           we can stop when r*i > precy i.e. i > precy/r */
     {
       n = 1UL << m;
+      if (precy / r <= n)
+        n = (precy / r) + 1;
       MPFR_ASSERTN (n != 0);  /* no overflow */
-      for (i = k = 0; (i < n) && (i <= precy / r); i += 2, k ++)
+      for (i = k = 0; i < n; i += 2, k ++)
         {
           mpz_set_ui (Q[k + 1], 2 * i + 3);
           mpz_mul_2exp (S[k], Q[k+1], r);
