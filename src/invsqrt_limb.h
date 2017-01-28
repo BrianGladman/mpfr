@@ -307,8 +307,8 @@ static const mp_limb_t T3[768] =
         _r ++;                                                  \
       }                                                         \
     (s) = _r;                                                   \
-    (h) = _h;                                                   \
-    (l) = _l;                                                   \
+    (rh) = _h;                                                   \
+    (rl) = _l;                                                   \
     (invs) = _invs;                                             \
   } while (0)
 
