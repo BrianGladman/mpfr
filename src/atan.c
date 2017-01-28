@@ -84,6 +84,8 @@ set_table (mpfr_t y, const mp_limb_t x[3])
 
    When we sum terms up to x^k/(2k+1), the denominator Q[0] is
    3*5*7*...*(2k+1) ~ (2k/e)^k.
+
+   The tab[] array should have at least 3*(m+1) entries.
 */
 static void
 mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
