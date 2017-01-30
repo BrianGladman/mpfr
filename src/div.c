@@ -150,14 +150,9 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       /* subtract {h,l} from {u0,0} */
       sub_ddmmss (h, l, u0, 0, h, l);
       /* the remainder {h, l} should be < v0 */
-      /* TODO: See whether it is better to replace this by a loop. */
-      if (h || l >= v0)
-        {
-          q0 ++;
-          h -= (l < v0);
-          l -= v0;
-        }
-      if (h || l >= v0)
+      /* This while loop is executed at most two times, but does not seem
+         slower than two consecutive identical if-statements. */
+      while (h || l >= v0)
         {
           q0 ++;
           h -= (l < v0);
