@@ -89,6 +89,7 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   ADD_LIMB (q0, xx, cy);
   q1 += cy;
   MPFR_ASSERTD (r1 <= 4);
+  /* TODO: use value coverage on r1 to check that the 5 cases are tested. */
   while (r1) /* the number of loops is at most 4 */
     {
       /* add inv to q0 */
@@ -149,6 +150,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       /* subtract {h,l} from {u0,0} */
       sub_ddmmss (h, l, u0, 0, h, l);
       /* the remainder {h, l} should be < v0 */
+      /* TODO: See whether it is better to replace this by a loop. */
       if (h || l >= v0)
         {
           q0 ++;
@@ -197,8 +199,8 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
          (a) either qx < emin - 1
          (b) or qx = emin - 1 and qp[0] = 1000....000 and rb = sb = 0.
          Note: in case (b), it suffices to check whether sb = 0, since rb = 1
-         and sb = 0 is not possible (the exact quotient would have p+1 bits, thus
-         u would need at least p+1 bits). */
+         and sb = 0 is not possible (the exact quotient would have p+1 bits,
+         thus u would need at least p+1 bits). */
       if (rnd_mode == MPFR_RNDN &&
           (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0)))
         rnd_mode = MPFR_RNDZ;
