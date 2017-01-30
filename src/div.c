@@ -276,36 +276,36 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   else
     {
       /* we know q1:q0 is a good-enough approximation, use it! */
-      mp_limb_t qq[2], uu[4];
+      mp_limb_t s0, s1, s2, h, l;
 
-      qq[0] = q0;
-      qq[1] = q1;
-      /* FIXME: instead of using mpn_mul_n, we can use 3 umul_ppmm calls,
-         since we know the difference should at most 16*(v1:v0) after the
-         subtraction below, thus at most 16*2^128. */
-      mpn_mul_n (uu, qq, MPFR_MANT(v), 2);
-      /* we now should have uu[3]:uu[2] <= r3:r2 */
-      MPFR_ASSERTD(uu[3] < r3 || (uu[3] == r3 && uu[2] <= r2));
-      /* subtract {uu,4} from r3:r2:0:0, with result in {uu,4} */
-      uu[2] = r2 - uu[2];
-      uu[3] = r3 - uu[3] - (uu[2] > r2);
-      /* now negate uu[1]:uu[0] */
-      uu[0] = -uu[0];
-      uu[1] = -uu[1] - (uu[0] != 0);
-      /* there is a borrow in uu[2] when uu[0] and uu[1] are not both zero */
-      uu[3] -= (uu[1] != 0 || uu[0] != 0) && (uu[2] == 0);
-      uu[2] -= (uu[1] != 0 || uu[0] != 0);
-      MPFR_ASSERTD(uu[3] == MPFR_LIMB_ZERO);
-      while (uu[2] > 0 || (uu[1] > v1) || (uu[1] == v1 && uu[0] >= v0))
+      /* Since we know the difference should be at most 21*(v1:v0) after the
+         subtraction below, thus at most 21*2^128, it suffices to compute the
+         lower 3 limbs of (q1:q0) * (v1:v0). */
+      umul_ppmm (s1, s0, q0, v0);
+      umul_ppmm (s2, l, q0, v1);
+      s1 += l;
+      s2 += (s1 < l);
+      umul_ppmm (h, l, q1, v0);
+      s1 += l;
+      s2 += h + (s1 < l);
+      s2 += q1 * v1;
+      /* Subtract s2:s1:s0 from r2:0:0, with result in s2:s1:s0. */
+      s2 = r2 - s2;
+      /* now negate s1:s0 */
+      s0 = -s0;
+      s1 = -s1 - (s0 != 0);
+      /* there is a borrow in s2 when s0 and s1 are not both zero */
+      s2 -= (s1 != 0 || s0 != 0);
+      while (s2 > 0 || (s1 > v1) || (s1 == v1 && s0 >= v0))
         {
           /* add 1 to q1:q0 */
           q0 ++;
           q1 += (q0 == 0);
-          /* subtract v1:v0 to u2:u1:u0 */
-          uu[2] -= (uu[1] < v1) || (uu[1] == v1 && uu[0] < v0);
-          sub_ddmmss (uu[1], uu[0], uu[1], uu[0], v1, v0);
+          /* subtract v1:v0 to s2:s1:s0 */
+          s2 -= (s1 < v1) || (s1 == v1 && s0 < v0);
+          sub_ddmmss (s1, s0, s1, s0, v1, v0);
         }
-      sb = uu[1] | uu[0];
+      sb = s1 | s0;
     }
   goto round_div2;
 #endif
