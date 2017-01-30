@@ -88,6 +88,7 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   umul_ppmm (xx, yy, r0, inv);
   ADD_LIMB (q0, xx, cy);
   q1 += cy;
+  MPFR_ASSERTD (r1 <= 4);
   while (r1) /* the number of loops is at most 4 */
     {
       /* add inv to q0 */
