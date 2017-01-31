@@ -291,15 +291,15 @@ static const mp_limb_t T3[768] =
     mp_limb_t _n, _x, _y, _z, _t;                                       \
     _n = (n);                                                           \
     __gmpfr_invsqrt_halflimb_approx (_x, _n);                           \
-    MPFR_ASSERTD(_x < 4294967296UL);                                    \
+    MPFR_ASSERTD(_x < MPFR_LIMB_ONE << 32);                             \
     /* x has 32 bits, and is near (by below) sqrt(2^126/n) */           \
     _y = (_x * (_n >> 31)) >> 32;                                       \
-    MPFR_ASSERTD(_y < 4294967296UL);                                    \
+    MPFR_ASSERTD(_y < MPFR_LIMB_ONE << 32);                             \
     /* y is near (by below) sqrt(n) */                                  \
     _z = _n - _y * _y;                                                  \
     /* reduce _z so that _z <= 2*_y */                                  \
     /* the maximal value of _z is 2*(2^32-1) */                         \
-    while (_z > 8589934590UL)                                           \
+    while (_z > 2 * ((MPFR_LIMB_ONE << 32) - 1))                        \
       {                                                                 \
         _z -= (_y + _y) + 1;                                            \
         _y ++;                                                          \
