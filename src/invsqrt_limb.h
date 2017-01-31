@@ -265,6 +265,56 @@ static const mp_limb_t T3[768] =
     (r) = (_v2 << 33) + (_h >> 29);                                     \
   } while (0)
 
+/* given 2^62 <= d < 2^64, return a 32-bit approximation r of
+   sqrt(2^126/d) */
+#define __gmpfr_invsqrt_halflimb_approx(r, d)                           \
+  do {                                                                  \
+    mp_limb_t _d, _i, _v0, _e0, _d37, _v1, _e1, _h;                     \
+    _d = (d);                                                           \
+    _i = (_d >> 54) - 256;                                              \
+    /* i = d10 - 256 */                                                 \
+    _v0 = T[_i];                                                        \
+    _d37 = 1 + (_d >> 27);                                              \
+    _e0 = T3[_i] * _d37;                                                \
+    /* the value (_v0 << 57) - _e0 is less than 2^61 */                 \
+    _v1 = (_v0 << 11) + (((_v0 << 57) - _e0) >> 47);                    \
+    _e1 = - _v1 * _v1 * _d37;                                           \
+    umul_hi (_h, _v1, _e1);                                             \
+    /* _h = floor(e_1*v_1/2^64) */                                      \
+    (r) = (_v1 << 10) + (_h >> 6);                                      \
+  } while (0)
+
+/* given 2^62 <= n < 2^64, put in s an approximation of sqrt(2^64*n),
+   with: s <= floor(sqrt(2^64*u)) <= s + 7 */
+#define __gmpfr_sqrt_limb_approx(s, n)                                  \
+  do {                                                                  \
+    mp_limb_t _n, _x, _y, _z, _t;                                       \
+    _n = (n);                                                           \
+    __gmpfr_invsqrt_halflimb_approx (_x, _n);                           \
+    MPFR_ASSERTD(_x < 4294967296UL);                                    \
+    /* x has 32 bits, and is near (by below) sqrt(2^126/n) */           \
+    _y = (_x * (_n >> 31)) >> 32;                                       \
+    MPFR_ASSERTD(_y < 4294967296UL);                                    \
+    /* y is near (by below) sqrt(n) */                                  \
+    _z = _n - _y * _y;                                                  \
+    /* reduce _z so that _z <= 2*_y */                                  \
+    /* the maximal value of _z is 2*(2^32-1) */                         \
+    while (_z > 8589934590UL)                                           \
+      {                                                                 \
+        _z -= (_y + _y) + 1;                                            \
+        _y ++;                                                          \
+      }                                                                 \
+    /* now z <= 2*(2^32-1): one reduction is enough */                  \
+    if (_z > _y + _y)                                                   \
+      {                                                                 \
+        _z -= (_y + _y) + 1;                                            \
+        _y ++;                                                          \
+      }                                                                 \
+    /* _x * _z should be < 2^64 */                                      \
+    _t = (_x * _z) >> 32;                                               \
+    (s) = (_y << 32) + _t;                                              \
+  } while (0)
+
 /* given 2^62 <= u < 2^64, put in s the value floor(sqrt(2^64*u)),
    and in rh in rl the remainder: 2^64*u - s^2 = 2^64*rh + rl, with
    2^64*rh + rl <= 2*s, and in invs the approximation of 2^96/sqrt(u) */
