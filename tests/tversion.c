@@ -278,6 +278,14 @@ main (void)
 #endif
           "\n");
 
+ printf ("[tversion] _mulx_u64 = "
+#if defined(HAVE_MULX_U64)
+         "yes"
+#else
+         "no"
+#endif
+         "\n");
+
   if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
     {
       printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
