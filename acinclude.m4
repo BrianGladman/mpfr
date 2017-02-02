@@ -482,18 +482,22 @@ static int f (double (*func)(double)) { return 0; }
 ],[AC_MSG_RESULT(no)])
 
 dnl Check if _mulx_u64 is provided
-dnl Note: This intrinsic is not standard, and ideally more checks should
-dnl be done to make sure that the MPFR code matches what is expected on
-dnl all compilers that provide it.
+dnl Note: This intrinsic is not standard. We need a run because
+dnl it may be provided but not working as expected (with ICC 15,
+dnl one gets an "Illegal instruction").
 AC_MSG_CHECKING([for _mulx_u64])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <immintrin.h>
 ]], [[
  return _mulx_u64(17, 42, (unsigned long long *) 0);
-]])], [
-   AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_MULX_U64, 1,[Have _mulx_u64 function])
-],[AC_MSG_RESULT(no)])
+]])],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_MULX_U64, 1,[Have a working _mulx_u64 function])
+  ],
+  [AC_MSG_RESULT(no)
+  ],
+  [AC_MSG_RESULT([cannot test, assume no])
+  ])
 
 LIBS="$saved_LIBS"
 
