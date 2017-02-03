@@ -489,7 +489,10 @@ AC_MSG_CHECKING([for _mulx_u64])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <immintrin.h>
 ]], [[
- return _mulx_u64(17, 42, (unsigned long long *) 0);
+ unsigned long long h1, h2;
+ _mulx_u64(17, 42, &h1);
+ _mulx_u64(-1, -1, &h2);
+ return h1 == 0 && h2 == -2 ? 0 : 1;
 ]])],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_MULX_U64, 1,[Have a working _mulx_u64 function])
