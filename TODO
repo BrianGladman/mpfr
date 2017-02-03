@@ -621,6 +621,10 @@ Table of contents:
   Once mpfr_zeta has improved, change the last argument of test_generic
   in tzeta.c back to 5 (as it was before r10667).
 
+- check the small-precision tables in the tests?
+  This may require to export some pointer to the tables, but this could
+  be done only if some debug macro is defined.
+
 
 ##############################################################################
 7. Portability
