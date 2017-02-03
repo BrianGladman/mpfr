@@ -42,7 +42,7 @@ mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 
   l += np[0];
   h += (l < np[0]);
-  
+
   /* now h <= 2 */
 
   /* divide by 2 */
@@ -95,7 +95,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* then compute an approximation of the integer square root of
      u0*2^GMP_NUMB_BITS */
   __gmpfr_sqrt_limb_approx (r0, u0);
-  
+
   sb = 1; /* when we can round correctly with the approximation, the sticky bit
              is non-zero */
 

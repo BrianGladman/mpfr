@@ -1411,7 +1411,7 @@ static void
 test_mpfr_div2_approx (unsigned long n)
 {
   mpfr_t x, y, z;
-  
+
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
   mpfr_init2 (z, 113);
