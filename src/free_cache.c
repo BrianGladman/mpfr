@@ -54,6 +54,25 @@ mpfr_mpz_init (mpz_t z)
 }
 
 MPFR_HOT_FUNCTION_ATTR void
+mpfr_mpz_init2 (mpz_t z, mp_bitcnt_t n)
+{
+  if (MPFR_LIKELY (n_alloc > 0))
+    {
+      /* Get a mpz_t from the MPFR stack of previously used mpz_t.
+         It reduces memory pressure, and it allows to reuse
+         a mpz_t which should be sufficiently big. */
+      MPFR_ASSERTD (n_alloc <= numberof (mpz_tab));
+      memcpy (z, &mpz_tab[--n_alloc], sizeof (mpz_t));
+      SIZ(z) = 0;
+    }
+  else
+    {
+      /* Call real GMP function */
+      (__gmpz_init2)(z, n);
+    }
+}
+
+MPFR_HOT_FUNCTION_ATTR void
 mpfr_mpz_clear (mpz_t z)
 {
   if (MPFR_LIKELY (n_alloc < numberof (mpz_tab)))

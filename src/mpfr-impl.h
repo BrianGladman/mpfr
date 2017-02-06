@@ -2233,8 +2233,10 @@ __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 /* Cache for mpz_t */
 #if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
 # undef mpz_init
+# undef mpz_init2
 # undef mpz_clear
 # define mpz_init mpfr_mpz_init
+# define mpz_init2 mpfr_mpz_init2
 # define mpz_clear mpfr_mpz_clear
 # undef mpz_init_set_ui
 # define mpz_init_set_ui(a,b) do { mpz_init (a); mpz_set_ui (a, b); } while (0)
