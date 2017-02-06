@@ -118,6 +118,33 @@ check_special (void)
   mpfr_clear (x);
 }
 
+/* check ax < __gmpfr_emin with rnd_mode == MPFR_RNDN, rb = 0 and sb <> 0 */
+static void
+test_underflow (void)
+{
+  mpfr_t x, y;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (0);
+
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 24);
+
+  mpfr_set_ui_2exp (x, 11863283, -24, MPFR_RNDN);
+  /* x^2 = 0.011111111111111111111111101101100111111010101001*2^(-48)
+     thus we have an underflow */
+  mpfr_clear_underflow ();
+  mpfr_sqr (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0);
+  MPFR_ASSERTN(mpfr_underflow_p ());
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+
+  mpfr_set_emin (emin);
+}
+
 /* Test of a bug seen with GCC 4.5.2 and GMP 5.0.1 on m68k (m68000 target).
      https://sympa.inria.fr/sympa/arc/mpfr/2011-05/msg00003.html
      https://sympa.inria.fr/sympa/arc/mpfr/2011-05/msg00041.html
@@ -161,8 +188,9 @@ main (void)
   tests_start_mpfr ();
 
   check_mpn_sqr ();
-
   check_special ();
+  test_underflow ();
+
   for (p = MPFR_PREC_MIN; p < 200; p++)
     check_random (p);
 

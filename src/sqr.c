@@ -65,6 +65,14 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
+      /* Note: for emin=2*k+1, a >= 0.111...111*2^(emin-1) is not possible,
+         i.e., a >= (1 - 2^(-p))*2^(2k), since we need a = b^2 with EXP(b)=k,
+         and the largest such b is (1 - 2^(-p))*2^k satisfies
+         b^2 < (1 - 2^(-p))*2^(2k).
+         For emin=2*k, it is only possible for some values of p: it is not
+         possible for p=53, because the largest significand is 6369051672525772
+         but its square has only 52 leading ones. For p=24 it is possible,
+         with b = 11863283, whose square has 24 leading ones. */
       if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
