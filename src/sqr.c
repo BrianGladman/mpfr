@@ -195,6 +195,12 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
+      /* Note: like for mpfr_sqr_2, the case
+         0.111...111*2^(emin-1) < a < 2^(emin-1) is not possible when emin is
+         odd, since (modulo a shift) this would imply 1-2^(-p) < a = b^2 < 1,
+         and this is not possible with 1-2^(-p) <= b < 1.
+         For emin even, it is possible for some values of p, for example for
+         p=69 with b=417402170410649030795*2^k. */
       if ((ax == __gmpfr_emin - 1) &&
           (ap[1] == MPFR_LIMB_MAX) &&
           (ap[0] == ~mask) &&

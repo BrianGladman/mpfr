@@ -139,6 +139,14 @@ test_underflow (void)
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0);
   MPFR_ASSERTN(mpfr_underflow_p ());
 
+  mpfr_set_prec (x, 69);
+  mpfr_set_prec (y, 69);
+  mpfr_set_str_binary (x, "0.101101010000010011110011001100111111100111011110011001001000010001011");
+  mpfr_clear_underflow ();
+  mpfr_sqr (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0);
+  MPFR_ASSERTN(mpfr_underflow_p ());
+
   mpfr_clear (y);
   mpfr_clear (x);
 
