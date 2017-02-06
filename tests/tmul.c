@@ -954,6 +954,46 @@ small_prec (void)
   set_emax (emax);
 }
 
+/* check ax < __gmpfr_emin with rnd_mode == MPFR_RNDN, rb = 0 and sb <> 0 */
+static void
+test_underflow2 (void)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (0);
+
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 24);
+  mpfr_init2 (z, 24);
+
+  mpfr_set_ui_2exp (x, 12913, -14, MPFR_RNDN);
+  mpfr_set_ui_2exp (y, 5197,  -13, MPFR_RNDN);
+  mpfr_clear_underflow ();
+  /* x*y = 0.0111111111111111111111111[01] thus underflow */
+  mpfr_mul (z, y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -1) == 0);
+  MPFR_ASSERTN(mpfr_underflow_p ());
+
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_prec (z, 65);
+  mpfr_set_str_binary (x, "0.10011101000110111011111100101001111");
+  mpfr_set_str_binary (y, "0.110100001001000111000011011110011");
+  mpfr_clear_underflow ();
+  /* x*y = 0.011111111111111111111111111111111111111111111111111111111111111111[01] thus underflow */
+  mpfr_mul (z, y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -1) == 0);
+  MPFR_ASSERTN(mpfr_underflow_p ());
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpfr_clear (z);
+
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1005,6 +1045,7 @@ main (int argc, char *argv[])
   test_underflow (128);
   bug20161209 ();
   bug20161209a ();
+  test_underflow2 ();
 
   tests_end_mpfr ();
   return 0;
