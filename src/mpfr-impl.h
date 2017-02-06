@@ -2210,6 +2210,7 @@ __MPFR_DECLSPEC void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC void mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr, mpfr_prec_t);
 
 __MPFR_DECLSPEC void mpfr_mpz_init (mpz_ptr);
+__MPFR_DECLSPEC void mpfr_mpz_init2 (mpz_t, mp_bitcnt_t);
 __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 
 #if defined (__cplusplus)
