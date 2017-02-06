@@ -185,10 +185,11 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(qx < __gmpfr_emin))
     {
-      if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
-          ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
-        goto rounding; /* no underflow */
+      /* Note: the case 0.111...111*2^(emin-1) < q < 2^(emin-1) is not possible
+         here since (up to exponent) this would imply 1 - 2^(-p) < u/v < 1,
+         thus v - 2^(-p)*v < u < v, and since we can assume 1/2 <= v < 1, it
+         would imply v - 2^(-p) = v - ulp(v) < u < v, which has no solution. */
+
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
          (a) either qx < emin - 1
@@ -202,7 +203,6 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
- rounding:
   MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
   if (rb == 0 && sb == 0)
@@ -447,11 +447,11 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (qx < __gmpfr_emin)
     {
-      if ((qx == __gmpfr_emin - 1) &&
-          (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
-          ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
-        goto rounding; /* no underflow */
+      /* Note: the case 0.111...111*2^(emin-1) < q < 2^(emin-1) is not possible
+         here since (up to exponent) this would imply 1 - 2^(-p) < u/v < 1,
+         thus v - 2^(-p)*v < u < v, and since we can assume 1/2 <= v < 1, it
+         would imply v - 2^(-p) = v - ulp(v) < u < v, which has no solution. */
+
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
          (a) either qx < emin - 1
@@ -466,7 +466,6 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
- rounding:
   MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
   if (rb == 0 && sb == 0)
