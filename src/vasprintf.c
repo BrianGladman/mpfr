@@ -819,6 +819,42 @@ floor_log10 (mpfr_srcptr x)
   return exp;
 }
 
+#define NDIGITS 8
+
+static char*
+mpfr_get_str_aux (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
+                  const struct printf_spec spec)
+{
+  size_t ndigits;
+  char *str, *s, nine;
+  int neg;
+
+  if (spec.width > 0 || n < NDIGITS)
+    return mpfr_get_str (NULL, exp, base, n, op, spec.rnd_mode);
+  
+  /* case width = 0: try to deduce the number of printed characters from
+     a small number of significant digits */
+  nine = (base <= 10) ? '0' + base - 1
+    : (base <= 36) ? 'a' + base - 11
+    : 'a' + base - 37;
+  for (ndigits = NDIGITS; ; ndigits *= 2)
+    {
+      if (ndigits > n)
+        ndigits = n;
+      str = mpfr_get_str (NULL, exp, base, ndigits, op, MPFR_RNDZ);
+      if (ndigits == n)
+        break;
+      neg = str[0] == '-';
+      s = str + neg;
+      while (*s == nine)
+        s ++;
+      if (s < str + neg + ndigits) /* we don't have ndigits 'nines' */
+        break;
+      mpfr_free_str (str);
+    }
+  return str;
+}
+
 /* Determine the different parts of the string representation of the regular
    number P when SPEC.SPEC is 'a', 'A', or 'b'.
 
@@ -864,7 +900,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          - if a non-zero precision is specified, then one digit before decimal
          point plus SPEC.PREC after it. */
       nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
-      str = mpfr_get_str (0, &exp, base, nsd, p, spec.rnd_mode);
+      str = mpfr_get_str (NULL, &exp, base, nsd, p, spec.rnd_mode);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
@@ -1068,7 +1104,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
          We use the fact here that mpfr_get_str allows us to ask for only one
          significant digit when the base is not a power of 2. */
       nsd = (spec.prec < 0) ? 0 : spec.prec + np->ip_size;
-      str = mpfr_get_str (0, &exp, 10, nsd, p, spec.rnd_mode);
+      str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
       register_string (np->sl, str);
     }
   else
@@ -1294,7 +1330,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                      base ten (undocumented feature, see comments in
                      get_str.c) */
 
-                  str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
+                  str = mpfr_get_str_aux (&exp, 10, nsd, p, spec);
                   register_string (np->sl, str);
                 }
               else
@@ -1367,8 +1403,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       if (dec_info == NULL)
         { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
-          str =
-            mpfr_get_str (NULL, &exp, 10, spec.prec+exp+1, p, spec.rnd_mode);
+          str = mpfr_get_str_aux (&exp, 10, spec.prec+exp+1, p, spec);
           register_string (np->sl, str);
         }
       else
@@ -1613,7 +1648,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
           dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
-                                        p, spec.rnd_mode);
+                                       p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);
           /* mpfr_get_str corresponds to a significand between 0.1 and 1,
              whereas here we want a significand between 1 and 10. */

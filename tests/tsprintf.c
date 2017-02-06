@@ -1277,6 +1277,30 @@ test20161214 (void)
   mpfr_clear (x);
 }
 
+/* http://gforge.inria.fr/tracker/index.php?func=detail&aid=21056 */
+static void
+bug21056 (void)
+{
+  mpfr_t x;
+  const char s[] = "0x0.fffffffffffff8p+1024";
+  int ndigits, r;
+
+  mpfr_init2 (x, 64);
+
+  mpfr_set_str (x, s, 16, MPFR_RNDN);
+
+  ndigits = 1000;
+  r = mpfr_snprintf (0, 0, "%.*RDf", ndigits, x);
+  /* the return value should be ndigits + 310 */
+  MPFR_ASSERTN(r == ndigits + 310);
+
+  ndigits = INT_MAX - 310;
+  r = mpfr_snprintf (0, 0, "%.*RDf", ndigits, x);
+  MPFR_ASSERTN(r == ndigits + 310);
+  
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1298,6 +1322,7 @@ main (int argc, char **argv)
   check_emax ();
   check_emin ();
   test20161214 ();
+  bug21056 ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #if MPFR_LCONV_DPTS
