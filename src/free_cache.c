@@ -1,4 +1,4 @@
-/* mpfr_free_cache - Free the cache used by MPFR for internal consts.
+/* mpfr_free_cache... - Free cache/pool memory used by MPFR.
 
 Copyright 2004-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
