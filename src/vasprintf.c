@@ -910,7 +910,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          - if a non-zero precision is specified, then one digit before decimal
          point plus SPEC.PREC after it. */
       nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
-      str = mpfr_get_str (NULL, &exp, base, nsd, p, spec.rnd_mode);
+      str = mpfr_get_str_aux (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
@@ -1081,7 +1081,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'e', 'E', 'g', or 'G'.
-   DEC_INFO contains the previously computed exponent and string or is NULL.
+   dec_info contains the previously computed exponent and string or is NULL.
 
    return -1 if some field > INT_MAX */
 static int
@@ -1115,7 +1115,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
          We use the fact here that mpfr_get_str allows us to ask for only one
          significant digit when the base is not a power of 2. */
       nsd = (spec.prec < 0) ? 0 : spec.prec + np->ip_size;
-      str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
+      str = mpfr_get_str_aux (&exp, 10, nsd, p, spec);
       register_string (np->sl, str);
     }
   else
@@ -1659,6 +1659,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           struct decimal_info dec_info;
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
+          /* here we cannot call mpfr_get_str_aux since we need the full
+             significand in dec_info.str */
           dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
                                        p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);

@@ -87,8 +87,7 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     {
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               p, fmt);
-      printf ("expected: %d [%s]\ngot:      %d\n", n0, buffer, n1);
-      mpfr_dump (x);
+      printf ("expected: %d\ngot:      %d\n", n0, n1);
       exit (1);
     }
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
@@ -1297,7 +1296,20 @@ bug21056 (void)
 
   ndigits = INT_MAX - 310;
   r = mpfr_snprintf (0, 0, "%.*RDf", ndigits, x);
-  MPFR_ASSERTN(r == ndigits + 310);
+  MPFR_ASSERTN(r == INT_MAX);
+
+  ndigits = INT_MAX - 10;
+  r = mpfr_snprintf (0, 0, "%.*RDa", ndigits, x);
+  MPFR_ASSERTN(r == INT_MAX);
+
+  ndigits = INT_MAX - 7;
+  r = mpfr_snprintf (0, 0, "%.*RDe", ndigits, x);
+  MPFR_ASSERTN(r == INT_MAX);
+  
+  ndigits = 1000;
+  r = mpfr_snprintf (0, 0, "%.*RDg", ndigits, x);
+  /* since trailing zeros are removed with %g, we get less digits */
+  MPFR_ASSERTN(r == 309);
   
   mpfr_clear (x);
 }
