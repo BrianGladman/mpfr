@@ -372,9 +372,9 @@ typedef wint_t mpfr_va_wint;
 #endif
 #define CASE_LONG_ARG(specinfo, ap)                                     \
   case LONG_ARG:                                                        \
-  if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')              \
-      || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')           \
-      || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))          \
+  if ((specinfo).spec == 'd' || (specinfo).spec == 'i'                  \
+      || (specinfo).spec == 'o' || (specinfo).spec == 'u'               \
+      || (specinfo).spec == 'x' || (specinfo).spec == 'X')              \
     (void) va_arg ((ap), long);                                         \
   else if ((specinfo).spec == 'c')                                      \
     (void) va_arg ((ap), mpfr_va_wint);                                 \
@@ -831,7 +831,7 @@ mpfr_get_str_aux (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
 
   if (spec.width > 0 || n < NDIGITS)
     return mpfr_get_str (NULL, exp, base, n, op, spec.rnd_mode);
-  
+
   /* case width = 0: try to deduce the number of printed characters from
      a small number of significant digits */
   nine = (base <= 10) ? '0' + base - 1
@@ -956,7 +956,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
           || (spec.rnd_mode == MPFR_RNDN
               && (msl & (MPFR_LIMB_ONE << rnd_bit))))
         digit++;
-      MPFR_ASSERTD ((0 <= digit) && (digit <= 15));
+      MPFR_ASSERTD (0 <= digit && digit <= 15);
 
       str = (char *)(*__gmp_allocate_func) (1 + np->ip_size);
       str[0] = num_to_text [digit];
@@ -1011,7 +1011,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       if (spec.prec < 0)
         /* remove trailing zeros, if any */
         {
-          while ((*ptr == '0') && (str_len != 0))
+          while (*ptr == '0' && str_len != 0)
             {
               --ptr;
               --str_len;
@@ -1027,13 +1027,14 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
+          MPFR_ASSERTD (str_len > 0 && str_len <= INT_MAX);
           if ((int) str_len < spec.prec)
             np->fp_trailing_zeros = spec.prec - str_len;
         }
     }
 
   /* decimal point */
-  if ((np->fp_size != 0) || spec.alt)
+  if (np->fp_size != 0 || spec.alt)
     np->point = MPFR_DECIMAL_POINT;
 
   /* the exponent part contains the character 'p', or 'P' plus the sign
@@ -1128,7 +1129,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
       if (!keep_trailing_zeros)
         /* remove trailing zeros, if any */
         {
-          while ((*ptr == '0') && (str_len != 0))
+          while (*ptr == '0' && str_len != 0)
             {
               --ptr;
               --str_len;
@@ -1144,8 +1145,9 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
-          if ((!spec_g || spec.alt) && (spec.prec > 0)
-              && ((int)str_len < spec.prec))
+          MPFR_ASSERTD (str_len > 0 && str_len <= INT_MAX);
+          if ((!spec_g || spec.alt) && spec.prec > 0
+              && (int) str_len < spec.prec)
             /* add missing trailing zeros */
             np->fp_trailing_zeros = spec.prec - str_len;
         }
@@ -1361,7 +1363,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   if (!keep_trailing_zeros)
                     /* remove trailing zeros, if any */
                     {
-                      while ((*ptr == '0') && str_len)
+                      while (*ptr == '0' && str_len != 0)
                         {
                           --ptr;
                           --str_len;
@@ -1437,7 +1439,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         {
           char *ptr = str + str_len - 1; /* pointer to the last digit of
                                             str */
-          while ((*ptr == '0') && (str_len != 0))
+          while (*ptr == '0' && str_len != 0)
             {
               --ptr;
               --str_len;
@@ -1820,10 +1822,10 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   xgmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
-  while (*fmt)
+  while (*fmt != '\0')
     {
       /* Look for the next format specification */
-      while ((*fmt) && (*fmt != '%'))
+      while (*fmt != '\0' && *fmt != '%')
         ++fmt;
 
       if (*fmt == '\0')
@@ -1913,7 +1915,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
            string is undefined. */
         continue;
 
-      if (*fmt)
+      if (*fmt != '\0')
         fmt++;
 
       /* Format processing */
