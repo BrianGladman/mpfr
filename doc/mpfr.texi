@@ -2643,7 +2643,8 @@ Write their output as a null terminated string in a block of memory allocated
 using the current allocation function. A pointer to the block is stored in
 @var{str}. The block of memory must be freed using @code{mpfr_free_str}.
 The return value is the number of characters written in the string, excluding
-the null-terminator, or a negative value if an error occurred.
+the null-terminator, or a negative value if an error occurred, in which case
+the contents of @var{str} are undefined.
 @c If the number of
 @c characters produced by the optional arguments under the control of the
 @c template string @var{template} appears to exceed the maximum limit for an
