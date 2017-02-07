@@ -226,6 +226,111 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 }
 
+/* same as mpfr_add1sp, but for p = GMP_NUMB_BITS */
+static int
+mpfr_add1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
+{
+  mpfr_exp_t bx = MPFR_GET_EXP (b);
+  mpfr_exp_t cx = MPFR_GET_EXP (c);
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp = MPFR_MANT(b);
+  mp_limb_t *cp = MPFR_MANT(c);
+  mp_limb_t rb; /* round bit */
+  mp_limb_t sb; /* sticky bit */
+  mp_limb_t a0; /* to store the result */
+  mpfr_uexp_t d;
+
+  MPFR_ASSERTD(MPFR_PREC (a) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC (b) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC (c) == GMP_NUMB_BITS);
+
+  if (bx == cx)
+    {
+      a0 = bp[0] + cp[0];
+      rb = a0 & MPFR_LIMB_ONE;
+      ap[0] = MPFR_LIMB_HIGHBIT | (a0 >> 1);
+      bx ++;
+      sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
+    }
+  else if (bx > cx)
+    {
+    BGreater1:
+      d = (mpfr_uexp_t) bx - cx;
+      if (d < GMP_NUMB_BITS) /* 1 <= d < GMP_NUMB_BITS */
+        {
+          a0 = bp[0] + (cp[0] >> d);
+          sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
+          if (a0 < bp[0]) /* carry */
+            {
+              ap[0] = MPFR_LIMB_HIGHBIT | (a0 >> 1);
+              rb = a0 & 1;
+              bx ++;
+            }
+          else /* no carry */
+            {
+              ap[0] = a0;
+              rb = sb & MPFR_LIMB_HIGHBIT;
+              sb &= ~MPFR_LIMB_HIGHBIT;
+            }
+        }
+      else /* d >= GMP_NUMB_BITS */
+        {
+          sb = d != GMP_NUMB_BITS || cp[0] != MPFR_LIMB_HIGHBIT;
+          ap[0] = bp[0];
+          rb = d == GMP_NUMB_BITS;
+        }
+    }
+  else /* bx < cx: swap b and c */
+    {
+      mpfr_exp_t tx;
+      mp_limb_t *tp;
+      tx = bx; bx = cx; cx = tx;
+      tp = bp; bp = cp; cp = tp;
+      goto BGreater1;
+    }
+
+  /* Note: we could keep the output significand in a0 for the rounding,
+     and only store it in ap[0] at the very end, but this seems slower
+     on average (but better for the worst case). */
+
+  /* now perform rounding */
+  if (MPFR_UNLIKELY(bx > __gmpfr_emax))
+    return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+
+  MPFR_SET_EXP (a, bx);
+  if (rb == 0 && sb == 0)
+    MPFR_RET(0);
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      /* the condition below should be rb == 0 || (rb != 0 && ...), but this
+         is equivalent to rb == 0 || (...) */
+      if (rb == 0 || (sb == 0 && (ap[0] & MPFR_LIMB_ONE) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE;
+      if (MPFR_UNLIKELY(ap[0] == 0))
+        {
+          ap[0] = MPFR_LIMB_HIGHBIT;
+          /* no need to have MPFR_LIKELY here, since we are in a rare branch */
+          if (bx + 1 <= __gmpfr_emax)
+            MPFR_SET_EXP (a, bx + 1);
+          else /* overflow */
+            return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
 /* same as mpfr_add1sp, but for GMP_NUMB_BITS < p < 2*GMP_NUMB_BITS */
 static int
 mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
@@ -539,6 +644,11 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (GMP_NUMB_BITS < p && p < 2 * GMP_NUMB_BITS)
     return mpfr_add1sp2 (a, b, c, rnd_mode, p);
+
+  /* we put this test after the mpfr_add1sp2() call, to avoid slowing down
+     the more frequent case GMP_NUMB_BITS < p < 2 * GMP_NUMB_BITS */
+  if (p == GMP_NUMB_BITS)
+    return mpfr_add1sp1n (a, b, c, rnd_mode);
 
   if (2 * GMP_NUMB_BITS < p && p < 3 * GMP_NUMB_BITS)
     return mpfr_add1sp3 (a, b, c, rnd_mode, p);
