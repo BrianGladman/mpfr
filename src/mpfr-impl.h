@@ -2213,6 +2213,8 @@ __MPFR_DECLSPEC void mpfr_mpz_init (mpz_ptr);
 __MPFR_DECLSPEC void mpfr_mpz_init2 (mpz_t, mp_bitcnt_t);
 __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 
+__MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*, va_list);
+
 #if defined (__cplusplus)
 }
 #endif

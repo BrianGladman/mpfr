@@ -87,7 +87,8 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     {
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               p, fmt);
-      printf ("expected: %d\ngot:      %d\n", n0, n1);
+      printf ("expected: %d [%s]\ngot:      %d\n", n0, buffer, n1);
+      mpfr_dump (x);
       exit (1);
     }
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
@@ -1158,8 +1159,8 @@ check_emax_aux (mpfr_exp_t e)
         printf ("(>LONG_MAX)\n");
       else
         printf ("%ld\n", (long) e);
-      printf ("Expected %s\n", s2);
-      printf ("Got      %s\n", s1);
+      printf ("Expected '%s'\n", s2);
+      printf ("Got      '%s'\n", s1);
       exit (1);
     }
 

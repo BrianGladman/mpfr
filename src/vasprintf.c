@@ -158,9 +158,10 @@ struct printf_spec
 
   int width;                    /* Width */
   int prec;                     /* Precision */
+  int size;                     /* Wanted size (0 iff snprintf with size=0) */
 
   enum arg_t arg_type;          /* Type of argument */
-  mpfr_rnd_t rnd_mode;            /* Rounding mode */
+  mpfr_rnd_t rnd_mode;          /* Rounding mode */
   char spec;                    /* Conversion specifier */
 
   char pad;                     /* Padding character */
@@ -176,6 +177,7 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->group = 0;
   specinfo->width = 0;
   specinfo->prec = 0;
+  specinfo->size = 1;
   specinfo->arg_type = NONE;
   specinfo->rnd_mode = MPFR_RNDN;
   specinfo->spec = '\0';
@@ -829,19 +831,27 @@ mpfr_get_str_aux (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
   char *str, *s, nine;
   int neg;
 
-  if (spec.width > 0 || n < NDIGITS)
+  if (spec.size != 0)
     return mpfr_get_str (NULL, exp, base, n, op, spec.rnd_mode);
 
-  /* case width = 0: try to deduce the number of printed characters from
-     a small number of significant digits */
+  /* Special case size = 0, i.e., xxx_snprintf with size = 0: we only want
+     to compute the number of printed characters. Try to deduce it from
+     a small number of significant digits. */
   nine = (base <= 10) ? '0' + base - 1
     : (base <= 36) ? 'a' + base - 11
     : 'a' + base - 37;
   for (ndigits = NDIGITS; ; ndigits *= 2)
     {
-      if (ndigits > n)
-        ndigits = n;
-      str = mpfr_get_str (NULL, exp, base, ndigits, op, MPFR_RNDZ);
+      mpfr_rnd_t rnd = MPFR_RNDZ;
+      /* when ndigits > n, we reduce it to the target size n, and then we use
+         the wanted rounding mode, to avoid errors for example when n=1 and
+         x = 9.5 with spec.rnd_mode = RNDU */
+      if (ndigits >= n)
+        {
+          ndigits = n;
+          rnd = spec.rnd_mode;
+        }
+      str = mpfr_get_str (NULL, exp, base, ndigits, op, rnd);
       if (ndigits == n)
         break;
       neg = str[0] == '-';
@@ -1728,7 +1738,10 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
    return the size of the string (not counting the terminating '\0')
    return -1 if the built string is too long (i.e. has more than
-   INT_MAX characters). */
+   INT_MAX characters).
+
+   If spec.size is 0, we only want the size of the string.
+*/
 static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
           const struct printf_spec spec)
@@ -1798,8 +1811,15 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   return length;
 }
 
+/* the following internal function implements both mpfr_vasprintf and
+   mpfr_vsnprintf:
+   (a) either ptr <> NULL, and then Buf and size are not used, and it
+       implements mpfr_vasprintf (ptr, fmt, ap)
+   (b) or ptr = NULL, and it implements mpfr_vsnprintf (Buf, size, fmt, ap)
+*/
 int
-mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
+mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
+                     va_list ap)
 {
   struct string_buffer buf;
   size_t nbchar;
@@ -2064,6 +2084,8 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
+          if (ptr == NULL)
+            spec.size = size;
           if (sprnt_fp (&buf, p, spec) < 0)
             goto overflow_error;
         }
@@ -2085,6 +2107,30 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
                             nbchar is too large (overflow_error) */
+  
+  if (ptr == NULL) /* implement mpfr_vsnprintf */
+    {
+      if (size > 0)
+        {
+          if (nbchar < size)
+            {
+              strncpy (Buf, buf.start, nbchar);
+              Buf[nbchar] = '\0';
+            }
+          else
+            {
+              strncpy (Buf, buf.start, size - 1);
+              Buf[size-1] = '\0';
+            }
+        }
+      MPFR_SAVE_EXPO_FREE (expo);
+      (*__gmp_free_func) (buf.start, buf.size);
+      return nbchar; /* return the number of characters that would have been
+                        written had 'size' be sufficiently large, not counting
+                        the terminating null character */
+    }
+
+  /* below we implement mpfr_vasprintf */
   *ptr = buf.start;
 
   /* If nbchar is larger than INT_MAX, the ISO C99 standard is silent, but
@@ -2115,6 +2161,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   (*__gmp_free_func) (buf.start, buf.size);
 
   return -1;
+}
+
+int
+mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
+{
+  return mpfr_vasnprintf_aux (ptr, NULL, 0, fmt, ap);
 }
 
 #else /* HAVE_STDARG */
