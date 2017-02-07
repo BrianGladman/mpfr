@@ -22,12 +22,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* Default value for the cache of mpz_t */
+/* Default number of entries for the mpz_t pool */
 #ifndef MPFR_MY_MPZ_INIT
 #  define MPFR_MY_MPZ_INIT 32
 #endif
 
-/* If the number of value to cache is not zero */
+/* If the number of entries of the mpz_t pool is not zero */
 #if MPFR_MY_MPZ_INIT
 
 /* Index in the stack table of mpz_t and stack table of mpz_t */
