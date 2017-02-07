@@ -545,7 +545,7 @@ Table of contents:
   be due to a poor malloc implementation (timings would depend on the
   platform). 3) Applications would use more RAM.
   Additional notes [VL]: the major differences in the timings given
-  by Patrick in 2014-01 were:
+  by Patrick in 2014-01 under Linux were:
     Before:
     arccos(x)  took 0.054689 ms (32767 eval in 1792 ms)
     arctan(x)  took 0.042116 ms (32767 eval in 1380 ms)
@@ -576,6 +576,10 @@ Table of contents:
       may be different in forks / compatible libraries / etc. This
       can be solved if MPFR code calls mpfr_mpz_init / mpfr_mpz_clear
       directly, avoiding the #define's.
+  Questions that need to be answered:
+    * What about the comparisons with other memory allocators?
+    * Shouldn't the pool be part of the memory allocator?
+      For the default memory allocator (malloc): RFE?
   If it is decided to keep some form of mpz_t caching, a possible solution
   for both issues: define mpfr_mpz_init2 and mpfr_mpz_clear2, which both
   take 2 arguments like mpz_init2, where mpfr_mpz_init2 behaves in a way
