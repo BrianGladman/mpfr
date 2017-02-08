@@ -24,8 +24,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* FIXME: There are inconsistencies between size types used here:
    sometimes size_t, sometimes int, while size_t < unsigned int and
    unsigned int < size_t are both possible. Since the *printf functions
-   return an int for the size, always use an int (checking overflow can
-   be done with unsigned int)? */
+   return an int for the size, always use an int, and unsigned int if
+   one needs to take the ending \0 into account (checking overflow can
+   be done with unsigned int too)? */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -2160,7 +2161,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
                             nbchar is too large (overflow_error) */
-  
+
   /* below we implement mpfr_vasprintf */
   *ptr = buf.start;
 
