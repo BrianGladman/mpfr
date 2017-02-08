@@ -254,7 +254,7 @@ mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
   mp_limb_t u0 = MPFR_MANT(u)[0];
   mp_limb_t v0 = MPFR_MANT(v)[0];
-  mp_limb_t q0, rb, sb, inv, h, l;
+  mp_limb_t q0, rb, sb, l;
   int extra;
 
   MPFR_ASSERTD(MPFR_PREC(q) == GMP_NUMB_BITS);
@@ -265,27 +265,31 @@ mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     u0 -= v0;
 
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
-  /* First compute an approximate quotient. */
-  __gmpfr_invert_limb_approx (inv, v0);
-  umul_ppmm (rb, sb, u0, inv);
-  q0 = u0 + rb;
-  /* rb does not exceed the true quotient floor(u0*2^GMP_NUMB_BITS/v0),
-     with error at most 2, which means the rational quotient q satisfies
-     rb <= q < rb + 3, thus the true quotient is rb, rb+1 or rb+2 */
-  umul_ppmm (h, l, q0, v0);
-  MPFR_ASSERTD(h < u0 || (h == u0 && l == MPFR_LIMB_ZERO));
-  /* subtract {h,l} from {u0,0} */
-  sub_ddmmss (h, l, u0, 0, h, l);
-  /* the remainder {h, l} should be < v0 */
-  /* This while loop is executed at most two times, but does not seem
-     slower than two consecutive identical if-statements. */
-  while (h || l >= v0)
-    {
-      q0 ++;
-      h -= (l < v0);
-      l -= v0;
-    }
-  MPFR_ASSERTD(h == 0 && l < v0);
+  {
+    mp_limb_t inv, h;
+
+    /* First compute an approximate quotient. */
+    __gmpfr_invert_limb_approx (inv, v0);
+    umul_ppmm (rb, sb, u0, inv);
+    q0 = u0 + rb;
+    /* rb does not exceed the true quotient floor(u0*2^GMP_NUMB_BITS/v0),
+       with error at most 2, which means the rational quotient q satisfies
+       rb <= q < rb + 3, thus the true quotient is rb, rb+1 or rb+2 */
+    umul_ppmm (h, l, q0, v0);
+    MPFR_ASSERTD(h < u0 || (h == u0 && l == MPFR_LIMB_ZERO));
+    /* subtract {h,l} from {u0,0} */
+    sub_ddmmss (h, l, u0, 0, h, l);
+    /* the remainder {h, l} should be < v0 */
+    /* This while loop is executed at most two times, but does not seem
+       slower than two consecutive identical if-statements. */
+    while (h || l >= v0)
+      {
+        q0 ++;
+        h -= (l < v0);
+        l -= v0;
+      }
+    MPFR_ASSERTD(h == 0 && l < v0);
+  }
 #else
   udiv_qrnnd (q0, l, u0, 0, v0);
 #endif
