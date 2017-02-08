@@ -127,7 +127,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   sb |= (r0 & mask) ^ rb;
   rp[0] = r0 & ~mask;
 
-  /* rounding */
+  /* rounding: sb = 0 implies rb = 0, since (rb,sb)=(1,0) is not possible */
 
   /* Note: if 1 and 2 are in [emin,emax], no overflow nor underflow
      is possible */
@@ -154,7 +154,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  rounding:
   MPFR_EXP (r) = exp_r;
-  if (rb == 0 && sb == 0)
+  if (sb == 0) /* implies rb = 0 */
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
@@ -162,8 +162,9 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (rp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* since sb <> 0, only rb is needed to decide how to round, and the exact
+         middle is not possible */
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -240,15 +241,16 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       rb -= (sb < r0);
       sb -= r0;
     }
-  /* now we have u0*2^64+low = r0^2+rb*2^64 + sb, with rb*2^64+sb <= 2*r0 */
+  /* now we have u0*2^64+low = r0^2 + rb*2^64+sb, with rb*2^64+sb <= 2*r0 */
   MPFR_ASSERTD(rb == 0 || (rb == 1 && sb <= 2 * r0));
 
   /* We can't have the middle case u0*2^64 = (r0 + 1/2)^2 since
      (r0 + 1/2)^2 is not an integer.
-     We thus always have sb = 1, and rb = 1 whenever u0*2^64 > (r0 + 1/2)^2,
-     thus rb*2^64 + sb > r0 */
+     We thus rb = 1 whenever u0*2^64 > (r0 + 1/2)^2, thus rb*2^64 + sb > r0
+     and the sticky bit is always 1, unless we had rb = sb = 0. */
+
   rb = rb || (sb > r0);
-  sb = 1;
+  sb = rb | sb;
   rp[0] = r0;
 
   /* rounding */
@@ -263,8 +265,8 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~MPFR_LIMB_ZERO) && rb)
-            goto rounding; /* no underflow */
+          /* the case rp[0] = 111...111 and rb = 1 cannot happen, since it
+             would imply u0 >= (2^64-1/2)^2/2^64 thus u0 >= 2^64 */
           if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
@@ -276,9 +278,11 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       return mpfr_underflow (r, rnd_mode, 1);
     }
 
+  /* sb = 0 can only occur when the square root is exact, i.e., rb = 0 */
+
  rounding:
   MPFR_EXP (r) = exp_r;
-  if (rb == 0 && sb == 0)
+  if (sb == 0) /* implies rb = 0 */
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
@@ -286,7 +290,8 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 && (rp[0] & MPFR_LIMB_ONE) == 0))
+      /* we can't have sb = 0, thus rb is enough */
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -426,7 +431,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
  rounding:
   MPFR_EXP (r) = exp_r;
-  if (rb == 0 && sb == 0)
+  if (sb == 0) /* implies rb = 0 */
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
@@ -434,8 +439,8 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (rp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* since sb <> 0 now, only rb is needed */
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;

@@ -616,6 +616,41 @@ bug20160908 (void)
   mpfr_clear (u);
 }
 
+/* test the case prec = GMP_NUMB_BITS */
+static void
+test_sqrt1n (void)
+{
+  mpfr_t r, u;
+  int inex;
+
+  mpfr_init2 (r, GMP_NUMB_BITS);
+  mpfr_init2 (u, GMP_NUMB_BITS);
+
+  inex = mpfr_set_ui_2exp (u, 17 * 17, 2 * GMP_NUMB_BITS - 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  inex = mpfr_sqrt (r, u, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 17, GMP_NUMB_BITS - 5) == 0);
+
+  inex = mpfr_set_ui_2exp (u, 1, GMP_NUMB_BITS - 2, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  inex = mpfr_add_ui (u, u, 1, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  inex = mpfr_mul_2exp (u, u, GMP_NUMB_BITS, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  /* u = 2^(2*GMP_NUMB_BITS-2) + 2^GMP_NUMB_BITS, thus
+     u = r^2 + 2^GMP_NUMB_BITS with r = 2^(GMP_NUMB_BITS-1).
+     Should round to r+1 to nearest. */
+  inex = mpfr_sqrt (r, u, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  inex = mpfr_sub_ui (r, r, 1, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 1, GMP_NUMB_BITS - 1) == 0);
+
+  mpfr_clear (r);
+  mpfr_clear (u);
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -753,6 +788,7 @@ main (void)
 
   bug20160120 ();
   bug20160908 ();
+  test_sqrt1n ();
 
   tests_end_mpfr ();
   return 0;
