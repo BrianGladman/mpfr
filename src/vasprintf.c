@@ -21,6 +21,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* FIXME: There are inconsistencies between size types used here:
+   sometimes size_t, sometimes int, while size_t < unsigned int and
+   unsigned int < size_t are both possible. Since the *printf functions
+   return an int for the size, always use an int (checking overflow can
+   be done with unsigned int)? */
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -541,7 +547,6 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTD (*b->curr == '\0');
 }
 
-/* FIXME: if size_t < unsigned int, size_t may be too small. */
 /* Concatenate the LEN first characters of the string S to the buffer B and
    expand it if needed. */
 static void
