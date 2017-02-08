@@ -525,6 +525,8 @@ buffer_widen (struct string_buffer *b, size_t len)
 {
   const size_t pos = b->curr - b->start;
   const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
+
+  MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (pos < b->size);
 
   MPFR_ASSERTN ((len & ~((size_t) 4095)) <= (size_t)(SIZE_MAX - 4096));
@@ -544,12 +546,15 @@ buffer_widen (struct string_buffer *b, size_t len)
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
+  MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (len != 0);
   MPFR_ASSERTD (len <= strlen (s));
 
   if (MPFR_UNLIKELY ((b->curr + len) >= (b->start + b->size)))
     buffer_widen (b, len);
 
+  /* strncat is similar to strncpy here, except that strncat ensures
+     that the buffer will be null-terminated. */
   strncat (b->curr, s, len);
   b->curr += len;
 
@@ -561,6 +566,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
 static void
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
+  MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (n != 0);
 
   MPFR_ASSERTN (b->size < SIZE_MAX - n - 1);
@@ -590,7 +596,9 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   const size_t q = size % step == 0 ? size / step - 1 : size / step;
   size_t i;
 
+  MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (size != 0);
+
   if (c == '\0')
     {
       buffer_cat (b, str, len);
@@ -648,6 +656,8 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 {
   int length;
   char *s;
+
+  MPFR_ASSERTD (*b->curr == '\0');
 
   length = gmp_vasprintf (&s, fmt, ap);
   if (length > 0)
