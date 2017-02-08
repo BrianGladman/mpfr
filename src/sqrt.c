@@ -192,6 +192,129 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
 }
 
+/* Special code for prec(r) = GMP_NUMB_BITS and prec(u) <= GMP_NUMB_BITS. */
+static int
+mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t exp_u = MPFR_EXP(u), exp_r;
+  mp_limb_t u0, r0, rb, sb, low;
+  mpfr_limb_ptr rp = MPFR_MANT(r);
+
+  MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
+  MPFR_ASSERTD(MPFR_PREC(r) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC(u) <= GMP_NUMB_BITS);
+
+  /* first make the exponent even */
+  u0 = MPFR_MANT(u)[0];
+  if (((unsigned int) exp_u & 1) != 0)
+    {
+      low = u0 << (GMP_NUMB_BITS - 1);
+      u0 >>= 1;
+      exp_u ++;
+    }
+  else
+    low = 0; /* low part of u0 */
+  MPFR_ASSERTD (((unsigned int) exp_u & 1) == 0);
+  exp_r = exp_u / 2;
+
+  /* then compute an approximation of the integer square root of
+     u0*2^GMP_NUMB_BITS */
+  __gmpfr_sqrt_limb_approx (r0, u0);
+
+  /* the exact square root is in [r0, r0 + 7] */
+
+  /* first ensure r0 has its most significant bit set */
+  if (MPFR_UNLIKELY(r0 < MPFR_LIMB_HIGHBIT))
+    r0 = MPFR_LIMB_HIGHBIT;
+  
+  umul_ppmm (rb, sb, r0, r0);
+  sub_ddmmss (rb, sb, u0, low, rb, sb);
+  /* for the exact square root, we should have 0 <= rb:sb <= 2*r0 */
+  while (!(rb == 0 || (rb == 1 && sb <= 2 * r0)))
+    {
+      /* subtract 2*r0+1 from rb:sb: subtract r0 before incrementing r0,
+         then r0 after (which is r0+1) */
+      rb -= (sb < r0);
+      sb -= r0;
+      r0 ++;
+      rb -= (sb < r0);
+      sb -= r0;
+    }
+  /* now we have u0*2^64+low = r0^2+rb*2^64 + sb, with rb*2^64+sb <= 2*r0 */
+  MPFR_ASSERTD(rb == 0 || (rb == 1 && sb <= 2 * r0));
+
+  /* We can't have the middle case u0*2^64 = (r0 + 1/2)^2 since
+     (r0 + 1/2)^2 is not an integer.
+     We thus always have sb = 1, and rb = 1 whenever u0*2^64 > (r0 + 1/2)^2,
+     thus rb*2^64 + sb > r0 */
+  rb = rb || (sb > r0);
+  sb = 1;
+  rp[0] = r0;
+
+  /* rounding */
+
+  /* Note: if 1 and 2 are in [emin,emax], no overflow nor underflow
+     is possible */
+  if (MPFR_UNLIKELY (exp_r > __gmpfr_emax))
+    return mpfr_overflow (r, rnd_mode, 1);
+
+  /* See comments in mpfr_div_1 */
+  if (MPFR_UNLIKELY (exp_r < __gmpfr_emin))
+    {
+      if (rnd_mode == MPFR_RNDN)
+        {
+          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~MPFR_LIMB_ZERO) && rb)
+            goto rounding; /* no underflow */
+          if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+            rnd_mode = MPFR_RNDZ;
+        }
+      else if (MPFR_IS_LIKE_RNDA(rnd_mode, 0))
+        {
+          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~MPFR_LIMB_ZERO) && (rb | sb))
+            goto rounding; /* no underflow */
+        }
+      return mpfr_underflow (r, rnd_mode, 1);
+    }
+
+ rounding:
+  MPFR_EXP (r) = exp_r;
+  if (rb == 0 && sb == 0)
+    {
+      MPFR_ASSERTD(exp_r >= __gmpfr_emin);
+      MPFR_ASSERTD(exp_r <= __gmpfr_emax);
+      return 0; /* idem than MPFR_RET(0) but faster */
+    }
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (rb && sb == 0 && (rp[0] & MPFR_LIMB_ONE) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, 0))
+    {
+    truncate:
+      MPFR_ASSERTD(exp_r >= __gmpfr_emin);
+      MPFR_ASSERTD(exp_r <= __gmpfr_emax);
+      MPFR_RET(-1);
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      rp[0] += MPFR_LIMB_ONE;
+      if (rp[0] == 0)
+        {
+          rp[0] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_UNLIKELY(exp_r + 1 > __gmpfr_emax))
+            return mpfr_overflow (r, rnd_mode, 1);
+          MPFR_ASSERTD(exp_r + 1 <= __gmpfr_emax);
+          MPFR_ASSERTD(exp_r + 1 >= __gmpfr_emin);
+          MPFR_SET_EXP (r, exp_r + 1);
+        }
+      MPFR_RET(1);
+    }
+}
+
 /* Special code for GMP_NUMB_BITS < prec(r) < 2*GMP_NUMB_BITS,
    and GMP_NUMB_BITS < prec(u) <= 2*GMP_NUMB_BITS.
    Assumes GMP_NUMB_BITS=64. */
@@ -362,6 +485,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   int sh; /* number of extra bits in rp[0] */
   int inexact; /* return ternary flag */
   mpfr_exp_t expr;
+  mpfr_prec_t rq = MPFR_GET_PREC (r);
+  mpfr_prec_t uq = MPFR_GET_PREC (u);
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC
@@ -405,16 +530,21 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_SET_POS(r);
 
 #if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
-  if (MPFR_GET_PREC (r) < GMP_NUMB_BITS && MPFR_GET_PREC (u) < GMP_NUMB_BITS)
-    return mpfr_sqrt1 (r, u, rnd_mode);
+  if (rq == uq)
+    {
+      if (rq < GMP_NUMB_BITS)
+        return mpfr_sqrt1 (r, u, rnd_mode);
 
-  if (GMP_NUMB_BITS < MPFR_GET_PREC (r) && MPFR_GET_PREC (r) < 2*GMP_NUMB_BITS
-      && MPFR_LIMB_SIZE(u) == 2)
-    return mpfr_sqrt2 (r, u, rnd_mode);
+      if (GMP_NUMB_BITS < rq && rq < 2*GMP_NUMB_BITS)
+        return mpfr_sqrt2 (r, u, rnd_mode);
+
+      if (rq == GMP_NUMB_BITS)
+        return mpfr_sqrt1n (r, u, rnd_mode);
+    }
 #endif
 
   MPFR_TMP_MARK (marker);
-  MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_GET_PREC (r));
+  MPFR_UNSIGNED_MINUS_MODULO (sh, rq);
   if (sh == 0 && rnd_mode == MPFR_RNDN)
     sh = GMP_NUMB_BITS; /* ugly case */
   rsize = MPFR_LIMB_SIZE(r) + (sh == GMP_NUMB_BITS);
