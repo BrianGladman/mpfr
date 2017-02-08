@@ -54,7 +54,7 @@ test20170208 (void)
   mpfr_t a, b, c;
   int inex;
 
-  mpfr_inits2 (GMP_NUMB_BITS - 1, a, b, c, NULL);
+  mpfr_inits2 (GMP_NUMB_BITS - 1, a, b, c, (mpfr_ptr) 0);
 
   mpfr_set_ui_2exp (b, 1, GMP_NUMB_BITS, MPFR_RNDN);
   mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
@@ -117,7 +117,7 @@ test20170208 (void)
   MPFR_ASSERTN(MPFR_EXP(a) == 2 * GMP_NUMB_BITS);
   MPFR_ASSERTN(inex < 0);
 
-  mpfr_clears (a, b, c, NULL);
+  mpfr_clears (a, b, c, (mpfr_ptr) 0);
 }
 
 int
