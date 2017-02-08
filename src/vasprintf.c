@@ -1766,12 +1766,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     return -1;
 
   if (spec.size == 0) /* no need to fill the buffer */
-    {
-      /* FIXME: It seems that the buffer was not allocated, so that
-         the code below is undefined behavior. */
-      buf->curr += length;
-      goto clear_and_exit;
-    }
+    goto clear_and_exit;
 
   /* right justification padding with left spaces */
   if (np.pad_type == LEFT && np.pad_size != 0)
@@ -2107,6 +2102,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
           if (ptr == NULL)
             spec.size = size;
+          /* FIXME: Maintain a separate length for things not written in
+             the buffer? */
           if (sprnt_fp (&buf, p, spec) < 0)
             goto overflow_error;
         }
@@ -2122,6 +2119,11 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     FLUSH (xgmp_fmt_flag, start, fmt, ap2, &buf);
 
   va_end (ap2);
+  /* FIXME:
+     1. Add the separate length for things not written in the buffer.
+     2. Possible overflow in the subtraction? If yes, a solution would
+        be to compute the length in a separate field, solving (1) at
+        the same time. */
   nbchar = buf.curr - buf.start;
 
   if (ptr == NULL) /* implement mpfr_vsnprintf */
