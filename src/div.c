@@ -245,7 +245,8 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
 }
 
-/* Special code for PREC(q) = PREC(u) = PREC(v) = GMP_NUMB_BITS */
+/* Special code for PREC(q) = GMP_NUMB_BITS,
+   with PREC(u), PREC(v) <= GMP_NUMB_BITS. */
 static int
 mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -255,6 +256,10 @@ mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   mp_limb_t v0 = MPFR_MANT(v)[0];
   mp_limb_t q0, rb, sb, inv, h, l;
   int extra;
+
+  MPFR_ASSERTD(MPFR_PREC(q) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC(u) <= GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC(v) <= GMP_NUMB_BITS);
 
   if ((extra = (u0 >= v0)))
     u0 -= v0;
@@ -287,16 +292,18 @@ mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   /* now (u0 - extra*v0) * 2^GMP_NUMB_BITS = q0*v0 + l with 0 <= l < v0 */
 
-  /* If extra=0, the quotient is q0, the round bit is the most significant bit
-     of l, and sb are the remaining bits from l.
+  /* If extra=0, the quotient is q0, the round bit is 1 if l >= v0/2,
+     and sb are the remaining bits from l.
      If extra=1, the quotient is MPFR_LIMB_HIGHBIT + (q0 >> 1), the round bit
      is the least significant bit of q0, and sb is l. */
 
   if (extra == 0)
     {
       qp[0] = q0;
-      rb = l & MPFR_LIMB_HIGHBIT;
-      sb = l & ~MPFR_LIMB_HIGHBIT;
+      /* If "l + l < l", then there is a carry in l + l, thus 2*l > v0.
+         Otherwise if there is no carry, we check whether 2*l >= v0. */
+      rb = (l + l < l) || (l + l >= v0);
+      sb = (rb) ? l + l - v0 : l;
     }
   else
     {
