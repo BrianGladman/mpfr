@@ -247,6 +247,12 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
                  that case the even rule wound round up too. */
               ap[0] = ~mask;
               bx --;
+              /* Warning: if d = GMP_NUMB_BITS and c0 = 1000...000, then
+                 b0 - c0 = |0111...111|1000...000|, which after the shift
+                 becomes |111...111|000...000| thus if p = GMP_NUMB_BITS-1
+                 we have rb = 1 but sb = 0. However in this case the round
+                 even rule will round up, which is what we get with sb = 1:
+                 the final result will be correct, while sb is incorrect. */
             }
           sb = 1;
         }
@@ -303,6 +309,190 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     {
     add_one_ulp:
       ap[0] += MPFR_LIMB_ONE << sh;
+      if (MPFR_UNLIKELY(ap[0] == 0))
+        {
+          ap[0] = MPFR_LIMB_HIGHBIT;
+          /* Note: bx+1 cannot exceed __gmpfr_emax, since |a| <= |b|, thus
+             bx+1 is at most equal to the original exponent of b. */
+          MPFR_ASSERTD(bx + 1 <= __gmpfr_emax);
+          MPFR_SET_EXP (a, bx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(a));
+    }
+}
+
+/* special code for p = GMP_NUMB_BITS */
+static int
+mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
+{
+  mpfr_exp_t bx = MPFR_GET_EXP (b);
+  mpfr_exp_t cx = MPFR_GET_EXP (c);
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp = MPFR_MANT(b);
+  mp_limb_t *cp = MPFR_MANT(c);
+  mpfr_prec_t cnt;
+  mp_limb_t rb; /* round bit */
+  mp_limb_t sb; /* sticky bit */
+  mp_limb_t a0;
+  mpfr_uexp_t d;
+
+  MPFR_ASSERTD(MPFR_PREC(a) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC(b) == GMP_NUMB_BITS);
+  MPFR_ASSERTD(MPFR_PREC(c) == GMP_NUMB_BITS);
+
+  if (bx == cx)
+    {
+      a0 = bp[0] - cp[0];
+      if (a0 == 0) /* result is zero */
+        {
+          if (rnd_mode == MPFR_RNDD)
+            MPFR_SET_NEG(a);
+          else
+            MPFR_SET_POS(a);
+          MPFR_SET_ZERO(a);
+          return 0; /* same as MPFR_RET(0) but faster */
+        }
+      else if (a0 > bp[0]) /* borrow: |c| > |b| */
+        {
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+          a0 = -a0;
+        }
+      else /* bp[0] > cp[0] */
+        MPFR_SET_SAME_SIGN (a, b);
+
+      /* now a0 != 0 */
+      MPFR_ASSERTD(a0 != 0);
+      count_leading_zeros (cnt, a0);
+      ap[0] = a0 << cnt;
+      bx -= cnt;
+      rb = sb = 0;
+    }
+  else if (bx > cx)
+    {
+      MPFR_SET_SAME_SIGN (a, b);
+    BGreater1:
+      d = (mpfr_uexp_t) bx - cx;
+      if (d < GMP_NUMB_BITS)
+        {
+          sb = - (cp[0] << (GMP_NUMB_BITS - d)); /* neglected part of -c */
+          a0 = bp[0] - (sb != 0) - (cp[0] >> d);
+          /* a0 can only be zero when d=1, b0 = B/2, and c0 = B-1, where
+             B = 2^GMP_NUMB_BITS, thus b0 - c0/2 = 1/2 */
+          if (a0 == MPFR_LIMB_ZERO)
+            {
+              bx -= GMP_NUMB_BITS;
+              ap[0] = MPFR_LIMB_HIGHBIT;
+              rb = sb = 0;
+            }
+          else
+            {
+              count_leading_zeros (cnt, a0);
+              if (cnt)
+                a0 = (a0 << cnt) | (sb >> (GMP_NUMB_BITS - cnt));
+              sb <<= cnt;
+              bx -= cnt;
+              rb = sb & MPFR_LIMB_HIGHBIT;
+              sb &= ~MPFR_LIMB_HIGHBIT;
+              ap[0] = a0;
+            }
+        }
+      else /* d >= GMP_NUMB_BITS */
+        {
+          /* We compute b - ulp(b) */
+          if (bp[0] > MPFR_LIMB_HIGHBIT)
+            {
+              /* If d = GMP_NUMB_BITS, rb = 0 and sb = 1,
+                 unless c0 = MPFR_LIMB_HIGHBIT in which case rb = 1 and sb = 0.
+                 If d > GMP_NUMB_BITS, rb = sb = 1. */
+              rb = d > GMP_NUMB_BITS || cp[0] == MPFR_LIMB_HIGHBIT;
+              sb = d > GMP_NUMB_BITS || cp[0] != MPFR_LIMB_HIGHBIT;
+              ap[0] = bp[0] - MPFR_LIMB_ONE;
+            }
+          else
+            {
+              /* Warning: in this case a0 is shifted by one!
+                 If d=GMP_NUMB_BITS:
+                   (a) if c0 = MPFR_LIMB_HIGHBIT, a0 = 111...111, rb = sb = 0
+                   (b) otherwise, a0 = 111...110, rb = -c0 >= 01000...000,
+                       sb = (-c0) << 2
+                 If d=GMP_NUMB_BITS+1: a0 = 111...111
+                   (c) if c0 = MPFR_LIMB_HIGHBIT, rb = 1 and sb = 0
+                   (d) otherwise rb = 0 and sb = 1
+                 If d > GMP_NUMB_BITS+1:
+                   (e) a0 = 111...111, rb = sb = 1
+              */
+              bx --;
+              if (d == GMP_NUMB_BITS && cp[0] > MPFR_LIMB_HIGHBIT)
+                { /* case (b) */
+                  rb = (-cp[0]) >= (MPFR_LIMB_HIGHBIT >> 1);
+                  sb = (-cp[0]) << 2;
+                  ap[0] = -(MPFR_LIMB_ONE << 1);
+                }
+              else /* cases (a), (c), (d) and (e) */
+                {
+                  ap[0] = -MPFR_LIMB_ONE;
+                  /* rb=1 in case (e) and case (c) */
+                  rb = d > GMP_NUMB_BITS + 1
+                    || (d == GMP_NUMB_BITS + 1 && cp[0] == MPFR_LIMB_HIGHBIT);
+                  /* sb = 1 in case (d) and (e) */
+                  sb = d > GMP_NUMB_BITS + 1
+                    || (d == GMP_NUMB_BITS + 1 && cp[0] > MPFR_LIMB_HIGHBIT);
+                }
+            }
+        }
+    }
+  else /* cx > bx */
+    {
+      mpfr_exp_t tx;
+      mp_limb_t *tp;
+      tx = bx; bx = cx; cx = tx;
+      tp = bp; bp = cp; cp = tp;
+      MPFR_SET_OPPOSITE_SIGN (a, b);
+      goto BGreater1;
+    }
+
+  /* now perform rounding */
+
+  /* Warning: MPFR considers underflow *after* rounding with an unbounded
+     exponent range. However since b and c have same precision p, they are
+     multiples of 2^(emin-p), likewise for b-c. Thus if bx < emin, the
+     subtraction (with an unbounded exponent range) is exact, so that bx is
+     also the exponent after rounding with an unbounded exponent range. */
+  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
+    {
+      /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either bx < emin - 1
+         (b) or bx = emin - 1 and ap[0] = 1000....000 (in this case necessarily
+             rb = sb = 0 since b-c is multiple of 2^(emin-p) */
+      if (rnd_mode == MPFR_RNDN &&
+          (bx < __gmpfr_emin - 1 || ap[0] == MPFR_LIMB_HIGHBIT))
+        {
+          MPFR_ASSERTD(rb == 0 && sb == 0);
+          rnd_mode = MPFR_RNDZ;
+        }
+      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+    }
+
+  MPFR_SET_EXP (a, bx);
+  if (rb == 0 && sb == 0)
+    return 0; /* idem than MPFR_RET(0) but faster */
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      if (rb == 0 || (sb == 0 && (ap[0] & MPFR_LIMB_ONE) == 0))
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+    {
+    truncate:
+      MPFR_RET(-MPFR_SIGN(a));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      ap[0] += MPFR_LIMB_ONE;
       if (MPFR_UNLIKELY(ap[0] == 0))
         {
           ap[0] = MPFR_LIMB_HIGHBIT;
@@ -813,6 +1003,16 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           if (a2 < MPFR_LIMB_HIGHBIT)
             {
               /* necessarily we had b = 1000...000 */
+              /* Warning: since we have an exponent decrease, when
+                 p = 3*GMP_NUMB_BITS - 1 and d = 3*GMP_NUMB_BITS, the round bit
+                 corresponds to the upper bit of -c. In that case rb = 0 and
+                 sb = 1, except when c = 1000...000 where rb = 1 and sb = 0. */
+              rb = sh > 1 || d > 3 * GMP_NUMB_BITS
+                || (cp[2] == MPFR_LIMB_HIGHBIT && cp[1] == MPFR_LIMB_ZERO &&
+                    cp[0] == MPFR_LIMB_ZERO);
+              /* sb=1 below is incorrect when p = 2*GMP_NUMB_BITS - 1,
+                 d = 2*GMP_NUMB_BITS and c = 1000...000, but in
+                 that case the even rule wound round up too. */
               ap[0] = ~mask;
               ap[1] = MPFR_LIMB_MAX;
               ap[2] = MPFR_LIMB_MAX;
@@ -823,8 +1023,9 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
               ap[0] = a0;
               ap[1] = a1;
               ap[2] = a2;
+              rb = 1;
             }
-          rb = sb = 1;
+          sb = 1;
         }
     }
   else /* cx > bx */
@@ -919,6 +1120,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* special case for GMP_NUMB_BITS < p < 2*GMP_NUMB_BITS */
   if (GMP_NUMB_BITS < p && p < 2 * GMP_NUMB_BITS)
     return mpfr_sub1sp2 (a, b, c, rnd_mode, p);
+
+  /* special case for p = GMP_NUMB_BITS: we put it *after* mpfr_sub1sp2,
+     in order not to slow down mpfr_sub1sp2, which should be more frequent */
+  if (p == GMP_NUMB_BITS)
+    return mpfr_sub1sp1n (a, b, c, rnd_mode);
 
   /* special case for 2*GMP_NUMB_BITS < p < 3*GMP_NUMB_BITS */
   if (2 * GMP_NUMB_BITS < p && p < 3 * GMP_NUMB_BITS)

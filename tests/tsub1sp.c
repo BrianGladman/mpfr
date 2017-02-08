@@ -47,7 +47,9 @@ bug20170109 (void)
 
 /* check mpfr_sub1sp1 when:
    (1) p = GMP_NUMB_BITS-1, d = GMP_NUMB_BITS and bp[0] = MPFR_LIMB_HIGHBIT
-   (2) p = 2*GMP_NUMB_BITS-1, d = 2*GMP_NUMB_BITS and b = 1000...000 */
+   (2) p = 2*GMP_NUMB_BITS-1, d = 2*GMP_NUMB_BITS and b = 1000...000
+   (3) p = 3*GMP_NUMB_BITS-1, d = 3*GMP_NUMB_BITS and b = 1000...000
+*/
 static void
 test20170208 (void)
 {
@@ -56,6 +58,7 @@ test20170208 (void)
 
   mpfr_inits2 (GMP_NUMB_BITS - 1, a, b, c, (mpfr_ptr) 0);
 
+  /* test (1) */
   mpfr_set_ui_2exp (b, 1, GMP_NUMB_BITS, MPFR_RNDN);
   mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
   inex = mpfr_sub (a, b, c, MPFR_RNDN);
@@ -84,6 +87,7 @@ test20170208 (void)
   MPFR_ASSERTN(MPFR_EXP(a) == GMP_NUMB_BITS);
   MPFR_ASSERTN(inex < 0);
 
+  /* test (2) */
   mpfr_set_prec (a, 2 * GMP_NUMB_BITS - 1);
   mpfr_set_prec (b, 2 * GMP_NUMB_BITS - 1);
   mpfr_set_prec (c, 2 * GMP_NUMB_BITS - 1);
@@ -100,7 +104,7 @@ test20170208 (void)
 
   mpfr_set_ui_2exp (c, 2, 0, MPFR_RNDN);
   mpfr_nextbelow (c);
-  /* now c = 2 - 2^(1-GMP_NUMB_BITS) */
+  /* now c = 2 - 2^(1-2*GMP_NUMB_BITS) */
   inex = mpfr_sub (a, b, c, MPFR_RNDN);
   /* b-c = 2^(2*GMP_NUMB_BITS)-2+2^(1-2*GMP_NUMB_BITS), which should
      round to 2^(2*GMP_NUMB_BITS)-2. We check by directly inspecting the bit
@@ -117,7 +121,101 @@ test20170208 (void)
   MPFR_ASSERTN(MPFR_EXP(a) == 2 * GMP_NUMB_BITS);
   MPFR_ASSERTN(inex < 0);
 
+  /* test (3) */
+  mpfr_set_prec (a, 3 * GMP_NUMB_BITS - 1);
+  mpfr_set_prec (b, 3 * GMP_NUMB_BITS - 1);
+  mpfr_set_prec (c, 3 * GMP_NUMB_BITS - 1);
+  mpfr_set_ui_2exp (b, 1, 3 * GMP_NUMB_BITS, MPFR_RNDN);
+  mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^(3*GMP_NUMB_BITS)-1 which has 3*GMP_NUMB_BITS bits, thus we should
+     round to 3^(2*GMP_NUMB_BITS) (even rule) */
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, 3 * GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, 3 * GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  mpfr_set_ui_2exp (c, 2, 0, MPFR_RNDN);
+  mpfr_nextbelow (c);
+  /* now c = 2 - 2^(1-3*GMP_NUMB_BITS) */
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^(3*GMP_NUMB_BITS)-2+2^(1-3*GMP_NUMB_BITS), which should
+     round to 2^(3*GMP_NUMB_BITS)-2. We check by directly inspecting the bit
+     field of a, since mpfr_cmp_ui might not work if unsigned long is shorter
+     than mp_limb_t, and we don't want to use mpfr_add_ui or mpfr_sub_ui
+     to construct the expected result. */
+  MPFR_ASSERTN(MPFR_MANT(a)[2] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[1] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == 3 * GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(MPFR_MANT(a)[2] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[1] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == 3 * GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
+}
+
+static void
+compare_sub_sub1sp (void)
+{
+  mpfr_t a, b, c, a_ref;
+  mpfr_prec_t p;
+  unsigned long d;
+  int i, inex_ref, inex;
+  mpfr_rnd_t r;
+
+  for (p = 1; p <= 3*GMP_NUMB_BITS; p++)
+    {
+      mpfr_inits2 (p, a, b, c, a_ref, (mpfr_ptr) 0);
+      for (d = 0; d <= p + 2; d++)
+        {
+          /* EXP(b) - EXP(c) = d */
+          for (i = 0; i < 4; i++)
+            {
+              /* for i even, b is the smallest number, for b odd the largest */
+              mpfr_set_ui_2exp (b, 1, d, MPFR_RNDN);
+              if (i & 1)
+                {
+                  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+                  mpfr_nextbelow (b);
+                }
+              mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
+              if (i & 2)
+                {
+                  mpfr_mul_2exp (c, c, 1, MPFR_RNDN);
+                  mpfr_nextbelow (c);
+                }
+              RND_LOOP(r)
+              {
+                /* increase the precision of b to ensure sub1sp is not used */
+                mpfr_prec_round (b, p + 1, MPFR_RNDN);
+                inex_ref = mpfr_sub (a_ref, b, c, r);
+                inex = mpfr_prec_round (b, p, MPFR_RNDN);
+                MPFR_ASSERTN(inex == 0);
+                inex = mpfr_sub1sp (a, b, c, r);
+                if (inex != inex_ref)
+                  {
+                    printf ("mpfr_sub and mpfr_sub1sp differ for r=%s\n",
+                            mpfr_print_rnd_mode (r));
+                    printf ("b="); mpfr_dump (b);
+                    printf ("c="); mpfr_dump (c);
+                    printf ("expected inex=%d and ", inex_ref);
+                    mpfr_dump (a_ref);
+                    printf ("got      inex=%d and ", inex);
+                    mpfr_dump (a);
+                    exit (1);
+                  }
+                MPFR_ASSERTN(mpfr_equal_p (a, a_ref));
+              }
+            }
+        }
+      mpfr_clears (a, b, c, a_ref, (mpfr_ptr) 0);
+    }
 }
 
 int
@@ -127,6 +225,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  compare_sub_sub1sp ();
   test20170208 ();
   bug20170109 ();
   check_special ();
@@ -148,8 +247,8 @@ main (void)
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
       mpfr_dump (y);                                                    \
       printf ("Z="); mpfr_dump (z);                                     \
-      printf ("Real: "); mpfr_dump (x2);                                \
-      printf ("Got : "); mpfr_dump (x);                                 \
+      printf ("Expected: "); mpfr_dump (x2);                            \
+      printf ("Got :     "); mpfr_dump (x);                             \
       abort();                                                          \
     }                                                                   \
  while (0)
@@ -161,8 +260,9 @@ main (void)
              mpfr_print_rnd_mode ((mpfr_rnd_t) r), (unsigned long) p, i); \
       mpfr_dump (y);                                                    \
       printf ("Z="); mpfr_dump (z);                                     \
-      printf ("R="); mpfr_dump (x);                                     \
-      printf ("Wrong inexact flag. Real: %d. Got: %d\n",                \
+      printf ("Expected: "); mpfr_dump (x2);                            \
+      printf ("Got :     "); mpfr_dump (x);                             \
+      printf ("Wrong inexact flag. Expected %d. Got %d\n",              \
               inexact1, inexact2);                                      \
       exit(1);                                                          \
     }                                                                   \
