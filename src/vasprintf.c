@@ -2068,6 +2068,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           format[4 + MPFR_PREC_FORMAT_SIZE] = spec.spec;
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
           length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
+          MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
           if (buf.size <= INT_MAX - length)
             {
               buffer_cat (&buf, s, length);
