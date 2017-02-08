@@ -245,6 +245,138 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
 }
 
+/* Special code for PREC(q) = PREC(u) = PREC(v) = GMP_NUMB_BITS */
+static int
+mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
+{
+  mpfr_limb_ptr qp = MPFR_MANT(q);
+  mpfr_exp_t qx = MPFR_GET_EXP(u) - MPFR_GET_EXP(v);
+  mp_limb_t u0 = MPFR_MANT(u)[0];
+  mp_limb_t v0 = MPFR_MANT(v)[0];
+  mp_limb_t q0, rb, sb, inv, h, l;
+  int extra;
+
+  if ((extra = (u0 >= v0)))
+    u0 -= v0;
+
+#if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
+  /* First compute an approximate quotient. */
+  __gmpfr_invert_limb_approx (inv, v0);
+  umul_ppmm (rb, sb, u0, inv);
+  q0 = u0 + rb;
+  /* rb does not exceed the true quotient floor(u0*2^GMP_NUMB_BITS/v0),
+     with error at most 2, which means the rational quotient q satisfies
+     rb <= q < rb + 3, thus the true quotient is rb, rb+1 or rb+2 */
+  umul_ppmm (h, l, q0, v0);
+  MPFR_ASSERTD(h < u0 || (h == u0 && l == MPFR_LIMB_ZERO));
+  /* subtract {h,l} from {u0,0} */
+  sub_ddmmss (h, l, u0, 0, h, l);
+  /* the remainder {h, l} should be < v0 */
+  /* This while loop is executed at most two times, but does not seem
+     slower than two consecutive identical if-statements. */
+  while (h || l >= v0)
+    {
+      q0 ++;
+      h -= (l < v0);
+      l -= v0;
+    }
+  MPFR_ASSERTD(h == 0 && l < v0);
+#else
+  udiv_qrnnd (q0, l, u0, 0, v0);
+#endif
+
+  /* now (u0 - extra*v0) * 2^GMP_NUMB_BITS = q0*v0 + l with 0 <= l < v0 */
+
+  /* If extra=0, the quotient is q0, the round bit is the most significant bit
+     of l, and sb are the remaining bits from l.
+     If extra=1, the quotient is MPFR_LIMB_HIGHBIT + (q0 >> 1), the round bit
+     is the least significant bit of q0, and sb is l. */
+
+  if (extra == 0)
+    {
+      qp[0] = q0;
+      rb = l & MPFR_LIMB_HIGHBIT;
+      sb = l & ~MPFR_LIMB_HIGHBIT;
+    }
+  else
+    {
+      qp[0] = MPFR_LIMB_HIGHBIT | (q0 >> 1);
+      rb = q0 & MPFR_LIMB_ONE;
+      sb = l;
+      qx ++;
+    }
+
+  MPFR_SIGN(q) = MPFR_MULT_SIGN (MPFR_SIGN (u), MPFR_SIGN (v));
+
+  /* rounding */
+  if (MPFR_UNLIKELY(qx > __gmpfr_emax))
+    return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+
+  /* Warning: underflow should be checked *after* rounding, thus when rounding
+     away and when q > 0.111...111*2^(emin-1), or when rounding to nearest and
+     q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
+  if (MPFR_UNLIKELY(qx < __gmpfr_emin))
+    {
+      /* Note: the case 0.111...111*2^(emin-1) < q < 2^(emin-1) is not possible
+         here since (up to exponent) this would imply 1 - 2^(-p) < u/v < 1,
+         thus v - 2^(-p)*v < u < v, and since we can assume 1/2 <= v < 1, it
+         would imply v - 2^(-p) = v - ulp(v) < u < v, which has no solution. */
+
+      /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
+         we have to change to RNDZ. This corresponds to:
+         (a) either qx < emin - 1
+         (b) or qx = emin - 1 and qp[0] = 1000....000 and rb = sb = 0.
+         Note: in case (b), it suffices to check whether sb = 0, since rb = 1
+         and sb = 0 is not possible (the exact quotient would have p+1 bits,
+         thus u would need at least p+1 bits). */
+      if (rnd_mode == MPFR_RNDN &&
+          (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0)))
+        rnd_mode = MPFR_RNDZ;
+      return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
+    }
+
+  MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
+                        in the cases "goto rounding" above. */
+  if (rb == 0 && sb == 0)
+    {
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      return 0; /* idem than MPFR_RET(0) but faster */
+    }
+  else if (rnd_mode == MPFR_RNDN)
+    {
+      /* It is not possible to have rb <> 0 and sb = 0 here, since it would
+         mean a n-bit by n-bit division gives an exact (n+1)-bit number.
+         And since the case rb = sb = 0 was already dealt with, we cannot
+         have sb = 0. Thus we cannot be in the middle of two numbers. */
+      MPFR_ASSERTD(sb != 0);
+      if (rb == 0)
+        goto truncate;
+      else
+        goto add_one_ulp;
+    }
+  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(q)))
+    {
+    truncate:
+      MPFR_ASSERTD(qx >= __gmpfr_emin);
+      MPFR_RET(-MPFR_SIGN(q));
+    }
+  else /* round away from zero */
+    {
+    add_one_ulp:
+      qp[0] += MPFR_LIMB_ONE;
+      if (qp[0] == 0)
+        {
+          qp[0] = MPFR_LIMB_HIGHBIT;
+          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
+            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
+          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
+          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
+          MPFR_SET_EXP (q, qx + 1);
+        }
+      MPFR_RET(MPFR_SIGN(q));
+    }
+}
+
 /* Special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
    PREC(u) = PREC(v) = PREC(q) */
 static int
@@ -826,7 +958,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
       if (GMP_NUMB_BITS < MPFR_GET_PREC(q) &&
           MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS)
-    return mpfr_div_2 (q, u, v, rnd_mode);
+        return mpfr_div_2 (q, u, v, rnd_mode);
+
+      if (MPFR_GET_PREC(q) == GMP_NUMB_BITS)
+        return mpfr_div_1n (q, u, v, rnd_mode);
     }
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
