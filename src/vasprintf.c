@@ -541,6 +541,7 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTD (*b->curr == '\0');
 }
 
+/* FIXME: if size_t < unsigned int, size_t may be too small. */
 /* Concatenate the LEN first characters of the string S to the buffer B and
    expand it if needed. */
 static void
