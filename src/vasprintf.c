@@ -1755,6 +1755,12 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (length < 0)
     return -1;
 
+  if (spec.size == 0) /* no need to fill the buffer */
+    {
+      buf->curr = buf->start + length;
+      goto clear_and_exit;
+    }
+
   /* right justification padding with left spaces */
   if (np.pad_type == LEFT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
@@ -1809,6 +1815,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.pad_type == RIGHT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 
+ clear_and_exit:
   clear_string_list (np.sl);
   return length;
 }
@@ -2104,12 +2111,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
   va_end (ap2);
   nbchar = buf.curr - buf.start;
-  MPFR_ASSERTD (nbchar == strlen (buf.start));
-  buf.start =
-    (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
-  buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
-                            nbchar is too large (overflow_error) */
-  
+
   if (ptr == NULL) /* implement mpfr_vsnprintf */
     {
       if (size > 0)
@@ -2132,6 +2134,12 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                         the terminating null character */
     }
 
+  MPFR_ASSERTD (nbchar == strlen (buf.start));
+  buf.start =
+    (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+  buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
+                            nbchar is too large (overflow_error) */
+  
   /* below we implement mpfr_vasprintf */
   *ptr = buf.start;
 

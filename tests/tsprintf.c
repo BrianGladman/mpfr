@@ -88,6 +88,11 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               p, fmt);
       printf ("expected: %d\ngot:      %d\n", n0, n1);
+      char format[1024];
+      strncpy (format, "x='", 1024);
+      strncpy (format + 3, fmt, 1021);
+      strncpy (format + 3 + strlen (fmt), "'\n", 1021 - strlen (fmt));
+      mpfr_printf (format, x);
       exit (1);
     }
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
