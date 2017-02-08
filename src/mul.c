@@ -216,8 +216,8 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 {
   mp_limb_t a0;
   mpfr_limb_ptr ap = MPFR_MANT(a);
-  mpfr_limb_ptr bp = MPFR_MANT(b);
-  mpfr_limb_ptr cp = MPFR_MANT(c);
+  mp_limb_t b0 = MPFR_MANT(b)[0];
+  mp_limb_t c0 = MPFR_MANT(c)[0];
   mpfr_exp_t ax;
   mpfr_prec_t sh = GMP_NUMB_BITS - p;
   mp_limb_t rb, sb, mask = MPFR_LIMB_MASK(sh);
@@ -225,12 +225,11 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   /* When prec(b), prec(c) <= GMP_NUMB_BITS / 2, we could replace umul_ppmm
      by a limb multiplication as follows, but we assume umul_ppmm is as fast
      as a limb multiplication on modern processors:
-      a0 = (bp[0] >> (GMP_NUMB_BITS / 2))
-        * (cp[0] >> (GMP_NUMB_BITS / 2));
+      a0 = (b0 >> (GMP_NUMB_BITS / 2)) * (c0 >> (GMP_NUMB_BITS / 2));
       sb = 0;
   */
   ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
-  umul_ppmm (a0, sb, bp[0], cp[0]);
+  umul_ppmm (a0, sb, b0, c0);
   if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
@@ -315,13 +314,13 @@ mpfr_mul_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t a0;
   mpfr_limb_ptr ap = MPFR_MANT(a);
-  mpfr_limb_ptr bp = MPFR_MANT(b);
-  mpfr_limb_ptr cp = MPFR_MANT(c);
+  mp_limb_t b0 = MPFR_MANT(b)[0];
+  mp_limb_t c0 = MPFR_MANT(c)[0];
   mpfr_exp_t ax;
   mp_limb_t rb, sb;
 
   ax = MPFR_GET_EXP(b) + MPFR_GET_EXP(c);
-  umul_ppmm (a0, sb, bp[0], cp[0]);
+  umul_ppmm (a0, sb, b0, c0);
   if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
@@ -343,7 +342,11 @@ mpfr_mul_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Warning: underflow should be checked *after* rounding, thus when rounding
      away and when a > 0.111...111*2^(emin-1), or when rounding to nearest and
-     a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
+     a >= 0.111...111[1]*2^(emin-1), there is no underflow.
+     Note: this case can only occur when the initial a0 (after the umul_ppmm
+     call above) had its most significant bit 0, since the largest a0 is
+     obtained for b0 = c0 = B-1 where B=2^GMP_NUMB_BITS, thus b0*c0 <= (B-1)^2
+     thus a0 <= B-2. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
       if (ax == __gmpfr_emin - 1 && ap[0] == ~MPFR_LIMB_ZERO &&
