@@ -227,16 +227,28 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else /* d >= GMP_NUMB_BITS */
         {
-          /* We compute b - ulp(b), and the remainder ulp(b) - c satisfies:
-             1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1. */
           if (bp[0] > MPFR_LIMB_HIGHBIT)
-            ap[0] = bp[0] - (MPFR_LIMB_ONE << sh);
+            {
+              /* We compute b - ulp(b), and the remainder ulp(b) - c satisfies:
+                 1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1. */
+              ap[0] = bp[0] - (MPFR_LIMB_ONE << sh);
+              rb = 1;
+            }
           else
             {
+              /* Warning: since we have an exponent decrease, when
+                 p = GMP_NUMB_BITS - 1 and d = GMP_NUMB_BITS, the round bit
+                 corresponds to the upper bit of -c. In that case rb = 0 and
+                 sb = 1, except when c0 = MPFR_LIMB_HIGHBIT where rb = 1 and
+                 sb = 0. */
+              rb = sh > 1 || d > GMP_NUMB_BITS || cp[0] == MPFR_LIMB_HIGHBIT;
+              /* sb=1 below is incorrect when p = GMP_NUMB_BITS - 1,
+                 d = GMP_NUMB_BITS and c0 = MPFR_LIMB_HIGHBIT, but in
+                 that case the even rule wound round up too. */
               ap[0] = ~mask;
               bx --;
             }
-          rb = sb = 1;
+          sb = 1;
         }
     }
   else /* cx > bx */
@@ -472,13 +484,23 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       else /* d >= 2*GMP_NUMB_BITS */
         {
           /* We compute b - ulp(b), and the remainder ulp(b) - c satisfies:
-             1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1. */
+             1/2 ulp(b) < ulp(b) - c < ulp(b), thus rb = sb = 1, unless we
+             had an exponent decrease. */
           t = MPFR_LIMB_ONE << sh;
           a0 = bp[0] - t;
           a1 = bp[1] - (bp[0] < t);
           if (a1 < MPFR_LIMB_HIGHBIT)
             {
               /* necessarily we had b = 1000...000 */
+              /* Warning: since we have an exponent decrease, when
+                 p = 2*GMP_NUMB_BITS - 1 and d = 2*GMP_NUMB_BITS, the round bit
+                 corresponds to the upper bit of -c. In that case rb = 0 and
+                 sb = 1, except when c = 1000...000 where rb = 1 and sb = 0. */
+              rb = sh > 1 || d > 2 * GMP_NUMB_BITS
+                || (cp[1] == MPFR_LIMB_HIGHBIT && cp[0] == MPFR_LIMB_ZERO);
+              /* sb=1 below is incorrect when p = 2*GMP_NUMB_BITS - 1,
+                 d = 2*GMP_NUMB_BITS and c = 1000...000, but in
+                 that case the even rule wound round up too. */
               ap[0] = ~mask;
               ap[1] = MPFR_LIMB_MAX;
               bx --;
@@ -487,8 +509,9 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             {
               ap[0] = a0;
               ap[1] = a1;
+              rb = 1;
             }
-          rb = sb = 1;
+          sb = 1;
         }
     }
   else /* cx > bx */

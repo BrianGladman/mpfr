@@ -45,6 +45,81 @@ bug20170109 (void)
   mpfr_clear (c);
 }
 
+/* check mpfr_sub1sp1 when:
+   (1) p = GMP_NUMB_BITS-1, d = GMP_NUMB_BITS and bp[0] = MPFR_LIMB_HIGHBIT
+   (2) p = 2*GMP_NUMB_BITS-1, d = 2*GMP_NUMB_BITS and b = 1000...000 */
+static void
+test20170208 (void)
+{
+  mpfr_t a, b, c;
+  int inex;
+
+  mpfr_inits2 (GMP_NUMB_BITS - 1, a, b, c, NULL);
+
+  mpfr_set_ui_2exp (b, 1, GMP_NUMB_BITS, MPFR_RNDN);
+  mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^GMP_NUMB_BITS-1 which has GMP_NUMB_BITS bits, thus we should
+     round to 2^GMP_NUMB_BITS (even rule) */
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  mpfr_set_ui_2exp (c, 2, 0, MPFR_RNDN);
+  mpfr_nextbelow (c);
+  /* now c = 2 - 2^(1-GMP_NUMB_BITS) */
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^GMP_NUMB_BITS-2+2^(1-GMP_NUMB_BITS), which should
+     round to 2^GMP_NUMB_BITS-2. We check by directly inspecting the bit
+     field of a, since mpfr_cmp_ui might not work if unsigned long is shorter
+     than mp_limb_t, and we don't want to use mpfr_add_ui or mpfr_sub_ui
+     to construct the expected result. */
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+
+  mpfr_set_prec (a, 2 * GMP_NUMB_BITS - 1);
+  mpfr_set_prec (b, 2 * GMP_NUMB_BITS - 1);
+  mpfr_set_prec (c, 2 * GMP_NUMB_BITS - 1);
+  mpfr_set_ui_2exp (b, 1, 2 * GMP_NUMB_BITS, MPFR_RNDN);
+  mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^(2*GMP_NUMB_BITS)-1 which has 2*GMP_NUMB_BITS bits, thus we should
+     round to 2^(2*GMP_NUMB_BITS) (even rule) */
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, 2 * GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, 2 * GMP_NUMB_BITS) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  mpfr_set_ui_2exp (c, 2, 0, MPFR_RNDN);
+  mpfr_nextbelow (c);
+  /* now c = 2 - 2^(1-GMP_NUMB_BITS) */
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  /* b-c = 2^(2*GMP_NUMB_BITS)-2+2^(1-2*GMP_NUMB_BITS), which should
+     round to 2^(2*GMP_NUMB_BITS)-2. We check by directly inspecting the bit
+     field of a, since mpfr_cmp_ui might not work if unsigned long is shorter
+     than mp_limb_t, and we don't want to use mpfr_add_ui or mpfr_sub_ui
+     to construct the expected result. */
+  MPFR_ASSERTN(MPFR_MANT(a)[1] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == 2 * GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+  inex = mpfr_sub1sp (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(MPFR_MANT(a)[1] == (mp_limb_t) -1);
+  MPFR_ASSERTN(MPFR_MANT(a)[0] == (mp_limb_t) -2);
+  MPFR_ASSERTN(MPFR_EXP(a) == 2 * GMP_NUMB_BITS);
+  MPFR_ASSERTN(inex < 0);
+
+  mpfr_clears (a, b, c, NULL);
+}
+
 int
 main (void)
 {
@@ -52,6 +127,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  test20170208 ();
   bug20170109 ();
   check_special ();
   for (p = MPFR_PREC_MIN ; p < 200 ; p++)
