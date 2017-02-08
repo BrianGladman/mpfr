@@ -238,10 +238,9 @@ err-if-output -t "Use MPFR_TMP_LIMBS_ALLOC" \
   grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
 
 # Use simple mp_limb_t constants: MPFR_LIMB_ZERO, MPFR_LIMB_ONE, etc.
-# possibly except in MPFR_STAT_STATIC_ASSERT
 grep '(mp_limb_t) *-\?[01]' $srctests | grep -v '#define MPFR_LIMB_' | \
-  err-if-output -t "Use simple mp_limb_t constants" \
-    grep -v MPFR_STAT_STATIC_ASSERT
+  grep -v 'MPFR_ASSERTN *(MPFR_MANT.*== *(mp_limb_t)' | \
+  err-if-output -t "Use simple mp_limb_t constants" cat
 
 # "~0;" has already been seen in the code. Check also a bit more.
 # Such code is either an error or poorly written, and in this case, quite
