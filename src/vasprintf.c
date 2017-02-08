@@ -1767,6 +1767,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
 
   if (spec.size == 0) /* no need to fill the buffer */
     {
+      /* FIXME: It seems that the buffer was not allocated, so that
+         the code below is undefined behavior. */
       buf->curr += length;
       goto clear_and_exit;
     }
