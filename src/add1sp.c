@@ -99,6 +99,8 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define DEBUG(x) /**/
 #endif
 
+#if !defined(MPFR_GENERIC_ABI)
+
 /* same as mpfr_add1sp, but for p < GMP_NUMB_BITS */
 static int
 mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
@@ -611,6 +613,8 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 }
 
+#endif /* !defined(MPFR_GENERIC_ABI) */
+
 /* compute sign(b) * (|b| + |c|).
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
@@ -639,6 +643,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
+
+#if !defined(MPFR_GENERIC_ABI)
   if (p < GMP_NUMB_BITS)
     return mpfr_add1sp1 (a, b, c, rnd_mode, p);
 
@@ -652,6 +658,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (2 * GMP_NUMB_BITS < p && p < 3 * GMP_NUMB_BITS)
     return mpfr_add1sp3 (a, b, c, rnd_mode, p);
+#endif
 
   /* We need to get the sign before the possible exchange. */
   neg = MPFR_IS_NEG (b);

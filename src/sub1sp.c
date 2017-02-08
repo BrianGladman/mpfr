@@ -89,58 +89,7 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define DEBUG(x) /**/
 #endif
 
-/* Rounding Sub */
-
-/*
-   compute sgn(b)*(|b| - |c|) if |b|>|c| else -sgn(b)*(|c| -|b|)
-   Returns 0 iff result is exact,
-   a negative value when the result is less than the exact value,
-   a positive value otherwise.
-*/
-
-/* A0...Ap-1
- *          Cp Cp+1 ....
- *             <- C'p+1 ->
- * Cp = -1 if calculated from c mantissa
- * Cp = 0  if 0 from a or c
- * Cp = 1  if calculated from a.
- * C'p+1 = First bit not null or 0 if there isn't one
- *
- * Can't have Cp=-1 and C'p+1=1*/
-
-/* RND = MPFR_RNDZ:
- *  + if Cp=0 and C'p+1=0,1,  Truncate.
- *  + if Cp=0 and C'p+1=-1,   SubOneUlp
- *  + if Cp=-1,               SubOneUlp
- *  + if Cp=1,                AddOneUlp
- * RND = MPFR_RNDA (Away)
- *  + if Cp=0 and C'p+1=0,-1, Truncate
- *  + if Cp=0 and C'p+1=1,    AddOneUlp
- *  + if Cp=1,                AddOneUlp
- *  + if Cp=-1,               Truncate
- * RND = MPFR_RNDN
- *  + if Cp=0,                Truncate
- *  + if Cp=1 and C'p+1=1,    AddOneUlp
- *  + if Cp=1 and C'p+1=-1,   Truncate
- *  + if Cp=1 and C'p+1=0,    Truncate if Ap-1=0, AddOneUlp else
- *  + if Cp=-1 and C'p+1=-1,  SubOneUlp
- *  + if Cp=-1 and C'p+1=0,   Truncate if Ap-1=0, SubOneUlp else
- *
- * If AddOneUlp:
- *   If carry, then it is 11111111111 + 1 = 10000000000000
- *      ap[n-1]=MPFR_HIGHT_BIT
- * If SubOneUlp:
- *   If we lose one bit, it is 1000000000 - 1 = 0111111111111
- *      Then shift, and put as last bit x which is calculated
- *              according Cp, Cp-1 and rnd_mode.
- * If Truncate,
- *    If it is a power of 2,
- *       we may have to suboneulp in some special cases.
- *
- * To simplify, we don't use Cp = 1.
- *
- */
-
+#if !defined(MPFR_GENERIC_ABI)
 /* special code for p < GMP_NUMB_BITS */
 static int
 mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
@@ -1088,6 +1037,59 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       MPFR_RET(MPFR_SIGN(a));
     }
 }
+#endif /* !defined(MPFR_GENERIC_ABI) */
+
+/* Rounding Sub */
+
+/*
+   compute sgn(b)*(|b| - |c|) if |b|>|c| else -sgn(b)*(|c| -|b|)
+   Returns 0 iff result is exact,
+   a negative value when the result is less than the exact value,
+   a positive value otherwise.
+*/
+
+/* A0...Ap-1
+ *          Cp Cp+1 ....
+ *             <- C'p+1 ->
+ * Cp = -1 if calculated from c mantissa
+ * Cp = 0  if 0 from a or c
+ * Cp = 1  if calculated from a.
+ * C'p+1 = First bit not null or 0 if there isn't one
+ *
+ * Can't have Cp=-1 and C'p+1=1*/
+
+/* RND = MPFR_RNDZ:
+ *  + if Cp=0 and C'p+1=0,1,  Truncate.
+ *  + if Cp=0 and C'p+1=-1,   SubOneUlp
+ *  + if Cp=-1,               SubOneUlp
+ *  + if Cp=1,                AddOneUlp
+ * RND = MPFR_RNDA (Away)
+ *  + if Cp=0 and C'p+1=0,-1, Truncate
+ *  + if Cp=0 and C'p+1=1,    AddOneUlp
+ *  + if Cp=1,                AddOneUlp
+ *  + if Cp=-1,               Truncate
+ * RND = MPFR_RNDN
+ *  + if Cp=0,                Truncate
+ *  + if Cp=1 and C'p+1=1,    AddOneUlp
+ *  + if Cp=1 and C'p+1=-1,   Truncate
+ *  + if Cp=1 and C'p+1=0,    Truncate if Ap-1=0, AddOneUlp else
+ *  + if Cp=-1 and C'p+1=-1,  SubOneUlp
+ *  + if Cp=-1 and C'p+1=0,   Truncate if Ap-1=0, SubOneUlp else
+ *
+ * If AddOneUlp:
+ *   If carry, then it is 11111111111 + 1 = 10000000000000
+ *      ap[n-1]=MPFR_HIGHT_BIT
+ * If SubOneUlp:
+ *   If we lose one bit, it is 1000000000 - 1 = 0111111111111
+ *      Then shift, and put as last bit x which is calculated
+ *              according Cp, Cp-1 and rnd_mode.
+ * If Truncate,
+ *    If it is a power of 2,
+ *       we may have to suboneulp in some special cases.
+ *
+ * To simplify, we don't use Cp = 1.
+ *
+ */
 
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
@@ -1113,6 +1115,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Read prec and num of limbs */
   p = MPFR_GET_PREC (b);
 
+#if !defined(MPFR_GENERIC_ABI)
   /* special case for p < GMP_NUMB_BITS */
   if (p < GMP_NUMB_BITS)
     return mpfr_sub1sp1 (a, b, c, rnd_mode, p);
@@ -1129,6 +1132,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* special case for 2*GMP_NUMB_BITS < p < 3*GMP_NUMB_BITS */
   if (2 * GMP_NUMB_BITS < p && p < 3 * GMP_NUMB_BITS)
     return mpfr_sub1sp3 (a, b, c, rnd_mode, p);
+#endif
 
   n = MPFR_PREC2LIMBS (p);
   /* Fast cmp of |b| and |c| */
