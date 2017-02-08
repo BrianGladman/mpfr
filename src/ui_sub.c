@@ -64,7 +64,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     MPFR_SAVE_EXPO_DECL (expo);
 
     MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
-    MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
+    MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
     /* So, u fits in a mp_limb_t, which justifies the casts below. */
     MPFR_ASSERTD (u != 0);
     count_leading_zeros (cnt, (mp_limb_t) u);
