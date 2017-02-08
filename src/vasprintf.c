@@ -1757,7 +1757,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
 
   if (spec.size == 0) /* no need to fill the buffer */
     {
-      buf->curr = buf->start + length;
+      buf->curr += length;
       goto clear_and_exit;
     }
 
