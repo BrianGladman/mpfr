@@ -20,6 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <float.h> /* for DBL_MAX */
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -287,6 +289,53 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   return inex;
 }
 
+/* return add = 1 + floor(log(c^3*(13+m1))/log(2))
+   where c = (1+eps)*(1+eps*max(8,m1)),
+   m1 = 1 + max(1/eps,2*sd)*(1+eps),
+   eps = 2^(-precz-14)
+   sd = abs(s-1)
+ */
+static long
+compute_add (mpfr_srcptr s, mpfr_prec_t precz)
+{
+  mpfr_t t, u, m1;
+  long add;
+
+  mpfr_inits2 (64, t, u, m1, (mpfr_ptr) 0);
+  if (mpfr_cmp_ui (s, 1) >= 0)
+    mpfr_sub_ui (t, s, 1, MPFR_RNDU);
+  else
+    mpfr_ui_sub (t, 1, s, MPFR_RNDU);
+  /* now t = sd = abs(s-1), rounded up */
+  mpfr_set_ui_2exp (u, 1, - precz - 14, MPFR_RNDU);
+  /* u = eps */
+  /* since 1/eps = 2^(precz+14), if EXP(sd) >= precz+14, then
+     sd >= 1/2*2^(precz+14) thus 2*sd >= 2^(precz+14) >= 1/eps */
+  if (mpfr_get_exp (t) >= precz + 14)
+    mpfr_mul_2exp (t, t, 1, MPFR_RNDU);
+  else
+    mpfr_set_ui_2exp (t, 1, precz + 14, MPFR_RNDU);
+  /* now t = max(1/eps,2*sd) */
+  mpfr_add_ui (u, u, 1, MPFR_RNDU); /* u = 1+eps, rounded up */
+  mpfr_mul (t, t, u, MPFR_RNDU); /* t = max(1/eps,2*sd)*(1+eps) */
+  mpfr_add_ui (m1, t, 1, MPFR_RNDU);
+  if (mpfr_get_exp (m1) <= 3)
+    mpfr_set_ui (t, 8, MPFR_RNDU);
+  else
+    mpfr_set (t, m1, MPFR_RNDU);
+  /* now t = max(8,m1) */
+  mpfr_div_2exp (t, t, precz + 14, MPFR_RNDU); /* eps*max(8,m1) */
+  mpfr_add_ui (t, t, 1, MPFR_RNDU); /* 1+eps*max(8,m1) */
+  mpfr_mul (t, t, u, MPFR_RNDU); /* t = c */
+  mpfr_add_ui (u, m1, 13, MPFR_RNDU); /* 13+m1 */
+  mpfr_mul (u, u, t, MPFR_RNDU); /* c*(13+m1) */
+  mpfr_sqr (t, t, MPFR_RNDU); /* c^2 */
+  mpfr_mul (u, u, t, MPFR_RNDU); /* c^3*(13+m1) */
+  add = mpfr_get_exp (u);
+  mpfr_clears (t, u, m1, (mpfr_ptr) 0);
+  return add;
+}
+
 int
 mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 {
@@ -416,7 +465,8 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       m1 = 1.0 + MAX(1.0 / eps,  2.0 * sd) * (1.0 + eps);
       c = (1.0 + eps) * (1.0 + eps * MAX(8.0, m1));
       /* add = 1 + floor(log(c*c*c*(13 + m1))/log(2)); */
-      add = __gmpfr_ceil_log2 (c * c * c * (13.0 + m1));
+      c = c * c * c * (13.0 + m1);
+      add = (c <= DBL_MAX) ? __gmpfr_ceil_log2 (c) : compute_add (s, precz);
       prec1 = precz + add;
       /* FIXME: To avoid that the working precision (prec1) depends on the
          input precision, one would need to take into account the error made
