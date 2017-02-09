@@ -21,12 +21,23 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* FIXME: There are inconsistencies between size types used here:
-   sometimes size_t, sometimes int, while size_t < unsigned int and
-   unsigned int < size_t are both possible. Since the *printf functions
-   return an int for the size, always use an int, and unsigned int if
-   one needs to take the ending \0 into account (checking overflow can
-   be done with unsigned int too)? */
+  /* If the number of output characters is larger than INT_MAX, the
+     ISO C99 standard is silent, but POSIX says concerning the snprintf()
+     function:
+     "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
+     number of bytes needed to hold the output excluding the
+     terminating null is greater than {INT_MAX}." See:
+     http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
+     But it doesn't say anything concerning the other printf-like functions.
+     A defect report has been submitted to austin-review-l (item 2532).
+     So, for the time being, we return a negative value and set the erange
+     flag, and set errno to EOVERFLOW in POSIX system. */
+
+/* Note: Due to limitations from the C standard and GMP, if
+   size_t < unsigned int (which is allowed by the C standard but unlikely
+   to occur on any platform), the behavior is undefined for output that
+   would reach SIZE_MAX (if the result cannot be delivered, there should
+   be an assertion failure, but this could not be tested). */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -483,7 +494,10 @@ typedef wint_t mpfr_va_wint;
   } while (0)
 
 /* process the format part which does not deal with mpfr types,
-   jump to external label 'error' if gmp_asprintf return -1. */
+   jump to external label 'error' if gmp_asprintf return -1.
+   Note: start and end are pointers to the format string, so that
+   size_t is the best type to express the difference.
+ */
 #define FLUSH(flag, start, end, ap, buf_ptr)                            \
   do {                                                                  \
     const size_t n = (end) - (start);                                   \
@@ -514,15 +528,40 @@ struct string_buffer
   char *start;                  /* beginning of the buffer */
   char *curr;                   /* null terminating character */
   size_t size;                  /* buffer capacity */
+  int len;                      /* string length or -1 if overflow */
 };
 
 static void
 buffer_init (struct string_buffer *b, size_t s)
 {
-  b->start = (char *) (*__gmp_allocate_func) (s);
-  b->start[0] = '\0';
-  b->curr = b->start;
+  if (s != 0)
+    {
+      b->start = (char *) (*__gmp_allocate_func) (s);
+      b->start[0] = '\0';
+      b->curr = b->start;
+    }
   b->size = s;
+  b->len = 0;
+}
+
+/* Increase the len field of the buffer. Return non-zero if overflow. */
+static int
+buffer_incr_len (struct string_buffer *b, size_t len)
+{
+  if (b->len == -1)
+    return 1;
+  else
+    {
+      size_t newlen = b->len + len;
+
+      if (MPFR_UNLIKELY (newlen < len || newlen > INT_MAX))
+        return 1;
+      else
+        {
+          b->len = newlen;
+          return 0;
+        }
+    }
 }
 
 /* Increase buffer size by a number of character being the least multiple of
@@ -533,10 +572,13 @@ buffer_widen (struct string_buffer *b, size_t len)
   const size_t pos = b->curr - b->start;
   const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
 
+  /* An overflow is not possible since it would have been detected
+     in buffer_incr_len, called first (see buffer_* functions). */
+  MPFR_ASSERTD (n >= 0x1000 && n >= len);
+
   MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (pos < b->size);
 
-  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= (size_t)(SIZE_MAX - 4096));
   MPFR_ASSERTN (b->size < SIZE_MAX - n);
 
   b->start =
@@ -549,112 +591,145 @@ buffer_widen (struct string_buffer *b, size_t len)
 }
 
 /* Concatenate the LEN first characters of the string S to the buffer B and
-   expand it if needed. */
-static void
+   expand it if needed. Return non-zero if overflow. */
+static int
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
-  MPFR_ASSERTD (*b->curr == '\0');
-  MPFR_ASSERTD (len != 0);
+  MPFR_ASSERTD (len > 0);
   MPFR_ASSERTD (len <= strlen (s));
 
-  if (MPFR_UNLIKELY ((b->curr + len) >= (b->start + b->size)))
-    buffer_widen (b, len);
+  if (buffer_incr_len (b, len))
+    return 1;
 
-  /* strncat is similar to strncpy here, except that strncat ensures
-     that the buffer will be null-terminated. */
-  strncat (b->curr, s, len);
-  b->curr += len;
+  if (b->size != 0)
+    {
+      MPFR_ASSERTD (*b->curr == '\0');
+      MPFR_ASSERTN (b->size < SIZE_MAX - len);
+      if (MPFR_UNLIKELY (b->curr + len >= b->start + b->size))
+        buffer_widen (b, len);
 
-  MPFR_ASSERTD (b->curr < b->start + b->size);
-  MPFR_ASSERTD (*b->curr == '\0');
+      /* strncat is similar to strncpy here, except that strncat ensures
+         that the buffer will be null-terminated. */
+      strncat (b->curr, s, len);
+      b->curr += len;
+
+      MPFR_ASSERTD (b->curr < b->start + b->size);
+      MPFR_ASSERTD (*b->curr == '\0');
+    }
+
+  return 0;
 }
 
-/* Add N characters C to the end of buffer B */
-static void
+/* Add N characters C to the end of buffer B. Return non-zero if overflow. */
+static int
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
-  MPFR_ASSERTD (*b->curr == '\0');
-  MPFR_ASSERTD (n != 0);
+  MPFR_ASSERTD (n > 0);
 
-  MPFR_ASSERTN (b->size < SIZE_MAX - n - 1);
-  if (MPFR_UNLIKELY ((b->curr + n + 1) > (b->start + b->size)))
-    buffer_widen (b, n);
+  if (buffer_incr_len (b, n))
+    return 1;
 
-  if (n == 1)
-    *b->curr = c;
-  else
-    memset (b->curr, c, n);
-  b->curr += n;
-  *b->curr = '\0';
+  if (b->size != 0)
+    {
+      MPFR_ASSERTD (*b->curr == '\0');
+      MPFR_ASSERTN (b->size < SIZE_MAX - n);
+      if (MPFR_UNLIKELY (b->curr + n >= b->start + b->size))
+        buffer_widen (b, n);
 
-  MPFR_ASSERTD (b->curr < b->start + b->size);
+      if (n == 1)
+        *b->curr = c;
+      else
+        memset (b->curr, c, n);
+      b->curr += n;
+      *b->curr = '\0';
+
+      MPFR_ASSERTD (b->curr < b->start + b->size);
+    }
+
+  return 0;
 }
 
 /* Form a string by concatenating the first LEN characters of STR to TZ
    zero(s), insert into one character C each 3 characters starting from end
    to beginning and concatenate the result to the buffer B. */
-static void
+static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
-  const size_t step = 3;
-  const size_t size = len + tz;
-  const size_t r = size % step == 0 ? step : size % step;
-  const size_t q = size % step == 0 ? size / step - 1 : size / step;
-  size_t i;
-
-  MPFR_ASSERTD (*b->curr == '\0');
-  MPFR_ASSERTD (size != 0);
+  MPFR_ASSERTD (len <= strlen (str));
 
   if (c == '\0')
-    {
-      buffer_cat (b, str, len);
+    return
+      buffer_cat (b, str, len) ||
       buffer_pad (b, '0', tz);
-      return;
-    }
-
-  MPFR_ASSERTN (b->size < SIZE_MAX - size - 1 - q);
-  MPFR_ASSERTD (len <= strlen (str));
-  if (MPFR_UNLIKELY ((b->curr + size + 1 + q) > (b->start + b->size)))
-    buffer_widen (b, size + q);
-
-  /* first R significant digits */
-  memcpy (b->curr, str, r);
-  b->curr += r;
-  str += r;
-  len -= r;
-
-  /* blocks of thousands. Warning: STR might end in the middle of a block */
-  for (i = 0; i < q; ++i)
+  else
     {
-      *b->curr++ = c;
-      if (MPFR_LIKELY (len > 0))
+      const size_t step = 3;
+      const size_t size = len + tz;
+      const size_t r = size % step == 0 ? step : size % step;
+      const size_t q = size % step == 0 ? size / step - 1 : size / step;
+      const size_t fullsize = size + q;
+      size_t i;
+
+      MPFR_ASSERTD (size > 0);
+
+      if (buffer_incr_len (b, fullsize))
+        return 1;
+
+      if (b->size != 0)
         {
-          if (MPFR_LIKELY (len >= step))
-            /* step significant digits */
+          char *oldcurr;
+
+          MPFR_ASSERTD (*b->curr == '\0');
+          MPFR_ASSERTN (b->size < SIZE_MAX - fullsize);
+          if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
+            buffer_widen (b, fullsize);
+
+          MPFR_DBGRES (oldcurr = b->curr);
+
+          /* first R significant digits */
+          memcpy (b->curr, str, r);
+          b->curr += r;
+          str += r;
+          len -= r;
+
+          /* blocks of thousands. Warning: STR might end in the middle of a block */
+          for (i = 0; i < q; ++i)
             {
-              memcpy (b->curr, str, step);
-              len -= step;
+              *b->curr++ = c;
+              if (MPFR_LIKELY (len > 0))
+                {
+                  if (MPFR_LIKELY (len >= step))
+                    /* step significant digits */
+                    {
+                      memcpy (b->curr, str, step);
+                      len -= step;
+                    }
+                  else
+                    /* last digits in STR, fill up thousand block with zeros */
+                    {
+                      memcpy (b->curr, str, len);
+                      memset (b->curr + len, '0', step - len);
+                      len = 0;
+                    }
+                }
+              else
+                /* trailing zeros */
+                memset (b->curr, '0', step);
+
+              b->curr += step;
+              str += step;
             }
-          else
-            /* last digits in STR, fill up thousand block with zeros */
-            {
-              memcpy (b->curr, str, len);
-              memset (b->curr + len, '0', step - len);
-              len = 0;
-            }
+
+          MPFR_ASSERTD (b->curr - oldcurr == fullsize);
+
+          *b->curr = '\0';
+
+          MPFR_ASSERTD (b->curr < b->start + b->size);
         }
-      else
-        /* trailing zeros */
-        memset (b->curr, '0', step);
 
-      b->curr += step;
-      str += step;
+      return 0;
     }
-
-  *b->curr = '\0';
-
-  MPFR_ASSERTD (b->curr < b->start + b->size);
 }
 
 /* let gmp_xprintf process the part it can understand */
@@ -664,11 +739,9 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
   int length;
   char *s;
 
-  MPFR_ASSERTD (*b->curr == '\0');
-
   length = gmp_vasprintf (&s, fmt, ap);
-  if (length > 0)
-    buffer_cat (b, s, length);
+  if (length > 0 && buffer_cat (b, s, length))
+    length = -1;  /* overflow in buffer_cat */
 
   mpfr_free_str (s);
   return length;
@@ -1772,8 +1845,13 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (length < 0)
     return -1;
 
-  if (spec.size == 0) /* no need to fill the buffer */
-    goto clear_and_exit;
+  if (spec.size == 0)
+    {
+      /* This is equivalent to the following code (no need to fill the buffer
+         and length is known). */
+      buffer_incr_len (buf, length);
+      goto clear_and_exit;
+    }
 
   /* right justification padding with left spaces */
   if (np.pad_type == LEFT && np.pad_size != 0)
@@ -1831,7 +1909,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
 
  clear_and_exit:
   clear_string_list (np.sl);
-  return length;
+  return buf->len == -1 ? -1 : length;
 }
 
 /* the following internal function implements both mpfr_vasprintf and
@@ -1860,8 +1938,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_SAVE_EXPO_MARK (expo);
 
-  nbchar = 0;
-  buffer_init (&buf, 4096);
+  buffer_init (&buf, ptr != NULL || size != 0 ? 4096 : 0);
   xgmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
@@ -2057,6 +2134,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */
           size_t length;
           mpfr_prec_t prec;
+          int err;
+
           prec = va_arg (ap, mpfr_prec_t);
 
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
@@ -2075,16 +2154,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
           length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
           MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
-          if (buf.size <= INT_MAX - length)
-            {
-              buffer_cat (&buf, s, length);
-              mpfr_free_str (s);
-            }
-          else
-            {
-              mpfr_free_str (s);
-              goto overflow_error;
-            }
+          err = buffer_cat (&buf, s, length);
+          mpfr_free_str (s);
+          if (err)
+            goto overflow_error;
         }
       else if (spec.arg_type == MPFR_ARG)
         /* output a mpfr_t variable */
@@ -2110,8 +2183,6 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
           if (ptr == NULL)
             spec.size = size;
-          /* FIXME: Maintain a separate length for things not written in
-             the buffer? */
           if (sprnt_fp (&buf, p, spec) < 0)
             goto overflow_error;
         }
@@ -2127,59 +2198,34 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     FLUSH (xgmp_fmt_flag, start, fmt, ap2, &buf);
 
   va_end (ap2);
-  /* FIXME:
-     1. Add the separate length for things not written in the buffer.
-     2. Possible overflow in the subtraction? If yes, a solution would
-        be to compute the length in a separate field, solving (1) at
-        the same time. */
-  nbchar = buf.curr - buf.start;
+  MPFR_ASSERTD (buf.len >= 0);  /* overflow already detected */
+  nbchar = buf.len;
 
-  if (ptr == NULL) /* implement mpfr_vsnprintf */
+  if (ptr != NULL)  /* implement mpfr_vasprintf */
     {
-      if (size > 0)
+      MPFR_ASSERTD (nbchar == strlen (buf.start));
+      *ptr = (char *)
+        (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+    }
+  else if (size > 0)  /* implement mpfr_vsnprintf */
+    {
+      if (nbchar < size)
         {
-          if (nbchar < size)
-            {
-              strncpy (Buf, buf.start, nbchar);
-              Buf[nbchar] = '\0';
-            }
-          else
-            {
-              strncpy (Buf, buf.start, size - 1);
-              Buf[size-1] = '\0';
-            }
+          strncpy (Buf, buf.start, nbchar);
+          Buf[nbchar] = '\0';
         }
-      MPFR_SAVE_EXPO_FREE (expo);
+      else
+        {
+          strncpy (Buf, buf.start, size - 1);
+          Buf[size-1] = '\0';
+        }
       (*__gmp_free_func) (buf.start, buf.size);
-      return nbchar; /* return the number of characters that would have been
-                        written had 'size' be sufficiently large, not counting
-                        the terminating null character */
     }
 
-  MPFR_ASSERTD (nbchar == strlen (buf.start));
-  buf.start =
-    (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
-  buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
-                            nbchar is too large (overflow_error) */
-
-  /* below we implement mpfr_vasprintf */
-  *ptr = buf.start;
-
-  /* If nbchar is larger than INT_MAX, the ISO C99 standard is silent, but
-     POSIX says concerning the snprintf() function:
-     "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
-     number of bytes needed to hold the output excluding the
-     terminating null is greater than {INT_MAX}." See:
-     http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
-     But it doesn't say anything concerning the other printf-like functions.
-     A defect report has been submitted to austin-review-l (item 2532).
-     So, for the time being, we return a negative value and set the erange
-     flag, and set errno to EOVERFLOW in POSIX system. */
-  if (nbchar <= INT_MAX)
-    {
-      MPFR_SAVE_EXPO_FREE (expo);
-      return nbchar;
-    }
+  MPFR_SAVE_EXPO_FREE (expo);
+  return nbchar; /* return the number of characters that would have been
+                    written had 'size' be sufficiently large, not counting
+                    the terminating null character */
 
  overflow_error:
   MPFR_SAVE_EXPO_UPDATE_FLAGS(expo, MPFR_FLAGS_ERANGE);
