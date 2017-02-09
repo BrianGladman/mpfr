@@ -128,6 +128,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   rp[0] = r0 & ~mask;
 
   /* rounding: sb = 0 implies rb = 0, since (rb,sb)=(1,0) is not possible */
+  MPFR_ASSERTD (rb == 0 || sb != 0);
 
   /* Note: if 1 and 2 are in [emin,emax], no overflow nor underflow
      is possible */
@@ -156,6 +157,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_EXP (r) = exp_r;
   if (sb == 0) /* implies rb = 0 */
     {
+      MPFR_ASSERTD (rb == 0);
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
       return 0; /* idem than MPFR_RET(0) but faster */
