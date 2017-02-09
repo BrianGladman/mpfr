@@ -38,6 +38,8 @@ ARPREC=$(GMP)
 CRLIBM=$(GMP)
 LIDIA=/localdisk/lidia/
 
+GMP_INCLUDE=$(GMP)/include
+
 MPFR_INCLUDE=$(MPFR)/include
 MPFR_LIB=$(MPFR)/lib
 
