@@ -189,7 +189,7 @@ test2 (void)
    depends on the extended exponent range): r10804 fails when the
    exponent field is on 32 bits. */
 static void
-interm_overflow (void)
+intermediate_overflow (void)
 {
   mpfr_t x, y1, y2;
   mpfr_flags_t flags1, flags2;
@@ -212,7 +212,7 @@ interm_overflow (void)
         SAME_SIGN (inex1, inex2) &&
         flags1 == flags2))
     {
-      printf ("Error in interm_overflow\n");
+      printf ("Error in intermediate_overflow\n");
       printf ("Expected ");
       mpfr_dump (y1);
       printf ("with inex = %d and flags =", inex1);
@@ -482,7 +482,7 @@ main (int argc, char *argv[])
   test_generic (MPFR_PREC_MIN, 70, 1);
   test2 ();
 
-  interm_overflow ();
+  intermediate_overflow ();
 
   tests_end_mpfr ();
   return 0;
