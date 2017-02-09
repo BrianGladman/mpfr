@@ -493,7 +493,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   int inexact; /* return ternary flag */
   mpfr_exp_t expr;
   mpfr_prec_t rq = MPFR_GET_PREC (r);
-  mpfr_prec_t uq = MPFR_GET_PREC (u);
   MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC
@@ -537,17 +536,21 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   MPFR_SET_POS(r);
 
 #if !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64
-  if (rq == uq)
-    {
-      if (rq < GMP_NUMB_BITS)
-        return mpfr_sqrt1 (r, u, rnd_mode);
+  {
+    mpfr_prec_t uq = MPFR_GET_PREC (u);
 
-      if (GMP_NUMB_BITS < rq && rq < 2*GMP_NUMB_BITS)
-        return mpfr_sqrt2 (r, u, rnd_mode);
+    if (rq == uq)
+      {
+        if (rq < GMP_NUMB_BITS)
+          return mpfr_sqrt1 (r, u, rnd_mode);
 
-      if (rq == GMP_NUMB_BITS)
-        return mpfr_sqrt1n (r, u, rnd_mode);
-    }
+        if (GMP_NUMB_BITS < rq && rq < 2*GMP_NUMB_BITS)
+          return mpfr_sqrt2 (r, u, rnd_mode);
+
+        if (rq == GMP_NUMB_BITS)
+          return mpfr_sqrt1n (r, u, rnd_mode);
+      }
+  }
 #endif
 
   MPFR_TMP_MARK (marker);
