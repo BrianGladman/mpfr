@@ -1751,6 +1751,13 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
           /* here we cannot call mpfr_get_str_aux since we need the full
              significand in dec_info.str */
+          /* FIXME: It may happen that in practical cases, the number of
+             output digits remains limited (this is the case when the
+             input number has a limited precision and a limited exponent
+             in absolute value, e.g. for numbers representable in the
+             IEEE 754-2008 basic formats), even though the requested
+             precision is huge. We should be able to determine a bound
+             on the number of digits and use it for mpfr_get_str. */
           dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
                                        p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);
