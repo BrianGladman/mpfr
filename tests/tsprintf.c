@@ -1323,6 +1323,10 @@ bug21056 (void)
   /* since trailing zeros are removed with %g, we get less digits */
   MPFR_ASSERTN(r == 309);
 
+  ndigits = INT_MAX - 1;
+  r = mpfr_snprintf (0, 0, "%#.*RDg", ndigits, x);
+  MPFR_ASSERTN(r == ndigits + 1);
+
   mpfr_clear (x);
 }
 
