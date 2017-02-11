@@ -45,16 +45,7 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
   */
   ax = MPFR_GET_EXP(b) * 2;
   umul_ppmm (a0, sb, b0, b0);
-  /* Instead of comparing a0 to MPFR_LIMB_HIGHBIT, we compare b0 to the
-     smallest value giving a0 >= MPFR_LIMB_HIGHBIT. This should be more
-     efficient since we don't have to wait the result of umul_ppmm to know
-     which branch to take. */
-#if GMP_NUMB_BITS == 32
-#define MAGIC 3037000500UL /* ceil(sqrt(2^63)) */
-#else /* GMP_NUMB_BITS = 64 */
-#define MAGIC 13043817825332782213UL /* ceil(sqrt(2^127)) */
-#endif
-  if (b0 < MAGIC) /* equivalent to a0 < MPFR_LIMB_HIGHBIT */
+  if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
@@ -147,7 +138,7 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 
   ax = MPFR_GET_EXP(b) * 2;
   umul_ppmm (a0, sb, b0, b0);
-  if (b0 < MAGIC) /* equivalent to a0 < MPFR_LIMB_HIGHBIT */
+  if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
