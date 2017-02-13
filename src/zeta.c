@@ -337,7 +337,7 @@ compute_add (mpfr_srcptr s, mpfr_prec_t precz)
 }
 
 /* return in z a lower bound (for rnd = RNDD) or upper bound (for rnd = RNDU)
-   of |zeta(s)|, using:
+   of |zeta(s)|/2, using:
    log(|zeta(s)|/2) = (s-1)*log(2*pi) + lngamma(1-s)
    + log(abs(sin(Pi*s/2)) * zeta(1-s)).
    Assumes s < 1/2 and s1 = 1-s exactly, thus s1 > 1/2.
@@ -408,8 +408,6 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
   mpfr_exp (z, z, rnd);
   if (rnd == MPFR_RNDD)
     mpfr_nextbelow (p); /* restore original p */
-  /* multiply by 2 */
-  mpfr_mul_2ui (z, z, 1, rnd);
 }
 
 int
@@ -594,19 +592,16 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                  5. Round then multiply by 2. Here, an overflow in either
                  operation means a real overflow. */
               mpfr_reflection_overflow (z_pre, s1, s, y, p, MPFR_RNDD);
-              /* z_pre is a the rounding of a lower bound of |zeta(s)|, thus
-		 if z_pre overflows, then |zeta(s)| overflows too. We assume
-		 here that if z_pre is the largest floating-point, there is
-		 overflow too. */
-	      mpfr_nextabove (z_pre);
-              if (MPFR_IS_INF (z_pre)) /* determine the sign of overflow */
-                {
+              /* z_pre is a lower bound of |zeta(s)|/2, thus if it overflows,
+                 or has exponent emax, then |zeta(s)| overflows too. */
+              if (MPFR_IS_INF (z_pre) || MPFR_GET_EXP(z_pre) == __gmpfr_emax)
+                { /* determine the sign of overflow */
                   mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
                   mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
                   overflow = (mpfr_cmp_si_2exp (s1, -1, -1) > 0) ? -1 : 1;
                   break;
                 }
-	      else
+	      else /* EXP(z_pre) < __gmpfr_emax */
 		{
 		  int ok = 0;
 		  mpfr_t z_down;
@@ -614,22 +609,25 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 		  mpfr_reflection_overflow (z_up, s1, s, y, p, MPFR_RNDU);
 		  /* if the lower approximation z_pre does not overflow, but
 		     z_up does, we need more precision */
-		  if (MPFR_IS_INF (z_up))
+		  if (MPFR_IS_INF (z_up) || MPFR_GET_EXP(z_up) == __gmpfr_emax)
 		    goto next_loop;
 		  /* check if z_pre and z_up round to the same number */
 		  mpfr_init2 (z_down, precz);
 		  mpfr_set (z_down, z_pre, rnd_mode);
+		  /* Note: it might be that EXP(z_down) = emax here, in that
+		     case we will have overflow below when we multiply by 2 */
 		  mpfr_prec_round (z_up, precz, rnd_mode);
 		  ok = mpfr_cmp (z_down, z_up) == 0;
 		  mpfr_clear (z_up);
 		  mpfr_clear (z_down);				   
 		  if (ok)
 		    {
-		      /* get correct sign */
+		      /* get correct sign and multiply by 2 */
 		      mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
 		      mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
 		      if (mpfr_cmp_si_2exp (s1, -1, -1) > 0)
 			mpfr_neg (z_pre, z_pre, rnd_mode);
+		      mpfr_mul_2ui (z_pre, z_pre, 1, rnd_mode);
 		      break;
 		    }
 		  else
