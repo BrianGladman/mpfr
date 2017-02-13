@@ -1769,7 +1769,9 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              in absolute value, e.g. for numbers representable in the
              IEEE 754-2008 basic formats), even though the requested
              precision is huge. We should be able to determine a bound
-             on the number of digits and use it for mpfr_get_str. */
+             on the number of digits and use it for mpfr_get_str. Even
+             when there is plenty of memory, this should also greatly
+             improve the performance. */
           dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
                                        p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);
