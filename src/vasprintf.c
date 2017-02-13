@@ -999,6 +999,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          - if no given precision, let mpfr_get_str determine it;
          - if a non-zero precision is specified, then one digit before decimal
          point plus SPEC.PREC after it. */
+      MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
       nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
       str = mpfr_get_str_aux (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
@@ -1204,6 +1205,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
          plus SPEC.PREC after it.
          We use the fact here that mpfr_get_str allows us to ask for only one
          significant digit when the base is not a power of 2. */
+      MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
       nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
       str = mpfr_get_str_aux (&exp, 10, nsd, p, spec);
       register_string (np->sl, str);
