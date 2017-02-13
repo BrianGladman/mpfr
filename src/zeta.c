@@ -350,6 +350,8 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
 {
   mpz_t sint;
 
+  MPFR_ASSERTD (rnd == MPFR_RNDD || rnd == MPFR_RNDU);
+
   /* since log(abs(sin(Pi*s/2)) <= 0, we want to round zeta(1-s) upward
      and log(abs(sin(Pi*s/2)) toward -infinity */
   mpz_init (sint);
@@ -363,7 +365,7 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
         {
           mpfr_mul (y, p, s, rnd);
 	  if (rnd == MPFR_RNDD)
-	    mpfr_nextabove (p);
+	    mpfr_nextabove (p); /* we will need p rounded above afterwards */
         }
       else /* sin(Pi*x) is decreasing: round up */
         {
@@ -619,7 +621,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 		  mpfr_prec_round (z_up, precz, rnd_mode);
 		  ok = mpfr_cmp (z_down, z_up) == 0;
 		  mpfr_clear (z_up);
-		  mpfr_clear (z_down);				   
+		  mpfr_clear (z_down);
 		  if (ok)
 		    {
 		      /* get correct sign and multiply by 2 */
