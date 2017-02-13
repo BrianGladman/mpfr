@@ -356,9 +356,9 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
      and log(abs(sin(Pi*s/2)) toward -infinity */
   mpz_init (sint);
   mpfr_get_z (sint, s, MPFR_RNDD);
-  /* we first compute a lower bound of abs(sin(Pi*s/2)):
+  /* We first compute a lower bound of abs(sin(Pi*s/2)):
      if -4k-2 < s < -4k, then -2k-1 < s/2 < -2k, thus sin(Pi*s/2) < 0
-     if -4k < s < -4k+2, then -2k < s < -2k+1, thus sin(Pi*s/2) > 0 */
+     if -4k < s < -4k+2, then -2k < s/2 < -2k+1, thus sin(Pi*s/2) > 0 */
   if (mpz_tstbit (sint, 1) == 0) /* sint = {0,1} mod 4, thus -2k < s < -2k+1 */
     {
       if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is increasing: round down */
