@@ -355,11 +355,21 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
   /* since log(abs(sin(Pi*s/2)) <= 0, we want to round zeta(1-s) upward
      and log(abs(sin(Pi*s/2)) toward -infinity */
   mpz_init (sint);
-  mpfr_get_z (sint, s, MPFR_RNDD);
+  mpfr_get_z (sint, s, MPFR_RNDD); /* sint = floor(s) */
   /* We first compute a lower bound of abs(sin(Pi*s/2)):
-     if -4k-2 < s < -4k, then -2k-1 < s/2 < -2k, thus sin(Pi*s/2) < 0
-     if -4k < s < -4k+2, then -2k < s/2 < -2k+1, thus sin(Pi*s/2) > 0 */
-  if (mpz_tstbit (sint, 1) == 0) /* sint = {0,1} mod 4, thus -2k < s < -2k+1 */
+     if -4k-2 < s < -4k, then -2k-1 < s/2 < -2k, thus sin(Pi*s/2) < 0;
+     if -4k < s < -4k+2, then -2k < s/2 < -2k+1, thus sin(Pi*s/2) > 0.
+     These cases are distinguished by testing bit 1 of floor(s) as if
+     represented in two's complement (or equivalently, as an unsigned
+     integer mod 4):
+     0: sint = {0,1} mod 4, thus -2k < s/2 < -2k+1 and sin(Pi*s/2) > 0;
+     1: sint = {2,3} mod 4, thus -2k-1 < s/2 < -2k and sin(Pi*s/2) < 0. */
+  /* FIXME: The following is not clear, and may be wrong, as s and sin(...)
+     can be positive or negative. Also, what matters is whether
+     abs(sin(Pi*s/2)) increases or decreases, so that the tests
+     should be based on sint mod 2, not sint mod 4. The sign of
+     sin(Pi*s/2) matters only when rounding mpfr_sin. */
+  if (mpz_tstbit (sint, 1) == 0) /* -2k < s/2 < -2k+1; sin(Pi*s/2) > 0 */
     {
       if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is increasing: round down */
         {
@@ -374,9 +384,9 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
           mpfr_mul (y, p, s, rnd);
         }
     }
-  else /* -2k-1 < s/2 < -2k */
+  else /* -2k-1 < s/2 < -2k; sin(Pi*s/2) < 0 */
     {
-      if (mpz_tstbit (sint, 1) == 0) /* sin(Pi*x) is decreasing: round down */
+      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is decreasing: round down */
         {
           mpfr_mul (y, p, s, rnd);
           if (rnd == MPFR_RNDD)
@@ -390,7 +400,7 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
         }
     }
   mpfr_div_2ui (y, y, 1, rnd);
-  mpfr_sin (y, y, rnd);
+  mpfr_sin (y, y, rnd); /* FIXME: rnd incorrect when sin(Pi*s/2) < 0. */
   mpz_clear (sint);
   mpfr_abs (y, y, rnd);
   /* now y <= |sin(Pi*s/2)| */
