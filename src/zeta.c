@@ -364,13 +364,13 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
       if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is increasing: round down */
         {
           mpfr_mul (y, p, s, rnd);
-	  if (rnd == MPFR_RNDD)
-	    mpfr_nextabove (p); /* we will need p rounded above afterwards */
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p); /* we will need p rounded above afterwards */
         }
       else /* sin(Pi*x) is decreasing: round up */
         {
-	  if (rnd == MPFR_RNDD)
-	    mpfr_nextabove (p);
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p);
           mpfr_mul (y, p, s, rnd);
         }
     }
@@ -379,13 +379,13 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
       if (mpz_tstbit (sint, 1) == 0) /* sin(Pi*x) is decreasing: round down */
         {
           mpfr_mul (y, p, s, rnd);
-	  if (rnd == MPFR_RNDD)
-	    mpfr_nextabove (p); /* we will need p rounded above afterwards */
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p); /* we will need p rounded above afterwards */
         }
       else /* sin(Pi*x) is increasing: round up */
         {
-	  if (rnd == MPFR_RNDD)
-	    mpfr_nextabove (p);
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p);
           mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
         }
     }
@@ -568,7 +568,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       for (;;)
         {
           mpfr_exp_t ey;
-	  mpfr_t z_up;
+          mpfr_t z_up;
 
           mpfr_const_pi (p, MPFR_RNDD); /* p is Pi */
 
@@ -603,38 +603,38 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                   overflow = (mpfr_cmp_si_2exp (s1, -1, -1) > 0) ? -1 : 1;
                   break;
                 }
-	      else /* EXP(z_pre) < __gmpfr_emax */
-		{
-		  int ok = 0;
-		  mpfr_t z_down;
-		  mpfr_init2 (z_up, mpfr_get_prec (z_pre));
-		  mpfr_reflection_overflow (z_up, s1, s, y, p, MPFR_RNDU);
-		  /* if the lower approximation z_pre does not overflow, but
-		     z_up does, we need more precision */
-		  if (MPFR_IS_INF (z_up) || MPFR_GET_EXP(z_up) == __gmpfr_emax)
-		    goto next_loop;
-		  /* check if z_pre and z_up round to the same number */
-		  mpfr_init2 (z_down, precz);
-		  mpfr_set (z_down, z_pre, rnd_mode);
-		  /* Note: it might be that EXP(z_down) = emax here, in that
-		     case we will have overflow below when we multiply by 2 */
-		  mpfr_prec_round (z_up, precz, rnd_mode);
-		  ok = mpfr_cmp (z_down, z_up) == 0;
-		  mpfr_clear (z_up);
-		  mpfr_clear (z_down);
-		  if (ok)
-		    {
-		      /* get correct sign and multiply by 2 */
-		      mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
-		      mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
-		      if (mpfr_cmp_si_2exp (s1, -1, -1) > 0)
-			mpfr_neg (z_pre, z_pre, rnd_mode);
-		      mpfr_mul_2ui (z_pre, z_pre, 1, rnd_mode);
-		      break;
-		    }
-		  else
-		    goto next_loop;
-		}
+              else /* EXP(z_pre) < __gmpfr_emax */
+                {
+                  int ok = 0;
+                  mpfr_t z_down;
+                  mpfr_init2 (z_up, mpfr_get_prec (z_pre));
+                  mpfr_reflection_overflow (z_up, s1, s, y, p, MPFR_RNDU);
+                  /* if the lower approximation z_pre does not overflow, but
+                     z_up does, we need more precision */
+                  if (MPFR_IS_INF (z_up) || MPFR_GET_EXP(z_up) == __gmpfr_emax)
+                    goto next_loop;
+                  /* check if z_pre and z_up round to the same number */
+                  mpfr_init2 (z_down, precz);
+                  mpfr_set (z_down, z_pre, rnd_mode);
+                  /* Note: it might be that EXP(z_down) = emax here, in that
+                     case we will have overflow below when we multiply by 2 */
+                  mpfr_prec_round (z_up, precz, rnd_mode);
+                  ok = mpfr_cmp (z_down, z_up) == 0;
+                  mpfr_clear (z_up);
+                  mpfr_clear (z_down);
+                  if (ok)
+                    {
+                      /* get correct sign and multiply by 2 */
+                      mpfr_div_2ui (s1, s, 2, MPFR_RNDN); /* s/4, exact */
+                      mpfr_frac (s1, s1, MPFR_RNDN); /* exact, -1 < s1 < 0 */
+                      if (mpfr_cmp_si_2exp (s1, -1, -1) > 0)
+                        mpfr_neg (z_pre, z_pre, rnd_mode);
+                      mpfr_mul_2ui (z_pre, z_pre, 1, rnd_mode);
+                      break;
+                    }
+                  else
+                    goto next_loop;
+                }
             }
           mpfr_zeta_pos (z_pre, s1, MPFR_RNDN);   /* zeta(1-s)  */
           mpfr_mul (z_pre, z_pre, y, MPFR_RNDN);  /* gamma(1-s)*zeta(1-s) */
@@ -674,7 +674,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                                            rnd_mode)))
             break;
 
-	next_loop:
+        next_loop:
           MPFR_ZIV_NEXT (loop, prec1);
           MPFR_GROUP_REPREC_4 (group, prec1, z_pre, s1, y, p);
         }
