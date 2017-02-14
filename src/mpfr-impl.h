@@ -730,7 +730,8 @@ static double double_zero = 0.0;
    optimizing anything. */
 #ifdef WANT_LONGDOUBLE_VOLATILE
 # ifdef volatile
-__MPFR_DECLSPEC long double __gmpfr_longdouble_volatile (long double) MPFR_CONST_ATTR;
+__MPFR_DECLSPEC long double
+  __gmpfr_longdouble_volatile (long double) MPFR_CONST_ATTR;
 #  define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
 #  define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
 # else
@@ -837,8 +838,8 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 
 #if _MPFR_EXP_FORMAT <= 3
-typedef long int mpfr_eexp_t;
-typedef unsigned long int mpfr_ueexp_t;
+typedef long mpfr_eexp_t;
+typedef unsigned long mpfr_ueexp_t;
 # define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
 # define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
 # define MPFR_EXP_FSPEC "l"
@@ -1217,7 +1218,7 @@ asm (".section predict_data, \"aw\"; .previous\n"
      ".section predict_file, \"a\"; .previous");
 # if defined __x86_64__
 #  define MPFR_DEBUGPRED__(e,E)                                         \
-  ({ long int _e = !!(e);                                               \
+  ({ long _e = !!(e);                                                   \
     asm volatile (".pushsection predict_data\n"                         \
                   "..predictcnt%=: .quad 0; .quad 0\n"                  \
                   ".section predict_line; .quad %c1\n"                  \
@@ -1228,7 +1229,7 @@ asm (".section predict_data, \"aw\"; .previous\n"
   })
 # elif defined __i386__
 #  define MPFR_DEBUGPRED__(e,E)                                         \
-  ({ long int _e = !!(e);                                               \
+  ({ long _e = !!(e);                                                   \
     asm volatile (".pushsection predict_data\n"                         \
                   "..predictcnt%=: .long 0; .long 0\n"                  \
                   ".section predict_line; .long %c1\n"                  \
@@ -2094,19 +2095,16 @@ MPFR_COLD_FUNCTION_ATTR __MPFR_DECLSPEC int
 MPFR_COLD_FUNCTION_ATTR __MPFR_DECLSPEC int
   mpfr_overflow (mpfr_ptr, mpfr_rnd_t, int);
 
-__MPFR_DECLSPEC int mpfr_add1 (mpfr_ptr, mpfr_srcptr,
-                               mpfr_srcptr, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_sub1 (mpfr_ptr, mpfr_srcptr,
-                               mpfr_srcptr, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_add1sp (mpfr_ptr, mpfr_srcptr,
-                                 mpfr_srcptr, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_sub1sp (mpfr_ptr, mpfr_srcptr,
-                                 mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_add1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_sub1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_add1sp (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+                                 mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_sub1sp (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+                                 mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_can_round_raw (const mp_limb_t *,
              mp_size_t, int, mpfr_exp_t, mpfr_rnd_t, mpfr_rnd_t, mpfr_prec_t);
 
-__MPFR_DECLSPEC int mpfr_cmp2 (mpfr_srcptr, mpfr_srcptr,
-                               mpfr_prec_t *);
+__MPFR_DECLSPEC int mpfr_cmp2 (mpfr_srcptr, mpfr_srcptr, mpfr_prec_t *);
 
 __MPFR_DECLSPEC long          __gmpfr_ceil_log2     (double);
 __MPFR_DECLSPEC long          __gmpfr_floor_log2    (double);
@@ -2117,13 +2115,13 @@ __MPFR_DECLSPEC int       __gmpfr_int_ceil_log2 (unsigned long);
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_ceil_mul (mpfr_exp_t, int, int);
 
-__MPFR_DECLSPEC int mpfr_exp_2 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_exp_3 (mpfr_ptr, mpfr_srcptr,mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_exp_2 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_exp_3 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_powerof2_raw (mpfr_srcptr);
 __MPFR_DECLSPEC int mpfr_powerof2_raw2 (const mp_limb_t *, mp_size_t);
 
-__MPFR_DECLSPEC int mpfr_pow_general (mpfr_ptr, mpfr_srcptr,
-                           mpfr_srcptr, mpfr_rnd_t, int, mpfr_save_expo_t *);
+__MPFR_DECLSPEC int mpfr_pow_general (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+                                      mpfr_rnd_t, int, mpfr_save_expo_t *);
 
 __MPFR_DECLSPEC void mpfr_setmax (mpfr_ptr, mpfr_exp_t);
 __MPFR_DECLSPEC void mpfr_setmin (mpfr_ptr, mpfr_exp_t);
@@ -2135,14 +2133,14 @@ __MPFR_DECLSPEC long mpfr_mpn_exp (mp_limb_t *, mpfr_exp_t *, int,
 __MPFR_DECLSPEC void mpfr_fprint_binary (FILE *, mpfr_srcptr);
 #endif
 __MPFR_DECLSPEC void mpfr_print_binary (mpfr_srcptr);
-__MPFR_DECLSPEC void mpfr_print_mant_binary (const char*,
-                                          const mp_limb_t*, mpfr_prec_t);
+__MPFR_DECLSPEC void mpfr_print_mant_binary (const char*, const mp_limb_t*,
+                                             mpfr_prec_t);
 __MPFR_DECLSPEC void mpfr_set_str_binary (mpfr_ptr, const char*);
 
 __MPFR_DECLSPEC int mpfr_round_raw (mp_limb_t *,
        const mp_limb_t *, mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t, int *);
-__MPFR_DECLSPEC int mpfr_round_raw_2 (const mp_limb_t *,
-             mpfr_prec_t, int, mpfr_prec_t, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_round_raw_2 (const mp_limb_t *, mpfr_prec_t, int,
+                                      mpfr_prec_t, mpfr_rnd_t);
 /* No longer defined (see round_prec.c).
    Uncomment if it needs to be defined again.
 __MPFR_DECLSPEC int mpfr_round_raw_3 (const mp_limb_t *,
@@ -2171,23 +2169,21 @@ __MPFR_DECLSPEC void mpfr_init_cache (mpfr_cache_t,
                                       int(*)(mpfr_ptr,mpfr_rnd_t));
 #endif
 __MPFR_DECLSPEC void mpfr_clear_cache (mpfr_cache_t);
-__MPFR_DECLSPEC int  mpfr_cache (mpfr_ptr, mpfr_cache_t,
-                                 mpfr_rnd_t);
+__MPFR_DECLSPEC int  mpfr_cache (mpfr_ptr, mpfr_cache_t, mpfr_rnd_t);
 
-__MPFR_DECLSPEC void mpfr_mulhigh_n (mpfr_limb_ptr,
-                        mpfr_limb_srcptr, mpfr_limb_srcptr, mp_size_t);
-__MPFR_DECLSPEC void mpfr_mullow_n  (mpfr_limb_ptr,
-                        mpfr_limb_srcptr, mpfr_limb_srcptr, mp_size_t);
-__MPFR_DECLSPEC void mpfr_sqrhigh_n (mpfr_limb_ptr,
-                        mpfr_limb_srcptr, mp_size_t);
-__MPFR_DECLSPEC mp_limb_t mpfr_divhigh_n (mpfr_limb_ptr,
-                        mpfr_limb_ptr, mpfr_limb_ptr, mp_size_t);
+__MPFR_DECLSPEC void mpfr_mulhigh_n (mpfr_limb_ptr, mpfr_limb_srcptr,
+                                     mpfr_limb_srcptr, mp_size_t);
+__MPFR_DECLSPEC void mpfr_mullow_n  (mpfr_limb_ptr, mpfr_limb_srcptr,
+                                     mpfr_limb_srcptr, mp_size_t);
+__MPFR_DECLSPEC void mpfr_sqrhigh_n (mpfr_limb_ptr, mpfr_limb_srcptr,
+                                     mp_size_t);
+__MPFR_DECLSPEC mp_limb_t mpfr_divhigh_n (mpfr_limb_ptr, mpfr_limb_ptr,
+                                          mpfr_limb_ptr, mp_size_t);
 
-__MPFR_DECLSPEC int mpfr_round_p (mp_limb_t *, mp_size_t,
-                                  mpfr_exp_t, mpfr_prec_t);
+__MPFR_DECLSPEC int mpfr_round_p (mp_limb_t *, mp_size_t, mpfr_exp_t,
+                                  mpfr_prec_t);
 
-__MPFR_DECLSPEC int mpfr_round_near_x (mpfr_ptr, mpfr_srcptr,
-                                       mpfr_uexp_t, int,
+__MPFR_DECLSPEC int mpfr_round_near_x (mpfr_ptr, mpfr_srcptr, mpfr_uexp_t, int,
                                        mpfr_rnd_t);
 __MPFR_DECLSPEC MPFR_COLD_FUNCTION_ATTR MPFR_NORETURN void
   mpfr_abort_prec_max (void);
@@ -2198,16 +2194,15 @@ __MPFR_DECLSPEC void mpfr_rand_raw (mpfr_limb_ptr, gmp_randstate_t,
 __MPFR_DECLSPEC mpz_srcptr mpfr_bernoulli_cache (unsigned long);
 __MPFR_DECLSPEC void mpfr_bernoulli_freecache (void);
 
-__MPFR_DECLSPEC int mpfr_sincos_fast (mpfr_t, mpfr_t,
-                                      mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_sincos_fast (mpfr_t, mpfr_t, mpfr_srcptr, mpfr_rnd_t);
 
 __MPFR_DECLSPEC double mpfr_scale2 (double, int);
 
-__MPFR_DECLSPEC void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr,
-                                   unsigned long int, unsigned long int,
-                                   mpfr_rnd_t);
+__MPFR_DECLSPEC void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr, unsigned long,
+                                   unsigned long, mpfr_rnd_t);
 
-__MPFR_DECLSPEC void mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr, mpfr_prec_t);
+__MPFR_DECLSPEC void mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr,
+                                                   mpfr_prec_t);
 
 __MPFR_DECLSPEC void mpfr_mpz_init (mpz_ptr);
 __MPFR_DECLSPEC void mpfr_mpz_init2 (mpz_t, mp_bitcnt_t);
@@ -2215,7 +2210,8 @@ __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 
 #ifdef _MPFR_H_HAVE_VA_LIST
 /* Declared only if <stdarg.h> has been included. */
-__MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*, va_list);
+__MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,
+                                         va_list);
 #endif
 
 #if defined (__cplusplus)
