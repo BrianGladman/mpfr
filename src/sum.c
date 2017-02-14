@@ -127,7 +127,7 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2] = { 0 };
  *   iteration (= maxexp2 of the last iteration).
  */
 static mpfr_prec_t
-sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
+sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, const mpfr_ptr *x,
          unsigned long n, mpfr_exp_t minexp, mpfr_exp_t maxexp,
          mp_limb_t *tp, mp_size_t ts, int logn, mpfr_prec_t prec,
          mpfr_exp_t *ep, mpfr_exp_t *minexpp, mpfr_exp_t *maxexpp)
@@ -503,7 +503,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 /* Generic case: all the inputs are finite numbers,
    with at least 3 regular numbers. */
 static int
-sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
+sum_aux (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd,
          mpfr_exp_t maxexp, unsigned long rn)
 {
   mp_limb_t *sump;
@@ -1204,7 +1204,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 /**********************************************************************/
 
 int
-mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
+mpfr_sum (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd)
 {
   MPFR_LOG_FUNC
     (("n=%lu rnd=%d", n, rnd),

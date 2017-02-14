@@ -805,7 +805,7 @@ __MPFR_DECLSPEC int mpfr_fmma (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_fmms (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                                mpfr_srcptr, mpfr_srcptr,
                                mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_sum (mpfr_ptr, mpfr_ptr *const,
+__MPFR_DECLSPEC int mpfr_sum (mpfr_ptr, const mpfr_ptr *,
                               unsigned long, mpfr_rnd_t);
 
 __MPFR_DECLSPEC void mpfr_free_cache (void);
