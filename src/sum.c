@@ -23,6 +23,25 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* Note: In the prototypes, one uses
+ *
+ *   const mpfr_ptr *x      i.e.:  __mpfr_struct *const *x
+ *
+ * instead of
+ *
+ *   const mpfr_srcptr *x   i.e.:  const __mpfr_struct *const *x
+ *
+ * because here one has a double indirection and the type matching rules
+ * from the C standard in such a case are stricter and they would yield
+ * annoying errors for the user in practice. See:
+ *
+ *   Why can't I pass a char ** to a function which expects a const char **?
+ *
+ * in the comp.lang.c FAQ:
+ *
+ *   http://c-faq.com/ansi/constmismatch.html
+ */
+
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
