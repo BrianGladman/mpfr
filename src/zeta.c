@@ -371,39 +371,48 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
      sin(Pi*s/2) matters only when rounding mpfr_sin. */
   if (mpz_tstbit (sint, 1) == 0) /* -2k < s/2 < -2k+1; sin(Pi*s/2) > 0 */
     {
-      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is increasing: round down */
+      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*s/2) is positive and increasing:
+                                        round down Pi*s to get a lower bound */
         {
           mpfr_mul (y, p, s, rnd);
           if (rnd == MPFR_RNDD)
             mpfr_nextabove (p); /* we will need p rounded above afterwards */
         }
-      else /* sin(Pi*x) is decreasing: round up */
-        {
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p);
-          mpfr_mul (y, p, s, rnd);
-        }
-    }
-  else /* -2k-1 < s/2 < -2k; sin(Pi*s/2) < 0 */
-    {
-      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*x) is decreasing: round down */
-        {
-          mpfr_mul (y, p, s, rnd);
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p); /* we will need p rounded above afterwards */
-        }
-      else /* sin(Pi*x) is increasing: round up */
+      else /* sin(Pi*x) is positive and decreasing: round up Pi*s to get a
+              lower bound */
         {
           if (rnd == MPFR_RNDD)
             mpfr_nextabove (p);
           mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
         }
+      mpfr_div_2ui (y, y, 1, rnd); /* exact */
+      mpfr_sin (y, y, rnd); /* sin(Pi*s/2) is positive: round down to get a
+                               lower bound */
     }
-  mpfr_div_2ui (y, y, 1, rnd);
-  mpfr_sin (y, y, rnd); /* FIXME: rnd incorrect when sin(Pi*s/2) < 0. */
+  else /* -2k-1 < s/2 < -2k; sin(Pi*s/2) < 0 */
+    {
+      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*s/2) is negative and decreasing:
+                                        round down Pi*s to get a lower bound
+                                        of |sin(Pi*s/2)| */
+        {
+          mpfr_mul (y, p, s, rnd);
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p); /* we will need p rounded above afterwards */
+        }
+      else /* sin(Pi*x) is negative and increasing: round up Pi*s to get a
+              lower bound of |sin(Pi*s/2)| */
+        {
+          if (rnd == MPFR_RNDD)
+            mpfr_nextabove (p);
+          mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
+        }
+      mpfr_div_2ui (y, y, 1, rnd); /* exact */
+      mpfr_sin (y, y, MPFR_INVERT_RND(rnd)); /* sin(Pi*s/2) is negative: round
+                                                up to get a lower bound */
+      mpfr_abs (y, y, rnd);
+    }
   mpz_clear (sint);
-  mpfr_abs (y, y, rnd);
-  /* now y <= |sin(Pi*s/2)| */
+  /* now y <= |sin(Pi*s/2)| when rnd=RNDD, y >= |sin(Pi*s/2)| when rnd=RNDU */
   mpfr_zeta_pos (z, s1, rnd);   /* zeta(1-s)  */
   mpfr_mul (z, z, y, rnd);
   /* now z <= |sin(Pi*s/2)|*zeta(1-s) */
