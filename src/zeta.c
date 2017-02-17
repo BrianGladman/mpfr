@@ -338,11 +338,11 @@ compute_add (mpfr_srcptr s, mpfr_prec_t precz)
 
 /* return in z a lower bound (for rnd = RNDD) or upper bound (for rnd = RNDU)
    of |zeta(s)|/2, using:
-   log(|zeta(s)|/2) = (s-1)*log(2*pi) + lngamma(1-s)
-   + log(abs(sin(Pi*s/2)) * zeta(1-s)).
+   log(|zeta(s)|/2) = (s-1)*log(2*Pi) + lngamma(1-s)
+   + log(|sin(Pi*s/2)| * zeta(1-s)).
    Assumes s < 1/2 and s1 = 1-s exactly, thus s1 > 1/2.
    y and p are temporary variables.
-   At input, p is pi rounded down.
+   At input, p is Pi rounded down.
    The comments in the code are for rnd = RNDD. */
 static void
 mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
@@ -352,64 +352,53 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
 
   MPFR_ASSERTD (rnd == MPFR_RNDD || rnd == MPFR_RNDU);
 
-  /* since log(abs(sin(Pi*s/2)) <= 0, we want to round zeta(1-s) upward
-     and log(abs(sin(Pi*s/2)) toward -infinity */
+  /* Since log(|sin(Pi*s/2)|) <= 0, we want to round zeta(1-s) upward
+     and log(|sin(Pi*s/2)|) downward. */
   mpz_init (sint);
   mpfr_get_z (sint, s, MPFR_RNDD); /* sint = floor(s) */
-  /* We first compute a lower bound of abs(sin(Pi*s/2)):
+  /* We first compute a lower bound of |sin(Pi*s/2)|, which is a periodic
+     function of period 2. Thus:
+     if 2k < s < 2k+1, then |sin(Pi*s/2)| is increasing;
+     if 2k-1 < s < 2k, then |sin(Pi*s/2)| is decreasing.
+     These cases are distinguished by testing bit 0 of floor(s) as if
+     represented in two's complement (or equivalently, as an unsigned
+     integer mod 2):
+     0: sint = 0 mod 2, thus 2k < s < 2k+1 and |sin(Pi*s/2)| is increasing;
+     1: sint = 1 mod 2, thus 2k-1 < s < 2k and |sin(Pi*s/2)| is decreasing.
+     Let's recall that the comments are for rnd = RNDD. */
+  if (mpz_tstbit (sint, 0) == 0) /* |sin(Pi*s/2)| is increasing: round down
+                                    Pi*s to get a lower bound. */
+    {
+      mpfr_mul (y, p, s, rnd);
+      if (rnd == MPFR_RNDD)
+        mpfr_nextabove (p); /* we will need p rounded above afterwards */
+    }
+  else /* |sin(Pi*s/2)| is decreasing: round up Pi*s to get a lower bound. */
+    {
+      if (rnd == MPFR_RNDD)
+        mpfr_nextabove (p);
+      mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
+    }
+  mpfr_div_2ui (y, y, 1, MPFR_RNDN); /* exact, rounding mode doesn't matter */
+  /* The rounding direction of sin depends on its sign. We have:
      if -4k-2 < s < -4k, then -2k-1 < s/2 < -2k, thus sin(Pi*s/2) < 0;
      if -4k < s < -4k+2, then -2k < s/2 < -2k+1, thus sin(Pi*s/2) > 0.
      These cases are distinguished by testing bit 1 of floor(s) as if
      represented in two's complement (or equivalently, as an unsigned
      integer mod 4):
      0: sint = {0,1} mod 4, thus -2k < s/2 < -2k+1 and sin(Pi*s/2) > 0;
-     1: sint = {2,3} mod 4, thus -2k-1 < s/2 < -2k and sin(Pi*s/2) < 0. */
-  /* FIXME: The following is not clear, and may be wrong, as s and sin(...)
-     can be positive or negative. Also, what matters is whether
-     abs(sin(Pi*s/2)) increases or decreases, so that the tests
-     should be based on sint mod 2, not sint mod 4. The sign of
-     sin(Pi*s/2) matters only when rounding mpfr_sin. */
+     1: sint = {2,3} mod 4, thus -2k-1 < s/2 < -2k and sin(Pi*s/2) < 0.
+     Let's recall that the comments are for rnd = RNDD. */
   if (mpz_tstbit (sint, 1) == 0) /* -2k < s/2 < -2k+1; sin(Pi*s/2) > 0 */
     {
-      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*s/2) is positive and increasing:
-                                        round down Pi*s to get a lower bound */
-        {
-          mpfr_mul (y, p, s, rnd);
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p); /* we will need p rounded above afterwards */
-        }
-      else /* sin(Pi*x) is positive and decreasing: round up Pi*s to get a
-              lower bound */
-        {
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p);
-          mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
-        }
-      mpfr_div_2ui (y, y, 1, rnd); /* exact */
-      mpfr_sin (y, y, rnd); /* sin(Pi*s/2) is positive: round down to get a
-                               lower bound */
+      /* Round sin down to get a lower bound of |sin(Pi*s/2)|. */
+      mpfr_sin (y, y, rnd);
     }
   else /* -2k-1 < s/2 < -2k; sin(Pi*s/2) < 0 */
     {
-      if (mpz_tstbit (sint, 0) == 0) /* sin(Pi*s/2) is negative and decreasing:
-                                        round down Pi*s to get a lower bound
-                                        of |sin(Pi*s/2)| */
-        {
-          mpfr_mul (y, p, s, rnd);
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p); /* we will need p rounded above afterwards */
-        }
-      else /* sin(Pi*x) is negative and increasing: round up Pi*s to get a
-              lower bound of |sin(Pi*s/2)| */
-        {
-          if (rnd == MPFR_RNDD)
-            mpfr_nextabove (p);
-          mpfr_mul (y, p, s, MPFR_INVERT_RND(rnd));
-        }
-      mpfr_div_2ui (y, y, 1, rnd); /* exact */
-      mpfr_sin (y, y, MPFR_INVERT_RND(rnd)); /* sin(Pi*s/2) is negative: round
-                                                up to get a lower bound */
-      mpfr_abs (y, y, rnd);
+      /* Round sin up to get a lower bound of |sin(Pi*s/2)|. */
+      mpfr_sin (y, y, MPFR_INVERT_RND(rnd));
+      mpfr_abs (y, y, MPFR_RNDN); /* exact, rounding mode doesn't matter */
     }
   mpz_clear (sint);
   /* now y <= |sin(Pi*s/2)| when rnd=RNDD, y >= |sin(Pi*s/2)| when rnd=RNDU */
