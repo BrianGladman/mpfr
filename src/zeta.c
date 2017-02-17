@@ -402,7 +402,7 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
     }
   mpz_clear (sint);
   /* now y <= |sin(Pi*s/2)| when rnd=RNDD, y >= |sin(Pi*s/2)| when rnd=RNDU */
-  mpfr_zeta_pos (z, s1, rnd);   /* zeta(1-s)  */
+  mpfr_zeta_pos (z, s1, MPFR_INVERT_RND(rnd)); /* zeta(1-s) rounded upward */
   mpfr_mul (z, z, y, rnd);
   /* now z <= |sin(Pi*s/2)|*zeta(1-s) */
   mpfr_log (z, z, rnd);
