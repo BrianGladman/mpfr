@@ -352,8 +352,8 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
 
   MPFR_ASSERTD (rnd == MPFR_RNDD || rnd == MPFR_RNDU);
 
-  /* Since log(|sin(Pi*s/2)|) <= 0, we want to round zeta(1-s) upward
-     and log(|sin(Pi*s/2)|) downward. */
+  /* Since log is increasing, we want lower bounds on |sin(Pi*s/2)| and
+     zeta(1-s). */
   mpz_init (sint);
   mpfr_get_z (sint, s, MPFR_RNDD); /* sint = floor(s) */
   /* We first compute a lower bound of |sin(Pi*s/2)|, which is a periodic
@@ -402,7 +402,7 @@ mpfr_reflection_overflow (mpfr_t z, mpfr_t s1, const mpfr_t s, mpfr_t y,
     }
   mpz_clear (sint);
   /* now y <= |sin(Pi*s/2)| when rnd=RNDD, y >= |sin(Pi*s/2)| when rnd=RNDU */
-  mpfr_zeta_pos (z, s1, MPFR_INVERT_RND(rnd)); /* zeta(1-s) rounded upward */
+  mpfr_zeta_pos (z, s1, rnd); /* zeta(1-s) */
   mpfr_mul (z, z, y, rnd);
   /* now z <= |sin(Pi*s/2)|*zeta(1-s) */
   mpfr_log (z, z, rnd);
