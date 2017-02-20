@@ -1757,22 +1757,37 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              where T is the threshold computed below and X is the exponent
              that would be displayed with style 'e' and precision T-1. */
           int threshold;
-          mpfr_exp_t x;
+          mpfr_exp_t x, e, k;
           struct decimal_info dec_info;
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
-          /* here we cannot call mpfr_get_str_aux since we need the full
-             significand in dec_info.str */
-          /* FIXME: It may happen that in practical cases, the number of
-             output digits remains limited (this is the case when the
-             input number has a limited precision and a limited exponent
-             in absolute value, e.g. for numbers representable in the
-             IEEE 754-2008 basic formats), even though the requested
-             precision is huge. We should be able to determine a bound
-             on the number of digits and use it for mpfr_get_str. Even
-             when there is plenty of memory, this should also greatly
-             improve the performance. */
-          dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10, threshold,
+
+          /* Here we cannot call mpfr_get_str_aux since we need the full
+             significand in dec_info.str.
+             Moreover, threshold may be huge while one can know that the
+             number of digits that are not trailing zeros remains limited;
+             such a limit occurs in practical cases, e.g. with numbers
+             representable in the IEEE 754-2008 basic formats. Since the
+             trailing zeros are not necessarily output, we do not want to
+             waste time and memory by making mpfr_get_str generate them.
+             So, let us try to find a smaller threshold for mpfr_get_str.
+             |p| < 2^EXP(p) = 10^(EXP(p)*log10(2)). So, the integer part
+             takes at most ceil(EXP(p)*log10(2)) digits (unless p rounds
+             to the next power of 10, but in this case any threshold will
+             be OK). So, for the integer part, we will take:
+             max(0,floor((EXP(p)+2)/3)).
+             Let k = PREC(p) - EXP(p), so that the last bit of p has
+             weight 2^(-k). If k <= 0, then p is an integer, otherwise
+             the fractional part in base 10 may have up to k digits
+             (this bound is reached if the last bit is 1).
+             Note: The bound could be improved, but this is not critical. */
+          e = MPFR_GET_EXP (p);
+          k = MPFR_PREC (p) - e;
+          e = e <= 0 ? k : (e + 2) / 3 + (k <= 0 ? 0 : k);
+          MPFR_ASSERTD (e >= 1);
+
+          dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10,
+                                       e < threshold ? e : threshold,
                                        p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);
           /* mpfr_get_str corresponds to a significand between 0.1 and 1,
