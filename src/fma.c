@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* The fused-multiply-add (fma) of x, y and z is defined by:
@@ -126,32 +127,51 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
      we assume mpn_mul_n is faster up to 4*MPFR_MUL_THRESHOLD).
      Since |EXP(x)|, |EXP(y)| < 2^(k-2) on a k-bit computer,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
-  n = MPFR_LIMB_SIZE(x);
-  if (n <= 4 * MPFR_MUL_THRESHOLD && MPFR_PREC(x) == MPFR_PREC(y) &&
-      e <= __gmpfr_emax && e > __gmpfr_emin)
+  if (MPFR_PREC(x) == MPFR_PREC(y) && e <= __gmpfr_emax && e > __gmpfr_emin)
     {
-      mp_size_t un = n + n;
-      mpfr_limb_ptr up;
-      MPFR_TMP_DECL(marker);
-
-      MPFR_TMP_MARK(marker);
-      MPFR_TMP_INIT (up, u, un * GMP_NUMB_BITS, un);
-      up = MPFR_MANT(u);
-      /* multiply x*y exactly into u */
-      mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
-      if (MPFR_LIMB_MSB (up[un - 1]) == 0)
+      if (MPFR_PREC(x) <= GMP_NUMB_BITS && MPFR_PREC(z) <= GMP_NUMB_BITS)
         {
-          mpn_lshift (up, up, un, 1);
-          MPFR_EXP(u) = e - 1;
+          mp_limb_t umant[2];
+
+          umul_ppmm (umant[1], umant[0], MPFR_MANT(x)[0], MPFR_MANT(y)[0]);
+          MPFR_MANT(u) = umant;
+          MPFR_PREC(u) = 2 * GMP_NUMB_BITS;
+          if ((umant[1] & MPFR_LIMB_HIGHBIT) == 0)
+            {
+              umant[1] = (umant[1] << 1) | (umant[0] >> (GMP_NUMB_BITS - 1));
+              umant[0] = umant[0] << 1;
+              MPFR_EXP(u) = e - 1;
+            }
+          else
+            MPFR_EXP(u) = e;
+          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          return mpfr_add (s, u, z, rnd_mode);
         }
-      else
-        MPFR_EXP(u) = e;
-      MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-      /* The above code does not generate any exception.
-         The exceptions will come only from mpfr_add. */
-      inexact = mpfr_add (s, u, z, rnd_mode);
-      MPFR_TMP_FREE(marker);
-      return inexact;
+      else if ((n = MPFR_LIMB_SIZE(x)) <= 4 * MPFR_MUL_THRESHOLD)
+        {
+          mpfr_limb_ptr up;
+          mp_size_t un = n + n;
+          MPFR_TMP_DECL(marker);
+      
+          MPFR_TMP_MARK(marker);
+          MPFR_TMP_INIT (up, u, un * GMP_NUMB_BITS, un);
+          up = MPFR_MANT(u);
+          /* multiply x*y exactly into u */
+          mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
+          if (MPFR_LIMB_MSB (up[un - 1]) == 0)
+            {
+              mpn_lshift (up, up, un, 1);
+              MPFR_EXP(u) = e - 1;
+            }
+          else
+            MPFR_EXP(u) = e;
+          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          /* The above code does not generate any exception.
+             The exceptions will come only from mpfr_add. */
+          inexact = mpfr_add (s, u, z, rnd_mode);
+          MPFR_TMP_FREE(marker);
+          return inexact;
+        }
     }
 
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
