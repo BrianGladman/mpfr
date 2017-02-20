@@ -229,7 +229,7 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* first ensure r0 has its most significant bit set */
   if (MPFR_UNLIKELY(r0 < MPFR_LIMB_HIGHBIT))
     r0 = MPFR_LIMB_HIGHBIT;
-  
+
   umul_ppmm (rb, sb, r0, r0);
   sub_ddmmss (rb, sb, u0, low, rb, sb);
   /* for the exact square root, we should have 0 <= rb:sb <= 2*r0 */
