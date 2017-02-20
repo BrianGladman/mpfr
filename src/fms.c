@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* The fused-multiply-subtract (fms) of x, y and z is defined by:
    fms(x,y,z)= x*y - z
-   Note: this is neither in IEEE754R, nor in LIA-2, but both the
+   Note: this is neither in IEEE 754-2008, nor in LIA-2, but both the
    PowerPC and the Itanium define fms as x*y - z.
 */
 int
