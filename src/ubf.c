@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* Note: In MPFR math functions, even if UBF code is not called first,
@@ -128,17 +129,32 @@ mpfr_ubf_mul_exact (mpfr_ubf_ptr a, mpfr_srcptr b, mpfr_srcptr c)
 
       ap = MPFR_MANT (a);
 
-      u = (bn >= cn) ?
-        mpn_mul (ap, MPFR_MANT (b), bn, MPFR_MANT (c), cn) :
-        mpn_mul (ap, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
-      if (MPFR_UNLIKELY (MPFR_LIMB_MSB (u) == 0))
+      if (bn == 1 && cn == 1)
         {
-          m = 1;
-          MPFR_DBGRES (v = mpn_lshift (ap, ap, bn + cn, 1));
-          MPFR_ASSERTD (v == 0);
+          umul_ppmm (ap[1], ap[0], MPFR_MANT(b)[0], MPFR_MANT(c)[0]);
+          if (ap[1] & MPFR_LIMB_HIGHBIT)
+            m = 0;
+          else
+            {
+              ap[1] = (ap[1] << 1) | (ap[0] >> (GMP_NUMB_BITS - 1));
+              ap[0] = ap[0] << 1;
+              m = 1;
+            }
         }
       else
-        m = 0;
+        {
+          u = (bn >= cn) ?
+            mpn_mul (ap, MPFR_MANT (b), bn, MPFR_MANT (c), cn) :
+            mpn_mul (ap, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
+          if (MPFR_LIMB_MSB (u) == 0)
+            {
+              m = 1;
+              MPFR_DBGRES (v = mpn_lshift (ap, ap, bn + cn, 1));
+              MPFR_ASSERTD (v == 0);
+            }
+          else
+            m = 0;
+        }
 
       if (! MPFR_IS_UBF (b) && ! MPFR_IS_UBF (c) &&
           (e = MPFR_GET_EXP (b) + MPFR_GET_EXP (c) - m,
