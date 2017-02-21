@@ -57,7 +57,9 @@ Changes from versions 3.1.* to version 4.0.0:
   old one could take all the memory and/or crash with inputs of different
   magnitudes in case of huge cancellation or table maker's dilemma). The
   sign of an exact zero result is now specified, and the return value is
-  now the usual ternary value.
+  now the usual ternary value. Note that the position of "const" in the
+  mpfr_sum prototype has been fixed (the manual was correct); user code
+  should not be affected.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
 - Added configure option --enable-assert=none to avoid checking any assertion.
