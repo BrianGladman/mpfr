@@ -129,30 +129,55 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
   if (MPFR_PREC(x) == MPFR_PREC(y) && e <= __gmpfr_emax && e > __gmpfr_emin)
     {
-      if (MPFR_PREC(x) <= GMP_NUMB_BITS && MPFR_PREC(z) <= GMP_NUMB_BITS)
+      if (MPFR_PREC(x) < GMP_NUMB_BITS && MPFR_PREC(z) == MPFR_PREC(x))
         {
-          mp_limb_t umant[2];
+          mp_limb_t umant[2], zmant[2];
+          mpfr_t zz;
+          int inex;
 
           umul_ppmm (umant[1], umant[0], MPFR_MANT(x)[0], MPFR_MANT(y)[0]);
+          MPFR_PREC(u) = MPFR_PREC(zz) = 2 * MPFR_PREC(x);
           MPFR_MANT(u) = umant;
-          MPFR_PREC(u) = 2 * GMP_NUMB_BITS;
-          if ((umant[1] & MPFR_LIMB_HIGHBIT) == 0)
+          MPFR_MANT(zz) = zmant;
+          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          MPFR_SIGN(zz) = MPFR_SIGN(z);
+          MPFR_EXP(zz) = MPFR_EXP(z);
+          if (MPFR_PREC(zz) <= GMP_NUMB_BITS) /* zz fits in one limb */
             {
-              umant[1] = (umant[1] << 1) | (umant[0] >> (GMP_NUMB_BITS - 1));
-              umant[0] = umant[0] << 1;
-              MPFR_EXP(u) = e - 1;
+              if ((umant[1] & MPFR_LIMB_HIGHBIT) == 0)
+                {
+                  umant[0] = umant[1] << 1;
+                  MPFR_EXP(u) = e - 1;
+                }
+              else
+                {
+                  umant[0] = umant[1];
+                  MPFR_EXP(u) = e;
+                }
+              zmant[0] = MPFR_MANT(z)[0];
             }
           else
-            MPFR_EXP(u) = e;
-          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-          return mpfr_add (s, u, z, rnd_mode);
+            {
+              zmant[1] = MPFR_MANT(z)[0];
+              zmant[0] = MPFR_LIMB_ZERO;
+              if ((umant[1] & MPFR_LIMB_HIGHBIT) == 0)
+                {
+                  umant[1] = (umant[1] << 1) | (umant[0] >> (GMP_NUMB_BITS - 1));
+                  umant[0] = umant[0] << 1;
+                  MPFR_EXP(u) = e - 1;
+                }
+              else
+                MPFR_EXP(u) = e;
+            }
+          inex = mpfr_add (u, u, zz, rnd_mode);
+          return mpfr_set_1_2 (s, u, rnd_mode, inex);
         }
       else if ((n = MPFR_LIMB_SIZE(x)) <= 4 * MPFR_MUL_THRESHOLD)
         {
           mpfr_limb_ptr up;
           mp_size_t un = n + n;
           MPFR_TMP_DECL(marker);
-      
+
           MPFR_TMP_MARK(marker);
           MPFR_TMP_INIT (up, u, un * GMP_NUMB_BITS, un);
           up = MPFR_MANT(u);
