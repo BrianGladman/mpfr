@@ -114,5 +114,5 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   MPFR_GROUP_CLEAR (group);
   mpfr_clear (z_plus_w);
   MPFR_SAVE_EXPO_FREE (expo);
-  return inex;
+  return mpfr_check_range (r, inex, rnd_mode);
 }
