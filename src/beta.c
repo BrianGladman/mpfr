@@ -29,7 +29,8 @@ int
 mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
 {
   mpfr_exp_t emin, emax;
-  mpfr_prec_t pmin, prec;
+  mpfr_uexp_t pmin;
+  mpfr_prec_t prec;
   mpfr_t z_plus_w, tmp, tmp2;
   int inex;
   MPFR_GROUP_DECL (group);
@@ -55,7 +56,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 if -2k-1 < w < -2k:   r = -Inf
                 if -2k-2 < w < -2k-1: r = +Inf
              if z = -Inf (then w = -Inf too): r = NaN */
-          if (mpfr_cmp (z, w) < 0)
+          if (mpfr_less_p (z, w))
             return mpfr_beta (r, w, z, rnd_mode);
           /* now z >= w */
           printf ("not yet implemented");
@@ -67,11 +68,13 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
     }
 
   /* compute the smallest precision such that z + w is exact */
-  emax = (MPFR_EXP(z) >= MPFR_EXP(w)) ? MPFR_EXP(z) : MPFR_EXP(w);
-  emin = (MPFR_EXP(z) - MPFR_PREC(z) <= MPFR_EXP(w) - MPFR_PREC(w))
-    ? MPFR_EXP(z) - MPFR_PREC(z) : MPFR_EXP(w) - MPFR_PREC(w);
-  pmin = emax - emin;
-  mpfr_init2 (z_plus_w, pmin);
+  emax = MAX (MPFR_EXP(z), MPFR_EXP(w));
+  emin = MIN (MPFR_EXP(z) - MPFR_PREC(z), MPFR_EXP(w) - MPFR_PREC(w));
+  MPFR_ASSERTD (emax >= emin);
+  /* Thus the math value of emax - emin is representable in mpfr_uexp_t. */
+  pmin = (mpfr_uexp_t) emax - emin;
+  MPFR_ASSERTN (pmin <= MPFR_PREC_MAX);  /* detect integer overflow */
+  mpfr_init2 (z_plus_w, (mpfr_prec_t) pmin);
   inex = mpfr_add (z_plus_w, z, w, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   prec = MPFR_PREC(r);
@@ -80,24 +83,25 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
+      unsigned int inex2;
+
       MPFR_GROUP_REPREC_2 (group, prec, tmp, tmp2);
-      inex = mpfr_gamma (tmp, z, MPFR_RNDN);
+      inex2 = mpfr_gamma (tmp, z, MPFR_RNDN);
       /* tmp = gamma(z) * (1 + theta) with |theta| <= 2^-prec */
-      /* FIXME: do not use bitwise operations on a signed integer. */
-      inex |= mpfr_gamma (tmp2, w, MPFR_RNDN);
+      inex2 |= mpfr_gamma (tmp2, w, MPFR_RNDN);
       /* tmp2 = gamma(w) * (1 + theta2) with |theta2| <= 2^-prec */
-      inex |= mpfr_mul (tmp, tmp, tmp2, MPFR_RNDN);
+      inex2 |= mpfr_mul (tmp, tmp, tmp2, MPFR_RNDN);
       /* tmp = gamma(z)*gamma(w) * (1 + theta3)^3 with |theta3| <= 2^-prec */
-      inex |= mpfr_gamma (tmp2, z_plus_w, MPFR_RNDN);
+      inex2 |= mpfr_gamma (tmp2, z_plus_w, MPFR_RNDN);
       /* tmp2 = gamma(z+w) * (1 + theta4) with |theta4| <= 2^-prec */
-      inex |= mpfr_div (tmp, tmp, tmp2, MPFR_RNDN);
+      inex2 |= mpfr_div (tmp, tmp, tmp2, MPFR_RNDN);
       /* tmp = gamma(z)*gamma(w)/gamma(z+w) * (1 + theta5)^5
          with |theta5| <= 2^-prec. For prec >= 3, we have
          |(1 + theta5)^5 - 1| <= 7 * 2^(-prec), thus the error is bounded
          by 7 ulps */
 
-      /* if inex=0, then tmp is exactly beta(z,w) */
-      if (inex == 0 ||
+      /* if inex2 = 0, then tmp is exactly beta(z,w) */
+      if (inex2 == 0 ||
           MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 3, MPFR_PREC(r), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
