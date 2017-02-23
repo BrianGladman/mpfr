@@ -83,7 +83,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
-      unsigned int inex2;
+      unsigned int inex2;  /* unsigned due to bitwise operations */
 
       MPFR_GROUP_REPREC_2 (group, prec, tmp, tmp2);
       inex2 = mpfr_gamma (tmp, z, MPFR_RNDN);
