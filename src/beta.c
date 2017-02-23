@@ -35,6 +35,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   int inex;
   MPFR_GROUP_DECL (group);
   MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (z) || MPFR_IS_SINGULAR (w)))
     {
@@ -66,6 +67,8 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
       return 0;
     }
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* compute the smallest precision such that z + w is exact */
   emax = MAX (MPFR_EXP(z), MPFR_EXP(w));
@@ -110,5 +113,6 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   inex = mpfr_set (r, tmp, rnd_mode);
   MPFR_GROUP_CLEAR (group);
   mpfr_clear (z_plus_w);
+  MPFR_SAVE_EXPO_FREE (expo);
   return inex;
 }
