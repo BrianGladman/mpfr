@@ -83,6 +83,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
       MPFR_GROUP_REPREC_2 (group, prec, tmp, tmp2);
       inex = mpfr_gamma (tmp, z, MPFR_RNDN);
       /* tmp = gamma(z) * (1 + theta) with |theta| <= 2^-prec */
+      /* FIXME: do not use bitwise operations on a signed integer. */
       inex |= mpfr_gamma (tmp2, w, MPFR_RNDN);
       /* tmp2 = gamma(w) * (1 + theta2) with |theta2| <= 2^-prec */
       inex |= mpfr_mul (tmp, tmp, tmp2, MPFR_RNDN);
@@ -94,7 +95,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
          with |theta5| <= 2^-prec. For prec >= 3, we have
          |(1 + theta5)^5 - 1| <= 7 * 2^(-prec), thus the error is bounded
          by 7 ulps */
-      
+
       /* if inex=0, then tmp is exactly beta(z,w) */
       if (inex == 0 ||
           MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 3, MPFR_PREC(r), rnd_mode)))
