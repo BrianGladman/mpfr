@@ -148,7 +148,8 @@ Table of contents:
     http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1946.pdf
   Some propositions about rootn: mpfr_rootn_si, mpfr_rootn_sj, mpfr_rootn_z,
   and perhaps versions with an unsigned integer: mpfr_rootn_ui (in which
-  case mpfr_root could be declared as obsolete) and mpfr_rootn_uj.
+  case mpfr_root could be declared as obsolete) and mpfr_rootn_uj. Warning!
+  rootn(-0,positive even) is +0, not -0 like in mpfr_root.
 - functions defined in the LIA-2 standard
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq
     and mmin_seq (mpfr_min and mpfr_max correspond to mmin and mmax);
