@@ -56,14 +56,89 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 if w is integer or -Inf: r = NaN (pole)
                 if -2k-1 < w < -2k:   r = -Inf
                 if -2k-2 < w < -2k-1: r = +Inf
+             if w = -Inf and z is not an integer:
+                beta(z,t) for t going to -Inf oscillates between positive and
+                negative values, with poles around integer values of t, thus
+                beta(z,w) gives NaN;
+             if w = -Inf and z is an integer:
+                beta(z,w) gives +0 for z even > 0, -0 for z odd > 0,
+                NaN for z <= 0;
              if z = -Inf (then w = -Inf too): r = NaN */
           if (mpfr_less_p (z, w))
             return mpfr_beta (r, w, z, rnd_mode);
           /* now z >= w */
-          printf ("not yet implemented");
+          if (MPFR_IS_INF (z) && MPFR_IS_POS(z)) /* z = +Inf */
+            {
+              if (mpfr_cmp_ui (w, 0) > 0)
+                {
+                  mpfr_set_ui (r, 0, MPFR_RNDN);
+                  MPFR_RET(0);
+                }
+              else if (MPFR_IS_ZERO(w) || MPFR_IS_INF(w) || mpfr_integer_p (w))
+                {
+                  MPFR_SET_NAN(r);
+                  MPFR_RET_NAN;
+                }
+              else
+                {
+                  long q;
+                  mpfr_t t;
+                  mpfr_init2 (t, MPFR_PREC_MIN);
+                  mpfr_set_ui (t, 1, MPFR_RNDN);
+                  mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
+                  mpfr_clear (t);
+                  /* q contains the low bits of trunc(w) where trunc() rounds
+                     towards zero, thus if q is odd, then -2k-2 < w < -2k-1 */
+                  MPFR_SET_INF(r);
+                  if (q & 1)
+                    MPFR_SET_NEG(r);
+                  else
+                    MPFR_SET_POS(r);
+                  MPFR_RET(0);
+                }
+            }
+          else if (MPFR_IS_INF(w)) /* w = -Inf */
+            {
+              if (mpfr_cmp_ui (z, 0) <= 0 || !mpfr_integer_p (z))
+                {
+                  MPFR_SET_NAN(r);
+                  MPFR_RET_NAN;
+                }
+              else
+                {
+                  /* FIXME: we could use the is_odd function in pow.c, if we
+                     declare it in mpfr-impl.h */
+                  mpfr_t t;
+                  long q;
+                  mpfr_init2 (t, MPFR_PREC_MIN);
+                  mpfr_set_ui (t, 1, MPFR_RNDN);
+                  mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
+                  mpfr_clear (t);
+                  MPFR_SET_ZERO(r);
+                  if (q & 1)
+                    MPFR_SET_NEG(r);
+                  else
+                    MPFR_SET_POS(r);
+                  MPFR_RET(0);
+                }
+            }
         }
       else /* z or w is 0 */
         {
+          /* for z > 0, beta(z,+0) = +Inf, beta(z,-0) = -Inf
+             beta(+-0,+-0) = NaN
+             beta(+-0, w) is NaN for w < 0 */
+          if (mpfr_cmp_ui (z, 0) > 0) /* then w = +0 or -0 */
+            {
+              MPFR_SET_INF(r);
+              MPFR_SET_SAME_SIGN(r,w);
+              MPFR_RET(0);
+            }
+          else
+            {
+              MPFR_SET_NAN(r);
+              MPFR_RET_NAN;
+            }
         }
       return 0;
     }
