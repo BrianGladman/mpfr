@@ -37,6 +37,9 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
+  if (mpfr_less_p (z, w))
+    return mpfr_beta (r, w, z, rnd_mode);
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (z) || MPFR_IS_SINGULAR (w)))
     {
       /* if z or w is NaN, return NaN */
@@ -64,8 +67,6 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 beta(z,w) gives +0 for z even > 0, -0 for z odd > 0,
                 NaN for z <= 0;
              if z = -Inf (then w = -Inf too): r = NaN */
-          if (mpfr_less_p (z, w))
-            return mpfr_beta (r, w, z, rnd_mode);
           /* now z >= w */
           if (MPFR_IS_INF (z) && MPFR_IS_POS(z)) /* z = +Inf */
             {
@@ -162,6 +163,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       unsigned int inex2;  /* unsigned due to bitwise operations */
+      mpfr_exp_t expw;
 
       MPFR_GROUP_REPREC_2 (group, prec, tmp, tmp2);
       inex2 = mpfr_gamma (tmp, z, MPFR_RNDN);
@@ -182,6 +184,17 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
       if (inex2 == 0 ||
           MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 3, MPFR_PREC(r), rnd_mode)))
         break;
+
+      /* beta(1,2^(-k)) = 2^k is exact, and cannot be detected above since
+         gamma(2^(-k)) is not exact */
+
+      expw = mpfr_get_exp (w);
+      if (mpfr_cmp_ui (z, 1) == 0 && mpfr_cmp_ui_2exp (w, 1, expw - 1) == 0)
+        {
+          mpfr_set_ui_2exp (tmp, 1, 1 - expw, MPFR_RNDN);
+          break;
+        }
+
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);
