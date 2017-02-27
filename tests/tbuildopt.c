@@ -80,9 +80,12 @@ check_gmpinternals_p (void)
 int
 main (void)
 {
+  tests_start_mpfr ();
+
   check_tls_p();
   check_decimal_p();
   check_gmpinternals_p();
 
+  tests_end_mpfr ();
   return 0;
 }
