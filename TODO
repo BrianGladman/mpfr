@@ -258,10 +258,9 @@ Table of contents:
   match this standard.
 
 - from gnumeric (www.gnome.org/projects/gnumeric/doc/function-reference.html):
-  - beta
-    (also incomplete beta function, see message from Martin Maechler
+  - incomplete beta function, see message from Martin Maechler
     <maechler@stat.math.ethz.ch> on 18 Jan 2016, and Section 6.6 in
-    Abramowitz & Stegun)
+    Abramowitz & Stegun
   - betaln
   - degrees
   - radians
