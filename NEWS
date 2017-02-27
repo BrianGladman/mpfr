@@ -47,7 +47,7 @@ Changes from versions 3.1.* to version 4.0.0:
 - New functions mpfr_fmma and mpfr_fmms to compute a*b+c*d and a*b-c*d.
 - New functions mpfr_log_ui to compute the logarithm of an integer,
   mpfr_gamma_inc for the incomplete Gamma function, and mpfr_beta for the
-  Beta function.  		 
+  Beta function.
 - The mpfr_eint function now returns the value of the E1/eint1 function
   for negative argument.
 - The behavior of the mpfr_set_exp function changed, as it could easily

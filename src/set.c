@@ -124,7 +124,7 @@ mpfr_set_1_2 (mpfr_ptr s, mpfr_srcptr u, mpfr_rnd_t rnd_mode, int inex)
       else
         {
           mp_limb_t u1 = up[1];
-          
+
           /* we need to round (u1, u0, inex) */
           mask = MPFR_LIMB_MASK(sh);
           rb = u1 & (MPFR_LIMB_ONE << (sh - 1));
