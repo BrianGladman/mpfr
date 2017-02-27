@@ -1,4 +1,4 @@
-/* Test file for the beta function 
+/* Test file for the beta function
 
 Copyright 2017 Free Software Foundation, Inc.
 Contributed by ChemicalDevelopment.
@@ -22,8 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define CMP_ALL mpfr_cmp (r, expected) != 0
+/* TODO: Test the ternary value and the flags. Add tgeneric tests. */
 
+/* FIXME: do not use mpfr_printf in the tests. */
 #define FAILED(p, r, z, w, expected, rnd_mode) do {                     \
     mpfr_printf ("prec=%d, rnd=%s case failed for z=%Rf, w=%Rf."        \
                  " Got %Rb, expected %Rb\n", p,                         \
@@ -35,18 +36,18 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define TESTRND(p, r, z, w, expected, rnd_mode) do {                    \
     mpfr_beta (r, z, w, rnd_mode);                                      \
-    if (is_same (r, expected) != 0)                                     \
+    if (not_same (r, expected))                                         \
       FAILED(p, r, z, w, expected, rnd_mode);                           \
   } while (0)
 
 static int
-is_same (mpfr_t a, mpfr_t b)
+not_same (mpfr_t a, mpfr_t b)
 {
   int res = 0;
 
   if (mpfr_cmp(a, b) != 0)
     res = 1;
-  if (mpfr_nan_p(a) != mpfr_nan_p(b))
+  if (! mpfr_nan_p(a) != ! mpfr_nan_p(b))
     res = 1;
   return res;
 }
@@ -151,7 +152,7 @@ test_beta_2exp (mp_prec_t prec, int trials, int spread)
   mpfr_init2 (z, prec);
   mpfr_init2 (w, prec);
   mpfr_init2 (expect, prec);
-  for (i = -(spread*trials)/2; spread*i < trials / 2; i+= spread)
+  for (i = -(spread*trials)/2; spread*i < trials / 2; i += spread)
     {
       mpfr_set_si_2exp (z, 1, i, MPFR_RNDN);
       mpfr_set_ui (w, 1, MPFR_RNDN);
@@ -171,14 +172,14 @@ test_beta_hardcoded (mp_prec_t prec)
 {
   mpfr_t r, z, w, expect;
   mp_prec_t oprec = 1;
-  
+
   if (prec < 10)
     prec = 10;
   mpfr_init2 (z, prec);
   mpfr_init2 (w, prec);
   mpfr_init2 (r, oprec);
   mpfr_init2 (expect, oprec);
-  
+
   mpfr_set_ui (z, 3, MPFR_RNDN);
   mpfr_set_ui (w, 3, MPFR_RNDN);
   mpfr_set_str (expect, "1e-5", 2, MPFR_RNDN);
@@ -236,7 +237,7 @@ test_beta_refl (mp_prec_t prec, mp_rnd_t rnd_mode)
   mpfr_init2 (w, prec);
   mpfr_init2 (r, prec);
   mpfr_init2 (expect, prec);
-  
+
   mpfr_set_ui (z, 3, MPFR_RNDN);
   mpfr_set_ui (w, 3, MPFR_RNDN);
   mpfr_beta (expect, w, z, rnd_mode);
