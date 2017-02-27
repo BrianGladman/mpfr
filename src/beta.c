@@ -32,7 +32,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   mpfr_uexp_t pmin;
   mpfr_prec_t prec;
   mpfr_t z_plus_w, tmp, tmp2;
-  int inex;
+  int inex, w_integer;
   MPFR_GROUP_DECL (group);
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -108,17 +108,8 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 }
               else
                 {
-                  /* FIXME: we could use the is_odd function in pow.c, if we
-                     declare it in mpfr-impl.h */
-                  mpfr_t t;
-                  long q;
-
-                  mpfr_init2 (t, MPFR_PREC_MIN);
-                  mpfr_set_ui (t, 1, MPFR_RNDN);
-                  mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
-                  mpfr_clear (t);
                   MPFR_SET_ZERO(r);
-                  if ((unsigned long) q & 1)
+                  if (mpfr_is_odd (w))
                     MPFR_SET_NEG(r);
                   else
                     MPFR_SET_POS(r);
@@ -135,6 +126,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
             {
               MPFR_SET_INF(r);
               MPFR_SET_SAME_SIGN(r,w);
+              MPFR_SET_DIVBY0 ();
               MPFR_RET(0);
             }
           else
@@ -146,6 +138,46 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
       return 0;
     }
 
+  /* special case when w is a negative integer */
+  w_integer = mpfr_integer_p (w);
+  if (w_integer && MPFR_IS_NEG(w))
+    {
+      /* if z < 0 or z+w > 0, or z is not an integer, return NaN */
+      if (MPFR_IS_NEG(z) || mpfr_cmpabs (z, w) > 0 || !mpfr_integer_p (z))
+        {
+          MPFR_SET_NAN(r);
+          MPFR_RET_NAN;
+        }
+      /* If z+w = 0, the result is 1/z. */
+      if (mpfr_cmpabs (z, w) == 0)
+        return mpfr_ui_div (r, 1, z, rnd_mode);
+      /* Now z is an integer and z+w <= 0: return (-1)^z*beta(z,1-w-z).
+         Since z and w are of opposite signs, |z+w| <= max(|z|,|w|). */
+      emax = MAX (MPFR_EXP(z), MPFR_EXP(w));
+      mpfr_init2 (z_plus_w, (mpfr_prec_t) emax);
+      inex = mpfr_add (z_plus_w, z, w, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      inex = mpfr_ui_sub (z_plus_w, 1, z_plus_w, MPFR_RNDN);
+      MPFR_ASSERTN(inex == 0);
+      if (mpfr_is_odd (z))
+        {
+          inex = -mpfr_beta (r, z, z_plus_w, MPFR_INVERT_RND (rnd_mode));
+          MPFR_CHANGE_SIGN(r);
+        }
+      else
+        inex = mpfr_beta (r, z, z_plus_w, rnd_mode);
+      mpfr_clear (z_plus_w);
+      return inex;
+    }
+
+  /* special case when z is a negative integer: here w < z and w is not an
+     integer */
+  if (mpfr_integer_p (z) && MPFR_IS_NEG(z))
+    {
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
+    }
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* compute the smallest precision such that z + w is exact */
@@ -154,10 +186,38 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (emax >= emin);
   /* Thus the math value of emax - emin is representable in mpfr_uexp_t. */
   pmin = (mpfr_uexp_t) emax - emin;
+  /* If z and w have same sign, their sum can have exponent emax + 1. */
+  pmin += 1;
+  if (pmin > MPFR_PREC_MAX) /* FIXME: check if result can differ from NaN. */
+    {
+      MPFR_SAVE_EXPO_FREE (expo);
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
+    }
   MPFR_ASSERTN (pmin <= MPFR_PREC_MAX);  /* detect integer overflow */
   mpfr_init2 (z_plus_w, (mpfr_prec_t) pmin);
   inex = mpfr_add (z_plus_w, z, w, MPFR_RNDN);
+  /* if z+w overflows with rounding to nearest, then w must be larger than
+     1/2*ulp(z), thus we have an underflow. */
+  if (MPFR_IS_INF(z_plus_w))
+    {
+      mpfr_clear (z_plus_w);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_underflow (r, rnd_mode, 1);
+    }
   MPFR_ASSERTN(inex == 0);
+
+  /* if z+w is 0 or a negative integer, return NaN when w (and thus z) is not
+     an integer */
+  if (mpfr_cmp_ui (z_plus_w, 0) <= 0 && !w_integer
+      && mpfr_integer_p (z_plus_w))
+    {
+      mpfr_clear (z_plus_w);
+      MPFR_SAVE_EXPO_FREE (expo);
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
+    }
+  
   prec = MPFR_PREC(r);
   prec += MPFR_INT_CEIL_LOG2 (prec);
   MPFR_GROUP_INIT_2 (group, prec, tmp, tmp2);
@@ -165,7 +225,6 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       unsigned int inex2;  /* unsigned due to bitwise operations */
-      mpfr_exp_t expw;
 
       MPFR_GROUP_REPREC_2 (group, prec, tmp, tmp2);
       inex2 = mpfr_gamma (tmp, z, MPFR_RNDN);
@@ -182,18 +241,54 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
          |(1 + theta5)^5 - 1| <= 7 * 2^(-prec), thus the error is bounded
          by 7 ulps */
 
+      if (MPFR_IS_NAN(tmp)) /* FIXME: most probably gamma(z)*gamma(w) = +-Inf,
+                               and gamma(z+w) = +-Inf, can we do better? */
+        {
+          mpfr_clear (z_plus_w);
+          MPFR_ZIV_FREE (loop);
+          MPFR_GROUP_CLEAR (group);
+          MPFR_SAVE_EXPO_FREE (expo);
+          MPFR_SET_NAN(r);
+          MPFR_RET_NAN;
+        }
+
+      MPFR_ASSERTN(mpfr_regular_p (tmp));
+
       /* if inex2 = 0, then tmp is exactly beta(z,w) */
       if (inex2 == 0 ||
           MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 3, MPFR_PREC(r), rnd_mode)))
         break;
 
-      /* beta(1,2^(-k)) = 2^k is exact, and cannot be detected above since
-         gamma(2^(-k)) is not exact */
-
-      expw = mpfr_get_exp (w);
-      if (mpfr_cmp_ui (z, 1) == 0 && mpfr_cmp_ui_2exp (w, 1, expw - 1) == 0)
+      /* beta(1,+/-2^(-k)) = +/-2^k is exact, and cannot be detected above
+         since gamma(+/-2^(-k)) is not exact */
+      if (mpfr_cmp_ui (z, 1) == 0)
         {
-          mpfr_set_ui_2exp (tmp, 1, 1 - expw, MPFR_RNDN);
+          mpfr_exp_t expw = mpfr_get_exp (w);
+          if (mpfr_cmp_ui_2exp (w, 1, expw - 1) == 0)
+            {
+              /* since z >= w, this will only match w <= 1 */
+              mpfr_set_ui_2exp (tmp, 1, 1 - expw, MPFR_RNDN);
+              break;
+            }
+          else if (mpfr_cmp_si_2exp (w, -1, expw - 1) == 0)
+            {
+              mpfr_set_si_2exp (tmp, -1, 1 - expw, MPFR_RNDN);
+              break;
+            }
+        }
+      
+      /* beta(2^k,1) = 1/2^k for k > 0 (k <= 0 was already tested above) */
+      if (mpfr_cmp_ui (w, 1) == 0 &&
+          mpfr_cmp_ui_2exp (z, 1, MPFR_EXP(z) - 1) == 0)
+        {
+          mpfr_set_ui_2exp (tmp, 1, 1 - MPFR_EXP(z), MPFR_RNDN);
+          break;
+        }
+
+      /* beta(2,-0.5) = -4 */
+      if (mpfr_cmp_ui (z, 2) == 0 && mpfr_cmp_si_2exp (w, -1, - 1) == 0)
+        {
+          mpfr_set_si_2exp (tmp, -1, 2, MPFR_RNDN);
           break;
         }
 

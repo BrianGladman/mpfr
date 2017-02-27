@@ -108,8 +108,8 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 }
 
 /* Return 1 if y is an odd integer, 0 otherwise. */
-static int
-is_odd (mpfr_srcptr y)
+int
+mpfr_is_odd (mpfr_srcptr y)
 {
   mpfr_exp_t expo;
   mpfr_prec_t prec;
@@ -191,7 +191,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   if (MPFR_IS_NEG (x))
     {
       MPFR_ASSERTD (y_is_integer);
-      if (is_odd (y))
+      if (mpfr_is_odd (y))
         {
           neg_result = 1;
           rnd_mode = MPFR_INVERT_RND (rnd_mode);
@@ -505,7 +505,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         {
           int negative;
           /* Determine the sign now, in case y and z are the same object */
-          negative = MPFR_IS_NEG (x) && is_odd (y);
+          negative = MPFR_IS_NEG (x) && mpfr_is_odd (y);
           if (MPFR_IS_POS (y))
             MPFR_SET_INF (z);
           else
@@ -521,7 +521,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           int negative;
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           /* Determine the sign now, in case y and z are the same object */
-          negative = MPFR_IS_NEG(x) && is_odd (y);
+          negative = MPFR_IS_NEG(x) && mpfr_is_odd (y);
           if (MPFR_IS_NEG (y))
             {
               MPFR_ASSERTD (! MPFR_IS_INF (y));
@@ -552,7 +552,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
   cmp_x_1 = mpfr_cmpabs (x, __gmpfr_one);
   if (cmp_x_1 == 0)
-    return mpfr_set_si (z, MPFR_IS_NEG (x) && is_odd (y) ? -1 : 1, rnd_mode);
+    return mpfr_set_si (z, MPFR_IS_NEG (x) && mpfr_is_odd (y) ? -1 : 1, rnd_mode);
 
   /* now we have:
      (1) either x > 0
@@ -608,7 +608,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       if (overflow)
         {
           MPFR_LOG_MSG (("early overflow detection\n", 0));
-          negative = MPFR_IS_NEG (x) && is_odd (y);
+          negative = MPFR_IS_NEG (x) && mpfr_is_odd (y);
           return mpfr_overflow (z, rnd_mode, negative ? -1 : 1);
         }
     }
@@ -651,7 +651,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           MPFR_LOG_MSG (("early underflow detection\n", 0));
           return mpfr_underflow (z,
                                  rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
-                                 MPFR_IS_NEG (x) && is_odd (y) ? -1 : 1);
+                                 MPFR_IS_NEG (x) && mpfr_is_odd (y) ? -1 : 1);
         }
     }
 
@@ -701,7 +701,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     MPFR_CLEAR_FLAGS ();
     inexact = mpfr_exp2 (z, tmp, rnd_mode);
     mpfr_clear (tmp);
-    if (sgnx < 0 && is_odd (y))
+    if (sgnx < 0 && mpfr_is_odd (y))
       {
         mpfr_neg (z, z, rnd_mode);
         inexact = -inexact;

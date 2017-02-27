@@ -2210,6 +2210,8 @@ __MPFR_DECLSPEC void mpfr_mpz_init (mpz_ptr);
 __MPFR_DECLSPEC void mpfr_mpz_init2 (mpz_t, mp_bitcnt_t);
 __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 
+__MPFR_DECLSPEC int mpfr_is_odd (mpfr_srcptr);
+
 #ifdef _MPFR_H_HAVE_VA_LIST
 /* Declared only if <stdarg.h> has been included. */
 __MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,

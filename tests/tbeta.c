@@ -273,9 +273,17 @@ test_beta_refl (mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
   mpfr_clear (expect);
 }
 
+#define TEST_FUNCTION mpfr_beta
+#define TWO_ARGS
+#define TEST_RANDOM_EMIN -16
+#define TEST_RANDOM_EMAX 16
+#include "tgeneric.c"
+
 int
 main (void)
 {
+  tests_start_mpfr ();
+
   test_beta_special (10);
   test_beta_special (100);
   test_beta_special (1000);
@@ -289,5 +297,8 @@ main (void)
   test_beta_refl (1, MPFR_RNDN);
   test_beta_refl (100, MPFR_RNDD);
 
+  test_generic (MPFR_PREC_MIN, 100, 20);
+
+  tests_end_mpfr ();
   return 0;
 }
