@@ -288,6 +288,23 @@ do
     { echo "Missing '#include \"mpfr-impl.h\"' in $file?" && err=1 }
 done
 
+# Check that the usual test programs call tests_start_mpfr and tests_end_mpfr.
+tprg=($(sed -n '/^check_PROGRAMS/,/[^\\]$/ {
+  s/.*=//
+  s/\\//
+  p
+  }' tests/Makefile.am))
+[[ -n $tprg ]]
+for t in $tprg
+do
+  [[ $t != mpf*_compat ]] || continue
+  tc=tests/$t.c
+  for fn in tests_start_mpfr tests_end_mpfr
+  do
+    err-if-output "missing call to $fn in $tc" grep -q "$fn *();" $tc
+  done
+done
+
 # mpfr_printf-like functions shouldn't be used in the tests,
 # as they need <stdarg.h> (HAVE_STDARG defined).
 for file in tests/*.c
