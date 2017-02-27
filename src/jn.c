@@ -311,6 +311,11 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           MPFR_ASSERTN (! exception);
           exception = 1;
         }
+      /* the expected number of lost bits is k0, if err is larger than k0
+         most probably there is a cancellation in the series, thus we add
+         err - k0 bits to prec */
+      if (err > k0)
+        prec += err - k0;
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);
