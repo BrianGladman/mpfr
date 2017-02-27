@@ -72,7 +72,8 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
             {
               if (mpfr_cmp_ui (w, 0) > 0)
                 {
-                  mpfr_set_ui (r, 0, MPFR_RNDN);
+                  MPFR_SET_ZERO(r);
+                  MPFR_SET_POS(r);
                   MPFR_RET(0);
                 }
               else if (MPFR_IS_ZERO(w) || MPFR_IS_INF(w) || mpfr_integer_p (w))
@@ -207,15 +208,18 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
     }
   MPFR_ASSERTN(inex == 0);
 
-  /* if z+w is 0 or a negative integer, return NaN when w (and thus z) is not
-     an integer */
+  /* If z+w is 0 or a negative integer, return +0 when w (and thus z) is not
+     an integer. Indeed, gamma(z) and gamma(w) are regular numbers, and
+     gamma(z+w) is Inf, thus 1/gamma(z+w) is zero. Unless there is a rule
+     to choose the sign of 0, we choose +0. */
   if (mpfr_cmp_ui (z_plus_w, 0) <= 0 && !w_integer
       && mpfr_integer_p (z_plus_w))
     {
       mpfr_clear (z_plus_w);
       MPFR_SAVE_EXPO_FREE (expo);
-      MPFR_SET_NAN(r);
-      MPFR_RET_NAN;
+      MPFR_SET_ZERO(r);
+      MPFR_SET_POS(r);
+      MPFR_RET(0);
     }
 
   prec = MPFR_PREC(r);
