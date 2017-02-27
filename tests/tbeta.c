@@ -274,7 +274,7 @@ test_beta_refl (mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 }
 
 int
-main ()
+main (void)
 {
   test_beta_special (10);
   test_beta_special (100);
