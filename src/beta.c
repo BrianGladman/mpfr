@@ -40,7 +40,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   if (mpfr_less_p (z, w))
     return mpfr_beta (r, w, z, rnd_mode);
 
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (z) || MPFR_IS_SINGULAR (w)))
+  if (MPFR_ARE_SINGULAR (z, w))
     {
       /* if z or w is NaN, return NaN */
       if (MPFR_IS_NAN (z) || MPFR_IS_NAN (w))
