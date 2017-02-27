@@ -60,8 +60,7 @@ scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
 grandom.c fpif.c set_float128.c get_float128.c rndna.c nrandom.c        \
 random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
 mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c invert_limb.h 	\
-invsqrt_limb.h
-# beta.c (not yet fully implemented, and not yet tested)
+invsqrt_limb.h beta.c
 
 libmpfr_la_LIBADD = @LIBOBJS@
 

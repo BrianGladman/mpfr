@@ -2130,6 +2130,11 @@ function on @var{op}, rounded in the direction @var{rnd}.
 When @var{op} is a negative integer, set @var{rop} to NaN@.
 @end deftypefun
 
+@deftypefun int mpfr_beta (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Beta function at arguments @var{op1} and
+@var{op2}.
+@end deftypefun
+
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_zeta_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Riemann Zeta function on @var{op},
