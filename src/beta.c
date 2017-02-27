@@ -84,6 +84,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 {
                   long q;
                   mpfr_t t;
+
                   mpfr_init2 (t, MPFR_PREC_MIN);
                   mpfr_set_ui (t, 1, MPFR_RNDN);
                   mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
@@ -91,7 +92,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                   /* q contains the low bits of trunc(w) where trunc() rounds
                      towards zero, thus if q is odd, then -2k-2 < w < -2k-1 */
                   MPFR_SET_INF(r);
-                  if (q & 1)
+                  if ((unsigned long) q & 1)
                     MPFR_SET_NEG(r);
                   else
                     MPFR_SET_POS(r);
@@ -111,12 +112,13 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                      declare it in mpfr-impl.h */
                   mpfr_t t;
                   long q;
+
                   mpfr_init2 (t, MPFR_PREC_MIN);
                   mpfr_set_ui (t, 1, MPFR_RNDN);
                   mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
                   mpfr_clear (t);
                   MPFR_SET_ZERO(r);
-                  if (q & 1)
+                  if ((unsigned long) q & 1)
                     MPFR_SET_NEG(r);
                   else
                     MPFR_SET_POS(r);
