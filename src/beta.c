@@ -109,8 +109,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
               else
                 {
                   MPFR_SET_ZERO(r);
-                  /* FIXME: w is infinite. This does not make sense! */
-                  if (mpfr_is_odd (w))
+                  if (mpfr_odd_p (z))
                     MPFR_SET_NEG(r);
                   else
                     MPFR_SET_POS(r);
@@ -160,7 +159,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTN(inex == 0);
       inex = mpfr_ui_sub (z_plus_w, 1, z_plus_w, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
-      if (mpfr_is_odd (z))
+      if (mpfr_odd_p (z))
         {
           inex = -mpfr_beta (r, z, z_plus_w, MPFR_INVERT_RND (rnd_mode));
           MPFR_CHANGE_SIGN(r);
