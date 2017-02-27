@@ -53,7 +53,7 @@ not_same (mpfr_t a, mpfr_t b)
 }
 
 static void
-test_beta_special (mp_prec_t prec)
+test_beta_special (mpfr_prec_t prec)
 {
   mpfr_t z, w, r, expect;
 
@@ -143,7 +143,7 @@ test_beta_special (mp_prec_t prec)
 }
 
 static void
-test_beta_2exp (mp_prec_t prec, int trials, int spread)
+test_beta_2exp (mpfr_prec_t prec, int trials, int spread)
 {
   mpfr_t r, z, w, expect;
   int i;
@@ -168,10 +168,10 @@ test_beta_2exp (mp_prec_t prec, int trials, int spread)
 }
 
 static void
-test_beta_hardcoded (mp_prec_t prec)
+test_beta_hardcoded (mpfr_prec_t prec)
 {
   mpfr_t r, z, w, expect;
-  mp_prec_t oprec = 1;
+  mpfr_prec_t oprec = 1;
 
   if (prec < 10)
     prec = 10;
@@ -229,7 +229,7 @@ test_beta_hardcoded (mp_prec_t prec)
 
 /* makes sure beta(a, b) = beta(b, a) */
 static void
-test_beta_refl (mp_prec_t prec, mp_rnd_t rnd_mode)
+test_beta_refl (mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 {
   mpfr_t r, z, w, expect;
 
