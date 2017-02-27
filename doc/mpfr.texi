@@ -3714,6 +3714,8 @@ that were added after MPFR 2.2, and in which MPFR version.
 
 @item @code{mpfr_asprintf} in MPFR 2.4.
 
+@item @code{mpfr_beta} in MPFR 4.0.
+
 @item @code{mpfr_buildopt_decimal_p} in MPFR 3.0.
 
 @item @code{mpfr_buildopt_float128_p} in MPFR 4.0.
