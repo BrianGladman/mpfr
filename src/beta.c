@@ -109,6 +109,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
               else
                 {
                   MPFR_SET_ZERO(r);
+                  /* FIXME: w is infinite. This does not make sense! */
                   if (mpfr_is_odd (w))
                     MPFR_SET_NEG(r);
                   else
