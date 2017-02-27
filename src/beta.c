@@ -217,7 +217,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
-  
+
   prec = MPFR_PREC(r);
   prec += MPFR_INT_CEIL_LOG2 (prec);
   MPFR_GROUP_INIT_2 (group, prec, tmp, tmp2);
@@ -276,7 +276,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
               break;
             }
         }
-      
+
       /* beta(2^k,1) = 1/2^k for k > 0 (k <= 0 was already tested above) */
       if (mpfr_cmp_ui (w, 1) == 0 &&
           mpfr_cmp_ui_2exp (z, 1, MPFR_EXP(z) - 1) == 0)
@@ -286,7 +286,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
 
       /* beta(2,-0.5) = -4 */
-      if (mpfr_cmp_ui (z, 2) == 0 && mpfr_cmp_si_2exp (w, -1, - 1) == 0)
+      if (mpfr_cmp_ui (z, 2) == 0 && mpfr_cmp_si_2exp (w, -1, -1) == 0)
         {
           mpfr_set_si_2exp (tmp, -1, 2, MPFR_RNDN);
           break;
