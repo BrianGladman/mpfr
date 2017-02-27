@@ -40,6 +40,8 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
   if (mpfr_less_p (z, w))
     return mpfr_beta (r, w, z, rnd_mode);
 
+  /* Now, either z and w are unordered (at least one is a NaN), or z >= w. */
+
   if (MPFR_ARE_SINGULAR (z, w))
     {
       /* if z or w is NaN, return NaN */
@@ -50,16 +52,16 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
       else if (MPFR_IS_INF (z) || MPFR_IS_INF (w))
         {
-          /* by symmetry we can assume z >= w:
+          /* Since we have z >= w:
              if z = +Inf and w > 0, then r = +0 (including w = +Inf);
              if z = +Inf and w = 0, then r = NaN
                [beta(z,1/log(z)) tends to +Inf whereas
-                beta(z,1/log(loz(z))) tends to +0]
+                beta(z,1/log(log(z))) tends to +0]
              if z = +Inf and w < 0:
-                if w is integer or -Inf: r = NaN (pole)
+                if w is an integer or -Inf: r = NaN
                 if -2k-1 < w < -2k:   r = -Inf
                 if -2k-2 < w < -2k-1: r = +Inf
-             if w = -Inf and z is not an integer:
+             if w = -Inf and z is finite and not an integer:
                 beta(z,t) for t going to -Inf oscillates between positive and
                 negative values, with poles around integer values of t, thus
                 beta(z,w) gives NaN;
@@ -67,7 +69,6 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 beta(z,w) gives +0 for z even > 0, -0 for z odd > 0,
                 NaN for z <= 0;
              if z = -Inf (then w = -Inf too): r = NaN */
-          /* now z >= w */
           if (MPFR_IS_INF (z) && MPFR_IS_POS(z)) /* z = +Inf */
             {
               if (mpfr_cmp_ui (w, 0) > 0)
@@ -123,6 +124,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
           /* for z > 0, beta(z,+0) = +Inf, beta(z,-0) = -Inf
              beta(+-0,+-0) = NaN
              beta(+-0, w) is NaN for w < 0 */
+          /* FIXME: If w is not an integer, this seems wrong. */
           if (mpfr_cmp_ui (z, 0) > 0) /* then w = +0 or -0 */
             {
               MPFR_SET_INF(r);
