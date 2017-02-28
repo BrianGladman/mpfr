@@ -58,9 +58,10 @@ not_same (mpfr_t a, mpfr_t b)
     res = 1;
   if (! mpfr_equal_p(a, b) && (! mpfr_nan_p(a) && ! mpfr_nan_p(b)))
     res = 1;
-  if ((! mpfr_signbit(a) != ! mpfr_signbit(b)) && ((! mpfr_nan_p(a) && ! mpfr_nan_p(b))))
+  if ((! mpfr_signbit(a) != ! mpfr_signbit(b)) &&
+      (! mpfr_nan_p(a) && ! mpfr_nan_p(b)))
     res = 1;
-    
+
   return res;
 }
 
@@ -191,11 +192,11 @@ Sage gives this as 0, and Lefevre said that we should return +0
 static void
 test_beta_zw_sum_int (mpfr_prec_t prec)
 {
-  if (prec < 4) {
-    prec = 4;
-  }
   mpfr_t r, z, w, expect;
   int sum;
+
+  if (prec < 4)
+    prec = 4;
 
   mpfr_init2 (r, prec);
   mpfr_init2 (z, prec);
@@ -208,25 +209,23 @@ test_beta_zw_sum_int (mpfr_prec_t prec)
   mpfr_set_zero (expect, 1);
   TEST(prec, r, z, w, expect);
 
-
   sum = -12;
   mpfr_set_str (z, "-1.101e0", 2, MPFR_RNDN);
   mpfr_si_sub (w, sum, z, MPFR_RNDN);
   mpfr_set_zero (expect, 1);
   TEST(prec, r, z, w, expect);
-  
+
   sum = -1;
   mpfr_set_str (z, "-.11e0", 2, MPFR_RNDN);
   mpfr_si_sub (w, sum, z, MPFR_RNDN);
   mpfr_set_zero (expect, 1);
   TEST(prec, r, z, w, expect);
-  
+
   sum = -13;
   mpfr_set_str (z, "-.001e0", 2, MPFR_RNDN);
   mpfr_si_sub (w, sum, z, MPFR_RNDN);
   mpfr_set_zero (expect, 1);
   TEST(prec, r, z, w, expect);
-  
 
   mpfr_clear (r);
   mpfr_clear (z);
@@ -243,6 +242,7 @@ test_beta_hardcoded (mpfr_prec_t prec)
 
   if (prec < 10)
     prec = 10;
+
   mpfr_init2 (z, prec);
   mpfr_init2 (w, prec);
   mpfr_init2 (r, oprec);
@@ -367,7 +367,6 @@ main (void)
 
   test_beta_zw_sum_int (10);
   test_beta_zw_sum_int (100);
-  
 
   test_generic (MPFR_PREC_MIN, 100, 20);
 
