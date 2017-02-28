@@ -139,6 +139,9 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
             {
               if (mpfr_integer_p (w))
                 {
+                  /* For small u > 0, Beta(w+u,2u) and Beta(w-u,2u) have
+                     opposite signs, so that they tend to infinities of
+                     opposite signs when u -> 0. Thus the result is NaN. */
                   MPFR_SET_NAN(r);
                   MPFR_RET_NAN;
                 }
