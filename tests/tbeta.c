@@ -26,11 +26,18 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* FIXME: do not use mpfr_printf in the tests. */
 #define FAILED(p, r, z, w, expected, rnd_mode) do {                     \
-    mpfr_printf ("prec=%d, rnd=%s case failed for z=%Rf, w=%Rf."        \
-                 " Got %Rb, expected %Rb\n", p,                         \
-                 mpfr_print_rnd_mode (rnd_mode), z, w, r, expected);    \
-    exit(1);                                                            \
-  } while (0)
+    mpfr_printf ("prec=%d, rnd=%s case failed for:",                    \
+                    p, mpfr_print_rnd_mode (rnd_mode));                 \
+    printf("\n z  =");                                                  \
+    mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);                          \
+    printf("\n w  =");                                                  \
+    mpfr_out_str (stdout, 2, 0, w, MPFR_RNDN);                          \
+    printf("\n ex.=");                                                  \
+    mpfr_out_str (stdout, 2, 0, expected, MPFR_RNDN);                   \
+    printf("\n ac.=");                                                  \
+    mpfr_out_str (stdout, 2, 0, r, MPFR_RNDN);                          \
+    printf("\n\n");                                                     \
+  } while (0)                                                           \
 
 #define TEST(p, r, z, w, expected) TESTRND(p, r, z, w, expected, MPFR_RNDN)
 
@@ -49,6 +56,11 @@ not_same (mpfr_t a, mpfr_t b)
     res = 1;
   if (! mpfr_nan_p(a) != ! mpfr_nan_p(b))
     res = 1;
+  if (! mpfr_equal_p(a, b) && (! mpfr_nan_p(a) && ! mpfr_nan_p(b)))
+    res = 1;
+  if ((! mpfr_signbit(a) != ! mpfr_signbit(b)) && ((! mpfr_nan_p(a) && ! mpfr_nan_p(b))))
+    res = 1;
+    
   return res;
 }
 
@@ -128,7 +140,7 @@ test_beta_special (mpfr_prec_t prec)
 
   mpfr_set_str (z, "10e0", 2, MPFR_RNDN);
   mpfr_set_inf (w, -1);
-  mpfr_set_zero (expect, -1);
+  mpfr_set_zero (expect, 1);
   TEST(prec, r, z, w, expect);
 
   mpfr_set_inf (z, -1);
@@ -166,6 +178,62 @@ test_beta_2exp (mpfr_prec_t prec, int trials, int spread)
   mpfr_clear (w);
   mpfr_clear (expect);
 }
+
+/*
+Tests values such that z and w are not integers, but (z+w) is.
+
+An example that was given:
+beta(-.3, -1.7) = gamma(-0.3)*gamma(-1.7)/gamma(-2)
+
+Sage gives this as 0, and Lefevre said that we should return +0
+
+*/
+static void
+test_beta_zw_sum_int (mpfr_prec_t prec)
+{
+  if (prec < 4) {
+    prec = 4;
+  }
+  mpfr_t r, z, w, expect;
+  int sum;
+
+  mpfr_init2 (r, prec);
+  mpfr_init2 (z, prec);
+  mpfr_init2 (w, prec);
+  mpfr_init2 (expect, prec);
+
+  sum = -3;
+  mpfr_set_str (z, "-1.1e0", 2, MPFR_RNDN);
+  mpfr_si_sub (w, sum, z, MPFR_RNDN);
+  mpfr_set_zero (expect, 1);
+  TEST(prec, r, z, w, expect);
+
+
+  sum = -12;
+  mpfr_set_str (z, "-1.101e0", 2, MPFR_RNDN);
+  mpfr_si_sub (w, sum, z, MPFR_RNDN);
+  mpfr_set_zero (expect, 1);
+  TEST(prec, r, z, w, expect);
+  
+  sum = -1;
+  mpfr_set_str (z, "-.11e0", 2, MPFR_RNDN);
+  mpfr_si_sub (w, sum, z, MPFR_RNDN);
+  mpfr_set_zero (expect, 1);
+  TEST(prec, r, z, w, expect);
+  
+  sum = -13;
+  mpfr_set_str (z, "-.001e0", 2, MPFR_RNDN);
+  mpfr_si_sub (w, sum, z, MPFR_RNDN);
+  mpfr_set_zero (expect, 1);
+  TEST(prec, r, z, w, expect);
+  
+
+  mpfr_clear (r);
+  mpfr_clear (z);
+  mpfr_clear (w);
+  mpfr_clear (expect);
+}
+
 
 static void
 test_beta_hardcoded (mpfr_prec_t prec)
@@ -296,6 +364,10 @@ main (void)
 
   test_beta_refl (1, MPFR_RNDN);
   test_beta_refl (100, MPFR_RNDD);
+
+  test_beta_zw_sum_int (10);
+  test_beta_zw_sum_int (100);
+  
 
   test_generic (MPFR_PREC_MIN, 100, 20);
 
