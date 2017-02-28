@@ -23,25 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H /* for MPFR_INT_CEIL_LOG2 */
 #include "mpfr-impl.h"
 
-/* True iff trunc(w) is odd */
-static int
-odd_trunc (mpfr_srcptr w)
-{
-  long q;
-  mpfr_t t;
-  MPFR_SAVE_EXPO_DECL (expo);
-
-  MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init2 (t, MPFR_PREC_MIN);
-  mpfr_set_ui (t, 1, MPFR_RNDN);
-  mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
-  mpfr_clear (t);
-  MPFR_SAVE_EXPO_FREE (expo);
-  /* q contains the low bits of trunc(w) where trunc() rounds toward zero,
-     thus q is odd iff -2k-2 < w < -2k-1 */
-  return (unsigned long) q & 1;
-}
-
 /* use formula (6.2.2) from Abramowitz & Stegun:
    beta(z,w) = gamma(z)*gamma(w)/gamma(z+w) */
 int
@@ -103,8 +84,17 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                 }
               else
                 {
+                  long q;
+                  mpfr_t t;
+
+                  mpfr_init2 (t, MPFR_PREC_MIN);
+                  mpfr_set_ui (t, 1, MPFR_RNDN);
+                  mpfr_fmodquo (t, &q, w, t, MPFR_RNDD);
+                  mpfr_clear (t);
+                  /* q contains the low bits of trunc(w) where trunc() rounds
+                     towards zero, thus if q is odd, then -2k-2 < w < -2k-1 */
                   MPFR_SET_INF(r);
-                  if (odd_trunc (w))
+                  if ((unsigned long) q & 1)
                     MPFR_SET_NEG(r);
                   else
                     MPFR_SET_POS(r);
@@ -131,59 +121,26 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
       else /* z or w is 0 */
         {
-          /* If x is not a nonpositive integer, Gamma(x) is regular, so that
-             when y -> 0 with either y >= 0 or y <= 0,
-               Beta(x,y) ~ Gamma(y) / Gamma(x)
-             Gamma(y) tends to an infinity of the same sign as y.
-             Thus Beta(x,y) should be an infinity whose sign is the product
-             of the signs of y and Gamma(x). */
-          if (mpfr_cmp_ui (z, 0) != 0) /* then w is +0 or -0 and z > 0 */
+          if (mpfr_cmp_ui (z, 0) != 0) /* then w = +0 or -0 */
             {
-              /* beta(z,+0) = +Inf, beta(z,-0) = -Inf (see above) */
+              /* beta(z,+0) = +Inf, beta(z,-0) = -Inf */
               MPFR_SET_INF(r);
               MPFR_SET_SAME_SIGN(r,w);
               MPFR_SET_DIVBY0 ();
               MPFR_RET(0);
             }
-          else if (mpfr_cmp_ui (w, 0) != 0) /* then z is +0 or -0 and w < 0 */
+          else if (mpfr_cmp_ui (w, 0) != 0)
             {
-              if (mpfr_integer_p (w))
-                {
-                  /* When y -> w, |Gamma(y)| -> +Inf but Gamma(y) takes
-                     opposite signs for y < w and y > w, so that the
-                     result is NaN. */
-                  MPFR_SET_NAN(r);
-                  MPFR_RET_NAN;
-                }
-              else
-                {
-                  /* See above. Gamma(w) > 0 iff trunc(w) is odd. */
-                  MPFR_SET_INF(r);
-                  if (odd_trunc (w))
-                    MPFR_SET_SAME_SIGN(r,z);
-                  else
-                    MPFR_SET_OPPOSITE_SIGN(r,z);
-                  MPFR_SET_DIVBY0 ();
-                  MPFR_RET(0);
-                }
+              /* beta(+0,w) = +Inf, beta(-0,w) = -Inf */
+              MPFR_SET_INF(r);
+              MPFR_SET_SAME_SIGN(r,z);
+              MPFR_SET_DIVBY0 ();
+              MPFR_RET(0);
             }
-          else /* w = z = 0:
-                  beta(+0,+0) = +Inf
-                  beta(-0,-0) = -Inf
-                  beta(+0,-0) = NaN */
+          else /* w = z = 0 */
             {
-              if (MPFR_SIGN(z) == MPFR_SIGN(w))
-                {
-                  MPFR_SET_INF(r);
-                  MPFR_SET_SAME_SIGN(r,z);
-                  MPFR_SET_DIVBY0 ();
-                  MPFR_RET(0);
-                }
-              else
-                {
-                  MPFR_SET_NAN(r);
-                  MPFR_RET_NAN;
-                }
+              MPFR_SET_NAN(r);
+              MPFR_RET_NAN;
             }
         }
     }
