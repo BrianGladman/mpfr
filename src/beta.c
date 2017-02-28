@@ -129,7 +129,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
              Gamma(y) tends to an infinity of the same sign as y.
              Thus Beta(x,y) should be an infinity of the same sign as y.
            */
-          if (mpfr_cmp_ui (z, 0) != 0) /* then w = +0 or -0 and z > 0 */
+          if (mpfr_cmp_ui (z, 0) != 0) /* then w is +0 or -0 and z > 0 */
             {
               /* beta(z,+0) = +Inf, beta(z,-0) = -Inf (see above) */
               MPFR_SET_INF(r);
@@ -141,7 +141,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
             {
               if (mpfr_integer_p (w))
                 {
-                  /* For small u > 0, Beta(w+u,2u) and Beta(w-u,2u) have
+                  /* For small u > 0, Beta(2u,w+u) and Beta(2u,w-u) have
                      opposite signs, so that they tend to infinities of
                      opposite signs when u -> 0. Thus the result is NaN. */
                   MPFR_SET_NAN(r);
