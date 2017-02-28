@@ -121,26 +121,53 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
       else /* z or w is 0 */
         {
-          if (mpfr_cmp_ui (z, 0) != 0) /* then w = +0 or -0 */
+          /* If x is not a nonpositive integer, Gamma(x) is regular, so that
+             when y -> 0 with either y >= 0 or y <= 0,
+               Beta(x,y) ~ Gamma(x) * Gamma(y) / Gamma(x) = Gamma(y)
+             Gamma(y) tends to an infinity of the same sign as y.
+             Thus Beta(x,y) should be an infinity of the same sign as y.
+           */
+          if (mpfr_cmp_ui (z, 0) != 0) /* then w = +0 or -0 and z > 0 */
             {
-              /* beta(z,+0) = +Inf, beta(z,-0) = -Inf */
+              /* beta(z,+0) = +Inf, beta(z,-0) = -Inf (see above) */
               MPFR_SET_INF(r);
               MPFR_SET_SAME_SIGN(r,w);
               MPFR_SET_DIVBY0 ();
               MPFR_RET(0);
             }
-          else if (mpfr_cmp_ui (w, 0) != 0)
+          else if (mpfr_cmp_ui (w, 0) != 0) /* then z is +0 or -0 and w < 0 */
             {
-              /* beta(+0,w) = +Inf, beta(-0,w) = -Inf */
-              MPFR_SET_INF(r);
-              MPFR_SET_SAME_SIGN(r,z);
-              MPFR_SET_DIVBY0 ();
-              MPFR_RET(0);
+              if (mpfr_integer_p (w))
+                {
+                  MPFR_SET_NAN(r);
+                  MPFR_RET_NAN;
+                }
+              else
+                {
+                  /* beta(+0,w) = +Inf, beta(-0,w) = -Inf (see above) */
+                  MPFR_SET_INF(r);
+                  MPFR_SET_SAME_SIGN(r,z);
+                  MPFR_SET_DIVBY0 ();
+                  MPFR_RET(0);
+                }
             }
-          else /* w = z = 0 */
+          else /* w = z = 0:
+                  beta(+0,+0) = +Inf
+                  beta(-0,-0) = -Inf
+                  beta(+0,-0) = NaN */
             {
-              MPFR_SET_NAN(r);
-              MPFR_RET_NAN;
+              if (MPFR_SIGN(z) == MPFR_SIGN(w))
+                {
+                  MPFR_SET_INF(r);
+                  MPFR_SET_SAME_SIGN(r,z);
+                  MPFR_SET_DIVBY0 ();
+                  MPFR_RET(0);
+                }
+              else
+                {
+                  MPFR_SET_NAN(r);
+                  MPFR_RET_NAN;
+                }
             }
         }
     }
