@@ -121,24 +121,41 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
         }
       else /* z or w is 0 */
         {
-          /* for z > 0, beta(z,+0) = +Inf, beta(z,-0) = -Inf
-             beta(+-0,+-0) = NaN
-             beta(+-0, w) is NaN for w < 0 */
-          /* FIXME: If w is not an integer, this seems wrong. */
-          if (mpfr_cmp_ui (z, 0) > 0) /* then w = +0 or -0 */
+          if (mpfr_cmp_ui (z, 0) != 0) /* then w = +0 or -0 */
             {
+              /* beta(z,+0) = +Inf, beta(z,-0) = -Inf */
               MPFR_SET_INF(r);
               MPFR_SET_SAME_SIGN(r,w);
               MPFR_SET_DIVBY0 ();
               MPFR_RET(0);
             }
-          else
+          else if (mpfr_cmp_ui (w, 0) != 0)
             {
-              MPFR_SET_NAN(r);
-              MPFR_RET_NAN;
+              /* beta(+0,w) = +Inf, beta(-0,w) = -Inf */
+              MPFR_SET_INF(r);
+              MPFR_SET_SAME_SIGN(r,z);
+              MPFR_SET_DIVBY0 ();
+              MPFR_RET(0);
+            }
+          else /* w = z = 0:
+                  beta(+0,+0) = +Inf
+                  beta(-0,-0) = -Inf
+                  beta(+0,-0) = NaN */
+            {
+              if (MPFR_SIGN(z) == MPFR_SIGN(w))
+                {
+                  MPFR_SET_INF(r);
+                  MPFR_SET_SAME_SIGN(r,z);
+                  MPFR_SET_DIVBY0 ();
+                  MPFR_RET(0);
+                }
+              else
+                {
+                  MPFR_SET_NAN(r);
+                  MPFR_RET_NAN;
+                }
             }
         }
-      return 0;
     }
 
   /* special case when w is a negative integer */
