@@ -484,6 +484,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, const mpfr_ptr *x,
 
                 MPFR_ASSERTD (diffexp < cancel - 2);
                 shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
+                /* equivalent to: minexp + wq - 2 - max(e,err) */
                 MPFR_ASSERTD (shiftq > 0);
                 shifts = shiftq / GMP_NUMB_BITS;
                 shiftc = shiftq % GMP_NUMB_BITS;
