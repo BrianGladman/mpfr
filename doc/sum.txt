@@ -300,7 +300,7 @@ that a number starting with a sequence of 1's is close to 0 (secondary
 term when the TMD occurs) and that each bit except the first one has a
 positive value (for the error bound).
 
-The precision of the accumulator needs to be a bit larger than the
+The precision of the accumulator needs to be slightly larger than the
 output precision, denoted sq, for two reasons:
 
   * We need some additional bits on the side of the most significant
@@ -549,7 +549,7 @@ code.
 After the loop over the inputs, we need to see whether the accuracy
 of the truncated sum is sufficient. We first determine the number of
 cancelled bits, defined as the number of consecutive identical bits
-starting with the most significant one in the accumulator. At the
+starting with the most significant bit in the accumulator. At the
 same time, we can determine whether the truncated sum is 0 (all the
 bits are identical and their value is 0). If it is 0, we have two
 cases: if maxexp2 is equal to MPFR_EXP_MIN (meaning no more tails),
@@ -1045,7 +1045,7 @@ We distinguish two cases:
     Let us recall that the d−1 bits from exponent u−2 to u−d (= err)
     are identical. We distinguish two subcases:
 
-      * err ≥ minexp. The last two over the d−1 identical bits and the
+      * err ≥ minexp. The last two of the d−1 identical bits and the
         following bits, i.e., the bits from err+1 to minexp, are copied
         (possibly with a shift) to the most significant part of the new
         accumulator.
