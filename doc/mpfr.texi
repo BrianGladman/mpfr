@@ -275,7 +275,8 @@ from most arbitrary precision floating-point software tools, are:
 
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
-@code{mp_bits_per_limb} (64 on most current processors);
+@code{mp_bits_per_limb} (64 on most current processors).
+It does not depend either on the machine rounding mode or rounding precision;
 
 @item the precision in bits can be set @emph{exactly} to any valid value
 for each variable (including very small precision);
