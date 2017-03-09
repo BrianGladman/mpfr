@@ -1191,9 +1191,11 @@ bug20120829 (void)
 
 /* https://sympa.inria.fr/sympa/arc/mpfr/2016-12/msg00043.html
    mpfr_strtofr can return an incorrect ternary value.
-   Note: As a consequence, the value can also be incorrect in
-   a reduced exponent range (since the ternary value is used
-   to resolve double rounding in mpfr_check_range). */
+   Note: As a consequence, the value can also be incorrect if the current
+   exponent range is not the maximum one (since the ternary value is used
+   to resolve double rounding in mpfr_check_range); this can happen only
+   if the value is a midpoint between 0 and the minimum positive number
+   or the opposite. */
 static void
 bug20161217 (void)
 {
@@ -1214,7 +1216,8 @@ bug20161217 (void)
 
 /* check bug in MPFR 3.1.5 is fixed: cf
    https://sympa.inria.fr/sympa/arc/mpfr/2017-03/msg00009.html
-   Note: same bug as bug20161217. See also the comments of bug20161217. */
+   Note: same bug as bug20161217. See also the comments of bug20161217;
+   here, this is a case where the value is incorrect. */
 static void
 bug20170308 (void)
 {
