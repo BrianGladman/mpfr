@@ -1208,7 +1208,8 @@ bug20161217 (void)
 }
 
 /* check bug in MPFR 3.1.5 is fixed: cf
-   https://sympa.inria.fr/sympa/arc/mpfr/2017-03/msg00009.html */
+   https://sympa.inria.fr/sympa/arc/mpfr/2017-03/msg00009.html
+   Note: same bug as bug20161217. */
 static void
 bug20170308 (void)
 {
