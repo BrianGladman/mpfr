@@ -1189,12 +1189,17 @@ bug20120829 (void)
   mpfr_clears (e, x1, x2, (mpfr_ptr) 0);
 }
 
-/* Note: the number is 5^47/2^9. */
+/* https://sympa.inria.fr/sympa/arc/mpfr/2016-12/msg00043.html
+   mpfr_strtofr can return an incorrect ternary value.
+   Note: As a consequence, the value can also be incorrect in
+   a reduced exponent range (since the ternary value is used
+   to resolve double rounding in mpfr_check_range). */
 static void
 bug20161217 (void)
 {
   mpfr_t fp, z;
   static const char * num = "0.1387778780781445675529539585113525390625e31";
+  /* The above number is 5^47/2^9. */
   int inex;
 
   mpfr_init2 (fp, 110);
@@ -1209,7 +1214,7 @@ bug20161217 (void)
 
 /* check bug in MPFR 3.1.5 is fixed: cf
    https://sympa.inria.fr/sympa/arc/mpfr/2017-03/msg00009.html
-   Note: same bug as bug20161217. */
+   Note: same bug as bug20161217. See also the comments of bug20161217. */
 static void
 bug20170308 (void)
 {
