@@ -24,10 +24,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* TODO: Test the ternary value and the flags. Add tgeneric tests. */
 
-/* FIXME: do not use mpfr_printf in the tests. */
 #define FAILED(p, r, z, w, expected, rnd_mode) do {                     \
-    mpfr_printf ("prec=%d, rnd=%s case failed for:",                    \
-                    p, mpfr_print_rnd_mode (rnd_mode));                 \
+    printf ("prec=%d, rnd=%s case failed for:",                         \
+            (int) p, mpfr_print_rnd_mode (rnd_mode));                   \
     printf("\n z  =");                                                  \
     mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);                          \
     printf("\n w  =");                                                  \
@@ -37,7 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     printf("\n ac.=");                                                  \
     mpfr_out_str (stdout, 2, 0, r, MPFR_RNDN);                          \
     printf("\n\n");                                                     \
-  } while (0)                                                           \
+  } while (0)
 
 #define TEST(p, r, z, w, expected) TESTRND(p, r, z, w, expected, MPFR_RNDN)
 
