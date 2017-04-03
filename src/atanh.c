@@ -25,6 +25,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* The computation of atanh is done by:
    atanh = ln((1+x)/(1-x)) / 2
+   except when x is very small, in which case atanh = x + tiny error.
+   TODO: When x is small (but x + tiny error cannot be used), the above
+   formula is slow due to the large error as (1+x)/(1-x) is close to 1;
+   one should use: log1p(2x/(1-x)).
 */
 
 int
