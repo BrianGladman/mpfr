@@ -90,7 +90,6 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
   MPFR_TMP_INIT_ABS (x, xt);
   Ny = MPFR_PREC (y);
   Nt = MAX (Nx, Ny);
-  /* the optimal number of bits : see algorithms.ps */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
 
   /* initialize of intermediary variable */
