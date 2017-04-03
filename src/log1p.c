@@ -23,8 +23,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
- /* The computation of log1p is done by
-    log1p(x)=log(1+x)                      */
+/* The computation of log1p is done by
+   log1p(x) = log(1+x)
+   except when x is very small, in which case log1p(x) = x + tiny error.
+   TODO: When x is small (but x + tiny error cannot be used), the above
+   formula is slow due to the absorption in 1+x and cancellation in the
+   log. The Taylor expansion may be faster.
+*/
 
 int
 mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)

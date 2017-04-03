@@ -300,7 +300,8 @@ Table of contents:
   Also mpfr_div uses the remainder computed by mpn_divrem. A workaround would
   be to first try with mpn_div_q, and if we cannot (easily) compute the
   rounding, then use the current code with mpn_divrem.
-- improve atanh(x) for small x by using atanh(x) = log1p(2x/(1-x)).
+- improve atanh(x) for small x by using atanh(x) = log1p(2x/(1-x)),
+  and log1p should also be improved for small arguments.
 - compute exp by using the series for cosh or sinh, which has half the terms
   (see Exercise 4.11 from Modern Computer Arithmetic, version 0.3)
   The same method can be used for log, using the series for atanh, i.e.,
