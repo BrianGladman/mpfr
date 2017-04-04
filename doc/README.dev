@@ -580,6 +580,14 @@ user-defined string literal in C++11:
 
    =====================================================================
 
+Setting errno is safe to signal some error information (as in the
+formatted output functions), but errno must not be read (unless we
+have just modified it) as this may yield undefined behavior in some
+corner cases out of our control (ISO C99 / C11, 7.14.1.1p5, also
+mentioned in J.2).
+
+   =====================================================================
+
 C-Reduce may be useful to try to identify whether a bug comes from the
 compiler.
 
