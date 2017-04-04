@@ -1206,10 +1206,19 @@ bug20161217 (void)
 
   mpfr_init2 (fp, 110);
   mpfr_init2 (z, 110);
+
   inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001101E-9");
   MPFR_ASSERTN(mpfr_equal_p (fp, z));
+
+  /* try with 109 bits */
+  mpfr_set_prec (fp, 109);
+  inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001100E-9");
+  MPFR_ASSERTN(mpfr_equal_p (fp, z));
+
   mpfr_clear (fp);
   mpfr_clear (z);
 }
@@ -1233,7 +1242,6 @@ bug20170308 (void)
   mpfr_set_emin (emin);
   mpfr_init2 (z, 53);
   inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
-  printf ("inex=%d z=", inex); mpfr_dump (z);
   MPFR_ASSERTN(inex < 0 && mpfr_cmp_ui_2exp (z, 1, -1075) == 0);
   mpfr_clear (z);
 }
