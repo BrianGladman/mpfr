@@ -120,6 +120,9 @@ check_long_string (void)
      in memory (~2.5 GB) */
   mpfr_t x;
   long large_prec = 2147483647;
+  size_t min_memory_limit, old_memory_limit;
+
+  old_memory_limit = tests_memory_limit;
 
   /* With a 32-bit (4GB) address space, a realloc failure has been noticed
      with a 2G precision (though allocating up to 4GB is possible):
@@ -134,6 +137,14 @@ check_long_string (void)
   if (large_prec > MPFR_PREC_MAX)
     large_prec = MPFR_PREC_MAX;
 
+  /* Increase tests_memory_limit if need be in order to avoid an
+     obvious failure due to insufficient memory. Note that such an
+     increase is necessary, but is not guaranteed to be sufficient
+     in all cases (e.g. with logging activated). */
+  min_memory_limit = 12 * (large_prec / MPFR_BYTES_PER_MP_LIMB);
+  if (tests_memory_limit > 0 && tests_memory_limit < min_memory_limit)
+    tests_memory_limit = min_memory_limit;
+
   mpfr_init2 (x, large_prec);
 
   mpfr_set_ui (x, 1, MPFR_RNDN);
@@ -146,6 +157,7 @@ check_long_string (void)
     }
 
   mpfr_clear (x);
+  tests_memory_limit = old_memory_limit;
 }
 
 static void
