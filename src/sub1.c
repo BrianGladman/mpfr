@@ -647,6 +647,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
       exp_a = exp_b - cancel;
+      /* The following assertion corresponds to a limitation of the MPFR
+         implementation. It may fail with a 32-bit ABI and huge precisions,
+         but this is practically impossible with a 64-bit ABI. This kind
+         of issue is not specific to this function. */
+      MPFR_ASSERTN (exp_b != MPFR_EXP_MAX || exp_a > __gmpfr_emax);
       if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
         {
           MPFR_TMP_FREE (marker);
@@ -669,7 +674,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
       MPFR_ASSERTD (add_exp == 0 || add_exp == 1);
-      if (MPFR_UNLIKELY (add_exp && exp_b >= __gmpfr_emax))
+      /* Overflow iff exp_b + add_exp >= __gmpfr_emax in Z, but we do
+         a subtraction below to avoid a potential integer overflow in
+         the case exp_b == MPFR_EXP_MAX. */
+      if (MPFR_UNLIKELY (exp_b >= __gmpfr_emax - add_exp))
         {
           MPFR_TMP_FREE (marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
