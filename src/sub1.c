@@ -674,7 +674,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
       MPFR_ASSERTD (add_exp == 0 || add_exp == 1);
-      /* Overflow iff exp_b + add_exp >= __gmpfr_emax in Z, but we do
+      /* Overflow iff exp_b + add_exp > __gmpfr_emax in Z, but we do
          a subtraction below to avoid a potential integer overflow in
          the case exp_b == MPFR_EXP_MAX. */
       if (MPFR_UNLIKELY (exp_b > __gmpfr_emax - add_exp))
