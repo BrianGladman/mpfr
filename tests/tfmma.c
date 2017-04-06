@@ -417,7 +417,7 @@ half_plus_half (void)
 
 /* check that result has exponent <= emax
    (see https://sympa.inria.fr/sympa/arc/mpfr/2017-04/msg00016.html) */
-static int
+static void
 bug20170405 (void)
 {
   mpfr_t x, y, z;
