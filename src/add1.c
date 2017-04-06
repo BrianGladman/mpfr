@@ -543,7 +543,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
  set_exponent:
-  if (MPFR_UNLIKELY (exp < __gmpfr_emin))  /* possible if UBF input(s) */
+  if (MPFR_UNLIKELY (exp < __gmpfr_emin))  /* possible if b and c are UBF's */
     {
       if (rnd_mode == MPFR_RNDN &&
           (exp < __gmpfr_emin - 1 ||
