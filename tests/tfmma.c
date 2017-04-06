@@ -446,6 +446,23 @@ bug20170405 (void)
   /* we should get -0 as result */
   MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z));
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_prec (z, 2);
+  /* (a+i*b)*(c+i*d) with:
+     a=0.10E1
+     b=0.10E-536870912
+     c=0.10E-536870912
+     d=0.10E1 */
+  mpfr_set_str_binary (x, "0.10E1"); /* x = a = d */
+  mpfr_set_str_binary (y, "0.10E-536870912"); /* y = b = c */
+  /* real part is a*c-b*d = x*y-y*x */
+  mpfr_fmms (z, x, y, y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (z) && !mpfr_signbit (z));
+  /* imaginary part is a*d+b*c = x*x+y*y */
+  mpfr_fmma (z, x, x, y, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
+  
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
