@@ -2361,6 +2361,6 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
 #define MPFR_UBF_CLEAR_EXP(x) \
-  ((void) (MPFR_IS_UBF (u) && (mpz_clear (MPFR_ZEXP (x)), 0)))
+  ((void) (MPFR_IS_UBF (x) && (mpz_clear (MPFR_ZEXP (x)), 0)))
 
 #endif /* __MPFR_IMPL_H__ */
