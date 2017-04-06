@@ -2873,12 +2873,13 @@ representable in precision @var{prec}, then one can use the following
 trick to determine the (non-zero) @ref{ternary value} in any rounding
 mode (@code{MPFR_RNDZ} can be replaced by any directed rounding mode):
 @example
-if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ, prec + (rnd2 == MPFR_RNDN)))
-@{
+if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ,
+                    prec + (rnd2 == MPFR_RNDN)))
+  @{
     /* round the approximation 'b' to the result 'r' of 'prec' bits
        with rounding mode 'rnd2' and get the ternary value 'inex' */
     inex = mpfr_set (r, b, rnd2);
-@}
+  @}
 @end example
 Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
