@@ -416,7 +416,9 @@ half_plus_half (void)
 }
 
 /* check that result has exponent <= emax
-   (see https://sympa.inria.fr/sympa/arc/mpfr/2017-04/msg00016.html) */
+   (see https://sympa.inria.fr/sympa/arc/mpfr/2017-04/msg00016.html)
+   Overflow detection in sub1.c was incorrect (only for UBF cases);
+   fixed in r11414. */
 static void
 bug20170405 (void)
 {
