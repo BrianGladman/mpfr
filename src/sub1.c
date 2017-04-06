@@ -34,7 +34,7 @@ int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign;
-  mpfr_exp_t diff_exp, exp_b;
+  mpfr_exp_t diff_exp, exp_a, exp_b;
   mpfr_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
@@ -641,10 +641,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* we have to set MPFR_EXP(a) to MPFR_EXP(b) - cancel + add_exp, taking
      care of underflows/overflows in that computation, and of the allowed
      exponent range */
+  MPFR_TMP_FREE (marker);
   if (MPFR_LIKELY(cancel))
     {
-      mpfr_exp_t exp_a;
-
       cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
       exp_a = exp_b - cancel;
       /* The following assertion corresponds to a limitation of the MPFR
@@ -654,7 +653,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTN (exp_b != MPFR_EXP_MAX || exp_a > __gmpfr_emax);
       if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
         {
-          MPFR_TMP_FREE (marker);
+        underflow:
           if (rnd_mode == MPFR_RNDN &&
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
@@ -663,13 +662,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
         {
-          MPFR_TMP_FREE (marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
         }
-      MPFR_SET_EXP (a, exp_a);
     }
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {
+
       /* in case cancel = 0, add_exp can still be 1, in case b is just
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
@@ -679,12 +677,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          the case exp_b == MPFR_EXP_MAX. */
       if (MPFR_UNLIKELY (exp_b > __gmpfr_emax - add_exp))
         {
-          MPFR_TMP_FREE (marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
         }
-      MPFR_SET_EXP (a, exp_b + add_exp);
+      exp_a = exp_b + add_exp;
+      if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
+        goto underflow;
     }
-  MPFR_TMP_FREE(marker);
+  MPFR_SET_EXP (a, exp_a);
   /* check that result is msb-normalized */
   MPFR_ASSERTD(ap[an-1] > ~ap[an-1]);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
