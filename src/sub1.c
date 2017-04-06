@@ -677,7 +677,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Overflow iff exp_b + add_exp >= __gmpfr_emax in Z, but we do
          a subtraction below to avoid a potential integer overflow in
          the case exp_b == MPFR_EXP_MAX. */
-      if (MPFR_UNLIKELY (exp_b >= __gmpfr_emax - add_exp))
+      if (MPFR_UNLIKELY (exp_b > __gmpfr_emax - add_exp))
         {
           MPFR_TMP_FREE (marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
