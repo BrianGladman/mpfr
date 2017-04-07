@@ -544,7 +544,7 @@ buffer_init (struct string_buffer *b, size_t s)
   b->len = 0;
 }
 
-/* Increase the len field of the buffer. Return non-zero if overflow. */
+/* Increase the len field of the buffer. Return non-zero iff overflow. */
 static int
 buffer_incr_len (struct string_buffer *b, size_t len)
 {
@@ -552,7 +552,10 @@ buffer_incr_len (struct string_buffer *b, size_t len)
     return 1;
   else
     {
-      size_t newlen = b->len + len;
+      size_t newlen = (size_t) b->len + len;
+
+      /* size_t is unsigned, thus the above is valid, but one has
+         newlen < len in case of overflow. */
 
       if (MPFR_UNLIKELY (newlen < len || newlen > INT_MAX))
         return 1;
