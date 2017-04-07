@@ -21,17 +21,17 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-  /* If the number of output characters is larger than INT_MAX, the
-     ISO C99 standard is silent, but POSIX says concerning the snprintf()
-     function:
-     "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
-     number of bytes needed to hold the output excluding the
-     terminating null is greater than {INT_MAX}." See:
-     http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
-     But it doesn't say anything concerning the other printf-like functions.
-     A defect report has been submitted to austin-review-l (item 2532).
-     So, for the time being, we return a negative value and set the erange
-     flag, and set errno to EOVERFLOW in POSIX system. */
+/* If the number of output characters is larger than INT_MAX, the
+   ISO C99 standard is silent, but POSIX says concerning the snprintf()
+   function:
+   "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
+   number of bytes needed to hold the output excluding the
+   terminating null is greater than {INT_MAX}." See:
+   http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
+   But it doesn't say anything concerning the other printf-like functions.
+   A defect report has been submitted to austin-review-l (item 2532).
+   So, for the time being, we return a negative value and set the erange
+   flag, and set errno to EOVERFLOW in POSIX system. */
 
 /* Note: Due to limitations from the C standard and GMP, if
    size_t < unsigned int (which is allowed by the C standard but unlikely
