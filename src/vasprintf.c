@@ -176,7 +176,7 @@ struct printf_spec
 
   int width;                    /* Width */
   int prec;                     /* Precision */
-  int size;                     /* Wanted size (0 iff snprintf with size=0) */
+  size_t size;                  /* Wanted size (0 iff snprintf with size=0) */
 
   enum arg_t arg_type;          /* Type of argument */
   mpfr_rnd_t rnd_mode;          /* Rounding mode */
