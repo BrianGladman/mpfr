@@ -1330,6 +1330,45 @@ bug21056 (void)
   mpfr_clear (x);
 }
 
+/* Fails for i = 5, i.e. t[i] = (size_t) UINT_MAX + 1,
+   with r11427 on 64-bit machines (4-byte int, 8-byte size_t).
+   On such machines, t[5] converted to int typically gives 0.
+   Note: the assumed behavior corresponds to the snprintf behavior
+   in ISO C, but this conflicts with POSIX:
+     https://sourceware.org/bugzilla/show_bug.cgi?id=14771#c2
+     http://austingroupbugs.net/view.php?id=761
+*/
+static void
+snprintf_size (void)
+{
+  mpfr_t x;
+  char buf[12];
+  const char s[] = "17.00000000";
+  size_t t[] = { 11, 12, 64, INT_MAX, (size_t) INT_MAX + 1,
+                 (size_t) UINT_MAX + 1, (size_t) UINT_MAX + 2,
+                 (size_t) -1 };
+  int i, r;
+
+  mpfr_init2 (x, 64);
+  mpfr_set_ui (x, 17, MPFR_RNDN);
+
+  for (i = 0; i < sizeof (t) / sizeof (*t); i++)
+    {
+      memset (buf, 0, sizeof (buf));
+      /* r = snprintf (buf, t[i], "%.8f", 17.0); */
+      r = mpfr_snprintf (buf, t[i], "%.8Rf", x);
+      if (r != 11 || (t[i] > 11 && strcmp (buf, s) != 0))
+        {
+          printf ("Error in snprintf_size for i = %d:\n", i);
+          printf ("expected r = 11, \"%s\"\n", s);
+          printf ("got      r = %d, \"%s\"\n", r, buf);
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1352,6 +1391,7 @@ main (int argc, char **argv)
   check_emin ();
   test20161214 ();
   bug21056 ();
+  snprintf_size ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #if MPFR_LCONV_DPTS
