@@ -2636,7 +2636,7 @@ the control of the template string @var{template}, and print it in
 @var{buf}. If @var{n} is zero, nothing is
 written and @var{buf} may be a null pointer, otherwise, the @var{n}@minus{}1
 first characters are written in @var{buf} and the @var{n}-th is a null character.
-Return the number of characters that would have been written had @var{n} be
+Return the number of characters that would have been written had @var{n} been
 sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
 @c If the number of characters produced by the
