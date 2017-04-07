@@ -211,7 +211,8 @@ done
 # Even on platforms where it is available, the prototype
 # may not be included (e.g. with gcc -ansi), so that the
 # code may be compiled incorrectly.
-err-if-output -t "snprintf" grep '[^a-z_]snprintf *([^)]' $srctests
+grep '[^a-z_]snprintf *([^)]' $srctests | \
+  err-if-output -t "snprintf" grep -v '/\*.*[^a-z_]snprintf *([^)]'
 
 # Constant checking should use either MPFR_STAT_STATIC_ASSERT
 # or MPFR_ASSERTN(0) for not yet implemented corner cases.
