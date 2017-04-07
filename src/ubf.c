@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* This function does not change the flags. */
 static void
-mpfr_get_zexp (mpz_ptr ez, mpfr_srcptr x)
+mpfr_init_get_zexp (mpz_ptr ez, mpfr_srcptr x)
 {
   mpz_init (ez);
 
@@ -170,8 +170,8 @@ mpfr_ubf_mul_exact (mpfr_ubf_ptr a, mpfr_srcptr b, mpfr_srcptr c)
 
           /* This may involve copies of mpz_t, but exponents should not be
              very large integers anyway. */
-          mpfr_get_zexp (be, b);
-          mpfr_get_zexp (ce, c);
+          mpfr_init_get_zexp (be, b);
+          mpfr_init_get_zexp (ce, c);
           mpz_add (MPFR_ZEXP (a), be, ce);
           mpz_clear (be);
           mpz_clear (ce);
@@ -187,8 +187,8 @@ mpfr_ubf_exp_less_p (mpfr_srcptr x, mpfr_srcptr y)
   mpz_t xe, ye;
   int c;
 
-  mpfr_get_zexp (xe, x);
-  mpfr_get_zexp (ye, y);
+  mpfr_init_get_zexp (xe, x);
+  mpfr_init_get_zexp (ye, y);
   c = mpz_cmp (xe, ye) < 0;
   mpz_clear (xe);
   mpz_clear (ye);
@@ -232,8 +232,8 @@ mpfr_ubf_diff_exp (mpfr_srcptr x, mpfr_srcptr y)
   mpz_t xe, ye;
   mpfr_exp_t e;
 
-  mpfr_get_zexp (xe, x);
-  mpfr_get_zexp (ye, y);
+  mpfr_init_get_zexp (xe, x);
+  mpfr_init_get_zexp (ye, y);
   mpz_sub (xe, xe, ye);
   mpz_clear (ye);
   e = mpfr_ubf_zexp2exp (xe);
