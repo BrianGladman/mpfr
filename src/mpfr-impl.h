@@ -1178,8 +1178,9 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    Since one does not know what is behind the associated typedef name,
    one cannot provide an explicit initialization for such a type. Two
    possible solutions:
-     1. Use a union whose first member is a char and initialize the
-        union with: { 0 }
+     1. Encapsulate the type in a structure or a union and use the
+        universal zero initializer: { 0 }
+        But: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80454
      2. Use designated initializers when supported. But this needs a
         configure test.
 */
