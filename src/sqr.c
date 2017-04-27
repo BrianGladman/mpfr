@@ -489,7 +489,7 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
     }
 }
 
-#endif /* !defined(MPFR_GENERIC_ABI) */
+#endif /* !defined(MPFR_GENERIC_ABI) && ... */
 
 /* Note: mpfr_sqr will call mpfr_mul if bn > MPFR_SQR_THRESHOLD,
    in order to use Mulders' mulhigh, which is handled only here
