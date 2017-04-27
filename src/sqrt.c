@@ -471,6 +471,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       MPFR_RET(1);
     }
 }
+
 #endif /* !defined(MPFR_GENERIC_ABI) && GMP_NUMB_BITS == 64 */
 
 int
