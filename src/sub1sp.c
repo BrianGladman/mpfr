@@ -90,6 +90,7 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #endif
 
 #if !defined(MPFR_GENERIC_ABI)
+
 /* special code for p < GMP_NUMB_BITS */
 static int
 mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
@@ -1037,6 +1038,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       MPFR_RET(MPFR_SIGN(a));
     }
 }
+
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
 /* Rounding Sub */
