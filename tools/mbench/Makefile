@@ -22,7 +22,8 @@ AR=ar
 CC=gcc
 CXX=g++
 RANLIB=ranlib
-CFLAGS=-O2 -fomit-frame-pointer -Wall -g -static
+# added -march=native to CFLAGS to properly detect cpus
+CFLAGS=-O2 -fomit-frame-pointer -Wall -g -static -march=native
 LDFLAGS=
 RM=rm -f
 CP=cp -f

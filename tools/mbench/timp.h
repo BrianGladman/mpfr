@@ -51,7 +51,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #elif defined (__i386__) || defined(__amd64__)
 
-#if !defined(corei7)
+#if !defined(corei7) && !defined(__core_avx2__)
 
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
@@ -81,7 +81,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
                 : "eax", "ebx", "ecx", "edx", "memory")
 #else
 
-/* corei7 offers newer instruction rdtscp, which should be better */
+/* corei7 and corei5 offer newer instruction rdtscp, which should be better */
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
                 ".align 64\n\t"           \
@@ -134,7 +134,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * The filling of the CPU cache is done because we do several loops,
  * and get the minimum.
  * Declaring num_cycle as "volatile" is to avoid optimization when it is
- * possible (To properly calcul overhead).
+ * possible (to properly compute overhead).
  * overhead is calculated outside by a call to:
  *   overhead = MEASURE("overhead", ;)
  * Use a lot the preprocessor.
