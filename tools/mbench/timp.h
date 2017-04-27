@@ -130,7 +130,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 /* We do several measures and keep the minimum to avoid counting
- * hardware interruption cycles.
+ * hardware interrupt cycles.
  * The filling of the CPU cache is done because we do several loops,
  * and get the minimum.
  * Declaring num_cycle as "volatile" is to avoid optimization when it is
