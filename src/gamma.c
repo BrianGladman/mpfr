@@ -180,8 +180,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           way, so that rounding 1/x gives the correct result and correct
           (nonzero) ternary value.
           If x < 2^E, then y > 2^(-E), thus ufp(y) >= 2^(-E).
-          A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(Y)).
+          A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(y)).
   */
+  /* TODO: The above proof uses the same precision for input and output.
+     Without this assumption, one might obtain a bound like
+     PREC(x) + PREC(y) instead of 2 MAX(PREC(x),PREC(y)). */
   /* TODO: Handle the very small arguments that do not satisfy the condition,
      by using the approximation 1/x - euler and a Ziv loop. Otherwise, after
      some tests, even Gamma(1+x)/x would be faster than the generic code. */
