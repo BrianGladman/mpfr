@@ -179,8 +179,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           if 2^(-2n) ufp(y) >= 1, then gamma(x) and 1/x round in the same
           way, so that rounding 1/x gives the correct result and correct
           (nonzero) ternary value.
-          If x < 2^E, then y > 2^(-E), thus ufp(y) >= 2^(-E).
-          A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(y)).
+          If x < 2^E, then y >= 2^(-E), thus ufp(y) >= 2^(-E).
+          A sufficient condition is thus EXP(x) <= -2n, where
+          n = MAX(MPFR_PREC(x), MPFR_PREC(gamma)).
   */
   /* TODO: The above proof uses the same precision for input and output.
      Without this assumption, one might obtain a bound like
