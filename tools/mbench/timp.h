@@ -81,7 +81,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
                 : "eax", "ebx", "ecx", "edx", "memory")
 #else
 
-/* corei7 and corei5 offer newer instruction rdtscp, which should be better */
+/* corei7 and corei5 offer newer instruction rdtscp, which should be better,
+   see https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf */
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
                 ".align 64\n\t"           \
