@@ -53,6 +53,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(corei7) && !defined(__core_avx2__)
 
+/* the following implements Section 3.2.3 of the article cited below */
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
                 ".align 64\n\t"           \
