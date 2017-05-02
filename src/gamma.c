@@ -160,12 +160,19 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Check for tiny arguments, where gamma(x) ~ 1/x - euler + ... can be
      approximated by 1/x, with some error term ~= - euler.
+     We need to make sure that gamma(x) and 1/x fall on the same side of
+     a breakpoint (discontinuity point of the rounding function), where
+     the possible breakpoints (for all rounding modes) are the numbers
+     that fit on PREC(gamma)+1 bits. We will choose n minimum such that
+     x fits on n bits and the breakpoints fit on n+1 bits, thus
+       n = MAX(MPFR_PREC(x), MPFR_PREC(gamma)).
      We know from "Bound on Runs of Zeros and Ones for Algebraic Functions",
      Proceedings of Arith15, T. Lang and J.-M. Muller, 2001, that the maximal
      number of consecutive zeroes or ones after the round bit for 1/x is n-1
      for an input x of n bits [this is an actually much older result!].
-     But we need a more precise lower bound. Assume x has n bits, and 1/x
-     is near a floating-point number y of n+1 bits. We can write x = X*2^e,
+     But we need a more precise lower bound. Assume that 1/x is near a
+     breakpoint y. From the definition of n, the input x fits on n bits
+     and the breakpoint y fits on of n+1 bits. We can write x = X*2^e,
      y = Y/2^f with X, Y integers of n and n+1 bits respectively.
      Thus X*Y^2^(e-f) is near 1, i.e., X*Y is near the integer 2^(f-e).
      Two cases can happen:
