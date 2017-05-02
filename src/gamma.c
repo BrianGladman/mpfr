@@ -160,11 +160,13 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* Check for tiny arguments, where gamma(x) ~ 1/x - euler + ... can be
      approximated by 1/x, with some error term ~= - euler.
-     We need to make sure that gamma(x) and 1/x fall on the same side of
-     a breakpoint (discontinuity point of the rounding function), where
-     the possible breakpoints (for all rounding modes) are the numbers
-     that fit on PREC(gamma)+1 bits. We will choose n minimum such that
-     x fits on n bits and the breakpoints fit on n+1 bits, thus
+     We need to make sure that there are no breakpoints (discontinuity
+     points of the rounding function) between gamma(x) and 1/x (included),
+     where the possible breakpoints (for all rounding modes) are the numbers
+     that fit on PREC(gamma)+1 bits. There will be a special case when |x|
+     is a power of two, since such values are breakpoints. We will choose n
+     minimum such that x fits on n bits and the breakpoints fit on n+1 bits,
+     thus
        n = MAX(MPFR_PREC(x), MPFR_PREC(gamma)).
      We know from "Bound on Runs of Zeros and Ones for Algebraic Functions",
      Proceedings of Arith15, T. Lang and J.-M. Muller, 2001, that the maximal
@@ -214,7 +216,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         mpfr_powerof2_raw (x);
 
       MPFR_BLOCK (flags, inex = mpfr_ui_div (gamma, 1, x, rnd_mode));
-      if (inex == 0) /* x is a power of two */
+      if (inex == 0) /* |x| is a power of two */
         {
           /* return RND(1/x - euler) = RND(+/- 2^k - eps) with eps > 0 */
           if (rnd_mode == MPFR_RNDN || MPFR_IS_LIKE_RNDU (rnd_mode, sign))
