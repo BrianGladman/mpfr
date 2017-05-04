@@ -158,13 +158,13 @@ static unsigned long long int timp_overhead = 0;
     timp_rdtsc_before(num_cycle);                                     \
     CODE;                                                             \
     timp_rdtsc_after(num_cycle2);                                     \
-    num_cycle =  num_cycle2 - num_cycle;                              \
+    num_cycle = num_cycle2 < num_cycle ? 0 : num_cycle2 - num_cycle;  \
     if (num_cycle < min_num_cycle)                                    \
       min_num_cycle = num_cycle;                                      \
     if (num_cycle2 - start_num_cycle > TIMP_MAX_WAIT_FOR_MEASURE)     \
       break;                                                          \
   }                                                                   \
-  min_num_cycle - timp_overhead; })
+  min_num_cycle < timp_overhead ? 0 : min_num_cycle - timp_overhead; })
 
 #define TIMP_OVERHEAD()                                               \
   (timp_overhead = 0, timp_overhead = TIMP_MEASURE((void) 0) )
