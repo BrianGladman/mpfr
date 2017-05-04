@@ -237,6 +237,9 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   if (a0 < MPFR_LIMB_HIGHBIT)
     {
       ax --;
+      /* TODO: This is actually an addition with carry (no shifts and no OR
+         needed in asm). Make sure that GCC generates optimized code once
+         it supports carry-in. */
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
       sb = sb << 1;
     }
@@ -255,7 +258,7 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 && ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
@@ -264,7 +267,8 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
          (a) either ax < emin - 1
          (b) or ax = emin - 1 and ap[0] = 1000....000 and rb = sb = 0 */
       if (rnd_mode == MPFR_RNDN &&
-          (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
+          (ax < __gmpfr_emin - 1 ||
+           (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
@@ -380,9 +384,9 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
@@ -515,10 +519,10 @@ mpfr_mul_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[2] == MPFR_LIMB_MAX) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[2] == MPFR_LIMB_MAX &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
@@ -645,6 +649,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   aq = MPFR_GET_PREC (a);
   bq = MPFR_GET_PREC (b);
   cq = MPFR_GET_PREC (c);
+
+#if !defined(MPFR_GENERIC_ABI)
   if (aq < GMP_NUMB_BITS && bq <= GMP_NUMB_BITS && cq <= GMP_NUMB_BITS)
     return mpfr_mul_1 (a, b, c, rnd_mode, aq);
 
@@ -657,6 +663,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       2 * GMP_NUMB_BITS < bq && bq <= 3 * GMP_NUMB_BITS &&
       2 * GMP_NUMB_BITS < cq && cq <= 3 * GMP_NUMB_BITS)
     return mpfr_mul_3 (a, b, c, rnd_mode, aq);
+#endif
 
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 

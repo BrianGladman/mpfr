@@ -164,45 +164,20 @@ mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
 int
 mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
 {
-  char *str;
   int ret;
-  size_t min_size;
+  va_list ap;
 
-  GET_STR (ret, str, fmt);
+  va_start(ap, fmt);
+  ret = mpfr_vasnprintf_aux (NULL, buf, size, fmt, ap);
+  va_end (ap);
 
-  /* C99 allows SIZE to be zero */
-  if (size != 0)
-    {
-      MPFR_ASSERTN (buf != NULL);
-      min_size = (size_t)ret < size ? (size_t)ret : size - 1;
-      strncpy (buf, str, min_size);
-      buf[min_size] = '\0';
-    }
-
-  mpfr_free_str (str);
   return ret;
 }
 
 int
 mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
 {
-  char *str;
-  int ret;
-  int min_size;
-
-  GET_STR_VA (ret, str, fmt, ap);
-
-  /* C99 allows SIZE to be zero */
-  if (size != 0)
-    {
-      MPFR_ASSERTN (buf != NULL);
-      min_size = (size_t)ret < size ? (size_t)ret : size - 1;
-      strncpy (buf, str, min_size);
-      buf[min_size] = '\0';
-    }
-
-  mpfr_free_str (str);
-  return ret;
+  return mpfr_vasnprintf_aux (NULL, buf, size, fmt, ap);
 }
 
 int

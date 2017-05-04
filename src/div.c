@@ -37,61 +37,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "invert_limb.h"
 
-#if 1
-/* Given u = u1*B+u0 < d = d1*B+d0 with d normalized (high bit of d1 set),
-   put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
-   B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16.
-   Note: this function requires __gmpfr_invert_limb (from invert_limb.h)
-   which is only provided so far for 64-bit limb. */
-static void
-mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
-                  mp_limb_t u1, mp_limb_t u0,
-                  mp_limb_t d1, mp_limb_t d0)
-{
-  mp_limb_t x, y, dummy, z2, z1, z0;
-
-  if (MPFR_UNLIKELY(d1 + 1 == MPFR_LIMB_ZERO))
-    x = 0;
-  else
-    __gmpfr_invert_limb (x, d1 + 1); /* B + x = floor((B^2-1)/(d1+1)) */
-  umul_ppmm (y, dummy, u1, x);
-  y += u1;
-  /* now y = floor(B*u1/d1) with y < B*u1/d1, thus even when
-     u1=d1, y < B */
-  umul_ppmm (dummy, z0, y, d0);
-  umul_ppmm (z2, z1, y, d1);
-  z1 += dummy;
-  z2 += (z1 < dummy);
-  z1 += (z0 != 0);
-  z2 += (z1 == 0 && z0 != 0);
-  /* now z = z2*B+z1 = ceil(y*d/B), and should cancel with u */
-  sub_ddmmss (z2, z1, u1, u0, z2, z1);
-  *v1 = y;
-  /* y*B + (B+x)*(z2*B+z1)/B */
-  umul_ppmm (*v0, dummy, x, z1);
-  /* add z1 */
-  *v0 += z1;
-  *v1 += (*v0 < z1);
-  /* add (B+x)*z2 */
-  while (z2--)
-    {
-      *v0 += x;
-      *v1 += 1 + (*v0 < x);
-    }
-}
-#else
-/* the following is some experimental code, not fully proven correct,
-   and which does not seem to be faster, unless we find a way to speed up
-   the while loop (if 'while' is replaced by 'if' it becomes faster than
-   the above code, but is then wrong) */
+/* Given u = u1*B+u0 < v = v1*B+v0 with v normalized (high bit of v1 set),
+   put in q = Q1*B+Q0 an approximation of floor(u*B^2/v), with:
+   B = 2^GMP_NUMB_BITS and q <= floor(u*B^2/v) <= q + 21.
+   Note: this function requires __gmpfr_invert_limb_approx (from invert_limb.h)
+   which is only provided so far for 64-bit limb.
+   Note: __gmpfr_invert_limb_approx can be replaced by __gmpfr_invert_limb,
+   in that case the bound 21 reduces to 16. */
 static void
 mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
                   mp_limb_t u1, mp_limb_t u0,
                   mp_limb_t v1, mp_limb_t v0)
 {
-  mp_limb_t inv, q1, q0, r2, r1, r0, cy;
+  mp_limb_t inv, q1, q0, r1, r0, cy, xx, yy;
 
-  /* first compute an approximation of q1 */
+  /* first compute an approximation of q1, using a lower approximation of
+     B^2/(v1+1) - B */
   if (MPFR_UNLIKELY(v1 == MPFR_LIMB_MAX))
     inv = MPFR_LIMB_ZERO;
   else
@@ -99,63 +60,47 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   /* now inv <= B^2/(v1+1) - B */
   umul_ppmm (q1, q0, u1, inv);
   q1 += u1;
+  /* now q1 <= u1*B/(v1+1) < (u1*B+u0)*B/(v1*B+v0) */
 
-  /* we have q1 <= floor(u1*2^GMP_NUMB_BITS/v1) <= q1 + 2 */
+  /* compute q1*(v1*B+v0) into r1:r0:yy and subtract from u1:u0:0 */
+  umul_ppmm (r1, r0, q1, v1);
+  umul_ppmm (xx, yy, q1, v0);
 
-  umul_ppmm (r2, r1, q1, v1);
-  umul_ppmm (cy, r0, q1, v0);
+  ADD_LIMB (r0, xx, cy);
   r1 += cy;
-  r2 += (r1 < cy);
 
-  /* Now r2:r1:r0 = q1 * v1:v0. While q1*v1 <= u1:0, it might be that
-     r2:r1 > u1:u0. First subtract r2:r1:r0 from u1:u0:0, with result
-     in r2:r1:r0. */
-  r0 = -r0;
-  r1 = u0 - r1 - (r0 != 0);
-  r2 = u1 - r2 - (r1 > u0 || (r1 == u0 && r0 != 0));
+  /* we ignore yy below, but first increment r0, to ensure we get a lower
+     approximation of the remainder */
+  r0 += (yy != 0);
+  r0 = u0 - r0;
+  r1 = u1 - r1 - (r0 > u0);
 
-  /* u1:u0:0 - q1 * v1:v0 >= u1*B^2 - q1*(v1*B+B-1) >= -q1*B > -B^2
-     thus r2 can be 0 or -1 here. */
-  if (r2 & MPFR_LIMB_HIGHBIT) /* correction performed at most two times */
+  /* r1:r0 should be nonnegative */
+  MPFR_ASSERTD((r1 & MPFR_LIMB_HIGHBIT) == 0);
+
+  /* the second quotient limb is approximated by (r1*B^2+r0*B) / v1,
+     and since (B+inv)/B approximates B/v1, this is in turn approximated
+     by (r1*B+r0)*(B+inv)/B = r1*B*r1*inv+r0+(r0*inv/B) */
+
+  q0 = r0;
+  q1 += r1;
+  /* add floor(r0*inv/B) to q0 */
+  umul_ppmm (xx, yy, r0, inv);
+  ADD_LIMB (q0, xx, cy);
+  q1 += cy;
+  MPFR_ASSERTD (r1 <= 4);
+  /* TODO: use value coverage on r1 to check that the 5 cases are tested. */
+  while (r1) /* the number of loops is at most 4 */
     {
-      ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
-      ADD_LIMB(r1, v1, cy);
-      r2 += cy;
-      q1 --;
-      if (r2 & MPFR_LIMB_HIGHBIT)
-        {
-          ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
-          ADD_LIMB(r1, v1, cy);
-          r2 += cy;
-          q1 --;
-        }
+      /* add inv to q0 */
+      ADD_LIMB (q0, inv, cy);
+      q1 += cy;
+      r1 --;
     }
-  else
-    {
-      /* experimentally, the number of loops is <= 5 */
-      while (r2 || r1 > v1 || (r1 == v1 && r0 >= v0))
-        {
-          r2 -= (r1 < v1 || (r1 == v1 && r0 < v0));
-          r1 -= v1 + (r0 < v0);
-          r0 -= v0;
-          q1 ++;
-        }
-    }
-
-  /* now u1:u0:0 = q1 * d1:d0 + r1:r0, with 0 <= r1:r0 < d1:d0 */
-  MPFR_ASSERTD(r2 == MPFR_LIMB_ZERO);
-  MPFR_ASSERTD(r1 < v1 || (r1 == v1 && r0 < v0));
-
-  /* the second quotient limb is approximated by r1*B / d1,
-     which is itself approximated by r1+(r1*inv/B) */
-  umul_ppmm (q0, r0, r1, inv);
 
   *Q1 = q1;
-  *Q0 = r1 + q0;
-
-  /* experimentally: q1:q0 <= floor(B^2*u/v) <= q1:q0 + 5 */
+  *Q0 = q0;
 }
-#endif
 
 #endif /* GMP_NUMB_BITS == 64 */
 
@@ -205,13 +150,9 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       /* subtract {h,l} from {u0,0} */
       sub_ddmmss (h, l, u0, 0, h, l);
       /* the remainder {h, l} should be < v0 */
-      if (h || l >= v0)
-        {
-          q0 ++;
-          h -= (l < v0);
-          l -= v0;
-        }
-      if (h || l >= v0)
+      /* This while loop is executed at most two times, but does not seem
+         slower than two consecutive identical if-statements. */
+      while (h || l >= v0)
         {
           q0 ++;
           h -= (l < v0);
@@ -244,24 +185,24 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(qx < __gmpfr_emin))
     {
-      if ((qx == __gmpfr_emin - 1) && (qp[0] == ~mask) &&
-          ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
-        goto rounding; /* no underflow */
+      /* Note: the case 0.111...111*2^(emin-1) < q < 2^(emin-1) is not possible
+         here since (up to exponent) this would imply 1 - 2^(-p) < u/v < 1,
+         thus v - 2^(-p)*v < u < v, and since we can assume 1/2 <= v < 1, it
+         would imply v - 2^(-p) = v - ulp(v) < u < v, which has no solution. */
+
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
          (a) either qx < emin - 1
          (b) or qx = emin - 1 and qp[0] = 1000....000 and rb = sb = 0.
          Note: in case (b), it suffices to check whether sb = 0, since rb = 1
-         and sb = 0 is not possible (the exact quotient would have p+1 bits, thus
-         u would need at least p+1 bits). */
+         and sb = 0 is not possible (the exact quotient would have p+1 bits,
+         thus u would need at least p+1 bits). */
       if (rnd_mode == MPFR_RNDN &&
           (qx < __gmpfr_emin - 1 || (qp[0] == MPFR_LIMB_HIGHBIT && sb == 0)))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
- rounding:
   MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
   if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))
@@ -329,42 +270,42 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 #if GMP_NUMB_BITS == 64
   mpfr_div2_approx (&q1, &q0, r3, r2, v1, v0);
   /* we know q1*B+q0 is smaller or equal to the exact quotient, with
-     difference at most 16 */
-  if (MPFR_LIKELY(((q0 + 16) & (mask >> 1)) > 16))
+     difference at most 21 */
+  if (MPFR_LIKELY(((q0 + 21) & (mask >> 1)) > 21))
     sb = 1; /* result is not exact when we can round with an approximation */
   else
     {
       /* we know q1:q0 is a good-enough approximation, use it! */
-      mp_limb_t qq[2], uu[4];
+      mp_limb_t s0, s1, s2, h, l;
 
-      qq[0] = q0;
-      qq[1] = q1;
-      /* FIXME: instead of using mpn_mul_n, we can use 3 umul_ppmm calls,
-         since we know the difference should at most 16*(v1:v0) after the
-         subtraction below, thus at most 16*2^128. */
-      mpn_mul_n (uu, qq, MPFR_MANT(v), 2);
-      /* we now should have uu[3]:uu[2] <= r3:r2 */
-      MPFR_ASSERTD(uu[3] < r3 || (uu[3] == r3 && uu[2] <= r2));
-      /* subtract {uu,4} from r3:r2:0:0, with result in {uu,4} */
-      uu[2] = r2 - uu[2];
-      uu[3] = r3 - uu[3] - (uu[2] > r2);
-      /* now negate uu[1]:uu[0] */
-      uu[0] = -uu[0];
-      uu[1] = -uu[1] - (uu[0] != 0);
-      /* there is a borrow in uu[2] when uu[0] and uu[1] are not both zero */
-      uu[3] -= (uu[1] != 0 || uu[0] != 0) && (uu[2] == 0);
-      uu[2] -= (uu[1] != 0 || uu[0] != 0);
-      MPFR_ASSERTD(uu[3] == MPFR_LIMB_ZERO);
-      while (uu[2] > 0 || (uu[1] > v1) || (uu[1] == v1 && uu[0] >= v0))
+      /* Since we know the difference should be at most 21*(v1:v0) after the
+         subtraction below, thus at most 21*2^128, it suffices to compute the
+         lower 3 limbs of (q1:q0) * (v1:v0). */
+      umul_ppmm (s1, s0, q0, v0);
+      umul_ppmm (s2, l, q0, v1);
+      s1 += l;
+      s2 += (s1 < l);
+      umul_ppmm (h, l, q1, v0);
+      s1 += l;
+      s2 += h + (s1 < l);
+      s2 += q1 * v1;
+      /* Subtract s2:s1:s0 from r2:0:0, with result in s2:s1:s0. */
+      s2 = r2 - s2;
+      /* now negate s1:s0 */
+      s0 = -s0;
+      s1 = -s1 - (s0 != 0);
+      /* there is a borrow in s2 when s0 and s1 are not both zero */
+      s2 -= (s1 != 0 || s0 != 0);
+      while (s2 > 0 || (s1 > v1) || (s1 == v1 && s0 >= v0))
         {
           /* add 1 to q1:q0 */
           q0 ++;
           q1 += (q0 == 0);
-          /* subtract v1:v0 to u2:u1:u0 */
-          uu[2] -= (uu[1] < v1) || (uu[1] == v1 && uu[0] < v0);
-          sub_ddmmss (uu[1], uu[0], uu[1], uu[0], v1, v0);
+          /* subtract v1:v0 to s2:s1:s0 */
+          s2 -= (s1 < v1) || (s1 == v1 && s0 < v0);
+          sub_ddmmss (s1, s0, s1, s0, v1, v0);
         }
-      sb = uu[1] | uu[0];
+      sb = s1 | s0;
     }
   goto round_div2;
 #endif
@@ -506,11 +447,11 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
      q >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (qx < __gmpfr_emin)
     {
-      if ((qx == __gmpfr_emin - 1) &&
-          (qp[1] == MPFR_LIMB_MAX) && (qp[0] == ~mask) &&
-          ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (q)) && (rb | sb))))
-        goto rounding; /* no underflow */
+      /* Note: the case 0.111...111*2^(emin-1) < q < 2^(emin-1) is not possible
+         here since (up to exponent) this would imply 1 - 2^(-p) < u/v < 1,
+         thus v - 2^(-p)*v < u < v, and since we can assume 1/2 <= v < 1, it
+         would imply v - 2^(-p) = v - ulp(v) < u < v, which has no solution. */
+
       /* For RNDN, mpfr_underflow always rounds away, thus for |q|<=2^(emin-2)
          we have to change to RNDZ. This corresponds to:
          (a) either qx < emin - 1
@@ -525,7 +466,6 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       return mpfr_underflow (q, rnd_mode, MPFR_SIGN(q));
     }
 
- rounding:
   MPFR_EXP (q) = qx; /* Don't use MPFR_SET_EXP since qx might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
   if ((rb == 0 && sb == 0) || (rnd_mode == MPFR_RNDF))

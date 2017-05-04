@@ -352,12 +352,10 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
  ****** interfaces.                               *****
  ******************************************************/
 
-/* If a mpn_sqr_n macro is not defined, use mpn_mul. GMP 4.x defines a
-   mpn_sqr_n macro in gmp-impl.h (and this macro disappeared in GMP 5),
-   so that GMP's macro can only be used when MPFR has been configured
-   with --with-gmp-build (and only with GMP 4.x). */
-#ifndef mpn_sqr_n
-# define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
+/* If mpn_sqr is not defined, use mpn_mul_n instead
+   (mpn_sqr was called mpn_sqr_n (internal) in older versions of GMP). */
+#ifndef mpn_sqr
+# define mpn_sqr(dst,src,n) mpn_mul_n((dst),(src),(src),(n))
 #endif
 
 /* invert_limb macro, copied from GMP 5.0.2, file gmp-impl.h.

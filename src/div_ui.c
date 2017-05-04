@@ -107,7 +107,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
-  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
+  MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
   if (dif >= 0)
     c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */

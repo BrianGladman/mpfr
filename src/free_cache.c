@@ -1,4 +1,4 @@
-/* mpfr_free_cache - Free the cache used by MPFR for internal consts.
+/* mpfr_free_cache... - Free cache/pool memory used by MPFR.
 
 Copyright 2004-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -22,12 +22,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* Default value for the cache of mpz_t */
+/* Default number of entries for the mpz_t pool */
 #ifndef MPFR_MY_MPZ_INIT
 #  define MPFR_MY_MPZ_INIT 32
 #endif
 
-/* If the number of value to cache is not zero */
+/* If the number of entries of the mpz_t pool is not zero */
 #if MPFR_MY_MPZ_INIT
 
 /* Index in the stack table of mpz_t and stack table of mpz_t */
@@ -50,6 +50,25 @@ mpfr_mpz_init (mpz_t z)
     {
       /* Call real GMP function */
       (__gmpz_init)(z);
+    }
+}
+
+MPFR_HOT_FUNCTION_ATTR void
+mpfr_mpz_init2 (mpz_t z, mp_bitcnt_t n)
+{
+  if (MPFR_LIKELY (n_alloc > 0))
+    {
+      /* Get a mpz_t from the MPFR stack of previously used mpz_t.
+         It reduces memory pressure, and it allows to reuse
+         a mpz_t which should be sufficiently big. */
+      MPFR_ASSERTD (n_alloc <= numberof (mpz_tab));
+      memcpy (z, &mpz_tab[--n_alloc], sizeof (mpz_t));
+      SIZ(z) = 0;
+    }
+  else
+    {
+      /* Call real GMP function */
+      (__gmpz_init2)(z, n);
     }
 }
 

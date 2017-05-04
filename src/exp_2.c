@@ -117,7 +117,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       {
         mp_limb_t a;
         mpfr_exp_t exp;
-        MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
+        MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
         /* Read the long directly (faster than using mpfr_get_si
            since it fits, it is not singular, it can't be zero
            and there is no conversion to do) */

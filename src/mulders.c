@@ -169,7 +169,7 @@ mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
     /* we can't use mpn_sqr_basecase here, since it requires
        n <= SQR_KARATSUBA_THRESHOLD, where SQR_KARATSUBA_THRESHOLD
        is not exported by GMP */
-    mpn_sqr_n (rp, np, n);
+    mpn_sqr (rp, np, n);
   else if (k == 0)
     mpfr_mulhigh_n_basecase (rp, np, np, n);
   else
@@ -177,7 +177,7 @@ mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
       mp_size_t l = n - k;
       mp_limb_t cy;
 
-      mpn_sqr_n (rp + 2 * l, np + l, k);          /* fills rp[2l..2n-1] */
+      mpn_sqr (rp + 2 * l, np + l, k);            /* fills rp[2l..2n-1] */
       mpfr_mulhigh_n (rp, np, np + k, l);         /* fills rp[l-1..2l-1] */
       /* {rp+n-1,l+1} += 2 * {rp+l-1,l+1} */
       cy = mpn_lshift (rp + l - 1, rp + l - 1, l + 1, 1);

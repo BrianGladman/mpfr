@@ -2213,7 +2213,13 @@ __MPFR_DECLSPEC void mpfr_div_ui2 (mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC void mpfr_gamma_one_and_two_third (mpfr_ptr, mpfr_ptr, mpfr_prec_t);
 
 __MPFR_DECLSPEC void mpfr_mpz_init (mpz_ptr);
+__MPFR_DECLSPEC void mpfr_mpz_init2 (mpz_t, mp_bitcnt_t);
 __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
+
+#ifdef _MPFR_H_HAVE_VA_LIST
+/* Declared only if <stdarg.h> has been included. */
+__MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*, va_list);
+#endif
 
 #if defined (__cplusplus)
 }
@@ -2236,8 +2242,10 @@ __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 /* Cache for mpz_t */
 #if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
 # undef mpz_init
+# undef mpz_init2
 # undef mpz_clear
 # define mpz_init mpfr_mpz_init
+# define mpz_init2 mpfr_mpz_init2
 # define mpz_clear mpfr_mpz_clear
 # undef mpz_init_set_ui
 # define mpz_init_set_ui(a,b) do { mpz_init (a); mpz_set_ui (a, b); } while (0)

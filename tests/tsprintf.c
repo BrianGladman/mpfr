@@ -85,9 +85,14 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     }
   if (n0 != n1)
     {
+      char format[1024];
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               p, fmt);
       printf ("expected: %d\ngot:      %d\n", n0, n1);
+      strncpy (format, "x='", 1024);
+      strncpy (format + 3, fmt, 1021);
+      strncpy (format + 3 + strlen (fmt), "'\n", 1021 - strlen (fmt));
+      mpfr_printf (format, x);
       exit (1);
     }
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
@@ -1158,8 +1163,8 @@ check_emax_aux (mpfr_exp_t e)
         printf ("(>LONG_MAX)\n");
       else
         printf ("%ld\n", (long) e);
-      printf ("Expected %s\n", s2);
-      printf ("Got      %s\n", s1);
+      printf ("Expected '%s'\n", s2);
+      printf ("Got      '%s'\n", s1);
       exit (1);
     }
 
@@ -1277,6 +1282,43 @@ test20161214 (void)
   mpfr_clear (x);
 }
 
+/* http://gforge.inria.fr/tracker/index.php?func=detail&aid=21056 */
+static void
+bug21056 (void)
+{
+  mpfr_t x;
+  const char s[] = "0x0.fffffffffffff8p+1024";
+  int ndigits, r;
+
+  mpfr_init2 (x, 64);
+
+  mpfr_set_str (x, s, 16, MPFR_RNDN);
+
+  ndigits = 1000;
+  r = mpfr_snprintf (0, 0, "%.*RDf", ndigits, x);
+  /* the return value should be ndigits + 310 */
+  MPFR_ASSERTN(r == ndigits + 310);
+
+  ndigits = INT_MAX - 310;
+  r = mpfr_snprintf (0, 0, "%.*RDf", ndigits, x);
+  MPFR_ASSERTN(r == INT_MAX);
+
+  ndigits = INT_MAX - 10;
+  r = mpfr_snprintf (0, 0, "%.*RDa", ndigits, x);
+  MPFR_ASSERTN(r == INT_MAX);
+
+  ndigits = INT_MAX - 7;
+  r = mpfr_snprintf (0, 0, "%.*RDe", ndigits, x);
+  MPFR_ASSERTN(r == INT_MAX);
+
+  ndigits = 1000;
+  r = mpfr_snprintf (0, 0, "%.*RDg", ndigits, x);
+  /* since trailing zeros are removed with %g, we get less digits */
+  MPFR_ASSERTN(r == 309);
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1298,6 +1340,7 @@ main (int argc, char **argv)
   check_emax ();
   check_emin ();
   test20161214 ();
+  bug21056 ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #if MPFR_LCONV_DPTS
