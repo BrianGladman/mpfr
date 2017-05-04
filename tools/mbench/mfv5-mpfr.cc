@@ -135,16 +135,14 @@ public:
   }
 };
 
-#ifdef mpfr_fmma
+#if MPFR_VERSION_MAJOR >= 4
 class mpfr_fmma_test {
 public:
   int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_srcptr d, mpfr_srcptr e, mp_rnd_t r) {
     return mpfr_fmma (a,b,c,d,e,r);
   }
 };
-#endif
 
-#ifdef mpfr_fmms
 class mpfr_fmms_test {
 public:
   int func(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_srcptr d, mpfr_srcptr e, mp_rnd_t r) {
@@ -281,10 +279,8 @@ static mpfr_test<mpfr_sub_test> test2 ("mpfr_sub");
 static mpfr_test<mpfr_mul_test> test3 ("mpfr_mul");
 static mpfr_test3<mpfr_fma_test> test10 ("mpfr_fma");
 static mpfr_test3<mpfr_fms_test> test11 ("mpfr_fms");
-#ifdef mpfr_fmma
+#if MPFR_VERSION_MAJOR >= 4
 static mpfr_test4<mpfr_fmma_test> test12 ("mpfr_fmma");
-#endif
-#ifdef mpfr_fmms
 static mpfr_test4<mpfr_fmms_test> test13 ("mpfr_fmms");
 #endif
 static mpfr_test<mpfr_sqr_test> test14 ("mpfr_sqr");

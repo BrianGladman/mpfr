@@ -1,4 +1,4 @@
-/* mpfr_set_decimal64 -- convert a IEEE 754r decimal64 float to
+/* mpfr_set_decimal64 -- convert an IEEE 754-2008 decimal64 float to
                          a multiple precision floating-point number
 
 See https://gcc.gnu.org/ml/gcc/2006-06/msg00691.html,

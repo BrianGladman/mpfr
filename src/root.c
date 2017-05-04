@@ -63,6 +63,8 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
     {
       if (k == 0)
         {
+          /* x^(1/0) = NaN since 0 is not signed, thus 1/0 might be +Inf or
+             -Inf */
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }

@@ -23,11 +23,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
- /* The computation of atanh is done by
-       atanh= 1/2*ln(x+1)-1/2*ln(1-x)   */
+/* The computation of atanh is done by:
+   atanh = ln((1+x)/(1-x)) / 2
+   except when x is very small, in which case atanh = x + tiny error.
+   TODO: When x is small (but x + tiny error cannot be used), the above
+   formula is slow due to the large error as (1+x)/(1-x) is close to 1;
+   one should use: log1p(2x/(1-x)).
+*/
 
 int
-mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
+mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t x, t, te;
@@ -85,27 +90,25 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
   MPFR_TMP_INIT_ABS (x, xt);
   Ny = MPFR_PREC (y);
   Nt = MAX (Nx, Ny);
-  /* the optimal number of bits : see algorithms.ps */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
 
   /* initialize of intermediary variable */
   mpfr_init2 (t, Nt);
   mpfr_init2 (te, Nt);
 
-  /* First computation of cosh */
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
       /* compute atanh */
-      mpfr_ui_sub (te, 1, x, MPFR_RNDU);   /* (1-xt)*/
-      mpfr_add_ui (t,  x, 1, MPFR_RNDD);   /* (xt+1)*/
-      mpfr_div (t, t, te, MPFR_RNDN);      /* (1+xt)/(1-xt)*/
-      mpfr_log (t, t, MPFR_RNDN);          /* ln((1+xt)/(1-xt))*/
-      mpfr_div_2ui (t, t, 1, MPFR_RNDN);   /* (1/2)*ln((1+xt)/(1-xt))*/
+      mpfr_ui_sub (te, 1, x, MPFR_RNDU);   /* (1-x) with x = |xt| */
+      mpfr_add_ui (t, x, 1, MPFR_RNDD);    /* (1+x) */
+      mpfr_div (t, t, te, MPFR_RNDN);      /* (1+x)/(1-x) */
+      mpfr_log (t, t, MPFR_RNDN);          /* ln((1+x)/(1-x)) */
+      mpfr_div_2ui (t, t, 1, MPFR_RNDN);   /* ln((1+x)/(1-x)) / 2 */
 
       /* error estimate: see algorithms.tex */
       /* FIXME: this does not correspond to the value in algorithms.tex!!! */
-      /* err=Nt-__gmpfr_ceil_log2(1+5*pow(2,1-MPFR_EXP(t)));*/
+      /* err = Nt - __gmpfr_ceil_log2(1+5*pow(2,1-MPFR_EXP(t))); */
       err = Nt - (MAX (4 - MPFR_GET_EXP (t), 0) + 1);
 
       if (MPFR_LIKELY (MPFR_IS_ZERO (t)
@@ -121,10 +124,9 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
 
   inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
 
-  mpfr_clear(t);
-  mpfr_clear(te);
+  mpfr_clear (t);
+  mpfr_clear (te);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
-

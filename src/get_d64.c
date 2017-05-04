@@ -1,5 +1,5 @@
 /* mpfr_get_decimal64 -- convert a multiple precision floating-point number
-                         to a IEEE 754r decimal64 float
+                         to an IEEE 754-2008 decimal64 float
 
 See https://gcc.gnu.org/ml/gcc/2006-06/msg00691.html,
 https://gcc.gnu.org/onlinedocs/gcc/Decimal-Float.html,

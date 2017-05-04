@@ -23,6 +23,25 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* Note: In the prototypes, one uses
+ *
+ *   const mpfr_ptr *x      i.e.:  __mpfr_struct *const *x
+ *
+ * instead of
+ *
+ *   const mpfr_srcptr *x   i.e.:  const __mpfr_struct *const *x
+ *
+ * because here one has a double indirection and the type matching rules
+ * from the C standard in such a case are stricter and they would yield
+ * annoying errors for the user in practice. See:
+ *
+ *   Why can't I pass a char ** to a function which expects a const char **?
+ *
+ * in the comp.lang.c FAQ:
+ *
+ *   http://c-faq.com/ansi/constmismatch.html
+ */
+
 /* See the doc/sum.txt file for the algorithm and a part of its proof
 (this will later go into algorithms.tex).
 
@@ -127,7 +146,7 @@ int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2] = { 0 };
  *   iteration (= maxexp2 of the last iteration).
  */
 static mpfr_prec_t
-sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
+sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, const mpfr_ptr *x,
          unsigned long n, mpfr_exp_t minexp, mpfr_exp_t maxexp,
          mp_limb_t *tp, mp_size_t ts, int logn, mpfr_prec_t prec,
          mpfr_exp_t *ep, mpfr_exp_t *minexpp, mpfr_exp_t *maxexpp)
@@ -465,6 +484,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 
                 MPFR_ASSERTD (diffexp < cancel - 2);
                 shiftq = cancel - 2 - (mpfr_prec_t) diffexp;
+                /* equivalent to: minexp + wq - 2 - max(e,err) */
                 MPFR_ASSERTD (shiftq > 0);
                 shifts = shiftq / GMP_NUMB_BITS;
                 shiftc = shiftq % GMP_NUMB_BITS;
@@ -503,7 +523,7 @@ sum_raw (mp_limb_t *wp, mp_size_t ws, mpfr_prec_t wq, mpfr_ptr *const x,
 /* Generic case: all the inputs are finite numbers,
    with at least 3 regular numbers. */
 static int
-sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
+sum_aux (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd,
          mpfr_exp_t maxexp, unsigned long rn)
 {
   mp_limb_t *sump;
@@ -1236,7 +1256,7 @@ sum_aux (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd,
 /**********************************************************************/
 
 int
-mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
+mpfr_sum (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd)
 {
   MPFR_LOG_FUNC
     (("n=%lu rnd=%d", n, rnd),

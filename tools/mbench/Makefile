@@ -1,4 +1,4 @@
-# Copyright 2005-2010, 2014 Free Software Foundation, Inc.
+# Copyright 2005-2017 Free Software Foundation, Inc.
 # Contributed by Patrick Pelissier, INRIA.
 # 
 # This file is part of the MPFR Library.
@@ -22,7 +22,11 @@ AR=ar
 CC=gcc
 CXX=g++
 RANLIB=ranlib
-CFLAGS=-O2 -fomit-frame-pointer -Wall -g -static
+# added -march=native to CFLAGS to properly detect cpus
+# (the -march=native option is not supported on all architectures,
+# but if this is an issue, this could be solved by a test of the
+# architecture with an ifeq).
+CFLAGS=-O2 -fomit-frame-pointer -Wall -g -static -march=native
 LDFLAGS=
 RM=rm -f
 CP=cp -f
@@ -37,6 +41,8 @@ MAPM=$(GMP)
 ARPREC=$(GMP)
 CRLIBM=$(GMP)
 LIDIA=/localdisk/lidia/
+
+GMP_INCLUDE=$(GMP)/include
 
 MPFR_INCLUDE=$(MPFR)/include
 MPFR_LIB=$(MPFR)/lib

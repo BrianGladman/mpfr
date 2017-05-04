@@ -34,6 +34,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    when tests_memory_end() is called.  Test programs must be sure to have
    "clear"s for all temporary variables used.  */
 
+/* Note about error messages
+   -------------------------
+   Error messages in MPFR are usually written to stdout. However, those
+   coming from the memory allocator need to be written to stderr in order
+   to be visible when the standard output is redirected, e.g. in the tests
+   of I/O functions (like tprintf). For consistency, all error messages in
+   this file should be written to stderr. */
+
 struct header {
   void           *ptr;
   size_t         size;
@@ -59,7 +67,8 @@ mpfr_default_allocate (size_t size)
   ret = malloc (size);
   if (MPFR_UNLIKELY (ret == NULL))
     {
-      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
+      fprintf (stderr, "[MPFR] mpfr_default_allocate(): "
+               "can't allocate memory (size=%lu)\n",
                (unsigned long) size);
       abort ();
     }
@@ -73,8 +82,8 @@ mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
   ret = realloc (oldptr, new_size);
   if (MPFR_UNLIKELY(ret == NULL))
     {
-      fprintf (stderr,
-               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
+      fprintf (stderr, "[MPFR] mpfr_default_reallocate(): "
+               "can't reallocate memory (old_size=%lu new_size=%lu)\n",
                (unsigned long) old_size, (unsigned long) new_size);
       abort ();
     }
@@ -119,7 +128,8 @@ tests_addsize (size_t size)
     {
       /* The total size taken by MPFR on the heap is more than 4 MB:
          either a bug or a huge inefficiency. */
-      printf ("MPFR: too much memory (%lu bytes)\n",
+      fprintf (stderr, "[MPFR] tests_addsize(): "
+               "too much memory (%lu bytes)\n",
               (unsigned long) tests_total_size);
       abort ();
     }
@@ -134,7 +144,8 @@ tests_allocate (size_t size)
 
   if (size == 0)
     {
-      printf ("tests_allocate(): attempt to allocate 0 bytes\n");
+      fprintf (stderr, "[MPFR] tests_allocate(): "
+               "attempt to allocate 0 bytes\n");
       abort ();
     }
 
@@ -161,7 +172,8 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 
   if (new_size == 0)
     {
-      printf ("tests_reallocate(): attempt to reallocate 0x%lX to 0 bytes\n",
+      fprintf (stderr, "[MPFR] tests_reallocate(): "
+               "attempt to reallocate 0x%lX to 0 bytes\n",
               (unsigned long) ptr);
       abort ();
     }
@@ -169,7 +181,8 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
   hp = tests_memory_find (ptr);
   if (hp == NULL)
     {
-      printf ("tests_reallocate(): attempt to reallocate bad pointer 0x%lX\n",
+      fprintf (stderr, "[MPFR] tests_reallocate(): "
+               "attempt to reallocate bad pointer 0x%lX\n",
               (unsigned long) ptr);
       abort ();
     }
@@ -179,7 +192,8 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
     {
       /* Note: we should use the standard %zu to print sizes, but
          this is not supported by old C implementations. */
-      printf ("tests_reallocate(): bad old size %lu, should be %lu\n",
+      fprintf (stderr, "[MPFR] tests_reallocate(): "
+               "bad old size %lu, should be %lu\n",
               (unsigned long) old_size, (unsigned long) h->size);
       abort ();
     }
@@ -201,7 +215,8 @@ tests_free_find (void *ptr)
   struct header  **hp = tests_memory_find (ptr);
   if (hp == NULL)
     {
-      printf ("tests_free(): attempt to free bad pointer 0x%lX\n",
+      fprintf (stderr, "[MPFR] tests_free(): "
+               "attempt to free bad pointer 0x%lX\n",
               (unsigned long) ptr);
       abort ();
     }
@@ -235,7 +250,7 @@ tests_free (void *ptr, size_t size)
     {
       /* Note: we should use the standard %zu to print sizes, but
          this is not supported by old C implementations. */
-      printf ("tests_free(): bad size %lu, should be %lu\n",
+      fprintf (stderr, "[MPFR] tests_free(): bad size %lu, should be %lu\n",
               (unsigned long) size, (unsigned long) h->size);
       abort ();
     }
@@ -271,13 +286,13 @@ tests_memory_end (void)
       struct header  *h;
       unsigned  count;
 
-      printf ("tests_memory_end(): not all memory freed\n");
+      fprintf (stderr, "[MPFR] tests_memory_end(): not all memory freed\n");
 
       count = 0;
       for (h = tests_memory_list; h != NULL; h = h->next)
         count++;
 
-      printf ("    %u blocks remaining\n", count);
+      fprintf (stderr, "[MPFR]    %u blocks remaining\n", count);
       abort ();
     }
 }

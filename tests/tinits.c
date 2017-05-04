@@ -40,9 +40,21 @@ main (void)
   large_prec = 2147483647;
   if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
     {
+      size_t min_memory_limit;
+
       /* We assume that the precision won't be increased internally. */
       if (large_prec > MPFR_PREC_MAX)
         large_prec = MPFR_PREC_MAX;
+
+      /* Increase tests_memory_limit if need be in order to avoid an
+         obvious failure due to insufficient memory, by choosing a bit
+         more than the memory used for the variables a and b. Note
+         that such an increase is necessary, but is not guaranteed to
+         be sufficient in all cases (e.g. with logging activated). */
+      min_memory_limit = 2 * (large_prec / MPFR_BYTES_PER_MP_LIMB) + 65536;
+      if (tests_memory_limit > 0 && tests_memory_limit < min_memory_limit)
+        tests_memory_limit = min_memory_limit;
+
       mpfr_inits2 (large_prec, a, b, (mpfr_ptr) 0);
       mpfr_set_ui (a, 17, MPFR_RNDN);
       mpfr_set (b, a, MPFR_RNDN);

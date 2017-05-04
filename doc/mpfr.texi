@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 4.0.0-dev
-@set UPDATED-MONTH February 2017
+@set UPDATED-MONTH April 2017
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -276,7 +276,8 @@ from most arbitrary precision floating-point software tools, are:
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
 @code{mp_bits_per_limb} (64 on most current processors), possibly
-except in faithful rounding;
+except in faithful rounding.
+It does not depend either on the machine rounding mode or rounding precision;
 
 @item the precision in bits can be set @emph{exactly} to any valid value
 for each variable (including very small precision);
@@ -1044,8 +1045,10 @@ As a consequence, if two variables are used to store
 only a few significant bits, and their product is stored in a variable with large
 precision, then MPFR will still compute the result with full precision.
 
-The value of the standard C macro @code{errno} may be set to non-zero by
-any MPFR function or macro, whether or not there is an error.
+The value of the standard C macro @code{errno} may be set to non-zero after
+calling any MPFR function or macro, whether or not there is an error. Except
+when documented, MPFR will not set @code{errno}, but functions called by the
+MPFR code (libc functions, memory allocator, etc.) may do so.
 
 @menu
 * Initialization Functions::
@@ -2159,6 +2162,11 @@ function on @var{op}, rounded in the direction @var{rnd}.
 When @var{op} is a negative integer, set @var{rop} to NaN@.
 @end deftypefun
 
+@deftypefun int mpfr_beta (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Beta function at arguments @var{op1} and
+@var{op2}.
+@end deftypefun
+
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_zeta_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the Riemann Zeta function on @var{op},
@@ -2300,7 +2308,7 @@ or the caches common to all threads (if @var{way} is
 @code{MPFR_FREE_GLOBAL_CACHE}).
 @end deftypefun
 
-@deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
 @var{tab} is an array of pointers
@@ -2607,8 +2615,9 @@ specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
 For all the following functions, if the number of characters which ought to be
 written appears to exceed the maximum limit for an @code{int}, nothing is
 written in the stream (resp.@: to @code{stdout}, to @var{buf}, to @var{str}),
-the function returns @minus{}1, sets the @emph{erange} flag, and (in
-POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
+the function returns @minus{}1, sets the @emph{erange} flag, and @code{errno}
+is set to @code{EOVERFLOW} if the @code{EOVERFLOW} macro is defined (such as
+in POSIX systems).
 
 @deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
@@ -2656,7 +2665,7 @@ the control of the template string @var{template}, and print it in
 @var{buf}. If @var{n} is zero, nothing is
 written and @var{buf} may be a null pointer, otherwise, the @var{n}@minus{}1
 first characters are written in @var{buf} and the @var{n}-th is a null character.
-Return the number of characters that would have been written had @var{n} be
+Return the number of characters that would have been written had @var{n} been
 sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
 @c If the number of characters produced by the
@@ -2926,12 +2935,13 @@ representable in precision @var{prec}, then one can use the following
 trick to determine the (non-zero) @ref{ternary value} in any rounding
 mode (@code{MPFR_RNDZ} can be replaced by any directed rounding mode):
 @example
-if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ, prec + (rnd2 == MPFR_RNDN)))
-@{
+if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ,
+                    prec + (rnd2 == MPFR_RNDN)))
+  @{
     /* round the approximation 'b' to the result 'r' of 'prec' bits
        with rounding mode 'rnd2' and get the ternary value 'inex' */
     inex = mpfr_set (r, b, rnd2);
-@}
+  @}
 @end example
 Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
@@ -3770,6 +3780,8 @@ that were added after MPFR 2.2, and in which MPFR version.
 @item @code{mpfr_ai} in MPFR 3.0 (incomplete, experimental).
 
 @item @code{mpfr_asprintf} in MPFR 2.4.
+
+@item @code{mpfr_beta} in MPFR 4.0.
 
 @item @code{mpfr_buildopt_decimal_p} in MPFR 3.0.
 

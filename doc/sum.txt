@@ -97,11 +97,29 @@ Specification
 The prototype:
 
 int
-mpfr_sum (mpfr_ptr sum, mpfr_ptr *const x, unsigned long n, mpfr_rnd_t rnd)
+mpfr_sum (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd)
 
 where sum will contain the result, x is an array of pointers to the
 inputs, n is the length of this array, and rnd is the rounding mode.
 The return value of type int will be the usual ternary value.
+
+Note: One uses
+
+  const mpfr_ptr *x      i.e.:  __mpfr_struct *const *x
+
+instead of
+
+  const mpfr_srcptr *x   i.e.:  const __mpfr_struct *const *x
+
+because here one has a double indirection and the type matching rules
+from the C standard in such a case are stricter and they would yield
+annoying errors for the user in practice. See:
+
+  Why can't I pass a char ** to a function which expects a const char **?
+
+in the comp.lang.c FAQ:
+
+  http://c-faq.com/ansi/constmismatch.html
 
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
@@ -282,7 +300,7 @@ that a number starting with a sequence of 1's is close to 0 (secondary
 term when the TMD occurs) and that each bit except the first one has a
 positive value (for the error bound).
 
-The precision of the accumulator needs to be a bit larger than the
+The precision of the accumulator needs to be slightly larger than the
 output precision, denoted sq, for two reasons:
 
   * We need some additional bits on the side of the most significant
@@ -531,7 +549,7 @@ code.
 After the loop over the inputs, we need to see whether the accuracy
 of the truncated sum is sufficient. We first determine the number of
 cancelled bits, defined as the number of consecutive identical bits
-starting with the most significant one in the accumulator. At the
+starting with the most significant bit in the accumulator. At the
 same time, we can determine whether the truncated sum is 0 (all the
 bits are identical and their value is 0). If it is 0, we have two
 cases: if maxexp2 is equal to MPFR_EXP_MIN (meaning no more tails),
@@ -1031,7 +1049,7 @@ We distinguish two cases:
     Let us recall that the d−1 bits from exponent u−2 to u−d (= err)
     are identical. We distinguish two subcases:
 
-      * err ≥ minexp. The last two over the d−1 identical bits and the
+      * err ≥ minexp. The last two of the d−1 identical bits and the
         following bits, i.e., the bits from err+1 to minexp, are copied
         (possibly with a shift) to the most significant part of the new
         accumulator.

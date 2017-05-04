@@ -48,6 +48,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     exp = MPFR_GET_EXP (b);
 
+  MPFR_ASSERTD (exp <= __gmpfr_emax);
+
   MPFR_TMP_MARK(marker);
 
   aq = MPFR_GET_PREC (a);
@@ -561,6 +563,15 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
  set_exponent:
+  if (MPFR_UNLIKELY (exp < __gmpfr_emin))  /* possible if b and c are UBF's */
+    {
+      if (rnd_mode == MPFR_RNDN &&
+          (exp < __gmpfr_emin - 1 ||
+           (inex >= 0 && mpfr_powerof2_raw (a))))
+        rnd_mode = MPFR_RNDZ;
+      inex = mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+      goto end_of_add;
+    }
   MPFR_SET_EXP (a, exp);
 
  end_of_add:

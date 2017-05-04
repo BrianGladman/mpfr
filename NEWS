@@ -46,7 +46,8 @@ Changes from versions 3.1.* to version 4.0.0:
   following normal and exponential distributions respectively.
 - New functions mpfr_fmma and mpfr_fmms to compute a*b+c*d and a*b-c*d.
 - New functions mpfr_log_ui to compute the logarithm of an integer,
-  and mpfr_gamma_inc for the incomplete Gamma function.
+  mpfr_gamma_inc for the incomplete Gamma function, and mpfr_beta for the
+  Beta function.
 - The mpfr_eint function now returns the value of the E1/eint1 function
   for negative argument.
 - The behavior of the mpfr_set_exp function changed, as it could easily
@@ -57,7 +58,9 @@ Changes from versions 3.1.* to version 4.0.0:
   old one could take all the memory and/or crash with inputs of different
   magnitudes in case of huge cancellation or table maker's dilemma). The
   sign of an exact zero result is now specified, and the return value is
-  now the usual ternary value.
+  now the usual ternary value. Note that the position of "const" in the
+  mpfr_sum prototype has been fixed (the manual was correct); user code
+  should not be affected.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
 - Added configure option --enable-assert=none to avoid checking any assertion.
@@ -84,7 +87,9 @@ Changes from versions 3.1.* to version 4.0.0:
 - Bug fixes. In particular: a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
   now sets the NaN flag on NaN input and the inexact flag when the conversion
-  is inexact.
+  is inexact. For a full list, see http://www.mpfr.org/mpfr-3.1.5/#fixed
+  and the same section for any previous 3.1.x version (follow the links
+  in the "Changes..." sections).
 - MinGW (MS Windows): Added support for thread-safe DLL (shared library).
 - Limited pkg-config support.
 

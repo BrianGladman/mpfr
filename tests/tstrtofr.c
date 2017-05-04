@@ -1189,21 +1189,60 @@ bug20120829 (void)
   mpfr_clears (e, x1, x2, (mpfr_ptr) 0);
 }
 
-/* Note: the number is 5^47/2^9. */
+/* https://sympa.inria.fr/sympa/arc/mpfr/2016-12/msg00043.html
+   mpfr_strtofr can return an incorrect ternary value.
+   Note: As a consequence, the value can also be incorrect if the current
+   exponent range is not the maximum one (since the ternary value is used
+   to resolve double rounding in mpfr_check_range); this can happen only
+   if the value is a midpoint between 0 and the minimum positive number
+   or the opposite. */
 static void
 bug20161217 (void)
 {
   mpfr_t fp, z;
   static const char * num = "0.1387778780781445675529539585113525390625e31";
+  /* The above number is 5^47/2^9. */
   int inex;
 
   mpfr_init2 (fp, 110);
   mpfr_init2 (z, 110);
+
   inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001101E-9");
   MPFR_ASSERTN(mpfr_equal_p (fp, z));
+
+  /* try with 109 bits */
+  mpfr_set_prec (fp, 109);
+  inex = mpfr_strtofr (fp, num, NULL, 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (z, "10001100001000010011110110011101101001010000001011011110010001010100010100100110111101000010001011001100001100E-9");
+  MPFR_ASSERTN(mpfr_equal_p (fp, z));
+
   mpfr_clear (fp);
+  mpfr_clear (z);
+}
+
+/* check bug in MPFR 3.1.5 is fixed: cf
+   https://sympa.inria.fr/sympa/arc/mpfr/2017-03/msg00009.html
+   Note: same bug as bug20161217. See also the comments of bug20161217;
+   here, this is a case where the value is incorrect. */
+static void
+bug20170308 (void)
+{
+  mpfr_exp_t emin;
+   /* the following is slightly larger than 2^-1075, thus should be rounded
+      to 0.5*2^-1074, with ternary value < 0 */
+  char str[] = "2.47032822920623272089E-324";
+  mpfr_t z;
+  int inex;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-1073);
+  mpfr_set_emin (emin);
+  mpfr_init2 (z, 53);
+  inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0 && mpfr_cmp_ui_2exp (z, 1, -1075) == 0);
   mpfr_clear (z);
 }
 
@@ -1222,6 +1261,7 @@ main (int argc, char *argv[])
   bug20120814 ();
   bug20120829 ();
   bug20161217 ();
+  bug20170308 ();
 
   tests_end_mpfr ();
   return 0;
