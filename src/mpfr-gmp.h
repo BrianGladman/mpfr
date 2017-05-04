@@ -126,10 +126,6 @@ void *alloca (size_t);
 
 /* MP_LIMB macros */
 #define MPN_ZERO(dst, n) memset((dst), 0, (n)*MPFR_BYTES_PER_MP_LIMB)
-/* TODO: add MPFR_ASSERTD assertions for MPN_COPY_DECR and MPN_COPY_INCR,
-   even though memmove works with any overlapping. Useful to detect bugs! */
-#define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
-#define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*MPFR_BYTES_PER_MP_LIMB)
 #define MPN_COPY(dst,src,n) \
   do                                                                  \
     {                                                                 \
@@ -454,12 +450,13 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
   } while (0)
 #endif
 
-/* mpn_copyd is a new exported function in GMP 5.
-   It existed in GMP 4 in the internal header, but still may not be
-   defined if HAVE_NATIVE_mpn_copyd is not defined */
+/* mpn_copyi and mpn_copyd are new exported functions in GMP 5.
+   Defining them to memmove works in overlap cases. */
 #if !__MPFR_GMP(5,0,0)
+# undef  mpn_copyi
+# define mpn_copyi memmove
 # undef  mpn_copyd
-# define mpn_copyd MPN_COPY
+# define mpn_copyd memmove
 #endif
 
 /* The following macro is copied from GMP-6.1.1, file gmp-impl.h,

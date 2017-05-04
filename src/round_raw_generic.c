@@ -103,7 +103,7 @@ mpfr_round_raw_generic(
 
   if (MPFR_UNLIKELY(xprec <= yprec))
     { /* No rounding is necessary. */
-      /* if yp=xp, maybe an overlap: MPN_COPY_DECR is OK when src <= dst */
+      /* if yp=xp, maybe an overlap: mpn_copyd is OK when src <= dst */
       if (MPFR_LIKELY(rw))
         nw++;
       MPFR_ASSERTD(nw >= 1);
@@ -111,7 +111,7 @@ mpfr_round_raw_generic(
       if (use_inexp)
         *inexp = 0;
 #if flag == 0
-      MPN_COPY_DECR(yp + (nw - xsize), xp, xsize);
+      mpn_copyd (yp + (nw - xsize), xp, xsize);
       MPN_ZERO(yp, nw - xsize);
 #endif
       return 0;
@@ -159,7 +159,7 @@ mpfr_round_raw_generic(
                   /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX : -MPFR_EVEN_INEX */
                   /* since neg = 0 or 1 and sb = 0 */
 #if flag == 0
-                  MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+                  mpn_copyi (yp, xp + xsize - nw, nw);
                   yp[0] &= himask;
 #endif
                   return 0; /* sb != 0 && rnd_mode != MPFR_RNDZ */
@@ -204,7 +204,7 @@ mpfr_round_raw_generic(
             /* ((neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1 */
             *inexp = MPFR_UNLIKELY(sb == 0) ? 0 : (2*neg-1);
 #if flag == 0
-          MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+          mpn_copyi (yp, xp + xsize - nw, nw);
           yp[0] &= himask;
 #endif
           return 0; /* sb != 0 && rnd_mode != MPFR_RNDZ */
@@ -221,7 +221,7 @@ mpfr_round_raw_generic(
                 /* ((neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1 */
                 *inexp = 0;
 #if flag == 0
-              MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+              mpn_copyi (yp, xp + xsize - nw, nw);
               yp[0] &= himask;
 #endif
               return 0;
@@ -254,7 +254,7 @@ mpfr_round_raw_generic(
         }
       else
         himask = MPFR_LIMB_MAX;
-      MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+      mpn_copyi (yp, xp + xsize - nw, nw);
       yp[0] &= himask;
 #endif
       return 0;

@@ -87,7 +87,7 @@ mpfr_round_nearest_away_begin (mpfr_t rop)
   ext   = (mpfr_size_limb_extended_t *)
     (*__gmp_allocate_func) (MPFR_MALLOC_EXTENDED_SIZE(xsize));
 
-  /* Save the context first */
+  /* Save the context first. */
   ext[ALLOC_SIZE].si   = xsize;
   ext[OLD_MANTISSA].pi = MPFR_MANT(rop);
   ext[OLD_EXPONENT].ex = MPFR_EXP(rop);
@@ -103,15 +103,20 @@ mpfr_round_nearest_away_begin (mpfr_t rop)
   MPFR_MANT(tmp) =  (mp_limb_t*)(ext+MANTISSA); /* Set Mantissa ptr */
   MPFR_SET_NAN(tmp);                            /* initializes to NaN */
 
-  /* Copy rop into tmp now (rop may be used as input latter). */
+  /* Note: This full initialization to NaN may be unnecessary because of
+     the mpfr_set just below, but this is cleaner in case internals would
+     change in the future (for instance, some fields of tmp could be read
+     before being set, and reading an uninitialized value is UB here). */
+
+  /* Copy rop into tmp now (rop may be used as input later). */
   MPFR_DBGRES (inexact = mpfr_set(tmp, rop, MPFR_RNDN));
   MPFR_ASSERTD(inexact == 0); /* Shall be exact since prec(tmp) > prec(rop) */
 
-  /* Overwrite rop with tmp */
+  /* Overwrite rop with tmp. */
   rop[0] = tmp[0];
 
-  /* rop now contains a copy of rop, with one extra bit of precision
-     while keeping the old rop "hidden" within its mantissa. */
+  /* The new rop now contains a copy of the old rop, with one extra bit of
+     precision while keeping the old rop "hidden" within its mantissa. */
 
   return;
 }

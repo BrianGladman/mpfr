@@ -532,7 +532,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           if (real_ysize != ysize)
             {
               if (count == 0)
-                MPN_COPY_DECR (y + ysize - real_ysize, y, real_ysize);
+                mpn_copyd (y + ysize - real_ysize, y, real_ysize);
               MPN_ZERO (y, ysize - real_ysize);
             }
           /* for each bit shift decrease exponent of y */

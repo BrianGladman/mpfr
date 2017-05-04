@@ -37,6 +37,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "invert_limb.h"
 
+#if 1
 /* Given u = u1*B+u0 < d = d1*B+d0 with d normalized (high bit of d1 set),
    put in v = v1*B+v0 an approximation of floor(u*B^2/d), with:
    B = 2^GMP_NUMB_BITS and v <= floor(u*B^2/d) <= v + 16.
@@ -78,11 +79,87 @@ mpfr_div2_approx (mpfr_limb_ptr v1, mpfr_limb_ptr v0,
       *v1 += 1 + (*v0 < x);
     }
 }
+#else
+/* the following is some experimental code, not fully proven correct,
+   and which does not seem to be faster, unless we find a way to speed up
+   the while loop (if 'while' is replaced by 'if' it becomes faster than
+   the above code, but is then wrong) */
+static void
+mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
+                  mp_limb_t u1, mp_limb_t u0,
+                  mp_limb_t v1, mp_limb_t v0)
+{
+  mp_limb_t inv, q1, q0, r2, r1, r0, cy;
+
+  /* first compute an approximation of q1 */
+  if (MPFR_UNLIKELY(v1 == MPFR_LIMB_MAX))
+    inv = MPFR_LIMB_ZERO;
+  else
+    __gmpfr_invert_limb_approx (inv, v1 + 1);
+  /* now inv <= B^2/(v1+1) - B */
+  umul_ppmm (q1, q0, u1, inv);
+  q1 += u1;
+
+  /* we have q1 <= floor(u1*2^GMP_NUMB_BITS/v1) <= q1 + 2 */
+
+  umul_ppmm (r2, r1, q1, v1);
+  umul_ppmm (cy, r0, q1, v0);
+  r1 += cy;
+  r2 += (r1 < cy);
+
+  /* Now r2:r1:r0 = q1 * v1:v0. While q1*v1 <= u1:0, it might be that
+     r2:r1 > u1:u0. First subtract r2:r1:r0 from u1:u0:0, with result
+     in r2:r1:r0. */
+  r0 = -r0;
+  r1 = u0 - r1 - (r0 != 0);
+  r2 = u1 - r2 - (r1 > u0 || (r1 == u0 && r0 != 0));
+
+  /* u1:u0:0 - q1 * v1:v0 >= u1*B^2 - q1*(v1*B+B-1) >= -q1*B > -B^2
+     thus r2 can be 0 or -1 here. */
+  if (r2 & MPFR_LIMB_HIGHBIT) /* correction performed at most two times */
+    {
+      ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
+      ADD_LIMB(r1, v1, cy);
+      r2 += cy;
+      q1 --;
+      if (r2 & MPFR_LIMB_HIGHBIT)
+        {
+          ADD_LIMB(r0, v0, cy); /* r0 += v0; cy = r0 < v0 */
+          ADD_LIMB(r1, v1, cy);
+          r2 += cy;
+          q1 --;
+        }
+    }
+  else
+    {
+      /* experimentally, the number of loops is <= 5 */
+      while (r2 || r1 > v1 || (r1 == v1 && r0 >= v0))
+        {
+          r2 -= (r1 < v1 || (r1 == v1 && r0 < v0));
+          r1 -= v1 + (r0 < v0);
+          r0 -= v0;
+          q1 ++;
+        }
+    }
+
+  /* now u1:u0:0 = q1 * d1:d0 + r1:r0, with 0 <= r1:r0 < d1:d0 */
+  MPFR_ASSERTD(r2 == MPFR_LIMB_ZERO);
+  MPFR_ASSERTD(r1 < v1 || (r1 == v1 && r0 < v0));
+
+  /* the second quotient limb is approximated by r1*B / d1,
+     which is itself approximated by r1+(r1*inv/B) */
+  umul_ppmm (q0, r0, r1, inv);
+
+  *Q1 = q1;
+  *Q0 = r1 + q0;
+
+  /* experimentally: q1:q0 <= floor(B^2*u/v) <= q1:q0 + 5 */
+}
+#endif
 
 #endif /* GMP_NUMB_BITS == 64 */
 
-/* Special code for p=PREC(q) < GMP_NUMB_BITS,
-   and PREC(u), PREC(v) <= GMP_NUMB_BITS */
+/* Special code for PREC(q) = PREC(u) = PREC(v) = p < GMP_NUMB_BITS */
 static int
 mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -99,31 +176,60 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     u0 -= v0;
 
 #if GMP_NUMB_BITS == 64 /* __gmpfr_invert_limb_approx only exists for 64-bit */
-  /* first try with an approximate quotient */
+  /* First try with an approximate quotient.
+     FIXME: for p<=62 we have sh-1<2 and will never be able to round correctly.
+     Even for p=61 we have sh-1=2 and we can round correctly only when the two
+     last bist of q0 are 01, which happens with probability 25% only. */
   {
     mp_limb_t inv;
     __gmpfr_invert_limb_approx (inv, v0);
-    umul_ppmm (q0, sb, u0, inv);
+    umul_ppmm (rb, sb, u0, inv);
   }
-  q0 = (q0 + u0) >> extra;
-  /* before the >> extra shift, q0 + u0 does not exceed the true quotient
-     floor(u'0*2^GMP_NUMB_BITS/v0), with error at most 2, which means the rational
-     quotient q satisfies q0 + u0 <= q < q0 + u0 + 3. We can round correctly except
-     when the last sh-1 bits of q0 are 000..000 or 111..111 or 111..110. */
+  rb += u0;
+  q0 = rb >> extra;
+  /* rb does not exceed the true quotient floor(u0*2^GMP_NUMB_BITS/v0),
+     with error at most 2, which means the rational quotient q satisfies
+     rb <= q < rb + 3. We can round correctly except when the last sh-1 bits
+     of q0 are 000..000 or 111..111 or 111..110. */
   if (MPFR_LIKELY(((q0 + 2) & (mask >> 1)) > 2))
     {
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
-      sb = 1; /* result cannot be exact when we can round with an approximation */
+      sb = 1; /* result cannot be exact in this case */
     }
-  else /* compute exact quotient and remainder */
-#endif
+  else /* the true quotient is rb, rb+1 or rb+2 */
     {
-      udiv_qrnnd (q0, sb, u0, 0, v0);
-      sb |= q0 & extra;
+      mp_limb_t h, l;
+      q0 = rb;
+      umul_ppmm (h, l, q0, v0);
+      MPFR_ASSERTD(h < u0 || (h == u0 && l == MPFR_LIMB_ZERO));
+      /* subtract {h,l} from {u0,0} */
+      sub_ddmmss (h, l, u0, 0, h, l);
+      /* the remainder {h, l} should be < v0 */
+      if (h || l >= v0)
+        {
+          q0 ++;
+          h -= (l < v0);
+          l -= v0;
+        }
+      if (h || l >= v0)
+        {
+          q0 ++;
+          h -= (l < v0);
+          l -= v0;
+        }
+      MPFR_ASSERTD(h == 0 && l < v0);
+      sb = l | (q0 & extra);
       q0 >>= extra;
       rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
       sb |= q0 & (mask >> 1);
     }
+#else
+  udiv_qrnnd (q0, sb, u0, 0, v0);
+  sb |= q0 & extra;
+  q0 >>= extra;
+  rb = q0 & (MPFR_LIMB_ONE << (sh - 1));
+  sb |= q0 & (mask >> 1);
+#endif
 
   qp[0] = (MPFR_LIMB_HIGHBIT | q0) & ~mask;
   qx += extra;
@@ -165,7 +271,12 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (sb == 0 && (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* It is not possible to have rb <> 0 and sb = 0 here, since it would
+         mean a n-bit by n-bit division gives an exact (n+1)-bit number.
+         And since the case rb = sb = 0 was already dealt with, we cannot
+         have sb = 0. Thus we cannot be in the middle of two numbers. */
+      MPFR_ASSERTD(sb != 0);
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -194,7 +305,7 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 }
 
 /* Special code for GMP_NUMB_BITS < PREC(q) < 2*GMP_NUMB_BITS and
-   GMP_NUMB_BITS < PREC(u), PREC(v) <= 2*GMP_NUMB_BITS */
+   PREC(u) = PREC(v) = PREC(q) */
 static int
 mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
@@ -220,10 +331,42 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
   /* we know q1*B+q0 is smaller or equal to the exact quotient, with
      difference at most 16 */
   if (MPFR_LIKELY(((q0 + 16) & (mask >> 1)) > 16))
+    sb = 1; /* result is not exact when we can round with an approximation */
+  else
     {
-      sb = 1; /* result is not exact when we can round with an approximation */
-      goto round_div2;
+      /* we know q1:q0 is a good-enough approximation, use it! */
+      mp_limb_t qq[2], uu[4];
+
+      qq[0] = q0;
+      qq[1] = q1;
+      /* FIXME: instead of using mpn_mul_n, we can use 3 umul_ppmm calls,
+         since we know the difference should at most 16*(v1:v0) after the
+         subtraction below, thus at most 16*2^128. */
+      mpn_mul_n (uu, qq, MPFR_MANT(v), 2);
+      /* we now should have uu[3]:uu[2] <= r3:r2 */
+      MPFR_ASSERTD(uu[3] < r3 || (uu[3] == r3 && uu[2] <= r2));
+      /* subtract {uu,4} from r3:r2:0:0, with result in {uu,4} */
+      uu[2] = r2 - uu[2];
+      uu[3] = r3 - uu[3] - (uu[2] > r2);
+      /* now negate uu[1]:uu[0] */
+      uu[0] = -uu[0];
+      uu[1] = -uu[1] - (uu[0] != 0);
+      /* there is a borrow in uu[2] when uu[0] and uu[1] are not both zero */
+      uu[3] -= (uu[1] != 0 || uu[0] != 0) && (uu[2] == 0);
+      uu[2] -= (uu[1] != 0 || uu[0] != 0);
+      MPFR_ASSERTD(uu[3] == MPFR_LIMB_ZERO);
+      while (uu[2] > 0 || (uu[1] > v1) || (uu[1] == v1 && uu[0] >= v0))
+        {
+          /* add 1 to q1:q0 */
+          q0 ++;
+          q1 += (q0 == 0);
+          /* subtract v1:v0 to u2:u1:u0 */
+          uu[2] -= (uu[1] < v1) || (uu[1] == v1 && uu[0] < v0);
+          sub_ddmmss (uu[1], uu[0], uu[1], uu[0], v1, v0);
+        }
+      sb = uu[1] | uu[0];
     }
+  goto round_div2;
 #endif
 
   /* now r3:r2 < v1:v0 */
@@ -334,6 +477,9 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 
   sb = r1 | r0;
 
+  /* here, q1:q0 should be an approximation of the quotient (or the exact
+     quotient), and sb the sticky bit */
+
 #if GMP_NUMB_BITS == 64
  round_div2:
 #endif
@@ -389,8 +535,9 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     }
   else if (rnd_mode == MPFR_RNDN)
     {
-      if (rb == 0 || (rb && sb == 0 &&
-                      (qp[0] & (MPFR_LIMB_ONE << sh)) == 0))
+      /* See the comment in mpfr_div_1. */
+      MPFR_ASSERTD(sb != 0);
+      if (rb == 0)
         goto truncate;
       else
         goto add_one_ulp;
@@ -729,20 +876,22 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
         }
     }
 
-  usize = MPFR_LIMB_SIZE(u);
-  vsize = MPFR_LIMB_SIZE(v);
-
   /* When MPFR_GENERIC_ABI is defined, we don't use special code. */
 #if !defined(MPFR_GENERIC_ABI)
+  if (MPFR_GET_PREC(u) == MPFR_GET_PREC(q) &&
+      MPFR_GET_PREC(v) == MPFR_GET_PREC(q))
+    {
+      if (MPFR_GET_PREC(q) < GMP_NUMB_BITS)
+        return mpfr_div_1 (q, u, v, rnd_mode);
 
-  if (MPFR_GET_PREC(q) < GMP_NUMB_BITS && usize == 1 && vsize == 1)
-    return mpfr_div_1 (q, u, v, rnd_mode);
-
-  if (GMP_NUMB_BITS < MPFR_GET_PREC(q) && MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS
-      && usize == 2 && vsize == 2)
+      if (GMP_NUMB_BITS < MPFR_GET_PREC(q) &&
+          MPFR_GET_PREC(q) < 2 * GMP_NUMB_BITS)
     return mpfr_div_2 (q, u, v, rnd_mode);
+    }
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
+  usize = MPFR_LIMB_SIZE(u);
+  vsize = MPFR_LIMB_SIZE(v);
   q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
   q0p = MPFR_MANT(q);
   up = MPFR_MANT(u);
