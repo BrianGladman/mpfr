@@ -160,7 +160,7 @@ static unsigned long long int timp_overhead = 0;
     timp_rdtsc_after(num_cycle2);                                     \
     num_cycle = num_cycle2 < num_cycle ? 0 : num_cycle2 - num_cycle;  \
     if (num_cycle < min_num_cycle)                                    \
-      min_num_cycle = num_cycle;                                      \
+      min_num_cycle = num_cycle;  /* shouldn't happen */              \
     if (num_cycle2 - start_num_cycle > TIMP_MAX_WAIT_FOR_MEASURE)     \
       break;                                                          \
   }                                                                   \
