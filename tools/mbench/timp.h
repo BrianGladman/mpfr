@@ -147,10 +147,10 @@ static unsigned long long int timp_overhead = 0;
 #define TIMP_NUM_TRY  4327
 #define TIMP_MAX_WAIT_FOR_MEASURE 10000000ULL
 
-#define TIMP_MEASURE(CODE)                                            \
+#define TIMP_MEASURE_AUX(CODE)                                        \
   ({                                                                  \
   volatile unsigned long long int num_cycle, num_cycle2;              \
-  unsigned long long min_num_cycle, start_num_cycle;                  \
+  unsigned long long int min_num_cycle, start_num_cycle;              \
   int _i;                                                             \
   timp_rdtsc_before (start_num_cycle);                                \
   min_num_cycle = 0xFFFFFFFFFFFFFFFFLL;                               \
@@ -167,7 +167,18 @@ static unsigned long long int timp_overhead = 0;
   }                                                                   \
   min_num_cycle < timp_overhead ? 0 : min_num_cycle - timp_overhead; })
 
+/* If the return value of TIMP_MEASURE_AUX() is 0, this probably means
+   that timp_overhead was too large and incorrect; this can occur just
+   after starting the process. In this case, TIMP_OVERHEAD() is called
+   again to recompute timp_overhead and the timing is redone. */
+#define TIMP_MEASURE(CODE)                                            \
+  ({                                                                  \
+    unsigned long long int _m;                                        \
+    while ((_m = TIMP_MEASURE_AUX(CODE)) == 0)                        \
+      TIMP_OVERHEAD();                                                \
+    _m; })
+
 #define TIMP_OVERHEAD()                                               \
-  (timp_overhead = 0, timp_overhead = TIMP_MEASURE((void) 0) )
+  (timp_overhead = 0, timp_overhead = TIMP_MEASURE_AUX((void) 0) )
 
 #endif /* __TIMP__H__ */
