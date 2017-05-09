@@ -96,7 +96,7 @@ compute_l2b (int output)
   mpfr_srcptr t;
   int beta, i;
   int error = 0;
-  char buffer[31];
+  char buffer[256];  /* larger than needed, for maintainability */
 
   if (output)
     printf ("#ifndef UINT64_C\n# define UINT64_C(c) c\n#endif\n\n");
