@@ -102,6 +102,24 @@ fi
 
 ############################################################################
 
+# Note: In the source, ignore everything related to mini-gmp.
+srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
+#srctests=(`find src tests -name '*.[ch]' ! -name '*mini-gmp.*'`)
+
+# Detect the definition of reserved macro names.
+#
+# Note: The following check may have false positives in some cases,
+# but this may also correspond to bad coding, in particular because
+# code moves. We assume that if a header is used somewhere, it may
+# be used everywhere in the MPFR code. This particularly concerns
+# macros defined via mpfr-impl.h or mpfr-test.h, which are included
+# in almost every tests.
+err-if-output \
+  --msg="ISO C 7.1.3 (Reserved identifiers) and 7.31 (Future library directions)." \
+  "reserved identifiers (macro names)" grep -E \
+  '# *define (E[0-9A-Z]|FE_[A-Z]|LC_[A-Z]|(PRI|SCN)[Xa-z]|SIG_?[A-Z]|TIME_[A-Z])' \
+  $srctests
+
 # Detect the possible use of forbidden macros in mpfr.h, such as those
 # starting with "HAVE_" or "WANT_". Public macros defined by MPFR must
 # start with "MPFR_".
@@ -136,10 +154,6 @@ grconf '^(.*if +|[[:space:]]*)(test|\[).* == '
 grconf '="`'
 grconf '[^a-z][ef]?grep[^a-z]'
 grconf '[^a-z]sed[^a-z]'
-
-# Note: In the source, ignore everything related to mini-gmp.
-srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
-#srctests=(`find src tests -name '*.[ch]' ! -name '*mini-gmp.*'`)
 
 err-if-output --msg="Use GMP_NUMB_BITS instead." \
   -t "GMP_LIMB_BITS" grep GMP_LIMB_BITS $srctests
