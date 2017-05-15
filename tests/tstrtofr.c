@@ -1162,9 +1162,9 @@ bug20120829 (void)
           mpfr_rnd_t rnd = (mpfr_rnd_t) r;
 
           inex1 = mpfr_exp10 (x1, e, rnd);
-          inex1 = SIGN (inex1);
+          inex1 = VSIGN (inex1);
           inex2 = mpfr_strtofr (x2, s, NULL, 0, rnd);
-          inex2 = SIGN (inex2);
+          inex2 = VSIGN (inex2);
           /* On 32-bit machines, for i = 7, r8389, r8391 and r8394 do:
              strtofr.c:...: MPFR assertion failed: cy == 0
              r8396 is OK.

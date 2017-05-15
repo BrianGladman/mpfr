@@ -134,7 +134,7 @@ check_cmp (int argc, char *argv[])
   for (k = 1; k <= n; k++)
     {
       mpfr_rnd_t rnd;
-      int sign = SIGN_RAND ();
+      int sign = RAND_SIGN ();
 
       mpfr_urandomb (x, RANDS);
       MPFR_SET_SIGN (x, sign);

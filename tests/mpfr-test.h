@@ -52,7 +52,7 @@ extern "C" {
 #define RND_RAND() ((mpfr_rnd_t) (randlimb() % MPFR_RND_MAX))
 
 /* Generates a random sign */
-#define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
+#define RAND_SIGN() (randlimb() % 2 ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
 
 /* Loop for all rounding modes */
 #define RND_LOOP(_r) for((_r) = 0 ; (_r) < MPFR_RND_MAX ; (_r)++)

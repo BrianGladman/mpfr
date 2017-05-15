@@ -1012,8 +1012,9 @@ typedef uintmax_t mpfr_ueexp_t;
   (I) != 0 ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
-#define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
-#define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
+/* Sign of a native value. */
+#define VSIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define SAME_SIGN(I1,I2) (VSIGN (I1) == VSIGN (I2))
 
 
 /******************************************************

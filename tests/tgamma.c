@@ -586,9 +586,9 @@ exprange (void)
       printf ("Error in exprange (test1)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -609,9 +609,9 @@ exprange (void)
       printf ("Error in exprange (test2)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -631,9 +631,9 @@ exprange (void)
       printf ("Error in exprange (test3)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -654,9 +654,9 @@ exprange (void)
       printf ("Error in exprange (test4)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -679,9 +679,9 @@ exprange (void)
       printf ("Error in exprange (test5)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -695,9 +695,9 @@ exprange (void)
       printf ("Error in exprange (test6)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -713,9 +713,9 @@ exprange (void)
       printf ("Error in exprange (test7)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -733,9 +733,9 @@ exprange (void)
       printf ("Error in exprange (test8)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -749,9 +749,9 @@ exprange (void)
       printf ("Error in exprange (test9)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -768,9 +768,9 @@ exprange (void)
       printf ("Error in exprange (test10)\n");
       printf ("x = ");
       mpfr_dump (x);
-      printf ("Expected inex1 = %d, flags1 = %u, ", SIGN (inex1), flags1);
+      printf ("Expected inex1 = %d, flags1 = %u, ", VSIGN (inex1), flags1);
       mpfr_dump (y);
-      printf ("Got      inex2 = %d, flags2 = %u, ", SIGN (inex2), flags2);
+      printf ("Got      inex2 = %d, flags2 = %u, ", VSIGN (inex2), flags2);
       mpfr_dump (z);
       exit (1);
     }
@@ -841,7 +841,7 @@ tiny_aux (int stop, mpfr_exp_t e)
                   mpfr_dump (x);
                   printf ("  expected inex = %2d, ", expected_inex);
                   mpfr_dump (z);
-                  printf ("  got      inex = %2d, ", SIGN (inex));
+                  printf ("  got      inex = %2d, ", VSIGN (inex));
                   mpfr_dump (y);
                   printf ("  expected flags = %u, got %u\n",
                           expected_flags, flags);
