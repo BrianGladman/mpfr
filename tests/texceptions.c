@@ -52,15 +52,15 @@ check_default_rnd (void)
         {
           printf ("%s %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r),
                   mpfr_print_rnd_mode (t));
-          PRINT_ERROR("ERROR in setting / getting default rounding mode (1)");
+          PRINT_ERROR ("ERROR in setting / getting default rounding mode (1)");
         }
     }
   mpfr_set_default_rounding_mode ((mpfr_rnd_t) MPFR_RND_MAX);
   if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
-    PRINT_ERROR("ERROR in setting / getting default rounding mode (2)");
+    PRINT_ERROR ("ERROR in setting / getting default rounding mode (2)");
   mpfr_set_default_rounding_mode((mpfr_rnd_t) -1);
   if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
-    PRINT_ERROR("ERROR in setting / getting default rounding mode (3)");
+    PRINT_ERROR ("ERROR in setting / getting default rounding mode (3)");
 }
 
 static void
@@ -73,18 +73,18 @@ check_emin_emax (void)
 
   /* Check the functions not the macros ! */
   if ((mpfr_set_emin)(MPFR_EMIN_MIN) != 0)
-    PRINT_ERROR("set_emin failed!");
+    PRINT_ERROR ("set_emin failed!");
   if ((mpfr_get_emin)() != MPFR_EMIN_MIN)
-    PRINT_ERROR("get_emin FAILED!");
+    PRINT_ERROR ("get_emin FAILED!");
   if ((mpfr_set_emin)(MPFR_EMIN_MIN-1) == 0)
-    PRINT_ERROR("set_emin failed! (2)");
+    PRINT_ERROR ("set_emin failed! (2)");
 
   if ((mpfr_set_emax)(MPFR_EMAX_MAX) != 0)
-    PRINT_ERROR("set_emax failed!");
+    PRINT_ERROR ("set_emax failed!");
   if ((mpfr_get_emax)() != MPFR_EMAX_MAX)
-    PRINT_ERROR("get_emax FAILED!");
+    PRINT_ERROR ("get_emax FAILED!");
   if ((mpfr_set_emax)(MPFR_EMAX_MAX+1) == 0)
-    PRINT_ERROR("set_emax failed! (2)");
+    PRINT_ERROR ("set_emax failed! (2)");
 
   if ((mpfr_get_emin_min) () != MPFR_EMIN_MIN)
     PRINT_ERROR ("get_emin_min");
@@ -154,25 +154,25 @@ check_flags (void)
   (mpfr_clear_overflow)();
   mpfr_mul_2exp (x, x, 1024, MPFR_RNDN);
   if (!(mpfr_overflow_p)())
-    PRINT_ERROR("ERROR: No overflow detected!\n");
+    PRINT_ERROR ("ERROR: No overflow detected!\n");
 
   (mpfr_clear_underflow)();
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_div_2exp (x, x, 1025, MPFR_RNDN);
   if (!(mpfr_underflow_p)())
-    PRINT_ERROR("ERROR: No underflow detected!\n");
+    PRINT_ERROR ("ERROR: No underflow detected!\n");
 
   (mpfr_clear_nanflag)();
   MPFR_SET_NAN(x);
   mpfr_add (x, x, x, MPFR_RNDN);
   if (!(mpfr_nanflag_p)())
-    PRINT_ERROR("ERROR: No NaN flag!\n");
+    PRINT_ERROR ("ERROR: No NaN flag!\n");
 
   (mpfr_clear_inexflag)();
   mpfr_set_ui(x, 2, MPFR_RNDN);
   mpfr_cos(x, x, MPFR_RNDN);
   if (!(mpfr_inexflag_p)())
-    PRINT_ERROR("ERROR: No inexact flag!\n");
+    PRINT_ERROR ("ERROR: No inexact flag!\n");
 
   (mpfr_clear_erangeflag) ();
   mpfr_set_ui (x, 1, MPFR_RNDN);
