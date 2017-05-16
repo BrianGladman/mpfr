@@ -191,9 +191,16 @@ __MPFR_DECLSPEC void mpfr_assert_fail (const char *, int,
 #define SIZ(x) ((x)->_mp_size)
 #define ABSIZ(x) ABS (SIZ (x))
 #define PTR(x) ((x)->_mp_d)
+#define ALLOC(x) ((x)->_mp_alloc)
+/* For mpf numbers only. */
+#ifdef MPFR_NEED_MPF_INTERNALS
+/* Note: the EXP macro name is reserved when <errno.h> is included.
+   For compatibility with gmp-impl.h (cf --with-gmp-build), we cannot
+   change this macro, but let's define it only when we need it, where
+   <errno.h> will not be included. */
 #define EXP(x) ((x)->_mp_exp)
 #define PREC(x) ((x)->_mp_prec)
-#define ALLOC(x) ((x)->_mp_alloc)
+#endif
 
 /* For longlong.h */
 #ifdef HAVE_ATTRIBUTE_MODE
