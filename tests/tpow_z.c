@@ -25,7 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
+#define PRINT_ERROR(str) \
+  do { printf ("Error for %s\n", str); exit (1); } while (0)
 
 static void
 check_special (void)
@@ -43,93 +44,93 @@ check_special (void)
   mpz_set_ui (z, 0);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_cmp_ui (y, 1) != 0)
-    ERROR ("23^0");
+    PRINT_ERROR ("23^0");
   mpfr_set_nan (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_nan_p (y) || mpfr_cmp_si (y, 1) != 0)
-    ERROR ("NAN^0");
+    PRINT_ERROR ("NAN^0");
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_cmp_ui (y, 1) != 0)
-    ERROR ("INF^0");
+    PRINT_ERROR ("INF^0");
 
   /* sINF^N = INF if s==1 or n even if N > 0*/
   mpz_set_ui (z, 42);
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || mpfr_sgn (y) <= 0)
-    ERROR ("INF^42");
+    PRINT_ERROR ("INF^42");
   mpfr_set_inf (x, -1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || mpfr_sgn (y) <= 0)
-    ERROR ("-INF^42");
+    PRINT_ERROR ("-INF^42");
   mpz_set_ui (z, 17);
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || mpfr_sgn (y) <= 0)
-    ERROR ("INF^17");
+    PRINT_ERROR ("INF^17");
   mpfr_set_inf (x, -1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || mpfr_sgn (y) >= 0)
-    ERROR ("-INF^17");
+    PRINT_ERROR ("-INF^17");
 
   mpz_set_si (z, -42);
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("INF^-42");
+    PRINT_ERROR ("INF^-42");
   mpfr_set_inf (x, -1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("-INF^-42");
+    PRINT_ERROR ("-INF^-42");
   mpz_set_si (z, -17);
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("INF^-17");
+    PRINT_ERROR ("INF^-17");
   mpfr_set_inf (x, -1);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_POS (y))
-    ERROR ("-INF^-17");
+    PRINT_ERROR ("-INF^-17");
 
   /* s0^N = +0 if s==+ or n even if N > 0*/
   mpz_set_ui (z, 42);
   MPFR_SET_ZERO (x); MPFR_SET_POS (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("+0^42");
+    PRINT_ERROR ("+0^42");
   MPFR_SET_NEG (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("-0^42");
+    PRINT_ERROR ("-0^42");
   mpz_set_ui (z, 17);
   MPFR_SET_POS (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("+0^17");
+    PRINT_ERROR ("+0^17");
   MPFR_SET_NEG (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_zero_p (y) == 0 || MPFR_IS_POS (y))
-    ERROR ("-0^17");
+    PRINT_ERROR ("-0^17");
 
   mpz_set_si (z, -42);
   MPFR_SET_ZERO (x); MPFR_SET_POS (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("+0^-42");
+    PRINT_ERROR ("+0^-42");
   MPFR_SET_NEG (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("-0^-42");
+    PRINT_ERROR ("-0^-42");
   mpz_set_si (z, -17);
   MPFR_SET_POS (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || MPFR_IS_NEG (y))
-    ERROR ("+0^-17");
+    PRINT_ERROR ("+0^-17");
   MPFR_SET_NEG (x);
   res = mpfr_pow_z (y, x, z, MPFR_RNDN);
   if (res != 0 || mpfr_inf_p (y) == 0 || MPFR_IS_POS (y))
-    ERROR ("-0^-17");
+    PRINT_ERROR ("-0^-17");
 
   mpz_clear (z);
   mpfr_clear (y);

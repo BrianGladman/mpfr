@@ -22,7 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
+#define PRINT_ERROR(str) \
+  do { printf ("Error for %s\n", str); exit (1); } while (0)
 
 static void
 test_2exp (void)
@@ -34,57 +35,57 @@ test_2exp (void)
 
   mpfr_set_ui_2exp (x, 1, 0, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1) != 0)
-    ERROR ("(1U,0)");
+    PRINT_ERROR ("(1U,0)");
 
   mpfr_set_ui_2exp (x, 1024, -10, MPFR_RNDN);
   if (mpfr_cmp_ui(x, 1) != 0)
-    ERROR ("(1024U,-10)");
+    PRINT_ERROR ("(1024U,-10)");
 
   mpfr_set_ui_2exp (x, 1024, 10, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1024 * 1024) != 0)
-    ERROR ("(1024U,+10)");
+    PRINT_ERROR ("(1024U,+10)");
 
   mpfr_set_si_2exp (x, -1024L * 1024L, -10, MPFR_RNDN);
   if (mpfr_cmp_si (x, -1024) != 0)
-    ERROR ("(1M,-10)");
+    PRINT_ERROR ("(1M,-10)");
 
   mpfr_set_ui_2exp (x, 0x92345678, 16, MPFR_RNDN);
   if (mpfr_cmp_str (x, "92345678@4", 16, MPFR_RNDN) != 0)
-    ERROR ("(x92345678U,+16)");
+    PRINT_ERROR ("(x92345678U,+16)");
 
   mpfr_set_si_2exp (x, -0x1ABCDEF0, -256, MPFR_RNDN);
   if (mpfr_cmp_str (x, "-1ABCDEF0@-64", 16, MPFR_RNDN) != 0)
-    ERROR ("(-x1ABCDEF0,-256)");
+    PRINT_ERROR ("(-x1ABCDEF0,-256)");
 
   mpfr_set_prec (x, 2);
   res = mpfr_set_si_2exp (x, 7, 10, MPFR_RNDU);
   if (mpfr_cmp_ui (x, 1<<13) != 0 || res <= 0)
-    ERROR ("Prec 2 + si_2exp");
+    PRINT_ERROR ("Prec 2 + si_2exp");
 
   res = mpfr_set_ui_2exp (x, 7, 10, MPFR_RNDU);
   if (mpfr_cmp_ui (x, 1<<13) != 0 || res <= 0)
-    ERROR ("Prec 2 + ui_2exp");
+    PRINT_ERROR ("Prec 2 + ui_2exp");
 
   mpfr_clear_flags ();
   mpfr_set_ui_2exp (x, 17, MPFR_EMAX_MAX, MPFR_RNDN);
   if (!mpfr_inf_p (x) || MPFR_IS_NEG (x))
-    ERROR ("mpfr_set_ui_2exp and overflow (bad result)");
+    PRINT_ERROR ("mpfr_set_ui_2exp and overflow (bad result)");
   if (!mpfr_overflow_p ())
-    ERROR ("mpfr_set_ui_2exp and overflow (overflow flag not set)");
+    PRINT_ERROR ("mpfr_set_ui_2exp and overflow (overflow flag not set)");
 
   mpfr_clear_flags ();
   mpfr_set_si_2exp (x, 17, MPFR_EMAX_MAX, MPFR_RNDN);
   if (!mpfr_inf_p (x) || MPFR_IS_NEG (x))
-    ERROR ("mpfr_set_si_2exp (pos) and overflow (bad result)");
+    PRINT_ERROR ("mpfr_set_si_2exp (pos) and overflow (bad result)");
   if (!mpfr_overflow_p ())
-    ERROR ("mpfr_set_si_2exp (pos) and overflow (overflow flag not set)");
+    PRINT_ERROR ("mpfr_set_si_2exp (pos) and overflow (overflow flag not set)");
 
   mpfr_clear_flags ();
   mpfr_set_si_2exp (x, -17, MPFR_EMAX_MAX, MPFR_RNDN);
   if (!mpfr_inf_p (x) || MPFR_IS_POS (x))
-    ERROR ("mpfr_set_si_2exp (neg) and overflow (bad result)");
+    PRINT_ERROR ("mpfr_set_si_2exp (neg) and overflow (bad result)");
   if (!mpfr_overflow_p ())
-    ERROR ("mpfr_set_si_2exp (neg) and overflow (overflow flag not set)");
+    PRINT_ERROR ("mpfr_set_si_2exp (neg) and overflow (overflow flag not set)");
 
   mpfr_clear (x);
 }
