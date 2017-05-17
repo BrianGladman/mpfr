@@ -118,11 +118,15 @@ srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
 # be used everywhere in the MPFR code. This particularly concerns
 # macros defined via mpfr-impl.h or mpfr-test.h, which are included
 # in almost every tests.
-err-if-output \
-  --msg="ISO C 7.1.3 (Reserved identifiers) and 7.31 (Future library directions)." \
-  "reserved identifiers (macro names)" grep -E \
-  '# *define (E[0-9A-Z]|FE_[A-Z]|LC_[A-Z]|(PRI|SCN)[Xa-z]|SIG_?[A-Z]|TIME_[A-Z])' \
-  $srctests
+#
+# The case of EXP in src/mpfr-gmp.h is not really fixable due to the
+# possible use of gmp-impl.h, but we should make sure that <errno.h>
+# is never included in this case (see comment in the code).
+names='E[0-9A-Z]|FE_[A-Z]|LC_[A-Z]|(PRI|SCN)[Xa-z]|SIG_?[A-Z]|TIME_[A-Z]'
+msg='ISO C 7.1.3 (Reserved identifiers) and 7.31 (Future library directions).'
+grep -E "# *define ($names)" $srctests | \
+  grep -v 'src/mpfr-gmp.h:#define EXP(' | \
+  err-if-output --msg="$msg" "reserved identifiers (macro names)" cat
 
 # Detect the possible use of forbidden macros in mpfr.h, such as those
 # starting with "HAVE_" or "WANT_". Public macros defined by MPFR must
