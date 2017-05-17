@@ -70,7 +70,7 @@ print_decimal64 (_Decimal64 d)
 #define PRINT_ERR_MISC(V)                                   \
   do                                                        \
     {                                                       \
-      printf ("Error in check_misc for " V ".\n");          \
+      printf ("Error in check_misc for %s.\n", V);          \
       printf ("  mpfr_get_decimal64() returned: ");         \
       print_decimal64 (d);                                  \
       printf ("  mpfr_set_decimal64() set x to: ");         \
