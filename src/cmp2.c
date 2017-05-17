@@ -82,7 +82,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
           if (MPFR_UNLIKELY (bn < 0))
             {
-              if (MPFR_LIKELY (cn < 0)) /* b = c */
+              if (MPFR_LIKELY (cn < 0)) /* |b| = |c| */
                 return 0;
 
               bp = cp;
@@ -100,7 +100,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
               while (bp[bn] == 0)
                 {
-                  if (--bn < 0) /* b = c */
+                  if (--bn < 0) /* |b| = |c| */
                     return 0;
                   res += GMP_NUMB_BITS;
                 }
