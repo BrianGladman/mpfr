@@ -47,7 +47,6 @@ extract_double (mpfr_limb_ptr rp, double d)
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
   MPFR_ASSERTD(d != 0.0);
 
-#undef _MPFR_IEEE_FLOATS
 #if _MPFR_IEEE_FLOATS
 
   {
