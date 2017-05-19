@@ -244,9 +244,16 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO in order to detect
-     whether tests can fail due to a FP division by 0 on platforms where
-     such an operation fails (e.g. trap).
+     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO -DXDEBUG in order
+     to detect whether tests can fail due to a FP division by 0 (yielding
+     either FE_DIVBYZERO, e.g. from 1.0 / 0.0 to generate an infinity, or
+     FE_INVALID, e.g. from 0.0 / 0.0 to generate a NaN) on platforms where
+     such an operation fails (e.g. trap). On platforms that do not support
+     IEEE 754, such an operation yields an undefined behavior.
+     If _MPFR_IEEE_FLOATS is defined to 1 (by the configure script), some
+     divisions by 0 are avoided in the MPFR library. The -DXDEBUG option
+     sets _MPFR_IEEE_FLOATS to 0, allowing one to detect more issues, for
+     platforms without IEEE floats.
 
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.
