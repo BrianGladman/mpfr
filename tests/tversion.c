@@ -240,6 +240,12 @@ main (void)
 #else
           "no"
 #endif
+          ", IEEE floats = "
+#if _MPFR_IEEE_FLOATS
+          "yes"
+#else
+          "no"
+#endif
           "\n");
 
   printf ("[tversion] gmp_printf: hhd = "
