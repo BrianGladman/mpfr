@@ -48,13 +48,15 @@ const char minf_uc_str[] = "-INF";
 const char nan_str[] = "nan";
 const char nan_uc_str[] = "NAN";
 
+int randsize;
+
 /* 1. compare expected string with the string BUFFER returned by
    mpfr_sprintf(buffer, fmt, x)
    2. then test mpfr_snprintf (buffer, p, fmt, x) with a random p. */
 static int
 check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
-  int n0, n1, p;
+  int n0, n1;
   char buffer[BUF_SIZE];
 
   /* test mpfr_sprintf */
@@ -68,18 +70,19 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     }
 
   /* test mpfr_snprintf */
-  p = (int) (randlimb () % n0);
-  if (p == 0 && (randlimb () & 1) == 0)
+  randsize = (int) (randlimb () % (n0 + 3)) - 3;  /* between -3 and n0 - 1 */
+  if (randsize < 0)
     {
       n1 = mpfr_snprintf (NULL, 0, fmt, x);
     }
   else
     {
-      buffer[p] = 17;
-      n1 = mpfr_snprintf (buffer, p, fmt, x);
-      if (buffer[p] != 17)
+      buffer[randsize] = 17;
+      n1 = mpfr_snprintf (buffer, randsize, fmt, x);
+      if (buffer[randsize] != 17)
         {
-          printf ("Buffer overflow in mpfr_snprintf for p = %d!\n", p);
+          printf ("Buffer overflow in mpfr_snprintf for randsize = %d!\n",
+                  randsize);
           exit (1);
         }
     }
@@ -87,7 +90,7 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     {
       char format[1024];
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
-              p, fmt);
+              randsize, fmt);
       printf ("expected: %d\ngot:      %d\n", n0, n1);
       strncpy (format, "x='", 1024);
       strncpy (format + 3, fmt, 1021);
@@ -95,13 +98,14 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
       mpfr_printf (format, x);
       exit (1);
     }
-  if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
-      || (p == 1 && buffer[0] != '\0'))
+  if ((randsize > 1 && strncmp (expected, buffer, randsize - 1) != 0)
+      || (randsize == 1 && buffer[0] != '\0'))
     {
       char part_expected[BUF_SIZE];
-      strncpy (part_expected, expected, p);
-      part_expected[p-1] = '\0';
-      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n", p, fmt);
+      strncpy (part_expected, expected, randsize);
+      part_expected[randsize - 1] = '\0';
+      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n",
+              randsize, fmt);
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", part_expected, buffer);
       exit (1);
     }
@@ -114,7 +118,7 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 static int
 check_vsprintf (const char *expected, const char *fmt, ...)
 {
-  int n0, n1, p;
+  int n0, n1;
   char buffer[BUF_SIZE];
   va_list ap0, ap1;
 
@@ -132,18 +136,19 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   va_start (ap1, fmt);
 
   /* test mpfr_snprintf */
-  p = (int) (randlimb () % n0);
-  if (p == 0 && (randlimb () & 1) == 0)
+  randsize = (int) (randlimb () % (n0 + 3)) - 3;  /* between -3 and n0 - 1 */
+  if (randsize < 0)
     {
       n1 = mpfr_vsnprintf (NULL, 0, fmt, ap1);
     }
   else
     {
-      buffer[p] = 17;
-      n1 = mpfr_vsnprintf (buffer, p, fmt, ap1);
-      if (buffer[p] != 17)
+      buffer[randsize] = 17;
+      n1 = mpfr_vsnprintf (buffer, randsize, fmt, ap1);
+      if (buffer[randsize] != 17)
         {
-          printf ("Buffer overflow in mpfr_vsnprintf for p = %d!\n", p);
+          printf ("Buffer overflow in mpfr_vsnprintf for randsize = %d!\n",
+                  randsize);
           exit (1);
         }
     }
@@ -153,18 +158,19 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   if (n0 != n1)
     {
       printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...) return value\n",
-              p, fmt);
+              randsize, fmt);
       printf ("expected: %d\ngot:      %d\n", n0, n1);
       exit (1);
     }
-  if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
-      || (p == 1 && buffer[0] != '\0'))
+  if ((randsize > 1 && strncmp (expected, buffer, randsize - 1) != 0)
+      || (randsize == 1 && buffer[0] != '\0'))
     {
       char part_expected[BUF_SIZE];
 
-      strncpy (part_expected, expected, p);
-      part_expected[p-1] = '\0';
-      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n", p, fmt);
+      strncpy (part_expected, expected, randsize);
+      part_expected[randsize - 1] = '\0';
+      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n",
+              randsize, fmt);
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", part_expected, buffer);
       exit (1);
     }
@@ -805,6 +811,7 @@ mixed (void)
   mpz_t mpz;
   mpfr_t x;
   mpfr_rnd_t rnd;
+  int k;
 
   mpf_init (mpf);
   mpf_set_ui (mpf, 40);
@@ -824,17 +831,25 @@ mixed (void)
                   x);
   check_vsprintf ("-12345678.9, 121", "%.1Rf, %i", x, i);
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", MPFR_RNDZ, x, mpq);
-  n2 = -17;
-  /* If this value is obtained for n2 after the check_vsprintf call below,
-     this probably means that n2 has not been written as expected. */
-  n1 = check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff%n",
-                       i, 12, x, mpf, &n2);
-  if (n1 != n2)
+
+  /* Do the test several times due to random parameters in check_vsprintf
+     and the use of %n.
+     In practice, the case p < 0 will occur in check_vsprintf. */
+  for (k = 0; k < 30; k++)
     {
-      printf ("error in number of characters written by mpfr_vsprintf\n");
-      printf ("expected: %d\n", n2);
-      printf ("     got: %d\n", n1);
-      exit (1);
+      n2 = -17;
+      /* If this value is obtained for n2 after the check_vsprintf call below,
+         this probably means that n2 has not been written as expected. */
+      n1 = check_vsprintf ("121, -12345678.875000000000, 1.290323",
+                           "%i, %.*Rf, %Ff%n", i, 12, x, mpf, &n2);
+      if (n1 != n2)
+        {
+          printf ("error in number of characters written by mpfr_vsprintf"
+                  " for k = %d, randsize = %d\n", k, randsize);
+          printf ("expected: %d\n", n2);
+          printf ("     got: %d\n", n1);
+          exit (1);
+        }
     }
 
 #ifdef PRINTF_L
