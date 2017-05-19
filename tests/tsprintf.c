@@ -833,8 +833,8 @@ mixed (void)
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", MPFR_RNDZ, x, mpq);
 
   /* Do the test several times due to random parameters in check_vsprintf
-     and the use of %n.
-     In practice, the case p < 0 will occur in check_vsprintf. */
+     and the use of %n. In r11501, n2 is incorrect (seems random) when
+     randsize <= 0, i.e. when the size argument of mpfr_vsnprintf is 0. */
   for (k = 0; k < 30; k++)
     {
       n2 = -17;
