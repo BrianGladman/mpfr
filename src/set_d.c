@@ -47,6 +47,7 @@ extract_double (mpfr_limb_ptr rp, double d)
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
   MPFR_ASSERTD(d != 0.0);
 
+#undef _MPFR_IEEE_FLOATS
 #if _MPFR_IEEE_FLOATS
 
   {
@@ -130,7 +131,15 @@ extract_double (mpfr_limb_ptr rp, double d)
 
     d *= MP_BASE_AS_DOUBLE;
 #if GMP_NUMB_BITS >= 64
+#ifndef __clang__
     manl = d;
+#else
+    /* clang produces an invalid exception when d >= 2^63,
+       see https://bugs.llvm.org//show_bug.cgi?id=17686.
+       Since this is always the case, here, we use the following patch. */
+    MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
+    manl = 0x8000000000000000 + (mp_limb_t) (d - 0x8000000000000000);
+#endif /* __clang__ */
 #else
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
     manh = (mp_limb_t) d;
