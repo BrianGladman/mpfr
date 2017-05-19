@@ -31,10 +31,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
-#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
-#ifdef MPFR_RAISE_EXCEPTIONS
-#define _GNU_SOURCE /* for feenableexcept */
-#endif
+#ifdef MPFR_TESTS_DIVBYZERO
+# ifdef MPFR_RAISE_EXCEPTIONS
+#  define _GNU_SOURCE /* for feenableexcept */
+# endif
 # include <fenv.h>
 #endif
 
@@ -243,7 +243,7 @@ test_version (void)
    for mpfr_xxx_d functions. Same for overflow. Thus we only check for
    the division-by-zero and invalid exceptions, which should not occur
    inside MPFR. */
-#define EXCEPTIONS_FLAG (FE_DIVBYZERO | FE_INVALID)
+#define FPE_FLAGS (FE_DIVBYZERO | FE_INVALID)
 
 void
 tests_start_mpfr (void)
@@ -264,13 +264,13 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
-#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
+#ifdef MPFR_TESTS_DIVBYZERO
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
   /* to raise exceptions as soon as they arise, use feenableexcept */
-#ifdef MPFR_RAISE_EXCEPTIONS
-  feenableexcept (EXCEPTIONS_FLAG);
-#endif
+# ifdef MPFR_RAISE_EXCEPTIONS
+  feenableexcept (FPE_FLAGS);
+# endif
 #endif
 
   if (!tests_memory_disabled)
@@ -305,31 +305,20 @@ tests_end_mpfr (void)
   if (!tests_memory_disabled)
     tests_memory_end ();
 
-#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
-  if (fetestexcept (EXCEPTIONS_FLAG))
+#ifdef MPFR_TESTS_DIVBYZERO
+  /* Define to test the use of MPFR_ERRDIVZERO */
+  if (fetestexcept (FPE_FLAGS))
     {
+      /* With MPFR_ERRDIVZERO, such exceptions should never occur
+         because the purpose of defining MPFR_ERRDIVZERO is to avoid
+         all the FP divisions by 0. */
       printf ("Some floating-point exception(s) occurred:");
       if (fetestexcept (FE_DIVBYZERO))
-        {
-          /* With MPFR_ERRDIVZERO, this should never occur because
-             the purpose of defining MPFR_ERRDIVZERO is to avoid all
-             the FP divisions by 0. */
-          printf (" DIVBYZERO");
-          err = 1;
-        }
+        printf (" DIVBYZERO");  /* e.g. from 1.0 / 0.0 to generate an inf */
       if (fetestexcept (FE_INVALID))
-        {
-          /* With MPFR_ERRDIVZERO, this should never occur because
-             the purpose of defining MPFR_ERRDIVZERO is to avoid all
-             the FP divisions by 0.
-             Note: FE_INVALID comes from 0.0 / 0.0, in particular. */
-          printf (" INVALID");
-          err = 1;
-        }
+        printf (" INVALID");    /* e.g. from 0.0 / 0.0 to generate a NaN */
       printf ("\n");
-#ifdef MPFR_TESTS_EXCEPTIONS
       err = 1;
-#endif
     }
 #endif
 

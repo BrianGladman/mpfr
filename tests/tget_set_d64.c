@@ -91,7 +91,7 @@ check_misc (void)
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_set_nan (x);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
@@ -399,7 +399,7 @@ main (void)
   check_misc ();
   check_random ();
   check_native ();
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   check_overflow ();
 #endif
   check_tiny ();

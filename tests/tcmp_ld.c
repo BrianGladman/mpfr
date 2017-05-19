@@ -82,7 +82,7 @@ main (void)
     }
   set_emin (emin);
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   /* Check NAN */
   {
     int c;

@@ -73,7 +73,7 @@ print_binary (long double d, int flag)
       return 0;
     }
   if (d < (long double) 0.0
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
       || (d == (long double) 0.0 && (1.0 / (double) d < 0.0))
 #endif
       )
@@ -506,7 +506,7 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG + 64);
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   /* check NaN */
   mpfr_set_nan (x);
   d = mpfr_get_ld (x, MPFR_RNDN);
@@ -532,7 +532,7 @@ main (int argc, char *argv[])
 #endif
     }
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   /* check +Inf */
   mpfr_set_inf (x, 1);
   d = mpfr_get_ld (x, MPFR_RNDN);
@@ -625,7 +625,7 @@ main (int argc, char *argv[])
   test_small ();
 
   check_subnormal ();
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   check_overflow ();
 #endif
 

@@ -36,7 +36,7 @@ main (void)
 
   tests_start_mpfr ();
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   /* The definition of DBL_POS_INF involves a division by 0. This makes
      "clang -O2 -fsanitize=undefined -fno-sanitize-recover" fail. */
   infp = (float) DBL_POS_INF;
@@ -51,7 +51,7 @@ main (void)
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
 
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   mpfr_set_nan (x);
   f = mpfr_get_flt (x, MPFR_RNDN);
   if (! DOUBLE_ISNAN (f))
@@ -320,7 +320,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   f = mpfr_get_flt (x, MPFR_RNDN); /* 2^128 rounds to itself with extended
                                       exponent range, we should get +Inf */
   g = infp;
@@ -365,7 +365,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
-#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
+#if !defined(MPFR_ERRDIVZERO)
   f = mpfr_get_flt (x, MPFR_RNDN); /* first round to 2^128 (even rule),
                                       thus we should get +Inf */
   g = infp;
