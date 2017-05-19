@@ -244,7 +244,7 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO -DXDEBUG in order
+     Test with -DMPFR_TESTS_FPE_DIV -DMPFR_ERRDIVZERO -DXDEBUG in order
      to detect whether tests can fail due to a FP division by 0 (yielding
      either FE_DIVBYZERO, e.g. from 1.0 / 0.0 to generate an infinity, or
      FE_INVALID, e.g. from 0.0 / 0.0 to generate a NaN) on platforms where
@@ -473,8 +473,10 @@ List of macros used for checking MPFR:
                         because it is regarded as undefined behavior by
                         a sanitizer). This disables the tests involving
                         such operations.
-+ MPFR_TESTS_DIVBYZERO: Define to check whether there has been a
-                        floating-point division by 0. This is normally
++ MPFR_TESTS_FPE_DIV:   Define to check whether there has been a FP
+                        exception FE_DIVBYZERO or FE_INVALID, which
+                        probably comes from 1.0 / 0.0 or 0.0 / 0.0 to
+                        generate an infinity or a NaN. This is normally
                         used together with MPFR_ERRDIVZERO, in order to
                         check that all divisions by 0 have been protected
                         in the tests (so that tests can pass on platforms

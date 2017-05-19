@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
 # ifdef MPFR_TESTS_FPE_TRAP
 #  define _GNU_SOURCE /* for feenableexcept */
 # endif
@@ -264,7 +264,7 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
   /* to raise exceptions as soon as they arise, use feenableexcept */
@@ -305,7 +305,7 @@ tests_end_mpfr (void)
   if (!tests_memory_disabled)
     tests_memory_end ();
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
   /* Define to test the use of MPFR_ERRDIVZERO */
   if (fetestexcept (FPE_FLAGS))
     {
