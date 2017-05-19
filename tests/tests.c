@@ -267,8 +267,8 @@ tests_start_mpfr (void)
 #ifdef MPFR_TESTS_FPE_DIV
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
-  /* to raise exceptions as soon as they arise, use feenableexcept */
 # ifdef MPFR_TESTS_FPE_TRAP
+  /* to trap the corresponding FP exceptions */
   feenableexcept (FPE_FLAGS);
 # endif
 #endif
