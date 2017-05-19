@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
 # include <fenv.h>
 #endif
 
@@ -254,7 +254,7 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
 #endif
@@ -291,17 +291,20 @@ tests_end_mpfr (void)
   if (!tests_memory_disabled)
     tests_memory_end ();
 
-#ifdef MPFR_TESTS_DIVBYZERO
-  /* Define to test the use of MPFR_ERRDIVZERO */
-  if (fetestexcept (FE_DIVBYZERO|FE_INVALID))
+#ifdef MPFR_TESTS_EXCEPTIONS
+  if (fetestexcept (FE_ALL_EXCEPT ^ FE_INEXACT))
     {
-      printf ("A floating-point division by 0 or an invalid operation"
-              " occurred!\n");
-#ifdef MPFR_ERRDIVZERO
-      /* This should never occur because the purpose of defining
-         MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
+      printf ("A floating-point exception occurred:");
+      if (fetestexcept (FE_DIVBYZERO))
+        printf (" DIVBYZERO");
+      if (fetestexcept (FE_INVALID))
+        printf (" INVALID");
+      if (fetestexcept (FE_OVERFLOW))
+        printf (" OVERFLOW");
+      if (fetestexcept (FE_UNDERFLOW))
+        printf (" UNDERFLOW");
+      printf ("\n");
       err = 1;
-#endif
     }
 #endif
 
