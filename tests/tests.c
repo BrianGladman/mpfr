@@ -291,20 +291,37 @@ tests_end_mpfr (void)
   if (!tests_memory_disabled)
     tests_memory_end ();
 
-#ifdef MPFR_TESTS_EXCEPTIONS
+#if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
   if (fetestexcept (FE_ALL_EXCEPT ^ FE_INEXACT))
     {
       printf ("A floating-point exception occurred:");
       if (fetestexcept (FE_DIVBYZERO))
-        printf (" DIVBYZERO");
+        {
+          printf (" DIVBYZERO");
+#ifdef MPFR_ERRDIVZERO
+          /* This should never occur because the purpose of defining
+             MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
+          err = 1;
+#endif
+        }
       if (fetestexcept (FE_INVALID))
-        printf (" INVALID");
+        {
+          printf (" INVALID");
+#ifdef MPFR_ERRDIVZERO
+          /* This should never occur because the purpose of defining
+             MPFR_ERRDIVZERO is to avoid all the FP divisions by 0.
+             Note: FE_INVALID comes from 0.0 / 0.0, in particular. */
+          err = 1;
+#endif
+        }
       if (fetestexcept (FE_OVERFLOW))
         printf (" OVERFLOW");
       if (fetestexcept (FE_UNDERFLOW))
         printf (" UNDERFLOW");
       printf ("\n");
+#ifdef MPFR_TESTS_EXCEPTIONS
       err = 1;
+#endif
     }
 #endif
 
