@@ -91,6 +91,7 @@ check_misc (void)
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
 
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   mpfr_set_nan (x);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
   mpfr_set_ui (x, 1, MPFR_RNDZ);
@@ -110,6 +111,7 @@ check_misc (void)
   mpfr_set_decimal64 (x, d, MPFR_RNDZ);
   if (! mpfr_inf_p (x) || MPFR_IS_POS (x))
     PRINT_ERR_MISC ("-Inf");
+#endif
 
   mpfr_set_ui (x, 0, MPFR_RNDZ);
   d = mpfr_get_decimal64 (x, MPFR_RNDZ);
@@ -397,7 +399,9 @@ main (void)
   check_misc ();
   check_random ();
   check_native ();
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   check_overflow ();
+#endif
   check_tiny ();
 
   tests_end_mpfr ();
