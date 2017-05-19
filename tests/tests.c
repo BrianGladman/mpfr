@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #ifdef MPFR_TESTS_DIVBYZERO
-# ifdef MPFR_RAISE_EXCEPTIONS
+# ifdef MPFR_TESTS_FPE_TRAP
 #  define _GNU_SOURCE /* for feenableexcept */
 # endif
 # include <fenv.h>
@@ -268,7 +268,7 @@ tests_start_mpfr (void)
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
   /* to raise exceptions as soon as they arise, use feenableexcept */
-# ifdef MPFR_RAISE_EXCEPTIONS
+# ifdef MPFR_TESTS_FPE_TRAP
   feenableexcept (FPE_FLAGS);
 # endif
 #endif
