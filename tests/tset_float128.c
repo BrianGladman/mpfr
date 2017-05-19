@@ -40,7 +40,7 @@ check_special (void)
 
   mpfr_init2 (x, 113);
 
-#if !defined(MPFR_ERRDIVZERO)
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   /* check NaN */
   f = 0.0 / 0.0;
   mpfr_set_float128 (x, f, MPFR_RNDN);
@@ -102,7 +102,7 @@ check_special (void)
       printf ("Error in mpfr_get_float128(+0.0)\n");
       exit (1);
     }
-#if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ)
+#if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ) && !defined(MPFR_TESTS_EXCEPTIONS)
   if (1 / f != 1 / 0.0)  /* check the sign */
     {
       printf ("Error in mpfr_get_float128(+0.0)\n");
@@ -131,7 +131,7 @@ check_special (void)
       printf ("Error in mpfr_get_float128(-0.0)\n");
       exit (1);
     }
-#if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ)
+#if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ) && !defined(MPFR_TESTS_EXCEPTIONS)
   if (1 / f != 1 / -0.0)  /* check the sign */
     {
       printf ("Error in mpfr_get_float128(-0.0)\n");

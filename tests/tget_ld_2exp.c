@@ -77,7 +77,7 @@ check_round (void)
 static void
 check_inf_nan (void)
 {
-#if !defined(MPFR_ERRDIVZERO)
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   mpfr_t  x;
   double  d;
   long    exp;

@@ -59,7 +59,7 @@ check_nans (void)
   MPFR_ASSERTN (mpfr_zero_p (y));
   MPFR_ASSERTN (MPFR_IS_NEG (y));
 
-#if !defined(MPFR_ERRDIVZERO)
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
 
   /* 1.0 / 0 == +inf */
   mpfr_set_ui (x, 0, MPFR_RNDN);
@@ -136,7 +136,6 @@ check_nans (void)
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (MPFR_IS_POS (y));
-
 #endif
 
   mpfr_clear (x);

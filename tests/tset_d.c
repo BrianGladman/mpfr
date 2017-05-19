@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 
   mpfr_init (x);
 
-#if !defined(MPFR_ERRDIVZERO)
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   mpfr_set_nan (x);
   d = mpfr_get_d (x, MPFR_RNDN);
   if (! DOUBLE_ISNAN (d))
@@ -105,7 +105,7 @@ main (int argc, char *argv[])
     }
 #endif  /* HAVE_SIGNEDZ */
 
-#if !defined(MPFR_ERRDIVZERO)
+#if !defined(MPFR_ERRDIVZERO) && !defined(MPFR_TESTS_EXCEPTIONS)
   mpfr_set_inf (x, 1);
   d = mpfr_get_d (x, MPFR_RNDN);
   mpfr_set_ui (x, 0, MPFR_RNDN);

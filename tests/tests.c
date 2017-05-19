@@ -32,6 +32,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
+#ifdef MPFR_RAISE_EXCEPTIONS
+#define _GNU_SOURCE /* for feenableexcept */
+#endif
 # include <fenv.h>
 #endif
 
@@ -235,6 +238,13 @@ test_version (void)
   exit (1);
 }
 
+/* The inexact exception occurs very often, and is normal.
+   The underflow exception also might occur, for example in test_generic
+   for mpfr_xxx_d functions. Same for overflow. Thus we only check for
+   the division-by-zero and invalid exceptions, which should not occur
+   inside MPFR. */
+#define EXCEPTIONS_FLAG (FE_DIVBYZERO | FE_INVALID)
+
 void
 tests_start_mpfr (void)
 {
@@ -257,6 +267,10 @@ tests_start_mpfr (void)
 #if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
+  /* to raise exceptions as soon as they arise, use feenableexcept */
+#ifdef MPFR_RAISE_EXCEPTIONS
+  feenableexcept (EXCEPTIONS_FLAG);
+#endif
 #endif
 
   if (!tests_memory_disabled)
@@ -292,9 +306,9 @@ tests_end_mpfr (void)
     tests_memory_end ();
 
 #if defined(MPFR_TESTS_DIVBYZERO) || defined(MPFR_TESTS_EXCEPTIONS)
-  if (fetestexcept (FE_ALL_EXCEPT ^ FE_INEXACT))
+  if (fetestexcept (EXCEPTIONS_FLAG))
     {
-      printf ("A floating-point exception occurred:");
+      printf ("Some floating-point exception(s) occurred:");
       if (fetestexcept (FE_DIVBYZERO))
         {
           printf (" DIVBYZERO");
@@ -314,10 +328,6 @@ tests_end_mpfr (void)
           err = 1;
 #endif
         }
-      if (fetestexcept (FE_OVERFLOW))
-        printf (" OVERFLOW");
-      if (fetestexcept (FE_UNDERFLOW))
-        printf (" UNDERFLOW");
       printf ("\n");
 #ifdef MPFR_TESTS_EXCEPTIONS
       err = 1;
