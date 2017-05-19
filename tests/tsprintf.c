@@ -826,6 +826,9 @@ mixed (void)
                   x);
   check_vsprintf ("-12345678.9, 121", "%.1Rf, %i", x, i);
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", MPFR_RNDZ, x, mpq);
+  n2 = -17;
+  /* If this value is obtained for n2 after the check_vsprintf call below,
+     this probably means that n2 has not been written as expected. */
   n1 = check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff%n",
                        i, 12, x, mpf, &n2);
   if (n1 != n2)
