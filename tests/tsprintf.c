@@ -876,6 +876,7 @@ locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
   mpfr_t x;
+  int k;
 
   if (setlocale (LC_ALL, "da_DK") == 0 ||
       localeconv()->decimal_point[0] != ',' ||
@@ -903,12 +904,12 @@ locale_da_DK (void)
   mpfr_exp10 (x, x, MPFR_RNDN);
   check_sprintf ("100000000000000000000000000000000000000000000000000", "%.0Rf",
                  x);
-  check_sprintf
-    ("100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,",
-     "%'#.0Rf", x);
-  check_sprintf
-    ("100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,0000",
-     "%'.4Rf", x);
+  for (k = 0; k < 40; k++)
+    {
+#define S "100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,"
+      check_sprintf (S, "%'#.0Rf", x);
+      check_sprintf (S "0000", "%'.4Rf", x);
+    }
 
   mpfr_clear (x);
   return 0;
