@@ -311,22 +311,20 @@ tests_end_mpfr (void)
       printf ("Some floating-point exception(s) occurred:");
       if (fetestexcept (FE_DIVBYZERO))
         {
+          /* With MPFR_ERRDIVZERO, this should never occur because
+             the purpose of defining MPFR_ERRDIVZERO is to avoid all
+             the FP divisions by 0. */
           printf (" DIVBYZERO");
-#ifdef MPFR_ERRDIVZERO
-          /* This should never occur because the purpose of defining
-             MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
           err = 1;
-#endif
         }
       if (fetestexcept (FE_INVALID))
         {
-          printf (" INVALID");
-#ifdef MPFR_ERRDIVZERO
-          /* This should never occur because the purpose of defining
-             MPFR_ERRDIVZERO is to avoid all the FP divisions by 0.
+          /* With MPFR_ERRDIVZERO, this should never occur because
+             the purpose of defining MPFR_ERRDIVZERO is to avoid all
+             the FP divisions by 0.
              Note: FE_INVALID comes from 0.0 / 0.0, in particular. */
+          printf (" INVALID");
           err = 1;
-#endif
         }
       printf ("\n");
 #ifdef MPFR_TESTS_EXCEPTIONS
