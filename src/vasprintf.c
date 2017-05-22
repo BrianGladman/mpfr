@@ -1818,12 +1818,12 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   /* compute the number of characters to be written verifying it is not too
      much */
 
-#define INCR_TOTAL(V)                           \
+#define INCR_TOTAL(v)                           \
   do {                                          \
-    MPFR_ASSERTD ((V) >= 0);                    \
-    if (MPFR_UNLIKELY ((V) > INT_MAX))          \
+    MPFR_ASSERTD ((v) >= 0);                    \
+    if (MPFR_UNLIKELY ((v) > INT_MAX))          \
       goto error;                               \
-    total += (V);                               \
+    total += (v);                               \
     if (MPFR_UNLIKELY (total > INT_MAX))        \
       goto error;                               \
   } while (0)
