@@ -1828,7 +1828,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
-    total += (np->ip_size + np->ip_trailing_zeros) / 3;
+    total += (np->ip_size + np->ip_trailing_zeros - 1) / 3;
   if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   if (np->point)
