@@ -877,7 +877,6 @@ locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
   mpfr_t x;
-  int k;
 
   if (setlocale (LC_ALL, "da_DK") == 0 ||
       localeconv()->decimal_point[0] != ',' ||
@@ -905,12 +904,9 @@ locale_da_DK (void)
   mpfr_exp10 (x, x, MPFR_RNDN);
   check_sprintf ("100000000000000000000000000000000000000000000000000", "%.0Rf",
                  x);
-  for (k = 0; k < 40; k++)
-    {
 #define S "100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,"
-      check_sprintf (S, "%'#.0Rf", x);
-      check_sprintf (S "0000", "%'.4Rf", x);
-    }
+  check_sprintf (S, "%'#.0Rf", x);
+  check_sprintf (S "0000", "%'.4Rf", x);
 
   mpfr_clear (x);
   return 0;
@@ -1391,6 +1387,7 @@ int
 main (int argc, char **argv)
 {
   char *locale;
+  int k;
 
   tests_start_mpfr ();
 
@@ -1400,24 +1397,30 @@ main (int argc, char **argv)
 #endif
 
   bug20111102 ();
-  native_types ();
-  hexadecimal ();
-  binary ();
-  decimal ();
-  mixed ();
+
+  for (k = 0; k < 40; k++)
+    {
+      native_types ();
+      hexadecimal ();
+      binary ();
+      decimal ();
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+#if MPFR_LCONV_DPTS
+      locale_da_DK ();
+  /* Avoid a warning by doing the setlocale outside of this #if */
+#endif
+      setlocale (LC_ALL, locale);
+#endif
+    }
+
   check_emax ();
   check_emin ();
   test20161214 ();
   bug21056 ();
   snprintf_size ();
 
-#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-#if MPFR_LCONV_DPTS
-  locale_da_DK ();
-  /* Avoid a warning by doing the setlocale outside of this #if */
-#endif
-  setlocale (LC_ALL, locale);
-#endif
+  mixed ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
     {
