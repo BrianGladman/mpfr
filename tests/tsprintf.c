@@ -1394,7 +1394,10 @@ snprintf_size (void)
   mpfr_clear (x);
 }
 
-/* With r11516, n2 gets a random value for i = 0 only!!! */
+/* With r11516, n2 gets a random value for i = 0 only!
+   valgrind detects a problem for "nchar = buf.curr - buf.start;"
+   in the spec.spec == 'n' case. Indeed, there is no buffer when
+   size is 0. */
 static void
 percent_n (void)
 {
