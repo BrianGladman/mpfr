@@ -2098,6 +2098,18 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           start = fmt;
+          /* FIXME: When size is 0, the buffer doesn't exist. We should take,
+             buf.len, but it is only an int. A solution could be to increase
+             it to mpfr_intmax_t, but all the overflow detection needs to be
+             redone. Alternatively, one may consider that in case of overflow,
+             the object associated with the 'n' format specifier does not
+             have to be filled, i.e. the consequences of the overflow error
+             are unspecified. For ISO C, an overflow on the return value
+             seems to be undefined behavior; in POSIX, this is not, but the
+             effects of an overflow seem to be unclear. Let's wait for
+             comments in the Austin Group mailing-list:
+             https://www.mail-archive.com/austin-group-l@opengroup.org/msg01038.html
+          */
           nchar = buf.curr - buf.start;
 
           switch (spec.arg_type)
