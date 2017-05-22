@@ -47,9 +47,19 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include <inttypes.h>
 # define MPFR_USE_INTMAX_T
 #endif
+
 #if HAVE_STDINT_H
 # include <stdint.h>
 # define MPFR_USE_INTMAX_T
+#endif
+
+/* Largest signed integer type available for the MPFR build. */
+#if defined(MPFR_USE_INTMAX_T)
+typedef intmax_t mpfr_intmax_t;
+#elif defined(HAVE_LONG_LONG)
+typedef long long mpfr_intmax_t;
+#else
+typedef long mpfr_intmax_t;
 #endif
 
 #endif
