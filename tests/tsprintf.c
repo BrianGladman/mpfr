@@ -1394,6 +1394,33 @@ snprintf_size (void)
   mpfr_clear (x);
 }
 
+/* With r11516, n2 gets a random value for i = 0 only!!! */
+static void
+percent_n (void)
+{
+  int err = 0, i, j;
+
+  for (i = 0; i < 24; i++)
+    for (j = 0; j < 3; j++)
+      {
+        volatile int n1, n2;
+        char buffer[64];
+
+        memset (buffer, 0, 64);
+        n2 = -17;
+        n1 = mpfr_snprintf (buffer, i % 8, "%d%n", 123, &n2);
+        if (n1 != 3 || n2 != 3)
+          {
+            printf ("Error 1 in percent_n: i = %d, n1 = %d, n2 = %d\n",
+                    i, n1, n2);
+            err = 1;
+          }
+      }
+
+  if (err)
+    exit (1);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1430,7 +1457,7 @@ main (int argc, char **argv)
   test20161214 ();
   bug21056 ();
   snprintf_size ();
-
+  percent_n ();
   mixed ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
