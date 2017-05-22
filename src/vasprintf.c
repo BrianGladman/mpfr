@@ -1877,7 +1877,7 @@ static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
           const struct printf_spec spec)
 {
-  int length;
+  int length, start;
   struct number_parts np;
 
   length = partition_number (&np, p, spec);
@@ -1891,6 +1891,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
       buffer_incr_len (buf, length);
       goto clear_and_exit;
     }
+
+  MPFR_DBGRES (start = buf->len);
 
   /* right justification padding with left spaces */
   if (np.pad_type == LEFT && np.pad_size != 0)
@@ -1945,6 +1947,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   /* left justification padding with right spaces */
   if (np.pad_type == RIGHT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
+
+  MPFR_ASSERTD (buf->len == -1 || buf->len - start == length);
 
  clear_and_exit:
   clear_string_list (np.sl);
