@@ -900,13 +900,24 @@ locale_da_DK (void)
   check_sprintf (" 000000018.993.474,61279296875", "%' 030.19RG", x);
   check_sprintf (" 00000000000018.993.474,612793", "%' 030RF", x);
 
-  mpfr_set_ui (x, 50, MPFR_RNDN);
+#define T1 "000"
+#define T2 ".000"
+#define S1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1 T1
+#define S2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 T2 ","
+
+  mpfr_set_ui (x, 48, MPFR_RNDN);
   mpfr_exp10 (x, x, MPFR_RNDN);
-  check_sprintf ("100000000000000000000000000000000000000000000000000", "%.0Rf",
-                 x);
-#define S "100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,"
-  check_sprintf (S, "%'#.0Rf", x);
-  check_sprintf (S "0000", "%'.4Rf", x);
+  check_sprintf ("1" S1, "%.0Rf", x);
+  check_sprintf ("1" S2, "%'#.0Rf", x);
+  check_sprintf ("1" S2 "0000", "%'.4Rf", x);
+  mpfr_mul_ui (x, x, 10, MPFR_RNDN);
+  check_sprintf ("10" S1, "%.0Rf", x);
+  check_sprintf ("10" S2, "%'#.0Rf", x);
+  check_sprintf ("10" S2 "0000", "%'.4Rf", x);
+  mpfr_mul_ui (x, x, 10, MPFR_RNDN);
+  check_sprintf ("100" S1, "%.0Rf", x);
+  check_sprintf ("100" S2, "%'#.0Rf", x);
+  check_sprintf ("100" S2 "0000", "%'.4Rf", x);
 
   mpfr_clear (x);
   return 0;
