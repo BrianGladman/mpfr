@@ -1600,7 +1600,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
   char *str;
-  long total;
+  unsigned int total;  /* significantly larger than an int */
   int uppercase;
 
   /* WARNING: left justification means right space padding */
@@ -1820,30 +1820,31 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   total = np->sign ? 1 : 0;
   total += np->prefix_size;
   total += np->ip_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
   total += np->ip_trailing_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
+  MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros >= 1);
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
     total += (np->ip_size + np->ip_trailing_zeros - 1) / 3;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
   if (np->point)
     ++total;
   total += np->fp_leading_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
   total += np->fp_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
   total += np->fp_trailing_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
   total += np->exp_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+  if (MPFR_UNLIKELY (total > INT_MAX))
     goto error;
 
   if (spec.width > total)
@@ -1852,6 +1853,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
       np->pad_size = spec.width - total;
       total += np->pad_size; /* here total == spec.width,
                                 so 0 < total < INT_MAX */
+      if (MPFR_UNLIKELY (total > INT_MAX))
+        goto error;
     }
 
   return total;
