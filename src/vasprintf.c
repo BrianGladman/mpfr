@@ -1600,7 +1600,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
   char *str;
-  unsigned int total;  /* significantly larger than an int */
+  unsigned int total;  /* can hold the sum of two non-negative int's + 1 */
   int uppercase;
 
   /* WARNING: left justification means right space padding */
@@ -1817,46 +1817,43 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
   /* compute the number of characters to be written verifying it is not too
      much */
+
+#define INCR_TOTAL(V)                           \
+  do {                                          \
+    MPFR_ASSERTD ((V) >= 0);                    \
+    if (MPFR_UNLIKELY ((V) > INT_MAX))          \
+      goto error;                               \
+    total += (V);                               \
+    if (MPFR_UNLIKELY (total > INT_MAX))        \
+      goto error;                               \
+  } while (0)
+
   total = np->sign ? 1 : 0;
-  total += np->prefix_size;
-  total += np->ip_size;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
-  total += np->ip_trailing_zeros;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
+  INCR_TOTAL (np->prefix_size);
+  INCR_TOTAL (np->ip_size);
+  INCR_TOTAL (np->ip_trailing_zeros);
   MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros >= 1);
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
-    total += (np->ip_size + np->ip_trailing_zeros - 1) / 3;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
+    INCR_TOTAL ((np->ip_size + np->ip_trailing_zeros - 1) / 3);
   if (np->point)
     ++total;
-  total += np->fp_leading_zeros;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
-  total += np->fp_size;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
-  total += np->fp_trailing_zeros;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
-  total += np->exp_size;
-  if (MPFR_UNLIKELY (total > INT_MAX))
-    goto error;
+  INCR_TOTAL (np->fp_leading_zeros);
+  INCR_TOTAL (np->fp_size);
+  INCR_TOTAL (np->fp_trailing_zeros);
+  INCR_TOTAL (np->exp_size);
 
   if (spec.width > total)
     /* pad with spaces or zeros depending on np->pad_type */
     {
       np->pad_size = spec.width - total;
       total += np->pad_size; /* here total == spec.width,
-                                so 0 < total < INT_MAX */
-      if (MPFR_UNLIKELY (total > INT_MAX))
-        goto error;
+                                so 0 < total <= INT_MAX */
+      MPFR_ASSERTD (total == spec.width);
     }
 
+  MPFR_ASSERTD (total > 0 && total <= INT_MAX);
   return total;
 
  error:
