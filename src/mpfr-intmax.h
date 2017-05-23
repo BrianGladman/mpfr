@@ -56,10 +56,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Largest signed integer type available for the MPFR build. */
 #if defined(MPFR_USE_INTMAX_T)
 typedef intmax_t mpfr_intmax_t;
+typedef uintmax_t mpfr_uintmax_t;
 #elif defined(HAVE_LONG_LONG)
 typedef long long mpfr_intmax_t;
+typedef unsigned long long mpfr_uintmax_t;
+# define MPFR_INTMAX_MAX LLONG_MAX
 #else
 typedef long mpfr_intmax_t;
+typedef unsigned long mpfr_uintmax_t;
+# define MPFR_INTMAX_MAX LONG_MAX
 #endif
 
 #endif
