@@ -41,7 +41,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif /* HAVE___VA_COPY */
 #endif /* HAVE_VA_COPY */
 
-#include <errno.h>
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_FILE

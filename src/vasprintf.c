@@ -71,6 +71,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
 
+#include <errno.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-intmax.h"
 #include "mpfr-impl.h"
