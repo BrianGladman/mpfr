@@ -96,21 +96,23 @@ static void
 check_vprintf_failure (const char *fmt, ...)
 {
   va_list ap;
-  int r;
+  int r, e;
 
   va_start (ap, fmt);
   errno = 0;
   r = mpfr_vprintf (fmt, ap);
+  e = errno;
   va_end (ap);
 
   if (r != -1
 #ifdef EOVERFLOW
-      || errno != EOVERFLOW
+      || e != EOVERFLOW
 #endif
       )
     {
       putchar ('\n');
-      fprintf (stderr, "Error 3 in mpfr_vprintf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error 3 in mpfr_vprintf(\"%s\", ...)\n"
+               "Got r = %d, errno = %d\n", fmt, r, e);
       exit (1);
     }
   putchar ('\n');
