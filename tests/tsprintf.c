@@ -1427,14 +1427,13 @@ percent_n (void)
 int
 main (int argc, char **argv)
 {
-  char *locale;
   int k;
 
   tests_start_mpfr ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   /* currently, we just check with 'C' locale */
-  locale = setlocale (LC_ALL, "C");
+  setlocale (LC_ALL, "C");
 #endif
 
   bug20111102 ();
@@ -1451,7 +1450,7 @@ main (int argc, char **argv)
       locale_da_DK ();
   /* Avoid a warning by doing the setlocale outside of this #if */
 #endif
-      setlocale (LC_ALL, locale);
+      setlocale (LC_ALL, "C");
 #endif
     }
 
