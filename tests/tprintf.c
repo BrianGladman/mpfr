@@ -92,7 +92,7 @@ check_vprintf (const char *fmt, ...)
   va_end (ap);
 }
 
-static void
+static unsigned int
 check_vprintf_failure (const char *fmt, ...)
 {
   va_list ap;
@@ -113,9 +113,11 @@ check_vprintf_failure (const char *fmt, ...)
       putchar ('\n');
       fprintf (stderr, "Error 3 in mpfr_vprintf(\"%s\", ...)\n"
                "Got r = %d, errno = %d\n", fmt, r, e);
-      exit (1);
+      return 1;
     }
+
   putchar ('\n');
+  return 0;
 }
 
 /* The goal of this test is to check cases where more INT_MAX characters
@@ -165,35 +167,44 @@ check_long_string (void)
 
   if (large_prec >= INT_MAX - 512)
     {
+      unsigned int err = 0;
+
 #define LS1 "%Rb %512d"
 #define LS2 "%RA %RA %Ra %Ra %512d"
-      check_vprintf_failure (LS1, x, 1);
-      check_vprintf_failure (LS2, x, x, x, x, 1);
+
+      err |= check_vprintf_failure (LS1, x, 1);
+      err |= check_vprintf_failure (LS2, x, x, x, x, 1);
+
       if (sizeof (long) * CHAR_BIT > 40)
         {
           long n1, n2;
 
           n1 = large_prec + 517;
-          check_vprintf_failure (LS1 "%ln", x, 1, &n2);
+          n2 = -17;
+          err |= check_vprintf_failure (LS1 "%ln", x, 1, &n2);
           if (n1 != n2)
             {
               fprintf (stderr, "Error in check_long_string(\"%s\", ...)\n"
                        "Expected n = %ld\n"
                        "Got      n = %ld\n",
                        LS1 "%ln", n1, n2);
-              exit (1);
+              err = 1;
             }
           n1 = ((large_prec - 2) / 4) * 4 + 548;
-          check_vprintf_failure (LS2 "%ln", x, x, x, x, 1, &n2);
+          n2 = -17;
+          err |= check_vprintf_failure (LS2 "%ln", x, x, x, x, 1, &n2);
           if (n1 != n2)
             {
               fprintf (stderr, "Error in check_long_string(\"%s\", ...)\n"
                        "Expected n = %ld\n"
                        "Got      n = %ld\n",
                        LS2 "%ln", n1, n2);
-              exit (1);
+              err = 1;
             }
         }
+
+      if (err)
+        exit (1);
     }
 
   mpfr_clear (x);
