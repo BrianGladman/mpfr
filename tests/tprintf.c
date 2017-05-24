@@ -163,8 +163,35 @@ check_long_string (void)
 
   if (large_prec >= INT_MAX - 512)
     {
-      check_vprintf_failure ("%Rb %512d", x, 1);
-      check_vprintf_failure ("%RA %RA %Ra %Ra %512d", x, x, x, x, 1);
+#define LS1 "%Rb %512d"
+#define LS2 "%RA %RA %Ra %Ra %512d"
+      check_vprintf_failure (LS1, x, 1);
+      check_vprintf_failure (LS2, x, x, x, x, 1);
+      if (sizeof (long) * CHAR_BIT > 40)
+        {
+          long n1, n2;
+
+          n1 = large_prec + 517;
+          check_vprintf_failure (LS1 "%ln", x, 1, &n2);
+          if (n1 != n2)
+            {
+              fprintf (stderr, "Error in check_long_string(\"%s\", ...)\n"
+                       "Expected n = %ld\n"
+                       "Got      n = %ld\n",
+                       LS1 "%ln", n1, n2);
+              exit (1);
+            }
+          n1 = ((large_prec - 2) / 4) * 4 + 548;
+          check_vprintf_failure (LS2 "%ln", x, x, x, x, 1, &n2);
+          if (n1 != n2)
+            {
+              fprintf (stderr, "Error in check_long_string(\"%s\", ...)\n"
+                       "Expected n = %ld\n"
+                       "Got      n = %ld\n",
+                       LS2 "%ln", n1, n2);
+              exit (1);
+            }
+        }
     }
 
   mpfr_clear (x);
