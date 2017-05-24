@@ -505,16 +505,21 @@ typedef wint_t mpfr_va_wint;
       /* previous specifiers are understood by gmp_printf */            \
       {                                                                 \
         MPFR_TMP_DECL (marker);                                         \
-        char *fmt_copy;                                                 \
+        char *fmt_copy, *s;                                             \
+        int length;                                                     \
+                                                                        \
         MPFR_TMP_MARK (marker);                                         \
         fmt_copy = (char*) MPFR_TMP_ALLOC (n + 1);                      \
         strncpy (fmt_copy, (start), n);                                 \
         fmt_copy[n] = '\0';                                             \
-        if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)             \
+        length = gmp_vasprintf (&s, fmt_copy, (ap));                    \
+        if (length < 0)                                                 \
           {                                                             \
             MPFR_TMP_FREE (marker);                                     \
             goto error;                                                 \
           }                                                             \
+        buffer_cat ((buf_ptr), s, length);                              \
+        mpfr_free_str (s);                                              \
         (flag) = 0;                                                     \
         MPFR_TMP_FREE (marker);                                         \
       }                                                                 \
@@ -742,21 +747,6 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
 
       return 0;
     }
-}
-
-/* let gmp_xprintf process the part it can understand */
-static int
-sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
-{
-  int length;
-  char *s;
-
-  length = gmp_vasprintf (&s, fmt, ap);
-  if (length > 0 && buffer_cat (b, s, length))
-    length = -1;  /* overflow in buffer_cat */
-
-  mpfr_free_str (s);
-  return length;
 }
 
 /* Helper struct and functions for temporary strings management */
@@ -2187,7 +2177,6 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */
           size_t length;
           mpfr_prec_t prec;
-          int err;
 
           prec = va_arg (ap, mpfr_prec_t);
 
@@ -2207,10 +2196,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
           length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
           MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
-          err = buffer_cat (&buf, s, length);
+          buffer_cat (&buf, s, length);
           mpfr_free_str (s);
-          if (err)
-            goto error;
         }
       else if (spec.arg_type == MPFR_ARG)
         /* output a mpfr_t variable */
@@ -2236,8 +2223,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
           if (ptr == NULL)
             spec.size = size;
-          if (sprnt_fp (&buf, p, spec) < 0)
-            goto error;
+          sprnt_fp (&buf, p, spec);
         }
       else
         /* gmp_printf specification, step forward in the va_list */
