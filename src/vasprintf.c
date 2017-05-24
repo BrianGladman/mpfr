@@ -563,7 +563,10 @@ buffer_incr_len (struct string_buffer *b, size_t len)
          has newlen < len in case of overflow. */
 
       if (MPFR_UNLIKELY (newlen < len || newlen > MPFR_INTMAX_MAX))
-        return 1;
+        {
+          b->len = -1;
+          return 1;
+        }
       else
         {
           b->len = newlen;
@@ -1888,7 +1891,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
 
   length = partition_number (&np, p, spec);
   if (length < 0)
-    return -1;
+    {
+      buf->len = -1;
+      return -1;
+    }
 
   if (spec.size == 0)
     {
@@ -2204,7 +2210,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           err = buffer_cat (&buf, s, length);
           mpfr_free_str (s);
           if (err)
-            goto overflow_error;
+            goto error;
         }
       else if (spec.arg_type == MPFR_ARG)
         /* output a mpfr_t variable */
@@ -2231,7 +2237,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           if (ptr == NULL)
             spec.size = size;
           if (sprnt_fp (&buf, p, spec) < 0)
-            goto overflow_error;
+            goto error;
         }
       else
         /* gmp_printf specification, step forward in the va_list */
@@ -2274,13 +2280,15 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                     written had 'size' be sufficiently large, not counting
                     the terminating null character */
 
- overflow_error:
-  MPFR_SAVE_EXPO_UPDATE_FLAGS(expo, MPFR_FLAGS_ERANGE);
-#ifdef EOVERFLOW
-  errno = EOVERFLOW;
-#endif
-
  error:
+  if (buf.len == -1)  /* overflow */
+    {
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_ERANGE);
+#ifdef EOVERFLOW
+      errno = EOVERFLOW;
+#endif
+    }
+
   MPFR_SAVE_EXPO_FREE (expo);
   *ptr = NULL;
   (*__gmp_free_func) (buf.start, buf.size);
