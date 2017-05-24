@@ -142,10 +142,10 @@ check_long_string (void)
      increase is necessary, but is not guaranteed to be sufficient
      in all cases (e.g. with logging activated). */
   min_memory_limit = large_prec / MPFR_BYTES_PER_MP_LIMB;
-  if (min_memory_limit > (size_t) -1 / 12)
+  if (min_memory_limit > (size_t) -1 / 32)
     min_memory_limit = (size_t) -1;
   else
-    min_memory_limit *= 12;
+    min_memory_limit *= 32;
   if (tests_memory_limit > 0 && tests_memory_limit < min_memory_limit)
     tests_memory_limit = min_memory_limit;
 

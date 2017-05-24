@@ -523,12 +523,14 @@ typedef wint_t mpfr_va_wint;
       buffer_cat ((buf_ptr), (start), n);                               \
   } while (0)
 
+/* Note: in case some form of %n is used in the format string,
+   we may need the maximum signed integer type for len. */
 struct string_buffer
 {
   char *start;                  /* beginning of the buffer */
   char *curr;                   /* null terminating character */
   size_t size;                  /* buffer capacity */
-  int len;                      /* string length or -1 if overflow */
+  mpfr_intmax_t len;            /* string length or -1 if overflow */
 };
 
 static void
@@ -552,12 +554,15 @@ buffer_incr_len (struct string_buffer *b, size_t len)
     return 1;
   else
     {
-      size_t newlen = (size_t) b->len + len;
+      /* We need to take mpfr_uintmax_t as the type must be as large
+         as both size_t (which is unsigned) and mpfr_intmax_t (which
+         is used for the 'n' format specifier). */
+      mpfr_uintmax_t newlen = (mpfr_uintmax_t) b->len + len;
 
-      /* size_t is unsigned, thus the above is valid, but one has
-         newlen < len in case of overflow. */
+      /* mpfr_uintmax_t is unsigned, thus the above is valid, but one
+         has newlen < len in case of overflow. */
 
-      if (MPFR_UNLIKELY (newlen < len || newlen > INT_MAX))
+      if (MPFR_UNLIKELY (newlen < len || newlen > MPFR_INTMAX_MAX))
         return 1;
       else
         {
@@ -575,9 +580,10 @@ buffer_widen (struct string_buffer *b, size_t len)
   const size_t pos = b->curr - b->start;
   const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
 
-  /* An overflow is not possible since it would have been detected
-     in buffer_incr_len, called first (see buffer_* functions). */
-  MPFR_ASSERTD (n >= 0x1000 && n >= len);
+  /* There are currently limitations here. We would need to switch to
+     the null-size behavior once there is an overflow in the buffer. */
+
+  MPFR_ASSERTN (n >= 0x1000 && n >= len);
 
   MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (pos < b->size);
@@ -1595,7 +1601,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
    return the total number of characters to be written.
    return -1 if an error occurred, in that case np's fields are in an undefined
    state but all string buffers have been freed. */
-static int
+static mpfr_intmax_t
 partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
@@ -1818,14 +1824,14 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   /* compute the number of characters to be written verifying it is not too
      much */
 
-#define INCR_TOTAL(v)                           \
-  do {                                          \
-    MPFR_ASSERTD ((v) >= 0);                    \
-    if (MPFR_UNLIKELY ((v) > INT_MAX))          \
-      goto error;                               \
-    total += (v);                               \
-    if (MPFR_UNLIKELY (total > INT_MAX))        \
-      goto error;                               \
+#define INCR_TOTAL(v)                                   \
+  do {                                                  \
+    MPFR_ASSERTD ((v) >= 0);                            \
+    if (MPFR_UNLIKELY ((v) > MPFR_INTMAX_MAX))          \
+      goto error;                                       \
+    total += (v);                                       \
+    if (MPFR_UNLIKELY (total > MPFR_INTMAX_MAX))        \
+      goto error;                                       \
   } while (0)
 
   total = np->sign ? 1 : 0;
@@ -1853,7 +1859,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
       MPFR_ASSERTD (total == spec.width);
     }
 
-  MPFR_ASSERTD (total > 0 && total <= INT_MAX);
+  MPFR_ASSERTD (total > 0 && total <= MPFR_INTMAX_MAX);
   return total;
 
  error:
@@ -1877,7 +1883,7 @@ static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
           const struct printf_spec spec)
 {
-  int length, start;
+  mpfr_intmax_t length, start;
   struct number_parts np;
 
   length = partition_number (&np, p, spec);
@@ -2092,61 +2098,47 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
            so as to be able to accept the same format strings. */
         {
           void *p;
-          size_t nchar;
 
           p = va_arg (ap, void *);
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           start = fmt;
-          /* FIXME: When size is 0, the buffer doesn't exist. We should take,
-             buf.len, but it is only an int. A solution could be to increase
-             it to mpfr_intmax_t, but all the overflow detection needs to be
-             redone. Alternatively, one may consider that in case of overflow,
-             the object associated with the 'n' format specifier does not
-             have to be filled, i.e. the consequences of the overflow error
-             are unspecified. For ISO C, an overflow on the return value
-             seems to be undefined behavior; in POSIX, this is not, but the
-             effects of an overflow seem to be unclear. Let's wait for
-             comments in the Austin Group mailing-list:
-             https://www.mail-archive.com/austin-group-l@opengroup.org/msg01038.html
-          */
-          nchar = buf.curr - buf.start;
 
           switch (spec.arg_type)
             {
             case CHAR_ARG:
-              *(char *) p = (char) nchar;
+              *(char *) p = (char) buf.len;
               break;
             case SHORT_ARG:
-              *(short *) p = (short) nchar;
+              *(short *) p = (short) buf.len;
               break;
             case LONG_ARG:
-              *(long *) p = (long) nchar;
+              *(long *) p = (long) buf.len;
               break;
 #ifdef HAVE_LONG_LONG
             case LONG_LONG_ARG:
-              *(long long *) p = (long long) nchar;
+              *(long long *) p = (long long) buf.len;
               break;
 #endif
 #ifdef _MPFR_H_HAVE_INTMAX_T
             case INTMAX_ARG:
-              *(intmax_t *) p = (intmax_t) nchar;
+              *(intmax_t *) p = (intmax_t) buf.len;
               break;
 #endif
             case SIZE_ARG:
-              *(size_t *) p = nchar;
+              *(size_t *) p = buf.len;
               break;
             case PTRDIFF_ARG:
-              *(ptrdiff_t *) p = (ptrdiff_t) nchar;
+              *(ptrdiff_t *) p = (ptrdiff_t) buf.len;
               break;
             case MPF_ARG:
-              mpf_set_ui ((mpf_ptr) p, (unsigned long) nchar);
+              mpf_set_ui ((mpf_ptr) p, (unsigned long) buf.len);
               break;
             case MPQ_ARG:
-              mpq_set_ui ((mpq_ptr) p, (unsigned long) nchar, 1L);
+              mpq_set_ui ((mpq_ptr) p, (unsigned long) buf.len, 1L);
               break;
             case MP_LIMB_ARG:
-              *(mp_limb_t *) p = (mp_limb_t) nchar;
+              *(mp_limb_t *) p = (mp_limb_t) buf.len;
               break;
             case MP_LIMB_ARRAY_ARG:
               {
@@ -2159,7 +2151,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                   break;
 
                 /* we assume here that mp_limb_t is wider than int */
-                *q = (mp_limb_t) nchar;
+                *q = (mp_limb_t) buf.len;
                 while (--n != 0)
                   {
                     q++;
@@ -2168,16 +2160,16 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               }
               break;
             case MPZ_ARG:
-              mpz_set_ui ((mpz_ptr) p, (unsigned long) nchar);
+              mpz_set_ui ((mpz_ptr) p, (unsigned long) buf.len);
               break;
 
             case MPFR_ARG:
-              mpfr_set_ui ((mpfr_ptr) p, (unsigned long) nchar,
+              mpfr_set_ui ((mpfr_ptr) p, (unsigned long) buf.len,
                            spec.rnd_mode);
               break;
 
             default:
-              *(int *) p = (int) nchar;
+              *(int *) p = (int) buf.len;
             }
           va_copy (ap2, ap); /* after the switch, due to MP_LIMB_ARRAY_ARG
                                 case */
