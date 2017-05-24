@@ -1868,7 +1868,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
    return the size of the string (not counting the terminating '\0')
    return -1 if the built string is too long (i.e. has more than
-   INT_MAX characters).
+   INT_MAX or MPFR_INTMAX_MAX characters).
 
    If spec.size is 0, we only want the size of the string.
 */
@@ -1968,7 +1968,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                      va_list ap)
 {
   struct string_buffer buf;
-  size_t nbchar;
+  int nbchar;
 
   /* informations on the conversion specification filled by the parser */
   struct printf_spec spec;
@@ -2237,34 +2237,40 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     FLUSH (xgmp_fmt_flag, start, fmt, ap2, &buf);
 
   va_end (ap2);
-  MPFR_ASSERTD (buf.len >= 0);  /* overflow already detected */
-  nbchar = buf.len;
 
-  if (ptr != NULL)  /* implement mpfr_vasprintf */
-    {
-      MPFR_ASSERTD (nbchar == strlen (buf.start));
-      *ptr = (char *)
-        (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
-    }
-  else if (size > 0)  /* implement mpfr_vsnprintf */
-    {
-      if (nbchar < size)
-        {
-          strncpy (Buf, buf.start, nbchar);
-          Buf[nbchar] = '\0';
-        }
-      else
-        {
-          strncpy (Buf, buf.start, size - 1);
-          Buf[size-1] = '\0';
-        }
-      (*__gmp_free_func) (buf.start, buf.size);
-    }
+  if (buf.len > INT_MAX)  /* overflow */
+    buf.len = -1;
 
-  MPFR_SAVE_EXPO_FREE (expo);
-  return nbchar; /* return the number of characters that would have been
-                    written had 'size' be sufficiently large, not counting
-                    the terminating null character */
+  if (buf.len != -1)
+    {
+      nbchar = buf.len;
+
+      if (ptr != NULL)  /* implement mpfr_vasprintf */
+        {
+          MPFR_ASSERTD (nbchar == strlen (buf.start));
+          *ptr = (char *)
+            (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+        }
+      else if (size > 0)  /* implement mpfr_vsnprintf */
+        {
+          if (nbchar < size)
+            {
+              strncpy (Buf, buf.start, nbchar);
+              Buf[nbchar] = '\0';
+            }
+          else
+            {
+              strncpy (Buf, buf.start, size - 1);
+              Buf[size-1] = '\0';
+            }
+          (*__gmp_free_func) (buf.start, buf.size);
+        }
+
+      MPFR_SAVE_EXPO_FREE (expo);
+      return nbchar; /* return the number of characters that would have
+                        been written had 'size' be sufficiently large,
+                        not counting the terminating null character */
+    }
 
  error:
   if (buf.len == -1)  /* overflow */
