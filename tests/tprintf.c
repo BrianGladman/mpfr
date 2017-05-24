@@ -29,6 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdarg.h>
 
 #include <stddef.h>
+#include <errno.h>
 
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
@@ -95,18 +96,24 @@ static void
 check_vprintf_failure (const char *fmt, ...)
 {
   va_list ap;
+  int r;
 
   va_start (ap, fmt);
-  if (mpfr_vprintf (fmt, ap) != -1)
-   {
+  errno = 0;
+  r = mpfr_vprintf (fmt, ap);
+  va_end (ap);
+
+  if (r != -1
+#ifdef EOVERFLOW
+      || errno != EOVERFLOW
+#endif
+      )
+    {
       putchar ('\n');
       fprintf (stderr, "Error 3 in mpfr_vprintf(\"%s\", ...)\n", fmt);
-
-      va_end (ap);
       exit (1);
     }
   putchar ('\n');
-  va_end (ap);
 }
 
 /* The goal of this test is to check cases where more INT_MAX characters
