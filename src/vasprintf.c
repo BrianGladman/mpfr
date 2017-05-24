@@ -2269,8 +2269,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
  error:
   if (buf.len == -1)  /* overflow */
     {
+      MPFR_LOG_MSG (("Overflow\n", 0));
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_ERANGE);
 #ifdef EOVERFLOW
+      MPFR_LOG_MSG (("Setting errno to EOVERFLOW\n", 0));
       errno = EOVERFLOW;
 #endif
     }
