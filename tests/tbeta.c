@@ -42,27 +42,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define TESTRND(p, r, z, w, expected, rnd_mode) do {                    \
     mpfr_beta (r, z, w, rnd_mode);                                      \
-    if (not_same (r, expected))                                         \
+    if (! SAME_VAL (r, expected))                                       \
       FAILED(p, r, z, w, expected, rnd_mode);                           \
   } while (0)
-
-static int
-not_same (mpfr_t a, mpfr_t b)
-{
-  int res = 0;
-
-  if (mpfr_cmp(a, b) != 0)
-    res = 1;
-  if (! mpfr_nan_p(a) != ! mpfr_nan_p(b))
-    res = 1;
-  if (! mpfr_equal_p(a, b) && (! mpfr_nan_p(a) && ! mpfr_nan_p(b)))
-    res = 1;
-  if ((! mpfr_signbit(a) != ! mpfr_signbit(b)) &&
-      (! mpfr_nan_p(a) && ! mpfr_nan_p(b)))
-    res = 1;
-
-  return res;
-}
 
 static void
 test_beta_special (mpfr_prec_t prec)
