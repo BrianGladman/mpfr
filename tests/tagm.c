@@ -78,7 +78,7 @@ check4 (const char *as, const char *bs, mpfr_rnd_t rnd_mode,
       newflags = __gmpfr_flags;
       expflags |= MPFR_FLAGS_INEXACT;
 
-      if (SIGN (inex2) != inex || newflags != expflags ||
+      if (VSIGN (inex2) != inex || newflags != expflags ||
           ! mpfr_equal_p (tres, tc))
         {
           printf ("mpfr_agm failed in rnd_mode=%s for\n",

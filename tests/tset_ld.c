@@ -625,7 +625,9 @@ main (int argc, char *argv[])
   test_small ();
 
   check_subnormal ();
+#if !defined(MPFR_ERRDIVZERO)
   check_overflow ();
+#endif
 
   test_20140212 ();
   bug_20160907 ();

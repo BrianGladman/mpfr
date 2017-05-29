@@ -21,6 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define MPFR_NEED_LONGLONG_H
+#define MPFR_NEED_MPF_INTERNALS
 #include "mpfr-impl.h"
 
 #ifndef MPFR_USE_MINI_GMP

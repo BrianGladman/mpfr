@@ -452,6 +452,23 @@ For instance, under Unix, where paths are separated by a colon:
     setenv LIBRARY_PATH "/usr/local/lib:/other/path/lib"
     setenv LD_LIBRARY_PATH "$LIBRARY_PATH"
 
+If almost all the tests fail and the messages in the test-suite.log file
+(or in the output, when running individual tests from the command line)
+start with a line of the form:
+
+  Incorrect MPFR version! (xxx header vs yyy library)
+
+then this means that an installed MPFR version is tested instead of the
+one that has just been built. This is probably not a bug in MPFR, but a
+problem caused by the user or system configuration (particular options,
+environment variables, etc.) or a bug in the toolchain. In particular,
+if LD_LIBRARY_PATH overrides the run path (set up by libtool) and an
+installed ABI-compatible version of MPFR is in a directory listed in
+the LD_LIBRARY_PATH search path, then this will break. An example with
+GNU ld:
+
+  https://sourceware.org/bugzilla/show_bug.cgi?id=21476
+
 If you can't solve your problem, you should contact us via the MPFR
 mailing-list <mpfr@inria.fr>, indicating the machine and operating system
 used (uname -a), the compiler and version used (gcc -v if you use gcc),

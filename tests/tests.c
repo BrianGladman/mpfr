@@ -31,7 +31,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
+# ifdef MPFR_TESTS_FPE_TRAP
+#  define _GNU_SOURCE /* for feenableexcept */
+# endif
 # include <fenv.h>
 #endif
 
@@ -235,6 +238,13 @@ test_version (void)
   exit (1);
 }
 
+/* The inexact exception occurs very often, and is normal.
+   The underflow exception also might occur, for example in test_generic
+   for mpfr_xxx_d functions. Same for overflow. Thus we only check for
+   the division-by-zero and invalid exceptions, which should not occur
+   inside MPFR. */
+#define FPE_FLAGS (FE_DIVBYZERO | FE_INVALID)
+
 void
 tests_start_mpfr (void)
 {
@@ -254,9 +264,13 @@ tests_start_mpfr (void)
   set_fpu_prec ();
 #endif
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
   /* Define to test the use of MPFR_ERRDIVZERO */
   feclearexcept (FE_ALL_EXCEPT);
+# ifdef MPFR_TESTS_FPE_TRAP
+  /* to trap the corresponding FP exceptions */
+  feenableexcept (FPE_FLAGS);
+# endif
 #endif
 
   if (!tests_memory_disabled)
@@ -291,17 +305,20 @@ tests_end_mpfr (void)
   if (!tests_memory_disabled)
     tests_memory_end ();
 
-#ifdef MPFR_TESTS_DIVBYZERO
+#ifdef MPFR_TESTS_FPE_DIV
   /* Define to test the use of MPFR_ERRDIVZERO */
-  if (fetestexcept (FE_DIVBYZERO|FE_INVALID))
+  if (fetestexcept (FPE_FLAGS))
     {
-      printf ("A floating-point division by 0 or an invalid operation"
-              " occurred!\n");
-#ifdef MPFR_ERRDIVZERO
-      /* This should never occur because the purpose of defining
-         MPFR_ERRDIVZERO is to avoid all the FP divisions by 0. */
+      /* With MPFR_ERRDIVZERO, such exceptions should never occur
+         because the purpose of defining MPFR_ERRDIVZERO is to avoid
+         all the FP divisions by 0. */
+      printf ("Some floating-point exception(s) occurred:");
+      if (fetestexcept (FE_DIVBYZERO))
+        printf (" DIVBYZERO");  /* e.g. from 1.0 / 0.0 to generate an inf */
+      if (fetestexcept (FE_INVALID))
+        printf (" INVALID");    /* e.g. from 0.0 / 0.0 to generate a NaN */
+      printf ("\n");
       err = 1;
-#endif
     }
 #endif
 

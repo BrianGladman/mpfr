@@ -71,6 +71,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
 
+#include <errno.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-intmax.h"
 #include "mpfr-impl.h"
@@ -505,16 +507,21 @@ typedef wint_t mpfr_va_wint;
       /* previous specifiers are understood by gmp_printf */            \
       {                                                                 \
         MPFR_TMP_DECL (marker);                                         \
-        char *fmt_copy;                                                 \
+        char *fmt_copy, *s;                                             \
+        int length;                                                     \
+                                                                        \
         MPFR_TMP_MARK (marker);                                         \
         fmt_copy = (char*) MPFR_TMP_ALLOC (n + 1);                      \
         strncpy (fmt_copy, (start), n);                                 \
         fmt_copy[n] = '\0';                                             \
-        if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)             \
+        length = gmp_vasprintf (&s, fmt_copy, (ap));                    \
+        if (length < 0)                                                 \
           {                                                             \
             MPFR_TMP_FREE (marker);                                     \
             goto error;                                                 \
           }                                                             \
+        buffer_cat ((buf_ptr), s, length);                              \
+        mpfr_free_str (s);                                              \
         (flag) = 0;                                                     \
         MPFR_TMP_FREE (marker);                                         \
       }                                                                 \
@@ -523,12 +530,14 @@ typedef wint_t mpfr_va_wint;
       buffer_cat ((buf_ptr), (start), n);                               \
   } while (0)
 
+/* Note: in case some form of %n is used in the format string,
+   we may need the maximum signed integer type for len. */
 struct string_buffer
 {
   char *start;                  /* beginning of the buffer */
   char *curr;                   /* null terminating character */
   size_t size;                  /* buffer capacity */
-  int len;                      /* string length or -1 if overflow */
+  mpfr_intmax_t len;            /* string length or -1 if overflow */
 };
 
 static void
@@ -552,13 +561,19 @@ buffer_incr_len (struct string_buffer *b, size_t len)
     return 1;
   else
     {
-      size_t newlen = (size_t) b->len + len;
+      /* We need to take mpfr_uintmax_t as the type must be as large
+         as both size_t (which is unsigned) and mpfr_intmax_t (which
+         is used for the 'n' format specifier). */
+      mpfr_uintmax_t newlen = (mpfr_uintmax_t) b->len + len;
 
-      /* size_t is unsigned, thus the above is valid, but one has
-         newlen < len in case of overflow. */
+      /* mpfr_uintmax_t is unsigned, thus the above is valid, but one
+         has newlen < len in case of overflow. */
 
-      if (MPFR_UNLIKELY (newlen < len || newlen > INT_MAX))
-        return 1;
+      if (MPFR_UNLIKELY (newlen < len || newlen > MPFR_INTMAX_MAX))
+        {
+          b->len = -1;
+          return 1;
+        }
       else
         {
           b->len = newlen;
@@ -575,9 +590,10 @@ buffer_widen (struct string_buffer *b, size_t len)
   const size_t pos = b->curr - b->start;
   const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
 
-  /* An overflow is not possible since it would have been detected
-     in buffer_incr_len, called first (see buffer_* functions). */
-  MPFR_ASSERTD (n >= 0x1000 && n >= len);
+  /* There are currently limitations here. We would need to switch to
+     the null-size behavior once there is an overflow in the buffer. */
+
+  MPFR_ASSERTN (n >= 0x1000 && n >= len);
 
   MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (pos < b->size);
@@ -733,21 +749,6 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
 
       return 0;
     }
-}
-
-/* let gmp_xprintf process the part it can understand */
-static int
-sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
-{
-  int length;
-  char *s;
-
-  length = gmp_vasprintf (&s, fmt, ap);
-  if (length > 0 && buffer_cat (b, s, length))
-    length = -1;  /* overflow in buffer_cat */
-
-  mpfr_free_str (s);
-  return length;
 }
 
 /* Helper struct and functions for temporary strings management */
@@ -1596,12 +1597,12 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
    return the total number of characters to be written.
    return -1 if an error occurred, in that case np's fields are in an undefined
    state but all string buffers have been freed. */
-static int
+static mpfr_intmax_t
 partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
   char *str;
-  long total;
+  unsigned int total;  /* can hold the sum of two non-negative int's + 1 */
   int uppercase;
 
   /* WARNING: left justification means right space padding */
@@ -1818,43 +1819,43 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
   /* compute the number of characters to be written verifying it is not too
      much */
+
+#define INCR_TOTAL(v)                                   \
+  do {                                                  \
+    MPFR_ASSERTD ((v) >= 0);                            \
+    if (MPFR_UNLIKELY ((v) > MPFR_INTMAX_MAX))          \
+      goto error;                                       \
+    total += (v);                                       \
+    if (MPFR_UNLIKELY (total > MPFR_INTMAX_MAX))        \
+      goto error;                                       \
+  } while (0)
+
   total = np->sign ? 1 : 0;
-  total += np->prefix_size;
-  total += np->ip_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
-  total += np->ip_trailing_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
+  INCR_TOTAL (np->prefix_size);
+  INCR_TOTAL (np->ip_size);
+  INCR_TOTAL (np->ip_trailing_zeros);
+  MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros >= 1);
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
-    total += (np->ip_size + np->ip_trailing_zeros) / 3;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
+    INCR_TOTAL ((np->ip_size + np->ip_trailing_zeros - 1) / 3);
   if (np->point)
     ++total;
-  total += np->fp_leading_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
-  total += np->fp_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
-  total += np->fp_trailing_zeros;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
-  total += np->exp_size;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
+  INCR_TOTAL (np->fp_leading_zeros);
+  INCR_TOTAL (np->fp_size);
+  INCR_TOTAL (np->fp_trailing_zeros);
+  INCR_TOTAL (np->exp_size);
 
   if (spec.width > total)
     /* pad with spaces or zeros depending on np->pad_type */
     {
       np->pad_size = spec.width - total;
       total += np->pad_size; /* here total == spec.width,
-                                so 0 < total < INT_MAX */
+                                so 0 < total <= INT_MAX */
+      MPFR_ASSERTD (total == spec.width);
     }
 
+  MPFR_ASSERTD (total > 0 && total <= MPFR_INTMAX_MAX);
   return total;
 
  error:
@@ -1870,7 +1871,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
    return the size of the string (not counting the terminating '\0')
    return -1 if the built string is too long (i.e. has more than
-   INT_MAX characters).
+   INT_MAX or MPFR_INTMAX_MAX characters).
 
    If spec.size is 0, we only want the size of the string.
 */
@@ -1878,12 +1879,15 @@ static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
           const struct printf_spec spec)
 {
-  int length;
+  mpfr_intmax_t length, start;
   struct number_parts np;
 
   length = partition_number (&np, p, spec);
   if (length < 0)
-    return -1;
+    {
+      buf->len = -1;
+      return -1;
+    }
 
   if (spec.size == 0)
     {
@@ -1892,6 +1896,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
       buffer_incr_len (buf, length);
       goto clear_and_exit;
     }
+
+  MPFR_DBGRES (start = buf->len);
 
   /* right justification padding with left spaces */
   if (np.pad_type == LEFT && np.pad_size != 0)
@@ -1947,6 +1953,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.pad_type == RIGHT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 
+  MPFR_ASSERTD (buf->len == -1 || buf->len - start == length);
+
  clear_and_exit:
   clear_string_list (np.sl);
   return buf->len == -1 ? -1 : length;
@@ -1963,7 +1971,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                      va_list ap)
 {
   struct string_buffer buf;
-  size_t nbchar;
+  int nbchar;
 
   /* informations on the conversion specification filled by the parser */
   struct printf_spec spec;
@@ -2089,49 +2097,47 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
            so as to be able to accept the same format strings. */
         {
           void *p;
-          size_t nchar;
 
           p = va_arg (ap, void *);
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           start = fmt;
-          nchar = buf.curr - buf.start;
 
           switch (spec.arg_type)
             {
             case CHAR_ARG:
-              *(char *) p = (char) nchar;
+              *(char *) p = (char) buf.len;
               break;
             case SHORT_ARG:
-              *(short *) p = (short) nchar;
+              *(short *) p = (short) buf.len;
               break;
             case LONG_ARG:
-              *(long *) p = (long) nchar;
+              *(long *) p = (long) buf.len;
               break;
 #ifdef HAVE_LONG_LONG
             case LONG_LONG_ARG:
-              *(long long *) p = (long long) nchar;
+              *(long long *) p = (long long) buf.len;
               break;
 #endif
 #ifdef _MPFR_H_HAVE_INTMAX_T
             case INTMAX_ARG:
-              *(intmax_t *) p = (intmax_t) nchar;
+              *(intmax_t *) p = (intmax_t) buf.len;
               break;
 #endif
             case SIZE_ARG:
-              *(size_t *) p = nchar;
+              *(size_t *) p = buf.len;
               break;
             case PTRDIFF_ARG:
-              *(ptrdiff_t *) p = (ptrdiff_t) nchar;
+              *(ptrdiff_t *) p = (ptrdiff_t) buf.len;
               break;
             case MPF_ARG:
-              mpf_set_ui ((mpf_ptr) p, (unsigned long) nchar);
+              mpf_set_ui ((mpf_ptr) p, (unsigned long) buf.len);
               break;
             case MPQ_ARG:
-              mpq_set_ui ((mpq_ptr) p, (unsigned long) nchar, 1L);
+              mpq_set_ui ((mpq_ptr) p, (unsigned long) buf.len, 1L);
               break;
             case MP_LIMB_ARG:
-              *(mp_limb_t *) p = (mp_limb_t) nchar;
+              *(mp_limb_t *) p = (mp_limb_t) buf.len;
               break;
             case MP_LIMB_ARRAY_ARG:
               {
@@ -2144,7 +2150,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                   break;
 
                 /* we assume here that mp_limb_t is wider than int */
-                *q = (mp_limb_t) nchar;
+                *q = (mp_limb_t) buf.len;
                 while (--n != 0)
                   {
                     q++;
@@ -2153,16 +2159,16 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               }
               break;
             case MPZ_ARG:
-              mpz_set_ui ((mpz_ptr) p, (unsigned long) nchar);
+              mpz_set_ui ((mpz_ptr) p, (unsigned long) buf.len);
               break;
 
             case MPFR_ARG:
-              mpfr_set_ui ((mpfr_ptr) p, (unsigned long) nchar,
+              mpfr_set_ui ((mpfr_ptr) p, (unsigned long) buf.len,
                            spec.rnd_mode);
               break;
 
             default:
-              *(int *) p = (int) nchar;
+              *(int *) p = (int) buf.len;
             }
           va_copy (ap2, ap); /* after the switch, due to MP_LIMB_ARRAY_ARG
                                 case */
@@ -2174,7 +2180,6 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */
           size_t length;
           mpfr_prec_t prec;
-          int err;
 
           prec = va_arg (ap, mpfr_prec_t);
 
@@ -2194,10 +2199,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
           length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
           MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
-          err = buffer_cat (&buf, s, length);
+          buffer_cat (&buf, s, length);
           mpfr_free_str (s);
-          if (err)
-            goto overflow_error;
         }
       else if (spec.arg_type == MPFR_ARG)
         /* output a mpfr_t variable */
@@ -2223,8 +2226,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
           if (ptr == NULL)
             spec.size = size;
-          if (sprnt_fp (&buf, p, spec) < 0)
-            goto overflow_error;
+          sprnt_fp (&buf, p, spec);
         }
       else
         /* gmp_printf specification, step forward in the va_list */
@@ -2238,42 +2240,52 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     FLUSH (xgmp_fmt_flag, start, fmt, ap2, &buf);
 
   va_end (ap2);
-  MPFR_ASSERTD (buf.len >= 0);  /* overflow already detected */
-  nbchar = buf.len;
 
-  if (ptr != NULL)  /* implement mpfr_vasprintf */
+  if (buf.len > INT_MAX)  /* overflow */
+    buf.len = -1;
+
+  if (buf.len != -1)
     {
-      MPFR_ASSERTD (nbchar == strlen (buf.start));
-      *ptr = (char *)
-        (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
-    }
-  else if (size > 0)  /* implement mpfr_vsnprintf */
-    {
-      if (nbchar < size)
-        {
-          strncpy (Buf, buf.start, nbchar);
-          Buf[nbchar] = '\0';
-        }
-      else
-        {
-          strncpy (Buf, buf.start, size - 1);
-          Buf[size-1] = '\0';
-        }
-      (*__gmp_free_func) (buf.start, buf.size);
-    }
+      nbchar = buf.len;
 
-  MPFR_SAVE_EXPO_FREE (expo);
-  return nbchar; /* return the number of characters that would have been
-                    written had 'size' be sufficiently large, not counting
-                    the terminating null character */
+      if (ptr != NULL)  /* implement mpfr_vasprintf */
+        {
+          MPFR_ASSERTD (nbchar == strlen (buf.start));
+          *ptr = (char *)
+            (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+        }
+      else if (size > 0)  /* implement mpfr_vsnprintf */
+        {
+          if (nbchar < size)
+            {
+              strncpy (Buf, buf.start, nbchar);
+              Buf[nbchar] = '\0';
+            }
+          else
+            {
+              strncpy (Buf, buf.start, size - 1);
+              Buf[size-1] = '\0';
+            }
+          (*__gmp_free_func) (buf.start, buf.size);
+        }
 
- overflow_error:
-  MPFR_SAVE_EXPO_UPDATE_FLAGS(expo, MPFR_FLAGS_ERANGE);
-#ifdef EOVERFLOW
-  errno = EOVERFLOW;
-#endif
+      MPFR_SAVE_EXPO_FREE (expo);
+      return nbchar; /* return the number of characters that would have
+                        been written had 'size' be sufficiently large,
+                        not counting the terminating null character */
+    }
 
  error:
+  if (buf.len == -1)  /* overflow */
+    {
+      MPFR_LOG_MSG (("Overflow\n", 0));
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_ERANGE);
+#ifdef EOVERFLOW
+      MPFR_LOG_MSG (("Setting errno to EOVERFLOW\n", 0));
+      errno = EOVERFLOW;
+#endif
+    }
+
   MPFR_SAVE_EXPO_FREE (expo);
   *ptr = NULL;
   (*__gmp_free_func) (buf.start, buf.size);

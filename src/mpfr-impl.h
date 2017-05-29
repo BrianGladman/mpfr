@@ -449,7 +449,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
    MPFR_DBGRES(assignment): to be used when the result is tested only
      in an MPFR_ASSERTD expression (in order to avoid a warning, e.g.
      with GCC's -Wunused-but-set-variable, in non-debug mode).
- */
+   Note: Evaluating expr might yield side effects, but such side effects
+   must not change the results (except by yielding an assertion failure).
+*/
 #ifndef MPFR_WANT_ASSERT
 # define MPFR_WANT_ASSERT 0
 #endif
@@ -477,10 +479,18 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
    __builtin_unreachable has been introduced in GCC 4.5 but it works
    fine since 4.8 only (before it may generate unoptimized code if there
    are more than one decision).
-   The use of __builtin_constant_p is to avoid calling any function in
-   assertions: it detects if the expression can be reduced to a constant,
-   i.e. if the expression has any other effect than being false or true
-   which is wrong if there is any function call.
+   Note:
+     The goal of MPFR_ASSUME() is to allow the compiler to optimize even
+     more. Thus we need to make sure that its use in MPFR will never yield
+     code generation. Since MPFR_ASSUME() may be used by MPFR_ASSERTN()
+     and MPFR_ASSERTD(), whose expression might have side effects, we need
+     to make sure that the expression x is not evaluated in such a case.
+     This is done with __builtin_constant_p (!!(x) || !(x)), whose value
+     is 0 if x has side effects, and normally 1 if the compiler knows that
+     x has no side effects (since here, it can deduce that !!(x) || !(x)
+     is equivalent to the constant 1). In the former case, MPFR_ASSUME(x)
+     will give (void) 0, and in the latter case, it will give:
+       (x) ? (void) 0 : __builtin_unreachable()
    In the development code, it is better to use MPFR_ASSERTD than
    MPFR_ASSUME, since it'll check if the condition is true in debug
    build.
@@ -1002,8 +1012,9 @@ typedef uintmax_t mpfr_ueexp_t;
   (I) != 0 ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
-#define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
-#define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
+/* Sign of a native value. */
+#define VSIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define SAME_SIGN(I1,I2) (VSIGN (I1) == VSIGN (I2))
 
 
 /******************************************************

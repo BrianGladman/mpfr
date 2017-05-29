@@ -286,9 +286,10 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               >= 2 * (x/e)^x / x for x >= 1 */
   if (compared > 0)
     {
-      mpfr_t yp;
+      mpfr_t yp, zp;
       mpfr_exp_t expxp;
       MPFR_BLOCK_DECL (flags);
+      MPFR_GROUP_DECL (group);
 
       /* quick test for the default exponent range */
       if (mpfr_get_emax () >= 1073741823UL && MPFR_GET_EXP(x) <= 25)
@@ -297,22 +298,19 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           return mpfr_gamma_aux (gamma, x, rnd_mode);
         }
 
+      MPFR_GROUP_INIT_3 (group, 53, xp, yp, zp);
       /* 1/e rounded down to 53 bits */
-#define EXPM1_STR "0.010111100010110101011000110110001011001110111100111"
-      mpfr_init2 (xp, 53);
-      mpfr_init2 (yp, 53);
-      mpfr_set_str_binary (xp, EXPM1_STR);
-      mpfr_mul (xp, x, xp, MPFR_RNDZ);
+      mpfr_set_str_binary (zp,
+        "0.010111100010110101011000110110001011001110111100111");
+      mpfr_mul (xp, x, zp, MPFR_RNDZ);
       mpfr_sub_ui (yp, x, 2, MPFR_RNDZ);
       mpfr_pow (xp, xp, yp, MPFR_RNDZ); /* (x/e)^(x-2) */
-      mpfr_set_str_binary (yp, EXPM1_STR);
-      mpfr_mul (xp, xp, yp, MPFR_RNDZ); /* x^(x-2) / e^(x-1) */
-      mpfr_mul (xp, xp, yp, MPFR_RNDZ); /* x^(x-2) / e^x */
+      mpfr_mul (xp, xp, zp, MPFR_RNDZ); /* x^(x-2) / e^(x-1) */
+      mpfr_mul (xp, xp, zp, MPFR_RNDZ); /* x^(x-2) / e^x */
       mpfr_mul (xp, xp, x, MPFR_RNDZ); /* lower bound on x^(x-1) / e^x */
       MPFR_BLOCK (flags, mpfr_mul_2ui (xp, xp, 1, MPFR_RNDZ));
       expxp = MPFR_GET_EXP (xp);
-      mpfr_clear (xp);
-      mpfr_clear (yp);
+      MPFR_GROUP_CLEAR (group);
       MPFR_SAVE_EXPO_FREE (expo);
       return MPFR_OVERFLOW (flags) || expxp > __gmpfr_emax ?
         mpfr_overflow (gamma, rnd_mode, 1) :

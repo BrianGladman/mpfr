@@ -87,7 +87,7 @@ class timming {
   timming (unsigned long s) : size (s) {
     besttime = new unsigned long long[size];
     for (unsigned long i = 0 ; i < size ; i++) 
-      besttime[i] = 0xFFFFFFFFFFFFFFFLL;
+      besttime[i] = 0xFFFFFFFFFFFFFFFFLL;
   }
 
   ~timming () {
@@ -107,7 +107,7 @@ class timming {
   void print (const char *name, const option_test &opt) {
     unsigned long long min, max, moy;
     unsigned long imin = 0, imax = 0;
-    min = 0xFFFFFFFFFFFFFFFLL;
+    min = 0xFFFFFFFFFFFFFFFFLL;
     max = moy = 0;
     for(unsigned long i = 0 ; i < (size-1) ; i++) {
       if (besttime[i] < min) 

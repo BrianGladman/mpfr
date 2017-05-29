@@ -163,7 +163,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
         (res, z, -2 * MPFR_GET_EXP (z), 3, 0, r, {
           int inex2 = mpfr_div_2ui (res, res, 1, r);
           if (MPFR_UNLIKELY (r == MPFR_RNDN && MPFR_IS_ZERO (res)) &&
-              (MPFR_ASSERTN (inex2 != 0), SIGN (_inexact) != MPFR_SIGN (z)))
+              (MPFR_ASSERTN (inex2 != 0), VSIGN (_inexact) != MPFR_SIGN (z)))
             {
               mpfr_nexttoinf (res);
               inex = - inex2;

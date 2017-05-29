@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* assume p >= 5 and is odd */
 static int
-isprime (unsigned long p)
+is_prime (unsigned long p)
 {
   unsigned long q;
 
@@ -68,7 +68,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
   mpz_init_set_ui (den, 6);
   for (p = 5; p <= n+1; p += 2)
     {
-      if ((n % (p-1)) == 0 && isprime (p))
+      if ((n % (p-1)) == 0 && is_prime (p))
         mpz_mul_ui (den, den, p);
     }
   if (n <= 64)

@@ -424,7 +424,6 @@ int
 mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 {
   mpfr_t z_pre, s1, y, p;
-  double sd, eps, m1, c;
   long add;
   mpfr_prec_t precz, prec1, precs, precs1;
   int inex;
@@ -534,32 +533,9 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       /* Precision precs1 needed to represent 1 - s, and s + 2,
          without any truncation */
       precs1 = precs + 2 + MAX (0, - MPFR_GET_EXP (s));
-      /* FIXME: For the error analysis, use MPFR instead of the native
-         double type. The code below can yield overflows on double's
-         when s is large enough (its precision also needs to be large
-         enough, otherwise s is an even integer, which has already been
-         taken into account). In particular, on platforms where overflow
-         is trapped (or if the user has chosen to trap overflow), this
-         can make the application crash.
-         Moreover, does the error computation need to be accurate, such as
-         the multiplications by (1.0 + eps)? If yes, what about rounding
-         directions when using double? If no, the expression could probably
-         be simplified, so that using native integer arithmetic with
-         mpfr_exp_t may be sufficient instead of using MPFR.
-         Note: This FIXME can be made obsolete by rewriting the code
-         (see algorithms.tex, still very incomplete). */
-      sd = mpfr_get_d (s, MPFR_RNDN) - 1.0;
-      if (sd < 0.0)
-        sd = -sd; /* now sd = abs(s-1.0) */
       /* Precision prec1 is the precision on elementary computations;
          it ensures a final precision prec1 - add for zeta(s) */
-      /* eps = pow (2.0, - (double) precz - 14.0); */
-      eps = __gmpfr_ceil_exp2 (- (double) precz - 14.0);
-      m1 = 1.0 + MAX(1.0 / eps, 2.0 * sd) * (1.0 + eps);
-      c = (1.0 + eps) * (1.0 + eps * MAX(8.0, m1));
-      /* add = 1 + floor(log(c*c*c*(13 + m1))/log(2)); */
-      c = c * c * c * (13.0 + m1);
-      add = (c <= DBL_MAX) ? __gmpfr_ceil_log2 (c) : compute_add (s, precz);
+      add = compute_add (s, precz);
       prec1 = precz + add;
       /* FIXME: To avoid that the working precision (prec1) depends on the
          input precision, one would need to take into account the error made

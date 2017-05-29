@@ -597,7 +597,7 @@ reduced_expo_range (void)
   ex_inex = 1;
   ex_flags = MPFR_FLAGS_INEXACT;
 
-  if (SIGN (inex) != ex_inex || flags != ex_flags ||
+  if (VSIGN (inex) != ex_inex || flags != ex_flags ||
       ! mpfr_equal_p (y, ex_y))
     {
       printf ("Error in reduced_expo_range\non x = ");
@@ -607,7 +607,7 @@ reduced_expo_range (void)
       printf ("\n         inex = %d, flags = %u\n", ex_inex, ex_flags);
       printf ("Got      y = ");
       mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
-      printf ("\n         inex = %d, flags = %u\n", SIGN (inex), flags);
+      printf ("\n         inex = %d, flags = %u\n", VSIGN (inex), flags);
       exit (1);
     }
 

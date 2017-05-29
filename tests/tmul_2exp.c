@@ -112,11 +112,11 @@ underflow (mpfr_exp_t e)
                       printf ("Expected ");
                       mpfr_out_str (stdout, 16, 0, z1, MPFR_RNDN);
                       printf (", inex = %d, flags = %u\n",
-                              SIGN (inex1), flags1);
+                              VSIGN (inex1), flags1);
                       printf ("Got      ");
                       mpfr_out_str (stdout, 16, 0, z2, MPFR_RNDN);
                       printf (", inex = %d, flags = %u\n",
-                              SIGN (inex2), flags2);
+                              VSIGN (inex2), flags2);
                       exit (1);
                     }  /* div */
                 }  /* k */

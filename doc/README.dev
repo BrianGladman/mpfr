@@ -244,9 +244,16 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TESTS_DIVBYZERO -DMPFR_ERRDIVZERO in order to detect
-     whether tests can fail due to a FP division by 0 on platforms where
-     such an operation fails (e.g. trap).
+     Test with -DMPFR_TESTS_FPE_DIV -DMPFR_ERRDIVZERO -DXDEBUG in order
+     to detect whether tests can fail due to a FP division by 0 (yielding
+     either FE_DIVBYZERO, e.g. from 1.0 / 0.0 to generate an infinity, or
+     FE_INVALID, e.g. from 0.0 / 0.0 to generate a NaN) on platforms where
+     such an operation fails (e.g. trap). On platforms that do not support
+     IEEE 754, such an operation yields an undefined behavior.
+     If _MPFR_IEEE_FLOATS is defined to 1 (by the configure script), some
+     divisions by 0 are avoided in the MPFR library. The -DXDEBUG option
+     sets _MPFR_IEEE_FLOATS to 0, allowing one to detect more issues, for
+     platforms without IEEE floats.
 
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.
@@ -466,12 +473,18 @@ List of macros used for checking MPFR:
                         because it is regarded as undefined behavior by
                         a sanitizer). This disables the tests involving
                         such operations.
-+ MPFR_TESTS_DIVBYZERO: Define to check whether there has been a
-                        floating-point division by 0. This is normally
++ MPFR_TESTS_FPE_DIV:   Define to check whether there has been a FP
+                        exception FE_DIVBYZERO or FE_INVALID, which
+                        probably comes from 1.0 / 0.0 or 0.0 / 0.0 to
+                        generate an infinity or a NaN. This is normally
                         used together with MPFR_ERRDIVZERO, in order to
                         check that all divisions by 0 have been protected
                         in the tests (so that tests can pass on platforms
                         where the floating-point division by 0 fails).
++ MPFR_TESTS_FPE_TRAP:  Define to trap the FE_DIVBYZERO and FE_INVALID
+                        exceptions; MPFR_TESTS_FPE_DIV needs to be defined
+                        too, and MPFR_ERRDIVZERO should be defined as well
+                        to avoid spurious traps (see above).
 + MPFR_TESTS_TIMEOUT:   Define to enable timeout in the tests. Its value
                         contains the default timeout (in seconds), or 0
                         for no timeout by default, and can be overridden

@@ -650,7 +650,7 @@ coverage_01032011 (void)
 
   status_f = mpfr_sincos_fast (svalf, NULL, val, MPFR_RNDN);
   status = mpfr_sin_cos (sval, cval, val, MPFR_RNDN);
-  if (! mpfr_equal_p (svalf, sval) || SIGN (status_f) != SIGN (status))
+  if (! mpfr_equal_p (svalf, sval) || VSIGN (status_f) != VSIGN (status))
     {
       printf ("mpfr_sincos_fast differ from mpfr_sin_cos result:\n"
               " sin fast is ");
