@@ -695,365 +695,362 @@ sum_aux (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd,
       }
     else  /* rnd != MPFR_RNDF */
       {
-    /* Note: This block has not been reindented after this test
-       for MPFR_RNDF has been added in the faithful branch. */
-
-    if (MPFR_LIKELY (u > minexp))
-      {
-        mpfr_prec_t tq;
-        mp_size_t wi;
-        int td;
-
-        tq = u - minexp;
-        MPFR_ASSERTD (tq > 0); /* number of trailing bits */
-        MPFR_LOG_MSG (("tq=%Pd\n", tq));
-
-        wi = tq / GMP_NUMB_BITS;
-
-        /* Determine the rounding bit, which is represented. */
-        td = tq % GMP_NUMB_BITS;
-        lbit = (wp[wi] >> td) & MPFR_LIMB_ONE;
-        rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
-          (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
-        MPFR_ASSERTD (rbit == 0 || rbit == 1);
-        MPFR_LOG_MSG (("rbit=%d\n", (int) rbit));
-
-        if (maxexp == MPFR_EXP_MIN)
-          {
-            /* The sum in the accumulator is exact. Determine inex:
-               inex = 0 if the final sum is exact, else 1, i.e.
-               inex = rounding bit || sticky bit. In round to nearest,
-               also determine the rounding direction: obtained from
-               the rounding bit possibly except in halfway cases.
-               Halfway cases are rounded toward -inf iff the last bit
-               of the truncated significand in two's complement is 0
-               (in precision > 1, because the parity after rounding is
-               the same in two's complement and sign + magnitude; in
-               precision 1, one checks that the rule works for both
-               positive (lbit == 1) and negative (lbit == 0) numbers,
-               rounding halfway cases away from zero). */
-            if (MPFR_LIKELY (rbit == 0 || (rnd == MPFR_RNDN && lbit == 0)))
-              {
-                /* We need to determine the sticky bit, either to set inex
-                   (if the rounding bit is 0) or to possibly "correct" rbit
-                   (round to nearest, halfway case rounded downward) from
-                   which the rounding direction will be determined. */
-                MPFR_LOG_MSG (("Determine the sticky bit...\n", 0));
-
-                inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0
-                  : td == 0 ?
-                  (MPFR_ASSERTD (wi >= 1),
-                   (wp[--wi] & MPFR_LIMB_MASK (GMP_NUMB_BITS - 1)) != 0)
-                  : 0;
-
-                if (!inex)
-                  {
-                    while (!inex && wi > 0)
-                      inex = wp[--wi] != 0;
-                    if (!inex && rbit != 0)
-                      {
-                        /* sticky bit = 0, rounding bit = 1,
-                           i.e. halfway case, which will be
-                           rounded downward (see earlier if). */
-                        MPFR_ASSERTD (rnd == MPFR_RNDN);
-                        inex = 1;
-                        rbit = 0;  /* even rounding downward */
-                        MPFR_LOG_MSG (("Halfway case rounded downward;"
-                                       " set inex=1 rbit=0\n", 0));
-                      }
-                  }
-              }
-            else
-              inex = 1;
-            tmd = 0;  /* We can round correctly -> no TMD. */
-          }
-        else  /* maxexp > MPFR_EXP_MIN */
-          {
-            mpfr_exp_t d;
-            mp_limb_t limb, mask;
-            int nbits;
-
-            /* Since maxexp was set to either the exponent of a x[i] or
-               to minexp... */
-            MPFR_ASSERTD (maxexp >= MPFR_EMIN_MIN || maxexp == minexp);
-
-            inex = 1;  /* We do not know whether the sum is exact. */
-
-            MPFR_ASSERTD (u <= MPFR_EMAX_MAX && u <= minexp + wq);
-            d = u - (maxexp + logn);  /* representable */
-            MPFR_ASSERTD (d >= 3);  /* due to prec = sq + 3 in sum_raw */
-
-            /* Let's see whether the TMD occurs by looking at the d bits
-               following the ulp bit, or the d-1 bits after the rounding
-               bit. */
-
-            /* First chunk after the rounding bit... It starts at:
-               (wi,td-2) if td >= 2,
-               (wi-1,td-2+GMP_NUMB_BITS) if td < 2. */
-            if (td == 0)
-              {
-                MPFR_ASSERTD (wi >= 1);
-                limb = wp[--wi];
-                mask = MPFR_LIMB_MASK (GMP_NUMB_BITS - 1);
-                nbits = GMP_NUMB_BITS;
-              }
-            else if (td == 1)
-              {
-                limb = wi >= 1 ? wp[--wi] : MPFR_LIMB_ZERO;
-                mask = MPFR_LIMB_MAX;
-                nbits = GMP_NUMB_BITS + 1;
-              }
-            else  /* td >= 2 */
-              {
-                MPFR_ASSERTD (td >= 2);
-                limb = wp[wi];
-                mask = MPFR_LIMB_MASK (td - 1);
-                nbits = td;
-              }
-
-            /* nbits: number of bits of the first chunk + 1
-               (the +1 is for the rounding bit). */
-
-            if (nbits > d)
-              {
-                /* Some low significant bits must be ignored. */
-                limb >>= nbits - d;
-                mask >>= nbits - d;
-                d = 0;
-              }
-            else
-              {
-                d -= nbits;
-                MPFR_ASSERTD (d >= 0);
-              }
-
-            limb &= mask;
-            tmd =
-              limb == MPFR_LIMB_ZERO ?
-                (rbit == 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) :
-              limb == mask ?
-                (limb = MPFR_LIMB_MAX,
-                 rbit != 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) : 0;
-
-            while (tmd != 0 && d != 0)
-              {
-                mp_limb_t limb2;
-
-                MPFR_ASSERTD (d > 0);
-                if (wi == 0)
-                  {
-                    /* The non-represented bits are 0's. */
-                    if (limb != MPFR_LIMB_ZERO)
-                      tmd = 0;
-                    break;
-                  }
-                MPFR_ASSERTD (wi > 0);
-                limb2 = wp[--wi];
-                if (d < GMP_NUMB_BITS)
-                  {
-                    int c = GMP_NUMB_BITS - d;
-                    MPFR_ASSERTD (c > 0 && c < GMP_NUMB_BITS);
-                    if ((limb2 >> c) != (limb >> c))
-                      tmd = 0;
-                    break;
-                  }
-                if (limb2 != limb)
-                  tmd = 0;
-                d -= GMP_NUMB_BITS;
-              }
-          }
-      }
-    else  /* u <= minexp */
-      {
-        /* The exact value of the accumulator will be copied.
-         * The TMD occurs if and only if there are bits still
-         * not taken into account, and if it occurs, this is
-         * necessarily on a machine number (-> tmd = 1).
-         */
-        lbit = u == minexp ? wp[0] & MPFR_LIMB_ONE : 0;
-        rbit = 0;
-        inex = tmd = maxexp != MPFR_EXP_MIN;
-      }
-
-    MPFR_ASSERTD (rbit == 0 || rbit == 1);
-
-    MPFR_LOG_MSG (("tmd=%d lbit=%d rbit=%d inex=%d neg=%d\n",
-                   tmd, (int) lbit, (int) rbit, inex, neg));
-
-    /* Here, if the final sum is known to be exact, inex = 0, otherwise
-     * inex = 1. We have a truncated significand, a trailing term t such
-     * that 0 <= t < 1 ulp, and an error on the trailing term bounded by
-     * t' in absolute value. Thus the error e on the truncated significand
-     * satisfies -t' <= e < 1 ulp + t'. Thus one has 4 correction cases
-     * denoted by a corr value between -1 and 2 depending on e, neg, rbit,
-     * and the rounding mode:
-     *   -1: equivalent to nextbelow;
-     *    0: the truncated significand is not corrected;
-     *    1: add 1 ulp;
-     *    2: add 1 ulp, then nextabove.
-     * The nextbelow and nextabove are used here since there may be a
-     * change of the binade.
-     */
-
-    if (tmd == 0)  /* no TMD */
-      {
-        switch (rnd)
-          {
-          case MPFR_RNDD:
-            corr = 0;
-            break;
-          case MPFR_RNDU:
-            corr = inex;
-            break;
-          case MPFR_RNDZ:
-            corr = inex && neg;
-            break;
-          case MPFR_RNDA:
-            corr = inex && !neg;
-            break;
-          default:
-            MPFR_ASSERTN (rnd == MPFR_RNDN);
-            /* Note: for halfway cases (maxexp == MPFR_EXP_MIN) that are
-               rounded downward, rbit has been changed to 0 so that corr
-               is set correctly. */
-            corr = rbit;
-          }
-        MPFR_ASSERTD (corr == 0 || corr == 1);
-        if (inex && corr == 0)  /* two's complement significand decreased */
-          inex = -1;
-      }
-    else
-      {
-        mpfr_exp_t minexp2;
-        mpfr_prec_t cancel2;
-        mpfr_exp_t err;  /* exponent of the error bound */
-        mp_size_t zz;    /* number of limbs to zero in the TMD accumulator */
-        mp_limb_t *zp;   /* pointer to the TMD accumulator */
-        mpfr_prec_t zq;  /* size of the TMD accumulator, in bits */
-        int sst;         /* sign of the secondary term */
-
-        /* TMD case. Here we use a new variable minexp2, with the same
-           meaning as minexp, as we want to keep the minexp value for
-           the copy to the destination. */
-
-        MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
-        MPFR_ASSERTD (tmd == 1 || tmd == 2);
-
-        /* TMD accumulator */
-        zp = wp + ws;
-        zq = (mpfr_prec_t) zs * GMP_NUMB_BITS;
-
-        err = maxexp + logn;
-
-        MPFR_LOG_MSG (("TMD with"
-                       " maxexp=%" MPFR_EXP_FSPEC "d"
-                       " err=%" MPFR_EXP_FSPEC "d"
-                       " zs=%Pd"
-                       " zq=%Pd\n",
-                       (mpfr_eexp_t) maxexp, (mpfr_eexp_t) err,
-                       (mpfr_prec_t) zs, zq));
-
-        /* The d-1 bits from u-2 to u-d (= err) are identical. */
-
-        if (err >= minexp)
+        if (MPFR_LIKELY (u > minexp))
           {
             mpfr_prec_t tq;
             mp_size_t wi;
             int td;
 
-            /* Let's keep the last 2 over the d-1 identical bits and the
-               following bits, i.e. the bits from err+1 to minexp. */
-            tq = err - minexp + 2;  /* tq = number of such bits */
-            MPFR_LOG_MSG (("[TMD] tq=%Pd\n", tq));
-            MPFR_ASSERTD (tq >= 2);
+            tq = u - minexp;
+            MPFR_ASSERTD (tq > 0); /* number of trailing bits */
+            MPFR_LOG_MSG (("tq=%Pd\n", tq));
 
             wi = tq / GMP_NUMB_BITS;
-            td = tq % GMP_NUMB_BITS;
 
-            if (td != 0)
+            /* Determine the rounding bit, which is represented. */
+            td = tq % GMP_NUMB_BITS;
+            lbit = (wp[wi] >> td) & MPFR_LIMB_ONE;
+            rbit = td >= 1 ? ((wp[wi] >> (td - 1)) & MPFR_LIMB_ONE) :
+              (MPFR_ASSERTD (wi >= 1), wp[wi-1] >> (GMP_NUMB_BITS - 1));
+            MPFR_ASSERTD (rbit == 0 || rbit == 1);
+            MPFR_LOG_MSG (("rbit=%d\n", (int) rbit));
+
+            if (maxexp == MPFR_EXP_MIN)
               {
-                wi++;  /* number of words with represented bits */
-                td = GMP_NUMB_BITS - td;
-                zz = zs - wi;
-                MPFR_ASSERTD (zz >= 0 && zz < zs);
-                mpn_lshift (zp + zz, wp, wi, td);
+                /* The sum in the accumulator is exact. Determine inex:
+                   inex = 0 if the final sum is exact, else 1, i.e.
+                   inex = rounding bit || sticky bit. In round to nearest,
+                   also determine the rounding direction: obtained from
+                   the rounding bit possibly except in halfway cases.
+                   Halfway cases are rounded toward -inf iff the last bit
+                   of the truncated significand in two's complement is 0
+                   (in precision > 1, because the parity after rounding is
+                   the same in two's complement and sign + magnitude; in
+                   precision 1, one checks that the rule works for both
+                   positive (lbit == 1) and negative (lbit == 0) numbers,
+                   rounding halfway cases away from zero). */
+                if (MPFR_LIKELY (rbit == 0 || (rnd == MPFR_RNDN && lbit == 0)))
+                  {
+                    /* We need to determine the sticky bit, either to set inex
+                       (if the rounding bit is 0) or to possibly "correct" rbit
+                       (round to nearest, halfway case rounded downward) from
+                       which the rounding direction will be determined. */
+                    MPFR_LOG_MSG (("Determine the sticky bit...\n", 0));
+
+                    inex = td >= 2 ? (wp[wi] & MPFR_LIMB_MASK (td - 1)) != 0
+                      : td == 0 ?
+                      (MPFR_ASSERTD (wi >= 1),
+                       (wp[--wi] & MPFR_LIMB_MASK (GMP_NUMB_BITS - 1)) != 0)
+                      : 0;
+
+                    if (!inex)
+                      {
+                        while (!inex && wi > 0)
+                          inex = wp[--wi] != 0;
+                        if (!inex && rbit != 0)
+                          {
+                            /* sticky bit = 0, rounding bit = 1,
+                               i.e. halfway case, which will be
+                               rounded downward (see earlier if). */
+                            MPFR_ASSERTD (rnd == MPFR_RNDN);
+                            inex = 1;
+                            rbit = 0;  /* even rounding downward */
+                            MPFR_LOG_MSG (("Halfway case rounded downward;"
+                                           " set inex=1 rbit=0\n", 0));
+                          }
+                      }
+                  }
+                else
+                  inex = 1;
+                tmd = 0;  /* We can round correctly -> no TMD. */
               }
+            else  /* maxexp > MPFR_EXP_MIN */
+              {
+                mpfr_exp_t d;
+                mp_limb_t limb, mask;
+                int nbits;
+
+                /* Since maxexp was set to either the exponent of a x[i] or
+                   to minexp... */
+                MPFR_ASSERTD (maxexp >= MPFR_EMIN_MIN || maxexp == minexp);
+
+                inex = 1;  /* We do not know whether the sum is exact. */
+
+                MPFR_ASSERTD (u <= MPFR_EMAX_MAX && u <= minexp + wq);
+                d = u - (maxexp + logn);  /* representable */
+                MPFR_ASSERTD (d >= 3);  /* due to prec = sq + 3 in sum_raw */
+
+                /* Let's see whether the TMD occurs by looking at the d bits
+                   following the ulp bit, or the d-1 bits after the rounding
+                   bit. */
+
+                /* First chunk after the rounding bit... It starts at:
+                   (wi,td-2) if td >= 2,
+                   (wi-1,td-2+GMP_NUMB_BITS) if td < 2. */
+                if (td == 0)
+                  {
+                    MPFR_ASSERTD (wi >= 1);
+                    limb = wp[--wi];
+                    mask = MPFR_LIMB_MASK (GMP_NUMB_BITS - 1);
+                    nbits = GMP_NUMB_BITS;
+                  }
+                else if (td == 1)
+                  {
+                    limb = wi >= 1 ? wp[--wi] : MPFR_LIMB_ZERO;
+                    mask = MPFR_LIMB_MAX;
+                    nbits = GMP_NUMB_BITS + 1;
+                  }
+                else  /* td >= 2 */
+                  {
+                    MPFR_ASSERTD (td >= 2);
+                    limb = wp[wi];
+                    mask = MPFR_LIMB_MASK (td - 1);
+                    nbits = td;
+                  }
+
+                /* nbits: number of bits of the first chunk + 1
+                   (the +1 is for the rounding bit). */
+
+                if (nbits > d)
+                  {
+                    /* Some low significant bits must be ignored. */
+                    limb >>= nbits - d;
+                    mask >>= nbits - d;
+                    d = 0;
+                  }
+                else
+                  {
+                    d -= nbits;
+                    MPFR_ASSERTD (d >= 0);
+                  }
+
+                limb &= mask;
+                tmd =
+                  limb == MPFR_LIMB_ZERO ?
+                    (rbit == 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) :
+                  limb == mask ?
+                    (limb = MPFR_LIMB_MAX,
+                     rbit != 0 ? 1 : rnd == MPFR_RNDN ? 2 : 0) : 0;
+
+                while (tmd != 0 && d != 0)
+                  {
+                    mp_limb_t limb2;
+
+                    MPFR_ASSERTD (d > 0);
+                    if (wi == 0)
+                      {
+                        /* The non-represented bits are 0's. */
+                        if (limb != MPFR_LIMB_ZERO)
+                          tmd = 0;
+                        break;
+                      }
+                    MPFR_ASSERTD (wi > 0);
+                    limb2 = wp[--wi];
+                    if (d < GMP_NUMB_BITS)
+                      {
+                        int c = GMP_NUMB_BITS - d;
+                        MPFR_ASSERTD (c > 0 && c < GMP_NUMB_BITS);
+                        if ((limb2 >> c) != (limb >> c))
+                          tmd = 0;
+                        break;
+                      }
+                    if (limb2 != limb)
+                      tmd = 0;
+                    d -= GMP_NUMB_BITS;
+                  }
+              }
+          }
+        else  /* u <= minexp */
+          {
+            /* The exact value of the accumulator will be copied.
+             * The TMD occurs if and only if there are bits still
+             * not taken into account, and if it occurs, this is
+             * necessarily on a machine number (-> tmd = 1).
+             */
+            lbit = u == minexp ? wp[0] & MPFR_LIMB_ONE : 0;
+            rbit = 0;
+            inex = tmd = maxexp != MPFR_EXP_MIN;
+          }
+
+        MPFR_ASSERTD (rbit == 0 || rbit == 1);
+
+        MPFR_LOG_MSG (("tmd=%d lbit=%d rbit=%d inex=%d neg=%d\n",
+                       tmd, (int) lbit, (int) rbit, inex, neg));
+
+        /* Here, if the final sum is known to be exact, inex = 0, otherwise
+         * inex = 1. We have a truncated significand, a trailing term t such
+         * that 0 <= t < 1 ulp, and an error on the trailing term bounded by
+         * t' in absolute value. Thus the error e on the truncated significand
+         * satisfies -t' <= e < 1 ulp + t'. Thus one has 4 correction cases
+         * denoted by a corr value between -1 and 2 depending on e, neg, rbit,
+         * and the rounding mode:
+         *   -1: equivalent to nextbelow;
+         *    0: the truncated significand is not corrected;
+         *    1: add 1 ulp;
+         *    2: add 1 ulp, then nextabove.
+         * The nextbelow and nextabove are used here since there may be a
+         * change of the binade.
+         */
+
+        if (tmd == 0)  /* no TMD */
+          {
+            switch (rnd)
+              {
+              case MPFR_RNDD:
+                corr = 0;
+                break;
+              case MPFR_RNDU:
+                corr = inex;
+                break;
+              case MPFR_RNDZ:
+                corr = inex && neg;
+                break;
+              case MPFR_RNDA:
+                corr = inex && !neg;
+                break;
+              default:
+                MPFR_ASSERTN (rnd == MPFR_RNDN);
+                /* Note: for halfway cases (maxexp == MPFR_EXP_MIN) that are
+                   rounded downward, rbit has been changed to 0 so that corr
+                   is set correctly. */
+                corr = rbit;
+              }
+            MPFR_ASSERTD (corr == 0 || corr == 1);
+            if (inex &&
+                corr == 0)  /* two's complement significand decreased */
+              inex = -1;
+          }
+        else  /* tmd */
+          {
+            mpfr_exp_t minexp2;
+            mpfr_prec_t cancel2;
+            mpfr_exp_t err;  /* exponent of the error bound */
+            mp_size_t zz;    /* nb of limbs to zero in the TMD accumulator */
+            mp_limb_t *zp;   /* pointer to the TMD accumulator */
+            mpfr_prec_t zq;  /* size of the TMD accumulator, in bits */
+            int sst;         /* sign of the secondary term */
+
+            /* TMD case. Here we use a new variable minexp2, with the same
+               meaning as minexp, as we want to keep the minexp value for
+               the copy to the destination. */
+
+            MPFR_ASSERTD (maxexp > MPFR_EXP_MIN);
+            MPFR_ASSERTD (tmd == 1 || tmd == 2);
+
+            /* TMD accumulator */
+            zp = wp + ws;
+            zq = (mpfr_prec_t) zs * GMP_NUMB_BITS;
+
+            err = maxexp + logn;
+
+            MPFR_LOG_MSG (("TMD with"
+                           " maxexp=%" MPFR_EXP_FSPEC "d"
+                           " err=%" MPFR_EXP_FSPEC "d"
+                           " zs=%Pd"
+                           " zq=%Pd\n",
+                           (mpfr_eexp_t) maxexp, (mpfr_eexp_t) err,
+                           (mpfr_prec_t) zs, zq));
+
+            /* The d-1 bits from u-2 to u-d (= err) are identical. */
+
+            if (err >= minexp)
+              {
+                mpfr_prec_t tq;
+                mp_size_t wi;
+                int td;
+
+                /* Let's keep the last 2 over the d-1 identical bits and the
+                   following bits, i.e. the bits from err+1 to minexp. */
+                tq = err - minexp + 2;  /* tq = number of such bits */
+                MPFR_LOG_MSG (("[TMD] tq=%Pd\n", tq));
+                MPFR_ASSERTD (tq >= 2);
+
+                wi = tq / GMP_NUMB_BITS;
+                td = tq % GMP_NUMB_BITS;
+
+                if (td != 0)
+                  {
+                    wi++;  /* number of words with represented bits */
+                    td = GMP_NUMB_BITS - td;
+                    zz = zs - wi;
+                    MPFR_ASSERTD (zz >= 0 && zz < zs);
+                    mpn_lshift (zp + zz, wp, wi, td);
+                  }
+                else
+                  {
+                    MPFR_ASSERTD (wi > 0);
+                    zz = zs - wi;
+                    MPFR_ASSERTD (zz >= 0 && zz < zs);
+                    if (zz > 0)
+                      MPN_COPY (zp + zz, wp, wi);
+                  }
+
+                /* Compute minexp2 = minexp - (zs * GMP_NUMB_BITS + td)
+                   safely. */
+                SAFE_SUB (minexp2, minexp, zz * GMP_NUMB_BITS + td);
+                MPFR_ASSERTD (minexp2 == err + 2 - zq);
+              }
+            else  /* err < minexp */
+              {
+                /* At least one of the identical bits is not represented,
+                   meaning that it is 0 and all these bits are 0's. Thus
+                   the accumulator will be 0. The new minexp is determined
+                   from maxexp, with cq bits reserved to avoid an overflow
+                   (as in the early steps). */
+                MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
+                zz = zs;
+
+                /* Compute minexp2 = maxexp - (zq - cq) safely. */
+                SAFE_SUB (minexp2, maxexp, zq - cq);
+                MPFR_ASSERTD (minexp2 == err + 1 - zq);
+              }
+
+            MPN_ZERO (zp, zz);
+
+            /* We need to determine the sign sst of the secondary term.
+               In sum_raw, since the truncated sum corresponding to this
+               secondary term will be in [2^(e-1),2^e] and the error
+               strictly less than 2^err, we can stop the iterations when
+               e - err >= 1 (this bound is the 11th argument of sum_raw). */
+            cancel2 = sum_raw (zp, zs, zq, x, n, minexp2, maxexp, tp, ts,
+                               logn, 1, NULL, NULL, NULL);
+
+            if (cancel2 != 0)
+              sst = MPFR_LIMB_MSB (zp[zs-1]) == 0 ? 1 : -1;
+            else if (tmd == 1)
+              sst = 0;
             else
               {
-                MPFR_ASSERTD (wi > 0);
-                zz = zs - wi;
-                MPFR_ASSERTD (zz >= 0 && zz < zs);
-                if (zz > 0)
-                  MPN_COPY (zp + zz, wp, wi);
+                /* For halfway cases, let's virtually eliminate them
+                   by setting a sst equivalent to a non-halfway case,
+                   which depends on the last bit of the pre-rounded
+                   result. */
+                MPFR_ASSERTD (rnd == MPFR_RNDN && tmd == 2);
+                sst = lbit != 0 ? 1 : -1;
               }
 
-            /* Compute minexp2 = minexp - (zs * GMP_NUMB_BITS + td) safely. */
-            SAFE_SUB (minexp2, minexp, zz * GMP_NUMB_BITS + td);
-            MPFR_ASSERTD (minexp2 == err + 2 - zq);
-          }
-        else  /* err < minexp */
-          {
-            /* At least one of the identical bits is not represented,
-               meaning that it is 0 and all these bits are 0's. Thus
-               the accumulator will be 0. The new minexp is determined
-               from maxexp, with cq bits reserved to avoid an overflow
-               (as in the early steps). */
-            MPFR_LOG_MSG (("[TMD] err < minexp\n", 0));
-            zz = zs;
+            MPFR_LOG_MSG (("[TMD] tmd=%d rbit=%d sst=%d\n",
+                           tmd, (int) rbit, sst));
 
-            /* Compute minexp2 = maxexp - (zq - cq) safely. */
-            SAFE_SUB (minexp2, maxexp, zq - cq);
-            MPFR_ASSERTD (minexp2 == err + 1 - zq);
-          }
+            /* Do not consider the corrected sst for MPFR_COV_SET */
+            MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit]
+                          [cancel2 == 0 ? 1 : sst+1][neg][sq > MPFR_PREC_MIN]);
 
-        MPN_ZERO (zp, zz);
+            inex =
+              MPFR_IS_LIKE_RNDD (rnd, sgn) ? (sst ? -1 : 0) :
+              MPFR_IS_LIKE_RNDU (rnd, sgn) ? (sst ?  1 : 0) :
+              (MPFR_ASSERTD (rnd == MPFR_RNDN),
+               tmd == 1 ? - sst : sst);
 
-        /* We need to determine the sign sst of the secondary term.
-           In sum_raw, since the truncated sum corresponding to this
-           secondary term will be in [2^(e-1),2^e] and the error
-           strictly less than 2^err, we can stop the iterations when
-           e - err >= 1 (this bound is the 11th argument of sum_raw). */
-        cancel2 = sum_raw (zp, zs, zq, x, n, minexp2, maxexp, tp, ts,
-                           logn, 1, NULL, NULL, NULL);
-
-        if (cancel2 != 0)
-          sst = MPFR_LIMB_MSB (zp[zs-1]) == 0 ? 1 : -1;
-        else if (tmd == 1)
-          sst = 0;
-        else
-          {
-            /* For halfway cases, let's virtually eliminate them
-               by setting a sst equivalent to a non-halfway case,
-               which depends on the last bit of the pre-rounded
-               result. */
-            MPFR_ASSERTD (rnd == MPFR_RNDN && tmd == 2);
-            sst = lbit != 0 ? 1 : -1;
-          }
-
-        MPFR_LOG_MSG (("[TMD] tmd=%d rbit=%d sst=%d\n",
-                       tmd, (int) rbit, sst));
-
-        /* Do not consider the corrected sst for MPFR_COV_SET */
-        MPFR_COV_SET (sum_tmd[(int) rnd][tmd-1][rbit]
-                      [cancel2 == 0 ? 1 : sst+1][neg][sq > MPFR_PREC_MIN]);
-
-        inex =
-          MPFR_IS_LIKE_RNDD (rnd, sgn) ? (sst ? -1 : 0) :
-          MPFR_IS_LIKE_RNDU (rnd, sgn) ? (sst ?  1 : 0) :
-          (MPFR_ASSERTD (rnd == MPFR_RNDN),
-           tmd == 1 ? - sst : sst);
-
-        if (tmd == 2 && sst == (rbit != 0 ? -1 : 1))
-          corr = 1 - (int) rbit;
-        else if (MPFR_IS_LIKE_RNDD (rnd, sgn) && sst == -1)
-          corr = (int) rbit - 1;
-        else if (MPFR_IS_LIKE_RNDU (rnd, sgn) && sst == +1)
-          corr = (int) rbit + 1;
-        else
-          corr = (int) rbit;
-      }
-
-    /* Note: The above block has not be reindented. */
+            if (tmd == 2 && sst == (rbit != 0 ? -1 : 1))
+              corr = 1 - (int) rbit;
+            else if (MPFR_IS_LIKE_RNDD (rnd, sgn) && sst == -1)
+              corr = (int) rbit - 1;
+            else if (MPFR_IS_LIKE_RNDU (rnd, sgn) && sst == +1)
+              corr = (int) rbit + 1;
+            else
+              corr = (int) rbit;
+          }  /* tmd */
       }  /* rnd != MPFR_RNDF */
 
     MPFR_LOG_MSG (("neg=%d corr=%d inex=%d\n", neg, corr, inex));
