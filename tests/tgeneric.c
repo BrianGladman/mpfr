@@ -142,11 +142,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define REDUCE_EMIN mpfr_get_emin ()
 #endif
 
-/* return non-zero if:
-   (1) either x and y are not NaN and are equal
-   (2) x = y = NaN */
-#define EQUAL(x,y) ((mpfr_nan_p (x) && mpfr_nan_p (y)) || mpfr_equal_p (x, y))
-
 static void
 test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 {
@@ -358,7 +353,6 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
              RNDD or RNDU. */
           if (rnd == MPFR_RNDF)
             {
-              int ok;
 #if defined(TWO_ARGS)
               TEST_FUNCTION (yd, x, u, MPFR_RNDD);
               TEST_FUNCTION (yu, x, u, MPFR_RNDU);
@@ -385,8 +379,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               TEST_FUNCTION (yd, x, MPFR_RNDD);
               TEST_FUNCTION (yu, x, MPFR_RNDU);
 #endif
-              ok = EQUAL (y, yd) || EQUAL (y, yu);
-              if (ok == 0)
+              if (! (SAME_VAL (y, yd) || SAME_VAL (y, yu)))
                 {
                    printf ("For RNDF, result does not match RNDD nor RNDU\n");
                    printf ("x = "); mpfr_dump (x);
