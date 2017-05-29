@@ -314,9 +314,7 @@ check_more_special (void)
               k[i++] = 0;
             }
           inex = mpfr_sum (sum, p, NS, (mpfr_rnd_t) r);
-          if (! ((MPFR_IS_NAN (sum) && MPFR_IS_NAN (s[NS-1])) ||
-                 (mpfr_equal_p (sum, s[NS-1]) &&
-                  MPFR_SIGN (sum) == MPFR_SIGN (s[NS-1]))) || inex != 0)
+          if (! SAME_VAL (sum, s[NS-1]) || inex != 0)
             {
               printf ("Error in check_more_special on %s",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r));

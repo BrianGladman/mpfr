@@ -87,10 +87,7 @@ cmpres (int spx, const void *px, const char *sy, mpfr_rnd_t rnd,
           if (MPFR_IS_PURE_FP (z2))
             return;
         }
-      else if (SAME_SIGN (inex1, inex2) &&
-               ((MPFR_IS_NAN (z1) && MPFR_IS_NAN (z2)) ||
-                ((MPFR_IS_NEG (z1) ^ MPFR_IS_NEG (z2)) == 0 &&
-                 mpfr_equal_p (z1, z2))))
+      else if (SAME_SIGN (inex1, inex2) && SAME_VAL (z1, z2))
         return;
     }
 

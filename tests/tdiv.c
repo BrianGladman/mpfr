@@ -26,8 +26,7 @@ static void
 check_equal (mpfr_srcptr a, mpfr_srcptr a2, char *s,
              mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
 {
-  if ((MPFR_IS_NAN (a) && MPFR_IS_NAN (a2)) ||
-      mpfr_equal_p (a, a2))
+  if (SAME_VAL (a, a2))
     return;
   if (r == MPFR_RNDF) /* RNDF might return different values */
     return;

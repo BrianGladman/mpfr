@@ -684,7 +684,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
 
       MPFR_ASSERTN (rnd != MPFR_RND_MAX);
       inex = fct (z, x, rnd);
-      if (! (mpfr_equal_p (y, z) || (mpfr_nan_p (y) && mpfr_nan_p (z))))
+      if (! SAME_VAL (y, z))
         {
           printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
                   name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
