@@ -1022,10 +1022,8 @@ typedef uintmax_t mpfr_ueexp_t;
  ******************************************************/
 
 /* MPFR_RND_MAX gives the number of supported rounding modes by all functions.
- * Once faithful rounding is implemented, MPFR_RNDA should be changed
- * to MPFR_RNDF. But this will also require more changes in the tests.
  */
-#define MPFR_RND_MAX ((mpfr_rnd_t)((MPFR_RNDA)+1))
+#define MPFR_RND_MAX ((mpfr_rnd_t)((MPFR_RNDF)+1))
 
 /* We want to test this :
  *  (rnd == MPFR_RNDU && test) || (rnd == RNDD && !test)
@@ -1596,7 +1594,12 @@ typedef struct {
             _ulp = MPFR_LIMB_ONE;                                           \
           }                                                                 \
         /* Rounding */                                                      \
-        if (rnd == MPFR_RNDN)                                               \
+        if (rnd == MPFR_RNDF)                                               \
+          {                                                                 \
+            inexact = 0;                                                    \
+            goto trunc_doit;                                                \
+          }                                                                 \
+        else if (rnd == MPFR_RNDN)                                          \
           {                                                                 \
             if (_rb == 0)                                                   \
               {                                                             \

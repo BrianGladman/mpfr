@@ -146,7 +146,7 @@ static void
 test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 {
   mpfr_prec_t prec, xprec, yprec;
-  mpfr_t x, y, z, t, w;
+  mpfr_t x, y, z, t, w, yd, yu;
 #ifdef NEED_U
   mpfr_t u;
 #endif
@@ -166,7 +166,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
 
-  mpfr_inits2 (MPFR_PREC_MIN, x, y, z, t, w, (mpfr_ptr) 0);
+  mpfr_inits2 (MPFR_PREC_MIN, x, y, yd, yu, z, t, w, (mpfr_ptr) 0);
 #ifdef NEED_U
   mpfr_init2 (u, MPFR_PREC_MIN);
 #endif
@@ -178,6 +178,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
       mpfr_set_prec (y, yprec);
+      mpfr_set_prec (yd, yprec);
+      mpfr_set_prec (yu, yprec);
       mpfr_set_prec (w, yprec);
 
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
@@ -342,9 +344,57 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                       " by the tested function!\n");
               exit (1);
             }
-          TGENERIC_CHECK ("bad inexact flag",
-                          (compare != 0) ^ (mpfr_inexflag_p () == 0));
+          if (rnd != MPFR_RNDF)
+            TGENERIC_CHECK ("bad inexact flag",
+                            (compare != 0) ^ (mpfr_inexflag_p () == 0));
           ctrt++;
+
+          /* If rnd = RNDF, check that we obtain the same result as
+             RNDD or RNDU. */
+          if (rnd == MPFR_RNDF)
+            {
+#if defined(TWO_ARGS)
+              TEST_FUNCTION (yd, x, u, MPFR_RNDD);
+              TEST_FUNCTION (yu, x, u, MPFR_RNDU);
+#elif defined(DOUBLE_ARG1)
+              d = mpfr_get_d (u, MPFR_RNDD);
+              TEST_FUNCTION (yd, d, x, MPFR_RNDD);
+              d = mpfr_get_d (u, MPFR_RNDU);
+              TEST_FUNCTION (yu, d, x, MPFR_RNDU);
+#elif defined(DOUBLE_ARG2)
+              d = mpfr_get_d (u, MPFR_RNDD);
+              TEST_FUNCTION (yd, x, d, MPFR_RNDD);
+              d = mpfr_get_d (u, MPFR_RNDU);
+              TEST_FUNCTION (yu, x, d, MPFR_RNDU);
+#elif defined(ULONG_ARG1) && defined(ONE_ARG)
+              TEST_FUNCTION (yd, i, MPFR_RNDD);
+              TEST_FUNCTION (yu, i, MPFR_RNDU);
+#elif defined(ULONG_ARG1)
+              TEST_FUNCTION (yd, i, x, MPFR_RNDD);
+              TEST_FUNCTION (yu, i, x, MPFR_RNDU);
+#elif defined(ULONG_ARG2)
+              TEST_FUNCTION (yd, x, i, MPFR_RNDD);
+              TEST_FUNCTION (yu, x, i, MPFR_RNDU);
+#else
+              TEST_FUNCTION (yd, x, MPFR_RNDD);
+              TEST_FUNCTION (yu, x, MPFR_RNDU);
+#endif
+              if (! (SAME_VAL (y, yd) || SAME_VAL (y, yu)))
+                {
+                   printf ("For RNDF, result does not match RNDD nor RNDU\n");
+                   printf ("x = "); mpfr_dump (x);
+#ifdef NEED_U
+                   printf ("u = "); mpfr_dump (u);
+#endif
+#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
+                   printf ("i = %lu\n", i);
+#endif
+                   printf ("yd (RNDD) = "); mpfr_dump (yd);
+                   printf ("yu (RNDU) = "); mpfr_dump (yu);
+                   printf ("y  (RNDF) = "); mpfr_dump (y);
+                   exit (1);
+                }
+            }
 
           /* Tests in a reduced exponent range. */
           {
@@ -406,7 +456,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     flags = __gmpfr_flags;
                     mpfr_set_emax (oemax);
                     ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
-                    if (flags != ex_flags)
+                    /* For RNDF, this test makes no sense, since RNDF
+                       might return either the maximal floating-point
+                       value or infinity, and the flags might differ in
+                       those two cases. */
+                    if (flags != ex_flags && rnd != MPFR_RNDF)
                       {
                         printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
                                 ", reduced exponent range [%"
@@ -461,7 +515,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     flags = __gmpfr_flags;
                     mpfr_set_emin (oemin);
                     ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-                    if (flags != ex_flags)
+                    /* For RNDF, this test makes no sense, since RNDF
+                       might return either the maximal floating-point
+                       value or infinity, and the flags might differ in
+                       those two cases. */
+                    if (flags != ex_flags && rnd != MPFR_RNDF)
                       {
                         printf ("tgeneric: error for " MAKE_STR(TEST_FUNCTION)
                                 ", reduced exponent range [%"
@@ -526,7 +584,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 flags = __gmpfr_flags;
                 mpfr_set_emin (oemin);
                 mpfr_set_emax (oemax);
-                if (! (SAME_VAL (w, y) &&
+                /* That test makes no sense for RNDF. */
+                if (rnd != MPFR_RNDF && ! (SAME_VAL (w, y) &&
                        SAME_SIGN (inexact, compare) &&
                        flags == oldflags))
                   {
@@ -598,7 +657,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               TGENERIC_CHECK ("should have been min MPFR number (underflow)",
                               MPFR_IS_ZERO (y));
             }
-          else if (compare == 0 || mpfr_can_round (y, yprec, rnd, rnd, prec))
+          else if (compare == 0 || rnd == MPFR_RNDF ||
+                   mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
               ctrn++;
               mpfr_set (t, y, rnd);
@@ -636,7 +696,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
               if (mpfr_erangeflag_p ())
                 goto next_n;
-              if (! mpfr_equal_p (t, z))
+              if (! mpfr_equal_p (t, z) && rnd != MPFR_RNDF)
                 {
                   printf ("tgeneric: results differ for "
                           MAKE_STR(TEST_FUNCTION) " on\n  x = ");
@@ -662,7 +722,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 compare = compare + compare2;
               else
                 compare = inexact; /* cannot determine sign(t-f(x)) */
-              if (! SAME_SIGN (inexact, compare))
+              if (! SAME_SIGN (inexact, compare) && rnd != MPFR_RNDF)
                 {
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
@@ -716,7 +776,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
             ctrn, ctrt);
 #endif
 
-  mpfr_clears (x, y, z, t, w, (mpfr_ptr) 0);
+  mpfr_clears (x, y, yd, yu, z, t, w, (mpfr_ptr) 0);
 #ifdef NEED_U
   mpfr_clear (u);
 #endif

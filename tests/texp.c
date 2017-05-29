@@ -576,7 +576,7 @@ overflowed_exp0 (void)
                   err = 1;
                 }
             }
-          else
+          else if (rnd != MPFR_RNDF)
             {
               if (inex <= 0)
                 {
@@ -720,7 +720,8 @@ underflow_up (int extended_emin)
                   mpfr_clear_flags ();
                   inex = e3 ? exp_3 (y, x, (mpfr_rnd_t) rnd)
                     : mpfr_exp (y, x, (mpfr_rnd_t) rnd);
-                  if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
+                  /* for MPFR_RNDF, the inexact flag is undefined */
+                  if (__gmpfr_flags != MPFR_FLAGS_INEXACT && rnd != MPFR_RNDF)
                     {
                       printf ("Incorrect flags in underflow_up, eps > 0, %s",
                               mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
@@ -728,6 +729,8 @@ underflow_up (int extended_emin)
                         printf (" and extended emin");
                       printf ("\nfor precx = %d, precy = %d, %s\n",
                               precx, precy, e3 ? "mpfr_exp_3" : "mpfr_exp");
+                      printf ("x="); mpfr_dump (x);
+                      printf ("y="); mpfr_dump (y);
                       printf ("Got %u instead of %u.\n",
                               (unsigned int) __gmpfr_flags,
                               (unsigned int) MPFR_FLAGS_INEXACT);
@@ -744,7 +747,9 @@ underflow_up (int extended_emin)
                       mpfr_dump (y);
                       err = 1;
                     }
-                  MPFR_ASSERTN (inex != 0);
+                  /* for MPFR_RNDF, the ternary value is undefined */
+                  if (rnd != MPFR_RNDF)
+                    MPFR_ASSERTN (inex != 0);
                   if (rnd == MPFR_RNDD || rnd == MPFR_RNDZ)
                     MPFR_ASSERTN (inex < 0);
                   if (rnd == MPFR_RNDU)
@@ -856,6 +861,9 @@ underflow_up (int extended_emin)
                                 (unsigned int) __gmpfr_flags, flags);
                         err = 1;
                       }
+                    if (rnd == MPFR_RNDF)
+                      continue; /* the test below makes no sense, since RNDF
+                                   does not give a deterministic result */
                     if (rnd == MPFR_RNDU || rnd == MPFR_RNDA || rnd == MPFR_RNDN ?
                         mpfr_cmp0 (y, minpos) != 0 : MPFR_NOTZERO (y))
                       {

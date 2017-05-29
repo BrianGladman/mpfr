@@ -96,7 +96,7 @@ overflowed_sec0 (void)
       mpfr_nextbelow (y);
       set_emax (emax);  /* 1 is not representable. */
       for (i = -1; i <= 1; i++)
-        RND_LOOP (rnd)
+        RND_LOOP_NO_RNDF (rnd)
           {
             mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
             mpfr_clear_flags ();

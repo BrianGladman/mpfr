@@ -67,7 +67,7 @@ check_random (mpfr_prec_t p)
     {
       mpfr_urandomb (x, RANDS);
       if (MPFR_IS_PURE_FP(x))
-        for (r = 0 ; r < MPFR_RND_MAX ; r++)
+        RND_LOOP_NO_RNDF (r)
           {
             inexact1 = mpfr_mul (y, x, x, (mpfr_rnd_t) r);
             inexact2 = mpfr_sqr (z, x, (mpfr_rnd_t) r);

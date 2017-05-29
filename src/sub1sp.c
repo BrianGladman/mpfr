@@ -34,6 +34,9 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_flags_t old_flags, flags, flags2;
   int inexb, inexc, inexact, inexact2;
 
+  if (rnd_mode == MPFR_RNDF)
+    return mpfr_sub1sp_ref (a, b, c, rnd_mode);
+
   old_flags = __gmpfr_flags;
 
   mpfr_init2 (tmpa, MPFR_PREC (a));
@@ -241,8 +244,9 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
+    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
+                 inexact flag are unspecified */
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -425,7 +429,7 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     return 0; /* idem than MPFR_RET(0) but faster */
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -683,8 +687,9 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
+    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
+                 inexact flag are unspecified */
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -1007,8 +1012,9 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
-    return 0; /* idem than MPFR_RET(0) but faster */
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
+    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
+                 inexact flag are unspecified */
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -1314,7 +1320,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* Rounding is necessary since c0 = 1 */
               /* Cp =-1 and C'p+1=0 */
               bcp = 1; bcp1 = 0;
-              if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+
+              if (rnd_mode == MPFR_RNDF)
+                goto truncate; /* low(b) = 0 and low(c) is 0 or 1/2 ulp(b), thus
+                                  low(b) - low(c) = 0 or -1/2 ulp(b) */
+              else if (rnd_mode == MPFR_RNDN)
                 {
                   /* Even Rule apply: Check last bit of a. */
                   if (MPFR_LIKELY( (ap[0] & (MPFR_LIMB_ONE << sh)) == 0) )
@@ -1403,7 +1413,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
     }
-  else if (MPFR_UNLIKELY(d >= p))
+  else if (MPFR_UNLIKELY(d >= p)) /* the difference of exponents is larger
+                                     than the precision of all operands, thus
+                                     the result is either b or b - 1 ulp,
+                                     with a possible exact result when
+                                     d = p, b = 2^e and c = 1/2 ulp(b) */
     {
       ap = MPFR_MANT(a);
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
@@ -1436,7 +1450,14 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           bp = MPFR_MANT (b);
 
           /* Even if src and dest overlap, it is OK using MPN_COPY */
-          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+          if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+            /* then d = p, and subtracting one ulp of b is ok even in the
+               exact case b = 2^e and c = 1/2 ulp(b) */
+            {
+              MPN_COPY(ap, bp, n);
+              goto sub_one_ulp;
+            }
+          else if (rnd_mode == MPFR_RNDN)
             {
               if (MPFR_UNLIKELY (bcp != 0 && bcp1 == 0))
                 /* Cp=-1 and C'p+1=0: Even rule Apply! */
@@ -1486,7 +1507,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* Copy mantissa B in A */
           MPN_COPY(ap, MPFR_MANT(b), n);
           /* Round */
-          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+          if (rnd_mode == MPFR_RNDF || rnd_mode == MPFR_RNDN)
             goto truncate;
           MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
           if (rnd_mode == MPFR_RNDZ)
@@ -1673,7 +1694,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
       /* Rounding */
-      if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+        goto truncate;
+      else if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
           if (MPFR_LIKELY(bcp == 0))
             goto truncate;

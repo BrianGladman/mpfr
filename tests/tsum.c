@@ -92,7 +92,7 @@ generic_tests (void)
     }
   mpfr_inits2 (precmax, exact_sum, sum1, sum2, (mpfr_ptr) 0);
 
-  for (m = 0; m < 4000; m++)
+  for (m = 0; m < 20000; m++)
     {
       int non_uniform, n;
       mpfr_prec_t prec;
@@ -117,24 +117,43 @@ generic_tests (void)
       /* putchar ('\n'); */
       get_exact_sum (exact_sum, t, n);
       RND_LOOP (rnd_mode)
-        {
-          int inex1, inex2;
+        if (rnd_mode == MPFR_RNDF)
+          {
+            int inex;
 
-          inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
-          inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
-          if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
-            {
-              printf ("generic_tests failed on m = %d, %s\n", m,
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
-              printf ("Expected ");
-              mpfr_dump (sum1);
-              printf ("with inex = %d\n", inex1);
-              printf ("Got      ");
-              mpfr_dump (sum2);
-              printf ("with inex = %d\n", inex2);
-              exit (1);
-            }
-        }
+            inex = mpfr_set (sum1, exact_sum, MPFR_RNDD);
+            mpfr_sum (sum2, p, n, MPFR_RNDF);
+            if (! mpfr_equal_p (sum1, sum2) &&
+                (inex == 0 ||
+                 (mpfr_nextabove (sum1), ! mpfr_equal_p (sum1, sum2))))
+              {
+                printf ("generic_tests failed on m = %d, MPFR_RNDF\n", m);
+                printf ("Exact sum = ");
+                mpfr_dump (exact_sum);
+                printf ("Got         ");
+                mpfr_dump (sum2);
+                exit (1);
+              }
+          }
+        else
+          {
+            int inex1, inex2;
+
+            inex1 = mpfr_set (sum1, exact_sum, (mpfr_rnd_t) rnd_mode);
+            inex2 = mpfr_sum (sum2, p, n, (mpfr_rnd_t) rnd_mode);
+            if (!(mpfr_equal_p (sum1, sum2) && SAME_SIGN (inex1, inex2)))
+              {
+                printf ("generic_tests failed on m = %d, %s\n", m,
+                        mpfr_print_rnd_mode ((mpfr_rnd_t) rnd_mode));
+                printf ("Expected ");
+                mpfr_dump (sum1);
+                printf ("with inex = %d\n", inex1);
+                printf ("Got      ");
+                mpfr_dump (sum2);
+                printf ("with inex = %d\n", inex2);
+                exit (1);
+              }
+          }
     }
 
   for (i = 0; i < nmax; i++)
@@ -395,7 +414,7 @@ check1 (int h)
                     {
                       mpfr_set_prec (sum1, prec);
                       mpfr_set_prec (sum2, prec);
-                      RND_LOOP (r)
+                      RND_LOOP_NO_RNDF (r)
                         {
                           inex1 = mpfr_set (sum1, s3, (mpfr_rnd_t) r);
                           inex2 = mpfr_sum (sum2, p, 4, (mpfr_rnd_t) r);
@@ -480,7 +499,7 @@ check2 (void)
                       prec = mpfr_get_exp (s4);
                       mpfr_set_prec (sum1, prec);
                       mpfr_set_prec (sum2, prec);
-                      RND_LOOP (r)
+                      RND_LOOP_NO_RNDF (r)
                         {
                           inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
                           inex2 = mpfr_sum (sum2, p, 5, (mpfr_rnd_t) r);
@@ -566,7 +585,7 @@ check3 (void)
                   for (q = 0; q < 2; q++)
                     {
                       mpfr_inits2 (prec[q], sum1, sum2, (mpfr_ptr) 0);
-                      RND_LOOP (r)
+                      RND_LOOP_NO_RNDF (r)
                         {
                           mpfr_clear_flags ();
                           inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
@@ -665,7 +684,7 @@ check4 (void)
                 mpfr_set_si_2exp (t[4], j, -2, MPFR_RNDN);
                 inex1 = mpfr_add (s4, s3, t[4], MPFR_RNDN);
                 MPFR_ASSERTN (inex1 == 0);
-                RND_LOOP (r) {
+                RND_LOOP_NO_RNDF (r) {
                   inex1 = mpfr_set (sum1, s4, (mpfr_rnd_t) r);
                   inex2 = mpfr_sum (sum2, p, 5, (mpfr_rnd_t) r);
                   MPFR_ASSERTN (mpfr_check (sum1));
@@ -766,7 +785,7 @@ bug20150327 (void)
       p[i] = t[i];
     }
 
-  RND_LOOP(r)
+  RND_LOOP_NO_RNDF (r)
     {
       int inex1, inex2;
 
@@ -814,7 +833,7 @@ check_extreme (void)
   mpfr_setmin (u, mpfr_get_emax ());
   mpfr_setmax (v, mpfr_get_emin ());
   mpfr_setmin (w, mpfr_get_emax () - 40);
-  RND_LOOP (r)
+  RND_LOOP_NO_RNDF (r)
     for (i = 0; i < 2; i++)
       {
         mpfr_set_prec (x, 64);
@@ -1156,7 +1175,7 @@ check_coverage (void)
   int r, i, j, k, p, q;
   int err = 0;
 
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP_NO_RNDF (r)
     for (i = 0; i < 1 + ((mpfr_rnd_t) r == MPFR_RNDN); i++)
       for (j = 0; j < 2; j++)
         for (k = 0; k < 3; k++)

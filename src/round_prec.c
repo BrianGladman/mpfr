@@ -127,8 +127,32 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
 /* assuming b is an approximation to x in direction rnd1 with error at
    most 2^(MPFR_EXP(b)-err), returns 1 if one is able to round exactly
    x to precision prec with direction rnd2, and 0 otherwise.
-
    Side effects: none.
+
+   rnd1 = RNDN and RNDF are similar: the sign of the error is unknown.
+
+   rnd2 = RNDF: assume that the user will round the approximation b
+   toward the direction of x, i.e. the opposite of rnd1 in directed
+   rounding modes, otherwise RNDN. Some details:
+
+                u   xinf        v xsup          w
+           -----|----+----------|--+------------|-----
+                     [----- x -----]
+     rnd1 = RNDD     b             |
+     rnd1 = RNDU                   b
+
+   where u, v and w are consecutive machine numbers.
+
+   * If [xinf,xsup] contains no machine numbers, then return 1.
+
+   * If [xinf,xsup] contains 2 machine numbers, then return 0.
+
+   * If [xinf,xsup] contains a single machine number, then return 1 iff
+     the rounding of b is this machine number.
+     With the above choice for the rounding of b, this will always be
+     the case if rnd1 is a directed rounding mode; said otherwise, for
+     rnd2 = RNDF and rnd1 being a directed rounding mode, return 1 iff
+     [xinf,xsup] contains at most 1 machine number.
 */
 
 int
@@ -173,8 +197,14 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
 
   /* Transform RNDD and RNDU to Zero / Away */
   MPFR_ASSERTD (neg == 0 || neg == 1);
+  /* transform RNDF to RNDN */
+  if (rnd1 == MPFR_RNDF)
+    rnd1 = MPFR_RNDN;
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
+  if (rnd2 == MPFR_RNDF)
+    rnd2 = (rnd1 == MPFR_RNDN) ? MPFR_RNDN :
+      MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDA : MPFR_RNDZ;
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 

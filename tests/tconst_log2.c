@@ -40,7 +40,7 @@ check (mpfr_prec_t p0, mpfr_prec_t p1)
     {
       mpfr_set_prec (x, p0);
       mpfr_set_prec (y, p0);
-      RND_LOOP (i)
+      RND_LOOP_NO_RNDF (i)
         {
           mpfr_rnd_t rnd = (mpfr_rnd_t) i;
           inex = mpfr_const_log2 (x, rnd);

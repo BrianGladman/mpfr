@@ -140,6 +140,11 @@ check_random (mpfr_prec_t p)
             {
               mpfr_flags_t flags1, flags2;
 
+              if (r == MPFR_RNDF) /* inexact makes no sense, moreover
+                                     mpfr_add1 and mpfr_add1sp could
+                                     return different values */
+                continue;
+
               mpfr_clear_flags ();
               inexact1 = mpfr_add1 (a1, bs, cs, (mpfr_rnd_t) r);
               flags1 = __gmpfr_flags;
@@ -170,6 +175,9 @@ check_special (void)
 
   for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
+      if (r == MPFR_RNDF)
+        continue; /* inexact makes no sense, mpfr_add1 and mpfr_add1sp
+                     could differ */
       SET_PREC(53);
       mpfr_set_str1 (b, "1@100");
       mpfr_set_str1 (c, "1@1");

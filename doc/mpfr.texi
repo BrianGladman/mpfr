@@ -275,7 +275,8 @@ from most arbitrary precision floating-point software tools, are:
 
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
-@code{mp_bits_per_limb} (64 on most current processors).
+@code{mp_bits_per_limb} (64 on most current processors), possibly
+except in faithful rounding.
 It does not depend either on the machine rounding mode or rounding precision;
 
 @item the precision in bits can be set @emph{exactly} to any valid value
@@ -283,11 +284,13 @@ for each variable (including very small precision);
 
 @item MPFR provides the four rounding modes from the IEEE 754-1985
 standard, plus away-from-zero, as well as for basic operations as for other
-mathematical functions.
+mathematical functions. Faithful rounding is provided too, but the results
+may no longer be reproducible.
 
 @end itemize
 
-In particular, with a precision of 53 bits, MPFR is able to
+In particular, with a precision of 53 bits and in any of the four standard
+rounding modes, MPFR is able to
 exactly reproduce all computations with double-precision machine
 floating-point numbers (e.g., @code{double} type in C, with a C
 implementation that rigorously follows Annex F of the ISO C99 standard
@@ -740,13 +743,14 @@ and puts the result back in @var{x}.
 @comment  node-name,  next,  previous,  up
 @section Rounding Modes
 
-The following five rounding modes are supported:
+The following rounding modes are supported:
 @itemize @bullet
 @item @code{MPFR_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008),
 @item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008),
 @item @code{MPFR_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008),
 @item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008),
 @item @code{MPFR_RNDA}: round away from zero.
+@item @code{MPFR_RNDF}: faithful rounding.
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
@@ -756,6 +760,25 @@ For example, the number 2.5, which is represented by (10.1) in binary, is
 rounded to (10.0)=2 with a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section 4.2.2).
+
+The @code{MPFR_RNDF} mode works as follows: the computed value is either
+that corresponding to @code{MPFR_RNDD} or that corresponding to
+@code{MPFR_RNDU}.
+In particular when those values are identical,
+i.e., when the result of the corresponding operation is exactly
+representable, that exact result is returned.
+Thus, the computed result can take at most two possible values, and
+in absence of underflow/overflow, the corresponding error is strictly
+less than one ulp (unit in the last place) of that result and of the
+exact result.
+For @code{MPFR_RNDF}, the ternary value (defined below) and the inexact flag
+(defined later, as with the other flags) are unspecified, the divide-by-zero
+flag is as with other roundings, and the underflow and overflow flags match
+what would be obtained in the case the computed value is the same as with
+@code{MPFR_RNDD} or @code{MPFR_RNDU}.
+The results may not be reproducible.
+@c Or should one guarantee reproducibility under some condition?
+@c But this may be non-obvious if the caches may have an influence.
 
 @anchor{ternary value}@cindex Ternary value
 Most MPFR functions take as first argument the destination variable, as
@@ -1645,6 +1668,12 @@ respectively @code{unsigned long}, @code{long}, @code{unsigned int},
 @code{intmax_t}, when rounded to an integer in the direction @var{rnd}.
 For instance, with the @code{MPFR_RNDU} rounding mode on @minus{}0.5,
 the result will be non-zero for all these functions.
+For @code{MPFR_RNDF}, those functions return non-zero when it is guaranteed
+that the corresponding conversion function (for example @code{mpfr_get_ui}
+for @code{mpfr_fits_ulong_p}), when called with faithful rounding,
+will always return a number that is representable in the corresponding type.
+As a consequence, for @code{MPFR_RNDF}, @code{mpfr_fits_ulong_p} will return
+non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 @end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
@@ -2859,10 +2888,43 @@ In other words, if the error on @var{b} is bounded by two to the power
 you should give @var{err}=@var{prec}@minus{}@var{k}.
 This function @strong{does not modify} its arguments.
 
-If @var{rnd1} is @code{MPFR_RNDN}, the error is considered to be either
+If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
+the error is considered to be either
 positive or negative, thus the possible range
 is twice as large as with a directed rounding for @var{rnd1} (with the
 same value of @var{err}).
+
+When @var{rnd2} is @code{MPFR_RNDF}, let @var{rnd3} be the opposite direction
+if @var{rnd1} is a directed rounding, and @code{MPFR_RNDN}
+if @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF}.
+The returned value of @code{mpfr_can_round (b, err, rnd1, MPFR_RNDF, prec)}
+is non-zero iff after
+the call @code{mpfr_set (y, b, rnd3)} with @var{y} of precision @var{prec},
+@var{y} is guaranteed to be a faithful rounding of @var{x}.
+@c
+@c For rnd1=RNDN, let [u,v] be the interval where x can lie, then mpfr_can_round
+@c returns 1 exactly when either:
+@c a) [u,v] contains a unique representable number y in precision prec,
+@c    and both u and v round to y with RNDN
+@c b) [u,v] contains no representable number y in precision prec, then mpfr_set
+@c    will return either down(u) or up(v) which are both faithful roundings of x
+@c (With rnd2=RNDN instead, mpfr_can_round would only return 1 in case a).
+@c
+@c For rnd1=RNDU, let [u,b] be the interval where x can lie (we have v=b since
+@c rnd1=RNDU implies x <= b), then mpfr_can_round returns 1 exactly when either:
+@c a) [u,b] contains a (unique) representable number y in precision prec,
+@c    then b rounds to y with rnd3=RNDD
+@c b) [u,b] contains no representable number y in precision prec, then mpfr_set
+@c    will return down(u) which is a faithful rounding of x
+@c (With rnd2 a directed rounding instead of RNDF, mpfr_can_round would only return
+@c 1 in case b, apart from special cases where u or b are representable in precision
+@c prec).
+@c
+@c Note: This spec is better than one avoiding "hard cases" (leaving
+@c such cases indeterminate to have a mpfr_can_round in constant time).
+@c Indeed, the time gained by having a mpfr_can_round without hard cases
+@c would be lost by making the user recompute everything in a larger
+@c precision if one could have returned non-zero instead of 0.
 
 @c FIXME: This is still incorrect as inex can be 0. But the note can
 @c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually

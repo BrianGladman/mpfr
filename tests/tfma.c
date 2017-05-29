@@ -124,7 +124,7 @@ test_overflow2 (void)
   /* The intermediate multiplication x * y will overflow. */
 
   for (i = -9; i <= 9; i++)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         int inf, overflow;
 
@@ -727,7 +727,7 @@ main (int argc, char *argv[])
             if (randlimb () % 2)
               mpfr_neg (z, z, MPFR_RNDN);
 
-            rnd = RND_RAND ();
+            rnd = RND_RAND_NO_RNDF ();
             mpfr_set_prec (slong, 2 * prec);
             if (mpfr_mul (slong, x, y, rnd))
               {

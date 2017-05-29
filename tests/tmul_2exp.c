@@ -69,7 +69,7 @@ underflow (mpfr_exp_t e)
         for (prec = 6; prec >= 3; prec -= 3)
           {
             mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
-            RND_LOOP (rnd)
+            RND_LOOP_NO_RNDF (rnd)
               for (k = 1; k <= 4; k++)
                 {
                   /* The following one is assumed to be correct. */
@@ -265,7 +265,7 @@ overflow0 (mpfr_exp_t emax)
 
   for (neg = 0; neg <= 1; neg++)
     {
-      RND_LOOP (r)
+      RND_LOOP_NO_RNDF (r)
         {
           int inex1, inex2;
           mpfr_flags_t flags1, flags2;

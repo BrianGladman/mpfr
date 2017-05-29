@@ -77,7 +77,7 @@ check_inexact (void)
                   exit (1);
                 }
               cmp = mpfr_cmp_ui (z, u);
-              if (! SAME_SIGN (inexact, cmp))
+              if (rnd != MPFR_RNDF && ! SAME_SIGN (inexact, cmp))
                 {
                   printf ("Wrong inexact flag for u=%lu, rnd=%s\n",
                           u, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));

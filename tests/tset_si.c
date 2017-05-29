@@ -162,7 +162,7 @@ test_get_ui_smallneg (void)
           unsigned long u;
 
           mpfr_clear_erangeflag ();
-          s = mpfr_get_si (x, (mpfr_rnd_t) r);
+          s = mpfr_get_si (x, r != MPFR_RNDF ? (mpfr_rnd_t) r : MPFR_RNDA);
           if (mpfr_erangeflag_p ())
             {
               printf ("ERROR for get_si + ERANGE + small negative op"
@@ -224,7 +224,7 @@ static void get_tests (void)
           {
             ctr++;
             /* x = t?[i] + j/4 */
-            RND_LOOP (r)
+            RND_LOOP_NO_RNDF (r)
               {
                 mpfr_flags_t ex_flags, flags;
                 int k, overflow;

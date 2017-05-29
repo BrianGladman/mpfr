@@ -443,14 +443,14 @@ check_inexact (void)
                 : MPFR_EXP(u) - MPFR_EXP(x);
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
               mpfr_set_prec (z, pz);
-              rnd = RND_RAND ();
+              rnd = RND_RAND_NO_RNDF ();
               if (test_sub (z, x, u, rnd))
                 {
                   printf ("z <- x - u should be exact\n");
                   exit (1);
                 }
                 {
-                  rnd = RND_RAND ();
+                  rnd = RND_RAND_NO_RNDF ();
                   inexact = test_sub (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
@@ -683,7 +683,7 @@ check_max_almosteven (void)
           for (j = 1; j >= 0; j--)
             {
               mpfr_set_exp (b, __gmpfr_emax - j);
-              RND_LOOP (rnd)
+              RND_LOOP_NO_RNDF (rnd)
                 {
                   mpfr_flags_t flags1, flags2;
                   int inex1, inex2;
@@ -781,6 +781,165 @@ check_max_almosteven (void)
   set_emax (old_emax);
 }
 
+static void
+test_rndf (void)
+{
+  mpfr_t a, b, c, d;
+
+  mpfr_init2 (a, 7);
+  mpfr_init2 (b, 7);
+  mpfr_init2 (c, 7);
+  mpfr_init2 (d, 7);
+  mpfr_set_str_binary (b, "-1.000000e-7");
+  mpfr_set_str_binary (c, "-1.000000");
+  mpfr_sub (a, b, c, MPFR_RNDF);
+  MPFR_ASSERTN(MPFR_IS_NORMALIZED(a));
+  mpfr_sub (d, b, c, MPFR_RNDD);
+  if (!mpfr_equal_p (a, d))
+    {
+      mpfr_sub (d, b, c, MPFR_RNDU);
+      if (!mpfr_equal_p (a, d))
+        {
+          printf ("Error: mpfr_sub(a,b,c,RNDF) does not match RNDD/RNDU\n");
+          printf ("b="); mpfr_dump (b);
+          printf ("c="); mpfr_dump (c);
+          printf ("a="); mpfr_dump (a);
+          exit (1);
+        }
+    }
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+  mpfr_clear (d);
+}
+
+static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_set_ui_2exp (b, 1, eb, MPFR_RNDN);
+              while (mpfr_cmp_ui_2exp (b, 1, eb + 1) < 0)
+                {
+                  for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                    {
+                      mpfr_init2 (c, pc);
+                      mpfr_set_ui (c, 1, MPFR_RNDN);
+                      while (mpfr_cmp_ui (c, 2) < 0)
+                        {
+                          mpfr_sub (a, b, c, MPFR_RNDF);
+                          mpfr_sub (d, b, c, MPFR_RNDD);
+                          if (!mpfr_equal_p (a, d))
+                            {
+                              mpfr_sub (d, b, c, MPFR_RNDU);
+                              if (!mpfr_equal_p (a, d))
+                                {
+                                  printf ("Error: mpfr_sub(a,b,c,RNDF) does not "
+                                          "match RNDD/RNDU\n");
+                                  printf ("b="); mpfr_dump (b);
+                                  printf ("c="); mpfr_dump (c);
+                                  printf ("a="); mpfr_dump (a);
+                                  exit (1);
+                                }
+                            }
+                          mpfr_nextabove (c);
+                        }
+                      mpfr_clear (c);
+                    }
+                  mpfr_nextabove (b);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
+static void
+test_rndf_exact (mp_size_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      /* only check pa mod GMP_NUMB_BITS = -2, -1, 0, 1, 2 */
+      if ((pa + 2) % GMP_NUMB_BITS > 4)
+        continue;
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          if ((pb + 2) % GMP_NUMB_BITS > 4)
+            continue;
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_urandomb (b, RANDS);
+              mpfr_mul_2exp (b, b, eb, MPFR_RNDN);
+              for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                {
+                  if ((pc + 2) % GMP_NUMB_BITS > 4)
+                    continue;
+                  mpfr_init2 (c, pc);
+                  mpfr_urandomb (c, RANDS);
+                  mpfr_sub (a, b, c, MPFR_RNDF);
+                  mpfr_sub (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_sub (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_sub(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  /* now make the low bits from c match those from b */
+                  mpfr_add (c, b, d, MPFR_RNDN);
+                  mpfr_sub (a, b, c, MPFR_RNDF);
+                  mpfr_sub (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_sub (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_sub(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  mpfr_clear (c);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -794,6 +953,9 @@ main (void)
 
   tests_start_mpfr ();
 
+  test_rndf ();
+  testall_rndf (7);
+  test_rndf_exact (200);
   bug20101017 ();
   check_rounding ();
   check_diverse ();

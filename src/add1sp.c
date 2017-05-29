@@ -34,6 +34,9 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_flags_t old_flags, flags, flags2;
   int inexb, inexc, inexact, inexact2;
 
+  if (rnd_mode == MPFR_RNDF)
+    return mpfr_add1sp_ref (a, b, c, rnd_mode);
+
   old_flags = __gmpfr_flags;
 
   mpfr_init2 (tmpa, MPFR_PREC (a));
@@ -195,7 +198,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -300,7 +303,7 @@ mpfr_add1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -424,7 +427,7 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -580,7 +583,7 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
 
   MPFR_SET_EXP (a, bx);
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     MPFR_RET(0);
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -694,8 +697,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
       ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
 
+
+      /* Fast track for faithful rounding: since b and c have the same
+         precision and the same exponent, the neglected value is either
+         0 or 1/2 ulp(a), thus returning a is fine. */
+      if (rnd_mode == MPFR_RNDF)
+        { inexact = 0; goto set_exponent; }
+
       if ((limb & (MPFR_LIMB_ONE << sh)) == 0) /* Check exact case */
         { inexact = 0; goto set_exponent; }
+
       /* Zero: Truncate
          Nearest: Even Rule => truncate or add 1
          Away: Add 1 */
@@ -714,6 +725,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else if (MPFR_UNLIKELY (d >= p))
     {
+      /* fast track for RNDF */
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+        goto copy_set_exponent;
+
       if (MPFR_LIKELY (d > p))
         {
           /* d > p : Copy B in A */
@@ -739,10 +754,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       else
         {
           /* d==p : Copy B in A */
-          /* Away:    Add 1
-             Nearest: Even Rule if C is a power of 2, else Add 1
-             Zero:    Trunc */
-          if (MPFR_LIKELY (rnd_mode == MPFR_RNDN))
+          /* Away:     Add 1
+             Nearest:  Even Rule if C is a power of 2, else Add 1
+             Zero:     Trunc */
+          if (rnd_mode == MPFR_RNDN)
             {
               /* Check if C was a power of 2 */
               cp = MPFR_MANT(c);
@@ -766,7 +781,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             goto copy_add_one_ulp;
         }
     }
-  else
+  else /* 0 < d < p */
     {
       mp_limb_t mask;
       mp_limb_t bcp, bcp1; /* Cp and C'p+1 */
@@ -805,6 +820,15 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("Before", MPFR_MANT(c), p) );
       DEBUG( mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p) );
       DEBUG( mpfr_print_mant_binary("After ", cp, p) );
+
+      /* fast track for RNDF */
+      if (rnd_mode == MPFR_RNDF)
+        {
+          /* The bcp and bcp1 values will not matter for MPFR_RNDF, but
+             let's set them to 0 to avoid undefined behavior. */
+          bcp1 = bcp = 0;
+          goto clean;
+        }
 
       /* Compute bcp=Cp and bcp1=C'p+1: bcp is the first neglected bit
          (round bit), and bcp1 corresponds to the remaining bits (sticky bit).
@@ -871,6 +895,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       DEBUG (printf("sh=%u Cp=%lu C'p+1=%lu\n", sh,
                     (unsigned long) bcp, (unsigned long) bcp1));
 
+    clean:
       /* Clean shifted C' */
       mask = ~MPFR_LIMB_MASK(sh);
       cp[0] &= mask;
@@ -901,7 +926,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           Nearest: Truncate but could be exact if Cp==0
                    Add 1 if C'p+1 !=0,
                    Even rule else */
-      if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
+        { inexact = 0; goto set_exponent; }
+      else if (rnd_mode == MPFR_RNDN)
         {
           inexact = - (bcp1 != 0);
           if (bcp == 0)

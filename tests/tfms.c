@@ -46,8 +46,10 @@ test_exact (void)
                 mpfr_mul (r1, a, b, (mpfr_rnd_t) rnd) ||
                 mpfr_sub (r1, r1, c, (mpfr_rnd_t) rnd))
               {
-                printf ("test_exact internal error for (%d,%d,%d,%d)\n",
-                        i, j, k, rnd);
+                if (rnd == MPFR_RNDF)
+                  break;
+                printf ("test_exact internal error for (%d,%d,%d,%d,%s)\n",
+                        i, j, k, rnd, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 exit (1);
               }
             if (mpfr_fms (r2, a, b, c, (mpfr_rnd_t) rnd))
@@ -124,7 +126,7 @@ test_overflow2 (void)
   /* The intermediate multiplication x * y will overflow. */
 
   for (i = -9; i <= 9; i++)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         int inf, overflow;
 
@@ -576,7 +578,7 @@ main (int argc, char *argv[])
           if (randlimb () % 2)
             mpfr_neg (z, z, MPFR_RNDN);
 
-          rnd = RND_RAND ();
+          rnd = RND_RAND_NO_RNDF ();
           mpfr_set_prec (slong, 2 * prec);
           if (mpfr_mul (slong, x, y, rnd))
             {
@@ -594,7 +596,7 @@ main (int argc, char *argv[])
               printf ("  z=");
               mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
               printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
-                      mpfr_print_rnd_mode (rnd));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               printf ("got      ");
               mpfr_out_str (stdout, 2, prec, s, MPFR_RNDN);
               puts ("");
@@ -611,7 +613,8 @@ main (int argc, char *argv[])
               ((inexact > 0) && (compare <= 0)))
             {
               printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-                      mpfr_print_rnd_mode (rnd), compare, inexact);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
+                      compare, inexact);
               printf (" x="); mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (" y="); mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" z="); mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);

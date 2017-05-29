@@ -438,13 +438,17 @@ check_inexact (mpfr_prec_t p)
   mpfr_urandomb (x, RANDS);
   u = randlimb () % 2;
   for (q = MPFR_PREC_MIN; q <= p; q++)
-    for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+    RND_LOOP_NO_RNDF(rnd)
       {
         mpfr_set_prec (y, q);
         mpfr_set_prec (z, q + 10);
         mpfr_set_prec (t, q);
         inexact = mpfr_pow_ui (y, x, u, (mpfr_rnd_t) rnd);
         cmp = mpfr_pow_ui (z, x, u, (mpfr_rnd_t) rnd);
+        /* Note: that test makes no sense for RNDF, since according to the
+           reference manual, if the mpfr_can_round() call succeeds, one would
+           have to use RNDN in the mpfr_set() call below, which might give a
+           different value for t that the value y obtained above. */
         if (mpfr_can_round (z, q + 10, (mpfr_rnd_t) rnd, (mpfr_rnd_t) rnd, q))
           {
             cmp = mpfr_set (t, z, (mpfr_rnd_t) rnd) || cmp;
@@ -1470,7 +1474,7 @@ bug20080721 (void)
   MPFR_ASSERTN (inex == 0);
   mpfr_set_str_binary (t[0], "-0.10101101e2");
   mpfr_set_str_binary (t[1], "-0.10101110e2");
-  RND_LOOP (rnd)
+  RND_LOOP_NO_RNDF (rnd)
     {
       int i, inex0;
 
@@ -1478,6 +1482,7 @@ bug20080721 (void)
       inex0 = i ? -1 : 1;
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
+
       if (__gmpfr_flags != MPFR_FLAGS_INEXACT || ! SAME_SIGN (inex, inex0)
           || MPFR_IS_NAN (z) || mpfr_cmp (z, t[i]) != 0)
         {

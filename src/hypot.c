@@ -188,7 +188,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
 
   MPFR_BLOCK (flags, inexact = mpfr_div_2si (z, t, sh, rnd_mode));
-  MPFR_ASSERTD (exact == 0 || inexact != 0);
+  MPFR_ASSERTD (exact == 0 || inexact != 0 || rnd_mode == MPFR_RNDF);
 
   mpfr_clear (t);
   mpfr_clear (ti);

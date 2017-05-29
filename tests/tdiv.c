@@ -29,6 +29,8 @@ check_equal (mpfr_srcptr a, mpfr_srcptr a2, char *s,
   if ((MPFR_IS_NAN (a) && MPFR_IS_NAN (a2)) ||
       mpfr_equal_p (a, a2))
     return;
+  if (r == MPFR_RNDF) /* RNDF might return different values */
+    return;
   printf ("Error in %s\n", mpfr_print_rnd_mode (r));
   printf ("b  = ");
   mpfr_dump (b);
@@ -51,7 +53,9 @@ mpfr_all_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
   oldflags = __gmpfr_flags;
   inex = mpfr_div (a, b, c, r);
 
-  if (a == b || a == c)
+  /* this test makes no sense for RNDF, since it compares the ternary value
+     and the flags */
+  if (a == b || a == c || r == MPFR_RNDF)
     return inex;
 
   newflags = __gmpfr_flags;
@@ -410,7 +414,7 @@ check_hard (void)
               mpfr_nextbelow (u);
               for (i = 0; i <= 2; i++)
                 {
-                  RND_LOOP(rnd)
+                  RND_LOOP_NO_RNDF (rnd)
                     {
                       inex = test_div (q, u, v, (mpfr_rnd_t) rnd);
                       inex2 = get_inexact (q, u, v);
@@ -678,7 +682,8 @@ check_inexact (void)
               mpfr_set_prec (y, py);
               mpfr_set_prec (z, py + pu);
                 {
-                  rnd = RND_RAND ();
+                  /* inexact is undefined for RNDF */
+                  rnd = RND_RAND_NO_RNDF ();
                   inexact = test_div (y, x, u, rnd);
                   if (mpfr_mul (z, y, u, rnd))
                     {
@@ -977,7 +982,8 @@ consistency (void)
       mpfr_prec_t px, py, pz, p;
       int inex1, inex2;
 
-      rnd = RND_RAND ();
+      /* inex is undefined for RNDF */
+      rnd = RND_RAND_NO_RNDF ();
       px = (randlimb () % 256) + 2;
       py = (randlimb () % 128) + 2;
       pz = (randlimb () % 256) + 2;
@@ -1311,6 +1317,56 @@ test_extreme (void)
 }
 
 static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          while (mpfr_cmp_ui (b, 2) < 0)
+            {
+              for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                {
+                  mpfr_init2 (c, pc);
+                  mpfr_set_ui (c, 1, MPFR_RNDN);
+                  while (mpfr_cmp_ui (c, 2) < 0)
+                    {
+                      mpfr_div (a, b, c, MPFR_RNDF);
+                      mpfr_div (d, b, c, MPFR_RNDD);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          mpfr_div (d, b, c, MPFR_RNDU);
+                          if (!mpfr_equal_p (a, d))
+                            {
+                              printf ("Error: mpfr_div(a,b,c,RNDF) does not "
+                                      "match RNDD/RNDU\n");
+                              printf ("b="); mpfr_dump (b);
+                              printf ("c="); mpfr_dump (c);
+                              printf ("a="); mpfr_dump (a);
+                              exit (1);
+                            }
+                        }
+                      mpfr_nextabove (c);
+                    }
+                  mpfr_clear (c);
+                }
+              mpfr_nextabove (b);
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
+static void
 test_mpfr_divsp2 (void)
 {
   mpfr_t u, v, q;
@@ -1432,6 +1488,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  testall_rndf (9);
   test_20170105 ();
   check_inexact ();
   check_hard ();

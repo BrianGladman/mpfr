@@ -42,7 +42,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_prec_t aq, bq;
   int inexact, shift_b, shift_c, add_exp = 0;
   int cmp_low = 0; /* used for rounding to nearest: 0 if low(b) = low(c),
-                      negative if low(b) < low(c), positive if low(b)>low(c) */
+                      negative if low(b) < low(c), positive if low(b) > low(c) */
   int sh, k;
   MPFR_TMP_DECL(marker);
 
@@ -118,6 +118,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          = B.BBBBBBBBBBBBBBB
           -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
+
+      /* since we can't have an exact result, for RNDF we can truncate b */
+      if (rnd_mode == MPFR_RNDF)
+        return mpfr_set4 (a, b, MPFR_RNDZ, MPFR_SIGN (a));
+
       MPFR_EXP (a) = exp_b;  /* may be up to MPFR_EXP_MAX */
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
                         rnd_mode, MPFR_SIGN (a),
@@ -352,7 +357,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
 
-  if (rnd_mode == MPFR_RNDN)
+  if (rnd_mode == MPFR_RNDF)
+    {
+      inexact = 0;
+      /* truncating is always correct since -1 ulp < low(b) - low(c) < 1 ulp */
+      goto truncate;
+    }
+  else if (rnd_mode == MPFR_RNDN)
     {
       if (MPFR_LIKELY(sh))
         {

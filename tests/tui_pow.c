@@ -239,12 +239,12 @@ main (int argc, char *argv[])
   for (prec = p0; prec <= p1; prec++)
     {
       mpfr_set_prec (x, prec);
-      for (n=0; n<N; n++)
+      for (n = 0; n < N; n++)
         {
           int nt;
           nt = randlimb () & INT_MAX;
           mpfr_urandomb (x, RANDS);
-          rnd = RND_RAND ();
+          rnd = RND_RAND_NO_RNDF ();
           check1 (x, prec, nt, rnd);
         }
     }

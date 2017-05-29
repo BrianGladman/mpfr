@@ -285,7 +285,7 @@ basic_tests (void)
 
             mpfr_set_si_2exp (x, s * i, -2, MPFR_RNDN);
             e = mpfr_get_exp (x);
-            RND_LOOP(r)
+            RND_LOOP_NO_RNDF (r)
               {
                 BASIC_TEST (trunc, s * (i/4));
                 BASIC_TEST (floor, s > 0 ? i/4 : - ((i+3)/4));
@@ -548,7 +548,7 @@ main (int argc, char *argv[])
                              mpfr_rint_floor (y, x, MPFR_RNDD));
                 else
                   {
-                    MPFR_ASSERTN (r == MPFR_RNDA);
+                    MPFR_ASSERTN (r == MPFR_RNDA || r == MPFR_RNDF);
                     continue;
                   }
                 if (mpfr_sub (t, y, x, MPFR_RNDN))

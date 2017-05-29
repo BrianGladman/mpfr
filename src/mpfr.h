@@ -92,9 +92,6 @@ typedef unsigned int    mpfr_flags_t;
    MPFR_RNDU must appear just before MPFR_RNDD (see
    MPFR_IS_RNDUTEST_OR_RNDDNOTTEST in mpfr-impl.h).
 
-   MPFR_RNDF has been added, though not implemented yet, in order to avoid
-   to break the ABI once faithful rounding gets implemented.
-
    If you change the order of the rounding modes, please update the routines
    in texceptions.c which assume 0=RNDN, 1=RNDZ, 2=RNDU, 3=RNDD, 4=RNDA.
 */
@@ -104,7 +101,7 @@ typedef enum {
   MPFR_RNDU,    /* round toward +Inf */
   MPFR_RNDD,    /* round toward -Inf */
   MPFR_RNDA,    /* round away from zero */
-  MPFR_RNDF,    /* faithful rounding (not implemented yet) */
+  MPFR_RNDF,    /* faithful rounding */
   MPFR_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */
 } mpfr_rnd_t;
 

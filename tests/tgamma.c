@@ -797,7 +797,7 @@ tiny_aux (int stop, mpfr_exp_t e)
   spm = 1;
   for (s = 0; s < 2; s++)
     {
-      RND_LOOP(r)
+      RND_LOOP_NO_RNDF (r)
         {
           mpfr_rnd_t rr = (mpfr_rnd_t) r;
           mpfr_exp_t exponent, emax;

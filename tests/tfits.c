@@ -191,7 +191,8 @@ main (void)
             int inv;
 
             mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
-            mpfr_rint (y, x, (mpfr_rnd_t) r);
+            /* for RNDF, it fits if it fits when rounding away from zero */
+            mpfr_rint (y, x, r != MPFR_RNDF ? (mpfr_rnd_t) r : MPFR_RNDA);
             inv = MPFR_NOTZERO (y);
             FTEST (80, inv ^ !, mpfr_fits_ulong_p);
             FTEST (81,       !, mpfr_fits_slong_p);
@@ -257,7 +258,10 @@ main (void)
           mpfr_set_si_2exp (x, -i, -2, MPFR_RNDN);
           mpfr_rint (y, x, (mpfr_rnd_t) r);
           inv = MPFR_NOTZERO (y);
-          FTEST (80, inv ^ !, mpfr_fits_uintmax_p);
+          if (r != MPFR_RNDF)
+            FTEST (80, inv ^ !, mpfr_fits_uintmax_p);
+          else
+            FTEST (80, !!, mpfr_fits_uintmax_p);
           FTEST (81,       !, mpfr_fits_intmax_p);
         }
     }

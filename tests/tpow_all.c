@@ -368,7 +368,7 @@ tst (void)
 
   for (i = 0; i < sv; i++)
     for (j = 0; j < sv; j++)
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
         {
           int exact, inex;
           unsigned int flags;
@@ -508,7 +508,7 @@ underflow_up1 (void)
 
       sprintf (sy, "emin - %d/4", i);
 
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
         {
           int zero;
 
@@ -576,7 +576,7 @@ underflow_up2 (void)
   /* 0 < eps < 1 / (2n), thus (1 - eps)^n > 1/2,
      and 1/2 (1/2)^n < (1/2 - eps/2)^n < (1/2)^n. */
   mpfr_inits2 (64, z, z0, (mpfr_ptr) 0);
-  RND_LOOP (rnd)
+  RND_LOOP_NO_RNDF (rnd)
     {
       unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
       int expected_inex;
@@ -614,7 +614,7 @@ underflow_up3 (void)
   inex = mpfr_set_exp_t (y, mpfr_get_emin () - 2, MPFR_RNDN);
   MPFR_ASSERTN (inex == 0);
   for (i = -1; i <= 1; i++)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
         int expected_inex;
@@ -690,7 +690,7 @@ overflow_inv (void)
                * t = 0: always overflow
                * t > 0: overflow for MPFR_RNDN and MPFR_RNDU.
                */
-              RND_LOOP (rnd)
+              RND_LOOP_NO_RNDF (rnd)
                 {
                   int inf, overflow;
                   mpfr_rnd_t rnd2;

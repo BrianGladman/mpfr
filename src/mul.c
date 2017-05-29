@@ -163,6 +163,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_t ta, tb, tc;
   int inexact1, inexact2;
 
+  if (rnd_mode == MPFR_RNDF)
+    return mpfr_mul2 (a, b, c, rnd_mode);
+
   mpfr_init2 (ta, MPFR_PREC (a));
   mpfr_init2 (tb, MPFR_PREC (b));
   mpfr_init2 (tc, MPFR_PREC (c));
@@ -274,7 +277,7 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
  rounding:
   MPFR_EXP (a) = ax; /* Don't use MPFR_SET_EXP since ax might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
       return 0; /* idem than MPFR_RET(0) but faster */
@@ -369,7 +372,7 @@ mpfr_mul_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  rounding:
   MPFR_EXP (a) = ax; /* Don't use MPFR_SET_EXP since ax might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
       return 0; /* idem than MPFR_RET(0) but faster */
@@ -495,7 +498,7 @@ mpfr_mul_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
  rounding:
   MPFR_EXP (a) = ax; /* Don't use MPFR_SET_EXP since ax might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
       return 0; /* idem than MPFR_RET(0) but faster */
@@ -632,7 +635,7 @@ mpfr_mul_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
  rounding:
   MPFR_EXP (a) = ax; /* Don't use MPFR_SET_EXP since ax might be < __gmpfr_emin
                         in the cases "goto rounding" above. */
-  if (rb == 0 && sb == 0)
+  if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
       return 0; /* idem than MPFR_RET(0) but faster */
@@ -768,7 +771,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
 
-  /* FIXME: Useful since we do an exponent check after ?
+  /* FIXME: Useful since we do an exponent check after?
    * It is useful iff the precision is big, there is an overflow
    * and we are doing further mults...*/
 #ifdef HUGE
@@ -986,8 +989,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
-        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1, aq
-                                          + (rnd_mode == MPFR_RNDN))))
+        if (rnd_mode == MPFR_RNDF && p + b1 - 1 >= aq)
+          {
+            /* we can round */
+          }
+        else if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
+                                               aq + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
             goto full_multiply;

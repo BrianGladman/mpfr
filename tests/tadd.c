@@ -528,7 +528,7 @@ check_inexact (void)
           pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
           mpfr_set_prec (z, pz);
 
-          rnd = RND_RAND ();
+          rnd = RND_RAND_NO_RNDF ();
           inexact = test_add (z, x, u, rnd);
           if (inexact != 0)
             {
@@ -539,7 +539,7 @@ check_inexact (void)
               exit (1);
             }
 
-          rnd = RND_RAND ();
+          rnd = RND_RAND_NO_RNDF ();
           inexact = test_add (y, x, u, rnd);
           cmp = mpfr_cmp (y, z);
           if ((inexact == 0 && cmp != 0) ||
@@ -638,7 +638,7 @@ check_overflow (void)
   mpfr_init (b);
   mpfr_init (c);
 
-  RND_LOOP(r)
+  RND_LOOP_NO_RNDF (r)
     for (prec_a = 2; prec_a <= 128; prec_a += 2)
       for (prec_b = 2; prec_b <= 128; prec_b += 2)
         for (prec_c = 2; prec_c <= 128; prec_c += 2)
@@ -754,7 +754,7 @@ check_1111 (void)
       test_add (c, c, one, MPFR_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, MPFR_RNDN);
-      rnd_mode = RND_RAND ();
+      rnd_mode = RND_RAND_NO_RNDF ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
       inex_s = test_add (s, b, c, MPFR_RNDN); /* exact */
@@ -823,6 +823,9 @@ check_1minuseps (void)
             {
               mpfr_t s;
               int inex_a, inex_s;
+
+              if (rnd_mode == MPFR_RNDF)
+                continue; /* inex_a, inex_s make no sense */
 
               mpfr_set_ui (c, 1, MPFR_RNDN);
               mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], MPFR_RNDN);
@@ -1159,10 +1162,15 @@ check_extreme (void)
         inex = mpfr_add (y, u, w, MPFR_RNDN);
         MPFR_ASSERTN (inex == 0);
         mpfr_prec_round (y, 32, (mpfr_rnd_t) r);
-        if (! mpfr_equal_p (x, y))
+        /* for RNDF, the rounding directions are not necessarily consistent */
+        if (! mpfr_equal_p (x, y) && r != MPFR_RNDF)
           {
-            printf ("Error in check_extreme (%s, i = %d)\n",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
+            printf ("Error in u + v (%s)\n",
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+            printf ("u = ");
+            mpfr_dump (u);
+            printf ("v = ");
+            mpfr_dump (v);
             printf ("Expected ");
             mpfr_dump (y);
             printf ("Got      ");
@@ -1173,6 +1181,133 @@ check_extreme (void)
         mpfr_neg (w, w, MPFR_RNDN);
       }
   mpfr_clears (u, v, w, x, y, (mpfr_ptr) 0);
+}
+
+static void
+testall_rndf (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_set_ui_2exp (b, 1, eb, MPFR_RNDN);
+              while (mpfr_cmp_ui_2exp (b, 1, eb + 1) < 0)
+                {
+                  for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                    {
+                      mpfr_init2 (c, pc);
+                      mpfr_set_ui (c, 1, MPFR_RNDN);
+                      while (mpfr_cmp_ui (c, 2) < 0)
+                        {
+                          mpfr_add (a, b, c, MPFR_RNDF);
+                          mpfr_add (d, b, c, MPFR_RNDD);
+                          if (!mpfr_equal_p (a, d))
+                            {
+                              mpfr_add (d, b, c, MPFR_RNDU);
+                              if (!mpfr_equal_p (a, d))
+                                {
+                                  printf ("Error: mpfr_add(a,b,c,RNDF) does not "
+                                          "match RNDD/RNDU\n");
+                                  printf ("b="); mpfr_dump (b);
+                                  printf ("c="); mpfr_dump (c);
+                                  printf ("a="); mpfr_dump (a);
+                                  exit (1);
+                                }
+                            }
+                          mpfr_nextabove (c);
+                        }
+                      mpfr_clear (c);
+                    }
+                  mpfr_nextabove (b);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
+}
+
+static void
+test_rndf_exact (mp_size_t pmax)
+{
+  mpfr_t a, b, c, d;
+  mpfr_prec_t pa, pb, pc;
+  mpfr_exp_t eb;
+
+  for (pa = MPFR_PREC_MIN; pa <= pmax; pa++)
+    {
+      /* only check pa mod GMP_NUMB_BITS = -2, -1, 0, 1, 2 */
+      if ((pa + 2) % GMP_NUMB_BITS > 4)
+        continue;
+      mpfr_init2 (a, pa);
+      mpfr_init2 (d, pa);
+      for (pb = MPFR_PREC_MIN; pb <= pmax; pb++)
+        {
+          if ((pb + 2) % GMP_NUMB_BITS > 4)
+            continue;
+          mpfr_init2 (b, pb);
+          for (eb = 0; eb <= pmax + 3; eb ++)
+            {
+              mpfr_urandomb (b, RANDS);
+              mpfr_mul_2exp (b, b, eb, MPFR_RNDN);
+              for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
+                {
+                  if ((pc + 2) % GMP_NUMB_BITS > 4)
+                    continue;
+                  mpfr_init2 (c, pc);
+                  mpfr_urandomb (c, RANDS);
+                  mpfr_add (a, b, c, MPFR_RNDF);
+                  mpfr_add (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_add (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_add(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  /* now make the low bits from c match those from b */
+                  mpfr_sub (c, b, d, MPFR_RNDN);
+                  mpfr_add (a, b, c, MPFR_RNDF);
+                  mpfr_add (d, b, c, MPFR_RNDD);
+                  if (!mpfr_equal_p (a, d))
+                    {
+                      mpfr_add (d, b, c, MPFR_RNDU);
+                      if (!mpfr_equal_p (a, d))
+                        {
+                          printf ("Error: mpfr_add(a,b,c,RNDF) does not "
+                                  "match RNDD/RNDU\n");
+                          printf ("b="); mpfr_dump (b);
+                          printf ("c="); mpfr_dump (c);
+                          printf ("a="); mpfr_dump (a);
+                          exit (1);
+                        }
+                    }
+
+                  mpfr_clear (c);
+                }
+            }
+          mpfr_clear (b);
+        }
+      mpfr_clear (a);
+      mpfr_clear (d);
+    }
 }
 
 #define TEST_FUNCTION test_add
@@ -1193,6 +1328,8 @@ main (int argc, char *argv[])
   tests ();
 #endif
 
+  test_rndf_exact (200);
+  testall_rndf (7);
   check_extreme ();
 
   test_generic (MPFR_PREC_MIN, 1000, 100);

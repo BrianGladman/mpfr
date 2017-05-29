@@ -67,7 +67,7 @@ test_round_near_x (void)
            mpfr_neg (x, x, MPFR_RNDN), p++, neg++)
         for (err = 2; err <= 6; err++)
           for (dir = 0; dir <= 1; dir++)
-            RND_LOOP(r)
+            RND_LOOP_NO_RNDF (r)
               {
                 inex = mpfr_round_near_x (y, x, err, dir, (mpfr_rnd_t) r);
 

@@ -51,7 +51,7 @@ check_inexact (void)
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          RND_LOOP (rnd)
+          RND_LOOP_NO_RNDF (rnd)
             {
               inexact = mpfr_abs (y, x, (mpfr_rnd_t) rnd);
               cmp = mpfr_cmp (y, absx);
@@ -59,8 +59,9 @@ check_inexact (void)
                   ((inexact > 0) && (cmp <= 0)) ||
                   ((inexact < 0) && (cmp >= 0)))
                 {
-                  printf ("Wrong inexact flag: expected %d, got %d\n",
-                          cmp, inexact);
+                  printf ("Wrong inexact flag for %s: expected %d, got %d\n",
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), cmp,
+                          inexact);
                   printf ("x="); mpfr_dump (x);
                   printf ("absx="); mpfr_dump (absx);
                   printf ("y="); mpfr_dump (y);

@@ -141,7 +141,7 @@ underflowed_cothinf (void)
   mpfr_init2 (y, 8);
 
   for (i = -1; i <= 1; i += 2)
-    RND_LOOP (rnd)
+    RND_LOOP_NO_RNDF (rnd)
       {
         mpfr_set_inf (x, i);
         mpfr_clear_flags ();

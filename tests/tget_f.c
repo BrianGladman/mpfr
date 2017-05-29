@@ -186,13 +186,13 @@ ternary_test (void)
       /* y == 1 */
       mpfr_set_ui_2exp (y, 1, prec, MPFR_RNDN);
 
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
       {
         inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
-        if (inex != 0 || mpfr_cmp_f (y, x) !=0)
+        if (inex != 0 || mpfr_cmp_f (y, x) != 0)
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (1) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");
@@ -207,7 +207,7 @@ ternary_test (void)
       /* y == 1 + epsilon */
       mpfr_nextbelow (y);
 
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
       {
         switch (rnd)
           {
@@ -224,7 +224,7 @@ ternary_test (void)
         if (! SAME_SIGN (expected_inex, inex)
             || SAME_SIGN (expected_inex, mpfr_cmp_f (y, x)))
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (2) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");
@@ -240,13 +240,13 @@ ternary_test (void)
       /* y == positive random float */
       mpfr_random2 (y, MPFR_LIMB_SIZE (y), 1024, RANDS);
 
-      RND_LOOP (rnd)
+      RND_LOOP_NO_RNDF (rnd)
       {
         inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
         if (! SAME_SIGN (inex, -mpfr_cmp_f (y, x)))
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+            printf ("Error (3) in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");

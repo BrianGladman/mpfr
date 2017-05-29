@@ -103,7 +103,7 @@ random_tests (void)
       mpfr_urandomb (b, RANDS);
       mpfr_urandomb (c, RANDS);
       mpfr_urandomb (d, RANDS);
-      RND_LOOP (r)
+      RND_LOOP_NO_RNDF (r)
         random_test (a, b, c, d, (mpfr_rnd_t) r);
       mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
     }
@@ -263,7 +263,7 @@ overflow_tests (void)
       set_emax (emax);
       exp_a = emax/2 + 32;
 
-      rnd = RND_RAND ();
+      rnd = RND_RAND_NO_RNDF ();
       prec_a = 64 + randlimb () % 100;
       prec_z = MPFR_PREC_MIN + randlimb () % 160;
 
@@ -347,6 +347,9 @@ overflow_tests (void)
           mpfr_dump (z2);
           printf ("  with inex = %d, flags =", inex2);
           flags_out (flags2);
+          printf ("a="); mpfr_dump (a);
+          printf ("c="); mpfr_dump (c);
+          printf ("d="); mpfr_dump (d);
           exit (1);
         }
 
