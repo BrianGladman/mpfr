@@ -36,7 +36,7 @@ mpfr_atanh_small (mpfr_ptr y, mpfr_srcptr x)
   unsigned long i;
   int k;
 
-  MPFR_ASSERTD(mpfr_get_exp (x) <= -1);
+  MPFR_ASSERTD(MPFR_GET_EXP (x) <= -1);
 
   /* in the following, theta represents a value with |theta| <= 2^(1-p)
      (might be a different value each time) */
@@ -51,7 +51,7 @@ mpfr_atanh_small (mpfr_ptr y, mpfr_srcptr x)
     {
       mpfr_mul (t, t, x2, MPFR_RNDF);    /* t = x^i * (1 + theta)^i */
       mpfr_div_ui (u, t, i, MPFR_RNDF); /* u = x^i/i * (1 + theta)^(i+1) */
-      if (mpfr_get_exp (u) <= mpfr_get_exp (y) - p) /* |u| < ulp(y) */
+      if (MPFR_GET_EXP (u) <= MPFR_GET_EXP (y) - p) /* |u| < ulp(y) */
         break;
       mpfr_add (y, y, u, MPFR_RNDF); /* error <= ulp(y) */
     }
@@ -174,7 +174,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
            variant whenever EXP(x) <= -p/log2(p). */
         k = 1 + __gmpfr_int_ceil_log2 (Ny); /* the +1 avoids a division by 0
                                                when Ny=1 */
-        if (mpfr_get_exp (x) <= - 1 - (mpfr_exp_t) Ny / k)
+        if (MPFR_GET_EXP (x) <= - 1 - (mpfr_exp_t) (Ny / k))
           /* this implies EXP(x) <= -1 thus x < 1/2 */
           {
             err = Nt - mpfr_atanh_small (t, x);
