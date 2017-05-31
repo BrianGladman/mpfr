@@ -181,6 +181,12 @@ public:
     return mpfr_log (a,b,r);
   }
 };
+class mpfr_log1p_test {
+public:
+  int func (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
+    return mpfr_log1p (a,b,r);
+  }
+};
 class mpfr_erf_test {
 public:
   int func (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t r) {
@@ -298,6 +304,7 @@ static mpfr_test<mpfr_tan_test>  testC ("mpfr_tan");
 static mpfr_test<mpfr_acos_test> testD ("mpfr_acos");
 static mpfr_test<mpfr_asin_test> testE ("mpfr_asin");
 static mpfr_test<mpfr_atan_test> testF ("mpfr_atan");
+static mpfr_test<mpfr_log1p_test> testG ("mpfr_log1p");
 
 static mpfr_test<mpfr_cosh_test>  testAh ("mpfr_cosh");
 static mpfr_test<mpfr_sinh_test>  testBh ("mpfr_sinh");
