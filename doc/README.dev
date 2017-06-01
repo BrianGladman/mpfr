@@ -410,7 +410,10 @@ Format of long double.
 + HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
 
-+ DEBUG:                For debugging messages in some functions.
++ DEBUG:                For debugging messages in some functions (currently
+                        not suitable for "make check" because many messages
+                        would be output and it is not possible to disable
+                        these messages once this macro has been defined).
 + XDEBUG:               Use generic 'double' code instead of IEEE specific one.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
