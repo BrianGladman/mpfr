@@ -1,6 +1,3 @@
-TODO for faithful branch:
-- deal with RNDF in mpfr_round_near_x (replaced by RNDZ)
-
 Copyright 1999-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
@@ -414,6 +411,9 @@ Table of contents:
   be 0. ARM and PowerPC could benefit from such an optimization,
   but not x86. This needs support from the compiler.
   For PowerPC: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79233
+
+- deal with MPFR_RNDF in mpfr_round_near_x (replaced by MPFR_RNDZ).
+
 
 ##############################################################################
 6. Miscellaneous

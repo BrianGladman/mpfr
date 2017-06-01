@@ -751,6 +751,9 @@ The following rounding modes are supported:
 @item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008),
 @item @code{MPFR_RNDA}: round away from zero.
 @item @code{MPFR_RNDF}: faithful rounding.
+@c FIXME: MPFR_RNDF is supported partially. Either the whole code is
+@c checked manually (in particular comparisons on rounding modes) and
+@c fixed, or it should be documented which functions are supported.
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
