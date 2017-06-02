@@ -52,6 +52,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define mpf_cmp_ui mpfr_cmp_ui
 #undef mpf_cmp_d
 #define mpf_cmp_d mpfr_cmp_d
+/* mpf_cmp_z appeared in GMP 6.1.0 */
+#if GMP_VERSION >= 6 && GMP_VERSION_MINOR >= 1
+#undef mpf_cmp_z
+#define mpf_cmp_z mpfr_cmp_z
+#endif
 #undef mpf_eq
 #define mpf_eq mpfr_eq
 #undef mpf_floor
