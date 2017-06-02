@@ -31,8 +31,8 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
   mpz_ptr u = mpq_numref (q);
   mpz_ptr v = mpq_denref (q);
 
-  
   mpz_set_ui (v, 1);
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
     {
       if (MPFR_UNLIKELY (MPFR_NOTZERO (f)))
@@ -46,8 +46,14 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
     {
       exp = mpfr_get_z_2exp (u, f);
       if (exp >= 0)
-        mpz_mul_2exp (u, u, exp);
-      else
-        mpz_mul_2exp (v, v, -exp);
+        {
+          MPFR_ASSERTN (exp <= (mp_bitcnt_t) -1);
+          mpz_mul_2exp (u, u, exp);
+        }
+      else  /* exp < 0 */
+        {
+          MPFR_ASSERTN (-exp <= (mp_bitcnt_t) -1);
+          mpz_mul_2exp (v, v, -exp);
+        }
     }
 }
