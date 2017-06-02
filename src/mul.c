@@ -966,15 +966,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpfr_mulhigh_n (tmp + k - 2 * n, bp, cp, n);
         else
           mpfr_sqrhigh_n (tmp + k - 2 * n, bp, n);
-        /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-           with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
-        /* [VL] FIXME: This cannot be true: mpfr_mulhigh_n only
-           depends on pointers and n. As k can be arbitrarily larger,
-           the result cannot depend on k. And indeed, with GMP compiled
-           with --enable-alloca=debug, valgrind was complaining, at
-           least because MPFR_RNDRAW at the end tried to compute the
-           sticky bit even when not necessary; this problem is fixed,
-           but there's at least something wrong with the comment above. */
+        /* now tmp[k-n]..tmp[k-1] contains an approximation of the n upper
+           limbs of the product, with tmp[k-1] >= 2^(GMP_NUMB_BITS-2) */
         b1 = tmp[k-1] >> (GMP_NUMB_BITS - 1); /* msb from the product */
 
         /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
@@ -985,12 +978,22 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              tmp[k-n-1..k-1], thus we shift only those limbs */
           mpn_lshift (tmp + k - n - 1, tmp + k - n - 1, n + 1, 1);
         tmp += k - tn;
+        /* now the approximation is in tmp[tn-n]...tmp[tn-1] */
         MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
-        if (rnd_mode == MPFR_RNDF && p + b1 - 1 >= aq)
+        if (rnd_mode == MPFR_RNDF && p + b1 - 1 >= aq
+            && ((aq % GMP_NUMB_BITS) != 0))
           {
+            /* Warning: while we know the error is bounded by
+               ufp(tmp)/2^(p+b1-1), and we want aq correct bits,
+               simply truncating tmp might give a result which is
+               1 ulp too small, in case tmp ends with 111...111.
+               But if we add one to tmp[tn-n], and then truncate, we
+               cannot exceed what would be obtained by RNDU,
+               since tmp has more bits than a */
+            mpn_add_1 (tmp + tn - n, tmp + tn - n, n, MPFR_LIMB_ONE);
             /* we can round */
           }
         else if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
@@ -1019,7 +1022,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       }
 
   ax2 = ax + (mpfr_exp_t) (b1 - 1);
-  MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
+  MPFR_RNDRAW (inexact, a, tmp, bq + cq, rnd_mode, sign, ax2++);
   MPFR_TMP_FREE (marker);
   MPFR_EXP (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
   MPFR_SET_SIGN (a, sign);
