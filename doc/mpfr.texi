@@ -3859,6 +3859,8 @@ in MPFR 4.0.
 
 @item @code{mpfr_get_patches} in MPFR 2.3.
 
+@item @code{mpfr_get_q} in MPFR 4.0
+
 @item @code{mpfr_get_z_2exp} in MPFR 3.0.
 This function was named @code{mpfr_get_z_exp} in previous versions;
 @code{mpfr_get_z_exp} is still available via a macro in @file{mpfr.h}:
