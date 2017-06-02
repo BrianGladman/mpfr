@@ -53,7 +53,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef mpf_cmp_d
 #define mpf_cmp_d mpfr_cmp_d
 /* mpf_cmp_z appeared in GMP 6.1.0 */
-#if __MPFR_GMP(6,1,0)
+#if __GNU_MP_VERSION > 6 || (__GNU_MP_VERSION == 6 && __GNU_MP_VERSION_MINOR >= 1)
 #undef mpf_cmp_z
 #define mpf_cmp_z mpfr_cmp_z
 #endif
