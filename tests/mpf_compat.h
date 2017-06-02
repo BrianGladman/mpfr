@@ -229,6 +229,16 @@ main (void)
       exit (1);
     }
 
+  /* non-regression tests for bugs fixed in revision 11565 */
+  mpf_set_si (x, -1);
+  MPFR_ASSERTN(mpf_fits_ulong_p (x) == 0);
+  MPFR_ASSERTN(mpf_fits_slong_p (x) != 0);
+  MPFR_ASSERTN(mpf_fits_uint_p (x) == 0);
+  MPFR_ASSERTN(mpf_fits_sint_p (x) != 0);
+  MPFR_ASSERTN(mpf_fits_ushort_p (x) == 0);
+  MPFR_ASSERTN(mpf_fits_sshort_p (x) != 0);
+  MPFR_ASSERTN(mpf_get_si (x) == -1);
+
   /* clear all variables */
   mpf_clear (y);
   mpf_clear (x);
