@@ -151,7 +151,7 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
 
       /* convert r+i0 into base b: we use b0 which might be in -36..-2 */
       str1 = (unsigned char*) MPFR_TMP_ALLOC (m + 3); /* need one extra character for mpn_get_str */
-      size_s1 = mpn_get_str (str1, b0, r + i0, n - i0);
+      size_s1 = mpn_get_str (str1, b, r + i0, n - i0);
 
       /* round str1 */
       MPFR_ASSERTN(size_s1 >= m);
@@ -2260,8 +2260,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   size_t n, i;
   char *s0;
   int neg;
-  int b0 = b; /* original value of b */
   int ret;    /* return value of mpfr_get_str_aux */
+  int b0 = b; /* initial base, might be negative */
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL (marker);
@@ -2408,7 +2408,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
             n --;
         }
 
-      mpn_get_str ((unsigned char *) s, b0, x1, n);
+      mpn_get_str ((unsigned char *) s, b, x1, n);
       for (i = 0; i < m; i++)
         s[i] = num_to_text[(int) s[i]];
       s[m] = 0;
@@ -2542,7 +2542,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       if (exact)
         err = -1;
 
-      ret = mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd);
+      ret = mpfr_get_str_aux (s, e, a, n, exp_a, err, b0, m, rnd);
 
       MPFR_TMP_FREE (marker);
 

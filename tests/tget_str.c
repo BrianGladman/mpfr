@@ -1248,6 +1248,23 @@ check_inex (void)
   mpfr_clear (x);
 }
 
+static void
+check_negative_base (void)
+{
+  mpfr_t f;
+  mpfr_exp_t e;
+  char *s, s2[16] = "7B000000000000", s3[16] = "74000000000000";
+
+  mpfr_init_set_ui (f, 123, MPFR_RNDN);
+  s = mpfr_get_str (0, &e, -16, 0, f, MPFR_RNDN);
+  MPFR_ASSERTN(strcmp (s, s2) == 0);
+  mpfr_free_str (s);
+  s = mpfr_get_str (0, &e, -17, 0, f, MPFR_RNDN);
+  MPFR_ASSERTN(strcmp (s, s3) == 0);
+  mpfr_free_str (s);
+  mpfr_clear (f);
+}
+
 #define ITER 1000
 
 int
@@ -1313,6 +1330,7 @@ main (int argc, char *argv[])
   check_bug_base2k ();
   check_reduced_exprange ();
   check_inex ();
+  check_negative_base ();
 
   tests_end_mpfr ();
   return 0;
