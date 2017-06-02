@@ -475,6 +475,7 @@ __MPFR_DECLSPEC unsigned long mpfr_get_ui (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC char * mpfr_get_str (char*, mpfr_exp_t*, int, size_t,
                                      mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t);
+__MPFR_DECLSPEC void mpfr_get_q (mpq_ptr q, mpfr_srcptr f);
 
 __MPFR_DECLSPEC void mpfr_free_str (char *);
 

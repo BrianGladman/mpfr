@@ -176,5 +176,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #undef mpz_set_f
 #define mpz_set_f(z,f) mpfr_get_z(z,f,MPFR_DEFAULT_RND)
+#undef mpq_set_f
+#define mpq_set_f(q,f) mpfr_get_q(q,f)
 
 #endif /* __MPFR_FROM_MPF__ */

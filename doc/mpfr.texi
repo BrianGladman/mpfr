@@ -1565,6 +1565,12 @@ when it is smaller than @var{op}; moreover, if @var{rop} differs from
 @var{op}, i.e., if @var{op} is not an integer, the inexact flag is set.
 @end deftypefun
 
+@deftypefun void mpfr_get_q (mpq_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t)
+Convert @var{op} to a @code{mpq_t}.
+If @var{op} is NaN or an infinity, the @emph{erange} flag is
+set, @var{rop} is set to 0. Otherwise the conversion is always exact.
+@end deftypefun
+
 @deftypefun int mpfr_get_f (mpf_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
