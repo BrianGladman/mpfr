@@ -136,10 +136,10 @@ AC_ARG_ENABLE(gmp-internals,
 AC_ARG_ENABLE(assert,
    [  --enable-assert         enable ASSERT checking [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([MPFR_WANT_ASSERT],1,[Want assertion]) ;;
+      yes) AC_DEFINE([MPFR_WANT_ASSERT],1,[Want all simple assertions]) ;;
       none) AC_DEFINE([MPFR_WANT_ASSERT],-1,[Do no want any assertion]) ;;
       no)  ;;
-      full) AC_DEFINE([MPFR_WANT_ASSERT],2,[Want assertion]) ;;
+      full) AC_DEFINE([MPFR_WANT_ASSERT],2,[Want full assertions]) ;;
       *) AC_MSG_ERROR([bad value for --enable-assert: yes, no, none or full]) ;;
      esac])
 
@@ -147,7 +147,7 @@ AC_ARG_ENABLE(logging,
    [  --enable-logging        enable MPFR logging (the system must support it)
                           [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([MPFR_USE_LOGGING],1,[Log what MPFR does]) ;;
+      yes) AC_DEFINE([MPFR_USE_LOGGING],1,[Enable MPFR logging support]) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
