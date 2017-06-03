@@ -224,8 +224,8 @@ main (void)
   mpz_clear (z);
   if (mpf_cmp_ui (x, 17) != 0)
     {
-      fprintf (stderr, "Error in conversion to/from mpz\n");
-      fprintf (stderr, "expected 17, got %1.16e\n", mpf_get_d (x));
+      printf ("Error in conversion to/from mpz\n");
+      printf ("expected 17, got %1.16e\n", mpf_get_d (x));
       exit (1);
     }
 
