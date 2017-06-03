@@ -2232,7 +2232,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
 /* prints the mantissa of x in the string s, and writes the corresponding
    exponent in e.
    x is rounded with direction rnd, m is the number of digits of the mantissa,
-   b is the given base (2 <= b <= 62 or -36 <= b <= -2).
+   |b| is the given base (2 <= b <= 62 or -36 <= b <= -2).
 
    Return value:
    if s=NULL, allocates a string to store the mantissa, with
@@ -2261,7 +2261,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   char *s0;
   int neg;
   int ret;    /* return value of mpfr_get_str_aux */
-  int b0 = b; /* initial base, might be negative */
+  int b0 = b; /* initial base argument, might be negative */
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL (marker);
@@ -2274,14 +2274,14 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       b, m, mpfr_get_prec (x), mpfr_log_prec, x, rnd),
      ("flags=%lx", (unsigned long) __gmpfr_flags));
 
-  /* Is the base valid? Valid bases are -36 to -2 and 2 to 62. */
+  /* Is the base argument valid? Valid values are -36 to -2 and 2 to 62. */
   if (b < -36 || (-2 < b && b < 2) || 62 < b)
     return NULL;
 
   num_to_text = (2 <= b && b <= 36) ? num_to_text36 : num_to_text62;
 
   b = (b > 0) ? b : -b;
-  
+
   /* now b is positive */
 
   /* map RNDF to RNDN, to avoid problems with specification of mpfr_can_round
