@@ -198,8 +198,8 @@ To make a release (for the MPFR team):
      Generate the release version with "make distcheck".
 
   6) Test the release version on different machines, with --enable-assert
-     set to yes, no (default), none and full respectively, with and
-     without -DXDEBUG in $CFLAGS, with and without gmp internal files
+     set to "yes", "no" (default), "none" and "full" respectively, with
+     and without -DXDEBUG in $CFLAGS, with and without gmp internal files
      (--enable-gmp-internals), with and without GMP built as a shared
      library, with objdir equal to and different from srcdir (e.g.
      ../mpfr-source/configure after making mpfr-source read-only), with
