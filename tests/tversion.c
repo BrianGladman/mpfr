@@ -39,7 +39,14 @@ main (void)
   if (test_version ())
     exit (1);
 
+  /*********************** MPFR version and patches ************************/
+
   printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING);
+
+  if (strcmp (mpfr_get_patches (), "") != 0)
+    printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
+
+  /************************* Compiler information **************************/
 
   /* TODO: We may want to output info for non-GNUC-compat compilers too. See:
    * http://sourceforge.net/p/predef/wiki/Compilers/
@@ -139,7 +146,7 @@ main (void)
           "\n");
 #endif
 
-  /*************************************************************************/
+  /******************* GMP version and build information *******************/
 
 #ifdef __MPIR_VERSION
   printf ("[tversion] MPIR: header %d.%d.%d, library %s\n",
@@ -155,6 +162,13 @@ main (void)
 #endif
 #endif
 
+#ifdef __GMP_CC
+  printf ("[tversion] __GMP_CC = \"%s\"\n", __GMP_CC);
+#endif
+#ifdef __GMP_CFLAGS
+  printf ("[tversion] __GMP_CFLAGS = \"%s\"\n", __GMP_CFLAGS);
+#endif
+
   /* The following output is also useful under Unix, where one should get:
      WinDLL: __GMP_LIBGMP_DLL = 0, MPFR_WIN_THREAD_SAFE_DLL = undef
      If this is not the case, something is probably broken. We cannot test
@@ -162,7 +176,9 @@ main (void)
      (POSIX) compatibility; for instance, Cygwin32 defines __unix__ (but
      Cygwin64 does not, probably because providing both MS Windows API and
      POSIX API is not possible with a 64-bit ABI, since MS Windows is LLP64
-     and Unix is LP64). */
+     and Unix is LP64).
+     MPFR_WIN_THREAD_SAFE_DLL is directly set up from __GMP_LIBGMP_DLL;
+     that is why it is output here. */
   printf ("[tversion] WinDLL: __GMP_LIBGMP_DLL = "
 #if defined(__GMP_LIBGMP_DLL)
           MAKE_STR(__GMP_LIBGMP_DLL)
@@ -176,6 +192,11 @@ main (void)
           "undef"
 #endif
           "\n");
+
+  /********************* MPFR configuration parameters *********************/
+
+  /* The following code outputs configuration parameters, either set up
+     by the user or determined automatically (default values). */
 
   if (
 #ifdef MPFR_USE_THREAD_SAFE
@@ -302,8 +323,14 @@ main (void)
   else
     printf ("[tversion] MPFR tuning parameters from %s\n", MPFR_TUNE_CASE);
 
-  if (strcmp (mpfr_get_patches (), "") != 0)
-    printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
+  /**************************** ABI information ****************************/
+
+  printf ("[tversion] GMP_NUMB_BITS = %ld, sizeof(mp_limb_t) = %ld\n",
+          (long) GMP_NUMB_BITS, (long) sizeof(mp_limb_t));
+
+  /* TODO: to be completed */
+
+  /************************** Runtime information **************************/
 
   tests_start_mpfr ();
   if (locale != NULL)
@@ -316,6 +343,8 @@ main (void)
     printf ("[tversion] Warning! Memory limit changed to %" MPFR_EXP_FSPEC
             "u\n", (mpfr_ueexp_t) tests_memory_limit);
   tests_end_mpfr ();
+
+  /*************************************************************************/
 
   return err;
 }
