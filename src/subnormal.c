@@ -112,7 +112,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
           MPFR_RET (sign);
         }
     }
-  else /* Hard case: It is more or less the same problem than mpfr_cache */
+  else /* Hard case: It is more or less the same problem as mpfr_cache */
     {
       mpfr_t dest;
       mpfr_prec_t q;
