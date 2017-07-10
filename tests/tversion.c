@@ -33,6 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (void)
 {
+  mpfr_exp_t e;
   int err = 0;
 
   /* Test the GMP and MPFR versions. */
@@ -325,10 +326,48 @@ main (void)
 
   /**************************** ABI information ****************************/
 
+  if (mp_bits_per_limb != GMP_NUMB_BITS)
+    {
+      printf ("ERROR! mp_bits_per_limb != GMP_NUMB_BITS (%ld vs %ld)\n",
+              (long) mp_bits_per_limb, (long) GMP_NUMB_BITS);
+      err = 1;
+    }
+
   printf ("[tversion] GMP_NUMB_BITS = %ld, sizeof(mp_limb_t) = %ld\n",
           (long) GMP_NUMB_BITS, (long) sizeof(mp_limb_t));
 
-  /* TODO: to be completed */
+  printf ("[tversion] _MPFR_PREC_FORMAT = %ld, sizeof(mpfr_prec_t) = %ld\n",
+          (long) _MPFR_PREC_FORMAT, (long) sizeof(mpfr_prec_t));
+
+  printf ("[tversion] _MPFR_EXP_FORMAT = %ld, sizeof(mpfr_exp_t) = %ld\n",
+          (long) _MPFR_EXP_FORMAT, (long) sizeof(mpfr_exp_t));
+
+  printf ("[tversion] sizeof(mpfr_t) = %ld, sizeof(mpfr_ptr) = %ld\n",
+          sizeof(mpfr_t), sizeof(mpfr_ptr));
+
+#define RANGE " range: [%" MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n"
+
+  printf ("[tversion] Precision" RANGE,
+          (mpfr_eexp_t) MPFR_PREC_MIN, (mpfr_eexp_t) MPFR_PREC_MAX);
+
+  e = mpfr_get_emin_min ();
+  if (e != MPFR_EMIN_MIN)
+    {
+      printf ("ERROR! mpfr_get_emin_min != MPFR_EMIN_MIN (%ld vs %ld)\n",
+              (mpfr_eexp_t) e, (mpfr_eexp_t) MPFR_EMIN_MIN);
+      err = 1;
+    }
+
+  e = mpfr_get_emax_max ();
+  if (e != MPFR_EMAX_MAX)
+    {
+      printf ("ERROR! mpfr_get_emax_max != MPFR_EMAX_MAX (%ld vs %ld)\n",
+              (mpfr_eexp_t) e, (mpfr_eexp_t) MPFR_EMAX_MAX);
+      err = 1;
+    }
+
+  printf ("[tversion] Max exponent" RANGE,
+          (mpfr_eexp_t) MPFR_EMIN_MIN, (mpfr_eexp_t) MPFR_EMAX_MAX);
 
   /************************** Runtime information **************************/
 
