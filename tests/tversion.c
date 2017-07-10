@@ -343,7 +343,7 @@ main (void)
           (long) _MPFR_EXP_FORMAT, (long) sizeof(mpfr_exp_t));
 
   printf ("[tversion] sizeof(mpfr_t) = %ld, sizeof(mpfr_ptr) = %ld\n",
-          sizeof(mpfr_t), sizeof(mpfr_ptr));
+          (long) sizeof(mpfr_t), (long) sizeof(mpfr_ptr));
 
 #define RANGE " range: [%" MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n"
 
