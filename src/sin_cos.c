@@ -354,10 +354,12 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
          which reduces to T[k] = (2*i+2)*(2*i+3)*2^r-pp,
          Q[k] = (2*i)*(2*i+1)*(2*i+2)*(2*i+3). */
       log2_nb_terms[k] = 1;
-      mpz_set_ui (Q[k], (2 * i + 2) * (2 * i + 3));
+      mpz_set_ui (Q[k], 2 * i + 2);
+      mpz_mul_ui (Q[k], Q[k], 2 * i + 3);
       mpz_mul_2exp (T[k], Q[k], r);
       mpz_sub (T[k], T[k], pp);
-      mpz_mul_ui (Q[k], Q[k], (2 * i) * (2 * i + 1));
+      mpz_mul_ui (Q[k], Q[k], 2 * i);
+      mpz_mul_ui (Q[k], Q[k], 2 * i + 1);
       /* the next term of the series is divided by Q[k] and multiplied
          by pp^2/2^(2r), thus the mult. factor < 1/2^mult[k] */
       MPFR_MPZ_SIZEINBASE2(mult[k], Q[k]);
