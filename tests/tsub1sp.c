@@ -191,27 +191,27 @@ compare_sub_sub1sp (void)
                   mpfr_nextbelow (c);
                 }
               RND_LOOP_NO_RNDF (r)
-              {
-                /* increase the precision of b to ensure sub1sp is not used */
-                mpfr_prec_round (b, p + 1, MPFR_RNDN);
-                inex_ref = mpfr_sub (a_ref, b, c, (mpfr_rnd_t) r);
-                inex = mpfr_prec_round (b, p, MPFR_RNDN);
-                MPFR_ASSERTN(inex == 0);
-                inex = mpfr_sub1sp (a, b, c, (mpfr_rnd_t) r);
-                if (inex != inex_ref)
-                  {
-                    printf ("mpfr_sub and mpfr_sub1sp differ for r=%s\n",
-                            mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-                    printf ("b="); mpfr_dump (b);
-                    printf ("c="); mpfr_dump (c);
-                    printf ("expected inex=%d and ", inex_ref);
-                    mpfr_dump (a_ref);
-                    printf ("got      inex=%d and ", inex);
-                    mpfr_dump (a);
-                    exit (1);
-                  }
-                MPFR_ASSERTN(mpfr_equal_p (a, a_ref));
-              }
+                {
+                  /* increase the precision of b to ensure sub1sp is not used */
+                  mpfr_prec_round (b, p + 1, MPFR_RNDN);
+                  inex_ref = mpfr_sub (a_ref, b, c, (mpfr_rnd_t) r);
+                  inex = mpfr_prec_round (b, p, MPFR_RNDN);
+                  MPFR_ASSERTN(inex == 0);
+                  inex = mpfr_sub1sp (a, b, c, (mpfr_rnd_t) r);
+                  if (inex != inex_ref)
+                    {
+                      printf ("mpfr_sub and mpfr_sub1sp differ for r=%s\n",
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                      printf ("b="); mpfr_dump (b);
+                      printf ("c="); mpfr_dump (c);
+                      printf ("expected inex=%d and ", inex_ref);
+                      mpfr_dump (a_ref);
+                      printf ("got      inex=%d and ", inex);
+                      mpfr_dump (a);
+                      exit (1);
+                    }
+                  MPFR_ASSERTN(mpfr_equal_p (a, a_ref));
+                }
             }
         }
       mpfr_clears (a, b, c, a_ref, (mpfr_ptr) 0);

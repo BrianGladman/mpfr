@@ -187,76 +187,76 @@ ternary_test (void)
       mpfr_set_ui_2exp (y, 1, prec, MPFR_RNDN);
 
       RND_LOOP_NO_RNDF (rnd)
-      {
-        inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
+        {
+          inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
-        if (inex != 0 || mpfr_cmp_f (y, x) != 0)
-          {
-            printf ("Error (1) in mpfr_get_f (x, y, %s)\nx = ",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-            mpf_out_str (stdout, 2, 0, x);
-            printf ("\ny = ");
-            mpfr_dump (y);
-            if (inex != 0)
-              printf ("got ternary value = %+d, expected: 0\n", inex);
+          if (inex != 0 || mpfr_cmp_f (y, x) != 0)
+            {
+              printf ("Error (1) in mpfr_get_f (x, y, %s)\nx = ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpf_out_str (stdout, 2, 0, x);
+              printf ("\ny = ");
+              mpfr_dump (y);
+              if (inex != 0)
+                printf ("got ternary value = %+d, expected: 0\n", inex);
 
-            exit (1);
-          }
-      }
+              exit (1);
+            }
+        }
 
       /* y == 1 + epsilon */
       mpfr_nextbelow (y);
 
       RND_LOOP_NO_RNDF (rnd)
-      {
-        switch (rnd)
-          {
-          case MPFR_RNDU: case MPFR_RNDA:
-          case MPFR_RNDN:
-            expected_inex = +1;
-            break;
-          default :
-            expected_inex = -1;
-          }
+        {
+          switch (rnd)
+            {
+            case MPFR_RNDU: case MPFR_RNDA:
+            case MPFR_RNDN:
+              expected_inex = +1;
+              break;
+            default :
+              expected_inex = -1;
+            }
 
-        inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
+          inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
-        if (! SAME_SIGN (expected_inex, inex)
-            || SAME_SIGN (expected_inex, mpfr_cmp_f (y, x)))
-          {
-            printf ("Error (2) in mpfr_get_f (x, y, %s)\nx = ",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-            mpf_out_str (stdout, 2, 0, x);
-            printf ("\ny = ");
-            mpfr_dump (y);
-            if (! SAME_SIGN (expected_inex, inex))
-              printf ("got ternary value = %+d, expected: %+d\n",
-                      inex, expected_inex);
+          if (! SAME_SIGN (expected_inex, inex)
+              || SAME_SIGN (expected_inex, mpfr_cmp_f (y, x)))
+            {
+              printf ("Error (2) in mpfr_get_f (x, y, %s)\nx = ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpf_out_str (stdout, 2, 0, x);
+              printf ("\ny = ");
+              mpfr_dump (y);
+              if (! SAME_SIGN (expected_inex, inex))
+                printf ("got ternary value = %+d, expected: %+d\n",
+                        inex, expected_inex);
 
-            exit (1);
-          }
-      }
+              exit (1);
+            }
+        }
 
       /* y == positive random float */
       mpfr_random2 (y, MPFR_LIMB_SIZE (y), 1024, RANDS);
 
       RND_LOOP_NO_RNDF (rnd)
-      {
-        inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
+        {
+          inex = mpfr_get_f (x, y, (mpfr_rnd_t) rnd);
 
-        if (! SAME_SIGN (inex, -mpfr_cmp_f (y, x)))
-          {
-            printf ("Error (3) in mpfr_get_f (x, y, %s)\nx = ",
-                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-            mpf_out_str (stdout, 2, 0, x);
-            printf ("\ny = ");
-            mpfr_dump (y);
-            printf ("got ternary value = %+d, expected: %+d\n",
-                    inex, -mpfr_cmp_f (y, x));
+          if (! SAME_SIGN (inex, -mpfr_cmp_f (y, x)))
+            {
+              printf ("Error (3) in mpfr_get_f (x, y, %s)\nx = ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpf_out_str (stdout, 2, 0, x);
+              printf ("\ny = ");
+              mpfr_dump (y);
+              printf ("got ternary value = %+d, expected: %+d\n",
+                      inex, -mpfr_cmp_f (y, x));
 
-            exit (1);
-          }
-      }
+              exit (1);
+            }
+        }
     }
 
   mpf_clear (x);
