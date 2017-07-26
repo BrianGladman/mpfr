@@ -3372,9 +3372,29 @@ This is an example of how to emulate binary double IEEE 754 arithmetic
 Note that @code{mpfr_set_emin} and @code{mpfr_set_emax} are called early
 enough in order to make sure that all computed values are in the current
 exponent range.
-
 Warning! This emulates a double IEEE 754 arithmetic with correct rounding
 in the subnormal range, which may not be the case for your hardware.
+
+Below is another example showing how to emulate fixed-point arithmetic.
+Here we compute the sine of the integers 1 to 17 with a fixed-point
+arithmetic rounded at @m{2^{-42}, 2 power -42}:
+
+@example
+@{
+  mpfr_t x; int i, inex;
+
+  mpfr_set_emin (-41);
+  mpfr_init2 (x, 42);
+  for (i = 1; i <= 17; i++)
+    @{
+      mpfr_set_ui (x, i, MPFR_RNDN);
+      inex = mpfr_sin (x, x, MPFR_RNDZ);
+      mpfr_subnormalize (x, inex, MPFR_RNDZ);
+      mpfr_dump (x);
+    @}
+  mpfr_clear (x);
+@}
+@end example
 
 @deftypefun void mpfr_clear_underflow (void)
 @deftypefunx void mpfr_clear_overflow (void)
