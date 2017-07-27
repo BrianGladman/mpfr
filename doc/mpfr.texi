@@ -3375,8 +3375,8 @@ exponent range.
 Warning! This emulates a double IEEE 754 arithmetic with correct rounding
 in the subnormal range, which may not be the case for your hardware.
 
-@c FIXME: mpfr_set_emax needed too to detect overflows?
-Below is another example showing how to emulate fixed-point arithmetic.
+Below is another example showing how to emulate fixed-point arithmetic
+(disregarding any overflow issue).
 Here we compute the sine of the integers 1 to 17 with a fixed-point
 arithmetic rounded at @m{2^{-42}, 2 power -42}:
 
