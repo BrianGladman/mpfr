@@ -3376,9 +3376,10 @@ Warning! This emulates a double IEEE 754 arithmetic with correct rounding
 in the subnormal range, which may not be the case for your hardware.
 
 Below is another example showing how to emulate fixed-point arithmetic
-(disregarding any overflow issue).
-Here we compute the sine of the integers 1 to 17 with a fixed-point
-arithmetic rounded at @m{2^{-42}, 2 power -42}:
+in a specific case.
+Here we compute the sine of the integers 1 to 17 with a result in a
+fixed-point arithmetic rounded at @m{2^{-42}, 2 power -42} (using the
+fact that the result at most 1 in absolute value):
 
 @example
 @{
