@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #ifdef MPFR_USE_MINI_GMP
-#include "mpfr-impl.h"
+#include "mpfr-test.h"
 #endif
 
 /* One of the goals of this test is to detect potential issues with the
