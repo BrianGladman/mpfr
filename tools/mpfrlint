@@ -311,6 +311,14 @@ do
     { echo "Missing '#include \"mpfr-impl.h\"' in $file?" && err=1 }
 done
 
+# "mpfr-impl.h" must not be included directly by the test programs.
+# Otherwise __MPFR_WITHIN_MPFR will be defined, yielding failures
+# under MS Windows with DLL.
+err-if-output \
+  --msg='Include "mpfr-test.h" instead of "mpfr-impl.h" to prevent __MPFR_WITHIN_MPFR from being defined.' \
+  -t "mpfr-impl.h inclusion" grep --exclude=mpfr-test.h \
+    '^ *# *include *"mpfr-impl.h"' tests/*.{c,h}
+
 # Check that the usual test programs call tests_start_mpfr and tests_end_mpfr.
 tprg=($(sed -n '/^check_PROGRAMS/,/[^\\]$/ {
   s/.*=//
