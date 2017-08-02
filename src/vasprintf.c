@@ -2250,6 +2250,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   if (buf.len != -1)
     {
       nbchar = buf.len;
+      MPFR_ASSERTD (nbchar >= 0);
 
       if (ptr != NULL)  /* implement mpfr_vasprintf */
         {
