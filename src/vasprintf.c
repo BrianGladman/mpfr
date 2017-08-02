@@ -1960,11 +1960,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   return buf->len == -1 ? -1 : length;
 }
 
-/* the following internal function implements both mpfr_vasprintf and
+/* The following internal function implements both mpfr_vasprintf and
    mpfr_vsnprintf:
    (a) either ptr <> NULL, and then Buf and size are not used, and it
        implements mpfr_vasprintf (ptr, fmt, ap)
    (b) or ptr = NULL, and it implements mpfr_vsnprintf (Buf, size, fmt, ap)
+   It returns the number of characters that would have been written had 'size'
+   been sufficiently large, not counting the terminating null character, or -1
+   if this number is too large for the return type 'int' (overflow).
 */
 int
 mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
@@ -2271,7 +2274,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
       MPFR_SAVE_EXPO_FREE (expo);
       return nbchar; /* return the number of characters that would have
-                        been written had 'size' be sufficiently large,
+                        been written had 'size' been sufficiently large,
                         not counting the terminating null character */
     }
 
