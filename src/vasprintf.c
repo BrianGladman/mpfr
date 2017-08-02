@@ -1,5 +1,5 @@
-/* mpfr_vasprintf -- main function for the printf functions family
-   plus helper macros & functions.
+/* mpfr_vasnprintf_aux -- helper function for the formatted output functions
+   (printf functions family).
 
 Copyright 2007-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -2295,12 +2295,6 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   (*__gmp_free_func) (buf.start, buf.size);
 
   return -1;
-}
-
-int
-mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
-{
-  return mpfr_vasnprintf_aux (ptr, NULL, 0, fmt, ap);
 }
 
 #else /* HAVE_STDARG */
