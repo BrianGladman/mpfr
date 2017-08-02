@@ -92,6 +92,10 @@ Changes from versions 3.1.* to version 4.0.0:
   in the "Changes..." sections).
 - MinGW (MS Windows): Added support for thread-safe DLL (shared library).
 - Limited pkg-config support.
+- Autotools: Under Linux, make sure that the old dtags (when supported)
+  are used if LD_LIBRARY_PATH is defined; otherwise "make check" would
+  check an installed, compatible MPFR library found in LD_LIBRARY_PATH
+  instead of the one that has been built with "make".
 
 Changes from versions 3.0.* to version 3.1.0:
 - The "canard à l'orange" release.
