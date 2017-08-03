@@ -2636,10 +2636,6 @@ Print to the stream @var{stream} the optional arguments under the control of
 the template string @var{template}.
 Return the number of characters written or a negative value if an error
 occurred.
-@c If the number of characters which ought to be written appears
-@c to exceed the maximum limit for an @code{int}, nothing is written in the
-@c stream, the function returns @minus{}1, sets the @emph{erange} flag, and (in
-@c POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
 @deftypefun  int mpfr_printf (const char *@var{template}, @dots{})
@@ -2648,10 +2644,6 @@ Print to @code{stdout} the optional arguments under the control of the
 template string @var{template}.
 Return the number of characters written or a negative value if an error
 occurred.
-@c If the number of characters which ought to be written appears
-@c to exceed the maximum limit for an @code{int}, nothing is written in
-@c @code{stdout}, the function returns @minus{}1, sets the @emph{erange} flag,
-@c and (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
 @deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
@@ -2663,10 +2655,6 @@ the control of the template string @var{template}, and print it in
 Return the number of characters written in the array @var{buf}
 @emph{not counting}
 the terminating null character or a negative value if an error occurred.
-@c If the number of characters which ought to be written appears to exceed the
-@c maximum limit for an @code{int}, nothing is written in @var{buf}, the function
-@c returns @minus{}1, sets the @emph{erange} flag, and (in POSIX system only)
-@c code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
 @deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, @dots{})
@@ -2679,11 +2667,6 @@ first characters are written in @var{buf} and the @var{n}-th is a null character
 Return the number of characters that would have been written had @var{n} been
 sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
-@c If the number of characters produced by the
-@c optional arguments under the control of the template string @var{template}
-@c appears to exceed the maximum limit for an @code{int}, nothing is written in
-@c @var{buf}, the function returns @minus{}1, sets the @emph{erange} flag, and
-@c (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
 @deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, @dots{})
@@ -2694,12 +2677,6 @@ using the current allocation function. A pointer to the block is stored in
 The return value is the number of characters written in the string, excluding
 the null-terminator, or a negative value if an error occurred, in which case
 the contents of @var{str} are undefined.
-@c If the number of
-@c characters produced by the optional arguments under the control of the
-@c template string @var{template} appears to exceed the maximum limit for an
-@c @code{int}, @var{str} is a null pointer, the function returns @minus{}1, sets
-@c the @emph{erange} flag, and (in POSIX system only) @code{errno} is set to
-@c @code{EOVERFLOW}.
 @end deftypefun
 
 @node Integer and Remainder Related Functions, Rounding-Related Functions, Formatted Output Functions, MPFR Interface
