@@ -2621,12 +2621,14 @@ specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
 
 @subsection Functions
 
-For all the following functions, if the number of characters which ought to be
-written appears to exceed the maximum limit for an @code{int}, nothing is
+For all the following functions, if the number of characters that ought to be
+written exceeds the maximum limit @code{INT_MAX} for an @code{int}, nothing is
 written in the stream (resp.@: to @code{stdout}, to @var{buf}, to @var{str}),
 the function returns @minus{}1, sets the @emph{erange} flag, and @code{errno}
 is set to @code{EOVERFLOW} if the @code{EOVERFLOW} macro is defined (such as
-in POSIX systems).
+on POSIX systems). Note, however, that @code{errno} might be changed to
+another value by some internal library call if another error occurs there
+(currently, this would come from the unallocation function).
 
 @deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
