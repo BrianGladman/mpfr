@@ -988,6 +988,15 @@ and @code{mpfr_free_cache2}. It is strongly advised to free thread-local
 caches before terminating a thread and global caches before exiting when
 using tools like @samp{valgrind} (to avoid memory leaks being reported).
 
+@c FIXME: explain how memory allocation is done (once the issues are fixed
+@c to allow the allocation functions to be changed). Give a reference to:
+@c @ifinfo
+@c @pxref{Custom Allocation,,, gmp.info,GNU MP}.
+@c @end ifinfo
+@c @ifnotinfo
+@c see Section ``Custom Allocation'' in @cite{GNU MP}.
+@c @end ifnotinfo
+
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
 accessed via parameters) are either global (if MPFR has not been
