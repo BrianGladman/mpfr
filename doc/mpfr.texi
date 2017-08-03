@@ -491,6 +491,29 @@ MPFR 4.0.0 web page @url{http://www.mpfr.org/mpfr-4.0.0/}.
 The latest version of MPFR is available from
 @url{ftp://ftp.gnu.org/gnu/mpfr/} or @url{http://www.mpfr.org/}.
 
+@section Getting the Best Efficiency Out of MPFR
+
+Here are a few hints to get the best efficiency out of MPFR:
+
+@itemize @bullet
+
+@item you should avoid allocating and clearing variables. Reuse variables
+      whenever possible, allocate or clear outside of loops, pass
+      temporary variables to subroutines instead of allocating them inside
+      the subroutines;
+
+@item use @code{mpfr_swap} instead of @code{mpfr_set} whenever possible.
+      This will avoid copying the significands;
+
+@item avoid using MPFR from C++, or make sure your C++ interface does not
+      perform unnecessary allocations or copies;
+
+@item MPFR functions work in-place: to compute @code{a = a + b} you don't
+      need an auxiliary variable, you can directly write
+      @code{mpfr_add (a, a, b, ...)}.
+
+@end itemize
+
 @node Reporting Bugs, MPFR Basics, Installing MPFR, Top
 @comment  node-name,  next,  previous,  up
 @chapter Reporting Bugs
