@@ -23,6 +23,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* FIXME: The current code suffers from double rounding for subnormals
+ * and depends on double's. Things to do:
+ *   1. The precision of y should take subnormals into account.
+ *   2. mpfr_get_ui should be used instead of mpfr_get_d.
+ */
+
 #ifdef MPFR_WANT_FLOAT128
 
 /* generic code */
