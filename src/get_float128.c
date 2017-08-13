@@ -26,10 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* FIXME: The current code suffers from double rounding for subnormals
  * and depends on double's. Things to do:
  *   1. The precision of y should take subnormals into account.
- *      Note: In the tests, test the case where the precision would be 1,
- *      and for the backport to the 3.1 branch, a special case needs to
- *      be added (mpfr_subnormalize could be use, but this is probably
- *      overkill).
  *   2. mpfr_get_ui should be used instead of mpfr_get_d.
  */
 
