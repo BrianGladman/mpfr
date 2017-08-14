@@ -23,10 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* FIXME: The current code suffers from double rounding for subnormals
- * and depends on double's. Things to do:
- *   1. The precision of y should take subnormals into account.
- *   2. mpfr_get_ui should be used instead of mpfr_get_d.
+/* FIXME: The current code depends on double's.
+ * mpfr_get_ui should be used instead of mpfr_get_d.
  */
 
 #ifdef MPFR_WANT_FLOAT128
@@ -43,15 +41,25 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       __float128 r; /* result */
       __float128 m;
       double s; /* part of result */
+      mpfr_exp_t e;  /* exponent of x (before rounding) */
       mpfr_exp_t sh; /* exponent shift, so that x/2^sh is in the double range */
       mpfr_t y, z;
+      const int emin = -16381;
+      const int esub = emin - IEEE_FLOAT128_MANT_DIG;
+      int prec;
       int sign;
 
-      /* first round x to the target __float128 precision, so that
-         all subsequent operations are exact (this avoids double rounding
-         problems) */
-      mpfr_init2 (y, IEEE_FLOAT128_MANT_DIG);
-      mpfr_init2 (z, IEEE_FLOAT128_MANT_DIG);
+      e = MPFR_GET_EXP (x);
+
+      /* First round x to the target __float128 precision, taking the
+         reduced precision of the subnormals into account, so that all
+         subsequent operations are exact (this avoids double rounding
+         problems). */
+      /* FIXME: The code is still incorrect below the smallest subnormal
+         in absolute value. */
+      prec = e <= esub ? 1 : e < emin ? e - esub : IEEE_FLOAT128_MANT_DIG;
+      mpfr_init2 (y, prec);
+      mpfr_init2 (z, prec);
 
       mpfr_set (y, x, rnd_mode);
       sh = MPFR_GET_EXP (y);
