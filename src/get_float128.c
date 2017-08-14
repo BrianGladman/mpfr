@@ -49,36 +49,46 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       int prec;
       int sign;
 
+      sign = MPFR_SIGN (x);
       e = MPFR_GET_EXP (x);
 
-      /* First round x to the target __float128 precision, taking the
-         reduced precision of the subnormals into account, so that all
-         subsequent operations are exact (this avoids double rounding
-         problems). */
-      /* FIXME: The code is still incorrect below the smallest subnormal
-         in absolute value. */
-      prec = e <= esub ? 1 : e < emin ? e - esub : IEEE_FLOAT128_MANT_DIG;
-      mpfr_init2 (y, prec);
-      mpfr_init2 (z, prec);
-
-      mpfr_set (y, x, rnd_mode);
-      sh = MPFR_GET_EXP (y);
-      sign = MPFR_SIGN (y);
-      MPFR_SET_EXP (y, 0);
-      MPFR_SET_POS (y);
-
-      r = 0.0;
-      do
+      if (MPFR_UNLIKELY (e <= esub))
         {
-          s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
-          r += (__float128) s;
-          mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
-          mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+          if (MPFR_IS_LIKE_RNDZ (rnd_mode, sign < 0) ||
+              (rnd_mode == MPFR_RNDN && (e < esub || mpfr_powerof2_raw (x))))
+            return sign < 0 ? -0.0 : 0.0;
+          r = 1.0;
+          sh = esub;
         }
-      while (MPFR_NOTZERO (y));
+      else
+        {
+          /* First round x to the target __float128 precision, taking the
+             reduced precision of the subnormals into account, so that all
+             subsequent operations are exact (this avoids double rounding
+             problems). */
+          prec = e < emin ? e - esub : IEEE_FLOAT128_MANT_DIG;
+          MPFR_ASSERTD (prec >= MPFR_PREC_MIN);
+          mpfr_init2 (y, prec);
+          mpfr_init2 (z, prec);
 
-      mpfr_clear (z);
-      mpfr_clear (y);
+          mpfr_set (y, x, rnd_mode);
+          sh = MPFR_GET_EXP (y);
+          MPFR_SET_EXP (y, 0);
+          MPFR_SET_POS (y);
+
+          r = 0.0;
+          do
+            {
+              s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
+              r += (__float128) s;
+              mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
+              mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+            }
+          while (MPFR_NOTZERO (y));
+
+          mpfr_clear (z);
+          mpfr_clear (y);
+        }
 
       /* we now have to multiply r by 2^sh */
       MPFR_ASSERTD (r > 0);
