@@ -23,10 +23,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* FIXME: The current code depends on double's.
- * mpfr_get_ui should be used instead of mpfr_get_d.
- */
-
 #ifdef MPFR_WANT_FLOAT128
 
 /* generic code */
@@ -40,13 +36,10 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       __float128 r; /* result */
       __float128 m;
-      double s; /* part of result */
       mpfr_exp_t e;  /* exponent of x (before rounding) */
       mpfr_exp_t sh; /* exponent shift, so that x/2^sh is in the double range */
-      mpfr_t y, z;
       const int emin = -16381;
       const int esub = emin - IEEE_FLOAT128_MANT_DIG;
-      int prec;
       int sign;
 
       sign = MPFR_SIGN (x);
@@ -62,6 +55,10 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       else
         {
+          mpfr_t y, z;
+          mp_limb_t *yp;
+          int prec, i;  /* small enough to fit in an int */
+
           /* First round x to the target __float128 precision, taking the
              reduced precision of the subnormals into account, so that all
              subsequent operations are exact (this avoids double rounding
@@ -75,16 +72,17 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           sh = MPFR_GET_EXP (y);
           MPFR_SET_EXP (y, 0);
           MPFR_SET_POS (y);
+          yp = MPFR_MANT (y);
 
           r = 0.0;
-          do
+          for (i = 0; i < MPFR_LIMB_SIZE (y); i++)
             {
-              s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
-              r += (__float128) s;
-              mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
-              mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
+              /* Note: MPFR_LIMB_MAX is avoided below as it might not
+                 always work if GMP_NUMB_BITS > IEEE_FLOAT128_MANT_DIG.
+                 MPFR_LIMB_HIGHBIT has the advantage to fit on 1 bit. */
+              r += yp[i];
+              r *= 1 / (2 * (__float128) MPFR_LIMB_HIGHBIT);
             }
-          while (MPFR_NOTZERO (y));
 
           mpfr_clear (z);
           mpfr_clear (y);
