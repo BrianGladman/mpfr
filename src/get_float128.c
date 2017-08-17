@@ -55,7 +55,7 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       else
         {
-          mpfr_t y, z;
+          mpfr_t y;
           mp_limb_t *yp;
           int prec, i;  /* small enough to fit in an int */
 
@@ -66,7 +66,6 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           prec = e < emin ? e - esub : IEEE_FLOAT128_MANT_DIG;
           MPFR_ASSERTD (prec >= MPFR_PREC_MIN);
           mpfr_init2 (y, prec);
-          mpfr_init2 (z, prec);
 
           mpfr_set (y, x, rnd_mode);
           sh = MPFR_GET_EXP (y);
@@ -84,7 +83,6 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               r *= 1 / (2 * (__float128) MPFR_LIMB_HIGHBIT);
             }
 
-          mpfr_clear (z);
           mpfr_clear (y);
         }
 
