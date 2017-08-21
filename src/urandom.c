@@ -160,10 +160,12 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
       || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
       if (MPFR_UNLIKELY (exp > __gmpfr_emax))
-        mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
+        mpfr_set_inf (rop, +1);  /* overflow */
       else
         mpfr_nextabove (rop);
       inex = +1;
+      /* There is an overflow in the first case and possibly in the second
+         case. If this occurs, the flag will be set by mpfr_check_range. */
     }
   else
     inex = -1;
