@@ -156,7 +156,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
         {
           /* since we expect a number in [0,1], for RNDN when emin > 1
              we should return 0 */
-          inex = mpfr_set_ui_2exp (rop, 1, ((emin > 1) ? 1 : emin) - 1, rnd_mode);
+          inex = mpfr_set_ui_2exp (rop, 1, (emin > 1 ? 1 : emin) - 1,
+                                   rnd_mode);
           if (inex == 0)
             inex = +1;
         }
