@@ -37,9 +37,9 @@ random_rounding_bit (gmp_randstate_t rstate)
   return r & MPFR_LIMB_ONE;
 }
 
-/* FIXME: Generate exceptions (flags) when need be, as usual? The current
-   behavior is inconsistent as when reached, mpfr_check_range will detect
-   some exceptions and set the corresponding flag. */
+/* FIXME: The current behavior is to consider "underflow before rounding"
+   (the significand does not need to be drawn), while the rule in MPFR is
+   "underflow after rounding". */
 
 /* The mpfr_urandom() function is implemented in the following way for
    the generic case.
@@ -75,6 +75,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
          rounding modes, the rounded value is uniquely determined. For
          rounding to nearest: if emin = 1, one has probability 1/2 for
          each; otherwise (i.e. if emin > 1), the rounded value is 0. */
+      mpfr_set_underflow ();
       if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
           || (__gmpfr_emin == 1 && rnd_mode == MPFR_RNDN
               && random_rounding_bit (rstate)))
@@ -119,6 +120,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              If exp == emin - 1, the rounding bit is set, except
              if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
+          mpfr_set_underflow ();
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && exp == __gmpfr_emin - 1
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
