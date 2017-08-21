@@ -61,31 +61,14 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   mp_size_t nlimbs;
   mp_size_t n;
   mpfr_exp_t exp;
-  mpfr_exp_t emin;
   int cnt;
   int inex;
 
   rp = MPFR_MANT (rop);
   nbits = MPFR_PREC (rop);
-
-  emin = mpfr_get_emin ();
-
-  /* special code for nbits = 1 */
-  /* VL: Why? Step 1 should be the same in any precision. */
-  if (nbits == 1)
-    {
-      exp = 0;
-      while (random_rounding_bit (rstate) == 0)
-        exp --;
-
-      MPFR_EXP (rop) = exp; /* may be outside the current exponent range */
-      rp[0] = MPFR_LIMB_HIGHBIT;
-      goto rounding;
-    }
-
   MPFR_SET_POS (rop);
 
-  if (MPFR_UNLIKELY (emin > 0))
+  if (MPFR_UNLIKELY (__gmpfr_emin > 0))
     {
       /* The minimum positive representable number 2^(emin-1) is >= 1,
          so that we need to round to +0 or 2^(emin-1). For the directed
@@ -93,10 +76,10 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
          rounding to nearest: if emin = 1, one has probability 1/2 for
          each; otherwise (i.e. if emin > 1), the rounded value is 0. */
       if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-          || (emin == 1 && rnd_mode == MPFR_RNDN
+          || (__gmpfr_emin == 1 && rnd_mode == MPFR_RNDN
               && random_rounding_bit (rstate)))
         {
-          mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+          mpfr_set_ui_2exp (rop, 1, __gmpfr_emin - 1, rnd_mode);
           return +1;
         }
       else
@@ -106,8 +89,8 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
         }
     }
 
-  nlimbs = MPFR_LIMB_SIZE (rop);
   exp = 0;
+  MPFR_ASSERTD (exp >= __gmpfr_emin);
 
   /* Step 1 (exponent). */
 #define DRAW_BITS 8 /* we draw DRAW_BITS at a time */
@@ -126,7 +109,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
         }
       exp -= cnt;  /* no integer overflow */
 
-      if (MPFR_UNLIKELY (exp < emin))
+      if (MPFR_UNLIKELY (exp < __gmpfr_emin))
         {
           /* To get here, we have been drawing more than -emin zeros
              in a row, then return 0 or the smallest representable
@@ -137,10 +120,10 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
-              || (rnd_mode == MPFR_RNDN && exp == emin - 1
+              || (rnd_mode == MPFR_RNDN && exp == __gmpfr_emin - 1
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
             {
-              mpfr_set_ui_2exp (rop, 1, emin - 1, rnd_mode);
+              mpfr_set_ui_2exp (rop, 1, __gmpfr_emin - 1, rnd_mode);
               return +1;
             }
           else
@@ -149,13 +132,23 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
               return -1;
             }
         }
+      MPFR_ASSERTD (exp >= __gmpfr_emin);
     }
-  MPFR_EXP (rop) = exp; /* Warning: may be outside the current
-                           exponent range */
+
+  MPFR_ASSERTD (exp >= __gmpfr_emin);
+  MPFR_EXP (rop) = exp; /* Warning: may be larger than emax */
+
+  /* special code for nbits = 1 */
+  if (nbits == 1)
+    {
+      rp[0] = MPFR_LIMB_HIGHBIT;
+      goto rounding;
+    }
 
   /* Step 2 (significand): we need generate only nbits-1 bits, since the
      most significant bit is 1. */
   mpfr_rand_raw (rp, rstate, nbits - 1);
+  nlimbs = MPFR_LIMB_SIZE (rop);
   n = nlimbs * GMP_NUMB_BITS - nbits;
   if (MPFR_LIKELY (n != 0)) /* this will put the low bits to zero */
     mpn_lshift (rp, rp, nlimbs, n);
@@ -166,27 +159,11 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
   if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
       || (rnd_mode == MPFR_RNDN && random_rounding_bit (rstate)))
     {
-      /* Take care of the exponent range: it may have been reduced. */
-      /* VL: For emin, wasn't this done above? */
-      if (exp < emin)
-        {
-          /* Since we expect a number in [0,1], for RNDN when emin > 1
-             we should return 0 */
-          inex = mpfr_set_ui_2exp (rop, 1, (emin > 1 ? 1 : emin) - 1,
-                                   rnd_mode);
-          if (inex == 0)
-            inex = +1;
-        }
-      else if (exp > mpfr_get_emax ())
-        {
-          mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
-          inex = +1;
-        }
+      if (MPFR_UNLIKELY (exp > __gmpfr_emax))
+        mpfr_set_inf (rop, +1); /* overflow, flag set by mpfr_check_range */
       else
-        {
-          mpfr_nextabove (rop);
-          inex = +1;
-        }
+        mpfr_nextabove (rop);
+      inex = +1;
     }
   else
     inex = -1;
