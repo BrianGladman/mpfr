@@ -156,7 +156,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   printf ("Average = %.5f\nVariance = %.5f\n", av, var);
   printf ("Repartition for urandom with rounding mode %s. "
           "Each integer should be close to %d.\n",
-         mpfr_print_rnd_mode (rnd), (int)th);
+          mpfr_print_rnd_mode (rnd), (int) th);
 
   for (k = 0; k < size_tab; k++)
     {
