@@ -243,6 +243,7 @@ underflow_tests (void)
   mpfr_t x;
   mpfr_exp_t emin;
   int i, k;
+  int inex;
   int rnd;
   mpfr_flags_t ex_flags, flags;
 
@@ -256,7 +257,7 @@ underflow_tests (void)
         for (k = 0; k < 100; k++)
           {
             mpfr_clear_flags ();
-            mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
+            inex = mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
             flags = __gmpfr_flags;
             MPFR_ASSERTN (mpfr_inexflag_p ());
             if (MPFR_IS_NEG (x))
@@ -287,6 +288,13 @@ underflow_tests (void)
                     exit (1);
                   }
               }
+            if (inex == 0 || (MPFR_IS_ZERO (x) && inex > 0))
+              {
+                printf ("Error in underflow_tests: incorrect inex (%d)"
+                        " for i=%d rnd=%s k=%d.\n", inex,
+                        i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                exit (1);
+              }
           }
     }
   mpfr_clear (x);
@@ -299,6 +307,7 @@ overflow_tests (void)
   mpfr_t x;
   mpfr_exp_t emax;
   int i, k;
+  int inex;
   int rnd;
   mpfr_flags_t ex_flags, flags;
 
@@ -312,7 +321,7 @@ overflow_tests (void)
         for (k = 0; k < 100; k++)
           {
             mpfr_clear_flags ();
-            mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
+            inex = mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
             flags = __gmpfr_flags;
             MPFR_ASSERTN (mpfr_inexflag_p ());
             if (MPFR_IS_NEG (x))
@@ -342,6 +351,13 @@ overflow_tests (void)
                     flags_out (flags);
                     exit (1);
                   }
+              }
+            if (inex == 0 || (MPFR_IS_INF (x) && inex < 0))
+              {
+                printf ("Error in overflow_tests: incorrect inex (%d)"
+                        " for i=%d rnd=%s k=%d.\n", inex,
+                        i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                exit (1);
               }
           }
     }
