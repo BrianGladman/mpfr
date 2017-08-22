@@ -35,6 +35,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   long count = 0;
   int i;
   int inex = 1;
+  mpfr_flags_t ex_flags, flags;
 
   size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
   tab = (int *) calloc (size_tab, sizeof(int));
@@ -57,7 +58,10 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
 
   for (k = 0; k < nbtests; k++)
     {
+      mpfr_clear_flags ();
+      ex_flags = MPFR_FLAGS_INEXACT;
       i = mpfr_urandom (x, RANDS, rnd);
+      flags = __gmpfr_flags;
       inex = (i != 0) && inex;
       /* check that lower bits are zero */
       if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh) && !MPFR_IS_ZERO (x))
@@ -71,6 +75,17 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
         {
           printf ("Error: mpfr_urandom() returns number outside [0, 1]:\n");
           mpfr_dump (x);
+          exit (1);
+        }
+      /* check the flags (an underflow is theoretically possible, but
+         impossible in practice due to the huge exponent range) */
+      if (flags != ex_flags)
+        {
+          printf ("Error: mpfr_urandom() returns incorrect flags.\n");
+          printf ("Expected ");
+          flags_out (ex_flags);
+          printf ("Got      ");
+          flags_out (flags);
           exit (1);
         }
 
@@ -96,10 +111,17 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
     {
       set_emin (k+1);
       mpfr_clear_flags ();
+      ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
       inex = mpfr_urandom (x, RANDS, rnd);
-      if (! mpfr_underflow_p ())
+      flags = __gmpfr_flags;
+      if (flags != ex_flags)
         {
-          printf ("Error: underflow flag not set for emin = %d.\n", k+1);
+          printf ("Error: mpfr_urandom() returns incorrect flags"
+                  " for emin = %d.\n", k+1);
+          printf ("Expected ");
+          flags_out (ex_flags);
+          printf ("Got      ");
+          flags_out (flags);
           exit (1);
         }
       if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
