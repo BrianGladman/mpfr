@@ -289,12 +289,11 @@ main (int argc, char *argv[])
     }
 
 #ifndef MPFR_USE_MINI_GMP
-  /* since this test assumes a deterministic random generator, and this is not
-     implemented in mini-gmp, we omit it with mini-gmp */
+  /* Since these tests assume a deterministic random generator, and
+     this is not implemented in mini-gmp, we omit it with mini-gmp. */
   bug20100914 ();
-#endif
-
   bug20170123 ();
+#endif
 
   tests_end_mpfr ();
   return 0;
