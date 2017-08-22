@@ -237,6 +237,62 @@ bug20170123 (void)
   mpfr_set_emin (emin);
 }
 
+static void
+underflow_tests (void)
+{
+  mpfr_t x;
+  mpfr_exp_t emin;
+  int i, k;
+  int rnd;
+  mpfr_flags_t ex_flags, flags;
+
+  emin = mpfr_get_emin ();
+  mpfr_init2 (x, 4);
+  ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT; /* if underflow */
+  for (i = 2; i >= -4; i--)
+    {
+      mpfr_set_emin (i);
+      RND_LOOP (rnd)
+        for (k = 0; k < 100; k++)
+          {
+            mpfr_clear_flags ();
+            mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
+            flags = __gmpfr_flags;
+            MPFR_ASSERTN (mpfr_inexflag_p ());
+            if (MPFR_IS_NEG (x))
+              {
+                printf ("Error in underflow_tests: got a negative sign"
+                        " for i=%d rnd=%s k=%d.\n",
+                        i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                exit (1);
+              }
+            if (MPFR_IS_ZERO (x))
+              {
+                if (rnd == MPFR_RNDU || rnd == MPFR_RNDA)
+                  {
+                    printf ("Error in underflow_tests: the value cannot"
+                            " be 0 for i=%d rnd=%s k=%d.\n",
+                            i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                    exit (1);
+                  }
+                if (flags != ex_flags)
+                  {
+                    printf ("Error in underflow_tests: incorrect flags"
+                            " for i=%d rnd=%s k=%d.\n",
+                            i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                    printf ("Expected ");
+                    flags_out (ex_flags);
+                    printf ("Got      ");
+                    flags_out (flags);
+                    exit (1);
+                  }
+              }
+          }
+    }
+  mpfr_clear (x);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -287,6 +343,8 @@ main (int argc, char *argv[])
           test_urandom (nbtests, MPFR_PREC_MIN, (mpfr_rnd_t) rnd, -1, 0);
         }
     }
+
+  underflow_tests ();
 
 #ifndef MPFR_USE_MINI_GMP
   /* Since these tests assume a deterministic random generator, and
