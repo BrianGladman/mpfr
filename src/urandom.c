@@ -81,12 +81,12 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
               && random_rounding_bit (rstate)))
         {
           mpfr_set_ui_2exp (rop, 1, __gmpfr_emin - 1, rnd_mode);
-          return +1;
+          MPFR_RET (+1);
         }
       else
         {
           MPFR_SET_ZERO (rop);
-          return -1;
+          MPFR_RET (-1);
         }
     }
 
@@ -126,12 +126,12 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
             {
               mpfr_set_ui_2exp (rop, 1, __gmpfr_emin - 1, rnd_mode);
-              return +1;
+              MPFR_RET (+1);
             }
           else
             {
               MPFR_SET_ZERO (rop);
-              return -1;
+              MPFR_RET (-1);
             }
         }
       MPFR_ASSERTD (exp >= __gmpfr_emin);
