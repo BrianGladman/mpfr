@@ -95,7 +95,13 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   for (k = 0; k < 5; k++)
     {
       set_emin (k+1);
+      mpfr_clear_flags ();
       inex = mpfr_urandom (x, RANDS, rnd);
+      if (! mpfr_underflow_p ())
+        {
+          printf ("Error: underflow flag not set for emin = %d.\n", k+1);
+          exit (1);
+        }
       if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
               && (!MPFR_IS_ZERO (x) || inex != -1))
           || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
