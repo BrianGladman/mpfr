@@ -51,7 +51,10 @@ random_rounding_bit (gmp_randstate_t rstate)
    3. Rounding is done. For the directed rounding modes, the rounded value
       is uniquely determined. For rounding to nearest, ]a,m[ and ]m,b[,
       where m = (a+b)/2, have the same measure, so that one gets a or b
-      with equal probabilities. */
+      with equal probabilities.
+   Note: Only low-level functions are used (except just before a "return"),
+   so that we do not need MPFR_SAVE_EXPO_*.
+*/
 
 int
 mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
@@ -75,7 +78,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
          rounding modes, the rounded value is uniquely determined. For
          rounding to nearest: if emin = 1, one has probability 1/2 for
          each; otherwise (i.e. if emin > 1), the rounded value is 0. */
-      mpfr_set_underflow ();
+      __gmpfr_flags |= MPFR_FLAGS_UNDERFLOW;
       if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
           || (__gmpfr_emin == 1 && rnd_mode == MPFR_RNDN
               && random_rounding_bit (rstate)))
@@ -120,7 +123,7 @@ mpfr_urandom (mpfr_ptr rop, gmp_randstate_t rstate, mpfr_rnd_t rnd_mode)
              If exp == emin - 1, the rounding bit is set, except
              if cnt == DRAW_BITS in which case the rounding bit is
              outside rp[0] and must be generated. */
-          mpfr_set_underflow ();
+          __gmpfr_flags |= MPFR_FLAGS_UNDERFLOW;
           if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
               || (rnd_mode == MPFR_RNDN && exp == __gmpfr_emin - 1
                   && (cnt != DRAW_BITS || random_rounding_bit (rstate))))
