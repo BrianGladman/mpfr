@@ -181,7 +181,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
 
 /* Problem reported by Carl Witty. This test assumes the random generator
    used by GMP is deterministic (for a given seed). We need to distinguish
-   two cases since the random generator changed after GMP 4.2.0. */
+   two cases since the random generator changed in GMP 4.2.0. */
 static void
 bug20100914 (void)
 {
@@ -224,6 +224,7 @@ bug20100914 (void)
 static void
 bug20170123 (void)
 {
+#if __MPFR_GMP(4,2,0)
   mpfr_t x;
   mpfr_exp_t emin;
 
@@ -235,6 +236,7 @@ bug20170123 (void)
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -8) == 0);
   mpfr_clear (x);
   mpfr_set_emin (emin);
+#endif
 }
 
 static void
