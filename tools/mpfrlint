@@ -311,6 +311,13 @@ do
     { echo "Missing '#include \"mpfr-impl.h\"' in $file?" && err=1 }
 done
 
+# Re-seeding mpfr_rands in the tests is bad practice, as it would affect
+# later tests, defeating the purpose of GMP_CHECK_RANDOMIZE.
+err-if-output \
+  --msg='Do not re-seed mpfr_rands; use another gmp_randstate_t variable.' \
+  -t "mpfr_rands" grep --exclude=tests.c \
+    'gmp_randseed.*mpfr_rands' tests/*.{c,h}
+
 # "mpfr-impl.h" must not be included directly by the test programs.
 # Otherwise __MPFR_WITHIN_MPFR will be defined, yielding failures
 # under MS Windows with DLL.
