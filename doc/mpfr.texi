@@ -3084,8 +3084,9 @@ generated according to the continuous uniform distribution on the interval
 The second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
-Note: the note for @code{mpfr_urandomb} holds too. In addition, the exponent
-range and the rounding mode might have a side effect on the next random state.
+Note: the note for @code{mpfr_urandomb} holds too. Moreover, the next
+random state does not depend on the current exponent range and the
+rounding mode.
 @end deftypefun
 
 @deftypefun int mpfr_nrandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
@@ -4084,6 +4085,13 @@ can be different between MPFR 3.1 and previous MPFR versions.
 Note: as the reproducibility of these functions was not specified
 before MPFR 3.1, the MPFR 3.1 behavior is @emph{not} regarded as
 backward incompatible with previous versions.
+
+@item @code{mpfr_urandom} changed in MPFR 4.0.
+The next random state no longer depends on the current exponent range and
+the rounding mode. The exceptions due to the rounding of the random number
+are now correctly generated, following the uniform distribution.
+As a consequence, the returned values can be different between MPFR 4.0
+and previous MPFR versions.
 
 @end itemize
 

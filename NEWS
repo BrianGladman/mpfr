@@ -55,6 +55,10 @@ Changes from versions 3.1.* to version 4.0.0:
 - The behavior of the mpfr_set_exp function changed, as it could easily
   yield undefined behavior in some cases (this modifies both the API and
   the ABI).
+- In function mpfr_urandom, the next random state no longer depends on the
+  current exponent range and the rounding mode. The exceptions due to the
+  rounding of the random number are now correctly generated, following the
+  uniform distribution.
 - Function mpfr_grandom is deprecated and will be removed in a future release.
 - Complete rewrite of function mpfr_sum, which now works in all cases (the
   old one could take all the memory and/or crash with inputs of different
