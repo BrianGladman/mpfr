@@ -227,14 +227,17 @@ bug20170123 (void)
 #if __MPFR_GMP(4,2,0)
   mpfr_t x;
   mpfr_exp_t emin;
+  gmp_randstate_t s;
 
   emin = mpfr_get_emin ();
   mpfr_set_emin (-7);
   mpfr_init2 (x, 53);
-  gmp_randseed_ui (mpfr_rands, 398);
-  mpfr_urandom (x, mpfr_rands, MPFR_RNDN);
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 398);
+  mpfr_urandom (x, s, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -8) == 0);
   mpfr_clear (x);
+  gmp_randclear (s);
   mpfr_set_emin (emin);
 #endif
 }
