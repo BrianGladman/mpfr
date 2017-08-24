@@ -370,6 +370,76 @@ overflow_tests (void)
   mpfr_set_emax (emax);
 }
 
+static void
+reprod (void)
+{
+  int i;
+
+  for (i = 0; i < 10; i++)
+    {
+      gmp_randstate_t s1;
+      mpfr_prec_t prec;
+      mpfr_t x1, x2, y;
+      mp_limb_t v;
+      int r;
+
+      prec = MPFR_PREC_MIN + (randlimb () % 200);
+      mpfr_inits2 (prec, x1, x2, y, (mpfr_ptr) 0);
+
+      gmp_randinit_set (s1, mpfr_rands);
+      mpfr_urandom (x1, mpfr_rands, MPFR_RNDZ);
+      mpfr_rand_raw (&v, mpfr_rands, GMP_NUMB_BITS);
+      mpfr_set (x2, x1, MPFR_RNDN);
+      mpfr_nextabove (x2);
+      /* The real number is between x1 and x2. */
+
+      RND_LOOP (r)
+        {
+          gmp_randstate_t s2;
+          mpfr_rnd_t rr = (mpfr_rnd_t) r;
+          mp_limb_t w;
+          mpfr_ptr t[2];
+          int k, nk = 0;
+
+          gmp_randinit_set (s2, s1);
+          mpfr_urandom (y, s2, rr);
+          mpfr_rand_raw (&w, s2, GMP_NUMB_BITS);
+          if (w != v)
+            {
+              printf ("Error in reprod for i=%d rnd=%s: different "
+                      "PRNG state\n", i, mpfr_print_rnd_mode (rr));
+              exit (1);
+            }
+
+          if (! MPFR_IS_LIKE_RNDA (rr, 0))
+            t[nk++] = x1;
+          if (! MPFR_IS_LIKE_RNDZ (rr, 0))
+            t[nk++] = x2;
+          MPFR_ASSERTN (nk == 1 || nk == 2);
+
+          if (!(mpfr_equal_p (y, t[0]) || (nk > 1 && mpfr_equal_p (y, t[1]))))
+            {
+              printf ("Error in reprod for i=%d rnd=%s:\n",
+                      i, mpfr_print_rnd_mode (rr));
+              printf ("Expected%s\n", nk > 1 ? " one of" : "");
+              for (k = 0; k < nk; k++)
+                {
+                  printf ("  ");
+                  mpfr_dump (t[k]);
+                }
+              printf ("Got\n  ");
+              mpfr_dump (y);
+              exit (1);
+            }
+
+          gmp_randclear (s2);
+        }
+
+      mpfr_clears (x1, x2, y, (mpfr_ptr) 0);
+      gmp_randclear (s1);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -429,6 +499,7 @@ main (int argc, char *argv[])
      this is not implemented in mini-gmp, we omit it with mini-gmp. */
   bug20100914 ();
   bug20170123 ();
+  reprod ();
 #endif
 
   tests_end_mpfr ();
