@@ -30,7 +30,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* The mpfr_urandom() function is implemented in the following way,
    so that the exact number (the random value to be rounded) and the
    final status of the random generator do not depend on the current
-   exponent range and on the rounding mode.
+   exponent range and on the rounding mode. However, they depend on
+   the target precision: from the same state of the random generator,
+   if the precision of the destination is changed, then the value may
+   be completely different (and the state of the random generator is
+   different too).
    1. One determines the exponent exp: 0 with probability 1/2, -1 with
       probability 1/4, -2 with probability 1/8, etc.
    2. One draws a 1-ulp interval ]a,b[ containing the exact result (the
