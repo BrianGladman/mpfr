@@ -3084,9 +3084,12 @@ generated according to the continuous uniform distribution on the interval
 The second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
-Note: the note for @code{mpfr_urandomb} holds too. Moreover, the next
-random state does not depend on the current exponent range and the
-rounding mode.
+Note: the note for @code{mpfr_urandomb} holds too. Moreover, the exact number
+(the random value to be rounded) and the next random state do not depend on
+the current exponent range and the rounding mode. However, they depend on
+the target precision: from the same state of the random generator, if the
+precision of the destination is changed, then the value may be completely
+different (and the state of the random generator is different too).
 @end deftypefun
 
 @deftypefun int mpfr_nrandom (mpfr_t @var{rop1}, gmp_randstate_t @var{state}, mpfr_rnd_t @var{rnd})
