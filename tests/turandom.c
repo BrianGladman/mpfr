@@ -479,6 +479,92 @@ reprod_rnd_exp (void)
     }
 }
 
+/* Reproducibility test: check that the behavior does not depend on
+   the platform ABI or MPFR version (new, incompatible MPFR versions
+   may introduce changes, in which case the hardcoded values should
+   depend on MPFR_VERSION).
+   It is not necessary to test with different rounding modes and
+   exponent ranges as this has already been done in reprod_rnd_exp.
+   We do not need to check the status of the PRNG after mpfr_urandom
+   since this is done implicitly by comparing the next value, except
+   for the last itaration.
+*/
+static void
+reprod_abi (void)
+{
+#define N 6
+  /* Run this program with the MPFR_REPROD_ABI_OUTPUT environment variable
+     set to get the array of strings. */
+  char *t[5 * N] = {
+    "1.0@-1",
+    "3.0@-1",
+    "7.0@-1",
+    "9.0@-1",
+    "c.0@-1",
+    "4.385434c0@-1",
+    "1.9a018734@-1",
+    "8.26547780@-1",
+    "a.fd334198@-1",
+    "9.aa11d5f00@-1",
+    "d.aa9a32fd0a801ac0@-1",
+    "c.eb47074368ec6340@-1",
+    "9.7dbe2ced88ae4c30@-1",
+    "d.03218ea6704a42c0@-1",
+    "7.1530156aac800d980@-1",
+    "e.270121b1d74aea9029ccc740@-1",
+    "5.614fc2d9ca3917107609e2e0@-1",
+    "5.15417c51af272232181d6a40@-1",
+    "f.dfb431dd6533c004b6d3c590@-1",
+    "4.345f96fd2929d41eb278a4f40@-1",
+    "a.804590c6449cd8c83bae31f31f7a4100@-1",
+    "a.0a2b318d3c99911a45e4cf33847d3680@-1",
+    "2.89f6127c19092d7a1808b1842b296400@-1",
+    "2.1db4fc00348ca1531983fe4bd4cdf6d2@-1",
+    "5.2d90f11ed710425ebe549a95decbb6540@-1",
+    "8.ca35d1302cf369e03c2a58bf2ce5cff8307f0bc0@-1",
+    "3.a22bae632c32f2a7a67a1fa78a93f5e84f9caa40@-1",
+    "f.370a36febed972dbb47f2503f7e08a651edbf120@-1",
+    "d.0764d7a38c206eeba6ffe8cf39d777194f5c9200@-1",
+    "a.1a312f0bb16db20c4783c6438725ed5d6dff6af80@-1"
+  };
+  gmp_randstate_t s;
+  int generate, i;
+
+  /* We must hardcode the seed to be able to compare with hardcoded values. */
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 17);
+
+  generate = getenv ("MPFR_REPROD_ABI_OUTPUT") != NULL;
+
+  for (i = 0; i < 5 * N; i++)
+    {
+      mpfr_prec_t prec;
+      mpfr_t x;
+
+      prec = i < 5 ? MPFR_PREC_MIN + i : (i / 5) * 32 + (i % 5) - 2;
+      mpfr_init2 (x, prec);
+      mpfr_urandom (x, s, MPFR_RNDN);
+      if (generate)
+        {
+          printf ("    \"");
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDZ);
+          printf (i < 5 * N - 1 ? "\",\n" : "\"\n");
+        }
+      else if (mpfr_cmp_str (x, t[i], 16, MPFR_RNDN) != 0)
+        {
+          printf ("Error in reprod_abi for i=%d\n", i);
+          printf ("Expected %s\n", t[i]);
+          printf ("Got      ");
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDZ);
+          printf ("\n");
+          exit (1);
+        }
+      mpfr_clear (x);
+    }
+
+  gmp_randclear (s);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -539,6 +625,7 @@ main (int argc, char *argv[])
   bug20100914 ();
   bug20170123 ();
   reprod_rnd_exp ();
+  reprod_abi ();
 #endif
 
   tests_end_mpfr ();
