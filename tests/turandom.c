@@ -120,7 +120,7 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
           mpfr_clear_flags ();
           inex = mpfr_urandom (x, RANDS, rnd);
           flags = __gmpfr_flags;
-          if (flags != ex_flags)
+          if (k > 0 && flags != ex_flags)
             {
               printf ("Error: mpfr_urandom() returns incorrect flags"
                       " for emin = %d (i = %d).\n", k+1, i);
@@ -255,62 +255,93 @@ underflow_tests (void)
   mpfr_t x;
   mpfr_exp_t emin;
   int i, k;
-  int inex;
   int rnd;
-  mpfr_flags_t ex_flags, flags;
 
   emin = mpfr_get_emin ();
   mpfr_init2 (x, 4);
-  ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT; /* if underflow */
+
   for (i = 2; i >= -4; i--)
-    {
-      mpfr_set_emin (i);
-      RND_LOOP (rnd)
-        for (k = 0; k < 100; k++)
-          {
-            mpfr_clear_flags ();
-            inex = mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
-            flags = __gmpfr_flags;
-            MPFR_ASSERTN (mpfr_inexflag_p ());
-            if (MPFR_IS_NEG (x))
-              {
-                printf ("Error in underflow_tests: got a negative sign"
-                        " for i=%d rnd=%s k=%d.\n",
-                        i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
-                exit (1);
-              }
-            if (MPFR_IS_ZERO (x))
-              {
-                if (rnd == MPFR_RNDU || rnd == MPFR_RNDA)
-                  {
-                    printf ("Error in underflow_tests: the value cannot"
-                            " be 0 for i=%d rnd=%s k=%d.\n",
-                            i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
-                    exit (1);
-                  }
-                if (flags != ex_flags)
-                  {
-                    printf ("Error in underflow_tests: incorrect flags"
-                            " for i=%d rnd=%s k=%d.\n",
-                            i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
-                    printf ("Expected ");
-                    flags_out (ex_flags);
-                    printf ("Got      ");
-                    flags_out (flags);
-                    exit (1);
-                  }
-              }
-            if (inex == 0 || (MPFR_IS_ZERO (x) && inex > 0))
-              {
-                printf ("Error in underflow_tests: incorrect inex (%d)"
-                        " for i=%d rnd=%s k=%d.\n", inex,
-                        i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
-                exit (1);
-              }
-          }
-    }
+    RND_LOOP (rnd)
+      for (k = 0; k < 100; k++)
+        {
+          mpfr_flags_t ex_flags, flags;
+          int inex;
+
+          if (i >= 2)
+            {
+              /* Always underflow when emin >= 2, i.e. when the minimum
+                 representable positive number is >= 2. */
+              ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+            }
+          else
+            {
+#ifndef MPFR_USE_MINI_GMP
+              gmp_randstate_t s;
+
+              /* Since the unrounded random number does not depend on
+                 the current exponent range, we can detect underflow
+                 in a range larger than the one that will be tested. */
+              gmp_randinit_set (s, mpfr_rands);
+              mpfr_clear_flags ();
+              mpfr_urandom (x, s, (mpfr_rnd_t) rnd);
+              gmp_randclear (s);
+              ex_flags = MPFR_FLAGS_INEXACT;
+              if (MPFR_IS_ZERO (x) || mpfr_get_exp (x) < i)
+                ex_flags |= MPFR_FLAGS_UNDERFLOW;
+#else
+              /* Do not test the flags. */
+              ex_flags = 0;
+#endif
+            }
+
+          mpfr_set_emin (i);
+          mpfr_clear_flags ();
+          inex = mpfr_urandom (x, mpfr_rands, (mpfr_rnd_t) rnd);
+          flags = __gmpfr_flags;
+          MPFR_ASSERTN (mpfr_inexflag_p ());
+          mpfr_set_emin (emin);
+
+          if (MPFR_IS_NEG (x))
+            {
+              printf ("Error in underflow_tests: got a negative sign"
+                      " for i=%d rnd=%s k=%d.\n",
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+              exit (1);
+            }
+
+          if (MPFR_IS_ZERO (x))
+            {
+              if (rnd == MPFR_RNDU || rnd == MPFR_RNDA)
+                {
+                  printf ("Error in underflow_tests: the value cannot"
+                          " be 0 for i=%d rnd=%s k=%d.\n",
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+                  exit (1);
+                }
+            }
+
+          if (inex == 0 || (MPFR_IS_ZERO (x) && inex > 0))
+            {
+              printf ("Error in underflow_tests: incorrect inex (%d)"
+                      " for i=%d rnd=%s k=%d.\n", inex,
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+              exit (1);
+            }
+
+          if (ex_flags != 0 && flags != ex_flags)
+            {
+              printf ("Error in underflow_tests: incorrect flags"
+                      " for i=%d rnd=%s k=%d.\n",
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), k);
+              printf ("Expected ");
+              flags_out (ex_flags);
+              printf ("Got      ");
+              flags_out (flags);
+              exit (1);
+            }
+        }
+
   mpfr_clear (x);
-  mpfr_set_emin (emin);
 }
 
 static void
