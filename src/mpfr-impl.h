@@ -461,7 +461,19 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 # define MPFR_ASSERTN(expr)  MPFR_ASSUME (expr)
 #else
 # define MPFR_ASSERTN(expr)  \
-  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
+  ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),MPFR_ASSUME(expr),0)))
+/* Some explanations: mpfr_assert_fail is not marked as "no return",
+   so that ((void) ((MPFR_LIKELY(expr)) || (ASSERT_FAIL(expr),0)))
+   cannot be a way to tell the compiler that after this code, expr is
+   necessarily true. The MPFR_ASSUME(expr) is a way to tell the compiler
+   that if expr is false, then ASSERT_FAIL(expr) does not return
+   (otherwise they would be a contradiction / UB when MPFR_ASSUME(expr)
+   is reached). Such information is useful to avoid warnings like those
+   from -Wmaybe-uninitialized, e.g. in tests/turandom.c r11663 on t[0]
+   from "mpfr_equal_p (y, t[0])".
+   TODO: Remove the MPFR_ASSUME(expr) once mpfr_assert_fail is marked as
+   "no return".
+ */
 #endif
 
 #if MPFR_WANT_ASSERT > 0
