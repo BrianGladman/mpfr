@@ -114,34 +114,37 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   for (k = 0; k < 5; k++)
     {
       set_emin (k+1);
-      mpfr_clear_flags ();
       ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-      inex = mpfr_urandom (x, RANDS, rnd);
-      flags = __gmpfr_flags;
-      if (flags != ex_flags)
+      for (i = 0; i < 5; i++)
         {
-          printf ("Error: mpfr_urandom() returns incorrect flags"
-                  " for emin = %d.\n", k+1);
-          printf ("Expected ");
-          flags_out (ex_flags);
-          printf ("Got      ");
-          flags_out (flags);
-          exit (1);
-        }
-      if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
-              && (!MPFR_IS_ZERO (x) || inex != -1))
-          || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
-              && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1))
-          || (rnd == MPFR_RNDN
-              && (k > 0 || mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
-              && (!MPFR_IS_ZERO (x) || inex != -1)))
-        {
-          printf ("Error: mpfr_urandom() does not handle correctly"
-                  " a restricted exponent range.\nemin = %d\n"
-                  "rounding mode: %s\nternary value: %d\nrandom value: ",
-                  k+1, mpfr_print_rnd_mode (rnd), inex);
-          mpfr_dump (x);
-          exit (1);
+          mpfr_clear_flags ();
+          inex = mpfr_urandom (x, RANDS, rnd);
+          flags = __gmpfr_flags;
+          if (flags != ex_flags)
+            {
+              printf ("Error: mpfr_urandom() returns incorrect flags"
+                      " for emin = %d (i = %d).\n", k+1, i);
+              printf ("Expected ");
+              flags_out (ex_flags);
+              printf ("Got      ");
+              flags_out (flags);
+              exit (1);
+            }
+          if ((   (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
+                  && (!MPFR_IS_ZERO (x) || inex != -1))
+              || ((rnd == MPFR_RNDU || rnd == MPFR_RNDA)
+                  && (mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1))
+              || (rnd == MPFR_RNDN
+                  && (k > 0 || mpfr_cmp_ui (x, 1 << k) != 0 || inex != +1)
+                  && (!MPFR_IS_ZERO (x) || inex != -1)))
+            {
+              printf ("Error: mpfr_urandom() does not handle correctly"
+                      " a restricted exponent range.\nemin = %d\n"
+                      "rounding mode: %s\nternary value: %d\nrandom value: ",
+                      k+1, mpfr_print_rnd_mode (rnd), inex);
+              mpfr_dump (x);
+              exit (1);
+            }
         }
     }
   set_emin (emin);
