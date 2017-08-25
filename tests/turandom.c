@@ -89,9 +89,13 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
           exit (1);
         }
 
-      d = mpfr_get_d1 (x); av += d; var += d*d;
-      i = (int)(size_tab * d);
-      if (d == 1.0) i --;
+      d = mpfr_get_d1 (x);
+      av += d;
+      var += d*d;
+      i = (int) (size_tab * d);
+      if (d == 1.0)
+        i--;
+      MPFR_ASSERTN (i < size_tab);
       tab[i]++;
 
       if (limb_mask && (MPFR_MANT (x)[limb_index] & limb_mask))
