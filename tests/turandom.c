@@ -445,7 +445,7 @@ reprod_rnd_exp (void)
           mpfr_rand_raw (&w, s2, GMP_NUMB_BITS);
           if (w != v)
             {
-              printf ("Error in reprod for i=%d rnd=%s: different "
+              printf ("Error in reprod_rnd_exp for i=%d rnd=%s: different "
                       "PRNG state\n", i, mpfr_print_rnd_mode (rr));
               exit (1);
             }
@@ -458,7 +458,7 @@ reprod_rnd_exp (void)
 
           if (!(mpfr_equal_p (y, t[0]) || (nk > 1 && mpfr_equal_p (y, t[1]))))
             {
-              printf ("Error in reprod for i=%d rnd=%s:\n",
+              printf ("Error in reprod_rnd_exp for i=%d rnd=%s:\n",
                       i, mpfr_print_rnd_mode (rr));
               printf ("Expected%s\n", nk > 1 ? " one of" : "");
               for (k = 0; k < nk; k++)
