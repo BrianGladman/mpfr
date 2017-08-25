@@ -408,8 +408,9 @@ overflow_tests (void)
   mpfr_set_emax (emax);
 }
 
+/* Reproducibility test with several rounding modes and exponent ranges. */
 static void
-reprod (void)
+reprod_rnd_exp (void)
 {
   int i;
 
@@ -537,7 +538,7 @@ main (int argc, char *argv[])
      this is not implemented in mini-gmp, we omit it with mini-gmp. */
   bug20100914 ();
   bug20170123 ();
-  reprod ();
+  reprod_rnd_exp ();
 #endif
 
   tests_end_mpfr ();
