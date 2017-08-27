@@ -492,6 +492,7 @@ reprod_rnd_exp (void)
 static void
 reprod_abi (void)
 {
+#if __MPFR_GMP(4,2,0)
 #define N 6
   /* Run this program with the MPFR_REPROD_ABI_OUTPUT environment variable
      set to get the array of strings. */
@@ -563,6 +564,7 @@ reprod_abi (void)
     }
 
   gmp_randclear (s);
+#endif
 }
 
 int
