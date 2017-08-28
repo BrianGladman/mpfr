@@ -522,7 +522,7 @@ case $host in
    AC_MSG_CHECKING(for DLL/static GMP)
    if test "$enable_shared" = yes; then
      MPFR_LDFLAGS="$MPFR_LDFLAGS -no-undefined"
-     LIBMPFR_LDFLAGS="$LIBMPFR_LDFLAGS -Wl,--output-def,.libs/libmpfr-4.dll.def"
+     LIBMPFR_LDFLAGS="$LIBMPFR_LDFLAGS -Wl,--output-def,.libs/libmpfr-6.dll.def"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
 #if !__GMP_LIBGMP_DLL
