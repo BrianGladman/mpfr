@@ -35,7 +35,7 @@ clyr=$(sed -n "/^r/ {
 # Do not use "find ... | while read file do ... done" because the "do"
 # part needs to be run in the current shell, and some shells behave in
 # a different way.
-srctests=$(find examples src tests -name '*.[ch]')
+srctests=$(find examples src tests -name '*.[ch]' ! -name '.#*')
 
 # Take the copyright notice last year of NEWS file as a reference.
 z=$(sed -n "s/^Copyright 2000-$yrx Free Software Foundation.*/\1/p" NEWS)

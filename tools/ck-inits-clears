@@ -14,7 +14,7 @@ exit $err;
 
 sub wanted
   {
-    /\.c$/ or return;
+    /\.c$/ && ! /^\.#/ or return;
     my $ctr = 0;
     open FILE, '<', $_ or die;
     while (<FILE>)
