@@ -422,7 +422,7 @@ else
 fi
 
 err-if-output "ck-clz_tab" tools/ck-clz_tab
-err-if-output "check_inits_clears" tools/ck-inits-clears
+err-if-output "ck-inits-clears" tools/ck-inits-clears
 
 ############################################################################
 
