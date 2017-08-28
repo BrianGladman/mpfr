@@ -172,9 +172,10 @@ To make a release (for the MPFR team):
   2) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
-     Update the libtool version too (see src/Makefile.am). Check with
-     tools/ck-version-info (this check will also be done automatically
-     by "make dist" / "make distcheck").
+     Update the libtool version (see src/Makefile.am).
+     Update the DLL version (see configure.ac) if need be.
+     Check these versions with tools/ck-version-info (this check will also
+     be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
 
   3) Update the NEWS file, in particular say if the release is binary
