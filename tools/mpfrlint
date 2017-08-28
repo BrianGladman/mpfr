@@ -423,6 +423,7 @@ fi
 
 err-if-output "ck-clz_tab" tools/ck-clz_tab
 err-if-output "ck-inits-clears" tools/ck-inits-clears
+err-if-output "ck-version-info" tools/ck-version-info
 
 ############################################################################
 
