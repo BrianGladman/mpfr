@@ -90,4 +90,4 @@ make check -j4
 # gcc119 # PASS:  159 # SKIP:  1 (manual compilation)
 # gcc200 Connection timed out
 # gcc201 Connection timed out
-# gcc202 # PASS:  158 # FAIL:  1 (gmpop) GMP-5.1.3 (GMP 6 fails make check)
+# gcc202 # PASS:  159 # SKIP:  1 (gmp-6.1.2 configured with --disable-assembly)
