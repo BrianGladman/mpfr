@@ -345,6 +345,39 @@ underflow_tests (void)
 }
 
 static void
+test_underflow (int verbose)
+{
+  mpfr_t x;
+  mpfr_exp_t emin = mpfr_get_emin ();
+  long i, exp[6] = {0, 0, 0, 0, 0, 0};
+
+  mpfr_init2 (x, 2);
+  mpfr_set_emin (-3);
+#define N 1000000
+  for (i = 0; i < N; i++)
+    {
+      mpfr_urandom (x, RANDS, MPFR_RNDN);
+      if (mpfr_zero_p (x))
+        exp[5] ++;
+      else
+        /* exp=1 is possible if the generated number is 0.111111... */
+        exp[1-mpfr_get_exp(x)] ++;
+    }
+  if (verbose)
+    printf ("exp=1:%.3f(%.3f) 0:%.3f(%.3f) -1:%.3f(%.3f) -2:%.3f(%.3f) "
+            "-3:%.3f(%.3f) zero:%.3f(%.3f)\n",
+            100.0 * (double) exp[0] / (double) N, 12.5,
+            100.0 * (double) exp[1] / (double) N, 43.75,
+            100.0 * (double) exp[2] / (double) N, 21.875,
+            100.0 * (double) exp[3] / (double) N, 10.9375,
+            100.0 * (double) exp[4] / (double) N, 7.8125,
+            100.0 * (double) exp[5] / (double) N, 3.125);
+  mpfr_clear (x);
+  mpfr_set_emin (emin);
+#undef N
+}
+
+static void
 overflow_tests (void)
 {
   mpfr_t x;
@@ -629,6 +662,8 @@ main (int argc, char *argv[])
   reprod_rnd_exp ();
   reprod_abi ();
 #endif
+
+  test_underflow (verbose);
 
   tests_end_mpfr ();
   return 0;
