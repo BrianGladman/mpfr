@@ -939,7 +939,7 @@ random_double (void)
       '+',
       ' ',
       '#',
-      '0', /* no ambiguity: first zeros are flag zero*/
+      '0', /* no ambiguity: first zeros are flag zero */
       '\''
     };
   /* no 'a': mpfr and glibc do not have the same semantic */
