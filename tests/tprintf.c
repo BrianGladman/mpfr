@@ -536,7 +536,7 @@ main (int argc, char *argv[])
       if (freopen ("/dev/null", "w", stdout) == NULL)
         {
           /* We failed to open this device, try with a dummy file */
-          if (freopen ("mpfrtest.txt", "w", stdout) == NULL)
+          if (freopen ("tprintf_out.txt", "w", stdout) == NULL)
             {
               /* Output the error message to stderr since it is not
                  a message about a wrong result in MPFR. Anyway the
