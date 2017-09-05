@@ -940,7 +940,7 @@ random_double (void)
       ' ',
       '#',
       '0', /* no ambiguity: first zeros are flag zero */
-      '\''
+      '\'' /* SUS extension */
     };
   /* no 'a': mpfr and glibc do not have the same semantic */
   char specifier[] =
@@ -1004,8 +1004,12 @@ random_double (void)
       *ptr_mpfr++ = *ptr++ = '%';
       /* random specifier 'e', 'f', 'g', 'E', 'F', or 'G' */
       spec = (int) (randlimb() % 6);
-      /* random flags, but no ' flag with %e */
+      /* random flags, but no ' flag with %e or with non-glibc */
+#if __MPFR_GLIBC(1,0)
       jmax = (spec == 0 || spec == 3) ? 5 : 6;
+#else
+      jmax = 5;
+#endif
       for (j = 0; j < jmax; j++)
         {
           if (randlimb() % 3 == 0)
