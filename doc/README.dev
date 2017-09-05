@@ -1298,6 +1298,12 @@ where such features are required). For instance, the mpfr_printf-like
 functions need <stdarg.h> (HAVE_STDARG defined), thus should not be
 used, except for testing them.
 
+For temporary result files created by test programs, choose a unique
+filename to avoid conflicts in parallel tests. To ensure that, the
+filename should start with the name of the test program (for instance,
+"tfprintf_out.txt" for tfprintf.c). Add the filename to CLEANFILES in
+the tests/Makefile.am file.
+
 Also, make sure that the tests run against previous MPFR versions,
 possibly by disabling some tests with code like
 
