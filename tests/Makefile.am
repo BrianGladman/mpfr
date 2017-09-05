@@ -50,7 +50,7 @@ check:
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.dat tmul.dat \
-	mpfrtest.dat mpfrtest2.dat
+	tfpif_r1.dat tfpif_r2.dat
 
 CLEANFILES = tfprintf_out.txt tout_str_out.txt toutimpl_out.txt tprintf_out.txt
 

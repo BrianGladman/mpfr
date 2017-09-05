@@ -22,10 +22,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define FILE_NAME_RW "mpfrtest.txt" /* temporary name (written then read) */
-#define FILE_NAME_R  "mpfrtest.dat" /* fixed file name (read only) */
-#define FILE_NAME_R2 "mpfrtest2.dat" /* fixed file name (read only) with a
-                                        precision > MPFR_PREC_MAX */
+#define FILE_NAME_RW "tfpif_rw.dat" /* temporary name (written then read) */
+#define FILE_NAME_R  "tfpif_r1.dat" /* fixed file name (read only) */
+#define FILE_NAME_R2 "tfpif_r2.dat" /* fixed file name (read only) with a
+                                       precision > MPFR_PREC_MAX */
 
 /* TODO: add tests for precision 1 and for precisions > MPFR_PREC_MAX. */
 
