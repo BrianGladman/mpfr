@@ -1437,15 +1437,28 @@ do {                                                                  \
 # endif
 #endif
 
+/* FIXME: Add support for multibyte decimal_point and thousands_sep since
+   this can be found in practice: https://reviews.llvm.org/D27167 says:
+   "I found this problem on FreeBSD 11, where thousands_sep in fr_FR.UTF-8
+   is a no-break space (U+00A0)."
+   Note, however, that this is not allowed by the C standard, which just
+   says "character" and not "multibyte character".
+   In the mean time, in case of non-single-byte character, revert to the
+   default value. */
 #if MPFR_LCONV_DPTS
 #include <locale.h>
 /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
    be negative (the ISO C99 does not seem to forbid negative values). */
-#define MPFR_DECIMAL_POINT (localeconv()->decimal_point[0])
-#define MPFR_THOUSANDS_SEPARATOR (localeconv()->thousands_sep[0])
+#define MPFR_DECIMAL_POINT                      \
+  (localeconv()->decimal_point[1] != '\0' ?     \
+   (char) '.' : localeconv()->decimal_point[0])
+#define MPFR_THOUSANDS_SEPARATOR                \
+  (localeconv()->thousands_sep[0] == '\0' ||    \
+   localeconv()->thousands_sep[1] != '\0' ?     \
+   (char) '\0' : localeconv()->thousands_sep[0])
 #else
 #define MPFR_DECIMAL_POINT ((char) '.')
-#define MPFR_THOUSANDS_SEPARATOR ('\0')
+#define MPFR_THOUSANDS_SEPARATOR ((char) '\0')
 #endif
 
 
