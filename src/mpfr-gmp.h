@@ -305,9 +305,12 @@ extern void * (*__gmp_reallocate_func) (void *, size_t, size_t);
 extern void (*__gmp_free_func) (void *, size_t);
 #endif
 
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_allocate_func)   (size_t);
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_reallocate_func) (void *, size_t, size_t);
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       (void *, size_t);
+/* Note: The declaration of the MPFR memory allocation functions had to be
+   moved to mpfr-impl.h for thread-safe DLL support on MS Windows, because
+   mpfr-gmp.h is included too early for that. */
+typedef void * (*mpfr_allocate_func_t) (size_t);
+typedef void * (*mpfr_reallocate_func_t) (void *, size_t, size_t);
+typedef void   (*mpfr_free_func_t) (void *, size_t);
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q

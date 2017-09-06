@@ -228,6 +228,11 @@ extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
 extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emax;
 extern MPFR_THREAD_ATTR mpfr_prec_t  __gmpfr_default_fp_bit_precision;
 extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
+# ifndef MPFR_HAVE_GMP_IMPL
+extern MPFR_THREAD_ATTR mpfr_allocate_func_t   mpfr_allocate_func;
+extern MPFR_THREAD_ATTR mpfr_reallocate_func_t mpfr_reallocate_func;
+extern MPFR_THREAD_ATTR mpfr_free_func_t       mpfr_free_func;
+# endif
 extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_euler;
 extern MPFR_CACHE_ATTR  mpfr_cache_t __gmpfr_cache_const_catalan;
 # ifndef MPFR_USE_LOGGING
@@ -254,6 +259,11 @@ __MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emin_f (void);
 __MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f (void);
 __MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f (void);
 __MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f (void);
+# ifndef MPFR_HAVE_GMP_IMPL
+__MPFR_DECLSPEC mpfr_allocate_func_t *   __gmpfr_allocate_func_f (void);
+__MPFR_DECLSPEC mpfr_reallocate_func_t * __gmpfr_reallocate_func_f (void);
+__MPFR_DECLSPEC mpfr_free_func_t *       __gmpfr_free_func_f (void);
+# endif
 __MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f (void);
 __MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f (void);
 # ifndef MPFR_USE_LOGGING
@@ -273,6 +283,11 @@ __MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f (void);
 #  define __gmpfr_emax                     (*__gmpfr_emax_f())
 #  define __gmpfr_default_fp_bit_precision (*__gmpfr_default_fp_bit_precision_f())
 #  define __gmpfr_default_rounding_mode    (*__gmpfr_default_rounding_mode_f())
+#  ifndef MPFR_HAVE_GMP_IMPL
+#   define mpfr_allocate_func             (*__gmpfr_allocate_func_f())
+#   define mpfr_reallocate_func           (*__gmpfr_reallocate_func_f())
+#   define mpfr_free_func                 (*__gmpfr_free_func_f())
+#  endif
 #  define __gmpfr_cache_const_euler        (*__gmpfr_cache_const_euler_f())
 #  define __gmpfr_cache_const_catalan      (*__gmpfr_cache_const_catalan_f())
 #  ifndef MPFR_USE_LOGGING
