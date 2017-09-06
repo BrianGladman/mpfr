@@ -284,9 +284,9 @@ __MPFR_DECLSPEC mpfr_cache_ptr * __gmpfr_cache_const_log2_f (void);
 #  define __gmpfr_default_fp_bit_precision (*__gmpfr_default_fp_bit_precision_f())
 #  define __gmpfr_default_rounding_mode    (*__gmpfr_default_rounding_mode_f())
 #  ifndef MPFR_HAVE_GMP_IMPL
-#   define mpfr_allocate_func             (*__gmpfr_allocate_func_f())
-#   define mpfr_reallocate_func           (*__gmpfr_reallocate_func_f())
-#   define mpfr_free_func                 (*__gmpfr_free_func_f())
+#   define mpfr_allocate_func              (*mpfr_allocate_func_f())
+#   define mpfr_reallocate_func            (*mpfr_reallocate_func_f())
+#   define mpfr_free_func                  (*mpfr_free_func_f())
 #  endif
 #  define __gmpfr_cache_const_euler        (*__gmpfr_cache_const_euler_f())
 #  define __gmpfr_cache_const_catalan      (*__gmpfr_cache_const_catalan_f())
