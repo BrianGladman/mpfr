@@ -260,9 +260,9 @@ __MPFR_DECLSPEC mpfr_exp_t *   __gmpfr_emax_f (void);
 __MPFR_DECLSPEC mpfr_prec_t *  __gmpfr_default_fp_bit_precision_f (void);
 __MPFR_DECLSPEC mpfr_rnd_t *   __gmpfr_default_rounding_mode_f (void);
 # ifndef MPFR_HAVE_GMP_IMPL
-__MPFR_DECLSPEC mpfr_allocate_func_t *   __gmpfr_allocate_func_f (void);
-__MPFR_DECLSPEC mpfr_reallocate_func_t * __gmpfr_reallocate_func_f (void);
-__MPFR_DECLSPEC mpfr_free_func_t *       __gmpfr_free_func_f (void);
+__MPFR_DECLSPEC mpfr_allocate_func_t *   mpfr_allocate_func_f (void);
+__MPFR_DECLSPEC mpfr_reallocate_func_t * mpfr_reallocate_func_f (void);
+__MPFR_DECLSPEC mpfr_free_func_t *       mpfr_free_func_f (void);
 # endif
 __MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_euler_f (void);
 __MPFR_DECLSPEC mpfr_cache_t * __gmpfr_cache_const_catalan_f (void);
