@@ -337,7 +337,9 @@ To make a release (for the MPFR team):
      (for mpfr.html, use "makeinfo --html --no-split mpfr.texi" from
      the doc directory).
      Upload the tarballs and the signatures to the MPFR web server
-     (via svn), to InriaForge and to the GNU FTP site.
+     (via a svn working copy) and to InriaForge.
+     Prepare the files for the GNU FTP site with the gnu-sigdir script
+     in the /misc directory and upload them.
      Update the mpfr-current symbolic link and the history page.
      Update the old current page to point to the new release; see
      examples for 3.0.1 (latest version of the branch) and 3.1.0
