@@ -129,7 +129,7 @@ if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   echo "Comparing with GNU FTP (ftp.gnu.org)..." >&2
   for i in tar.bz2 tar.gz tar.xz zip
   do
-    wget http://ftp.gnu.org/gnu/mpfr/mpfr-$vers.$i
+    wget https://ftp.gnu.org/gnu/mpfr/mpfr-$vers.$i
   done
   for i in sha1sum sha256sum
   do
@@ -172,7 +172,7 @@ from InriaForge:
 
 and from the GNU FTP site:
 
-  http://ftp.gnu.org/gnu/mpfr/
+  https://ftp.gnu.org/gnu/mpfr/
 
 Thanks very much to those who sent us bug reports and/or tested the
 release candidate.
