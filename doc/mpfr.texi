@@ -4227,7 +4227,7 @@ volume 33, issue 2, article 13, 15 pages, 2007,
 
 @item
 Torbj@"orn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library",
-  version 5.0.1, 2010, @url{http://gmplib.org}.
+  version 5.0.1, 2010, @url{https://gmplib.org/}.
 
 @item
 IEEE standard for binary floating-point arithmetic, Technical Report
