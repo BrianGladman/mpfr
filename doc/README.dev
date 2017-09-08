@@ -335,8 +335,8 @@ To make a release (for the MPFR team):
   9) * For the release itself (not the release candidates):
      Create a web page for the MPFR release and add the documentation
      (for mpfr.html, use "makeinfo --html --no-split mpfr.texi" from
-     the doc directory). WARNING! Make sure that the dvi and ps files
-     have an a4 papersize; there's a bug in texinfo(?):
+     the doc directory). WARNING! Make sure that the .ps file has an
+     a4 papersize; there's a bug in texinfo(?):
        https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=874632
      Upload the tarballs and the signatures to the MPFR web server
      (via a svn working copy) and to InriaForge.
