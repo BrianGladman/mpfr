@@ -45,7 +45,7 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k,
                mpfr_rnd_t rnd_mode);
 
 int
-mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
+mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
   mpfr_exp_t e, r, sh, f;
@@ -63,8 +63,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
     {
       if (k == 0)
         {
-          /* x^(1/0) = NaN since 0 is not signed, thus 1/0 might be +Inf or
-             -Inf */
+          /* rootn(x,0) is NaN (IEEE 754-2008). */
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
@@ -81,29 +80,33 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
           MPFR_RET_NAN;
         }
 
-      if (MPFR_IS_INF (x)) /* +Inf^(1/k) = +Inf
-                              -Inf^(1/k) = -Inf if k odd
-                              -Inf^(1/k) = NaN if k even */
+      if (MPFR_IS_INF (x)) /* (+Inf)^(1/k) = +Inf
+                              (-Inf)^(1/k) = -Inf if k odd
+                              (-Inf)^(1/k) = NaN if k even */
         {
-          if (MPFR_IS_NEG(x) && (k % 2 == 0))
+          if (MPFR_IS_NEG (x) && (k & 1) == 0)
             {
               MPFR_SET_NAN (y);
               MPFR_RET_NAN;
             }
           MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
         }
       else /* x is necessarily 0: (+0)^(1/k) = +0
                                   (-0)^(1/k) = -0 */
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           MPFR_SET_ZERO (y);
+          if (MPFR_IS_POS (x) || (k & 1) == 0)
+            MPFR_SET_POS (y);
+          else
+            MPFR_SET_NEG (y);
         }
-      MPFR_SET_SAME_SIGN (y, x);
       MPFR_RET (0);
     }
 
   /* Returns NAN for x < 0 and k even */
-  if (MPFR_UNLIKELY (MPFR_IS_NEG (x) && (k % 2 == 0)))
+  if (MPFR_UNLIKELY (MPFR_IS_NEG (x) && (k & 1) == 0))
     {
       MPFR_SET_NAN (y);
       MPFR_RET_NAN;
@@ -278,4 +281,37 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
 
   return mpfr_check_range (y, inexact, rnd_mode);
+}
+
+int
+mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
+{
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg k=%lu rnd=%d",
+      mpfr_get_prec (x), mpfr_log_prec, x, k, rnd_mode),
+     ("y[%Pu]=%.*Rg",
+      mpfr_get_prec (y), mpfr_log_prec, y));
+
+  /* Like mpfr_rootn_ui... */
+  if (MPFR_UNLIKELY (k <= 1))
+    {
+      if (k == 0)
+        {
+          /* rootn(x,0) is NaN (IEEE 754-2008). */
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else /* y = x^(1/1) = x */
+        return mpfr_set (y, x, rnd_mode);
+    }
+
+  if (MPFR_UNLIKELY (MPFR_IS_ZERO (x)))
+    {
+      /* The only case that may differ from mpfr_rootn_ui. */
+      MPFR_SET_ZERO (y);
+      MPFR_SET_SAME_SIGN (y, x);
+      MPFR_RET (0);
+    }
+  else
+    return mpfr_rootn_ui (y, x, k, rnd_mode);
 }

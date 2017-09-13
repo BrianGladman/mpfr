@@ -1813,14 +1813,29 @@ is @minus{}Inf instead of +Inf.
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_rootn_ui (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
 For @var{k} = 0, set @var{rop} to NaN@.
 For @var{k} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
 set @var{rop} to a negative number (resp.@: NaN)@.
-The @var{k}th root of @minus{}0 is defined to be @minus{}0,
-whatever the parity of @var{k} (different from zero).
+If @var{op} is zero, set @var{rop} to zero with the sign obtained by the
+usual limit rules, i.e., the same sign as @var{op} if @var{k} is odd, and
+positive if @var{k} is even.
+
+These functions agree with the rootn function of the IEEE 754-2008 standard
+(Section 9.2).
+@end deftypefun
+
+@deftypefun int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
+This function is the same as @code{mpfr_rootn_ui} except when @var{op}
+is @minus{}0 and @var{k} is even: the result is @minus{}0 instead of +0
+(the reason was to be consistent with @code{mpfr_sqrt}). Said otherwise,
+if @var{op} is zero, set @var{rop} to @var{op}.
+
+This function predates the IEEE 754-2008 standard and behaves differently
+from its rootn function. It is marked as deprecated and will be removed in
+a future release.
 @end deftypefun
 
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -1984,8 +1999,8 @@ Important note: in some domains, computing special functions (even more
 with correct rounding) is expensive, even for small precision,
 for example the trigonometric and Bessel functions for large argument.
 For some functions, the memory usage might depend not only on the output
-precision: it is the case of the @code{mpfr_root} function where the memory
-usage is also linear in the argument @var{k},
+precision: it is the case of the @code{mpfr_rootn_ui} function where the
+memory usage is also linear in the argument @var{k},
 and of the incomplete Gamma function (dependence on the precision of @var{op}).
 
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -3939,6 +3954,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_rint_roundeven} and @code{mpfr_roundeven} in MPFR 4.0.
 
 @item @code{mpfr_round_nearest_away} in MPFR 4.0.
+
+@item @code{mpfr_rootn_ui} in MPFR 4.0.
 
 @item @code{mpfr_set_divby0} in MPFR 3.1 (new divide-by-zero exception).
 

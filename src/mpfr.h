@@ -669,8 +669,11 @@ __MPFR_DECLSPEC int mpfr_hypot (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_erf (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_erfc (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_cbrt (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+MPFR_DEPRECATED
 __MPFR_DECLSPEC int mpfr_root (mpfr_ptr, mpfr_srcptr, unsigned long,
                                mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_rootn_ui (mpfr_ptr, mpfr_srcptr, unsigned long,
+                                   mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_gamma (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_gamma_inc (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                                     mpfr_rnd_t);
