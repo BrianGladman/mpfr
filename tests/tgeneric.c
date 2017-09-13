@@ -70,9 +70,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TGENERIC_SO_TEST 1
 #endif
 
-#define STR(F) #F
-#define MAKE_STR(S) STR(S)
-
 /* The (void *) below is needed to avoid a warning with gcc 4.2+ and functions
  * with 2 arguments. See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36299>.
  */

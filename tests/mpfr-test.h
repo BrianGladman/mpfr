@@ -37,6 +37,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#define STRINGIZE(S) #S
+#define MAKE_STR(S) STRINGIZE(S)
+
 #if defined (__cplusplus)
 extern "C" {
 #endif

@@ -27,9 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
-#define STRINGIZE(S) #S
-#define MAKE_STR(S) STRINGIZE(S)
-
 int
 main (void)
 {
