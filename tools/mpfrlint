@@ -337,10 +337,12 @@ for t in $tprg
 do
   [[ $t != mpf*_compat ]] || continue
   tc=tests/$t.c
-  for fn in tests_start_mpfr tests_end_mpfr
-  do
-    err-if-output "missing call to $fn in $tc" grep -q "$fn *();" $tc
-  done
+  if grep -q "main *(" $tc; then
+    for fn in tests_start_mpfr tests_end_mpfr
+    do
+      err-if-output "missing call to $fn in $tc" grep -q "$fn *();" $tc
+    done
+  fi
 done
 
 # mpfr_printf-like functions shouldn't be used in the tests,
