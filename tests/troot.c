@@ -20,7 +20,10 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#ifndef TF
+#ifdef TF
+# define TF_IS_MPFR_ROOT 0
+#else
+# define TF_IS_MPFR_ROOT 1
 # define TF mpfr_root
 #endif
 
@@ -95,16 +98,18 @@ special (void)
   /* root(+/-0, k) = +/-0 for k > 0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   TF (y, x, 17, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: root(+0,17) <> +0\n");
       exit (1);
     }
   mpfr_neg (x, x, MPFR_RNDN);
   TF (y, x, 42, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+  if (MPFR_NOTZERO (y) ||
+      (TF_IS_MPFR_ROOT ? MPFR_IS_POS (y) : MPFR_IS_NEG (y)))
     {
-      printf ("Error: root(-0,42) <> -0\n");
+      printf ("Error: root(-0,42) <> %c0\n",
+              TF_IS_MPFR_ROOT ? '-' : '+');
       exit (1);
     }
 
