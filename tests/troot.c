@@ -62,76 +62,84 @@ special (void)
 
   /* root(NaN) = NaN */
   mpfr_set_nan (x);
-  TF (y, x, 17, MPFR_RNDN);
+  i = TF (y, x, 17, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: root(NaN,17) <> NaN\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
 
   /* root(+Inf) = +Inf */
   mpfr_set_inf (x, 1);
-  TF (y, x, 42, MPFR_RNDN);
+  i = TF (y, x, 42, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error: root(+Inf,42) <> +Inf\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
 
   /* root(-Inf, 17) = -Inf */
   mpfr_set_inf (x, -1);
-  TF (y, x, 17, MPFR_RNDN);
+  i = TF (y, x, 17, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
     {
       printf ("Error: root(-Inf,17) <> -Inf\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
+
   /* root(-Inf, 42) =  NaN */
   mpfr_set_inf (x, -1);
-  TF (y, x, 42, MPFR_RNDN);
+  i = TF (y, x, 42, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: root(-Inf,42) <> -Inf\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
 
   /* root(+/-0, k) = +/-0, with the sign depending on TF.
    * Before calling the function, we set y to NaN with the wrong sign,
    * so that if the code of the function forgets to do something, this
    * will be detected.
    */
-  mpfr_set_ui (x, 0, MPFR_RNDN);  /* x is +0 */
+  mpfr_set_zero (x, 1);  /* x is +0 */
   MPFR_SET_NAN (y);
   MPFR_SET_NEG (y);
-  TF (y, x, 17, MPFR_RNDN);
+  i = TF (y, x, 17, MPFR_RNDN);
   if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: root(+0,17) <> +0\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
   MPFR_SET_NAN (y);
   MPFR_SET_NEG (y);
-  TF (y, x, 42, MPFR_RNDN);
+  i = TF (y, x, 42, MPFR_RNDN);
   if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: root(+0,42) <> +0\n");
       exit (1);
     }
-  mpfr_neg (x, x, MPFR_RNDN);  /* x is -0 */
+  MPFR_ASSERTN (i == 0);
+  mpfr_set_zero (x, -1);  /* x is -0 */
   MPFR_SET_NAN (y);
   MPFR_SET_POS (y);
-  TF (y, x, 17, MPFR_RNDN);
+  i = TF (y, x, 17, MPFR_RNDN);
   if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
     {
       printf ("Error: root(-0,17) <> -0\n");
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
   MPFR_SET_NAN (y);
   if (TF_IS_MPFR_ROOT)
     MPFR_SET_POS (y);
   else
     MPFR_SET_NEG (y);
-  TF (y, x, 42, MPFR_RNDN);
+  i = TF (y, x, 42, MPFR_RNDN);
   if (MPFR_NOTZERO (y) ||
       (TF_IS_MPFR_ROOT ? MPFR_IS_POS (y) : MPFR_IS_NEG (y)))
     {
@@ -139,6 +147,7 @@ special (void)
               TF_IS_MPFR_ROOT ? '-' : '+');
       exit (1);
     }
+  MPFR_ASSERTN (i == 0);
 
   mpfr_set_prec (x, 53);
   mpfr_set_str (x, "8.39005285514734966412e-01", 10, MPFR_RNDN);
