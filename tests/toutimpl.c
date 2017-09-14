@@ -1,5 +1,5 @@
 /* Test file for internal debugging-out functions:
-   mpfr_dump, mpfr_print_binary, mpfr_print_rnd_mode.
+   mpfr_dump, mpfr_print_rnd_mode.
 
 Copyright 2004-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.

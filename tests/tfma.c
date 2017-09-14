@@ -242,12 +242,11 @@ test_underflow1 (void)
                 }
               if (! mpfr_equal_p (r, z))
                 {
-                  printf (STRTU1 "got ", signy, signz,
+                  printf (STRTU1 "got        ", signy, signz,
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  mpfr_print_binary (r);
-                  printf (" instead of ");
-                  mpfr_print_binary (z);
-                  printf ("\n");
+                  mpfr_dump (r);
+                  printf ("  instead of ");
+                  mpfr_dump (z);
                   err = 1;
                 }
               if (inex >= 0 && (rnd == MPFR_RNDD ||
@@ -738,34 +737,31 @@ main (int argc, char *argv[])
             inexact = mpfr_fma (s, x, y, z, rnd);
             if (! mpfr_equal_p (s, t))
               {
-                printf ("results differ for x=");
-                mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
+                printf ("results differ for\n");
+                printf ("  x=");
+                mpfr_dump (x);
                 printf ("  y=");
-                mpfr_out_str (stdout, 2, prec, y, MPFR_RNDN);
+                mpfr_dump (y);
                 printf ("  z=");
-                mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
-                printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
+                mpfr_dump (z);
+                printf ("  with prec=%u rnd_mode=%s\n", (unsigned int) prec,
                         mpfr_print_rnd_mode (rnd));
                 printf ("got      ");
-                mpfr_out_str (stdout, 2, prec, s, MPFR_RNDN);
-                puts ("");
+                mpfr_dump (s);
                 printf ("expected ");
-                mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
-                puts ("");
-                printf ("approx  ");
-                mpfr_print_binary (slong);
-                puts ("");
+                mpfr_dump (t);
+                printf ("approx   ");
+                mpfr_dump (slong);
                 exit (1);
               }
             if (! SAME_SIGN (inexact, compare))
               {
                 printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
                         mpfr_print_rnd_mode (rnd), compare, inexact);
-                printf (" x="); mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
-                printf (" y="); mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
-                printf (" z="); mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);
-                printf (" s="); mpfr_out_str (stdout, 2, 0, s, MPFR_RNDN);
-                printf ("\n");
+                printf (" x="); mpfr_dump (x);
+                printf (" y="); mpfr_dump (y);
+                printf (" z="); mpfr_dump (z);
+                printf (" s="); mpfr_dump (s);
                 exit (1);
               }
           }

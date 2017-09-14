@@ -197,9 +197,10 @@ overflowed_sin_cos0 (void)
           if (! (mpfr_zero_p (x) && MPFR_IS_NEG (x)))
             {
               printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
-                      "  Got sin = ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              mpfr_print_binary (x);
-              printf (" instead of -0.\n");
+                      "  Got sin =  ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpfr_dump (x);
+              printf ("  instead of -0.\n");
               err = 1;
             }
           if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
@@ -214,10 +215,10 @@ overflowed_sin_cos0 (void)
               if (! mpfr_equal_p (y, z))
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
-                          "  Got cos = ",
+                          "  Got cos =  ",
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  mpfr_print_binary (y);
-                  printf (" instead of 0.11111111E%d.\n", emax);
+                  mpfr_dump (y);
+                  printf ("  instead of 0.11111111E%d.\n", emax);
                   err = 1;
                 }
             }
@@ -233,10 +234,10 @@ overflowed_sin_cos0 (void)
               if (! (mpfr_inf_p (y) && MPFR_IS_POS (y)))
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
-                          "  Got cos = ",
+                          "  Got cos =  ",
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                  mpfr_print_binary (y);
-                  printf (" instead of +Inf.\n");
+                  mpfr_dump (y);
+                  printf ("  instead of +Inf.\n");
                   err = 1;
                 }
             }

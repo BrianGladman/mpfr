@@ -163,10 +163,11 @@ check4 (const char *Ns, const char *Ds, mpfr_rnd_t rnd_mode, int p,
     {
       printf ("mpfr_div failed for n=%s, d=%s, p=%d, rnd_mode=%s\n",
               Ns, Ds, p, mpfr_print_rnd_mode (rnd_mode));
-      printf ("got      ");mpfr_print_binary(q);
+      printf ("got      ");
+      mpfr_dump (q);
       mpfr_set_str (q, Qs, ((p==53) ? 10 : 2), MPFR_RNDN);
-      printf("\nexpected "); mpfr_print_binary(q);
-      putchar('\n');
+      printf ("expected ");
+      mpfr_dump (q);
       exit (1);
     }
   mpfr_clears (q, n, d, (mpfr_ptr) 0);
@@ -292,14 +293,14 @@ check_64(void)
   test_div(z, x, y, MPFR_RNDU);
   if (mpfr_cmp_str (z, "0.1001001001101101010010100101011110000010111001001010100000000000E-529", 2, MPFR_RNDN))
     {
-      printf("Error for tdiv for MPFR_RNDU and p=64\nx=");
-      mpfr_print_binary(x);
-      printf("\ny=");
-      mpfr_print_binary(y);
-      printf("\ngot      ");
-      mpfr_print_binary(z);
-      printf("\nexpected 0.1001001001101101010010100101011110000010111001001010100000000000E-529\n");
-      exit(1);
+      printf ("Error for tdiv for MPFR_RNDU and p=64\nx=");
+      mpfr_dump (x);
+      printf ("y=");
+      mpfr_dump (y);
+      printf ("got      ");
+      mpfr_dump (z);
+      printf ("expected 0.1001001001101101010010100101011110000010111001001010100000000000E-529\n");
+      exit (1);
     }
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);

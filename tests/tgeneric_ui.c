@@ -92,14 +92,11 @@ test_generic_ui (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N)
                   printf ("Function: %s\n", TEST_FUNCTION_NAME);
 #endif
                   printf ("got      ");
-                  mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
-                  puts ("");
+                  mpfr_dump (z);
                   printf ("expected ");
-                  mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
-                  puts ("");
-                  printf ("approx  ");
-                  mpfr_print_binary (y);
-                  puts ("");
+                  mpfr_dump (t);
+                  printf ("approx   ");
+                  mpfr_dump (y);
                   exit (1);
                 }
               compare2 = mpfr_cmp (t, y);

@@ -36,8 +36,8 @@ check3 (const char *xs, unsigned long y, mpfr_rnd_t rnd_mode, const char *zs)
   if (mpfr_cmp_str1(zz, zs))
     {
       printf ("expected sum is %s, got ", zs);
-      mpfr_print_binary(zz);
-      printf ("\nmpfr_sub_ui failed for x=%s y=%lu with rnd_mode=%s\n",
+      mpfr_dump (zz);
+      printf ("mpfr_sub_ui failed for x=%s y=%lu with rnd_mode=%s\n",
               xs, y, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }

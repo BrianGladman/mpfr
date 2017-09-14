@@ -196,11 +196,9 @@ special (void)
     {
       printf ("Error in mpfr_cmp2:\n");
       printf ("x=");
-      mpfr_print_binary (x);
-      puts ("");
+      mpfr_dump (x);
       printf ("y=");
-      mpfr_print_binary (y);
-      puts ("");
+      mpfr_dump (y);
       printf ("got %lu, expected 1\n", (unsigned long) j);
       exit (1);
     }

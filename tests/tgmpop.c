@@ -1199,11 +1199,12 @@ coverage_mpfr_mul_q_20110218 (void)
   mpfr_set_inf (cmp, -1);
   if ((status != 0) || (mpfr_cmp(res, cmp) != 0))
     {
-      printf ("mpfr_mul_q 1 * (-1/0) returned a wrong value :\n waiting for ");
-      mpfr_print_binary (cmp);
-      printf (" got ");
+      printf ("mpfr_mul_q 1 * (-1/0) returned a wrong value:\n");
+      printf ("  expected ");
+      mpfr_dump (cmp);
+      printf ("  got      ");
       mpfr_dump (res);
-      printf ("ternary value is %d\n", status);
+      printf ("  ternary value is %d\n", status);
       exit (1);
     }
 

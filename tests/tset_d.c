@@ -133,8 +133,7 @@ main (int argc, char *argv[])
             printf ("got ");
             mpfr_out_str (stdout, 10, 10, x, MPFR_RNDN);
             printf ("\n");
-            mpfr_print_binary (x);
-            puts ("");
+            mpfr_dump (x);
             exit (1);
           }
       }
@@ -188,8 +187,7 @@ main (int argc, char *argv[])
   mpfr_set_d (x, d, (mpfr_rnd_t) 0);
   if (d != mpfr_get_d1 (x))
     {
-      mpfr_print_binary (x);
-      puts ("");
+      mpfr_dump (x);
       printf ("Error: get_d o set_d <> identity for d = %1.20e %1.20e\n",
               d, mpfr_get_d1 (x));
       exit (1);
@@ -212,8 +210,7 @@ main (int argc, char *argv[])
       if (d != dd && !(Isnan(d) && Isnan(dd)))
         {
           printf ("Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d1 (x));
-          mpfr_print_binary (x);
-          puts ("");
+          mpfr_dump (x);
           exit (1);
         }
     }

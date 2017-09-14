@@ -373,10 +373,9 @@ err (const char *str, mp_size_t s, mpfr_t x, mpfr_t y, mpfr_prec_t p,
   printf ("Error: %s\ns = %u, p = %u, r = %s, trint = %d, inexact = %d\nx = ",
           str, (unsigned int) s, (unsigned int) p, mpfr_print_rnd_mode (r),
           trint, inexact);
-  mpfr_print_binary (x);
-  printf ("\ny = ");
-  mpfr_print_binary (y);
-  printf ("\n");
+  mpfr_dump (x);
+  printf ("y = ");
+  mpfr_dump (y);
   exit (1);
 }
 

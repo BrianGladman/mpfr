@@ -154,9 +154,10 @@ overfl_exp10_0 (void)
                 if (! mpfr_equal_p (x, y))
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
-                            "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                    mpfr_print_binary (x);
-                    printf (" instead of 0.11111111E%d.\n", emax);
+                            "  Got        ", i,
+                            mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                    mpfr_dump (x);
+                    printf ("  instead of 0.11111111E%d.\n", emax);
                     err = 1;
                   }
               }
@@ -172,9 +173,10 @@ overfl_exp10_0 (void)
                 if (! (mpfr_inf_p (x) && MPFR_IS_POS (x)))
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
-                            "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                    mpfr_print_binary (x);
-                    printf (" instead of +Inf.\n");
+                            "  Got        ", i,
+                            mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                    mpfr_dump (x);
+                    printf ("  instead of +Inf.\n");
                     err = 1;
                   }
               }

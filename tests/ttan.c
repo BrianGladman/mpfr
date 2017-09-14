@@ -112,9 +112,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp_ui_2exp(x, 1, -1))
     {
       printf ("mpfr_tan(0.5, MPFR_RNDD) failed\n"
-              "expected 0.5, got");
-      mpfr_print_binary(x);
-      putchar('\n');
+              "expected 0.5, got ");
+      mpfr_dump (x);
       exit (1);
     }
 

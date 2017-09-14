@@ -360,16 +360,14 @@ main (int argc, char *argv[])
   if (MPFR_MANT(x)[0] != MPFR_LIMB_HIGHBIT || inex >= 0)
     {
       printf ("Error in mpfr_set_si(x:3, 77617, MPFR_RNDD)\n");
-      mpfr_print_binary (x);
-      puts ("");
+      mpfr_dump (x);
       exit (1);
     }
   inex = mpfr_set_ui (x, 77617, MPFR_RNDD); /* should be 65536 */
   if (MPFR_MANT(x)[0] != MPFR_LIMB_HIGHBIT || inex >= 0)
     {
       printf ("Error in mpfr_set_ui(x:3, 77617, MPFR_RNDD)\n");
-      mpfr_print_binary (x);
-      puts ("");
+      mpfr_dump (x);
       exit (1);
     }
 

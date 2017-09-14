@@ -168,7 +168,7 @@ test2 (void)
       if (mpfr_cmp_str (y, val[i+1] , 2, MPFR_RNDZ))
         {
           printf("Wrong result for zeta(%s=", val[i]);
-          mpfr_print_binary (x);
+          mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
           printf (").\nGot     : ");
           mpfr_dump (y);
           printf("Expected: ");

@@ -164,11 +164,11 @@ underflowed_cothinf (void)
                MPFR_MULT_SIGN (MPFR_SIGN (x), MPFR_SIGN (y)) > 0))
           {
             printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
-                    "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-            mpfr_print_binary (x);
-            printf (" instead of ");
-            mpfr_print_binary (y);
-            printf (".\n");
+                    "  Got        ", i,
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+            mpfr_dump (x);
+            printf ("  instead of ");
+            mpfr_dump (y);
             err = 1;
           }
         if ((rnd == MPFR_RNDD ||

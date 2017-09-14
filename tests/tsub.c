@@ -535,8 +535,8 @@ bug20101017 (void)
     {
       printf ("Error in mpfr_sub for b-c for b=2^64+1+2^(-64), c=1\n");
       printf ("Expected result 2^64 with inex < 0\n");
-      printf ("Got "); mpfr_print_binary (a);
-      printf (" with inex=%d\n", inex);
+      printf ("Got "); mpfr_dump (a);
+      printf ("with inex=%d\n", inex);
       exit (1);
     }
 

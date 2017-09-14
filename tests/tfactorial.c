@@ -155,9 +155,10 @@ overflowed_fac0 (void)
           if (! mpfr_equal_p (x, y))
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
-                      "  Got ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              mpfr_print_binary (x);
-              printf (" instead of 0.11111111E0.\n");
+                      "  Got        ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpfr_dump (x);
+              printf ("  instead of 0.11111111E0.\n");
               err = 1;
             }
         }
@@ -173,9 +174,10 @@ overflowed_fac0 (void)
           if (! (mpfr_inf_p (x) && MPFR_IS_POS (x)))
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
-                      "  Got ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-              mpfr_print_binary (x);
-              printf (" instead of +Inf.\n");
+                      "  Got        ",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              mpfr_dump (x);
+              printf ("  instead of +Inf.\n");
               err = 1;
             }
         }
@@ -268,15 +270,12 @@ main (int argc, char *argv[])
                     mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
                     printf (" prec=%lu rnd_mode=%s\n", prec,
                             mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                    printf ("   got ");
-                    mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
-                    puts ("");
-                    printf ("   expected ");
-                    mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
-                    puts ("");
+                    printf ("   got               ");
+                    mpfr_dump (z);
+                    printf ("   expected          ");
+                    mpfr_dump (t);
                     printf ("   approximation was ");
-                    mpfr_print_binary (y);
-                    puts ("");
+                    mpfr_dump (y);
                     exit (1);
                   }
               }

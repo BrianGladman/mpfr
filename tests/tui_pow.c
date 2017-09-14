@@ -110,14 +110,11 @@ check1 (mpfr_ptr x, mpfr_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
           printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                   mpfr_print_rnd_mode (rnd));
           printf ("got      ");
-          mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
-          puts ("");
+          mpfr_dump (z);
           printf ("expected ");
-          mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
-          puts ("");
-          printf ("approx  ");
-          mpfr_print_binary (y);
-          puts ("");
+          mpfr_dump (t);
+          printf ("approx   ");
+          mpfr_dump (y);
           exit (1);
         }
       compare2 = mpfr_cmp (t, y);

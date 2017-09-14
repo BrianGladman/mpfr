@@ -276,8 +276,7 @@ special (void)
   if (mpfr_cmp_ui (z, 0) < 0)
     {
       printf ("Error: square root of 1 gives ");
-      mpfr_print_binary(z);
-      putchar('\n');
+      mpfr_dump (z);
       exit (1);
     }
 
@@ -441,12 +440,12 @@ check_inexact (mpfr_prec_t p)
       ((inexact > 0) && (sign <= 0)) ||
       ((inexact < 0) && (sign >= 0)))
     {
-      printf ("Error: wrong inexact flag, expected %d, got %d\n",
-              sign, inexact);
+      printf ("Error with rnd=%s: wrong ternary value, expected %d, got %d\n",
+              mpfr_print_rnd_mode (rnd), sign, inexact);
       printf ("x=");
-      mpfr_print_binary (x);
-      printf (" rnd=%s\n", mpfr_print_rnd_mode (rnd));
-      printf ("y="); mpfr_dump (y);
+      mpfr_dump (x);
+      printf ("y=");
+      mpfr_dump (y);
       exit (1);
     }
   mpfr_clear (x);

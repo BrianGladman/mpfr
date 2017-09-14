@@ -130,11 +130,11 @@ check_nan_inf_mpq (void)
       mpfr_init2 (mpfr_cmp, MPFR_PREC_MIN);
       mpfr_set_nan (mpfr_cmp);
       printf ("mpfr_set_q with a NAN mpq value returned a wrong value :\n"
-              " waiting for ");
-      mpfr_print_binary (mpfr_cmp);
-      printf (" got ");
-      mpfr_print_binary (mpfr_value);
-      printf ("\n ternary value is %d\n", status);
+              "  expected ");
+      mpfr_dump (mpfr_cmp);
+      printf ("  got      ");
+      mpfr_dump (mpfr_value);
+      printf ("  ternary value is %d\n", status);
       exit (1);
     }
 
@@ -149,11 +149,11 @@ check_nan_inf_mpq (void)
       mpfr_init2 (mpfr_cmp, MPFR_PREC_MIN);
       mpfr_set_inf (mpfr_cmp, -1);
       printf ("mpfr_set_q with a -INF mpq value returned a wrong value :\n"
-              " waiting for ");
-      mpfr_print_binary (mpfr_cmp);
-      printf (" got ");
-      mpfr_print_binary (mpfr_value);
-      printf ("\n ternary value is %d\n", status);
+              "  expected ");
+      mpfr_dump (mpfr_cmp);
+      printf ("  got      ");
+      mpfr_dump (mpfr_value);
+      printf ("  ternary value is %d\n", status);
       exit (1);
     }
 
