@@ -33,7 +33,7 @@ CP=cp -f
 MV=mv -f
 
 GMP=/usr
-MPFR=$(PWD)/../..
+MPFR=$(PWD)/../../src
 PARI=$(GMP)
 NTL=$(GMP)
 CLN=$(GMP)
