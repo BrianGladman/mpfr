@@ -4124,6 +4124,10 @@ MPFR 3.0 or later).
 (The function @code{mpfr_random} had been deprecated since at least MPFR 2.2.0,
 and @code{mpfr_random2} since MPFR 2.4.0.)
 
+Macros @code{mpfr_add_one_ulp} and @code{mpfr_sub_one_ulp} have been
+removed in MPFR 4.0. They were no longer documented since MPFR 2.1.0
+and were announced as deprecated since MPFR 3.1.0.
+
 Function @code{mpfr_grandom} is marked as deprecated in MPFR 4.0.
 It will be removed in a future release.
 

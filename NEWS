@@ -70,6 +70,8 @@ Changes from versions 3.1.* to version 4.0.0:
   now the usual ternary value. Note that the position of "const" in the
   mpfr_sum prototype has been fixed (the manual was correct); user code
   should not be affected.
+- Old, deprecated macros mpfr_add_one_ulp and mpfr_sub_one_ulp removed.
+  The mpfr_next* functions should be used instead.
 - Internally, improved caching: a minimum of 10% increase of the precision
   is guaranteed to avoid too many recomputations; added mpz_t caching.
 - Added configure option --enable-assert=none to avoid checking any assertion.
