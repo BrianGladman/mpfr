@@ -263,7 +263,7 @@ check_special (void)
   /* check exp(-inf) = +0 */
   mpfr_set_inf (x, -1);
   test_exp (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error for exp(-inf)\n");
       exit (1);
@@ -354,7 +354,7 @@ check_special (void)
   set_emin (-10);
   mpfr_set_si (x, -9, MPFR_RNDN);
   test_exp (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error for exp(-9) for emin=-10\n");
       printf ("Expected +0\n");

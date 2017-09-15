@@ -136,7 +136,7 @@ main (void)
   /* acos (1) = 0 */
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_acos (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: acos(1) != +0.0\n");
       exit (1);

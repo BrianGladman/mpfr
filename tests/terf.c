@@ -76,7 +76,7 @@ special_erf (void)
   /* erf(+0) = +0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_erf (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("mpfr_erf failed for x=+0\n");
       exit (1);
@@ -85,7 +85,7 @@ special_erf (void)
   /* erf(-0) = -0 */
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_erf (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
     {
       printf ("mpfr_erf failed for x=-0\n");
       exit (1);
@@ -477,7 +477,7 @@ large_arg (void)
   mpfr_set_prec (y, 85);
   mpfr_set_str_binary (x, "0.111110111111010011101011001100001010011110101010011111010010111101010001011E15");
   mpfr_erfc (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("mpfr_erfc failed for large x (3b)\n");
       exit (1);

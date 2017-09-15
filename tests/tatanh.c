@@ -75,14 +75,14 @@ special (void)
   /* atanh(+0) = +0, atanh(-0) = -0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_atanh (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: mpfr_atanh(+0) <> +0\n");
       exit (1);
     }
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_atanh (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
     {
       printf ("Error: mpfr_atanh(-0) <> -0\n");
       exit (1);

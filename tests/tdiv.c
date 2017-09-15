@@ -786,8 +786,7 @@ check_special (void)
   MPFR_SET_POS (d);
   mpfr_clear_flags ();
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */
-  MPFR_ASSERTN (mpfr_number_p (q));
-  MPFR_ASSERTN (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (MPFR_IS_ZERO (q));
   MPFR_ASSERTN (MPFR_IS_POS (q));
   MPFR_ASSERTN (__gmpfr_flags == 0);
 
@@ -797,8 +796,7 @@ check_special (void)
   MPFR_SET_NEG (d);
   mpfr_clear_flags ();
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */
-  MPFR_ASSERTN (mpfr_number_p (q));
-  MPFR_ASSERTN (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (MPFR_IS_ZERO (q));
   MPFR_ASSERTN (MPFR_IS_NEG (q));
   MPFR_ASSERTN (__gmpfr_flags == 0);
 
@@ -808,8 +806,7 @@ check_special (void)
   MPFR_SET_POS (d);
   mpfr_clear_flags ();
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */
-  MPFR_ASSERTN (mpfr_number_p (q));
-  MPFR_ASSERTN (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (MPFR_IS_ZERO (q));
   MPFR_ASSERTN (MPFR_IS_NEG (q));
   MPFR_ASSERTN (__gmpfr_flags == 0);
 
@@ -819,8 +816,7 @@ check_special (void)
   MPFR_SET_NEG (d);
   mpfr_clear_flags ();
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */
-  MPFR_ASSERTN (mpfr_number_p (q));
-  MPFR_ASSERTN (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (MPFR_IS_ZERO (q));
   MPFR_ASSERTN (MPFR_IS_POS (q));
   MPFR_ASSERTN (__gmpfr_flags == 0);
 

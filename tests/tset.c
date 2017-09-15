@@ -71,7 +71,7 @@ check_special (void)
                   "ERROR: mpfr_set failed to set variable to +infinity.\n");
 
   inexact = mpfr_set_ui (y, 0, MPFR_RNDN);
-  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (y) || MPFR_IS_NEG (y) || inexact != 0,
                   "ERROR: mpfr_set_ui failed to set variable to +0.\n");
 
   mpfr_set_inf (x, -1);
@@ -85,26 +85,26 @@ check_special (void)
                   "ERROR: mpfr_set failed to set variable to -infinity.\n");
 
   mpfr_set_zero (x, 1);
-  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (x) || MPFR_IS_NEG (x),
                   "ERROR: mpfr_set_zero failed to set variable to +0 [1].\n");
   mpfr_set_zero (x, INT_MAX);
-  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (x) || MPFR_IS_NEG (x),
                   "ERROR: mpfr_set_zero failed to set variable to +0 [2].\n");
   mpfr_set_zero (x, 0);
-  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (x) || MPFR_IS_NEG (x),
                   "ERROR: mpfr_set_zero failed to set variable to +0 [3].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
-  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (y) || MPFR_IS_NEG (y) || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to +0.\n");
 
   mpfr_set_zero (x, -1);
-  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) > 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (x) || MPFR_IS_POS (x),
                   "ERROR: mpfr_set_zero failed to set variable to -0 [1].\n");
   mpfr_set_zero (x, INT_MIN);
-  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (x) || MPFR_IS_POS (x),
                   "ERROR: mpfr_set_zero failed to set variable to -0 [2].\n");
   inexact = mpfr_set (y, x, MPFR_RNDN);
-  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) > 0 || inexact != 0,
+  PRINT_ERROR_IF (MPFR_NOTZERO (y) || MPFR_IS_POS (y) || inexact != 0,
                   "ERROR: mpfr_set failed to set variable to -0.\n");
 
   mpfr_set_nan (x);

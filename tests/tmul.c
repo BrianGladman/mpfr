@@ -351,7 +351,7 @@ check_min(void)
   mpfr_set_str1(yy, "0.9375");
   mpfr_mul_2si(yy, yy, MPFR_EMIN_DEFAULT - MPFR_EMIN_DEFAULT/2 - 1, MPFR_RNDN);
   test_mul(zz, xx, yy, MPFR_RNDD);
-  if (mpfr_sgn(zz) != 0)
+  if (MPFR_NOTZERO (zz))
     {
       printf("check_min failed: got ");
       mpfr_out_str(stdout, 2, 0, zz, MPFR_RNDZ);

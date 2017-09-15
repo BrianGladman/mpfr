@@ -276,7 +276,7 @@ test_cmp_z (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
           if (!MPFR_IS_SINGULAR (x))
             {
               mpfr_sub_z (z, x, y, MPFR_RNDN);
-              res1 = mpfr_sgn (z);
+              res1 = (mpfr_sgn) (z);
               res2 = mpfr_cmp_z (x, y);
               if (res1 != res2)
                 {
@@ -328,7 +328,7 @@ test_cmp_q (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
           if (!MPFR_IS_SINGULAR (x))
             {
               mpfr_sub_q (z, x, y, MPFR_RNDN);
-              res1 = mpfr_sgn (z);
+              res1 = (mpfr_sgn) (z);
               res2 = mpfr_cmp_q (x, y);
               if (res1 != res2)
                 {
@@ -382,7 +382,7 @@ test_cmp_f (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
             {
               mpfr_set_f (z, y, MPFR_RNDN);
               mpfr_sub   (z, x, z, MPFR_RNDN);
-              res1 = mpfr_sgn (z);
+              res1 = (mpfr_sgn) (z);
               res2 = mpfr_cmp_f (x, y);
               if (res1 != res2)
                 {

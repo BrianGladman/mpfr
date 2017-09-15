@@ -85,6 +85,25 @@ extern "C" {
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
 
+/* In the tests, mpfr_sgn was sometimes used incorrectly, for instance:
+ *
+ *   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+ *
+ * to check that y is +0. This does not make sense since on 0, mpfr_sgn
+ * yields 0, so that -0 would not be detected as an error. To make sure
+ * that mpfr_sgn is not used incorrectly, we choose to fail when this
+ * macro is used on a datum whose mathematical sign is not +1 or -1.
+ * This feature is disabled when MPFR_TESTS_TSGN is defined, typically
+ * in tsgn (to test mpfr_sgn itself).
+ */
+#ifndef MPFR_TESTS_TSGN
+# undef mpfr_sgn
+# define mpfr_sgn(x)                   \
+  (MPFR_ASSERTN (! MPFR_IS_NAN (x)),   \
+   MPFR_ASSERTN (! MPFR_IS_ZERO (x)),  \
+   MPFR_SIGN (x))
+#endif
+
 #define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
 int test_version (void);

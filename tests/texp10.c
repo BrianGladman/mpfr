@@ -233,7 +233,7 @@ main (int argc, char *argv[])
   set_emin (-11);
   mpfr_set_si (x, -4, MPFR_RNDN);
   mpfr_exp10 (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error for emin = -11, x = -4, RNDN\n");
       printf ("Expected +0\n");

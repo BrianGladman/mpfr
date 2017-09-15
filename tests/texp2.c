@@ -288,7 +288,7 @@ main (int argc, char *argv[])
   set_emin (-10);
   mpfr_set_si (x, -12, MPFR_RNDN);
   mpfr_exp2 (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error for x=emin-2, RNDN\n");
       printf ("Expected +0\n");
