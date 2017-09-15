@@ -197,8 +197,14 @@ To make a release (for the MPFR team):
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
 
-  5) Make sure that any change has been committed (with "svn st").
-     Generate the release version with "make distcheck".
+  5) Do a "svn export" of the branch to make sure to start from a clean
+     source tree; this also has the advantage (over a checkout) to set
+     the timestamps to the commit time, ensuring the right ordering of
+     the files by date.
+     Generate the tarballs with:
+       $ ./autogen.sh
+       $ ./configure
+       $ make distcheck
 
   6) Test the release version on different machines, with --enable-assert
      set to "yes", "no" (default), "none" and "full" respectively, with
