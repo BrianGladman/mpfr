@@ -53,10 +53,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if !defined(corei7) && !defined(__core_avx2__)
 
-/* the following implements Section 3.2.3 of the article cited below */
+/* The following implements Section 3.2.3 of the article cited below. */
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
-                ".align 64\n\t"           \
+                ".p2align 6\n\t"          \
                 "xorl %%eax,%%eax\n\t"    \
                 "cpuid\n\t"               \
                 "rdtsc\n\t"               \
@@ -86,7 +86,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    see https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf */
 #define timp_rdtsc_before(time)           \
         __asm__ __volatile__(             \
-                ".align 64\n\t"           \
+                ".p2align 6\n\t"          \
                 "xorl %%eax,%%eax\n\t"    \
                 "cpuid\n\t"               \
                 "rdtsc\n\t"               \
