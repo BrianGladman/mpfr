@@ -1,5 +1,5 @@
 /* Test file for internal debugging-out functions:
-   mpfr_dump, mpfr_print_rnd_mode.
+   mpfr_print_rnd_mode, mpfr_dump, mpfr_print_mant_binary.
 
 Copyright 2004-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -26,10 +26,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FILE_NAME "toutimpl_out.txt"
 
 static const char Buffer[] =
-"@NaN@\n"
-"-@Inf@\n"
-"-0\n"
-"0.10101010101011111001000110001100010000100000000000000E32\n";
+  "@NaN@\n"
+  "-@Inf@\n"
+  "-0\n"
+  "0.10101010101011111001000110001100010000100000000000000E32\n"
+#if GMP_NUMB_BITS == 32
+  "x = 10101010101011111001000110001100.010000100000000000000[00000000000.]\n"
+#elif GMP_NUMB_BITS == 64
+  "x = 10101010101011111001000110001100010000100000000000000[00000000000.]\n"
+#endif
+  ;
 
 int
 main (void)
@@ -41,22 +47,22 @@ main (void)
   tests_start_mpfr ();
 
   /* Check RND_MODE */
-  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDN), "MPFR_RNDN"))
+  if (strcmp (mpfr_print_rnd_mode (MPFR_RNDN), "MPFR_RNDN"))
     {
       printf ("Error for printing MPFR_RNDN\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDU), "MPFR_RNDU"))
+  if (strcmp (mpfr_print_rnd_mode (MPFR_RNDU), "MPFR_RNDU"))
     {
       printf ("Error for printing MPFR_RNDU\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDD), "MPFR_RNDD"))
+  if (strcmp (mpfr_print_rnd_mode (MPFR_RNDD), "MPFR_RNDD"))
     {
       printf ("Error for printing MPFR_RNDD\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDZ), "MPFR_RNDZ"))
+  if (strcmp (mpfr_print_rnd_mode (MPFR_RNDZ), "MPFR_RNDZ"))
     {
       printf ("Error for printing MPFR_RNDZ\n");
       exit (1);
@@ -83,11 +89,10 @@ main (void)
   mpfr_dump (x);
   mpfr_set_str_binary (x, "0.101010101010111110010001100011000100001E32");
   mpfr_dump (x);
-  mpfr_print_mant_binary ("x=",MPFR_MANT(x), MPFR_PREC(x));
-
-
+  mpfr_print_mant_binary ("x =", MPFR_MANT(x), MPFR_PREC(x));
   mpfr_clear (x);
   fclose (stdout);
+
   /* Open it and check for it */
   f = fopen (FILE_NAME, "r");
   if (f == NULL)
@@ -95,7 +100,7 @@ main (void)
       fprintf (stderr, "Can't reopen file!\n");
       exit (1);
     }
-  for(i = 0 ; i < sizeof(Buffer)-1 ; i++)
+  for (i = 0 ; i < sizeof (Buffer) - 1 ; i++)
     {
       if (feof (f))
         {
@@ -104,8 +109,8 @@ main (void)
         }
       if (Buffer[i] != fgetc (f))
         {
-          fprintf (stderr, "Character mismatch for i=%d / %lu\n",
-                  i, (unsigned long) sizeof(Buffer));
+          fprintf (stderr, "Character mismatch for i = %d / %lu\n",
+                  i, (unsigned long) sizeof (Buffer));
           exit (1);
         }
     }
