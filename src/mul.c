@@ -184,14 +184,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nb = ",
                mpfr_print_rnd_mode (rnd_mode),
                MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
-      mpfr_fprint_binary (stderr, b);
-      fprintf (stderr, "\nc = ");
-      mpfr_fprint_binary (stderr, c);
-      fprintf (stderr, "\nOldMul: ");
-      mpfr_fprint_binary (stderr, ta);
-      fprintf (stderr, "\nNewMul: ");
-      mpfr_fprint_binary (stderr, a);
-      fprintf (stderr, "\nNewInexact = %d | OldInexact = %d\n",
+      mpfr_fdump (stderr, b);
+      fprintf (stderr, "c = ");
+      mpfr_fdump (stderr, c);
+      fprintf (stderr, "OldMul: ");
+      mpfr_fdump (stderr, ta);
+      fprintf (stderr, "NewMul: ");
+      mpfr_fdump (stderr, a);
+      fprintf (stderr, "NewInexact = %d | OldInexact = %d\n",
                inexact1, inexact2);
       MPFR_ASSERTN(0);
     }

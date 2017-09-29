@@ -76,14 +76,14 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                (unsigned long) MPFR_PREC (a),
                (unsigned long) MPFR_PREC (b),
                (unsigned long) MPFR_PREC (c));
-      mpfr_fprint_binary (stderr, tmpb);
-      fprintf (stderr, "\nC = ");
-      mpfr_fprint_binary (stderr, tmpc);
-      fprintf (stderr, "\n\nadd1  : ");
-      mpfr_fprint_binary (stderr, tmpa);
-      fprintf (stderr, "\nadd1sp: ");
-      mpfr_fprint_binary (stderr, a);
-      fprintf (stderr, "\nInexact sp = %d | Inexact = %d\n"
+      mpfr_fdump (stderr, tmpb);
+      fprintf (stderr, "C = ");
+      mpfr_fdump (stderr, tmpc);
+      fprintf (stderr, "\nadd1  : ");
+      mpfr_fdump (stderr, tmpa);
+      fprintf (stderr, "add1sp: ");
+      mpfr_fdump (stderr, a);
+      fprintf (stderr, "Inexact sp = %d | Inexact = %d\n"
                "Flags sp = %u | Flags = %u\n",
                inexact, inexact2, flags, flags2);
       MPFR_ASSERTN (0);

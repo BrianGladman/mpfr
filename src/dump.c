@@ -36,14 +36,62 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * The format may depend on MPFR_* environment variables. For instance,
  * some environment variables could specify prefix and suffix strings
  * to colorize parts of the output that correspond to invalid data.
- *
- * Moreover, get rid of mpfr_print_binary? It should be replaced
- * either by mpfr_dump or by mpfr_out_str in the MPFR code.
  */
 
-void
-mpfr_dump (mpfr_srcptr u)
+static void
+mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
 {
-  mpfr_print_binary(u);
-  putchar('\n');
+  if (MPFR_IS_NAN (x))
+    {
+      fprintf (stream, "@NaN@");
+      return;
+    }
+
+  if (MPFR_IS_NEG (x))
+    fprintf (stream, "-");
+
+  if (MPFR_IS_INF (x))
+    fprintf (stream, "@Inf@");
+  else if (MPFR_IS_ZERO (x))
+    fprintf (stream, "0");
+  else
+    {
+      mp_limb_t *mx;
+      mpfr_prec_t px;
+      mp_size_t n;
+
+      mx = MPFR_MANT (x);
+      px = MPFR_PREC (x);
+
+      fprintf (stream, "0.");
+      for (n = (px - 1) / GMP_NUMB_BITS; n >= 0; n--)
+        {
+          mp_limb_t wd, t;
+
+          wd = mx[n];
+          for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
+            {
+              putc ((wd & t) == 0 ? '0' : '1', stream);
+              if (--px == 0)
+                break;
+            }
+        }
+      if (MPFR_IS_UBF (x))
+        gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
+      else
+        fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) MPFR_EXP (x));
+    }
+}
+
+void
+mpfr_fdump (FILE *stream, mpfr_srcptr x)
+{
+  mpfr_fprint_binary (stream, x);
+  putc ('\n', stream);
+}
+
+void
+mpfr_dump (mpfr_srcptr x)
+{
+  mpfr_fdump (stdout, x);
 }

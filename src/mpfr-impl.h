@@ -2187,9 +2187,8 @@ __MPFR_DECLSPEC long mpfr_mpn_exp (mp_limb_t *, mpfr_exp_t *, int,
                                    mpfr_exp_t, size_t);
 
 #ifdef _MPFR_H_HAVE_FILE
-__MPFR_DECLSPEC void mpfr_fprint_binary (FILE *, mpfr_srcptr);
+__MPFR_DECLSPEC void mpfr_fdump (FILE *, mpfr_srcptr);
 #endif
-__MPFR_DECLSPEC void mpfr_print_binary (mpfr_srcptr);
 __MPFR_DECLSPEC void mpfr_print_mant_binary (const char*, const mp_limb_t*,
                                              mpfr_prec_t);
 __MPFR_DECLSPEC void mpfr_set_str_binary (mpfr_ptr, const char*);

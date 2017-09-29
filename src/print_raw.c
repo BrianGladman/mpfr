@@ -24,57 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 void
-mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
-{
-  if (MPFR_IS_NAN (x))
-    {
-      fprintf (stream, "@NaN@");
-      return;
-    }
-
-  if (MPFR_IS_NEG (x))
-    fprintf (stream, "-");
-
-  if (MPFR_IS_INF (x))
-    fprintf (stream, "@Inf@");
-  else if (MPFR_IS_ZERO (x))
-    fprintf (stream, "0");
-  else
-    {
-      mp_limb_t *mx;
-      mpfr_prec_t px;
-      mp_size_t n;
-
-      mx = MPFR_MANT (x);
-      px = MPFR_PREC (x);
-
-      fprintf (stream, "0.");
-      for (n = (px - 1) / GMP_NUMB_BITS; n >= 0; n--)
-        {
-          mp_limb_t wd, t;
-
-          wd = mx[n];
-          for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
-            {
-              putc ((wd & t) == 0 ? '0' : '1', stream);
-              if (--px == 0)
-                break;
-            }
-        }
-      if (MPFR_IS_UBF (x))
-        gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
-      else
-        fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) MPFR_EXP (x));
-    }
-}
-
-void
-mpfr_print_binary (mpfr_srcptr x)
-{
-  mpfr_fprint_binary (stdout, x);
-}
-
-void
 mpfr_print_mant_binary (const char *str, const mp_limb_t *p, mpfr_prec_t r)
 {
   int i;
