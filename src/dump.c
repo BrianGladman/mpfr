@@ -38,19 +38,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * to colorize parts of the output that correspond to invalid data.
  */
 
-static void
-mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
+void
+mpfr_fdump (FILE *stream, mpfr_srcptr x)
 {
-  if (MPFR_IS_NAN (x))
-    {
-      fprintf (stream, "@NaN@");
-      return;
-    }
-
   if (MPFR_IS_NEG (x))
     fprintf (stream, "-");
 
-  if (MPFR_IS_INF (x))
+  if (MPFR_IS_NAN (x))
+    fprintf (stream, "@NaN@");
+  else if (MPFR_IS_INF (x))
     fprintf (stream, "@Inf@");
   else if (MPFR_IS_ZERO (x))
     fprintf (stream, "0");
@@ -81,12 +77,6 @@ mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
       else
         fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) MPFR_EXP (x));
     }
-}
-
-void
-mpfr_fdump (FILE *stream, mpfr_srcptr x)
-{
-  mpfr_fprint_binary (stream, x);
   putc ('\n', stream);
 }
 
