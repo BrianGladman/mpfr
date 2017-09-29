@@ -1,5 +1,6 @@
-/* mpfr_print_binary -- print the internal binary representation of a
-   floating-point number (for the tests and debugging purpose)
+/* mpfr_print_mant_binary -- print the internal binary representation
+   of a significand of floating-point number (for the tests and
+   debugging purpose)
 
 Copyright 1999-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
