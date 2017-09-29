@@ -27,19 +27,27 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 static const char Buffer[] =
   "@NaN@\n"
+  "-@NaN@\n"
+  "@Inf@\n"
   "-@Inf@\n"
+  "0\n"
   "-0\n"
   "0.10101010101011111001000110001100010000100000000000000E32\n"
 #if GMP_NUMB_BITS == 32
   "x = 10101010101011111001000110001100.010000100000000000000[00000000000.]\n"
+  "0.01010101010101111100100011000110010000100000000000000[00000000001]E32!!!NT<!!!\n"
+  "0.01010101010101111100100011000110010000100000000000000[00000000001]E32!!!NT>!!!\n"
 #elif GMP_NUMB_BITS == 64
   "x = 10101010101011111001000110001100010000100000000000000[00000000000.]\n"
+  "0.01010101010101111100100011000110001000010000000000000[00000000001]E32!!!NT<!!!\n"
+  "0.01010101010101111100100011000110001000010000000000000[00000000001]E32!!!NT>!!!\n"
 #endif
   ;
 
 int
 main (void)
 {
+  mpfr_exp_t e;
   mpfr_t x;
   FILE *f;
   int i;
@@ -80,16 +88,32 @@ main (void)
       printf ("Error can't redirect stdout\n");
       exit (1);
     }
-  mpfr_init (x);
+  mpfr_init2 (x, 53);
   mpfr_set_nan (x);
+  mpfr_dump (x);
+  MPFR_CHANGE_SIGN (x);
+  mpfr_dump (x);
+  mpfr_set_inf (x, +1);
   mpfr_dump (x);
   mpfr_set_inf (x, -1);
   mpfr_dump (x);
-  MPFR_SET_ZERO (x); MPFR_SET_NEG (x);
+  mpfr_set_zero (x, +1);
+  mpfr_dump (x);
+  mpfr_set_zero (x, -1);
   mpfr_dump (x);
   mpfr_set_str_binary (x, "0.101010101010111110010001100011000100001E32");
   mpfr_dump (x);
   mpfr_print_mant_binary ("x =", MPFR_MANT(x), MPFR_PREC(x));
+  MPFR_MANT(x)[MPFR_LAST_LIMB(x)] >>= 1;
+  MPFR_MANT(x)[0] |= 1;
+  e = mpfr_get_emin ();
+  mpfr_set_emin (33);
+  mpfr_dump (x);
+  mpfr_set_emin (e);
+  e = mpfr_get_emax ();
+  mpfr_set_emax (31);
+  mpfr_dump (x);
+  mpfr_set_emax (e);
   mpfr_clear (x);
   fclose (stdout);
 

@@ -27,15 +27,18 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * is part of the API, but the output format may change without breaking
  * the ABI.
  *
- * TODO: Since this is for debugging, it should support invalid data,
- * such as:
- *   - out-of-range exponents (with some form of warning);
- *   - numbers that are not normalized (MSB = 0);
- *   - numbers with trailing bits that are not all zero's
- *     (e.g. output in square brackets in such a case).
+ * Since this is for debugging, it can detect invalid data (or UBF), and
+ * in such a case, it outputs information between exclamation marks:
+ *   - 'N': the number is not normalized (MSB = 0);
+ *   - 'T': there are non-zero trailing bits (output in square brackets);
+ *   - 'U': this is a UBF number (internal use only);
+ *   - '<': the exponent is < the current emin;
+ *   - '>': the exponent is > the current emax.
+ *
  * The format may depend on MPFR_* environment variables. For instance,
- * some environment variables could specify prefix and suffix strings
- * to colorize parts of the output that correspond to invalid data.
+ * in the future, some environment variables could specify prefix and
+ * suffix strings to colorize parts of the output that correspond to
+ * invalid data.
  */
 
 void
@@ -55,6 +58,8 @@ mpfr_fdump (FILE *stream, mpfr_srcptr x)
       mp_limb_t *mx;
       mpfr_prec_t px;
       mp_size_t n;
+      char invalid[4];
+      int first = 1, i = 0;
 
       mx = MPFR_MANT (x);
       px = MPFR_PREC (x);
@@ -65,17 +70,52 @@ mpfr_fdump (FILE *stream, mpfr_srcptr x)
           mp_limb_t wd, t;
 
           wd = mx[n];
+          if (first)
+            {
+              if (! MPFR_LIMB_MSB (wd))
+                invalid[i++] = 'N';
+              first = 0;
+            }
           for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
             {
               putc ((wd & t) == 0 ? '0' : '1', stream);
               if (--px == 0)
-                break;
+                {
+                  MPFR_ASSERTD (n == 0);
+                  if (t != 0 && (wd & (t - 1)) != 0)
+                    {
+                      putc ('[', stream);
+                      invalid[i++] = 'T';
+                    }
+                  else
+                    break; /* the trailing bits (all 0's) are not output */
+                }
             }
         }
+      if (px < 0)  /* there are non-zero trailing bits */
+        putc (']', stream);
+
       if (MPFR_IS_UBF (x))
-        gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
+        {
+          gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
+          invalid[i++] = 'U';
+        }
       else
-        fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) MPFR_EXP (x));
+        {
+          mpfr_exp_t e = MPFR_EXP (x);
+
+          fprintf (stream, "E%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e);
+          if (e < __gmpfr_emin)
+            invalid[i++] = '<';
+          else if (e > __gmpfr_emax)
+            invalid[i++] = '>';
+        }
+
+      if (i != 0)
+        {
+          invalid[i] = '\0';
+          fprintf (stream, "!!!%s!!!", invalid);
+        }
     }
   putc ('\n', stream);
 }
