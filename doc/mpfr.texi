@@ -1360,7 +1360,7 @@ of the valid string formats.
 Contrary to @code{mpfr_strtofr}, @code{mpfr_set_str} requires the
 @emph{whole} string to represent a valid floating-point number.
 @c Additionally, special values
-@c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
+@c @samp{@@NaN@@}, @samp{@@Inf@@}, @samp{+@@Inf@@} and @samp{-@@Inf@@},
 @c all case insensitive, without leading whitespace and possibly followed by
 @c other characters, are accepted too (it may change).
 
@@ -1389,7 +1389,7 @@ pointer). The usual ternary value is returned.
 
 Parsing follows the standard C @code{strtod} function with some extensions.
 After optional leading whitespace, one has a subject sequence consisting of an
-optional sign (@code{+} or @code{-}), and either numeric data or special
+optional sign (@samp{+} or @samp{-}), and either numeric data or special
 data. The subject sequence is defined as the longest initial subsequence of
 the input string, starting with the first non-whitespace character, that is of
 the expected form.
@@ -1398,45 +1398,45 @@ The form of numeric data is a non-empty sequence of significand digits with an
 optional decimal point, and an optional exponent consisting of an exponent
 prefix followed by an optional sign and a non-empty sequence of decimal
 digits. A significand digit is either a decimal digit or a Latin letter (62
-possible characters), with @code{A} = 10, @code{B} = 11, @dots{}, @code{Z} =
+possible characters), with @samp{A} = 10, @samp{B} = 11, @dots{}, @samp{Z} =
 35; case is ignored in bases less or equal to 36, in bases larger than 36,
-@code{a} = 36, @code{b} = 37, @dots{}, @code{z} = 61.
+@samp{a} = 36, @samp{b} = 37, @dots{}, @samp{z} = 61.
 The value of a
 significand digit must be strictly less than the base.  The decimal point can
 be either the one defined by the current locale or the period (the first one
 is accepted for consistency with the C standard and the practice, the second
 one is accepted to allow the programmer to provide MPFR numbers from strings
 in a way that does not depend on the current locale).
-The exponent prefix can be @code{e} or @code{E} for bases up to 10, or
-@code{@@} in any base; it indicates a multiplication by a power of the
-base. In bases 2 and 16, the exponent prefix can also be @code{p} or @code{P},
+The exponent prefix can be @samp{e} or @samp{E} for bases up to 10, or
+@samp{@@} in any base; it indicates a multiplication by a power of the
+base. In bases 2 and 16, the exponent prefix can also be @samp{p} or @samp{P},
 in which case the exponent, called @emph{binary exponent}, indicates a
 multiplication by a power of 2 instead of the base (there is a difference
-only for base 16); in base 16 for example @code{1p2} represents 4 whereas
-@code{1@@2} represents 256. The value of an exponent is always written in
+only for base 16); in base 16 for example @samp{1p2} represents 4 whereas
+@samp{1@@2} represents 256. The value of an exponent is always written in
 base 10.
 
 If the argument @var{base} is 0, then the base is automatically detected
-as follows. If the significand starts with @code{0b} or @code{0B}, base 2
-is assumed. If the significand starts with @code{0x} or @code{0X}, base 16
+as follows. If the significand starts with @samp{0b} or @samp{0B}, base 2
+is assumed. If the significand starts with @samp{0x} or @samp{0X}, base 16
 is assumed. Otherwise base 10 is assumed.
 
 Note: The exponent (if present)
 must contain at least a digit. Otherwise the possible
 exponent prefix and sign are not part of the number (which ends with the
-significand). Similarly, if @code{0b}, @code{0B}, @code{0x} or @code{0X}
+significand). Similarly, if @samp{0b}, @samp{0B}, @samp{0x} or @samp{0X}
 is not followed by a binary/hexadecimal digit, then the subject sequence
-stops at the character @code{0}, thus 0 is read.
+stops at the character @samp{0}, thus 0 is read.
 
-Special data (for infinities and NaN) can be @code{@@inf@@} or
-@code{@@nan@@(n-char-sequence-opt)}, and if @math{@var{base} @le{} 16},
-it can also be @code{infinity}, @code{inf}, @code{nan} or
-@code{nan(n-char-sequence-opt)}, all case insensitive.
-A @code{n-char-sequence-opt} is a possibly empty string containing only digits,
+Special data (for infinities and NaN) can be @samp{@@inf@@} or
+@samp{@@nan@@(n-char-sequence-opt)}, and if @math{@var{base} @le{} 16},
+it can also be @samp{infinity}, @samp{inf}, @samp{nan} or
+@samp{nan(n-char-sequence-opt)}, all case insensitive.
+A @samp{n-char-sequence-opt} is a possibly empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
 NaN@.
-For example, @code{-@@nAn@@(This_Is_Not_17)} is a valid representation for NaN
+For example, @samp{-@@nAn@@(This_Is_Not_17)} is a valid representation for NaN
 in base 17.
 
 @end deftypefun
@@ -1629,9 +1629,9 @@ number of significant digits output in the string; in the latter case,
 @var{n} must be greater or equal to 2. The base may vary from 2 to 62;
 otherwise the function does nothing and immediately returns a null pointer.
 
-If the input is NaN, then the returned string is @code{@@NaN@@} and the
+If the input is NaN, then the returned string is @samp{@@NaN@@} and the
 NaN flag is set. If the input is +Inf (resp.@: @minus{}Inf), then the
-returned string is @code{@@Inf@@} (resp.@: @code{-@@Inf@@}).
+returned string is @samp{@@Inf@@} (resp.@: @samp{-@@Inf@@}).
 
 If the input number is a finite number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
@@ -1678,7 +1678,7 @@ To free the returned string, you must use @code{mpfr_free_str}.
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
-character, and the value 7 accounts for @code{-@@Inf@@}
+character, and the value 7 accounts for @samp{-@@Inf@@}
 plus the terminating null character. The pointer to the string @var{str}
 is returned (unless the base is invalid).
 
@@ -2438,10 +2438,10 @@ whitespace) and parses it using @code{mpfr_set_str}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
 of the valid string formats.
 @c Special values can be read as follows (the case does not matter):
-@c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
+@c @samp{@@NaN@@}, @samp{@@Inf@@}, @samp{+@@Inf@@} and @samp{-@@Inf@@},
 @c possibly followed by other characters; if the base is smaller or equal
-@c to 16, the following strings are accepted too: @code{NaN}, @code{Inf},
-@c @code{+Inf} and @code{-Inf}.
+@c to 16, the following strings are accepted too: @samp{NaN}, @samp{Inf},
+@c @samp{+Inf} and @samp{-Inf}.
 
 Return the number of bytes read, or if an error occurred, return 0.
 @end deftypefun
