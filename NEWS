@@ -52,6 +52,8 @@ Changes from versions 3.1.* to version 4.0.0:
   mpfr_gamma_inc for the incomplete Gamma function, and mpfr_beta for the
   Beta function.
 - New function mpfr_get_q to convert a floating-point number into rational.
+- The mpfr_dump function is now described in the manual; its output format
+  has slightly changed.
 - The mpfr_eint function now returns the value of the E1/eint1 function
   for negative argument.
 - The behavior of the mpfr_set_exp function changed, as it could easily
