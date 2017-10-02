@@ -2484,7 +2484,22 @@ Output @var{op} on @code{stdout} in some unspecified format, then a newline
 character. This function is mainly for debugging purpose. Thus invalid data
 may be supported. Everything that is not specified may change without
 breaking the ABI and may depend on the environment.
-@c TODO: say more for the *current* version of MPFR.
+
+The current output format is the following: a minus sign if the sign bit
+is set (even for NaN); @samp{@@NaN@@}, @samp{@@Inf@@} or @samp{0} if the
+argument is NaN, an infinity or zero, respectively; otherwise the remaining
+of the output is as follows: @samp{0.} then the @var{p} bits of the binary
+significand, where @var{p} is the precision of the number; if the trailing
+bits are not all zeros (which must not occur with valid data), they are
+output enclosed by square brackets; the character @samp{E} followed by
+the exponent written in base 10; in case of invalid data or out-of-range
+exponent, this function outputs three exclamation marks (@samp{!!!}),
+followed by flags, followed by three exclamation marks (@samp{!!!}) again.
+These flags are: @samp{N} if the most significant bit of the significand
+is 0 (i.e., the number is not normalized); @samp{T} if there are non-zero
+trailing bits; @samp{U} if this is a UBF number (internal use only);
+@samp{<} if the exponent is less than the current minimum exponent;
+@samp{>} if the exponent is greater than the current maximum exponent.
 @end deftypefun
 
 @node Formatted Output Functions, Integer and Remainder Related Functions, Input and Output Functions, MPFR Interface
