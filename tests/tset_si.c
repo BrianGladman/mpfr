@@ -197,8 +197,13 @@ test_get_ui_smallneg (void)
   mpfr_clear (x);
 }
 
+/* Test mpfr_get_si and mpfr_get_ui, on values around some particular
+ * integers (see ts[] and tu[]): x = t?[i] + j/4, where '?' is 's' or
+ * 'u', and j is an integer from -8 to 8.
+ */
 static void get_tests (void)
 {
+  mpfr_exp_t emin, emax;
   mpfr_t x, z;
   long ts[5] = { LONG_MIN, LONG_MAX, -17, 0, 17 };
   unsigned long tu[3] = { 0, ULONG_MAX, 17 };
@@ -206,7 +211,14 @@ static void get_tests (void)
   int inex;
   int r;
 
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  /* We need the bitsize of an unsigned long + 3 bits (1 additional bit for
+   * the cases >= ULONG_MAX + 1; 2 additional bits for the fractional part).
+   */
   mpfr_init2 (x, sizeof (unsigned long) * CHAR_BIT + 3);
+
   mpfr_init2 (z, MPFR_PREC_MIN);
   mpfr_set_ui_2exp (z, 1, -2, MPFR_RNDN);  /* z = 1/4 */
 
@@ -222,13 +234,16 @@ static void get_tests (void)
         MPFR_ASSERTN (inex == 0);
         for (j = -8; j <= 8; j++)
           {
-            ctr++;
-            /* x = t?[i] + j/4 */
+            /* Test x = t?[i] + j/4 in each non-RNDF rounding mode... */
             RND_LOOP_NO_RNDF (r)
               {
                 mpfr_flags_t ex_flags, flags;
-                int k, overflow;
+                int e, k, overflow;
 
+                ctr++;  /* for the check below */
+
+                /* Let's determine k such that the rounded integer should
+                   be t?[i] + k, assuming an unbounded exponent range. */
                 k = (j + 8 +
                      (MPFR_IS_LIKE_RNDD (r, MPFR_SIGN (x)) ? 0 :
                       MPFR_IS_LIKE_RNDU (r, MPFR_SIGN (x)) ? 3 :
@@ -236,8 +251,16 @@ static void get_tests (void)
                 if (r == MPFR_RNDN && ((unsigned int) j & 3) == 2 &&
                     ((odd + k) & 1))
                   k--;  /* even rounding */
+
+                /* Overflow cases. Note that with the above choices:
+                   _ t?[0] == minval(type)
+                   _ t?[1] == maxval(type)
+                */
                 overflow = (i == 0 && k < 0) || (i == 1 && k > 0);
 
+                /* Expected flags. Note that in case of overflow, only the
+                   erange flag is set. Otherwise, the result is inexact iff
+                   j mod 1 != 0, i.e. the last two bits are not 00. */
                 ex_flags = overflow ? MPFR_FLAGS_ERANGE
                   : ((unsigned int) j & 3) != 0 ? MPFR_FLAGS_INEXACT : 0;
 
@@ -248,12 +271,22 @@ static void get_tests (void)
                   TYPE a, d;                                            \
                                                                         \
                   a = TZ[i] + (overflow ? 0 : k);                       \
-                  d = F (x, (mpfr_rnd_t) r);                            \
-                  if (__gmpfr_flags != ex_flags || a != d)              \
+                  if (e)                                                \
                     {                                                   \
-                      flags = __gmpfr_flags;                            \
-                      printf ("Error in get_tests for " #F " on %s,\n", \
-                              mpfr_print_rnd_mode ((mpfr_rnd_t) r));    \
+                      mpfr_exp_t ex;                                    \
+                      ex = MPFR_GET_EXP (x);                            \
+                      set_emin (ex);                                    \
+                      set_emax (ex);                                    \
+                    }                                                   \
+                  d = F (x, (mpfr_rnd_t) r);                            \
+                  flags = __gmpfr_flags;                                \
+                  set_emin (emin);                                      \
+                  set_emax (emax);                                      \
+                  if (flags != ex_flags || a != d)                      \
+                    {                                                   \
+                      printf ("Error in get_tests for " #F " on %s,%s\n", \
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) r),     \
+                              e ? " reduced exponent range" : "");      \
                       printf ("x = t" C "[%d] + (%d/4) = ", i, j);      \
                       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);       \
                       printf ("\n--> k = %d\n", k);                     \
@@ -267,17 +300,28 @@ static void get_tests (void)
                     }                                                   \
                 } while (0)
 
-                if (s)
-                  GET_TESTS_TEST (long, ts, mpfr_get_si, "s", "d");
-                else
-                  GET_TESTS_TEST (unsigned long, tu, mpfr_get_ui, "u", "u");
+                for (e = 0; e < 2; e++)
+                  {
+                    if (e && MPFR_IS_ZERO (x))
+                      break;
+                    if (s)
+                      GET_TESTS_TEST (long,
+                                      ts, mpfr_get_si, "s", "d");
+                    else
+                      GET_TESTS_TEST (unsigned long,
+                                      tu, mpfr_get_ui, "u", "u");
+                  }
               }
             inex = mpfr_add (x, x, z, MPFR_RNDN);
             MPFR_ASSERTN (inex == 0);
           }
       }
 
-  MPFR_ASSERTN (ctr == 8*17);
+  /* Check that we have tested everything: 8 = 5 + 3 integers t?[i]
+   * with 17 = 8 - (-8) + 1 additional terms (j/4) for each integer,
+   * and each non-RNDF rounding mode.
+   */
+  MPFR_ASSERTN (ctr == 8 * 17 * ((int) MPFR_RND_MAX - 1));
 
   mpfr_clear (x);
   mpfr_clear (z);
