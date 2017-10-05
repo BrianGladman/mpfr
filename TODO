@@ -417,7 +417,9 @@ Table of contents:
   (FMV), currently only available with the GNU C++ front end:
     https://gcc.gnu.org/wiki/FunctionMultiVersioning
   According to https://lwn.net/Articles/691932/ the dispatch resolution
-  is now done by the dynamic loader, so that this may be fast enough.
+  is now done by the dynamic loader, so that this should be fast enough
+  (the cost would be the reading of a static variable, initialized at
+  load time, instead of a constant).
   In particular, binary package distributions would benefit from FMV as
   only one binary is generated for different processor families.
 
