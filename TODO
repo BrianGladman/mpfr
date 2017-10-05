@@ -413,6 +413,14 @@ Table of contents:
 
 - deal with MPFR_RNDF in mpfr_round_near_x (replaced by MPFR_RNDZ).
 
+- instead of a fixed mparam.h, optionally use function multiversioning
+  (FMV), currently only available with the GNU C++ front end:
+    https://gcc.gnu.org/wiki/FunctionMultiVersioning
+  According to https://lwn.net/Articles/691932/ the dispatch resolution
+  is now done by the dynamic loader, so that this may be fast enough.
+  In particular, binary package distributions would benefit from FMV as
+  only one binary is generated for different processor families.
+
 
 ##############################################################################
 6. Miscellaneous
