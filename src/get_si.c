@@ -40,8 +40,10 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_IS_ZERO (f))
     return (long) 0;
 
-  /* determine prec of long */
-  for (s = LONG_MIN, prec = 0; s != 0; s /= 2, prec++)
+  /* Determine the precision of long. |LONG_MIN| may have one more bit
+     as an integer, but in this case, this is a power of 2, thus fits
+     in a precision-prec floating-point number. */
+  for (s = LONG_MAX, prec = 0; s != 0; s /= 2, prec++)
     { }
 
   MPFR_SAVE_EXPO_MARK (expo);

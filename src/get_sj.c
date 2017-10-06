@@ -47,13 +47,11 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_IS_ZERO (f))
      return (intmax_t) 0;
 
-  /* determine the precision of intmax_t */
-  for (r = MPFR_INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
+  /* Determine the precision of intmax_t. |INTMAX_MIN| may have one
+     more bit as an integer, but in this case, this is a power of 2,
+     thus fits in a precision-prec floating-point number. */
+  for (r = MPFR_INTMAX_MAX, prec = 0; r != 0; r /= 2, prec++)
     { }
-  /* Note: though INTMAX_MAX would have been sufficient for the conversion,
-     we chose INTMAX_MIN so that INTMAX_MIN - 1 is always representable in
-     precision prec; this is useful to detect overflows in MPFR_RNDZ (will
-     be needed later). */
 
   MPFR_ASSERTD (r == 0);
 
@@ -74,15 +72,15 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
-      MPFR_ASSERTN ((mpfr_prec_t) sh <= prec);
+      MPFR_ASSERTN ((mpfr_prec_t) sh <= prec + 1);
       if (MPFR_INTMAX_MIN + MPFR_INTMAX_MAX != 0
-          && MPFR_UNLIKELY ((mpfr_prec_t) sh == prec))
+          && MPFR_UNLIKELY ((mpfr_prec_t) sh > prec))
         {
           /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
              has the same size as intmax_t, we cannot use the code in
              the for loop since the operations would be performed in
              unsigned arithmetic. */
-          MPFR_ASSERTN (MPFR_IS_NEG (x) && (mpfr_powerof2_raw (x)));
+          MPFR_ASSERTN (MPFR_IS_NEG (x) && mpfr_powerof2_raw (x));
           r = MPFR_INTMAX_MIN;
         }
       else if (MPFR_IS_POS (x))
