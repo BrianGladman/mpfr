@@ -284,9 +284,9 @@ static void get_tests (void)
                   set_emax (emax);                                      \
                   if (flags != ex_flags || a != d)                      \
                     {                                                   \
-                      printf ("Error in get_tests for " #F " on %s,%s\n", \
+                      printf ("Error in get_tests for " #F " on %s%s\n", \
                               mpfr_print_rnd_mode ((mpfr_rnd_t) r),     \
-                              e ? " reduced exponent range" : "");      \
+                              e ? ", reduced exponent range" : "");     \
                       printf ("x = t" C "[%d] + (%d/4) = ", i, j);      \
                       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);       \
                       printf ("\n--> k = %d\n", k);                     \
