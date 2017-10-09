@@ -125,6 +125,9 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       long double r; /* result */
       double s; /* part of result */
+      MPFR_SAVE_EXPO_DECL (expo);
+
+      MPFR_SAVE_EXPO_MARK (expo);
 
 #if defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
       if (MPFR_LDBL_MANT_DIG == 106)
@@ -227,6 +230,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           if (sign < 0)
             r = -r;
         }
+      MPFR_SAVE_EXPO_FREE (expo);
       return r;
     }
 }
