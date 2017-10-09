@@ -171,11 +171,16 @@ print_binary (long double d, int flag)
 static void
 check_set_get (long double d)
 {
+  mpfr_exp_t emin, emax;
   mpfr_t x;
   mpfr_prec_t prec;
   int r;
   long double e;
   int inex;
+  int red;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   /* Select a precision to ensure that the conversion of d to x be exact. */
   prec = print_binary (d, 0);
@@ -188,9 +193,6 @@ check_set_get (long double d)
       inex = mpfr_set_ld (x, d, (mpfr_rnd_t) r);
       if (inex != 0)
         {
-          mpfr_exp_t emin, emax;
-          emin = mpfr_get_emin ();
-          emax = mpfr_get_emax ();
           printf ("Error: mpfr_set_ld should be exact (rnd = %s)\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           /* We use 36 digits here, as the maximum LDBL_MANT_DIG value
@@ -214,33 +216,49 @@ check_set_get (long double d)
           print_binary (d, 2);
           exit (1);
         }
-      e = mpfr_get_ld (x, (mpfr_rnd_t) r);
-      if (inex == 0 && ((Isnan_ld(d) && ! Isnan_ld(e)) ||
-                        (Isnan_ld(e) && ! Isnan_ld(d)) ||
-                        (e != d && !(Isnan_ld(e) && Isnan_ld(d)))))
+      for (red = 0; red < 2; red++)
         {
-          printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
-          printf ("  rnd = %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-          printf ("  d ~= %.36Le (output may be wrong!)\n", d);
-          printf ("  e ~= %.36Le (output may be wrong!)\n", e);
-          ld_trace ("  d", d);
-          printf ("  x = "); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
-          printf ("\n");
-          ld_trace ("  e", e);
-          printf ("  d = ");
-          print_binary (d, 1);
-          printf ("  x = ");
-          mpfr_dump (x);
-          printf ("  e = ");
-          print_binary (e, 1);
-          printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
+          if (red)
+            {
+              mpfr_exp_t ex;
+
+              if (MPFR_IS_SINGULAR (x))
+                break;
+              ex = MPFR_GET_EXP (x);
+              set_emin (ex);
+              set_emax (ex);
+            }
+          e = mpfr_get_ld (x, (mpfr_rnd_t) r);
+          set_emin (emin);
+          set_emax (emax);
+          if (inex == 0 && ((Isnan_ld(d) && ! Isnan_ld(e)) ||
+                            (Isnan_ld(e) && ! Isnan_ld(d)) ||
+                            (e != d && !(Isnan_ld(e) && Isnan_ld(d)))))
+            {
+              printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id%s\n",
+                      red ? ", reduced exponent range" : "");
+              printf ("  rnd = %s\n", mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+              printf ("  d ~= %.36Le (output may be wrong!)\n", d);
+              printf ("  e ~= %.36Le (output may be wrong!)\n", e);
+              ld_trace ("  d", d);
+              printf ("  x = "); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
+              printf ("\n");
+              ld_trace ("  e", e);
+              printf ("  d = ");
+              print_binary (d, 1);
+              printf ("  x = ");
+              mpfr_dump (x);
+              printf ("  e = ");
+              print_binary (e, 1);
+              printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
 #ifdef MPFR_NANISNAN
-          if (Isnan_ld(d) || Isnan_ld(e))
-            printf ("The reason is that NAN == NAN. Please look at the "
-                    "configure output\nand Section \"In case of problem\" "
-                    "of the INSTALL file.\n");
+              if (Isnan_ld(d) || Isnan_ld(e))
+                printf ("The reason is that NAN == NAN. Please look at the "
+                        "configure output\nand Section \"In case of problem\""
+                        " of the INSTALL file.\n");
 #endif
-          exit (1);
+              exit (1);
+            }
         }
     }
 
