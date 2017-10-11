@@ -58,6 +58,9 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_t y;
           mp_limb_t *yp;
           int prec, i;  /* small enough to fit in an int */
+          MPFR_SAVE_EXPO_DECL (expo);
+
+          MPFR_SAVE_EXPO_MARK (expo);
 
           /* First round x to the target __float128 precision, taking the
              reduced precision of the subnormals into account, so that all
@@ -84,6 +87,8 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             }
 
           mpfr_clear (y);
+
+          MPFR_SAVE_EXPO_FREE (expo);
         }
 
       /* we now have to multiply r by 2^sh */

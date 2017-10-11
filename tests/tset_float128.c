@@ -145,10 +145,15 @@ check_special (void)
 static void
 check_large (void)
 {
+  mpfr_exp_t emin, emax;
   __float128 f, e;
   int i;
   mpfr_t x, y;
   int r;
+  int red;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 113);
   mpfr_init2 (y, 113);
@@ -173,12 +178,29 @@ check_large (void)
               mpfr_dump (x);
               exit (1);
             }
-          e =  mpfr_get_float128 (x, (mpfr_rnd_t) r);
-          if (e != f)
+          for (red = 0; red < 2; red++)
             {
-              printf ("mpfr_get_float128 failed for 2^%d*(1-2^(-113)) rnd=%s\n",
-                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-              exit (1);
+              if (red)
+                {
+                  mpfr_exp_t ex;
+
+                  if (MPFR_IS_SINGULAR (x))
+                    break;
+                  ex = MPFR_GET_EXP (x);
+                  set_emin (ex);
+                  set_emax (ex);
+                }
+              e =  mpfr_get_float128 (x, (mpfr_rnd_t) r);
+              set_emin (emin);
+              set_emax (emax);
+              if (e != f)
+                {
+                  printf ("mpfr_get_float128 failed for 2^%d*(1-2^(-113))"
+                          " rnd=%s%s\n",
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) r),
+                          red ? ", reduced exponent range" : "");
+                  exit (1);
+                }
             }
         }
 
