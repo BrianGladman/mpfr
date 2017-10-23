@@ -745,7 +745,7 @@ for undefined preprocessing identifier").
 
 ===========================================================================
 
-If wou want to use the logging of MPFR, you need to enable it:
+If you want to use the logging of MPFR, you need to enable it:
  ./configure --enable-logging
  make clean
  make
