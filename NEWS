@@ -49,8 +49,8 @@ Changes from versions 3.1.* to version 4.0.0:
 - New function mpfr_rootn_ui, similar to mpfr_root, but agreeing with the
   rootn function of the IEEE 754-2008 standard.
 - New functions mpfr_log_ui to compute the logarithm of an integer,
-  mpfr_gamma_inc for the incomplete Gamma function, and mpfr_beta for the
-  Beta function.
+  mpfr_gamma_inc for the incomplete Gamma function.
+- New function mpfr_beta for the Beta function (incomplete, experimental).
 - New function mpfr_get_q to convert a floating-point number into rational.
 - The mpfr_dump function is now described in the manual; its output format
   has slightly changed.
