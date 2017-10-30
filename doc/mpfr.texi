@@ -3063,14 +3063,16 @@ int i = mpfr_round_nearest_away (mpfr_add_ui, r, f, ul);
 @section Miscellaneous Functions
 
 @deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
-If @var{x} or @var{y} is NaN, set @var{x} to NaN@. If @var{x} and @var{y}
-are equal, @var{x} is unchanged. Otherwise, if @var{x}
-is different from @var{y}, replace @var{x} by the next floating-point
-number (with the precision of @var{x} and the current exponent range)
-in the direction of @var{y}
+If @var{x} or @var{y} is NaN, set @var{x} to NaN; note that the NaN flag
+is set as usual.
+If @var{x} and @var{y} are equal, @var{x} is unchanged.
+Otherwise, if @var{x} is different from @var{y}, replace @var{x} by the
+next floating-point number (with the precision of @var{x} and the current
+exponent range) in the direction of @var{y}
 (the infinite values are seen as the smallest and largest floating-point
-numbers). If the result is zero, it keeps the same sign. No underflow or
-overflow is generated.
+numbers). If the result is zero, it keeps the same sign. No underflow,
+overflow, or inexact exception is raised.
+@c For NaN, the behavior is like IEEE 754-2008 with sNaN.
 @end deftypefun
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
