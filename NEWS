@@ -26,7 +26,8 @@ Changes from versions 3.1.* to version 4.0.0:
 - Mini-gmp support via the --enable-mini-gmp configure option (experimental).
 - The minimum precision MPFR_PREC_MIN is now 1, with rounding defined as
   in the next IEEE 754 revision (ties rounded away from zero).
-- Shared caches for multithread applications.
+- Shared caches for multithreaded applications.
+  New function mpfr_free_cache2.
 - Partial support of MPFR_RNDF (faithful rounding).
 - New functions: mpfr_fpif_export and mpfr_fpif_import to export and import
   numbers in a floating-point interchange format, independent both on the

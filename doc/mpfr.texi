@@ -3922,6 +3922,8 @@ in MPFR 4.0.
 
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
+@item @code{mpfr_free_cache2} in MPFR 4.0.
+
 @item @code{mpfr_frexp} in MPFR 3.1.
 
 @item @code{mpfr_gamma_inc} in MPFR 4.0.
