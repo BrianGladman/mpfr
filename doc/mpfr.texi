@@ -985,7 +985,7 @@ a minimum of 10% increase of the precision is guaranteed to avoid too
 many recomputations.
 
 MPFR functions may also create pools for internal use to avoid the cost
-for memory allocation.
+of memory allocation.
 @c FIXME: Say a bit more about the mpz_t pool. Make it configurable at
 @c run time, with a compile-time bound on the number of entries? Pools
 @c may be a bad idea if the allocator is fast and/or if there are many
