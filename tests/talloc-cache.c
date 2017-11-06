@@ -93,6 +93,9 @@ main (void)
 {
   mpfr_t x;
 
+  tests_memory_disabled = 2;
+  tests_start_mpfr ();
+
   mp_set_memory_functions (my_alloc1, my_realloc1, my_free1);
 
   mpfr_init2 (x, 53);
@@ -107,7 +110,6 @@ main (void)
   mpfr_sin (x, x, MPFR_RNDN);
   mpfr_clear (x);
 
-  mpfr_free_cache ();
-
+  tests_end_mpfr ();
   return 0;
 }
