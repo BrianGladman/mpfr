@@ -20,11 +20,13 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* This test program is for temporary testing only. It is not in the
-   usual test suite (not in check_PROGRAMS from Makefile.am).
+/* WARNING! This is not the final code and this code will be incorrect
+   once some issues with memory allocation are resolved. It is currently
+   for temporary testing only.
    In the 3.1 branch, it crashes before r9467, and r9467 fixes the crash
    (among other issues).
-   In the trunk, it crashes, which is not expected with the current code.
+   In the trunk, it currently fails due to the mpz_t pool (this will be
+   fixed by the change of memory allocation method).
 */
 
 #include <stdlib.h>
@@ -37,37 +39,53 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void *
 my_alloc1 (size_t s)
 {
-  return malloc (s);
+  void *p = malloc (s + A);
+  *(int *) p = 1;
+  return (void *) ((char *) p + A);
 }
 
 static void *
 my_realloc1 (void *p, size_t t, size_t s)
 {
-  return realloc (p, s);
+  p = (void *) ((char *) p - A);
+  if (*(int *) p != 1)
+    abort ();
+  return (void *) ((char *) realloc (p, s + A) + A);
 }
 
 static void
 my_free1 (void *p, size_t t)
 {
-  return free (p);
+  p = (void *) ((char *) p - A);
+  if (*(int *) p != 1)
+    abort ();
+  free (p);
 }
 
 static void *
 my_alloc2 (size_t s)
 {
-  return (void *) ((char *) malloc (s + A) + A);
+  void *p = malloc (s + A);
+  *(int *) p = 2;
+  return (void *) ((char *) p + A);
 }
 
 static void *
 my_realloc2 (void *p, size_t t, size_t s)
 {
-  return (void *) ((char *) realloc ((char *) p - A, s + A) + A);
+  p = (void *) ((char *) p - A);
+  if (*(int *) p != 2)
+    abort ();
+  return (void *) ((char *) realloc (p, s + A) + A);
 }
 
 static void
 my_free2 (void *p, size_t t)
 {
-  return free ((char *) p - A);
+  p = (void *) ((char *) p - A);
+  if (*(int *) p != 2)
+    abort ();
+  free (p);
 }
 
 int
@@ -88,6 +106,8 @@ main (void)
   mpfr_set_ui (x, I, MPFR_RNDN);
   mpfr_sin (x, x, MPFR_RNDN);
   mpfr_clear (x);
+
+  mpfr_free_cache ();
 
   return 0;
 }

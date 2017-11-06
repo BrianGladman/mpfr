@@ -14,12 +14,12 @@ AUTOMAKE_OPTIONS = 1.6 gnu
 check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      tabort_defalloc2 talloc tinternals tinits tisqrt tsgn tcheck	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse	\
-     tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm tai tasin	\
-     tasinh tatan tatanh taway tbeta tbuildopt tcan_round tcbrt		\
-     tcmp tcmp2	tcmp_d tcmp_ld tcmp_ui tcmpabs tcomparisons		\
-     tconst_catalan tconst_euler tconst_log2 tconst_pi tcopysign	\
-     tcos tcosh tcot tcoth tcsc tcsch td_div td_sub tdigamma tdim	\
-     tdiv tdiv_d tdiv_ui teint teq terandom terandom_chisq terf		\
+     tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm tai		\
+     talloc-cache tasin tasinh tatan tatanh taway tbeta tbuildopt	\
+     tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs		\
+     tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi	\
+     tcopysign tcos tcosh tcot tcoth tcsc tcsch td_div td_sub tdigamma	\
+     tdim tdiv tdiv_d tdiv_ui teint teq terandom terandom_chisq terf	\
      texp texp10 texp2 texpm1 tfactorial tfits tfma tfmma tfmod tfms	\
      tfpif tfprintf tfrac tfrexp tgamma tgamma_inc tget_d tget_d_2exp	\
      tget_f tget_flt tget_ld_2exp tget_q tget_set_d64 tget_sj		\
