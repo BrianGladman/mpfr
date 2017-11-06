@@ -984,10 +984,18 @@ When more precision is needed, the value is automatically recomputed;
 a minimum of 10% increase of the precision is guaranteed to avoid too
 many recomputations.
 
-At any time, the user can free various caches with @code{mpfr_free_cache}
-and @code{mpfr_free_cache2}. It is strongly advised to free thread-local
-caches before terminating a thread and global caches before exiting when
-using tools like @samp{valgrind} (to avoid memory leaks being reported).
+MPFR functions may also create pools for internal use to avoid the cost
+for memory allocation.
+@c FIXME: Say a bit more about the mpz_t pool. Make it configurable at
+@c run time, with a compile-time bound on the number of entries? Pools
+@c may be a bad idea if the allocator is fast and/or if there are many
+@c threads (since they are thread-local).
+
+At any time, the user can free various caches and pools with
+@code{mpfr_free_cache} and @code{mpfr_free_cache2}. It is strongly advised
+to free thread-local caches before terminating a thread and global caches
+before exiting when using tools like @samp{valgrind} (to avoid memory leaks
+being reported).
 
 @c FIXME: explain how memory allocation is done (once the issues are fixed
 @c to allow the allocation functions to be changed). Give a reference to:
@@ -2352,7 +2360,7 @@ use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @c while mpfr_free_cache (or the dedicated function) would not touch
 @c them.
 @deftypefun void mpfr_free_cache (void)
-Free various caches used by MPFR internally (thoses local to the
+Free various caches and pools used by MPFR internally (thoses local to the
 current thread and shared by all threads).
 In addition to clearing all MPFR variables,
 you should call this function before terminating a thread, of before calling
@@ -2362,10 +2370,10 @@ internally).
 @end deftypefun
 
 @deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
-Free various caches used by MPFR internally,
-either the caches local to the current thread (if @var{way} is
+Free various caches and pools used by MPFR internally,
+either those local to the current thread (if @var{way} is
 @code{MPFR_FREE_LOCAL_CACHE})
-or the caches common to all threads (if @var{way} is
+or those common to all threads (if @var{way} is
 @code{MPFR_FREE_GLOBAL_CACHE}).
 @end deftypefun
 
