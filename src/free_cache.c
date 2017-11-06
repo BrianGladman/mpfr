@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Default number of entries for the mpz_t pool */
 #ifndef MPFR_MY_MPZ_INIT
-#  define MPFR_MY_MPZ_INIT 32
+# define MPFR_MY_MPZ_INIT 32
 #endif
 
 /* If the number of entries of the mpz_t pool is not zero */
@@ -49,7 +49,7 @@ mpfr_mpz_init (mpz_t z)
   else
     {
       /* Call real GMP function */
-      (__gmpz_init)(z);
+      (__gmpz_init) (z);
     }
 }
 
@@ -68,7 +68,7 @@ mpfr_mpz_init2 (mpz_t z, mp_bitcnt_t n)
   else
     {
       /* Call real GMP function */
-      (__gmpz_init2)(z, n);
+      (__gmpz_init2) (z, n);
     }
 }
 
@@ -84,7 +84,7 @@ mpfr_mpz_clear (mpz_t z)
   else
     {
       /* Call real GMP function */
-      (__gmpz_clear)(z);
+      (__gmpz_clear) (z);
     }
 }
 
@@ -112,14 +112,14 @@ static void
 mpfr_free_local_cache (void)
 {
   /* Before mpz caching */
-  mpfr_bernoulli_freecache();
+  mpfr_bernoulli_freecache ();
 
 #if MPFR_MY_MPZ_INIT
-  { /* Avoid mixed declarations and code for ISO C90 support. */
+  { /* Avoid mixed declarations and code (for ISO C90 support). */
     int i;
     MPFR_ASSERTD (n_alloc >= 0 && n_alloc <= numberof (mpz_tab));
     for (i = 0; i < n_alloc; i++)
-      (__gmpz_clear)(&mpz_tab[i]);
+      (__gmpz_clear) (&mpz_tab[i]);
     n_alloc = 0;
   }
 #endif
@@ -128,7 +128,7 @@ mpfr_free_local_cache (void)
 void
 mpfr_free_cache (void)
 {
-  mpfr_free_local_cache();
+  mpfr_free_local_cache ();
   mpfr_free_const_caches ();
 }
 
@@ -137,7 +137,7 @@ mpfr_free_cache2 (mpfr_free_cache_t way)
 {
   if (way & MPFR_FREE_LOCAL_CACHE)
     {
-      mpfr_free_local_cache();
+      mpfr_free_local_cache ();
 #if !defined (WANT_SHARED_CACHE)
       mpfr_free_const_caches ();
 #endif
