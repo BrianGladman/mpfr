@@ -37,13 +37,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void *
 my_alloc1 (size_t s)
 {
-return malloc (s);
+  return malloc (s);
 }
 
 static void *
 my_realloc1 (void *p, size_t t, size_t s)
 {
-return realloc (p, s);
+  return realloc (p, s);
 }
 
 static void
