@@ -2360,8 +2360,8 @@ use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @c while mpfr_free_cache (or the dedicated function) would not touch
 @c them.
 @deftypefun void mpfr_free_cache (void)
-Free various caches and pools used by MPFR internally (thoses local to the
-current thread and shared by all threads).
+Free all caches and pools used by MPFR internally (thoses local to the
+current thread and those shared by all threads).
 In addition to clearing all MPFR variables,
 you should call this function before terminating a thread, of before calling
 @code{mp_set_memory_functions}, even if you did
@@ -2371,10 +2371,18 @@ internally).
 
 @deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
 Free various caches and pools used by MPFR internally,
-either those local to the current thread (if @var{way} is
-@code{MPFR_FREE_LOCAL_CACHE})
-or those common to all threads (if @var{way} is
-@code{MPFR_FREE_GLOBAL_CACHE}).
+as specified by @var{way}, which is a set of flags:
+@itemize @bullet
+@item those local to the current thread if flag @code{MPFR_FREE_LOCAL_CACHE}
+is set;
+@item those shared by all threads if flag @code{MPFR_FREE_GLOBAL_CACHE}
+is set.
+@end itemize
+The other bits of @var{way} are currently ignored and are reserved for
+future use; they should be zero.
+
+Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
+is currently equivalent to @code{mpfr_free_cache()}.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
