@@ -246,8 +246,8 @@ typedef enum {
 
 /* Free cache policy */
 typedef enum {
-  MPFR_FREE_LOCAL_CACHE = 1,
-  MPFR_FREE_GLOBAL_CACHE = 2
+  MPFR_FREE_LOCAL_CACHE  = 1,  /* 1 << 0 */
+  MPFR_FREE_GLOBAL_CACHE = 2   /* 1 << 1 */
 } mpfr_free_cache_t;
 
 /* GMP defines:
