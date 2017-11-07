@@ -3555,12 +3555,21 @@ By inserting the following two lines after the @code{#include <gmp.h>} line,
 #include <mpf2mpfr.h>
 @end example
 @noindent
-any program written for
-MPF can be compiled directly with MPFR without any changes
-(except the @code{gmp_printf} functions will not work for arguments of type
-@code{mpfr_t}).
+many programs written for MPF can be compiled directly against MPFR
+without any changes.
 All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
+
+Warning! There are some differences. In particular:
+@itemize @bullet
+@item The precision is different: MPFR rounds to the exact number of bits
+(zeroing trailing bits in the internal representation). Users may need to
+increase the precision of their variables.
+@item The exponent range is also different.
+@item The formatted output functions (@code{gmp_printf}, etc.)  will not work
+for arguments of arbitrary-precision floating-point type (@code{mpf_t}, which
+@file{mpf2mpfr.h} redefines as @code{mpfr_t}).
+@end itemize
 
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
