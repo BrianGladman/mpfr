@@ -3562,11 +3562,6 @@ MPF can be compiled directly with MPFR without any changes
 All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
 
-Warning! The @code{mpf_init} and @code{mpf_init2} functions initialize
-to zero, whereas the corresponding MPFR functions initialize to NaN:
-this is useful to detect uninitialized values, but is slightly incompatible
-with MPF@.
-
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
 The only difference with @code{mpfr_set_prec} is that @var{prec} is assumed to
