@@ -135,14 +135,14 @@ mpfr_free_cache (void)
 void
 mpfr_free_cache2 (mpfr_free_cache_t way)
 {
-  if (way & MPFR_FREE_LOCAL_CACHE)
+  if ((unsigned int) way & MPFR_FREE_LOCAL_CACHE)
     {
       mpfr_free_local_cache ();
 #if !defined (WANT_SHARED_CACHE)
       mpfr_free_const_caches ();
 #endif
     }
-  if (way & MPFR_FREE_GLOBAL_CACHE)
+  if ((unsigned int) way & MPFR_FREE_GLOBAL_CACHE)
     {
 #if defined (WANT_SHARED_CACHE)
       mpfr_free_const_caches ();
