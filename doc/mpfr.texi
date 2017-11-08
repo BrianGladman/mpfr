@@ -997,14 +997,34 @@ to free thread-local caches before terminating a thread and global caches
 before exiting when using tools like @samp{valgrind} (to avoid memory leaks
 being reported).
 
-@c FIXME: explain how memory allocation is done (once the issues are fixed
-@c to allow the allocation functions to be changed). Give a reference to:
-@c @ifinfo
-@c @pxref{Custom Allocation,,, gmp.info,GNU MP}.
-@c @end ifinfo
-@c @ifnotinfo
-@c see Section ``Custom Allocation'' in @cite{GNU MP}.
-@c @end ifnotinfo
+MPFR allocates its memory either on the stack (for temporary memory only)
+or with the same allocator as the one configured for GMP:
+@ifinfo
+@pxref{Custom Allocation,,, gmp.info,GNU MP}.
+@end ifinfo
+@ifnotinfo
+see Section ``Custom Allocation'' in @cite{GNU MP}.
+@end ifnotinfo
+This means that the application must make sure that data allocated with the
+current allocator will not be reallocated or freed with a new allocator.
+So, in practice, if an application needs to change the allocator with
+@code{mp_set_memory_functions}, it should first free all data allocated
+with the current allocator: for its own data, with @code{mpfr_clear},
+etc.; for the caches and pools, with @code{mpfr_mp_memory_cleanup} in
+all threads where MPFR is potentially used. This function is currently
+equivalent to @code{mpfr_free_cache}, but @code{mpfr_mp_memory_cleanup}
+is the recommended way in case the allocation method changes in the future
+(for instance, one may choose to allocate the caches for floating-point
+constants with @code{malloc} to avoid freeing them if the allocator
+changes). Developers should also be aware that MPFR may also be used
+indirectly by libraries, so that libraries based on MPFR should provide
+a clean-up function calling @code{mpfr_mp_memory_cleanup} and/or warn
+their users about this issue.
+
+@c This is important for shared caches.
+Note: For multithreaded applications, the allocator must be valid in
+all threads where MPFR may be used; data allocated in one thread may
+be reallocated and/or freed in some other thread.
 
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
@@ -2348,23 +2368,10 @@ calculations if a lower or equal precision is requested. To free these caches,
 use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
-@c FIXME: It would be better to have a dedicated function concerning
-@c mp_set_memory_functions (mpfr_free_cache is there mainly to free some
-@c memory, not to solve issues with mp_set_memory_functions, even if
-@c these issues are currently solved exactly by calling mpfr_free_cache),
-@c in case we want to change things in the future (new features, etc.).
-@c Moreover, a documentation of memory allocation in MPFR should be given
-@c (the user should know how memory is allocated if this can affect his
-@c programs). Recommendations for libraries using MPFR should also be
-@c given: if they keep MPFR objects on their side, a clean-up is needed,
-@c while mpfr_free_cache (or the dedicated function) would not touch
-@c them.
 @deftypefun void mpfr_free_cache (void)
 Free all caches and pools used by MPFR internally (thoses local to the
 current thread and those shared by all threads).
-In addition to clearing all MPFR variables,
-you should call this function before terminating a thread, of before calling
-@code{mp_set_memory_functions}, even if you did
+You should call this function before terminating a thread, even if you did
 not call @code{mpfr_const_*} functions directly (they could have been called
 internally).
 @end deftypefun
@@ -2383,6 +2390,11 @@ future use; they should be zero.
 
 Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
 is currently equivalent to @code{mpfr_free_cache()}.
+@end deftypefun
+
+@deftypefun void mpfr_mp_memory_cleanup (void)
+This function should be called before calling @code{mp_set_memory_functions}.
+@xref{Memory Handling}, for more information.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
@@ -3980,6 +3992,8 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_modf} in MPFR 2.4.
 
+@item @code{mpfr_mp_memory_cleanup} in MPFR 4.0.
+
 @item @code{mpfr_mul_d} in MPFR 2.4.
 
 @item @code{mpfr_nrandom} in MPFR 4.0.
@@ -4207,6 +4221,9 @@ the MPFR API since the exception can only be seen via new functions.
 
 As of MPFR 3.1, the @file{mpfr.h} header can be included several times,
 while still supporting optional functions (@pxref{Headers and Libraries}).
+
+The way memory is allocated by MPFR should be regarded as well-specified
+only as of MPFR 4.0.
 
 @node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up

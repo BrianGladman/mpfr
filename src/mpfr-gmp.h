@@ -275,42 +275,13 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
    numberof_const (x))
 #endif
 
-/* Allocate func are defined in gmp-impl.h.
-   Warning: the code below fetches the GMP memory allocation functions the first
-   time one allocates some mpfr_t, and then always uses those initial functions,
-   even if the user later changes the GMP memory allocation functions with
-   mp_set_memory_functions(). This is fine as long as the user who wants to use
-   different memory allocation functions first calls mp_set_memory_functions()
-   before any call to mpfr_init or mpfr_init2.
-   For more complex usages, change #if 1 into #if 0. Warning! But in this
-   case, the user must make sure that there are no data internal to MPFR
-   allocated with the previous allocator. Freeing all the caches may be
-   necessary, but this is not guaranteed to be sufficient. */
+__MPFR_DECLSPEC void * mpfr_allocate_func (size_t);
+__MPFR_DECLSPEC void * mpfr_reallocate_func (void *, size_t, size_t);
+__MPFR_DECLSPEC void   mpfr_free_func (void *, size_t);
 
-#if 1
-#undef __gmp_allocate_func
-#undef __gmp_reallocate_func
-#undef __gmp_free_func
-#define MPFR_GET_MEMFUNC                                        \
-  ((void) (MPFR_LIKELY (mpfr_allocate_func != 0) ||             \
-           (mp_get_memory_functions(&mpfr_allocate_func,        \
-                                    &mpfr_reallocate_func,      \
-                                    &mpfr_free_func), 1)))
-#define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
-#define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
-#define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
-#else
-extern void * (*__gmp_allocate_func) (size_t);
-extern void * (*__gmp_reallocate_func) (void *, size_t, size_t);
-extern void (*__gmp_free_func) (void *, size_t);
-#endif
-
-/* Note: The declaration of the MPFR memory allocation functions had to be
-   moved to mpfr-impl.h for thread-safe DLL support on MS Windows, because
-   mpfr-gmp.h is included too early for that. */
-typedef void * (*mpfr_allocate_func_t) (size_t);
-typedef void * (*mpfr_reallocate_func_t) (void *, size_t, size_t);
-typedef void   (*mpfr_free_func_t) (void *, size_t);
+#define __gmp_allocate_func   &mpfr_allocate_func
+#define __gmp_reallocate_func &mpfr_reallocate_func
+#define __gmp_free_func       &mpfr_free_func
 
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q

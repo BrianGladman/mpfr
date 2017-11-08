@@ -149,3 +149,15 @@ mpfr_free_cache2 (mpfr_free_cache_t way)
 #endif
     }
 }
+
+/* Function an application should call before mp_set_memory_functions().
+   This is currently equivalent to freeing the caches (and pools) since
+   they are allocated with GMP's current allocator. But this might change
+   in the future to avoid the drawback of having to free the caches just
+   because the allocators are changed: the caches could optionally be
+   allocated with malloc(). */
+void
+mpfr_mp_memory_cleanup (void)
+{
+  mpfr_free_cache ();
+}

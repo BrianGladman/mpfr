@@ -20,15 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* WARNING! This is not the final code and this code will be incorrect
-   once some issues with memory allocation are resolved. It is currently
-   for temporary testing only.
-   In the 3.1 branch, it crashes before r9467, and r9467 fixes the crash
-   (among other issues).
-   In the trunk, it currently fails due to the mpz_t pool (this will be
-   fixed by the change of memory allocation method).
-*/
-
 #include <stdlib.h>
 
 #include "mpfr-test.h"
@@ -96,6 +87,7 @@ main (void)
   tests_memory_disabled = 2;
   tests_start_mpfr ();
 
+  mpfr_mp_memory_cleanup ();
   mp_set_memory_functions (my_alloc1, my_realloc1, my_free1);
 
   mpfr_init2 (x, 53);
@@ -103,6 +95,7 @@ main (void)
   mpfr_sin (x, x, MPFR_RNDN);
   mpfr_clear (x);
 
+  mpfr_mp_memory_cleanup ();
   mp_set_memory_functions (my_alloc2, my_realloc2, my_free2);
 
   mpfr_init2 (x, 1000);

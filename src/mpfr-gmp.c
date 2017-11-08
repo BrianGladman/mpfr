@@ -300,16 +300,42 @@ mpfr_assert_fail (const char *filename, int linenum,
   abort();
 }
 
-/* putting 0 as initial values forces those symbols to be fully defined,
-   and always resolved, otherwise they are only tentatively defined, which
-   leads to problems on e.g. MacOS, cf
-   http://lists.gforge.inria.fr/pipermail/mpc-discuss/2008-November/000048.html
-   and http://software.intel.com/en-us/articles/intelr-fortran-compiler-for-mac-os-non_lazy_ptr-unresolved-references-from-linking
-   Note that using ranlib -c or libtool -c is another fix.
-*/
-MPFR_THREAD_VAR (mpfr_allocate_func_t, mpfr_allocate_func, 0)
-MPFR_THREAD_VAR (mpfr_reallocate_func_t, mpfr_reallocate_func, 0)
-MPFR_THREAD_VAR (mpfr_free_func_t, mpfr_free_func, 0)
+/* Performing a concentration for theses indirect functions may be
+   good for performance since branch prediction for indirect calls
+   is not well supported by a lot of CPU's (typically they can only
+   predict a limited number of indirections). */
+MPFR_HOT_FUNCTION_ATTR void *
+mpfr_allocate_func (size_t alloc_size)
+{
+  void * (*allocate_func) (size_t);
+  void * (*reallocate_func) (void *, size_t, size_t);
+  void   (*free_func) (void *, size_t);
+  /* Always calling with the 3 arguments smooths branch prediction. */
+  mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
+  return (*allocate_func) (alloc_size);
+}
+
+MPFR_HOT_FUNCTION_ATTR void *
+mpfr_reallocate_func (void * ptr, size_t old_size, size_t new_size)
+{
+  void * (*allocate_func) (size_t);
+  void * (*reallocate_func) (void *, size_t, size_t);
+  void   (*free_func) (void *, size_t);
+  /* Always calling with the 3 arguments smooths branch prediction. */
+  mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
+  return (*reallocate_func) (ptr, old_size, new_size);
+}
+
+MPFR_HOT_FUNCTION_ATTR void
+mpfr_free_func (void *ptr, size_t size)
+{
+  void * (*allocate_func) (size_t);
+  void * (*reallocate_func) (void *, size_t, size_t);
+  void   (*free_func) (void *, size_t);
+  /* Always calling with the 3 arguments smooths branch prediction. */
+  mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
+  (*free_func) (ptr, size);
+}
 
 void *
 mpfr_tmp_allocate (struct tmp_marker **tmp_marker, size_t size)

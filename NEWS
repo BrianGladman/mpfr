@@ -23,6 +23,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 Changes from versions 3.1.* to version 4.0.0:
 - The "dinde aux marrons" release.
 - MPFR now depends on GMP 5.0+ instead of 4.1+.
+- API change:
+  Applications that call GMP's mp_set_memory_functions function to change
+  the allocators must first call the new function mpfr_mp_memory_cleanup
+  in all threads where MPFR is potentially used; this new function is
+  currently equivalent to mpfr_free_cache.
+  The reason is that the way memory allocation is done by MPFR has changed
+  (again), so that the current GMP allocators are used (since for some
+  applications, the old allocators may become invalid).
+  Note: Freeing the caches like this might have a performance impact on some
+  particular applications; if this is an issue, this could be handled for a
+  future MPFR version.
 - Mini-gmp support via the --enable-mini-gmp configure option (experimental).
 - The minimum precision MPFR_PREC_MIN is now 1, with rounding defined as
   in the next IEEE 754 revision (ties rounded away from zero).
