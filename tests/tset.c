@@ -34,17 +34,26 @@ int error;
   } while (0)
 
 
-/* Maybe better create its own test file ? */
+/* Maybe better create its own test file? */
 static void
 check_neg_special (void)
 {
   mpfr_t x;
   mpfr_init (x);
+
   MPFR_SET_NAN (x);
   mpfr_clear_nanflag ();
   mpfr_neg (x, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_nanflag_p (),
                   "ERROR: neg (NaN) doesn't set Nan flag.\n");
+
+  /* check following bug is fixed:
+     https://sympa.inria.fr/sympa/arc/mpfr/2017-11/msg00003.html */
+  int s = mpfr_signbit (x);
+  mpfr_neg (x, x, MPFR_RNDN);
+  PRINT_ERROR_IF (mpfr_signbit (x) + s != 1,
+                  "ERROR: neg (NaN) doesn't correctly flip sign bit.\n");
+
   mpfr_clear (x);
 }
 
