@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-int error;
+static int error;
 
 #define PRINT_ERROR_IF(condition, text)         \
   do {                                          \
