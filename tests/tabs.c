@@ -84,7 +84,7 @@ check_cmp (int argc, char *argv[])
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
 
-  mpfr_set_ui(x, 1, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   (mpfr_abs) (x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
@@ -92,16 +92,16 @@ check_cmp (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_si(x, -1, MPFR_RNDN);
-  mpfr_abs(x, x, MPFR_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_abs (x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(1.0)\n");
       exit (1);
     }
 
-  mpfr_set_si(x, -1, MPFR_RNDN);
-  mpfr_abs(x, x, MPFR_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_abs (x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(-1.0)\n");
