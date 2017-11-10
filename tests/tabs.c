@@ -80,55 +80,137 @@ static void
 check_cmp (int argc, char *argv[])
 {
   mpfr_t x, y;
+  mpfr_ptr p[2];
+  int inexact;
   int n, k;
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
 
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  (mpfr_abs) (x, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (x, 1))
-    {
-      printf ("Error in mpfr_abs(1.0)\n");
-      exit (1);
-    }
+  /* will test with DEST != SRC and with DEST == SRC */
+  p[0] = y;  /* y first */
+  p[1] = x;  /* x last since it may be modified */
 
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_abs (x, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (x, 1))
+  for (k = 0; k <= 1; k++)
     {
-      printf ("Error in mpfr_abs(1.0)\n");
-      exit (1);
-    }
+      mpfr_set_nan (p[k]);
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (mpfr_cmp_ui (p[k], 1) || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(1.0) for k = %d\n", k);
+          exit (1);
+        }
 
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_abs (x, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (x, 1))
-    {
-      printf ("Error in mpfr_abs(-1.0)\n");
-      exit (1);
-    }
+      mpfr_set_nan (p[k]);
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (mpfr_cmp_ui (p[k], 1) || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(1.0) for k = %d\n", k);
+          exit (1);
+        }
 
-  mpfr_set_inf (x, 1);
-  mpfr_abs (x, x, MPFR_RNDN);
-  if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
-    {
-      printf ("Error in mpfr_abs(Inf).\n");
-      exit (1);
-    }
-  mpfr_set_inf (x, -1);
-  mpfr_abs (x, x, MPFR_RNDN);
-  if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
-    {
-      printf ("Error in mpfr_abs(-Inf).\n");
-      exit (1);
-    }
+      mpfr_set_nan (p[k]);
+      mpfr_set_si (x, -1, MPFR_RNDN);
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (mpfr_cmp_ui (p[k], 1) || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(-1.0) for k = %d\n", k);
+          exit (1);
+        }
 
-  MPFR_SET_NAN(x);
-  mpfr_abs (x, x, MPFR_RNDN);
-  if (!MPFR_IS_NAN(x))
-    {
-      printf ("Error in mpfr_abs(NAN).\n");
-      exit (1);
+      mpfr_set_nan (p[k]);
+      mpfr_set_si (x, -1, MPFR_RNDN);
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (mpfr_cmp_ui (p[k], 1) || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(-1.0) for k = %d\n", k);
+          exit (1);
+        }
+
+      mpfr_set_nan (p[k]);
+      mpfr_set_inf (x, 1);
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (! mpfr_inf_p (p[k]) || mpfr_sgn (p[k]) <= 0 || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(Inf) for k = %d\n", k);
+          exit (1);
+        }
+
+      mpfr_set_nan (p[k]);
+      mpfr_set_inf (x, 1);
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (! mpfr_inf_p (p[k]) || mpfr_sgn (p[k]) <= 0 || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(Inf) for k = %d\n", k);
+          exit (1);
+        }
+
+      mpfr_set_nan (p[k]);
+      mpfr_set_inf (x, -1);
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (! mpfr_inf_p (p[k]) || mpfr_sgn (p[k]) <= 0 || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(-Inf) for k = %d\n", k);
+          exit (1);
+        }
+
+      mpfr_set_nan (p[k]);
+      mpfr_set_inf (x, -1);
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (! mpfr_inf_p (p[k]) || mpfr_sgn (p[k]) <= 0 || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(-Inf) for k = %d\n", k);
+          exit (1);
+        }
+
+      mpfr_set_zero (p[k], 1);
+      MPFR_SET_NAN (x);
+      MPFR_SET_POS (x);
+      mpfr_clear_nanflag ();
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (! MPFR_IS_NAN (p[k]) || ! mpfr_nanflag_p () ||
+          mpfr_signbit (p[k]) || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(+NaN).\n");
+          exit (1);
+        }
+
+      mpfr_set_zero (p[k], 1);
+      MPFR_SET_NAN (x);
+      MPFR_SET_POS (x);
+      mpfr_clear_nanflag ();
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (! MPFR_IS_NAN (p[k]) || ! mpfr_nanflag_p () ||
+          mpfr_signbit (p[k]) || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(+NaN).\n");
+          exit (1);
+        }
+
+      mpfr_set_zero (p[k], 1);
+      MPFR_SET_NAN (x);
+      MPFR_SET_NEG (x);
+      mpfr_clear_nanflag ();
+      inexact = mpfr_abs (p[k], x, MPFR_RNDN);
+      if (! MPFR_IS_NAN (p[k]) || ! mpfr_nanflag_p () ||
+          mpfr_signbit (p[k]) || inexact != 0)
+        {
+          printf ("Error in mpfr_abs(-NaN).\n");
+          exit (1);
+        }
+
+      mpfr_set_zero (p[k], 1);
+      MPFR_SET_NAN (x);
+      MPFR_SET_NEG (x);
+      mpfr_clear_nanflag ();
+      inexact = (mpfr_abs) (p[k], x, MPFR_RNDN);
+      if (! MPFR_IS_NAN (p[k]) || ! mpfr_nanflag_p () ||
+          mpfr_signbit (p[k]) || inexact != 0)
+        {
+          printf ("Error in (mpfr_abs)(-NaN).\n");
+          exit (1);
+        }
     }
 
   n = (argc==1) ? 25000 : atoi(argv[1]);
