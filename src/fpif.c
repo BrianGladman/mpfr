@@ -48,7 +48,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     {                                                                   \
       if ((buffer) == NULL || *(buffer_size) < (wanted_size))           \
         {                                                               \
-          (buffer) = (unsigned char *) (*__gmp_reallocate_func)         \
+          (buffer) = (unsigned char *) mpfr_reallocate_func             \
             ((buffer), *(buffer_size), (wanted_size));                  \
           if ((buffer) == NULL)                                         \
             {                                                           \
@@ -477,7 +477,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
     return -1;
 
   buf_size = MAX_VARIABLE_STORAGE(sizeof(mpfr_exp_t), mpfr_get_prec (x));
-  buf = (unsigned char*) (*__gmp_allocate_func) (buf_size);
+  buf = (unsigned char*) mpfr_allocate_func (buf_size);
   if (buf == NULL)
     return -1;
 
@@ -487,14 +487,14 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
   status = fwrite (buf, used_size, 1, fh);
   if (status != 1)
     {
-      (*__gmp_free_func) (buf, buf_size);
+      mpfr_free_func (buf, buf_size);
       return -1;
     }
   used_size = buf_size;
   bufResult = mpfr_fpif_store_exponent (buf, &used_size, x);
   if (bufResult == NULL)
     {
-      (*__gmp_free_func) (buf, buf_size);
+      mpfr_free_func (buf, buf_size);
       return -1;
     }
   buf = bufResult;
@@ -502,7 +502,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
   status = fwrite (buf, used_size, 1, fh);
   if (status != 1)
     {
-      (*__gmp_free_func) (buf, buf_size);
+      mpfr_free_func (buf, buf_size);
       return -1;
     }
 
@@ -514,12 +514,12 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
       status = fwrite (buf, used_size, 1, fh);
       if (status != 1)
         {
-          (*__gmp_free_func) (buf, buf_size);
+          mpfr_free_func (buf, buf_size);
           return -1;
         }
     }
 
-  (*__gmp_free_func) (buf, buf_size);
+  mpfr_free_func (buf, buf_size);
   return 0;
 }
 
@@ -554,7 +554,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
   if (mpfr_regular_p (x))
     {
       used_size = (precision + 7) >> 3; /* ceil(precision/8) */
-      buffer = (unsigned char*) (*__gmp_allocate_func) (used_size);
+      buffer = (unsigned char*) mpfr_allocate_func (used_size);
       if (buffer == NULL)
         {
           return -1;
@@ -562,11 +562,11 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
       status = fread (buffer, used_size, 1, fh);
       if (status != 1)
         {
-          (*__gmp_free_func) (buffer, used_size);
+          mpfr_free_func (buffer, used_size);
           return -1;
         }
       status = mpfr_fpif_read_limbs (x, buffer, &used_size);
-      (*__gmp_free_func) (buffer, used_size);
+      mpfr_free_func (buffer, used_size);
       if (status != 0)
         return -1;
     }

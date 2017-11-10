@@ -2025,7 +2025,7 @@ struct mpfr_group_t {
                 (unsigned long) (g).alloc));                     \
  if ((g).alloc != 0) {                                           \
    MPFR_ASSERTD ((g).mant != (g).tab);                           \
-   (*__gmp_free_func) ((g).mant, (g).alloc);                     \
+   mpfr_free_func ((g).mant, (g).alloc);                         \
  }} while (0)
 
 #define MPFR_GROUP_INIT_TEMPLATE(g, prec, num, handler) do {            \
@@ -2038,7 +2038,7 @@ struct mpfr_group_t {
  if (_size * (num) > MPFR_GROUP_STATIC_SIZE)                            \
    {                                                                    \
      (g).alloc = (num) * _size * sizeof (mp_limb_t);                    \
-     (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);       \
+     (g).mant = (mp_limb_t *) mpfr_allocate_func ((g).alloc);           \
    }                                                                    \
  else                                                                   \
    {                                                                    \
@@ -2088,10 +2088,10 @@ struct mpfr_group_t {
  _size = MPFR_PREC2LIMBS (_prec);                                       \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
  if (_oalloc == 0)                                                      \
-   (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
+   (g).mant = (mp_limb_t *) mpfr_allocate_func ((g).alloc);             \
  else                                                                   \
    (g).mant = (mp_limb_t *)                                             \
-     (*__gmp_reallocate_func) ((g).mant, _oalloc, (g).alloc);           \
+     mpfr_reallocate_func ((g).mant, _oalloc, (g).alloc);               \
  MPFR_LOG_MSG (("GROUP_REPREC: newptr = 0x%lX, newsize = %lu\n",        \
                 (unsigned long) (g).mant, (unsigned long) (g).alloc));  \
  handler;                                                               \

@@ -219,10 +219,10 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       twopoweri = GMP_NUMB_BITS;
 
       /* Allocate tables */
-      P    = (mpz_t*) (*__gmp_allocate_func) (3*(k+2)*sizeof(mpz_t));
+      P    = (mpz_t*) mpfr_allocate_func (3*(k+2)*sizeof(mpz_t));
       for (i = 0; i < 3*(k+2); i++)
         mpz_init (P[i]);
-      mult = (mpfr_prec_t*) (*__gmp_allocate_func) (2*(k+2)*sizeof(mpfr_prec_t));
+      mult = (mpfr_prec_t*) mpfr_allocate_func (2*(k+2)*sizeof(mpfr_prec_t));
 
       /* Particular case for i==0 */
       mpfr_extract (uk, x_copy, 0);
@@ -249,8 +249,8 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* Clear tables */
       for (i = 0; i < 3*(k+2); i++)
         mpz_clear (P[i]);
-      (*__gmp_free_func) (P, 3*(k+2)*sizeof(mpz_t));
-      (*__gmp_free_func) (mult, 2*(k+2)*sizeof(mpfr_prec_t));
+      mpfr_free_func (P, 3*(k+2)*sizeof(mpz_t));
+      mpfr_free_func (mult, 2*(k+2)*sizeof(mpfr_prec_t));
 
       if (shift_x > 0)
         {

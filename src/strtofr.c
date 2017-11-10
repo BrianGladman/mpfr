@@ -323,7 +323,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 
   /* Alloc mantissa */
   pstr->alloc = (size_t) strlen (str) + 1;
-  pstr->mantissa = (unsigned char*) (*__gmp_allocate_func) (pstr->alloc);
+  pstr->mantissa = (unsigned char*) mpfr_allocate_func (pstr->alloc);
 
   /* Read mantissa digits */
  parse_begin:
@@ -435,7 +435,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   *string = str;
  end:
   if (pstr->mantissa != NULL && res != 1)
-    (*__gmp_free_func) (pstr->mantissa, pstr->alloc);
+    mpfr_free_func (pstr->mantissa, pstr->alloc);
   return res;
 }
 
@@ -807,7 +807,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 static void
 free_parsed_string (struct parsed_string *pstr)
 {
-  (*__gmp_free_func) (pstr->mantissa, pstr->alloc);
+  mpfr_free_func (pstr->mantissa, pstr->alloc);
 }
 
 int

@@ -666,19 +666,13 @@ Table of contents:
   This may require to export some pointer to the tables, but this could
   be done only if some debug macro is defined.
 
-- use mpfr_allocate_func, etc. instead of *__gmp_allocate_func, etc.
-  This would be cleaner (as the __gmp_ prefix is reserved by GMP and
-  its use might change) and simpler. In mpfr-gmp.h, the 3 #define's
-  should be reversed and used with the GMP build instead of without.
-
 - optionally use malloc() for the caches? See mpfr_mp_memory_cleanup.
   Note: This can be implemented by adding a TLS flag saying whether we
   are under cache generation or not, and by making the MPFR allocation
-  functions consider this flag. This needs the above change concerning
-  mpfr_allocate_func vs *__gmp_allocate_func. Moreover, this can only
-  work for mpfr_t caching (floating-point constants), not for mpz_t
-  caching (Bernoulli constants) because we do not have the control
-  of memory allocation for mpz_init.
+  functions consider this flag. Moreover, this can only work for mpfr_t
+  caching (floating-point constants), not for mpz_t caching (Bernoulli
+  constants) because we do not have the control of memory allocation for
+  mpz_init.
 
 
 ##############################################################################

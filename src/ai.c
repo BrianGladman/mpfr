@@ -389,7 +389,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   L = __gmpfr_isqrt (prec);
   MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
 
-  z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t) );
+  z = (mpfr_t *) mpfr_allocate_func ( (L + 1) * sizeof (mpfr_t) );
   MPFR_ASSERTN (z != NULL);
   for (j=0; j<=L; j++)
     mpfr_init (z[j]);
@@ -539,10 +539,10 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
       for (j=0; j<=L; j++)
         mpfr_clear (z[j]);
-      (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
+      mpfr_free_func (z, (L + 1) * sizeof (mpfr_t));
       L = __gmpfr_isqrt (t);
       MPFR_LOG_MSG (("size of blocks L = %lu\n", L));
-      z = (mpfr_t *) (*__gmp_allocate_func) ( (L + 1) * sizeof (mpfr_t));
+      z = (mpfr_t *) mpfr_allocate_func ( (L + 1) * sizeof (mpfr_t));
       MPFR_ASSERTN (z != NULL);
       for (j=0; j<=L; j++)
         mpfr_init (z[j]);
@@ -584,7 +584,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_clear (tmp2_sp);
   for (j=0; j<=L; j++)
     mpfr_clear (z[j]);
-  (*__gmp_free_func) (z, (L + 1) * sizeof (mpfr_t));
+  mpfr_free_func (z, (L + 1) * sizeof (mpfr_t));
 
   mpfr_clear (s);
   mpfr_clear (u0); mpfr_clear (u1);

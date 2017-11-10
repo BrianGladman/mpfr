@@ -39,7 +39,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
     {
       mpfr_size_limb_t *tmp;
 
-      tmp = (mpfr_size_limb_t *) (*__gmp_reallocate_func)
+      tmp = (mpfr_size_limb_t *) mpfr_reallocate_func
         (MPFR_GET_REAL_PTR(x),
          MPFR_MALLOC_SIZE(xoldsize),
          MPFR_MALLOC_SIZE(xsize));

@@ -2292,7 +2292,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
     {
       if (s == NULL)
-        s = (char *) (*__gmp_allocate_func) (6);
+        s = (char *) mpfr_allocate_func (6);
       strcpy (s, "@NaN@");
       MPFR_LOG_MSG (("%s\n", s));
       __gmpfr_flags |= MPFR_FLAGS_NAN;
@@ -2304,7 +2304,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   if (MPFR_UNLIKELY (MPFR_IS_INF (x)))
     {
       if (s == NULL)
-        s = (char *) (*__gmp_allocate_func) (neg + 6);
+        s = (char *) mpfr_allocate_func (neg + 6);
       strcpy (s, (neg) ? "-@Inf@" : "@Inf@");
       MPFR_LOG_MSG (("%s\n", s));
       return s;
@@ -2337,7 +2337,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   /* x is a floating-point number */
 
   if (s == NULL)
-    s = (char *) (*__gmp_allocate_func) (neg + m + 1);
+    s = (char *) mpfr_allocate_func (neg + m + 1);
   s0 = s;
   if (neg)
     *s++ = '-';
@@ -2584,5 +2584,5 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
 void mpfr_free_str (char *str)
 {
-  (*__gmp_free_func) (str, strlen (str) + 1);
+  mpfr_free_func (str, strlen (str) + 1);
 }

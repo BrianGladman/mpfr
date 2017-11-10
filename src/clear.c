@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 MPFR_HOT_FUNCTION_ATTR void
 mpfr_clear (mpfr_ptr m)
 {
-  (*__gmp_free_func) (MPFR_GET_REAL_PTR (m),
+  mpfr_free_func (MPFR_GET_REAL_PTR (m),
                       MPFR_MALLOC_SIZE (MPFR_GET_ALLOC_SIZE (m)));
   MPFR_MANT (m) = (mp_limb_t *) 0;
 }

@@ -343,8 +343,8 @@ mpfr_tmp_allocate (struct tmp_marker **tmp_marker, size_t size)
   struct tmp_marker *head;
 
   head = (struct tmp_marker *)
-    (*__gmp_allocate_func) (sizeof (struct tmp_marker));
-  head->ptr = (*__gmp_allocate_func) (size);
+    mpfr_allocate_func (sizeof (struct tmp_marker));
+  head->ptr = mpfr_allocate_func (size);
   head->size = size;
   head->next = *tmp_marker;
   *tmp_marker = head;
@@ -359,9 +359,9 @@ mpfr_tmp_free (struct tmp_marker *tmp_marker)
   while (tmp_marker != NULL)
     {
       t = tmp_marker;
-      (*__gmp_free_func) (t->ptr, t->size);
+      mpfr_free_func (t->ptr, t->size);
       tmp_marker = t->next;
-      (*__gmp_free_func) (t, sizeof (struct tmp_marker));
+      mpfr_free_func (t, sizeof (struct tmp_marker));
     }
 }
 

@@ -216,12 +216,12 @@ mpfr_bernoulli_cache (unsigned long n)
         {
           bernoulli_alloc = MAX(16, n + n/4);
           bernoulli_table = (mpz_t *)
-            (*__gmp_allocate_func) (bernoulli_alloc * sizeof (mpz_t));
+            mpfr_allocate_func (bernoulli_alloc * sizeof (mpz_t));
           bernoulli_size  = 0;
         }
       else if (n >= bernoulli_alloc)
         {
-          bernoulli_table = (mpz_t *) (*__gmp_reallocate_func)
+          bernoulli_table = (mpz_t *) mpfr_reallocate_func
             (bernoulli_table, bernoulli_alloc * sizeof (mpz_t),
              (n + n/4) * sizeof (mpz_t));
           bernoulli_alloc = n + n/4;
@@ -247,7 +247,7 @@ mpfr_bernoulli_freecache (void)
         {
           mpz_clear (bernoulli_table[i]);
         }
-      (*__gmp_free_func) (bernoulli_table, bernoulli_alloc * sizeof (mpz_t));
+      mpfr_free_func (bernoulli_table, bernoulli_alloc * sizeof (mpz_t));
       bernoulli_table = NULL;
       bernoulli_alloc = 0;
       bernoulli_size = 0;

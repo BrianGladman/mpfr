@@ -248,7 +248,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                               (unsigned long) dint));
 
           size = (p + 1) * sizeof(mpfr_t);
-          tc1 = (mpfr_t*) (*__gmp_allocate_func) (size);
+          tc1 = (mpfr_t*) mpfr_allocate_func (size);
           for (l=1; l<=p; l++)
             mpfr_init2 (tc1[l], dint);
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
@@ -270,7 +270,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           mpfr_add (z_pre, z_pre, b, MPFR_RNDN);
           for (l=1; l<=p; l++)
             mpfr_clear (tc1[l]);
-          (*__gmp_free_func) (tc1, size);
+          mpfr_free_func (tc1, size);
           /* End branch 2 */
         }
 

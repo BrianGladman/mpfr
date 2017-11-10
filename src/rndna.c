@@ -85,7 +85,7 @@ mpfr_round_nearest_away_begin (mpfr_t rop)
   /* Allocate the context within the needed mantissa. */
   xsize = MPFR_PREC2LIMBS (p);
   ext   = (mpfr_size_limb_extended_t *)
-    (*__gmp_allocate_func) (MPFR_MALLOC_EXTENDED_SIZE(xsize));
+    mpfr_allocate_func (MPFR_MALLOC_EXTENDED_SIZE(xsize));
 
   /* Save the context first. */
   ext[ALLOC_SIZE].si   = xsize;
@@ -187,7 +187,7 @@ mpfr_round_nearest_away_end (mpfr_t rop, int inex)
     inex = -mpfr_sgn (rop);
 
   /* Free tmp (cannot call mpfr_clear): free the associated context. */
-  (*__gmp_free_func)(ext, MPFR_MALLOC_EXTENDED_SIZE(xsize));
+  mpfr_free_func(ext, MPFR_MALLOC_EXTENDED_SIZE(xsize));
 
   return mpfr_check_range (rop, inex, MPFR_RNDN);
 }

@@ -545,7 +545,7 @@ buffer_init (struct string_buffer *b, size_t s)
 {
   if (s != 0)
     {
-      b->start = (char *) (*__gmp_allocate_func) (s);
+      b->start = (char *) mpfr_allocate_func (s);
       b->start[0] = '\0';
       b->curr = b->start;
     }
@@ -601,7 +601,7 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTN (b->size < SIZE_MAX - n);
 
   b->start =
-    (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
+    (char *) mpfr_reallocate_func (b->start, b->size, b->size + n);
   b->size += n;
   b->curr = b->start + pos;
 
@@ -778,7 +778,7 @@ clear_string_list (struct string_list *sl)
       if (sl->string)
         mpfr_free_str (sl->string);
       n = sl->next;
-      (*__gmp_free_func) (sl, sizeof(struct string_list));
+      mpfr_free_func (sl, sizeof(struct string_list));
       sl = n;
     }
 }
@@ -792,7 +792,7 @@ register_string (struct string_list *sl, char *new_string)
     sl = sl->next;
 
   sl->next = (struct string_list*)
-    (*__gmp_allocate_func) (sizeof (struct string_list));
+    mpfr_allocate_func (sizeof (struct string_list));
 
   sl = sl->next;
   sl->next = NULL;
@@ -984,7 +984,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     /* prefix part */
     {
       np->prefix_size = 2;
-      str = (char *) (*__gmp_allocate_func) (1 + np->prefix_size);
+      str = (char *) mpfr_allocate_func (1 + np->prefix_size);
       str[0] = '0';
       str[1] = uppercase ? 'X' : 'x';
       str[2] = '\0';
@@ -1031,7 +1031,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     }
   else if (next_base_power_p (p, base, spec.rnd_mode))
     {
-      str = (char *)(*__gmp_allocate_func) (2);
+      str = (char *)mpfr_allocate_func (2);
       str[0] = '1';
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1040,7 +1040,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     }
   else if (base == 2)
     {
-      str = (char *)(*__gmp_allocate_func) (2);
+      str = (char *)mpfr_allocate_func (2);
       str[0] = '1';
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1063,7 +1063,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         digit++;
       MPFR_ASSERTD (0 <= digit && digit <= 15);
 
-      str = (char *)(*__gmp_allocate_func) (1 + np->ip_size);
+      str = (char *)mpfr_allocate_func (1 + np->ip_size);
       str[0] = num_to_text [digit];
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1157,7 +1157,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         x /= 10;
       }
   }
-  str = (char *) (*__gmp_allocate_func) (1 + np->exp_size);
+  str = (char *) mpfr_allocate_func (1 + np->exp_size);
   np->exp_ptr = register_string (np->sl, str);
   {
     char exp_fmt[8];  /* contains at most 7 characters like in "p%+.1i",
@@ -1286,7 +1286,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
   if (np->exp_size < 4)
     np->exp_size = 4;
 
-  str = (char *) (*__gmp_allocate_func) (1 + np->exp_size);
+  str = (char *) mpfr_allocate_func (1 + np->exp_size);
   np->exp_ptr = register_string (np->sl, str);
 
   {
@@ -1332,7 +1332,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
     {
       /* Most of the time, integral part is 0 */
       np->ip_size = 1;
-      str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+      str = (char *) mpfr_allocate_func (1 + np->ip_size);
       str[0] = '0';
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1413,7 +1413,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
                   np->fp_size = 1;
                   str =
-                    (char *) (*__gmp_allocate_func) (1 + np->fp_size);
+                    (char *) mpfr_allocate_func (1 + np->fp_size);
                   str[0] = '1';
                   str[1] = '\0';
                   np->fp_ptr = register_string (np->sl, str);
@@ -1623,7 +1623,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   np->exp_ptr = NULL;
   np->exp_size = 0;
   np->sl = (struct string_list *)
-    (*__gmp_allocate_func) (sizeof (struct string_list));
+    mpfr_allocate_func (sizeof (struct string_list));
   init_string_list (np->sl);
 
   uppercase = spec.spec == 'A' || spec.spec == 'E' || spec.spec == 'F'
@@ -1639,7 +1639,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             np->pad_type = LEFT;
 
           np->ip_size = MPFR_NAN_STRING_LENGTH;
-          str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+          str = (char *) mpfr_allocate_func (1 + np->ip_size);
           strcpy (str, uppercase ? MPFR_NAN_STRING_UC : MPFR_NAN_STRING_LC);
           np->ip_ptr = register_string (np->sl, str);
         }
@@ -1654,7 +1654,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             np->sign = '-';
 
           np->ip_size = MPFR_INF_STRING_LENGTH;
-          str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+          str = (char *) mpfr_allocate_func (1 + np->ip_size);
           strcpy (str, uppercase ? MPFR_INF_STRING_UC : MPFR_INF_STRING_LC);
           np->ip_ptr = register_string (np->sl, str);
         }
@@ -1674,7 +1674,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             /* prefix part */
             {
               np->prefix_size = 2;
-              str = (char *) (*__gmp_allocate_func) (1 + np->prefix_size);
+              str = (char *) mpfr_allocate_func (1 + np->prefix_size);
               str[0] = '0';
               str[1] = uppercase ? 'X' : 'x';
               str[2] = '\0';
@@ -1683,7 +1683,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
           /* integral part */
           np->ip_size = 1;
-          str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+          str = (char *) mpfr_allocate_func (1 + np->ip_size);
           str[0] = '0';
           str[1] = '\0';
           np->ip_ptr = register_string (np->sl, str);
@@ -1704,7 +1704,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             /* exponent part */
             {
               np->exp_size = (spec.spec == 'e' || spec.spec == 'E') ? 4 : 3;
-              str = (char *) (*__gmp_allocate_func) (1 + np->exp_size);
+              str = (char *) mpfr_allocate_func (1 + np->exp_size);
               if (spec.spec == 'e' || spec.spec == 'E')
                 strcpy (str, uppercase ? "E+00" : "e+00");
               else
@@ -1726,7 +1726,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         np->sign = '-';
 
       np->ip_size = 3;
-      str = (char *) (*__gmp_allocate_func) (1 + np->ip_size);
+      str = (char *) mpfr_allocate_func (1 + np->ip_size);
       strcpy (str, uppercase ? "UBF" : "ubf");
       np->ip_ptr = register_string (np->sl, str);
       /* TODO: output more information (e.g. the exponent) if need be. */
@@ -2256,7 +2256,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
         {
           MPFR_ASSERTD (nbchar == strlen (buf.start));
           *ptr = (char *)
-            (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+            mpfr_reallocate_func (buf.start, buf.size, nbchar + 1);
         }
       else if (size > 0)  /* implement mpfr_vsnprintf */
         {
@@ -2270,7 +2270,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               strncpy (Buf, buf.start, size - 1);
               Buf[size-1] = '\0';
             }
-          (*__gmp_free_func) (buf.start, buf.size);
+          mpfr_free_func (buf.start, buf.size);
         }
 
       MPFR_SAVE_EXPO_FREE (expo);
@@ -2292,7 +2292,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
   MPFR_SAVE_EXPO_FREE (expo);
   *ptr = NULL;
-  (*__gmp_free_func) (buf.start, buf.size);
+  mpfr_free_func (buf.start, buf.size);
 
   return -1;
 }

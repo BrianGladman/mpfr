@@ -86,7 +86,13 @@ extern "C" {
  ************* Define GMP Internal Interface  *********
  ******************************************************/
 
-#ifndef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
+#ifdef MPFR_HAVE_GMP_IMPL  /* with gmp build */
+
+#define mpfr_allocate_func   (*__gmp_allocate_func)
+#define mpfr_reallocate_func (*__gmp_reallocate_func)
+#define mpfr_free_func       (*__gmp_free_func)
+
+#else  /* without gmp build (gmp-impl.h replacement) */
 
 /* The following tries to get a good version of alloca.
    See gmp-impl.h for implementation details and original version */
@@ -279,10 +285,6 @@ __MPFR_DECLSPEC void * mpfr_allocate_func (size_t);
 __MPFR_DECLSPEC void * mpfr_reallocate_func (void *, size_t, size_t);
 __MPFR_DECLSPEC void   mpfr_free_func (void *, size_t);
 
-#define __gmp_allocate_func   &mpfr_allocate_func
-#define __gmp_reallocate_func &mpfr_reallocate_func
-#define __gmp_free_func       &mpfr_free_func
-
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
 #ifndef __gmpn_sbpi1_divappr_q
 __MPFR_DECLSPEC mp_limb_t __gmpn_sbpi1_divappr_q (mp_limb_t*,
@@ -323,7 +325,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 #define TMP_FREE(m) \
   (MPFR_LIKELY (tmp_marker == NULL) ? (void) 0 : mpfr_tmp_free (tmp_marker))
 
-#endif /* GMP Internal replacement */
+#endif  /* gmp-impl.h replacement */
 
 
 

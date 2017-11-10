@@ -40,7 +40,7 @@ main (int argc, char **argv)
 
   printf ("[tabort_defalloc1] Check for good handling of abort"
           " in memory function.\n");
-  (*__gmp_allocate_func) ((size_t) -1);
+  mpfr_allocate_func ((size_t) -1);
 
   tests_end_mpfr ();
   return -1; /* Should not be executed */
