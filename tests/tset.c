@@ -39,23 +39,26 @@ static void
 check_neg_special (void)
 {
   mpfr_t x;
-  int s1, s2;
+  int s1, s2, s3;
 
   mpfr_init (x);
 
   MPFR_SET_NAN (x);
   mpfr_clear_nanflag ();
+  s1 = mpfr_signbit (x) != 0;
   mpfr_neg (x, x, MPFR_RNDN);
   PRINT_ERROR_IF (!mpfr_nanflag_p (),
                   "ERROR: neg (NaN) doesn't set Nan flag.\n");
 
   /* check following "bug" is fixed:
      https://sympa.inria.fr/sympa/arc/mpfr/2017-11/msg00003.html */
-  s1 = mpfr_signbit (x) != 0;
-  mpfr_neg (x, x, MPFR_RNDN);
   s2 = mpfr_signbit (x) != 0;
   PRINT_ERROR_IF (s1 == s2,
-                  "ERROR: neg (NaN) doesn't correctly flip sign bit.\n");
+                  "ERROR: neg (NaN) doesn't correctly flip sign bit (1).\n");
+  mpfr_neg (x, x, MPFR_RNDN);
+  s3 = mpfr_signbit (x) != 0;
+  PRINT_ERROR_IF (s2 == s3,
+                  "ERROR: neg (NaN) doesn't correctly flip sign bit (2).\n");
 
   mpfr_clear (x);
 }
