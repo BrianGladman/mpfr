@@ -1359,6 +1359,10 @@ to use @code{mpfr_set_decimal64}, one should define the macro
 @code{mpfr_set_q} might fail if the numerator (or the
 denominator) can not be represented as a @code{mpfr_t}.
 
+For @code{mpfr_set}, the sign of a NaN is propagated in order to mimic the
+IEEE-754 @code{copy} operation. But contrary to IEEE-754, the NaN flag is
+set as usual.
+
 Note: If you want to store a floating-point constant to a @code{mpfr_t},
 you should use @code{mpfr_set_str} (or one of the MPFR constant functions,
 such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of
@@ -1903,6 +1907,11 @@ Just changes or adjusts
 the sign if @var{rop} and @var{op} are the same variable,
 otherwise a rounding might occur if the precision of @var{rop} is less than
 that of @var{op}.
+
+The sign rule also applies to NaN in order to mimic the IEEE-754
+@code{negate} and @code{abs} operations, i.e., for @code{mpfr_neg}, the
+sign is reversed, and for @code{mpfr_abs}, the sign is set to positive.
+But contrary to IEEE-754, the NaN flag is set as usual.
 @end deftypefun
 
 @deftypefun int mpfr_dim (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -4052,6 +4061,11 @@ the behavior of code written for some MPFR version when built and run
 against another MPFR version (older or newer), as described below.
 
 @itemize @bullet
+
+@item @code{mpfr_abs}, @code{mpfr_neg} and @code{mpfr_set} changed in MPFR 4.0.
+In previous MPFR versions, the sign bit of a NaN was unspecified; however,
+in practice, it was set as now specified except for @code{mpfr_neg} with
+a reused argument: @code{mpfr_neg(x,x,rnd)}.
 
 @item @code{mpfr_check_range} changed in MPFR 2.3.2 and MPFR 2.4.
 If the value is an inexact infinity, the overflow flag is now set
