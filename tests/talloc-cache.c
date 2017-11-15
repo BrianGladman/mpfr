@@ -83,11 +83,13 @@ int
 main (void)
 {
   mpfr_t x;
+  int err;
 
   tests_memory_disabled = 2;
   tests_start_mpfr ();
 
-  mpfr_mp_memory_cleanup ();
+  err = mpfr_mp_memory_cleanup ();
+  MPFR_ASSERTN (err == 0);
   mp_set_memory_functions (my_alloc1, my_realloc1, my_free1);
 
   mpfr_init2 (x, 53);
@@ -95,7 +97,8 @@ main (void)
   mpfr_sin (x, x, MPFR_RNDN);
   mpfr_clear (x);
 
-  mpfr_mp_memory_cleanup ();
+  err = mpfr_mp_memory_cleanup ();
+  MPFR_ASSERTN (err == 0);
   mp_set_memory_functions (my_alloc2, my_realloc2, my_free2);
 
   mpfr_init2 (x, 1000);

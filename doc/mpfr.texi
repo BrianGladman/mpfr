@@ -2401,9 +2401,12 @@ Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
 is currently equivalent to @code{mpfr_free_cache()}.
 @end deftypefun
 
-@deftypefun void mpfr_mp_memory_cleanup (void)
+@deftypefun int mpfr_mp_memory_cleanup (void)
 This function should be called before calling @code{mp_set_memory_functions}.
 @xref{Memory Handling}, for more information.
+Zero is returned in case of success, non-zero in case of error.
+Errors are currently not possible, but checking the return value
+is recommended for future compatibility.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})

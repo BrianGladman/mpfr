@@ -155,9 +155,13 @@ mpfr_free_cache2 (mpfr_free_cache_t way)
    they are allocated with GMP's current allocator. But this might change
    in the future to avoid the drawback of having to free the caches just
    because the allocators are changed: the caches could optionally be
-   allocated with malloc(). */
-void
+   allocated with malloc().
+   This function returns 0 in case of success, non-zero in case of error.
+   Errors are currently not possible. But let's avoid a prototype change
+   in the future, in case errors would be possible. */
+int
 mpfr_mp_memory_cleanup (void)
 {
   mpfr_free_cache ();
+  return 0;
 }
