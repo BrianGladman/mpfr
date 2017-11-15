@@ -27,10 +27,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define A 4096
 #define I 10000
 
+/* Variable v is used to check that the allocator is the current GMP one.
+   The assertions on v in would typically fail with MPFR 3.1.6, where the
+   allocation functions are memorized the first time they are seen. */
+static int v = 0;
+
 static void *
 my_alloc1 (size_t s)
 {
   void *p = malloc (s + A);
+  MPFR_ASSERTN (v == 1);
   *(int *) p = 1;
   return (void *) ((char *) p + A);
 }
@@ -39,8 +45,8 @@ static void *
 my_realloc1 (void *p, size_t t, size_t s)
 {
   p = (void *) ((char *) p - A);
-  if (*(int *) p != 1)
-    abort ();
+  MPFR_ASSERTN (v == 1);
+  MPFR_ASSERTN (*(int *) p == 1);
   return (void *) ((char *) realloc (p, s + A) + A);
 }
 
@@ -48,8 +54,8 @@ static void
 my_free1 (void *p, size_t t)
 {
   p = (void *) ((char *) p - A);
-  if (*(int *) p != 1)
-    abort ();
+  MPFR_ASSERTN (v == 1);
+  MPFR_ASSERTN (*(int *) p == 1);
   free (p);
 }
 
@@ -57,6 +63,7 @@ static void *
 my_alloc2 (size_t s)
 {
   void *p = malloc (s + A);
+  MPFR_ASSERTN (v == 2);
   *(int *) p = 2;
   return (void *) ((char *) p + A);
 }
@@ -65,8 +72,8 @@ static void *
 my_realloc2 (void *p, size_t t, size_t s)
 {
   p = (void *) ((char *) p - A);
-  if (*(int *) p != 2)
-    abort ();
+  MPFR_ASSERTN (v == 2);
+  MPFR_ASSERTN (*(int *) p == 2);
   return (void *) ((char *) realloc (p, s + A) + A);
 }
 
@@ -74,8 +81,8 @@ static void
 my_free2 (void *p, size_t t)
 {
   p = (void *) ((char *) p - A);
-  if (*(int *) p != 2)
-    abort ();
+  MPFR_ASSERTN (v == 2);
+  MPFR_ASSERTN (*(int *) p == 2);
   free (p);
 }
 
@@ -91,6 +98,7 @@ main (void)
   err = mpfr_mp_memory_cleanup ();
   MPFR_ASSERTN (err == 0);
   mp_set_memory_functions (my_alloc1, my_realloc1, my_free1);
+  v = 1;
 
   mpfr_init2 (x, 53);
   mpfr_set_ui (x, I, MPFR_RNDN);
@@ -100,6 +108,7 @@ main (void)
   err = mpfr_mp_memory_cleanup ();
   MPFR_ASSERTN (err == 0);
   mp_set_memory_functions (my_alloc2, my_realloc2, my_free2);
+  v = 2;
 
   mpfr_init2 (x, 1000);
   mpfr_set_ui (x, I, MPFR_RNDN);
