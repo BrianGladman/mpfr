@@ -284,8 +284,8 @@ for each variable (including very small precision);
 
 @item MPFR provides the four rounding modes from the IEEE 754-1985
 standard, plus away-from-zero, as well as for basic operations as for other
-mathematical functions. Faithful rounding is provided too, but the results
-may no longer be reproducible.
+mathematical functions. Faithful rounding (partially supported) is provided
+too, but the results may no longer be reproducible.
 
 @end itemize
 
@@ -751,10 +751,15 @@ The following rounding modes are supported:
 @item @code{MPFR_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008),
 @item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008),
 @item @code{MPFR_RNDA}: round away from zero.
-@item @code{MPFR_RNDF}: faithful rounding.
-@c FIXME: MPFR_RNDF is supported partially. Either the whole code is
-@c checked manually (in particular comparisons on rounding modes) and
-@c fixed, or it should be documented which functions are supported.
+@item @code{MPFR_RNDF}: faithful rounding. This feature is currently
+experimental. Specific support for this rounding mode has been added
+to some functions, such as the basic operations (addition, subtraction,
+multiplication, square, division, square root) or when explicitly
+documented. It might also work with other functions, as it is possible that
+they do not need modification in their code; even though a correct behavior
+is not guaranteed yet (corrections were done when failures occurred in the
+test suite, but almost nothing has been checked manually), failures should
+be regarded as bugs and reported, so that they can be fixed.
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
@@ -3884,6 +3889,11 @@ compatibility (this might change in future versions), using:
 @end example
 The rounding mode ``round away from zero'' (@code{MPFR_RNDA}) was added in
 MPFR 3.0 (however no rounding mode @code{GMP_RNDA} exists).
+Faithful rounding (@code{MPFR_RNDF}) was added in MPFR 4.0, but currently,
+it is partially supported.
+@c That's sufficient information for now. More should be said in future
+@c versions (for instance, a user of 4.1 may want to know if this works
+@c in 4.0).
 
 The flags-related macros, whose name starts with @code{MPFR_FLAGS_},
 were added in MPFR 4.0 (for the new functions @code{mpfr_flags_clear},
