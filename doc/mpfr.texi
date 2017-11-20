@@ -3026,16 +3026,14 @@ the call @code{mpfr_set (y, b, rnd3)} with @var{y} of precision @var{prec},
 @c would be lost by making the user recompute everything in a larger
 @c precision if one could have returned non-zero instead of 0.
 
-@c FIXME: This is still incorrect as inex can be 0. But the note can
-@c be simplified if one replaces rnd1 by MPFR_RNDN as this is usually
-@c the case.
 Note: The @ref{ternary value} cannot be determined in general with this
 function. However, if it is known that the exact value is not exactly
 representable in precision @var{prec}, then one can use the following
-trick to determine the (non-zero) @ref{ternary value} in any rounding
-mode (@code{MPFR_RNDZ} can be replaced by any directed rounding mode):
+trick to determine the (non-zero) ternary value in any rounding mode
+@var{rnd2} (note that @code{MPFR_RNDZ} below can be replaced by any
+directed rounding mode):
 @example
-if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ,
+if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
                     prec + (rnd2 == MPFR_RNDN)))
   @{
     /* round the approximation 'b' to the result 'r' of 'prec' bits
