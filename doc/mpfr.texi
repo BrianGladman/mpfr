@@ -4298,7 +4298,9 @@ non-floating-point types in general.
 
 Note also that some obvious differences may come from the fact that in
 MPFR, each variable has its own precision. For instance, a subtraction
-of two numbers of the same sign may yield an overflow.
+of two numbers of the same sign may yield an overflow; idem for a call
+to @code{mpfr_set}, @code{mpfr_neg} or @code{mpfr_abs}, if the destination
+variable has a smaller precision.
 
 @node Contributors, References, MPFR and the IEEE 754 Standard, Top
 @comment  node-name,  next,  previous,  up
