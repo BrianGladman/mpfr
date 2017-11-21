@@ -4260,6 +4260,7 @@ and behaviors that are not specified yet in IEEE 754.
 The MPFR numbers do not include subnormals. The reason is that subnormals
 are less useful than in IEEE 754 as the default exponent range in MPFR is
 large and they would have made the implementation more complex.
+However, subnormals can be emulated using @code{mpfr_subnormalize}.
 
 MPFR has a single NaN. The behavior is similar either to a signaling NaN or
 to a quiet NaN, depending on the context. For any function returning a NaN
