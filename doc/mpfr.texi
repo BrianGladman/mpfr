@@ -107,6 +107,7 @@ floating-point arithmetic, version @value{VERSION}.
 * MPFR Basics::                 What every MPFR user should now.
 * MPFR Interface::              MPFR functions and macros.
 * API Compatibility::           API compatibility with previous MPFR versions.
+* MPFR and the IEEE 754 Standard::
 * Contributors::
 * References::
 * GNU Free Documentation License::
@@ -3779,7 +3780,7 @@ whole number of limbs, the excess bits at the low end of the data are zeros.
 
 @end itemize
 
-@node API Compatibility, MPFR and the IEEE 754 standard, MPFR Interface, Top
+@node API Compatibility, MPFR and the IEEE 754 Standard, MPFR Interface, Top
 @chapter API Compatibility
 
 The goal of this section is to describe some API changes that occurred
@@ -4250,8 +4251,8 @@ while still supporting optional functions (@pxref{Headers and Libraries}).
 The way memory is allocated by MPFR should be regarded as well-specified
 only as of MPFR 4.0.
 
-@node MPFR and the IEEE 754 standard, Contributors, API Compatibility, Top
-@chapter MPFR and the IEEE 754 standard
+@node MPFR and the IEEE 754 Standard, Contributors, API Compatibility, Top
+@chapter MPFR and the IEEE 754 Standard
 
 This section describes differences between MPFR and the IEEE 754 standard,
 or things that are not specified yet in IEEE 754.
@@ -4275,7 +4276,7 @@ Not-a-Number (NaN) in that case. This concerns the functions
 @code{mpfr_div_ui}, @code{mpfr_div_si}, @code{mpfr_div_q} and
 @code{mpfr_div_z}.
 
-@node Contributors, References, MPFR and the IEEE 754 standard, Top
+@node Contributors, References, MPFR and the IEEE 754 Standard, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
