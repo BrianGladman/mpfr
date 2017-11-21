@@ -4262,10 +4262,10 @@ are less useful than in IEEE 754 as the default exponent range in MPFR is
 large and they would have made the implementation more complex.
 However, subnormals can be emulated using @code{mpfr_subnormalize}.
 
-MPFR has a single NaN. The behavior is similar either to a signaling NaN or
+MPFR has a single NaN@. The behavior is similar either to a signaling NaN or
 to a quiet NaN, depending on the context. For any function returning a NaN
 (either produced or propagated), the NaN flag is set, while in IEEE 754,
-some operations are quiet (even on a signaling NaN).
+some operations are quiet (even on a signaling NaN)@.
 
 The @code{mpfr_rec_sqrt} function differs from IEEE 754 on @minus{}0,
 where it gives +Inf (like for +0), following the usual limit rules,
