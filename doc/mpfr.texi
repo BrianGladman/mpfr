@@ -1365,7 +1365,7 @@ to use @code{mpfr_set_decimal64}, one should define the macro
 denominator) can not be represented as a @code{mpfr_t}.
 
 For @code{mpfr_set}, the sign of a NaN is propagated in order to mimic the
-IEEE-754 @code{copy} operation. But contrary to IEEE-754, the NaN flag is
+IEEE 754 @code{copy} operation. But contrary to IEEE 754, the NaN flag is
 set as usual.
 
 Note: If you want to store a floating-point constant to a @code{mpfr_t},
@@ -1771,7 +1771,7 @@ non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
-@var{rnd}.  The IEEE-754 rules are used, in particular for signed zeros.
+@var{rnd}.  The IEEE 754 rules are used, in particular for signed zeros.
 But for types having no signed zeros, 0 is considered unsigned
 (i.e., (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
 The @code{mpfr_add_d} function assumes that the radix of the @code{double} type
@@ -1790,7 +1790,7 @@ is a power of 2, with a precision at most that declared by the C implementation
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
-@var{rnd}.  The IEEE-754 rules are used, in particular for signed zeros.
+@var{rnd}.  The IEEE 754 rules are used, in particular for signed zeros.
 But for types having no signed zeros, 0 is considered unsigned
 (i.e., (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
 0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
@@ -1913,10 +1913,10 @@ the sign if @var{rop} and @var{op} are the same variable,
 otherwise a rounding might occur if the precision of @var{rop} is less than
 that of @var{op}.
 
-The sign rule also applies to NaN in order to mimic the IEEE-754
+The sign rule also applies to NaN in order to mimic the IEEE 754
 @code{negate} and @code{abs} operations, i.e., for @code{mpfr_neg}, the
 sign is reversed, and for @code{mpfr_abs}, the sign is set to positive.
-But contrary to IEEE-754, the NaN flag is set as usual.
+But contrary to IEEE 754, the NaN flag is set as usual.
 @end deftypefun
 
 @deftypefun int mpfr_dim (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -3779,7 +3779,7 @@ whole number of limbs, the excess bits at the low end of the data are zeros.
 
 @end itemize
 
-@node API Compatibility, Contributors, MPFR Interface, Top
+@node API Compatibility, MPFR and the IEEE 754 standard, MPFR Interface, Top
 @chapter API Compatibility
 
 The goal of this section is to describe some API changes that occurred
@@ -4249,6 +4249,31 @@ while still supporting optional functions (@pxref{Headers and Libraries}).
 
 The way memory is allocated by MPFR should be regarded as well-specified
 only as of MPFR 4.0.
+
+@node MPFR and the IEEE 754 standard, Contributors, API Compatibility, Top
+@chapter MPFR and the IEEE 754 standard
+
+This section describes differences between MPFR and the IEEE 754 standard,
+or things that are not specified yet in IEEE 754.
+
+@code{mpfr_set} and @code{mpfr_abs}:
+when the input is NaN, the NaN flag is set, contrary to
+IEEE 754.
+
+@code{mpfr_rec_sqrt}: this function differs from IEEE 754 on @minus{}0,
+where it gives +Inf (like for +0), instead of @minus{}Inf.
+
+@code{mpfr_root}: this function predates IEEE 754-2008 and behaves differently
+from its rootn function.
+It is deprecated and @code{mpfr_rootn_ui} should be used instead.
+
+Division by unsigned zero: when dividing a floating-point number by
+the integer zero (which is unsigned, unlike the floating-point zero),
+the committee in charge of the 2018 revision of IEEE 754 did not want
+to standardize this operation. We have therefore decided to return
+Not-a-Number (NaN) in that case. This concerns the functions
+@code{mpfr_div_ui}, @code{mpfr_div_si}, @code{mpfr_div_q} and
+@code{mpfr_div_z}.
 
 @node Contributors, References, API Compatibility, Top
 @comment  node-name,  next,  previous,  up
