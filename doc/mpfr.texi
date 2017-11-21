@@ -4275,7 +4275,7 @@ Not-a-Number (NaN) in that case. This concerns the functions
 @code{mpfr_div_ui}, @code{mpfr_div_si}, @code{mpfr_div_q} and
 @code{mpfr_div_z}.
 
-@node Contributors, References, API Compatibility, Top
+@node Contributors, References, MPFR and the IEEE 754 standard, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
