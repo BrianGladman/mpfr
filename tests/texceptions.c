@@ -1,4 +1,4 @@
-/* Test file for exceptions.
+/* Test file for features related to exceptions.
 
 Copyright 2001-2017 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -100,7 +100,7 @@ check_emin_emax (void)
 }
 
 static void
-check_set_get_prec (void)
+check_get_prec (void)
 {
   mpfr_t x;
 
@@ -547,7 +547,7 @@ main (int argc, char *argv[])
 
   check_emin_emax();
   check_flags();
-  check_set_get_prec ();
+  check_get_prec ();
   check_powerof2 ();
   check_set ();
   check_groups ();
