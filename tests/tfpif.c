@@ -27,8 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FILE_NAME_R2 "tfpif_r2.dat" /* fixed file name (read only) with a
                                        precision > MPFR_PREC_MAX */
 
-/* TODO: add tests for precision 1 and for precisions > MPFR_PREC_MAX. */
-
 static void
 doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
