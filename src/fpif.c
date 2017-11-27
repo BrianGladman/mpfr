@@ -326,7 +326,10 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   if (fread (buffer, 1, 1, fh) != 1)
     return 1;
 
-  sign = (buffer[0] & 0x80) ? -1 : 1;
+  /* sign value that can be used with MPFR_SET_SIGN,
+     mpfr_set_zero and mpfr_set_inf */
+  sign = (buffer[0] & 0x80) ? MPFR_SIGN_NEG : MPFR_SIGN_POS;
+
   exponent = buffer[0] & 0x7F;
   exponent_size = 1;
 
