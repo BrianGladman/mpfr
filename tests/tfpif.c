@@ -36,9 +36,6 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   FILE *fh;
   mpfr_t x[9];
   mpfr_t y;
-  unsigned char badData[6][2] =
-    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
-  int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
   int i;
 
   mpfr_init2 (x[0], p1);
@@ -131,15 +128,28 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     mpfr_clear (x[i]);
 
   remove (filenameCompressed);
+}
 
-  mpfr_init2 (y, 2);
-  status = mpfr_fpif_export (NULL, y);
+static void
+check_bad (void)
+{
+  char *filenameCompressed = FILE_NAME_RW;
+  int status;
+  FILE *fh;
+  mpfr_t x;
+  unsigned char badData[6][2] =
+    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
+  int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
+  int i;
+
+  mpfr_init2 (x, 2);
+  status = mpfr_fpif_export (NULL, x);
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail with a NULL file\n");
       exit(1);
     }
-  status = mpfr_fpif_import (y, NULL);
+  status = mpfr_fpif_import (x, NULL);
   if (status == 0)
     {
       printf ("mpfr_fpif_import did not fail with a NULL file\n");
@@ -155,7 +165,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
       remove (filenameCompressed);
       exit (1);
     }
-  status = mpfr_fpif_import (y, fh);
+  status = mpfr_fpif_import (x, fh);
   if (status == 0)
     {
       printf ("mpfr_fpif_import did not fail on a empty file\n");
@@ -176,7 +186,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
           exit(1);
         }
       rewind (fh);
-      status = mpfr_fpif_import (y, fh);
+      status = mpfr_fpif_import (x, fh);
       if (status == 0)
         {
           printf ("mpfr_fpif_import did not fail on a bad imported data\n");
@@ -211,7 +221,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     }
 
   fclose (fh);
-  mpfr_clear (y);
+  mpfr_clear (x);
 
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
@@ -221,18 +231,16 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
       exit (1);
     }
 
-  mpfr_init2 (y, 2);
-  status = mpfr_fpif_export (fh, y);
+  mpfr_init2 (x, 2);
+  status = mpfr_fpif_export (fh, x);
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail on a read only stream\n");
       exit(1);
     }
-
   fclose (fh);
   remove (filenameCompressed);
-
-  mpfr_clear (y);
+  mpfr_clear (x);
 }
 
 /* exercise error when precision > MPFR_PREC_MAX */
@@ -274,6 +282,7 @@ main (int argc, char *argv[])
   extra ();
   doit (argc, argv, 130, 2048);
   doit (argc, argv, 1, 53);
+  check_bad ();
 
   tests_end_mpfr ();
 
