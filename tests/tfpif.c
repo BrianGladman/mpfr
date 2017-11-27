@@ -88,9 +88,9 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
-      if (mpfr_cmp(x[i], y) != 0)
+      if (! SAME_VAL (x[i], y))
         {
-          printf ("mpfr_cmp failed on written number %d, exiting...\n", i);
+          printf ("doit failed on written number %d, exiting...\n", i);
           printf ("expected "); mpfr_dump (x[i]);
           printf ("got      "); mpfr_dump (y);
           exit (1);
@@ -113,9 +113,9 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
-      if (mpfr_cmp (x[i], y) != 0)
+      if (! SAME_VAL (x[i], y))
         {
-          printf ("mpfr_cmp failed on data number %d, exiting...\n", i);
+          printf ("doit failed on data number %d, exiting...\n", i);
           printf ("expected "); mpfr_dump (x[i]);
           printf ("got      "); mpfr_dump (y);
           exit (1);
