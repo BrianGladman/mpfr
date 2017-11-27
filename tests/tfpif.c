@@ -88,6 +88,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
+      /* TODO: also check that y has the expected precision. */
       if (! SAME_VAL (x[i], y))
         {
           printf ("doit failed on written number %d, exiting...\n", i);
@@ -113,6 +114,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
     {
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
+      /* TODO: also check that y has the expected precision. */
       if (! SAME_VAL (x[i], y))
         {
           printf ("doit failed on data number %d, exiting...\n", i);
