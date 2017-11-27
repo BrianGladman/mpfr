@@ -253,9 +253,9 @@ extra (void)
       exit (1);
     }
   ret = mpfr_fpif_import (x, fp);
-  MPFR_ASSERTN(ret != 0);
-  MPFR_ASSERTN(mpfr_get_prec (x) == 17);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 42) == 0);
+  MPFR_ASSERTN (ret != 0);  /* import failure */
+  MPFR_ASSERTN (mpfr_get_prec (x) == 17);  /* precision did not change */
+  MPFR_ASSERTN (mpfr_cmp_ui0 (x, 42) == 0);  /* value is still 42 */
   fclose (fp);
   mpfr_clear (x);
 }
