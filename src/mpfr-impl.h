@@ -951,6 +951,11 @@ typedef uintmax_t mpfr_ueexp_t;
   (MPFR_LIMB_MSB (MPFR_MANT(x)[MPFR_LAST_LIMB(x)]) != 0)
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
+/* Note: contrary to the MPFR_IS_PURE_*(x) macros, the MPFR_IS_SINGULAR*(x)
+   macros may be used even when x is being constructed, i.e. its exponent
+   field is already set (possibly out-of-range), but its significand field
+   may still contain arbitrary data. Thus MPFR_IS_PURE_FP(x) is not always
+   equivalent to !MPFR_IS_SINGULAR(x); see the code below. */
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
 #define MPFR_IS_SINGULAR_OR_UBF(x) (MPFR_EXP(x) <= MPFR_EXP_UBF)
 #define MPFR_IS_PURE_FP(x)                          \
