@@ -593,7 +593,9 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
   if (status != 0)
     return -1;
 
-  if (mpfr_regular_p (x))
+  /* Warning! The significand of x is not set yet. Thus use MPFR_IS_SINGULAR
+     for the test. */
+  if (!MPFR_IS_SINGULAR (x))
     {
       used_size = (precision + 7) >> 3; /* ceil(precision/8) */
       buffer = (unsigned char*) mpfr_allocate_func (used_size);
