@@ -36,8 +36,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Note: Due to limitations from the C standard and GMP, if
    size_t < unsigned int (which is allowed by the C standard but unlikely
    to occur on any platform), the behavior is undefined for output that
-   would reach SIZE_MAX (if the result cannot be delivered, there should
-   be an assertion failure, but this could not be tested). */
+   would reach SIZE_MAX = (size_t) -1 (if the result cannot be delivered,
+   there should be an assertion failure, but this could not be tested). */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -66,7 +66,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if defined (__cplusplus)
 #include <cstddef>
-#define __STDC_LIMIT_MACROS   /* SIZE_MAX defined with <stdint.h> inclusion */
 #else
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
@@ -598,7 +597,7 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTD (*b->curr == '\0');
   MPFR_ASSERTD (pos < b->size);
 
-  MPFR_ASSERTN (b->size < SIZE_MAX - n);
+  MPFR_ASSERTN (b->size < ((size_t) -1) - n);
 
   b->start =
     (char *) mpfr_reallocate_func (b->start, b->size, b->size + n);
@@ -623,7 +622,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   if (b->size != 0)
     {
       MPFR_ASSERTD (*b->curr == '\0');
-      MPFR_ASSERTN (b->size < SIZE_MAX - len);
+      MPFR_ASSERTN (b->size < ((size_t) -1) - len);
       if (MPFR_UNLIKELY (b->curr + len >= b->start + b->size))
         buffer_widen (b, len);
 
@@ -651,7 +650,7 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   if (b->size != 0)
     {
       MPFR_ASSERTD (*b->curr == '\0');
-      MPFR_ASSERTN (b->size < SIZE_MAX - n);
+      MPFR_ASSERTN (b->size < ((size_t) -1) - n);
       if (MPFR_UNLIKELY (b->curr + n >= b->start + b->size))
         buffer_widen (b, n);
 
@@ -700,7 +699,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
           char *oldcurr;
 
           MPFR_ASSERTD (*b->curr == '\0');
-          MPFR_ASSERTN (b->size < SIZE_MAX - fullsize);
+          MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
           if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
             buffer_widen (b, fullsize);
 

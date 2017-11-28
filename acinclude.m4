@@ -69,9 +69,6 @@ AC_CHECK_MEMBERS([struct lconv.decimal_point, struct lconv.thousands_sep],,,
 dnl Check how to get `alloca'
 AC_FUNC_ALLOCA
 
-dnl SIZE_MAX macro
-gl_SIZE_MAX
-
 dnl va_copy macro
 AC_MSG_CHECKING([how to copy va_list])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
