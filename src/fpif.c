@@ -46,10 +46,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       where s is the sign bit and E = [eeeeeee] such that:
         * If 0 <= E <= 94, then the exponent e is E-47 (-47 <= e <= 47).
         * If 95 <= E <= 110, the exponent is stored in the next E-94 bytes
-          (1 to 16 bytes).
+          (1 to 16 bytes) in sign + absolute value representation.
         * If 111 <= E <= 118, the exponent size S is stored in the next
           E-110 bytes (1 to 8), then the exponent itself is stored in the
-          next S bytes.
+          next S bytes. [Not implemented yet]
         * If 119 <= E <= 127, we have a special value:
           E = 119 (MPFR_KIND_ZERO) for a signed zero;
           E = 120 (MPFR_KIND_INF) for a signed infinity;
@@ -73,6 +73,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_EXTERNAL_EXPONENT 94
 
 /* Begin: Low level helper functions */
+
+/* storage must have an unsigned type */
 #define COUNT_NB_BYTE(storage, size)            \
   do                                            \
     {                                           \
@@ -194,7 +196,7 @@ mpfr_fpif_store_precision (unsigned char *buffer, size_t *buffer_size,
 
   if (precision > MPFR_MAX_EMBEDDED_PRECISION)
     {
-      mpfr_prec_t copy_precision;
+      mpfr_uprec_t copy_precision;
 
       copy_precision = precision - (MPFR_MAX_EMBEDDED_PRECISION + 1);
       COUNT_NB_BYTE(copy_precision, size_precision);
@@ -236,8 +238,8 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
     return 0;
 
   precision_size = buffer[0];
-  if (precision_size >= 8)
-    return precision_size - 7;
+  if (precision_size > MPFR_MAX_PRECSIZE)
+    return precision_size - MPFR_MAX_PRECSIZE;
 
   precision_size++;
   MPFR_ASSERTD (precision_size <= BUFFER_SIZE);
@@ -278,34 +280,42 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
  *        the size of its exponent and its exponent value in a binary format,
  */
 /* TODO
- *   exponents that use more than 16 bytes are not managed
-*/
+ *   Exponents that use more than 16 bytes are not managed (not an issue
+ *   until one has integer types larger than 128 bits).
+ */
 static unsigned char*
 mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
 {
   unsigned char *result;
-  mpfr_exp_t exponent;
   mpfr_uexp_t uexp;
   size_t exponent_size;
 
-  exponent = mpfr_get_exp (x);
   exponent_size = 0;
 
-  if (mpfr_regular_p (x))
+  if (MPFR_IS_PURE_FP (x))
     {
+      mpfr_exp_t exponent = MPFR_GET_EXP (x);
+
       if (exponent > MPFR_MAX_EMBEDDED_EXPONENT ||
           exponent < -MPFR_MAX_EMBEDDED_EXPONENT)
         {
-          mpfr_exp_t copy_exponent;
+          mpfr_uexp_t copy_exponent, sign_bit;
 
           uexp = SAFE_ABS (mpfr_uexp_t, exponent)
             - MPFR_MAX_EMBEDDED_EXPONENT;
 
+          /* Shift uexp to take the sign bit of the exponent into account.
+             Because of constraints on the valid exponents, this cannot
+             overflow (check with an MPFR_ASSERTD). */
           copy_exponent = uexp << 1;
+          MPFR_ASSERTD (copy_exponent > uexp);
           COUNT_NB_BYTE(copy_exponent, exponent_size);
+          MPFR_ASSERTN (exponent_size <= 16);  /* see TODO */
 
+          sign_bit = (mpfr_uexp_t) 1 << (8 * exponent_size - 1);
+          MPFR_ASSERTD (uexp < sign_bit);
           if (exponent < 0)
-            uexp |= (mpfr_uexp_t) 1 << (8 * exponent_size - 1);
+            uexp |= sign_bit;
         }
       else
         uexp = exponent + MPFR_MAX_EMBEDDED_EXPONENT;
@@ -314,7 +324,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
   result = buffer;
   ALLOC_RESULT(result, buffer_size, exponent_size + 1);
 
-  if (mpfr_regular_p (x))
+  if (MPFR_IS_PURE_FP (x))
     {
       if (exponent_size == 0)
         result[0] = uexp;
@@ -326,16 +336,17 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
                                sizeof(mpfr_exp_t), exponent_size);
         }
     }
-  else if (mpfr_zero_p (x))
+  else if (MPFR_IS_ZERO (x))
     result[0] = MPFR_KIND_ZERO;
-  else if (mpfr_inf_p (x))
+  else if (MPFR_IS_INF (x))
     result[0] = MPFR_KIND_INF;
   else
     {
-      MPFR_ASSERTD (mpfr_nan_p (x));
+      MPFR_ASSERTD (MPFR_IS_NAN (x));
       result[0] = MPFR_KIND_NAN;
     }
 
+  /* Set the sign, even for NaN. */
   if (MPFR_IS_NEG (x))
     result[0] |= 0x80;
 
@@ -348,8 +359,10 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
  * return 0 if successful
  */
 /* TODO
- *   exponents that use more than 16 bytes are not managed
-*/
+ *   Exponents that use more than 16 bytes are not managed (this is not
+ *   an issue if the data were written by MPFR with mpfr_exp_t not larger
+ *   than 128 bits).
+ */
 static int
 mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 {
@@ -377,11 +390,14 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
       mpfr_uexp_t exponent_sign;
 
       exponent_size = exponent - MPFR_EXTERNAL_EXPONENT;
+      MPFR_ASSERTN (exponent_size <= 16);  /* see TODO */
 
-      if (exponent_size > sizeof(mpfr_exp_t))
+      /* FIXME: allow the exponent to have leading zeros, though this
+         is not the shorter encoding. */
+      if (MPFR_UNLIKELY (exponent_size > sizeof(mpfr_exp_t)))
         return 1;
 
-      if (fread (buffer, exponent_size, 1, fh) != 1)
+      if (MPFR_UNLIKELY (fread (buffer, exponent_size, 1, fh) != 1))
         return 1;
 
       uexp = 0;
@@ -392,11 +408,13 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 
       uexp &= ~exponent_sign;
       uexp += MPFR_MAX_EMBEDDED_EXPONENT;
+      if (MPFR_UNLIKELY (uexp > MPFR_EMAX_MAX && uexp > -MPFR_EMIN_MIN))
+        return 1;
 
       exponent = exponent_sign ? - (mpfr_exp_t) uexp : (mpfr_exp_t) uexp;
-      if (! MPFR_EXP_IN_RANGE (exponent))
+      if (MPFR_UNLIKELY (! MPFR_EXP_IN_RANGE (exponent)))
         return 1;
-      MPFR_EXP (x) = exponent;
+      MPFR_SET_EXP (x, exponent);
 
       MPFR_SET_SIGN (x, sign);
 
@@ -408,13 +426,13 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
     mpfr_set_inf (x, sign);
   else if (exponent == MPFR_KIND_NAN)
     mpfr_set_nan (x);
-  else if (exponent < 95)
+  else if (exponent <= MPFR_EXTERNAL_EXPONENT)
     {
       /* FIXME: no sign set. Is this normal? Check with a testcase. */
       exponent -= MPFR_MAX_EMBEDDED_EXPONENT;
-      if (! MPFR_EXP_IN_RANGE (exponent))
+      if (MPFR_UNLIKELY (! MPFR_EXP_IN_RANGE (exponent)))
         return 1;
-      MPFR_EXP (x) = exponent;
+      MPFR_SET_EXP (x, exponent);
     }
   else
     return 1;
