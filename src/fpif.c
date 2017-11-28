@@ -597,6 +597,13 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
      for the test. */
   if (!MPFR_IS_SINGULAR (x))
     {
+      /* For portability, we need to consider bytes with only 8 significant
+         bits in the interchange format. That's OK because CHAR_BIT >= 8.
+         But the implementation is currently not clear when CHAR_BIT > 8.
+         This may have never been tested. For safety, require CHAR_BIT == 8,
+         and test/adapt the code if this ever fails. */
+      MPFR_STAT_STATIC_ASSERT (CHAR_BIT == 8);
+      MPFR_STAT_STATIC_ASSERT ((MPFR_PREC_MAX + 7) >> 3 <= (size_t) -1);
       used_size = (precision + 7) >> 3; /* ceil(precision/8) */
       buffer = (unsigned char*) mpfr_allocate_func (used_size);
       if (buffer == NULL)
