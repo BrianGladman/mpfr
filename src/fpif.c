@@ -54,13 +54,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
           E = 119 (MPFR_KIND_ZERO) for a signed zero;
           E = 120 (MPFR_KIND_INF) for a signed infinity;
           E = 121 (MPFR_KIND_NAN) for NaN.
-          *** FIXME *** Decide whether the sign of NaN matters here.
-          This is currently not the case for import, but it wouldn't
-          hurt. Moreover, it seems important that for export, the
-          sign of NaN be specified in some way (to ease things like
-          binary diffs or hashes).
+          *** FIXME *** Decide whether the sign bit of NaN matters here
+          (the sign is currently transmitted before checking the value,
+          so that the code would not need to be changed).
+          It seems important that for export, the sign bit of NaN be
+          specified in some way (to ease things like binary diffs or
+          hashes).
 
-   3. Then we store the significand.
+   3. Then we store the significand (for regular values).
 */
 
 #define MPFR_MAX_PRECSIZE 7
@@ -381,6 +382,8 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   /* sign value that can be used with MPFR_SET_SIGN,
      mpfr_set_zero and mpfr_set_inf */
   sign = (buffer[0] & 0x80) ? MPFR_SIGN_NEG : MPFR_SIGN_POS;
+  /* Set the sign, even for NaN. */
+  MPFR_SET_SIGN (x, sign);
 
   exponent = buffer[0] & 0x7F;
   exponent_size = 1;
@@ -416,19 +419,16 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
         return 1;
       MPFR_SET_EXP (x, exponent);
 
-      MPFR_SET_SIGN (x, sign);
-
       exponent_size++;
     }
   else if (exponent == MPFR_KIND_ZERO)
-    mpfr_set_zero (x, sign);
+    MPFR_SET_ZERO (x);
   else if (exponent == MPFR_KIND_INF)
-    mpfr_set_inf (x, sign);
+    MPFR_SET_INF (x);
   else if (exponent == MPFR_KIND_NAN)
-    mpfr_set_nan (x);
+    MPFR_SET_NAN (x);
   else if (exponent <= MPFR_EXTERNAL_EXPONENT)
     {
-      /* FIXME: no sign set. Is this normal? Check with a testcase. */
       exponent -= MPFR_MAX_EMBEDDED_EXPONENT;
       if (MPFR_UNLIKELY (! MPFR_EXP_IN_RANGE (exponent)))
         return 1;
