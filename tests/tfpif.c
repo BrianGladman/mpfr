@@ -90,6 +90,10 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
       mpfr_prec_t px, py;
 
       mpfr_init2 (y, 2);
+      /* Set the sign bit of y to the opposite of the expected one.
+         Thus, if mpfr_fpif_import forgets to set the sign, this will
+         be detected. */
+      MPFR_SET_SIGN (y, - MPFR_SIGN (x[i]));
       mpfr_fpif_import (y, fh);
       px = mpfr_get_prec (x[i]);
       py = mpfr_get_prec (y);
@@ -126,6 +130,10 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
       mpfr_prec_t px, py;
 
       mpfr_init2 (y, 2);
+      /* Set the sign bit of y to the opposite of the expected one.
+         Thus, if mpfr_fpif_import forgets to set the sign, this will
+         be detected. */
+      MPFR_SET_SIGN (y, - MPFR_SIGN (x[i]));
       pos = ftell (fh);
       mpfr_fpif_import (y, fh);
       px = mpfr_get_prec (x[i]);
