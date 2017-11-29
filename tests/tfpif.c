@@ -37,6 +37,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   mpfr_t x[9];
   mpfr_t y;
   int i;
+  long pos;
 
   mpfr_init2 (x[0], p1);
   mpfr_init2 (x[8], p1);
@@ -113,11 +114,13 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   for (i = 0; i < 9 && (p1 == 130 && p2 == 2048); i++)
     {
       mpfr_init2 (y, 2);
+      pos = ftell (fh);
       mpfr_fpif_import (y, fh);
       /* TODO: also check that y has the expected precision. */
       if (! SAME_VAL (x[i], y))
         {
-          printf ("doit failed on data number %d, exiting...\n", i);
+          printf ("doit failed on data number %d at offset 0x%lx,"
+                  " exiting...\n", i, (unsigned long) pos);
           printf ("expected "); mpfr_dump (x[i]);
           printf ("got      "); mpfr_dump (y);
           exit (1);
