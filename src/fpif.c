@@ -602,14 +602,15 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
     return -1;
   if (precision > MPFR_PREC_MAX)
     return -1;
-  MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN <= 8);
-  if (precision < MPFR_PREC_MIN)
-    precision = MPFR_PREC_MIN;
+  MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN == 1);  /* as specified */
   mpfr_set_prec (x, precision);
 
   status = mpfr_fpif_read_exponent_from_file (x, fh);
   if (status != 0)
-    return -1;
+    {
+      mpfr_set_nan (x);
+      return -1;
+    }
 
   /* Warning! The significand of x is not set yet. Thus use MPFR_IS_SINGULAR
      for the test. */
@@ -626,18 +627,23 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
       buffer = (unsigned char*) mpfr_allocate_func (used_size);
       if (buffer == NULL)
         {
+          mpfr_set_nan (x);
           return -1;
         }
       status = fread (buffer, used_size, 1, fh);
       if (status != 1)
         {
           mpfr_free_func (buffer, used_size);
+          mpfr_set_nan (x);
           return -1;
         }
       status = mpfr_fpif_read_limbs (x, buffer, &used_size);
       mpfr_free_func (buffer, used_size);
       if (status != 0)
-        return -1;
+        {
+          mpfr_set_nan (x);
+          return -1;
+        }
     }
 
   return 0;

@@ -2520,11 +2520,11 @@ versions.
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
 The precision of @var{op} is read from the stream.
-@c Commented out since with MPFR_PREC_MIN=1 this is void.
-@c If the precision is less
-@c than @code{MPFR_PREC_MIN}, it is set to @code{MPFR_PREC_MIN}.
-If the stored precision is greater than @code{MPFR_PREC_MAX}, the function
-fails (it returns non-zero and @var{op} is unchanged).
+If the stored precision is zero or greater than @code{MPFR_PREC_MAX}, the
+function fails (it returns non-zero) and @var{op} is unchanged. If the
+function fails for another reason, @var{op} is set to NaN and it is
+unspecified whether the precision of @var{op} has changed to the one
+read from the file.
 Return 0 iff the import was successful.
 
 Note: this function is experimental and its interface might change in future
