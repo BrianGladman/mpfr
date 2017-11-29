@@ -390,11 +390,11 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
       mpfr_uexp_t exponent_sign;
 
       exponent_size = exponent - MPFR_EXTERNAL_EXPONENT;
-      MPFR_ASSERTN (exponent_size <= 16);  /* see TODO */
 
       /* FIXME: allow the exponent to have leading zeros, though this
-         is not the shorter encoding. */
-      if (MPFR_UNLIKELY (exponent_size > sizeof(mpfr_exp_t)))
+         is not the shortest encoding. */
+      if (MPFR_UNLIKELY (exponent_size > 16 /* see TODO */ ||
+                         exponent_size > sizeof(mpfr_exp_t)))
         return 1;
 
       if (MPFR_UNLIKELY (fread (buffer, exponent_size, 1, fh) != 1))
