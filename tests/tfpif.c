@@ -87,9 +87,19 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 
   for (i = 0; i < 9; i++)
     {
+      mpfr_prec_t px, py;
+
       mpfr_init2 (y, 2);
       mpfr_fpif_import (y, fh);
-      /* TODO: also check that y has the expected precision. */
+      px = mpfr_get_prec (x[i]);
+      py = mpfr_get_prec (y);
+      if (px != py)
+        {
+          printf ("doit failed on written number %d: bad precision\n", i);
+          printf ("expected %ld\n", (long) px);
+          printf ("got      %ld\n", (long) py);
+          exit (1);
+        }
       if (! SAME_VAL (x[i], y))
         {
           printf ("doit failed on written number %d, exiting...\n", i);
@@ -113,10 +123,20 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   /* the fixed file FILE_NAME_R assumes p1=130 and p2=2048 */
   for (i = 0; i < 9 && (p1 == 130 && p2 == 2048); i++)
     {
+      mpfr_prec_t px, py;
+
       mpfr_init2 (y, 2);
       pos = ftell (fh);
       mpfr_fpif_import (y, fh);
-      /* TODO: also check that y has the expected precision. */
+      px = mpfr_get_prec (x[i]);
+      py = mpfr_get_prec (y);
+      if (px != py)
+        {
+          printf ("doit failed on data number %d: bad precision\n", i);
+          printf ("expected %ld\n", (long) px);
+          printf ("got      %ld\n", (long) py);
+          exit (1);
+        }
       if (! SAME_VAL (x[i], y))
         {
           printf ("doit failed on data number %d at offset 0x%lx,"
