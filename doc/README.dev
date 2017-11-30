@@ -1493,10 +1493,13 @@ Subversion, and these files need to be removed manually.
 
 ===========================================================================
 
-After a MPFR build, the list of GMP symbols used by MPFR can be obtained
-as follows:
+After a MPFR build, the list of GMP symbols used by this particular MPFR
+build can be obtained as follows:
 
   nm -u src/.libs/libmpfr.so | sed -n 's/^ *U \(__gmp.*\)/\1/p'
+
+Note that this list may depend on various parameters, such as the
+architecture and the compilation options.
 
 GMP internal symbols used by MPFR can be detected with the following
 shell command (just replace /path/to/gmp.h by the actual pathname):
