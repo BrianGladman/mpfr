@@ -236,6 +236,10 @@ the values obtained from GMP may be incorrect if GMP has been built
 on a different machine. In such a case, the user may need to specify
 CC/CFLAGS as explained below.
 
+Moreover, even without --with-gmp-build and --enable-gmp-internals,
+MPFR might use some GMP internals by mistake. This would be a bug,
+which should be reported to the MPFR developers.
+
 Run "./configure --help" to see the other options (default options
 from Autoconf and Automake).
 
