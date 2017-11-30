@@ -101,18 +101,22 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 GMPI = $(top_builddir)/src/gmp.i
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
-# this rule if you use --with-gmp-build or --enable-gmp-internals.
+# this rule if you use --with-gmp-build or --enable-gmp-internals. This
+# test does nothing if --disable-shared has been used.
 check-gmp-symbols: $(LTLIBRARIES)
-	printf "#include <%s.h>\n" stdarg stdio gmp | $(CC) -E - > $(GMPI)
-	internals=`$(NM) -u $(top_builddir)/src/.libs/libmpfr.so | \
-	  $(SED) -n 's/^ *U \(__gmp.*\)/\1/p' | \
-	  while read s; \
-	  do \
-	    $(GREP) -q "$$s[ (;]" $(GMPI) || echo "$$s"; \
-	  done`; \
-	if [ -n "$$internals" ]; then \
-	  echo "Internal GMP symbols:" $$internals; \
-	  exit 1; \
+	printf "#include <%s.h>\n" stdarg stdio gmp | $(COMPILE) -E - > $(GMPI)
+	libmpfrso=$(top_builddir)/src/.libs/libmpfr.so; \
+	if [ -f "$$libmpfrso" ]; then \
+	  internals=`$(NM) -u "$$libmpfrso" | \
+	    $(SED) -n 's/^ *U \(__gmp.*\)/\1/p' | \
+	    while read s; \
+	    do \
+	      $(GREP) -q "$$s[ (;]" $(GMPI) || echo "$$s"; \
+	    done`; \
+	  if [ -n "$$internals" ]; then \
+	    echo "Internal GMP symbols:" $$internals; \
+	    exit 1; \
+	  fi; \
 	fi
 	rm $(GMPI)
 
