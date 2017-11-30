@@ -48,6 +48,8 @@ dist-hook:
 	cd $(srcdir) && tools/ck-clz_tab
 	cd $(srcdir)/doc && ./check-typography
 
+# Check that MPFR does not use GMP internal symbols. Of course, do not run
+# this rule if you use --with-gmp-build or --enable-gmp-internals.
 check-gmp-symbols:
 	cd src && $(MAKE) check-gmp-symbols
 
