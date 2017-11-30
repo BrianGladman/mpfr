@@ -1514,7 +1514,7 @@ do
   grep -q "^#define .* ${regex}$" /path/to/gmp.h || echo "Internal: $s"
 done
 
-As similar check can be done with "make check-gmp-symbols".
+A similar check can be done with "make check-gmp-symbols".
 
 ===========================================================================
 
