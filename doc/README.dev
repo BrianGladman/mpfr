@@ -1493,6 +1493,26 @@ Subversion, and these files need to be removed manually.
 
 ===========================================================================
 
+After a MPFR build, the list of GMP symbols used by MPFR can be obtained
+as follows:
+
+  nm -u src/.libs/libmpfr.so | sed -n 's/^ *U \(__gmp.*\)/\1/p'
+
+GMP internal symbols used by MPFR can be detected with the following
+shell command (just replace /path/to/gmp.h by the actual pathname):
+
+nm -u src/.libs/libmpfr.so | sed -n 's/^ *U \(__gmp.*\)/\1/p' | \
+while read s
+do
+  case $s in
+    __gmpn_*) regex="__MPN(${s#__gmpn_})" ;;
+    *)        regex="$s" ;;
+  esac
+  grep -q "^#define .* ${regex}$" /path/to/gmp.h || echo "Internal: $s"
+done
+
+===========================================================================
+
 To update the FAQ, checkout the misc directory of the repository root.
 Modify the faq.xhtml file and run
 
