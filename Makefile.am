@@ -47,3 +47,8 @@ dist-hook:
 	cd $(srcdir) && tools/ck-news
 	cd $(srcdir) && tools/ck-clz_tab
 	cd $(srcdir)/doc && ./check-typography
+
+check-gmp-symbols:
+	cd src && $(MAKE) check-gmp-symbols
+
+.PHONY: check-gmp-symbols
