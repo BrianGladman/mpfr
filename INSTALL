@@ -80,7 +80,17 @@ MPFR).
    running "make check", for instance by typing:
      VERBOSE=1 make check
 
-6. To install it (default "/usr/local" | see "--prefix" option), type:
+6. [Optional / experimental] Binary distributions may also want to run:
+     make check-gmp-symbols
+
+   This will check that MPFR does not use GMP internal symbols, which
+   could yield failures in case of GMP upgrade without a MPFR rebuild.
+   But note that this is a heuristic and might give false positives or
+   false negatives. Please report any problem to the MPFR developers.
+   End users may also be interested in this check, unless they have
+   allowed GMP internals with configure options (see below).
+
+7. To install it (default "/usr/local" | see "--prefix" option), type:
      make install
 
 If you installed MPFR (header and library) in directories that are
