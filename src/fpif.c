@@ -62,6 +62,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
           hashes).
 
    3. Then we store the significand (for regular values).
+
+   Note: When a size is stored, it must be minimal, i.e. a number cannot
+   start with a null byte. Otherwise the import may fail.
 */
 
 #define MPFR_MAX_PRECSIZE 7
@@ -394,8 +397,8 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 
       exponent_size = exponent - MPFR_EXTERNAL_EXPONENT;
 
-      /* FIXME: allow the exponent to have leading zeros, though this
-         is not the shortest encoding. */
+      /* A failure is acceptable when the exponent starts with leading zeros,
+         even if it would fit in mpfr_exp_t (see format description). */
       if (MPFR_UNLIKELY (exponent_size > 16 /* see TODO */ ||
                          exponent_size > sizeof(mpfr_exp_t)))
         return 1;
