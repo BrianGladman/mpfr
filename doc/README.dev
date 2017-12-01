@@ -1279,6 +1279,10 @@ of mismatch between a header and a library, an error message is output
 
 3. Otherwise test_version() returns with value 0 (everything is fine).
 
+Note: The tests_start_mpfr function does a setbuf on stdout to disable
+buffering. As a consequence, no operations on stdout (such as printf)
+must be done before this function is called.
+
 With Automake 1.13+, the tests are run in parallel if a -j make option
 is used. In case of failure, information can be found in the log file
 of each failed test program and in the global tests/test-suite.log file

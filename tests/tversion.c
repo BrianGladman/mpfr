@@ -37,6 +37,8 @@ main (void)
   if (test_version ())
     exit (1);
 
+  tests_start_mpfr ();
+
   /*********************** MPFR version and patches ************************/
 
   printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING);
@@ -368,7 +370,6 @@ main (void)
 
   /************************** Runtime information **************************/
 
-  tests_start_mpfr ();
   if (locale != NULL)
     printf ("[tversion] Locale: %s\n", locale);
   /* The memory limit should not be changed for "make check".
@@ -378,9 +379,10 @@ main (void)
   if (tests_memory_limit != DEFAULT_MEMORY_LIMIT)
     printf ("[tversion] Warning! Memory limit changed to %" MPFR_EXP_FSPEC
             "u\n", (mpfr_ueexp_t) tests_memory_limit);
-  tests_end_mpfr ();
 
   /*************************************************************************/
+
+  tests_end_mpfr ();
 
   return err;
 }

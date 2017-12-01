@@ -137,7 +137,8 @@ void (*dummy_func)(mpfr_srcptr) = mpfr_dump;
    of "make check") but a different library that is already installed,
    i.e. any test result would be meaningless; in such a case, we exit
    immediately with an error (exit status = 1).
-   Return value: 0 for no errors, 1 in case of any non-fatal error. */
+   Return value: 0 for no errors, 1 in case of any non-fatal error.
+   Note: If the return value is 0, no data must be sent to stdout. */
 int
 test_version (void)
 {
@@ -248,10 +249,12 @@ test_version (void)
 void
 tests_start_mpfr (void)
 {
-  test_version ();
-
-  /* don't buffer, so output is not lost if a test causes a segv etc */
+  /* Don't buffer, so output is not lost if a test causes a segv, etc.
+     Warning! No operations must have already been done on stdout
+     (this is a requirement of ISO C, and this is important on AIX). */
   setbuf (stdout, NULL);
+
+  test_version ();
 
 #if defined HAVE_LOCALE_H && defined HAVE_SETLOCALE
   /* Added on 2005-07-09. This allows to test MPFR under various
