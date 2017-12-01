@@ -621,7 +621,9 @@ Please build MPFR without --enable-decimal-float.])
              fi ;;
        esac],
       [AC_MSG_RESULT(assuming DPD)
-       AC_DEFINE([DPD_FORMAT],1,[])])
+       AC_DEFINE([DPD_FORMAT],1,[])
+       AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
+                 [Build decimal float functions])])
               ],
     [AC_MSG_RESULT(no)
      if test "$enable_decimal_float" = yes; then
