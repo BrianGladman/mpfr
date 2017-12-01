@@ -584,13 +584,12 @@ dnl For the different cases, we try to use values that will not be returned
 dnl by build tools. For instance, 1 must not be used as it can be returned
 dnl by ld in case of link failure.
 if test "$enable_decimal_float" != no; then
-           AC_MSG_CHECKING(if compiler knows _Decimal64)
-           AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
-              [AC_MSG_RESULT(yes)
-               AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
-                         [Build decimal float functions])
-               AC_MSG_CHECKING(decimal float format)
-               AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+  AC_MSG_CHECKING(if compiler knows _Decimal64)
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[_Decimal64 x;]])],
+    [AC_MSG_RESULT(yes)
+     AC_MSG_CHECKING(decimal float format)
+     AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
 ]], [[
 volatile _Decimal64 x = 1;
@@ -600,27 +599,35 @@ y.d64 = 1234567890123456.0dd;
 return y.d == 0.14894469406741037E-123 ? 80 :
        y.d == 0.59075095508629822E-68  ? 81 : 82;
 ]])], [AC_MSG_RESULT(internal error)
-       AC_MSG_FAILURE(unexpected exit status)],
-      [case "$?" in
+       AC_MSG_FAILURE(unexpected exit status 0)],
+      [d64_exit_status=$?
+       case "$d64_exit_status" in
          80) AC_MSG_RESULT(DPD)
-             AC_DEFINE([DPD_FORMAT],1,[]) ;;
-         81) AC_MSG_RESULT(BID) ;;
+             AC_DEFINE([DPD_FORMAT],1,[DPD format])
+             AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
+                       [Build decimal float functions]) ;;
+         81) AC_MSG_RESULT(BID)
+             AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
+                       [Build decimal float functions]) ;;
          82) AC_MSG_RESULT(neither DPD nor BID)
              if test "$enable_decimal_float" = yes; then
                AC_MSG_ERROR([unsupported decimal float format.
-Please build MPFR with --disable-decimal-float.])
+Please build MPFR without --enable-decimal-float.])
              fi ;;
-         *) AC_MSG_RESULT(internal error)
-            AC_MSG_FAILURE(unexpected exit status) ;;
+         *) AC_MSG_RESULT(unknown (exit status $d64_exit_status))
+             if test "$enable_decimal_float" = yes; then
+               AC_MSG_ERROR([internal or link error.
+Please build MPFR without --enable-decimal-float.])
+             fi ;;
        esac],
       [AC_MSG_RESULT(assuming DPD)
        AC_DEFINE([DPD_FORMAT],1,[])])
               ],
-              [AC_MSG_RESULT(no)
-               if test "$enable_decimal_float" = yes; then
-                  AC_MSG_ERROR([compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+    [AC_MSG_RESULT(no)
+     if test "$enable_decimal_float" = yes; then
+       AC_MSG_ERROR([compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
 Please use another compiler or build MPFR without --enable-decimal-float.])
-               fi])
+     fi])
 fi
 
 dnl Check if __float128 is available. We also require the compiler
