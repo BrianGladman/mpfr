@@ -579,7 +579,10 @@ then
  fi
 fi
 
-dnl Check if decimal floats are available
+dnl Check if decimal floats are available.
+dnl For the different cases, we try to use values that will not be returned
+dnl by build tools. For instance, 1 must not be used as it can be returned
+dnl by ld in case of link failure.
 if test "$enable_decimal_float" != no; then
            AC_MSG_CHECKING(if compiler knows _Decimal64)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
@@ -592,19 +595,21 @@ if test "$enable_decimal_float" != no; then
 ]], [[
 volatile _Decimal64 x = 1;
 union { double d; _Decimal64 d64; } y;
-if (x != x) return 3;
+if (x != x) return 83;
 y.d64 = 1234567890123456.0dd;
-return y.d == 0.14894469406741037E-123 ? 0 :
-       y.d == 0.59075095508629822E-68  ? 1 : 2;
-]])], [AC_MSG_RESULT(DPD)
-       AC_DEFINE([DPD_FORMAT],1,[])],
+return y.d == 0.14894469406741037E-123 ? 80 :
+       y.d == 0.59075095508629822E-68  ? 81 : 82;
+]])], [AC_MSG_RESULT(internal error)
+       AC_MSG_FAILURE(unexpected exit status)],
       [case "$?" in
-         1) AC_MSG_RESULT(BID) ;;
-         2) AC_MSG_RESULT(neither DPD nor BID)
-            if test "$enable_decimal_float" = yes; then
+         80) AC_MSG_RESULT(DPD)
+             AC_DEFINE([DPD_FORMAT],1,[]) ;;
+         81) AC_MSG_RESULT(BID) ;;
+         82) AC_MSG_RESULT(neither DPD nor BID)
+             if test "$enable_decimal_float" = yes; then
                AC_MSG_ERROR([unsupported decimal float format.
-Please build MPFR without --enable-decimal-float.])
-            fi ;;
+Please build MPFR with --disable-decimal-float.])
+             fi ;;
          *) AC_MSG_RESULT(internal error)
             AC_MSG_FAILURE(unexpected exit status) ;;
        esac],
