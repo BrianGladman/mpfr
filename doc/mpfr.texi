@@ -16,6 +16,8 @@
 @c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
 
 @c texinfo.tex 2017-12-01.13 or later is needed to support @var{} in exponent.
+@c See thread at
+@c   http://lists.gnu.org/archive/html/bug-texinfo/2017-11/msg00019.html
 
 @copying
 This manual documents how to install and use the Multiple Precision
@@ -2205,12 +2207,6 @@ Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd}. MPFR defines the dilogarithm function as
 @m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
 to @var{op}}.
-@c Note: It should be {@var{op}} instead of {op} above, but pdftex fails
-@c on the correct form with the error "\scriptfont 5 is undefined" on
-@c characters o and p. The correct form is typographically important as
-@c as the font is slanted instead of italic and kerning must be avoided
-@c (for instance, see "@var{foo}" vs "foo"). Bug report:
-@c   http://lists.gnu.org/archive/html/bug-texinfo/2017-11/msg00019.html
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
