@@ -15,6 +15,8 @@
 @c as the "info" utility cannot currently handle them.
 @c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
 
+@c texinfo.tex 2017-12-01.13 or later is needed to support @var{} in exponent.
+
 @copying
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
@@ -27,19 +29,6 @@ version published by the Free Software Foundation; with no Invariant Sections,
 with no Front-Cover Texts, and with no Back-Cover Texts.  A copy of the
 license is included in @ref{GNU Free Documentation License}.
 @end copying
-
-
-@c  Texinfo version 4.2 or later will be needed to process this file.
-@c  Texinfo version 5.0 or later should be used since the formatting
-@c  has been modified for this version (tested with 5.2).
-@c
-@c  A suitable texinfo.tex is supplied, a newer one should work
-@c  equally well.
-@c
-@c  The edition number is in the VERSION variable above and should be
-@c  updated where appropriate.  Also, update the month and year in
-@c  UPDATED-MONTH.
-
 
 @dircategory Software libraries
 @direntry
@@ -1701,7 +1690,7 @@ minimal precision @math{m} depending only on @var{p} = PREC(@var{op}) and
 m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
 @end ifnottex
 @tex
-$m = 1 + \lceil p {\log 2 \over \log b} \rceil$,
+$m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
 @end tex
 with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
 but in some very rare cases, it might be @math{m+1}
@@ -1974,7 +1963,7 @@ or both arguments are NaN@. But only floating-point numbers can be compared
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_exp_t @var{e})
 @deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mpfr_exp_t @var{e})
-Compare @var{op1} and @m{@var{op2} \times 2^e, @var{op2} multiplied by two to
+Compare @var{op1} and @m{@var{op2} \times 2^{@var{e}}, @var{op2} multiplied by two to
 the power @var{e}}. Similar as above.
 @end deftypefun
 
@@ -2214,7 +2203,7 @@ at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd}. MPFR defines the dilogarithm function as
-@m{-\int_{t=0}^{op} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
+@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
 to @var{op}}.
 @c Note: It should be {@var{op}} instead of {op} above, but pdftex fails
 @c on the correct form with the error "\scriptfont 5 is undefined" on
