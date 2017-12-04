@@ -303,7 +303,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
       if (exponent > MPFR_MAX_EMBEDDED_EXPONENT ||
           exponent < -MPFR_MAX_EMBEDDED_EXPONENT)
         {
-          mpfr_uexp_t copy_exponent, sign_bit;
+          mpfr_uexp_t copy_exponent, exp_sign_bit;
 
           uexp = SAFE_ABS (mpfr_uexp_t, exponent)
             - MPFR_MAX_EMBEDDED_EXPONENT;
@@ -316,10 +316,11 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
           COUNT_NB_BYTE(copy_exponent, exponent_size);
           MPFR_ASSERTN (exponent_size <= 16);  /* see TODO */
 
-          sign_bit = (mpfr_uexp_t) 1 << (8 * exponent_size - 1);
-          MPFR_ASSERTD (uexp < sign_bit);
+          /* Sign bit of the exponent. */
+          exp_sign_bit = (mpfr_uexp_t) 1 << (8 * exponent_size - 1);
+          MPFR_ASSERTD (uexp < exp_sign_bit);
           if (exponent < 0)
-            uexp |= sign_bit;
+            uexp |= exp_sign_bit;
         }
       else
         uexp = exponent + MPFR_MAX_EMBEDDED_EXPONENT;
@@ -393,7 +394,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
 
   if (exponent > MPFR_EXTERNAL_EXPONENT && exponent < MPFR_KIND_ZERO)
     {
-      mpfr_uexp_t exponent_sign;
+      mpfr_uexp_t exp_sign_bit;
 
       exponent_size = exponent - MPFR_EXTERNAL_EXPONENT;
 
@@ -410,14 +411,15 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
       getLittleEndianData ((unsigned char *) &uexp, buffer,
                            sizeof(mpfr_exp_t), exponent_size);
 
-      exponent_sign = uexp & ((mpfr_uexp_t) 1 << (8 * exponent_size - 1));
+      /* Sign bit of the exponent. */
+      exp_sign_bit = uexp & ((mpfr_uexp_t) 1 << (8 * exponent_size - 1));
 
-      uexp &= ~exponent_sign;
+      uexp &= ~exp_sign_bit;
       uexp += MPFR_MAX_EMBEDDED_EXPONENT;
       if (MPFR_UNLIKELY (uexp > MPFR_EMAX_MAX && uexp > -MPFR_EMIN_MIN))
         return 1;
 
-      exponent = exponent_sign ? - (mpfr_exp_t) uexp : (mpfr_exp_t) uexp;
+      exponent = exp_sign_bit ? - (mpfr_exp_t) uexp : (mpfr_exp_t) uexp;
       if (MPFR_UNLIKELY (! MPFR_EXP_IN_RANGE (exponent)))
         return 1;
       MPFR_SET_EXP (x, exponent);
