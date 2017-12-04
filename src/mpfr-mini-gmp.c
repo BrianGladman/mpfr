@@ -51,31 +51,6 @@ gmp_randclear (gmp_randstate_t state)
 }
 #endif
 
-#ifdef WANT_mpn_neg
-mp_limb_t
-mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
-{
-  mp_size_t i;
-
-  for (i = 0; i < n; i++)
-    rp[i] = ~sp[i];
-  /* the return value of mpn_neg is the borrow as if we subtracted
-     {sp, n} from {0, n}, i.e., it is always 1 unless {sp, n} is zero */
-  return 1 - mpn_add_1 (rp, rp, n, (mp_limb_t) 1);
-}
-#endif
-
-#ifdef WANT_mpn_com
-void
-mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n)
-{
-  mp_size_t i;
-
-  for (i = 0; i < n; i++)
-    rp[i] = ~sp[i];
-}
-#endif
-
 #ifdef WANT_mpn_divrem_1
 mp_limb_t
 mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,

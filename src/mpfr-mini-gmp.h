@@ -33,6 +33,10 @@ extern char gmp_version[];
 #define GMP_NUMB_BITS (CHAR_BIT * sizeof(mp_limb_t))
 #endif
 
+#ifndef mp_limb_signed_t
+typedef long mp_limb_signed_t;
+#endif
+
 #ifndef __gmp_allocate_func
 #define __gmp_allocate_func gmp_default_alloc
 #define __gmp_reallocate_func gmp_default_realloc
@@ -62,16 +66,6 @@ void gmp_randclear (gmp_randstate_t);
 #ifndef mpn_scan1
 #define WANT_mpn_scan1
 mp_bitcnt_t mpn_scan1 (const mp_limb_t *, mp_bitcnt_t);
-#endif
-
-#ifndef mpn_neg
-#define WANT_mpn_neg
-mp_limb_t mpn_neg (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
-#endif
-
-#ifndef mpn_com
-#define WANT_mpn_com
-void mpn_com (mp_limb_t *rp, const mp_limb_t *sp, mp_size_t n);
 #endif
 
 #ifndef mpz_perfect_square_p

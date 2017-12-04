@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#define MPFR_USE_FILE
 #include "mpfr-impl.h"
 
 /* mpfr_dump is mainly for debugging purpose. It outputs a MPFR number
@@ -97,7 +98,12 @@ mpfr_fdump (FILE *stream, mpfr_srcptr x)
 
       if (MPFR_IS_UBF (x))
         {
+#ifndef MPFR_USE_MINI_GMP          
           gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
+#else /* mini-gmp has no gmp_fprintf */
+          fprintf (stream, "E");
+          mpz_out_str (stream, 10, MPFR_ZEXP (x));
+#endif          
           invalid[i++] = 'U';
         }
       else

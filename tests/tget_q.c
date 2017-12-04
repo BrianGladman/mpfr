@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#ifndef MPFR_USE_MINI_GMP
+
 static void
 special (void)
 {
@@ -109,3 +111,13 @@ main (void)
   tests_end_mpfr ();
   return 0;
 }
+
+#else
+
+int
+main (void)
+{
+  return 77;
+}
+
+#endif /* MPFR_USE_MINI_GMP */

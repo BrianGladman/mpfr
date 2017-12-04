@@ -121,7 +121,8 @@ check_one (mpz_ptr z)
                     mpz_set_si (t, neg ? -1 : 1);
                     mpz_mul_2exp (t, t, -sh - 1);
                     mpz_add (ex, ex, t);
-                    d = mpz_divisible_2exp_p (ex, -sh);
+                    /* d = mpz_divisible_2exp_p (ex, -sh); */
+                    d = mpz_scan1 (ex, 0) >= -sh;
                     mpz_tdiv_q_2exp (ex, ex, -sh);
                     if (d && mpz_tstbit (ex, 0) != 0)  /* even rounding */
                       {

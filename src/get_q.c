@@ -23,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#ifndef MPFR_USE_MINI_GMP
 /* part of the code was copied from get_z.c */
 void
 mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
@@ -57,3 +58,4 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
         }
     }
 }
+#endif

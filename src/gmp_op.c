@@ -164,6 +164,7 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
   return res;
 }
 
+#ifndef MPFR_USE_MINI_GMP
 /* Compute y = RND(x*n/d), where n and d are mpz integers.
    An integer 0 is assumed to have a positive sign.
    This function is used by mpfr_mul_q and mpfr_div_q.
@@ -245,7 +246,6 @@ mpfr_muldiv_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr n, mpz_srcptr d,
     }
 }
 
-#ifndef MPFR_USE_MINI_GMP
 int
 mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
