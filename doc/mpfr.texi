@@ -1702,8 +1702,8 @@ for bases 7 and 49).
 @c but also m = 1 is changed to 2.
 
 If @var{str} is a null pointer, space for the significand is allocated using
-the current allocation function and a pointer to the string is returned
-(unless the base is invalid).
+the allocation function (@pxref{Memory Handling}) and a pointer to the string
+is returned (unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
@@ -1718,16 +1718,9 @@ Like in usual functions, the inexact flag is set iff the result is inexact.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
-Free a string allocated by @code{mpfr_get_str} using the current unallocation
-function.
+Free a string allocated by @code{mpfr_get_str} using the unallocation
+function (@pxref{Memory Handling}).
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
-For more information about how it is done:
-@ifinfo
-@pxref{Custom Allocation,,, gmp.info,GNU MP}.
-@end ifinfo
-@ifnotinfo
-see Section ``Custom Allocation'' in @cite{GNU MP}.
-@end ifnotinfo
 @end deftypefun
 
 @deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2777,7 +2770,8 @@ the terminating null character, or a negative value if an error occurred.
 @deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vasprintf (char **@var{str}, const char *@var{template}, va_list @var{ap})
 Write their output as a null terminated string in a block of memory allocated
-using the current allocation function. A pointer to the block is stored in
+using the allocation function (@pxref{Memory Handling}). A pointer to the
+block is stored in
 @var{str}. The block of memory must be freed using @code{mpfr_free_str}.
 The return value is the number of characters written in the string, excluding
 the null-terminator, or a negative value if an error occurred, in which case
