@@ -954,6 +954,8 @@ mpfr_get_str_aux (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
       if (s < str + neg + ndigits) /* we don't have ndigits 'nines' */
         break;
       mpfr_free_str (str);
+      MPFR_ASSERTN (ndigits <= ((size_t) -1) / 2);
+      /* to make sure that the product by 2 is representable. */
     }
   return str;
 }
@@ -1001,9 +1003,10 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       /* Number of significant digits:
          - if no given precision, let mpfr_get_str determine it;
          - if a non-zero precision is specified, then one digit before decimal
-         point plus SPEC.PREC after it. */
+         point plus SPEC.PREC after it (which will give nsd > 1 below). */
       MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
       nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
+      MPFR_ASSERTD (nsd != 1);
       str = mpfr_get_str_aux (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
