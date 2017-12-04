@@ -50,6 +50,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include <string.h>
 #endif
 
+/* Since <stdio.h> (<cstdio> for C++) is unconditionally included... */
+#ifndef MPFR_DONT_USE_FILE
+# define MPFR_USE_FILE
+#endif
+
 #include <stdlib.h>
 #include <limits.h>
 

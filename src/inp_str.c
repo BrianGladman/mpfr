@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <ctype.h>
-#define MPFR_USE_FILE
+
 #include "mpfr-impl.h"
 
 /* The original version of this function came from GMP's mpf/inp_str.c;

@@ -28,6 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include <stdint.h>
 #endif
 
+#define MPFR_DONT_USE_FILE  /* don't use FILE in mpfr-impl.h */
 #ifdef MPFR_USE_MINI_GMP
 #include "mpfr-test.h"
 #endif
@@ -47,7 +48,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * was fixed in r7320.
  *
  * With mini-gmp, mpfr-impl.h is included first, but this should not
- * affect this test.
+ * affect this test thanks to MPFR_DONT_USE_FILE.
  */
 #include <mpfr.h>
 
