@@ -2240,7 +2240,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
    (thus m+1 or m+2 characters).
 
    Important: when you call this function with s=NULL, don't forget to free
-   the memory space allocated, with free(s, strlen(s)).
+   the memory space allocated, with mpfr_free_str.
 */
 char*
 mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
