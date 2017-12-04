@@ -1698,6 +1698,8 @@ with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
 but in some very rare cases, it might be @math{m+1}
 (the smallest case for bases up to 62 is when @var{p} equals 186564318007
 for bases 7 and 49).
+@c In the source src/get_str.c, this is due to the approximate mpfr_ceil_mul,
+@c but also m = 1 is changed to 2.
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the current allocation function and a pointer to the string is returned
@@ -1705,11 +1707,12 @@ the current allocation function and a pointer to the string is returned
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
-large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
-The extra two bytes are for a possible minus sign, and for the terminating null
-character, and the value 7 accounts for @samp{-@@Inf@@}
-plus the terminating null character. The pointer to the string @var{str}
-is returned (unless the base is invalid).
+large enough for the significand. A safe block size (sufficient for any
+value) is @code{max(@var{n} + 2, 7)} if @var{n} is not zero; if @var{n} is
+zero, replace it by @math{m+1}, as discussed above. The extra two bytes are
+for a possible minus sign, and for the terminating null character, and the
+value 7 accounts for @samp{-@@Inf@@} plus the terminating null character.
+The pointer to the string @var{str} is returned (unless the base is invalid).
 
 Like in usual functions, the inexact flag is set iff the result is inexact.
 @end deftypefun
