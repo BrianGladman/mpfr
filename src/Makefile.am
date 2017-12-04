@@ -98,13 +98,18 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 # what has been changed by "patch".
 #CLEANFILES = get_patches.c
 
+GMPC = $(top_builddir)/src/gmp.c
 GMPI = $(top_builddir)/src/gmp.i
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
 # this rule if you use --with-gmp-build or --enable-gmp-internals. This
 # test does nothing if --disable-shared has been used.
+# Note: we use a temporary file $(GMPC) instead of "| $(COMPILE) -E -"
+# because the latter is not supported by all compilers (at least under
+# MS Windows).
 check-gmp-symbols: $(LTLIBRARIES)
-	printf "#include <%s.h>\n" stdarg stdio gmp | $(COMPILE) -E - > $(GMPI)
+	printf "#include <%s.h>\n" stdarg stdio gmp > $(GMPC)
+	$(COMPILE) -E $(GMPC) > $(GMPI)
 	libmpfrso=$(top_builddir)/src/.libs/libmpfr.so; \
 	if [ -f "$$libmpfrso" ]; then \
 	  internals=`$(NM) -u "$$libmpfrso" | \
@@ -118,8 +123,8 @@ check-gmp-symbols: $(LTLIBRARIES)
 	    exit 1; \
 	  fi; \
 	fi
-	rm $(GMPI)
+	rm $(GMPC) $(GMPI)
 
-CLEANFILES = $(GMPI)
+CLEANFILES = $(GMPC) $(GMPI)
 
 .PHONY: check-gmp-symbols
