@@ -15,7 +15,7 @@ How to compile GNU MPFR with mini-gmp
    cp mini-gmp.h /tmp/include/gmp.h
 
 3) extract the MPFR tarball in say /tmp/mpfr
-   ./configure --with-gmp=/tmp --enable-mini-gmp
+   ./configure --with-gmp=/tmp --enable-mini-gmp --disable-shared
 
 Note: to use this version of the MPFR library, you need to define
 the MPFR_USE_MINI_GMP macro before including mpfr.h (alternatively,
