@@ -1890,6 +1890,9 @@ standards for the @code{pow} function:
 @item @code{pow(-Inf, @var{y})} returns plus infinity for @var{y} positive and not an odd integer.
 @item @code{pow(+Inf, @var{y})} returns plus zero for @var{y} negative, and plus infinity for @var{y} positive.
 @end itemize
+Note: When 0 is of integer type, it is regarded as +0 by these functions.
+We do not use the usual limit rules in this case, as these rules are not
+used for @code{pow}.
 @end deftypefun
 
 @deftypefun int mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -4261,14 +4264,14 @@ It is deprecated and @code{mpfr_rootn_ui} should be used instead.
 @c The following paragraph should cover functions like mpfr_div_ui and
 @c mpfr_log_ui. There are no issues with mpfr_pow_{ui,si,z} because the
 @c IEEE 754 pown operation agrees with mpfr_pow.
-@c FIXME: What about mpfr_ui_pow?
 
 Operations with an unsigned zero: For functions taking an argument of
 integer or rational type, a zero of such a type is unsigned unlike the
 floating-point zero (this includes the zero of type @code{unsigned long},
 which is a mathematical, exact zero, as opposed to a floating-point zero,
 which may come from an underflow and whose sign would correspond to the
-sign of the real non-zero value). Then the usual limit rules are used,
+sign of the real non-zero value). Then, unless documented otherwise,
+the usual limit rules are used,
 as if the operation were defined on the extended real numbers. Thus, for
 the division by an unsigned zero, NaN is returned, and for the logarithm
 of an unsigned zero, @minus{}Inf is returned. This concerns at least the
