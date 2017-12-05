@@ -4376,7 +4376,7 @@ volume 33, issue 2, article 13, 15 pages, 2007,
 
 @item
 Torbj@"orn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library",
-  version 5.0.1, 2010, @url{https://gmplib.org/}.
+  version 6.1.2, 2016, @url{https://gmplib.org/}.
 
 @item
 IEEE standard for binary floating-point arithmetic, Technical Report
@@ -4396,7 +4396,7 @@ Donald E.@: Knuth, "The Art of Computer Programming", vol 2,
 
 @item
 Jean-Michel Muller, "Elementary Functions, Algorithms and Implementation",
-Birkh@"auser, Boston, 2nd edition, 2006.
+Birkh@"auser, Boston, 3rd edition, 2016.
 
 @item
 Jean-Michel Muller, Nicolas Brisebarre, Florent de Dinechin,
