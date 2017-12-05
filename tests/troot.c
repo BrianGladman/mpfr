@@ -25,6 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #else
 # define TF_IS_MPFR_ROOT 1
 # define TF mpfr_root
+# define _MPFR_NO_DEPRECATED_ROOT
 #endif
 
 #include "mpfr-test.h"

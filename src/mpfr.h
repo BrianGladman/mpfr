@@ -482,7 +482,9 @@ __MPFR_DECLSPEC int mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t);
 __MPFR_DECLSPEC void mpfr_free_str (char *);
 
 __MPFR_DECLSPEC int mpfr_urandom (mpfr_ptr, gmp_randstate_t, mpfr_rnd_t);
+#ifndef _MPFR_NO_DEPRECATED_GRANDOM /* for the test of this function */
 MPFR_DEPRECATED
+#endif
 __MPFR_DECLSPEC int mpfr_grandom (mpfr_ptr, mpfr_ptr, gmp_randstate_t,
                                   mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_nrandom (mpfr_ptr, gmp_randstate_t, mpfr_rnd_t);
@@ -671,7 +673,9 @@ __MPFR_DECLSPEC int mpfr_hypot (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_erf (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_erfc (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_cbrt (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+#ifndef _MPFR_NO_DEPRECATED_ROOT /* for the test of this function */
 MPFR_DEPRECATED
+#endif
 __MPFR_DECLSPEC int mpfr_root (mpfr_ptr, mpfr_srcptr, unsigned long,
                                mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_rootn_ui (mpfr_ptr, mpfr_srcptr, unsigned long,

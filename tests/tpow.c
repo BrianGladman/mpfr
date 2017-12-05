@@ -23,6 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <float.h>
 #include <math.h>
 
+#define _MPFR_NO_DEPRECATED_ROOT
 #include "mpfr-test.h"
 
 #ifdef CHECK_EXTERNAL
