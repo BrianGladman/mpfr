@@ -1814,8 +1814,11 @@ rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_div_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.
-When a result is zero, its sign is the product of the signs of the operands
-(for types having no signed zeros, 0 is considered positive).
+When a result is zero, its sign is the product of the signs of the operands.
+For types having no signed zeros, 0 is considered positive; but note that if
+@var{op1} is non-zero and @var{op2} is zero, the result might change from
+@pom{}Inf to NaN in future MPFR versions if there is an opposite decision
+on the IEEE 754 side.
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_div}
 and @code{mpfr_div_d}.
 @end deftypefun
@@ -4264,19 +4267,23 @@ It is deprecated and @code{mpfr_rootn_ui} should be used instead.
 @c The following paragraph should cover functions like mpfr_div_ui and
 @c mpfr_log_ui. There are no issues with mpfr_pow_{ui,si,z} because the
 @c IEEE 754 pown operation agrees with mpfr_pow.
+@c Discussions:
+@c   https://sympa.inria.fr/sympa/arc/mpfr/2017-04/msg00019.html
+@c   https://sympa.inria.fr/sympa/arc/mpfr/2017-11/msg00009.html
+@c   https://sympa.inria.fr/sympa/arc/mpfr/2017-12/msg00008.html
 
 Operations with an unsigned zero: For functions taking an argument of
 integer or rational type, a zero of such a type is unsigned unlike the
 floating-point zero (this includes the zero of type @code{unsigned long},
 which is a mathematical, exact zero, as opposed to a floating-point zero,
 which may come from an underflow and whose sign would correspond to the
-sign of the real non-zero value). Then, unless documented otherwise,
-the usual limit rules are used,
-as if the operation were defined on the extended real numbers. Thus, for
-the division by an unsigned zero, NaN is returned, and for the logarithm
-of an unsigned zero, @minus{}Inf is returned. This concerns at least the
-functions @code{mpfr_div_ui}, @code{mpfr_div_si}, @code{mpfr_div_q},
-@code{mpfr_div_z}, and @code{mpfr_log_ui}.
+sign of the real non-zero value). Unless documented otherwise, this zero
+is regarded as +0, as if it were first converted to a MPFR number with
+@code{mpfr_set_ui} or @code{mpfr_set_si} (thus the result may not agree
+with the usual limit rules applied to a mathematical zero). This is not
+the case of addition and subtraction (@code{mpfr_add_ui}, etc.), but for
+these functions, only the sign of a zero result would be affected, with
++0 and @minus{}0 considered equal.
 Such operations are currently out of the scope of the IEEE 754 standard,
 and at the time of specification in MPFR, the Floating-Point Working Group
 in charge of the revision of IEEE 754 did not want to discuss issues with
