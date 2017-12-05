@@ -436,9 +436,9 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
    Warning: mini-gmp does not define GMP_VERSION (as of gmp-6.1.2). */
 #if !__MPFR_GMP(5,0,0)
 # undef  mpn_copyi
-# define mpn_copyi(d,s,n) memmove(d,s,n*sizeof(mp_limb_t))
+# define mpn_copyi(d,s,n) memmove((d),(s),(n)*sizeof(mp_limb_t))
 # undef  mpn_copyd
-# define mpn_copyd(d,s,n) memmove(d,s,n*sizeof(mp_limb_t))
+# define mpn_copyd(d,s,n) memmove((d),(s),(n)*sizeof(mp_limb_t))
 #endif
 
 /* The following macro is copied from GMP-6.1.1, file gmp-impl.h,
