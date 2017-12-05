@@ -2496,7 +2496,7 @@ interchange format.
 In particular one can export on a 32-bit computer and import on a 64-bit
 computer, or export on a little-endian computer and import on a big-endian
 computer.
-The precision of @var{op} is stored too.
+The precision of @var{op} and the sign of a NaN are stored too.
 Return 0 iff the export was successful.
 
 Note: this function is experimental and its interface might change in future

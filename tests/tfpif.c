@@ -114,6 +114,14 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
             printf ("got      %ld\n", (long) py);
             exit (1);
           }
+        if (MPFR_SIGN (x[i]) != MPFR_SIGN (y))
+          {
+            printf ("doit failed on written number %d, neg=%d:"
+                    " bad sign\n", i, neg);
+            printf ("expected %d\n", (int) MPFR_SIGN (x[i]));
+            printf ("got      %d\n", (int) MPFR_SIGN (y));
+            exit (1);
+          }
         if (! SAME_VAL (x[i], y))
           {
             printf ("doit failed on written number %d, neg=%d\n", i, neg);
@@ -157,6 +165,14 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
                   " bad precision\n", i, neg);
           printf ("expected %ld\n", (long) px);
           printf ("got      %ld\n", (long) py);
+          exit (1);
+        }
+      if (MPFR_SIGN (x[i]) != MPFR_SIGN (y))
+        {
+          printf ("doit failed on data number %d, neg=%d:"
+                  " bad sign\n", i, neg);
+          printf ("expected %d\n", (int) MPFR_SIGN (x[i]));
+          printf ("got      %d\n", (int) MPFR_SIGN (y));
           exit (1);
         }
       if (! SAME_VAL (x[i], y))
