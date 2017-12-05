@@ -1,7 +1,17 @@
 How to compile GNU MPFR with mini-gmp
 =====================================
 
-(this was tested with MPFR svn 11891 and GMP 6.1.2 on x86_64 GNU/Linux)
+This was tested with MPFR svn 11903 and GMP 6.1.2 on x86_64 GNU/Linux:
+============================================================================
+Testsuite summary for MPFR 4.0.0-dev
+============================================================================
+# TOTAL: 180
+# PASS:  170
+# SKIP:  10
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
 
 1) extract the GMP tarball in say /tmp/gmp-6.1.2
    go into /tmp/gmp-6.1.2/mini-gmp
