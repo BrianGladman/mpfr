@@ -304,8 +304,8 @@ To make a release (for the MPFR team):
      -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
      -Wmissing-field-initializers". The -Wint-in-bool-context option
      could be added once available. These warnings can easily be checked
-     in automatic tests by adding "-Werror -Wno-error=unused-function
-     -Wno-error=deprecated-declarations", but this needs:
+     in automatic tests by adding "-Werror -Wno-error=unused-function",
+     but this needs:
        * GCC 4.9+
        * a patched autoconf:
      http://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
