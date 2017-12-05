@@ -560,10 +560,6 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
 /******************************************************
  ************* GMP Basic Pointer Types ****************
  ******************************************************/
-/* Compatibility with old GMP versions. */
-#if !__MPFR_GMP(5,0,0)
-typedef unsigned long mp_bitcnt_t;
-#endif
 
 typedef mp_limb_t *mpfr_limb_ptr;
 typedef const mp_limb_t *mpfr_limb_srcptr;
