@@ -186,69 +186,6 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   return;
 }
 
-/* Problem reported by Carl Witty. This test assumes the random generator
-   used by GMP is deterministic (for a given seed). We need to distinguish
-   two cases since the random generator changed in GMP 4.2.0. */
-static void
-bug20100914 (void)
-{
-  mpfr_t x;
-  gmp_randstate_t s;
-
-#if __MPFR_GMP(4,2,0)
-# define C1 "0.8488312"
-# define C2 "0.8156509"
-#else
-# define C1 "0.6485367"
-# define C2 "0.9362717"
-#endif
-
-  gmp_randinit_default (s);
-  gmp_randseed_ui (s, 42);
-  mpfr_init2 (x, 17);
-  mpfr_urandom (x, s, MPFR_RNDN);
-  if (mpfr_cmp_str1 (x, C1) != 0)
-    {
-      printf ("Error in bug20100914, expected " C1 ", got ");
-      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
-      printf ("\n");
-      exit (1);
-    }
-  mpfr_urandom (x, s, MPFR_RNDN);
-  if (mpfr_cmp_str1 (x, C2) != 0)
-    {
-      printf ("Error in bug20100914, expected " C2 ", got ");
-      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
-      printf ("\n");
-      exit (1);
-    }
-  mpfr_clear (x);
-  gmp_randclear (s);
-}
-
-/* non-regression test for bug reported by Trevor Spiteri
-   https://sympa.inria.fr/sympa/arc/mpfr/2017-01/msg00020.html */
-static void
-bug20170123 (void)
-{
-#if __MPFR_GMP(4,2,0)
-  mpfr_t x;
-  mpfr_exp_t emin;
-  gmp_randstate_t s;
-
-  emin = mpfr_get_emin ();
-  mpfr_set_emin (-7);
-  mpfr_init2 (x, 53);
-  gmp_randinit_default (s);
-  gmp_randseed_ui (s, 398);
-  mpfr_urandom (x, s, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -8) == 0);
-  mpfr_clear (x);
-  gmp_randclear (s);
-  mpfr_set_emin (emin);
-#endif
-}
-
 static void
 underflow_tests (void)
 {
@@ -441,6 +378,71 @@ overflow_tests (void)
   mpfr_set_emax (emax);
 }
 
+#ifndef MPFR_USE_MINI_GMP
+
+/* Problem reported by Carl Witty. This test assumes the random generator
+   used by GMP is deterministic (for a given seed). We need to distinguish
+   two cases since the random generator changed in GMP 4.2.0. */
+static void
+bug20100914 (void)
+{
+  mpfr_t x;
+  gmp_randstate_t s;
+
+#if __MPFR_GMP(4,2,0)
+# define C1 "0.8488312"
+# define C2 "0.8156509"
+#else
+# define C1 "0.6485367"
+# define C2 "0.9362717"
+#endif
+
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 42);
+  mpfr_init2 (x, 17);
+  mpfr_urandom (x, s, MPFR_RNDN);
+  if (mpfr_cmp_str1 (x, C1) != 0)
+    {
+      printf ("Error in bug20100914, expected " C1 ", got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_urandom (x, s, MPFR_RNDN);
+  if (mpfr_cmp_str1 (x, C2) != 0)
+    {
+      printf ("Error in bug20100914, expected " C2 ", got ");
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  gmp_randclear (s);
+}
+
+/* non-regression test for bug reported by Trevor Spiteri
+   https://sympa.inria.fr/sympa/arc/mpfr/2017-01/msg00020.html */
+static void
+bug20170123 (void)
+{
+#if __MPFR_GMP(4,2,0)
+  mpfr_t x;
+  mpfr_exp_t emin;
+  gmp_randstate_t s;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-7);
+  mpfr_init2 (x, 53);
+  gmp_randinit_default (s);
+  gmp_randseed_ui (s, 398);
+  mpfr_urandom (x, s, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -8) == 0);
+  mpfr_clear (x);
+  gmp_randclear (s);
+  mpfr_set_emin (emin);
+#endif
+}
+
 /* Reproducibility test with several rounding modes and exponent ranges. */
 static void
 reprod_rnd_exp (void)
@@ -599,6 +601,8 @@ reprod_abi (void)
   gmp_randclear (s);
 #endif
 }
+
+#endif
 
 int
 main (int argc, char *argv[])

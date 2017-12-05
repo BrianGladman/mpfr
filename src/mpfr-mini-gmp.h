@@ -63,6 +63,11 @@ void gmp_randseed_ui (gmp_randstate_t, unsigned long int);
 void gmp_randclear (gmp_randstate_t);
 #endif
 
+#ifndef gmp_randinit_set
+#define WANT_gmp_randinit_set
+void gmp_randinit_set (gmp_randstate_t, gmp_randstate_t);
+#endif
+
 #ifndef mpn_scan1
 #define WANT_mpn_scan1
 mp_bitcnt_t mpn_scan1 (const mp_limb_t *, mp_bitcnt_t);

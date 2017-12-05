@@ -100,6 +100,7 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
   return;
 }
 
+#ifndef MPFR_USE_MINI_GMP
 /* Problem reported by Carl Witty: check mpfr_urandomb give similar results
    on 32-bit and 64-bit machines.
    We assume the default GMP random generator does not depend on the machine
@@ -141,6 +142,7 @@ bug20100914 (void)
   mpfr_clear (x);
   gmp_randclear (s);
 }
+#endif
 
 int
 main (int argc, char *argv[])

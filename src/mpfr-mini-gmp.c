@@ -51,6 +51,13 @@ gmp_randclear (gmp_randstate_t state)
 }
 #endif
 
+#ifdef WANT_gmp_randinit_set
+void
+gmp_randinit_set (gmp_randstate_t s1, gmp_randstate_t s2)
+{
+}
+#endif
+
 #ifdef WANT_mpn_divrem_1
 mp_limb_t
 mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,

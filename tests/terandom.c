@@ -46,7 +46,6 @@ test_erandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
               int verbose)
 {
   mpfr_t *t;
-  mpfr_t av, va, tmp;
   int i, inexact;
 
   t = (mpfr_t *) tests_allocate (nbtests * sizeof (mpfr_t));
@@ -68,6 +67,8 @@ test_erandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
 #if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
   if (verbose)
     {
+      mpfr_t av, va, tmp;
+
       mpfr_init2 (av, prec);
       mpfr_init2 (va, prec);
       mpfr_init2 (tmp, prec);
