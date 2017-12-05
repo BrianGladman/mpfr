@@ -306,7 +306,17 @@ typedef enum {
    deprecated. Code inspired by Apache Subversion's svn_types.h file.
    For compatibility with MSVC, MPFR_DEPRECATED must be put before
    __MPFR_DECLSPEC (not at the end of the function declaration as
-   documented in the GCC manual); GCC does not seem to care. */
+   documented in the GCC manual); GCC does not seem to care.
+   Moreover, in order to avoid a warning when testing such functions,
+   do something like:
+     #ifndef _MPFR_NO_DEPRECATED_funcname
+     MPFR_DEPRECATED
+     #endif
+     __MPFR_DECLSPEC int mpfr_funcname (...);
+   and in the corresponding test program:
+     #define _MPFR_NO_DEPRECATED_funcname
+     #include "mpfr-test.h"
+*/
 #if defined(__GNUC__) && \
   (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 # define MPFR_DEPRECATED __attribute__ ((deprecated))
