@@ -97,12 +97,12 @@ mpfr_fdump (FILE *stream, mpfr_srcptr x)
 
       if (MPFR_IS_UBF (x))
         {
-#ifndef MPFR_USE_MINI_GMP          
+#ifndef MPFR_USE_MINI_GMP
           gmp_fprintf (stream, "E%Zd", MPFR_ZEXP (x));
 #else /* mini-gmp has no gmp_fprintf */
           fprintf (stream, "E");
           mpz_out_str (stream, 10, MPFR_ZEXP (x));
-#endif          
+#endif
           invalid[i++] = 'U';
         }
       else

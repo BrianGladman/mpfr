@@ -509,12 +509,12 @@ main (int argc, char *argv[])
       mpfr_set_prec (u, s);
       if (mpfr_set_z (x, z, MPFR_RNDN))
         {
-#ifndef MPFR_USE_MINI_GMP          
+#ifndef MPFR_USE_MINI_GMP
           gmp_printf ("Error: mpfr_set_z should be exact (z = %Zd, s = %u)\n",
                       z, (unsigned int) s);
 #else /* mini-gmp has no gmp_printf (at least in gmp-6.1.2) */
           printf ("mpfr_set_z should be exact\n");
-#endif          
+#endif
           exit (1);
         }
       if (randlimb () % 2)
