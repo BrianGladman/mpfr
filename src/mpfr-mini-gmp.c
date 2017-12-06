@@ -208,15 +208,4 @@ mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, mp_size_t qxn,
 }
 #endif
 
-/*************************** miscellaneous functions *************************/
-
-#ifdef WANT_mpz_dump
-void
-mpz_dump (mpz_t z)
-{
-  mpz_out_str (stdout, 10, z);
-  putchar ('\n');
-}
-#endif
-
 #endif /* MPFR_USE_MINI_GMP */

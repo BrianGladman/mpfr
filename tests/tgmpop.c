@@ -31,8 +31,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
             str, res, __gmpfr_flags);                                   \
     printf ("Got "); mpfr_dump (y);                                     \
     printf ("X = "); mpfr_dump (x);                                     \
-    printf ("Q = "); mpz_dump (mpq_numref(q));                          \
-    printf ("   /"); mpz_dump (mpq_denref(q));                          \
+    printf ("Q = "); mpz_out_str (stdout, 10, mpq_numref(q));           \
+    printf ("\n   /"); mpz_out_str (stdout, 10, mpq_denref(q));         \
+    printf ("\n");                                                      \
     exit (1);                                                           \
   }
 
@@ -42,7 +43,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
             str, res, __gmpfr_flags);                                   \
     printf ("Got "); mpfr_dump (y);                                     \
     printf ("X = "); mpfr_dump (x);                                     \
-    printf ("Z = "); mpz_dump (z);                                      \
+    printf ("Z = "); mpz_out_str (stdout, 10, z);                       \
+    printf ("\n");                                                      \
     exit (1);                                                           \
   }
 

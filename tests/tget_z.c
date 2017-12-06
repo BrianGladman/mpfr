@@ -187,9 +187,9 @@ check_one (mpz_ptr z)
                                 mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
                                 e ? ", reduced exponent range" : "");
                         printf ("     f = "); mpfr_dump (f);
-                        printf ("expected "); mpz_dump (ex);
-                        printf ("     got "); mpz_dump (got);
-                        printf ("Expected inex ~ %d, got %d (%s)\n",
+                        printf ("expected "); mpz_out_str (stdout, 10, ex);
+                        printf ("\n     got "); mpz_out_str (stdout, 10, got);
+                        printf ("\nExpected inex ~ %d, got %d (%s)\n",
                                 ex_inex, inex, same ? "OK" : "wrong");
                         printf ("Flags:\n");
                         printf ("      in"); flags_out (flags[fi]);
