@@ -22,9 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* Default number of entries for the mpz_t pool */
 #ifndef MPFR_MY_MPZ_INIT
-# define MPFR_MY_MPZ_INIT 32
+# define MPFR_MY_MPZ_INIT 32   /* number of entries for the mpz_t pool */
+# define MPFR_POOL_MAX_SIZE 32 /* maximal size (in limbs) of each entry */
 #endif
 
 /* If the number of entries of the mpz_t pool is not zero */
@@ -72,16 +72,16 @@ mpfr_mpz_init2 (mpz_t z, mp_bitcnt_t n)
     }
 }
 
+
 MPFR_HOT_FUNCTION_ATTR void
 mpfr_mpz_clear (mpz_t z)
 {
-  if (MPFR_LIKELY (n_alloc < numberof (mpz_tab)))
+  /* we only put objects with at most MPFR_POOL_MAX_SIZE in the mpz_t pool,
+     to avoid it takes too much memory (and anyway the speedup is mainly
+     for small precision) */
+  if (MPFR_LIKELY (n_alloc < numberof (mpz_tab) &&
+                   mpz_size (z) <= MPFR_POOL_MAX_SIZE))
     {
-      /* Warning! The consequence in high precision is that the whole
-         pool can take much memory while it does not contain meaningful
-         data (even more for multithreaded software). A possible
-         compromise: add some condition like ALLOC(z) < small_constant
-         above. */
       /* Push back the mpz_t inside the stack of the used mpz_t */
       MPFR_ASSERTD (n_alloc >= 0);
       memcpy (&mpz_tab[n_alloc++], z, sizeof (mpz_t));
