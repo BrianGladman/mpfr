@@ -77,6 +77,11 @@ mpfr_mpz_clear (mpz_t z)
 {
   if (MPFR_LIKELY (n_alloc < numberof (mpz_tab)))
     {
+      /* Warning! The consequence in high precision is that the whole
+         pool can take much memory while it does not contain meaningful
+         data (even more for multithreaded software). A possible
+         compromise: add some condition like ALLOC(z) < small_constant
+         above. */
       /* Push back the mpz_t inside the stack of the used mpz_t */
       MPFR_ASSERTD (n_alloc >= 0);
       memcpy (&mpz_tab[n_alloc++], z, sizeof (mpz_t));
