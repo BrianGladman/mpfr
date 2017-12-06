@@ -29,6 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-mini-gmp.h"
 
+/************************ random generation functions ************************/
+
 #ifdef WANT_gmp_randinit_default
 void
 gmp_randinit_default (gmp_randstate_t state)
@@ -55,45 +57,6 @@ gmp_randclear (gmp_randstate_t state)
 void
 gmp_randinit_set (gmp_randstate_t s1, gmp_randstate_t s2)
 {
-}
-#endif
-
-#ifdef WANT_mpn_divrem_1
-mp_limb_t
-mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
-              mp_limb_t d0)
-{
-  mpz_t q, r, n, d;
-  mp_limb_t ret, dd[1];
-
-  d->_mp_d = dd;
-  d->_mp_d[0] = d0;
-  d->_mp_size = 1;
-  mpz_init (q);
-  mpz_init (r);
-  if (qxn == 0)
-    {
-      n->_mp_d = np;
-      n->_mp_size = nn;
-    }
-  else
-    {
-      mpz_init2 (n, (nn + qxn) * GMP_NUMB_BITS);
-      mpn_copyi (n->_mp_d + qxn, np, nn);
-      mpn_zero (n->_mp_d, qxn);
-      n->_mp_size = nn + qxn;
-    }
-  mpz_tdiv_qr (q, r, n, d);
-  if (q->_mp_size > 0)
-    mpn_copyi (qp, q->_mp_d, q->_mp_size);
-  if (q->_mp_size < nn + qxn)
-    mpn_zero (qp + q->_mp_size, nn + qxn - q->_mp_size);
-  ret = (r->_mp_size == 1) ? r->_mp_d[0] : 0;
-  mpz_clear (q);
-  mpz_clear (r);
-  if (qxn != 0)
-    mpz_clear (n);
-  return ret;
 }
 #endif
 
@@ -142,6 +105,47 @@ unsigned long
 gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
 {
   return random_limb () % (1UL << n);
+}
+#endif
+
+/************************* division functions ********************************/
+
+#ifdef WANT_mpn_divrem_1
+mp_limb_t
+mpn_divrem_1 (mp_limb_t *qp, mp_size_t qxn, mp_limb_t *np, mp_size_t nn,
+              mp_limb_t d0)
+{
+  mpz_t q, r, n, d;
+  mp_limb_t ret, dd[1];
+
+  d->_mp_d = dd;
+  d->_mp_d[0] = d0;
+  d->_mp_size = 1;
+  mpz_init (q);
+  mpz_init (r);
+  if (qxn == 0)
+    {
+      n->_mp_d = np;
+      n->_mp_size = nn;
+    }
+  else
+    {
+      mpz_init2 (n, (nn + qxn) * GMP_NUMB_BITS);
+      mpn_copyi (n->_mp_d + qxn, np, nn);
+      mpn_zero (n->_mp_d, qxn);
+      n->_mp_size = nn + qxn;
+    }
+  mpz_tdiv_qr (q, r, n, d);
+  if (q->_mp_size > 0)
+    mpn_copyi (qp, q->_mp_d, q->_mp_size);
+  if (q->_mp_size < nn + qxn)
+    mpn_zero (qp + q->_mp_size, nn + qxn - q->_mp_size);
+  ret = (r->_mp_size == 1) ? r->_mp_d[0] : 0;
+  mpz_clear (q);
+  mpz_clear (r);
+  if (qxn != 0)
+    mpz_clear (n);
+  return ret;
 }
 #endif
 
@@ -204,29 +208,7 @@ mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, mp_size_t qxn,
 }
 #endif
 
-#ifdef WANT_mpn_sqrtrem
-mp_size_t
-mpn_sqrtrem (mp_limb_t *sp, mp_limb_t *rp, const mp_limb_t *np, mp_size_t nn)
-{
-  mpz_t s, r, n;
-  mp_size_t sn = (nn + 1) >> 1, ret;
-
-  MPFR_ASSERTN(rp == NULL);
-  n->_mp_d = (mp_limb_t*) np;
-  n->_mp_size = nn;
-  mpz_init (s);
-  mpz_init (r);
-  mpz_sqrtrem (s, r, n);
-  if (s->_mp_size > 0)
-    mpn_copyi (sp, s->_mp_d, s->_mp_size);
-  if (s->_mp_size < sn)
-    mpn_zero (sp + s->_mp_size, sn - s->_mp_size);
-  ret = r->_mp_size;
-  mpz_clear (s);
-  mpz_clear (r);
-  return ret;
-}
-#endif
+/*************************** miscellaneous functions *************************/
 
 #ifdef WANT_mpz_dump
 void
