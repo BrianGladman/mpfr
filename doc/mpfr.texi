@@ -2511,7 +2511,7 @@ versions.
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
 Note that the precision of @var{op} is set to the one read from the stream,
-and the sign bit is always retrieved (even for NaN).
+and the sign bit is always retrieved (even for NaN)@.
 If the stored precision is zero or greater than @code{MPFR_PREC_MAX}, the
 function fails (it returns non-zero) and @var{op} is unchanged. If the
 function fails for another reason, @var{op} is set to NaN and it is
