@@ -737,6 +737,7 @@ __MPFR_DECLSPEC int mpfr_sum (mpfr_ptr, const mpfr_ptr *, unsigned long,
 
 __MPFR_DECLSPEC void mpfr_free_cache (void);
 __MPFR_DECLSPEC void mpfr_free_cache2 (mpfr_free_cache_t);
+__MPFR_DECLSPEC void mpfr_free_pool (void);
 __MPFR_DECLSPEC int mpfr_mp_memory_cleanup (void);
 
 __MPFR_DECLSPEC int mpfr_subnormalize (mpfr_ptr, int, mpfr_rnd_t);

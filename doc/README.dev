@@ -237,7 +237,7 @@ To make a release (for the MPFR team):
      Check with "-UHAVE_BIG_ENDIAN -UHAVE_LITTLE_ENDIAN" to simulate
      platforms where the endianness is unknown (or can't be specified
      without AC_CONFIG_HEADERS).
-     Check also without mpz_t caching (-DMPFR_MY_MPZ_INIT=0).
+     Check also without the mpz_t pool (-DMPFR_POOL_NENTRIES=0).
      Check the generic code, e.g. with -DMPFR_GENERIC_ABI in $CFLAGS
      (useful because most tests are written for low precision) and with
      mpfr_cv_c_long_double_format=unknown (as a variable assignment).

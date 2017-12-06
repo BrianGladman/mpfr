@@ -2272,30 +2272,29 @@ __MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,
 #endif
 
 
-/******************************************************
- ***************  Internal mpz caching  ***************
- ******************************************************/
+/*****************************************************
+ ***************  Internal mpz_t pool  ***************
+ *****************************************************/
 
-/* don't use mpz caching with mini-gmp */
+/* don't use the mpz_t pool with mini-gmp */
 #ifdef MPFR_USE_MINI_GMP
-#define MPFR_MY_MPZ_INIT 0
+# define MPFR_POOL_NENTRIES 0
 #endif
 
-/* define MPFR_MY_MPZ_INIT to 0 here to disable the mpz_t pool
-   (see src/free_cache.c) */
-/* #define MPFR_MY_MPZ_INIT 0 */
+#ifndef MPFR_POOL_NENTRIES
+# define MPFR_POOL_NENTRIES 32  /* default number of entries of the pool */
+#endif
 
-/* Cache for mpz_t */
-#if !defined(MPFR_MY_MPZ_INIT) || MPFR_MY_MPZ_INIT != 0
+#if MPFR_POOL_NENTRIES && !defined(MPFR_POOL_DONT_REDEFINE)
 # undef mpz_init
 # undef mpz_init2
 # undef mpz_clear
+# undef mpz_init_set_ui
+# undef mpz_init_set
 # define mpz_init mpfr_mpz_init
 # define mpz_init2 mpfr_mpz_init2
 # define mpz_clear mpfr_mpz_clear
-# undef mpz_init_set_ui
 # define mpz_init_set_ui(a,b) do { mpz_init (a); mpz_set_ui (a, b); } while (0)
-# undef mpz_init_set
 # define mpz_init_set(a,b) do { mpz_init (a); mpz_set (a, b); } while (0)
 #endif
 

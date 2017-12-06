@@ -87,7 +87,10 @@ Changes from versions 3.1.* to version 4.0.0:
 - Old, deprecated macros mpfr_add_one_ulp and mpfr_sub_one_ulp removed.
   The mpfr_next* functions should be used instead.
 - Internally, improved caching: a minimum of 10% increase of the precision
-  is guaranteed to avoid too many recomputations; added mpz_t caching.
+  is guaranteed to avoid too many recomputations.
+- Added internal small-precision mpz_t pool, which aims to avoid the
+  overhead of memory allocation, in particular.
+  New function mpfr_free_pool.
 - Added configure option --enable-assert=none to avoid checking any assertion.
 - The --enable-decimal-float configure option no longer requires
   --with-gmp-build, and support for decimal floats is now automatically

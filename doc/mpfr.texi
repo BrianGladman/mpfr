@@ -981,12 +981,10 @@ When more precision is needed, the value is automatically recomputed;
 a minimum of 10% increase of the precision is guaranteed to avoid too
 many recomputations.
 
-MPFR functions may also create pools for internal use to avoid the cost
-of memory allocation.
-@c FIXME: Say a bit more about the mpz_t pool. Make it configurable at
-@c run time, with a compile-time bound on the number of entries? Pools
-@c may be a bad idea if the allocator is fast and/or if there are many
-@c threads (since they are thread-local).
+MPFR functions may also create thread-local pools for internal use
+to avoid the cost of memory allocation. The pools can be freed with
+@code{mpfr_free_pool} (but with a default MPFR build, they should not
+take much memory, as the allocation size is limited).
 
 At any time, the user can free various caches and pools with
 @code{mpfr_free_cache} and @code{mpfr_free_cache2}. It is strongly advised
@@ -2396,6 +2394,12 @@ future use; they should be zero.
 
 Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
 is currently equivalent to @code{mpfr_free_cache()}.
+@end deftypefun
+
+@deftypefun void mpfr_free_pool (void)
+Free the pools used by MPFR internally.
+Note: This function is automatically called after the thread-local caches
+are freed (with @code{mpfr_free_cache} or @code{mpfr_free_cache2}).
 @end deftypefun
 
 @deftypefun int mpfr_mp_memory_cleanup (void)
@@ -3966,6 +3970,8 @@ in MPFR 4.0.
 @item @code{mpfr_fprintf} in MPFR 2.4.
 
 @item @code{mpfr_free_cache2} in MPFR 4.0.
+
+@item @code{mpfr_free_pool} in MPFR 4.0.
 
 @item @code{mpfr_frexp} in MPFR 3.1.
 
