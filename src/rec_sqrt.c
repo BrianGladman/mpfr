@@ -67,7 +67,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    References:
    [1] Modern Computer Algebra, Richard Brent and Paul Zimmermann,
-   http://www.loria.fr/~zimmerma/mca/pub226.html
+   https://members.loria.fr/PZimmermann/mca/pub226.html
 */
 static void
 mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,

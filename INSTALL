@@ -404,7 +404,7 @@ optimizations by giving -O0 (letter O, digit 0) in CFLAGS. If the
 MPFR tests no longer fail, this was probably due to a compiler bug,
 though we cannot exclude a bug in MPFR. You may want to contact us
 (see below), possibly after looking at:
-  http://www.loria.fr/~zimmerma/software/compilerbugs.html
+  https://members.loria.fr/PZimmermann/software/compilerbugs.html
 
 On some platforms, try with "gmake" (GNU make) instead of "make".
 Problems have been reported with the Tru64 make.
