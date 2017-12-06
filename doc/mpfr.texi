@@ -4363,8 +4363,11 @@ Fredrik Johannsson a faster version of @code{mpfr_const_euler}.
 @item
 Richard Brent and Paul Zimmermann,
 "Modern Computer Arithmetic",
-Cambridge University Press (to appear),
-also available from the authors' web pages.
+Cambridge University Press,
+Cambridge Monographs on Applied and Computational Mathematics,
+number 18, 2010.
+Electronic version freely available at
+@url{http://www.loria.fr/~zimmerma/mca/pub226.html}.
 
 @item
 Laurent Fousse, Guillaume Hanrot, Vincent Lef@`evre,
