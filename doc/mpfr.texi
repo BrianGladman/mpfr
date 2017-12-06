@@ -990,7 +990,7 @@ of memory allocation.
 
 At any time, the user can free various caches and pools with
 @code{mpfr_free_cache} and @code{mpfr_free_cache2}. It is strongly advised
-to free thread-local caches before terminating a thread and global caches
+to free thread-local caches before terminating a thread, and all caches
 before exiting when using tools like @samp{valgrind} (to avoid memory leaks
 being reported).
 
