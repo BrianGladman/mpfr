@@ -2496,7 +2496,7 @@ interchange format.
 In particular one can export on a 32-bit computer and import on a 64-bit
 computer, or export on a little-endian computer and import on a big-endian
 computer.
-The precision of @var{op} and the sign of a NaN are stored too.
+The precision of @var{op} and the sign bit of a NaN are stored too.
 Return 0 iff the export was successful.
 
 Note: this function is experimental and its interface might change in future
@@ -2506,7 +2506,8 @@ versions.
 @deftypefun int mpfr_fpif_import (mpfr_t @var{op}, FILE *@var{stream})
 Import the number @var{op} from the stream @var{stream} in a floating-point
 interchange format (see @code{mpfr_fpif_export}).
-The precision of @var{op} is read from the stream.
+Note that the precision of @var{op} is set to the one read from the stream,
+and the sign bit is always retrieved (even for NaN).
 If the stored precision is zero or greater than @code{MPFR_PREC_MAX}, the
 function fails (it returns non-zero) and @var{op} is unchanged. If the
 function fails for another reason, @var{op} is set to NaN and it is
