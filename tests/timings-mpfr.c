@@ -63,8 +63,8 @@ main (int argc, char *argv[])
       argc --;
       argv ++;
     }
-    
-  
+
+
   if (argc != 2 && argc != 3)
     {
       fprintf(stderr, "Usage: timing digits\n");
@@ -79,80 +79,80 @@ main (int argc, char *argv[])
   else
     prec = (int) ( n * log(10.0) / log(2.0) + 1.0 );
   printf("[precision is %u bits]\n", prec);
- 
-  mpfr_init2(x, prec); mpfr_init2(y, prec); mpfr_init2(z, prec); 
 
-  mpfr_set_d(x, 3.0, GMP_RNDN); mpfr_sqrt(x, x, GMP_RNDN); mpfr_sub_ui (x, x, 1, GMP_RNDN);
-  mpfr_set_d(y, 5.0, GMP_RNDN); mpfr_sqrt(y, y, GMP_RNDN);
+  mpfr_init2(x, prec); mpfr_init2(y, prec); mpfr_init2(z, prec);
 
-  mpfr_log (z, x, GMP_RNDN);
+  mpfr_set_d(x, 3.0, MPFR_RNDN); mpfr_sqrt(x, x, MPFR_RNDN); mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+  mpfr_set_d(y, 5.0, MPFR_RNDN); mpfr_sqrt(y, y, MPFR_RNDN);
 
-  N=1;  st = cputime();
-  do {
-    for (i=0;i<N;i++) mpfr_mul(z, x, y, GMP_RNDN);
-    N=2*N;
-    st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("x*y        took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
+  mpfr_log (z, x, MPFR_RNDN);
 
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_mul(z, x, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_mul(z, x, y, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("x*x        took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
+  } while (st2-st<1000);
+  printf("x*y        took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
 
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_div(z, x, y, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_mul(z, x, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("x/y        took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
-  
+  } while (st2-st<1000);
+  printf("x*x        took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_sqrt(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_div(z, x, y, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("sqrt(x)    took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
-  
+  } while (st2-st<1000);
+  printf("x/y        took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_exp(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_sqrt(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("exp(x)     took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
-  
+  } while (st2-st<1000);
+  printf("sqrt(x)    took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_log(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_exp(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("log(x)     took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
-  
+  } while (st2-st<1000);
+  printf("exp(x)     took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_sin(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_log(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
-  } while (st2-st<1000); 	  
-  printf("sin(x)     took %f ms (%d eval in %d ms)\n", 
-	 (double)(st2-st)/(N-1),N-1,st2-st);
-  
+  } while (st2-st<1000);
+  printf("log(x)     took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_cos(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_sin(z, x, MPFR_RNDN);
+    N=2*N;
+    st2=cputime();
+  } while (st2-st<1000);
+  printf("sin(x)     took %f ms (%d eval in %d ms)\n",
+         (double)(st2-st)/(N-1),N-1,st2-st);
+
+  N=1;  st = cputime();
+  do {
+    for (i=0;i<N;i++) mpfr_cos(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
   } while (st2-st<1000);
@@ -161,16 +161,16 @@ main (int argc, char *argv[])
 
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_acos(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_acos(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
   } while (st2-st<1000);
   printf("arccos(x)  took %f ms (%d eval in %d ms)\n",
          (double)(st2-st)/(N-1),N-1,st2-st);
-  
+
   N=1;  st = cputime();
   do {
-    for (i=0;i<N;i++) mpfr_atan(z, x, GMP_RNDN);
+    for (i=0;i<N;i++) mpfr_atan(z, x, MPFR_RNDN);
     N=2*N;
     st2=cputime();
   } while (st2-st<1000);
