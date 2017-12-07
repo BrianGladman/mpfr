@@ -54,14 +54,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
           E = 119 (MPFR_KIND_ZERO) for a signed zero;
           E = 120 (MPFR_KIND_INF) for a signed infinity;
           E = 121 (MPFR_KIND_NAN) for NaN.
-          *** FIXME *** Decide whether the sign bit of NaN matters here
-          (the sign is currently transmitted before checking the value,
-          so that the code would not need to be changed).
-          It seems important that for export, the sign bit of NaN be
-          specified in some way (to ease things like binary diffs or
-          hashes).
 
    3. Then we store the significand (for regular values).
+
+   The sign bit is preserved by the import/export functions, even for NaN.
 
    Note: When a size is stored, it must be minimal, i.e. a number cannot
    start with a null byte. Otherwise the import may fail.
