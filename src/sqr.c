@@ -95,7 +95,7 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -187,7 +187,7 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -316,7 +316,7 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -455,7 +455,7 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
     {
       MPFR_ASSERTD(ax >= __gmpfr_emin);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {

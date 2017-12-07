@@ -123,7 +123,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           else
             MPFR_SET_POS(a);
           MPFR_SET_ZERO(a);
-          return 0; /* same as MPFR_RET(0) but faster */
+          MPFR_RET (0);
         }
       else if (a0 > bp[0]) /* borrow: |c| > |b| */
         {
@@ -245,8 +245,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
-    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
-                 inexact flag are unspecified */
+    MPFR_RET (0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -304,7 +303,7 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             MPFR_SET_POS(a);
           MPFR_SET_ZERO(a);
-          return 0; /* same as MPFR_RET(0) but faster */
+          MPFR_RET (0);
         }
       else if (a0 > bp[0]) /* borrow: |c| > |b| */
         {
@@ -430,7 +429,7 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_SET_EXP (a, bx);
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
-    return 0; /* idem than MPFR_RET(0) but faster */
+    MPFR_RET (0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & MPFR_LIMB_ONE) == 0))
@@ -490,7 +489,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           else
             MPFR_SET_POS(a);
           MPFR_SET_ZERO(a);
-          return 0; /* same as MPFR_RET(0) but faster */
+          MPFR_RET (0);
         }
       else if (a1 >= bp[1]) /* borrow: |c| > |b| */
         {
@@ -688,8 +687,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
-    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
-                 inexact flag are unspecified */
+    MPFR_RET (0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
@@ -752,7 +750,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           else
             MPFR_SET_POS(a);
           MPFR_SET_ZERO(a);
-          return 0; /* same as MPFR_RET(0) but faster */
+          MPFR_RET (0);
         }
       else if (a2 >= bp[2]) /* borrow: |c| > |b| */
         {
@@ -1013,8 +1011,7 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   MPFR_SET_EXP (a, bx);
   if ((rb == 0 && sb == 0) || rnd_mode == MPFR_RNDF)
-    return 0; /* idem than MPFR_RET(0) but faster, for RNDF the ternary value and
-                 inexact flag are unspecified */
+    MPFR_RET (0);
   else if (rnd_mode == MPFR_RNDN)
     {
       if (rb == 0 || (sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))

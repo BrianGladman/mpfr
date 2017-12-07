@@ -160,7 +160,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTD (rb == 0 || rnd_mode == MPFR_RNDF);
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -288,7 +288,7 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
@@ -437,7 +437,7 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       MPFR_ASSERTD(exp_r >= __gmpfr_emin);
       MPFR_ASSERTD(exp_r <= __gmpfr_emax);
-      return 0; /* idem than MPFR_RET(0) but faster */
+      MPFR_RET (0);
     }
   else if (rnd_mode == MPFR_RNDN)
     {
