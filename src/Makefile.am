@@ -14,7 +14,7 @@ EXTRA_DIST = round_raw_generic.c jyn_asympt.c x86/core2/mparam.h        \
 	ia64/mparam.h arm/mparam.h powerpc64/mparam.h sparc64/mparam.h	\
 	generic/mparam.h amd/athlon/mparam.h amd/k8/mparam.h 		\
 	amd/amdfam10/mparam.h powerpc32/mparam.h hppa/mparam.h          \
-        mips/mparam.h
+	mips/mparam.h generic/coverage/mparam.h
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 
