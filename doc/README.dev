@@ -122,13 +122,24 @@ To make a release (for the MPFR team):
 
   *** Please read this section entirely before making any release. ***
 
+  Note: The following needs to be done in a branch x.y for MPFR x.y.z.
+
   0) Make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
      and the libtool-related files (config.guess, etc.) are up-to-date.
      Running autogen.sh may be necessary; avoid the possible warnings,
      as long as this does not require too recent tools (e.g. < 4 years
      old).
 
-  1) Generate the tuning parameters on different architectures and
+  1) Check the version and change the suffix to "rc1", "rc2", etc. with
+     tools/update-version for the release candidates; remove the suffix
+     for the final release.
+     Update the libtool version (see src/Makefile.am).
+     Update the DLL version (see configure.ac) if need be.
+     Check these versions with tools/ck-version-info (this check will also
+     be done automatically by "make dist" / "make distcheck").
+     Update the date in doc/mpfr.texi.
+
+  2) Generate the tuning parameters on different architectures and
      put them in src/mparam_h.in. For each architecture:
 
      a) download the latest release of GMP on gmplib.org
@@ -170,15 +181,6 @@ To make a release (for the MPFR team):
      Also test with -DMPFR_COV_CHECK, which allows one to check the coverage
      of some combinations of variable values (as defined in the MPFR source
      and test suite).
-
-  2) Check the version and change the suffix to "rc1", "rc2", etc. with
-     tools/update-version for the release candidates; remove the suffix
-     for the final release.
-     Update the libtool version (see src/Makefile.am).
-     Update the DLL version (see configure.ac) if need be.
-     Check these versions with tools/ck-version-info (this check will also
-     be done automatically by "make dist" / "make distcheck").
-     Update the date in doc/mpfr.texi.
 
   3) Update the NEWS file, in particular say if the release is binary
      and/or API compatible (or not) with previous releases.
