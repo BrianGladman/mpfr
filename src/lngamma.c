@@ -640,7 +640,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
          |h| <= (2m+48)*ulp(s), thus exp(s0) = exp(s) * exp(-h).
          For |h| <= 1/4, we have |exp(h)-1| <= 1.2*|h| thus
          |exp(s) - exp(s0)| <= 1.2 * exp(s) * (2m+48)* 2^(EXP(s)-w). */
-      d = 1.2 * (2.0 * (double) m + 48.0);
+      /* d = 1.2 * (2.0 * (double) m + 48.0); */
       /* the error on s is bounded by d*2^err_s * 2^(-w) */
       mpfr_sqrt (t, v, MPFR_RNDN);
       /* let v0 be the exact value of v. We have v = v0*(1+u)^(4k+1),
@@ -649,7 +649,13 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
       /* the error on input s is bounded by (1+u)^(d*2^err_s),
          and that on t is (1+u)^(2k+3/2), thus the
          total error is (1+u)^(d*2^err_s+2k+5/2) */
-      err_s += __gmpfr_ceil_log2 (d);
+      /* err_s += __gmpfr_ceil_log2 (d); */
+      /* since d = 1.2 * (2m+48), ceil(log2(d)) = 2 + ceil(log2(0.6*m+14.4))
+         <= 2 + ceil(log2(0.6*m+15)) */
+      {
+        unsigned long mm = (1 + m / 5) * 3; /* 0.6*m <= mm */
+        err_s += 2 + __gmpfr_int_ceil_log2 (mm + 15);
+      }
       err_t = __gmpfr_ceil_log2 (2.0 * (double) k + 2.5);
       err_s = (err_s >= err_t) ? err_s + 1 : err_t + 1;
 #else
