@@ -100,6 +100,38 @@ random_tests (void)
   mpfr_clear (g);
 }
 
+/* Check results are in canonical form.
+   See https://sympa.inria.fr/sympa/arc/mpfr/2017-12/msg00029.html */
+static void
+check_canonical (void)
+{
+  mpfr_t x;
+  mpq_t q;
+  mpz_t z;
+  
+  mpfr_init2 (x, 53);
+  mpfr_set_ui (x, 3, MPFR_RNDN);
+  mpq_init (q);
+  mpfr_get_q (q, x);
+  /* check the denominator is positive */
+  if (mpz_sgn (mpq_denref (q)) <= 0)
+    {
+      printf ("Error, the denominator of mpfr_get_q should be positive\n");
+      MPFR_ASSERTN (0);
+    }
+  mpz_init (z);
+  mpz_gcd (z, mpq_numref (q), mpq_denref (q));
+  /* check the numerator and denominator are coprime */
+  if (mpz_cmp_ui (z, 1) != 0)
+    {
+      printf ("Error, numerator and denominator of mpfr_get_q should be coprime\n");
+      MPFR_ASSERTN (0);
+    }
+  mpfr_clear (x);
+  mpq_clear (q);
+  mpz_clear (z);
+}
+
 int
 main (void)
 {
@@ -107,6 +139,8 @@ main (void)
 
   special ();
   random_tests ();
+
+  check_canonical ();
 
   tests_end_mpfr ();
   return 0;

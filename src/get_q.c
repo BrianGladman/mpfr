@@ -56,6 +56,7 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
           MPFR_ASSERTN (-exp <= (mp_bitcnt_t) -1);
           mpz_mul_2exp (v, v, -exp);
         }
+      mpq_canonicalize (q);
     }
 }
 #endif
