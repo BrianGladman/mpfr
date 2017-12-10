@@ -32,6 +32,8 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
   mpz_ptr u = mpq_numref (q);
   mpz_ptr v = mpq_denref (q);
 
+  /* v is set to 1 and will not be changed directly.
+     This ensures that q will be canonical. */
   mpz_set_ui (v, 1);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
@@ -54,9 +56,8 @@ mpfr_get_q (mpq_ptr q, mpfr_srcptr f)
       else  /* exp < 0 */
         {
           MPFR_ASSERTN (-exp <= (mp_bitcnt_t) -1);
-          mpz_mul_2exp (v, v, -exp);
+          mpq_div_2exp (q, q, -exp);
         }
-      mpq_canonicalize (q);
     }
 }
 #endif
