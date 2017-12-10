@@ -117,7 +117,7 @@ check_canonical (void)
   if (mpz_sgn (mpq_denref (q)) <= 0)
     {
       printf ("Error, the denominator of mpfr_get_q should be positive\n");
-      MPFR_ASSERTN (0);
+      exit (1);
     }
   mpz_init (z);
   mpz_gcd (z, mpq_numref (q), mpq_denref (q));
@@ -125,7 +125,7 @@ check_canonical (void)
   if (mpz_cmp_ui (z, 1) != 0)
     {
       printf ("Error, numerator and denominator of mpfr_get_q should be coprime\n");
-      MPFR_ASSERTN (0);
+      exit (1);
     }
   mpfr_clear (x);
   mpq_clear (q);
