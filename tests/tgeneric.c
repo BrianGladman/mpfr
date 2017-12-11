@@ -104,7 +104,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TGENERIC_CHECK(S, EXPR) TGENERIC_CHECK_AUX(S, EXPR, 0)
 #endif
 
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
 #define TGENERIC_IAUX(F,P,X,U)                                          \
   do                                                                    \
     {                                                                   \
@@ -125,7 +125,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #else
 #define TGENERIC_INFO(F,P) TGENERIC_IAUX(F,P,x,0)
 #endif
-#endif  /* DEBUG_TGENERIC */
+#endif  /* MPFR_DEBUG_TGENERIC */
 
 /* For some functions (for example cos), the argument reduction is too
    expensive when using mpfr_get_emax(). Then simply define REDUCE_EMAX
@@ -309,7 +309,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 
           rnd = RND_RAND ();
           mpfr_clear_flags ();
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
           TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (y));
 #endif
 #if defined(TWO_ARGS)
@@ -429,7 +429,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     mpfr_flags_t ex_flags;
 
                     mpfr_set_emax (e - 1);
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: overflow test (emax = %"
                             MPFR_EXP_FSPEC "d)\n",
                             (mpfr_eexp_t) __gmpfr_emax);
@@ -488,7 +488,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     mpfr_flags_t ex_flags;
 
                     mpfr_set_emin (e + 1);
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: underflow test (emin = %"
                             MPFR_EXP_FSPEC "d)\n",
                             (mpfr_eexp_t) __gmpfr_emin);
@@ -556,7 +556,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               {
                 mpfr_set_emin (emin);
                 mpfr_set_emax (emax);
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
                 /* Useful information in case of assertion failure. */
                 printf ("tgeneric: reduced exponent range [%"
                         MPFR_EXP_FSPEC "d,%" MPFR_EXP_FSPEC "d]\n",
@@ -666,7 +666,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                  test below). */
               if (randlimb () & 1)
                 __gmpfr_flags = MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE;
-#ifdef DEBUG_TGENERIC
+#ifdef MPFR_DEBUG_TGENERIC
               TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (z));
 #endif
               /* Let's increase the precision of the inputs in a random way.

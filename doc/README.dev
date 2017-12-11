@@ -210,9 +210,9 @@ To make a release (for the MPFR team):
 
   6) Test the release version on different machines, with --enable-assert
      set to "yes", "no" (default), "none" and "full" respectively, with
-     and without -DXDEBUG in $CFLAGS, with and without gmp internal files
-     (--enable-gmp-internals), with and without GMP built as a shared
-     library, with objdir equal to and different from srcdir (e.g.
+     and without -DMPFR_DISABLE_IEEE_FLOATS in $CFLAGS, with and without gmp
+     internal files (--enable-gmp-internals), with and without GMP built as
+     a shared library, with objdir equal to and different from srcdir (e.g.
      ../mpfr-source/configure after making mpfr-source read-only), with
      and without --enable-logging.
 
@@ -255,16 +255,17 @@ To make a release (for the MPFR team):
      32, mode32 and mode64 (in particular mode32, where long's have
      32 bits and limbs have 64 bits [long long]).
 
-     Test with -DMPFR_TESTS_FPE_DIV -DMPFR_ERRDIVZERO -DXDEBUG in order
+     Test with -DMPFR_TESTS_FPE_DIV -DMPFR_ERRDIVZERO
+     -DMPFR_DISABLE_IEEE_FLOATS in order
      to detect whether tests can fail due to a FP division by 0 (yielding
      either FE_DIVBYZERO, e.g. from 1.0 / 0.0 to generate an infinity, or
      FE_INVALID, e.g. from 0.0 / 0.0 to generate a NaN) on platforms where
      such an operation fails (e.g. trap). On platforms that do not support
      IEEE 754, such an operation yields an undefined behavior.
      If _MPFR_IEEE_FLOATS is defined to 1 (by the configure script), some
-     divisions by 0 are avoided in the MPFR library. The -DXDEBUG option
-     sets _MPFR_IEEE_FLOATS to 0, allowing one to detect more issues, for
-     platforms without IEEE floats.
+     divisions by 0 are avoided in the MPFR library.
+     The -DMPFR_DISABLE_IEEE_FLOATS option sets _MPFR_IEEE_FLOATS to 0,
+     allowing one to detect more issues, for platforms without IEEE floats.
 
      Test with -D_MPFR_PREC_FORMAT=2 when the "int" type is smaller
      than the "long" type.
@@ -425,11 +426,8 @@ Format of long double.
 + HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
 
-+ DEBUG:                For debugging messages in some functions (currently
-                        not suitable for "make check" because many messages
-                        would be output and it is not possible to disable
-                        these messages once this macro has been defined).
-+ XDEBUG:               Use generic 'double' code instead of IEEE specific one.
++ MPFR_DISABLE_IEEE_FLOATS: Use generic 'double' code instead of IEEE
+                            specific one.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 

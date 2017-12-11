@@ -581,8 +581,8 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 # endif
 #endif
 
-/* With -DXDEBUG, exercise non IEEE floats */
-#ifdef XDEBUG
+/* With -DMPFR_DISABLE_IEEE_FLOATS, exercise non IEEE floats */
+#ifdef MPFR_DISABLE_IEEE_FLOATS
 # ifdef _MPFR_IEEE_FLOATS
 #  undef _MPFR_IEEE_FLOATS
 # endif
