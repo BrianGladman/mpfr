@@ -108,7 +108,7 @@ check_canonical (void)
   mpfr_t x;
   mpq_t q;
   mpz_t z;
-  
+
   mpfr_init2 (x, 53);
   mpfr_set_ui (x, 3, MPFR_RNDN);
   mpq_init (q);
