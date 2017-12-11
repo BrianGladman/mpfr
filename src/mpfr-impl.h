@@ -1397,16 +1397,6 @@ do {                                                                  \
     }                                                                 \
   while (0)
 
-/* Use it only for debug reasons */
-/*   MPFR_TRACE (operation) : execute operation iff DEBUG flag is set */
-/*   MPFR_DUMP (x) : print x (a mpfr_t) on stdout */
-#ifdef DEBUG
-# define MPFR_TRACE(x) x
-#else
-# define MPFR_TRACE(x) (void) 0
-#endif
-#define MPFR_DUMP(x) ( printf(#x"="), mpfr_dump(x) )
-
 /* Test if X (positive) is a power of 2 */
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
 #define NOT_POW2(X) (((X) & ((X) - 1)) != 0)

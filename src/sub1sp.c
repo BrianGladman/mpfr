@@ -84,14 +84,6 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 # define mpfr_sub1sp mpfr_sub1sp_ref
 #endif  /* MPFR_WANT_ASSERT >= 2 */
 
-/* Debugging support */
-#ifdef DEBUG
-# undef DEBUG
-# define DEBUG(x) (x)
-#else
-# define DEBUG(x) /**/
-#endif
-
 #if !defined(MPFR_GENERIC_ABI)
 
 /* special code for p < GMP_NUMB_BITS */
@@ -1193,7 +1185,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* Now |b| > |c| */
   MPFR_ASSERTD(bx >= cx);
   d = (mpfr_uexp_t) bx - cx;
-  DEBUG (printf ("New with diff=%lu\n", (unsigned long) d));
+  /* printf ("New with diff=%lu\n", (unsigned long) d); */
 
   if (d <= 1)
     {
@@ -1256,7 +1248,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               MPFR_TMP_FREE(marker);
               /* since b and c have same sign, exponent and precision, the
                  subtraction is exact */
-              DEBUG( printf("(D==0 Underflow)\n") );
+              /* printf("(D==0 Underflow)\n"); */
               /* for MPFR_RNDN, mpfr_underflow always rounds away from zero,
                  thus for |a| <= 2^(emin-2) we change to RNDZ. */
               if (rnd_mode == MPFR_RNDN &&
@@ -1443,7 +1435,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               else
                 bcp1 = 1;
             }
-          DEBUG( printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", bbcp!=0, bcp1!=0) );
+          /* printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", bbcp!=0, bcp1!=0); */
           bp = MPFR_MANT (b);
 
           /* Even if src and dest overlap, it is OK using MPN_COPY */
@@ -1483,7 +1475,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         {
           /* Cp=0, Cp+1=-1 if d==p+1, C'p+1=-1 */
           bcp = 0; bbcp = (d==p+1); bcp1 = 1;
-          DEBUG( printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0) );
+          /* printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0); */
           /* Need to compute C'p+2 if d==p+1 and if rnd_mode=NEAREST
              (Because of a very improbable case) */
           if (MPFR_UNLIKELY(d==p+1 && rnd_mode==MPFR_RNDN))
@@ -1499,7 +1491,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
               else
                 bbcp1 = 1;
-              DEBUG( printf("(D>P) C'p+2=%d\n", bbcp1!=0) );
+              /* printf("(D>P) C'p+2=%d\n", bbcp1!=0); */
             }
           /* Copy mantissa B in A */
           MPN_COPY(ap, MPFR_MANT(b), n);
@@ -1545,9 +1537,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPN_ZERO(cp+n-m, m);
         }
 
-      DEBUG( mpfr_print_mant_binary("Before", MPFR_MANT(c), p) );
-      DEBUG( mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p) );
-      DEBUG( mpfr_print_mant_binary("After ", cp, p) );
+      /* mpfr_print_mant_binary("Before", MPFR_MANT(c), p); */
+      /* mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p); */
+      /* mpfr_print_mant_binary("After ", cp, p); */
 
       /* Compute bcp=Cp and bcp1=C'p+1 */
       if (MPFR_LIKELY(sh))
@@ -1570,9 +1562,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   mp_limb_t *tp = MPFR_MANT(c);
                   mp_size_t kx = n-1 - (x / GMP_NUMB_BITS);
                   mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
-                  DEBUG (printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
-                                 (unsigned long) x, (long) kx,
-                                 (unsigned long) sx));
+                  /* printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
+                     (unsigned long) x, (long) kx, (unsigned long) sx); */
                   /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
                   if (tp[kx] & MPFR_LIMB_MASK(sx))
                     bcp1 = 1;
@@ -1610,7 +1601,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               bcp1 = (kx >= 0);
             }
         }
-      DEBUG( printf("sh=%lu Cp=%d C'p+1=%d\n", sh, bcp!=0, bcp1!=0) );
+      /* printf("sh=%lu Cp=%d C'p+1=%d\n", sh, bcp!=0, bcp1!=0); */
 
       /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
       bp = MPFR_MANT(b);
@@ -1634,9 +1625,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               mpfr_prec_t sx = GMP_NUMB_BITS-1 - (x % GMP_NUMB_BITS);
 
               MPFR_ASSERTD(p > d);
-              DEBUG (printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
-                             (unsigned long) x, (long) kx,
-                             (unsigned long) sx));
+              /* printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
+                 (unsigned long) x, (long) kx, (unsigned long) sx); */
               bbcp = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
               /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
               /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
@@ -1649,10 +1639,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                     kx--;
                   while (kx >= 0 && tp[kx] == 0);
                   bbcp1 = (kx >= 0);
-                  DEBUG (printf ("(Pre) Scan done for %ld\n", (long) kx));
+                  /* printf ("(Pre) Scan done for %ld\n", (long) kx); */
                 }
             } /*End of Bcp1 != 0*/
-          DEBUG( printf("(Pre) Cp+1=%d C'p+2=%d\n", bbcp!=0, bbcp1!=0) );
+          /* printf("(Pre) Cp+1=%d C'p+2=%d\n", bbcp!=0, bbcp1!=0); */
         } /* End of "can lose a bit" */
 
       /* Clean shifted C' */
@@ -1662,7 +1652,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Subtract the mantissa c from b in a */
       ap = MPFR_MANT(a);
       mpn_sub_n (ap, bp, cp, n);
-      DEBUG( mpfr_print_mant_binary("Sub=  ", ap, p) );
+      /* mpfr_print_mant_binary("Sub=  ", ap, p); */
 
      /* Normalize: we lose at max one bit*/
       if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
@@ -1731,7 +1721,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          for d = 1 are in the "SubD1NoLose" case, and in that case
          |b|-|c| >= 1/2*W^n, thus round(|b|-|c|) >= 1/2*W^n, and ap[n-1]
          cannot go below MPFR_LIMB_HIGHBIT. */
-      DEBUG( printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0));
+      /* printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0); */
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit! */
       MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
@@ -1742,14 +1732,14 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           ap[0] |= MPFR_LIMB_ONE << sh;
           if (rnd_mode == MPFR_RNDN)
             inexact = 1;
-          DEBUG( printf("(SubOneUlp) Last bit set\n") );
+          /* printf("(SubOneUlp) Last bit set\n"); */
         }
       /* Result could be exact if C'p+1 = 0 and rnd == Zero
          since we have had one more bit to the result */
       /* Fixme: rnd_mode == MPFR_RNDZ needed ? */
       if (rnd_mode == MPFR_RNDZ && bcp1 == 0)
         {
-          DEBUG( printf("(SubOneUlp) Exact result\n") );
+          /* printf("(SubOneUlp) Exact result\n"); */
           inexact = 0;
         }
     }
@@ -1780,15 +1770,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* It is a power of 2! */
           /* Compute Cp+1 if it isn't already compute (ie d==1) */
           /* Note: if d=1, we have {a, n} > 1/2*W^n, thus we cannot have k < 0. */
-          DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
-                 bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
+          /* printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n",
+             bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0); */
           MPFR_ASSERTD(bbcp != MPFR_LIMB_MAX);
           MPFR_ASSERTD(rnd_mode != MPFR_RNDN || bcp != 0 ||
                        bbcp == 0 || bbcp1 != MPFR_LIMB_MAX);
           if ((rnd_mode != MPFR_RNDZ && bcp != 0) ||
               (rnd_mode == MPFR_RNDN && bcp == 0 && bbcp != 0 && bbcp1 != 0))
             {
-              DEBUG( printf("(Truncate) Do sub\n") );
+              /* printf("(Truncate) Do sub\n"); */
               mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
               ap[n-1] |= MPFR_LIMB_HIGHBIT;
               bx--;

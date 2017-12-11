@@ -238,7 +238,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 
-#ifdef DEBUG
+#if 0
   MPFR_LOG_MSG (("rnd=%s shift_b=%d shift_c=%d diffexp=%" MPFR_EXP_FSPEC
                  "d\n", mpfr_print_rnd_mode (rnd_mode), shift_b, shift_c,
                  (mpfr_eexp_t) diff_exp));
@@ -271,7 +271,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     cancel2 = - (mp_size_t) ((diff_exp - cancel) / GMP_NUMB_BITS);
   /* the high cancel2 limbs from b should not be taken into account */
-#ifdef DEBUG
+#if 0
   MPFR_LOG_MSG (("cancel=%Pd cancel1=%Pd cancel2=%Pd\n",
                  cancel, cancel1, cancel2));
 #endif
@@ -404,7 +404,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cn0 = cn;
   cn -= an + cancel2;
 
-#ifdef DEBUG
+#if 0
   MPFR_LOG_MSG (("last sh=%d bits from a are %Mu, bn=%Pd, cn=%Pd\n",
                  sh, carry, (mpfr_prec_t) bn, (mpfr_prec_t) cn));
 #endif
@@ -497,7 +497,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
 
-#ifdef DEBUG
+#if 0
       MPFR_LOG_MSG (("k=%d bb=%Mu cc=%Mu cmp_low=%d\n", k, bb, cc, cmp_low));
 #endif
 

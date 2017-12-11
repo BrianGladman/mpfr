@@ -22,8 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* #define DEBUG */
-
 /* Cache for emin and emax bounds.
    Contrary to other caches, it uses a fixed size for the mantissa,
    so there is no dynamic allocation, and no need to free them. */

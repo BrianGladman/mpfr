@@ -203,8 +203,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
            where gamma is Euler's constant */
         {
           dint = MAX (d + 3, precs);
-          MPFR_TRACE (printf ("branch 1\ninternal precision=%lu\n",
-                              (unsigned long) dint));
+          /* branch 1, with internal precision dint */
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
           mpfr_div (z_pre, __gmpfr_one, s1, MPFR_RNDN);
           mpfr_const_euler (f, MPFR_RNDN);
@@ -214,7 +213,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
         {
           size_t size;
 
-          MPFR_TRACE (printf ("branch 2\n"));
+          /* branch 2 */
           /* Computation of parameters n, p and working precision */
           dnep = (double) d * LOG2;
           sd = mpfr_get_d (s, MPFR_RNDN);
@@ -234,7 +233,6 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
               p = 1 + (int) beta / 2;
               n = 1 + (int) ((sd + 2.0 * (double) p - 1.0) / 6.2832);
             }
-          MPFR_TRACE (printf ("\nn=%d\np=%d\n",n,p));
           /* add = 4 + floor(1.5 * log(d) / log (2)).
              We should have add >= 10, which is always fulfilled since
              d = precz + 11 >= 12, thus ceil(log2(d)) >= 4 */
@@ -244,8 +242,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           if (dint < precs)
             dint = precs;
 
-          MPFR_TRACE (printf ("internal precision=%lu\n",
-                              (unsigned long) dint));
+          /* internal precision is dint */
 
           size = (p + 1) * sizeof(mpfr_t);
           tc1 = (mpfr_t*) mpfr_allocate_func (size);
@@ -253,8 +250,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
             mpfr_init2 (tc1[l], dint);
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
 
-          MPFR_TRACE (printf ("precision of z = %lu\n",
-                              (unsigned long) precz));
+          /* precision of z is precz */
 
           /* Computation of the coefficients c_k */
           mpfr_zeta_c (p, tc1);
@@ -265,7 +261,6 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           mpfr_div (c, __gmpfr_one, s1, MPFR_RNDN);
           mpfr_ui_pow (f, n, s1, MPFR_RNDN);
           mpfr_div (c, c, f, MPFR_RNDN);
-          MPFR_TRACE (MPFR_DUMP (c));
           mpfr_add (z_pre, z_pre, c, MPFR_RNDN);
           mpfr_add (z_pre, z_pre, b, MPFR_RNDN);
           for (l=1; l<=p; l++)
@@ -274,7 +269,6 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           /* End branch 2 */
         }
 
-      MPFR_TRACE (MPFR_DUMP (z_pre));
       if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, d-3, precz, rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, d);
