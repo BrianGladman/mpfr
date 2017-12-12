@@ -25,9 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Macros to detect STDC, ICC, GCC, and GLIBC versions */
 #if defined(__STDC_VERSION__)
-# define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
-#elif defined(__STDC__)
-# define __MPFR_STDC(version) (0 == (version))
+# define __MPFR_STDC(version) (__STDC_VERSION__ >= (version))
 #else
 # define __MPFR_STDC(version) 0
 #endif
