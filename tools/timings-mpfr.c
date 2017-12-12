@@ -26,7 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "gmp.h"
 #include "mpfr.h"
 
-#if defined (USG) || defined (__SVR4) || defined (_UNICOS) || defined(HPUX)
+#if defined (USG) || defined (__SVR4) || defined (_UNICOS) || defined(HPUX) || defined(_MSC_VER)
+
 #include <time.h>
 
 int
@@ -36,7 +37,9 @@ cputime ()
     return clock () * 1000 / CLOCKS_PER_SEC;
   return clock () / (CLOCKS_PER_SEC / 1000);
 }
+
 #else
+
 #include <sys/types.h>
 #include <sys/resource.h>
 
@@ -48,6 +51,7 @@ cputime ()
   getrusage (0, &rus);
   return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
 }
+
 #endif
 
 int
