@@ -578,7 +578,7 @@ But:
   [...]
   if (l != 0) do_action ();
 
- since mp_limb_t may be "unsigned long long", and some buggy compiler
+since mp_limb_t may be "unsigned long long", and some buggy compiler
 produce illegal codes with the first form.
 
    =====================================================================
@@ -751,9 +751,9 @@ for undefined preprocessing identifier").
 ===========================================================================
 
 If you want to use the logging of MPFR, you need to enable it:
- ./configure --enable-logging
- make clean
- make
+  make distclean
+  ./configure --enable-logging
+  make
 Then link your program with this new build of MPFR.
 
 Warning! The logging code for functions sometimes output an "inexact"
