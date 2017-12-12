@@ -101,8 +101,8 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
-  printf("checking %s\n", foo);
+#ifdef MPFR_DEBUG
+  printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref2, prec);
@@ -174,8 +174,8 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
   mpfr_t res;
   int i, j, k;
 
-#ifdef DEBUG
-  printf("checking %s\n", foo);
+#ifdef MPFR_DEBUG
+  printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref, prec);
   mpfr_init2 (op1, prec);
@@ -303,8 +303,8 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t),
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
-  printf("checking %s\n", foo);
+#ifdef MPFR_DEBUG
+  printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref2, prec);
@@ -348,8 +348,8 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t),
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
-  printf("checking %s\n", foo);
+#ifdef MPFR_DEBUG
+  printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref3, prec);
@@ -389,8 +389,8 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
-  printf("checking %s\n", foo);
+#ifdef MPFR_DEBUG
+  printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref2, prec);
@@ -429,7 +429,7 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
+#ifdef MPFR_DEBUG
   printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
@@ -469,7 +469,7 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
   mpfr_t res1, res2;
   int i;
 
-#ifdef DEBUG
+#ifdef MPFR_DEBUG
   printf ("checking %s\n", foo);
 #endif
   mpfr_init2 (ref1, prec);
@@ -532,8 +532,8 @@ pow_int (mpfr_rnd_t rnd)
   mpfr_t res1;
   int i;
 
-#ifdef DEBUG
-  printf("pow_int\n");
+#ifdef MPFR_DEBUG
+  printf ("pow_int\n");
 #endif
   mpfr_inits2 ((randlimb () % 200) + MPFR_PREC_MIN,
                ref1, ref2, res1, (mpfr_ptr) 0);

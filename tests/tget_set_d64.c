@@ -32,8 +32,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define DEC64_MAX 9.999999999999999E384dd
 #endif
 
-/* #define DEBUG */
-
 #if _MPFR_IEEE_FLOATS
 static void
 print_decimal64 (_Decimal64 d)
@@ -389,7 +387,7 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-#ifdef DEBUG
+#ifdef MPFR_DEBUG
 #ifdef DPD_FORMAT
   printf ("Using DPD format\n");
 #else

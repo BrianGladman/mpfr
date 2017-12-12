@@ -937,7 +937,7 @@ cancel (void)
 
               rnd = RND_RAND ();
 
-#if DEBUG
+#if MPFR_DEBUG
               printf ("mpfr_sum cancellation test\n");
               for (j = 0; j < n; j++)
                 {
