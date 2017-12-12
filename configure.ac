@@ -427,7 +427,7 @@ dnl     http://www.ncsa.illinois.edu/UserInfo/Resources/Software/Intel/Compilers
 AC_MSG_CHECKING(for ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
-# error "ICC Not Found"
+# error "Not ICC"
 error
 #endif
 ]], [[]])],[
