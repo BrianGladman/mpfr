@@ -674,9 +674,6 @@ Table of contents:
   constants) because we do not have the control of memory allocation for
   mpz_init.
 
-- rename the DEBUG macro to MPFR_DEBUG to avoid issues with CI builds
-  that define this macro?
-
 
 ##############################################################################
 7. Portability
