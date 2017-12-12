@@ -31,6 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define MPFR_ALLOCA_MAX 16384
 #endif
 
+/* ISO C99 is needed by MPFR_DECL_INIT. */
 #if __MPFR_STDC (199901L) && MPFR_ALLOCA_MAX <= 16384
 
 int
