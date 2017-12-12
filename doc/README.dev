@@ -426,8 +426,8 @@ Format of long double.
 + HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
 
-+ MPFR_DISABLE_IEEE_FLOATS: Use generic 'double' code instead of IEEE
-                            specific one.
++ MPFR_DISABLE_IEEE_FLOATS:
+                        Use generic 'double' code instead of IEEE specific one.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
@@ -446,7 +446,8 @@ Format of long double.
                         as double-double (a.k.a. IBM long double).
 
 + MPFR_USE_LOGGING:     Define to enable logging.
-+ MPFR_WANT_DECIMAL_FLOATS: Define to build conversion functions from/to
++ MPFR_WANT_DECIMAL_FLOATS:
+                        Define to build conversion functions from/to
                         decimal floats.
 + MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
                         __float128.
@@ -457,12 +458,14 @@ Format of long double.
                         the GMP build directory (--with-gmp-build).
 
 + MPFR_USE_THREAD_SAFE: Define to build MPFR as thread safe (TLS).
-+ MPFR_USE_C11_THREAD_SAFE: Define to implement TLS in the C11 way.
++ MPFR_USE_C11_THREAD_SAFE:
+                        Define to implement TLS in the C11 way.
 
 + MPFR_HAVE_NORETURN:   Define if the _Noreturn function specifier is
                         supported.
-+ MPFR_HAVE_BUILTIN_UNREACHABLE: Define if the __builtin_unreachable
-                        GCC built-in is supported.
++ MPFR_HAVE_BUILTIN_UNREACHABLE:
+                        Define if the __builtin_unreachable GCC built-in is
+                        supported.
 
 + MPFR_GENERIC_ABI:     Define to disable code that is tied to a specific
                         ABI (e.g. GMP_NUMB_BITS value).
@@ -521,7 +524,8 @@ Environment variables that affect the tests:
 
 + MPFR_CHECK_LARGEMEM:  Define to enable expensive tests.
 
-+ MPFR_CHECK_LIBC_PRINTF: Define to enable comparisons with the printf
++ MPFR_CHECK_LIBC_PRINTF:
+                        Define to enable comparisons with the printf
                         function of the C library. These comparisons are
                         disabled by default as failures could be due to
                         the C library itself on some machines, and they
@@ -529,11 +533,12 @@ Environment variables that affect the tests:
 
 + MPFR_DEBUG_BADCASES:  For debugging (see tests.c, function bad_cases).
 
-+ MPFR_SUSPICIOUS_OVERFLOW: Define to check suspicious overflow in the
-                        generic tests (tgeneric.c). For developers and
-                        testers.
++ MPFR_SUSPICIOUS_OVERFLOW:
+                        Define to check suspicious overflow in the generic
+                        tests (tgeneric.c). For developers and testers.
 
-+ MPFR_TESTS_MEMORY_LIMIT: The memory limit for the tests (default is
++ MPFR_TESTS_MEMORY_LIMIT:
+                        The memory limit for the tests (default is
                         2^22 = 4 MB). Set to 0 for unlimited.
 
 + MPFR_TESTS_TIMEOUT:   When timeout in the tests is enabled, this
