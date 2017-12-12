@@ -30,8 +30,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <time.h>
 
-int
-cputime ()
+static int
+cputime (void)
 {
   if (CLOCKS_PER_SEC < 100000)
     return clock () * 1000 / CLOCKS_PER_SEC;
@@ -44,7 +44,7 @@ cputime ()
 #include <sys/resource.h>
 
 static int
-cputime ()
+cputime (void)
 {
   struct rusage rus;
 
