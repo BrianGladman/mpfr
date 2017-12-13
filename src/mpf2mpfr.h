@@ -39,6 +39,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef mpf_init2
 #define mpf_init2(x,p) (mpfr_init2((x),(p)), mpfr_set_ui ((x), 0, MPFR_DEFAULT_RND))
 
+#undef mpf_inits
+#define mpf_inits mpfr_inits
+#undef mpf_clears
+#define mpf_clears mpfr_clears
+
 /* functions which don't take as argument the rounding mode */
 #undef mpf_ceil
 #define mpf_ceil mpfr_ceil
