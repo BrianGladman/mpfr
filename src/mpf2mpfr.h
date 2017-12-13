@@ -39,6 +39,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef mpf_init2
 #define mpf_init2(x,p) (mpfr_init2((x),(p)), mpfr_set_ui ((x), 0, MPFR_DEFAULT_RND))
 
+/* Warning! This assumes that all pointer types have the same representation. */
 #undef mpf_inits
 #define mpf_inits mpfr_inits
 #undef mpf_clears
