@@ -608,6 +608,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             {
               ap[1] = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
               a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
+              sb <<= 1;
               bx --;
             }
           else

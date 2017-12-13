@@ -218,6 +218,24 @@ compare_sub_sub1sp (void)
     }
 }
 
+static void
+bug20171213 (void)
+{
+  mpfr_t a, b, c;
+
+  mpfr_init2 (a, 127);
+  mpfr_init2 (b, 127);
+  mpfr_init2 (c, 127);
+  mpfr_set_str_binary (b, "0.1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E1");
+  mpfr_set_str_binary (c, "0.1000011010111101100101100110101111111001011001010000110000000000000000000000000000000000000000000000000000000000000000000000000E-74");
+  mpfr_sub (a, b, c, MPFR_RNDN);
+  mpfr_set_str_binary (b, "0.1111111111111111111111111111111111111111111111111111111111111111111111111101111001010000100110100110010100000001101001101011110E0");
+  MPFR_ASSERTN(mpfr_equal_p (a, b));
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 int
 main (void)
 {
@@ -228,6 +246,7 @@ main (void)
   compare_sub_sub1sp ();
   test20170208 ();
   bug20170109 ();
+  bug20171213 ();
   check_special ();
   for (p = MPFR_PREC_MIN ; p < 200 ; p++)
     {
