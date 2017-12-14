@@ -236,6 +236,54 @@ bug20171213 (void)
   mpfr_clear (c);
 }
 
+/* generic test for bug20171213:
+   b = 1.0 with precision p
+   c = 0.1xxx110...0E-e with precision p, with e >= 1, such that the part 1xxx1 has
+       exactly p+1-e bits, thus b-c = 0.111..01... is exact on p+1 bits.
+   Due to the round-to-even rule, b-c should be rounded to 0.111..0.
+*/
+static void
+bug20171213_gen (mp_prec_t pmax)
+{
+  mpfr_prec_t p;
+  mpfr_exp_t e;
+  mpfr_t a, b, c, d;
+
+  for (p = MPFR_PREC_MIN; p <= pmax; p++)
+    {
+      for (e = 1; e < p; e++)
+        {
+          mpfr_init2 (a, p);
+          mpfr_init2 (b, p);
+          mpfr_init2 (c, p);
+          mpfr_init2 (d, p);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          mpfr_set_ui_2exp (c, 1, p + 1 - e, MPFR_RNDN); /* c = 2^(p + 1 - e) */
+          mpfr_sub_ui (c, c, 1, MPFR_RNDN); /* c = 2^(p + 1 - e) - 1 */
+          mpfr_div_2exp (c, c, p + 1, MPFR_RNDN); /* c = 2^(-e) - 2^(-p-1) */
+          /* the exact difference is 1 - 2^(-e) + 2^(-p-1) */
+          mpfr_sub (a, b, c, MPFR_RNDN);
+          /* check that a = 1 - 2^(-e) */
+          mpfr_set_ui_2exp (d, 1, e, MPFR_RNDN); /* b = 2^e */
+          mpfr_sub_ui (d, d, 1, MPFR_RNDN);      /* b = 2^e - 1 */
+          mpfr_div_2exp (d, d, e, MPFR_RNDN);    /* b = 1 - 2^(-e) */
+          if (mpfr_equal_p (a, d) == 0)
+            {
+              printf ("bug20171213_gen failed for p=%lu, e=%lu\n", p, e);
+              printf ("b="); mpfr_dump (b);
+              printf ("c="); mpfr_dump (c);
+              printf ("got      a="); mpfr_dump (a);
+              printf ("expected d="); mpfr_dump (d);
+              exit (1);
+            }
+          mpfr_clear (a);
+          mpfr_clear (b);
+          mpfr_clear (c);
+          mpfr_clear (d);
+        }
+    }
+}
+
 int
 main (void)
 {
@@ -247,6 +295,7 @@ main (void)
   test20170208 ();
   bug20170109 ();
   bug20171213 ();
+  bug20171213_gen (256);
   check_special ();
   for (p = MPFR_PREC_MIN ; p < 200 ; p++)
     {
