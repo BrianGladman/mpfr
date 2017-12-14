@@ -50,7 +50,7 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
     {
       ax --;
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
-      sb = sb << 1;
+      sb <<= 1;
     }
   rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
   sb |= (a0 & mask) ^ rb;
@@ -143,7 +143,7 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
     {
       ax --;
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
-      sb = sb << 1;
+      sb <<= 1;
     }
   rb = sb & MPFR_LIMB_HIGHBIT;
   sb = sb & ~MPFR_LIMB_HIGHBIT;
@@ -270,7 +270,7 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       ax --;
       h = (h << 1) | (l >> (GMP_NUMB_BITS - 1));
       l = (l << 1) | (sb >> (GMP_NUMB_BITS - 1));
-      sb = sb << 1;
+      sb <<= 1;
       /* no need to shift sb2 since we only want to know if it is zero or not */
     }
   ap[1] = h;
@@ -412,7 +412,7 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       a2 = (a2 << 1) | (a1 >> (GMP_NUMB_BITS - 1));
       a1 = (a1 << 1) | (a0 >> (GMP_NUMB_BITS - 1));
       a0 = (a0 << 1) | (sb >> (GMP_NUMB_BITS - 1));
-      sb = sb << 1;
+      sb <<= 1;
       /* no need to shift sb2: we only need to know if it is zero or not */
     }
   ap[2] = a2;
