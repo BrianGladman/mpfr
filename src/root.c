@@ -112,6 +112,10 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
+  /* Special case x=1. */
+  if (mpfr_cmp_ui (x, 1) == 0)
+    return mpfr_set_ui (y, 1, rnd_mode);
+
   /* General case */
 
   /* For large k, use exp(log(x)/k). The threshold of 100 seems to be quite

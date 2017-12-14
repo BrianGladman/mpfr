@@ -457,6 +457,22 @@ cmp_pow (void)
   mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
 }
 
+static void
+bug20171214 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 805);
+  mpfr_init2 (y, 837);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  inex = mpfr_root (y, x, 120, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -507,6 +523,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  bug20171214 ();
   exact_powers (3, 1000);
   special ();
   bigint ();
