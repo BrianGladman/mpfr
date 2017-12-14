@@ -243,7 +243,7 @@ bug20171213 (void)
    Due to the round-to-even rule, b-c should be rounded to 0.111..0.
 */
 static void
-bug20171213_gen (mp_prec_t pmax)
+bug20171213_gen (mpfr_prec_t pmax)
 {
   mpfr_prec_t p;
   mpfr_exp_t e;
@@ -267,7 +267,7 @@ bug20171213_gen (mp_prec_t pmax)
           mpfr_set_ui_2exp (d, 1, e, MPFR_RNDN); /* b = 2^e */
           mpfr_sub_ui (d, d, 1, MPFR_RNDN);      /* b = 2^e - 1 */
           mpfr_div_2exp (d, d, e, MPFR_RNDN);    /* b = 1 - 2^(-e) */
-          if (mpfr_equal_p (a, d) == 0)
+          if (! mpfr_equal_p (a, d))
             {
               printf ("bug20171213_gen failed for p=%lu, e=%lu\n", p, e);
               printf ("b="); mpfr_dump (b);
