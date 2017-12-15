@@ -112,9 +112,10 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  /* Special case x=1. */
-  if (mpfr_cmp_ui (x, 1) == 0)
-    return mpfr_set_ui (y, 1, rnd_mode);
+  /* Special case |x| = 1. Note that if x = -1, then k is odd
+     (NaN results have already been filtered), so that y = -1. */
+  if (mpfr_cmpabs (x, __gmpfr_one) == 0)
+    return mpfr_set (y, x, rnd_mode);
 
   /* General case */
 
@@ -197,6 +198,14 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
    Assume all special cases have been eliminated before.
    In the extended exponent range, overflows/underflows are not possible.
    Assume x > 0, or x < 0 and k odd.
+   Also assume |x| <> 1 because log(1) = 0, which does not have an exponent
+   and would yield a failure in the error bound computation. A priori, this
+   constraint is quite artificial because if |x| is close enough to 1, then
+   the exponent of log|x| does not need to be used (in the code, err would
+   be 1 in such a domain). So this constraint |x| <> 1 could be avoided in
+   the code. However, this is an easy exact case to detect, so that such a
+   change would be useless. Values very close to 1 are not an issue, since
+   an underflow is not possible before the MPFR_GET_EXP.
 */
 static int
 mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
@@ -228,7 +237,8 @@ mpfr_root_aux (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
       mpfr_log (t, absx, MPFR_RNDN);
       /* t = log|x| * (1 + theta) with |theta| <= 2^(-w) */
       mpfr_div_ui (t, t, k, MPFR_RNDN);
-      expt = MPFR_GET_EXP (t);
+      /* No possible underflow in mpfr_log and mpfr_div_ui. */
+      expt = MPFR_GET_EXP (t);  /* assumes t <> 0 */
       /* t = log|x|/k * (1 + theta) + eps with |theta| <= 2^(-w)
          and |eps| <= 1/2 ulp(t), thus the total error is bounded
          by 1.5 * 2^(expt - w) */

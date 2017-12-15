@@ -467,8 +467,12 @@ bug20171214 (void)
   mpfr_init2 (y, 837);
   mpfr_set_ui (x, 1, MPFR_RNDN);
   inex = TF (y, x, 120, MPFR_RNDN);
-  MPFR_ASSERTN(inex == 0);
-  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  MPFR_ASSERTN (inex == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (y, 1) == 0);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  inex = TF (y, x, 121, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  MPFR_ASSERTN (mpfr_cmp_si (y, -1) == 0);
   mpfr_clear (x);
   mpfr_clear (y);
 }
