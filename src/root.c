@@ -203,7 +203,7 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
    constraint is quite artificial because if |x| is close enough to 1, then
    the exponent of log|x| does not need to be used (in the code, err would
    be 1 in such a domain). So this constraint |x| <> 1 could be avoided in
-   the code. However, this is an easy exact case to detect, so that such a
+   the code. However, this is an exact case easy to detect, so that such a
    change would be useless. Values very close to 1 are not an issue, since
    an underflow is not possible before the MPFR_GET_EXP.
 */
