@@ -1,4 +1,313 @@
 ------------------------------------------------------------------------
+r11987 | zimmerma | 2017-12-17 16:23:21 +0000 (Sun, 17 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] fix bug in mpfr_add1sp3() in case d=GMP_NUMB_BITS
+
+------------------------------------------------------------------------
+r11986 | zimmerma | 2017-12-17 15:16:48 +0000 (Sun, 17 Dec 2017) | 14 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] added test for new bug (still to be fixed):
+
+Seed GMP_CHECK_RANDOMIZE=1514385177 (include this in bug reports)
+add1 & add1sp return different values for MPFR_RNDN
+Prec_a = 137, Prec_b = 137, Prec_c = 137
+B = 0.11111111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000000E-66
+C = 0.11111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000110000E-2
+
+add1  : 0.10000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000001000E-1
+add1sp: 0.11111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000010000E-2
+Inexact sp = 0 | Inexact = 0
+Flags sp = 8 | Flags = 8
+add1sp.c:89: MPFR assertion failed: 0
+
+------------------------------------------------------------------------
+r11981 | vlefevre | 2017-12-15 02:44:49 +0000 (Fri, 15 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/root.c
+
+[src/root.c] Minor comment correction.
+------------------------------------------------------------------------
+r11980 | vlefevre | 2017-12-15 02:36:50 +0000 (Fri, 15 Dec 2017) | 4 lines
+Changed paths:
+   M /trunk/src/root.c
+   M /trunk/tests/troot.c
+
+[src/root.c] Completed fix from r11978, as x=-1 was affected too. Also
+  added comments explaining that mpfr_root_aux assumes |x| ≠ 1 and why.
+  Hence the need of a filter on |x| = 1.
+[tests/troot.c] Added test for x = -1.
+------------------------------------------------------------------------
+r11979 | vlefevre | 2017-12-15 01:44:11 +0000 (Fri, 15 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/troot.c
+
+[tests/troot.c] Replaced mpfr_root by TF (like in the other tests).
+------------------------------------------------------------------------
+r11978 | zimmerma | 2017-12-14 10:22:32 +0000 (Thu, 14 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/root.c
+   M /trunk/tests/troot.c
+
+[src/root.c] fixed bug when x=1
+[tests/troot.c] added non-regression test
+
+------------------------------------------------------------------------
+r11977 | vlefevre | 2017-12-14 07:57:05 +0000 (Thu, 14 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tsub1sp.c
+
+[tests/tsub1sp.c] Corrected a type. And mpfr_equal_p being a predicate
+function, it's better to use Boolean operators on it.
+------------------------------------------------------------------------
+r11976 | zimmerma | 2017-12-14 07:35:35 +0000 (Thu, 14 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tsub1sp.c
+
+[tests/tsub1sp.c] added a generic test for bug20171213()
+
+------------------------------------------------------------------------
+r11975 | vlefevre | 2017-12-14 02:17:05 +0000 (Thu, 14 Dec 2017) | 7 lines
+Changed paths:
+   M /trunk/src/mul.c
+   M /trunk/src/sqr.c
+
+[src/{mul.c,sqr.c}] Minor changes, making code similar to sub1sp.c.
+Checked with
+  grep -A 1 'sb *>>' src/*.c
+that the bug fixed in r11974 does not occur in other parts of the code.
+BTW, there is much duplicate code, as shown by the grep output, and
+using macros could have avoided that, making bugs easier to reproduce
+(since a same bug would be duplicate several times).
+------------------------------------------------------------------------
+r11974 | zimmerma | 2017-12-13 21:18:23 +0000 (Wed, 13 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+   M /trunk/tests/tsub1sp.c
+
+[src/sub1sp.c] fixed bug in mpfr_sub1sp2()
+[tests/tsub1sp.c] added non-regression test
+
+------------------------------------------------------------------------
+r11973 | vlefevre | 2017-12-13 18:00:00 +0000 (Wed, 13 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/mpf2mpfr.h
+
+[src/mpf2mpfr.h] Added a comment.
+------------------------------------------------------------------------
+r11972 | zimmerma | 2017-12-13 17:25:07 +0000 (Wed, 13 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/mpf2mpfr.h
+
+[src/mpf2mpfr.h] missing mpf_inits/mpf_clears
+
+------------------------------------------------------------------------
+r11969 | zimmerma | 2017-12-13 07:05:01 +0000 (Wed, 13 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/mpfr-gmp.h
+
+[src/mpfr-gmp.h] redefine __clz_tab also with gmp-build
+
+------------------------------------------------------------------------
+r11968 | vlefevre | 2017-12-12 22:20:41 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] Improved error message.
+------------------------------------------------------------------------
+r11967 | vlefevre | 2017-12-12 15:38:37 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/talloc.c
+
+[tests/talloc.c] Added a comment about why talloc requires ISO C99.
+------------------------------------------------------------------------
+r11966 | vlefevre | 2017-12-12 15:35:34 +0000 (Tue, 12 Dec 2017) | 4 lines
+Changed paths:
+   M /trunk/src/mpfr-cvers.h
+
+[src/mpfr-cvers.h] Removed a useless test for __MPFR_STDC, as one just
+needs to check whether we have a C99, C11, etc. implementation (if not
+done via a configure test). Particular incompatibilities with the C90
+standard should always be checked via a configure test.
+------------------------------------------------------------------------
+r11965 | vlefevre | 2017-12-12 12:04:01 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests
+
+[tests] Added *.exe to svn:ignore property (files from MinGW builds).
+------------------------------------------------------------------------
+r11964 | zimmerma | 2017-12-12 11:07:36 +0000 (Tue, 12 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tools/timings-mpfr.c
+
+[tools/timings-mpfr.c] always use clock() [now very accurate under Linux]
+
+------------------------------------------------------------------------
+r11963 | vlefevre | 2017-12-12 10:15:50 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tools/timings-mpfr.c
+
+[tools/timings-mpfr.c] Updated years in copyright notice.
+------------------------------------------------------------------------
+r11962 | vlefevre | 2017-12-12 10:14:08 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tools/timings-mpfr.c
+
+[tools/timings-mpfr.c] Fixed prototypes.
+------------------------------------------------------------------------
+r11961 | vlefevre | 2017-12-12 10:12:48 +0000 (Tue, 12 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tools/timings-mpfr.c
+
+[tools/timings-mpfr.c] Added a defined(_MSC_VER). But clock() is
+standard, so why not always using it?
+------------------------------------------------------------------------
+r11960 | vlefevre | 2017-12-12 01:17:00 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Correction.
+------------------------------------------------------------------------
+r11959 | vlefevre | 2017-12-12 01:11:31 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Made formatting consistent (same as configure --help).
+------------------------------------------------------------------------
+r11958 | vlefevre | 2017-12-12 00:58:43 +0000 (Tue, 12 Dec 2017) | 5 lines
+Changed paths:
+   M /trunk/tests/reuse.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tsum.c
+
+Completed r11955: There were also DEBUG macros under the "tests"
+directory. Since such macros can still be useful in case a test failure,
+replaced them by MPFR_DEBUG to avoid issues with CI builds that define
+the DEBUG macro. But an environment variable would be a better solution
+(see MPFR_DEBUG_BADCASES as an example).
+------------------------------------------------------------------------
+r11957 | vlefevre | 2017-12-12 00:44:45 +0000 (Tue, 12 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/TODO
+
+[TODO] Removed item on the DEBUG macro (done in r11955).
+------------------------------------------------------------------------
+r11956 | zimmerma | 2017-12-11 17:36:36 +0000 (Mon, 11 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/doc/README.dev
+   M /trunk/src/mpfr-impl.h
+   M /trunk/tests/tgeneric.c
+
+DEBUG_TGENERIC -> MPFR_DEBUG_TGENERIC
+XDEBUG -> MPFR_DISABLE_IEEE_FLOATS
+
+------------------------------------------------------------------------
+r11955 | zimmerma | 2017-12-11 17:02:05 +0000 (Mon, 11 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+   M /trunk/src/div.c
+   M /trunk/src/exp.c
+   M /trunk/src/exp_2.c
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/sub1.c
+   M /trunk/src/sub1sp.c
+   M /trunk/src/zeta.c
+
+get rid of DEBUG macro (but keep corresponding commands in comment to help
+understanding of the code and debugging)
+
+------------------------------------------------------------------------
+r11954 | vlefevre | 2017-12-11 15:33:31 +0000 (Mon, 11 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/tget_q.c
+
+[tests/tget_q.c] Removed trailing whitespace.
+------------------------------------------------------------------------
+r11953 | zimmerma | 2017-12-10 07:42:03 +0000 (Sun, 10 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tget_q.c
+
+[tests/tget_q.c] replaced MPFR_ASSERTN(0) by exit(1)
+
+------------------------------------------------------------------------
+r11952 | vlefevre | 2017-12-10 02:02:43 +0000 (Sun, 10 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/get_q.c
+
+[src/get_q.c] Optimization of r11951 suggested by Trevor Spiteri:
+https://sympa.inria.fr/sympa/arc/mpfr/2017-12/msg00040.html
+------------------------------------------------------------------------
+r11951 | zimmerma | 2017-12-09 21:59:21 +0000 (Sat, 09 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/get_q.c
+   M /trunk/tests/tget_q.c
+
+[src/get_q.c] make result of mpfr_get_q in canonical form
+[tests/tget_q.c] added non-regression test
+
+------------------------------------------------------------------------
+r11950 | zimmerma | 2017-12-09 21:46:01 +0000 (Sat, 09 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/lngamma.c
+
+[src/lngamma.c] replace call to __gmpfr_ceil_log2 by __gmpfr_int_ceil_log2
+
+------------------------------------------------------------------------
+r11949 | vlefevre | 2017-12-09 11:18:20 +0000 (Sat, 09 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/TODO
+
+[TODO] Rename the DEBUG macro to MPFR_DEBUG?
+------------------------------------------------------------------------
+r11945 | vlefevre | 2017-12-08 16:15:36 +0000 (Fri, 08 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+
+[src/Makefile.am] Also distribute generic/coverage/mparam.h
+(at least useful for testing the distributed tarballs).
+------------------------------------------------------------------------
+r11942 | vlefevre | 2017-12-08 14:53:52 +0000 (Fri, 08 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/FAQ.html
+
+[doc] Updated FAQ.html with update-faq.
+------------------------------------------------------------------------
+r11939 | vlefevre | 2017-12-08 14:30:37 +0000 (Fri, 08 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/FAQ.html
+
+[doc] Updated FAQ.html with update-faq.
+------------------------------------------------------------------------
+r11934 | vlefevre | 2017-12-08 13:56:42 +0000 (Fri, 08 Dec 2017) | 5 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] "To make a release":
+  * Note that this needs to be done in a branch.
+  * Swapped (1) and (2), in particular because the coverage might be
+    different in -dev versions and it is better to give results closer
+    to the release.
+------------------------------------------------------------------------
+r11933 | vlefevre | 2017-12-08 13:40:19 +0000 (Fri, 08 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.ac
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/mpfr.h
+   M /trunk/src/version.c
+
+Updated version to 4.1.0-dev.
+------------------------------------------------------------------------
+r11931 | vlefevre | 2017-12-08 13:17:51 +0000 (Fri, 08 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/ChangeLog
+
+ChangeLog update with "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+------------------------------------------------------------------------
 r11930 | vlefevre | 2017-12-08 13:09:08 +0000 (Fri, 08 Dec 2017) | 2 lines
 Changed paths:
    D /trunk/tests/timings-mpfr.c
