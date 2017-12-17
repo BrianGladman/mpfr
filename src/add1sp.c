@@ -527,7 +527,11 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             : (cp[2] << (2*GMP_NUMB_BITS-d)) | (cp[1] >> (d - GMP_NUMB_BITS));
           a0 = bp[0] + c0shifted;
           a1 = bp[1] + (cp[2] >> (d - GMP_NUMB_BITS)) + (a0 < bp[0]);
-          a2 = bp[2] + (a1 < bp[1]);
+          /* if a1 < bp[1], there was a carry in the above addition,
+             or when a1 = bp[1] and one of the added terms is nonzero
+             (the sum of cp[2] >> (d - GMP_NUMB_BITS) and a0 < bp[0]
+             is at most 2^GMP_NUMB_BITS-d) */
+          a2 = bp[2] + ((a1 < bp[1]) || (a1 == bp[1] && a0 < bp[0]));
           if (a2 == 0)
             goto exponent_shift;
           rb = a0 & (MPFR_LIMB_ONE << (sh - 1));
