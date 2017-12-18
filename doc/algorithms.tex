@@ -1865,7 +1865,7 @@ and then $s = \tanh(x) \cdot (1+\theta_4)^{2^k+4}$.
 
 \begin{lemma}
 For $0 < x \leq 1/2$ and $0 < y \leq x^{-1/2}$, we have:
-\[ 0 < (1+x)^y - 1 \leq 1.2 \cdot y \cdot x. \]
+\[ 0 < (1+x)^y - 1 \leq 1.4 \cdot y \cdot x. \]
 \end{lemma}
 \begin{proof}
 We have $(1+x)^y = e^{y \cdot \log(1+x)}$, with
@@ -1876,8 +1876,8 @@ Thus $0 < y \cdot \log(1+x) < 0.574$.
 Now it is easy to see that for $0 < t < 0.574$, we have
 $|e^t-1| \leq 1.4\,t$.
 Thus $0 < (1+x)^y - 1 \leq 1.4 \cdot y \cdot \log(1+x)$.
-The result follows from $\log(1+x) \leq 0.82\,x$ for
-$0 < x \leq 1/2$, and $1.4 \times 0.82 \leq 1.2$.
+The result follows from $\log(1+x) \leq x$ for
+$0 < x \leq 1/2$.
 \end{proof}
 
 First, note that for $t > 0$ and $q \geq 1$, one has
@@ -1886,8 +1886,8 @@ development. Thus $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|$.
 Then one can apply the above lemma for $x=2^{-p}$ and $y=2^k+4$,
 assuming $2^k+4 \leq 2^{p/2}$.
 We get $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|
-\leq 1.2 (2^k+4) 2^{-p}$, and thus
-we can write $s = \tanh(x) [1 + 1.2 (2^k+4)\theta_5]$ with
+\leq 1.4 (2^k+4) 2^{-p}$, and thus
+we can write $s = \tanh(x) [1 + 1.4 (2^k+4)\theta_5]$ with
 $|\theta_5| \leq 2^{-p}$.
 Since $2^k+4 \leq 2^{{\rm max}(3,k+1)}$,
 the relative error on $s$ is thus bounded by $2^{{\rm max}(4,k+2)-p}$.
