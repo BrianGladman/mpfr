@@ -70,6 +70,24 @@ check_nans (void)
   mpfr_clear (y);
 }
 
+static void
+bug20171218 (void)
+{
+  mpfr_t a, b;
+  mpfr_init2 (a, 22);
+  mpfr_init2 (b, 1312);
+  mpfr_set_str (b, "1.ffffffffffffffffffc3e0007ffe000700fff8001fff800000000007e0fffe0007fffffff00001f800000003ffffffe1fc00000003fffe7c03ffffffffffffffe000000fffffffff83f0000007ffc03ffffffffc0007ff0000ffcfffffe00000f80000000003c007ffffffff3ff807ffffffffff000000000000001fc000fffe000600000ff0003ffe00fffffffc00001ffc0fffffffffff00000807fe03ffffffc01ffe", 16, MPFR_RNDN);
+  mpfr_mul_d (a, b, 0.5, MPFR_RNDF);
+  /* a should be 1 or nextbelow(1) */
+  if (mpfr_cmp_ui (a, 1) != 0)
+    {
+      mpfr_nextabove (a);
+      MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+    }
+  mpfr_clear (a);
+  mpfr_clear (b);
+}
+
 #define TEST_FUNCTION mpfr_mul_d
 #define DOUBLE_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -83,6 +101,8 @@ main (void)
   int inexact;
 
   tests_start_mpfr ();
+
+  bug20171218 ();
 
   /* check with enough precision */
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);

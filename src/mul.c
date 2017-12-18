@@ -981,22 +981,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         /* now the approximation is in tmp[tn-n]...tmp[tn-1] */
         MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
+        /* for RNDF, we simply use RNDZ, since anyway here we multiply numbers
+           with large precisions, thus the overhead of RNDZ is small */
+        if (rnd_mode == MPFR_RNDF)
+          rnd_mode = MPFR_RNDZ;
+        
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
-        if (rnd_mode == MPFR_RNDF && p + b1 - 1 >= aq
-            && ((aq % GMP_NUMB_BITS) != 0))
-          {
-            /* Warning: while we know the error is bounded by
-               ufp(tmp)/2^(p+b1-1), and we want aq correct bits,
-               simply truncating tmp might give a result which is
-               1 ulp too small, in case tmp ends with 111...111.
-               But if we add one to tmp[tn-n], and then truncate, we
-               cannot exceed what would be obtained by RNDU,
-               since tmp has more bits than a */
-            mpn_add_1 (tmp + tn - n, tmp + tn - n, n, MPFR_LIMB_ONE);
-            /* we can round */
-          }
-        else if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
+        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
                                                aq + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
