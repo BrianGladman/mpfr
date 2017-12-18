@@ -1880,11 +1880,12 @@ The result follows from $\log(1+x) \leq 0.82\,x$ for
 $0 < x \leq 1/2$, and $1.4 \times 0.82 \leq 1.2$.
 \end{proof}
 
-% Because for t > 0 and q >= 1, |(1-t)^q - 1| <= |(1+t)^q - 1|...
-
-Applying the above lemma for $x=2^{-p}$ and $y=2^k+4$,
-assuming $2^k+4 \leq 2^{p/2}$,
-we get $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|
+First, note that for $t > 0$ and $q \geq 1$, one has
+$|(1-t)^q - 1| \leq |(1+t)^q - 1|$ due to the triangle inequality on the
+development. Thus $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|$.
+Then one can apply the above lemma for $x=2^{-p}$ and $y=2^k+4$,
+assuming $2^k+4 \leq 2^{p/2}$.
+We get $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|
 \leq 1.2 (2^k+4) 2^{-p}$, and thus
 we can write $s = \tanh(x) [1 + 1.2 (2^k+4)\theta_5]$ with
 $|\theta_5| \leq 2^{-p}$.
