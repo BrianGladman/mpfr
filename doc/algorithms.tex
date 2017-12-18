@@ -1892,7 +1892,9 @@ $|\theta_5| \leq 2^{-p}$.
 Since $2^k+4 \leq 2^{{\rm max}(3,k+1)}$,
 the relative error on $s$ is thus bounded by $2^{{\rm max}(4,k+2)-p}$.
 
-The condition $2^k+4 \leq 2^{p/2}$ is checked in the code.
+The condition $2^k+4 \leq 2^{p/2}$ is checked in the code with
+${\rm max}(3,k+1) \leq \lfloor p/2 \rfloor$, so that:
+\[2^k+4 \leq 2^{{\rm max}(3,k+1)} \leq 2^{\lfloor p/2 \rfloor} \leq 2^{p/2}.\]
 
 \subsection{The inverse hyperbolic tangent function}
 

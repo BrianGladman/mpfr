@@ -131,10 +131,12 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
       d = d - MPFR_GET_EXP (te);
       mpfr_div (t, te, t, MPFR_RNDN);      /* (exp(2x)-1)/(exp(2x)+1) */
 
-      /* Calculation of the error, see algorithms.tex */
-      d = MAX(4, d + 2);
+      /* Calculation of the error, see algorithms.tex; the current value
+         of d is k in algorithms.tex. */
+      d = MAX(3, d + 1);  /* d = exponent in 2^(max(3,k+1)) */
       err = Nt - (d + 1);
 
+      /* The inequality is the condition max(3,k+1) <= floor(p/2). */
       if (MPFR_LIKELY ((d <= Nt / 2) && MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         {
           inexact = mpfr_set4 (y, t, rnd_mode, sign);
