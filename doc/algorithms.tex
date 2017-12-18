@@ -1863,6 +1863,7 @@ then the error on $r$ is bounded by $\frac{1}{2} (2^k+1) \ulp(r)$.
 We can thus write $r = (e^{2x}-1) (1+\theta_3)^{2^k+1}$,
 and then $s = \tanh(x) \cdot (1+\theta_4)^{2^k+4}$.
 
+% FIXME: Simplify/improve the lemma since x > 0 and y > 0.
 \begin{lemma}
 For $|x| \leq 1/2$, and $|y| \leq |x|^{-1/2}$, we have:
 \[ |(1+x)^y-1| \leq 2.5 \cdot |y| \cdot |x|. \]
@@ -1881,13 +1882,16 @@ The result follows from $\left|\log (1+x)\right| \leq 1.4 |x|$ for
 $|x| \leq 1/2$, and $1.72 \times 1.4 \leq 2.5$.
 \end{proof}
 
-Applying the above lemma for $x=\theta_4$ and $y=2^k+4$,
+Applying the above lemma for $x=2^{-p}$ and $y=2^k+4$,
 assuming $2^k+4 \leq 2^{p/2}$,
-we get $|(1+\theta_4)^{2^k+4} - 1| \leq 2.5 (2^k+4) |\theta_4|$, and thus
+we get $|(1+\theta_4)^{2^k+4} - 1| \leq |(1+2^{-p})^{2^k+4} - 1|
+\leq 2.5 (2^k+4) 2^{-p}$, and thus
 we can write $s = \tanh(x) [1 + 2.5 (2^k+4)\theta_5]$ with
 $|\theta_5| \leq 2^{-p}$.
 Since $2^k+4 \leq 2^{{\rm max}(3,k+1)}$,
 the relative error on $s$ is thus bounded by $2^{{\rm max}(5,k+3)-p}$.
+
+% FIXME: What about "assuming $2^k+4 \leq 2^{p/2}$"?
 
 \subsection{The inverse hyperbolic tangent function}
 
