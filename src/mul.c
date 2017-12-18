@@ -985,7 +985,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            with large precisions, thus the overhead of RNDZ is small */
         if (rnd_mode == MPFR_RNDF)
           rnd_mode = MPFR_RNDZ;
-        
+
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
         if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
