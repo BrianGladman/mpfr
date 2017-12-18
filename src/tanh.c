@@ -98,13 +98,20 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
     if (MPFR_GET_EXP (x) < 0)
       Nt += -MPFR_GET_EXP (x);
 
+    /* The error analysis in algorithms.tex assumes that x is exactly
+       representable with working precision Nt.
+       FIXME: adapt the error analysis for the case Nt < PREC(x). */
+    if (Nt < MPFR_PREC(x))
+      Nt = MPFR_PREC(x);
+
     /* initialize of intermediary variable */
     MPFR_GROUP_INIT_2 (group, Nt, t, te);
 
     MPFR_ZIV_INIT (loop, Nt);
     for (;;) {
       /* tanh = (exp(2x)-1)/(exp(2x)+1) */
-      mpfr_mul_2ui (te, x, 1, MPFR_RNDN);  /* 2x */
+      inexact = mpfr_mul_2ui (te, x, 1, MPFR_RNDN);  /* 2x */
+      MPFR_ASSERTD(inexact == 0); /* see FIXME above */
       /* since x > 0, we can only have an overflow */
       mpfr_exp (te, te, MPFR_RNDN);        /* exp(2x) */
       if (MPFR_UNLIKELY (MPFR_IS_INF (te))) {
@@ -119,13 +126,13 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
         break;
       }
       d = MPFR_GET_EXP (te);              /* For Error calculation */
-      mpfr_add_ui (t, te, 1, MPFR_RNDD);   /* exp(2x) + 1*/
-      mpfr_sub_ui (te, te, 1, MPFR_RNDU);  /* exp(2x) - 1*/
+      mpfr_add_ui (t, te, 1, MPFR_RNDD);   /* exp(2x) + 1 */
+      mpfr_sub_ui (te, te, 1, MPFR_RNDU);  /* exp(2x) - 1 */
       d = d - MPFR_GET_EXP (te);
-      mpfr_div (t, te, t, MPFR_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
+      mpfr_div (t, te, t, MPFR_RNDN);      /* (exp(2x)-1)/(exp(2x)+1) */
 
-      /* Calculation of the error */
-      d = MAX(3, d + 1);
+      /* Calculation of the error, see algorithms.tex */
+      d = MAX(4, d + 2);
       err = Nt - (d + 1);
 
       if (MPFR_LIKELY ((d <= Nt / 2) && MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))

@@ -116,11 +116,31 @@ special_overflow (void)
   mpfr_clear (x);
 }
 
+/* This test was generated from bad_cases, with input y=-7.778@-1 = -3823/8192.
+   For the x value below, we have atanh(y) < x, thus since tanh() is increasing,
+   y < tanh(x), and thus tanh(x) rounded towards zero should give -3822/8192. */
+static void
+bug20171218 (void)
+{
+  mpfr_t x, y, z;
+  mpfr_init2 (x, 813);
+  mpfr_init2 (y, 12);
+  mpfr_init2 (z, 12);
+  mpfr_set_str (x, "-8.17cd20bfc17ae00935dc3abad8e17ab43d3ef7740c320798eefb93191f4a62dba9a2daa5efb6eace21130abd87e3ee2eadd2ad8ddae883d2f2db5dee1ac7ce3c59d16eca09e2ca3f21dc2a0386c037a0d3972e62d5b6e82446032020705553c566b1df24f40@-1", 16, MPFR_RNDN);
+  mpfr_tanh (y, x, MPFR_RNDZ);
+  mpfr_set_str (z, "-7.770@-1", 16, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  bug20171218 ();
   special_overflow ();
   special ();
 
