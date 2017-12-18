@@ -215,6 +215,34 @@ overflowed_exp2_0 (void)
   mpfr_clear (y);
 }
 
+static void
+bug20171218 (void)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t emin;
+  int inex;
+  
+  mpfr_init2 (x, 228);
+  mpfr_init2 (y, 11);
+  mpfr_init2 (z, 11);
+  mpfr_set_str_binary (x, "-0.110111010100001100000000000000111001100101011011101110101011000011011011001101111111110100110001110100111000111101010010100010001101100001010111101110100010000101011111001101011000011101000000001010001011110011110101010111000000E17");
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-113285);
+  mpfr_clear_flags ();
+  inex = mpfr_exp2 (y, x, MPFR_RNDA);
+  /* exact result is 0.11111111111110110000001011...E-113286, which rounded away
+     gives 0.10000000000E-113285, i.e., no underflow (after rounding) */
+  mpfr_set_str_binary (z, "0.10000000000E-113285");
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inexflag_p ());
+  MPFR_ASSERTN(!mpfr_underflow_p ());
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -223,6 +251,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  bug20171218 ();
   special_overflow ();
   emax_m_eps ();
   exp_range ();
