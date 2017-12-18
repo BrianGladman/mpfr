@@ -145,7 +145,9 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   mpfr_clear (xfrac);
   MPFR_CLEAR_FLAGS ();
-  mpfr_mul_2si (y, y, xint, MPFR_RNDN); /* exact or overflow */
+  /* FIXME: in case of underflow, MPFR_RNDN might return 0.5*2^emin, which will
+     remain unchanged below, whereas with RNDZ, we want +0 as result. */
+  mpfr_mul_2si (y, y, xint, MPFR_RNDN); /* exact or under/overflow */
   /* Note: We can have an overflow only when t was rounded up to 2. */
   MPFR_ASSERTD (MPFR_IS_PURE_FP (y) || inexact > 0);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
