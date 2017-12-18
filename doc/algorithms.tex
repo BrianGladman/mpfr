@@ -1858,36 +1858,36 @@ Firstly, $u$ is exact, assuming $x$ is exact with precision $p$.
 Then $v = e^{2x} (1+\theta_1)$ and
 $w = (e^{2x}+1) (1+\theta_2)^2$.
 The error on $r$ is bounded by $\frac{1}{2} \ulp(v) + \frac{1}{2} \ulp(r)$.
-Assume $\ulp(v) = 2^e \ulp(r)$, with $e \geq 0$;
-then the error on $r$ is bounded by $\frac{1}{2} (2^e+1) \ulp(r)$.
-We can thus write $r = (e^{2x}-1) (1+\theta_3)^{2^e+1}$,
-and then $s = \tanh(x) (1+\theta_4)^{2^e+4}$.
+Assume $\ulp(v) = 2^k \ulp(r)$, with $k \geq 0$;
+then the error on $r$ is bounded by $\frac{1}{2} (2^k+1) \ulp(r)$.
+We can thus write $r = (e^{2x}-1) (1+\theta_3)^{2^k+1}$,
+and then $s = \tanh(x) (1+\theta_4)^{2^k+4}$.
 
 \begin{lemma}
 For $|x| \leq 1/2$, and $|y| \leq |x|^{-1/2}$, we have:
-\[ |(1+x)^y-1| \leq 2.5 |y| x. \]
+\[ |(1+x)^y-1| \leq 2.5 \cdot |y| \cdot x. \]
 \end{lemma}
 \begin{proof}
 We have $(1+x)^y = e^{y \log (1+x)}$,
-with $|y \log (1+x)| \leq |x|^{-1/2} |\log (1+x)|$.
-The function $|x|^{-1/2} \log (1+x)$ is increasing on $[-1/2,1/2]$, and
+with $|y \cdot \log (1+x)| \leq |x|^{-1/2} \cdot \left|\log (1+x)\right|$.
+The function $|x|^{-1/2} \cdot \log (1+x)$ is increasing on $[-1/2,1/2]$, and
 takes as values $\approx -0.980$ in $x=-1/2$ and $\approx 0.573$ in $x=1/2$,
 thus is bounded in absolute value by $1$.
-This yields $|y \log (1+x)| \leq 1$.
+This yields $|y \cdot \log (1+x)| \leq 1$.
 Now it is easy to see that for $|t| \leq 1$, we have
 $|e^t-1| \leq 1.72 |t|$.
-Thus $|(1+x)^y-1| \leq 1.72 |y| |\log (1+x)|$.
-The result follows from $|\log (1+x)| \leq 1.4 |x|$ for $|x| \leq 1/2$,
-and $1.72 \times 1.4 \leq 2.5$.
+Thus $|(1+x)^y-1| \leq 1.72 \cdot |y| \cdot \left|\log (1+x)\right|$.
+The result follows from $\left|\log (1+x)\right| \leq 1.4 |x|$ for
+$|x| \leq 1/2$, and $1.72 \times 1.4 \leq 2.5$.
 \end{proof}
 
-Applying the above lemma for $x=\theta_4$ and $y=2^e+4$,
-assuming $2^e+4 \leq 2^{p/2}$,
-we get $|(1+\theta_4)^{2^e+4} - 1| \leq 2.5 (2^e+4) |\theta_4|$, and thus
-we can write $s = \tanh(x) [1 + 2.5 (2^e+4)\theta_5]$ with
+Applying the above lemma for $x=\theta_4$ and $y=2^k+4$,
+assuming $2^k+4 \leq 2^{p/2}$,
+we get $|(1+\theta_4)^{2^k+4} - 1| \leq 2.5 (2^k+4) |\theta_4|$, and thus
+we can write $s = \tanh(x) [1 + 2.5 (2^k+4)\theta_5]$ with
 $|\theta_5| \leq 2^{-p}$.
-Since $2^e+4 \leq 2^{{\rm max}(3,e+1)}$,
-the relative error on $s$ is thus bounded by $2^{{\rm max}(5,e+3)-p}$.
+Since $2^k+4 \leq 2^{{\rm max}(3,k+1)}$,
+the relative error on $s$ is thus bounded by $2^{{\rm max}(5,k+3)-p}$.
 
 \subsection{The inverse hyperbolic tangent function}
 
