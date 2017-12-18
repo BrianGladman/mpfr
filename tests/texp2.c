@@ -221,7 +221,7 @@ bug20171218 (void)
   mpfr_t x, y, z;
   mpfr_exp_t emin;
   int inex;
-  
+
   mpfr_init2 (x, 228);
   mpfr_init2 (y, 11);
   mpfr_init2 (z, 11);

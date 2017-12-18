@@ -67,7 +67,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      Warning, for __gmpfr_emin - 2 < x < __gmpfr_emin - 1, we cannot conclude,
      since 2^x might round to 2^(__gmpfr_emin - 1) for rounding away or to nearest,
      and there might be no underflow. */
-     
+
   MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emin - 2) <= 0))
     {
