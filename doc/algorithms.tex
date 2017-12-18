@@ -1865,10 +1865,10 @@ and then $s = \tanh(x) \cdot (1+\theta_4)^{2^k+4}$.
 
 \begin{lemma}
 For $|x| \leq 1/2$, and $|y| \leq |x|^{-1/2}$, we have:
-\[ |(1+x)^y-1| \leq 2.5 \cdot |y| \cdot x. \]
+\[ |(1+x)^y-1| \leq 2.5 \cdot |y| \cdot |x|. \]
 \end{lemma}
 \begin{proof}
-We have $(1+x)^y = e^{y \log (1+x)}$,
+We have $(1+x)^y = e^{y \cdot \log (1+x)}$,
 with $|y \cdot \log (1+x)| \leq |x|^{-1/2} \cdot \left|\log (1+x)\right|$.
 The function $|x|^{-1/2} \cdot \log (1+x)$ is increasing on $[-1/2,1/2]$, and
 takes as values $\approx -0.980$ in $x=-1/2$ and $\approx 0.573$ in $x=1/2$,
