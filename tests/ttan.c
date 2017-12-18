@@ -92,6 +92,25 @@ check_nans (void)
   mpfr_clear (y);
 }
 
+/* This test was generated from bad_cases, with GMP_CHECK_RANDOMIZE=1514257254.
+   For the x value below, we have tan(x) = -1.875 + epsilon,
+   thus with RNDZ it should be rounded to -1.c. */
+static void
+bug20171218 (void)
+{
+  mpfr_t x, y, z;
+  mpfr_init2 (x, 804);
+  mpfr_init2 (y, 4);
+  mpfr_init2 (z, 4);
+  mpfr_set_str (x, "-1.14b1dd5f90ce0eded2a8f59c05e72daf7cc4c78f5075d73246fa420e2c026291d9377e67e7f54e925c4aed39c7b2f917424033c8612f00a19821890558d6c2cef9c60f4ad2c3b061ed53a1709dc1ec8e139627c2119c36d7ebdff0d715e559b47f740c534", 16, MPFR_RNDN);
+  mpfr_tan (y, x, MPFR_RNDZ);
+  mpfr_set_str (z, "-1.c", 16, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -102,6 +121,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  bug20171218 ();
   check_nans ();
 
   mpfr_init (x);

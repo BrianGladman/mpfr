@@ -1479,11 +1479,28 @@ test_mpfr_div2_approx (unsigned long n)
 }
 #endif
 
+/* bug found in ttan with GMP_CHECK_RANDOMIZE=1514257254 */
+static void
+bug20171218 (void)
+{
+  mpfr_t s, c;
+  mpfr_init2 (s, 124);
+  mpfr_init2 (c, 124);
+  mpfr_set_str_binary (s, "-0.1110000111100001111000011110000111100001111000011110000111100001111000011110000111100001111000011110000111100001111000011110E0");
+  mpfr_set_str_binary (c, "0.1111000011110000111100001111000011110000111100001111000011110000111100001111000011110000111100001111000011110000111100001111E-1");
+  mpfr_div (c, s, c, MPFR_RNDN);
+  mpfr_set_str_binary (s, "-1.111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+  MPFR_ASSERTN(mpfr_equal_p (c, s));
+  mpfr_clear (s);
+  mpfr_clear (c);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  bug20171218 ();
   testall_rndf (9);
   test_20170105 ();
   check_inexact ();

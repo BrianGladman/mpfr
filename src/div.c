@@ -71,7 +71,8 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
 
   /* we ignore yy below, but first increment r0, to ensure we get a lower
      approximation of the remainder */
-  r0 += (yy != 0);
+  r0 += yy != 0;
+  r1 += r0 == 0 && yy != 0;
   r0 = u0 - r0;
   r1 = u1 - r1 - (r0 > u0);
 
