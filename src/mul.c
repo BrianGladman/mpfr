@@ -847,7 +847,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   else
     /* Mulders' mulhigh. This code can also be used via mpfr_sqr,
        hence the tests b != c. */
-    if (MPFR_UNLIKELY (bn > (threshold = b != c ?
+    if (MPFR_UNLIKELY (cn > (threshold = b != c ?
                              MPFR_MUL_THRESHOLD : MPFR_SQR_THRESHOLD)))
       {
         mp_limb_t *bp, *cp;
