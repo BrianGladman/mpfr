@@ -220,13 +220,15 @@ bug20171218 (void)
 {
   mpfr_t x, y, z;
   mpfr_exp_t emin;
-  int inex;
+  int inex, i;
+  mpfr_flags_t flags, ex_flags;
+
+  emin = mpfr_get_emin ();
 
   mpfr_init2 (x, 228);
   mpfr_init2 (y, 11);
   mpfr_init2 (z, 11);
   mpfr_set_str_binary (x, "-0.110111010100001100000000000000111001100101011011101110101011000011011011001101111111110100110001110100111000111101010010100010001101100001010111101110100010000101011111001101011000011101000000001010001011110011110101010111000000E17");
-  emin = mpfr_get_emin ();
   mpfr_set_emin (-113285);
   mpfr_clear_flags ();
   inex = mpfr_exp2 (y, x, MPFR_RNDA);
@@ -240,6 +242,40 @@ bug20171218 (void)
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+
+  mpfr_init2 (x, 256);
+  mpfr_init2 (y, 8);
+  mpfr_init2 (z, 8);
+
+  for (i = 0; i < 3; i++)
+    {
+      mpfr_set_emin (i == 0 ? -17 : i == 1 ? emin : MPFR_EMIN_MIN);
+      mpfr_set_exp_t (x, __gmpfr_emin - 2, MPFR_RNDN);
+      mpfr_nextabove (x);
+      mpfr_set_ui_2exp (z, 1, __gmpfr_emin - 1, MPFR_RNDN);
+      ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      inex = mpfr_exp2 (y, x, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      if (! (flags == ex_flags && SAME_SIGN (inex, 1) && mpfr_equal_p (y, z)))
+        {
+          printf ("Error in bug20171218 for i=%d\n", i);
+          printf ("Expected ");
+          mpfr_dump (z);
+          printf ("  with inex = 1 and flags:");
+          flags_out (ex_flags);
+          printf ("Got      ");
+          mpfr_dump (y);
+          printf ("  with inex = %d and flags:", inex);
+          flags_out (flags);
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+
   mpfr_set_emin (emin);
 }
 
