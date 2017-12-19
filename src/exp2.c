@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  int inexact;
+  int inexact, inex2;
   long xint;
   mpfr_t xfrac;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -62,27 +62,22 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
-     if x <= __gmpfr_emin - 2, the result is either 1/2*2^__gmpfr_emin or 0.
-     Warning, for __gmpfr_emin - 2 < x < __gmpfr_emin - 1, we cannot conclude,
-     since 2^x might round to 2^(__gmpfr_emin - 1) for rounding away or to nearest,
-     and there might be no underflow. */
+  /* Since the smallest representable non-zero float is 1/2 * 2^emin,
+     if x <= emin - 2, the result is either 1/2 * 2^emin or 0.
+     Warning, for emin - 2 < x < emin - 1, we cannot conclude, since 2^x
+     might round to 2^(emin - 1) for rounding away or to nearest, and there
+     might be no underflow, since we consider underflow "after rounding". */
 
   MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emin - 2) <= 0))
-    {
-      mpfr_rnd_t rnd2 = rnd_mode;
-      /* in round to nearest mode, round to zero */
-      if (rnd_mode == MPFR_RNDN)
-        rnd2 = MPFR_RNDZ;
-      return mpfr_underflow (y, rnd2, 1);
-    }
+    return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode, 1);
 
   MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax) >= 0))
     return mpfr_overflow (y, rnd_mode, 1);
 
-  /* We now know that emin - 1 <= x < emax. */
+  /* We now know that emin - 2 < x < emax. Note that an underflow or
+     overflow is still possible (we have eliminated only easy cases). */
 
   MPFR_SAVE_EXPO_MARK (expo);
 
@@ -94,10 +89,13 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   xint = mpfr_get_si (x, MPFR_RNDZ);
   mpfr_init2 (xfrac, MPFR_PREC (x));
-  mpfr_sub_si (xfrac, x, xint, MPFR_RNDN); /* exact */
+  MPFR_DBGRES (inexact = mpfr_sub_si (xfrac, x, xint, MPFR_RNDN));
+  MPFR_ASSERTD (inexact == 0);
 
   if (MPFR_IS_ZERO (xfrac))
     {
+      /* Here, emin - 1 <= x <= emax - 1, so that an underflow or overflow
+         will not be possible. */
       mpfr_set_ui (y, 1, MPFR_RNDN);
       inexact = 0;
     }
@@ -144,12 +142,16 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   mpfr_clear (xfrac);
+
   MPFR_CLEAR_FLAGS ();
-  /* FIXME: in case of underflow, MPFR_RNDN might return 0.5*2^emin, which will
-     remain unchanged below, whereas with RNDZ, we want +0 as result. */
-  mpfr_mul_2si (y, y, xint, MPFR_RNDN); /* exact or under/overflow */
-  /* Note: We can have an overflow only when t was rounded up to 2. */
-  MPFR_ASSERTD (MPFR_IS_PURE_FP (y) || inexact > 0);
+  /* FIXME: possible double rounding issue in the underflow case
+     (xint = emin - 1, y = 1/2 before the scaling). This should
+     be handled a bit like in mpfr_check_range. But first, add a
+     non-regression test. */
+  inex2 = mpfr_mul_2si (y, y, xint, rnd_mode);
+  if (inex2 != 0)  /* underflow or overflow */
+    inexact = inex2;
+
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
