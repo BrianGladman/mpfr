@@ -120,6 +120,11 @@ floating-point arithmetic, version @value{VERSION}.
 \V\
 @end macro
 @end iftex
+@ifnottex
+@macro svar {V}
+\V\
+@end macro
+@end ifnottex
 
 
 @c  @m{T,N} is $T$ in tex or @math{N} otherwise.  This is an easy way to give
