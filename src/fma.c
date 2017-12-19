@@ -129,7 +129,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
   if (MPFR_PREC(x) == MPFR_PREC(y) && e <= __gmpfr_emax && e > __gmpfr_emin)
     {
-      if (MPFR_PREC(x) < GMP_NUMB_BITS && MPFR_PREC(z) == MPFR_PREC(x))
+      if (MPFR_PREC(x) < GMP_NUMB_BITS && MPFR_PREC(z) == MPFR_PREC(x) &&
+          MPFR_PREC(s) == MPFR_PREC(x))
         {
           mp_limb_t umant[2], zmant[2];
           mpfr_t zz;
@@ -170,6 +171,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                 MPFR_EXP(u) = e;
             }
           inex = mpfr_add (u, u, zz, rnd_mode);
+          /* mpfr_set_1_2 requires PREC(u) = 2*PREC(s),
+             thus we need PREC(s) = PREC(x) = PREC(y) = PREC(z) */
           return mpfr_set_1_2 (s, u, rnd_mode, inex);
         }
       else if ((n = MPFR_LIMB_SIZE(x)) <= 4 * MPFR_MUL_THRESHOLD)

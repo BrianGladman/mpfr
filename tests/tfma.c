@@ -485,6 +485,49 @@ bug20101018 (void)
   mpfr_clear (u);
 }
 
+/* bug found with GMP_CHECK_RANDOMIZE=1514407719 */
+static void
+bug20171219 (void)
+{
+  mpfr_t x, y, z, t, u;
+  int i;
+
+  mpfr_init2 (x, 60);
+  mpfr_init2 (y, 60);
+  mpfr_init2 (z, 60);
+  mpfr_init2 (t, 68);
+  mpfr_init2 (u, 68);
+
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
+  mpfr_set_ui (z, 1, MPFR_RNDN);
+  mpfr_set_ui (t, 2, MPFR_RNDN);
+  i = mpfr_fma (u, x, y, z, MPFR_RNDA);
+  if (! mpfr_equal_p (u, t))
+    {
+      printf ("Wrong result in bug20171219 (a)\n");
+      printf ("Expected ");
+      mpfr_out_str (stdout, 16, 0, t, MPFR_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 16, 0, u, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  if (i != 0)
+    {
+      printf ("Wrong ternary value in bug20171219\n");
+      printf ("Expected 0\n");
+      printf ("Got      %d\n", i);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (t);
+  mpfr_clear (u);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -496,6 +539,7 @@ main (int argc, char *argv[])
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
 
+  bug20171219 ();
   bug20101018 ();
 
   mpfr_init (x);
