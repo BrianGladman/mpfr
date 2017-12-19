@@ -122,7 +122,7 @@ floating-point arithmetic, version @value{VERSION}.
 @end iftex
 @ifnottex
 @macro svar {V}
-\V\
+@var{\V\}
 @end macro
 @end ifnottex
 
