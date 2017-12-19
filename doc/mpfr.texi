@@ -15,6 +15,10 @@
 @c as the "info" utility cannot currently handle them.
 @c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
 
+@c Warning! If a macro is used with @iftex, it must also be defined for
+@c info at least (e.g. with @ifnottex) in order to avoid a failure with
+@c makeinfo 5.2 (there is no such problem with makeinfo 6.5).
+
 @copying
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
