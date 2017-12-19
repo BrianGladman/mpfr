@@ -143,16 +143,26 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   mpfr_clear (xfrac);
 
-  MPFR_CLEAR_FLAGS ();
-  /* FIXME: possible double rounding issue in the underflow case
-     (xint = emin - 1, y = 1/2 before the scaling). This should
-     be handled a bit like in mpfr_check_range. But first, add a
-     non-regression test. */
-  inex2 = mpfr_mul_2si (y, y, xint, rnd_mode);
-  if (inex2 != 0)  /* underflow or overflow */
-    inexact = inex2;
+  if (MPFR_UNLIKELY (rnd_mode == MPFR_RNDN && xint == __gmpfr_emin - 1 &&
+                     MPFR_GET_EXP (y) == 0 && mpfr_powerof2_raw (y)))
+    {
+      /* y was rounded down to 1/2 and the rounded value with an unbounded
+         exponent range would be 2^(emin-2), i.e. the midpoint between 0
+         and the smallest positive FP number. This is a double rounding
+         problem: we should not round to 0, but to (1/2) * 2^emin. */
+      MPFR_SET_EXP (y, __gmpfr_emin);
+      inexact = 1;
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_UNDERFLOW);
+    }
+  else
+    {
+      MPFR_CLEAR_FLAGS ();
+      inex2 = mpfr_mul_2si (y, y, xint, rnd_mode);
+      if (inex2 != 0)  /* underflow or overflow */
+        inexact = inex2;
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+    }
 
-  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
