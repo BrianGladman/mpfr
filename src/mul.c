@@ -989,7 +989,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         /* if the most significant bit b1 is zero, we have only p-1 correct
            bits */
         if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p + b1 - 1,
-                                               aq + (rnd_mode == MPFR_RNDN))))
+                                          aq + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
             goto full_multiply;
