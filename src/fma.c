@@ -103,6 +103,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   mpfr_t u;
   mp_size_t n;
   mpfr_exp_t e;
+  mpfr_prec_t precx, precy;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_GROUP_DECL(group);
 
@@ -121,23 +122,27 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 
   e = MPFR_GET_EXP (x) + MPFR_GET_EXP (y);
 
+  precx = MPFR_PREC (x);
+  precy = MPFR_PREC (y);
+
   /* First deal with special case where prec(x) = prec(y) and x*y does
      not overflow nor underflow. Do it only for small sizes since for large
      sizes x*y is faster using Mulders' algorithm (as a rule of thumb,
      we assume mpn_mul_n is faster up to 4*MPFR_MUL_THRESHOLD).
      Since |EXP(x)|, |EXP(y)| < 2^(k-2) on a k-bit computer,
      |EXP(x)+EXP(y)| < 2^(k-1), thus cannot overflow nor underflow. */
-  if (MPFR_PREC(x) == MPFR_PREC(y) && e <= __gmpfr_emax && e > __gmpfr_emin)
+  if (precx == precy && e <= __gmpfr_emax && e > __gmpfr_emin)
     {
-      if (MPFR_PREC(x) < GMP_NUMB_BITS && MPFR_PREC(z) == MPFR_PREC(x) &&
-          MPFR_PREC(s) == MPFR_PREC(x))
+      if (precx < GMP_NUMB_BITS &&
+          MPFR_PREC(z) == precx &&
+          MPFR_PREC(s) == precx)
         {
           mp_limb_t umant[2], zmant[2];
           mpfr_t zz;
           int inex;
 
           umul_ppmm (umant[1], umant[0], MPFR_MANT(x)[0], MPFR_MANT(y)[0]);
-          MPFR_PREC(u) = MPFR_PREC(zz) = 2 * MPFR_PREC(x);
+          MPFR_PREC(u) = MPFR_PREC(zz) = 2 * precx;
           MPFR_MANT(u) = umant;
           MPFR_MANT(zz) = zmant;
           MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
@@ -163,7 +168,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               zmant[0] = MPFR_LIMB_ZERO;
               if ((umant[1] & MPFR_LIMB_HIGHBIT) == 0)
                 {
-                  umant[1] = (umant[1] << 1) | (umant[0] >> (GMP_NUMB_BITS - 1));
+                  umant[1] = (umant[1] << 1) |
+                    (umant[0] >> (GMP_NUMB_BITS - 1));
                   umant[0] = umant[0] << 1;
                   MPFR_EXP(u) = e - 1;
                 }
@@ -204,7 +210,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
-  MPFR_GROUP_INIT_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
+  MPFR_ASSERTN (precx + precy <= MPFR_PREC_MAX);
+  MPFR_GROUP_INIT_1 (group, precx + precy, u);
   MPFR_SAVE_EXPO_MARK (expo);
 
   if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
@@ -331,13 +338,13 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               MPFR_BLOCK (flags,
                           if (MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
                             {
-                              mpfr_init2 (scaled_v, MPFR_PREC (x));
+                              mpfr_init2 (scaled_v, precx);
                               mpfr_mul_2ui (scaled_v, x, scale, MPFR_RNDN);
                               mpfr_mul (u, scaled_v, y, MPFR_RNDN);
                             }
                           else
                             {
-                              mpfr_init2 (scaled_v, MPFR_PREC (y));
+                              mpfr_init2 (scaled_v, precy);
                               mpfr_mul_2ui (scaled_v, y, scale, MPFR_RNDN);
                               mpfr_mul (u, x, scaled_v, MPFR_RNDN);
                             });
