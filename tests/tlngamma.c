@@ -284,12 +284,36 @@ bug20171220 (void)
   mpfr_clear (z);
 }
 
+/* taway failing with GMP_CHECK_RANDOMIZE=1513888822 */
+static void
+bug20171220a (void)
+{
+  mpfr_t x, y, z;
+  int inex;
+  
+  mpfr_init2 (x, 198);
+  mpfr_init2 (y, 1);
+  mpfr_init2 (z, 1);
+
+  mpfr_set_str (x, "9.999962351340362288585900348170984233205352566408878552154832e-01", 10, MPFR_RNDN);
+  inex = mpfr_lngamma (y, x, MPFR_RNDA);
+  /* lngamma(x) ~ -18.81, should be rounded to -32 */
+  mpfr_set_si (z, -32, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  MPFR_ASSERTN(inex < 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
   bug20171220 ();
+  bug20171220a ();
 
   special ();
   test_generic (MPFR_PREC_MIN, 100, 2);
