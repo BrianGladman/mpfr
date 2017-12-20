@@ -68,11 +68,11 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      might round to 2^(emin - 1) for rounding away or to nearest, and there
      might be no underflow, since we consider underflow "after rounding". */
 
-  MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
+  MPFR_STAT_STATIC_ASSERT (MPFR_EMIN_MIN >= LONG_MIN + 2);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emin - 2) <= 0))
     return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode, 1);
 
-  MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
+  MPFR_STAT_STATIC_ASSERT (MPFR_EMAX_MAX <= LONG_MAX);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax) >= 0))
     return mpfr_overflow (y, rnd_mode, 1);
 
