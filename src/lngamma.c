@@ -350,7 +350,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
              ulp(u)/2 + (2-z0)*max(1,log(2-z0))*2^(1-w)
              = (1/2 + (2-z0)*max(1,log(2-z0))*2^(1-E(u))) ulp(u) */
           d = (double) MPFR_GET_EXP(s) * 0.694; /* upper bound for log(2-z0) */
-          err_u = MPFR_GET_EXP(s) + __gmpfr_ceil_log2 (d) + 1 - MPFR_GET_EXP(u);
+          if (MPFR_IS_ZERO(u)) /* in that case the error on u is zero */
+            err_u = 0;
+          else
+            err_u = MPFR_GET_EXP(s) + __gmpfr_ceil_log2 (d) + 1 - MPFR_GET_EXP(u);
           err_u = (err_u >= 0) ? err_u + 1 : 0;
           /* now the error on u is bounded by 2^err_u ulps */
 

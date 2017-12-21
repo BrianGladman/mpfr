@@ -297,10 +297,10 @@ bug20171220a (void)
 
   mpfr_set_str (x, "9.999962351340362288585900348170984233205352566408878552154832e-01", 10, MPFR_RNDN);
   inex = mpfr_lngamma (y, x, MPFR_RNDA);
-  /* lngamma(x) ~ -18.81, should be rounded to -32 */
-  mpfr_set_si (z, -32, MPFR_RNDN);
+  /* lngamma(x) ~ 2.1731512683e0-6 ~ 2^-18.81, should be rounded to 2^-18 */
+  mpfr_set_si_2exp (z, 1, -18, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_equal_p (y, z));
-  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(inex > 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
