@@ -93,12 +93,7 @@ mpfr_nexttoinf (mpfr_ptr x)
         {
           mpfr_exp_t exp = MPFR_EXP (x);
           if (MPFR_UNLIKELY (exp == __gmpfr_emax))
-            {
-              /* maybe we should call mpfr_overflow here,
-                 and also set the inexact flag? */
-              MPFR_SET_INF (x);
-              __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
-            }
+            MPFR_SET_INF (x);
           else
             {
               MPFR_SET_EXP (x, exp + 1);
