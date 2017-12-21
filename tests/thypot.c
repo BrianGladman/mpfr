@@ -323,7 +323,7 @@ bug20171221 (void)
   mpfr_init2 (y, 11);
   mpfr_set_str_binary (x, "0.111111111110E0");
   mpfr_set_str_binary (u, "0.111011110100E-177");
-  emax = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
   mpfr_set_emax (0);
   mpfr_clear_flags ();
   inex = mpfr_hypot (y, x, u, MPFR_RNDU);
