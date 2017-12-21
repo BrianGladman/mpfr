@@ -310,7 +310,8 @@ alltst (void)
     }
 }
 
-/* test failing with GMP_CHECK_RANDOMIZE=1513841234 */
+/* Test failing with GMP_CHECK_RANDOMIZE=1513841234 (overflow flag not set).
+   The bug was in fact in mpfr_nexttoinf which didn't set the overflow flag. */
 static void
 bug20171221 (void)
 {
@@ -327,7 +328,6 @@ bug20171221 (void)
   mpfr_set_emax (0);
   mpfr_clear_flags ();
   inex = mpfr_hypot (y, x, u, MPFR_RNDU);
-  mpfr_dump (y);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inexflag_p ());
