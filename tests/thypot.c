@@ -316,15 +316,15 @@ bug20171221 (void)
 {
   mpfr_t x, u, y;
   int inex;
-  mpfr_exp_t emin;
+  mpfr_exp_t emax;
 
   mpfr_init2 (x, 12);
   mpfr_init2 (u, 12);
   mpfr_init2 (y, 11);
   mpfr_set_str_binary (x, "0.111111111110E0");
   mpfr_set_str_binary (u, "0.111011110100E-177");
-  emin = mpfr_get_emin ();
-  mpfr_set_emin (0);
+  emax = mpfr_get_emin ();
+  mpfr_set_emax (0);
   mpfr_clear_flags ();
   inex = mpfr_hypot (y, x, u, MPFR_RNDU);
   mpfr_dump (y);
@@ -332,7 +332,7 @@ bug20171221 (void)
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inexflag_p ());
   MPFR_ASSERTN(mpfr_overflow_p ());
-  mpfr_set_emin (emin);
+  mpfr_set_emax (emax);
   mpfr_clear (x);
   mpfr_clear (u);
   mpfr_clear (y);
