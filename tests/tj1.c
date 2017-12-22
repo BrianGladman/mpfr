@@ -56,14 +56,14 @@ test_small (void)
                  thus y should be 2^(e-1) and the inexact flag should be
                  of opposite sign of x */
               MPFR_ASSERTN(mpfr_cmp_si_2exp (y, sign, e - 1) == 0);
-              MPFR_ASSERTN(inex * sign < 0);
+              MPFR_ASSERTN(VSIGN (inex) * sign < 0);
             }
           else
             {
               /* here |y| should be 0.5*2^emin and the inexact flag should
                  have the sign of x */
               MPFR_ASSERTN(mpfr_cmp_si_2exp (y, sign, e) == 0);
-              MPFR_ASSERTN(inex * sign > 0);
+              MPFR_ASSERTN(VSIGN (inex) * sign > 0);
             }
         }
     }
