@@ -258,7 +258,7 @@ bug20171220 (void)
 {
   mpfr_t x, y, z;
   int inex;
-  
+
   mpfr_init2 (x, 15);
   mpfr_init2 (y, 15);
   mpfr_init2 (z, 15);
@@ -290,7 +290,7 @@ bug20171220a (void)
 {
   mpfr_t x, y, z;
   int inex;
-  
+
   mpfr_init2 (x, 198);
   mpfr_init2 (y, 1);
   mpfr_init2 (z, 1);
