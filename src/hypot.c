@@ -102,8 +102,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
               mpfr_nexttoinf (z);
               /* since mpfr_nexttoinf does not set the overflow flag,
                  we have to check manually for overflow */
-              if (mpfr_inf_p (z))
-                __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
+              if (MPFR_UNLIKELY (MPFR_IS_INF (z)))
+                MPFR_SET_OVERFLOW ();
             }
           MPFR_RET (1);
         }
