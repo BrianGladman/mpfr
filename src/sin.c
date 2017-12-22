@@ -148,9 +148,8 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       sign = MPFR_SIGN(xx);
       /* now that the argument is reduced, precision m is enough */
       mpfr_set_prec (c, m);
-      mpfr_cos (c, xx, MPFR_RNDZ);    /* can't be exact */
-      mpfr_nexttoinf (c);           /* now c = cos(x) rounded away */
-      mpfr_mul (c, c, c, MPFR_RNDU); /* away */
+      mpfr_cos (c, xx, MPFR_RNDA);    /* c = cos(x) rounded away */
+      mpfr_mul (c, c, c, MPFR_RNDU);  /* away */
       mpfr_ui_sub (c, 1, c, MPFR_RNDZ);
       mpfr_sqrt (c, c, MPFR_RNDZ);
       if (MPFR_IS_NEG_SIGN(sign))
