@@ -98,7 +98,13 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           /* If z > abs(x), then it was already rounded up; otherwise
              z = abs(x), and we need to add one ulp due to y. */
           if (mpfr_abs (z, x, rnd_mode) == 0)
-            mpfr_nexttoinf (z);
+            {
+              mpfr_nexttoinf (z);
+              /* since mpfr_nexttoinf does not set the overflow flag,
+                 we have to check manually for overflow */
+              if (mpfr_inf_p (z))
+                __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
+            }
           MPFR_RET (1);
         }
       else /* MPFR_RNDZ, MPFR_RNDD, MPFR_RNDN */
