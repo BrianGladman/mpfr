@@ -36,7 +36,7 @@ test_small (void)
   mpfr_exp_t e, emin;
 
   mpfr_init2 (x, 10);
-  mpfr_init2 (y, 10);
+  mpfr_init2 (y, 9);
   emin = mpfr_get_emin ();
   for (e = -4; e >= -30; e--)
     {
@@ -48,16 +48,22 @@ test_small (void)
       for (sign = -1; sign <= 1; sign += 2)
         {
           mpfr_set_si_2exp (x, sign, e, MPFR_RNDN);
+          mpfr_nexttoinf (x);
           inex = mpfr_j1 (y, x, MPFR_RNDN);
           if (e >= -29)
             {
+              /* since |x| is just above 2^e, |j1(x)| is just above 2^(e-1),
+                 thus y should be 2^(e-1) and the inexact flag should be
+                 of opposite sign of x */
               MPFR_ASSERTN(mpfr_cmp_si_2exp (y, sign, e - 1) == 0);
-              MPFR_ASSERTN(inex * sign > 0);
+              MPFR_ASSERTN(inex * sign < 0);
             }
           else
             {
-              MPFR_ASSERTN(mpfr_zero_p (y));
-              MPFR_ASSERTN(mpfr_signbit(y) ^ (sign > 0));
+              /* here |y| should be 0.5*2^emin and the inexact flag should
+                 have the sign of x */
+              MPFR_ASSERTN(mpfr_cmp_si_2exp (y, sign, e) == 0);
+              MPFR_ASSERTN(inex * sign > 0);
             }
         }
     }
