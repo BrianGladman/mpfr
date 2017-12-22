@@ -27,12 +27,53 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
 #include "tgeneric.c"
 
+/* test for small input, where j1(x) = x/2 - x^3/16 + ... */
+static void
+test_small (void)
+{
+  mpfr_t x, y;
+  int inex, sign;
+  mpfr_exp_t e, emin;
+
+  mpfr_init2 (x, 10);
+  mpfr_init2 (y, 10);
+  emin = mpfr_get_emin ();
+  for (e = -4; e >= -30; e--)
+    {
+      if (e == -30)
+        {
+          e = mpfr_get_emin_min () - 1;
+          mpfr_set_emin (e + 1);
+        }
+      for (sign = -1; sign <= 1; sign += 2)
+        {
+          mpfr_set_si_2exp (x, sign, e, MPFR_RNDN);
+          inex = mpfr_j1 (y, x, MPFR_RNDN);
+          if (e >= -29)
+            {
+              MPFR_ASSERTN(mpfr_cmp_si_2exp (y, sign, e - 1) == 0);
+              MPFR_ASSERTN(inex * sign > 0);
+            }
+          else
+            {
+              MPFR_ASSERTN(mpfr_zero_p (y));
+              MPFR_ASSERTN(mpfr_signbit(y) ^ (sign > 0));
+            }
+        }
+    }
+  mpfr_set_emin (emin);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
 
   tests_start_mpfr ();
+
+  test_small ();
 
   mpfr_init (x);
   mpfr_init (y);
