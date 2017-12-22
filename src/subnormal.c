@@ -144,7 +144,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
                 {
                   if (SAME_SIGN (inexact, MPFR_INT_SIGN (y)))
                     mpfr_nexttozero (dest);
-                  else /* FIXME: can dest overflow here? */
+                  else  /* subnormal range, thus no overflow */
                     mpfr_nexttoinf (dest);
                   inexact = -inexact;
                 }
