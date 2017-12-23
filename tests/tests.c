@@ -398,7 +398,7 @@ tests_rand_start (void)
 #ifdef HAVE_GETTIMEOFDAY
           struct timeval  tv;
           gettimeofday (&tv, NULL);
-          seed = 1000000 * tv.tv_sec + tv.tv_usec;
+          seed = 1000000 * (unsigned long) tv.tv_sec + tv.tv_usec;
 #else
           time_t  tv;
           time (&tv);
