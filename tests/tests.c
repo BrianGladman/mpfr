@@ -398,6 +398,12 @@ tests_rand_start (void)
 #ifdef HAVE_GETTIMEOFDAY
           struct timeval  tv;
           gettimeofday (&tv, NULL);
+          /* Note: If time_t is a "floating type" (as allowed by ISO C99),
+             the cast below can yield undefined behavior. But this would
+             be uncommon (gettimeofday() is specified by POSIX only and
+             POSIX requires time_t to be an integer type) and this line
+             is not executed by default. So, this should be OK. Moreover,
+             gettimeofday() is marked obsolescent by POSIX.1-2008. */
           seed = 1000000 * (unsigned long) tv.tv_sec + tv.tv_usec;
 #else
           time_t  tv;
