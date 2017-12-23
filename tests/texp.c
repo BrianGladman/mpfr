@@ -972,6 +972,24 @@ underflow (void)
     }
 }
 
+/* bug found with GMP_CHECK_RANDOMIZE=1514290185 */
+static void
+bug20171223 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 372);
+  mpfr_init2 (y, 2);
+  mpfr_set_str (x, "-6.9314716128384587678466323621915206417385796077947874471662159283492445979241549847386366371775938082803907383582e-01", 10, MPFR_RNDN);
+  /* exp(x) = 0.500000009638..., should be rounded to 0.5 */
+  inex = mpfr_exp (y, x, MPFR_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0);
+  MPFR_ASSERTN(inex < 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -979,6 +997,8 @@ main (int argc, char *argv[])
 
   if (argc > 1)
     check_large ();
+
+  bug20171223 ();
 
   check_inexact ();
   check_special ();
