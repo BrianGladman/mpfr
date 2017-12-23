@@ -198,14 +198,15 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
       mpfr_sub (r, x, r, MPFR_RNDU);
 
+      while (MPFR_IS_PURE_FP(r) && MPFR_IS_NEG (r))
+        { /* initial approximation n was too large */
+          n--;
+          mpfr_add (r, r, s, MPFR_RNDU);
+        }
+
+      /* if r is 0, we cannot round correctly */
       if (MPFR_LIKELY(MPFR_IS_PURE_FP (r)))
         {
-          while (MPFR_IS_NEG (r))
-            { /* initial approximation n was too large */
-              n--;
-              mpfr_add (r, r, s, MPFR_RNDU);
-            }
-
           /* since there was a cancellation in x - n*log(2), the low error_r
              bits from r are zero and thus non significant, thus we can reduce
              the working precision */
