@@ -36,7 +36,8 @@ Changes from versions 3.1.* to version 4.0.0:
   future MPFR version.
 - Mini-gmp support via the --enable-mini-gmp configure option (experimental).
 - The minimum precision MPFR_PREC_MIN is now 1, with rounding defined as
-  in the next IEEE 754 revision (ties rounded away from zero).
+  in the errata of IEEE 754-2008 and in the following IEEE 754 revision
+  (ties rounded away from zero).
 - Shared caches for multithreaded applications.
   New function mpfr_free_cache2.
 - Partial support of MPFR_RNDF (faithful rounding).
@@ -113,10 +114,10 @@ Changes from versions 3.1.* to version 4.0.0:
 - Bug fixes. In particular: a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
   now sets the NaN flag on NaN input and the inexact flag when the conversion
-  is inexact. For a full list, see http://www.mpfr.org/mpfr-3.1.5/#fixed
+  is inexact. For a full list, see http://www.mpfr.org/mpfr-3.1.6/#fixed
   and the same section for any previous 3.1.x version (follow the links
   in the "Changes..." sections).
-- MS Windows: Added support for thread-safe DLL (shared library).
+- Microsoft Windows: Added support for thread-safe DLL (shared library).
   Tested with MinGW, ICC and MSVC.
 - Limited pkg-config support.
 - Autotools: Under Linux, make sure that the old dtags (when supported)
