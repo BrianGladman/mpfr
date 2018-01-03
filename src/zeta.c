@@ -82,16 +82,33 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 /* Input: p - an integer
    Output: fills tc[1..p], tc[i] = bernoulli(2i)/(2i)!
    tc[1]=1/12, tc[2]=-1/720, tc[3]=1/30240, ...
+   Assumes all the tc[i] have the same precision.
+
+   Uses the recurrence (4.60) from the book "Modern Computer Arithmetic"
+   by Brent and Zimmermann for C_k = bernoulli(2k)/(2k)!:
+   sum(C_k/(2k+1-2j)!/4^(k-j), j=0..k) = 1/(2k)!/4^k
+   If we put together the terms involving C_0 and C_1 we get:
+   sum(D_k/(2k+1-2j)!/4^(k-j), j=1..k) = 0
+   with D_1 = C_0/4/(2k+1)/(2k)+C_1-1/(2k)/4=(k-1)/(12k+6),
+   and D_k = C_k for k >= 2.
+
+   FIXME: we have C_k = (-1)^(k-1) 2/(2pi)^(2k) * zeta(2k),
+   see for example formula (4.65) from the above book,
+   thus since |zeta(2k)-1| < 2^(1-2k) for k >= 2, we have:
+   |C_k - E_k| < E_k * 2^(1-2k) for k >= 2 and E_k := (-1)^(k-1) 2/(2pi)^(2k).
+   Then if 2k-1 >= prec we can evaluate E_k instead, which only requires one
+   multiplication per term, instead of O(k) small divisions.
 */
 static void
 mpfr_zeta_c (int p, mpfr_t *tc)
 {
   mpfr_t d;
   int k, l;
+  mpfr_prec_t prec = MPFR_PREC (tc[1]);
 
   if (p > 0)
     {
-      mpfr_init2 (d, MPFR_PREC (tc[1]));
+      mpfr_init2 (d, prec);
       mpfr_div_ui (tc[1], __gmpfr_one, 12, MPFR_RNDN);
       for (k = 2; k <= p; k++)
         {
