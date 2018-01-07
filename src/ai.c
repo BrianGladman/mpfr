@@ -592,7 +592,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_clear (temp1);
   mpfr_clear (temp2);
 
-  return r;
+  return mpfr_check_range (y, r, rnd);
 }
 
 /* We consider that the boundary between the area where the naive method
