@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 /*
- * Check if x is a valid mpfr_t initializes by mpfr_init
+ * Check if x is a valid mpfr_t initialized by mpfr_init
  * Returns 0 if isn't valid
  *
  * Note: Due to the MPFR_GET_ALLOC_SIZE test, this function must not
