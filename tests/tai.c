@@ -96,6 +96,7 @@ bug20180107 (void)
   mpfr_t x, y, z;
   mpfr_exp_t emin;
   int inex;
+  mpfr_flags_t flags;
 
   mpfr_init2 (x, 152);
   mpfr_init2 (y, 11);
@@ -103,23 +104,29 @@ bug20180107 (void)
   mpfr_set_str_binary (x, "0.11010101100111000111001001010110101001100001011110101111000010100111011101011110000100111011101100100100001010000110100011001000111010010001110000011100E5");
   emin = mpfr_get_emin ();
   mpfr_set_emin (-134);
+  mpfr_clear_flags ();
   inex = mpfr_ai (y, x, MPFR_RNDA);
+  flags = __gmpfr_flags;
   /* result should be 0.10011100000E-135 with unlimited exponent range,
      and thus should be rounded to 0.1E-134 */
   mpfr_set_str_binary (z, "0.1E-134");
-  MPFR_ASSERTN(mpfr_equal_p (y, z));
-  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN (mpfr_equal_p (y, z));
+  MPFR_ASSERTN (inex > 0);
+  MPFR_ASSERTN (flags == (MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT));
 
   mpfr_set_prec (x, 2);
   mpfr_set_str_binary (x, "0.11E7");
   mpfr_set_prec (y, 2);
+  mpfr_clear_flags ();
   inex = mpfr_ai (y, x, MPFR_RNDA);
+  flags = __gmpfr_flags;
   /* result should be 1.0E-908 with unlimited exponent range,
      and thus should be rounded to 0.1E-134 */
   mpfr_set_str_binary (z, "0.1E-134");
-  MPFR_ASSERTN(mpfr_equal_p (y, z));
-  MPFR_ASSERTN(inex > 0);
-  
+  MPFR_ASSERTN (mpfr_equal_p (y, z));
+  MPFR_ASSERTN (inex > 0);
+  MPFR_ASSERTN (flags == (MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT));
+
   mpfr_set_emin (emin);
   mpfr_clear (x);
   mpfr_clear (y);
