@@ -109,6 +109,16 @@ bug20180107 (void)
   mpfr_set_str_binary (z, "0.1E-134");
   MPFR_ASSERTN(mpfr_equal_p (y, z));
   MPFR_ASSERTN(inex > 0);
+
+  mpfr_set_prec (x, 2);
+  mpfr_set_str_binary (x, "0.11E7");
+  mpfr_set_prec (y, 2);
+  inex = mpfr_ai (y, x, MPFR_RNDA);
+  /* result should be 1.0E-908 with unlimited exponent range,
+     and thus should be rounded to 0.1E-134 */
+  mpfr_set_str_binary (z, "0.1E-134");
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  MPFR_ASSERTN(inex > 0);
   
   mpfr_set_emin (emin);
   mpfr_clear (x);
