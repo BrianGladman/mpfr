@@ -123,8 +123,11 @@ floating-point arithmetic, version @value{VERSION}.
 
 @c  Usage: @GMPabs{x}
 @c  Give either |x| in tex, or abs(x) in info or html.
+@c  The \ensuremath is needed because the OT1 encoding is used, where
+@c  the pipe character corresponds to a wide dash:
+@c    https://tex.stackexchange.com/a/1775/58921
 @tex
-\gdef\GMPabs#1{|#1|}
+\gdef\GMPabs#1{\ensuremath{|#1|}}
 @end tex
 @ifnottex
 @macro GMPabs {X}
