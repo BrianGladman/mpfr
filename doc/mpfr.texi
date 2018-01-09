@@ -3718,7 +3718,8 @@ with @code{mpfr_custom_init_set} is undefined.
 
 @deftypefun mpfr_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
 Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
-number. The return value for NaN, Infinity or zero is unspecified but does not
+number and the significand is considered in [1/2,1).
+The behavior for NaN, infinity or zero is undefined but does not
 produce any trap.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
