@@ -107,30 +107,6 @@ floating-point arithmetic, version @value{VERSION}.
 @end menu
 
 
-@c Texinfo currently doesn't support @var in script font size:
-@c error "@scriptfont 5 is undefined". See thread at
-@c   http://lists.gnu.org/archive/html/bug-texinfo/2017-11/msg00019.html
-@c   http://lists.gnu.org/archive/html/bug-texinfo/2017-12/msg00001.html
-@c (unfortunately the antispam there garbles important Texinfo code).
-@c
-@c Use the @svar macro, defined below, instead. It currently disables
-@c the use of @var, with the consequence that this appears in italic
-@c instead of slanted. Alternatively, the following could be used for
-@c the macro definition: @hbox{@switchtolllsize@var{\V\}}
-@c But with this workaround, the font is larger than it should be, making
-@c some cases ugly, such as in: {\log 2 \over \log @svar{b}}
-@iftex
-@macro svar {V}
-\V\
-@end macro
-@end iftex
-@ifnottex
-@macro svar {V}
-@var{\V\}
-@end macro
-@end ifnottex
-
-
 @c  @m{T,N} is $T$ in tex or @math{N} otherwise.  This is an easy way to give
 @c  different forms for math in tex and info.  Commas in N or T don't work,
 @c  but @C{} can be used instead.  \, works in info but not in tex.
@@ -1714,7 +1690,7 @@ minimal precision @math{m} depending only on @var{p} = PREC(@var{op}) and
 m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
 @end ifnottex
 @tex
-$m = 1 + \left\lceil @var{p} {\log 2 \over \log @svar{b}} \right\rceil$,
+$m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
 @end tex
 with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
 but in some very rare cases, it might be @math{m+1}
@@ -1989,7 +1965,7 @@ or both arguments are NaN@. But only floating-point numbers can be compared
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_exp_t @var{e})
 @deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mpfr_exp_t @var{e})
-Compare @var{op1} and @m{@var{op2} \times 2^{@svar{e}}, @var{op2} multiplied by two to
+Compare @var{op1} and @m{@var{op2} \times 2^{@var{e}}, @var{op2} multiplied by two to
 the power @var{e}}. Similar as above.
 @end deftypefun
 
@@ -2229,7 +2205,7 @@ at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd}. MPFR defines the dilogarithm function as
-@m{-\int_{t=0}^{@svar{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
+@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
 to @var{op}}.
 @end deftypefun
 
