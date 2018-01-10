@@ -818,6 +818,9 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
           int ok, inex2;
           mpfr_prec_t w = MPFR_PREC (y) + 14;
           mpfr_exp_t expl;
+          MPFR_SAVE_EXPO_DECL (expo);
+
+          MPFR_SAVE_EXPO_MARK (expo);
 
           while (1)
             {
@@ -847,13 +850,18 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
               mpfr_clear (l);
               mpfr_clear (h);
               if (ok)
-                return inex;
+                {
+                  MPFR_SAVE_EXPO_FREE (expo);
+                  return mpfr_check_range (y, inex, rnd);
+                }
               /* if ulp(log(-x)) <= |x| there is no reason to loop,
                  since the width of [l, h] will be at least |x| */
               if (expl < MPFR_EXP (x) + w)
                 break;
               w += MPFR_INT_CEIL_LOG2(w) + 3;
             }
+
+          MPFR_SAVE_EXPO_FREE (expo);
         }
     }
 
