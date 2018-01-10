@@ -88,20 +88,11 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
     }
   if (n0 != n1)
     {
-      char format[1024];
-      size_t len;
-
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               randsize, fmt);
-      printf ("expected: %d\ngot:      %d\n", n0, n1);
-      strncpy (format, "x='", 1023);
-      strncpy (format + 3, fmt, 1020);
-      len = 3 + strlen (fmt);
-      if (len < 1024)  /* should always occur */
-        {
-          strncpy (format + len, "'\n", 1023 - len);
-          mpfr_printf (format, x);
-        }
+      printf ("expected: %d\ngot:      %d\nx='", n0, n1);
+      mpfr_printf (fmt, x);
+      printf ("'\n");
       exit (1);
     }
   if ((randsize > 1 && strncmp (expected, buffer, randsize - 1) != 0)
