@@ -413,12 +413,14 @@ bug20180110 (void)
 {
   mpfr_exp_t emax, e;
   mpfr_t x, y, z;
-  int i, sign;
+  mpfr_flags_t flags, eflags;
+  int i, inex, sign;
 
   emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 2);
   mpfr_inits2 (64, y, z, (mpfr_ptr) 0);
+  eflags = MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
 
   for (i = 10; i <= 30; i++)
     {
@@ -426,17 +428,23 @@ bug20180110 (void)
       mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
       e = mpfr_get_exp (y);
       mpfr_set_emax (e - 1);
-      mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
+      mpfr_clear_flags ();
+      inex = mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
+      flags = __gmpfr_flags;
       mpfr_set_inf (z, 1);
       mpfr_nextbelow (z);
       mpfr_set_emax (emax);
-      if (! mpfr_equal_p (y, z))
+      if (! (mpfr_equal_p (y, z) && SAME_SIGN (inex, -1) && flags == eflags))
         {
           printf ("Error in bug20180110 for i = %d:\n", i);
           printf ("Expected ");
           mpfr_dump (z);
+          printf ("with inex = %d and flags =", -1);
+          flags_out (eflags);
           printf ("Got      ");
           mpfr_dump (y);
+          printf ("with inex = %d and flags =", inex);
+          flags_out (flags);
           exit (1);
         }
     }
