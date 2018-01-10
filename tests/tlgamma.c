@@ -405,12 +405,52 @@ tcc_bug20160606 (void)
   mpfr_clear (y);
 }
 
+/* With r12088, mpfr_lgamma is much too slow with a reduced emax that
+   yields an overflow, even though this case is easier. In practice,
+   this test will hang. */
+static void
+bug20180110 (void)
+{
+  mpfr_exp_t emax, e;
+  mpfr_t x, y, z;
+  int i, sign;
+
+  emax = mpfr_get_emax ();
+
+  mpfr_init2 (x, 2);
+  mpfr_inits2 (64, y, z, (mpfr_ptr) 0);
+
+  for (i = 10; i <= 30; i++)
+    {
+      mpfr_set_si_2exp (x, -1, -(1L << i), MPFR_RNDN);  /* -2^(-2^i) */
+      mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
+      e = mpfr_get_exp (y);
+      mpfr_set_emax (e - 1);
+      mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
+      mpfr_set_inf (z, 1);
+      mpfr_nextbelow (z);
+      mpfr_set_emax (emax);
+      if (! mpfr_equal_p (y, z))
+        {
+          printf ("Error in bug20180110 for i = %d:\n", i);
+          printf ("Expected ");
+          mpfr_dump (z);
+          printf ("Got      ");
+          mpfr_dump (y);
+          exit (1);
+        }
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
   tcc_bug20160606 ();
+  bug20180110 ();
 
   special ();
   test_generic (MPFR_PREC_MIN, 100, 2);
