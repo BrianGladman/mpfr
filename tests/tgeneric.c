@@ -423,11 +423,15 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 #endif
             if (MPFR_IS_PURE_FP (y))
               {
-                e = MPFR_GET_EXP (y);
-                if (test_of && e - 1 >= emax)
+                e = MPFR_GET_EXP (y);  /* exponent of the result */
+
+                if (test_of && e - 1 >= emax)  /* overflow test */
                   {
                     mpfr_flags_t ex_flags;
 
+                    /* Exponent e of the result > exponents of the inputs;
+                       let's set emax to e - 1, so that one should get an
+                       overflow. */
                     mpfr_set_emax (e - 1);
 #ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: overflow test (emax = %"
@@ -483,10 +487,14 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                       }
                     test_of = 0;  /* Overflow is tested only once. */
                   }
-                if (test_uf && e + 1 <= emin)
+
+                if (test_uf && e + 1 <= emin)  /* underflow test */
                   {
                     mpfr_flags_t ex_flags;
 
+                    /* Exponent e of the result < exponents of the inputs;
+                       let's set emin to e + 1, so that one should get an
+                       underflow. */
                     mpfr_set_emin (e + 1);
 #ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: underflow test (emin = %"
@@ -542,13 +550,16 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                       }
                     test_uf = 0;  /* Underflow is tested only once. */
                   }
+
                 if (e < emin)
                   emin = e;
                 if (e > emax)
                   emax = e;
-              }
+              }  /* MPFR_IS_PURE_FP (y) */
+
             if (emin > emax)
               emin = emax;  /* case where all values are singular */
+
             /* Consistency test in a reduced exponent range. Doing it
                for the first 10 samples and for prec == p1 (which has
                some special cases) should be sufficient. */
@@ -609,8 +620,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     exit (1);
                   }
               }
+
             __gmpfr_flags = oldflags;  /* restore the flags */
-          }
+          }  /* tests in a reduced exponent range */
 
           if (MPFR_IS_SINGULAR (y))
             {
