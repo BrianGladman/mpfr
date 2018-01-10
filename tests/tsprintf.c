@@ -89,13 +89,19 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
   if (n0 != n1)
     {
       char format[1024];
+      size_t len;
+
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
               randsize, fmt);
       printf ("expected: %d\ngot:      %d\n", n0, n1);
-      strncpy (format, "x='", 1024);
-      strncpy (format + 3, fmt, 1021);
-      strncpy (format + 3 + strlen (fmt), "'\n", 1021 - strlen (fmt));
-      mpfr_printf (format, x);
+      strncpy (format, "x='", 1023);
+      strncpy (format + 3, fmt, 1020);
+      len = 3 + strlen (fmt);
+      if (len < 1024)  /* should always occur */
+        {
+          strncpy (format + len, "'\n", 1023 - len);
+          mpfr_printf (format, x);
+        }
       exit (1);
     }
   if ((randsize > 1 && strncmp (expected, buffer, randsize - 1) != 0)
