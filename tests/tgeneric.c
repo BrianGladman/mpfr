@@ -157,7 +157,6 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
   int inexact, compare, compare2;
   unsigned int n;
   unsigned long ctrt = 0, ctrn = 0;
-  int test_of = 1, test_uf = 1;
   mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
@@ -171,6 +170,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
   /* generic test */
   for (prec = p0; prec <= p1; prec++)
     {
+      /* Number of overflow/underflow tests for each precision.
+         Since MPFR uses several algorithms and there may also be
+         early overflow/underflow detection, several tests may be
+         needed to detect a bug. */
+      int test_of = 3, test_uf = 3;
+
       mpfr_set_prec (z, prec);
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
@@ -425,7 +430,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               {
                 e = MPFR_GET_EXP (y);  /* exponent of the result */
 
-                if (test_of && e - 1 >= emax)  /* overflow test */
+                if (test_of > 0 && e - 1 >= emax)  /* overflow test */
                   {
                     mpfr_flags_t ex_flags;
 
@@ -485,10 +490,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                         mpfr_dump (w);
                         exit (1);
                       }
-                    test_of = 0;  /* Overflow is tested only once. */
+                    test_of--;
                   }
 
-                if (test_uf && e + 1 <= emin)  /* underflow test */
+                if (test_uf > 0 && e + 1 <= emin)  /* underflow test */
                   {
                     mpfr_flags_t ex_flags;
 
@@ -548,7 +553,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                         mpfr_dump (w);
                         exit (1);
                       }
-                    test_uf = 0;  /* Underflow is tested only once. */
+                    test_uf--;
                   }
 
                 if (e < emin)
