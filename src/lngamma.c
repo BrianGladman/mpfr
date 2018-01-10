@@ -850,7 +850,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
                 return inex;
               /* if ulp(log(-x)) <= |x| there is no reason to loop,
                  since the width of [l, h] will be at least |x| */
-              if (expl < MPFR_EXP(x) + (mpfr_exp_t) w)
+              if (expl < MPFR_EXP (x) + w)
                 break;
               w += MPFR_INT_CEIL_LOG2(w) + 3;
             }
