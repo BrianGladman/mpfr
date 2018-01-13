@@ -1,4 +1,1135 @@
 ------------------------------------------------------------------------
+r12100 | vlefevre | 2018-01-13 13:50:28 +0000 (Sat, 13 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/NEWS
+
+[NEWS] Update. Prepare for new version 4.1.0.
+------------------------------------------------------------------------
+r12099 | vlefevre | 2018-01-13 13:43:02 +0000 (Sat, 13 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/doc/FAQ.html
+
+[doc] Updated FAQ.html with update-faq.
+------------------------------------------------------------------------
+r12092 | vlefevre | 2018-01-10 13:40:31 +0000 (Wed, 10 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/tests/tlgamma.c
+
+[tests/tlgamma.c] bug20180110: test the ternary value and the flags.
+------------------------------------------------------------------------
+r12091 | vlefevre | 2018-01-10 13:32:58 +0000 (Wed, 10 Jan 2018) | 3 lines
+Changed paths:
+   M /trunk/src/lngamma.c
+
+[src/lngamma.c] Fixed mpfr_lgamma bug for tiny negative x, in case
+emax < exponent of the result (the issue was an overflow in the "fast"
+algorithm, which made it loop with more and more working precision).
+------------------------------------------------------------------------
+r12090 | vlefevre | 2018-01-10 13:24:29 +0000 (Wed, 10 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/src/lngamma.c
+
+[src/lngamma.c] Removed a useless cast.
+------------------------------------------------------------------------
+r12089 | vlefevre | 2018-01-10 13:17:50 +0000 (Wed, 10 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/tests/tlgamma.c
+
+[tests/tlgamma.c] Added a test case for a bug found from the tgeneric
+change done in r12088.
+------------------------------------------------------------------------
+r12088 | vlefevre | 2018-01-10 12:22:11 +0000 (Wed, 10 Jan 2018) | 5 lines
+Changed paths:
+   M /trunk/tests/tgeneric.c
+
+[tests/tgeneric.c] Do several overflow/underflow tests instead of 1, and
+this for each precision. This allows one to detect the mpfr_ai bug found
+and fixed on 2018-01-07 (with 32-bit *and* 64-bit ABI):
+  https://sympa.inria.fr/sympa/arc/mpfr/2018-01/msg00001.html
+Moreover, this makes tlgamma loop with a 32-bit ABI (x86). To be fixed.
+------------------------------------------------------------------------
+r12087 | vlefevre | 2018-01-10 11:49:52 +0000 (Wed, 10 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/tests/tgeneric.c
+
+[tests/tgeneric.c] Added comments for tests in a reduced exponent range.
+------------------------------------------------------------------------
+r12085 | vlefevre | 2018-01-10 10:12:19 +0000 (Wed, 10 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] About r12084, simplified the code, without needing
+strncpy.
+------------------------------------------------------------------------
+r12084 | vlefevre | 2018-01-10 09:59:30 +0000 (Wed, 10 Jan 2018) | 3 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Fixed strncpy usage, in particular to ensure a
+null-terminated string (bug detected by gcc-snapshot 20180107-1 under
+Debian with -Werror=stringop-truncation).
+------------------------------------------------------------------------
+r12082 | vlefevre | 2018-01-09 14:44:43 +0000 (Tue, 09 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Fixed the @GMPabs macro in tex mode: due to the use of
+the OT1 encoding, the pipe character "|" was giving a wide dash.
+------------------------------------------------------------------------
+r12081 | vlefevre | 2018-01-09 14:06:43 +0000 (Tue, 09 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] For mpfr_custom_get_exp, restored the spec for NaN,
+infinity and zero, with more details.
+------------------------------------------------------------------------
+r12080 | vlefevre | 2018-01-09 13:51:51 +0000 (Tue, 09 Jan 2018) | 5 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Improved description of mpfr_custom_init_set.
+Note: For the versions of the manual generated with TeX (PDF/DVI/PS),
+"|kind|" appears as "—kind—", and the description of mpfr_ai has
+the same issue (since its introduction in MPFR 3.0.0). The cause
+is unclear, and this will be fixed later.
+------------------------------------------------------------------------
+r12079 | zimmerma | 2018-01-09 13:28:21 +0000 (Tue, 09 Jan 2018) | 3 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] for mpfr_custom_get_exp, explain the significand is considered
+		in [1/2,1) as for mpfr_get_exp
+
+------------------------------------------------------------------------
+r12076 | vlefevre | 2018-01-09 12:19:03 +0000 (Tue, 09 Jan 2018) | 4 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+   M /trunk/doc/texinfo.tex
+
+[doc]
+  * texinfo.tex: update to the latest version 2018-01-09.11, which
+    supports @var with script font size without any drawback.
+  * mpfr.texi: replaced the now useless @svar by @var.
+------------------------------------------------------------------------
+r12075 | vlefevre | 2018-01-07 20:45:25 +0000 (Sun, 07 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/tests/tai.c
+
+[tests/tai.c] In bug20180107, also check the flags.
+------------------------------------------------------------------------
+r12074 | vlefevre | 2018-01-07 20:06:18 +0000 (Sun, 07 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/src/ai.c
+
+[src/ai.c] Really fixed the bug.
+------------------------------------------------------------------------
+r12073 | vlefevre | 2018-01-07 19:51:21 +0000 (Sun, 07 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/src/check.c
+
+[src/check.c] Typo.
+------------------------------------------------------------------------
+r12072 | zimmerma | 2018-01-07 19:51:20 +0000 (Sun, 07 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/src/ai.c
+
+[src/ai.c] missing call to mpfr_check_range
+
+------------------------------------------------------------------------
+r12071 | zimmerma | 2018-01-07 19:47:02 +0000 (Sun, 07 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/tests/tai.c
+
+[tests/tai.c] added test that fails on x86_64
+
+------------------------------------------------------------------------
+r12070 | zimmerma | 2018-01-07 18:51:13 +0000 (Sun, 07 Jan 2018) | 3 lines
+Changed paths:
+   M /trunk/tests/tai.c
+
+[tests/tai.c] added test for bug in mpfr_ai (see thread
+https://sympa.inria.fr/sympa/arc/mpfr/2018-01/msg00001.html)
+
+------------------------------------------------------------------------
+r12069 | vlefevre | 2018-01-03 10:58:06 +0000 (Wed, 03 Jan 2018) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r12068 | vlefevre | 2018-01-03 10:56:21 +0000 (Wed, 03 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/tools/ck-mparam
+
+[tools/ck-mparam] In the copyright notice, just keep the year 2011
+since this file is not part of the tarball (just used by mpfrlint).
+------------------------------------------------------------------------
+r12067 | vlefevre | 2018-01-03 10:53:21 +0000 (Wed, 03 Jan 2018) | 6 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/INSTALL
+   M /trunk/Makefile.am
+   M /trunk/NEWS
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+   M /trunk/doc/FAQ.html
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/README.dev
+   M /trunk/doc/check-typography
+   M /trunk/doc/faq.xsl
+   M /trunk/doc/mpfr.texi
+   M /trunk/examples/can_round.c
+   M /trunk/examples/divworst.c
+   M /trunk/examples/rndo-add.c
+   M /trunk/examples/sample.c
+   M /trunk/examples/version.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/abort_prec_max.c
+   M /trunk/src/acos.c
+   M /trunk/src/acosh.c
+   M /trunk/src/add.c
+   M /trunk/src/add1.c
+   M /trunk/src/add1sp.c
+   M /trunk/src/add_d.c
+   M /trunk/src/add_ui.c
+   M /trunk/src/agm.c
+   M /trunk/src/ai.c
+   M /trunk/src/amd/amdfam10/mparam.h
+   M /trunk/src/amd/athlon/mparam.h
+   M /trunk/src/amd/k8/mparam.h
+   M /trunk/src/arm/mparam.h
+   M /trunk/src/asin.c
+   M /trunk/src/asinh.c
+   M /trunk/src/atan.c
+   M /trunk/src/atan2.c
+   M /trunk/src/atanh.c
+   M /trunk/src/bernoulli.c
+   M /trunk/src/beta.c
+   M /trunk/src/buildopt.c
+   M /trunk/src/cache.c
+   M /trunk/src/cbrt.c
+   M /trunk/src/check.c
+   M /trunk/src/clear.c
+   M /trunk/src/clears.c
+   M /trunk/src/cmp.c
+   M /trunk/src/cmp2.c
+   M /trunk/src/cmp_abs.c
+   M /trunk/src/cmp_d.c
+   M /trunk/src/cmp_ld.c
+   M /trunk/src/cmp_si.c
+   M /trunk/src/cmp_ui.c
+   M /trunk/src/comparisons.c
+   M /trunk/src/const_catalan.c
+   M /trunk/src/const_euler.c
+   M /trunk/src/const_log2.c
+   M /trunk/src/const_pi.c
+   M /trunk/src/constant.c
+   M /trunk/src/copysign.c
+   M /trunk/src/cos.c
+   M /trunk/src/cosh.c
+   M /trunk/src/cot.c
+   M /trunk/src/coth.c
+   M /trunk/src/csc.c
+   M /trunk/src/csch.c
+   M /trunk/src/d_div.c
+   M /trunk/src/d_sub.c
+   M /trunk/src/digamma.c
+   M /trunk/src/dim.c
+   M /trunk/src/div.c
+   M /trunk/src/div_2exp.c
+   M /trunk/src/div_2si.c
+   M /trunk/src/div_2ui.c
+   M /trunk/src/div_d.c
+   M /trunk/src/div_ui.c
+   M /trunk/src/dump.c
+   M /trunk/src/eint.c
+   M /trunk/src/eq.c
+   M /trunk/src/erandom.c
+   M /trunk/src/erf.c
+   M /trunk/src/erfc.c
+   M /trunk/src/exceptions.c
+   M /trunk/src/exp.c
+   M /trunk/src/exp10.c
+   M /trunk/src/exp2.c
+   M /trunk/src/exp3.c
+   M /trunk/src/exp_2.c
+   M /trunk/src/expm1.c
+   M /trunk/src/extract.c
+   M /trunk/src/factorial.c
+   M /trunk/src/fits_intmax.c
+   M /trunk/src/fits_s.h
+   M /trunk/src/fits_sint.c
+   M /trunk/src/fits_slong.c
+   M /trunk/src/fits_sshort.c
+   M /trunk/src/fits_u.h
+   M /trunk/src/fits_uint.c
+   M /trunk/src/fits_uintmax.c
+   M /trunk/src/fits_ulong.c
+   M /trunk/src/fits_ushort.c
+   M /trunk/src/fma.c
+   M /trunk/src/fmma.c
+   M /trunk/src/fms.c
+   M /trunk/src/fpif.c
+   M /trunk/src/frac.c
+   M /trunk/src/free_cache.c
+   M /trunk/src/frexp.c
+   M /trunk/src/gamma.c
+   M /trunk/src/gamma_inc.c
+   M /trunk/src/gammaonethird.c
+   M /trunk/src/gen_inverse.h
+   M /trunk/src/generic/coverage/mparam.h
+   M /trunk/src/generic/mparam.h
+   M /trunk/src/get_d.c
+   M /trunk/src/get_d64.c
+   M /trunk/src/get_exp.c
+   M /trunk/src/get_f.c
+   M /trunk/src/get_float128.c
+   M /trunk/src/get_flt.c
+   M /trunk/src/get_ld.c
+   M /trunk/src/get_q.c
+   M /trunk/src/get_si.c
+   M /trunk/src/get_sj.c
+   M /trunk/src/get_str.c
+   M /trunk/src/get_ui.c
+   M /trunk/src/get_uj.c
+   M /trunk/src/get_z.c
+   M /trunk/src/get_z_exp.c
+   M /trunk/src/gmp_op.c
+   M /trunk/src/grandom.c
+   M /trunk/src/hppa/mparam.h
+   M /trunk/src/hypot.c
+   M /trunk/src/ia64/mparam.h
+   M /trunk/src/ieee_floats.h
+   M /trunk/src/init.c
+   M /trunk/src/init2.c
+   M /trunk/src/inits.c
+   M /trunk/src/inits2.c
+   M /trunk/src/inp_str.c
+   M /trunk/src/int_ceil_log2.c
+   M /trunk/src/invert_limb.h
+   M /trunk/src/invsqrt_limb.h
+   M /trunk/src/isinf.c
+   M /trunk/src/isinteger.c
+   M /trunk/src/isnan.c
+   M /trunk/src/isnum.c
+   M /trunk/src/isqrt.c
+   M /trunk/src/isregular.c
+   M /trunk/src/iszero.c
+   M /trunk/src/jn.c
+   M /trunk/src/jyn_asympt.c
+   M /trunk/src/li2.c
+   M /trunk/src/lngamma.c
+   M /trunk/src/log.c
+   M /trunk/src/log10.c
+   M /trunk/src/log1p.c
+   M /trunk/src/log2.c
+   M /trunk/src/log_ui.c
+   M /trunk/src/logging.c
+   M /trunk/src/min_prec.c
+   M /trunk/src/minmax.c
+   M /trunk/src/mips/mparam.h
+   M /trunk/src/modf.c
+   M /trunk/src/mp_clz_tab.c
+   M /trunk/src/mparam_h.in
+   M /trunk/src/mpf2mpfr.h
+   M /trunk/src/mpfr-cvers.h
+   M /trunk/src/mpfr-gmp.c
+   M /trunk/src/mpfr-gmp.h
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/mpfr-intmax.h
+   M /trunk/src/mpfr-longlong.h
+   M /trunk/src/mpfr-mini-gmp.c
+   M /trunk/src/mpfr-mini-gmp.h
+   M /trunk/src/mpfr-sassert.h
+   M /trunk/src/mpfr-thread.h
+   M /trunk/src/mpfr.h
+   M /trunk/src/mpn_exp.c
+   M /trunk/src/mul.c
+   M /trunk/src/mul_2exp.c
+   M /trunk/src/mul_2si.c
+   M /trunk/src/mul_2ui.c
+   M /trunk/src/mul_d.c
+   M /trunk/src/mul_ui.c
+   M /trunk/src/mulders.c
+   M /trunk/src/neg.c
+   M /trunk/src/next.c
+   M /trunk/src/nrandom.c
+   M /trunk/src/odd_p.c
+   M /trunk/src/out_str.c
+   M /trunk/src/pool.c
+   M /trunk/src/pow.c
+   M /trunk/src/pow_si.c
+   M /trunk/src/pow_ui.c
+   M /trunk/src/pow_z.c
+   M /trunk/src/powerof2.c
+   M /trunk/src/powerpc32/mparam.h
+   M /trunk/src/powerpc64/mparam.h
+   M /trunk/src/print_raw.c
+   M /trunk/src/print_rnd_mode.c
+   M /trunk/src/printf.c
+   M /trunk/src/random_deviate.c
+   M /trunk/src/random_deviate.h
+   M /trunk/src/rec_sqrt.c
+   M /trunk/src/reldiff.c
+   M /trunk/src/rem1.c
+   M /trunk/src/rint.c
+   M /trunk/src/rndna.c
+   M /trunk/src/root.c
+   M /trunk/src/round_near_x.c
+   M /trunk/src/round_p.c
+   M /trunk/src/round_prec.c
+   M /trunk/src/round_raw_generic.c
+   M /trunk/src/scale2.c
+   M /trunk/src/sec.c
+   M /trunk/src/sech.c
+   M /trunk/src/set.c
+   M /trunk/src/set_d.c
+   M /trunk/src/set_d64.c
+   M /trunk/src/set_dfl_prec.c
+   M /trunk/src/set_exp.c
+   M /trunk/src/set_f.c
+   M /trunk/src/set_float128.c
+   M /trunk/src/set_flt.c
+   M /trunk/src/set_inf.c
+   M /trunk/src/set_ld.c
+   M /trunk/src/set_nan.c
+   M /trunk/src/set_prc_raw.c
+   M /trunk/src/set_prec.c
+   M /trunk/src/set_q.c
+   M /trunk/src/set_rnd.c
+   M /trunk/src/set_si.c
+   M /trunk/src/set_si_2exp.c
+   M /trunk/src/set_sj.c
+   M /trunk/src/set_str.c
+   M /trunk/src/set_str_raw.c
+   M /trunk/src/set_ui.c
+   M /trunk/src/set_ui_2exp.c
+   M /trunk/src/set_uj.c
+   M /trunk/src/set_z.c
+   M /trunk/src/set_z_exp.c
+   M /trunk/src/set_zero.c
+   M /trunk/src/setmax.c
+   M /trunk/src/setmin.c
+   M /trunk/src/setsign.c
+   M /trunk/src/sgn.c
+   M /trunk/src/si_op.c
+   M /trunk/src/signbit.c
+   M /trunk/src/sin.c
+   M /trunk/src/sin_cos.c
+   M /trunk/src/sinh.c
+   M /trunk/src/sinh_cosh.c
+   M /trunk/src/sparc64/mparam.h
+   M /trunk/src/sqr.c
+   M /trunk/src/sqrt.c
+   M /trunk/src/sqrt_ui.c
+   M /trunk/src/stack_interface.c
+   M /trunk/src/strtofr.c
+   M /trunk/src/sub.c
+   M /trunk/src/sub1.c
+   M /trunk/src/sub1sp.c
+   M /trunk/src/sub_d.c
+   M /trunk/src/sub_ui.c
+   M /trunk/src/subnormal.c
+   M /trunk/src/sum.c
+   M /trunk/src/swap.c
+   M /trunk/src/tan.c
+   M /trunk/src/tanh.c
+   M /trunk/src/ubf.c
+   M /trunk/src/uceil_exp2.c
+   M /trunk/src/uceil_log2.c
+   M /trunk/src/ufloor_log2.c
+   M /trunk/src/ui_div.c
+   M /trunk/src/ui_pow.c
+   M /trunk/src/ui_pow_ui.c
+   M /trunk/src/ui_sub.c
+   M /trunk/src/urandom.c
+   M /trunk/src/urandomb.c
+   M /trunk/src/vasprintf.c
+   M /trunk/src/version.c
+   M /trunk/src/volatile.c
+   M /trunk/src/x86/core2/mparam.h
+   M /trunk/src/x86/mparam.h
+   M /trunk/src/x86_64/core2/mparam.h
+   M /trunk/src/x86_64/corei5/mparam.h
+   M /trunk/src/x86_64/pentium4/mparam.h
+   M /trunk/src/yn.c
+   M /trunk/src/zeta.c
+   M /trunk/src/zeta_ui.c
+   M /trunk/tests/Makefile.am
+   M /trunk/tests/cmp_str.c
+   M /trunk/tests/data/digamma
+   M /trunk/tests/data/li2
+   M /trunk/tests/memory.c
+   M /trunk/tests/mpf_compat.c
+   M /trunk/tests/mpf_compat.h
+   M /trunk/tests/mpfr-test.h
+   M /trunk/tests/mpfr_compat.c
+   M /trunk/tests/random2.c
+   M /trunk/tests/reuse.c
+   M /trunk/tests/rnd_mode.c
+   M /trunk/tests/tabort_defalloc1.c
+   M /trunk/tests/tabort_defalloc2.c
+   M /trunk/tests/tabort_prec_max.c
+   M /trunk/tests/tabs.c
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tadd.c
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tadd_d.c
+   M /trunk/tests/tadd_ui.c
+   M /trunk/tests/tagm.c
+   M /trunk/tests/tai.c
+   M /trunk/tests/talloc-cache.c
+   M /trunk/tests/talloc.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tassert.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/taway.c
+   M /trunk/tests/tbeta.c
+   M /trunk/tests/tbuildopt.c
+   M /trunk/tests/tcan_round.c
+   M /trunk/tests/tcbrt.c
+   M /trunk/tests/tcheck.c
+   M /trunk/tests/tcmp.c
+   M /trunk/tests/tcmp2.c
+   M /trunk/tests/tcmp_d.c
+   M /trunk/tests/tcmp_ld.c
+   M /trunk/tests/tcmp_ui.c
+   M /trunk/tests/tcmpabs.c
+   M /trunk/tests/tcomparisons.c
+   M /trunk/tests/tconst_catalan.c
+   M /trunk/tests/tconst_euler.c
+   M /trunk/tests/tconst_log2.c
+   M /trunk/tests/tconst_pi.c
+   M /trunk/tests/tcopysign.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/tcot.c
+   M /trunk/tests/tcoth.c
+   M /trunk/tests/tcsc.c
+   M /trunk/tests/tcsch.c
+   M /trunk/tests/td_div.c
+   M /trunk/tests/td_sub.c
+   M /trunk/tests/tdigamma.c
+   M /trunk/tests/tdim.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tdiv_d.c
+   M /trunk/tests/tdiv_ui.c
+   M /trunk/tests/teint.c
+   M /trunk/tests/teq.c
+   M /trunk/tests/terandom.c
+   M /trunk/tests/terandom_chisq.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texceptions.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp10.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/texpm1.c
+   M /trunk/tests/tfactorial.c
+   M /trunk/tests/tfits.c
+   M /trunk/tests/tfma.c
+   M /trunk/tests/tfmma.c
+   M /trunk/tests/tfmod.c
+   M /trunk/tests/tfms.c
+   M /trunk/tests/tfpif.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tfrac.c
+   M /trunk/tests/tfrexp.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tgamma_inc.c
+   M /trunk/tests/tgeneric.c
+   M /trunk/tests/tgeneric_ui.c
+   M /trunk/tests/tget_d.c
+   M /trunk/tests/tget_d_2exp.c
+   M /trunk/tests/tget_f.c
+   M /trunk/tests/tget_flt.c
+   M /trunk/tests/tget_ld_2exp.c
+   M /trunk/tests/tget_q.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tget_sj.c
+   M /trunk/tests/tget_str.c
+   M /trunk/tests/tget_z.c
+   M /trunk/tests/tgmpop.c
+   M /trunk/tests/tgrandom.c
+   M /trunk/tests/thyperbolic.c
+   M /trunk/tests/thypot.c
+   M /trunk/tests/tinits.c
+   M /trunk/tests/tinp_str.c
+   M /trunk/tests/tinternals.c
+   M /trunk/tests/tisnan.c
+   M /trunk/tests/tisqrt.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tjn.c
+   M /trunk/tests/tl2b.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tli2.c
+   M /trunk/tests/tlngamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tlog1p.c
+   M /trunk/tests/tlog2.c
+   M /trunk/tests/tlog_ui.c
+   M /trunk/tests/tmin_prec.c
+   M /trunk/tests/tminmax.c
+   M /trunk/tests/tmodf.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/tmul_d.c
+   M /trunk/tests/tmul_ui.c
+   M /trunk/tests/tnext.c
+   M /trunk/tests/tnrandom.c
+   M /trunk/tests/tnrandom_chisq.c
+   M /trunk/tests/tout_str.c
+   M /trunk/tests/toutimpl.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow3.c
+   M /trunk/tests/tpow_all.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/tprintf.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/trandom_deviate.c
+   M /trunk/tests/trec_sqrt.c
+   M /trunk/tests/tremquo.c
+   M /trunk/tests/trint.c
+   M /trunk/tests/trndna.c
+   M /trunk/tests/troot.c
+   M /trunk/tests/trootn_ui.c
+   M /trunk/tests/tround_prec.c
+   M /trunk/tests/tsec.c
+   M /trunk/tests/tsech.c
+   M /trunk/tests/tset.c
+   M /trunk/tests/tset_d.c
+   M /trunk/tests/tset_exp.c
+   M /trunk/tests/tset_f.c
+   M /trunk/tests/tset_float128.c
+   M /trunk/tests/tset_ld.c
+   M /trunk/tests/tset_q.c
+   M /trunk/tests/tset_si.c
+   M /trunk/tests/tset_sj.c
+   M /trunk/tests/tset_str.c
+   M /trunk/tests/tset_z.c
+   M /trunk/tests/tset_z_exp.c
+   M /trunk/tests/tsgn.c
+   M /trunk/tests/tsi_op.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsin_cos.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsinh_cosh.c
+   M /trunk/tests/tsprintf.c
+   M /trunk/tests/tsqr.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/tsqrt_ui.c
+   M /trunk/tests/tstckintc.c
+   M /trunk/tests/tstdint.c
+   M /trunk/tests/tstrtofr.c
+   M /trunk/tests/tsub.c
+   M /trunk/tests/tsub1sp.c
+   M /trunk/tests/tsub_d.c
+   M /trunk/tests/tsub_ui.c
+   M /trunk/tests/tsubnormal.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/tswap.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/ttrunc.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/tui_pow.c
+   M /trunk/tests/tui_sub.c
+   M /trunk/tests/turandom.c
+   M /trunk/tests/tvalist.c
+   M /trunk/tests/tversion.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+   M /trunk/tests/tyn.c
+   M /trunk/tests/tzeta.c
+   M /trunk/tests/tzeta_ui.c
+   M /trunk/tools/bench/Makefile.am
+   M /trunk/tools/bench/benchtime.h
+   M /trunk/tools/bench/mpfrbench.c
+   M /trunk/tools/ck-clz_tab
+   M /trunk/tools/ck-copyright-notice
+   M /trunk/tools/ck-news
+   M /trunk/tools/ck-version-info
+   M /trunk/tools/get_patches.sh
+   M /trunk/tune/Makefile.am
+   M /trunk/tune/bidimensional_sample.c
+   M /trunk/tune/speed.c
+   M /trunk/tune/tuneup.c
+
+Copyright notice update: added 2018 with
+  perl -pi -e 's/ (\d{4}-)?(2017)(?= Free Software)/
+               " ".($1||"$2-").($2+1)/e' **/*(^/)
+under zsh, reverting the ck-mparam and timings-mpfr.c files and
+the mbench directory under "tools" (not distributed with MPFR).
+Removed 2017 from the example in the doc/README.dev file.
+------------------------------------------------------------------------
+r12066 | zimmerma | 2018-01-03 10:20:46 +0000 (Wed, 03 Jan 2018) | 2 lines
+Changed paths:
+   M /trunk/src/zeta.c
+
+[src/zeta.c] added comments and FIXME
+
+------------------------------------------------------------------------
+r12056 | vlefevre | 2017-12-25 11:15:53 +0000 (Mon, 25 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/NEWS
+
+[NEWS] Minor corrections for GNU MPFR 4.0.0.
+------------------------------------------------------------------------
+r12055 | vlefevre | 2017-12-23 21:38:16 +0000 (Sat, 23 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/tests.c
+
+[tests/tests.c] Added a note about gettimeofday() and a cast.
+------------------------------------------------------------------------
+r12054 | vlefevre | 2017-12-23 21:17:25 +0000 (Sat, 23 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+[tests/tests.c] Fixed a potential integer overflow from r12053 with
+GMP_CHECK_RANDOMIZE=1, in particular under a 32-bit Linux.
+------------------------------------------------------------------------
+r12053 | zimmerma | 2017-12-23 17:08:06 +0000 (Sat, 23 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+[tests/tests.c] decrease probability of collision with random seed
+
+------------------------------------------------------------------------
+r12048 | zimmerma | 2017-12-23 08:46:50 +0000 (Sat, 23 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/exp_2.c
+   M /trunk/src/subnormal.c
+
+[src/exp_2.c] fixed bug from previous commit
+[src/subnormal.c] added assert
+
+------------------------------------------------------------------------
+r12047 | zimmerma | 2017-12-23 08:38:01 +0000 (Sat, 23 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/texp.c
+
+[tests/texp.c] added test for new bug
+
+------------------------------------------------------------------------
+r12045 | vlefevre | 2017-12-22 11:01:53 +0000 (Fri, 22 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/tlngamma.c
+
+Removed trailing whitespace.
+------------------------------------------------------------------------
+r12044 | vlefevre | 2017-12-22 10:54:49 +0000 (Fri, 22 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/subnormal.c
+
+[src/subnormal.c] Replaced FIXME.
+------------------------------------------------------------------------
+r12043 | vlefevre | 2017-12-22 10:48:08 +0000 (Fri, 22 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/tests/tj1.c
+
+[tests/tj1.c] Avoid a potential integer overflow.
+------------------------------------------------------------------------
+r12042 | zimmerma | 2017-12-22 08:10:22 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/subnormal.c
+
+[src/subnormal.c] added FIXME
+
+------------------------------------------------------------------------
+r12041 | zimmerma | 2017-12-22 08:06:04 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/sin.c
+
+[src/sin.c] simplified code with RNDA
+
+------------------------------------------------------------------------
+r12040 | zimmerma | 2017-12-22 08:03:49 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/hypot.c
+
+[src/hypot.c] mimic mpfr_round_near_x
+
+------------------------------------------------------------------------
+r12039 | zimmerma | 2017-12-22 07:54:59 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tj1.c
+
+[tests/tj1.c] exercise corner case
+
+------------------------------------------------------------------------
+r12038 | zimmerma | 2017-12-22 07:38:25 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tj1.c
+
+[tests/tj1.c] added test for j1(z) with small z
+
+------------------------------------------------------------------------
+r12037 | zimmerma | 2017-12-22 07:36:41 +0000 (Fri, 22 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/hypot.c
+
+[src/hypot.c] fixed issue with overflow flag not correctly set
+
+------------------------------------------------------------------------
+r12036 | vlefevre | 2017-12-21 09:17:04 +0000 (Thu, 21 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/next.c
+
+[src/next.c] Reverted r12035 as per documentation, which follows
+IEEE 754 (with the usual special treatment for the single NaN).
+------------------------------------------------------------------------
+r12035 | zimmerma | 2017-12-21 07:37:30 +0000 (Thu, 21 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/next.c
+   M /trunk/tests/thypot.c
+
+[src/next.c] fixed nextinf (missing overflow flag)
+[tests/thypot.c] removed debug call to mpfr_dump in previous commit
+
+------------------------------------------------------------------------
+r12034 | zimmerma | 2017-12-21 07:29:57 +0000 (Thu, 21 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/thypot.c
+
+[tests/thypot.c] another fix...
+
+------------------------------------------------------------------------
+r12033 | zimmerma | 2017-12-21 07:21:29 +0000 (Thu, 21 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/thypot.c
+
+[tests/thypot.c] fixed bug20171221()
+
+------------------------------------------------------------------------
+r12032 | zimmerma | 2017-12-21 07:12:14 +0000 (Thu, 21 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/thypot.c
+
+[tests/thypot.c] new failing test
+
+------------------------------------------------------------------------
+r12031 | zimmerma | 2017-12-21 06:18:05 +0000 (Thu, 21 Dec 2017) | 4 lines
+Changed paths:
+   M /trunk/src/lngamma.c
+   M /trunk/tests/tlngamma.c
+
+[src/lngamma.c] fixed bug when u=0 in case z0 < 1
+[tests/tlngamma.c] fixed test case which was wrong
+
+
+------------------------------------------------------------------------
+r12030 | zimmerma | 2017-12-20 20:28:49 +0000 (Wed, 20 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tlngamma.c
+
+[tests/tlngamma.c] added test for new failure
+
+------------------------------------------------------------------------
+r12029 | zimmerma | 2017-12-20 10:48:26 +0000 (Wed, 20 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/lngamma.c
+
+[src/lngamma.c] fixed bug found in previous commit
+
+------------------------------------------------------------------------
+r12028 | zimmerma | 2017-12-20 10:40:34 +0000 (Wed, 20 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/tlngamma.c
+
+[tests/tlngamma.c] added failing test with mpfr-4.0.0-rc2
+
+------------------------------------------------------------------------
+r12025 | vlefevre | 2017-12-20 01:54:18 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.ac
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/mpfr.h
+   M /trunk/src/version.c
+
+Updated version to 4.1.0-dev again.
+------------------------------------------------------------------------
+r12023 | vlefevre | 2017-12-20 01:52:21 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.ac
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/mpfr.h
+   M /trunk/src/version.c
+
+Updated version to 4.0.0-rc2 for an attempt to replace the 4.0 branch.
+------------------------------------------------------------------------
+r12022 | vlefevre | 2017-12-20 01:34:49 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/fma.c
+
+[src/fma.c] Minor improvements. Added an assert.
+------------------------------------------------------------------------
+r12021 | vlefevre | 2017-12-20 01:17:36 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/tanh.c
+
+[src/tanh.c] GNU coding style.
+------------------------------------------------------------------------
+r12020 | vlefevre | 2017-12-20 01:13:09 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/mul.c
+
+[src/mul.c] Reindentation.
+------------------------------------------------------------------------
+r12019 | vlefevre | 2017-12-20 01:10:54 +0000 (Wed, 20 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/exp2.c
+
+[src/exp2.c] Replaced two MPFR_ASSERTN by MPFR_STAT_STATIC_ASSERT.
+------------------------------------------------------------------------
+r12018 | vlefevre | 2017-12-19 16:30:09 +0000 (Tue, 19 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/exp2.c
+
+[src/exp2.c] Fixed the double rounding problem in an underflow case,
+triggered by the test added in r12017.
+------------------------------------------------------------------------
+r12017 | vlefevre | 2017-12-19 16:13:48 +0000 (Tue, 19 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/tests/texp2.c
+
+[tests/texp2.c] Added test of underflow in MPFR_RNDN with exact value
+close to 2^(emin-2). Currently fails due to double rounding.
+------------------------------------------------------------------------
+r12016 | vlefevre | 2017-12-19 14:45:00 +0000 (Tue, 19 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/tests/tdiv.c
+
+[tests/tdiv.c] Added new non-regression test: the was the real cause of
+the ttanh failure in r11993 without the tanh.c fix in this same commit.
+But this mpfr_div was fixed in r12002.
+------------------------------------------------------------------------
+r12015 | vlefevre | 2017-12-19 08:56:43 +0000 (Tue, 19 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Added a comment about a bug/limitation in makeinfo 5.2.
+------------------------------------------------------------------------
+r12014 | vlefevre | 2017-12-19 08:21:55 +0000 (Tue, 19 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Improved svar macro for nottex, in case it is used
+in the future.
+------------------------------------------------------------------------
+r12013 | vlefevre | 2017-12-19 08:20:18 +0000 (Tue, 19 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Define svar even for nottex, though it is not used
+(attempt to avoid a failure with makeinfo 5.2).
+------------------------------------------------------------------------
+r12012 | zimmerma | 2017-12-19 06:51:47 +0000 (Tue, 19 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/fma.c
+   M /trunk/tests/tfma.c
+
+[src/fma.c] fixed bug in mpfr_fma
+[tests/tfma.c] added non-regression test
+
+------------------------------------------------------------------------
+r12011 | vlefevre | 2017-12-19 03:38:58 +0000 (Tue, 19 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/exp2.c
+
+[src/exp2.c] Update concerning the underflow/overflow cases.
+Still incomplete.
+------------------------------------------------------------------------
+r12010 | vlefevre | 2017-12-19 02:32:33 +0000 (Tue, 19 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated a comment.
+------------------------------------------------------------------------
+r12009 | vlefevre | 2017-12-19 02:29:51 +0000 (Tue, 19 Dec 2017) | 8 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+   M /trunk/doc/texinfo.tex
+
+[doc]
+  * texinfo.tex: update to the latest version 2017-12-18.20, which
+    reverts the change done in 2017-12-01.13 attempting to support
+    @var with script font size (e.g. in exponent); but this change
+    didn't work correctly.
+  * mpfr.texi: introduced a @svar macro to handle this case. It
+    currently disables the use of @var, the other workaround being
+    worse.
+------------------------------------------------------------------------
+r12008 | vlefevre | 2017-12-18 17:59:35 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/mul.c
+
+Removed trailing whitespace.
+------------------------------------------------------------------------
+r12007 | vlefevre | 2017-12-18 17:05:28 +0000 (Mon, 18 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+   M /trunk/src/tanh.c
+
+[doc/algorithms.tex,src/tanh.c] Fixed the bound, in particular from
+the recent improvements in the error analysis.
+------------------------------------------------------------------------
+r12006 | zimmerma | 2017-12-18 16:21:36 +0000 (Mon, 18 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/mul.c
+
+[src/mul.c] we should compare the smaller size and not the larger one to
+	    MPFR_MUL_THRESHOLD or MPFR_SQR_THRESHOLD for Mulders' short product
+
+------------------------------------------------------------------------
+r12005 | zimmerma | 2017-12-18 16:17:19 +0000 (Mon, 18 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/mul.c
+   M /trunk/tests/tmul_d.c
+
+[src/mul.c] with Mulders', convert RNDF to RNDZ
+[tests/tmul_d.c] added a non-regression test
+
+------------------------------------------------------------------------
+r12004 | vlefevre | 2017-12-18 16:04:59 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] mpfr_tanh: corrected bounds (thanks to Paul).
+------------------------------------------------------------------------
+r12003 | vlefevre | 2017-12-18 15:54:05 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] mpfr_tanh: detailed some inequalities.
+------------------------------------------------------------------------
+r12002 | zimmerma | 2017-12-18 15:06:45 +0000 (Mon, 18 Dec 2017) | 4 lines
+Changed paths:
+   M /trunk/src/div.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/ttan.c
+
+[src/div.c] fixed bug in mpfr_div2_approx()
+[tests/tdiv.c] added non-regression test
+[tests/ttan.c] added test triggering bug in mpfr_div2_approx()
+
+------------------------------------------------------------------------
+r12001 | vlefevre | 2017-12-18 14:44:33 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] mpfr_tanh: resolved both FIXME's.
+------------------------------------------------------------------------
+r12000 | vlefevre | 2017-12-18 13:37:07 +0000 (Mon, 18 Dec 2017) | 4 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] mpfr_tanh: corrected a part of the error analysis
+(2^k+4 ≤ |theta_4|^(−1/2) was not necessarily true, since theta_4 can
+be very small). As a consequence, the lemma can be simplified/improved
+(first FIXME). Added a second FIXME on a condition that is not checked.
+------------------------------------------------------------------------
+r11999 | vlefevre | 2017-12-18 12:22:26 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] mpfr_tanh: missing absolute value; added a \cdot.
+------------------------------------------------------------------------
+r11998 | vlefevre | 2017-12-18 12:15:31 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/src/exp2.c
+   M /trunk/tests/texp2.c
+
+Removed trailing whitespace.
+------------------------------------------------------------------------
+r11997 | vlefevre | 2017-12-18 12:08:36 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Added another \cdot for readability.
+------------------------------------------------------------------------
+r11996 | zimmerma | 2017-12-18 12:01:41 +0000 (Mon, 18 Dec 2017) | 2 lines
+Changed paths:
+   M /trunk/src/exp2.c
+
+[src/exp2.c] added FIXME
+
+------------------------------------------------------------------------
+r11995 | vlefevre | 2017-12-18 11:55:11 +0000 (Mon, 18 Dec 2017) | 7 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Minor corrections for hyperbolic tangent function:
+  * "e" had two different meanings (BTW, the constant e should actually
+    be written \mathrm{e} everywhere in the document).
+  * Use \left...\right instead of |...| when it contains an expression
+    starting with \log (the latter was confusing pdflatex, which added
+    a spurious space before \log).
+  * Added some \cdot for better readability.
+------------------------------------------------------------------------
+r11994 | zimmerma | 2017-12-18 11:36:15 +0000 (Mon, 18 Dec 2017) | 3 lines
+Changed paths:
+   M /trunk/src/exp2.c
+   M /trunk/tests/texp2.c
+
+[src/exp2.c] fixed bug near underflow
+[tests/texp2.c] added non-regression test
+
+------------------------------------------------------------------------
+r11993 | zimmerma | 2017-12-18 08:51:06 +0000 (Mon, 18 Dec 2017) | 9 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+   M /trunk/src/tanh.c
+   M /trunk/tests/ttanh.c
+
+[tests/ttanh.c] added test for bug in mpfr_tanh
+[doc/algorithms.tex] fixed error analysis for mpfr_tanh
+[src/tanh.c] fixed error analysis
+Note after r12016: Even though mpfr_tanh was incorrect, the failure
+of the test added in ttanh.c was actually *only* due to a bug in the
+mpfr_div code specific to the trunk (fixed in r12002), i.e. this was
+not a non-regression test for the mpfr_tanh bug itself (in particular,
+this test does not introduce a failure in the 3.1 branch, which still
+has the same incorrect mpfr_tanh code but a correct mpfr_div).
+------------------------------------------------------------------------
+r11991 | vlefevre | 2017-12-18 00:04:58 +0000 (Mon, 18 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.ac
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/mpfr.h
+   M /trunk/src/version.c
+
+Updated version to 4.1.0-dev again.
+------------------------------------------------------------------------
+r11989 | vlefevre | 2017-12-17 23:57:39 +0000 (Sun, 17 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.ac
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/mpfr.h
+   M /trunk/src/version.c
+
+Updated version to 4.0.0-rc2 for an attempt to replace the 4.0 branch.
+------------------------------------------------------------------------
+r11988 | vlefevre | 2017-12-17 23:52:26 +0000 (Sun, 17 Dec 2017) | 1 line
+Changed paths:
+   M /trunk/ChangeLog
+
+ChangeLog update with "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+------------------------------------------------------------------------
 r11987 | zimmerma | 2017-12-17 16:23:21 +0000 (Sun, 17 Dec 2017) | 2 lines
 Changed paths:
    M /trunk/src/add1sp.c
@@ -7888,7 +9019,7 @@ r10773 | zimmerma | 2016-08-31 08:54:41 +0000 (Wed, 31 Aug 2016) | 2 lines
 Changed paths:
    M /trunk/src/div.c
 
-[src/div.c] fixed error trigerred by previous commit
+[src/div.c] fixed error triggered by previous commit
 
 ------------------------------------------------------------------------
 r10772 | zimmerma | 2016-08-31 08:50:17 +0000 (Wed, 31 Aug 2016) | 3 lines
@@ -25607,7 +26738,7 @@ r8070 | vlefevre | 2012-03-07 15:15:09 +0000 (Wed, 07 Mar 2012) | 1 line
 Changed paths:
    M /trunk/NEWS
 
-[NEWS] Prepare for new version.
+[NEWS] Prepare for new version 3.2.0 (will be 4.0.0).
 ------------------------------------------------------------------------
 r8068 | vlefevre | 2012-03-07 13:06:40 +0000 (Wed, 07 Mar 2012) | 1 line
 Changed paths:
@@ -33609,7 +34740,7 @@ r7069 | vlefevre | 2010-08-12 14:28:59 +0000 (Thu, 12 Aug 2010) | 1 line
 Changed paths:
    M /trunk/NEWS
 
-[NEWS] Prepare for new version.
+[NEWS] Prepare for new version 3.1.0.
 ------------------------------------------------------------------------
 r7067 | vlefevre | 2010-08-12 14:13:48 +0000 (Thu, 12 Aug 2010) | 1 line
 Changed paths:
