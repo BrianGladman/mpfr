@@ -20,6 +20,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 ##############################################################################
 
+Changes from versions 4.0.* to version 4.1.0:
+- The "..." release.
+- Bug fixes.
+
 Changes from versions 3.1.* to version 4.0.0:
 - The "dinde aux marrons" release.
 - MPFR now depends on GMP 5.0+ instead of 4.1+.
@@ -111,6 +115,7 @@ Changes from versions 3.1.* to version 4.0.0:
   in the computation of Bernoulli numbers (used in mpfr_gamma, mpfr_li2,
   mpfr_digamma, mpfr_lngamma and mpfr_lgamma), in mpfr_div, in mpfr_fma
   and mpfr_fms.
+- Test coverage: 96.3% lines of code.
 - Bug fixes. In particular: a speed improvement when the --enable-assert
   or --enable-assert=full configure option is used with GCC; mpfr_get_str
   now sets the NaN flag on NaN input and the inexact flag when the conversion
