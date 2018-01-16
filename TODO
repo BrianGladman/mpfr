@@ -112,11 +112,6 @@ Table of contents:
     see the -mfpu GCC option for ARM and
     https://en.wikipedia.org/wiki/Denormal_number#Disabling_denormal_floats_at_the_code_level
 
-- decide whether multiple calls to mpfr_clear (without a mpfr_init2 between)
-  should be allowed. See thread:
-    https://sympa.inria.fr/sympa/arc/mpfr/2017-12/msg00077.html
-  In the mean time, a wrapper to mpfr_clear is sufficient.
-
 
 ##############################################################################
 4. New functions to implement
