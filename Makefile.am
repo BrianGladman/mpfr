@@ -49,11 +49,13 @@ dist-hook:
 	cd $(srcdir)/doc && ./check-typography
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
-# this rule if you use --with-gmp-build or --enable-gmp-internals. This
-# test does nothing if --disable-shared has been used.
+# this rule if you use --with-gmp-build or --enable-gmp-internals.
+# This test does nothing if no libmpfr.so is generated.
 check-gmp-symbols:
 	cd src && $(MAKE) check-gmp-symbols
 
+# Check that MPFR does not define symbols with a GMP reserved prefix.
+# This test does nothing if no libmpfr.so is generated.
 check-exported-symbols:
 	cd src && $(MAKE) check-exported-symbols
 
