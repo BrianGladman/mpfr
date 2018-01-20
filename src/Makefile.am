@@ -100,6 +100,7 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 
 GMPC = $(top_builddir)/src/gmp.c
 GMPI = $(top_builddir)/src/gmp.i
+LIBMPFRSO = $(top_builddir)/src/.libs/libmpfr.so
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
 # this rule if you use --with-gmp-build or --enable-gmp-internals. This
@@ -110,9 +111,8 @@ GMPI = $(top_builddir)/src/gmp.i
 check-gmp-symbols: $(LTLIBRARIES)
 	printf "#include <%s.h>\n" stdarg stdio gmp > $(GMPC)
 	$(COMPILE) -E $(GMPC) > $(GMPI)
-	libmpfrso=$(top_builddir)/src/.libs/libmpfr.so; \
-	if [ -f "$$libmpfrso" ]; then \
-	  internals=`$(NM) -u "$$libmpfrso" | \
+	if [ -f "$(LIBMPFRSO)" ]; then \
+	  internals=`$(NM) -u "$(LIBMPFRSO)" | \
 	    $(SED) -n 's/^ *U \(__gmp.*\)/\1/p' | \
 	    while read s; \
 	    do \
@@ -125,6 +125,18 @@ check-gmp-symbols: $(LTLIBRARIES)
 	fi
 	rm $(GMPC) $(GMPI)
 
+# Check that MPFR does not define symbols with a GMP reserved prefix.
+# For instance, with r11968, and
+#   ./configure --with-gmp-build=... CC=tcc
+# the symbol __gmpn_clz_tab is defined, which is wrong.
+# Note: the "grep -v '@plt$$'" below is for tcc.
+check-exported-symbols: $(LTLIBRARIES)
+	gsymbols=`$(NM) -gP "$(LIBMPFRSO)" | perl -ne '/^(__gmp[a-z]?_[_0-9A-Za-z]*) +[A-TV-Z]/ and print " $$1"' | grep -v '@plt$$'`; \
+	if [ -n "$$gsymbols" ]; then \
+	  echo "MPFR defines symbols with a GMP reserved prefix:$$gsymbols"; \
+	  exit 1; \
+	fi;
+
 CLEANFILES = $(GMPC) $(GMPI)
 
-.PHONY: check-gmp-symbols
+.PHONY: check-gmp-symbols check-exported-symbols

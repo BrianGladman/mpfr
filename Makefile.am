@@ -54,4 +54,7 @@ dist-hook:
 check-gmp-symbols:
 	cd src && $(MAKE) check-gmp-symbols
 
-.PHONY: check-gmp-symbols
+check-exported-symbols:
+	cd src && $(MAKE) check-exported-symbols
+
+.PHONY: check-gmp-symbols check-exported-symbols
