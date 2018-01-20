@@ -98,8 +98,13 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 # what has been changed by "patch".
 #CLEANFILES = get_patches.c
 
+# For check-gmp-symbols
 GMPC = $(top_builddir)/src/gmp.c
 GMPI = $(top_builddir)/src/gmp.i
+
+# For check-gmp-symbols and check-exported-symbols (if the library does
+# not have this name, e.g. on some platforms or when the shared library
+# is disabled, these rules do nothing).
 LIBMPFRSO = $(top_builddir)/src/.libs/libmpfr.so
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
@@ -109,9 +114,9 @@ LIBMPFRSO = $(top_builddir)/src/.libs/libmpfr.so
 # because the latter is not supported by all compilers (at least under
 # MS Windows).
 check-gmp-symbols: $(LTLIBRARIES)
-	printf "#include <%s.h>\n" stdarg stdio gmp > $(GMPC)
-	$(COMPILE) -E $(GMPC) > $(GMPI)
 	if [ -f "$(LIBMPFRSO)" ]; then \
+	  printf "#include <%s.h>\n" stdarg stdio gmp > $(GMPC) && \
+	  $(COMPILE) -E $(GMPC) > $(GMPI) || exit 1; \
 	  internals=`$(NM) -u "$(LIBMPFRSO)" | \
 	    $(SED) -n 's/^ *U \(__gmp.*\)/\1/p' | \
 	    while read s; \
@@ -122,8 +127,8 @@ check-gmp-symbols: $(LTLIBRARIES)
 	    echo "Internal GMP symbols:" $$internals; \
 	    exit 1; \
 	  fi; \
+	  rm $(GMPC) $(GMPI); \
 	fi
-	rm $(GMPC) $(GMPI)
 
 # Check that MPFR does not define symbols with a GMP reserved prefix.
 # For instance, with r11968, and
@@ -131,11 +136,15 @@ check-gmp-symbols: $(LTLIBRARIES)
 # the symbol __gmpn_clz_tab is defined, which is wrong.
 # Note: the "grep -v '@plt$$'" below is for tcc.
 check-exported-symbols: $(LTLIBRARIES)
-	gsymbols=`$(NM) -gP "$(LIBMPFRSO)" | perl -ne '/^(__gmp[a-z]?_[_0-9A-Za-z]*) +[A-TV-Z]/ and print " $$1"' | grep -v '@plt$$'`; \
-	if [ -n "$$gsymbols" ]; then \
-	  echo "MPFR defines symbols with a GMP reserved prefix:$$gsymbols"; \
-	  exit 1; \
-	fi;
+	if [ -f "$(LIBMPFRSO)" ]; then \
+	  gsymbols=`$(NM) -gP "$(LIBMPFRSO)" | perl -ne \
+	    '/^(__gmp[a-z]?_[_0-9A-Za-z]*) +[A-TV-Z]/ and print " $$1"' | \
+	    grep -v '@plt$$'`; \
+	  if [ -n "$$gsymbols" ]; then \
+	    echo "MPFR defines symbols with a GMP reserved prefix:$$gsymbols"; \
+	    exit 1; \
+	  fi; \
+	fi
 
 CLEANFILES = $(GMPC) $(GMPI)
 
