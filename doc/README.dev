@@ -335,6 +335,13 @@ To make a release (for the MPFR team):
      --enable-debug-prediction, run "timings-mpfr 100", and check that
      the output contains no WARNING.
 
+     For various platforms and compilers, check that:
+       * [make check-gmp-symbols]
+         MPFR does not use GMP internal symbols (unless --with-gmp-build
+         or --enable-gmp-internals has been used);
+       * [make check-exported-symbols]
+         MPFR does not define symbols with a GMP reserved prefix.
+
   7) For the release itself (not the release candidates), if no problems
      have been found, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
