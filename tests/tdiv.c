@@ -1521,7 +1521,12 @@ bug20171218 (void)
 
 /* Extended test based on a bug found with flint-arb test suite with a
    32-bit ABI: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888459
-   A failure may occur in r12126 with pb=GMP_NUMB_BITS and MPFR_RNDN.
+   Division of the form: (1 - 2^(-pa)) / (1 - 2^(-pb)).
+   The result is compared to the one obtained by increasing the precision
+   of the denominator (without changing its value, so that both results
+   should be equal). For all of these tests, a failure may occur in r12126
+   only with pb=GMP_NUMB_BITS and MPFR_RNDN (and some particular values of
+   pa and pc).
 */
 static void
 bug20180126 (void)
@@ -1542,9 +1547,9 @@ bug20180126 (void)
           mpfr_inits2 (pb, b2, (mpfr_ptr) 0);
 
           mpfr_set_ui (a, 1, MPFR_RNDN);
-          mpfr_nextbelow (a);
+          mpfr_nextbelow (a);                   /* 1 - 2^(-pa) */
           mpfr_set_ui (b2, 1, MPFR_RNDN);
-          mpfr_nextbelow (b2);
+          mpfr_nextbelow (b2);                  /* 1 - 2^(-pb) */
           inex1 = mpfr_set (b1, b2, MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
 
@@ -1554,6 +1559,7 @@ bug20180126 (void)
 
               RND_LOOP_NO_RNDF (r)
                 {
+                  MPFR_ASSERTN (mpfr_equal_p (b1, b2));
                   inex1 = mpfr_div (c1, a, b1, (mpfr_rnd_t) r);
                   inex2 = mpfr_div (c2, a, b2, (mpfr_rnd_t) r);
 
