@@ -1526,7 +1526,7 @@ bug20171218 (void)
    of the denominator (without changing its value, so that both results
    should be equal). For all of these tests, a failure may occur in r12126
    only with pb=GMP_NUMB_BITS and MPFR_RNDN (and some particular values of
-   pa and pc).
+   pa and pc). This bug was introduced by r9086.
 */
 static void
 bug20180126 (void)
