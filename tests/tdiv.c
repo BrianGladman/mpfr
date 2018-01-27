@@ -1522,11 +1522,12 @@ bug20171218 (void)
 /* Extended test based on a bug found with flint-arb test suite with a
    32-bit ABI: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888459
    Division of the form: (1 - 2^(-pa)) / (1 - 2^(-pb)).
-   The result is compared to the one obtained by increasing the precision
-   of the denominator (without changing its value, so that both results
-   should be equal). For all of these tests, a failure may occur in r12126
-   only with pb=GMP_NUMB_BITS and MPFR_RNDN (and some particular values of
-   pa and pc). This bug was introduced by r9086.
+   The result is compared to the one obtained by increasing the precision of
+   the divisor (without changing its value, so that both results should be
+   equal). For all of these tests, a failure may occur in r12126 only with
+   pb=GMP_NUMB_BITS and MPFR_RNDN (and some particular values of pa and pc).
+   This bug was introduced by r9086, where mpfr_div uses mpfr_div_ui when
+   the divisor has only one limb.
 */
 static void
 bug20180126 (void)
