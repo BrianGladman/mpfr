@@ -238,6 +238,46 @@ test_20170105 (void)
 }
 #endif
 
+#if GMP_NUMB_BITS == 64
+/* tests one failing case from function bug20180126() in tdiv.c */
+static void
+bug20180126 (void)
+{
+  mpfr_t y, x, z;
+  unsigned long u;
+  int inex;
+
+  mpfr_init2 (x, 133);
+  mpfr_init2 (y, 64);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_nextbelow (x); /* 1 - 2^(-133) = (2^133-1)/2^133 */
+  u = MPFR_LIMB_MAX;  /* 2^64 - 1 */
+  inex = mpfr_div_ui (y, x, u, MPFR_RNDN);
+  /* 2^133*x/u = (2^133-1)/(2^64 - 1) = 590295810358705651744 + 31/(2^64-1)
+     and should be rounded to q+2^5 = 2^69+2^6, thus x/u should be rounded
+     to 2^(-133)*(2^69+2^6) */
+  MPFR_ASSERTN(inex > 0);
+  mpfr_nextbelow (y);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -64) == 0);
+
+  mpfr_set_prec (x, 49);
+  mpfr_set_str_binary (x, "0.1000000000000000000111111111111111111111100000000E0");
+  /* x = 281476050452224/2^49 */
+  /* let X = 2^256*x = q*u+r, then q has 192 bits,
+     and r = 8222597979955926678 > u/2 thus we should round to (q+1)/2^256 */
+  mpfr_set_prec (y, 192);
+  u = 10865468317030705979UL;
+  inex = mpfr_div_ui (y, x, u, MPFR_RNDN);
+  mpfr_init2 (z, 192);
+  mpfr_set_str_binary (z, "0.110110010100111111000100101011011110010101010010001101100110101111001010100011010111010011100001101000110100011101001010000001010000001001011100000100000110101111110100100101011000000110011111E-64");
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_equal_p (y, z));
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+#endif
+
 #define TEST_FUNCTION mpfr_div_ui
 #define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -250,6 +290,10 @@ main (int argc, char **argv)
 
   tests_start_mpfr ();
 
+#if GMP_NUMB_BITS == 64
+  bug20180126 ();
+#endif
+  
   special ();
 
   check_inexact ();
