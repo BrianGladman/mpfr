@@ -26,7 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* returns 0 if result exact, non-zero otherwise */
 #undef mpfr_div_ui
 MPFR_HOT_FUNCTION_ATTR int
-mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
+mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
+             mpfr_rnd_t rnd_mode)
 {
   long i;
   int sh;
@@ -127,7 +128,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   */
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
-  /* it remains sh bits in less significant limb of y */
+  /* it remains sh bits in the least significant limb of y */
 
   if (tmp[yn] == 0)
     {
@@ -175,9 +176,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
           exp -= shlz;
         }
       else
-        { /* this happens only if u == 1 and xp[xn-1] >=
-             MPFR_LIMB_ONE << (GMP_NUMB_BITS-1). It might be better to
-             handle the u == 1 case separately?
+        {
+          /* This happens only if u == 1 and xp[xn-1] >= MPFR_LIMB_HIGHBIT.
+             It might be better to handle the u == 1 case separately?
           */
           MPN_COPY (yp, tmp + 1, yn);
           if (sh == 0) /* round bit is upper bit from tmp[0] */
@@ -194,7 +195,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
     }
 
   d = yp[0] & MPFR_LIMB_MASK (sh);
-  yp[0] ^= d; /* set to zero lowest sh bits */
+  yp[0] ^= d; /* clear the lowest sh bits */
 
   MPFR_TMP_FREE (marker);
 
