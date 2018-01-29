@@ -33,7 +33,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   mp_size_t xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mpfr_exp_t exp;
-  int inexact, nexttoinf;
+  int inexact;
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
   MPFR_TMP_DECL(marker);
@@ -206,6 +206,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
     inexact = 0;  /* result is exact */
   else
     {
+      int nexttoinf;
+
       MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN (y));
       switch (rnd_mode)
         {
@@ -247,13 +249,12 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
                 }
             }
         }
-    }
-
-  if (nexttoinf &&
-      MPFR_UNLIKELY (mpn_add_1 (yp, yp, yn, MPFR_LIMB_ONE << sh)))
-    {
-      exp++;
-      yp[yn-1] = MPFR_LIMB_HIGHBIT;
+      if (nexttoinf &&
+          MPFR_UNLIKELY (mpn_add_1 (yp, yp, yn, MPFR_LIMB_ONE << sh)))
+        {
+          exp++;
+          yp[yn-1] = MPFR_LIMB_HIGHBIT;
+        }
     }
 
   /* Set the exponent. Warning! One may still have an underflow. */
