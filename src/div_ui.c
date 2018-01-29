@@ -29,9 +29,8 @@ MPFR_HOT_FUNCTION_ATTR int
 mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
              mpfr_rnd_t rnd_mode)
 {
-  long i;
   int sh;
-  mp_size_t xn, yn, dif;
+  mp_size_t i, xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mpfr_exp_t exp;
   int inexact;
@@ -60,10 +59,10 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
         }
       else
         {
-          MPFR_ASSERTD (MPFR_IS_ZERO(x));
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
           if (u == 0) /* 0/0 is NaN */
             {
-              MPFR_SET_NAN(y);
+              MPFR_SET_NAN (y);
               MPFR_RET_NAN;
             }
           else
@@ -78,7 +77,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
     {
       if (u < 1)
         {
-          /* x/0 is Inf since x != 0*/
+          /* x/0 is Inf since x != 0 */
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_SET_DIVBY0 ();
@@ -93,6 +92,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   MPFR_SET_SAME_SIGN (y, x);
 
   MPFR_TMP_MARK (marker);
+
   xn = MPFR_LIMB_SIZE (x);
   yn = MPFR_LIMB_SIZE (y);
 
@@ -102,25 +102,28 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
 
   dif = yn + 1 - xn;
 
-  /* we need to store yn+1 = xn + dif limbs of the quotient */
-  /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
+  /* we need to store yn + 1 = xn + dif limbs of the quotient */
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
   MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
   if (dif >= 0)
     c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
-  else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
+  else /* dif < 0, thus xn > yn; ignore the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
 
-  /* the quotient x/u is formed by {tmp, yn+1}
-     + (c + {xp, dif}/B^dif) / u, where B = 2^GMP_NUMB_BITS */
+  /* The quotient x/u (with the same exponent as x) is formed by
+     {tmp, yn+1} + (c + r) / (B^(yn+1) * u) with B = 2^GMP_NUMB_BITS,
+     where
+       - if dif >= 0, r = 0;
+       - if dif < 0, r = {xp, -dif}. */
 
-  for (i = sb = 0; sb == 0 && i < -dif; i++)
+  for (sb = 0, i = 0; sb == 0 && i < -dif; i++)
     if (xp[i])
       sb = 1;
+  /* sb != 0 iff r != 0 */
 
   /*
-     If the high limb of the result is 0 (xp[xn-1] < u), remove it.
+     If the highest limb of the result is 0 (xp[xn-1] < u), remove it.
      Otherwise, compute the left shift to be performed to normalize.
      In the latter case, we discard some low bits computed. They
      contain information useful for the rounding, hence the updating
@@ -138,13 +141,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
         {
           rb = c > (u - c); /* remember 0 <= c < u */
           /* if rb = 0, then add c to sb, otherwise we should add 2*c-u */
-          sb = (rb == 0) ? c | sb : (c + c - u) | sb;
+          sb |= rb == 0 ? c : 2*c - u;
         }
       else
         {
           /* round bit is in tmp[0] */
           rb = tmp[0] & (MPFR_LIMB_ONE << (sh - 1));
-          sb = (tmp[0] & MPFR_LIMB_MASK(sh - 1)) | c | sb;
+          sb |= (tmp[0] & MPFR_LIMB_MASK(sh - 1)) | c;
         }
     }
   else
@@ -170,7 +173,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
           else
             {
               rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
-              sb = (yp[0] & MPFR_LIMB_MASK(sh - 1)) | w | c | sb;
+              sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | w | c;
             }
 
           exp -= shlz;
@@ -189,7 +192,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
           else
             {
               rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
-              sb = (yp[0] & MPFR_LIMB_MASK(sh - 1)) | tmp[0] | c | sb;
+              sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | tmp[0] | c;
             }
         }
     }
