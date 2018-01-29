@@ -131,7 +131,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   */
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
-  /* it remains sh bits in the least significant limb of y */
+  /* sh: number of the trailing bits of y */
 
   if (tmp[yn] == 0)
     {
