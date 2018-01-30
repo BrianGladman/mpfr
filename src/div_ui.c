@@ -107,7 +107,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
 
   /* Notation: {p, n} denotes the integer formed by the n limbs
      from p[0] to p[n-1]. Let B = 2^GMP_NUMB_BITS.
-     On has: 0 <= {p, n} < B^n. */
+     One has: 0 <= {p, n} < B^n. */
 
   MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
   if (dif >= 0)
