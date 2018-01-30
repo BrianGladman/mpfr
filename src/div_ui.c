@@ -152,13 +152,31 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
       exp -= GMP_NUMB_BITS;
       if (sh == 0) /* round bit is 1 if c >= u/2 */
         {
-          rb = c > (u - c); /* remember 0 <= c < u */
-          /* if rb = 0, then add c to sb, otherwise we should add 2*c-u */
-          sb |= rb == 0 ? c : 2*c - u;
-          /* FIXME: in the case tmp[yn]=0 and sh=0, which means the round bit
+          /* Warning: in the case tmp[yn]=0 and sh=0, which means the round bit
              is not in {tmp,yn+1}, we should compare the remainder
              (c + r) / u to 1/2, i.e., the sign of 2*(c+r) - u, which means in
              some corner cases we should look the most significant bit of r. */
+          if (c >= u - c) /* then 2c >= u: round bit is always set */
+            {
+              rb = 1;
+              sb |= 2 * c - u;
+            }
+          else /* 2*c < u */
+            {
+              rb = (c == u/2) && (dif < 0) && (xp[-dif-1] & MPFR_LIMB_HIGHBIT);
+              /* if rb is set, we need to recompute sb, since it might have
+                 taken into account the msb of xp[-dif-1] */
+              if (rb && sb)
+                {
+                  sb = xp[-dif-1] & (~MPFR_LIMB_HIGHBIT);
+                  for (i = 0; sb == 0 && i < -dif-1; i++)
+                    if (xp[i])
+                      sb = 1;
+                }
+              /* if rb is non-zero here, c was already used to produce rb */
+              if (rb == 0)
+                sb |= c;
+            }
         }
       else
         {
