@@ -111,7 +111,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   else /* dif < 0, thus xn > yn; ignore the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
 
-  /* The quotient x/u (with the same exponent as x) is formed by
+  /* FIXME. There are magnitude issues below (r12146 seemed correct).
+     The quotient x/u (with the same exponent as x) is formed by
      {tmp, yn+1} + (c + r) / u where
        - if dif >= 0, r = 0;
        - if dif < 0, r = {xp, -dif} / B^(-dif) with B = 2^GMP_NUMB_BITS. */
