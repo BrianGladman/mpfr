@@ -348,6 +348,49 @@ bug20180126 (void)
     }
 }
 
+/* check corner cases where the round bit is located in the upper bit of r */
+static void
+corner_cases (int n)
+{
+  mpfr_t x, y, t;
+  unsigned long u, v;
+
+  /* we need xn > yn + 1, thus we take xn = 3 and yn = 1 */
+  mpfr_init2 (x, 3 * GMP_NUMB_BITS);
+  mpfr_init2 (y, GMP_NUMB_BITS);
+  mpfr_init2 (t, 2 * GMP_NUMB_BITS);
+  while (n--)
+    {
+      u = randlimb ();
+      do
+        v = randlimb ();
+      while (v <= MPFR_LIMB_HIGHBIT);
+      mpfr_set_ui (t, v, MPFR_RNDN);
+      mpfr_sub_d (t, t, 0.5, MPFR_RNDN);
+      /* t = v-1/2 */
+      mpfr_mul_ui (x, t, u, MPFR_RNDN);
+
+      /* when x = (v-1/2)*u, x/u should give v-1/2, which should give either
+         v (if v is even) or v-1 (if v is odd) */
+      mpfr_div_ui (y, x, u, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_cmp_ui (y, v - (v & 1)) == 0);
+
+      /* when x = (v-1/2)*u - epsilon, x/u should give v-1 */
+      mpfr_nextbelow (x);
+      mpfr_div_ui (y, x, u, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_cmp_ui (y, v - 1) == 0);
+
+      /* when x = (v-1/2)*u + epsilon, x/u should give v */
+      mpfr_nextabove (x);
+      mpfr_nextabove (x);
+      mpfr_div_ui (y, x, u, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_cmp_ui (y, v) == 0);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (t);
+}
+
 #define TEST_FUNCTION mpfr_div_ui
 #define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -359,6 +402,8 @@ main (int argc, char **argv)
   mpfr_t x;
 
   tests_start_mpfr ();
+
+  corner_cases (100);
 
   bug20180126 ();
 
