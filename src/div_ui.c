@@ -125,11 +125,10 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
                   = {xp, -dif} + ({tmp, yn+1} * u + c) * B^(-dif) */
     }
 
-  /* FIXME: to be rewritten, with explicit exponents...
-     The quotient x/u (with the same exponent as x) is formed by
-     {tmp, yn+1} + (c + r) / u where
-       - if dif >= 0, r = 0;
-       - if dif < 0, r = {xp, -dif} / B^(-dif) with B = 2^GMP_NUMB_BITS. */
+  /* Let r = {xp, -dif} / B^(-dif) if dif < 0, r = 0 otherwise; 0 <= r < 1.
+     Then {xp, xn} = ({tmp, yn+1} * u + c + r) * B^(-dif).
+     x / u = ({xp, xn} / u) * B^(-xn) * 2^exp
+           = ({tmp, yn+1} + (c + r) / u) * B^(-(yn+1)) * 2^exp */
 
   for (sb = 0, i = 0; sb == 0 && i < -dif; i++)
     if (xp[i])
