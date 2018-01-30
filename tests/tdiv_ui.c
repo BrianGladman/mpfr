@@ -238,17 +238,82 @@ test_20170105 (void)
 }
 #endif
 
-#if GMP_NUMB_BITS == 64
-/* tests one failing case from function bug20180126() in tdiv.c */
 static void
 bug20180126 (void)
 {
-  mpfr_t y, x, z;
-  unsigned long u;
+  mpfr_t w, x, y, z, t;
+  unsigned long u, v;
+  int i, k, m, n, p, pmax, q, r;
   int inex;
 
-  /* This test expects that a limb fits in an unsigned long. */
-  if (MPFR_LIMB_MAX <= ULONG_MAX)
+  /* Let m = n * q + r, with 0 <= r < v.
+     (2^m-1) / (2^n-1) = 2^r * (2^(n*q)-1) / (2^n-1) + (2^r-1) / (2^n-1)
+       = sum(i=0,q-1,2^(r+n*i)) + sum(i=1,inf,(2^r-1)*2^(-n*i))
+  */
+  n = 1;
+  for (u = 1; u != ULONG_MAX; u = (u << 1) + 1)
+    n++;
+  pmax = 6 * n;
+  mpfr_init2 (t, n);
+  for (m = n; m < 4 * n; m++)
+    {
+      q = m / n;
+      r = m % n;
+      mpfr_init2 (w, pmax + n + 1);
+      mpfr_set_zero (w, 1);
+      for (i = 0; i < q; i++)
+        {
+          inex = mpfr_set_ui_2exp (t, 1, r + n * i, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          inex = mpfr_add (w, w, t, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+        }
+      v = (1UL << r) - 1;
+      for (i = 1; n * (q - 1 + i) <= MPFR_PREC (w); i++)
+        {
+          inex = mpfr_set_ui_2exp (t, v, - n * i, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          mpfr_add (w, w, t, MPFR_RNDN);
+        }
+      for (p = pmax; p >= MPFR_PREC_MIN; p--)
+        {
+          mpfr_inits2 (p, y, z, (mpfr_ptr) 0);
+          mpfr_set (z, w, MPFR_RNDN);  /* the sticky bit is not 0 */
+          mpfr_init2 (x, m);
+          inex = mpfr_set_ui_2exp (x, 1, m, MPFR_RNDN);
+          MPFR_ASSERTN (inex == 0);
+          inex = mpfr_sub_ui (x, x, 1, MPFR_RNDN);  /* x = 2^m-1 */
+          MPFR_ASSERTN (inex == 0);
+          for (k = 0; k < 2; k++)
+            {
+              if (k)
+                {
+                  inex = mpfr_prec_round (x, 6 * n, MPFR_RNDN);
+                  MPFR_ASSERTN (inex == 0);
+                }
+              inex = mpfr_div_ui (y, x, u, MPFR_RNDN);
+              if (! mpfr_equal_p (y, z))
+                {
+                  printf ("Error in bug20180126 for (2^%d-1)/(2^%d-1)"
+                          " with px=%d py=%d\n", m, n,
+                          (int) MPFR_PREC (x), p);
+                  printf ("Expected ");
+                  mpfr_dump (z);
+                  printf ("Got      ");
+                  mpfr_dump (y);
+                  exit (1);
+                }
+            }
+          mpfr_clears (x, y, z, (mpfr_ptr) 0);
+        }
+      mpfr_clear (w);
+    }
+  mpfr_clear (t);
+
+  /* This test expects that a limb fits in an unsigned long.
+     One failing case from function bug20180126() in tdiv.c,
+     for GMP_NUMB_BITS == 64. */
+  if (GMP_NUMB_BITS == 64 && MPFR_LIMB_MAX <= ULONG_MAX)
     {
       mpfr_init2 (x, 133);
       mpfr_init2 (y, 64);
@@ -269,7 +334,9 @@ bug20180126 (void)
       /* let X = 2^256*x = q*u+r, then q has 192 bits, and
          r = 8222597979955926678 > u/2 thus we should round to (q+1)/2^256 */
       mpfr_set_prec (y, 192);
-      u = 10865468317030705979UL;
+      /* The hex constant and the cast below avoid spurious warnings
+         from GCC with a 32-bit ABI. */
+      u = (mp_limb_t) 0xf1430962f7cd785;
       inex = mpfr_div_ui (y, x, u, MPFR_RNDN);
       mpfr_init2 (z, 192);
       mpfr_set_str_binary (z, "0.110110010100111111000100101011011110010101010010001101100110101111001010100011010111010011100001101000110100011101001010000001010000001001011100000100000110101111110100100101011000000110011111E-64");
@@ -280,7 +347,6 @@ bug20180126 (void)
       mpfr_clear (z);
     }
 }
-#endif
 
 #define TEST_FUNCTION mpfr_div_ui
 #define ULONG_ARG2
@@ -294,9 +360,7 @@ main (int argc, char **argv)
 
   tests_start_mpfr ();
 
-#if GMP_NUMB_BITS == 64
   bug20180126 ();
-#endif
 
   special ();
 
