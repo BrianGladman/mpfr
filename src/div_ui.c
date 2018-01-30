@@ -116,7 +116,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
       /* {xp, xn} = ({tmp, xn+dif} * u + c) * B^(-dif)
                   = ({tmp, yn+1} * u + c) * B^(-dif) */
     }
-  else /* dif < 0, thus xn > yn; ignore the (-dif) low limbs from x */
+  else /* dif < 0, thus xn > yn+1; ignore the (-dif) low limbs from x */
     {
       c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
       /* {xp-dif, yn+1} = {tmp, yn+1} * u + c
