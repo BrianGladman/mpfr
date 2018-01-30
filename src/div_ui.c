@@ -105,13 +105,27 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   /* we need to store yn + 1 = xn + dif limbs of the quotient */
   tmp = MPFR_TMP_LIMBS_ALLOC (yn + 1);
 
+  /* Notation: {p, n} denotes the integer formed by the n limbs
+     from p[0] to p[n-1]. Let B = 2^GMP_NUMB_BITS.
+     On has: 0 <= {p, n} < B^n. */
+
   MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
   if (dif >= 0)
-    c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
+    {
+      c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
+      /* {xp, xn} = ({tmp, xn+dif} * u + c) * B^(-dif)
+                  = ({tmp, yn+1} * u + c) * B^(-dif) */
+    }
   else /* dif < 0, thus xn > yn; ignore the (-dif) low limbs from x */
-    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
+    {
+      c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, u);
+      /* {xp-dif, yn+1} = {tmp, yn+1} * u + c
+         thus
+         {xp, xn} = {xp, -dif} + {xp-dif, yn+1} * B^(-dif)
+                  = {xp, -dif} + ({tmp, yn+1} * u + c) * B^(-dif) */
+    }
 
-  /* FIXME. There are magnitude issues below (r12146 seemed correct).
+  /* FIXME: to be rewritten, with explicit exponents...
      The quotient x/u (with the same exponent as x) is formed by
      {tmp, yn+1} + (c + r) / u where
        - if dif >= 0, r = 0;
