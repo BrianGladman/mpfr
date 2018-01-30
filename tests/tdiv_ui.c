@@ -336,7 +336,7 @@ bug20180126 (void)
       mpfr_set_prec (y, 192);
       /* The hex constant and the cast below avoid spurious warnings
          from GCC with a 32-bit ABI. */
-      u = (mp_limb_t) 0xf1430962f7cd785;
+      u = (mp_limb_t) 0x96c9e5dddae06b3b;
       inex = mpfr_div_ui (y, x, u, MPFR_RNDN);
       mpfr_init2 (z, 192);
       mpfr_set_str_binary (z, "0.110110010100111111000100101011011110010101010010001101100110101111001010100011010111010011100001101000110100011101001010000001010000001001011100000100000110101111110100100101011000000110011111E-64");
