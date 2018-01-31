@@ -186,51 +186,35 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
           sb |= (tmp[0] & MPFR_LIMB_MASK(sh - 1)) | c;
         }
     }
-  else
+  else  /* tmp[yn] != 0 */
     {
       int shlz;
+      mp_limb_t w;
 
+      MPFR_ASSERTD (tmp[yn] != 0);
       count_leading_zeros (shlz, tmp[yn]);
 
+      MPFR_ASSERTD (u >= 2);    /* see special cases at the beginning */
+      MPFR_ASSERTD (shlz > 0);  /* since u >= 2 */
+
       /* shift left to normalize */
-      if (MPFR_LIKELY (shlz != 0))
+      w = tmp[0] << shlz;
+      mpn_lshift (yp, tmp + 1, yn, shlz);
+      yp[0] |= tmp[0] >> (GMP_NUMB_BITS - shlz);
+      /* now {yp, yn} is the approximate quotient, w is the next limb */
+
+      if (sh == 0) /* round bit is upper bit from w */
         {
-          mp_limb_t w = tmp[0] << shlz;
-
-          mpn_lshift (yp, tmp + 1, yn, shlz);
-          yp[0] |= tmp[0] >> (GMP_NUMB_BITS - shlz);
-          /* now {yp, yn} is the approximate quotient, w is the next limb */
-
-          if (sh == 0) /* round bit is upper bit from w */
-            {
-              rb = w & MPFR_LIMB_HIGHBIT;
-              sb |= (w - rb) | c;
-            }
-          else
-            {
-              rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
-              sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | w | c;
-            }
-
-          exp -= shlz;
+          rb = w & MPFR_LIMB_HIGHBIT;
+          sb |= (w - rb) | c;
         }
       else
         {
-          /* This happens only if u == 1 and xp[xn-1] >= MPFR_LIMB_HIGHBIT.
-             It might be better to handle the u == 1 case separately?
-          */
-          MPN_COPY (yp, tmp + 1, yn);
-          if (sh == 0) /* round bit is upper bit from tmp[0] */
-            {
-              rb = tmp[0] & MPFR_LIMB_HIGHBIT;
-              sb |= (tmp[0] - rb) | c;
-            }
-          else
-            {
-              rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
-              sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | tmp[0] | c;
-            }
+          rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
+          sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | w | c;
         }
+
+      exp -= shlz;
     }
 
   d = yp[0] & MPFR_LIMB_MASK (sh);
