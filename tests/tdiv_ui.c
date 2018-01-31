@@ -397,7 +397,8 @@ static void
 midpoint_exact (void)
 {
   mpfr_t x, y1, y2;
-  int i, j, kx, ky, px, pxmin, py, pymin, r;
+  unsigned long j;
+  int i, kx, ky, px, pxmin, py, pymin, r;
   int inex1, inex2;
 
   pymin = 1;
@@ -405,14 +406,19 @@ midpoint_exact (void)
     {
       if ((i & (i-2)) == 1)
         pymin++;
-      for (j = 1; j < 32; j++)
+      for (j = 1; j != 0; j++)
         {
+          if (j == 31)
+            j = ULONG_MAX;
           /* Test of (i*j) / j with various precisions. The target precisions
              include: large, length(i), and length(i)-1; the latter case
              corresponds to a midpoint. */
-          mpfr_init2 (x, 64);
-          inex1 = mpfr_set_ui (x, i*j, MPFR_RNDN);
+          mpfr_init2 (x, 5 + sizeof(long) * CHAR_BIT);
+          inex1 = mpfr_set_ui (x, j, MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
+          inex1 = mpfr_mul_ui (x, x, i, MPFR_RNDN);
+          MPFR_ASSERTN (inex1 == 0);
+          /* x = (i*j) */
           pxmin = mpfr_min_prec (x);
           if (pxmin < MPFR_PREC_MIN)
             pxmin = MPFR_PREC_MIN;
@@ -439,7 +445,7 @@ midpoint_exact (void)
                           ! SAME_SIGN (inex1, inex2))
                         {
                           printf ("Error in midpoint_exact for "
-                                  "i=%d j=%d px=%d py=%d %s\n", i, j, px, py,
+                                  "i=%d j=%lu px=%d py=%d %s\n", i, j, px, py,
                                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
                           printf ("Expected ");
                           mpfr_dump (y1);
