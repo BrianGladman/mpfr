@@ -128,7 +128,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   /* Let r = {xp, -dif} / B^(-dif) if dif < 0, r = 0 otherwise; 0 <= r < 1.
      Then {xp, xn} = ({tmp, yn+1} * u + c + r) * B^(-dif).
      x / u = ({xp, xn} / u) * B^(-xn) * 2^exp
-           = ({tmp, yn+1} + (c + r) / u) * B^(-(yn+1)) * 2^exp */
+           = ({tmp, yn+1} + (c + r) / u) * B^(-(yn+1)) * 2^exp
+     where 0 <= (c + r) / u < 1. */
 
   for (sb = 0, i = 0; sb == 0 && i < -dif; i++)
     if (xp[i])
@@ -150,31 +151,31 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
     {
       MPN_COPY(yp, tmp, yn);
       exp -= GMP_NUMB_BITS;
-      if (sh == 0) /* round bit is 1 if c >= u/2 */
+      if (sh == 0) /* round bit is 1 iff (c + r) / u >= 1/2 */
         {
-          /* Warning: in the case tmp[yn]=0 and sh=0, which means the round bit
-             is not in {tmp,yn+1}, we should compare the remainder
-             (c + r) / u to 1/2, i.e., the sign of 2*(c+r) - u, which means in
-             some corner cases we should look the most significant bit of r. */
-          if (c >= u - c) /* then 2c >= u: round bit is always set */
+          /* In this case tmp[yn]=0 and sh=0, the round bit is not in
+             {tmp,yn+1}. It is 1 iff 2*(c+r) - u >= 0. This means that in
+             some cases, we should look at the most significant bit of r. */
+          if (c >= u - c) /* i.e. 2c >= u: round bit is always 1 */
             {
               rb = 1;
+              /* The sticky bit is 1 unless 2c-u = 0 and r = 0. */
               sb |= 2 * c - u;
             }
           else /* 2*c < u */
             {
+              /* The round bit is 1 iff r >= 1/2 and 2*(c+1/2) = u. */
               rb = (c == u/2) && (dif < 0) && (xp[-dif-1] & MPFR_LIMB_HIGHBIT);
-              /* if rb is set, we need to recompute sb, since it might have
-                 taken into account the msb of xp[-dif-1] */
-              if (rb && sb)
+              /* If rb is set, we need to recompute sb, since it might have
+                 taken into account the msb of xp[-dif-1]. */
+              if (rb)
                 {
-                  sb = xp[-dif-1] & (~MPFR_LIMB_HIGHBIT);
+                  sb = xp[-dif-1] << 1; /* discard the most significant bit */
                   for (i = 0; sb == 0 && i < -dif-1; i++)
                     if (xp[i])
                       sb = 1;
                 }
-              /* if rb is non-zero here, c was already used to produce rb */
-              if (rb == 0)
+              else
                 sb |= c;
             }
         }
