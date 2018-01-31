@@ -2339,6 +2339,7 @@ __MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,
 extern "C" {
 #endif
 
+__MPFR_DECLSPEC extern int __gmpfr_cov_div_ui_sb[9][2];
 __MPFR_DECLSPEC extern int __gmpfr_cov_sum_tmd[MPFR_RND_MAX][2][2][3][2][2];
 
 #if defined (__cplusplus)

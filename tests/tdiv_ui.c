@@ -393,6 +393,26 @@ corner_cases (int n)
     }
 }
 
+static void
+check_coverage (void)
+{
+#ifdef MPFR_COV_CHECK
+  int i, j;
+  int err = 0;
+
+  for (i = 0; i < numberof (__gmpfr_cov_div_ui_sb); i++)
+    for (j = 0; j < 2; j++)
+      if (!__gmpfr_cov_div_ui_sb[i][j])
+        {
+          printf ("mpfr_div_ui not tested on case %d, sb=%d\n", i, j);
+          err = 1;
+        }
+
+  if (err)
+    exit (1);
+#endif
+}
+
 #define TEST_FUNCTION mpfr_div_ui
 #define ULONG_ARG2
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
@@ -436,6 +456,7 @@ main (int argc, char **argv)
 
   test_generic (MPFR_PREC_MIN, 200, 100);
 
+  check_coverage ();
   tests_end_mpfr ();
   return 0;
 }

@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#ifdef MPFR_COV_CHECK
+int __gmpfr_cov_div_ui_sb[9][2] = { 0 };
+#endif
+
 /* returns 0 if result exact, non-zero otherwise */
 #undef mpfr_div_ui
 MPFR_HOT_FUNCTION_ATTR int
@@ -161,6 +165,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
               rb = 1;
               /* The sticky bit is 1 unless 2c-u = 0 and r = 0. */
               sb |= 2 * c - u;
+              MPFR_COV_SET (div_ui_sb[0][!!sb]);
             }
           else /* 2*c < u */
             {
@@ -174,9 +179,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
                   for (i = 0; sb == 0 && i < -dif-1; i++)
                     if (xp[i])
                       sb = 1;
+                  MPFR_COV_SET (div_ui_sb[1][!!sb]);
                 }
               else
-                sb |= c;
+                {
+                  sb |= c;
+                  MPFR_COV_SET (div_ui_sb[2][!!sb]);
+                }
             }
         }
       else
@@ -184,6 +193,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
           /* round bit is in tmp[0] */
           rb = tmp[0] & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (tmp[0] & MPFR_LIMB_MASK(sh - 1)) | c;
+          MPFR_COV_SET (div_ui_sb[3+!!rb][!!sb]);
         }
     }
   else  /* tmp[yn] != 0 */
@@ -207,11 +217,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
         {
           rb = w & MPFR_LIMB_HIGHBIT;
           sb |= (w - rb) | c;
+          MPFR_COV_SET (div_ui_sb[5+!!rb][!!sb]);
         }
       else
         {
           rb = yp[0] & (MPFR_LIMB_ONE << (sh - 1));
           sb |= (yp[0] & MPFR_LIMB_MASK(sh - 1)) | w | c;
+          MPFR_COV_SET (div_ui_sb[7+!!rb][!!sb]);
         }
 
       exp -= shlz;
