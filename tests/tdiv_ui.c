@@ -394,6 +394,71 @@ corner_cases (int n)
 }
 
 static void
+midpoint_exact (void)
+{
+  mpfr_t x, y1, y2;
+  int i, j, kx, ky, px, pxmin, py, pymin, r;
+  int inex1, inex2;
+
+  pymin = 1;
+  for (i = 3; i < 32; i += 2)
+    {
+      if ((i & (i-2)) == 1)
+        pymin++;
+      for (j = 1; j < 32; j++)
+        {
+          /* Test of (i*j) / j with various precisions. The target precisions
+             include: large, length(i), and length(i)-1; the latter case
+             corresponds to a midpoint. */
+          mpfr_init2 (x, 64);
+          inex1 = mpfr_set_ui (x, i*j, MPFR_RNDN);
+          MPFR_ASSERTN (inex1 == 0);
+          pxmin = mpfr_min_prec (x);
+          if (pxmin < MPFR_PREC_MIN)
+            pxmin = MPFR_PREC_MIN;
+          for (kx = 0; kx < 8; kx++)
+            {
+              px = pxmin;
+              if (kx != 0)
+                px += randlimb () % (4 * GMP_NUMB_BITS);
+              inex1 = mpfr_prec_round (x, px, MPFR_RNDN);
+              MPFR_ASSERTN (inex1 == 0);
+              for (ky = 0; ky < 8; ky++)
+                {
+                  py = pymin;
+                  if (ky == 0)
+                    py--;
+                  else if (ky > 1)
+                    py += randlimb () % (4 * GMP_NUMB_BITS);
+                  mpfr_inits2 (py, y1, y2, (mpfr_ptr) 0);
+                  RND_LOOP_NO_RNDF (r)
+                    {
+                      inex1 = mpfr_set_ui (y1, i, (mpfr_rnd_t) r);
+                      inex2 = mpfr_div_ui (y2, x, j, (mpfr_rnd_t) r);
+                      if (! mpfr_equal_p (y1, y2) ||
+                          ! SAME_SIGN (inex1, inex2))
+                        {
+                          printf ("Error in midpoint_exact for "
+                                  "i=%d j=%d px=%d py=%d %s\n", i, j, px, py,
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                          printf ("Expected ");
+                          mpfr_dump (y1);
+                          printf ("with inex = %d\n", inex1);
+                          printf ("Got      ");
+                          mpfr_dump (y2);
+                          printf ("with inex = %d\n", inex2);
+                          exit (1);
+                        }
+                    }
+                  mpfr_clears (y1, y2, (mpfr_ptr) 0);
+                }
+            }
+          mpfr_clear (x);
+        }
+    }
+}
+
+static void
 check_coverage (void)
 {
 #ifdef MPFR_COV_CHECK
@@ -455,6 +520,7 @@ main (int argc, char **argv)
   mpfr_clear (x);
 
   test_generic (MPFR_PREC_MIN, 200, 100);
+  midpoint_exact ();
 
   check_coverage ();
   tests_end_mpfr ();
