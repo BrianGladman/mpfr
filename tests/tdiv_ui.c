@@ -353,43 +353,48 @@ corner_cases (int n)
 {
   mpfr_t x, y, t;
   unsigned long u, v;
+  int i, xn;
 
   if (MPFR_LIMB_MAX <= ULONG_MAX)
     {
-      /* we need xn > yn + 1, thus we take xn = 3 and yn = 1 */
-      mpfr_init2 (x, 3 * GMP_NUMB_BITS);
-      mpfr_init2 (y, GMP_NUMB_BITS);
-      mpfr_init2 (t, 2 * GMP_NUMB_BITS);
-      while (n--)
+      /* We need xn > yn + 1, thus we take xn = 3 and yn = 1.
+         Also take xn = 4 to 6 to cover more code. */
+      for (xn = 3; xn < 6; xn++)
         {
-          u = randlimb ();
-          do
-            v = randlimb ();
-          while (v <= MPFR_LIMB_HIGHBIT);
-          mpfr_set_ui (t, v, MPFR_RNDN);
-          mpfr_sub_d (t, t, 0.5, MPFR_RNDN);
-          /* t = v-1/2 */
-          mpfr_mul_ui (x, t, u, MPFR_RNDN);
+          mpfr_init2 (x, xn * GMP_NUMB_BITS);
+          mpfr_init2 (y, GMP_NUMB_BITS);
+          mpfr_init2 (t, 2 * GMP_NUMB_BITS);
+          for (i = 0; i < n; i++)
+            {
+              u = randlimb ();
+              do
+                v = randlimb ();
+              while (v <= MPFR_LIMB_HIGHBIT);
+              mpfr_set_ui (t, v, MPFR_RNDN);
+              mpfr_sub_d (t, t, 0.5, MPFR_RNDN);
+              /* t = v-1/2 */
+              mpfr_mul_ui (x, t, u, MPFR_RNDN);
 
-          /* when x = (v-1/2)*u, x/u should give v-1/2, which should give
-             either v (if v is even) or v-1 (if v is odd) */
-          mpfr_div_ui (y, x, u, MPFR_RNDN);
-          MPFR_ASSERTN(mpfr_cmp_ui (y, v - (v & 1)) == 0);
+              /* when x = (v-1/2)*u, x/u should give v-1/2, which should give
+                 either v (if v is even) or v-1 (if v is odd) */
+              mpfr_div_ui (y, x, u, MPFR_RNDN);
+              MPFR_ASSERTN(mpfr_cmp_ui (y, v - (v & 1)) == 0);
 
-          /* when x = (v-1/2)*u - epsilon, x/u should give v-1 */
-          mpfr_nextbelow (x);
-          mpfr_div_ui (y, x, u, MPFR_RNDN);
-          MPFR_ASSERTN(mpfr_cmp_ui (y, v - 1) == 0);
+              /* when x = (v-1/2)*u - epsilon, x/u should give v-1 */
+              mpfr_nextbelow (x);
+              mpfr_div_ui (y, x, u, MPFR_RNDN);
+              MPFR_ASSERTN(mpfr_cmp_ui (y, v - 1) == 0);
 
-          /* when x = (v-1/2)*u + epsilon, x/u should give v */
-          mpfr_nextabove (x);
-          mpfr_nextabove (x);
-          mpfr_div_ui (y, x, u, MPFR_RNDN);
-          MPFR_ASSERTN(mpfr_cmp_ui (y, v) == 0);
+              /* when x = (v-1/2)*u + epsilon, x/u should give v */
+              mpfr_nextabove (x);
+              mpfr_nextabove (x);
+              mpfr_div_ui (y, x, u, MPFR_RNDN);
+              MPFR_ASSERTN(mpfr_cmp_ui (y, v) == 0);
+            }
+          mpfr_clear (x);
+          mpfr_clear (y);
+          mpfr_clear (t);
         }
-      mpfr_clear (x);
-      mpfr_clear (y);
-      mpfr_clear (t);
     }
 }
 
