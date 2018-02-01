@@ -441,6 +441,8 @@ midpoint_exact (void)
                     py--;
                   else if (ky > 1)
                     py += randlimb () % (4 * GMP_NUMB_BITS);
+                  if (py < MPFR_PREC_MIN)
+                    break;
                   mpfr_inits2 (py, y1, y2, (mpfr_ptr) 0);
                   RND_LOOP_NO_RNDF (r)
                     {
