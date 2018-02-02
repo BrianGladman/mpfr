@@ -256,9 +256,16 @@ void
 tests_start_mpfr (void)
 {
   /* Don't buffer, so output is not lost if a test causes a segv, etc.
-     Warning! No operations must have already been done on stdout
-     (this is a requirement of ISO C, and this is important on AIX). */
+     For stdout, this is important as it will typically be fully buffered
+     by default with "make check". For stderr, the C standard just says
+     that it is not fully buffered (it may be line buffered by default);
+     disabling buffering completely might be useful in some cases.
+     Warning! No operations must have already been done on stdout/stderr
+     (this is a requirement of ISO C, and this is important on AIX).
+     Thus tests_start_mpfr should be called at the beginning of main(),
+     possibly after some variable settings. */
   setbuf (stdout, NULL);
+  setbuf (stderr, NULL);
 
   test_version ();
 
