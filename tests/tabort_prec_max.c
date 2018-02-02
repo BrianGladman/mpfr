@@ -31,6 +31,7 @@ main (int argc, char **argv)
 
   printf ("[tabort_prec_max] Check for good handling of abort"
           " in memory function.\n");
+  fflush (stdout);
 
   mpfr_abort_prec_max ();
 
