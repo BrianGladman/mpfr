@@ -74,6 +74,7 @@ main (void)
   mpfr_t x, y, z;
   double d;
   int inexact;
+
   tests_start_mpfr ();
 
   /* check with enough precision */

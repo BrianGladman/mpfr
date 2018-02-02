@@ -31,6 +31,7 @@ static void
 check_gcc33_bug (void)
 {
   volatile long double x;
+
   x = (long double) 9007199254740992.0 + 1.0;
   if (x != 0.0)
     return;  /* OK */
