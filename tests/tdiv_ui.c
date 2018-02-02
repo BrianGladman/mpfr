@@ -478,16 +478,21 @@ check_coverage (void)
   int i, j;
   int err = 0;
 
-  for (i = 0; i < numberof (__gmpfr_cov_div_ui_sb); i++)
-    for (j = 0; j < 2; j++)
-      if (!__gmpfr_cov_div_ui_sb[i][j])
-        {
-          printf ("mpfr_div_ui not tested on case %d, sb=%d\n", i, j);
-          err = 1;
-        }
+  if (MPFR_LIMB_MAX <= ULONG_MAX)
+    {
+      for (i = 0; i < numberof (__gmpfr_cov_div_ui_sb); i++)
+        for (j = 0; j < 2; j++)
+          if (!__gmpfr_cov_div_ui_sb[i][j])
+            {
+              printf ("mpfr_div_ui not tested on case %d, sb=%d\n", i, j);
+              err = 1;
+            }
 
-  if (err)
-    exit (1);
+      if (err)
+        exit (1);
+    }
+  else /* e.g. mips64 with the n32 ABI */
+    printf ("Warning! Value coverage disabled (mp_limb_t > unsigned long).\n");
 #endif
 }
 
