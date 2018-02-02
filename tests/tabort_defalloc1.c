@@ -40,7 +40,6 @@ main (int argc, char **argv)
 
   printf ("[tabort_defalloc1] Check for good handling of abort"
           " in memory function.\n");
-  fflush (stdout);
   mpfr_allocate_func ((size_t) -1);
 
   tests_end_mpfr ();

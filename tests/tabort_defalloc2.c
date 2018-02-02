@@ -42,7 +42,6 @@ main (int argc, char **argv)
 
   printf ("[tabort_defalloc2] Check for good handling of abort"
           " in memory function.\n");
-  fflush (stdout);
   ptr = mpfr_allocate_func (128);
   ptr = mpfr_reallocate_func (ptr, 128, (size_t) -1);
 
