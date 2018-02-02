@@ -80,23 +80,23 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
   av /= nbtests;
   var = (var / nbtests) - av * av;
 
-  th = (double)nbtests / size_tab;
-  printf("Average = %.5f\nVariance = %.5f\n", av, var);
-  printf("Repartition for urandomb. Each integer should be close to %d.\n",
-         (int)th);
+  th = (double) nbtests / size_tab;
+  printf ("Average = %.5f\nVariance = %.5f\n", av, var);
+  printf ("Repartition for urandomb. Each integer should be close to %d.\n",
+          (int) th);
 
   for (k = 0; k < size_tab; k++)
     {
       chi2 += (tab[k] - th) * (tab[k] - th) / th;
-      printf("%d ", tab[k]);
+      printf ("%d ", tab[k]);
       if (((k+1) & 7) == 0)
-        printf("\n");
+        printf ("\n");
     }
 
-  printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n",
-         size_tab - 1, chi2);
+  printf ("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n",
+          size_tab - 1, chi2);
 
-  free(tab);
+  free (tab);
   return;
 }
 
@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   nbtests = 10000;
   if (argc > 1)
     {
-      long a = atol(argv[1]);
+      long a = atol (argv[1]);
       if (a != 0)
         nbtests = a;
     }
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   if (argc <= 2)
     prec = 1000;
   else
-    prec = atol(argv[2]);
+    prec = atol (argv[2]);
 
   test_urandomb (nbtests, prec, verbose);
 

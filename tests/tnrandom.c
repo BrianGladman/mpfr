@@ -37,7 +37,7 @@ test_special (mpfr_prec_t p)
       exit (1);
     }
 
-  mpfr_clear(x);
+  mpfr_clear (x);
 }
 
 
@@ -105,6 +105,7 @@ main (int argc, char *argv[])
 {
   long nbtests;
   int verbose;
+
   tests_start_mpfr ();
 
   verbose = 0;

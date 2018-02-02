@@ -115,8 +115,7 @@ test_erandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
       if (inexact == 0)
         {
           /* one call in the loop pretended to return an exact number! */
-          fprintf (stderr,
-                   "Error: mpfr_erandom() returns a zero ternary value.\n");
+          printf ("Error: mpfr_erandom() returns a zero ternary value.\n");
           exit (1);
         }
       if (mpfr_signbit (x))
@@ -266,7 +265,7 @@ test_erandom_chisq_disc (long num, mpfr_prec_t wprec, int prec,
   mpfr_set_zero (t, 1);
   for (i = 0; i <= nu; ++i)
     {
-       if (i < nu)
+      if (i < nu)
         mpfr_nextabove (v);
       else
         mpfr_set_inf (v, 1);
@@ -299,12 +298,13 @@ test_erandom_chisq_disc (long num, mpfr_prec_t wprec, int prec,
 }
 
 static void
-run_chisq ( double (*f)(long, mpfr_prec_t, int, double, double, int),
-            long num, mpfr_prec_t prec, int bin,
-            double xmin, double xmax, int verbose)
+run_chisq (double (*f)(long, mpfr_prec_t, int, double, double, int),
+           long num, mpfr_prec_t prec, int bin,
+           double xmin, double xmax, int verbose)
 {
   double Q, Qcum, Qbad, Qthresh;
   int i;
+
   Qcum = 1;
   Qbad = 1.e-9;
   Qthresh = 0.01;
@@ -316,8 +316,8 @@ run_chisq ( double (*f)(long, mpfr_prec_t, int, double, double, int),
         return;
       else if (Q < Qbad)
         {
-          fprintf (stderr, "Error: mpfr_erandom chi-squared failure "
-                   "(prob = %.2e)\n", Q);
+          printf ("Error: mpfr_erandom chi-squared failure "
+                  "(prob = %.2e)\n", Q);
           exit (1);
         }
       num *= 10;
@@ -325,8 +325,8 @@ run_chisq ( double (*f)(long, mpfr_prec_t, int, double, double, int),
     }
   if (Qcum < Qbad)              /* Presumably this is true */
     {
-      fprintf (stderr, "Error: mpfr_erandom combined chi-squared failure "
-               "(prob = %.2e)\n", Qcum);
+      printf ("Error: mpfr_erandom combined chi-squared failure "
+              "(prob = %.2e)\n", Qcum);
       exit (1);
     }
 }
@@ -336,6 +336,7 @@ main (int argc, char *argv[])
 {
   long nbtests;
   int verbose;
+
   tests_start_mpfr ();
 
   verbose = 0;
