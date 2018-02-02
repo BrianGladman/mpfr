@@ -38,12 +38,9 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   mpfr_flags_t ex_flags, flags;
 
   size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
-  tab = (int *) calloc (size_tab, sizeof(int));
-  if (tab == NULL)
-    {
-      fprintf (stderr, "trandom: can't allocate memory in test_urandom\n");
-      exit (1);
-    }
+  tab = (int *) tests_allocate (size_tab * sizeof (int));
+  for (k = 0; k < size_tab; k++)
+    tab[k] = 0;
 
   mpfr_init2 (x, prec);
   xn = 1 + (prec - 1) / mp_bits_per_limb;
@@ -150,39 +147,37 @@ test_urandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd, long bit_index,
   set_emin (emin);
 
   mpfr_clear (x);
-  if (!verbose)
+
+  if (verbose)
     {
-      free(tab);
-      return;
+      av /= nbtests;
+      var = (var / nbtests) - av * av;
+
+      th = (double)nbtests / size_tab;
+      printf ("Average = %.5f\nVariance = %.5f\n", av, var);
+      printf ("Repartition for urandom with rounding mode %s. "
+              "Each integer should be close to %d.\n",
+              mpfr_print_rnd_mode (rnd), (int) th);
+
+      for (k = 0; k < size_tab; k++)
+        {
+          chi2 += (tab[k] - th) * (tab[k] - th) / th;
+          printf("%d ", tab[k]);
+          if (((unsigned int) (k+1) & 7) == 0)
+            printf("\n");
+        }
+
+      printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n",
+             size_tab - 1, chi2);
+
+      if (limb_mask)
+        printf ("Bit #%ld is set %ld/%ld = %.1f %% of time\n",
+                bit_index, count, nbtests, count * 100.0 / nbtests);
+
+      puts ("");
     }
 
-  av /= nbtests;
-  var = (var / nbtests) - av * av;
-
-  th = (double)nbtests / size_tab;
-  printf ("Average = %.5f\nVariance = %.5f\n", av, var);
-  printf ("Repartition for urandom with rounding mode %s. "
-          "Each integer should be close to %d.\n",
-          mpfr_print_rnd_mode (rnd), (int) th);
-
-  for (k = 0; k < size_tab; k++)
-    {
-      chi2 += (tab[k] - th) * (tab[k] - th) / th;
-      printf("%d ", tab[k]);
-      if (((k+1) & 7) == 0)
-        printf("\n");
-    }
-
-  printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n",
-         size_tab - 1, chi2);
-
-  if (limb_mask)
-    printf ("Bit #%ld is set %ld/%ld = %.1f %% of time\n",
-            bit_index, count, nbtests, count * 100.0 / nbtests);
-
-  puts ("");
-
-  free(tab);
+  tests_free (tab, size_tab * sizeof (int));
   return;
 }
 

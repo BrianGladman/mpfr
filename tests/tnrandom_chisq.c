@@ -96,12 +96,9 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
   rndd = MPFR_RNDD;             /* For sampling and figuring the bins */
   mpfr_inits2 (prec, x, a, b, dx, z, pa, pb, ps, t, (mpfr_ptr) 0);
 
-  counts = (long *) calloc (nu + 1, sizeof (long));
-  if (counts == NULL)
-    {
-      fprintf (stderr, "tnrandom_chisq: can't allocate memory\n");
-      exit (1);
-    }
+  counts = (long *) tests_allocate ((nu + 1) * sizeof (long));
+  for (i = 0; i <= nu; i++)
+    counts[i] = 0;
 
   /* a and b are bounds of nu equally spaced bins.  Set dx = (b-a)/nu */
   mpfr_set_d (a, xmin, rnd);
@@ -160,7 +157,7 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
         printf ("    WARNING: probability (less than 5%%) = %.2e\n", Q);
     }
 
-  free (counts);
+  tests_free (counts, (nu + 1) * sizeof (long));
   mpfr_clears (x, a, b, dx, z, pa, pb, ps, t, (mpfr_ptr) 0);
   return Q;
 }
@@ -230,12 +227,9 @@ test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, int prec,
   /* Two bins for each sequential number (for inexact = +/- 1), plus 1 for u <
    * umin and 1 for u > umax, minus 1 for degrees of freedom */
   nu = 2 * (seqmax - seqmin + 1) + 2 - 1;
-  counts = (long *) calloc (nu + 1, sizeof (long));
-  if (counts == NULL)
-    {
-      fprintf (stderr, "tnrandom_chisq: can't allocate memory\n");
-      exit (1);
-    }
+  counts = (long *) tests_allocate ((nu + 1) * sizeof (long));
+  for (i = 0; i <= nu; i++)
+    counts[i] = 0;
 
   for (k = 0; k < num; ++k)
     {
@@ -293,7 +287,7 @@ test_nrandom_chisq_disc (long num, mpfr_prec_t wprec, int prec,
         printf ("    WARNING: probability (less than 5%%) = %.2e\n", Q);
     }
 
-  free (counts);
+  tests_free (counts, (nu + 1) * sizeof (long));
   mpfr_clears (x, v, pa, pb, z, t, (mpfr_ptr) 0);
   return Q;
 }
