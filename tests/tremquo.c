@@ -58,6 +58,8 @@ main (int argc, char *argv[])
   long q[1];
   int inex;
 
+  tests_start_mpfr ();
+
   if (argc == 3) /* usage: tremquo x y (rnd=MPFR_RNDN implicit) */
     {
       mpfr_init2 (x, GMP_NUMB_BITS);
@@ -74,8 +76,6 @@ main (int argc, char *argv[])
       mpfr_clear (r);
       return 0;
     }
-
-  tests_start_mpfr ();
 
   bug20090227 ();
 

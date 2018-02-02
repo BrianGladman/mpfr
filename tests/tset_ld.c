@@ -505,16 +505,6 @@ main (int argc, char *argv[])
   mpfr_t x;
   int i;
   mpfr_exp_t emax;
-#ifdef WITH_FPU_CONTROL
-  fpu_control_t cw;
-
-  if (argc > 1)
-    {
-      cw = strtol(argv[1], NULL, 0);
-      printf ("FPU control word: 0x%x\n", (unsigned int) cw);
-      _FPU_SETCW (cw);
-    }
-#endif
 
   tests_start_mpfr ();
   mpfr_test_init ();
