@@ -375,17 +375,17 @@ corner_cases (int n)
               /* t = v-1/2 */
               mpfr_mul_ui (x, t, u, MPFR_RNDN);
 
-              /* when x = (v-1/2)*u, x/u should give v-1/2, which should give
-                 either v (if v is even) or v-1 (if v is odd) */
+              /* when x = (v-1/2)*u, x/u should give v-1/2, which should
+                 round to either v (if v is even) or v-1 (if v is odd) */
               mpfr_div_ui (y, x, u, MPFR_RNDN);
               MPFR_ASSERTN(mpfr_cmp_ui (y, v - (v & 1)) == 0);
 
-              /* when x = (v-1/2)*u - epsilon, x/u should give v-1 */
+              /* when x = (v-1/2)*u - epsilon, x/u should round to v-1 */
               mpfr_nextbelow (x);
               mpfr_div_ui (y, x, u, MPFR_RNDN);
               MPFR_ASSERTN(mpfr_cmp_ui (y, v - 1) == 0);
 
-              /* when x = (v-1/2)*u + epsilon, x/u should give v */
+              /* when x = (v-1/2)*u + epsilon, x/u should round to v */
               mpfr_nextabove (x);
               mpfr_nextabove (x);
               mpfr_div_ui (y, x, u, MPFR_RNDN);
