@@ -414,11 +414,14 @@ EOF
 gmpv1=`sed -n 's/.*error "GMP \([0-9.]\+\) or .*/\1/p' configure.ac`
 gmpv2=`sed -n 's/.*AC_MSG_ERROR.*GMP \([0-9.]\+\) or .*/\1/p' configure.ac`
 gmpv3=`sed -n 's/.*MPFR requires GMP version \([0-9.]\+\) or .*/\1/p' INSTALL`
-[[ $gmpv1 == $gmpv2 && $gmpv1 == $gmpv3 ]] || { cat <<EOF && err=1 }
+gmpv4=`sed -n 's/.*GNU MP (version \([0-9.]\+\) or .*/\1/p' doc/mpfr.texi`
+[[ $gmpv1 == $gmpv2 && $gmpv1 == $gmpv3 && $gmpv1 == $gmpv4 ]] ||
+  { cat <<EOF && err=1 }
 Minimal GMP version mismatch:
   configure.ac 1: $gmpv1
   configure.ac 2: $gmpv2
   INSTALL:        $gmpv3
+  doc/mpfr.texi:  $gmpv4
 EOF
 
 # In case of problems, one can also skip files or use "grep -v"...
