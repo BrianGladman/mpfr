@@ -198,6 +198,7 @@ To make a release (for the MPFR team):
 
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+     Make sure that all the pending commits have been done.
 
   5) Do a "svn export" of the branch to make sure to start from a clean
      source tree; this also has the advantage (over a checkout) to set
@@ -366,7 +367,6 @@ To make a release (for the MPFR team):
      Update the old current page to point to the new release; see
      examples for 3.0.1 (latest version of the branch) and 3.1.0
      (which is not the latest version of the branch).
-     Make sure that all the pending commits have been done.
      Run the tools/announce-text script to do some checking and get
      the announce text. Edit this text if need be.
      Announce the release in the mpfr-announce, mpfr, gmp-discuss, gcc
