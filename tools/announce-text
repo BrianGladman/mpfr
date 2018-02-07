@@ -50,6 +50,17 @@ base=${vers%-rc*}
 echo "MPFR version: $vers" >&2
 echo "Base version: $base" >&2
 
+if [ $vers = $base ]; then
+  # This is a release (not a release candidate).
+  tagversfile="$root/tags/$vers/VERSION"
+  tagvers=$(svn cat "$tagversfile")
+  if [ $vers != "$tagvers" ]; then
+    echo "$tagversfile is incorrect or does not exist:" >&2
+    echo "got '$tagvers' instead of '$vers'" >&2
+    exit 1
+  fi
+fi
+
 www="$root/misc/www/mpfr-$base"
 echo "MPFR $vers www directory: $www" >&2
 svn ls "$www" | sort > ls1
