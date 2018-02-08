@@ -24,10 +24,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
-#ifdef WITH_FPU_CONTROL
-#include <fpu_control.h>
-#endif
-
 #ifdef MPFR_WANT_FLOAT128
 
 #include "mpfr-test.h"
