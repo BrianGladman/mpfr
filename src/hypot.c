@@ -155,18 +155,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      round toward zero. Using a larger sh wouldn't guarantee an absence
      of overflow. Note that the scaling of y can underflow only when the
      target precision is huge, otherwise the case would already have been
-     handled by the diff_exp > threshold code.
-     FIXME: Friedland in "Algorithm 312: Absolute Value and Square Root of a
-     Complex Number" (Communications of the ACM, 1967) avoids overflow by
-     computing |x|*sqrt(1+(y/x)^2) if |x| >= |y|, and |y|*sqrt(1+(x/y)^2)
-     otherwise.
-     [VL] This trick (which is a scaling by a non-power of 2, thus doesn't
-     really bring new behavior w.r.t. overflow/underflow exceptions) may be
-     useful for hardware floating-point formats because a whole power-of-2
-     scaling code is likely to take more time than the additional division,
-     but in the context of multiple-precision, I doubt that it is a good
-     idea. Ideally scaling by a power of 2 could be done in a constant time,
-     e.g. with MPFR_ALIAS; but one needs to be very careful... */
+     handled by the diff_exp > threshold code; but this case is avoided
+     thanks to a FMA (this problem is transferred to the FMA code). */
   sh = (mpfr_get_emax () - 1) / 2 - Ex;
 
   MPFR_ZIV_INIT (loop, Nt);

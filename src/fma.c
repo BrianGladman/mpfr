@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME: Possible overflow/underflow issues in corner cases
+   (see MPFR_ASSERTN in the code). They should be fixable with UBF
+   like in mpfr_fmma. */
+
 /* The fused-multiply-add (fma) of x, y and z is defined by:
    fma(x,y,z)= x*y + z
 */
