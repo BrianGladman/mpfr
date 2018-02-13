@@ -625,7 +625,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_prec_t p;
   unsigned int sh;
   mp_size_t n;
-  mp_limb_t *ap, *cp;
+  mp_limb_t *ap;
   mpfr_exp_t bx;
   mp_limb_t limb, rb, sb;
   int inexact;
@@ -772,7 +772,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else /* 0 < d < p */
     {
-      mp_limb_t mask;
+      mp_limb_t mask, *cp;
 
       /* General case: 1 <= d < p */
       cp = MPFR_TMP_LIMBS_ALLOC (n);
@@ -851,16 +851,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
       /* mpfr_print_mant_binary("Add=  ", ap, p); */
 
-      /* Check for overflow */
-      if (MPFR_UNLIKELY (limb))
+      /* Check for carry out */
+      if (MPFR_UNLIKELY (limb != 0))
         {
-          limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
-          mpn_rshift (ap, ap, n, 1);          /* Shift mantissa */
-          bx++;                               /* Fix exponent */
-          ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
-          ap[0]   &= mask;                    /* Clear LSB bit */
-          sb    |= rb;                        /* Recompute sb */
-          rb      = limb;                     /* Recompute rb */
+          limb = ap[0] & (MPFR_LIMB_ONE << sh); /* Get LSB (will be new rb) */
+          mpn_rshift (ap, ap, n, 1);            /* Shift significand */
+          bx++;                                 /* Increase exponent */
+          ap[n-1] |= MPFR_LIMB_HIGHBIT;         /* Set MSB */
+          ap[0]   &= mask;                      /* Clear LSB */
+          sb      |= rb;                        /* Update sb */
+          rb      = limb;                       /* New rb */
           /* printf ("(Overflow) rb=%lu sb=%lu\n",
              (unsigned long) rb, (unsigned long) sb);
              mpfr_print_mant_binary ("Add=  ", ap, p); */
@@ -879,13 +879,14 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           inexact = - (sb != 0);
           if (rb == 0)
             goto set_exponent;
-          else if (MPFR_UNLIKELY(sb==0) && (ap[0]&(MPFR_LIMB_ONE<<sh))==0)
+          else if (MPFR_UNLIKELY (sb == 0) &&
+                   (ap[0] & (MPFR_LIMB_ONE << sh)) == 0)
             { inexact = -1; goto set_exponent; }
           else
             goto add_one_ulp;
         }
       MPFR_UPDATE_RND_MODE(rnd_mode, neg);
-      inexact = -(rb != 0 || sb != 0);
+      inexact = - (rb != 0 || sb != 0);
       if (rnd_mode == MPFR_RNDZ || inexact == 0)
         goto set_exponent;
       else
@@ -896,7 +897,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
  add_one_ulp:
   /* add one unit in last place to a */
   /* printf("AddOneUlp\n"); */
-  if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
+  if (MPFR_UNLIKELY (mpn_add_1 (ap, ap, n, MPFR_LIMB_ONE << sh)))
     {
       /* Case 100000x0 = 0x1111x1 + 1*/
       /* printf("Pow of 2\n"); */
