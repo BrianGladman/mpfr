@@ -632,8 +632,9 @@ mpfr_addrsh (mp_limb_t *ap, mp_limb_t *bp, mp_limb_t *cp, mp_size_t n,
   if (d < GMP_NUMB_BITS)
     {
       /* {ap, n} <- {bp, n} + {cp, n} >> d */
+      MPFR_ASSERTD (d > 0);
+      /* thus 0 < GMP_NUMB_BITS - d < GMP_NUMB_BITS */
       *low = cp[0] << (GMP_NUMB_BITS - d);
-      MPFR_ASSERTD(d > 0);
       for (i = 0, cy = 0; i < n - 1; i++)
         {
           c_shifted = (cp[i+1] << (GMP_NUMB_BITS - d)) | (cp[i] >> d);
