@@ -1095,7 +1095,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_exp_t bx, cx;
   mpfr_uexp_t d;
   mpfr_prec_t p, sh, cnt;
-  mp_size_t n;
+  mp_size_t n, k;
   mp_limb_t *ap = MPFR_MANT(a);
   mp_limb_t *bp, *cp;
   mp_limb_t limb;
@@ -1142,12 +1142,14 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (bx == cx)
     {
-      mp_size_t k = n - 1;
+      k = n - 1;
       /* Check mantissa since exponents are equal */
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
       while (k >= 0 && MPFR_UNLIKELY(bp[k] == cp[k]))
         k--;
+      /* now k = - 1 if b == c, otherwise k is the largest integer < n such
+         that bp[k] <> cp[k] */
       if (k < 0)
         /* b == c ! */
         {
@@ -1191,8 +1193,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (d == 0)
     {
-          /* <-- b -->
-             <-- c --> : exact sub */
+      /* <-- b -->
+         <-- c --> : exact sub */
           mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
           /* Normalize */
         ExactNormalize:
@@ -1201,7 +1203,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             {
               /* First limb is not zero. */
               count_leading_zeros(cnt, limb);
-              /* cnt could be == 0 <= SubD1Lose */
+              /* Warning: cnt can be 0 when we come from the case SubD1Lose
+                 with goto ExactNormalize */
               if (MPFR_LIKELY(cnt))
                 {
                   mpn_lshift(ap, ap, n, cnt); /* Normalize number */
@@ -1213,28 +1216,26 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           else
             {
-              /* First limb is zero */
-              mp_size_t k = n-1, len;
+              /* First limb is zero: this can only occur for n >= 2 */
+              mp_size_t len;
               /* Find the first limb not equal to zero. It necessarily exists
-                 since |b| > |c|. */
-              do
-                {
-                  MPFR_ASSERTD( k > 0 );
-                  limb = ap[--k];
-                }
-              while (limb == 0);
+                 since |b| > |c|. We know that bp[k] > cp[k] and all upper
+                 limbs are equal. */
+              while (ap[k] == 0)
+                k--;
+              limb = ap[k];
+              /* ap[k] is the non-zero limb of largest index, thus we have
+                 to consider the k+1 least significant limbs */
               MPFR_ASSERTD(limb != 0);
               count_leading_zeros(cnt, limb);
               k++;
-              len = n - k; /* Number of last limb */
-              MPFR_ASSERTD(k >= 0);
+              len = n - k; /* Number of most significant zero limbs */
+              MPFR_ASSERTD(k > 0);
               if (cnt)
                 mpn_lshift (ap + len, ap, k, cnt); /* Normalize the High Limb*/
               else
-                {
-                  /* Must use copyd since src and dst may overlap & dst>=src */
-                  mpn_copyd (ap+len, ap, k);
-                }
+                /* Must use copyd since src and dst may overlap & dst>=src */
+                mpn_copyd (ap + len, ap, k);
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
               bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
               /* Last limb should be OK */
@@ -1266,7 +1267,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* | <-- b -->
              |  <-- c --> */
           mp_limb_t c0, mask;
-          mp_size_t k;
           MPFR_UNSIGNED_MINUS_MODULO(sh, p);
           /* If we lose at least one bit, compute 2*b-c (Exact)
            * else compute b-c/2 */
@@ -1341,6 +1341,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               mpn_sub_n (ap, bp, cp, n);
 #endif
               bx--;
+              MPFR_ASSERTD(k == n-1);
               goto ExactNormalize;
             }
           else
@@ -1417,7 +1418,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               cp = MPFR_MANT(c);
               if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
                 {
-                  mp_size_t k = n-1;
+                  k = n-1;
                   do
                     k--;
                   while (k >= 0 && cp[k] == 0);
@@ -1751,7 +1752,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       X bit should always be set if SubOneUlp*/
   if (MPFR_UNLIKELY(ap[n-1] == MPFR_LIMB_HIGHBIT))
     {
-      mp_size_t k = n-1;
+      k = n-1;
       do
         k--;
       while (k >= 0 && ap[k] == 0);
