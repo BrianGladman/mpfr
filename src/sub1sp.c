@@ -1096,7 +1096,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_uexp_t d;
   mpfr_prec_t p, sh, cnt;
   mp_size_t n;
-  mp_limb_t *ap, *bp, *cp;
+  mp_limb_t *ap = MPFR_MANT(a);
+  mp_limb_t *bp, *cp;
   mp_limb_t limb;
   int inexact;
   mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
@@ -1192,7 +1193,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     {
           /* <-- b -->
              <-- c --> : exact sub */
-          ap = MPFR_MANT(a);
           mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
           /* Normalize */
         ExactNormalize:
@@ -1287,7 +1287,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             SubD1NoLose:
               c0 = cp[0] & (MPFR_LIMB_ONE << sh);
               mask = ~MPFR_LIMB_MASK(sh);
-              ap = MPFR_MANT(a);
               cp = MPFR_TMP_LIMBS_ALLOC (n);
               /* FIXME: it might be faster to have one function shifting c by 1
                  to the right and adding with b to a, which would read c once
@@ -1331,12 +1330,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* |b| - |c| <= (W/2-1)*W^k + W^k-1 = 1/2*W^n - 1 */
               /* The exponent decreases by one. */
             SubD1Lose:
-              ap = MPFR_MANT(a);
               /* Compute 2*b-c (Exact) */
-              /* Experiments with __gmpn_rsblsh_n show that it is not always
-                 faster than mpn_lshift + mpn_sub_n, thus we don't enable it
-                 for now (HAVE___GMPN_RSBLSH_N -> HAVE___GMPN_RSBLSH_Nxxx). */
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH_Nxxx)
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH_N)
               /* {ap, n} = 2*{bp, n} - {cp, n} */
               __gmpn_rsblsh_n (ap, MPFR_MANT(c), MPFR_MANT(b), n, 1);
 #else
@@ -1367,7 +1362,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               while (bp[k] == carry);
               if (MPFR_UNLIKELY(k < 0))
                 {
-                  ap = MPFR_MANT (a);
                   if (MPFR_UNLIKELY(carry))
                     {
                       /* If carry then necessarily the precision is an exact
@@ -1406,7 +1400,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                                      with a possible exact result when
                                      d = p, b = 2^e and c = 1/2 ulp(b) */
     {
-      ap = MPFR_MANT(a);
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       /* We can't set A before since we use cp for rounding... */
       /* Perform rounding: check if a=b or a=b-ulp(b) */
@@ -1648,7 +1641,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       cp[0] &= mask;
 
       /* Subtract the mantissa c from b in a */
-      ap = MPFR_MANT(a);
       mpn_sub_n (ap, bp, cp, n);
       /* mpfr_print_mant_binary("Sub=  ", ap, p); */
 
