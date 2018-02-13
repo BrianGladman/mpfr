@@ -614,6 +614,81 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
 #endif /* !defined(MPFR_GENERIC_ABI) */
 
+/* {ap, n} <- {bp, n} + {cp + q, n - q} >> r where d = q * GMP_NUMB_BITS + r.
+   Return the carry at ap[n+1] (0 or 1) and set *low so that:
+   * the most significant bit of *low would be that of ap[-1] if we would
+     compute one more limb of the (infinite) addition
+   * the GMP_NUMB_BITS-1 least significant bits of *low are zero iff all bits
+     of ap[-1], ap[-2], ... would be zero (except the most significant bit
+     of ap[-1).
+   Assume 0 < d < GMP_NUMB_BITS*n. */
+static mp_limb_t
+mpfr_addrsh (mp_ptr ap, mp_ptr bp, mp_ptr cp, mp_size_t n, mp_size_t d,
+             mp_limb_t *low)
+{
+  mp_limb_t cy, cy2, c_shifted;
+  mp_size_t i;
+
+  if (d < GMP_NUMB_BITS)
+    {
+      /* {ap, n} <- {bp, n} + {cp, n} >> d */
+      *low = cp[0] << (GMP_NUMB_BITS - d);
+      MPFR_ASSERTD(d > 0);
+      for (i = 0, cy = 0; i < n - 1; i++)
+        {
+          c_shifted = (cp[i+1] << (GMP_NUMB_BITS - d)) | (cp[i] >> d);
+          ap[i] = bp[i] + c_shifted;
+          cy2 = ap[i] < c_shifted;
+          ap[i] += cy;
+          cy = cy2 + (ap[i] < cy);
+        }
+      /* most significant limb is special */
+      c_shifted = cp[i] >> d;
+      ap[i] = bp[i] + c_shifted;
+      cy2 = ap[i] < c_shifted;
+      ap[i] += cy;
+      cy = cy2 + (ap[i] < cy);
+    }
+  else /* d >= GMP_NUMB_BITS */
+    {
+      mp_size_t q = d / GMP_NUMB_BITS;
+      mpfr_uexp_t r = d % GMP_NUMB_BITS;
+      if (r == 0)
+        {
+          MPFR_ASSERTD(q > 0);
+          *low = cp[q-1];
+          for (i = 0; i < q-1; i++)
+            *low |= !!cp[i];
+          cy = mpn_add_n (ap, bp, cp + q, n - q);
+          cy = mpn_add_1 (ap + n - q, bp + n - q, q, cy);
+        }
+      else /* 0 < r < GMP_NUMB_BITS */
+        {
+          *low = cp[q] << (GMP_NUMB_BITS - r);
+          for (i = 0; i < q; i++)
+            *low |= !!cp[i];
+          for (i = 0, cy = 0; i < n - q - 1; i++)
+            {
+              c_shifted = (cp[q+i+1] << (GMP_NUMB_BITS - r)) | (cp[q+i] >> r);
+              ap[i] = bp[i] + c_shifted;
+              cy2 = ap[i] < c_shifted;
+              ap[i] += cy;
+              cy = cy2 + (ap[i] < cy);
+            }
+          /* most significant limb of c is special */
+          MPFR_ASSERTD(i == n - q - 1);
+          c_shifted = cp[n-1] >> r;
+          ap[i] = bp[i] + c_shifted;
+          cy2 = ap[i] < c_shifted;
+          ap[i] += cy;
+          cy = cy2 + (ap[i] < cy);
+          /* upper limbs are copied */
+          cy = mpn_add_1 (ap + n - q, bp + n - q, q, cy);
+        }
+    }
+  return cy;
+}
+
 /* compute sign(b) * (|b| + |c|).
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
@@ -625,7 +700,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mpfr_prec_t p;
   unsigned int sh;
   mp_size_t n;
-  mp_limb_t *ap;
+  mp_limb_t *ap = MPFR_MANT(a);
   mpfr_exp_t bx;
   mp_limb_t limb, rb, sb;
   int inexact;
@@ -684,7 +759,6 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* mpfr_print_mant_binary("C= ", MPFR_MANT(c), p); */
       /* mpfr_print_mant_binary("B= ", MPFR_MANT(b), p); */
       bx++;                                /* exp + 1 */
-      ap = MPFR_MANT(a);
       limb = mpn_add_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
       /* mpfr_print_mant_binary("A= ", ap, p); */
       MPFR_ASSERTD(limb != 0);             /* There must be a carry */
@@ -734,7 +808,6 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           if (rnd_mode == MPFR_RNDN || MPFR_IS_LIKE_RNDZ (rnd_mode, neg))
             {
             copy_set_exponent:
-              ap = MPFR_MANT (a);
               if (a != b)
                 MPN_COPY (ap, MPFR_MANT(b), n);
               inexact = -1;
@@ -743,7 +816,6 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             {
             copy_add_one_ulp:
-              ap = MPFR_MANT(a);
               if (a != b)
                 MPN_COPY (ap, MPFR_MANT(b), n);
               goto add_one_ulp;
@@ -772,84 +844,30 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else /* 0 < d < p */
     {
-      mp_limb_t mask, *cp;
+      mp_limb_t mask = ~MPFR_LIMB_MASK(sh);
 
       /* General case: 1 <= d < p */
-      cp = MPFR_TMP_LIMBS_ALLOC (n);
 
-      /* Shift c in temporary allocated place */
-      {
-        mpfr_uexp_t r;
-        mp_size_t q;
+      limb = mpfr_addrsh (ap, MPFR_MANT(b), MPFR_MANT(c), n, d, &sb);
+      /* the most significant bit of sb contains what would be the most
+         significant bit of ap[-1], and the remaining bits of sb are 0
+         iff the remaining bits of ap[-1], ap[-2], ... are all zero */
 
-        r = d % GMP_NUMB_BITS;
-        q = d / GMP_NUMB_BITS;
-        /* d = q*GMP_NUMB_BITS + r */
-        if (q != 0)
-          {
-            /* q > 0: Just copy when r=0, otherwise shift */
-            if (r == 0)
-              {
-                MPN_COPY (cp, MPFR_MANT(c) + q, n - q);
-                sb = MPFR_MANT(c)[q-1];
-              }
-            else
-              sb = mpn_rshift (cp, MPFR_MANT(c) + q, n - q, r);
-            /* otherwise rb will be determined later in cp[0] */
-            MPN_ZERO(cp + n - q, q);
-          }
-        else /* case q = 0 */
-          {
-            /* r>=1 and q == 0: just shift */
-            MPFR_ASSERTD(r >= 1);
-            sb = mpn_rshift (cp, MPFR_MANT(c), n, r);
-          }
-        /* sb contains some of the most significant bits that have not
-           been copied in cp: either the most significant non-copied limb
-           (if r == 0), or the shifted bits from mpn_rshift. */
+      if (sh > 0)
+        {
+          /* The round bit and a part of the sticky bit are in ap[0]. */
+          rb = (ap[0] & (MPFR_LIMB_ONE << (sh - 1)));
+          sb |= ap[0] & MPFR_LIMB_MASK (sh - 1);
+        }
+      else
+        {
+          /* The round bit and possibly a part of the sticky bit are
+             in sb. */
+          rb = sb & MPFR_LIMB_HIGHBIT;
+          sb &= ~MPFR_LIMB_HIGHBIT;
+        }
 
-        if (rnd_mode == MPFR_RNDF)
-          {
-            /* The rb and sb values will not matter for MPFR_RNDF;
-               sb has already been initialized, and let's initialize
-               rb too to avoid undefined behavior. */
-            rb = 0;
-          }
-        else
-          {
-            if (sh > 0)
-              {
-                /* The round bit and possibly a part of the sticky bit are
-                   in cp[0]. */
-                rb = (cp[0] & (MPFR_LIMB_ONE << (sh - 1)));
-                sb |= cp[0] & MPFR_LIMB_MASK (sh - 1);
-              }
-            else
-              {
-                /* The round bit and possibly a part of the sticky bit are
-                   in sb. */
-                rb = sb & MPFR_LIMB_HIGHBIT;
-                sb &= ~MPFR_LIMB_HIGHBIT;
-              }
-            /* If r == 0, the most significant non-copied limb has already
-               been taken into account (to possibly get the round bit from
-               it). Thus let's ignore it in the following. */
-            if (r == 0)
-              q--;
-            /* Take the remaining limbs into account for the sticky bit. */
-            while (sb == 0 && q != 0)
-              sb |= MPFR_MANT(c)[--q];
-          }
-      }
-
-      /* Clean shifted C */
-      mask = ~MPFR_LIMB_MASK(sh);
-      cp[0] &= mask;
-
-      /* Add the mantissa c from b in a */
-      ap = MPFR_MANT(a);
-      limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
-      /* mpfr_print_mant_binary("Add=  ", ap, p); */
+      ap[0] &= mask;
 
       /* Check for carry out */
       if (MPFR_UNLIKELY (limb != 0))
