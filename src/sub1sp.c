@@ -1237,12 +1237,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 /* Must use copyd since src and dst may overlap & dst>=src */
                 mpn_copyd (ap + len, ap, k);
               MPN_ZERO(ap, len); /* Zeroing the last limbs */
-              bx -= cnt + len*GMP_NUMB_BITS; /* Update Expo */
-              /* Last limb should be OK */
+              bx -= cnt + len * GMP_NUMB_BITS; /* update exponent */
+              /* ap[len] should have its low bits zero: it is bp[0]-cp[0] */
               MPFR_ASSERTD(!(ap[len] & MPFR_LIMB_MASK((unsigned int) (-p)
                                                       % GMP_NUMB_BITS)));
             }
-          /* Check expo underflow */
+          /* Check exponent underflow (no overflow can happen) */
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
             {
               MPFR_TMP_FREE(marker);
@@ -1258,7 +1258,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           MPFR_SET_EXP (a, bx);
           /* No rounding is necessary since the result is exact */
-          MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
+          MPFR_ASSERTD(ap[n-1] & MPFR_LIMB_HIGHBIT);
           MPFR_TMP_FREE(marker);
           return 0;
     }
