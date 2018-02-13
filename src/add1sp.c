@@ -791,7 +791,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             if (r == 0)
               {
                 MPN_COPY (cp, MPFR_MANT(c) + q, n - q);
-                sb = 0;
+                sb = MPFR_MANT(c)[q-1];
               }
             else
               sb = mpn_rshift (cp, MPFR_MANT(c) + q, n - q, r);
@@ -804,42 +804,44 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             MPFR_ASSERTD(r >= 1);
             sb = mpn_rshift (cp, MPFR_MANT(c), n, r);
           }
-        if (sh == 0)
+        /* sb contains some of the most significant bits that have not
+           been copied in cp: either the most significant non-copied limb
+           (if r == 0), or the shifted bits from mpn_rshift. */
+
+        if (rnd_mode == MPFR_RNDF)
           {
-            rb = sb & MPFR_LIMB_HIGHBIT;
-            sb = sb & ~MPFR_LIMB_HIGHBIT;
+            /* The rb and sb values will not matter for MPFR_RNDF;
+               sb has already been initialized, and let's initialize
+               rb too to avoid undefined behavior. */
+            rb = 0;
           }
-        /* part of sticky bit from neglected limb from c */
-        while (sb == 0 && q--)
-          sb |= MPFR_MANT(c)[q];
+        else
+          {
+            if (sh > 0)
+              {
+                /* The round bit and possibly a part of the sticky bit are
+                   in cp[0]. */
+                rb = (cp[0] & (MPFR_LIMB_ONE << (sh - 1)));
+                sb |= cp[0] & MPFR_LIMB_MASK (sh - 1);
+              }
+            else
+              {
+                /* The round bit and possibly a part of the sticky bit are
+                   in sb. */
+                rb = sb & MPFR_LIMB_HIGHBIT;
+                sb &= ~MPFR_LIMB_HIGHBIT;
+              }
+            /* If r == 0, the most significant non-copied limb has already
+               been taken into account (to possibly get the round bit from
+               it). Thus let's ignore it in the following. */
+            if (r == 0)
+              q--;
+            /* Take the remaining limbs into account for the sticky bit. */
+            while (sb == 0 && q != 0)
+              sb |= MPFR_MANT(c)[--q];
+          }
       }
 
-      /* mpfr_print_mant_binary("Before", MPFR_MANT(c), p);
-         mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p);
-         mpfr_print_mant_binary("After ", cp, p); */
-
-      /* fast track for RNDF */
-      if (rnd_mode == MPFR_RNDF)
-        {
-          /* The rb and sb values will not matter for MPFR_RNDF, but
-             let's set them to 0 to avoid undefined behavior. */
-          rb = sb = 0;
-          goto clean;
-        }
-
-      /* Compute rb and sb: rb is the first neglected bit (round bit),
-         and sb corresponds to the remaining bits (sticky bit).
-         If sh=0, we already computed rb and sb.
-         If sb>0, we need to take into account the last sh bits from cp[0]. */
-      if (sh > 0)
-        {
-          rb = (cp[0] & (MPFR_LIMB_ONE << (sh - 1)));
-          sb |= cp[0] & MPFR_LIMB_MASK(sh - 1);
-        }
-      /* printf("sh=%u rb=%lu sb=%lu\n", sh,
-         (unsigned long) rb, (unsigned long) sb); */
-
-    clean:
       /* Clean shifted C */
       mask = ~MPFR_LIMB_MASK(sh);
       cp[0] &= mask;
