@@ -706,9 +706,6 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_limb_t limb, rb, sb;
   int inexact;
   int neg;
-  MPFR_TMP_DECL(marker);
-
-  MPFR_TMP_MARK(marker);
 
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
@@ -929,11 +926,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(bx > __gmpfr_emax)) /* Check for overflow */
     {
       /* printf("Overflow\n"); */
-      MPFR_TMP_FREE(marker);
       return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
 
-  MPFR_TMP_FREE(marker);
   MPFR_RET (inexact * MPFR_INT_SIGN (a));
 }
