@@ -1188,10 +1188,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   d = (mpfr_uexp_t) bx - cx;
   /* printf ("New with diff=%lu\n", (unsigned long) d); */
 
-  if (d <= 1)
+  if (d == 0)
     {
-      if (d == 0)
-        {
           /* <-- b -->
              <-- c --> : exact sub */
           ap = MPFR_MANT(a);
@@ -1262,8 +1260,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
           MPFR_TMP_FREE(marker);
           return 0;
-        }
-      else /* if (d == 1) */
+    }
+  else if (d == 1)
         {
           /* | <-- b -->
              |  <-- c --> */
@@ -1402,7 +1400,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
             }
         }
-    }
   else if (MPFR_UNLIKELY(d >= p)) /* the difference of exponents is larger
                                      than the precision of all operands, thus
                                      the result is either b or b - 1 ulp,
