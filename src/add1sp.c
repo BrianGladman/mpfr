@@ -623,8 +623,8 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
      of ap[-1).
    Assume 0 < d < GMP_NUMB_BITS*n. */
 static mp_limb_t
-mpfr_addrsh (mp_ptr ap, mp_ptr bp, mp_ptr cp, mp_size_t n, mp_size_t d,
-             mp_limb_t *low)
+mpfr_addrsh (mp_limb_t *ap, mp_limb_t *bp, mp_limb_t *cp, mp_size_t n,
+             mp_size_t d, mp_limb_t *low)
 {
   mp_limb_t cy, cy2, c_shifted;
   mp_size_t i;
