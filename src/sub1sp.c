@@ -1539,176 +1539,109 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else /* case 2 <= d < p */
     {
-      mpfr_uexp_t dm;
-      mp_size_t m;
+      mpfr_uexp_t r;
+      mp_size_t q, i;
       mp_limb_t mask;
-      mp_limb_t sbb = MPFR_LIMB_MAX;
+      mp_limb_t sbb;
 
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       cp = MPFR_TMP_LIMBS_ALLOC (n);
 
       /* Shift c in temporary allocated place */
-      dm = d % GMP_NUMB_BITS;
-      m = d / GMP_NUMB_BITS;
-      if (MPFR_UNLIKELY(dm == 0))
+      r = d % GMP_NUMB_BITS;
+      q = d / GMP_NUMB_BITS;
+      /* d = q * GMP_NUMB_BITS + r */
+      if (MPFR_UNLIKELY(r == 0))
         {
-          /* dm = 0 and m > 0: Just copy */
-          MPFR_ASSERTD(m != 0);
-          MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
-          MPN_ZERO(cp+n-m, m);
-        }
-      else if (MPFR_LIKELY(m == 0))
-        {
-          /* dm >=2 and m == 0: just shift */
-          MPFR_ASSERTD(dm >= 2);
-          mpn_rshift(cp, MPFR_MANT(c), n, dm);
+          /* r = 0 and q > 0: Just copy */
+          MPFR_ASSERTD(q != 0);
+          MPN_COPY(cp, MPFR_MANT(c) + q, n - q);
+          MPN_ZERO(cp + n - q, q);
+          sbb = MPFR_MANT(c)[--q];
         }
       else
         {
-          /* dm > 0 and m > 0: shift and zero  */
-          mpn_rshift(cp, MPFR_MANT(c)+m, n-m, dm);
-          MPN_ZERO(cp+n-m, m);
+          /* r > 0: shift and zero (if q > 0) */
+          /* the bits returned by mpn_rshift are the low r ignored bits of
+             MPFR_MANT(c)[q], thus we use them for the sticky bit */
+          sbb = mpn_rshift (cp, MPFR_MANT(c) + q, n - q, r);
+          if (q > 0)
+            {
+              MPN_ZERO(cp + n - q, q);
+              sbb |=  MPFR_MANT(c)[q-1] >> r;
+            }
         }
+      /* sbb contains the GMP_NUMB_BITS most significant ignored bits from C */
+
+      /* now C' = {cp, n} is the value that can be subtracted from {bp, n} */
 
       /* mpfr_print_mant_binary("Before", MPFR_MANT(c), p); */
       /* mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p); */
       /* mpfr_print_mant_binary("After ", cp, p); */
 
-      /* Compute rb=Cp and sb=C'p+1 */
-      if (MPFR_LIKELY(sh))
+      /* compute the round and sticky bits from C':
+         rb is the round bit (bit p+1, starting from 1)
+         rbb is the next bit (bit p+2)
+         sbb is non-zero iff the remaining bits (>= p+3) are non-zero */
+      if (sh > 2)
         {
-          /* Try to compute them from C' rather than C (FIXME: Faster?) */
-          rb = (cp[0] & (MPFR_LIMB_ONE<<(sh-1))) ;
-          if (cp[0] & MPFR_LIMB_MASK(sh-1))
-            sb = 1;
-          else
-            {
-              /* We can't compute C'p+1 from C'. Compute it from C */
-              /* Start from bit x=p-d+sh in mantissa C
-                 (+sh since we have already looked sh bits in C'!) */
-              mpfr_prec_t x = p-d+sh-1;
-              if (x > p)
-                /* We are already looked at all the bits of c, so C'p+1 = 0*/
-                sb = 0;
-              else
-                {
-                  mp_limb_t *tp = MPFR_MANT(c);
-                  mp_size_t kx = n-1 - (x / GMP_NUMB_BITS);
-                  mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
-                  /* printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
-                     (unsigned long) x, (long) kx, (unsigned long) sx); */
-                  /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
-                  if (tp[kx] & MPFR_LIMB_MASK(sx))
-                    sb = 1;
-                  else
-                    {
-                      /*kx += (sx==0);*/
-                      /*If sx==0, tp[kx] hasn't been checked*/
-                      do
-                        kx--;
-                      while (kx >= 0 && tp[kx] == 0);
-                      sb = (kx >= 0);
-                    }
-                }
-            }
+          rb = cp[0] & (MPFR_LIMB_ONE << (sh - 1));
+          rbb = cp[0] & (MPFR_LIMB_ONE << (sh - 2));
+          sbb |= cp[0] & MPFR_LIMB_MASK(sh - 2);
         }
-      else
+      else if (sh == 2)
         {
-          /* Compute Cp and C'p+1 from C with sh=0 */
-          mp_limb_t *tp = MPFR_MANT(c);
-          /* Start from bit x=p-d in mantissa C */
-          mpfr_prec_t  x = p-d;
-          mp_size_t   kx = n-1 - (x / GMP_NUMB_BITS);
-          mpfr_prec_t sx = GMP_NUMB_BITS-1-(x%GMP_NUMB_BITS);
-          MPFR_ASSERTD(p >= d);
-          rb = (tp[kx] & (MPFR_LIMB_ONE<<sx));
-          /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
-          if (tp[kx] & MPFR_LIMB_MASK(sx))
-            sb = 1;
-          else
-            {
-              /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
-              do
-                kx--;
-              while (kx >= 0 && tp[kx] == 0);
-              sb = (kx >= 0);
-            }
+          rb = cp[0] & (MPFR_LIMB_ONE << (sh - 1));
+          rbb = cp[0] & (MPFR_LIMB_ONE << (sh - 2));
         }
-      /* printf("sh=%lu Cp=%d C'p+1=%d\n", sh, rb!=0, sb!=0); */
-
-      /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
-      bp = MPFR_MANT(b);
-      if (MPFR_UNLIKELY (bp[n-1] - cp[n-1] <= MPFR_LIMB_HIGHBIT))
+      else if (sh == 1)
         {
-          /* We can lose a bit so we precompute Cp+1 and C'p+2 */
-          /* Test for trivial case: since C'p+1=0, Cp+1=0 and C'p+2 =0 */
-          if (MPFR_LIKELY(sb == 0))
-            {
-              rbb = 0;
-              sbb = 0;
-            }
-          else /* sb != 0 */
-            {
-              /* We can lose a bit:
-                 compute Cp+1 and C'p+2 from mantissa C */
-              mp_limb_t *tp = MPFR_MANT(c);
-              /* Start from bit x=(p+1)-d in mantissa C */
-              mpfr_prec_t x  = p+1-d;
-              mp_size_t kx = n-1 - (x / GMP_NUMB_BITS);
-              mpfr_prec_t sx = GMP_NUMB_BITS-1 - (x % GMP_NUMB_BITS);
-
-              MPFR_ASSERTD(p > d);
-              /* printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
-                 (unsigned long) x, (long) kx, (unsigned long) sx); */
-              rbb = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
-              /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
-              /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
-              if (MPFR_LIKELY (rbb == 0 || (tp[kx] & MPFR_LIMB_MASK(sx))))
-                sbb = 1;
-              else
-                {
-                  /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
-                  do
-                    kx--;
-                  while (kx >= 0 && tp[kx] == 0);
-                  sbb = (kx >= 0);
-                  /* printf ("(Pre) Scan done for %ld\n", (long) kx); */
-                }
-            } /*End of sb != 0*/
-          /* printf("(Pre) Cp+1=%d C'p+2=%d\n", rbb!=0, sbb!=0); */
-        } /* End of "can lose a bit" */
+          rb = cp[0] & (MPFR_LIMB_ONE << (sh - 1));
+          rbb = sbb & MPFR_LIMB_HIGHBIT;
+          sbb = sbb << 1; /* ignore rbb */
+        }
+      else /* sh = 0 */
+        {
+          rb = sbb & MPFR_LIMB_HIGHBIT;
+          rbb = (sbb << 1) & MPFR_LIMB_HIGHBIT;
+          sbb = sbb << 2; /* ignore rb and rbb */
+        } 
+      /* we ignored MPFR_MANT(c)[0] to MPFR_MANT(c)[q-1] */
+      for (i = 0; sbb == 0 && i < q; i++)
+        sbb = MPFR_MANT(c)[i];
+      sb = rbb | sbb;
+      /* printf("sh=%ld rb=%lu rbb=%lu sbb=%lu\n", sh, rb, rbb, sbb); */
 
       /* Clean shifted C' */
       mask = ~MPFR_LIMB_MASK (sh);
       cp[0] &= mask;
 
       /* Subtract the mantissa c from b in a */
-      mpn_sub_n (ap, bp, cp, n);
+      mpn_sub_n (ap, MPFR_MANT(b), cp, n);
       /* mpfr_print_mant_binary("Sub=  ", ap, p); */
 
-     /* Normalize: we lose at max one bit*/
+     /* Normalize: we lose at most one bit */
       if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
         {
           /* High bit is not set and we have to fix it! */
-          /* Ap >= 010000xxx001 */
-          mpn_lshift(ap, ap, n, 1);
-          /* Ap >= 100000xxx010 */
-          if (MPFR_UNLIKELY(rb != 0)) /* Check if Cp = -1 */
-            /* Since Cp == -1, we have to subtract one more */
+          /* We can assume B >= 2^(p+1) up to scaling by 2^e,
+             then since d >= 2, C <= 2^p-1, thus B-C >= 2^p+1. */
+          mpn_lshift (ap, ap, n, 1);
+          if (MPFR_UNLIKELY(rb != 0)) /* Check if rb is set */
+            /* Since rb is set, we have to subtract one more,
+               but we know the exponent cannot decrease again. */
             {
-              mpn_sub_1(ap, ap, n, MPFR_LIMB_ONE<<sh);
+              mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
               MPFR_ASSERTD(MPFR_LIMB_MSB(ap[n-1]) != 0);
             }
-          /* Ap >= 10000xxx001 */
-          /* Final exponent -1 since we have shifted the mantissa */
+          /* Final exponent is bx-1 since we have shifted the mantissa */
           bx--;
           /* Update rb and sb */
           MPFR_ASSERTD(rbb != MPFR_LIMB_MAX);
-          MPFR_ASSERTD(sbb != MPFR_LIMB_MAX);
           rb  = rbb;
           sb = sbb;
           /* We don't have anymore a valid Cp+1!
-             But since Ap >= 100000xxx001, the final sub can't unnormalize!*/
+             But since B-C >= 2^p+1, the final sub can't unnormalize */
         }
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
