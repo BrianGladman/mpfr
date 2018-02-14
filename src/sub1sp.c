@@ -1104,9 +1104,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                        negative, i.e., if rb <> 0, then we should subtract 1
                        at the round bit position, and of sb <> 0, we should
                        subtract something below the round bit position. */
-  mp_limb_t rbb = MPFR_LIMB_MAX, sbb = MPFR_LIMB_MAX; /* rbb is the next bit
-    after the round bit, and sbb the corresponding sticky bit.
-    gcc claims that they might be used uninitialized. We fill them with invalid
+  mp_limb_t rbb = MPFR_LIMB_MAX; /* rbb is the next bit after the round bit.
+    gcc claims that it might be used uninitialized. We fill it with invalid
     values, which should produce a failure if so. See README.dev file. */
 
   MPFR_TMP_DECL(marker);
@@ -1330,11 +1329,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   if (MPFR_LIKELY( (ap[0] & (MPFR_LIMB_ONE << sh)) == 0) )
                     goto truncate;
                   else
-                    goto sub_one_ulp;
+                    goto next_below;
                 }
               MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
               if (rnd_mode == MPFR_RNDZ)
-                goto sub_one_ulp;
+                goto next_below;
               else
                 goto truncate;
             }
@@ -1416,107 +1415,126 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
             }
         }
-  else if (MPFR_UNLIKELY(d >= p)) /* the difference of exponents is larger
-                                     than the precision of all operands, thus
-                                     the result is either b or b - 1 ulp,
-                                     with a possible exact result when
-                                     d = p, b = 2^e and c = 1/2 ulp(b) */
+  else if (MPFR_UNLIKELY(d >= p))
+    /* in that case, we distinguish two cases:
+     (1) if b is not a power of 2, the result can be either b or b - ulp(b):
+         RNDZ: result is b - ulp(b) (case 1a)
+         RNZA: result is b (case 1b)
+         RNDN and d > p: result is always b (case 1c)
+         RNDN and d = p: result is always b - ulp(b) (case 1d), except when c
+                         is a power of 2 and significand of b is even where
+                         the result is b (case 1e)
+     (2) if b is a power of 2, the result can be either b, b - 1/2 ulp(b),
+         or b - ulp(b):
+         RNDZ: result is b - ulp(b) if d=p and c is not a power of 2 (case 2a),
+                         b - 1/2 ulp(b) if d > p (case 2b)
+         RNDA: result is b if d > p (case 2c),
+               result is b-1/2ulp(b) if d=p (case 2c')
+         RNDN and d > p+1: result is always b (case 2d)
+         RNDN and d = p+1: result is always b - 1/2ulp(b) (case 2e), except
+                           when c is a power of 2 where it is b (case 2f)
+         RNDN and d = p:   result is b - ulp(b) when c >= 3/4ulp(b) (case 2g),
+                           otherwise it is b - 1/2ulp(b) (case 2h)
+    */
     {
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       /* We can't set A before since we use cp for rounding... */
       /* Perform rounding: check if a=b or a=b-ulp(b) */
-      if (MPFR_UNLIKELY(d == p))
+      cp = MPFR_MANT(c);
+      if (d == p)
         {
+          /* RNDZ: result is always b - ulp(b) (cases 1a and 2a)
+             RNDA: result is always b (cases 1b and 2c)
+             RNDN: result is b (case 1e), b-1/2ulp(b) (case 2h) or
+                   b-ulp(b) (cases 1e and 2g) */
+          int pow2_b = mpfr_powerof2_raw (b);
           /* since c is normalized, we need to subtract 1/2 ulp(b) */
           rb  = 1;
           /* rbb is the bit of weight 1/4 ulp(b) in c. We assume a limb has
              at least 2 bits. If the precision is 1, we read in the unused
              bits, which should be zero, and this is what we want. */
-          rbb = MPFR_MANT(c)[n-1] & (MPFR_LIMB_HIGHBIT >> 1);
-          /* We need also C'p+1 for an even more unprobable case... */
-          if (MPFR_LIKELY( rbb ))
+          MPFR_STAT_STATIC_ASSERT(GMP_NUMB_BITS >= 2);
+          rbb = cp[n-1] & (MPFR_LIMB_HIGHBIT >> 1);
+          /* we compute also the sticky bit */
+          if (rbb || cp[n-1] > MPFR_LIMB_HIGHBIT)
             sb = 1;
           else
             {
-              cp = MPFR_MANT(c);
-              if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
-                {
-                  do
-                    k--;
-                  while (k >= 0 && cp[k] == 0);
-                  sb = (k >= 0);
-                }
-              else
-                sb = 1;
+              MPFR_ASSERTD(k == n-1);
+              do
+                k--;
+              while (k >= 0 && cp[k] == 0);
+              sb = k >= 0;
             }
           /* printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", rbb!=0, sb!=0); */
           bp = MPFR_MANT (b);
 
           /* Even if src and dest overlap, it is OK using MPN_COPY */
-          if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
-            /* then d = p, and subtracting one ulp of b is ok even in the
-               exact case b = 2^e and c = 1/2 ulp(b) */
+          if (rnd_mode == MPFR_RNDF)
+            /* Returning next_below(b) is ok even in the
+               exact case b = 2^e and c = 1/2 ulp(b),
+               since we detect that exact case in "next_below" */
             {
               MPN_COPY(ap, bp, n);
-              goto sub_one_ulp;
+              goto next_below;
             }
           else if (rnd_mode == MPFR_RNDN)
             {
-              if (MPFR_UNLIKELY (rb != 0 && sb == 0))
-                /* Cp=-1 and C'p+1=0: Even rule Apply! */
-                /* Check Ap-1 = Bp-1 */
+              /* when b = 2^e and c = 2^(e-p), we subtract 1/2 ulp and the
+                 result is exact */
+              MPN_COPY(ap, bp, n);
+              if (sb == 0) /* c is a power of 2: even rule applies! */
+                /* check parity of last bit of b */
                 if ((bp[0] & (MPFR_LIMB_ONE << sh)) == 0)
-                  {
-                    MPN_COPY(ap, bp, n);
-                    goto truncate;
-                  }
-              MPN_COPY(ap, bp, n);
-              goto sub_one_ulp;
+                  if (!pow2_b)
+                    goto truncate; /* case 1e */
+              goto next_below; /* cases 1d and 2h */
             }
-          MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-          if (rnd_mode == MPFR_RNDZ)
+          MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(a));
+          if (rnd_mode == MPFR_RNDZ) /* cases 1a and 2a */
             {
+              /* we always subtract since c cannot be zero */
               MPN_COPY(ap, bp, n);
-              goto sub_one_ulp;
+              goto next_below;
             }
-          else
+          else /* round away: cases 1b, 2c and 2c' */
             {
+              MPFR_ASSERTD(rnd_mode == MPFR_RNDA);
               MPN_COPY(ap, bp, n);
+              if (pow2_b)
+                goto next_below; /* case 2c' */
               goto truncate;
             }
         }
-      else
+      else /* case d > p */
         {
-          /* Cp=0, Cp+1=-1 if d==p+1, C'p+1=-1 */
-          rb = 0; rbb = (d==p+1); sb = 1;
-          /* printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", rb!=0,rbb!=0,sb!=0); */
-          /* Need to compute C'p+2 if d==p+1 and if rnd_mode=NEAREST
-             (Because of a very improbable case) */
-          if (MPFR_UNLIKELY(d==p+1 && rnd_mode==MPFR_RNDN))
-            {
-              cp = MPFR_MANT(c);
-              if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
-                {
-                  mp_size_t k = n-1;
-                  do
-                    k--;
-                  while (k >= 0 && cp[k] == 0);
-                  sbb = (k >= 0);
-                }
-              else
-                sbb = 1;
-              /* printf("(D>P) C'p+2=%d\n", sbb!=0); */
-            }
-          /* Copy mantissa B in A */
+          /* The round bit is 0, the sticky bit is 1, and the second round bit
+             is 1 iff d = p + 1.
+             * for RNDZ, the result is b-ulp(p) (case 1a),
+                         or b-1/2ulp(b) if b = 2^e (case 2b)
+             * for RNDA, the result is b (cases 1b and 2c)
+             * for RNDN, the result is b (cases 1c, 2d and 2f)
+                         or b - 1/2ulp(b) (case 2e) */
+          rb = 0;
+          rbb = d == p+1;
+          sb = 1;
+          /* printf("(d>p) rb=%d rbb=%d sb=%d\n", rb, rbb, sb); */
+          /* copy the significand of b into a */
           MPN_COPY(ap, MPFR_MANT(b), n);
           /* Round */
-          if (rnd_mode == MPFR_RNDF || rnd_mode == MPFR_RNDN)
-            goto truncate;
+          if (rnd_mode == MPFR_RNDF)
+            goto truncate; /* this is correct since this is what RNDA gives */
+          if (rnd_mode == MPFR_RNDN)
+            {
+              if (rbb && mpfr_powerof2_raw (b) && !mpfr_powerof2_raw (c))
+                goto next_below; /* case 2e */
+              goto truncate; /* cases 1c, 2d and 2f */
+            }
           MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
           if (rnd_mode == MPFR_RNDZ)
-            goto sub_one_ulp;
-          else /* rnd_mode = AWAY */
-            goto truncate;
+            goto next_below; /* case 2b */
+          else /* round away from zero */
+            goto truncate; /* cases 1b and 2c */
         }
     }
   else /* case 2 <= d < p */
@@ -1524,6 +1542,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpfr_uexp_t dm;
       mp_size_t m;
       mp_limb_t mask;
+      mp_limb_t sbb = MPFR_LIMB_MAX;
 
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       cp = MPFR_TMP_LIMBS_ALLOC (n);
@@ -1701,7 +1720,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           if (MPFR_LIKELY(rb == 0))
             goto truncate;
           else if (sb != 0 || (ap[0] & (MPFR_LIMB_ONE << sh)) != 0)
-            goto sub_one_ulp;
+            goto next_below;
           else
             goto truncate;
         }
@@ -1709,28 +1728,29 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Update rounding mode */
       MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
       if (rnd_mode == MPFR_RNDZ && MPFR_LIKELY (rb != 0 || sb != 0))
-        goto sub_one_ulp;
+        goto next_below;
       goto truncate;
     }
   MPFR_RET_NEVER_GO_HERE ();
 
-  /* Sub one ulp to the result */
- sub_one_ulp:
+  /* Sub one ulp to the result (or 1/2 ulp for a power of 2) */
+ next_below:
   mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
   /* Result should be smaller than exact value: inexact=-1 */
   inexact = -1;
   /* Check normalization */
   if (MPFR_UNLIKELY(ap[n-1] < MPFR_LIMB_HIGHBIT))
     {
-      /* ap was a power of 2, and we lose a bit */
-      /* Now it is 0111111111111111111[00000 */
+      /* in this case the result might be b - 1/2*ulp(b) where b = 2^e */
+      /* {ap,n} was a power of 2, and we lose a bit */
+      /* Now it is 0111111111111111111[00000] */
       /* The following 2 lines are equivalent to: mpn_lshift(ap, ap, n, 1); */
       ap[0] <<= 1;
       ap[n-1] |= MPFR_LIMB_HIGHBIT;
       bx--;
       /* And the lost bit x depends on Cp+1, and Cp */
       /* Compute Cp+1 if it isn't already computed (ie d==1) */
-      /* Note: we can't have d = 1 here, since the only "goto sub_one_ulp"
+      /* Note: we can't have d = 1 here, since the only "goto next_below"
          for d = 1 are in the "SubD1NoLose" case, and in that case
          |b|-|c| >= 1/2*W^n, thus round(|b|-|c|) >= 1/2*W^n, and ap[n-1]
          cannot go below MPFR_LIMB_HIGHBIT. */
@@ -1738,72 +1758,27 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit! */
       MPFR_ASSERTD(rbb != MPFR_LIMB_MAX);
-      if ((rnd_mode == MPFR_RNDZ && rb == 0) ||
-          (rnd_mode == MPFR_RNDN && rbb == 0) ||
-          (rb != 0 && sb == 0)) /* Exact result */
+      if ((rnd_mode == MPFR_RNDZ && rb == 0) ||               /* case 2b */
+          (rnd_mode == MPFR_RNDN && rb == 0 && rbb != 0 && sb != 0) || /* case 2e */
+          (rnd_mode == MPFR_RNDN && rb != 0 && rbb == 0) ||   /* case 2h */
+          (rnd_mode == MPFR_RNDA && rb != 0) ||               /* case 2c' */
+          (rb != 0 && sb == 0))                               /* exact */
         {
-          ap[0] |= MPFR_LIMB_ONE << sh;
-          if (rnd_mode == MPFR_RNDN)
-            inexact = 1;
+          ap[0] |= MPFR_LIMB_ONE << sh; /* b - 1/2ulp(b) */
+          /* case 2b: we have c < 1/2*ulp(b) thus inexact = -1
+             case 2e: we have c < 1/2*ulp(b) thus inexact = -1
+             case 2h: 1/2*ulp(b) <= c < 3/4*ulp(b) thus inexact = 0 or 1
+             case 2c': 1/2*ulp(b) <= c < 3/4*ulp(b) thus inexact = 0 or 1 */
+          if (rb)
+            inexact = (sb == 0) ? 0 : 1;
           /* printf("(SubOneUlp) Last bit set\n"); */
         }
-      /* Result could be exact if C'p+1 = 0 and rnd == Zero
-         since we have had one more bit to the result */
-      /* Fixme: rnd_mode == MPFR_RNDZ needed ? */
-      if (rnd_mode == MPFR_RNDZ && sb == 0)
-        {
-          /* printf("(SubOneUlp) Exact result\n"); */
-          inexact = 0;
-        }
     }
-
   goto end_of_sub;
 
  truncate:
-  /* Check if the result is an exact power of 2: 100000000000
-     in which cases, we could have to do sub_one_ulp due to some nasty reasons:
-     If Result is a Power of 2:
-      + If rnd = AWAY,
-      |  If Cp=-1 and C'p+1 = 0, SubOneUlp and the result is EXACT.
-         If Cp=-1 and C'p+1 =-1, SubOneUlp and the result is above.
-         Otherwise truncate
-      + If rnd = NEAREST,
-         If Cp= 0 and Cp+1  =-1 and C'p+2=-1, SubOneUlp and the result is above
-         If cp=-1 and C'p+1 = 0, SubOneUlp and the result is exact.
-         Otherwise truncate.
-      X bit should always be set if SubOneUlp*/
-  if (MPFR_UNLIKELY(ap[n-1] == MPFR_LIMB_HIGHBIT))
-    {
-      k = n-1;
-      do
-        k--;
-      while (k >= 0 && ap[k] == 0);
-      if (MPFR_UNLIKELY (k < 0))
-        {
-          /* It is a power of 2! */
-          /* Compute Cp+1 if it isn't already compute (ie d==1) */
-          /* Note: if d=1, we have {a, n} > 1/2*W^n, thus we cannot have k < 0. */
-          /* printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n",
-             rb!=0, rbb!=0, sb!=0, sbb!=0); */
-          MPFR_ASSERTD(rbb != MPFR_LIMB_MAX);
-          MPFR_ASSERTD(rnd_mode != MPFR_RNDN || rb != 0 ||
-                       rbb == 0 || sbb != MPFR_LIMB_MAX);
-          if ((rnd_mode != MPFR_RNDZ && rb != 0) ||
-              (rnd_mode == MPFR_RNDN && rb == 0 && rbb != 0 && sbb != 0))
-            {
-              /* printf("(Truncate) Do sub\n"); */
-              mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
-              ap[n-1] |= MPFR_LIMB_HIGHBIT;
-              bx--;
-              /* FIXME: Explain why it works (or why not)... */
-              inexact = (sb == 0) ? 0 : (rnd_mode == MPFR_RNDN) ? -1 : 1;
-              goto end_of_sub;
-            }
-        }
-    }
-
-  /* Calcul of Inexact flag.*/
-  inexact = (rb != 0 || sb != 0);
+  /* ternary value: 0 if rb=sb=0, +1 otherwise (for a > 0) */
+  inexact = rb != 0 || sb != 0;
 
  end_of_sub:
   /* Update Exponent */
