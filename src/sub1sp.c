@@ -1196,6 +1196,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   d = (mpfr_uexp_t) bx - cx;
   /* printf ("New with diff=%lu\n", (unsigned long) d); */
 
+  /* FIXME: The goto's below are too complex and make the code unreadable. */
+
   if (d == 0)
     {
       /* <-- b -->
@@ -1373,6 +1375,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   ck_shifted += cp[k] >> 1;
                 }
               while (bp[k] == ck_shifted);
+              /* FIXME: k is modified (decreased) while the "goto SubD1Lose"
+                 jumps to code that expects k == n-1. */
               if (MPFR_UNLIKELY(k < 0))
                 {
                   if (MPFR_UNLIKELY(ck_shifted))
