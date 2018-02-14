@@ -1343,9 +1343,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               /* The exponent decreases by one. */
             SubD1Lose:
               /* Compute 2*b-c (Exact) */
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH_N)
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH1_N)
               /* {ap, n} = 2*{bp, n} - {cp, n} */
-              __gmpn_rsblsh_n (ap, MPFR_MANT(c), MPFR_MANT(b), n, 1);
+              /* mpn_rsblsh1_n -- rp[] = (vp[] << 1) - up[] */
+              __gmpn_rsblsh1_n (ap, MPFR_MANT(c), MPFR_MANT(b), n);
 #else
               bp = MPFR_TMP_LIMBS_ALLOC (n);
               /* Shift b in the allocated temporary block */
