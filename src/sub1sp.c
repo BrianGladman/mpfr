@@ -1177,10 +1177,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Swap b and c and set sign */
       mpfr_srcptr t;
       mpfr_exp_t tx;
+
+      tx = bx; bx = cx; cx = tx;
     CGreater:
       MPFR_SET_OPPOSITE_SIGN(a,b);
       t  = b;  b  = c;  c  = t;
-      tx = bx; bx = cx; cx = tx;
     }
   else
     {
