@@ -298,6 +298,12 @@ __MPFR_DECLSPEC mp_limb_t __gmpn_invert_limb (mp_limb_t);
 #endif
 #endif
 
+#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_RSBLSH1_N)
+#ifndef __gmpn_rsblsh1_n
+__MPFR_DECLSPEC mp_limb_t __gmpn_rsblsh1_n (mp_limb_t*, mp_limb_t*, mp_limb_t*, mp_size_t);
+#endif
+#endif
+
 /* Temp memory allocate */
 struct tmp_marker
 {
