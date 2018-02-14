@@ -168,15 +168,17 @@ err-if-output --msg="Use GMP_NUMB_BITS instead." \
 
 grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 
-# Note: GMP internals should not be used. There are some exceptions,
-# normally used only if WANT_GMP_INTERNALS is defined (this should be
-# checked manually).
-grep '__gmp[nz]_' $srctests | \
-  grep -v __gmpn_rootrem | \
-  grep -v __gmpn_sbpi1_divappr_q | \
-  grep -v __gmpn_invert_limb | \
-  grep -v __gmpn_rsblsh_n | \
-  err-if-output "GMP internals" cat
+# Note: GMP internals must not be used unless WANT_GMP_INTERNALS is defined.
+# The check below attempts to handle that, but this is a heuristic (it might
+# fail in case of nested #if's, but this is currently OK).
+for file in $srctests
+do
+  perl -e 'undef $/; $_ = <>;
+           s:/\*.*?\*/::sg;
+           s:# *(el)?if.*WANT_GMP_INTERNALS(.|\n)*?# *(else|endif)::g;
+           print' $file |
+    err-if-output -t "GMP internals in $file" grep '__gmp[nz]_'
+done
 
 err-if-output --msg="Use mpfr_limb_ptr and mpfr_limb_srcptr instead." \
   -t "mp_ptr and mp_srcptr" grep -E 'mp_(src)?ptr' $srctests
