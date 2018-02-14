@@ -1361,29 +1361,27 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else /* limb = MPFR_LIMB_HIGHBIT */
             {
               /* Case: limb = 100000000000 */
-              /* Check while b[k] == c'[k] (C' is C shifted by 1) */
-              /* If b[k]<c'[k] => We lose at least one bit */
-              /* If b[k]>c'[k] => We don't lose any bit */
-              /* If k==-1 => We don't lose any bit
+              /* Check while b[l] == c'[l] (C' is C shifted by 1) */
+              /* If b[l]<c'[l] => We lose at least one bit */
+              /* If b[l]>c'[l] => We don't lose any bit */
+              /* If l==-1 => We don't lose any bit
                  AND the result is 100000000000 0000000000 00000000000 */
-              mp_limb_t ck_shifted;
-              MPFR_ASSERTD(k == n-1);
+              mp_size_t l = n - 1;
+              mp_limb_t cl_shifted;
               do
                 {
                   /* the first loop will compare b[n-2] and c'[n-2] */
-                  ck_shifted = cp[k] << (GMP_NUMB_BITS - 1);
-                  if (--k < 0)
+                  cl_shifted = cp[l] << (GMP_NUMB_BITS - 1);
+                  if (--l < 0)
                     break;
-                  ck_shifted += cp[k] >> 1;
+                  cl_shifted += cp[l] >> 1;
                 }
-              while (bp[k] == ck_shifted);
-              /* FIXME: k is modified (decreased) while the "goto SubD1Lose"
-                 jumps to code that expects k == n-1. */
-              if (MPFR_UNLIKELY(k < 0))
+              while (bp[l] == cl_shifted);
+              if (MPFR_UNLIKELY(l < 0))
                 {
-                  if (MPFR_UNLIKELY(ck_shifted))
+                  if (MPFR_UNLIKELY(cl_shifted))
                     {
-                      /* Since ck_shifted is what should be subtracted
+                      /* Since cl_shifted is what should be subtracted
                          from ap[-1], if non-zero then necessarily the
                          precision is a multiple of GMP_NUMB_BITS, and we lose
                          one bit, thus the (exact) result is a power of 2
@@ -1395,7 +1393,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                     }
                   else
                     {
-                      /* ck_shifted=0: result is a power of 2. */
+                      /* cl_shifted=0: result is a power of 2. */
                       MPN_ZERO (ap, n - 1);
                       ap[n-1] = MPFR_LIMB_HIGHBIT;
                       MPFR_SET_EXP (a, bx); /* No exponent overflow! */
@@ -1405,15 +1403,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   MPFR_TMP_FREE (marker);
                   return 0;
                 }
-              /* ck_shifted is the shifted value c'[k] */
-              else if (bp[k] > ck_shifted)
+              /* cl_shifted is the shifted value c'[l] */
+              else if (bp[l] > cl_shifted)
                 goto SubD1NoLose; /* |b|-|c| >= 1/2*W^n */
               else
                 {
-                  /* we cannot have bp[k] = ck_shifted since the only way we
-                     can exit the while loop above is when bp[k] <> ck_shifted
-                     or k < 0, and the case k < 0 was already treated above. */
-                  MPFR_ASSERTD(bp[k] < ck_shifted);
+                  /* we cannot have bp[l] = cl_shifted since the only way we
+                     can exit the while loop above is when bp[l] <> cl_shifted
+                     or l < 0, and the case l < 0 was already treated above. */
+                  MPFR_ASSERTD(bp[l] < cl_shifted);
                   goto SubD1Lose; /* |b|-|c| <= 1/2*W^n-1 and is exact */
                 }
             }
