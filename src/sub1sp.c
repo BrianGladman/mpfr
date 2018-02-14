@@ -1143,9 +1143,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   MPFR_TMP_MARK(marker);
 
+  k = n - 1;
+
   if (bx == cx)
     {
-      k = n - 1;
       /* Check mantissa since exponents are equal */
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
@@ -1276,7 +1277,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
            * else compute b-c/2 */
           bp = MPFR_MANT(b);
           cp = MPFR_MANT(c);
-          k = n-1;
           limb = bp[k] - cp[k]/2;
           /* Let W = 2^GMP_NUMB_BITS:
              we have |b|-|c| >= limb*W^k - (2*W^k-1)/2 >= limb*W^k - W^k + 1/2
@@ -1435,7 +1435,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               cp = MPFR_MANT(c);
               if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
                 {
-                  k = n-1;
                   do
                     k--;
                   while (k >= 0 && cp[k] == 0);
