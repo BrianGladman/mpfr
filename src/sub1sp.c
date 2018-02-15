@@ -1605,7 +1605,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           rb = sbb & MPFR_LIMB_HIGHBIT;
           rbb = (sbb << 1) & MPFR_LIMB_HIGHBIT;
           sbb = sbb << 2; /* ignore rb and rbb */
-        } 
+        }
       /* we ignored MPFR_MANT(c)[0] to MPFR_MANT(c)[q-1] */
       for (i = 0; sbb == 0 && i < q; i++)
         sbb = MPFR_MANT(c)[i];
