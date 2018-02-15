@@ -940,6 +940,38 @@ test_rndf_exact (mp_size_t pmax)
     }
 }
 
+static void
+bug20180215 (void)
+{
+  mpfr_t x, y, z1, z2;
+  mpfr_rnd_t r[] = { MPFR_RNDN, MPFR_RNDU, MPFR_RNDA };
+  int i, p;
+
+  for (p = 3; p <= 3 + 4 * GMP_NUMB_BITS; p++)
+    {
+      mpfr_inits2 (p, x, y, z1, z2, (mpfr_ptr) 0);
+      mpfr_set_ui_2exp (x, 1, p - 1, MPFR_RNDN);
+      mpfr_nextabove (x);
+      mpfr_set_ui_2exp (y, 3, -1, MPFR_RNDN);
+      mpfr_set (z1, x, MPFR_RNDN);
+      mpfr_nextbelow (z1);
+      mpfr_nextbelow (z1);
+      for (i = 0; i < numberof (r); i++)
+        {
+          test_sub (z2, x, y, r[i]);
+          if (! mpfr_equal_p (z1, z2))
+            {
+              printf ("Error in bug20180215 in precision %d, %s\n",
+                      p, mpfr_print_rnd_mode (r[i]));
+              printf ("expected "); mpfr_dump (z1);
+              printf ("got      "); mpfr_dump (z2);
+              exit (1);
+            }
+        }
+      mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
+    }
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -962,6 +994,7 @@ main (void)
   check_inexact ();
   check_max_almosteven ();
   bug_ddefour ();
+  bug20180215 ();
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
