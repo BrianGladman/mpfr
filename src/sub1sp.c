@@ -1620,8 +1620,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpn_sub_n (ap, MPFR_MANT(b), cp, n);
       /* mpfr_print_mant_binary("Sub=  ", ap, p); */
 
-     /* Normalize: we lose at most one bit */
-      if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
+      /* Normalize: we lose at most one bit */
+      if (MPFR_LIMB_MSB(ap[n-1]) == 0)
         {
           /* High bit is not set and we have to fix it! */
           /* We can assume B >= 2^(p+1) up to scaling by 2^e,
@@ -1645,16 +1645,27 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
+      /* if {ap, n} is a power of 2 and rb <> 0, we subtract 1 */
+      if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == MPFR_LIMB_HIGHBIT &&
+                        mpfr_powerof2_raw (a)))
+        {
+          mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
+          ap[n-1] |= MPFR_LIMB_HIGHBIT;
+          bx--;
+          rb  = rbb;
+          sb = sbb;
+        }
+
       /* Rounding */
       if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
         goto truncate;
       else if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
-          if (MPFR_LIKELY(rb == 0))
+          if (rb == 0)
             goto truncate;
           else if (sb != 0 || (ap[0] & (MPFR_LIMB_ONE << sh)) != 0)
             goto next_below;
-          else
+          else /* rb = 1, sb = 0, even rule */
             goto truncate;
         }
       else
