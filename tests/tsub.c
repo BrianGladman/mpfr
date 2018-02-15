@@ -940,8 +940,10 @@ test_rndf_exact (mp_size_t pmax)
     }
 }
 
-/* Bug in the case 2 <= d < p in generic code mpfr_sub1sp()
- * introduced in r12242.
+/* Bug in the case 2 <= d < p in generic code mpfr_sub1sp() introduced
+ * in r12242. Before this change, the special case that is failing was
+ * handled by the MPFR_UNLIKELY(ap[n-1] == MPFR_LIMB_HIGHBIT) in the
+ * "truncate:" code.
  */
 static void
 bug20180215 (void)
