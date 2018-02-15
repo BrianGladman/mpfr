@@ -940,6 +940,9 @@ test_rndf_exact (mp_size_t pmax)
     }
 }
 
+/* Bug in the case 2 <= d < p in generic code mpfr_sub1sp()
+ * introduced in r12242.
+ */
 static void
 bug20180215 (void)
 {
