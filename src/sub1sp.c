@@ -1657,12 +1657,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else
             goto truncate;
         }
-
-      /* Update rounding mode */
-      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-      if (rnd_mode == MPFR_RNDZ && MPFR_LIKELY (rb != 0 || sb != 0))
-        goto next_below;
-      goto truncate;
+      else
+        {
+          /* Update rounding mode */
+          MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
+          if (rnd_mode == MPFR_RNDZ && MPFR_LIKELY (rb != 0 || sb != 0))
+            goto next_below;
+          else
+            goto truncate;
+        }
     }
   MPFR_RET_NEVER_GO_HERE ();
 
