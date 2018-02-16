@@ -51,7 +51,8 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN (y));
         }
       /* exp - n >= emin (no underflow, no integer overflow) */
-      /* FIXME: since n is an unsigned long, we cannot have n > LONG_MAX? */
+      /* Since n is an unsigned long, n can be up to
+         2 * LONG_MAX + 1 (mathematically). */
       while (n > LONG_MAX)
         {
           n -= LONG_MAX;
