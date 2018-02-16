@@ -37,10 +37,10 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   else
     {
       mpfr_exp_t exp = MPFR_GET_EXP (x);
-      mpfr_uexp_t diffexp;
+      mpfr_exp_t diffexp;
 
       MPFR_SETRAW (inexact, y, x, exp, rnd_mode);
-      diffexp = (mpfr_uexp_t) exp - (mpfr_uexp_t) (__gmpfr_emin - 1);
+      diffexp = exp - (__gmpfr_emin - 1);  /* diff of valid exponents +/- 1 */
       if (MPFR_UNLIKELY (n >= diffexp))  /* exp - n <= emin - 1 */
         {
           if (rnd_mode == MPFR_RNDN &&
