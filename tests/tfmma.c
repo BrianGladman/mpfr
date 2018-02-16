@@ -465,6 +465,8 @@ bug20170405 (void)
   /* imaginary part is a*d+b*c = x*x+y*y */
   mpfr_fmma (z, x, x, y, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
+  mpfr_fmma (z, y, y, x, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
