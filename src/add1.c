@@ -81,7 +81,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
 
   MPFR_SET_SAME_SIGN(a, b);
-  MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
+  MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (b));
   /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ, MPFR_RNDA or MPFR_RNDF. */
   if (MPFR_UNLIKELY (MPFR_IS_UBF (c)))
     {

@@ -246,7 +246,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
     {
       int nexttoinf;
 
-      MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(y));
+      MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (y));
       switch (rnd_mode)
         {
         case MPFR_RNDZ:

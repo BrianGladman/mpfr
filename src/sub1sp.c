@@ -1490,7 +1490,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                     goto truncate; /* case 1e */
               goto next_below; /* cases 1d and 2h */
             }
-          MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(a));
+          MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (a));
           if (rnd_mode == MPFR_RNDZ) /* cases 1a and 2a */
             {
               /* we always subtract since c cannot be zero */
