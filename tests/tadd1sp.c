@@ -72,6 +72,39 @@ bug20171217 (void)
   mpfr_clear (c);
 }
 
+/* Check corner case b = 1, c = 2^(-p) for MPFR_PREC_MIN <= p <= pmax.
+   With RNDN, result is 1, except for p=1, where it is 2. */
+static void
+test_corner_1 (mpfr_prec_t pmax)
+{
+  mpfr_prec_t p;
+
+  for (p = MPFR_PREC_MIN; p <= pmax; p++)
+    {
+      mpfr_t a, b, c;
+      int inex;
+      mpfr_init2 (a, p);
+      mpfr_init2 (b, p);
+      mpfr_init2 (c, p);
+      mpfr_set_ui (b, 1, MPFR_RNDN);
+      mpfr_set_ui_2exp (c, 1, -p, MPFR_RNDN);
+      inex = mpfr_add (a, b, c, MPFR_RNDN);
+      if (p == 1) /* special case, since 2^(p-1) is odd */
+        {
+          MPFR_ASSERTN(inex > 0);
+          MPFR_ASSERTN(mpfr_cmp_ui (a, 2) == 0);
+        }
+      else
+        {
+          MPFR_ASSERTN(inex < 0);
+          MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+        }
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (c);
+    }
+}
+
 int
 main (void)
 {
@@ -79,6 +112,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  test_corner_1 (1024);
   bug20171217 ();
   check_special ();
   for(p = MPFR_PREC_MIN; p < 200 ; p++)
