@@ -314,6 +314,21 @@ overflow0 (mpfr_exp_t emax)
   set_emax (old_emax);
 }
 
+static void
+coverage_div_2ui (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 2);
+  mpfr_init2 (y, 2);
+  mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
+  mpfr_div_2ui (y, x, (unsigned long) LONG_MAX + 1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (y));
+  MPFR_ASSERTN(mpfr_signbit (y) == 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -323,6 +338,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  coverage_div_2ui ();
   mpfr_inits2 (53, w, z, (mpfr_ptr) 0);
 
   for (i = 0; i < 3; i++)

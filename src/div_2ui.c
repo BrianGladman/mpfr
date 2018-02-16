@@ -52,7 +52,10 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
         }
       /* exp - n >= emin (no underflow, no integer overflow) */
       /* Since n is an unsigned long, n can be up to
-         2 * LONG_MAX + 1 (mathematically). */
+         2 * LONG_MAX + 1 (mathematically).
+         Note: on a 64-bit computer, since emax <= 2^62-1 and emin >= 1-2^62,
+         we have diffexp <= 2^63-1, thus since here n < diffexp we have
+         n < 2^63-1, and the test n > LONG_MAX is never true. */
       while (n > LONG_MAX)
         {
           n -= LONG_MAX;
