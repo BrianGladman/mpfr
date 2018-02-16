@@ -81,7 +81,10 @@ build_base (vector<string> &base, const option_test &opt)
 
   for (i = 0 ; i < n ; i++) {
     mpfr_urandomb (x, state);
-    mpfr_mul_2si  (x, x, (rand() % opt.max_exp) - (opt.max_exp / 2), MPFR_RNDN);
+    if (opt.exp_diff == -1)
+      mpfr_mul_2si  (x, x, (rand() % opt.max_exp) - (opt.max_exp / 2), MPFR_RNDN);
+    else /* set the exponent to -i*exp_diff */
+      mpfr_set_exp (x, -(long) i * opt.exp_diff);
     str = mpfr_get_str (NULL, &e, 10, 0, x, MPFR_RNDN);
     if (str == 0)
       abort ();
@@ -125,7 +128,8 @@ int main (int argc, const char *argv[])
   vector<string> base;
   int i, j, cont, prio;
 
-  options.max_exp = 1; /* default value */
+  options.max_exp = 1;   /* default value */
+  options.exp_diff = -1; /* mean no constraint */
 
   /* Parse option */
   prio = 19;
@@ -157,6 +161,10 @@ int main (int argc, const char *argv[])
 	    case 'e':
               options.max_exp = atol (argv[i]+2);
 	      assert (options.max_exp > 0);
+              break;
+	    case 'd':
+              options.exp_diff = atol (argv[i]+2);
+	      assert (options.exp_diff >= 0);
               break;
             case 'r':
               {

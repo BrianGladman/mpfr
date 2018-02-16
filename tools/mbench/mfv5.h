@@ -43,7 +43,8 @@ struct option_test {
   unsigned long prec;
   unsigned long seed;
   unsigned long stat;
-  long max_exp;
+  long max_exp;       /* exponent is in [-max_exp/2, max_exp/2] */
+  long exp_diff;      /* difference of exponents (for mpfr_add, mpfr_sub) */
   bool verbose;
   mpfr_rnd_t rnd;
   std::string export_base;
