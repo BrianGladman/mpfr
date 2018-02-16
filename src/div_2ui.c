@@ -50,9 +50,9 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN (y));
         }
-      /* Now, exp - n >= emin. Thus n <= exp - emin, which a
-       * difference of two valid exponents, thus fits in a mpfr_exp_t
-       * (from the constraints on valid exponents).
+      /* Now, n < diffexp, i.e. n <= exp - emin, which a difference
+       * of two valid exponents, thus fits in a mpfr_exp_t (from the
+       * constraints on valid exponents).
        */
       MPFR_SET_EXP (y, exp - (mpfr_exp_t) n);
     }
