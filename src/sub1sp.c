@@ -1643,11 +1643,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* We don't have anymore a valid Cp+1!
              But since B-C >= 2^p+1, the final sub can't unnormalize */
         }
-      MPFR_ASSERTD( !(ap[0] & ~mask) );
-
-      /* if {ap, n} is a power of 2 and rb <> 0, we subtract 1 */
-      if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == MPFR_LIMB_HIGHBIT &&
-                        mpfr_powerof2_raw (a)))
+      /* if {ap, n} is a power of 2 and rb <> 0, we can subtract 1 */
+      else if (rb && MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == MPFR_LIMB_HIGHBIT
+                                   && mpfr_powerof2_raw (a)))
         {
           mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
           ap[n-1] |= MPFR_LIMB_HIGHBIT;
@@ -1655,6 +1653,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           rb = rbb;
           sb = sbb;
         }
+      MPFR_ASSERTD( !(ap[0] & ~mask) );
 
       /* Rounding */
       if (MPFR_LIKELY(rnd_mode == MPFR_RNDF))
