@@ -1449,7 +1449,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                    b-ulp(b) (cases 1e and 2g) */
           int pow2_b = mpfr_powerof2_raw (b);
           /* since c is normalized, we need to subtract 1/2 ulp(b) */
-          rb  = 1;
+          rb = 1;
           /* rbb is the bit of weight 1/4 ulp(b) in c. We assume a limb has
              at least 2 bits. If the precision is 1, we read in the unused
              bits, which should be zero, and this is what we want. */
@@ -1638,7 +1638,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           bx--;
           /* Update rb and sb */
           MPFR_ASSERTD(rbb != MPFR_LIMB_MAX);
-          rb  = rbb;
+          rb = rbb;
           sb = sbb;
           /* We don't have anymore a valid Cp+1!
              But since B-C >= 2^p+1, the final sub can't unnormalize */
@@ -1652,7 +1652,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
           ap[n-1] |= MPFR_LIMB_HIGHBIT;
           bx--;
-          rb  = rbb;
+          rb = rbb;
           sb = sbb;
         }
 
