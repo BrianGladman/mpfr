@@ -105,6 +105,119 @@ test_corner_1 (mpfr_prec_t pmax)
     }
 }
 
+static void
+coverage (void)
+{
+  mpfr_t a, b, c;
+  int inex;
+  mpfr_exp_t emax;
+
+  /* coverage test in mpfr_add1sp1n: case round away, where add_one_ulp
+     gives a carry, and the new exponent is below emax */
+  mpfr_init2 (a, GMP_NUMB_BITS);
+  mpfr_init2 (b, GMP_NUMB_BITS);
+  mpfr_init2 (c, GMP_NUMB_BITS);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
+  mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-1, MPFR_RNDN);
+  /* c = 2^(-p-1) thus b+c = 1 - 2^(-p-1) should be rounded to 1 */
+  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+
+  /* coverage test in mpfr_add1sp2: case GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS
+     and a1 = 0 */
+  mpfr_set_prec (a, GMP_NUMB_BITS + 2);
+  mpfr_set_prec (b, GMP_NUMB_BITS + 2);
+  mpfr_set_prec (c, GMP_NUMB_BITS + 2);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) with p = GMP_NUMB_BITS+2 */
+  mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-1, MPFR_RNDN);
+  mpfr_nextbelow (c); /* c = 2^(1-p) - 2^(1-2p) */
+  /* a = 1 + 2^(-p) - 2^(1-2p) should be rounded to 1 with RNDN */
+  inex = mpfr_add (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+
+  /* coverage test in mpfr_add1sp2: case round away, where add_one_ulp
+     gives a carry, and the new exponent is below emax */
+  mpfr_set_prec (a, GMP_NUMB_BITS + 1);
+  mpfr_set_prec (b, GMP_NUMB_BITS + 1);
+  mpfr_set_prec (c, GMP_NUMB_BITS + 1);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
+  mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-2, MPFR_RNDN);
+  /* c = 2^(-p-1) */
+  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+
+  /* coverage test in mpfr_add1sp3: case GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS
+     and a2 == 0 */
+  mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 2);
+  mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 2);
+  mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 2);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) with p = 2*GMP_NUMB_BITS+2 */
+  mpfr_set_ui_2exp (c, 1, -2*GMP_NUMB_BITS-1, MPFR_RNDN);
+  mpfr_nextbelow (c); /* c = 2^(1-p) - 2^(1-2p) */
+  /* a = 1 + 2^(-p) - 2^(1-2p) should be rounded to 1 with RNDN */
+  inex = mpfr_add (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+
+  /* coverage test in mpfr_add1sp3: case bx > emax */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1);
+  mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_ui_2exp (b, 1, mpfr_get_emax () - 1, MPFR_RNDN);
+  mpfr_nextbelow (b);
+  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+  /* now b is the largest number < +Inf */
+  mpfr_div_2exp (c, b, GMP_NUMB_BITS - 1, MPFR_RNDN);
+  /* we are in the case d < GMP_NUMB_BITS of mpfr_add1sp3 */
+  inex = mpfr_add (a, b, b, MPFR_RNDU);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+  mpfr_set_emax (emax);
+
+  /* coverage test in mpfr_add1sp3: case round away, where add_one_ulp gives
+     a carry, no overflow */
+  mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
+  mpfr_set_ui_2exp (c, 1, -2 * GMP_NUMB_BITS - 2, MPFR_RNDN);
+  /* c = 2^(-p-1) */
+  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+
+  /* coverage test in mpfr_add1sp3: case round away, where add_one_ulp gives
+     a carry, with overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1);
+  mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
+  mpfr_set_ui_2exp (b, 1, mpfr_get_emax () - 1, MPFR_RNDN);
+  mpfr_nextbelow (b);
+  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+  /* now b is the largest number < +Inf */
+  mpfr_set_ui_2exp (c, 1, mpfr_get_emin () - 1, MPFR_RNDN);
+  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+  mpfr_set_emax (emax);
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 int
 main (void)
 {
@@ -112,6 +225,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  coverage ();
   test_corner_1 (1024);
   bug20171217 ();
   check_special ();
