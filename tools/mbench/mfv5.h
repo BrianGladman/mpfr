@@ -49,7 +49,7 @@ struct option_test {
   mpfr_rnd_t rnd;
   std::string export_base;
   std::string import_base;
-  option_test () : prec (53), seed (14528596), stat (100), verbose (false), rnd(MPFR_RNDN), export_base("") {}
+  option_test () : prec (53), seed (14528596), stat (100), max_exp (1), exp_diff (-1), verbose (false), rnd(MPFR_RNDN), export_base("") {}
 };
 
 class registered_test;
