@@ -808,8 +808,10 @@ dnl because static assertions are not supported, so that MPFR_ASSERTN
 dnl is used, but it is not defined by "mpfr-sassert.h". The consequence
 dnl is that the program fails, and MPFR_LONG_WITHIN_LIMB is not defined
 dnl while it should be. Before fixing this bug, find a way to test with
-dnl MPFR_LONG_WITHIN_LIMB undefined (this is necessary for code coverage
-dnl and possibly to find new bugs, like in r12252).
+dnl MPFR_LONG_WITHIN_LIMB undefined; this is necessary for code coverage
+dnl and possibly to find new bugs, like in r12252:
+dnl   ./configure --enable-assert=full \
+dnl     'CFLAGS=-std=c99 -O3 -pedantic-errors -Wno-error=overlength-strings'
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
 AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
