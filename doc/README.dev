@@ -1071,7 +1071,7 @@ conversions). If such a signed type contains a negative value, the
 result will probably be incorrect. With MPFR 2.x, this problem could
 arise with mpfr_exp_t, which is signed, and mpfr_prec_t (mp_prec_t),
 which was unsigned (it is now signed), meaning that in general, a cast
-of a mpfr_prec_t into a mpfr_exp_t was needed.
+of a mpfr_prec_t to a mpfr_exp_t was needed.
 
 Note that such bugs are difficult to detect because they may depend on
 the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,
@@ -1099,7 +1099,7 @@ the MPFR versions: MPFR_UINTMAX_MAX, MPFR_INTMAX_MAX and MPFR_INTMAX_MIN.
 Use mpfr_prec_t and mpfr_rnd_t instead of the old types mp_prec_t and
 mp_rnd_t. Similarly, use mpfr_exp_t instead of GMP's mp_exp_t type
 (unless you really want mp_exp_t, e.g. for conversions with mpf; but
-you should not assume that mpfr_exp_t and mp_exp_t are identical).
+you must not assume that mpfr_exp_t and mp_exp_t are identical).
 
 ===========================================================================
 
@@ -1132,12 +1132,18 @@ in the MPFR source depends on the context.
 
 More on exponent handling:
 
+* The mpfr_exp_t type has at least 32 bits since it must contain the
+  default exponent range.
+
+* The range of valid exponents is defined so that if a and b are two
+  valid exponents (i.e. between MPFR_EMIN_MIN and MPFR_EMAX_MAX), then
+  ± a ± b ± 1 fits in a mpfr_exp_t.
+
 * The unsigned type corresponding to mpfr_exp_t is mpfr_uexp_t. It may be
   useful if the considered values are nonnegative and don't necessarily
-  fit in mpfr_exp_t. To convert a mpfr_exp_t to mpfr_uexp_t, you should
-  use the MPFR_UEXP macro, as in debug mode, it checks that the value is
-  nonnegative (in future MPFR versions, MPFR_UEXP could tell the compiler
-  that the value is nonnegative, possibly allowing more optimization).
+  fit in mpfr_exp_t. To convert a nonnegative mpfr_exp_t to mpfr_uexp_t,
+  you should use the MPFR_UEXP macro, which is defined as:
+    #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 
 * If a mpfr_exp_t appears in arithmetic expressions together with ISO C90
   types int and/or long, computations must be done with the largest type,
