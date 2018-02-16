@@ -50,18 +50,11 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN (y));
         }
-      /* exp - n >= emin (no underflow, no integer overflow) */
-      /* Since n is an unsigned long, n can be up to
-         2 * LONG_MAX + 1 (mathematically).
-         Note: on a 64-bit computer, since emax <= 2^62-1 and emin >= 1-2^62,
-         we have diffexp <= 2^63-1, thus since here n < diffexp we have
-         n < 2^63-1, and the test n > LONG_MAX is never true. */
-      while (n > LONG_MAX)
-        {
-          n -= LONG_MAX;
-          exp -= LONG_MAX;  /* note: signed values */
-        }
-      MPFR_SET_EXP (y, exp - (long) n);
+      /* Now, exp - n >= emin. Thus n <= exp - emin, which a
+       * difference of two valid exponents, thus fits in a mpfr_exp_t
+       * (from the constraints on valid exponents).
+       */
+      MPFR_SET_EXP (y, exp - (mpfr_exp_t) n);
     }
 
   MPFR_RET (inexact);
