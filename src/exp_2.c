@@ -108,7 +108,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       mp_limb_t r_limb[(sizeof (long) -1) / sizeof(mp_limb_t) + 1];
       /* Note: we use precision sizeof (long) * CHAR_BIT - 1 here since it is
-         more efficient that full limb precision. */
+         more efficient that full limb precision.
+         The value of n will depend on whether MPFR_LONG_WITHIN_LIMB is
+         defined or not. For instance, for r = 0.111E0, one gets n = 0
+         in the former case and n = 1 in the latter case. */
       MPFR_TMP_INIT1(r_limb, r, sizeof (long) * CHAR_BIT - 1);
       mpfr_div (r, x, __gmpfr_const_log2_RNDD, MPFR_RNDN);
 #ifdef MPFR_LONG_WITHIN_LIMB
