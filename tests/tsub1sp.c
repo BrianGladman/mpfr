@@ -284,6 +284,54 @@ bug20171213_gen (mpfr_prec_t pmax)
     }
 }
 
+static void
+coverage (void)
+{
+  mpfr_t a, b, c, d, u;
+  int inex;
+
+  /* coverage test in mpfr_sub1sp: case d=1, limb > MPFR_LIMB_HIGHBIT, RNDF
+     and also RNDZ */
+  mpfr_init2 (a, 3 * GMP_NUMB_BITS);
+  mpfr_init2 (b, 3 * GMP_NUMB_BITS);
+  mpfr_init2 (c, 3 * GMP_NUMB_BITS);
+  mpfr_init2 (d, 3 * GMP_NUMB_BITS);
+  mpfr_init2 (u, 3 * GMP_NUMB_BITS);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
+  mpfr_set_prec (c, GMP_NUMB_BITS);
+  mpfr_set_ui_2exp (c, 1, -1, MPFR_RNDN);
+  mpfr_nextbelow (c);
+  mpfr_nextbelow (c); /* c = 1/2 - 2*2^(-GMP_NUMB_BITS-1) */
+  mpfr_prec_round (c, 3 * GMP_NUMB_BITS, MPFR_RNDN);
+  mpfr_nextbelow (c); /* c = 1/2 - 2*2^(-GMP_NUMB_BITS-1) - 2^(-p-1) */
+  /* b-c = c */
+  mpfr_sub (a, b, c, MPFR_RNDF);
+  mpfr_sub (d, b, c, MPFR_RNDD);
+  mpfr_sub (u, b, c, MPFR_RNDU);
+  /* check a = d or u */
+  MPFR_ASSERTN(mpfr_equal_p (a, d) || mpfr_equal_p (a, u));
+
+  /* coverage test in mpfr_sub1sp: case d=p, RNDN, sb = 0, significand of b
+     is even but b<>2^e, (case 1e) */
+  mpfr_set_prec (a, 3 * GMP_NUMB_BITS);
+  mpfr_set_prec (b, 3 * GMP_NUMB_BITS);
+  mpfr_set_prec (c, 3 * GMP_NUMB_BITS);
+  mpfr_set_ui (b, 1, MPFR_RNDN);
+  mpfr_nextabove (b);
+  mpfr_nextabove (b);
+  mpfr_set_ui_2exp (c, 1, -3 * GMP_NUMB_BITS, MPFR_RNDN);
+  inex = mpfr_sub (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_equal_p (a, b));
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+  mpfr_clear (d);
+  mpfr_clear (u);
+}
+
 int
 main (void)
 {
@@ -291,6 +339,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  coverage ();
   compare_sub_sub1sp ();
   test20170208 ();
   bug20170109 ();
