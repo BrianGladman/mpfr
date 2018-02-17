@@ -86,6 +86,8 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
       mpfr_t t;
       mpfr_exp_t err;
 
+      /* FIXME for 32-bit mpfr_prec_t & mpfr_exp_t and 64-bit long
+         (-D_MPFR_PREC_FORMAT=2 on a 64-bit Linux machine). */
       MPFR_TMP_INIT1(t_limb, t, 64);
       /* since x < 0, to get an upper bound on x/log(2), we need to divide
          by an upper bound on log(2) */
