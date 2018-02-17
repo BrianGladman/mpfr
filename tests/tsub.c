@@ -1077,7 +1077,7 @@ bug20180216 (void)
     }
 }
 
-/* Fails with r12281 with "reuse of c error in b - c in MPFR_RNDN". */
+/* Fails with r12281: "reuse of c error in b - c in MPFR_RNDN". */
 static void
 bug20180217 (void)
 {
