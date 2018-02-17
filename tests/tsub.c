@@ -1017,16 +1017,12 @@ bug20180216 (void)
     }
 }
 
-/* With r12281, -DMPFR_GENERIC_ABI in CFLAGS and --enable-assert=full,
- * tsin_cos fails with:
- *   sub1 & sub1sp return different values for MPFR_RNDN
- *   Prec_a = 8, Prec_b = 8, Prec_c = 8
- *   B = 0.11001000E-8
- *   C = 0.10000000E1
- *   sub1  : -0.11111111E0
- *   sub1sp: -0.10000000E1
- * Thus this test is expected to fail for p == 8 && d == 9 && i == 2
- * (x = 0.10000000E1 and y = 0.11001000E-8), but it doesn't!
+/* Fails with r12281. Note: the reuse of the input below is important.
+ * FIXME: Improve this test and the above two ones by checking
+ * the 3 combinations:
+ *   test_sub (z2, x, y, ...)
+ *   test_sub (z2, z2, y, ...)
+ *   test_sub (z2, x, z2, ...)
  */
 static void
 bug20180217 (void)
@@ -1068,7 +1064,8 @@ bug20180217 (void)
                     }
                   else
                     inex1 = 1;
-                  inex2 = test_sub (z2, x, y, (mpfr_rnd_t) r);
+                  mpfr_set (z2, y, MPFR_RNDN);
+                  inex2 = test_sub (z2, x, z2, (mpfr_rnd_t) r);
                   if (!(mpfr_equal_p (z1, z2) && SAME_SIGN (inex1, inex2)))
                     {
                       printf ("Error in bug20180217 with "
