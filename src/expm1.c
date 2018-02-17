@@ -90,10 +90,13 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
       /* since x < 0, to get an upper bound on x/log(2), we need to divide
          by an upper bound on log(2) */
       mpfr_div (t, x, __gmpfr_const_log2_RNDU, MPFR_RNDU); /* > x / ln(2) */
-      err = - mpfr_get_exp_t (t, MPFR_RNDU);
+      err = mpfr_get_exp_t (t, MPFR_RNDU);
+      /* The "- (err == MPFR_EXP_MIN)" is necessary because -MPFR_EXP_MIN
+         yields an integer overflow in two's complement. */
+      err = - (err == MPFR_EXP_MIN) - err;
       MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) err));
       /* exp(x) = 2^(x/ln(2))
-               <= 2^max(MPFR_EMIN_MIN,ceil(x/ln(2)+epsilon))
+               <= 2^max(1+MPFR_EXP_MIN,ceil(x/ln(2)+epsilon))
          with epsilon > 0 */
       MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_mone, err, 0, 0,
                                         rnd_mode, expo, {});
