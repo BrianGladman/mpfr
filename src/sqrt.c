@@ -68,7 +68,7 @@ mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
   rp[1] = r1;
 }
 
-/* Special code for prec(r), prec(u) < GMP_NUMB_BITS. We cannot have
+/* Special code for prec(r) = prec(u) < GMP_NUMB_BITS. We cannot have
    prec(u) = GMP_NUMB_BITS here, since when the exponent of u is odd,
    we need to shift u by one bit to the right without losing any bit.
    Assumes GMP_NUMB_BITS = 64. */
@@ -152,12 +152,14 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
-          /* The smallest positive number is 0.5^2^emin, and its predecessor
-             with unbounded exponent range is (1-2^(-p))*2^(emin-1), thus if
-             the result is >= the rounding boundary (1-2^(-p-1))*2^(emin-1),
-             there is no underflow. */
-          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
+          /* If (1-2^(-p-1))*2^(emin-1) <= sqrt(u) < 2^(emin-1),
+             then sqrt(u) would be rounded to 2^(emin-1) with unbounded
+             exponent range, and there would be no underflow.
+             But this case cannot happen if u has precision p.
+             Indeed, we would have:
+             (1-2^(-p-1))^2*2^(2*emin-2) <= u < 2^(2*emin-2), i.e.,
+             (1-2^(-p)+2^(-2p-2))*2^(2*emin-2) <= u < 2^(2*emin-2),
+             and there is no p-bit number in that interval. */
           /* If the result is <= 0.5^2^(emin-1), we should round to 0. */
           if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
@@ -212,7 +214,7 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
 }
 
-/* Special code for prec(r) = GMP_NUMB_BITS and prec(u) <= GMP_NUMB_BITS. */
+/* Special code for prec(r) = prec(u) = GMP_NUMB_BITS. */
 static int
 mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
@@ -339,8 +341,7 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     }
 }
 
-/* Special code for GMP_NUMB_BITS < prec(r) < 2*GMP_NUMB_BITS,
-   and GMP_NUMB_BITS < prec(u) <= 2*GMP_NUMB_BITS.
+/* Special code for GMP_NUMB_BITS < prec(r) = prec(u) < 2*GMP_NUMB_BITS.
    Assumes GMP_NUMB_BITS=64. */
 static int
 mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
@@ -432,9 +433,6 @@ mpfr_sqrt2 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
-          if (exp_r == __gmpfr_emin - 1 && (rp[1] == MPFR_LIMB_MAX &&
-                                            rp[0] == ~mask) && rb)
-            goto rounding; /* no underflow */
           if (exp_r < __gmpfr_emin - 1 || (rp[1] == MPFR_LIMB_HIGHBIT &&
                                            rp[0] == MPFR_LIMB_ZERO && sb == 0))
             rnd_mode = MPFR_RNDZ;
