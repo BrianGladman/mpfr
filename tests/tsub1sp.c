@@ -332,6 +332,43 @@ coverage (void)
   mpfr_clear (u);
 }
 
+/* bug in mpfr_sub1sp1n, made generic */
+static void
+bug20180217 (mpfr_prec_t pmax)
+{
+  mpfr_t a, b, c;
+  int inex;
+  mpfr_prec_t p;
+
+  for (p = MPFR_PREC_MIN; p <= pmax; p++)
+    {
+      mpfr_init2 (a, p);
+      mpfr_init2 (b, p);
+      mpfr_init2 (c, p);
+      mpfr_set_ui (b, 1, MPFR_RNDN); /* b = 1 */
+      mpfr_set_ui_2exp (c, 1, -p-1, MPFR_RNDN); /* c = 2^(-p-1) */
+      /* a - b = 1 - 2^(-p-1) and should be rounded to 1 (case 2f of
+         mpfr_sub1sp) */
+      inex = mpfr_sub (a, b, c, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+      /* check also when a=b */
+      mpfr_set_ui (a, 1, MPFR_RNDN);
+      inex = mpfr_sub (a, a, c, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+      /* and when a=c */
+      mpfr_set_ui (b, 1, MPFR_RNDN); /* b = 1 */
+      mpfr_set_ui_2exp (a, 1, -p-1, MPFR_RNDN);
+      inex = mpfr_sub (a, b, a, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (c);
+    }
+}
+
 int
 main (void)
 {
@@ -339,6 +376,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  bug20180217 (1024);
   coverage ();
   compare_sub_sub1sp ();
   test20170208 ();

@@ -375,13 +375,15 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
               else /* cases (a), (c), (d) and (e) */
                 {
-                  ap[0] = -MPFR_LIMB_ONE;
                   /* rb=1 in case (e) and case (c) */
                   rb = d > GMP_NUMB_BITS + 1
                     || (d == GMP_NUMB_BITS + 1 && cp[0] == MPFR_LIMB_HIGHBIT);
                   /* sb = 1 in case (d) and (e) */
                   sb = d > GMP_NUMB_BITS + 1
                     || (d == GMP_NUMB_BITS + 1 && cp[0] > MPFR_LIMB_HIGHBIT);
+                  /* Warning: only set ap[0] last, otherwise in case ap=cp,
+                     the above comparisons involving cp[0] would be wrong */
+                  ap[0] = -MPFR_LIMB_ONE;
                 }
             }
         }
