@@ -91,6 +91,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
          by an upper bound on log(2) */
       mpfr_div (t, x, __gmpfr_const_log2_RNDU, MPFR_RNDU); /* > x / ln(2) */
       err = - mpfr_get_exp_t (t, MPFR_RNDU);
+      MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) err));
       /* exp(x) = 2^(x/ln(2))
                <= 2^max(MPFR_EMIN_MIN,ceil(x/ln(2)+epsilon))
          with epsilon > 0 */
