@@ -726,6 +726,39 @@ check_overflow (void)
   mpfr_set_emax (emax);
 }
 
+static void
+check_underflow (void)
+{
+  mpfr_t r, u;
+  mpfr_prec_t p;
+  mpfr_exp_t emin;
+  int inex;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (2);
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    {
+      mpfr_init2 (r, p);
+      mpfr_init2 (u, p);
+      mpfr_set_ui_2exp (u, 1, mpfr_get_emin () - 1, MPFR_RNDN); /* u = 2 */
+      /* for RNDN, since sqrt(2) is closer from 2 than 0, the result is 2 */
+      inex = mpfr_sqrt (r, u, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_equal_p (r, u));
+      /* for RNDA, the result should be u */
+      inex = mpfr_sqrt (r, u, MPFR_RNDA);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_equal_p (r, u));
+      /* for RNDZ, the result should be +0 */
+      inex = mpfr_sqrt (r, u, MPFR_RNDZ);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(mpfr_zero_p (r) && mpfr_signbit (r) == 0);
+      mpfr_clear (r);
+      mpfr_clear (u);
+    }
+  mpfr_set_emin (emin);
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -738,6 +771,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  check_underflow ();
   check_overflow ();
   testall_rndf (16);
   for (p = MPFR_PREC_MIN; p <= 128; p++)

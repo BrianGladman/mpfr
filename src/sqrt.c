@@ -152,8 +152,13 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     {
       if (rnd_mode == MPFR_RNDN)
         {
+          /* The smallest positive number is 0.5^2^emin, and its predecessor
+             with unbounded exponent range is (1-2^(-p))*2^(emin-1), thus if
+             the result is >= the rounding boundary (1-2^(-p-1))*2^(emin-1),
+             there is no underflow. */
           if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~mask) && rb)
             goto rounding; /* no underflow */
+          /* If the result is <= 0.5^2^(emin-1), we should round to 0. */
           if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
