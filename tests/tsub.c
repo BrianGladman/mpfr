@@ -1017,6 +1017,90 @@ bug20180216 (void)
     }
 }
 
+/* With r12281, -DMPFR_GENERIC_ABI in CFLAGS and --enable-assert=full,
+ * tsin_cos fails with:
+ *   sub1 & sub1sp return different values for MPFR_RNDN
+ *   Prec_a = 8, Prec_b = 8, Prec_c = 8
+ *   B = 0.11001000E-8
+ *   C = 0.10000000E1
+ *   sub1  : -0.11111111E0
+ *   sub1sp: -0.10000000E1
+ * Thus this test is expected to fail for p == 8 && d == 9 && i == 2
+ * (x = 0.10000000E1 and y = 0.11001000E-8), but it doesn't!
+ */
+static void
+bug20180217 (void)
+{
+  mpfr_t x, y, z1, z2;
+  int r, p, d, i, inex1, inex2;
+
+  for (p = 3; p <= 3 + 4 * GMP_NUMB_BITS; p++)
+    {
+      mpfr_inits2 (p, x, y, z1, z2, (mpfr_ptr) 0);
+      for (d = p; d <= p+4; d++)
+        {
+          mpfr_set_ui (x, 1, MPFR_RNDN);
+          mpfr_set_ui_2exp (y, 1, -d, MPFR_RNDN);
+          for (i = 0; i < 3; i++)
+            {
+              RND_LOOP_NO_RNDF (r)
+                {
+                  mpfr_set (z1, x, MPFR_RNDN);
+                  if (d == p)
+                    {
+                      mpfr_nextbelow (z1);
+                      if (i == 0)
+                        inex1 = 0;
+                      else if (r == MPFR_RNDD || r == MPFR_RNDZ ||
+                               (r == MPFR_RNDN && i > 1))
+                        {
+                          mpfr_nextbelow (z1);
+                          inex1 = -1;
+                        }
+                      else
+                        inex1 = 1;
+                    }
+                  else if (r == MPFR_RNDD || r == MPFR_RNDZ ||
+                           (r == MPFR_RNDN && d == p+1 && i > 0))
+                    {
+                      mpfr_nextbelow (z1);
+                      inex1 = -1;
+                    }
+                  else
+                    inex1 = 1;
+                  inex2 = test_sub (z2, x, y, (mpfr_rnd_t) r);
+                  if (!(mpfr_equal_p (z1, z2) && SAME_SIGN (inex1, inex2)))
+                    {
+                      printf ("Error in bug20180217 with "
+                              "p=%d, d=%d, i=%d, %s\n", p, d, i,
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                      printf ("x = ");
+                      mpfr_dump (x);
+                      printf ("y = ");
+                      mpfr_dump (y);
+                      printf ("Expected "); mpfr_dump (z1);
+                      printf ("  with inex = %d\n", inex1);
+                      printf ("Got      "); mpfr_dump (z2);
+                      printf ("  with inex = %d\n", inex2);
+                      exit (1);
+                    }
+                }
+              if (i == 0)
+                mpfr_nextabove (y);
+              else
+                {
+                  if (p < 6)
+                    break;
+                  mpfr_nextbelow (y);
+                  mpfr_mul_ui (y, y, 25, MPFR_RNDD);
+                  mpfr_div_2ui (y, y, 4, MPFR_RNDN);
+                }
+            }
+        }
+      mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
+    }
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -1041,6 +1125,7 @@ main (void)
   bug_ddefour ();
   bug20180215 ();
   bug20180216 ();
+  bug20180217 ();
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
