@@ -102,9 +102,21 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   /* the exact square root is in [r0, r0 + 7] */
   if (MPFR_UNLIKELY(((r0 + 7) & (mask >> 1)) <= 7))
     {
-      /* first ensure r0 has its most significant bit set */
-      if (MPFR_UNLIKELY(r0 < MPFR_LIMB_HIGHBIT))
-        r0 = MPFR_LIMB_HIGHBIT;
+      /* We should ensure r0 has its most significant bit set.
+         Since r0 <= sqrt(2^64*u0) <= r0 + 7, as soon as sqrt(2^64*u0)>=2^63+7,
+         which happens for u0>=2^62+8, then r0 >= 2^63.
+         It thus remains to check that for 2^62 <= u0 <= 2^62+7,
+         __gmpfr_sqrt_limb_approx (r0, u0) gives r0 >= 2^63, which is indeed
+         the case:
+         u0=4611686018427387904 r0=9223372036854775808
+         u0=4611686018427387905 r0=9223372036854775808
+         u0=4611686018427387906 r0=9223372036854775809
+         u0=4611686018427387907 r0=9223372036854775810
+         u0=4611686018427387908 r0=9223372036854775811
+         u0=4611686018427387909 r0=9223372036854775812
+         u0=4611686018427387910 r0=9223372036854775813
+         u0=4611686018427387911 r0=9223372036854775814 */
+      MPFR_ASSERTD(r0 >= MPFR_LIMB_HIGHBIT);
       umul_ppmm (rb, sb, r0, r0);
       sub_ddmmss (rb, sb, u0, 0, rb, sb);
       /* for the exact square root, we should have 0 <= rb:sb <= 2*r0 */
