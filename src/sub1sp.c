@@ -1508,6 +1508,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       else /* case d > p */
         {
+          int case_2e;
           /* The round bit is 0, the sticky bit is 1, and the second round bit
              is 1 iff d = p + 1.
              * for RNDZ, the result is b-ulp(p) (case 1a),
@@ -1519,6 +1520,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           rbb = d == p+1;
           sb = 1;
           /* printf("(d>p) rb=%d rbb=%d sb=%d\n", rb, rbb, sb); */
+          case_2e = rnd_mode == MPFR_RNDN && rbb && mpfr_powerof2_raw (b) &&
+            !mpfr_powerof2_raw (c);
           /* copy the significand of b into a */
           MPN_COPY(ap, MPFR_MANT(b), n);
           /* Round */
@@ -1526,7 +1529,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             goto truncate; /* this is correct since this is what RNDA gives */
           if (rnd_mode == MPFR_RNDN)
             {
-              if (rbb && mpfr_powerof2_raw (b) && !mpfr_powerof2_raw (c))
+              if (case_2e)
                 goto next_below; /* case 2e */
               goto truncate; /* cases 1c, 2d and 2f */
             }
