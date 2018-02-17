@@ -22,12 +22,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#ifdef CHECK_EXTERNAL
 static int
 test_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
+#ifdef CHECK_EXTERNAL
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
+
   if (ok)
     {
       mpfr_print_raw (b);
@@ -42,10 +43,69 @@ test_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       printf ("\n");
     }
   return res;
-}
-#else
-#define test_sub mpfr_sub
+#else  /* reuse test */
+  int inex;
+
+  inex = mpfr_sub (a, b, c, rnd_mode);
+
+  if (a != b && a != c && ! MPFR_IS_NAN (a))
+    {
+      mpfr_t t;
+      int reuse_b, reuse_c, inex_r;
+
+      reuse_b = MPFR_PREC (a) == MPFR_PREC (b);
+      reuse_c = MPFR_PREC (a) == MPFR_PREC (c);
+
+      if (reuse_b || reuse_c)
+        mpfr_init2 (t, MPFR_PREC (a));
+
+      if (reuse_b)
+        {
+          mpfr_set (t, b, MPFR_RNDN);
+          inex_r = mpfr_sub (t, t, c, rnd_mode);
+          if (!(mpfr_equal_p (t, a) && SAME_SIGN (inex_r, inex)))
+            {
+              printf ("reuse of b error in b - c in %s for\n",
+                      mpfr_print_rnd_mode (rnd_mode));
+              printf ("b = ");
+              mpfr_dump (b);
+              printf ("c = ");
+              mpfr_dump (c);
+              printf ("Expected "); mpfr_dump (a);
+              printf ("  with inex = %d\n", inex);
+              printf ("Got      "); mpfr_dump (t);
+              printf ("  with inex = %d\n", inex_r);
+              exit (1);
+            }
+        }
+
+      if (reuse_c)
+        {
+          mpfr_set (t, c, MPFR_RNDN);
+          inex_r = mpfr_sub (t, b, t, rnd_mode);
+          if (!(mpfr_equal_p (t, a) && SAME_SIGN (inex_r, inex)))
+            {
+              printf ("reuse of c error in b - c in %s for\n",
+                      mpfr_print_rnd_mode (rnd_mode));
+              printf ("b = ");
+              mpfr_dump (b);
+              printf ("c = ");
+              mpfr_dump (c);
+              printf ("Expected "); mpfr_dump (a);
+              printf ("  with inex = %d\n", inex);
+              printf ("Got      "); mpfr_dump (t);
+              printf ("  with inex = %d\n", inex_r);
+              exit (1);
+            }
+        }
+
+      if (reuse_b || reuse_c)
+        mpfr_clear (t);
+    }
+
+  return inex;
 #endif
+}
 
 static void
 check_diverse (void)
@@ -1017,13 +1077,7 @@ bug20180216 (void)
     }
 }
 
-/* Fails with r12281. Note: the reuse of the input below is important.
- * FIXME: Improve this test and the above two ones by checking
- * the 3 combinations:
- *   test_sub (z2, x, y, ...)
- *   test_sub (z2, z2, y, ...)
- *   test_sub (z2, x, z2, ...)
- */
+/* Fails with r12281 with "reuse of c error in b - c in MPFR_RNDN". */
 static void
 bug20180217 (void)
 {
@@ -1064,8 +1118,7 @@ bug20180217 (void)
                     }
                   else
                     inex1 = 1;
-                  mpfr_set (z2, y, MPFR_RNDN);
-                  inex2 = test_sub (z2, x, z2, (mpfr_rnd_t) r);
+                  inex2 = test_sub (z2, x, y, (mpfr_rnd_t) r);
                   if (!(mpfr_equal_p (z1, z2) && SAME_SIGN (inex1, inex2)))
                     {
                       printf ("Error in bug20180217 with "
