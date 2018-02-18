@@ -872,6 +872,48 @@ check_underflow (void)
   mpfr_set_emin (emin);
 }
 
+static void
+coverage (void)
+{
+  mpfr_t r, t, u, v, w;
+  mpfr_prec_t p;
+  int inex;
+
+  /* exercise even rule */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    {
+      mpfr_init2 (r, p);
+      mpfr_init2 (t, p + 1);
+      mpfr_init2 (u, 2 * p + 2);
+      mpfr_init2 (v, p);
+      mpfr_init2 (w, p);
+      do
+        mpfr_urandomb (v, RANDS);
+      while (mpfr_zero_p (v));
+      mpfr_set (w, v, MPFR_RNDN);
+      mpfr_nextabove (w); /* w = nextabove(v) */
+      mpfr_set (t, v, MPFR_RNDN);
+      mpfr_nextabove (t);
+      mpfr_mul (u, t, t, MPFR_RNDN);
+      inex = mpfr_sqrt (r, u, MPFR_RNDN);
+      if (mpfr_min_prec (v) < p) /* v is even */
+        {
+          MPFR_ASSERTN(inex < 0);
+          MPFR_ASSERTN(mpfr_equal_p (r, v));
+        }
+      else /* v is odd */
+        {
+          MPFR_ASSERTN(inex > 0);
+          MPFR_ASSERTN(mpfr_equal_p (r, w));
+        }
+      mpfr_clear (r);
+      mpfr_clear (t);
+      mpfr_clear (u);
+      mpfr_clear (v);
+      mpfr_clear (w);
+    }
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -884,6 +926,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  coverage ();
   check_underflow ();
   check_overflow ();
   testall_rndf (16);
