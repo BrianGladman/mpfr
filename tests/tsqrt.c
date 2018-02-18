@@ -735,11 +735,12 @@ check_underflow (void)
   int inex;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (2);
   for (p = MPFR_PREC_MIN; p <= 1024; p++)
     {
       mpfr_init2 (r, p);
       mpfr_init2 (u, p);
+
+      mpfr_set_emin (2);
       mpfr_set_ui_2exp (u, 1, mpfr_get_emin () - 1, MPFR_RNDN); /* u = 2 */
       /* for RNDN, since sqrt(2) is closer from 2 than 0, the result is 2 */
       mpfr_clear_flags ();
@@ -825,6 +826,34 @@ check_underflow (void)
       MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 1, mpfr_get_emin () - 1) == 0);
       MPFR_ASSERTN(mpfr_underflow_p ());
 
+      mpfr_set_emin (3);
+      mpfr_set_ui_2exp (u, 1, mpfr_get_emin () - 1, MPFR_RNDN); /* u = 4 */
+      /* sqrt(u) = 2 = 0.5^2^(emin-1) should be rounded to +0 */
+      mpfr_clear_flags ();
+      inex = mpfr_sqrt (r, u, MPFR_RNDN);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(mpfr_zero_p (r) && mpfr_signbit (r) == 0);
+      MPFR_ASSERTN(mpfr_underflow_p ());
+
+      /* next number */
+      mpfr_set_ui_2exp (u, 1, mpfr_get_emin () - 1, MPFR_RNDN); /* u = 4 */
+      mpfr_nextabove (u);
+      /* sqrt(u) should be rounded to 4 */
+      mpfr_clear_flags ();
+      inex = mpfr_sqrt (r, u, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_cmp_ui (r, 4) == 0);
+      MPFR_ASSERTN(mpfr_underflow_p ());
+
+      mpfr_set_emin (4);
+      mpfr_set_ui_2exp (u, 1, mpfr_get_emin () - 1, MPFR_RNDN); /* u = 8 */
+      /* sqrt(u) should be rounded to +0 */
+      mpfr_clear_flags ();
+      inex = mpfr_sqrt (r, u, MPFR_RNDN);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(mpfr_zero_p (r) && mpfr_signbit (r) == 0);
+      MPFR_ASSERTN(mpfr_underflow_p ());
+      
       mpfr_clear (r);
       mpfr_clear (u);
     }
