@@ -177,6 +177,14 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
                      here. This would mean that the precision of e2 would be
                      huge (and possibly not supported in practice anyway). */
                   MPFR_ASSERTN (e1 > MPFR_EMIN_MIN);
+                  /* Note: this case is probably impossible to have in practice
+                     since we need e2 = emax, and no overflow in the product.
+                     Since the product is >= 2^(e1+e2-2), it implies
+                     e1 + e2 - 2 <= emax, thus e1 <= 2. Now to get an overflow
+                     we need op1 >= 1/2 ulp(op2), which implies that the
+                     precision of op2 should be at least emax-2. On a 64-bit
+                     computer this is impossible to have, and would require
+                     a huge amount of memory on a 32-bit computer. */
                   scaleop = -1;
                 }
 

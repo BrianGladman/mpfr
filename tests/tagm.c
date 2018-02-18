@@ -354,7 +354,6 @@ main (int argc, char* argv[])
   tests_start_mpfr ();
 
   check_special ();
-
   check_large ();
   check_eq ();
   check4 ("2.0", "1.0", MPFR_RNDN, "1.456791031046906869", -1);
