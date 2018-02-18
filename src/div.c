@@ -842,8 +842,8 @@ mpfr_div_with_mpz_tdiv_q (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v,
       *inex = mpfr_set_z (q, qm, rnd_mode);
       MPFR_SAVE_EXPO_FREE (expo);
       /* if we got an underflow or overflow, the result is not valid */
-      if (MPFR_IS_SINGULAR(q) || MPFR_EXP(q) == MPFR_EXT_EMIN ||
-          MPFR_EXP(q) == MPFR_EXT_EMAX)
+      if (MPFR_IS_SINGULAR(q) || MPFR_EXP(q) == MPFR_EMIN_MIN ||
+          MPFR_EXP(q) == MPFR_EMAX_MAX)
         ok =  0;
       MPFR_EXP(q) += ue - ve;
       *inex = mpfr_check_range (q, *inex, rnd_mode);
