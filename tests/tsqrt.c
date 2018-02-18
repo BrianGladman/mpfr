@@ -698,15 +698,16 @@ check_overflow (void)
   int inex;
 
   emax = mpfr_get_emax ();
-  mpfr_set_emax (-1);
   for (p = MPFR_PREC_MIN; p <= 1024; p++)
     {
       mpfr_init2 (r, p);
       mpfr_init2 (u, p);
+
+      mpfr_set_emax (-1);
       mpfr_set_ui_2exp (u, 1, mpfr_get_emax () - 1, MPFR_RNDN);
       mpfr_nextbelow (u);
       mpfr_mul_2exp (u, u, 1, MPFR_RNDN);
-      /* now u = 1/2 - 2^(-p-1) is the largest number < +Inf,
+      /* now u = (1 - 2^(-p))*2^emax is the largest number < +Inf,
          it square root is near 0.707 and has exponent 0 > emax */
       /* for RNDN, the result should be +Inf */
       inex = mpfr_sqrt (r, u, MPFR_RNDN);
@@ -720,6 +721,17 @@ check_overflow (void)
       inex = mpfr_sqrt (r, u, MPFR_RNDZ);
       MPFR_ASSERTN(inex < 0);
       MPFR_ASSERTN(mpfr_equal_p (r, u));
+
+      mpfr_set_emax (0);
+      mpfr_set_ui_2exp (u, 1, mpfr_get_emax () - 1, MPFR_RNDN);
+      mpfr_nextbelow (u);
+      mpfr_mul_2exp (u, u, 1, MPFR_RNDN);
+      /* u = 1-2^(-p), its square root is > u, and should thus give +Inf when
+         rounding away */
+      inex = mpfr_sqrt (r, u, MPFR_RNDA);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_inf_p (r) && mpfr_sgn (r) > 0);
+
       mpfr_clear (r);
       mpfr_clear (u);
     }
