@@ -269,7 +269,8 @@ bug20171213_gen (mpfr_prec_t pmax)
           mpfr_div_2exp (d, d, e, MPFR_RNDN);    /* b = 1 - 2^(-e) */
           if (! mpfr_equal_p (a, d))
             {
-              printf ("bug20171213_gen failed for p=%lu, e=%lu\n", p, e);
+              printf ("bug20171213_gen failed for p=%ld, e=%ld\n",
+                      (long) p, (long) e);
               printf ("b="); mpfr_dump (b);
               printf ("c="); mpfr_dump (c);
               printf ("got      a="); mpfr_dump (a);
@@ -887,8 +888,8 @@ check_underflow (mpfr_prec_t p)
       inexact = mpfr_sub (x, y, z, MPFR_RNDN);
       if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
         {
-          printf ("4*2^(emin-2) - 3*2^(emin-2) with RNDN failed for p=%lu\n",
-                  p);
+          printf ("4*2^(emin-2) - 3*2^(emin-2) with RNDN failed for p=%ld\n",
+                  (long) p);
           printf ("Expected inexact < 0 with x=0\n");
           printf ("Got inexact=%d with x=", inexact);
           mpfr_dump (x);
@@ -903,8 +904,8 @@ check_underflow (mpfr_prec_t p)
       inexact = mpfr_sub (x, y, z, MPFR_RNDN);
       if (inexact >= 0 || (mpfr_cmp_ui (x, 0) != 0))
         {
-          printf ("5*2^(emin-2) - 4*2^(emin-2) with RNDN failed for p=%lu\n",
-                  p);
+          printf ("5*2^(emin-2) - 4*2^(emin-2) with RNDN failed for p=%ld\n",
+                  (long) p);
           printf ("Expected inexact < 0 with x=0\n");
           printf ("Got inexact=%d with x=", inexact);
           mpfr_dump (x);

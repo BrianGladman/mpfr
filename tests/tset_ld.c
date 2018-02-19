@@ -210,7 +210,7 @@ check_set_get (long double d)
           printf ("  x = ");
           mpfr_dump (x);
           printf ("  MPFR_LDBL_MANT_DIG=%u\n", MPFR_LDBL_MANT_DIG);
-          printf ("  prec=%lu\n", prec);
+          printf ("  prec=%ld\n", (long) prec);
           print_binary (d, 2);
           exit (1);
         }
