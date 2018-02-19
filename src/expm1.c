@@ -84,25 +84,22 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
     {
       mp_limb_t t_limb[(64 - 1) / GMP_NUMB_BITS + 1];
       mpfr_t t;
-      mpfr_exp_t err;
+      mpfr_eexp_t err;
 
-      /* FIXME for 32-bit mpfr_prec_t & mpfr_exp_t and 64-bit long
-         (-D_MPFR_PREC_FORMAT=2 on a 64-bit Linux machine). */
       MPFR_TMP_INIT1(t_limb, t, 64);
       /* since x < 0, to get an upper bound on x/log(2), we need to divide
          by an upper bound on log(2) */
       mpfr_div (t, x, __gmpfr_const_log2_RNDU, MPFR_RNDU); /* > x / ln(2) */
       err = mpfr_get_exp_t (t, MPFR_RNDU);
-      /* The "- (err == MPFR_EXP_MIN)" is necessary because -MPFR_EXP_MIN
-         yields an integer overflow in two's complement. So err will be
-         -max(ceil(t),1+MPFR_EXP_MIN). */
-      err = - (err == MPFR_EXP_MIN) - err;
-      MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) err));
+      MPFR_ASSERTD (err < 0);
+      err = err < - MPFR_EXP_MAX ? MPFR_EXP_MAX : - err;
+      /* err = -max(ceil(t),-MPFR_EXP_MAX). */
+      MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", err));
       /* exp(x) = 2^(x/ln(2))
-               <= 2^max(1+MPFR_EXP_MIN,ceil(x/ln(2)+epsilon))
+               <= 2^max(-MPFR_EXP_MAX,ceil(x/ln(2)+epsilon))
          with epsilon > 0 */
-      MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_mone, err, 0, 0,
-                                        rnd_mode, expo, {});
+      MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_mone, (mpfr_exp_t) err,
+                                        0, 0, rnd_mode, expo, {});
     }
 
   /* General case */
