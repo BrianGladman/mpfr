@@ -242,44 +242,44 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       MPFR_LOG_MSG (("Roundoff error: %Pu\n", err));
       MPFR_LOG_MSG (("Approxim error: %Pu\n", wprec-prec-1));
 
-      if (wprec < err+1)
-        correct_bits=0;
+      /* wprec = prec + ceil(log2(prec)) + 5 + cond + assumed_exponent
+         err = 4 + ceil(log2(k)) + cond - EXP(s)
+         thus wprec - (err+1) >= prec + ceil(log2(prec))
+         + assumed_exponent - ceil(log2(k)) + EXP(s)
+         >= prec + ceil(log2(prec)) - ceil(log2(k)) + 1
+         since |s| >= 2^(-assumed_exponent) thus EXP(s) >= 1-assumed_exponent.
+         Now since prec = PREC(y) + 11 >= 12, this yields:
+         wprec - (err+1) >= 12 + 4 - ceil(log2(k)) + 1 = 17 - ceil(log2(k)).
+         Note: the smallest observed value of wprec - (err+1) in the tests
+         (with GMP_CHECK_RANDOMIZE not defined) is 12.
+         Instead of having code that is never exercised, we prefer to assume
+         we always have wprec > err+1. */
+      MPFR_ASSERTN(wprec > err + 1);
+      if (wprec < err + prec +1)
+        correct_bits =  wprec - err - 1; /* since wprec > err + 1,
+                                            correct_bits > 0 */
       else
-        {
-          if (wprec < err+prec+1)
-            correct_bits =  wprec - err - 1;
-          else
-            correct_bits = prec;
-        }
+        correct_bits = prec;
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, correct_bits, MPFR_PREC (y), rnd)))
         break;
 
-      if (correct_bits == 0)
-        {
-          assumed_exponent *= 2;
-          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n",
-                         assumed_exponent));
-          wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (prec) + cond + assumed_exponent;
+      MPFR_ASSERTD(correct_bits > 0);
+      if (correct_bits < prec)
+        { /* The precision was badly chosen */
+          MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"
+                         " (E=%" MPFR_EXP_FSPEC "d)\n",
+                         (mpfr_eexp_t) MPFR_GET_EXP (s)));
+          wprec = prec + err + 1;
         }
       else
-        {
-          if (correct_bits < prec)
-            { /* The precision was badly chosen */
-              MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"
-                             " (E=%" MPFR_EXP_FSPEC "d)\n",
-                             (mpfr_eexp_t) MPFR_GET_EXP (s)));
-              wprec = prec + err + 1;
-            }
-          else
-            { /* We are really in a bad case of the TMD */
-              MPFR_ZIV_NEXT (loop, prec);
-
-              /* We update wprec */
-              /* We assume that K will not be multiplied by more than 4 */
-              wprec = prec + (MPFR_INT_CEIL_LOG2 (k)+2) + 5 + cond
-                - MPFR_GET_EXP (s);
-            }
+        { /* We are really in a bad case of the TMD */
+          MPFR_ZIV_NEXT (loop, prec);
+          
+          /* We update wprec */
+          /* We assume that K will not be multiplied by more than 4 */
+          wprec = prec + (MPFR_INT_CEIL_LOG2 (k) + 2) + 5 + cond
+            - MPFR_GET_EXP (s);
         }
 
     } /* End of ZIV loop */
@@ -303,7 +303,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
 
 /* Airy function Ai evaluated by Smith algorithm.
-   Assume that x is a finite number. */
+   Assume that x is a finite non-zero number. */
 static int
 mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
@@ -336,7 +336,6 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   /* FIXME: underflow for large values of |x| */
 
-
   /* Set initial precision */
   /* See the analysis for the naive evaluation */
 
@@ -355,31 +354,26 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_mul (tmp2_sp, tmp_sp, tmp2_sp, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
-  if ( (MPFR_IS_ZERO (x)) || (MPFR_GET_EXP (x) <= 0) )
+  if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
     cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1)/4 - 1;
 
   /* This variable is used to store the maximal assumed exponent of       */
-  /* Ai (x). More precisely, we assume that |Ai (x)| will be greater than */
-  /* 2^{-assumedExp}.                                                     */
-  if (MPFR_IS_ZERO (x))
-    assumed_exponent = 2;
-  else
+  /* Ai(x). More precisely, we assume that |Ai(x)| will be greater than   */
+  /* 2^{-assumed_exponent}.                                               */
+  if (MPFR_IS_POS (x))
     {
-      if (MPFR_IS_POS (x))
-        {
-          if (MPFR_GET_EXP (x) <= 0)
-            assumed_exponent = 3;
-          else
-            assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
-                                + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
-        }
-      /* We do not know Ai (x) yet */
-      /* We cover the case when EXP (Ai (x))>=-10 */
+      if (MPFR_GET_EXP (x) <= 0)
+        assumed_exponent = 3;
       else
-        assumed_exponent = 10;
+        assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+                            + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
     }
+  /* We do not know Ai(x) yet */
+  /* We cover the case when EXP(Ai(x))>=-10 */
+  else
+    assumed_exponent = 10;
 
   wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumed_exponent;
 
@@ -627,6 +621,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
       else if (MPFR_IS_INF (x))
         return mpfr_set_ui (y, 0, rnd);
+      /* the cases x = +0 or -0 will be treated below */
     }
 
   /* The exponent range must be large enough for the computation of temp1. */
@@ -653,5 +648,7 @@ mpfr_ai (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   MPFR_SAVE_EXPO_FREE (expo); /* Ignore all previous exceptions. */
 
+  /* we use ai2 if |x|*AI_THRESHOLD1/3 + PREC(y)*AI_THRESHOLD2 > AI_SCALE,
+     which means x cannot be zero in mpfr_ai2 */
   return use_ai2 ? mpfr_ai2 (y, x, rnd) : mpfr_ai1 (y, x, rnd);
 }

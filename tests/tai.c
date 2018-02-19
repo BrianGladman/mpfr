@@ -133,11 +133,77 @@ bug20180107 (void)
   mpfr_clear (z);
 }
 
+/* exercise mpfr_ai near m*2^e, for precision p */
+static void
+test_near_zero (long m, mpfr_exp_t e, mpfr_prec_t pmax)
+{
+  mpfr_t x, xx, y, yy;
+  mpfr_prec_t p;
+  int inex;
+  
+  /* first determine the smallest precision for which m*2^e is exact */
+  for (p = MPFR_PREC_MIN; p <= pmax; p++)
+    {
+      mpfr_init2 (x, p);
+      inex = mpfr_set_si_2exp (x, m, e, MPFR_RNDN);
+      mpfr_clear (x);
+      if (inex == 0)
+        break;
+    }
+  mpfr_init2 (x, p);
+  inex = mpfr_set_si_2exp (x, m, e, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  for (; p <= pmax; p++)
+    {
+      mpfr_init2 (y, p);
+      mpfr_init2 (xx, p);
+      mpfr_init2 (yy, p);
+      mpfr_prec_round (x, p, MPFR_RNDN);
+      mpfr_ai (y, x, MPFR_RNDN);
+      while (1)
+        {
+          mpfr_set (xx, x, MPFR_RNDN);
+          mpfr_nextbelow (xx);
+          mpfr_ai (yy, xx, MPFR_RNDN);
+          if (mpfr_cmpabs (yy, y) >= 0)
+            break;
+          else
+            {
+              mpfr_set (x, xx, MPFR_RNDN);
+              mpfr_set (y, yy, MPFR_RNDN);
+            }
+        }
+      while (1)
+        {
+          mpfr_set (xx, x, MPFR_RNDN);
+          mpfr_nextabove (xx);
+          mpfr_ai (yy, xx, MPFR_RNDN);
+          if (mpfr_cmpabs (yy, y) >= 0)
+            break;
+          else
+            {
+              mpfr_set (x, xx, MPFR_RNDN);
+              mpfr_set (y, yy, MPFR_RNDN);
+            }
+        }
+      mpfr_clear (y);
+      mpfr_clear (xx);
+      mpfr_clear (yy);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  test_near_zero (-5, -1, 100); /* exercise near zero -2.5 */
+  test_near_zero (-4, 0, 100); /* exercise near zero -4 */
+  test_near_zero (-11, -1, 100); /* exercise near zero -5.5 */
+  test_near_zero (-27, -2, 100); /* exercise near zero -6.8 */
+  test_near_zero (-31, -2, 100); /* exercise near zero -8 */
+  test_near_zero (-15, -1, 100); /* exercise near zero -9 */
   bug20180107 ();
   check_large ();
   check_zero ();
