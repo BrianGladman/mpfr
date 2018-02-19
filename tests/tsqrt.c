@@ -865,7 +865,7 @@ check_underflow (void)
       MPFR_ASSERTN(inex < 0);
       MPFR_ASSERTN(mpfr_zero_p (r) && mpfr_signbit (r) == 0);
       MPFR_ASSERTN(mpfr_underflow_p ());
-      
+
       mpfr_clear (r);
       mpfr_clear (u);
     }
