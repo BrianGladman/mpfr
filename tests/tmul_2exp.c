@@ -101,10 +101,8 @@ underflow (mpfr_exp_t e)
                         printf ("MPFR_EMIN_MIN");
                       else if (e == emin)
                         printf ("default emin");
-                      else if (e >= LONG_MIN)
-                        printf ("%ld", (long) e);
                       else
-                        printf ("<LONG_MIN");
+                        printf ("%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e);
                       printf (") with mpfr_%s,\nx = %d/16, prec = %d, k = %d,"
                               " %s\n", div == 0 ? "mul_2si" : div == 1 ?
                               "div_2si" : "div_2ui", s * i, prec, k,
