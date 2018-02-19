@@ -146,7 +146,13 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
-    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1) / 4 - 1;
+    {
+      MPFR_BLOCK_DECL (flags);
+
+      MPFR_BLOCK (flags, cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+      MPFR_ASSERTN (! MPFR_ERANGEFLAG (flags));
+      cond -= (MPFR_GET_EXP (x) - 1) / 4 + 1;
+    }
 
   /* The variable assumed_exponent is used to store the maximal assumed */
   /* exponent of Ai(x). More precisely, we assume that |Ai(x)| will be  */
@@ -156,8 +162,15 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_GET_EXP (x) <= 0)
         assumed_exponent = 3;
       else
-        assumed_exponent = (2 + (MPFR_GET_EXP (x) / 4 + 1)
-                            + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+        {
+          unsigned long int t;
+          MPFR_BLOCK_DECL (flags);
+
+          MPFR_BLOCK (flags, t = mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+          MPFR_ASSERTN (! MPFR_ERANGEFLAG (flags));
+          assumed_exponent = t + 2 + (MPFR_GET_EXP (x) / 4 + 1);
+          MPFR_ASSERTN (assumed_exponent > t);
+        }
     }
   /* We do not know Ai (x) yet */
   /* We cover the case when EXP (Ai (x))>=-10 */
@@ -357,7 +370,13 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
-    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1) / 4 - 1;
+    {
+      MPFR_BLOCK_DECL (flags);
+
+      MPFR_BLOCK (flags, cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+      MPFR_ASSERTN (! MPFR_ERANGEFLAG (flags));
+      cond -= (MPFR_GET_EXP (x) - 1) / 4 + 1;
+    }
 
   /* This variable is used to store the maximal assumed exponent of       */
   /* Ai(x). More precisely, we assume that |Ai(x)| will be greater than   */
@@ -367,8 +386,15 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_GET_EXP (x) <= 0)
         assumed_exponent = 3;
       else
-        assumed_exponent = (2 + (MPFR_GET_EXP (x) / 4 + 1)
-                            + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+        {
+          unsigned long int t;
+          MPFR_BLOCK_DECL (flags);
+
+          MPFR_BLOCK (flags, t = mpfr_get_ui (tmp2_sp, MPFR_RNDU));
+          MPFR_ASSERTN (! MPFR_ERANGEFLAG (flags));
+          assumed_exponent = t + 2 + (MPFR_GET_EXP (x) / 4 + 1);
+          MPFR_ASSERTN (assumed_exponent > t);
+        }
     }
   /* We do not know Ai(x) yet */
   /* We cover the case when EXP(Ai(x))>=-10 */
