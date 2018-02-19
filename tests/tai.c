@@ -140,7 +140,9 @@ test_near_zero (long m, mpfr_exp_t e, mpfr_prec_t pmax)
   mpfr_t x, xx, y, yy;
   mpfr_prec_t p;
   int inex;
-  
+
+  mpfr_clear_flags ();
+
   /* first determine the smallest precision for which m*2^e is exact */
   for (p = MPFR_PREC_MIN; p <= pmax; p++)
     {
@@ -150,9 +152,11 @@ test_near_zero (long m, mpfr_exp_t e, mpfr_prec_t pmax)
       if (inex == 0)
         break;
     }
+
   mpfr_init2 (x, p);
   inex = mpfr_set_si_2exp (x, m, e, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
+
   for (; p <= pmax; p++)
     {
       mpfr_init2 (y, p);
@@ -190,7 +194,11 @@ test_near_zero (long m, mpfr_exp_t e, mpfr_prec_t pmax)
       mpfr_clear (xx);
       mpfr_clear (yy);
     }
+
   mpfr_clear (x);
+
+  /* Since some tests don't really check that the result is not NaN... */
+  MPFR_ASSERTN (! mpfr_nanflag_p ());
 }
 
 int
