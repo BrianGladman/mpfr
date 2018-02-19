@@ -178,9 +178,14 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
     assumed_exponent = 10;
 
   {
-    mpfr_prec_t incr =
-      MPFR_INT_CEIL_LOG2 (prec) + 5 + cond + assumed_exponent;
-    wprec = MPFR_ADD_PREC (prec, incr);
+    unsigned long int t, u;
+
+    t = assumed_exponent + cond;
+    MPFR_ASSERTN (t >= cond);
+    u = MPFR_INT_CEIL_LOG2 (prec) + 5;
+    t += u;
+    MPFR_ASSERTN (t >= u);
+    wprec = MPFR_ADD_PREC (prec, t);
   }
 
   mpfr_init (ti);
@@ -401,7 +406,16 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   else
     assumed_exponent = 10;
 
-  wprec = prec + MPFR_INT_CEIL_LOG2 (prec) + 6 + cond + assumed_exponent;
+  {
+    unsigned long int t, u;
+
+    t = assumed_exponent + cond;
+    MPFR_ASSERTN (t >= cond);
+    u = MPFR_INT_CEIL_LOG2 (prec) + 6;
+    t += u;
+    MPFR_ASSERTN (t >= u);
+    wprec = MPFR_ADD_PREC (prec, t);
+  }
 
   /* We assume that the truncation rank will be ~ prec */
   L = __gmpfr_isqrt (prec);
