@@ -172,13 +172,12 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
     }
 }
 
-#if MPFR_LIMB_MAX >= ULONG_MAX
 /*
  * return index [-1..127] of highest bit set.  Return -1 if x = 0, 2 if x = 4,
  * etc.  (From Algorithms for programmers by Joerg Arndt.)
  */
 static int
-highest_bit_idx (unsigned long x)
+highest_bit_idx_alt (unsigned long x)
 {
   int r = 0;
 
@@ -199,7 +198,7 @@ highest_bit_idx (unsigned long x)
   if (x &  0x00000002UL) {           r +=  1; }
   return r;
 }
-#else
+
 /*
  * return index [-1..63] of highest bit set.
  * Return -1 if x = 0, 63 is if x = ~0 (for 64-bit unsigned long).
@@ -208,15 +207,20 @@ highest_bit_idx (unsigned long x)
 static int
 highest_bit_idx (unsigned long x)
 {
-  int cnt;
+  /* this test should be evaluated at compile time */
+  if (sizeof (mp_limb_t) >= sizeof (unsigned long))
+    {
+      int cnt;
 
-  if (x == 0)
-    return -1;
-  count_leading_zeros (cnt, (mp_limb_t) x);
-  MPFR_ASSERTD (cnt <= GMP_NUMB_BITS - 1);
-  return GMP_NUMB_BITS - 1 - cnt;
+      if (x == 0)
+        return -1;
+      count_leading_zeros (cnt, (mp_limb_t) x);
+      MPFR_ASSERTD (cnt <= GMP_NUMB_BITS - 1);
+      return GMP_NUMB_BITS - 1 - cnt;
+    }
+  else
+    return highest_bit_idx_alt (x);
 }
-#endif
 
 /* return position of leading bit, counting from 1 */
 static mpfr_random_size_t
