@@ -26,6 +26,7 @@ static void
 test1 (void)
 {
   mpfr_t x, y;
+  int inex;
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 42);
@@ -90,6 +91,14 @@ test1 (void)
   mpfr_set_prec (y, 2);
   mpfr_zeta (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 3, -1) == 0);
+
+  /* yet another coverage test (case beta <= 0.0) */
+  mpfr_set_prec (x, 10);
+  mpfr_set_ui (x, 23, MPFR_RNDN);
+  mpfr_set_prec (y, 15);
+  inex = mpfr_zeta (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
 
   mpfr_set_nan (x);
   mpfr_zeta (y, x, MPFR_RNDN);
