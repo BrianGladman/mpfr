@@ -135,7 +135,7 @@ bug20180107 (void)
 
 /* exercise mpfr_ai near m*2^e, for precision p */
 static void
-test_near_zero (long m, mpfr_exp_t e, mpfr_prec_t pmax)
+test_near_m2e (long m, mpfr_exp_t e, mpfr_prec_t pmax)
 {
   mpfr_t x, xx, y, yy;
   mpfr_prec_t p;
@@ -206,12 +206,12 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  test_near_zero (-5, -1, 100); /* exercise near zero -2.5 */
-  test_near_zero (-4, 0, 100); /* exercise near zero -4 */
-  test_near_zero (-11, -1, 100); /* exercise near zero -5.5 */
-  test_near_zero (-27, -2, 100); /* exercise near zero -6.8 */
-  test_near_zero (-31, -2, 100); /* exercise near zero -8 */
-  test_near_zero (-15, -1, 100); /* exercise near zero -9 */
+  test_near_m2e (-5, -1, 100); /* exercise near -2.5 */
+  test_near_m2e (-4, 0, 100); /* exercise near -4 */
+  test_near_m2e (-11, -1, 100); /* exercise near -5.5 */
+  test_near_m2e (-27, -2, 100); /* exercise near -6.75 */
+  test_near_m2e (-31, -2, 100); /* exercise near -7.75 */
+  test_near_m2e (-15, -1, 100); /* exercise near -7.5 */
   bug20180107 ();
   check_large ();
   check_zero ();
