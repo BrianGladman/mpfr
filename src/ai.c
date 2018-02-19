@@ -106,6 +106,9 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       return mpfr_check_range (y, r, rnd);
     }
 
+  /* now x is not zero */
+  MPFR_ASSERTD(!MPFR_IS_ZERO(x));
+
   /* FIXME: underflow for large values of |x| ? */
 
 
@@ -140,7 +143,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_mul (tmp2_sp, tmp_sp, tmp2_sp, MPFR_RNDU);
 
   /* cond represents the number of lost bits in the evaluation of the sum */
-  if ( (MPFR_IS_ZERO (x)) || (MPFR_GET_EXP (x) <= 0) )
+  if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
     cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x)-1)/4 - 1;
@@ -148,23 +151,18 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   /* The variable assumed_exponent is used to store the maximal assumed */
   /* exponent of Ai(x). More precisely, we assume that |Ai(x)| will be  */
   /* greater than 2^{-assumed_exponent}.                                */
-  if (MPFR_IS_ZERO (x))
-    assumed_exponent = 2;
-  else
+  if (MPFR_IS_POS (x))
     {
-      if (MPFR_IS_POS (x))
-        {
-          if (MPFR_GET_EXP (x) <= 0)
-            assumed_exponent = 3;
-          else
-            assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
-                                + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
-        }
-      /* We do not know Ai (x) yet */
-      /* We cover the case when EXP (Ai (x))>=-10 */
+      if (MPFR_GET_EXP (x) <= 0)
+        assumed_exponent = 3;
       else
-        assumed_exponent = 10;
+        assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+                            + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
     }
+  /* We do not know Ai (x) yet */
+  /* We cover the case when EXP (Ai (x))>=-10 */
+  else
+    assumed_exponent = 10;
 
   {
     mpfr_prec_t incr =
