@@ -165,10 +165,8 @@ large (mpfr_exp_t e)
         printf ("MPFR_EMAX_MAX");
       else if (e == emax)
         printf ("default emax");
-      else if (e <= LONG_MAX)
-        printf ("%ld", (long) e);
       else
-        printf (">LONG_MAX");
+        printf ("%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e);
       printf (") for mpfr_mul_2si\n");
       printf ("Expected inex > 0, flags = %u,\n         y = ",
               (unsigned int) MPFR_FLAGS_INEXACT);
@@ -190,10 +188,8 @@ large (mpfr_exp_t e)
         printf ("MPFR_EMAX_MAX");
       else if (e == emax)
         printf ("default emax");
-      else if (e <= LONG_MAX)
-        printf ("%ld", (long) e);
       else
-        printf (">LONG_MAX");
+        printf ("%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e);
       printf (") for mpfr_div_2si\n");
       printf ("Expected inex > 0, flags = %u,\n         y = ",
               (unsigned int) MPFR_FLAGS_INEXACT);
@@ -215,10 +211,8 @@ large (mpfr_exp_t e)
         printf ("MPFR_EMAX_MAX");
       else if (e == emax)
         printf ("default emax");
-      else if (e <= LONG_MAX)
-        printf ("%ld", (long) e);
       else
-        printf (">LONG_MAX");
+        printf ("%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e);
       printf (") for mpfr_div_2ui\n");
       printf ("Expected inex > 0, flags = %u,\n         y = ",
               (unsigned int) MPFR_FLAGS_INEXACT);
