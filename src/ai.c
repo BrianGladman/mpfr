@@ -260,7 +260,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
           assumed_exponent *= 2;
           MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n",
                          assumed_exponent));
-          wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (k) + cond + assumed_exponent;
+          wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (prec) + cond + assumed_exponent;
         }
       else
         {
