@@ -664,7 +664,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTN (exp_b != MPFR_EXP_MAX || exp_a > __gmpfr_emax);
       if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
         {
-        underflow:
           if (rnd_mode == MPFR_RNDN &&
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
