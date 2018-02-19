@@ -161,12 +161,15 @@ mpfr_sqrt1 (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
              (1-2^(-p)+2^(-2p-2))*2^(2*emin-2) <= u < 2^(2*emin-2),
              and there is no p-bit number in that interval. */
           /* If the result is <= 0.5^2^(emin-1), we should round to 0. */
-          if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+          if (exp_r < __gmpfr_emin - 1 ||
+              (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
       else if (MPFR_IS_LIKE_RNDA(rnd_mode, 0))
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~mask) && (rb | sb))
+          if (exp_r == __gmpfr_emin - 1 &&
+              rp[0] == ~mask &&
+              (rb | sb) != 0)
             goto rounding; /* no underflow */
         }
       return mpfr_underflow (r, rnd_mode, 1);
@@ -247,7 +250,7 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   /* As shown in mpfr_sqrt1 above, r0 has its most significant bit set */
   MPFR_ASSERTD(r0 >= MPFR_LIMB_HIGHBIT);
-  
+
   umul_ppmm (rb, sb, r0, r0);
   sub_ddmmss (rb, sb, u0, low, rb, sb);
   /* for the exact square root, we should have 0 <= rb:sb <= 2*r0 */
@@ -287,12 +290,15 @@ mpfr_sqrt1n (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         {
           /* the case rp[0] = 111...111 and rb = 1 cannot happen, since it
              would imply u0 >= (2^64-1/2)^2/2^64 thus u0 >= 2^64 */
-          if (exp_r < __gmpfr_emin - 1 || (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
+          if (exp_r < __gmpfr_emin - 1 ||
+              (rp[0] == MPFR_LIMB_HIGHBIT && sb == 0))
             rnd_mode = MPFR_RNDZ;
         }
       else if (MPFR_IS_LIKE_RNDA(rnd_mode, 0))
         {
-          if ((exp_r == __gmpfr_emin - 1) && (rp[0] == ~MPFR_LIMB_ZERO) && (rb | sb))
+          if (exp_r == __gmpfr_emin - 1 &&
+              rp[0] == MPFR_LIMB_MAX &&
+              (rb | sb) != 0)
             goto rounding; /* no underflow */
         }
       return mpfr_underflow (r, rnd_mode, 1);
@@ -632,7 +638,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   expr = (MPFR_GET_EXP(u) + odd_exp) / 2;  /* exact */
 
-  if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD || sticky == MPFR_LIMB_ZERO)
+  if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD ||
+      sticky == MPFR_LIMB_ZERO)
     {
       inexact = (sticky == MPFR_LIMB_ZERO) ? 0 : -1;
       goto truncate;
