@@ -136,7 +136,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_init2 (tmp2_sp, MPFR_SMALL_PRECISION);
   mpfr_abs (tmp_sp, x, MPFR_RNDU);
   mpfr_pow_ui (tmp_sp, tmp_sp, 3, MPFR_RNDU);
-  mpfr_sqrt (tmp_sp, tmp_sp, MPFR_RNDU); /* tmp_sp ~ x^3/2 */
+  mpfr_sqrt (tmp_sp, tmp_sp, MPFR_RNDU); /* tmp_sp ~ |x|^(3/2) */
 
   /* 0.96179669392597567 >~ 2/3 * log2(e). See algorithms.tex */
   mpfr_set_str (tmp2_sp, "0.96179669392597567", 10, MPFR_RNDU);
@@ -146,7 +146,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
-    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x)-1)/4 - 1;
+    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1) / 4 - 1;
 
   /* The variable assumed_exponent is used to store the maximal assumed */
   /* exponent of Ai(x). More precisely, we assume that |Ai(x)| will be  */
@@ -156,7 +156,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_GET_EXP (x) <= 0)
         assumed_exponent = 3;
       else
-        assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+        assumed_exponent = (2 + (MPFR_GET_EXP (x) / 4 + 1)
                             + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
     }
   /* We do not know Ai (x) yet */
@@ -275,7 +275,7 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       else
         { /* We are really in a bad case of the TMD */
           MPFR_ZIV_NEXT (loop, prec);
-          
+
           /* We update wprec */
           /* We assume that K will not be multiplied by more than 4 */
           wprec = prec + (MPFR_INT_CEIL_LOG2 (k) + 2) + 5 + cond
@@ -347,7 +347,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   mpfr_init2 (tmp2_sp, MPFR_SMALL_PRECISION);
   mpfr_abs (tmp_sp, x, MPFR_RNDU);
   mpfr_pow_ui (tmp_sp, tmp_sp, 3, MPFR_RNDU);
-  mpfr_sqrt (tmp_sp, tmp_sp, MPFR_RNDU); /* tmp_sp ~ x^3/2 */
+  mpfr_sqrt (tmp_sp, tmp_sp, MPFR_RNDU); /* tmp_sp ~ |x|^(3/2) */
 
   /* 0.96179669392597567 >~ 2/3 * log2(e). See algorithms.tex */
   mpfr_set_str (tmp2_sp, "0.96179669392597567", 10, MPFR_RNDU);
@@ -357,7 +357,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (x) <= 0)
     cond = 0;
   else
-    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1)/4 - 1;
+    cond = mpfr_get_ui (tmp2_sp, MPFR_RNDU) - (MPFR_GET_EXP (x) - 1) / 4 - 1;
 
   /* This variable is used to store the maximal assumed exponent of       */
   /* Ai(x). More precisely, we assume that |Ai(x)| will be greater than   */
@@ -367,7 +367,7 @@ mpfr_ai2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_GET_EXP (x) <= 0)
         assumed_exponent = 3;
       else
-        assumed_exponent = (2 + (MPFR_GET_EXP (x)/4 + 1)
+        assumed_exponent = (2 + (MPFR_GET_EXP (x) / 4 + 1)
                             + mpfr_get_ui (tmp2_sp, MPFR_RNDU));
     }
   /* We do not know Ai(x) yet */
