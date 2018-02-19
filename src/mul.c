@@ -180,10 +180,17 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else if (! mpfr_equal_p (ta, a) || ! SAME_SIGN (inexact1, inexact2))
     {
+      /* We do not have MPFR_PREC_FSPEC, so let's use mpfr_eexp_t and
+         MPFR_EXP_FSPEC since mpfr_prec_t values are guaranteed to be
+         representable in mpfr_exp_t, thus in mpfr_eexp_t. */
       fprintf (stderr, "mpfr_mul return different values for %s\n"
-               "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nb = ",
+               "Prec_a = %" MPFR_EXP_FSPEC "d, "
+               "Prec_b = %" MPFR_EXP_FSPEC "d, "
+               "Prec_c = %" MPFR_EXP_FSPEC "d\nb = ",
                mpfr_print_rnd_mode (rnd_mode),
-               MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
+               (mpfr_eexp_t) MPFR_PREC (a),
+               (mpfr_eexp_t) MPFR_PREC (b),
+               (mpfr_eexp_t) MPFR_PREC (c));
       mpfr_fdump (stderr, b);
       fprintf (stderr, "c = ");
       mpfr_fdump (stderr, c);
