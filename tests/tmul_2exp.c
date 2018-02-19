@@ -230,10 +230,24 @@ large (mpfr_exp_t e)
 static void
 large0 (void)
 {
-  large (256);
-  if (mpfr_get_emax () != MPFR_EMAX_MAX)
-    large (mpfr_get_emax ());
-  large (MPFR_EMAX_MAX);
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
+
+  while (1)
+    {
+      large (256);
+      if (mpfr_get_emax () != MPFR_EMAX_MAX)
+        large (mpfr_get_emax ());
+      large (MPFR_EMAX_MAX);
+      if (mpfr_get_emin () == MPFR_EMIN_MIN)
+        break;
+      /* Redo the test with __gmpfr_emin set to MPFR_EMIN_MIN, which can
+         be useful to trigger integer overflows as in div_2ui.c r12272. */
+      set_emin (MPFR_EMIN_MIN);
+    }
+
+  set_emin (emin);
 }
 
 /* Cases where the function overflows on n = 0 when rounding is like

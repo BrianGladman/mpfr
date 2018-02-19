@@ -37,10 +37,14 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   else
     {
       mpfr_exp_t exp = MPFR_GET_EXP (x);
-      mpfr_exp_t diffexp;
+      mpfr_uexp_t diffexp;
 
       MPFR_SETRAW (inexact, y, x, exp, rnd_mode);
-      diffexp = exp - (__gmpfr_emin - 1);  /* diff of valid exponents +/- 1 */
+      /* Warning! exp may have increased by 1 due to rounding. Thus the
+         difference below may overflow in a mpfr_exp_t; but mpfr_uexp_t
+         is OK to hold the value, with the difference done in unsigned
+         integer arithmetic in this type. */
+      diffexp = (mpfr_uexp_t) exp - (mpfr_uexp_t) (__gmpfr_emin - 1);
       if (MPFR_UNLIKELY (n >= diffexp))  /* exp - n <= emin - 1 */
         {
           if (rnd_mode == MPFR_RNDN &&
@@ -50,10 +54,14 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (y, rnd_mode, MPFR_SIGN (y));
         }
-      /* Now, n < diffexp, i.e. n <= exp - emin, which a difference
-       * of two valid exponents, thus fits in a mpfr_exp_t (from the
-       * constraints on valid exponents).
+      /* Now, n < diffexp, i.e. n <= exp - emin, which a difference of
+       * two valid exponents + 0 or 1, thus fits in a mpfr_exp_t (from
+       * the constraints on valid exponents). Moreover, there cannot be
+       * an overflow (if exp had been increased by 1 due to rounding)
+       * since the case n = 0 has been filtered out.
        */
+      MPFR_ASSERTD (n <= MPFR_EXP_MAX);
+      MPFR_ASSERTD (n >= 1);
       MPFR_SET_EXP (y, exp - (mpfr_exp_t) n);
     }
 
