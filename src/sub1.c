@@ -671,10 +671,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
         }
-      if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
-        {
-          return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
-        }
+      /* We cannot have overflow here. Indeed:
+         exp_a = exp_b - cancel + add_exp <= emax - 1 + 1 <= emax. */
+      MPFR_ASSERTD(exp_a <= __gmpfr_emax);
     }
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {

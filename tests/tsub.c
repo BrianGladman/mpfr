@@ -143,6 +143,19 @@ check_diverse (void)
       exit (1);
     }
 
+  /* yet another coverage test */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 3);
+  mpfr_set_prec (z, 1);
+  mpfr_set_ui_2exp (y, 1, mpfr_get_emax (), MPFR_RNDZ);
+  /* y = (1 - 2^(-3))*2^emax */
+  mpfr_set_ui_2exp (z, 1, mpfr_get_emax () - 4, MPFR_RNDZ);
+  /* z = 2^(emax - 4) */
+  /* y - z = (1 - 2^(-3) - 2^(-4))*2^emax > (1-2^(-2))*2^emax */
+  inexact = mpfr_sub (x, y, z, MPFR_RNDU);
+  MPFR_ASSERTN(inexact > 0);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
   mpfr_set_prec (x, 288);
   mpfr_set_prec (y, 288);
   mpfr_set_prec (z, 288);
