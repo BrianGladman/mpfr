@@ -466,8 +466,12 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr q)
   if (MPFR_UNLIKELY (mpq_denref (q) == 0))
     {
       /* q is an infinity or NaN */
-      mpfr_init2 (t, 2);
+      mpfr_flags_t old_flags;
+
+      mpfr_init2 (t, MPFR_PREC_MIN);
+      old_flags = __gmpfr_flags;
       mpfr_set_q (t, q, MPFR_RNDN);
+      __gmpfr_flags = old_flags;
       res = mpfr_cmp (x, t);
       mpfr_clear (t);
       return res;
