@@ -851,7 +851,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (b1 == 0))
         mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
-  else
+  else /* bn >= cn and bn >= 3 */
     /* Mulders' mulhigh. This code can also be used via mpfr_sqr,
        hence the tests b != c. */
     if (MPFR_UNLIKELY (cn > (threshold = b != c ?
@@ -944,9 +944,27 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               }
             if (b != c)
               {
+#if GMP_NUMB_BITS <= 32
                 if (cn > n)
-                  cp --; /* FIXME: Could this happen? */
+                  cp --; /* This can only happen on a 32-bit computer,
+                            and is very unlikely to happen.
+                            Indeed, since n = MIN (an + 1, cn), with
+                            an = MPFR_LIMB_SIZE(a), we can have cn > n
+                            only when n = an + 1 < cn.
+                            We are in the case aq > p - 5, with
+                            aq = PREC(a) = an*W - sh, with W = GMP_NUMB_BITS
+                            and 0 <= sh < W, and p = n*W - ceil(log2(n+2)),
+                            thus an*W - sh > n*W - ceil(log2(n+2)) - 5.
+                            Thus n < an + (ceil(log2(n+2)) + 5 - sh)/W.
+                            To get n = an + 1, we need
+                            ceil(log2(n+2)) + 5 - sh > W, thus since sh>=0
+                            we need ceil(log2(n+2)) + 5 > W.
+                            With W=32 this can only happen for n>=2^27-1,
+                            thus for a precision of 2^32-64 for a,
+                            and with W=64 for n>=2^59-1, which would give
+                            a precision >= 2^64. */
                 else
+#endif
                   {
                     cp = MPFR_TMP_LIMBS_ALLOC (n + 1);
                     cp[0] = 0;
