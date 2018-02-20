@@ -812,6 +812,9 @@ dnl MPFR_LONG_WITHIN_LIMB undefined; this is necessary for code coverage
 dnl and possibly to find new bugs, like in r12252:
 dnl   ./configure --enable-assert=full \
 dnl     'CFLAGS=-std=c99 -O3 -pedantic-errors -Wno-error=overlength-strings'
+dnl According to the GMP developers, a limb is always as large as a long,
+dnl except when __GMP_SHORT_LIMB is defined, but this is never defined:
+dnl https://gmplib.org/list-archives/gmp-discuss/2018-February/006190.html
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
 AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
@@ -825,10 +828,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   return 0;
 ]])], [mpfr_cv_long_within_limb="yes"],
       [mpfr_cv_long_within_limb="no"],
-      [mpfr_cv_long_within_limb="cannot test, assume not present"])
+      [mpfr_cv_long_within_limb="cannot test, assume yes"])
 ])
 case $mpfr_cv_long_within_limb in
 yes*)
+      AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t]) ;;
+cannot*)
       AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t])
 esac
 CPPFLAGS="$saved_CPPFLAGS"
