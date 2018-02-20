@@ -1215,6 +1215,34 @@ coverage (mpfr_prec_t pmax)
       mpfr_nextabove (a);
       MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
+      /* same as above, but near emax, to exercise the case where a carry
+         produces an overflow */
+      mpfr_set_si_2exp (b, -1, -(p+2)/2, MPFR_RNDN);
+      mpfr_add_ui (b, b, 1, MPFR_RNDN);
+      mpfr_mul_2si (b, b, mpfr_get_emax (), MPFR_RNDN);
+      mpfr_set_si_2exp (c, 1, -(p+2)/2, MPFR_RNDN);
+      mpfr_add_ui (c, c, 1, MPFR_RNDN);
+      /* b*c should round to 2^emax */
+      mpfr_clear_flags ();
+      inex = mpfr_mul (a, b, c, MPFR_RNDN);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+      MPFR_ASSERTN(mpfr_overflow_p ());
+      /* idem for RNDU */
+      mpfr_clear_flags ();
+      inex = mpfr_mul (a, b, c, MPFR_RNDU);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+      MPFR_ASSERTN(mpfr_overflow_p ());
+      /* For RNDD, b*c should round to (1-2^(-p))*2^emax */
+      mpfr_clear_flags ();
+      inex = mpfr_mul (a, b, c, MPFR_RNDD);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(!mpfr_inf_p (a));
+      MPFR_ASSERTN(!mpfr_overflow_p ());
+      mpfr_nextabove (a);
+      MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+
     end_of_loop:
       mpfr_clear (a);
       mpfr_clear (b);
