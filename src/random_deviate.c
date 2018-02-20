@@ -174,16 +174,15 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
 
 #ifndef MPFR_LONG_WITHIN_LIMB /* a long does not fit in a mp_limb_t */
 /*
- * return index [-1..127] of highest bit set.  Return -1 if x = 0, 2 if x = 4,
- * etc.  (From Algorithms for programmers by Joerg Arndt.)
+ * return index [0..127] of highest bit set.  Return 0 if x = 1, 2 if x = 4,
+ * etc. Assume x > 0. (From Algorithms for programmers by Joerg Arndt.)
  */
 static int
 highest_bit_idx (unsigned long x)
 {
   int r = 0;
 
-  if (x == 0)
-    return -1;
+  MPFR_ASSERTD(x > 0);
   MPFR_ASSERTN (sizeof (unsigned long) * CHAR_BIT <= 128);
   if (sizeof (unsigned long) * CHAR_BIT > 64)
     {
@@ -201,8 +200,8 @@ highest_bit_idx (unsigned long x)
 }
 #else /* a long fits in a mp_limb_t */
 /*
- * return index [-1..63] of highest bit set.
- * Return -1 if x = 0, 63 is if x = ~0 (for 64-bit unsigned long).
+ * return index [0..63] of highest bit set. Assume x > 0.
+ * Return 0 if x = 1, 63 is if x = ~0 (for 64-bit unsigned long).
  * See alternate code above too.
  */
 static int
@@ -210,8 +209,7 @@ highest_bit_idx (unsigned long x)
 {
   int cnt;
 
-  if (x == 0)
-    return -1;
+  MPFR_ASSERTD(x > 0);
   count_leading_zeros (cnt, (mp_limb_t) x);
   MPFR_ASSERTD (cnt <= GMP_NUMB_BITS - 1);
   return GMP_NUMB_BITS - 1 - cnt;
