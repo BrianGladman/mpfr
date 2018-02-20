@@ -815,6 +815,10 @@ dnl     'CFLAGS=-std=c99 -O3 -pedantic-errors -Wno-error=overlength-strings'
 dnl According to the GMP developers, a limb is always as large as a long,
 dnl except when __GMP_SHORT_LIMB is defined, but this is never defined:
 dnl https://gmplib.org/list-archives/gmp-discuss/2018-February/006190.html
+dnl FIXME: This is not safe. The fact that __GMP_SHORT_LIMB cannot occur
+dnl is not documented, and gmp.h has such a code probably because it may
+dnl occur in the future (or the user may want to override the default
+dnl choice).
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
 AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
@@ -834,7 +838,7 @@ case $mpfr_cv_long_within_limb in
 yes*)
       AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t]) ;;
 cannot*)
-      AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t])
+      AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t]) ;;
 esac
 CPPFLAGS="$saved_CPPFLAGS"
 ])
