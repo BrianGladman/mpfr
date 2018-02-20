@@ -1601,11 +1601,12 @@ static void
 coverage (mpfr_prec_t pmax)
 {
   mpfr_prec_t p;
-  int inex, inex2;
-  mpfr_t q, u, v, t, w;
 
   for (p = MPFR_PREC_MIN; p <= pmax; p++)
     {
+      int inex;
+      mpfr_t q, u, v;
+
       mpfr_init2 (q, p);
       mpfr_init2 (u, p);
       mpfr_init2 (v, p);
@@ -1668,47 +1669,6 @@ coverage (mpfr_prec_t pmax)
       mpfr_clear (u);
       mpfr_clear (v);
     }
-
-  /* coverage for mpfr_div_with_mpz_tdiv_q (case q0size >= 32) */
-  p = 32 * GMP_NUMB_BITS;
-  mpfr_init2 (q, p);
-  mpfr_init2 (u, 2 * p + GMP_NUMB_BITS + 1); /* to have up > vp + wp
-                                                in mpfr_div_with_mpz_tdiv_q */
-  mpfr_init2 (v, p);
-  do
-    mpfr_urandomb (u, RANDS);
-  while (mpfr_zero_p (u) && mpfr_min_prec (u) < mpfr_get_prec (u));
-  do mpfr_urandomb (v, RANDS); while (mpfr_zero_p (v));
-  inex = mpfr_div (q, u, v, MPFR_RNDN);
-  mpfr_init2 (t, mpfr_get_prec (u));
-  mpfr_init2 (w, mpfr_get_prec (u));
-  inex2 = mpfr_mul (t, q, v, MPFR_RNDN);
-  MPFR_ASSERTN(inex2 == 0);
-  if (inex == 0) /* check q*v = u */
-    MPFR_ASSERTN(mpfr_equal_p (u, t));
-  else
-    {
-      if (inex > 0)
-        mpfr_nextbelow (q);
-      else
-        mpfr_nextabove (q);
-      inex2 = mpfr_mul (w, q, v, MPFR_RNDN);
-      MPFR_ASSERTN(inex2 == 0);
-      inex2 = mpfr_sub (t, t, u, MPFR_RNDN);
-      MPFR_ASSERTN(inex2 == 0);
-      inex2 = mpfr_sub (w, w, u, MPFR_RNDN);
-      MPFR_ASSERTN(inex2 == 0);
-      MPFR_ASSERTN(mpfr_cmpabs (t, w) <= 0);
-      if (mpfr_cmpabs (t, w) == 0) /* even rule: significand of q should now
-                                      be odd */
-        MPFR_ASSERTN(mpfr_min_prec (q) == mpfr_get_prec (q));
-    }
-
-  mpfr_clear (q);
-  mpfr_clear (u);
-  mpfr_clear (v);
-  mpfr_clear (t);
-  mpfr_clear (w);
 }
 
 int
