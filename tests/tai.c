@@ -201,11 +201,31 @@ test_near_m2e (long m, mpfr_exp_t e, mpfr_prec_t pmax)
   MPFR_ASSERTN (! mpfr_nanflag_p ());
 }
 
+/* example provided by Sylvain Chevillard, which exercises the case
+   wprec < err + 1, and thus correct_bits = 0, in src/ai.c */
+static void
+coverage (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 800);
+  mpfr_init2 (y, 20);
+  mpfr_set_str (x, "-2.3381074104597670384891972524467354406385401456723878524838544372136680027002836477821640417313293202847600938532659527752254668583598667448688987168197275409731526749911127480659996456283534915503672", 10, MPFR_RNDN);
+  inex = mpfr_ai (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 593131, -682) == 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  coverage ();
   test_near_m2e (-5, -1, 100); /* exercise near -2.5 */
   test_near_m2e (-4, 0, 100); /* exercise near -4 */
   test_near_m2e (-11, -1, 100); /* exercise near -5.5 */

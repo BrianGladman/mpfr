@@ -260,20 +260,9 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       MPFR_LOG_MSG (("Roundoff error: %Pu\n", err));
       MPFR_LOG_MSG (("Approxim error: %Pu\n", wprec-prec-1));
 
-      /* wprec = prec + ceil(log2(prec)) + 5 + cond + assumed_exponent
-         err = 4 + ceil(log2(k)) + cond - EXP(s)
-         thus wprec - (err+1) >= prec + ceil(log2(prec))
-         + assumed_exponent - ceil(log2(k)) + EXP(s)
-         >= prec + ceil(log2(prec)) - ceil(log2(k)) + 1
-         since |s| >= 2^(-assumed_exponent) thus EXP(s) >= 1-assumed_exponent.
-         Now since prec = PREC(y) + 11 >= 12, this yields:
-         wprec - (err+1) >= 12 + 4 - ceil(log2(k)) + 1 = 17 - ceil(log2(k)).
-         Note: the smallest observed value of wprec - (err+1) in the tests
-         (with GMP_CHECK_RANDOMIZE not defined) is 12.
-         Instead of having code that is never exercised, we prefer to assume
-         we always have wprec > err+1. */
-      MPFR_ASSERTN(wprec > err + 1);
-      if (wprec < err + prec +1)
+      if (wprec < err + 1)
+        correct_bits = 0;
+      else if (wprec < err + prec +1)
         correct_bits =  wprec - err - 1; /* since wprec > err + 1,
                                             correct_bits > 0 */
       else
@@ -282,8 +271,15 @@ mpfr_ai1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, correct_bits, MPFR_PREC (y), rnd)))
         break;
 
-      MPFR_ASSERTD(correct_bits > 0);
-      if (correct_bits < prec)
+      if (correct_bits == 0)
+        {
+          assumed_exponent *= 2;
+          MPFR_LOG_MSG (("Not a single bit correct (assumed_exponent=%lu)\n",
+                         assumed_exponent));
+          wprec = prec + 5 + MPFR_INT_CEIL_LOG2 (prec) + cond +
+            assumed_exponent;
+        }
+      else if (correct_bits < prec)
         { /* The precision was badly chosen */
           MPFR_LOG_MSG (("Bad assumption on the exponent of Ai(x)"
                          " (E=%" MPFR_EXP_FSPEC "d)\n",
