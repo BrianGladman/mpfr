@@ -736,7 +736,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 case $mpfr_cv_check_gmp in
 no*)
   AC_MSG_ERROR([bad GMP library or header - ABI problem?
-See 'config.log' for details.])
+See 'config.log' for details.]) ;;
 esac
 ])
 
@@ -794,7 +794,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 case $mpfr_cv_dbl_int_bug in
 yes*)
   AC_MSG_ERROR([double-to-integer conversion is incorrect.
-You need to use another compiler (or lower the optimization level).])
+You need to use another compiler (or lower the optimization level).]) ;;
 esac
 ])
 
