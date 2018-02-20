@@ -1216,11 +1216,50 @@ coverage_mpfr_mul_q_20110218 (void)
   mpfr_clear (cmp);
 }
 
+static void
+coverage (void)
+{
+  mpfr_exp_t emax, emin;
+  mpz_t z;
+  mpfr_t x;
+  int cmp;
+
+  mpz_init (z);
+  mpfr_init2 (x, 5);
+
+  /* coverage for mpfr_cmp_z in case of overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (63);
+  mpz_set_str (z, "9223372036854775808", 10); /* 2^63 */
+  mpfr_set_ui_2exp (x, 1, mpfr_get_emax (), MPFR_RNDZ);
+  /* x = (1-2^(-p))*2^emax */
+  mpfr_clear_flags ();
+  cmp = mpfr_cmp_z (x, z);
+  MPFR_ASSERTN(cmp < 0);
+  MPFR_ASSERTN(!mpfr_overflow_p ());
+  mpfr_set_emax (emax);
+
+  /* coverage for mpfr_cmp_z in case of underflow */
+  mpz_set_str (z, "18446744073709551615", 10); /* 2^64-1 */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (65); /* xmin = 2^64 */
+  mpfr_set_ui_2exp (x, 1, 64, MPFR_RNDN);
+  mpfr_clear_flags ();
+  cmp = mpfr_cmp_z (x, z);
+  MPFR_ASSERTN(cmp > 0);
+  MPFR_ASSERTN(!mpfr_underflow_p ());
+  mpfr_set_emin (emin);
+
+  mpfr_clear (x);
+  mpz_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  coverage ();
   special ();
 
   test_specialz (mpfr_add_z, mpz_add, "add");
