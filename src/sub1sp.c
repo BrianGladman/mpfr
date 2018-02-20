@@ -24,8 +24,21 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Check if we have to check the result of mpfr_sub1sp with mpfr_sub1 */
 #if MPFR_WANT_ASSERT >= 2
+/* Check the result of mpfr_sub1sp with mpfr_sub1.
+
+   Note: mpfr_sub1sp itself has two algorithms: one always valid and one
+   faster for small precisions (up to 3 limbs). The latter one is disabled
+   if MPFR_GENERIC_ABI is defined. When MPFR_WANT_ASSERT >= 2, it could be
+   interesting to compare the results of these different algorithms. For
+   the time being, this is currently done by running the same code on the
+   same data with and without MPFR_GENERIC_ABI defined, where we have the
+   following comparisons in small precisions:
+     mpfr_sub1sp slow <-> mpfr_sub1 when MPFR_GENERIC_ABI is defined;
+     mpfr_sub1sp fast <-> mpfr_sub1 when MPFR_GENERIC_ABI is not defined.
+   By transitivity, the absence of failures implies that the 3 results are
+   the same.
+*/
 
 int mpfr_sub1sp_ref (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
