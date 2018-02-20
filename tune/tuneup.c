@@ -886,9 +886,9 @@ tune_div_mulders_upto (mp_size_t n)
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
-  /* we should have (n+3)/2 <= k < n, which translates into
-     (n+4)/2 <= k < n in C */
-  for (k = (n + 4) / 2 ; k < n ; k += step)
+  /* we should have (n+3)/2 <= k < n-1, which translates into
+     (n+4)/2 <= k < n-1 in C */
+  for (k = (n + 4) / 2 ; k < n - 1; k += step)
     {
       divhigh_ktab[n] = k;
       t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");

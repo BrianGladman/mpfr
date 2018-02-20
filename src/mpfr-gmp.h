@@ -177,6 +177,10 @@ void *alloca (size_t);
 #define MPN_SAME_OR_DECR_P(dst, src, size)      \
   MPN_SAME_OR_DECR2_P(dst, size, src, size)
 
+#ifndef MUL_FFT_THRESHOLD
+#define MUL_FFT_THRESHOLD 8448
+#endif
+
 /* If mul_basecase or mpn_sqr_basecase are not exported, used mpn_mul instead */
 #ifndef mpn_mul_basecase
 # define mpn_mul_basecase(dst,s1,n1,s2,n2) mpn_mul((dst),(s1),(n1),(s2),(n2))

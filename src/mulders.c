@@ -26,15 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
        July 25-27, 2011, pages 7-14.
 */
 
-/* Defines it to 1 to use short div (or 0 for FoldDiv(K)) */
-#define USE_SHORT_DIV 1
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-
-#ifndef MUL_FFT_THRESHOLD
-#define MUL_FFT_THRESHOLD 8448
-#endif
 
 /* Don't use MPFR_MULHIGH_SIZE since it is handled by tuneup */
 #ifdef MPFR_MULHIGH_TAB_SIZE
@@ -103,50 +96,6 @@ mpfr_mulhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
     }
 }
 
-#if USE_SHORT_DIV == 0
-/* Put in  rp[0..n] the n+1 low limbs of {up, n} * {vp, n}.
-   Assume 2n limbs are allocated at rp. */
-static void
-mpfr_mullow_n_basecase (mpfr_limb_ptr rp, mpfr_limb_srcptr up,
-                        mpfr_limb_srcptr vp, mp_size_t n)
-{
-  mp_size_t i;
-
-  rp[n] = mpn_mul_1 (rp, up, n, vp[0]);
-  for (i = 1 ; i < n ; i++)
-    mpn_addmul_1 (rp + i, up, n - i + 1, vp[i]);
-}
-
-/* Put in  rp[0..n] the n+1 low limbs of {np, n} * {mp, n}.
-   Assume 2n limbs are allocated at rp. */
-void
-mpfr_mullow_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mpfr_limb_srcptr mp,
-               mp_size_t n)
-{
-  mp_size_t k;
-
-  MPFR_STAT_STATIC_ASSERT (MPFR_MULHIGH_TAB_SIZE >= 8); /* so that 3*(n/4) > n/2 */
-  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 3*(n/4);
-  MPFR_ASSERTD (k == -1 || k == 0 || (2 * k >= n && k < n));
-  if (k < 0)
-    mpn_mul_basecase (rp, np, n, mp, n);
-  else if (k == 0)
-    mpfr_mullow_n_basecase (rp, np, mp, n);
-  else if (n > MUL_FFT_THRESHOLD)
-    mpn_mul_n (rp, np, mp, n);
-  else
-    {
-      mp_size_t l = n - k;
-
-      mpn_mul_n (rp, np, mp, k);                      /* fills rp[0..2k] */
-      mpfr_mullow_n (rp + n, np + k, mp, l);          /* fills rp[n..n+2l] */
-      mpn_add_n (rp + k, rp + k, rp + n, l + 1);
-      mpfr_mullow_n (rp + n, np, mp + k, l);          /* fills rp[n..n+2l] */
-      mpn_add_n (rp + k, rp + k, rp + n, l + 1);
-    }
-}
-#endif
-
 #ifdef MPFR_SQRHIGH_TAB_SIZE
 static short sqrhigh_ktab[MPFR_SQRHIGH_TAB_SIZE];
 #else
@@ -186,8 +135,6 @@ mpfr_sqrhigh_n (mpfr_limb_ptr rp, mpfr_limb_srcptr np, mp_size_t n)
     }
 }
 
-#if USE_SHORT_DIV == 1
-
 #ifdef MPFR_DIVHIGH_TAB_SIZE
 static short divhigh_ktab[MPFR_DIVHIGH_TAB_SIZE];
 #else
@@ -201,6 +148,8 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
    Assumes the most significant bit of D is set. Clobbers N.
 
    The approximate quotient Q satisfies - 2(n-1) < N/D - Q <= 4.
+
+   Assumes n >= 2.
 */
 static mp_limb_t
 mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
@@ -208,6 +157,8 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
 {
   mp_limb_t qh, d1, d0, dinv, q2, q1, q0;
   mpfr_pi1_t dinv2;
+
+  MPFR_ASSERTD(n >= 2);
 
   np += n;
 
@@ -218,15 +169,7 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
 
   d1 = dp[n - 1];
 
-  if (n == 1)
-    {
-      invert_limb (dinv, d1);
-      umul_ppmm (q1, q0, np[0], dinv);
-      qp[0] = np[0] + q1;
-      return qh;
-    }
-
-  /* now n >= 2 */
+  /* we assumed n >= 2 */
   d0 = dp[n - 2];
   invert_pi1 (dinv2, d1, d0);
   /* dinv2.inv32 = floor ((B^3 - 1) / (d0 + d1 B)) - B */
@@ -291,6 +234,8 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
    Assumes the most significant bit of D is set. Clobbers N.
 
    This implements the ShortDiv algorithm from reference [1].
+
+   Assumes n >= 2 (which should be fulfilled also in the recursive calls).
 */
 mp_limb_t
 mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
@@ -302,7 +247,9 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   MPFR_TMP_DECL(marker);
 
   MPFR_STAT_STATIC_ASSERT (MPFR_DIVHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
+  MPFR_ASSERTD(n >= 2);
   k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);
+  MPFR_ASSERTD(k != n - 1); /* k=n-1 would give l=1 in the recursive call */
 
   if (k == 0)
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
@@ -349,151 +296,3 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
 
   return qh;
 }
-
-#else /* below is the FoldDiv(K) algorithm from [1] */
-
-mp_limb_t
-mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
-                mp_size_t n)
-{
-  mp_size_t k, r;
-  mpfr_limb_ptr ip, tp, up;
-  mp_limb_t qh = 0, cy, cc;
-  int count;
-  MPFR_TMP_DECL(marker);
-
-#define K 3
-  if (n < K)
-    return mpn_divrem (qp, 0, np, 2 * n, dp, n);
-
-  k = (n - 1) / K + 1; /* ceil(n/K) */
-
-  MPFR_TMP_MARK (marker);
-  ip = MPFR_TMP_LIMBS_ALLOC (k + 1);
-  tp = MPFR_TMP_LIMBS_ALLOC (n + k);
-  up = MPFR_TMP_LIMBS_ALLOC (2 * (k + 1));
-  mpn_invert (ip, dp + n - (k + 1), k + 1, NULL); /* takes about 13% for n=1000 */
-  /* {ip, k+1} = floor((B^(2k+2)-1)/D - B^(k+1) where D = {dp+n-(k+1),k+1} */
-  for (r = n, cc = 0UL; r > 0;)
-    {
-      /* cc is the carry at np[n+r] */
-      MPFR_ASSERTD(cc <= 1);
-      /* FIXME: why can we have cc as large as say 8? */
-      count = 0;
-      while (cc > 0)
-        {
-          count ++;
-          MPFR_ASSERTD(count <= 1);
-          /* subtract {dp+n-r,r} from {np+n,r} */
-          cc -= mpn_sub_n (np + n, np + n, dp + n - r, r);
-          /* add 1 at qp[r] */
-          qh += mpn_add_1 (qp + r, qp + r, n - r, 1UL);
-        }
-      /* it remains r limbs to reduce, i.e., the remainder is {np, n+r} */
-      if (r < k)
-        {
-          ip += k - r;
-          k = r;
-        }
-      /* now r >= k */
-      /* qp + r - 2 * k -> up */
-      mpfr_mulhigh_n (up, np + n + r - (k + 1), ip, k + 1);
-      /* take into account the term B^k in the inverse: B^k * {np+n+r-k, k} */
-      cy = mpn_add_n (qp + r - k, up + k + 2, np + n + r - k, k);
-      /* since we need only r limbs of tp (below), it suffices to consider
-         r high limbs of dp */
-      if (r > k)
-        {
-#if 0
-          mpn_mul (tp, dp + n - r, r, qp + r - k, k);
-#else  /* use a short product for the low k x k limbs */
-          /* we know the upper k limbs of the r-limb product cancel with the
-             remainder, thus we only need to compute the low r-k limbs */
-          if (r - k >= k)
-            mpn_mul (tp + k, dp + n - r + k, r - k, qp + r - k, k);
-          else /* r-k < k */
-            {
-/* #define LOW */
-#ifndef LOW
-              mpn_mul (tp + k, qp + r - k, k, dp + n - r + k, r - k);
-#else
-              mpfr_mullow_n_basecase (tp + k, qp + r - k, dp + n - r + k, r - k);
-              /* take into account qp[2r-2k] * dp[n - r + k] */
-              tp[r] += qp[2*r-2*k] * dp[n - r + k];
-#endif
-              /* tp[k..r] is filled */
-            }
-#if 0
-          mpfr_mulhigh_n (up, dp + n - r, qp + r - k, k);
-#else /* compute one more limb. FIXME: we could add one limb of dp in the
-         above, to save one mpn_addmul_1 call */
-          mpfr_mulhigh_n (up, dp + n - r, qp + r - k, k - 1); /* {up,2k-2} */
-          /* add {qp + r - k, k - 1} * dp[n-r+k-1] */
-          up[2*k-2] = mpn_addmul_1 (up + k - 1, qp + r - k, k-1, dp[n-r+k-1]);
-          /* add {dp+n-r, k} * qp[r-1] */
-          up[2*k-1] = mpn_addmul_1 (up + k - 1, dp + n - r, k, qp[r-1]);
-#endif
-#ifndef LOW
-          cc = mpn_add_n (tp + k, tp + k, up + k, k);
-          mpn_add_1 (tp + 2 * k, tp + 2 * k, r - k, cc);
-#else
-          /* update tp[k..r] */
-          if (r - k + 1 <= k)
-            mpn_add_n (tp + k, tp + k, up + k, r - k + 1);
-          else /* r - k >= k */
-            {
-              cc = mpn_add_n (tp + k, tp + k, up + k, k);
-              mpn_add_1 (tp + 2 * k, tp + 2 * k, r - 2 * k + 1, cc);
-            }
-#endif
-#endif
-        }
-      else /* last step: since we only want the quotient, no need to update,
-              just propagate the carry cy */
-        {
-          MPFR_ASSERTD(r < n);
-          if (cy > 0)
-            qh += mpn_add_1 (qp + r, qp + r, n - r, cy);
-          break;
-        }
-      /* subtract {tp, n+k} from {np+r-k, n+k}; however we only want to
-         update {np+n, n} */
-      /* we should have tp[r] = np[n+r-k] up to 1 */
-      MPFR_ASSERTD(tp[r] == np[n + r - k] || tp[r] + 1 == np[n + r - k]);
-#ifndef LOW
-      cc = mpn_sub_n (np + n - 1, np + n - 1, tp + k - 1, r + 1); /* borrow at np[n+r] */
-#else
-      cc = mpn_sub_n (np + n - 1, np + n - 1, tp + k - 1, r - k + 2);
-#endif
-      /* if cy = 1, subtract {dp, n} from {np+r, n}, thus
-         {dp+n-r,r} from {np+n,r} */
-      if (cy)
-        {
-          if (r < n)
-            cc += mpn_sub_n (np + n - 1, np + n - 1, dp + n - r - 1, r + 1);
-          else
-            cc += mpn_sub_n (np + n, np + n, dp + n - r, r);
-          /* propagate cy */
-          if (r == n)
-            qh = cy;
-          else
-            qh += mpn_add_1 (qp + r, qp + r, n - r, cy);
-        }
-      /* cc is the borrow at np[n+r] */
-      count = 0;
-      while (cc > 0) /* quotient was too large */
-        {
-          count++;
-          MPFR_ASSERTD (count <= 1);
-          cy = mpn_add_n (np + n, np + n, dp + n - (r - k), r - k);
-          cc -= mpn_add_1 (np + n + r - k, np + n + r - k, k, cy);
-          qh -= mpn_sub_1 (qp + r - k, qp + r - k, n - (r - k), 1UL);
-        }
-      r -= k;
-      cc = np[n + r];
-    }
-  MPFR_TMP_FREE(marker);
-
-  return qh;
-}
-#endif

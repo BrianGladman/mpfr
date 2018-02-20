@@ -267,10 +267,11 @@ check_exact (void)
 }
 
 static void
-check_max(void)
+check_max (void)
 {
   mpfr_t xx, yy, zz;
   mpfr_exp_t emin;
+  int inex;
 
   mpfr_init2(xx, 4);
   mpfr_init2(yy, 4);
@@ -332,6 +333,20 @@ check_max(void)
   /* exact result is just above 0.1E-1, which should round to minfloat */
   MPFR_ASSERTN(mpfr_cmp (zz, yy) == 0);
   set_emin (emin);
+
+  /* coverage test for mulders.c, case n > MUL_FFT_THRESHOLD */
+  mpfr_set_prec (xx, (MUL_FFT_THRESHOLD + 1) * GMP_NUMB_BITS);
+  mpfr_set_prec (yy, (MUL_FFT_THRESHOLD + 1) * GMP_NUMB_BITS);
+  mpfr_set_prec (zz, (MUL_FFT_THRESHOLD + 1) * GMP_NUMB_BITS);
+  mpfr_set_ui (xx, 1, MPFR_RNDN);
+  mpfr_nextbelow (xx);
+  mpfr_set_ui (yy, 1, MPFR_RNDN);
+  mpfr_nextabove (yy);
+  /* xx = 1 - 2^(-p), yy = 1 + 2^(1-p), where p = PREC(x),
+     thus xx * yy should be rounded to 1 */
+  inex = mpfr_mul (zz, xx, yy, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (zz, 1) == 0);
 
   mpfr_clear(xx);
   mpfr_clear(yy);
