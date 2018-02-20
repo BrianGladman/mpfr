@@ -460,8 +460,18 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr q)
   mpfr_prec_t p;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* the documentation of GMP says the denominator of a mpz_t is positive */
-  MPFR_ASSERTD(mpq_denref (q) != 0);
+  /* GMP allows the user to set the denominator to 0. This is interpreted
+     by MPFR as the value being an infinity or NaN (probably better than
+     an assertion failure). */
+  if (MPFR_UNLIKELY (mpq_denref (q) == 0))
+    {
+      /* q is an infinity or NaN */
+      mpfr_init2 (t, 2);
+      mpfr_set_q (t, q, MPFR_RNDN);
+      res = mpfr_cmp (x, t);
+      mpfr_clear (t);
+      return res;
+    }
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return mpfr_cmp_si (x, mpq_sgn (q));
