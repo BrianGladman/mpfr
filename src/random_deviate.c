@@ -180,16 +180,21 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
 static int
 highest_bit_idx (unsigned long x)
 {
+  unsigned long y;
   int r = 0;
 
   MPFR_ASSERTD(x > 0);
-  MPFR_ASSERTN (sizeof (unsigned long) * CHAR_BIT <= 128);
-  if (sizeof (unsigned long) * CHAR_BIT > 64)
+  MPFR_STAT_STATIC_ASSERT (sizeof (unsigned long) * CHAR_BIT <= 128);
+
+  /* A compiler with VRP (like GCC) will optimize and not generate any code
+     for the following lines if unsigned long has at most 64 values bits. */
+  y = ((x >> 16) >> 24) >> 24;  /* portable x >> 64 */
+  if (y != 0)
     {
-      /* handle 128-bit unsigned longs avoiding compiler warnings */
-      unsigned long y = x >> 16; y >>= 24; y >>= 24;
-      if (y) { x = y; r += 64;}
+      x = y;
+      r += 64;
     }
+
   if (x & ~0xffffffffUL) { x >>= 16; x >>= 16; r +=32; }
   if (x &  0xffff0000UL) { x >>= 16; r += 16; }
   if (x &  0x0000ff00UL) { x >>=  8; r +=  8; }
