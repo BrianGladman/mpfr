@@ -203,7 +203,7 @@ highest_bit_idx (unsigned long x)
 /*
  * return index [-1..63] of highest bit set.
  * Return -1 if x = 0, 63 is if x = ~0 (for 64-bit unsigned long).
- * See highest_bit_idx_alt too.
+ * See alternate code above too.
  */
 static int
 highest_bit_idx (unsigned long x)
