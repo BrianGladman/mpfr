@@ -233,15 +233,20 @@ mpfr_div_1 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
     add_one_ulp:
       qp[0] += MPFR_LIMB_ONE << sh;
-      if (qp[0] == 0)
-        {
-          qp[0] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
-            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
-          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
-          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
-          MPFR_SET_EXP (q, qx + 1);
-        }
+      MPFR_ASSERTD(qp[0] != 0);
+      /* It is not possible to have an overflow in the addition above.
+         Proof: if p is the precision of the inputs, it would mean we have two
+         integers n and d with 2^(p-1) <= n, d < 2^p, such that the binary
+         expansion of n/d starts with p '1', and has at least one '1' later.
+         We distinguish two cases:
+         (1) if n/d < 1, it would mean 1-2^(-p) < n/d < 1
+         (2) if n/d >= 1, it would mean 2-2^(1-p) < n/d < 1
+         In case (1), multiplying by d we get 1-d/2^p < n < d,
+         which has no integer solution since d/2^p < 1.
+         In case (2), multiplying by d we get 2d-2d/2^p < n < 2d:
+         (2a) if d=2^(p-1), we get 2^p-1 < n < 2^p which has no solution;
+              if d>=2^(p-1)+1, then 2d-2d/2^p >= 2^p+2-2 = 2^p, thus there is
+              solution n < 2^p either. */
       MPFR_RET(MPFR_SIGN(q));
     }
 }
@@ -376,15 +381,9 @@ mpfr_div_1n (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
     add_one_ulp:
       qp[0] += MPFR_LIMB_ONE;
-      if (qp[0] == 0)
-        {
-          qp[0] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
-            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
-          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
-          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
-          MPFR_SET_EXP (q, qx + 1);
-        }
+      /* there can be no overflow in the addition above,
+         see the analysis of mpfr_div_1 */
+      MPFR_ASSERTD(qp[0] != 0);
       MPFR_RET(MPFR_SIGN(q));
     }
 }
@@ -636,16 +635,10 @@ mpfr_div_2 (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
     {
     add_one_ulp:
       qp[0] += MPFR_LIMB_ONE << sh;
-      qp[1] += (qp[0] == 0);
-      if (qp[1] == 0)
-        {
-          qp[1] = MPFR_LIMB_HIGHBIT;
-          if (MPFR_UNLIKELY(qx + 1 > __gmpfr_emax))
-            return mpfr_overflow (q, rnd_mode, MPFR_SIGN(q));
-          MPFR_ASSERTD(qx + 1 <= __gmpfr_emax);
-          MPFR_ASSERTD(qx + 1 >= __gmpfr_emin);
-          MPFR_SET_EXP (q, qx + 1);
-        }
+      qp[1] += qp[0] == 0;
+      /* there can be no overflow in the addition above,
+         see the analysis of mpfr_div_1 */
+      MPFR_ASSERTD(qp[1] != 0);
       MPFR_RET(MPFR_SIGN(q));
     }
 }
