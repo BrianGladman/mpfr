@@ -670,12 +670,14 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
         }
-      /* We cannot have overflow here. Indeed:
+      /* We cannot have overflow here, except for UBFs. Indeed:
          exp_a = exp_b - cancel + add_exp <= emax - 1 + 1 <= emax.
-         FIXME: maybe we could have exponents > MPFR_EXP_MAX for UBFs,
-         either prove this does not happen, or deal with such exponents
-         and add coverage tests. */
-      MPFR_ASSERTD(exp_a <= __gmpfr_emax);
+         For UBFs, we can have exp_b > emax. */
+      if (exp_a > __gmpfr_emax)
+        {
+          MPFR_ASSERTD(exp_b > __gmpfr_emax);
+          return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
+        }
     }
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {
