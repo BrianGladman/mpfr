@@ -60,6 +60,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/powerpc64/mparam.h"
 #include "powerpc64/mparam.h"
 
+#elif defined (__sparc_v9__) /* Threshold for 64-bits Sparc */
+#define MPFR_TUNE_CASE "src/sparc64/mparam.h"
+#include "sparc64/mparam.h"
+
 #elif defined (__mips__) /* MIPS */
 #define MPFR_TUNE_CASE "src/mips/mparam.h"
 #include "mips/mparam.h"
