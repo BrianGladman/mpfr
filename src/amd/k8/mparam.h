@@ -223,7 +223,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   
 #define MPFR_MUL_THRESHOLD 17 /* limbs */
 #define MPFR_SQR_THRESHOLD 13 /* limbs */
-#define MPFR_DIV_THRESHOLD 4 /* limbs */
+#define MPFR_DIV_THRESHOLD 27 /* limbs */
 #define MPFR_EXP_2_THRESHOLD 562 /* bits */
 #define MPFR_EXP_THRESHOLD 11073 /* bits */
 #define MPFR_SINCOS_THRESHOLD 32373 /* bits */
