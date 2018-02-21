@@ -36,7 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
 #include "x86_64/core2/mparam.h"
 
-#elif defined (__x86_64__)
+#elif defined (__x86_64__) /* generic parameters for x86_64 */
 #define MPFR_TUNE_CASE "src/x86_64/mparam.h"
 #include "x86_64/mparam.h"
 
@@ -48,10 +48,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #elif defined (__tune_k8__) && defined (__amd64__) /* AMD K8 */
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
-
-#elif defined (__tune_athlon__) /* Threshold for Athlon */
-#define MPFR_TUNE_CASE "src/amd/athlon/mparam.h"
-#include "amd/athlon/mparam.h"
 
 #elif defined (__tune_pentiumpro__) || defined (__tune_i686__) || defined (__i386) /* we consider all other 386's here */
 #define MPFR_TUNE_CASE "src/x86/mparam.h"
