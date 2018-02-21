@@ -849,7 +849,8 @@ tune_sqr_mulders_upto (mp_size_t n)
   return kbest;
 }
 
-/* Tune mpfr_divhigh_n for size n */
+/* Tune mpfr_divhigh_n for size n.
+   Ensure divhigh_ktab[n] < n for n > 0. */
 static mp_size_t
 tune_div_mulders_upto (mp_size_t n)
 {
@@ -858,9 +859,12 @@ tune_div_mulders_upto (mp_size_t n)
   double t, tbest;
   MPFR_TMP_DECL (marker);
 
-  /* we want n>=2 in mpfr_divhigh */
-  if (n <= 1)
-    return 0;
+  /* we require n > 2 in mpfr_divhigh (at least with mpn_sbpi1_divappr_q) */
+  if (n <= 2)
+    {
+      divhigh_ktab[n] = 0;
+      return 0;
+    }
 
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_yp = s.align_wp = s.align_wp2 = 64;
@@ -870,21 +874,13 @@ tune_div_mulders_upto (mp_size_t n)
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 
-  /* Check k == n, i.e., mpn_divrem */
-  divhigh_ktab[n] = n;
-  kbest = n;
-  tbest = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
-
-  /* Check k == 0, i.e., mpfr_divhigh_n_basecase */
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
-  if (n > 2) /* mpn_sbpi1_divappr_q requires dn > 2 */
+  MPFR_ASSERTN (n > 2); /* mpn_sbpi1_divappr_q requires dn > 2 */
 #endif
-    {
-      divhigh_ktab[n] = 0;
-      t = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
-      if (t * TOLERANCE < tbest)
-        kbest = 0, tbest = t;
-    }
+  
+  /* Check k == 0, i.e., mpfr_divhigh_n_basecase */
+  kbest = 0;
+  tbest = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");
 
   /* Check Mulders */
   step = 1 + n / (2 * MAX_STEPS);
@@ -898,6 +894,7 @@ tune_div_mulders_upto (mp_size_t n)
         kbest = k, tbest = t;
     }
 
+  MPFR_ASSERTN(kbest < n);
   divhigh_ktab[n] = kbest;
 
   MPFR_TMP_FREE (marker);
