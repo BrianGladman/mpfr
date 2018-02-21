@@ -37,8 +37,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Put that before __x86_64__ since __x86_64__ is also defined on AMD 64,
    We also have to define __tune_k8__ since __amd64__ is also defined on
-   Intel x86_64! */
-#elif defined (__amd64__) && defined (__tune_k8__) /* AMD 64 */
+   Intel x86_64! Ignore Clang as it defines both of these macros even on
+   Intel x86_64, and it does not seem to be possible to provide tuning
+   information when compiling with Clang, so that it is better to select
+   generic parameters for x86_64. */
+#elif defined (__amd64__) && defined (__tune_k8__) && ! defined (__clang__) /* AMD 64 */
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
 
