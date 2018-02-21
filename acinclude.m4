@@ -1052,7 +1052,7 @@ BEGIN {
               got[11] == "031" && \
               got[10] == "300")
             {
-              print "IEEE extended, little endian"
+              print "IEEE extended, little endian (12 bytes)"
               found = 1
               exit
             }
@@ -1071,7 +1071,7 @@ BEGIN {
               got[08] == "000")
             {
               # format found on m68k
-              print "IEEE extended, big endian"
+              print "IEEE extended, big endian (12 bytes)"
               found = 1
               exit
             }
@@ -1115,7 +1115,7 @@ BEGIN {
               got[15] == "031" && \
               got[14] == "300")
             {
-              print "IEEE extended, little endian"
+              print "IEEE extended, little endian (16 bytes)"
               found = 1
               exit
             }
@@ -1245,37 +1245,37 @@ AH_VERBATIM([HAVE_LDOUBLE],
 #undef HAVE_LDOUBLE_IEEE_QUAD_BIG])
 
 case $mpfr_cv_c_long_double_format in
-  "IEEE double, big endian")
+  "IEEE double, big endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
     ;;
-  "IEEE double, little endian")
+  "IEEE double, little endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
     ;;
-  "IEEE extended, little endian")
+  "IEEE extended, little endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_LITTLE, 1)
     ;;
-  "IEEE extended, big endian")
+  "IEEE extended, big endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IEEE_EXT_BIG, 1)
     ;;
-  "IEEE quad, big endian")
+  "IEEE quad, big endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_BIG, 1)
     ;;
-  "IEEE quad, little endian")
+  "IEEE quad, little endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IEEE_QUAD_LITTLE, 1)
     ;;
-  "possibly double-double, big endian")
+  "possibly double-double, big endian"*)
     AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
     AC_MSG_WARN([but due to GCC PR26374, we can't test further.])
     AC_MSG_WARN([You can safely ignore this warning, though.])
     AC_DEFINE(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE, 1)
     ;;
-  "possibly double-double, little endian")
+  "possibly double-double, little endian"*)
     AC_MSG_WARN([This format is known on GCC/PowerPC platforms,])
     AC_MSG_WARN([but due to GCC PR26374, we can't test further.])
     AC_MSG_WARN([You can safely ignore this warning, though.])
     AC_DEFINE(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE, 1)
     ;;
-  unknown* | "not available")
+  unknown* | "not available"*)
     ;;
   *)
     AC_MSG_WARN([unrecognized long double FP format: $mpfr_cv_c_long_double_format])
