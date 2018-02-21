@@ -49,6 +49,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
 
+#elif defined (__tune_pentiumpro__) || defined (__tune_i686__) || defined (__i386) /* we consider all other 386's here,
+      including a 64-bit machine with gmp/mpfr compiled with ABI=32 */
+#define MPFR_TUNE_CASE "src/x86/mparam.h"
+#include "x86/mparam.h"
+
 #elif defined (__PPC64__) /* Threshold for 64-bit PowerPC, test it before
                              32-bit PowerPC since _ARCH_PPC is also defined
                              on 64-bit PowerPC */
