@@ -62,10 +62,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/ia64/mparam.h"
 #include "ia64/mparam.h"
 
-#elif defined (__arm__) /* Threshold for ARM */
-#define MPFR_TUNE_CASE "src/arm/mparam.h"
-#include "arm/mparam.h"
-
 #elif defined (__PPC64__) /* Threshold for 64-bit PowerPC, test it before
                              32-bit PowerPC since _ARCH_PPC is also defined
                              on 64-bit PowerPC */
