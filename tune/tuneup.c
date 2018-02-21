@@ -478,18 +478,19 @@ tune_simple_func (mpfr_prec_t *threshold,
                   mpfr_prec_t pstart)
 {
   double measure[THRESHOLD_FINAL_WINDOW+1];
-  double d;
+  double d = -1.0;
   mpfr_prec_t pstep;
   int i, numpos, numneg, try;
   mpfr_prec_t pmin, pmax, p;
 
   /* first look for a lower bound within 10% */
   pmin = p = pstart;
-  d = domeasure (threshold, func, pmin);
+  for (i = 0; i < 10 && d < 0.0; i++)
+    d = domeasure (threshold, func, pmin);
   if (d < 0.0)
     {
       if (verbose)
-        printf ("Oops: even for %lu, algo 2 seems to be faster!\n",
+        printf ("Oops: even for precision %lu, algo 2 seems to be faster!\n",
                 (unsigned long) pmin);
       *threshold = MPFR_PREC_MIN;
       return;
