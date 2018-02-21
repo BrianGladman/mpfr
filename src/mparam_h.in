@@ -36,8 +36,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
 #include "x86_64/core2/mparam.h"
 
-/* put that before __x86_64__ since __x86_64__ is also defined on AMD 64 */
-#elif defined (__amd64__) /* AMD 64 */
+/* Put that before __x86_64__ since __x86_64__ is also defined on AMD 64,
+   We also have to define __tune_k8__ since __amd64__ is also defined on
+   Intel x86_64! */
+#elif defined (__amd64__) && defined (__tune_k8__) /* AMD 64 */
 #define MPFR_TUNE_CASE "src/amd/k8/mparam.h"
 #include "amd/k8/mparam.h"
 
