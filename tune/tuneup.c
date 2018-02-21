@@ -1093,7 +1093,7 @@ all (const char *filename)
   if (verbose)
     printf ("Tuning mpfr_div...\n");
   tune_simple_func (&mpfr_div_threshold, speed_mpfr_div,
-                    3*GMP_NUMB_BITS+1);
+                    2*GMP_NUMB_BITS+1);
   fprintf (f, "#define MPFR_DIV_THRESHOLD %lu /* limbs */\n",
            (unsigned long) (mpfr_div_threshold - 1) / GMP_NUMB_BITS + 1);
 
