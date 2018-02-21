@@ -155,7 +155,7 @@ static mp_limb_t
 mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
                          mpfr_limb_srcptr dp, mp_size_t n)
 {
-  mp_limb_t qh, d1, d0, dinv, q2, q1, q0;
+  mp_limb_t qh, d1, d0, q2, q1, q0;
   mpfr_pi1_t dinv2;
 
   MPFR_ASSERTD(n >= 2);
