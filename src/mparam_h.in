@@ -68,6 +68,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/mips/mparam.h"
 #include "mips/mparam.h"
 
+#elif defined (__arm__) /* ARM */
+#define MPFR_TUNE_CASE "src/arm/mparam.h"
+#include "arm/mparam.h"
+
 #else
 #define MPFR_TUNE_CASE "default"
 #endif
