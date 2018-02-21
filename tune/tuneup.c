@@ -857,7 +857,8 @@ tune_div_mulders_upto (mp_size_t n)
   double t, tbest;
   MPFR_TMP_DECL (marker);
 
-  if (n == 0)
+  /* we want n>=2 in mpfr_divhigh */
+  if (n <= 1)
     return 0;
 
   MPFR_TMP_MARK (marker);
