@@ -216,6 +216,7 @@ test_overflow3 (void)
   inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (r) && mpfr_sgn (r) > 0);
+  MPFR_ASSERTN(mpfr_overflow_p ());
   mpfr_clears (x, y, z, r, (mpfr_ptr) 0);
 }
 
@@ -238,9 +239,9 @@ test_overflow4 (void)
      x*y+z = 2^emax - 2^(emax-2p-3) + 2^(emax-3p-3) should overflow,
      since it is closest from 2^emax than from 2^emax - 2^(emax-2p-1). */
   inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-  mpfr_dump (r);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (r) && mpfr_sgn (r) > 0);
+  MPFR_ASSERTN(mpfr_overflow_p ());
   mpfr_clears (x, y, z, r, (mpfr_ptr) 0);
 }
 
