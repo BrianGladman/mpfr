@@ -26,8 +26,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #if !defined(MPFR_GENERIC_ABI) && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
 
 /* Special code for prec(a) < GMP_NUMB_BITS and prec(b) <= GMP_NUMB_BITS.
-   Note: this function was copied from mpfr_mul_1 in file mul.c, thus any change
-   here should be done also in mpfr_mul_1. */
+   Note: this function was copied from mpfr_mul_1 in file mul.c, thus any
+   changehere should be done also in mpfr_mul_1.
+   Although this function works as soon as prec(a) < GMP_NUMB_BITS and
+   prec(b) <= GMP_NUMB_BITS, we use it for prec(a)=prec(b) < GMP_NUMB_BITS. */
 static int
 mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
 {
@@ -166,10 +168,10 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
          GMP_NUMB_BITS=32 since the largest b0 such that b0^2 < 2^(2*32-1)
          is b0=3037000499, but its square has only 30 leading ones.
          For GMP_NUMB_BITS=64 it is possible: the largest b0 is
-         13043817825332782212, and its square has 64 leading ones. */
-      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~MPFR_LIMB_HIGHBIT) &&
-          ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+         13043817825332782212, and its square has 64 leading ones,
+         but since the next bit is rb=0, for RNDN we always have underflow. */
+      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~MPFR_LIMB_ZERO) &&
+          MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
          we have to change to RNDZ. This corresponds to:
@@ -532,19 +534,20 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   bq = MPFR_GET_PREC(b);
 
 #if !defined(MPFR_GENERIC_ABI) && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
-  if (aq < GMP_NUMB_BITS && bq <= GMP_NUMB_BITS)
-    return mpfr_sqr_1 (a, b, rnd_mode, aq);
+  if (aq == bq)
+    {
+      if (aq < GMP_NUMB_BITS)
+        return mpfr_sqr_1 (a, b, rnd_mode, aq);
 
-  if (GMP_NUMB_BITS < aq && aq < 2 * GMP_NUMB_BITS
-      && GMP_NUMB_BITS < bq && bq <= 2 * GMP_NUMB_BITS)
-    return mpfr_sqr_2 (a, b, rnd_mode, aq);
+      if (GMP_NUMB_BITS < aq && aq < 2 * GMP_NUMB_BITS)
+        return mpfr_sqr_2 (a, b, rnd_mode, aq);
 
-  if (aq == GMP_NUMB_BITS && bq <= GMP_NUMB_BITS)
-    return mpfr_sqr_1n (a, b, rnd_mode);
+      if (aq == GMP_NUMB_BITS)
+        return mpfr_sqr_1n (a, b, rnd_mode);
 
-  if (2 * GMP_NUMB_BITS < aq && aq < 3 * GMP_NUMB_BITS
-      && 2 * GMP_NUMB_BITS < bq && bq <= 3 * GMP_NUMB_BITS)
-    return mpfr_sqr_3 (a, b, rnd_mode, aq);
+      if (2 * GMP_NUMB_BITS < aq && aq < 3 * GMP_NUMB_BITS)
+        return mpfr_sqr_3 (a, b, rnd_mode, aq);
+    }
 #endif
 
   ax = 2 * MPFR_GET_EXP (b);
