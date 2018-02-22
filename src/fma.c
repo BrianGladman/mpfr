@@ -265,7 +265,10 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               {
                 /* |z| < ulp(u)/4, where the ulp is meant with the precision
                    of the result s, therefore one can use z instead of z/4,
-                   including when u is a power of 2! */
+                   including when u is a power of 2!
+                   FIXME[VL]: It should be |z| < ulp(u)/4 where the precision
+                   considered for the ulp is the maximum of the precisions of
+                   s and u. First, add a test... */
                 zz = z;
               }
             else
