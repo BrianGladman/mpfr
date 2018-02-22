@@ -569,6 +569,50 @@ bug20171219 (void)
   mpfr_clear (u);
 }
 
+/* coverage test for mpfr_set_1_2, case prec < GMP_NUMB_BITS,
+   inex > 0, rb <> 0, sb = 0 */
+static void
+coverage (void)
+{
+  mpfr_t x, y, z, s;
+  int inex;
+  mpfr_exp_t emax;
+
+  mpfr_inits2 (GMP_NUMB_BITS - 1, x, y, z, s, (mpfr_ptr) 0);
+
+  /* set x to 2^(GMP_NUMB_BITS/2) + 1, y to 2^(GMP_NUMB_BITS/2) - 1 */
+  MPFR_ASSERTN((GMP_NUMB_BITS % 2) == 0);
+  mpfr_set_ui (x, (1UL << (GMP_NUMB_BITS / 2)) + 1, MPFR_RNDN);
+  mpfr_set_ui (y, (1UL << (GMP_NUMB_BITS / 2)) - 1, MPFR_RNDN);
+  /* we have x*y = 2^GMP_NUMB_BITS - 1, thus has exponent GMP_NUMB_BITS */
+  /* set z to 2^(1-GMP_NUMB_BITS), with exponent 2-GMP_NUMB_BITS */
+  mpfr_set_ui_2exp (z, 1, 1 - GMP_NUMB_BITS, MPFR_RNDN);
+  inex = mpfr_fms (s, x, y, z, MPFR_RNDN);
+  /* s should be 2^GMP_NUMB_BITS-2 */
+  MPFR_ASSERTN(inex < 0);
+  inex = mpfr_add_ui (s, s, 2, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (s, 1, GMP_NUMB_BITS) == 0);
+
+  /* same example, but with overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (GMP_NUMB_BITS + 1);
+  mpfr_set_ui_2exp (z, 1, mpfr_get_emax () - 1, MPFR_RNDZ);
+  mpfr_clear_flags ();
+  inex = mpfr_fma (s, x, y, z, MPFR_RNDN);
+  /* x*y = 2^GMP_NUMB_BITS - 1, z = 2^GMP_NUMB_BITS, thus
+     x*y+z = 2^(GMP_NUMB_BITS+1) - 1 should round to 2^(GMP_NUMB_BITS+1),
+     thus give an overflow */
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inf_p (s) && mpfr_sgn (s) > 0);
+  MPFR_ASSERTN(mpfr_overflow_p ());
+  mpfr_set_emax (emax);
+  
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (s);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -576,6 +620,8 @@ main (int argc, char *argv[])
   mpfr_exp_t emin, emax;
 
   tests_start_mpfr ();
+
+  coverage ();
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
