@@ -201,48 +201,39 @@ test_overflow3 (void)
   mpfr_t x, y, z, r;
   int inex;
   mpfr_prec_t p = 8;
+  mpfr_flags_t ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT, flags;
+  int i;
 
   mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
-  mpfr_init2 (r, 2 * p);
-  mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
-  mpfr_set_ui (y, 2, MPFR_RNDN);       /* y = 2 */
-  mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - 2,
-                    MPFR_RNDN);
-  mpfr_nextabove (z);
-  mpfr_clear_flags ();
-  /* We have x*y = 2^emax and z = -2^(emax-2p-2)*(1-2^(-p)) thus
-     x*y+z = 2^emax - 2^(emax-2p-2) + 2^(emax-3p-2) should overflow,
-     since it is closest from 2^emax than from 2^emax - 2^(emax-2p). */
-  inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-  MPFR_ASSERTN(inex > 0);
-  MPFR_ASSERTN(mpfr_inf_p (r) && mpfr_sgn (r) > 0);
-  MPFR_ASSERTN(mpfr_overflow_p ());
-  mpfr_clears (x, y, z, r, (mpfr_ptr) 0);
-}
-
-static void
-test_overflow4 (void)
-{
-  mpfr_t x, y, z, r;
-  int inex;
-  mpfr_prec_t p = 8;
-
-  mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
-  mpfr_init2 (r, 2 * p + 1);
-  mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
-  mpfr_set_ui (y, 2, MPFR_RNDN);       /* y = 2 */
-  mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - 2,
-                    MPFR_RNDN);
-  mpfr_nextabove (z);
-  mpfr_clear_flags ();
-  /* We have x*y = 2^emax and z = -2^(emax-2p-3)*(1-2^(-p)) thus
-     x*y+z = 2^emax - 2^(emax-2p-3) + 2^(emax-3p-3) should overflow,
-     since it is closest from 2^emax than from 2^emax - 2^(emax-2p-1). */
-  inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-  MPFR_ASSERTN(inex > 0);
-  MPFR_ASSERTN(mpfr_inf_p (r) && mpfr_sgn (r) > 0);
-  MPFR_ASSERTN(mpfr_overflow_p ());
-  mpfr_clears (x, y, z, r, (mpfr_ptr) 0);
+  for (i = 0; i < 2; i++)
+    {
+      mpfr_init2 (r, 2 * p + i);
+      mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
+      mpfr_set_ui (y, 2, MPFR_RNDN);       /* y = 2 */
+      mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - 2,
+                        MPFR_RNDN);
+      mpfr_nextabove (z);
+      mpfr_clear_flags ();
+      /* We have x*y = 2^emax and z = -2^(emax-2p-2-i)*(1-2^(-p)) thus
+         x*y+z = 2^emax - 2^(emax-2p-2-i) + 2^(emax-3p-2-i) should overflow,
+         since it is closest from 2^emax than from 2^emax - 2^(emax-2p-i). */
+      inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      if (inex <= 0 || ! mpfr_inf_p (r) || MPFR_IS_NEG (r) ||
+          flags != ex_flags)
+        {
+          printf ("Error in test_overflow3 for i=%d\n", i);
+          printf ("Expected @Inf@\n  with inex > 0 and flags:");
+          flags_out (ex_flags);
+          printf ("Got      ");
+          mpfr_dump (r);
+          printf ("  with inex = %d and flags:", inex);
+          flags_out (flags);
+          exit (1);
+        }
+      mpfr_clear (r);
+    }
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
 static void
@@ -875,6 +866,7 @@ main (int argc, char *argv[])
 
   test_overflow1 ();
   test_overflow2 ();
+  test_overflow3 ();
   test_underflow1 ();
   test_underflow2 ();
   test_underflow3 (1);
@@ -884,7 +876,6 @@ main (int argc, char *argv[])
   test_overflow1 ();
   test_overflow2 ();
   test_overflow3 ();
-  test_overflow4 ();
   test_underflow1 ();
   test_underflow2 ();
   test_underflow3 (2);
