@@ -1328,7 +1328,7 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_flt (mpfr_t @var{rop}, float @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ld (mpfr_t @var{rop}, long double @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_float128 (mpfr_t @var{rop}, __float128 @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_float128 (mpfr_t @var{rop}, _Float128 @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_decimal64 (mpfr_t @var{rop}, _Decimal64 @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1339,7 +1339,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_si}, @code{mpfr_set_uj}, @code{mpfr_set_sj},
 The @code{mpfr_set_float128} function is built only with the configure
 option @samp{--enable-float128}, which requires the compiler or
-system provides the @samp{__float128} data type
+system provides the @samp{_Float128} data type
 (GCC 4.3 or later supports this data type);
 to use @code{mpfr_set_float128}, one should define the macro
 @code{MPFR_WANT_FLOAT128} before including @file{mpfr.h}.
@@ -1527,7 +1527,7 @@ See @code{mpfr_set_str}.
 @deftypefun float mpfr_get_flt (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx double mpfr_get_d (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx {__float128} mpfr_get_float128 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx {_Float128} mpfr_get_float128 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx _Decimal64 mpfr_get_decimal64 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{float} (respectively @code{double},
 @code{long double} or @code{_Decimal64}), using the rounding mode @var{rnd}.
@@ -3295,7 +3295,7 @@ return zero otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_buildopt_float128_p (void)
-Return a non-zero value if MPFR was compiled with @samp{__float128} support
+Return a non-zero value if MPFR was compiled with @samp{_Float128} support
 (that is, MPFR was built with the @samp{--enable-float128} configure option),
 return zero otherwise.
 @end deftypefun

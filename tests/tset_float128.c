@@ -32,7 +32,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 check_special (void)
 {
-  __float128 f;
+  _Float128 f;
   mpfr_t x;
 
   mpfr_init2 (x, 113);
@@ -143,7 +143,7 @@ static void
 check_large (void)
 {
   mpfr_exp_t emin, emax;
-  __float128 f, e;
+  _Float128 f, e;
   int i;
   mpfr_t x, y;
   int r;
@@ -158,7 +158,7 @@ check_large (void)
   /* check with the largest float128 number 2^16384*(1-2^(-113)) */
   for (f = 1.0, i = 0; i < 113; i++)
     f = f + f;
-  f = f - (__float128) 1.0;
+  f = f - (_Float128) 1.0;
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_mul_2exp (y, y, 113, MPFR_RNDN);
   mpfr_sub_ui (y, y, 1, MPFR_RNDN);
@@ -239,7 +239,7 @@ check_small (void)
 {
   int t[5] = { 1, 2, 17, 111, 112 };
   mpfr_exp_t emin;
-  __float128 e, f;
+  _Float128 e, f;
   int i, j, neg, inex, r;
   mpfr_t w, x, y, z;
 

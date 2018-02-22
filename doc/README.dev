@@ -459,7 +459,7 @@ Format of long double.
                         Define to build conversion functions from/to
                         decimal floats.
 + MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
-                        __float128.
+                        _Float128.
 
 + MPFR_ALLOCA_MAX:      Maximum size for the use of alloca by temporary
                         allocations (default: 16384).

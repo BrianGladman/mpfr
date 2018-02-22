@@ -1,4 +1,4 @@
-/* mpfr_set_float128 -- convert a machine __float128 number to
+/* mpfr_set_float128 -- convert a machine _Float128 number to
                         a multiple precision floating-point number
 
 Copyright 2012-2018 Free Software Foundation, Inc.
@@ -28,16 +28,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_FLOAT128
 
-/* The q suffix is a GNU C extension, but so is __float128. */
+/* The q suffix is a GNU C extension, but so is _Float128. */
 #define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383q
 
 int
-mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
+mpfr_set_float128 (mpfr_ptr r, _Float128 d, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t;
   mp_limb_t *tp;
   int inexact, shift_exp, neg, e, i;
-  __float128 p[14], q[14];
+  _Float128 p[14], q[14];
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Check for NaN */
@@ -61,7 +61,7 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
       return 0;
     }
   /* Check for ZERO */
-  else if (MPFR_UNLIKELY (d == (__float128) 0.0))
+  else if (MPFR_UNLIKELY (d == (_Float128) 0.0))
     return mpfr_set_d (r, (double) d, rnd_mode);
 
   shift_exp = 0; /* invariant: remainder to deal with is d*2^shift_exp */
@@ -124,7 +124,7 @@ mpfr_set_float128 (mpfr_ptr r, __float128 d, mpfr_rnd_t rnd_mode)
 
   for (i = MPFR_LAST_LIMB (t); i >= 0; i--)
     {
-      d *= 2 * (__float128) MPFR_LIMB_HIGHBIT;
+      d *= 2 * (_Float128) MPFR_LIMB_HIGHBIT;
       tp[i] = (mp_limb_t) d;
       d -= tp[i];
     }
