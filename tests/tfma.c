@@ -216,7 +216,7 @@ test_overflow3 (void)
       mpfr_clear_flags ();
       /* We have x*y = 2^emax and z = -2^(emax-2p-2-i)*(1-2^(-p)) thus
          x*y+z = 2^emax - 2^(emax-2p-2-i) + 2^(emax-3p-2-i) should overflow,
-         since it is closest from 2^emax than from 2^emax - 2^(emax-2p-i). */
+         since it is closest to 2^emax than to 2^emax - 2^(emax-2p-i). */
       inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
       flags = __gmpfr_flags;
       if (inex <= 0 || ! mpfr_inf_p (r) || MPFR_IS_NEG (r) ||
