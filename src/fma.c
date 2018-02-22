@@ -271,11 +271,16 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             else
               {
                 mpfr_init2 (zo4, MPFR_PREC (z));
-                if (mpfr_div_2ui (zo4, z, 2, MPFR_RNDZ))
-                  {
-                    /* The division by 4 underflowed! */
-                    MPFR_ASSERTN (0); /* TODO... */
-                  }
+                inexact = mpfr_div_2ui (zo4, z, 2, MPFR_RNDZ);
+                /* If inexact <> 0 this means the division by 4 underflowed
+                   (it cannot overflow since EXP(z) <= emax).
+                   This is very unlikely since it would imply EXP(z) <= emin+1,
+                   and since EXP(u) >= emax - 1 (otherwise x*y would not
+                   overflow) and EXP(u) - EXP(z) <= PREC(s) + 1 we deduce
+                   PREC(s) >= emax - emin - 3, which means PREC(s) >= 2^31-5
+                   on a 32-bit computer, and PREC(s) >= 2^63-5 on a 64-bit
+                   computer */
+                MPFR_ASSERTN (inexact == 0);
                 zz = zo4;
               }
 
@@ -283,8 +288,11 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                following addition would give the same result). */
             MPFR_BLOCK (flags, inexact = mpfr_add (s, u, zz, rnd_mode));
             /* u and zz have different signs, so that an overflow
-               is not possible. But an underflow is theoretically
-               possible! */
+               is not possible (FIXME: except if PREC(s) < PREC(u) and u is
+               the largest number < +Inf).
+               But an underflow is theoretically
+               possible, if zz cancels almost all bits of u up to the emin
+               bit position. */
             if (MPFR_UNDERFLOW (flags))
               {
                 MPFR_ASSERTN (zz != z);
