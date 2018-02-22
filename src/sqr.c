@@ -291,7 +291,7 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      /* Note: like for mpfr_sqr_2, the case
+      /* Note: like for mpfr_sqr_1, the case
          0.111...111*2^(emin-1) < a < 2^(emin-1) is not possible when emin is
          odd, since (modulo a shift) this would imply 1-2^(-p) < a = b^2 < 1,
          and this is not possible with 1-2^(-p) <= b < 1.
@@ -303,12 +303,12 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
           ((rnd_mode == MPFR_RNDN && rb) ||
            (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
         goto rounding; /* no underflow */
-      /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
-         we have to change to RNDZ */
+      /* for RNDN, mpfr_underflow always rounds away, thus for
+         |a| <= 2^(emin-2) we have to change to RNDZ */
       if (rnd_mode == MPFR_RNDN &&
           (ax < __gmpfr_emin - 1 ||
            (ap[1] == MPFR_LIMB_HIGHBIT && ap[0] == 0 && (rb | sb) == 0)))
-            rnd_mode = MPFR_RNDZ;
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
     }
 

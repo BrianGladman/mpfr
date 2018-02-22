@@ -226,7 +226,30 @@ coverage (mpfr_prec_t pmax)
           MPFR_ASSERTN(mpfr_equal_p (a, c));
         }
 
-      /* exercise overflow */
+      /* same as above, with RNDU */
+      mpfr_set_ui_2exp (b, 1, mpfr_get_emax (), MPFR_RNDZ);
+      mpfr_sqrt (b, b, MPFR_RNDU);
+      mpfr_div_2exp (c, b, 1, MPFR_RNDN);
+      mpfr_sqr (c, c, MPFR_RNDU);
+      mpfr_clear_flags ();
+      inex = mpfr_sqr (a, b, MPFR_RNDU);
+      /* if EXP(c) > emax-2, there is overflow */
+      if (mpfr_get_exp (c) > mpfr_get_emax () - 2)
+        {
+          MPFR_ASSERTN(inex > 0);
+          MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
+          MPFR_ASSERTN(mpfr_overflow_p ());
+        }
+      else /* no overflow */
+        {
+          /* 2^p-1 is a square only for p=1 */
+          MPFR_ASSERTN((p == 1 && inex == 0) || (p > 1 && inex < 0));
+          MPFR_ASSERTN(!mpfr_overflow_p ());
+          mpfr_set_ui_2exp (c, 1, mpfr_get_emax (), MPFR_RNDZ);
+          MPFR_ASSERTN(mpfr_equal_p (a, c));
+        }
+
+      /* exercise trivial overflow */
       mpfr_set_ui_2exp (b, 1, mpfr_get_emax (), MPFR_RNDZ);
       mpfr_sqrt (b, b, MPFR_RNDU);
       mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
@@ -235,6 +258,16 @@ coverage (mpfr_prec_t pmax)
       MPFR_ASSERTN(inex > 0);
       MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
       MPFR_ASSERTN(mpfr_overflow_p ());
+
+      /* exercise trivial underflow */
+      mpfr_set_ui_2exp (b, 1, mpfr_get_emin () - 1, MPFR_RNDZ);
+      mpfr_sqrt (b, b, MPFR_RNDU);
+      mpfr_div_2exp (b, b, 1, MPFR_RNDN);
+      mpfr_clear_flags ();
+      inex = mpfr_sqr (a, b, MPFR_RNDN);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(mpfr_zero_p (a) && mpfr_signbit (a) == 0);
+      MPFR_ASSERTN(mpfr_underflow_p ());
 
       /* exercise square between 0.5*2^emin and its predecessor (emin even) */
       emin = mpfr_get_emin ();
@@ -268,6 +301,16 @@ coverage (mpfr_prec_t pmax)
           MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, mpfr_get_emin () - 1) == 0);
           MPFR_ASSERTN(!mpfr_underflow_p ());
         }
+      mpfr_set_emin (emin);
+
+      /* exercise exact square root 2^(emin-2) for emin even */
+      emin = mpfr_get_emin ();
+      mpfr_set_emin (emin + (emin & 1)); /* now emin is even */
+      mpfr_set_ui_2exp (b, 1, (mpfr_get_emin () - 2) / 2, MPFR_RNDN);
+      inex = mpfr_sqr (a, b, MPFR_RNDN);
+      MPFR_ASSERTN(inex < 0);
+      MPFR_ASSERTN(mpfr_zero_p (a) && mpfr_signbit (a) == 0);
+      MPFR_ASSERTN(mpfr_underflow_p ());
       mpfr_set_emin (emin);
 
       /* same as above, for RNDU */
