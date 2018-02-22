@@ -261,10 +261,10 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             MPFR_BLOCK_DECL (flags);
 
             if (MPFR_GET_EXP (u) > MPFR_GET_EXP (z) &&
-                MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (u))
+                MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (u) + 1)
               {
-                /* |z| < ulp(u)/2, therefore one can use z instead of z/4,
-                   except maybe when u is a power of 2! */
+                /* |z| < ulp(u)/4, therefore one can use z instead of z/4,
+                   including when u is a power of 2! */
                 zz = z;
               }
             else
