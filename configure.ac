@@ -347,11 +347,12 @@ AC_ARG_ENABLE(decimal-float,
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
      esac])
 
-dnl _Float128 is now standard, changed the default to yes
+dnl FIXME: If a fallback to __float128 is used, say binary128 instead
+dnl of _Float128.
 AC_ARG_ENABLE(float128,
    [  --disable-float128      explicitly disable _Float128 support
   --enable-float128       build conversion functions from/to _Float128
-                          [[default=yes]]],
+                          [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
       no)  ;;
