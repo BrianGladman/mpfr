@@ -234,7 +234,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           /* Let's eliminate the obvious case where x*y and z have the
              same sign. No possible cancellation -> real overflow.
              Also, we know that |z| < 2^emax. If E(x) + E(y) >= emax+3,
-             then |x*y| >= 2^(emax+1), and |x*y + z| >= 2^emax. This case
+             then |x*y| >= 2^(emax+1), and |x*y + z| > 2^emax. This case
              is also an overflow. */
           if (MPFR_SIGN (u) == MPFR_SIGN (z) || e >= __gmpfr_emax + 3)
             {
@@ -253,7 +253,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           inexact = mpfr_mul (u, u, y, MPFR_RNDN);
           MPFR_ASSERTN (inexact == 0);
 
-          /* Now, we need to add z/4... But it may underflow! */
+          /* Now, we need to add z/4, which is in fact a subtraction since
+             x*y and z have different signs. But it may underflow! */
           {
             mpfr_t zo4;
             mpfr_srcptr zz;
@@ -262,7 +263,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             if (MPFR_GET_EXP (u) > MPFR_GET_EXP (z) &&
                 MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (u))
               {
-                /* |z| < ulp(u)/2, therefore one can use z instead of z/4. */
+                /* |z| < ulp(u)/2, therefore one can use z instead of z/4,
+                   except maybe when u is a power of 2! */
                 zz = z;
               }
             else
