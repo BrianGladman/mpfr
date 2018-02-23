@@ -1271,7 +1271,7 @@ static int
 coverage (void)
 {
   mpfr_t x;
-  char s[22];
+  char s[42];
   mpfr_exp_t e;
   int b = 3;
   size_t m = 40;
