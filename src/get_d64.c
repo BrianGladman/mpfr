@@ -319,19 +319,15 @@ string_to_Decimal64 (char *s)
   while (ISDIGIT (*s))
     m[n++] = *s++;
   exp = n;
-  if (*s == '.')
-    {
-      s ++;
-      while (ISDIGIT (*s))
-        m[n++] = *s++;
-    }
+
+  /* as constructed in mpfr_get_decimal64, s cannot have any '.' separator */
+
   /* we have exp digits before decimal point, and a total of n digits */
   exp -= n; /* we will consider an integer mantissa */
   MPFR_ASSERTN(n <= 16);
-  if (*s == 'E' || *s == 'e')
-    exp += strtol (s + 1, endptr, 10);
-  else
-    *endptr = s;
+  /* s always have an exponent separator 'E' */
+  MPFR_ASSERTN(*s == 'E');
+  exp += strtol (s + 1, endptr, 10);
   MPFR_ASSERTN(**endptr == '\0');
   MPFR_ASSERTN(-398 <= exp && exp <= (long) (385 - n));
   while (n < 16)
