@@ -175,6 +175,7 @@ get_decimal64_max (int negative)
    (b1) -383 <= e <= 384 with m integer multiple of 10^(-15), |m| < 10
    (b2) or -398 <= e <= 369 with m integer, |m| < 10^16.
    Assumes s is neither NaN nor +Inf nor -Inf.
+   s = [-][0-9]+E[-][0-9]+
 */
 #if _MPFR_IEEE_FLOATS
 static _Decimal64
@@ -202,19 +203,15 @@ string_to_Decimal64 (char *s)
   while (ISDIGIT (*s))
     m[n++] = *s++;
   exp = n;
-  if (*s == '.')
-    {
-      s ++;
-      while (ISDIGIT (*s))
-        m[n++] = *s++;
-    }
+
+  /* as constructed in mpfr_get_decimal64, s cannot have any '.' separator */
+
   /* we have exp digits before decimal point, and a total of n digits */
   exp -= n; /* we will consider an integer mantissa */
   MPFR_ASSERTN(n <= 16);
-  if (*s == 'E' || *s == 'e')
-    exp += strtol (s + 1, endptr, 10);
-  else
-    *endptr = s;
+  /* s always have an exponent separator 'E' */
+  MPFR_ASSERTN(*s == 'E');
+  exp += strtol (s + 1, endptr, 10);
   MPFR_ASSERTN(**endptr == '\0');
   MPFR_ASSERTN(-398 <= exp && exp <= (long) (385 - n));
   while (n < 16)
@@ -515,28 +512,25 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   e = MPFR_GET_EXP (src);
   negative = MPFR_IS_NEG (src);
 
-  if (MPFR_UNLIKELY(rnd_mode == MPFR_RNDA))
-    rnd_mode = negative ? MPFR_RNDD : MPFR_RNDU;
+  MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (src));
+
+  /* now rnd_mode is RNDN, RNDF, RNDA or RNDZ */
 
   /* the smallest decimal64 number is 10^(-398),
      with 2^(-1323) < 10^(-398) < 2^(-1322) */
   if (MPFR_UNLIKELY (e < -1323)) /* src <= 2^(-1324) < 1/2*10^(-398) */
     {
-      if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN
-          || (rnd_mode == MPFR_RNDD && negative == 0)
-          || (rnd_mode == MPFR_RNDU && negative != 0))
+      if (rnd_mode != MPFR_RNDA)
         return get_decimal64_zero (negative);
-      else /* return the smallest non-zero number */
+      else /* RNDA: return the smallest non-zero number */
         return get_decimal64_min (negative);
     }
   /* the largest decimal64 number is just below 10^(385) < 2^1279 */
   else if (MPFR_UNLIKELY (e > 1279)) /* then src >= 2^1279 */
     {
-      if (rnd_mode == MPFR_RNDZ
-          || (rnd_mode == MPFR_RNDU && negative != 0)
-          || (rnd_mode == MPFR_RNDD && negative == 0))
+      if (rnd_mode == MPFR_RNDZ)
         return get_decimal64_max (negative);
-      else
+      else /* RNDN, RNDA, RNDF: round away */
         return get_decimal64_inf (negative);
     }
   else
@@ -562,11 +556,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
                     get_decimal64_zero (negative) :
                     get_decimal64_min (negative);
                 }
-              if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN
-                  || (rnd_mode == MPFR_RNDD && negative == 0)
-                  || (rnd_mode == MPFR_RNDU && negative != 0))
+              if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN)
                 return get_decimal64_zero (negative);
-              else /* return the smallest non-zero number */
+              else /* RNDA or RNDF: return the smallest non-zero number */
                 return get_decimal64_min (negative);
             }
           else
@@ -587,11 +579,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
          which corresponds to s=[0.]9999...999 and e=385 */
       else if (e > 385)
         {
-          if (rnd_mode == MPFR_RNDZ
-              || (rnd_mode == MPFR_RNDU && negative != 0)
-              || (rnd_mode == MPFR_RNDD && negative == 0))
+          if (rnd_mode == MPFR_RNDZ)
             return get_decimal64_max (negative);
-          else
+          else /* RNDN, RNDA, RNDF: round away */
             return get_decimal64_inf (negative);
         }
       else /* -382 <= e <= 385 */

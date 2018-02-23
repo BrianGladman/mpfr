@@ -1083,7 +1083,8 @@ typedef uintmax_t mpfr_ueexp_t;
   } while (0)
 
 /* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
-   leave the other modes unchanged */
+   leave the other modes unchanged.
+   Usage: MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (x)) */
 #define MPFR_UPDATE2_RND_MODE(rnd, sign)                       \
   do {                                                         \
     if (rnd == MPFR_RNDU)                                      \

@@ -76,7 +76,7 @@ print_decimal64 (_Decimal64 d)
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);           \
       printf (" approx.\n    = ");                          \
       mpfr_dump (x);                                        \
-      err = 1;                                              \
+      exit (1);                                             \
     }                                                       \
  while (0)
 
@@ -85,7 +85,6 @@ check_misc (void)
 {
   mpfr_t  x, y;
   _Decimal64 d;
-  int err = 0;
 
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
@@ -181,6 +180,47 @@ check_misc (void)
   if (! mpfr_equal_p (x, y))
     PRINT_ERR_MISC ("1E-398");
 
+  /* exercise case e < -1323, i.e., x < 0.5*2^(-1323) */
+  mpfr_set_ui_2exp (x, 1, -1324, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  d = mpfr_get_decimal64 (x, MPFR_RNDZ);
+  /* d should equal +0 */
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  /* check RNDA */
+  mpfr_set_ui_2exp (x, 1, -1324, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  d = mpfr_get_decimal64 (x, MPFR_RNDA);
+  /* d should equal 1E-398 */
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  mpfr_set_str (y, "1E-398", 10, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+  /* check negative number */
+  mpfr_set_ui_2exp (x, 1, -1324, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_neg (x, x, MPFR_RNDN);
+  d = mpfr_get_decimal64 (x, MPFR_RNDZ);
+  /* d should equal -0 */
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 1);
+
+  /* exercise case e10 < -397 */
+  mpfr_set_ui_2exp (x, 1, -1323, MPFR_RNDN);
+  d = mpfr_get_decimal64 (x, MPFR_RNDZ);
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_set_ui_2exp (x, 1, -1323, MPFR_RNDN);
+  d = mpfr_get_decimal64 (x, MPFR_RNDU);
+  mpfr_set_str (y, "1E-398", 10, MPFR_RNDN);
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+  mpfr_set_ui_2exp (x, 1, -1323, MPFR_RNDN);
+  /* 2^(-1323) = 5.46154776930125e-399 thus should be rounded to 1E-398 */
+  d = mpfr_get_decimal64 (x, MPFR_RNDN);
+  mpfr_set_str (y, "1E-398", 10, MPFR_RNDN);
+  mpfr_set_decimal64 (x, d, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+
   /* subnormal number with exponent change when we round back
      from 16 digits to 1 digit */
   mpfr_set_str (x, "9.9E-398", 10, MPFR_RNDN);
@@ -207,7 +247,7 @@ check_misc (void)
       printf ("Error in check_misc for DEC64_MAX.\n");
       printf ("  mpfr_get_decimal64() returned: ");
       print_decimal64 (d);
-      err = 1;
+      exit (1);
     }
 
   mpfr_set_str (x, "-9.999999999999999E384", 10, MPFR_RNDZ);
@@ -225,7 +265,7 @@ check_misc (void)
       printf ("Error in check_misc for -DEC64_MAX.\n");
       printf ("  mpfr_get_decimal64() returned: ");
       print_decimal64 (d);
-      err = 1;
+      exit (1);
     }
 
   mpfr_set_prec (x, 53);
@@ -240,9 +280,6 @@ check_misc (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
-
-  if (err)
-    exit (1);
 }
 
 static void
