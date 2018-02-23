@@ -45,11 +45,8 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
   /* Get working precision */
   count_leading_zeros (c, p[s-1]);
   pf = s * GMP_NUMB_BITS - c;
-#if MPFR_PREC_MIN > 1
-  if (pf < MPFR_PREC_MIN)
-    pf = MPFR_PREC_MIN;
-#endif
-  mpfr_init2 (f, pf);
+  MPFR_ASSERTD (pf >= 1);
+  mpfr_init2 (f, pf >= MPFR_PREC_MIN ? pf : MPFR_PREC_MIN);
 
   /* Copy Mantissa */
   if (MPFR_LIKELY (c))
