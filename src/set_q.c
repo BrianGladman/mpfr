@@ -45,8 +45,10 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
   /* Get working precision */
   count_leading_zeros (c, p[s-1]);
   pf = s * GMP_NUMB_BITS - c;
+#if MPFR_PREC_MIN > 1
   if (pf < MPFR_PREC_MIN)
     pf = MPFR_PREC_MIN;
+#endif
   mpfr_init2 (f, pf);
 
   /* Copy Mantissa */
@@ -102,14 +104,28 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
   cn = set_z (n, num, &sn);
   cd = set_z (d, den, &sd);
 
+  /* sn is the number of limbs of the numerator, sd that of the denominator */
+
   sn -= sd;
+#if GMP_NUMB_BITS <= 32 /* overflow/underflow cannot happen on 64-bit
+                           processors, where MPFR_EMAX_MAX is 2^62 - 1, due to
+                           memory limits */
+  /* If sn >= 0, the quotient has at most sn limbs, thus is larger or equal to
+     2^((sn-1)*GMP_NUMB_BITS), thus its exponent >= (sn-1)*GMP_NUMB_BITS)+1.
+     (sn-1)*GMP_NUMB_BITS)+1 > emax yields (sn-1)*GMP_NUMB_BITS) >= emax,
+     i.e., sn-1 >= floor(emax/GMP_NUMB_BITS). */
   if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / GMP_NUMB_BITS))
     {
       MPFR_SAVE_EXPO_FREE (expo);
       inexact = mpfr_overflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }
-  if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / GMP_NUMB_BITS -1))
+  /* If sn < 0, the inverse quotient is >= 2^((-sn-1)*GMP_NUMB_BITS),
+     thus the quotient is <= 2^((sn+1)*GMP_NUMB_BITS), and thus its
+     exponent is <= (sn+1)*GMP_NUMB_BITS+1.
+     (sn+1)*GMP_NUMB_BITS+1 < emin yields (sn+1)*GMP_NUMB_BITS+2 <= emin,
+     i.e., sn+1 <= floor((emin-2)/GMP_NUMB_BITS). */
+  if (MPFR_UNLIKELY (sn <= (MPFR_EMIN_MIN - 2) / GMP_NUMB_BITS - 1))
     {
       MPFR_SAVE_EXPO_FREE (expo);
       if (rnd == MPFR_RNDN)
@@ -117,17 +133,26 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
       inexact = mpfr_underflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }
+#endif
 
   inexact = mpfr_div (f, n, d, rnd);
   shift = GMP_NUMB_BITS*sn+cn-cd;
   MPFR_ASSERTD (shift == GMP_NUMB_BITS*sn+cn-cd);
   cd = mpfr_mul_2si (f, f, shift, rnd);
   MPFR_SAVE_EXPO_FREE (expo);
+  /* we can have cd <> 0 only in case of underflow or overflow, but since we
+     are still in extended exponent range, this cannot happen on 64-bit (see
+     above) */
+#if GMP_NUMB_BITS <= 32
   if (MPFR_UNLIKELY (cd != 0))
     inexact = cd;
   else
     inexact = mpfr_check_range (f, inexact, rnd);
  end:
+#else
+  MPFR_ASSERTD(cd == 0);
+  inexact = mpfr_check_range (f, inexact, rnd);
+#endif
   mpfr_clear (d);
   mpfr_clear (n);
   MPFR_RET (inexact);
