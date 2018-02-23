@@ -671,8 +671,6 @@ int main (void) {
       AC_DEFINE([MPFR_USE_STATIC_ASSERT],1,[Build MPFR with Static Assertions])
      ],
      [AC_MSG_RESULT(no)
-     ],
-     [AC_MSG_RESULT([cannot test, assume no])
      ])
 CPPFLAGS="$saved_CPPFLAGS"
 
