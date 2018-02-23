@@ -159,28 +159,23 @@ mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   MPFR_ALIAS (tmp, src, MPFR_SIGN (src), 0);
   ret = mpfr_get_d (tmp, rnd_mode);
 
-  if (MPFR_IS_PURE_FP(src))
+  exp = MPFR_GET_EXP (src);
+
+  /* rounding can give 1.0, adjust back to 0.5 <= abs(ret) < 1.0 */
+  if (ret == 1.0)
     {
-      exp = MPFR_GET_EXP (src);
-
-      /* rounding can give 1.0, adjust back to 0.5 <= abs(ret) < 1.0 */
-      if (ret == 1.0)
-        {
-          ret = 0.5;
-          exp++;
-        }
-      else if (ret == -1.0)
-        {
-          ret = -0.5;
-          exp++;
-        }
-
-      MPFR_ASSERTN ((ret >= 0.5 && ret < 1.0)
-                    || (ret <= -0.5 && ret > -1.0));
-      MPFR_ASSERTN (exp >= LONG_MIN && exp <= LONG_MAX);
+      ret = 0.5;
+      exp++;
     }
-  else
-    exp = 0;
+  else if (ret == -1.0)
+    {
+      ret = -0.5;
+      exp++;
+    }
+
+  MPFR_ASSERTN ((ret >= 0.5 && ret < 1.0)
+                || (ret <= -0.5 && ret > -1.0));
+  MPFR_ASSERTN (exp >= LONG_MIN && exp <= LONG_MAX);
 
   *expptr = exp;
   return ret;
