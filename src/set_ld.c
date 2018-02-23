@@ -62,11 +62,19 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 
 #elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE)
 
+#if GMP_NUMB_BITS >= 64
+# define MPFR_LIMBS_PER_LONG_DOUBLE 1
+#elif GMP_NUMB_BITS == 32
+# define MPFR_LIMBS_PER_LONG_DOUBLE 2
+#endif
+/* The hypothetical GMP_NUMB_BITS == 16 is not supported. It will trigger
+   an error below. */
+
 /* IEEE Extended Little Endian Code */
 int
 mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 {
-  int inexact, i, k, cnt;
+  int inexact, k, cnt;
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_LONG_DOUBLE];
   mpfr_long_double_t x;
@@ -120,32 +128,29 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
       x.ld = -x.ld;
     }
 
-  /* Extract mantissa */
-#if GMP_NUMB_BITS >= 64
+  /* Extract and normalize the significand */
+#if MPFR_LIMBS_PER_LONG_DOUBLE == 1
   tmpmant[0] = ((mp_limb_t) x.s.manh << 32) | ((mp_limb_t) x.s.manl);
-#else
-  tmpmant[0] = (mp_limb_t) x.s.manl;
-  tmpmant[1] = (mp_limb_t) x.s.manh;
-#endif
-
-  /* Normalize mantissa */
-#if HAVE_LDOUBLE_IEEE_EXT_LITTLE && MPFR_LIMBS_PER_LONG_DOUBLE == 1
-  /* then MPFR_LIMBS_PER_LONG_DOUBLE can be used by the preprocessor
-     since it does not use "sizeof" (see r12409) */
   count_leading_zeros (cnt, tmpmant[0]);
   tmpmant[0] <<= cnt;
   k = 0; /* number of limbs shifted */
 #else
-  i = MPFR_LIMBS_PER_LONG_DOUBLE;
-  MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
-  k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
-  count_leading_zeros (cnt, tmpmant[i - 1]);
-  if (MPFR_UNLIKELY (cnt != 0))
-    mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-  else if (MPFR_UNLIKELY (k != 0))
-    MPN_COPY (tmpmant + k, tmpmant, i);
-  if (MPFR_UNLIKELY (k != 0))
-    MPN_ZERO (tmpmant, k);
+  /* Since we set only 2 limbs below... */
+  MPFR_STAT_STATIC_ASSERT (MPFR_LIMBS_PER_LONG_DOUBLE == 2);
+  tmpmant[0] = (mp_limb_t) x.s.manl;
+  tmpmant[1] = (mp_limb_t) x.s.manh;
+  {
+    int i = MPFR_LIMBS_PER_LONG_DOUBLE;
+    MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
+    k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
+    count_leading_zeros (cnt, tmpmant[i - 1]);
+    if (MPFR_UNLIKELY (cnt != 0))
+      mpn_lshift (tmpmant + k, tmpmant, i, cnt);
+    else if (MPFR_UNLIKELY (k != 0))
+      MPN_COPY (tmpmant + k, tmpmant, i);
+    if (MPFR_UNLIKELY (k != 0))
+      MPN_ZERO (tmpmant, k);
+  }
 #endif
 
   /* Set exponent */

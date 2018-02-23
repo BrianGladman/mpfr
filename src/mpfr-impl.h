@@ -688,8 +688,6 @@ static double double_zero = 0.0;
 # define MPFR_LDBL_MANT_DIG \
   (sizeof(long double)*GMP_NUMB_BITS/sizeof(mp_limb_t))
 #endif
-#define MPFR_LIMBS_PER_LONG_DOUBLE \
-  ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
 
 /* LONGDOUBLE_NAN_ACTION executes the code "action" if x is a NaN. */
 
@@ -779,11 +777,6 @@ typedef union {
     unsigned int sign : 1;
   } s;
 } mpfr_long_double_t;
-
-/* #undef MPFR_LDBL_MANT_DIG */
-#undef MPFR_LIMBS_PER_LONG_DOUBLE
-/* #define MPFR_LDBL_MANT_DIG   64 */
-#define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/GMP_NUMB_BITS+1)
 
 #endif /* HAVE_LDOUBLE_IEEE_EXT_LITTLE */
 
