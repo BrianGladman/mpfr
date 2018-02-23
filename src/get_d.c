@@ -89,7 +89,6 @@ mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   else
     {
       int nbits;
-      mp_size_t np, i;
       mp_limb_t tp[ MPFR_LIMBS_PER_DOUBLE ];
       int carry;
 
@@ -97,17 +96,22 @@ mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (e < -1021))
         /*In the subnormal case, compute the exact number of significant bits*/
         {
-          nbits += (1021 + e);
-          MPFR_ASSERTD (nbits >= 1);
+          nbits += 1021 + e;
+          MPFR_ASSERTD (1 <= nbits && nbits < IEEE_DBL_MANT_DIG);
         }
-      np = MPFR_PREC2LIMBS (nbits);
-      MPFR_ASSERTD ( np <= MPFR_LIMBS_PER_DOUBLE );
       carry = mpfr_round_raw_4 (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
                                 nbits, rnd_mode);
       if (MPFR_UNLIKELY(carry))
         d = 1.0;
       else
         {
+#if MPFR_LIMBS_PER_DOUBLE == 1
+          d = (double) tp[0] / MP_BASE_AS_DOUBLE;
+#else
+          mp_size_t np, i;
+          MPFR_ASSERTD (nbits <= IEEE_DBL_MANT_DIG);
+          np = MPFR_PREC2LIMBS (nbits);
+          MPFR_ASSERTD ( np <= MPFR_LIMBS_PER_DOUBLE );
           /* The following computations are exact thanks to the previous
              mpfr_round_raw. */
           d = (double) tp[0] / MP_BASE_AS_DOUBLE;
@@ -115,6 +119,7 @@ mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
             d = (d + tp[i]) / MP_BASE_AS_DOUBLE;
           /* d is the mantissa (between 1/2 and 1) of the argument rounded
              to 53 bits */
+#endif
         }
       d = mpfr_scale2 (d, e);
       if (negative)
