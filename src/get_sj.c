@@ -87,7 +87,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
       else
         {
 #ifdef MPFR_INTMAX_WITHIN_LIMB
-          MPFR_ASSERTD (sh > 0);
+          MPFR_ASSERTD (sh > 0 && sh < GMP_NUMB_BITS);
           r = xp[0] >> (GMP_NUMB_BITS - sh);
 #else
           /* Note: testing the condition sh > 0 is necessary to avoid
@@ -105,11 +105,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
                  for the case sizeof(intmax_t) == sizeof(mp_limb_t), as
                  mp_limb_t is unsigned, therefore not representable as an
                  intmax_t when the MSB is 1 (this is the case here). */
-              /* sh + GMP_NUMB_BITS <= prec + 1 because if sh >= 0 the shifted
-                 value xp[n] << sh should fit in an intmax_t */
-              MPFR_ASSERTD (sh + GMP_NUMB_BITS <= prec + 1);
               MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
-              if (sh >= 0) MPFR_ASSERTN(0);
               /* each limb should be shifted by sh bits to the left if sh>=0,
                  and by sh bits to the right if sh < 0 */
               r += sh >= 0
