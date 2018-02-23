@@ -1267,6 +1267,30 @@ check_negative_base (void)
 
 #define ITER 1000
 
+static int
+coverage (void)
+{
+  mpfr_t x;
+  char s[22];
+  mpfr_exp_t e;
+  int b = 3;
+  size_t m = 40;
+
+  mpfr_init2 (x, 128);
+
+  /* exercise corner case in mpfr_get_str_aux: exact case (e < 0), where r
+     rounds to a power of 2, and f is a multiple of GMP_NUMB_BITS */
+  mpfr_set_ui_2exp (x, 1, 64, MPFR_RNDU);
+  mpfr_nextbelow (x);
+  /* x = 2^64 - 2^(-64) */
+  mpfr_get_str (s, &e, b, m, x, MPFR_RNDU);
+  /* s is the base-3 string for 6148914691236517206 (in base 10) */
+  MPFR_ASSERTN(strcmp (s, "1111222002212212010121102012021021021200") == 0);
+  MPFR_ASSERTN(e == 41);
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1281,6 +1305,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  coverage ();
   check_small ();
 
   check_special (2, 2);

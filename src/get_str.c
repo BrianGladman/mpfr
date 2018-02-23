@@ -2499,7 +2499,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
           else
             MPN_COPY (a, result + nx1, n);
         }
-      else
+      else /* m < g: divide by b^exp */
         {
           mp_limb_t *x1;
 
