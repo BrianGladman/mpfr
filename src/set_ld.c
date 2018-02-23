@@ -129,6 +129,13 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 #endif
 
   /* Normalize mantissa */
+#if HAVE_LDOUBLE_IEEE_EXT_LITTLE && MPFR_LIMBS_PER_LONG_DOUBLE == 1
+  /* then MPFR_LIMBS_PER_LONG_DOUBLE can be used by the preprocessor
+     since it does not use "sizeof" (see r12409) */
+  count_leading_zeros (cnt, tmpmant[0]);
+  tmpmant[0] <<= cnt;
+  k = 0; /* number of limbs shifted */
+#else
   i = MPFR_LIMBS_PER_LONG_DOUBLE;
   MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
   k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
@@ -139,6 +146,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
     MPN_COPY (tmpmant + k, tmpmant, i);
   if (MPFR_UNLIKELY (k != 0))
     MPN_ZERO (tmpmant, k);
+#endif
 
   /* Set exponent */
   exp = (mpfr_exp_t) ((x.s.exph << 8) + x.s.expl);  /* 15-bit unsigned int */

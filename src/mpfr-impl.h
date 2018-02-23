@@ -785,7 +785,7 @@ typedef union {
 /* #define MPFR_LDBL_MANT_DIG   64 */
 #define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/GMP_NUMB_BITS+1)
 
-#endif
+#endif /* HAVE_LDOUBLE_IEEE_EXT_LITTLE */
 
 #endif  /* long double macros and typedef */
 
