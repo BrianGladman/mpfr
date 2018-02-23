@@ -747,6 +747,7 @@ dnl mpn_rsblsh1_n(rp, up, vp, n) does {rp, n} <- 2 * {vp, n} - {up, n}
 AC_CHECK_FUNCS([__gmpn_rsblsh1_n])
 
 MPFR_CHECK_MP_LIMB_T_VS_LONG
+MPFR_CHECK_MP_LIMB_T_VS_INTMAX
 
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])

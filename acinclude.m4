@@ -843,6 +843,33 @@ esac
 CPPFLAGS="$saved_CPPFLAGS"
 ])
 
+dnl MPFR_CHECK_MP_LIMB_T_VS_INTMAX
+dnl ------------------------------
+dnl Check that an intmax_t can fit in a mp_limb_t.
+AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_INTMAX], [
+AC_REQUIRE([MPFR_CONFIGS])
+AC_CACHE_CHECK([for intmax_t to fit in mp_limb_t], mpfr_cv_intmax_within_limb, [
+saved_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <gmp.h>
+#include "mpfr-intmax.h"
+]], [[
+  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (intmax_t) -1);
+  return 0;
+]])], [mpfr_cv_intmax_within_limb="yes"],
+      [mpfr_cv_intmax_within_limb="no"],
+      [mpfr_cv_intmax_within_limb="cannot test, assume yes"])
+])
+case $mpfr_cv_intmax_within_limb in
+yes*)
+      AC_DEFINE([MPFR_INTMAX_WITHIN_LIMB],1,[intmax_t can be stored in mp_limb_t]) ;;
+cannot*)
+      AC_DEFINE([MPFR_INTMAX_WITHIN_LIMB],1,[intmax_t can be stored in mp_limb_t]) ;;
+esac
+CPPFLAGS="$saved_CPPFLAGS"
+])
+
 dnl MPFR_PARSE_DIRECTORY
 dnl Input:  $1 = a string to a relative or absolute directory
 dnl Output: $2 = the variable to set with the absolute directory

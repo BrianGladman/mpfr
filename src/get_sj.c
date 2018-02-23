@@ -80,12 +80,16 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
              has the same size as intmax_t, we cannot use the code in
              the for loop since the operations would be performed in
              unsigned arithmetic. */
-          MPFR_ASSERTN (MPFR_IS_NEG (x) && mpfr_powerof2_raw (x));
+          MPFR_ASSERTD (MPFR_IS_NEG (x) && mpfr_powerof2_raw (x));
           r = MPFR_INTMAX_MIN;
         }
       /* sh is the number of bits that remain to be considered in {xp, xn} */
       else
         {
+#ifdef MPFR_INTMAX_WITHIN_LIMB
+          MPFR_ASSERTD (sh > 0);
+          r = xp[0] >> (GMP_NUMB_BITS - sh);
+#else
           /* Note: testing the condition sh > 0 is necessary to avoid
              an undefined behavior on xp[n] >> S when S >= GMP_NUMB_BITS
              (even though xp[n] == 0 in such a case). This can happen if
@@ -112,6 +116,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
                 ? (intmax_t) xp[n] << sh
                 : (intmax_t) (xp[n] >> (-sh));
             }
+#endif
           if (MPFR_IS_NEG(x))
             r = -r;
         }
