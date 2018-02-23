@@ -83,14 +83,15 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
           MPFR_ASSERTN (MPFR_IS_NEG (x) && mpfr_powerof2_raw (x));
           r = MPFR_INTMAX_MIN;
         }
-      else if (MPFR_IS_POS (x))
+      /* sh is the number of bits the remain to be considered in {xp, xn} */
+      else
         {
-          /* Note: testing the condition sh >= 0 is necessary to avoid
+          /* Note: testing the condition sh > 0 is necessary to avoid
              an undefined behavior on xp[n] >> S when S >= GMP_NUMB_BITS
              (even though xp[n] == 0 in such a case). This can happen if
              sizeof(mp_limb_t) < sizeof(intmax_t) and |x| is small enough
              because of the trailing bits due to its normalization. */
-          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0 && sh >= 0; n--)
+          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0 && sh > 0; n--)
             {
               sh -= GMP_NUMB_BITS;
               /* Note the concerning the casts below:
@@ -100,23 +101,19 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
                  for the case sizeof(intmax_t) == sizeof(mp_limb_t), as
                  mp_limb_t is unsigned, therefore not representable as an
                  intmax_t when the MSB is 1 (this is the case here). */
-              MPFR_ASSERTD (sh < GMP_NUMB_BITS && -sh < GMP_NUMB_BITS);
-              r += (sh >= 0
-                    ? (intmax_t) xp[n] << sh
-                    : (intmax_t) (xp[n] >> (-sh)));
+              /* sh + GMP_NUMB_BITS <= prec + 1 because if sh >= 0 the shifted
+                 value xp[n] << sh should fit in an intmax_t */
+              MPFR_ASSERTD (sh + GMP_NUMB_BITS <= prec + 1);
+              MPFR_ASSERTD (-sh < GMP_NUMB_BITS);
+              if (sh >= 0) MPFR_ASSERTN(0);
+              /* each limb should be shifted by sh bits to the left if sh>=0,
+                 and by sh bits to the right if sh < 0 */
+              r += sh >= 0
+                ? (intmax_t) xp[n] << sh
+                : (intmax_t) (xp[n] >> (-sh));
             }
-        }
-      else
-        {
-          /* See the comments for the case x positive. */
-          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0 && sh >= 0; n--)
-            {
-              sh -= GMP_NUMB_BITS;
-              MPFR_ASSERTD (sh < GMP_NUMB_BITS && -sh < GMP_NUMB_BITS);
-              r -= (sh >= 0
-                    ? (intmax_t) xp[n] << sh
-                    : (intmax_t) (xp[n] >> (-sh)));
-            }
+          if (MPFR_IS_NEG(x))
+            r = -r;
         }
     }
 
