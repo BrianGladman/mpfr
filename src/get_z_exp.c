@@ -70,6 +70,10 @@ mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
 
   SIZ(z) = MPFR_IS_NEG (f) ? -fn : fn;
 
+#if GMP_NUMB_BITS <= 32  
+  /* on a 64-bit machine, MPFR_GET_EXP(f) >= MPFR_EMIN_MIN = 1-2^62 and
+     MPFR_EXP_MIN = -2^63, thus the following implies PREC(f) > 2^62+1,
+     which is impossible due to memory constraints */
   if (MPFR_UNLIKELY ((mpfr_uexp_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
                      < (mpfr_uexp_t) MPFR_PREC (f)))
     {
@@ -77,6 +81,7 @@ mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
       MPFR_SET_ERANGEFLAG ();
       return MPFR_EXP_MIN;
     }
+#endif  
 
   return MPFR_GET_EXP (f) - MPFR_PREC (f);
 }
