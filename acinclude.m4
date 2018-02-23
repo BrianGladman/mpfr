@@ -831,13 +831,10 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
   return 0;
 ]])], [mpfr_cv_long_within_limb="yes"],
-      [mpfr_cv_long_within_limb="no"],
-      [mpfr_cv_long_within_limb="cannot test, assume yes"])
+      [mpfr_cv_long_within_limb="no"])
 ])
 case $mpfr_cv_long_within_limb in
 yes*)
-      AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t]) ;;
-cannot*)
       AC_DEFINE([MPFR_LONG_WITHIN_LIMB],1,[long can be stored in mp_limb_t]) ;;
 esac
 CPPFLAGS="$saved_CPPFLAGS"
@@ -858,8 +855,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (intmax_t) -1);
   return 0;
 ]])], [mpfr_cv_intmax_within_limb="yes"],
-      [mpfr_cv_intmax_within_limb="no"],
-      [mpfr_cv_intmax_within_limb="cannot test, assume no"])
+      [mpfr_cv_intmax_within_limb="no"])
 ])
 case $mpfr_cv_intmax_within_limb in
 yes*)
