@@ -83,7 +83,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
           MPFR_ASSERTN (MPFR_IS_NEG (x) && mpfr_powerof2_raw (x));
           r = MPFR_INTMAX_MIN;
         }
-      /* sh is the number of bits the remain to be considered in {xp, xn} */
+      /* sh is the number of bits that remain to be considered in {xp, xn} */
       else
         {
           /* Note: testing the condition sh > 0 is necessary to avoid
