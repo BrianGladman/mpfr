@@ -132,11 +132,35 @@ check_canonical (void)
   mpz_clear (z);
 }
 
+static void
+coverage (void)
+{
+  mpfr_t x;
+  mpq_t q;
+  mpz_t z;
+
+  mpfr_init2 (x, 5);
+  mpq_init (q);
+  mpz_init (z);
+
+  mpfr_set_ui_2exp (x, 17, 100, MPFR_RNDN);
+  mpfr_get_q (q, x);
+  MPFR_ASSERTN(mpz_cmp_ui (mpq_denref (q), 1) == 0);
+  mpz_set_ui (z, 17);
+  mpz_mul_2exp (z, z, 100);
+  MPFR_ASSERTN(mpz_cmp (mpq_numref (q), z) == 0);
+
+  mpfr_clear (x);
+  mpq_clear (q);
+  mpz_clear (z);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
+  coverage ();
   special ();
   random_tests ();
 
