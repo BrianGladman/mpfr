@@ -1299,6 +1299,15 @@ coverage (void)
   MPFR_ASSERTN(strcmp (s, "1") == 0);
   MPFR_ASSERTN(e == 1);
 
+  /* exercise corner case in mpfr_get_str: case m < g, exact <> 0,
+     nx > 2 * n, and low nx-2n limbs from xp not identically zero */
+  mpfr_set_prec (x, 129);
+  mpfr_set_str_binary (x, "0.100100111110110111100010100011011111101010110000011001000111111101100110101110110000110011E8");
+  mpfr_nextabove (x);
+  mpfr_get_str (s, &e, 10, 2, x, MPFR_RNDZ);
+  MPFR_ASSERTN(strcmp (s, "14") == 0);
+  MPFR_ASSERTN(e == 3);
+
   mpfr_clear (x);
 }
 

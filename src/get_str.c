@@ -2429,6 +2429,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
 
   g = mpfr_ceil_mul (MPFR_GET_EXP (x) - 1, b, 1);
   exact = 1;
+  /* prec is the radix-2 precision necessary to get m digits in radix b */
   prec = mpfr_ceil_mul (m, b, 0) + 1;
   exp = ((mpfr_exp_t) m < g) ? g - (mpfr_exp_t) m : (mpfr_exp_t) m - g;
   prec += MPFR_INT_CEIL_LOG2 (prec); /* number of guard bits */
@@ -2472,7 +2473,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
           x1 = (nx >= n) ? xp + nx - n : xp;
           nx1 = (nx >= n) ? n : nx; /* nx1 = min(n, nx) */
 
-          /* test si exact */
+          /* test if exact */
           if (nx > n)
             exact = (exact &&
                      ((mpn_scan1 (xp, 0) >= (nx - n) * GMP_NUMB_BITS)));
@@ -2507,15 +2508,23 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
           exact = (err == -1);
 
           /* allocate memory for x1, result and reste */
-          x1 = MPFR_TMP_LIMBS_ALLOC (2 * n);
           result = MPFR_TMP_LIMBS_ALLOC (n + 1);
           reste = MPFR_TMP_LIMBS_ALLOC (n);
 
-          /* initialize x1 = x */
-          MPN_COPY2 (x1, 2 * n, xp, nx);
-          if ((exact) && (nx > 2 * n) &&
-              (mpn_scan1 (xp, 0) < (nx - 2 * n) * GMP_NUMB_BITS))
-            exact = 0;
+          if (2 * n <= nx)
+            {
+              x1 = xp + nx - 2 * n;
+              /* we ignored the low nx - 2 * n limbs from x */
+              if (exact && mpn_scan1 (xp, 0) < (nx - 2 * n) * GMP_NUMB_BITS)
+                exact = 0;
+            }
+          else
+            {
+              /* copy the nx most significant limbs of x into those of x1 */
+              x1 = MPFR_TMP_LIMBS_ALLOC (2 * n);
+              MPN_ZERO (x1, 2 * n - nx);
+              MPN_COPY (x1 + 2 * n - nx, xp, nx);
+            }
 
           /* result = x / a */
           mpn_tdiv_qr (result, reste, 0, x1, 2 * n, a, n);
