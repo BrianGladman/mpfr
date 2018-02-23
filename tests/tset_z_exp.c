@@ -58,6 +58,14 @@ check0 (void)
           exit (1);
         }
     }
+
+  /* coverage test for huge exponent */
+  mpz_setbit (y, GMP_NUMB_BITS);
+  mpfr_clear_flags ();
+  inexact = mpfr_set_z_2exp (x, y, mpfr_get_emax_max(), MPFR_RNDN);
+  MPFR_ASSERTN(inexact > 0);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  MPFR_ASSERTN(mpfr_overflow_p ());
   mpfr_clear(x);
   mpz_clear(y);
 }
