@@ -1655,8 +1655,8 @@ than in MPFR, so that an overflow or underflow is not possible.
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
-number of significant digits output in the string; in the latter case,
-@var{n} must be greater or equal to 2. The base may vary from 2 to 62;
+number of significant digits output in the string.
+The base may vary from 2 to 62;
 otherwise the function does nothing and immediately returns a null pointer.
 
 If the input is NaN, then the returned string is @samp{@@NaN@@} and the
@@ -1699,8 +1699,7 @@ with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
 but in some very rare cases, it might be @math{m+1}
 (the smallest case for bases up to 62 is when @var{p} equals 186564318007
 for bases 7 and 49).
-@c In the source src/get_str.c, this is due to the approximate mpfr_ceil_mul,
-@c but also m = 1 is changed to 2.
+@c In the source src/get_str.c, this is due to the approximate mpfr_ceil_mul.
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the allocation function (@pxref{Memory Handling}) and a pointer to the string

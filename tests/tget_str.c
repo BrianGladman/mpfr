@@ -1288,6 +1288,17 @@ coverage (void)
   MPFR_ASSERTN(strcmp (s, "1111222002212212010121102012021021021200") == 0);
   MPFR_ASSERTN(e == 41);
 
+  /* exercise corner case in mpfr_get_str: input is m=0, then it is changed
+     to m=1 */
+  mpfr_set_prec (x, 1);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_get_str (s, &e, 2, 0, x, MPFR_RNDN);
+  MPFR_ASSERTN(strcmp (s, "1") == 0);
+  MPFR_ASSERTN(e == 1);
+  mpfr_get_str (s, &e, 2, 1, x, MPFR_RNDN);
+  MPFR_ASSERTN(strcmp (s, "1") == 0);
+  MPFR_ASSERTN(e == 1);
+
   mpfr_clear (x);
 }
 
