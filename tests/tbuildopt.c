@@ -105,7 +105,8 @@ main (void)
   check_float128_p();
   check_gmpinternals_p();
   {
-    char *s = mpfr_buildopt_tune_case ();
+    const char *s = mpfr_buildopt_tune_case ();
+    (void) strlen (s);
   }
 
   tests_end_mpfr ();
