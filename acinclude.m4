@@ -859,12 +859,10 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   return 0;
 ]])], [mpfr_cv_intmax_within_limb="yes"],
       [mpfr_cv_intmax_within_limb="no"],
-      [mpfr_cv_intmax_within_limb="cannot test, assume yes"])
+      [mpfr_cv_intmax_within_limb="cannot test, assume no"])
 ])
 case $mpfr_cv_intmax_within_limb in
 yes*)
-      AC_DEFINE([MPFR_INTMAX_WITHIN_LIMB],1,[intmax_t can be stored in mp_limb_t]) ;;
-cannot*)
       AC_DEFINE([MPFR_INTMAX_WITHIN_LIMB],1,[intmax_t can be stored in mp_limb_t]) ;;
 esac
 CPPFLAGS="$saved_CPPFLAGS"
