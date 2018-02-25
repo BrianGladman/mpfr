@@ -39,6 +39,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * for consistency. The erange flag is set.
  */
 
+/* MPFR_LARGE_EXP can be defined when mpfr_exp_t is guaranteed to have
+   at least 64 bits (in a portable way). */
+#if GMP_NUMB_BITS >= 64
+/* Now, we know that the constant below is supported by the compiler. */
+# if _MPFR_EXP_FORMAT >= 3 && LONG_MAX >= 9223372036854775807
+#  define MPFR_LARGE_EXP 1
+# endif
+#endif
+
 mpfr_exp_t
 mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
 {
@@ -70,11 +79,10 @@ mpfr_get_z_2exp (mpz_ptr z, mpfr_srcptr f)
 
   SIZ(z) = MPFR_IS_NEG (f) ? -fn : fn;
 
-#if !(_MPFR_EXP_FORMAT >= 3 && LONG_MAX >= 9223372036854775807L)
-  /* If _MPFR_EXP_FORMAT >= 3, mpfr_exp_t is at least a long.
-     If mpfr_ext_t has 64 bits, then MPFR_GET_EXP(f) >= MPFR_EMIN_MIN = 1-2^62
-     and MPFR_EXP_MIN = -2^63, thus the following implies PREC(f) > 2^62+1,
-     which is impossible due to memory constraints */
+#ifndef MPFR_LARGE_EXP
+  /* If mpfr_exp_t has 64 bits, then MPFR_GET_EXP(f) >= MPFR_EMIN_MIN = 1-2^62
+     and MPFR_EXP_MIN <= 1-2^63, thus the following implies PREC(f) > 2^62,
+     which is impossible due to memory constraints. */
   if (MPFR_UNLIKELY ((mpfr_uexp_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
                      < (mpfr_uexp_t) MPFR_PREC (f)))
     {
