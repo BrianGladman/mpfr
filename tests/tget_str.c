@@ -1267,7 +1267,7 @@ check_negative_base (void)
 
 #define ITER 1000
 
-static int
+static void
 coverage (void)
 {
   mpfr_t x;
