@@ -313,6 +313,7 @@ bug20180126 (void)
   /* This test expects that a limb fits in an unsigned long.
      One failing case from function bug20180126() in tdiv.c,
      for GMP_NUMB_BITS == 64. */
+#if ULONG_MAX > 4294967295
   if (GMP_NUMB_BITS == 64 && MPFR_LIMB_MAX <= ULONG_MAX)
     {
       mpfr_init2 (x, 133);
@@ -345,6 +346,7 @@ bug20180126 (void)
       mpfr_clear (y);
       mpfr_clear (z);
     }
+#endif
 }
 
 /* check corner cases where the round bit is located in the upper bit of r */
