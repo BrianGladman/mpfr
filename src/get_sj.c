@@ -68,7 +68,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_NOTZERO (x))
     {
       mp_limb_t *xp;
-      int sh, n;        /* An int should be sufficient in this context. */
+      int sh;        /* An int should be sufficient in this context. */
 
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
@@ -90,6 +90,8 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
           MPFR_ASSERTD (sh > 0 && sh < GMP_NUMB_BITS);
           r = xp[0] >> (GMP_NUMB_BITS - sh);
 #else
+          int n;
+
           /* Note: testing the condition sh > 0 is necessary to avoid
              an undefined behavior on xp[n] >> S when S >= GMP_NUMB_BITS
              (even though xp[n] == 0 in such a case). This can happen if
