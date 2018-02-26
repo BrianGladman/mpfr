@@ -24,10 +24,8 @@ Changes from versions 4.0.* to version 4.1.0:
 - The "..." release.
 - Improved __GMP_CC and __GMP_CFLAGS retrieval (in particular for MS Windows).
 - Changed __float128 to the type _Float128 specified in ISO/IEC TS 18661.
-  FIXME: A fallback to __float128? Even with this fallback, does this
-  change the ABI on some platforms, where __float128 is an alias for
-  long double (thus __float128 and _Float128 are different types, though
-  with the same representation)? To be discussed.
+  __float128 is used as a fallback if _Float128 is not supported.
+  FIXME: To be confirmed before the release.
 - Optimized the tuning parameters for various architectures.
 - Improved test coverage to XXX% of code.
 - Bug fixes.

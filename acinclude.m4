@@ -632,19 +632,31 @@ Please use another compiler or build MPFR without --enable-decimal-float.])
      fi])
 fi
 
-dnl Check if _Float128 is available. We also require the compiler
-dnl to support C99 constants (this prevents the _Float128 support
-dnl with GCC's -std=c90, but who cares?).
+dnl Check if _Float128 or __float128 is available. We also require the
+dnl compiler to support hex constants with the f128 or q suffix (this
+dnl prevents the _Float128 support with GCC's -std=c90, but who cares?).
 if test "$enable_float128" != no; then
-   AC_MSG_CHECKING(if compiler knows _Float128 with C99 constants)
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Float128 x = 0x1.fp+16383q;]])],
+   AC_MSG_CHECKING(if compiler knows _Float128 with hex constants)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Float128 x = 0x1.fp+16383f128;]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT128],1,[Build float128 functions])],
       [AC_MSG_RESULT(no)
-       if test "$enable_float128" = yes; then
-          AC_MSG_ERROR([compiler doesn't know _Float128 with C99 constants
+       AC_MSG_CHECKING(if __float128 can be used as a fallback)
+dnl Use the q suffix in this case.
+       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#define _Float128 __float128
+]], [[_Float128 x = 0x1.fp+16383q;]])],
+          [AC_MSG_RESULT(yes)
+           AC_DEFINE([MPFR_WANT_FLOAT128],2,
+                     [Build float128 functions with float128 fallback])
+           AC_DEFINE([_Float128],[__float128],[__float128 fallback])],
+          [AC_MSG_RESULT(no)
+           if test "$enable_float128" = yes; then
+              AC_MSG_ERROR(
+[compiler doesn't know _Float128 or __float128 with hex constants.
 Please use another compiler or build MPFR without --enable-float128.])
        fi])
+      ])
 fi
 
 dnl Check if Static Assertions are supported.

@@ -26,8 +26,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_FLOAT128
 
-/* The q suffix is a GNU C extension. TODO: use f128 preferably. */
-#define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383q
+#if MPFR_WANT_FLOAT128 == 1
+/* _Float128 type from ISO/IEC TS 18661 */
+# define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383f128
+#elif MPFR_WANT_FLOAT128 == 2
+/* __float128 type (GNU C extension) */
+# define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383q
+#else
+# error "Unsupported value for MPFR_WANT_FLOAT128"
+#endif
 
 int
 mpfr_set_float128 (mpfr_ptr r, _Float128 d, mpfr_rnd_t rnd_mode)
