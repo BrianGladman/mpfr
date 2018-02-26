@@ -1195,6 +1195,14 @@ To detect compilers, see
 
 ===========================================================================
 
+For configure tests, use AC_LINK_IFELSE rather than AC_COMPILE_IFELSE,
+which is broken by design. The reason is that some errors just produce
+a warning (which is not a bug from the compiler: in ISO C terminology,
+this corresponds to a diagnostic, and the compilation is allowed to
+succeed), and this is unfixable in a portable way.
+
+===========================================================================
+
 For developers - Use of the svn:eol-style Subversion property
 
 The svn:eol-style Subversion property is traditionally set to "native" on
