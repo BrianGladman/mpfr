@@ -858,8 +858,11 @@ AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for intmax_t to fit in mp_limb_t], mpfr_cv_intmax_within_limb, [
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+dnl AC_LINK_IFELSE is safier than AC_COMPILE_IFELSE, which did not detect
+dnl the missing #include "mpfr-sassert.h".
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
+#include "mpfr-sassert.h"
 #include "mpfr-intmax.h"
 ]], [[
   MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (uintmax_t) -1);
