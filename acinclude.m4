@@ -862,7 +862,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
 #include "mpfr-intmax.h"
 ]], [[
-  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (intmax_t) -1);
+  MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (uintmax_t) -1);
   return 0;
 ]])], [mpfr_cv_intmax_within_limb="yes"],
       [mpfr_cv_intmax_within_limb="no"])
