@@ -606,7 +606,7 @@ coverage (void)
   MPFR_ASSERTN(mpfr_inf_p (s) && mpfr_sgn (s) > 0);
   MPFR_ASSERTN(mpfr_overflow_p ());
   mpfr_set_emax (emax);
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

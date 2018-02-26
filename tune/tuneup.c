@@ -877,7 +877,7 @@ tune_div_mulders_upto (mp_size_t n)
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
   MPFR_ASSERTN (n > 2); /* mpn_sbpi1_divappr_q requires dn > 2 */
 #endif
-  
+
   /* Check k == 0, i.e., mpfr_divhigh_n_basecase */
   kbest = 0;
   tbest = mpfr_speed_measure (speed_mpfr_divhigh, &s, "mpfr_divhigh");

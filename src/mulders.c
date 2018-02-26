@@ -265,7 +265,7 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
                                              forbid k=n-1 which would give l=1
                                              in the recursive call, it follows
                                              n >= 5 */
-                                             
+
   MPFR_TMP_MARK (marker);
   l = n - k;
   /* first divide the most significant 2k limbs from N by the most significant
