@@ -21,14 +21,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <float.h> /* for DBL_MAX */
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #ifdef MPFR_WANT_FLOAT128
 
-/* The q suffix is a GNU C extension, but so is _Float128. */
+/* The q suffix is a GNU C extension. TODO: use f128 preferably. */
 #define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383q
 
 int
