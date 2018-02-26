@@ -645,7 +645,7 @@ if test "$enable_float128" != no; then
 dnl Use the q suffix in this case.
        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #define _Float128 __float128
-]], [[_Float128 x = 0x1.fp+16383q;]])],
+_Float128 x = 0x1.fp+16383q;]])],
           [AC_MSG_RESULT(yes)
            AC_DEFINE([MPFR_WANT_FLOAT128],2,
                      [Build float128 functions with float128 fallback])
