@@ -582,8 +582,9 @@ coverage (void)
 
   /* set x to 2^(GMP_NUMB_BITS/2) + 1, y to 2^(GMP_NUMB_BITS/2) - 1 */
   MPFR_ASSERTN((GMP_NUMB_BITS % 2) == 0);
-  mpfr_set_ui (x, (1UL << (GMP_NUMB_BITS / 2)) + 1, MPFR_RNDN);
-  mpfr_set_ui (y, (1UL << (GMP_NUMB_BITS / 2)) - 1, MPFR_RNDN);
+  mpfr_set_ui_2exp (x, 1, GMP_NUMB_BITS / 2, MPFR_RNDN);
+  mpfr_sub_ui (y, x, 1, MPFR_RNDN);
+  mpfr_add_ui (x, x, 1, MPFR_RNDN);
   /* we have x*y = 2^GMP_NUMB_BITS - 1, thus has exponent GMP_NUMB_BITS */
   /* set z to 2^(1-GMP_NUMB_BITS), with exponent 2-GMP_NUMB_BITS */
   mpfr_set_ui_2exp (z, 1, 1 - GMP_NUMB_BITS, MPFR_RNDN);
