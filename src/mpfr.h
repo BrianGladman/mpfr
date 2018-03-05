@@ -136,7 +136,11 @@ typedef enum {
 
 /* Let's make mpfr_prec_t signed in order to avoid problems due to the
    usual arithmetic conversions when mixing mpfr_prec_t and mpfr_exp_t
-   in an expression (for error analysis) if casts are forgotten. */
+   in an expression (for error analysis) if casts are forgotten.
+   Note: mpfr_prec_t is currently limited to "long". This means that
+   under MS Windows, the precisions are limited to about 2^31; however,
+   these are already huge precisions, probably sufficient in practice
+   on this platform. */
 #if   _MPFR_PREC_FORMAT == 1
 typedef short mpfr_prec_t;
 typedef unsigned short mpfr_uprec_t;
