@@ -2229,6 +2229,64 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
   return r;
 }
 
+/* take at least 1 + ceil(p*log(2)/log(b)) digits, where p is the
+   number of bits of the mantissa, to ensure back conversion from
+   the output gives the same floating-point.
+   
+   Warning: if b = 2^k, this may be too large. The worst case is when
+   the first base-b digit contains only one bit, so we take
+   1 + ceil((p-1)/k) instead.
+*/
+size_t
+mpfr_get_str_digits (int b, mpfr_prec_t p)
+{
+  MPFR_ASSERTD(2 <= b && b <= 62);
+
+  /* the value returned by mpfr_ceil_mul is guaranteed to be
+     1 + ceil(p*log(2)/log(b)) for p < 186564318007 (it returns one more
+     for p=186564318007 and b=7 or 49) */
+  if (MPFR_LIKELY(p < 186564318007))
+    return 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
+
+  if (IS_POW2(b)) /* 1 + ceil((p-1)/k) = 2 + floor((p-2)/k) */
+    {
+      int k;
+      
+      for (k = 1; b > 2; b >>= 1, k++);
+      /* now the original b is 2^k */
+      return 2 + (p - 2) / k;
+    }
+
+  /* now p >= 186564318007 and b is not a power of two */
+  {
+    mpfr_prec_t w = 77; /* mpfr_ceil_mul used a 77-bit upper approximation of
+                           log(2)/log(b) */
+    mpfr_t d, u;
+    size_t ret = 0;
+    while (ret == 0)
+      {
+        w = 2 * w;
+        mpfr_init2 (d, w); /* lower approximation */
+        mpfr_init2 (u, w); /* upper approximation */
+        mpfr_set_ui (d, b, MPFR_RNDU);
+        mpfr_set_ui (u, b, MPFR_RNDD);
+        mpfr_log2 (d, d, MPFR_RNDU);
+        mpfr_log2 (u, u, MPFR_RNDD);
+        /* u <= log(b)/log(2) <= d */
+        mpfr_ui_div (d, p, d, MPFR_RNDD);
+        mpfr_ui_div (u, p, u, MPFR_RNDU);
+        /* d <= p*log(2)/log(b) <= u */
+        mpfr_ceil (d, d);
+        mpfr_ceil (u, u);
+        if (mpfr_cmp (d, u) == 0)
+          ret = mpfr_get_ui (d, MPFR_RNDU);
+        mpfr_clear (d);
+        mpfr_clear (u);
+      }
+    return ret;
+  }
+}
+
 /* prints the mantissa of x in the string s, and writes the corresponding
    exponent in e.
    x is rounded with direction rnd, m is the number of digits of the mantissa,
@@ -2313,19 +2371,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   MPFR_SAVE_EXPO_MARK (expo);  /* needed for mpfr_ceil_mul (at least) */
 
   if (m == 0)
-    {
-
-      /* take at least 1 + ceil(n*log(2)/log(b)) digits, where n is the
-         number of bits of the mantissa, to ensure back conversion from
-         the output gives the same floating-point.
-
-         Warning: if b = 2^k, this may be too large. The worst case is when
-         the first base-b digit contains only one bit, so we get
-         1 + ceil((n-1)/k) = 2 + floor((n-2)/k) instead.
-      */
-      m = 1 +
-        mpfr_ceil_mul (IS_POW2(b) ? MPFR_PREC(x) - 1 : MPFR_PREC(x), b, 1);
-    }
+    m = mpfr_get_str_digits (b, MPFR_PREC(x));
 
   MPFR_LOG_MSG (("m=%zu\n", m));
 

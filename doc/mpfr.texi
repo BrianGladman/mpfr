@@ -1652,6 +1652,21 @@ not with the same radix), the range of values is much larger in MPF
 than in MPFR, so that an overflow or underflow is not possible.
 @end deftypefun
 
+@deftypefun {size_t} mpfr_get_str_digits (int @var{b}, mpfr_prec_t @var{p})
+Return the minimal integer @math{m} such that any number
+of @var{p} bits, when output with @math{m} digits in radix @var{b} with
+rounding to nearest, can be recovered exactly when read again,
+still with rounding to nearest.
+More precisely, we have
+@ifnottex
+m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
+@end ifnottex
+@tex
+$m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
+@end tex
+with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
+@end deftypefun
+
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
