@@ -2242,6 +2242,17 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
 {
   MPFR_ASSERTD(2 <= b && b <= 62);
 
+  /* deal first with power of two bases, since even for those, mpfr_ceil_mul
+     might return a value too large by 1 */
+  if (IS_POW2(b)) /* 1 + ceil((p-1)/k) = 2 + floor((p-2)/k) */
+    {
+      int k;
+
+      count_leading_zeros (k, (mp_limb_t) b);
+      k = GMP_NUMB_BITS - k - 1; /* now b = 2^k */
+      return 1 + (p + k - 2) / k;
+    }
+
   /* the value returned by mpfr_ceil_mul is guaranteed to be
      1 + ceil(p*log(2)/log(b)) for p < 186564318007 (it returns one more
      for p=186564318007 and b=7 or 49) */
@@ -2253,15 +2264,6 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
   if (MPFR_LIKELY (p < 186564318007))
 #endif
     return 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
-
-  if (IS_POW2(b)) /* 1 + ceil((p-1)/k) = 2 + floor((p-2)/k) */
-    {
-      int k;
-
-      for (k = 1; b > 2; b >>= 1, k++);
-      /* now the original b is 2^k */
-      return 2 + (p - 2) / k;
-    }
 
   /* Now p is large and b is not a power of two. The code below works for any
      value of p and b, as long as b is not a power of two. Indeed, in such a
@@ -2295,7 +2297,7 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
         mpfr_clear (d);
         mpfr_clear (u);
       }
-    return ret;
+    return 1 + ret;
   }
 }
 
@@ -2418,7 +2420,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
       int inexp;
 
       count_leading_zeros (pow2, (mp_limb_t) b);
-      pow2 = GMP_NUMB_BITS - pow2 - 1; /* base = 2^pow2 */
+      pow2 = GMP_NUMB_BITS - pow2 - 1; /* b = 2^pow2 */
 
       /* set MPFR_EXP(x) = f*pow2 + r, 1 <= r <= pow2 */
       f = (MPFR_GET_EXP (x) - 1) / pow2;

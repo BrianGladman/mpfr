@@ -1311,6 +1311,72 @@ coverage (void)
   mpfr_clear (x);
 }
 
+/* test of mpfr_get_str_ndigits */
+static void
+test_ndigits (void)
+{
+  mpfr_prec_t p;
+
+  /* for b=2, we have 1 + ceil((p-1)*log(2)/log(b)) = p */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    MPFR_ASSERTN(mpfr_get_str_ndigits (2, p) == p);
+
+  /* for b=4, we have 1 + ceil((p-1)*log(2)/log(b)) = 1 + ceil((p-1)/2)
+     = 1 + floor(p/2) */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    MPFR_ASSERTN(mpfr_get_str_ndigits (4, p) == 1 + (p / 2));
+
+  /* for b=8, we have 1 + ceil((p-1)*log(2)/log(b)) = 1 + ceil((p-1)/3)
+     = 1 + floor((p+1)/3) */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    MPFR_ASSERTN(mpfr_get_str_ndigits (8, p) == 1 + ((p + 1) / 3));
+
+  /* for b=16, we have 1 + ceil((p-1)*log(2)/log(b)) = 1 + ceil((p-1)/4)
+     = 1 + floor((p+2)/4) */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    MPFR_ASSERTN(mpfr_get_str_ndigits (16, p) == 1 + ((p + 2) / 4));
+
+  /* for b=32, we have 1 + ceil((p-1)*log(2)/log(b)) = 1 + ceil((p-1)/5)
+     = 1 + floor((p+3)/5) */
+  for (p = MPFR_PREC_MIN; p <= 1024; p++)
+    MPFR_ASSERTN(mpfr_get_str_ndigits (32, p) == 1 + ((p + 3) / 5));
+
+  /* error < 1e-3 */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (57, 35) == 8);
+
+  /* error < 1e-4 */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (31, 649) == 133);
+
+  /* error < 1e-5 */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (43, 5041) == 931);
+
+  /* error < 1e-6 */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (41, 17771) == 3319);
+
+  /* 20th convergent of log(2)/log(3) */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 630138897) == 397573381);
+
+#if MPFR_PREC_BITS >= 64
+  /* 21st convergent of log(2)/log(3) */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 9809721694) == 6189245292);
+
+  /* 22nd convergent of log(2)/log(3) */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 10439860591) == 6586818672);
+
+  /* 23rd convergent of log(2)/log(3) */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 103768467013) == 65470613322);
+
+  /* 24th convergent of log(2)/log(3) */
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 217976794617) == 137528045314);
+
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 1193652440098) == 753110839882);
+
+  MPFR_ASSERTN(mpfr_get_str_ndigits (3, 683381996816440) == 431166034846569);
+
+  MPFR_ASSERTN(mpfr_get_str_ndigits (7, 186564318007) == 66455550933);
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1325,6 +1391,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  test_ndigits ();
   coverage ();
   check_small ();
 
