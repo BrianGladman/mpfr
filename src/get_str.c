@@ -2238,7 +2238,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
    1 + ceil((p-1)/k) instead.
 */
 size_t
-mpfr_get_str_digits (int b, mpfr_prec_t p)
+mpfr_get_str_ndigits (int b, mpfr_prec_t p)
 {
   MPFR_ASSERTD(2 <= b && b <= 62);
 
@@ -2397,7 +2397,7 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   MPFR_SAVE_EXPO_MARK (expo);  /* needed for mpfr_ceil_mul (at least) */
 
   if (m == 0)
-    m = mpfr_get_str_digits (b, MPFR_PREC(x));
+    m = mpfr_get_str_ndigits (b, MPFR_PREC(x));
 
   MPFR_LOG_MSG (("m=%zu\n", m));
 

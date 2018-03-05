@@ -1652,7 +1652,7 @@ not with the same radix), the range of values is much larger in MPF
 than in MPFR, so that an overflow or underflow is not possible.
 @end deftypefun
 
-@deftypefun {size_t} mpfr_get_str_digits (int @var{b}, mpfr_prec_t @var{p})
+@deftypefun {size_t} mpfr_get_str_ndigits (int @var{b}, mpfr_prec_t @var{p})
 Return the minimal integer @math{m} such that any number
 of @var{p} bits, when output with @math{m} digits in radix @var{b} with
 rounding to nearest, can be recovered exactly when read again,
@@ -1697,24 +1697,8 @@ which is 12 in decimal, (16) and a half is rounded to
 @c (36) and a half is rounded to (40) which is 28 in decimal,
 and (26) and a half is rounded to (26) which is 20 in decimal.
 
-If @var{n} is zero, the number of digits of the significand is chosen
-large enough so that re-reading the printed value with the same precision,
-assuming both output and input use rounding to nearest, will recover
-the original value of @var{op}.
-More precisely, in most cases, the chosen precision of @var{str} is the
-minimal precision @math{m} depending only on @var{p} = PREC(@var{op}) and
-@var{b} that satisfies the above property, i.e.,
-@ifnottex
-m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
-@end ifnottex
-@tex
-$m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
-@end tex
-with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
-but in some very rare cases, it might be @math{m+1}
-(the smallest case for bases up to 62 is when @var{p} equals 186564318007
-for bases 7 and 49).
-@c In the source src/get_str.c, this is due to the approximate mpfr_ceil_mul.
+If @var{n} is zero, the number of digits of the significand is taken as
+@code{mpfr_get_str_ndigits(b,p)} where @var{p} = PREC(@var{op}).
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the allocation function (@pxref{Memory Handling}) and a pointer to the string
