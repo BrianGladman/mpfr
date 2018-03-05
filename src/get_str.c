@@ -2232,7 +2232,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
 /* take at least 1 + ceil(p*log(2)/log(b)) digits, where p is the
    number of bits of the mantissa, to ensure back conversion from
    the output gives the same floating-point.
-   
+
    Warning: if b = 2^k, this may be too large. The worst case is when
    the first base-b digit contains only one bit, so we take
    1 + ceil((p-1)/k) instead.
@@ -2245,18 +2245,28 @@ mpfr_get_str_digits (int b, mpfr_prec_t p)
   /* the value returned by mpfr_ceil_mul is guaranteed to be
      1 + ceil(p*log(2)/log(b)) for p < 186564318007 (it returns one more
      for p=186564318007 and b=7 or 49) */
-  if (MPFR_LIKELY(p < 186564318007))
+  if (MPFR_LIKELY(
+#if defined(HAVE_LONG_LONG) || GMP_NUMB_BITS >= 64
+        /* 64-bit numbers are supported by the C implementation */
+        p < 186564318007
+#else
+        /* use 32-bit numbers only; condition is probably always true */
+        p <= 0xffffffff
+#endif
+                  ))
     return 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
 
   if (IS_POW2(b)) /* 1 + ceil((p-1)/k) = 2 + floor((p-2)/k) */
     {
       int k;
-      
+
       for (k = 1; b > 2; b >>= 1, k++);
       /* now the original b is 2^k */
       return 2 + (p - 2) / k;
     }
 
+  /* FIXME: The condition p >= 186564318007 might not be true. Does
+     this matter? */
   /* now p >= 186564318007 and b is not a power of two */
   {
     mpfr_prec_t w = 77; /* mpfr_ceil_mul used a 77-bit upper approximation of
@@ -2273,8 +2283,23 @@ mpfr_get_str_digits (int b, mpfr_prec_t p)
         mpfr_log2 (d, d, MPFR_RNDU);
         mpfr_log2 (u, u, MPFR_RNDD);
         /* u <= log(b)/log(2) <= d */
-        mpfr_ui_div (d, p, d, MPFR_RNDD);
-        mpfr_ui_div (u, p, u, MPFR_RNDU);
+        if (MPFR_LIKELY (p <= ULONG_MAX))
+          {
+            mpfr_ui_div (d, p, d, MPFR_RNDD);
+            mpfr_ui_div (u, p, u, MPFR_RNDU);
+          }
+        else
+          {
+            mpfr_t pp;
+            int inex;
+
+            mpfr_init2 (pp, 128); /* should be sufficient */
+            inex = mpfr_set_exp_t (pp, p, MPFR_RNDN);
+            MPFR_ASSERTN (inex == 0);
+            mpfr_div (d, pp, d, MPFR_RNDD);
+            mpfr_div (u, pp, u, MPFR_RNDU);
+            mpfr_clear (pp);
+          }
         /* d <= p*log(2)/log(b) <= u */
         mpfr_ceil (d, d);
         mpfr_ceil (u, u);
