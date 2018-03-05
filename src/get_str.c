@@ -2265,9 +2265,10 @@ mpfr_get_str_digits (int b, mpfr_prec_t p)
       return 2 + (p - 2) / k;
     }
 
-  /* FIXME: The condition p >= 186564318007 might not be true. Does
-     this matter? */
-  /* now p >= 186564318007 and b is not a power of two */
+  /* Now p is large and b is not a power of two. The code below works for any
+     value of p and b, as long as b is not a power of two. Indeed, in such a
+     case, p*log(2)/log(b) cannot be exactly an integer, and thus Ziv's loop
+     will terminate. */
   {
     mpfr_prec_t w = 77; /* mpfr_ceil_mul used a 77-bit upper approximation of
                            log(2)/log(b) */
@@ -2282,7 +2283,7 @@ mpfr_get_str_digits (int b, mpfr_prec_t p)
         mpfr_set_ui (u, b, MPFR_RNDD);
         mpfr_log2 (d, d, MPFR_RNDU);
         mpfr_log2 (u, u, MPFR_RNDD);
-        /* u <= log(b)/log(2) <= d */
+        /* u <= log(b)/log(2) <= d (***) */
         if (MPFR_LIKELY (p <= ULONG_MAX))
           {
             mpfr_ui_div (d, p, d, MPFR_RNDD);
