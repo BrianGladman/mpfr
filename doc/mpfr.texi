@@ -3407,20 +3407,20 @@ This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range of the emulated
 floating-point system, this function just propagates the
 @ref{ternary value} @var{t}; otherwise, it rounds @var{x} to precision
-@code{EXP(x)-emin+1} according to rounding mode @var{rnd} and previous
+@code{EXP(@var{x})-emin+1} according to rounding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
-More precisely in the subnormal domain, denoting by @var{e} the value of
+More precisely in the subnormal domain, denoting by @m{e,@var{e}} the value of
 @code{emin}, @var{x} is rounded in fixed-point
 arithmetic to an integer multiple of @m{2^{e-1}, two to the power
 @var{e}@minus{}1}; as a consequence, @m{1.5 \times 2^{e-1},
 1.5 multiplied by two to the power @var{e}@minus{}1} when @var{t} is zero
 is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
 
-@code{PREC(x)} is not modified by this function.
+@code{PREC(@var{x})} is not modified by this function.
 @var{rnd} and @var{t} must be the rounding mode
 and the returned ternary value used when computing @var{x}
 (as in @code{mpfr_check_range}).
-The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
+The subnormal exponent range is from @code{emin} to @code{emin+PREC(@var{x})-1}.
 If the result cannot be represented in the current exponent range of MPFR
 (due to a too small @code{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
