@@ -1698,7 +1698,8 @@ which is 12 in decimal, (16) and a half is rounded to
 and (26) and a half is rounded to (26) which is 20 in decimal.
 
 If @var{n} is zero, the number of digits of the significand is taken as
-@code{mpfr_get_str_ndigits(b,p)} where @var{p} = PREC(@var{op}).
+@code{mpfr_get_str_ndigits(@var{b},@var{p})} where @var{p} is the precision
+of @var{op}.
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the allocation function (@pxref{Memory Handling}) and a pointer to the string
