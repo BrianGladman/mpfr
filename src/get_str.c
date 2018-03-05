@@ -2245,15 +2245,13 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
   /* the value returned by mpfr_ceil_mul is guaranteed to be
      1 + ceil(p*log(2)/log(b)) for p < 186564318007 (it returns one more
      for p=186564318007 and b=7 or 49) */
-  if (MPFR_LIKELY(
-#if defined(HAVE_LONG_LONG) || GMP_NUMB_BITS >= 64
-        /* 64-bit numbers are supported by the C implementation */
-        p < 186564318007
-#else
-        /* use 32-bit numbers only; condition is probably always true */
-        p <= 0xffffffff
+  MPFR_STAT_STATIC_ASSERT (MPFR_PREC_BITS >= 64 || MPFR_PREC_BITS <= 32);
+#if MPFR_PREC_BITS >= 64
+  /* 64-bit numbers are supported by the C implementation, so that we can
+     use the large constant below. If MPFR_PREC_BITS <= 32, the condition
+     is always satisfied, so that we do not need any test. */
+  if (MPFR_LIKELY (p < 186564318007))
 #endif
-                  ))
     return 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
 
   if (IS_POW2(b)) /* 1 + ceil((p-1)/k) = 2 + floor((p-2)/k) */
@@ -2283,24 +2281,12 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
         mpfr_set_ui (u, b, MPFR_RNDD);
         mpfr_log2 (d, d, MPFR_RNDU);
         mpfr_log2 (u, u, MPFR_RNDD);
+        /* The code below requires that the precision fit in an unsigned long,
+           which we currently guarantee (see _MPFR_PREC_FORMAT). */
+        MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MAX <= ULONG_MAX);
         /* u <= log(b)/log(2) <= d (***) */
-        if (MPFR_LIKELY (p <= ULONG_MAX))
-          {
-            mpfr_ui_div (d, p, d, MPFR_RNDD);
-            mpfr_ui_div (u, p, u, MPFR_RNDU);
-          }
-        else
-          {
-            mpfr_t pp;
-            int inex;
-
-            mpfr_init2 (pp, 128); /* should be sufficient */
-            inex = mpfr_set_exp_t (pp, p, MPFR_RNDN);
-            MPFR_ASSERTN (inex == 0);
-            mpfr_div (d, pp, d, MPFR_RNDD);
-            mpfr_div (u, pp, u, MPFR_RNDU);
-            mpfr_clear (pp);
-          }
+        mpfr_ui_div (d, p, d, MPFR_RNDD);
+        mpfr_ui_div (u, p, u, MPFR_RNDU);
         /* d <= p*log(2)/log(b) <= u */
         mpfr_ceil (d, d);
         mpfr_ceil (u, u);
