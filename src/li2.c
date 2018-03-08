@@ -40,8 +40,8 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   /* The series converges for |z| < 2 pi, but in mpfr_li2 the argument is
-     reduced so that 0 < z <= log(2). Here is additionnal check that z is
-     (nearly) correct */
+     reduced so that 0 < z <= log(2). Here is an additional check that z
+     is (nearly) correct. */
   MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
   MPFR_ASSERTD (mpfr_cmp_ui_2exp (z, 89, -7) <= 0); /* z <= 0.6953125 */
 

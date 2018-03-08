@@ -978,7 +978,7 @@ mpfr_prec_t mpfr_exp_threshold;
 #undef  MPFR_EXP_THRESHOLD
 #define MPFR_EXP_THRESHOLD mpfr_exp_threshold
 /* Include the test function to threshold directly in the test
-   program. It will overide the mpfr_exp coming from libmpfr.a */
+   program. It will override the mpfr_exp coming from libmpfr.a */
 #include "exp.c"
 /* Define the speed function related to mpfr_exp */
 static double speed_mpfr_exp (struct speed_params *s) {

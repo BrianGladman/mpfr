@@ -1978,7 +1978,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   struct string_buffer buf;
   int nbchar;
 
-  /* informations on the conversion specification filled by the parser */
+  /* information on the conversion specification filled by the parser */
   struct printf_spec spec;
   /* flag raised when previous part of fmt need to be processed by
      gmp_vsnprintf */

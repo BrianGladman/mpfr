@@ -81,7 +81,7 @@ print_binary (long double d, int flag)
       d = -d;
     }
   /* now d >= 0 */
-  /* Use 2 differents tests for Inf, to avoid potential bugs
+  /* Use 2 different tests for Inf, to avoid potential bugs
      in implementations. */
   if (Isnan_ld (d - d) || (d > 1 && d * 0.5 == d))
     {

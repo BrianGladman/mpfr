@@ -54,7 +54,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /**************************************************************************/
 /**************************************************************************/
 #if defined (MPFR_HAVE_C11_LOCK)
-/* NOTE: This version has not been completly tested */
+/* NOTE: This version has not been completely tested */
 #include <thread.h>
 
 #define MPFR_LOCK_DECL(_lock)                   \

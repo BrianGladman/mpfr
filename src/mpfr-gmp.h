@@ -320,7 +320,7 @@ __MPFR_DECLSPEC void *mpfr_tmp_allocate (struct tmp_marker **,
                                          size_t);
 __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 
-/* Can be overriden at configure time. Useful for checking buffer overflow. */
+/* Can be overridden at configure time. Useful for checking buffer overflow. */
 #ifndef MPFR_ALLOCA_MAX
 # define MPFR_ALLOCA_MAX 16384
 #endif
