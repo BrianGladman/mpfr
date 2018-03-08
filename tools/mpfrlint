@@ -431,8 +431,9 @@ EOF
 # (they are in the doc/mpfr.t2p/mpfr.t2d/pdf/check_recorder directory, and
 # unfortunately codespell can't skip directories such as mpfr.t2p).
 if which codespell > /dev/null 2> /dev/null; then
-  err-if-output "codespell" codespell ${term:+--enable-colors} -q3 -S \
-    'algorithm2e.sty,algorithms.tex,texinfo.tex,openout.*' \
+  err-if-output "codespell" codespell ${term:+--enable-colors} \
+    -q3 -I codespell.ignore \
+    -S 'algorithm2e.sty,algorithms.tex,texinfo.tex,openout.*' \
     AUTHORS BUGS INSTALL NEWS README TODO doc examples $srctests
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
