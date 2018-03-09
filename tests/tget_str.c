@@ -1386,7 +1386,7 @@ check_corner (void)
   mpfr_exp_t e;      /* external exponent */
   mpfr_prec_t oprec; /* external precision */
   mpfr_prec_t iprec; /* internal precision */
-#define MAX_OPREC 100         
+#define MAX_OPREC 100
   char *s, *t;
   int i, ret;
   mpfr_exp_t f;
@@ -1397,11 +1397,11 @@ check_corner (void)
         {
           mpfr_t x, y;
           oprec = mpfr_get_str_ndigits (b, iprec);
-          s = malloc (oprec + 6); /* oprec characters for the significand,
-                                     1 for the '@' sign,
-                                     at most 4 for the exponent (-100),
-                                     and 1 for the terminating '\0'. */
-          t = malloc (oprec + 6);
+          s = tests_allocate (oprec + 6); /* oprec characters for the
+                                             significand, 1 for the '@' sign,
+                                             at most 4 for the exponent (-100),
+                                             and 1 for the terminating '\0'. */
+          t = tests_allocate (oprec + 6);
           mpfr_init2 (x, iprec);
           mpfr_init2 (y, iprec);
           /* set s to 1000...000Ee */
@@ -1432,8 +1432,8 @@ check_corner (void)
             }
           mpfr_clear (x);
           mpfr_clear (y);
-          free (s);
-          free (t);
+          tests_free (s, oprec + 6);
+          tests_free (t, oprec + 6);
         }
 }
 
