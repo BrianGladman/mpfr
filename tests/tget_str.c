@@ -1397,11 +1397,11 @@ check_corner (void)
         {
           mpfr_t x, y;
           oprec = mpfr_get_str_ndigits (b, iprec);
-          s = tests_allocate (oprec + 6); /* oprec characters for the
-                                             significand, 1 for the '@' sign,
-                                             at most 4 for the exponent (-100),
-                                             and 1 for the terminating '\0'. */
-          t = tests_allocate (oprec + 6);
+          s = (char *) tests_allocate (oprec + 6);
+            /* oprec characters for the significand, 1 for the '@' sign,
+               at most 4 for the exponent (-100), and 1 for the terminating
+               '\0'. */
+          t = (char *) tests_allocate (oprec + 6);
           mpfr_init2 (x, iprec);
           mpfr_init2 (y, iprec);
           /* set s to 1000...000Ee */
