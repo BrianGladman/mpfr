@@ -144,7 +144,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
                      mpfr_overflow (dest, rnd, sign);
                   );
 
-  /* Rather a likely, this is a 100% succes rate for
+  /* Rather a likely, this is a 100% success rate for
      all constants of MPFR */
   if (MPFR_LIKELY (cache->inexact != 0))
     {

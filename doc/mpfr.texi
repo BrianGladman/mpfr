@@ -2375,7 +2375,7 @@ use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
 @deftypefun void mpfr_free_cache (void)
-Free all caches and pools used by MPFR internally (thoses local to the
+Free all caches and pools used by MPFR internally (those local to the
 current thread and those shared by all threads).
 You should call this function before terminating a thread, even if you did
 not call @code{mpfr_const_*} functions directly (they could have been called

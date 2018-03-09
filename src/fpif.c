@@ -522,7 +522,7 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
 
 /* External Function */
 /*
- * fh : IN : file hander
+ * fh : IN : file handler
  * x : IN : MPFR number to put in the file
  * return 0 if successful
  */
@@ -587,7 +587,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
 /*
  * x : IN/OUT : MPFR number extracted from the file, its precision is reset to
  *              be able to hold the number
- * fh : IN : file hander
+ * fh : IN : file handler
  * Return 0 if the import was successful.
  */
 int

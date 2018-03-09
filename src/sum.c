@@ -67,7 +67,7 @@ VL: This is very different:
     arbitrary precision            fixed precision
      correct rounding        just reproducible rounding
     integer operations        floating-point operations
-        sequencial             parallel (& sequential)
+        sequential             parallel (& sequential)
 */
 
 #ifdef MPFR_COV_CHECK

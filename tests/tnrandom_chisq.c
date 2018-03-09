@@ -163,7 +163,7 @@ test_nrandom_chisq_cont (long num, mpfr_prec_t prec, int nu,
 }
 
 /* Return a sequential number for a positive low-precision x.  x is altered by
- * this fuction.  low precision means prec = 2, 3, or 4.  High values of
+ * this function.  low precision means prec = 2, 3, or 4.  High values of
  * precision will result in integer overflow. */
 static long
 sequential (mpfr_t x)

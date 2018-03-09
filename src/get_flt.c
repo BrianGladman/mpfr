@@ -124,7 +124,7 @@ mpfr_get_flt (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
       if (negative)
         dd = -dd;
 
-      /* convert (exacly) to float */
+      /* convert (exactly) to float */
       d = (float) dd;
     }
 
