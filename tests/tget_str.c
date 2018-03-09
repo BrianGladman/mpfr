@@ -1377,6 +1377,66 @@ test_ndigits (void)
 #endif
 }
 
+/* check corner cases: radix-b number near from b^e converted to mpfr_t
+   and then back to radix b */
+static void
+check_corner (void)
+{
+  int b;             /* external radix */
+  mpfr_exp_t e;      /* external exponent */
+  mpfr_prec_t oprec; /* external precision */
+  mpfr_prec_t iprec; /* internal precision */
+#define MAX_OPREC 100         
+  char *s, *t;
+  int i, ret;
+  mpfr_exp_t f;
+
+  for (b = 2; b <= 62; b++)
+    for (e = -100; e <= 100; e++)
+      for (iprec = MPFR_PREC_MIN; iprec <= 100; iprec ++)
+        {
+          mpfr_t x, y;
+          oprec = mpfr_get_str_ndigits (b, iprec);
+          s = malloc (oprec + 6); /* oprec characters for the significand,
+                                     1 for the '@' sign,
+                                     at most 4 for the exponent (-100),
+                                     and 1 for the terminating '\0'. */
+          t = malloc (oprec + 6);
+          mpfr_init2 (x, iprec);
+          mpfr_init2 (y, iprec);
+          /* set s to 1000...000Ee */
+          s[0] = '1';
+          for (i = 1; i < oprec; i++)
+            s[i] = '0';
+          s[oprec] = '@';
+          ret = sprintf (s + oprec + 1, "%ld", e);
+          MPFR_ASSERTN(ret <= 4);
+          /* sprintf prints the terminating null byte */
+          ret = mpfr_set_str (x, s, b, MPFR_RNDN);
+          MPFR_ASSERTN(ret == 0);
+          mpfr_get_str (t, &f, b, 0, x, MPFR_RNDN);
+          MPFR_ASSERTN(strlen (t) == oprec);
+          t[oprec] = '@';
+          ret = sprintf (t + oprec + 1, "%ld", f - oprec);
+          MPFR_ASSERTN(ret <= 4);
+          ret = mpfr_set_str (y, t, b, MPFR_RNDN);
+          MPFR_ASSERTN(ret == 0);
+          if (!mpfr_equal_p (x, y))
+            {
+              printf ("mpfr_set_str o mpfr_get_str <> Id for b=%d\n", b);
+              printf ("x="); mpfr_dump (x);
+              printf ("mpfr_get_str converted to 0.%s@%ld\n", t, f);
+              printf ("mpfr_set_str converted to:\n");
+              printf ("y="); mpfr_dump (y);
+              exit (1);
+            }
+          mpfr_clear (x);
+          mpfr_clear (y);
+          free (s);
+          free (t);
+        }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1391,6 +1451,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  check_corner ();
   test_ndigits ();
   coverage ();
   check_small ();
