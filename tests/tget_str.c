@@ -1409,7 +1409,7 @@ check_corner (void)
           for (i = 1; i < oprec; i++)
             s[i] = '0';
           s[oprec] = '@';
-          ret = sprintf (s + oprec + 1, "%ld", e);
+          ret = sprintf (s + oprec + 1, "%ld", (long) e);
           MPFR_ASSERTN(ret <= 4);
           /* sprintf prints the terminating null byte */
           ret = mpfr_set_str (x, s, b, MPFR_RNDN);
@@ -1417,7 +1417,7 @@ check_corner (void)
           mpfr_get_str (t, &f, b, 0, x, MPFR_RNDN);
           MPFR_ASSERTN(strlen (t) == oprec);
           t[oprec] = '@';
-          ret = sprintf (t + oprec + 1, "%ld", f - oprec);
+          ret = sprintf (t + oprec + 1, "%ld", (long) (f - oprec));
           MPFR_ASSERTN(ret <= 4);
           ret = mpfr_set_str (y, t, b, MPFR_RNDN);
           MPFR_ASSERTN(ret == 0);
@@ -1425,7 +1425,7 @@ check_corner (void)
             {
               printf ("mpfr_set_str o mpfr_get_str <> Id for b=%d\n", b);
               printf ("x="); mpfr_dump (x);
-              printf ("mpfr_get_str converted to 0.%s@%ld\n", t, f);
+              printf ("mpfr_get_str converted to 0.%s@%ld\n", t, (long) f);
               printf ("mpfr_set_str converted to:\n");
               printf ("y="); mpfr_dump (y);
               exit (1);
