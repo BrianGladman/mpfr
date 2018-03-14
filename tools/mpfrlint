@@ -313,6 +313,13 @@ do
     { echo "Missing '#include \"mpfr-impl.h\"' in $file?" && err=1 }
 done
 
+# Detect mpfr_mul with identical 2nd and 3rd arguments, which can be
+# replaced by mpfr_sqr.
+err-if-output --msg='Use mpfr_sqr instead of mpfr_mul.' "mul/sqr" perl -ne \
+  '/__MPFR_DECLSPEC/ or ($u,$v) = /mpfr_mul *\([^,]*,([^,]*),([^,]*),/ and
+     do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
+  src/*.{c,h}
+
 # Re-seeding mpfr_rands in the tests is bad practice, as it would affect
 # later tests, defeating the purpose of GMP_CHECK_RANDOMIZE.
 err-if-output \
