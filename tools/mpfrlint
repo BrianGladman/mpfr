@@ -318,7 +318,7 @@ done
 err-if-output --msg='Use mpfr_sqr instead of mpfr_mul.' "mul/sqr" perl -ne \
   '/__MPFR_DECLSPEC/ or ($u,$v) = /mpfr_mul *\([^,]*,([^,]*),([^,]*),/ and
      do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
-  src/*.{c,h}
+  src/*.[ch]~src/(mul|sqr).c
 
 # Re-seeding mpfr_rands in the tests is bad practice, as it would affect
 # later tests, defeating the purpose of GMP_CHECK_RANDOMIZE.
