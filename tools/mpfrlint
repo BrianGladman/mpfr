@@ -314,7 +314,8 @@ do
 done
 
 # Detect mpfr_mul with identical 2nd and 3rd arguments, which can be
-# replaced by mpfr_sqr.
+# replaced by mpfr_sqr. We exclude mul.c and sqr.c (which implement
+# these functions) because such a mpfr_mul can be used on purpose.
 err-if-output --msg='Use mpfr_sqr instead of mpfr_mul.' "mul/sqr" perl -ne \
   '/__MPFR_DECLSPEC/ or ($u,$v) = /mpfr_mul *\([^,]*,([^,]*),([^,]*),/ and
      do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
