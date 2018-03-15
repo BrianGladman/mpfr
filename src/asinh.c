@@ -89,7 +89,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       /* compute asinh */
-      mpfr_mul (t, x, x, MPFR_RNDD);                    /* x^2 */
+      mpfr_sqr (t, x, MPFR_RNDD);                       /* x^2 */
       mpfr_add_ui (t, t, 1, MPFR_RNDD);                 /* x^2+1 */
       mpfr_sqrt (t, t, MPFR_RNDN);                      /* sqrt(x^2+1) */
       (neg ? mpfr_sub : mpfr_add) (t, t, x, MPFR_RNDN); /* sqrt(x^2+1)+x */

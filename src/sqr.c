@@ -558,6 +558,8 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
                                     2*bn or 2*bn-1 */
 
   if (MPFR_UNLIKELY(bn > MPFR_SQR_THRESHOLD))
+    /* the following line should not be replaced by mpfr_sqr,
+       otherwise we'll get an infinite loop! */
     return mpfr_mul (a, b, b, rnd_mode);
 
   MPFR_TMP_MARK(marker);

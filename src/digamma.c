@@ -51,8 +51,8 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
      thus 0 <= EXP(olds)-EXP(s) <= 1, and EXP(t)-EXP(s) <= 0, thus
      error <= 1/2 + 1/2*2 + 1/2 <= 2 ulps. */
   e = 2; /* initial error */
-  mpfr_mul (invxx, x, x, MPFR_RNDZ);     /* invxx = x^2 * (1 + theta)
-                                            for |theta| <= 2^(-p) */
+  mpfr_sqr (invxx, x, MPFR_RNDZ);     /* invxx = x^2 * (1 + theta)
+                                         for |theta| <= 2^(-p) */
   mpfr_ui_div (invxx, 1, invxx, MPFR_RNDU); /* invxx = 1/x^2 * (1 + theta)^2 */
 
   /* in the following we note err=xxx when the ratio between the approximation

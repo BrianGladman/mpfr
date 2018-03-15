@@ -208,10 +208,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           if (MPFR_IS_ZERO(xr))
             goto ziv_next;
           /* now |xr| <= 4, thus r <= 16 below */
-          mpfr_mul (r, xr, xr, MPFR_RNDU); /* err <= 1 ulp */
+          mpfr_sqr (r, xr, MPFR_RNDU); /* err <= 1 ulp */
         }
       else
-        mpfr_mul (r, x, x, MPFR_RNDU); /* err <= 1 ulp */
+        mpfr_sqr (r, x, MPFR_RNDU); /* err <= 1 ulp */
 
       /* now |x| < 4 (or xr if reduce = 1), thus |r| <= 16 */
 

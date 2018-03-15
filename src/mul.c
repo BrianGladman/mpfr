@@ -907,7 +907,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               }
             else
               /* Call mpfr_mul instead of mpfr_sqr as the precision
-                 is probably still high enough. */
+                 is probably still high enough. It is thus better to call
+                 mpfr_mul again, but it should not give an infinite loop
+                 if we call mpfr_sqr. */
               return mpfr_mul (a, b_tmp, b_tmp, rnd_mode);
           }
 

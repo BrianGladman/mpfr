@@ -66,7 +66,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
       /* now 2^(i-1) <= n < 2^i: i=1+floor(log2(n)) */
       for (i -= 2; i >= 0; i--)
         {
-          inexact |= mpfr_mul (res, res, res, MPFR_RNDU);
+          inexact |= mpfr_sqr (res, res, MPFR_RNDU);
           err++;
           if (n & (1UL << i))
             inexact |= mpfr_mul_ui (res, res, y, MPFR_RNDU);

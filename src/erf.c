@@ -78,7 +78,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_init2 (l, MPFR_PREC(y) + 17);
       mpfr_init2 (h, MPFR_PREC(y) + 17);
       /* first compute l */
-      mpfr_mul (l, x, x, MPFR_RNDU);
+      mpfr_sqr (l, x, MPFR_RNDU);
       mpfr_div_ui (l, l, 3, MPFR_RNDU); /* upper bound on x^2/3 */
       mpfr_ui_sub (l, 1, l, MPFR_RNDZ); /* lower bound on 1 - x^2/3 */
       mpfr_const_pi (h, MPFR_RNDU); /* upper bound of Pi */
@@ -204,7 +204,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
-      mpfr_mul (y, x, x, MPFR_RNDU); /* err <= 1 ulp */
+      mpfr_sqr (y, x, MPFR_RNDU); /* err <= 1 ulp */
       mpfr_set_ui (s, 1, MPFR_RNDN);
       mpfr_set_ui (t, 1, MPFR_RNDN);
       tauk = 0.0;
