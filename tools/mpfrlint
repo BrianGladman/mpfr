@@ -441,7 +441,7 @@ EOF
 if which codespell > /dev/null 2> /dev/null; then
   err-if-output "codespell" codespell ${term:+--enable-colors} \
     -q3 -I codespell.ignore \
-    -S 'algorithm2e.sty,algorithms.tex,texinfo.tex,openout.*' \
+    -S 'algorithm2e.sty,algorithms.*,texinfo.tex,openout.*' \
     AUTHORS BUGS INSTALL NEWS README TODO doc examples $srctests
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
