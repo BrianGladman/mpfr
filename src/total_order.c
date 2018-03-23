@@ -26,6 +26,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_total_order (mpfr_srcptr x, mpfr_srcptr y)
 {
+  /* FIXME: test the sign bit first? */
+
   if (MPFR_IS_NAN(x))
     {
       if (!MPFR_IS_NAN(y)) /* -NaN < y */
