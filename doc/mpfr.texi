@@ -4071,6 +4071,8 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_sub_d} in MPFR 2.4.
 
+@item @code{mpfr_total_order} in MPFR 4.1.
+
 @item @code{mpfr_urandom} in MPFR 3.0.
 
 @item @code{mpfr_vasprintf}, @code{mpfr_vfprintf}, @code{mpfr_vprintf},
