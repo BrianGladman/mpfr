@@ -117,9 +117,6 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- a function totalOrder following IEEE 754-2008:
-  https://en.wikipedia.org/wiki/IEEE_754#Total-ordering_predicate
-  (suggested by Patrick Pelissier)
 - a function to compute the hash of a floating-point number
   (suggested by Patrick Pelissier)
 - implement new functions from the C++17 standard:
