@@ -2022,6 +2022,15 @@ Return non-zero if @var{op1} or @var{op2} is a NaN (i.e., they cannot be
 compared), zero otherwise.
 @end deftypefun
 
+@deftypefun int mpfr_total_order (mpfr_t @var{x}, mpfr_t @var{y})
+This function implements the totalOrder predicate from IEEE 754-2008.
+It returns a non-zero value (true) when @var{x} is considered smaller than
+@var{y}, and zero (false) otherwise.
+Contrary to @code{mpfr_cmp (x, y)}, which returns a ternary value,
+@code{mpfr_total_order} returns a binary value (zero or non-zero).
+In particular @code{mpfr_total_order (-0, +0)} returns true.
+@end deftypefun
+
 @node Special Functions, Input and Output Functions, Comparison Functions, MPFR Interface
 @cindex Special functions
 @section Special Functions
