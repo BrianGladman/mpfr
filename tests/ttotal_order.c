@@ -22,99 +22,89 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+static void
+check1 (mpfr_ptr x, mpfr_ptr y)
+{
+  if (! mpfr_total_order (x, x))
+    {
+      printf ("Error on mpfr_total_order (x, x) with\n");
+      printf ("x = ");
+      mpfr_dump (x);
+      exit (1);
+    }
+
+  mpfr_set (y, x, MPFR_RNDN);
+
+  if (! mpfr_total_order (x, y))
+    {
+      printf ("Error on mpfr_total_order (x, y) with\n");
+      printf ("x = ");
+      mpfr_dump (x);
+      printf ("y = ");
+      mpfr_dump (y);
+      exit (1);
+    }
+}
+
+static void
+check2 (mpfr_ptr x, mpfr_ptr y)
+{
+  if (! mpfr_total_order (x, y))
+    {
+      printf ("Error on mpfr_total_order (x, y) with\n");
+      printf ("x = ");
+      mpfr_dump (x);
+      printf ("y = ");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  if (mpfr_total_order (y, x))
+    {
+      printf ("Error on mpfr_total_order (y, x) with\n");
+      printf ("x = ");
+      mpfr_dump (x);
+      printf ("y = ");
+      mpfr_dump (y);
+      exit (1);
+    }
+}
+
 int
 main (void)
 {
-  mpfr_t x, y;
+  mpfr_t x[13];
+  int i, j;
 
   tests_start_mpfr ();
 
-  mpfr_init (x);
-  mpfr_init (y);
+  for (i = 0; i < 13; i++)
+    mpfr_init2 (x[i], 32);
 
-  /* If x < y, totalOrder(x, y) is true */
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_set_ui (y, 2, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
+  mpfr_set_nan (x[1]);
+  MPFR_SET_NEG (x[1]);
+  mpfr_set_inf (x[2], -1);
+  mpfr_set_si (x[3], -3, MPFR_RNDN);
+  mpfr_set_si (x[4], -2, MPFR_RNDN);
+  mpfr_set_si (x[5], -1, MPFR_RNDN);
+  mpfr_set_zero (x[6], -1);
+  mpfr_set_zero (x[7], 1);
+  mpfr_set_si (x[8], 1, MPFR_RNDN);
+  mpfr_set_si (x[9], 2, MPFR_RNDN);
+  mpfr_set_si (x[10], 3, MPFR_RNDN);
+  mpfr_set_inf (x[11], 1);
+  mpfr_set_nan (x[12]);
+  MPFR_SET_POS (x[12]);
 
-  /* If x > y, totalOrder(x, y) is false */
-  mpfr_set_ui (x, 2, MPFR_RNDN);
-  mpfr_set_ui (y, 1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) == 0);
+  for (i = 1; i <= 12; i++)
+    {
+      check1 (x[i], x[0]);
+      for (j = i+1; j <= 12; j++)
+        check2 (x[i], x[j]);
+    }
 
-  /* totalOrder(-0, +0) is true */
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_neg (x, x, MPFR_RNDN);
-  mpfr_set_ui (y, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  /* totalOrder(+0, -0) is false */
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_set_ui (y, 0, MPFR_RNDN);
-  mpfr_neg (y, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) == 0);
-
-  /* Case x = y */
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_set_si (y, -1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  mpfr_set_si (x, 1, MPFR_RNDN);
-  mpfr_set_si (y, 1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  /* Case x = -NaN */
-  mpfr_set_nan (x);
-  /* warning: the sign of x is unspecified in mpfr_set_nan */
-  if (!mpfr_signbit (x))
-    mpfr_neg (x, x, MPFR_RNDN);
-  /* now x = -NaN */
-  mpfr_set_si (y, 1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_set_inf (y, -1);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_set_inf (y, +1);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  /* Case y = +NaN */
-  mpfr_set_nan (y);
-  if (mpfr_signbit (y))
-    mpfr_neg (y, y, MPFR_RNDN);
-  /* now y = +NaN */
-  mpfr_set_si (x, 1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_set_inf (x, -1);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_set_inf (x, +1);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  /* Both x and y are NaN */
-  mpfr_set_nan (x);
-  if (!mpfr_signbit (x))
-    mpfr_neg (x, x, MPFR_RNDN);
-  /* now x = -NaN */
-  mpfr_set_nan (y);
-  if (mpfr_signbit (y))
-    mpfr_neg (y, y, MPFR_RNDN);
-  /* now y = +NaN */
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_neg (y, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-
-  mpfr_set_nan (x);
-  if (mpfr_signbit (x))
-    mpfr_neg (x, x, MPFR_RNDN);
-  /* now x = +NaN */
-  mpfr_set_nan (y);
-  if (mpfr_signbit (y))
-    mpfr_neg (y, y, MPFR_RNDN);
-  /* now y = +NaN */
-  MPFR_ASSERTN(mpfr_total_order (x, y) != 0);
-  mpfr_neg (y, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_total_order (x, y) == 0);
-
-  mpfr_clear (x);
-  mpfr_clear (y);
+  for (i = 0; i < 13; i++)
+    mpfr_clear (x[i]);
 
   tests_end_mpfr ();
   return 0;
