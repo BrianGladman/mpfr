@@ -26,30 +26,17 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_total_order (mpfr_srcptr x, mpfr_srcptr y)
 {
-  /* FIXME: test the sign bit first? */
+  if (MPFR_SIGN (x) != MPFR_SIGN (y))
+    return MPFR_IS_POS (y);
 
-  if (MPFR_IS_NAN(x))
-    {
-      if (!MPFR_IS_NAN(y)) /* -NaN < y */
-        return MPFR_IS_POS(x) ? 0 : 1; /* +NaN > y, -NaN < y */
-      /* both x and y are NaN */
-      if (MPFR_SIGN(x) != MPFR_SIGN(y))
-        return MPFR_IS_POS(x) ?	0 : 1; /* +NaN > -NaN, -NaN < +NaN */
-      return 1;
-    }
+  if (MPFR_IS_NAN (x))
+    return MPFR_IS_NAN (y) || MPFR_IS_NEG (x);
 
-  /* now x is not NaN */
-  if (MPFR_IS_NAN(y))
-    return MPFR_IS_POS(y) ? 1 : 0; /* x < +NaN, x > -NaN */
+  /* Now x is not NaN. */
+  if (MPFR_IS_NAN (y))
+    return MPFR_IS_POS (y); /* x < +NaN, x > -NaN */
 
-  /* now neither x nor y are NaN */
-  if (MPFR_IS_ZERO(x) && MPFR_IS_ZERO(y))
-    {
-      if (MPFR_SIGN(x) != MPFR_SIGN(y))
-        return MPFR_IS_POS(x) ? 0 : 1; /* +0 > -0, -0 < +0 */
-      else
-        return 1;
-    }
-
-  return mpfr_cmp (x, y) <= 0 ? 1 : 0;
+  /* Now neither x nor y is NaN, and zeros of different sign have
+     already been taken into account. */
+  return mpfr_lessequal_p (x, y);
 }
