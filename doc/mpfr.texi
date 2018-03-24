@@ -2025,7 +2025,7 @@ compared), zero otherwise.
 @deftypefun int mpfr_total_order (mpfr_t @var{x}, mpfr_t @var{y})
 This function implements the totalOrder predicate from IEEE 754-2008,
 where @minus{}NaN < @minus{}Inf < negative finite numbers < @minus{}0 <
-+0 < positive finite numbers < +Inf < +NaN.
++0 < positive finite numbers < +Inf < +NaN@.
 It returns a non-zero value (true) when @var{x} is smaller than or equal
 to @var{y} for this order relation, and zero (false) otherwise.
 Contrary to @code{mpfr_cmp (x, y)}, which returns a ternary value,
