@@ -341,6 +341,55 @@ test_cmp_q (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
             }
         }
     }
+
+  /* check for y = 1/0 */
+  mpz_set_ui (mpq_numref (y), 1);
+  mpz_set_ui (mpq_denref (y), 0);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) < 0);
+  mpfr_set_inf (x, -1);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) < 0);
+  mpfr_set_inf (x, +1);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  
+  /* check for y = -1/0 */
+  mpz_set_si (mpq_numref (y), -1);
+  mpz_set_ui (mpq_denref (y), 0);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) > 0);
+  mpfr_set_inf (x, -1);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  mpfr_set_inf (x, +1);
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) > 0);
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  
+  /* check for y = 0/0 */
+  mpz_set_ui (mpq_numref (y), 0);
+  mpz_set_ui (mpq_denref (y), 0);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  mpfr_set_inf (x, -1);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  mpfr_set_inf (x, +1);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  MPFR_ASSERTN(mpfr_cmp_q (x, y) == 0);
+  MPFR_ASSERTN(mpfr_erangeflag_p ());
+  
   mpq_clear (y);
   mpfr_clear (x);
   mpfr_clear (z);

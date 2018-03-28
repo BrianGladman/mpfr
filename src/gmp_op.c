@@ -463,7 +463,7 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr q)
   /* GMP allows the user to set the denominator to 0. This is interpreted
      by MPFR as the value being an infinity or NaN (probably better than
      an assertion failure). */
-  if (MPFR_UNLIKELY (mpq_denref (q) == 0))
+  if (MPFR_UNLIKELY (mpz_sgn (mpq_denref (q)) == 0))
     {
       /* q is an infinity or NaN */
       mpfr_flags_t old_flags;
