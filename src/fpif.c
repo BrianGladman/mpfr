@@ -242,14 +242,16 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
     return precision_size - MPFR_MAX_PRECSIZE;
 
   precision_size++;
-  /* now 1 <= precision_size <= MPFR_MAX_PRECSIZE */
   MPFR_ASSERTD (precision_size <= BUFFER_SIZE);
 
   /* Read the precision in little-endian format. */
   if (fread (buffer, precision_size, 1, fh) != 1)
     return 0;
 
-#if MPFR_MAX_PRECSIZE * CHAR_BIT > MPFR_PREC_BITS
+  /* Justification of the #if below. */
+  MPFR_ASSERTD (precision_size <= MPFR_MAX_PRECSIZE + 1);
+
+#if (MPFR_MAX_PRECSIZE + 1) * CHAR_BIT > MPFR_PREC_BITS
   while (precision_size > sizeof(mpfr_prec_t))
     {
       if (buffer[precision_size-1] != 0)
@@ -257,7 +259,12 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
       precision_size--;
     }
 #endif
-  
+
+  /* To detect bugs affecting particular platforms (thus MPFR_ASSERTN)... */
+  MPFR_ASSERTN (precision_size <= sizeof(mpfr_prec_t));
+
+  /* Since mpfr_prec_t is signed, one also needs to check that the
+     most significant bit of the corresponding unsigned value is 0. */
   if (precision_size == sizeof(mpfr_prec_t) &&
       buffer[precision_size-1] >= 0x80)
     return 0;  /* the read precision doesn't fit in a mpfr_prec_t */
