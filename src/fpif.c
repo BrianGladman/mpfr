@@ -242,19 +242,22 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
     return precision_size - MPFR_MAX_PRECSIZE;
 
   precision_size++;
+  /* now 1 <= precision_size <= MPFR_MAX_PRECSIZE */
   MPFR_ASSERTD (precision_size <= BUFFER_SIZE);
 
   /* Read the precision in little-endian format. */
   if (fread (buffer, precision_size, 1, fh) != 1)
     return 0;
 
+#if MPFR_MAX_PRECSIZE * CHAR_BIT > MPFR_PREC_BITS
   while (precision_size > sizeof(mpfr_prec_t))
     {
       if (buffer[precision_size-1] != 0)
         return 0;  /* the read precision doesn't fit in a mpfr_prec_t */
       precision_size--;
     }
-
+#endif
+  
   if (precision_size == sizeof(mpfr_prec_t) &&
       buffer[precision_size-1] >= 0x80)
     return 0;  /* the read precision doesn't fit in a mpfr_prec_t */
@@ -356,7 +359,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
 
 /*
  * x : OUT : MPFR number extracted from the binary buffer
- * fh : IN : file handler
+ * fh : IN : file handler (should not be NULL)
  * return 0 if successful
  */
 /* TODO
@@ -373,8 +376,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_t x, FILE * fh)
   int sign;
   unsigned char buffer[sizeof(mpfr_exp_t)];
 
-  if (fh == NULL)
-    return 1;
+  MPFR_ASSERTD(fh != NULL);
 
   if (fread (buffer, 1, 1, fh) != 1)
     return 1;
@@ -601,6 +603,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
   precision = mpfr_fpif_read_precision_from_file (fh);
   if (precision == 0) /* precision = 0 means an error */
     return -1;
+  MPFR_ASSERTD(fh != NULL); /* checked by mpfr_fpif_read_precision_from_file */
   if (precision > MPFR_PREC_MAX)
     return -1;
   MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN == 1);  /* as specified */

@@ -193,6 +193,8 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   remove (filenameCompressed);
 }
 
+#define BAD 7
+
 static void
 check_bad (void)
 {
@@ -200,9 +202,10 @@ check_bad (void)
   int status;
   FILE *fh;
   mpfr_t x;
-  unsigned char badData[6][2] =
-    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 } };
-  int badDataSize[6] = { 1, 1, 2, 2, 2, 2 };
+  unsigned char badData[BAD][9] =
+    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
+      {7, 0, 0, 0, 0, 0, 0, 0, 128}};
+  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 9 };
   int i;
 
   mpfr_init2 (x, 2);
@@ -237,7 +240,7 @@ check_bad (void)
       exit(1);
     }
 
-  for (i = 0; i < 6; i++)
+  for (i = 0; i < BAD; i++)
     {
       rewind (fh);
       status = fwrite (&badData[i][0], badDataSize[i], 1, fh);
@@ -272,6 +275,9 @@ check_bad (void)
               break;
             case 5:
               printf ("  no limb data\n");
+              break;
+            case 6:
+              printf ("  too large precision\n");
               break;
             default:
               printf ("Test fatal error, unknown case\n");
