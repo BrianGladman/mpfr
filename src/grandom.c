@@ -104,7 +104,8 @@ mpfr_grandom (mpfr_ptr rop1, mpfr_ptr rop2, gmp_randstate_t rstate,
                0 < x', y' <= 2^p', and we conclude by induction. */
           if (mpz_sizeinbase (s, 2) <= 2 * tprec)
             goto yeepee;
-          /* Extend by 32 bits */
+          /* Extend by 32 bits: for tprec=12, the probability we get here
+             is 8191/13180825, i.e., about 0.000621 */
           mpz_mul_2exp (xp, xp, 32);
           mpz_mul_2exp (yp, yp, 32);
           mpz_urandomb (x, rstate, 32);

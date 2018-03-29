@@ -114,6 +114,7 @@ main (int argc, char *argv[])
 {
   long nbtests;
   int verbose;
+  int i;
 
   tests_start_mpfr ();
 
@@ -130,6 +131,9 @@ main (int argc, char *argv[])
   test_grandom (nbtests, 420, MPFR_RNDN, verbose);
   test_special (2);
   test_special (42000);
+  /* the following should exercise the case "Extend by 32 bits" in grandom.c */
+  for (i = 0; i < 10000; i++)
+    test_special (1);
 
   tests_end_mpfr ();
   return 0;
