@@ -46,7 +46,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       where s is the sign bit and E = [eeeeeee] such that:
         * If 0 <= E <= 94, then the exponent e is E-47 (-47 <= e <= 47).
         * If 95 <= E <= 110, the exponent is stored in the next E-94 bytes
-          (1 to 16 bytes) in sign + absolute value representation.
+          (1 to 16 bytes) in sign + absolute value representation,
+          where the absolute value is increased by 47 (e <= -47 or 47 <= e).
         * If 111 <= E <= 118, the exponent size S is stored in the next
           E-110 bytes (1 to 8), then the exponent itself is stored in the
           next S bytes. [Not implemented yet]

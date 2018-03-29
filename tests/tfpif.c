@@ -193,7 +193,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   remove (filenameCompressed);
 }
 
-#define BAD 7
+#define BAD 9
 
 static void
 check_bad (void)
@@ -204,9 +204,13 @@ check_bad (void)
   mpfr_t x;
   unsigned char badData[BAD][10] =
     { { 7 }, { 16 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
-      { 7, 0, 0, 0, 0, 0, 0, 0, 128, 119 } /* +0 in a huge precision */
-    };
-  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 10 };
+      { 7, 0, 0, 0, 0, 0, 0, 0, 128, 119 }, /* +0 in a huge precision */
+      /* precision 8-7=1, exponent on 98-94=4 bytes */
+      { 8, 98, 255, 255, 255, 127 },
+      /* precision 8-7=1, exponent on 102-94=8 bytes */
+      { 8, 102, 255, 255, 255, 255, 255, 255, 255, 127 }
+      };
+  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 10, 6, 10 };
   int i;
 
   mpfr_init2 (x, 2);
@@ -283,6 +287,10 @@ check_bad (void)
               break;
             case 6:
               printf ("  too large precision\n");
+              break;
+            case 7:
+            case 8:
+              printf ("  too large exponent\n");
               break;
             default:
               printf ("Test fatal error, unknown case\n");
