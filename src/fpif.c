@@ -552,7 +552,11 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
   buf = bufResult;
   used_size > buf_size ? buf_size = used_size : 0;
   status = fwrite (buf, used_size, 1, fh);
-  MPFR_ASSERTN(status == 1);
+  if (status != 1)
+    {
+      mpfr_free_func (buf, buf_size);
+      return -1;
+    }
 
   if (mpfr_regular_p (x))
     {
