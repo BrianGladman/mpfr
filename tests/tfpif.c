@@ -203,8 +203,8 @@ check_bad (void)
   FILE *fh;
   mpfr_t x;
   unsigned char badData[BAD][9] =
-    { { 7, 0 }, { 16, 0 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
-      {7, 0, 0, 0, 0, 0, 0, 0, 128}};
+    { { 7 }, { 16 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
+      { 7, 0, 0, 0, 0, 0, 0, 0, 128 } };
   int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 9 };
   int i;
 
@@ -242,6 +242,10 @@ check_bad (void)
 
   for (i = 0; i < BAD; i++)
     {
+      /* For i == 6, mpfr_prec_t needs at least a 65-bit precision
+         (64 value bits + 1 sign bit) to avoid a failure. */
+      if (i == 6 && MPFR_PREC_BITS > 64)
+        break;
       rewind (fh);
       status = fwrite (&badData[i][0], badDataSize[i], 1, fh);
       if (status != 1)
