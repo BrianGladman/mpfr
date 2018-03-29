@@ -1599,6 +1599,28 @@ tst20140422 (void)
   mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
 }
 
+static void
+coverage (void)
+{
+  mpfr_t x, y, z;
+  int inex;
+  mpfr_exp_t emax;
+
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (mpfr_get_emax_max ());
+  /* emax = 4611686018427387903 on a 64-bit machine */
+  mpfr_init2 (x, 10);
+  mpfr_init2 (y, 10);
+  mpfr_init2 (z, 64);
+  mpfr_set_ui_2exp (x, 513, 3074457345618258593UL, MPFR_RNDN);
+  mpfr_set_str_binary (y, "1.1"); /* y = 3/2 */
+  inex = mpfr_pow (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inf_p (z));
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  mpfr_set_emax (emax);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1606,6 +1628,7 @@ main (int argc, char **argv)
 
   tests_start_mpfr ();
 
+  coverage ();
   bug20071127 ();
   special ();
   particular_cases ();

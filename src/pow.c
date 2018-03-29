@@ -109,7 +109,8 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 
 /* Assumes that the exponent range has already been extended and if y is
    an integer, then the result is not exact in unbounded exponent range.
-   If x < 0, assumes y is an integer.
+   If y_is_integer is non-zero, y is an integer (always when x < 0).
+   expo is the saved exponent range and flags (at the call to mpfr_pow).
 */
 int
 mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
@@ -125,7 +126,6 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   mpfr_prec_t Nt;                              /* working precision */
   mpfr_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
-
 
   MPFR_LOG_FUNC
     (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg rnd=%d",
