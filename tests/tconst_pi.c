@@ -254,6 +254,7 @@ main (int argc, char *argv[])
 
   /* another test of mpfr_free_cache2 with MPFR_FREE_LOCAL_CACHE, to check
      that we can call it when the caches are already freed */
+  mpfr_free_cache2 (MPFR_FREE_LOCAL_CACHE);
 
   return 0;
 }
