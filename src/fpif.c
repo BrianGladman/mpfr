@@ -491,30 +491,22 @@ mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
 /*
  * x : OUT : MPFR number extracted from the binary buffer, should have the same
  *           precision than the number in the binary format
- * buffer : IN : limb of the MPFR number x in a binary format,
- * buffer_size : IN/OUT : size of the buffer => size used in the buffer
+ * buffer : IN : limb of the MPFR number x in a binary format
+ * nb_byte : IN : size of the buffer (in bytes)
  * return 0 if successful
+ * Assume buffer is not NULL.
  */
 static int
-mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t *buffer_size)
+mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t nb_byte)
 {
-  mpfr_prec_t precision;
-  size_t nb_byte;
   size_t mp_bytes_per_limb;
   size_t nb_partial_byte;
   size_t i, j;
 
-  precision = mpfr_get_prec (x);
-  nb_byte = (precision + 7) >> 3;
+  MPFR_ASSERTD (buffer != NULL);
+
   mp_bytes_per_limb = mp_bits_per_limb >> 3;
   nb_partial_byte = nb_byte % mp_bytes_per_limb;
-
-  if ((buffer == NULL) || (*buffer_size < nb_byte))
-    {
-      *buffer_size = 0;
-      return 1;
-    }
-  *buffer_size = nb_byte;
 
   if (nb_partial_byte > 0)
     {
@@ -649,7 +641,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
           mpfr_set_nan (x);
           return -1;
         }
-      status = mpfr_fpif_read_limbs (x, buffer, &used_size);
+      status = mpfr_fpif_read_limbs (x, buffer, used_size);
       mpfr_free_func (buffer, used_size);
       if (status != 0)
         {
