@@ -193,7 +193,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   remove (filenameCompressed);
 }
 
-#define BAD 9
+#define BAD 10
 
 static void
 check_bad (void)
@@ -208,9 +208,10 @@ check_bad (void)
       /* precision 8-7=1, exponent on 98-94=4 bytes */
       { 8, 98, 255, 255, 255, 127 },
       /* precision 8-7=1, exponent on 102-94=8 bytes */
-      { 8, 102, 255, 255, 255, 255, 255, 255, 255, 127 }
+      { 8, 102, 255, 255, 255, 255, 255, 255, 255, 127 },
+      { 8, 94 }
       };
-  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 10, 6, 10 };
+  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 10, 6, 10, 2 };
   int i;
 
   mpfr_init2 (x, 2);
@@ -247,10 +248,17 @@ check_bad (void)
 
   for (i = 0; i < BAD; i++)
     {
+      mpfr_exp_t emax;
       /* For i == 6, mpfr_prec_t needs at least a 65-bit precision
          (64 value bits + 1 sign bit) to avoid a failure. */
       if (i == 6 && MPFR_PREC_BITS > 64)
         break;
+      /* For i=9, we use a reduced exponent range */
+      if (i == 9)
+        {
+          emax = mpfr_get_emax ();
+          mpfr_set_emax (46);
+        }
       rewind (fh);
       status = fwrite (&badData[i][0], badDataSize[i], 1, fh);
       if (status != 1)
@@ -290,6 +298,7 @@ check_bad (void)
               break;
             case 7:
             case 8:
+            case 9:
               printf ("  too large exponent\n");
               break;
             default:
@@ -300,6 +309,8 @@ check_bad (void)
           remove (filenameCompressed);
           exit(1);
         }
+      if (i == 9)
+        mpfr_set_emax (emax);
     }
 
   fclose (fh);
