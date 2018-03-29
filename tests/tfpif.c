@@ -206,7 +206,7 @@ check_bad (void)
     { { 7 }, { 16 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
       { 7, 0, 0, 0, 0, 0, 0, 0, 128, 119 } /* +0 in a huge precision */
     };
-  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 9 };
+  int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 10 };
   int i;
 
   mpfr_init2 (x, 2);
