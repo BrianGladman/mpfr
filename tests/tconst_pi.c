@@ -245,7 +245,15 @@ main (int argc, char *argv[])
 
   RUN_PTHREAD_TEST();
 
+  /* the following is just to test mpfr_free_cache2 with MPFR_FREE_LOCAL_CACHE,
+     it should not hurt, since the call to mpfr_free_cache in tests_end_mpfr
+     will do nothing */
+  mpfr_free_cache2 (MPFR_FREE_LOCAL_CACHE);
+
   tests_end_mpfr ();
+
+  /* another test of mpfr_free_cache2 with MPFR_FREE_LOCAL_CACHE, to check
+     that we can call it when the caches are already freed */
 
   return 0;
 }
