@@ -202,9 +202,10 @@ check_bad (void)
   int status;
   FILE *fh;
   mpfr_t x;
-  unsigned char badData[BAD][9] =
+  unsigned char badData[BAD][10] =
     { { 7 }, { 16 }, { 23, 118 }, { 23, 95 }, { 23, 127 }, { 23, 47 },
-      { 7, 0, 0, 0, 0, 0, 0, 0, 128 } };
+      { 7, 0, 0, 0, 0, 0, 0, 0, 128, 119 } /* +0 in a huge precision */
+    };
   int badDataSize[BAD] = { 1, 1, 2, 2, 2, 2, 9 };
   int i;
 
