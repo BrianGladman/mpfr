@@ -91,11 +91,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
         {                                                               \
           (buffer) = (unsigned char *) mpfr_reallocate_func             \
             ((buffer), *(buffer_size), (wanted_size));                  \
-          if ((buffer) == NULL)                                         \
-            {                                                           \
-              *(buffer_size) = 0;                                       \
-              return NULL;                                              \
-            }                                                           \
+          MPFR_ASSERTN((buffer) != 0);                                  \
         }                                                               \
       *(buffer_size) = (wanted_size);                                   \
     }                                                                   \
@@ -493,10 +489,9 @@ mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_t x)
  *           precision than the number in the binary format
  * buffer : IN : limb of the MPFR number x in a binary format
  * nb_byte : IN : size of the buffer (in bytes)
- * return 0 if successful
  * Assume buffer is not NULL.
  */
-static int
+static void
 mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t nb_byte)
 {
   size_t mp_bytes_per_limb;
@@ -518,8 +513,6 @@ mpfr_fpif_read_limbs (mpfr_t x, unsigned char *buffer, size_t nb_byte)
        i += mp_bytes_per_limb, j++)
     getLittleEndianData ((unsigned char*) (MPFR_MANT(x) + j), buffer + i,
                          sizeof(mp_limb_t), sizeof(mp_limb_t));
-
-  return 0;
 }
 
 /* External Function */
@@ -541,8 +534,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
 
   buf_size = MAX_VARIABLE_STORAGE(sizeof(mpfr_exp_t), mpfr_get_prec (x));
   buf = (unsigned char*) mpfr_allocate_func (buf_size);
-  if (buf == NULL)
-    return -1;
+  MPFR_ASSERTN(buf != NULL);
 
   used_size = buf_size;
   buf = mpfr_fpif_store_precision (buf, &used_size, mpfr_get_prec (x));
@@ -555,19 +547,12 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
     }
   used_size = buf_size;
   bufResult = mpfr_fpif_store_exponent (buf, &used_size, x);
-  if (bufResult == NULL)
-    {
-      mpfr_free_func (buf, buf_size);
-      return -1;
-    }
+  /* bufResult cannot be NULL: if reallocation failed in
+     mpfr_fpif_store_exponent, an assertion failed */
   buf = bufResult;
   used_size > buf_size ? buf_size = used_size : 0;
   status = fwrite (buf, used_size, 1, fh);
-  if (status != 1)
-    {
-      mpfr_free_func (buf, buf_size);
-      return -1;
-    }
+  MPFR_ASSERTN(status == 1);
 
   if (mpfr_regular_p (x))
     {
@@ -575,11 +560,7 @@ mpfr_fpif_export (FILE *fh, mpfr_t x)
       buf = mpfr_fpif_store_limbs (buf, &used_size, x);
       used_size > buf_size ? buf_size = used_size : 0;
       status = fwrite (buf, used_size, 1, fh);
-      if (status != 1)
-        {
-          mpfr_free_func (buf, buf_size);
-          return -1;
-        }
+      MPFR_ASSERTN(status == 1);
     }
 
   mpfr_free_func (buf, buf_size);
@@ -629,11 +610,7 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
       MPFR_STAT_STATIC_ASSERT ((MPFR_PREC_MAX + 7) >> 3 <= (size_t) -1);
       used_size = (precision + 7) >> 3; /* ceil(precision/8) */
       buffer = (unsigned char*) mpfr_allocate_func (used_size);
-      if (buffer == NULL)
-        {
-          mpfr_set_nan (x);
-          return -1;
-        }
+      MPFR_ASSERTN(buffer != NULL);
       status = fread (buffer, used_size, 1, fh);
       if (status != 1)
         {
@@ -641,13 +618,8 @@ mpfr_fpif_import (mpfr_t x, FILE *fh)
           mpfr_set_nan (x);
           return -1;
         }
-      status = mpfr_fpif_read_limbs (x, buffer, used_size);
+      mpfr_fpif_read_limbs (x, buffer, used_size);
       mpfr_free_func (buffer, used_size);
-      if (status != 0)
-        {
-          mpfr_set_nan (x);
-          return -1;
-        }
     }
 
   return 0;
