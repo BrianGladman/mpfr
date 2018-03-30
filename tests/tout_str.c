@@ -58,10 +58,6 @@ special (void)
       exit (1);
     }
 
-  /* check stream = NULL */
-  n = mpfr_out_str (NULL, 10, 0, x, MPFR_RNDN);
-  putchar ('\n');
-
   mpfr_set_inf (x, 1);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
   if (n != 5)
