@@ -37,9 +37,6 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
   int retval;
   size_t nread;
 
-  if (stream == NULL)
-    stream = stdin;
-
   alloc_size = 100;
   str = (unsigned char *) mpfr_allocate_func (alloc_size);
   str_size = 0;
