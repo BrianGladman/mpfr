@@ -43,10 +43,6 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
 
   MPFR_ASSERTN (base >= 2 && base <= 62);
 
-  /* when stream=NULL, output to stdout */
-  if (stream == NULL)
-    stream = stdout;
-
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
     {
       if (MPFR_IS_NAN (op))
