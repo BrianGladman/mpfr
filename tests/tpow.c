@@ -1602,6 +1602,7 @@ tst20140422 (void)
 static void
 coverage (void)
 {
+#if MPFR_PREC_BITS == 64
   mpfr_t x, y, z;
   int inex;
   mpfr_exp_t emax;
@@ -1619,6 +1620,7 @@ coverage (void)
   MPFR_ASSERTN(mpfr_inf_p (z));
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
   mpfr_set_emax (emax);
+#endif
 }
 
 int
