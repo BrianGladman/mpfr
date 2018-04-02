@@ -252,19 +252,21 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   MPFR_ASSERTD(k != n - 1); /* k=n-1 would give l=1 in the recursive call */
 
   if (k == 0)
+    {
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
-  {
-    mpfr_pi1_t dinv2;
-    invert_pi1 (dinv2, dp[n - 1], dp[n - 2]);
-    return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
-  }
+      mpfr_pi1_t dinv2;
+      invert_pi1 (dinv2, dp[n - 1], dp[n - 2]);
+      return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
 #else /* use our own code for base-case short division */
-    return mpfr_divhigh_n_basecase (qp, np, dp, n);
+      return mpfr_divhigh_n_basecase (qp, np, dp, n);
 #endif
-  else if (k == n)
-    /* for k=n, we use a division with remainder (mpn_divrem),
-     which computes the exact quotient */
-    return mpn_divrem (qp, 0, np, 2 * n, dp, n);
+    }
+  else if (k == n)  /* possible with some mparam.h files only */
+    {
+      /* for k=n, we use a division with remainder (mpn_divrem),
+         which computes the exact quotient */
+      return mpn_divrem (qp, 0, np, 2 * n, dp, n);
+    }
 
   MPFR_ASSERTD ((n+4)/2 <= k && k < n); /* bounds from [1] */
   MPFR_TMP_MARK (marker);
