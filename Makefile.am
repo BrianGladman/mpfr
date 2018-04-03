@@ -41,6 +41,9 @@ bench:
 #   up-to-date. Note: this is a heuristic, to detect some mistakes.
 # * Check that copyright notices exist and appear to be correct.
 # * Check the NEWS file.
+# * Check the __clz_tab sizes.
+# * Check the mparam.h files.
+# * Check typography in mpfr.texi (Texinfo rules).
 dist-hook:
 	cd $(srcdir) && tools/ck-version-info
 	cd $(srcdir) && tools/ck-copyright-notice
