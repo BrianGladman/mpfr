@@ -46,7 +46,13 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
 # has been generated with Automake 1.13+); but this is done only when
 # no tests fail.
 check:
-	cat tversion.log 2> /dev/null || true
+	@if [ -d $(top_srcdir)/.svn ]; then \
+	  output=`svnversion $(top_srcdir) 2> /dev/null`; \
+	  if [ -n "$$output" ]; then \
+	    echo "[svnversion] $$output"; \
+	  fi; \
+	fi
+	@cat tversion.log 2> /dev/null || true
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
