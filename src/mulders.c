@@ -249,7 +249,6 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   MPFR_STAT_STATIC_ASSERT (MPFR_DIVHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
   MPFR_ASSERTD(n >= 2);
   k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);
-  MPFR_ASSERTD(k != n - 1); /* k=n-1 would give l=1 in the recursive call */
 
   if (k == 0)
     {
@@ -261,14 +260,11 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
       return mpfr_divhigh_n_basecase (qp, np, dp, n);
 #endif
     }
-  else if (k == n)  /* possible with some mparam.h files only */
-    {
-      /* for k=n, we use a division with remainder (mpn_divrem),
-         which computes the exact quotient */
-      return mpn_divrem (qp, 0, np, 2 * n, dp, n);
-    }
 
-  MPFR_ASSERTD ((n+4)/2 <= k && k < n); /* bounds from [1] */
+  /* Check the bounds from [1]. In addition, we forbid k=n-1, which would
+     give l=1 in the recursive call. It follows n >= 5. */
+  MPFR_ASSERTD ((n+4)/2 <= k && k < n-1);
+
   MPFR_TMP_MARK (marker);
   l = n - k;
   /* first divide the most significant 2k limbs from N by the most significant
