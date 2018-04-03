@@ -24,15 +24,16 @@ err=0
 
 for i in $files
 do
-  output=`echo "#include \"$i\"" | gcc -o /dev/null -c -xc - 2>&1`
-  if [ -n "$output" ]; then
-    printf "Error for file '%s':\n%s\n" "$i" "$output"
-    err=1
-  fi
+  #output=`echo "#include \"$i\"" | gcc -o /dev/null -c -xc - 2>&1`
+  #if [ -n "$output" ]; then
+  #  printf "Error for file '%s':\n%s\n" "$i" "$output"
+  #  err=1
+  #fi
   rm -f check_mparam
-  gcc "-DMPARAM=\"../$i\"" -o check_mparam tools/check_mparam.c
+  ${CC:-cc} "-DMPARAM=\"../$i\"" -o check_mparam tools/check_mparam.c
   ./check_mparam
-  rm -f check_mparam
 done
+
+rm -f check_mparam
 
 exit $err
