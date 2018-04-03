@@ -46,6 +46,7 @@ dist-hook:
 	cd $(srcdir) && tools/ck-copyright-notice
 	cd $(srcdir) && tools/ck-news
 	cd $(srcdir) && tools/ck-clz_tab
+	cd $(srcdir) && tools/ck-mparam
 	cd $(srcdir)/doc && ./check-typography
 
 # Check that MPFR does not use GMP internal symbols. Of course, do not run
