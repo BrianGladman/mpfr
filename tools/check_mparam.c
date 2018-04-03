@@ -1,9 +1,16 @@
 /* to check some mparam.h table:
-   1) make a symbolic link to the corresponding mparam.h
+   1) make a symbolic link to the corresponding mparam.h or
+      provide -DMPARAM='"..."' with a path to the mparam.h
+      file when compiling this program
    2) compile and run this program */
 
 #include <stdio.h>
-#include "mparam.h"
+
+#ifndef MPARAM
+# define MPARAM "mparam.h"
+#endif
+
+#include MPARAM
 
 #define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
 
