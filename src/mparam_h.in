@@ -45,12 +45,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/amd/mparam.h"
 #include "amd/mparam.h"
 
-#elif defined (__x86_64__) /* generic parameters for x86_64 */
+/* _M_X64 is for the Microsoft compiler, see
+   https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros */
+#elif defined (__x86_64__) || defined (_M_X64)
+/* generic parameters for x86_64 */
 #define MPFR_TUNE_CASE "src/x86_64/mparam.h"
 #include "x86_64/mparam.h"
 
-#elif defined (__i386) /* we consider all other 386's here,
-      including a 64-bit machine with gmp/mpfr compiled with ABI=32 */
+#elif defined (__i386) || defined(_M_IX86)
+/* we consider all other 386's here,
+   including a 64-bit machine with gmp/mpfr compiled with ABI=32 */
 #define MPFR_TUNE_CASE "src/x86/mparam.h"
 #include "x86/mparam.h"
 
@@ -66,7 +70,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_TUNE_CASE "src/mips/mparam.h"
 #include "mips/mparam.h"
 
-#elif defined (__arm__) /* ARM */
+#elif defined (__arm__) || defined (_M_ARM) /* ARM */
 #define MPFR_TUNE_CASE "src/arm/mparam.h"
 #include "arm/mparam.h"
 
