@@ -28,8 +28,8 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/version.c examples/can_round.c
 
 EXTRA_DIST = PATCHES VERSION doc/README.dev doc/check-typography \
-  tools/ck-clz_tab tools/ck-copyright-notice tools/ck-news \
-  tools/ck-version-info tools/get_patches.sh \
+  tools/check_mparam.c tools/ck-clz_tab tools/ck-copyright-notice \
+  tools/ck-mparam tools/ck-news tools/ck-version-info tools/get_patches.sh \
   $(DATAFILES)
 
 bench:
