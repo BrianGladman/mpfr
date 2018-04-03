@@ -52,7 +52,7 @@ check:
 	    echo "[svnversion] $$output"; \
 	  fi; \
 	fi
-	@cat tversion.log 2> /dev/null || true
+	@grep -v '^PASS ' tversion.log 2> /dev/null || true
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
