@@ -1641,6 +1641,19 @@ coverage (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
   mpfr_set_emin (emin);
 
+  /* test for x = -2^k, y an odd integer with EXP(y) > 256 */
+  mpfr_init2 (x, 10);
+  mpfr_init2 (y, 257);
+  mpfr_init2 (z, 10);
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_set_ui_2exp (y, 1, 256, MPFR_RNDN);
+  mpfr_nextabove (y);
+  inex = mpfr_pow (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_inf_p (z));
+  MPFR_ASSERTN(mpfr_signbit (z) != 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+
 #if MPFR_PREC_BITS == 64
   {
     mpfr_exp_t emax;
