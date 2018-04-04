@@ -1602,24 +1602,63 @@ tst20140422 (void)
 static void
 coverage (void)
 {
-#if MPFR_PREC_BITS == 64
   mpfr_t x, y, z;
+  mpfr_exp_t emin;
   int inex;
-  mpfr_exp_t emax;
 
-  emax = mpfr_get_emax ();
-  mpfr_set_emax (mpfr_get_emax_max ());
-  /* emax = 4611686018427387903 on a 64-bit machine */
-  mpfr_init2 (x, 10);
-  mpfr_init2 (y, 10);
-  mpfr_init2 (z, 64);
-  mpfr_set_ui_2exp (x, 513, 3074457345618258593UL, MPFR_RNDN);
-  mpfr_set_str_binary (y, "1.1"); /* y = 3/2 */
+  /* check a corner case with prec(z)=1 */
+  mpfr_init2 (x, 2);
+  mpfr_init2 (y, 8);
+  mpfr_init2 (z, 1);
+  mpfr_set_ui_2exp (x, 3, -2, MPFR_RNDN);   /* x = 3/4 */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-40);
+  mpfr_set_ui_2exp (y, 199, -1, MPFR_RNDN); /* y = 99.5 */
+  /* x^y ~ 0.81*2^-41 */
+  mpfr_clear_underflow ();
   inex = mpfr_pow (z, x, y, MPFR_RNDN);
   MPFR_ASSERTN(inex > 0);
-  MPFR_ASSERTN(mpfr_inf_p (z));
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -41) == 0);
+  /* there should be no underflow, since with unbounded exponent range,
+     and a precision of 1 bit, x^y is rounded to 1.0*2^-41 */
+  MPFR_ASSERTN(!mpfr_underflow_p ());
+  mpfr_set_ui_2exp (y, 201, -1, MPFR_RNDN); /* y = 100.5 */
+  /* x^y ~ 0.61*2^-41 */
+  mpfr_clear_underflow ();
+  inex = mpfr_pow (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (z, 1, -41) == 0);
+  /* there should be an underflow, since with unbounded exponent range,
+     and a precision of 1 bit, x^y is rounded to 0.5*2^-41 */
+  MPFR_ASSERTN(mpfr_underflow_p ());
+  mpfr_set_ui_2exp (y, 203, -1, MPFR_RNDN); /* y = 101.5 */
+  /* x^y ~ 0.46*2^-41 */
+  mpfr_clear_underflow ();
+  inex = mpfr_pow (z, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z) == 0);
+  MPFR_ASSERTN(mpfr_underflow_p ());
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
-  mpfr_set_emax (emax);
+  mpfr_set_emin (emin);
+
+#if MPFR_PREC_BITS == 64
+  {
+    mpfr_exp_t emax;
+
+    emax = mpfr_get_emax ();
+    mpfr_set_emax (mpfr_get_emax_max ());
+    /* emax = 4611686018427387903 on a 64-bit machine */
+    mpfr_init2 (x, 10);
+    mpfr_init2 (y, 10);
+    mpfr_init2 (z, 64);
+    mpfr_set_ui_2exp (x, 513, 3074457345618258593UL, MPFR_RNDN);
+    mpfr_set_str_binary (y, "1.1"); /* y = 3/2 */
+    inex = mpfr_pow (z, x, y, MPFR_RNDN);
+    MPFR_ASSERTN(inex > 0);
+    MPFR_ASSERTN(mpfr_inf_p (z));
+    mpfr_clears (x, y, z, (mpfr_ptr) 0);
+    mpfr_set_emax (emax);
+  }
 #endif
 }
 
