@@ -624,32 +624,32 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      thus we would have |x| >= 2 and y >= 2^256, which gives an overflow,
      also already treated above. */
   if (mpfr_powerof2_raw (x))
-  {
-    mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
-    mpfr_t tmp;
+    {
+      mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
+      mpfr_t tmp;
 
-    MPFR_ASSERTN (b >= LONG_MIN && b <= LONG_MAX);  /* FIXME... */
-    MPFR_ASSERTD (MPFR_SIGN(x) > 0);
+      MPFR_ASSERTN (b >= LONG_MIN && b <= LONG_MAX);  /* FIXME... */
+      MPFR_ASSERTD (MPFR_SIGN(x) > 0);
 
-    MPFR_LOG_MSG (("special case (+/-2^b)^Y\n", 0));
-    /* now x = +/-2^b, so x^y = (+/-1)^y*2^(b*y) is exact whenever b*y is
-       an integer */
-    MPFR_SAVE_EXPO_MARK (expo);
-    mpfr_init2 (tmp, MPFR_PREC (y) + sizeof (long) * CHAR_BIT);
-    inexact = mpfr_mul_si (tmp, y, b, MPFR_RNDN); /* exact */
-    MPFR_ASSERTN (inexact == 0);
-    /* Note: as the exponent range has been extended, an overflow is not
-       possible (due to basic overflow and underflow checking above, as
-       the result is ~ 2^tmp), and an underflow is not possible either
-       because b is an integer (thus either 0 or >= 1). */
-    MPFR_CLEAR_FLAGS ();
-    inexact = mpfr_exp2 (z, tmp, rnd_mode);
-    mpfr_clear (tmp);
-    /* Without the following, the overflows3 test in tpow.c fails. */
-    MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
-    MPFR_SAVE_EXPO_FREE (expo);
-    return mpfr_check_range (z, inexact, rnd_mode);
-  }
+      MPFR_LOG_MSG (("special case (+/-2^b)^Y\n", 0));
+      /* now x = +/-2^b, so x^y = (+/-1)^y*2^(b*y) is exact whenever b*y is
+         an integer */
+      MPFR_SAVE_EXPO_MARK (expo);
+      mpfr_init2 (tmp, MPFR_PREC (y) + sizeof (long) * CHAR_BIT);
+      inexact = mpfr_mul_si (tmp, y, b, MPFR_RNDN); /* exact */
+      MPFR_ASSERTN (inexact == 0);
+      /* Note: as the exponent range has been extended, an overflow is not
+         possible (due to basic overflow and underflow checking above, as
+         the result is ~ 2^tmp), and an underflow is not possible either
+         because b is an integer (thus either 0 or >= 1). */
+      MPFR_CLEAR_FLAGS ();
+      inexact = mpfr_exp2 (z, tmp, rnd_mode);
+      mpfr_clear (tmp);
+      /* Without the following, the overflows3 test in tpow.c fails. */
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (z, inexact, rnd_mode);
+    }
 
   MPFR_SAVE_EXPO_MARK (expo);
 
