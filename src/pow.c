@@ -600,6 +600,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      MBs may be necessary). Note that in such a case, either x = +/-2^b
      (this case is handled below) or x^y cannot be represented exactly in
      any precision supported by MPFR (the general case uses this property).
+     Note: the threshold of 256 should not be decreased too much, see the
+     comments about (-2^b)^y just below. */
   */
   if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
     {
