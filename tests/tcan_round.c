@@ -88,7 +88,52 @@ check_round_p (void)
                                MPFR_RNDN, MPFR_RNDZ, p);
       if (r1 != r2)
         {
-          printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
+          printf ("mpfr_round_p(%d) != mpfr_can_round(%d,RNDZ)!\n"
+                  "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
+                  r1, r2, n, (long) err, (unsigned long) p);
+#ifndef MPFR_USE_MINI_GMP
+          gmp_printf ("%NX\n", buf, n);
+#endif
+          exit (1);
+        }
+      /* Same with RNDF: with rnd1=RNDN, rnd2=RNDF is converted to RNDN. */
+      r1 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDN, MPFR_RNDN, p);
+      r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDN, MPFR_RNDF, p);
+      if (r1 != r2)
+        {
+          printf ("mpfr_can_round(%d,RNDN) != mpfr_can_round(%d,RNDF)!\n"
+                  "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
+                  r1, r2, n, (long) err, (unsigned long) p);
+#ifndef MPFR_USE_MINI_GMP
+          gmp_printf ("%NX\n", buf, n);
+#endif
+          exit (1);
+        }
+      /* Same with RNDF: with rnd1=RNDZ, rnd2=RNDF is converted to RNDA. */
+      r1 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDZ, MPFR_RNDA, p);
+      r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDZ, MPFR_RNDF, p);
+      if (r1 != r2)
+        {
+          printf ("mpfr_can_round(%d,RNDA) != mpfr_can_round(%d,RNDF)!\n"
+                  "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
+                  r1, r2, n, (long) err, (unsigned long) p);
+#ifndef MPFR_USE_MINI_GMP
+          gmp_printf ("%NX\n", buf, n);
+#endif
+          exit (1);
+        }
+      /* Same with RNDF: with rnd1=RNDA, rnd2=RNDF is converted to RNDZ. */
+      r1 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDA, MPFR_RNDZ, p);
+      r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+                               MPFR_RNDA, MPFR_RNDF, p);
+      if (r1 != r2)
+        {
+          printf ("mpfr_can_round(%d,RNDZ) != mpfr_can_round(%d,RNDF)!\n"
                   "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
                   r1, r2, n, (long) err, (unsigned long) p);
 #ifndef MPFR_USE_MINI_GMP

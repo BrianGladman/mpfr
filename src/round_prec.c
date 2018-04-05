@@ -204,7 +204,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
   if (rnd2 == MPFR_RNDF)
     rnd2 = (rnd1 == MPFR_RNDN) ? MPFR_RNDN :
-      MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDA : MPFR_RNDZ;
+      MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDA : MPFR_RNDZ;
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
