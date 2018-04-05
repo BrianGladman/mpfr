@@ -602,6 +602,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      any precision supported by MPFR (the general case uses this property).
      Note: the threshold of 256 should not be decreased too much, see the
      comments about (-2^b)^y just below. */
+  /* TODO: the 256 should be adapted to the actual exponent width. */
   if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
     {
       mpz_t zi;
@@ -640,7 +641,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       mpfr_clear (tmp);
       if (sgnx < 0 && mpfr_odd_p (y))
         {
-          /* can occur if x = -1/2, for instance */
+          /* can occur (only) if x = -1/2
+             TODO: This is an underflow on most platforms (see above TODO),
+             thus could be dealt with as a special case.
+           */
           mpfr_neg (z, z, rnd_mode);
           inexact = -inexact;
         }
