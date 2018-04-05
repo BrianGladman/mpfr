@@ -111,6 +111,27 @@ bug20171218 (void)
   mpfr_clear (z);
 }
 
+static void
+coverage (void)
+{
+  mpfr_t x, y;
+  int inex;
+  mpfr_exp_t emax;
+
+  /* exercise mpfr_round_near_x when rounding gives an overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (-2);
+  mpfr_init2 (x, 2);
+  mpfr_init2 (y, 2);
+  mpfr_setmax (x, mpfr_get_emax ());
+  inex = mpfr_tan (y, x, MPFR_RNDA);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_signbit (y) == 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -121,6 +142,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  coverage ();
   bug20171218 ();
   check_nans ();
 
