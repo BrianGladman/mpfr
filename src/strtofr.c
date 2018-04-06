@@ -682,6 +682,10 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               if (h >= ysize) /* not enough precision in z */
                 goto next_loop;
               cy = mpn_add_1 (z, z, ysize - h, MPFR_LIMB_ONE << l);
+              /* Note: it is very unlikely that we can have a carry in the
+                 above addition. Indeed, this would mean that an integer
+                 power of pstr->base has its ysize most significant
+                 limbs >= 1000...000 - 2^err. */
               if (cy != 0) /* the code below requires z on ysize limbs */
                 goto next_loop;
             }
