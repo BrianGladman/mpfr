@@ -28,6 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define use_inexp 1
 #include "round_raw_generic.c"
 
+/* mpfr_round_raw_2 is called from mpfr_round_raw2 */
 #define mpfr_round_raw_generic mpfr_round_raw_2
 #define flag 1
 #define use_inexp 0
@@ -207,6 +208,8 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDA : MPFR_RNDZ;
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
+
+  /* now rnd2 is either RNDN, RNDZ or RNDZ */
 
   /* For err < prec (+1 for rnd1=RNDN), we can never round correctly, since
      the error is at least 2*ulp(b) >= ulp(round(b)).

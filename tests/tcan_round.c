@@ -276,6 +276,36 @@ check_can_round (void)
   mpfr_clears (x, xinf, xsup, yinf, ysup, (mpfr_ptr) 0);
 }
 
+/* test of RNDNA (nearest with ties to away) */
+static void
+test_rndna (void)
+{
+  mpfr_t x;
+  int inex;
+
+  mpfr_init2 (x, 10);
+  mpfr_set_str_binary (x, "1111111101"); /* 1021 */
+  inex = mpfr_prec_round (x, 9, MPFR_RNDNA);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1022) == 0);
+  mpfr_set_prec (x, 10);
+  mpfr_set_str_binary (x, "1111111101"); /* 1021 */
+  inex = mpfr_prec_round (x, 9, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1020) == 0);
+  mpfr_set_prec (x, 10);
+  mpfr_set_str_binary (x, "1111111011"); /* 1019 */
+  inex = mpfr_prec_round (x, 9, MPFR_RNDNA);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1020) == 0);
+  mpfr_set_prec (x, 10);
+  mpfr_set_str_binary (x, "1111111011"); /* 1019 */
+  inex = mpfr_prec_round (x, 9, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1020) == 0);
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -286,6 +316,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  test_rndna ();
   test_simple ();
 
   /* checks that rounds to nearest sets the last
