@@ -27,8 +27,8 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2	\
      tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui	\
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3		\
-     tpow_all tpow_z tprintf trandom trandom_deviate trec_sqrt		\
-     tremquo trint trndna troot trootn_ui tprec_round tsec tsech	\
+     tpow_all tpow_z tprec_round tprintf trandom trandom_deviate	\
+     trec_sqrt tremquo trint trndna troot trootn_ui tsec tsech		\
      tset_d tset_f tset_float128 tset_ld tset_q tset_si tset_sj		\
      tset_str tset_z tset_z_exp tsi_op tsin tsin_cos tsinh tsinh_cosh	\
      tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr		\
