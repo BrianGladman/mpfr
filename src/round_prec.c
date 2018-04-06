@@ -324,24 +324,8 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
             }
           return 1;
         }
-      else if (rnd1 == rnd2)
-        {
-          if (rnd1 == MPFR_RNDN && prec < (mpfr_prec_t) bn * GMP_NUMB_BITS)
-            {
-              /* then rnd2 = RNDN, and for prec = bn * GMP_NUMB_BITS we cannot
-                 have b the middle of two representable numbers */
-              k1 = MPFR_PREC2LIMBS (prec + 1);
-              MPFR_UNSIGNED_MINUS_MODULO(s1, prec + 1);
-              if (((bp[bn - k1] >> s1) & 1) &&
-                  mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec + 1) == 0)
-                /* b is representable in precision prec+1 and ends with a 1 */
-                return 0;
-              else
-                return 1;
-            }
-          else
-            return 1;
-        }
+      else if (rnd1 == rnd2) /* cases RNDZ RNDZ or RNDA RNDA: ok */
+        return 1;
       else
         return mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec) != 0;
     }
