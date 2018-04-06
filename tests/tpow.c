@@ -1641,7 +1641,7 @@ coverage (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
   mpfr_set_emin (emin);
 
-  /* test for x = (-2)^k, y an odd integer with EXP(y) > 256 */
+  /* test for x = -2, y an odd integer with EXP(y) > 256 */
   mpfr_init2 (x, 10);
   mpfr_init2 (y, 257);
   mpfr_init2 (z, 10);
