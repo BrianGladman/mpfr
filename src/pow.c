@@ -520,25 +520,19 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
   if (cmp_x_1 * MPFR_SIGN (y) > 0)
     {
-      mpfr_t t;
+      mpfr_t t, x_abs;
       int negative, overflow;
 
+      /* FIXME: since we round y*log2|x| toward zero, we could also do early
+         underflow detection */
       MPFR_SAVE_EXPO_MARK (expo);
-      mpfr_init2 (t, 53);
-      /* we want a lower bound on y*log2|x|:
-         (i) if x > 0, it suffices to round log2(x) toward zero, and
-             to round y*o(log2(x)) toward zero too;
-         (ii) if x < 0, we first compute t = o(-x), with rounding toward 1,
-              and then follow as in case (1). */
-      if (MPFR_IS_POS (x))
-        mpfr_log2 (t, x, MPFR_RNDZ);
-      else
-        {
-          mpfr_neg (t, x, (cmp_x_1 > 0) ? MPFR_RNDZ : MPFR_RNDU);
-          mpfr_log2 (t, t, MPFR_RNDZ);
-        }
+      mpfr_init2 (t, sizeof (mpfr_exp_t) * CHAR_BIT);
+      /* we want a lower bound on y*log2|x| */
+      MPFR_TMP_INIT_ABS (x_abs, x);
+      mpfr_log2 (t, x_abs, MPFR_RNDZ);
       mpfr_mul (t, t, y, MPFR_RNDZ);
-      overflow = mpfr_cmp_si (t, __gmpfr_emax) > 0;
+      overflow = mpfr_cmp_si (t, __gmpfr_emax) >= 0;
+      /* if t >= emax, then |z| >= 2^t >= 2^emax and we have overflow */
       mpfr_clear (t);
       MPFR_SAVE_EXPO_FREE (expo);
       if (overflow)
@@ -621,7 +615,19 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     {
       mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
       mpfr_t tmp;
-      int sgnx = MPFR_SIGN (x);
+
+      /* For x < 0, we have EXP(y) > 256, thus since |x| <> 1:
+         (a) either |x| >= 2, and we have overflow. but this was detected by
+             the early overflow detection above;
+         (b) either |x| <= 1/2, and we have underflow. */
+      if (MPFR_SIGN (x) < 0)
+        {
+          MPFR_ASSERTD(MPFR_EXP (x) <= 0);
+          MPFR_ASSERTD(MPFR_EXP (y) > 256);
+          return mpfr_underflow (z,
+                                 rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
+                                 MPFR_IS_NEG (x) && mpfr_odd_p (y) ? -1 : 1);
+        }
 
       MPFR_ASSERTN (b >= LONG_MIN && b <= LONG_MAX);  /* FIXME... */
 
@@ -639,15 +645,6 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       MPFR_CLEAR_FLAGS ();
       inexact = mpfr_exp2 (z, tmp, rnd_mode);
       mpfr_clear (tmp);
-      if (sgnx < 0 && mpfr_odd_p (y))
-        {
-          /* can occur (only) if x = -1/2
-             TODO: This is an underflow on most platforms (see above TODO),
-             thus could be dealt with as a special case.
-           */
-          mpfr_neg (z, z, rnd_mode);
-          inexact = -inexact;
-        }
       /* Without the following, the overflows3 test in tpow.c fails. */
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
       MPFR_SAVE_EXPO_FREE (expo);
