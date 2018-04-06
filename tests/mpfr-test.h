@@ -74,17 +74,6 @@ extern "C" {
   ((MPFR_IS_NAN (X) && MPFR_IS_NAN (Y)) ||                              \
    (mpfr_equal_p ((X), (Y)) && MPFR_INT_SIGN (X) == MPFR_INT_SIGN (Y)))
 
-/* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
-   been included. They have the same semantics as in gmp-impl.h, but the
-   expressions may be slightly different. So, it's better to undefine
-   them first, as required by the ISO C standard. */
-#undef MAX
-#undef MIN
-#undef ABS
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define ABS(x) (((x)>0) ? (x) : -(x))
-
 /* In the tests, mpfr_sgn was sometimes used incorrectly, for instance:
  *
  *   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)

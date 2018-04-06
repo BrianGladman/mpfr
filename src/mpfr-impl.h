@@ -1230,6 +1230,17 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
  ******************  Useful macros  *******************
  ******************************************************/
 
+/* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
+   been included. They have the same semantics as in gmp-impl.h, but the
+   expressions may be slightly different. So, it's better to undefine
+   them first, as required by the ISO C standard. */
+#undef MAX
+#undef MIN
+#undef ABS
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define ABS(x) (((x)>0) ? (x) : -(x))
+
 /* Theses macros help the compiler to determine if a test is
    likely or unlikely. The !! is necessary in case x is larger
    than a long. */
