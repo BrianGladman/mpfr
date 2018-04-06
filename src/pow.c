@@ -23,6 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#ifndef MPFR_POW_EXP_THRESHOLD
+# define MPFR_POW_EXP_THRESHOLD (MAX (sizeof(mpfr_exp_t) * CHAR_BIT, 256))
+#endif
+
 /* return non zero iff x^y is exact.
    Assumes x and y are ordinary numbers,
    y is not an integer, x is not a power of 2 and x is positive
@@ -596,8 +600,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      any precision supported by MPFR (the general case uses this property).
      Note: the threshold of 256 should not be decreased too much, see the
      comments about (-2^b)^y just below. */
-  /* TODO: the 256 should be adapted to the actual exponent width. */
-  if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
+  if (y_is_integer && MPFR_GET_EXP (y) <= MPFR_POW_EXP_THRESHOLD)
     {
       mpz_t zi;
 
@@ -616,14 +619,19 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
       mpfr_t tmp;
 
-      /* For x < 0, we have EXP(y) > 256, thus since |x| <> 1:
-         (a) either |x| >= 2, and we have overflow. but this was detected by
-             the early overflow detection above;
+      MPFR_STAT_STATIC_ASSERT (MPFR_POW_EXP_THRESHOLD >=
+                               sizeof(mpfr_exp_t) * CHAR_BIT);
+
+      /* For x < 0, we have EXP(y) > MPFR_POW_EXP_THRESHOLD, thus
+         EXP(y) > bitsize of mpfr_exp_t (1). Therefore, since |x| <> 1:
+         (a) either |x| >= 2, and we have an overflow due to (1), but
+             this was detected by the early overflow detection above,
+             i.e. this case is not possible;
          (b) either |x| <= 1/2, and we have underflow. */
       if (MPFR_SIGN (x) < 0)
         {
-          MPFR_ASSERTD(MPFR_EXP (x) <= 0);
-          MPFR_ASSERTD(MPFR_EXP (y) > 256);
+          MPFR_ASSERTD (MPFR_EXP (x) <= 0);
+          MPFR_ASSERTD (MPFR_EXP (y) > sizeof(mpfr_exp_t) * CHAR_BIT);
           return mpfr_underflow (z,
                                  rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                                  MPFR_IS_NEG (x) && mpfr_odd_p (y) ? -1 : 1);
