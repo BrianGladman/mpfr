@@ -54,6 +54,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * may change in the future without notice.
  */
 
+#if !(flag == 0 || flag == 1)
+#error "flag must be 0 or 1"
+#endif
+
 int
 mpfr_round_raw_generic(
 #if flag == 0
