@@ -1690,12 +1690,13 @@ coverage (void)
     }
   mpfr_clears (t, u, (mpfr_ptr) 0);
 
-#if MPFR_PREC_BITS == 64
+#if _MPFR_EXP_FORMAT >= 3 && _MPFR_PREC_FORMAT == 3 && MPFR_PREC_BITS == 64
+  /* thus an unsigned long has at least 64 bits and x will be finite */
   {
     mpfr_exp_t emax;
 
     emax = mpfr_get_emax ();
-    mpfr_set_emax (mpfr_get_emax_max ());
+    mpfr_set_emax ((1UL << 62) - 1);
     /* emax = 4611686018427387903 on a 64-bit machine */
     mpfr_init2 (x, 65);
     mpfr_init2 (y, 65);
