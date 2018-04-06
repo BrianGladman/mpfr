@@ -1661,11 +1661,13 @@ coverage (void)
     emax = mpfr_get_emax ();
     mpfr_set_emax (mpfr_get_emax_max ());
     /* emax = 4611686018427387903 on a 64-bit machine */
-    mpfr_init2 (x, 10);
-    mpfr_init2 (y, 10);
+    mpfr_init2 (x, 65);
+    mpfr_init2 (y, 65);
     mpfr_init2 (z, 64);
-    mpfr_set_ui_2exp (x, 513, 3074457345618258593UL, MPFR_RNDN);
+    mpfr_set_ui_2exp (x, 512, 3074457345618258593UL, MPFR_RNDN);
+    mpfr_nextbelow (x);
     mpfr_set_str_binary (y, "1.1"); /* y = 3/2 */
+    mpfr_nextabove (y);
     inex = mpfr_pow (z, x, y, MPFR_RNDN);
     MPFR_ASSERTN(inex > 0);
     MPFR_ASSERTN(mpfr_inf_p (z));
