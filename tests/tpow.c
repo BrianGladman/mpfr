@@ -1602,9 +1602,10 @@ tst20140422 (void)
 static void
 coverage (void)
 {
-  mpfr_t x, y, z;
+  mpfr_t x, y, z, t, u;
   mpfr_exp_t emin;
   int inex;
+  int i;
 
   /* check a corner case with prec(z)=1 */
   mpfr_init2 (x, 2);
@@ -1641,18 +1642,53 @@ coverage (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
   mpfr_set_emin (emin);
 
-  /* test for x = -2, y an odd integer with EXP(y) > 256 */
-  mpfr_init2 (x, 10);
-  mpfr_init2 (y, 257);
-  mpfr_init2 (z, 10);
-  mpfr_set_si (x, -2, MPFR_RNDN);
-  mpfr_set_ui_2exp (y, 1, 256, MPFR_RNDN);
-  mpfr_nextabove (y);
-  inex = mpfr_pow (z, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(inex < 0);
-  MPFR_ASSERTN(mpfr_inf_p (z));
-  MPFR_ASSERTN(mpfr_signbit (z) != 0);
-  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  /* test for x = -2, y an odd integer with EXP(y) > i */
+  mpfr_inits2 (10, t, u, (mpfr_ptr) 0);
+  mpfr_set_ui_2exp (t, 1, 1UL << 8, MPFR_RNDN);
+  for (i = 8; i <= 300; i++)
+    {
+      mpfr_flags_t flags, flags_u;
+      int inex_u;
+
+      mpfr_mul_si (u, t, -2, MPFR_RNDN);  /* u = (-2)^(2^i + 1) */
+      mpfr_init2 (x, 10);
+      mpfr_init2 (y, i+1);
+      mpfr_init2 (z, 10);
+      mpfr_set_si (x, -2, MPFR_RNDN);
+      mpfr_set_ui_2exp (y, 1, i, MPFR_RNDN);
+      mpfr_nextabove (y);  /* y = 2^i + 1 */
+      if (MPFR_IS_INF (u))
+        {
+          inex_u = -1;
+          flags_u = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+        }
+      else
+        {
+          inex_u = 0;
+          flags_u = 0;
+        }
+      mpfr_clear_flags ();
+      inex = mpfr_pow (z, x, y, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      if (mpfr_cmp0 (z, u) != 0 ||
+          ! SAME_SIGN (inex, inex_u) ||
+          flags != flags_u)
+        {
+          printf ("Error in coverage for (-2)^(2^%d + 1):\n", i);
+          printf ("Expected ");
+          mpfr_dump (u);
+          printf ("  with inex = %d and flags:", inex_u);
+          flags_out (flags_u);
+          printf ("Got      ");
+          mpfr_dump (z);
+          printf ("  with inex = %d and flags:", inex);
+          flags_out (flags);
+          exit (1);
+        }
+      mpfr_sqr (t, t, MPFR_RNDN);
+      mpfr_clears (x, y, z, (mpfr_ptr) 0);
+    }
+  mpfr_clears (t, u, (mpfr_ptr) 0);
 
 #if MPFR_PREC_BITS == 64
   {
