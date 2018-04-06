@@ -209,7 +209,9 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
-  /* now rnd2 is either RNDN, RNDZ or RNDZ */
+  MPFR_ASSERTD (rnd2 == MPFR_RNDN ||
+                rnd2 == MPFR_RNDZ ||
+                rnd2 == MPFR_RNDA);
 
   /* For err < prec (+1 for rnd1=RNDN), we can never round correctly, since
      the error is at least 2*ulp(b) >= ulp(round(b)).
