@@ -685,7 +685,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               /* Note: it is very unlikely that we can have a carry in the
                  above addition. Indeed, this would mean that an integer
                  power of pstr->base has its ysize most significant
-                 limbs >= 1000...000 - 2^err. */
+                 limbs >= 1000...000 - 2^err.
+                 For example if base=3, the largest convergent of the
+                 continued fraction of log(2^64)/log(3) with numerator less
+                 than 2^32 is the 36th convergent
+                 5832963307408086805/144453564223816677,
+                 and 3^5832963307408086805/B^144453564223816677 is less than
+                 1 - 2^(-124), which means that if ysize >= 3 and err <= 64,
+                 there can be no carry. */
               if (cy != 0) /* the code below requires z on ysize limbs */
                 goto next_loop;
             }
