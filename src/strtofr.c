@@ -780,12 +780,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       exp ++;
     }
 
-  if (res == 0) /* fix ternary value */
-    {
-      exact = exact && (pstr_size == pstr->prec);
-      if (!exact)
-        res = (pstr->negative) ? 1 : -1;
-    }
+  /* Note: if exact <> 0, then the approximation {result, ysize} is exact,
+     thus no double-rounding can occur:
+     (a) either the ternary value res is non-zero, and it is the correct
+         ternary value that we should return
+     (b) or the ternary value res is zero, and we should return 0. */
 
   /* Set sign of x before exp since check_range needs a valid sign */
   (pstr->negative) ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
