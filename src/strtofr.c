@@ -692,7 +692,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                  and 3^2112009130072406892/B^52303988630398057 is about
                  1 + 2^-56.83. The worst case for bases <= 62 is b=31,
                  for which 31^511170973314085831/B^39569396093273623 is
-                 about 1 + 2^-60.27. In no case we get a carry. */
+                 about 1 + 2^-60.27. In no case we get a carry.
+                 More precisely, if b^e < B^E, where E = round(e*log(b)/log(B))
+                 then no carry can happen, since mpfr_mpn_exp computes an
+                 approximation of b^e rounded toward zero, and the closest
+                 one to a power of B is with a multiplier 1 +/- 2^-60.27,
+                 which also holds for the approximation toward zero, thus the
+                 upper limb of {z, ysize} cannot be B-1, thus no carry can
+                 happen. */
               MPFR_ASSERTN(cy == 0);
             }
           exact = exact && (err == -1);
