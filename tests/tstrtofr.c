@@ -1259,12 +1259,48 @@ bug20170308 (void)
   int inex;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-1073);
-  mpfr_set_emin (emin);
   mpfr_init2 (z, 53);
+  mpfr_set_emin (-1073);
+  /* with emin = -1073, the smallest positive number is 0.5*2^emin = 2^(-1074),
+     thus str should be rounded to 2^(-1074) with inex > 0 */
+  inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0 && mpfr_cmp_ui_2exp (z, 1, -1074) == 0);
+  mpfr_set_emin (-1074);
+  /* with emin = -1074, str should be rounded to 2^(-1075) with inex < 0 */
   inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex < 0 && mpfr_cmp_ui_2exp (z, 1, -1075) == 0);
   mpfr_clear (z);
+  mpfr_set_emin (emin);
+}
+
+static void
+coverage (void)
+{
+#if _MPFR_EXP_FORMAT >= 3 && _MPFR_PREC_FORMAT == 3 && MPFR_PREC_BITS == 64
+  char str3[] = "1@-2112009130072406892";
+  char str31[] = "1@-511170973314085831";
+  mpfr_t x;
+  int inex;
+  mpfr_exp_t emin;
+
+  /* exercise assertion cy == 0 around line 698 of strtofr.c */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (mpfr_get_emin_min ());
+  /* emin = -4611686018427387903 on a 64-bit machine */
+  mpfr_init2 (x, 1);
+  inex = mpfr_strtofr (x, str3, NULL, 3, MPFR_RNDN);
+  /* 3^-2112009130072406892 is slightly larger than (2^64)^-52303988630398057
+     thus we should get inex < 0 */
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -52303988630398057 * 64) == 0);
+  inex = mpfr_strtofr (x, str31, NULL, 31, MPFR_RNDN);
+  /* 31^-511170973314085831 is slightly smaller than (2^64)^-39569396093273623
+     thus we should get inex > 0 */
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -39569396093273623 * 64) == 0);
+  mpfr_clear (x);
+  mpfr_set_emin (emin);
+#endif
 }
 
 int
@@ -1272,6 +1308,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  coverage ();
   check_special();
   check_reftable ();
   check_parse ();
