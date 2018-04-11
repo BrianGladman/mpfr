@@ -379,6 +379,14 @@ main (void)
   printf ("[tversion] Max exponent" RANGE,
           (mpfr_eexp_t) MPFR_EMIN_MIN, (mpfr_eexp_t) MPFR_EMAX_MAX);
 
+  printf ("[tversion] Generic ABI code: "
+#if defined(MPFR_GENERIC_ABI)
+          "yes"
+#else
+          "no"
+#endif
+          "\n");
+
   /************************** Runtime information **************************/
 
   if (locale != NULL)
