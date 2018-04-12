@@ -246,6 +246,7 @@ test_overflow4 (void)
   int inex1, inex2;
   int ei, i, j;
   int below;
+  unsigned int neg;
 
   old_emax = mpfr_get_emax ();
   emax = MPFR_EMAX_MAX;
@@ -293,25 +294,35 @@ test_overflow4 (void)
                     flags1 = MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
                     MPFR_ASSERTN (flags1 == __gmpfr_flags);
                   }
-                mpfr_clear_flags ();
-                inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDZ);
-                flags2 = __gmpfr_flags;
-                if (! (mpfr_equal_p (r1, r2) &&
-                       SAME_SIGN (inex1, inex2) &&
-                       flags1 == flags2))
+                for (neg = 0; neg <= 3; neg++)
                   {
-                    printf ("Error in test_overflow4 for "
-                            "px=%d ei=%d i=%d j=%d\n",
-                            (int) px, ei, i, j);
-                    printf ("Expected ");
-                    mpfr_dump (r1);
-                    printf ("with inex = %d and flags:", inex1);
-                    flags_out (flags1);
-                    printf ("Got      ");
-                    mpfr_dump (r2);
-                    printf ("with inex = %d and flags:", inex2);
-                    flags_out (flags2);
-                    exit (1);
+                    mpfr_clear_flags ();
+                    inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDZ);
+                    flags2 = __gmpfr_flags;
+                    if (! (mpfr_equal_p (r1, r2) &&
+                           SAME_SIGN (inex1, inex2) &&
+                           flags1 == flags2))
+                      {
+                        printf ("Error in test_overflow4 for "
+                                "px=%d ei=%d i=%d j=%d neg=%u\n",
+                                (int) px, ei, i, j, neg);
+                        printf ("Expected ");
+                        mpfr_dump (r1);
+                        printf ("with inex = %d and flags:", inex1);
+                        flags_out (flags1);
+                        printf ("Got      ");
+                        mpfr_dump (r2);
+                        printf ("with inex = %d and flags:", inex2);
+                        flags_out (flags2);
+                        exit (1);
+                      }
+                    if (neg == 0 || neg == 2)
+                      mpfr_neg (x, x, MPFR_RNDN);
+                    if (neg == 1 || neg == 3)
+                      mpfr_neg (y, y, MPFR_RNDN);
+                    mpfr_neg (z, z, MPFR_RNDN);
+                    mpfr_neg (r1, r1, MPFR_RNDN);
+                    inex1 = - inex1;
                   }
               }
         }
