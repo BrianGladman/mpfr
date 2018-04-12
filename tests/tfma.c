@@ -335,6 +335,88 @@ test_overflow4 (void)
 }
 
 static void
+test_overflow5 (void)
+{
+  mpfr_t x, y, z, r1, r2;
+  mpfr_exp_t old_emax, emax;
+  int inex1, inex2;
+  int ei, i, rnd;
+  unsigned int neg, negr;
+
+  old_emax = mpfr_get_emax ();
+
+  for (ei = 0; ei <= 1; ei++)
+    {
+      emax = ei ? MPFR_EMAX_MAX : 1024;
+      set_emax (emax);
+
+      mpfr_init2 (x, 123);
+      mpfr_init2 (y, 45);
+      mpfr_init2 (z, 67);
+      mpfr_inits2 (89, r1, r2, (mpfr_ptr) 0);
+
+      mpfr_set_ui_2exp (x, 1, emax - 1, MPFR_RNDN);
+
+      for (i = 3; i <= 17; i++)
+        {
+          mpfr_set_ui (y, i, MPFR_RNDN);
+          mpfr_set_ui_2exp (z, 1, emax - 1, MPFR_RNDN);
+          for (neg = 0; neg < 8; neg++)
+            {
+              mpfr_setsign (x, x, neg & 1, MPFR_RNDN);
+              mpfr_setsign (y, y, neg & 2, MPFR_RNDN);
+              mpfr_setsign (z, z, neg & 4, MPFR_RNDN);
+
+              /* |x*y + z| = (i +/- 1) * 2^(emax - 1) >= 2^emax (overflow)
+                 and x*y + z has the same sign as x*y. */
+              negr = (neg ^ (neg >> 1)) & 1;
+
+              RND_LOOP (rnd)
+                {
+                  mpfr_set_inf (r1, 1);
+                  if (MPFR_IS_LIKE_RNDZ ((mpfr_rnd_t) rnd, negr))
+                    {
+                      mpfr_nextbelow (r1);
+                      inex1 = -1;
+                    }
+                  else
+                    inex1 = 1;
+
+                  if (negr)
+                    {
+                      mpfr_neg (r1, r1, MPFR_RNDN);
+                      inex1 = - inex1;
+                    }
+
+                  mpfr_clear_flags ();
+                  inex2 = mpfr_fma (r2, x, y, z, rnd);
+                  MPFR_ASSERTN (__gmpfr_flags ==
+                                (MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW));
+
+                  if (! (mpfr_equal_p (r1, r2) && SAME_SIGN (inex1, inex2)))
+                    {
+                      printf ("Error in test_overflow5 for "
+                              "ei=%d i=%d neg=%u %s\n", ei, i, neg,
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                      printf ("Expected ");
+                      mpfr_dump (r1);
+                      printf ("with inex = %d\n", inex1);
+                      printf ("Got      ");
+                      mpfr_dump (r2);
+                      printf ("with inex = %d\n", inex2);
+                      exit (1);
+                    }
+                }  /* rnd */
+            }  /* neg */
+        }  /* i */
+
+      mpfr_clears (x, y, z, r1, r2, (mpfr_ptr) 0);
+    }  /* ei */
+
+  set_emax (old_emax);
+}
+
+static void
 test_underflow1 (void)
 {
   mpfr_t x, y, z, r;
@@ -1013,6 +1095,7 @@ main (int argc, char *argv[])
   test_overflow2 ();
   test_overflow3 ();
   test_overflow4 ();
+  test_overflow5 ();
   test_underflow1 ();
   test_underflow2 ();
   test_underflow3 (1);

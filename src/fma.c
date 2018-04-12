@@ -240,7 +240,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             {
               MPFR_GROUP_CLEAR (group);
               MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_overflow (s, rnd_mode, MPFR_SIGN (z));
+              return mpfr_overflow (s, rnd_mode, MPFR_SIGN (u));
             }
 
           /* E(x) + E(y) <= emax+2, therefore |x*y| < 2^(emax+2), and
