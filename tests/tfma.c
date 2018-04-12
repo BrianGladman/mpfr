@@ -237,6 +237,93 @@ test_overflow3 (void)
 }
 
 static void
+test_overflow4 (void)
+{
+  mpfr_t x, y, z, r1, r2;
+  mpfr_exp_t old_emax, emax, e;
+  mpfr_prec_t px;
+  mpfr_flags_t flags1, flags2;
+  int inex1, inex2;
+  int ei, i, j;
+  int below;
+
+  old_emax = mpfr_get_emax ();
+  emax = MPFR_EMAX_MAX;
+  set_emax (emax);
+
+  mpfr_init2 (y, MPFR_PREC_MIN);
+  mpfr_set_ui (y, 2, MPFR_RNDN);  /* y = 2 */
+
+  mpfr_init2 (z, 8);
+
+  for (px = 17; px < 256; px *= 2)
+    {
+      mpfr_init2 (x, px);
+      mpfr_inits2 (px - 8, r1, r2, (mpfr_ptr) 0);
+      for (ei = 0; ei <= 1; ei++)
+        {
+          e = ei ? emax : 0;
+          mpfr_set_ui_2exp (x, 1, e - 1, MPFR_RNDN);
+          mpfr_nextabove (x);  /* x = 2^(e - 1) + 2^(e - px) */
+          /* x*y = 2^e + 2^(e - px + 1), which internally overflows
+             when e = emax. */
+          for (i = -4; i <= 4; i++)
+            for (j = 2; j <= 3; j++)
+              {
+                mpfr_set_si_2exp (z, -j, e - px + i, MPFR_RNDN);
+                /* If |z| <= 2^(e - px + 1), then x*y + z >= 2^e and
+                   RZ(x*y + z) = 2^e with an unbounded exponent range.
+                   If |z| > 2^(e - px + 1), then RZ(x*y + z) is the
+                   predecessor of 2^e (since |z| < ulp(r)/2); this
+                   occurs when i > 0 and when i = 0 and j > 2 */
+                mpfr_set_ui_2exp (r1, 1, e - 1, MPFR_RNDN);
+                below = i > 0 || (i == 0 && j > 2);
+                if (below)
+                  mpfr_nextbelow (r1);
+                mpfr_clear_flags ();
+                inex1 = mpfr_mul_2ui (r1, r1, 1, MPFR_RNDZ);
+                if (below || e < emax)
+                  {
+                    inex1 = i == 0 && j == 2 ? 0 : -1;
+                    flags1 = inex1 ? MPFR_FLAGS_INEXACT : 0;
+                  }
+                else
+                  {
+                    MPFR_ASSERTN (inex1 < 0);
+                    flags1 = MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
+                    MPFR_ASSERTN (flags1 == __gmpfr_flags);
+                  }
+                mpfr_clear_flags ();
+                inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDZ);
+                flags2 = __gmpfr_flags;
+                if (! (mpfr_equal_p (r1, r2) &&
+                       SAME_SIGN (inex1, inex2) &&
+                       flags1 == flags2))
+                  {
+                    printf ("Error in test_overflow4 for "
+                            "px=%d ei=%d i=%d j=%d\n",
+                            (int) px, ei, i, j);
+                    printf ("Expected ");
+                    mpfr_dump (r1);
+                    printf ("with inex = %d and flags:", inex1);
+                    flags_out (flags1);
+                    printf ("Got      ");
+                    mpfr_dump (r2);
+                    printf ("with inex = %d and flags:", inex2);
+                    flags_out (flags2);
+                    exit (1);
+                  }
+              }
+        }
+      mpfr_clears (x, r1, r2, (mpfr_ptr) 0);
+    }
+
+  mpfr_clears (y, z, (mpfr_ptr) 0);
+
+  set_emax (old_emax);
+}
+
+static void
 test_underflow1 (void)
 {
   mpfr_t x, y, z, r;
@@ -914,6 +1001,7 @@ main (int argc, char *argv[])
   test_overflow1 ();
   test_overflow2 ();
   test_overflow3 ();
+  test_overflow4 ();
   test_underflow1 ();
   test_underflow2 ();
   test_underflow3 (1);
