@@ -2369,9 +2369,6 @@ extern "C" {
    and hopefully avoid aliasing issues at the same time. And code that
    accepts UBF in input should also accept mpfr_t as a consequence; this
    makes mpfr_t to UBF conversion unnecessary.
-   It is assumed that __mpfr_ubf_struct has the same alignment constraints
-   as __mpfr_struct, i.e. that the mpz_t field does not yield an additional
-   alignment constraint.
    When an input of a public function is a UBF, the semantic remains
    internal to MPFR and can change in the future.
    Note that functions used for logging need to support UBF (currently
