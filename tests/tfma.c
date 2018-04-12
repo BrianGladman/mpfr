@@ -389,7 +389,7 @@ test_overflow5 (void)
                     }
 
                   mpfr_clear_flags ();
-                  inex2 = mpfr_fma (r2, x, y, z, rnd);
+                  inex2 = mpfr_fma (r2, x, y, z, (mpfr_rnd_t) rnd);
                   MPFR_ASSERTN (__gmpfr_flags ==
                                 (MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW));
 
