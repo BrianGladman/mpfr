@@ -260,14 +260,13 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             mpfr_srcptr zz;
             MPFR_BLOCK_DECL (flags);
 
-            if (MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (s) + 1)
+            if (MPFR_GET_EXP (u) - MPFR_GET_EXP (z) >
+                MAX (MPFR_PREC (s), precx + precy) + 1)
               {
-                /* |z| < ulp(u)/4, where the ulp is meant with the precision
-                   of the result s, therefore one can use z instead of z/4,
-                   including when u is a power of 2!
-                   FIXME[VL]: It should be |z| < ulp(u)/4 where the precision
-                   considered for the ulp is the maximum of the precisions of
-                   s and u. First, add a test... */
+                /* |z| < ulp(u)/4, where the ulp is meant with the maximum
+                   of the precision of the result s and the precision of
+                   the exact product x*y. Therefore one can use z instead
+                   of z/4, including when u is a power of 2! */
                 zz = z;
               }
             else
