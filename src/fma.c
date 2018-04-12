@@ -260,8 +260,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             mpfr_srcptr zz;
             MPFR_BLOCK_DECL (flags);
 
-            if (MPFR_GET_EXP (u) > MPFR_GET_EXP (z) &&
-                MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (s) + 1)
+            if (MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (s) + 1)
               {
                 /* |z| < ulp(u)/4, where the ulp is meant with the precision
                    of the result s, therefore one can use z instead of z/4,
