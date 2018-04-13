@@ -202,7 +202,7 @@ test_overflow3 (void)
   int inex;
   mpfr_prec_t p = 8;
   mpfr_flags_t ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT, flags;
-  int i;
+  int i, j, k;
   unsigned int neg;
 
   mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
@@ -211,43 +211,52 @@ test_overflow3 (void)
       mpfr_init2 (r, 2 * p + i);
       mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
       mpfr_set_ui (y, 2, MPFR_RNDN);       /* y = 2 */
-      mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - 2,
-                        MPFR_RNDN);
-      mpfr_nextabove (z);
-      for (neg = 0; neg <= 3; neg++)
-        {
-          mpfr_clear_flags ();
-          /* (The following applies for neg = 0 or 2, all the signs need to
-             be reversed for neg = 1 or 3.)
-             We have x*y = 2^emax and z = -2^(emax-2p-2-i)*(1-2^(-p)), thus
-             x*y+z = 2^emax - 2^(emax-2p-2-i) + 2^(emax-3p-2-i) should overflow,
-             since it is closer to 2^emax than to 2^emax - 2^(emax-2p-i). */
-          inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-          flags = __gmpfr_flags;
-          if (! mpfr_inf_p (r) || flags != ex_flags ||
-              ((neg & 1) == 0 ?
-               (inex <= 0 || MPFR_IS_NEG (r)) :
-               (inex >= 0 || MPFR_IS_POS (r))))
-            {
-              printf ("Error in test_overflow3 for i=%d neg=%u\n", i, neg);
-              printf ("Expected %c@Inf@\n  with inex %c 0 and flags:",
-                      (neg & 1) == 0 ? '+' : '-',
-                      (neg & 1) == 0 ? '>' : '<');
-              flags_out (ex_flags);
-              printf ("Got      ");
-              mpfr_dump (r);
-              printf ("  with inex = %d and flags:", inex);
-              flags_out (flags);
-              exit (1);
-            }
-          if (neg == 0 || neg == 2)
-            mpfr_neg (x, x, MPFR_RNDN);
-          if (neg == 1 || neg == 3)
-            mpfr_neg (y, y, MPFR_RNDN);
-          mpfr_neg (z, z, MPFR_RNDN);
-        }
+      for (j = 1; j <= 2; j++)
+        for (k = 0; k <= 1; k++)
+          {
+            mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - j,
+                              MPFR_RNDN);
+            if (k)
+              mpfr_nextabove (z);
+            for (neg = 0; neg <= 3; neg++)
+              {
+                mpfr_clear_flags ();
+                /* (The following applies for neg = 0 or 2, all the signs
+                   need to be reversed for neg = 1 or 3.)
+                   We have x*y = 2^emax and
+                   z = - 2^(emax-2p-i-j) * (1-k*2^(-p)), thus
+                   x*y+z = 2^emax - 2^(emax-2p-i-j) + k*2^(emax-3p-i-j)
+                   should overflow. Indeed it is >= the midpoint of
+                   2^emax - 2^(emax-2p-i) and 2^emax, the midpoint
+                   being obtained for j = 1 and k = 0. */
+                inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
+                flags = __gmpfr_flags;
+                if (! mpfr_inf_p (r) || flags != ex_flags ||
+                    ((neg & 1) == 0 ?
+                     (inex <= 0 || MPFR_IS_NEG (r)) :
+                     (inex >= 0 || MPFR_IS_POS (r))))
+                  {
+                    printf ("Error in test_overflow3 for "
+                            "i=%d j=%d k=%d neg=%u\n", i, j, k, neg);
+                    printf ("Expected %c@Inf@\n  with inex %c 0 and flags:",
+                            (neg & 1) == 0 ? '+' : '-',
+                            (neg & 1) == 0 ? '>' : '<');
+                    flags_out (ex_flags);
+                    printf ("Got      ");
+                    mpfr_dump (r);
+                    printf ("  with inex = %d and flags:", inex);
+                    flags_out (flags);
+                    exit (1);
+                  }
+                if (neg == 0 || neg == 2)
+                  mpfr_neg (x, x, MPFR_RNDN);
+                if (neg == 1 || neg == 3)
+                  mpfr_neg (y, y, MPFR_RNDN);
+                mpfr_neg (z, z, MPFR_RNDN);
+              }  /* neg */
+          }  /* k */
       mpfr_clear (r);
-    }
+    }  /* i */
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
