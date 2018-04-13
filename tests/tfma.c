@@ -203,6 +203,7 @@ test_overflow3 (void)
   mpfr_prec_t p = 8;
   mpfr_flags_t ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT, flags;
   int i;
+  unsigned int neg;
 
   mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
   for (i = 0; i < 2; i++)
@@ -213,23 +214,37 @@ test_overflow3 (void)
       mpfr_set_si_2exp (z, -1, mpfr_get_emax () - mpfr_get_prec (r) - 2,
                         MPFR_RNDN);
       mpfr_nextabove (z);
-      mpfr_clear_flags ();
-      /* We have x*y = 2^emax and z = -2^(emax-2p-2-i)*(1-2^(-p)) thus
-         x*y+z = 2^emax - 2^(emax-2p-2-i) + 2^(emax-3p-2-i) should overflow,
-         since it is closest to 2^emax than to 2^emax - 2^(emax-2p-i). */
-      inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-      flags = __gmpfr_flags;
-      if (inex <= 0 || ! mpfr_inf_p (r) || MPFR_IS_NEG (r) ||
-          flags != ex_flags)
+      for (neg = 0; neg <= 3; neg++)
         {
-          printf ("Error in test_overflow3 for i=%d\n", i);
-          printf ("Expected @Inf@\n  with inex > 0 and flags:");
-          flags_out (ex_flags);
-          printf ("Got      ");
-          mpfr_dump (r);
-          printf ("  with inex = %d and flags:", inex);
-          flags_out (flags);
-          exit (1);
+          mpfr_clear_flags ();
+          /* (The following applies for neg = 0 or 2, all the signs need to
+             be reversed for neg = 1 or 3.)
+             We have x*y = 2^emax and z = -2^(emax-2p-2-i)*(1-2^(-p)), thus
+             x*y+z = 2^emax - 2^(emax-2p-2-i) + 2^(emax-3p-2-i) should overflow,
+             since it is closer to 2^emax than to 2^emax - 2^(emax-2p-i). */
+          inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
+          flags = __gmpfr_flags;
+          if (! mpfr_inf_p (r) || flags != ex_flags ||
+              ((neg & 1) == 0 ?
+               (inex <= 0 || MPFR_IS_NEG (r)) :
+               (inex >= 0 || MPFR_IS_POS (r))))
+            {
+              printf ("Error in test_overflow3 for i=%d neg=%u\n", i, neg);
+              printf ("Expected %c@Inf@\n  with inex %c 0 and flags:",
+                      (neg & 1) == 0 ? '+' : '-',
+                      (neg & 1) == 0 ? '>' : '<');
+              flags_out (ex_flags);
+              printf ("Got      ");
+              mpfr_dump (r);
+              printf ("  with inex = %d and flags:", inex);
+              flags_out (flags);
+              exit (1);
+            }
+          if (neg == 0 || neg == 2)
+            mpfr_neg (x, x, MPFR_RNDN);
+          if (neg == 1 || neg == 3)
+            mpfr_neg (y, y, MPFR_RNDN);
+          mpfr_neg (z, z, MPFR_RNDN);
         }
       mpfr_clear (r);
     }
