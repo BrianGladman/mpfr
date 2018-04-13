@@ -31,6 +31,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    + to check a condition at compile time within the declaration section.
    MPFR_STAT_STATIC_ASSERT:
    + to check a condition at compile time within the statement section.
+
+   Note: In case one would need a static assertion in an expression,
+   a sizeof(...) instead of a typedef could be used. For instance,
+   see https://stackoverflow.com/questions/9229601/what-is-in-c-code
+   (about BUILD_BUG_ON_ZERO in the Linux kernel).
 */
 
 #ifdef MPFR_USE_STATIC_ASSERT
