@@ -514,101 +514,116 @@ static void
 test_underflow2 (void)
 {
   mpfr_t x, y, z, r1, r2;
-  int b, i;
+  int e, b, i, prec = 32, pz, inex;
   unsigned int neg;
 
-  mpfr_inits2 (32, x, y, z, r1, r2, (mpfr_ptr) 0);
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  mpfr_inits2 (prec, y, z, r1, r2, (mpfr_ptr) 0);
 
-  mpfr_set_si_2exp (z, 1, mpfr_get_emin (), MPFR_RNDN);   /* z = 2^emin */
   mpfr_set_si_2exp (x, 1, mpfr_get_emin (), MPFR_RNDN);   /* x = 2^emin */
 
-  for (b = 0; b <= 1; b++)
+  for (e = 0; e <= prec + 2; e++)
     {
-      for (i = 15; i <= 17; i++)
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
+      mpfr_set (z, x, MPFR_RNDN);
+      /* z = x = 2^(emin+e) */
+      for (b = 0; b <= 1; b++)
         {
-          mpfr_flags_t flags1 = MPFR_FLAGS_INEXACT, flags2;
-          int inex1, inex2;
-
-          mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), MPFR_RNDN);
-
-          /*  z = 1.000...00b   with b = 0 or 1
-           * xy =            01111  (i = 15)
-           *   or            10000  (i = 16)
-           *   or            10001  (i = 17)
-           *
-           * x, y, and z will be modified to test the different sign
-           * combinations. In the case b = 0 (i.e. |z| is a power of 2)
-           * and x*y has a different sign from z, then y will be divided
-           * by 2, so that i = 16 corresponds to a midpoint.
-           */
-
-          for (neg = 0; neg < 8; neg++)
+          for (pz = prec - 4 * (b == 0); pz <= prec + 4; pz++)
             {
-              int xyneg, prev_binade;
-
-              mpfr_setsign (x, x, neg & 1, MPFR_RNDN);
-              mpfr_setsign (y, y, neg & 2, MPFR_RNDN);
-              mpfr_setsign (z, z, neg & 4, MPFR_RNDN);
-
-              xyneg = (neg ^ (neg >> 1)) & 1;  /* true iff x*y < 0 */
-
-              /* If a change of binade occurs by adding x*y to z exactly,
-                 then take into account the fact that the midpoint has a
-                 different exponent. */
-              prev_binade = b == 0 && (xyneg ^ MPFR_IS_NEG (z));
-              if (prev_binade)
-                mpfr_div_2ui (y, y, 1, MPFR_RNDN);
-
-              mpfr_set (r1, z, MPFR_RNDN);
-
-              if (i == 15 || (i == 16 && b == 0))
+              inex = mpfr_prec_round (z, pz, MPFR_RNDZ);
+              MPFR_ASSERTN (inex == 0);
+              for (i = 15; i <= 17; i++)
                 {
-                  /* round toward z */
-                  inex1 = xyneg ? 1 : -1;
-                }
-              else if (xyneg)
-                {
-                  /* round away from z, with x*y < 0 */
-                  mpfr_nextbelow (r1);
-                  inex1 = -1;
-                }
-              else
-                {
-                  /* round away from z, with x*y > 0 */
-                  mpfr_nextabove (r1);
-                  inex1 = 1;
-                }
+                  mpfr_flags_t flags1 = MPFR_FLAGS_INEXACT, flags2;
+                  int inex1, inex2;
 
-              mpfr_clear_flags ();
-              inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDN);
-              flags2 = __gmpfr_flags;
+                  mpfr_set_si_2exp (y, i, -4 - prec, MPFR_RNDN);
 
-              if (! (mpfr_equal_p (r1, r2) &&
-                     SAME_SIGN (inex1, inex2) &&
-                     flags1 == flags2))
-                {
-                  printf ("Error in test_underflow2 for b=%d i=%d neg=%u\n",
-                          b, i, neg);
-                  printf ("Expected ");
-                  mpfr_dump (r1);
-                  printf ("with inex = %d and flags:", inex1);
-                  flags_out (flags1);
-                  printf ("Got      ");
-                  mpfr_dump (r2);
-                  printf ("with inex = %d and flags:", inex2);
-                  flags_out (flags2);
-                  exit (1);
-                }
+                  /*      <--- r --->
+                   *  z = 1.000...00b   with b = 0 or 1
+                   * xy =            01111  (i = 15)
+                   *   or            10000  (i = 16)
+                   *   or            10001  (i = 17)
+                   *
+                   * x, y, and z will be modified to test the different sign
+                   * combinations. In the case b = 0 (i.e. |z| is a power of
+                   * 2) and x*y has a different sign from z, then y will be
+                   * divided by 2, so that i = 16 corresponds to a midpoint.
+                   */
 
-              /* Restore y. */
-              if (prev_binade)
-                mpfr_mul_2ui (y, y, 1, MPFR_RNDN);
-            }
-        }
+                  for (neg = 0; neg < 8; neg++)
+                    {
+                      int xyneg, prev_binade;
 
-      MPFR_SET_POS (z);
-      mpfr_nextabove (z);
-    }
+                      mpfr_setsign (x, x, neg & 1, MPFR_RNDN);
+                      mpfr_setsign (y, y, neg & 2, MPFR_RNDN);
+                      mpfr_setsign (z, z, neg & 4, MPFR_RNDN);
+
+                      xyneg = (neg ^ (neg >> 1)) & 1;  /* true iff x*y < 0 */
+
+                      /* If a change of binade occurs by adding x*y to z
+                         exactly, then take into account the fact that the
+                         midpoint has a different exponent. */
+                      prev_binade = b == 0 && (xyneg ^ MPFR_IS_NEG (z));
+                      if (prev_binade)
+                        mpfr_div_2ui (y, y, 1, MPFR_RNDN);
+
+                      mpfr_set (r1, z, MPFR_RNDN);
+
+                      if (i == 15 || (i == 16 && b == 0))
+                        {
+                          /* round toward z */
+                          inex1 = xyneg ? 1 : -1;
+                        }
+                      else if (xyneg)
+                        {
+                          /* round away from z, with x*y < 0 */
+                          mpfr_nextbelow (r1);
+                          inex1 = -1;
+                        }
+                      else
+                        {
+                          /* round away from z, with x*y > 0 */
+                          mpfr_nextabove (r1);
+                          inex1 = 1;
+                        }
+
+                      mpfr_clear_flags ();
+                      inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDN);
+                      flags2 = __gmpfr_flags;
+
+                      if (! (mpfr_equal_p (r1, r2) &&
+                             SAME_SIGN (inex1, inex2) &&
+                             flags1 == flags2))
+                        {
+                          printf ("Error in test_underflow2 for "
+                                  "e=%d b=%d pz=%d i=%d neg=%u\n",
+                                  e, b, pz, i, neg);
+                          printf ("Expected ");
+                          mpfr_dump (r1);
+                          printf ("with inex = %d and flags:", inex1);
+                          flags_out (flags1);
+                          printf ("Got      ");
+                          mpfr_dump (r2);
+                          printf ("with inex = %d and flags:", inex2);
+                          flags_out (flags2);
+                          exit (1);
+                        }
+
+                      /* Restore y. */
+                      if (prev_binade)
+                        mpfr_mul_2ui (y, y, 1, MPFR_RNDN);
+                    }  /* neg */
+                }  /* i */
+            }  /* pz */
+
+          inex = mpfr_prec_round (z, prec, MPFR_RNDZ);
+          MPFR_ASSERTN (inex == 0);
+          MPFR_SET_POS (z);
+          mpfr_nextabove (z);
+        }  /* b */
+    }  /* e */
 
   mpfr_clears (x, y, z, r1, r2, (mpfr_ptr) 0);
 }
