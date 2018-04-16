@@ -296,6 +296,12 @@ Table of contents:
 - asec, acsc, acot, asech, acsch and acoth (mail from Björn Terelius on mpfr
   list, 18 June 2009)
 
+- function to reduce the precision of a variable, with a ternary value in
+  input, i.e. taking care of double rounding. Two possible forms: like
+  mpfr_set (i.e. with input and output) or like mpfr_prec_round (i.e. with
+  a single variable). mpfr_subnormalize and mpfr_round_nearest_away_end
+  could use it.
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
