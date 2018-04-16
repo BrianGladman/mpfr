@@ -241,16 +241,17 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               return mpfr_overflow (s, rnd_mode, sign_u);
             }
         }
-      else  /* underflow: one has |xy| < 2^(emin-1). */
+      else  /* underflow: one has |x*y| < 2^(emin-1). */
         {
           MPFR_LOG_MSG (("Underflow on x*y\n", 0));
 
-          /* Let's detect easy cases, i.e. when 2^(emin-1) is less than
-             one half of both ulp(z) and ulp(s), so that one can replace
-             x*y by sign(x*y) * 2^(emin-1).
+          /* Easy cases: when 2^(emin-1) <= 1/2 * min(ulp(z),ulp(s)),
+             one can replace x*y by sign(x*y) * 2^(emin-1). Note that
+             this is even true in case of equality for MPFR_RNDN thanks
+             to the even-rounding rule.
              The + 1 on MPFR_PREC (s) is necessary because the exponent
              of the result can be EXP(z) - 1. */
-          if (MPFR_GET_EXP (z) - __gmpfr_emin >
+          if (MPFR_GET_EXP (z) - __gmpfr_emin >=
               MAX (MPFR_PREC (z), MPFR_PREC (s) + 1))
             {
               MPFR_PREC (u) = MPFR_PREC_MIN;
