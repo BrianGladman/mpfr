@@ -531,10 +531,15 @@ test_underflow2 (void)
 
           mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), MPFR_RNDN);
 
-          /*  z = 1.000...00b
-           * xy =            01111
-           *   or            10000
-           *   or            10001
+          /*  z = 1.000...00b   with b = 0 or 1
+           * xy =            01111  (i = 15)
+           *   or            10000  (i = 16)
+           *   or            10001  (i = 17)
+           *
+           * x, y, and z will be modified to test the different sign
+           * combinations. In the case b = 0 (i.e. |z| is a power of 2)
+           * and x*y has a different sign from z, then y will be divided
+           * by 2, so that i = 16 corresponds to a midpoint.
            */
 
           for (neg = 0; neg < 8; neg++)
