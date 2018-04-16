@@ -520,9 +520,10 @@ test_underflow2 (void)
   mpfr_init2 (x, MPFR_PREC_MIN);
   mpfr_inits2 (prec, y, z, r1, r2, (mpfr_ptr) 0);
 
-  mpfr_set_si_2exp (x, 1, mpfr_get_emin (), MPFR_RNDN);   /* x = 2^emin */
+  mpfr_set_si_2exp (x, 1, mpfr_get_emin () - 1, MPFR_RNDN);
+  /* x = 2^(emin-1) */
 
-  for (e = 0; e <= prec + 2; e++)
+  for (e = -1; e <= prec + 2; e++)
     {
       mpfr_set (z, x, MPFR_RNDN);
       /* z = x = 2^(emin+e) */
@@ -534,7 +535,7 @@ test_underflow2 (void)
               MPFR_ASSERTN (inex == 0);
               for (i = 15; i <= 17; i++)
                 {
-                  mpfr_flags_t flags1 = MPFR_FLAGS_INEXACT, flags2;
+                  mpfr_flags_t flags1, flags2;
                   int inex1, inex2;
 
                   mpfr_set_si_2exp (y, i, -4 - prec, MPFR_RNDN);
@@ -569,8 +570,16 @@ test_underflow2 (void)
                         mpfr_div_2ui (y, y, 1, MPFR_RNDN);
 
                       mpfr_set (r1, z, MPFR_RNDN);
+                      flags1 = MPFR_FLAGS_INEXACT;
 
-                      if (i == 15 || (i == 16 && b == 0))
+                      if (e == -1 && i == 17 && b == 0 &&
+                          (xyneg ^ (neg >> 2)) != 0)
+                        {
+                          /* Special underflow case. */
+                          flags1 |= MPFR_FLAGS_UNDERFLOW;
+                          inex1 = xyneg ? 1 : -1;
+                        }
+                      else if (i == 15 || (i == 16 && b == 0))
                         {
                           /* round toward z */
                           inex1 = xyneg ? 1 : -1;
