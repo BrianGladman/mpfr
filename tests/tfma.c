@@ -524,7 +524,6 @@ test_underflow2 (void)
 
   for (e = 0; e <= prec + 2; e++)
     {
-      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
       mpfr_set (z, x, MPFR_RNDN);
       /* z = x = 2^(emin+e) */
       for (b = 0; b <= 1; b++)
@@ -623,6 +622,7 @@ test_underflow2 (void)
           MPFR_SET_POS (z);
           mpfr_nextabove (z);
         }  /* b */
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }  /* e */
 
   mpfr_clears (x, y, z, r1, r2, (mpfr_ptr) 0);
