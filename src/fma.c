@@ -260,6 +260,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               mpfr_clear_flags ();
               goto add;
             }
+
+          MPFR_GROUP_CLEAR (group);  /* we no longer need u */
         }
 
       /* Let's use UBF to resolve the overflow/underflow issues. */
