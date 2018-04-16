@@ -513,10 +513,11 @@ test_underflow1 (void)
 static void
 test_underflow2 (void)
 {
-  mpfr_t x, y, z, r;
-  int b, i, inex, same, err = 0;
+  mpfr_t x, y, z, r1, r2;
+  int b, i;
+  unsigned int neg;
 
-  mpfr_inits2 (32, x, y, z, r, (mpfr_ptr) 0);
+  mpfr_inits2 (32, x, y, z, r1, r2, (mpfr_ptr) 0);
 
   mpfr_set_si_2exp (z, 1, mpfr_get_emin (), MPFR_RNDN);   /* z = 2^emin */
   mpfr_set_si_2exp (x, 1, mpfr_get_emin (), MPFR_RNDN);   /* x = 2^emin */
@@ -525,47 +526,86 @@ test_underflow2 (void)
     {
       for (i = 15; i <= 17; i++)
         {
+          mpfr_flags_t flags1 = MPFR_FLAGS_INEXACT, flags2;
+          int inex1, inex2;
+
           mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), MPFR_RNDN);
+
           /*  z = 1.000...00b
            * xy =            01111
            *   or            10000
            *   or            10001
            */
-          mpfr_clear_flags ();
-          inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
-#define STRTU2 "Error in test_underflow2 (b = %d, i = %d)\n  "
-          if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
+
+          for (neg = 0; neg < 8; neg++)
             {
-              printf (STRTU2 "flags = %u instead of %u\n", b, i,
-                      (unsigned int) __gmpfr_flags,
-                      (unsigned int) MPFR_FLAGS_INEXACT);
-              err = 1;
-            }
-          same = i == 15 || (i == 16 && b == 0);
-          if (same ? (inex >= 0) : (inex <= 0))
-            {
-              printf (STRTU2 "incorrect ternary value (%d instead of %c 0)\n",
-                      b, i, inex, same ? '<' : '>');
-              err = 1;
-            }
-          mpfr_set (y, z, MPFR_RNDN);
-          if (!same)
-            mpfr_nextabove (y);
-          if (! mpfr_equal_p (r, y))
-            {
-              printf (STRTU2 "expected ", b, i);
-              mpfr_dump (y);
-              printf ("  got      ");
-              mpfr_dump (r);
-              err = 1;
+              int xyneg, prev_binade;
+
+              mpfr_setsign (x, x, neg & 1, MPFR_RNDN);
+              mpfr_setsign (y, y, neg & 2, MPFR_RNDN);
+              mpfr_setsign (z, z, neg & 4, MPFR_RNDN);
+
+              xyneg = (neg ^ (neg >> 1)) & 1;  /* true iff x*y < 0 */
+
+              /* If a change of binade occurs by adding x*y to z exactly,
+                 then take into account the fact that the midpoint has a
+                 different exponent. */
+              prev_binade = b == 0 && (xyneg ^ MPFR_IS_NEG (z));
+              if (prev_binade)
+                mpfr_div_2ui (y, y, 1, MPFR_RNDN);
+
+              mpfr_set (r1, z, MPFR_RNDN);
+
+              if (i == 15 || (i == 16 && b == 0))
+                {
+                  /* round toward z */
+                  inex1 = xyneg ? 1 : -1;
+                }
+              else if (xyneg)
+                {
+                  /* round away from z, with x*y < 0 */
+                  mpfr_nextbelow (r1);
+                  inex1 = -1;
+                }
+              else
+                {
+                  /* round away from z, with x*y > 0 */
+                  mpfr_nextabove (r1);
+                  inex1 = 1;
+                }
+
+              mpfr_clear_flags ();
+              inex2 = mpfr_fma (r2, x, y, z, MPFR_RNDN);
+              flags2 = __gmpfr_flags;
+
+              if (! (mpfr_equal_p (r1, r2) &&
+                     SAME_SIGN (inex1, inex2) &&
+                     flags1 == flags2))
+                {
+                  printf ("Error in test_underflow2 for b=%d i=%d neg=%u\n",
+                          b, i, neg);
+                  printf ("Expected ");
+                  mpfr_dump (r1);
+                  printf ("with inex = %d and flags:", inex1);
+                  flags_out (flags1);
+                  printf ("Got      ");
+                  mpfr_dump (r2);
+                  printf ("with inex = %d and flags:", inex2);
+                  flags_out (flags2);
+                  exit (1);
+                }
+
+              /* Restore y. */
+              if (prev_binade)
+                mpfr_mul_2ui (y, y, 1, MPFR_RNDN);
             }
         }
+
+      MPFR_SET_POS (z);
       mpfr_nextabove (z);
     }
 
-  if (err)
-    exit (1);
-  mpfr_clears (x, y, z, r, (mpfr_ptr) 0);
+  mpfr_clears (x, y, z, r1, r2, (mpfr_ptr) 0);
 }
 
 static void
