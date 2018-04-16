@@ -132,6 +132,7 @@
 /tpow3
 /tpow_all
 /tpow_z
+/tprec_round
 /tprintf
 /trandom
 /trandom_deviate
@@ -141,7 +142,6 @@
 /trndna
 /troot
 /trootn_ui
-/tround_prec
 /tsec
 /tsech
 /tset
@@ -175,6 +175,7 @@
 /tsub_ui
 /tsubnormal
 /tsum
+/ttotal_order
 /tswap
 /ttan
 /ttanh
