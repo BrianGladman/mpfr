@@ -244,6 +244,8 @@ To make a release (for the MPFR team):
      Check the generic code, e.g. with -DMPFR_GENERIC_ABI in $CFLAGS
      (useful because most tests are written for low precision) and with
      mpfr_cv_c_long_double_format=unknown (as a variable assignment).
+     Check with -DMPFR_GROUP_STATIC_SIZE=0 to detect memory leaks that would
+     occur in medium precision or more if a MPFR_GROUP_CLEAR were forgotten.
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
