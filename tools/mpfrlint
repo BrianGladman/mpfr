@@ -168,6 +168,14 @@ err-if-output --msg="Use GMP_NUMB_BITS instead." \
 
 grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 
+# Use mpfr_div_2ui/mpfr_mul_2ui instead of mpfr_div_2exp/mpfr_mul_2exp.
+grep 'mpfr_\(div\|mul\)_2exp' {src,tests}/*.{c,h} |\
+  grep -v '^src/\(\(div\|mul\)_2exp\.c:\|mpf2mpfr\.h:#define mpf_\)' | \
+  grep -v '^src/mpfr\.h:\(__MPFR_DECLSPEC\|#define mpfr_..._2exp\)' | \
+  grep -v '^tests/\(reuse\|taway\)\.c: *test2ui (mpfr_..._2exp,' | \
+  err-if-output --msg="Use mpfr_div_2ui and mpfr_mul_2ui instead." \
+    "mpfr_div_2exp and mpfr_mul_2exp" cat
+
 # Note: GMP internals must not be used unless WANT_GMP_INTERNALS is defined.
 # The check below attempts to handle that, but this is a heuristic (it might
 # fail in case of nested #if's, but this is currently OK).
