@@ -130,14 +130,6 @@ Table of contents:
   C++17 draft:
   https://github.com/cplusplus/draft/blob/master/source/numerics.tex
 - implement mpfr_get_decimal128 and mpfr_set_decimal128
-- implement mpfr_log_ui to compute log(n) for an unsigned long n.
-  We can write for argument reduction n = 2^k * n/2^k, where
-  2/3 <= n/2^k < 4/3, i.e., k = floor(log2(3n))-1, thus
-  log(n) = k*log(2) + log(n/2^k), and we can use binary splitting on the
-  Taylor expansion of log(1+x) to compute log(n/2^k), where at most
-  p*log(2)/log(3) terms are needed for precision p.
-  Other idea (from Fredrik Johansson): compute log(m) + log(n/m) where
-  m=2^a*3^b*5^c*7^d and m is close to n.
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement mpfr_pow_q and variants with two integers (native or mpz)
   instead of a rational? See IEEE P1788.
