@@ -193,7 +193,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
 
       mpfr_set_z (t, T[0], MPFR_RNDN); /* t = P[0] * (1 + theta_1) */
       mpfr_set_z (q, B[0], MPFR_RNDN); /* q = B[0] * (1 + theta_2) */
-      mpfr_mul_2exp (q, q, q0, MPFR_RNDN); /* B[0]*Q[0] */
+      mpfr_mul_2ui (q, q, q0, MPFR_RNDN); /* B[0]*Q[0] */
       mpfr_div (t, t, q, MPFR_RNDN);   /* t = T[0]/(B[0]*Q[0])*(1 + theta_3)^3
                                             = log(n/2^k) * (1 + theta_4)^4
                                             for |theta_i| < 2^(-w) */

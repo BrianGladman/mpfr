@@ -148,7 +148,7 @@ main (void)
       mpfr_set_ui (x, 0, MPFR_RNDN); /* exact */
       mpfr_acos (y, x, (mpfr_rnd_t) r);
       mpfr_const_pi (x, (mpfr_rnd_t) r);
-      mpfr_div_2exp (x, x, 1, MPFR_RNDN); /* exact */
+      mpfr_div_2ui (x, x, 1, MPFR_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: acos(0) != Pi/2 for rnd=%s\n",

@@ -76,9 +76,9 @@ check_small (void)
 
   mpfr_set_prec (x, 64);
   mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 63, MPFR_RNDN); /* x = -2^(-63) */
+  mpfr_div_2ui (x, x, 63, MPFR_RNDN); /* x = -2^(-63) */
   mpfr_add_ui (x, x, 1, MPFR_RNDN); /* x = 1 - 2^(-63) */
-  mpfr_mul_2exp (x, x, 32, MPFR_RNDN); /* x = 2^32 - 2^(-31) */
+  mpfr_mul_2ui (x, x, 32, MPFR_RNDN); /* x = 2^32 - 2^(-31) */
   s = mpfr_get_str (NULL, &e, 3, 21, x, MPFR_RNDU);
   if (strcmp (s, "102002022201221111211") || (e != 21))
     {
@@ -991,7 +991,7 @@ check_large (void)
 
   mpfr_init2 (x, 3322);
   mpfr_set_str (x, xm, 10, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 4343, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 4343, MPFR_RNDN);
   s = mpfr_get_str (NULL, &e, 10, 1000, x, MPFR_RNDN);
   if (s[999] != '1') /* s must be 5.04383...689071e-309 */
     {
@@ -1001,7 +1001,7 @@ check_large (void)
     }
   mpfr_free_str (s);
 
-  mpfr_mul_2exp (x, x, 4343, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, 4343, MPFR_RNDN);
   s = mpfr_get_str (NULL, &e, 10, 2, x, MPFR_RNDN);
   if (strcmp (s, "12") || (e != 1000))
     {

@@ -169,7 +169,7 @@ main (void)
           printf ("got      "); mpfr_dump (y);
           exit (1);
         }
-      mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }
 
   mpfr_set_prec (x, 53);
@@ -187,7 +187,7 @@ main (void)
           printf ("got      "); mpfr_dump (y);
           exit (1);
         }
-      mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }
 
   mpfr_set_prec (x, 53);
@@ -205,7 +205,7 @@ main (void)
           printf ("got      "); mpfr_dump (y);
           exit (1);
         }
-      mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+      mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }
 
 #ifdef HAVE_DENORMS_FLT

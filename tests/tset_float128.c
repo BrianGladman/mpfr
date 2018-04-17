@@ -160,7 +160,7 @@ check_large (void)
     f = f + f;
   f = f - (_Float128) 1.0;
   mpfr_set_ui (y, 1, MPFR_RNDN);
-  mpfr_mul_2exp (y, y, 113, MPFR_RNDN);
+  mpfr_mul_2ui (y, y, 113, MPFR_RNDN);
   mpfr_sub_ui (y, y, 1, MPFR_RNDN);
   for (i = 113; i < 16384; i++)
     {
@@ -315,7 +315,7 @@ check_small (void)
             }
         }
       f =  0.5 * f;
-      mpfr_div_2exp (y, y, 1, MPFR_RNDN);
+      mpfr_div_2ui (y, y, 1, MPFR_RNDN);
     }
 
   mpfr_clears (w, x, y, z, (mpfr_ptr) 0);

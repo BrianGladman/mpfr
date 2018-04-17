@@ -42,7 +42,7 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, 32);
   (mpfr_const_catalan) (x, MPFR_RNDN);
-  mpfr_mul_2exp (x, x, 32, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, 32, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 3934042271UL))
     {
       printf ("Error in const_catalan for prec=32\n");

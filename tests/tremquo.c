@@ -320,7 +320,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 65);
   mpfr_set_prec (y, 65);
   mpfr_const_pi (x, MPFR_RNDN);
-  mpfr_mul_2exp (x, x, 63, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, 63, MPFR_RNDN);
   mpfr_const_log2 (y, MPFR_RNDN);
   mpfr_set_prec (r, 10);
   mpfr_remquo (r, q, x, y, MPFR_RNDN);

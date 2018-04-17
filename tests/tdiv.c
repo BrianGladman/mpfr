@@ -913,7 +913,7 @@ check_special (void)
   set_emax (1);
   mpfr_set_ui (a, 1, MPFR_RNDZ);
   mpfr_set_ui (d, 1, MPFR_RNDZ);
-  mpfr_div_2exp (d, d, 1, MPFR_RNDZ);
+  mpfr_div_2ui (d, d, 1, MPFR_RNDZ);
   mpfr_clear_flags ();
   test_div (q, a, d, MPFR_RNDU); /* 1 / 0.5 = 2 -> overflow */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
@@ -924,7 +924,7 @@ check_special (void)
   emin = mpfr_get_emin ();
   set_emin (-1);
   mpfr_set_ui (a, 1, MPFR_RNDZ);
-  mpfr_div_2exp (a, a, 2, MPFR_RNDZ);
+  mpfr_div_2ui (a, a, 2, MPFR_RNDZ);
   mpfr_set_prec (d, mpfr_get_prec (q) + 8);
   for (i = -1; i <= 1; i++)
     {
@@ -1376,7 +1376,7 @@ test_mpfr_divsp2 (void)
   mpfr_set_str (v, "241810647971575979588130185988987264768", 10, MPFR_RNDN);
   mpfr_div (q, u, v, MPFR_RNDN);
   mpfr_set_str (u, "5732952910203749289426944", 10, MPFR_RNDN);
-  mpfr_div_2exp (u, u, 82, MPFR_RNDN);
+  mpfr_div_2ui (u, u, 82, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_equal_p (q, u));
 
   mpfr_clear (u);
@@ -1405,7 +1405,7 @@ test_20160831 (void)
   mpfr_set_str (v, "205987256581218236405412302590110119580", 10, MPFR_RNDN);
   mpfr_div (q, u, v, MPFR_RNDN);
   mpfr_set_str (u, "19217137613667309953639458782352244736", 10, MPFR_RNDN);
-  mpfr_div_2exp (u, u, 124, MPFR_RNDN);
+  mpfr_div_2ui (u, u, 124, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_equal_p (q, u));
 
   mpfr_clears (u, v, q, (mpfr_ptr) 0);

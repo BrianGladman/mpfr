@@ -486,7 +486,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_add (arctgt, arctgt, sk, MPFR_RNDN);
 
       /* argument reduction */
-      mpfr_mul_2exp (arctgt, arctgt, red, MPFR_RNDN);
+      mpfr_mul_2ui (arctgt, arctgt, red, MPFR_RNDN);
 
       if (comparison > 0)
         { /* atan(x) = Pi/2-atan(1/x) for x > 0 */

@@ -323,7 +323,7 @@ compute_add (mpfr_srcptr s, mpfr_prec_t precz)
   /* since 1/eps = 2^(precz+14), if EXP(sd) >= precz+14, then
      sd >= 1/2*2^(precz+14) thus 2*sd >= 2^(precz+14) >= 1/eps */
   if (mpfr_get_exp (t) >= precz + 14)
-    mpfr_mul_2exp (t, t, 1, MPFR_RNDU);
+    mpfr_mul_2ui (t, t, 1, MPFR_RNDU);
   else
     mpfr_set_ui_2exp (t, 1, precz + 14, MPFR_RNDU);
   /* now t = max(1/eps,2*sd) */
@@ -335,7 +335,7 @@ compute_add (mpfr_srcptr s, mpfr_prec_t precz)
   else
     mpfr_set (t, m1, MPFR_RNDU);
   /* now t = max(8,m1) */
-  mpfr_div_2exp (t, t, precz + 14, MPFR_RNDU); /* eps*max(8,m1) */
+  mpfr_div_2ui (t, t, precz + 14, MPFR_RNDU); /* eps*max(8,m1) */
   mpfr_add_ui (t, t, 1, MPFR_RNDU); /* 1+eps*max(8,m1) */
   mpfr_mul (t, t, u, MPFR_RNDU); /* t = c */
   mpfr_add_ui (u, m1, 13, MPFR_RNDU); /* 13+m1 */

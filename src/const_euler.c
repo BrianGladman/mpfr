@@ -251,9 +251,9 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
       mpfr_set_ui (y, n, MPFR_RNDZ); /* exact */
       mpfr_log (y, y, MPFR_RNDZ); /* error < 2^-wp */
 
-      mpfr_mul_2exp (y, y, wp, MPFR_RNDZ);
+      mpfr_mul_2ui (y, y, wp, MPFR_RNDZ);
       mpfr_z_sub (y, v, y, MPFR_RNDZ);
-      mpfr_div_2exp (y, y, wp, MPFR_RNDZ);
+      mpfr_div_2ui (y, y, wp, MPFR_RNDZ);
       /* rounding error from the last subtraction < 2^-wp */
       /* so y = gamma with error < 5*2^-wp */
 

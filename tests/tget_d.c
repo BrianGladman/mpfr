@@ -41,7 +41,7 @@ check_denorms (void)
       d = (double) k * DBL_MIN; /* k * 2^(-1022) */
       f = 1.0;
       mpfr_set_si (x, k, MPFR_RNDN);
-      mpfr_div_2exp (x, x, 1022, MPFR_RNDN); /* k * 2^(-1022) */
+      mpfr_div_2ui (x, x, 1022, MPFR_RNDN); /* k * 2^(-1022) */
       for (n = 0; n <= 58; n++)
         {
           d2 = d * f;
@@ -54,7 +54,7 @@ check_denorms (void)
               fail = 1;
             }
           f *= 0.5;
-          mpfr_div_2exp (x, x, 1, MPFR_RNDN);
+          mpfr_div_2ui (x, x, 1, MPFR_RNDN);
         }
     }
 

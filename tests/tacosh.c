@@ -105,7 +105,7 @@ special (void)
     }
 
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 1, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 1, MPFR_RNDN);
   mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {

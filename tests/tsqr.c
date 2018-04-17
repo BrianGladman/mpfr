@@ -206,7 +206,7 @@ coverage (mpfr_prec_t pmax)
       /* exercise carry in most significant bits of a, with overflow */
       mpfr_set_ui_2exp (b, 1, mpfr_get_emax (), MPFR_RNDZ);
       mpfr_sqrt (b, b, MPFR_RNDU);
-      mpfr_div_2exp (c, b, 1, MPFR_RNDN);
+      mpfr_div_2ui (c, b, 1, MPFR_RNDN);
       mpfr_sqr (c, c, MPFR_RNDN);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDN);
@@ -229,7 +229,7 @@ coverage (mpfr_prec_t pmax)
       /* same as above, with RNDU */
       mpfr_set_ui_2exp (b, 1, mpfr_get_emax (), MPFR_RNDZ);
       mpfr_sqrt (b, b, MPFR_RNDU);
-      mpfr_div_2exp (c, b, 1, MPFR_RNDN);
+      mpfr_div_2ui (c, b, 1, MPFR_RNDN);
       mpfr_sqr (c, c, MPFR_RNDU);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDU);
@@ -252,7 +252,7 @@ coverage (mpfr_prec_t pmax)
       /* exercise trivial overflow */
       mpfr_set_ui_2exp (b, 1, mpfr_get_emax (), MPFR_RNDZ);
       mpfr_sqrt (b, b, MPFR_RNDU);
-      mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+      mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDN);
       MPFR_ASSERTN(inex > 0);
@@ -262,7 +262,7 @@ coverage (mpfr_prec_t pmax)
       /* exercise trivial underflow */
       mpfr_set_ui_2exp (b, 1, mpfr_get_emin () - 1, MPFR_RNDZ);
       mpfr_sqrt (b, b, MPFR_RNDU);
-      mpfr_div_2exp (b, b, 1, MPFR_RNDN);
+      mpfr_div_2ui (b, b, 1, MPFR_RNDN);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDN);
       MPFR_ASSERTN(inex < 0);
@@ -275,7 +275,7 @@ coverage (mpfr_prec_t pmax)
       mpfr_set_ui_2exp (b, 1, mpfr_get_emin () - 1, MPFR_RNDN);
       inex = mpfr_sqrt (b, b, MPFR_RNDZ);
       MPFR_ASSERTN(inex != 0); /* sqrt(2) is not exact */
-      mpfr_mul_2exp (c, b, 1, MPFR_RNDN);
+      mpfr_mul_2ui (c, b, 1, MPFR_RNDN);
       mpfr_sqr (c, c, MPFR_RNDN);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDN);
@@ -319,7 +319,7 @@ coverage (mpfr_prec_t pmax)
       mpfr_set_ui_2exp (b, 1, mpfr_get_emin () - 1, MPFR_RNDN);
       inex = mpfr_sqrt (b, b, MPFR_RNDZ);
       MPFR_ASSERTN(inex != 0); /* sqrt(2) is not exact */
-      mpfr_mul_2exp (c, b, 1, MPFR_RNDN);
+      mpfr_mul_2ui (c, b, 1, MPFR_RNDN);
       mpfr_sqr (c, c, MPFR_RNDU);
       mpfr_clear_flags ();
       inex = mpfr_sqr (a, b, MPFR_RNDU);

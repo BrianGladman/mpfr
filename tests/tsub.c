@@ -337,7 +337,7 @@ check_diverse (void)
 
   mpfr_set_prec (x, 33);
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 32, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 32, MPFR_RNDN);
   mpfr_sub_ui (x, x, 1, MPFR_RNDN);
 
   mpfr_set_prec (x, 5);
@@ -398,7 +398,7 @@ bug_ddefour(void)
     mpfr_init2(tot1, 150);
 
     mpfr_set_ui( ex, 1, MPFR_RNDN);
-    mpfr_mul_2exp( ex, ex, 906, MPFR_RNDN);
+    mpfr_mul_2ui( ex, ex, 906, MPFR_RNDN);
     mpfr_log( tot, ex, MPFR_RNDN);
     mpfr_set( ex1, tot, MPFR_RNDN); /* ex1 = high(tot) */
     test_sub( ex2, tot, ex1, MPFR_RNDN); /* ex2 = high(tot - ex1) */
@@ -481,10 +481,10 @@ check_inexact (void)
 
   mpfr_set_prec (x, 2);
   mpfr_set_ui (x, 6, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 4, MPFR_RNDN); /* x = 6/16 */
+  mpfr_div_2ui (x, x, 4, MPFR_RNDN); /* x = 6/16 */
   mpfr_set_prec (y, 2);
   mpfr_set_si (y, -1, MPFR_RNDN);
-  mpfr_div_2exp (y, y, 4, MPFR_RNDN); /* y = -1/16 */
+  mpfr_div_2ui (y, y, 4, MPFR_RNDN); /* y = -1/16 */
   inexact = test_sub (y, y, x, MPFR_RNDN); /* y = round(-7/16) = -1/2 */
   if (inexact >= 0)
     {
@@ -962,7 +962,7 @@ test_rndf_exact (mp_size_t pmax)
           for (eb = 0; eb <= pmax + 3; eb ++)
             {
               mpfr_urandomb (b, RANDS);
-              mpfr_mul_2exp (b, b, eb, MPFR_RNDN);
+              mpfr_mul_2ui (b, b, eb, MPFR_RNDN);
               for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
                 {
                   if ((pc + 2) % GMP_NUMB_BITS > 4)

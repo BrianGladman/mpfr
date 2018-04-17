@@ -166,9 +166,9 @@ main (void)
 
         /* Check large values (no fit) */
         mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
-        mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+        mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
         CHECK_ALL (8, !!);
-        mpfr_mul_2exp (x, x, 40, MPFR_RNDN);
+        mpfr_mul_2ui (x, x, 40, MPFR_RNDN);
         CHECK_ALL (9, !!);
 
         /* Check a non-integer number just below a power of two. */

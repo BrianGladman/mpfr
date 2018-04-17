@@ -181,13 +181,13 @@ compare_sub_sub1sp (void)
               mpfr_set_ui_2exp (b, 1, d, MPFR_RNDN);
               if (i & 1)
                 {
-                  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+                  mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
                   mpfr_nextbelow (b);
                 }
               mpfr_set_ui_2exp (c, 1, 0, MPFR_RNDN);
               if (i & 2)
                 {
-                  mpfr_mul_2exp (c, c, 1, MPFR_RNDN);
+                  mpfr_mul_2ui (c, c, 1, MPFR_RNDN);
                   mpfr_nextbelow (c);
                 }
               RND_LOOP_NO_RNDF (r)
@@ -260,13 +260,13 @@ bug20171213_gen (mpfr_prec_t pmax)
           mpfr_set_ui (b, 1, MPFR_RNDN);
           mpfr_set_ui_2exp (c, 1, p + 1 - e, MPFR_RNDN); /* c = 2^(p + 1 - e) */
           mpfr_sub_ui (c, c, 1, MPFR_RNDN); /* c = 2^(p + 1 - e) - 1 */
-          mpfr_div_2exp (c, c, p + 1, MPFR_RNDN); /* c = 2^(-e) - 2^(-p-1) */
+          mpfr_div_2ui (c, c, p + 1, MPFR_RNDN); /* c = 2^(-e) - 2^(-p-1) */
           /* the exact difference is 1 - 2^(-e) + 2^(-p-1) */
           mpfr_sub (a, b, c, MPFR_RNDN);
           /* check that a = 1 - 2^(-e) */
           mpfr_set_ui_2exp (d, 1, e, MPFR_RNDN); /* b = 2^e */
           mpfr_sub_ui (d, d, 1, MPFR_RNDN);      /* b = 2^e - 1 */
-          mpfr_div_2exp (d, d, e, MPFR_RNDN);    /* b = 1 - 2^(-e) */
+          mpfr_div_2ui (d, d, e, MPFR_RNDN);    /* b = 1 - 2^(-e) */
           if (! mpfr_equal_p (a, d))
             {
               printf ("bug20171213_gen failed for p=%ld, e=%ld\n",
@@ -935,10 +935,10 @@ check_corner (mpfr_prec_t p)
   for (e = 0; e < p; e++)
     {
       /* add 2^(-e) to z */
-      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      mpfr_mul_2ui (z, z, e, MPFR_RNDN);
       inex = mpfr_add_ui (z, z, 1, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
-      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+      mpfr_div_2ui (z, z, e, MPFR_RNDN);
 
       /* compute x = y - z which should be exact, near 2-2^(-e) */
       inex = mpfr_sub (x, y, z, MPFR_RNDN);
@@ -946,16 +946,16 @@ check_corner (mpfr_prec_t p)
       MPFR_ASSERTN(mpfr_get_exp (x) == 1);
 
       /* restore initial z */
-      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      mpfr_mul_2ui (z, z, e, MPFR_RNDN);
       inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
-      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+      mpfr_div_2ui (z, z, e, MPFR_RNDN);
 
       /* subtract 2^(-e) to z */
-      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      mpfr_mul_2ui (z, z, e, MPFR_RNDN);
       inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
-      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+      mpfr_div_2ui (z, z, e, MPFR_RNDN);
 
       /* ensure last significant bit of z is 0 so that y-z is exact */
       odd = mpfr_min_prec (z) == p;
@@ -970,10 +970,10 @@ check_corner (mpfr_prec_t p)
       /* restore initial z */
       if (odd)
         mpfr_nextbelow (z);
-      mpfr_mul_2exp (z, z, e, MPFR_RNDN);
+      mpfr_mul_2ui (z, z, e, MPFR_RNDN);
       inex = mpfr_add_ui (z, z, 1, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
-      mpfr_div_2exp (z, z, e, MPFR_RNDN);
+      mpfr_div_2ui (z, z, e, MPFR_RNDN);
     }
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }

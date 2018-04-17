@@ -98,7 +98,7 @@ special (void)
       mpfr_set_ui (x, 1, MPFR_RNDN); /* exact */
       mpfr_asin (y, x, (mpfr_rnd_t) r);
       mpfr_const_pi (x, (mpfr_rnd_t) r);
-      mpfr_div_2exp (x, x, 1, MPFR_RNDN); /* exact */
+      mpfr_div_2ui (x, x, 1, MPFR_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: asin(1) != Pi/2 for rnd=%s\n",
@@ -114,7 +114,7 @@ special (void)
       mpfr_asin (y, x, (mpfr_rnd_t) r);
       mpfr_const_pi (x, MPFR_INVERT_RND((mpfr_rnd_t) r));
       mpfr_neg (x, x, MPFR_RNDN); /* exact */
-      mpfr_div_2exp (x, x, 1, MPFR_RNDN); /* exact */
+      mpfr_div_2ui (x, x, 1, MPFR_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: asin(-1) != -Pi/2 for rnd=%s\n",

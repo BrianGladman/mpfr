@@ -289,7 +289,7 @@ special (void)
 
   mpfr_set_prec (x, 53);
   mpfr_set_str (x, "8093416094703476.0", 10, MPFR_RNDN);
-  mpfr_div_2exp (x, x, 1075, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 1075, MPFR_RNDN);
   test_sqrt (x, x, MPFR_RNDN);
   mpfr_set_str (z, "1e55596835b5ef@-141", 16, MPFR_RNDN);
   if (mpfr_cmp (x, z))
@@ -341,7 +341,7 @@ special (void)
   mpfr_set_prec (z, GMP_NUMB_BITS - 1);
   mpfr_set_prec (y, GMP_NUMB_BITS - 1);
   mpfr_set_ui (y, 1, MPFR_RNDN);
-  mpfr_mul_2exp (y, y, GMP_NUMB_BITS - 1, MPFR_RNDN);
+  mpfr_mul_2ui (y, y, GMP_NUMB_BITS - 1, MPFR_RNDN);
   mpfr_nextabove (y);
   for (p = 2 * GMP_NUMB_BITS - 1; p <= 1000; p++)
     {
@@ -674,7 +674,7 @@ test_sqrt1n (void)
   MPFR_ASSERTN(inex == 0);
   inex = mpfr_add_ui (u, u, 1, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
-  inex = mpfr_mul_2exp (u, u, GMP_NUMB_BITS, MPFR_RNDN);
+  inex = mpfr_mul_2ui (u, u, GMP_NUMB_BITS, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   /* u = 2^(2*GMP_NUMB_BITS-2) + 2^GMP_NUMB_BITS, thus
      u = r^2 + 2^GMP_NUMB_BITS with r = 2^(GMP_NUMB_BITS-1).
@@ -706,7 +706,7 @@ check_overflow (void)
       mpfr_set_emax (-1);
       mpfr_set_ui_2exp (u, 1, mpfr_get_emax () - 1, MPFR_RNDN);
       mpfr_nextbelow (u);
-      mpfr_mul_2exp (u, u, 1, MPFR_RNDN);
+      mpfr_mul_2ui (u, u, 1, MPFR_RNDN);
       /* now u = (1 - 2^(-p))*2^emax is the largest number < +Inf,
          it square root is near 0.707 and has exponent 0 > emax */
       /* for RNDN, the result should be +Inf */
@@ -725,7 +725,7 @@ check_overflow (void)
       mpfr_set_emax (0);
       mpfr_set_ui_2exp (u, 1, mpfr_get_emax () - 1, MPFR_RNDN);
       mpfr_nextbelow (u);
-      mpfr_mul_2exp (u, u, 1, MPFR_RNDN);
+      mpfr_mul_2ui (u, u, 1, MPFR_RNDN);
       /* u = 1-2^(-p), its square root is > u, and should thus give +Inf when
          rounding away */
       inex = mpfr_sqrt (r, u, MPFR_RNDA);

@@ -326,11 +326,11 @@ special_overflow (void)
   mpfr_set_prec (y, 38);
   mpfr_set_str (x, "-2993155353253689176481146537402947624254601559176535", 10,
                 MPFR_RNDN);
-  mpfr_div_2exp (x, x, 170, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 170, MPFR_RNDN);
   mpfr_gamma (y, x, MPFR_RNDN);
   mpfr_set_prec (x, 38);
   mpfr_set_str (x, "201948391737", 10, MPFR_RNDN);
-  mpfr_mul_2exp (x, x, 92, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, 92, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for gamma (test 5)\n");

@@ -43,7 +43,7 @@ check_round (void)
       for (i = 0; i < (int) numberof (data); i++)
         {
           mpfr_set_ui (f, 1L, MPFR_RNDZ);
-          mpfr_mul_2exp (f, f, data[i], MPFR_RNDZ);
+          mpfr_mul_2ui (f, f, data[i], MPFR_RNDZ);
           mpfr_sub_ui (f, f, 1L, MPFR_RNDZ);
 
           for (neg = 0; neg <= 1; neg++)

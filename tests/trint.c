@@ -60,7 +60,7 @@ special (void)
   /* coverage test */
   mpfr_set_prec (x, 2);
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_mul_2exp (x, x, mp_bits_per_limb, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, mp_bits_per_limb, MPFR_RNDN);
   mpfr_rint (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
 

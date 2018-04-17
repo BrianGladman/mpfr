@@ -502,7 +502,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       else
         {
           /* y <- trunc(x2 * 2^sh) = trunc(x * 2^(2*sh-1)) */
-          mpfr_mul_2exp (x2, x2, sh, MPFR_RNDN); /* exact */
+          mpfr_mul_2ui (x2, x2, sh, MPFR_RNDN); /* exact */
           mpfr_get_z (y, x2, MPFR_RNDZ); /* round toward zero: now
                                            0 <= x2 < 2^sh, thus
                                            0 <= x2/2^(sh-1) < 2^(1-sh) */
@@ -548,11 +548,11 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   mpfr_set_z (s, S, MPFR_RNDN);
   mpfr_div_z (s, s, Q, MPFR_RNDN);
-  mpfr_div_2exp (s, s, l, MPFR_RNDN);
+  mpfr_div_2ui (s, s, l, MPFR_RNDN);
 
   mpfr_set_z (c, C, MPFR_RNDN);
   mpfr_div_z (c, c, Q, MPFR_RNDN);
-  mpfr_div_2exp (c, c, l, MPFR_RNDN);
+  mpfr_div_2ui (c, c, l, MPFR_RNDN);
 
   mpz_clear (Q);
   mpz_clear (S);
@@ -615,7 +615,7 @@ mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd)
           mpfr_init2 (x_red, w);
           mpfr_init2 (pi, (MPFR_EXP(x) > 0) ? w + MPFR_EXP(x) : w);
           mpfr_const_pi (pi, MPFR_RNDN);
-          mpfr_div_2exp (pi, pi, 1, MPFR_RNDN); /* Pi/2 */
+          mpfr_div_2ui (pi, pi, 1, MPFR_RNDN); /* Pi/2 */
           mpfr_remquo (x_red, &q, x, pi, MPFR_RNDN);
           /* x = q * (Pi/2 + eps1) + x_red + eps2,
              where |eps1| <= 1/2*ulp(Pi/2) = 2^(-w-MAX(0,EXP(x))),

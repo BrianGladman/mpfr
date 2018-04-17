@@ -42,7 +42,7 @@ check_round (void)
       for (i = 0; i < (int) numberof (data); i++)
         {
           mpfr_set_ui (f, 1L, MPFR_RNDZ);
-          mpfr_mul_2exp (f, f, data[i], MPFR_RNDZ);
+          mpfr_mul_2ui (f, f, data[i], MPFR_RNDZ);
           mpfr_sub_ui (f, f, 1L, MPFR_RNDZ);
 
           for (neg = 0; neg <= 1; neg++)
@@ -112,7 +112,7 @@ bug20090520 (void)
   mpfr_init (x);
   mpfr_set_ui (x, 1, MPFR_RNDN);
   d = 1.0;
-  mpfr_div_2exp (x, x, 16383, MPFR_RNDN);
+  mpfr_div_2ui (x, x, 16383, MPFR_RNDN);
   for (i = 0; i < 16383; i++)
     d *= 0.5;
   e = mpfr_get_ld (x, MPFR_RNDN);

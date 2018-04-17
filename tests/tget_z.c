@@ -92,8 +92,8 @@ check_one (mpz_ptr z)
       MPFR_ASSERTN (inex == 0);
 
       inex = sh < 0 ?
-        mpfr_div_2exp (f, f, -sh, MPFR_RNDN) :
-        mpfr_mul_2exp (f, f, sh, MPFR_RNDN);
+        mpfr_div_2ui (f, f, -sh, MPFR_RNDN) :
+        mpfr_mul_2ui (f, f, sh, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
 
       for (neg = 0; neg <= 1; neg++)

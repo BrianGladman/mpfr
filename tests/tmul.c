@@ -746,7 +746,7 @@ test_underflow (mpfr_prec_t pmax)
           printf ("c="); mpfr_dump (c);
           printf ("a="); mpfr_dump (a);
           mpfr_set_prec (a, mpfr_get_prec (b) + mpfr_get_prec (c));
-          mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+          mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
           inex = mpfr_mul (a, b, c, MPFR_RNDN);
           MPFR_ASSERTN (inex == 0);
           printf ("Exact 2*a="); mpfr_dump (a);
@@ -789,7 +789,7 @@ test_underflow (mpfr_prec_t pmax)
           printf ("c="); mpfr_dump (c);
           printf ("a="); mpfr_dump (a);
           mpfr_set_prec (a, mpfr_get_prec (b) + mpfr_get_prec (c));
-          mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+          mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
           inex = mpfr_mul (a, b, c, MPFR_RNDN);
           MPFR_ASSERTN (inex == 0);
           printf ("Exact 2*a="); mpfr_dump (a);

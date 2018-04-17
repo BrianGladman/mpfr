@@ -635,7 +635,7 @@ special (void)
   mpfr_set_inf (x, -1);
   mpfr_set_prec (y, 2 * mp_bits_per_limb);
   mpfr_set_ui (y, 1, MPFR_RNDN);
-  mpfr_mul_2exp (y, y, mp_bits_per_limb - 1, MPFR_RNDN);
+  mpfr_mul_2ui (y, y, mp_bits_per_limb - 1, MPFR_RNDN);
   /* y = 2^(mp_bits_per_limb - 1) */
   test_pow (z, x, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
@@ -644,7 +644,7 @@ special (void)
   /* y = 2^(mp_bits_per_limb - 1) + epsilon */
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_nextbelow (y);
-  mpfr_div_2exp (y, y, 1, MPFR_RNDN);
+  mpfr_div_2ui (y, y, 1, MPFR_RNDN);
   mpfr_nextabove (y);
   test_pow (z, x, y, MPFR_RNDN);
   /* y = 2^(mp_bits_per_limb - 2) + epsilon */

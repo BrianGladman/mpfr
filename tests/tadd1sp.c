@@ -174,9 +174,9 @@ coverage (void)
   mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_ui_2exp (b, 1, mpfr_get_emax () - 1, MPFR_RNDN);
   mpfr_nextbelow (b);
-  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+  mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
   /* now b is the largest number < +Inf */
-  mpfr_div_2exp (c, b, GMP_NUMB_BITS - 1, MPFR_RNDN);
+  mpfr_div_2ui (c, b, GMP_NUMB_BITS - 1, MPFR_RNDN);
   /* we are in the case d < GMP_NUMB_BITS of mpfr_add1sp3 */
   inex = mpfr_add (a, b, b, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
@@ -205,7 +205,7 @@ coverage (void)
   mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_ui_2exp (b, 1, mpfr_get_emax () - 1, MPFR_RNDN);
   mpfr_nextbelow (b);
-  mpfr_mul_2exp (b, b, 1, MPFR_RNDN);
+  mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
   /* now b is the largest number < +Inf */
   mpfr_set_ui_2exp (c, 1, mpfr_get_emin () - 1, MPFR_RNDN);
   inex = mpfr_add (a, b, c, MPFR_RNDU);

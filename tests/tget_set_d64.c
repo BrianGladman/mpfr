@@ -298,7 +298,7 @@ check_random (void)
       /* the normal decimal64 range contains [2^(-1272), 2^1278] */
       mpfr_mul_2si (x, x, (i % 2550) - 1272, MPFR_RNDN);
       if (mpfr_get_exp (x) <= -1272)
-        mpfr_mul_2exp (x, x, -1271 - mpfr_get_exp (x), MPFR_RNDN);
+        mpfr_mul_2ui (x, x, -1271 - mpfr_get_exp (x), MPFR_RNDN);
       d = mpfr_get_decimal64 (x, MPFR_RNDN);
       mpfr_set_decimal64 (y, d, MPFR_RNDN);
       if (mpfr_cmp (x, y) != 0)

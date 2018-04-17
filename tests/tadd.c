@@ -375,18 +375,18 @@ check_case_1b (void)
           mpfr_set_prec (b, prec_b);
           /* b = 1 - 2^(-prec_a) + 2^(-prec_b) */
           mpfr_set_ui (b, 1, MPFR_RNDN);
-          mpfr_div_2exp (b, b, dif, MPFR_RNDN);
+          mpfr_div_2ui (b, b, dif, MPFR_RNDN);
           mpfr_sub_ui (b, b, 1, MPFR_RNDN);
-          mpfr_div_2exp (b, b, prec_a, MPFR_RNDN);
+          mpfr_div_2ui (b, b, prec_a, MPFR_RNDN);
           mpfr_add_ui (b, b, 1, MPFR_RNDN);
           for (prec_c = dif; prec_c <= 64; prec_c++)
             {
               /* c = 2^(-prec_a) - 2^(-prec_b) */
               mpfr_set_prec (c, prec_c);
               mpfr_set_si (c, -1, MPFR_RNDN);
-              mpfr_div_2exp (c, c, dif, MPFR_RNDN);
+              mpfr_div_2ui (c, c, dif, MPFR_RNDN);
               mpfr_add_ui (c, c, 1, MPFR_RNDN);
-              mpfr_div_2exp (c, c, prec_a, MPFR_RNDN);
+              mpfr_div_2ui (c, c, prec_a, MPFR_RNDN);
               test_add (a, b, c, MPFR_RNDN);
               if (mpfr_cmp_ui (a, 1) != 0)
                 {
@@ -1267,7 +1267,7 @@ test_rndf_exact (mp_size_t pmax)
           for (eb = 0; eb <= pmax + 3; eb ++)
             {
               mpfr_urandomb (b, RANDS);
-              mpfr_mul_2exp (b, b, eb, MPFR_RNDN);
+              mpfr_mul_2ui (b, b, eb, MPFR_RNDN);
               for (pc = MPFR_PREC_MIN; pc <= pmax; pc++)
                 {
                   if ((pc + 2) % GMP_NUMB_BITS > 4)
