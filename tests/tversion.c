@@ -54,7 +54,7 @@ main (void)
    * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
    *
    * For ICC, do not check the __ICC macro as it is obsolete and not always
-   * defined.
+   * defined (in particular, on MS Windows).
    */
 #define COMP "[tversion] Compiler: "
 #ifdef __INTEL_COMPILER
