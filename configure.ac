@@ -404,9 +404,8 @@ AC_ARG_ENABLE(lto,
       *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
      esac])
 
-dnl Check if compiler is ICC, and if such a case, disable GCC
-dnl And add some specific flags.
-dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).
+dnl If the compiler is ICC, add some specific flags.
+dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).
 dnl Add -long_double flags? Don't use -pc64 !
 dnl Notes (VL):
 dnl   * With icc 10.1 20080212 on itanium, the __ICC macro is not defined,
