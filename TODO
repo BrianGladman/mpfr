@@ -609,15 +609,6 @@ Table of contents:
   that is, with a large error during the computation of the secondary term
   (when the TMD occurs).
 
-- add internal or public variants of some basic functions (+, -, *) with
-  mpz_t as the exponent for correctly rounded polynomials (like fmma),
-  in order to avoid internal overflow and underflow in extreme cases?
-  Alternatively, for fmma, modify add*.c and sub*.c code to define
-  mpfr_add_raw, which takes arrays of limbs and their precision, and the
-  positive exponent delta (as mpfr_uexp_t to be always representable).
-  The exponent delta should be sufficient for now since it can be bounded
-  by MPFR_PREC_MAX+1 if need be.
-
 - use the keyword "static" in array indices of parameter declarations with
   C99 compilers (6.7.5.3p7) when the pointer is expected not to be null?
   For instance, if mpfr.h is changed to have:
