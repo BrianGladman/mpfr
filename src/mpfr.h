@@ -838,17 +838,8 @@ __MPFR_DECLSPEC int mpfr_total_order (mpfr_srcptr, mpfr_srcptr);
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))
 
 
-/* When using GCC, optimize certain common comparisons and affectations.
-   + Remove some Intel C/C++ (ICC) versions since they now define __GNUC__
-     but produce a huge number of warnings if you use this code.
-     VL: I couldn't reproduce a single warning when enabling these macros
-     with icc 10.1 20080212 on Itanium. But with this version, the obsolete
-     __ICC macro isn't defined (__INTEL_COMPILER is, though), so that these
-     macros are enabled anyway. Checking with other ICC versions is needed.
-     For now, !defined(__ICC) seems to be the right test. Possibly detect
-     whether warnings are produced or not with a configure test.
-   + Remove C++ too, since it complains too much. */
-/* Added casts to improve robustness in case of undefined behavior and
+/* When using GCC or ICC, optimize certain common comparisons and affectations.
+   Added casts to improve robustness in case of undefined behavior and
    compiler extensions based on UB (in particular -fwrapv). MPFR doesn't
    use such extensions, but these macros will be used by 3rd-party code,
    where such extensions may be required.
@@ -868,7 +859,7 @@ __MPFR_DECLSPEC int mpfr_total_order (mpfr_srcptr, mpfr_srcptr);
    If this is not possible (for future macros), one of the tricks described
    on http://groups.google.com/group/comp.std.c/msg/e92abd24bf9eaf7b could
    be used. */
-#if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
+#if defined (__GNUC__) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 
 #undef mpfr_cmp_ui

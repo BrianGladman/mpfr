@@ -39,8 +39,6 @@ Table of contents:
 
 - update ICC detection.
   * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
-  * Possibly enable some features with ICC. For instance, removing
-    "&& !defined(__ICC)" from src/mpfr.h works with ICC 15.0.0 20140723.
 
 ##############################################################################
 3. Changes in existing functions
