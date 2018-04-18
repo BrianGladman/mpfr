@@ -698,6 +698,84 @@ test_underflow3 (int n)
   mpfr_clears (x, y, z, t1, t2, (mpfr_ptr) 0);
 }
 
+/* Test s = x*y + z with PREC(z) > PREC(s) + 1, x*y underflows, where
+   z + x*y and z + sign(x*y) * 2^(emin-1) do not give the same result.
+     x = 2^emin
+     y = 2^(-8)
+     z = 2^emin * (2^PREC(s) + k - 2^(-1))
+   with k = 3 for MPFR_RNDN and k = 2 for the directed rounding modes.
+   Also test the opposite versions with neg != 0.
+*/
+static void
+test_underflow4 (void)
+{
+  mpfr_t x, y, z, s1, s2;
+  mpfr_prec_t ps = 32;
+  int inex, rnd;
+
+  mpfr_inits2 (MPFR_PREC_MIN, x, y, (mpfr_ptr) 0);
+  mpfr_inits2 (ps, s1, s2, (mpfr_ptr) 0);
+  mpfr_init2 (z, ps + 2);
+
+  inex = mpfr_set_si_2exp (x, 1, mpfr_get_emin (), MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  inex = mpfr_set_si_2exp (y, 1, -8, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+
+  RND_LOOP_NO_RNDF (rnd)
+    {
+      mpfr_flags_t flags1, flags2;
+      int inex1, inex2;
+      int neg;
+
+      inex = mpfr_set_si_2exp (z, 1 << 1, ps, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_sub_ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_div_2ui (z, z, 1, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_add_ui (z, z, rnd == MPFR_RNDN ? 3 : 2, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      inex = mpfr_mul (z, z, x, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+
+      for (neg = 0; neg <= 3; neg++)
+        {
+          inex1 = mpfr_set (s1, z, (mpfr_rnd_t) rnd);
+          flags1 = MPFR_FLAGS_INEXACT;
+
+          mpfr_clear_flags ();
+          inex2 = mpfr_fma (s2, x, y, z, (mpfr_rnd_t) rnd);
+          flags2 = __gmpfr_flags;
+
+          if (! (mpfr_equal_p (s1, s2) &&
+                 SAME_SIGN (inex1, inex2) &&
+                 flags1 == flags2))
+            {
+              printf ("Error in test_underflow4 for %s\n",
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              printf ("Expected ");
+              mpfr_dump (s1);
+              printf ("  with inex ~ %d, flags =", inex1);
+              flags_out (flags1);
+              printf ("Got      ");
+              mpfr_dump (s2);
+              printf ("  with inex ~ %d, flags =", inex2);
+              flags_out (flags2);
+              exit (1);
+            }
+
+          if (neg == 0 || neg == 2)
+            mpfr_neg (x, x, MPFR_RNDN);
+          if (neg == 1 || neg == 3)
+            mpfr_neg (y, y, MPFR_RNDN);
+          mpfr_neg (z, z, MPFR_RNDN);
+        }
+    }
+
+  mpfr_clears (x, y, z, s1, s2, (mpfr_ptr) 0);
+}
+
 static void
 bug20101018 (void)
 {
@@ -1201,6 +1279,7 @@ main (int argc, char *argv[])
       test_underflow1 ();
       test_underflow2 ();
       test_underflow3 (i);
+      test_underflow4 ();
     }
 
   tests_end_mpfr ();
