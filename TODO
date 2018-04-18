@@ -37,16 +37,6 @@ Table of contents:
 2. Compiler/library detection
 ##############################################################################
 
-- if we want to distinguish GMP and MPIR, we can check at configure time
-  the following symbols which are only defined in MPIR:
-
-  #define __MPIR_VERSION 0
-  #define __MPIR_VERSION_MINOR 9
-  #define __MPIR_VERSION_PATCHLEVEL 0
-
-  There is also a library symbol mpir_version, which should match VERSION, set
-  by configure, for example 0.9.0.
-
 - update ICC detection.
   * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
   * Possibly enable some features with ICC. For instance, removing
