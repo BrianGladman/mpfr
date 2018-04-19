@@ -77,16 +77,17 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
          possible for p=53, because the largest significand is 6369051672525772
          but its square has only 52 leading ones. For p=24 it is possible,
          with b = 11863283, whose square has 24 leading ones. */
-      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 && ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA (rnd_mode, 0) && (rb | sb))))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
          we have to change to RNDZ. This corresponds to:
          (a) either ax < emin - 1
          (b) or ax = emin - 1 and ap[0] = 1000....000 and rb = sb = 0 */
       if (rnd_mode == MPFR_RNDN &&
-          (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
+          (ax < __gmpfr_emin - 1 ||
+           (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
     }
@@ -106,7 +107,7 @@ mpfr_sqr_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       else
         goto add_one_ulp;
     }
-  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+  else if (MPFR_IS_LIKE_RNDZ (rnd_mode, 0))
     {
     truncate:
       MPFR_ASSERTD(ax >= __gmpfr_emin);
@@ -202,7 +203,7 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
       else
         goto add_one_ulp;
     }
-  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+  else if (MPFR_IS_LIKE_RNDZ (rnd_mode, 0))
     {
     truncate:
       MPFR_ASSERTD(ax >= __gmpfr_emin);
@@ -301,11 +302,11 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
          and this is not possible with 1-2^(-p) <= b < 1.
          For emin even, it is possible for some values of p, for example for
          p=69 with b=417402170410649030795*2^k. */
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA (rnd_mode, 0) && (rb | sb))))
         goto rounding; /* no underflow */
       /* for RNDN, mpfr_underflow always rounds away, thus for
          |a| <= 2^(emin-2) we have to change to RNDZ */
@@ -331,7 +332,7 @@ mpfr_sqr_2 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       else
         goto add_one_ulp;
     }
-  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+  else if (MPFR_IS_LIKE_RNDZ (rnd_mode, 0))
     {
     truncate:
       MPFR_ASSERTD(ax >= __gmpfr_emin);
@@ -438,12 +439,12 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
      a >= 0.111...111[1]*2^(emin-1), there is no underflow. */
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
-      if ((ax == __gmpfr_emin - 1) &&
-          (ap[2] == MPFR_LIMB_MAX) &&
-          (ap[1] == MPFR_LIMB_MAX) &&
-          (ap[0] == ~mask) &&
+      if (ax == __gmpfr_emin - 1 &&
+          ap[2] == MPFR_LIMB_MAX &&
+          ap[1] == MPFR_LIMB_MAX &&
+          ap[0] == ~mask &&
           ((rnd_mode == MPFR_RNDN && rb) ||
-           (MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)) && (rb | sb))))
+           (MPFR_IS_LIKE_RNDA (rnd_mode, 0) && (rb | sb))))
         goto rounding; /* no underflow */
       /* for RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
          we have to change to RNDZ */
@@ -470,7 +471,7 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
       else
         goto add_one_ulp;
     }
-  else if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG(a)))
+  else if (MPFR_IS_LIKE_RNDZ (rnd_mode, 0))
     {
     truncate:
       MPFR_ASSERTD(ax >= __gmpfr_emin);
