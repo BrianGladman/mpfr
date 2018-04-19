@@ -163,15 +163,18 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(ax < __gmpfr_emin))
     {
       /* As seen in mpfr_mul_1, we cannot have a0 = 111...111 here if there
-         was not exponent decrease (ax--) above.
-         In the case of an exponent decrease, it is not possible for
-         GMP_NUMB_BITS=32 since the largest b0 such that b0^2 < 2^(2*32-1)
-         is b0=3037000499, but its square has only 30 leading ones.
-         For GMP_NUMB_BITS=64 it is possible: the largest b0 is
-         13043817825332782212, and its square has 64 leading ones,
-         but since the next bit is rb=0, for RNDN we always have underflow. */
-      if ((ax == __gmpfr_emin - 1) && (ap[0] == ~MPFR_LIMB_ZERO) &&
-          MPFR_IS_LIKE_RNDA(rnd_mode, MPFR_IS_NEG (a)))
+         was not an exponent decrease (ax--) above.
+         In the case of an exponent decrease:
+         - For GMP_NUMB_BITS=32, a0 = 111...111 is not possible since the
+           largest b0 such that b0^2 < 2^(2*32-1) is b0=3037000499, but
+           its square has only 30 leading ones.
+         - For GMP_NUMB_BITS=64, a0 = 111...111 is possible: the largest b0
+           is 13043817825332782212, and its square has 64 leading ones; but
+           since the next bit is rb=0, for RNDN, we always have an underflow.
+         For the test below, note that a is positive.
+      */
+      if (ax == __gmpfr_emin - 1 && ap[0] == MPFR_LIMB_MAX &&
+          MPFR_IS_LIKE_RNDA (rnd_mode, 0))
         goto rounding; /* no underflow */
       /* For RNDN, mpfr_underflow always rounds away, thus for |a| <= 2^(emin-2)
          we have to change to RNDZ. This corresponds to:
