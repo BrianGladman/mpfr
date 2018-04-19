@@ -42,7 +42,7 @@ equal_flt (float f, float g)
       mpfr_set_flt (z, g, MPFR_RNDN);
       sg = mpfr_signbit (z);
       mpfr_clear (z);
-      return sf == sg;
+      return !sf == !sg;
     }
 }
 
