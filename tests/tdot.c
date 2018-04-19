@@ -38,7 +38,7 @@ check_simple (void)
     }
 
   i = mpfr_dot (r, tabp, tabp, 3, MPFR_RNDN);
-  if (mpfr_cmp_ui (r, 3) || i != 0)
+  if (mpfr_cmp_ui0 (r, 3) || i != 0)
     {
       printf ("Error in check_simple\n");
       exit (1);
@@ -53,78 +53,111 @@ check_special (void)
   mpfr_t tab[3], r;
   mpfr_ptr tabp[3];
   int i;
+  int rnd;
 
   mpfr_inits2 (53, tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
   tabp[0] = tab[0];
   tabp[1] = tab[1];
   tabp[2] = tab[2];
 
-  i = mpfr_dot (r, tabp, tabp, 0, MPFR_RNDN);
-  if (!MPFR_IS_ZERO (r) || !MPFR_IS_POS (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case n==0 failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 0, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_ZERO (r) || !MPFR_IS_POS (r) || i != 0)
+        {
+          printf ("Special case n==0 failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   mpfr_set_ui (tab[0], 42, MPFR_RNDN);
-  i = mpfr_dot (r, tabp, tabp, 1, MPFR_RNDN);
-  if (mpfr_cmp_ui (r, 42*42) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case n==1 failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 1, (mpfr_rnd_t) rnd);
+      if (mpfr_cmp_ui0 (r, 42*42) || i != 0)
+        {
+          printf ("Special case n==1 failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   mpfr_set_ui (tab[1], 17, MPFR_RNDN);
   MPFR_SET_NAN (tab[2]);
-  i = mpfr_dot (r, tabp, tabp, 3, MPFR_RNDN);
-  if (!MPFR_IS_NAN (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case NAN failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 3, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_NAN (r) || i != 0)
+        {
+          printf ("Special case NAN failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_POS (tab[2]);
-  i = mpfr_dot (r, tabp, tabp, 3, MPFR_RNDN);
-  if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case +INF failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 3, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
+        {
+          printf ("Special case +INF failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_NEG (tab[2]);
-  i = mpfr_dot (r, tabp, tabp, 3, MPFR_RNDN);
-  if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case -INF failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 3, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
+        {
+          printf ("Special case +INF failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   MPFR_SET_ZERO (tab[1]);
-  i = mpfr_dot (r, tabp, tabp, 2, MPFR_RNDN);
-  if (mpfr_cmp_ui (r, 42*42) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case 42+0 failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 2, (mpfr_rnd_t) rnd);
+      if (mpfr_cmp_ui0 (r, 42*42) || i != 0)
+        {
+          printf ("Special case 42+0 failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   MPFR_SET_NAN (tab[0]);
-  i = mpfr_dot (r, tabp, tabp, 3, MPFR_RNDN);
-  if (!MPFR_IS_NAN (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case NAN+0+-INF failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp, 3, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_NAN (r) || i != 0)
+        {
+          printf ("Special case NAN+0+-INF failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   mpfr_set_inf (tab[0], 1);
   mpfr_set_inf (tab[0], 1);
   mpfr_set_inf (tab[2], -1);
-  i = mpfr_dot (r, tabp, tabp + 1, 2, MPFR_RNDN);
-  if (!MPFR_IS_NAN (r) || i != 0)
+  RND_LOOP (rnd)
     {
-      printf ("Special case inf*inf-inf*inf failed!\n");
-      exit (1);
+      i = mpfr_dot (r, tabp, tabp + 1, 2, (mpfr_rnd_t) rnd);
+      if (!MPFR_IS_NAN (r) || i != 0)
+        {
+          printf ("Special case inf*inf-inf*inf failed for %s!\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+          exit (1);
+        }
     }
 
   mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
