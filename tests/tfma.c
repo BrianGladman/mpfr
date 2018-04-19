@@ -1254,6 +1254,7 @@ main (int argc, char *argv[])
     {
       if (i == 0)
         {
+          /* corresponds to the generic code + mpfr_check_range */
           set_emin (-1024);
           set_emax (1024);
         }
