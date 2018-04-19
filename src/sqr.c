@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Special code for prec(a) < GMP_NUMB_BITS and prec(b) <= GMP_NUMB_BITS.
    Note: this function was copied from mpfr_mul_1 in file mul.c, thus any
-   changehere should be done also in mpfr_mul_1.
+   change here should be done also in mpfr_mul_1.
    Although this function works as soon as prec(a) < GMP_NUMB_BITS and
    prec(b) <= GMP_NUMB_BITS, we use it for prec(a)=prec(b) < GMP_NUMB_BITS. */
 static int
