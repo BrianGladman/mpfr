@@ -22,8 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-static
-void check_simple (void)
+static void
+check_simple (void)
 {
   mpfr_t tab[3], r;
   mpfr_ptr tabp[3];
@@ -47,8 +47,8 @@ void check_simple (void)
   mpfr_clears (tab[0], tab[1], tab[2], r, (mpfr_ptr) 0);
 }
 
-static
-void check_special (void)
+static void
+check_special (void)
 {
   mpfr_t tab[3], r;
   mpfr_ptr tabp[3];
