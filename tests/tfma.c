@@ -726,7 +726,7 @@ test_underflow4 (void)
     {
       mpfr_flags_t flags1, flags2;
       int inex1, inex2;
-      int neg;
+      unsigned int neg;
 
       inex = mpfr_set_si_2exp (z, 1 << 1, ps, MPFR_RNDN);
       MPFR_ASSERTN (inex == 0);
@@ -752,8 +752,8 @@ test_underflow4 (void)
                  SAME_SIGN (inex1, inex2) &&
                  flags1 == flags2))
             {
-              printf ("Error in test_underflow4 for %s\n",
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              printf ("Error in test_underflow4 for neg=%u %s\n",
+                      neg, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               printf ("Expected ");
               mpfr_dump (s1);
               printf ("  with inex ~ %d, flags =", inex1);
