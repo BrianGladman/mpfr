@@ -2451,7 +2451,8 @@ Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
 whose common size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
 @var{a} and @var{b} are arrays of pointers to @code{mpfr_t}.
-This function is experimental, and does not yet handle intermediate overflows.
+This function is experimental, and does not yet handle intermediate overflows
+and underflows.
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface

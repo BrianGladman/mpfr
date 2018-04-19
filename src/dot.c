@@ -22,7 +22,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* res -> a[0]*b[0] + ... + a[n-1]*b[n-1] */
+/* FIXME: handle intermediate overflows and underflows. */
+
+/* res <- a[0]*b[0] + ... + a[n-1]*b[n-1] */
 int
 mpfr_dot (mpfr_ptr res, const mpfr_ptr *a, const mpfr_ptr *b,
           unsigned long n, mpfr_rnd_t rnd)
@@ -32,16 +34,20 @@ mpfr_dot (mpfr_ptr res, const mpfr_ptr *a, const mpfr_ptr *b,
   int inex;
   mpfr_ptr *tab;
 
-  if (n == 0)
-    return mpfr_set_ui (res, 0, MPFR_RNDZ);
+  if (MPFR_UNLIKELY (n == 0))
+    {
+      MPFR_SET_ZERO (res);
+      MPFR_SET_POS (res);
+      MPFR_RET (0);
+    }
 
-  c = (mpfr_t*) mpfr_allocate_func (n * sizeof (mpfr_t));
-  tab = (mpfr_ptr*) mpfr_allocate_func (n * sizeof (mpfr_ptr));
+  c = (mpfr_t *) mpfr_allocate_func (n * sizeof (mpfr_t));
+  tab = (mpfr_ptr *) mpfr_allocate_func (n * sizeof (mpfr_ptr));
   for (i = 0; i < n; i++)
     {
       mpfr_init2 (c[i], mpfr_get_prec (a[i]) + mpfr_get_prec (b[i]));
-      inex = mpfr_mul (c[i], a[i], b[i], MPFR_RNDZ); /* exact */
-      MPFR_ASSERTD (inex == 0);
+      inex = mpfr_mul (c[i], a[i], b[i], MPFR_RNDZ); /* exact except... */
+      MPFR_ASSERTN (inex == 0); /* failure in case of overflow/underflow */
       tab[i] = c[i];
     }
   inex = mpfr_sum (res, tab, n, rnd);
