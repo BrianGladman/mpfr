@@ -19,11 +19,11 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs		\
      tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi	\
      tcopysign tcos tcosh tcot tcoth tcsc tcsch td_div td_sub tdigamma	\
-     tdim tdiv tdiv_d tdiv_ui teint teq terandom terandom_chisq terf	\
-     texp texp10 texp2 texpm1 tfactorial tfits tfma tfmma tfmod tfms	\
-     tfpif tfprintf tfrac tfrexp tgamma tgamma_inc tget_d tget_d_2exp	\
-     tget_f tget_flt tget_ld_2exp tget_q tget_set_d64 tget_sj		\
-     tget_str tget_z tgmpop tgrandom thyperbolic thypot tinp_str	\
+     tdim tdiv tdiv_d tdiv_ui tdot teint teq terandom terandom_chisq    \
+     terf texp texp10 texp2 texpm1 tfactorial tfits tfma tfmma tfmod    \
+     tfms tfpif tfprintf tfrac tfrexp tgamma tgamma_inc tget_d          \
+     tget_d_2exp tget_f tget_flt tget_ld_2exp tget_q tget_set_d64       \
+     tget_sj tget_str tget_z tgmpop tgrandom thyperbolic thypot tinp_str \
      tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2	\
      tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui	\
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3		\

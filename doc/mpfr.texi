@@ -2446,6 +2446,14 @@ the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
 @end itemize
 @end deftypefun
 
+@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}[], const mpfr_ptr @var{b}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
+whose common size is @var{n},
+correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
+@var{a} and @var{b} are arrays of pointers to @code{mpfr_t}.
+This function is experimental, and does not yet handle intermediate overflows.
+@end deftypefun
+
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float input and output functions
@@ -3969,6 +3977,8 @@ use @code{mpfr_custom_get_mantissa}.
 @item @code{mpfr_divby0_p} in MPFR 3.1 (new divide-by-zero exception).
 
 @item @code{mpfr_div_d} in MPFR 2.4.
+
+@item @code{mpfr_dot} in MPFR 4.1.
 
 @item @code{mpfr_erandom} in MPFR 4.0.
 
