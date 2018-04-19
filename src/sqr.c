@@ -181,7 +181,8 @@ mpfr_sqr_1n (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
          (a) either ax < emin - 1
          (b) or ax = emin - 1 and ap[0] = 1000....000 and rb = sb = 0 */
       if (rnd_mode == MPFR_RNDN &&
-          (ax < __gmpfr_emin - 1 || (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
+          (ax < __gmpfr_emin - 1 ||
+           (ap[0] == MPFR_LIMB_HIGHBIT && (rb | sb) == 0)))
         rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
     }
