@@ -3978,7 +3978,7 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_div_d} in MPFR 2.4.
 
-@item @code{mpfr_dot} in MPFR 4.1.
+@item @code{mpfr_dot} in MPFR 4.1 (incomplete, experimental).
 
 @item @code{mpfr_erandom} in MPFR 4.0.
 
