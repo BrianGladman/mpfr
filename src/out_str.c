@@ -80,10 +80,9 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
     {
       int r;
 
-      MPFR_ASSERTN(e >= LONG_MIN);
-      MPFR_ASSERTN(e <= LONG_MAX);
-
-      r = fprintf (stream, (base <= 10 ? "e%ld" : "@%ld"), (long) e);
+      r = fprintf (stream, (base <= 10 ?
+                            "e%" MPFR_EXP_FSPEC "d" :
+                            "@%" MPFR_EXP_FSPEC "d"), (mpfr_eexp_t) e);
       if (MPFR_UNLIKELY (r < 0))
         return 0;
 
