@@ -130,7 +130,9 @@ void *alloca (size_t);
 #define MP_SIZE_T_MIN      LONG_MIN
 #endif
 
-/* MP_LIMB macros */
+/* MP_LIMB macros.
+   Note: GMP now also has the MPN_FILL macro, and GMP's MPN_ZERO(dst,n) is
+   defined as if (n) MPN_FILL(dst, n, 0). */
 #define MPN_ZERO(dst, n) memset((dst), 0, (n)*MPFR_BYTES_PER_MP_LIMB)
 #define MPN_COPY(dst,src,n) \
   do                                                                  \
