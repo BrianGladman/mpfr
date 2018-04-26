@@ -268,10 +268,10 @@ test_cmp_z (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
       exit (1);
     }
 
-  for(p=pmin ; p < pmax ; p++)
+  for (p = pmin ; p < pmax ; p++)
     {
       mpfr_set_prec (x, p);
-      for ( n = 0; n < nmax ; n++)
+      for (n = 0 ; n < nmax ; n++)
         {
           mpfr_urandomb (x, RANDS);
           mpz_urandomb  (y, RANDS, 1024);
@@ -343,7 +343,7 @@ test_cmp_q (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
       exit (1);
     }
 
-  for(p=pmin ; p < pmax ; p++)
+  for (p = pmin ; p < pmax ; p++)
     {
       mpfr_set_prec (x, p);
       for (n = 0 ; n < nmax ; n++)
@@ -444,11 +444,11 @@ test_cmp_f (mpfr_prec_t pmin, mpfr_prec_t pmax, int nmax)
       exit (1);
     }
 
-  for(p=pmin ; p < pmax ; p+=3)
+  for (p = pmin ; p < pmax ; p += 3)
     {
       mpfr_set_prec (x, p);
       mpf_set_prec (y, p);
-      for ( n = 0; n < nmax ; n++)
+      for (n = 0 ; n < nmax ; n++)
         {
           mpfr_urandomb (x, RANDS);
           mpf_urandomb  (y, RANDS, p);
@@ -868,7 +868,7 @@ test_specialq (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int N,
       mpfr_inits2 (prec, fra, frb, frq, (mpfr_ptr) 0);
       mpq_init (q1); mpq_init(q2); mpq_init (qr);
 
-      for( n = 0 ; n < N ; n++)
+      for (n = 0 ; n < N ; n++)
         {
           mpq_set_ui(q1, randlimb(), randlimb() );
           mpq_set_ui(q2, randlimb(), randlimb() );
