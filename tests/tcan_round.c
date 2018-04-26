@@ -38,6 +38,9 @@ test_simple (void)
           mpfr_t b;
           int p, err, prec, inex, c;
 
+          /* TODO: Test r2 == MPFR_RNDF. The following "continue"
+             was added while this case had not been specified
+             yet, but this is no longer the case. */
           if (r2 == MPFR_RNDF)
             continue;
           p = 12 + (randlimb() % (2 * GMP_NUMB_BITS));
@@ -246,6 +249,9 @@ check_can_round (void)
                   RND_LOOP (rnd1)
                     RND_LOOP (rnd2)
                       {
+                        /* TODO: Test r2 == MPFR_RNDF. The following "continue"
+                           was added while this case had not been specified
+                           yet, but this is no longer the case. */
                         if (rnd2 == MPFR_RNDF)
                           continue;
                         mpfr_set (yinf, MPFR_IS_LIKE_RNDD (rnd1, 1) ?
@@ -367,11 +373,10 @@ main (void)
     for (j = 30; j < 99; j++)
       RND_LOOP (r1)
         RND_LOOP (r2)
-          if (r2 != MPFR_RNDF)
-            {
-              /* test for assertions */
-              mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
-            }
+          {
+            /* test for assertions */
+            mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j);
+          }
 
   test_pow2 (32, 32, MPFR_RNDN, MPFR_RNDN, 32);
   test_pow2 (174, 174, MPFR_RNDN, MPFR_RNDN, 174);
@@ -383,6 +388,9 @@ main (void)
   /* Tests for x = 2^i (E(x) = i+1) with error at most 1 = 2^0. */
   for (n = 0; n < 100; n++)
     {
+      /* TODO: Test r2 == MPFR_RNDF (add its support in test_pow2). The
+         exclusion below was added while this case had not been specified
+         yet, but this is no longer the case. */
       i = (randlimb() % 200) + 4;
       for (j = i - 2; j < i + 2; j++)
         RND_LOOP (r1)
