@@ -675,7 +675,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto underflow, goto overflow);
 
-          /* (z, exp_z) = base^(exp_base-pstr_size) */
+          /* (z, exp_z) = base^(pstr_size - exp_base) */
           z = result + 2*ysize + 1;
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
           /* Since we want y/z rounded toward zero, we must get an upper
@@ -691,9 +691,17 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               /* Modify z to get the upper bound. */
               cy = mpn_add_1 (z + h, z + h, ysize - h, MPFR_LIMB_ONE << l);
               /* A nonzero carry (cy != 0) means this upper bound does not
-                 fit on ysize limbs, required by the code below. */
+                 fit on ysize limbs, required by the code below. This can
+                 occur when base^(pstr_size - exp_base) is slightly below
+                 a power of 2. */
               if (cy != 0) /* not enough precision in z for this code */
-                goto next_loop;
+                {
+                  MPFR_LOG_MSG (("cy != 0 for base=%d exp_base=%"
+                                 MPFR_EXP_FSPEC"d pstr_size=%zu\n",
+                                 pstr->base, (mpfr_eexp_t) pstr->exp_base,
+                                 pstr_size));
+                  goto next_loop;
+                }
             }
           exact = exact && (err == -1);
           if (err == -2)
