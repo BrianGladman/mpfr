@@ -377,6 +377,13 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   res = 1;
   MPFR_ASSERTD (pstr->exp_base >= 0);
 
+  /* FIXME: In the code below (both cases), if the exponent from the
+     string is large, it will be replaced by MPFR_EXP_MIN or MPFR_EXP_MAX,
+     i.e. it will have a different value. This may not change the result
+     in most cases, but there is no guarantee on very long strings when
+     mpfr_exp_t is a 32-bit type, as the exponent could be brought back
+     to the current exponent range. */
+
   /* an optional exponent (e or E, p or P, @) */
   if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E')))
        && (!isspace((unsigned char) str[1])) )
