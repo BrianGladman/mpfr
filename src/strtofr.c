@@ -680,6 +680,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
           /* Since we want y/z rounded toward zero, we must get an upper
              bound on z. If err >= 0, the error on z is bounded by 2^err. */
+          /* TODO: Is this necessary? If this has an effect on the
+             rounded result, doesn't this mean that mpfr_round_p will
+             catch the error and yield a Ziv loop?
+             Disabling this code by adding "0 &&" in front of "err >= 0"
+             with r12685 does not yield any "make check" failure for both
+             the 32-bit and the 64-bit ABI's.
+             If this code is unnecessary, this would also mean that r12573
+             actually did not fix anything. */
           if (err >= 0)
             {
               mp_limb_t cy;
