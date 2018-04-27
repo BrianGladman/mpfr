@@ -681,8 +681,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
               if (h >= ysize) /* not enough precision in z */
                 goto next_loop;
+              /* Modify z to get the upper bound. */
               cy = mpn_add_1 (z + h, z + h, ysize - h, MPFR_LIMB_ONE << l);
-              if (cy != 0) /* the code below requires z on ysize limbs */
+              /* A nonzero carry (cy != 0) means this upper bound does not
+                 fit on ysize limbs, required by the code below. */
+              if (cy != 0) /* not enough precision in z for this code */
                 goto next_loop;
             }
           exact = exact && (err == -1);
@@ -691,8 +694,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           if (err == -1)
             err = 0;
 
-          /* compute y / z */
-          /* result will be put into result + n, and remainder into result */
+          /* Compute the integer division y/z rounded toward zero.
+             The quotient will be put at result + ysize (size: ysize + 1),
+             and the remainder at result (size: ysize). */
           mpn_tdiv_qr (result + ysize, result, (mp_size_t) 0, y,
                        2 * ysize, z, ysize);
 
