@@ -680,9 +680,10 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
           /* Since we want y/z rounded toward zero, we must get an upper
              bound on z. If err >= 0, the error on z is bounded by 2^err. */
-          /* TODO: Is this necessary? If this has an effect on the
-             rounded result, doesn't this mean that mpfr_round_p will
-             catch the error and yield a Ziv loop?
+          /* TODO: Taking the upper bound comes from r8384, but the purpose
+             of this change is unclear. If this has an effect on the rounded
+             result, doesn't this mean that mpfr_round_p will catch the error
+             and yield a Ziv loop?
              More precisely, after mpfr_mpn_exp, the exact value of b^e
              is between z and z + 2^err. If one takes the upper bound
              z + 2^err (current code), then the error will be:
