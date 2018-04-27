@@ -690,13 +690,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              with
                eps1 = y/b^e - y/(z + 2^err) >= 0
                eps2 = y/(z + 2^err) - trunc(y/(z + 2^err)) >= 0
-             thus the errors will accumulate.
+             thus the errors will accumulate, giving a bound |eps1| + |eps2|.
              If one takes the lower bound z, then the error will be:
                y/b^e - trunc(y/z) = eps1 + eps2
              with
                eps1 = y/b^e - y/z <= 0
                eps2 = y/z - trunc(y/z) >= 0
-             thus the errors will (partly) compensate.
+             thus the errors will (partly) compensate, giving a better bound
+             max(|eps1|,|eps2|).
              Disabling this code by adding "0 &&" in front of "err >= 0"
              with r12685 does not yield any "make check" failure for both
              the 32-bit and the 64-bit ABI's.
