@@ -683,6 +683,20 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* TODO: Is this necessary? If this has an effect on the
              rounded result, doesn't this mean that mpfr_round_p will
              catch the error and yield a Ziv loop?
+             More precisely, after mpfr_mpn_exp, the exact value of b^e
+             is between z and z + 2^err. If one takes the upper bound
+             z + 2^err (current code), then the error will be:
+               y/b^e - trunc(y/(z + 2^err)) = eps1 + eps2
+             with
+               eps1 = y/b^e - y/(z + 2^err) >= 0
+               eps2 = y/(z + 2^err) - trunc(y/(z + 2^err)) >= 0
+             thus the errors will accumulate.
+             If one takes the lower bound z, then the error will be:
+               y/b^e - trunc(y/z) = eps1 + eps2
+             with
+               eps1 = y/b^e - y/z <= 0
+               eps2 = y/z - trunc(y/z) >= 0
+             thus the errors will (partly) compensate.
              Disabling this code by adding "0 &&" in front of "err >= 0"
              with r12685 does not yield any "make check" failure for both
              the 32-bit and the 64-bit ABI's.
