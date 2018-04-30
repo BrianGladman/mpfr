@@ -124,7 +124,7 @@ random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
                            sizeof (mpfr_random_size_t) >=
                            sizeof (mpfr_uprec_t));
 
-  /* Finally, at runtime, check that k is not too big.  e is set to ceil(k/W)*W
+  /* Finally, at run time, check that k is not too big.  e is set to ceil(k/W)*W
    * and we require that this allows x->e + 1 in random_deviate_leading_bit to
    * be computed without overflow. */
   MPFR_ASSERTN (k <= (mpfr_random_size_t)(-((int) W + 1)));

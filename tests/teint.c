@@ -191,7 +191,7 @@ check_specials (void)
       exit (1);
     }
 
-  /* Runtime error at si_op.c:42:31 with r9996 on an x86-64 Linux machine,
+  /* Run-time error at si_op.c:42:31 with r9996 on an x86-64 Linux machine,
      using CFLAGS="-fsanitize=undefined -fno-sanitize-recover". */
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 46);

@@ -387,7 +387,7 @@ main (void)
 #endif
           "\n");
 
-  /************************** Runtime information **************************/
+  /************************* Run-time information **************************/
 
   if (locale != NULL)
     printf ("[tversion] Locale: %s\n", locale);
