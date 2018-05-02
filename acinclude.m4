@@ -583,6 +583,17 @@ dnl Check if decimal floats are available.
 dnl For the different cases, we try to use values that will not be returned
 dnl by build tools. For instance, 1 must not be used as it can be returned
 dnl by ld in case of link failure.
+dnl Note: We currently reread the 64-bit data memory as a double and compare
+dnl it with constants. However, if there is any issue with double, such as
+dnl the use of an extended precision, this may fail. Possible solutions:
+dnl   1. Use the hex format for the double constants (this format should be
+dnl      supported if _Decimal64 is).
+dnl   2. Use more precision in the double constants (more decimal digits),
+dnl      just in case.
+dnl   3. Use uint64_t (or unsigned long long, though this type might not be
+dnl      on 64 bits) instead of or in addition to the test on double.
+dnl   4. Use an array of 8 unsigned char's instead of or in addition to the
+dnl      test on double, considering the 2 practical cases of endianness.
 if test "$enable_decimal_float" != no; then
   AC_MSG_CHECKING(if compiler knows _Decimal64)
   AC_COMPILE_IFELSE(
