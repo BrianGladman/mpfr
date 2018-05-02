@@ -632,6 +632,8 @@ Table of contents:
   constants) because we do not have the control of memory allocation for
   mpz_init.
 
+- use GCC's nonnull and returns_nonnull attributes where applicable.
+
 
 ##############################################################################
 7. Portability
