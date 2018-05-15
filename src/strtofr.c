@@ -678,55 +678,19 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* (z, exp_z) = base^(pstr_size - exp_base) */
           z = result + 2*ysize + 1;
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
-          /* Since we want y/z rounded toward zero, we must get an upper
-             bound on z. If err >= 0, the error on z is bounded by 2^err. */
-          /* TODO: Taking the upper bound comes from r8384, but the purpose
-             of this change is unclear. If this has an effect on the rounded
-             result, doesn't this mean that mpfr_round_p will catch the error
-             and yield a Ziv loop?
-             More precisely, after mpfr_mpn_exp, the exact value of b^e
-             is between z and z + 2^err. If one takes the upper bound
-             z + 2^err (current code), then the error will be:
-               y/b^e - trunc(y/(z + 2^err)) = eps1 + eps2
-             with
-               eps1 = y/b^e - y/(z + 2^err) >= 0
-               eps2 = y/(z + 2^err) - trunc(y/(z + 2^err)) >= 0
-             thus the errors will accumulate, giving a bound |eps1| + |eps2|.
-             If one takes the lower bound z, then the error will be:
+          /* Now {z, ysize}*2^(exp_z_out - ysize_bits) is an approximation of
+             base^exp_z_in, rounded towards zero, with:
+             * if err=-1, the result is exact
+             * if err=-2, an overflow occurred in the computation of exp_z
+             * otherwise the error is bounded by 2^err ulps.
+             Thus the exact value of b^e is between z and z + 2^err (up to a
+             power of 2 multiplier for the exponent). Then the error will be:
                y/b^e - trunc(y/z) = eps1 + eps2
              with
                eps1 = y/b^e - y/z <= 0
                eps2 = y/z - trunc(y/z) >= 0
-             thus the errors will (partly) compensate, giving a better bound
-             max(|eps1|,|eps2|).
-             Disabling this code by adding "0 &&" in front of "err >= 0"
-             with r12685 does not yield any "make check" failure for both
-             the 32-bit and the 64-bit ABI's.
-             If this code is unnecessary, this would also mean that r12573
-             actually did not fix anything. */
-          if (err >= 0)
-            {
-              mp_limb_t cy;
-              unsigned long h = err / GMP_NUMB_BITS;
-              unsigned long l = err - h * GMP_NUMB_BITS;
-
-              if (h >= ysize) /* not enough precision in z */
-                goto next_loop;
-              /* Modify z to get the upper bound. */
-              cy = mpn_add_1 (z + h, z + h, ysize - h, MPFR_LIMB_ONE << l);
-              /* A nonzero carry (cy != 0) means this upper bound does not
-                 fit on ysize limbs, required by the code below. This can
-                 occur when base^(pstr_size - exp_base) is slightly below
-                 a power of 2. */
-              if (cy != 0) /* not enough precision in z for this code */
-                {
-                  MPFR_LOG_MSG (("cy != 0 for base=%d exp_base=%"
-                                 MPFR_EXP_FSPEC"d pstr_size=%zu\n",
-                                 pstr->base, (mpfr_eexp_t) pstr->exp_base,
-                                 pstr_size));
-                  goto next_loop;
-                }
-            }
+             thus the errors will (partly) compensate, giving a bound
+             max(|eps1|,|eps2|). */
           exact = exact && (err == -1);
           if (err == -2)
             goto underflow; /* FIXME: Sure? */
@@ -735,10 +699,33 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
           /* Compute the integer division y/z rounded toward zero.
              The quotient will be put at result + ysize (size: ysize + 1),
-             and the remainder at result (size: ysize). */
+             and the remainder at result (size: ysize).
+             Both the dividend {y, 2*ysize} and the divisor {z, ysize} are
+             normalized, i.e., the most significant bit of their most
+             significant limb is 1. */
+          MPFR_ASSERTD(y[2 * ysize - 1] & MPFR_LIMB_HIGHBIT);
+          MPFR_ASSERTD(z[ysize - 1] & MPFR_LIMB_HIGHBIT);
           mpn_tdiv_qr (result + ysize, result, (mp_size_t) 0, y,
                        2 * ysize, z, ysize);
 
+          /* The truncation error of the mpn_tdiv_qr call (eps2 above) is at
+             most 1 ulp. For the error eps1 coming from the approximation of
+             b^e, we have (still up to a power-of-2 normalization):
+             y/z - y/b^e = y*(b^e-z)/(z*b^e) <= y*2^err/(z*b^e).
+             We have to convert that error in terms of ulp(trunc(y/z)).
+             We first have ulp(trunc(y/z)) = ulp(y/z).
+             Since both y and z are normalized, the quotient
+             {result+ysize, ysize+1} has exactly ysize limbs, plus maybe one
+             bit.
+             If the quotient has exactly ysize limbs, then 1/2 <= |y/z| < 1
+             (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
+             most 2^(err+1) ulps.
+             If the quotient has one extra bit, then 1 <= |y/z| < 2
+             (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
+             most 2^(err+2) ulps; but since we will shift the result right
+             below by one bit, the final error will be at most 2^(err+1) ulps
+             too. */
+          
           /* exp -= exp_z + ysize_bits with overflow checking
              and check that we can add/subtract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
@@ -749,7 +736,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
                               goto overflow, goto underflow);
-          err += 2;
+
+          err += 1; /* see above for the explanation of the +1 term */
+
           /* if the remainder of the division is zero, then the result is
              still "exact" if it was before */
           exact = exact && (mpn_popcount (result, ysize) == 0);
@@ -795,7 +784,6 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                                  MPFR_PREC(x) + (rnd == MPFR_RNDN)))
         break;
 
-    next_loop:
       /* update the prec for next loop */
       MPFR_ZIV_NEXT (loop, prec);
     } /* loop */
