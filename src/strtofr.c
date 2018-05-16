@@ -690,7 +690,12 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                eps1 = y/b^e - y/z <= 0
                eps2 = y/z - trunc(y/z) >= 0
              thus the errors will (partly) compensate, giving a bound
-             max(|eps1|,|eps2|). */
+             max(|eps1|,|eps2|).
+             In addition there is a 3rd error eps3 since y might be the
+             conversion of only part of the characters strings, and/or y
+             might be truncated by the mpn_rshift call above:
+               eps3 = y0/b^e - y/b^e >= 0.
+          */
           exact = exact && (err == -1);
           if (err == -2)
             goto underflow; /* FIXME: Sure? */
@@ -709,22 +714,29 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                        2 * ysize, z, ysize);
 
           /* The truncation error of the mpn_tdiv_qr call (eps2 above) is at
-             most 1 ulp. For the error eps1 coming from the approximation of
+             most 1 ulp. Idem for the error eps3 which has the same sign,
+             thus eps2 + eps3 <= 2 ulps.
+             For the error eps1 coming from the approximation of
              b^e, we have (still up to a power-of-2 normalization):
              y/z - y/b^e = y*(b^e-z)/(z*b^e) <= y*2^err/(z*b^e).
              We have to convert that error in terms of ulp(trunc(y/z)).
              We first have ulp(trunc(y/z)) = ulp(y/z).
              Since both y and z are normalized, the quotient
              {result+ysize, ysize+1} has exactly ysize limbs, plus maybe one
-             bit.
-             If the quotient has exactly ysize limbs, then 1/2 <= |y/z| < 1
-             (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
-             most 2^(err+1) ulps.
-             If the quotient has one extra bit, then 1 <= |y/z| < 2
-             (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
-             most 2^(err+2) ulps; but since we will shift the result right
-             below by one bit, the final error will be at most 2^(err+1) ulps
-             too. */
+             bit:
+             * if the quotient has exactly ysize limbs, then 1/2 <= |y/z| < 1
+               (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
+               most 2^(err+1) ulps.
+             * if the quotient has one extra bit, then 1 <= |y/z| < 2
+               (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
+               most 2^(err+2) ulps; but since we will shift the result right
+               below by one bit, the final error will be at most 2^(err+1) ulps
+               too.
+
+             Thus the error is:
+             * at most 2^(err+1) ulps for eps1
+             * at most 2 ulps for eps2 + eps3, which is opposite sign
+             and we can bound the error by 2^(err+1) ulps in all cases. */
           
           /* exp -= exp_z + ysize_bits with overflow checking
              and check that we can add/subtract 2 to exp without overflow */
