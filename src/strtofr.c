@@ -737,7 +737,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              * at most 2^(err+1) ulps for eps1
              * at most 2 ulps for eps2 + eps3, which is opposite sign
              and we can bound the error by 2^(err+1) ulps in all cases. */
-          
+
           /* exp -= exp_z + ysize_bits with overflow checking
              and check that we can add/subtract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
