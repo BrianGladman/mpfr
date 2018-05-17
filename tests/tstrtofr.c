@@ -22,10 +22,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-/* TODO: Add a test that would fail if the mpn_add_1 and the next two lines
-   were removed from strtofr.c (such a test would also probably fail before
-   the fix r12573). */
-
 static void
 check_special (void)
 {
