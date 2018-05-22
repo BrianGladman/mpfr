@@ -2378,7 +2378,10 @@ extern "C" {
    an _Alignas alignment attribute (C11) could be added for UBF.
 
    When an input of a public function is a UBF, the semantic remains
-   internal to MPFR and can change in the future.
+   internal to MPFR and can change in the future. UBF arguments need
+   to be explicitly converted to mpfr_ptr (or mpfr_srcptr); be careful
+   with variadic functions, as the compiler will not be able to check
+   in general. See fmma.c as an example of usage.
 
    Note that functions used for logging need to support UBF (currently
    done by printing that a number is a UBF, as it may be difficult to
