@@ -2369,8 +2369,17 @@ extern "C" {
    and hopefully avoid aliasing issues at the same time. And code that
    accepts UBF in input should also accept mpfr_t as a consequence; this
    makes mpfr_t to UBF conversion unnecessary.
+
+   The alignment requirement for __mpfr_ubf_struct (UBF) needs to be at least
+   as strong as the one for __mpfr_struct (MPFR number); this is not required
+   by the C standard, but this should always be the case in practice, since
+   __mpfr_ubf_struct starts with the same members as those of __mpfr_struct.
+   If ever this would not be the case with some particular C implementation,
+   an _Alignas alignment attribute (C11) could be added for UBF.
+
    When an input of a public function is a UBF, the semantic remains
    internal to MPFR and can change in the future.
+
    Note that functions used for logging need to support UBF (currently
    done by printing that a number is a UBF, as it may be difficult to
    do more without significant changes). */
