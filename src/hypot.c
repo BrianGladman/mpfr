@@ -29,7 +29,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
-  int inexact, exact;
+  int inexact;
+  unsigned int exact;  /* Warning: 0 will mean "exact" */
   mpfr_t t, te, ti; /* auxiliary variables */
   mpfr_prec_t N, Nz; /* size variables */
   mpfr_prec_t Nt;   /* precision of the intermediary variable */
