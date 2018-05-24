@@ -69,6 +69,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         return mpfr_abs (z, x, rnd_mode);
     }
 
+  /* TODO: It may be sufficient to just compare the exponents.
+     The error analysis would need to be updated. */
   if (mpfr_cmpabs (x, y) < 0)
     {
       mpfr_srcptr u;
@@ -158,6 +160,11 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      handled by the diff_exp > threshold code; but this case is avoided
      thanks to a FMA (this problem is transferred to the FMA code). */
   sh = (mpfr_get_emax () - 1) / 2 - Ex;
+
+  /* TODO: The general case could be improved by first avoiding the
+     scaling and using 2 mpfr_sqr, a mpfr_add and a mpfr_sqrt, possibly
+     with faithful rounding. Use scaling and the code below only in case
+     of overflow or underflow. */
 
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
