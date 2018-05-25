@@ -2169,8 +2169,8 @@ __MPFR_DECLSPEC int mpfr_pow_general (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 __MPFR_DECLSPEC void mpfr_setmax (mpfr_ptr, mpfr_exp_t);
 __MPFR_DECLSPEC void mpfr_setmin (mpfr_ptr, mpfr_exp_t);
 
-__MPFR_DECLSPEC long mpfr_mpn_exp (mp_limb_t *, mpfr_exp_t *, int,
-                                   mpfr_exp_t, size_t);
+__MPFR_DECLSPEC int mpfr_mpn_exp (mp_limb_t *, mpfr_exp_t *, int,
+                                  mpfr_exp_t, size_t);
 
 #ifdef _MPFR_H_HAVE_FILE
 __MPFR_DECLSPEC void mpfr_fdump (FILE *, mpfr_srcptr);

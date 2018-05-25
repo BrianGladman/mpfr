@@ -36,7 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Return -2 if an overflow occurred in the computation of exp_r.
 */
 
-long
+int
 mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
 {
   mp_limb_t *c, B;
