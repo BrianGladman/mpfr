@@ -1205,6 +1205,31 @@ succeed), and this is unfixable in a portable way.
 
 ===========================================================================
 
+Shell portability
+-----------------
+
+Shell commands (in /bin/sh scripts, in Makefile and autotools related
+files...) need to be valid in POSIX shells, but also in Bourne shells
+(for instance, /bin/sh under Solaris is a Bourne shell).
+
+In particular:
+
+* Do not use $(...) but `...` (backticks).
+
+* Be careful that quote nesting with backticks such as "`cmd "$foo"`"
+  is not portable:
+
+    https://unix.stackexchange.com/q/387246/74516
+    ("quotes inside backticks inside quotes in ksh")
+
+  But the external quotes are not needed when assigning to a variable:
+
+    out=`cmd "$foo"`
+
+  Otherwise one can write "`cmd \"$foo\"`".
+
+===========================================================================
+
 For developers - Use of the svn:eol-style Subversion property
 
 The svn:eol-style Subversion property is traditionally set to "native" on
