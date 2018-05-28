@@ -20,7 +20,7 @@ fi
 #   ./update-version 2 3 0 p1 -
 
 dir=`pwd`
-[ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
+[ -d src ] || [ "`basename \"$dir\"`" != tools ] || cd ..
 
 replace()
 {

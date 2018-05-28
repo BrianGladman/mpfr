@@ -12,7 +12,7 @@
 
 # ck-clz_tab can be run from the tools directory
 dir=`pwd`
-[ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
+[ -d src ] || [ "`basename \"$dir\"`" != tools ] || cd ..
 
 size1=`sed -n 's/^extern .* __clz_tab\[\([0-9]\+\)\].*/\1/p' \
         src/mpfr-longlong.h`

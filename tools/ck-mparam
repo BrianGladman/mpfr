@@ -17,7 +17,7 @@ set -e
 
 # ck-mparam can be run from the tools directory
 dir=`pwd`
-[ -d src ] || [ "`basename "$dir"`" != tools ] || cd ..
+[ -d src ] || [ "`basename \"$dir\"`" != tools ] || cd ..
 
 files=`find src/*/ -name mparam.h`
 err=0
