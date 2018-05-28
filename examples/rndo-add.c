@@ -87,5 +87,6 @@ int main (int argc, char **argv)
   mpfr_printf ("z = %.*Rb\n", pprec, z);
 
   mpfr_clears (LIST, (mpfr_ptr) 0);
+  mpfr_free_cache ();
   return 0;
 }

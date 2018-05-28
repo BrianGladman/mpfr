@@ -60,5 +60,6 @@ main (void)
     }
   mpfr_clear (x);
   mpfr_clear (y);
+  mpfr_free_cache ();
   return 0;
 }
