@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!DOCTYPE stylesheet [
-<!ENTITY styles SYSTEM "http://www.mpfr.org/styles/visual.css">
+<!ENTITY styles SYSTEM "visual.css">
 <!ENTITY filter "h:div[@class = 'logo' or @class = 'end']">
 ]>
 
