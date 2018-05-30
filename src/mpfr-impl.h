@@ -657,6 +657,12 @@ static double double_zero = 0.0;
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
 #else
+/* FIXME: With GCC, due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=323
+   (in particular), there is currently no guarantee that (x) != (x) will be
+   true only for NaN. And even though GCC can be used in a mode that avoids
+   this issue, one cannot test with standard preprocessor macros:
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85995
+   Select the above DOUBLE_ISNAN code with GCC? */
 # define DOUBLE_ISNAN(x) (LVALUE(x) && (x) != (x))
 #endif
 
