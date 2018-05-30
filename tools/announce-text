@@ -110,7 +110,7 @@ if [ -z "$nowebsrv" ]; then
   do
     echo "  [$i]" >&2
     [ -f "$i" ] || svn cat "$www/$i" > "$i"
-    wget -O file "http://www.mpfr.org/mpfr-$base/$i"
+    wget -O file "https://www.mpfr.org/mpfr-$base/$i"
     cmp file "$i"
     rm file
   done
@@ -175,7 +175,7 @@ GNU MPFR $vers ($rname), a C library for
 multiple-precision floating-point computations with correct rounding,
 is now available for download from the MPFR web site:
 
-  http://www.mpfr.org/mpfr-$vers/
+  https://www.mpfr.org/mpfr-$vers/
 
 from InriaForge:
 
@@ -196,10 +196,10 @@ The release of GNU MPFR $base ($rname)
 is imminent. Please help to make this release as good as possible
 by downloading and testing this release candidate:
 
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.zip
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.zip
 EOF
 fi
 
@@ -216,10 +216,10 @@ cat sha256sum.out
 cat <<EOF
 
 The signatures:
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz.asc
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2.asc
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz.asc
-http://www.mpfr.org/mpfr-$base/mpfr-$vers.zip.asc
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz.asc
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2.asc
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz.asc
+https://www.mpfr.org/mpfr-$base/mpfr-$vers.zip.asc
 
 Each tarball is signed by Vincent Lefèvre. This can be verified using
 the DSA key ID 980C197698C3739D; this key can be retrieved with:
