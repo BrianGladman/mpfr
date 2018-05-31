@@ -644,8 +644,8 @@ static double double_zero = 0.0;
 #define DOUBLE_ISINF(x) (LVALUE(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
 /* The DOUBLE_ISNAN(x) macro is also valid on long double x
    (assuming that the compiler isn't too broken). */
-#ifdef MPFR_NANISNAN
-/* Avoid MIPSpro / IRIX64 / gcc -ffast-math (incorrect) optimizations.
+#if defined(MPFR_NANISNAN) || __MPFR_GNUC(1,0)
+/* Avoid MIPSpro / IRIX64 / GCC (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is
    regarded as a positive number or something like that; the second
    test catches this case.
@@ -653,16 +653,18 @@ static double double_zero = 0.0;
    -ffinite-math-only; such options are not supported, but this makes
    difficult to test MPFR assuming x == x optimization to 1. Anyway
    support of functions/tests of using native FP and special values for
-   non-IEEE-754 environment will always be on a case-by-case basis. */
+   non-IEEE-754 environment will always be on a case-by-case basis.
+   [2018-05-31] Let's use this macro instead of the usual (x) != (x) test
+   with all GCC versions, as due to
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=323
+   there is no guarantee that (x) != (x) will be true only for NaN.
+   And even though GCC can be used in a mode that avoids this issue,
+   there is currently no way to detect this:
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85995
+*/
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
 #else
-/* FIXME: With GCC, due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=323
-   (in particular), there is currently no guarantee that (x) != (x) will be
-   true only for NaN. And even though GCC can be used in a mode that avoids
-   this issue, one cannot test with standard preprocessor macros:
-     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85995
-   Select the above DOUBLE_ISNAN code with GCC? */
 # define DOUBLE_ISNAN(x) (LVALUE(x) && (x) != (x))
 #endif
 
