@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 4.1.0-dev
-@set UPDATED-MONTH April 2018
+@set UPDATED-MONTH May 2018
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
