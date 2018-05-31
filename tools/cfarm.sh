@@ -18,7 +18,7 @@ if [ ! -d $GMP ]; then
    cd $HOME
 fi
 /bin/rm -fr mpfr*
-wget http://www.mpfr.org/$MPFR/$MPFR-$RC.tar.gz
+wget https://www.mpfr.org/$MPFR/$MPFR-$RC.tar.gz
 gunzip $MPFR-$RC.tar.gz
 tar xf $MPFR-$RC.tar
 cd $MPFR-$RC

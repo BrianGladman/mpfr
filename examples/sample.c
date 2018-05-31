@@ -1,5 +1,5 @@
 /* This is the example given and commented on the MPFR web site:
- *   http://www.mpfr.org/sample.html
+ *   https://www.mpfr.org/sample.html
  */
 
 /*
