@@ -37,13 +37,13 @@ mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 
   __gmpfr_sqrt_limb (r1, h, l, x, np[1]);
 
-  /* now r1 = floor(sqrt(n1)) and h:l = n1^2 - r1^2 with h:l <= 2*r1,
-     thus h <= 1 */
+  /* now r1 = floor(sqrt(2^64*n1)) and h:l = 2^64*n1 - r1^2 with h:l <= 2*r1,
+     thus h <= 1, and x is an approximation of 2^96/sqrt(np[1])-2^64 */
 
   l += np[0];
   h += (l < np[0]);
 
-  /* now h <= 2 */
+  /* now 2^64*n1 + n0 - r1^2 = 2^64*h + l with h <= 2 */
 
   /* divide by 2 */
   l = (h << 63) | (l >> 1);
