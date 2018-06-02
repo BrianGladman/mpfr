@@ -102,6 +102,9 @@ main (void)
 #else
           "undef"
 #endif
+#if defined(__STRICT_ANSI__)
+          ", __STRICT_ANSI__"
+#endif
           "\n");
 #endif
 
