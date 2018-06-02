@@ -644,7 +644,7 @@ static double double_zero = 0.0;
 #define DOUBLE_ISINF(x) (LVALUE(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
 /* The DOUBLE_ISNAN(x) macro must be valid with any real floating type,
    thus constants must be of integer type (e.g. 0). */
-#if defined(MPFR_NANISNAN) || __MPFR_GNUC(1,0)
+#if defined(MPFR_NANISNAN) || (__MPFR_GNUC(1,0) && !defined(__STRICT_ANSI__))
 /* Avoid MIPSpro / IRIX64 / GCC (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is
    regarded as a positive number or something like that; the second
@@ -654,13 +654,15 @@ static double double_zero = 0.0;
    difficult to test MPFR assuming x == x optimization to 1. Anyway
    support of functions/tests of using native FP and special values for
    non-IEEE-754 environment will always be on a case-by-case basis.
-   [2018-05-31] Let's use this macro instead of the usual (x) != (x) test
-   with all GCC versions, as due to
+   [2018-06-02] Let's use this macro instead of the usual (x) != (x) test
+   with all GCC versions except in ISO C mode[*], as due to
      https://gcc.gnu.org/bugzilla/show_bug.cgi?id=323
    there is no guarantee that (x) != (x) will be true only for NaN.
-   And even though GCC can be used in a mode that avoids this issue,
-   there is currently no way to detect this:
+   Testing __STRICT_ANSI__ is suggested in:
      https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85995
+   but this is not safe if the user adds a -f option affecting conformance,
+   in which case this would be a user error (however, note that the
+   configure test associated with MPFR_NANISNAN will catch some issues).
 */
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0) + ((x) <= 0)) && -(x)*(x) <= 0))
