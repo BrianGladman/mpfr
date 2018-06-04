@@ -442,15 +442,16 @@ Minimal GMP version mismatch:
   doc/mpfr.texi:  $gmpv4
 EOF
 
-# In case of problems, one can also skip files or use "grep -v"...
-# In particular, skip the openout.* files, which are created by "make pdf"
-# (they are in the doc/mpfr.t2p/mpfr.t2d/pdf/check_recorder directory, and
-# unfortunately codespell can't skip directories such as mpfr.t2p).
+# In case of problems, one can skip files with -S or use "grep -v"...
+# The codespell.exclude could be simplified after this is fixed:
+#   https://github.com/codespell-project/codespell/issues/17
+#   https://github.com/codespell-project/codespell/issues/535
 if which codespell > /dev/null 2> /dev/null; then
+  doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
+       faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
   err-if-output "codespell" codespell ${term:+--enable-colors} \
-    -q3 -I codespell.ignore \
-    -S 'algorithm2e.sty,algorithms.*,mpfr.t2p,texinfo.tex,openout.*' \
-    AUTHORS BUGS INSTALL NEWS README TODO doc examples $srctests
+    -q3 -I codespell.ignore -x codespell.exclude \
+    AUTHORS BUGS INSTALL NEWS README TODO doc/${^doc} examples $srctests
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
