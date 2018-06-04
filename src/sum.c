@@ -968,6 +968,15 @@ sum_aux (mpfr_ptr sum, const mpfr_ptr *x, unsigned long n, mpfr_rnd_t rnd,
                 wi = tq / GMP_NUMB_BITS;
                 td = tq % GMP_NUMB_BITS;
 
+                /* Note: The "else" (td == 0) branch below can be executed
+                   only if tq >= GMP_NUMB_BITS, which is possible only when
+                   logn is large enough.
+                   TODO: Find an inequality between tq and logn, and add
+                   a corresponding MPFR_ASSERTD assertion / hint. On some
+                   platforms, this branch could be dead code, and such
+                   information would allow the compiler to remove it.
+                   It seems that this branch is never tested (r12754). */
+
                 if (td != 0)
                   {
                     wi++;  /* number of words with represented bits */
