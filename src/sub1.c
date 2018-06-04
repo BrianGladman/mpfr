@@ -664,6 +664,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_ASSERTN (exp_b != MPFR_EXP_MAX || exp_a > __gmpfr_emax);
       if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
         {
+        underflow:
           if (rnd_mode == MPFR_RNDN &&
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
@@ -692,10 +693,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (exp_b > __gmpfr_emax - add_exp))
         return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
       exp_a = exp_b + add_exp;
-      /* Since exp_b >= emin and add_exp >= 0, necessarily exp_a >= emin.
-         FIXME: maybe we could have exponents < MPFR_EXP_MIN for UBFs,
-         either prove this does not happen, or deal with such exponents
-         and add coverage tests. */
+      /* Warning: an underflow can happen for UBFs, for example when
+         mpfr_add is called from mpfr_fmma or mpfr_fmms. */
+      if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
+        goto underflow;
       MPFR_ASSERTD (exp_a >= __gmpfr_emin);
     }
   MPFR_SET_EXP (a, exp_a);
