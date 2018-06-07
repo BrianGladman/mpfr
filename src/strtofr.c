@@ -726,9 +726,16 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              y/z - y/b^e = y * (b^e-z) / (z * b^e) <= y * 2^err / (z * b^e).
              We have to convert that error in terms of ulp(trunc(y/z)).
              We first have ulp(trunc(y/z)) = ulp(y/z).
+
+             FIXME: There must be some discussion about the exponents,
+                    because up to a power of 2, 1/2 <= |y/z| < 1 and
+                    1 <= |y/z| < 2 are equivalent and give no information.
+                    Moreover 1/2 <= b^e < 1 has not been explained and may
+                    hide mistakes since one may have 1/2 <= z < 1 < b^e.
+
              Since both y and z are normalized, the quotient
              {result+ysize, ysize+1} has exactly ysize limbs, plus maybe one
-             bit:
+             bit (this corresponds to the MPFR_ASSERTD below):
              * if the quotient has exactly ysize limbs, then 1/2 <= |y/z| < 1
                (up to a power of 2) and since 1/2 <= b^e < 1, the error is at
                most 2^(err+1) ulps;
@@ -747,6 +754,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              thus replacing err = -1 by err = 0 above was the right thing
              to do, since 2^(0+1) = 2.
           */
+          MPFR_ASSERTD (result[2 * ysize] <= 1);
 
           /* exp -= exp_z + ysize_bits with overflow checking
              and check that we can add/subtract 2 to exp without overflow */
