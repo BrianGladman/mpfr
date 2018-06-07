@@ -466,8 +466,18 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   /* initialize the working precision */
   prec = MPFR_PREC (x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
 
-  /* compute the value y of the leading characters as long as rounding is not
-     possible */
+  /* Compute the value y of the leading characters as long as rounding is not
+     possible.
+     Note: We have some integer overflow checking using MPFR_EXP_MIN and
+     MPFR_EXP_MAX in this loop. Thanks to the large margin between these
+     extremal values of the mpfr_exp_t type and the valid minimum/maximum
+     exponents, such integer overflows would correspond to real underflow
+     or overflow on the result (possibly except in huge precisions, which
+     are disregarded here; anyway, in practice, such issues could occur
+     only with 32-bit precision and exponent types). Such checks could be
+     extended to real early underflow/overflow checking, in order to avoid
+     useless computations in such cases; in such a case, be careful that
+     the approximation errors need to be taken into account. */
   MPFR_TMP_MARK(marker);
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -706,6 +716,17 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           else
             exact = 0;
 
+          /* exp -= exp_z + ysize_bits with overflow checking
+             and check that we can add/subtract 2 to exp without overflow */
+          MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
+                              mpfr_exp_t, mpfr_uexp_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto underflow, goto overflow);
+          MPFR_SADD_OVERFLOW (exp, exp, -exp_z,
+                              mpfr_exp_t, mpfr_uexp_t,
+                              MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
+                              goto overflow, goto underflow);
+
           /* Compute the integer division y/z rounded toward zero.
              The quotient will be put at result + ysize (size: ysize + 1),
              and the remainder at result (size: ysize).
@@ -755,17 +776,6 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              to do, since 2^(0+1) = 2.
           */
           MPFR_ASSERTD (result[2 * ysize] <= 1);
-
-          /* exp -= exp_z + ysize_bits with overflow checking
-             and check that we can add/subtract 2 to exp without overflow */
-          MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
-                              mpfr_exp_t, mpfr_uexp_t,
-                              MPFR_EXP_MIN, MPFR_EXP_MAX,
-                              goto underflow, goto overflow);
-          MPFR_SADD_OVERFLOW (exp, exp, -exp_z,
-                              mpfr_exp_t, mpfr_uexp_t,
-                              MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
-                              goto overflow, goto underflow);
 
           err += 1; /* see above for the explanation of the +1 term */
 
