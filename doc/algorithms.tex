@@ -4638,7 +4638,7 @@ thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
 
 \subsection{The constant $\pi$}
 
-The computation of $\pi$ uses the AGM formula
+The computation of $\pi$ uses the Brent-Salamin formula
 \[ \pi = \frac{\mu^2}{D}, \]
 where $\mu = {\rm AGM}(\frac{1}{\sqrt{2}}, 1)$ is the common limit
 of the sequences $a_0=1, b_0 = \frac{1}{\sqrt{2}},
@@ -4646,7 +4646,8 @@ a_{k+1} = (a_k+b_k)/2, b_{k+1} = \sqrt{a_k b_k}$,
 $D=\frac{1}{4} - \sum_{k=1}^{\infty} 2^{k-1} (a_k^2-b_k^2)$.
 This formula can be evaluated efficiently as shown in \cite{ScGrVe94},
 starting from $a_0 = A_0 = 1, B_0 = 1/2, D_0 = 1/4$, where $A_k$ and
-$B_k$ represent respectively $a_k^2$ and $b_k^2$:
+$B_k$ represent respectively $a_k^2$ and $b_k^2$
+(see \cite{bertot:hal-01582524} for a formal proof of the error analysis):
 \begin{quote}
 $S_{k+1} \leftarrow (A_k + B_k)/4$ \\
 $b_k \leftarrow \sqrt{B_k}$ \\
