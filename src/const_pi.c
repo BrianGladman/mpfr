@@ -40,7 +40,8 @@ mpfr_const_pi (mpfr_ptr x, mpfr_rnd_t rnd_mode) {
 
 /* The algorithm used here is taken from Section 8.2.5 of the book
    "Fast Algorithms: A Multitape Turing Machine Implementation"
-   by A. Schönhage, A. F. W. Grotefeld and E. Vetter, 1994. */
+   by A. Schönhage, A. F. W. Grotefeld and E. Vetter, 1994.
+   It is a clever form of Brent-Salamin formula. */
 
 /* Don't need to save/restore exponent range: the cache does it */
 int
