@@ -33,7 +33,7 @@ autoreconf -i || exit 1
 
 echo "Building MPFR"
 ./configure --enable-assert=none --enable-tune-for-coverage --disable-shared --enable-static \
-  CFLAGS="-fprofile-arcs -ftest-coverage -g"  || exit 1
+  CFLAGS="--coverage -g"  || exit 1
 make clean  || exit 1
 make all -j4 || exit 1
 
@@ -109,8 +109,8 @@ done | bash ../coverage.subscript | grep -v '__gmp' > ../coverage.mpfr
 rm -f coverage.subscript coverage-tmp || exit 1
 
 cd -
-lcov --capture --directory . --output-file all.info || exit 1
-genhtml -o coverage all.info || exit 1
+lcov --rc lcov_branch_coverage=1 --capture --directory . --output-file all.info || exit 1
+genhtml --branch-coverage -o coverage all.info || exit 1
 
 echo "Coverage summary saved in file    /tmp/ompfr-gcov/coverage.mpfr"
 echo "Detailed coverage is available at /tmp/ompfr-gcov/coverage/index.html"
