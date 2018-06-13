@@ -118,6 +118,8 @@ Table of contents:
   C++17 draft:
   https://github.com/cplusplus/draft/blob/master/source/numerics.tex
 - implement mpfr_get_decimal128 and mpfr_set_decimal128
+  (mpfr_set_decimal128 is implemented in 12766, but not really tested,
+  thus not in the reference manual)
 - implement mpfr_q_sub, mpfr_z_div, mpfr_q_div?
 - implement mpfr_pow_q and variants with two integers (native or mpz)
   instead of a rational? See IEEE P1788.
