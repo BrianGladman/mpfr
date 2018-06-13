@@ -29,6 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
+
 #ifdef DPD_FORMAT
   /* conversion 10-bits to 3 digits */
 static unsigned int T[1024] = {
@@ -221,8 +222,10 @@ decimal128_to_string (char *s, _Decimal128 d)
   exp -= 398; /* unbiased exponent */
   sprintf (t, "E%d", exp);
 }
+
 #else
 /* portable version */
+
 #ifndef DEC128_MAX
 # define DEC128_MAX 9.999999999999999999999999999999999E6144dl
 #endif
@@ -233,17 +236,17 @@ decimal128_to_string (char *s, _Decimal128 d)
   int sign = 0, n;
   int exp = 0;
 
-  if (d != d) /* NaN */
+  if (MPFR_UNLIKELY (DOUBLE_ISNAN (d))) /* NaN */
     {
       sprintf (s, "NaN"); /* sprintf puts a final '\0' */
       return;
     }
-  else if (d > DEC128_MAX) /* +Inf */
+  else if (MPFR_UNLIKELY (d > DEC128_MAX)) /* +Inf */
     {
       sprintf (s, "Inf");
       return;
     }
-  else if (d < -DEC128_MAX) /* -Inf */
+  else if (MPFR_UNLIKELY (d < -DEC128_MAX)) /* -Inf */
     {
       sprintf (s, "-Inf");
       return;
@@ -469,6 +472,7 @@ decimal128_to_string (char *s, _Decimal128 d)
   else
     *s = '\0';
 }
+
 #endif /* _GMP_IEEE_FLOATS */
 
 /* the IEEE754-2008 decimal128 format has 34 digits, with emax=6144,
