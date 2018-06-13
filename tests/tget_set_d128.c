@@ -47,17 +47,18 @@ test_set (void)
 }
 
 int
-main (void)
+main (int argc, char *argv[])
 {
+  int verbose = argc > 1;
+
   tests_start_mpfr ();
   mpfr_test_init ();
 
-#ifdef MPFR_DEBUG
+  if (verbose)
 #ifdef DPD_FORMAT
-  printf ("Using DPD format\n");
+    printf ("Using DPD format\n");
 #else
   printf ("Using BID format\n");
-#endif
 #endif
 
   test_set ();
