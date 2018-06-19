@@ -33,13 +33,11 @@ static void
 test_set (void)
 {
   _Decimal128 d128;
-  _Decimal64 d64;
   mpfr_t x;
   int inex;
 
   mpfr_init2 (x, 53);
-  d64 = 1.0D;
-  d128 = d64;
+  d128 = 1.0;
   inex = mpfr_set_decimal128 (x, d128, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1) != 0 || inex != 0)
     {
