@@ -459,16 +459,16 @@ decimal128_to_string (char *s, _Decimal128 d)
   *s++ = '.';
   for (n = 0; n < 34; n++)
     {
-      double e;
       int r;
 
-      d *= (_Decimal128) 10.0;
-      e = (double) d;
-      r = (int) e;
+      MPFR_ASSERTD (d < 1);
+      d *= 10;
+      MPFR_ASSERTD (d < 10);
+      r = (int) d;
       *s++ = '0' + r;
       d -= (_Decimal128) r;
     }
-  MPFR_ASSERTN(d == (_Decimal128) 0.0);
+  MPFR_ASSERTN (d == 0);
   if (exp != 0)
     sprintf (s, "E%d", exp); /* adds a final '\0' */
   else
