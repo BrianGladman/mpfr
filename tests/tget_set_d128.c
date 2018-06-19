@@ -62,11 +62,13 @@ main (int argc, char *argv[])
   mpfr_test_init ();
 
   if (verbose)
+    {
 #ifdef DPD_FORMAT
-    printf ("Using DPD format\n");
+      printf ("Using DPD format\n");
 #else
-  printf ("Using BID format\n");
+      printf ("Using BID format\n");
 #endif
+    }
 
   test_set ();
 
@@ -83,4 +85,3 @@ main (void)
 }
 
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
-
