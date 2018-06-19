@@ -491,7 +491,7 @@ mpfr_set_decimal128 (mpfr_ptr r, _Decimal128 d, mpfr_rnd_t rnd_mode)
 
   decimal128_to_string (s, d);
   MPFR_LOG_MSG (("string: %s\n", s));
-  return mpfr_set_str (r, s, 10, rnd_mode);
+  return mpfr_strtofr (r, s, NULL, 10, rnd_mode);
 }
 
 #endif /* MPFR_WANT_DECIMAL_FLOATS */

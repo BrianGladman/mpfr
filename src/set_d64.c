@@ -427,7 +427,7 @@ mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mpfr_rnd_t rnd_mode)
                       1 character for terminating \0. */
 
   decimal64_to_string (s, d);
-  return mpfr_set_str (r, s, 10, rnd_mode);
+  return mpfr_strtofr (r, s, NULL, 10, rnd_mode);
 }
 
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
