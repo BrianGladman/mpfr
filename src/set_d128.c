@@ -237,6 +237,22 @@ decimal128_to_string (char *s, _Decimal128 d)
 {
   int sign = 0, n;
   int exp = 0;
+  _Decimal128 ten, ten2, ten4, ten8, ten16, ten32, ten64,
+    ten128, ten256, ten512, ten1024, ten2048, ten4096;
+
+  ten = 10;
+  ten2 = 100;
+  ten4 = 10000;
+  ten8 = 100000000;
+  ten16 = ten8 * ten8;
+  ten32 = ten16 * ten16;
+  ten64 = ten32 * ten32;
+  ten128 = ten64 * ten64;
+  ten256 = ten128 * ten128;
+  ten512 = ten256 * ten256;
+  ten1024 = ten512 * ten512;
+  ten2048 = ten1024 * ten1024;
+  ten4096 = ten2048 * ten2048;
 
   if (MPFR_UNLIKELY (DOUBLE_ISNAN (d))) /* NaN */
     {
@@ -277,17 +293,6 @@ decimal128_to_string (char *s, _Decimal128 d)
   /* now normalize d in [0.1, 1[ */
   if (d >= (_Decimal128) 1.0)
     {
-      _Decimal128 ten16 = (double) 1e16; /* 10^16 is exactly representable
-                                           in binary64 */
-      _Decimal128 ten32 = ten16 * ten16;
-      _Decimal128 ten64 = ten32 * ten32;
-      _Decimal128 ten128 = ten64 * ten64;
-      _Decimal128 ten256 = ten128 * ten128;
-      _Decimal128 ten512 = ten256 * ten256;
-      _Decimal128 ten1024 = ten512 * ten512;
-      _Decimal128 ten2048 = ten1024 * ten1024;
-      _Decimal128 ten4096 = ten2048 * ten2048;
-
       if (d >= ten4096)
         {
           d /= ten4096;
@@ -328,126 +333,97 @@ decimal128_to_string (char *s, _Decimal128 d)
           d /= ten32;
           exp += 32;
         }
-      if (d >= (_Decimal128) 10000000000000000.0)
+      if (d >= ten16)
         {
-          d /= (_Decimal128) 10000000000000000.0;
+          d /= ten16;
           exp += 16;
         }
-      if (d >= (_Decimal128) 100000000.0)
+      if (d >= ten8)
         {
-          d /= (_Decimal128) 100000000.0;
+          d /= ten8;
           exp += 8;
         }
-      if (d >= (_Decimal128) 10000.0)
+      if (d >= ten4)
         {
-          d /= (_Decimal128) 10000.0;
+          d /= ten4;
           exp += 4;
         }
-      if (d >= (_Decimal128) 100.0)
+      if (d >= ten2)
         {
-          d /= (_Decimal128) 100.0;
+          d /= ten2;
           exp += 2;
         }
-      if (d >= (_Decimal128) 10.0)
+      while (d >= 1)
         {
-          d /= (_Decimal128) 10.0;
-          exp += 1;
-        }
-      if (d >= (_Decimal128) 1.0)
-        {
-          d /= (_Decimal128) 10.0;
+          d /= ten;
           exp += 1;
         }
     }
   else /* d < 1.0 */
     {
-      _Decimal128 ten16, ten32, ten64, ten128, ten256, ten512, ten1024,
-        ten2048, ten4096;
-
-      ten16 = (double) 1e16; /* 10^16 is exactly representable in binary64 */
-      ten16 = (_Decimal128) 1.0 / ten16; /* 10^(-16), exact */
-      ten32 = ten16 * ten16;
-      ten64 = ten32 * ten32;
-      ten128 = ten64 * ten64;
-      ten256 = ten128 * ten128;
-      ten512 = ten256 * ten256;
-      ten1024 = ten512 * ten512;
-      ten2048 = ten1024 * ten1024;
-      ten4096 = ten2048 * ten2048;
-
-      if (d < ten4096)
+      if (d < 1 / ten4096)
         {
-          d /= ten4096;
+          d *= ten4096;
           exp -= 4096;
         }
-      if (d < ten2048)
+      if (d < 1 / ten2048)
         {
-          d /= ten2048;
+          d *= ten2048;
           exp -= 2048;
         }
-      if (d < ten1024)
+      if (d < 1 / ten1024)
         {
-          d /= ten1024;
+          d *= ten1024;
           exp -= 1024;
         }
-      if (d < ten512)
+      if (d < 1 / ten512)
         {
-          d /= ten512;
+          d *= ten512;
           exp -= 512;
         }
-      if (d < ten256)
+      if (d < 1 / ten256)
         {
-          d /= ten256;
+          d *= ten256;
           exp -= 256;
         }
-      if (d < ten128)
+      if (d < 1 / ten128)
         {
-          d /= ten128;
+          d *= ten128;
           exp -= 128;
         }
-      if (d < ten64)
+      if (d < 1 / ten64)
         {
-          d /= ten64;
+          d *= ten64;
           exp -= 64;
         }
-      if (d < ten32)
+      if (d < 1 / ten32)
         {
-          d /= ten32;
+          d *= ten32;
           exp -= 32;
         }
-      /* the double constant 0.0000000000000001 is 2028240960365167/2^104,
-         which should be rounded to 1e-16 in _Decimal128 */
-      if (d < (_Decimal128) 0.0000000000000001)
+      if (d < 1 / ten16)
         {
-          d *= (_Decimal128) 10000000000000000.0;
+          d *= ten16;
           exp -= 16;
         }
-      /* the double constant 0.00000001 is 3022314549036573/2^78,
-         which should be rounded to 1e-8 in _Decimal128 */
-      if (d < (_Decimal128) 0.00000001)
+      if (d < 1 / ten8)
         {
-          d *= (_Decimal128) 100000000.0;
+          d *= ten8;
           exp -= 8;
         }
-      /* the double constant 0.0001 is 7378697629483821/2^66,
-         which should be rounded to 1e-4 in _Decimal128 */
-      if (d < (_Decimal128) 0.0001)
+      if (d < 1 / ten4)
         {
-          d *= (_Decimal128) 10000.0;
+          d *= ten4;
           exp -= 4;
         }
-      /* the double constant 0.01 is 5764607523034235/2^59,
-         which should be rounded to 1e-2 in _Decimal128 */
-      if (d < (_Decimal128) 0.01)
+      if (d < 1 / ten2)
         {
-          d *= (_Decimal128) 100.0;
+          d *= ten2;
           exp -= 2;
         }
-      /* the double constant 0.1 is 3602879701896397/2^55,
-         which should be rounded to 1e-1 in _Decimal128 */
-      if (d < (_Decimal128) 0.1)
+      if (d < 1 / ten)
         {
-          d *= (_Decimal128) 10.0;
+          d *= ten;
           exp -= 1;
         }
     }
