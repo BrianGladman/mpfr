@@ -103,7 +103,7 @@ static unsigned int T[1024] = {
 #endif
 
 /* FIXME: change the #if once the implementation is complete.
-   #if _GMP_IEEE_FLOATS */
+   #if _MPFR_IEEE_FLOATS */
 #if 0
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 44 characters (including the final \0):
@@ -475,7 +475,7 @@ decimal128_to_string (char *s, _Decimal128 d)
     *s = '\0';
 }
 
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* _MPFR_IEEE_FLOATS */
 
 /* the IEEE754-2008 decimal128 format has 34 digits, with emax=6144,
    emin=1-emax=-6143 */
