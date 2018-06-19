@@ -34,19 +34,24 @@ test_set (void)
 {
   long v[] = { 1, -1, 2147483647, -2147483647 };
   mpfr_t x;
+  mpfr_flags_t flags;
   int i, inex;
 
   mpfr_init2 (x, 53);
   for (i = 0; i < numberof (v); i++)
     {
+      mpfr_clear_flags ();
       inex = mpfr_set_decimal128 (x, (_Decimal128) v[i], MPFR_RNDN);
-      if (mpfr_cmp_si (x, v[i]) != 0 || inex != 0)
+      flags = __gmpfr_flags;
+      if (mpfr_cmp_si (x, v[i]) != 0 || inex != 0 || flags != 0)
         {
           printf ("Error in test_set for i=%d\n", i);
-          printf ("Expected %ld\n    with inex = 0\n", v[i]);
+          printf ("Expected %ld\n    with inex = 0 and flags =", v[i]);
+          flags_out (0);
           printf ("Got      ");
           mpfr_dump (x);
-          printf ("    with inex = %d\n", inex);
+          printf ("    with inex = %d and flags =", inex);
+          flags_out (flags);
           exit (1);
         }
     }
