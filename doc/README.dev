@@ -656,6 +656,20 @@ Some references:
 * http://stackoverflow.com/questions/346622/opinions-on-type-punning-in-c
   "Opinions on type-punning in C++?"
 
+   =====================================================================
+
+For floating-point constants, do not use the non-standard and useless
+suffix "D". It seems to mean "double" for GCC[*], but for instance,
+ICC 15 regards 1.0D as 0 (though ICC claims compatibility with GCC)
+and for tcc 0.9.27, this is an error.
+
+Moreover, avoid native floating-point if possible. Be careful that GCC
+does not conform to the C standard by default. References:
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=323
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85957
+
+[*] https://stackoverflow.com/questions/4331200/what-do-f-and-d-mean-at-the-end-of-numeric-literals
+
 ===========================================================================
 
 Avoid variable names "l", "I" and "O", which look like "1" and "0" with
