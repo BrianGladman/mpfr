@@ -32,20 +32,23 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 test_set (void)
 {
-  _Decimal128 d128;
+  long v[] = { 1, -1, 2147483647, -2147483647 };
   mpfr_t x;
-  int inex;
+  int i, inex;
 
   mpfr_init2 (x, 53);
-  inex = mpfr_set_decimal128 (x, (_Decimal128) 1, MPFR_RNDN);
-  if (mpfr_cmp_ui (x, 1) != 0 || inex != 0)
+  for (i = 0; i < numberof (v); i++)
     {
-      printf ("Error in test_set\n");
-      printf ("Expected 1\n    with inex = 0\n");
-      printf ("Got      ");
-      mpfr_dump (x);
-      printf ("    with inex = %d\n", inex);
-      exit (1);
+      inex = mpfr_set_decimal128 (x, (_Decimal128) v[i], MPFR_RNDN);
+      if (mpfr_cmp_si (x, v[i]) != 0 || inex != 0)
+        {
+          printf ("Error in test_set for i=%d\n", i);
+          printf ("Expected %ld\n    with inex = 0\n", v[i]);
+          printf ("Got      ");
+          mpfr_dump (x);
+          printf ("    with inex = %d\n", inex);
+          exit (1);
+        }
     }
   mpfr_clear (x);
 }
