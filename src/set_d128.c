@@ -490,6 +490,7 @@ mpfr_set_decimal128 (mpfr_ptr r, _Decimal128 d, mpfr_rnd_t rnd_mode)
                       1 character for terminating \0. */
 
   decimal128_to_string (s, d);
+  MPFR_LOG_MSG (("string: %s\n", s));
   return mpfr_set_str (r, s, 10, rnd_mode);
 }
 
