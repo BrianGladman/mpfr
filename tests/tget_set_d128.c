@@ -37,8 +37,7 @@ test_set (void)
   int inex;
 
   mpfr_init2 (x, 53);
-  d128 = 1.0;
-  inex = mpfr_set_decimal128 (x, d128, MPFR_RNDN);
+  inex = mpfr_set_decimal128 (x, (_Decimal128) 1, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1) != 0 || inex != 0)
     {
       printf ("Error in test_set\n");
