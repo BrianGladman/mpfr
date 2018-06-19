@@ -138,6 +138,11 @@ err-if-output -t "" perl -ne '
       and next;
     print "Forbidden macro in mpfr.h line $.: $m\n" }' src/mpfr.h
 
+# Test before other ones about preprocessing directives.
+err-if-output \
+  --msg="Do not put spaces before a preprocessing directive" \
+  -t "space+#" grep -E '^ +# *(define|include|if|el|endif)' $srctests
+
 err-if-output -t "math.h" grep '^# *include *<math\.h>' src/*.c
 
 flaglist="underflow|overflow|divby0|nanflag|inexflag|erangeflag"
