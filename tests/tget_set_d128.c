@@ -41,8 +41,15 @@ test_set (void)
   d64 = 1.0D;
   d128 = d64;
   inex = mpfr_set_decimal128 (x, d128, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
-  MPFR_ASSERTN(inex == 0);
+  if (mpfr_cmp_ui (x, 1) != 0 || inex != 0)
+    {
+      printf ("Error in test_set\n");
+      printf ("Expected 1\n    with inex = 0\n");
+      printf ("Got      ");
+      mpfr_dump (x);
+      printf ("    with inex = %d\n", inex);
+      exit (1);
+    }
   mpfr_clear (x);
 }
 
