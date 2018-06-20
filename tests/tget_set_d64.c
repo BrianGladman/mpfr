@@ -423,25 +423,40 @@ static void
 powers_of_10 (void)
 {
   mpfr_t x1, x2;
-  int inex1, inex2;
-  mpfr_flags_t flags1, flags2;
   _Decimal64 d[2];
-  int i, neg, rnd;
+  int i, rnd;
+  unsigned int neg;
 
   mpfr_inits2 (200, x1, x2, (mpfr_ptr) 0);
   for (i = 0, d[0] = 1, d[1] = 1; i < 150; i++, d[0] *= 10, d[1] /= 10)
-    for (neg = 0; neg <= 1; neg++)
+    for (neg = 0; neg <= 3; neg++)
       RND_LOOP_NO_RNDF (rnd)
         {
-          inex1 = mpfr_set_si (x1, neg ? -i : i, MPFR_RNDN);
+          int inex1, inex2;
+          mpfr_flags_t flags1, flags2;
+          mpfr_rnd_t rx1;
+          _Decimal64 dd;
+
+          inex1 = mpfr_set_si (x1, (neg >> 1) ? -i : i, MPFR_RNDN);
           MPFR_ASSERTN (inex1 == 0);
 
+          rx1 = (neg & 1) ?
+            MPFR_INVERT_RND ((mpfr_rnd_t) rnd) : (mpfr_rnd_t) rnd;
           mpfr_clear_flags ();
-          inex1 = mpfr_exp10 (x1, x1, (mpfr_rnd_t) rnd);
+          inex1 = mpfr_exp10 (x1, x1, rx1);
           flags1 = __gmpfr_flags;
 
+          dd = d[neg >> 1];
+
+          if (neg & 1)
+            {
+              MPFR_SET_NEG (x1);
+              inex1 = -inex1;
+              dd = -dd;
+            }
+
           mpfr_clear_flags ();
-          inex2 = mpfr_set_decimal64 (x2, d[neg], (mpfr_rnd_t) rnd);
+          inex2 = mpfr_set_decimal64 (x2, dd, (mpfr_rnd_t) rnd);
           flags2 = __gmpfr_flags;
 
           if (!(mpfr_equal_p (x1, x2) &&
@@ -460,7 +475,7 @@ powers_of_10 (void)
               flags_out (flags2);
               exit (1);
             }
-      }
+        }
   mpfr_clears (x1, x2, (mpfr_ptr) 0);
 }
 
