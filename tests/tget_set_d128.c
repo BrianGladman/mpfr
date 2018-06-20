@@ -368,6 +368,19 @@ check_misc (void)
   if (! mpfr_equal_p (x, y))
     PRINT_ERR_MISC ("DEC128_MAX (2)");
 
+  /* since 1+ceil(109*log(2)/log(10)) = 34, the 109-bit value x, when
+     converted to a 34-digit decimal d, gives back x when converted back to
+     binary */
+  mpfr_set_prec (x, 109);
+  mpfr_set_prec (y, 109);
+  mpfr_set_str (x, "1E1793", 10, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_set_decimal128 (x, d, MPFR_RNDN);
+  mpfr_set_str (y, "1E1793", 10, MPFR_RNDN);
+  if (! mpfr_equal_p (x, y))
+    PRINT_ERR_MISC ("1E1793");
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
