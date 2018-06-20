@@ -486,6 +486,7 @@ __MPFR_DECLSPEC float mpfr_get_flt (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC double mpfr_get_d (mpfr_srcptr, mpfr_rnd_t);
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 __MPFR_DECLSPEC _Decimal64 mpfr_get_decimal64 (mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC _Decimal128 mpfr_get_decimal128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC long double mpfr_get_ld (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC double mpfr_get_d1 (mpfr_srcptr);
