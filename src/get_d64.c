@@ -154,7 +154,9 @@ get_decimal64_zero (int negative)
   return y.d64;
 }
 
-/* construct the decimal64 smallest non-zero with given sign */
+/* construct the decimal64 smallest non-zero with given sign:
+   it is 10^emin * 10^(1-p). Since emax = 384, emin = 1-emax = -383,
+   and p = 16, we get 10^(-398) */
 static _Decimal64
 get_decimal64_min (int negative)
 {
@@ -303,11 +305,8 @@ string_to_Decimal64 (char *s)
   char m[17];
   long n = 0; /* mantissa length */
   char *endptr[1];
-  _Decimal64 x = 0.0;
+  _Decimal64 x = 0;
   int sign = 0;
-#ifdef DPD_FORMAT
-  unsigned int G, d1, d2, d3, d4, d5;
-#endif
 
   /* read sign */
   if (*s == '-')
@@ -318,16 +317,14 @@ string_to_Decimal64 (char *s)
   /* read mantissa */
   while (ISDIGIT (*s))
     m[n++] = *s++;
-  exp = n;
 
   /* as constructed in mpfr_get_decimal64, s cannot have any '.' separator */
 
-  /* we have exp digits before decimal point, and a total of n digits */
-  exp -= n; /* we will consider an integer mantissa */
+  /* we will consider an integer mantissa m*10^exp */
   MPFR_ASSERTN(n <= 16);
-  /* s always have an exponent separator 'E' */
+  /* s always has an exponent separator 'E' */
   MPFR_ASSERTN(*s == 'E');
-  exp += strtol (s + 1, endptr, 10);
+  exp = strtol (s + 1, endptr, 10);
   MPFR_ASSERTN(**endptr == '\0');
   MPFR_ASSERTN(-398 <= exp && exp <= (long) (385 - n));
   while (n < 16)
@@ -521,7 +518,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
       else /* RNDA: return the smallest non-zero number */
         return get_decimal64_min (negative);
     }
-  /* the largest decimal64 number is just below 10^(385) < 2^1279 */
+  /* the largest decimal64 number is just below 10^385 < 2^1279 */
   else if (MPFR_UNLIKELY (e > 1279)) /* then src >= 2^1279 */
     {
       if (rnd_mode == MPFR_RNDZ)
