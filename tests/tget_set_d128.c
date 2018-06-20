@@ -358,6 +358,14 @@ check_misc (void)
       exit (1);
     }
 
+  /* exercise |x| > DEC128_MAX */
+  mpfr_set_str (x, "10E6144", 10, MPFR_RNDU);
+  d = mpfr_get_decimal128 (x, MPFR_RNDZ);
+  MPFR_ASSERTN(d == DEC128_MAX);
+  mpfr_set_str (x, "-10E6144", 10, MPFR_RNDU);
+  d = mpfr_get_decimal128 (x, MPFR_RNDZ);
+  MPFR_ASSERTN(d == -DEC128_MAX);
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
@@ -380,6 +388,22 @@ check_misc (void)
   mpfr_set_str (y, "1E1793", 10, MPFR_RNDN);
   if (! mpfr_equal_p (x, y))
     PRINT_ERR_MISC ("1E1793");
+
+  mpfr_set_str (x, "2E4095", 10, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_set_decimal128 (x, d, MPFR_RNDN);
+  mpfr_set_str (y, "2E4095", 10, MPFR_RNDN);
+  if (! mpfr_equal_p (x, y))
+    PRINT_ERR_MISC ("2E4095");
+
+  mpfr_set_str (x, "2E-4096", 10, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_set_decimal128 (x, d, MPFR_RNDN);
+  mpfr_set_str (y, "2E-4096", 10, MPFR_RNDN);
+  if (! mpfr_equal_p (x, y))
+    PRINT_ERR_MISC ("2E-4096");
 
   mpfr_clear (x);
   mpfr_clear (y);
