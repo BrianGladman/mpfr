@@ -101,7 +101,7 @@ string_to_Decimal128 (char *s) /* portable version */
   char m[35];
   long n = 0; /* mantissa length */
   char *endptr[1];
-  _Decimal128 x = 0.0dl;
+  _Decimal128 x = 0;
   int sign = 0;
 
   /* read sign */
@@ -158,7 +158,7 @@ string_to_Decimal128 (char *s) /* portable version */
   exp -= 6176;
 
   for (n = 0; n < 34; n++)
-    x = (_Decimal128) 10.0 * x + (_Decimal128) (m[n] - '0');
+    x = (_Decimal128) 10 * x + (_Decimal128) (m[n] - '0');
 
   /* multiply by 10^exp */
   if (exp > 0)
@@ -301,27 +301,27 @@ string_to_Decimal128 (char *s) /* portable version */
         }
       if (exp <= -16)
         {
-          x /= (_Decimal128) 10000000000000000.0;
+          x /= ten16;
           exp += 16;
         }
       if (exp <= -8)
         {
-          x /= (_Decimal128) 100000000.0;
+          x /= ten8;
           exp += 8;
         }
       if (exp <= -4)
         {
-          x /= (_Decimal128) 10000.0;
+          x /= ten4;
           exp += 4;
         }
       if (exp <= -2)
         {
-          x /= (_Decimal128) 100.0;
+          x /= ten2;
           exp += 2;
         }
       if (exp <= -1)
         {
-          x /= (_Decimal128) 10.0;
+          x /= ten;
           exp += 1;
         }
     }

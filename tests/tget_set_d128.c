@@ -405,6 +405,34 @@ check_misc (void)
   if (! mpfr_equal_p (x, y))
     PRINT_ERR_MISC ("2E-4096");
 
+  mpfr_set_str (x, "2E-6110", 10, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_set_decimal128 (x, d, MPFR_RNDN);
+  mpfr_set_str (y, "2E-6110", 10, MPFR_RNDN);
+  if (! mpfr_equal_p (x, y))
+    PRINT_ERR_MISC ("2E-6110");
+
+  /* case where EXP(x) > 20414, thus outside the decimal128 range */
+  mpfr_set_ui_2exp (x, 1, 20414, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDZ);
+  MPFR_ASSERTN(d == DEC128_MAX);
+  d = mpfr_get_decimal128 (x, MPFR_RNDA);
+  MPFR_ASSERTN(d > DEC128_MAX); /* implies d = +Inf */
+  mpfr_set_si_2exp (x, -1, 20414, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDZ);
+  MPFR_ASSERTN(d == -DEC128_MAX);
+  d = mpfr_get_decimal128 (x, MPFR_RNDA);
+  MPFR_ASSERTN(d < -DEC128_MAX); /* implies d = -Inf */
+
+  /* case where EXP(x) = 20414, at the limit of the decimal128 range */
+  mpfr_set_ui_2exp (x, 3, 20412, MPFR_RNDN); /* 3*2^20412 > 9.999...E6144 */
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  MPFR_ASSERTN(d > DEC128_MAX); /* implies d = +Inf */
+  mpfr_set_si_2exp (x, -3, 20412, MPFR_RNDN);
+  d = mpfr_get_decimal128 (x, MPFR_RNDN);
+  MPFR_ASSERTN(d < -DEC128_MAX); /* implies d = -Inf */
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
