@@ -188,15 +188,16 @@ decimal128_to_string (char *s, _Decimal128 d)
   if (Gh < 24)
     {
       /* the biased exponent E is formed from G[0] to G[13] and the
-         significand from bits G[14] through the end of the decoding
+         significant from bits G[14] through the end of the decoding
          (including the bits of the trailing significand field) */
-      exp = x.s.comb >> 3; /* upper 14 bits */
+      exp = x.s.comb >> 3; /* upper 14 bits, exp <= 12287 */
       rp[3] = ((x.s.comb & 7) << 14) | x.s.t0;
+      /* rp[3] is less than 2^17 */
     }
   else
     {
       /* the biased exponent is formed from G[2] to G[15] */
-      exp = (x.s.comb >> 1) & 0x3fff;
+      exp = (x.s.comb >> 1) & 0x3fff; /* exp <= 16383 */
       rp[3] = ((8 | (x.s.comb & 1)) << 14) | x.s.t0;
     }
   rp[2] = x.s.t1;
