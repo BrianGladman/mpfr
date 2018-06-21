@@ -338,7 +338,6 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   int negative;
   mpfr_exp_t e;
 
-  /* the encoding of NaN, Inf, zero is the same under DPD or BID */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
       if (MPFR_IS_NAN (src))
