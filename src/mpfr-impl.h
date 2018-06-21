@@ -808,6 +808,8 @@ typedef union {
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
+/* FIXME: This should be checked with a configure test as
+   this is implementation-defined (endianness...). */
 union ieee_double_decimal128
 {
   struct
