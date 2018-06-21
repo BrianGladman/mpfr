@@ -196,7 +196,6 @@ decimal128_to_string (char *s, _Decimal128 d)
   else
     {
       /* the biased exponent is formed from G[2] to G[15] */
-      abort ();
       exp = (x.s.comb >> 1) & 0x3fff;
       rp[3] = ((8 | (x.s.comb & 1)) << 14) | x.s.t0;
     }
