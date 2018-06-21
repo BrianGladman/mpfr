@@ -102,10 +102,7 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
-/* FIXME: once the implementation is complete, change the #if to:
- *   #if _MPFR_IEEE_FLOATS
- */
-#if 0
+#if _MPFR_IEEE_FLOATS
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 44 characters (including the final \0):
    * 1 for the sign '-'
@@ -126,12 +123,11 @@ static unsigned int T[1024] = {
 static void
 decimal128_to_string (char *s, _Decimal128 d)
 {
-  union ieee_double_extract128 x; /* FIXME */
-  union ieee_double_decimal128 y;
+  union ieee_double_decimal128 x;
   char *t;
   int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
-  mp_limb_t rp[2];
+  mp_limb_t rp[4];
   mp_size_t rn = 2;
   unsigned int i;
 #ifdef DPD_FORMAT
@@ -139,9 +135,8 @@ decimal128_to_string (char *s, _Decimal128 d)
 #endif
 
   /* now convert BID or DPD to string */
-  y.d128 = d;
-  x.d = y.d;
-  Gh = x.s.exp >> 6; /* FIXME: check 6 is correct */
+  x.d128 = d;
+  Gh = x.s.comb >> 12;
   if (Gh == 31)
     {
       sprintf (s, "NaN");
@@ -159,6 +154,11 @@ decimal128_to_string (char *s, _Decimal128 d)
   if (x.s.sig)
     *t++ = '-';
 
+  /* both the decimal128 DPD and BID encodings consist of:
+   * a sign bit of 1 bit
+   * a combination field of 17 bits (5 for the combination field and 12 remaining bits)
+   * a trailing significand field of 110 bits
+   */
 #ifdef DPD_FORMAT
   if (Gh < 24)
     {
@@ -184,28 +184,29 @@ decimal128_to_string (char *s, _Decimal128 d)
       t[i] = '0';
   t += 16;
 #else /* BID */
+  /* w + 5 = 17, thus w = 12 */
   if (Gh < 24)
     {
-      /* the biased exponent E is formed from G[0] to G[9] and the
-         significand from bits G[10] through the end of the decoding */
-      exp = x.s.exp >> 1;
-      /* manh has 20 bits, manl has 32 bits */
-      rp[1] = ((x.s.exp & 1) << 20) | x.s.manh;
-      rp[0] = x.s.manl;
+      /* the biased exponent E is formed from G[0] to G[13] and the
+         significand from bits G[14] through the end of the decoding
+         (including the bits of the trailing significand field) */
+      exp = x.s.comb >> 3; /* upper 14 bits */
+      rp[3] = ((x.s.comb & 7) << 14) | x.s.t0;
     }
   else
     {
-      /* the biased exponent is formed from G[2] to G[11] */
-      exp = (x.s.exp & 511) << 1;
-      rp[1] = x.s.manh;
-      rp[0] = x.s.manl;
-      exp |= rp[1] >> 19;
-      rp[1] &= 524287; /* 2^19-1: cancel G[11] */
-      rp[1] |= 2097152; /* add 2^21 */
+      /* the biased exponent is formed from G[2] to G[15] */
+      abort ();
+      exp = (x.s.comb >> 1) & 0x3fff;
+      rp[3] = ((8 | (x.s.comb & 1)) << 14) | x.s.t0;
     }
-#if GMP_NUMB_BITS >= 54
+  rp[2] = x.s.t1;
+  rp[1] = x.s.t2;
+  rp[0] = x.s.t3;
+#if GMP_NUMB_BITS == 64
   rp[0] |= rp[1] << 32;
-  rn = 1;
+  rp[1] = rp[2] | (rp[3] << 32);
+  rn = 2;
 #endif
   while (rn > 0 && rp[rn - 1] == 0)
     rn --;
@@ -216,13 +217,13 @@ decimal128_to_string (char *s, _Decimal128 d)
     }
   else
     {
-      i = mpn_get_str ((unsigned char*)t, 10, rp, rn);
+      i = mpn_get_str ((unsigned char*) t, 10, rp, rn);
     }
   while (i-- > 0)
     *t++ += '0';
 #endif /* DPD or BID */
 
-  exp -= 398; /* unbiased exponent */
+  exp -= 6176; /* unbiased exponent */
   sprintf (t, "E%d", exp);
 }
 

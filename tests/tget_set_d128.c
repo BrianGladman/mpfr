@@ -433,6 +433,17 @@ check_misc (void)
   d = mpfr_get_decimal128 (x, MPFR_RNDN);
   MPFR_ASSERTN(d < -DEC128_MAX); /* implies d = -Inf */
 
+  {
+    unsigned long i;
+    for (i = 1; i < 1000; i++)
+      {
+        mpfr_set_ui_2exp (x, i, 20403, MPFR_RNDN);
+        d = mpfr_get_decimal128 (x, MPFR_RNDN);
+        mpfr_set_decimal128 (x, d, MPFR_RNDN);
+        MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, i, 20403) == 0);
+      }
+  }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

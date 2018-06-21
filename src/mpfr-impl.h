@@ -808,6 +808,19 @@ typedef union {
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
+union ieee_double_decimal128
+{
+  struct
+    {
+      unsigned int t3:32;
+      unsigned int t2:32;
+      unsigned int t1:32;
+      unsigned int t0:14;
+      unsigned int comb:17;
+      unsigned int sig:1;
+    } s;
+  _Decimal128 d128;
+};
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 
