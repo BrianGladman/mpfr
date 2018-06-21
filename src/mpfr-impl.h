@@ -811,7 +811,9 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 /* FIXME: This should be checked with a configure test as
    this is implementation-defined (endianness...). */
 #ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
-/* assume little-endian double implies little-endian decimal128 */
+/* Assume little-endian double implies little-endian for bit-field allocation
+   (C99 says: "The order of allocation of bit-fields within a unit (high-order
+   to low-order or low-order to high-order) is implementation-defined.") */
 union ieee_double_decimal128
 {
   struct
