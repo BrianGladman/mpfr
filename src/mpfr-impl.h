@@ -810,6 +810,8 @@ typedef union {
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 /* FIXME: This should be checked with a configure test as
    this is implementation-defined (endianness...). */
+#ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
+/* assume little-endian double implies little-endian decimal128 */
 union ieee_double_decimal128
 {
   struct
@@ -823,6 +825,21 @@ union ieee_double_decimal128
     } s;
   _Decimal128 d128;
 };
+#else /* big endian */
+union ieee_double_decimal128
+{
+  struct
+    {
+      unsigned int sig:1;
+      unsigned int comb:17;
+      unsigned int t0:14;
+      unsigned int t1:32;
+      unsigned int t2:32;
+      unsigned int t3:32;
+    } s;
+  _Decimal128 d128;
+};
+#endif
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 
