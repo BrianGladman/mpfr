@@ -147,16 +147,23 @@ decimal64_to_string (char *s, _Decimal64 d)
   if (x.s.sig)
     *t++ = '-';
 
+  /* both the decimal64 DPD and BID encodings consist of:
+   * a sign bit of 1 bit
+   * a combination field of 13=5+8 bits
+   * a trailing significand field of 50 bits
+   */
 #ifdef DPD_FORMAT
+  /* the most significant 5 bits of the combination field give the first digit
+     of the significand, and leading bits of the biased exponent (0, 1, 2). */
   if (Gh < 24)
     {
       exp = (x.s.exp >> 1) & 768;
-      d0 = Gh & 7;
+      d0 = Gh & 7; /* first digit is in 0..7 */
     }
   else
     {
       exp = (x.s.exp & 384) << 1;
-      d0 = 8 | (Gh & 1);
+      d0 = 8 | (Gh & 1); /* first digit is 8 or 9 */
     }
   exp |= (x.s.exp & 63) << 2;
   exp |= x.s.manh >> 18;
