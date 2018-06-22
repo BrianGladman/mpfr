@@ -661,7 +661,10 @@ Some references:
 For floating-point constants, do not use the non-standard and useless
 suffix "D". It seems to mean "double" for GCC[*], but for instance,
 ICC 15 regards 1.0D as 0 (though ICC claims compatibility with GCC)
-and for tcc 0.9.27, this is an error.
+and for tcc 0.9.27, this is an error. The standard suffixes from TS 18661-2
+are:
+
+	f l F L df dd dl DF DD DL
 
 Moreover, avoid native floating-point if possible. Be careful that GCC
 does not conform to the C standard by default. References:
