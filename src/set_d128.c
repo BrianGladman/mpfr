@@ -102,7 +102,7 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
-#if _MPFR_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 44 characters (including the final \0):
    * 1 for the sign '-'
@@ -128,7 +128,7 @@ decimal128_to_string (char *s, _Decimal128 d)
   int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
   mp_limb_t rp[4];
-  mp_size_t rn = 2;
+  mp_size_t rn;
   unsigned int i;
 #ifdef DPD_FORMAT
   unsigned int d0, d1, d2, d3, d4, d5;
@@ -193,7 +193,7 @@ decimal128_to_string (char *s, _Decimal128 d)
          (including the bits of the trailing significand field) */
       exp = x.s.comb >> 3; /* upper 14 bits, exp <= 12287 */
       rp[3] = ((x.s.comb & 7) << 14) | x.s.t0;
-      /* rp[3] is less than 2^17 */
+      MPFR_ASSERTD (rp[3] < MPFR_LIMB_ONE << 17);  /* rp[3] < 2^17 */
     }
   else
     {
@@ -208,6 +208,8 @@ decimal128_to_string (char *s, _Decimal128 d)
   rp[0] |= rp[1] << 32;
   rp[1] = rp[2] | (rp[3] << 32);
   rn = 2;
+#else
+  rn = 4;
 #endif
   while (rn > 0 && rp[rn - 1] == 0)
     rn --;
