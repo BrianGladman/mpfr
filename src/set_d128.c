@@ -134,7 +134,7 @@ decimal128_to_string (char *s, _Decimal128 d)
   mp_size_t rn;
   unsigned int i;
 #ifdef DPD_FORMAT
-  unsigned int d[12];
+  unsigned int D[12]; /* declets */
 #endif
 
   /* now convert BID or DPD to string:
@@ -169,28 +169,28 @@ decimal128_to_string (char *s, _Decimal128 d)
   if (Gh < 24)
     {
       exp = Gh >> 3;
-      d[0] = Gh & 7; /* 4G2+2G3+G4 */
+      D[0] = Gh & 7; /* 4G2+2G3+G4 */
     }
   else /* case c1i): the most significant five bits of G are 110xx or 1110x */
     {
       exp = (Gh >> 1) & 3; /* 2G2+G3 */
-      d[0] = 8 | (Gh & 1); /* leading significant digit, 8 or 9 */
+      D[0] = 8 | (Gh & 1); /* leading significant digit, 8 or 9 */
     }
   exp = (exp << 12) | (x.s.comb & 0xfff); /* add last 12 bits of biased exp. */
-  d[1] = x.s.t0 >> 4; /* first declet */
-  d[2] = ((x.s.t0 << 6) | (x.s.t1 >> 26)) & 1023;
-  d[3] = (x.s.t1 >> 16) & 1023;
-  d[4] = (x.s.t1 >> 6) & 1023;
-  d[5] = ((x.s.t1 << 4) | (x.s.t2 >> 28)) & 1023;
-  d[6] = (x.s.t2 >> 18) & 1023;
-  d[7] = (x.s.t2 >> 8) & 1023;
-  d[8] = ((x.s.t2 << 2) | (x.s.t3 >> 30)) & 1023;
-  d[9] = (x.s.t3 >> 20) & 1023;
-  d[10] = (x.s.t3 >> 10) & 1023;
-  d[11] = x.s.t3 & 1023;
-  sprintf (t, "%1u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u", d[0], T[d[1]], T[d[2]],
-           T[d[3]], T[d[4]], T[d[5]], T[d[6]], T[d[7]], T[d[8]], T[d[9]],
-           T[d[10]], T[d[11]]);
+  D[1] = x.s.t0 >> 4; /* first declet */
+  D[2] = ((x.s.t0 << 6) | (x.s.t1 >> 26)) & 1023;
+  D[3] = (x.s.t1 >> 16) & 1023;
+  D[4] = (x.s.t1 >> 6) & 1023;
+  D[5] = ((x.s.t1 << 4) | (x.s.t2 >> 28)) & 1023;
+  D[6] = (x.s.t2 >> 18) & 1023;
+  D[7] = (x.s.t2 >> 8) & 1023;
+  D[8] = ((x.s.t2 << 2) | (x.s.t3 >> 30)) & 1023;
+  D[9] = (x.s.t3 >> 20) & 1023;
+  D[10] = (x.s.t3 >> 10) & 1023;
+  D[11] = x.s.t3 & 1023;
+  sprintf (t, "%1u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u", D[0], T[D[1]], T[D[2]],
+           T[D[3]], T[D[4]], T[D[5]], T[D[6]], T[D[7]], T[D[8]], T[D[9]],
+           T[D[10]], T[D[11]]);
   /* Warning: some characters may be blank */
   for (i = 0; i < 34; i++)
     if (t[i] == ' ')
