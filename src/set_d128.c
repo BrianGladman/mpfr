@@ -215,7 +215,7 @@ decimal128_to_string (char *s, _Decimal128 d)
     {
     zero:
       t[0] = '0';
-      t[1] = '\n';
+      t[1] = '\0';
       return;
     }
   i = mpn_get_str ((unsigned char *) t, 10, rp, rn);
