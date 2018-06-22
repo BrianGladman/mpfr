@@ -809,7 +809,9 @@ typedef union {
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 /* FIXME: This should be checked with a configure test as
-   this is implementation-defined (endianness...). */
+   this is implementation-defined (endianness...).
+   TODO: It would be better to define a different structure for DPD,
+   where the t* fields correspond to the declets. */
 #ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 /* Assume little-endian double implies little-endian for bit-field allocation
    (C99 says: "The order of allocation of bit-fields within a unit (high-order
