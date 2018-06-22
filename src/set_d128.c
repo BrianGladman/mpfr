@@ -233,7 +233,7 @@ decimal128_to_string (char *s, _Decimal128 d)
   i = mpn_get_str ((unsigned char *) t, 10, rp, rn);
   if (i > 34)
     goto zero;
-  while (i-- > 0)
+  /* convert the values from mpn_get_str (0, 1, ..., 9) to digits: */
     *t++ += '0';
 #endif /* DPD or BID */
 

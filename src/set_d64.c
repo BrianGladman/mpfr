@@ -213,6 +213,7 @@ decimal64_to_string (char *s, _Decimal64 d)
     {
       i = mpn_get_str ((unsigned char*) t, 10, rp, rn);
     }
+  /* convert the values from mpn_get_str (0, 1, ..., 9) to digits: */
   while (i-- > 0)
     *t++ += '0';
 #endif /* DPD or BID */
