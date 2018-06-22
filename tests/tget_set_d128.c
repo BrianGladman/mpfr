@@ -483,6 +483,41 @@ coverage (void)
 #endif
 }
 
+/* generate random sequences of 16 bytes and interpret them as _Decimal128 */
+static void
+check_random_bytes (void)
+{
+  union {
+    _Decimal128 d;
+    unsigned char c[16];
+  } x;
+  int i;
+  mpfr_t y;
+  _Decimal128 e;
+
+  mpfr_init2 (y, 114); /* 114 = 1 + ceil(34*log(10)/log(2)), thus ensures
+                         that if a decimal128 number is converted to a 114-bit
+                         value and back, we should get the same value */
+  for (i = 0; i < 100000; i++)
+    {
+      int j;
+      for (j = 0; j < 16; j++)
+        x.c[j] = randlimb () & 255;
+      mpfr_set_decimal128 (y, x.d, MPFR_RNDN);
+      e = mpfr_get_decimal128 (y, MPFR_RNDN);
+      if (!mpfr_nan_p (y))
+        if (x.d != e)
+          {
+            printf ("check_random_bytes failed\n");
+            printf ("x.d="); print_decimal128 (x.d);
+            printf ("y="); mpfr_dump (y);
+            printf ("e="); print_decimal128 (e);
+            exit (1);
+          }
+    }
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -500,6 +535,7 @@ main (int argc, char *argv[])
 #endif
     }
 
+  check_random_bytes ();
   test_set ();
   powers_of_10 ();
   check_misc ();
