@@ -505,6 +505,41 @@ coverage (void)
 #endif
 }
 
+/* generate random sequences of 8 bytes and interpret them as _Decimal64 */
+static void
+check_random_bytes (void)
+{
+  union {
+    _Decimal64 d;
+    unsigned char c[8];
+  } x;
+  int i;
+  mpfr_t y;
+  _Decimal64 e;
+
+  mpfr_init2 (y, 55); /* 55 = 1 + ceil(16*log(10)/log(2)), thus ensures
+                         that if a decimal64 number is converted to a 55-bit
+                         value and back, we should get the same value */
+  for (i = 0; i < 100000; i++)
+    {
+      int j;
+      for (j = 0; j < 8; j++)
+        x.c[j] = randlimb () & 255;
+      mpfr_set_decimal64 (y, x.d, MPFR_RNDN);
+      e = mpfr_get_decimal64 (y, MPFR_RNDN);
+      if (!mpfr_nan_p (y))
+        if (x.d != e)
+          {
+            printf ("check_random_bytes failed\n");
+            printf ("x.d="); print_decimal64 (x.d);
+            printf ("y="); mpfr_dump (y);
+            printf ("e="); print_decimal64 (e);
+            exit (1);
+          }
+    }
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -520,6 +555,7 @@ main (int argc, char *argv[])
   printf ("Using BID format\n");
 #endif
 
+  check_random_bytes ();
   coverage ();
   check_misc ();
   check_random ();
