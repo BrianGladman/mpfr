@@ -811,7 +811,9 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
 /* FIXME: This should be checked with a configure test as
    this is implementation-defined (endianness...).
    TODO: It would be better to define a different structure for DPD,
-   where the t* fields correspond to the declets. */
+   where the t* bit-fields correspond to the declets. And to avoid
+   confusion and detect coding errors, these bit-fields should have
+   different names for BID and DPD. */
 #ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
 /* Assume little-endian double implies little-endian for bit-field allocation
    (C99 says: "The order of allocation of bit-fields within a unit (high-order
