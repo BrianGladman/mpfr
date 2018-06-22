@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
+/* TODO: Also test non-canonical encodings. */
+
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
 #include "mpfr-test.h"
