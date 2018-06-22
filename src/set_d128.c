@@ -186,6 +186,8 @@ decimal128_to_string (char *s, _Decimal128 d)
   t += 16;
 #else /* BID */
   /* w + 5 = 17, thus w = 12 */
+  /* IEEE 754-2008 specifies that if the decoded significand exceeds the
+     maximum, i.e. here if it is >= 10^34, then the value is zero. */
   if (Gh < 24)
     {
       /* the biased exponent E is formed from G[0] to G[13] and the
@@ -196,11 +198,7 @@ decimal128_to_string (char *s, _Decimal128 d)
       MPFR_ASSERTD (rp[3] < MPFR_LIMB_ONE << 17);  /* rp[3] < 2^17 */
     }
   else
-    {
-      /* the biased exponent is formed from G[2] to G[15] */
-      exp = (x.s.comb >> 1) & 0x3fff; /* exp <= 16383 */
-      rp[3] = ((8 | (x.s.comb & 1)) << 14) | x.s.t0;
-    }
+    goto zero;  /* 2^113 >= 10^34, thus the value is 0. */
   rp[2] = x.s.t1;
   rp[1] = x.s.t2;
   rp[0] = x.s.t3;
@@ -215,13 +213,14 @@ decimal128_to_string (char *s, _Decimal128 d)
     rn --;
   if (rn == 0)
     {
-      *t = 0;
-      i = 1;
+    zero:
+      t[0] = '0';
+      t[1] = '\n';
+      return;
     }
-  else
-    {
-      i = mpn_get_str ((unsigned char*) t, 10, rp, rn);
-    }
+  i = mpn_get_str ((unsigned char *) t, 10, rp, rn);
+  if (i > 34)
+    goto zero;
   while (i-- > 0)
     *t++ += '0';
 #endif /* DPD or BID */
