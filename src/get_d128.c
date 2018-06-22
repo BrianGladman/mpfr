@@ -378,9 +378,10 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* We need to store the sign (1), the significand (34), the exponent
-         part (6), and the terminating null character, thus we need at least
-         42 characters in s. */
+      /* we need to store the sign (1 character), the significand (at most 34
+         characters), the exponent part (at most 6 characters for "E-6176"),
+         and the terminating null character, thus we need at least 42
+         characters in s. */
       char s[42];
       mpfr_get_str (s, &e, 10, 34, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-6143,

@@ -528,8 +528,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* we need to store the sign (1), the mantissa (16), and the terminating
-         character, thus we need at least 18 characters in s */
+      /* we need to store the sign (1 character), the significand (at most 16
+         characters), the exponent part (at most 5 characters for "E-398"),
+         and the terminating character, thus we need at least 23 characters */
       char s[23];
       mpfr_get_str (s, &e, 10, 16, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-383,
