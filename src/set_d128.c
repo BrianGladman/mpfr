@@ -156,7 +156,8 @@ decimal128_to_string (char *s, _Decimal128 d)
 
   /* both the decimal128 DPD and BID encodings consist of:
    * a sign bit of 1 bit
-   * a combination field of 17 bits (5 for the combination field and 12 remaining bits)
+   * a combination field of 17 bits (5 for the combination field and
+     12 remaining bits)
    * a trailing significand field of 110 bits
    */
 #ifdef DPD_FORMAT
