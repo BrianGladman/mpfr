@@ -210,7 +210,12 @@ decimal128_to_string (char *s, _Decimal128 d)
       MPFR_ASSERTD (rp[3] < MPFR_LIMB_ONE << 17);  /* rp[3] < 2^17 */
     }
   else
-    goto zero;  /* 2^113 >= 10^34, thus the value is 0. */
+    goto zero;  /* in that case (assuming G[2]G[3] <> 11), the significand
+                   is formed by prefixing (8 + G[16]) to the trailing
+                   significand field of 110 bits, which will give a value
+                   of at least 2^113 > 10^34-1, and the standard
+                   says that any value exceeding the maximum is
+                   non-canonical and should be interpreted as 0. */
   rp[2] = x.s.t1;
   rp[1] = x.s.t2;
   rp[0] = x.s.t3;
