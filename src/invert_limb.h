@@ -35,6 +35,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   do {                                          \
     mp_limb_t _l;                               \
     umul_ppmm (h, _l, x, y);                    \
+    (void) _l;  /* unused variable */           \
   } while (0)
 #endif
 
