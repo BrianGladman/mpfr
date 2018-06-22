@@ -209,12 +209,15 @@ decimal64_to_string (char *s, _Decimal64 d)
     rn --;
   if (rn == 0)
     {
+    zero:
       *t = 0;
       i = 1;
     }
   else
     {
       i = mpn_get_str ((unsigned char*) t, 10, rp, rn);
+      if (i > 16) /* non-canonical encoding: return zero */
+        goto zero;
     }
   /* convert the values from mpn_get_str (0, 1, ..., 9) to digits: */
   while (i-- > 0)
