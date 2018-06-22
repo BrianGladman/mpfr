@@ -180,6 +180,8 @@ decimal64_to_string (char *s, _Decimal64 d)
       t[i] = '0';
   t += 16;
 #else /* BID */
+  /* IEEE 754-2008 specifies that if the decoded significand exceeds the
+     maximum, i.e. here if it is >= 10^16, then the value is zero. */
   if (Gh < 24)
     {
       /* the biased exponent E is formed from G[0] to G[9] and the
