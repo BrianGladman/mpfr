@@ -237,6 +237,7 @@ static const mp_limb_t T3[768] =
   do {                                          \
     mp_limb_t _l;                               \
     umul_ppmm (h, _l, x, y);                    \
+    (void) _l;  /* unused variable */           \
   } while (0)
 #endif
 
