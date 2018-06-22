@@ -103,9 +103,6 @@ static unsigned int T[1024] = {
 #endif
 
 #if _MPFR_IEEE_FLOATS && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
-/* FIXME: stack-buffer-overflow with:
-     CC=gcc-snapshot CFLAGS="-O3 -march=native -fsanitize=address"
-*/
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 44 characters (including the final \0):
    * 1 for the sign '-'

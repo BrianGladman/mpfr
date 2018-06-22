@@ -332,6 +332,9 @@ string_to_Decimal128 (char *s) /* portable version */
   return x;
 }
 
+/* FIXME: stack-buffer-overflow with:
+     CFLAGS="-O3 -march=native -fsanitize=address"
+*/
 _Decimal128
 mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
