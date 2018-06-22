@@ -643,10 +643,10 @@ Please use another compiler or build MPFR without --enable-decimal-float.])
      fi])
 fi
 
-dnl Check the encoding (little or big endian) of _Decimal128
+dnl Check the bit-field ordering for _Decimal128.
 dnl Little endian: sig=0 comb=49400 t0=0 t1=0 t2=0 t3=10
 dnl Big endian: sig=0 comb=8 t0=0 t1=0 t2=0 t3=570933248
-AC_MSG_CHECKING(encoding of _Decimal128)
+AC_MSG_CHECKING(bit-field ordering for _Decimal128)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
   union ieee_decimal128
@@ -670,8 +670,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
      return 2; /* big endian */
   else
      return 0; /* unknown encoding */
-]])], [AC_MSG_RESULT(internal error)
-       AC_MSG_FAILURE(unknown encoding)],  
+]])], [AC_MSG_RESULT(unknown)],
       [d128_exit_status=$?
        case "$d128_exit_status" in
          1) AC_MSG_RESULT(little endian)
@@ -679,8 +678,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
          2) AC_MSG_RESULT(big endian)
             AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
        esac],
-      [AC_MSG_RESULT(assuming little endian)
-       AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1)])
+      [AC_MSG_RESULT(cannot test)])
   
 dnl Check if _Float128 or __float128 is available. We also require the
 dnl compiler to support hex constants with the f128 or q suffix (this

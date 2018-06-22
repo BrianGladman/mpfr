@@ -452,7 +452,7 @@ static void
 coverage (void)
 {
   /* The code below assumes BID. */
-#ifndef DPD_FORMAT
+#if HAVE_DECIMAL128_IEEE && !defined(DPD_FORMAT)
   union ieee_decimal128 x;
 
   /* produce a non-canonical decimal128 with Gh >= 24 */

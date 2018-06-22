@@ -102,7 +102,7 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
-#if _MPFR_IEEE_FLOATS && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
+#if HAVE_DECIMAL128_IEEE && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 44 characters (including the final \0):
    * 1 for the sign '-'

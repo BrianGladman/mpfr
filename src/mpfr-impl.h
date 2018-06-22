@@ -811,6 +811,7 @@ typedef union {
    Do something like union ieee_decimal128. */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
+#if _MPFR_IEEE_FLOATS
 /* TODO: It would be better to define a different structure for DPD,
    where the t* bit-fields correspond to the declets. And to avoid
    confusion and detect coding errors, these bit-fields should have
@@ -823,24 +824,30 @@ union ieee_decimal128
          allocation (C99 says: "The order of allocation of bit-fields
          within a unit (high-order to low-order or low-order to high-order)
          is implementation-defined.") */
-#ifdef HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN
+#if defined(HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN)
+#define HAVE_DECIMAL128_IEEE
       unsigned int t3:32;
       unsigned int t2:32;
       unsigned int t1:32;
       unsigned int t0:14;
       unsigned int comb:17;
       unsigned int sig:1;
-#else /* big endian */
+#elif defined(HAVE_DECIMAL128_IEEE_BIG_ENDIAN)
+#define HAVE_DECIMAL128_IEEE
       unsigned int sig:1;
       unsigned int comb:17;
       unsigned int t0:14;
       unsigned int t1:32;
       unsigned int t2:32;
       unsigned int t3:32;
+#else /* unknowned bit-field ordering */
+      /* This will not be used in practice. */
+      unsigned int dummy;
 #endif
     } s;
   _Decimal128 d128;
 };
+#endif /* _MPFR_IEEE_FLOATS */
 
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
