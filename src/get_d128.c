@@ -332,9 +332,6 @@ string_to_Decimal128 (char *s) /* portable version */
   return x;
 }
 
-/* FIXME: stack-buffer-overflow with:
-     CFLAGS="-O3 -march=native -fsanitize=address"
-*/
 _Decimal128
 mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
@@ -381,9 +378,10 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* we need to store the sign (1), the mantissa (34), and the terminating
-         character, thus we need at least 35 characters in s */
-      char s[36];
+      /* We need to store the sign (1), the significand (34), the exponent
+         part (6), and the terminating null character, thus we need at least
+         42 characters in s. */
+      char s[42];
       mpfr_get_str (s, &e, 10, 34, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-6143,
          which corresponds to s=[0.]1000...000 and e=-6142 */
