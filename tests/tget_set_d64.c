@@ -488,15 +488,15 @@ coverage (void)
   union ieee_double_decimal64 y;
 
   /* test for non-canonical encoding */
-  y.d64 = 9999999999999998.0d;
+  y.d64 = 9999999999999999.0dd;
   x.d = y.d;
-  /* if BID, we have sig=0, exp=1735, manh=231154, manl=1874919422 */
+  /* if BID, we have sig=0, exp=1735, manh=231154, manl=1874919423 */
   if (x.s.sig == 0 && x.s.exp == 1735 && x.s.manh == 231154 &&
-      x.s.manl == 1874919422)
+      x.s.manl == 1874919423)
     {
       mpfr_t z;
-      mpfr_init2 (z, 53);
-      x.s.manl += 2; /* then the significand equals 10^16 */
+      mpfr_init2 (z, 54); /* 54 bits ensure z is exact, since 10^16 < 2^54 */
+      x.s.manl += 1; /* then the significand equals 10^16 */
       y.d = x.d;
       mpfr_set_decimal64 (z, y.d64, MPFR_RNDN);
       MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z) == 0);
