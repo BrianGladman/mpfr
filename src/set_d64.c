@@ -211,13 +211,14 @@ decimal64_to_string (char *s, _Decimal64 d)
     }
   else
     {
-      i = mpn_get_str ((unsigned char*)t, 10, rp, rn);
+      i = mpn_get_str ((unsigned char*) t, 10, rp, rn);
     }
   while (i-- > 0)
     *t++ += '0';
 #endif /* DPD or BID */
 
-  exp -= 398; /* unbiased exponent */
+  exp -= 398; /* unbiased exponent: -398 = emin - (p-1) where
+                 emin = 1-emax = 1-384 = -383 and p=16 */
   sprintf (t, "E%d", exp);
 }
 #else
