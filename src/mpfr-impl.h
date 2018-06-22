@@ -811,9 +811,7 @@ typedef union {
    Do something like union ieee_decimal128. */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
-/* FIXME: This should be checked with a configure test as
-   this is implementation-defined (endianness...).
-   TODO: It would be better to define a different structure for DPD,
+/* TODO: It would be better to define a different structure for DPD,
    where the t* bit-fields correspond to the declets. And to avoid
    confusion and detect coding errors, these bit-fields should have
    different names for BID and DPD. */
@@ -825,7 +823,7 @@ union ieee_decimal128
          allocation (C99 says: "The order of allocation of bit-fields
          within a unit (high-order to low-order or low-order to high-order)
          is implementation-defined.") */
-#ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
+#ifdef HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN
       unsigned int t3:32;
       unsigned int t2:32;
       unsigned int t1:32;

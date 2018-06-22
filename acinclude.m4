@@ -643,6 +643,45 @@ Please use another compiler or build MPFR without --enable-decimal-float.])
      fi])
 fi
 
+dnl Check the encoding (little or big endian) of _Decimal128
+dnl Little endian: sig=0 comb=49400 t0=0 t1=0 t2=0 t3=10
+dnl Big endian: sig=0 comb=8 t0=0 t1=0 t2=0 t3=570933248
+AC_MSG_CHECKING(encoding of _Decimal128)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+]], [[
+  union ieee_decimal128
+  {
+    struct
+    {
+      unsigned int t3:32;
+      unsigned int t2:32;
+      unsigned int t1:32;
+      unsigned int t0:14;
+      unsigned int comb:17;
+      unsigned int sig:1;
+    } s;
+    _Decimal128 d128;
+  } x;
+
+  x.d128 = 1.0dl;
+  if (x.s.sig==0 && x.s.comb==49400 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==10)
+     return 1; /* little endian */
+  else if (x.s.sig==0 && x.s.comb==8 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==570933248)
+     return 2; /* big endian */
+  else
+     return 0; /* unknown encoding */
+]])], [AC_MSG_RESULT(internal error)
+       AC_MSG_FAILURE(unknown encoding)],  
+      [d128_exit_status=$?
+       case "$d128_exit_status" in
+         1) AC_MSG_RESULT(little endian)
+            AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1) ;;
+         2) AC_MSG_RESULT(big endian)
+            AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
+       esac],
+      [AC_MSG_RESULT(assuming little endian)
+       AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1)])
+  
 dnl Check if _Float128 or __float128 is available. We also require the
 dnl compiler to support hex constants with the f128 or q suffix (this
 dnl prevents the _Float128 support with GCC's -std=c90, but who cares?).
