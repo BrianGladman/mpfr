@@ -1330,6 +1330,7 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_ld (mpfr_t @var{rop}, long double @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_float128 (mpfr_t @var{rop}, _Float128 @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_decimal64 (mpfr_t @var{rop}, _Decimal64 @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_decimal128 (mpfr_t @var{rop}, _Decimal128 @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -1346,13 +1347,14 @@ to use @code{mpfr_set_float128}, one should define the macro
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system does not support the IEEE 754 standard,
-@code{mpfr_set_flt}, @code{mpfr_set_d}, @code{mpfr_set_ld} and
-@code{mpfr_set_decimal64} might not preserve the signed zeros.
-The @code{mpfr_set_decimal64} function is built only with the configure
+@code{mpfr_set_flt}, @code{mpfr_set_d}, @code{mpfr_set_ld},
+@code{mpfr_set_decimal64} and @code{mpfr_set_decimal128}
+might not preserve the signed zeros.
+The @code{mpfr_set_decimal64} and @code{mpfr_set_decimal128}
+functions are built only with the configure
 option @samp{--enable-decimal-float}, and when the compiler or
-system provides the @samp{_Decimal64} data type
-(recent versions of GCC support this data type);
-to use @code{mpfr_set_decimal64}, one should define the macro
+system provides the @samp{_Decimal64} and @samp{_Decimal128} data type;
+to use those functions, one should define the macro
 @code{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
 @code{mpfr_set_q} might fail if the numerator (or the
 denominator) can not be represented as a @code{mpfr_t}.
@@ -1365,11 +1367,12 @@ Note: If you want to store a floating-point constant to a @code{mpfr_t},
 you should use @code{mpfr_set_str} (or one of the MPFR constant functions,
 such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of
 @code{mpfr_set_flt}, @code{mpfr_set_d},
-@code{mpfr_set_ld} or @code{mpfr_set_decimal64}.
+@code{mpfr_set_ld}, @code{mpfr_set_decimal64} or
+@code{mpfr_set_decimal128}.
 Otherwise the floating-point constant will be first
 converted into a reduced-precision (e.g., 53-bit) binary
-(or decimal, for @code{mpfr_set_decimal64}) number before
-MPFR can work with it.
+(or decimal, for @code{mpfr_set_decimal64} and @code{mpfr_set_decimal128})
+number before MPFR can work with it.
 @end deftypefun
 
 @deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mpfr_exp_t @var{e}, mpfr_rnd_t @var{rnd})
@@ -1529,15 +1532,18 @@ See @code{mpfr_set_str}.
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx {_Float128} mpfr_get_float128 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx _Decimal64 mpfr_get_decimal64 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx _Decimal128 mpfr_get_decimal128 (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a @code{float} (respectively @code{double},
-@code{long double} or @code{_Decimal64}), using the rounding mode @var{rnd}.
+@code{long double}, @code{_Decimal64}, or @code{_Decimal128})
+using the rounding mode @var{rnd}.
 If @var{op} is NaN, some fixed NaN (either quiet or signaling) or the result
 of 0.0/0.0 is returned. If @var{op} is @pom{}Inf, an infinity of the same
 sign or the result of @pom{}1.0/0.0 is returned. If @var{op} is zero, these
 functions return a zero, trying to preserve its sign, if possible.
-The @code{mpfr_get_float128} and @code{mpfr_get_decimal64} functions are built
-only under some conditions: see the documentation of @code{mpfr_set_float128}
-and @code{mpfr_set_decimal64} respectively.
+The @code{mpfr_get_float128}, @code{mpfr_get_decimal64} and
+@code{mpfr_get_decimal128} functions are built
+only under some conditions: see the documentation of @code{mpfr_set_float128},
+@code{mpfr_set_decimal64} and @code{mpfr_set_decimal128} respectively.
 @end deftypefun
 
 @deftypefun long mpfr_get_si (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -4007,6 +4013,8 @@ in MPFR 4.0.
 
 @item @code{mpfr_gamma_inc} in MPFR 4.0.
 
+@item @code{mpfr_get_decimal128} in MPFR 4.1.
+
 @item @code{mpfr_get_float128} in MPFR 4.0 if configured with
 @samp{--enable-float128}.
 
@@ -4060,6 +4068,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_round_nearest_away} in MPFR 4.0.
 
 @item @code{mpfr_rootn_ui} in MPFR 4.0.
+
+@item @code{mpfr_set_decimal128} in MPFR 4.1.
 
 @item @code{mpfr_set_divby0} in MPFR 3.1 (new divide-by-zero exception).
 
