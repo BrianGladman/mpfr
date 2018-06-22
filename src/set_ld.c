@@ -176,7 +176,7 @@ int
 mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t, u;
-  int inexact, shift_exp;
+  int inexact;
   double h, l;
   MPFR_SAVE_EXPO_DECL (expo);
 
