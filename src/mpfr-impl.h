@@ -807,7 +807,8 @@ typedef union {
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
-/* to cast between binary64 and decimal64 */
+/* TODO: The following is ugly and possibly wrong on some platforms.
+   Do something like union ieee_decimal128. */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 /* FIXME: This should be checked with a configure test as
