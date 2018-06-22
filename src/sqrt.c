@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 {
-  mp_limb_t x, r1, r0, h, l, t;
+  mp_limb_t x, r1, r0, h, l;
 
   __gmpfr_sqrt_limb (r1, h, l, x, np[1]);
 
@@ -53,7 +53,7 @@ mpfr_sqrt2_approx (mpfr_limb_ptr rp, mpfr_limb_srcptr np)
 
   /* now add (2^64+x) * (h*2^64+l) / 2^64 to [r1*2^64, 0] */
 
-  umul_ppmm (r0, t, x, l); /* x * l */
+  umul_hi (r0, x, l); /* x * l */
   r0 += l;
   r1 += h + (r0 < l); /* now we have added 2^64 * (h*2^64+l) */
   if (h)
