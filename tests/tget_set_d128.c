@@ -450,6 +450,50 @@ check_misc (void)
   mpfr_clear (y);
 }
 
+static void
+coverage (void)
+{
+  union 
+  {
+    struct
+    {
+      unsigned int t3:32;
+      unsigned int t2:32;
+      unsigned int t1:32;
+      unsigned int t0:14;
+      unsigned int comb:17;
+      unsigned int sig:1;
+    } s;
+    _Decimal128 d;
+  } x;
+
+  /* produce a non-canonical decimal128 with Gh >= 24 */
+  x.d = 1;
+  /* if little-endian BID, we have sig=0, comb=49408, t0=t1=t2=0, t3=1 */
+  if (x.s.sig == 0 && x.s.comb == 49408 && x.s.t0 == 0 && x.s.t1 == 0 &&
+      x.s.t2 == 0 && x.s.t3 == 1)
+    {
+      mpfr_t y;
+      x.s.comb = 98560; /* force Gh >= 24 thus a non-canonical number
+                           (significand >= 2^113 > 20^34-1) */
+      mpfr_init2 (y, 113);
+      mpfr_set_decimal128 (y, x.d, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+
+      /* now construct a case Gh < 24, but where the significand exceeds
+         10^34-1 */
+      x.d = 9999999999999999999999999999999999.0dl;
+      /* should give sig=0, comb=49415, t0=11529, t1=3199043520,
+         t2=932023907, t3=4294967295 */
+      x.s.t3 ++; /* should give 0 */
+      x.s.t2 += (x.s.t3 == 0);
+      /* now the significand is 10^34 */
+      mpfr_set_decimal128 (y, x.d, MPFR_RNDN);
+      MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+      mpfr_clear (y);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -470,6 +514,7 @@ main (int argc, char *argv[])
   test_set ();
   powers_of_10 ();
   check_misc ();
+  coverage ();
 
   tests_end_mpfr ();
   return 0;
