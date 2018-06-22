@@ -25,8 +25,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
-/* TODO: Also test non-canonical encodings. */
-
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
 #include "mpfr-test.h"
@@ -489,6 +487,7 @@ coverage (void)
   union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 
+  /* test for non-canonical encoding */
   y.d64 = 9999999999999998.0d;
   x.d = y.d;
   /* if BID, we have sig=0, exp=1735, manh=231154, manl=1874919422 */
@@ -497,7 +496,7 @@ coverage (void)
     {
       mpfr_t z;
       mpfr_init2 (z, 53);
-      x.s.manl += 2;
+      x.s.manl += 2; /* then the significand equals 10^16 */
       y.d = x.d;
       mpfr_set_decimal64 (z, y.d64, MPFR_RNDN);
       MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z) == 0);
