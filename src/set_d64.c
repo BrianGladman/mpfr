@@ -119,11 +119,12 @@ decimal64_to_string (char *s, _Decimal64 d)
   char *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
-  mp_limb_t rp[2];
-  mp_size_t rn = 2;
   unsigned int i;
 #ifdef DPD_FORMAT
   unsigned int d0, d1, d2, d3, d4, d5;
+#else
+  mp_limb_t rp[2];
+  mp_size_t rn;
 #endif
 
   /* now convert BID or DPD to string */
@@ -198,9 +199,11 @@ decimal64_to_string (char *s, _Decimal64 d)
       rp[1] &= 524287; /* 2^19-1: cancel G[11] */
       rp[1] |= 2097152; /* add 2^21 */
     }
-#if GMP_NUMB_BITS >= 54
+#if GMP_NUMB_BITS >= 64
   rp[0] |= rp[1] << 32;
   rn = 1;
+#else
+  rn = 2;
 #endif
   while (rn > 0 && rp[rn - 1] == 0)
     rn --;
