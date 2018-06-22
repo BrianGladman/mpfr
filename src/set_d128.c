@@ -130,11 +130,12 @@ decimal128_to_string (char *s, _Decimal128 d)
   char *t;
   int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
-  mp_limb_t rp[4];
-  mp_size_t rn;
   unsigned int i;
 #ifdef DPD_FORMAT
   unsigned int D[12]; /* declets */
+#else
+  mp_limb_t rp[4];
+  mp_size_t rn;
 #endif
 
   /* now convert BID or DPD to string:
