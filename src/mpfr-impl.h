@@ -841,7 +841,7 @@ union ieee_decimal128
       unsigned int t2:32;
       unsigned int t3:32;
 #else /* unknowned bit-field ordering */
-      /* This will not be used in practice. */
+      /* This will not be used as HAVE_DECIMAL128_IEEE is not defined. */
       unsigned int dummy;
 #endif
     } s;
