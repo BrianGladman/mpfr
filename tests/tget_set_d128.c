@@ -453,11 +453,13 @@ check_misc (void)
 static void
 coverage (void)
 {
+  /* The code below assumes BID. */
+#ifndef DPD_FORMAT
   union ieee_double_decimal128 x;
 
   /* produce a non-canonical decimal128 with Gh >= 24 */
   x.d128 = 1;
-  /* if little-endian BID, we have sig=0, comb=49408, t0=t1=t2=0, t3=1 */
+  /* if BID, we have sig=0, comb=49408, t0=t1=t2=0, t3=1 */
   if (x.s.sig == 0 && x.s.comb == 49408 && x.s.t0 == 0 && x.s.t1 == 0 &&
       x.s.t2 == 0 && x.s.t3 == 1)
     {
@@ -480,6 +482,7 @@ coverage (void)
       MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
       mpfr_clear (y);
     }
+#endif
 }
 
 int
