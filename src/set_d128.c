@@ -134,10 +134,11 @@ decimal128_to_string (char *s, _Decimal128 d)
   mp_size_t rn;
   unsigned int i;
 #ifdef DPD_FORMAT
-  unsigned int d0, d1, d2, d3, d4, d5;
+  unsigned int d[12];
 #endif
 
-  /* now convert BID or DPD to string */
+  /* now convert BID or DPD to string:
+     the combination field has 17 bits: 5 + 12 */
   x.d128 = d;
   Gh = x.s.comb >> 12;
   if (Gh == 31)
@@ -164,29 +165,37 @@ decimal128_to_string (char *s, _Decimal128 d)
    * a trailing significand field of 110 bits
    */
 #ifdef DPD_FORMAT
+  /* page 11 of IEEE 754-2008, case c1) */
   if (Gh < 24)
     {
-      exp = (x.s.exp >> 1) & 768;
-      d0 = Gh & 7;
+      exp = Gh >> 3;
+      d[0] = Gh & 7; /* 4G2+2G3+G4 */
     }
-  else
+  else /* case c1i): the most significant five bits of G are 110xx or 1110x */
     {
-      exp = (x.s.exp & 384) << 1;
-      d0 = 8 | (Gh & 1);
+      exp = (Gh >> 1) & 3; /* 2G2+G3 */
+      d[0] = 8 | (Gh & 1); /* leading significant digit, 8 or 9 */
     }
-  exp |= (x.s.exp & 63) << 2;
-  exp |= x.s.manh >> 18;
-  d1 = (x.s.manh >> 8) & 1023;
-  d2 = ((x.s.manh << 2) | (x.s.manl >> 30)) & 1023;
-  d3 = (x.s.manl >> 20) & 1023;
-  d4 = (x.s.manl >> 10) & 1023;
-  d5 = x.s.manl & 1023;
-  sprintf (t, "%1u%3u%3u%3u%3u%3u", d0, T[d1], T[d2], T[d3], T[d4], T[d5]);
+  exp = (exp << 12) | (x.s.comb & 0xfff); /* add last 12 bits of biased exp. */
+  d[1] = x.s.t0 >> 4; /* first declet */
+  d[2] = ((x.s.t0 << 6) | (x.s.t1 >> 26)) & 1023;
+  d[3] = (x.s.t1 >> 16) & 1023;
+  d[4] = (x.s.t1 >> 6) & 1023;
+  d[5] = ((x.s.t1 << 4) | (x.s.t2 >> 28)) & 1023;
+  d[6] = (x.s.t2 >> 18) & 1023;
+  d[7] = (x.s.t2 >> 8) & 1023;
+  d[8] = ((x.s.t2 << 2) | (x.s.t3 >> 30)) & 1023;
+  d[9] = (x.s.t3 >> 20) & 1023;
+  d[10] = (x.s.t3 >> 10) & 1023;
+  d[11] = x.s.t3 & 1023;
+  sprintf (t, "%1u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u%3u", d[0], T[d[1]], T[d[2]],
+           T[d[3]], T[d[4]], T[d[5]], T[d[6]], T[d[7]], T[d[8]], T[d[9]],
+           T[d[10]], T[d[11]]);
   /* Warning: some characters may be blank */
-  for (i = 0; i < 16; i++)
+  for (i = 0; i < 34; i++)
     if (t[i] == ' ')
       t[i] = '0';
-  t += 16;
+  t += 34;
 #else /* BID */
   /* w + 5 = 17, thus w = 12 */
   /* IEEE 754-2008 specifies that if the decoded significand exceeds the
@@ -228,7 +237,8 @@ decimal128_to_string (char *s, _Decimal128 d)
     *t++ += '0';
 #endif /* DPD or BID */
 
-  exp -= 6176; /* unbiased exponent */
+  exp -= 6176; /* unbiased exponent: emin - (p-1) where
+                  emin = 1-emax = 1-6144 = -6143 and p=34 */
   sprintf (t, "E%d", exp);
 }
 
