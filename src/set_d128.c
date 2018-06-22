@@ -126,7 +126,7 @@ static unsigned int T[1024] = {
 static void
 decimal128_to_string (char *s, _Decimal128 d)
 {
-  union ieee_double_decimal128 x;
+  union ieee_decimal128 x;
   char *t;
   int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */

@@ -806,46 +806,43 @@ typedef union {
  ******************************************************/
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
+
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
+
 /* FIXME: This should be checked with a configure test as
    this is implementation-defined (endianness...).
    TODO: It would be better to define a different structure for DPD,
    where the t* bit-fields correspond to the declets. And to avoid
    confusion and detect coding errors, these bit-fields should have
    different names for BID and DPD. */
+union ieee_decimal128
+{
+  struct
+    {
+      /* Assume little-endian double implies little-endian for bit-field
+         allocation (C99 says: "The order of allocation of bit-fields
+         within a unit (high-order to low-order or low-order to high-order)
+         is implementation-defined.") */
 #ifdef HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
-/* Assume little-endian double implies little-endian for bit-field allocation
-   (C99 says: "The order of allocation of bit-fields within a unit (high-order
-   to low-order or low-order to high-order) is implementation-defined.") */
-union ieee_double_decimal128
-{
-  struct
-    {
       unsigned int t3:32;
       unsigned int t2:32;
       unsigned int t1:32;
       unsigned int t0:14;
       unsigned int comb:17;
       unsigned int sig:1;
-    } s;
-  _Decimal128 d128;
-};
 #else /* big endian */
-union ieee_double_decimal128
-{
-  struct
-    {
       unsigned int sig:1;
       unsigned int comb:17;
       unsigned int t0:14;
       unsigned int t1:32;
       unsigned int t2:32;
       unsigned int t3:32;
+#endif
     } s;
   _Decimal128 d128;
 };
-#endif
+
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 

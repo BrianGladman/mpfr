@@ -455,7 +455,7 @@ coverage (void)
 {
   /* The code below assumes BID. */
 #ifndef DPD_FORMAT
-  union ieee_double_decimal128 x;
+  union ieee_decimal128 x;
 
   /* produce a non-canonical decimal128 with Gh >= 24 */
   x.d128 = 1;
