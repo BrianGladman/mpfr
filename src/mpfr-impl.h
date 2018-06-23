@@ -825,7 +825,7 @@ union ieee_decimal128
          within a unit (high-order to low-order or low-order to high-order)
          is implementation-defined.") */
 #if defined(HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN)
-#define HAVE_DECIMAL128_IEEE
+#define HAVE_DECIMAL128_IEEE 1
       unsigned int t3:32;
       unsigned int t2:32;
       unsigned int t1:32;
@@ -833,7 +833,7 @@ union ieee_decimal128
       unsigned int comb:17;
       unsigned int sig:1;
 #elif defined(HAVE_DECIMAL128_IEEE_BIG_ENDIAN)
-#define HAVE_DECIMAL128_IEEE
+#define HAVE_DECIMAL128_IEEE 1
       unsigned int sig:1;
       unsigned int comb:17;
       unsigned int t0:14;
