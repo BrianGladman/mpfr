@@ -404,7 +404,8 @@ AC_ARG_ENABLE(lto,
       *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
      esac])
 
-dnl If the compiler is ICC, add some specific flags.
+dnl Warning: This test is *only* for CFLAGS settings.
+dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
 dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).
 dnl Add -long_double flags? Don't use -pc64 !
 dnl Notes (VL):
@@ -423,10 +424,10 @@ dnl     to use -fp-model <arg> instead of -mp, but what is <arg>? Anyway
 dnl     -mieee-fp solves the tset_d failure due to a negative zero. This
 dnl     option has been introduced in ICC 9.0 for Linux (2005-06):
 dnl     http://www.ncsa.illinois.edu/UserInfo/Resources/Software/Intel/Compilers/9.0/C_ReleaseNotes.htm
-AC_MSG_CHECKING(for ICC)
+AC_MSG_CHECKING(for non-MS-Windows ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if !defined(__ICC) && !defined(__INTEL_COMPILER)
-# error "Not ICC"
+#if (!defined(__ICC) && !defined(__INTEL_COMPILER)) || defined(_WIN32)
+# error "Not a non-MS-Windows ICC"
 error
 #endif
 ]], [[]])],[
