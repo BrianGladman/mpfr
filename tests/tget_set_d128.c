@@ -36,7 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 print_decimal128 (_Decimal128 d)
 {
-  if (d != d)
+  if (DOUBLE_ISNAN (d))
     printf ("NaN");
   else if (d > DEC128_MAX)
     printf ("Inf");
