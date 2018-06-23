@@ -555,7 +555,9 @@ main (int argc, char *argv[])
   printf ("Using BID format\n");
 #endif
 
+#if !defined(MPFR_ERRDIVZERO)
   check_random_bytes ();
+#endif
   coverage ();
   check_misc ();
   check_random ();

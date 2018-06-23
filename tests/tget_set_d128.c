@@ -535,10 +535,14 @@ main (int argc, char *argv[])
 #endif
     }
 
+#if !defined(MPFR_ERRDIVZERO)
   check_random_bytes ();
+#endif
   test_set ();
   powers_of_10 ();
+#if !defined(MPFR_ERRDIVZERO)
   check_misc ();
+#endif
   coverage ();
 
   tests_end_mpfr ();
