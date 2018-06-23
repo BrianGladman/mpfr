@@ -301,7 +301,7 @@ check_random (void)
         mpfr_mul_2ui (x, x, -1271 - mpfr_get_exp (x), MPFR_RNDN);
       d = mpfr_get_decimal64 (x, MPFR_RNDN);
       mpfr_set_decimal64 (y, d, MPFR_RNDN);
-      if (mpfr_cmp (x, y) != 0)
+      if (! mpfr_equal_p (x, y))
         {
           printf ("Error:\n");
           printf ("x="); mpfr_dump (x);
