@@ -327,6 +327,29 @@ test_negint (long n, unsigned long k, mpfr_prec_t prec)
   mpfr_clear (y);
 }
 
+static void
+coverage (void)
+{
+  mpfr_t a, x, y;
+  int inex;
+
+  mpfr_init2 (a, MPFR_PREC_MIN);
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  mpfr_init2 (y, MPFR_PREC_MIN);
+
+  /* exercise test MPFR_GET_EXP(a) + 3 > w in mpfr_gamma_inc_negint */
+  mpfr_set_si (a, -256, MPFR_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  inex = mpfr_gamma_inc (y, a, x, MPFR_RNDN);
+  /* gamma_inc(-256,1) = 0.00143141575826821 is rounded to 2^(-10) */
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -10) == 0);
+
+  mpfr_clear (a);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -358,6 +381,8 @@ main (int argc, char *argv[])
     test_random (p, 10);
 
   test_generic (MPFR_PREC_MIN, 100, 5);
+
+  coverage ();
 
   tests_end_mpfr ();
   return 0;
