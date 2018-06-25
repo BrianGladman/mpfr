@@ -345,6 +345,19 @@ coverage (void)
   MPFR_ASSERTN(inex < 0);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -10) == 0);
 
+  /* exercise the case MPFR_IS_ZERO(s) in mpfr_gamma_inc_negint */
+  mpfr_set_prec (a, 4);
+  mpfr_set_prec (x, 4);
+  mpfr_set_prec (y, 4);
+  inex = mpfr_set_si (a, -15, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  inex = mpfr_set_ui (x, 15, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  /* gamma_inc(-15,15) = 0.2290433491e-25, rounded to 14*2^(-89) */
+  inex = mpfr_gamma_inc (y, a, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 14, -89) == 0);
+
   mpfr_clear (a);
   mpfr_clear (x);
   mpfr_clear (y);
@@ -373,6 +386,8 @@ main (int argc, char *argv[])
       return 0;
     }
 
+  coverage ();
+
   specials ();
 
   test_negint (30, 10, 53);
@@ -381,8 +396,6 @@ main (int argc, char *argv[])
     test_random (p, 10);
 
   test_generic (MPFR_PREC_MIN, 100, 5);
-
-  coverage ();
 
   tests_end_mpfr ();
   return 0;
