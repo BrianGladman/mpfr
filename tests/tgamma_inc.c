@@ -79,6 +79,103 @@ specials (void)
   mpfr_init2 (a, 2);
   mpfr_init2 (x, 2);
 
+  mpfr_set_inf (a, 1);
+  mpfr_set_inf (x, 1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_inf (a, 1);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_inf (x, 1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (a) || mpfr_signbit (a) == 0);
+
+  mpfr_set_inf (a, 1);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (a) || mpfr_signbit (a) == 0);
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (a) || mpfr_signbit (a) == 0);
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (a) || mpfr_signbit (a) == 0);
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (a) || mpfr_signbit (a) == 0);
+
+  mpfr_set_ui (a, 1, MPFR_RNDN);
+  mpfr_set_inf (x, 1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (a) || mpfr_signbit (a) == 0);
+
+  /* gamma_inc(1,-x) = exp(x) tends to +Inf */
+  mpfr_set_ui (a, 1, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (a) || mpfr_signbit (a) == 0);
+
+  /* gamma_inc(0,x) for x < 0 has imaginary part -Pi and thus gives NaN
+     over the reals */
+  mpfr_set_zero (a, 1);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  /* gamma_inc(-1,x) for x < 0 has imaginary part +Pi and thus gives NaN */
+  mpfr_set_si (a, -1, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  /* gamma_inc(-2,x) for x < 0 has imaginary part -Pi/2 and thus gives NaN */
+  mpfr_set_si (a, -2, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_ui_2exp (a, 1, -1, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_si_2exp (a, -1, -1, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  /* gamma_inc(0,x) = -Ei(-x) */
+  mpfr_set_zero (a, 1);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  /* gamma_inc(a,0) = gamma(a) thus gamma_inc(-Inf,0) = gamma(-Inf) = NaN */
+  mpfr_set_inf (a, -1);
+  mpfr_set_zero (x, 1);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
+  mpfr_set_inf (a, -1);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_gamma_inc (a, a, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (a));
+
   /* check gamma_inc(2,0) = 1 is exact */
   mpfr_set_ui (a, 2, MPFR_RNDN);
   mpfr_set_ui (x, 0, MPFR_RNDN);
