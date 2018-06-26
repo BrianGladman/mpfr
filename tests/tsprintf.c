@@ -857,6 +857,9 @@ mixed (void)
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
 
+  /* check invalid spec.spec */
+  check_vsprintf ("%%", "%h%%", 17);
+
   mpf_clear (mpf);
   mpq_clear (mpq);
   mpz_clear (mpz);
