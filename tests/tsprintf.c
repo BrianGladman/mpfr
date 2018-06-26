@@ -860,6 +860,9 @@ mixed (void)
   /* check invalid spec.spec */
   check_vsprintf ("%%", "%h%%", 17);
 
+  /* check empty format */
+  check_vsprintf ("%", "%", 17);
+
   mpf_clear (mpf);
   mpq_clear (mpq);
   mpz_clear (mpz);
