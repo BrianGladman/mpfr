@@ -858,7 +858,7 @@ mixed (void)
 #endif
 
   /* check invalid spec.spec */
-  check_vsprintf ("%%", "%h%%", 17);
+  check_vsprintf ("%,", "%,");
 
   /* check empty format */
   check_vsprintf ("%", "%", 17);
