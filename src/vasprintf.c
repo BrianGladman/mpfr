@@ -675,9 +675,6 @@ static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
-  MPFR_ASSERTD (len <= strlen (str));
-  MPFR_ASSERTD (c != '\0');
-
   const size_t step = 3;
   const size_t size = len + tz;
   const size_t r = size % step == 0 ? step : size % step;
@@ -685,6 +682,8 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   const size_t fullsize = size + q;
   size_t i;
 
+  MPFR_ASSERTD (len <= strlen (str));
+  MPFR_ASSERTD (c != '\0');
   MPFR_ASSERTD (size > 0);
 
   if (buffer_incr_len (b, fullsize))
