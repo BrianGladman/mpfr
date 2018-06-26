@@ -861,7 +861,7 @@ mixed (void)
   check_vsprintf ("%,", "%,");
 
   /* check empty format */
-  check_vsprintf ("%", "%", 17);
+  check_vsprintf ("%", "%");
 
   mpf_clear (mpf);
   mpq_clear (mpq);
