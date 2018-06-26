@@ -669,85 +669,80 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 
 /* Form a string by concatenating the first LEN characters of STR to TZ
    zero(s), insert into one character C each 3 characters starting from end
-   to beginning and concatenate the result to the buffer B. */
+   to beginning and concatenate the result to the buffer B.
+   Assume c is not null (\0). */
 static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
   MPFR_ASSERTD (len <= strlen (str));
+  MPFR_ASSERTD (c != '\0');
 
-  if (c == '\0')
-    return
-      buffer_cat (b, str, len) ||
-      buffer_pad (b, '0', tz);
-  else
+  const size_t step = 3;
+  const size_t size = len + tz;
+  const size_t r = size % step == 0 ? step : size % step;
+  const size_t q = size % step == 0 ? size / step - 1 : size / step;
+  const size_t fullsize = size + q;
+  size_t i;
+
+  MPFR_ASSERTD (size > 0);
+
+  if (buffer_incr_len (b, fullsize))
+    return 1;
+
+  if (b->size != 0)
     {
-      const size_t step = 3;
-      const size_t size = len + tz;
-      const size_t r = size % step == 0 ? step : size % step;
-      const size_t q = size % step == 0 ? size / step - 1 : size / step;
-      const size_t fullsize = size + q;
-      size_t i;
+      char *oldcurr;
 
-      MPFR_ASSERTD (size > 0);
+      MPFR_ASSERTD (*b->curr == '\0');
+      MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
+      if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
+        buffer_widen (b, fullsize);
 
-      if (buffer_incr_len (b, fullsize))
-        return 1;
+      MPFR_DBGRES (oldcurr = b->curr);
 
-      if (b->size != 0)
+      /* first R significant digits */
+      memcpy (b->curr, str, r);
+      b->curr += r;
+      str += r;
+      len -= r;
+
+      /* blocks of thousands. Warning: STR might end in the middle of a block */
+      for (i = 0; i < q; ++i)
         {
-          char *oldcurr;
-
-          MPFR_ASSERTD (*b->curr == '\0');
-          MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
-          if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
-            buffer_widen (b, fullsize);
-
-          MPFR_DBGRES (oldcurr = b->curr);
-
-          /* first R significant digits */
-          memcpy (b->curr, str, r);
-          b->curr += r;
-          str += r;
-          len -= r;
-
-          /* blocks of thousands. Warning: STR might end in the middle of a block */
-          for (i = 0; i < q; ++i)
+          *b->curr++ = c;
+          if (MPFR_LIKELY (len > 0))
             {
-              *b->curr++ = c;
-              if (MPFR_LIKELY (len > 0))
+              if (MPFR_LIKELY (len >= step))
+                /* step significant digits */
                 {
-                  if (MPFR_LIKELY (len >= step))
-                    /* step significant digits */
-                    {
-                      memcpy (b->curr, str, step);
-                      len -= step;
-                    }
-                  else
-                    /* last digits in STR, fill up thousand block with zeros */
-                    {
-                      memcpy (b->curr, str, len);
-                      memset (b->curr + len, '0', step - len);
-                      len = 0;
-                    }
+                  memcpy (b->curr, str, step);
+                  len -= step;
                 }
               else
-                /* trailing zeros */
-                memset (b->curr, '0', step);
-
-              b->curr += step;
-              str += step;
+                /* last digits in STR, fill up thousand block with zeros */
+                {
+                  memcpy (b->curr, str, len);
+                  memset (b->curr + len, '0', step - len);
+                  len = 0;
+                }
             }
+          else
+            /* trailing zeros */
+            memset (b->curr, '0', step);
 
-          MPFR_ASSERTD (b->curr - oldcurr == fullsize);
-
-          *b->curr = '\0';
-
-          MPFR_ASSERTD (b->curr < b->start + b->size);
+          b->curr += step;
+          str += step;
         }
 
-      return 0;
+      MPFR_ASSERTD (b->curr - oldcurr == fullsize);
+
+      *b->curr = '\0';
+
+      MPFR_ASSERTD (b->curr < b->start + b->size);
     }
+
+  return 0;
 }
 
 /* Helper struct and functions for temporary strings management */

@@ -493,7 +493,7 @@ test_locale (void)
   mpfr_t x;
   int count;
 
-  for(i = 0; i < numberof(tab_locale) && s == NULL; i++)
+  for (i = 0; i < numberof(tab_locale) && s == NULL; i++)
     s = setlocale (LC_ALL, tab_locale[i]);
 
   if (s == NULL || MPFR_THOUSANDS_SEPARATOR != ',')
