@@ -704,6 +704,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
       memcpy (b->curr, str, r);
       b->curr += r;
       str += r;
+      MPFR_ASSERTD (len >= r);
       len -= r;
 
       /* blocks of thousands. Warning: STR might end in the middle of a block */
