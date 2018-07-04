@@ -492,6 +492,7 @@ test_locale (void)
   int i;
   mpfr_t x;
   int count;
+  char v[] = "99999999999999999999999.5";
 
   for (i = 0; i < numberof(tab_locale); i++)
     {
@@ -525,17 +526,12 @@ test_locale (void)
   count = mpfr_printf ("(3) 1000=%'Rf \n", x);
   check_length (10002, count, 23, d);
 
-  mpfr_set_str (x, "9.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(4) 10=%'.0Rf \n", x);
-  check_length (10003, count, 11, d);
-
-  mpfr_set_str (x, "99.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(5) 100=%'.0Rf \n", x);
-  check_length (10004, count, 13, d);
-
-  mpfr_set_str (x, "999.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(6) 1000=%'.0Rf \n", x);
-  check_length (10005, count, 16, d);
+  for (i = 1; i <= sizeof (v) - 3; i++)
+    {
+      mpfr_set_str (x, v + sizeof (v) - 3 - i, 10, MPFR_RNDN);
+      count = mpfr_printf ("(4) 10^i=%'.0Rf \n", x);
+      check_length (10002 + i, count, 12 + i + i/3, d);
+    }
 
   mpfr_clear (x);
 }
