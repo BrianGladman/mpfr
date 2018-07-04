@@ -1441,6 +1441,78 @@ percent_n (void)
     exit (1);
 }
 
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+
+/* The following tests should be equivalent to those from test_locale()
+   in tprintf.c (remove the \n at the end of the test strings). */
+
+static void
+test_locale (void)
+{
+  const char * const tab_locale[] = {
+    "en_US",
+    "en_US.iso88591",
+    "en_US.iso885915",
+    "en_US.utf8"
+  };
+  int i;
+  mpfr_t x;
+
+  for (i = 0; i < numberof(tab_locale); i++)
+    {
+      char *s;
+
+      s = setlocale (LC_ALL, tab_locale[i]);
+
+      if (s != NULL && MPFR_THOUSANDS_SEPARATOR == ',')
+        break;
+    }
+
+  if (i == numberof(tab_locale))
+    {
+      if (getenv ("MPFR_CHECK_LOCALES") == NULL)
+        return;
+
+      fprintf (stderr, "Cannot find a locale with ',' thousands separator.\n"
+               "Please install one of the en_US based locales.\n");
+      exit (1);
+    }
+
+  mpfr_init2 (x, 113);
+  mpfr_set_ui (x, 10000, MPFR_RNDN);
+
+  check_sprintf ("(1) 10000=10,000 ", "(1) 10000=%'Rg ", x);
+  check_sprintf ("(2) 10000=10,000.000000 ", "(2) 10000=%'Rf ", x);
+
+  mpfr_set_ui (x, 1000, MPFR_RNDN);
+  check_sprintf ("(3) 1000=1,000.000000 ", "(3) 1000=%'Rf ", x);
+
+  mpfr_set_str (x, "9.5", 10, MPFR_RNDN);
+  check_sprintf ("(4) 10=10 ", "(4) 10=%'.0Rf ", x);
+
+  mpfr_set_str (x, "99.5", 10, MPFR_RNDN);
+  check_sprintf ("(5) 100=100 ", "(5) 100=%'.0Rf ", x);
+
+  mpfr_set_str (x, "999.5", 10, MPFR_RNDN);
+  check_sprintf ("(6) 1000=1,000 ", "(6) 1000=%'.0Rf ", x);
+
+  mpfr_clear (x);
+}
+
+#else
+
+static void
+test_locale (void)
+{
+  if (getenv ("MPFR_CHECK_LOCALES") != NULL)
+    {
+      fprintf (stderr, "Cannot test locales.\n");
+      exit (1);
+    }
+}
+
+#endif
+
 int
 main (int argc, char **argv)
 {
@@ -1480,6 +1552,7 @@ main (int argc, char **argv)
   snprintf_size ();
   percent_n ();
   mixed ();
+  test_locale ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
     {
