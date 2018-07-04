@@ -670,21 +670,30 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 /* Form a string by concatenating the first LEN characters of STR to TZ
    zero(s), insert into one character C each 3 characters starting from end
    to beginning and concatenate the result to the buffer B.
-   Assume c is not null (\0). */
+   Assume c is not null (\0). Return non-zero if overflow. */
 static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
   const size_t step = 3;
-  const size_t size = len + tz;
-  const size_t r = size % step == 0 ? step : size % step;
-  const size_t q = size % step == 0 ? size / step - 1 : size / step;
-  const size_t fullsize = size + q;
-  size_t i;
+  size_t size, q, r, fullsize;
 
   MPFR_ASSERTD (len <= strlen (str));
   MPFR_ASSERTD (c != '\0');
+
+  if (len > (size_t) -1 - tz)
+    return 1;
+
+  size = len + tz;              /* number of digits */
   MPFR_ASSERTD (size > 0);
+
+  q = (size - 1) / step;        /* number of separators C */
+  r = ((size - 1) % step) + 1;  /* number of digits in the leftmost block */
+
+  if (size > (size_t) -1 - q)
+    return 1;
+
+  fullsize = size + q;          /* number of digits and separators */
 
   if (buffer_incr_len (b, fullsize))
     return 1;
@@ -692,6 +701,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   if (b->size != 0)
     {
       char *oldcurr;
+      size_t i;
 
       MPFR_ASSERTD (*b->curr == '\0');
       MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
@@ -700,12 +710,21 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
 
       MPFR_DBGRES (oldcurr = b->curr);
 
-      /* first R significant digits */
-      memcpy (b->curr, str, r);
+      /* first r significant digits (leftmost block) */
+      if (r <= len)
+        {
+          memcpy (b->curr, str, r);
+          str += r;
+          len -= r;
+        }
+      else
+        {
+          MPFR_ASSERTD (r > len);
+          memcpy (b->curr, str, len);
+          memset (b->curr + len, '0', r - len);
+          len = 0;
+        }
       b->curr += r;
-      str += r;
-      MPFR_ASSERTD (len >= r);
-      len -= r;
 
       /* blocks of thousands. Warning: STR might end in the middle of a block */
       for (i = 0; i < q; ++i)
@@ -718,6 +737,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                 {
                   memcpy (b->curr, str, step);
                   len -= step;
+                  str += step;
                 }
               else
                 /* last digits in STR, fill up thousand block with zeros */
@@ -725,6 +745,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                   memcpy (b->curr, str, len);
                   memset (b->curr + len, '0', step - len);
                   len = 0;
+                  /* str no longer used, thus not updated */
                 }
             }
           else
@@ -732,7 +753,6 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
             memset (b->curr, '0', step);
 
           b->curr += step;
-          str += step;
         }
 
       MPFR_ASSERTD (b->curr - oldcurr == fullsize);
@@ -1915,8 +1935,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   /* integral part (may also be "nan" or "inf") */
   MPFR_ASSERTN (np.ip_ptr != NULL); /* never empty */
   if (MPFR_UNLIKELY (np.thousands_sep))
-    buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.ip_trailing_zeros,
-                     np.thousands_sep);
+    {
+      if (buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.ip_trailing_zeros,
+                           np.thousands_sep))
+        {
+          buf->len = -1;
+          goto clear_and_exit;
+        }
+    }
   else
     {
       buffer_cat (buf, np.ip_ptr, np.ip_size);
