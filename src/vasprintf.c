@@ -1563,7 +1563,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
            mpfr_get_str may miss at most one trailing zero. A better
            explanation needs to be given. If one can prove that
            exp - str_len is at most 1, then the buffer_sandwich
-           code (at least) can be simplified. */
+           code (at least) can be simplified. But, in particular,
+           check the case size = 0 in mpfr_get_str_wrapper, which
+           might give more trailing zeros. */
         /* mpfr_get_str gives no trailing zeros when p is rounded up to
            the next power of 10 (p integer, so no fractional part) */
         {
