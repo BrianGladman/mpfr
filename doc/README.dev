@@ -331,7 +331,7 @@ To make a release (for the MPFR team):
 
      Also test with different environment variables set
      (GMP_CHECK_RANDOMIZE, MPFR_CHECK_LIBC_PRINTF, MPFR_CHECK_LARGEMEM,
-     MPFR_SUSPICIOUS_OVERFLOW).
+     MPFR_SUSPICIOUS_OVERFLOW, MPFR_CHECK_LOCALES).
 
      Check there is no branch misprediction due to wrong MPFR_LIKELY or
      MPFR_UNLIKELY statements. For that test, configure with
@@ -541,6 +541,11 @@ Environment variables that affect the tests:
                         disabled by default as failures could be due to
                         the C library itself on some machines, and they
                         do not affect MPFR.
+
++ MPFR_CHECK_LOCALES:   Fail in case a locale cannot be set. Developers
+                        can set this variable on their machines to make
+                        sure that needed locales are properly installed
+                        and tested.
 
 + MPFR_DEBUG_BADCASES:  For debugging (see tests.c, function bad_cases).
 

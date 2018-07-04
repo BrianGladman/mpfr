@@ -875,7 +875,7 @@ mixed (void)
 /* Check with locale "da_DK". On most platforms, decimal point is ','
    and thousands separator is '.'; the test is not performed if this
    is not the case or if the locale doesn't exist. */
-static int
+static void
 locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
@@ -884,7 +884,14 @@ locale_da_DK (void)
   if (setlocale (LC_ALL, "da_DK") == 0 ||
       localeconv()->decimal_point[0] != ',' ||
       localeconv()->thousands_sep[0] != '.')
-    return 0;
+    {
+      if (getenv ("MPFR_CHECK_LOCALES") == NULL)
+        return;
+
+      fprintf (stderr,
+               "Cannot test the da_DK locale (not found or inconsistent).\n");
+      exit (1);
+    }
 
   mpfr_init2 (x, p);
 
@@ -923,7 +930,6 @@ locale_da_DK (void)
   check_sprintf ("100" S2 "0000", "%'.4Rf", x);
 
   mpfr_clear (x);
-  return 0;
 }
 
 #endif  /* MPFR_LCONV_DPTS */
@@ -1453,10 +1459,16 @@ main (int argc, char **argv)
       decimal ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-#if MPFR_LCONV_DPTS
+# if MPFR_LCONV_DPTS
       locale_da_DK ();
   /* Avoid a warning by doing the setlocale outside of this #if */
-#endif
+# else
+      if (getenv ("MPFR_CHECK_LOCALES") != NULL)
+        {
+          fprintf (stderr, "Cannot test locales.\n");
+          exit (1);
+        }
+# endif
       setlocale (LC_ALL, "C");
 #endif
     }

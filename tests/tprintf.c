@@ -493,11 +493,23 @@ test_locale (void)
   mpfr_t x;
   int count;
 
-  for (i = 0; i < numberof(tab_locale) && s == NULL; i++)
-    s = setlocale (LC_ALL, tab_locale[i]);
+  for (i = 0; i < numberof(tab_locale); i++)
+    {
+      s = setlocale (LC_ALL, tab_locale[i]);
 
-  if (s == NULL || MPFR_THOUSANDS_SEPARATOR != ',')
-    return;
+      if (s != NULL && MPFR_THOUSANDS_SEPARATOR == ',')
+        break;
+    }
+
+  if (i == numberof(tab_locale))
+    {
+      if (getenv ("MPFR_CHECK_LOCALES") == NULL)
+        return;
+
+      fprintf (stderr, "Cannot find a locale with ',' thousands separator.\n"
+               "Please install one of the en_US based locales.\n");
+      exit (1);
+    }
 
   mpfr_init2 (x, 113);
   mpfr_set_ui (x, 10000, MPFR_RNDN);
@@ -522,7 +534,11 @@ test_locale (void)
 static void
 test_locale (void)
 {
-  /* Nothing */
+  if (getenv ("MPFR_CHECK_LOCALES") != NULL)
+    {
+      fprintf (stderr, "Cannot test locales.\n");
+      exit (1);
+    }
 }
 
 #endif
