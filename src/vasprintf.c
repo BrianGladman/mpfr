@@ -933,9 +933,9 @@ floor_log10 (mpfr_srcptr x)
 
 #define NDIGITS 8
 
-static char*
-mpfr_get_str_aux (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
-                  const struct printf_spec spec)
+static char *
+mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
+                      const struct printf_spec spec)
 {
   size_t ndigits;
   char *str, *s, nine;
@@ -1024,7 +1024,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
       nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
       MPFR_ASSERTD (nsd != 1);
-      str = mpfr_get_str_aux (&exp, base, nsd, p, spec);
+      str = mpfr_get_str_wrapper (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
@@ -1230,7 +1230,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
          significant digit when the base is not a power of 2. */
       MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
       nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
-      str = mpfr_get_str_aux (&exp, 10, nsd, p, spec);
+      str = mpfr_get_str_wrapper (&exp, 10, nsd, p, spec);
       register_string (np->sl, str);
     }
   else
@@ -1468,7 +1468,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                      base ten (undocumented feature, see comments in
                      get_str.c) */
 
-                  str = mpfr_get_str_aux (&exp, 10, nsd, p, spec);
+                  str = mpfr_get_str_wrapper (&exp, 10, nsd, p, spec);
                   register_string (np->sl, str);
                 }
               else
@@ -1541,7 +1541,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       if (dec_info == NULL)
         { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
-          str = mpfr_get_str_aux (&exp, 10, spec.prec+exp+1, p, spec);
+          str = mpfr_get_str_wrapper (&exp, 10, spec.prec+exp+1, p, spec);
           register_string (np->sl, str);
         }
       else
@@ -1786,7 +1786,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
 
-          /* Here we cannot call mpfr_get_str_aux since we need the full
+          /* Here we cannot call mpfr_get_str_wrapper since we need the full
              significand in dec_info.str.
              Moreover, threshold may be huge while one can know that the
              number of digits that are not trailing zeros remains limited;
