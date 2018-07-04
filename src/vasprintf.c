@@ -678,6 +678,11 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   const size_t step = 3;
   size_t size, q, r, fullsize;
 
+  if (len <= ULONG_MAX)
+    MPFR_LOG_MSG (("len=%lu\n", (unsigned long) len));
+  if (tz <= ULONG_MAX)
+    MPFR_LOG_MSG (("tz=%lu\n", (unsigned long) tz));
+
   MPFR_ASSERTD (len <= strlen (str));
   MPFR_ASSERTD (c != '\0');
 
