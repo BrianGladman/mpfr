@@ -526,6 +526,14 @@ test_locale (void)
   count = mpfr_printf ("(4) 1e17=%'.0Rf \n", x);
   check_length (10003, count, 13, d);
 
+  mpfr_set_str (x, "99.5", 10, MPFR_RNDN);
+  count = mpfr_printf ("(5) 1e17=%'.0Rf \n", x);
+  check_length (10004, count, 14, d);
+
+  mpfr_set_str (x, "999.5", 10, MPFR_RNDN);
+  count = mpfr_printf ("(6) 1e17=%'.0Rf \n", x);
+  check_length (10005, count, 16, d);
+
   mpfr_clear (x);
 }
 

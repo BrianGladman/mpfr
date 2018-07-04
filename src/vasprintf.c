@@ -681,8 +681,8 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   MPFR_ASSERTD (len <= strlen (str));
   MPFR_ASSERTD (c != '\0');
 
-  if (len > (size_t) -1 - tz)
-    return 1;
+  /* check that len + tz does not overflow */
+  MPFR_ASSERTN (len <= (size_t) -1 - tz);
 
   size = len + tz;              /* number of digits */
   MPFR_ASSERTD (size > 0);
@@ -690,8 +690,8 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   q = (size - 1) / step;        /* number of separators C */
   r = ((size - 1) % step) + 1;  /* number of digits in the leftmost block */
 
-  if (size > (size_t) -1 - q)
-    return 1;
+  /* check that size + q does not overflow */
+  MPFR_ASSERTN (size <= (size_t) -1 - q);
 
   fullsize = size + q;          /* number of digits and separators */
 
