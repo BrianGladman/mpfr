@@ -533,6 +533,11 @@ test_locale (void)
       check_length (10002 + i, count, 12 + i + i/3, d);
     }
 
+  /* TODO: add tests with powers of ten in all rounding modes
+     and powers of ten + 0.5 in rounding to nearest. Then add
+     the corresponding tests to tsprintf.c too. This may give
+     information for the FIXME in "src/vasprintf.c". */
+
   mpfr_clear (x);
 }
 
