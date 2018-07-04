@@ -870,7 +870,7 @@ mixed (void)
   return 0;
 }
 
-#if MPFR_LCONV_DPTS
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE) && MPFR_LCONV_DPTS
 
 /* Check with locale "da_DK". On most platforms, decimal point is ','
    and thousands separator is '.'; the test is not performed if this
@@ -885,6 +885,8 @@ locale_da_DK (void)
       localeconv()->decimal_point[0] != ',' ||
       localeconv()->thousands_sep[0] != '.')
     {
+      setlocale (LC_ALL, "C");
+
       if (getenv ("MPFR_CHECK_LOCALES") == NULL)
         return;
 
@@ -930,9 +932,11 @@ locale_da_DK (void)
   check_sprintf ("100" S2 "0000", "%'.4Rf", x);
 
   mpfr_clear (x);
+
+  setlocale (LC_ALL, "C");
 }
 
-#endif  /* MPFR_LCONV_DPTS */
+#endif  /* ... && MPFR_LCONV_DPTS */
 
 /* check concordance between mpfr_asprintf result with a regular mpfr float
    and with a regular double float */
@@ -1458,18 +1462,14 @@ main (int argc, char **argv)
       binary ();
       decimal ();
 
-#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-# if MPFR_LCONV_DPTS
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE) && MPFR_LCONV_DPTS
       locale_da_DK ();
-  /* Avoid a warning by doing the setlocale outside of this #if */
-# else
+#else
       if (getenv ("MPFR_CHECK_LOCALES") != NULL)
         {
           fprintf (stderr, "Cannot test locales.\n");
           exit (1);
         }
-# endif
-      setlocale (LC_ALL, "C");
 #endif
     }
 
