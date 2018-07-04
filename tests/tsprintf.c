@@ -1457,6 +1457,7 @@ test_locale (void)
   };
   int i;
   mpfr_t x;
+  char v[] = "99999999999999999999999.5";
 
   for (i = 0; i < numberof(tab_locale); i++)
     {
@@ -1487,14 +1488,18 @@ test_locale (void)
   mpfr_set_ui (x, 1000, MPFR_RNDN);
   check_sprintf ("(3) 1000=1,000.000000 ", "(3) 1000=%'Rf ", x);
 
-  mpfr_set_str (x, "9.5", 10, MPFR_RNDN);
-  check_sprintf ("(4) 10=10 ", "(4) 10=%'.0Rf ", x);
+  for (i = 1; i <= sizeof (v) - 3; i++)
+    {
+      char buf[64];
+      int j;
 
-  mpfr_set_str (x, "99.5", 10, MPFR_RNDN);
-  check_sprintf ("(5) 100=100 ", "(5) 100=%'.0Rf ", x);
-
-  mpfr_set_str (x, "999.5", 10, MPFR_RNDN);
-  check_sprintf ("(6) 1000=1,000 ", "(6) 1000=%'.0Rf ", x);
+      strcpy (buf, "(4) 10^i=1");
+      for (j = i; j > 0; j--)
+        strcat (buf, ",0" + (j % 3 != 0));
+      strcat (buf, " ");
+      mpfr_set_str (x, v + sizeof (v) - 3 - i, 10, MPFR_RNDN);
+      check_sprintf (buf, "(4) 10^i=%'.0Rf ", x);
+    }
 
   mpfr_clear (x);
 }
