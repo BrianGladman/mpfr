@@ -31,6 +31,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stddef.h>
 #include <errno.h>
 
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
+
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 #define STDOUT_FILENO 1
@@ -474,20 +478,17 @@ check_random (int nb_tests)
   mpfr_clear (x);
 }
 
-#ifdef HAVE_LOCALE_H
-
-#include <locale.h>
-
-const char * const tab_locale[] = {
-  "en_US",
-  "en_US.iso88591",
-  "en_US.iso885915",
-  "en_US.utf8"
-};
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 
 static void
 test_locale (void)
 {
+  const char * const tab_locale[] = {
+    "en_US",
+    "en_US.iso88591",
+    "en_US.iso885915",
+    "en_US.utf8"
+  };
   int i;
   char *s = NULL;
   mpfr_t x;
