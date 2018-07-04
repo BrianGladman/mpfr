@@ -490,12 +490,13 @@ test_locale (void)
     "en_US.utf8"
   };
   int i;
-  char *s = NULL;
   mpfr_t x;
   int count;
 
   for (i = 0; i < numberof(tab_locale); i++)
     {
+      char *s;
+
       s = setlocale (LC_ALL, tab_locale[i]);
 
       if (s != NULL && MPFR_THOUSANDS_SEPARATOR == ',')
