@@ -520,20 +520,21 @@ test_locale (void)
   check_length (10000, count, 18, d);
   count = mpfr_printf ("(2) 10000=%'Rf \n", x);
   check_length (10001, count, 25, d);
+
   mpfr_set_ui (x, 1000, MPFR_RNDN);
   count = mpfr_printf ("(3) 1000=%'Rf \n", x);
   check_length (10002, count, 23, d);
 
   mpfr_set_str (x, "9.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(4) 1e17=%'.0Rf \n", x);
-  check_length (10003, count, 13, d);
+  count = mpfr_printf ("(4) 10=%'.0Rf \n", x);
+  check_length (10003, count, 11, d);
 
   mpfr_set_str (x, "99.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(5) 1e17=%'.0Rf \n", x);
-  check_length (10004, count, 14, d);
+  count = mpfr_printf ("(5) 100=%'.0Rf \n", x);
+  check_length (10004, count, 13, d);
 
   mpfr_set_str (x, "999.5", 10, MPFR_RNDN);
-  count = mpfr_printf ("(6) 1e17=%'.0Rf \n", x);
+  count = mpfr_printf ("(6) 1000=%'.0Rf \n", x);
   check_length (10005, count, 16, d);
 
   mpfr_clear (x);
