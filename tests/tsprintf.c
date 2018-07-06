@@ -419,6 +419,12 @@ decimal (void)
   check_sprintf ("1e+03", "%.0Rg", x);
   check_sprintf ("1e+03", "%.3Rg", x);
   check_sprintf ("1000", "%.4Rg", x);
+  check_sprintf ("1e+03", "%.3Rg", x);
+  check_sprintf ("1000", "%.4Rg", x);
+  check_sprintf ("    1e+03", "%9.3Rg", x);
+  check_sprintf ("     1000", "%9.4Rg", x);
+  check_sprintf ("000001000", "%09.3Rg", x);
+  check_sprintf ("00001e+03", "%09.4Rg", x);
 
   mpfr_ui_div (x, 1, x, MPFR_RNDN);
   check_sprintf ("0.001", "%Rg", x);
@@ -430,6 +436,10 @@ decimal (void)
   check_sprintf ("1e+05", "%.0Rg", x);
   check_sprintf ("1e+05", "%.5Rg", x);
   check_sprintf ("100000", "%.6Rg", x);
+  check_sprintf ("            1e+05", "%17.5Rg", x);
+  check_sprintf ("           100000", "%17.6Rg", x);
+  check_sprintf ("0000000000001e+05", "%017.5Rg", x);
+  check_sprintf ("00000000000100000", "%017.6Rg", x);
 
   mpfr_ui_div (x, 1, x, MPFR_RNDN);
   check_sprintf ("1e-05", "%Rg", x);
