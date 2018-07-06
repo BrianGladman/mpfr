@@ -510,7 +510,7 @@ typedef wint_t mpfr_va_wint;
         int length;                                                     \
                                                                         \
         MPFR_TMP_MARK (marker);                                         \
-        fmt_copy = (char*) MPFR_TMP_ALLOC (n + 1);                      \
+        fmt_copy = (char *) MPFR_TMP_ALLOC (n + 1);                     \
         strncpy (fmt_copy, (start), n);                                 \
         fmt_copy[n] = '\0';                                             \
         length = gmp_vasprintf (&s, fmt_copy, (ap));                    \
@@ -582,7 +582,7 @@ buffer_incr_len (struct string_buffer *b, size_t len)
 }
 
 /* Increase buffer size by a number of character being the least multiple of
-   4096 greater than LEN+1. */
+   4096 greater than len+1. */
 static void
 buffer_widen (struct string_buffer *b, size_t len)
 {
@@ -599,8 +599,7 @@ buffer_widen (struct string_buffer *b, size_t len)
 
   MPFR_ASSERTN (b->size < ((size_t) -1) - n);
 
-  b->start =
-    (char *) mpfr_reallocate_func (b->start, b->size, b->size + n);
+  b->start = (char *) mpfr_reallocate_func (b->start, b->size, b->size + n);
   b->size += n;
   b->curr = b->start + pos;
 
@@ -608,7 +607,7 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTD (*b->curr == '\0');
 }
 
-/* Concatenate the LEN first characters of the string S to the buffer B and
+/* Concatenate the first len characters of the string s to the buffer b and
    expand it if needed. Return non-zero if overflow. */
 static int
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
@@ -638,7 +637,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   return 0;
 }
 
-/* Add N characters C to the end of buffer B. Return non-zero if overflow. */
+/* Add n characters c to the end of buffer b. Return non-zero if overflow. */
 static int
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
@@ -800,7 +799,7 @@ register_string (struct string_list *sl, char *new_string)
   while (sl->next)
     sl = sl->next;
 
-  sl->next = (struct string_list*)
+  sl->next = (struct string_list *)
     mpfr_allocate_func (sizeof (struct string_list));
 
   sl = sl->next;
@@ -1043,7 +1042,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     }
   else if (next_base_power_p (p, base, spec.rnd_mode))
     {
-      str = (char *)mpfr_allocate_func (2);
+      str = (char *) mpfr_allocate_func (2);
       str[0] = '1';
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1052,7 +1051,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     }
   else if (base == 2)
     {
-      str = (char *)mpfr_allocate_func (2);
+      str = (char *) mpfr_allocate_func (2);
       str[0] = '1';
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1066,7 +1065,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       int rnd_bit = GMP_NUMB_BITS - 5;
 
       /* pick up the 4 first bits */
-      digit = msl >> (rnd_bit+1);
+      digit = msl >> (rnd_bit + 1);
       if (spec.rnd_mode == MPFR_RNDA
           || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
           || (spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
@@ -1075,7 +1074,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         digit++;
       MPFR_ASSERTD (0 <= digit && digit <= 15);
 
-      str = (char *)mpfr_allocate_func (1 + np->ip_size);
+      str = (char *) mpfr_allocate_func (1 + np->ip_size);
       str[0] = num_to_text [digit];
       str[1] = '\0';
       np->ip_ptr = register_string (np->sl, str);
@@ -1426,8 +1425,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   np->fp_leading_zeros = spec.prec - 1;
 
                   np->fp_size = 1;
-                  str =
-                    (char *) mpfr_allocate_func (1 + np->fp_size);
+                  str = (char *) mpfr_allocate_func (1 + np->fp_size);
                   str[0] = '1';
                   str[1] = '\0';
                   np->fp_ptr = register_string (np->sl, str);
@@ -1537,7 +1535,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       if (dec_info == NULL)
         {
           /* %f case */
-          str = mpfr_get_str_wrapper (&exp, 10, spec.prec+exp+1, p, spec);
+          str = mpfr_get_str_wrapper (&exp, 10, spec.prec + exp + 1, p, spec);
           register_string (np->sl, str);
         }
       else
