@@ -559,11 +559,11 @@ test_locale (void)
     }
 
   mpfr_set_str (x, "1000", 10, MPFR_RNDN);
-  count = mpfr_printf ("%'012.3g\n", x);
+  count = mpfr_printf ("%'012.3Rg\n", x);
   check_length (12000, count, 13, d);
-  count = mpfr_printf ("'012.4g\n", x);
+  count = mpfr_printf ("'012.4Rg\n", x);
   check_length (12001, count, 13, d);
-  count = mpfr_printf ("%'013.4g\n", x);
+  count = mpfr_printf ("%'013.4Rg\n", x);
   check_length (12002, count, 14, d);
 
   mpfr_clear (x);
