@@ -667,16 +667,20 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   return 0;
 }
 
-/* Form a string by concatenating the first LEN characters of STR to TZ
-   zero(s), insert into one character C each 3 characters starting from end
-   to beginning and concatenate the result to the buffer B.
+/* Form a string by concatenating the first len characters of str to tz
+   zero(s), insert into one character c each 3 characters starting from end
+   to beginning and concatenate the result to the buffer b.
    Assume c is not null (\0). Return non-zero if overflow. */
 static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
   const size_t step = 3;
-  size_t size, q, r, fullsize;
+  size_t size, q, r, fullsize, i;
+  char *oldcurr;
+
+  MPFR_ASSERTD (b->size != 0);
+  MPFR_ASSERTD (tz == 0 || tz == 1);
 
   if (len <= ULONG_MAX)
     MPFR_LOG_MSG (("len=%lu\n", (unsigned long) len));
@@ -705,69 +709,53 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   if (buffer_incr_len (b, fullsize))
     return 1;
 
-  if (b->size != 0)
+  MPFR_ASSERTD (*b->curr == '\0');
+  MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
+  if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
+    buffer_widen (b, fullsize);
+
+  MPFR_DBGRES (oldcurr = b->curr);
+
+  /* first r significant digits (leftmost block) */
+  if (r <= len)
     {
-      char *oldcurr;
-      size_t i;
+      memcpy (b->curr, str, r);
+      str += r;
+      len -= r;
+    }
+  else
+    {
+      MPFR_ASSERTD (r > len);
+      memcpy (b->curr, str, len);
+      memset (b->curr + len, '0', r - len);
+      len = 0;
+    }
+  b->curr += r;
 
-      MPFR_ASSERTD (*b->curr == '\0');
-      MPFR_ASSERTN (b->size < ((size_t) -1) - fullsize);
-      if (MPFR_UNLIKELY (b->curr + fullsize >= b->start + b->size))
-        buffer_widen (b, fullsize);
-
-      MPFR_DBGRES (oldcurr = b->curr);
-
-      /* first r significant digits (leftmost block) */
-      if (r <= len)
+  for (i = 0; i < q; ++i)
+    {
+      *b->curr++ = c;
+      if (MPFR_LIKELY (len >= step))
         {
-          memcpy (b->curr, str, r);
-          str += r;
-          len -= r;
+          memcpy (b->curr, str, step);
+          len -= step;
+          str += step;
         }
       else
         {
-          MPFR_ASSERTD (r > len);
+          /* last digits */
+          MPFR_ASSERTD (i == q - 1 && step - len == 1);
           memcpy (b->curr, str, len);
-          memset (b->curr + len, '0', r - len);
-          len = 0;
+          memset (b->curr + len, '0', 1);
         }
-      b->curr += r;
-
-      /* blocks of thousands. Warning: STR might end in the middle of a block */
-      for (i = 0; i < q; ++i)
-        {
-          *b->curr++ = c;
-          if (MPFR_LIKELY (len > 0))
-            {
-              if (MPFR_LIKELY (len >= step))
-                /* step significant digits */
-                {
-                  memcpy (b->curr, str, step);
-                  len -= step;
-                  str += step;
-                }
-              else
-                /* last digits in STR, fill up thousand block with zeros */
-                {
-                  memcpy (b->curr, str, len);
-                  memset (b->curr + len, '0', step - len);
-                  len = 0;
-                  /* str no longer used, thus not updated */
-                }
-            }
-          else
-            /* trailing zeros */
-            memset (b->curr, '0', step);
-
-          b->curr += step;
-        }
-
-      MPFR_ASSERTD (b->curr - oldcurr == fullsize);
-
-      *b->curr = '\0';
-
-      MPFR_ASSERTD (b->curr < b->start + b->size);
+      b->curr += step;
     }
+
+  MPFR_ASSERTD (b->curr - oldcurr == fullsize);
+
+  *b->curr = '\0';
+
+  MPFR_ASSERTD (b->curr < b->start + b->size);
 
   return 0;
 }
@@ -844,8 +832,8 @@ struct number_parts
 
   char *ip_ptr;           /* Pointer to integral part characters*/
   size_t ip_size;         /* Number of digits in *ip_ptr */
-  int ip_trailing_zeros;  /* Number of additional null digits in integral
-                             part */
+  int ip_trailing_digits; /* Number of additional digits in integral part
+                             (if spec.size != 0, this can only be a zero) */
 
   char point;             /* Decimal point character */
 
@@ -983,7 +971,7 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
 }
 
 /* Determine the different parts of the string representation of the regular
-   number P when SPEC.SPEC is 'a', 'A', or 'b'.
+   number P when spec.spec is 'a', 'A', or 'b'.
 
    return -1 if some field > INT_MAX */
 static int
@@ -1200,7 +1188,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'e', 'E', 'g', or 'G'.
-   dec_info contains the previously computed exponent and string or is NULL.
+   dec_info contains the previously computed exponent and string or is
+   a null pointer.
 
    return -1 if some field > INT_MAX */
 static int
@@ -1329,7 +1318,8 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'f', 'F', 'g', or 'G'.
-   DEC_INFO contains the previously computed exponent and string or is NULL.
+   dec_info contains the previously computed exponent and string or is
+   a null pointer.
 
    return -1 if some field of number_parts is greater than INT_MAX */
 static int
@@ -1545,12 +1535,14 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         return -1;
 
       if (dec_info == NULL)
-        { /* this case occurs with mpfr_printf ("%.0RUf", x) with x=9.5 */
+        {
+          /* %f case */
           str = mpfr_get_str_wrapper (&exp, 10, spec.prec+exp+1, p, spec);
           register_string (np->sl, str);
         }
       else
         {
+          /* %g case */
           exp = dec_info->exp;
           str = dec_info->str;
         }
@@ -1559,17 +1551,13 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       /* integral part */
       if (exp > str_len)
-        /* FIXME: The following comment is incorrect. It seems that
-           mpfr_get_str may miss at most one trailing zero. A better
-           explanation needs to be given. If one can prove that
-           exp - str_len is at most 1, then the buffer_sandwich
-           code (at least) can be simplified. But, in particular,
-           check the case size = 0 in mpfr_get_str_wrapper, which
-           might give more trailing zeros. */
-        /* mpfr_get_str gives no trailing zeros when p is rounded up to
-           the next power of 10 (p integer, so no fractional part) */
         {
-          np->ip_trailing_zeros = exp - str_len;
+          /* When spec.size == 0, mpfr_get_str may be called in a reduced
+             precision, so that some trailing digits may have been ignored.
+             When spec.size != 0, this case is also possible in the case
+             where p is rounded up to the next power of 10: a zero must be
+             added since the exponent has been increased by 1. */
+          np->ip_trailing_digits = exp - str_len;
           np->ip_size = str_len;
         }
       else
@@ -1645,7 +1633,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   np->thousands_sep = '\0';
   np->ip_ptr = NULL;
   np->ip_size = 0;
-  np->ip_trailing_zeros = 0;
+  np->ip_trailing_digits = 0;
   np->point = '\0';
   np->fp_leading_zeros = 0;
   np->fp_ptr = NULL;
@@ -1864,12 +1852,12 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   total = np->sign ? 1 : 0;
   INCR_TOTAL (np->prefix_size);
   INCR_TOTAL (np->ip_size);
-  INCR_TOTAL (np->ip_trailing_zeros);
-  MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros >= 1);
+  INCR_TOTAL (np->ip_trailing_digits);
+  MPFR_ASSERTD (np->ip_size + np->ip_trailing_digits >= 1);
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
-    INCR_TOTAL ((np->ip_size + np->ip_trailing_zeros - 1) / 3);
+    INCR_TOTAL ((np->ip_size + np->ip_trailing_digits - 1) / 3);
   if (np->point)
     ++total;
   INCR_TOTAL (np->fp_leading_zeros);
@@ -1950,7 +1938,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   MPFR_ASSERTN (np.ip_ptr != NULL); /* never empty */
   if (MPFR_UNLIKELY (np.thousands_sep))
     {
-      if (buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.ip_trailing_zeros,
+      if (buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.ip_trailing_digits,
                            np.thousands_sep))
         {
           buf->len = -1;
@@ -1961,9 +1949,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     {
       buffer_cat (buf, np.ip_ptr, np.ip_size);
 
-      /* trailing zeros in integral part */
-      if (np.ip_trailing_zeros != 0)
-        buffer_pad (buf, '0', np.ip_trailing_zeros);
+      /* possible trailing zero in integral part (spec.size != 0) */
+      MPFR_ASSERTD (np.ip_trailing_digits <= 1);
+      if (np.ip_trailing_digits != 0)
+        buffer_pad (buf, '0', 1);
     }
 
   /* decimal point */
