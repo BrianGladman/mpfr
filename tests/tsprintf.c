@@ -380,7 +380,7 @@ decimal (void)
   check_sprintf ("1.00                ", "%-#20.3RG", x);
   check_sprintf ("0.9999              ", "%-#20.4RG", x);
 
-  /* multiple of 10 */
+  /* powers of 10 */
   mpfr_set_str (x, "1e17", 10, MPFR_RNDN);
   check_sprintf ("1e+17", "%Re", x);
   check_sprintf ("1.000e+17", "%.3Re", x);
@@ -402,7 +402,7 @@ decimal (void)
   check_sprintf ("1", "%.0RUf", x);
   check_sprintf ("1", "%.0RYf", x);
 
-  /* multiple of 10 with 'g' style */
+  /* powers of 10 with 'g' style */
   mpfr_set_str (x, "10", 10, MPFR_RNDN);
   check_sprintf ("10", "%Rg", x);
   check_sprintf ("1e+01", "%.0Rg", x);
