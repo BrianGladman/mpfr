@@ -533,10 +533,30 @@ test_locale (void)
       check_length (10002 + i, count, 12 + i + i/3, d);
     }
 
-  /* TODO: add tests with powers of ten in all rounding modes
-     and powers of ten + 0.5 in rounding to nearest. Then add
-     the corresponding tests to tsprintf.c too. This may give
-     information for the FIXME in "src/vasprintf.c". */
+#define N0 20
+
+  for (i = 1; i <= N0; i++)
+    {
+      char s[N0+4];
+      int j, rnd;
+
+      s[0] = '1';
+      for (j = 1; j <= i; j++)
+        s[j] = '0';
+      s[i+1] = '\0';
+
+      mpfr_set_str (x, s, 10, MPFR_RNDN);
+
+      RND_LOOP (rnd)
+        {
+          count = mpfr_printf ("(5) 10^i=%'.0R*f \n", (mpfr_rnd_t) rnd, x);
+          check_length (11000 + 10 * i + rnd, count, 12 + i + i/3, d);
+        }
+
+      strcat (s + (i + 1), ".5");
+      count = mpfr_printf ("(5) 10^i=%'.0Rf \n", x);
+      check_length (11000 + 10 * i + 9, count, 12 + i + i/3, d);
+    }
 
   mpfr_clear (x);
 }

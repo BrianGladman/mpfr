@@ -1501,6 +1501,35 @@ test_locale (void)
       check_sprintf (buf, "(4) 10^i=%'.0Rf ", x);
     }
 
+#define N0 20
+
+  for (i = 1; i <= N0; i++)
+    {
+      char s[N0+4], buf[64];
+      int j;
+
+      s[0] = '1';
+      for (j = 1; j <= i; j++)
+        s[j] = '0';
+      s[i+1] = '\0';
+
+      strcpy (buf, "(5) 10^i=1");
+      for (j = i; j > 0; j--)
+        strcat (buf, ",0" + (j % 3 != 0));
+      strcat (buf, " ");
+
+      mpfr_set_str (x, s, 10, MPFR_RNDN);
+
+      check_sprintf (buf, "(5) 10^i=%'.0RNf ", x);
+      check_sprintf (buf, "(5) 10^i=%'.0RZf ", x);
+      check_sprintf (buf, "(5) 10^i=%'.0RUf ", x);
+      check_sprintf (buf, "(5) 10^i=%'.0RDf ", x);
+      check_sprintf (buf, "(5) 10^i=%'.0RYf ", x);
+
+      strcat (s + (i + 1), ".5");
+      check_sprintf (buf, "(5) 10^i=%'.0Rf ", x);
+    }
+
   mpfr_clear (x);
 }
 
