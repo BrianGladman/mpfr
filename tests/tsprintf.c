@@ -1530,6 +1530,11 @@ test_locale (void)
       check_sprintf (buf, "(5) 10^i=%'.0Rf ", x);
     }
 
+  mpfr_set_str (x, "1000", 10, MPFR_RNDN);
+  check_sprintf ("00000001e+03", "%'012.3g", x);
+  check_sprintf ("00000001,000", "%'012.4g", x);
+  check_sprintf ("000000001,000", "%'013.4g", x);
+
   mpfr_clear (x);
 }
 
