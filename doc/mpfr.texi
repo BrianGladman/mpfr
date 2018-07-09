@@ -655,7 +655,6 @@ symbols using these prefixes.
 
 @cindex Floating-point number
 @tindex @code{mpfr_t}
-@noindent
 A @dfn{floating-point number}, or @dfn{float} for short, is an object
 representing a radix-2 floating-point number consisting of a sign,
 an arbitrary-precision normalized significand (also called mantissa),
@@ -674,7 +673,6 @@ is very similar to IEEE 754, but there may be some differences.
 
 @cindex Precision
 @tindex @code{mpfr_prec_t}
-@noindent
 The @dfn{precision} is the number of bits used to represent the significand
 of a floating-point number;
 the corresponding C data type is @code{mpfr_prec_t}.
@@ -692,7 +690,6 @@ implementation).
 
 @cindex Rounding Modes
 @tindex @code{mpfr_rnd_t}
-@noindent
 The @dfn{rounding mode} specifies the way to round the result of a
 floating-point operation, in case the exact result can not be represented
 exactly in the destination significand;
