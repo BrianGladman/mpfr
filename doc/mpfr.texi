@@ -656,24 +656,21 @@ symbols using these prefixes.
 @cindex Floating-point number
 @tindex @code{mpfr_t}
 @noindent
-A @dfn{floating-point number}, or @dfn{float} for short, is an arbitrary
-precision significand (also called mantissa) with a limited precision
-exponent. The C data type
-for such objects is @code{mpfr_t} (internally defined as a one-element
+A @dfn{floating-point number}, or @dfn{float} for short, is an object
+representing a radix-2 floating-point number consisting of a sign,
+an arbitrary-precision normalized significand (also called mantissa),
+and an exponent (an integer in some given range). The C data type for
+such objects is @code{mpfr_t}, internally defined as a one-element
 array of a structure, and @code{mpfr_ptr} is the C data type representing
-a pointer to this structure). A floating-point number can have
-three special values: Not-a-Number (NaN) or plus or minus Infinity. NaN
-represents an uninitialized object, the result of an invalid operation
-(like 0 divided by 0), or a value that cannot be determined (like
-+Infinity minus +Infinity). Moreover, like in the IEEE 754 standard,
-zero is signed, i.e., there are both +0 and @minus{}0; the behavior
-is the same as in the IEEE 754 standard and it is generalized to
-the other functions supported by MPFR@. Unless documented otherwise,
-the sign bit of a NaN is unspecified.
-@c VL: re-added how mpfr_t is defined, due to some questions from users
-@c in the past (the fact that the result was returned in an argument
-@c seemed strange); also, mpfr_ptr needs to be defined here, as it is
-@c used in the API.
+a pointer to this structure. Like in the IEEE 754 standard, a
+floating-point number can also have three special values: a signed zero,
+a signed infinity, and Not-a-Number (NaN)@. NaN can represent the default
+value of a @code{mpfr_t} object and the result of some operations for
+which no other results would make sense, such as 0 divided by 0 or
++Infinity minus +Infinity; unless documented otherwise, the sign bit of
+a NaN is unspecified. Note that contrary to IEEE 754, MPFR has a single
+kind of NaN and does not have subnormals. Other than that, the behavior
+is very similar to IEEE 754, but there may be some differences.
 
 @cindex Precision
 @tindex @code{mpfr_prec_t}
