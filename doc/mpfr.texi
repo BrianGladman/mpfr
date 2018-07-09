@@ -654,22 +654,28 @@ symbols using these prefixes.
 @section Nomenclature and Types
 
 @cindex Floating-point number
+@cindex Regular number
 @tindex @code{mpfr_t}
+@tindex @code{mpfr_ptr}
 A @dfn{floating-point number}, or @dfn{float} for short, is an object
 representing a radix-2 floating-point number consisting of a sign,
 an arbitrary-precision normalized significand (also called mantissa),
-and an exponent (an integer in some given range). The C data type for
-such objects is @code{mpfr_t}, internally defined as a one-element
-array of a structure, and @code{mpfr_ptr} is the C data type representing
-a pointer to this structure. Like in the IEEE 754 standard, a
-floating-point number can also have three special values: a signed zero,
-a signed infinity, and Not-a-Number (NaN)@. NaN can represent the default
-value of a @code{mpfr_t} object and the result of some operations for
+and an exponent (an integer in some given range); these are called
+@dfn{regular numbers}. Like in the IEEE 754 standard, a floating-point
+number can also have three kinds of special values: a signed zero, a
+signed infinity, and Not-a-Number (NaN)@. NaN can represent the default
+value of a floating-point object and the result of some operations for
 which no other results would make sense, such as 0 divided by 0 or
 +Infinity minus +Infinity; unless documented otherwise, the sign bit of
 a NaN is unspecified. Note that contrary to IEEE 754, MPFR has a single
 kind of NaN and does not have subnormals. Other than that, the behavior
 is very similar to IEEE 754, but there may be some differences.
+
+The C data type for such objects is @code{mpfr_t}, internally defined
+as a one-element array of a structure (so that when passed as an
+argument to a function, it is the pointer that is actually passed),
+and @code{mpfr_ptr} is the C data type representing a pointer to this
+structure.
 
 @cindex Precision
 @tindex @code{mpfr_prec_t}
@@ -688,11 +694,19 @@ may reach some memory limit on your platform, in which case the program
 may abort, crash or have undefined behavior (depending on your C
 implementation).
 
+@cindex Exponent
+@tindex @code{mpfr_exp_t}
+An @dfn{exponent} is a component of a regular floating-point number.
+Its C data type is @code{mpfr_exp_t}. Valid exponents are restricted
+to a subset of this type, and the exponent range can be changed globally
+as described in @ref{Exception Related Functions}. Special values do not
+have an exponent.
+
 @cindex Rounding Modes
 @tindex @code{mpfr_rnd_t}
 The @dfn{rounding mode} specifies the way to round the result of a
 floating-point operation, in case the exact result can not be represented
-exactly in the destination significand;
+exactly in the destination;
 the corresponding C data type is @code{mpfr_rnd_t}.
 
 @cindex Group of flags
