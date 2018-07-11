@@ -698,6 +698,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
 
   q = (size - 1) / step;        /* number of separators C */
   r = ((size - 1) % step) + 1;  /* number of digits in the leftmost block */
+  MPFR_ASSERTD (r >= 1 && r <= step);
 
   /* check that size + q does not overflow */
   if (size > (size_t) -1 - q)
@@ -725,9 +726,15 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   else
     {
       MPFR_ASSERTD (r > len);
+      MPFR_ASSERTD (len < step);    /* as a consequence */
+      MPFR_ASSERTD (size <= step);  /* as a consequence */
+      MPFR_ASSERTD (q == 0);        /* as a consequence */
+      MPFR_ASSERTD (r == size);     /* as a consequence */
+      MPFR_ASSERTD (tz == 1);       /* as a consequence */
       memcpy (b->curr, str, len);
-      memset (b->curr + len, '0', r - len);
-      len = 0;
+      *(b->curr + len) = '0';  /* trailing zero */
+      /* We do not need to set len to 0 since it will not be read again
+         (q = 0, so that the loop below will have 0 iterations). */
     }
   b->curr += r;
 
@@ -745,7 +752,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
           /* last digits */
           MPFR_ASSERTD (i == q - 1 && step - len == 1);
           memcpy (b->curr, str, len);
-          memset (b->curr + len, '0', 1);
+          *(b->curr + len) = '0';  /* trailing zero */
         }
       b->curr += step;
     }
