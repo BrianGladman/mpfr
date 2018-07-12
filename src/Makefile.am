@@ -138,7 +138,7 @@ check-exported-symbols: $(LTLIBRARIES)
 	if [ -f "$(LIBMPFRSO)" ]; then \
 	  gsymbols=`$(NM) -gP "$(LIBMPFRSO)" | perl -ne \
 	    '/^(__gmp[a-z]?_[_0-9A-Za-z]*) +[A-TV-Z]/ and print " $$1"' | \
-	    grep -v '@plt$$'`; \
+	    { grep -v '@plt$$' || true ; }`; \
 	  if [ -n "$$gsymbols" ]; then \
 	    echo "MPFR defines symbols with a GMP reserved prefix:$$gsymbols"; \
 	    exit 1; \
