@@ -683,15 +683,19 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 dnl Check if _Float128 or __float128 is available. We also require the
 dnl compiler to support hex constants with the f128 or q suffix (this
 dnl prevents the _Float128 support with GCC's -std=c90, but who cares?).
+dnl Note: We use AC_LINK_IFELSE instead of AC_COMPILE_IFELSE since an
+dnl error may occur only at link time, such as under NetBSD:
+dnl   https://mail-index.netbsd.org/pkgsrc-users/2018/02/02/msg026220.html
+dnl   https://mail-index.netbsd.org/pkgsrc-users/2018/02/05/msg026238.html
 if test "$enable_float128" != no; then
    AC_MSG_CHECKING(if compiler knows _Float128 with hex constants)
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Float128 x = 0x1.fp+16383f128;]])],
+   AC_LINK_IFELSE([AC_LANG_PROGRAM([[_Float128 x = 0x1.fp+16383f128;]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT128],1,[Build float128 functions])],
       [AC_MSG_RESULT(no)
        AC_MSG_CHECKING(if __float128 can be used as a fallback)
 dnl Use the q suffix in this case.
-       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+       AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #define _Float128 __float128
 _Float128 x = 0x1.fp+16383q;]])],
           [AC_MSG_RESULT(yes)
