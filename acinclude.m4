@@ -691,7 +691,7 @@ dnl By using volatile and making the exit code depend on the value of
 dnl this variable, we also make sure that optimization doesn't make
 dnl the "undefined reference" error disappear.
 if test "$enable_float128" != no; then
-   AC_MSG_CHECKING(if compiler knows _Float128 with hex constants)
+   AC_MSG_CHECKING(if _Float128 with hex constants is supported)
    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
 volatile _Float128 x = 0x1.fp+16383f128;
 return x == 0;
