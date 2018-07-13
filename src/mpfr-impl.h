@@ -811,6 +811,9 @@ typedef union {
    Do something like union ieee_decimal128. */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
+/* FIXME: There's no reason to make the _Decimal128 code depend on
+   whether _MPFR_IEEE_FLOATS is defined or not, as _MPFR_IEEE_FLOATS
+   is about binary IEEE-754 floating point only. */
 #if _MPFR_IEEE_FLOATS
 /* TODO: It would be better to define a different structure for DPD,
    where the t* bit-fields correspond to the declets. And to avoid
