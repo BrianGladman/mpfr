@@ -687,9 +687,15 @@ dnl Note: We use AC_LINK_IFELSE instead of AC_COMPILE_IFELSE since an
 dnl error may occur only at link time, such as under NetBSD:
 dnl   https://mail-index.netbsd.org/pkgsrc-users/2018/02/02/msg026220.html
 dnl   https://mail-index.netbsd.org/pkgsrc-users/2018/02/05/msg026238.html
+dnl By using volatile and making the exit code depend on the value of
+dnl this variable, we also make sure that optimization doesn't make
+dnl the "undefined reference" error disappear.
 if test "$enable_float128" != no; then
    AC_MSG_CHECKING(if compiler knows _Float128 with hex constants)
-   AC_LINK_IFELSE([AC_LANG_PROGRAM([[_Float128 x = 0x1.fp+16383f128;]])],
+   AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
+volatile _Float128 x = 0x1.fp+16383f128;
+return x == 0;
+]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT128],1,[Build float128 functions])],
       [AC_MSG_RESULT(no)
@@ -697,7 +703,10 @@ if test "$enable_float128" != no; then
 dnl Use the q suffix in this case.
        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #define _Float128 __float128
-_Float128 x = 0x1.fp+16383q;]])],
+]], [[
+volatile _Float128 x = 0x1.fp+16383q;
+return x == 0;
+]])],
           [AC_MSG_RESULT(yes)
            AC_DEFINE([MPFR_WANT_FLOAT128],2,
                      [Build float128 functions with float128 fallback])
