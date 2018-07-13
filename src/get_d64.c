@@ -111,6 +111,9 @@ static const int T[1000] = {
 #endif
 
 /* construct a decimal64 NaN */
+/* FIXME: In the _MPFR_IEEE_FLOATS case, possible issue due to the fact
+   that not all bitfields are initialized. Moreover, is there an advantage
+   of this code compared to the generic one? */
 static _Decimal64
 get_decimal64_nan (void)
 {
@@ -127,6 +130,9 @@ get_decimal64_nan (void)
 }
 
 /* construct the decimal64 Inf with given sign */
+/* FIXME: In the _MPFR_IEEE_FLOATS case, possible issue due to the fact
+   that not all bitfields are initialized. Moreover, is there an advantage
+   of this code compared to the generic one? */
 static _Decimal64
 get_decimal64_inf (int negative)
 {
@@ -147,11 +153,7 @@ get_decimal64_inf (int negative)
 static _Decimal64
 get_decimal64_zero (int negative)
 {
-  union ieee_double_decimal64 y;
-
-  /* zero has the same representation in binary64 and decimal64 */
-  y.d = negative ? DBL_NEG_ZERO : 0.0;
-  return y.d64;
+  return negative ? -0.0dd : 0.0dd;
 }
 
 /* construct the decimal64 smallest non-zero with given sign:
