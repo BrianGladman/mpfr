@@ -570,6 +570,7 @@ buffer_incr_len (struct string_buffer *b, size_t len)
 
       if (MPFR_UNLIKELY (newlen < len || newlen > MPFR_INTMAX_MAX))
         {
+          MPFR_LOG_MSG (("Overflow\n", 0));
           b->len = -1;
           return 1;
         }
