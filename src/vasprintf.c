@@ -941,15 +941,16 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
   char *str, *s, nine;
   int neg;
 
+  /* Possibles bases for the *printf functions. */
+  MPFR_ASSERTD (base == 2 || base == 10 || base == 16);
+
   if (spec.size != 0)
     return mpfr_get_str (NULL, exp, base, n, op, spec.rnd_mode);
 
   /* Special case size = 0, i.e., xxx_snprintf with size = 0: we only want
      to compute the number of printed characters. Try to deduce it from
      a small number of significant digits. */
-  nine = (base <= 10) ? '0' + base - 1
-    : (base <= 36) ? 'a' + base - 11
-    : 'a' + base - 37;
+  nine = base == 2 ? '1' : base == 10 ? '9' : 'f';
   for (ndigits = NDIGITS; ; ndigits *= 2)
     {
       mpfr_rnd_t rnd = MPFR_RNDZ;
