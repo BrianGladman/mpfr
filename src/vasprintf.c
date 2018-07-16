@@ -102,7 +102,12 @@ static const char num_to_text[] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
 
-/* Read an integer; saturate to INT_MAX. */
+/* Read an integer. An overflow is possible only with no indirection,
+   in which case the integer is non-negative; saturate to INT_MAX.
+   FIXME: saturating is not the correct behavior. Add a width_overflow
+   field to specinfo? (This may be needed as for %n, the width must be
+   ignored, and an overflow on this field has no consequences.)
+ */
 #define READ_INT(ap, format, specinfo, field, label_out)                \
   do {                                                                  \
     while (*(format))                                                   \
@@ -2052,8 +2057,9 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
       if (spec.width < 0)
         {
           spec.left = 1;
+          /* FIXME: This is buggy on INT_MIN (undefined behavior). But first,
+             decide what to do with READ_INT (see the other FIXME). */
           spec.width = -spec.width;
-          MPFR_ASSERTN (spec.width < INT_MAX);
         }
       if (*fmt == '.')
         {
