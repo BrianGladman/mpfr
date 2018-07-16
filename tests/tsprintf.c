@@ -1389,6 +1389,7 @@ bug21056 (void)
    in ISO C, but this conflicts with POSIX:
      https://sourceware.org/bugzilla/show_bug.cgi?id=14771#c2
      http://austingroupbugs.net/view.php?id=761
+   Fixed in r11429.
 */
 static void
 snprintf_size (void)
