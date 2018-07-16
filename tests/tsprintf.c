@@ -1456,7 +1456,7 @@ percent_n (void)
 struct clo
 {
   char *fmt;
-  int r, e;
+  int width, r, e;
 };
 
 static void
@@ -1465,12 +1465,21 @@ check_length_overflow (void)
   mpfr_t x;
   int i, r, e;
   struct clo t[] = {
-    { "%Rg", 1, 0 },
-    { "%5Rg", 5, 0 },
+    { "%Rg", 0, 1, 0 },
+    { "%*Rg", 1, 1, 0 },
+    { "%*Rg", -1, 1, 0 },
+    { "%5Rg", 0, 5, 0 },
+    { "%*Rg", 5, 5, 0 },
+    { "%*Rg", -5, 5, 0 },
 #if INT_MAX == 2147483647
-    { "%2147483647Rg", 2147483647, 0 },
-    { "%2147483648Rg", -1, 1 },
-    { "%18446744073709551616Rg", -1, 1 },
+    { "%2147483647Rg", 0, 2147483647, 0 },
+    { "%2147483648Rg", 0, -1, 1 },
+    { "%18446744073709551616Rg", 0, -1, 1 },
+    { "%*Rg", 2147483647, 2147483647, 0 },
+    { "%*Rg", -2147483647, 2147483647, 0 },
+# if INT_MIN < -INT_MAX
+    { "%*Rg", INT_MIN, -1, 1 },
+# endif
 #endif
   };
 
@@ -1480,7 +1489,9 @@ check_length_overflow (void)
   for (i = 0; i < numberof (t); i++)
     {
       errno = 0;
-      r = mpfr_snprintf (NULL, 0, t[i].fmt, x);
+      r = t[i].width == 0 ?
+        mpfr_snprintf (NULL, 0, t[i].fmt, x) :
+        mpfr_snprintf (NULL, 0, t[i].fmt, t[i].width, x);
       e = errno;
       if ((t[i].r < 0 ? r >= 0 : r != t[i].r)
 #ifdef EOVERFLOW
@@ -1488,8 +1499,8 @@ check_length_overflow (void)
 #endif
           )
         {
-          printf ("Error in check_length_overflow for i=%d (%s)\n",
-                  i, t[i].fmt);
+          printf ("Error in check_length_overflow for i=%d (%s %d)\n",
+                  i, t[i].fmt, t[i].width);
           printf ("Expected r=%d, got r=%d\n", t[i].r, r);
 #ifdef EOVERFLOW
           if (t[i].e && e != EOVERFLOW)
