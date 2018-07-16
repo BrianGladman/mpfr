@@ -30,6 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <stdarg.h>
 
 #include <float.h>
+#include <errno.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -1452,6 +1453,56 @@ percent_n (void)
     exit (1);
 }
 
+struct clo
+{
+  char *fmt;
+  int r, e;
+};
+
+static void
+check_length_overflow (void)
+{
+  mpfr_t x;
+  int i, r, e;
+  struct clo t[] = {
+    { "%Rg", 1, 0 },
+    { "%5Rg", 5, 0 },
+#if INT_MAX == 2147483647
+    { "%2147483647Rg", 2147483647, 0 },
+    { "%2147483648Rg", -1, 1 },
+    { "%18446744073709551616Rg", -1, 1 },
+#endif
+  };
+
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+
+  for (i = 0; i < numberof (t); i++)
+    {
+      errno = 0;
+      r = mpfr_snprintf (NULL, 0, t[i].fmt, x);
+      e = errno;
+      if ((t[i].r < 0 ? r >= 0 : r != t[i].r)
+#ifdef EOVERFLOW
+          || (t[i].e && e != EOVERFLOW)
+#endif
+          )
+        {
+          printf ("Error in check_length_overflow for i=%d (%s)\n",
+                  i, t[i].fmt);
+          printf ("Expected r=%d, got r=%d\n", t[i].r, r);
+#ifdef EOVERFLOW
+          if (t[i].e && e != EOVERFLOW)
+            printf ("Expected errno=EOVERFLOW=%d, got errno=%d\n",
+                    EOVERFLOW, e);
+#endif
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+}
+
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 
 /* The following tests should be equivalent to those from test_locale()
@@ -1602,6 +1653,7 @@ main (int argc, char **argv)
   snprintf_size ();
   percent_n ();
   mixed ();
+  check_length_overflow ();
   test_locale ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
