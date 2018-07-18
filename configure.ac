@@ -168,7 +168,7 @@ AC_ARG_ENABLE(shared-cache,
                           dependent on PTHREAD [[default=no]]],
    [ case $enableval in
       yes) mpfr_want_shared_cache=yes
-         AC_DEFINE([WANT_SHARED_CACHE],1,[Want shared cache]) ;;
+         AC_DEFINE([MPFR_WANT_SHARED_CACHE],1,[Want shared cache]) ;;
       no)  ;;
       *) AC_MSG_ERROR([bad value for --enable-shared-cache: yes or no]) ;;
      esac])

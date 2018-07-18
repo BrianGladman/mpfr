@@ -22,7 +22,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#if defined (WANT_SHARED_CACHE) && defined(HAVE_PTHREAD)
+#if defined(MPFR_WANT_SHARED_CACHE) && defined(HAVE_PTHREAD)
 
 # include <pthread.h>
 

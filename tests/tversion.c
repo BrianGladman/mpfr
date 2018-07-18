@@ -259,6 +259,14 @@ main (void)
           ")" : "no",
           mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
 
+  printf ("[tversion] Shared cache = "
+#if defined(MPFR_WANT_SHARED_CACHE)
+          "yes (" MPFR_THREAD_LOCK_METHOD ")"
+#else
+          "no"
+#endif
+          "\n");
+
   printf ("[tversion] intmax_t = "
 #if defined(_MPFR_H_HAVE_INTMAX_T)
           "yes"

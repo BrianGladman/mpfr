@@ -429,6 +429,9 @@ List of macros used for building MPFR (also used for checking):
 + MPFR_HAVE_INTMAX_MAX: Define if the INTMAX_MAX macro works correctly
                         (if 'intmax_t' is supported).
 
++ MPFR_HAVE_C11_LOCK:   Define if C11 threads are supported.
++ HAVE_PTHREAD:         Define if pthread is available.
+
 Format of long double.
 + HAVE_LDOUBLE_IS_DOUBLE:               IEEE double.
 + HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian.
@@ -471,6 +474,12 @@ Format of long double.
 + MPFR_USE_THREAD_SAFE: Define to build MPFR as thread safe (TLS).
 + MPFR_USE_C11_THREAD_SAFE:
                         Define to implement TLS in the C11 way.
+
++ MPFR_WANT_SHARED_CACHE:
+                        Define to have caches shared by all threads.
++ MPFR_THREAD_LOCK_METHOD:
+                        When MPFR_WANT_SHARED_CACHE is defined, this macro
+                        gives the thread locking method (string).
 
 + MPFR_HAVE_NORETURN:   Define if the _Noreturn function specifier is
                         supported.

@@ -1661,7 +1661,7 @@ AC_DEFUN([MPFR_CHECK_C11_THREAD], [
 AC_MSG_CHECKING([for ISO C11 thread support])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <assert.h>
-#include <thread.h>
+#include <threads.h>
  mtx_t lock;
  once_flag once = ONCE_FLAG_INIT;
  thrd_t thd_idx;

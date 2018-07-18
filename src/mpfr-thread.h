@@ -53,9 +53,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /*                           ISO C11 version                              */
 /**************************************************************************/
 /**************************************************************************/
+
 #if defined (MPFR_HAVE_C11_LOCK)
 /* NOTE: This version has not been completely tested */
-#include <thread.h>
+
+#define MPFR_THREAD_LOCK_METHOD "C11"
+
+#include <threads.h>
 
 #define MPFR_LOCK_DECL(_lock)                   \
   mtx_t _lock;
@@ -110,8 +114,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /*                           POSIX   version                              */
 /**************************************************************************/
 /**************************************************************************/
+
 #elif defined (HAVE_PTHREAD)
-# include <pthread.h>
+
+#define MPFR_THREAD_LOCK_METHOD "pthread"
+
+#include <pthread.h>
 
 #define MPFR_LOCK_DECL(_lock)                                           \
   pthread_rwlock_t _lock;
