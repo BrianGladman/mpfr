@@ -1629,7 +1629,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
   char *str;
-  unsigned int total;  /* can hold the sum of two non-negative int's + 1 */
+  mpfr_uintmax_t total;  /* can hold the sum of two non-negative
+                            signed integers + 1 */
   int uppercase;
 
   /* WARNING: left justification means right space padding */
