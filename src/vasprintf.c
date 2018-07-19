@@ -495,11 +495,14 @@ typedef wint_t mpfr_va_wint;
       }                                         \
   } while (0)
 
-/* process the format part which does not deal with mpfr types,
-   jump to external label 'error' if gmp_asprintf return -1.
+/* Process the format part which does not deal with mpfr types,
+   Jump to external label 'error' if gmp_asprintf return -1.
    Note: start and end are pointers to the format string, so that
    size_t is the best type to express the difference.
- */
+   FIXME: If buf.size = 0 or size != 0, gmp_vsnprintf should be called
+   instead of gmp_vasprintf, outputting data directly to the buffer
+   when applicable.
+*/
 #define FLUSH(flag, start, end, ap, buf_ptr)                            \
   do {                                                                  \
     const size_t n = (end) - (start);                                   \
@@ -2024,6 +2027,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_SAVE_EXPO_MARK (expo);
 
+  /* FIXME: Once buf.len >= size, switch to size = 0 for efficiency and
+     avoid potential DoS? i.e. we no longer need to generate the strings
+     (potentially huge), just compute the lengths. */
+
   buffer_init (&buf, ptr != NULL || size != 0 ? 4096 : 0);
   xgmp_fmt_flag = 0;
   va_copy (ap2, ap);
@@ -2220,12 +2227,15 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           size_t length;
           mpfr_prec_t prec;
 
-          /* FIXME: With size = 0 and a huge width or precision, this
-             can uselessly take much memory. And even with size != 0,
+          /* FIXME: With buf.size = 0 and a huge width or precision, this
+             can uselessly take much memory. And even with buf.size != 0,
              this would take more memory than necessary and need a large
              buffer_cat. A solution: compute a bound on the maximum
              number of significant digits, and handle the additional
-             characters separately. Add testcases too. */
+             characters separately. Moreover, if buf.size = 0 or size != 0,
+             gmp_snprintf should be called instead of gmp_asprintf,
+             outputting data directly to the buffer when applicable..
+             Add testcases. */
 
           prec = va_arg (ap, mpfr_prec_t);
 
