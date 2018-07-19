@@ -2234,7 +2234,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
              number of significant digits, and handle the additional
              characters separately. Moreover, if buf.size = 0 or size != 0,
              gmp_snprintf should be called instead of gmp_asprintf,
-             outputting data directly to the buffer when applicable..
+             outputting data directly to the buffer when applicable.
+             See also: https://sourceware.org/bugzilla/show_bug.cgi?id=23432
              Add testcases. */
 
           prec = va_arg (ap, mpfr_prec_t);
