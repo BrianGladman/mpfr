@@ -2258,9 +2258,9 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               && spec.spec != 'e' && spec.spec != 'E'
               && spec.spec != 'f' && spec.spec != 'F'
               && spec.spec != 'g' && spec.spec != 'G')
-            /* the format specifier is invalid; skip the invalid format
-           specifier so as to print it as a literal string. What may be
-           printed after this string is undefined. */
+            /* The format specifier is invalid; skip the invalid format
+               specifier so as to print it as a literal string. What may
+               be printed after this string is undefined. */
             continue;
 
           p = va_arg (ap, mpfr_srcptr);
