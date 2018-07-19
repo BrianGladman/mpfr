@@ -2220,6 +2220,13 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           size_t length;
           mpfr_prec_t prec;
 
+          /* FIXME: With size = 0 and a huge width or precision, this
+             can uselessly take much memory. And even with size != 0,
+             this would take more memory than necessary and need a large
+             buffer_cat. A solution: compute a bound on the maximum
+             number of significant digits, and handle the additional
+             characters separately. Add testcases too. */
+
           prec = va_arg (ap, mpfr_prec_t);
 
           FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
