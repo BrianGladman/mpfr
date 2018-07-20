@@ -24,8 +24,9 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mpfr.pc
 
 nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
-  examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
-  examples/version.c examples/can_round.c
+  examples/ReadMe examples/can_round.c examples/divworst.c \
+  examples/rndo-add.c examples/sample.c examples/threads.c \
+  examples/version.c
 
 EXTRA_DIST = PATCHES VERSION doc/README.dev doc/check-typography \
   tools/check_mparam.c tools/ck-clz_tab tools/ck-copyright-notice \
