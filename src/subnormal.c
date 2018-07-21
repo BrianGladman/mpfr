@@ -116,6 +116,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
     {
       mpfr_t dest;
       mpfr_prec_t q;
+      mpfr_rnd_t rnd2;
       int inexact, inex2;
 
       MPFR_ASSERTD (MPFR_GET_EXP (y) > __gmpfr_emin);
@@ -129,7 +130,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
       /* Round y in dest */
       MPFR_SET_EXP (dest, MPFR_GET_EXP (y));
       MPFR_SET_SIGN (dest, sign);
-      mpfr_rnd_t rnd2 = (rnd == MPFR_RNDNA) ? MPFR_RNDN : rnd;
+      rnd2 = rnd == MPFR_RNDNA ? MPFR_RNDN : rnd;
       MPFR_RNDRAW_EVEN (inexact, dest,
                         MPFR_MANT (y), MPFR_PREC (y), rnd2, sign,
                         MPFR_SET_EXP (dest, MPFR_GET_EXP (dest) + 1));
