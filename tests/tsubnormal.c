@@ -204,11 +204,57 @@ check3 (void)
   set_emin (emin);
 }
 
+/* check mpfr_subnormize with RNDNA (experimental) */
+static void
+check_rndna (void)
+{
+  mpfr_t x, y;
+  int inex;
+  mpfr_exp_t emin = mpfr_get_emin ();
+
+  mpfr_init2 (x, 11);
+  mpfr_init2 (y, 9);
+
+  mpfr_set_str_binary (x, "0.1111111010E-14");
+  inex = mpfr_set (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  mpfr_set_emin (-21);
+  inex = mpfr_subnormalize (y, inex, MPFR_RNDNA);
+  /* mpfr_subnormalize rounds to precision EXP(y)-emin+1 = 8,
+     thus should round to 0.111111110E-14 */
+  mpfr_set_str_binary (x, "0.111111110E-14");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  /* now consider x slightly larger: we should get the same result */
+  mpfr_set_str_binary (x, "0.1111111011E-14");
+  inex = mpfr_set (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  inex = mpfr_subnormalize (y, inex, MPFR_RNDNA);
+  mpfr_set_str_binary (x, "0.111111110E-14");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  /* now consider x slightly smaller: we should get a different result */
+  mpfr_set_str_binary (x, "0.11111110001E-14");
+  inex = mpfr_set (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(inex < 0);
+  inex = mpfr_subnormalize (y, inex, MPFR_RNDNA);
+  mpfr_set_str_binary (x, "0.111111100E-14");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+  MPFR_ASSERTN(inex < 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  check_rndna ();
   check1 ();
   check2 ();
   check3 ();
