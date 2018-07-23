@@ -203,7 +203,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       mpfr_t tauk;
-      int log2tauk;
+      mpfr_exp_t log2tauk;
 
       mpfr_sqr (y, x, MPFR_RNDU); /* err <= 1 ulp */
       mpfr_set_ui (s, 1, MPFR_RNDN);
@@ -242,6 +242,9 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
       /* tauk = 4 * tauk + 11: final ulp-error on s */
       mpfr_mul_2ui (tauk, tauk, 2, MPFR_RNDU);
       mpfr_add_ui (tauk, tauk, 11, MPFR_RNDU);
+      /* In practice, one should not get an infinity, as it would require
+         a huge precision and a lot of time, but just in case... */
+      MPFR_ASSERTN (!MPFR_IS_INF (tauk));
       log2tauk = MPFR_GET_EXP (tauk);
       mpfr_clear (tauk);
 
