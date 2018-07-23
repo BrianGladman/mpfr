@@ -224,7 +224,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
           sigmak -= MPFR_GET_EXP(s);
           nuk = MPFR_GET_EXP(u) - MPFR_GET_EXP(s);
 
-          if ((nuk < - (mpfr_exp_t) m) && ((double) k >= xf2))
+          if ((nuk < - (mpfr_exp_t) m) && (k >= xf2))
             break;
 
           /* tauk <- 1/2 + tauk * 2^sigmak + (1+8k)*2^nuk */
