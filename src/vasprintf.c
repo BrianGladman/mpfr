@@ -29,11 +29,22 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    http://pubs.opengroup.org/onlinepubs/9699919799/functions/fprintf.html
    This follows a defect report submitted in 2007 to austin-review-l. */
 
-/* Note: Due to limitations from the C standard and GMP, if
-   size_t < unsigned int (which is allowed by the C standard but unlikely
-   to occur on any platform), the behavior is undefined for output that
-   would reach SIZE_MAX = (size_t) -1 (if the result cannot be delivered,
-   there should be an assertion failure, but this could not be tested). */
+/* Notes about limitations on some platforms:
+
+   Due to limitations from the C standard and GMP, if size_t < unsigned int
+   (which is allowed by the C standard but unlikely to occur on any
+   platform), the behavior is undefined for output that would reach
+   SIZE_MAX = (size_t) -1 (if the result cannot be delivered, there should
+   be an assertion failure, but this could not be tested).
+
+   The stdarg(3) Linux man page says:
+      On some systems, va_end contains a closing '}' matching a '{' in
+      va_start, so that both macros must occur in the same function,
+      and in a way that allows this.
+   However, the only requirement from ISO C is that both macros must be
+   invoked in the same function (MPFR uses va_copy instead of va_start,
+   but the requirement is the same). Here, MPFR just follows ISO C.
+*/
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -2298,44 +2309,42 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
   va_end (ap2);
 
-  if (buf.len > INT_MAX)  /* overflow */
-    buf.len = -1;
+  if (buf.len == -1 || buf.len > INT_MAX)  /* overflow */
+    goto overflow;
 
-  if (buf.len != -1)
+  nbchar = buf.len;
+  MPFR_ASSERTD (nbchar >= 0);
+
+  if (ptr != NULL)  /* implement mpfr_vasprintf */
     {
-      nbchar = buf.len;
-      MPFR_ASSERTD (nbchar >= 0);
-
-      if (ptr != NULL)  /* implement mpfr_vasprintf */
+      MPFR_ASSERTD (nbchar == strlen (buf.start));
+      *ptr = (char *) mpfr_reallocate_func (buf.start, buf.size, nbchar + 1);
+    }
+  else if (size > 0)  /* implement mpfr_vsnprintf */
+    {
+      if (nbchar < size)
         {
-          MPFR_ASSERTD (nbchar == strlen (buf.start));
-          *ptr = (char *)
-            mpfr_reallocate_func (buf.start, buf.size, nbchar + 1);
+          strncpy (Buf, buf.start, nbchar);
+          Buf[nbchar] = '\0';
         }
-      else if (size > 0)  /* implement mpfr_vsnprintf */
+      else
         {
-          if (nbchar < size)
-            {
-              strncpy (Buf, buf.start, nbchar);
-              Buf[nbchar] = '\0';
-            }
-          else
-            {
-              strncpy (Buf, buf.start, size - 1);
-              Buf[size-1] = '\0';
-            }
-          mpfr_free_func (buf.start, buf.size);
+          strncpy (Buf, buf.start, size - 1);
+          Buf[size-1] = '\0';
         }
-
-      MPFR_SAVE_EXPO_FREE (expo);
-      return nbchar; /* return the number of characters that would have
-                        been written had 'size' been sufficiently large,
-                        not counting the terminating null character */
+      mpfr_free_func (buf.start, buf.size);
     }
 
+  MPFR_SAVE_EXPO_FREE (expo);
+  return nbchar; /* return the number of characters that would have
+                    been written had 'size' been sufficiently large,
+                    not counting the terminating null character */
+
  error:
+  va_end (ap2);
   if (buf.len == -1)  /* overflow */
     {
+    overflow:
       MPFR_LOG_MSG (("Overflow\n", 0));
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_ERANGE);
 #ifdef EOVERFLOW
