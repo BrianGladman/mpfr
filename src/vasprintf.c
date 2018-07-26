@@ -27,7 +27,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    [*] The Open Group Base Specifications Issue 7, 2018 edition
        IEEE Std 1003.1-2017 (Revision of IEEE Std 1003.1-2008)
    http://pubs.opengroup.org/onlinepubs/9699919799/functions/fprintf.html
-   This follows a defect report submitted in 2007 to austin-review-l. */
+   This follows a defect report submitted in 2007 to austin-review-l.
+   Even in case of such a failure (just because of the limitation on int),
+   we try to support %n, %ln, %jn when possible. That's why the sizes (or
+   lengths) are expressed using mpfr_intmax_t in the code below. */
 
 /* Notes about limitations on some platforms:
 
@@ -113,15 +116,20 @@ static const char num_to_text[] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
 
-/* Read an integer. An overflow is possible only with no indirection,
-   in which case the integer is non-negative; saturate to INT_MAX.
-   FIXME: saturating is not the correct behavior. Add a width_overflow
-   field to specinfo? (This may be needed as for %n, the width must be
-   ignored, and an overflow on this field has no consequences.)
- */
-#define READ_INT(ap, format, specinfo, field, label_out)                \
+/* Read an integer var of type mpfr_intmax_t. In case of overflow, set
+   overflow to 1.
+   Note: Since mpfr_intmax_t = int is theoretically possible, all values
+   of var are potentially valid values (via '*'). Hence the need of an
+   overflow flag instead of a special value that would indicate overflow.
+   Saturating would not be OK either as the maximum value could be
+   meaningful with %jn and/or in the case mpfr_intmax_t = int, for
+   MPFR_PREC_ARG.
+*/
+#define READ_INT(ap, format, var)                                       \
   do {                                                                  \
-    while (*(format))                                                   \
+    int _loop = 1;                                                      \
+    MPFR_ASSERTD ((var) == 0);                                          \
+    while (_loop && *(format))                                          \
       {                                                                 \
         int _i;                                                         \
         switch (*(format))                                              \
@@ -136,19 +144,28 @@ static const char num_to_text[] = "0123456789abcdef";
           case '7':                                                     \
           case '8':                                                     \
           case '9':                                                     \
-            specinfo.field = (specinfo.field <= INT_MAX / 10) ?         \
-              specinfo.field * 10 : INT_MAX;                            \
-            _i = *(format) - '0';                                       \
-            MPFR_ASSERTN (_i >= 0 && _i <= 9);                          \
-            specinfo.field = (specinfo.field <= INT_MAX - _i) ?         \
-              specinfo.field + _i : INT_MAX;                            \
+            if (!(overflow))                                            \
+              {                                                         \
+                if ((var) > MPFR_INTMAX_MAX / 10)                       \
+                  (overflow) = 1;                                       \
+                else                                                    \
+                  {                                                     \
+                    (var) *= 10;                                        \
+                    _i = *(format) - '0';                               \
+                    MPFR_ASSERTN (_i >= 0 && _i <= 9);                  \
+                    if ((var) > MPFR_INTMAX_MAX - _i)                   \
+                      (overflow) = 1;                                   \
+                    else                                                \
+                      (var) += _i;                                      \
+                  }                                                     \
+              }                                                         \
             ++(format);                                                 \
             break;                                                      \
           case '*':                                                     \
-            specinfo.field = va_arg ((ap), int);                        \
+            (var) = va_arg ((ap), int);                                 \
             ++(format);                                                 \
           default:                                                      \
-            goto label_out;                                             \
+            _loop = 0;                                                  \
           }                                                             \
       }                                                                 \
   } while (0)
@@ -187,8 +204,8 @@ struct printf_spec
   unsigned int showsign:1;      /* + flag */
   unsigned int group:1;         /* ' flag */
 
-  int width;                    /* Width */
-  int prec;                     /* Precision */
+  mpfr_intmax_t width;          /* Width */
+  mpfr_intmax_t prec;           /* Precision, or negative if omitted */
   size_t size;                  /* Wanted size (0 iff snprintf with size=0) */
 
   enum arg_t arg_type;          /* Type of argument */
@@ -569,7 +586,7 @@ buffer_init (struct string_buffer *b, size_t s)
 
 /* Increase the len field of the buffer. Return non-zero iff overflow. */
 static int
-buffer_incr_len (struct string_buffer *b, size_t len)
+buffer_incr_len (struct string_buffer *b, mpfr_intmax_t len)
 {
   if (b->len == -1)
     return 1;
@@ -655,7 +672,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
 
 /* Add n characters c to the end of buffer b. Return non-zero if overflow. */
 static int
-buffer_pad (struct string_buffer *b, const char c, const size_t n)
+buffer_pad (struct string_buffer *b, const char c, const mpfr_intmax_t n)
 {
   MPFR_ASSERTD (n > 0);
 
@@ -665,7 +682,14 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   if (b->size != 0)
     {
       MPFR_ASSERTD (*b->curr == '\0');
-      MPFR_ASSERTN (b->size < ((size_t) -1) - n);
+
+      if (n > (size_t) -1 || b->size > ((size_t) -1) - n)
+        {
+          /* Reallocation will not be possible. Regard this as an overflow. */
+          b->len = -1;
+          return 1;
+        }
+
       if (MPFR_UNLIKELY (b->curr + n >= b->start + b->size))
         buffer_widen (b, n);
 
@@ -843,7 +867,7 @@ enum pad_t
 struct number_parts
 {
   enum pad_t pad_type;    /* Padding type */
-  size_t pad_size;        /* Number of padding characters */
+  mpfr_intmax_t pad_size; /* Number of padding characters */
 
   char sign;              /* Sign character */
 
@@ -859,12 +883,12 @@ struct number_parts
 
   char point;             /* Decimal point character */
 
-  int fp_leading_zeros;   /* Number of additional leading zeros in fractional
-                             part */
+  mpfr_intmax_t fp_leading_zeros;  /* Number of additional leading zeros in
+                                      fractional part */
   char *fp_ptr;           /* Pointer to fractional part characters */
   size_t fp_size;         /* Number of digits in *fp_ptr */
-  int fp_trailing_zeros;  /* Number of additional trailing zeros in fractional
-                             part */
+  mpfr_intmax_t fp_trailing_zeros;  /* Number of additional trailing zeros in
+                                       fractional part */
 
   char *exp_ptr;          /* Pointer to exponent part */
   size_t exp_size;        /* Number of characters in *exp_ptr */
@@ -996,7 +1020,7 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'a', 'A', or 'b'.
 
-   return -1 if some field > INT_MAX */
+   Return -1 in case of overflow on the sizes. */
 static int
 regular_ab (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
@@ -1037,9 +1061,16 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          - if no given precision, let mpfr_get_str determine it;
          - if a non-zero precision is specified, then one digit before decimal
          point plus SPEC.PREC after it (which will give nsd > 1 below). */
-      MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
-      nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
-      MPFR_ASSERTD (nsd != 1);
+      MPFR_ASSERTD (np->ip_size == 1);  /* thus the + 1 below */
+      if (spec.prec < 0)
+        nsd = 0;
+      else
+        {
+          if (MPFR_UNLIKELY (spec.prec > (size_t) -2))  /* overflow */
+            return -1;
+          nsd = (size_t) spec.prec + 1;
+          MPFR_ASSERTD (nsd != 1);
+        }
       str = mpfr_get_str_wrapper (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
@@ -1158,18 +1189,17 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
-      if (str_len > INT_MAX)
-        /* too many digits in fractional part */
-        return -1;
-
       if (str_len != 0)
         /* there are some non-zero digits in fractional part */
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
-          MPFR_ASSERTD (str_len > 0 && str_len <= INT_MAX);
-          if ((int) str_len < spec.prec)
-            np->fp_trailing_zeros = spec.prec - str_len;
+          /* Warning! str_len has type size_t, which is unsigned. */
+          if (spec.prec > 0 && str_len < spec.prec)
+            {
+              np->fp_trailing_zeros = spec.prec - str_len;
+              MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
+            }
         }
     }
 
@@ -1202,7 +1232,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     exp_fmt[1] = '\0';
     strcat (exp_fmt, "%+.1" MPFR_EXP_FSPEC "d");
 
-    if (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0)
+    if (MPFR_UNLIKELY (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0))
       return -1;
   }
 
@@ -1214,7 +1244,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
    dec_info contains the previously computed exponent and string or is
    a null pointer.
 
-   return -1 if some field > INT_MAX */
+   Return -1 in case of overflow on the sizes. */
 static int
 regular_eg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec, struct decimal_info *dec_info)
@@ -1245,8 +1275,15 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
          plus SPEC.PREC after it.
          We use the fact here that mpfr_get_str allows us to ask for only one
          significant digit when the base is not a power of 2. */
-      MPFR_ASSERTD (np->ip_size == 1); /* thus no integer overflow below */
-      nsd = spec.prec < 0 ? 0 : (size_t) spec.prec + np->ip_size;
+      MPFR_ASSERTD (np->ip_size == 1);  /* thus the + 1 below */
+      if (spec.prec < 0)
+        nsd = 0;
+      else
+        {
+          if (MPFR_UNLIKELY (spec.prec > (size_t) -2))  /* overflow */
+            return -1;
+          nsd = (size_t) spec.prec + 1;
+        }
       str = mpfr_get_str_wrapper (&exp, 10, nsd, p, spec);
       register_string (np->sl, str);
     }
@@ -1278,20 +1315,18 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
-      if (str_len > INT_MAX)
-        /* too many digits in fractional part */
-        return -1;
-
       if (str_len != 0)
         /* there are some non-zero digits in fractional part */
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
-          MPFR_ASSERTD (str_len > 0 && str_len <= INT_MAX);
-          if ((!spec_g || spec.alt) && spec.prec > 0
-              && (int) str_len < spec.prec)
-            /* add missing trailing zeros */
-            np->fp_trailing_zeros = spec.prec - str_len;
+          /* Warning! str_len has type size_t, which is unsigned. */
+          if ((!spec_g || spec.alt) && spec.prec > 0 && str_len < spec.prec)
+            {
+              /* add missing trailing zeros */
+              np->fp_trailing_zeros = spec.prec - str_len;
+              MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
+            }
         }
     }
 
@@ -1332,7 +1367,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
     exp_fmt[1] = '\0';
     strcat (exp_fmt, "%+.2" MPFR_EXP_FSPEC "d");
 
-    if (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0)
+    if (MPFR_UNLIKELY (sprintf (str, exp_fmt, (mpfr_eexp_t) exp) < 0))
       return -1;
   }
 
@@ -1344,7 +1379,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
    dec_info contains the previously computed exponent and string or is
    a null pointer.
 
-   return -1 if some field of number_parts is greater than INT_MAX */
+   Return -1 in case of overflow on the sizes. */
 static int
 regular_fg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec, struct decimal_info *dec_info)
@@ -1399,6 +1434,11 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             /* only the last digit may be non zero */
             {
               int round_away;
+
+              /* Due to mpfr_set_si below... */
+              if (MPFR_UNLIKELY (spec.prec > LONG_MAX))  /* overflow */
+                return -1;
+
               switch (spec.rnd_mode)
                 {
                 case MPFR_RNDA:
@@ -1473,12 +1513,10 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 {
                   size_t nsd;
 
-                  /* Consequences of earlier assertions (in r11307).
-                     They guarantee that the integers are representable
-                     (i.e., no integer overflow), assuming size_t >= int
-                     as usual. */
                   MPFR_ASSERTD (exp <= -1);
                   MPFR_ASSERTD (spec.prec + (exp + 1) >= 0);
+                  if (MPFR_UNLIKELY (spec.prec + (exp + 1) > (size_t) -1))
+                    return -1;
                   nsd = spec.prec + (exp + 1);
                   /* WARNING: nsd may equal 1, but here we use the
                      fact that mpfr_get_str can return one digit with
@@ -1523,19 +1561,23 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                         }
                     }
 
-                  if (str_len > INT_MAX)
-                    /* too many digits in fractional part */
-                    return -1;
-
                   MPFR_ASSERTD (str_len > 0);
                   np->fp_size = str_len;
 
+                  /* The np->fp_size <= MPFR_INTMAX_MAX test and the
+                     cast to mpfr_uintmax_t below allow one to avoid
+                     integer overflow. */
                   if ((!spec_g || spec.alt)
                       && spec.prec > 0
-                      && (np->fp_leading_zeros + np->fp_size < spec.prec))
-                    /* add missing trailing zeros */
-                    np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
-                      - np->fp_size;
+                      && np->fp_size <= MPFR_INTMAX_MAX
+                      && ((mpfr_uintmax_t)
+                          np->fp_leading_zeros + np->fp_size) < spec.prec)
+                    {
+                      /* add missing trailing zeros */
+                      np->fp_trailing_zeros = spec.prec
+                        - np->fp_leading_zeros - np->fp_size;
+                      MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
+                    }
                 }
             }
         }
@@ -1552,14 +1594,16 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       /* Determine the position of the most significant decimal digit. */
       exp = floor_log10 (p);
       MPFR_ASSERTD (exp >= 0);
-      if (exp > INT_MAX)
-        /* P is too large to print all its integral part digits */
-        return -1;
 
       if (dec_info == NULL)
         {
           /* %f case */
-          str = mpfr_get_str_wrapper (&exp, 10, spec.prec + exp + 1, p, spec);
+          mpfr_uintmax_t n;
+
+          n = (mpfr_uintmax_t) spec.prec + (exp + 1);
+          if (MPFR_UNLIKELY (n > (size_t) -1))
+            return -1;
+          str = mpfr_get_str_wrapper (&exp, 10, n, p, spec);
           register_string (np->sl, str);
         }
       else
@@ -1607,20 +1651,19 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       if (str_len > 0)
         /* some nonzero digits in fractional part */
         {
-          if (str_len > INT_MAX)
-            /* too many digits in fractional part */
-            return -1;
-
           np->point = MPFR_DECIMAL_POINT;
           np->fp_ptr = str;
           np->fp_size = str_len;
         }
 
+      /* Warning! str_len has type size_t, which is unsigned. */
+      MPFR_ASSERTD (spec.prec >= 0);  /* let's recall this */
       if (keep_trailing_zeros && str_len < spec.prec)
         /* add missing trailing zeros */
         {
           np->point = MPFR_DECIMAL_POINT;
           np->fp_trailing_zeros = spec.prec - np->fp_size;
+          MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
         }
 
       if (spec.alt)
@@ -1635,9 +1678,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
    representation of the number p according to the given specification.
    partition_number initializes the given structure np, so all previous
    information in that variable is lost.
-   return the total number of characters to be written.
-   return -1 if an error occurred, in that case np's fields are in an undefined
-   state but all string buffers have been freed. */
+   Return the total number of characters to be written.
+   Return -1 if an error occurred, in that case np's fields are in an
+   undefined state but all string buffers have been freed. */
 static mpfr_intmax_t
 partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
@@ -1737,6 +1780,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
               np->point = MPFR_DECIMAL_POINT;
               np->fp_trailing_zeros = (spec.spec == 'g' || spec.spec == 'G') ?
                 spec.prec - 1 : spec.prec;
+              MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
             }
           else if (spec.alt)
             np->point = MPFR_DECIMAL_POINT;
@@ -1892,9 +1936,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
     /* pad with spaces or zeros depending on np->pad_type */
     {
       np->pad_size = spec.width - total;
-      total += np->pad_size; /* here total == spec.width,
-                                so 0 < total <= INT_MAX */
-      MPFR_ASSERTD (total == spec.width);
+      total = spec.width;
     }
 
   MPFR_ASSERTD (total > 0 && total <= MPFR_INTMAX_MAX);
@@ -1911,8 +1953,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
 /* sprnt_fp prints a mpfr_t according to spec.spec specification.
 
-   return the size of the string (not counting the terminating '\0')
-   return -1 if the built string is too long (i.e. has more than
+   Return the size of the string (not counting the terminating '\0').
+   Return -1 if the built string is too long (i.e. has more than
    INT_MAX or MPFR_INTMAX_MAX characters).
 
    If spec.size is 0, we only want the size of the string.
@@ -1925,7 +1967,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   struct number_parts np;
 
   length = partition_number (&np, p, spec);
-  if (length < 0)
+  if (MPFR_UNLIKELY (length < 0))
     {
       buf->len = -1;
       return -1;
@@ -2048,6 +2090,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   start = fmt;
   while (*fmt != '\0')
     {
+      int overflow = 0;
+
       /* Look for the next format specification */
       while (*fmt != '\0' && *fmt != '%')
         ++fmt;
@@ -2071,25 +2115,27 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
       specinfo_init (&spec);
       fmt = parse_flags (fmt, &spec);
 
-      READ_INT (ap, fmt, spec, width, width_analysis);
-    width_analysis:
-      if (spec.width < 0)
+      READ_INT (ap, fmt, spec.width);
+      if (spec.width < 0)  /* integer read via '*', no overflow */
         {
           spec.left = 1;
-          /* FIXME: This is buggy on INT_MIN (undefined behavior). But first,
-             decide what to do with READ_INT (see the other FIXME). */
-          spec.width = -spec.width;
+          if (MPFR_UNLIKELY (spec.width < - MPFR_INTMAX_MAX))
+            overflow = 1;
+          else
+            spec.width = - spec.width;
         }
+      MPFR_ASSERTD (spec.width >= 0);
+
       if (*fmt == '.')
         {
           const char *f = ++fmt;
-          READ_INT (ap, fmt, spec, prec, prec_analysis);
-        prec_analysis:
-          if (f == fmt)
+          READ_INT (ap, fmt, spec.prec);
+          if (f == fmt || spec.prec < 0)
             spec.prec = -1;
         }
       else
         spec.prec = -1;
+      MPFR_ASSERTD (spec.prec >= -1);
 
       fmt = parse_arg_type (fmt, &spec);
       if (spec.arg_type == UNSUPPORTED)
@@ -2256,6 +2302,28 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           va_copy (ap2, ap);
           start = fmt;
 
+          /* The restriction to INT_MAX is a limitation due to the fact
+             that *.* is used below. If the width or precision field is
+             larger than INT_MAX, then there is a real overflow on the
+             return value due to the padding characters, thus the error
+             is correct. The only minor drawback is that some variables
+             corresponding to the 'n' conversion specifier with a type
+             larger than int may not be set. This is not a bug, as there
+             are no strong guarantees for such variables in case of error.
+             FIXME: If size = 0 and max(spec.width,spec.prec) is large
+             enough, there is no need to call gmp_asprintf since we are
+             just interested in the length, which should be this maximum;
+             in particular, this should avoid the overflow issue. */
+          if (overflow || spec.width > INT_MAX || spec.prec > INT_MAX)
+            {
+              buf.len = -1;
+              goto error;
+            }
+
+          /* Recalled from above. */
+          MPFR_ASSERTD (spec.width >= 0);
+          MPFR_ASSERTD (spec.prec >= -1);
+
           /* construct format string, like "%*.*hd" "%*.*d" or "%*.*ld" */
           format[0] = '%';
           format[1] = '*';
@@ -2265,7 +2333,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           strcat (format, MPFR_PREC_FORMAT_TYPE);
           format[4 + MPFR_PREC_FORMAT_SIZE] = spec.spec;
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
-          length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
+          length = gmp_asprintf (&s, format,
+                                 (int) spec.width, (int) spec.prec, prec);
           MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
           buffer_cat (&buf, s, length);
           mpfr_free_str (s);
@@ -2291,6 +2360,12 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           va_end (ap2);
           va_copy (ap2, ap);
           start = fmt;
+
+          if (overflow)
+            {
+              buf.len = -1;
+              goto error;
+            }
 
           if (ptr == NULL)
             spec.size = size;
