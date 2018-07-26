@@ -233,6 +233,7 @@ decimal (void)
   /* specifier 'P' for precision */
   check_vsprintf ("128", "%Pu", p);
   check_vsprintf ("00128", "%.5Pu", p);
+  check_vsprintf ("000128", "%06Pu", p);
   check_vsprintf ("128    :", "%-7Pu:", p);
   check_vsprintf ("128", "%-2.6Pd:", p);
   check_vsprintf ("  000128:", "%8.6Pd:", p);
