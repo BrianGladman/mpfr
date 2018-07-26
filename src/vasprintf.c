@@ -2320,7 +2320,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
       MPFR_ASSERTD (nbchar == strlen (buf.start));
       *ptr = (char *) mpfr_reallocate_func (buf.start, buf.size, nbchar + 1);
     }
-  else if (size > 0)  /* implement mpfr_vsnprintf */
+  else if (size != 0)  /* implement mpfr_vsnprintf */
     {
       if (nbchar < size)
         {
@@ -2354,8 +2354,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     }
 
   MPFR_SAVE_EXPO_FREE (expo);
-  *ptr = NULL;
-  mpfr_free_func (buf.start, buf.size);
+  if (ptr != NULL)  /* implement mpfr_vasprintf */
+    *ptr = NULL;
+  if (ptr != NULL || size != 0)
+    mpfr_free_func (buf.start, buf.size);
 
   return -1;
 }
