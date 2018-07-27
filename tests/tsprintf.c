@@ -235,9 +235,15 @@ decimal (void)
   check_vsprintf ("00128", "%.5Pu", p);
   check_vsprintf ("000128", "%06Pu", p);
   check_vsprintf ("128    :", "%-7Pu:", p);
-  check_vsprintf ("128", "%-2.6Pd:", p);
+  check_vsprintf ("000128:", "%-2.6Pd:", p);
   check_vsprintf ("  000128:", "%8.6Pd:", p);
   check_vsprintf ("000128  :", "%-8.6Pd:", p);
+  check_vsprintf ("+128:", "%+d:", p);
+  check_vsprintf (" 128:", "% d:", p);
+  check_vsprintf ("80:", "% x:", p);
+  check_vsprintf ("0x80:", "% #x:", p);
+  check_vsprintf ("0x80:", "%0#+ -x:", p);
+  check_vsprintf ("0200:", "%0#+ -o:", p);
 
   /* special numbers */
   mpfr_set_inf (x, 1);
@@ -1613,6 +1619,8 @@ test_locale (void)
   check_sprintf ("00000001e+03", "%'012.3Rg", x);
   check_sprintf ("00000001,000", "%'012.4Rg", x);
   check_sprintf ("000000001,000", "%'013.4Rg", x);
+
+  check_vsprintf ("+01,234,567  :", "%0+ -'13.10Pd:", (mpfr_prec_t) 1234567);
 
   mpfr_clear (x);
 }
