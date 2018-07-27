@@ -1625,7 +1625,9 @@ test_locale (void)
   check_sprintf ("00000001,000", "%'012.4Rg", x);
   check_sprintf ("000000001,000", "%'013.4Rg", x);
 
+#ifdef PRINTF_GROUPFLAG
   check_vsprintf ("+01,234,567  :", "%0+ -'13.10Pd:", (mpfr_prec_t) 1234567);
+#endif
 
   mpfr_clear (x);
 }

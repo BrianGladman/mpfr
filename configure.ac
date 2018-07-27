@@ -708,7 +708,8 @@ if test -z "$enable_mini_gmp" ; then
    [AC_MSG_RESULT(yes)
     MPFR_CHECK_GMP
     MPFR_CHECK_DBL2INT_BUG
-    MPFR_CHECK_PRINTF_SPEC],
+    MPFR_CHECK_PRINTF_SPEC
+    MPFR_CHECK_PRINTF_GROUPFLAG],
    [AC_MSG_RESULT(no)
     AC_MSG_WARN([==========================================================])
     AC_MSG_WARN(['gmp.h' and 'libgmp' seem to have different versions or])

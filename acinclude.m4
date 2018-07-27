@@ -1537,6 +1537,31 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])
 
+dnl MPFR_CHECK_PRINTF_GROUPFLAG
+dnl ---------------------------
+dnl Check the support of the group flag for native integers, which is
+dnl a Single UNIX Specification extension.
+dnl This will be used to enable some tests, as the implementation of
+dnl the P length modifier for mpfr_*printf relies on this support.
+
+AC_DEFUN([MPFR_CHECK_PRINTF_GROUPFLAG], [
+AC_MSG_CHECKING(if gmp_printf supports the ' group flag)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <string.h>
+#include <gmp.h>
+]], [[
+  char s[256];
+
+  if (gmp_sprintf (s, "%'d", 17) == -1) return 1;
+  return (strcmp (s, "17") != 0);
+]])],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE([PRINTF_GROUPFLAG], 1, [Define if gmp_printf supports the ' group flag])],
+  [AC_MSG_RESULT(no)],
+  [AC_MSG_RESULT(cannot test, assume no)])
+])
+])
+
 dnl MPFR_LTO
 dnl --------
 dnl To be representative, we need:
