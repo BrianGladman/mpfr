@@ -244,6 +244,8 @@ decimal (void)
   check_vsprintf ("0x80:", "% #x:", p);
   check_vsprintf ("0x80:", "%0#+ -x:", p);
   check_vsprintf ("0200:", "%0#+ -o:", p);
+  check_vsprintf ("+0000128 :", "%0+ *.*Pd:", -9, 7, p);
+  check_vsprintf ("+12345   :", "%0+ -*.*Pd:", -9, -3, (mpfr_prec_t) 12345);
 
   /* special numbers */
   mpfr_set_inf (x, 1);
