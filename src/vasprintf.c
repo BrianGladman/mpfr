@@ -2328,7 +2328,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
           /* construct format string, like "%*.*hd" "%*.*d" or "%*.*ld" */
           sprintf (format, "%%%s%s%s%s%s%s*.*" MPFR_PREC_FORMAT_TYPE "%c",
-                   spec.pad ? "0" : "",
+                   spec.pad == '0' ? "0" : "",
                    spec.alt ? "#" : "",
                    spec.showsign ? "+" : "",
                    spec.space ? " " : "",
