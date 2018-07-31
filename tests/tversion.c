@@ -25,6 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
+#include <errno.h>
+
 #include "mpfr-intmax.h"
 #include "mpfr-test.h"
 
@@ -40,9 +42,18 @@ main (void)
 
   tests_start_mpfr ();
 
+  errno = 0;
+
   /*********************** MPFR version and patches ************************/
 
-  printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING);
+  /* With i586-mingw32msvc-gcc -D__USE_MINGW_ANSI_STDIO and run under Wine,
+     the following line was not output. This is not reproducible. Let's try
+     to detect the error in case this happens again. */
+  if (printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING) < 0)
+    {
+      perror ("tversion (first printf)");
+      err = 1;
+    }
 
   if (strcmp (mpfr_get_patches (), "") != 0)
     printf ("[tversion] MPFR patches: %s\n", mpfr_get_patches ());
@@ -417,6 +428,12 @@ main (void)
             "u\n", (mpfr_ueexp_t) tests_memory_limit);
 
   /*************************************************************************/
+
+  if (errno != 0)
+    {
+      perror ("tversion");
+      err = 1;
+    }
 
   tests_end_mpfr ();
 
