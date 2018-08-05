@@ -175,7 +175,11 @@ grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 
 # __MPFR_DECLSPEC (based on the __MPFR_WITHIN_MPFR status) must be used
 # instead of __GMP_DECLSPEC (based on the __GMP_WITHIN_GMP status, always
-# undefined in MPFR).
+# undefined in MPFR); in particular, the __GMP_DECLSPEC occurrences from
+# GMP's longlong.h file must be changed to __MPFR_DECLSPEC when porting
+# this file to MPFR. See:
+#   https://sympa.inria.fr/sympa/arc/mpfr/2018-08/msg00000.html
+#   https://sympa.inria.fr/sympa/arc/mpfr/2018-08/msg00001.html
 err-if-output --msg="Use __MPFR_DECLSPEC instead." -t "__GMP_DECLSPEC" \
   grep --exclude=src/mpfr.h __GMP_DECLSPEC $srctests
 
