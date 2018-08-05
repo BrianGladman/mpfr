@@ -2103,7 +2103,7 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     (q) = __MPN(udiv_w_sdiv) (&__r, nh, nl, d);				\
     (r) = __r;								\
   } while (0)
-__GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
+__MPFR_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
 #endif
 
 /* If udiv_qrnnd was not defined for this processor, use __udiv_qrnnd_c.  */
@@ -2147,7 +2147,7 @@ __GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
 #endif
 
 #ifdef COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-extern const unsigned char __GMP_DECLSPEC __clz_tab[129];
+extern const unsigned char __MPFR_DECLSPEC __clz_tab[129];
 #endif
 
 #if !defined (count_trailing_zeros)
