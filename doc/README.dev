@@ -1136,10 +1136,21 @@ array of bits (e.g. for limbs) and to locally avoid integer overflow.
 
 ===========================================================================
 
-You can use the features related to intmax_t only if _MPFR_H_HAVE_INTMAX_T
-is defined. In such a case, do not use the macros UINTMAX_MAX, INTMAX_MAX
-and INTMAX_MIN directly (because they may make the compilation fail), but
-the MPFR versions: MPFR_UINTMAX_MAX, MPFR_INTMAX_MAX and MPFR_INTMAX_MIN.
+To use the features related to intmax_t, "mpfr-intmax.h" must be included
+before "mpfr-impl.h", to express the need for the largest integer types.
+Then, these features can be used only if _MPFR_H_HAVE_INTMAX_T is defined.
+In such a case, do not use the macros UINTMAX_MAX, INTMAX_MAX and INTMAX_MIN
+directly (because they might make the compilation fail due to bugs in the
+build environment), but the MPFR versions: MPFR_UINTMAX_MAX, MPFR_INTMAX_MAX
+and MPFR_INTMAX_MIN. Whether _MPFR_H_HAVE_INTMAX_T is defined or not, these
+macros and the types mpfr_intmax_t / mpfr_uintmax_t are always defined, and
+they correspond to the latest integer types available (e.g. intmax_t, else
+long long, else long).
+
+It can be assumed that any signed (resp. unsigned) integer type can be
+represented in mpfr_intmax_t (resp. mpfr_uintmax_t).
+
+The corresponding length specifier is MPFR_INTMAX_FSPEC.
 
 ===========================================================================
 
