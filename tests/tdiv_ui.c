@@ -202,7 +202,12 @@ check_inexact (void)
   mpfr_clear (z);
 }
 
-#if GMP_NUMB_BITS == 64
+/* Note the the preprocessor test and the if test in the function are
+   complementary. If the size of an unsigned long is a power of 2 and
+   this type has no padding bits, the test on ULONG_MAX and the if test
+   are equivalent. The preprocessor test can avoid compiler warnings
+   about the large shifts. */
+#if GMP_NUMB_BITS == 64 && ULONG_MAX > 4294967295
 /* With r11140, on a 64-bit machine with GMP_CHECK_RANDOMIZE=1484406128:
    Consistency error for i = 2577
 */
@@ -211,7 +216,7 @@ test_20170105 (void)
 {
   mpfr_t x,z, t;
 
-  if (sizeof (unsigned long) * CHAR_BIT == 64)
+  if (sizeof (unsigned long) * CHAR_BIT >= 64)
     {
       mpfr_init2 (x, 138);
       mpfr_init2 (z, 128);
@@ -524,7 +529,7 @@ main (int argc, char **argv)
   check("1.0", 3, MPFR_RNDD, "3.3333333333333331483e-1");
   check("1.0", 2116118, MPFR_RNDN, "4.7256343927890600483e-7");
   check("1.098612288668109782", 5, MPFR_RNDN, "0.21972245773362195087");
-#if GMP_NUMB_BITS == 64
+#if GMP_NUMB_BITS == 64 && ULONG_MAX > 4294967295
   test_20170105 ();
 #endif
 
