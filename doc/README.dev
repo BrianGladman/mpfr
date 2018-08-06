@@ -583,11 +583,25 @@ included first, because these header files already have the above code.
 ===========================================================================
 
 The GNU Coding standards can be read at:
-  http://www.gnu.org/prep/standards_toc.html
+  https://www.gnu.org/prep/standards/
+
 ISO C Names and corresponding headers:
   http://www.schweikhardt.net/identifiers.html
-Language C:
-  http://www.vmunix.com/~gabor/c/draft.html
+
+The C language:
+  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
+  http://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
+  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
+  http://home.datacomm.ch/t_wolf/tw/c/c9x_changes.html
+
+About undefined behavior:
+  https://blog.regehr.org/archives/213
+  https://blog.regehr.org/archives/226
+  https://blog.regehr.org/archives/232
+  http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html
+
+Type punning, strict aliasing, and optimization:
+  https://blog.regehr.org/archives/959
 
 To allow MPFR to be built on some buggy compiler, try to follow
 theses rules:
