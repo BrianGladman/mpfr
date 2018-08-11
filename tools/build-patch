@@ -85,7 +85,7 @@ if [[ $# -ge 1 ]] then
   fi
   popd
   set +e
-  TZ=UTC diff -Naurd $base-a $base-b > $newpatch
+  TZ=UTC0 diff -Naurd $base-a $base-b > $newpatch
   if [[ $? -ne 1 ]] then
     echo "${prg}: something has gone wrong with diff" >&2
     exit 4

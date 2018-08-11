@@ -85,7 +85,7 @@ For patches from MPFR developers, e.g. for MPFR 3.1.0:
      tools/update-version 3 1 0 p<n> -
    where <n> is the patch number.
 8. In mpfr-3.1.0-b, update PATCHES file: echo >> PATCHES <patch_name>
-9. Make the patch: TZ=UTC diff -Naurd mpfr-3.1.0-a mpfr-3.1.0-b
+9. Make the patch: TZ=UTC0 diff -Naurd mpfr-3.1.0-a mpfr-3.1.0-b
 
 The tools/build-patch script can be used to ease the process.
 
@@ -196,8 +196,8 @@ To make a release (for the MPFR team):
      directory.
      [*] http://lvc.github.io/abi-compliance-checker/
 
-  4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
-     UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+  4) Update the ChangeLog file with "TZ=UTC0 svn log -rHEAD:0 -v" in
+     UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC0 svn log -rHEAD:0 -v".
      Make sure that all the pending commits have been done.
 
   5) Do a "svn export" of the branch to make sure to start from a clean
