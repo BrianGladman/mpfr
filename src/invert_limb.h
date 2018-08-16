@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* umul_hi(h, x, y) puts in h the high part of x*y */
 #ifdef HAVE_MULX_U64
 #include <immintrin.h>
-#define umul_hi(h, x, y) _mulx_u64 (x, y, (unsigned long long *) &h)
+#define umul_hi(h, x, y) _mulx_u64 (x, y, (unsigned long long *) &(h))
 #else
 #define umul_hi(h, x, y)                        \
   do {                                          \
