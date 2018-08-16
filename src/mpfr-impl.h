@@ -1872,16 +1872,18 @@ typedef struct {
    is not used (if the result is larger than MPFR_PREC_MAX, this
    should be detected with a later assertion, e.g. in mpfr_init2).
    But this change is mainly for existing code that has not been
-   updated yet. So, it is advised to always use MPFR_ADD_PREC if
-   the result can be larger than MPFR_PREC_MAX. */
+   updated yet. So, it is advised to always use MPFR_ADD_PREC or
+   MPFR_INC_PREC if the result can be larger than MPFR_PREC_MAX. */
 #define MPFR_ADD_PREC(P,X) \
   (MPFR_ASSERTN ((X) <= MPFR_PREC_MAX - (P)), (P) + (X))
+#define MPFR_INC_PREC(P,X) \
+  (MPFR_ASSERTN ((X) <= MPFR_PREC_MAX - (P)), (P) += (X))
 
 #ifndef MPFR_USE_LOGGING
 
 #define MPFR_ZIV_DECL(_x) mpfr_prec_t _x
 #define MPFR_ZIV_INIT(_x, _p) (_x) = GMP_NUMB_BITS
-#define MPFR_ZIV_NEXT(_x, _p) ((_p) = MPFR_ADD_PREC (_p, _x), (_x) = (_p)/2)
+#define MPFR_ZIV_NEXT(_x, _p) (MPFR_INC_PREC (_p, _x), (_x) = (_p)/2)
 #define MPFR_ZIV_FREE(x)
 
 #else
@@ -1931,7 +1933,7 @@ typedef struct {
 #define MPFR_ZIV_NEXT(_x, _p)                                           \
   do                                                                    \
     {                                                                   \
-      (_p) = MPFR_ADD_PREC (_p, _x);                                    \
+      MPFR_INC_PREC (_p, _x);                                           \
       (_x) = (_p) / 2;                                                  \
       if (mpfr_log_level >= 0)                                          \
         _x ## _bad += (_x ## _cpt == 1);                                \

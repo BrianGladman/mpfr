@@ -87,7 +87,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       p = mpfr_get_ui (z, MPFR_RNDU); /* (n/e/2/pi)^n <= 2^p */
       mpfr_clear (z);
       /* the +14 term ensures no rounding failure up to n=10000 */
-      prec += p + mpz_sizeinbase (den, 2) + 14;
+      MPFR_INC_PREC (prec, p + mpz_sizeinbase (den, 2) + 14);
     }
 
  try_again:
@@ -194,7 +194,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
 
   if (!ok)
     {
-      prec += prec / 10;
+      MPFR_INC_PREC (prec, prec / 10);
       goto try_again;
     }
 
