@@ -1474,15 +1474,15 @@ do {                                                                  \
 #define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
 
 /* Store in r the size in bits of the mpz_t z */
-#define MPFR_MPZ_SIZEINBASE2(r, z)              \
-  do {                                          \
-   int _cnt;                                    \
-   mp_size_t _size;                             \
-   MPFR_ASSERTD (mpz_sgn (z) != 0);             \
-   _size = ABSIZ(z);                            \
-   MPFR_ASSERTD (_size >= 1);                   \
-   count_leading_zeros (_cnt, PTR(z)[_size-1]); \
-   (r) = _size * GMP_NUMB_BITS - _cnt;          \
+#define MPFR_MPZ_SIZEINBASE2(r, z)                      \
+  do {                                                  \
+    int _cnt;                                           \
+    mp_size_t _size;                                    \
+    MPFR_ASSERTD (mpz_sgn (z) != 0);                    \
+    _size = ABSIZ(z);                                   \
+    MPFR_ASSERTD (_size >= 1);                          \
+    count_leading_zeros (_cnt, PTR(z)[_size-1]);        \
+    (r) = (mp_bitcnt_t) _size * GMP_NUMB_BITS - _cnt;   \
   } while (0)
 
 /* MPFR_LCONV_DPTS can also be forced to 0 or 1 by the user. */
