@@ -405,13 +405,13 @@ mpfr_sqr_3 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, mpfr_prec_t p)
     sb = sb2 = 1; /* result cannot be exact in that case */
   else
     {
-      mp_limb_t p[6];
-      mpn_sqr (p, bp, 3);
-      a2 = p[5];
-      a1 = p[4];
-      a0 = p[3];
-      sb = p[2];
-      sb2 = p[1] | p[0];
+      mp_limb_t t[6];
+      mpn_sqr (t, bp, 3);
+      a2 = t[5];
+      a1 = t[4];
+      a0 = t[3];
+      sb = t[2];
+      sb2 = t[1] | t[0];
     }
   if (a2 < MPFR_LIMB_HIGHBIT)
     {
