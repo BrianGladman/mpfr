@@ -248,7 +248,7 @@ mpfr_round_raw_generic(
 #else
               carry = mpn_add_1(yp, xp + xsize - nw, nw,
                                 rw ? MPFR_LIMB_ONE << (GMP_NUMB_BITS - rw)
-                                : 1);
+                                : MPFR_LIMB_ONE);
               yp[0] &= himask;
               return carry;
 #endif
