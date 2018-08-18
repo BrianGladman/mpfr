@@ -165,6 +165,10 @@ tests_allocate (size_t size)
   return h->ptr;
 }
 
+/* Note: the double cast (mpfr_uintmax_t) (uintptr_t) below allows to avoid a
+   pointer-to-int-cast warning with GCC. The AC_TYPE_UINTPTR_T Autoconf macro
+   must be used to define uintptr_t if not available. */
+
 void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 {
@@ -176,7 +180,7 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
     {
       fprintf (stderr, "[MPFR] tests_reallocate(): "
                "attempt to reallocate 0x%" MPFR_INTMAX_FSPEC "X to 0 bytes\n",
-              (mpfr_uintmax_t) ptr);
+               (mpfr_uintmax_t) (uintptr_t) ptr);
       abort ();
     }
 
@@ -185,7 +189,7 @@ tests_reallocate (void *ptr, size_t old_size, size_t new_size)
     {
       fprintf (stderr, "[MPFR] tests_reallocate(): "
                "attempt to reallocate bad pointer 0x%" MPFR_INTMAX_FSPEC "X\n",
-              (mpfr_uintmax_t) ptr);
+              (mpfr_uintmax_t) (uintptr_t) ptr);
       abort ();
     }
   h = *hp;
@@ -220,7 +224,7 @@ tests_free_find (void *ptr)
     {
       fprintf (stderr, "[MPFR] tests_free(): "
                "attempt to free bad pointer 0x%" MPFR_INTMAX_FSPEC "X\n",
-              (mpfr_uintmax_t) ptr);
+              (mpfr_uintmax_t) (uintptr_t) ptr);
       abort ();
     }
   return hp;

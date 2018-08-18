@@ -69,6 +69,9 @@ AC_CHECK_MEMBERS([struct lconv.decimal_point, struct lconv.thousands_sep],,,
 dnl Check how to get `alloca'
 AC_FUNC_ALLOCA
 
+dnl Define uintptr_t if not available.
+AC_TYPE_UINTPTR_T
+
 dnl va_copy macro
 AC_MSG_CHECKING([how to copy va_list])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
