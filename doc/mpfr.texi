@@ -847,7 +847,7 @@ as a tuple in the extended real numbers (the set of the real numbers
 with both infinities).
 
 When the input point is in the domain of the mathematical function, the
-result is rounded as described in Section ``Rounding'' (but see
+result is rounded as described in @ref{Rounding} (but see
 below for the specification of the sign of an exact zero). Otherwise
 the general rules from this section apply unless stated otherwise in
 the description of the MPFR function (@ref{MPFR Interface}).
