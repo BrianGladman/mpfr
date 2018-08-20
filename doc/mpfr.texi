@@ -539,7 +539,7 @@ the language needs to be improved, please send a note to the same address.
 * Headers and Libraries::
 * Nomenclature and Types::
 * MPFR Variable Conventions::
-* Rounding Modes::
+* Rounding::
 * Floating-Point Values on Special Numbers::
 * Exceptions::
 * Memory Handling::
@@ -702,7 +702,7 @@ to a subset of this type, and the exponent range can be changed globally
 as described in @ref{Exception Related Functions}. Special values do not
 have an exponent.
 
-@cindex Rounding Modes
+@cindex Rounding
 @tindex @code{mpfr_rnd_t}
 The @dfn{rounding mode} specifies the way to round the result of a
 floating-point operation, in case the exact result can not be represented
@@ -715,7 +715,7 @@ MPFR has a global (or per-thread) flag for each supported exception and
 provides operations on flags (@ref{Exceptions}). This C data type is used
 to represent a group of flags (or a mask).
 
-@node MPFR Variable Conventions, Rounding Modes, Nomenclature and Types, MPFR Basics
+@node MPFR Variable Conventions, Rounding, Nomenclature and Types, MPFR Basics
 @comment  node-name,  next,  previous,  up
 @section MPFR Variable Conventions
 
@@ -743,9 +743,9 @@ expression.  For example, the main function for floating-point multiplication,
 This computes the square of @var{x} with rounding mode @code{rnd}
 and puts the result back in @var{x}.
 
-@node Rounding Modes, Floating-Point Values on Special Numbers, MPFR Variable Conventions, MPFR Basics
+@node Rounding, Floating-Point Values on Special Numbers, MPFR Variable Conventions, MPFR Basics
 @comment  node-name,  next,  previous,  up
-@section Rounding Modes
+@section Rounding
 
 The following rounding modes are supported:
 @itemize @bullet
@@ -829,7 +829,7 @@ Unless documented otherwise, functions returning as result the value @code{1}
 for special cases (like @code{acos(0)}) yield an overflow or
 an underflow if that value is not representable in the current exponent range.
 
-@node Floating-Point Values on Special Numbers, Exceptions, Rounding Modes, MPFR Basics
+@node Floating-Point Values on Special Numbers, Exceptions, Rounding, MPFR Basics
 @comment  node-name,  next,  previous,  up
 @section Floating-Point Values on Special Numbers
 
@@ -847,7 +847,7 @@ as a tuple in the extended real numbers (the set of the real numbers
 with both infinities).
 
 When the input point is in the domain of the mathematical function, the
-result is rounded as described in Section ``Rounding Modes'' (but see
+result is rounded as described in Section ``Rounding'' (but see
 below for the specification of the sign of an exact zero). Otherwise
 the general rules from this section apply unless stated otherwise in
 the description of the MPFR function (@ref{MPFR Interface}).
