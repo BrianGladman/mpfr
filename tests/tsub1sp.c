@@ -370,7 +370,8 @@ bug20180217 (mpfr_prec_t pmax)
     }
 }
 
-/* bug in revision 12985 with tlog and GMP_CHECK_RANDOMIZE=1534111552615050 */
+/* bug in revision 12985 with tlog and GMP_CHECK_RANDOMIZE=1534111552615050
+   (introduced in revision 12242, does not affect the 4.0 branch) */
 static void
 bug20180813 (void)
 {
