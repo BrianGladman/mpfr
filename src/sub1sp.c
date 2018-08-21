@@ -1661,15 +1661,25 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           /* We don't have anymore a valid Cp+1!
              But since B-C >= 2^p+1, the final sub can't unnormalize */
         }
-      /* if {ap, n} is a power of 2 and rb <> 0, we can subtract 1 */
-      else if (rb && MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == MPFR_LIMB_HIGHBIT
-                                   && mpfr_powerof2_raw (a)))
+      /* special case if {ap, n} is a power of 2, since rb/sb correspond to
+         negative values, thus we have to consider rbb and sbb instead */
+      else if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == MPFR_LIMB_HIGHBIT
+                             && mpfr_powerof2_raw (a)))
         {
-          mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
-          ap[n-1] |= MPFR_LIMB_HIGHBIT;
-          bx--;
-          rb = rbb;
-          sb = sbb;
+          if (rb) /* we can already subtract 1 */
+            {
+              mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
+              ap[n-1] |= MPFR_LIMB_HIGHBIT;
+              bx--;
+              rb = rbb;
+            }
+          else /* case rb = 0: we set rb to rbb to force the 'next_below'
+                  branch when rbb != 0 and sbb != 0 */
+            {
+              rb = rbb;
+              rbb = 0;
+            }
+            sb = sbb;
         }
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
@@ -1678,9 +1688,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         goto truncate;
       else if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
-          if (rb == 0)
+          if (rb == 0) /* we have to subtract less than 1/2 ulp */
             goto truncate;
           else if (sb != 0 || (ap[0] & (MPFR_LIMB_ONE << sh)) != 0)
+            /* rb = 1 here: if sb != 0 we have to subtract more than 1/2 ulp,
+               likewise if sb = 0 and the significand is odd */
             goto next_below;
           else /* rb = 1, sb = 0, even rule */
             goto truncate;
@@ -1723,7 +1735,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
          we need one more bit! */
       MPFR_ASSERTD(rbb != MPFR_LIMB_MAX);
       if ((rnd_mode == MPFR_RNDZ && rb == 0) ||               /* case 2b */
-          (rnd_mode == MPFR_RNDN && rb == 0 && rbb != 0 && sb != 0) || /* case 2e */
+          /* note for the following line: even if rb=0, rbb<>0 and sb=0,
+             we round to 111...111 */
+          (rnd_mode == MPFR_RNDN && rb == 0 && rbb != 0) ||   /* case 2e */
           (rnd_mode == MPFR_RNDN && rb != 0 && rbb == 0) ||   /* case 2h */
           (rnd_mode == MPFR_RNDA && rb != 0) ||               /* case 2c' */
           (rb != 0 && sb == 0))                               /* exact */
