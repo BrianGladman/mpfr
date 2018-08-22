@@ -1817,7 +1817,6 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Calcul of Inexact flag.*/
   inexact = (rb != 0 || sb != 0);
 
  end_of_sub:
