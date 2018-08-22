@@ -152,15 +152,13 @@ the maximal possible difference between $x$ and $y$ is $\frac{1}{2} \ulp(y)
 $\frac{1}{2} |a| \cdot \ulp(b) < \ulp(a b) < 2 |a| \cdot \ulp(b)$.
 \end{Rule}
 \begin{proof}
-Write $a = m_a 2^{e_a}$, $b = m_b \cdot 2^{e_b}$, and $a b = m 2^e$
-with $\frac{1}{2} \le m_a, m_b, m < 1$,
-then $\frac{1}{4} 2^{e_a+e_b} \le |a b| < 2^{e_a+e_b}$,
-thus $e = e_a + e_b$ or $e = e_a + e_b - 1$, which implies
-$\frac{1}{2} 2^{e_a} \ulp(b) \le \ulp(a b) \le 2^{e_a} \ulp(b)$
-using $2^{e_b-n} = \ulp(b)$, and the rule follows from
-the fact that $|a| < 2^{e_a} \le 2|a|$ (equality on the right side can
-occur only if $e = e_a + e_b$ and $m_a = \frac{1}{2}$, which are
-incompatible).
+Let $e$ be the exponent of $a$, i.e., $2^{e-1} \leq |a| < 2^e$. Then
+$\frac{1}{2} |a| \cdot \ulp(b) < \frac{1}{2} 2^e \cdot \ulp(b) =
+\ulp(2^{e-1} b) \leq \ulp(a b)$.
+The other inequality is actually equivalent: replace $a$ by $\frac{1}{a}$
+and $b$ by $ab$.
+% Note: it is also possible to prove the right inequality directly by
+% taking $2^{k-1} < |a| \leq 2^k$.
 \end{proof}
 
 \begin{Rule} \label{R5}
