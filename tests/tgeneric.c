@@ -91,11 +91,15 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     }                                                                   \
   while (0)
 
+#if TEST_FLAGS
 #define TGENERIC_CHECK_AUX(S, EXPR, U)                          \
   do                                                            \
     if (!(EXPR))                                                \
       TGENERIC_FAIL (S " for " MAKE_STR(TEST_FUNCTION), x, U);  \
   while (0)
+#else
+#define TGENERIC_CHECK_AUX(S, EXPR, U)
+#endif
 
 #undef TGENERIC_CHECK
 #if defined(TWO_ARGS_ALL)

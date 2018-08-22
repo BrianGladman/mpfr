@@ -37,6 +37,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* if TEST_FLAGS is 0, flags are not tested (debug use only) */
+#define TEST_FLAGS 1
+
 #define STRINGIZE(S) #S
 #define MAKE_STR(S) STRINGIZE(S)
 
