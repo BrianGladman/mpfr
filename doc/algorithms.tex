@@ -149,6 +149,13 @@ the maximal possible difference between $x$ and $y$ is $\frac{1}{2} \ulp(y)
 \end{proof}
 
 \begin{Rule} \label{R4}
+$\ulp(2^k a) = 2^k \ulp(a)$.
+\end{Rule}
+\begin{proof}
+Easy: if $a = m_a \cdot 2^{e_a}$, then $2^k a = m_a \cdot 2^{e_a+k}$.
+\end{proof}
+
+\begin{Rule} \label{R5}
 $\frac{1}{2} |a| \cdot \ulp(b) < \ulp(a b) < 2 |a| \cdot \ulp(b)$.
 \end{Rule}
 \begin{proof}
@@ -159,13 +166,6 @@ The other inequality is actually equivalent: replace $a$ by $\frac{1}{a}$
 and $b$ by $ab$.
 % Note: it is also possible to prove the right inequality directly by
 % taking $2^{k-1} < |a| \leq 2^k$.
-\end{proof}
-
-\begin{Rule} \label{R5}
-$\ulp(2^k a) = 2^k \ulp(a)$.
-\end{Rule}
-\begin{proof}
-Easy: if $a = m_a \cdot 2^{e_a}$, then $2^k a = m_a \cdot 2^{e_a+k}$.
 \end{proof}
 
 \begin{Rule} \label{R6}
@@ -182,7 +182,7 @@ $\frac{1}{2} u < x$.
 $\frac{1}{2} |a| \cdot \ulp(1) < \ulp(a) \leq |a| \cdot \ulp(1)$.
 \end{Rule}
 \begin{proof}
-The left inequality comes from Rule~\ref{R4} with $b=1$,
+The left inequality comes from Rule~\ref{R5} with $b=1$,
 and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-n} =\ulp(a)$.
 \end{proof}
 
@@ -297,7 +297,7 @@ w&=&\circ(uv) \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
-& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(uv) + (1+c_v^+) k_u \ulp(uv) \U{R4}\\\nonumber
+& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(uv) + (1+c_v^+) k_u \ulp(uv) \U{R5}\\\nonumber
 & \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -326,7 +326,7 @@ w&=&\circ(\frac{1}{u}) \\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
-& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
+& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R5}\\\nonumber
 & \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -350,7 +350,7 @@ w&=&\circ(\frac{u}{v}) \\\nonumber
 &   =  & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R4}\\\nonumber
+\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R5}\\\nonumber
 && 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -361,7 +361,7 @@ w&=&\circ(\frac{u}{v}) \\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
-& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
+& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R5}\\\nonumber
 & \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -398,7 +398,7 @@ it follows $\frac{1}{\sqrt{x}+\sqrt{u}} \leq
 \error(v)& \leq & c_v \ulp(v) +
                  \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber
 & \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}
-       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber
+       k_u \ulp(\sqrt{u}) \;\; \U{R5}\\\nonumber
 & \leq & (c_v + \frac{2k_u}{1+\sqrt{c_u^-}})  \ulp(v). \;\; \U{R8}\\\nonumber
 \end{eqnarray}
 If $u$ is less than $x$, we have $c_u^-=1$ and
@@ -421,7 +421,7 @@ v&=&\circ(e^{u}) \\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
-& \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R4}\\\nonumber
+& \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R5}\\\nonumber
 & \leq & (c_v +  2 c_u^* u k_u )\ulp(v) \;\U{R8}\\\nonumber
 & \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
 \end{eqnarray}
@@ -1382,7 +1382,7 @@ $u$ to $-\infty \;\; (\bullet)$
 
 $(\star\star)$
 
-From inequation \U{R4},
+From inequation \U{R5},
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
 if $a =\frac{1}{u^2},\;b = u$ then
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
@@ -1599,7 +1599,7 @@ it is possible with $u=\minf(e^x)$ $(\bullet)$
 
 $(\star\star)$
 
-From inequation \U{R4},
+From inequation \U{R5},
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
 if $a =\frac{1}{u^2},\;b = u$ then
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
@@ -2893,7 +2893,7 @@ $v \leftarrow \pinf(y \times u) $
 \begin{minipage}{6cm}
 ($\star$)
 
-with \U{R4}
+with \U{R5}
 
 ($\star$)
 
