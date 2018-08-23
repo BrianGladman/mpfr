@@ -426,6 +426,14 @@ main (void)
 #endif
           );
 
+  (puts) ("[tversion] Enable formally proven code: "
+#if defined(MPFR_WANT_PROVEN_CODE)
+          "yes"
+#else
+          "no"
+#endif
+          );
+
   /************************* Run-time information **************************/
 
   if (locale != NULL)
