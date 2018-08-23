@@ -409,7 +409,7 @@ AC_ARG_ENABLE(formally-proven-code,
                           use formally proven code when available
                           (needs a C99 compiler) [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([WANT_PROVEN_CODE],1,[Want formally proven code]) ;;
+      yes) AC_DEFINE([MPFR_WANT_PROVEN_CODE],1,[Want formally proven code]) ;;
       no)  ;;
       *) AC_MSG_ERROR([bad value for --enable-formally-proven-code: yes or no]) ;;
      esac])
