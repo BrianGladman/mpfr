@@ -104,7 +104,10 @@ fi
 
 # Note: In the source, ignore everything related to mini-gmp.
 srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
-#srctests=(`find src tests -name '*.[ch]' ! -name '*mini-gmp.*'`)
+
+# Among C files, ignore extracted files (proven code).
+c_src=(src/*.c~src/*_extracted.c)
+c_srctests=($c_src tests/*.c)
 
 # Detect the definition of reserved macro names.
 #
@@ -208,7 +211,7 @@ err-if-output --msg="Use mpfr_limb_ptr and mpfr_limb_srcptr instead." \
 
 # Do not use __mpfr_struct structure members in .c files.
 err-if-output -t "__mpfr_struct members" \
-  grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' {src,tests}/*.c
+  grep -E '[^0-9a-z_]_mpfr_(prec|sign|exp|d)' $c_srctests
 
 # Detect some uses of "x != x" and "x == x". If this occurs in source code,
 # x is probably a native FP number (otherwise the test is useless), but in
@@ -329,7 +332,7 @@ grep -E 'mpfr_set_(inf|zero) *\([^,]*, *[-+]?([02-9]|1[^)])' $srctests | \
 
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
-for file in src/*.c
+for file in $c_src
 do
   [[ "$file" == src/(jyn_asympt|mini-gmp|round_raw_generic).c ]] || \
     grep -q '^# *include *"\(mpfr-impl\|fits.*\|gen_inverse\|random_deviate\)\.h"' $file || \
