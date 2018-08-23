@@ -109,7 +109,8 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #if !defined(MPFR_GENERIC_ABI)
 
-#ifdef WANT_PROVEN_CODE
+#if defined(WANT_PROVEN_CODE) && GMP_NUMB_BITS == 64 && \
+  MPFR_PREC_BITS == 32 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
 
 #include "add1sp1_extracted.c"
 

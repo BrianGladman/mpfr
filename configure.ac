@@ -404,10 +404,6 @@ AC_ARG_ENABLE(lto,
       *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
      esac])
 
-dnl FIXME: add checks for the type sizes since the extracted code assumes
-dnl that mpfr_prec_t is uint32_t (though mpfr_prec_t is signed), mpfr_exp_t
-dnl is int32_t and mp_limb_t is uint64_t. For instance, many tests fail
-dnl with -m32.
 AC_ARG_ENABLE(formally-proven-code,
    [  --enable-formally-proven-code
                           use formally proven code when available
