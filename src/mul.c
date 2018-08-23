@@ -217,7 +217,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #if !defined(MPFR_GENERIC_ABI)
 
-#if defined(WANT_PROVEN_CODE) && GMP_NUMB_BITS == 64 && \
+/* Disabled for now since the mul_1_extracted.c is not formally proven yet.
+   Once it is proven, replace WANT_PROVEN_CODExxx by WANT_PROVEN_CODE. */
+#if defined(WANT_PROVEN_CODExxx) && GMP_NUMB_BITS == 64 && \
   MPFR_PREC_BITS == 32 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
 
 #include "mul_1_extracted.c"
