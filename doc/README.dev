@@ -495,6 +495,9 @@ Format of long double.
                         for low precision, meaning that without this macro,
                         the generic code would not sufficiently be tested.
 
++ MPFR_WANT_PROVEN_CODE:
+                        Define to enable formally proven code.
+
 List of macros used for checking MPFR:
 
 + MPFR_HAVE_FESETROUND: Define if the function fesetround() is available
