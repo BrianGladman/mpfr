@@ -404,6 +404,14 @@ AC_ARG_ENABLE(lto,
       *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
      esac])
 
+AC_ARG_ENABLE(formally-proven-code,
+   [  --enable-formally-proven-code use formally proven code when available [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([WANT_PROVEN_CODE],1,[Want formally proven code]) ;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-formally-proven-code: yes or no]) ;;
+     esac])
+
 dnl Warning: This test is *only* for CFLAGS settings.
 dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
 dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).

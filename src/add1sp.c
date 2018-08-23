@@ -109,6 +109,12 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #if !defined(MPFR_GENERIC_ABI)
 
+#ifdef WANT_PROVEN_CODE
+
+#include "add1sp1_extracted.c"
+
+#else
+
 /* same as mpfr_add1sp, but for p < GMP_NUMB_BITS */
 static int
 mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
@@ -235,6 +241,8 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       MPFR_RET(MPFR_SIGN(a));
     }
 }
+
+#endif /* WANT_PROVEN_CODE */
 
 /* same as mpfr_add1sp, but for p = GMP_NUMB_BITS */
 static int

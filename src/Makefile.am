@@ -10,6 +10,7 @@
 
 
 EXTRA_DIST = round_raw_generic.c jyn_asympt.c				\
+	add1sp1_extracted.c mul_1_extracted.c				\
 	amd/mparam.h arm/mparam.h					\
 	generic/coverage/mparam.h generic/mparam.h			\
 	mips/mparam.h powerpc64/mparam.h sparc64/mparam.h		\

@@ -217,6 +217,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #if !defined(MPFR_GENERIC_ABI)
 
+#ifdef WANT_PROVEN_CODE
+
+#include "mul_1_extracted.c"
+
+#else
+
 /* Special code for prec(a) < GMP_NUMB_BITS and
    prec(b), prec(c) <= GMP_NUMB_BITS.
    Note: this code was copied in sqr.c, function mpfr_sqr_1 (this saves a few cycles
@@ -318,6 +324,8 @@ mpfr_mul_1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       MPFR_RET(MPFR_SIGN(a));
     }
 }
+
+#endif /* WANT_PROVEN_CODE */
 
 /* Special code for prec(a) = GMP_NUMB_BITS and
    prec(b), prec(c) <= GMP_NUMB_BITS. */

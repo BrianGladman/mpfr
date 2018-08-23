@@ -4410,8 +4410,10 @@ The MPFR-MPC workshop in June 2012 was partly supported by the ERC
 grant ANTICS of Andreas Enge.
 The MPFR-MPC workshop in January 2013 was partly supported by the ERC
 grant ANTICS, the GDR IM and the Caramel project-team, during which
-Mickaël Gastineau contributed the MPFRbench program, and
-Fredrik Johansson a faster version of @code{mpfr_const_euler}.
+Mickaël Gastineau contributed the MPFRbench program,
+Fredrik Johansson a faster version of @code{mpfr_const_euler},
+and Jianyang Pan a formally proven version of the @code{mpfr_add1sp1} and
+@code{mpfr_mul_1} internal routines.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
