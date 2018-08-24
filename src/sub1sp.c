@@ -1584,6 +1584,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         /* the round bit is in tp[kx], at position sx */
         MPFR_ASSERTD(p >= d);
         rb = tp[kx] & (MPFR_LIMB_ONE << sx);
+
         /* Now compute rbb: since d >= 2 it always exists in C */
         if (sx == 0) /* rbb is in the next limb */
           {
@@ -1593,17 +1594,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         else
           sx --; /* rb and rbb are in the same limb */
         rbb = tp[kx] & (MPFR_LIMB_ONE << sx);
-        /* Look at the last bits of limb kx (If sx=0, does nothing)*/
-        if (tp[kx] & MPFR_LIMB_MASK(sx))
-          sbb = 1;
-        else
-          {
-            /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
-            do
-              kx--;
-            while (kx >= 0 && tp[kx] == 0);
-            sbb = kx >= 0;
-          }
+
+        /* Now look at the remaining low bits of C to determine sbb */
+        sbb = tp[kx] & MPFR_LIMB_MASK(sx);
+        while (sbb == 0 && kx > 0)
+          sbb = tp[--kx];
       }
       /* printf("sh=%lu Cp=%d C'p+1=%d\n", sh, rb!=0, sb!=0); */
 
