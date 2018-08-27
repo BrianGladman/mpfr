@@ -1214,6 +1214,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   d = (mpfr_uexp_t) bx - cx;
   /* printf ("New with diff=%lu\n", (unsigned long) d); */
 
+  /* FIXME: The goto's below are too complex (long backward) and make
+     the code unreadable. */
+
   if (d == 0)
     {
       /* <-- b -->
