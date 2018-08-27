@@ -110,7 +110,12 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #if !defined(MPFR_GENERIC_ABI)
 
 #if defined(MPFR_WANT_PROVEN_CODE) && GMP_NUMB_BITS == 64 && \
-  MPFR_PREC_BITS == 64 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+  UINT_MAX == 0xffffffff && MPFR_PREC_BITS == 64 && \
+  _MPFR_PREC_FORMAT == 3 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+
+/* The code assumes that mp_limb_t has 64 bits exactly, unsigned int
+   has 32 bits exactly, mpfr_prec_t and mpfr_exp_t are of type long,
+   which has 64 bits exactly. */
 
 #include "add1sp1_extracted.c"
 

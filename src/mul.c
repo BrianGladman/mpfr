@@ -220,7 +220,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 /* Disabled for now since the mul_1_extracted.c is not formally proven yet.
    Once it is proven, replace MPFR_WANT_PROVEN_CODExxx by MPFR_WANT_PROVEN_CODE. */
 #if defined(MPFR_WANT_PROVEN_CODExxx) && GMP_NUMB_BITS == 64 && \
-  MPFR_PREC_BITS == 64 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+  UINT_MAX == 0xffffffff && MPFR_PREC_BITS == 64 && \
+  _MPFR_PREC_FORMAT == 3 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+
+/* The code assumes that mp_limb_t has 64 bits exactly, unsigned int
+   has 32 bits exactly, mpfr_prec_t and mpfr_exp_t are of type long,
+   which has 64 bits exactly. */
 
 #include "mul_1_extracted.c"
 
