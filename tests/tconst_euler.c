@@ -33,6 +33,22 @@ my_const_euler (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 #define TEST_FUNCTION my_const_euler
 #include "tgeneric.c"
 
+static void
+exercise_Ziv (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 177);
+  mpfr_init2 (y, 177);
+  inex = mpfr_const_euler (x, MPFR_RNDN);
+  mpfr_set_str_binary (y, "0.10010011110001000110011111100011011111011011000011000111101001001101000110111110001111111000000100000001010100101100101101010110101000011100111011001100001110101111011001011101");
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+  MPFR_ASSERTN(inex > 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -53,6 +69,8 @@ main (int argc, char *argv[])
       mpfr_clear (gamma);
       return 0;
     }
+
+  exercise_Ziv ();
 
   mpfr_init (y);
   mpfr_init (z);

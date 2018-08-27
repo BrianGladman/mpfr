@@ -192,7 +192,7 @@ mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
   MPFR_ZIV_DECL (loop);
 
   prec = mpfr_get_prec (x);
-  wp = prec + 24;
+  wp = prec + MPFR_INT_CEIL_LOG2 (prec) + 5;
 
   mpfr_init2 (y, wp);
   mpfr_const_euler_bs_init (sum);
