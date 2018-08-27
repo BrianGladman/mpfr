@@ -33,6 +33,22 @@ my_const_catalan (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 #define TEST_FUNCTION my_const_catalan
 #include "tgeneric.c"
 
+static void
+exercise_Ziv (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 175);
+  mpfr_init2 (y, 175);
+  inex = mpfr_const_catalan (x, MPFR_RNDN);
+  mpfr_set_str_binary (y, "0.1110101001111100101110001001111101000000100110101110100001000101001000010101100000100010111000110111110100110010110100001100011000111110110001000011111000010011100000011100001");
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+  MPFR_ASSERTN(inex < 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -40,6 +56,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  exercise_Ziv ();
   mpfr_init2 (x, 32);
   (mpfr_const_catalan) (x, MPFR_RNDN);
   mpfr_mul_2ui (x, x, 32, MPFR_RNDN);
