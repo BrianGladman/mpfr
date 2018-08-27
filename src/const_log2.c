@@ -57,15 +57,12 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
           mpz_set_ui (P[0], n1);
           mpz_neg (P[0], P[0]);
         }
-      if (n1 <= (ULONG_MAX / 4 - 1) / 2)
-        mpz_set_ui (Q[0], 4 * (2 * n1 + 1));
-      else /* to avoid overflow in 4 * (2 * n1 + 1) */
-        {
-          mpz_set_ui (Q[0], n1);
-          mpz_mul_2exp (Q[0], Q[0], 1);
-          mpz_add_ui (Q[0], Q[0], 1);
-          mpz_mul_2exp (Q[0], Q[0], 2);
-        }
+      /* since n1 <= N, where N is the value from mpfr_const_log2_internal(),
+         and N = w / 3 + 1, where w <= PREC_MAX <= ULONG_MAX, then
+         N <= floor(ULONG_MAX/3) + 1, thus 2*N+1 <= ULONG_MAX */
+      MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MAX <= ULONG_MAX);
+      mpz_set_ui (Q[0], 2 * n1 + 1);
+      mpz_mul_2exp (Q[0], Q[0], 2);
       mpz_set (T[0], P[0]);
     }
   else
@@ -134,9 +131,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, w);
   for (;;)
     {
-      N = w / 3 + 1; /* Warning: do not change that (even increasing N!)
-                        without checking correct rounding in the above
-                        ranges for n. */
+      N = w / 3 + 1;
 
       /* the following are needed for error analysis (see algorithms.tex) */
       MPFR_ASSERTD(w >= 3 && N >= 2);
