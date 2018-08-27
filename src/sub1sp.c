@@ -1599,8 +1599,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           rb = rbb;
           sb = sbb;
         }
+      /* Warning: for p=1, the significand is always odd: the "even" rule
+         rounds to the value with largest magnitude, thus we have to check
+         that case separately */
       if (rb == 0 ||
-          (rb != 0 && sb == 0 && (ap[0] & (MPFR_LIMB_ONE << sh)) == 0))
+          (rb != 0 && sb == 0 &&
+           ((ap[0] & (MPFR_LIMB_ONE << sh)) == 0 || p == 1)))
         inexact = 1; /* round to a and return 1 */
       else /* round to pred(a) and return -1 */
         {
