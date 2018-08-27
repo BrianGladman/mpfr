@@ -1292,7 +1292,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         {
           /* | <-- b -->
              |  <-- c --> */
-          mp_limb_t c0, mask, *tp;
+          mp_limb_t c0, mask;
           MPFR_UNSIGNED_MINUS_MODULO(sh, p);
           /* If we lose at least one bit, compute 2*b-c (Exact)
            * else compute b-c/2 */
@@ -1307,6 +1307,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              below necessarily yield a > 1/2*W^n. */
           if (limb > MPFR_LIMB_HIGHBIT) /* case limb > W/2 */
             {
+              mp_limb_t *tp;
               /* The exponent cannot decrease: compute b-c/2 */
               /* Shift c in the allocated temporary block */
             SubD1NoLose:
@@ -1499,15 +1500,15 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Compute rb=Cp and sb=C'p+1 */
       {
         /* Compute rb and rbb from C */
-        tp = MPFR_MANT(c);
+        mp_limb_t *cp = MPFR_MANT(c);
         /* The round bit is bit p-d in C, assuming the most significant bit
            of C is bit 0 */
         mpfr_prec_t  x = p - d;
         mp_size_t   kx = n - 1 - (x / GMP_NUMB_BITS);
         mpfr_prec_t sx = GMP_NUMB_BITS - 1 - (x % GMP_NUMB_BITS);
-        /* the round bit is in tp[kx], at position sx */
+        /* the round bit is in cp[kx], at position sx */
         MPFR_ASSERTD(p >= d);
-        rb = tp[kx] & (MPFR_LIMB_ONE << sx);
+        rb = cp[kx] & (MPFR_LIMB_ONE << sx);
 
         /* Now compute rbb: since d >= 2 it always exists in C */
         if (sx == 0) /* rbb is in the next limb */
@@ -1517,12 +1518,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           }
         else
           sx --; /* rb and rbb are in the same limb */
-        rbb = tp[kx] & (MPFR_LIMB_ONE << sx);
+        rbb = cp[kx] & (MPFR_LIMB_ONE << sx);
 
         /* Now look at the remaining low bits of C to determine sbb */
-        sbb = tp[kx] & MPFR_LIMB_MASK(sx);
+        sbb = cp[kx] & MPFR_LIMB_MASK(sx);
         while (sbb == 0 && kx > 0)
-          sbb = tp[--kx];
+          sbb = cp[--kx];
       }
       /* printf("sh=%lu Cp=%d C'p+1=%d\n", sh, rb!=0, sb!=0); */
 
