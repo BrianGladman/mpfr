@@ -1491,6 +1491,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_rshift (tp, cp + m, n - m, dm);
           MPN_ZERO (tp + n - m, m);
         }
+      /* FIXME: Instead of doing "cp = tp;", keep using tp to avoid
+         confusion? Thus in the block below, we don't need
+         "mp_limb_t *cp = MPFR_MANT(c);". In short, cp should always
+         be MPFR_MANT(c) defined earlier, possibly after the swap. */
       cp = tp;
 
       /* mpfr_print_mant_binary("Before", MPFR_MANT(c), p); */
