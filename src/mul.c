@@ -220,7 +220,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 /* Disabled for now since the mul_1_extracted.c is not formally proven yet.
    Once it is proven, replace MPFR_WANT_PROVEN_CODExxx by MPFR_WANT_PROVEN_CODE. */
 #if defined(MPFR_WANT_PROVEN_CODExxx) && GMP_NUMB_BITS == 64 && \
-  MPFR_PREC_BITS == 32 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+  MPFR_PREC_BITS == 64 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
 
 #include "mul_1_extracted.c"
 

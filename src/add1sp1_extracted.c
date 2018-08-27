@@ -22,39 +22,39 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define uint32_t mpfr_prec_t
-#define int32_t mpfr_exp_t
+#define int64_t long
+#define uint32_t unsigned int
 #define uint64_t mp_limb_t
 
 typedef struct MPFR_Add1sp1_state_s
 {
-  uint32_t sh;
-  int32_t bx;
+  int64_t sh;
+  int64_t bx;
   uint64_t rb;
   uint64_t sb;
 }
 MPFR_Add1sp1_state;
 
 static MPFR_Add1sp1_state
-MPFR_Add1sp1_mk_state(uint32_t sh, int32_t bx, uint64_t rb, uint64_t sb)
+MPFR_Add1sp1_mk_state(int64_t sh, int64_t bx, uint64_t rb, uint64_t sb)
 {
   return ((MPFR_Add1sp1_state){ .sh = sh, .bx = bx, .rb = rb, .sb = sb });
 }
 
-typedef struct K___uint64_t_int32_t_s
+typedef struct K___uint64_t_int64_t_s
 {
   uint64_t fst;
-  int32_t snd;
+  int64_t snd;
 }
-K___uint64_t_int32_t;
+K___uint64_t_int64_t;
 
-typedef struct K___uint64_t_uint64_t_int32_t_s
+typedef struct K___uint64_t_uint64_t_int64_t_s
 {
   uint64_t fst;
   uint64_t snd;
-  int32_t thd;
+  int64_t thd;
 }
-K___uint64_t_uint64_t_int32_t;
+K___uint64_t_uint64_t_int64_t;
 
 #define MPFR_Lib_mpfr_struct __mpfr_struct
 #define MPFR_Lib_mpfr_RET(I) ((I) != 0 ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0)
@@ -77,9 +77,9 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   MPFR_Lib_mpfr_struct a0 = a[0U];
   MPFR_Lib_mpfr_struct b0 = b[0U];
   MPFR_Lib_mpfr_struct c0 = c[0U];
-  int32_t bx = b0.mpfr_exp;
-  int32_t cx = c0.mpfr_exp;
-  uint32_t sh = MPFR_Lib_gmp_NUMB_BITS - p;
+  int64_t bx = b0.mpfr_exp;
+  int64_t cx = c0.mpfr_exp;
+  int64_t sh = MPFR_Lib_gmp_NUMB_BITS - p;
   MPFR_Add1sp1_state st;
   if (bx == cx)
   {
@@ -87,8 +87,8 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     uint64_t *bp = b0.mpfr_d;
     uint64_t *cp = c0.mpfr_d;
     uint64_t a01 = (bp[0U] >> (uint32_t)1U) + (cp[0U] >> (uint32_t)1U);
-    int32_t bx1 = b0.mpfr_exp + (int32_t)1;
-    uint64_t rb = a01 & (uint64_t)1U << (sh - (uint32_t)1U);
+    int64_t bx1 = b0.mpfr_exp + (int64_t)1;
+    uint64_t rb = a01 & (uint64_t)1U << (uint32_t)(sh - (int64_t)1);
     ap[0U] = a01 ^ rb;
     uint64_t sb = (uint64_t)0U;
     st = MPFR_Add1sp1_mk_state(sh, bx1, rb, sb);
@@ -98,32 +98,32 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     MPFR_Add1sp1_state ite0;
     if (bx > cx)
     {
-      int32_t bx1 = b0.mpfr_exp;
-      int32_t cx1 = c0.mpfr_exp;
-      uint32_t d = (uint32_t)(bx1 - cx1);
-      uint64_t mask = ((uint64_t)1U << sh) - (uint64_t)1U;
+      int64_t bx1 = b0.mpfr_exp;
+      int64_t cx1 = c0.mpfr_exp;
+      int64_t d = bx1 - cx1;
+      uint64_t mask = ((uint64_t)1U << (uint32_t)sh) - (uint64_t)1U;
       MPFR_Add1sp1_state ite1;
       if (d < sh)
       {
         uint64_t *ap = a0.mpfr_d;
         uint64_t *bp = b0.mpfr_d;
         uint64_t *cp = c0.mpfr_d;
-        int32_t bx2 = b0.mpfr_exp;
-        uint64_t a01 = bp[0U] + (cp[0U] >> d);
-        K___uint64_t_int32_t scrut;
+        int64_t bx2 = b0.mpfr_exp;
+        uint64_t a01 = bp[0U] + (cp[0U] >> (uint32_t)d);
+        K___uint64_t_int64_t scrut;
         if (a01 < bp[0U])
           scrut =
             (
-              (K___uint64_t_int32_t){
+              (K___uint64_t_int64_t){
                 .fst = (uint64_t)0x8000000000000000U | a01 >> (uint32_t)1U,
-                .snd = bx2 + (int32_t)1
+                .snd = bx2 + (int64_t)1
               }
             );
         else
-          scrut = ((K___uint64_t_int32_t){ .fst = a01, .snd = bx2 });
+          scrut = ((K___uint64_t_int64_t){ .fst = a01, .snd = bx2 });
         uint64_t a02 = scrut.fst;
-        int32_t bx3 = scrut.snd;
-        uint64_t rb = a02 & (uint64_t)1U << (sh - (uint32_t)1U);
+        int64_t bx3 = scrut.snd;
+        uint64_t rb = a02 & (uint64_t)1U << (uint32_t)(sh - (int64_t)1);
         uint64_t sb = (a02 & mask) ^ rb;
         ap[0U] = a02 & ~mask;
         ite1 = MPFR_Add1sp1_mk_state(sh, bx3, rb, sb);
@@ -136,25 +136,25 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           uint64_t *ap = a0.mpfr_d;
           uint64_t *bp = b0.mpfr_d;
           uint64_t *cp = c0.mpfr_d;
-          int32_t bx2 = b0.mpfr_exp;
-          uint64_t sb = cp[0U] << (MPFR_Lib_gmp_NUMB_BITS - d);
-          uint64_t a01 = bp[0U] + (cp[0U] >> d);
-          K___uint64_t_uint64_t_int32_t scrut;
+          int64_t bx2 = b0.mpfr_exp;
+          uint64_t sb = cp[0U] << (uint32_t)(MPFR_Lib_gmp_NUMB_BITS - d);
+          uint64_t a01 = bp[0U] + (cp[0U] >> (uint32_t)d);
+          K___uint64_t_uint64_t_int64_t scrut;
           if (a01 < bp[0U])
             scrut =
               (
-                (K___uint64_t_uint64_t_int32_t){
+                (K___uint64_t_uint64_t_int64_t){
                   .fst = sb | (a01 & (uint64_t)1U),
                   .snd = (uint64_t)0x8000000000000000U | a01 >> (uint32_t)1U,
-                  .thd = bx2 + (int32_t)1
+                  .thd = bx2 + (int64_t)1
                 }
               );
           else
-            scrut = ((K___uint64_t_uint64_t_int32_t){ .fst = sb, .snd = a01, .thd = bx2 });
+            scrut = ((K___uint64_t_uint64_t_int64_t){ .fst = sb, .snd = a01, .thd = bx2 });
           uint64_t sb1 = scrut.fst;
           uint64_t a02 = scrut.snd;
-          int32_t bx3 = scrut.thd;
-          uint64_t rb = a02 & (uint64_t)1U << (sh - (uint32_t)1U);
+          int64_t bx3 = scrut.thd;
+          uint64_t rb = a02 & (uint64_t)1U << (uint32_t)(sh - (int64_t)1);
           uint64_t sb2 = sb1 | ((a02 & mask) ^ rb);
           ap[0U] = a02 & ~mask;
           ite = MPFR_Add1sp1_mk_state(sh, bx3, rb, sb2);
@@ -163,7 +163,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           uint64_t *ap = a0.mpfr_d;
           uint64_t *bp = b0.mpfr_d;
-          int32_t bx2 = b0.mpfr_exp;
+          int64_t bx2 = b0.mpfr_exp;
           ap[0U] = bp[0U];
           uint64_t rb = (uint64_t)0U;
           uint64_t sb = (uint64_t)1U;
@@ -175,32 +175,32 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
     else
     {
-      int32_t bx1 = c0.mpfr_exp;
-      int32_t cx1 = b0.mpfr_exp;
-      uint32_t d = (uint32_t)(bx1 - cx1);
-      uint64_t mask = ((uint64_t)1U << sh) - (uint64_t)1U;
+      int64_t bx1 = c0.mpfr_exp;
+      int64_t cx1 = b0.mpfr_exp;
+      int64_t d = bx1 - cx1;
+      uint64_t mask = ((uint64_t)1U << (uint32_t)sh) - (uint64_t)1U;
       MPFR_Add1sp1_state ite1;
       if (d < sh)
       {
         uint64_t *ap = a0.mpfr_d;
         uint64_t *bp = c0.mpfr_d;
         uint64_t *cp = b0.mpfr_d;
-        int32_t bx2 = c0.mpfr_exp;
-        uint64_t a01 = bp[0U] + (cp[0U] >> d);
-        K___uint64_t_int32_t scrut;
+        int64_t bx2 = c0.mpfr_exp;
+        uint64_t a01 = bp[0U] + (cp[0U] >> (uint32_t)d);
+        K___uint64_t_int64_t scrut;
         if (a01 < bp[0U])
           scrut =
             (
-              (K___uint64_t_int32_t){
+              (K___uint64_t_int64_t){
                 .fst = (uint64_t)0x8000000000000000U | a01 >> (uint32_t)1U,
-                .snd = bx2 + (int32_t)1
+                .snd = bx2 + (int64_t)1
               }
             );
         else
-          scrut = ((K___uint64_t_int32_t){ .fst = a01, .snd = bx2 });
+          scrut = ((K___uint64_t_int64_t){ .fst = a01, .snd = bx2 });
         uint64_t a02 = scrut.fst;
-        int32_t bx3 = scrut.snd;
-        uint64_t rb = a02 & (uint64_t)1U << (sh - (uint32_t)1U);
+        int64_t bx3 = scrut.snd;
+        uint64_t rb = a02 & (uint64_t)1U << (uint32_t)(sh - (int64_t)1);
         uint64_t sb = (a02 & mask) ^ rb;
         ap[0U] = a02 & ~mask;
         ite1 = MPFR_Add1sp1_mk_state(sh, bx3, rb, sb);
@@ -213,25 +213,25 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           uint64_t *ap = a0.mpfr_d;
           uint64_t *bp = c0.mpfr_d;
           uint64_t *cp = b0.mpfr_d;
-          int32_t bx2 = c0.mpfr_exp;
-          uint64_t sb = cp[0U] << (MPFR_Lib_gmp_NUMB_BITS - d);
-          uint64_t a01 = bp[0U] + (cp[0U] >> d);
-          K___uint64_t_uint64_t_int32_t scrut;
+          int64_t bx2 = c0.mpfr_exp;
+          uint64_t sb = cp[0U] << (uint32_t)(MPFR_Lib_gmp_NUMB_BITS - d);
+          uint64_t a01 = bp[0U] + (cp[0U] >> (uint32_t)d);
+          K___uint64_t_uint64_t_int64_t scrut;
           if (a01 < bp[0U])
             scrut =
               (
-                (K___uint64_t_uint64_t_int32_t){
+                (K___uint64_t_uint64_t_int64_t){
                   .fst = sb | (a01 & (uint64_t)1U),
                   .snd = (uint64_t)0x8000000000000000U | a01 >> (uint32_t)1U,
-                  .thd = bx2 + (int32_t)1
+                  .thd = bx2 + (int64_t)1
                 }
               );
           else
-            scrut = ((K___uint64_t_uint64_t_int32_t){ .fst = sb, .snd = a01, .thd = bx2 });
+            scrut = ((K___uint64_t_uint64_t_int64_t){ .fst = sb, .snd = a01, .thd = bx2 });
           uint64_t sb1 = scrut.fst;
           uint64_t a02 = scrut.snd;
-          int32_t bx3 = scrut.thd;
-          uint64_t rb = a02 & (uint64_t)1U << (sh - (uint32_t)1U);
+          int64_t bx3 = scrut.thd;
+          uint64_t rb = a02 & (uint64_t)1U << (uint32_t)(sh - (int64_t)1);
           uint64_t sb2 = sb1 | ((a02 & mask) ^ rb);
           ap[0U] = a02 & ~mask;
           ite = MPFR_Add1sp1_mk_state(sh, bx3, rb, sb2);
@@ -240,7 +240,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         {
           uint64_t *ap = a0.mpfr_d;
           uint64_t *bp = c0.mpfr_d;
-          int32_t bx2 = c0.mpfr_exp;
+          int64_t bx2 = c0.mpfr_exp;
           ap[0U] = bp[0U];
           uint64_t rb = (uint64_t)0U;
           uint64_t sb = (uint64_t)1U;
@@ -261,14 +261,14 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
   {
     uint64_t *ap = a->mpfr_d;
     uint64_t a01 = ap[0U];
-    MPFR_Lib_mpfr_struct uu___62_3483 = a[0U];
+    MPFR_Lib_mpfr_struct uu___72_3478 = a[0U];
     a[0U] =
       (
         (MPFR_Lib_mpfr_struct){
-          .mpfr_prec = uu___62_3483.mpfr_prec,
-          .mpfr_sign = uu___62_3483.mpfr_sign,
+          .mpfr_prec = uu___72_3478.mpfr_prec,
+          .mpfr_sign = uu___72_3478.mpfr_sign,
           .mpfr_exp = st.bx,
-          .mpfr_d = uu___62_3483.mpfr_d
+          .mpfr_d = uu___72_3478.mpfr_d
         }
       );
     if (st.rb == (uint64_t)0U && st.sb == (uint64_t)0U)
@@ -278,7 +278,7 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       (
         st.rb
         == (uint64_t)0U
-        || (st.sb == (uint64_t)0U && (a01 & (uint64_t)1U << st.sh) == (uint64_t)0U)
+        || (st.sb == (uint64_t)0U && (a01 & (uint64_t)1U << (uint32_t)st.sh) == (uint64_t)0U)
       )
       {
         int32_t ite;
@@ -291,20 +291,20 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       else
       {
         uint64_t *ap1 = a->mpfr_d;
-        ap1[0U] = ap1[0U] + ((uint64_t)1U << st.sh);
+        ap1[0U] = ap1[0U] + ((uint64_t)1U << (uint32_t)st.sh);
         if (ap1[0U] == (uint64_t)0U)
         {
           ap1[0U] = (uint64_t)0x8000000000000000U;
-          if (st.bx + (int32_t)1 <= MPFR_Lib_mpfr_EMAX)
+          if (st.bx + (int64_t)1 <= MPFR_Lib_mpfr_EMAX)
           {
-            MPFR_Lib_mpfr_struct uu___62_3579 = a[0U];
+            MPFR_Lib_mpfr_struct uu___72_3574 = a[0U];
             a[0U] =
               (
                 (MPFR_Lib_mpfr_struct){
-                  .mpfr_prec = uu___62_3579.mpfr_prec,
-                  .mpfr_sign = uu___62_3579.mpfr_sign,
-                  .mpfr_exp = st.bx + (int32_t)1,
-                  .mpfr_d = uu___62_3579.mpfr_d
+                  .mpfr_prec = uu___72_3574.mpfr_prec,
+                  .mpfr_sign = uu___72_3574.mpfr_sign,
+                  .mpfr_exp = st.bx + (int64_t)1,
+                  .mpfr_d = uu___72_3574.mpfr_d
                 }
               );
             return MPFR_Lib_mpfr_RET(a->mpfr_sign);
@@ -330,20 +330,20 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     else
     {
       uint64_t *ap1 = a->mpfr_d;
-      ap1[0U] = ap1[0U] + ((uint64_t)1U << st.sh);
+      ap1[0U] = ap1[0U] + ((uint64_t)1U << (uint32_t)st.sh);
       if (ap1[0U] == (uint64_t)0U)
       {
         ap1[0U] = (uint64_t)0x8000000000000000U;
-        if (st.bx + (int32_t)1 <= MPFR_Lib_mpfr_EMAX)
+        if (st.bx + (int64_t)1 <= MPFR_Lib_mpfr_EMAX)
         {
-          MPFR_Lib_mpfr_struct uu___62_3786 = a[0U];
+          MPFR_Lib_mpfr_struct uu___72_3781 = a[0U];
           a[0U] =
             (
               (MPFR_Lib_mpfr_struct){
-                .mpfr_prec = uu___62_3786.mpfr_prec,
-                .mpfr_sign = uu___62_3786.mpfr_sign,
-                .mpfr_exp = st.bx + (int32_t)1,
-                .mpfr_d = uu___62_3786.mpfr_d
+                .mpfr_prec = uu___72_3781.mpfr_prec,
+                .mpfr_sign = uu___72_3781.mpfr_sign,
+                .mpfr_exp = st.bx + (int64_t)1,
+                .mpfr_d = uu___72_3781.mpfr_d
               }
             );
           return MPFR_Lib_mpfr_RET(a->mpfr_sign);
