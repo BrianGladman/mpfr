@@ -1530,7 +1530,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* Subtract the mantissa c from b in a */
       mpn_sub_n (ap, bp, cp, n);
       /* mpfr_print_mant_binary("Sub=  ", ap, p); */
-      
+
       /* Normalize: we lose at most one bit */
       if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
         {
