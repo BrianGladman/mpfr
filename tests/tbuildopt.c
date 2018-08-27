@@ -95,6 +95,24 @@ check_gmpinternals_p (void)
 #endif
 }
 
+static void
+check_sharedcache_p (void)
+{
+#if defined(MPFR_WANT_SHARED_CACHE)
+  if (!mpfr_buildopt_sharedcache_p ())
+    {
+      printf ("Error: mpfr_buildopt_sharedcache_p should return true\n");
+      exit (1);
+    }
+#else
+  if (mpfr_buildopt_sharedcache_p ())
+    {
+      printf ("Error: mpfr_buildopt_sharedcache_p should return false\n");
+      exit (1);
+    }
+#endif
+}
+
 int
 main (void)
 {
@@ -104,6 +122,7 @@ main (void)
   check_decimal_p();
   check_float128_p();
   check_gmpinternals_p();
+  check_sharedcache_p ();
   {
     const char *s = mpfr_buildopt_tune_case ();
     (void) strlen (s);
