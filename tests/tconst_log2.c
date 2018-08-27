@@ -150,6 +150,22 @@ my_const_log2 (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 #define TEST_FUNCTION my_const_log2
 #include "tgeneric.c"
 
+static void
+exercise_Ziv (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 92);
+  mpfr_init2 (y, 92);
+  inex = mpfr_const_log2 (x, MPFR_RNDN);
+  mpfr_set_str_binary (y, "0.1011000101110010000101111111011111010001110011110111100110101011110010011110001110110011101");
+  MPFR_ASSERTN(mpfr_equal_p (x, y));
+  MPFR_ASSERTN(inex > 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -187,6 +203,8 @@ main (int argc, char *argv[])
       mpfr_out_str (stdout, 10, 0, x, rnd);
       puts ("");
     }
+
+  exercise_Ziv ();
 
   mpfr_set_prec (x, 53);
   mpfr_const_log2 (x, MPFR_RNDZ);

@@ -126,11 +126,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
     ("rnd_mode=%d", rnd_mode),
     ("x[%Pu]=%.*Rg inex=%d", mpfr_get_prec(x), mpfr_log_prec, x, inexact));
 
-  if (n < 1069)
-    w = n + 9; /* ensures correct rounding for the four rounding modes,
-                   together with N = w / 3 + 1 (see below). */
-  else
-    w = n + 10; /* idem at least for prec < 300000 */
+  w = n + MPFR_INT_CEIL_LOG2 (n) + 3;
 
   MPFR_TMP_MARK(marker);
   MPFR_GROUP_INIT_2(group, w, t, q);
@@ -169,9 +165,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
           mpz_clear (Q[i]);
         }
 
-      /* for prec < 300000 and all rounding modes we checked by exhaustive
-         search that the rounding is correct */
-      if (MPFR_LIKELY (n < 300000 || MPFR_CAN_ROUND (t, w - 2, n, rnd_mode)))
+      if (MPFR_CAN_ROUND (t, w - 2, n, rnd_mode))
         break;
 
       MPFR_ZIV_NEXT (loop, w);
