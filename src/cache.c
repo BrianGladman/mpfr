@@ -120,12 +120,9 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
   MPFR_EXP (dest) = MPFR_GET_EXP (cache->x);
   MPFR_SET_SIGN (dest, sign);
 
-  /* Round cache->x from precision pold down to precision prec.
-     Since we are in extended exponent range, for the values considered
-     here, an overflow is not possible (and wouldn't make much sense).
-     In practice, the cached values considered by MPFR are far enough
-     from powers of 2, so that the "overflow handler" of MPFR_RNDRAW_GEN
-     (which increases the exponent) should never be called. */
+  /* round cache->x from precision pold down to precision prec;
+     since we are in extended exponent range, for the values considered
+     here, an overflow is not possible (and wouldn't make much sense). */
   MPFR_RNDRAW_GEN (inexact, dest,
                    MPFR_MANT (cache->x), pold, rnd, sign,
                    if (MPFR_UNLIKELY (cache->inexact == 0))
