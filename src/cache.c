@@ -120,7 +120,9 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
   MPFR_EXP (dest) = MPFR_GET_EXP (cache->x);
   MPFR_SET_SIGN (dest, sign);
 
-  /* round cache->x from precision pold down to precision prec */
+  /* round cache->x from precision pold down to precision prec;
+     since we are in extended exponent range, for the values considered
+     here, an overflow is not possible (and wouldn't make much sense). */
   MPFR_RNDRAW_GEN (inexact, dest,
                    MPFR_MANT (cache->x), pold, rnd, sign,
                    if (MPFR_UNLIKELY (cache->inexact == 0))
@@ -140,8 +142,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
                        inexact = -sign;
                        goto trunc_doit;
                      },
-                   if (MPFR_UNLIKELY (++MPFR_EXP (dest) > __gmpfr_emax))
-                     mpfr_overflow (dest, rnd, sign);
+                   MPFR_EXP (dest) ++;
+                   MPFR_ASSERTD (MPFR_EXP (dest) <= __gmpfr_emax);
                   );
 
   /* Rather a likely, this is a 100% success rate for
