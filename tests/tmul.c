@@ -1268,12 +1268,42 @@ coverage (mpfr_prec_t pmax)
     }
 }
 
+/* check special underflow case for precision = 64 */
+static void
+coverage2 (void)
+{
+  mpfr_t a, b, c;
+  int inex;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin (); /* save emin */
+  mpfr_set_emin (0);
+
+  mpfr_init2 (a, 64);
+  mpfr_init2 (b, 64);
+  mpfr_init2 (c, 64);
+
+  mpfr_set_str_binary (b, "1111110110100001011100100000100000110110001100100010011010011001E-64"); /* 18276014142440744601/2^64 */
+  mpfr_set_str_binary (c, "1000000100110010000111000100010010010001000100101010111101010100E-64"); /* 9309534460545511252/2^64 */
+  /* since 1/2-2^-66 < b0*c0 < 1/2, b0*c0 should be rounded to 1/2 */
+  inex = mpfr_mul (a, b, c, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 1, -1) == 0);
+  MPFR_ASSERTN(inex > 0);
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+
+  mpfr_set_emin (emin); /* restore emin */
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   coverage (1024);
+  coverage2 ();
   testall_rndf (9);
   check_nans ();
   check_exact ();
