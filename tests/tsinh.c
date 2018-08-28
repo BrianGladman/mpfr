@@ -92,7 +92,7 @@ special (void)
 static void
 coverage (void)
 {
-#if ULONG_MAX == 0xffffffffffffffff
+#if _MPFR_EXP_FORMAT >= 3 && ULONG_MAX == 0xffffffffffffffff
   mpfr_t x, y;
   int inex;
   mpfr_exp_t emax;
