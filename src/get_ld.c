@@ -94,8 +94,40 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           ld.s.manl = tmpmant[1] >> (denorm - 32);
           ld.s.manh = 0;
         }
+#elif GMP_NUMB_BITS == 16
+      if (MPFR_LIKELY (denorm == 0))
+        {
+          ld.s.manl = tmpmant[0] | ((unsigned int) tmpmant[1] << 16);
+          ld.s.manh = tmpmant[2] | ((unsigned int) tmpmant[3] << 16);
+        }
+      else if (denorm < 16)
+        {
+          ld.s.manl = (tmpmant[0] >> denorm)
+            | ((unsigned int) tmpmant[1] << (16 - denorm))
+            | ((unsigned int) tmpmant[2] << (32 - denorm));
+          ld.s.manh = (tmpmant[2] >> denorm)
+            | ((unsigned int) tmpmant[3] << (16 - denorm));
+        }
+      else if (denorm < 32)
+        {
+          ld.s.manl = (tmpmant[1] >> (denorm - 16))
+            | ((unsigned int) tmpmant[2] << (32 - denorm))
+            | ((unsigned int) tmpmant[3] << (48 - denorm));
+          ld.s.manh = tmpmant[3] >> (denorm - 16);
+        }
+      else if (denorm < 48)
+        {
+          ld.s.manl = (tmpmant[2] >> (denorm - 32))
+            | ((unsigned int) tmpmant[3] << (64 - denorm));
+          ld.s.manh = 0;
+        }
+      else /* 48 <= denorm < 64 */
+        {
+          ld.s.manl = tmpmant[3] >> (denorm - 48);
+          ld.s.manh = 0;
+        }
 #else
-# error "GMP_NUMB_BITS must be 32 or >= 64"
+# error "GMP_NUMB_BITS must be 16, 32 or >= 64"
       /* Other values have never been supported anyway. */
 #endif
       if (MPFR_LIKELY (denorm == 0))
