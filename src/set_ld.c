@@ -66,6 +66,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 # define MPFR_LIMBS_PER_LONG_DOUBLE 1
 #elif GMP_NUMB_BITS == 32
 # define MPFR_LIMBS_PER_LONG_DOUBLE 2
+#elif GMP_NUMB_BITS == 16
+# define MPFR_LIMBS_PER_LONG_DOUBLE 4
 #endif
 /* The hypothetical GMP_NUMB_BITS == 16 is not supported. It will trigger
    an error below. */
@@ -134,11 +136,16 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   count_leading_zeros (cnt, tmpmant[0]);
   tmpmant[0] <<= cnt;
   k = 0; /* number of limbs shifted */
-#else
-  /* Since we set only 2 limbs below... */
-  MPFR_STAT_STATIC_ASSERT (MPFR_LIMBS_PER_LONG_DOUBLE == 2);
+#elif MPFR_LIMBS_PER_LONG_DOUBLE == 2 || MPFR_LIMBS_PER_LONG_DOUBLE == 4
+#if MPFR_LIMBS_PER_LONG_DOUBLE == 2
   tmpmant[0] = (mp_limb_t) x.s.manl;
   tmpmant[1] = (mp_limb_t) x.s.manh;
+#else
+  tmpmant[0] = (mp_limb_t) x.s.manl;
+  tmpmant[1] = (mp_limb_t) x.s.manl >> 16;
+  tmpmant[2] = (mp_limb_t) x.s.manl;
+  tmpmant[3] = (mp_limb_t) x.s.manh >> 16;
+#endif
   {
     int i = MPFR_LIMBS_PER_LONG_DOUBLE;
     MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
