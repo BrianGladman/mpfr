@@ -1,12 +1,12 @@
 How to compile GNU MPFR with mini-gmp
 =====================================
 
-This was tested with MPFR svn 11903 and GMP 6.1.2 on x86_64 GNU/Linux:
+This was tested with MPFR svn 13047 and GMP 6.1.2 on x86_64 GNU/Linux:
 ============================================================================
 Testsuite summary for MPFR 4.0.0-dev
 ============================================================================
-# TOTAL: 180
-# PASS:  170
+# TOTAL: 183
+# PASS:  173
 # SKIP:  10
 # XFAIL: 0
 # FAIL:  0
