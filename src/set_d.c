@@ -40,9 +40,11 @@ extract_double (mpfr_limb_ptr rp, double d)
   mp_limb_t man[1];
 #elif GMP_NUMB_BITS == 32
   mp_limb_t man[2];
+#elif GMP_NUMB_BITS == 16
+  mp_limb_t man[4];
 #endif
 
-  /* FIXME: Generalize to handle all GMP_NUMB_BITS. */
+  /* FIXME: Generalize to handle GMP_NUMB_BITS < 16. */
 
   MPFR_ASSERTD(!DOUBLE_ISNAN(d));
   MPFR_ASSERTD(!DOUBLE_ISINF(d));
@@ -57,13 +59,19 @@ extract_double (mpfr_limb_ptr rp, double d)
     exp = x.s.exp;
     if (exp)
       {
+        /* x.s.manh has 20 bits, x.s.manl has 32 bits */
 #if GMP_NUMB_BITS >= 64
         man[0] = ((MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)) |
                   ((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
                   ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
-#else
-        MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
+#elif GMP_NUMB_BITS == 32
         man[1] = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
+        man[0] = x.s.manl << 11;
+#else
+        MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 16);
+        man[3] = (MPFR_LIMB_ONE << 15) | (x.s.manh >> 5);
+        man[2] = (x.s.manh << 11) | (x.s.manl >> 21);
+        man[1] = x.s.manl >> 5;
         man[0] = x.s.manl << 11;
 #endif
         exp -= 1022;
@@ -76,8 +84,7 @@ extract_double (mpfr_limb_ptr rp, double d)
         man[0] = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
                   ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
         count_leading_zeros (cnt, man[0]);
-#else
-        MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
+#elif GMP_NUMB_BITS == 32
         man[1] = (x.s.manh << 11) /* high 21 bits */
           | (x.s.manl >> 21); /* middle 11 bits */
         man[0] = x.s.manl << 11; /* low 21 bits */
@@ -90,6 +97,27 @@ extract_double (mpfr_limb_ptr rp, double d)
         count_leading_zeros (cnt, man[1]);
         man[1] = (man[1] << cnt) |
           (cnt != 0 ? man[0] >> (GMP_NUMB_BITS - cnt) : 0);
+#else
+        MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 16);
+        man[3] = x.s.manh >> 5;
+        man[2] = (x.s.manh << 11) | (x.s.manl >> 21);
+        man[1] = x.s.manl >> 5;
+        man[0] = x.s.manl << 11;
+        while (man[3] == 0) /* d is assumed <> 0 */
+          {
+            man[3] = man[2];
+            man[2] = man[1];
+            man[1] = man[0];
+            man[0] = 0;
+            exp -= GMP_NUMB_BITS;
+          }
+        count_leading_zeros (cnt, man[3]);
+        if (cnt)
+          {
+            man[3] = (man[3] << cnt) | (man[2] >> (GMP_NUMB_BITS - cnt));
+            man[2] = (man[2] << cnt) | (man[1] >> (GMP_NUMB_BITS - cnt));
+            man[1] = (man[1] << cnt) | (man[0] >> (GMP_NUMB_BITS - cnt));
+          }
 #endif
         man[0] <<= cnt;
         exp -= cnt;
@@ -140,18 +168,33 @@ extract_double (mpfr_limb_ptr rp, double d)
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
     man[0] = 0x8000000000000000 + (mp_limb_t) (d - 0x8000000000000000);
 #endif /* __clang__ */
-#else
-    MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
+#elif GMP_NUMB_BITS == 32
     man[1] = (mp_limb_t) d;
     man[0] = (mp_limb_t) ((d - man[1]) * MP_BASE_AS_DOUBLE);
+#else
+    MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 16);
+    {
+      double r = d;
+      man[3] = (mp_limb_t) r;
+      r = (r - man[3]) * MP_BASE_AS_DOUBLE;
+      man[2] = (mp_limb_t) r;
+      r = (r - man[2]) * MP_BASE_AS_DOUBLE;
+      man[1] = (mp_limb_t) r;
+      r = (r - man[1]) * MP_BASE_AS_DOUBLE;
+      man[0] = (mp_limb_t) r;
+    }
 #endif
   }
 
 #endif /* _MPFR_IEEE_FLOATS */
 
   rp[0] = man[0];
-#if GMP_NUMB_BITS == 32
+#if GMP_NUMB_BITS <= 32
   rp[1] = man[1];
+#endif
+#if GMP_NUMB_BITS <= 16
+  rp[2] = man[2];
+  rp[3] = man[3];
 #endif
 
   MPFR_ASSERTD((rp[MPFR_LIMBS_PER_DOUBLE - 1] & MPFR_LIMB_HIGHBIT) != 0);
