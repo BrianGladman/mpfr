@@ -33,6 +33,7 @@ MPFR_HOT_FUNCTION_ATTR int
 mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
              mpfr_rnd_t rnd_mode)
 {
+#if MPFR_LONG_WITHIN_LIMB
   int sh;
   mp_size_t i, xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
@@ -113,7 +114,6 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
      from p[0] to p[n-1]. Let B = 2^GMP_NUMB_BITS.
      One has: 0 <= {p, n} < B^n. */
 
-  MPFR_STAT_STATIC_ASSERT (MPFR_LIMB_MAX >= ULONG_MAX);
   if (dif >= 0)
     {
       c = mpn_divrem_1 (tmp, dif, xp, xn, u); /* used all the dividend */
@@ -299,4 +299,13 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
   MPFR_EXP (y) = exp;
 
   return mpfr_check_range (y, inexact, rnd_mode);
+#else /* MPFR_LONG_WITHIN_LIMB */
+  mpfr_t uu;
+  int inex;
+  mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
+  mpfr_set_ui (uu, u, MPFR_RNDZ);
+  inex = mpfr_div (y, x, uu, rnd_mode);
+  mpfr_clear (uu);
+  return inex;
+#endif
 }
