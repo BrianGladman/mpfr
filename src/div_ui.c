@@ -33,12 +33,14 @@ MPFR_HOT_FUNCTION_ATTR int
 mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
              mpfr_rnd_t rnd_mode)
 {
+  int inexact;
+
 #ifdef MPFR_LONG_WITHIN_LIMB
+
   int sh;
   mp_size_t i, xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mpfr_exp_t exp;
-  int inexact;
   mp_limb_t rb; /* round bit */
   mp_limb_t sb; /* sticky bit */
   MPFR_TMP_DECL(marker);
@@ -297,18 +299,18 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
 
   /* Set the exponent. Warning! One may still have an underflow. */
   MPFR_EXP (y) = exp;
-
-  return mpfr_check_range (y, inexact, rnd_mode);
 #else /* MPFR_LONG_WITHIN_LIMB */
   mpfr_t uu;
-  int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  /* FIXME: The exponent range needs to be extended as usual.
-     Add a failing test first. */
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
   mpfr_set_ui (uu, u, MPFR_RNDZ);
-  inex = mpfr_div (y, x, uu, rnd_mode);
+  inexact = mpfr_div (y, x, uu, rnd_mode);
   mpfr_clear (uu);
-  return inex;
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+  MPFR_SAVE_EXPO_FREE (expo);
 #endif
+
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
