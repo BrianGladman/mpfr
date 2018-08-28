@@ -365,12 +365,15 @@ AC_ARG_ENABLE(mini-gmp,
    [  --enable-mini-gmp       build MPFR with mini-gmp (experimental) [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_USE_MINI_GMP],1,[Use mini-gmp])
-           # With mini-gmp, mp_limb_t is always unsigned long.
-           AC_COMPUTE_INT(nettle_cv_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
-              [#include <limits.h>],
-              [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])
-           AC_MSG_RESULT([$nettle_cv_gmp_numb_bits bits])
-           AC_DEFINE_UNQUOTED([GMP_NUMB_BITS], $nettle_cv_gmp_numb_bits, [number of bits in a limb])
+           # first check if mini-gmp defines GMP_NUMB_BITS
+           AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
+              [#include <gmp.h>],
+              # if not found in mini-gmp.h, we assume unsigned long
+              [AC_COMPUTE_INT(mini_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
+                 [#include <limits.h>],
+                 [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])])
+           AC_MSG_RESULT([$mini_gmp_numb_bits bits])
+           AC_DEFINE_UNQUOTED([GMP_NUMB_BITS], $mini_gmp_numb_bits, [number of bits in a limb])
            AC_DEFINE([GMP_NAIL_BITS], 0, [number of nails in a limb])
            test_libgmp=mpz_init;;
       no)  ;;
