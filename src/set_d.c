@@ -36,9 +36,10 @@ static int
 extract_double (mpfr_limb_ptr rp, double d)
 {
   int exp;
-  mp_limb_t manl;
-#if GMP_NUMB_BITS == 32
-  mp_limb_t manh;
+#if GMP_NUMB_BITS >= 64
+  mp_limb_t man[1];
+#elif GMP_NUMB_BITS == 32
+  mp_limb_t man[2];
 #endif
 
   /* FIXME: Generalize to handle all GMP_NUMB_BITS. */
@@ -57,13 +58,13 @@ extract_double (mpfr_limb_ptr rp, double d)
     if (exp)
       {
 #if GMP_NUMB_BITS >= 64
-        manl = ((MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)) |
-                ((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
-                ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
+        man[0] = ((MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1)) |
+                  ((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
+                  ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
 #else
         MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
-        manh = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
-        manl = x.s.manl << 11;
+        man[1] = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
+        man[0] = x.s.manl << 11;
 #endif
         exp -= 1022;
       }
@@ -72,25 +73,25 @@ extract_double (mpfr_limb_ptr rp, double d)
         int cnt;
         exp = -1021;
 #if GMP_NUMB_BITS >= 64
-        manl = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
-                ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
-        count_leading_zeros (cnt, manl);
+        man[0] = (((mp_limb_t) x.s.manh << (GMP_NUMB_BITS - 21)) |
+                  ((mp_limb_t) x.s.manl << (GMP_NUMB_BITS - 53)));
+        count_leading_zeros (cnt, man[0]);
 #else
         MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
-        manh = (x.s.manh << 11) /* high 21 bits */
+        man[1] = (x.s.manh << 11) /* high 21 bits */
           | (x.s.manl >> 21); /* middle 11 bits */
-        manl = x.s.manl << 11; /* low 21 bits */
-        if (manh == 0)
+        man[0] = x.s.manl << 11; /* low 21 bits */
+        if (man[1] == 0)
           {
-            manh = manl;
-            manl = 0;
+            man[1] = man[0];
+            man[0] = 0;
             exp -= GMP_NUMB_BITS;
           }
-        count_leading_zeros (cnt, manh);
-        manh = (manh << cnt) |
-          (cnt != 0 ? manl >> (GMP_NUMB_BITS - cnt) : 0);
+        count_leading_zeros (cnt, man[1]);
+        man[1] = (man[1] << cnt) |
+          (cnt != 0 ? man[0] >> (GMP_NUMB_BITS - cnt) : 0);
 #endif
-        manl <<= cnt;
+        man[0] <<= cnt;
         exp -= cnt;
       }
   }
@@ -131,26 +132,26 @@ extract_double (mpfr_limb_ptr rp, double d)
     d *= MP_BASE_AS_DOUBLE;
 #if GMP_NUMB_BITS >= 64
 #ifndef __clang__
-    manl = d;
+    man[0] = d;
 #else
     /* clang produces an invalid exception when d >= 2^63,
        see https://bugs.llvm.org//show_bug.cgi?id=17686.
        Since this is always the case, here, we use the following patch. */
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
-    manl = 0x8000000000000000 + (mp_limb_t) (d - 0x8000000000000000);
+    man[0] = 0x8000000000000000 + (mp_limb_t) (d - 0x8000000000000000);
 #endif /* __clang__ */
 #else
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 32);
-    manh = (mp_limb_t) d;
-    manl = (mp_limb_t) ((d - manh) * MP_BASE_AS_DOUBLE);
+    man[1] = (mp_limb_t) d;
+    man[0] = (mp_limb_t) ((d - man[1]) * MP_BASE_AS_DOUBLE);
 #endif
   }
 
 #endif /* _MPFR_IEEE_FLOATS */
 
-  rp[0] = manl;
+  rp[0] = man[0];
 #if GMP_NUMB_BITS == 32
-  rp[1] = manh;
+  rp[1] = man[1];
 #endif
 
   MPFR_ASSERTD((rp[MPFR_LIMBS_PER_DOUBLE - 1] & MPFR_LIMB_HIGHBIT) != 0);
