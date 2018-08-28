@@ -864,12 +864,14 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
    *                                                                        *
    **************************************************************************/
 
-  /* when the divisor has one limb, we can use mpfr_div_ui, which should be
-     faster, assuming there is no intermediate overflow or underflow.
+  /* When the divisor has one limb and MPFR_LONG_WITHIN_LIMB is defined,
+     we can use mpfr_div_ui, which should be faster, assuming there is no
+     intermediate overflow or underflow.
      The divisor interpreted as an integer satisfies
      2^(GMP_NUMB_BITS-1) <= vm < 2^GMP_NUMB_BITS, thus the quotient
      satisfies 2^(EXP(u)-1-GMP_NUMB_BITS) < u/vm < 2^(EXP(u)-GMP_NUMB_BITS+1)
      and its exponent is either EXP(u)-GMP_NUMB_BITS or one more. */
+#ifdef MPFR_LONG_WITHIN_LIMB
   if (vsize <= 1 && __gmpfr_emin <= MPFR_EXP(u) - GMP_NUMB_BITS
       && MPFR_EXP(u) - GMP_NUMB_BITS + 1 <= __gmpfr_emax
       && vp[0] <= ULONG_MAX)
@@ -892,6 +894,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
       MPFR_EXP(q) += GMP_NUMB_BITS;
       return mpfr_check_range (q, inex, rnd_mode);
     }
+#endif
 
   MPFR_TMP_MARK(marker);
 

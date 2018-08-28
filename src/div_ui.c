@@ -33,7 +33,7 @@ MPFR_HOT_FUNCTION_ATTR int
 mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
              mpfr_rnd_t rnd_mode)
 {
-#if MPFR_LONG_WITHIN_LIMB
+#ifdef MPFR_LONG_WITHIN_LIMB
   int sh;
   mp_size_t i, xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
