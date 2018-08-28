@@ -264,7 +264,7 @@ coverage (void)
   inex = mpfr_subnormalize (y, -1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 65537, mpfr_get_emin () - 1) == 0);
   MPFR_ASSERTN(inex > 0);
-  
+
   mpfr_clear (y);
 }
 
