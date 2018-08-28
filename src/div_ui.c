@@ -302,6 +302,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u,
 #else /* MPFR_LONG_WITHIN_LIMB */
   mpfr_t uu;
   int inex;
+
+  /* FIXME: The exponent range needs to be extended as usual.
+     Add a failing test first. */
   mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
   mpfr_set_ui (uu, u, MPFR_RNDZ);
   inex = mpfr_div (y, x, uu, rnd_mode);
