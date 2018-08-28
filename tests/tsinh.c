@@ -88,11 +88,53 @@ special (void)
   mpfr_clear (x);
 }
 
+/* exercise mpfr_sinh near the overflow limit */
+static void
+coverage (void)
+{
+#if ULONG_MAX == 0xffffffffffffffff
+  mpfr_t x, y;
+  int inex;
+  mpfr_exp_t emax;
+
+  emax = mpfr_get_emax ();
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, 64);
+
+  MPFR_ASSERTN(mpfr_get_emax_max () == 4611686018427387903UL); /* 2^62-1 */
+  mpfr_set_emax (mpfr_get_emax_max ());
+
+  mpfr_set_ui (x, 3196577161300663915UL, MPFR_RNDN);
+  mpfr_clear_overflow ();
+  /* exp(x) overflows, cosh(x/2)*sinh(x/2) does not overflow,
+     but 2*cosh(x/2)*sinh(x/2) overflows */
+  inex = mpfr_sinh (y, x, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 18446744073709551615UL, 4611686018427387839UL) == 0);
+  MPFR_ASSERTN(inex < 0);
+  MPFR_ASSERTN(mpfr_overflow_p ());
+
+  mpfr_set_prec (x, 65);
+  mpfr_set_str (x, "3196577161300663914.5", 10, MPFR_RNDN);
+  mpfr_clear_overflow ();
+  /* exp(x) overflows, cosh(x/2)*sinh(x/2) does not overflow,
+     and 2*cosh(x/2)*sinh(x/2) does not overflow */
+  inex = mpfr_sinh (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 11795642775994293059UL, 4611686018427387839UL) == 0);
+  MPFR_ASSERTN(inex > 0);
+  MPFR_ASSERTN(!mpfr_overflow_p ());
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_set_emax (emax);
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  coverage ();
   special ();
 
   test_generic (MPFR_PREC_MIN, 100, 100);
