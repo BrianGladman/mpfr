@@ -63,6 +63,10 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     int inex;
     MPFR_SAVE_EXPO_DECL (expo);
 
+    /* Optimization note: Exponent save/restore operations may be
+       removed if mpfr_sub works even when uu is out-of-range. */
+    MPFR_SAVE_EXPO_MARK (expo);
+
 #ifdef MPFR_LONG_WITHIN_LIMB
     MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
     /* So, u fits in a mp_limb_t, which justifies the casts below. */
@@ -74,9 +78,6 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
     mpfr_set_ui (uu, u, MPFR_RNDZ);
 #endif
 
-    /* Optimization note: Exponent save/restore operations may be
-       removed if mpfr_sub works even when uu is out-of-range. */
-    MPFR_SAVE_EXPO_MARK (expo);
     MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
     inex = mpfr_sub (y, uu, x, rnd_mode);
 #ifndef MPFR_LONG_WITHIN_LIMB
