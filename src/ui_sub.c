@@ -57,7 +57,6 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
 
   /* Main code */
   {
-    mpfr_t uu;
     int inex;
     MPFR_SAVE_EXPO_DECL (expo);
 
@@ -67,6 +66,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
 
 #ifdef MPFR_LONG_WITHIN_LIMB
     {
+      mpfr_t uu;
       mp_limb_t up[1];
       int cnt;
 
@@ -76,16 +76,19 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
       count_leading_zeros (cnt, (mp_limb_t) u);
       up[0] = (mp_limb_t) u << cnt;
       MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
+      inex = mpfr_sub (y, uu, x, rnd_mode);
     }
 #else
-    mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
-    mpfr_set_ui (uu, u, MPFR_RNDZ);
+    {
+      mpfr_t uu;
+
+      mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
+      mpfr_set_ui (uu, u, MPFR_RNDZ);
+      inex = mpfr_sub (y, uu, x, rnd_mode);
+      mpfr_clear (uu);
+    }
 #endif
 
-    inex = mpfr_sub (y, uu, x, rnd_mode);
-#ifndef MPFR_LONG_WITHIN_LIMB
-    mpfr_clear (uu);
-#endif
     MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
     MPFR_SAVE_EXPO_FREE (expo);
     return mpfr_check_range (y, inex, rnd_mode);
