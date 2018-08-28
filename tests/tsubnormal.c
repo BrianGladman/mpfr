@@ -249,11 +249,31 @@ check_rndna (void)
   mpfr_set_emin (emin);
 }
 
+/* exercise a corner case of mpfr_subnormalize:
+   y = 1xxx...xxx0|100000| with old_inexact = -1 */
+static void
+coverage (void)
+{
+  mpfr_t y;
+  int inex;
+
+  mpfr_init2 (y, 42);
+  mpfr_set_ui_2exp (y, 131073, mpfr_get_emin () - 2, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_get_exp (y) == mpfr_get_emin () + 16);
+  /* mpfr_subnormalize rounds y to precision EXP(y) - emin + 1, thus 17 */
+  inex = mpfr_subnormalize (y, -1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 65537, mpfr_get_emin () - 1) == 0);
+  MPFR_ASSERTN(inex > 0);
+  
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  coverage ();
   check_rndna ();
   check1 ();
   check2 ();
