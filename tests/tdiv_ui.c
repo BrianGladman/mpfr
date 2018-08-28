@@ -187,7 +187,7 @@ check_inexact (void)
                   ((inexact > 0) && (cmp <= 0)) ||
                   ((inexact < 0) && (cmp >= 0)))
                 {
-                  printf ("Wrong inexact flag for u=%lu, rnd=%s\n", u,
+                  printf ("Wrong ternary value for u=%lu, rnd=%s\n", u,
                           mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   printf ("x="); mpfr_dump (x);
                   printf ("y="); mpfr_dump (y);
