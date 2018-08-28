@@ -57,8 +57,6 @@ mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
   /* Main code */
   {
     mpfr_t uu;
-    mp_limb_t up[1];
-    int cnt;
     int inex;
     MPFR_SAVE_EXPO_DECL (expo);
 
@@ -67,17 +65,22 @@ mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
     MPFR_SAVE_EXPO_MARK (expo);
 
 #ifdef MPFR_LONG_WITHIN_LIMB
-    MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
-    /* So, u fits in a mp_limb_t, which justifies the casts below. */
-    MPFR_ASSERTD (u != 0);
-    count_leading_zeros (cnt, (mp_limb_t) u);
-    up[0] = (mp_limb_t) u << cnt;
+    {
+      mp_limb_t up[1];
+      int cnt;
+
+      MPFR_TMP_INIT1 (up, uu, GMP_NUMB_BITS);
+      /* So, u fits in a mp_limb_t, which justifies the casts below. */
+      MPFR_ASSERTD (u != 0);
+      count_leading_zeros (cnt, (mp_limb_t) u);
+      up[0] = (mp_limb_t) u << cnt;
+      MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
+    }
 #else
     mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
     mpfr_set_ui (uu, u, MPFR_RNDZ);
 #endif
 
-    MPFR_SET_EXP (uu, GMP_NUMB_BITS - cnt);
     inex = mpfr_add (y, x, uu, rnd_mode);
 #ifndef MPFR_LONG_WITHIN_LIMB
     mpfr_clear (uu);
