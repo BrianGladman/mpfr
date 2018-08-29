@@ -48,7 +48,9 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mpfr_exp_t err0, mpfr_prec_t prec)
       fprintf (stderr, "mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
                "bn = %lu, err0 = %ld, prec = %lu\nbp = ", i1, i2,
                (unsigned long) bn, (long) err0, (unsigned long) prec);
+#ifndef MPFR_USE_MINI_GMP
       gmp_fprintf (stderr, "%NX\n", bp, bn);
+#endif
       MPFR_ASSERTN (0);
     }
 
