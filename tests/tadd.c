@@ -149,7 +149,7 @@ check64 (void)
   mpfr_set_str_binary (t, "-1.1e-2");
   mpfr_set_prec (u, 2);
   test_add (u, x, t, MPFR_RNDN);
-  if (MPFR_MANT(u)[0] << 2)
+  if ((mp_limb_t) (MPFR_MANT(u)[0] << 2))
     {
       printf ("result not normalized for prec=2\n");
       mpfr_dump (u);
