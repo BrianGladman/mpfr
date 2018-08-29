@@ -172,6 +172,12 @@ check_inexact (void)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + mp_bits_per_limb);
+          /* The following test fails with MPFR_RNDF ("Wrong ternary value")
+             when building with CFLAGS="-Wall -Werror -std=c90 -pedantic
+             -Wno-error=overlength-strings -Wno-error=format" so that
+             MPFR_LONG_WITHIN_LIMB is not defined (the implementation
+             is not the same in this case). But the ternary value is not
+             specified for MPFR_RNDF. Thus use RND_LOOP_NO_RNDF. */
           RND_LOOP_NO_RNDF (rnd)
             {
               inexact = mpfr_div_ui (y, x, u, (mpfr_rnd_t) rnd);
