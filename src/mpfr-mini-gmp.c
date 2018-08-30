@@ -64,7 +64,9 @@ static mp_limb_t
 random_limb (void)
 {
   /* lrand48() only gives 31 bits */
-#if GMP_NUMB_BITS == 32
+#if GMP_NUMB_BITS == 16
+  return (mp_limb_t) lrand48 ();
+#elif GMP_NUMB_BITS == 32
   return lrand48 () + (lrand48 () << 31);
 #else
   return lrand48 () + (((mp_limb_t) lrand48 ()) << 31)
