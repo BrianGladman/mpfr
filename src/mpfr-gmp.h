@@ -349,6 +349,71 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
  ****** interfaces.                               *****
  ******************************************************/
 
+#ifndef MPFR_LONG_WITHIN_LIMB
+
+/* the following routines assume that an unsigned long has at least twice the
+   size of an mp_limb_t */
+
+#define umul_ppmm(ph, pl, m0, m1)                                       \
+  do {									\
+    unsigned long _p = (unsigned long) (m0) * (unsigned long) (m1);     \
+    (ph) = (mp_limb_t) (_p >> GMP_NUMB_BITS);                           \
+    (pl) = (mp_limb_t) (_p & MPFR_LIMB_MAX);                            \
+  } while (0)
+
+#define add_ssaaaa(sh, sl, ah, al, bh, bl)                              \
+  do {                                                                  \
+    unsigned long _a = ((ah) << GMP_NUMB_BITS) + (al);                  \
+    unsigned long _b = ((bh) << GMP_NUMB_BITS) + (bl);                  \
+    unsigned long _s = _a + _b;                                         \
+    (sh) = (mp_limb_t) (_s >> GMP_NUMB_BITS);                           \
+    (sl) = (mp_limb_t) (_s & MPFR_LIMB_MAX);                            \
+  } while (0)
+
+#define sub_ddmmss(sh, sl, ah, al, bh, bl)                              \
+  do {                                                                  \
+    unsigned long _a = ((ah) << GMP_NUMB_BITS) + (al);                  \
+    unsigned long _b = ((bh) << GMP_NUMB_BITS) + (bl);                  \
+    unsigned long _s = _a - _b;                                         \
+    (sh) = (mp_limb_t) (_s >> GMP_NUMB_BITS);                           \
+    (sl) = (mp_limb_t) (_s & MPFR_LIMB_MAX);                            \
+  } while (0)
+
+#define count_leading_zeros(count,x)                                    \
+  do {                                                                  \
+    int _c = 0;                                                         \
+    mp_limb_t _x = (mp_limb_t) (x);                                     \
+    if ((_x >> (GMP_NUMB_BITS - 8)) == 0)                               \
+      {                                                                 \
+        _c += 8;                                                        \
+        _x = (mp_limb_t) (_x << 8);                                     \
+      }                                                                 \
+    if ((_x >> (GMP_NUMB_BITS - 4)) == 0)                               \
+      {                                                                 \
+        _c += 4;                                                        \
+        _x = (mp_limb_t) (_x << 4);                                     \
+      }                                                                 \
+    if ((_x >> (GMP_NUMB_BITS - 2)) == 0)                               \
+      {                                                                 \
+        _c += 2;                                                        \
+        _x = (mp_limb_t) (_x << 2);                                     \
+      }                                                                 \
+    if ((_x & MPFR_LIMB_HIGHBIT) == 0)                                  \
+      _c ++;                                                            \
+    (count) = _c;                                                       \
+  } while (0)
+
+#define invert_limb(invxl,xl)                                           \
+  do {                                                                  \
+    unsigned long _num;                                                 \
+    MPFR_ASSERTD ((xl) != 0);                                           \
+    _num = (unsigned long) (mp_limb_t) ~(xl);                           \
+    _num = (_num << GMP_NUMB_BITS) | MPFR_LIMB_MAX;                     \
+    (invxl) = _num / (xl);                                              \
+  } while (0)
+
+#endif
+
 /* If mpn_sqr is not defined, use mpn_mul_n instead
    (mpn_sqr was called mpn_sqr_n (internal) in older versions of GMP). */
 #ifndef mpn_sqr
@@ -423,6 +488,7 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
   do {                                                                  \
     mp_limb_t _v, _p, _t1, _t0, _mask;                                  \
     invert_limb (_v, d1);                                               \
+    if (d1 == 59892) printf ("v=%u\n", _v);                             \
     _p = (d1) * _v;                                                     \
     _p += (d0);                                                         \
     if (_p < (d0))                                                      \
