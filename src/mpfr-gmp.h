@@ -413,7 +413,10 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
   } while (0)
 #endif
 
-/* invert_pi1 macro adapted from GMP 5 */
+/* invert_pi1 macro adapted from GMP 5, this computes in (dinv).inv32
+   the value of floor((beta^3 - 1)/(d1*beta+d0)) - beta,
+   cf "Improved Division by Invariant Integers" by Niels Möller and
+   Torbjörn Granlund */
 typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
 #ifndef invert_pi1
 #define invert_pi1(dinv, d1, d0)                                        \
