@@ -355,7 +355,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
    size of an mp_limb_t */
 
 #define umul_ppmm(ph, pl, m0, m1)                                       \
-  do {									\
+  do {                                                                  \
     unsigned long _p = (unsigned long) (m0) * (unsigned long) (m1);     \
     (ph) = (mp_limb_t) (_p >> GMP_NUMB_BITS);                           \
     (pl) = (mp_limb_t) (_p & MPFR_LIMB_MAX);                            \
