@@ -34,15 +34,14 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mpfr_exp_t e, mpfr_rnd_t rnd_mode
       MPFR_SET_ZERO (x);
       MPFR_RET (0);
     }
-#ifdef MPFR_LONG_WITHIN_LIMB
   else
     {
+#ifdef MPFR_LONG_WITHIN_LIMB
       mp_size_t xn;
       int cnt, nbits;
       mp_limb_t *xp;
       int inex = 0;
 
-      /* FIXME: support int limbs (e.g. 16-bit limbs on 16-bit proc) */
       MPFR_ASSERTD (i == (mp_limb_t) i);
 
       /* Position of the highest limb */
@@ -69,16 +68,15 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mpfr_exp_t e, mpfr_rnd_t rnd_mode
 
       MPFR_EXP (x) = e;
       return mpfr_check_range (x, inex, rnd_mode);
-    }
 #else
-  /* if a long does not fit into a limb, we use mpfr_set_z_2exp */
-  {
-    mpz_t z;
-    int inex;
-    mpz_init_set_ui (z, i);
-    inex = mpfr_set_z_2exp (x, z, e, rnd_mode);
-    mpz_clear (z);
-    return inex;
-  }
+      /* if a long does not fit into a limb, we use mpfr_set_z_2exp */
+      mpz_t z;
+      int inex;
+
+      mpz_init_set_ui (z, i);
+      inex = mpfr_set_z_2exp (x, z, e, rnd_mode);
+      mpz_clear (z);
+      return inex;
 #endif
+    }
 }
