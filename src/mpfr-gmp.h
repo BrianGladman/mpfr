@@ -412,6 +412,14 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
     (invxl) = _num / (xl);                                              \
   } while (0)
 
+#define udiv_qrnnd(q, r, n1, n0, d)                                     \
+  do {                                                                  \
+    unsigned long _num;                                                 \
+    _num = (n1) << GMP_NUMB_BITS | (n0);                                \
+    (q) = _num / (d);                                                   \
+    (r) = _num % (d);                                                   \
+  } while (0)
+
 #endif
 
 /* If mpn_sqr is not defined, use mpn_mul_n instead
