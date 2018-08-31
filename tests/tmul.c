@@ -1033,9 +1033,7 @@ small_prec (void)
         flags2 = __gmpfr_flags;
         if (!(mpfr_equal_p (z1, z2) &&
               SAME_SIGN (inex1, inex2)
-#if TEST_FLAGS
               && flags1 == flags2
-#endif
               ))
           {
             printf ("Error in small_prec on i = %d, j = %d\n", i, j);
