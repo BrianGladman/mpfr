@@ -382,8 +382,8 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
               bx --;
               if (d == GMP_NUMB_BITS && cp[0] > MPFR_LIMB_HIGHBIT)
                 { /* case (b) */
-                  rb = (-cp[0]) >= (MPFR_LIMB_HIGHBIT >> 1);
-                  sb = (-cp[0]) << 2;
+                  rb = MPFR_LIMB(-cp[0]) >= (MPFR_LIMB_HIGHBIT >> 1);
+                  sb = MPFR_LIMB(-cp[0]) << 2;
                   ap[0] = -(MPFR_LIMB_ONE << 1);
                 }
               else /* cases (a), (c), (d) and (e) */

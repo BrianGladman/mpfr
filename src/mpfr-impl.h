@@ -1162,6 +1162,13 @@ typedef uintmax_t mpfr_ueexp_t;
 /* Mask for the low 's' bits of a limb */
 #define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
+/* Cast to an mp_limb_t (needed for limb with less than 32 bits since
+   operations are promoted to 32 bits) */
+#ifdef MPFR_LONG_WITHIN_LIMB
+#define MPFR_LIMB(x) (x)
+#else
+#define MPFR_LIMB(x) ((mp_limb_t) (x))
+#endif
 
 /******************************************************
  **********************  Memory  **********************

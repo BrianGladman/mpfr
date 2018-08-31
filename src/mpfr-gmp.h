@@ -488,7 +488,6 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t;
   do {                                                                  \
     mp_limb_t _v, _p, _t1, _t0, _mask;                                  \
     invert_limb (_v, d1);                                               \
-    if (d1 == 59892) printf ("v=%u\n", _v);                             \
     _p = (d1) * _v;                                                     \
     _p += (d0);                                                         \
     if (_p < (d0))                                                      \
