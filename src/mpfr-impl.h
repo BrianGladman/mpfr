@@ -1173,8 +1173,14 @@ typedef uintmax_t mpfr_ueexp_t;
 /* Mask for the low 's' bits of a limb */
 #define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
-/* Cast to an mp_limb_t (needed for limb with less than 32 bits since
-   operations are promoted to 32 bits) */
+/* Cast to mp_limb_t, assuming that x is based on mp_limb_t variables
+   (needed when mp_limb_t is defined as an integer type shorter than
+   int, due to the integer promotion rules, which is possible only
+   if MPFR_LONG_WITHIN_LIMB is not defined). Warning! This will work
+   only when the computed value x is congruent to the expected value
+   modulo MPFR_LIMB_MAX + 1. Be aware that this macro may not solve
+   all the problems related to the integer promotion rules, because
+   it won't have an influence on the evaluation of x itself. */
 #ifdef MPFR_LONG_WITHIN_LIMB
 #define MPFR_LIMB(x) (x)
 #else
