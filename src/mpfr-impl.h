@@ -107,7 +107,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 # include "mpfr.h"
 # include "mpfr-gmp.h"
-# ifndef MPFR_LONG_WITHIN_LIMB /* longlong.h is not valid otherwise */
+# ifdef MPFR_LONG_WITHIN_LIMB /* longlong.h is not valid otherwise */
 # ifdef MPFR_NEED_LONGLONG_H
 #  define LONGLONG_STANDALONE
 #  include "mpfr-longlong.h"
