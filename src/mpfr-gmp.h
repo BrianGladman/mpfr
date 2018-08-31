@@ -415,7 +415,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 #define udiv_qrnnd(q, r, n1, n0, d)                                     \
   do {                                                                  \
     unsigned long _num;                                                 \
-    _num = (n1) << GMP_NUMB_BITS | (n0);                                \
+    _num = ((unsigned long) (n1) << GMP_NUMB_BITS) | (n0);              \
     (q) = _num / (d);                                                   \
     (r) = _num % (d);                                                   \
   } while (0)
