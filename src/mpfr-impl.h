@@ -90,10 +90,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "gmp.h"
 
-/* Make sure that MPFR_LONG_WITHIN_LIMB is defined if __GMP_SHORT_LIMB is
-   not defined (this is the general case), because one cannot rely on the
-   configure test entirely, in particular when GMP is involved. */
-#ifndef __GMP_SHORT_LIMB
+/* With the current code, MPFR_LONG_WITHIN_LIMB must be defined if an
+   unsigned long fits in a limb. Since one cannot rely on the configure
+   tests entirely (in particular when GMP is involved) and some platforms
+   may not use configure, make sure that MPFR_LONG_WITHIN_LIMB is defined
+   when __GMP_SHORT_LIMB is not defined (this is the general case) or
+   when int and long have the same size (as with MS Windows). */
+#if !defined(__GMP_SHORT_LIMB) || INT_MAX == LONG_MAX
 # undef MPFR_LONG_WITHIN_LIMB
 # define MPFR_LONG_WITHIN_LIMB 1
 #endif
