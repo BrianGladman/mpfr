@@ -1410,6 +1410,7 @@ asm (".section predict_data, \"aw\"; .previous\n"
    with some build options; a loop could be used if x > ULONG_MAX. If
    the type of x is <= unsigned long, then no additional code will be
    generated thanks to obvious compiler optimization. */
+#ifdef MPFR_LONG_WITHIN_LIMB
 # define MPFR_INT_CEIL_LOG2(x)                            \
     (MPFR_UNLIKELY ((x) == 1) ? 0 :                       \
      __extension__ ({ int _b; mp_limb_t _limb;            \
@@ -1419,9 +1420,21 @@ asm (".section predict_data, \"aw\"; .previous\n"
       count_leading_zeros (_b, _limb);                    \
       (GMP_NUMB_BITS - _b); }))
 #else
+# define MPFR_INT_CEIL_LOG2(x)                              \
+  (MPFR_UNLIKELY ((x) == 1) ? 0 :                           \
+   __extension__ ({ int _c = 0; unsigned long _x = (x) - 1; \
+       MPFR_ASSERTN ((x) > 1);                              \
+       while (_x != 0)                                      \
+         {                                                  \
+           _x = _x >> 1;                                    \
+           _c ++;                                           \
+         };                                                 \
+       _c; }))
+#endif /* MPFR_LONG_WITHIN_LIMB */
+#else
 # define MPFR_INT_CEIL_LOG2(x) \
   (MPFR_ASSERTN (x <= ULONG_MAX), __gmpfr_int_ceil_log2(x))
-#endif
+#endif /* __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0) */
 
 /* Add two integers with overflow handling */
 /* Example: MPFR_SADD_OVERFLOW (c, a, b, long, unsigned long,
