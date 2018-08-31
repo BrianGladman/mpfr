@@ -1173,18 +1173,27 @@ typedef uintmax_t mpfr_ueexp_t;
 /* Mask for the low 's' bits of a limb */
 #define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
 
-/* Cast to mp_limb_t, assuming that x is based on mp_limb_t variables
-   (needed when mp_limb_t is defined as an integer type shorter than
-   int, due to the integer promotion rules, which is possible only
+/* MPFR_LIMB: Cast to mp_limb_t, assuming that x is based on mp_limb_t
+   variables (needed when mp_limb_t is defined as an integer type shorter
+   than int, due to the integer promotion rules, which is possible only
    if MPFR_LONG_WITHIN_LIMB is not defined). Warning! This will work
    only when the computed value x is congruent to the expected value
-   modulo MPFR_LIMB_MAX + 1. Be aware that this macro may not solve
-   all the problems related to the integer promotion rules, because
-   it won't have an influence on the evaluation of x itself. */
+   modulo MPFR_LIMB_MAX + 1. Be aware that this macro may not solve all
+   the problems related to the integer promotion rules, because it won't
+   have an influence on the evaluation of x itself. Hence the need for...
+
+   MPFR_LIMB_LSHIFT: Left shift by making sure that the shifted argument
+   is unsigned (use unsigned long due to the MPFR_LONG_WITHIN_LIMB test).
+   For instance, due to the integer promotion rules, if mp_limb_t is
+   defined as a 16-bit unsigned short and an int has 32 bits, then a
+   mp_limb_t will be converted to an int, which is signed.
+*/
 #ifdef MPFR_LONG_WITHIN_LIMB
 #define MPFR_LIMB(x) (x)
+#define MPFR_LIMB_LSHIFT(x,c) ((x) << (c))
 #else
 #define MPFR_LIMB(x) ((mp_limb_t) (x))
+#define MPFR_LIMB_LSHIFT(x,c) MPFR_LIMB((unsigned long) (x) << (c))
 #endif
 
 /******************************************************
