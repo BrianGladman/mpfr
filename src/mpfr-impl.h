@@ -88,9 +88,18 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 #include "mpfr-thread.h"
 
+#include "gmp.h"
+
+/* Make sure that MPFR_LONG_WITHIN_LIMB is defined if __GMP_SHORT_LIMB is
+   not defined (this is the general case), because one cannot rely on the
+   configure test entirely, in particular when GMP is involved. */
+#ifndef __GMP_SHORT_LIMB
+# undef MPFR_LONG_WITHIN_LIMB
+# define MPFR_LONG_WITHIN_LIMB 1
+#endif
+
 #ifdef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
-# include "gmp.h"
 # include "gmp-impl.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  include "longlong.h"
@@ -100,7 +109,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #else /* Build without gmp internals */
 
-# include "gmp.h"
 /* if using mini-gmp, include missing definitions in mini-gmp */
 # ifdef MPFR_USE_MINI_GMP
 #  include "mpfr-mini-gmp.h"
