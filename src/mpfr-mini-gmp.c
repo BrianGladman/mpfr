@@ -87,7 +87,7 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
   i = n * GMP_NUMB_BITS - nbits;
   /* mask the upper i bits */
   if (i)
-    rop->_mp_d[n-1] = MPFR_LIMB(rop->_mp_d[n-1] << i) >> i;
+    rop->_mp_d[n-1] = MPFR_LIMB_LSHIFT(rop->_mp_d[n-1], i) >> i;
   while (n > 0 && (rop->_mp_d[n-1] == 0))
     n--;
   rop->_mp_size = n;
