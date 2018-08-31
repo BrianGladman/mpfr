@@ -776,6 +776,8 @@ check_1111 (void)
                   (int) tb, (int) tc, (int) diff,
                   mpfr_print_rnd_mode (rnd_mode));
           printf ("sb = %d, sc = %d\n", sb, sc);
+          printf ("b = "); mpfr_dump (b);
+          printf ("c = "); mpfr_dump (c);
           printf ("a = "); mpfr_dump (a);
           printf ("s = "); mpfr_dump (s);
           printf ("inex_a = %d, inex_s = %d\n", inex_a, inex_s);

@@ -379,7 +379,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                   if (fb)
                     goto rounding;
                   rb ^= 1;
-                  if (rb == 0 && mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh))
+                  if (rb == 0 && mpn_add_1 (ap, ap, an, MPFR_LIMB_ONE << sh))
                     {
                       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
                         {
@@ -404,7 +404,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
           if (fb || ck < 0)
             goto rounding;
-          if (difs && (cprev << (GMP_NUMB_BITS - difs)) != 0)
+          if (difs && MPFR_LIMB(cprev << (GMP_NUMB_BITS - difs)) != 0)
             {
               fb = 1;
               goto rounding;
