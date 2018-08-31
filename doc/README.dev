@@ -527,8 +527,7 @@ List of macros used for checking MPFR:
                         exceptions; MPFR_TESTS_FPE_DIV needs to be defined
                         too, and MPFR_ERRDIVZERO should be defined as well
                         to avoid spurious traps (see above).
-+ MPFR_TESTS_TIMEOUT:   (requires --enable-tests-timeout)
-                        Define to enable timeout in the tests. Its value
++ MPFR_TESTS_TIMEOUT:   Define to enable timeout in the tests. Its value
                         contains the default timeout (in seconds), or 0
                         for no timeout by default, and can be overridden
                         at "make check" time with the MPFR_TESTS_TIMEOUT
