@@ -49,6 +49,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
   else if (MPFR_SIGN(b) != si || i == 0)
     return MPFR_INT_SIGN (b);
   else /* b and i are of same sign si */
+#ifdef MPFR_LONG_WITHIN_LIMB
     {
       mpfr_exp_t e;
       unsigned long ai;
@@ -91,6 +92,18 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
           return si;
       return 0;
     }
+#else
+  {
+      mpfr_t uu;
+      int ret;
+
+      mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
+      mpfr_set_ui_2exp (uu, i, f, MPFR_RNDZ);
+      ret = mpfr_cmp (b, uu);
+      mpfr_clear (uu);
+      return ret;
+  }
+#endif /* MPFR_LONG_WITHIN_LIMB */
 }
 
 #undef mpfr_cmp_si
