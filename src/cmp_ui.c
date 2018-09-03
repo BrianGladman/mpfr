@@ -96,9 +96,13 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mpfr_exp_t f)
   {
       mpfr_t uu;
       int ret;
+      MPFR_SAVE_EXPO_DECL (expo);
 
       mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
+      /* Warning: i*2^f might be outside the current exponent range! */
+      MPFR_SAVE_EXPO_MARK (expo);
       mpfr_set_ui_2exp (uu, i, f, MPFR_RNDZ);
+      MPFR_SAVE_EXPO_FREE (expo);
       ret = mpfr_cmp (b, uu);
       mpfr_clear (uu);
       return ret;
