@@ -488,7 +488,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                         flags_out (flags);
                         printf ("inex = %d, w = ", inexact);
                         mpfr_dump (w);
-                        exit (1);
+                        abort ();
                       }
                     test_of--;
                   }
@@ -551,7 +551,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                         flags_out (flags);
                         printf ("inex = %d, w = ", inexact);
                         mpfr_dump (w);
-                        exit (1);
+                        abort ();
                       }
                     test_uf--;
                   }
@@ -622,7 +622,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     mpfr_dump (w);
                     printf ("  inex = %d, flags =", inexact);
                     flags_out (flags);
-                    exit (1);
+                    abort ();
                   }
               }
 
