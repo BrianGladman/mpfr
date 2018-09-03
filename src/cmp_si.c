@@ -98,7 +98,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
       int ret;
 
       mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
-      mpfr_set_ui_2exp (uu, i, f, MPFR_RNDZ);
+      mpfr_set_si_2exp (uu, i, f, MPFR_RNDZ);
       ret = mpfr_cmp (b, uu);
       mpfr_clear (uu);
       return ret;
