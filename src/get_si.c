@@ -60,6 +60,7 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY (MPFR_IS_ZERO(x)))
     s = 0;
   else
+#ifdef MPFR_LONG_WITHIN_LIMB
     {
       mp_limb_t a;
       mp_size_t n;
@@ -71,6 +72,29 @@ mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
       a = MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
       s = MPFR_IS_POS (f) ? a : a <= LONG_MAX ? - (long) a : LONG_MIN;
     }
+#else
+  {
+    mp_size_t n;
+    mpfr_exp_t exp;
+
+    exp = MPFR_GET_EXP (x);
+    n = MPFR_LIMB_SIZE(x);
+    /* invariant: the current word x[n-1] has to be multiplied by
+       2^(exp - GMP_NUMB_BITS) */
+    s = 0;
+    while (exp > 0)
+      {
+        MPFR_ASSERTD(n > 0);
+        if (exp <= GMP_NUMB_BITS)
+          s += MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
+        else
+          s += MPFR_MANT(x)[n - 1] << (exp - GMP_NUMB_BITS);
+        n --;
+        exp -= GMP_NUMB_BITS;
+      }
+    s = MPFR_IS_POS (f) ? s : s <= LONG_MAX ? - (long) s : LONG_MIN;
+  }
+#endif
 
   mpfr_clear (x);
 
