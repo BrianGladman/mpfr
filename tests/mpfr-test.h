@@ -37,6 +37,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#ifdef MPFR_TESTS_ABORT
+# undef exit
+# define exit(C) ((C) != 1 ? (exit)(C) : \
+                  (fflush (stdout), fflush (stderr), abort ()))
+#endif
+
 #define STRINGIZE(S) #S
 #define MAKE_STR(S) STRINGIZE(S)
 
