@@ -50,7 +50,7 @@ mpfr_integer_p (mpfr_srcptr x)
 
   xp = MPFR_MANT(x);
   MPFR_ASSERTN(xn >= 0);
-  if (xp[xn] << (expo % GMP_NUMB_BITS) != 0)
+  if (MPFR_LIMB_LSHIFT(xp[xn], expo % GMP_NUMB_BITS) != 0)
     return 0;
   while (--xn >= 0)
     if (xp[xn] != 0)
