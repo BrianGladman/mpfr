@@ -31,11 +31,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);                          \
     printf("\n w  =");                                                  \
     mpfr_out_str (stdout, 2, 0, w, MPFR_RNDN);                          \
-    printf("\n ex.=");                                                  \
+    printf("\n expected ");                                             \
     mpfr_out_str (stdout, 2, 0, expected, MPFR_RNDN);                   \
-    printf("\n ac.=");                                                  \
+    printf("\n got ");                                                  \
     mpfr_out_str (stdout, 2, 0, r, MPFR_RNDN);                          \
     printf("\n\n");                                                     \
+    exit (1);                                                           \
   } while (0)
 
 #define TEST(p, r, z, w, expected) TESTRND(p, r, z, w, expected, MPFR_RNDN)
