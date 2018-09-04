@@ -38,13 +38,14 @@ randexp (void)
     {
       mpfr_uexp_t emax = (mpfr_uexp_t) -1;
 
-      /* FIXME: This looks correct, but GCC complains. */
       e = 0;
       while (emax != 0)
         {
-          /* Since mp_limb_t < mpfr_uexp_t, the shift counts are valid. */
-          e = (e << GMP_NUMB_BITS) + randlimb ();
-          emax >>= GMP_NUMB_BITS;
+          /* Since mp_limb_t < mpfr_uexp_t, the shift counts are valid.
+             Use GMP_NUMB_BITS - 1 instead of GMP_NUMB_BITS to avoid a
+             bug in GCC. */
+          e = (e << (GMP_NUMB_BITS - 1)) + (randlimb () >> 1);
+          emax >>= GMP_NUMB_BITS - 1;
         }
     }
   return (mpfr_exp_t) (e % (__gmpfr_emax - __gmpfr_emin)) + __gmpfr_emin;
