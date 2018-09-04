@@ -383,7 +383,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       cy = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       /* propagate carry up to most significant limb */
       for (tn = 0; tn + 1 < k1 && cy != 0; tn ++)
-        cy = MPFR_LIMB(~bp[bn + tn]) == 0;
+        cy = MPFR_LIMB (bp[bn + tn]) == MPFR_LIMB_MAX;
       if (cy == 0 && err == prec)
         {
           res = 0;
@@ -413,7 +413,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       cy = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       /* propagate carry up to most significant limb */
       for (tn = 0; tn + 1 < k1 && cy != 0; tn ++)
-        cy = ~bp[bn + tn] == 0;
+        cy = MPFR_LIMB (bp[bn + tn]) == MPFR_LIMB_MAX;
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec2);
       /* cc is the new value of bit s1 in bp[bn-1]+eps after rounding 'rnd2' */
