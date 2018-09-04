@@ -82,7 +82,7 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
         if (exp <= GMP_NUMB_BITS)
           s += MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
         else
-          s += MPFR_MANT(x)[n - 1] << (exp - GMP_NUMB_BITS);
+          s += (unsigned long) MPFR_MANT(x)[n - 1] << (exp - GMP_NUMB_BITS);
         n --;
         exp -= GMP_NUMB_BITS;
       }
