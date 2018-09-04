@@ -136,29 +136,33 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   count_leading_zeros (cnt, tmpmant[0]);
   tmpmant[0] <<= cnt;
   k = 0; /* number of limbs shifted */
-#elif MPFR_LIMBS_PER_LONG_DOUBLE == 2 || MPFR_LIMBS_PER_LONG_DOUBLE == 4
+#else /* MPFR_LIMBS_PER_LONG_DOUBLE >= 2 */
 #if MPFR_LIMBS_PER_LONG_DOUBLE == 2
   tmpmant[0] = (mp_limb_t) x.s.manl;
   tmpmant[1] = (mp_limb_t) x.s.manh;
-#else
+#elif MPFR_LIMBS_PER_LONG_DOUBLE == 4
   tmpmant[0] = (mp_limb_t) x.s.manl;
-  tmpmant[1] = (mp_limb_t) x.s.manl >> 16;
-  tmpmant[2] = (mp_limb_t) x.s.manl;
-  tmpmant[3] = (mp_limb_t) x.s.manh >> 16;
-#endif
+  tmpmant[1] = (mp_limb_t) (x.s.manl >> 16);
+  tmpmant[2] = (mp_limb_t) x.s.manh;
+  tmpmant[3] = (mp_limb_t) (x.s.manh >> 16);
+#else
+#error "MPFR_LIMBS_PER_LONG_DOUBLE should be 1, 2 or 4"
+#endif /* MPFR_LIMBS_PER_LONG_DOUBLE >= 2 */
   {
     int i = MPFR_LIMBS_PER_LONG_DOUBLE;
     MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
     k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
     count_leading_zeros (cnt, tmpmant[i - 1]);
-    if (MPFR_UNLIKELY (cnt != 0))
+    if (cnt != 0)
       mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-    else if (MPFR_UNLIKELY (k != 0))
-      MPN_COPY (tmpmant + k, tmpmant, i);
-    if (MPFR_UNLIKELY (k != 0))
+    else if (k != 0)
+      /* since we copy {tmpmant, i} into {tmpmant + k, i}, we should work
+         decreasingly, thus call mpn_copyd */
+      mpn_copyd (tmpmant + k, tmpmant, i);
+    if (k != 0)
       MPN_ZERO (tmpmant, k);
   }
-#endif
+#endif /* MPFR_LIMBS_PER_LONG_DOUBLE == 1 */
 
   /* Set exponent */
   exp = (mpfr_exp_t) ((x.s.exph << 8) + x.s.expl);  /* 15-bit unsigned int */
