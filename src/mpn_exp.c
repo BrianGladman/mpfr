@@ -24,6 +24,38 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* count the number of significant bits of e, i.e.,
+   nbits(mpfr_exp_t) - count_leading_zeros (e) */
+static int
+nbits_mpfr_exp_t (mpfr_exp_t e)
+{
+  int nbits = 0;
+
+  MPFR_ASSERTD(e > 0);
+  while (e >= 0x10000)
+    {
+      e >>= 16;
+      nbits += 16;
+    }
+  while (e >= 0x100)
+    {
+      e >>= 8;
+      nbits += 8;
+    }
+  while (e >= 0x10)
+    {
+      e >>= 4;
+      nbits += 4;
+    }
+  while (e >= 4)
+    {
+      e >>= 2;
+      nbits += 2;
+    }
+  /* now e = 1, 2, or 3 */
+  return nbits + 1 + (e >= 2);
+}
+
 /* this function computes an approximation to b^e in {a, n}, with exponent
    stored in exp_r. The computed value is rounded toward zero (truncated).
    It returns an integer f such that the final error is bounded by 2^f ulps,
@@ -51,7 +83,7 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
   MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN (n > 0 && n <= ((size_t) -1) / GMP_NUMB_BITS);
-  MPFR_ASSERTN (e > 0 && e <= MPFR_LIMB_MAX);
+  MPFR_ASSERTN (e > 0);
   MPFR_ASSERTN (2 <= b && b <= 62);
 
   MPFR_TMP_MARK(marker);
@@ -75,12 +107,11 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
   f = h - (n - 1) * GMP_NUMB_BITS;
 
   /* determine number of bits in e */
-  count_leading_zeros (t, (mp_limb_t) e);
-
-  t = GMP_NUMB_BITS - t; /* number of bits of exponent e */
+  t = nbits_mpfr_exp_t (e);
 
   error = t;
-  MPFR_ASSERTD (error >= 0 && error <= GMP_NUMB_BITS);
+  /* t, error <= bitsize(mpfr_exp_t) */
+  MPFR_ASSERTD (error >= 0);
 
   MPN_ZERO (c, 2 * n);
 
@@ -126,8 +157,7 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
           mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * GMP_NUMB_BITS)
         error = i;
 
-      /* Let's recall that e > 0 and fits in a limb. */
-      if (e & (MPFR_LIMB_ONE << i))
+      if ((e >> i) & 1)
         {
           /* multiply A by B */
           c[2 * n - 1] = mpn_mul_1 (c + n - 1, a, n, B);
@@ -149,9 +179,9 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
         }
     }
 
-  MPFR_ASSERTD (error >= 0 && error <= GMP_NUMB_BITS);
-  MPFR_ASSERTD (err_s_a2 >= 0 && err_s_a2 < GMP_NUMB_BITS);
-  MPFR_ASSERTD (err_s_ab >= 0 && err_s_ab < GMP_NUMB_BITS);
+  MPFR_ASSERTD (error >= 0);
+  MPFR_ASSERTD (err_s_a2 >= 0);
+  MPFR_ASSERTD (err_s_ab >= 0);
 
   MPFR_TMP_FREE(marker);
 
@@ -159,7 +189,7 @@ mpfr_mpn_exp (mp_limb_t *a, mpfr_exp_t *exp_r, int b, mpfr_exp_t e, size_t n)
 
   if (error == t)
     return -1; /* result is exact */
-  else /* error <= t-2 <= GMP_NUMB_BITS-2
+  else /* error <= t-2 <= bitsize(mpfr_exp_t)-2
           err_s_ab, err_s_a2 <= t-1       */
     {
       /* if there are p loops after the first inexact result, with
