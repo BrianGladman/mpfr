@@ -27,6 +27,7 @@ int
 mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mpfr_rnd_t rnd_mode)
 {
   if (u)
+#ifdef MPFR_LONG_WITHIN_LIMB
     {
       mpfr_t uu;
       mp_limb_t up[1];
@@ -45,6 +46,22 @@ mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mpfr_rnd_t rnd_mode)
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range(r, inex, rnd_mode);
     }
+#else
+  {
+      mpfr_t uu;
+      int ret;
+      MPFR_SAVE_EXPO_DECL (expo);
+
+      mpfr_init2 (uu, sizeof (unsigned long) * CHAR_BIT);
+      /* Warning: u might be outside the current exponent range! */
+      MPFR_SAVE_EXPO_MARK (expo);
+      mpfr_set_ui (uu, u, MPFR_RNDZ);
+      MPFR_SAVE_EXPO_FREE (expo);
+      ret = mpfr_sqrt (r, uu, rnd_mode);
+      mpfr_clear (uu);
+      return ret;
+  }
+#endif /* MPFR_LONG_WITHIN_LIMB */
   else /* sqrt(0) = 0 */
     {
       MPFR_SET_ZERO(r);
