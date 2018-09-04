@@ -126,12 +126,33 @@ bug20090520 (void)
   mpfr_clear (x);
 }
 
+static void
+bug20180904 (void)
+{
+  mpfr_t x;
+  long double d = 5.450797408381041489264061250159e-4937L;
+  long double e;
+
+  mpfr_init2 (x, 64);
+  mpfr_set_str_binary (x, "0.1000100000000000000000000000000000000000000000000000000000000000E-16397");
+  e = mpfr_get_ld (x, MPFR_RNDN);
+  if (e != d)
+    {
+      printf ("Error in bug20180904:\n");
+      printf ("expected %.30Le\n", d);
+      printf ("got      %.30Le\n", e);
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
   mpfr_test_init ();
 
+  bug20180904 ();
   bug20090520 ();
 
   check_round ();
