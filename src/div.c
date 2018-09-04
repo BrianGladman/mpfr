@@ -734,7 +734,7 @@ mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
     {
       bb = (extra) ? (MPFR_LIMB_LSHIFT(bp[1],GMP_NUMB_BITS-1) | (bp[0] >> 1)) : bp[0];
       rp = ap[0] - bb - cy;
-      cy = (ap[0] < bb) || (cy && MPFR_LIMB(~rp) == MPFR_LIMB_ZERO) ?
+      cy = (ap[0] < bb) || (cy && rp == MPFR_LIMB_MAX) ?
         MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
       ap[0] = rp;
       ap ++;
