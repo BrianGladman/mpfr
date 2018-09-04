@@ -26,20 +26,28 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static mpfr_exp_t
 randexp (void)
 {
-#if defined(MPFR_LONG_WITHIN_LIMB) && _MPFR_EXP_FORMAT <= 3
-  /* if _MPFR_EXP_FORMAT <= 3, mpfr_exp_t <= long, thus since a long fits in
-     a limb, we can generate the whole range [emin, emax] */
-  return (mpfr_exp_t) (randlimb () % (__gmpfr_emax - __gmpfr_emin))
-    + __gmpfr_emin;
-#else
-  mpfr_exp_t emax = MPFR_EMAX_MAX, e = 0;
-  while (emax != 0)
+  mpfr_uexp_t e;
+
+  if (MPFR_EXP_MAX <= MPFR_LIMB_MAX >> 1)
     {
-      e = (e << GMP_NUMB_BITS) + randlimb ();
-      emax >>= GMP_NUMB_BITS;
+      /* mpfr_uexp_t fits in a limb: we can generate the whole range
+         [emin, emax] directly. */
+      e = randlimb ();
     }
-  return (mpfr_exp_t) e % (__gmpfr_emax - __gmpfr_emin) + __gmpfr_emin;
-#endif
+  else
+    {
+      mpfr_uexp_t emax = (mpfr_uexp_t) -1;
+
+      /* FIXME: This looks correct, but GCC complains. */
+      e = 0;
+      while (emax != 0)
+        {
+          /* Since mp_limb_t < mpfr_uexp_t, the shift counts are valid. */
+          e = (e << GMP_NUMB_BITS) + randlimb ();
+          emax >>= GMP_NUMB_BITS;
+        }
+    }
+  return (mpfr_exp_t) (e % (__gmpfr_emax - __gmpfr_emin)) + __gmpfr_emin;
 }
 
 static void
