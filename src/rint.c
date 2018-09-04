@@ -136,7 +136,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           uj = un - ui;  /* lowest limb of the integer part */
           idiff = exp % GMP_NUMB_BITS;  /* #int-part bits in up[uj] or 0 */
 
-          uflags = idiff == 0 || (up[uj] << idiff) == 0 ? 0 : 2;
+          uflags = idiff == 0 || MPFR_LIMB_LSHIFT(up[uj],idiff) == 0 ? 0 : 2;
           if (uflags == 0)
             while (uj > 0)
               if (up[--uj] != 0)
