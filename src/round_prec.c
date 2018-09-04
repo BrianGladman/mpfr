@@ -383,7 +383,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       cy = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       /* propagate carry up to most significant limb */
       for (tn = 0; tn + 1 < k1 && cy != 0; tn ++)
-        cy = ~bp[bn + tn] == 0;
+        cy = MPFR_LIMB(~bp[bn + tn]) == 0;
       if (cy == 0 && err == prec)
         {
           res = 0;

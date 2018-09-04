@@ -265,12 +265,14 @@ check_can_round (void)
                           {
                             printf ("Error in check_can_round on:\n"
                                     "precx=%d, precy=%d, i=%d, err=%d, "
-                                    "rnd1=%s, rnd2=%s: got %d\n",
+                                    "rnd1=%s, rnd2=%s: expected %d, got %d\n",
                                     precx, precy, i, err,
                                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd1),
                                     mpfr_print_rnd_mode ((mpfr_rnd_t) rnd2),
-                                    got);
+                                    expected, got);
                             printf ("x="); mpfr_dump (x);
+                            printf ("yinf="); mpfr_dump (yinf);
+                            printf ("ysup="); mpfr_dump (ysup);
                             exit (1);
                           }
                       }
