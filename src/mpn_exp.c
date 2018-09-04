@@ -31,27 +31,31 @@ nbits_mpfr_exp_t (mpfr_exp_t e)
 {
   int nbits = 0;
 
-  MPFR_ASSERTD(e > 0);
+  MPFR_ASSERTD (e > 0);
   while (e >= 0x10000)
     {
       e >>= 16;
       nbits += 16;
     }
-  while (e >= 0x100)
+  MPFR_ASSERTD (e <= 0xffff);
+  if (e >= 0x100)
     {
       e >>= 8;
       nbits += 8;
     }
-  while (e >= 0x10)
+  MPFR_ASSERTD (e <= 0xff);
+  if (e >= 0x10)
     {
       e >>= 4;
       nbits += 4;
     }
-  while (e >= 4)
+  MPFR_ASSERTD (e <= 0xf);
+  if (e >= 4)
     {
       e >>= 2;
       nbits += 2;
     }
+  MPFR_ASSERTD (e <= 3);
   /* now e = 1, 2, or 3 */
   return nbits + 1 + (e >= 2);
 }
