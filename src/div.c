@@ -732,9 +732,9 @@ mpfr_mpn_sub_aux (mpfr_limb_ptr ap, mpfr_limb_ptr bp, mp_size_t n,
 
   while (n--)
     {
-      bb = (extra) ? ((bp[1] << (GMP_NUMB_BITS-1)) | (bp[0] >> 1)) : bp[0];
+      bb = (extra) ? (MPFR_LIMB_LSHIFT(bp[1],GMP_NUMB_BITS-1) | (bp[0] >> 1)) : bp[0];
       rp = ap[0] - bb - cy;
-      cy = (ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO) ?
+      cy = (ap[0] < bb) || (cy && MPFR_LIMB(~rp) == MPFR_LIMB_ZERO) ?
         MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
       ap[0] = rp;
       ap ++;
@@ -1091,8 +1091,27 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
    *                                                                        *
    **************************************************************************/
 
+  /* In the general case (usize > 2*qsize and vsize > qsize), we have:
+       ______________________________________
+      |                          |           |   u1 has 2*qsize limbs
+      |             u1           |     u0    |   u0 has usize-2*qsize limbs
+      |__________________________|___________|
+
+                      ____________________
+                     |           |        |      v1 has qsize limbs
+                     |    v1     |    v0  |      v0 has vsize-qsize limbs
+                     |___________|________|
+
+      We divide u1 by v1, with quotient in qh + {qp, qsize} and
+      remainder (denoted r below) stored in place of the low qsize limbs of u1.
+  */
+
   /* if Mulders' short division failed, we revert to division with remainder */
   qh = mpn_divrem (qp, 0, ap + k, qqsize - k, bp, qsize - k);
+  /* let u1 be the upper part of u, and v1 the upper part of v (with sticky_u
+     and sticky_v representing the lower parts), then the quotient of u1 by v1
+     is now in {qp, qsize}, with possible carry in qh, and the remainder in
+     {ap + k, qsize - k} */
   /* warning: qh may be 1 if u1 == v1, but u < v */
 
   k = qsize;
@@ -1165,9 +1184,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
               sticky = sticky3;
               goto case_1;
             }
-          else /* hard case: we have to compare q1 * v0 and r + low(u),
+          else /* hard case: we have to compare q1 * v0 and r + u0,
                  where q1 * v0 has qsize + (vsize-qsize) = vsize limbs, and
-                 r + low(u) has qsize + (usize-2*qsize) = usize-qsize limbs */
+                 r + u0 has qsize + (usize-2*qsize) = usize-qsize limbs */
             {
               mp_size_t l;
               mpfr_limb_ptr sp;
@@ -1188,17 +1207,17 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
                 qh2 = MPFR_LIMB_ZERO;
               qp[0] ^= sticky3orig; /* restore truncated quotient */
 
-              /* compare qh2 + {sp, k + qsize} to {ap, qsize} + low(u) */
+              /* compare qh2 + {sp, k + qsize} to {ap, qsize} + u0 */
               cmp_s_r = (qh2 != 0) ? 1 : mpn_cmp (sp + k, ap, qsize);
-              if (cmp_s_r == 0) /* compare {sp, k} and low(u) */
+              if (cmp_s_r == 0) /* compare {sp, k} and u0 */
                 {
                   cmp_s_r = (usize >= qqsize) ?
                     mpfr_mpn_cmp_aux (sp, k, up, usize - qqsize, extra_bit) :
                     mpfr_mpn_cmpzero (sp, k);
                 }
-              /* now cmp_s_r > 0 if {sp, vsize} > {ap, qsize} + low(u)
-                     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + low(u)
-                     cmp_s_r < 0 if {sp, vsize} < {ap, qsize} + low(u) */
+              /* now cmp_s_r > 0 if {sp, vsize} > {ap, qsize} + u0
+                     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + u0
+                     cmp_s_r < 0 if {sp, vsize} < {ap, qsize} + u0 */
               if (cmp_s_r <= 0) /* quotient is in [q1, q1+1) */
                 {
                   sticky = (cmp_s_r == 0) ? sticky3 : MPFR_LIMB_ONE;
@@ -1206,11 +1225,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
                 }
               else /* cmp_s_r > 0, quotient is < q1: to determine if it is
                       in [q1-2,q1-1] or in [q1-1,q1], we need to subtract
-                      the low part u0 of the dividend u0 from q*v0 */
+                      the low part u0 of the dividend from q*v0 */
                 {
                   mp_limb_t cy = MPFR_LIMB_ZERO;
 
-                  /* subtract low(u)>>extra_bit if non-zero */
+                  /* subtract u0 >> extra_bit if non-zero */
                   if (qh2 != 0) /* whatever the value of {up, m + k}, it
                                    will be smaller than qh2 + {sp, k} */
                     cmp_s_r = 1;
@@ -1219,11 +1238,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
                       if (low_u != MPFR_LIMB_ZERO)
                         {
                           mp_size_t m;
-                          l = usize - qqsize; /* number of low limbs in u */
+                          l = usize - qqsize; /* number of limbs in u0 */
                           m = (l > k) ? l - k : 0;
                           cy = (extra_bit) ?
                             (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
-                          if (l >= k) /* u0 has more limbs than s:
+                          if (l >= k) /* u0 has at least as many limbs than s:
                                          first look if {up, m} is not zero,
                                          and compare {sp, k} and {up + m, k} */
                             {
