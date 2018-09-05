@@ -123,8 +123,12 @@ decimal64_to_string (char *s, _Decimal64 d)
 #ifdef DPD_FORMAT
   unsigned int d0, d1, d2, d3, d4, d5;
 #else
-  unsigned int rp[2]; /* rp[0] and rp[1] should contain at least 32 bits */
-#define NLIMBS (64 / GMP_NUMB_BITS)  
+#if GMP_NUMB_BITS >= 64
+  mp_limb_t rp[2];
+#else
+  unsigned long rp[2]; /* rp[0] and rp[1] should contain at least 32 bits */
+#endif
+#define NLIMBS (64 / GMP_NUMB_BITS)
   mp_limb_t sp[NLIMBS];
   mp_size_t sn;
 #endif
@@ -215,7 +219,7 @@ decimal64_to_string (char *s, _Decimal64 d)
   sp[2] = MPFR_LIMB(rp[1]);
   sp[3] = MPFR_LIMB(rp[1] >> 16);
 #else
-#error "GMP_NUMB_BITS should be 16, 32, or >= 64"  
+#error "GMP_NUMB_BITS should be 16, 32, or >= 64"
 #endif
   sn = NLIMBS;
   while (sn > 0 && sp[sn - 1] == 0)
