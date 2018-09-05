@@ -311,7 +311,7 @@ run_chisq (double (*f)(long, mpfr_prec_t, int, double, double, int),
       else if (Q < Qbad)
         {
           printf ("Error: mpfr_erandom chi-squared failure "
-                  "(prob = %.2e)\n", Q);
+                  "(prob = %.2e < %.2e)\n", Q, Qbad);
           exit (1);
         }
       num *= 10;

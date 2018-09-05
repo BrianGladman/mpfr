@@ -106,7 +106,22 @@ gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 unsigned long
 gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
 {
+#ifdef MPFR_LONG_WITHIN_LIMB
   return random_limb () % (1UL << n);
+#else
+  unsigned long res = 0;
+  int m = n; /* remaining bits to generate */
+  while (m >= GMP_NUMB_BITS)
+    {
+      /* we can generate a full limb */
+      res = (res << GMP_NUMB_BITS) | (unsigned long) random_limb ();
+      m -= GMP_NUMB_BITS;
+    }
+  /* now m < GMP_NUMB_BITS */
+  if (m) /* generate m extra bits */
+    res = (res << m) | (unsigned long) (random_limb () % (1UL << m));
+  return res;
+#endif  
 }
 #endif
 
@@ -209,5 +224,46 @@ mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, mp_size_t qxn,
   mpz_clear (r);
 }
 #endif
+
+void
+mpz_dump (mpz_t z)
+{
+  mp_size_t n = z->_mp_size;
+
+  MPFR_STAT_STATIC_ASSERT ((GMP_NUMB_BITS % 4) == 0);
+    
+  if (n == 0)
+    printf ("0");
+  else
+    {
+      int first = 1;
+      if (n < 0)
+        {
+          printf ("-");
+          n = -n;
+        }
+      while (n > 0)
+        {
+          if (first)
+            {
+              printf ("%lx", z->_mp_d[n-1]);
+              first = 0;
+            }
+          else
+            {
+              char s[17];
+              int len;
+              sprintf (s, "%lx", z->_mp_d[n-1]);
+              len = strlen (s);
+              /* one character should be printed for 4 bits */
+              while (len++ < GMP_NUMB_BITS / 4)
+                printf ("0");
+              printf ("%lx", z->_mp_d[n-1]);
+            }
+          n--;
+        }
+    }
+  printf ("\n");
+}
 
 #endif /* MPFR_USE_MINI_GMP */
