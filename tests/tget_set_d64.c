@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define DEC64_MAX 9.999999999999999E384dd
 #endif
 
-#if _MPFR_IEEE_FLOATSxxx
+#if _MPFR_IEEE_FLOATS
 static void
 print_decimal64 (_Decimal64 d)
 {
