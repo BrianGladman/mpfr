@@ -110,7 +110,7 @@ static void
 random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
                          gmp_randstate_t r, mpz_t t)
 {
-  /* Various compile time checks on mprf_random_deviate_t */
+  /* Various compile time checks on mpfr_random_deviate_t */
 
   /* Check that the h field of a mpfr_random_deviate_t can hold W bits */
   MPFR_STAT_STATIC_ASSERT (W > 0 && W <= sizeof (unsigned long) * CHAR_BIT);
