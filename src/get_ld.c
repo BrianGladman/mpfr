@@ -97,33 +97,55 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 #elif GMP_NUMB_BITS == 16
       if (MPFR_LIKELY (denorm == 0))
         {
+          /* manl = tmpmant[1] | tmpmant[0]
+             manh = tmpmant[3] | tmpmant[2] */
           ld.s.manl = tmpmant[0] | ((unsigned long) tmpmant[1] << 16);
           ld.s.manh = tmpmant[2] | ((unsigned long) tmpmant[3] << 16);
         }
       else if (denorm < 16)
         {
+          /* manl = low(mant[2],denorm) | mant[1] | high(mant[0],16-denorm)
+             manh = mant[3] | high(mant[2],16-denorm) */
           ld.s.manl = (tmpmant[0] >> denorm)
             | ((unsigned long) tmpmant[1] << (16 - denorm))
             | ((unsigned long) tmpmant[2] << (32 - denorm));
           ld.s.manh = (tmpmant[2] >> denorm)
             | ((unsigned long) tmpmant[3] << (16 - denorm));
         }
+      else if (denorm == 16)
+        {
+          /* manl = tmpmant[2] | tmpmant[1]
+             manh = 0000000000 | tmpmant[3] */
+          ld.s.manl = tmpmant[1] | ((unsigned long) tmpmant[2] << 16);
+          ld.s.manh = tmpmant[3];
+        }
       else if (denorm < 32)
         {
+          /* manl = low(mant[3],denorm-16) | mant[2] | high(mant[1],32-denorm)
+             manh = high(mant[3],32-denorm) */
           ld.s.manl = (tmpmant[1] >> (denorm - 16))
-            | ((unsigned long) tmpmant[2] << (32 - denorm));
-          if (denorm < 16)
-            ld.s.manl |= ((unsigned long) tmpmant[3] << (48 - denorm));
+            | ((unsigned long) tmpmant[2] << (32 - denorm))
+            | ((unsigned long) tmpmant[3] << (48 - denorm));
           ld.s.manh = tmpmant[3] >> (denorm - 16);
+        }
+      else if (denorm == 32)
+        {
+          /* manl = tmpmant[3] | tmpmant[2]
+             manh = 0 */
+          ld.s.manl = tmpmant[2] | ((unsigned long) tmpmant[3] << 16);
+          ld.s.manh = 0;
         }
       else if (denorm < 48)
         {
+          /* manl = zero(denorm-32) | tmpmant[3] | high(tmpmant[2],48-denorm)
+             manh = 0 */
           ld.s.manl = (tmpmant[2] >> (denorm - 32))
-            | ((unsigned long) tmpmant[3] << (64 - denorm));
+            | ((unsigned long) tmpmant[3] << (48 - denorm));
           ld.s.manh = 0;
         }
       else /* 48 <= denorm < 64 */
         {
+          /* we assume a right shift of 0 is identity */
           ld.s.manl = tmpmant[3] >> (denorm - 48);
           ld.s.manh = 0;
         }
@@ -131,6 +153,8 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 # error "GMP_NUMB_BITS must be 16, 32 or >= 64"
       /* Other values have never been supported anyway. */
 #endif
+      MPFR_ASSERTD((ld.s.manl >> 32) == 0);
+      MPFR_ASSERTD((ld.s.manl >> 32) == 0);
       if (MPFR_LIKELY (denorm == 0))
         {
           ld.s.exph = (e + 0x3FFE) >> 8;
