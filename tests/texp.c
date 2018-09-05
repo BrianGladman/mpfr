@@ -618,6 +618,8 @@ bug20080731 (void)
   mpfr_set_str (x, "-2.c5c85fdf473de6af278ece700fcbdabd03cd0cb9ca62d8b62c@7",
                 16, MPFR_RNDN);
 
+  /* exp(x) is just below 0xf.fffffffffffffffp-1073741828 */
+
   mpfr_init2 (y1, prec);
   mpfr_exp (y1, x, MPFR_RNDU);
 
@@ -629,9 +631,9 @@ bug20080731 (void)
   if (mpfr_cmp0 (y1, y2) != 0)
     {
       printf ("Error in bug20080731\nExpected ");
-      mpfr_out_str (stdout, 16, 0, y2, MPFR_RNDN);
+      mpfr_dump (y2);
       printf ("\nGot      ");
-      mpfr_out_str (stdout, 16, 0, y1, MPFR_RNDN);
+      mpfr_dump (y1);
       printf ("\n");
       exit (1);
     }

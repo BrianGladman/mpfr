@@ -33,6 +33,42 @@ mpz_normalize  (mpz_t, mpz_t, mpfr_exp_t);
 static mpfr_exp_t
 mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
 
+/* count the number of significant bits of n, i.e.,
+   nbits(unsigned long) - count_leading_zeros (n) */
+static int
+nbits_ulong (unsigned long n)
+{
+  int nbits = 0;
+
+  MPFR_ASSERTD (n > 0);
+  while (n >= 0x10000)
+    {
+      n >>= 16;
+      nbits += 16;
+    }
+  MPFR_ASSERTD (n <= 0xffff);
+  if (n >= 0x100)
+    {
+      n >>= 8;
+      nbits += 8;
+    }
+  MPFR_ASSERTD (n <= 0xff);
+  if (n >= 0x10)
+    {
+      n >>= 4;
+      nbits += 4;
+    }
+  MPFR_ASSERTD (n <= 0xf);
+  if (n >= 4)
+    {
+      n >>= 2;
+      nbits += 2;
+    }
+  MPFR_ASSERTD (n <= 3);
+  /* now n = 1, 2, or 3 */
+  return nbits + 1 + (n >= 2);
+}
+
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
@@ -146,9 +182,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     error_r = 0;
   else
     {
-      count_leading_zeros (error_r,
-                           (mp_limb_t) SAFE_ABS (unsigned long, n) + 1);
-      error_r = GMP_NUMB_BITS - error_r;
+      error_r = nbits_ulong (SAFE_ABS (unsigned long, n) + 1);
       /* we have |x| <= 2^error_r * log(2) */
     }
 
