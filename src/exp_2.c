@@ -21,9 +21,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#ifdef MPFR_LONG_WITHIN_LIMB
-#define MPFR_NEED_LONGLONG_H /* for count_leading_zeros */
-#endif
+#define MPFR_NEED_LONGLONG_H  /* MPFR_INT_CEIL_LOG2 */
 #include "mpfr-impl.h"
 
 static unsigned long
@@ -34,48 +32,6 @@ static mpfr_exp_t
 mpz_normalize  (mpz_t, mpz_t, mpfr_exp_t);
 static mpfr_exp_t
 mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
-
-/* count the number of significant bits of n, i.e.,
-   nbits(unsigned long) - count_leading_zeros (n) */
-int
-mpfr_nbits_ulong (unsigned long n)
-{
-#ifdef MPFR_LONG_WITHIN_LIMB
-  int cnt;
-  count_leading_zeros (cnt, (mp_limb_t) n);
-  return GMP_NUMB_BITS - cnt;
-#else  
-  int nbits = 0;
-
-  MPFR_ASSERTD (n > 0);
-  while (n >= 0x10000)
-    {
-      n >>= 16;
-      nbits += 16;
-    }
-  MPFR_ASSERTD (n <= 0xffff);
-  if (n >= 0x100)
-    {
-      n >>= 8;
-      nbits += 8;
-    }
-  MPFR_ASSERTD (n <= 0xff);
-  if (n >= 0x10)
-    {
-      n >>= 4;
-      nbits += 4;
-    }
-  MPFR_ASSERTD (n <= 0xf);
-  if (n >= 4)
-    {
-      n >>= 2;
-      nbits += 2;
-    }
-  MPFR_ASSERTD (n <= 3);
-  /* now n = 1, 2, or 3 */
-  return nbits + 1 + (n >= 2);
-#endif  
-}
 
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
