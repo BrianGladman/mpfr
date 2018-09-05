@@ -21,7 +21,9 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#ifdef MPFR_LONG_WITHIN_LIMB
 #define MPFR_NEED_LONGLONG_H /* for count_leading_zeros */
+#endif
 #include "mpfr-impl.h"
 
 static unsigned long
@@ -35,9 +37,14 @@ mpz_normalize2 (mpz_t, mpz_t, mpfr_exp_t, mpfr_exp_t);
 
 /* count the number of significant bits of n, i.e.,
    nbits(unsigned long) - count_leading_zeros (n) */
-static int
-nbits_ulong (unsigned long n)
+int
+mpfr_nbits_ulong (unsigned long n)
 {
+#ifdef MPFR_LONG_WITHIN_LIMB
+  int cnt;
+  count_leading_zeros (cnt, (mp_limb_t) n);
+  return GMP_NUMB_BITS - cnt;
+#else  
   int nbits = 0;
 
   MPFR_ASSERTD (n > 0);
@@ -67,6 +74,7 @@ nbits_ulong (unsigned long n)
   MPFR_ASSERTD (n <= 3);
   /* now n = 1, 2, or 3 */
   return nbits + 1 + (n >= 2);
+#endif  
 }
 
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
@@ -182,7 +190,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     error_r = 0;
   else
     {
-      error_r = nbits_ulong (SAFE_ABS (unsigned long, n) + 1);
+      error_r = mpfr_nbits_ulong (SAFE_ABS (unsigned long, n) + 1);
       /* we have |x| <= 2^error_r * log(2) */
     }
 

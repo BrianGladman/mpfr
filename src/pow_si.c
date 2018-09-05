@@ -20,7 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* The computation of y = pow_si(x,n) is done by
@@ -149,8 +148,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
         MPFR_ZIV_DECL (loop);
 
         abs_n = - (unsigned long) n;
-        count_leading_zeros (size_n, (mp_limb_t) abs_n);
-        size_n = GMP_NUMB_BITS - size_n;
+        size_n = mpfr_nbits_ulong (abs_n);
 
         /* initial working precision */
         Ny = MPFR_PREC (y);

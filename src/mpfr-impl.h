@@ -2359,6 +2359,8 @@ __MPFR_DECLSPEC void mpfr_mpz_clear (mpz_ptr);
 
 __MPFR_DECLSPEC int mpfr_odd_p (mpfr_srcptr);
 
+__MPFR_DECLSPEC int mpfr_nbits_ulong (unsigned long);  
+
 #ifdef _MPFR_H_HAVE_VA_LIST
 /* Declared only if <stdarg.h> has been included. */
 __MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,
