@@ -111,8 +111,9 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       else if (denorm < 32)
         {
           ld.s.manl = (tmpmant[1] >> (denorm - 16))
-            | ((unsigned int) tmpmant[2] << (32 - denorm))
-            | ((unsigned int) tmpmant[3] << (48 - denorm));
+            | ((unsigned int) tmpmant[2] << (32 - denorm));
+          if (denorm < 16)
+            ld.s.manl |= ((unsigned int) tmpmant[3] << (48 - denorm));
           ld.s.manh = tmpmant[3] >> (denorm - 16);
         }
       else if (denorm < 48)
