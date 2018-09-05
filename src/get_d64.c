@@ -185,7 +185,7 @@ get_decimal64_max (int negative)
 static _Decimal64
 string_to_Decimal64 (char *s)
 {
-  long int exp = 0;
+  long int exp;
   char m[17];
   long n = 0; /* mantissa length */
   char *endptr[1];
@@ -266,19 +266,31 @@ string_to_Decimal64 (char *s)
   x.s.manl |= (d3 << 20) | (d4 << 10) | d5;
 #else /* BID format */
   {
-    mp_size_t rn;
-    mp_limb_t rp[2];
+    unsigned int rp[2]; /* rp[0] and rp[1]  should contain at least 32 bits */
+#define NLIMBS (64 / GMP_NUMB_BITS)
+    mp_limb_t sp[NLIMBS];
+    mp_size_t sn;
     int case_i = strcmp (m, "9007199254740992") < 0;
 
     for (n = 0; n < 16; n++)
       m[n] -= '0';
-    rn = mpn_set_str (rp, (unsigned char *) m, 16, 10);
-    if (rn == 1)
-      rp[1] = 0;
-#if GMP_NUMB_BITS > 32
-    rp[1] = rp[1] << (GMP_NUMB_BITS - 32);
-    rp[1] |= rp[0] >> 32;
-    rp[0] &= 4294967295UL;
+    sn = mpn_set_str (sp, (unsigned char *) m, 16, 10);
+    while (sn < NLIMBS)
+      sp[sn++] = 0;
+    /* now convert {sp, sn} to {rp, 2} */
+#if GMP_NUMB_BITS >= 64
+    MPFR_ASSERTD(sn <= 1);
+    rp[0] = sp[0] & 4294967295UL;
+    rp[1] = sp[0] >> 32;
+#elif GMP_NUMB_BITS == 32
+    MPFR_ASSERTD(sn <= 2);
+    rp[0] = sp[0];
+    rp[1] = sp[1];
+#elif GMP_NUMB_BITS == 16
+    rp[0] = sp[0] | ((unsigned int) sp[1] << 16);
+    rp[1] = sp[2] | ((unsigned int) sp[3] << 16);
+#else
+#error "GMP_NUMB_BITS should be 16, 32, or >= 64"    
 #endif
     if (case_i)
       {  /* s < 2^53: case i) */

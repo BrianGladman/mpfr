@@ -33,7 +33,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define DEC64_MAX 9.999999999999999E384dd
 #endif
 
-#if _MPFR_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATSxxx
 static void
 print_decimal64 (_Decimal64 d)
 {
@@ -533,7 +533,7 @@ check_random_bytes (void)
             printf ("check_random_bytes failed\n");
             printf ("x.d="); print_decimal64 (x.d);
             printf ("y="); mpfr_dump (y);
-            printf ("e="); print_decimal64 (e);
+            printf ("e  ="); print_decimal64 (e);
             exit (1);
           }
     }
