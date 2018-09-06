@@ -1164,7 +1164,7 @@ test_20151023 (void)
           MPFR_ASSERTN(inex == 0);
           mpfr_nextabove (n);
           mpfr_div (q, n, d, MPFR_RNDN);
-          if (mpfr_cmp (q, q0) != 0)
+          if (! mpfr_equal_p (q, q0))
             {
               printf ("Error in test_20151023 for p=%lu, rnd=RNDN\n", p);
               printf ("n="); mpfr_dump (n);
