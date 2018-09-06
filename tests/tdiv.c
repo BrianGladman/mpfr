@@ -1139,8 +1139,10 @@ test_20151023 (void)
 
       /* generate a random divisor of p bits */
       mpfr_urandomb (d, RANDS);
-      /* generate a random quotient of GMP_NUMB_BITS bits */
-      mpfr_urandomb (q0, RANDS);
+      /* generate a random non-zero quotient of GMP_NUMB_BITS bits */
+      do
+        mpfr_urandomb (q0, RANDS);
+      while (mpfr_zero_p (q0));
       /* zero-pad the quotient to p bits */
       inex = mpfr_prec_round (q0, p, MPFR_RNDN);
       MPFR_ASSERTN(inex == 0);
@@ -1162,7 +1164,15 @@ test_20151023 (void)
           MPFR_ASSERTN(inex == 0);
           mpfr_nextabove (n);
           mpfr_div (q, n, d, MPFR_RNDN);
-          MPFR_ASSERTN(mpfr_cmp (q, q0) == 0);
+          if (mpfr_cmp (q, q0) != 0)
+            {
+              printf ("Error in test_20151023 for p=%lu, rnd=RNDN\n", p);
+              printf ("n="); mpfr_dump (n);
+              printf ("d="); mpfr_dump (d);
+              printf ("expected q0="); mpfr_dump (q0);
+              printf ("got       q="); mpfr_dump (q);
+              exit (1);
+            }
 
           inex = mpfr_mul (n, d, q0, MPFR_RNDN);
           MPFR_ASSERTN(inex == 0);
