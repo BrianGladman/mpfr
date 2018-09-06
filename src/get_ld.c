@@ -153,8 +153,6 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 # error "GMP_NUMB_BITS must be 16, 32 or >= 64"
       /* Other values have never been supported anyway. */
 #endif
-      MPFR_ASSERTD((ld.s.manl >> 32) == 0);
-      MPFR_ASSERTD((ld.s.manl >> 32) == 0);
       if (MPFR_LIKELY (denorm == 0))
         {
           ld.s.exph = (e + 0x3FFE) >> 8;
