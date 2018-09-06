@@ -121,7 +121,7 @@ gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
   if (m) /* generate m extra bits */
     res = (res << m) | (unsigned long) (random_limb () % (1UL << m));
   return res;
-#endif  
+#endif
 }
 #endif
 
@@ -231,7 +231,7 @@ mpz_dump (mpz_t z)
   mp_size_t n = z->_mp_size;
 
   MPFR_STAT_STATIC_ASSERT ((GMP_NUMB_BITS % 4) == 0);
-    
+
   if (n == 0)
     printf ("0");
   else

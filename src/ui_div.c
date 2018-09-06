@@ -95,7 +95,7 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode
       mpfr_set_ui (uu, u, MPFR_RNDZ);
       inex = mpfr_div (y, uu, x, rnd_mode);
       mpfr_clear (uu);
-      }      
+      }
 #endif
 
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);

@@ -290,7 +290,7 @@ string_to_Decimal64 (char *s)
     rp[0] = sp[0] | ((unsigned int) sp[1] << 16);
     rp[1] = sp[2] | ((unsigned int) sp[3] << 16);
 #else
-#error "GMP_NUMB_BITS should be 16, 32, or >= 64"    
+#error "GMP_NUMB_BITS should be 16, 32, or >= 64"
 #endif
     if (case_i)
       {  /* s < 2^53: case i) */
