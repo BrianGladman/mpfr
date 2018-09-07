@@ -189,8 +189,8 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
         int a12 = a[an - 1] << 8;
         if (an >= 2)
           a12 |= a[an - 2];
-        MPFR_ASSERTN(GMP_NUMB_BITS >= 12 + as);
-        i = a12 >> (GMP_NUMB_BITS - (12 + as));
+        MPFR_ASSERTN(GMP_NUMB_BITS >= 4 + as);
+        i = a12 >> (GMP_NUMB_BITS - (4 + as));
       }
 #endif
       /* if one wants faithful rounding for p=11, replace #if 0 by #if 1 */
