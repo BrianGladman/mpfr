@@ -1855,23 +1855,25 @@ is @minus{}Inf instead of +Inf.
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_rootn_ui (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
-of @var{op} rounded in the direction @var{rnd}.
-For @var{k} = 0, set @var{rop} to NaN@.
-For @var{k} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
+@deftypefunx int mpfr_rootn_ui (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the @var{n}th root (with @math{@var{n} = 3}, the cubic root,
+for @code{mpfr_cbrt}) of @var{op} rounded in the direction @var{rnd}.
+For @math{@var{n} = 0}, set @var{rop} to NaN@.
+For @var{n} odd (resp.@: even) and @var{op} negative (including @minus{}Inf),
 set @var{rop} to a negative number (resp.@: NaN)@.
 If @var{op} is zero, set @var{rop} to zero with the sign obtained by the
-usual limit rules, i.e., the same sign as @var{op} if @var{k} is odd, and
-positive if @var{k} is even.
+usual limit rules, i.e., the same sign as @var{op} if @var{n} is odd, and
+positive if @var{n} is even.
 
 These functions agree with the rootn function of the IEEE 754-2008 standard
-(Section 9.2).
+and the P754/D2.41 draft of the next standard (Section 9.2). Note that it
+is here restricted to @math{@var{n} @ge{} 0}. Functions allowing a negative
+@var{n} may be implemented in the future.
 @end deftypefun
 
-@deftypefun int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 This function is the same as @code{mpfr_rootn_ui} except when @var{op}
-is @minus{}0 and @var{k} is even: the result is @minus{}0 instead of +0
+is @minus{}0 and @var{n} is even: the result is @minus{}0 instead of +0
 (the reason was to be consistent with @code{mpfr_sqrt}). Said otherwise,
 if @var{op} is zero, set @var{rop} to @var{op}.
 
