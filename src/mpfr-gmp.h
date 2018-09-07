@@ -64,11 +64,13 @@ extern "C" {
 # error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
 #endif
 
-#if (GMP_NUMB_BITS<16) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))
-# error "GMP_NUMB_BITS must be a power of 2, and >= 16"
+#if (GMP_NUMB_BITS<8) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))
+# error "GMP_NUMB_BITS must be a power of 2, and >= 8"
 #endif
 
-#if GMP_NUMB_BITS == 16
+#if GMP_NUMB_BITS == 8
+# define MPFR_LOG2_GMP_NUMB_BITS 3
+#elif GMP_NUMB_BITS == 16
 # define MPFR_LOG2_GMP_NUMB_BITS 4
 #elif GMP_NUMB_BITS == 32
 # define MPFR_LOG2_GMP_NUMB_BITS 5
