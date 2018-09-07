@@ -247,19 +247,19 @@ mpz_dump (mpz_t z)
         {
           if (first)
             {
-              printf ("%lx", z->_mp_d[n-1]);
+              printf ("%lx", (unsigned long) z->_mp_d[n-1]);
               first = 0;
             }
           else
             {
               char s[17];
               int len;
-              sprintf (s, "%lx", z->_mp_d[n-1]);
+              sprintf (s, "%lx", (unsigned long) z->_mp_d[n-1]);
               len = strlen (s);
               /* one character should be printed for 4 bits */
               while (len++ < GMP_NUMB_BITS / 4)
                 printf ("0");
-              printf ("%lx", z->_mp_d[n-1]);
+              printf ("%lx", (unsigned long) z->_mp_d[n-1]);
             }
           n--;
         }
