@@ -71,8 +71,8 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
 
   /* Start off at a random bit position in the most significant limb.  */
   bit_pos = GMP_NUMB_BITS - 1;
-  ran >>= 6;                            /* Ideally   log2(GMP_NUMB_BITS) */
-  ran_nbits = BITS_PER_RANDCALL - 6;    /* Ideally - log2(GMP_NUMB_BITS) */
+  ran >>= MPFR_LOG2_GMP_NUMB_BITS;      /* Ideally   log2(GMP_NUMB_BITS) */
+  ran_nbits = BITS_PER_RANDCALL - MPFR_LOG2_GMP_NUMB_BITS; /* Ideally - log2(GMP_NUMB_BITS) */
 
   /* Bit 0 of ran chooses string of ones/string of zeroes.
      Make most significant limb be non-zero by setting bit 0 of RAN.  */
