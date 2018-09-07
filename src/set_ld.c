@@ -68,6 +68,10 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 # define MPFR_LIMBS_PER_LONG_DOUBLE 2
 #elif GMP_NUMB_BITS == 16
 # define MPFR_LIMBS_PER_LONG_DOUBLE 4
+#elif GMP_NUMB_BITS == 8
+# define MPFR_LIMBS_PER_LONG_DOUBLE 8
+#else
+#error "GMP_NUMB_BITS is assumed to be 8, 16, 32 or >= 64"
 #endif
 /* The hypothetical GMP_NUMB_BITS == 16 is not supported. It will trigger
    an error below. */
@@ -145,8 +149,17 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   tmpmant[1] = (mp_limb_t) (x.s.manl >> 16);
   tmpmant[2] = (mp_limb_t) x.s.manh;
   tmpmant[3] = (mp_limb_t) (x.s.manh >> 16);
+#elif MPFR_LIMBS_PER_LONG_DOUBLE == 8
+  tmpmant[0] = (mp_limb_t) x.s.manl;
+  tmpmant[1] = (mp_limb_t) (x.s.manl >> 8);
+  tmpmant[2] = (mp_limb_t) (x.s.manl >> 16);
+  tmpmant[3] = (mp_limb_t) (x.s.manl >> 24);
+  tmpmant[4] = (mp_limb_t) x.s.manh;
+  tmpmant[5] = (mp_limb_t) (x.s.manh >> 8);
+  tmpmant[6] = (mp_limb_t) (x.s.manh >> 16);
+  tmpmant[7] = (mp_limb_t) (x.s.manh >> 24);
 #else
-#error "MPFR_LIMBS_PER_LONG_DOUBLE should be 1, 2 or 4"
+#error "MPFR_LIMBS_PER_LONG_DOUBLE should be 1, 2, 4 or 8"
 #endif /* MPFR_LIMBS_PER_LONG_DOUBLE >= 2 */
   {
     int i = MPFR_LIMBS_PER_LONG_DOUBLE;

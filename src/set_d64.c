@@ -218,8 +218,17 @@ decimal64_to_string (char *s, _Decimal64 d)
   sp[1] = MPFR_LIMB(rp[0] >> 16);
   sp[2] = MPFR_LIMB(rp[1]);
   sp[3] = MPFR_LIMB(rp[1] >> 16);
+#elif GMP_NUMB_BITS == 8
+  sp[0] = MPFR_LIMB(rp[0]);
+  sp[1] = MPFR_LIMB(rp[0] >> 8);
+  sp[2] = MPFR_LIMB(rp[0] >> 16);
+  sp[3] = MPFR_LIMB(rp[0] >> 24);
+  sp[4] = MPFR_LIMB(rp[1]);
+  sp[5] = MPFR_LIMB(rp[1] >> 8);
+  sp[6] = MPFR_LIMB(rp[1] >> 16);
+  sp[7] = MPFR_LIMB(rp[1] >> 24);
 #else
-#error "GMP_NUMB_BITS should be 16, 32, or >= 64"
+#error "GMP_NUMB_BITS should be 8, 16, 32, or >= 64"
 #endif
   sn = NLIMBS;
   while (sn > 0 && sp[sn - 1] == 0)

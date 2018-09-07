@@ -149,6 +149,16 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           ld.s.manl = tmpmant[3] >> (denorm - 48);
           ld.s.manh = 0;
         }
+#elif GMP_NUMB_BITS == 8
+      {
+        uint64_t mant = 0;
+        int i;
+        for (i = 0; i < 8; i++)
+          mant |= ((unsigned long) tmpmant[i] << (8*i));
+        mant >>= denorm;
+        ld.s.manl = mant;
+        ld.s.manh = mant >> 32;
+      }
 #else
 # error "GMP_NUMB_BITS must be 16, 32 or >= 64"
       /* Other values have never been supported anyway. */

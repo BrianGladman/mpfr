@@ -139,3 +139,7 @@ void mpn_tdiv_qr (mp_limb_t *, mp_limb_t *, mp_size_t,
 #ifndef mpz_rrandomb
 #define mpz_rrandomb mpz_urandomb
 #endif
+
+#ifndef mpz_dump
+void mpz_dump (mpz_t);
+#endif
