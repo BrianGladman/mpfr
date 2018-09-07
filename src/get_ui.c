@@ -68,9 +68,6 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
     }
 #else
   {
-    mp_size_t n;
-    mpfr_exp_t exp;
-
     exp = MPFR_GET_EXP (x);
     n = MPFR_LIMB_SIZE(x);
     /* invariant: the current word x[n-1] has to be multiplied by
