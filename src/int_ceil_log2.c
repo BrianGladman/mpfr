@@ -29,6 +29,7 @@ __gmpfr_int_ceil_log2 (unsigned long n)
   if (MPFR_UNLIKELY (n == 1))
     return 0;
   else
+#ifdef MPFR_LONG_WITHIN_LIMB
     {
       int b;
       mp_limb_t limb;
@@ -39,4 +40,7 @@ __gmpfr_int_ceil_log2 (unsigned long n)
       count_leading_zeros (b, limb);
       return GMP_NUMB_BITS - b;
     }
+#else
+  return mpfr_nbits_ulong (n - 1);
+#endif
 }
