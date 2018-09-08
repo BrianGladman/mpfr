@@ -379,7 +379,9 @@ corner_cases (int n)
           mpfr_init2 (t, 2 * GMP_NUMB_BITS);
           for (i = 0; i < n; i++)
             {
-              u = randlimb ();
+              do
+                u = randlimb ();
+              while (u == 0);
               do
                 v = randlimb ();
               while (v <= MPFR_LIMB_HIGHBIT);
