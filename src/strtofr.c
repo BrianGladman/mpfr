@@ -563,11 +563,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                characters neglected from pstr->mant) */
         {
           /* shift {y, num_limb} for (GMP_NUMB_BITS - count) bits
-             to the right. FIXME: can we prove that count cannot be zero here,
-             since mpn_rshift does not accept a shift of GMP_NUMB_BITS? */
-          MPFR_ASSERTD (count != 0);
-          exact = mpn_rshift (y, y, real_ysize, GMP_NUMB_BITS - count) ==
-            MPFR_LIMB_ZERO;
+             to the right.
+             When calling mpfr_set_str (y, t, b, MPFR_RNDN) with prec(y)=12, b=54
+             and t = 'rrMm@-99', with GMP_NUMB_BITS=8, we get count=0 here. */
+          if (count != 0)
+            exact = mpn_rshift (y, y, real_ysize, GMP_NUMB_BITS - count) ==
+              MPFR_LIMB_ZERO;
+          else
+            exact = 1;
           /* for each bit shift increase exponent of y */
           exp = GMP_NUMB_BITS - count;
         }
