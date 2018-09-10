@@ -570,7 +570,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
             exact = mpn_rshift (y, y, real_ysize, GMP_NUMB_BITS - count) ==
               MPFR_LIMB_ZERO;
           else
-            exact = 1;
+            {
+              /* copy {y+1, real_ysize-1} to {y, real_ysize-1} */
+              exact = y[0] == MPFR_LIMB_ZERO;
+              mpn_copyi (y, y + 1, real_ysize - 1);
+            }
           /* for each bit shift increase exponent of y */
           exp = GMP_NUMB_BITS - count;
         }

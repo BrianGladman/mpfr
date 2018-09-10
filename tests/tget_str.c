@@ -1425,6 +1425,7 @@ check_corner (void)
             {
               printf ("mpfr_set_str o mpfr_get_str <> Id for b=%d\n", b);
               printf ("x="); mpfr_dump (x);
+              t[oprec] = '\0';
               printf ("mpfr_get_str converted to 0.%s@%ld\n", t, (long) f);
               printf ("mpfr_set_str converted to:\n");
               printf ("y="); mpfr_dump (y);
@@ -1435,6 +1436,22 @@ check_corner (void)
           tests_free (s, oprec + 6);
           tests_free (t, oprec + 6);
         }
+}
+
+static void
+bug20180908 (void)
+{
+  mpfr_t x, y;
+  const char s[] = "ssq4";
+
+  mpfr_init2 (x, 12);
+  mpfr_init2 (y, 12);
+  mpfr_set_str_binary (x, "0.100010111010E24");
+  /* x = 9150464 = [4, 52, 54, 54] in base 55 */
+  mpfr_set_str (y, s, 55, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_equal_p (x, y));
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 int
@@ -1451,6 +1468,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  bug20180908 ();
   check_corner ();
   test_ndigits ();
   coverage ();
