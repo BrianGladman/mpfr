@@ -661,14 +661,22 @@ test_sqrt1n (void)
   mpfr_t r, u;
   int inex;
 
+  MPFR_ASSERTD(GMP_NUMB_BITS >= 8); /* so that 15^2 is exactly representable */
+
   mpfr_init2 (r, GMP_NUMB_BITS);
   mpfr_init2 (u, GMP_NUMB_BITS);
 
-  inex = mpfr_set_ui_2exp (u, 17 * 17, 2 * GMP_NUMB_BITS - 10, MPFR_RNDN);
+  inex = mpfr_set_ui_2exp (u, 9 * 9, 2 * GMP_NUMB_BITS - 10, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
   inex = mpfr_sqrt (r, u, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
-  MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 17, GMP_NUMB_BITS - 5) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 9, GMP_NUMB_BITS - 5) == 0);
+
+  inex = mpfr_set_ui_2exp (u, 15 * 15, 2 * GMP_NUMB_BITS - 10, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  inex = mpfr_sqrt (r, u, MPFR_RNDN);
+  MPFR_ASSERTN(inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (r, 15, GMP_NUMB_BITS - 5) == 0);
 
   inex = mpfr_set_ui_2exp (u, 1, GMP_NUMB_BITS - 2, MPFR_RNDN);
   MPFR_ASSERTN(inex == 0);
