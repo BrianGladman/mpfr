@@ -545,7 +545,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* convert str into binary: note that pstr->mant is big endian,
          thus no offset is needed */
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
-      MPFR_ASSERTD (real_ysize <= ysize+1);
+      MPFR_ASSERTD (real_ysize <= ysize + 2);
 
       /* normalize y: warning we can even get ysize+1 limbs! */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
@@ -573,17 +573,23 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                bits from the result of mpn_set_str (in addition to the
                characters neglected from pstr->mant) */
         {
-          /* shift {y, num_limb} for (GMP_NUMB_BITS - count) bits
-             to the right.
-             When calling mpfr_set_str (y, t, b, MPFR_RNDN) with prec(y)=12, b=54
-             and t = 'rrMm@-99', with GMP_NUMB_BITS=8, we get count=0 here. */
+          /* Shift {y, real_ysize} for (GMP_NUMB_BITS - count) bits
+             to the right, and put the ysize most significant limbs
+             into {y, ysize}. We have real_ysize = ysize or ysize + 1. */
           if (count != 0)
-            exact = mpn_rshift (y, y, real_ysize, GMP_NUMB_BITS - count) ==
-              MPFR_LIMB_ZERO;
+            {
+              exact = real_ysize == ysize + 1 || y[0] == MPFR_LIMB_ZERO;
+              /* mpn_rshift allows overlap, provided destination <= source */
+              exact &= mpn_rshift (y, y + real_ysize - ysize - 1, real_ysize,
+                                   GMP_NUMB_BITS - count) == MPFR_LIMB_ZERO;
+            }
           else
             {
-              /* copy {y+1, real_ysize-1} to {y, real_ysize-1} */
+              /* the case real_ysize = ysize + 2 with count = 0 cannot happen
+                 even with GMP_NUMB_BITS = 8 since 62^2 < 256^2/2 */
+              MPFR_ASSERTD(real_ysize == ysize + 1);
               exact = y[0] == MPFR_LIMB_ZERO;
+              /* copy {y+real_ysize-ysize, ysize} to {y, ysize} */
               mpn_copyi (y, y + 1, real_ysize - 1);
             }
           /* for each bit shift increase exponent of y */
