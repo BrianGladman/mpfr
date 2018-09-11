@@ -580,8 +580,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
             {
               exact = real_ysize == ysize + 1 || y[0] == MPFR_LIMB_ZERO;
               /* mpn_rshift allows overlap, provided destination <= source */
-              exact &= mpn_rshift (y, y + real_ysize - ysize - 1, real_ysize,
-                                   GMP_NUMB_BITS - count) == MPFR_LIMB_ZERO;
+              exact = exact &&
+                mpn_rshift (y, y + real_ysize - ysize - 1, real_ysize,
+                            GMP_NUMB_BITS - count) == MPFR_LIMB_ZERO;
             }
           else
             {
