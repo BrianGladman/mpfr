@@ -512,6 +512,17 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          and ysize_bits = a*Den+b,
          then ysize_bits * Num/Den = a*Num + (b * Num)/Den,
          thus ceil(ysize_bits * Num/Den) = a*Num + floor(b * Num + Den - 1)/Den
+
+         Note: denoting m = pstr_size and n = ysize_bits, assuming we have
+         m = 1 + ceil(n/log2(b)), i.e., b^(m-1) >= 2^n > b^(m-2), then
+         b^(m-1)/2^n < b, and since we consider m characters of the input,
+         the corresponding part is less than b^m < b^2*2^n.
+         This implies that if b^2 < 2^GMP_NUMB_BITS, which for b <= 62 holds
+         for GMP_NUMB_BITS >= 12, we have real_ysize <= ysize+1 below
+         (this also imlies that for GMP_NUMB_BITS >= 13, the number of bits
+         of y[real_ysize-1] below is less than GMP_NUMB_BITS, thus
+         count < GMP_NUMB_BITS.
+         Warning: for GMP_NUMB_BITS=8, we can have real_ysize = ysize+2!
       */
       {
         unsigned long Num = RedInvLog2Table[pstr->base-2][0];
