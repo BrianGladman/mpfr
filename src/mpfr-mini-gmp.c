@@ -27,8 +27,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_USE_MINI_GMP
 
-#include "mpfr-mini-gmp.h"
-
 /************************ random generation functions ************************/
 
 #ifdef WANT_gmp_randinit_default
