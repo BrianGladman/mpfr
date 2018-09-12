@@ -20,16 +20,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <stdlib.h> /* for size_t */
-#include "gmp.h"
-
 #ifndef gmp_version
 extern char gmp_version[];
 #endif
 
 #ifndef GMP_NUMB_BITS
 /* see https://gmplib.org/list-archives/gmp-bugs/2015-October/003755.html */
-#include <limits.h>
 #define GMP_NUMB_BITS (CHAR_BIT * sizeof(mp_limb_t))
 #endif
 
