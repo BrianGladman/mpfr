@@ -216,7 +216,15 @@ dnl Warning! The following tests must be done before Autoconf selects
 dnl a compiler. This means that some macros such as AC_PROG_CC and
 dnl AM_PROG_AR must be put after the following code.
 
-if test -z "$user_redefine_cc" && test "$cross_compiling" != yes ; then
+dnl We do not do this check if mini-gmp is used. Note that the status of
+dnl --enable-mini-gmp and --with-mini-gmp is already available even though
+dnl these options will be handled later (at this time, --with-mini-gmp is
+dnl not even handled yet).
+
+if test -z "$user_redefine_cc" && \
+   test "$cross_compiling" != yes && \
+   test "${enable_mini_gmp+set}" != set && \
+   test "${with_mini_gmp+set}" != set ; then
 
 dnl We need to guess the C preprocessor instead of using AC_PROG_CPP,
 dnl since AC_PROG_CPP implies AC_PROG_CC, which chooses a compiler
