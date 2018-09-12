@@ -169,8 +169,13 @@ test_version (void)
      installations). */
   if (err)
     {
+#ifndef MPFR_USE_MINI_GMP
       printf ("ERROR! The versions of gmp.h (%s) and libgmp (%s) do not "
               "match.\nThe possible causes are:\n", buffer, gmp_version);
+#else /* libgmp is not defined in mini-gmp */
+      printf ("ERROR! The versions of gmp.h (%s) and libgmp do not "
+              "match.\nThe possible causes are:\n", buffer);
+#endif
       printf ("  * A bad configuration in your include/library search paths.\n"
               "  * An inconsistency in the include/library search paths of\n"
               "    your development environment; an example:\n"
