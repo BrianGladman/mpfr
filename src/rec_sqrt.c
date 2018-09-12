@@ -179,7 +179,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
   if (p == 11) /* should happen only from recursive calls */
     {
       unsigned long i, ab, ac;
-      int t;
+      mp_limb_t t;
 
       /* take the 12+as most significant bits of A */
 #if GMP_NUMB_BITS >= 16
