@@ -103,6 +103,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
+# ifdef MPFR_USE_MINI_GMP
+#  error "MPFR_HAVE_GMP_IMPL and MPFR_USE_MINI_GMP must not be both defined"
+# endif
 # include "gmp-impl.h"
 # ifdef MPFR_NEED_LONGLONG_H
 #  include "longlong.h"
