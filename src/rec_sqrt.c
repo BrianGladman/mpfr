@@ -184,7 +184,8 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       /* take the 12+as most significant bits of A */
 #if GMP_NUMB_BITS >= 16
       i = a[an - 1] >> (GMP_NUMB_BITS - (12 + as));
-#else /* GMP_NUMB_BITS = 8 */
+#else
+      MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 8);
       {
         unsigned int a12 = a[an - 1] << 8;
         if (an >= 2)
@@ -197,15 +198,15 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       ab = i >> 4;
       ac = (ab & 0x3F0) | (i & 0x0F);
       t = T1[ab - 0x80] + T2[ac - 0x80];  /* fits on 16 bits */
-      if (GMP_NUMB_BITS >= 16) /* x has only one limb */
-        x[0] = (mp_limb_t) t << (GMP_NUMB_BITS - p);
-      else
-        {
-          MPFR_ASSERTD (GMP_NUMB_BITS == 8);
-          MPFR_ASSERTD (1024 <= t && t <= 2047);
-          x[1] = t >> 3; /* 128 <= x[1] <= 255 */
-          x[0] = MPFR_LIMB_LSHIFT(t, 5);
-        }
+#if GMP_NUMB_BITS >= 16
+      /* x has only one limb */
+      x[0] = (mp_limb_t) t << (GMP_NUMB_BITS - p);
+#else
+      MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 8);
+      MPFR_ASSERTD (1024 <= t && t <= 2047);
+      x[1] = t >> 3; /* 128 <= x[1] <= 255 */
+      x[0] = MPFR_LIMB_LSHIFT(t, 5);
+#endif
     }
   else /* p >= 12 */
     {
