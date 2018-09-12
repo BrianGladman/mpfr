@@ -179,14 +179,14 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
   if (p == 11) /* should happen only from recursive calls */
     {
       unsigned long i, ab, ac;
-      mp_limb_t t;
+      unsigned int t;
 
       /* take the 12+as most significant bits of A */
 #if GMP_NUMB_BITS >= 16
       i = a[an - 1] >> (GMP_NUMB_BITS - (12 + as));
 #else /* GMP_NUMB_BITS = 8 */
       {
-        int a12 = a[an - 1] << 8;
+        unsigned int a12 = a[an - 1] << 8;
         if (an >= 2)
           a12 |= a[an - 2];
         MPFR_ASSERTN(GMP_NUMB_BITS >= 4 + as);
@@ -196,13 +196,13 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
       /* if one wants faithful rounding for p=11, replace #if 0 by #if 1 */
       ab = i >> 4;
       ac = (ab & 0x3F0) | (i & 0x0F);
-      t = (int) T1[ab - 0x80] + (int) T2[ac - 0x80];
+      t = T1[ab - 0x80] + T2[ac - 0x80];  /* fits on 16 bits */
       if (GMP_NUMB_BITS >= 16) /* x has only one limb */
-        x[0] = t << (GMP_NUMB_BITS - p);
+        x[0] = (mp_limb_t) t << (GMP_NUMB_BITS - p);
       else
         {
-          MPFR_ASSERTD(GMP_NUMB_BITS == 8);
-          /* 1024 <= t <= 2047 */
+          MPFR_ASSERTD (GMP_NUMB_BITS == 8);
+          MPFR_ASSERTD (1024 <= t && t <= 2047);
           x[1] = t >> 3; /* 128 <= x[1] <= 255 */
           x[0] = MPFR_LIMB_LSHIFT(t, 5);
         }
