@@ -66,11 +66,13 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
 #else
       while (exp > GMP_NUMB_BITS)
         {
+          MPFR_ASSERTD (n > 0);
           s += (unsigned long) MPFR_MANT(x)[n - 1] << (exp - GMP_NUMB_BITS);
           n--;
           exp -= GMP_NUMB_BITS;
         }
 #endif
+      MPFR_ASSERTD (n > 0);
       s += MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
     }
 
