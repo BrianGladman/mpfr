@@ -282,13 +282,15 @@ reduce2 (mpz_t S, mpz_t C, mpfr_prec_t prec)
 
    Assumes prec >= 10.
 */
+
+#define  KMAX 64
 static unsigned long
 sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
             mpfr_prec_t prec)
 {
-  mpz_t T[GMP_NUMB_BITS], Q[GMP_NUMB_BITS], ptoj[GMP_NUMB_BITS], pp;
-  mpfr_prec_t log2_nb_terms[GMP_NUMB_BITS], mult[GMP_NUMB_BITS];
-  mpfr_prec_t accu[GMP_NUMB_BITS], size_ptoj[GMP_NUMB_BITS];
+  mpz_t T[KMAX], Q[KMAX], ptoj[KMAX], pp;
+  mpfr_prec_t log2_nb_terms[KMAX], mult[KMAX];
+  mpfr_prec_t accu[KMAX], size_ptoj[KMAX];
   mpfr_prec_t prec_i_have, h, r0 = r, pp_s, p_s;
   unsigned long i, j, m;
   int alloc, k, l;
