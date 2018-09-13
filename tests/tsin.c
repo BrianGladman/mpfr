@@ -194,7 +194,11 @@ check_nans (void)
 }
 
 #define TEST_FUNCTION test_sin
+#ifndef MPFR_USE_MINI_GMP
 #define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
+#else
+#define REDUCE_EMAX 16383  /* reduce further since mini-gmp works in O(n^2) */
+#endif
 #include "tgeneric.c"
 
 const char xs[] = "0.111011111110110000111000001100000111110E-1";
