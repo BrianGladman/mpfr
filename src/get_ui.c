@@ -56,35 +56,23 @@ mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
 
   /* warning: if x=0, taking its exponent is illegal */
-  if (MPFR_IS_ZERO(x))
-    s = 0;
-  else
-#ifdef MPFR_LONG_WITHIN_LIMB
+  if (MPFR_NOTZERO (x))
     {
-      /* now the result is in the most significant limb of x */
-      exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
-      n = MPFR_LIMB_SIZE(x);
-      s = MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
-    }
+      exp = MPFR_GET_EXP (x);
+      MPFR_ASSERTD (exp >= 1); /* since |x| >= 1 */
+      n = MPFR_LIMB_SIZE (x);
+#ifdef MPFR_LONG_WITHIN_LIMB
+      MPFR_ASSERTD (exp <= GMP_NUMB_BITS);
 #else
-  {
-    exp = MPFR_GET_EXP (x);
-    n = MPFR_LIMB_SIZE(x);
-    /* invariant: the current word x[n-1] has to be multiplied by
-       2^(exp - GMP_NUMB_BITS) */
-    s = 0;
-    while (exp > 0)
-      {
-        MPFR_ASSERTD(n > 0);
-        if (exp <= GMP_NUMB_BITS)
-          s += MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
-        else
+      while (exp > GMP_NUMB_BITS)
+        {
           s += (unsigned long) MPFR_MANT(x)[n - 1] << (exp - GMP_NUMB_BITS);
-        n --;
-        exp -= GMP_NUMB_BITS;
-      }
-  }
+          n--;
+          exp -= GMP_NUMB_BITS;
+        }
 #endif
+      s += MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
+    }
 
   mpfr_clear (x);
 
