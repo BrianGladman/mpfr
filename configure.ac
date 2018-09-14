@@ -368,7 +368,7 @@ AC_ARG_ENABLE(float128,
 
 test_libgmp=__gmpz_init
 
-dnl Removed this option?
+dnl Remove this option?
 dnl This option assumes that mini-gmp has already been built (like if
 dnl it were a real GMP) and that the corresponding gmp.h is the one of
 dnl mini-gmp. Thus the --enable-mini-gmp is misused, because the fact
