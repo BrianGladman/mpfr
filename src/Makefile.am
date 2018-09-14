@@ -91,13 +91,6 @@ libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:0
 $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.sh
 	(cd $(top_srcdir) && ./tools/get_patches.sh) > $@ || rm -f $@
 
-# Do not add get_patches.c to CLEANFILES so that this file doesn't
-# need to be (re)built as long as no patches are applied. Anyway the
-# update of this file should be regarded as part of the patch process,
-# and "make clean" shouldn't remove it, just like it doesn't remove
-# what has been changed by "patch".
-#CLEANFILES = get_patches.c
-
 # For check-gmp-symbols
 GMPC = $(top_builddir)/src/gmp.c
 GMPI = $(top_builddir)/src/gmp.i
@@ -146,6 +139,11 @@ check-exported-symbols: $(LTLIBRARIES)
 	  fi; \
 	fi
 
+# Do not add get_patches.c to CLEANFILES so that this file doesn't
+# need to be (re)built as long as no patches are applied. Anyway the
+# update of this file should be regarded as part of the patch process,
+# and "make clean" shouldn't remove it, just like it doesn't remove
+# what has been changed by "patch".
 CLEANFILES = $(GMPC) $(GMPI)
 
 .PHONY: check-gmp-symbols check-exported-symbols
