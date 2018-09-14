@@ -217,9 +217,8 @@ dnl a compiler. This means that some macros such as AC_PROG_CC and
 dnl AM_PROG_AR must be put after the following code.
 
 dnl We do not do this check if mini-gmp is used. Note that the status of
-dnl --enable-mini-gmp and --with-mini-gmp is already available even though
-dnl these options will be handled later (at this time, --with-mini-gmp is
-dnl not even handled yet).
+dnl --enable-mini-gmp is already available even though this option will
+dnl be handled later (at this time, --with-mini-gmp is not handled yet).
 
 if test -z "$user_redefine_cc" && \
    test "$cross_compiling" != yes && \
@@ -369,6 +368,13 @@ AC_ARG_ENABLE(float128,
 
 test_libgmp=__gmpz_init
 
+dnl Removed this option?
+dnl This option assumes that mini-gmp has already been built (like if
+dnl it were a real GMP) and that the corresponding gmp.h is the one of
+dnl mini-gmp. Thus the --enable-mini-gmp is misused, because the fact
+dnl that mini-gmp is enabled or not is what the gmp.h file contains.
+dnl Said otherwise, this should have just been an autodetection.
+dnl Note: A future --with-mini-gmp option may make this one obsolete.
 AC_ARG_ENABLE(mini-gmp,
    [  --enable-mini-gmp       build MPFR with mini-gmp (experimental) [[default=no]]],
    [ case $enableval in
