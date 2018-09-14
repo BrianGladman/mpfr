@@ -222,6 +222,9 @@ AC_ARG_ENABLE(tune-for-coverage,
       *)    AC_MSG_ERROR([bad value for --enable-tune-for-coverage]) ;;
      esac])
 
+dnl Makefile.am files can use "if MINI_GMP" / ... / "endif".
+AM_CONDITIONAL([MINI_GMP], [test "$use_mini_gmp" = yes])
+
 
 dnl
 dnl Setup CC and CFLAGS
