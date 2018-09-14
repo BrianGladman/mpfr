@@ -121,6 +121,24 @@ AC_ARG_WITH(gmp_build,
    fi
    ])
 
+AC_ARG_WITH(mini_gmp,
+   [  --with-mini-gmp=DIR     use mini-gmp (sources in DIR) instead of GMP],
+   [
+   MPFR_PARSE_DIRECTORY(["$withval"],[withval])
+   if test -z "$gmp_lib_path" && test -z "$with_gmp_include" && \
+      test -z "$use_gmp_build"; then
+     if test -f "$withval/mini-gmp.c" && test -f "$withval/mini-gmp.h"; then
+       AC_DEFINE([MPFR_USE_MINI_GMP],1,[Use mini-gmp])
+       CPPFLAGS="$CPPFLAGS -I$withval"
+       use_mini_gmp=yes
+     else
+       AC_MSG_FAILURE([mini-gmp.{c,h} not found in $withval])
+     fi
+   else
+     AC_MSG_FAILURE([Do not use --with-mini-gmp and other --with-gmp options simultaneously.])
+   fi
+  ])
+
 AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
    AC_DEFINE_UNQUOTED([MPFR_MULHIGH_SIZE],$withval, [Mulhigh size]))
@@ -218,7 +236,7 @@ dnl AM_PROG_AR must be put after the following code.
 
 dnl We do not do this check if mini-gmp is used. Note that the status of
 dnl --enable-mini-gmp is already available even though this option will
-dnl be handled later (at this time, --with-mini-gmp is not handled yet).
+dnl be handled later.
 
 if test -z "$user_redefine_cc" && \
    test "$cross_compiling" != yes && \
@@ -368,13 +386,13 @@ AC_ARG_ENABLE(float128,
 
 test_libgmp=__gmpz_init
 
-dnl Removed this option?
+dnl Remove this option?
 dnl This option assumes that mini-gmp has already been built (like if
 dnl it were a real GMP) and that the corresponding gmp.h is the one of
 dnl mini-gmp. Thus the --enable-mini-gmp is misused, because the fact
 dnl that mini-gmp is enabled or not is what the gmp.h file contains.
 dnl Said otherwise, this should have just been an autodetection.
-dnl Note: A future --with-mini-gmp option may make this one obsolete.
+dnl Note: The --with-mini-gmp option may make this one obsolete.
 AC_ARG_ENABLE(mini-gmp,
    [  --enable-mini-gmp       build MPFR with mini-gmp (experimental) [[default=no]]],
    [ case $enableval in
@@ -619,6 +637,8 @@ dnl
 dnl Setup GMP detection (continued)
 dnl
 
+if test "$use_mini_gmp" != yes ; then
+
 dnl Check minimal GMP version
 dnl We only guarantee that with a *functional* and recent enough GMP version,
 dnl MPFR will compile; we do not guarantee that GMP will compile.
@@ -776,6 +796,9 @@ AC_CHECK_FUNCS([__gmpn_rsblsh1_n])
 
 MPFR_CHECK_MP_LIMB_T_VS_LONG
 MPFR_CHECK_MP_LIMB_T_VS_INTMAX
+
+dnl End of the GMP checks (no mini-gmp)
+fi
 
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])

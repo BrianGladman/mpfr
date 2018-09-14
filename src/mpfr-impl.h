@@ -88,7 +88,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 #include "mpfr-thread.h"
 
+#ifndef MPFR_USE_MINI_GMP
 #include "gmp.h"
+#else
+#include "mini-gmp.h"
+#endif
 
 /* With the current code, MPFR_LONG_WITHIN_LIMB must be defined if an
    unsigned long fits in a limb. Since one cannot rely on the configure
