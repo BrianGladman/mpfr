@@ -95,10 +95,11 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
           /* Generate a string of nb ones.  */
           if (nb > bit_pos)
             {
-              xp[ri--] = acc | (((mp_limb_t) 2 << bit_pos) - 1);
+              xp[ri--] = acc |
+                (MPFR_LIMB_LSHIFT (MPFR_LIMB_ONE, bit_pos + 1) - 1);
               bit_pos += GMP_NUMB_BITS;
               bit_pos -= nb;
-              acc = (~MPFR_LIMB_ONE) << bit_pos;
+              acc = MPFR_LIMB_LSHIFT (MPFR_LIMB_MAX, bit_pos + 1);
             }
           else
             {

@@ -365,8 +365,8 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 
 #define add_ssaaaa(sh, sl, ah, al, bh, bl)                              \
   do {                                                                  \
-    unsigned long _a = ((ah) << GMP_NUMB_BITS) + (al);                  \
-    unsigned long _b = ((bh) << GMP_NUMB_BITS) + (bl);                  \
+    unsigned long _a = ((unsigned long) (ah) << GMP_NUMB_BITS) + (al);  \
+    unsigned long _b = ((unsigned long) (bh) << GMP_NUMB_BITS) + (bl);  \
     unsigned long _s = _a + _b;                                         \
     (sh) = (mp_limb_t) (_s >> GMP_NUMB_BITS);                           \
     (sl) = (mp_limb_t) (_s & MPFR_LIMB_MAX);                            \
@@ -374,8 +374,8 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 
 #define sub_ddmmss(sh, sl, ah, al, bh, bl)                              \
   do {                                                                  \
-    unsigned long _a = ((ah) << GMP_NUMB_BITS) + (al);                  \
-    unsigned long _b = ((bh) << GMP_NUMB_BITS) + (bl);                  \
+    unsigned long _a = ((unsigned long) (ah) << GMP_NUMB_BITS) + (al);  \
+    unsigned long _b = ((unsigned long) (bh) << GMP_NUMB_BITS) + (bl);  \
     unsigned long _s = _a - _b;                                         \
     (sh) = (mp_limb_t) (_s >> GMP_NUMB_BITS);                           \
     (sl) = (mp_limb_t) (_s & MPFR_LIMB_MAX);                            \

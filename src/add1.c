@@ -189,7 +189,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
               mask = MPFR_LIMB_MASK (sh);
               bb = ap[0] & mask;
-              ap[0] &= (~mask) << 1;
+              ap[0] &= MPFR_LIMB_LSHIFT (~mask, 1);
               if (bb == 0)
                 fb = 0;
               else if (bb == mask)
