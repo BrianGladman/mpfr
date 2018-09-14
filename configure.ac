@@ -32,7 +32,9 @@ dnl Older Automake versions than 1.13 may still be supported, but no longer
 dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
 dnl and MPFR manual assume that MPFR has been built using Automake 1.13+
 dnl (due to parallel tests, introduced by default in Automake 1.13).
-AM_INIT_AUTOMAKE([1.13 no-define dist-bzip2 dist-xz dist-zip])
+dnl The subdir-objects option is needed due to configuration related to
+dnl mini-gmp, which has sources in an external directory.
+AM_INIT_AUTOMAKE([1.13 no-define dist-bzip2 dist-xz dist-zip subdir-objects])
 AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -130,7 +132,8 @@ AC_ARG_WITH(mini_gmp,
      if test -f "$withval/mini-gmp.c" && test -f "$withval/mini-gmp.h"; then
        AC_DEFINE([MPFR_USE_MINI_GMP],1,[Use mini-gmp])
        CPPFLAGS="$CPPFLAGS -I$withval"
-       use_mini_gmp=yes
+       mini_gmp_path="$withval"
+       AC_SUBST(mini_gmp_path)
      else
        AC_MSG_FAILURE([mini-gmp.{c,h} not found in $withval])
      fi
@@ -223,7 +226,7 @@ AC_ARG_ENABLE(tune-for-coverage,
      esac])
 
 dnl Makefile.am files can use "if MINI_GMP" / ... / "endif".
-AM_CONDITIONAL([MINI_GMP], [test "$use_mini_gmp" = yes])
+AM_CONDITIONAL([MINI_GMP], [test -n "$mini_gmp_path"])
 
 
 dnl
@@ -640,7 +643,7 @@ dnl
 dnl Setup GMP detection (continued)
 dnl
 
-if test "$use_mini_gmp" != yes ; then
+if test -z "$mini_gmp_path" ; then
 
 dnl Check minimal GMP version
 dnl We only guarantee that with a *functional* and recent enough GMP version,

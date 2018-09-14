@@ -91,6 +91,15 @@ libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:0
 $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.sh
 	(cd $(top_srcdir) && ./tools/get_patches.sh) > $@ || rm -f $@
 
+if MINI_GMP
+# FIXME: The noinst_ below may be wrong. The idea was to avoid a libminigmp
+# installation in case of static build only, but this is probably incorrect
+# in case of an installation of a dynamic build. To be decided later...
+noinst_LTLIBRARIES = libminigmp.la
+libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h $(mini_gmp_path)/mini-gmp.c
+libmpfr_la_LIBADD += libminigmp.la
+endif
+
 # For check-gmp-symbols
 GMPC = $(top_builddir)/src/gmp.c
 GMPI = $(top_builddir)/src/gmp.i
