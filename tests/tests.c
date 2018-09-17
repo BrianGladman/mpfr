@@ -191,7 +191,6 @@ test_version (void)
   version = mpfr_get_version ();
   if (strcmp (MPFR_VERSION_STRING, version) == 0)
     {
-      char buffer[16];
       int i;
 
       sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
