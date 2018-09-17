@@ -224,6 +224,7 @@ mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, mp_size_t qxn,
 }
 #endif
 
+#if 0 /* this function is useful for debugging, thus please keep it here */
 void
 mpz_dump (mpz_t z)
 {
@@ -264,5 +265,6 @@ mpz_dump (mpz_t z)
     }
   printf ("\n");
 }
+#endif
 
 #endif /* MPFR_USE_MINI_GMP */
