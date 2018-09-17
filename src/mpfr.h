@@ -49,7 +49,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_VERSION \
 MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 
+#ifndef MPFR_USE_MINI_GMP
 #include <gmp.h>
+#else
+#include <mini-gmp.h>
+#endif
 
 /* Avoid some problems with macro expansion if the user defines macros
    with the same name as keywords. By convention, identifiers and macro
