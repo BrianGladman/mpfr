@@ -143,10 +143,10 @@ int
 test_version (void)
 {
   const char *version;
+  char buffer[256];
   int err = 0;
 
 #ifndef MPFR_USE_MINI_GMP
-  char buffer[256];
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
            __GNU_MP_VERSION_PATCHLEVEL);
   if (strcmp (buffer, gmp_version) != 0 &&
@@ -191,7 +191,6 @@ test_version (void)
   version = mpfr_get_version ();
   if (strcmp (MPFR_VERSION_STRING, version) == 0)
     {
-      char buffer[16];
       int i;
 
       sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
