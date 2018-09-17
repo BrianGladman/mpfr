@@ -27,10 +27,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 MPFR_HOT_FUNCTION_ATTR int
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode)
 {
+  int inexact;
+#ifdef MPFR_LONG_WITHIN_LIMB
   mp_limb_t *yp;
   mp_size_t xn;
-  int cnt, inexact;
+  int cnt;
   MPFR_TMP_DECL (marker);
+#endif
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
