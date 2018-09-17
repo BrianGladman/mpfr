@@ -23,7 +23,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#if GMP_NUMB_BITS < 16
+#define LOGBITS_PER_BLOCK 3
+#else
 #define LOGBITS_PER_BLOCK 4
+#endif
+
 #if GMP_NUMB_BITS < 32
 #define BITS_PER_RANDCALL GMP_NUMB_BITS
 #else
