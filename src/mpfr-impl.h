@@ -1164,18 +1164,6 @@ typedef uintmax_t mpfr_ueexp_t;
  ******************  Limb macros  *********************
  ******************************************************/
 
-/* Definition of simple mp_limb_t constants */
-#define MPFR_LIMB_ZERO    ((mp_limb_t) 0)
-#define MPFR_LIMB_ONE     ((mp_limb_t) 1)
-#define MPFR_LIMB_HIGHBIT (MPFR_LIMB_ONE << (GMP_NUMB_BITS - 1))
-#define MPFR_LIMB_MAX     ((mp_limb_t) -1)
-
-/* Mask to get the Most Significant Bit of a limb */
-#define MPFR_LIMB_MSB(l) ((l) & MPFR_LIMB_HIGHBIT)
-
-/* Mask for the low 's' bits of a limb */
-#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE << (s)) - MPFR_LIMB_ONE)
-
 /* MPFR_LIMB: Cast to mp_limb_t, assuming that x is based on mp_limb_t
    variables (needed when mp_limb_t is defined as an integer type shorter
    than int, due to the integer promotion rules, which is possible only
@@ -1198,6 +1186,19 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_LIMB(x) ((mp_limb_t) (x))
 #define MPFR_LIMB_LSHIFT(x,c) MPFR_LIMB((unsigned long) (x) << (c))
 #endif
+
+/* Definition of simple mp_limb_t constants */
+#define MPFR_LIMB_ZERO    ((mp_limb_t) 0)
+#define MPFR_LIMB_ONE     ((mp_limb_t) 1)
+#define MPFR_LIMB_HIGHBIT MPFR_LIMB_LSHIFT (MPFR_LIMB_ONE, GMP_NUMB_BITS - 1)
+#define MPFR_LIMB_MAX     ((mp_limb_t) -1)
+
+/* Mask to get the Most Significant Bit of a limb */
+#define MPFR_LIMB_MSB(l) ((mp_limb_t) ((l) & MPFR_LIMB_HIGHBIT))
+
+/* Mask for the low 's' bits of a limb */
+#define MPFR_LIMB_MASK(s) \
+  ((mp_limb_t) (MPFR_LIMB_LSHIFT (MPFR_LIMB_ONE, s) - MPFR_LIMB_ONE))
 
 /******************************************************
  **********************  Memory  **********************
