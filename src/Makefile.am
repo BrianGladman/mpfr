@@ -92,9 +92,10 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 	(cd $(top_srcdir) && ./tools/get_patches.sh) > $@ || rm -f $@
 
 if MINI_GMP
-# FIXME: The noinst_ below may be wrong. The idea was to avoid a libminigmp
-# installation in case of static build only, but this is probably incorrect
-# in case of an installation of a dynamic build. To be decided later...
+include_HEADERS += $(mini_gmp_path)/mini-gmp.h
+# The noinst_ below seems OK as libminigmp should be included in libmpfr,
+# and this is confirmed by ldd (replacing noinst_ by lib_ does not seem to
+# do this and makes linking of the test programs fail).
 noinst_LTLIBRARIES = libminigmp.la
 libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h $(mini_gmp_path)/mini-gmp.c
 libmpfr_la_LIBADD += libminigmp.la
