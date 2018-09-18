@@ -1201,8 +1201,10 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_LIMB_MSB(l) ((mp_limb_t) ((l) & MPFR_LIMB_HIGHBIT))
 
 /* Mask for the low 's' bits of a limb */
-#define MPFR_LIMB_MASK(s) \
-  ((mp_limb_t) (MPFR_LIMB_LSHIFT (MPFR_LIMB_ONE, s) - MPFR_LIMB_ONE))
+#define MPFR_LIMB_MASK(s)                                               \
+  (MPFR_ASSERTD (s >= 0 && s <= GMP_NUMB_BITS),                         \
+   s == GMP_NUMB_BITS ? MPFR_LIMB_MAX :                                 \
+   (mp_limb_t) (MPFR_LIMB_LSHIFT (MPFR_LIMB_ONE, s) - MPFR_LIMB_ONE))
 
 /******************************************************
  **********************  Memory  **********************
