@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifndef GMP_NUMB_BITS
 /* see https://gmplib.org/list-archives/gmp-bugs/2015-October/003755.html */
+/* FIXME: GMP_NUMB_BITS is used in preprocessor tests, thus the following
+   definition, which uses sizeof, is incorrect. */
 #define GMP_NUMB_BITS (CHAR_BIT * sizeof(mp_limb_t))
 #endif
 
