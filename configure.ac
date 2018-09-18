@@ -645,6 +645,15 @@ dnl
 
 if test -z "$mini_gmp_path" ; then
 
+dnl Avoid a configure failure with automatic dependency tracking due to
+dnl   libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h [...]
+dnl in src/Makefile.am; this failure comes from the fact that lines with
+dnl $(mini_gmp_path)/$(DEPDIR)/... are added to src/Makefile even though
+dnl the rules related to $(mini_gmp_path) are in an Automake conditional
+dnl that is false when $mini_gmp_path is an empty string. This is probably
+dnl a bug in Automake.
+mini_gmp_path=.
+
 dnl Check minimal GMP version
 dnl We only guarantee that with a *functional* and recent enough GMP version,
 dnl MPFR will compile; we do not guarantee that GMP will compile.
