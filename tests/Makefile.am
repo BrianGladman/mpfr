@@ -11,7 +11,17 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
+output_info = { \
+  if [ -d $(top_srcdir)/.svn ]; then \
+    output=`svnversion $(top_srcdir) 2> /dev/null`; \
+    if [ -n "$$output" ]; then \
+      echo "[svnversion] $$output"; \
+    fi; \
+  fi; \
+  grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
+}
+
+TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1		\
      tabort_defalloc2 talloc tinternals tinits tisqrt tsgn tcheck	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse	\
      tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm tai		\
@@ -37,23 +47,23 @@ check_PROGRAMS = tversion tabort_prec_max tassert tabort_defalloc1	\
      ttotal_order ttrunc tui_div tui_pow tui_sub turandom tvalist	\
      ty0 ty1 tyn tzeta tzeta_ui
 
+check_PROGRAMS = tversion $(TESTS_NO_TVERSION)
+
+LOGS_NO_TVERSION = $(TESTS_NO_TVERSION:%=%.log)
+
 # Before Automake 1.13, we ran tversion at the beginning and at the end
 # of the tests, and output from tversion appeared at the same place as
 # the tests results (make output). With Automake 1.13+, the tests are
 # parallelized by default and their output is sent to log files instead
 # of the make output, so that the user could no longer see information
-# from tversion. To mimic the old behavior, we now output the contents
-# of the tversion log file if this file exists (i.e. if the Makefile
-# has been generated with Automake 1.13+); but this is done only when
-# no tests fail.
+# from tversion. To mimic the old behavior, we now run tversion at the
+# beginning and output the contents. Also output the contents after the
+# tests, but when a test fails, they will not be shown.
+tversion_special: tversion.log
+	@$(output_info)
+$(LOGS_NO_TVERSION): tversion_special
 check:
-	@if [ -d $(top_srcdir)/.svn ]; then \
-	  output=`svnversion $(top_srcdir) 2> /dev/null`; \
-	  if [ -n "$$output" ]; then \
-	    echo "[svnversion] $$output"; \
-	  fi; \
-	fi
-	@grep -v '^PASS ' tversion.log 2> /dev/null || true
+	@$(output_info)
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
@@ -112,3 +122,5 @@ TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
 #   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=18662
 #
 AM_LDFLAGS = -no-install -L$(top_builddir)/src/.libs
+
+.PHONY: tversion_special
