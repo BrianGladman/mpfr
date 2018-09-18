@@ -37,6 +37,7 @@ Changes from versions 4.0.* to version 4.1.0:
 - New: optional "make check-exported-symbols", mainly for the MPFR developers
   and binary distributions, to check that MPFR does not define symbols with a
   GMP reserved prefix (experimental).
+- Mini-gmp support via the --with-mini-gmp configure option (experimental).
 
 Changes from versions 3.1.* to version 4.0.0:
 - The "dinde aux marrons" release.
