@@ -97,18 +97,19 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
       nb = (ran >> 1) % (1 << LOGBITS_PER_BLOCK) + 1;
       if ((ran & 1) != 0)
         {
+          MPFR_ASSERTN (bit_pos < GMP_NUMB_BITS);
           /* Generate a string of nb ones.  */
           if (nb > bit_pos)
             {
               xp[ri--] = acc | MPFR_LIMB_MASK (bit_pos + 1);
               bit_pos += GMP_NUMB_BITS;
               bit_pos -= nb;
-              acc = MPFR_LIMB_LSHIFT (MPFR_LIMB_MAX, bit_pos + 1);
+              acc = MPFR_LIMB_LSHIFT (MPFR_LIMB_MAX << 1, bit_pos);
             }
           else
             {
               bit_pos -= nb;
-              acc |= MPFR_LIMB_LSHIFT (MPFR_LIMB_MASK (nb), bit_pos + 1);
+              acc |= MPFR_LIMB_LSHIFT (MPFR_LIMB_MASK (nb) << 1, bit_pos);
             }
         }
       else
