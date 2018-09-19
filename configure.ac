@@ -124,7 +124,8 @@ AC_ARG_WITH(gmp_build,
    ])
 
 AC_ARG_WITH(mini_gmp,
-   [  --with-mini-gmp=DIR     use mini-gmp (sources in DIR) instead of GMP],
+   [  --with-mini-gmp=DIR     use mini-gmp (sources in DIR) instead of GMP
+                          (experimental, please read doc/mini-gmp file)],
    [
    MPFR_PARSE_DIRECTORY(["$withval"],[withval])
    if test -z "$gmp_lib_path" && test -z "$with_gmp_include" && \
