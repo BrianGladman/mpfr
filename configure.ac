@@ -544,9 +544,58 @@ TUNE_LIBS="$LIBS"
 LIBS="$old_LIBS"
 AC_SUBST(TUNE_LIBS)
 
+dnl Under Linux, make sure that the old dtags are used if LD_LIBRARY_PATH
+dnl is defined. The issue is that with the new dtags, LD_LIBRARY_PATH has
+dnl the precedence over the run path, so that if a compatible MPFR library
+dnl is installed in some directory from $LD_LIBRARY_PATH, then the tested
+dnl MPFR library will be this library instead of the MPFR library from the
+dnl build tree. Other OS with the same issue might be added later.
+dnl
+dnl References:
+dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859732
+dnl   http://lists.gnu.org/archive/html/libtool/2017-05/msg00000.html
+dnl
+dnl We need to check whether --disable-new-dtags is supported as alternate
+dnl linkers may be used (e.g., with tcc: CC=tcc LD=tcc).
+dnl
+case $host in
+  *-*-linux*)
+    if test -n "$LD_LIBRARY_PATH"; then
+      saved_LDFLAGS="$LDFLAGS"
+      LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags"
+      AC_MSG_CHECKING(whether --disable-new-dtags is supported by the linker)
+      AC_LINK_IFELSE([AC_LANG_SOURCE([[
+int main (void) { return 0; }
+      ]])],
+      [AC_MSG_RESULT(yes (use it since LD_LIBRARY_PATH is set))],
+      [AC_MSG_RESULT(no)
+       LDFLAGS="$saved_LDFLAGS"
+      ])
+    fi
+    ;;
+esac
+
+dnl
+dnl For mpfr-longlong.h - TODO: should be replaced (see acinclude.m4).
+dnl
+
+GMP_C_ATTRIBUTE_MODE
+
+
 dnl
 dnl Setup GMP detection
 dnl
+
+if test -z "$mini_gmp_path" ; then
+
+dnl Avoid a configure failure with automatic dependency tracking due to
+dnl   libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h [...]
+dnl in src/Makefile.am; this failure comes from the fact that lines with
+dnl $(mini_gmp_path)/$(DEPDIR)/... are added to src/Makefile even though
+dnl the rules related to $(mini_gmp_path) are in an Automake conditional
+dnl that is false when $mini_gmp_path is an empty string. This is probably
+dnl a bug in Automake.
+mini_gmp_path=.
 
 dnl Check GMP Header
 AC_MSG_CHECKING(for gmp.h)
@@ -600,59 +649,6 @@ error
   fi
   ;;
 esac
-
-dnl Under Linux, make sure that the old dtags are used if LD_LIBRARY_PATH
-dnl is defined. The issue is that with the new dtags, LD_LIBRARY_PATH has
-dnl the precedence over the run path, so that if a compatible MPFR library
-dnl is installed in some directory from $LD_LIBRARY_PATH, then the tested
-dnl MPFR library will be this library instead of the MPFR library from the
-dnl build tree. Other OS with the same issue might be added later.
-dnl
-dnl References:
-dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859732
-dnl   http://lists.gnu.org/archive/html/libtool/2017-05/msg00000.html
-dnl
-dnl We need to check whether --disable-new-dtags is supported as alternate
-dnl linkers may be used (e.g., with tcc: CC=tcc LD=tcc).
-dnl
-case $host in
-  *-*-linux*)
-    if test -n "$LD_LIBRARY_PATH"; then
-      saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags"
-      AC_MSG_CHECKING(whether --disable-new-dtags is supported by the linker)
-      AC_LINK_IFELSE([AC_LANG_SOURCE([[
-int main (void) { return 0; }
-      ]])],
-      [AC_MSG_RESULT(yes (use it since LD_LIBRARY_PATH is set))],
-      [AC_MSG_RESULT(no)
-       LDFLAGS="$saved_LDFLAGS"
-      ])
-    fi
-    ;;
-esac
-
-dnl
-dnl For mpfr-longlong.h - TODO: should be replaced (see acinclude.m4).
-dnl
-
-GMP_C_ATTRIBUTE_MODE
-
-
-dnl
-dnl Setup GMP detection (continued)
-dnl
-
-if test -z "$mini_gmp_path" ; then
-
-dnl Avoid a configure failure with automatic dependency tracking due to
-dnl   libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h [...]
-dnl in src/Makefile.am; this failure comes from the fact that lines with
-dnl $(mini_gmp_path)/$(DEPDIR)/... are added to src/Makefile even though
-dnl the rules related to $(mini_gmp_path) are in an Automake conditional
-dnl that is false when $mini_gmp_path is an empty string. This is probably
-dnl a bug in Automake.
-mini_gmp_path=.
 
 dnl Check minimal GMP version
 dnl We only guarantee that with a *functional* and recent enough GMP version,
