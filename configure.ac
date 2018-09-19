@@ -240,13 +240,10 @@ dnl Warning! The following tests must be done before Autoconf selects
 dnl a compiler. This means that some macros such as AC_PROG_CC and
 dnl AM_PROG_AR must be put after the following code.
 
-dnl We do not do this check if mini-gmp is used. Note that the status of
-dnl --enable-mini-gmp is already available even though this option will
-dnl be handled later.
+dnl We do not do this check if mini-gmp is used.
 
 if test -z "$user_redefine_cc" && \
    test "$cross_compiling" != yes && \
-   test "${enable_mini_gmp+set}" != set && \
    test "${with_mini_gmp+set}" != set ; then
 
 dnl We need to guess the C preprocessor instead of using AC_PROG_CPP,
@@ -388,34 +385,6 @@ AC_ARG_ENABLE(float128,
       yes) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
-     esac])
-
-test_libgmp=__gmpz_init
-
-dnl Remove this option?
-dnl This option assumes that mini-gmp has already been built (like if
-dnl it were a real GMP) and that the corresponding gmp.h is the one of
-dnl mini-gmp. Thus the --enable-mini-gmp is misused, because the fact
-dnl that mini-gmp is enabled or not is what the gmp.h file contains.
-dnl Said otherwise, this should have just been an autodetection.
-dnl Note: The --with-mini-gmp option may make this one obsolete.
-AC_ARG_ENABLE(mini-gmp,
-   [  --enable-mini-gmp       build MPFR with mini-gmp (experimental) [[default=no]]],
-   [ case $enableval in
-      yes) AC_DEFINE([MPFR_USE_MINI_GMP],1,[Use mini-gmp])
-           # first check if mini-gmp defines GMP_NUMB_BITS
-           AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
-              [#include <gmp.h>],
-              # if not found in mini-gmp.h, we assume unsigned long
-              [AC_COMPUTE_INT(mini_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
-                 [#include <limits.h>],
-                 [AC_MSG_FAILURE([cannot find value of GMP_NUMB_BITS])])])
-           AC_MSG_RESULT([$mini_gmp_numb_bits bits])
-           AC_DEFINE_UNQUOTED([GMP_NUMB_BITS], $mini_gmp_numb_bits, [number of bits in a limb])
-           AC_DEFINE([GMP_NAIL_BITS], 0, [number of nails in a limb])
-           test_libgmp=mpz_init;;
-      no)  ;;
-      *) AC_MSG_ERROR([bad value for --enable-mini-gmp: yes or no]) ;;
      esac])
 
 AC_ARG_ENABLE(debug-prediction,
@@ -658,9 +627,8 @@ dnl MPFR will compile; we do not guarantee that GMP will compile.
 dnl In particular fat builds are broken in GMP 4.3.2 and GMP 5.0.0
 dnl (at least on 64-bit Core 2 under Linux),
 dnl see <https://gmplib.org/list-archives/gmp-bugs/2011-August/002345.html>.
-if test -z "$enable_mini_gmp" ; then
-  AC_MSG_CHECKING(for recent GMP)
-  AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_MSG_CHECKING(for recent GMP)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include "gmp.h"
 #if (__GNU_MP_VERSION*100+__GNU_MP_VERSION_MINOR*10 < 500)
 # error "GMP 5.0.0 or newer is required"
@@ -670,7 +638,6 @@ error
    AC_MSG_RESULT(no)
    AC_MSG_ERROR([GMP 5.0.0 or newer is required])
 ])
-fi
 
 dnl Check if gmp.h is usable at link time; this may detect errors such as
 dnl with GMP 4.1, which uses "extern __inline__" unconditionally with all
@@ -729,7 +696,7 @@ See 'config.log' for details (search for GMP_NUMB_BITS).])],
        [AC_MSG_RESULT([cannot test])])
 
 dnl Check if we can link with GMP
-AC_CHECK_LIB(gmp, $test_libgmp, [LIBS="-lgmp $LIBS"],
+AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR([libgmp not found or uses a different ABI (including static vs shared).
 Please read the INSTALL file -- see "In case of problem".])])
 
@@ -742,11 +709,10 @@ dnl incorrect and even have security implications.
 dnl WARNING! LD_RUN_PATH is not taken into account by the GNU gold ld,
 dnl e.g. from binutils-gold 2.22-5 under Debian; see
 dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
-if test -z "$enable_mini_gmp" ; then
-  saved_LD_RUN_PATH="$LD_RUN_PATH"
-  LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
-  export LD_RUN_PATH
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+saved_LD_RUN_PATH="$LD_RUN_PATH"
+LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
+export LD_RUN_PATH
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <string.h>
 #include "gmp.h"
@@ -789,8 +755,7 @@ if test -z "$enable_mini_gmp" ; then
     AC_MSG_WARN([==========================================================])
     ],AC_MSG_RESULT([cannot test])
   )
-  LD_RUN_PATH="$saved_LD_RUN_PATH"
-fi
+LD_RUN_PATH="$saved_LD_RUN_PATH"
 
 dnl __gmpn_sbpi1_divappr_q is an internal GMP symbol; thus its behavior
 dnl may change or this symbol may be removed in the future (without being
