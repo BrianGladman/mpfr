@@ -583,10 +583,12 @@ GMP_C_ATTRIBUTE_MODE
 
 
 dnl
-dnl Setup GMP detection
+dnl Setup related to GMP / mini-gmp
 dnl
 
 if test -z "$mini_gmp_path" ; then
+
+dnl Setup for GMP
 
 dnl Avoid a configure failure with automatic dependency tracking due to
 dnl   libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h [...]
@@ -808,8 +810,26 @@ AC_CHECK_FUNCS([__gmpn_rsblsh1_n])
 MPFR_CHECK_MP_LIMB_T_VS_LONG
 MPFR_CHECK_MP_LIMB_T_VS_INTMAX
 
-dnl End of the GMP checks (no mini-gmp)
+else
+
+dnl Setup for mini-gmp
+
+dnl First check whether mini-gmp defines GMP_NUMB_BITS.
+AC_MSG_CHECKING(for GMP_NUMB_BITS)
+how="from mini-gmp.h"
+AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
+   [#include <mini-gmp.h>],
+   [how="not in mini-gmp.h; guessed"
+    AC_COMPUTE_INT(mini_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
+       [#include <limits.h>],
+       [AC_MSG_FAILURE([cannot define GMP_NUMB_BITS])])
+    AC_DEFINE_UNQUOTED([GMP_NUMB_BITS], $mini_gmp_numb_bits, [number of bits in a limb])
+  ])
+AC_MSG_RESULT([$mini_gmp_numb_bits bits ($how)])
+
 fi
+
+dnl End of setup related to GMP / mini-gmp
 
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])
