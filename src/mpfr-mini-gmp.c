@@ -69,6 +69,7 @@ random_limb (void)
 #elif GMP_NUMB_BITS == 64
   return lrand48 () + (((mp_limb_t) lrand48 ()) << 31)
     + (((mp_limb_t) lrand48 ()) << 62);
+#else
 #error "GMP_NUMB_BITS should be 8, 16, 32 or >= 64"
 #endif
 }
