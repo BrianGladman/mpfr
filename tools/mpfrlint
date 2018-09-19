@@ -363,7 +363,12 @@ err-if-output \
     '^ *# *include *"mpfr-impl.h"' tests/*.{c,h}
 
 # Check that the usual test programs call tests_start_mpfr and tests_end_mpfr.
-tprg=($(sed -n '/^check_PROGRAMS/,/[^\\]$/ {
+if grep -q TESTS_NO_TVERSION tests/Makefile.am; then
+  tprgvar=TESTS_NO_TVERSION
+else
+  tprgvar=check_PROGRAMS
+fi
+tprg=($(sed -n "/^$tprgvar"'/,/[^\\]$/ {
   s/.*=//
   s/\\//
   p
