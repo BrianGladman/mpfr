@@ -9,11 +9,14 @@ To build and test MPFR against mini-gmp:
 
 "make" will build mini-gmp with the same compiler as for MPFR.
 
+For "make check", tests that use features not supported by mini-gmp
+(mpq_t, mpf_t, and the gmp_*printf functions) are skipped.
+
 Note: To use this version of the MPFR library, you need to define
 the MPFR_USE_MINI_GMP macro before including mpfr.h (alternatively,
 you can modify mpfr.h to define this macro at the beginning). But
-this will currently not be usable as is if mini-gmp.h does not
-declare gmp_randstate_t.
+this will currently not be usable since mini-gmp.h does not declare
+gmp_randstate_t (you need to modify either mini-gmp.h or mpfr.h).
 
 This was tested with MPFR svn r13226 and GMP 6.1.2 on x86_64 GNU/Linux:
 ============================================================================
