@@ -93,17 +93,34 @@ $(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.s
 	(cd $(top_srcdir) && ./tools/get_patches.sh) > $@ || rm -f $@
 
 if MINI_GMP
+
 # The mini-gmp.{c,h} files are external files, not part of MPFR, thus they
 # must not be put in the tarballs by "make dist". Hence the use of nodist_
 # on the corresponding sources (this is needed even when --with-mini-gmp
 # has not been used).
-nodist_include_HEADERS += $(mini_gmp_path)/mini-gmp.h
+nodist_include_HEADERS += mini-gmp.h
+
 # The noinst_ below seems OK as libminigmp should be included in libmpfr,
 # and this is confirmed by ldd (replacing noinst_ by lib_ does not seem to
 # do this and makes linking of the test programs fail).
 noinst_LTLIBRARIES = libminigmp.la
-nodist_libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h $(mini_gmp_path)/mini-gmp.c
+nodist_libminigmp_la_SOURCES = mini-gmp.h mini-gmp.c
 libmpfr_la_LIBADD += libminigmp.la
+
+DISTCLEANFILES = $(nodist_libminigmp_la_SOURCES)
+
+# Note: Due to a bug in Automake 1.15 (fixed in Automake 1.16) when using
+# automatic dependency tracking (used by default and highly recommended),
+# the _SOURCES paths must not depend on Make variables. Thus mini-gmp.{c,h}
+# are assumed to be sources in the build directory. They should be added
+# by the configure.ac code when --with-mini-gmp is used, preferably as
+# symbolic links, so that during mini-gmp development/patching, it doesn't
+# matter which pathname is used (when build directory = source directory,
+# one could easily mistakenly edit the copy). Once this Automake bug has
+# become obsolete, the above code could be reverted to:
+#   nodist_include_HEADERS += $(mini_gmp_path)/mini-gmp.h
+#   nodist_libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h $(mini_gmp_path)/mini-gmp.c
+
 endif
 
 # For check-gmp-symbols
