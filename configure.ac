@@ -132,9 +132,6 @@ AC_ARG_WITH(mini_gmp,
       test -z "$use_gmp_build"; then
      if test -f "$withval/mini-gmp.c" && test -f "$withval/mini-gmp.h"; then
        AC_DEFINE([MPFR_USE_MINI_GMP],1,[Use mini-gmp])
-dnl Once the Automake 1.15 bug with automatic dependency tracking has become
-dnl obsolete and the src/Makefile.am changes have been reverted, one should
-dnl add back: CPPFLAGS="$CPPFLAGS -I$withval"
        mini_gmp_path="$withval"
        AC_SUBST(mini_gmp_path)
      else
@@ -562,15 +559,6 @@ if test -z "$mini_gmp_path" ; then
 
 dnl Setup for GMP
 
-dnl Avoid a configure failure with automatic dependency tracking due to
-dnl   libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h [...]
-dnl in src/Makefile.am; this failure comes from the fact that lines with
-dnl $(mini_gmp_path)/$(DEPDIR)/... are added to src/Makefile even though
-dnl the rules related to $(mini_gmp_path) are in an Automake conditional
-dnl that is false when $mini_gmp_path is an empty string. This is probably
-dnl a bug in Automake.
-mini_gmp_path=.
-
 dnl Check GMP Header
 AC_MSG_CHECKING(for gmp.h)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
@@ -782,14 +770,23 @@ else
 
 dnl Setup for mini-gmp
 
+dnl Let us make the configure script clean up the mini-gmp.* files
+dnl and add the symbolic links to mini-gmp.{c,h} instead of relying
+dnl on timestamp-based make rules, which may not work when testing
+dnl several mini-gmp versions (whose source can go back in time).
+mpfr_build_src="${ac_top_build_prefix}src"
+mkdir -p "$mpfr_build_src"
+rm -f -- "$mpfr_build_src"/mini-gmp.*
+for i in c h
+do
+  ln -s -- "$mini_gmp_path/mini-gmp.$i" "$mpfr_build_src/mini-gmp.$i"
+done
+
 dnl First check whether mini-gmp defines GMP_NUMB_BITS.
 AC_MSG_CHECKING(for GMP_NUMB_BITS)
 how="from mini-gmp.h"
-dnl With the code working with Automake 1.15 (see --with-mini-gmp code
-dnl above), CPPFLAGS has not been modified, thus one needs a temporary
-dnl one to find the mini-gmp.h header file.
 saved_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS -I$mini_gmp_path"
+CPPFLAGS="$CPPFLAGS -I$mpfr_build_src"
 AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
    [#include <mini-gmp.h>],
    [how="not in mini-gmp.h; guessed"
@@ -800,18 +797,6 @@ AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
   ])
 CPPFLAGS="$saved_CPPFLAGS"
 AC_MSG_RESULT([$mini_gmp_numb_bits bits ($how)])
-
-dnl Also added for the code avoiding the Automake 1.15 bug:
-dnl Let us make the configure script clean up the mini-gmp.* files
-dnl and add the symbolic links to mini-gmp.{c,h} instead of relying
-dnl on timestamp-based make rules, which may not work when testing
-dnl several mini-gmp versions (whose source can go back in time).
-mkdir -p "$ac_top_build_prefix"src
-rm -f -- "$ac_top_build_prefix"src/mini-gmp.*
-for i in c h
-do
-  ln -s -- "$mini_gmp_path/mini-gmp.$i" "$ac_top_build_prefix"src/mini-gmp.$i
-done
 
 fi
 

@@ -109,18 +109,6 @@ libmpfr_la_LIBADD += libminigmp.la
 
 DISTCLEANFILES = $(nodist_libminigmp_la_SOURCES)
 
-# Note: Due to a bug in Automake 1.15 (fixed in Automake 1.16) when using
-# automatic dependency tracking (used by default and highly recommended),
-# the _SOURCES paths must not depend on Make variables. Thus mini-gmp.{c,h}
-# are assumed to be sources in the build directory. They should be added
-# by the configure.ac code when --with-mini-gmp is used, preferably as
-# symbolic links, so that during mini-gmp development/patching, it doesn't
-# matter which pathname is used (when build directory = source directory,
-# one could easily mistakenly edit the copy). Once this Automake bug has
-# become obsolete, the above code could be reverted to:
-#   nodist_include_HEADERS += $(mini_gmp_path)/mini-gmp.h
-#   nodist_libminigmp_la_SOURCES = $(mini_gmp_path)/mini-gmp.h $(mini_gmp_path)/mini-gmp.c
-
 endif
 
 # For check-gmp-symbols
