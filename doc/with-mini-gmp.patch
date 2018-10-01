@@ -28,6 +28,8 @@ earlier versions, due to a bug fixed in 1.16; in Automake 1.16 NEWS file:
     using a private target that is only meant to bootstrap the required
     makefile fragments.
 
+The code has been changed in r13235 to avoid this Automake bug.
+
 Index: configure.ac
 ===================================================================
 --- configure.ac	(revision 13213)
