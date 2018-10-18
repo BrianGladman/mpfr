@@ -410,23 +410,25 @@ long __MPN(count_leading_zeros) (UDItype);
 #define COUNT_LEADING_ZEROS_0 32
 #endif /* __a29k__ */
 
+/* MPFR: changed "J" constraint to "Cal" constraint
+   (https://sympa.inria.fr/sympa/arc/mpfr/2018-10/msg00010.html) */
 #if defined (__arc__)
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add.f\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
 	   : "=r" (sh),							\
 	     "=&r" (sl)							\
 	   : "r"  ((USItype) (ah)),					\
-	     "rIJ" ((USItype) (bh)),					\
+	     "rICal" ((USItype) (bh)),					\
 	     "%r" ((USItype) (al)),					\
-	     "rIJ" ((USItype) (bl)))
+	     "rICal" ((USItype) (bl)))
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub.f\t%1, %4, %5\n\tsbc\t%0, %2, %3"			\
 	   : "=r" (sh),							\
 	     "=&r" (sl)							\
 	   : "r" ((USItype) (ah)),					\
-	     "rIJ" ((USItype) (bh)),					\
+	     "rICal" ((USItype) (bh)),					\
 	     "r" ((USItype) (al)),					\
-	     "rIJ" ((USItype) (bl)))
+	     "rICal" ((USItype) (bl)))
 #endif
 
 #if defined (__arm__) && (defined (__thumb2__) || !defined (__thumb__)) \
