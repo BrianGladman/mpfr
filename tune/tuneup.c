@@ -859,7 +859,7 @@ tune_div_mulders_upto (mp_size_t n)
   double t, tbest;
   MPFR_TMP_DECL (marker);
 
-  /* we require n > 2 in mpfr_divhigh (at least with mpn_sbpi1_divappr_q) */
+  /* we require n > 2 in mpfr_divhigh */
   if (n <= 2)
     {
       divhigh_ktab[n] = 0;
@@ -873,10 +873,6 @@ tune_div_mulders_upto (mp_size_t n)
   s.yp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
-
-#if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
-  MPFR_ASSERTN (n > 2); /* mpn_sbpi1_divappr_q requires dn > 2 */
-#endif
 
   /* Check k == 0, i.e., mpfr_divhigh_n_basecase */
   kbest = 0;

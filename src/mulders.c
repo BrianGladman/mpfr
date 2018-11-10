@@ -142,7 +142,6 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
 #define MPFR_DIVHIGH_TAB_SIZE (numberof_const (divhigh_ktab))
 #endif
 
-#if !(defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q))
 /* Put in Q={qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).
    Assumes the most significant bit of D is set. Clobbers N.
@@ -227,7 +226,6 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
 
   return qh;
 }
-#endif
 
 /* Put in {qp, n} an approximation of N={np, 2*n} divided by D={dp, n},
    with the most significant limb of the quotient as return value (0 or 1).
@@ -255,7 +253,10 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
 #if defined(WANT_GMP_INTERNALS) && defined(HAVE___GMPN_SBPI1_DIVAPPR_Q)
       mpfr_pi1_t dinv2;
       invert_pi1 (dinv2, dp[n - 1], dp[n - 2]);
-      return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
+      if (n > 2) /* sbpi1_divappr_q wants n > 2 */
+        return __gmpn_sbpi1_divappr_q (qp, np, n + n, dp, n, dinv2.inv32);
+      else
+        return mpfr_divhigh_n_basecase (qp, np, dp, n);
 #else /* use our own code for base-case short division */
       return mpfr_divhigh_n_basecase (qp, np, dp, n);
 #endif
