@@ -554,7 +554,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       MPFR_ASSERTD (real_ysize <= ysize + extra_limbs);
 
       /* Normalize y. Since pstr->mant was normalized, mpn_set_str
-         gurantees that the most significant limb is non-zero. */
+         guarantees that the most significant limb is non-zero. */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
       count_leading_zeros (count, y[real_ysize - 1]);
       /* exact means that the number of limbs of the output of mpn_set_str
