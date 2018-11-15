@@ -36,30 +36,54 @@ test_simple (void)
       RND_LOOP (r2)
         {
           mpfr_t b;
-          int p, err, prec, inex, c;
+          int p, err, prec, inex;
+          int s1, s2;
+          int expected, got;
 
-          /* TODO: Test r2 == MPFR_RNDF. The following "continue"
-             was added while this case had not been specified
-             yet, but this is no longer the case. */
-          if (r2 == MPFR_RNDF)
-            continue;
           p = 12 + (randlimb() % (2 * GMP_NUMB_BITS));
           err = p - 3;
           prec = 4;
           mpfr_init2 (b, p);
           inex = mpfr_set_si (b, t[i], MPFR_RNDN);
           MPFR_ASSERTN (inex == 0);
-          c = mpfr_can_round (b, err, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, prec);
-          /* If r1 == r2, we can round.
-             Note: For r1, RNDF is equivalent to RNDN.
-             TODO: complete this test for r1 != r2. */
-          if ((r1 == MPFR_RNDF ? MPFR_RNDN : r1) == r2 && !c)
+          got = mpfr_can_round (b, err, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, prec);
+          s1 = r1;
+          s2 = r2;
+          if (s1 == MPFR_RNDD)
+            s1 = (t[i] > 0) ? MPFR_RNDZ : MPFR_RNDA;
+          if (s1 == MPFR_RNDU)
+            s1 = (t[i] < 0) ? MPFR_RNDZ : MPFR_RNDA;
+          if (s1 == MPFR_RNDF)
+            s1 = MPFR_RNDN; /* For s1, RNDF is equivalent to RNDN. */
+          if (s2 == MPFR_RNDD)
+            s2 = (t[i] > 0) ? MPFR_RNDZ : MPFR_RNDA;
+          if (s2 == MPFR_RNDU)
+            s2 = (t[i] < 0) ? MPFR_RNDZ : MPFR_RNDA;
+          /* If s1 == s2, we can round.
+             s1      s2      can round
+             xxx     xxx     yes
+             RNDZ    RNDA    no
+             RNDZ    RNDN    yes
+             RNDA    RNDZ    no
+             RNDA    RNDN    yes
+             RNDN    RNDZ    no
+             RNDN    RNDA    no
+             xxx     RNDF    yes
+          */
+          expected = 1;
+          if ((s1 == MPFR_RNDZ && s2 == MPFR_RNDA) ||
+              (s1 == MPFR_RNDA && s2 == MPFR_RNDZ) ||
+              (s1 == MPFR_RNDN && s2 == MPFR_RNDZ) ||
+              (s1 == MPFR_RNDN && s2 == MPFR_RNDA))
+            expected = 0;
+          if (!!got != !!expected)
             {
               printf ("Error in test_simple for i=%d,"
-                      " err=%d r1=%s, r2=%s, p=%d\n", i, err,
+                      " err=%d r1=%s, r2=%s, p=%d, prec=%d\n", i, err,
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r1),
-                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r2), p, prec);
               printf ("b="); mpfr_dump (b);
+              printf ("expected %d, got %d\n", expected, got);
               exit (1);
             }
           mpfr_clear (b);
