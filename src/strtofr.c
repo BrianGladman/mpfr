@@ -460,6 +460,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   size_t pstr_size;
   mp_size_t ysize, real_ysize;
   int res, err;
+  const int extra_limbs = GMP_NUMB_BITS >= 12 ? 1 : 2; /* see below */
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL (marker);
 
@@ -491,12 +492,12 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       MPFR_ASSERTD (ysize_bits >= prec);
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits. */
       /* We need to allocate one more limb as specified by mpn_set_str
-         (an extra limb may be written in rp[rn]). Note that the
-         documentation of GMP up to 5.1.3 was incorrect on this point.
+         (a limb may be written in rp[rn]). Note that the manual of GMP
+         up to 5.1.3 was incorrect on this point.
          See the following discussion:
          https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html */
-      y0 = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 2);
-      y = y0 + ysize; /* y has (ysize+2) allocated limbs */
+      y0 = MPFR_TMP_LIMBS_ALLOC (2 * ysize + extra_limbs + 1);
+      y = y0 + ysize; /* y has (ysize + extra_limbs + 1) allocated limbs */
 
       /* pstr_size is the number of bytes we want to read from pstr->mant
          to fill at least ysize full limbs with mpn_set_str.
@@ -524,7 +525,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          (this also implies that for GMP_NUMB_BITS >= 13, the number of bits
          of y[real_ysize-1] below is less than GMP_NUMB_BITS, thus
          count < GMP_NUMB_BITS.
-         Warning: for GMP_NUMB_BITS=8, we can have real_ysize = ysize+2!
+         Warning: for GMP_NUMB_BITS=8, we can have real_ysize = ysize + 2!
+         Hence the allocation above for ysize + extra_limbs limbs.
       */
       {
         unsigned long Num = RedInvLog2Table[pstr->base-2][0];
@@ -549,7 +551,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
 
       /* See above for the explanation of the following assertion. */
-      MPFR_ASSERTD (real_ysize <= ysize + (GMP_NUMB_BITS >= 12 ? 1 : 2));
+      MPFR_ASSERTD (real_ysize <= ysize + extra_limbs);
 
       /* Normalize y. Since pstr->mant was normalized, mpn_set_str
          gurantees that the most significant limb is non-zero. */
