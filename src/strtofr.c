@@ -490,10 +490,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       ysize_bits = ysize * GMP_NUMB_BITS;
       MPFR_ASSERTD (ysize_bits >= prec);
       /* and to ysize_bits >= prec > MPFR_PREC (x) bits. */
-      /* We need to allocate one more limb to work around bug
-         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html
-         found in GMP 5.1.3 (an additional limb 0 is written by mpn_set_str
-         at rp[rn], while the most significant limb is rp[rn-1]). */
+      /* We need to allocate one more limb as specified by mpn_set_str
+         (an extra limb may be written in rp[rn]). Note that the
+         documentation of GMP up to 5.1.3 was incorrect on this point.
+         See the following discussion:
+         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html */
       y0 = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 2);
       y = y0 + ysize; /* y has (ysize+2) allocated limbs */
 
