@@ -484,20 +484,21 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
     {
       mp_limb_t *y0, *y;
 
-      /* Set y to the value of the ~prec most significant bits of pstr->mant
-         (as long as we guarantee correct rounding, we don't need to get
-         exactly prec bits). */
+      /* y will be regarded as a number with precision prec. */
       ysize = MPFR_PREC2LIMBS (prec);
       /* prec bits corresponds to ysize limbs */
       ysize_bits = ysize * GMP_NUMB_BITS;
-      /* and to ysize_bits >= prec > MPFR_PREC (x) bits */
-      /* we need to allocate one more limb to work around bug
-         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html */
+      MPFR_ASSERTD (ysize_bits >= prec);
+      /* and to ysize_bits >= prec > MPFR_PREC (x) bits. */
+      /* We need to allocate one more limb to work around bug
+         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html
+         found in GMP 5.1.3 (an additional limb 0 is written by mpn_set_str
+         at rp[rn], while the most significant limb is rp[rn-1]). */
       y0 = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 2);
       y = y0 + ysize; /* y has (ysize+2) allocated limbs */
 
-      /* pstr_size is the number of characters we read in pstr->mant
-         to have at least ysize full limbs.
+      /* pstr_size is the number of bytes we want to read from pstr->mant
+         to fill at least ysize full limbs with mpn_set_str.
          We must have base^(pstr_size-1) >= (2^(GMP_NUMB_BITS))^ysize
          (in the worst case, the first digit is one and all others are zero).
          i.e., pstr_size >= 1 + ysize*GMP_NUMB_BITS/log2(base)
@@ -532,18 +533,18 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           + 1;
       }
 
-      /* since pstr_size corresponds to at least ysize_bits full bits,
-         and ysize_bits > prec, the weight of the neglected part of
-         pstr->mant (if any) is < ulp(y) < ulp(x) */
+      /* Since pstr_size corresponds to at least ysize_bits bits,
+         and ysize_bits >= prec, the weight of the neglected part of
+         pstr->mant (if any) is < ulp(y) < ulp(x). */
 
-      /* if the number of wanted characters is more than what we have in
-         pstr->mant, round it down */
-      if (pstr_size >= pstr->prec)
+      /* If the number of wanted bytes is more than what is available
+         in pstr->mant, i.e. pstr->prec, reduce it to pstr->prec. */
+      if (pstr_size > pstr->prec)
         pstr_size = pstr->prec;
       MPFR_ASSERTD (pstr_size == (mpfr_exp_t) pstr_size);
 
-      /* convert str into binary: note that pstr->mant is big endian,
-         thus no offset is needed */
+      /* Convert str (potentially truncated to pstr_size) into binary.
+         Note that pstr->mant is big endian, thus no offset is needed. */
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
       MPFR_ASSERTD (real_ysize <= ysize + 2);
 
