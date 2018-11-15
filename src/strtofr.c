@@ -520,7 +520,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          the corresponding part is less than b^m < b^2*2^n.
          This implies that if b^2 < 2^GMP_NUMB_BITS, which for b <= 62 holds
          for GMP_NUMB_BITS >= 12, we have real_ysize <= ysize+1 below
-         (this also imlies that for GMP_NUMB_BITS >= 13, the number of bits
+         (this also implies that for GMP_NUMB_BITS >= 13, the number of bits
          of y[real_ysize-1] below is less than GMP_NUMB_BITS, thus
          count < GMP_NUMB_BITS.
          Warning: for GMP_NUMB_BITS=8, we can have real_ysize = ysize+2!
@@ -546,9 +546,12 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* Convert str (potentially truncated to pstr_size) into binary.
          Note that pstr->mant is big endian, thus no offset is needed. */
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
-      MPFR_ASSERTD (real_ysize <= ysize + 2);
 
-      /* normalize y: warning we can even get ysize+1 limbs! */
+      /* See above for the explanation of the following assertion. */
+      MPFR_ASSERTD (real_ysize <= ysize + (GMP_NUMB_BITS >= 12 ? 1 : 2));
+
+      /* Normalize y. Since pstr->mant was normalized, mpn_set_str
+         gurantees that the most significant limb is non-zero. */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
       count_leading_zeros (count, y[real_ysize - 1]);
       /* exact means that the number of limbs of the output of mpn_set_str
