@@ -458,7 +458,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   mp_limb_t *result;
   int count, exact;
   size_t pstr_size;
-  mp_size_t ysize, real_ysize;
+  mp_size_t ysize, real_ysize, diff_ysize;
   int res, err;
   const int extra_limbs = GMP_NUMB_BITS >= 12 ? 1 : 2; /* see below */
   MPFR_ZIV_DECL (loop);
@@ -524,7 +524,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          for GMP_NUMB_BITS >= 12, we have real_ysize <= ysize+1 below
          (this also implies that for GMP_NUMB_BITS >= 13, the number of bits
          of y[real_ysize-1] below is less than GMP_NUMB_BITS, thus
-         count < GMP_NUMB_BITS.
+         count < GMP_NUMB_BITS).
          Warning: for GMP_NUMB_BITS=8, we can have real_ysize = ysize + 2!
          Hence the allocation above for ysize + extra_limbs limbs.
       */
@@ -553,54 +553,71 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* See above for the explanation of the following assertion. */
       MPFR_ASSERTD (real_ysize <= ysize + extra_limbs);
 
-      /* Normalize y. Since pstr->mant was normalized, mpn_set_str
-         guarantees that the most significant limb is non-zero. */
+      /* The Boolean "exact" will attempt to track exactness of the result:
+         If it is true, then this means that the result is exact, allowing
+         termination, even though the rounding test may not succeed.
+         Conversely, if the result is exact, then "exact" will not
+         necessarily be true at the end of the Ziv loop, but we will need
+         to make sure that at some point, "exact" will be true in order to
+         guarantee termination. FIXME: check that. */
+      /* First, consider the part of the input string that has been ignored.
+         Note that the trailing zeros have been removed in parse_string, so
+         that if something has been ignored, it must be non-zero. */
+      exact = pstr_size == pstr->prec;
+
+      /* Normalize y and set the initial value of its exponent exp.
+         Since pstr->mant was normalized, mpn_set_str guarantees that
+         the most significant limb is non-zero. */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
       count_leading_zeros (count, y[real_ysize - 1]);
-      /* exact means that the number of limbs of the output of mpn_set_str
-         is less or equal to ysize */
-      exact = real_ysize <= ysize;
-      if (exact) /* shift y to the left; in that case, y will be exact */
+      diff_ysize = ysize - real_ysize;
+      if (diff_ysize >= 0)
         {
-          /* we have enough limbs to store {y, real_ysize} */
-          /* shift {y, num_limb} for count bits to the left */
+          /* We have enough limbs to store {y, real_ysize} exactly
+             in {y, ysize}, so that we can do a left shift, without
+             losing any information ("exact" will not change). */
           if (count != 0)
-            mpn_lshift (y + ysize - real_ysize, y, real_ysize, count);
-          if (real_ysize != ysize)
+            mpn_lshift (y + diff_ysize, y, real_ysize, count);
+          if (diff_ysize > 0)
             {
               if (count == 0)
-                mpn_copyd (y + ysize - real_ysize, y, real_ysize);
-              MPN_ZERO (y, ysize - real_ysize);
+                mpn_copyd (y + diff_ysize, y, real_ysize);
+              MPN_ZERO (y, diff_ysize);
             }
-          /* for each bit shift decrease exponent of y */
-          /* (This should not overflow) */
-          exp = - ((ysize - real_ysize) * GMP_NUMB_BITS + count);
+          /* exp = negation of the total shift count, avoiding overflows. */
+          exp = - ((mpfr_exp_t) diff_ysize * GMP_NUMB_BITS + count);
         }
-      else  /* shift y to the right, by doing this we might lose some
-               bits from the result of mpn_set_str (in addition to the
-               characters neglected from pstr->mant) */
+      else
         {
-          /* Shift {y, real_ysize} for (GMP_NUMB_BITS - count) bits
-             to the right, and put the ysize most significant limbs
-             into {y, ysize}. We have real_ysize = ysize or ysize + 1. */
+          /* Shift {y, real_ysize} for (GMP_NUMB_BITS - count) bits to the
+             right, and put the ysize most significant limbs into {y, ysize}.
+             We have either real_ysize = ysize + 1 or real_ysize = ysize + 2
+             (only possible with extra_limbs == 2). */
+          MPFR_ASSERTD (diff_ysize == -1 ||
+                        (extra_limbs == 2 && diff_ysize == -2));
           if (count != 0)
             {
-              exact = real_ysize == ysize + 1 || y[0] == MPFR_LIMB_ZERO;
+              mp_size_t offset = - diff_ysize - 1;
+              MPFR_ASSERTD (offset == 0 || (extra_limbs == 2 && offset == 1));
+              /* Before doing the shift, consider the limb that will entirely
+                 be lost if real_ysize = ysize + 2, i.e. offset = 1. */
+              exact = exact && (diff_ysize == -1 || y[0] == MPFR_LIMB_ZERO);
               /* mpn_rshift allows overlap, provided destination <= source */
-              exact = mpn_rshift (y, y + real_ysize - ysize - 1, real_ysize,
-                                  GMP_NUMB_BITS - count) == MPFR_LIMB_ZERO
-                && exact;
+              if (mpn_rshift (y, y + offset, real_ysize,
+                              GMP_NUMB_BITS - count) != MPFR_LIMB_ZERO)
+                exact = 0; /* some non-zero bits have been shifted out */
             }
           else
             {
               /* the case real_ysize = ysize + 2 with count = 0 cannot happen
                  even with GMP_NUMB_BITS = 8 since 62^2 < 256^2/2 */
-              MPFR_ASSERTD(real_ysize == ysize + 1);
-              exact = y[0] == MPFR_LIMB_ZERO;
+              MPFR_ASSERTD (diff_ysize == -1);
+              exact = exact && y[0] == MPFR_LIMB_ZERO;
               /* copy {y+real_ysize-ysize, ysize} to {y, ysize} */
               mpn_copyi (y, y + 1, real_ysize - 1);
             }
-          /* for each bit shift increase exponent of y */
+          /* exp = shift count */
+          /* FIXME: Why GMP_NUMB_BITS when count = 0? */
           exp = GMP_NUMB_BITS - count;
         }
 
@@ -834,13 +851,6 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           result = y;
           err = 0;
         }
-
-      /* If result is exact, we still have to consider the neglected part
-         of the input string. For a directed rounding, in that case we could
-         still correctly round, since the neglected part is less than
-         one ulp, but that would make the code more complex, and give a
-         speedup for rare cases only. */
-      exact = exact && (pstr_size == pstr->prec);
 
       /* at this point, result is an approximation rounded toward zero
          of the pstr_size most significant digits of pstr->mant, with
