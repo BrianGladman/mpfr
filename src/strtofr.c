@@ -618,7 +618,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               mpn_copyi (y, y + 1, real_ysize - 1);
             }
           /* exp = shift count */
-          /* FIXME: Why not taking offset (when count != 0) into account? */
+          /* FIXME: Why not taking offset (when count != 0) into account?
+             The value of exp does not seem to matter (changing it does
+             not make tstrtofr fail). */
           exp = GMP_NUMB_BITS - count;
         }
 
