@@ -722,8 +722,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
           /* if the low ysize limbs of {result, 2*ysize} are all zero,
              then the result is still "exact" (if it was before) */
-          exact = exact && (mpn_scan1 (result, 0)
-                            >= (unsigned long) ysize_bits);
+          exact = exact && (mpn_scan1 (result, 0) >= ysize_bits);
           result += ysize;
         }
       /* case exp_base < pstr_size */
