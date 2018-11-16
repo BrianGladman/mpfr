@@ -1222,6 +1222,13 @@ typedef uintmax_t mpfr_ueexp_t;
    The goal of the mpfr_size_limb_t union is to make sure that
    size and alignment requirements are satisfied if mp_size_t and
    mp_limb_t have different sizes and/or alignment requirements.
+   And the casts to void * prevents the compiler from emitting a
+   warning (or error), such as:
+     cast increases required alignment of target type
+   with the -Wcast-align GCC option. Correct alignment is checked
+   by MPFR_SET_MANT_PTR (when setting MPFR_MANT(x), the MPFR code
+   should use this macro or guarantee a correct alignment at this
+   time).
    Moreover, pointer conversions are not fully specified by the
    C standard, and the use of a union (and the double casts below)
    might help even if mp_size_t and mp_limb_t have the same size
@@ -1231,15 +1238,15 @@ typedef uintmax_t mpfr_ueexp_t;
 */
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
-  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] + 0)
+  (((mp_size_t *) (void *) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
-  (((mp_size_t *) (mpfr_size_limb_t *) MPFR_MANT(x))[-1] = (n))
+  (((mp_size_t *) (void *) MPFR_MANT(x))[-1] = (n))
 #define MPFR_MALLOC_SIZE(s) \
   (sizeof(mpfr_size_limb_t) + MPFR_BYTES_PER_MP_LIMB * (size_t) (s))
 #define MPFR_SET_MANT_PTR(x,p) \
   (MPFR_MANT(x) = (mp_limb_t *) ((mpfr_size_limb_t *) (p) + 1))
 #define MPFR_GET_REAL_PTR(x) \
-  ((mp_limb_t *) ((mpfr_size_limb_t *) MPFR_MANT(x) - 1))
+  ((void *) ((mpfr_size_limb_t *) (void *) MPFR_MANT(x) - 1))
 
 /* Temporary memory handling */
 #ifndef TMP_SALLOC
