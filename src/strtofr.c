@@ -465,7 +465,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   MPFR_TMP_DECL (marker);
 
   /* initialize the working precision */
-  prec = MPFR_PREC (x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
+  prec = MPFR_GET_PREC (x);
+  prec += MPFR_INT_CEIL_LOG2 (prec);
 
   /* Compute the value y of the leading characters as long as rounding is not
      possible.
