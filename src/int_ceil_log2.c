@@ -38,7 +38,9 @@ __gmpfr_int_ceil_log2 (unsigned long n)
       limb = n - 1;
       MPFR_ASSERTN (limb == n - 1);
       count_leading_zeros (b, limb);
-      return GMP_NUMB_BITS - b;
+      b = GMP_NUMB_BITS - b;
+      MPFR_ASSERTD (b >= 0);
+      return b;
     }
 #else
   return mpfr_nbits_ulong (n - 1);

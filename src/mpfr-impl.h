@@ -1450,7 +1450,9 @@ asm (".section predict_data, \"aw\"; .previous\n"
       _limb = (x) - 1;                                    \
       MPFR_ASSERTN (_limb == (x) - 1);                    \
       count_leading_zeros (_b, _limb);                    \
-      (GMP_NUMB_BITS - _b); }))
+      _b = GMP_NUMB_BITS - _b;                            \
+      MPFR_ASSERTD (_b >= 0);                             \
+      _b; }))
 #else
 # define MPFR_INT_CEIL_LOG2(x)                              \
   (MPFR_UNLIKELY ((x) == 1) ? 0 :                           \
@@ -1461,6 +1463,7 @@ asm (".section predict_data, \"aw\"; .previous\n"
            _x = _x >> 1;                                    \
            _c ++;                                           \
          };                                                 \
+       MPFR_ASSERTD (_c >= 0);                              \
        _c; }))
 #endif /* MPFR_LONG_WITHIN_LIMB */
 #else
