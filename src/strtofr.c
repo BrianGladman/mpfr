@@ -565,7 +565,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          that if something has been ignored, it must be non-zero. */
       exact = pstr_size == pstr->prec;
 
-      /* Normalize y and set the initial value of its exponent exp.
+      /* Normalize y and set the initial value of its exponent exp, which
+         is 0 when y is not shifted.
          Since pstr->mant was normalized, mpn_set_str guarantees that
          the most significant limb is non-zero. */
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
@@ -617,7 +618,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               mpn_copyi (y, y + 1, real_ysize - 1);
             }
           /* exp = shift count */
-          /* FIXME: Why GMP_NUMB_BITS when count = 0? */
+          /* FIXME: Why not taking offset (when count != 0) into account? */
           exp = GMP_NUMB_BITS - count;
         }
 
