@@ -620,7 +620,10 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* exp = shift count */
           /* FIXME: Why not taking offset (when count != 0) into account?
              The value of exp does not seem to matter (changing it does
-             not make tstrtofr fail). */
+             not make tstrtofr fail). The reason is that the rounding test
+             does no depend on the exponent and one always loops in this
+             case (except in case of overflow or underflow, but this is
+             not tested). This is another issue to solve... */
           exp = GMP_NUMB_BITS - count;
         }
 
