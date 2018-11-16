@@ -625,7 +625,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              not make tstrtofr fail). The reason is that the rounding test
              does no depend on the exponent and one always loops in this
              case (except in case of overflow or underflow, but this is
-             not tested). This is another issue to solve...
+             not tested). -> This is actually due to the current tstrtofr.c
+             tests, which seem to always be hard-to-round cases!!!
              Additionally, the lost bits are not taken into account
              in the error analysis below! */
           exp = GMP_NUMB_BITS - count;
