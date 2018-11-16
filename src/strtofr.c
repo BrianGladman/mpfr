@@ -452,7 +452,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 static int
 parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 {
-  mpfr_prec_t prec;
+  mpfr_prec_t precx, prec;
   mpfr_exp_t exp;
   mpfr_exp_t ysize_bits;
   mp_limb_t *result;
@@ -465,8 +465,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   MPFR_TMP_DECL (marker);
 
   /* initialize the working precision */
-  prec = MPFR_GET_PREC (x);
-  prec += MPFR_INT_CEIL_LOG2 (prec);
+  precx = MPFR_GET_PREC (x);
+  prec = precx + MPFR_INT_CEIL_LOG2 (precx);
 
   /* Compute the value y of the leading characters as long as rounding is not
      possible.
@@ -491,7 +491,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* prec bits corresponds to ysize limbs */
       ysize_bits = ysize * GMP_NUMB_BITS;
       MPFR_ASSERTD (ysize_bits >= prec);
-      /* and to ysize_bits >= prec > MPFR_PREC (x) bits. */
+      /* and to ysize_bits >= prec > precx bits. */
       /* We need to allocate one more limb as specified by mpn_set_str
          (a limb may be written in rp[rn]). Note that the manual of GMP
          up to 5.1.3 was incorrect on this point.
@@ -869,7 +869,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           err = 0;
         }
 
-      MPFR_LOG_MSG (("exact = %d, err = %d\n", exact, err));
+      MPFR_LOG_MSG (("exact = %d, err = %d, precx = %Pu\n",
+                     exact, err, precx));
 
       /* at this point, result is an approximation rounded toward zero
          of the pstr_size most significant digits of pstr->mant, with
@@ -877,12 +878,12 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
       /* test if rounding is possible, and if so exit the loop.
          Note: we also need to be able to determine the correct ternary value,
-         thus we use the MPFR_PREC(x) + (rnd == MPFR_RNDN) trick.
+         thus we use the precx + (rnd == MPFR_RNDN) trick.
          For example if result = xxx...xxx111...111 and rnd = RNDN,
          then we know the correct rounding is xxx...xx(x+1), but we cannot know
          the correct ternary value. */
       if (exact || mpfr_round_p (result, ysize, ysize_bits - err - 1,
-                                 MPFR_PREC(x) + (rnd == MPFR_RNDN)))
+                                 precx + (rnd == MPFR_RNDN)))
         break;
 
       /* update the prec for next loop */
@@ -891,9 +892,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
   MPFR_ZIV_FREE (loop);
 
   /* round y */
-  if (mpfr_round_raw (MPFR_MANT (x), result,
-                      ysize_bits,
-                      pstr->negative, MPFR_PREC(x), rnd, &res ))
+  if (mpfr_round_raw (MPFR_MANT (x), result, ysize_bits,
+                      pstr->negative, precx, rnd, &res))
     {
       /* overflow when rounding y */
       MPFR_MANT (x)[MPFR_LIMB_SIZE (x) - 1] = MPFR_LIMB_HIGHBIT;
