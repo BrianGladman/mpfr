@@ -573,6 +573,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       MPFR_ASSERTD (y[real_ysize - 1] != 0); /* mpn_set_str guarantees this */
       count_leading_zeros (count, y[real_ysize - 1]);
       diff_ysize = ysize - real_ysize;
+      MPFR_LOG_MSG (("diff_ysize = %ld\n", (long) diff_ysize));
       if (diff_ysize >= 0)
         {
           /* We have enough limbs to store {y, real_ysize} exactly
@@ -637,6 +638,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           int pow2;
           mpfr_exp_t tmp;
 
+          MPFR_LOG_MSG (("case 1 (base = power of 2)\n", 0));
+
           count_leading_zeros (pow2, (mp_limb_t) pstr->base);
           pow2 = GMP_NUMB_BITS - pow2 - 1; /* base = 2^pow2 */
           MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
@@ -672,6 +675,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
         {
           mp_limb_t *z;
           mpfr_exp_t exp_z;
+
+          MPFR_LOG_MSG (("case 2 (exp_base > pstr_size)\n", 0));
 
           result = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
 
@@ -731,6 +736,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
         {
           mp_limb_t *z;
           mpfr_exp_t exp_z;
+
+          MPFR_LOG_MSG (("case 3 (exp_base < pstr_size)\n", 0));
 
           result = MPFR_TMP_LIMBS_ALLOC (3 * ysize + 1);
 
@@ -855,10 +862,14 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* case exp_base = pstr_size: no multiplication or division needed */
       else
         {
+          MPFR_LOG_MSG (("case 4 (exp_base = pstr_size)\n", 0));
+
           /* base^(exp-pr) = 1             nothing to compute */
           result = y;
           err = 0;
         }
+
+      MPFR_LOG_MSG (("exact = %d, err = %d\n", exact, err));
 
       /* at this point, result is an approximation rounded toward zero
          of the pstr_size most significant digits of pstr->mant, with
