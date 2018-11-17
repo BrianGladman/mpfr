@@ -203,9 +203,24 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     rnd1 = MPFR_RNDN;
   if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
+
+  /* Warning: for rnd2=RNDF and rnd1 a directed rounding (RNDZ or RNDA),
+     the specification of mpfr_can_round says that we should return non-zero
+     when {bp, bn} is exactly representable in precision prec. */
   if (rnd2 == MPFR_RNDF)
-    rnd2 = (rnd1 == MPFR_RNDN) ? MPFR_RNDN :
-      MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDA : MPFR_RNDZ;
+    {
+      if (rnd1 == MPFR_RNDN)
+        rnd2 = MPFR_RNDN;
+      else
+        {
+          rnd2 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDA : MPFR_RNDZ;
+          cc = mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec);
+          if (cc == 0)
+            /* in that special case, b is exact, thus we can round */
+            return 1;
+        }
+    }
+
   if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
@@ -365,7 +380,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   k++; /* since we work with k+1 everywhere */
   tmp = MPFR_TMP_LIMBS_ALLOC (tn);
   if (bn > k)
-    MPN_COPY (tmp, bp, bn - k);
+    MPN_COPY (tmp, bp, bn - k); /* copy low bn-k limbs of b into tmp */
 
   MPFR_ASSERTD (k > 0);
 
@@ -373,7 +388,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
     {
     case MPFR_RNDZ:
       /* rnd1 = Round to Zero */
-      cc = (bp[bn - 1] >> s1) & 1;
+      cc = (bp[bn - 1] >> s1) & 1; /* cc is the least significant bit of b */
       /* mpfr_round_raw2 returns 1 if one should add 1 at ulp(b,prec),
          and 0 otherwise */
       cc ^= mpfr_round_raw2 (bp, bn, neg, rnd2, prec2);
