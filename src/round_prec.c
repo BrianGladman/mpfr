@@ -195,18 +195,20 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
 
   MPFR_ASSERT_SIGN(neg);
   neg = MPFR_IS_NEG_SIGN(neg);
-
-  /* Transform RNDD and RNDU to Zero / Away */
   MPFR_ASSERTD (neg == 0 || neg == 1);
-  /* transform RNDF to RNDN */
+
+  /* For rnd1 and rnd2, transform RNDF / RNDD / RNDU to RNDN / RNDZ / RNDA
+     (with a special case for rnd1 directed rounding, rnd2 = RNDF). */
+
   if (rnd1 == MPFR_RNDF)
-    rnd1 = MPFR_RNDN;
-  if (rnd1 != MPFR_RNDN)
+    rnd1 = MPFR_RNDN;  /* transform RNDF to RNDN */
+  else if (rnd1 != MPFR_RNDN)
     rnd1 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
-  /* Warning: for rnd2=RNDF and rnd1 a directed rounding (RNDZ or RNDA),
-     the specification of mpfr_can_round says that we should return non-zero
-     when {bp, bn} is exactly representable in precision prec. */
+  MPFR_ASSERTD (rnd1 == MPFR_RNDN ||
+                rnd1 == MPFR_RNDZ ||
+                rnd1 == MPFR_RNDA);
+
   if (rnd2 == MPFR_RNDF)
     {
       if (rnd1 == MPFR_RNDN)
@@ -214,14 +216,15 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
       else
         {
           rnd2 = MPFR_IS_LIKE_RNDZ(rnd1, neg) ? MPFR_RNDA : MPFR_RNDZ;
-          cc = mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec);
-          if (cc == 0)
-            /* in that special case, b is exact, thus we can round */
+          /* Warning: in this case (rnd1 directed rounding, rnd2 = RNDF),
+             the specification of mpfr_can_round says that we should
+             return non-zero (i.e., we can round) when {bp, bn} is
+             exactly representable in precision prec. */
+          if (mpfr_round_raw2 (bp, bn, neg, MPFR_RNDA, prec) == 0)
             return 1;
         }
     }
-
-  if (rnd2 != MPFR_RNDN)
+  else if (rnd2 != MPFR_RNDN)
     rnd2 = MPFR_IS_LIKE_RNDZ(rnd2, neg) ? MPFR_RNDZ : MPFR_RNDA;
 
   MPFR_ASSERTD (rnd2 == MPFR_RNDN ||
