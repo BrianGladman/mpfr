@@ -1382,6 +1382,9 @@ random_tests (void)
               j++;
             }
 
+          /* FIXME: We should check whether s0[j] is the maximum digit,
+             and go back until this is no longer the case (the first digit
+             after the common prefix cannot be the maximum digit). */
           MPFR_ASSERTN (s0[j] != 0);
           d = s0[j];
           s2[j+2] = d = d == '9' ? 'A' : d == 'Z' ? 'a' : d + 1;
