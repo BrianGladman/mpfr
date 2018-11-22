@@ -22,6 +22,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* The implicit \0 is useless, but we do not write num_to_text[62] otherwise
+   g++ complains. */
+static const char num_to_text36[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  "abcdefghijklmnopqrstuvwxyz";
+
 static void
 check_special (void)
 {
@@ -1316,8 +1322,9 @@ random_tests (void)
     {
       mpfr_inits2 (prec, x0, x1, x2, (mpfr_ptr) 0);
 
-      for (i = 0; i < 5; i++)
+      for (i = 0; i < 20; i++)
         {
+          const char *num_to_text;
           mpfr_exp_t e0, e1;
           int base, j, neg;
           int noteq = 0;
@@ -1328,6 +1335,8 @@ random_tests (void)
           do
             base = 2 + (randlimb () % 61);
           while (prec == 1 && base == 2);
+
+          num_to_text = base <= 36 ? num_to_text36 : num_to_text62;
 
           do
             {
@@ -1382,11 +1391,9 @@ random_tests (void)
               j++;
             }
 
-          /* FIXME: We should check whether s0[j] is the maximum digit,
-             and go back until this is no longer the case (the first digit
-             after the common prefix cannot be the maximum digit). */
           MPFR_ASSERTN (s0[j] != 0);
-          d = s0[j];
+          while ((d = s0[j]) == num_to_text[base - 1])
+            j--;
           s2[j+2] = d = d == '9' ? 'A' : d == 'Z' ? 'a' : d + 1;
           if (d != s1[j])
             noteq = 1;
