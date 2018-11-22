@@ -1392,6 +1392,11 @@ random_tests (void)
             }
 
           MPFR_ASSERTN (s0[j] != 0);
+          /* We will increment the next digit. Thus while s0[j] is the
+             maximum digit, go back until this is no longer the case
+             (the first digit after the common prefix cannot be the
+             maximum digit, so that we will stop early enough). */
+          /* FIXME: If we go back to this digit, noteq needs to reset to 0. */
           while ((d = s0[j]) == num_to_text[base - 1])
             j--;
           s2[j+2] = d = d == '9' ? 'A' : d == 'Z' ? 'a' : d + 1;
