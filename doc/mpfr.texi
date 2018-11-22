@@ -1686,11 +1686,20 @@ with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Convert @var{op} to a string of digits in base @var{b}, with rounding in
-the direction @var{rnd}, where @var{n} is either zero (see below) or the
-number of significant digits output in the string.
-The base may vary from 2 to 62;
+Convert @var{op} to a string of digits in base @GMPabs{@var{b}}, with
+rounding in the direction @var{rnd}, where @var{n} is either zero
+(see below) or the number of significant digits output in the string.
+The argument @var{b} may vary from 2 to 62 or from @minus{}2 to @minus{}36;
 otherwise the function does nothing and immediately returns a null pointer.
+
+For @var{b} in the range 2 to 36, digits and lower-case letters are used;
+for @minus{}2 to @minus{}36, digits and upper-case letters are used; for
+37 to 62, digits, upper-case letters, and lower-case letters, in that
+significance order, are used. Warning! This implies that for
+@math{@var{b} > 10}, the successor of the digit 9 depends on @var{b}.
+This choice has been done for compatibility with GMP's @code{mpf_get_str}
+function. Users who wish a more consistent behavior should write a simple
+wrapper.
 
 If the input is NaN, then the returned string is @samp{@@NaN@@} and the
 NaN flag is set. If the input is +Inf (resp.@: @minus{}Inf), then the
