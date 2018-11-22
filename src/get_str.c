@@ -2558,7 +2558,7 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
    Important: when you call this function with s=NULL, don't forget to free
    the memory space allocated, with mpfr_free_str.
 */
-char*
+char *
 mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
               mpfr_rnd_t rnd)
 {
