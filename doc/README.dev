@@ -1132,25 +1132,36 @@ incorrect value in case of a bug in MPFR.
 
 Avoid mixing signed and unsigned integer types, as this can lead signed
 types to be automatically converted into unsigned types (usual arithmetic
-conversions). If such a signed type contains a negative value, the
-result will probably be incorrect. With MPFR 2.x, this problem could
+conversions). If such a signed type contains a negative value, the result
+may be incorrect on some platforms. With MPFR 2.x, this problem could
 arise with mpfr_exp_t, which is signed, and mpfr_prec_t (mp_prec_t),
 which was unsigned (it is now signed), meaning that in general, a cast
 of a mpfr_prec_t to a mpfr_exp_t was needed.
 
 Note that such bugs are difficult to detect because they may depend on
-the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,
-but on ILP32, 32-bit int + 32-bit unsigned long is incorrect), but also
-on the input values. So, do not rely on tests very much. However, if
-a test works on 32 bits but fails on 64 bits in the extended exponent
-range (or conversely), the cause may be related to the integer types
-(e.g. a signness problem or an integer overflow due to different type
-sizes).
+the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long will give
+a signed type, but on ILP32, 32-bit int + 32-bit unsigned long will give
+an unsigned type, which may not be what is expected), but also on the
+input values. So, do not rely on tests very much. However, if a test
+works on 32 bits but fails on 64 bits in the extended exponent range
+(or conversely), the cause may be related to the integer types (e.g. a
+signness problem or an integer overflow due to different type sizes).
+
+For instance, in MPFR, such issues were fixed in r1992 and r5588.
+
+An example that will fail with 32-bit int and long:
+
+    long long umd(void)
+    {
+      long a = 1;
+      unsigned int b = 2;
+      return a - b;
+    }
 
 When creating a new variable that will always contain nonnegative values,
 it is generally better to define it as a signed type if it may be used in
 an arithmetic expression. The exceptions are when the value is seen as an
-array of bits (e.g. for limbs) and to locally avoid integer overflow.
+array of bits (e.g. for limbs) and to temporarily avoid integer overflow.
 
 ===========================================================================
 
