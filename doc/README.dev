@@ -677,6 +677,8 @@ compiler.
 
    =====================================================================
 
+About type conversions:
+
 To do type punning (i.e. store a value of some type and reinterpret
 it as another type), use a union. This is valid in ISO C99 and above
 (in C99, see 6.5#7 and Note 82 of 6.5.2.3#3 for the clarification),
@@ -689,6 +691,16 @@ Some references:
 * https://en.wikipedia.org/wiki/Type_punning#Use_of_union
 * http://stackoverflow.com/questions/346622/opinions-on-type-punning-in-c
   "Opinions on type-punning in C++?"
+
+Do not do conversions between function pointers and other kinds of
+pointers (including to void *). This yields undefined behavior and
+may not work in practice. Example:
+
+  https://stackoverflow.com/questions/5579835/c-function-pointer-casting-to-void-pointer
+
+Adding a level of indirection is OK, as suggested there, and on:
+
+  https://stackoverflow.com/questions/36645660/why-cant-i-cast-a-function-pointer-to-void
 
    =====================================================================
 
