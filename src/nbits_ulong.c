@@ -39,6 +39,8 @@ mpfr_nbits_ulong (unsigned long n)
 
 #else
 
+  cnt = 0;
+
   while (n >= 0x10000)
     {
       n >>= 16;
