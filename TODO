@@ -281,6 +281,10 @@ Table of contents:
   a single variable). mpfr_subnormalize and mpfr_round_nearest_away_end
   could use it.
 
+- UBF functions for +, -, *, fmma, /, sqrt.
+  Support UBF in mpfr_check_range or add mpfr_ubf_check_range?
+  Make this available in the API, e.g. for MPC.
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
