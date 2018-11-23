@@ -452,12 +452,10 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 static int
 parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 {
-  mpfr_prec_t precx, prec;
+  mpfr_prec_t precx, prec, ysize_bits, pstr_size;
   mpfr_exp_t exp;
-  mpfr_exp_t ysize_bits;
   mp_limb_t *result;
   int count, exact;
-  size_t pstr_size;
   mp_size_t ysize, real_ysize, diff_ysize;
   int res, err;
   const int extra_limbs = GMP_NUMB_BITS >= 12 ? 1 : 2; /* see below */
@@ -489,7 +487,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       /* y will be regarded as a number with precision prec. */
       ysize = MPFR_PREC2LIMBS (prec);
       /* prec bits corresponds to ysize limbs */
-      ysize_bits = ysize * GMP_NUMB_BITS;
+      ysize_bits = (mpfr_prec_t) ysize * GMP_NUMB_BITS;
       MPFR_ASSERTD (ysize_bits >= prec);
       /* and to ysize_bits >= prec > precx bits. */
       /* We need to allocate one more limb as specified by mpn_set_str
@@ -508,8 +506,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           Since ysize ~ prec/GMP_NUMB_BITS and prec < Umax/2 =>
           ysize*GMP_NUMB_BITS can not overflow.
          We compute pstr_size = 1 + ceil(ysize_bits * Num / Den)
-          where Num/Den >= 1/log2(base)
-         It is not exactly ceil(1/log2(base)) but could be one more (base 2)
+          where 1/log2(base) <= Num/Den <= 1
+         It is not exactly ceil(1/log2(base)) but could be one more (base 2).
          Quite ugly since it tries to avoid overflow:
          let Num = RedInvLog2Table[pstr->base-2][0]
          and Den = RedInvLog2Table[pstr->base-2][1],
@@ -532,8 +530,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
       {
         unsigned long Num = RedInvLog2Table[pstr->base-2][0];
         unsigned long Den = RedInvLog2Table[pstr->base-2][1];
-        pstr_size = ((ysize_bits / Den) * Num)
-          + (((ysize_bits % Den) * Num + Den - 1) / Den)
+        MPFR_ASSERTD (Num <= Den && Den <= 65535); /* thus no overflow */
+        pstr_size = (ysize_bits / Den) * Num
+          + ((ysize_bits % Den) * Num + Den - 1) / Den
           + 1;
       }
 
@@ -545,7 +544,6 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          in pstr->mant, i.e. pstr->prec, reduce it to pstr->prec. */
       if (pstr_size > pstr->prec)
         pstr_size = pstr->prec;
-      MPFR_ASSERTD (pstr_size == (mpfr_exp_t) pstr_size);
 
       /* Convert str (potentially truncated to pstr_size) into binary.
          Note that pstr->mant is big endian, thus no offset is needed. */
