@@ -93,6 +93,22 @@ bug20081028 (void)
   mpfr_clear (x);
 }
 
+static void
+bug20180908 (void)
+{
+  mpfr_t x, y;
+  const char s[] = "ssq4";
+
+  mpfr_init2 (x, 12);
+  mpfr_init2 (y, 12);
+  mpfr_set_str_binary (x, "0.100010111010E24");
+  /* x = 9150464 = [4, 52, 54, 54] in base 55 */
+  mpfr_set_str (y, s, 55, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_equal_p (x, y));
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -844,6 +860,7 @@ main (int argc, char *argv[])
 
   check_underflow ();
   bug20081028 ();
+  bug20180908 ();
 
   tests_end_mpfr ();
   return 0;
