@@ -603,6 +603,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                  be lost if real_ysize = ysize + 2. */
               exact = exact && (diff_ysize == -1 || y[0] == MPFR_LIMB_ZERO);
               /* mpn_rshift allows overlap, provided destination <= source */
+              /* FIXME: The bits lost due to mpn_rshift are not taken
+                 into account in the error analysis below! */
               if (mpn_rshift (y, y - (diff_ysize + 1), real_ysize,
                               GMP_NUMB_BITS - count) != MPFR_LIMB_ZERO)
                 exact = 0; /* some non-zero bits have been shifted out */
