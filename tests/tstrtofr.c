@@ -1413,7 +1413,7 @@ random_tests (void)
               j++;
             }
 
-          sprintf (s2 + (j+2), "@%" MPFR_EXP_FSPEC "d", e0);
+          sprintf (s2 + (j+2), "@%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) e0);
 
           while (noteq == 0 && j < BSIZE - 1)
             {

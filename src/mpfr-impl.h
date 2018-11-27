@@ -934,6 +934,12 @@ union ieee_decimal128
    nonnegative. */
 #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 
+/* Define mpfr_eexp_t, mpfr_ueexp_t and MPFR_EXP_FSPEC.
+   Warning! MPFR_EXP_FSPEC is the length modifier associated with
+   these types mpfr_eexp_t / mpfr_ueexp_t, not with mpfr_exp_t.
+   (Should we change that, or is this safer to detect bugs, e.g.
+   in the context of an expression with computations with long?)
+*/
 #if _MPFR_EXP_FORMAT <= 3
 typedef long mpfr_eexp_t;
 typedef unsigned long mpfr_ueexp_t;
