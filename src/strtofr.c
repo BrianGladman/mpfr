@@ -599,13 +599,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                         (extra_limbs == 2 && diff_ysize == -2));
           if (count != 0)
             {
-              mp_size_t offset = - diff_ysize - 1;
-              MPFR_ASSERTD (offset == 0 || (extra_limbs == 2 && offset == 1));
               /* Before doing the shift, consider the limb that will entirely
-                 be lost if real_ysize = ysize + 2, i.e. offset = 1. */
+                 be lost if real_ysize = ysize + 2. */
               exact = exact && (diff_ysize == -1 || y[0] == MPFR_LIMB_ZERO);
               /* mpn_rshift allows overlap, provided destination <= source */
-              if (mpn_rshift (y, y + offset, real_ysize,
+              if (mpn_rshift (y, y - (diff_ysize + 1), real_ysize,
                               GMP_NUMB_BITS - count) != MPFR_LIMB_ZERO)
                 exact = 0; /* some non-zero bits have been shifted out */
             }
@@ -619,11 +617,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
               mpn_copyi (y, y + 1, real_ysize - 1);
             }
           /* exp = shift count */
-          /* FIXME: Why not taking offset (when count != 0) into account?
-             Indeed, in r13289, a test fails for diff_ysize = -2.
-             Additionally, the lost bits are not taken into account
-             in the error analysis below! */
-          exp = GMP_NUMB_BITS - count;
+          /* TODO: add some explanations about what exp means exactly. */
+          exp = GMP_NUMB_BITS * (- diff_ysize) - count;
         }
 
       /* compute base^(exp_base - pstr_size) on n limbs */
