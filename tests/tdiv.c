@@ -1166,7 +1166,8 @@ test_20151023 (void)
           mpfr_div (q, n, d, MPFR_RNDN);
           if (! mpfr_equal_p (q, q0))
             {
-              printf ("Error in test_20151023 for p=%lu, rnd=RNDN\n", p);
+              printf ("Error in test_20151023 for p=%ld, rnd=RNDN\n",
+                      (long) p);
               printf ("n="); mpfr_dump (n);
               printf ("d="); mpfr_dump (d);
               printf ("expected q0="); mpfr_dump (q0);
