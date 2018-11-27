@@ -1279,6 +1279,31 @@ bug20170308 (void)
   mpfr_set_emin (emin);
 }
 
+/* r13299 fails with 8-bit limbs (micro-gmp/8). */
+static void
+bug20181127 (void)
+{
+  char s[] = "9.Z6nrLVSMG1bDcCF2ONJdX@-183295525";  /* base 58 */
+  mpfr_t x, y;
+
+  mpfr_inits2 (6, x, y, (mpfr_ptr) 0);
+  mpfr_set_ui_2exp (x, 5, -1073741701, MPFR_RNDN);
+  mpfr_strtofr (y, s, NULL, 58, MPFR_RNDZ);
+  if (! mpfr_equal_p (x, y))
+    {
+      printf ("Error in bug20181127 on %s (base 58)\n", s);
+      printf ("Expected x = ");
+      mpfr_dump (x);
+      printf ("Got      y = ");
+      mpfr_dump (y);
+      printf ("*Note* In base 58, x ~= ");
+      mpfr_out_str (stdout, 58, 8, x, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clears (x, y, (mpfr_ptr) 0);
+}
+
 static void
 coverage (void)
 {
@@ -1478,6 +1503,7 @@ main (int argc, char *argv[])
   bug20120829 ();
   bug20161217 ();
   bug20170308 ();
+  bug20181127 ();
   random_tests ();
 
   tests_end_mpfr ();
