@@ -904,6 +904,13 @@ check_overflow (void)
     {
       printf ("Check overflow failed (2) with:\n s='%s'\n x=", s);
       mpfr_dump (x);
+#if defined(__GNUC__)
+      printf ("This failure is triggered by GCC bug 86554:\n"
+              "  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86554\n"
+              "  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87276 "
+              "(about this test)\nWorkaround: disable code hoisting "
+              "with -fno-code-hoisting in CFLAGS.\n");
+#endif
       exit (1);
     }
   mpfr_strtofr (x, "123456789E170141183460469231731687303715884105728",
