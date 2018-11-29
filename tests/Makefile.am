@@ -94,11 +94,13 @@ $(top_builddir)/src/libmpfr.la:
 
 TESTS = $(check_PROGRAMS)
 
+# Unset DISPLAY as it is not needed and it can yield error messages when
+# running the tests with LOG_COMPILER=wine (for builds with MinGW).
 # $(VALGRIND) is still there to be able to use a wrapper such as valgrind
 # in case old Automake. With Automake 1.13+, where a parallel test harness
 # is generated, use LOG_COMPILER instead. For additional information, see:
 # http://www.gnu.org/software/automake/manual/automake.html#Parallel-Test-Harness
-TESTS_ENVIRONMENT = MPFR_QUIET=1 $(VALGRIND)
+TESTS_ENVIRONMENT = env -u DISPLAY MPFR_QUIET=1 $(VALGRIND)
 
 # The -no-install option prevents libtool from generating wrapper scripts
 # for the tests.
