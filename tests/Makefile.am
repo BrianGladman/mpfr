@@ -95,7 +95,9 @@ $(top_builddir)/src/libmpfr.la:
 TESTS = $(check_PROGRAMS)
 
 # Unset DISPLAY as it is not needed and it can yield error messages when
-# running the tests with LOG_COMPILER=wine (for builds with MinGW).
+# running the tests with LOG_COMPILER=wine (for builds with MinGW). See:
+#   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914822
+#   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914949
 # $(VALGRIND) is still there to be able to use a wrapper such as valgrind
 # in case old Automake. With Automake 1.13+, where a parallel test harness
 # is generated, use LOG_COMPILER instead. For additional information, see:
