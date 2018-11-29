@@ -57,12 +57,12 @@ main (void)
 
   /*********************** MPFR version and patches ************************/
 
-  /* With i586-mingw32msvc-gcc -D__USE_MINGW_ANSI_STDIO and run under Wine,
-     the following line was not output. This is not reproducible. Let's try
-     to detect the error in case this happens again.
-     Update for r13304: This occurred again twice in a row, once with
-     -D__USE_MINGW_ANSI_STDIO and once without it, and in either case,
-     tversion did not fail, i.e. printf succeeded! */
+  /* The printf failure test was added because of an output issue under Wine,
+   * eventually not related to this output; this test is kept just in case...
+   * Details:
+   *   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914822
+   *   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914949
+   */
   if (printf ("[tversion] MPFR %s\n", MPFR_VERSION_STRING) < 0)
     {
       perror ("tversion (first printf)");
