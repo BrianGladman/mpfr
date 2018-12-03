@@ -192,7 +192,7 @@ extract_double (mpfr_limb_ptr rp, double d)
     man[0] = d;
 #else
     /* clang produces an invalid exception when d >= 2^63,
-       see https://bugs.llvm.org//show_bug.cgi?id=17686.
+       see <https://bugs.llvm.org/show_bug.cgi?id=17686>.
        Since this is always the case, here, we use the following patch. */
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS == 64);
     man[0] = 0x8000000000000000 + (mp_limb_t) (d - 0x8000000000000000);
