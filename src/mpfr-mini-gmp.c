@@ -98,7 +98,8 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
 unsigned long
 gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 {
-  unsigned long p, q, r;
+  mp_limb_t p, q;
+  unsigned long r;
 
   MPFR_STAT_STATIC_ASSERT (ULONG_MAX <= MPFR_LIMB_MAX);
   MPFR_ASSERTD(n <= MPFR_LIMB_MAX);
