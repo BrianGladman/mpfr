@@ -99,6 +99,8 @@ unsigned long
 gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 {
   unsigned long p, q, r;
+
+  MPFR_STAT_STATIC_ASSERT (ULONG_MAX <= MPFR_LIMB_MAX);
   MPFR_ASSERTD(n <= MPFR_LIMB_MAX);
   p = random_limb (); /* p is in [0, MPFR_LIMB_MAX], thus p is uniform among
                          MPFR_LIMB_MAX+1 values */
