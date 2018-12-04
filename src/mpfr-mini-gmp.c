@@ -98,7 +98,18 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
 unsigned long
 gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 {
-  return random_limb () % n;
+  unsigned long p, q, r;
+  MPFR_ASSERTD(n <= MPFR_LIMB_MAX);
+  p = random_limb (); /* p is in [0, MPFR_LIMB_MAX], thus p is uniform among
+                         MPFR_LIMB_MAX+1 values */
+  r = MPFR_LIMB_MAX % n;
+  if (r < n - 1) /* MPFR_LIMB_MAX+1 is not multiple of n */
+    {
+      q = n * (MPFR_LIMB_MAX / n);
+      while (p >= q)
+        p = random_limb ();
+    }
+  return p % n;
 }
 #endif
 
