@@ -103,7 +103,7 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
 #ifdef WANT_gmp_urandomm_ui
 /* generates a random unsigned long */
 static unsigned long
-random_ulong ()
+random_ulong (void)
 {
 #ifdef MPFR_LONG_WITHIN_LIMB
   /* we assume a limb and an unsigned long have both a number of different
