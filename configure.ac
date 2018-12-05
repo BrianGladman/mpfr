@@ -798,6 +798,10 @@ AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
 CPPFLAGS="$saved_CPPFLAGS"
 AC_MSG_RESULT([$mini_gmp_numb_bits bits ($how)])
 
+dnl We need to check the availability of lrand48 (used by random_limb),
+dnl in particular because it is not part of the ISO C standard.
+AC_CHECK_FUNC(lrand48,,AC_MSG_FAILURE([mini-gmp requires lrand48]))
+
 fi
 
 dnl End of setup related to GMP / mini-gmp
