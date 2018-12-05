@@ -61,14 +61,20 @@ gmp_randinit_set (gmp_randstate_t s1, gmp_randstate_t s2)
 static mp_limb_t
 random_limb (void)
 {
-  /* lrand48() only gives 31 bits */
-#if GMP_NUMB_BITS == 8 || GMP_NUMB_BITS == 16
-  return (mp_limb_t) lrand48 ();
+  /* lrand48() returns a random number in [0, 2^31-1],
+     but the low 15 bits do not depend on the random seed,
+     thus it is safer to use the upper bits */
+#if GMP_NUMB_BITS < 32
+  /* use the upper GMP_NUMB_BITS bits from lrand48 () */
+  return (mp_limb_t) (lrand48 () >> (31 - GMP_NUMB_BITS));
 #elif GMP_NUMB_BITS == 32
-  return lrand48 () + (lrand48 () << 31);
+  /* use the upper 16 bits from two lrand48 calls */
+  return (lrand48 () >> 15) + ((lrand48 () >> 15) << 16);
 #elif GMP_NUMB_BITS == 64
-  return lrand48 () + (((mp_limb_t) lrand48 ()) << 31)
-    + (((mp_limb_t) lrand48 ()) << 62);
+  /* use the upper 16 bits from four lrand48 calls */
+  return (lrand48 () >> 15) + ((((mp_limb_t) lrand48 ()) >> 15) << 16)
+    + ((((mp_limb_t) lrand48 ()) >> 15) << 32)
+    + ((((mp_limb_t) lrand48 ()) >> 15) << 48);
 #else
 #error "GMP_NUMB_BITS should be 8, 16, 32 or >= 64"
 #endif
@@ -95,27 +101,44 @@ mpz_urandomb (mpz_t rop, gmp_randstate_t state, mp_bitcnt_t nbits)
 #endif
 
 #ifdef WANT_gmp_urandomm_ui
+/* generates a random unsigned long */
+static unsigned long
+random_ulong ()
+{
+#ifdef MPFR_LONG_WITHIN_LIMB
+  /* we assume a limb and an unsigned long have both a number of different
+     values that is a power of two, thus when we cast a random limb into
+     an unsigned long, we still get an uniform distribution */
+  return random_limb ();
+#else
+  /* with the same assumption as above, we need to generate as many random
+     limbs needed to "fill" an unsigned long */
+  unsigned long u, v;
+
+  v = MPFR_LIMB_MAX;
+  u = random_limb ();
+  while (v < ULONG_MAX)
+    {
+      v = (v << GMP_NUMB_BITS) + MPFR_LIMB_MAX;
+      u = (u << GMP_NUMB_BITS) + random_limb ();
+    }
+  return u;
+#endif
+}
+
 unsigned long
 gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 {
-  mp_limb_t p, q;
-  unsigned long r;
+  unsigned long p, q, r;
 
-  MPFR_ASSERTN (n > 0);
-#ifndef MPFR_LONG_WITHIN_LIMB
-  /* The method below generates a random limb, it can thus only work when
-     n <= MPFR_LIMB_MAX + 1. FIXME: write a method that works in all cases */
-  MPFR_ASSERTN (n - 1 <= MPFR_LIMB_MAX);
-#endif
-  p = random_limb (); /* p is in [0, MPFR_LIMB_MAX], thus p is uniform among
-                         MPFR_LIMB_MAX+1 values */
-  r = MPFR_LIMB_MAX % n;
-  if (r < n - 1) /* MPFR_LIMB_MAX+1 is not multiple of n */
-    {
-      q = n * (MPFR_LIMB_MAX / n);
-      while (p >= q)
-        p = random_limb ();
-    }
+  p = random_ulong (); /* p is in [0, ULONG_MAX], thus p is uniform among
+                          ULONG_MAX+1 values */
+  q = n * (ULONG_MAX / n);
+  r = ULONG_MAX % n;
+  if (r != n - 1) /* ULONG_MAX+1 is not multiple of n, will happen whenever
+                     n is not a power of two */
+    while (p >= q)
+      p = random_ulong ();
   return p % n;
 }
 #endif
