@@ -131,6 +131,7 @@ gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
 {
   unsigned long p, q, r;
 
+  MPFR_ASSERTN (n > 0);
   p = random_ulong (); /* p is in [0, ULONG_MAX], thus p is uniform among
                           ULONG_MAX+1 values */
   q = n * (ULONG_MAX / n);
