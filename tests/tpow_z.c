@@ -177,7 +177,7 @@ check_integer (mpfr_prec_t begin, mpfr_prec_t end, unsigned long max)
                 }
               if (res1 != res2)
                 {
-                  printf ("Wrong inexact flags for p = %lu, z = %lu, rnd = %s"
+                  printf ("Wrong ternary value for p = %lu, z = %lu, rnd = %s"
                           " and x = ", (unsigned long) p, n,
                           mpfr_print_rnd_mode (rnd));
                   mpfr_dump (x);
