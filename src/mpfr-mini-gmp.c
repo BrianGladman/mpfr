@@ -101,10 +101,11 @@ gmp_urandomm_ui (gmp_randstate_t state, unsigned long n)
   mp_limb_t p, q;
   unsigned long r;
 
+  MPFR_ASSERTN (n > 0);
 #ifndef MPFR_LONG_WITHIN_LIMB
   /* The method below generates a random limb, it can thus only work when
      n <= MPFR_LIMB_MAX + 1. FIXME: write a method that works in all cases */
-  MPFR_ASSERTN(n > 0 && n - 1 <= MPFR_LIMB_MAX);
+  MPFR_ASSERTN (n - 1 <= MPFR_LIMB_MAX);
 #endif
   p = random_limb (); /* p is in [0, MPFR_LIMB_MAX], thus p is uniform among
                          MPFR_LIMB_MAX+1 values */
