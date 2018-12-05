@@ -176,7 +176,7 @@ check_integer (mpfr_prec_t begin, mpfr_prec_t end, unsigned long max)
                   exit (1);
                 }
               /* The ternary value is unspecified with MPFR_RNDF. */
-              if (rnd != MPFR_RNDF && res1 != res2)
+              if (rnd != MPFR_RNDF && ! SAME_SIGN (res1, res2))
                 {
                   printf ("Wrong ternary value for p = %lu, z = %lu, rnd = %s"
                           " and x = ", (unsigned long) p, n,
