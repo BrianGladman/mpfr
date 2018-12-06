@@ -116,9 +116,10 @@ check_round_p (void)
       if (r1 != r2)
         {
           printf ("mpfr_round_p(%d) != mpfr_can_round(%d,RNDZ)!\n"
-                  "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
+                  "bn = %ld, err0 = %ld, prec = %lu\n",
                   r1, r2, (long) n, (long) err, (unsigned long) p);
 #ifndef MPFR_USE_MINI_GMP
+          printf ("bp = ");
           gmp_printf ("%NX\n", buf, n);
 #endif
           exit (1);
