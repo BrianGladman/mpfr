@@ -125,6 +125,7 @@ double Ulp (double);
 int Isnan (double);
 void d_trace (const char *, double);
 void ld_trace (const char *, long double);
+void n_trace (const char *, mp_limb_t *, mp_size_t);
 
 FILE *src_fopen (const char *, const char *);
 void set_emin (mpfr_exp_t);

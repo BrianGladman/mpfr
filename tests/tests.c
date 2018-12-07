@@ -593,6 +593,30 @@ ld_trace (const char *name, long double ld)
   printf ("] %.20Lg\n", ld);
 }
 
+void
+n_trace (const char *name, mp_limb_t *p, mp_size_t n)
+{
+  unsigned char *buf;
+  size_t bufsize;
+  mp_size_t i, m;
+
+  if (name != NULL && name[0] != '\0')
+    printf ("%s=", name);
+
+  /* similar to gmp_printf ("%NX\n",...), which is not available
+     with mini-gmp */
+  bufsize = 2 + ((mpfr_prec_t) n * GMP_NUMB_BITS - 1) / 4;
+  buf = (unsigned char *) tests_allocate (bufsize);
+  m = mpn_get_str (buf, 16, p, n);
+  i = 0;
+  while (i < m - 1 && buf[i] == 0)
+    i++;  /* skip leading zeros (keeping at least one digit) */
+  while (i < m)
+    putchar ("0123456789ABCDEF"[buf[i++]]);
+  putchar ('\n');
+  tests_free (buf, bufsize);
+}
+
 /* Open a file in the SRCDIR directory, i.e. the "tests" source directory,
    which is different from the current directory when objdir is different
    from srcdir. One should generally use this function instead of fopen
