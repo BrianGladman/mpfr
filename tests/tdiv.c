@@ -1138,7 +1138,9 @@ test_20151023 (void)
       mpfr_init2 (q0, GMP_NUMB_BITS);
 
       /* generate a random divisor of p bits */
-      mpfr_urandomb (d, RANDS);
+      do
+        mpfr_urandomb (d, RANDS);
+      while (mpfr_zero_p (d));
       /* generate a random non-zero quotient of GMP_NUMB_BITS bits */
       do
         mpfr_urandomb (q0, RANDS);
@@ -1166,8 +1168,8 @@ test_20151023 (void)
           mpfr_div (q, n, d, MPFR_RNDN);
           if (! mpfr_equal_p (q, q0))
             {
-              printf ("Error in test_20151023 for p=%ld, rnd=RNDN\n",
-                      (long) p);
+              printf ("Error in test_20151023 for p=%ld, rnd=RNDN, i=%d\n",
+                      (long) p, i);
               printf ("n="); mpfr_dump (n);
               printf ("d="); mpfr_dump (d);
               printf ("expected q0="); mpfr_dump (q0);
