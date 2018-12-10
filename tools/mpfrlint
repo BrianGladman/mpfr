@@ -397,6 +397,11 @@ do
       grep "mpfr_[a-z]*printf"
 done
 
+# gmp_printf with just %N can be avoided by using n_trace (see r13327).
+grep 'gmp_printf *(' tests/*.c | \
+  err-if-output --msg='gmp_printf is not available in mini-gmp' \
+                -t "gmp_printf" grep -Ev '/\*.*gmp_printf|%Z'
+
 grep __gmp_ tests/*.c | \
   err-if-output -t "__gmp_" grep -v '^tests/tabort_defalloc'
 
