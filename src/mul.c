@@ -135,7 +135,10 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_TMP_FREE(marker);
 
   {
-    mpfr_exp_t ax2 = ax + (mpfr_exp_t) (b1 - 1 + cc);
+    /* warning: with reduced limbs, b1 might have a smaller format that
+       mpfr_exp_t, thus we should cast it before subtracting 1, to get
+       a correct result when b1=0 */
+    mpfr_exp_t ax2 = ax + (mpfr_exp_t) ((mpfr_exp_t) b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
       return mpfr_overflow (a, rnd_mode, sign_product);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
@@ -183,6 +186,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* We do not have MPFR_PREC_FSPEC, so let's use mpfr_eexp_t and
          MPFR_EXP_FSPEC since mpfr_prec_t values are guaranteed to be
          representable in mpfr_exp_t, thus in mpfr_eexp_t. */
+      /* Warning: the printed values might be wrong in case mpfr_mul was
+         called with overlapping arguments. */
       fprintf (stderr, "mpfr_mul return different values for %s\n"
                "Prec_a = %" MPFR_EXP_FSPEC "d, "
                "Prec_b = %" MPFR_EXP_FSPEC "d, "
