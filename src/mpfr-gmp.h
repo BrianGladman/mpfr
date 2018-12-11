@@ -385,9 +385,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
   do {                                                                  \
     int _c = 0;                                                         \
     mp_limb_t _x = (mp_limb_t) (x);                                     \
-    /* the following code assumes GMP_NUMB_BITS <= 32 */                \
-    MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS <= 32);                      \
-    if (GMP_NUMB_BITS > 16 && (_x >> (GMP_NUMB_BITS - 16)) == 0)        \
+    while (GMP_NUMB_BITS > 16 && (_x >> (GMP_NUMB_BITS - 16)) == 0)     \
       {                                                                 \
         _c += 16;                                                       \
         _x = (mp_limb_t) (_x << 16);                                    \
