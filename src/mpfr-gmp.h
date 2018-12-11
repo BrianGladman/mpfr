@@ -387,22 +387,22 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
     mp_limb_t _x = (mp_limb_t) (x);                                     \
     /* the following code assumes GMP_NUMB_BITS <= 32 */                \
     MPFR_STAT_STATIC_ASSERT (GMP_NUMB_BITS <= 32);                      \
-    if ((_x >> (GMP_NUMB_BITS - 16)) == 0)                              \
+    if (GMP_NUMB_BITS > 16 && (_x >> (GMP_NUMB_BITS - 16)) == 0)        \
       {                                                                 \
         _c += 16;                                                       \
         _x = (mp_limb_t) (_x << 16);                                    \
       }                                                                 \
-    if ((_x >> (GMP_NUMB_BITS - 8)) == 0)                               \
+    if (GMP_NUMB_BITS > 8 && (_x >> (GMP_NUMB_BITS - 8)) == 0)          \
       {                                                                 \
         _c += 8;                                                        \
         _x = (mp_limb_t) (_x << 8);                                     \
       }                                                                 \
-    if ((_x >> (GMP_NUMB_BITS - 4)) == 0)                               \
+    if (GMP_NUMB_BITS > 4 && (_x >> (GMP_NUMB_BITS - 4)) == 0)          \
       {                                                                 \
         _c += 4;                                                        \
         _x = (mp_limb_t) (_x << 4);                                     \
       }                                                                 \
-    if ((_x >> (GMP_NUMB_BITS - 2)) == 0)                               \
+    if (GMP_NUMB_BITS > 2 && (_x >> (GMP_NUMB_BITS - 2)) == 0)          \
       {                                                                 \
         _c += 2;                                                        \
         _x = (mp_limb_t) (_x << 2);                                     \
