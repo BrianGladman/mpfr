@@ -135,7 +135,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_TMP_FREE(marker);
 
   {
-    /* warning: with reduced limbs, b1 might have a smaller format that
+    /* warning: with reduced limbs, b1 might have a smaller format than
        mpfr_exp_t, thus we should cast it before subtracting 1, to get
        a correct result when b1=0 */
     mpfr_exp_t ax2 = ax + (mpfr_exp_t) ((mpfr_exp_t) b1 - 1 + cc);
