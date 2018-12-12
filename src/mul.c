@@ -117,6 +117,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
      with tmp[k-1]>=2^(GMP_NUMB_BITS-2) */
   b1 >>= GMP_NUMB_BITS - 1; /* msb from the product */
+  MPFR_ASSERTD (b1 == 0 || b1 == 1);
 
   /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
      then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
@@ -127,6 +128,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   cc = mpfr_round_raw (MPFR_MANT (a), tmp, bq + cq,
                        MPFR_IS_NEG_SIGN(sign_product),
                        MPFR_PREC (a), rnd_mode, &inexact);
+  MPFR_ASSERTD (cc == 0 || cc == 1);
 
   /* cc = 1 ==> result is a power of two */
   if (MPFR_UNLIKELY(cc))
@@ -135,10 +137,11 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_TMP_FREE(marker);
 
   {
-    /* warning: with reduced limbs, b1 might have a smaller format than
-       mpfr_exp_t, thus we should cast it before subtracting 1, to get
-       a correct result when b1=0 */
-    mpfr_exp_t ax2 = ax + (mpfr_exp_t) ((mpfr_exp_t) b1 - 1 + cc);
+    /* We need to cast b1 to a signed integer type in order to use
+       signed integer arithmetic only, as the expression can involve
+       negative integers. Let's recall that both b1 and cc are 0 or 1,
+       and since cc is an int, let's choose int for this part. */
+    mpfr_exp_t ax2 = ax + ((int) b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
       return mpfr_overflow (a, rnd_mode, sign_product);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
