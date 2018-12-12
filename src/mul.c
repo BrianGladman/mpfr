@@ -186,19 +186,20 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* We do not have MPFR_PREC_FSPEC, so let's use mpfr_eexp_t and
          MPFR_EXP_FSPEC since mpfr_prec_t values are guaranteed to be
          representable in mpfr_exp_t, thus in mpfr_eexp_t. */
-      /* Warning: the printed values might be wrong in case mpfr_mul was
-         called with overlapping arguments. */
       fprintf (stderr, "mpfr_mul return different values for %s\n"
                "Prec_a = %" MPFR_EXP_FSPEC "d, "
                "Prec_b = %" MPFR_EXP_FSPEC "d, "
-               "Prec_c = %" MPFR_EXP_FSPEC "d\nb = ",
+               "Prec_c = %" MPFR_EXP_FSPEC "d\n",
                mpfr_print_rnd_mode (rnd_mode),
                (mpfr_eexp_t) MPFR_PREC (a),
                (mpfr_eexp_t) MPFR_PREC (b),
                (mpfr_eexp_t) MPFR_PREC (c));
-      mpfr_fdump (stderr, b);
+      /* Note: We output tb and tc instead of b and c, in case a = b or c
+         (this is why tb and tc have been created in the first place). */
+      fprintf (stderr, "b = ");
+      mpfr_fdump (stderr, tb);
       fprintf (stderr, "c = ");
-      mpfr_fdump (stderr, c);
+      mpfr_fdump (stderr, tc);
       fprintf (stderr, "OldMul: ");
       mpfr_fdump (stderr, ta);
       fprintf (stderr, "NewMul: ");
