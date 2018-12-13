@@ -592,7 +592,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 
   MPFR_TMP_FREE(marker);
   {
-    mpfr_exp_t ax2 = ax + (mpfr_exp_t) (b1 - 1 + cc);
+    mpfr_exp_t ax2 = ax + ((int) b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
       return mpfr_overflow (a, rnd_mode, MPFR_SIGN_POS);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
