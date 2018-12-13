@@ -285,6 +285,9 @@ Table of contents:
   Support UBF in mpfr_check_range or add mpfr_ubf_check_range?
   Make this available in the API, e.g. for MPC.
 
+- mpfr_cmp_uj and mpfr_cmp_sj. They would be useful to test MPFR with
+  _MPFR_EXP_FORMAT=4.
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
