@@ -1065,7 +1065,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
       }
 
-  ax2 = ax + (mpfr_exp_t) (b1 - 1);
+  /* b1 is 0 or 1 (most significant bit from the raw product) */
+  ax2 = ax + ((int) b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq + cq, rnd_mode, sign, ax2++);
   MPFR_TMP_FREE (marker);
   MPFR_EXP (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
