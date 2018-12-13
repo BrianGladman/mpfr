@@ -438,17 +438,6 @@ Table of contents:
   option (but this does not affect the C library, which may or may not
   accept signaling NaNs).
 
-- check again coverage: on 2007-07-27, Patrick Pelissier reports that the
-  following files are not tested at 100%: add1.c, atan.c, atan2.c,
-  cache.c, cmp2.c, const_catalan.c, const_euler.c, const_log2.c, cos.c,
-  gen_inverse.h, div_ui.c, eint.c, exp3.c, exp_2.c, expm1.c, fma.c, fms.c,
-  lngamma.c, gamma.c, get_d.c, get_f.c, get_ld.c, get_str.c, get_z.c,
-  inp_str.c, jn.c, jyn_asympt.c, lngamma.c, mpfr-gmp.c, mul.c, mul_ui.c,
-  mulders.c, out_str.c, pow.c, print_raw.c, rint.c, root.c, round_near_x.c,
-  round_raw_generic.c, set_d.c, set_ld.c, set_q.c, set_uj.c, set_z.c, sin.c,
-  sin_cos.c, sinh.c, sqr.c, stack_interface.c, sub1.c, sub1sp.c, subnormal.c,
-  uceil_exp2.c, uceil_log2.c, ui_pow_ui.c, urandomb.c, yn.c, zeta.c, zeta_ui.c.
-
 - check the constants mpfr_set_emin (-16382-63) and mpfr_set_emax (16383) in
   get_ld.c and the other constants, and provide a testcase for large and
   small numbers.
