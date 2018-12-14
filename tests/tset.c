@@ -256,6 +256,30 @@ check_ternary_value (void)
   mpfr_clear (y);
 }
 
+static void
+test_set_1_2 (void)
+{
+  mpfr_t u, v, zz, z;
+  int inex;
+
+  /* (8,16)-bit test */
+  mpfr_inits2 (16, u, v, zz, (mpfr_ptr) 0);
+  mpfr_init2 (z, 8);
+  mpfr_set_str_binary (u, "0.1100001100011010E-1");
+  mpfr_set_str_binary (v, "0.1100010101110010E0");
+  /* u + v = 1.0010011011111111 */
+  inex = mpfr_add (zz, u, v, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  mpfr_set_str_binary (u, "1.001001110000000");
+  MPFR_ASSERTN(mpfr_equal_p (zz, u));
+  inex = mpfr_set_1_2 (z, zz, MPFR_RNDN, inex);
+  /* we should have z = 1.0010011 and inex < 0 */
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (u, "1.0010011");
+  MPFR_ASSERTN(mpfr_equal_p (z, u));
+  mpfr_clears (u, v, zz, z, (mpfr_ptr) 0);
+}
+
 #define TEST_FUNCTION mpfr_set
 #include "tgeneric.c"
 
@@ -267,6 +291,8 @@ main (void)
   mpfr_exp_t emax;
 
   tests_start_mpfr ();
+
+  test_set_1_2 ();
 
   /* Default : no error */
   error = 0;
