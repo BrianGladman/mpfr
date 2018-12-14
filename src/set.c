@@ -88,7 +88,11 @@ mpfr_abs (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
              (a negative value, if any, is preserved in inex2 | inex)
    rnd=RNDA: idem
    rnd=RNDN: inex2 = mpfr_set (s, u, rnd_mode);
-             if (inex2) return inex2; else return inex; */
+             if (inex2) return inex2; else return inex;
+             Except in the double-rounding case: when u is in the middle of
+             two representable numbers, if inex and inex2 are both > 0 (resp.
+             both < 0), we should return nextbelow(s) (resp. nextabove(s)),
+             and return the opposite of inex. */
 int
 mpfr_set_1_2 (mpfr_ptr s, mpfr_srcptr u, mpfr_rnd_t rnd_mode, int inex)
 {
@@ -194,6 +198,19 @@ mpfr_set_1_2 (mpfr_ptr s, mpfr_srcptr u, mpfr_rnd_t rnd_mode, int inex)
 
   /* general case PREC(s) >= GMP_NUMB_BITS */
   inex2 = mpfr_set (s, u, rnd_mode);
+  /* Check the double-rounding case: if u is exactly representable on
+     PREC(s) + 1 bits: since inex2 != 0, this means we are in the middle of
+     two numbers in precision PREC(s). Moreover since PREC(u) = 2*PREC(s),
+     u and s cannot be identical, thus u was not changed. */
+  if (rnd_mode == MPFR_RNDN && inex * inex2 > 0 &&
+      mpfr_min_prec (u) == MPFR_PREC(s) + 1)
+    {
+      if (inex > 0)
+        mpfr_nextbelow (s);
+      else
+        mpfr_nextabove (s);
+      return -inex;
+    }
   return (rnd_mode != MPFR_RNDN) ? inex | inex2
     : (inex2) ? inex2 : inex;
 }

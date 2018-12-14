@@ -278,6 +278,69 @@ test_set_1_2 (void)
   mpfr_set_str_binary (u, "1.0010011");
   MPFR_ASSERTN(mpfr_equal_p (z, u));
   mpfr_clears (u, v, zz, z, (mpfr_ptr) 0);
+
+  /* (16,32)-bit test:
+   * take for v a random 32-bit number in [1/2,1), here 2859611790/2^32
+   * take for z a random 16-bit number in [1,2), less than 2*v,
+   with last bit 0, here we take z = 40900/2^15
+   * take u = z-v-1/2^16-1/2^32 */
+  mpfr_inits2 (32, u, v, zz, (mpfr_ptr) 0);
+  mpfr_init2 (z, 16);
+  mpfr_set_str_binary (u, "0.10010101000101001100100101110001");
+  mpfr_set_str_binary (v, "0.10101010011100100011011010001110");
+  /* u + v = 1.00111111100001101111111111111111 */
+  inex = mpfr_add (zz, u, v, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  mpfr_set_str_binary (u, "1.0011111110000111");
+  MPFR_ASSERTN(mpfr_equal_p (zz, u));
+  inex = mpfr_set_1_2 (z, zz, MPFR_RNDN, inex);
+  /* we should have z = 1.001111111000011 and inex < 0 */
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (u, "1.001111111000011");
+  MPFR_ASSERTN(mpfr_equal_p (z, u));
+  mpfr_clears (u, v, zz, z, (mpfr_ptr) 0);
+
+  /* (32,64)-bit test:
+   * take for v a random 64-bit number in [1/2,1),
+     here v = 13687985014345662879/2^64
+   * take for z a random 32-bit number in [1,2), less than 2*v,
+     with last bit 0, here we take z = 2871078774/2^31
+   * take u = z-v-1/2^32-1/2^64 */
+  mpfr_inits2 (64, u, v, zz, (mpfr_ptr) 0);
+  mpfr_init2 (z, 32);
+  mpfr_set_str_binary (u, "0.10011000010011001110000100010001110010010000111001111110011");
+  mpfr_set_str_binary (v, "0.1011110111110101011111011101100100110110111100011000000110011111");
+  /* u + v = 1.0101011001000010010111101110101011111111111111111111111111111111 */
+  inex = mpfr_add (zz, u, v, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  mpfr_set_str_binary (u, "1.01010110010000100101111011101011");
+  MPFR_ASSERTN(mpfr_equal_p (zz, u));
+  inex = mpfr_set_1_2 (z, zz, MPFR_RNDN, inex);
+  /* we should have z = 1.0101011001000010010111101110101 and inex < 0 */
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (u, "1.0101011001000010010111101110101");
+  MPFR_ASSERTN(mpfr_equal_p (z, u));
+  mpfr_clears (u, v, zz, z, (mpfr_ptr) 0);
+
+  /* (64,128)-bit test:
+   * take for v a random 128-bit number in [1/2,1),
+     here v = 322263811942091240216761391118876232409/2^128
+   * take for z a random 64-bit number in [1,2), less than 2*v,
+     with last bit 0, here we take z = 16440347967874738276/2^63
+   * take u = z-v-1/2^64-1/2^128 */
+  mpfr_inits2 (128, u, v, zz, (mpfr_ptr) 0);
+  mpfr_init2 (z, 64);
+  mpfr_set_str_binary (u, "0.1101010111011101111100100001011111111000010011011001000101111010110101101101011011100110101001010001101011011110101101010010011");
+  mpfr_set_str_binary (v, "0.11110010011100011100000010100110100010011010110010111111010011000010100100101001000110010101101011100101001000010100101011011001");
+  inex = mpfr_add (zz, u, v, MPFR_RNDN);
+  MPFR_ASSERTN(inex > 0);
+  mpfr_set_str_binary (u, "1.1100100001001111101100101011111010000001111110100101000011000111");
+  MPFR_ASSERTN(mpfr_equal_p (zz, u));
+  inex = mpfr_set_1_2 (z, zz, MPFR_RNDN, inex);
+  MPFR_ASSERTN(inex < 0);
+  mpfr_set_str_binary (u, "1.1100100001001111101100101011111010000001111110100101000011000110");
+  MPFR_ASSERTN(mpfr_equal_p (z, u));
+  mpfr_clears (u, v, zz, z, (mpfr_ptr) 0);
 }
 
 #define TEST_FUNCTION mpfr_set
