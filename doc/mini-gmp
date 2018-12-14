@@ -34,3 +34,23 @@ Testsuite summary for MPFR 4.1.0-dev
 # XPASS: 0
 # ERROR: 0
 ============================================================================
+
+How to use mini-gmp with reduced limb size
+==========================================
+
+Following the idea of Micro-GMP [1], the GMP developers have adapted mini-gmp
+so that it can be used with a reduced limb size.
+
+For that, you have to take a GMP snapshot from December 09, 2018, or later
+(see https://gmplib.org/download/snapshot/).
+
+Then edit the first line of mini-gmp.h to have for example:
+
+  #include <stdint.h>
+  typedef uint8_t mp_limb_t;
+  #define GMP_LIMB_BITS 8
+  #define __GMP_SHORT_LIMB
+
+Then you can configure MPFR with that version of mini-gmp, as indicated above.
+
+[1] https://members.loria.fr/PZimmermann/talks/microgmp.pdf
