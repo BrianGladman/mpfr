@@ -782,7 +782,8 @@ do
   ln -s -- "$mini_gmp_path/mini-gmp.$i" "$mpfr_build_src/mini-gmp.$i"
 done
 
-dnl First check whether mini-gmp defines GMP_NUMB_BITS.
+dnl First check whether mini-gmp defines GMP_NUMB_BITS. If it doesn't,
+dnl then guess the value from the size of mp_limb_t.
 AC_MSG_CHECKING(for GMP_NUMB_BITS)
 how="from mini-gmp.h"
 saved_CPPFLAGS="$CPPFLAGS"
@@ -790,8 +791,9 @@ CPPFLAGS="$CPPFLAGS -I$mpfr_build_src"
 AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
    [#include <mini-gmp.h>],
    [how="not in mini-gmp.h; guessed"
-    AC_COMPUTE_INT(mini_gmp_numb_bits, [(sizeof(unsigned long) * CHAR_BIT)],
-       [#include <limits.h>],
+    AC_COMPUTE_INT(mini_gmp_numb_bits, [(sizeof(mp_limb_t) * CHAR_BIT)],
+       [#include <limits.h>
+        #include <mini-gmp.h>],
        [AC_MSG_FAILURE([cannot define GMP_NUMB_BITS])])
     AC_DEFINE_UNQUOTED([GMP_NUMB_BITS], $mini_gmp_numb_bits, [number of bits in a limb])
   ])
