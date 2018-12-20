@@ -44,7 +44,8 @@ so that it can be used with a reduced limb size.
 For that, you have to take a GMP snapshot from December 09, 2018, or later
 (see https://gmplib.org/download/snapshot/).
 
-Then edit the first line of mini-gmp.h to have for example:
+Then replace the "typedef unsigned long mp_limb_t;" line of mini-gmp.h
+to have for example:
 
   #include <stdint.h>
   typedef uint8_t mp_limb_t;
