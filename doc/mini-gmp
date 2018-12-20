@@ -49,7 +49,6 @@ to have for example:
 
   #include <stdint.h>
   typedef uint8_t mp_limb_t;
-  #define GMP_LIMB_BITS 8
   #define __GMP_SHORT_LIMB
 
 Then you can configure MPFR with that version of mini-gmp, as indicated above.
