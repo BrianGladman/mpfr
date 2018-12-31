@@ -553,6 +553,69 @@ bug20180604 (void)
   mpfr_set_emin (emin);
 }
 
+/* Test double-rounding cases in mpfr_set_1_2, which is called when
+   all the precisions are the same. With set.c before r13347, this
+   triggers errors for neg=0. */
+static void
+double_rounding (void)
+{
+  int p;
+
+  for (p = 4; p < 4 * GMP_NUMB_BITS; p++)
+    {
+      mpfr_t a, b, c, d, z1, z2;
+      int neg;
+
+      mpfr_inits2 (p, a, b, c, d, z1, z2, (mpfr_ptr) 0);
+      /* Choose a, b, c, d such that a*b = 2^p and c*d = 1 + epsilon */
+      mpfr_set_ui (a, 2, MPFR_RNDN);
+      mpfr_set_ui_2exp (b, 1, p - 1, MPFR_RNDN);
+      mpfr_set_ui (c, 1, MPFR_RNDN);
+      mpfr_nextabove (c);
+      /* c = 1 + ulp(1) = 1 + 2 * ulp(1/2) */
+
+      for (neg = 0; neg <= 1; neg++)
+        {
+          int inex1, inex2;
+
+          /* Set d = 1 - (1 + neg) * ulp(1/2), thus
+           * c*d = 1 + (1 - neg) * ulp(1/2) - 2 * (1 + neg) * ulp(1/2)^2,
+           * so that a*b + c*d rounds to 2^p + 1 and epsilon has the
+           * same sign as (-1)^neg.
+           */
+          mpfr_set_ui (d, 1, MPFR_RNDN);
+          mpfr_nextbelow (d);
+          mpfr_set_ui_2exp (z1, 1, p, MPFR_RNDN);
+          if (neg)
+            {
+              mpfr_nextbelow (d);
+              inex1 = -1;
+            }
+          else
+            {
+              mpfr_nextabove (z1);
+              inex1 = 1;
+            }
+
+          inex2 = mpfr_fmma (z2, a, b, c, d, MPFR_RNDN);
+          if (!(mpfr_equal_p (z1, z2) && SAME_SIGN (inex1, inex2)))
+            {
+              printf ("Error in double_rounding for precision %d, neg=%d\n",
+                      p, neg);
+              printf ("Expected ");
+              mpfr_dump (z1);
+              printf ("with inex = %d\n", inex1);
+              printf ("Got      ");
+              mpfr_dump (z2);
+              printf ("with inex = %d\n", inex2);
+              exit (1);
+            }
+        }
+
+      mpfr_clears (a, b, c, d, z1, z2, (mpfr_ptr) 0);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -566,6 +629,7 @@ main (int argc, char *argv[])
   overflow_tests ();
   half_plus_half ();
   bug20170405 ();
+  double_rounding ();
 
   tests_end_mpfr ();
   return 0;
