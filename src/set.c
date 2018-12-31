@@ -111,9 +111,9 @@ mpfr_set_1_2 (mpfr_ptr s, mpfr_srcptr u, mpfr_rnd_t rnd_mode, int inex)
       return inex;
     }
 
-  MPFR_ASSERTD(MPFR_PREC(u) == 2 * MPFR_PREC(s));
+  MPFR_ASSERTD(MPFR_PREC(u) == 2 * p);
 
-  if (MPFR_PREC(s) < GMP_NUMB_BITS)
+  if (p < GMP_NUMB_BITS)
     {
       mask = MPFR_LIMB_MASK(sh);
 
@@ -205,7 +205,7 @@ mpfr_set_1_2 (mpfr_ptr s, mpfr_srcptr u, mpfr_rnd_t rnd_mode, int inex)
      Moreover, since PREC(u) = 2*PREC(s), u and s cannot be identical
      (as pointers), thus u was not changed. */
   if (rnd_mode == MPFR_RNDN && inex * inex2 > 0 &&
-      mpfr_min_prec (u) == MPFR_PREC(s) + 1)
+      mpfr_min_prec (u) == p + 1)
     {
       if (inex > 0)
         mpfr_nextbelow (s);
