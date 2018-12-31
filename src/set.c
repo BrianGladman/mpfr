@@ -81,7 +81,8 @@ mpfr_abs (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 }
 
 /* Round (u, inex) into s with rounding mode rnd_mode, where inex is
-   the ternary value associated with u with the *same* rounding mode.
+   the ternary value associated with u, which has been obtained using
+   the *same* rounding mode rnd_mode.
    Assumes PREC(u) = 2*PREC(s).
    The generic algorithm is the following:
    1. inex2 = mpfr_set (s, u, rnd_mode);
