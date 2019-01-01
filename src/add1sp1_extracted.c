@@ -2,7 +2,7 @@
    This code was extracted by Kremlin from a formal proof in F*
    done by Jianyang Pan in April-August 2018: do not modify it!
 
-Copyright 2004-2018 Free Software Foundation, Inc.
+Copyright 2004-2019 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.

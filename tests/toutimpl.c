@@ -1,7 +1,7 @@
 /* Test file for internal debugging-out functions:
    mpfr_print_rnd_mode, mpfr_dump, mpfr_print_mant_binary.
 
-Copyright 2004-2018 Free Software Foundation, Inc.
+Copyright 2004-2019 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
