@@ -910,6 +910,9 @@ check_overflow (void)
               "  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87276 "
               "(about this test)\nWorkaround: disable code hoisting "
               "with -fno-code-hoisting in CFLAGS.\n");
+      /* Note: In Debian, this error is obtained with gcc-snapshot from
+         20180908-1 to 20181127-1. Versions 20181209-1 to 20190102-1 are
+         still buggy, but the MPFR build seems no longer affected. */
 #endif
       exit (1);
     }
