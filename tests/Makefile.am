@@ -94,7 +94,7 @@ $(top_builddir)/src/libmpfr.la:
 
 TESTS = $(check_PROGRAMS)
 
-# Unset DISPLAY as it is not needed and it can yield error messages when
+# Set DISPLAY='' as it is not needed and it can yield error messages when
 # running the tests with LOG_COMPILER=wine (for builds with MinGW). See:
 #   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914822
 #   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=914949
@@ -102,7 +102,12 @@ TESTS = $(check_PROGRAMS)
 # in case old Automake. With Automake 1.13+, where a parallel test harness
 # is generated, use LOG_COMPILER instead. For additional information, see:
 # https://www.gnu.org/software/automake/manual/automake.html#Parallel-Test-Harness
-TESTS_ENVIRONMENT = env -u DISPLAY MPFR_QUIET=1 $(VALGRIND)
+#
+# Note: We do not use "env -u DISPLAY" as the -u option is a GNU extension
+# and not supported by NetBSD. Setting DISPLAY='' is not equivalent, but
+# it also avoids the bogus "Invalid MIT-MAGIC-COOKIE-1 key" error message
+# that can make the parsing of the output fail.
+TESTS_ENVIRONMENT = env DISPLAY='' MPFR_QUIET=1 $(VALGRIND)
 
 # The -no-install option prevents libtool from generating wrapper scripts
 # for the tests.
