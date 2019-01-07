@@ -15,7 +15,7 @@ License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
@@ -25,7 +25,7 @@ Notes for the MPFR developers and Subversion users
 To compile source code obtained from the Subversion repository, you
 need some GNU development utilities: aclocal, autoheader, automake,
 autoconf 2.60 (at least), libtoolize, and the AX_PTHREAD macro from
-<http://www.gnu.org/software/autoconf-archive/ax_pthread.html>
+<https://www.gnu.org/software/autoconf-archive/ax_pthread.html>
 (for the latter, under Debian/Ubuntu it suffices to install the
 autoconf-archive package).
 As some files like "configure" are not part of the Subversion
@@ -114,7 +114,7 @@ where yyyy is the year of the latest modification in the branch
 
 The latest rules for GNU software can be found here:
 
-  http://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
+  https://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
 
 ===========================================================================
 
@@ -384,7 +384,7 @@ To make a release (for the MPFR team):
      (see svn history such as [4] for examples), as the manual already
      contains the new URL's.
 
-     [1] http://www.gnu.org/prep/maintain/html_node/Announcements.html
+     [1] https://www.gnu.org/prep/maintain/html_node/Announcements.html
      [2] http://siteadmin.gforge.inria.fr/FAQ.html
      [3] See https://lists.gnu.org/mailman/listinfo/platform-testers and
      https://lists.gnu.org/archive/html/platform-testers/2011-09/msg00000.html
@@ -647,7 +647,7 @@ or more generally:
 
   https://www.google.com/search?q=%22C%2B%2B%22+reserved+keywords
 
-Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
+Quoted from <https://www.gnu.org/software/gcc/codingconventions.html>:
 
   Avoid the use of identifiers or idioms that would prevent code
   compiling with a C++ compiler. Identifiers such as new or class,
@@ -1367,7 +1367,7 @@ License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
@@ -1433,7 +1433,7 @@ LOG_COMPILER, e.g.:
   LOG_COMPILER=wine make check
 
 More information about the parallel test harness:
-http://www.gnu.org/software/automake/manual/automake.html#Parallel-Test-Harness
+https://www.gnu.org/software/automake/manual/automake.html#Parallel-Test-Harness
 
    ---------------------------------------------------------------------
 

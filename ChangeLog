@@ -23769,7 +23769,7 @@ Changed paths:
    M /trunk/tune/tuneup.c
 
 Use copyright year ranges, following
-  http://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
+  https://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
 ------------------------------------------------------------------------
 r8537 | vlefevre | 2013-05-30 13:51:01 +0000 (Thu, 30 May 2013) | 1 line
 Changed paths:
@@ -46666,7 +46666,7 @@ Changed paths:
    M /trunk/INSTALL
 
 INSTALL: updated GMP's URL (the old one no longer worked), using
-http://www.gnu.org/software/gmp/ as suggested by Karl Berry (see
+https://www.gnu.org/software/gmp/ as suggested by Karl Berry (see
 GNU policies).
 
 ------------------------------------------------------------------------
@@ -58403,7 +58403,7 @@ Changed paths:
    M /trunk/zeta_ui.c
 
 Updated the copyright notices according to the new GNU rules on:
-  http://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
+  https://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
 i.e. added 2006 to every MPFR file.
 Note: the copyright notices (currently 336) should match the regexp
   Copyright.* 2006 Free Software
