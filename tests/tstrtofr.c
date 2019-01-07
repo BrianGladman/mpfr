@@ -911,8 +911,10 @@ check_overflow (void)
               "(about this test)\nWorkaround: disable code hoisting "
               "with -fno-code-hoisting in CFLAGS.\n");
       /* Note: In Debian, this error is obtained with gcc-snapshot from
-         20180908-1 to 20181127-1. Versions 20181209-1 to 20190102-1 are
-         still buggy, but the MPFR build seems no longer affected. */
+         20180908-1 to 20181127-1. With gcc-snapshot from 20181209-1 to
+         20190102-1 (at least), the MPFR build no longer seems affected
+         in general, but using --with-gmp-build=... together with
+         --enable-assert still triggers this failure. */
 #endif
       exit (1);
     }
