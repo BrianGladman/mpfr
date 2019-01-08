@@ -914,7 +914,9 @@ check_overflow (void)
          20180908-1 to 20181127-1. With gcc-snapshot from 20181209-1 to
          20190102-1 (at least), the MPFR build no longer seems affected
          in general, but using --with-gmp-build=... together with
-         --enable-assert still triggers this failure. */
+         --enable-assert still triggers this failure. This bug has been
+         fixed in the GCC trunk rev 267725, thus the future gcc-snapshot
+         versions should no longer have this bug. */
 #endif
       exit (1);
     }
