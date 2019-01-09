@@ -94,7 +94,7 @@ dnl the latter case, there should be an error).
 dnl Do a compilation test, as this is currently not done by AX_PTHREAD.
 dnl Moreover, MPFR needs pthread_rwlock_t, which is conditionally defined
 dnl in glibc's bits/pthreadtypes.h (via <pthread.h>), not sure why...
-      AC_MSG_CHECKING([if pthread_rwlock_t is supported])
+      AC_MSG_CHECKING([for pthread_rwlock_t])
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <pthread.h>
 ]], [[
