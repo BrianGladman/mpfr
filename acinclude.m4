@@ -1642,6 +1642,7 @@ dnl because logging support disables threading support
   else
     AC_MSG_RESULT(yes)
     if test "$ax_pthread_ok" = yes ; then
+        CC="$PTHREAD_CC"
         CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
         LIBS="$LIBS $PTHREAD_LIBS"
     fi
