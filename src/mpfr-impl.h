@@ -233,6 +233,10 @@ extern "C" {
 # define MPFR_CACHE_ATTR MPFR_THREAD_ATTR
 #endif
 
+/* Note: The following structure and types depend on the MPFR build options
+   (including compiler options), due to the various locking methods affecting
+   MPFR_DEFERRED_INIT_SLAVE_DECL and MPFR_LOCK_DECL. But since this is only
+   internal, that's OK. */
 struct __gmpfr_cache_s {
   mpfr_t x;
   int inexact;
