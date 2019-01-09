@@ -87,16 +87,33 @@ dnl should be tested with and without ax_pthread.m4 availability (in
 dnl the latter case, there should be an error).
     m4_pattern_forbid([AX_PTHREAD\b])
     AX_PTHREAD([])
+    if test "$ax_pthread_ok" = yes; then
+      CC="$PTHREAD_CC"
+      CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+      LIBS="$LIBS $PTHREAD_LIBS"
+dnl Do a compilation test, as this is currently not done by AX_PTHREAD.
+dnl Moreover, MPFR needs pthread_rwlock_t, which is conditionally defined
+dnl in glibc's bits/pthreadtypes.h (via <pthread.h>), not sure why...
+      AC_MSG_CHECKING([if pthread_rwlock_t is supported])
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <pthread.h>
+]], [[
+pthread_rwlock_t lock;
+]])],
+        [AC_MSG_RESULT([yes])
+         mpfr_pthread_ok=yes],
+        [AC_MSG_RESULT([no])
+         mpfr_pthread_ok=no])
+    else
+      mpfr_pthread_ok=no
+    fi
   fi
 
   AC_MSG_CHECKING(if shared cache can be supported)
   if test "$mpfr_c11_thread_ok" = yes; then
     AC_MSG_RESULT([yes, with ISO C11 threads])
-  elif test "$ax_pthread_ok" = yes; then
+  elif test "$mpfr_pthread_ok" = yes; then
     AC_MSG_RESULT([yes, with pthread])
-    CC="$PTHREAD_CC"
-    CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
-    LIBS="$LIBS $PTHREAD_LIBS"
   else
     AC_MSG_RESULT(no)
     AC_MSG_ERROR([shared cache needs C11 threads or pthread support])
