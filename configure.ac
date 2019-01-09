@@ -188,7 +188,7 @@ AC_ARG_ENABLE(shared-cache,
                           for all MPFR constants.  It usually makes MPFR
                           dependent on PTHREAD [[default=no]]],
    [ case $enableval in
-      yes) mpfr_want_shared_cache=yes
+      yes)
          AC_DEFINE([MPFR_WANT_SHARED_CACHE],1,[Want shared cache]) ;;
       no)  ;;
       *) AC_MSG_ERROR([bad value for --enable-shared-cache: yes or no]) ;;
