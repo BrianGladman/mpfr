@@ -38,25 +38,6 @@ dnl   - Libtool stuff.
 dnl   - Handling of special arguments of MPFR's configure.
 AC_DEFUN([MPFR_CONFIGS],
 [
-dnl First, detect incompatibilities between configure options.
-if test "$enable_logging" = yes; then
-  if test "$enable_thread_safe" = yes; then
-    AC_MSG_ERROR([enable either logging or thread-safe, not both])
-  fi
-dnl The following test is done only to output a specific error message,
-dnl as there would otherwise be an error due to enable_thread_safe=no.
-  if test "$enable_shared_cache" = yes; then
-    AC_MSG_ERROR([shared cache does not work with logging support])
-  fi
-  enable_thread_safe=no
-fi
-if test "$enable_shared_cache" = yes; then
-  if test "$enable_thread_safe" = no; then
-    AC_MSG_ERROR([shared cache needs thread-safe support])
-  fi
-  enable_thread_safe=yes
-fi
-
 AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
 AC_REQUIRE([MPFR_CHECK_LIBQUADMATH])
