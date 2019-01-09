@@ -295,8 +295,14 @@ main (void)
             ")" : "no",
             mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
 
+#ifdef MPFR_THREAD_LOCK_METHOD
+# define LOCK_METHOD " (lock method: " MPFR_THREAD_LOCK_METHOD ")"
+#else
+# define LOCK_METHOD ""
+#endif
+
   (printf) ("[tversion] Shared cache = %s\n",
-            mpfr_buildopt_sharedcache_p () ? "yes" : "no");
+            mpfr_buildopt_sharedcache_p () ? "yes" LOCK_METHOD : "no");
 
   (puts) ("[tversion] intmax_t = "
 #if defined(_MPFR_H_HAVE_INTMAX_T)
