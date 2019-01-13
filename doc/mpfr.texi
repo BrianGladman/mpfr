@@ -2147,7 +2147,7 @@ Set @var{rop} to the arc-cosine, arc-sine or arc-tangent of @var{op},
 rounded in the direction @var{rnd}.
 Note that since @code{acos(-1)} returns the floating-point number closest to
 @m{\pi,Pi} according to the given rounding mode, this number might not be
-in the output range @math{0 @le{} @var{rop} < \pi}
+in the output range @m{0 @le{} @var{rop} < \pi,0 @le{} @var{rop} < Pi}
 of the arc-cosine function;
 still, the result lies in the image of the output range
 by the rounding function.
