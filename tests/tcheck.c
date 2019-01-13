@@ -69,7 +69,7 @@ main (void)
           max--;
         }
       if (max == 0)
-        PRINT_ERROR ("can't reach overflow");
+        PRINT_ERROR ("for overflow");
       mpfr_set_ui (a, 2137, MPFR_RNDN);
       /* Corrupt a and check for it */
       MPFR_SIGN (a) = 2;
