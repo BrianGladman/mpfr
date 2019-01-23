@@ -491,7 +491,7 @@ error
 #endif
   ]], [[]])],[
     AC_MSG_RESULT(no)
-    CFLAGS="-Wmissing-prototypes $CFLAGS"
+    CFLAGS="-Wmissing-prototypes -Wc++-compat $CFLAGS"
   ],[
     AC_MSG_RESULT(yes)
     CFLAGS="-Wmissing-declarations -Wno-sign-compare $CFLAGS"
