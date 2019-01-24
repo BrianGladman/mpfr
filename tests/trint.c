@@ -337,12 +337,12 @@ test_fct (double (*f)(double), int (*g)(), char *s, mpfr_rnd_t r)
   mpfr_clear (yy);
 }
 
-#define TEST_FCT(F) test_fct (&F, &mpfr_##F, #F, r)
+#define TEST_FCT(F) test_fct (&F, &mpfr_##F, #F, (mpfr_rnd_t) r)
 
 static void
 test_against_libc (void)
 {
-  mpfr_rnd_t r = MPFR_RNDN;
+  int r = MPFR_RNDN;
 
   (void) r;  /* avoid a warning by using r */
 #if HAVE_ROUND
@@ -359,8 +359,8 @@ test_against_libc (void)
 #endif
 #if HAVE_NEARBYINT
   for (r = 0; r < MPFR_RND_MAX ; r++)
-    if (mpfr_set_machine_rnd_mode (r) == 0)
-      test_fct (&nearbyint, &mpfr_rint, "rint", r);
+    if (mpfr_set_machine_rnd_mode ((mpfr_rnd_t) r) == 0)
+      test_fct (&nearbyint, &mpfr_rint, "rint", (mpfr_rnd_t) r);
 #endif
 }
 
