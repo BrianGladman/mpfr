@@ -1327,6 +1327,9 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
         But: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80454
      2. Use designated initializers when supported. But this needs a
         configure test.
+   Using a diagnostic pragma to ignore the warning in this particular case
+   is not really possible, because the warning occurs when the macro is
+   expanded and one cannot put a pragma in the contents of a #define.
 */
 #define MPFR_DECL_INIT_CACHE(_cache,_func)                           \
   MPFR_DEFERRED_INIT_MASTER_DECL(_func,                              \
