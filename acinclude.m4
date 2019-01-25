@@ -79,7 +79,7 @@ dnl in glibc's bits/pthreadtypes.h (via <pthread.h>), not sure why...
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <pthread.h>
 ]], [[
-pthread_rwlock_t lock;
+pthread_rwlock_t lock; (void) lock;
 ]])],
         [AC_MSG_RESULT([yes])
          mpfr_pthread_ok=yes],
