@@ -189,8 +189,10 @@ Thanks very much to those who sent us bug reports and/or tested the
 release candidate.
 EOF
 else
+  rc=${vers#*-rc}
+  [ $rc -gt 1 ] && n=" $rc"
   cat <<EOF
-Subject: GNU MPFR $base Release Candidate
+Subject: GNU MPFR $base Release Candidate$n
 
 The release of GNU MPFR $base ($rname)
 is imminent. Please help to make this release as good as possible
