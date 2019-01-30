@@ -477,8 +477,13 @@ error
  CFLAGS="-fp_port -mieee-fp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
 ],[AC_MSG_RESULT(no)])
 
-dnl If compiler is gcc, then use some specific flags.
-dnl But don't touch user other flags.
+dnl If CFLAGS has not been set explicitly and the compiler is GCC, then
+dnl use some specific flags. But don't touch user other flags.
+dnl Note: This is done even when CFLAGS has been set from GMP's CFLAGS
+dnl (__GMP_CFLAGS macro in gmp.h) above. The consequence is that this
+dnl might yield a compilation failure if the -Werror option appears in
+dnl __GMP_CFLAGS. But in this case, since -Werror is not used by default,
+dnl one may expect that the user would also set CFLAGS for MPFR.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wpointer-arith $CFLAGS"
   AC_MSG_CHECKING(whether the selected language is C++)
