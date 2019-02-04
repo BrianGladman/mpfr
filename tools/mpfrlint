@@ -149,13 +149,13 @@ err-if-output \
 err-if-output -t "math.h" grep '^# *include *<math\.h>' src/*.c
 
 flaglist="underflow|overflow|divby0|nanflag|inexflag|erangeflag"
-grep -E "mpfr_($flaglist)_p" src/*.{c,h} | \
+grep -E "mpfr_($flaglist)_p" src/*.[ch] | \
   grep -v -i 'mpfr_clear_' | \
   grep -v '^src/exceptions.c:' | \
   grep -v '^src/mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^src/mpfr.h:__MPFR_DECLSPEC ' | \
   err-if-output "flags" cat
-grep -E "mpfr_(clear|set)_($flaglist) *\(" src/*.{c,h} | \
+grep -E "mpfr_(clear|set)_($flaglist) *\(" src/*.[ch] | \
   grep -v '^src/exceptions.c:' | \
   grep -v '^src/mpfr.h:' | \
   err-if-output "flags" cat
@@ -187,7 +187,7 @@ err-if-output --msg="Use __MPFR_DECLSPEC instead." -t "__GMP_DECLSPEC" \
   grep --exclude=src/mpfr.h __GMP_DECLSPEC $srctests
 
 # Use mpfr_div_2ui/mpfr_mul_2ui instead of mpfr_div_2exp/mpfr_mul_2exp.
-grep 'mpfr_\(div\|mul\)_2exp' {src,tests}/*.{c,h} |\
+grep 'mpfr_\(div\|mul\)_2exp' {src,tests}/*.[ch] |\
   grep -v '^src/\(\(div\|mul\)_2exp\.c:\|mpf2mpfr\.h:#define mpf_\)' | \
   grep -v '^src/mpfr\.h:\(__MPFR_DECLSPEC\|#define mpfr_..._2exp\)' | \
   grep -v '^tests/\(reuse\|taway\)\.c: *test2ui (mpfr_..._2exp,' | \
@@ -355,7 +355,7 @@ err-if-output --msg='Use mpfr_sqr instead of mpfr_mul.' "mul/sqr" perl -ne \
 err-if-output \
   --msg='Do not re-seed mpfr_rands; use another gmp_randstate_t variable.' \
   -t "mpfr_rands" grep --exclude=tests.c \
-    'gmp_randseed.*mpfr_rands' tests/*.{c,h}
+    'gmp_randseed.*mpfr_rands' tests/*.[ch]
 
 # "mpfr-impl.h" must not be included directly by the test programs.
 # Otherwise __MPFR_WITHIN_MPFR will be defined, yielding failures
@@ -363,14 +363,14 @@ err-if-output \
 err-if-output \
   --msg='Include "mpfr-test.h" instead of "mpfr-impl.h" to prevent __MPFR_WITHIN_MPFR from being defined.' \
   -t "mpfr-impl.h inclusion" grep --exclude=mpfr-test.h \
-    '^ *# *include *"mpfr-impl.h"' tests/*.{c,h}
+    '^ *# *include *"mpfr-impl.h"' tests/*.[ch]
 
 # Division by zero yields issues on some platforms, even in the case where
 # MPFR_ERRDIVZERO is not defined. See, e.g.
 #   https://sympa.inria.fr/sympa/arc/mpfr/2019-02/msg00005.html
 # The solution is to still allow tests related to NaN and infinities, but
 # such tests must avoid division by zero.
-grep -E '/ *0?\.0([^0-9]|$)' tests/*.{c,h} | \
+grep -E '/ *0?\.0([^0-9]|$)' tests/*.[ch] | \
   err-if-output --msg='Division by zero yields issues on some platforms, use MPFR_DBL_* macros.' \
                 -t "division by zero" grep -Ev '/\*.*/ *0?\.0'
 
