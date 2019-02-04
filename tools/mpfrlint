@@ -362,6 +362,11 @@ err-if-output \
   -t "mpfr-impl.h inclusion" grep --exclude=mpfr-test.h \
     '^ *# *include *"mpfr-impl.h"' tests/*.{c,h}
 
+# Division by zero yields issues on some platforms, even in the case where
+# MPFR_ERRDIVZERO is not defined. See, e.g.
+#   https://sympa.inria.fr/sympa/arc/mpfr/2019-02/msg00005.html
+# The solution is to still allow tests related to NaN and infinities, but
+# such tests must avoid division by zero.
 grep -E '/ *0?\.0([^0-9]|$)' tests/*.{c,h} | \
   err-if-output --msg='division by zero yields issues on some platforms' \
                 -t "division by zero" grep -Ev '/\*.*/ *0?\.0'
