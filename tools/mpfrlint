@@ -362,6 +362,10 @@ err-if-output \
   -t "mpfr-impl.h inclusion" grep --exclude=mpfr-test.h \
     '^ *# *include *"mpfr-impl.h"' tests/*.{c,h}
 
+grep -E '/ *0?\.0([^0-9]|$)' tests/*.{c,h} | \
+  err-if-output --msg='division by zero yields issues on some platforms' \
+                -t "division by zero" grep -Ev '/\*.*/ *0?\.0'
+
 # Check that the usual test programs call tests_start_mpfr and tests_end_mpfr.
 if grep -q TESTS_NO_TVERSION tests/Makefile.am; then
   tprgvar=TESTS_NO_TVERSION
