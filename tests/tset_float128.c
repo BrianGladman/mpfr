@@ -28,6 +28,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef MPFR_WANT_FLOAT128
 
 #include "mpfr-test.h"
+#include "ieee_floats.h"
 
 static void
 check_special (void)
@@ -39,7 +40,7 @@ check_special (void)
 
 #if !defined(MPFR_ERRDIVZERO)
   /* check NaN */
-  f = 0.0 / 0.0;
+  f = MPFR_DBL_NAN;
   mpfr_set_float128 (x, f, MPFR_RNDN);
   if (! mpfr_nan_p (x))
     {
@@ -55,7 +56,7 @@ check_special (void)
     }
 
   /* check +Inf */
-  f = 1.0 / 0.0;
+  f = MPFR_DBL_INFP;
   mpfr_set_float128 (x, f, MPFR_RNDN);
   if (! mpfr_inf_p (x) || MPFR_IS_NEG (x))
     {
@@ -63,14 +64,14 @@ check_special (void)
       exit (1);
     }
   f = mpfr_get_float128 (x, MPFR_RNDN);
-  if (f != (1.0 / 0.0))
+  if (f != MPFR_DBL_INFP)
     {
       printf ("Error in mpfr_get_float128(+Inf)\n");
       exit (1);
     }
 
   /* check -Inf */
-  f = -1.0 / 0.0;
+  f = MPFR_DBL_INFM;
   mpfr_set_float128 (x, f, MPFR_RNDN);
   if (! mpfr_inf_p (x) || MPFR_IS_POS (x))
     {
@@ -78,7 +79,7 @@ check_special (void)
       exit (1);
     }
   f = mpfr_get_float128 (x, MPFR_RNDN);
-  if (f != (-1.0 / 0.0))
+  if (f != MPFR_DBL_INFM)
     {
       printf ("Error in mpfr_get_float128(-Inf)\n");
       exit (1);
@@ -100,7 +101,7 @@ check_special (void)
       exit (1);
     }
 #if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ)
-  if (1 / f != 1 / 0.0)  /* check the sign */
+  if (1 / f != MPFR_DBL_INFP)  /* check the sign */
     {
       printf ("Error in mpfr_get_float128(+0.0)\n");
       exit (1);
@@ -129,7 +130,7 @@ check_special (void)
       exit (1);
     }
 #if !defined(MPFR_ERRDIVZERO) && defined(HAVE_SIGNEDZ)
-  if (1 / f != 1 / -0.0)  /* check the sign */
+  if (1 / f != MPFR_DBL_INFM)  /* check the sign */
     {
       printf ("Error in mpfr_get_float128(-0.0)\n");
       exit (1);

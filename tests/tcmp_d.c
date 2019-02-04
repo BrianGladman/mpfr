@@ -21,6 +21,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
+#include "ieee_floats.h"
 
 int
 main (void)
@@ -86,7 +87,7 @@ main (void)
     int c;
 
     mpfr_clear_flags ();
-    c = mpfr_cmp_d (x, DBL_NAN);
+    c = mpfr_cmp_d (x, MPFR_DBL_NAN);
     if (c != 0 || __gmpfr_flags != MPFR_FLAGS_ERANGE)
       {
         printf ("ERROR for NAN (1)\n");

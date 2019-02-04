@@ -23,6 +23,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <float.h>     /* for FLT_MIN */
 
 #include "mpfr-test.h"
+#include "ieee_floats.h"
 
 /* return non-zero iff f == g, and if both are zero check the sign */
 static int
@@ -59,9 +60,7 @@ main (void)
   tests_start_mpfr ();
 
 #if !defined(MPFR_ERRDIVZERO)
-  /* The definition of DBL_POS_INF involves a division by 0. This makes
-     "clang -O2 -fsanitize=undefined -fno-sanitize-recover" fail. */
-  infp = (float) DBL_POS_INF;
+  infp = (float) MPFR_DBL_INFP;
   if (infp * 0.5 != infp)
     {
       fprintf (stderr, "Error, FLT_MAX + FLT_MAX does not yield INFP\n");

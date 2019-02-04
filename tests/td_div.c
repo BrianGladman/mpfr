@@ -23,6 +23,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <float.h>
 
 #include "mpfr-test.h"
+#include "ieee_floats.h"
 
 static void
 check_nans (void)
@@ -102,7 +103,7 @@ check_nans (void)
   /* +inf / 0 == +inf */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_clear_flags ();
-  inexact = mpfr_d_div (y, DBL_POS_INF, x, MPFR_RNDN);
+  inexact = mpfr_d_div (y, MPFR_DBL_INFP, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -111,7 +112,7 @@ check_nans (void)
   /* -inf / 0 == -inf */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_clear_flags ();
-  inexact = mpfr_d_div (y, DBL_NEG_INF, x, MPFR_RNDN);
+  inexact = mpfr_d_div (y, MPFR_DBL_INFM, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -121,7 +122,7 @@ check_nans (void)
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_clear_flags ();
-  inexact = mpfr_d_div (y, DBL_POS_INF, x, MPFR_RNDN);
+  inexact = mpfr_d_div (y, MPFR_DBL_INFP, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -131,7 +132,7 @@ check_nans (void)
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
   mpfr_clear_flags ();
-  inexact = mpfr_d_div (y, DBL_NEG_INF, x, MPFR_RNDN);
+  inexact = mpfr_d_div (y, MPFR_DBL_INFM, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
