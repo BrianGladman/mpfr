@@ -219,6 +219,9 @@ err-if-output -t "__mpfr_struct members" \
 err-if-output -t "x != x and x == x tests" \
   grep '( *\([^[:space:]]*\) *[!=]= *\1 *)' $srctests
 
+err-if-output --msg="Use MPFR_DBL_* macros." -t "DBL_* macros" \
+  grep -E '[^A-Z_]DBL_(NAN|(POS|NEG)_INF)' $c_src tests/*.[ch]
+
 for i in exp prec rnd
 do
   grep "[^a-z]mp_${i}_t" $srctests | \
