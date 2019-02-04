@@ -368,7 +368,7 @@ err-if-output \
 # The solution is to still allow tests related to NaN and infinities, but
 # such tests must avoid division by zero.
 grep -E '/ *0?\.0([^0-9]|$)' tests/*.{c,h} | \
-  err-if-output --msg='division by zero yields issues on some platforms' \
+  err-if-output --msg='Division by zero yields issues on some platforms, use MPFR_DBL_* macros.' \
                 -t "division by zero" grep -Ev '/\*.*/ *0?\.0'
 
 # Check that the usual test programs call tests_start_mpfr and tests_end_mpfr.
