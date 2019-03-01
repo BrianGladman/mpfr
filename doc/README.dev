@@ -1481,7 +1481,9 @@ in MPFR.
    ---------------------------------------------------------------------
 
 To check the coverage of the test suite, you can use gcov.
-   ./configure CFLAGS="-fprofile-arcs -ftest-coverage"
+To get accurate information, do not enable optimizations.
+
+   ./configure CFLAGS="--coverage"
    make clean
    make check
    find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
