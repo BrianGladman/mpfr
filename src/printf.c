@@ -30,17 +30,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <stdarg.h>
 
-#ifndef HAVE_VA_COPY
-# ifdef HAVE___VA_COPY
-#  define va_copy(dst,src) __va_copy(dst, src)
-# else
-/* autoconf manual advocates this fallback.
-   This is also the solution chosen by gmp */
-#  define va_copy(dst,src) \
-  do { memcpy(&(dst), &(src), sizeof(va_list)); } while (0)
-# endif /* HAVE___VA_COPY */
-#endif /* HAVE_VA_COPY */
-
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_FILE
