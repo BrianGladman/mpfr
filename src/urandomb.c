@@ -42,6 +42,8 @@ mpfr_rand_raw (mpfr_limb_ptr mp, gmp_randstate_t rstate,
   MPFR_ASSERTN ((mp_bitcnt_t) -1 < 0 || nbits <= (mp_bitcnt_t) -1);
   mpz_init (z);
   mpz_urandomb (z, rstate, nbits);
+  /* FIXME: The MPN_COPY below triggers a use-of-uninitialized-value
+     with Clang's memory sanitizer (-fsanitize=memory), e.g. in tsgn. */
   MPN_COPY(mp, PTR(z), MPFR_PREC2LIMBS (nbits));
   mpz_clear (z);
 }
