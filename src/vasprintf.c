@@ -2126,6 +2126,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
           else
             spec.width = - spec.width;
         }
+      /* FIXME: One has an obvious assertion failure if
+         spec.width < - MPFR_INTMAX_MAX; one should probably just
+         modify this assertion to take overflow into account, but
+         this needs some tests. */
       MPFR_ASSERTD (spec.width >= 0);
 
       if (*fmt == '.')
