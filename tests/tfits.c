@@ -247,9 +247,9 @@ main (void)
       CHECK_MAX (10, !);
 
       /* Check the limits of the types (except 0 for uintmax_t) */
-      CHECK_LIM (20, MPFR_UINTMAX_MAX, mpfr_set_uj, mpfr_fits_uintmax_p);
-      CHECK_LIM (30, MPFR_INTMAX_MAX, mpfr_set_sj, mpfr_fits_intmax_p);
-      CHECK_LIM (35, MPFR_INTMAX_MIN, mpfr_set_sj, mpfr_fits_intmax_p);
+      CHECK_LIM (20, UINTMAX_MAX, mpfr_set_uj, mpfr_fits_uintmax_p);
+      CHECK_LIM (30, INTMAX_MAX, mpfr_set_sj, mpfr_fits_intmax_p);
+      CHECK_LIM (35, INTMAX_MIN, mpfr_set_sj, mpfr_fits_intmax_p);
 
       /* Check negative op */
       for (i = 1; i <= 4; i++)

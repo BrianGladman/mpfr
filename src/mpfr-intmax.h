@@ -53,20 +53,28 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define MPFR_USE_INTMAX_T
 #endif
 
-/* Largest signed integer type available for the MPFR build. */
-#if defined(MPFR_USE_INTMAX_T)
+/* Largest integer type available and fully working for the MPFR build
+   (may be smaller than intmax_t / uintmax_t if NPRINTF_J is defined). */
+#if defined(MPFR_USE_INTMAX_T) && !defined(NPRINTF_J)
 typedef intmax_t mpfr_intmax_t;
 typedef uintmax_t mpfr_uintmax_t;
+# define MPFR_UINTMAX_MAX UINTMAX_MAX
+# define MPFR_INTMAX_MAX INTMAX_MAX
+# define MPFR_INTMAX_MIN INTMAX_MIN
 # define MPFR_INTMAX_FSPEC "j"
-#elif defined(HAVE_LONG_LONG)
+#elif defined(HAVE_LONG_LONG) && !defined(NPRINTF_LL)
 typedef long long mpfr_intmax_t;
 typedef unsigned long long mpfr_uintmax_t;
+# define MPFR_UINTMAX_MAX ULLONG_MAX
 # define MPFR_INTMAX_MAX LLONG_MAX
+# define MPFR_INTMAX_MIN LLONG_MIN
 # define MPFR_INTMAX_FSPEC "ll"
 #else
 typedef long mpfr_intmax_t;
 typedef unsigned long mpfr_uintmax_t;
+# define MPFR_UINTMAX_MAX ULONG_MAX
 # define MPFR_INTMAX_MAX LONG_MAX
+# define MPFR_INTMAX_MIN LONG_MIN
 # define MPFR_INTMAX_FSPEC "l"
 #endif
 

@@ -204,34 +204,6 @@ if test "$ac_cv_type_intmax_t" = yes; then
   if test "$mpfr_cv_have_intmax_max" = "yes"; then
     AC_DEFINE(MPFR_HAVE_INTMAX_MAX,1,[Define if you have a working INTMAX_MAX.])
   fi
-  AC_CACHE_CHECK([for working printf length modifier for intmax_t],
-                 mpfr_cv_printf_maxlm, [
-    saved_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-    for modifier in j ll l
-    do
-      AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <stdio.h>
-#include <string.h>
-#include "mpfr-intmax.h"
-]],[[
-  char s[64];
-  sprintf (s, "%${modifier}d %${modifier}u",
-           (intmax_t) -17, (uintmax_t) 42);
-  return strcmp (s, "-17 42") != 0;
-]])],
-       mpfr_cv_printf_maxlm=${modifier}; break,
-       mpfr_cv_printf_maxlm=none,
-dnl We assume that j is working when cross-compiling.
-       mpfr_cv_printf_maxlm=j; break
-      )
-    done
-    CPPFLAGS="$saved_CPPFLAGS"
-  ])
-  if test "$mpfr_cv_printf_maxlm" != "none"; then
-    AC_DEFINE_UNQUOTED([MPFR_PRINTF_MAXLM],["$mpfr_cv_printf_maxlm"],
-      [Define to a working printf length modifier for intmax_t])
-  fi
 fi
 
 AC_CHECK_TYPE( [union fpc_csr],
@@ -1497,7 +1469,7 @@ fi
 dnl  MPFR_FUNC_GMP_PRINTF_SPEC
 dnl  ------------------------------------
 dnl  MPFR_FUNC_GMP_PRINTF_SPEC(spec, type, [includes], [if-true], [if-false])
-dnl  Check if gmp_sprintf supports the conversion specification 'spec'
+dnl  Check if sprintf and gmp_sprintf support the conversion specifier 'spec'
 dnl  with type 'type'.
 dnl  Expand 'if-true' if printf supports 'spec', 'if-false' otherwise.
 
@@ -1512,8 +1484,19 @@ $3
   char s[256];
   $2 a = 17;
 
-  if (gmp_sprintf (s, "(%0.0$1)(%d)", a, 42) == -1) return 1;
-  return (strcmp (s, "(17)(42)") != 0);
+  /* Contrary to the gmp_sprintf test, do not use the 0 flag with the
+     precision, as -Werror=format yields an error, even though this
+     flag is allowed by the ISO C standard (it is just ignored).
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70813 */
+  if (sprintf (s, "(%.0$1)(%d)", a, 42) != 8 ||
+      strcmp (s, "(17)(42)") != 0)
+    return 1;
+
+  if (gmp_sprintf (s, "(%0.0$1)(%d)", a, 42) == -1 ||
+      strcmp (s, "(17)(42)") != 0)
+    return 1;
+
+  return 0;
 ]])],
   [AC_MSG_RESULT(yes)
   $4],
@@ -1540,24 +1523,24 @@ if test "$ac_cv_type_intmax_t" = yes; then
 # include <stdint.h>
 #endif
          ],,
-         [AC_DEFINE([NPRINTF_J], 1, [gmp_printf cannot read intmax_t])])
+         [AC_DEFINE([NPRINTF_J], 1, [printf/gmp_printf cannot read intmax_t])])
 fi
 
 MPFR_FUNC_GMP_PRINTF_SPEC([hhd], [char], [
 #include <gmp.h>
          ],,
-         [AC_DEFINE([NPRINTF_HH], 1, [gmp_printf cannot use `hh' length modifier])])
+         [AC_DEFINE([NPRINTF_HH], 1, [printf/gmp_printf cannot use `hh' length modifier])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([lld], [long long int], [
 #include <gmp.h>
          ],,
-         [AC_DEFINE([NPRINTF_LL], 1, [gmp_printf cannot read long long int])])
+         [AC_DEFINE([NPRINTF_LL], 1, [printf/gmp_printf cannot read long long int])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([Lf], [long double], [
 #include <gmp.h>
          ],
-         [AC_DEFINE([PRINTF_L], 1, [gmp_printf can read long double])],
-         [AC_DEFINE([NPRINTF_L], 1, [gmp_printf cannot read long double])])
+         [AC_DEFINE([PRINTF_L], 1, [printf/gmp_printf can read long double])],
+         [AC_DEFINE([NPRINTF_L], 1, [printf/gmp_printf cannot read long double])])
 
 MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #if defined (__cplusplus)
@@ -1567,8 +1550,8 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #endif
 #include <gmp.h>
     ],
-    [AC_DEFINE([PRINTF_T], 1, [gmp_printf can read ptrdiff_t])],
-    [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
+    [AC_DEFINE([PRINTF_T], 1, [printf/gmp_printf can read ptrdiff_t])],
+    [AC_DEFINE([NPRINTF_T], 1, [printf/gmp_printf cannot read ptrdiff_t])])
 ])
 
 dnl MPFR_CHECK_PRINTF_GROUPFLAG

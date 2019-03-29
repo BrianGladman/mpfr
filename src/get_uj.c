@@ -41,14 +41,14 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
     {
       MPFR_SET_ERANGEFLAG ();
       return MPFR_IS_NAN (f) || MPFR_IS_NEG (f) ?
-        (uintmax_t) 0 : MPFR_UINTMAX_MAX;
+        (uintmax_t) 0 : UINTMAX_MAX;
     }
 
   if (MPFR_IS_ZERO (f))
     return (uintmax_t) 0;
 
   /* determine the precision of uintmax_t */
-  for (r = MPFR_UINTMAX_MAX, prec = 0; r != 0; r /= 2, prec++)
+  for (r = UINTMAX_MAX, prec = 0; r != 0; r /= 2, prec++)
     { }
 
   MPFR_ASSERTD (r == 0);

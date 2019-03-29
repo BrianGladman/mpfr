@@ -75,8 +75,8 @@ main (void)
   mpfr_clear (x);
   if (j != 1)
     {
-#ifdef MPFR_PRINTF_MAXLM
-      printf ("Error: got %" MPFR_PRINTF_MAXLM "d instead of 1.\n", j);
+#ifndef NPRINTF_J
+      printf ("Error: got %jd instead of 1.\n", j);
 #else
       printf ("Error: did not get 1.\n");
 #endif

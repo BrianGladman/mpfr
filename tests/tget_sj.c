@@ -38,8 +38,8 @@ main (void)
 
 #else
 
-#ifdef MPFR_PRINTF_MAXLM
-#define PRMAX(SPEC,V) printf (" %" MPFR_PRINTF_MAXLM SPEC ",", V)
+#ifndef NPRINTF_J
+#define PRMAX(SPEC,V) printf (" %j" SPEC ",", V)
 #else
 #define PRMAX(SPEC,V) (void) 0
 #endif
@@ -253,20 +253,20 @@ check_erange (void)
   RND_LOOP (rnd)
     for (fi = 0; fi < numberof (flags); fi++)
       {
-        mpfr_set_uj (x, MPFR_UINTMAX_MAX, MPFR_RNDN);
-        CHECK_ERANGE_U ("UINTMAX_MAX", MPFR_UINTMAX_MAX, 0);
+        mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
+        CHECK_ERANGE_U ("UINTMAX_MAX", UINTMAX_MAX, 0);
         mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        CHECK_ERANGE_U ("UINTMAX_MAX+1", MPFR_UINTMAX_MAX, 1);
+        CHECK_ERANGE_U ("UINTMAX_MAX+1", UINTMAX_MAX, 1);
         mpfr_set_sj (x, -1, MPFR_RNDN);
         CHECK_ERANGE_U ("-1", 0, 1);
-        mpfr_set_sj (x, MPFR_INTMAX_MAX, MPFR_RNDN);
-        CHECK_ERANGE_S ("INTMAX_MAX", MPFR_INTMAX_MAX, 0);
+        mpfr_set_sj (x, INTMAX_MAX, MPFR_RNDN);
+        CHECK_ERANGE_S ("INTMAX_MAX", INTMAX_MAX, 0);
         mpfr_add_ui (x, x, 1, MPFR_RNDN);
-        CHECK_ERANGE_S ("INTMAX_MAX+1", MPFR_INTMAX_MAX, 1);
-        mpfr_set_sj (x, MPFR_INTMAX_MIN, MPFR_RNDN);
-        CHECK_ERANGE_S ("INTMAX_MIN", MPFR_INTMAX_MIN, 0);
+        CHECK_ERANGE_S ("INTMAX_MAX+1", INTMAX_MAX, 1);
+        mpfr_set_sj (x, INTMAX_MIN, MPFR_RNDN);
+        CHECK_ERANGE_S ("INTMAX_MIN", INTMAX_MIN, 0);
         mpfr_sub_ui (x, x, 1, MPFR_RNDN);
-        CHECK_ERANGE_S ("INTMAX_MIN-1", MPFR_INTMAX_MIN, 1);
+        CHECK_ERANGE_S ("INTMAX_MIN-1", INTMAX_MIN, 1);
         mpfr_set_nan (x);
         CHECK_ERANGE_U ("NaN", 0, 1);
         CHECK_ERANGE_S ("NaN", 0, 1);
@@ -308,8 +308,8 @@ test_get_uj_smallneg (void)
               printf ("ERROR for get_uj + ERANGE + small negative op"
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
-#ifdef MPFR_PRINTF_MAXLM
-              printf ("Expected 0, got %" MPFR_PRINTF_MAXLM "u\n", u);
+#ifndef NPRINTF_J
+              printf ("Expected 0, got %ju\n", u);
 #endif
               exit (1);
             }
@@ -321,8 +321,8 @@ test_get_uj_smallneg (void)
                       " for rnd = %s and x = -%d/4\n",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               printf ("The rounded integer ");
-#ifdef MPFR_PRINTF_MAXLM
-              printf("(%" MPFR_PRINTF_MAXLM "d) ", s);
+#ifndef NPRINTF_J
+              printf("(%jd) ", s);
 #endif
               printf("is%s representable in unsigned long,\n"
                      "but the erange flag is%s set.\n", Not, Not);
@@ -344,7 +344,7 @@ main (void)
 
   tests_start_mpfr ();
 
-  for (u = MPFR_UINTMAX_MAX, prec = 0; u != 0; u /= 2, prec++)
+  for (u = UINTMAX_MAX, prec = 0; u != 0; u /= 2, prec++)
     { }
 
   mpfr_init2 (x, prec + 4);
@@ -366,7 +366,7 @@ main (void)
 
   mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
-  for (s = MPFR_INTMAX_MAX; s != 0; s /= 17)
+  for (s = INTMAX_MAX; s != 0; s /= 17)
     {
       check_sj (s, y);
       mpfr_div_ui (y, y, 17, MPFR_RNDZ);
@@ -376,16 +376,16 @@ main (void)
   mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
   mpfr_neg (y, y, MPFR_RNDN);
-  if (MPFR_INTMAX_MIN + MPFR_INTMAX_MAX != 0)
+  if (INTMAX_MIN + INTMAX_MAX != 0)
     mpfr_sub_ui (y, y, 1, MPFR_RNDN); /* INTMAX_MIN */
-  for (s = MPFR_INTMAX_MIN; s != 0; s /= 17)
+  for (s = INTMAX_MIN; s != 0; s /= 17)
     {
       check_sj (s, y);
       mpfr_div_ui (y, y, 17, MPFR_RNDZ);
       mpfr_trunc (y, y);
     }
 
-  for (u = MPFR_UINTMAX_MAX; u != 0; u /= 17)
+  for (u = UINTMAX_MAX; u != 0; u /= 17)
     {
       check_uj (u, x);
       mpfr_div_ui (x, x, 17, MPFR_RNDZ);

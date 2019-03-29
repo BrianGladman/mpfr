@@ -37,7 +37,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
 #define FUNCTION   mpfr_fits_uintmax_p
-#define MAXIMUM    MPFR_UINTMAX_MAX
+#define MAXIMUM    UINTMAX_MAX
 #define TYPE       uintmax_t
 
 #include "fits_u.h"

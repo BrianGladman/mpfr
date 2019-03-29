@@ -380,11 +380,11 @@ main (void)
 
   /**************************** ABI information ****************************/
 
-  (printf) ("[tversion] sizeof(long) = %ld"
+  (printf) ("[tversion] sizeof(long) = %ld, sizeof(mpfr_intmax_t) = %ld"
 #if defined(_MPFR_H_HAVE_INTMAX_T)
             ", sizeof(intmax_t) = %ld"
 #endif
-            "\n", (long) sizeof(long)
+            "\n", (long) sizeof(long), (long) sizeof(mpfr_intmax_t)
 #if defined(_MPFR_H_HAVE_INTMAX_T)
             , (long) sizeof(intmax_t)
 #endif
