@@ -458,6 +458,8 @@ typedef wint_t mpfr_va_wint;
 #define CASE_LONG_LONG_ARG(specinfo, ap)
 #endif
 
+/* Note: (specinfo).width may be incorrect in case of overflow,
+   but it is not used by CONSUME_VA_ARG. */
 #define CONSUME_VA_ARG(specinfo, ap)            \
   do {                                          \
     switch ((specinfo).arg_type)                \
@@ -2121,16 +2123,19 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
       if (spec.width < 0)  /* integer read via '*', no overflow */
         {
           spec.left = 1;
-          if (MPFR_UNLIKELY (spec.width < - MPFR_INTMAX_MAX))
+          /* Since the type of the integer is int, spec.width >= INT_MIN,
+             so that an overflow is possible here only if mpfr_intmax_t
+             has the same size of int. The INT_MIN < - MPFR_INTMAX_MAX
+             test allows the compiler to optimize when it is false. */
+          if (MPFR_UNLIKELY (INT_MIN < - MPFR_INTMAX_MAX &&
+                             spec.width < - MPFR_INTMAX_MAX))
             overflow = 1;
           else
             spec.width = - spec.width;
         }
-      /* FIXME: One has an obvious assertion failure if
-         spec.width < - MPFR_INTMAX_MAX; one should probably just
-         modify this assertion to take overflow into account, but
-         this needs some tests. */
-      MPFR_ASSERTD (spec.width >= 0);
+      /* Note: We will make sure that spec.width is not used in case of
+         overflow. */
+      MPFR_ASSERTD (overflow || spec.width >= 0);
 
       if (*fmt == '.')
         {
