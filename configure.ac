@@ -226,15 +226,13 @@ AC_ARG_ENABLE(tune-for-coverage,
       *)    AC_MSG_ERROR([bad value for --enable-tune-for-coverage]) ;;
      esac])
 
-dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
-dnl (note that it is not guaranteed to be available because it may
-dnl be disabled in the GCC build). See:
-dnl   https://gcc.gnu.org/gcc-4.3/changes.html
-dnl _Decimal64 is not yet defined in GCC for C++:
-dnl   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
-dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
-dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
-dnl is detected by the x != x test below.
+dnl Support for _Decimal64 and _Decimal128 (ISO/IEC TS 18661).
+dnl See acinclude.m4 for more information and tests.
+dnl FIXME: differentiate the support of _Decimal64 and _Decimal128, e.g.
+dnl   --enable-decimal64  for _Decimal64
+dnl   --enable-decimal128 for _Decimal128
+dnl   --enable-decimal-float would explicitly enable both (or fail).
+dnl   --disable-decimal-float would explicitly disable both.
 AC_ARG_ENABLE(decimal-float,
    [  --disable-decimal-float explicitly disable decimal floats support
   --enable-decimal-float  build conversion functions from/to decimal floats
