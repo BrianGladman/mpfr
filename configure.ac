@@ -68,9 +68,10 @@ dnl To use a separate config header.
 dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
-dnl Extra arguments to configure
-
 unset gmp_lib_path GMP_CFLAGS GMP_CC
+
+dnl ********************************************************************
+dnl Extra arguments to configure (AC_ARG_WITH and AC_ARG_ENABLE)
 
 AC_ARG_WITH(gmp_include,
    [  --with-gmp-include=DIR  GMP include directory ],
@@ -225,6 +226,74 @@ AC_ARG_ENABLE(tune-for-coverage,
       *)    AC_MSG_ERROR([bad value for --enable-tune-for-coverage]) ;;
      esac])
 
+dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
+dnl (note that it is not guaranteed to be available because it may
+dnl be disabled in the GCC build). See:
+dnl   https://gcc.gnu.org/gcc-4.3/changes.html
+dnl _Decimal64 is not yet defined in GCC for C++:
+dnl   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
+dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
+dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
+dnl is detected by the x != x test below.
+AC_ARG_ENABLE(decimal-float,
+   [  --disable-decimal-float explicitly disable decimal floats support
+  --enable-decimal-float  build conversion functions from/to decimal floats
+                          [[default=autodetect]]],
+   [ case $enableval in
+      yes) ;;
+      no)  ;;
+      *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
+     esac])
+
+dnl FIXME: If a fallback to __float128 is used, say binary128 instead
+dnl of _Float128.
+AC_ARG_ENABLE(float128,
+   [  --disable-float128      explicitly disable _Float128 support
+  --enable-float128       build conversion functions from/to _Float128
+                          [[default=autodetect]]],
+   [ case $enableval in
+      yes) ;;
+      no)  ;;
+      *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
+     esac])
+
+AC_ARG_ENABLE(debug-prediction,
+   [  --enable-debug-prediction
+                          [[for developers]] enable debug of branch prediction
+                          (for x86 and x86-64 with GCC, static libs)],
+   [ case $enableval in
+      yes)  if test "$enable_shared" != no; then
+              AC_MSG_ERROR([--enable-debug-prediction can only work in static mode (--disable-shared)])
+            fi
+            AC_DEFINE([MPFR_DEBUG_PREDICTION],1,
+	       [Enable debug of branch prediction]) ;;
+      no)   ;;
+      *)    AC_MSG_ERROR([bad value for --enable-debug-prediction: yes or no]) ;;
+     esac])
+
+AC_ARG_ENABLE(lto,
+   [  --enable-lto            build MPFR with link-time-optimization
+                          (experimental) [[default: no]]],
+   [ case $enableval in
+      yes)  if test "$enable_shared" != "no"; then
+              AC_MSG_ERROR([--enable-lto can only work in static mode (--disable-shared)])
+            fi
+            enable_lto=yes
+            ;;
+      no)   ;;
+      *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
+     esac])
+
+AC_ARG_ENABLE(formally-proven-code,
+   [  --enable-formally-proven-code
+                          use formally proven code when available
+                          (needs a C99 compiler) [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([MPFR_WANT_PROVEN_CODE],1,[Want formally proven code]) ;;
+      no)  ;;
+      *) AC_MSG_ERROR([bad value for --enable-formally-proven-code: yes or no]) ;;
+     esac])
+
 dnl Makefile.am files can use "if MINI_GMP" / ... / "endif".
 AM_CONDITIONAL([MINI_GMP], [test -n "$mini_gmp_path"])
 
@@ -377,74 +446,6 @@ case "$mpfr_ieee_double" in
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
   *) AC_MSG_WARN([format of `double' floating-point not recognized]) ;;
 esac
-
-dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
-dnl (note that it is not guaranteed to be available because it may
-dnl be disabled in the GCC build). See:
-dnl   https://gcc.gnu.org/gcc-4.3/changes.html
-dnl _Decimal64 is not yet defined in GCC for C++:
-dnl   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
-dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
-dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
-dnl is detected by the x != x test below.
-AC_ARG_ENABLE(decimal-float,
-   [  --disable-decimal-float explicitly disable decimal floats support
-  --enable-decimal-float  build conversion functions from/to decimal floats
-                          [[default=autodetect]]],
-   [ case $enableval in
-      yes) ;;
-      no)  ;;
-      *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
-     esac])
-
-dnl FIXME: If a fallback to __float128 is used, say binary128 instead
-dnl of _Float128.
-AC_ARG_ENABLE(float128,
-   [  --disable-float128      explicitly disable _Float128 support
-  --enable-float128       build conversion functions from/to _Float128
-                          [[default=autodetect]]],
-   [ case $enableval in
-      yes) ;;
-      no)  ;;
-      *)   AC_MSG_ERROR([bad value for --enable-float128: yes or no]) ;;
-     esac])
-
-AC_ARG_ENABLE(debug-prediction,
-   [  --enable-debug-prediction
-                          [[for developers]] enable debug of branch prediction
-                          (for x86 and x86-64 with GCC, static libs)],
-   [ case $enableval in
-      yes)  if test "$enable_shared" != no; then
-              AC_MSG_ERROR([--enable-debug-prediction can only work in static mode (--disable-shared)])
-            fi
-            AC_DEFINE([MPFR_DEBUG_PREDICTION],1,
-	       [Enable debug of branch prediction]) ;;
-      no)   ;;
-      *)    AC_MSG_ERROR([bad value for --enable-debug-prediction: yes or no]) ;;
-     esac])
-
-AC_ARG_ENABLE(lto,
-   [  --enable-lto            build MPFR with link-time-optimization
-                          (experimental) [[default: no]]],
-   [ case $enableval in
-      yes)  if test "$enable_shared" != "no"; then
-              AC_MSG_ERROR([--enable-lto can only work in static mode (--disable-shared)])
-            fi
-            enable_lto=yes
-            ;;
-      no)   ;;
-      *)    AC_MSG_ERROR([bad value for --enable-lto: yes or no]) ;;
-     esac])
-
-AC_ARG_ENABLE(formally-proven-code,
-   [  --enable-formally-proven-code
-                          use formally proven code when available
-                          (needs a C99 compiler) [[default=no]]],
-   [ case $enableval in
-      yes) AC_DEFINE([MPFR_WANT_PROVEN_CODE],1,[Want formally proven code]) ;;
-      no)  ;;
-      *) AC_MSG_ERROR([bad value for --enable-formally-proven-code: yes or no]) ;;
-     esac])
 
 dnl Warning: This test is *only* for CFLAGS settings.
 dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
