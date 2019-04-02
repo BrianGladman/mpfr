@@ -760,6 +760,27 @@ if test "$enable_lto" = "yes" ; then
    MPFR_LTO
 fi
 
+dnl Logging support needs nested functions and the 'cleanup' attribute.
+dnl This is checked at the end because the change of CC and/or CFLAGS that
+dnl could occur before may have an influence on this test. The tested code
+dnl is very similar to what is used in MPFR (mpfr-impl.h).
+if test "$enable_logging" = yes; then
+AC_MSG_CHECKING(for nested functions and 'cleanup' attribute)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+int main (void) {
+  auto void f_cleanup (int *p);
+  void f_cleanup (int *p) { int v = *p; (void) v; }
+  int v __attribute__ ((cleanup (f_cleanup)));
+  v = 0;
+  return 0;
+}
+  ]])],
+     [AC_MSG_RESULT(yes)],
+     [AC_MSG_RESULT(no)
+      AC_MSG_ERROR([logging support needs nested functions and the 'cleanup' attribute])
+     ])
+fi
+
 ])
 dnl end of MPFR_CONFIGS
 
