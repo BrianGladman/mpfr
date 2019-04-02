@@ -243,12 +243,13 @@ AC_ARG_ENABLE(decimal-float,
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
      esac])
 
-dnl FIXME: If a fallback to __float128 is used, say binary128 instead
-dnl of _Float128.
+dnl Warning! Not to be confused with _Decimal128. Thus it is better
+dnl to say binary128 in the description. It can correspond to either
+dnl _Float128 (ISO/IEC TS 18661) or __float128 (old type name).
 AC_ARG_ENABLE(float128,
-   [  --disable-float128      explicitly disable _Float128 support
-  --enable-float128       build conversion functions from/to _Float128
-                          [[default=autodetect]]],
+   [  --disable-float128      explicitly disable binary128 support
+  --enable-float128       build conversion functions from/to binary128
+                          (_Float128 or __float128) [[default=autodetect]]],
    [ case $enableval in
       yes) ;;
       no)  ;;
