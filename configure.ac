@@ -166,8 +166,8 @@ AC_ARG_ENABLE(assert,
      esac])
 
 AC_ARG_ENABLE(logging,
-   [  --enable-logging        enable MPFR logging (the system must support it)
-                          [[default=no]]],
+   [  --enable-logging        enable MPFR logging (needs nested functions
+                          and the 'cleanup' attribute) [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_USE_LOGGING],1,[Enable MPFR logging support]) ;;
       no)  ;;
