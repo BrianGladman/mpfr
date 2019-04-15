@@ -127,47 +127,30 @@ static const char num_to_text[] = "0123456789abcdef";
 */
 #define READ_INT(ap, format, var)                                       \
   do {                                                                  \
-    int _loop = 1;                                                      \
     MPFR_ASSERTD ((var) == 0);                                          \
-    while (_loop && *(format))                                          \
+    if (*(format) == '*')                                               \
       {                                                                 \
-        int _i;                                                         \
-        switch (*(format))                                              \
+        (var) = va_arg ((ap), int);                                     \
+        ++(format);                                                     \
+      }                                                                 \
+    else                                                                \
+      for ( ; *(format) >= '0' && *(format) <= '9' ; ++(format))        \
+        if (!(overflow))                                                \
           {                                                             \
-          case '0':                                                     \
-          case '1':                                                     \
-          case '2':                                                     \
-          case '3':                                                     \
-          case '4':                                                     \
-          case '5':                                                     \
-          case '6':                                                     \
-          case '7':                                                     \
-          case '8':                                                     \
-          case '9':                                                     \
-            if (!(overflow))                                            \
+            if ((var) > MPFR_INTMAX_MAX / 10)                           \
+              (overflow) = 1;                                           \
+            else                                                        \
               {                                                         \
-                if ((var) > MPFR_INTMAX_MAX / 10)                       \
+                int _i;                                                 \
+                (var) *= 10;                                            \
+                _i = *(format) - '0';                                   \
+                MPFR_ASSERTN (_i >= 0 && _i <= 9);                      \
+                if ((var) > MPFR_INTMAX_MAX - _i)                       \
                   (overflow) = 1;                                       \
                 else                                                    \
-                  {                                                     \
-                    (var) *= 10;                                        \
-                    _i = *(format) - '0';                               \
-                    MPFR_ASSERTN (_i >= 0 && _i <= 9);                  \
-                    if ((var) > MPFR_INTMAX_MAX - _i)                   \
-                      (overflow) = 1;                                   \
-                    else                                                \
-                      (var) += _i;                                      \
-                  }                                                     \
+                  (var) += _i;                                          \
               }                                                         \
-            ++(format);                                                 \
-            break;                                                      \
-          case '*':                                                     \
-            (var) = va_arg ((ap), int);                                 \
-            ++(format);                                                 \
-          default:                                                      \
-            _loop = 0;                                                  \
           }                                                             \
-      }                                                                 \
   } while (0)
 
 /* arg_t contains all the types described by the 'type' field of the

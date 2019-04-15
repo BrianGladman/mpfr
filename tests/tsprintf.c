@@ -886,6 +886,7 @@ mixed (void)
 
   /* check invalid spec.spec */
   check_vsprintf ("%,", "%,");
+  check_vsprintf ("%3*Rg", "%3*Rg");
 
   /* check empty format */
   check_vsprintf ("%", "%");
