@@ -2167,6 +2167,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               break;
             case 'N':
               ++fmt;
+              MPFR_FALLTHROUGH;
             default:
               spec.rnd_mode = MPFR_RNDN;
             }

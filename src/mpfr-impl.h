@@ -197,6 +197,15 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_MAYBE_UNUSED
 #endif
 
+/* This MPFR_FALLTHROUGH macro allows one to make fallthrough in switch case
+   explicit. Use this macro at the end of a switch case if it falls through,
+   in order to avoid a -Wimplicit-fallthrough warning. */
+#if __MPFR_GNUC(7,0)
+#define MPFR_FALLTHROUGH __attribute__ ((fallthrough))
+#else
+#define MPFR_FALLTHROUGH
+#endif
+
 
 
 /******************************************************
