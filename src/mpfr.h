@@ -343,6 +343,13 @@ typedef enum {
    not __llvm__, and __declspec(deprecated("...")) can be used with
    MSC as above. */
 
+#if defined(__GNUC__) && \
+  (__GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9))
+# define MPFR_RETURNS_NONNULL __attribute__ ((returns_nonnull))
+#else
+# define MPFR_RETURNS_NONNULL
+#endif
+
 /* Note: In order to be declared, some functions need a specific
    system header to be included *before* "mpfr.h". If the user
    forgets to include the header, the MPFR function prototype in
@@ -355,14 +362,16 @@ typedef enum {
 extern "C" {
 #endif
 
-__MPFR_DECLSPEC const char * mpfr_get_version (void);
-__MPFR_DECLSPEC const char * mpfr_get_patches (void);
+__MPFR_DECLSPEC MPFR_RETURNS_NONNULL const char * mpfr_get_version (void);
+__MPFR_DECLSPEC MPFR_RETURNS_NONNULL const char * mpfr_get_patches (void);
+
 __MPFR_DECLSPEC int mpfr_buildopt_tls_p          (void);
 __MPFR_DECLSPEC int mpfr_buildopt_float128_p     (void);
 __MPFR_DECLSPEC int mpfr_buildopt_decimal_p      (void);
 __MPFR_DECLSPEC int mpfr_buildopt_gmpinternals_p (void);
 __MPFR_DECLSPEC int mpfr_buildopt_sharedcache_p  (void);
-__MPFR_DECLSPEC const char * mpfr_buildopt_tune_case (void);
+__MPFR_DECLSPEC MPFR_RETURNS_NONNULL const char *
+  mpfr_buildopt_tune_case (void);
 
 __MPFR_DECLSPEC mpfr_exp_t mpfr_get_emin     (void);
 __MPFR_DECLSPEC int        mpfr_set_emin     (mpfr_exp_t);
@@ -763,7 +772,8 @@ __MPFR_DECLSPEC int mpfr_round_nearest_away_end (mpfr_t, int);
 
 __MPFR_DECLSPEC size_t mpfr_custom_get_size (mpfr_prec_t);
 __MPFR_DECLSPEC void mpfr_custom_init (void *, mpfr_prec_t);
-__MPFR_DECLSPEC void * mpfr_custom_get_significand (mpfr_srcptr);
+__MPFR_DECLSPEC MPFR_RETURNS_NONNULL void *
+  mpfr_custom_get_significand (mpfr_srcptr);
 __MPFR_DECLSPEC mpfr_exp_t mpfr_custom_get_exp (mpfr_srcptr);
 __MPFR_DECLSPEC void mpfr_custom_move (mpfr_ptr, void *);
 __MPFR_DECLSPEC void mpfr_custom_init_set (mpfr_ptr, int, mpfr_exp_t,

@@ -262,7 +262,7 @@ specinfo_is_valid (struct printf_spec spec)
 
 /* Note: additional flags should be added to the MPFR_PREC_ARG code
    for gmp_asprintf (when supported). */
-static const char *
+MPFR_RETURNS_NONNULL static const char *
 parse_flags (const char *format, struct printf_spec *specinfo)
 {
   while (*format)
@@ -301,7 +301,7 @@ parse_flags (const char *format, struct printf_spec *specinfo)
   return format;
 }
 
-static const char *
+MPFR_RETURNS_NONNULL static const char *
 parse_arg_type (const char *format, struct printf_spec *specinfo)
 {
   switch (*format)
@@ -959,7 +959,7 @@ floor_log10 (mpfr_srcptr x)
 
 #define NDIGITS 8
 
-static char *
+MPFR_RETURNS_NONNULL static char *
 mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
                       const struct printf_spec spec)
 {
