@@ -422,6 +422,14 @@ grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
 
 err-if-output --dir=doc "check-typography" ./check-typography
 
+rndmodes1=(${(o)$(perl -ne '/return\s*"(MPFR_\S+)"/ and print "$1\n"' src/print_rnd_mode.c)})
+rndmodes2=(${(o)$(sed -n '/deftypefun.*mpfr_print_rnd_mode/,/end deftypefun/{s/[^"]*"\(MPFR_[^"]*\)"[^"]*/\1\n/gp}' doc/mpfr.texi)})
+[[ "$rndmodes1" == "$rndmodes2" ]] || { cat <<EOF && err=1 }
+The lists of rounding modes in src/print_rnd_mode.c and doc/mpfr.texi differ:
+  src/print_rnd_mode.c: $rndmodes1
+         doc/mpfr.texi: $rndmodes2
+EOF
+
 fdlv1="`sed -n '/Version / {
   s/.*Version //
   s/,.*//
