@@ -3116,9 +3116,9 @@ Return the minimal number of bits required to store the significand of
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
-Return a string ("MPFR_RNDD", "MPFR_RNDU", "MPFR_RNDN", "MPFR_RNDZ",
-"MPFR_RNDA") corresponding to the rounding mode @var{rnd}, or a null pointer
-if @var{rnd} is an invalid rounding mode.
+Return a string ("MPFR_RNDN", "MPFR_RNDZ", "MPFR_RNDU", "MPFR_RNDD",
+"MPFR_RNDA", "MPFR_RNDF") corresponding to the rounding mode @var{rnd},
+or a null pointer if @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
 @deftypefn Macro int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
