@@ -22,6 +22,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* WARNING! When adding a new rounding mode, do not forget to update the
+   description of this mpfr_print_rnd_mode function in the manual. */
+
 const char *
 mpfr_print_rnd_mode (mpfr_rnd_t rnd_mode)
 {
