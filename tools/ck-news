@@ -41,7 +41,10 @@ my $ok;
 while (<NEWS>)
   {
     /$rx/ and $ok = 1;
-    $suf ne '-dev' && /FIXME|TODO/ and $! = 2, die "$0: $& in NEWS file";
+    # If this is a release or a release candidate, check that
+    # the NEWS file does not contain FIXME or TODO.
+    $suf =~ /^(-rc.*)?$/ && /FIXME|TODO/
+      and $! = 2, die "$0: $& in NEWS file";
   }
 close NEWS or die "$!\n$0: can't close NEWS file\n";
 
