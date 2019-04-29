@@ -48,10 +48,23 @@ while (<MF>)
 /^libmpfr_la_LDFLAGS\s+=.*\s-version-info\s+(\d+:\d+:\d+)\s/
   or die "$0: missing correct libmpfr_la_LDFLAGS line";
 close MF or die "$!\n$0: can't close Makefile.am file\n";
-defined $vinfo
-  or die "$0: missing comment with -version-info value for MPFR $mv.x";
-$suf eq '-dev' || $vinfo eq $1
-  or die "$0: bad -version-info value ($1 instead of $vinfo)\n";
+
+if (defined $vinfo)
+  {
+    # Check that the -version-info value in the libmpfr_la_LDFLAGS line
+    # corresponds to the expected value from the comment ($vinfo).
+    $vinfo eq $1
+      or die "$0: bad -version-info value ($1 instead of $vinfo)\n";
+  }
+else
+  {
+    # If this is a release or a release candidate, make sure that $vinfo
+    # is defined. For intermediate version, this value may not be known
+    # yet (for instance, the ABI may be broken some time later), so that
+    # defining $vinfo not required.
+    $suf =~ /^(-rc.*)?$/
+      and die "$0: missing comment with -version-info value for MPFR $mv.x";
+  }
 
 open CONFIGURE, '<', 'configure.ac'
   or die "$!\n$0: can't open configure.ac file\n";
