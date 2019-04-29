@@ -74,6 +74,10 @@ libmpfr_la_LIBADD = @LIBOBJS@
 # 3. Interfaces removed or changed (BAD, breaks upward compatibility):
 #    ==> Increment CURRENT, set AGE and REVISION to 0.
 #
+# For each new MPFR major-minor version, add a new line below with the
+# corresponding -version-info CURRENT and AGE. This will be checked by
+# the tools/ck-version-info script.
+#
 #         MPFR     -version-info
 #        2.1.x      -
 #        2.2.x    1:x:0
