@@ -48,6 +48,8 @@ while (<MF>)
 /^libmpfr_la_LDFLAGS\s+=.*\s-version-info\s+(\d+:\d+:\d+)\s/
   or die "$0: missing correct libmpfr_la_LDFLAGS line";
 close MF or die "$!\n$0: can't close Makefile.am file\n";
+defined $vinfo
+  or die "$0: missing comment with -version-info value for MPFR $mv.x";
 $suf eq '-dev' || $vinfo eq $1
   or die "$0: bad -version-info value ($1 instead of $vinfo)\n";
 
