@@ -48,10 +48,15 @@ development versions (in general, "-dev") or pre-release versions (e.g.
   tools/update-version 3 1 0 rc1
   tools/update-version 3 1 0
 
+The "-dev" suffix means that additional tests may be done or required
+for development. For instance, the data files from the tests/data
+directory are required; such files are not included in tarballs as
+they can be large.
+
 If nightly snapshots are built, the date in the yyyymmdd format and/or
 the Subversion revision number (giving more accurate information) must
 be added to the version as a suffix, for instance: "2.3.0-20070621" or
-"2.3.0-dev-r4553".
+"2.3.0-r4553".
 
 Patches can be tracked by adding a chunk of the form
 
