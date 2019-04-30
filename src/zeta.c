@@ -102,12 +102,12 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 static void
 mpfr_zeta_c (int p, mpfr_t *tc)
 {
-  mpfr_t d;
-  int k, l;
-  mpfr_prec_t prec = MPFR_PREC (tc[1]);
-
   if (p > 0)
     {
+      mpfr_t d;
+      int k, l;
+      mpfr_prec_t prec = MPFR_PREC (tc[1]);
+
       mpfr_init2 (d, prec);
       mpfr_div_ui (tc[1], __gmpfr_one, 12, MPFR_RNDN);
       for (k = 2; k <= p; k++)
