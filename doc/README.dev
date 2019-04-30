@@ -303,7 +303,9 @@ To make a release (for the MPFR team):
      Test with GCC's AddressSanitizer (-fsanitize=address). Optimizations
      should not be enabled, otherwise they can make some errors disappear.
      One also needs to unset LD_PRELOAD or use -static-libasan to avoid
-     failures.
+     failures. But the -static-libasan solution does not work with MPFR,
+     as it yields the following error:
+       Your application is linked against incompatible ASan runtimes.
 
      Test with i586-mingw32msvc under Wine (see below).
 
