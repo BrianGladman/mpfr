@@ -613,6 +613,7 @@ About undefined behavior:
   https://blog.regehr.org/archives/213
   https://blog.regehr.org/archives/226
   https://blog.regehr.org/archives/232
+  https://blog.regehr.org/archives/1520
   http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html
 
 Type punning, strict aliasing, and optimization:
