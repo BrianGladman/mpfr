@@ -774,13 +774,12 @@ static double double_zero = 0.0;
     if ((x) != __x)                                     \
       { action; }                                       \
   } while (0)
-# define WANT_LONGDOUBLE_VOLATILE 1
-#endif
 
-/* If we don't have a proper "volatile" then volatile is #defined to empty,
-   in this case call through an external function to stop the compiler
-   optimizing anything. */
-#ifdef WANT_LONGDOUBLE_VOLATILE
+/* Some compilers do not have a proper "volatile" and #define volatile
+   to empty (to avoid a build failure with programs using "volatile"),
+   i.e. "volatile" is just ignored and will not prevent optimizations
+   that could potentially break the IEEE rules. In this case, call an
+   external function, hoping that the compiler will not optimize. */
 # ifdef volatile
 __MPFR_DECLSPEC long double
   __gmpfr_longdouble_volatile (long double) MPFR_CONST_ATTR;
