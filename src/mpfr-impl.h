@@ -57,6 +57,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <stdlib.h>
 #include <limits.h>
+#include <float.h>  /* for FLT_RADIX, etc., tested below */
 
 
 /******************************************************
