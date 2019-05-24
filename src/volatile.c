@@ -24,6 +24,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <float.h> /* needed so that WANT_GMPFR_LONGDOUBLE_VOLATILE is correctly defined */
+
 #include "mpfr-impl.h"
 
 /* Only needed sometimes. */
