@@ -604,6 +604,11 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
 #  undef _MPFR_IEEE_FLOATS
 # endif
 # define _MPFR_IEEE_FLOATS 0
+# undef HAVE_LDOUBLE_IS_DOUBLE
+# undef HAVE_LDOUBLE_IEEE_EXT_LITTLE
+# undef HAVE_LDOUBLE_IEEE_EXT_BIG
+# undef HAVE_LDOUBLE_IEEE_QUAD_BIG
+# undef HAVE_LDOUBLE_IEEE_QUAD_LITTLE
 #endif
 
 #ifndef IEEE_DBL_MANT_DIG
