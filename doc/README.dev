@@ -447,7 +447,9 @@ Format of long double.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
 
 + MPFR_DISABLE_IEEE_FLOATS:
-                        Use generic 'double' code instead of IEEE specific one.
+                        Related to the native floating-point types (e.g.
+                        for conversion functions), use the generic code
+                        instead of IEEE 754 specific one.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
