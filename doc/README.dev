@@ -450,6 +450,9 @@ Format of long double.
                         Related to the native floating-point types (e.g.
                         for conversion functions), use the generic code
                         instead of IEEE 754 specific one.
+                        Note: This is mainly for developers in order to
+                        check the generic code, as machines without IEEE
+                        floating-point types are very uncommon nowadays.
 + MPFR_WANT_ASSERT:     Assertion level. See src/mpfr-impl.h for details.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
