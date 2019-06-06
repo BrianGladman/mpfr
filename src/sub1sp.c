@@ -130,7 +130,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           MPFR_SET_ZERO(a);
           MPFR_RET (0);
         }
-      else if (a0 > bp[0]) /* borrow: |c| > |b| */
+      else if (a0 >= MPFR_LIMB_HIGHBIT) /* borrow: |c| > |b| */
         {
           MPFR_SET_OPPOSITE_SIGN (a, b);
           a0 = -a0;
