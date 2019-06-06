@@ -120,6 +120,11 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
 
   if (bx == cx)
     {
+      MPFR_ASSERTD (bp[0] >= MPFR_LIMB_HIGHBIT);
+      MPFR_ASSERTD (cp[0] >= MPFR_LIMB_HIGHBIT);
+      /* Thus, mathematically, the signed difference is between
+         1 - MPFR_LIMB_HIGHBIT and MPFR_LIMB_HIGHBIT - 1, and the
+         most significant bit is equivalent to the usual sign bit. */
       a0 = bp[0] - cp[0];
       if (a0 == 0) /* result is zero */
         {
@@ -132,6 +137,12 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
         }
       else if (a0 >= MPFR_LIMB_HIGHBIT) /* borrow: |c| > |b| */
         {
+          /* Note: The test before r13506 was a0 > bp[0], which should be
+             easier to optimize than a0 >= MPFR_LIMB_HIGHBIT on processors
+             with condition flags, i.e. the test should be a no-op as the
+             flag should have been obtained form the subtraction above.
+             TODO: revert the test in the future, once compilers have
+             improved? */
           MPFR_SET_OPPOSITE_SIGN (a, b);
           a0 = -a0;
         }
