@@ -142,6 +142,7 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
              with condition flags, i.e. the test should be a no-op as the
              flag should have been obtained from the subtraction above.
              See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=30315>.
+             As of version 7, Clang knows to optimize the a0 > bp[0].
              TODO: revert the test in the future, once compilers have
              improved? */
           MPFR_SET_OPPOSITE_SIGN (a, b);
