@@ -1007,20 +1007,24 @@ dnl  MPFR_C_LONG_DOUBLE_FORMAT
 dnl  -------------------------
 dnl  Determine the format of a long double.
 dnl
-dnl  The object file is grepped, so as to work when cross compiling.  A
-dnl  start and end sequence is included to avoid false matches, and
+dnl  The object file is grepped, so as to work when cross-compiling.
+dnl  Start and end sequences are included to avoid false matches, and
 dnl  allowance is made for the desired data crossing an "od -b" line
 dnl  boundary.  The test number is a small integer so it should appear
-dnl  exactly, no rounding or truncation etc.
+dnl  exactly, without rounding or truncation, etc.
 dnl
 dnl  "od -b" is supported even by Unix V7, and the awk script used doesn't
 dnl  have functions or anything, so even an "old" awk should suffice.
 dnl
-dnl  The 10-byte IEEE extended format is generally padded to either 12 or 16
-dnl  bytes for alignment purposes.  The SVR4 i386 ABI is 12 bytes, or i386
-dnl  gcc -m128bit-long-double selects 16 bytes.  IA-64 is 16 bytes in LP64
-dnl  mode, or 12 bytes in ILP32 mode.  The first 10 bytes is the relevant
-dnl  part in all cases (big and little endian).
+dnl  The 10-byte IEEE extended format is generally padded with nul bytes
+dnl  to either 12 or 16 bytes for alignment purposes.  The SVR4 i386 ABI
+dnl  is 12 bytes, or i386 gcc -m128bit-long-double selects 16 bytes.
+dnl  IA-64 is 16 bytes in LP64 mode, or 12 bytes in ILP32 mode.  The
+dnl  relevant part in all cases (big and little endian) consists of the
+dnl  first 10 bytes.
+dnl
+dnl  Warning! This does not work with GCC's LTO (gcc -flto ...), where
+dnl  the generated object file does not contain the structure as is.
 dnl
 dnl  Enhancements:
 dnl
@@ -1030,7 +1034,7 @@ dnl
 dnl  Don't want to duplicate the double matching from GMP_C_DOUBLE_FORMAT,
 dnl  perhaps we should merge with that macro, to match data formats
 dnl  irrespective of the C type in question.  Or perhaps just let the code
-dnl  use DOUBLE macros when sizeof(double)==sizeof(long double).
+dnl  use DOUBLE macros when sizeof(double) == sizeof(long double).
 
 AC_DEFUN([MPFR_C_LONG_DOUBLE_FORMAT],
 [AC_REQUIRE([AC_PROG_CC])
