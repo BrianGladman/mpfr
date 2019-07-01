@@ -1023,7 +1023,7 @@ dnl  IA-64 is 16 bytes in LP64 mode, or 12 bytes in ILP32 mode.  The
 dnl  relevant part in all cases (big and little endian) consists of the
 dnl  first 10 bytes.
 dnl
-dnl  Warning! This does not work with GCC's LTO (gcc -flto ...), where
+dnl  Warning! This does not work with GCC's and clang's LTO (-flto), where
 dnl  the generated object file does not contain the structure as is.
 dnl
 dnl  Enhancements:
@@ -1351,7 +1351,7 @@ EOF
     unknown*)
       echo "cannot match anything, conftest.$OBJEXT contains" >&AS_MESSAGE_LOG_FD
       od -b conftest.$OBJEXT >&AS_MESSAGE_LOG_FD
-      if $FGREP -q .gnu.lto conftest.$OBJEXT; then
+      if $EGREP -q '\.gnu\.lto|ThinLTO' conftest.$OBJEXT; then
         mpfr_cv_c_long_double_format="unknown (recognition prevented by LTO)"
       fi
       ;;
