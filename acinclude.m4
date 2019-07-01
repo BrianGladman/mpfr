@@ -1351,6 +1351,9 @@ EOF
     unknown*)
       echo "cannot match anything, conftest.$OBJEXT contains" >&AS_MESSAGE_LOG_FD
       od -b conftest.$OBJEXT >&AS_MESSAGE_LOG_FD
+      if $FGREP -q .gnu.lto conftest.$OBJEXT; then
+        mpfr_cv_c_long_double_format="unknown (recognition prevented by LTO)"
+      fi
       ;;
     esac
   else

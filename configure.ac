@@ -62,6 +62,7 @@ dnl choose a compiler because of the CC and CFLAGS setup from gmp.h!
 AC_CANONICAL_HOST
 
 AC_PROG_EGREP
+AC_PROG_FGREP
 AC_PROG_SED
 
 dnl To use a separate config header.
@@ -362,13 +363,13 @@ if test -z "$GMP_CC$GMP_CFLAGS" ; then
      echo "MPFR_OPTION __GMP_CC" >> conftest.c
      $cpp $CPPFLAGS conftest.c 2> /dev/null > conftest.txt
      test $? -ne 0 && continue
-     GMP_CC=`$EGREP MPFR_OPTION conftest.txt | $SED -e 's/MPFR_OPTION //g;s/ *" *//g'`
+     GMP_CC=`$FGREP MPFR_OPTION conftest.txt | $SED -e 's/MPFR_OPTION //g;s/ *" *//g'`
      # Get CFLAGS
      echo "#include \"gmp.h\"" >  conftest.c
      echo "MPFR_OPTION __GMP_CFLAGS" >> conftest.c
      $cpp $CPPFLAGS conftest.c 2> /dev/null > conftest.txt
      test $? -ne 0 && continue
-     [GMP_CFLAGS=`$EGREP MPFR_OPTION conftest.txt | $SED -e 's/[ "]-pedantic[ "]/ /g;s/MPFR_OPTION //g;s/ *" *//g'`]
+     [GMP_CFLAGS=`$FGREP MPFR_OPTION conftest.txt | $SED -e 's/[ "]-pedantic[ "]/ /g;s/MPFR_OPTION //g;s/ *" *//g'`]
      break
    done
    rm -f conftest*
