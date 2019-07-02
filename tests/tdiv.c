@@ -23,7 +23,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check_equal (mpfr_srcptr a, mpfr_srcptr a2, char *s,
+check_equal (mpfr_srcptr a, mpfr_srcptr a2, const char *s,
              mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
 {
   if (SAME_VAL (a, a2))

@@ -308,7 +308,7 @@ basic_tests (void)
 #if __MPFR_STDC (199901L)
 
 static void
-test_fct (double (*f)(double), int (*g)(), char *s, mpfr_rnd_t r)
+test_fct (double (*f)(double), int (*g)(), const char *s, mpfr_rnd_t r)
 {
   double d, y;
   mpfr_t dd, yy;

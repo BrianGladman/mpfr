@@ -1474,7 +1474,7 @@ percent_n (void)
 
 struct clo
 {
-  char *fmt;
+  const char *fmt;
   int width, r, e;
 };
 

@@ -258,7 +258,7 @@ overflow0 (mpfr_exp_t emax)
   mpfr_exp_t old_emax;
   mpfr_t x, y1, y2;
   int neg, r, op;
-  static char *sop[4] = { "mul_2ui", "mul_2si", "div_2ui", "div_2si" };
+  static const char *sop[4] = { "mul_2ui", "mul_2si", "div_2ui", "div_2si" };
 
   old_emax = mpfr_get_emax ();
   set_emax (emax);

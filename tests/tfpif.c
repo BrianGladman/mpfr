@@ -30,8 +30,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
-  char *filenameCompressed = FILE_NAME_RW;
-  char *data = FILE_NAME_R;
+  const char *filenameCompressed = FILE_NAME_RW;
+  const char *data = FILE_NAME_R;
   int status;
   FILE *fh;
   mpfr_t x[9];
@@ -198,7 +198,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 static void
 check_bad (void)
 {
-  char *filenameCompressed = FILE_NAME_RW;
+  const char *filenameCompressed = FILE_NAME_RW;
   int status;
   FILE *fh;
   mpfr_t x;
@@ -340,7 +340,7 @@ check_bad (void)
 static void
 extra (void)
 {
-  char *data = FILE_NAME_R2;
+  const char *data = FILE_NAME_R2;
   mpfr_t x;
   FILE *fp;
   int ret;

@@ -285,7 +285,7 @@ check_special (void)
 static void
 check_more_special (void)
 {
-  char *str[NC] = { "NaN", "+Inf", "-Inf", "+0", "-0", "+1", "-1" };
+  const char *str[NC] = { "NaN", "+Inf", "-Inf", "+0", "-0", "+1", "-1" };
   int i, r, k[NS];
   mpfr_t c[NC], s[NS], sum;
   mpfr_ptr p[NS];
@@ -724,7 +724,7 @@ bug20131027 (void)
 {
   mpfr_t sum, t[4];
   mpfr_ptr p[4];
-  char *s[4] = {
+  const char *s[4] = {
     "0x1p1000",
     "-0x0.fffffffffffff80000000000000001p1000",
     "-0x1p947",
@@ -771,7 +771,11 @@ bug20150327 (void)
 {
   mpfr_t sum1, sum2, t[3];
   mpfr_ptr p[3];
-  char *s[3] = { "0.10000111110101000010101011100001", "1E-100", "0.1E95" };
+  const char *s[3] = {
+    "0.10000111110101000010101011100001",
+    "1E-100",
+    "0.1E95"
+  };
   int i, r;
 
   mpfr_inits2 (58, sum1, sum2, (mpfr_ptr) 0);
@@ -1268,7 +1272,7 @@ bug20160315 (void)
 {
   mpfr_t r, t[4];
   mpfr_ptr p[4];
-  char *s[4] = { "0.10E20", "0", "0.11E382", "0.10E826" };
+  const char *s[4] = { "0.10E20", "0", "0.11E382", "0.10E826" };
   int i;
 
   mpfr_init2 (r, 2);

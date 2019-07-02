@@ -526,7 +526,7 @@ reprod_abi (void)
 #define N 6
   /* Run this program with the MPFR_REPROD_ABI_OUTPUT environment variable
      set to get the array of strings. */
-  char *t[5 * N] = {
+  const char *t[5 * N] = {
     "1.0@-1",
     "3.0@-1",
     "7.0@-1",
