@@ -2150,7 +2150,21 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 struct mpfr_group_t {
   size_t     alloc;
   mp_limb_t *mant;
+#if MPFR_GROUP_STATIC_SIZE != 0
   mp_limb_t  tab[MPFR_GROUP_STATIC_SIZE];
+#else
+  /* In order to detect memory leaks when testing, MPFR_GROUP_STATIC_SIZE
+     can be set to 0, in which case tab will not be used. ISO C does not
+     support zero-length arrays[*], thus let's use a flexible array member
+     (which will be equivalent here). Note: this is new in C99, but this
+     is just used for testing.
+     [*] Zero-length arrays are a GNU extension:
+           https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+         and as such an extension is forbidden in ISO C, it triggers an
+         error with -Werror=pedantic.
+  */
+  mp_limb_t  tab[];
+#endif
 };
 
 #define MPFR_GROUP_DECL(g) struct mpfr_group_t g
