@@ -413,12 +413,14 @@ if test "$mpfr_cv_nanisnan" = "yes"; then
   AC_MSG_WARN([platform and/or document the behavior.])
 fi
 
-dnl Check if the chars '0' to '9' are consecutive values
+dnl Check if the chars '0' to '9', 'a' to 'z', and 'A' to 'Z' are
+dnl consecutive values.
+dnl The const is necessary with GCC's "-Wwrite-strings -Werror".
 AC_MSG_CHECKING([if charset has consecutive values])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-char *number = "0123456789";
-char *lower  = "abcdefghijklmnopqrstuvwxyz";
-char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char *number = "0123456789";
+const char *lower  = "abcdefghijklmnopqrstuvwxyz";
+const char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 ]],[[
  int i;
  unsigned char *p;
