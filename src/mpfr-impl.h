@@ -1357,7 +1357,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
 
-/* Theses macros help the compiler to determine if a test is
+/* These macros help the compiler to determine if a test is
    likely or unlikely. The !! is necessary in case x is larger
    than a long. */
 #if defined MPFR_DEBUG_PREDICTION && __MPFR_GNUC(3,0)

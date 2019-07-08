@@ -625,7 +625,7 @@ Type punning, strict aliasing, and optimization:
   https://blog.regehr.org/archives/959
 
 To allow MPFR to be built on some buggy compiler, try to follow
-theses rules:
+these rules:
 
    =====================================================================
 
@@ -881,7 +881,7 @@ to the new timeout value in seconds (or 0 to disable the timeout).
 ===========================================================================
 
 This feature is available only for gcc >= 3.0 and glibc >= 2.0.
-To achieve this, theses macros have been added:
+To achieve this, these macros have been added:
 
 +++ MPFR_LOG_VAR(y)
  Log a MPFR variable if requested (INTERNAL).
@@ -935,7 +935,7 @@ its goals too.
 ZivLoop Controller
 
 Ziv strategy is quite used in MPFR. In order to factorize the code, you
-could use theses macros:
+could use these macros:
 
 +++ MPFR_ZIV_DECL(_x)
  Declare a ZivLoop controller

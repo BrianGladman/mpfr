@@ -277,7 +277,7 @@ typedef enum {
 #endif
 
 /* If the user hasn't requested his/her preference
-   and if the intension of support by the compiler is C99
+   and if the intention of support by the compiler is C99
    and if the compiler is known to support the C99 feature
    then we can auto-detect the C99 support as OK.
    __GNUC__ is used to detect GNU-C, ICC & CLANG compilers.
@@ -819,7 +819,7 @@ __MPFR_DECLSPEC int mpfr_total_order (mpfr_srcptr, mpfr_srcptr);
    even if it produces faster and smaller code. */
 #ifndef MPFR_USE_NO_MACRO
 
-/* Inlining theses functions is both faster and smaller */
+/* Inlining these functions is both faster and smaller */
 #define mpfr_nan_p(_x)      ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
 #define mpfr_inf_p(_x)      ((_x)->_mpfr_exp == __MPFR_EXP_INF)
 #define mpfr_zero_p(_x)     ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
@@ -986,7 +986,7 @@ __MPFR_DECLSPEC int mpfr_total_order (mpfr_srcptr, mpfr_srcptr);
 
 #endif /* MPFR_USE_NO_MACRO */
 
-/* Theses are defined to be macros */
+/* These are defined to be macros */
 #define mpfr_init_set_si(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_si((x), (i), (rnd)) )
 #define mpfr_init_set_ui(x, i, rnd) \
