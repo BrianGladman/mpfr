@@ -364,9 +364,9 @@ To make a release (for the MPFR team):
   9) * For the release itself (not the release candidates):
      Create a web page for the MPFR release and add the documentation
      (for mpfr.html, use "makeinfo --html --no-split mpfr.texi" from
-     the doc directory). WARNING! Make sure that the .ps file has an
-     a4 papersize; there's a bug in texinfo(?):
-       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=874632
+     the doc directory). Make sure that both the .dvi and .ps files
+     have an a4 papersize (see technical information later about the
+     MPFR manual).
      Upload the tarballs and the signatures to the MPFR web server
      (via a svn working copy) and to InriaForge.
      Prepare the files for the GNU FTP site with the gnu-sigdir script
@@ -1102,10 +1102,28 @@ MPFR manual (mpfr.texi):
     info file. So, do not use additional space for .texi indentation.
     This also means that you need to care about the typography. Please
     read Section "Inserting Space" in the Texinfo manual.
-  * Follow the English typography, not the French one!
-  * Beware of the following texinfo bug:
-      https://savannah.gnu.org/bugs/?33329
-      https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=583558
+  * Follow the English typography (no space before punctuation marks,
+    double space after a period, etc.), not the French one.
+
+The MPFR manual in DVI/PS/PDF formats should have an a4 papersize, as
+declared in mpfr.texi (@afourpaper command). The DVI file format (.dvi)
+traditionally does not contain papersize information, which has two
+consequences:
+  * When viewing a .dvi file, one gets the papersize from global settings,
+    which may differ from the papersize declared in the mpfr.texi file.
+    In particular, a4 text on letter paper can be truncated, depending on
+    the margins.
+  * Since the .ps file is built from the .dvi file and makeinfo does not
+    provide the papersize information to the dvips command, the .ps file
+    can get a wrong papersize, depending on the settings on the machine
+    where this file is generated. Papersize information should be checked
+    before distributing the .ps file.
+Nowadays, .dvi files can contain papersize information via "specials",
+and texinfo.tex has been updated to include such information. However,
+the interpretation of such data is based on a common agreement between
+drivers rather on a standard. In short, the papersize issues should no
+longer appear, but this should be checked manually. The bug report:
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=874632
 
 ===========================================================================
 
