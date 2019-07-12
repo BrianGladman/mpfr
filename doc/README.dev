@@ -322,6 +322,9 @@ To make a release (for the MPFR team):
        * a patched autoconf:
      https://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
 
+     Check whether some functions could be declared as pure, const, etc.
+     with GCC, using -Wsuggest-attribute=... options.
+
      Check that there are no abnormal regressions in the timings (both for
      100, 1000, 10000 digits, https://www.mpfr.org/mpfr-current/timings.html,
      and for small precision, using the mbench program, see mpfr/mbench).
