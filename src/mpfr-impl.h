@@ -163,9 +163,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-# define MPFR_CONST_ATTR    __attribute__ ((const))
+# define MPFR_CONST_FUNCTION_ATTR   __attribute__ ((const))
 #else
-# define MPFR_CONST_ATTR
+# define MPFR_CONST_FUNCTION_ATTR
 #endif
 
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
@@ -787,7 +787,7 @@ static double double_zero = 0.0;
    external function, hoping that the compiler will not optimize. */
 # ifdef volatile
 __MPFR_DECLSPEC long double
-  __gmpfr_longdouble_volatile (long double) MPFR_CONST_ATTR;
+  __gmpfr_longdouble_volatile (long double) MPFR_CONST_FUNCTION_ATTR;
 #  define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
 #  define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
 # else
