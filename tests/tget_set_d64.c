@@ -484,13 +484,20 @@ noncanonical (void)
 {
   /* The code below assumes BID. */
 #ifndef DPD_FORMAT
+  /* The volatile below avoids _Decimal64 constant propagation, which is
+     buggy in various GCC versions (failure with gcc (Debian 20190719-1)
+     10.0.0 20190718 (experimental) [trunk revision 273586], but not
+     with previous GCC versions, though the are also buggy).
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91226
+  */
+  volatile _Decimal64 d = 9999999999999999.0dd;
   union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 
   MPFR_ASSERTN (sizeof (x) == 8);
   MPFR_ASSERTN (sizeof (y) == 8);
   /* test for non-canonical encoding */
-  y.d64 = 9999999999999999.0dd;
+  y.d64 = d;
   memcpy (&x, &y, 8);
   /* if BID, we have sig=0, exp=1735, manh=231154, manl=1874919423 */
   if (x.s.sig == 0 && x.s.exp == 1735 && x.s.manh == 231154 &&
@@ -501,8 +508,6 @@ noncanonical (void)
       x.s.manl += 1; /* then the significand equals 10^16 */
       memcpy (&y, &x, 8);
       mpfr_set_decimal64 (z, y.d64, MPFR_RNDN);
-      /* Fails with r13530 and gcc (Debian 20190719-1) 10.0.0 20190718
-         (experimental) [trunk revision 273586] */
       if (MPFR_NOTZERO (z) || MPFR_IS_NEG (z))
         {
           int i;
