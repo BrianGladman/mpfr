@@ -136,6 +136,11 @@ decimal64_to_string (char *s, _Decimal64 d)
   /* now convert BID or DPD to string */
   y.d64 = d;
   x.d = y.d;
+  MPFR_LOG_MSG (("x = { .sig = %u, .exp = %u, "
+                 ".manh = 0x%05lX = %lu, .manl = 0x%08lX = %lu }\n",
+                 (unsigned int) x.s.sig, (unsigned int) x.s.exp,
+                 (unsigned long) x.s.manh, (unsigned long) x.s.manh,
+                 (unsigned long) x.s.manl, (unsigned long) x.s.manl));
   Gh = x.s.exp >> 6;
   if (Gh == 31)
     {
