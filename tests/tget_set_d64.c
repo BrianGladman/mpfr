@@ -480,7 +480,7 @@ powers_of_10 (void)
 }
 
 static void
-coverage (void)
+noncanonical (void)
 {
   /* The code below assumes BID. */
 #ifndef DPD_FORMAT
@@ -499,7 +499,14 @@ coverage (void)
       x.s.manl += 1; /* then the significand equals 10^16 */
       y.d = x.d;
       mpfr_set_decimal64 (z, y.d64, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z) == 0);
+      /* Fails with r13530 and gcc (Debian 20190719-1) 10.0.0 20190718
+         (experimental) [trunk revision 273586] */
+      if (MPFR_NOTZERO (z) || MPFR_IS_NEG (z))
+        {
+          printf ("Error in noncanonical. Expected +0, got:\n");
+          mpfr_dump (z);
+          exit (1);
+        }
       mpfr_clear (z);
     }
 #endif
@@ -558,7 +565,7 @@ main (int argc, char *argv[])
 #if !defined(MPFR_ERRDIVZERO)
   check_random_bytes ();
 #endif
-  coverage ();
+  noncanonical ();
   check_misc ();
   check_random ();
   check_native ();
