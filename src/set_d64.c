@@ -133,6 +133,17 @@ decimal64_to_string (char *s, _Decimal64 d)
   mp_size_t sn;
 #endif
 
+  /* Memory representation of the _Decimal64 argument. */
+  MPFR_LOG_MSG (("d = { %02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X }\n",
+                 ((unsigned char *) &d)[0],
+                 ((unsigned char *) &d)[1],
+                 ((unsigned char *) &d)[2],
+                 ((unsigned char *) &d)[3],
+                 ((unsigned char *) &d)[4],
+                 ((unsigned char *) &d)[5],
+                 ((unsigned char *) &d)[6],
+                 ((unsigned char *) &d)[7]));
+
   /* now convert BID or DPD to string */
   y.d64 = d;
   x.d = y.d;
