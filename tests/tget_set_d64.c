@@ -505,7 +505,11 @@ noncanonical (void)
          (experimental) [trunk revision 273586] */
       if (MPFR_NOTZERO (z) || MPFR_IS_NEG (z))
         {
-          printf ("Error in noncanonical. Expected +0, got:\n");
+          int i;
+          printf ("Error in noncanonical on");
+          for (i = 0; i < 8; i++)
+            printf (" %02X", ((unsigned char *)&y)[i]);
+          printf ("\nExpected +0, got:\n");
           mpfr_dump (z);
           exit (1);
         }
