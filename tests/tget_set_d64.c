@@ -487,9 +487,11 @@ noncanonical (void)
   union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
 
+  MPFR_ASSERTN (sizeof (x) == 8);
+  MPFR_ASSERTN (sizeof (y) == 8);
   /* test for non-canonical encoding */
   y.d64 = 9999999999999999.0dd;
-  x.d = y.d;
+  memcpy (&x, &y, 8);
   /* if BID, we have sig=0, exp=1735, manh=231154, manl=1874919423 */
   if (x.s.sig == 0 && x.s.exp == 1735 && x.s.manh == 231154 &&
       x.s.manl == 1874919423)
@@ -497,7 +499,7 @@ noncanonical (void)
       mpfr_t z;
       mpfr_init2 (z, 54); /* 54 bits ensure z is exact, since 10^16 < 2^54 */
       x.s.manl += 1; /* then the significand equals 10^16 */
-      y.d = x.d;
+      memcpy (&y, &x, 8);
       mpfr_set_decimal64 (z, y.d64, MPFR_RNDN);
       /* Fails with r13530 and gcc (Debian 20190719-1) 10.0.0 20190718
          (experimental) [trunk revision 273586] */
@@ -509,6 +511,8 @@ noncanonical (void)
         }
       mpfr_clear (z);
     }
+  else
+    printf ("Warning! Unexpected value of x in noncanonical.\n");
 #endif
 }
 
