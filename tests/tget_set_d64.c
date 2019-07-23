@@ -485,11 +485,12 @@ noncanonical (void)
   /* The code below assumes BID. */
 #ifndef DPD_FORMAT
   /* The volatile below avoids _Decimal64 constant propagation, which is
-     buggy for non-canonical encoding in various GCC versions: failure
-     with gcc (Debian 20190719-1) 10.0.0 20190718 (experimental)
-     [trunk revision 273586]; the MPFR test was not failing with previous
-     GCC versions, but GCC versions 5 to 9 are also affected on the simple
-     testcase at: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91226
+     buggy for non-canonical encoding in various GCC versions on the x86 and
+     x86_64 targets: failure with gcc (Debian 20190719-1) 10.0.0 20190718
+     (experimental) [trunk revision 273586]; the MPFR test was not failing
+     with previous GCC versions, but GCC versions 5 to 9 are also affected
+     on the simple testcase at:
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91226
   */
   volatile _Decimal64 d = 9999999999999999.0dd;
   union mpfr_ieee_double_extract x;
