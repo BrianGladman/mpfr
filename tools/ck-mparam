@@ -14,7 +14,10 @@
 # PARTICULAR PURPOSE.
 
 # Note: This script must be run from a writable directory (an executable
-# check_mparam will be created in it).
+# check_mparam will be created in it). Moreover, the source tree that is
+# checked is the one that contains this script, not the one corresponding
+# to the current working directory (the rule for the other scripts in
+# the tools directory may be different).
 
 set -e
 
