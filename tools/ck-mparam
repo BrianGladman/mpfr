@@ -13,13 +13,13 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# Note: This script must be run from a writable directory (an executable
+# check_mparam will be created in it).
+
 set -e
 
-# ck-mparam can be run from the tools directory
-dir=`pwd`
-[ -d src ] || [ "`basename \"$dir\"`" != tools ] || cd ..
-
-files=`find src/*/ -name mparam.h`
+dir=$(dirname "$0")
+files=$(cd "$dir/.." && find src/*/ -name mparam.h)
 err=0
 
 for i in $files
@@ -30,7 +30,7 @@ do
   #  err=1
   #fi
   rm -f check_mparam
-  ${CC:-cc} "-DMPARAM=\"../$i\"" -o check_mparam tools/check_mparam.c
+  ${CC:-cc} "-DMPARAM=\"../$i\"" -o check_mparam "$dir"/check_mparam.c
   ./check_mparam
 done
 
