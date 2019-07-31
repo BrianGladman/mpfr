@@ -19,7 +19,7 @@ EXTRA_DIST = round_raw_generic.c jyn_asympt.c				\
 include_HEADERS = mpfr.h mpf2mpfr.h
 nodist_include_HEADERS =
 
-BUILT_SOURCES = mparam.h
+BUILT_SOURCES = get_patches.c mparam.h
 
 lib_LTLIBRARIES = libmpfr.la
 
@@ -53,7 +53,7 @@ int_ceil_log2.c isqrt.c strtofr.c pow_z.c logging.c mulders.c get_f.c	\
 round_p.c erfc.c atan2.c subnormal.c const_catalan.c root.c		\
 gen_inverse.h sec.c csc.c cot.c eint.c sech.c csch.c coth.c		\
 round_near_x.c constant.c abort_prec_max.c stack_interface.c lngamma.c	\
-zeta_ui.c set_d64.c get_d64.c jn.c yn.c rem1.c get_patches.c add_d.c	\
+zeta_ui.c set_d64.c get_d64.c jn.c yn.c rem1.c add_d.c			\
 sub_d.c d_sub.c mul_d.c div_d.c d_div.c li2.c rec_sqrt.c min_prec.c	\
 buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
 scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
@@ -62,6 +62,8 @@ random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
 mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c invert_limb.h 	\
 invsqrt_limb.h beta.c odd_p.c get_q.c pool.c total_order.c set_d128.c   \
 get_d128.c nbits_ulong.c
+
+nodist_libmpfr_la_SOURCES = $(BUILT_SOURCES)
 
 libmpfr_la_LIBADD = @LIBOBJS@
 
@@ -88,13 +90,8 @@ libmpfr_la_LIBADD = @LIBOBJS@
 #        4.0.x    6:x:0
 libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:0
 
-# Important note: If for some reason, srcdir is read-only at build time
-# (and you use objdir != srcdir), then you need to rebuild get_patches.c
-# (with "make get_patches.c") just after patching the MPFR source. This
-# should not be a problem in practice, in particular because "make dist"
-# automatically rebuilds get_patches.c before generating the archives.
-$(srcdir)/get_patches.c: $(top_srcdir)/PATCHES $(top_srcdir)/tools/get_patches.sh
-	(cd $(top_srcdir) && ./tools/get_patches.sh) > $@ || rm -f $@
+get_patches.c: $(top_srcdir)/tools/get_patches.sh $(top_srcdir)/PATCHES
+	$< > $@ || rm -f $@
 
 if MINI_GMP
 
@@ -163,11 +160,6 @@ check-exported-symbols: $(LTLIBRARIES)
 	  fi; \
 	fi
 
-# Do not add get_patches.c to CLEANFILES so that this file doesn't
-# need to be (re)built as long as no patches are applied. Anyway the
-# update of this file should be regarded as part of the patch process,
-# and "make clean" shouldn't remove it, just like it doesn't remove
-# what has been changed by "patch".
-CLEANFILES = $(GMPC) $(GMPI)
+CLEANFILES = get_patches.c $(GMPC) $(GMPI)
 
 .PHONY: check-gmp-symbols check-exported-symbols
