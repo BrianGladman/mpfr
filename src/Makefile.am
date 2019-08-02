@@ -90,8 +90,10 @@ libmpfr_la_LIBADD = @LIBOBJS@
 #        4.0.x    6:x:0
 libmpfr_la_LDFLAGS = $(MPFR_LDFLAGS) $(LIBMPFR_LDFLAGS) -version-info 6:0:0
 
-get_patches.c: $(top_srcdir)/tools/get_patches.sh $(top_srcdir)/PATCHES
-	$< > $@ || rm -f $@
+GET_PATCHES_SH = $(top_srcdir)/tools/get_patches.sh
+PATCHES = $(top_srcdir)/PATCHES
+get_patches.c: $(GET_PATCHES_SH) $(PATCHES)
+	$(GET_PATCHES_SH) $(PATCHES) > $@ || { rm -f $@; exit 1; }
 
 if MINI_GMP
 
