@@ -9,6 +9,12 @@
 # PARTICULAR PURPOSE.
 
 
+# Since we do not require GNU "make", let's select the POSIX behavior to
+# uniformize the behavior a bit more with various "make" implementations
+# and ease maintenance. This target should be removed only if one day,
+# we need to require GNU "make".
+.POSIX:
+
 EXTRA_DIST = round_raw_generic.c jyn_asympt.c				\
 	add1sp1_extracted.c mul_1_extracted.c				\
 	amd/mparam.h arm/mparam.h					\

@@ -9,6 +9,12 @@
 # PARTICULAR PURPOSE.
 
 
+# Since we do not require GNU "make", let's select the POSIX behavior to
+# uniformize the behavior a bit more with various "make" implementations
+# and ease maintenance. This target should be removed only if one day,
+# we need to require GNU "make".
+.POSIX:
+
 dist_doc_DATA = FAQ.html
 
 info_TEXINFOS = mpfr.texi
