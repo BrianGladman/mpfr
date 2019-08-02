@@ -39,5 +39,6 @@ mpfr_get_patches (void)
 {
 EOF
 
-echo "  return \"$patches\";"
+# $patches is written as a list of words separated by a space character.
+echo '  return "'$patches'";'
 echo '}'
