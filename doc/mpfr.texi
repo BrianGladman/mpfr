@@ -360,6 +360,7 @@ Here are the steps needed to install the library on Unix systems
 (more details are provided in the @file{INSTALL} file):
 
 @enumerate
+
 @item
 To build MPFR, you first have to install GNU MP (version 5.0.0 or higher)
 on your computer.
@@ -410,6 +411,7 @@ to the directory @file{/usr/local/share/info}, and some other documentation
 files to the directory @file{/usr/local/share/doc/mpfr} (or if you passed the
 @samp{--prefix} option to @file{configure}, using the prefix directory given
 as argument to @samp{--prefix} instead of @file{/usr/local}).
+
 @end enumerate
 
 @section Other `make' Targets
@@ -748,16 +750,23 @@ and puts the result back in @var{x}.
 @section Rounding
 
 The following rounding modes are supported:
+
 @itemize @bullet
+
 @item @code{MPFR_RNDN}: round to nearest
       (roundTiesToEven in IEEE@tie{}754-2008),
+
 @item @code{MPFR_RNDZ}: round toward zero
       (roundTowardZero in IEEE@tie{}754-2008),
+
 @item @code{MPFR_RNDU}: round toward plus infinity
       (roundTowardPositive in IEEE@tie{}754-2008),
+
 @item @code{MPFR_RNDD}: round toward minus infinity
       (roundTowardNegative in IEEE@tie{}754-2008),
+
 @item @code{MPFR_RNDA}: round away from zero.
+
 @item @code{MPFR_RNDF}: faithful rounding. This feature is currently
 experimental. Specific support for this rounding mode has been added
 to some functions, such as the basic operations (addition, subtraction,
@@ -767,6 +776,7 @@ they do not need modification in their code; even though a correct behavior
 is not guaranteed yet (corrections were done when failures occurred in the
 test suite, but almost nothing has been checked manually), failures should
 be regarded as bugs and reported, so that they can be fixed.
+
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE@tie{}754 standard: in
