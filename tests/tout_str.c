@@ -152,15 +152,7 @@ main (int argc, char *argv[])
   /* random tests */
   for (i = 0; i < N; i++)
     {
-      do
-        {
-          d = DBL_RAND ();
-        }
-#ifdef HAVE_DENORMS
-      while (0);
-#else
-      while (ABS(d) < DBL_MIN);
-#endif
+      d = DBL_RAND ();
       rnd = RND_RAND ();
       p = 2 + randlimb () % 61;
       check (d, rnd, p);
