@@ -58,7 +58,8 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = fopen (filenameCompressed, "w");
   if (fh == NULL)
     {
-      printf ("Failed to open for writing %s\n", filenameCompressed);
+      fprintf (stderr, "Failed to open \"%s\" for writing\n",
+               filenameCompressed);
       exit (1);
     }
 
@@ -86,7 +87,8 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
-      printf ("Failed to open for reading %s\n", filenameCompressed);
+      fprintf (stderr, "Failed to open \"%s\" for reading\n",
+               filenameCompressed);
       exit (1);
     }
 
@@ -141,7 +143,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = src_fopen (data, "r");
   if (fh == NULL)
     {
-      printf ("Failed to open for reading %s in srcdir\n", data);
+      fprintf (stderr, "Failed to open \"%s\" in srcdir for reading\n", data);
       exit (1);
     }
 
@@ -231,8 +233,8 @@ check_bad (void)
   fh = fopen (filenameCompressed, "w+");
   if (fh == NULL)
     {
-      printf ("Failed to open for reading/writing %s, exiting...\n",
-            filenameCompressed);
+      fprintf (stderr, "Failed to open \"%s\" for reading/writing\n",
+              filenameCompressed);
       fclose (fh);
       remove (filenameCompressed);
       exit (1);
@@ -319,8 +321,8 @@ check_bad (void)
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
-      printf ("Failed to open for reading %s, exiting...\n",
-              filenameCompressed);
+      fprintf (stderr, "Failed to open \"%s\" for reading\n",
+               filenameCompressed);
       exit (1);
     }
 
@@ -350,7 +352,7 @@ extra (void)
   fp = src_fopen (data, "r");
   if (fp == NULL)
     {
-      printf ("Failed to open for reading %s in srcdir, exiting...\n", data);
+      fprintf (stderr, "Failed to open \"%s\" in srcdir for reading\n", data);
       exit (1);
     }
   ret = mpfr_fpif_import (x, fp);
