@@ -27,6 +27,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FILE_NAME_R2 "tfpif_r2.dat" /* fixed file name (read only) with a
                                        precision > MPFR_PREC_MAX */
 
+/* Note: The perror below must be called just after the failing function,
+   thus before fprintf (otherwise one could get an error associated with
+   fprintf). */
+
 static void
 doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
