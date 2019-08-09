@@ -100,31 +100,29 @@ special (void)
 int
 main (int argc, char *argv[])
 {
+  const char *fname = "tout_str_out.txt";
   int i, N=10000, p;
   mpfr_rnd_t rnd;
   double d;
 
   tests_start_mpfr ();
 
-  /* with no argument: prints to /dev/null,
+  /* with no argument: prints to a temporary file,
      tout_str N: prints N tests to stdout */
   if (argc == 1)
     {
-      fout = fopen ("/dev/null", "w");
-      /* If we failed to open this device, try with a dummy file */
+      fout = fopen (fname, "w");
       if (fout == NULL)
-        fout = fopen ("tout_str_out.txt", "w");
+        {
+          perror (NULL);
+          fprintf (stderr, "Failed to open \"%s\" for writing\n", fname);
+          exit (1);
+        }
     }
   else
     {
       fout = stdout;
       N = atoi (argv[1]);
-    }
-
-  if (fout == NULL)
-    {
-      printf ("Can't open /dev/null or stdout\n");
-      exit (1);
     }
 
   special ();
@@ -163,7 +161,16 @@ main (int argc, char *argv[])
       check (d, rnd, p);
     }
 
-  fclose (fout);
+  if (fout != stdout)
+    {
+      if (fclose (fout) != 0)
+        {
+          perror (NULL);
+          fprintf (stderr, "Failed to close \"%s\"\n", fname);
+          exit (1);
+        }
+      remove (fname);
+    }
 
   tests_end_mpfr ();
   return 0;
