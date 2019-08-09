@@ -35,7 +35,7 @@ check4 (double d, mpfr_rnd_t rnd, int base, int prec)
 
   mpfr_init2 (x, prec);
   mpfr_set_d (x, d, rnd);
-  fprintf (fout, "%1.19e base %d rnd %d:\n ", d, base, rnd);
+  fprintf (fout, "%1.19e base %d %s:\n ", d, base, mpfr_print_rnd_mode (rnd));
   mpfr_out_str (fout, base, (base == 2) ? prec : 0, x, rnd);
   fputc ('\n', fout);
   mpfr_clear (x);
