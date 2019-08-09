@@ -51,6 +51,7 @@ special (void)
 
   mpfr_set_nan (x);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  fputc ('\n', fout);
   if (n != 5)
     {
       printf ("Error: mpfr_out_str (file, 10, 0, NaN, MPFR_RNDN) wrote %u "
@@ -60,6 +61,7 @@ special (void)
 
   mpfr_set_inf (x, 1);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  fputc ('\n', fout);
   if (n != 5)
     {
       printf ("Error: mpfr_out_str (file, 10, 0, +Inf, MPFR_RNDN) wrote %u "
@@ -69,6 +71,7 @@ special (void)
 
   mpfr_set_inf (x, -1);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  fputc ('\n', fout);
   if (n != 6)
     {
       printf ("Error: mpfr_out_str (file, 10, 0, -Inf, MPFR_RNDN) wrote %u "
@@ -78,6 +81,7 @@ special (void)
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  fputc ('\n', fout);
   if (n != 1)
     {
       printf ("Error: mpfr_out_str (file, 10, 0, +0, MPFR_RNDN) wrote %u "
@@ -87,6 +91,7 @@ special (void)
 
   mpfr_neg (x, x, MPFR_RNDN);
   n = mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  fputc ('\n', fout);
   if (n != 2)
     {
       printf ("Error: mpfr_out_str (file, 10, 0, -0, MPFR_RNDN) wrote %u "
