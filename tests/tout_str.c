@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   check (7.02293374921793516813e-84, MPFR_RNDN, 10);
 
   /* random tests */
-  for (i=0;i<N;i++)
+  for (i = 0; i < N; i++)
     {
       do
         {
