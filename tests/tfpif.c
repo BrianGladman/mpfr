@@ -58,6 +58,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = fopen (filenameCompressed, "w");
   if (fh == NULL)
     {
+      perror ("doit");
       fprintf (stderr, "Failed to open \"%s\" for writing\n",
                filenameCompressed);
       exit (1);
@@ -81,12 +82,18 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
           MPFR_CHANGE_SIGN (x[i]);
       }
 
-  fclose (fh);
+  if (fclose (fh) != 0)
+    {
+      perror ("doit");
+      fprintf (stderr, "Failed to close \"%s\"\n", filenameCompressed);
+      exit (1);
+    }
 
   /* we then read back FILE_NAME_RW and check we get the same numbers x[i] */
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
+      perror ("doit");
       fprintf (stderr, "Failed to open \"%s\" for reading\n",
                filenameCompressed);
       exit (1);
@@ -143,6 +150,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = src_fopen (data, "r");
   if (fh == NULL)
     {
+      perror ("doit");
       fprintf (stderr, "Failed to open \"%s\" in srcdir for reading\n", data);
       exit (1);
     }
@@ -230,10 +238,11 @@ check_bad (void)
       exit(1);
     }
 
-  fh = fopen (filenameCompressed, "w+");
+  fh = fopen (filenameCompressed, "w");
   if (fh == NULL)
     {
-      fprintf (stderr, "Failed to open \"%s\" for reading/writing\n",
+      perror ("check_bad");
+      fprintf (stderr, "Failed to open \"%s\" for writing\n",
               filenameCompressed);
       fclose (fh);
       remove (filenameCompressed);
@@ -315,12 +324,19 @@ check_bad (void)
         mpfr_set_emax (emax);
     }
 
-  fclose (fh);
+  if (fclose (fh) != 0)
+    {
+      perror ("check_bad");
+      fprintf (stderr, "Failed to close \"%s\"\n", filenameCompressed);
+      exit (1);
+    }
+
   mpfr_clear (x);
 
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
+      perror ("check_bad");
       fprintf (stderr, "Failed to open \"%s\" for reading\n",
                filenameCompressed);
       exit (1);
@@ -352,6 +368,7 @@ extra (void)
   fp = src_fopen (data, "r");
   if (fp == NULL)
     {
+      perror ("extra");
       fprintf (stderr, "Failed to open \"%s\" in srcdir for reading\n", data);
       exit (1);
     }
