@@ -233,13 +233,13 @@ check_bad (void)
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail with a NULL file\n");
-      exit(1);
+      exit (1);
     }
   status = mpfr_fpif_import (x, NULL);
   if (status == 0)
     {
       printf ("mpfr_fpif_import did not fail with a NULL file\n");
-      exit(1);
+      exit (1);
     }
 
   fh = fopen (filenameCompressed, "w");
@@ -258,7 +258,7 @@ check_bad (void)
       printf ("mpfr_fpif_import did not fail on a empty file\n");
       fclose (fh);
       remove (filenameCompressed);
-      exit(1);
+      exit (1);
     }
 
   for (i = 0; i < BAD; i++)
@@ -281,7 +281,7 @@ check_bad (void)
           printf ("Write error on the test file\n");
           fclose (fh);
           remove (filenameCompressed);
-          exit(1);
+          exit (1);
         }
       rewind (fh);
       status = mpfr_fpif_import (x, fh);
@@ -322,7 +322,7 @@ check_bad (void)
             }
           fclose (fh);
           remove (filenameCompressed);
-          exit(1);
+          exit (1);
         }
       if (i == 9)
         mpfr_set_emax (emax);
@@ -351,7 +351,7 @@ check_bad (void)
   if (status == 0)
     {
       printf ("mpfr_fpif_export did not fail on a read only stream\n");
-      exit(1);
+      exit (1);
     }
   fclose (fh);
   remove (filenameCompressed);
