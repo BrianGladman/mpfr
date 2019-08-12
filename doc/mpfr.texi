@@ -2525,6 +2525,8 @@ current locale) at the right of the
 first digit and a trailing exponent in base 10, in the form @samp{eNNN},
 are printed. If @var{base} is greater than 10, @samp{@@} will be used
 instead of @samp{e} as exponent delimiter.
+@c [FIXME] If the exponent is 0, it is not written. Fix the code or the
+@c documentation? Moreover, "NNN" is ambiguous.
 
 Return the number of characters written, or if an error occurred, return 0.
 @end deftypefun
