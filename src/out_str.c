@@ -76,7 +76,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   e--;  /* due to the leading digit */
 
   /* outputs exponent */
-  if (e)
+  if (e != 0)
     {
       int r;
 
