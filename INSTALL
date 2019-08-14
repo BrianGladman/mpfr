@@ -605,26 +605,45 @@ a. Using MinGW
     MPFR formatted output functions based on ISO-compliant printf(), you
     need to compile GMP (not MPFR) with CC="gcc -D__USE_MINGW_ANSI_STDIO"
     (since the standard printf modifiers %e, %Ld and %td are passed to GMP).
-    Not doing so may result in failures of some of the printf-related tests.
-    For instance, the following error on some Windows machine has been
-    reported:
 
-      https://sympa.inria.fr/sympa/arc/mpfr/2016-02/msg00053.html
+    To avoid failures of some of the printf-related tests, MPFR needs to
+    be compiled with the same __USE_MINGW_ANSI_STDIO as with GMP, i.e.
+    this macro should be defined for both or undefined for both; this
+    should be the case by default, unless CC or CFLAGS has been redefined.
+    For instance, if __USE_MINGW_ANSI_STDIO is defined in GMP but not in
+    MPFR, the following error may occur:
 
       Error in mpfr_vsprintf (s, "%e", ...);
       expected: "-1.250000e+000"
       got:      "-1.250000e+00"
       FAIL tsprintf.exe (exit status: 1)
 
-    The cause is that here the C functions vsnprintf and vsprintf used
-    internally in GMP do not produce the same output:
+    and in the opposite case:
+
+      Error in mpfr_vsprintf (s, "%e", ...);
+      expected: "-1.250000e+00"
+      got:      "-1.250000e+000"
+      FAIL tsprintf.exe (exit status: 1)
+
+    Note with old GMP versions: Other issues could arise due to the fact
+    that the C functions vsnprintf and vsprintf both used internally in
+    old GMP versions do not produce the same output:
 
       https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00045.html
       https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00051.html
       https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00053.html
 
-    Building MPFR with -D__USE_MINGW_ANSI_STDIO is at best useless,
-    and at worst counterproductive.
+    If __USE_MINGW_ANSI_STDIO has not been defined when building GMP,
+    then the length modifiers j, L and t are not supported with the GMP
+    formatted output functions, and as a consequence, also with MPFR.
+    This is automatically detected by the configure script, except when
+    cross-compiling (e.g. under Linux), in which case some macros need
+    to be defined explicitly, e.g. with
+
+      "CPPFLAGS=-DNPRINTF_J -DNPRINTF_L -DNPRINTF_T"
+
+    in order to avoid potential issues with the MPFR library and failures
+    in the test suite (the corresponding tests are disabled explicitly).
 
 b. Using Cygwin
 ===============
