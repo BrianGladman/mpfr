@@ -623,8 +623,8 @@ a. Using MinGW
       https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00051.html
       https://sympa.inria.fr/sympa/arc/mpfr/2016-03/msg00053.html
 
-    Building MPFR with -D__USE_MINGW_ANSI_STDIO is currently useless except
-    for some error messages in the test suite.
+    Building MPFR with -D__USE_MINGW_ANSI_STDIO is at best useless,
+    and at worst counterproductive.
 
 b. Using Cygwin
 ===============
