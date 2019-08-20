@@ -1449,19 +1449,19 @@ data. The subject sequence is defined as the longest initial subsequence of
 the input string, starting with the first non-whitespace character, that is of
 the expected form.
 
-The form of numeric data is a non-empty sequence of significand digits with an
-optional decimal point, and an optional exponent consisting of an exponent
-prefix followed by an optional sign and a non-empty sequence of decimal
-digits. A significand digit is either a decimal digit or a Latin letter (62
-possible characters), with @samp{A} = 10, @samp{B} = 11, @dots{}, @samp{Z} =
-35; case is ignored in bases less or equal to 36, in bases larger than 36,
-@samp{a} = 36, @samp{b} = 37, @dots{}, @samp{z} = 61.
-The value of a
-significand digit must be strictly less than the base.  The decimal point can
-be either the one defined by the current locale or the period (the first one
-is accepted for consistency with the C standard and the practice, the second
-one is accepted to allow the programmer to provide MPFR numbers from strings
-in a way that does not depend on the current locale).
+The form of numeric data is a non-empty sequence of significand digits with
+an optional decimal-point character, and an optional exponent consisting of
+an exponent prefix followed by an optional sign and a non-empty sequence of
+decimal digits. A significand digit is either a decimal digit or a Latin
+letter (62 possible characters), with @samp{A} = 10, @samp{B} = 11, @dots{},
+@samp{Z} = 35; case is ignored in bases less or equal to 36, in bases larger
+than 36, @samp{a} = 36, @samp{b} = 37, @dots{}, @samp{z} = 61.
+The value of a significand digit must be strictly less than the base. The
+decimal-point character can be either the one defined by the current locale
+or the period (the first one is accepted for consistency with the C standard
+and the practice, the second one is accepted to allow the programmer to
+provide MPFR numbers from strings in a way that does not depend on the
+current locale).
 The exponent prefix can be @samp{e} or @samp{E} for bases up to 10, or
 @samp{@@} in any base; it indicates a multiplication by a power of the
 base. In bases 2 and 16, the exponent prefix can also be @samp{p} or @samp{P},
@@ -2527,10 +2527,10 @@ If the input is NaN, +Inf, @minus{}Inf, +0, or @minus{}0, then
 @samp{-0} is output, respectively.
 
 For the regular numbers, the format of the output is the following: the
-most significant digit, then a decimal point (defined by the current
-locale), then the remaining @var{n}@minus{}1 digits (including trailing
-zeros), then the exponent prefix, then the exponent in decimal. The
-exponent prefix is @samp{e} when @var{base} is less or equal to 10,
+most significant digit, then a decimal-point character (defined by the
+current locale), then the remaining @var{n}@minus{}1 digits (including
+trailing zeros), then the exponent prefix, then the exponent in decimal.
+The exponent prefix is @samp{e} when @var{base} is less or equal to 10,
 @samp{@@} when @var{base} is greater than 10. @xref{mpfr_get_str} for
 information on the digits depending on the base.
 @c The term "exponent prefix" is used in the mpfr_strtofr description.
@@ -3667,8 +3667,8 @@ increase the precision of their variables.
 for arguments of arbitrary-precision floating-point type (@code{mpf_t}, which
 @file{mpf2mpfr.h} redefines as @code{mpfr_t}).
 @item The output of @code{mpf_out_str} has a format slightly different from
-the one of @code{mpfr_out_str} (concerning the position of the decimal point,
-trailing zeros and the output of the value 0).
+the one of @code{mpfr_out_str} (concerning the position of the decimal-point
+character, trailing zeros and the output of the value 0).
 @end itemize
 
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
