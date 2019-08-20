@@ -39,7 +39,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   char *s, *s0;
   size_t l;
   mpfr_exp_t e;
-  int err;
+  int err, r;
 
   MPFR_ASSERTN (base >= 2 && base <= 62);
 
@@ -76,20 +76,13 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   e--;  /* due to the leading digit */
 
   /* outputs exponent */
-  if (e != 0)
-    {
-      int r;
+  r = fprintf (stream, (base <= 10 ?
+                        "e%" MPFR_EXP_FSPEC "d" :
+                        "@%" MPFR_EXP_FSPEC "d"), (mpfr_eexp_t) e);
 
-      r = fprintf (stream, (base <= 10 ?
-                            "e%" MPFR_EXP_FSPEC "d" :
-                            "@%" MPFR_EXP_FSPEC "d"), (mpfr_eexp_t) e);
+  /* Check error from fprintf or integer overflow (wrapping) on size_t */
+  if (MPFR_UNLIKELY (r < 0 || l + r < l))
+    return 0;
 
-      /* Check error from fprintf or integer overflow (wrapping) on size_t */
-      if (MPFR_UNLIKELY (r < 0 || l + r < l))
-        return 0;
-
-      l += r;
-    }
-
-  return l;
+  return l + r;
 }
