@@ -1696,6 +1696,7 @@ $m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
 with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
 @end deftypefun
 
+@anchor{mpfr_get_str}
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @GMPabs{@var{base}},
 with rounding in the direction @var{rnd}, where @var{n} is either zero
@@ -2513,20 +2514,26 @@ include the @code{<stdio.h>} standard header before @file{mpfr.h},
 to allow @file{mpfr.h} to define prototypes for these functions.
 
 @deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Output @var{op} on stream @var{stream}, as a string of digits in
-base @var{base}, rounded in the direction @var{rnd}.
-The base may vary from 2 to 62.  The argument @var{n} has the same meaning
-as in @code{mpfr_get_str}: Print @var{n} significant digits exactly, or if
-@var{n} is 0, the number @code{mpfr_get_str_ndigits(@var{base},@var{p})}
-where @var{p} is the precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
+Output @var{op} on stream @var{stream} as a text string in base @var{base},
+rounded in the direction @var{rnd}.
+The base may vary from 2 to 62 (any other value yields undefined behavior).
+The argument @var{n} has the same meaning as in @code{mpfr_get_str}:
+Print @var{n} significant digits exactly, or if @var{n} is 0, the number
+@code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the
+precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
 
-In addition to the significant digits, a decimal point (defined by the
-current locale) at the right of the
-first digit and a trailing exponent in base 10, in the form @samp{eNNN},
-are printed. If @var{base} is greater than 10, @samp{@@} will be used
-instead of @samp{e} as exponent delimiter.
-@c [FIXME] If the exponent is 0, it is not written. Fix the code or the
-@c documentation? Moreover, "NNN" is ambiguous.
+If the input is NaN, +Inf, @minus{}Inf, +0, or @minus{}0, then
+@samp{@@NaN@@}, @samp{@@Inf@@}, @samp{-@@Inf@@}, @samp{0}, or
+@samp{-0} is output, respectively.
+
+For the regular numbers, the format of the output is the following: the
+most significant digit, then a decimal point (defined by the current
+locale), then the remaining @var{n}@minus{}1 digits (including trailing
+zeros), then the exponent prefix, then the exponent in decimal. The
+exponent prefix is @samp{e} when @var{base} is less or equal to 10,
+@samp{@@} when @var{base} is greater than 10. @xref{mpfr_get_str} for
+information on the digits depending on the base.
+@c The term "exponent prefix" is used in the mpfr_strtofr description.
 
 Return the number of characters written, or if an error occurred, return 0.
 @end deftypefun
