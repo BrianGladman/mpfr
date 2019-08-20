@@ -787,7 +787,7 @@ References:
 ===========================================================================
 
 Use locale-dependent functions when the result needs to depend on the
-locales, e.g. the fractional point in mpfr_out_str.
+locales, e.g. the decimal-point character in mpfr_out_str.
 
 Conversely, do not use locale-dependent functions when the result must
 not depend on the locales. In particular, the alphanumeric characters
@@ -1100,6 +1100,12 @@ and may not be portable.
 
 MPFR manual (mpfr.texi):
   * Use "significand", not "mantissa".
+  * Use "decimal-point character" (as in ISO C) when the meaning is
+    the corresponding character ("." or ",", depending on the locale),
+    not "decimal point", "decimal separator", "fractional point", or
+    "radix point" (the latter is fine in certain contexts). This is
+    just the name of this character (as initially defined for base 10)
+    and does not imply a number written in decimal.
   * Use "@minus{}" for the minus character, not "-".
   * Warning! Texinfo is not like TeX. Whitespace is preserved in the
     info file. So, do not use additional space for .texi indentation.
