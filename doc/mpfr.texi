@@ -3663,9 +3663,12 @@ Warning! There are some differences. In particular:
 (zeroing trailing bits in the internal representation). Users may need to
 increase the precision of their variables.
 @item The exponent range is also different.
-@item The formatted output functions (@code{gmp_printf}, etc.)  will not work
+@item The formatted output functions (@code{gmp_printf}, etc.) will not work
 for arguments of arbitrary-precision floating-point type (@code{mpf_t}, which
 @file{mpf2mpfr.h} redefines as @code{mpfr_t}).
+@item The output of @code{mpf_out_str} has a format slightly different from
+the one of @code{mpfr_out_str} (concerning the position of the decimal point,
+trailing zeros and the output of the value 0).
 @end itemize
 
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mpfr_prec_t @var{prec})
