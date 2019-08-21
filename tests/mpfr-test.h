@@ -240,4 +240,14 @@ void tests_free (void *, size_t);
 }
 #endif
 
+/* With GCC, a macro "volatile" can be defined to test some special code
+   in mpfr-impl.h (code for compilers that define such a macro), but the
+   volatile keyword is necessary in some tests to avoid some GCC bugs.
+   Thus we need to undef this macro (if defined). We do that at the end,
+   so that mpfr-impl.h (included earlier) is not affected by this undef.
+ */
+#if defined(__GNUC__) && defined(volatile)
+# undef volatile
+#endif
+
 #endif
