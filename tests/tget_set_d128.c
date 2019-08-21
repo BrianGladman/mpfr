@@ -449,37 +449,71 @@ check_misc (void)
 }
 
 static void
-coverage (void)
+noncanonical (void)
 {
   /* The code below assumes BID. */
 #if HAVE_DECIMAL128_IEEE && !defined(DPD_FORMAT)
   union ieee_decimal128 x;
 
+  MPFR_ASSERTN (sizeof (x) == 16);
   /* produce a non-canonical decimal128 with Gh >= 24 */
   x.d128 = 1;
   /* if BID, we have sig=0, comb=49408, t0=t1=t2=0, t3=1 */
   if (x.s.sig == 0 && x.s.comb == 49408 && x.s.t0 == 0 && x.s.t1 == 0 &&
       x.s.t2 == 0 && x.s.t3 == 1)
     {
+      /* The volatile below avoids _Decimal128 constant propagation, which is
+         buggy for non-canonical encoding in various GCC versions on the x86
+         and x86_64 targets: failure in the second test below ("Error 2")
+         with gcc (Debian 20190820-1) 10.0.0 20190820 (experimental)
+         [trunk revision 274744]. The MPFR test was not failing with previous
+         GCC versions, not even with gcc (Debian 20190719-1) 10.0.0 20190718
+         (experimental) [trunk revision 273586] (contrary to the similar test
+         in tget_set_d64.c). More information at:
+         https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91226
+      */
+      volatile _Decimal128 d = 9999999999999999999999999999999999.0dl;
       mpfr_t y;
+
       x.s.comb = 98560; /* force Gh >= 24 thus a non-canonical number
                            (significand >= 2^113 > 20^34-1) */
       mpfr_init2 (y, 113);
       mpfr_set_decimal128 (y, x.d128, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+      if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
+        {
+          int i;
+          printf ("Error 1 in noncanonical on");
+          for (i = 0; i < 16; i++)
+            printf (" %02X", ((unsigned char *)&x)[i]);
+          printf ("\nExpected +0, got:\n");
+          mpfr_dump (y);
+          exit (1);
+        }
 
       /* now construct a case Gh < 24, but where the significand exceeds
          10^34-1 */
-      x.d128 = 9999999999999999999999999999999999.0dl;
+      x.d128 = d;
       /* should give sig=0, comb=49415, t0=11529, t1=3199043520,
          t2=932023907, t3=4294967295 */
       x.s.t3 ++; /* should give 0 */
       x.s.t2 += (x.s.t3 == 0);
       /* now the significand is 10^34 */
       mpfr_set_decimal128 (y, x.d128, MPFR_RNDN);
-      MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+      if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
+        {
+          int i;
+          printf ("Error 2 in noncanonical on");
+          for (i = 0; i < 16; i++)
+            printf (" %02X", ((unsigned char *)&x)[i]);
+          printf ("\nExpected +0, got:\n");
+          mpfr_dump (y);
+          exit (1);
+        }
+
       mpfr_clear (y);
     }
+  else
+    printf ("Warning! Unexpected value of x in noncanonical.\n");
 #endif
 }
 
@@ -543,7 +577,7 @@ main (int argc, char *argv[])
 #if !defined(MPFR_ERRDIVZERO)
   check_misc ();
 #endif
-  coverage ();
+  noncanonical ();
 
   tests_end_mpfr ();
   return 0;
