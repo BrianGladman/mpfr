@@ -2,6 +2,8 @@
    This code was extracted by Kremlin from a formal proof in F*
    done by Jianyang Pan in April-August 2018: do not modify it!
 
+Source: https://github.com/project-everest/hacl-star/tree/dev_mpfr/code/mpfr
+
 Copyright 2004-2019 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
