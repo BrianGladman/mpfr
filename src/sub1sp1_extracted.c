@@ -83,31 +83,6 @@ K___MPFR_Lib_mpfr_struct__MPFR_Lib_mpfr_struct__int64_t_int64_t_uint64_t__uint64
 }
 K___MPFR_Lib_mpfr_struct__MPFR_Lib_mpfr_struct__int64_t_int64_t_uint64_t__uint64_t_;
 
-#define KRML_HOST_PRINTF printf
-#define KRML_HOST_EXIT exit
-
-/* from snapshots/kremlib/kremlin/prims_int.h */
-typedef int32_t krml_checked_int_t;
-#define RETURN_OR(x)                                            \
-  do {                                                          \
-  int64_t __ret = x;                                            \
-  if (__ret < INT32_MIN || INT32_MAX < __ret) {                 \
-  KRML_HOST_PRINTF(                                             \
-  "Prims.{int,nat,pos} integer overflow at %s:%d\n", __FILE__,  \
-  __LINE__);                                                    \
-  KRML_HOST_EXIT(252);                                          \
-  }                                                             \
-  return (int32_t)__ret;                                        \
-  } while (0)
-
-inline static krml_checked_int_t FStar_UInt64_v(uint64_t x) {
-  RETURN_OR(x);
-}
-inline static krml_checked_int_t FStar_Int64_v(int64_t x) {
-  return x;
-}
-/* end of excerpt from snapshots/kremlib/kremlin/prims_int.h */
-
 static MPFR_Add1sp1_state
 MPFR_Add1sp1_mk_state(int64_t sh, int64_t bx, uint64_t rb, uint64_t sb)
 {
@@ -430,7 +405,9 @@ MPFR_Sub1sp1_mpfr_sub1sp1(
         }
       }
     }
-    if (st.bx < (int64_t)-0x000000003fffffff)
+    /* the constant (int64_t)-0x000000003fffffff from the original extracted
+       code was manually replaced by __gmpfr_emin */
+    if (st.bx < __gmpfr_emin)
     {
       int32_t s = a->mpfr_sign;
       uint64_t ap0ul = ap[0U];
@@ -438,7 +415,9 @@ MPFR_Sub1sp1_mpfr_sub1sp1(
       (
         __eq__MPFR_RoundingMode_mpfr_rnd_t(rnd_mode,
           MPFR_RoundingMode_MPFR_RNDN)
-        && (st.bx < (int64_t)-1073741824 || ap0ul == (uint64_t)0x8000000000000000U)
+        /* the constant (int64_t)-1073741824 from the original extracted
+           code was manually replaced by __gmpfr_emin-1 */
+        && (st.bx < __gmpfr_emin - 1 || ap0ul == (uint64_t)0x8000000000000000U)
       )
       {
         MPFR_Lib_mpfr_SET_EXP(a, (int64_t)-0x7fffffffffffffff);
@@ -475,7 +454,9 @@ MPFR_Sub1sp1_mpfr_sub1sp1(
         {
           ap[0U] = ap[0U] + ((uint64_t)1U << (uint32_t)st.sh);
           ap[0U] = (uint64_t)0x8000000000000000U;
-          if (st.bx + (int64_t)1 <= (int64_t)0x000000003fffffff)
+          /* the constant (int64_t)0x000000003fffffff from the original
+             extracted code was replaced by __gmpfr_emax */
+          if (st.bx + (int64_t)1 <= __gmpfr_emax)
           {
             MPFR_Lib_mpfr_SET_EXP(a, st.bx + (int64_t)1);
             /* the following return was commented out from the extracted code */
@@ -512,7 +493,9 @@ MPFR_Sub1sp1_mpfr_sub1sp1(
         {
           ap[0U] = ap[0U] + ((uint64_t)1U << (uint32_t)st.sh);
           ap[0U] = (uint64_t)0x8000000000000000U;
-          if (st.bx + (int64_t)1 <= (int64_t)0x000000003fffffff)
+          /* the constant (int64_t)0x000000003fffffff from the original
+             extracted code was replaced by __gmpfr_emax */
+          if (st.bx + (int64_t)1 <= __gmpfr_emax)
           {
             MPFR_Lib_mpfr_SET_EXP(a, st.bx + (int64_t)1);
             /* the following return was commented out from the extracted code */
