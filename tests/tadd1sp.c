@@ -72,6 +72,21 @@ bug20171217 (void)
   mpfr_clear (c);
 }
 
+/* bug in r13574 */
+static void
+bug20190903 (void)
+{
+  mpfr_t a, b, c;
+
+  mpfr_inits2 (128, a, b, c, (mpfr_ptr) 0);
+  mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110101110E0");
+  mpfr_set_str_binary (c, "0.10000001011101000010000111100111011110100000001001000010011011001000110100111111101100001101001101011101100100011000000101110111E-126");
+  mpfr_add (a, b, c, MPFR_RNDN);
+  mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110110000E0");
+  MPFR_ASSERTN (mpfr_equal_p (a, b));
+  mpfr_clears (a, b, c, (mpfr_ptr) 0);
+}
+
 /* Check corner case b = 1, c = 2^(-p) for MPFR_PREC_MIN <= p <= pmax.
    With RNDN, result is 1, except for p=1, where it is 2. */
 static void
@@ -228,6 +243,7 @@ main (void)
   coverage ();
   test_corner_1 (1024);
   bug20171217 ();
+  bug20190903 ();
   check_special ();
   for(p = MPFR_PREC_MIN; p < 200 ; p++)
     check_random (p);
