@@ -478,7 +478,7 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
     }
 }
 
-/* same as mpfr_add2sp, but for p = 2*GMP_NUMB_BITS */
+/* same as mpfr_add1sp, but for p = 2*GMP_NUMB_BITS */
 static int
 mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
