@@ -531,8 +531,13 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       else if (d < 2*GMP_NUMB_BITS) /* GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS */
         {
+          /* The most significant bit of sb should be the rounding bit,
+             while the least GMP_NUMB_BITS-1 bits represent the sticky bit:
+             * if d = GMP_NUMB_BITS, we get cp[0]
+             * if d > GMP_NUMB_BITS: we get the least d-GMP_NUMB_BITS bits
+               of cp[1], and those from cp[0] */
           sb = (d == GMP_NUMB_BITS) ? cp[0]
-            : cp[0] | (cp[1] << (2*GMP_NUMB_BITS-d));
+            : (cp[1] << (2*GMP_NUMB_BITS-d)) | (cp[0] != 0);
           a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
           a1 = bp[1] + (a0 < bp[0]);
           if (a1 == 0)
