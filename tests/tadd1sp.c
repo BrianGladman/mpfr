@@ -86,20 +86,22 @@ bug20190903 (void)
   int inex;
   mpfr_flags_t flags;
 
+  /* Bug in r13574, fixed in r13578.
+     Note: to reproduce the failure, GMP_NUMB_BITS == 64 is assumed. */
   mpfr_inits2 (128, a, b, c, d, (mpfr_ptr) 0);
-
-  /* Bug in r13574, fixed in r13578. */
   mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110101110E0");
   mpfr_set_str_binary (c, "0.10000001011101000010000111100111011110100000001001000010011011001000110100111111101100001101001101011101100100011000000101110111E-126");
   mpfr_add_cf (a, b, c, MPFR_RNDN);
   mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110110000E0");
   MPFR_ASSERTN (mpfr_equal_p (a, b));
+  mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
 
-  /* Bug in r13574, still present in r13579 (see FIXME there). */
+  /* Bug in r13574, fixed in r13586. */
   /* Figure with GMP_NUMB_BITS = 4:
        b = 1111 1000
        c =      1000 0001
   */
+  mpfr_inits2 (2 * GMP_NUMB_BITS, a, b, c, d, (mpfr_ptr) 0);
   mpfr_set_ui_2exp (d, 1, 3 * GMP_NUMB_BITS, MPFR_RNDN);
   mpfr_set_ui_2exp (c, 1, 2 * GMP_NUMB_BITS - 1, MPFR_RNDN);
   mpfr_sub (b, d, c, MPFR_RNDN);
@@ -115,7 +117,6 @@ bug20190903 (void)
   MPFR_ASSERTN (mpfr_equal_p (a, d));
   MPFR_ASSERTN (inex > 0);
   MPFR_ASSERTN (flags == MPFR_FLAGS_INEXACT);
-
   mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
 }
 
