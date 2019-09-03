@@ -537,9 +537,9 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       else
         {
-          /* First, compute (a0,a1) = b + (c >> d) and determine sb from
-             the bits shifted out (TODO: to be completed after resolving
-             the FIXME below). */
+          /* First, compute (a0,a1) = b + (c >> d), and determine sb from
+             the bits shifted out such that (MSB, other bits) is regarded
+             as (rounding bit, sticky bit), assuming no carry. */
           if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
             {
               sb = cp[0] << (GMP_NUMB_BITS - d);
@@ -553,8 +553,6 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                  * if d = GMP_NUMB_BITS, we get cp[0]
                  * if d > GMP_NUMB_BITS: we get the least d-GMP_NUMB_BITS bits
                    of cp[1], and those from cp[0] */
-              /* FIXME: No tests currently fail, but the LSB of sb can be lost
-                 with sb >> 1 below in case of exponent shift. */
               sb = (d == GMP_NUMB_BITS) ? cp[0]
                 : (cp[1] << (2*GMP_NUMB_BITS-d)) | (cp[0] != 0);
               a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
@@ -562,19 +560,20 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           if (a1 < bp[1]) /* carry in high word */
             {
-              sb = (a0 << (GMP_NUMB_BITS - 1)) | (sb >> 1);
-              /* shift a by 1 */
+              rb = a0 << (GMP_NUMB_BITS - 1);
+              /* and sb is the real sticky bit. */
+              /* Shift the result by 1 to the right. */
               ap[0] = (a1 << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
               ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
               bx ++;
             }
           else
             {
+              rb = MPFR_LIMB_MSB (sb);
+              sb <<= 1;
               ap[0] = a0;
               ap[1] = a1;
             }
-          rb = sb & MPFR_LIMB_HIGHBIT;
-          sb <<= 1;
         }
     }
 
