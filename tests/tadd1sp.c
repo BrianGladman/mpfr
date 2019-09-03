@@ -109,6 +109,12 @@ bug20190903 (void)
   MPFR_ASSERTN (mpfr_equal_p (a, d));
   MPFR_ASSERTN (inex < 0);
   MPFR_ASSERTN (flags == MPFR_FLAGS_INEXACT);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
+  flags = __gmpfr_flags;
+  mpfr_add_ui (d, d, 1, MPFR_RNDU);
+  MPFR_ASSERTN (mpfr_equal_p (a, d));
+  MPFR_ASSERTN (inex > 0);
+  MPFR_ASSERTN (flags == MPFR_FLAGS_INEXACT);
 
   mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
 }
