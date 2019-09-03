@@ -549,7 +549,7 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           else /* GMP_NUMB_BITS <= d < 2 * GMP_NUMB_BITS */
             {
               /* The most significant bit of sb should be the rounding bit,
-                 while the least GMP_NUMB_BITS-1 bits represent the sticky bit:
+                 while the other bits represent the sticky bit:
                  * if d = GMP_NUMB_BITS, we get cp[0];
                  * if d > GMP_NUMB_BITS: we get the least d-GMP_NUMB_BITS bits
                    of cp[1], and those from cp[0] as the LSB of sb. */
