@@ -82,9 +82,11 @@ bug20171217 (void)
 static void
 bug20190903 (void)
 {
-  mpfr_t a, b, c;
+  mpfr_t a, b, c, d;
+  int inex;
+  mpfr_flags_t flags;
 
-  mpfr_inits2 (128, a, b, c, (mpfr_ptr) 0);
+  mpfr_inits2 (128, a, b, c, d, (mpfr_ptr) 0);
 
   /* Bug in r13574, fixed in r13578. */
   mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110101110E0");
@@ -98,13 +100,17 @@ bug20190903 (void)
        b = 1111 1000
        c =      1000 0001
   */
-  mpfr_set_ui_2exp (b, 1, 3 * GMP_NUMB_BITS, MPFR_RNDN);
+  mpfr_set_ui_2exp (d, 1, 3 * GMP_NUMB_BITS, MPFR_RNDN);
   mpfr_set_ui_2exp (c, 1, 2 * GMP_NUMB_BITS - 1, MPFR_RNDN);
-  mpfr_sub (b, b, c, MPFR_RNDN);
+  mpfr_sub (b, d, c, MPFR_RNDN);
   mpfr_add_ui (c, c, 1, MPFR_RNDN);
-  mpfr_add_cf (a, b, c, MPFR_RNDN);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDN);
+  flags = __gmpfr_flags;
+  MPFR_ASSERTN (mpfr_equal_p (a, d));
+  MPFR_ASSERTN (inex < 0);
+  MPFR_ASSERTN (flags == MPFR_FLAGS_INEXACT);
 
-  mpfr_clears (a, b, c, (mpfr_ptr) 0);
+  mpfr_clears (a, b, c, d, (mpfr_ptr) 0);
 }
 
 /* Check corner case b = 1, c = 2^(-p) for MPFR_PREC_MIN <= p <= pmax.
