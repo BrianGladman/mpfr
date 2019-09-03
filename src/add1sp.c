@@ -498,23 +498,65 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       a0 = bp[0] + cp[0];
       a1 = bp[1] + cp[1] + (a0 < bp[0]);
       rb = a0 & MPFR_LIMB_ONE;
-      bx ++;
-      ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
-      ap[0] = (a0 >> 1) | (a1 << (GMP_NUMB_BITS - 1));
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
+      ap[0] = (a1 << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
+      ap[1] = MPFR_LIMB_HIGHBIT | (a1 >> 1);
+      bx ++;
     }
-  else if (bx > cx)
+  else
     {
-    BGreater2:
-      d = (mpfr_uexp_t) bx - cx;
-      if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
+      if (bx < cx)  /* swap b and c */
         {
-          sb = cp[0] << (GMP_NUMB_BITS - d); /* bits from cp[-1] after shift */
-          a0 = bp[0] + ((cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d));
-          a1 = bp[1] + (cp[1] >> d) + (a0 < bp[0]);
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+        }
+      MPFR_ASSERTD (bx > cx);
+      d = (mpfr_uexp_t) bx - cx;
+      if (d >= 2 * GMP_NUMB_BITS)
+        {
+          if (d == 2 * GMP_NUMB_BITS)
+            {
+              rb = 1;
+              sb = (cp[0] != MPFR_LIMB_ZERO ||
+                    cp[1] > MPFR_LIMB_HIGHBIT);
+            }
+          else
+            {
+              rb = 0;
+              sb = 1;
+            }
+          ap[0] = bp[0];
+          ap[1] = bp[1];
+        }
+      else
+        {
+          /* First, compute (a0,a1) = b + (c >> d) and determine sb from
+             the bits shifted out (TODO: to be completed after resolving
+             the FIXME below). */
+          if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
+            {
+              sb = cp[0] << (GMP_NUMB_BITS - d);
+              a0 = bp[0] + ((cp[1] << (GMP_NUMB_BITS - d)) | (cp[0] >> d));
+              a1 = bp[1] + (cp[1] >> d) + (a0 < bp[0]);
+            }
+          else /* GMP_NUMB_BITS <= d < 2 * GMP_NUMB_BITS */
+            {
+              /* The most significant bit of sb should be the rounding bit,
+                 while the least GMP_NUMB_BITS-1 bits represent the sticky bit:
+                 * if d = GMP_NUMB_BITS, we get cp[0]
+                 * if d > GMP_NUMB_BITS: we get the least d-GMP_NUMB_BITS bits
+                   of cp[1], and those from cp[0] */
+              /* FIXME: No tests currently fail, but the LSB of sb can be lost
+                 with sb >> 1 below in case of exponent shift. */
+              sb = (d == GMP_NUMB_BITS) ? cp[0]
+                : (cp[1] << (2*GMP_NUMB_BITS-d)) | (cp[0] != 0);
+              a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
+              a1 = bp[1] + (a0 < bp[0]);
+            }
           if (a1 < bp[1]) /* carry in high word */
             {
-            exponent_shift:
               sb = (a0 << (GMP_NUMB_BITS - 1)) | (sb >> 1);
               /* shift a by 1 */
               ap[0] = (a1 << (GMP_NUMB_BITS - 1)) | (a0 >> 1);
@@ -529,40 +571,6 @@ mpfr_add1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           rb = sb & MPFR_LIMB_HIGHBIT;
           sb <<= 1;
         }
-      else if (d < 2*GMP_NUMB_BITS) /* GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS */
-        {
-          /* The most significant bit of sb should be the rounding bit,
-             while the least GMP_NUMB_BITS-1 bits represent the sticky bit:
-             * if d = GMP_NUMB_BITS, we get cp[0]
-             * if d > GMP_NUMB_BITS: we get the least d-GMP_NUMB_BITS bits
-               of cp[1], and those from cp[0] */
-          sb = (d == GMP_NUMB_BITS) ? cp[0]
-            : (cp[1] << (2*GMP_NUMB_BITS-d)) | (cp[0] != 0);
-          a0 = bp[0] + (cp[1] >> (d - GMP_NUMB_BITS));
-          a1 = bp[1] + (a0 < bp[0]);
-          if (a1 == 0)
-            goto exponent_shift;
-          rb = sb & MPFR_LIMB_HIGHBIT;
-          sb <<= 1;
-          ap[0] = a0;
-          ap[1] = a1;
-        }
-      else /* d >= 2*GMP_NUMB_BITS */
-        {
-          sb = d > 2 * GMP_NUMB_BITS ||
-            (cp[1] > MPFR_LIMB_HIGHBIT || cp[0] != MPFR_LIMB_ZERO);
-          ap[0] = bp[0];
-          ap[1] = bp[1];
-          rb = d == 2 * GMP_NUMB_BITS;
-        }
-    }
-  else /* bx < cx: swap b and c */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      goto BGreater2;
     }
 
   /* now perform rounding */
