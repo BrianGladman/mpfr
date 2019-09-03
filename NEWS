@@ -33,6 +33,7 @@ Changes from versions 4.0.* to version 4.1.0:
 - New function mpfr_dot for the dot product (incomplete, experimental).
 - New functions mpfr_get_decimal128 and mpfr_set_decimal128.
 - Shared caches: cleanup; really detect lock failures (abort in this case).
+- Improved mpfr_add for 128-bit precision (on 64-bit processor).
 - Optimized the tuning parameters for various architectures.
 - Improved test coverage to 98.3% of code for x86_64.
 - Bug fixes.
