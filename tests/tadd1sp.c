@@ -25,6 +25,13 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void check_special (void);
 static void check_random (mpfr_prec_t p);
 
+static int
+mpfr_add_cf (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t r)
+{
+  mpfr_clear_flags ();  /* allows better checking */
+  return mpfr_add (a, b, c, r);
+}
+
 static void
 check_overflow (void)
 {
@@ -64,7 +71,7 @@ bug20171217 (void)
   mpfr_init2 (c, 137);
   mpfr_set_str_binary (b, "0.11111111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000000E-66");
   mpfr_set_str_binary (c, "0.11111111111111111111111111111111111111111111111111111111111111111000000000000000000000000000000000000000000000000000000000000000000110000E-2");
-  mpfr_add (a, b, c, MPFR_RNDN);
+  mpfr_add_cf (a, b, c, MPFR_RNDN);
   mpfr_set_str_binary (b, "0.10000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000001000E-1");
   MPFR_ASSERTN(mpfr_equal_p (a, b));
   mpfr_clear (a);
@@ -82,7 +89,7 @@ bug20190903 (void)
   /* Bug in r13574, fixed in r13578. */
   mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110101110E0");
   mpfr_set_str_binary (c, "0.10000001011101000010000111100111011110100000001001000010011011001000110100111111101100001101001101011101100100011000000101110111E-126");
-  mpfr_add (a, b, c, MPFR_RNDN);
+  mpfr_add_cf (a, b, c, MPFR_RNDN);
   mpfr_set_str_binary (b, "0.11111111111111111100000000000000000001001111111101111111110000101001111100111110110010011001111110000000101001001001110110110000E0");
   MPFR_ASSERTN (mpfr_equal_p (a, b));
 
@@ -95,7 +102,7 @@ bug20190903 (void)
   mpfr_set_ui_2exp (c, 1, 2 * GMP_NUMB_BITS - 1, MPFR_RNDN);
   mpfr_sub (b, b, c, MPFR_RNDN);
   mpfr_add_ui (c, c, 1, MPFR_RNDN);
-  mpfr_add (a, b, c, MPFR_RNDN);
+  mpfr_add_cf (a, b, c, MPFR_RNDN);
 
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
 }
@@ -116,7 +123,7 @@ test_corner_1 (mpfr_prec_t pmax)
       mpfr_init2 (c, p);
       mpfr_set_ui (b, 1, MPFR_RNDN);
       mpfr_set_ui_2exp (c, 1, -p, MPFR_RNDN);
-      inex = mpfr_add (a, b, c, MPFR_RNDN);
+      inex = mpfr_add_cf (a, b, c, MPFR_RNDN);
       if (p == 1) /* special case, since 2^(p-1) is odd */
         {
           MPFR_ASSERTN(inex > 0);
@@ -149,7 +156,7 @@ coverage (void)
   mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
   mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-1, MPFR_RNDN);
   /* c = 2^(-p-1) thus b+c = 1 - 2^(-p-1) should be rounded to 1 */
-  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
@@ -163,7 +170,7 @@ coverage (void)
   mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-1, MPFR_RNDN);
   mpfr_nextbelow (c); /* c = 2^(1-p) - 2^(1-2p) */
   /* a = 1 + 2^(-p) - 2^(1-2p) should be rounded to 1 with RNDN */
-  inex = mpfr_add (a, b, c, MPFR_RNDN);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDN);
   MPFR_ASSERTN(inex < 0);
   MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
@@ -176,7 +183,7 @@ coverage (void)
   mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
   mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-2, MPFR_RNDN);
   /* c = 2^(-p-1) */
-  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
@@ -190,7 +197,7 @@ coverage (void)
   mpfr_set_ui_2exp (c, 1, -2*GMP_NUMB_BITS-1, MPFR_RNDN);
   mpfr_nextbelow (c); /* c = 2^(1-p) - 2^(1-2p) */
   /* a = 1 + 2^(-p) - 2^(1-2p) should be rounded to 1 with RNDN */
-  inex = mpfr_add (a, b, c, MPFR_RNDN);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDN);
   MPFR_ASSERTN(inex < 0);
   MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
@@ -206,7 +213,7 @@ coverage (void)
   /* now b is the largest number < +Inf */
   mpfr_div_2ui (c, b, GMP_NUMB_BITS - 1, MPFR_RNDN);
   /* we are in the case d < GMP_NUMB_BITS of mpfr_add1sp3 */
-  inex = mpfr_add (a, b, b, MPFR_RNDU);
+  inex = mpfr_add_cf (a, b, b, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
   mpfr_set_emax (emax);
@@ -220,7 +227,7 @@ coverage (void)
   mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
   mpfr_set_ui_2exp (c, 1, -2 * GMP_NUMB_BITS - 2, MPFR_RNDN);
   /* c = 2^(-p-1) */
-  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
 
@@ -236,7 +243,7 @@ coverage (void)
   mpfr_mul_2ui (b, b, 1, MPFR_RNDN);
   /* now b is the largest number < +Inf */
   mpfr_set_ui_2exp (c, 1, mpfr_get_emin () - 1, MPFR_RNDN);
-  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
   mpfr_set_emax (emax);
