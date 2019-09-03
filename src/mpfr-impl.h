@@ -2408,6 +2408,10 @@ __MPFR_DECLSPEC int mpfr_vasnprintf_aux (char**, char*, size_t, const char*,
                                          va_list);
 #endif
 
+#if MPFR_WANT_ASSERT >= 2
+__MPFR_DECLSPEC void flags_fout (FILE *, mpfr_flags_t);
+#endif
+
 #if defined (__cplusplus)
 }
 #endif
