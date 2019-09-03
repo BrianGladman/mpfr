@@ -237,6 +237,7 @@ int
 main (void)
 {
   mpfr_prec_t p;
+  int i;
 
   tests_start_mpfr ();
 
@@ -245,8 +246,14 @@ main (void)
   bug20171217 ();
   bug20190903 ();
   check_special ();
-  for(p = MPFR_PREC_MIN; p < 200 ; p++)
+  for (p = MPFR_PREC_MIN; p < 200; p++)
     check_random (p);
+  for (i = 0; i < 200; i++)
+    {
+      /* special precisions */
+      check_random (GMP_NUMB_BITS);
+      check_random (2 * GMP_NUMB_BITS);
+    }
   check_overflow ();
 
   tests_end_mpfr ();
