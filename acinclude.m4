@@ -1078,7 +1078,7 @@ int main (void) {
   for (i = 0; i < 8; i++)
     printf ("%d %Lf\n", foo.before[i] + foo.after[i], foo.x);
   return 0;
-};
+}
 ]
 EOF
   mpfr_compile="$CC $CFLAGS $CPPFLAGS conftest.c -o conftest >&AS_MESSAGE_LOG_FD 2>&1"
