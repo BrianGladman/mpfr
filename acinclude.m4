@@ -1025,13 +1025,15 @@ dnl  IA-64 is 16 bytes in LP64 mode, or 12 bytes in ILP32 mode.  The
 dnl  relevant part in all cases (big and little endian) consists of the
 dnl  first 10 bytes.
 dnl
-dnl  We compile and link (with "-o conftest") instead of just compiling
-dnl  (with "-c"), so that this test works with GCC's and clang's LTO
-dnl  (-flto). If we just compile with LTO, the generated object file
-dnl  does not contain the structure as is. This new test is inspired
-dnl  by the one used by GMP for the double type:
+dnl  We compile and link (with "-o conftest$EXEEXT") instead of just
+dnl  compiling (with "-c"), so that this test works with GCC's and
+dnl  clang's LTO (-flto). If we just compile with LTO, the generated
+dnl  object file does not contain the structure as is. This new test
+dnl  is inspired by the one used by GMP for the double type:
 dnl    https://gmplib.org/repo/gmp/rev/33eb0998a052
 dnl    https://gmplib.org/repo/gmp/rev/cbc6dbf95a10
+dnl  "$EXEEXT" had to be added, otherwise the test was failing on
+dnl  MS-Windows (see Autoconf manual).
 dnl
 dnl  Enhancements:
 dnl
@@ -1081,7 +1083,7 @@ int main (void) {
 }
 ]
 EOF
-  mpfr_compile="$CC $CFLAGS $CPPFLAGS conftest.c -o conftest >&AS_MESSAGE_LOG_FD 2>&1"
+  mpfr_compile="$CC $CFLAGS $CPPFLAGS conftest.c -o conftest$EXEEXT >&AS_MESSAGE_LOG_FD 2>&1"
   if AC_TRY_EVAL(mpfr_compile); then
     cat >conftest.awk <<\EOF
 [
@@ -1361,11 +1363,11 @@ END {
 }
 ]
 EOF
-    mpfr_cv_c_long_double_format=`od -b conftest | $AWK -f conftest.awk`
+    mpfr_cv_c_long_double_format=`od -b conftest$EXEEXT | $AWK -f conftest.awk`
     case $mpfr_cv_c_long_double_format in
     unknown*)
-      echo "cannot match anything, conftest contains" >&AS_MESSAGE_LOG_FD
-      od -b conftest >&AS_MESSAGE_LOG_FD
+      echo "cannot match anything, conftest$EXEEXT contains" >&AS_MESSAGE_LOG_FD
+      od -b conftest$EXEEXT >&AS_MESSAGE_LOG_FD
       ;;
     esac
   else
