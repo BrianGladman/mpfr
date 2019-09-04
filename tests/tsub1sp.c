@@ -390,6 +390,29 @@ bug20180813 (void)
   mpfr_clear (c);
 }
 
+/* bug in revision 13599 with tatan and GMP_CHECK_RANDOMIZE=1567609230659336:
+   the values are equal, but the ternary value differs between sub1 and sub1sp
+   (bug introduced with mpfr_sub1sp2n, does not affect the 4.0 branch) */
+static void
+bug20190904 (void)
+{
+  mpfr_t a, b, c;
+  int ret;
+
+  mpfr_init2 (a, 128);
+  mpfr_init2 (b, 128);
+  mpfr_init2 (c, 128);
+  mpfr_set_str_binary (b, "0.11001001000011111101101010100010001000010110100011000010001101001100010011000110011000101000101110000000110111000001110011010001E1");
+  mpfr_set_str_binary (c, "0.10010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010010000000000000000000000E-102");
+  ret = mpfr_sub (a, b, c, MPFR_RNDN);
+  mpfr_set_str_binary (b, "0.11001001000011111101101010100010001000010110100011000010001101001100010011000110011000101000101101111111101111000001110011010001E1");
+  MPFR_ASSERTN(mpfr_equal_p (a, b));
+  MPFR_ASSERTN(ret > 0);
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 int
 main (void)
 {
@@ -397,6 +420,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  bug20190904 ();
   bug20180813 ();
   bug20180217 (1024);
   coverage ();

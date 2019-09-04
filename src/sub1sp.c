@@ -894,8 +894,12 @@ mpfr_sub1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              |      a1       |      a0       |
              |     bp[1]     |     bp[0]     |
                              |      t        |     sb     | */
+          /* warning: we should not ignore the low bits from cp[0]
+             in case d > GMP_NUMB_BITS */
           sb = (d == GMP_NUMB_BITS) ? cp[0]
-            : (cp[1] << (2*GMP_NUMB_BITS - d)) | (cp[0] >> (d - GMP_NUMB_BITS));
+            : (cp[1] << (2*GMP_NUMB_BITS - d))
+              | (cp[0] >> (d - GMP_NUMB_BITS))
+              | ((cp[0] << (2*GMP_NUMB_BITS - d)) != 0);
           t = (cp[1] >> (d - GMP_NUMB_BITS)) + (sb != 0);
           /* Warning: t might overflow to 0 if d=GMP_NUMB_BITS, sb <> 0,
              and cp[1] = 111...111 */
