@@ -159,19 +159,27 @@ coverage (void)
   mpfr_t a, b, c;
   int inex;
   mpfr_exp_t emax;
+  mpfr_prec_t p;
 
-  /* coverage test in mpfr_add1sp1n: case round away, where add_one_ulp
+  mpfr_init (a);
+  mpfr_init (b);
+  mpfr_init (c);
+
+  /* coverage test in mpfr_add1sp: case round away, where add_one_ulp
      gives a carry, and the new exponent is below emax */
-  mpfr_init2 (a, GMP_NUMB_BITS);
-  mpfr_init2 (b, GMP_NUMB_BITS);
-  mpfr_init2 (c, GMP_NUMB_BITS);
-  mpfr_set_ui (b, 1, MPFR_RNDN);
-  mpfr_nextbelow (b); /* b = 1 - 2^(-p) */
-  mpfr_set_ui_2exp (c, 1, -GMP_NUMB_BITS-1, MPFR_RNDN);
-  /* c = 2^(-p-1) thus b+c = 1 - 2^(-p-1) should be rounded to 1 */
-  inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
-  MPFR_ASSERTN(inex > 0);
-  MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+  for (p = MPFR_PREC_MIN; p <= 3 * GMP_NUMB_BITS; p++)
+    {
+      mpfr_set_prec (a, p);
+      mpfr_set_prec (b, p);
+      mpfr_set_prec (c, p);
+      mpfr_set_ui (b, 1, MPFR_RNDN);
+      mpfr_nextbelow (b); /* b = 1 - 2^(-p) (including for p=1) */
+      mpfr_set_ui_2exp (c, 1, -p-1, MPFR_RNDN);
+      /* c = 2^(-p-1) thus b+c = 1 - 2^(-p-1) should be rounded to 1 */
+      inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
+      MPFR_ASSERTN(inex > 0);
+      MPFR_ASSERTN(mpfr_cmp_ui (a, 1) == 0);
+    }
 
   /* coverage test in mpfr_add1sp2: case GMP_NUMB_BITS <= d < 2*GMP_NUMB_BITS
      and a1 = 0 */
