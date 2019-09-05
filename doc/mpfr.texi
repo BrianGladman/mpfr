@@ -691,10 +691,10 @@ is equal to 1.
 Warning! MPFR needs to increase the precision internally, in order to
 provide accurate results (and in particular, correct rounding). Do not
 attempt to set the precision to any value near @code{MPFR_PREC_MAX},
-otherwise MPFR will abort due to an assertion failure. Moreover, you
-may reach some memory limit on your platform, in which case the program
-may abort, crash or have undefined behavior (depending on your C
-implementation).
+otherwise MPFR will abort due to an assertion failure. However, in practice,
+the real limitation will probably be the available memory on your platform,
+and in case of lack of memory, the program may abort, crash or have
+undefined behavior (depending on your C implementation).
 
 @cindex Exponent
 @tindex @code{mpfr_exp_t}
