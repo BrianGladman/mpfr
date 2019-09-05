@@ -1907,6 +1907,9 @@ from its rootn function. It is marked as deprecated and will be removed in
 a future release.
 @end deftypefun
 
+@c FIXME: Move mpfr_pow to the section with the other transcendental functions?
+@c Possibly keep those with an integer exponent, and the first sentence, then
+@c say "For the special values, see mpfr_pow" with @xref{...}.
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
@@ -1975,6 +1978,75 @@ Set @var{rop} to @m{@var{op1}/2^{op2}, @var{op1} divided by 2 raised
 to @var{op2}}
 rounded in the direction @var{rnd}. Just decreases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
+@end deftypefun
+
+@deftypefun int mpfr_fac_ui (mpfr_t @var{rop}, unsigned long int  @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the factorial of @var{op}, rounded in the direction @var{rnd}.
+@end deftypefun
+
+@deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}}
+(resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}})
+rounded in the direction @var{rnd}.  Concerning special values (signed zeros,
+infinities, NaN), these functions behave like a multiplication followed by a
+separate addition or subtraction.  That is, the fused operation matters only
+for rounding.
+@end deftypefun
+
+@deftypefun int mpfr_fmma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fmms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + (@var{op3} @GMPtimes{} @var{op4})}
+(resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - (@var{op3} @GMPtimes{} @var{op4})})
+rounded in the direction @var{rnd}.
+In case the computation of @math{@var{op1} @GMPtimes{} @var{op2}} overflows or
+underflows (or that of @math{@var{op3} @GMPtimes{} @var{op4}}), the result
+@var{rop} is computed as if the two intermediate products were computed with
+rounding toward zero.
+@end deftypefun
+
+@deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the Euclidean norm of @var{x} and @var{y},
+@ifnottex
+i.e., the square root of the sum of the squares of @var{x} and @var{y},
+@end ifnottex
+@tex
+i.e., $\sqrt{x^2+y^2}$,
+@end tex
+rounded in the direction @var{rnd}.
+Special values are handled as described in the ISO C99 (Section@tie{}F.9.4.3)
+and IEEE@tie{}754-2008 (Section@tie{}9.2.1) standards:
+If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
+even if the other number is NaN@.
+@end deftypefun
+
+@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
+correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
+@var{tab} is an array of pointers
+to @code{mpfr_t}, not an array of @code{mpfr_t}.
+If @var{n} = 0, then the result is +0, and if @var{n} = 1, then the function
+is equivalent to @code{mpfr_set}.
+For the special exact cases, the result is the same as the one obtained
+with a succession of additions (@code{mpfr_add}) in infinite precision.
+In particular, if the result is an exact zero and @math{@var{n} @ge{} 1}:
+@itemize @bullet
+@item if all the inputs have the same sign (i.e., all +0 or all @minus{}0),
+then the result has the same sign as the inputs;
+@item otherwise, either because all inputs are zeros with at least a +0 and
+a @minus{}0, or because some inputs are non-zero (but they globally cancel),
+the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
+@minus{}0.
+@end itemize
+@end deftypefun
+
+@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}[], const mpfr_ptr @var{b}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
+whose common size is @var{n},
+correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
+@var{a} and @var{b} are arrays of pointers to @code{mpfr_t}.
+This function is experimental, and does not yet handle intermediate overflows
+and underflows.
 @end deftypefun
 
 @node Comparison Functions, Special Functions, Basic Arithmetic Functions, MPFR Interface
@@ -2236,10 +2308,6 @@ Set @var{rop} to the inverse hyperbolic cosine, sine or tangent of @var{op},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun int mpfr_fac_ui (mpfr_t @var{rop}, unsigned long int  @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the factorial of @var{op}, rounded in the direction @var{rnd}.
-@end deftypefun
-
 @deftypefun int mpfr_eint (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the exponential integral of @var{op},
 rounded in the direction @var{rnd}.
@@ -2353,27 +2421,6 @@ NaN or negative, @var{rop} is always set to NaN@. When @var{op} is +Inf,
 or @minus{}Inf depending on the parity and sign of @var{n}.
 @end deftypefun
 
-@deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}}
-(resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}})
-rounded in the direction @var{rnd}.  Concerning special values (signed zeros,
-infinities, NaN), these functions behave like a multiplication followed by a
-separate addition or subtraction.  That is, the fused operation matters only
-for rounding.
-@end deftypefun
-
-@deftypefun int mpfr_fmma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_fmms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_t @var{op4}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + (@var{op3} @GMPtimes{} @var{op4})}
-(resp.@: @math{(@var{op1} @GMPtimes{} @var{op2}) - (@var{op3} @GMPtimes{} @var{op4})})
-rounded in the direction @var{rnd}.
-In case the computation of @math{@var{op1} @GMPtimes{} @var{op2}} overflows or
-underflows (or that of @math{@var{op3} @GMPtimes{} @var{op4}}), the result
-@var{rop} is computed as if the two intermediate products were computed with
-rounding toward zero.
-@end deftypefun
-
 @deftypefun int mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded in the direction @var{rnd}.
@@ -2388,21 +2435,6 @@ If any operand is negative and the other one is not zero,
 set @var{rop} to NaN@.
 If any operand is zero and the other one is finite (resp.@: infinite),
 set @var{rop} to +0 (resp.@: NaN)@.
-@end deftypefun
-
-@deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the Euclidean norm of @var{x} and @var{y},
-@ifnottex
-i.e., the square root of the sum of the squares of @var{x} and @var{y},
-@end ifnottex
-@tex
-i.e., $\sqrt{x^2+y^2}$,
-@end tex
-rounded in the direction @var{rnd}.
-Special values are handled as described in the ISO C99 (Section@tie{}F.9.4.3)
-and IEEE@tie{}754-2008 (Section@tie{}9.2.1) standards:
-If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
-even if the other number is NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2465,35 +2497,6 @@ This function should be called before calling @code{mp_set_memory_functions}.
 Zero is returned in case of success, non-zero in case of error.
 Errors are currently not possible, but checking the return value
 is recommended for future compatibility.
-@end deftypefun
-
-@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
-correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
-@var{tab} is an array of pointers
-to @code{mpfr_t}, not an array of @code{mpfr_t}.
-If @var{n} = 0, then the result is +0, and if @var{n} = 1, then the function
-is equivalent to @code{mpfr_set}.
-For the special exact cases, the result is the same as the one obtained
-with a succession of additions (@code{mpfr_add}) in infinite precision.
-In particular, if the result is an exact zero and @math{@var{n} @ge{} 1}:
-@itemize @bullet
-@item if all the inputs have the same sign (i.e., all +0 or all @minus{}0),
-then the result has the same sign as the inputs;
-@item otherwise, either because all inputs are zeros with at least a +0 and
-a @minus{}0, or because some inputs are non-zero (but they globally cancel),
-the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
-@minus{}0.
-@end itemize
-@end deftypefun
-
-@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}[], const mpfr_ptr @var{b}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
-whose common size is @var{n},
-correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
-@var{a} and @var{b} are arrays of pointers to @code{mpfr_t}.
-This function is experimental, and does not yet handle intermediate overflows
-and underflows.
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
