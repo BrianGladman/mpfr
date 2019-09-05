@@ -1150,6 +1150,7 @@ MPFR code (libc functions, memory allocator, etc.) may do so.
 * Rounding-Related Functions::
 * Miscellaneous Functions::
 * Exception Related Functions::
+* Memory Handling Functions::
 * Compatibility with MPF::
 * Custom Interface::
 * Internals::
@@ -2461,44 +2462,6 @@ calculations if a lower or equal precision is requested. To free these caches,
 use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
-@deftypefun void mpfr_free_cache (void)
-Free all caches and pools used by MPFR internally (those local to the
-current thread and those shared by all threads).
-You should call this function before terminating a thread, even if you did
-not call @code{mpfr_const_*} functions directly (they could have been called
-internally).
-@end deftypefun
-
-@deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
-Free various caches and pools used by MPFR internally,
-as specified by @var{way}, which is a set of flags:
-@itemize @bullet
-@item those local to the current thread if flag @code{MPFR_FREE_LOCAL_CACHE}
-is set;
-@item those shared by all threads if flag @code{MPFR_FREE_GLOBAL_CACHE}
-is set.
-@end itemize
-The other bits of @var{way} are currently ignored and are reserved for
-future use; they should be zero.
-
-Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
-is currently equivalent to @code{mpfr_free_cache()}.
-@end deftypefun
-
-@deftypefun void mpfr_free_pool (void)
-Free the pools used by MPFR internally.
-Note: This function is automatically called after the thread-local caches
-are freed (with @code{mpfr_free_cache} or @code{mpfr_free_cache2}).
-@end deftypefun
-
-@deftypefun int mpfr_mp_memory_cleanup (void)
-This function should be called before calling @code{mp_set_memory_functions}.
-@xref{Memory Handling}, for more information.
-Zero is returned in case of success, non-zero in case of error.
-Errors are currently not possible, but checking the return value
-is recommended for future compatibility.
-@end deftypefun
-
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float input and output functions
@@ -3401,7 +3364,7 @@ Return a string saying which thresholds file has been used at compile time.
 This file is normally selected from the processor type.
 @end deftypefun
 
-@node Exception Related Functions, Compatibility with MPF, Miscellaneous Functions, MPFR Interface
+@node Exception Related Functions, Memory Handling Functions, Miscellaneous Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Exception related functions
 @section Exception Related Functions
@@ -3643,7 +3606,53 @@ Restore the flags specified by @var{mask} to their state represented
 in @var{flags}.
 @end deftypefun
 
-@node Compatibility with MPF, Custom Interface, Exception Related Functions, MPFR Interface
+@node Memory Handling Functions, Compatibility with MPF, Exception Related Functions, MPFR Interface
+@comment  node-name,  next,  previous,  up
+@cindex Memory handling functions
+@section Memory Handling Functions
+
+These are general functions concerning memory handling
+(@pxref{Memory Handling}, for more information).
+
+@deftypefun void mpfr_free_cache (void)
+Free all caches and pools used by MPFR internally (those local to the
+current thread and those shared by all threads).
+You should call this function before terminating a thread, even if you did
+not call @code{mpfr_const_*} functions directly (they could have been called
+internally).
+@end deftypefun
+
+@deftypefun void mpfr_free_cache2 (mpfr_free_cache_t @var{way})
+Free various caches and pools used by MPFR internally,
+as specified by @var{way}, which is a set of flags:
+@itemize @bullet
+@item those local to the current thread if flag @code{MPFR_FREE_LOCAL_CACHE}
+is set;
+@item those shared by all threads if flag @code{MPFR_FREE_GLOBAL_CACHE}
+is set.
+@end itemize
+The other bits of @var{way} are currently ignored and are reserved for
+future use; they should be zero.
+
+Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
+is currently equivalent to @code{mpfr_free_cache()}.
+@end deftypefun
+
+@deftypefun void mpfr_free_pool (void)
+Free the pools used by MPFR internally.
+Note: This function is automatically called after the thread-local caches
+are freed (with @code{mpfr_free_cache} or @code{mpfr_free_cache2}).
+@end deftypefun
+
+@deftypefun int mpfr_mp_memory_cleanup (void)
+This function should be called before calling @code{mp_set_memory_functions}.
+@xref{Memory Handling}, for more information.
+Zero is returned in case of success, non-zero in case of error.
+Errors are currently not possible, but checking the return value
+is recommended for future compatibility.
+@end deftypefun
+
+@node Compatibility with MPF, Custom Interface, Memory Handling Functions, MPFR Interface
 @cindex Compatibility with MPF
 @section Compatibility With MPF
 
