@@ -82,8 +82,8 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   flags = __gmpfr_flags;
 
   /* Convert the ternary values to (-1,0,1). */
-  inexact = VSIGN (inexact);
   inexact2 = VSIGN (inexact2);
+  inexact = VSIGN (inexact);
 
   if (! mpfr_equal_p (tmpa, a) || inexact != inexact2 || flags != flags2)
     {
