@@ -904,7 +904,7 @@ such a case is always explicitly specified in @ref{MPFR Interface}.
 @c to change the libtool interface number (this would have more drawbacks
 @c that advantages in practice), like for any bug fix.
 Example: @code{mpfr_hypot} on (NaN,0) gives NaN, but @code{mpfr_hypot}
-on (NaN,+Inf) gives +Inf (as specified in @ref{Special Functions}),
+on (NaN,+Inf) gives +Inf (as specified in @ref{Transcendental Functions}),
 since for any finite or infinite input @var{x}, @code{mpfr_hypot} on
 (@var{x},+Inf) gives +Inf.
 
@@ -1143,7 +1143,7 @@ MPFR code (libc functions, memory allocator, etc.) may do so.
 * Conversion Functions::
 * Basic Arithmetic Functions::
 * Comparison Functions::
-* Special Functions::
+* Transcendental Functions::
 * Input and Output Functions::
 * Formatted Output Functions::
 * Integer and Remainder Related Functions::
@@ -2050,7 +2050,7 @@ This function is experimental, and does not yet handle intermediate overflows
 and underflows.
 @end deftypefun
 
-@node Comparison Functions, Special Functions, Basic Arithmetic Functions, MPFR Interface
+@node Comparison Functions, Transcendental Functions, Basic Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float comparisons functions
 @cindex Comparison functions
@@ -2150,22 +2150,23 @@ In particular, @code{mpfr_total_order (x, x)} returns true,
 The sign bit of NaN also matters.
 @end deftypefun
 
-@node Special Functions, Input and Output Functions, Comparison Functions, MPFR Interface
-@cindex Special functions
-@section Special Functions
+@node Transcendental Functions, Input and Output Functions, Comparison Functions, MPFR Interface
+@cindex Transcendental functions
+@section Transcendental Functions
 
 All those functions, except explicitly stated (for example
 @code{mpfr_sin_cos}), return a @ref{ternary value}, i.e., zero for an
 exact return value, a positive value for a return value larger than the
 exact result, and a negative value otherwise.
 
-Important note: in some domains, computing special functions (even more
-with correct rounding) is expensive, even for small precision,
-for example the trigonometric and Bessel functions for large argument.
-For some functions, the memory usage might depend not only on the output
-precision: it is the case of the @code{mpfr_rootn_ui} function where the
-memory usage is also linear in the argument @var{k},
-and of the incomplete Gamma function (dependence on the precision of @var{op}).
+Important note: In some domains, computing transcendental functions
+(even more with correct rounding) is expensive, even in small precision,
+for example the trigonometric and Bessel functions with a large argument.
+For some functions, the algorithm complexity and memory usage does not
+depend only on the output precision: for instance, the memory usage of
+@code{mpfr_rootn_ui} is also linear in the argument @var{k}, and the
+memory usage of the incomplete Gamma function also depends on the
+precision of the input @var{op}.
 
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_log_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
@@ -2462,7 +2463,7 @@ calculations if a lower or equal precision is requested. To free these caches,
 use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 @end deftypefun
 
-@node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
+@node Input and Output Functions, Formatted Output Functions, Transcendental Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float input and output functions
 @cindex Input functions
