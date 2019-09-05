@@ -1100,7 +1100,6 @@ Here are a few hints to get the best efficiency out of MPFR:
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
 @cindex Floating-point functions
-@cindex Float functions
 
 The floating-point functions expect arguments of type @code{mpfr_t}.
 
@@ -1787,7 +1786,6 @@ non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 
 @node Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Float arithmetic functions
 @cindex Arithmetic functions
 @section Arithmetic Functions
 
@@ -2016,7 +2014,6 @@ and underflows.
 
 @node Comparison Functions, Transcendental Functions, Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Float comparisons functions
 @cindex Comparison functions
 @section Comparison Functions
 
@@ -2115,7 +2112,6 @@ The sign bit of NaN also matters.
 @end deftypefun
 
 @node Transcendental Functions, Input and Output Functions, Comparison Functions, MPFR Interface
-@cindex Float transcendental functions
 @cindex Transcendental functions
 @section Transcendental Functions
 
@@ -2471,7 +2467,6 @@ use @code{mpfr_free_cache} or @code{mpfr_free_cache2}.
 
 @node Input and Output Functions, Formatted Output Functions, Transcendental Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Float input and output functions
 @cindex Input functions
 @cindex Output functions
 @cindex I/O functions
@@ -2596,7 +2591,6 @@ trailing bits; @samp{U} if this is a UBF number (internal use only);
 
 @node Formatted Output Functions, Integer and Remainder Related Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Float output functions
 @cindex Output functions
 @cindex I/O functions
 @section Formatted Output Functions
