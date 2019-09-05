@@ -1141,7 +1141,7 @@ MPFR code (libc functions, memory allocator, etc.) may do so.
 * Assignment Functions::
 * Combined Initialization and Assignment Functions::
 * Conversion Functions::
-* Basic Arithmetic Functions::
+* Arithmetic Functions::
 * Comparison Functions::
 * Transcendental Functions::
 * Input and Output Functions::
@@ -1545,7 +1545,7 @@ rounded in the direction @var{rnd}.
 See @code{mpfr_set_str}.
 @end deftypefun
 
-@node Conversion Functions, Basic Arithmetic Functions, Combined Initialization and Assignment Functions, MPFR Interface
+@node Conversion Functions, Arithmetic Functions, Combined Initialization and Assignment Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Conversion functions
 @section Conversion Functions
@@ -1785,12 +1785,11 @@ As a consequence, for @code{MPFR_RNDF}, @code{mpfr_fits_ulong_p} will return
 non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 @end deftypefun
 
-@node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
+@node Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Basic arithmetic functions
-@cindex Float arithmetic functions
 @cindex Arithmetic functions
-@section Basic Arithmetic Functions
+@cindex Float arithmetic functions
+@section Arithmetic Functions
 
 @deftypefun int mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
@@ -2050,7 +2049,7 @@ This function is experimental, and does not yet handle intermediate overflows
 and underflows.
 @end deftypefun
 
-@node Comparison Functions, Transcendental Functions, Basic Arithmetic Functions, MPFR Interface
+@node Comparison Functions, Transcendental Functions, Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float comparisons functions
 @cindex Comparison functions
