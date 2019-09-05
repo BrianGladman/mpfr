@@ -167,10 +167,13 @@ int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mpfr_t ta, tb, tc;
+  mpfr_flags_t old_flags, flags1, flags2;
   int inexact1, inexact2;
 
   if (rnd_mode == MPFR_RNDF)
     return mpfr_mul2 (a, b, c, rnd_mode);
+
+  old_flags = __gmpfr_flags;
 
   mpfr_init2 (ta, MPFR_PREC (a));
   mpfr_init2 (tb, MPFR_PREC (b));
@@ -178,13 +181,24 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTN (mpfr_set (tb, b, MPFR_RNDN) == 0);
   MPFR_ASSERTN (mpfr_set (tc, c, MPFR_RNDN) == 0);
 
+  /* Note: If b or c is NaN, then the NaN flag has been set by mpfr_set above.
+     Thus restore the old flags just below to make sure that mpfr_mul3 is
+     tested under the real conditions. */
+
+  __gmpfr_flags = old_flags;
   inexact2 = mpfr_mul3 (ta, tb, tc, rnd_mode);
+  flags2 = __gmpfr_flags;
+
+  __gmpfr_flags = old_flags;
   inexact1 = mpfr_mul2 (a, b, c, rnd_mode);
-  if (MPFR_IS_NAN (ta) && MPFR_IS_NAN (a))
-    {
-      /* Getting both NaN is OK. */
-    }
-  else if (! mpfr_equal_p (ta, a) || ! SAME_SIGN (inexact1, inexact2))
+  flags1 = __gmpfr_flags;
+
+  /* Convert the ternary values to (-1,0,1). */
+  inexact2 = VSIGN (inexact2);
+  inexact1 = VSIGN (inexact1);
+
+  if (! ((MPFR_IS_NAN (ta) && MPFR_IS_NAN (a)) || mpfr_equal_p (ta, a)) ||
+      inexact1 != inexact2 || flags1 != flags2)
     {
       /* We do not have MPFR_PREC_FSPEC, so let's use mpfr_eexp_t and
          MPFR_EXP_FSPEC since mpfr_prec_t values are guaranteed to be
@@ -207,8 +221,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpfr_fdump (stderr, ta);
       fprintf (stderr, "NewMul: ");
       mpfr_fdump (stderr, a);
-      fprintf (stderr, "NewInexact = %d | OldInexact = %d\n",
-               inexact1, inexact2);
+      fprintf (stderr, "OldMul: ternary = %2d, flags =", inexact2);
+      flags_fout (stderr, flags2);
+      fprintf (stderr, "NewMul: ternary = %2d, flags =", inexact1);
+      flags_fout (stderr, flags1);
       MPFR_ASSERTN(0);
     }
 
