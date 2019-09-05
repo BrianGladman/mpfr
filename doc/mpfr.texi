@@ -1787,8 +1787,8 @@ non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
 
 @node Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@cindex Arithmetic functions
 @cindex Float arithmetic functions
+@cindex Arithmetic functions
 @section Arithmetic Functions
 
 @deftypefun int mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -2150,6 +2150,7 @@ The sign bit of NaN also matters.
 @end deftypefun
 
 @node Transcendental Functions, Input and Output Functions, Comparison Functions, MPFR Interface
+@cindex Float transcendental functions
 @cindex Transcendental functions
 @section Transcendental Functions
 
