@@ -2166,7 +2166,16 @@ For some functions, the algorithm complexity and memory usage does not
 depend only on the output precision: for instance, the memory usage of
 @code{mpfr_rootn_ui} is also linear in the argument @var{k}, and the
 memory usage of the incomplete Gamma function also depends on the
-precision of the input @var{op}.
+precision of the input @var{op}. It is also theoretically possible that
+some functions on some particular inputs might be very hard to round
+(i.e. the Table Maker's Dilemma occurs in much larger precisions than
+normally expected from the context), meaning that the internal precision
+needs to be increased even more; but it is conjectured that the needed
+precision has a reasonable bound.
+@c Let's not give too many details, but by context, it is implied that
+@c the input precision is involved if the cases have been built so that
+@c they are hard to round, like in function bad_cases in the test suite
+@c (tests/tests.c).
 
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_log_ui (mpfr_t @var{rop}, unsigned long @var{op}, mpfr_rnd_t @var{rnd})
