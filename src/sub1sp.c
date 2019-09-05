@@ -75,6 +75,10 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   inexact = mpfr_sub1sp_ref (a, b, c, rnd_mode);
   flags = __gmpfr_flags;
 
+  /* Convert the ternary values to (-1,0,1). */
+  inexact2 = VSIGN (inexact2);
+  inexact = VSIGN (inexact);
+
   if (! mpfr_equal_p (tmpa, a) || inexact != inexact2 || flags != flags2)
     {
       fprintf (stderr, "sub1 & sub1sp return different values for %s\n"
@@ -90,9 +94,10 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpfr_fdump (stderr, tmpa);
       fprintf (stderr, "sub1sp: ");
       mpfr_fdump (stderr, a);
-      fprintf (stderr, "Ternary value: sub1 = %d, sub1sp = %d\n"
-               "Flags: sub1 = %u, sub1sp = %u\n",
-               inexact2, inexact, flags2, flags);
+      fprintf (stderr, "sub1  : ternary = %2d, flags =", inexact2);
+      flags_fout (stderr, flags2);
+      fprintf (stderr, "sub1sp: ternary = %2d, flags =", inexact);
+      flags_fout (stderr, flags);
       MPFR_ASSERTN (0);
     }
   mpfr_clears (tmpa, tmpb, tmpc, (mpfr_ptr) 0);
