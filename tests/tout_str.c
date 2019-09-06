@@ -106,9 +106,7 @@ int
 main (int argc, char *argv[])
 {
   const char *fname = "tout_str_out.txt";
-  int i, N=10000, p;
-  mpfr_rnd_t rnd;
-  double d;
+  int i, N = 10000;
 
   tests_start_mpfr ();
 
@@ -152,10 +150,16 @@ main (int argc, char *argv[])
   /* random tests */
   for (i = 0; i < N; i++)
     {
+      double d;
+      mpfr_rnd_t rnd;
+      int b;
+
       d = DBL_RAND ();
       rnd = RND_RAND ();
-      p = 2 + randlimb () % 61;
-      check (d, rnd, p);
+      do
+        b = (randlimb () % (62 + 36 + 1)) - 36;
+      while (b > -2 && b < 2);
+      check (d, rnd, b);
     }
 
   if (fout != stdout)

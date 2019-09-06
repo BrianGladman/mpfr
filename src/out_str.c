@@ -41,7 +41,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   mpfr_exp_t e;
   int err, r;
 
-  MPFR_ASSERTN (base >= 2 && base <= 62);
+  MPFR_ASSERTN ((base >= -36 && base <= -2) || (base >= 2 && base <= 62));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
     {
