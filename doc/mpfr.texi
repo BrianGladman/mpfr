@@ -2012,6 +2012,9 @@ This function is experimental, and does not yet handle intermediate overflows
 and underflows.
 @end deftypefun
 
+For the power functions (with an integer exponent or not), see @ref{mpfr_pow}
+in @ref{Transcendental Functions}.
+
 @node Comparison Functions, Transcendental Functions, Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Comparison functions
@@ -2172,6 +2175,7 @@ Set @var{rop} to @m{e^{op}-1,the exponential of @var{op} followed by a
 subtraction by one}, rounded in the direction @var{rnd}.
 @end deftypefun
 
+@anchor{mpfr_pow}
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
