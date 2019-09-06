@@ -162,10 +162,12 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      thanks to a FMA (this problem is transferred to the FMA code). */
   sh = (mpfr_get_emax () - 1) / 2 - Ex;
 
-  /* TODO: The general case could be improved by first avoiding the
-     scaling and using 2 mpfr_sqr, a mpfr_add and a mpfr_sqrt, possibly
-     with faithful rounding. Use scaling and the code below only in case
-     of overflow or underflow. */
+  /* FIXME: ti is subject to underflow. Solution: x and y could be
+     aliased with MPFR_ALIAS, and if need be, the aliases be pre-scaled
+     exactly as UBF, so that x^2 + y^2 is in range. Then call mpfr_fmma
+     and the square root, and scale the result. The error analysis would
+     be simpler.
+     Note: mpfr_fmma is currently not optimized. */
 
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
