@@ -399,7 +399,7 @@ by typing:
 
 In case of failure, you may want to check whether the problem is already
 known. If not, please report this failure to the MPFR mailing-list
-@samp{mpfr@@inria.fr}. For details, @xref{Reporting Bugs}.
+@samp{mpfr@@inria.fr}. For details, see @ref{Reporting Bugs}.
 
 @item
 @samp{make install}
