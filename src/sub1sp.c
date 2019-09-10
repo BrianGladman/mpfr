@@ -171,10 +171,21 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       rb = sb = 0;
       /* Note: sh is not initialized, but will not be used in this case. */
     }
-  else if (bx > cx)
+  else
     {
-      MPFR_SET_SAME_SIGN (a, b);
-    BGreater1:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+        }
+      else
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       sh = GMP_NUMB_BITS - p;
       mask = MPFR_LIMB_MASK(sh);
@@ -239,15 +250,6 @@ mpfr_sub1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             }
           sb = 1;
         }
-    }
-  else /* cx > bx */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      MPFR_SET_OPPOSITE_SIGN (a, b);
-      goto BGreater1;
     }
 
   /* now perform rounding */
@@ -352,10 +354,21 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       bx -= cnt;
       rb = sb = 0;
     }
-  else if (bx > cx)
+  else
     {
-      MPFR_SET_SAME_SIGN (a, b);
-    BGreater1:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+        }
+      else
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       if (d < GMP_NUMB_BITS)
         {
@@ -427,15 +440,6 @@ mpfr_sub1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                 }
             }
         }
-    }
-  else /* cx > bx */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      MPFR_SET_OPPOSITE_SIGN (a, b);
-      goto BGreater1;
     }
 
   /* now perform rounding */
@@ -559,12 +563,23 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       rb = sb = 0;
       /* Note: sh is not initialized, but will not be used in this case. */
     }
-  else if (bx > cx)
+  else
     {
       mp_limb_t t;
 
-      MPFR_SET_SAME_SIGN (a, b);
-    BGreater2:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+        }
+      else
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       sh =  2 * GMP_NUMB_BITS - p;
       mask = MPFR_LIMB_MASK(sh);
@@ -692,15 +707,6 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           sb = 1;
         }
     }
-  else /* cx > bx */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      MPFR_SET_OPPOSITE_SIGN (a, b);
-      goto BGreater2;
-    }
 
   /* now perform rounding */
 
@@ -822,12 +828,23 @@ mpfr_sub1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
       rb = sb = 0; /* the subtraction is exact */
     }
-  else if (bx > cx)
+  else
     {
       mp_limb_t t;
 
-      MPFR_SET_SAME_SIGN (a, b); /* since bx > cx, sign(b - c) = sign(b) */
-    BGreater2:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+        }
+      else
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       if (d < GMP_NUMB_BITS)
         {
@@ -971,15 +988,6 @@ mpfr_sub1sp2n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
         }
     }
-  else /* cx > bx */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      MPFR_SET_OPPOSITE_SIGN (a, b);
-      goto BGreater2;
-    }
 
   /* now perform rounding */
 
@@ -1110,10 +1118,21 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       rb = sb = 0;
       /* Note: sh is not initialized, but will not be used in this case. */
     }
-  else if (bx > cx)
+  else
     {
-      MPFR_SET_SAME_SIGN (a, b);
-    BGreater2:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+          MPFR_SET_OPPOSITE_SIGN (a, b);
+        }
+      else
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       sh =  3 * GMP_NUMB_BITS - p;
       mask = MPFR_LIMB_MASK(sh);
@@ -1294,15 +1313,6 @@ mpfr_sub1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
             }
           sb = 1;
         }
-    }
-  else /* cx > bx */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      MPFR_SET_OPPOSITE_SIGN (a, b);
-      goto BGreater2;
     }
 
   /* now perform rounding */

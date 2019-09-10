@@ -158,9 +158,16 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       ap[0] = a0 ^ rb;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
-  else if (bx > cx)
+  else
     {
-    BGreater1:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       mask = MPFR_LIMB_MASK(sh);
       /* TODO: Should the case d < sh be removed, i.e. seen as a particular
@@ -201,14 +208,6 @@ mpfr_add1sp1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           rb = 0; /* since p < GMP_NUMB_BITS */
           sb = 1; /* since c <> 0 */
         }
-    }
-  else /* bx < cx: swap b and c */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      goto BGreater1;
     }
 
   /* Note: we could keep the output significand in a0 for the rounding,
@@ -281,9 +280,16 @@ mpfr_add1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       bx ++;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
-  else if (bx > cx)
+  else
     {
-    BGreater1:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       if (d < GMP_NUMB_BITS) /* 1 <= d < GMP_NUMB_BITS */
         {
@@ -308,14 +314,6 @@ mpfr_add1sp1n (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           ap[0] = bp[0];
           rb = d == GMP_NUMB_BITS;
         }
-    }
-  else /* bx < cx: swap b and c */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      goto BGreater1;
     }
 
   /* Note: we could keep the output significand in a0 for the rounding,
@@ -391,9 +389,16 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       ap[0] = a0 ^ rb;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
-  else if (bx > cx)
+  else
     {
-    BGreater2:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
@@ -436,14 +441,6 @@ mpfr_add1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           rb = 0; /* since p < 2*GMP_NUMB_BITS */
           sb = 1; /* since c <> 0 */
         }
-    }
-  else /* bx < cx: swap b and c */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      goto BGreater2;
     }
 
   /* now perform rounding */
@@ -648,9 +645,16 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
       ap[0] = a0 ^ rb;
       sb = 0; /* since b + c fits on p+1 bits, the sticky bit is zero */
     }
-  else if (bx > cx)
+  else
     {
-    BGreater2:
+      if (bx < cx)  /* swap b and c */
+        {
+          mpfr_exp_t tx;
+          mp_limb_t *tp;
+          tx = bx; bx = cx; cx = tx;
+          tp = bp; bp = cp; cp = tp;
+        }
+      MPFR_ASSERTD (bx > cx);
       d = (mpfr_uexp_t) bx - cx;
       mask = MPFR_LIMB_MASK(sh);
       if (d < GMP_NUMB_BITS) /* 0 < d < GMP_NUMB_BITS */
@@ -727,14 +731,6 @@ mpfr_add1sp3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           rb = 0; /* since p < 3*GMP_NUMB_BITS */
           sb = 1; /* since c <> 0 */
         }
-    }
-  else /* bx < cx: swap b and c */
-    {
-      mpfr_exp_t tx;
-      mp_limb_t *tp;
-      tx = bx; bx = cx; cx = tx;
-      tp = bp; bp = cp; cp = tp;
-      goto BGreater2;
     }
 
   /* now perform rounding */
