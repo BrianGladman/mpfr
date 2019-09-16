@@ -20,6 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* FIXME: The output is not tested (thus coverage data are meaningless). */
+
 #include <float.h>
 
 #include "mpfr-test.h"

@@ -20,6 +20,12 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* FIXME: The output is not tested (thus coverage data are meaningless);
+   only the return value is tested (output string length).
+   Knowing the implementation, we may need only some minimal checks:
+   all the formatted output functions are based on mpfr_vasnprintf_aux
+   and full checks are done via tsprintf. */
+
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
