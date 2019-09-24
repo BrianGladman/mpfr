@@ -19,6 +19,6 @@ dist_doc_DATA = FAQ.html
 
 info_TEXINFOS = mpfr.texi
 
-mpfr_TEXINFOS = fdl.texi
+mpfr_TEXINFOS = texinfo.tex fdl.texi
 
 MAKEINFOFLAGS = --enable-encoding
