@@ -26,7 +26,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "ieee_floats.h"
 
 static int
-check_denorms (void)
+check_subnorm (void)
 {
   mpfr_rnd_t rnd_mode;
   mpfr_t x;
@@ -277,7 +277,7 @@ main (void)
   printf ("DBL_MAX_EXP  = %ld\n", (long) DBL_MAX_EXP);
 #endif
 
-  if (check_denorms ())
+  if (check_subnorm ())
     exit (1);
 
   check_inf_nan ();

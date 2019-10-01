@@ -298,7 +298,7 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
   fi
 fi
 
-dnl Check if subnormal (denormalized) numbers are supported
+dnl Check if subnormal numbers are supported.
 dnl for the binary64 format, the smallest normal number is 2^(-1022)
 dnl for the binary32 format, the smallest normal number is 2^(-126)
 dnl Note: One could double-check with the value of the macros
@@ -308,7 +308,7 @@ dnl subnormal support. Anyway, this check is useful only for the
 dnl tests. Thus in doubt, assume that subnormals are not supported,
 dnl in order to disable the corresponding tests (which could fail).
 AC_CACHE_CHECK([for subnormal double-precision numbers],
-mpfr_cv_have_denorms, [
+mpfr_cv_have_subnorm_dbl, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
@@ -317,15 +317,16 @@ int main (void) {
   return 2.0 * (double) (x / 2.0) != x;
 }
 ]])],
-   [mpfr_cv_have_denorms="yes"],
-   [mpfr_cv_have_denorms="no"],
-   [mpfr_cv_have_denorms="cannot test, assume no"])
+   [mpfr_cv_have_subnorm_dbl="yes"],
+   [mpfr_cv_have_subnorm_dbl="no"],
+   [mpfr_cv_have_subnorm_dbl="cannot test, assume no"])
 ])
-if test "$mpfr_cv_have_denorms" = "yes"; then
-  AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) doubles work.])
+if test "$mpfr_cv_have_subnorm_dbl" = "yes"; then
+  AC_DEFINE(HAVE_SUBNORM_DBL, 1,
+   [Define if the double type fully supports subnormals.])
 fi
 AC_CACHE_CHECK([for subnormal single-precision numbers],
-mpfr_cv_have_denorms_flt, [
+mpfr_cv_have_subnorm_flt, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
@@ -334,13 +335,13 @@ int main (void) {
   return 2.0 * (float) (x / 2.0) != x;
 }
 ]])],
-   [mpfr_cv_have_denorms_flt="yes"],
-   [mpfr_cv_have_denorms_flt="no"],
-   [mpfr_cv_have_denorms_flt="cannot test, assume no"])
+   [mpfr_cv_have_subnorm_flt="yes"],
+   [mpfr_cv_have_subnorm_flt="no"],
+   [mpfr_cv_have_subnorm_flt="cannot test, assume no"])
 ])
-if test "$mpfr_cv_have_denorms_flt" = "yes"; then
-  AC_DEFINE(HAVE_DENORMS_FLT,1,
-  [Define if subnormal (denormalized) floats work.])
+if test "$mpfr_cv_have_subnorm_flt" = "yes"; then
+  AC_DEFINE(HAVE_SUBNORM_FLT, 1,
+   [Define if the float type fully supports subnormals.])
 fi
 
 dnl Check if signed zeros are supported. Note: the test will fail

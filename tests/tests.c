@@ -451,12 +451,12 @@ mpfr_test_init (void)
   set_fpc_csr(exp.fc_word);
 #endif
 
-#ifdef HAVE_DENORMS
+#ifdef HAVE_SUBNORM_DBL
   {
     double d = DBL_MIN;
     if (2.0 * (d / 2.0) != d)
       {
-        printf ("Error: HAVE_DENORMS defined, but no subnormals.\n");
+        printf ("Error: HAVE_SUBNORM_DBL defined, but no subnormals.\n");
         exit (1);
       }
   }

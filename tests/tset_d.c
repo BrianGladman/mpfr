@@ -200,7 +200,7 @@ main (int argc, char *argv[])
         {
           d = DBL_RAND ();
         }
-#ifdef HAVE_DENORMS
+#ifdef HAVE_SUBNORM_DBL
       while (0);
 #else
       while (ABS(d) < DBL_MIN);

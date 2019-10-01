@@ -519,7 +519,8 @@ List of macros used for checking MPFR:
 + MPFR_FPU_PREC:        Allows to test MPFR on x86 processors when the
                         x87 FPU rounding precision has been changed (see
                         tests/tests.c for its usage).
-+ HAVE_DENORMS:         Define if subnormal (denormalized) floats work.
++ HAVE_SUBNORM_DBL:     Define if the double type fully supports subnormals.
++ HAVE_SUBNORM_FLT:     Define if the float type fully supports subnormals.
 + HAVE_SIGNEDZ:         Define if signed zeros are supported.
 + HAVE_SYS_TIME_H:      Define if the header sys/time.h is usable.
 + HAVE_GETTIMEOFDAY:    Define if the function gettimeofday() is available.

@@ -207,7 +207,7 @@ main (void)
       mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }
 
-#ifdef HAVE_DENORMS_FLT
+#ifdef HAVE_SUBNORM_FLT
   for (i = 0; i < 2; i++)
     {
       mpfr_set_si_2exp (x, 1, -150, MPFR_RNDN);
@@ -349,7 +349,7 @@ main (void)
           exit (1);
         }
     }
-#endif /* HAVE_DENORMS_FLT */
+#endif /* HAVE_SUBNORM_FLT */
 
   mpfr_set_si_2exp (x, 1, 128, MPFR_RNDN);
   g = FLT_MAX;

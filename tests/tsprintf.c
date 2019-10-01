@@ -1025,7 +1025,7 @@ random_double (void)
         {
           y = DBL_RAND ();
         }
-#ifdef HAVE_DENORMS
+#ifdef HAVE_SUBNORM_DBL
       while (0);
 #else
       while (ABS(y) < DBL_MIN);
