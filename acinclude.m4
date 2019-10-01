@@ -304,7 +304,9 @@ dnl for the binary32 format, the smallest normal number is 2^(-126)
 dnl Note: One could double-check with the value of the macros
 dnl DBL_HAS_SUBNORM and FLT_HAS_SUBNORM, when defined (C2x), but
 dnl neither tests would be reliable on implementations with partial
-dnl subnormal support.
+dnl subnormal support. Anyway, this check is useful only for the
+dnl tests. Thus in doubt, assume that subnormals are not supported,
+dnl in order to disable the corresponding tests (which could fail).
 AC_CACHE_CHECK([for subnormal double-precision numbers],
 mpfr_cv_have_denorms, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
