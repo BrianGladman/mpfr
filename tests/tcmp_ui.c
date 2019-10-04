@@ -110,6 +110,8 @@ check_macros (void)
     }
   if (c != 1)
     {
+      /* Failure in r13626 on x86_64 with the clang-9 1:9-1 Debian package:
+         c = 2 instead of 1 */
       printf ("Error 3 on mpfr_cmp_ui(x,17) in check_macros\n"
               "(c = %d instead of 1)\n", c);
       exit (1);
