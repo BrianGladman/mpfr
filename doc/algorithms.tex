@@ -94,31 +94,31 @@ to have the same precision, usually denoted $p$.
 
 \section{Error calculus}
 
-Let $n$ --- the working precision ---
+Let $p$ --- the working precision ---
 be a positive integer (considered fixed in the following).
 We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := \Exp(x)$, and
-we define $\ulp(x) := 2^{\Exp(x) - n}$.
+we define $\ulp(x) := 2^{\Exp(x) - p}$.
 Any time a number appears in a $\ulp$, it is implicitly assumed to be
 nonzero.
 
 \subsection{Ulp calculus}
 
 \begin{Rule} \label{R1}
-$2^{-n} |x| < \ulp(x) \le 2^{-n+1} |x|$.
+$2^{-p} |x| < \ulp(x) \le 2^{1-p} |x|$.
 \end{Rule}
 \begin{proof}
 Obvious from $x = m \cdot 2^e$ with $\frac{1}{2} \le |m| < 1$.
 \end{proof}
 
 \begin{Rule} \label{R2}
-If $a$ and $b$ have same precision $n$,
+If $a$ and $b$ have same precision $p$,
 and $|a| \le |b|$, then $\ulp(a) \le \ulp(b)$.
 \end{Rule}
 \begin{proof}
 Write $a = m_a \cdot 2^{e_a}$ and $b = m_b \cdot 2^{e_b}$.
 Then $|a| \le |b|$ implies $e_a \le e_b$, thus
-$\ulp(a) = 2^{e_a-n} \le 2^{e_b-n} = \ulp(b)$.
+$\ulp(a) = 2^{e_a-p} \le 2^{e_b-p} = \ulp(b)$.
 \end{proof}
 
 \begin{Rule} \label{R3}
@@ -183,7 +183,7 @@ $\frac{1}{2} |a| \cdot \ulp(1) < \ulp(a) \leq |a| \cdot \ulp(1)$.
 \end{Rule}
 \begin{proof}
 The left inequality comes from Rule~\ref{R5} with $b=1$,
-and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-n} =\ulp(a)$.
+and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-p} =\ulp(a)$.
 \end{proof}
 
 \begin{Rule} \label{R8}
@@ -196,7 +196,7 @@ Without loss of generality, assume $x > 0$.
 Let $x = m \cdot 2^e$ with $\frac{1}{2} \leq m < 1$.
 As $\frac{1}{2} 2^{e_x}$ is a machine number, necessarily $\circ(x) \geq
 \frac{1}{2} 2^{e_x}$, thus by Rule~\ref{R2}, then $\ulp(\circ(x)) \geq
-2^{e_x - n} = \ulp(x)$.
+2^{e_x - p} = \ulp(x)$.
 If we round toward zero, then $\circ(x) \leq x$ and by Rule~\ref{R2} again,
 $\ulp(\circ(x)) \leq \ulp(x)$.
 \end{proof}
@@ -458,13 +458,13 @@ $v = m \cdot 2^{e_v}$ with $1/2 \leq |m| < 1$.
 
 The error in ulp (ulp-error) and the relative error are related as follows.
 
-Let $n$ be the working precision.
+Let $p$ be the working precision.
 Consider $u = \circ(x)$, then the error on $u$ is at most
-$\ulp(u) = 2^{\Exp(u)-n} \leq |u| \cdot 2^{1-n}$, thus the relative error
-is $\leq 2^{1-n}$.
+$\ulp(u) = 2^{\Exp(u)-p} \leq |u| \cdot 2^{1-p}$, thus the relative error
+is $\leq 2^{1-p}$.
 
 Respectively, if the relative error is $\leq \delta$, then the error
-is at most $\delta |u| \leq \delta 2^n \ulp(u)$. (Going from the ulp-error
+is at most $\delta |u| \leq \delta 2^p \ulp(u)$. (Going from the ulp-error
 to the relative error and back, we lose a factor of two.)
 
 It is sometimes more convenient to use the relative error instead of the
@@ -475,17 +475,17 @@ Higham \cite{Higham02} proposes the following framework:
 we associate to each variable the cumulated number $k$ of roundings that were
 made.
 The $i$th rounding introduces a relative error of $\delta_i$,
-with $|\delta_i| \leq 2^{1-n}$, i.e. the computed result is
+with $|\delta_i| \leq 2^{1-p}$, i.e. the computed result is
 $1+\delta_i$ times the exact result.
 Hence $k$ successive roundings give a error factor of $(1+\delta_1)
 (1+\delta_2) \cdots (1+\delta_k)$, which is between $(1-\varepsilon)^k$
-and $(1+\varepsilon)^k$ with $\varepsilon = 2^{1-n}$.
+and $(1+\varepsilon)^k$ with $\varepsilon = 2^{1-p}$.
 In particular, if all roundings are away, the final relative error is
-at most $k \varepsilon = k \cdot 2^{1-n}$, thus at most $2k$ ulps.
+at most $k \varepsilon = k \cdot 2^{1-p}$, thus at most $2k$ ulps.
 
 \begin{lemma} \label{rel_ulp}
 If a value is computed by $k$ successive multiplications or divisions,
-each with rounding away from zero, and precision $n$, then the final
+each with rounding away from zero, and precision $p$, then the final
 error is bounded by $2k$ ulps.
 \end{lemma}
 
