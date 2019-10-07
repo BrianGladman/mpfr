@@ -123,29 +123,17 @@ $\ulp(a) = 2^{e_a-p} \le 2^{e_b-p} = \ulp(b)$.
 
 \begin{Rule} \label{R3}
 Let $x$ be a real number, and $y = \circ(x)$.
-Then $|x - y| \leq \frac{1}{2} {\rm min}(\ulp(x), \ulp(y))$
+Then $|x - y| \leq \frac{1}{2} \ulp(x) \leq \frac{1}{2} \ulp(y)$
 in rounding to nearest,
-and $|x - y| \leq {\rm min}(\ulp(x), \ulp(y))$ for the other rounding modes.
+and $|x - y| \leq \ulp(x) \leq \ulp(y)$ in the other rounding modes.
 \end{Rule}
 \begin{proof}
-First consider rounding to nearest.
-By definition, we have $|x-y| \leq \frac{1}{2} \ulp(y)$.
-If $\ulp(y) \leq \ulp(x)$, then $|x-y| \leq \frac{1}{2} \ulp(y)
-\leq \frac{1}{2} \ulp(x)$.
-The only difficult case is when $\ulp(x) < \ulp(y)$, but then
-necessarily $y$ is a power of two;
-since in that case $y - \frac{1}{2} \ulp(y)$ is exactly representable,
-the maximal possible difference between $x$ and $y$
-is $\frac{1}{4} \ulp(y) = \frac{1}{2} \ulp(x)$, which concludes the proof
-in the rounding to nearest case.
-
-In rounding to zero, we always have $\ulp(y) \leq \ulp(x)$, so the rule
-holds.
-In rounding away from zero, the only difficult case is when
-$\ulp(x) < \ulp(y)$, but then $y$ is a power of two, and since
-$y - \frac{1}{2} \ulp(y)$ is exactly representable,
-the maximal possible difference between $x$ and $y$ is $\frac{1}{2} \ulp(y)
-= \ulp(x)$, which concludes the proof.
+In the binade $[2^{e-1},2^e]$, the distance between two consecutive
+machine numbers is $\ulp(x)$. Hence $|x - y| \leq c \cdot \ulp(x)$
+with $c = \frac{1}{2}$ in rounding to nearest and $c = 1$ in the other
+rounding modes. Since $x \in [2^{e-1},2^e[$ and both $2^{e-1}$ and $2^e$
+are exactly representable, $y \in [2^{e-1},2^e]$.
+Thus $\ulp(x) \leq \ulp(y)$, which completes the proof.
 \end{proof}
 
 \begin{Rule} \label{R4}
