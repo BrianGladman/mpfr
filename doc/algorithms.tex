@@ -105,6 +105,11 @@ also assumes that no underflows nor overflows occur.
 
 \subsection{Ulp calculus}
 
+% TODO: Update the numbers in the labels (and the references).
+% Alternatively, rename the labels to something more meaningful.
+% If one wants to change the order of the rules (which has been done),
+% the numbers in the labels no longer make any sense.
+
 \begin{Rule} \label{R1}
 $2^{-p} |x| < \ulp(x) \le 2^{1-p} |x|$.
 \end{Rule}
@@ -122,6 +127,19 @@ Then $|a| \le |b|$ implies $e_a \le e_b$, thus
 $\ulp(a) = 2^{e_a-p} \le 2^{e_b-p} = \ulp(b)$.
 \end{proof}
 
+\begin{Rule} \label{R8}
+For any $x \neq 0$ and any rounding mode $\circ(\cdot)$,
+we have $\ulp(x) \leq \ulp(\circ(x))$, and equality holds when rounding toward
+zero, toward $-\infty$ for $x>0$, or toward $+\infty$ for $x<0$.
+\end{Rule}
+\begin{proof}
+Without loss of generality, assume $x > 0$. Since $x \in [2^{e-1},2^e[$
+and both $2^{e-1}$ and $2^e$ are exactly representable, one has
+$\circ(x) \in [2^{e-1},2^e]$, and in rounding toward zero,
+$\circ(x) \in [2^{e-1},2^e[$. For any $x, y \in [2^{e-1},2^e[$, one has
+$\ulp(x) = \ulp(y) = \ulp(2^{e-1}) < \ulp(2^e)$. QED.
+\end{proof}
+
 \begin{Rule} \label{R3}
 Let $x$ be a real number, and $y = \circ(x)$.
 Then $|x - y| \leq \frac{1}{2} \ulp(x) \leq \frac{1}{2} \ulp(y)$
@@ -132,9 +150,8 @@ and $|x - y| \leq \ulp(x) \leq \ulp(y)$ in the other rounding modes.
 In the binade $[2^{e-1},2^e]$, the distance between two consecutive
 machine numbers is $\ulp(x)$. Hence $|x - y| \leq c \cdot \ulp(x)$
 with $c = \frac{1}{2}$ in rounding to nearest and $c = 1$ in the other
-rounding modes. Since $|x| \in [2^{e-1},2^e[$ and both $2^{e-1}$ and $2^e$
-are exactly representable, $|y| \in [2^{e-1},2^e]$.
-Thus $\ulp(x) \leq \ulp(y)$, which completes the proof.
+rounding modes. And $\ulp(x) \leq \ulp(y)$ from Rule~\ref{R8}, which
+completes the proof.
 \end{proof}
 
 \begin{Rule} \label{R4}
@@ -174,19 +191,6 @@ $\frac{1}{2} |a| \cdot \ulp(1) < \ulp(a) \leq |a| \cdot \ulp(1)$.
 \begin{proof}
 The left inequality comes from Rule~\ref{R5} with $b=1$,
 and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-p} =\ulp(a)$.
-\end{proof}
-
-\begin{Rule} \label{R8}
-For any $x \neq 0$ and any rounding mode $\circ(\cdot)$,
-we have $\ulp(x) \leq \ulp(\circ(x))$, and equality holds when rounding toward
-zero, toward $-\infty$ for $x>0$, or toward $+\infty$ for $x<0$.
-\end{Rule}
-\begin{proof}
-Without loss of generality, assume $x > 0$. Since $x \in [2^{e-1},2^e[$
-and both $2^{e-1}$ and $2^e$ are exactly representable, one has
-$\circ(x) \in [2^{e-1},2^e]$, and in rounding toward zero,
-$\circ(x) \in [2^{e-1},2^e[$. For any $x, y \in [2^{e-1},2^e[$, one has
-$\ulp(x) = \ulp(y) = \ulp(2^{e-1}) < \ulp(2^e)$. QED.
 \end{proof}
 
 \begin{Rule} \label{R9}
