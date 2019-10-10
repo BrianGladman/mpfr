@@ -157,13 +157,15 @@ and $b$ by $ab$.
 \end{proof}
 
 \begin{Rule} \label{R6}
-Let $x > 0$, $\circ(\cdot)$ be any rounding, and $u := \circ(x)$,
-then $\frac{1}{2} u < x < 2 u$.
+Let $x$ be a nonzero real number, $\circ(\cdot)$ be any rounding, and
+$u := \circ(x)$. Then, assuming that no underflows nor overflows occur,
+$\frac{1}{2} |u| < |x| < 2 |u|$.
 \end{Rule}
 \begin{proof}
-Assume $x \geq 2 u$, then $2u$ is another representable number which is closer
-from $x$ than $u$, which leads to a contradiction. The same argument proves
-$\frac{1}{2} u < x$.
+Since, no underflows nor overflows occur, $u$ is finite and nonzero.
+Assume $|x| \geq 2 |u|$. Then $2u$ is another representable number,
+which is closer from $x$ than $u$, which leads to a contradiction.
+The same argument proves $\frac{1}{2} |u| < |x|$.
 \end{proof}
 
 \begin{Rule} \label{R7}
