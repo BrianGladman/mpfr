@@ -132,8 +132,8 @@ and $|x - y| \leq \ulp(x) \leq \ulp(y)$ in the other rounding modes.
 In the binade $[2^{e-1},2^e]$, the distance between two consecutive
 machine numbers is $\ulp(x)$. Hence $|x - y| \leq c \cdot \ulp(x)$
 with $c = \frac{1}{2}$ in rounding to nearest and $c = 1$ in the other
-rounding modes. Since $x \in [2^{e-1},2^e[$ and both $2^{e-1}$ and $2^e$
-are exactly representable, $y \in [2^{e-1},2^e]$.
+rounding modes. Since $|x| \in [2^{e-1},2^e[$ and both $2^{e-1}$ and $2^e$
+are exactly representable, $|y| \in [2^{e-1},2^e]$.
 Thus $\ulp(x) \leq \ulp(y)$, which completes the proof.
 \end{proof}
 
