@@ -182,13 +182,11 @@ we have $\ulp(x) \leq \ulp(\circ(x))$, and equality holds when rounding toward
 zero, toward $-\infty$ for $x>0$, or toward $+\infty$ for $x<0$.
 \end{Rule}
 \begin{proof}
-Without loss of generality, assume $x > 0$.
-Let $x = m \cdot 2^e$ with $\frac{1}{2} \leq m < 1$.
-As $\frac{1}{2} 2^{e_x}$ is a machine number, necessarily $\circ(x) \geq
-\frac{1}{2} 2^{e_x}$, thus by Rule~\ref{R2}, then $\ulp(\circ(x)) \geq
-2^{e_x - p} = \ulp(x)$.
-If we round toward zero, then $\circ(x) \leq x$ and by Rule~\ref{R2} again,
-$\ulp(\circ(x)) \leq \ulp(x)$.
+Without loss of generality, assume $x > 0$. Since $x \in [2^{e-1},2^e[$
+and both $2^{e-1}$ and $2^e$ are exactly representable, one has
+$\circ(x) \in [2^{e-1},2^e]$, and in rounding toward zero,
+$\circ(x) \in [2^{e-1},2^e[$. For any $x, y \in [2^{e-1},2^e[$, one has
+$\ulp(x) = \ulp(y) = \ulp(2^{e-1}) < \ulp(2^e)$. QED.
 \end{proof}
 
 \begin{Rule} \label{R9}
