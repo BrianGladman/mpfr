@@ -100,7 +100,8 @@ We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := \Exp(x)$, and
 we define $\ulp(x) := 2^{\Exp(x) - p}$.
 Any time a number appears in a $\ulp$, it is implicitly assumed to be
-nonzero.
+nonzero. Unless specified otherwise, when rounding is involved, one
+also assumes that no underflows nor overflows occur.
 
 \subsection{Ulp calculus}
 
@@ -158,11 +159,10 @@ and $b$ by $ab$.
 
 \begin{Rule} \label{R6}
 Let $x$ be a nonzero real number, $\circ(\cdot)$ be any rounding, and
-$u := \circ(x)$. Then, assuming that no underflows nor overflows occur,
-$\frac{1}{2} |u| < |x| < 2 |u|$.
+$u := \circ(x)$. Then $\frac{1}{2} |u| < |x| < 2 |u|$.
 \end{Rule}
 \begin{proof}
-Since, no underflows nor overflows occur, $u$ is finite and nonzero.
+Since no underflows nor overflows occur, $u$ is finite and nonzero.
 Assume $|x| \geq 2 |u|$. Then $2u$ is another representable number,
 which is closer from $x$ than $u$, which leads to a contradiction.
 The same argument proves $\frac{1}{2} |u| < |x|$.
