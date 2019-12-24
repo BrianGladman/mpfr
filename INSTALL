@@ -207,7 +207,7 @@ specific architecture.
 --enable-assert         build MPFR with assertions.
 
 --enable-thread-safe    build MPFR as thread safe, using compiler-level
-                        Thread Local Storage (TLS). Note: TLS support is
+                        Thread-Local Storage (TLS). Note: TLS support is
                         roughly tested by configure. If configure detects
                         that TLS does not work (because of the compiler,
                         linker or system libraries), it will output an

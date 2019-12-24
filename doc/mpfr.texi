@@ -1049,7 +1049,7 @@ be reallocated and/or freed in some other thread.
 MPFR internal data such as flags, the exponent range, the default
 precision and rounding mode, and caches (i.e., data that are not
 accessed via parameters) are either global (if MPFR has not been
-compiled as thread safe) or per-thread (thread local storage, TLS)@.
+compiled as thread safe) or per-thread (thread-local storage, TLS)@.
 The initial values of TLS data after a thread is created entirely
 depend on the compiler and thread implementation (MPFR simply does
 a conventional variable initialization, the variables being declared
@@ -3333,7 +3333,7 @@ patches applied to the old (compile-time) MPFR version are not available
 
 @deftypefun int mpfr_buildopt_tls_p (void)
 Return a non-zero value if MPFR was compiled as thread safe using
-compiler-level Thread Local Storage (that is, MPFR was built with the
+compiler-level Thread-Local Storage (that is, MPFR was built with the
 @samp{--enable-thread-safe} configure option, see @code{INSTALL} file),
 return zero otherwise.
 @end deftypefun
