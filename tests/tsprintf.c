@@ -225,8 +225,8 @@ static int
 decimal (void)
 {
   mpfr_prec_t p = 128;
-  mpfr_t x;
-  mpfr_t z;
+  mpfr_t x, y, z;
+
   mpfr_init (z);
   mpfr_init2 (x, p);
 
@@ -300,10 +300,13 @@ decimal (void)
 
   /* positive numbers */
   mpfr_set_str (x, "18993474.61279296875", 10, MPFR_RNDN);
+  mpfr_init2 (y, 59);
+  mpfr_set (y, x, MPFR_RNDN);
   mpfr_set_ui (z, 0, MPFR_RNDD);
 
   /* simplest case right justified */
   check_sprintf ("1.899347461279296875000000000000000000000e+07", "%30Re", x);
+  check_sprintf ("      1.899347461279296875e+07", "%30Re", y);
   check_sprintf ("                         2e+07", "%30.0Re", x);
   check_sprintf ("               18993474.612793", "%30Rf", x);
   check_sprintf ("              18993474.6127930", "%30.7Rf", x);
@@ -317,12 +320,14 @@ decimal (void)
   check_sprintf ("                             0", "%30.4Rg", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 1.899347461279296875000000000000000000000E+07", "% 030RE", x);
+  check_sprintf (" 000001.899347461279296875E+07", "% 030RE", y);
   check_sprintf (" 0000000000000000001.89935E+07", "% 030RG", x);
   check_sprintf (" 0000000000000000000000002E+07", "% 030.0RE", x);
   check_sprintf (" 0000000000000000000000000E+00", "% 030.0RE", z);
   check_sprintf (" 00000000000000000000000000000", "% 030.0RF", z);
   /* sign + or -, left justified */
   check_sprintf ("+1.899347461279296875000000000000000000000e+07", "%+-30Re", x);
+  check_sprintf ("+1.899347461279296875e+07     ", "%+-30Re", y);
   check_sprintf ("+2e+07                        ", "%+-30.0Re", x);
   check_sprintf ("+0e+00                        ", "%+-30.0Re", z);
   check_sprintf ("+0                            ", "%+-30.0Rf", z);
@@ -343,6 +348,7 @@ decimal (void)
   check_sprintf ("+00000000.0", "%0+#11.1RZF", z);
   /* pad with leading zero */
   check_sprintf ("1.899347461279296875000000000000000000000e+07", "%030RDe", x);
+  check_sprintf ("0000001.899347461279296875e+07", "%030RDe", y);
   check_sprintf ("00000000000000000000000001e+07", "%030.0RDe", x);
   /* sign or space, decimal point, left justified */
   check_sprintf (" 1.8E+07   ", "%- #11.1RDE", x);
@@ -363,8 +369,12 @@ decimal (void)
 
   /* neighborhood of 1 */
   mpfr_set_str (x, "0.99993896484375", 10, MPFR_RNDN);
+  mpfr_set_prec (y, 43);
+  mpfr_set (y, x, MPFR_RNDN);
   check_sprintf ("9.999389648437500000000000000000000000000E-01", "%-20RE", x);
   check_sprintf ("9.999389648437500000000000000000000000000E-01", "%-20.RE", x);
+  check_sprintf ("9.9993896484375E-01 ", "%-20RE", y);
+  check_sprintf ("9.9993896484375E-01 ", "%-20.RE", y);
   check_sprintf ("1E+00               ", "%-20.0RE", x);
   check_sprintf ("1.0E+00             ", "%-20.1RE", x);
   check_sprintf ("1.00E+00            ", "%-20.2RE", x);
@@ -595,7 +605,7 @@ decimal (void)
   /* regression in MPFR 3.1.0 (bug introduced in r7761, fixed in r7931) */
   check_sprintf ("-10", "%.2Rg", x);
 
-  mpfr_clears (x, z, (mpfr_ptr) 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
   return 0;
 }
 
@@ -907,7 +917,7 @@ static void
 locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
-  mpfr_t x;
+  mpfr_t x, y;
 
   if (setlocale (LC_ALL, "da_DK") == 0 ||
       localeconv()->decimal_point[0] != ',' ||
@@ -927,15 +937,19 @@ locale_da_DK (void)
 
   /* positive numbers */
   mpfr_set_str (x, "18993474.61279296875", 10, MPFR_RNDN);
+  mpfr_init2 (y, 59);
+  mpfr_set (y, x, MPFR_RNDN);
 
   /* simplest case right justified with thousands separator */
   check_sprintf ("1,899347461279296875000000000000000000000e+07", "%'30Re", x);
+  check_sprintf ("      1,899347461279296875e+07", "%'30Re", y);
   check_sprintf ("                   1,89935e+07", "%'30Rg", x);
   check_sprintf ("        18.993.474,61279296875", "%'30.19Rg", x);
   check_sprintf ("             18.993.474,612793", "%'30Rf", x);
 
   /* sign or space, pad, thousands separator with leading zeros */
   check_sprintf (" 1,899347461279296875000000000000000000000E+07", "%' 030RE", x);
+  check_sprintf (" 000001,899347461279296875E+07", "%' 030RE", y);
   check_sprintf (" 0000000000000000001,89935E+07", "%' 030RG", x);
   check_sprintf (" 000000018.993.474,61279296875", "%' 030.19RG", x);
   check_sprintf (" 00000000000018.993.474,612793", "%' 030RF", x);
@@ -960,6 +974,7 @@ locale_da_DK (void)
   check_sprintf ("100" S2 "0000", "%'.4Rf", x);
 
   mpfr_clear (x);
+  mpfr_clear (y);
 
   setlocale (LC_ALL, "C");
 }
