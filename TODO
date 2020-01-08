@@ -288,6 +288,22 @@ Table of contents:
 - mpfr_cmp_uj and mpfr_cmp_sj. They would be useful to test MPFR with
   _MPFR_EXP_FORMAT=4.
 
+- base conversion with the round-trip property using a minimal precision,
+  such as the to_chars functions from the C++ standard:
+
+    The functions [...] ensure that the string representation consists
+    of the smallest number of characters such that there is at least
+    one digit before the radix point (if present) and parsing the
+    representation using the corresponding from_chars function
+    recovers value exactly. [Note: This guarantee applies only if
+    to_chars and from_chars are executed on the same implementation.
+    — end note] If there are several such representations, the
+    representation with the smallest difference from the
+    floating-point argument value is chosen, resolving any remaining
+    ties using rounding according to round_to_nearest.
+
+  Text from: https://www.zsh.org/mla/workers/2019/msg01138.html
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
