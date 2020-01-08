@@ -1234,17 +1234,13 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
    Return -1 in case of overflow on the sizes. */
 static int
 regular_eg (struct number_parts *np, mpfr_srcptr p,
-            const struct printf_spec spec, struct decimal_info *dec_info)
+            const struct printf_spec spec, struct decimal_info *dec_info,
+            int keep_trailing_zeros)
 {
   char *str;
   mpfr_exp_t exp;
 
   const int uppercase = spec.spec == 'E' || spec.spec == 'G';
-  const int spec_g = spec.spec == 'g' || spec.spec == 'G';
-  /* spec.prec == -1 corresponds to mpfr_printf ("%.Re", x), where we want the
-     same number of digits printed, whatever the value of x */
-  const int keep_trailing_zeros = (spec_g && spec.alt)
-    || (!spec_g && ((spec.prec != 0)));
 
   /* sign */
   if (MPFR_IS_NEG (p))
@@ -1310,7 +1306,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
           np->fp_ptr = str;
           np->fp_size = str_len;
           /* Warning! str_len has type size_t, which is unsigned. */
-          if ((!spec_g || spec.alt) && spec.prec > 0 && str_len < spec.prec)
+          if (keep_trailing_zeros && spec.prec > 0 && str_len < spec.prec)
             {
               /* add missing trailing zeros */
               np->fp_trailing_zeros = spec.prec - str_len;
@@ -1371,12 +1367,11 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
    Return -1 in case of overflow on the sizes. */
 static int
 regular_fg (struct number_parts *np, mpfr_srcptr p,
-            const struct printf_spec spec, struct decimal_info *dec_info)
+            const struct printf_spec spec, struct decimal_info *dec_info,
+            int keep_trailing_zeros)
 {
   mpfr_exp_t exp;
   char * str;
-  const int spec_g = (spec.spec == 'g' || spec.spec == 'G');
-  const int keep_trailing_zeros = !spec_g || spec.alt;
 
   /* WARNING: an empty precision field is forbidden (it means precision = 6
      and it should have been changed to 6 before the function call) */
@@ -1431,7 +1426,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               switch (spec.rnd_mode)
                 {
                 case MPFR_RNDA:
-                case MPFR_RNDF:  /* round_away = 1 needed for spec_g */
+                case MPFR_RNDF:  /* round_away = 1 needed for %Rg */
                   round_away = 1;
                   break;
                 case MPFR_RNDZ:
@@ -1486,7 +1481,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               else
                 /* only zeros in fractional part */
                 {
-                  MPFR_ASSERTD (!spec_g);
+                  MPFR_ASSERTD (spec.spec == 'f' || spec.spec == 'F');
                   np->fp_leading_zeros = spec.prec;
                 }
             }
@@ -1528,7 +1523,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 {
                   MPFR_ASSERTD (str[0] == '1');
                   np->ip_ptr[0] = '1';
-                  if (!spec_g || spec.alt)
+                  if (keep_trailing_zeros)
                     np->fp_leading_zeros = spec.prec;
                 }
               else
@@ -1556,7 +1551,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   /* The np->fp_size <= MPFR_INTMAX_MAX test and the
                      cast to mpfr_uintmax_t below allow one to avoid
                      integer overflow. */
-                  if ((!spec_g || spec.alt)
+                  if (keep_trailing_zeros
                       && spec.prec > 0
                       && np->fp_size <= MPFR_INTMAX_MAX
                       && ((mpfr_uintmax_t)
@@ -1818,12 +1813,12 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         {
           if (spec.prec < 0)
             spec.prec = 6;
-          if (regular_fg (np, p, spec, NULL) == -1)
+          if (regular_fg (np, p, spec, NULL, 1) == -1)
             goto error;
         }
       else if (spec.spec == 'e' || spec.spec == 'E')
         {
-          if (regular_eg (np, p, spec, NULL) == -1)
+          if (regular_eg (np, p, spec, NULL, 1) == -1)
             goto error;
         }
       else
@@ -1879,14 +1874,14 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
               /* the conversion is with style 'f' */
               spec.prec = threshold - x - 1;
 
-              if (regular_fg (np, p, spec, &dec_info) == -1)
+              if (regular_fg (np, p, spec, &dec_info, spec.alt) == -1)
                 goto error;
             }
           else
             {
               spec.prec = threshold - 1;
 
-              if (regular_eg (np, p, spec, &dec_info) == -1)
+              if (regular_eg (np, p, spec, &dec_info, spec.alt) == -1)
                 goto error;
             }
         }
