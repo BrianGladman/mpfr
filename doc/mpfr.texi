@@ -2772,7 +2772,7 @@ enough digits so that it can be read back exactly, assuming that the input and
 output variables have the same precision and that the input and output
 rounding modes are both rounding to nearest (as for @code{mpfr_get_str});
 in that case the number of digits displayed does not depend on the value of
-the number, only on its precision.
+the number, only on its precision (for details, @pxref{mpfr_get_str_ndigits}).
 The default precision for an empty @samp{precision} field with @samp{conv}
 specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
 
