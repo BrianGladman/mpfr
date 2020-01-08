@@ -45,6 +45,9 @@ if [ $z -lt $clyr ]; then
   err=1
 fi
 
+# Note: mpfr.pc.in is not checked as it does not have a copyright notice
+# (it is distributed with MPFR, but regarded as trivial).
+
 for file in $srctests BUGS INSTALL README TODO configure.ac
 do
   y=""
