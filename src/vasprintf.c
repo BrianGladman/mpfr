@@ -1241,8 +1241,11 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
   const int uppercase = spec.spec == 'E' || spec.spec == 'G';
   const int spec_g = spec.spec == 'g' || spec.spec == 'G';
+  /* spec.prec == -1 && spec.width == 0 corresponds to
+     mpfr_printf ("%.Re", x), where we want the same number of digits printed,
+     whatever the value of x */
   const int keep_trailing_zeros = (spec_g && spec.alt)
-    || (!spec_g && (spec.prec > 0));
+    || (!spec_g && ((spec.prec > 0) || (spec.prec == -1 && spec.width == 0)));
 
   /* sign */
   if (MPFR_IS_NEG (p))
