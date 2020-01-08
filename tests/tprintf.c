@@ -316,7 +316,7 @@ check_mixed (void)
   check_vprintf ("a. %c, b. %Rb, c. %u, d. %li%ln", i, mpfr, i, lo, &ulo);
   check_length (2, ulo, 36, lu);
   check_vprintf ("a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
-  check_length (3, ush, 29, hu);
+  check_length (3, ush, 46, hu);
   check_vprintf ("a. %hi, b. %f, c. %#.2Rf%n", sh, d, mpfr, &i);
   check_length (4, i, 29, d);
   check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz, &sz);
@@ -356,7 +356,7 @@ check_mixed (void)
     unsigned long long ullo = 1;
 
     check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
-    check_length_with_cmp (11, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
+    check_length_with_cmp (11, mpq, 31, mpq_cmp_ui (mpq, 31, 1), Qu);
     check_vprintf ("a. %lli, b. %Rf%lln", llo, mpfr, &ullo);
     check_length (12, ullo, 19, llu);
   }

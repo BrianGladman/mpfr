@@ -195,7 +195,7 @@ check_mixed (FILE *fout)
                   lo, &ulo);
   check_length (2, ulo, 36, lu);
   check_vfprintf (fout, "a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
-  check_length (3, ush, 29, hu);
+  check_length (3, ush, 46, hu);
   check_vfprintf (fout, "a. %hi, b. %f, c. %#.2Rf%n", sh, d, mpfr, &i);
   check_length (4, i, 29, d);
   check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz,
@@ -233,12 +233,12 @@ check_mixed (FILE *fout)
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
   /* The 'M' specifier was added in gmp 4.2.0 */
   check_vfprintf (fout, "a. %Mx b. %Re%Mn", limb[0], mpfr, &limb[0]);
-  if (limb[0] != 14 + GMP_NUMB_BITS / 4 ||
+  if (limb[0] != 29 + GMP_NUMB_BITS / 4 ||
       limb[1] != MPFR_LIMB_MAX ||
       limb[2] != MPFR_LIMB_MAX)
     {
       printf ("Error in test #11: mpfr_vfprintf did not print %d characters"
-              " as expected\n", 14 + (int) GMP_NUMB_BITS / 4);
+              " as expected\n", 29 + (int) GMP_NUMB_BITS / 4);
       exit (1);
     }
 
@@ -247,12 +247,12 @@ check_mixed (FILE *fout)
      and check it doesn't go through */
   check_vfprintf (fout, "a. %Re .b %Nx%Nn", mpfr, limb, limb_size, limb,
                   limb_size - 1);
-  if (limb[0] != 14 + 3 * GMP_NUMB_BITS / 4 ||
+  if (limb[0] != 29 + 3 * GMP_NUMB_BITS / 4 ||
       limb[1] != MPFR_LIMB_ZERO ||
       limb[2] != MPFR_LIMB_MAX)
     {
       printf ("Error in test #12: mpfr_vfprintf did not print %d characters"
-              " as expected\n", 14 + (int) GMP_NUMB_BITS / 4);
+              " as expected\n", 29 + (int) GMP_NUMB_BITS / 4);
       exit (1);
     }
 #endif
@@ -263,7 +263,7 @@ check_mixed (FILE *fout)
     unsigned long long ullo = 1;
 
     check_vfprintf (fout, "a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
-    check_length_with_cmp (21, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
+    check_length_with_cmp (21, mpq, 31, mpq_cmp_ui (mpq, 31, 1), Qu);
     check_vfprintf (fout, "a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
     check_length_with_cmp (22, mpf, 19, mpf_cmp_ui (mpf, 19), Fg);
   }

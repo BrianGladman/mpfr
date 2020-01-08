@@ -303,7 +303,7 @@ decimal (void)
   mpfr_set_ui (z, 0, MPFR_RNDD);
 
   /* simplest case right justified */
-  check_sprintf ("      1.899347461279296875e+07", "%30Re", x);
+  check_sprintf ("1.899347461279296875000000000000000000000e+07", "%30Re", x);
   check_sprintf ("                         2e+07", "%30.0Re", x);
   check_sprintf ("               18993474.612793", "%30Rf", x);
   check_sprintf ("              18993474.6127930", "%30.7Rf", x);
@@ -316,13 +316,13 @@ decimal (void)
   check_sprintf ("                             0", "%30.0Rg", z);
   check_sprintf ("                             0", "%30.4Rg", z);
   /* sign or space, pad with leading zeros */
-  check_sprintf (" 000001.899347461279296875E+07", "% 030RE", x);
+  check_sprintf (" 1.899347461279296875000000000000000000000E+07", "% 030RE", x);
   check_sprintf (" 0000000000000000001.89935E+07", "% 030RG", x);
   check_sprintf (" 0000000000000000000000002E+07", "% 030.0RE", x);
   check_sprintf (" 0000000000000000000000000E+00", "% 030.0RE", z);
   check_sprintf (" 00000000000000000000000000000", "% 030.0RF", z);
   /* sign + or -, left justified */
-  check_sprintf ("+1.899347461279296875e+07     ", "%+-30Re", x);
+  check_sprintf ("+1.899347461279296875000000000000000000000e+07", "%+-30Re", x);
   check_sprintf ("+2e+07                        ", "%+-30.0Re", x);
   check_sprintf ("+0e+00                        ", "%+-30.0Re", z);
   check_sprintf ("+0                            ", "%+-30.0Rf", z);
@@ -342,7 +342,7 @@ decimal (void)
   check_sprintf ("+0000.0E+00", "%0+#11.1RZE", z);
   check_sprintf ("+00000000.0", "%0+#11.1RZF", z);
   /* pad with leading zero */
-  check_sprintf ("0000001.899347461279296875e+07", "%030RDe", x);
+  check_sprintf ("1.899347461279296875000000000000000000000e+07", "%030RDe", x);
   check_sprintf ("00000000000000000000000001e+07", "%030.0RDe", x);
   /* sign or space, decimal point, left justified */
   check_sprintf (" 1.8E+07   ", "%- #11.1RDE", x);
@@ -363,8 +363,8 @@ decimal (void)
 
   /* neighborhood of 1 */
   mpfr_set_str (x, "0.99993896484375", 10, MPFR_RNDN);
-  check_sprintf ("9.9993896484375E-01 ", "%-20RE", x);
-  check_sprintf ("9.9993896484375E-01 ", "%-20.RE", x);
+  check_sprintf ("9.999389648437500000000000000000000000000E-01", "%-20RE", x);
+  check_sprintf ("9.999389648437500000000000000000000000000E-01", "%-20.RE", x);
   check_sprintf ("1E+00               ", "%-20.0RE", x);
   check_sprintf ("1.0E+00             ", "%-20.1RE", x);
   check_sprintf ("1.00E+00            ", "%-20.2RE", x);
@@ -399,7 +399,7 @@ decimal (void)
 
   /* powers of 10 */
   mpfr_set_str (x, "1e17", 10, MPFR_RNDN);
-  check_sprintf ("1e+17", "%Re", x);
+  check_sprintf ("1.000000000000000000000000000000000000000e+17", "%Re", x);
   check_sprintf ("1.000e+17", "%.3Re", x);
   check_sprintf ("100000000000000000", "%.0Rf", x);
   check_sprintf ("100000000000000000.0", "%.1Rf", x);
@@ -407,7 +407,7 @@ decimal (void)
   check_sprintf ("100000000000000000.0", "%'.1Rf", x);
 
   mpfr_ui_div (x, 1, x, MPFR_RNDN); /* x=1e-17 */
-  check_sprintf ("1e-17", "%Re", x);
+  check_sprintf ("1.000000000000000000000000000000000000000e-17", "%Re", x);
   check_sprintf ("0.000000", "%Rf", x);
   check_sprintf ("1e-17", "%Rg", x);
   check_sprintf ("0.0", "%.1RDf", x);
@@ -849,9 +849,9 @@ mixed (void)
   rnd = MPFR_RNDD;
 
   check_vsprintf ("121%", "%i%%", i);
-  check_vsprintf ("121% -1.2345678875E+07", "%i%% %RNE", i, x);
+  check_vsprintf ("121% -1.2345678875000000E+07", "%i%% %RNE", i, x);
   check_vsprintf ("121, -12345679", "%i, %.0Rf", i, x);
-  check_vsprintf ("10610209857723, -1.2345678875e+07", "%Zi, %R*e", mpz, rnd,
+  check_vsprintf ("10610209857723, -1.2345678875000000e+07", "%Zi, %R*e", mpz, rnd,
                   x);
   check_vsprintf ("-12345678.9, 121", "%.1Rf, %i", x, i);
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", MPFR_RNDZ, x, mpq);
@@ -880,7 +880,7 @@ mixed (void)
 #ifdef PRINTF_L
   /* under MinGW, -D__USE_MINGW_ANSI_STDIO is required to support %Lf
      see https://gcc.gnu.org/ml/gcc/2013-03/msg00103.html */
-  check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
+  check_vsprintf ("00000010610209857723, -1.2345678875000000e+07, 0.032258",
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
 
