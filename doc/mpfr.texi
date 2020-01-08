@@ -2750,9 +2750,9 @@ for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 @code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
 @samp{G} specifiers.
 
-If the @samp{precision} field is not empty, the @code{mpfr_t} number is
-rounded to the given precision in the direction specified by the rounding
-mode.
+The @code{mpfr_t} number is rounded to the given precision in the direction
+specified by the rounding mode (see below if the @samp{precision} field is
+empty).
 If the precision is zero with rounding to nearest mode and one of the
 following @samp{conv} specifiers: @samp{a}, @samp{A}, @samp{b}, @samp{e},
 @samp{E}, tie case is rounded to even when it lies between two consecutive
@@ -2766,16 +2766,22 @@ the @samp{e} (resp. @samp{E}) style.
 If the precision is set to a value greater than the maximum value for an
 @code{int}, it will be silently reduced down to @code{INT_MAX}.
 
-If the @samp{precision} field is empty (as in @code{%Re} or @code{%.RE}) with
-@samp{conv} specifier @samp{e} and @samp{E}, the number is displayed with
-enough digits so that it can be read back exactly, assuming that the input and
-output variables have the same precision and that the input and output
-rounding modes are both rounding to nearest (as for @code{mpfr_get_str});
-in that case the number of digits displayed does not depend on the value of
-the number, only on its precision (for details, @pxref{mpfr_get_str_ndigits}).
-The default precision for an empty @samp{precision} field with @samp{conv}
+If the @samp{precision} field is empty with @samp{conv} specifier @samp{e}
+and @samp{E} (as in @code{%Re} or @code{%.RE}), the chosen precision
+(i.e., the number of digits to be displayed after the initial digit and
+the decimal point) is
+@ifnottex
+ceil(@var{p}*log(2)/log(@var{10})),
+@end ifnottex
+@tex
+$\left\lceil @var{p} {\log 2 \over \log @var{10}} \right\rceil$,
+@end tex
+where @var{p} is the precision of the input variable, matching the choice
+done for @code{mpfr_get_str}; thus, if rounding to nearest is used,
+outputting the value with an empty @samp{precision} field and reading it
+back will yield the original value.
+The chosen precision for an empty @samp{precision} field with @samp{conv}
 specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
-
 
 @subsection Functions
 
