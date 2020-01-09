@@ -110,6 +110,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_INF_STRING_UC "INF"
 #define MPFR_INF_STRING_LENGTH 3
 
+#define DEFAULT_DECIMAL_PREC 6
+
 /* The implicit \0 is useless, but we do not write num_to_text[16]
    otherwise g++ complains. */
 static const char num_to_text[] = "0123456789abcdef";
@@ -1757,6 +1759,15 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           str[1] = '\0';
           np->ip_ptr = register_string (np->sl, str);
 
+          if (spec.prec < 0)  /* empty precision field */
+            {
+              if (spec.spec == 'e' || spec.spec == 'E')
+                spec.prec = mpfr_get_str_ndigits (10, MPFR_GET_PREC (p)) - 1;
+              else if (spec.spec == 'f' || spec.spec == 'F' ||
+                       spec.spec == 'g' || spec.spec == 'G')
+                spec.prec = DEFAULT_DECIMAL_PREC;
+            }
+
           if (spec.prec > 0
               && ((spec.spec != 'g' && spec.spec != 'G') || spec.alt))
             /* fractional part */
@@ -1812,7 +1823,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
       else if (spec.spec == 'f' || spec.spec == 'F')
         {
           if (spec.prec < 0)
-            spec.prec = 6;
+            spec.prec = DEFAULT_DECIMAL_PREC;
           if (regular_fg (np, p, spec, NULL, 1) == -1)
             goto error;
         }
@@ -1835,7 +1846,9 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           mpfr_exp_t x, e, k;
           struct decimal_info dec_info;
 
-          threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
+          threshold = spec.prec < 0 ? DEFAULT_DECIMAL_PREC :
+            spec.prec == 0 ? 1 : spec.prec;
+          MPFR_ASSERTD (threshold >= 1);
 
           /* Here we cannot call mpfr_get_str_wrapper since we need the full
              significand in dec_info.str.
