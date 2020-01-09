@@ -27,8 +27,7 @@ dnl  If you change the required version, please update README.dev too!
 AC_PREREQ(2.60)
 
 dnl ------------------------------------------------------------
-dnl You must put in MPFR_CONFIGS everything which configure MPFR
-dnl except:
+dnl You must put in MPFR_CONFIGS everything that configures MPFR except:
 dnl   - Everything dealing with CC and CFLAGS in particular the ABI
 dnl     but the IEEE-754 specific flags must be set here.
 dnl   - Tests that depend on gmp.h (see MPFR_CHECK_DBL2INT_BUG as an example:
