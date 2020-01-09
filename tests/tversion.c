@@ -169,19 +169,19 @@ main (void)
      but test both, just in case this will change in the future. Tested
      with "x86_64-w64-mingw32-gcc -dM -E -xc /dev/null" under Debian. */
 #if defined(__MINGW32__) || defined(__MINGW64__)
-  (printf) ("[tversion] MinGW"
+  (puts) ("[tversion] MinGW"
 #if defined(__MINGW64__)
-            "64"
+          "64"
 #else
-            "32"
+          "32"
 #endif
-            ": __USE_MINGW_ANSI_STDIO "
+          ": __USE_MINGW_ANSI_STDIO = "
 #if defined(__USE_MINGW_ANSI_STDIO)
-            " = %s\n", MAKE_STR(__USE_MINGW_ANSI_STDIO)
+          MAKE_STR(__USE_MINGW_ANSI_STDIO)
 #else
-            "is undefined\n"
+          "undef"
 #endif
-            );
+          );
 #endif
 
 #if defined(__GLIBC__)
