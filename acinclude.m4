@@ -1057,7 +1057,7 @@ AC_DEFUN([MPFR_C_LONG_DOUBLE_FORMAT],
 AC_REQUIRE([AC_PROG_AWK])
 AC_REQUIRE([AC_OBJEXT])
 AC_CHECK_TYPES([long double])
-AC_CACHE_CHECK([format of `long double' floating point],
+AC_CACHE_CHECK([format of floating-point type `long double'],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown
 if test "$ac_cv_type_long_double" != yes; then
@@ -1428,7 +1428,7 @@ case $mpfr_cv_c_long_double_format in
   unknown* | "not available"*)
     ;;
   *)
-    AC_MSG_WARN([unrecognized long double FP format: $mpfr_cv_c_long_double_format])
+    AC_MSG_WARN([format of `long double' not recognized: $mpfr_cv_c_long_double_format])
     ;;
 esac
 ])

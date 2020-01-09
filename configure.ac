@@ -413,7 +413,7 @@ dnl This must done before MPFR_CONFIGS.
 LT_INIT(win32-dll)
 
 dnl Try to determine the double format
-AC_MSG_CHECKING(format of `double' floating point)
+AC_MSG_CHECKING(format of floating-point type `double')
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
 union ieee_double_extract
@@ -443,7 +443,8 @@ case "$mpfr_ieee_double" in
      AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
   2) AC_MSG_RESULT([IEEE big endian])
      AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_WARN([format of `double' floating-point not recognized]) ;;
+  *) AC_MSG_RESULT([unknown])
+     AC_MSG_WARN([format of `double' not recognized]) ;;
 esac
 
 dnl Warning: This test is *only* for CFLAGS settings.
