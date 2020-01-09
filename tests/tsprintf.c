@@ -314,6 +314,9 @@ decimal (void)
   check_sprintf ("                         2e+07", "%30.0Rg", x);
   check_sprintf ("          18993474.61279296875", "%30.19Rg", x);
   check_sprintf ("        0.0000000000000000e+00", "%30Re", z);
+  check_sprintf ("                      0.000000", "%30Rf", z);
+  check_sprintf ("                             0", "%30Rg", z);
+  check_sprintf ("                       0.00000", "%#30Rg", z);
   check_sprintf ("                         0e+00", "%30.0Re", z);
   check_sprintf ("                             0", "%30.0Rf", z);
   check_sprintf ("                        0.0000", "%30.4Rf", z);
