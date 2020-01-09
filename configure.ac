@@ -412,41 +412,6 @@ AM_PROG_AR
 dnl This must done before MPFR_CONFIGS.
 LT_INIT(win32-dll)
 
-dnl Try to determine the double format
-AC_MSG_CHECKING(format of floating-point type `double')
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-]], [[
-union ieee_double_extract
-{
-  double d;
-  unsigned char x[8];
-} t;
-t.d = 2.877939254133025759330166692961938679218292236328125; /* exact */
-if (sizeof (double) != 8)
-   return 0;
-if (sizeof (unsigned char) != 1)
-   return 0;
-if (t.x[0] == 1 && t.x[1] == 2 && t.x[2] == 3 && t.x[3] == 4 &&
-    t.x[4] == 5 && t.x[5] == 6 && t.x[6] == 7 && t.x[7] == 64)
-   return 1; /* little endian */
-else if (t.x[7] == 1 && t.x[6] == 2 && t.x[5] == 3 && t.x[4] == 4 &&
-    t.x[3] == 5 && t.x[2] == 6 && t.x[1] == 7 && t.x[0] == 64)
-   return 2; /* big endian */
-else
-   return 0; /* unknown */
-]])],
-   [mpfr_ieee_double=$?],
-   [mpfr_ieee_double=$?],
-   [mpfr_ieee_double=0])
-case "$mpfr_ieee_double" in
-  1) AC_MSG_RESULT([IEEE little endian])
-     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
-  2) AC_MSG_RESULT([IEEE big endian])
-     AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_RESULT([unknown])
-     AC_MSG_WARN([format of `double' not recognized]) ;;
-esac
-
 dnl Warning: This test is *only* for CFLAGS settings.
 dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
 dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).

@@ -526,7 +526,44 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 
 LIBS="$saved_LIBS"
 
-dnl Now try to check the long double format
+dnl Try to determine the format of double
+dnl FIXME: Use a test like for long double instead of AC_RUN_IFELSE,
+dnl        which cannot run the test when cross-compiling.
+AC_MSG_CHECKING(format of floating-point type `double')
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+]], [[
+union ieee_double_extract
+{
+  double d;
+  unsigned char x[8];
+} t;
+t.d = 2.877939254133025759330166692961938679218292236328125; /* exact */
+if (sizeof (double) != 8)
+   return 0;
+if (sizeof (unsigned char) != 1)
+   return 0;
+if (t.x[0] == 1 && t.x[1] == 2 && t.x[2] == 3 && t.x[3] == 4 &&
+    t.x[4] == 5 && t.x[5] == 6 && t.x[6] == 7 && t.x[7] == 64)
+   return 1; /* little endian */
+else if (t.x[7] == 1 && t.x[6] == 2 && t.x[5] == 3 && t.x[4] == 4 &&
+    t.x[3] == 5 && t.x[2] == 6 && t.x[1] == 7 && t.x[0] == 64)
+   return 2; /* big endian */
+else
+   return 0; /* unknown */
+]])],
+   [mpfr_ieee_double=$?],
+   [mpfr_ieee_double=$?],
+   [mpfr_ieee_double=0])
+case "$mpfr_ieee_double" in
+  1) AC_MSG_RESULT([IEEE little endian])
+     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
+  2) AC_MSG_RESULT([IEEE big endian])
+     AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
+  *) AC_MSG_RESULT([unknown])
+     AC_MSG_WARN([format of `double' not recognized]) ;;
+esac
+
+dnl Now try to determine the format of long double
 MPFR_C_LONG_DOUBLE_FORMAT
 
 dnl Check if thread-local variables are supported.
