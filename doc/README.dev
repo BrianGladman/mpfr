@@ -1645,8 +1645,7 @@ To cross-compile MPFR for i686-w64-mingw32 and test it under Wine:
 1. Build and install GMP.
 
 In the GMP source directory:
-$ ./configure --host=i686-w64-mingw32 --disable-shared --prefix=... \
-    CC="i686-w64-mingw32-gcc -D__USE_MINGW_ANSI_STDIO"
+$ ./configure --host=i686-w64-mingw32 --disable-shared --prefix=...
 $ make
 $ make check LOG_COMPILER=wine
 $ make install
