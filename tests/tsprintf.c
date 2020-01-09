@@ -655,6 +655,8 @@ hexadecimal (void)
   check_sprintf ("   0xf.edcba987654321p+24", "%25RNa", x);
   check_sprintf ("                  0x1p+28", "%25.0Ra", x);
   check_sprintf ("                   0x0p+0", "%25.0Ra", z);
+  check_sprintf ("                   0x0p+0", "%25Ra", z);
+  check_sprintf ("                  0x0.p+0", "%#25Ra", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 0X00F.EDCBA987654321P+24", "% 025RA", x);
   check_sprintf (" 0X000000000000000001P+28", "% 025.0RA", x);
@@ -780,6 +782,7 @@ binary (void)
   /* simplest case: right justified */
   check_sprintf ("    1.1100101011001101p+9", "%25Rb", x);
   check_sprintf ("                     0p+0", "%25Rb", z);
+  check_sprintf ("                    0.p+0", "%#25Rb", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 0001.1100101011001101p+9", "% 025Rb", x);
   check_sprintf (" 000000000000000000000p+0", "% 025Rb", z);
