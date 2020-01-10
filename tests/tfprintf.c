@@ -213,9 +213,11 @@ check_mixed (FILE *fout)
   if (p != 20)
     {
       mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, saved_p);
-      /* under MinGW, -D__USE_MINGW_ANSI_STDIO is required to support %td
-         see https://gcc.gnu.org/ml/gcc/2013-03/msg00103.html */
-      fprintf (stderr, "Under MinGW, compiling GMP with -D__USE_MINGW_ANSI_STDIO might be required\n");
+#if defined(__MINGW32__) || defined(__MINGW64__)
+      fprintf (stderr,
+               "Your MinGW may be too old, in which case compiling GMP\n"
+               "with -D__USE_MINGW_ANSI_STDIO might be required.\n");
+#endif
     }
   check_length (8, (long) p, 20, ld); /* no format specifier "%td" in C89 */
 #endif
