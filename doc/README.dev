@@ -1656,7 +1656,8 @@ add CC="i686-w64-mingw32-gcc -D__USE_MINGW_ANSI_STDIO" at the end of the
 configure line. Otherwise MPFR needs to be configured with
   "CPPFLAGS=-DNPRINTF_J -DNPRINTF_L -DNPRINTF_T"
 But with recent versions of the tools, printf now seems to be ISO-compliant
-by default.
+by default. The __USE_MINGW_ANSI_STDIO macro is now internal to MinGW and
+should no longer be used.
 
 2. Build and check MPFR.
 
