@@ -1748,7 +1748,9 @@ To free the returned string, you must use @code{mpfr_free_str}.
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand. A safe block size (sufficient for any
 value) is @code{max(@var{n} + 2, 7)} if @var{n} is not zero; if @var{n} is
-zero, replace it by @math{m+1}, as discussed above. The extra two bytes are
+zero, a safe block size is @code{mpfr_get_str_ndigits(@var{base},@var{p})}
+where @var{p} is the precision of @var{op}.
+The extra two bytes are
 for a possible minus sign, and for the terminating null character, and the
 value 7 accounts for @samp{-@@Inf@@} plus the terminating null character.
 The pointer to the string @var{str} is returned (unless the base is invalid).
