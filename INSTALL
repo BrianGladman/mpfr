@@ -599,12 +599,19 @@ a. Using MinGW
 
 3 - To avoid using the Microsoft runtime (which might not be conform to ISO C),
     you can use the MinGW runtime package (which is an integral part of MinGW).
-    For example, with MinGW versions 3.15 and later you can get an
-    ISO-compliant printf() if you compile your application with either
-    '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. In order to have the
-    MPFR formatted output functions based on ISO-compliant printf(), you
-    need to compile GMP (not MPFR) with CC="gcc -D__USE_MINGW_ANSI_STDIO"
-    (since the standard printf modifiers %e, %Ld and %td are passed to GMP).
+
+    With old MinGW versions, you can get an ISO-compliant printf()
+    if you compile your application with either '-ansi', '-posix' or
+    '-D__USE_MINGW_ANSI_STDIO'. But note that this latter option,
+    which was useful in the past (see below) should no longer be used.
+
+    The following applies to old MinGW versions, and may be discouraged
+    with recent MinGW versions.
+
+    In order to have the MPFR formatted output functions based on an
+    ISO-compliant printf(), you need to compile GMP (not MPFR) with
+    CC="gcc -D__USE_MINGW_ANSI_STDIO" (since the standard printf modifiers
+    %e, %Ld and %td are passed to GMP).
 
     To avoid failures of some of the printf-related tests, MPFR needs to
     be compiled with the same __USE_MINGW_ANSI_STDIO as with GMP, i.e.
