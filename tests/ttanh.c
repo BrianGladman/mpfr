@@ -118,7 +118,7 @@ special_overflow (void)
 
 /* This test was generated from bad_cases, with input y=-7.778@-1 = -3823/8192.
    For the x value below, we have atanh(y) < x, thus since tanh() is increasing,
-   y < tanh(x), and thus tanh(x) rounded towards zero should give -3822/8192. */
+   y < tanh(x), and thus tanh(x) rounded toward zero should give -3822/8192. */
 static void
 bug20171218 (void)
 {

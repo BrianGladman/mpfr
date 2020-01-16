@@ -94,7 +94,7 @@ mpfr_beta (mpfr_ptr r, mpfr_srcptr z, mpfr_srcptr w, mpfr_rnd_t rnd_mode)
                   mpfr_clear (t);
                   MPFR_SAVE_EXPO_FREE (expo);
                   /* q contains the low bits of trunc(w) where trunc() rounds
-                     towards zero, thus if q is odd, then -2k-2 < w < -2k-1 */
+                     toward zero, thus if q is odd, then -2k-2 < w < -2k-1 */
                   MPFR_SET_INF(r);
                   if ((unsigned long) q & 1)
                     MPFR_SET_NEG(r);
