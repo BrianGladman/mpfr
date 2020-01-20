@@ -234,9 +234,6 @@ specific architecture.
                         may be useful in cross-compilation). If you use
                         this option, you need to have Libtool 2.4+ on
                         the target system. See Libtool 2.4+'s NEWS file.
-                        Technical information can be found at [1].
-
-[1] http://permalink.gmane.org/gmane.comp.gnu.libtool.patches/10111
 
 Note: By default, the configure script tries to set CC / CFLAGS to GMP's
 ones from gmp.h (__GMP_CC / __GMP_CFLAGS) in order to ensure that MPFR is
