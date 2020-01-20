@@ -117,9 +117,12 @@ TESTS_ENVIRONMENT = env DISPLAY='' MPFR_QUIET=1 $(VALGRIND)
 
 # The -no-install option prevents libtool from generating wrapper scripts
 # for the tests.
-# This is useful to easily run the test scripts under valgrind or gdb.
-# See discussion http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28033
-# http://article.gmane.org/gmane.comp.lib.gnulib.bugs/28140 in particular.
+# This is useful to easily run individual test scripts under valgrind or gdb.
+# See discussion
+#   https://lists.gnu.org/archive/html/bug-gnulib/2011-08/msg00247.html
+# and
+#   https://lists.gnu.org/archive/html/bug-gnulib/2011-09/msg00081.html
+# in particular.
 #
 # The -L$(top_builddir)/src/.libs option is necessary for some platforms,
 # such as HP-UX, when --with-gmp or --with-gmp-lib is used and an old MPFR
