@@ -1,4 +1,2091 @@
 ------------------------------------------------------------------------
+r13678 | vlefevre | 2020-01-20 15:36:00 +0000 (Mon, 20 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/tests/Makefile.am
+
+[tests/Makefile.am] Updated a comment; in particular, replaced the two
+obsolete gmane.org URLs by lists.gnu.org/archive/html/bug-gnulib ones.
+------------------------------------------------------------------------
+r13677 | vlefevre | 2020-01-20 15:25:19 +0000 (Mon, 20 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] Removed reference to a gmane.org URL, which no longer exists.
+------------------------------------------------------------------------
+r13674 | vlefevre | 2020-01-16 13:21:16 +0000 (Thu, 16 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/src/beta.c
+   M /trunk/tests/ttanh.c
+
+[src/beta.c,tests/ttanh.c] towards → toward (for consistency).
+------------------------------------------------------------------------
+r13671 | vlefevre | 2020-01-10 16:24:30 +0000 (Fri, 10 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+
+[tests/{tfprintf.c,tprintf.c}] Updated an error message about MinGW,
+now output only if MinGW is used.
+------------------------------------------------------------------------
+r13670 | vlefevre | 2020-01-10 16:17:16 +0000 (Fri, 10 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Concerning MinGW, added a sentence about the use of
+the __USE_MINGW_ANSI_STDIO macro, confirming the existing note.
+------------------------------------------------------------------------
+r13669 | vlefevre | 2020-01-10 16:12:53 +0000 (Fri, 10 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/TODO
+
+[TODO] Removed obsolete item on MinGW and -D__USE_MINGW_ANSI_STDIO.
+------------------------------------------------------------------------
+r13668 | vlefevre | 2020-01-10 16:11:46 +0000 (Fri, 10 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] Update concerning MinGW and the __USE_MINGW_ANSI_STDIO macro.
+------------------------------------------------------------------------
+r13667 | vlefevre | 2020-01-10 10:30:58 +0000 (Fri, 10 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated mpfr_get_str documentation, correcting r13666
+(we still need the extra two bytes and to take -@Inf@ into account).
+------------------------------------------------------------------------
+r13666 | zimmerma | 2020-01-10 09:21:11 +0000 (Fri, 10 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[mpfr.texi] fixed out-dated documentation for mpfr_get_str
+
+------------------------------------------------------------------------
+r13665 | vlefevre | 2020-01-09 18:01:59 +0000 (Thu, 09 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] In the latest update, forgot to remove the CC=...
+------------------------------------------------------------------------
+r13664 | vlefevre | 2020-01-09 17:57:53 +0000 (Thu, 09 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update about the test under Wine.
+------------------------------------------------------------------------
+r13663 | vlefevre | 2020-01-09 14:37:48 +0000 (Thu, 09 Jan 2020) | 7 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+
+[acinclude.m4,configure.ac]
+  * Moved the code that tries to determine the format of double from
+    configure.ac to acinclude.m4 in MPFR_CONFIGS (as required), just
+    before the one for long double.
+  * Added a FIXME comment: This code uses AC_RUN_IFELSE, which cannot
+    run the test when cross-compiling; use a test like for long double
+    instead.
+------------------------------------------------------------------------
+r13662 | vlefevre | 2020-01-09 14:27:27 +0000 (Thu, 09 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] English usage.
+------------------------------------------------------------------------
+r13661 | vlefevre | 2020-01-09 14:25:30 +0000 (Thu, 09 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+
+[acinclude.m4] Updated messages about the format of "long double".
+[configure.ac] Ditto for "double". Added missing AC_MSG_RESULT.
+------------------------------------------------------------------------
+r13658 | vlefevre | 2020-01-09 11:37:25 +0000 (Thu, 09 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/tests/tversion.c
+
+[tests/tversion.c] Updated/fixed an output line to match the other ones.
+------------------------------------------------------------------------
+r13657 | vlefevre | 2020-01-09 10:23:44 +0000 (Thu, 09 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Added tests for %Ra and %Rb on the value 0 with an
+empty precision field.
+------------------------------------------------------------------------
+r13656 | vlefevre | 2020-01-09 10:17:04 +0000 (Thu, 09 Jan 2020) | 3 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+
+[src/vasprintf.c] Fixed output precision bug with decimal output
+(i.e. e, f and g conversion specifiers) and an empty precision field
+on the value 0.
+------------------------------------------------------------------------
+r13655 | vlefevre | 2020-01-09 09:44:00 +0000 (Thu, 09 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Also added tests with %Rf, %Rg and %#Rg on 0.
+------------------------------------------------------------------------
+r13654 | vlefevre | 2020-01-09 09:39:45 +0000 (Thu, 09 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Added a test with %Re and an empty precision field
+on the value 0; it currently fails.
+------------------------------------------------------------------------
+r13653 | vlefevre | 2020-01-08 18:28:42 +0000 (Wed, 08 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/tools/ck-copyright-notice
+
+[tools/ck-copyright-notice] Added a note about the mpfr.pc.in file.
+------------------------------------------------------------------------
+r13652 | vlefevre | 2020-01-08 18:11:13 +0000 (Wed, 08 Jan 2020) | 4 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/INSTALL
+   M /trunk/Makefile.am
+   M /trunk/NEWS
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+   M /trunk/doc/FAQ.html
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/README.dev
+   M /trunk/doc/check-typography
+   M /trunk/doc/faq.xsl
+   M /trunk/doc/mpfr.texi
+   M /trunk/examples/can_round.c
+   M /trunk/examples/divworst.c
+   M /trunk/examples/rndo-add.c
+   M /trunk/examples/sample.c
+   M /trunk/examples/threads.c
+   M /trunk/examples/version.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/abort_prec_max.c
+   M /trunk/src/acos.c
+   M /trunk/src/acosh.c
+   M /trunk/src/add.c
+   M /trunk/src/add1.c
+   M /trunk/src/add1sp.c
+   M /trunk/src/add1sp1_extracted.c
+   M /trunk/src/add_d.c
+   M /trunk/src/add_ui.c
+   M /trunk/src/agm.c
+   M /trunk/src/ai.c
+   M /trunk/src/amd/mparam.h
+   M /trunk/src/arm/mparam.h
+   M /trunk/src/asin.c
+   M /trunk/src/asinh.c
+   M /trunk/src/atan.c
+   M /trunk/src/atan2.c
+   M /trunk/src/atanh.c
+   M /trunk/src/bernoulli.c
+   M /trunk/src/beta.c
+   M /trunk/src/buildopt.c
+   M /trunk/src/cache.c
+   M /trunk/src/cbrt.c
+   M /trunk/src/check.c
+   M /trunk/src/clear.c
+   M /trunk/src/clears.c
+   M /trunk/src/cmp.c
+   M /trunk/src/cmp2.c
+   M /trunk/src/cmp_abs.c
+   M /trunk/src/cmp_d.c
+   M /trunk/src/cmp_ld.c
+   M /trunk/src/cmp_si.c
+   M /trunk/src/cmp_ui.c
+   M /trunk/src/comparisons.c
+   M /trunk/src/const_catalan.c
+   M /trunk/src/const_euler.c
+   M /trunk/src/const_log2.c
+   M /trunk/src/const_pi.c
+   M /trunk/src/constant.c
+   M /trunk/src/copysign.c
+   M /trunk/src/cos.c
+   M /trunk/src/cosh.c
+   M /trunk/src/cot.c
+   M /trunk/src/coth.c
+   M /trunk/src/csc.c
+   M /trunk/src/csch.c
+   M /trunk/src/d_div.c
+   M /trunk/src/d_sub.c
+   M /trunk/src/digamma.c
+   M /trunk/src/dim.c
+   M /trunk/src/div.c
+   M /trunk/src/div_2exp.c
+   M /trunk/src/div_2si.c
+   M /trunk/src/div_2ui.c
+   M /trunk/src/div_d.c
+   M /trunk/src/div_ui.c
+   M /trunk/src/dot.c
+   M /trunk/src/dump.c
+   M /trunk/src/eint.c
+   M /trunk/src/eq.c
+   M /trunk/src/erandom.c
+   M /trunk/src/erf.c
+   M /trunk/src/erfc.c
+   M /trunk/src/exceptions.c
+   M /trunk/src/exp.c
+   M /trunk/src/exp10.c
+   M /trunk/src/exp2.c
+   M /trunk/src/exp3.c
+   M /trunk/src/exp_2.c
+   M /trunk/src/expm1.c
+   M /trunk/src/extract.c
+   M /trunk/src/factorial.c
+   M /trunk/src/fits_intmax.c
+   M /trunk/src/fits_s.h
+   M /trunk/src/fits_sint.c
+   M /trunk/src/fits_slong.c
+   M /trunk/src/fits_sshort.c
+   M /trunk/src/fits_u.h
+   M /trunk/src/fits_uint.c
+   M /trunk/src/fits_uintmax.c
+   M /trunk/src/fits_ulong.c
+   M /trunk/src/fits_ushort.c
+   M /trunk/src/fma.c
+   M /trunk/src/fmma.c
+   M /trunk/src/fms.c
+   M /trunk/src/fpif.c
+   M /trunk/src/frac.c
+   M /trunk/src/free_cache.c
+   M /trunk/src/frexp.c
+   M /trunk/src/gamma.c
+   M /trunk/src/gamma_inc.c
+   M /trunk/src/gammaonethird.c
+   M /trunk/src/gen_inverse.h
+   M /trunk/src/generic/coverage/mparam.h
+   M /trunk/src/generic/mparam.h
+   M /trunk/src/get_d.c
+   M /trunk/src/get_d128.c
+   M /trunk/src/get_d64.c
+   M /trunk/src/get_exp.c
+   M /trunk/src/get_f.c
+   M /trunk/src/get_float128.c
+   M /trunk/src/get_flt.c
+   M /trunk/src/get_ld.c
+   M /trunk/src/get_q.c
+   M /trunk/src/get_si.c
+   M /trunk/src/get_sj.c
+   M /trunk/src/get_str.c
+   M /trunk/src/get_ui.c
+   M /trunk/src/get_uj.c
+   M /trunk/src/get_z.c
+   M /trunk/src/get_z_exp.c
+   M /trunk/src/gmp_op.c
+   M /trunk/src/grandom.c
+   M /trunk/src/hypot.c
+   M /trunk/src/ieee_floats.h
+   M /trunk/src/init.c
+   M /trunk/src/init2.c
+   M /trunk/src/inits.c
+   M /trunk/src/inits2.c
+   M /trunk/src/inp_str.c
+   M /trunk/src/int_ceil_log2.c
+   M /trunk/src/invert_limb.h
+   M /trunk/src/invsqrt_limb.h
+   M /trunk/src/isinf.c
+   M /trunk/src/isinteger.c
+   M /trunk/src/isnan.c
+   M /trunk/src/isnum.c
+   M /trunk/src/isqrt.c
+   M /trunk/src/isregular.c
+   M /trunk/src/iszero.c
+   M /trunk/src/jn.c
+   M /trunk/src/jyn_asympt.c
+   M /trunk/src/li2.c
+   M /trunk/src/lngamma.c
+   M /trunk/src/log.c
+   M /trunk/src/log10.c
+   M /trunk/src/log1p.c
+   M /trunk/src/log2.c
+   M /trunk/src/log_ui.c
+   M /trunk/src/logging.c
+   M /trunk/src/min_prec.c
+   M /trunk/src/minmax.c
+   M /trunk/src/mips/mparam.h
+   M /trunk/src/modf.c
+   M /trunk/src/mp_clz_tab.c
+   M /trunk/src/mparam_h.in
+   M /trunk/src/mpf2mpfr.h
+   M /trunk/src/mpfr-cvers.h
+   M /trunk/src/mpfr-gmp.c
+   M /trunk/src/mpfr-gmp.h
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/mpfr-intmax.h
+   M /trunk/src/mpfr-longlong.h
+   M /trunk/src/mpfr-mini-gmp.c
+   M /trunk/src/mpfr-mini-gmp.h
+   M /trunk/src/mpfr-sassert.h
+   M /trunk/src/mpfr-thread.h
+   M /trunk/src/mpfr.h
+   M /trunk/src/mpn_exp.c
+   M /trunk/src/mul.c
+   M /trunk/src/mul_1_extracted.c
+   M /trunk/src/mul_2exp.c
+   M /trunk/src/mul_2si.c
+   M /trunk/src/mul_2ui.c
+   M /trunk/src/mul_d.c
+   M /trunk/src/mul_ui.c
+   M /trunk/src/mulders.c
+   M /trunk/src/nbits_ulong.c
+   M /trunk/src/neg.c
+   M /trunk/src/next.c
+   M /trunk/src/nrandom.c
+   M /trunk/src/odd_p.c
+   M /trunk/src/out_str.c
+   M /trunk/src/pool.c
+   M /trunk/src/pow.c
+   M /trunk/src/pow_si.c
+   M /trunk/src/pow_ui.c
+   M /trunk/src/pow_z.c
+   M /trunk/src/powerof2.c
+   M /trunk/src/powerpc64/mparam.h
+   M /trunk/src/print_raw.c
+   M /trunk/src/print_rnd_mode.c
+   M /trunk/src/printf.c
+   M /trunk/src/random_deviate.c
+   M /trunk/src/random_deviate.h
+   M /trunk/src/rec_sqrt.c
+   M /trunk/src/reldiff.c
+   M /trunk/src/rem1.c
+   M /trunk/src/rint.c
+   M /trunk/src/rndna.c
+   M /trunk/src/root.c
+   M /trunk/src/round_near_x.c
+   M /trunk/src/round_p.c
+   M /trunk/src/round_prec.c
+   M /trunk/src/round_raw_generic.c
+   M /trunk/src/scale2.c
+   M /trunk/src/sec.c
+   M /trunk/src/sech.c
+   M /trunk/src/set.c
+   M /trunk/src/set_d.c
+   M /trunk/src/set_d128.c
+   M /trunk/src/set_d64.c
+   M /trunk/src/set_dfl_prec.c
+   M /trunk/src/set_exp.c
+   M /trunk/src/set_f.c
+   M /trunk/src/set_float128.c
+   M /trunk/src/set_flt.c
+   M /trunk/src/set_inf.c
+   M /trunk/src/set_ld.c
+   M /trunk/src/set_nan.c
+   M /trunk/src/set_prc_raw.c
+   M /trunk/src/set_prec.c
+   M /trunk/src/set_q.c
+   M /trunk/src/set_rnd.c
+   M /trunk/src/set_si.c
+   M /trunk/src/set_si_2exp.c
+   M /trunk/src/set_sj.c
+   M /trunk/src/set_str.c
+   M /trunk/src/set_str_raw.c
+   M /trunk/src/set_ui.c
+   M /trunk/src/set_ui_2exp.c
+   M /trunk/src/set_uj.c
+   M /trunk/src/set_z.c
+   M /trunk/src/set_z_exp.c
+   M /trunk/src/set_zero.c
+   M /trunk/src/setmax.c
+   M /trunk/src/setmin.c
+   M /trunk/src/setsign.c
+   M /trunk/src/sgn.c
+   M /trunk/src/si_op.c
+   M /trunk/src/signbit.c
+   M /trunk/src/sin.c
+   M /trunk/src/sin_cos.c
+   M /trunk/src/sinh.c
+   M /trunk/src/sinh_cosh.c
+   M /trunk/src/sparc64/mparam.h
+   M /trunk/src/sqr.c
+   M /trunk/src/sqrt.c
+   M /trunk/src/sqrt_ui.c
+   M /trunk/src/stack_interface.c
+   M /trunk/src/strtofr.c
+   M /trunk/src/sub.c
+   M /trunk/src/sub1.c
+   M /trunk/src/sub1sp.c
+   M /trunk/src/sub1sp1_extracted.c
+   M /trunk/src/sub_d.c
+   M /trunk/src/sub_ui.c
+   M /trunk/src/subnormal.c
+   M /trunk/src/sum.c
+   M /trunk/src/swap.c
+   M /trunk/src/tan.c
+   M /trunk/src/tanh.c
+   M /trunk/src/total_order.c
+   M /trunk/src/ubf.c
+   M /trunk/src/uceil_exp2.c
+   M /trunk/src/uceil_log2.c
+   M /trunk/src/ufloor_log2.c
+   M /trunk/src/ui_div.c
+   M /trunk/src/ui_pow.c
+   M /trunk/src/ui_pow_ui.c
+   M /trunk/src/ui_sub.c
+   M /trunk/src/urandom.c
+   M /trunk/src/urandomb.c
+   M /trunk/src/vasprintf.c
+   M /trunk/src/version.c
+   M /trunk/src/volatile.c
+   M /trunk/src/x86/mparam.h
+   M /trunk/src/x86_64/core2/mparam.h
+   M /trunk/src/x86_64/mparam.h
+   M /trunk/src/yn.c
+   M /trunk/src/zeta.c
+   M /trunk/src/zeta_ui.c
+   M /trunk/tests/Makefile.am
+   M /trunk/tests/cmp_str.c
+   M /trunk/tests/data/digamma
+   M /trunk/tests/data/li2
+   M /trunk/tests/memory.c
+   M /trunk/tests/mpf_compat.c
+   M /trunk/tests/mpf_compat.h
+   M /trunk/tests/mpfr-test.h
+   M /trunk/tests/mpfr_compat.c
+   M /trunk/tests/random2.c
+   M /trunk/tests/reuse.c
+   M /trunk/tests/rnd_mode.c
+   M /trunk/tests/tabort_defalloc1.c
+   M /trunk/tests/tabort_defalloc2.c
+   M /trunk/tests/tabort_prec_max.c
+   M /trunk/tests/tabs.c
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tadd.c
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tadd_d.c
+   M /trunk/tests/tadd_ui.c
+   M /trunk/tests/tagm.c
+   M /trunk/tests/tai.c
+   M /trunk/tests/talloc-cache.c
+   M /trunk/tests/talloc.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tassert.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/taway.c
+   M /trunk/tests/tbeta.c
+   M /trunk/tests/tbuildopt.c
+   M /trunk/tests/tcan_round.c
+   M /trunk/tests/tcbrt.c
+   M /trunk/tests/tcheck.c
+   M /trunk/tests/tcmp.c
+   M /trunk/tests/tcmp2.c
+   M /trunk/tests/tcmp_d.c
+   M /trunk/tests/tcmp_ld.c
+   M /trunk/tests/tcmp_ui.c
+   M /trunk/tests/tcmpabs.c
+   M /trunk/tests/tcomparisons.c
+   M /trunk/tests/tconst_catalan.c
+   M /trunk/tests/tconst_euler.c
+   M /trunk/tests/tconst_log2.c
+   M /trunk/tests/tconst_pi.c
+   M /trunk/tests/tcopysign.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/tcot.c
+   M /trunk/tests/tcoth.c
+   M /trunk/tests/tcsc.c
+   M /trunk/tests/tcsch.c
+   M /trunk/tests/td_div.c
+   M /trunk/tests/td_sub.c
+   M /trunk/tests/tdigamma.c
+   M /trunk/tests/tdim.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tdiv_d.c
+   M /trunk/tests/tdiv_ui.c
+   M /trunk/tests/tdot.c
+   M /trunk/tests/teint.c
+   M /trunk/tests/teq.c
+   M /trunk/tests/terandom.c
+   M /trunk/tests/terandom_chisq.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texceptions.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp10.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/texpm1.c
+   M /trunk/tests/tfactorial.c
+   M /trunk/tests/tfits.c
+   M /trunk/tests/tfma.c
+   M /trunk/tests/tfmma.c
+   M /trunk/tests/tfmod.c
+   M /trunk/tests/tfms.c
+   M /trunk/tests/tfpif.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tfrac.c
+   M /trunk/tests/tfrexp.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tgamma_inc.c
+   M /trunk/tests/tgeneric.c
+   M /trunk/tests/tgeneric_ui.c
+   M /trunk/tests/tget_d.c
+   M /trunk/tests/tget_d_2exp.c
+   M /trunk/tests/tget_f.c
+   M /trunk/tests/tget_flt.c
+   M /trunk/tests/tget_ld_2exp.c
+   M /trunk/tests/tget_q.c
+   M /trunk/tests/tget_set_d128.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tget_sj.c
+   M /trunk/tests/tget_str.c
+   M /trunk/tests/tget_z.c
+   M /trunk/tests/tgmpop.c
+   M /trunk/tests/tgrandom.c
+   M /trunk/tests/thyperbolic.c
+   M /trunk/tests/thypot.c
+   M /trunk/tests/tinits.c
+   M /trunk/tests/tinp_str.c
+   M /trunk/tests/tinternals.c
+   M /trunk/tests/tisnan.c
+   M /trunk/tests/tisqrt.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tjn.c
+   M /trunk/tests/tl2b.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tli2.c
+   M /trunk/tests/tlngamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tlog1p.c
+   M /trunk/tests/tlog2.c
+   M /trunk/tests/tlog_ui.c
+   M /trunk/tests/tmin_prec.c
+   M /trunk/tests/tminmax.c
+   M /trunk/tests/tmodf.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/tmul_d.c
+   M /trunk/tests/tmul_ui.c
+   M /trunk/tests/tnext.c
+   M /trunk/tests/tnrandom.c
+   M /trunk/tests/tnrandom_chisq.c
+   M /trunk/tests/tout_str.c
+   M /trunk/tests/toutimpl.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow3.c
+   M /trunk/tests/tpow_all.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/tprec_round.c
+   M /trunk/tests/tprintf.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/trandom_deviate.c
+   M /trunk/tests/trec_sqrt.c
+   M /trunk/tests/tremquo.c
+   M /trunk/tests/trint.c
+   M /trunk/tests/trndna.c
+   M /trunk/tests/troot.c
+   M /trunk/tests/trootn_ui.c
+   M /trunk/tests/tsec.c
+   M /trunk/tests/tsech.c
+   M /trunk/tests/tset.c
+   M /trunk/tests/tset_d.c
+   M /trunk/tests/tset_exp.c
+   M /trunk/tests/tset_f.c
+   M /trunk/tests/tset_float128.c
+   M /trunk/tests/tset_ld.c
+   M /trunk/tests/tset_q.c
+   M /trunk/tests/tset_si.c
+   M /trunk/tests/tset_sj.c
+   M /trunk/tests/tset_str.c
+   M /trunk/tests/tset_z.c
+   M /trunk/tests/tset_z_exp.c
+   M /trunk/tests/tsgn.c
+   M /trunk/tests/tsi_op.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsin_cos.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsinh_cosh.c
+   M /trunk/tests/tsprintf.c
+   M /trunk/tests/tsqr.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/tsqrt_ui.c
+   M /trunk/tests/tstckintc.c
+   M /trunk/tests/tstdint.c
+   M /trunk/tests/tstrtofr.c
+   M /trunk/tests/tsub.c
+   M /trunk/tests/tsub1sp.c
+   M /trunk/tests/tsub_d.c
+   M /trunk/tests/tsub_ui.c
+   M /trunk/tests/tsubnormal.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/tswap.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/ttotal_order.c
+   M /trunk/tests/ttrunc.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/tui_pow.c
+   M /trunk/tests/tui_sub.c
+   M /trunk/tests/turandom.c
+   M /trunk/tests/tvalist.c
+   M /trunk/tests/tversion.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+   M /trunk/tests/tyn.c
+   M /trunk/tests/tzeta.c
+   M /trunk/tests/tzeta_ui.c
+   M /trunk/tools/bench/Makefile.am
+   M /trunk/tools/bench/benchtime.h
+   M /trunk/tools/bench/mpfrbench.c
+   M /trunk/tools/check_mparam.c
+   M /trunk/tools/ck-clz_tab
+   M /trunk/tools/ck-copyright-notice
+   M /trunk/tools/ck-mparam
+   M /trunk/tools/ck-news
+   M /trunk/tools/ck-version-info
+   M /trunk/tools/get_patches.sh
+   M /trunk/tune/Makefile.am
+   M /trunk/tune/bidimensional_sample.c
+   M /trunk/tune/speed.c
+   M /trunk/tune/tuneup.c
+
+Copyright notice update: added 2020 with
+  perl -pi -e 's/ (\d{4}-)?(2019)(?= Free Software)/
+               " ".($1||"$2-").($2+1)/e' **/*(^/)
+under zsh. Removed 2019 from the example in the doc/README.dev file.
+------------------------------------------------------------------------
+r13651 | vlefevre | 2020-01-08 17:52:26 +0000 (Wed, 08 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+[TODO] + base conversion with the round-trip property using a minimal
+precision, such as the to_chars functions from the C++ standard.
+------------------------------------------------------------------------
+r13650 | vlefevre | 2020-01-08 17:33:44 +0000 (Wed, 08 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r13649 | vlefevre | 2020-01-08 17:21:57 +0000 (Wed, 08 Jan 2020) | 4 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Formatted output: improved the text concerning the
+empty precision field, i.e. focus on the chosen precision rather
+than the round-trip property (as the rounding mode is not necessarily
+to nearest).
+------------------------------------------------------------------------
+r13648 | vlefevre | 2020-01-08 16:34:16 +0000 (Wed, 08 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Formatted output with %Re (empty precision field):
+added a reference to mpfr_get_str_ndigits.
+------------------------------------------------------------------------
+r13647 | vlefevre | 2020-01-08 16:20:57 +0000 (Wed, 08 Jan 2020) | 2 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+
+[src/vasprintf.c] Simplified the conditions under which trailing zeros
+are kept (the spec_g variable is no longer needed as a consequence).
+------------------------------------------------------------------------
+r13646 | vlefevre | 2020-01-08 15:30:46 +0000 (Wed, 08 Jan 2020) | 3 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Re-added tests changed by r13644 and r13645, but
+with a variable of smaller precision in order to get the same output
+as before.
+------------------------------------------------------------------------
+r13645 | vlefevre | 2020-01-08 14:56:56 +0000 (Wed, 08 Jan 2020) | 1 line
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tests/tsprintf.c] Updated other two tests (in da_DK locale).
+------------------------------------------------------------------------
+r13644 | zimmerma | 2020-01-08 12:15:52 +0000 (Wed, 08 Jan 2020) | 3 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/vasprintf.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+   M /trunk/tests/tsprintf.c
+
+fixed tests for new more precise semantics for mpfr_printf ("%Re", x),
+and documented it
+
+------------------------------------------------------------------------
+r13643 | zimmerma | 2020-01-08 10:43:06 +0000 (Wed, 08 Jan 2020) | 3 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+
+[src/vasprintf.c] tentative fix so that mpfr_printf ("%.Re", x) prints a number
+		  of decimal digits independent from x
+
+------------------------------------------------------------------------
+r13642 | vlefevre | 2019-12-24 03:10:33 +0000 (Tue, 24 Dec 2019) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/doc/mpfr.texi
+
+[INSTALL,doc/mpfr.texi] Typography.
+------------------------------------------------------------------------
+r13635 | vlefevre | 2019-10-10 13:56:19 +0000 (Thu, 10 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Ulp calculus: put the old Rule 8 just after Rule 2,
+as the old Rule 3 (now Rule 4) uses it directly (proof updated).
+------------------------------------------------------------------------
+r13634 | vlefevre | 2019-10-10 13:32:57 +0000 (Thu, 10 Oct 2019) | 1 line
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Ulp calculus: simplified the proof of Rule 8.
+------------------------------------------------------------------------
+r13633 | vlefevre | 2019-10-10 13:18:34 +0000 (Thu, 10 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Ulp calculus Rule 3: missing absolute values in
+the proof.
+------------------------------------------------------------------------
+r13632 | vlefevre | 2019-10-10 13:08:28 +0000 (Thu, 10 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Actually assume that no underflows nor overflows
+occur for the whole section "Error calculus".
+------------------------------------------------------------------------
+r13631 | vlefevre | 2019-10-10 12:59:33 +0000 (Thu, 10 Oct 2019) | 3 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Ulp calculus Rule 6: corrected it (we need to
+assume no underflows nor overflows) and its proof, and generalized
+it with absolute values (like in the previous rules).
+------------------------------------------------------------------------
+r13630 | vlefevre | 2019-10-07 09:17:23 +0000 (Mon, 07 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Ulp calculus Rule 3: more powerful result and
+much simpler proof.
+------------------------------------------------------------------------
+r13629 | vlefevre | 2019-10-07 08:50:52 +0000 (Mon, 07 Oct 2019) | 3 lines
+Changed paths:
+   M /trunk/doc/algorithms.tex
+
+[doc/algorithms.tex] Section 2 (Error calculus): When n was a precision,
+replaced it by p as this is the usual notation (see Section 1) and n
+sometimes had a double meaning.
+------------------------------------------------------------------------
+r13628 | vlefevre | 2019-10-04 08:52:53 +0000 (Fri, 04 Oct 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tcmp_ui.c
+
+[tests/tcmp_ui.c] Updated comment: this is a bug in Clang 9.
+------------------------------------------------------------------------
+r13627 | vlefevre | 2019-10-04 08:28:16 +0000 (Fri, 04 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tcmp_ui.c
+
+[tests/tcmp_ui.c] Added a comment: failure of a test with the
+clang-9 1:9-1 Debian package.
+------------------------------------------------------------------------
+r13626 | vlefevre | 2019-10-01 13:55:09 +0000 (Tue, 01 Oct 2019) | 11 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/doc/README.dev
+   M /trunk/tests/tests.c
+   M /trunk/tests/tget_d.c
+   M /trunk/tests/tget_flt.c
+   M /trunk/tests/tset_d.c
+   M /trunk/tests/tsprintf.c
+
+Clean-up concerning the tests of subnormals for double and float.
+  * acinclude.m4: renamed variables
+      mpfr_cv_have_denorms_flt to mpfr_cv_have_subnorm_flt
+      mpfr_cv_have_denorms     to mpfr_cv_have_subnorm_dbl
+    and improved messages.
+  * acinclude.m4, tests/tget_flt.c: renamed macro
+      HAVE_DENORMS_FLT to HAVE_SUBNORM_FLT
+  * acinclude.m4, tests/{tests.c,tset_d.c,tsprintf.c}: renamed macro
+      HAVE_DENORMS     to HAVE_SUBNORM_DBL
+  * doc/README.dev: updated / completed the corresponding documentation.
+  * tests/tget_d.c: renamed function check_denorms to check_subnorm.
+------------------------------------------------------------------------
+r13625 | vlefevre | 2019-10-01 13:28:37 +0000 (Tue, 01 Oct 2019) | 1 line
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Updated comment about the tests for subnormal numbers.
+------------------------------------------------------------------------
+r13624 | vlefevre | 2019-10-01 13:23:51 +0000 (Tue, 01 Oct 2019) | 1 line
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Added a comment about the tests for subnormal numbers.
+------------------------------------------------------------------------
+r13623 | vlefevre | 2019-09-24 11:08:04 +0000 (Tue, 24 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+[doc/Makefile.am] Added missing texinfo.tex prerequisite.
+------------------------------------------------------------------------
+r13622 | vlefevre | 2019-09-16 08:33:16 +0000 (Mon, 16 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tout_str.c
+   M /trunk/tests/tprintf.c
+
+[tests] Added FIXME comment in tfprintf.c, tout_str.c and tprintf.c:
+The output is not tested (thus coverage data are meaningless).
+------------------------------------------------------------------------
+r13621 | vlefevre | 2019-09-10 12:40:39 +0000 (Tue, 10 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/add1sp.c
+   M /trunk/src/sub1sp.c
+
+[src/{add1sp.c,sub1sp.c}] Get rid of useless goto's.
+------------------------------------------------------------------------
+r13619 | vlefevre | 2019-09-06 15:17:14 +0000 (Fri, 06 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r13618 | vlefevre | 2019-09-06 12:35:10 +0000 (Fri, 06 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/hypot.c
+
+[src/hypot.c] Replaced a TODO by a FIXME.
+------------------------------------------------------------------------
+r13617 | vlefevre | 2019-09-06 11:17:11 +0000 (Fri, 06 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/doc/mpfr.texi
+   M /trunk/src/out_str.c
+   M /trunk/tests/tout_str.c
+
+The mpfr_out_str function now accepts bases from -2 to -36, in order to
+follow mpfr_get_str and GMP's mpf_out_str functions.
+------------------------------------------------------------------------
+r13614 | vlefevre | 2019-09-06 01:00:27 +0000 (Fri, 06 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Changed an incorrect use of @xref, which must always
+occur at the beginning of a sentence (use "see @ref{...}" instead).
+------------------------------------------------------------------------
+r13613 | vlefevre | 2019-09-06 00:56:34 +0000 (Fri, 06 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] At the end of "Arithmetic Functions", added a sentence
+referencing the power functions (since x^n is an arithmetic function).
+------------------------------------------------------------------------
+r13612 | vlefevre | 2019-09-05 16:17:35 +0000 (Thu, 05 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Removed the useless "Float ..." index entries.
+------------------------------------------------------------------------
+r13611 | vlefevre | 2019-09-05 16:10:49 +0000 (Thu, 05 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Moved the mpfr_pow class of functions from
+"Arithmetic Functions" to "Transcendental Functions".
+------------------------------------------------------------------------
+r13610 | vlefevre | 2019-09-05 15:40:37 +0000 (Thu, 05 Sep 2019) | 4 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Added "Float transcendental functions" to the index
+for consistency ("transcendental functions" implies floating point,
+but the user should expect to find it with the other index terms
+starting with "Float").
+------------------------------------------------------------------------
+r13609 | vlefevre | 2019-09-05 15:36:08 +0000 (Thu, 05 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Renamed "Basic Arithmetic Functions" to just
+"Arithmetic Functions".
+------------------------------------------------------------------------
+r13608 | vlefevre | 2019-09-05 14:15:10 +0000 (Thu, 05 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Transcendental functions: added a sentence to the
+important note (about cases theoretically very hard to round).
+------------------------------------------------------------------------
+r13607 | vlefevre | 2019-09-05 13:57:21 +0000 (Thu, 05 Sep 2019) | 4 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Renamed Section "Special Functions" to
+"Transcendental Functions" (as after changes in r13605 and r13606,
+it now contains only the transcendental functions), and slightly
+rewrote its important note.
+------------------------------------------------------------------------
+r13606 | vlefevre | 2019-09-05 13:44:16 +0000 (Thu, 05 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Moved mpfr_free_cache, mpfr_free_cache2, mpfr_free_pool
+and mpfr_mp_memory_cleanup from "Special Functions" to a new section
+"Memory Handling Functions".
+------------------------------------------------------------------------
+r13605 | vlefevre | 2019-09-05 13:23:26 +0000 (Thu, 05 Sep 2019) | 7 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi]
+  * Moved mpfr_fac_ui, mpfr_fma, mpfr_fms, mpfr_fmma, mpfr_fmms,
+    mpfr_hypot, mpfr_sum and mpfr_dot from "Special Functions" to
+    "Basic Arithmetic Functions" (as these are functions based on
+    +, -, *, / and roots).
+  * Added a FIXME for mpfr_pow: does this function really belong
+    to "Basic Arithmetic Functions"?
+------------------------------------------------------------------------
+r13604 | vlefevre | 2019-09-05 12:56:52 +0000 (Thu, 05 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Improved warning about huge precisions.
+------------------------------------------------------------------------
+r13603 | vlefevre | 2019-09-05 10:21:34 +0000 (Thu, 05 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/mul.c
+
+[src/mul.c] For the --enable-assert=full test, also test the flags
+(like what has been done for mpfr_add1sp and mpfr_sub1sp).
+------------------------------------------------------------------------
+r13602 | vlefevre | 2019-09-05 10:02:14 +0000 (Thu, 05 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] For the --enable-assert=full test, improved output of
+ternary value and flags, like in r13582 for mpfr_add1sp.
+------------------------------------------------------------------------
+r13601 | vlefevre | 2019-09-05 09:58:32 +0000 (Thu, 05 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] Cosmetic change (consistent ordering).
+------------------------------------------------------------------------
+r13600 | zimmerma | 2019-09-04 15:29:19 +0000 (Wed, 04 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+   M /trunk/tests/tsub1sp.c
+
+[tests/tsub1sp.c] added non-regression test for bug in mpfr_sub1sp2n
+[src/sub1sp.c] fixed that bug
+
+------------------------------------------------------------------------
+r13599 | vlefevre | 2019-09-04 12:38:10 +0000 (Wed, 04 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Fixed MPFR_C_LONG_DOUBLE_FORMAT macro for MS-Windows.
+------------------------------------------------------------------------
+r13598 | vlefevre | 2019-09-04 12:23:27 +0000 (Wed, 04 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/NEWS
+
+[NEWS] More details about mpfr_add and mpfr_sub.
+------------------------------------------------------------------------
+r13597 | zimmerma | 2019-09-04 12:07:07 +0000 (Wed, 04 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+[NEWS] mention that mpfr_sub was also improved for 128 bits
+
+------------------------------------------------------------------------
+r13596 | zimmerma | 2019-09-04 11:52:11 +0000 (Wed, 04 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+[NEWS] coverage improved to 98.6% on x86_64
+
+------------------------------------------------------------------------
+r13595 | zimmerma | 2019-09-04 11:35:35 +0000 (Wed, 04 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] improve coverage
+
+------------------------------------------------------------------------
+r13594 | vlefevre | 2019-09-04 11:33:24 +0000 (Wed, 04 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Fixed MPFR_C_LONG_DOUBLE_FORMAT macro: the patch had
+a spurious ";" at the end of conftest.c, which made its compilation
+fail with -pedantic -Werror (using gcc or clang).
+------------------------------------------------------------------------
+r13593 | zimmerma | 2019-09-04 11:22:26 +0000 (Wed, 04 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] rewrote mpfr_sub1sp2n (inspired from mpfr_sub1sp1n)
+
+------------------------------------------------------------------------
+r13592 | vlefevre | 2019-09-04 10:59:18 +0000 (Wed, 04 Sep 2019) | 4 lines
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Updated MPFR_C_LONG_DOUBLE_FORMAT to support compilation
+with GCC's and clang's LTO (-flto). This new test is inspired by the one
+used by GMP for the double type.
+Thanks to Paul Mulders for a preliminary version of the patch for MPFR.
+------------------------------------------------------------------------
+r13590 | zimmerma | 2019-09-03 16:16:53 +0000 (Tue, 03 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] added new function mpfr_sub1sp2n for p = 2*GMP_NUMB_BITS
+	       (still to be tested)
+
+------------------------------------------------------------------------
+r13589 | vlefevre | 2019-09-03 14:39:35 +0000 (Tue, 03 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] bug20190903:
+  * Fixed the second test for GMP_NUMB_BITS != 64.
+  * Updated comments.
+------------------------------------------------------------------------
+r13588 | zimmerma | 2019-09-03 14:02:27 +0000 (Tue, 03 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] improved comment
+
+------------------------------------------------------------------------
+r13587 | vlefevre | 2019-09-03 14:00:33 +0000 (Tue, 03 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] mpfr_add1sp2n: improved a comment.
+------------------------------------------------------------------------
+r13586 | vlefevre | 2019-09-03 13:52:48 +0000 (Tue, 03 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] Fixed the bug.
+------------------------------------------------------------------------
+r13585 | vlefevre | 2019-09-03 13:35:47 +0000 (Tue, 03 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] bug20190903: do the second test in MPFR_RNDU too.
+------------------------------------------------------------------------
+r13584 | vlefevre | 2019-09-03 13:31:08 +0000 (Tue, 03 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] bug20190903: in the second test, check the mpfr_t
+value, the ternary value and the flags, in order to get a failure
+even without "--enable-assert=full".
+------------------------------------------------------------------------
+r13583 | vlefevre | 2019-09-03 13:11:52 +0000 (Tue, 03 Sep 2019) | 6 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] When testing mpfr_add, use a wrapper mpfr_add_cf
+that calls mpfr_clear_flags first, so that if --enable-assert=full
+is used, the flags can be better checked too (and automatically).
+Now tadd1sp outputs with --enable-assert=full, as wanted:
+  add1  : ternary = -1, flags = inexact (8)
+  add1sp: ternary =  0, flags = none (0)
+------------------------------------------------------------------------
+r13582 | vlefevre | 2019-09-03 13:02:07 +0000 (Tue, 03 Sep 2019) | 5 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+   M /trunk/src/exceptions.c
+   M /trunk/src/mpfr-impl.h
+
+[src]
+  * exceptions.c: define flags_fout if MPFR_WANT_ASSERT >= 2, i.e. with
+    --enable-assert=full (for better flags output in add1sp.c, etc.).
+  * mpfr-impl.h: declare flags_fout if MPFR_WANT_ASSERT >= 2.
+  * add1sp.c: improve output of ternary value and flags.
+------------------------------------------------------------------------
+r13581 | vlefevre | 2019-09-03 12:40:56 +0000 (Tue, 03 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] Updated comments of bug20190903.
+------------------------------------------------------------------------
+r13580 | vlefevre | 2019-09-03 12:37:47 +0000 (Tue, 03 Sep 2019) | 8 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] Added a test that triggers a bug in mpfr_add1sp2n
+(corresponding to the FIXME), yielding a failure with
+"--enable-assert=full".
+Note 1: The computed values are equal (with MPFR_RNDN), but one gets
+  Inexact sp = 0 | Inexact = -1
+  Flags sp = 10 | Flags = 10
+Note 2: The fact that the flags do not match the ternary value in the
+error message is due to a missing mpfr_clear_flags in the test.
+------------------------------------------------------------------------
+r13579 | vlefevre | 2019-09-03 12:23:35 +0000 (Tue, 03 Sep 2019) | 6 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] mpfr_add1sp2n:
+  * Code refactoring, eliminating the unnecessary goto's.
+  * In the d >= 2 * GMP_NUMB_BITS case, use a single test for rb and sb.
+  * Improved code consistency.
+  * Added a FIXME about suspicious code. → Find a failing test and fix
+    the code, or explain the code if it is correct.
+------------------------------------------------------------------------
+r13578 | zimmerma | 2019-09-03 11:51:41 +0000 (Tue, 03 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] fix for bug20190903
+
+------------------------------------------------------------------------
+r13577 | vlefevre | 2019-09-03 11:28:22 +0000 (Tue, 03 Sep 2019) | 1 line
+Changed paths:
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] Corrected a comment.
+------------------------------------------------------------------------
+r13576 | vlefevre | 2019-09-03 10:30:10 +0000 (Tue, 03 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] More random tests in the special precisions
+GMP_NUMB_BITS and 2 * GMP_NUMB_BITS (but they don't trigger
+the bug due to r13574).
+------------------------------------------------------------------------
+r13575 | vlefevre | 2019-09-03 10:25:41 +0000 (Tue, 03 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+
+[tests/tadd1sp.c] Added testcase for bug due to r13574 (found with
+the other test programs, using --enable-assert=full).
+------------------------------------------------------------------------
+r13574 | zimmerma | 2019-09-03 09:20:19 +0000 (Tue, 03 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/src/add1sp.c
+
+[src/add1sp.c] added mpfr_add1sp2n for 128-bit precision (with 64-bit limb)
+
+------------------------------------------------------------------------
+r13573 | zimmerma | 2019-09-02 15:48:13 +0000 (Mon, 02 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp1_extracted.c
+
+[src/sub1sp1_extracted.c] replace hard-coded bounds by emin/emax
+
+------------------------------------------------------------------------
+r13572 | zimmerma | 2019-09-02 15:10:45 +0000 (Mon, 02 Sep 2019) | 2 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+   M /trunk/src/sub1sp.c
+   A /trunk/src/sub1sp1_extracted.c
+
+added sub1sp1_extracted.c (not ready yet)
+
+------------------------------------------------------------------------
+r13571 | zimmerma | 2019-08-30 13:26:54 +0000 (Fri, 30 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/src/add1sp1_extracted.c
+   M /trunk/src/mul_1_extracted.c
+
+added github source for Jianyang Pan formal proof
+
+------------------------------------------------------------------------
+r13570 | vlefevre | 2019-08-21 10:22:25 +0000 (Wed, 21 Aug 2019) | 7 lines
+Changed paths:
+   M /trunk/tests/mpfr-test.h
+
+[tests/mpfr-test.h] At the end, with GCC, undef volatile if defined.
+Explanations:
+  With GCC, a macro "volatile" can be defined to test some special code
+  in mpfr-impl.h (code for compilers that define such a macro), but the
+  volatile keyword is necessary in some tests to avoid some GCC bugs.
+  Thus we need to undef this macro (if defined). We do that at the end,
+  so that mpfr-impl.h (included earlier) is not affected by this undef.
+------------------------------------------------------------------------
+r13569 | vlefevre | 2019-08-21 08:57:50 +0000 (Wed, 21 Aug 2019) | 5 lines
+Changed paths:
+   M /trunk/tests/tget_set_d128.c
+
+[tests/tget_set_d128.c] Updated a test with a non-canonical encoding:
+  * More meaningful name ("noncanonical" instead of "coverage").
+  * Output details in case of failure.
+  * Avoid GCC bug 91226: wrong propagation of non-canonical _Decimal64
+    and _Decimal128 constant (BID only).
+------------------------------------------------------------------------
+r13568 | vlefevre | 2019-08-20 13:58:15 +0000 (Tue, 20 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update concerning the "decimal-point character".
+------------------------------------------------------------------------
+r13567 | vlefevre | 2019-08-20 13:44:16 +0000 (Tue, 20 Aug 2019) | 5 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Changed "decimal point" to "decimal-point character",
+which is the term used in the ISO C standard. This is better as this
+character is also used with non-decimal bases: "decimal-point" is
+just the name of this character (as initially defined for base 10)
+and does not imply a number written in decimal.
+------------------------------------------------------------------------
+r13566 | vlefevre | 2019-08-20 13:02:52 +0000 (Tue, 20 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Compatibility With MPF: added an item on the difference
+of the output format between mpf_out_str and mpfr_out_str.
+------------------------------------------------------------------------
+r13565 | vlefevre | 2019-08-20 11:06:03 +0000 (Tue, 20 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Rewrote and completed the mpfr_out_str description.
+------------------------------------------------------------------------
+r13564 | vlefevre | 2019-08-20 09:39:53 +0000 (Tue, 20 Aug 2019) | 13 lines
+Changed paths:
+   M /trunk/src/out_str.c
+
+[src/out_str.c] Fixed bug in mpfr_out_str: When the exponent of the
+converted value is 0, it was not output, contrary to what is described
+in the MPFR manual. Note that this does not change the value of the
+printed string, so that this has no effect on applications that just
+re-read the value (with MPFR or another code).
+This was regarded as a bug rather than an error in the documentation,
+thus the output now looks more similar to what printf with %e yields;
+the GMP function mpf_out_str also outputs the exponent 0.
+Short discussion:
+  https://sympa.inria.fr/sympa/arc/mpfr/2019-08/msg00012.html
+
+Note: The tests still pass, as this function is currently not really
+tested.
+------------------------------------------------------------------------
+r13563 | vlefevre | 2019-08-14 17:01:18 +0000 (Wed, 14 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] Update/corrections about MinGW and __USE_MINGW_ANSI_STDIO.
+------------------------------------------------------------------------
+r13562 | vlefevre | 2019-08-14 15:43:30 +0000 (Wed, 14 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tversion.c
+
+[tests/tversion.c] When building with MinGW, output a line about it:
+MinGW32 / MinGW64, and the __USE_MINGW_ANSI_STDIO definition.
+------------------------------------------------------------------------
+r13561 | vlefevre | 2019-08-14 15:37:46 +0000 (Wed, 14 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/src/set_d128.c
+
+[src/set_d128.c] Moved a definition under the #if where it is used.
+------------------------------------------------------------------------
+r13560 | zimmerma | 2019-08-14 07:38:12 +0000 (Wed, 14 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+improve INSTALL (feedback from sisyphus <sisyphus359@gmail.com>)
+
+------------------------------------------------------------------------
+r13559 | vlefevre | 2019-08-12 13:39:50 +0000 (Mon, 12 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Added a FIXME for mpfr_out_str about the exponent 0.
+------------------------------------------------------------------------
+r13558 | vlefevre | 2019-08-12 13:32:58 +0000 (Mon, 12 Aug 2019) | 10 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] About mpfr_get_str / mpfr_out_str:
+  * In the mpfr_get_str description, changed argument "b" to "base" for
+    consistency with similar functions (now, only mpfr_get_str_ndigits
+    has b as this looks better in the formula). Also added a link to
+    mpfr_get_str_ndigits.
+  * In the mpfr_out_str description, replaced the ambiguous and even
+    incorrect sentence "enough digits so that op can be read back
+    exactly" (issues with trailing zeros and with the directed rounding
+    modes) by text similar to the one in the mpfr_get_str description
+    (keeping the reference to mpfr_get_str).
+------------------------------------------------------------------------
+r13557 | vlefevre | 2019-08-12 12:40:32 +0000 (Mon, 12 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/src/out_str.c
+
+[src/out_str.c] Coding style (e is not a boolean).
+------------------------------------------------------------------------
+r13556 | vlefevre | 2019-08-09 13:52:29 +0000 (Fri, 09 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tout_str.c
+
+[tests/tout_str.c] Use mpfr_print_rnd_mode in a message.
+------------------------------------------------------------------------
+r13555 | vlefevre | 2019-08-09 13:49:28 +0000 (Fri, 09 Aug 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tout_str.c
+
+[tests/tout_str.c] Code simplification: a test from r1888 on a
+random value was unnecessary (the log message of r1888 did not
+even correspond to the change).
+------------------------------------------------------------------------
+r13554 | vlefevre | 2019-08-09 13:37:48 +0000 (Fri, 09 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tout_str.c
+
+[tests/tout_str.c] GNU coding style.
+------------------------------------------------------------------------
+r13553 | vlefevre | 2019-08-09 13:34:16 +0000 (Fri, 09 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tout_str.c
+
+[tests/tout_str.c] Added missing newline characters in the output
+after calls to mpfr_out_str.
+------------------------------------------------------------------------
+r13552 | vlefevre | 2019-08-09 13:29:36 +0000 (Fri, 09 Aug 2019) | 5 lines
+Changed paths:
+   M /trunk/tests/tout_str.c
+
+[tests/tout_str.c] By default, output the results to a file instead of
+/dev/null (this was already done only if opening /dev/null failed), so
+that they can be checked later. Fixed 2 issues at the same time:
+  * Do not close stdout (when an argument was provided).
+  * Remove the file at the end.
+------------------------------------------------------------------------
+r13551 | vlefevre | 2019-08-09 13:11:38 +0000 (Fri, 09 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tfpif.c
+
+[tests/tfpif.c] GNU coding style.
+------------------------------------------------------------------------
+r13550 | vlefevre | 2019-08-09 13:09:57 +0000 (Fri, 09 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tfpif.c
+
+[tests/tfpif.c] Added a comment about the use of perror.
+------------------------------------------------------------------------
+r13549 | vlefevre | 2019-08-09 13:06:47 +0000 (Fri, 09 Aug 2019) | 4 lines
+Changed paths:
+   M /trunk/tests/tfpif.c
+
+[tests/tfpif.c] Also check fclose failure when the file has been opened
+for writing (typically an error in case the buffer cannot be written to
+the file). Call perror after all fopen/src_fopen/fclose failures to get
+the reason of the failure.
+------------------------------------------------------------------------
+r13548 | vlefevre | 2019-08-09 12:45:21 +0000 (Fri, 09 Aug 2019) | 4 lines
+Changed paths:
+   M /trunk/tests/tfpif.c
+
+[tests/tfpif.c] In case of failure of fopen or src_fopen, write the
+error message on stderr (as one should do for errors not directly
+related to the tests, such as memory allocation and I/O errors).
+Also improved the error messages and made them consistent.
+------------------------------------------------------------------------
+r13547 | vlefevre | 2019-08-06 12:47:52 +0000 (Tue, 06 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r13546 | vlefevre | 2019-08-05 13:50:20 +0000 (Mon, 05 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Improved consistency with @item.
+------------------------------------------------------------------------
+r13545 | vlefevre | 2019-08-02 13:17:10 +0000 (Fri, 02 Aug 2019) | 3 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/doc/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/tests/Makefile.am
+   M /trunk/tools/bench/Makefile.am
+   M /trunk/tune/Makefile.am
+
+For Makefile.am and each one in SUBDIRS, added the .POSIX target to
+select the POSIX behavior (since we do not require GNU "make").
+See: https://sympa.inria.fr/sympa/arc/mpfr/2019-08/msg00005.html
+------------------------------------------------------------------------
+r13544 | vlefevre | 2019-08-02 08:22:52 +0000 (Fri, 02 Aug 2019) | 2 lines
+Changed paths:
+   M /trunk/tools/get_patches.sh
+
+[tools/get_patches.sh] Fixed change in r13543 (the contents of PATCHES
+should still be written as a list of words separated by a space).
+------------------------------------------------------------------------
+r13543 | vlefevre | 2019-08-02 08:15:24 +0000 (Fri, 02 Aug 2019) | 9 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+   M /trunk/tools/get_patches.sh
+
+Fixed src/get_patches.c generation that was changed in r13542.
+  * src/Makefile.am, tools/get_patches.sh: since get_patches.sh is
+    no longer run from $(top_srcdir), the PATCHES absolute pathname
+    now needs to be passed in argument.
+  * src/Makefile.am: fixed the get_patches.c rule (the automatic
+    variable $< was used with the meaning "first prerequisite" of
+    GNU Make; an "exit 1" was missing, so that a failure did not
+    abort "make" immediately).
+  * tools/get_patches.sh: detect errors with "set -e".
+------------------------------------------------------------------------
+r13542 | vlefevre | 2019-07-31 15:55:00 +0000 (Wed, 31 Jul 2019) | 7 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+
+[src/Makefile.am] Define get_patches.c as a built source to avoid a
+non-portable make rule ("/" character in target), causing an error
+in FreeBSD with its "make" command. This change should be OK as the
+get_patches.sh script that generates get_patches.c is very simple
+and portable. As a consequence, put get_patches.c in CLEANFILES.
+See:
+  https://sympa.inria.fr/sympa/arc/mpfr/2019-07/msg00003.html
+------------------------------------------------------------------------
+r13541 | vlefevre | 2019-07-31 15:28:01 +0000 (Wed, 31 Jul 2019) | 4 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+[Makefile.am] Fixed dist-hook for ck-mparam, which was run from a
+read-only directory with "make distcheck" while a temporary file
+is created in the current directory, yielding a failure (ck-mparam
+has been run in dist-hook since r12533 on 2018-04-03).
+------------------------------------------------------------------------
+r13540 | vlefevre | 2019-07-31 15:23:57 +0000 (Wed, 31 Jul 2019) | 4 lines
+Changed paths:
+   M /trunk/tools/ck-mparam
+
+[tools/ck-mparam] Updated comment to warn that the source tree that is
+checked is the one that contains this script, not the one corresponding
+to the current working directory (the rule for the other scripts in the
+tools directory is currently different).
+------------------------------------------------------------------------
+r13539 | vlefevre | 2019-07-31 15:06:10 +0000 (Wed, 31 Jul 2019) | 5 lines
+Changed paths:
+   M /trunk/tools/ck-mparam
+
+[tools/ck-mparam] This script can now be run from any directory (which
+must still be writable). This change has been done to be able to run
+it from the build directory, as if it is run via "make distcheck" and
+a dist-hook rule, then neither the top-level directory nor the tools
+directory is writable.
+------------------------------------------------------------------------
+r13537 | vlefevre | 2019-07-23 10:55:43 +0000 (Tue, 23 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] Updated comment (only the x86 and x86_64 targets
+are affected).
+------------------------------------------------------------------------
+r13536 | vlefevre | 2019-07-23 06:55:53 +0000 (Tue, 23 Jul 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] Improved a comment.
+------------------------------------------------------------------------
+r13535 | vlefevre | 2019-07-22 14:08:50 +0000 (Mon, 22 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] Avoid GCC bug 91226: wrong propagation of
+non-canonical _Decimal64 constant.
+------------------------------------------------------------------------
+r13534 | vlefevre | 2019-07-22 12:57:55 +0000 (Mon, 22 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/src/set_d64.c
+
+[src/set_d64.c] In decimal64_to_string, log the memory representation
+of the _Decimal64 argument.
+------------------------------------------------------------------------
+r13533 | vlefevre | 2019-07-22 12:47:56 +0000 (Mon, 22 Jul 2019) | 3 lines
+Changed paths:
+   M /trunk/src/set_d64.c
+
+[src/set_d64.c] In decimal64_to_string, log the various fields of the
+_Decimal64 argument whose memory data is regarded as a double (as this
+is the current implementation of this function).
+------------------------------------------------------------------------
+r13532 | vlefevre | 2019-07-22 10:36:28 +0000 (Mon, 22 Jul 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] More output details in the noncanonical test.
+------------------------------------------------------------------------
+r13531 | vlefevre | 2019-07-22 10:29:09 +0000 (Mon, 22 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] Improved the noncanonical test, but this does not
+solve the failure with gcc-snapshot.
+------------------------------------------------------------------------
+r13530 | vlefevre | 2019-07-22 10:16:00 +0000 (Mon, 22 Jul 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tget_set_d64.c
+
+[tests/tget_set_d64.c] More meaningful name of a test with a
+non-canonical encoding and more details (fails with Debian's
+gcc-snapshot 10.0.0 20190718, trunk revision 273586).
+------------------------------------------------------------------------
+r13528 | vlefevre | 2019-07-12 15:58:07 +0000 (Fri, 12 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] "To make a release": mention -Wsuggest-attribute=...
+options (but mpfr.h first needs some macros like __MPFR_SENTINEL_ATTR).
+------------------------------------------------------------------------
+r13527 | vlefevre | 2019-07-12 13:31:46 +0000 (Fri, 12 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+
+Renamed MPFR_CONST_ATTR macro to MPFR_CONST_FUNCTION_ATTR in order to be
+similar to the MPFR_{PURE,HOT,COLD}_FUNCTION_ATTR macro names.
+------------------------------------------------------------------------
+r13526 | vlefevre | 2019-07-10 09:15:09 +0000 (Wed, 10 Jul 2019) | 5 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update concerning the MPFR manual:
+  * Updated information about the papersize issues (should be fixed,
+    but manual checking is recommended).
+  * Detailed English typography.
+  * Removed mention of the old texinfo bug 33329 (Debian bug 583558).
+------------------------------------------------------------------------
+r13524 | vlefevre | 2019-07-08 11:08:18 +0000 (Mon, 08 Jul 2019) | 1 line
+Changed paths:
+   M /trunk/codespell.exclude
+   M /trunk/codespell.ignore
+
+[codespell.*] Update for codespell 1.15.0.
+------------------------------------------------------------------------
+r13522 | vlefevre | 2019-07-08 11:03:43 +0000 (Mon, 08 Jul 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+   M /trunk/src/free_cache.c
+   M /trunk/src/mpfr-gmp.c
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/mpfr.h
+
+Fixed spelling mistakes found by codespell 1.15.0.
+------------------------------------------------------------------------
+r13519 | vlefevre | 2019-07-06 19:55:37 +0000 (Sat, 06 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] Added missing "const" qualifier to "char *" in a test;
+needed with GCC's "-Wwrite-strings -Werror".
+------------------------------------------------------------------------
+r13517 | vlefevre | 2019-07-02 12:13:56 +0000 (Tue, 02 Jul 2019) | 4 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+
+[src/mpfr-impl.h] MPFR_GROUP_* macros / mpfr_group_t structure: when
+MPFR_GROUP_STATIC_SIZE is 0 (for testing), use a flexible array member
+(ISO C99) instead of a zero-length array (GNU extension, forbidden in
+ISO C).
+------------------------------------------------------------------------
+r13515 | vlefevre | 2019-07-02 11:06:33 +0000 (Tue, 02 Jul 2019) | 3 lines
+Changed paths:
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tfpif.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/trint.c
+   M /trunk/tests/tsprintf.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/turandom.c
+
+[tests/*.c] Added missing "const" qualifier to "char *" when this
+involves string literals (detected by using GCC's -Wwrite-strings
+option, via the default -Wdiscarded-qualifiers warning).
+------------------------------------------------------------------------
+r13514 | vlefevre | 2019-07-01 15:40:11 +0000 (Mon, 01 Jul 2019) | 4 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+
+[acinclude.m4,configure.ac] MPFR_C_LONG_DOUBLE_FORMAT: also detect
+clang's LTO.
+Note: no longer use $FGREP (see r13513) as its status is unclear on
+non-POSIX systems (though very probably available when $EGREP is).
+------------------------------------------------------------------------
+r13513 | vlefevre | 2019-07-01 14:12:10 +0000 (Mon, 01 Jul 2019) | 5 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/configure.ac
+
+[acinclude.m4,configure.ac] For MPFR_C_LONG_DOUBLE_FORMAT, when the
+format is unknown and it is detected that LTO has been used, output
+"recognition prevented by LTO".
+Note: at the same time, since AC_PROG_FGREP was needed, replaced
+$EGREP by $FGREP when applicable.
+------------------------------------------------------------------------
+r13512 | vlefevre | 2019-07-01 13:44:51 +0000 (Mon, 01 Jul 2019) | 2 lines
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] MPFR_C_LONG_DOUBLE_FORMAT: improved comment and added a
+warning saying that this does not work with GCC's LTO (gcc -flto ...).
+------------------------------------------------------------------------
+r13511 | zimmerma | 2019-06-07 12:42:41 +0000 (Fri, 07 Jun 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] simplified code of sub1sp1 for bx = cx
+
+------------------------------------------------------------------------
+r13510 | vlefevre | 2019-06-06 12:43:33 +0000 (Thu, 06 Jun 2019) | 3 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] About r13506-13509 and optimization: added a comment
+about Clang after some tests (without giving details, as in practice,
+this is more complex... but this is the general idea).
+------------------------------------------------------------------------
+r13509 | zimmerma | 2019-06-06 12:23:42 +0000 (Thu, 06 Jun 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] fixed typo
+
+------------------------------------------------------------------------
+r13508 | vlefevre | 2019-06-06 12:12:11 +0000 (Thu, 06 Jun 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] Added reference to GCC PR30315 about a misoptimization
+on x86/x86_64 (see r13506 and r13507).
+------------------------------------------------------------------------
+r13507 | vlefevre | 2019-06-06 10:51:57 +0000 (Thu, 06 Jun 2019) | 3 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] Completed r13506: added MPFR_ASSERTD to justify the
+new code and give more information to the compiler; added comments
+about this optimization issue.
+------------------------------------------------------------------------
+r13506 | zimmerma | 2019-06-06 10:14:04 +0000 (Thu, 06 Jun 2019) | 2 lines
+Changed paths:
+   M /trunk/src/sub1sp.c
+
+[src/sub1sp.c] small speedup (following discussion with Félix Breton)
+
+------------------------------------------------------------------------
+r13498 | vlefevre | 2019-06-01 14:22:53 +0000 (Sat, 01 Jun 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Added a note about MPFR_DISABLE_IEEE_FLOATS.
+------------------------------------------------------------------------
+r13497 | vlefevre | 2019-06-01 13:57:48 +0000 (Sat, 01 Jun 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Updated MPFR_DISABLE_IEEE_FLOATS description.
+------------------------------------------------------------------------
+r13496 | vlefevre | 2019-06-01 13:54:08 +0000 (Sat, 01 Jun 2019) | 3 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+
+[src/mpfr-impl.h] Undefine HAVE_LDOUBLE_IS_DOUBLE & HAVE_LDOUBLE_IEEE_*
+macros if MPFR_DISABLE_IEEE_FLOATS is defined, as the goal is to test
+code not relying on IEEE floats.
+------------------------------------------------------------------------
+r13495 | vlefevre | 2019-05-24 13:17:50 +0000 (Fri, 24 May 2019) | 3 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+
+[src/mpfr-impl.h] Code simplification with the generic
+LONGDOUBLE_NAN_ACTION macro (the WANT_LONGDOUBLE_VOLATILE macro is not
+needed as used only once, thus removed). Improved the related comment.
+------------------------------------------------------------------------
+r13494 | vlefevre | 2019-05-24 08:33:50 +0000 (Fri, 24 May 2019) | 4 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/volatile.c
+
+[src] Instead of including <float.h> in volatile.c (r13493), do that
+unconditionally in mpfr-impl.h to make sure that macro definitions
+in this header file are always correct: some definitions depend on
+various macros from <float.h>, such as FLT_RADIX and DBL_MANT_DIG.
+------------------------------------------------------------------------
+r13493 | zimmerma | 2019-05-24 07:35:03 +0000 (Fri, 24 May 2019) | 3 lines
+Changed paths:
+   M /trunk/src/volatile.c
+
+applied patch from #21762
+(https://gforge.inria.fr/tracker/?func=detail&atid=619&aid=21762&group_id=136)
+
+------------------------------------------------------------------------
+r13492 | vlefevre | 2019-05-15 13:53:23 +0000 (Wed, 15 May 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Added another URL on undefined behavior.
+------------------------------------------------------------------------
+r13488 | vlefevre | 2019-04-30 17:06:09 +0000 (Tue, 30 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Note that -static-libasan does not work with MPFR.
+------------------------------------------------------------------------
+r13486 | vlefevre | 2019-04-30 15:13:32 +0000 (Tue, 30 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update about the use of GCC's "-fsanitize=address".
+------------------------------------------------------------------------
+r13485 | zimmerma | 2019-04-30 13:49:59 +0000 (Tue, 30 Apr 2019) | 3 lines
+Changed paths:
+   M /trunk/src/zeta.c
+
+[src/zeta.c] fixed out-of-bound read reported by Thomas Bailleux
+
+Note: This bug was introduced in r12066.
+------------------------------------------------------------------------
+r13484 | vlefevre | 2019-04-29 13:29:12 +0000 (Mon, 29 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/tools/ck-version-info
+
+[tools/ck-version-info] Minor corrections in a comment.
+------------------------------------------------------------------------
+r13483 | vlefevre | 2019-04-29 13:26:29 +0000 (Mon, 29 Apr 2019) | 3 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update about the VERSION file:
+  * Added a paragraph on the meaning of the "-dev" suffix.
+  * Removed a confusing and useless "-dev" in an example.
+------------------------------------------------------------------------
+r13482 | vlefevre | 2019-04-29 13:17:34 +0000 (Mon, 29 Apr 2019) | 4 lines
+Changed paths:
+   M /trunk/tools/ck-news
+
+[tools/ck-news] Changed the condition of the test for FIXME or TODO:
+Previously it was disabled only for -dev versions. Now it is enabled
+only for releases and release candidates. This will allow snapshots,
+for which the NEWS file may still contain a FIXME or TODO.
+------------------------------------------------------------------------
+r13481 | vlefevre | 2019-04-29 13:11:11 +0000 (Mon, 29 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/tools/ck-version-info
+
+[tools/ck-version-info] Corrected check. Added explanations in comments.
+------------------------------------------------------------------------
+r13480 | vlefevre | 2019-04-29 12:44:01 +0000 (Mon, 29 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/tools/ck-version-info
+
+[tools/ck-version-info] Better error message if $vinfo is not defined.
+------------------------------------------------------------------------
+r13479 | vlefevre | 2019-04-29 12:38:40 +0000 (Mon, 29 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/src/Makefile.am
+
+[src/Makefile.am] Added a comment.
+------------------------------------------------------------------------
+r13477 | vlefevre | 2019-04-25 12:26:27 +0000 (Thu, 25 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r13475 | vlefevre | 2019-04-25 10:55:11 +0000 (Thu, 25 Apr 2019) | 3 lines
+Changed paths:
+   M /trunk/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the list of rounding modes in the description
+of the mpfr_print_rnd_mode function. Choose the same order as in the
+"Rounding Modes" section in "MPFR Basics".
+------------------------------------------------------------------------
+r13474 | vlefevre | 2019-04-25 10:53:38 +0000 (Thu, 25 Apr 2019) | 2 lines
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] Lists of rounding modes: also check with the
+"Rounding Modes" section in "MPFR Basics".
+------------------------------------------------------------------------
+r13473 | vlefevre | 2019-04-25 10:35:45 +0000 (Thu, 25 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/src/print_rnd_mode.c
+
+[src/print_rnd_mode.c] Added a comment to remember to update the manual.
+------------------------------------------------------------------------
+r13472 | vlefevre | 2019-04-25 10:34:31 +0000 (Thu, 25 Apr 2019) | 2 lines
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] Check that the lists of rounding modes in
+src/print_rnd_mode.c and doc/mpfr.texi are identical.
+------------------------------------------------------------------------
+r13471 | vlefevre | 2019-04-25 10:05:47 +0000 (Thu, 25 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/src/mpfr.h
+
+[src/mpfr.h] Added a blank line (grouping of function declarations).
+------------------------------------------------------------------------
+r13470 | vlefevre | 2019-04-25 10:04:25 +0000 (Thu, 25 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/TODO
+   M /trunk/src/mpfr.h
+   M /trunk/src/vasprintf.c
+
+Added support for GCC's returns_nonnull attribute (with GCC 4.9+).
+------------------------------------------------------------------------
+r13469 | vlefevre | 2019-04-25 09:31:55 +0000 (Thu, 25 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/TODO
+
+[TODO] Update about GCC's nonnull and returns_nonnull attributes.
+------------------------------------------------------------------------
+r13467 | vlefevre | 2019-04-16 08:11:02 +0000 (Tue, 16 Apr 2019) | 5 lines
+Changed paths:
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/vasprintf.c
+
+New macro MPFR_FALLTHROUGH to avoid -Wimplicit-fallthrough warnings
+with GCC 7+. This macro also makes the code more readable by bringing
+the attention on an unusual fallthrough in a switch case.
+  * src/mpfr-impl.h: define this macro.
+  * src/vasprintf.c: use this macro in a case of fallthrough.
+------------------------------------------------------------------------
+r13466 | vlefevre | 2019-04-15 12:27:49 +0000 (Mon, 15 Apr 2019) | 8 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+   M /trunk/tests/tsprintf.c
+
+[src/vasprintf.c] Minor bug fix: when an integer is to be read for
+  the field width or precision, regard strings like "17*" as invalid
+  instead of regarding it as "*" (ignoring the integer that precedes,
+  except in case of overflow). In C's printf, such an invalid string
+  yields undefined behavior, but in MPFR, we normally print the
+  invalid format specifier as a literal string in such a case.
+  Bug detected with -Wimplicit-fallthrough from GCC 7+.
+[tests/tsprintf.c] Added non-regression test.
+------------------------------------------------------------------------
+r13464 | vlefevre | 2019-04-02 09:36:47 +0000 (Tue, 02 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] Updated --enable-logging description.
+------------------------------------------------------------------------
+r13463 | vlefevre | 2019-04-02 09:33:07 +0000 (Tue, 02 Apr 2019) | 3 lines
+Changed paths:
+   M /trunk/acinclude.m4
+
+[acinclude.m4] When logging support is requested, run a test to check
+that code with nested functions and the 'cleanup' attribute can be
+compiled, as these features are needed.
+------------------------------------------------------------------------
+r13462 | vlefevre | 2019-04-02 09:07:39 +0000 (Tue, 02 Apr 2019) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] AC_ARG_ENABLE(float128,...): updated comment and
+description.
+------------------------------------------------------------------------
+r13461 | vlefevre | 2019-04-02 08:56:21 +0000 (Tue, 02 Apr 2019) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] Updated comment for AC_ARG_ENABLE(decimal-float,...).
+  * Removed information about very old GCC versions.
+  * _Decimal128 is considered too, in addition to _Decimal64.
+  * No longer just a GCC extension, but part of ISO/IEC TS 18661.
+  * Added a FIXME for new options about _Decimal64 and _Decimal128.
+------------------------------------------------------------------------
+r13460 | vlefevre | 2019-04-02 08:43:30 +0000 (Tue, 02 Apr 2019) | 1 line
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] Cleanup: moved some AC_ARG_ENABLE's where they should be.
+------------------------------------------------------------------------
+r13459 | vlefevre | 2019-03-29 16:27:57 +0000 (Fri, 29 Mar 2019) | 8 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+
+[src/vasprintf.c]
+  * Corrected FIXME by modifying the assertion. The failure could occur
+    only when mpfr_intmax_t has the same size as int (which is the case
+    when long = int and either intmax_t and long long are not available
+    or intmax_t = long = int), and only when INT_MIN is provided as a
+    field width argument.
+  * Related to that, updated a test to improve optimization.
+  * Added comments.
+------------------------------------------------------------------------
+r13458 | vlefevre | 2019-03-29 15:20:48 +0000 (Fri, 29 Mar 2019) | 2 lines
+Changed paths:
+   M /trunk/src/vasprintf.c
+
+[src/vasprintf.c] Added a FIXME: tsprintf yields an assertion failure
+with sizeof(mpfr_intmax_t) = 4 (which was not tested until now).
+------------------------------------------------------------------------
+r13457 | vlefevre | 2019-03-29 14:39:22 +0000 (Fri, 29 Mar 2019) | 32 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/doc/README.dev
+   M /trunk/src/fits_intmax.c
+   M /trunk/src/fits_uintmax.c
+   M /trunk/src/get_sj.c
+   M /trunk/src/get_uj.c
+   M /trunk/src/mpfr-impl.h
+   M /trunk/src/mpfr-intmax.h
+   M /trunk/tests/tfits.c
+   M /trunk/tests/tget_sj.c
+   M /trunk/tests/tset_sj.c
+   M /trunk/tests/tstdint.c
+   M /trunk/tests/tversion.c
+
+Cleanup / fixes related to intmax_t, mpfr_intmax_t, etc.
+
+The issues were:
+  * The build of the tests (make check) could fail with CFLAGS implying
+    "-std=c90 -Werror=format", i.e. if intmax_t was available but the
+    use of the "j" printf length modifier made the compilation fail
+    (its unconditional use was incorrect anyway).
+  * MPFR_INTMAX_MAX had definitions in both mpfr-impl.h & mpfr-intmax.h,
+    with inconsistent usage.
+
+Detailed changes:
+  * acinclude.m4: removed the definition of MPFR_PRINTF_MAXLM, which
+    could be incorrect (large numbers were not tested to select its
+    value); in the MPFR_FUNC_GMP_PRINTF_SPEC macro, check sprintf()
+    in addition to gmp_sprintf() as it is now also used in the tests;
+    updated some comments and messages.
+  * src/mpfr-impl.h: removed the MPFR_*INTMAX* definitions; they had
+    been added due to
+      https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=582698
+    with -ansi -pedantic-errors, but this issue was fixed in GCC 4.8
+    (released 6 years ago), so that they are no longer needed.
+  * src/mpfr-intmax.h: completed the definitions; mpfr_intmax_t is now
+    the largest integer type available and fully working (in particular
+    with printf), thus it may be smaller than intmax_t.
+  * doc/README.dev: updated the description of mpfr_intmax_t, etc.
+  * tests/tversion.c: output sizeof(mpfr_intmax_t) too.
+  * Various .c files in src and tests related to (u)intmax_t: use
+    INTMAX_MAX instead of MPFR_INTMAX_MAX, etc. as Debian bug 582698
+    (mentioned above) no longer occurs and mpfr_intmax_t may be smaller
+    than intmax_t; use the "j" printf length modifier instead of
+    MPFR_PRINTF_MAXLM, and protect it with "#ifndef NPRINTF_J"
+    (only the tests are concerned, so that this is not an issue).
+------------------------------------------------------------------------
+r13456 | vlefevre | 2019-03-28 17:19:00 +0000 (Thu, 28 Mar 2019) | 2 lines
+Changed paths:
+   M /trunk/src/urandomb.c
+
+[src/urandomb.c] Removed the FIXME: this is a bug in GMP or in Clang's
+memory sanitizer.
+------------------------------------------------------------------------
+r13455 | vlefevre | 2019-03-28 16:56:46 +0000 (Thu, 28 Mar 2019) | 2 lines
+Changed paths:
+   M /trunk/src/urandomb.c
+
+[src/urandomb.c] Added a FIXME (use-of-uninitialized-value with
+Clang's memory sanitizer).
+------------------------------------------------------------------------
+r13452 | vlefevre | 2019-03-13 12:51:51 +0000 (Wed, 13 Mar 2019) | 1 line
+Changed paths:
+   M /trunk/src/printf.c
+
+[src/printf.c] Removed unused definitions.
+------------------------------------------------------------------------
+r13451 | vlefevre | 2019-03-01 13:12:20 +0000 (Fri, 01 Mar 2019) | 6 lines
+Changed paths:
+   M /trunk/doc/README.dev
+
+[doc/README.dev] Update about coverage:
+  * Mention not to enable optimizations.
+  * Replaced "-fprofile-arcs -ftest-coverage" by "--coverage", as
+    this is what is used by the tools/coverage script (note: this
+    is a synonym when compiling, but also allows the right options
+    to be used when linking, thus might be better in doubt).
+------------------------------------------------------------------------
+r13446 | vlefevre | 2019-02-04 14:17:56 +0000 (Mon, 04 Feb 2019) | 1 line
+Changed paths:
+   M /trunk/tests/tcmp_d.c
+   M /trunk/tests/tcmp_ld.c
+   M /trunk/tests/td_div.c
+   M /trunk/tests/tget_flt.c
+   M /trunk/tests/tset_float128.c
+
+[tests] Use MPFR_DBL_* macros when necessary.
+------------------------------------------------------------------------
+r13445 | vlefevre | 2019-02-04 13:57:49 +0000 (Mon, 04 Feb 2019) | 1 line
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] For consistency, use "[ch]" instead of "{c,h}".
+------------------------------------------------------------------------
+r13444 | vlefevre | 2019-02-04 13:55:47 +0000 (Mon, 04 Feb 2019) | 1 line
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] Detect use of DBL_* macros instead of MPFR_DBL_* ones.
+------------------------------------------------------------------------
+r13443 | vlefevre | 2019-02-04 13:47:14 +0000 (Mon, 04 Feb 2019) | 1 line
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] Improved message about division by zero.
+------------------------------------------------------------------------
+r13442 | vlefevre | 2019-02-04 13:39:17 +0000 (Mon, 04 Feb 2019) | 2 lines
+Changed paths:
+   M /trunk/doc/README.dev
+   M /trunk/tools/mpfrlint
+
+[doc/README.dev] Improved description of MPFR_ERRDIVZERO.
+[tools/mpfrlint] Added a comment about division by zero.
+------------------------------------------------------------------------
+r13441 | vlefevre | 2019-02-04 13:23:37 +0000 (Mon, 04 Feb 2019) | 1 line
+Changed paths:
+   M /trunk/tools/mpfrlint
+
+[tools/mpfrlint] Check that native FP division by zero is not used.
+------------------------------------------------------------------------
+r13429 | vlefevre | 2019-01-31 15:09:00 +0000 (Thu, 31 Jan 2019) | 2 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+
+[src/Makefile.am] In check-exported-symbols, replaced grep by $(GREP)
+as usual and like in check-gmp-symbols.
+------------------------------------------------------------------------
+r13423 | vlefevre | 2019-01-30 09:49:35 +0000 (Wed, 30 Jan 2019) | 1 line
+Changed paths:
+   M /trunk/configure.ac
+
+[configure.ac] Updated comment about default options in CFLAGS for GCC.
+------------------------------------------------------------------------
+r13421 | vlefevre | 2019-01-30 09:19:01 +0000 (Wed, 30 Jan 2019) | 7 lines
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+Update about CC / CFLAGS settings from GMP (__GMP_CC / __GMP_CFLAGS).
+  * configure.ac: remove -pedantic unconditionally; since r7044, it was
+    removed only when logging was enabled, as at that time only logging
+    was using C extensions.
+  * NEWS: added a line about this change.
+  * INSTALL: updated the note about CC / CFLAGS, removing the obsolete
+    reference to GMP 4.3.0 at the same time.
+------------------------------------------------------------------------
+r13420 | vlefevre | 2019-01-28 01:31:22 +0000 (Mon, 28 Jan 2019) | 1 line
+Changed paths:
+   M /trunk/tools/announce-text
+
+[tools/announce-text] Corrected subject for Release Candidate > 1.
+------------------------------------------------------------------------
+r13415 | vlefevre | 2019-01-25 14:31:46 +0000 (Fri, 25 Jan 2019) | 1 line
+Changed paths:
+   M /trunk/ChangeLog
+
+ChangeLog update with "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+------------------------------------------------------------------------
 r13414 | vlefevre | 2019-01-25 12:58:24 +0000 (Fri, 25 Jan 2019) | 1 line
 Changed paths:
    M /trunk/NEWS
@@ -9628,12 +11715,13 @@ under zsh, reverting the ck-mparam and timings-mpfr.c files and
 the mbench directory under "tools" (not distributed with MPFR).
 Removed 2017 from the example in the doc/README.dev file.
 ------------------------------------------------------------------------
-r12066 | zimmerma | 2018-01-03 10:20:46 +0000 (Wed, 03 Jan 2018) | 2 lines
+r12066 | zimmerma | 2018-01-03 10:20:46 +0000 (Wed, 03 Jan 2018) | 3 lines
 Changed paths:
    M /trunk/src/zeta.c
 
 [src/zeta.c] added comments and FIXME
 
+Note (2019-04-30): a bug has also been introduced (fixed in r13485).
 ------------------------------------------------------------------------
 r12056 | vlefevre | 2017-12-25 11:15:53 +0000 (Mon, 25 Dec 2017) | 1 line
 Changed paths:
@@ -49752,7 +51840,7 @@ acinclude.m4: Make sure results of calculations on constants used with
 the fesetround() test are not precomputed by GCC (occurs on MIPS).
 Patch from Maciej W. Rozycki.
   https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00036.html
-  http://article.gmane.org/gmane.comp.lib.mpfr.general/174
+  gmane.comp.lib.mpfr.general:174
 ------------------------------------------------------------------------
 r6272 | zimmerma | 2009-06-13 02:00:58 +0000 (Sat, 13 Jun 2009) | 2 lines
 Changed paths:
@@ -61645,8 +63733,8 @@ Changed paths:
    A /trunk/patch-libtool
 
 Added patch-libtool (patch for aclocal.m4 and configure that comes from
-<http://thread.gmane.org/gmane.comp.gnu.libtool.bugs/5771/focus=5776>).
-
+<https://lists.gnu.org/archive/html/bug-libtool/2007-07/msg00007.html>
+or gmane.comp.gnu.libtool.bugs:5776).
 ------------------------------------------------------------------------
 r4614 | vlefevre | 2007-07-02 12:17:08 +0000 (Mon, 02 Jul 2007) | 2 lines
 Changed paths:
