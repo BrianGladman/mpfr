@@ -669,12 +669,12 @@ Static and dynamic MPFR libraries for the 32- and 64-bit versions of
 Windows can be built with Microsoft Visual Studio 2015 using the
 Microsoft Visual C++ compiler, see:
 
-  https://www.visualstudio.com/
+  https://visualstudio.microsoft.com/
 
 The Intel C++ compiler provided as a part of Intel Parallel Studio XE
 can also be used:
 
-  https://software.intel.com/en-us/intel-parallel-studio-xe
+  https://software.intel.com/en-us/parallel-studio-xe
 
 The relevant build projects are available here:
 
