@@ -1046,9 +1046,8 @@ Note: For multithreaded applications, the allocator must be valid in
 all threads where MPFR may be used; data allocated in one thread may
 be reallocated and/or freed in some other thread.
 
-MPFR internal data such as flags, the exponent range, the default
-precision and rounding mode, and caches (i.e., data that are not
-accessed via parameters) are either global (if MPFR has not been
+MPFR internal data such as flags, the exponent range, the default precision,
+and the default rounding mode are either global (if MPFR has not been
 compiled as thread safe) or per-thread (thread-local storage, TLS)@.
 The initial values of TLS data after a thread is created entirely
 depend on the compiler and thread implementation (MPFR simply does
