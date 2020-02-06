@@ -72,7 +72,7 @@ mpfr_fmma_aux (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   MPFR_TMP_FREE (marker);
 
-  return mpfr_check_range (z, inex, rnd);
+  return inex;
 }
 
 /* z <- a*b + c*d */
