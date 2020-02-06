@@ -22,6 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* compute a*b+c*d if neg=0 (fmma), a*b-c*d otherwise (fmms) */
 static int
 mpfr_fmma_aux (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
                mpfr_srcptr d, mpfr_rnd_t rnd, int neg)
@@ -71,7 +72,7 @@ mpfr_fmma_aux (mpfr_ptr z, mpfr_srcptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   MPFR_TMP_FREE (marker);
 
-  return inex;
+  return mpfr_check_range (z, inex, rnd);
 }
 
 /* z <- a*b + c*d */

@@ -553,6 +553,38 @@ bug20180604 (void)
   mpfr_set_emin (emin);
 }
 
+/* this bug was discovered from mpc_mul */
+static void
+bug20200206 (void)
+{
+  mpfr_exp_t emin = mpfr_get_emin ();
+  mpfr_t xre, xim, yre, yim, zre;
+
+  mpfr_set_emin (-1073);
+  mpfr_init2 (xre, 53);
+  mpfr_init2 (xim, 53);
+  mpfr_init2 (yre, 53);
+  mpfr_init2 (yim, 53);
+  mpfr_init2 (zre, 53);
+  mpfr_set_d (xre, -6.0344722345057644e-272, MPFR_RNDN);
+  mpfr_set_d (xim, -4.8536770224196353e-204, MPFR_RNDN);
+  mpfr_set_d (yre, 1.3834775731431992e-246, MPFR_RNDN);
+  mpfr_set_d (yim, 2.9246270396940562e-124, MPFR_RNDN);
+  mpfr_fmms (zre, xre, yre, xim, yim, MPFR_RNDN);
+  if (mpfr_regular_p (zre) && mpfr_get_exp (zre) < -1073)
+    {
+      printf ("Error, mpfr_fmms returns an out-of-range exponent:\n");
+      mpfr_dump (zre);
+      exit (1);
+    }
+  mpfr_clear (xre);
+  mpfr_clear (xim);
+  mpfr_clear (yre);
+  mpfr_clear (yim);
+  mpfr_clear (zre);
+  mpfr_set_emin (emin);
+}
+
 /* Test double-rounding cases in mpfr_set_1_2, which is called when
    all the precisions are the same. With set.c before r13347, this
    triggers errors for neg=0. */
@@ -621,6 +653,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  bug20200206 ();
   bug20180604 ();
   underflow_tests ();
   random_tests ();
