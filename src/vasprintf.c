@@ -2338,6 +2338,11 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
                    spec.left ? "-" : "",
                    spec.group ? "'" : "",
                    spec.spec);
+          MPFR_LOG_MSG (("MPFR_PREC_ARG: format for gmp_asprintf: \"%s\"\n",
+                         format));
+          MPFR_LOG_MSG (("MPFR_PREC_ARG: width = %d, prec = %d, value = %"
+                         MPFR_PREC_FORMAT_TYPE "d\n",
+                         (int) spec.width, (int) spec.prec, prec));
           length = gmp_asprintf (&s, format,
                                  (int) spec.width, (int) spec.prec, prec);
           MPFR_ASSERTN (length >= 0);  /* guaranteed by GMP 6 */
