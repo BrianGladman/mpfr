@@ -239,12 +239,12 @@ decimal (void)
   check_vsprintf ("000128:", "%-2.6Pd:", p);
   check_vsprintf ("  000128:", "%8.6Pd:", p);
   check_vsprintf ("000128  :", "%-8.6Pd:", p);
-  check_vsprintf ("+128:", "%+d:", p);
-  check_vsprintf (" 128:", "% d:", p);
-  check_vsprintf ("80:", "% x:", p);
-  check_vsprintf ("0x80:", "% #x:", p);
-  check_vsprintf ("0x80:", "%0#+ -x:", p);
-  check_vsprintf ("0200:", "%0#+ -o:", p);
+  check_vsprintf ("+128:", "%+Pd:", p);
+  check_vsprintf (" 128:", "% Pd:", p);
+  check_vsprintf ("80:", "% Px:", p);
+  check_vsprintf ("0x80:", "% #Px:", p);
+  check_vsprintf ("0x80:", "%0#+ -Px:", p);
+  check_vsprintf ("0200:", "%0#+ -Po:", p);
   check_vsprintf ("+0000128 :", "%0+ *.*Pd:", -9, 7, p);
   check_vsprintf ("+12345   :", "%0+ -*.*Pd:", -9, -3, (mpfr_prec_t) 12345);
   /* Do not add a test like "%05.1Pd" as MS Windows is buggy: when
