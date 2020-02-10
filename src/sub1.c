@@ -131,11 +131,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (rnd_mode == MPFR_RNDF)
         return mpfr_set4 (a, b, MPFR_RNDZ, MPFR_SIGN (a));
 
-      MPFR_EXP (a) = exp_b;  /* may be up to MPFR_EXP_MAX */
+      exp_a = exp_b;  /* may be any out-of-range value due to UBF */
       MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), bq,
                         rnd_mode, MPFR_SIGN (a),
-                        if (MPFR_EXP (a) != MPFR_EXP_MAX)
-                          ++ MPFR_EXP (a));
+                        if (exp_a != MPFR_EXP_MAX)
+                          exp_a ++);
       MPFR_LOG_MSG (("inexact=%d\n", inexact));
       if (inexact == 0)
         {
@@ -147,7 +147,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           if (! MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
             {
               inexact = MPFR_INT_SIGN (a);
-              goto check_overflow;
+              goto end_of_c_small;
             }
         }
       else  /* inexact != 0 */
@@ -172,7 +172,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
              which means we get a wrong rounded result if x == 1,
              i.e. inexact == MPFR_EVEN_INEX (for positive numbers). */
           if (MPFR_LIKELY (inexact != MPFR_EVEN_INEX * MPFR_INT_SIGN (a)))
-            goto check_overflow;
+            goto end_of_c_small;
         }
       /* We need to take the value preceding |a|. We can't use
          mpfr_nexttozero due to a possible out-of-range exponent.
@@ -182,16 +182,20 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
       if (MPFR_UNLIKELY (MPFR_LIMB_MSB (ap[an-1]) == 0))
         {
-          MPFR_EXP (a) --;
+          exp_a --;
           /* The following is valid whether an = 1 or an > 1. */
           ap[an-1] |= MPFR_LIMB_HIGHBIT;
         }
       inexact = - MPFR_INT_SIGN (a);
-    check_overflow:
-      if (MPFR_UNLIKELY (MPFR_EXP (a) > __gmpfr_emax))
+    end_of_c_small:
+      /* The underflow case is possibly only with UBF. The overflow case
+         is also possible with normal FP due to rounding. */
+      if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
         return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
-      else
-        MPFR_RET (inexact);
+      if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
+        goto underflow;
+      MPFR_SET_EXP (a, exp_a);
+      MPFR_RET (inexact);
     }
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
