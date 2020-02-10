@@ -28,8 +28,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    a positive value otherwise.
 */
 
-/* TODO: check the code in case exp_b == MPFR_EXP_MAX. */
-
 int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
@@ -55,6 +53,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   (void) MPFR_GET_PREC (c);
 
   sign = mpfr_cmp2 (b, c, &cancel);
+  MPFR_LOG_MSG (("sign=%d\n", sign));
   if (MPFR_UNLIKELY(sign == 0))
     {
       if (rnd_mode == MPFR_RNDD)
@@ -94,6 +93,15 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       exp_b = MPFR_IS_UBF (b) ?
         mpfr_ubf_zexp2exp (MPFR_ZEXP (b)) : MPFR_GET_EXP (b);
       diff_exp = mpfr_ubf_diff_exp (b, c);
+      MPFR_LOG_MSG (("UBF: exp_b=%" MPFR_EXP_FSPEC "d%s "
+                     "diff_exp=%" MPFR_EXP_FSPEC "d%s\n",
+                     (mpfr_eexp_t) exp_b,
+                     exp_b == MPFR_EXP_MAX ? "=MPFR_EXP_MAX" : "",
+                     (mpfr_eexp_t) diff_exp,
+                     diff_exp == MPFR_EXP_MAX ? "=MPFR_EXP_MAX" : ""));
+      /* If diff_exp == MPFR_EXP_MAX, the actual value can be larger,
+         but anyway, since mpfr_exp_t >= mp_size_t, this will be the
+         case c small below, and the exact value does not matter. */
     }
   else
     {
@@ -671,18 +679,17 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
         }
-      /* We cannot have overflow here, except for UBFs. Indeed:
+      /* We cannot have an overflow here, except for UBFs. Indeed:
          exp_a = exp_b - cancel + add_exp <= emax - 1 + 1 <= emax.
          For UBFs, we can have exp_b > emax. */
       if (exp_a > __gmpfr_emax)
         {
-          MPFR_ASSERTD(exp_b > __gmpfr_emax);
+          MPFR_ASSERTD (exp_b > __gmpfr_emax);  /* since exp_b >= exp_a */
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
         }
     }
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {
-
       /* in case cancel = 0, add_exp can still be 1, in case b is just
          below a power of two, c is very small, prec(a) < prec(b),
          and rnd=away or nearest */
