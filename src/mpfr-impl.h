@@ -1097,8 +1097,14 @@ typedef uintmax_t mpfr_ueexp_t;
 /* Special inexact value */
 #define MPFR_EVEN_INEX 2
 
+/* Note: the addition/subtraction of 2 comparisons below instead of the
+   use of the ?: operator allows GCC and Clang to generate better code
+   in general; this is the case at least with GCC on x86 (32 & 64 bits),
+   PowerPC and Aarch64 (64-bit ARM), and with Clang on x86_64.
+   VSIGN code based on mini-gmp's GMP_CMP macro; adapted for INEXPOS. */
+
 /* Macros for functions returning two inexact values in an 'int' */
-#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
+#define INEXPOS(y) (((y) != 0) + ((y) < 0))
 #define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
 
 /* When returning the ternary inexact value, ALWAYS use one of the
@@ -1109,7 +1115,7 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 /* Sign of a native value. */
-#define VSIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define VSIGN(I) (((I) > 0) - ((I) < 0))
 #define SAME_SIGN(I1,I2) (VSIGN (I1) == VSIGN (I2))
 
 
