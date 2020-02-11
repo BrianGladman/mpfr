@@ -1103,7 +1103,8 @@ typedef uintmax_t mpfr_ueexp_t;
    PowerPC and Aarch64 (64-bit ARM), and with Clang on x86_64.
    VSIGN code based on mini-gmp's GMP_CMP macro; adapted for INEXPOS. */
 
-/* Macros for functions returning two inexact values in an 'int' */
+/* Macros for functions returning two inexact values in an 'int'
+   (exact = 0, positive = 1, negative = 2) */
 #define INEXPOS(y) (((y) != 0) + ((y) < 0))
 #define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
 
