@@ -561,15 +561,11 @@ bug20200206 (void)
   mpfr_t xre, xim, yre, yim, zre;
 
   mpfr_set_emin (-1073);
-  mpfr_init2 (xre, 53);
-  mpfr_init2 (xim, 53);
-  mpfr_init2 (yre, 53);
-  mpfr_init2 (yim, 53);
-  mpfr_init2 (zre, 53);
-  mpfr_set_d (xre, -6.0344722345057644e-272, MPFR_RNDN);
-  mpfr_set_d (xim, -4.8536770224196353e-204, MPFR_RNDN);
-  mpfr_set_d (yre, 1.3834775731431992e-246, MPFR_RNDN);
-  mpfr_set_d (yim, 2.9246270396940562e-124, MPFR_RNDN);
+  mpfr_inits2 (53, xre, xim, yre, yim, zre, (mpfr_ptr) 0);
+  mpfr_set_str (xre, "-0x8.294611b331c8p-904", 16, MPFR_RNDN);
+  mpfr_set_str (xim, "-0x1.859278c2992fap-676", 16, MPFR_RNDN);
+  mpfr_set_str (yre, "0x9.ac54802a95f8p-820", 16, MPFR_RNDN);
+  mpfr_set_str (yim, "0x3.17e59e7612aap-412", 16, MPFR_RNDN);
   mpfr_fmms (zre, xre, yre, xim, yim, MPFR_RNDN);
   if (mpfr_regular_p (zre) && mpfr_get_exp (zre) < -1073)
     {
@@ -577,11 +573,7 @@ bug20200206 (void)
       mpfr_dump (zre);
       exit (1);
     }
-  mpfr_clear (xre);
-  mpfr_clear (xim);
-  mpfr_clear (yre);
-  mpfr_clear (yim);
-  mpfr_clear (zre);
+  mpfr_clears (xre, xim, yre, yim, zre, (mpfr_ptr) 0);
   mpfr_set_emin (emin);
 }
 
