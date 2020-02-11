@@ -137,21 +137,18 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                         if (exp_a != MPFR_EXP_MAX)
                           exp_a ++);
       MPFR_LOG_MSG (("inexact=%d\n", inexact));
-      if (inexact == 0)
-        {
+      if (inexact == 0 &&
           /* a = b, but the exact value of b - c is a bit below. Then,
              except for directed rounding similar to toward zero and
              before overflow checking: a is the correctly rounded value
              and since |b| - |c| < |a|, the ternary value value is given
              by the sign of a. */
-          if (! MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
-            {
-              inexact = MPFR_INT_SIGN (a);
-              goto end_of_c_small;
-            }
-        }
-      else  /* inexact != 0 */
+          ! MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
         {
+          MPFR_LOG_MSG (("c small, case 1\n", 0));
+          inexact = MPFR_INT_SIGN (a);
+        }
+      else if (inexact != 0 &&
           /*   A.AAAAAAAAAAAAAA
              = B.BBBBBBBBBBBBBBB
               -                   C.CCCCCCCCCCCCC */
@@ -171,23 +168,27 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1)
              which means we get a wrong rounded result if x == 1,
              i.e. inexact == MPFR_EVEN_INEX (for positive numbers). */
-          if (MPFR_LIKELY (inexact != MPFR_EVEN_INEX * MPFR_INT_SIGN (a)))
-            goto end_of_c_small;
-        }
-      /* We need to take the value preceding |a|. We can't use
-         mpfr_nexttozero due to a possible out-of-range exponent.
-         But this will allow us to have more specific code. */
-      MPFR_LOG_MSG (("correcting the value of a\n", 0));
-      sh = (mpfr_prec_t) an * GMP_NUMB_BITS - aq;
-      mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
-      if (MPFR_UNLIKELY (MPFR_LIMB_MSB (ap[an-1]) == 0))
+               MPFR_LIKELY (inexact != MPFR_EVEN_INEX * MPFR_INT_SIGN (a)))
         {
-          exp_a --;
-          /* The following is valid whether an = 1 or an > 1. */
-          ap[an-1] |= MPFR_LIMB_HIGHBIT;
+          MPFR_LOG_MSG (("c small, case 2\n", 0));
+          /* nothing to do */
         }
-      inexact = - MPFR_INT_SIGN (a);
-    end_of_c_small:
+      else
+        {
+          /* We need to take the value preceding |a|. We can't use
+             mpfr_nexttozero due to a possible out-of-range exponent.
+             But this will allow us to have more specific code. */
+          MPFR_LOG_MSG (("c small, case 3: correcting the value of a\n", 0));
+          sh = (mpfr_prec_t) an * GMP_NUMB_BITS - aq;
+          mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
+          if (MPFR_UNLIKELY (MPFR_LIMB_MSB (ap[an-1]) == 0))
+            {
+              exp_a --;
+              /* The following is valid whether an = 1 or an > 1. */
+              ap[an-1] |= MPFR_LIMB_HIGHBIT;
+            }
+          inexact = - MPFR_INT_SIGN (a);
+        }
       /* The underflow case is possibly only with UBF. The overflow case
          is also possible with normal FP due to rounding. */
       if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
