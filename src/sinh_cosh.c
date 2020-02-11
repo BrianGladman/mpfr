@@ -23,9 +23,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
-#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
-
  /* The computations are done by
     cosh(x) = 1/2 [e^(x)+e^(-x)]
     sinh(x) = 1/2 [e^(x)-e^(-x)]

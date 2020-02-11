@@ -22,9 +22,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-#define INEXPOS(y) ((y) == 0 ? 0 : (((y) > 0) ? 1 : 2))
-#define INEX(y,z) (INEXPOS(y) | (INEXPOS(z) << 2))
-
 /* Set iop to the integral part of op and fop to its fractional part */
 int
 mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
