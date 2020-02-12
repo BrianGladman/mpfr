@@ -4037,6 +4037,8 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 @item @code{mpfr_clear_divby0} in MPFR@tie{}3.1
 (new divide-by-zero exception).
 
+@item @code{mpfr_cmpabs_ui} in MPFR@tie{}4.1.
+
 @item @code{mpfr_copysign} in MPFR@tie{}2.3.
 Note: MPFR@tie{}2.2 had a @code{mpfr_copysign} function that was available,
 but not documented,
