@@ -304,6 +304,51 @@ Table of contents:
 
   Text from: https://www.zsh.org/mla/workers/2019/msg01138.html
 
+- Serialization / Deserialization. Suggested by Frédéric Pétrot:
+  https://sympa.inria.fr/sympa/arc/mpfr/2020-02/msg00006.html
+  like mpfr_fpif_{import,export}, but with memory instead of file.
+
+  Idea of implementation to reuse most of the code and change very little:
+
+  Instead of passing a FILE *fh, pass a struct ext_data *h, and instead of
+  using fread and fwrite, use
+    h->read (h, buffer, size)
+    h->write (h, buffer, size)
+  respectively.
+
+  The struct ext_data structure could contain the following fields:
+    * read: pointer to a wrapper function for the read method.
+    * write: pointer to a wrapper function for the write method.
+    * FILE *hf: to be used for operations with files.
+    * unsigned char *arena: to be used for operations with memory.
+
+  The wrapper functions for the read method could be:
+
+  static int
+  read_from_file (struct ext_data *h, unsigned char *buffer, size_t size)
+  {
+    return fread (buffer, size, 1, h->fh) != 1;
+  }
+
+  static int
+  read_from_memory (struct ext_data *h, unsigned char *buffer, size_t size)
+  {
+    if (f->arena == NULL)
+      return 1;
+    memcpy (buffer, f->arena, size);
+    f->arena += size;
+    return 0;
+  }
+
+  So I expect very few changes in the existing code:
+    * Write a few wrapper functions.
+    * Rename mpfr_fpif_export to mpfr_fpif_export_aux and
+      mpfr_fpif_import to mpfr_fpif_import_aux.
+    * In the existing functions, replace FILE *fh, and fread/fwrite
+      calls as mentioned above.
+    * Add new mpfr_fpif_export, mpfr_fpif_import, mpfr_fpif_export_mem,
+      mpfr_fpif_import_mem.
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
