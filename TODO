@@ -319,7 +319,7 @@ Table of contents:
   The struct ext_data structure could contain the following fields:
     * read: pointer to a wrapper function for the read method.
     * write: pointer to a wrapper function for the write method.
-    * FILE *hf: to be used for operations with files.
+    * FILE *fh: to be used for operations with files.
     * unsigned char *arena: to be used for operations with memory.
 
   The wrapper functions for the read method could be:
