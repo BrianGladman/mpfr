@@ -608,11 +608,12 @@ __MPFR_DECLSPEC int mpfr_cmp  (mpfr_srcptr, mpfr_srcptr);
 __MPFR_DECLSPEC int mpfr_cmp3 (mpfr_srcptr, mpfr_srcptr, int);
 __MPFR_DECLSPEC int mpfr_cmp_d (mpfr_srcptr, double);
 __MPFR_DECLSPEC int mpfr_cmp_ld (mpfr_srcptr, long double);
-__MPFR_DECLSPEC int mpfr_cmpabs (mpfr_srcptr, mpfr_srcptr);
 __MPFR_DECLSPEC int mpfr_cmp_ui (mpfr_srcptr, unsigned long);
 __MPFR_DECLSPEC int mpfr_cmp_si (mpfr_srcptr, long);
 __MPFR_DECLSPEC int mpfr_cmp_ui_2exp (mpfr_srcptr, unsigned long, mpfr_exp_t);
 __MPFR_DECLSPEC int mpfr_cmp_si_2exp (mpfr_srcptr, long, mpfr_exp_t);
+__MPFR_DECLSPEC int mpfr_cmpabs (mpfr_srcptr, mpfr_srcptr);
+__MPFR_DECLSPEC int mpfr_cmpabs_ui (mpfr_srcptr, unsigned long);
 __MPFR_DECLSPEC void mpfr_reldiff (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                                    mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_eq (mpfr_srcptr, mpfr_srcptr, unsigned long);
