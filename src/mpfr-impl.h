@@ -1298,17 +1298,24 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
   (xp = MPFR_TMP_LIMBS_ALLOC(s),                                     \
    MPFR_TMP_INIT1(xp, x, p))
 
-#define MPFR_TMP_INIT_ABS(d, s)                                      \
- ( MPFR_PREC(d) = MPFR_PREC(s),                                      \
-   MPFR_MANT(d) = MPFR_MANT(s),                                      \
-   MPFR_SET_POS(d),                                                  \
-   MPFR_EXP(d)  = MPFR_EXP(s))
+/* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
+   sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such
+   that 1/2 <= |y| < 1. Does not check y is in the valid exponent range.
+   WARNING! x and y share the same mantissa. So, some operations are
+   not valid if x has been provided via an argument, e.g., trying to
+   modify the mantissa of y, even temporarily, or calling mpfr_clear on y.
+*/
+#define MPFR_ALIAS(y,x,s,e)                     \
+  (MPFR_PREC(y) = MPFR_PREC(x),                 \
+   MPFR_SIGN(y) = (s),                          \
+   MPFR_EXP(y) = (e),                           \
+   MPFR_MANT(y) = MPFR_MANT(x))
 
-#define MPFR_TMP_INIT_NEG(d, s)                                      \
- ( MPFR_PREC(d) = MPFR_PREC(s),                                      \
-   MPFR_MANT(d) = MPFR_MANT(s),                                      \
-   MPFR_SET_OPPOSITE_SIGN(d,s),                                      \
-   MPFR_EXP(d)  = MPFR_EXP(s))
+#define MPFR_TMP_INIT_ABS(y,x) \
+  MPFR_ALIAS (y, x, MPFR_SIGN_POS, MPFR_EXP (x))
+
+#define MPFR_TMP_INIT_NEG(y,x) \
+  MPFR_ALIAS (y, x, - MPFR_SIGN (x), MPFR_EXP (x))
 
 
 /******************************************************
@@ -1614,22 +1621,6 @@ do {                                                                  \
 #define MPFR_THOUSANDS_SEPARATOR ((char) '\0')
 #endif
 
-
-/* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
-   sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such
-   that 1/2 <= |y| < 1. Does not check y is in the valid exponent range.
-   WARNING! x and y share the same mantissa. So, some operations are
-   not valid if x has been provided via an argument, e.g., trying to
-   modify the mantissa of y, even temporarily, or calling mpfr_clear on y.
-*/
-#define MPFR_ALIAS(y,x,s,e)                     \
-  do                                            \
-    {                                           \
-      MPFR_PREC(y) = MPFR_PREC(x);              \
-      MPFR_SIGN(y) = (s);                       \
-      MPFR_EXP(y) = (e);                        \
-      MPFR_MANT(y) = MPFR_MANT(x);              \
-    } while (0)
 
 /* Size of an array, as a constant expression. */
 #define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
