@@ -33,7 +33,7 @@ libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-cvers.h mpfr-gmp.h          \
 mpfr-impl.h mpfr-intmax.h mpfr-longlong.h mpfr-sassert.h mpfr-thread.h 	\
 exceptions.c extract.c uceil_exp2.c					\
 uceil_log2.c ufloor_log2.c add.c add1.c add_ui.c agm.c clear.c cmp.c	\
-cmp_abs.c cmp_si.c cmp_ui.c comparisons.c div_2exp.c div_2si.c		\
+cmpabs.c cmp_si.c cmp_ui.c comparisons.c div_2exp.c div_2si.c		\
 div_2ui.c div.c div_ui.c dot.c dump.c eq.c exp10.c exp2.c exp3.c exp.c	\
 frac.c frexp.c get_d.c get_exp.c get_str.c init.c inp_str.c isinteger.c	\
 isinf.c isnan.c isnum.c const_log2.c log.c modf.c mul_2exp.c mul_2si.c	\
