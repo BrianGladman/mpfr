@@ -48,7 +48,7 @@ cmpabs (mpfr_srcptr x, mpfr_srcptr y)
       __gmpfr_flags = f1 = flags[i % 2];
       r[i] = mpfr_cmpabs (x, y);
       f2 = __gmpfr_flags;
-      if (MPFR_IS_NAN (x))
+      if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
         f1 |= MPFR_FLAGS_ERANGE;
 
       if (i & 2)
@@ -92,6 +92,12 @@ test_cmpabs (void)
     PRINT_ERROR ("mpfr_cmpabs (NAN,NAN) returns non-zero");
   if (!mpfr_erangeflag_p ())
     PRINT_ERROR ("mpfr_cmpabs (NAN,NAN) doesn't set erange flag");
+
+  mpfr_set_si (yy, -1, MPFR_RNDN);
+  if (cmpabs (xx, yy) != 0)
+    PRINT_ERROR ("mpfr_cmpabs (NAN,-1) returns non-zero");
+  if (cmpabs (yy, xx) != 0)
+    PRINT_ERROR ("mpfr_cmpabs (-1,NAN) returns non-zero");
 
   mpfr_set_str_binary (xx, "0.10E0");
   mpfr_set_str_binary (yy, "-0.10E0");
