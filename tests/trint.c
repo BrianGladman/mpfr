@@ -595,7 +595,7 @@ main (int argc, char *argv[])
                     if (mpfr_sub (u, v, x, MPFR_RNDN))
                       err ("subtraction 2 should be exact", s, x, y, p,
                            (mpfr_rnd_t) r, trint, inexact);
-                    cmp = mpfr_cmp_abs (t, u);
+                    cmp = mpfr_cmpabs (t, u);
                     if (cmp > 0)
                       err ("faithful rounding, but not the nearest integer",
                            s, x, y, p, (mpfr_rnd_t) r, trint, inexact);
