@@ -1001,6 +1001,8 @@ typedef uintmax_t mpfr_ueexp_t;
 # define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
+/* Compare the exponents of two numbers, which can be either MPFR numbers
+   or UBF numbers. */
 #define MPFR_UBF_EXP_LESS_P(x,y) \
   (MPFR_UNLIKELY (MPFR_IS_UBF (x) || MPFR_IS_UBF (y)) ? \
    mpfr_ubf_exp_less_p (x, y) : MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
@@ -1030,6 +1032,7 @@ typedef uintmax_t mpfr_ueexp_t;
   (MPFR_LIMB_MSB (MPFR_MANT(x)[MPFR_LAST_LIMB(x)]) != 0)
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
+
 /* Note: contrary to the MPFR_IS_PURE_*(x) macros, the MPFR_IS_SINGULAR*(x)
    macros may be used even when x is being constructed, i.e. its exponent
    field is already set (possibly out-of-range), but its significand field
@@ -1037,6 +1040,12 @@ typedef uintmax_t mpfr_ueexp_t;
    equivalent to !MPFR_IS_SINGULAR(x); see the code below. */
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
 #define MPFR_IS_SINGULAR_OR_UBF(x) (MPFR_EXP(x) <= MPFR_EXP_UBF)
+
+/* The following two macros return true iff the value is a regular number,
+   i.e. it is not a singular number. In debug mode, the format is also
+   checked: valid exponent, but potentially out of range; normalized value.
+   In contexts where UBF's are not accepted or not possible, MPFR_IS_PURE_FP
+   is preferable. If UBF's are accepted, MPFR_IS_PURE_UBF must be used. */
 #define MPFR_IS_PURE_FP(x)                          \
   (!MPFR_IS_SINGULAR(x) &&                          \
    (MPFR_ASSERTD (MPFR_EXP (x) >= MPFR_EMIN_MIN &&  \
@@ -1049,9 +1058,9 @@ typedef uintmax_t mpfr_ueexp_t;
                     MPFR_EXP (x) <= MPFR_EMAX_MAX)) &&  \
                   MPFR_IS_NORMALIZED (x)), 1))
 
+/* Ditto for 2 numbers. */
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
-
 #define MPFR_ARE_SINGULAR_OR_UBF(x,y)           \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(x)) || \
    MPFR_UNLIKELY(MPFR_IS_SINGULAR_OR_UBF(y)))
@@ -2551,6 +2560,13 @@ extern "C" {
    in mpfr_fmma_aux, one uses mpfr_ubf_t to generate the exact products
    as UBF; then the corresponding pointers are converted to mpfr_srcptr
    for mpfr_add (even though they point to UBF).
+
+   Functions that can accept either MPFR arguments (mpfr_ptr type) or
+   UBF arguments (mpfr_ubf_ptr type) must use a pointer type that can
+   always be converted from both, typically mpfr_ptr or mpfr_srcptr.
+   For instance, that's why mpfr_ubf_exp_less_p uses mpfr_srcptr.
+   Note: "void *" could also be used, but mpfr_ptr is more meaningful
+   and practical.
 
    Note that functions used for logging need to support UBF (currently
    done by printing that a number is a UBF, as it may be difficult to
