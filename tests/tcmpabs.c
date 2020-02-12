@@ -140,6 +140,57 @@ test_cmpabs (void)
   mpfr_clear (yy);
 }
 
+static int
+cmpabs_ui (mpfr_srcptr x, unsigned long u)
+{
+  unsigned int i;
+  int r[4];
+  mpfr_flags_t f1, f2, flags[2] = { 0, MPFR_FLAGS_ALL };
+  mpfr_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  for (i = 0; i < 4; i++)
+    {
+      if (i & 2)
+        {
+          mpfr_exp_t e = MPFR_IS_SINGULAR (x) ? emax : MPFR_GET_EXP (x);
+          set_emin (e);
+          set_emax (e);
+        }
+
+      __gmpfr_flags = f1 = flags[i % 2];
+      r[i] = mpfr_cmpabs_ui (x, u);
+      f2 = __gmpfr_flags;
+      if (MPFR_IS_NAN (x))
+        f1 |= MPFR_FLAGS_ERANGE;
+
+      if (i & 2)
+        {
+          set_emin (emin);
+          set_emax (emax);
+        }
+
+      if (f1 != f2)
+        {
+          printf ("Flags error in mpfr_cmpabs_ui for i = %u\n  x = ", i);
+          mpfr_dump (x);
+          printf ("  u = %lu\n", u);
+          printf ("Expected flags = ");
+          flags_out (f1);
+          printf ("Obtained flags = ");
+          flags_out (f2);
+          exit (1);
+        }
+
+      if (i > 0)
+        MPFR_ASSERTN (r[i] == r[0]);
+    }
+
+  return r[0];
+}
+
 static void
 test_cmpabs_ui (void)
 {
@@ -148,51 +199,51 @@ test_cmpabs_ui (void)
   mpfr_init2 (x, 64); /* should be enough so that ULONG_MAX fits */
   /* check NaN */
   mpfr_set_nan (x);
-  if (mpfr_cmpabs_ui (x, 17) != 0)
+  if (cmpabs_ui (x, 17) != 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (NaN, 17)");
   /* check -Inf */
   mpfr_set_inf (x, -1);
-  if (mpfr_cmpabs_ui (x, 17) <= 0)
+  if (cmpabs_ui (x, 17) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (-Inf, 17)");
   /* check +Inf */
   mpfr_set_inf (x, +1);
-  if (mpfr_cmpabs_ui (x, 17) <= 0)
+  if (cmpabs_ui (x, 17) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (+Inf, 17)");
   /* check -1 */
   mpfr_set_si (x, -1, MPFR_RNDN);
-  if (mpfr_cmpabs_ui (x, 0) <= 0)
+  if (cmpabs_ui (x, 0) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (-1, 0)");
-  if (mpfr_cmpabs_ui (x, 17) >= 0)
+  if (cmpabs_ui (x, 17) >= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (-1, 17)");
   /* check -0 */
   mpfr_set_zero (x, -1);
-  if (mpfr_cmpabs_ui (x, 0) != 0)
+  if (cmpabs_ui (x, 0) != 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (-0, 0)");
-  if (mpfr_cmpabs_ui (x, 17) >= 0)
+  if (cmpabs_ui (x, 17) >= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (-0, 17)");
   /* check +0 */
   mpfr_set_zero (x, +1);
-  if (mpfr_cmpabs_ui (x, 0) != 0)
+  if (cmpabs_ui (x, 0) != 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (+0, 0)");
-  if (mpfr_cmpabs_ui (x, 17) >= 0)
+  if (cmpabs_ui (x, 17) >= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (+0, 17)");
   /* check 1 */
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  if (mpfr_cmpabs_ui (x, 0) <= 0)
+  if (cmpabs_ui (x, 0) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (1, 0)");
-  if (mpfr_cmpabs_ui (x, 1) != 0)
+  if (cmpabs_ui (x, 1) != 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (1, 1)");
-  if (mpfr_cmpabs_ui (x, 17) >= 0)
+  if (cmpabs_ui (x, 17) >= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (1, 17)");
   /* check ULONG_MAX */
   mpfr_set_ui (x, ULONG_MAX, MPFR_RNDN);
-  if (mpfr_cmpabs_ui (x, 0) <= 0)
+  if (cmpabs_ui (x, 0) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (ULONG_MAX, 0)");
-  if (mpfr_cmpabs_ui (x, 1) <= 0)
+  if (cmpabs_ui (x, 1) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (ULONG_MAX, 1)");
-  if (mpfr_cmpabs_ui (x, 17) <= 0)
+  if (cmpabs_ui (x, 17) <= 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (ULONG_MAX, 17)");
-  if (mpfr_cmpabs_ui (x, ULONG_MAX) != 0)
+  if (cmpabs_ui (x, ULONG_MAX) != 0)
     PRINT_ERROR ("mpfr_cmpabs_ui (ULONG_MAX, ULONG_MAX)");
   mpfr_clear (x);
 }
