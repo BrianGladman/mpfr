@@ -32,6 +32,7 @@ Changes from versions 4.0.* to version 4.1.0:
 - New function mpfr_get_str_ndigits.
 - New function mpfr_dot for the dot product (incomplete, experimental).
 - New functions mpfr_get_decimal128 and mpfr_set_decimal128.
+- New function mpfr_cmpabs_ui.
 - The mpfr_out_str function now accepts bases from -2 to -36, in order to
   follow mpfr_get_str and GMP's mpf_out_str functions.
 - Shared caches: cleanup; really detect lock failures (abort in this case).
