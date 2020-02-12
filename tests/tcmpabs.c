@@ -24,11 +24,63 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define PRINT_ERROR(s) do { printf ("Error: %s\n", s); exit (1); } while (0)
 
+static int
+cmpabs (mpfr_srcptr x, mpfr_srcptr y)
+{
+  unsigned int i;
+  int r[4];
+  mpfr_flags_t f1, f2, flags[2] = { 0, MPFR_FLAGS_ALL };
+  mpfr_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  for (i = 0; i < 4; i++)
+    {
+      if (i & 2)
+        {
+          mpfr_exp_t ex = MPFR_IS_SINGULAR (x) ? emax : MPFR_GET_EXP (x);
+          mpfr_exp_t ey = MPFR_IS_SINGULAR (y) ? emax : MPFR_GET_EXP (y);
+          set_emin (ex < ey ? ex : ey);
+          set_emax (ex < ey ? ey : ex);
+        }
+
+      __gmpfr_flags = f1 = flags[i % 2];
+      r[i] = mpfr_cmpabs (x, y);
+      f2 = __gmpfr_flags;
+      if (MPFR_IS_NAN (x))
+        f1 |= MPFR_FLAGS_ERANGE;
+
+      if (i & 2)
+        {
+          set_emin (emin);
+          set_emax (emax);
+        }
+
+      if (f1 != f2)
+        {
+          printf ("Flags error in mpfr_cmpabs for i = %u\n  x = ", i);
+          mpfr_dump (x);
+          printf ("  y = ");
+          mpfr_dump (y);
+          printf ("Expected flags = ");
+          flags_out (f1);
+          printf ("Obtained flags = ");
+          flags_out (f2);
+          exit (1);
+        }
+
+      if (i > 0)
+        MPFR_ASSERTN (r[i] == r[0]);
+    }
+
+  return r[0];
+}
+
 static void
 test_cmpabs (void)
 {
   mpfr_t xx, yy;
-  int c;
 
   mpfr_init2 (xx, 2);
   mpfr_init2 (yy, 2);
@@ -36,67 +88,67 @@ test_cmpabs (void)
   mpfr_clear_erangeflag ();
   MPFR_SET_NAN (xx);
   MPFR_SET_NAN (yy);
-  if (mpfr_cmpabs (xx, yy) != 0)
+  if (cmpabs (xx, yy) != 0)
     PRINT_ERROR ("mpfr_cmpabs (NAN,NAN) returns non-zero");
   if (!mpfr_erangeflag_p ())
     PRINT_ERROR ("mpfr_cmpabs (NAN,NAN) doesn't set erange flag");
 
   mpfr_set_str_binary (xx, "0.10E0");
   mpfr_set_str_binary (yy, "-0.10E0");
-  if (mpfr_cmpabs (xx, yy) != 0)
+  if (cmpabs (xx, yy) != 0)
     PRINT_ERROR ("mpfr_cmpabs (xx, yy) returns non-zero for prec=2");
 
   mpfr_set_prec (xx, 65);
   mpfr_set_prec (yy, 65);
   mpfr_set_str_binary (xx, "-0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_binary (yy, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
-  if (mpfr_cmpabs (xx, yy) <= 0)
+  if (cmpabs (xx, yy) <= 0)
     PRINT_ERROR ("Error (1) in mpfr_cmpabs");
 
   mpfr_set_str_binary (xx, "-0.10100010001110110111000010001000010011111101000100011101000011100");
   mpfr_set_str_binary (yy, "-0.10100010001110110111000010001000010011111101000100011101000011011");
-  if (mpfr_cmpabs (xx, yy) <= 0)
+  if (cmpabs (xx, yy) <= 0)
     PRINT_ERROR ("Error (2) in mpfr_cmpabs");
 
   mpfr_set_prec (xx, 160);
   mpfr_set_prec (yy, 160);
   mpfr_set_str_binary (xx, "0.1E1");
   mpfr_set_str_binary (yy, "-0.1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000110001110100");
-  if (mpfr_cmpabs (xx, yy) <= 0)
+  if (cmpabs (xx, yy) <= 0)
     PRINT_ERROR ("Error (3) in mpfr_cmpabs");
 
   mpfr_set_prec(xx, 53);
   mpfr_set_prec(yy, 200);
   mpfr_set_ui (xx, 1, (mpfr_rnd_t) 0);
   mpfr_set_ui (yy, 1, (mpfr_rnd_t) 0);
-  if (mpfr_cmpabs(xx, yy) != 0)
+  if (cmpabs (xx, yy) != 0)
     PRINT_ERROR ("Error in mpfr_cmpabs: 1.0 != 1.0");
 
   mpfr_set_prec (yy, 31);
   mpfr_set_str (xx, "-1.0000000002", 10, (mpfr_rnd_t) 0);
   mpfr_set_ui (yy, 1, (mpfr_rnd_t) 0);
-  if (!(mpfr_cmpabs(xx,yy)>0))
+  if (cmpabs (xx, yy) <= 0)
     PRINT_ERROR ("Error in mpfr_cmpabs: not 1.0000000002 > 1.0");
   mpfr_set_prec(yy, 53);
 
   mpfr_set_ui(xx, 0, MPFR_RNDN);
   mpfr_set_str (yy, "-0.1", 10, MPFR_RNDN);
-  if (mpfr_cmpabs(xx, yy) >= 0)
+  if (cmpabs (xx, yy) >= 0)
     PRINT_ERROR ("Error in mpfr_cmpabs(0.0, 0.1)");
 
   mpfr_set_inf (xx, -1);
   mpfr_set_str (yy, "23489745.0329", 10, MPFR_RNDN);
-  if (mpfr_cmpabs(xx, yy) <= 0)
-    PRINT_ERROR ("Error in mpfr_cmp(-Inf, 23489745.0329)");
+  if (cmpabs (xx, yy) <= 0)
+    PRINT_ERROR ("Error in mpfr_cmpabs(-Inf, 23489745.0329)");
 
   mpfr_set_inf (xx, 1);
   mpfr_set_inf (yy, -1);
-  if (mpfr_cmpabs(xx, yy) != 0)
+  if (cmpabs (xx, yy) != 0)
     PRINT_ERROR ("Error in mpfr_cmpabs(Inf, -Inf)");
 
   mpfr_set_inf (yy, -1);
   mpfr_set_str (xx, "2346.09234", 10, MPFR_RNDN);
-  if (mpfr_cmpabs (xx, yy) >= 0)
+  if (cmpabs (xx, yy) >= 0)
     PRINT_ERROR ("Error in mpfr_cmpabs(-Inf, 2346.09234)");
 
   mpfr_set_prec (xx, 2);
@@ -105,36 +157,12 @@ test_cmpabs (void)
   mpfr_set_str_binary (yy,
                        "0.100000000000000000000000000000000000000000000000"
                        "00000000000000000000000000000000000000000000001E10");
-  if (mpfr_cmpabs (xx, yy) >= 0)
+  if (cmpabs (xx, yy) >= 0)
     PRINT_ERROR ("Error in mpfr_cmpabs(10.235, 2346.09234)");
   mpfr_swap (xx, yy);
-  if (mpfr_cmpabs(xx, yy) <= 0)
+  if (cmpabs (xx, yy) <= 0)
     PRINT_ERROR ("Error in mpfr_cmpabs(2346.09234, 10.235)");
   mpfr_swap (xx, yy);
-
-  /* Check for NAN */
-  mpfr_set_nan (xx);
-  mpfr_clear_erangeflag ();
-  c = (mpfr_cmp) (xx, yy);
-  if (c != 0 || !mpfr_erangeflag_p () )
-    {
-      printf ("NAN error (1)");
-      exit (1);
-    }
-  mpfr_clear_erangeflag ();
-  c = (mpfr_cmp) (yy, xx);
-  if (c != 0 || !mpfr_erangeflag_p () )
-    {
-      printf ("NAN error (2)");
-      exit (1);
-    }
-  mpfr_clear_erangeflag ();
-  c = (mpfr_cmp) (xx, xx);
-  if (c != 0 || !mpfr_erangeflag_p () )
-    {
-      printf ("NAN error (3)");
-      exit (1);
-    }
 
   mpfr_clear (xx);
   mpfr_clear (yy);
