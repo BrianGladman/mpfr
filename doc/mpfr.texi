@@ -2051,6 +2051,7 @@ the power @var{e}}. Similar as above.
 @end deftypefun
 
 @deftypefun int mpfr_cmpabs (mpfr_t @var{op1}, mpfr_t @var{op2})
+@deftypefunx int mpfr_cmpabs (mpfr_t @var{op1}, unsigned long @var{op2})
 Compare @math{|@var{op1}|} and @math{|@var{op2}|}.  Return a positive value if
 @math{|@var{op1}| > |@var{op2}|}, zero if @math{|@var{op1}| = |@var{op2}|}, and
 a negative value if @math{|@var{op1}| < |@var{op2}|}.
