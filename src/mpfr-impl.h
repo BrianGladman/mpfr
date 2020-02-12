@@ -2593,10 +2593,18 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
 }
 #endif
 
-#define MPFR_ZEXP(x)                                                    \
-  ((void) (x)->_mpfr_exp /* to check that x has a correct type */,      \
+/* Get the _mpfr_zexp field (pointer to a mpz_t) of a UBF object.
+   For practical reasons, the type of the argument x can be either
+   mpfr_ubf_ptr or mpfr_ptr, since the latter is used in functions
+   that accept both MPFR numbers and UBF's; this is checked by the
+   code "(x)->_mpfr_exp".
+   This macro can be used when building a UBF. So we do not check
+   that the _mpfr_exp field has the value MPFR_EXP_UBF. */
+#define MPFR_ZEXP(x)                            \
+  ((void) (x)->_mpfr_exp,                       \
    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
+/* If x is a UBF, clear its mpz_t exponent. */
 #define MPFR_UBF_CLEAR_EXP(x) \
   ((void) (MPFR_IS_UBF (x) && (mpz_clear (MPFR_ZEXP (x)), 0)))
 
