@@ -2544,6 +2544,14 @@ extern "C" {
    with variadic functions, as the compiler will not be able to check
    in general. See fmma.c as an example of usage.
 
+   In general, the type used for values that may be UBF must be either
+   mpfr_ubf_t or mpfr_ubf_ptr. The type mpfr_ptr or mpfr_srcptr may be
+   used for UBF only in the case where the pointer has been converted
+   from mpfr_ubf_ptr, in order to ensure valid alignment. For instance,
+   in mpfr_fmma_aux, one uses mpfr_ubf_t to generate the exact products
+   as UBF; then the corresponding pointers are converted to mpfr_srcptr
+   for mpfr_add (even though they point to UBF).
+
    Note that functions used for logging need to support UBF (currently
    done by printing that a number is a UBF, as it may be difficult to
    do more without significant changes). */
