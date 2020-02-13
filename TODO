@@ -333,10 +333,10 @@ Table of contents:
   static int
   read_from_memory (struct ext_data *h, unsigned char *buffer, size_t size)
   {
-    if (f->arena == NULL)
+    if (h->arena == NULL)
       return 1;
-    memcpy (buffer, f->arena, size);
-    f->arena += size;
+    memcpy (buffer, h->arena, size);
+    h->arena += size;
     return 0;
   }
 
