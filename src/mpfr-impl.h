@@ -1285,7 +1285,6 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_TMP_LIMBS_ALLOC(N) \
   ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * MPFR_BYTES_PER_MP_LIMB))
 
-/* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
  * since only functions dealing with the Heap care about it */
 #define MPFR_TMP_INIT1(xp, x, p)                                     \
