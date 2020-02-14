@@ -690,6 +690,10 @@ Table of contents:
 
 - use GCC's nonnull attribute (available since GCC 4.0) where applicable.
 
+- avoid the use of MPFR_MANT(x) as an lvalue; use other (more high level)
+  internal macros if possible, such as MPFR_TMP_INIT1, MPFR_TMP_INIT and
+  MPFR_ALIAS.
+
 
 ##############################################################################
 7. Portability
