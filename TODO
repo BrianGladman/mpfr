@@ -708,3 +708,18 @@ Table of contents:
   couple of places already.  Arrays of chars are not much fun.
 
 - use https://gcc.gnu.org/viewcvs/gcc/trunk/config/stdint.m4 for mpfr-gmp.h
+
+- By default, GNU Automake adds -I options to local directories, with
+  the side effect that these directories have the precedence to search
+  for system headers (#include <...>). This may make the build fail if
+  a C implementation includes a file that has the same name as one used
+  in such a directory.
+  For instance, if one adds an empty file "src/bits/types.h", then the
+  MPFR build fails under Linux because /usr/include/stdio.h has
+    #include <bits/types.h>
+  Possible workaround:
+    * disable the default -I options with nostdinc as documented in
+      the Automake manual;
+    * have a rule that copies the needed files ("mpfr.h" or they should
+      be prefixed with "mpfr-") to $(top_builddir)/include;
+    * use "-I$(top_builddir)/include".
