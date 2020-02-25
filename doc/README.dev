@@ -681,6 +681,13 @@ user-defined string literal in C++11:
   https://en.cppreference.com/w/cpp/language/user_literal
   https://stackoverflow.com/a/6402166/3782797
 
+In at least mpfr.h, use the underscore version of the attribute names
+(e.g. "__sentinel__" instead of "sentinel"), otherwise user code could
+fail to compile with GCC when it defines macros such as "sentinel"
+(before the #include's or via the -D command-line option). See
+
+  https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html
+
    =====================================================================
 
 Setting errno is safe to signal some error information (as in the

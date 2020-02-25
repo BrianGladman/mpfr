@@ -272,7 +272,7 @@ typedef enum {
 #if defined (__GNUC__)
 # if __GNUC__ >= 4
 #  undef __MPFR_SENTINEL_ATTR
-#  define __MPFR_SENTINEL_ATTR __attribute__ ((sentinel))
+#  define __MPFR_SENTINEL_ATTR __attribute__ ((__sentinel__))
 # endif
 #endif
 
@@ -331,7 +331,7 @@ typedef enum {
 */
 #if defined(__GNUC__) && \
   (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-# define MPFR_DEPRECATED __attribute__ ((deprecated))
+# define MPFR_DEPRECATED __attribute__ ((__deprecated__))
 #elif defined(_MSC_VER) && _MSC_VER >= 1300
 # define MPFR_DEPRECATED __declspec(deprecated)
 #else
@@ -345,7 +345,7 @@ typedef enum {
 
 #if defined(__GNUC__) && \
   (__GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9))
-# define MPFR_RETURNS_NONNULL __attribute__ ((returns_nonnull))
+# define MPFR_RETURNS_NONNULL __attribute__ ((__returns_nonnull__))
 #else
 # define MPFR_RETURNS_NONNULL
 #endif
