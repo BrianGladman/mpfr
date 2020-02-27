@@ -272,6 +272,31 @@ check_tiny (void)
   mpfr_clear (x);
 }
 
+static void
+check_binary128 (void)
+{
+  mpfr_t x, y, z;
+  
+  mpfr_init2 (x, 128);
+  mpfr_init2 (y, 128);
+  mpfr_init2 (z, 128);
+  /* number closest to a multiple of pi/2 in the binary128 format:
+     211178687508491476026207099112361930892 * 2^13323 */
+  mpfr_set_str (x, "4.f6fc494bb0d32499bd1688d3f24d846p13448", 16, MPFR_RNDN);
+  mpfr_cos (y, x, MPFR_RNDN);
+  mpfr_set_str (z, "-0xe.f90c5593d35be5801d20ae62edc96f5p-144", 16, MPFR_RNDN);
+  if (mpfr_cmp (y, z) != 0)
+    {
+      printf ("Error in check128\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -371,6 +396,7 @@ main (int argc, char *argv[])
   test_generic (MPFR_SINCOS_THRESHOLD-1, MPFR_SINCOS_THRESHOLD+1, 2);
   test_sign ();
   check_tiny ();
+  check_binary128 ();
 
   data_check ("data/sin", mpfr_sin, "mpfr_sin");
   bad_cases (mpfr_sin, mpfr_asin, "mpfr_sin", 256, -40, 0, 4, 128, 800, 50);
