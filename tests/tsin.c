@@ -276,7 +276,7 @@ static void
 check_binary128 (void)
 {
   mpfr_t x, y, z;
-  
+
   mpfr_init2 (x, 128);
   mpfr_init2 (y, 128);
   mpfr_init2 (z, 128);
@@ -284,8 +284,8 @@ check_binary128 (void)
      211178687508491476026207099112361930892 * 2^13323 */
   mpfr_set_str (x, "4.f6fc494bb0d32499bd1688d3f24d846p13448", 16, MPFR_RNDN);
   mpfr_cos (y, x, MPFR_RNDN);
-  mpfr_set_str (z, "-0xe.f90c5593d35be5801d20ae62edc96f5p-144", 16, MPFR_RNDN);
-  if (mpfr_cmp (y, z) != 0)
+  mpfr_set_str (z, "-e.f90c5593d35be5801d20ae62edc96f5p-144", 16, MPFR_RNDN);
+  if (! mpfr_equal_p (y, z))
     {
       printf ("Error in check128\n");
       printf ("expected "); mpfr_dump (z);
