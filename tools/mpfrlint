@@ -141,6 +141,12 @@ err-if-output -t "" perl -ne '
       and next;
     print "Forbidden macro in mpfr.h line $.: $m\n" }' src/mpfr.h
 
+# Detect the use of the non-underscore version of the attribute names
+# in mpfr.h (as user code could define macros with such names).
+err-if-output \
+  --msg="In mpfr.h, use the underscore version of the attribute names." \
+  -t "attribute name" grep '__attribute__ *(( *[^_]' src/mpfr.h
+
 # Test before other ones about preprocessing directives.
 err-if-output \
   --msg="Do not put spaces before a preprocessing directive" \
