@@ -339,7 +339,7 @@ typedef enum {
 #endif
 /* TODO: Also define MPFR_EXPERIMENTAL for experimental functions?
    See SVN_EXPERIMENTAL in Subversion 1.9+ as an example:
-   __attribute__((warning("..."))) can be used with GCC 4.3.1+ but
+   __attribute__((__warning__("..."))) can be used with GCC 4.3.1+ but
    not __llvm__, and __declspec(deprecated("...")) can be used with
    MSC as above. */
 
