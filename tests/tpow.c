@@ -1714,6 +1714,36 @@ coverage (void)
 #endif
 }
 
+static void
+check_binary128 (void)
+{
+  mpfr_t x, y, z, t;
+  
+  mpfr_init2 (x, 113);
+  mpfr_init2 (y, 113);
+  mpfr_init2 (z, 113);
+  mpfr_init2 (t, 113);
+  /* x = 1-2^(-113) */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  /* y = 1.125*2^126 = 9*2^123 */
+  mpfr_set_ui_2exp (y, 9, 123, MPFR_RNDN);
+  mpfr_pow (z, x, y, MPFR_RNDN);
+  /* x^y ~ 3.48e-4003 */
+  mpfr_set_str (t, "1.16afef53c30899a5c172bb302882p-13296", 16, MPFR_RNDN);
+  if (mpfr_cmp (z, t) != 0)
+    {
+      printf ("Error in check_binary128\n");
+      printf ("expected "); mpfr_dump (t);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (t);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1744,6 +1774,7 @@ main (int argc, char **argv)
   bug20080820 ();
   bug20110320 ();
   tst20140422 ();
+  check_binary128 ();
 
   test_generic (MPFR_PREC_MIN, 100, 100);
   test_generic_ui (MPFR_PREC_MIN, 100, 100);
