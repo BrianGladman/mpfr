@@ -29,18 +29,18 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    Assumes neither of b or c is NaN, +/- infinity, or +/- 0.
 
-   In other terms, if |b| != |c|, mpfr_cmp2 (b, c) returns
-   EXP(max(|b|,|c|)) - EXP(|b| - |c|).
+   In other terms, if |b| != |c|, mpfr_cmp2 (b, c) stores
+   EXP(max(|b|,|c|)) - EXP(|b| - |c|) in *cancel.
 */
 
 int
 mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 {
-  mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
+  mp_limb_t *bp, *cp, bb, cc, lastc, dif, high_dif;
   mp_size_t bn, cn;
   mpfr_exp_t sdiff_exp;
   mpfr_uexp_t diff_exp;
-  mpfr_prec_t res = 0;
+  mpfr_prec_t res = 0;  /* will be the number of canceled bits (*cancel) */
   int sign;
 
   /* b=c should not happen, since cmp2 is called only from agm (with
@@ -64,17 +64,21 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
   if (sdiff_exp >= 0)
     {
-      sign = 1;
+      sign = 1;  /* assumes |b| > |c|; will be changed if not. */
       diff_exp = sdiff_exp;
 
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
 
+      /* index of the most significant limb of b and c */
       bn = (MPFR_PREC(b) - 1) / GMP_NUMB_BITS;
-      cn = (MPFR_PREC(c) - 1) / GMP_NUMB_BITS; /* # of limbs of c minus 1 */
+      cn = (MPFR_PREC(c) - 1) / GMP_NUMB_BITS;
 
+      /* If diff_exp != 0, i.e. diff_exp > 0, then |b| > |c|. Otherwise... */
       if (diff_exp == 0)
         {
+          /* Skip the identical most significant limbs, adding GMP_NUMB_BITS
+             to the number of canceled bits at each iteration. */
           while (bn >= 0 && cn >= 0 && bp[bn] == cp[cn])
             {
               bn--;
@@ -87,11 +91,15 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
               if (MPFR_LIKELY (cn < 0)) /* |b| = |c| */
                 return 0;
 
-              /* b has been read entirely, but not c. Replace b by c for the
-                 symmetric case below (only the sign differs if not 0). */
+              /* b has been read entirely, but not c. Thus |b| <= |c|.
+                 Swap (bp,bn) and (cp,cn), and take the opposite sign
+                 for the symmetric case below (simulating a swap).
+                 Note: cp will not be used, thus is not assigned; and
+                 "cn = -1;" is necessary to enter the following "if"
+                 (probably less confusing than a "goto"). */
               bp = cp;
               bn = cn;
-              cn = -1; /* to enter the following "if" */
+              cn = -1;
               sign = -1;
             }
 
@@ -102,6 +110,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
               MPFR_ASSERTD (bn >= 0);
 
+              /* Skip null limbs of b (= non-represented null limbs of c),
+                 adding GMP_NUMB_BITS to the number of canceled bits at
+                 each iteration. */
               while (bp[bn] == 0)
                 {
                   if (--bn < 0) /* |b| = |c| */
@@ -109,7 +120,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
                   res += GMP_NUMB_BITS;
                 }
 
-              count_leading_zeros (z, bp[bn]); /* bp[bn] <> 0 */
+              count_leading_zeros (z, bp[bn]); /* bp[bn] != 0 */
               *cancel = res + z;
               return sign;
             }
@@ -117,6 +128,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
           MPFR_ASSERTD (bn >= 0);
           MPFR_ASSERTD (cn >= 0);
           MPFR_ASSERTD (bp[bn] != cp[cn]);
+
+          /* |b| != |c|. If |b| < |c|: swap (bp,bn) and (cp,cn),
+             and take the opposite sign. */
           if (bp[bn] < cp[cn])
             {
               mp_limb_t *tp;
@@ -130,6 +144,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
     } /* MPFR_EXP(b) >= MPFR_EXP(c) */
   else /* MPFR_EXP(b) < MPFR_EXP(c) */
     {
+      /* We necessarily have |b| < |c|. Simulate a swap by reading the
+         parameters so that |(bp,bn)| > |(cp,cn)|. */
+
       sign = -1;
       diff_exp = - (mpfr_uexp_t) sdiff_exp;
 
@@ -140,31 +157,55 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
       cn = (MPFR_PREC(b) - 1) / GMP_NUMB_BITS;
     }
 
-  /* now we have removed the identical upper limbs of b and c
-     (can happen only when diff_exp = 0), and after the possible
-     swap, we have |b| > |c|: bp[bn] > cc, bn >= 0, cn >= 0,
-     diff_exp = EXP(b) - EXP(c).
-  */
+  /* Now we have removed the identical upper limbs of b and c
+     (when diff_exp = 0), and after the possible swap, we have |b| > |c|,
+     where b is represented by (bp,bn) and c is represented by (cp,cn),
+     with diff_exp = EXP(b) - EXP(c). */
+
+  /* One needs to accumulate canceled bits for the case
+       [common part]100000...
+       [common part]011111...
+     which can occur for diff_exp == 0 (with a non-empty common part,
+     partly or entirely removed) or for diff_exp == 1 (with an empty
+     common part). */
+
+  /* First, consume the equivalent of GMP_NUMB_BITS bits of c (just
+     decrease diff_exp if >= GMP_NUMB_BITS). The part aligned with
+     bp[bn] is put in cc, the remaining part in lastc. */
+
+  lastc = 0;
 
   if (MPFR_LIKELY (diff_exp < GMP_NUMB_BITS))
     {
       cc = cp[cn] >> diff_exp;
       /* warning: a shift by GMP_NUMB_BITS is not allowed by ISO C */
-      if (diff_exp)
+      if (diff_exp != 0)
         lastc = cp[cn] << (GMP_NUMB_BITS - diff_exp);
       cn--;
     }
   else
-    diff_exp -= GMP_NUMB_BITS; /* cc = 0 */
+    {
+      cc = 0;
+      diff_exp -= GMP_NUMB_BITS;
+    }
 
-  dif = bp[bn--] - cc; /* necessarily dif >= 1 */
-  MPFR_ASSERTD(dif >= 1);
+  /* Then consume GMP_NUMB_BITS bits of b.
+     Since |b| > |c| and the identical upper limbs of b and c have been
+     removed, we have bp[bn] >= cc + 1 mathematically. */
 
-  /* now high_dif = 0, dif >= 1, lastc is the neglected part of cp[cn+1] */
+  MPFR_ASSERTD (bp[bn] >= cc);  /* no borrow out in subtraction below */
+  dif = bp[bn--] - cc;
+  MPFR_ASSERTD (dif >= 1);
+  high_dif = 0;
+
+  /* If diff_exp > 1, then no limbs have been skipped, so that bp[bn] had
+     its MSB equal to 1 and the most two significant bits of cc are 0,
+     which implies that dif > 1. This if we enter the loop below, then
+     dif == 1, which implies diff_exp <= 1. */
 
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
-                        && (high_dif == 0) && (dif == 1)))
-    { /* dif=1 implies diff_exp = 0 or 1 */
+                        && high_dif == 0 && dif == 1))
+    {
       MPFR_ASSERTD (diff_exp <= 1);
       bb = (bn >= 0) ? bp[bn] : 0;
       cc = lastc;
