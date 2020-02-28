@@ -277,21 +277,53 @@ check_binary128 (void)
 {
   mpfr_t x, y, z;
 
-  mpfr_init2 (x, 128);
-  mpfr_init2 (y, 128);
-  mpfr_init2 (z, 128);
-  /* number closest to a multiple of pi/2 in the binary128 format:
-     211178687508491476026207099112361930892 * 2^13323 */
-  mpfr_set_str (x, "4.f6fc494bb0d32499bd1688d3f24d846p13448", 16, MPFR_RNDN);
+  mpfr_init2 (x, 113);
+  mpfr_init2 (y, 113);
+  mpfr_init2 (z, 113);
+
+  /* number closest to a odd multiple of pi/2 in the binary128 format:
+     8794873135033829349702184924722639 * 2^1852 */
+  mpfr_set_str (x, "1b19ee7c329d7d951906d1e11b5cfp1852", 16, MPFR_RNDN);
   mpfr_cos (y, x, MPFR_RNDN);
-  mpfr_set_str (z, "-e.f90c5593d35be5801d20ae62edc96f5p-144", 16, MPFR_RNDN);
+  mpfr_set_str (z, "1.ad1a2037cd7820f748483f5d39c3p-124", 16, MPFR_RNDN);
   if (! mpfr_equal_p (y, z))
     {
-      printf ("Error in check128\n");
+      printf ("Error in check_binary128 (cos x)\n");
       printf ("expected "); mpfr_dump (z);
       printf ("got      "); mpfr_dump (y);
       exit (1);
     }
+  mpfr_sin (y, x, MPFR_RNDN);
+  mpfr_set_ui (z, 1, MPFR_RNDN);
+  if (! mpfr_equal_p (y, z))
+    {
+      printf ("Error in check_binary128 (sin x)\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  /* now multiply x by 2, so that it is near an even multiple of pi/2 */
+  mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+  mpfr_cos (y, x, MPFR_RNDN);
+  mpfr_set_si (z, -1, MPFR_RNDN);
+  if (! mpfr_equal_p (y, z))
+    {
+      printf ("Error in check_binary128 (cos 2x)\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_sin (y, x, MPFR_RNDN);
+  mpfr_set_str (z, "3.5a34406f9af041ee90907eba7386p-124", 16, MPFR_RNDN);
+  if (! mpfr_equal_p (y, z))
+    {
+      printf ("Error in check_binary128 (sin 2x)\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
