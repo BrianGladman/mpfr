@@ -55,9 +55,11 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   sdiff_exp = MPFR_UNLIKELY (MPFR_IS_UBF (b) || MPFR_IS_UBF (c)) ?
     mpfr_ubf_diff_exp (b, c) : MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
-  /* The returned result is restricted to [MPFR_EXP_MIN,MPFR_EXP_MAX],
+  /* The returned result is saturated to [MPFR_EXP_MIN,MPFR_EXP_MAX],
      which is the range of the mpfr_exp_t type. But under the condition
-     below, the value of cancel will not be affected. */
+     below, since |MPFR_EXP_MIN| >= MPFR_EXP_MAX, the value of cancel
+     will not be affected: if saturation occurred, the smaller number
+     is less than the ulp of the larger number (in absolute value). */
   MPFR_STAT_STATIC_ASSERT (MPFR_EXP_MAX > MPFR_PREC_MAX);
 
   if (sdiff_exp >= 0)
