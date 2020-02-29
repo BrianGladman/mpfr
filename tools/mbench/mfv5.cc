@@ -83,6 +83,8 @@ build_base (vector<string> &base, const option_test &opt)
     mpfr_urandomb (x, state);
     if (opt.exp_diff == -1)
       mpfr_mul_2si  (x, x, (rand() % opt.max_exp) - (opt.max_exp / 2), MPFR_RNDN);
+    else if (opt.exp_diff == -2)
+      mpfr_set_exp (x, opt.max_exp);
     else /* set the exponent to -i*exp_diff */
       mpfr_set_exp (x, -(long) i * opt.exp_diff);
     str = mpfr_get_str (NULL, &e, 10, 0, x, MPFR_RNDN);
@@ -161,7 +163,10 @@ int main (int argc, const char *argv[])
               break;
 	    case 'd':
               options.exp_diff = atol (argv[i]+2);
-	      assert (options.exp_diff >= 0);
+	      assert (options.exp_diff >= -2);
+	      /* exp_diff = -1 (default): exponent is chosen in [-e/2,e/2]
+		 exp_dif >=0: the exponent of the ith value is -i*exp_diff
+		 exp_dif = -2: the exponent is exactly e */
               break;
             case 'r':
               {
