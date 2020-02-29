@@ -1723,6 +1723,7 @@ check_binary128 (void)
   mpfr_init2 (y, 113);
   mpfr_init2 (z, 113);
   mpfr_init2 (t, 113);
+
   /* x = 1-2^(-113) */
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextbelow (x);
@@ -1738,6 +1739,21 @@ check_binary128 (void)
       printf ("got      "); mpfr_dump (z);
       exit (1);
     }
+
+  /* x = 5192296858534827628530496329220095/2^112 */
+  mpfr_set_str (x, "1.fffffffffffffffffffffffffffep-1", 16, MPFR_RNDN);
+  /* y = -58966440806378323534486035691038613504 */
+  mpfr_set_str (y, "-1.62e42fefa39ef35793c7673007e5p125", 16, MPFR_RNDN);
+  mpfr_pow (z, x, y, MPFR_RNDN);
+  mpfr_set_str (t, "1.fffffffffffffffffffffffff105p16383", 16, MPFR_RNDN);
+  if (mpfr_cmp (z, t) != 0)
+    {
+      printf ("Error in check_binary128 (2)\n");
+      printf ("expected "); mpfr_dump (t);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
