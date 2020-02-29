@@ -157,8 +157,18 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
            which is obtained by dividing by 2Y. */
         mpz_mul_2exp (my, my, 1);       /* 2Y */
 
-      mpz_set_ui (r, 2);
-      mpz_powm_ui (r, r, ex - ey, my);  /* 2^(ex-ey) mod my */
+      /* Warning: up to GMP 6.2.0, mpz_powm_ui is not optimized when BASE^EXP
+         has about the same size as MOD, in which case it should first compute
+         BASE^EXP exactly, then reduce it modulo MOD:
+         https://gmplib.org/list-archives/gmp-bugs/2020-February/004736.html
+         Thus when 2^(ex-ey) is less than my^3, we use this algorithm. */
+      if (ex - ey > 3 * mpz_sizeinbase (my, 2))
+        {
+          mpz_set_ui (r, 2);
+          mpz_powm_ui (r, r, ex - ey, my);  /* 2^(ex-ey) mod my */
+        }
+      else
+        mpz_ui_pow_ui (r, 2, ex - ey);
       mpz_mul (r, r, mx);
       mpz_mod (r, r, my);
 
