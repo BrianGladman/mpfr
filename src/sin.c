@@ -84,7 +84,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* for x large, since argument reduction is expensive, we want to avoid
      any failure in Ziv's strategy, thus we take into account expx too */
-  m = precy + MPFR_INT_CEIL_LOG2 (MAX(precy,expx)) + 7;
+  m = precy + MPFR_INT_CEIL_LOG2 (MAX(precy,expx)) + 8;
 
   /* since we compute sin(x) as sqrt(1-cos(x)^2), and for x small we have
      cos(x)^2 ~ 1 - x^2, when subtracting cos(x)^2 from 1 we will lose
