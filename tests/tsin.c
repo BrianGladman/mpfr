@@ -304,7 +304,7 @@ check_binary128 (void)
     }
 
   /* now multiply x by 2, so that it is near an even multiple of pi/2 */
-  mpfr_mul_2exp (x, x, 1, MPFR_RNDN);
+  mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
   mpfr_cos (y, x, MPFR_RNDN);
   mpfr_set_si (z, -1, MPFR_RNDN);
   if (! mpfr_equal_p (y, z))
