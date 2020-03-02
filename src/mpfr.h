@@ -115,11 +115,21 @@ typedef enum {
 #define GMP_RNDU MPFR_RNDU
 #define GMP_RNDD MPFR_RNDD
 
-/* Note: With the following default choices for _MPFR_PREC_FORMAT and
-   _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as [mp_exp_t] (at least
-   up to GMP 5). */
+/* The _MPFR_PREC_FORMAT and _MPFR_EXP_FORMAT values are automatically
+   defined below. You MUST NOT force a value (this will break the ABI),
+   possibly except for a very particular use, in which case you need to
+   rebuild the MPFR library itself; do not install this rebuilt library
+   in a path that is searched by default, otherwise this will break
+   applications that use MPFR.
 
-/* Define precision: 1 (short), 2 (int) or 3 (long) */
+   Using non-default values is not guaranteed to work.
+
+   Note: With the following default choices for _MPFR_PREC_FORMAT and
+   _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as [mp_exp_t] (at least
+   up to GMP 6). */
+
+/* Define precision: 1 (short), 2 (int) or 3 (long).
+   DON'T FORCE A VALUE (see above). */
 #ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT
 #  define _MPFR_PREC_FORMAT 2
@@ -128,7 +138,8 @@ typedef enum {
 # endif
 #endif
 
-/* Define exponent: 1 (short), 2 (int), 3 (long) or 4 (intmax_t) */
+/* Define exponent: 1 (short), 2 (int), 3 (long) or 4 (intmax_t).
+   DON'T FORCE A VALUE (see above). */
 #ifndef _MPFR_EXP_FORMAT
 # define _MPFR_EXP_FORMAT _MPFR_PREC_FORMAT
 #endif
