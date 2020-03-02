@@ -119,7 +119,7 @@ typedef enum {
    _MPFR_EXP_FORMAT, mpfr_exp_t will be the same as [mp_exp_t] (at least
    up to GMP 5). */
 
-/* Define precision: 1 (short), 2 (int) or 3 (long) (DON'T USE IT!) */
+/* Define precision: 1 (short), 2 (int) or 3 (long) */
 #ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT
 #  define _MPFR_PREC_FORMAT 2
@@ -128,8 +128,7 @@ typedef enum {
 # endif
 #endif
 
-/* Define exponent: 1 (short), 2 (int), 3 (long) or 4 (intmax_t)
-   (DON'T USE IT!) */
+/* Define exponent: 1 (short), 2 (int), 3 (long) or 4 (intmax_t) */
 #ifndef _MPFR_EXP_FORMAT
 # define _MPFR_EXP_FORMAT _MPFR_PREC_FORMAT
 #endif
