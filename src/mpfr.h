@@ -117,10 +117,10 @@ typedef enum {
 
 /* The _MPFR_PREC_FORMAT and _MPFR_EXP_FORMAT values are automatically
    defined below. You MUST NOT force a value (this will break the ABI),
-   possibly except for a very particular use, in which case you need to
-   rebuild the MPFR library itself; do not install this rebuilt library
-   in a path that is searched by default, otherwise this will break
-   applications that use MPFR.
+   possibly except for a very particular use, in which case you also need
+   to rebuild the MPFR library with the chosen values; do not install this
+   rebuilt library in a path that is searched by default, otherwise this
+   will break applications that are dynamically linked with MPFR.
 
    Using non-default values is not guaranteed to work.
 
