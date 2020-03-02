@@ -162,6 +162,9 @@ typedef unsigned short mpfr_uprec_t;
 typedef int   mpfr_prec_t;
 typedef unsigned int   mpfr_uprec_t;
 #elif _MPFR_PREC_FORMAT == 3
+/* we could use "long long" under Windows 64 here, which can be tested
+   with the macro _WIN64 according to
+   https://sourceforge.net/p/predef/wiki/OperatingSystems/ */
 typedef long  mpfr_prec_t;
 typedef unsigned long  mpfr_uprec_t;
 #else
