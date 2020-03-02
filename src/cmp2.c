@@ -191,45 +191,50 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   MPFR_ASSERTD (bp[bn] >= cc);  /* no borrow out in subtraction below */
   dif = bp[bn--] - cc;
   MPFR_ASSERTD (dif >= 1);
-  high_dif = 0;
 
-  /* One needs to accumulate canceled bits for the case
-       [common part]100000...
-       [common part]011111...
-     which can occur for diff_exp == 0 (with a non-empty common part,
+  /* One needs to accumulate canceled bits for the remaining case where
+     b and c are close to each other due to a long borrow propagation:
+       b = [common part]1000...000[low(b)]
+       c = [common part]0111...111[low(c)]
+     This can occur for diff_exp == 0 (with a non-empty common part,
      partly or entirely removed) or for diff_exp == 1 (with an empty
-     common part). */
+     common part). The first bits after the common part have already
+     been taken into account above, and the difference has been stored
+     in the variable dif. */
 
   /* If diff_exp > 1, then no limbs have been skipped, so that bp[bn] had
      its MSB equal to 1 and the most two significant bits of cc are 0,
      which implies that dif > 1. Thus if we enter the loop below, then
      dif == 1, which implies diff_exp <= 1. */
 
+  high_dif = 0;  /* carry = 1 - borrow, for the following loop */
+  /* TODO: This needs explanations for the case where the loop is not
+     entered. But it would probably be better to remove high_dif. */
+
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
                         && high_dif == 0 && dif == 1))
     {
+      res += GMP_NUMB_BITS;  /* because we entered the loop */
       MPFR_ASSERTD (diff_exp <= 1);
-      bb = (bn >= 0) ? bp[bn] : 0;
-      cc = lastc;
-      if (cn >= 0)
+      bb = bn >= 0 ? bp[bn--] : 0;
+      if (MPFR_UNLIKELY (cn < 0))
         {
-          if (diff_exp == 0)
-            {
-              cc += cp[cn];
-            }
-          else
-            {
-              MPFR_ASSERTD (diff_exp == 1);
-              cc += cp[cn] >> 1;
-              lastc = cp[cn] << (GMP_NUMB_BITS - 1);
-            }
+          cc = lastc;
+          lastc = 0;
+        }
+      else if (diff_exp == 0)
+        {
+          cc = cp[cn--];
         }
       else
-        lastc = 0;
-      high_dif = 1 - mpn_sub_n (&dif, &bb, &cc, 1);
-      bn--;
-      cn--;
-      res += GMP_NUMB_BITS;
+        {
+          MPFR_ASSERTD (diff_exp == 1);
+          MPFR_ASSERTD (lastc == 0 || lastc == MPFR_LIMB_HIGHBIT);
+          cc = lastc + (cp[cn] >> 1);
+          lastc = cp[cn--] << (GMP_NUMB_BITS - 1);
+        }
+      dif = bb - cc;
+      high_dif = bb >= cc;
     }
 
   /* (cn<0 and lastc=0) or (high_dif,dif)<>(0,1) */
