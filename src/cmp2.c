@@ -159,21 +159,20 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 
   /* Now we have removed the identical upper limbs of b and c
      (when diff_exp = 0), and after the possible swap, we have |b| > |c|,
-     where b is represented by (bp,bn) and c is represented by (cp,cn),
-     with diff_exp = EXP(b) - EXP(c). */
+     where b is represented by (bp,bn) and c is represented by (cp,cn).
+     The value diff_exp = EXP(b) - EXP(c) can be regarded as the number
+     of leading zeros of c, when aligned with b. */
 
-  /* One needs to accumulate canceled bits for the case
-       [common part]100000...
-       [common part]011111...
-     which can occur for diff_exp == 0 (with a non-empty common part,
-     partly or entirely removed) or for diff_exp == 1 (with an empty
-     common part). */
-
-  /* First, consume the equivalent of GMP_NUMB_BITS bits of c (just
-     decrease diff_exp if >= GMP_NUMB_BITS). The part aligned with
-     bp[bn] is put in cc, the remaining part in lastc. */
-
+  /* When a limb of c is read from memory, the part that is not taken
+     into account for the operation with a limb bp[bn] of b will be put
+     in lastc, shifted to the leftmost part (for alignment with b):
+       [-------- bp[bn] --------][------- bp[bn-1] -------]
+       [-- old_lastc --][-------- cp[cn] --------]
+                                 [-- new_lastc --]
+  */
   lastc = 0;
+
+  /* Compute the next limb difference, which cannot be 0 (dif >= 1). */
 
   if (MPFR_LIKELY (diff_exp < GMP_NUMB_BITS))
     {
@@ -186,21 +185,24 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   else
     {
       cc = 0;
-      diff_exp -= GMP_NUMB_BITS;
+      diff_exp -= GMP_NUMB_BITS;  /* remove GMP_NUMB_BITS leading zeros */
     }
-
-  /* Then consume GMP_NUMB_BITS bits of b.
-     Since |b| > |c| and the identical upper limbs of b and c have been
-     removed, we have bp[bn] >= cc + 1 mathematically. */
 
   MPFR_ASSERTD (bp[bn] >= cc);  /* no borrow out in subtraction below */
   dif = bp[bn--] - cc;
   MPFR_ASSERTD (dif >= 1);
   high_dif = 0;
 
+  /* One needs to accumulate canceled bits for the case
+       [common part]100000...
+       [common part]011111...
+     which can occur for diff_exp == 0 (with a non-empty common part,
+     partly or entirely removed) or for diff_exp == 1 (with an empty
+     common part). */
+
   /* If diff_exp > 1, then no limbs have been skipped, so that bp[bn] had
      its MSB equal to 1 and the most two significant bits of cc are 0,
-     which implies that dif > 1. This if we enter the loop below, then
+     which implies that dif > 1. Thus if we enter the loop below, then
      dif == 1, which implies diff_exp <= 1. */
 
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
