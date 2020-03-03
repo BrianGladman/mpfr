@@ -251,70 +251,85 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
       high_dif = bb >= cc;
     }
 
-  /* (cn<0 and lastc=0) or (high_dif,dif)<>(0,1) */
+  /* Now, c has entirely been taken into account or [high_dif][dif] > 1.
+     In any case, [high_dif][dif] >= 1 by construction.
+     First, we determine the currently number of canceled bits,
+     corresponding to the exponent of the current difference.
+     The trailing bits of c, if any, can still decrease the exponent of
+     the difference when [high_dif][dif] is a power of two, but since
+     [high_dif][dif] > 1 in this case, by not more than 1. */
 
-  if (MPFR_UNLIKELY (high_dif != 0)) /* high_dif == 1 */
+  if (high_dif != 0) /* high_dif == 1 */
     {
-      res--;
+      res--;  /* see comment at the beginning of the above loop */
       MPFR_ASSERTD (res >= 0);
-      if (dif != 0)
-        {
-          *cancel = res;
-          return sign;
-        }
+      /* Terminate if [high_dif][dif] is not a power of two. */
+      if (MPFR_LIKELY (dif != 0))
+        goto end;
     }
   else /* high_dif == 0 */
     {
       int z;
 
-      count_leading_zeros (z, dif); /* dif > 1 here */
+      MPFR_ASSERTD (dif >= 1);  /* [high_dif][dif] >= 1 */
+      count_leading_zeros (z, dif);
       res += z;
-      if (MPFR_LIKELY(dif != (MPFR_LIMB_ONE << (GMP_NUMB_BITS - z - 1))))
-        { /* dif is not a power of two */
-          *cancel = res;
-          return sign;
-        }
+      /* Terminate if [high_dif][dif] is not a power of two. */
+      if (MPFR_LIKELY (NOT_POW2 (dif)))
+        goto end;
     }
 
-  /* now result is res + (low(b) < low(c)) */
-  while (bn >= 0 && (cn >= 0 || lastc != 0))
+  /* Now, the result will be res + (low(b) < low(c)). */
+
+  /* If c has entirely been taken into account, it can no longer modify
+     the current result. */
+  if (cn < 0 && lastc == 0)
+    goto end;
+
+  for (; bn >= 0 ; bn--)
     {
       if (diff_exp >= GMP_NUMB_BITS)
-        diff_exp -= GMP_NUMB_BITS;
-      else
+        {
+          diff_exp -= GMP_NUMB_BITS;
+          MPFR_ASSERTD (cc == 0);
+        }
+      else if (MPFR_UNLIKELY (cn < 0))
         {
           cc = lastc;
-          if (cn >= 0)
-            {
-              cc += cp[cn] >> diff_exp;
-              if (diff_exp != 0)
-                lastc = cp[cn] << (GMP_NUMB_BITS - diff_exp);
-            }
-          else
-            lastc = 0;
-          cn--;
+          lastc = 0;
         }
-      if (bp[bn] != cc)
+      else if (diff_exp == 0)
         {
-          *cancel = res + (bp[bn] < cc);
-          return sign;
+          cc = cp[cn--];
         }
-      bn--;
-    }
-
-  if (bn < 0)
-    {
-      if (lastc != 0)
-        res++;
       else
         {
-          while (cn >= 0 && cp[cn] == 0)
-            cn--;
-          if (cn >= 0)
-            res++;
+          MPFR_ASSERTD (diff_exp >= 1 && diff_exp < GMP_NUMB_BITS);
+          cc = lastc + (cp[cn] >> diff_exp);
+          lastc = cp[cn--] << (GMP_NUMB_BITS - diff_exp);
+        }
+
+      if (bp[bn] != cc)
+        {
+          res += bp[bn] < cc;
+          goto end;
         }
     }
 
+  /* b has entirely been read. Determine whether the trailing part of c
+     is non-zero. */
+
+  if (lastc != 0)
+    res++;
+  else
+    {
+      while (cn >= 0 && cp[cn] == 0)
+        cn--;
+      if (cn >= 0)
+        res++;
+    }
+
+ end:
   *cancel = res;
   return sign;
 }
