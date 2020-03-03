@@ -36,7 +36,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
 {
-  mp_limb_t *bp, *cp, bb, cc, lastc, dif, high_dif;
+  mp_limb_t *bp, *cp, bb, cc, lastc, dif;
+  int high_dif;  /* manipulated like a boolean */
   mp_size_t bn, cn;
   mpfr_exp_t sdiff_exp;
   mpfr_uexp_t diff_exp;
@@ -169,7 +170,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
        [-------- bp[bn] --------][------- bp[bn-1] -------]
        [-- old_lastc --][-------- cp[cn] --------]
                                  [-- new_lastc --]
-  */
+     Note: if diff_exp == 0, then lastc will always remain 0. */
   lastc = 0;
 
   /* Compute the next limb difference, which cannot be 0 (dif >= 1). */
@@ -191,32 +192,45 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
   MPFR_ASSERTD (bp[bn] >= cc);  /* no borrow out in subtraction below */
   dif = bp[bn--] - cc;
   MPFR_ASSERTD (dif >= 1);
+  high_dif = 0;
+
+  /* The current difference, here and later, is expressed under the form
+     [high_dif][dif], where high_dif is 0 or 1, and dif is a limb.
+     Here, since we have computed a difference of limbs (with b >= c),
+     high_dif = 0. */
 
   /* One needs to accumulate canceled bits for the remaining case where
      b and c are close to each other due to a long borrow propagation:
        b = [common part]1000...000[low(b)]
        c = [common part]0111...111[low(c)]
-     This can occur for diff_exp == 0 (with a non-empty common part,
-     partly or entirely removed) or for diff_exp == 1 (with an empty
-     common part). The first bits after the common part have already
-     been taken into account above, and the difference has been stored
-     in the variable dif. */
-
-  /* If diff_exp > 1, then no limbs have been skipped, so that bp[bn] had
-     its MSB equal to 1 and the most two significant bits of cc are 0,
-     which implies that dif > 1. Thus if we enter the loop below, then
-     dif == 1, which implies diff_exp <= 1. */
-
-  high_dif = 0;  /* carry = 1 - borrow, for the following loop */
-  /* TODO: This needs explanations for the case where the loop is not
-     entered. But it would probably be better to remove high_dif. */
+     After eliminating the common part above, we have computed a difference
+     of the most significant parts, which has been stored in [high_dif][dif]
+     with high_dif = 0. We will loop as long as the currently computed
+     difference [high_dif][dif] = 1 (it is >= 1 by construction). The
+     computation of the difference will be:
+        1bbb...bbb
+       - ccc...ccc
+     where the leading 1 before bbb...bbb corresponds to [high_dif][dif]
+     at the beginning of the loop. We will exit the loop also when c has
+     entirely been taken into account as cancellation is no longer possible
+     in this case (it is no longer possible to cancel the leading 1).
+     Note: We can enter the loop only with diff_exp = 0 (with a non-empty
+     common part, partly or entirely removed) or with diff_exp = 1 (with
+     an empty common part). Indeed, if diff_exp > 1, then no limbs have
+     been skipped, so that bp[bn] had its MSB equal to 1 and the most two
+     significant bits of cc are 0, which implies that dif > 1. */
 
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
                         && high_dif == 0 && dif == 1))
     {
-      res += GMP_NUMB_BITS;  /* because we entered the loop */
-      MPFR_ASSERTD (diff_exp <= 1);
-      bb = bn >= 0 ? bp[bn--] : 0;
+      /* Since we consider the next limb, we assume a cancellation of
+         GMP_NUMB_BITS (the new exponent of the difference now being the
+         one of the MSB of the next limb). But if the leading 1 remains
+         1 in the difference (i.e. high_dif = 1 at the end of the loop),
+         then we will need to decrease res. */
+      res += GMP_NUMB_BITS;
+      MPFR_ASSERTD (diff_exp <= 1);  /* see comment before the loop */
+      bb = bn >= 0 ? bp[bn--] : 0;  /* next limb of b or non-represented 0 */
       if (MPFR_UNLIKELY (cn < 0))
         {
           cc = lastc;
