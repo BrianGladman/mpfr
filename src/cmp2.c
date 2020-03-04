@@ -60,9 +60,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mpfr_prec_t *cancel)
      which is the range of the mpfr_exp_t type. But under the condition
      below, since |MPFR_EXP_MIN| >= MPFR_EXP_MAX, the value of cancel
      will not be affected: by symmetry (as done in the code), assume
-     |b| >= |c|; if |EXP(b) - EXP(c)| >= MPFR_EXP_MAX, then |c| < ulp(b),
-     so that the return value is 0, or 1 if |b| is a power of 2, whatever
-     the exact value of |EXP(b) - EXP(c)|. */
+     |b| >= |c|; if EXP(b) - EXP(c) >= MPFR_EXP_MAX, then |c| < ulp(b),
+     so that the value of cancel is 0, or 1 if |b| is a power of 2,
+     whatever the exact value of |EXP(b) - EXP(c)|. */
   MPFR_STAT_STATIC_ASSERT (MPFR_EXP_MAX > MPFR_PREC_MAX);
 
   if (sdiff_exp >= 0)
