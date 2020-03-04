@@ -53,9 +53,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   (void) MPFR_GET_PREC (c);
 
   sign = mpfr_cmp2 (b, c, &cancel);
-  MPFR_LOG_MSG (("sign=%d\n", sign));
+
   if (MPFR_UNLIKELY(sign == 0))
     {
+      MPFR_LOG_MSG (("sign=0\n", 0));
       if (rnd_mode == MPFR_RNDD)
         MPFR_SET_NEG (a);
       else
@@ -63,6 +64,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       MPFR_SET_ZERO (a);
       MPFR_RET (0);
     }
+
+  /* sign != 0, so that cancel has a valid value. */
+  MPFR_LOG_MSG (("sign=%d cancel=%Pd\n", sign, cancel));
+  MPFR_ASSERTD (cancel >= 0 && cancel <= MPFR_PREC_MAX);
 
   /*
    * If subtraction: sign(a) = sign * sign(b)
