@@ -31,6 +31,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    In other terms, if |b| != |c|, mpfr_cmp2 (b, c) stores
    EXP(max(|b|,|c|)) - EXP(|b| - |c|) in *cancel.
+
+   One necessarily has 0 <= cancel <= max(PREC(b),PREC(c)), so that this
+   value is representable in a mpfr_prec_t. Note that in the code, the
+   maximum intermediate value is cancel + 1, but since MPFR_PREC_MAX is
+   not the maximum value of mpfr_prec_t, there is no integer overflow.
 */
 
 int
