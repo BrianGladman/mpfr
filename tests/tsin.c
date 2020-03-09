@@ -329,6 +329,32 @@ check_binary128 (void)
   mpfr_clear (z);
 }
 
+/* check Ziv's loop with precision 212 bits */
+static void
+check_212 (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init2 (x, 212);
+  mpfr_init2 (y, 212);
+  mpfr_init2 (z, 212);
+
+  mpfr_set_str (x, "f.c34b10aa02f796d435a3db0146b4e8a0b2850422f778af06be66p+0", 16, MPFR_RNDN);
+  mpfr_sin (y, x, MPFR_RNDN);
+  mpfr_set_str (z, "-e.0c2d5c189f8a0d185d7036b87b90f3040f4f2aa0f46f901bad44p-8", 16, MPFR_RNDN);
+  if (! mpfr_equal_p (y, z))
+    {
+      printf ("Error in check_212\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -429,6 +455,7 @@ main (int argc, char *argv[])
   test_sign ();
   check_tiny ();
   check_binary128 ();
+  check_212 ();
 
   data_check ("data/sin", mpfr_sin, "mpfr_sin");
   bad_cases (mpfr_sin, mpfr_asin, "mpfr_sin", 256, -40, 0, 4, 128, 800, 50);
