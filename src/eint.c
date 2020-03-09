@@ -66,11 +66,13 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpz_init (m);
   MPFR_GROUP_INIT_3 (group, 31, eps, erru, errs);
   e = mpfr_get_z_2exp (m, x); /* x = m * 2^e */
+  MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
   MPFR_ASSERTD (mpz_sizeinbase (m, 2) == MPFR_PREC (x));
   if (MPFR_PREC (x) > w)
     {
       e += MPFR_PREC (x) - w;
       mpz_tdiv_q_2exp (m, m, MPFR_PREC (x) - w);
+      MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
     }
   MPFR_LOG_MSG (("m %s 0\n", mpz_sgn (m) != 0 ? "!=" : "=="));
   /* remove trailing zeroes from m: this will speed up much cases where
