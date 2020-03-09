@@ -45,6 +45,10 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   unsigned long k;
   MPFR_GROUP_DECL (group);
 
+  MPFR_LOG_FUNC (
+    ("x[%Pu]=%.*Rg", mpfr_get_prec (x), mpfr_log_prec, x),
+    ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
+
   /* for |x| <= 1, we have S := sum(x^k/k/k!, k=1..infinity) = x + R(x)
      where |R(x)| <= (x/2)^2/(1-|x|/2) <= 2*(x/2)^2
      thus |R(x)/x| <= |x|/2
@@ -68,6 +72,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
       e += MPFR_PREC (x) - w;
       mpz_tdiv_q_2exp (m, m, MPFR_PREC (x) - w);
     }
+  MPFR_LOG_MSG (("m %s 0\n", mpz_sgn (m) != 0 ? "!=" : "=="));
   /* remove trailing zeroes from m: this will speed up much cases where
      x is a small integer divided by a power of 2 */
   k = mpz_scan1 (m, 0);
@@ -145,6 +150,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpz_clear (t);
   mpz_clear (u);
   mpz_clear (m);
+  MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
   return e;
 }
 
@@ -160,6 +166,10 @@ mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
   mpfr_t invx, t, err;
   unsigned long k;
   mpfr_exp_t err_exp;
+
+  MPFR_LOG_FUNC (
+    ("x[%Pu]=%.*Rg", mpfr_get_prec (x), mpfr_log_prec, x),
+    ("err_exp=%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) err_exp));
 
   mpfr_init2 (t, p);
   mpfr_init2 (invx, p);
