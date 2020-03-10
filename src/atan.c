@@ -70,7 +70,7 @@ set_table (mpfr_t y, const mp_limb_t x[3])
 }
 #endif
 
-/* If x = p/2^r, put in y an approximation of atan(x)/x using 2^m terms
+/* If x = p/2^r, put in y an approximation to atan(x)/x using 2^m terms
    for the series expansion, with an error of at most 1 ulp.
    Assumes 0 < x < 1, thus 1 <= p < 2^r.
    More precisely, p consists of the floor(r/2) bits of the binary expansion
@@ -98,8 +98,9 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
   mpfr_prec_t accu[MPFR_PREC_BITS], log2_nb_terms[MPFR_PREC_BITS];
   mpfr_prec_t precy = MPFR_PREC(y);
 
-  MPFR_ASSERTD(mpz_cmp_ui (p, 0) != 0);
-  MPFR_ASSERTD (m+1 <= MPFR_PREC_BITS);
+  MPFR_ASSERTD (mpz_sgn (p) > 0);
+  MPFR_ASSERTD (m > 0);
+  MPFR_ASSERTD (m <= MPFR_PREC_BITS - 1);
 
 #if GMP_NUMB_BITS == 64
   /* tabulate values for small precision and small value of r (which are the
@@ -150,10 +151,11 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
       MPFR_ASSERTD (r > n);
       r -= n;
     }
-  /* since |p/2^r| < 1, and p is a non-zero integer, necessarily r > 0 */
 
+  /* Since |p/2^r| < 1, and p is a non-zero integer, necessarily r > 0. */
   MPFR_ASSERTD (mpz_sgn (p) > 0);
   MPFR_ASSERTD (m > 0);
+  MPFR_ASSERTD (r > 0);
 
   /* check if p=1 (special case) */
   l = 0;
