@@ -107,7 +107,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                  3 * sh - (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r)));
 
   sh = 3 * sh + r;
-  if (sh >= 0)
+  if (sh > 0)
     {
       mpz_mul_2exp (m, m, sh);
       e -= sh;
