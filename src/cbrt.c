@@ -25,19 +25,19 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
  /* The computation of y = x^(1/3) is done as follows:
 
-    Let x = sign * m * 2^(3*e) where m is an integer
+    Let x = sign * m * 2^(3*e) where m is an integer >= 2^(3n-3) with
+    n = PREC(y).
 
-    with 2^(3n-3) <= m < 2^(3n) where n = PREC(y)
+    Let s be the integer cube root of m, i.e. the maximum integer such that
+    m = s^3 + r with r >= 0.
 
-    and m = s^3 + r where 0 <= r and m < (s+1)^3
+    The constraint m >= 2^(3n-3) allows one to have sufficient precision
+    for s: s >= 2^(n-1), i.e. s has at least n bits.
 
-    FIXME: In the code below, the root can be applied to a value of m
-    larger than 2^(3n), if PREC(x) > 3*PREC(y) up to some small constant.
+    FIXME: The description below is incorrect if s has more than n bits
+    (since n is the target precision).
 
-    we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(3n-3)
-    i.e. m must have at least 3n-2 bits
-
-    then x^(1/3) = s * 2^e if r=0
+    Then x^(1/3) = s * 2^e if r=0
          x^(1/3) = (s+1) * 2^e if round up
          x^(1/3) = (s-1) * 2^e if round down
          x^(1/3) = s * 2^e if nearest and r < 3/2*s^2+3/4*s+1/8
