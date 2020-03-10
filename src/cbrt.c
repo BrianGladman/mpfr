@@ -31,6 +31,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
     and m = s^3 + r where 0 <= r and m < (s+1)^3
 
+    FIXME: In the code below, the root can be applied to a value of m
+    larger than 2^(3n), if PREC(x) > 3*PREC(y) up to some small constant.
+
     we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(3n-3)
     i.e. m must have at least 3n-2 bits
 
