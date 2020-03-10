@@ -101,17 +101,17 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
   n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
-  /* We want m to have at least 3n-2 bits. Assume that size_m < 3 * n - 2.
-     We will need to shift m by r' bits to the left and subtract r' from e
-     so that m has at least 3*n-2 bits and e becomes a multiple of 3.
+  /* We will need to shift m by r' bits to the left and subtract r' from e
+     so that m has at least 3n-2 bits and e becomes a multiple of 3.
      Since r = e % 3, we write r' = 3 * sh + r.
+     If m already has at least 3n-2 bits, then we will use r' = r, so that
+     let us focus on the case size_m < 3 * n - 2.
      We want 3 * n - 2 <= size_m + 3 * sh + r <= 3 * n.
-     Let d = 3 * n - size_m - r. Thus we want 0 <= d - 3 * sh <= 2, i.e.
-     sh = floor(d/3).
-     Note: If d < 0, the following operation does a trunc instead of a
-     floor. But in this case, this means that size_m >= 3 * n - 2, and
-     we have sh <= 0, and the code below will use r' = r, which is what
-     we want. */
+     Let d = 3 * n - size_m - r > 0. Thus we want 0 <= d - 3 * sh <= 2,
+     i.e. sh = floor(d/3) = trunc(d/3).
+     If size_m >= 3 * n - 2, then d <= 2, so that sh <= 0, whether a trunc
+     (ISO C99 and later) or a floor (possible before C99) is done with the
+     integer division; and the code will use r' = r as wanted. */
   sh = (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / 3;
 
   if (sh > 0)
