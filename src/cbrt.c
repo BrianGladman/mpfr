@@ -45,9 +45,9 @@ int
 mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
-  mpfr_exp_t e, r, sh;
+  mpfr_exp_t e, sh;
   mpfr_prec_t n, size_m, tmp;
-  int inexact, negative;
+  int inexact, negative, r;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (
@@ -89,27 +89,39 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   r = e % 3;
   if (r < 0)
     r += 3;
+  MPFR_ASSERTD (r >= 0 && r < 3 && (e - r) % 3 == 0);
+
   /* x = (m*2^r) * 2^(e-r) = (m*2^r) * 2^(3*q) */
+
+  MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d r=%d\n", (mpfr_eexp_t) e, r));
 
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
   n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
-  /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
-     i.e. 3*sh + size_m + r <= 3*n */
+  /* FIXME: The division by 3 leaves a remainder in [-2,2], which is
+     incompatible with the [-2,0] implied by the constraint below. */
+  /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n */
   sh = (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / 3;
+  /* i.e. the following value should be in [-2,0] */
+  MPFR_LOG_MSG (("size_m + 3*sh + r - 3*n = %" MPFR_EXP_FSPEC "d\n",
+                 3 * sh - (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r)));
+
   sh = 3 * sh + r;
   if (sh >= 0)
     {
       mpz_mul_2exp (m, m, sh);
-      e = e - sh;
+      e -= sh;
     }
   else if (r > 0)
     {
       mpz_mul_2exp (m, m, r);
-      e = e - r;
+      e -= r;
     }
 
-  /* invariant: x = m*2^e, with e divisible by 3 */
+  MPFR_ASSERTD (e % 3 == 0);
+  e /= 3;
+
+  /* invariant: x = m*2^(3*e) */
 
   /* we reuse the variable m to store the cube root, since it is not needed
      any more: we just need to know if the root is exact */
@@ -121,7 +133,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       inexact = inexact || (mpz_scan1 (m, 0) < sh);
       mpz_fdiv_q_2exp (m, m, sh);
-      e += 3 * sh;
+      e += sh;
     }
 
   if (inexact)
@@ -139,7 +151,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      is not changed; or inexact=0, and inexact is set only when
      rnd_mode=MPFR_RNDN and bit (n+1) from m is 1 */
   inexact += mpfr_set_z (y, m, MPFR_RNDN);
-  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / 3);
+  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e);
 
   if (negative)
     {
