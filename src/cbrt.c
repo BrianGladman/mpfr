@@ -26,7 +26,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  /* The computation of y = x^(1/3) is done as follows:
 
     Let x = sign * m * 2^(3*e) where m is an integer >= 2^(3n-3) with
-    n = PREC(y).
+    n = PREC(y), i.e. m has at least 3n-2 bits.
 
     Let s be the integer cube root of m, i.e. the maximum integer such that
     m = s^3 + r with r >= 0.
@@ -101,21 +101,23 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
   n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
-  /* FIXME: The division by 3 leaves a remainder in [-2,2], which is
-     incompatible with the [-2,0] implied by the constraint below. */
-  /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n */
+  /* We want m to have at least 3n-2 bits. Assume that size_m < 3 * n - 2.
+     We will need to shift m by r' bits to the left and subtract r' from e
+     so that m has at least 3*n-2 bits and e becomes a multiple of 3.
+     Since r = e % 3, we write r' = 3 * sh + r.
+     We want 3 * n - 2 <= size_m + 3 * sh + r <= 3 * n.
+     Let d = 3 * n - size_m - r. Thus we want 0 <= d - 3 * sh <= 2, i.e.
+     sh = floor(d/3).
+     Note: If d < 0, the following operation does a trunc instead of a
+     floor. But in this case, this means that size_m >= 3 * n - 2, and
+     we have sh <= 0, and the code below will use r' = r, which is what
+     we want. */
   sh = (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / 3;
-  /* i.e. the following value should be in [-2,0] */
-  MPFR_LOG_MSG (("size_m + 3*sh + r - 3*n = %" MPFR_EXP_FSPEC "d\n",
-                 3 * sh - (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r)));
 
-  sh = 3 * sh + r;
   if (sh > 0)
-    {
-      mpz_mul_2exp (m, m, sh);
-      e -= sh;
-    }
-  else if (r > 0)
+    r += 3 * sh;  /* denoted r' above */
+
+  if (r > 0)
     {
       mpz_mul_2exp (m, m, r);
       e -= r;
