@@ -47,7 +47,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpz_t m;
   mpfr_exp_t e, sh;
   mpfr_prec_t n, size_m, tmp;
-  int inexact, negative, r;
+  int inexact, inexact2, negative, r;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (
@@ -142,7 +142,10 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         rnd_mode = MPFR_INVERT_RND (rnd_mode);
       if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
           || (rnd_mode == MPFR_RNDN && mpz_tstbit (m, 0)))
-        inexact = 1, mpz_add_ui (m, m, 1);
+        {
+          inexact = 1;
+          mpz_add_ui (m, m, 1);
+        }
       else
         inexact = -1;
     }
@@ -150,7 +153,9 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* either inexact is not zero, and the conversion is exact, i.e. inexact
      is not changed; or inexact=0, and inexact is set only when
      rnd_mode=MPFR_RNDN and bit (n+1) from m is 1 */
-  inexact += mpfr_set_z (y, m, MPFR_RNDN);
+  inexact2 = mpfr_set_z (y, m, MPFR_RNDN);
+  MPFR_ASSERTD (inexact == 0 || inexact2 == 0);
+  inexact += inexact2;
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e);
 
   if (negative)
