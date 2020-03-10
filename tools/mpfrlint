@@ -506,9 +506,16 @@ EOF
 if which codespell > /dev/null 2> /dev/null; then
   doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
        faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
-  err-if-output "codespell" codespell ${term:+--enable-colors} \
+  cscmd=(codespell ${term:+--enable-colors} \
     -q3 -I codespell.ignore -x codespell.exclude \
-    AUTHORS BUGS INSTALL NEWS README TODO doc/${^doc} examples $srctests
+    AUTHORS BUGS INSTALL NEWS README TODO doc/${^doc} examples $srctests)
+  if test -z "$(codespell /dev/null 2>&1 > /dev/null)"; then
+    err-if-output "codespell" $cscmd
+  else
+    # Workaround to Debian bug 953369 in libpython3.8-minimal
+    $cscmd |& err-if-output -t "codespell" grep -Ev \
+      "RuntimeWarning: line buffering|file = builtins.open"
+  fi
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
