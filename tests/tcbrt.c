@@ -26,50 +26,76 @@ static void
 special (void)
 {
   mpfr_t x, y;
+  int inex;
 
   mpfr_init (x);
   mpfr_init (y);
 
   /* cbrt(NaN) = NaN */
   mpfr_set_nan (x);
-  mpfr_cbrt (y, x, MPFR_RNDN);
+  inex = mpfr_cbrt (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
-      printf ("Error: cbrt(NaN) <> NaN\n");
+      printf ("Error: cbrt(NaN) is not NaN\n");
+      exit (1);
+    }
+  if (inex != 0)
+    {
+      printf ("Error: cbrt(NaN): incorrect ternary value %d\n", inex);
       exit (1);
     }
 
   /* cbrt(+Inf) = +Inf */
   mpfr_set_inf (x, 1);
-  mpfr_cbrt (y, x, MPFR_RNDN);
+  inex = mpfr_cbrt (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error: cbrt(+Inf) <> +Inf\n");
       exit (1);
     }
+  if (inex != 0)
+    {
+      printf ("Error: cbrt(+Inf): incorrect ternary value %d\n", inex);
+      exit (1);
+    }
 
   /* cbrt(-Inf) =  -Inf */
   mpfr_set_inf (x, -1);
-  mpfr_cbrt (y, x, MPFR_RNDN);
+  inex = mpfr_cbrt (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
     {
       printf ("Error: cbrt(-Inf) <> -Inf\n");
       exit (1);
     }
+  if (inex != 0)
+    {
+      printf ("Error: cbrt(-Inf): incorrect ternary value %d\n", inex);
+      exit (1);
+    }
 
   /* cbrt(+/-0) =  +/-0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_cbrt (y, x, MPFR_RNDN);
+  inex = mpfr_cbrt (y, x, MPFR_RNDN);
   if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error: cbrt(+0) <> +0\n");
       exit (1);
     }
+  if (inex != 0)
+    {
+      printf ("Error: cbrt(+0): incorrect ternary value %d\n", inex);
+      exit (1);
+    }
   mpfr_neg (x, x, MPFR_RNDN);
-  mpfr_cbrt (y, x, MPFR_RNDN);
+  inex = mpfr_cbrt (y, x, MPFR_RNDN);
   if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
     {
       printf ("Error: cbrt(-0) <> -0\n");
+      exit (1);
+    }
+  if (inex != 0)
+    {
+      printf ("Error: cbrt(-0): incorrect ternary value %d\n", inex);
       exit (1);
     }
 
