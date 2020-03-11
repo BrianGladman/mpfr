@@ -29,33 +29,28 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    We seek to compute an integer cube root in precision n and the
    associated inexact bit (non-zero iff the remainder is non-zero).
 
-   Let x = sign * m * 2^(3*e) where m is an integer >= 2^(3n-3), i.e.
-   m has at least 3n-2 bits.
+   Let us write x, possibly truncated, under the form sign * m * 2^(3*e)
+   where m is an integer such that 2^(3n-3) <= m < 2^(3n), i.e. m has
+   between 3n-2 and 3n bits.
 
    Let s be the integer cube root of m, i.e. the maximum integer such that
-   m = s^3 + t with t >= 0.
+   m = s^3 + t with t >= 0. Thus 2^(n-1) <= s < 2^n, i.e. s has n bits.
 
-   TODO: Couldn't the size of m be fixed between 3n-2 and 3n? In the case
-   where the initial size of m is > 3n, if a discarded bit was non-zero,
-   this could be remembered for the inexact bit. Said otherwise, discard
-   3k bits of the mpz_root argument instead of discarding k bits of its
-   result (integer cube root).
-
-   The constraint m >= 2^(3n-3) allows one to have sufficient precision
-   for s: s >= 2^(n-1), i.e. s has at least n bits.
-
-   Let s' be s shifted to the right so that s' has exactly n bits.
    Then |x|^(1/3) = s * 2^e or (s+1) * 2^e depending on the rounding mode,
-   the sign, and whether s' is inexact (t > 0 or some discarded bit in the
-   shift of s is non-zero).
+   the sign, and whether s is "inexact" (i.e. t > 0 or the truncation of x
+   was not equal to x).
+
+   Note: The truncation of x was allowed because any breakpoint has n bits
+   and its cube has at most 3n bits. Thus the truncation of x cannot yield
+   a cube root below RNDZ(x^(1/3)) in precision n. [TODO: add details.]
 */
 
 int
 mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
-  mpfr_exp_t e, sh;
-  mpfr_prec_t n, size_m, tmp;
+  mpfr_exp_t e, d, sh;
+  mpfr_prec_t n, size_m;
   int inexact, inexact2, negative, r;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -107,45 +102,46 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
   n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
-  /* We will need to shift m by r' bits to the left and subtract r' from e
-     so that m has at least 3n-2 bits and e becomes a multiple of 3.
+  /* We will need to multiply m by 2^(r'), truncated if r' < 0, and
+     subtract r' from e, so that m has between 3n-2 and 3n bits and
+     e becomes a multiple of 3.
      Since r = e % 3, we write r' = 3 * sh + r.
-     If m already has at least 3n-2 bits, then we will use r' = r, so that
-     let us focus on the case size_m < 3 * n - 2.
      We want 3 * n - 2 <= size_m + 3 * sh + r <= 3 * n.
-     Let d = 3 * n - size_m - r > 0. Thus we want 0 <= d - 3 * sh <= 2,
-     i.e. sh = floor(d/3) = trunc(d/3).
-     If size_m >= 3 * n - 2, then d <= 2, so that sh <= 0, whether a trunc
-     (ISO C99 and later) or a floor (possible before C99) is done with the
-     integer division; and the code will use r' = r as wanted. */
-  sh = (3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r) / 3;
+     Let d = 3 * n - size_m - r. Thus we want 0 <= d - 3 * sh <= 2,
+     i.e. sh = floor(d/3). */
+  d = 3 * (mpfr_exp_t) n - (mpfr_exp_t) size_m - r;
+  sh = d >= 0 ? d / 3 : - ((2 - d) / 3);  /* floor(d/3) */
+  r += 3 * sh;  /* denoted r' above */
 
-  if (sh > 0)
-    r += 3 * sh;  /* denoted r' above */
+  e -= r;
+  MPFR_ASSERTD (e % 3 == 0);
+  e /= 3;
+
+  inexact = 0;
 
   if (r > 0)
     {
       mpz_mul_2exp (m, m, r);
-      e -= r;
     }
-
-  MPFR_ASSERTD (e % 3 == 0);
-  e /= 3;
-
-  /* invariant: x = m*2^(3*e) */
+  else if (r < 0)
+    {
+      r = -r;
+      inexact = mpz_scan1 (m, 0) < r;
+      mpz_fdiv_q_2exp (m, m, r);
+    }
 
   /* we reuse the variable m to store the cube root, since it is not needed
      any more: we just need to know if the root is exact */
-  inexact = mpz_root (m, m, 3) == 0;
+  inexact = ! mpz_root (m, m, 3) || inexact;
 
-  MPFR_MPZ_SIZEINBASE2 (tmp, m);
-  sh = tmp - n;
-  if (sh > 0) /* we have to flush to 0 the last sh bits from m */
-    {
-      inexact = inexact || (mpz_scan1 (m, 0) < sh);
-      mpz_fdiv_q_2exp (m, m, sh);
-      e += sh;
-    }
+#if MPFR_WANT_ASSERT > 0
+  {
+    mpfr_prec_t tmp;
+
+    MPFR_MPZ_SIZEINBASE2 (tmp, m);
+    MPFR_ASSERTN (tmp == n);
+  }
+#endif
 
   if (inexact)
     {
