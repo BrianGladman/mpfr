@@ -175,7 +175,7 @@ int
 main (void)
 {
   mpfr_t x;
-  int r;
+  int r, inex;
   mpfr_prec_t p;
 
   tests_start_mpfr ();
@@ -184,29 +184,30 @@ main (void)
 
   mpfr_init (x);
 
-  for (p=2; p<100; p++)
+  for (p = 2; p < 100; p++)
     {
       mpfr_set_prec (x, p);
       for (r = 0; r < MPFR_RND_MAX; r++)
         {
           mpfr_set_ui (x, 1, MPFR_RNDN);
-          mpfr_cbrt (x, x, (mpfr_rnd_t) r);
-          if (mpfr_cmp_ui (x, 1))
+          inex = mpfr_cbrt (x, x, (mpfr_rnd_t) r);
+          if (mpfr_cmp_ui (x, 1) || inex != 0)
             {
               printf ("Error in mpfr_cbrt for x=1, rnd=%s\ngot ",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-              mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
-              printf ("\n");
+              mpfr_dump (x);
+              printf ("inex = %d\n", inex);
               exit (1);
             }
+
           mpfr_set_si (x, -1, MPFR_RNDN);
-          mpfr_cbrt (x, x, (mpfr_rnd_t) r);
-          if (mpfr_cmp_si (x, -1))
+          inex = mpfr_cbrt (x, x, (mpfr_rnd_t) r);
+          if (mpfr_cmp_si (x, -1) || inex != 0)
             {
               printf ("Error in mpfr_cbrt for x=-1, rnd=%s\ngot ",
                       mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-              mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
-              printf ("\n");
+              mpfr_dump (x);
+              printf ("inex = %d\n", inex);
               exit (1);
             }
 
@@ -217,14 +218,15 @@ main (void)
                 {
                   mpfr_set_ui (x, 27, MPFR_RNDN);
                   mpfr_mul_2si (x, x, 3*i, MPFR_RNDN);
-                  mpfr_cbrt (x, x, MPFR_RNDN);
-                  if (mpfr_cmp_si_2exp (x, 3, i))
+                  inex = mpfr_cbrt (x, x, MPFR_RNDN);
+                  if (mpfr_cmp_si_2exp (x, 3, i) || inex != 0)
                     {
                       printf ("Error in mpfr_cbrt for "
                               "x = 27.0 * 2^(%d), rnd=%s\ngot ",
                               3*i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
-                      mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
-                      printf ("\ninstead of 3 * 2^(%d)\n", i);
+                      mpfr_dump (x);
+                      printf (", expected 3 * 2^(%d)\n", i);
+                      printf ("inex = %d, expected 0\n", inex);
                       exit (1);
                     }
                 }
