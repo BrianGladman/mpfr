@@ -26,6 +26,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* The computation of y = x^(1/3) is done as follows.
 
    Let n = PREC(y), or PREC(y) + 1 if the rounding mode is MPFR_RNDN.
+   We seek to compute an integer cube root in precision n and the
+   associated inexact bit (non-zero iff the remainder is non-zero).
+
    Let x = sign * m * 2^(3*e) where m is an integer >= 2^(3n-3), i.e.
    m has at least 3n-2 bits.
 
@@ -34,23 +37,17 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
    TODO: Couldn't the size of m be fixed between 3n-2 and 3n? In the case
    where the initial size of m is > 3n, if a discarded bit was non-zero,
-   this could be remembered for the sticky bit. Said otherwise, discard
+   this could be remembered for the inexact bit. Said otherwise, discard
    3k bits of the mpz_root argument instead of discarding k bits of its
    result (integer cube root).
 
    The constraint m >= 2^(3n-3) allows one to have sufficient precision
    for s: s >= 2^(n-1), i.e. s has at least n bits.
 
-   FIXME: The description below is incorrect if s has more than n bits
-   (since n is the target precision). Also, I don't understand the
-   last case (nearest) since 1 was added to PREC(y) to make it like
-   the directed rounding modes.
-
-   Then x^(1/3) = s * 2^e if t = 0
-        x^(1/3) = (s+1) * 2^e if round up
-        x^(1/3) = (s-1) * 2^e if round down
-        x^(1/3) = s * 2^e if nearest and t < 3/2*s^2+3/4*s+1/8
-                  (s+1) * 2^e otherwise
+   Let s' be s shifted to the right so that s' has exactly n bits.
+   Then |x|^(1/3) = s * 2^e or (s+1) * 2^e depending on the rounding mode,
+   the sign, and whether s' is inexact (t > 0 or some discarded bit in the
+   shift of s is non-zero).
 */
 
 int
