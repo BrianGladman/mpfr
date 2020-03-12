@@ -244,7 +244,7 @@ main (void)
   test_generic (MPFR_PREC_MIN, 200, 10);
 
   data_check ("data/cbrt", mpfr_cbrt, "mpfr_cbrt");
-  bad_cases (mpfr_cbrt, cube, "mpfr_cbrt", 8, -256, 255, 4, 128, 800, 50);
+  bad_cases (mpfr_cbrt, cube, "mpfr_cbrt", 256, -256, 255, 4, 128, 200, 50);
 
   tests_end_mpfr ();
   return 0;
