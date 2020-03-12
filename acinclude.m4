@@ -648,6 +648,15 @@ dnl   3. Use uint64_t (or unsigned long long, though this type might not be
 dnl      on 64 bits) instead of or in addition to the test on double.
 dnl   4. Use an array of 8 unsigned char's instead of or in addition to the
 dnl      test on double, considering the 2 practical cases of endianness.
+dnl FIXME: In case of cross-compiling, the guess "DPD" can be wrong, e.g.
+dnl for the build with MinGW under Linux. There should be a way to choose
+dnl between BID, DPD and unknown, and in the latter case, select the
+dnl portable implementation of the decimal functions. Currently, the
+dnl portable implementation is selected just because of the ugliness of
+dnl the MPFR code, which depends on the binary formats (!!!) and because
+dnl the check of the "double" format also uses AC_RUN_IFELSE (contrary to
+dnl the "long double" test), thus the "double" format is unknown, and only
+dnl the portable implementation can be used.
 if test "$enable_decimal_float" != no; then
   AC_MSG_CHECKING(if compiler knows _Decimal64)
   AC_COMPILE_IFELSE(
