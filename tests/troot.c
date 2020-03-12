@@ -590,12 +590,12 @@ main (int argc, char *argv[])
 
   test_generic_ui (MPFR_PREC_MIN, 200, 30);
 
-  bad_cases (root2, pow2, "rootn[2]", 8, -256, 255, 4, 128, 800, 40);
-  bad_cases (root3, pow3, "rootn[3]", 8, -256, 255, 4, 128, 800, 40);
-  bad_cases (root4, pow4, "rootn[4]", 8, -256, 255, 4, 128, 800, 40);
-  bad_cases (root5, pow5, "rootn[5]", 8, -256, 255, 4, 128, 800, 40);
-  bad_cases (root17, pow17, "rootn[17]", 8, -256, 255, 4, 128, 800, 40);
-  bad_cases (root120, pow120, "rootn[120]", 8, -256, 255, 4, 128, 800, 40);
+  bad_cases (root2, pow2, "rootn[2]", 0, -256, 255, 4, 128, 80, 40);
+  bad_cases (root3, pow3, "rootn[3]", 256, -256, 255, 4, 128, 200, 40);
+  bad_cases (root4, pow4, "rootn[4]", 0, -256, 255, 4, 128, 320, 40);
+  bad_cases (root5, pow5, "rootn[5]", 256, -256, 255, 4, 128, 440, 40);
+  bad_cases (root17, pow17, "rootn[17]", 256, -256, 255, 4, 128, 800, 40);
+  bad_cases (root120, pow120, "rootn[120]", 0, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;

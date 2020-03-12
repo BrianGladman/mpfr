@@ -997,7 +997,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
       int inex;
 
       if (dbg)
-        printf ("bad_cases: i = %d\n", i);
+        printf ("bad_cases: %s, i = %d\n", name, i);
       py = pymin + (randlimb () % (pymax - pymin + 1));
       mpfr_set_prec (y, py);
       tests_default_random (y, pos, emin, emax, 0);
@@ -1009,6 +1009,8 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
         }
       px = py + psup;
       mpfr_set_prec (x, px);
+      if (dbg)
+        printf ("bad_cases: xprec =%4ld\n", (long) px);
       mpfr_clear_flags ();
       inv (x, y, MPFR_RNDN);
       if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ())
@@ -1055,9 +1057,12 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
           if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ()
               || ! mpfr_equal_p (z, y))
             {
-              if (dbg)
-                printf ("bad_cases: inverse doesn't match\n");
-              goto next_i;
+              printf ("bad_cases: inverse doesn't match for %s\ny = ", name);
+              mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
+              printf ("\nz = ");
+              mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
+              printf ("\n");
+              exit (1);
             }
         }
       while (inex == 0);
