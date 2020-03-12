@@ -995,7 +995,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 
   dbgenv = getenv ("MPFR_DEBUG_BADCASES");
   dbg = dbgenv != 0 ? atoi (dbgenv) : 0;  /* debug level */
-  mpfr_inits (x, y, z, (mpfr_ptr) 0);
+  mpfr_inits2 (MPFR_PREC_MIN, x, y, z, (mpfr_ptr) 0);
   for (i = 0; i < n; i++)
     {
       mpfr_prec_t px, py, pz;
