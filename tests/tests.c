@@ -704,16 +704,18 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax,
     mpfr_neg (x, x, MPFR_RNDN);
 }
 
-/* The test_one argument is seen a boolean. If it is true and rnd is
-   a rounding mode toward infinity, then the function is tested in
-   only one rounding mode (the one provided in rnd) and the variable
-   rndnext is not used (due to the break). If it is true and rnd is a
-   rounding mode toward or away from zero, then the function is tested
-   twice, first with the provided rounding mode and second with the
-   rounding mode toward the corresponding infinity (determined by the
-   sign of the result). If it is false, then the function is tested
-   in the 5 rounding modes, and rnd must initially be MPFR_RNDZ; thus
-   rndnext will be initialized in the first iteration.
+/* The test_one argument is regarded as a boolean. If it is true, then the
+   function is tested in only one rounding mode (the one provided in rnd).
+   If it is false, then the function is tested in the 5 rounding modes,
+   rnd must initially be MPFR_RNDZ, and f(x) is supposed to be inexact;
+   the successive rounding modes are:
+     * MPFR_RNDZ, MPFR_RNDD, MPFR_RNDA, MPFR_RNDU, MPFR_RNDN for positive y;
+     * MPFR_RNDZ, MPFR_RNDU, MPFR_RNDA, MPFR_RNDD, MPFR_RNDN for negative y;
+   for the last test MPFR_RNDN, the target precision is decreased by 1 in
+   order to be able to deduce the result (anyway, for a hard-to-round case
+   in directed rounding modes, if yprec is chosen to be minimum precision
+   preserving this hard-to-round case, then one has a hard-to-round case
+   in round-to-nearest for precision yprec-1).
    If the test_one argument is 2, then this means that y is exact, and
    the ternary value is checked.
    As examples of use, see the calls to test5rm from the data_check and
@@ -733,7 +735,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
 
       MPFR_ASSERTN (rnd != MPFR_RND_MAX);
       inex = fct (z, x, rnd);
-      if (! SAME_VAL (y, z))
+      if (! SAME_VAL (y, z))  /* TODO: also check inex */
         {
           printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
                   name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
@@ -755,19 +757,9 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           printf ("\nexact case, but non-zero ternary value (%d)\n", inex);
           exit (1);
         }
-      if (rnd == MPFR_RNDN)
+
+      if (test_one || rnd == MPFR_RNDN)
         break;
-
-      if (test_one)
-        {
-          if (rnd == MPFR_RNDU || rnd == MPFR_RNDD)
-            break;
-
-          if (MPFR_IS_NEG (y))
-            rnd = (rnd == MPFR_RNDA) ? MPFR_RNDD : MPFR_RNDU;
-          else
-            rnd = (rnd == MPFR_RNDA) ? MPFR_RNDU : MPFR_RNDD;
-        }
       else if (rnd == MPFR_RNDZ)
         {
           rnd = MPFR_IS_NEG (y) ? MPFR_RNDU : MPFR_RNDD;
@@ -779,7 +771,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           if (rnd == MPFR_RNDA)
             {
               mpfr_nexttoinf (y);
-              rndnext = (MPFR_IS_NEG (y)) ? MPFR_RNDD : MPFR_RNDU;
+              rndnext = MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU;
             }
           else if (rndnext != MPFR_RNDN)
             rndnext = MPFR_RNDN;
@@ -787,6 +779,9 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
             {
               if (yprec == MPFR_PREC_MIN)
                 break;
+              /* MPFR_RNDZ is used due to the previous mpfr_nexttoinf for
+                 the MPFR_RNDA test: RNDN(p,w) = RNDZ(p,RNDA(p+1,w)) if w
+                 is not a midpoint in precision p. */
               mpfr_prec_round (y, --yprec, MPFR_RNDZ);
               mpfr_set_prec (z, yprec);
             }
@@ -807,14 +802,14 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
 
-   If rnd is Z, y is the expected output in round-toward-zero, and the
-   four directed rounding modes are tested, then the round-to-nearest
-   mode is tested in precision yprec-1. This is useful for worst cases,
-   where yprec is the minimum value such that one has a worst case in a
-   directed rounding mode.
+   If rnd is Z, then y is the expected output in round-toward-zero, the
+   four directed rounding modes are tested, and the round-to-nearest
+   mode is tested in precision yprec-1. See details in the description
+   of test5rm above.
 
-   If rnd is *, y must be an exact case. All the rounding modes are tested
-   and the ternary value is checked (it must be 0).
+   If rnd is *, y must be an exact case (possibly a special case).
+   All the rounding modes are tested and the ternary value is checked
+   (it must be 0).
  */
 void
 data_check (const char *f, int (*foo) (FLIST), const char *name)
