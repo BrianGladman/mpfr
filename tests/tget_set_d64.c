@@ -571,11 +571,14 @@ main (int argc, char *argv[])
   mpfr_test_init ();
 
   if (verbose)
+    {
 #ifdef DPD_FORMAT
-    printf ("Using DPD format\n");
+      /* FIXME: DPD_FORMAT is also used when the format is unknown. */
+      printf ("Using DPD format (or unknown)\n");
 #else
-  printf ("Using BID format\n");
+      printf ("Using BID format\n");
 #endif
+    }
 
 #if !defined(MPFR_ERRDIVZERO)
   check_random_bytes ();
