@@ -1059,7 +1059,7 @@ main (void)
 
   test_generic (MPFR_PREC_MIN, 300, 15);
   data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");
-  bad_cases (mpfr_sqrt, mpfr_sqr, "mpfr_sqrt", 8, -256, 255, 4, 128, 800, 50);
+  bad_cases (mpfr_sqrt, mpfr_sqr, "mpfr_sqrt", 0, -256, 255, 4, 128, 80, 50);
 
   bug20160120 ();
   bug20160908 ();
