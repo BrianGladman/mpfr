@@ -1032,6 +1032,9 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
             {
               if (dbg)
                 printf ("bad_cases: exact case\n");
+              /* TODO: Exact cases are not tested yet. This needs a change
+                 in test5rm. Moreover, one should also test the value just
+                 below and the value just above the exact case. */
               goto next_i;
             }
           if (dbg)
