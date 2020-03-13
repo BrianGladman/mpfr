@@ -186,7 +186,7 @@ main (void)
   test_generic (MPFR_PREC_MIN, 300, 15);
 
   data_check ("data/rec_sqrt", mpfr_rec_sqrt, "mpfr_rec_sqrt");
-  bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 8, -256, 255, 4, 128,
+  bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 0, -256, 255, 4, 128,
              800, 50);
 
   tests_end_mpfr ();

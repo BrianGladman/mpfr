@@ -178,7 +178,7 @@ main (int argc, char *argv[])
   test_generic (MPFR_PREC_MIN, 100, 25);
 
   data_check ("data/atanh", mpfr_atanh, "mpfr_atanh");
-  bad_cases (mpfr_atanh, mpfr_tanh, "mpfr_atanh", 256, -128, 9,
+  bad_cases (mpfr_atanh, mpfr_tanh, "mpfr_atanh", 256, -128, 8,
              4, 128, 800, 100);
 
   tests_end_mpfr ();

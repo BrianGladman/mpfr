@@ -704,31 +704,35 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax,
     mpfr_neg (x, x, MPFR_RNDN);
 }
 
-/* Argument test_one is a boolean. If it is true, then the function is
-   tested in only one rounding mode (the one provided in rnd). Otherwise,
-   the function is tested in the 5 rounding modes, and rnd must initially
-   be MPFR_RNDZ; the successive rounding modes are:
+/* If sb = -1, then the function is tested in only one rounding mode
+   (the one provided in rnd) and the ternary value is not checked.
+   Otherwise, the function is tested in the 5 rounding modes, rnd must
+   initially be MPFR_RNDZ, y = RNDZ(f(x)), and sb is 0 if f(x) is exact,
+   1 if f(x) is inexact (in which case, y must be a regular number,
+   i.e. not the result of an overflow or an underflow); the successive
+   rounding modes are:
      * MPFR_RNDZ, MPFR_RNDD, MPFR_RNDA, MPFR_RNDU, MPFR_RNDN for positive y;
      * MPFR_RNDZ, MPFR_RNDU, MPFR_RNDA, MPFR_RNDD, MPFR_RNDN for negative y;
    for the last test MPFR_RNDN, the target precision is decreased by 1 in
    order to be able to deduce the result (anyway, for a hard-to-round case
    in directed rounding modes, if yprec is chosen to be minimum precision
    preserving this hard-to-round case, then one has a hard-to-round case
-   in round-to-nearest for precision yprec-1).
-   Argument exact should be 1 when f(x) is exact, and 0 otherwise; if
-   test_one is true, a value of -1 means that one does not know (TODO:
-   the current data that provide no information should be updated to
-   avoid this value, whose support should be removed in the future).
+   in round-to-nearest for precision yprec-1). If the target precision was
+   MPFR_PREC_MIN, then skip the MPFR_RNDN test; thus to test exact special
+   cases, use a target precision larger than MPFR_PREC_MIN.
+   Note: if y is a regular number, sb corresponds to the sticky bit when
+   considering round-to-nearest with precision yprec-1.
    As examples of use, see the calls to test5rm from the data_check and
    bad_cases functions. */
 static void
 test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
-         mpfr_rnd_t rnd, int test_one, int exact, const char *name)
+         mpfr_rnd_t rnd, int sb, const char *name)
 {
   mpfr_prec_t yprec = MPFR_PREC (y);
   mpfr_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
+  int expected_inex = INT_MIN;
 
-  MPFR_ASSERTN (test_one || (rnd == MPFR_RNDZ && exact != -1));
+  MPFR_ASSERTN (sb == -1 || rnd == MPFR_RNDZ);
   mpfr_set_prec (z, yprec);
   while (1)
     {
@@ -736,7 +740,13 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
 
       MPFR_ASSERTN (rnd != MPFR_RND_MAX);
       inex = fct (z, x, rnd);
-      if (! SAME_VAL (y, z))  /* TODO: also check inex */
+      if (sb == -1)
+        expected_inex = inex;  /* not checked */
+      else if (rnd != MPFR_RNDN)
+        expected_inex =
+          sb == 0 ? 0 : MPFR_IS_LIKE_RNDD (rnd, MPFR_SIGN (y)) ? -1 : 1;
+      MPFR_ASSERTN (expected_inex != INT_MIN);
+      if (!(SAME_VAL (y, z) || SAME_SIGN (inex, expected_inex)))
         {
           printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
                   name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
@@ -747,21 +757,12 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           printf ("\ngot      ");
           mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
           printf ("\n");
-          exit (1);
-        }
-      if (exact == 1 && inex != 0)
-        {
-          printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
-                  name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
-                  mpfr_print_rnd_mode (rnd));
-          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
-          printf ("\nexact case, but non-zero ternary value (%d)\n", inex);
+          if (sb != -1)
+            printf ("Expected inex = %d, got %d\n", expected_inex, inex);
           exit (1);
         }
 
-      /* TODO: if test_one is false, the code currently assumes that exact
-         is false. */
-      if (test_one || rnd == MPFR_RNDN)
+      if (sb == -1 || rnd == MPFR_RNDN)
         break;
       else if (rnd == MPFR_RNDZ)
         {
@@ -773,7 +774,8 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           rnd = rndnext;
           if (rnd == MPFR_RNDA)
             {
-              mpfr_nexttoinf (y);
+              if (sb)
+                mpfr_nexttoinf (y);
               rndnext = MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU;
             }
           else if (rndnext != MPFR_RNDN)
@@ -782,10 +784,14 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
             {
               if (yprec == MPFR_PREC_MIN)
                 break;
-              /* MPFR_RNDZ is used due to the previous mpfr_nexttoinf for
-                 the MPFR_RNDA test: RNDN(p,w) = RNDZ(p,RNDA(p+1,w)) if w
-                 is not a midpoint in precision p. */
-              mpfr_prec_round (y, --yprec, MPFR_RNDZ);
+              /* If sb = 1, then mpfr_nexttoinf was called on y for the
+                 MPFR_RNDA test, i.e. y = RNDA(yprec,f(x)); we use MPFR_RNDZ
+                 since one has the property RNDN(p,w) = RNDZ(p,RNDA(p+1,w))
+                 when w is not a midpoint in precision p. If sb = 0, then
+                 y = f(x), so that RNDN(yprec-1,f(x)) = RNDN(yprec-1,y). */
+              inex = mpfr_prec_round (y, --yprec, sb ? MPFR_RNDZ : MPFR_RNDN);
+              expected_inex = sb ?
+                MPFR_SIGN (y) * (inex == 0 ? 1 : -1) : inex;
               mpfr_set_prec (z, yprec);
             }
         }
@@ -805,10 +811,10 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
 
-   If rnd is Z, then y is the expected output in round-toward-zero, the
-   four directed rounding modes are tested, and the round-to-nearest
-   mode is tested in precision yprec-1. See details in the description
-   of test5rm above.
+   If rnd is Z, then y is the expected output in round-toward-zero and
+   it is assumed to be inexact; the four directed rounding modes are
+   tested, and the round-to-nearest mode is tested in precision yprec-1.
+   See details in the description of test5rm above.
 
    If rnd is *, y must be an exact case (possibly a special case).
    All the rounding modes are tested and the ternary value is checked
@@ -946,9 +952,9 @@ data_check (const char *f, int (*foo) (FLIST), const char *name)
               exit (1);
             }
           if (r == '*')
-            test5rm (foo, x, y, z, MPFR_RNDZ, 0, 1, name);
+            test5rm (foo, x, y, z, MPFR_RNDZ, 0, name);
           else
-            test5rm (foo, x, y, z, rnd, r != 'Z', -1, name);
+            test5rm (foo, x, y, z, rnd, r == 'Z' ? 1 : -1, name);
         }
     }
 
@@ -993,7 +999,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
   for (i = 0; i < n; i++)
     {
       mpfr_prec_t px, py, pz;
-      int inex;
+      int inex_inv, inex, sb;
 
       if (dbg)
         printf ("bad_cases: %s, i = %d\n", name, i);
@@ -1011,7 +1017,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
       if (dbg)
         printf ("bad_cases: xprec =%4ld\n", (long) px);
       mpfr_clear_flags ();
-      inv (x, y, MPFR_RNDN);
+      inex_inv = inv (x, y, MPFR_RNDN);
       if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ())
         {
           if (dbg)
@@ -1029,14 +1035,20 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
         {
           pz += 32;
           mpfr_set_prec (z, pz);
-          if (fct (z, x, MPFR_RNDN) == 0)
+          sb = fct (z, x, MPFR_RNDN) != 0;
+          if (!sb)
             {
               if (dbg)
                 printf ("bad_cases: exact case\n");
-              /* TODO: Exact cases are not tested yet. This needs a change
-                 in test5rm. Moreover, one should also test the value just
-                 below and the value just above the exact case. */
-              goto next_i;
+              if (inex_inv)
+                {
+                  printf ("bad_cases: f exact while f^(-1) inexact,\n"
+                          "due to a poor choice of the parameters.\n");
+                  exit (1);
+                  /* alternatively, goto next_i */
+                }
+              inex = 0;
+              break;
             }
           if (dbg)
             {
@@ -1091,7 +1103,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
           printf ("\n");
         }
       /* Note: y is now the expected result rounded toward zero. */
-      test5rm (fct, x, y, z, MPFR_RNDZ, 0, 0, name);
+      test5rm (fct, x, y, z, MPFR_RNDZ, sb, name);
     next_i:
       /* In case the exponent range has been changed by
          tests_default_random()... */
