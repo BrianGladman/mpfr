@@ -987,7 +987,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 {
   mpfr_t x, y, z;
   char *dbgenv;
-  int i, dbg;
+  int cnt = 0, i, dbg;
   mpfr_exp_t old_emin, old_emax;
 
   old_emin = mpfr_get_emin ();
@@ -1068,12 +1068,16 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
           if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ()
               || ! mpfr_equal_p (z, y))
             {
-              printf ("bad_cases: inverse doesn't match for %s\ny = ", name);
-              mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
-              printf ("\nz = ");
-              mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
-              printf ("\n");
-              exit (1);
+              if (dbg)
+                {
+                  printf ("bad_cases: inverse doesn't match for %s\ny = ",
+                          name);
+                  mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
+                  printf ("\nz = ");
+                  mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
+                  printf ("\n");
+                }
+              goto next_i;
             }
         }
       while (inex == 0);
@@ -1104,6 +1108,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
         }
       /* Note: y is now the expected result rounded toward zero. */
       test5rm (fct, x, y, z, MPFR_RNDZ, sb, name);
+      cnt++;
     next_i:
       /* In case the exponent range has been changed by
          tests_default_random()... */
@@ -1111,6 +1116,16 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
       mpfr_set_emax (old_emax);
     }
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
+
+  if (dbg)
+    printf ("bad_cases: %d bad cases over %d generated values\n", cnt, n);
+
+  if (getenv ("MPFR_CHECK_BADCASES") && n - cnt > n/10)
+    {
+      printf ("bad_cases: too few bad cases (%d over %d generated values)\n",
+              cnt, n);
+      exit (1);
+    }
 }
 
 void
