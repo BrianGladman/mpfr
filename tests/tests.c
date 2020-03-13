@@ -704,11 +704,10 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax,
     mpfr_neg (x, x, MPFR_RNDN);
 }
 
-/* The test_one argument is regarded as a boolean. If it is true, then the
-   function is tested in only one rounding mode (the one provided in rnd).
-   If it is false, then the function is tested in the 5 rounding modes,
-   rnd must initially be MPFR_RNDZ, and f(x) is supposed to be inexact;
-   the successive rounding modes are:
+/* Argument test_one is a boolean. If it is true, then the function is
+   tested in only one rounding mode (the one provided in rnd). Otherwise,
+   the function is tested in the 5 rounding modes, and rnd must initially
+   be MPFR_RNDZ; the successive rounding modes are:
      * MPFR_RNDZ, MPFR_RNDD, MPFR_RNDA, MPFR_RNDU, MPFR_RNDN for positive y;
      * MPFR_RNDZ, MPFR_RNDU, MPFR_RNDA, MPFR_RNDD, MPFR_RNDN for negative y;
    for the last test MPFR_RNDN, the target precision is decreased by 1 in
@@ -716,18 +715,20 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax,
    in directed rounding modes, if yprec is chosen to be minimum precision
    preserving this hard-to-round case, then one has a hard-to-round case
    in round-to-nearest for precision yprec-1).
-   If the test_one argument is 2, then this means that y is exact, and
-   the ternary value is checked.
+   Argument exact should be 1 when f(x) is exact, and 0 otherwise; if
+   test_one is true, a value of -1 means that one does not know (TODO:
+   the current data that provide no information should be updated to
+   avoid this value, whose support should be removed in the future).
    As examples of use, see the calls to test5rm from the data_check and
    bad_cases functions. */
 static void
 test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
-         mpfr_rnd_t rnd, int test_one, const char *name)
+         mpfr_rnd_t rnd, int test_one, int exact, const char *name)
 {
   mpfr_prec_t yprec = MPFR_PREC (y);
   mpfr_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
 
-  MPFR_ASSERTN (test_one || rnd == MPFR_RNDZ);
+  MPFR_ASSERTN (test_one || (rnd == MPFR_RNDZ && exact != -1));
   mpfr_set_prec (z, yprec);
   while (1)
     {
@@ -748,7 +749,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           printf ("\n");
           exit (1);
         }
-      if (test_one == 2 && inex != 0)
+      if (exact == 1 && inex != 0)
         {
           printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
                   name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
@@ -758,6 +759,8 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           exit (1);
         }
 
+      /* TODO: if test_one is false, the code currently assumes that exact
+         is false. */
       if (test_one || rnd == MPFR_RNDN)
         break;
       else if (rnd == MPFR_RNDZ)
@@ -943,13 +946,9 @@ data_check (const char *f, int (*foo) (FLIST), const char *name)
               exit (1);
             }
           if (r == '*')
-            {
-              int rndint;
-              RND_LOOP (rndint)
-                test5rm (foo, x, y, z, (mpfr_rnd_t) rndint, 2, name);
-            }
+            test5rm (foo, x, y, z, MPFR_RNDZ, 0, 1, name);
           else
-            test5rm (foo, x, y, z, rnd, r != 'Z', name);
+            test5rm (foo, x, y, z, rnd, r != 'Z', -1, name);
         }
     }
 
@@ -1092,7 +1091,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
           printf ("\n");
         }
       /* Note: y is now the expected result rounded toward zero. */
-      test5rm (fct, x, y, z, MPFR_RNDZ, 0, name);
+      test5rm (fct, x, y, z, MPFR_RNDZ, 0, 0, name);
     next_i:
       /* In case the exponent range has been changed by
          tests_default_random()... */
