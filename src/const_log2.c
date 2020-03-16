@@ -68,7 +68,7 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
   else
     {
       unsigned long m = (n1 / 2) + (n2 / 2) + (n1 & 1UL & n2);
-      unsigned long v, w;
+      mp_bitcnt_t v, w;
 
       S (T, P, Q, n1, m, 1);
       S (T + 1, P + 1, Q + 1, m, n2, need_P);
