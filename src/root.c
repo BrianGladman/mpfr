@@ -161,7 +161,7 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
   sh = tmp - n;
   if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
-      inexact = inexact || ((mpfr_exp_t) mpz_scan1 (m, 0) < sh);
+      inexact = inexact || (mpz_scan1 (m, 0) < sh);
       mpz_fdiv_q_2exp (m, m, sh);
       e += k * sh;
     }
