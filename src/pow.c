@@ -38,8 +38,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                    mpfr_rnd_t rnd_mode, int *inexact)
 {
   mpz_t a, c;
-  mpfr_exp_t d, b;
-  unsigned long i;
+  mpfr_exp_t d, b, i;
   int res;
 
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (y));
@@ -52,7 +51,9 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   if (MPFR_IS_NEG (y))
     return 0; /* x is not a power of two => x^-y is not exact */
 
-  /* compute d such that y = c*2^d with c odd integer */
+  /* Compute d such that y = c*2^d with c odd integer.
+     Since c comes from a regular MPFR number, due to the constraints on the
+     exponent and the precision, there can be no integer overflow below. */
   mpz_init (c);
   d = mpfr_get_z_2exp (c, y);
   i = mpz_scan1 (c, 0);
@@ -62,7 +63,9 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* Since y is not an integer, d is necessarily < 0 */
   MPFR_ASSERTD (d < 0);
 
-  /* Compute a,b such that x=a*2^b */
+  /* Compute a,b such that x=a*2^b.
+     Since a comes from a regular MPFR number, due to the constrainst on the
+     exponent and the precision, there can be no integer overflow below. */
   mpz_init (a);
   b = mpfr_get_z_2exp (a, x);
   i = mpz_scan1 (a, 0);
