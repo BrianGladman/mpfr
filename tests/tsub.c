@@ -1182,22 +1182,29 @@ bug20180217 (void)
  * Tests should be done for both the main branch and this special branch
  * when this makes sense.
  */
-static void test_ubf (void)
+#define REXP 1024
+
+static void test_ubf_aux (void)
 {
-  mpfr_ubf_t x[2];
-  mpfr_ptr p[2];
-  mpfr_t ee, z;
+  mpfr_ubf_t x[8];
+  mpfr_ptr p[8];
+  int ex[8];
+  mpfr_t ee, y, z;
   int i, j, k, neg, inexact, rnd;
   const int kn = 2;
   mpfr_exp_t e[] =
-    { MPFR_EXP_MIN, MPFR_EMIN_MIN, 0, MPFR_EMAX_MAX, MPFR_EXP_MAX };
+    { MPFR_EXP_MIN, MPFR_EMIN_MIN, -REXP, 0,
+      REXP, MPFR_EMAX_MAX, MPFR_EXP_MAX };
 
   mpfr_init2 (ee, sizeof (mpfr_exp_t) * CHAR_BIT);
+  mpfr_inits2 (64, y, z, (mpfr_ptr) 0);
+
+  for (i = 0; i < 8; i++)
+    p[i] = (mpfr_ptr) x[i];
 
   /* exact zero result, with small and large exponents */
   for (i = 0; i < 2; i++)
     {
-      p[i] = (mpfr_ptr) x[i];
       mpfr_init2 (p[i], 5 + (randlimb () % 128));
       mpfr_set_ui (p[i], 17, MPFR_RNDN);
       mpz_init (MPFR_ZEXP (x[i]));
@@ -1227,7 +1234,7 @@ static void test_ubf (void)
                   if (inexact != 0 || MPFR_NOTZERO (z) ||
                       (rnd != MPFR_RNDD ? MPFR_IS_NEG (z) : MPFR_IS_POS (z)))
                     {
-                      printf ("Error in test_ubf for exact zero result: "
+                      printf ("Error 1 in test_ubf for exact zero result: "
                               "j=%d k=%d neg=%d, rnd=%s\nGot ", j, k, neg,
                               mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                       mpfr_dump (z);
@@ -1249,18 +1256,140 @@ static void test_ubf (void)
       mpfr_clear (p[i]);
     }
 
-  /* underflow */
+  /* Up to a given exponent (for the result) and sign, test:
+   *   (t + .10010) - (t + .00001) = .10001
+   *   (t + 1) - (t + .01111)      = .10001
+   * where t = 0 or a power of 2, e.g. 2^200. Test various exponents so that
+   * the subtraction yields a normal number, an overflow or an underflow.
+   */
+  for (i = 0; i < 8; i++)
+    {
+      static int v[4] = { 18, 1, 32, 15 };
 
+      mpfr_init2 (p[i], i < 4 ? 5 + (randlimb () % 128) : 256);
+      if (i < 4)
+        mpfr_set_si_2exp (p[i], v[i], -5, MPFR_RNDN);
+      else
+        {
+          mpfr_set_si_2exp (p[i], 1, 200, MPFR_RNDN);
+          mpfr_add (p[i], p[i], p[i-4], MPFR_RNDN);
+        }
+      ex[i] = mpfr_get_exp (x[i]) + 5;
+      MPFR_ASSERTD (ex[i] >= 0);
+    }
+  for (i = 0; i < 8; i++)
+    {
+      mpz_init (MPFR_ZEXP (x[i]));
+      MPFR_SET_UBF (x[i]);
+    }
+  for (j = 0; j < numberof (e); j++)
+    {
+      inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      inexact = mpfr_get_z (MPFR_ZEXP (x[0]), ee, MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      for (i = 1; i < 8; i++)
+        mpz_set (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[0]));
+      for (i = 0; i < 8; i++)
+        {
+          mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), ex[i]);
+          mpz_sub_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 5 + kn);
+        }
+      for (k = -kn; k <= kn; k++)
+        {
+          for (neg = 0; neg <= 1; neg++)
+            {
+              RND_LOOP (rnd)
+                for (i = 0; i < 8; i += 2)
+                  {
+                    mpfr_exp_t e0 = MPFR_UBF_GET_EXP (x[0]);
+                    mpfr_flags_t flags;
+
+                    mpfr_clear_flags ();
+                    inexact = mpfr_sub (z, p[i], p[i+1], (mpfr_rnd_t) rnd);
+                    flags = __gmpfr_flags;
+                    if (e0 < __gmpfr_emin)
+                      {
+                        /* TODO: underflow */
+                      }
+                    else if (e0 > __gmpfr_emax)
+                      {
+                        /* TODO: overflow */
+                      }
+                    else
+                      {
+                        mpfr_set_ui_2exp (y, 17, e0 - 5, MPFR_RNDN);
+                        if (neg)
+                          MPFR_CHANGE_SIGN (y);
+                        if (inexact != 0 || flags != 0 ||
+                            ! mpfr_equal_p (y, z))
+                          {
+                            printf ("Error 2 in test_ubf with "
+                                    "j=%d k=%d neg=%d i=%d rnd=%s\n",
+                                    j, k, neg, i,
+                                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                            printf ("emin=%" MPFR_EXP_FSPEC "d "
+                                    "emax=%" MPFR_EXP_FSPEC "d\n",
+                                    (mpfr_eexp_t) __gmpfr_emin,
+                                    (mpfr_eexp_t) __gmpfr_emax);
+                            printf ("b = ");
+                            mpfr_dump (p[i]);
+                            printf ("c = ");
+                            mpfr_dump (p[i+1]);
+                            printf ("Expected ");
+                            mpfr_dump (y);
+                            printf ("with inex = 0 and flags =");
+                            flags_out (0);
+                            printf ("Got      ");
+                            mpfr_dump (z);
+                            printf ("with inex = %d and flags =", inexact);
+                            flags_out (flags);
+                            exit (1);
+                          }
+                      }
+                  }
+
+              for (i = 0; i < 8; i++)
+                MPFR_CHANGE_SIGN (x[i]);
+            }
+
+          for (i = 0; i < 8; i++)
+            mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 1);
+        }
+    }
+  for (i = 0; i < 8; i++)
+    {
+      MPFR_UBF_CLEAR_EXP (x[i]);
+      mpfr_clear (p[i]);
+    }
 
   /* normal due to rounding upward */
 
 
-  /* overflow */
-
-
   /* overflow due to rounding upward */
 
-  mpfr_clear (ee);
+  mpfr_clears (ee, y, z, (mpfr_ptr) 0);
+}
+
+/* Run the tests on UBF with the maximum exponent range and with a
+   reduced exponent range. */
+static void test_ubf (void)
+{
+  mpfr_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+  test_ubf_aux ();
+
+  set_emin (-REXP);
+  set_emax (REXP);
+  test_ubf_aux ();
+
+  set_emin (emin);
+  set_emax (emax);
 }
 
 #define TEST_FUNCTION test_sub
