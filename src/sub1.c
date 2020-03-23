@@ -674,6 +674,15 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   if (MPFR_LIKELY(cancel))
     {
       cancel -= add_exp; /* OK: add_exp is an int equal to 0 or 1 */
+      MPFR_ASSERTD (cancel >= 0);
+      /* Detect an underflow case to avoid a possible integer overflow
+         with UBF in the computation of exp_a. */
+      if (MPFR_UNLIKELY (exp_b < __gmpfr_emin - 1))
+        {
+          if (rnd_mode == MPFR_RNDN)
+            rnd_mode = MPFR_RNDZ;
+          return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+        }
       exp_a = exp_b - cancel;
       /* The following assertion corresponds to a limitation of the MPFR
          implementation. It may fail with a 32-bit ABI and huge precisions,
