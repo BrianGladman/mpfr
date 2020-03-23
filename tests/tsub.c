@@ -1170,6 +1170,95 @@ bug20180217 (void)
     }
 }
 
+/* Tests on UBF.
+ *
+ * Note: mpfr_sub1sp will never be used as it does not support UBF.
+ * Thus there is no need to generate tests for both mpfr_sub1 and
+ * mpfr_sub1sp.
+ *
+ * Note that mpfr_sub1 has a special branch "c small", where the second
+ * argument c is sufficiently smaller than the ulp of the first argument
+ * and the ulp of the result: MAX (aq, bq) + 2 <= diff_exp.
+ * Tests should be done for both the main branch and this special branch
+ * when this makes sense.
+ */
+static void test_ubf (void)
+{
+  mpfr_ubf_t x[2];
+  mpfr_ptr p[2];
+  mpfr_t ee, z;
+  int i, j, k, neg, inexact, rnd;
+  const int kn = 2;
+  mpfr_exp_t e[] =
+    { MPFR_EXP_MIN, MPFR_EMIN_MIN, 0, MPFR_EMAX_MAX, MPFR_EXP_MAX };
+
+  mpfr_init2 (ee, sizeof (mpfr_exp_t) * CHAR_BIT);
+
+  /* exact zero result, with small and large exponents */
+  for (i = 0; i < 2; i++)
+    {
+      p[i] = (mpfr_ptr) x[i];
+      mpfr_init2 (p[i], 5 + (randlimb () % 128));
+      mpfr_set_ui (p[i], 17, MPFR_RNDN);
+      mpz_init (MPFR_ZEXP (x[i]));
+      MPFR_SET_UBF (x[i]);
+    }
+  for (j = 0; j < numberof (e); j++)
+    {
+      inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      inexact = mpfr_get_z (MPFR_ZEXP (x[0]), ee, MPFR_RNDN);
+      MPFR_ASSERTD (inexact == 0);
+      mpz_sub_ui (MPFR_ZEXP (x[0]), MPFR_ZEXP (x[0]), kn);
+
+      for (k = -kn; k <= kn; k++)
+        {
+          mpz_set (MPFR_ZEXP (x[1]), MPFR_ZEXP (x[0]));
+
+          for (neg = 0; neg <= 1; neg++)
+            {
+              RND_LOOP (rnd)
+                {
+                  inexact = mpfr_sub (z, p[0], p[1], (mpfr_rnd_t) rnd);
+                  if (inexact != 0 || MPFR_NOTZERO (z) ||
+                      (rnd != MPFR_RNDD ? MPFR_IS_NEG (z) : MPFR_IS_POS (z)))
+                    {
+                      printf ("Error in test_ubf for exact zero result: "
+                              "j=%d k=%d neg=%d, rnd=%s\nGot ", j, k, neg,
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                      mpfr_dump (z);
+                      printf ("inexact = %d\n", inexact);
+                      exit (1);
+                    }
+                }
+
+              for (i = 0; i < 2; i++)
+                MPFR_CHANGE_SIGN (x[i]);
+            }
+
+          mpz_add_ui (MPFR_ZEXP (x[0]), MPFR_ZEXP (x[0]), 1);
+        }
+    }
+  for (i = 0; i < 2; i++)
+    {
+      MPFR_UBF_CLEAR_EXP (x[i]);
+      mpfr_clear (p[i]);
+    }
+
+  /* underflow */
+
+
+  /* normal due to rounding upward */
+
+
+  /* overflow */
+
+
+  /* overflow due to rounding upward */
+
+  mpfr_clear (ee);
+}
+
 #define TEST_FUNCTION test_sub
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
@@ -1199,6 +1288,7 @@ main (void)
     for (i=0; i<50; i++)
       check_two_sum (p);
   test_generic (MPFR_PREC_MIN, 800, 100);
+  test_ubf ();
 
   tests_end_mpfr ();
   return 0;
