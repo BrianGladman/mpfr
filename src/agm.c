@@ -228,7 +228,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mpfr_rnd_t rnd_mode)
           mpfr_add (vf, u, v, MPFR_RNDN);  /* No overflow? */
           mpfr_div_2ui (vf, vf, 1, MPFR_RNDN);
           /* See proof in algorithms.tex */
-          if (4*eq > p)
+          if (eq > p / 4)
             {
               mpfr_t w;
               MPFR_BLOCK_DECL (flags3);
