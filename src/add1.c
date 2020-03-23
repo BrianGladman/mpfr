@@ -41,7 +41,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (MPFR_IS_UBF (b)))
     {
-      exp = mpfr_ubf_zexp2exp (MPFR_ZEXP (b));
+      exp = MPFR_UBF_GET_EXP (b);
       if (exp > __gmpfr_emax)
         return mpfr_overflow (a, rnd_mode, MPFR_SIGN (b));;
     }

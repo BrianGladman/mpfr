@@ -2594,6 +2594,12 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
   ((void) (x)->_mpfr_exp,                       \
    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
+/* Like MPFR_GET_EXP, but accepts UBF (with exponent saturated to
+   the interval [MPFR_EXP_MIN,MPFR_EXP_MAX]). */
+#define MPFR_UBF_GET_EXP(x)                                     \
+  (MPFR_IS_UBF (x) ? mpfr_ubf_zexp2exp (MPFR_ZEXP (x)) :        \
+   MPFR_GET_EXP ((mpfr_ptr) (x)))
+
 /* If x is a UBF, clear its mpz_t exponent. */
 #define MPFR_UBF_CLEAR_EXP(x) \
   ((void) (MPFR_IS_UBF (x) && (mpz_clear (MPFR_ZEXP (x)), 0)))

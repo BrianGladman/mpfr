@@ -95,8 +95,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (MPFR_IS_UBF (b) || MPFR_IS_UBF (c)))
     {
-      exp_b = MPFR_IS_UBF (b) ?
-        mpfr_ubf_zexp2exp (MPFR_ZEXP (b)) : MPFR_GET_EXP (b);
+      exp_b = MPFR_UBF_GET_EXP (b);
       diff_exp = mpfr_ubf_diff_exp (b, c);
       MPFR_LOG_MSG (("UBF: exp_b=%" MPFR_EXP_FSPEC "d%s "
                      "diff_exp=%" MPFR_EXP_FSPEC "d%s\n",
