@@ -1213,12 +1213,16 @@ static void test_ubf (void)
 
       for (k = -kn; k <= kn; k++)
         {
+          /* exponent: e[j] + k, with |k| <= kn */
           mpz_set (MPFR_ZEXP (x[1]), MPFR_ZEXP (x[0]));
 
           for (neg = 0; neg <= 1; neg++)
             {
               RND_LOOP (rnd)
                 {
+                  /* Note: x[0] and x[1] are equal MPFR numbers, but do not
+                     test mpfr_sub with arg2 == arg3 as pointers in order to
+                     skip potentially optimized mpfr_sub code. */
                   inexact = mpfr_sub (z, p[0], p[1], (mpfr_rnd_t) rnd);
                   if (inexact != 0 || MPFR_NOTZERO (z) ||
                       (rnd != MPFR_RNDD ? MPFR_IS_NEG (z) : MPFR_IS_POS (z)))
