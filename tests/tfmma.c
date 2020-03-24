@@ -577,6 +577,26 @@ bug20200206 (void)
   mpfr_set_emin (emin);
 }
 
+/* check for integer overflow (see bug fixed in r13798) */
+static void
+extreme_underflow (void)
+{
+  mpfr_t x, y, z;
+  mpfr_exp_t emin = mpfr_get_emin ();
+
+  set_emin (MPFR_EMIN_MIN);
+  mpfr_inits2 (64, x, y, z, (mpfr_ptr) 0);
+  mpfr_set_ui_2exp (x, 1, MPFR_EMIN_MIN - 1, MPFR_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
+  mpfr_nextabove (x);
+  mpfr_clear_flags ();
+  mpfr_fmms (z, x, x, y, y, MPFR_RNDN);
+  MPFR_ASSERTN (__gmpfr_flags == (MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT));
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  set_emin (emin);
+}
+
 /* Test double-rounding cases in mpfr_set_1_2, which is called when
    all the precisions are the same. With set.c before r13347, this
    triggers errors for neg=0. */
@@ -655,6 +675,7 @@ main (int argc, char *argv[])
   half_plus_half ();
   bug20170405 ();
   double_rounding ();
+  extreme_underflow ();
 
   tests_end_mpfr ();
   return 0;
