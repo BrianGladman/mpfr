@@ -1303,49 +1303,62 @@ static void test_ubf_aux (void)
                 for (i = 0; i < 8; i += 2)
                   {
                     mpfr_exp_t e0 = MPFR_UBF_GET_EXP (x[0]);
-                    mpfr_flags_t flags;
+                    mpfr_flags_t flags, flags_y;
+                    int inex_y;
 
                     mpfr_clear_flags ();
                     inexact = mpfr_sub (z, p[i], p[i+1], (mpfr_rnd_t) rnd);
                     flags = __gmpfr_flags;
                     if (e0 < __gmpfr_emin)
                       {
-                        /* TODO: underflow */
+                        mpfr_rnd_t r =
+                          rnd == MPFR_RNDN && e0 < __gmpfr_emin - 1 ?
+                          MPFR_RNDZ : (mpfr_rnd_t) rnd;
+                        flags_y = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+                        inex_y = mpfr_underflow (y, r, neg ?
+                                                 MPFR_SIGN_NEG :
+                                                 MPFR_SIGN_POS);
                       }
                     else if (e0 > __gmpfr_emax)
                       {
-                        /* TODO: overflow */
+                        flags_y = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+                        inex_y = mpfr_overflow (y, (mpfr_rnd_t) rnd, neg ?
+                                                MPFR_SIGN_NEG :
+                                                MPFR_SIGN_POS);
                       }
                     else
                       {
                         mpfr_set_ui_2exp (y, 17, e0 - 5, MPFR_RNDN);
                         if (neg)
                           MPFR_CHANGE_SIGN (y);
-                        if (inexact != 0 || flags != 0 ||
-                            ! mpfr_equal_p (y, z))
-                          {
-                            printf ("Error 2 in test_ubf with "
-                                    "j=%d k=%d neg=%d i=%d rnd=%s\n",
-                                    j, k, neg, i,
-                                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
-                            printf ("emin=%" MPFR_EXP_FSPEC "d "
-                                    "emax=%" MPFR_EXP_FSPEC "d\n",
-                                    (mpfr_eexp_t) __gmpfr_emin,
-                                    (mpfr_eexp_t) __gmpfr_emax);
-                            printf ("b = ");
-                            mpfr_dump (p[i]);
-                            printf ("c = ");
-                            mpfr_dump (p[i+1]);
-                            printf ("Expected ");
-                            mpfr_dump (y);
-                            printf ("with inex = 0 and flags =");
-                            flags_out (0);
-                            printf ("Got      ");
-                            mpfr_dump (z);
-                            printf ("with inex = %d and flags =", inexact);
-                            flags_out (flags);
-                            exit (1);
-                          }
+                        flags_y = 0;
+                        inex_y = 0;
+                      }
+                    if (flags != flags_y ||
+                        ! SAME_SIGN (inexact, inex_y) ||
+                        ! mpfr_equal_p (y, z))
+                      {
+                        printf ("Error 2 in test_ubf with "
+                                "j=%d k=%d neg=%d i=%d rnd=%s\n",
+                                j, k, neg, i,
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                        printf ("emin=%" MPFR_EXP_FSPEC "d "
+                                "emax=%" MPFR_EXP_FSPEC "d\n",
+                                (mpfr_eexp_t) __gmpfr_emin,
+                                (mpfr_eexp_t) __gmpfr_emax);
+                        printf ("b = ");
+                        mpfr_dump (p[i]);
+                        printf ("c = ");
+                        mpfr_dump (p[i+1]);
+                        printf ("Expected ");
+                        mpfr_dump (y);
+                        printf ("with inex = %d and flags =", inex_y);
+                        flags_out (flags_y);
+                        printf ("Got      ");
+                        mpfr_dump (z);
+                        printf ("with inex = %d and flags =", inexact);
+                        flags_out (flags);
+                        exit (1);
                       }
                   }
 
