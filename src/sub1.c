@@ -96,6 +96,15 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_UBF (b) || MPFR_IS_UBF (c)))
     {
       exp_b = MPFR_UBF_GET_EXP (b);
+      /* Early underflow detection. Rare, but a test is needed anyway
+         since in the "MAX (aq, bq) + 2 <= diff_exp" branch, the exponent
+         may decrease and MPFR_EXP_MIN would yield an integer overflow. */
+      if (MPFR_UNLIKELY (exp_b < __gmpfr_emin - 1))
+        {
+          if (rnd_mode == MPFR_RNDN)
+            rnd_mode = MPFR_RNDZ;
+          return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+        }
       diff_exp = mpfr_ubf_diff_exp (b, c);
       MPFR_LOG_MSG (("UBF: exp_b=%" MPFR_EXP_FSPEC "d%s "
                      "diff_exp=%" MPFR_EXP_FSPEC "d%s\n",
