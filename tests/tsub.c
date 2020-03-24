@@ -1189,7 +1189,7 @@ static void test_ubf_aux (void)
   mpfr_ubf_t x[8];
   mpfr_ptr p[8];
   int ex[8];
-  mpfr_t ee, y, z;
+  mpfr_t ee, y, z, w;
   int i, j, k, neg, inexact, rnd;
   const int kn = 2;
   mpfr_exp_t e[] =
@@ -1198,6 +1198,7 @@ static void test_ubf_aux (void)
 
   mpfr_init2 (ee, sizeof (mpfr_exp_t) * CHAR_BIT);
   mpfr_inits2 (64, y, z, (mpfr_ptr) 0);
+  mpfr_init2 (w, 2);
 
   for (i = 0; i < 8; i++)
     p[i] = (mpfr_ptr) x[i];
@@ -1257,14 +1258,17 @@ static void test_ubf_aux (void)
     }
 
   /* Up to a given exponent (for the result) and sign, test:
-   *   (t + .10010) - (t + .00001) = .10001
-   *   (t + 1) - (t + .01111)      = .10001
-   * where t = 0 or a power of 2, e.g. 2^200. Test various exponents so that
+   *   (t + .11010) - (t + .00001) = .11001
+   *   (t + 8) - (t + 111.00111)   = .11001
+   * where t = 0 or a power of 2, e.g. 2^200. Test various exponents
+   * (including those near the underflow/overflow boundaries) so that
    * the subtraction yields a normal number, an overflow or an underflow.
+   * In MPFR_RNDA, also test with a 2-bit precision target, as this
+   * yields an exponent change.
    */
   for (i = 0; i < 8; i++)
     {
-      static int v[4] = { 18, 1, 32, 15 };
+      static int v[4] = { 26, 1, 256, 231 };
 
       mpfr_init2 (p[i], i < 4 ? 5 + (randlimb () % 128) : 256);
       if (i < 4)
@@ -1299,6 +1303,8 @@ static void test_ubf_aux (void)
         {
           for (neg = 0; neg <= 1; neg++)
             {
+              int sign = neg ? -1 : 1;
+
               RND_LOOP (rnd)
                 for (i = 0; i < 8; i += 2)
                   {
@@ -1309,31 +1315,27 @@ static void test_ubf_aux (void)
                     mpfr_clear_flags ();
                     inexact = mpfr_sub (z, p[i], p[i+1], (mpfr_rnd_t) rnd);
                     flags = __gmpfr_flags;
+
                     if (e0 < __gmpfr_emin)
                       {
                         mpfr_rnd_t r =
                           rnd == MPFR_RNDN && e0 < __gmpfr_emin - 1 ?
                           MPFR_RNDZ : (mpfr_rnd_t) rnd;
                         flags_y = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-                        inex_y = mpfr_underflow (y, r, neg ?
-                                                 MPFR_SIGN_NEG :
-                                                 MPFR_SIGN_POS);
+                        inex_y = mpfr_underflow (y, r, sign);
                       }
                     else if (e0 > __gmpfr_emax)
                       {
                         flags_y = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
-                        inex_y = mpfr_overflow (y, (mpfr_rnd_t) rnd, neg ?
-                                                MPFR_SIGN_NEG :
-                                                MPFR_SIGN_POS);
+                        inex_y = mpfr_overflow (y, (mpfr_rnd_t) rnd, sign);
                       }
                     else
                       {
-                        mpfr_set_ui_2exp (y, 17, e0 - 5, MPFR_RNDN);
-                        if (neg)
-                          MPFR_CHANGE_SIGN (y);
+                        mpfr_set_si_2exp (y, sign * 25, e0 - 5, MPFR_RNDN);
                         flags_y = 0;
                         inex_y = 0;
                       }
+
                     if (flags != flags_y ||
                         ! SAME_SIGN (inexact, inex_y) ||
                         ! mpfr_equal_p (y, z))
@@ -1360,6 +1362,63 @@ static void test_ubf_aux (void)
                         flags_out (flags);
                         exit (1);
                       }
+
+                    /* Do the following 2-bit precision test only in RNDA. */
+                    if (rnd != MPFR_RNDA)
+                      continue;
+
+                    mpfr_clear_flags ();
+                    inexact = mpfr_sub (w, p[i], p[i+1], MPFR_RNDA);
+                    flags = __gmpfr_flags;
+                    if (e0 < MPFR_EXP_MAX)
+                      e0++;
+
+                    if (e0 < __gmpfr_emin)
+                      {
+                        flags_y = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+                        inex_y = mpfr_underflow (y, MPFR_RNDA, sign);
+                      }
+                    else if (e0 > __gmpfr_emax)
+                      {
+                        flags_y = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+                        inex_y = mpfr_overflow (y, MPFR_RNDA, sign);
+                      }
+                    else
+                      {
+                        mpfr_set_si_2exp (y, sign, e0 - 1, MPFR_RNDN);
+                        flags_y = MPFR_FLAGS_INEXACT;
+                        inex_y = sign;
+                      }
+
+                    if (flags != flags_y ||
+                        ! SAME_SIGN (inexact, inex_y) ||
+                        ! mpfr_equal_p (y, w))
+                      {
+                        printf ("Error 3 in test_ubf with "
+                                "j=%d k=%d neg=%d i=%d rnd=%s\n",
+                                j, k, neg, i,
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+                        printf ("emin=%" MPFR_EXP_FSPEC "d "
+                                "emax=%" MPFR_EXP_FSPEC "d\n",
+                                (mpfr_eexp_t) __gmpfr_emin,
+                                (mpfr_eexp_t) __gmpfr_emax);
+                        printf ("b = ");
+                        mpfr_dump (p[i]);
+                        printf ("c = ");
+                        mpfr_dump (p[i+1]);
+                        printf ("Expected ");
+                        /* Set y to a 2-bit precision just for the output.
+                           Since we exit, this will have no other effect. */
+                        mpfr_round_prec (y, 2, MPFR_RNDA);
+                        mpfr_dump (y);
+                        printf ("with inex = %d and flags =", inex_y);
+                        flags_out (flags_y);
+                        printf ("Got      ");
+                        mpfr_dump (w);
+                        printf ("with inex = %d and flags =", inexact);
+                        flags_out (flags);
+                        exit (1);
+                      }
                   }
 
               for (i = 0; i < 8; i++)
@@ -1376,12 +1435,7 @@ static void test_ubf_aux (void)
       mpfr_clear (p[i]);
     }
 
-  /* normal due to rounding upward */
-
-
-  /* overflow due to rounding upward */
-
-  mpfr_clears (ee, y, z, (mpfr_ptr) 0);
+  mpfr_clears (ee, y, z, w, (mpfr_ptr) 0);
 }
 
 /* Run the tests on UBF with the maximum exponent range and with a
