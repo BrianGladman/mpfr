@@ -1186,9 +1186,9 @@ bug20180217 (void)
 
 static void test_ubf_aux (void)
 {
-  mpfr_ubf_t x[8];
-  mpfr_ptr p[8];
-  int ex[8];
+  mpfr_ubf_t x[11];
+  mpfr_ptr p[11];
+  int ex[11];
   mpfr_t ee, y, z, w;
   int i, j, k, neg, inexact, rnd;
   const int kn = 2;
@@ -1200,7 +1200,7 @@ static void test_ubf_aux (void)
   mpfr_inits2 (64, y, z, (mpfr_ptr) 0);
   mpfr_init2 (w, 2);
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 11; i++)
     p[i] = (mpfr_ptr) x[i];
 
   /* exact zero result, with small and large exponents */
@@ -1265,6 +1265,13 @@ static void test_ubf_aux (void)
    * the subtraction yields a normal number, an overflow or an underflow.
    * In MPFR_RNDA, also test with a 2-bit precision target, as this
    * yields an exponent change.
+   *
+   * Also test the "MAX (aq, bq) + 2 <= diff_exp" branch of sub1.c with
+   * .1 - epsilon (possible decrease of the exponent) and .111 - epsilon
+   * in precision 2 (possible increase of the exponent). The first test
+   * triggers a possible decrease of the exponent (see bug fixed in r13806).
+   * The second test triggers a possible increase of the exponent (see the
+   * "exp_a != MPFR_EXP_MAX" test to avoid an integer overflow).
    */
   for (i = 0; i < 8; i++)
     {
@@ -1281,24 +1288,34 @@ static void test_ubf_aux (void)
       ex[i] = mpfr_get_exp (x[i]) + 5;
       MPFR_ASSERTD (ex[i] >= 0);
     }
-  for (i = 0; i < 8; i++)
+  mpfr_inits2 (3, p[8], p[9], p[10], (mpfr_ptr) 0);
+  mpfr_set_si_2exp (p[8], 1, 0, MPFR_RNDN);
+  ex[8] = 5;
+  mpfr_set_si_2exp (p[9], 1, 0, MPFR_RNDN);  /* will be epsilon */
+  ex[9] = 0;
+  mpfr_set_si_2exp (p[10], 7, 0, MPFR_RNDN);
+  ex[10] = 5;
+
+  for (i = 0; i < 11; i++)
     {
       mpz_init (MPFR_ZEXP (x[i]));
       MPFR_SET_UBF (x[i]);
     }
+
   for (j = 0; j < numberof (e); j++)
     {
       inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
       inexact = mpfr_get_z (MPFR_ZEXP (x[0]), ee, MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
-      for (i = 1; i < 8; i++)
+      for (i = 1; i < 11; i++)
         mpz_set (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[0]));
-      for (i = 0; i < 8; i++)
+      for (i = 0; i < 11; i++)
         {
           mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), ex[i]);
           mpz_sub_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 5 + kn);
         }
+      mpz_sub_ui (MPFR_ZEXP (x[9]), MPFR_ZEXP (x[9]), 256);
       for (k = -kn; k <= kn; k++)
         {
           for (neg = 0; neg <= 1; neg++)
@@ -1306,11 +1323,20 @@ static void test_ubf_aux (void)
               int sign = neg ? -1 : 1;
 
               RND_LOOP (rnd)
-                for (i = 0; i < 8; i += 2)
+                for (i = 0; i <= 10; i += 2)
                   {
                     mpfr_exp_t e0 = MPFR_UBF_GET_EXP (x[0]);
                     mpfr_flags_t flags, flags_y;
                     int inex_y;
+
+                    if (i >= 8)
+                      {
+                        mpfr_clear_flags ();
+                        inexact = mpfr_sub (w, p[i], p[9], (mpfr_rnd_t) rnd);
+                        flags = __gmpfr_flags;
+                        continue;  /* TODO: check the result */
+                        goto testw;
+                      }
 
                     mpfr_clear_flags ();
                     inexact = mpfr_sub (z, p[i], p[i+1], (mpfr_rnd_t) rnd);
@@ -1390,6 +1416,7 @@ static void test_ubf_aux (void)
                         inex_y = sign;
                       }
 
+                  testw:
                     if (flags != flags_y ||
                         ! SAME_SIGN (inexact, inex_y) ||
                         ! mpfr_equal_p (y, w))
@@ -1421,15 +1448,15 @@ static void test_ubf_aux (void)
                       }
                   }
 
-              for (i = 0; i < 8; i++)
+              for (i = 0; i < 11; i++)
                 MPFR_CHANGE_SIGN (x[i]);
             }
 
-          for (i = 0; i < 8; i++)
+          for (i = 0; i < 11; i++)
             mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 1);
         }
     }
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < 11; i++)
     {
       MPFR_UBF_CLEAR_EXP (x[i]);
       mpfr_clear (p[i]);
