@@ -1409,7 +1409,7 @@ static void test_ubf_aux (void)
                         printf ("Expected ");
                         /* Set y to a 2-bit precision just for the output.
                            Since we exit, this will have no other effect. */
-                        mpfr_round_prec (y, 2, MPFR_RNDA);
+                        mpfr_prec_round (y, 2, MPFR_RNDA);
                         mpfr_dump (y);
                         printf ("with inex = %d and flags =", inex_y);
                         flags_out (flags_y);
