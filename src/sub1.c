@@ -210,7 +210,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
         return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
       if (MPFR_UNLIKELY (exp_a < __gmpfr_emin))
-        goto underflow;
+        {
+          if (rnd_mode == MPFR_RNDN &&
+              (exp_a < __gmpfr_emin - 1 ||
+               (inexact * MPFR_INT_SIGN (a) >= 0 && mpfr_powerof2_raw (a))))
+            rnd_mode = MPFR_RNDZ;
+          return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
+        }
       MPFR_SET_EXP (a, exp_a);
       MPFR_RET (inexact);
     }
