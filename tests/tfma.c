@@ -47,7 +47,7 @@ test_exact (void)
                 mpfr_add (r1, r1, c, (mpfr_rnd_t) rnd))
               {
                 if (rnd == MPFR_RNDF)
-                  break;
+                  continue;
                 printf ("test_exact internal error for (%d,%d,%d,%d,%s)\n",
                         i, j, k, rnd, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 exit (1);
