@@ -1325,22 +1325,57 @@ static void test_ubf_aux (void)
               RND_LOOP (rnd)
                 for (i = 0; i <= 10; i += 2)
                   {
-                    mpfr_exp_t e0 = MPFR_UBF_GET_EXP (x[0]);
+                    mpfr_exp_t e0;
                     mpfr_flags_t flags, flags_y;
                     int inex_y;
 
                     if (i >= 8)
                       {
+                        int d;
+
+                        e0 = MPFR_UBF_GET_EXP (x[i]);
+                        if (e0 < MPFR_EXP_MIN + 3)
+                          e0 += 3;
+
+                        if (rnd == MPFR_RNDN)
+                          d = i == 8 ? (e0 == __gmpfr_emin ? 3 : 4) : 6;
+                        else if (MPFR_IS_LIKE_RNDZ (rnd, neg))
+                          d = i == 8 ? 3 : 6;
+                        else
+                          d = i == 8 ? 6 : 8;
+
+                        mpfr_clear_flags ();
+                        inex_y = mpfr_set_si_2exp (w, sign * d, e0 - 3,
+                                                   (mpfr_rnd_t) rnd);
+                        flags_y = __gmpfr_flags | MPFR_FLAGS_INEXACT;
+                        if (inex_y == 0)
+                          inex_y = rnd == MPFR_RNDN ? (i == 8 ? 1 : -1) :
+                            MPFR_IS_LIKE_RNDD ((mpfr_rnd_t) rnd, sign) ?
+                            -1 : 1;
+                        mpfr_set (y, w, MPFR_RNDN);
+
                         mpfr_clear_flags ();
                         inexact = mpfr_sub (w, p[i], p[9], (mpfr_rnd_t) rnd);
                         flags = __gmpfr_flags;
-                        continue;  /* TODO: check the result */
+
+                        /* For MPFR_RNDF, only do a basic test. */
+                        MPFR_ASSERTN (mpfr_check (w));
+                        if (rnd == MPFR_RNDF)
+                          continue;
+
                         goto testw;
                       }
 
                     mpfr_clear_flags ();
                     inexact = mpfr_sub (z, p[i], p[i+1], (mpfr_rnd_t) rnd);
                     flags = __gmpfr_flags;
+
+                    /* For MPFR_RNDF, only do a basic test. */
+                    MPFR_ASSERTN (mpfr_check (z));
+                    if (rnd == MPFR_RNDF)
+                      continue;
+
+                    e0 = MPFR_UBF_GET_EXP (x[0]);
 
                     if (e0 < __gmpfr_emin)
                       {
@@ -1432,7 +1467,7 @@ static void test_ubf_aux (void)
                         printf ("b = ");
                         mpfr_dump (p[i]);
                         printf ("c = ");
-                        mpfr_dump (p[i+1]);
+                        mpfr_dump (p[i <= 8 ? i+1 : 9]);
                         printf ("Expected ");
                         /* Set y to a 2-bit precision just for the output.
                            Since we exit, this will have no other effect. */
