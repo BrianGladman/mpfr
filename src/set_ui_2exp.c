@@ -42,6 +42,15 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mpfr_exp_t e, mpfr_rnd_t rnd_mode
       mp_limb_t *xp;
       int inex = 0;
 
+      /* Early underflow/overflow checking is necessary to avoid
+         integer overflow or errors due to special exponent values. */
+      if (MPFR_UNLIKELY (e < __gmpfr_emin - (mpfr_exp_t)
+                         (sizeof (unsigned long) * CHAR_BIT + 1)))
+        return mpfr_underflow (x, rnd_mode == MPFR_RNDN ?
+                               MPFR_RNDZ : rnd_mode, i < 0 ? -1 : 1);
+      if (MPFR_UNLIKELY (e >= __gmpfr_emax))
+        return mpfr_overflow (x, rnd_mode, i < 0 ? -1 : 1);
+
       MPFR_ASSERTD (i == (mp_limb_t) i);
 
       /* Position of the highest limb */
