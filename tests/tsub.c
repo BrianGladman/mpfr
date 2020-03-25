@@ -1338,18 +1338,19 @@ static void test_ubf_aux (void)
                           e0 += 3;
 
                         if (rnd == MPFR_RNDN)
-                          d = i == 8 ? (e0 == __gmpfr_emin ? 3 : 4) : 6;
+                          d = i == 8 ? (e0 == __gmpfr_emin - 1 ? 3 : 4) : 6;
                         else if (MPFR_IS_LIKE_RNDZ (rnd, neg))
                           d = i == 8 ? 3 : 6;
                         else
-                          d = i == 8 ? 6 : 8;
+                          d = i == 8 ? 4 : 8;
 
                         mpfr_clear_flags ();
                         inex_y = mpfr_set_si_2exp (w, sign * d, e0 - 3,
                                                    (mpfr_rnd_t) rnd);
                         flags_y = __gmpfr_flags | MPFR_FLAGS_INEXACT;
                         if (inex_y == 0)
-                          inex_y = rnd == MPFR_RNDN ? (i == 8 ? 1 : -1) :
+                          inex_y = rnd == MPFR_RNDN ?
+                            sign * (i == 8 ? 1 : -1) :
                             MPFR_IS_LIKE_RNDD ((mpfr_rnd_t) rnd, sign) ?
                             -1 : 1;
                         mpfr_set (y, w, MPFR_RNDN);
