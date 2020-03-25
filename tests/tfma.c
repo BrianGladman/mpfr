@@ -664,7 +664,7 @@ test_underflow3 (int n)
              Note: The purpose of the s * 2^(emin-7) term is to yield
              double rounding when scaling for k = 4, s != 0, MPFR_RNDN. */
 
-          RND_LOOP (rnd)
+          RND_LOOP_NO_RNDF (rnd)
             {
               mpfr_clear_flags ();
               inex1 = mpfr_set_si_2exp (t1, sign * (8*k+s-64), e-6,
