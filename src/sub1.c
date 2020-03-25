@@ -115,6 +115,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       /* If diff_exp == MPFR_EXP_MAX, the actual value can be larger,
          but anyway, since mpfr_exp_t >= mp_size_t, this will be the
          case c small below, and the exact value does not matter. */
+      /* mpfr_set4 below used with MPFR_RNDF does not support UBF. */
+      if (rnd_mode == MPFR_RNDF)
+        rnd_mode = MPFR_RNDN;
     }
   else
     {
