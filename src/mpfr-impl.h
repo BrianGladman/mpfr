@@ -2591,8 +2591,8 @@ extern "C" {
 
      https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94337
 
-   (see ubf2 branch). So, for the time being, as long as the code does not
-   break, do not change anything.
+   (see changeset r13820 in the ubf2 branch). So, for the time being,
+   as long as the code does not break, do not change anything.
 */
 
 typedef struct {
