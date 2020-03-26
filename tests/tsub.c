@@ -1208,21 +1208,21 @@ static void test_ubf_aux (void)
     {
       mpfr_init2 (p[i], 5 + (randlimb () % 128));
       mpfr_set_ui (p[i], 17, MPFR_RNDN);
-      mpz_init (MPFR_ZEXP (x[i]));
-      MPFR_SET_UBF (x[i]);
+      mpz_init (MPFR_ZEXP (p[i]));
+      MPFR_SET_UBF (p[i]);
     }
   for (j = 0; j < numberof (e); j++)
     {
       inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
-      inexact = mpfr_get_z (MPFR_ZEXP (x[0]), ee, MPFR_RNDN);
+      inexact = mpfr_get_z (MPFR_ZEXP (p[0]), ee, MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
-      mpz_sub_ui (MPFR_ZEXP (x[0]), MPFR_ZEXP (x[0]), kn);
+      mpz_sub_ui (MPFR_ZEXP (p[0]), MPFR_ZEXP (p[0]), kn);
 
       for (k = -kn; k <= kn; k++)
         {
           /* exponent: e[j] + k, with |k| <= kn */
-          mpz_set (MPFR_ZEXP (x[1]), MPFR_ZEXP (x[0]));
+          mpz_set (MPFR_ZEXP (p[1]), MPFR_ZEXP (p[0]));
 
           for (neg = 0; neg <= 1; neg++)
             {
@@ -1245,15 +1245,15 @@ static void test_ubf_aux (void)
                 }
 
               for (i = 0; i < 2; i++)
-                MPFR_CHANGE_SIGN (x[i]);
+                MPFR_CHANGE_SIGN (p[i]);
             }
 
-          mpz_add_ui (MPFR_ZEXP (x[0]), MPFR_ZEXP (x[0]), 1);
+          mpz_add_ui (MPFR_ZEXP (p[0]), MPFR_ZEXP (p[0]), 1);
         }
     }
   for (i = 0; i < 2; i++)
     {
-      MPFR_UBF_CLEAR_EXP (x[i]);
+      MPFR_UBF_CLEAR_EXP (p[i]);
       mpfr_clear (p[i]);
     }
 
@@ -1285,7 +1285,7 @@ static void test_ubf_aux (void)
           mpfr_set_si_2exp (p[i], 1, 200, MPFR_RNDN);
           mpfr_add (p[i], p[i], p[i-4], MPFR_RNDN);
         }
-      ex[i] = mpfr_get_exp (x[i]) + 5;
+      ex[i] = mpfr_get_exp (p[i]) + 5;
       MPFR_ASSERTD (ex[i] >= 0);
     }
   mpfr_inits2 (3, p[8], p[9], p[10], (mpfr_ptr) 0);
@@ -1298,24 +1298,24 @@ static void test_ubf_aux (void)
 
   for (i = 0; i < 11; i++)
     {
-      mpz_init (MPFR_ZEXP (x[i]));
-      MPFR_SET_UBF (x[i]);
+      mpz_init (MPFR_ZEXP (p[i]));
+      MPFR_SET_UBF (p[i]);
     }
 
   for (j = 0; j < numberof (e); j++)
     {
       inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
-      inexact = mpfr_get_z (MPFR_ZEXP (x[0]), ee, MPFR_RNDN);
+      inexact = mpfr_get_z (MPFR_ZEXP (p[0]), ee, MPFR_RNDN);
       MPFR_ASSERTD (inexact == 0);
       for (i = 1; i < 11; i++)
-        mpz_set (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[0]));
+        mpz_set (MPFR_ZEXP (p[i]), MPFR_ZEXP (p[0]));
       for (i = 0; i < 11; i++)
         {
-          mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), ex[i]);
-          mpz_sub_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 5 + kn);
+          mpz_add_ui (MPFR_ZEXP (p[i]), MPFR_ZEXP (p[i]), ex[i]);
+          mpz_sub_ui (MPFR_ZEXP (p[i]), MPFR_ZEXP (p[i]), 5 + kn);
         }
-      mpz_sub_ui (MPFR_ZEXP (x[9]), MPFR_ZEXP (x[9]), 256);
+      mpz_sub_ui (MPFR_ZEXP (p[9]), MPFR_ZEXP (p[9]), 256);
       for (k = -kn; k <= kn; k++)
         {
           for (neg = 0; neg <= 1; neg++)
@@ -1333,7 +1333,7 @@ static void test_ubf_aux (void)
                       {
                         int d;
 
-                        e0 = MPFR_UBF_GET_EXP (x[i]);
+                        e0 = MPFR_UBF_GET_EXP (p[i]);
                         if (e0 < MPFR_EXP_MIN + 3)
                           e0 += 3;
 
@@ -1376,7 +1376,7 @@ static void test_ubf_aux (void)
                     if (rnd == MPFR_RNDF)
                       continue;
 
-                    e0 = MPFR_UBF_GET_EXP (x[0]);
+                    e0 = MPFR_UBF_GET_EXP (p[0]);
 
                     if (e0 < __gmpfr_emin)
                       {
@@ -1485,16 +1485,16 @@ static void test_ubf_aux (void)
                   }
 
               for (i = 0; i < 11; i++)
-                MPFR_CHANGE_SIGN (x[i]);
+                MPFR_CHANGE_SIGN (p[i]);
             }
 
           for (i = 0; i < 11; i++)
-            mpz_add_ui (MPFR_ZEXP (x[i]), MPFR_ZEXP (x[i]), 1);
+            mpz_add_ui (MPFR_ZEXP (p[i]), MPFR_ZEXP (p[i]), 1);
         }
     }
   for (i = 0; i < 11; i++)
     {
-      MPFR_UBF_CLEAR_EXP (x[i]);
+      MPFR_UBF_CLEAR_EXP (p[i]);
       mpfr_clear (p[i]);
     }
 
