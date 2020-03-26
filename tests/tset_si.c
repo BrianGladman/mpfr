@@ -182,7 +182,8 @@ test_2exp_extreme_aux (void)
                       "emax=%" MPFR_EXP_FSPEC "d\n",
                       (mpfr_eexp_t) __gmpfr_emin,
                       (mpfr_eexp_t) __gmpfr_emax);
-              printf ("ep[%d] = %" MPFR_EXP_FSPEC "d\n", i, ep[i]);
+              printf ("ep[%d] = %" MPFR_EXP_FSPEC "d\n",
+                      i, (mpfr_eexp_t) ep[i]);
               printf ("Expected ");
               mpfr_dump (x1);
               printf ("with inex = %d and flags =", inex1);
