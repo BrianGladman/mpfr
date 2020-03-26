@@ -31,7 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * in such a case, it outputs information between exclamation marks:
  *   - 'N': the number is not normalized (MSB = 0);
  *   - 'T': there are non-zero trailing bits (output in square brackets);
- *   - 'U': this is a UBF number (internal use only);
+ *   - 'U': this is an UBF number (internal use only);
  *   - '<': the exponent is < the current emin;
  *   - '>': the exponent is > the current emax.
  *

@@ -2591,7 +2591,7 @@ exponent, this function outputs three exclamation marks (@samp{!!!}),
 followed by flags, followed by three exclamation marks (@samp{!!!}) again.
 These flags are: @samp{N} if the most significant bit of the significand
 is 0 (i.e., the number is not normalized); @samp{T} if there are non-zero
-trailing bits; @samp{U} if this is a UBF number (internal use only);
+trailing bits; @samp{U} if this is an UBF number (internal use only);
 @samp{<} if the exponent is less than the current minimum exponent;
 @samp{>} if the exponent is greater than the current maximum exponent.
 @end deftypefun

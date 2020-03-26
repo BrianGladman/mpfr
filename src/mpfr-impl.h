@@ -2541,7 +2541,7 @@ extern "C" {
    If ever this would not be the case with some particular C implementation,
    an _Alignas alignment attribute (C11) could be added for UBF.
 
-   When an input of a public function is a UBF, the semantic remains
+   When an input of a public function is an UBF, the semantic remains
    internal to MPFR and can change in the future. UBF arguments need
    to be explicitly converted to mpfr_ptr (or mpfr_srcptr); be careful
    with variadic functions, as the compiler will not be able to check
@@ -2563,7 +2563,7 @@ extern "C" {
    and practical.
 
    Note that functions used for logging need to support UBF (currently
-   done by printing that a number is a UBF, as it may be difficult to
+   done by printing that a number is an UBF, as it may be difficult to
    do more without significant changes).
 
    --------
@@ -2616,7 +2616,7 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
 }
 #endif
 
-/* Get the _mpfr_zexp field (pointer to a mpz_t) of a UBF object.
+/* Get the _mpfr_zexp field (pointer to a mpz_t) of an UBF object.
    For practical reasons, the type of the argument x can be either
    mpfr_ubf_ptr or mpfr_ptr, since the latter is used in functions
    that accept both MPFR numbers and UBF's; this is checked by the
@@ -2624,13 +2624,13 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
    could be invalid when MPFR_ZEXP(x) is used for an assignment,
    and also avoids breaking the aliasing rules if they are dealt
    with in the future).
-   This macro can be used when building a UBF. So we do not check
+   This macro can be used when building an UBF. So we do not check
    that the _mpfr_exp field has the value MPFR_EXP_UBF. */
 #define MPFR_ZEXP(x)                            \
   ((void) sizeof ((x)->_mpfr_exp),              \
    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
-/* If x is a UBF, clear its mpz_t exponent. */
+/* If x is an UBF, clear its mpz_t exponent. */
 #define MPFR_UBF_CLEAR_EXP(x) \
   ((void) (MPFR_IS_UBF (x) && (mpz_clear (MPFR_ZEXP (x)), 0)))
 
