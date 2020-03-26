@@ -2589,11 +2589,14 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_ubf_diff_exp (mpfr_srcptr, mpfr_srcptr);
    For practical reasons, the type of the argument x can be either
    mpfr_ubf_ptr or mpfr_ptr, since the latter is used in functions
    that accept both MPFR numbers and UBF's; this is checked by the
-   code "(x)->_mpfr_exp".
+   code "(x)->_mpfr_exp" (the "sizeof" prevents an access, which
+   could be invalid when MPFR_ZEXP(x) is used for an assignment,
+   and also avoids breaking the aliasing rules if they are dealt
+   with in the future).
    This macro can be used when building a UBF. So we do not check
    that the _mpfr_exp field has the value MPFR_EXP_UBF. */
 #define MPFR_ZEXP(x)                            \
-  ((void) (x)->_mpfr_exp,                       \
+  ((void) sizeof ((x)->_mpfr_exp),              \
    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
 /* If x is a UBF, clear its mpz_t exponent. */
