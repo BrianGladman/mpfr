@@ -2529,8 +2529,10 @@ extern "C" {
    using the public API. This is some form of "subtyping".
 
    Unfortunately this breaks aliasing rules, and C does not provide any way
-   to avoid that (except with additional syntax ugliness and API breakage):
-   https://news.ycombinator.com/item?id=11753236
+   to avoid that (except with additional syntax ugliness and API breakage,
+   though there is a workaround -- see the end of this comment):
+
+     https://news.ycombinator.com/item?id=11753236
 
    The alignment requirement for __mpfr_ubf_struct (UBF) needs to be at least
    as strong as the one for __mpfr_struct (MPFR number); this is not required
@@ -2562,7 +2564,36 @@ extern "C" {
 
    Note that functions used for logging need to support UBF (currently
    done by printing that a number is a UBF, as it may be difficult to
-   do more without significant changes). */
+   do more without significant changes).
+
+   --------
+
+   A workaround to avoid breaking aliasing rules should be to use mpfr_ptr
+   to access the usual mpfr_t members and mpfr_ubf_ptr to access the
+   additional member _mpfr_zexp. And never use __mpfr_ubf_struct as a
+   declared type; otherwise this would force __mpfr_ubf_struct to be the
+   effective type of the whole object. Thus instead of
+
+     typedef __mpfr_ubf_struct mpfr_ubf_t[1];
+
+   one could use the following definition as a trick to allocate an UBF as
+   an automatic variable with the required alignment but without forcing
+   the effective type to __mpfr_ubf_struct.
+
+      typedef union {
+        __mpfr_ubf_struct u[1];
+        __mpfr_struct m[1];
+      } mpfr_ubf_t;
+
+   Then adapt the related code to select to right member, depending on the
+   context. Unfortunately, this triggers -Wstrict-aliasing false positives
+   with GCC in the MPFR_UBF_CLEAR_EXP expansion:
+
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94337
+
+   (see ubf2 branch). So, for the time being, as long as the code does not
+   break, do not change anything.
+*/
 
 typedef struct {
   mpfr_prec_t  _mpfr_prec;
