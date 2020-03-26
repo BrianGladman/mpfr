@@ -2526,9 +2526,11 @@ extern "C" {
    which is assumed to be present (with a value in it) when the usual
    exponent field has the value MPFR_EXP_UBF. The goal of this compatible
    representation is to easily be able to support UBF in "normal" code
-   and hopefully avoid aliasing issues at the same time. And code that
-   accepts UBF in input should also accept mpfr_t as a consequence; this
-   makes mpfr_t to UBF conversion unnecessary.
+   using the public API. This is some form of "subtyping".
+
+   Unfortunately this breaks aliasing rules, and C does not provide any way
+   to avoid that (except with additional syntax ugliness and API breakage):
+   https://news.ycombinator.com/item?id=11753236
 
    The alignment requirement for __mpfr_ubf_struct (UBF) needs to be at least
    as strong as the one for __mpfr_struct (MPFR number); this is not required
