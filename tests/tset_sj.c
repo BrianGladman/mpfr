@@ -176,6 +176,152 @@ check_set_sj_2exp (void)
   mpfr_clear (x);
 }
 
+#define REXP 1024
+
+static void
+test_2exp_extreme_aux (void)
+{
+  mpfr_t x1, x2, y;
+  mpfr_exp_t e, ep[1 + 8 * 5], eb[] =
+    { MPFR_EMIN_MIN, -REXP, REXP, MPFR_EMAX_MAX, MPFR_EXP_MAX };
+  mpfr_flags_t flags1, flags2;
+  int i, j, rnd, inex1, inex2;
+  char s;
+
+  ep[0] = MPFR_EXP_MIN;
+  for (i = 0; i < numberof(eb); i++)
+    for (j = 0; j < 8; j++)
+      ep[1 + 8 * i + j] = eb[i] - j;
+
+  mpfr_inits2 (3, x1, x2, (mpfr_ptr) 0);
+  mpfr_init2 (y, 32);
+
+  /* The cast to int is needed if numberof(ep) is of unsigned type, in
+     which case the condition without the cast would be always false. */
+  for (i = -2; i < (int) numberof(ep); i++)
+    for (j = -31; j <= 31; j++)
+      RND_LOOP_NO_RNDF (rnd)
+        {
+          int sign = j < 0 ? -1 : 1;
+          intmax_t em;
+
+          if (i < 0)
+            {
+              em = i == -2 ? INTMAX_MIN : INTMAX_MAX;
+              mpfr_clear_flags ();
+              inex1 = j == 0 ?
+                (mpfr_set_zero (x1, +1), 0) : i == -2 ?
+                mpfr_underflow (x1, rnd == MPFR_RNDN ?
+                                MPFR_RNDZ : (mpfr_rnd_t) rnd, sign) :
+                mpfr_overflow (x1, (mpfr_rnd_t) rnd, sign);
+              flags1 = __gmpfr_flags;
+            }
+          else
+            {
+              em = ep[i];
+              /* Compute the expected value, inex and flags */
+              inex1 = mpfr_set_si (y, j, MPFR_RNDN);
+              MPFR_ASSERTN (inex1 == 0);
+              inex1 = mpfr_set (x1, y, (mpfr_rnd_t) rnd);
+              /* x1 is the rounded value and inex1 the ternary value,
+                 assuming that the exponent argument is 0 (this is the
+                 rounded significand of the final result, assuming an
+                 unbounded exponent range). The multiplication by a
+                 power of 2 is exact, unless underflow/overflow occurs.
+                 The tests on the exponent below avoid integer overflows
+                 (ep[i] may take extreme values). */
+              e = mpfr_get_exp (x1);
+              mpfr_clear_flags ();
+              if (j != 0 && ep[i] < __gmpfr_emin - e)  /* underflow */
+                {
+                  mpfr_rnd_t r =
+                    (rnd == MPFR_RNDN &&
+                     (ep[i] < __gmpfr_emin - mpfr_get_exp (y) - 1 ||
+                      IS_POW2 (sign * j))) ?
+                    MPFR_RNDZ : (mpfr_rnd_t) rnd;
+                  inex1 = mpfr_underflow (x1, r, sign);
+                  flags1 = __gmpfr_flags;
+                }
+              else if (j != 0 && ep[i] > __gmpfr_emax - e)  /* overflow */
+                {
+                  inex1 = mpfr_overflow (x1, (mpfr_rnd_t) rnd, sign);
+                  flags1 = __gmpfr_flags;
+                }
+              else
+                {
+                  if (j != 0)
+                    mpfr_set_exp (x1, ep[i] + e);
+                  flags1 = inex1 != 0 ? MPFR_FLAGS_INEXACT : 0;
+                }
+            }
+
+          /* Test mpfr_set_sj_2exp */
+          mpfr_clear_flags ();
+          inex2 = mpfr_set_sj_2exp (x2, j, em, (mpfr_rnd_t) rnd);
+          flags2 = __gmpfr_flags;
+
+          if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                 mpfr_equal_p (x1, x2)))
+            {
+              s = 's';
+              goto err_extreme;
+            }
+
+          if (j < 0)
+            continue;
+
+          /* Test mpfr_set_uj_2exp */
+          mpfr_clear_flags ();
+          inex2 = mpfr_set_uj_2exp (x2, j, em, (mpfr_rnd_t) rnd);
+          flags2 = __gmpfr_flags;
+
+          if (! (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                 mpfr_equal_p (x1, x2)))
+            {
+              s = 'u';
+            err_extreme:
+              printf ("Error in extreme mpfr_set_%cj_2exp for i=%d j=%d %s\n",
+                      s, i, j, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
+              printf ("emin=%" MPFR_EXP_FSPEC "d "
+                      "emax=%" MPFR_EXP_FSPEC "d\n",
+                      (mpfr_eexp_t) __gmpfr_emin,
+                      (mpfr_eexp_t) __gmpfr_emax);
+              printf ("e = %jd\n", em);
+              printf ("Expected ");
+              mpfr_dump (x1);
+              printf ("with inex = %d and flags =", inex1);
+              flags_out (flags1);
+              printf ("Got      ");
+              mpfr_dump (x2);
+              printf ("with inex = %d and flags =", inex2);
+              flags_out (flags2);
+              exit (1);
+            }
+        }
+
+  mpfr_clears (x1, x2, y, (mpfr_ptr) 0);
+}
+
+static void
+test_2exp_extreme (void)
+{
+  mpfr_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+  test_2exp_extreme_aux ();
+
+  set_emin (-REXP);
+  set_emax (REXP);
+  test_2exp_extreme_aux ();
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -185,6 +331,7 @@ main (int argc, char *argv[])
   check_set_uj_2exp ();
   check_set_sj ();
   check_set_sj_2exp ();
+  test_2exp_extreme ();
 
   tests_end_mpfr ();
   return 0;
