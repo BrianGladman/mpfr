@@ -1620,9 +1620,34 @@ do {                                                                  \
 #define MPFR_THOUSANDS_SEPARATOR ((char) '\0')
 #endif
 
-
 /* Size of an array, as a constant expression. */
 #define numberof_const(x)  (sizeof (x) / sizeof ((x)[0]))
+
+/* Size of an array, safe version but not a constant expression:
+   Since an array can silently be converted to a pointer, we check
+   that this macro is applied on an array, not a pointer.
+   Also make sure that the type is signed ("long" is sufficient
+   in practice since the sizes come from the MPFR source), so that
+   the value can be used in arbitrary expressions without the risk
+   of silently switching to unsigned arithmetic. */
+#undef numberof
+#if 0
+/* The following should work with GCC as documented in its manual,
+   but fails: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=38377#c10
+   Thus disabled for now. */
+# define numberof(x)                                                    \
+  ( __extension__ ({                                                    \
+      int is_array = (void *) &(x) == (void *) &(x)[0];                 \
+      MPFR_STAT_STATIC_ASSERT (__builtin_constant_p (is_array) ?        \
+                               is_array : 1);                           \
+      MPFR_ASSERTN (is_array);                                          \
+      (long) numberof_const (x);                                        \
+    }) )
+#else
+# define numberof(x)                                    \
+  (MPFR_ASSERTN ((void *) &(x) == (void *) &(x)[0]),    \
+   (long) numberof_const (x))
+#endif
 
 /* Addition with carry (detected by GCC and other good compilers). */
 #define ADD_LIMB(u,v,c) ((u) += (v), (c) = (u) < (v))

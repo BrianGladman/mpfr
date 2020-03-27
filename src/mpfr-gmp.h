@@ -269,28 +269,6 @@ __MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 #define MIN(l,o) ((l) < (o) ? (l) : (o))
 #define MAX(h,i) ((h) > (i) ? (h) : (i))
 
-/* Size of an array, safe version but not a constant expression:
-   Since an array can silently be converted to a pointer, we check
-   that this macro is applied on an array, not a pointer. */
-#undef numberof
-#if 0
-/* The following should work with GCC as documented in its manual,
-   but fails: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=38377#c10
-   Thus disabled for now. */
-# define numberof(x)                                                    \
-  ( __extension__ ({                                                    \
-      int is_array = (void *) &(x) == (void *) &(x)[0];                 \
-      MPFR_STAT_STATIC_ASSERT (__builtin_constant_p (is_array) ?        \
-                               is_array : 1);                           \
-      MPFR_ASSERTN (is_array);                                          \
-      numberof_const (x);                                               \
-    }) )
-#else
-# define numberof(x)                                    \
-  (MPFR_ASSERTN ((void *) &(x) == (void *) &(x)[0]),    \
-   numberof_const (x))
-#endif
-
 __MPFR_DECLSPEC void * mpfr_allocate_func (size_t);
 __MPFR_DECLSPEC void * mpfr_reallocate_func (void *, size_t, size_t);
 __MPFR_DECLSPEC void   mpfr_free_func (void *, size_t);
