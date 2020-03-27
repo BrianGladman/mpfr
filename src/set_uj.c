@@ -41,7 +41,7 @@ mpfr_set_uj (mpfr_t x, uintmax_t j, mpfr_rnd_t rnd)
 int
 mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
 {
-  int cnt;
+  int cnt, inex;
   mp_size_t i, k;
   mp_limb_t limb;
   mp_limb_t yp[uintmaxpml];
@@ -111,9 +111,9 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
   e += k * GMP_NUMB_BITS - cnt;    /* Update Expo */
   MPFR_ASSERTD (MPFR_LIMB_MSB(yp[numberof (yp) - 1]) != 0);
 
-  /* FIXME: e < __gmpfr_emin does not necessarily mean underflow,
-     since rounding can increase the exponent. */
-  /* Check expo underflow / overflow (can't use mpfr_check_range) */
+  MPFR_RNDRAW (inex, x, yp, uintmax_bit_size, rnd, MPFR_SIGN_POS, e++);
+
+  /* Check expo underflow / overflow */
   if (MPFR_UNLIKELY(e < __gmpfr_emin))
     {
       /* The following test is necessary because in the rounding to the
@@ -122,16 +122,18 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
        *   _ |x| < 2^(emin-2), or
        *   _ |x| = 2^(emin-2) and the absolute value of the exact
        *     result is <= 2^(emin-2). */
-      if (rnd == MPFR_RNDN && (e+1 < __gmpfr_emin || mpfr_powerof2_raw(y)))
+      if (rnd == MPFR_RNDN &&
+          (e + 1 < __gmpfr_emin ||
+           (mpfr_powerof2_raw (x) && inex >= 0)))
         rnd = MPFR_RNDZ;
       return mpfr_underflow (x, rnd, MPFR_SIGN_POS);
     }
   if (MPFR_UNLIKELY(e > __gmpfr_emax))
     return mpfr_overflow (x, rnd, MPFR_SIGN_POS);
-  MPFR_SET_EXP (y, e);
 
-  /* Final: set x to y (rounding if necessary) */
-  return mpfr_set (x, y, rnd);
+  MPFR_SET_SIGN (x, MPFR_SIGN_POS);
+  MPFR_SET_EXP (x, e);
+  MPFR_RET (inex);
 }
 
 #endif
