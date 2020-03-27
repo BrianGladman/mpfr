@@ -38,7 +38,7 @@ mpfr_set_sj (mpfr_t x, intmax_t j, mpfr_rnd_t rnd)
 int
 mpfr_set_sj_2exp (mpfr_t x, intmax_t j, intmax_t e, mpfr_rnd_t rnd)
 {
-  if (j>=0)
+  if (j >= 0)
     return mpfr_set_uj_2exp (x, j, e, rnd);
   else
     {
