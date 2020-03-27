@@ -57,6 +57,10 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
       MPFR_RET(0);
     }
 
+  /* early overflow detection to avoid a possible integer overflow below */
+  if (MPFR_UNLIKELY(e >= __gmpfr_emax))
+    return mpfr_overflow (x, rnd, MPFR_SIGN_POS);
+
   MPFR_ASSERTN (sizeof(uintmax_t) % sizeof(mp_limb_t) == 0);
 
   /* Create an auxiliary var */
@@ -107,6 +111,8 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
   e += k * GMP_NUMB_BITS - cnt;    /* Update Expo */
   MPFR_ASSERTD (MPFR_LIMB_MSB(yp[numberof (yp) - 1]) != 0);
 
+  /* FIXME: e < __gmpfr_emin does not necessarily mean underflow,
+     since rounding can increase the exponent. */
   /* Check expo underflow / overflow (can't use mpfr_check_range) */
   if (MPFR_UNLIKELY(e < __gmpfr_emin))
     {
