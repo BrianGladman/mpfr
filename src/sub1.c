@@ -205,7 +205,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
             }
           inexact = - MPFR_INT_SIGN (a);
         }
-      /* The underflow case is possibly only with UBF. The overflow case
+      /* The underflow case is possible only with UBF. The overflow case
          is also possible with normal FP due to rounding. */
       if (MPFR_UNLIKELY (exp_a > __gmpfr_emax))
         return mpfr_overflow (a, rnd_mode, MPFR_SIGN (a));
