@@ -2784,6 +2784,10 @@ outputting the value with an empty @samp{precision} field and reading it
 back will yield the original value.
 The chosen precision for an empty @samp{precision} field with @samp{conv}
 specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
+@c For the record, concerning the choice for 'e'/'E':
+@c   https://sympa.inria.fr/sympa/arc/mpfr/2019-12/msg00000.html
+@c   https://sympa.inria.fr/sympa/arc/mpfr/2020-01/msg00000.html
+@c   https://gforge.inria.fr/tracker/index.php?func=detail&aid=21816&group_id=136&atid=619
 
 @subsection Functions
 
