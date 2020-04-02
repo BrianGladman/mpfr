@@ -492,8 +492,6 @@ dnl (i.e. generic code must be used).
 AC_C_BIGENDIAN([AC_DEFINE(HAVE_BIG_ENDIAN)],[AC_DEFINE(HAVE_LITTLE_ENDIAN)],
 [true],[true])
 
-MPFR_CONFIGS
-
 # (Based on GMP 5.1)
 # clock_gettime is in librt on *-*-osf5.1 and on glibc < 2.17, so add -lrt to
 # TUNE_LIBS if needed (e.g. if clock_gettime is not already in the C library).
@@ -536,6 +534,10 @@ int main (void) { return 0; }
     fi
     ;;
 esac
+
+dnl MPFR_CONFIGS uses LDFLAGS, thus must be invoked after LDFLAGS has
+dnl been determined completely.
+MPFR_CONFIGS
 
 dnl
 dnl For mpfr-longlong.h - TODO: should be replaced (see acinclude.m4).
