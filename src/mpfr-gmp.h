@@ -284,9 +284,19 @@ __MPFR_DECLSPEC void *mpfr_tmp_allocate (struct tmp_marker **,
                                          size_t);
 __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 
-/* Can be overridden at configure time. Useful for checking buffer overflow. */
+/* Default MPFR_ALLOCA_MAX value. It can be overridden at configure time;
+   with some tools, by giving a low value such as 0, this is useful for
+   checking buffer overflow, which may not be possible with alloca.
+   If HAVE_ALLOCA is not defined, then alloca() is not available, so that
+   MPFR_ALLOCA_MAX needs to be 0 (see the definition of TMP_ALLOC below);
+   if the user has explicitly given a non-zero value, this will probably
+   yield an error at link time or at run time. */
 #ifndef MPFR_ALLOCA_MAX
-# define MPFR_ALLOCA_MAX 16384
+# ifdef HAVE_ALLOCA
+#  define MPFR_ALLOCA_MAX 16384
+# else
+#  define MPFR_ALLOCA_MAX 0
+# endif
 #endif
 
 /* Do not define TMP_SALLOC (see the test in mpfr-impl.h)! */
