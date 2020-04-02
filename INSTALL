@@ -692,6 +692,7 @@ $ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flo
 
 where $PREFIX is the directory where you have installed $PREFIX.
 
-You also need to unset LD_LIBRARY_PATH.
+You also need to unset LD_LIBRARY_PATH, and/or you might need to change
+wl="" into wl="-Wl," in the libtool file.
 
-All tests (make check) pass, except tset_ld which loops forever.
+All tests (make check) pass.
