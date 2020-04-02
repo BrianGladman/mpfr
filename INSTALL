@@ -683,13 +683,15 @@ The relevant build projects are available here:
 d. Using the CompCert compiler
 ==============================
 
-[this was tested with CompCert 3.7 and MPFR revision 13848]
+[this was tested with CompCert 3.7 and MPFR revision 13851]
 
 CompCert (http://compcert.inria.fr/) is a formally verified compiler.
 To compile MPFR with CompCert:
 
-$ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flongdouble -fstruct-passing -DMPFR_ALLOCA_MAX=0" --disable-shared
+$ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flongdouble -fstruct-passing" --disable-shared
 
 where $PREFIX is the directory where you have installed $PREFIX.
+
+You also need to unset LD_LIBRARY_PATH.
 
 All tests (make check) pass, except tset_ld which loops forever.
