@@ -26,27 +26,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Various i386 systems have been seen with <float.h> LDBL constants equal
-   to the DBL ones, whereas they ought to be bigger, reflecting the 10-byte
-   IEEE extended format on that processor.  gcc 3.2.1 on FreeBSD and Solaris
-   has been seen with the problem, and gcc 2.95.4 on FreeBSD 4.7.  */
-
-#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-static const union {
-  char         bytes[10];
-  long double  d;
-} ldbl_max_struct = {
-  { '\377','\377','\377','\377',
-    '\377','\377','\377','\377',
-    '\376','\177' }
-};
-#define MPFR_LDBL_MAX   (ldbl_max_struct.d)
-#else
-#define MPFR_LDBL_MAX   LDBL_MAX
-#endif
-
-/* To check for +inf, one can use the test x > MPFR_LDBL_MAX, as LDBL_MAX
-   is the maximum finite number representable in a long double, according
+/* To check for +inf, one can use the test x > LDBL_MAX, as LDBL_MAX is
+   the maximum finite number representable in a long double, according
    to DR 467; see
      http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2092.htm
    If this fails on some platform, a test x - x != 0 might be used. */
@@ -95,13 +76,13 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
   /* Check for INF */
-  else if (MPFR_UNLIKELY (d > MPFR_LDBL_MAX))
+  else if (MPFR_UNLIKELY (d > LDBL_MAX))
     {
       MPFR_SET_INF (r);
       MPFR_SET_POS (r);
       return 0;
     }
-  else if (MPFR_UNLIKELY (d < -MPFR_LDBL_MAX))
+  else if (MPFR_UNLIKELY (d < -LDBL_MAX))
     {
       MPFR_SET_INF (r);
       MPFR_SET_NEG (r);
@@ -208,12 +189,12 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
-  if (d > MPFR_LDBL_MAX)
+  if (d > LDBL_MAX)
     {
       mpfr_set_inf (r, 1);
       return 0;
     }
-  else if (d < -MPFR_LDBL_MAX)
+  else if (d < -LDBL_MAX)
     {
       mpfr_set_inf (r, -1);
       return 0;
@@ -222,8 +203,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   else if (d == 0.0)
     return mpfr_set_d (r, (double) d, rnd_mode);
 
-  if (d >= (long double) MPFR_LDBL_MAX || d <= (long double) -MPFR_LDBL_MAX)
-    h = (d >= (long double) MPFR_LDBL_MAX) ? MPFR_LDBL_MAX : -MPFR_LDBL_MAX;
+  if (d >= LDBL_MAX || d <= -LDBL_MAX)
+    h = (d >= LDBL_MAX) ? LDBL_MAX : -LDBL_MAX;
   else
     h = (double) d; /* should not overflow */
   l = (double) (d - (long double) h);
@@ -266,12 +247,12 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
-  if (d > MPFR_LDBL_MAX)
+  if (d > LDBL_MAX)
     {
       mpfr_set_inf (r, 1);
       return 0;
     }
-  else if (d < -MPFR_LDBL_MAX)
+  else if (d < -LDBL_MAX)
     {
       mpfr_set_inf (r, -1);
       return 0;
