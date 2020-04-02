@@ -126,6 +126,7 @@ bug20090520 (void)
   mpfr_clear (x);
 }
 
+#ifndef HAVE_LDOUBLE_IS_DOUBLE
 static void
 bug20180904 (void)
 {
@@ -145,6 +146,7 @@ bug20180904 (void)
     }
   mpfr_clear (x);
 }
+#endif
 
 int
 main (void)
@@ -152,7 +154,9 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
+#ifndef HAVE_LDOUBLE_IS_DOUBLE
   bug20180904 ();
+#endif
   bug20090520 ();
 
   check_round ();
