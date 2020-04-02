@@ -688,7 +688,7 @@ d. Using the CompCert compiler
 CompCert (http://compcert.inria.fr/) is a formally verified compiler.
 To compile MPFR with CompCert:
 
-$ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flongdouble -fstruct-passing" --disable-shared
+$ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flongdouble -fstruct-passing -I$PREFIX/lib/compcert/include" --disable-shared
 
 where $PREFIX is the directory where you have installed $PREFIX.
 
