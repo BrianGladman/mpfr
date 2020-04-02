@@ -1277,7 +1277,13 @@ static void test_ubf_aux (void)
     {
       static int v[4] = { 26, 1, 256, 231 };
 
-      mpfr_init2 (p[i], i < 4 ? 5 + (randlimb () % 128) : 256);
+      /* put hard-coded values to exercise the bug issued with
+         GMP_CHECK_RANDOMIZE=1585822440108893: we can remove them
+         once the bug is fixed and a non-regression test is added */
+      if (i == 2 || i == 3)
+        mpfr_init2 (p[i], 19 - 4 * i);
+      else
+        mpfr_init2 (p[i], i < 4 ? 5 + (randlimb () % 128) : 256);
       if (i < 4)
         mpfr_set_si_2exp (p[i], v[i], -5, MPFR_RNDN);
       else
