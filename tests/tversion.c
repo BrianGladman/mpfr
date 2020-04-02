@@ -290,6 +290,12 @@ main (void)
       err = 1;
     }
 
+#if defined(MPFR_HAVE_GMP_IMPL)
+  (puts) ("[tversion] MPFR built with the GMP build (--with-gmp-build)");
+#else
+  (printf) ("[tversion] MPFR_ALLOCA_MAX = %ld\n", (long) MPFR_ALLOCA_MAX);
+#endif
+
   if (
 #ifdef MPFR_WANT_SHARED_CACHE
       !
