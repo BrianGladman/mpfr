@@ -811,7 +811,6 @@ dnl and polluate (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
   $SED '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
   $SED '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
-  $SED '/#define HAVE_ALLOCA /d' <confdefs.h >confdefs.tmp
   $SED '/#define HAVE_DLFCN_H/d' <confdefs.tmp >confdefs.h
   $SED '/#define HAVE_MEM/d' <confdefs.h >confdefs.tmp
   $SED '/#define STDC_HEADERS/d' <confdefs.tmp >confdefs.h
