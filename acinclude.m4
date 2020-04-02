@@ -1135,7 +1135,7 @@ int main (void) {
 }
 ]
 EOF
-  mpfr_compile="$CC $CFLAGS $CPPFLAGS conftest.c -o conftest$EXEEXT >&AS_MESSAGE_LOG_FD 2>&1"
+  mpfr_compile="$CC $CFLAGS $CPPFLAGS $LDFLAGS conftest.c -o conftest$EXEEXT >&AS_MESSAGE_LOG_FD 2>&1"
   if AC_TRY_EVAL(mpfr_compile); then
     cat >conftest.awk <<\EOF
 [
