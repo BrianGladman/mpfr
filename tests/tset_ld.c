@@ -371,14 +371,6 @@ check_subnormal (void)
   mpfr_clear (x);
 }
 
-#ifndef HAVE_LDOUBLE_IS_DOUBLE
-#define TEST_LDBL_MAX LDBL_MAX
-#define TEST_LDBL_MANT_DIG MPFR_LDBL_MANT_DIG
-#else
-#define TEST_LDBL_MAX DBL_MAX
-#define TEST_LDBL_MANT_DIG IEEE_DBL_MANT_DIG
-#endif
-
 static void
 check_overflow (void)
 {
@@ -386,10 +378,10 @@ check_overflow (void)
   mpfr_t x;
   int i;
 
-  mpfr_init2 (x, TEST_LDBL_MANT_DIG);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
   for (i = 0; i < 2; i++)
     {
-      d = i == 0 ? TEST_LDBL_MAX : -TEST_LDBL_MAX;
+      d = i == 0 ? LDBL_MAX : -LDBL_MAX;
       mpfr_set_ld (x, d, MPFR_RNDN);
       mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
       e = mpfr_get_ld (x, MPFR_RNDN);
@@ -560,12 +552,12 @@ main (int argc, char *argv[])
 
   /* check the largest power of two */
   maxp2 = 1.0;
-  while (maxp2 < TEST_LDBL_MAX / 2.0)
+  while (maxp2 < LDBL_MAX / 2.0)
     maxp2 *= 2.0;
   check_set_get (maxp2);
   check_set_get (-maxp2);
 
-  d = TEST_LDBL_MAX;
+  d = LDBL_MAX;
   e = d / 2.0;
   if (e != maxp2)  /* false under NetBSD/x86 */
     {
