@@ -98,27 +98,6 @@ extern "C" {
 
 #else  /* without gmp build (gmp-impl.h replacement) */
 
-/* The following tries to get a good version of alloca.
-   See gmp-impl.h for implementation details and original version */
-/* FIXME: the autoconf manual gives a different piece of code under the
-   documentation of the AC_FUNC_ALLOCA macro. Should we switch to it? */
-#ifndef alloca
-# if defined ( __GNUC__ )
-#  define alloca __builtin_alloca
-# elif defined (__DECC)
-#  define alloca(x) __ALLOCA(x)
-# elif defined (_MSC_VER)
-#  include <malloc.h>
-#  define alloca _alloca
-# elif defined (HAVE_ALLOCA_H)
-#  include <alloca.h>
-# elif defined (_AIX) || defined (_IBMR2)
-#  pragma alloca
-# else
-void *alloca (size_t);
-# endif
-#endif
-
 /* Define some macros */
 
 #define ULONG_HIGHBIT (ULONG_MAX ^ ((unsigned long) ULONG_MAX >> 1))
@@ -292,7 +271,8 @@ __MPFR_DECLSPEC mp_limb_t __gmpn_rsblsh1_n (mp_limb_t*, mp_limb_t*, mp_limb_t*, 
 #endif
 #endif
 
-/* Temp memory allocate */
+/* Definitions related to temporary memory allocation */
+
 struct tmp_marker
 {
   void *ptr;
@@ -310,10 +290,44 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 #endif
 
 /* Do not define TMP_SALLOC (see the test in mpfr-impl.h)! */
-#define TMP_ALLOC(n) (MPFR_LIKELY ((n) <= MPFR_ALLOCA_MAX) ?       \
+
+#if MPFR_ALLOCA_MAX != 0
+
+/* The following tries to get a good version of alloca.
+   See gmp-impl.h for implementation details and original version */
+/* FIXME: the autoconf manual gives a different piece of code under the
+   documentation of the AC_FUNC_ALLOCA macro. Should we switch to it? */
+#ifndef alloca
+# if defined ( __GNUC__ )
+#  define alloca __builtin_alloca
+# elif defined (__DECC)
+#  define alloca(x) __ALLOCA(x)
+# elif defined (_MSC_VER)
+#  include <malloc.h>
+#  define alloca _alloca
+# elif defined (HAVE_ALLOCA_H)
+#  include <alloca.h>
+# elif defined (_AIX) || defined (_IBMR2)
+#  pragma alloca
+# else
+void *alloca (size_t);
+# endif
+#endif
+
+#define TMP_ALLOC(n) (MPFR_ASSERTD ((n) > 0),                      \
+                      MPFR_LIKELY ((n) <= MPFR_ALLOCA_MAX) ?       \
                       alloca (n) : mpfr_tmp_allocate (&tmp_marker, (n)))
+
+#else  /* MPFR_ALLOCA_MAX == 0, alloca() not needed */
+
+#define TMP_ALLOC(n) (mpfr_tmp_allocate (&tmp_marker, (n)))
+
+#endif
+
 #define TMP_DECL(m) struct tmp_marker *tmp_marker
+
 #define TMP_MARK(m) (tmp_marker = 0)
+
 /* Note about TMP_FREE: For small precisions, tmp_marker is null as
    the allocation is done on the stack (see TMP_ALLOC above). */
 #define TMP_FREE(m) \
