@@ -426,6 +426,7 @@ List of macros used for building MPFR (also used for checking):
                         ('gmp-impl.h', 'gmp-maparam.h', ...).
 + MPFR_USE_MINI_GMP:    Define to use mini-gmp.
 
++ HAVE_ALLOCA:          Define if alloca() works.
 + HAVE_ALLOCA_H:        Define if the function alloca() is in alloca.h.
 + HAVE_LOCALE_H:        Define if <locale.h> is available.
 + HAVE_LONG_LONG:       Define if the system supports 'long long'.
