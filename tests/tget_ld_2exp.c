@@ -126,10 +126,11 @@ bug20090520 (void)
   mpfr_clear (x);
 }
 
-#ifndef HAVE_LDOUBLE_IS_DOUBLE
 static void
 bug20180904 (void)
 {
+#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   mpfr_t x;
   long double d = 5.450797408381041489264061250159e-4937L;
   long double e;
@@ -145,8 +146,8 @@ bug20180904 (void)
       exit (1);
     }
   mpfr_clear (x);
-}
 #endif
+}
 
 int
 main (void)
@@ -154,9 +155,7 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-#ifndef HAVE_LDOUBLE_IS_DOUBLE
   bug20180904 ();
-#endif
   bug20090520 ();
 
   check_round ();
