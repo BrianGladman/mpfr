@@ -1277,29 +1277,31 @@ static void test_ubf_aux (void)
     {
       static int v[4] = { 26, 1, 256, 231 };
 
-      /* put hard-coded values to exercise the bug issued with
-         GMP_CHECK_RANDOMIZE=1585822440108893: we can remove them
-         once the bug is fixed and a non-regression test is added */
-      if (i == 2 || i == 3)
-        mpfr_init2 (p[i], 19 - 4 * i);
-      else
-        mpfr_init2 (p[i], i < 4 ? 5 + (randlimb () % 128) : 256);
+      mpfr_init2 (p[i], i < 4 ? 8 + (randlimb () % 128) : 256);
       if (i < 4)
-        mpfr_set_si_2exp (p[i], v[i], -5, MPFR_RNDN);
+        {
+          inexact = mpfr_set_si_2exp (p[i], v[i], -5, MPFR_RNDN);
+          MPFR_ASSERTD (inexact == 0);
+        }
       else
         {
-          mpfr_set_si_2exp (p[i], 1, 200, MPFR_RNDN);
-          mpfr_add (p[i], p[i], p[i-4], MPFR_RNDN);
+          inexact = mpfr_set_si_2exp (p[i], 1, 200, MPFR_RNDN);
+          MPFR_ASSERTD (inexact == 0);
+          inexact = mpfr_add (p[i], p[i], p[i-4], MPFR_RNDN);
+          MPFR_ASSERTD (inexact == 0);
         }
       ex[i] = mpfr_get_exp (p[i]) + 5;
       MPFR_ASSERTD (ex[i] >= 0);
     }
   mpfr_inits2 (3, p[8], p[9], p[10], (mpfr_ptr) 0);
-  mpfr_set_si_2exp (p[8], 1, 0, MPFR_RNDN);
+  inexact = mpfr_set_si_2exp (p[8], 1, 0, MPFR_RNDN);
+  MPFR_ASSERTD (inexact == 0);
   ex[8] = 5;
-  mpfr_set_si_2exp (p[9], 1, 0, MPFR_RNDN);  /* will be epsilon */
+  inexact = mpfr_set_si_2exp (p[9], 1, 0, MPFR_RNDN);  /* will be epsilon */
+  MPFR_ASSERTD (inexact == 0);
   ex[9] = 0;
-  mpfr_set_si_2exp (p[10], 7, 0, MPFR_RNDN);
+  inexact = mpfr_set_si_2exp (p[10], 7, 0, MPFR_RNDN);
+  MPFR_ASSERTD (inexact == 0);
   ex[10] = 5;
 
   for (i = 0; i < 11; i++)
