@@ -1214,9 +1214,9 @@ static void test_ubf_aux (void)
   for (j = 0; j < numberof (e); j++)
     {
       inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
-      MPFR_ASSERTD (inexact == 0);
+      MPFR_ASSERTN (inexact == 0);
       inexact = mpfr_get_z (MPFR_ZEXP (p[0]), ee, MPFR_RNDN);
-      MPFR_ASSERTD (inexact == 0);
+      MPFR_ASSERTN (inexact == 0);
       mpz_sub_ui (MPFR_ZEXP (p[0]), MPFR_ZEXP (p[0]), kn);
 
       for (k = -kn; k <= kn; k++)
@@ -1281,27 +1281,27 @@ static void test_ubf_aux (void)
       if (i < 4)
         {
           inexact = mpfr_set_si_2exp (p[i], v[i], -5, MPFR_RNDN);
-          MPFR_ASSERTD (inexact == 0);
+          MPFR_ASSERTN (inexact == 0);
         }
       else
         {
           inexact = mpfr_set_si_2exp (p[i], 1, 200, MPFR_RNDN);
-          MPFR_ASSERTD (inexact == 0);
+          MPFR_ASSERTN (inexact == 0);
           inexact = mpfr_add (p[i], p[i], p[i-4], MPFR_RNDN);
-          MPFR_ASSERTD (inexact == 0);
+          MPFR_ASSERTN (inexact == 0);
         }
       ex[i] = mpfr_get_exp (p[i]) + 5;
-      MPFR_ASSERTD (ex[i] >= 0);
+      MPFR_ASSERTN (ex[i] >= 0);
     }
   mpfr_inits2 (3, p[8], p[9], p[10], (mpfr_ptr) 0);
   inexact = mpfr_set_si_2exp (p[8], 1, 0, MPFR_RNDN);
-  MPFR_ASSERTD (inexact == 0);
+  MPFR_ASSERTN (inexact == 0);
   ex[8] = 5;
   inexact = mpfr_set_si_2exp (p[9], 1, 0, MPFR_RNDN);  /* will be epsilon */
-  MPFR_ASSERTD (inexact == 0);
+  MPFR_ASSERTN (inexact == 0);
   ex[9] = 0;
   inexact = mpfr_set_si_2exp (p[10], 7, 0, MPFR_RNDN);
-  MPFR_ASSERTD (inexact == 0);
+  MPFR_ASSERTN (inexact == 0);
   ex[10] = 5;
 
   for (i = 0; i < 11; i++)
@@ -1313,9 +1313,9 @@ static void test_ubf_aux (void)
   for (j = 0; j < numberof (e); j++)
     {
       inexact = mpfr_set_exp_t (ee, e[j], MPFR_RNDN);
-      MPFR_ASSERTD (inexact == 0);
+      MPFR_ASSERTN (inexact == 0);
       inexact = mpfr_get_z (MPFR_ZEXP (p[0]), ee, MPFR_RNDN);
-      MPFR_ASSERTD (inexact == 0);
+      MPFR_ASSERTN (inexact == 0);
       for (i = 1; i < 11; i++)
         mpz_set (MPFR_ZEXP (p[i]), MPFR_ZEXP (p[0]));
       for (i = 0; i < 11; i++)
