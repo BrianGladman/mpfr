@@ -688,11 +688,11 @@ d. Using the CompCert compiler
 CompCert (http://compcert.inria.fr/) is a formally verified compiler.
 To compile MPFR with CompCert:
 
-$ ./configure CC=ccomp LDFLAGS="-L$PREFIX/lib/compcert" CFLAGS="-fbitfields -flongdouble -fstruct-passing -I$PREFIX/lib/compcert/include" --disable-shared
-
-where $PREFIX is the directory where you have installed $PREFIX.
+$ ./configure CC=ccomp CFLAGS="-fbitfields -flongdouble -fstruct-passing" --disable-shared
 
 You also need to unset LD_LIBRARY_PATH, and/or you might need to change
 wl="" into wl="-Wl," in the libtool file.
 
-All tests (make check) pass.
+All tests (make check) should pass (tget_set_d64, tget_set_d128 and
+tset_float128 are skipped, since CompCert does not support _Decimal64,
+_Decimal128 nor _Float128).
