@@ -306,7 +306,9 @@ __MPFR_DECLSPEC void mpfr_tmp_free (struct tmp_marker *);
 /* The following tries to get a good version of alloca.
    See gmp-impl.h for implementation details and original version */
 /* FIXME: the autoconf manual gives a different piece of code under the
-   documentation of the AC_FUNC_ALLOCA macro. Should we switch to it? */
+   documentation of the AC_FUNC_ALLOCA macro. Should we switch to it?
+   But note that the HAVE_ALLOCA test in it seems wrong.
+   https://lists.gnu.org/archive/html/bug-autoconf/2019-01/msg00009.html */
 #ifndef alloca
 # if defined ( __GNUC__ )
 #  define alloca __builtin_alloca
