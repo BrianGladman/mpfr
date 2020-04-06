@@ -4196,6 +4196,15 @@ against another MPFR version (older or newer), as described below.
 
 @itemize @bullet
 
+@item The formatted output functions (@code{mpfr_printf}, etc.) have
+slightly changed in MPFR@tie{}4.1 in the case where the precision field
+is empty: trailing zeros were not output with the conversion specifier
+@samp{e} / @samp{E} (the chosen precision was not fully specified and
+it depended on the input value), and also on the value zero with the
+conversion specifiers @samp{f} / @samp{F} / @samp{g} / @samp{G} (this
+could partly be regarded as a bug); they are now kept in a way similar
+to the formatted output functions from C@.
+
 @item @code{mpfr_abs}, @code{mpfr_neg} and @code{mpfr_set} changed in
 MPFR@tie{}4.0.
 In previous MPFR versions, the sign bit of a NaN was unspecified; however,
