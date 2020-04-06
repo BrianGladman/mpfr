@@ -4204,6 +4204,7 @@ it depended on the input value), and also on the value zero with the
 conversion specifiers @samp{f} / @samp{F} / @samp{g} / @samp{G} (this
 could partly be regarded as a bug); they are now kept in a way similar
 to the formatted output functions from C@.
+@c https://gforge.inria.fr/tracker/index.php?func=detail&aid=21816&group_id=136&atid=619
 
 @item @code{mpfr_abs}, @code{mpfr_neg} and @code{mpfr_set} changed in
 MPFR@tie{}4.0.
