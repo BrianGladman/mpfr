@@ -434,8 +434,8 @@ is to make sure that the dynamic linker configuration is consistent
 with GCC's behavior, for instance by having /usr/local/lib in
 /etc/ld.so.conf or in some file from /etc/ld.so.conf.d (as Debian
 did: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=395177). See
-also https://gcc.gnu.org/ml/gcc-help/2010-01/msg00171.html for more
-information. Alternatively you can use:
+also https://gcc.gnu.org/legacy-ml/gcc-help/2010-01/msg00171.html for
+more information. Alternatively you can use:
   * environment variables. This may sometimes be necessary. If DIR
     is the installation directory of GMP, add DIR/include to your
     CPATH or C_INCLUDE_PATH (for compilers other than GCC, please

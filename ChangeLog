@@ -33755,7 +33755,7 @@ Changed paths:
 [src/mpfr-sassert.h] Get rid of annoying warnings
   typedef 'MPFR_ASSERT_xxx' locally defined but not used
 with GCC 4.8+ (better than the non-portable solution r8618). Thanks to
-Jonathan Wakely: https://gcc.gnu.org/ml/gcc-help/2013-07/msg00142.html
+Jonathan Wakely: https://gcc.gnu.org/legacy-ml/gcc-help/2013-07/msg00142.html
 ------------------------------------------------------------------------
 r8624 | zimmerma | 2013-07-22 12:06:18 +0000 (Mon, 22 Jul 2013) | 4 lines
 Changed paths:
@@ -55587,7 +55587,7 @@ Changed paths:
    M /trunk/INSTALL
 
 INSTALL: TLS on darwin may work, but I don't know anything more.
-See thread <https://gcc.gnu.org/ml/gcc/2008-12/msg00107.html>.
+See thread <https://gcc.gnu.org/legacy-ml/gcc/2008-12/msg00107.html>.
 ------------------------------------------------------------------------
 r5702 | vlefevre | 2008-12-08 16:02:29 +0000 (Mon, 08 Dec 2008) | 1 line
 Changed paths:
