@@ -30,9 +30,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
-#if HAVE_DECIMAL128_IEEE && (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64)
+#if HAVE_DECIMAL128_IEEE &&                             \
+  (GMP_NUMB_BITS == 32 || GMP_NUMB_BITS == 64) &&       \
+  !defined(DECIMAL_GENERIC_CODE)
 
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   /* conversion 10-bits to 3 digits */
 static unsigned int T[1024] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 80, 81, 800, 801, 880, 881, 10, 11, 12, 13,
@@ -129,9 +131,9 @@ decimal128_to_string (char *s, _Decimal128 d)
   int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
   unsigned int i;
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   unsigned int D[12]; /* declets */
-#else
+#else /* BID */
   mp_limb_t rp[4];
   mp_size_t rn;
 #endif
@@ -163,7 +165,7 @@ decimal128_to_string (char *s, _Decimal128 d)
      12 remaining bits)
    * a trailing significand field of 110 bits
    */
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   /* page 11 of IEEE 754-2008, case c1) */
   if (Gh < 24)
     {
@@ -246,8 +248,7 @@ decimal128_to_string (char *s, _Decimal128 d)
   sprintf (t, "E%d", exp);
 }
 
-#else
-/* portable version */
+#else  /* portable version */
 
 #ifndef DEC128_MAX
 # define DEC128_MAX 9.999999999999999999999999999999999E6144dl
@@ -472,7 +473,7 @@ decimal128_to_string (char *s, _Decimal128 d)
     *s = '\0';
 }
 
-#endif /* _MPFR_IEEE_FLOATS */
+#endif  /* definition of decimal128_to_string (DPD, BID, or portable) */
 
 /* the IEEE754-2008 decimal128 format has 34 digits, with emax=6144,
    emin=1-emax=-6143 */

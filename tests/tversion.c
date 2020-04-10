@@ -311,13 +311,13 @@ main (void)
             " GMP internals = %s\n",
             mpfr_buildopt_tls_p () ? "yes" : "no",
             mpfr_buildopt_float128_p () ? "yes" : "no",
-            mpfr_buildopt_decimal_p () ? "yes ("
-#ifdef DPD_FORMAT
-            "DPD"
-#else
-            "BID"
+            mpfr_buildopt_decimal_p () ? "yes"
+#if defined(DECIMAL_BID_FORMAT)
+            " (BID)"
+#elif defined(DECIMAL_DPD_FORMAT)
+            " (DPD)"
 #endif
-            ")" : "no",
+            : "no",
             mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
 
 #ifdef MPFR_THREAD_LOCK_METHOD

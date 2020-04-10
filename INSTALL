@@ -224,6 +224,27 @@ specific architecture.
                         buggy (MPFR tests may fail). In such a case,
                         this option is useful.
 
+--enable-decimal-float  build conversion functions from/to decimal floats.
+                        Note that detection by the configure script is
+                        limited in case of cross-compilation.
+                        Accepted arguments:
+                   yes  Decimal support is requested and the configure
+                        script fails if it detects that decimals do not
+                        work.
+                        The encoding (BID or DPD) will automatically be
+                        detected at configure time or at compile time if
+                        possible (if not, generic code will be used).
+                    no  Decimal support is explicitly disabled.
+                  auto  Decimal support is enabled if the configure script
+                        detects that it works. This is the default when
+                        --{enable,disable}-decimal-float is not given.
+                   bid  Decimal support is requested and the encoding is
+                        assumed to be BID (some check may be done).
+                   dpd  Decimal support is requested and the encoding is
+                        assumed to be DPD (some check may be done).
+               generic  Decimal support is requested and the generic code
+                        is used (mainly for developers).
+
 --enable-gmp-internals  allows the MPFR build to use GMP's undocumented
                         functions (not from the public API). Note that
                         library versioning is not guaranteed to work if

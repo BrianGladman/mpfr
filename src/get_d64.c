@@ -31,8 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
-#if _MPFR_IEEE_FLOATS
-#else
+#if ! _MPFR_IEEE_FLOATS
 #include "ieee_floats.h"
 #endif
 
@@ -40,7 +39,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define DEC64_MAX 9.999999999999999E384dd
 #endif
 
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
 static const int T[1000] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 32,
   33, 34, 35, 36, 37, 38, 39, 40, 41, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
@@ -181,7 +180,9 @@ get_decimal64_max (int negative)
    Assumes s is neither NaN nor +Inf nor -Inf.
    s = [-][0-9]+E[-][0-9]+
 */
-#if _MPFR_IEEE_FLOATS
+
+#if _MPFR_IEEE_FLOATS && !defined(DECIMAL_GENERIC_CODE)
+
 static _Decimal64
 string_to_Decimal64 (char *s)
 {
@@ -191,7 +192,7 @@ string_to_Decimal64 (char *s)
   char *endptr[1];
   union mpfr_ieee_double_extract x;
   union ieee_double_decimal64 y;
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   unsigned int G, d1, d2, d3, d4, d5;
 #endif
 
@@ -247,7 +248,7 @@ string_to_Decimal64 (char *s)
     }
 
   /* now convert to DPD or BID */
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
 #define CH(d) (d - '0')
   if (m[0] >= '8')
     G = (3 << 11) | ((exp & 768) << 1) | ((CH(m[0]) & 1) << 8);
@@ -264,7 +265,7 @@ string_to_Decimal64 (char *s)
   x.s.manh = ((G & 3) << 18) | (d1 << 8) | (d2 >> 2);
   x.s.manl = (d2 & 3) << 30;
   x.s.manl |= (d3 << 20) | (d4 << 10) | d5;
-#else /* BID format */
+#else /* BID */
   {
     unsigned int rp[2]; /* rp[0] and rp[1]  should contain at least 32 bits */
 #define NLIMBS (64 / GMP_NUMB_BITS)
@@ -311,12 +312,13 @@ string_to_Decimal64 (char *s)
         x.s.manh = (rp[1] ^ 2097152) | ((exp & 1) << 19);
       }
   }
-#endif /* DPD_FORMAT */
+#endif /* DPD or BID */
   y.d = x.d;
   return y.d64;
 }
-#else
-/* portable version */
+
+#else  /* portable version */
+
 static _Decimal64
 string_to_Decimal64 (char *s)
 {
@@ -498,7 +500,8 @@ string_to_Decimal64 (char *s)
 
   return x;
 }
-#endif
+
+#endif  /* definition of string_to_Decimal64 (DPD, BID, or portable) */
 
 _Decimal64
 mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)

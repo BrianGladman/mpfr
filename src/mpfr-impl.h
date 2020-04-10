@@ -828,6 +828,55 @@ typedef union {
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
+#if defined(__GNUC__) && \
+    __FLT64_DECIMAL_DIG__ == 17 && \
+    __FLT128_DECIMAL_DIG__ == 36
+
+/* GCC has standard _Decimal64 and _Decimal128 support.
+   We may be able to detect the encoding here at compile time.
+
+   Note: GCC may define __FLT64_DECIMAL_DIG__ and __FLT128_DECIMAL_DIG__
+   even when it does not support _Decimal64 and _Decimal128, e.g. on
+   aarch64 and sparc64. But since MPFR_WANT_DECIMAL_FLOATS has been
+   defined, we already know that these types should be supported.
+
+   Determining which encoding is used via macros is not documented, and
+   there is the risk of being wrong. Currently __DECIMAL_BID_FORMAT__ is
+   defined on x86, where the BID encoding is used. But on PowerPC, where
+   the DPD encoding is used, nothing indicating the encoding is defined.
+   A possible reason may be that the decimal support is provided by the
+   hardware (in this case), so that GCC does not need to care about the
+   encoding. Thus the absence of a __DECIMAL_BID_FORMAT__ macro would
+   not necessarily imply DPD, as similarly in the future, GCC could
+   support an ISA-level implementation using the BID encoding. */
+
+#ifdef __DECIMAL_BID_FORMAT__
+
+#if defined(DECIMAL_DPD_FORMAT)
+# error "Decimal encoding mismatch (DPD assumed, BID detected)"
+#elif !defined(DECIMAL_GENERIC_CODE)
+# define DECIMAL_BID_FORMAT 1
+#endif
+
+#endif  /* __DECIMAL_BID_FORMAT__ */
+
+#endif  /* __GNUC__ */
+
+#if defined(DECIMAL_GENERIC_CODE)
+# if defined(DECIMAL_BID_FORMAT)
+#  error "DECIMAL_BID_FORMAT and DECIMAL_GENERIC_CODE both defined"
+# endif
+# if defined(DECIMAL_DPD_FORMAT)
+#  error "DECIMAL_DPD_FORMAT and DECIMAL_GENERIC_CODE both defined"
+# endif
+#elif defined(DECIMAL_BID_FORMAT) || defined(DECIMAL_DPD_FORMAT)
+# if defined(DECIMAL_BID_FORMAT) && defined(DECIMAL_DPD_FORMAT)
+#  error "DECIMAL_BID_FORMAT and DECIMAL_DPD_FORMAT both defined"
+# endif
+#else
+# define DECIMAL_GENERIC_CODE 1
+#endif
+
 /* TODO: The following is ugly and possibly wrong on some platforms.
    Do something like union ieee_decimal128. */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };

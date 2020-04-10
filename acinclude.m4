@@ -648,15 +648,6 @@ dnl   3. Use uint64_t (or unsigned long long, though this type might not be
 dnl      on 64 bits) instead of or in addition to the test on double.
 dnl   4. Use an array of 8 unsigned char's instead of or in addition to the
 dnl      test on double, considering the 2 practical cases of endianness.
-dnl FIXME: In case of cross-compiling, the guess "DPD" can be wrong, e.g.
-dnl for the build with MinGW under Linux. There should be a way to choose
-dnl between BID, DPD and unknown, and in the latter case, select the
-dnl portable implementation of the decimal functions. Currently, the
-dnl portable implementation is selected just because of the ugliness of
-dnl the MPFR code, which depends on the binary formats (!!!) and because
-dnl the check of the "double" format also uses AC_RUN_IFELSE (contrary to
-dnl the "long double" test), thus the "double" format is unknown, and only
-dnl the portable implementation can be used.
 if test "$enable_decimal_float" != no; then
   AC_MSG_CHECKING(if compiler knows _Decimal64)
   AC_COMPILE_IFELSE(
@@ -677,33 +668,64 @@ return y.d == 0.14894469406741037E-123 ? 80 :
       [d64_exit_status=$?
        case "$d64_exit_status" in
          80) AC_MSG_RESULT(DPD)
-             AC_DEFINE([DPD_FORMAT],1,[DPD format])
-             AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
-                       [Build decimal float functions]) ;;
+             if test "$enable_decimal_float" = bid; then
+               AC_MSG_ERROR([encoding mismatch (BID requested).])
+             fi
+             if test "$enable_decimal_float" != generic; then
+               enable_decimal_float=dpd
+             fi ;;
          81) AC_MSG_RESULT(BID)
-             AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
-                       [Build decimal float functions]) ;;
+             if test "$enable_decimal_float" = dpd; then
+               AC_MSG_ERROR([encoding mismatch (DPD requested).])
+             fi
+             if test "$enable_decimal_float" != generic; then
+               enable_decimal_float=bid
+             fi ;;
          82) AC_MSG_RESULT(neither DPD nor BID)
-             if test "$enable_decimal_float" = yes; then
-               AC_MSG_ERROR([unsupported decimal float format.
-Please build MPFR without --enable-decimal-float.])
-             fi ;;
-         *) AC_MSG_RESULT(unknown (exit status $d64_exit_status))
-             if test "$enable_decimal_float" = yes; then
-               AC_MSG_ERROR([internal or link error.
-Please build MPFR without --enable-decimal-float.])
-             fi ;;
+             if test "$enable_decimal_float" = dpd; then
+               AC_MSG_ERROR([encoding mismatch (DPD requested).])
+             fi
+             if test "$enable_decimal_float" = bid; then
+               AC_MSG_ERROR([encoding mismatch (BID requested).])
+             fi
+             enable_decimal_float=generic
+  AC_MSG_WARN([The _Decimal64 encoding is non-standard or there was an])
+  AC_MSG_WARN([issue with its detection.  The generic code will be used.])
+  AC_MSG_WARN([Please do not forget to test with `make check'.])
+  AC_MSG_WARN([In case of failure of a decimal test, you should rebuild])
+  AC_MSG_WARN([MPFR without --enable-decimal-float.]) ;;
+         *)  AC_MSG_RESULT(error (exit status $d64_exit_status))
+             case "$enable_decimal_float" in
+               yes|bid|dpd|generic) AC_MSG_FAILURE([internal or link error.
+Please build MPFR without --enable-decimal-float.]) ;;
+               *) enable_decimal_float=no ;;
+             esac ;;
        esac],
-      [AC_MSG_RESULT(assuming DPD)
-       AC_DEFINE([DPD_FORMAT],1,[])
-       AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
-                 [Build decimal float functions])])
-              ],
+      [AC_MSG_RESULT(cannot test)
+       dnl Since the _Decimal64 type exists, we assume that it is correctly
+       dnl supported. The detection of the encoding may still be done at
+       dnl compile time. We do not add a configure test for it so that this
+       dnl can be done on platforms where configure cannot be used.
+       enable_decimal_float=compile-time])
+    ],
     [AC_MSG_RESULT(no)
-     if test "$enable_decimal_float" = yes; then
-       AC_MSG_ERROR([compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
-Please use another compiler or build MPFR without --enable-decimal-float.])
-     fi])
+     case "$enable_decimal_float" in
+       yes|bid|dpd|generic)
+         AC_MSG_FAILURE([compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+Please use another compiler or build MPFR without --enable-decimal-float.]) ;;
+       *) enable_decimal_float=no ;;
+     esac])
+  if test "$enable_decimal_float" != no; then
+    AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
+              [Build decimal float functions])
+    case "$enable_decimal_float" in
+      dpd) AC_DEFINE([DECIMAL_DPD_FORMAT],1,[]) ;;
+      bid) AC_DEFINE([DECIMAL_BID_FORMAT],1,[]) ;;
+      generic) AC_DEFINE([DECIMAL_GENERIC_CODE],1,[]) ;;
+      compile-time) ;;
+      *) AC_MSG_ERROR(internal error) ;;
+    esac
+  fi
 fi
 
 dnl Check the bit-field ordering for _Decimal128.

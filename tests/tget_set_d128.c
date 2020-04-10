@@ -452,7 +452,7 @@ static void
 noncanonical (void)
 {
   /* The code below assumes BID. */
-#if HAVE_DECIMAL128_IEEE && !defined(DPD_FORMAT)
+#if HAVE_DECIMAL128_IEEE && defined(DECIMAL_BID_FORMAT)
   union ieee_decimal128 x;
 
   MPFR_ASSERTN (sizeof (x) == 16);
@@ -562,11 +562,11 @@ main (int argc, char *argv[])
 
   if (verbose)
     {
-#ifdef DPD_FORMAT
-      /* FIXME: DPD_FORMAT is also used when the format is unknown. */
-      printf ("Using DPD format (or unknown)\n");
-#else
-      printf ("Using BID format\n");
+#ifdef DECIMAL_DPD_FORMAT
+      printf ("Using DPD encoding\n");
+#endif
+#ifdef DECIMAL_BID_FORMAT
+      printf ("Using BID encoding\n");
 #endif
     }
 

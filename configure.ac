@@ -236,11 +236,10 @@ dnl   --disable-decimal-float would explicitly disable both.
 AC_ARG_ENABLE(decimal-float,
    [  --disable-decimal-float explicitly disable decimal floats support
   --enable-decimal-float  build conversion functions from/to decimal floats
-                          [[default=autodetect]]],
+                          (see INSTALL file for details) [[default=auto]]],
    [ case $enableval in
-      yes) ;;
-      no)  ;;
-      *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
+      yes|no|auto|bid|dpd|generic) ;;
+      *) AC_MSG_ERROR([bad value for --enable-decimal-float]) ;;
      esac])
 
 dnl Warning! Not to be confused with _Decimal128. Thus it is better

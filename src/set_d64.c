@@ -30,7 +30,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   /* conversion 10-bits to 3 digits */
 static unsigned int T[1024] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 80, 81, 800, 801, 880, 881, 10, 11, 12, 13,
@@ -102,7 +102,8 @@ static unsigned int T[1024] = {
   774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999 };
 #endif
 
-#if _MPFR_IEEE_FLOATS
+#if _MPFR_IEEE_FLOATS && !defined(DECIMAL_GENERIC_CODE)
+
 /* Convert d to a decimal string (one-to-one correspondence, no rounding).
    The string s needs to have at least 25 characters (with the final '\0'):
    * 1 for the sign '-'
@@ -120,9 +121,10 @@ decimal64_to_string (char *s, _Decimal64 d)
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
   unsigned int i;
-#ifdef DPD_FORMAT
+
+#ifdef DECIMAL_DPD_FORMAT
   unsigned int d0, d1, d2, d3, d4, d5;
-#else
+#else /* BID */
 #if GMP_NUMB_BITS >= 64
   mp_limb_t rp[2];
 #else
@@ -132,6 +134,8 @@ decimal64_to_string (char *s, _Decimal64 d)
   mp_limb_t sp[NLIMBS];
   mp_size_t sn;
 #endif
+
+  /* end of declarations */
 
   /* Memory representation of the _Decimal64 argument. */
   MPFR_LOG_MSG (("d = { %02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X }\n",
@@ -175,7 +179,7 @@ decimal64_to_string (char *s, _Decimal64 d)
    * a combination field of 13=5+8 bits
    * a trailing significand field of 50 bits
    */
-#ifdef DPD_FORMAT
+#ifdef DECIMAL_DPD_FORMAT
   /* the most significant 5 bits of the combination field give the first digit
      of the significand, and leading bits of the biased exponent (0, 1, 2). */
   if (Gh < 24)
@@ -270,8 +274,9 @@ decimal64_to_string (char *s, _Decimal64 d)
                  emin = 1-emax = 1-384 = -383 and p=16 */
   sprintf (t, "E%d", exp);
 }
-#else
-/* portable version */
+
+#else  /* portable version */
+
 #ifndef DEC64_MAX
 # define DEC64_MAX 9.999999999999999E384dd
 #endif
@@ -469,7 +474,8 @@ decimal64_to_string (char *s, _Decimal64 d)
   else
     *s = '\0';
 }
-#endif /* _MPFR_IEEE_FLOATS */
+
+#endif  /* definition of decimal64_to_string (DPD, BID, or portable) */
 
 /* the IEEE754-2008 decimal64 format has 16 digits, with emax=384,
    emin=1-emax=-383 */
