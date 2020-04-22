@@ -64,6 +64,7 @@ set_table (mpfr_t y, const mp_limb_t x[3])
   mp_limb_t *yp = MPFR_MANT(y);
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, p);
+  MPFR_ASSERTD (n >= 1 && n <= 3);
   mpn_copyi (yp, x + 3 - n, n);
   /* FIXME: yp is used uninitialized in some code path.
      Found by -fanalyzer with GCC 10.0.1 20200418 (experimental). */
