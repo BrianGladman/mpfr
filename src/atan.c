@@ -65,6 +65,8 @@ set_table (mpfr_t y, const mp_limb_t x[3])
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, p);
   mpn_copyi (yp, x + 3 - n, n);
+  /* FIXME: yp is used uninitialized in some code path.
+     Found by -fanalyzer with GCC 10.0.1 20200418 (experimental). */
   yp[0] &= ~MPFR_LIMB_MASK(sh);
   MPFR_SET_EXP(y, 0);
 }
