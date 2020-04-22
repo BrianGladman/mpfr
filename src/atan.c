@@ -109,6 +109,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
      most expensive to compute) */
   if (precy <= 192)
     {
+      unsigned long u;
+
       switch (r)
         {
         case 1:
@@ -123,13 +125,15 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, unsigned long r, int m, mpz_t *tab)
           return;
         case 4:
           /* p has at most 2 bits: 1 <= p <= 3 */
-          MPFR_ASSERTD(1 <= mpz_get_ui (p) && mpz_get_ui (p) <= 3);
-          set_table (y, atan_table[1 + mpz_get_ui (p)]);
+          u = mpz_get_ui (p);
+          MPFR_ASSERTD(1 <= u && u <= 3);
+          set_table (y, atan_table[1 + u]);
           return;
         case 8:
           /* p has at most 4 bits: 1 <= p <= 15 */
-          MPFR_ASSERTD(1 <= mpz_get_ui (p) && mpz_get_ui (p) <= 15);
-          set_table (y, atan_table[4 + mpz_get_ui (p)]);
+          u = mpz_get_ui (p);
+          MPFR_ASSERTD(1 <= u && u <= 15);
+          set_table (y, atan_table[4 + u]);
           return;
         }
     }
