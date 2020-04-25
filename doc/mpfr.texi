@@ -3014,7 +3014,8 @@ must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
 If @var{prec} is greater or equal to the precision of @var{x}, then new
 space is allocated for the significand, and it is filled with zeros.
 Otherwise, the significand is rounded to precision @var{prec} with the given
-direction. In both cases, the precision of @var{x} is changed to @var{prec}.
+direction, and no new allocation is done.
+In both cases, the precision of @var{x} is changed to @var{prec}.
 
 Here is an example of how to use @code{mpfr_prec_round} to implement
 Newton's algorithm to compute the inverse of @var{a}, assuming @var{x} is
