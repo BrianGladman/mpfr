@@ -1170,8 +1170,11 @@ MPF function initializes to zero instead.)
 
 Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
-To change the precision of a variable which has already been initialized,
-use @code{mpfr_set_prec}.
+To change the precision of a variable that has already been initialized,
+use @code{mpfr_set_prec} or @code{mpfr_prec_round}; note that if the
+precision is decreased, the unused memory will not be freed, so that
+it may be wise to choose a large enough initial precision in order to
+avoid reallocations.
 The precision @var{prec} must be an integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX} (otherwise the behavior is undefined).
 @end deftypefun
@@ -1312,7 +1315,7 @@ iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
 @deftypefun void mpfr_set_prec (mpfr_t @var{x}, mpfr_prec_t @var{prec})
-Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits,
+Set the precision of @var{x} to be @strong{exactly} @var{prec} bits,
 and set its value to NaN@.
 The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to
@@ -3014,7 +3017,7 @@ must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
 If @var{prec} is greater or equal to the precision of @var{x}, then new
 space is allocated for the significand, and it is filled with zeros.
 Otherwise, the significand is rounded to precision @var{prec} with the given
-direction, and no new allocation is done.
+direction; no memory reallocation to free the unused limbs is done.
 In both cases, the precision of @var{x} is changed to @var{prec}.
 
 Here is an example of how to use @code{mpfr_prec_round} to implement
