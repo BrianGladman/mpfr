@@ -756,14 +756,14 @@ The following rounding modes are supported:
 @item @code{MPFR_RNDN}: round to nearest, with the even rounding rule
       (roundTiesToEven in IEEE@tie{}754-2008); see details below.
 
-@item @code{MPFR_RNDZ}: round toward zero
-      (roundTowardZero in IEEE@tie{}754-2008).
+@item @code{MPFR_RNDD}: round toward minus infinity
+      (roundTowardNegative in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDU}: round toward plus infinity
       (roundTowardPositive in IEEE@tie{}754-2008).
 
-@item @code{MPFR_RNDD}: round toward minus infinity
-      (roundTowardNegative in IEEE@tie{}754-2008).
+@item @code{MPFR_RNDZ}: round toward zero
+      (roundTowardZero in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDA}: round away from zero.
 
@@ -778,6 +778,9 @@ test suite, but almost nothing has been checked manually), failures should
 be regarded as bugs and reported, so that they can be fixed.
 
 @end itemize
+
+Note that, in particular for a result equal to zero, the sign is preserved
+by the rounding operation.
 
 @c Note: Because since 2008, IEEE 754 has 2 rounding attributes to nearest,
 @c we must avoid the confusion by being explicit that one uses the even
@@ -794,6 +797,26 @@ which is represented by (10.1) in binary, is rounded to (10.0)=2 with
 a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
+
+@c VL: There exist multiple equivalent definitions. I tried to give the
+@c most intuitive ones, with the important requirement of being closest
+@c to the input, and to make the definitions similar to each other. For
+@c MPFR_RNDZ and MPFR_RNDA, the use of the absolute value allows one to
+@c emphasize on the "sign symmetry" (there is no ambiguity on the sign
+@c of the result due to the "closest to x" requirement, except for the
+@c sign of 0, but see the note above).
+For the @dfn{directed rounding modes}, a number @var{x} is rounded to
+the number @var{y} that is the closest to @var{x} such that
+@itemize @bullet
+@item @code{MPFR_RNDD}:
+      @var{y} is less of equal to @var{x};
+@item @code{MPFR_RNDU}:
+      @var{y} is greater or equal to @var{x};
+@item @code{MPFR_RNDZ}:
+      @GMPabs{@var{y}} is less or equal to @GMPabs{@var{x}};
+@item @code{MPFR_RNDA}:
+      @GMPabs{@var{y}} is greater or equal to @GMPabs{@var{x}}.
+@end itemize
 
 The @code{MPFR_RNDF} mode works as follows: the computed value is either
 that corresponding to @code{MPFR_RNDD} or that corresponding to
