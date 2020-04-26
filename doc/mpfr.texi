@@ -707,7 +707,7 @@ have an exponent.
 @cindex Rounding
 @tindex @code{mpfr_rnd_t}
 The @dfn{rounding mode} specifies the way to round the result of a
-floating-point operation, in case the exact result can not be represented
+floating-point operation, in case the exact result cannot be represented
 exactly in the destination;
 the corresponding C data type is @code{mpfr_rnd_t}.
 
@@ -1412,7 +1412,7 @@ system provides the @samp{_Decimal64} and @samp{_Decimal128} data type;
 to use those functions, one should define the macro
 @code{MPFR_WANT_DECIMAL_FLOATS} before including @file{mpfr.h}.
 @code{mpfr_set_q} might fail if the numerator (or the
-denominator) can not be represented as a @code{mpfr_t}.
+denominator) cannot be represented as a @code{mpfr_t}.
 
 For @code{mpfr_set}, the sign of a NaN is propagated in order to mimic the
 IEEE@tie{}754 @code{copy} operation. But contrary to IEEE@tie{}754, the
