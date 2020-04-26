@@ -753,17 +753,17 @@ The following rounding modes are supported:
 
 @itemize @bullet
 
-@item @code{MPFR_RNDN}: round to nearest
-      (roundTiesToEven in IEEE@tie{}754-2008),
+@item @code{MPFR_RNDN}: round to nearest, with the even rounding rule
+      (roundTiesToEven in IEEE@tie{}754-2008); see details below.
 
 @item @code{MPFR_RNDZ}: round toward zero
-      (roundTowardZero in IEEE@tie{}754-2008),
+      (roundTowardZero in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDU}: round toward plus infinity
-      (roundTowardPositive in IEEE@tie{}754-2008),
+      (roundTowardPositive in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDD}: round toward minus infinity
-      (roundTowardNegative in IEEE@tie{}754-2008),
+      (roundTowardNegative in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDA}: round away from zero.
 
@@ -779,11 +779,19 @@ be regarded as bugs and reported, so that they can be fixed.
 
 @end itemize
 
-The @samp{round to nearest} mode works as in the IEEE@tie{}754 standard: in
-case the number to be rounded lies exactly in the middle of two representable
-numbers, it is rounded to the one with the least significant bit set to zero.
-For example, the number 2.5, which is represented by (10.1) in binary, is
-rounded to (10.0)=2 with a precision of two bits, and not to (11.0)=3.
+@c Note: Because since 2008, IEEE 754 has 2 rounding attributes to nearest,
+@c we must avoid the confusion by being explicit that one uses the even
+@c rounding rule. Moreover, functions that convert a MPFR number to a
+@c string of digits can output in a radix other than 2 (possibly odd);
+@c in particular because we do not always recall the rounding rule, we
+@c need to be general enough here.
+The @code{MPFR_RNDN} mode works like roundTiesToEven from the
+IEEE@tie{}754 standard: in case the number to be rounded lies exactly
+in the middle between two consecutive representable numbers, it is
+rounded to the one with an even significand; in radix 2, this means
+that the least significant bit is 0. For example, the number 2.5,
+which is represented by (10.1) in binary, is rounded to (10.0)=2 with
+a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
