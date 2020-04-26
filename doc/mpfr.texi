@@ -708,8 +708,8 @@ have an exponent.
 @tindex @code{mpfr_rnd_t}
 The @dfn{rounding mode} specifies the way to round the result of a
 floating-point operation, in case the exact result cannot be represented
-exactly in the destination;
-the corresponding C data type is @code{mpfr_rnd_t}.
+exactly in the destination (@pxref{Rounding}).
+The corresponding C data type is @code{mpfr_rnd_t}.
 
 @cindex Group of flags
 @tindex @code{mpfr_flags_t}
