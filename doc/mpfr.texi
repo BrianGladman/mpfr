@@ -809,13 +809,13 @@ For the @dfn{directed rounding modes}, a number @var{x} is rounded to
 the number @var{y} that is the closest to @var{x} such that
 @itemize @bullet
 @item @code{MPFR_RNDD}:
-      @var{y} is less of equal to @var{x};
+      @var{y} is less than or equal to @var{x};
 @item @code{MPFR_RNDU}:
-      @var{y} is greater or equal to @var{x};
+      @var{y} is greater than or equal to @var{x};
 @item @code{MPFR_RNDZ}:
-      @GMPabs{@var{y}} is less or equal to @GMPabs{@var{x}};
+      @GMPabs{@var{y}} is less than or equal to @GMPabs{@var{x}};
 @item @code{MPFR_RNDA}:
-      @GMPabs{@var{y}} is greater or equal to @GMPabs{@var{x}}.
+      @GMPabs{@var{y}} is greater than or equal to @GMPabs{@var{x}}.
 @end itemize
 
 The @code{MPFR_RNDF} mode works as follows: the computed value is either
@@ -848,7 +848,7 @@ The input variables are regarded as exact (in particular, their precision
 does not affect the result).
 
 As a consequence, in case of a non-zero real rounded result, the error
-on the result is less or equal to 1/2 ulp (unit in the last place) of
+on the result is less than or equal to 1/2 ulp (unit in the last place) of
 that result in the rounding to nearest mode, and less than 1 ulp of that
 result in the directed rounding modes (a ulp is the weight of the least
 significant represented bit of the result after rounding).
@@ -1487,8 +1487,8 @@ an optional decimal-point character, and an optional exponent consisting of
 an exponent prefix followed by an optional sign and a non-empty sequence of
 decimal digits. A significand digit is either a decimal digit or a Latin
 letter (62 possible characters), with @samp{A} = 10, @samp{B} = 11, @dots{},
-@samp{Z} = 35; case is ignored in bases less or equal to 36, in bases larger
-than 36, @samp{a} = 36, @samp{b} = 37, @dots{}, @samp{z} = 61.
+@samp{Z} = 35; case is ignored in bases less than or equal to 36, in bases
+larger than 36, @samp{a} = 36, @samp{b} = 37, @dots{}, @samp{z} = 61.
 The value of a significand digit must be strictly less than the base. The
 decimal-point character can be either the one defined by the current locale
 or the period (the first one is accepted for consistency with the C standard
@@ -1816,7 +1816,7 @@ that the corresponding conversion function (for example @code{mpfr_get_ui}
 for @code{mpfr_fits_ulong_p}), when called with faithful rounding,
 will always return a number that is representable in the corresponding type.
 As a consequence, for @code{MPFR_RNDF}, @code{mpfr_fits_ulong_p} will return
-non-zero for a non-negative number less or equal to @code{ULONG_MAX}.
+non-zero for a non-negative number less than or equal to @code{ULONG_MAX}.
 @end deftypefun
 
 @node Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
@@ -3045,8 +3045,8 @@ Get the default rounding mode.
 Round @var{x} according to @var{rnd} with precision @var{prec}, which
 must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
 (otherwise the behavior is undefined).
-If @var{prec} is greater or equal to the precision of @var{x}, then new
-space is allocated for the significand, and it is filled with zeros.
+If @var{prec} is greater than or equal to the precision of @var{x}, then
+new space is allocated for the significand, and it is filled with zeros.
 Otherwise, the significand is rounded to precision @var{prec} with the given
 direction; no memory reallocation to free the unused limbs is done.
 In both cases, the precision of @var{x} is changed to @var{prec}.
