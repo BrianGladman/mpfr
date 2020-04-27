@@ -785,9 +785,9 @@ by the rounding operation.
 @c Note: Because since 2008, IEEE 754 has 2 rounding attributes to nearest,
 @c we must avoid the confusion by being explicit that one uses the even
 @c rounding rule. Moreover, functions that convert a MPFR number to a
-@c string of digits can output in a radix other than 2 (possibly odd);
-@c in particular because we do not always recall the rounding rule, we
-@c need to be general enough here.
+@c string of digits can output in a radix other than 2; in particular
+@c because we do not always recall the rounding rule, we need to be general
+@c enough here.
 The @code{MPFR_RNDN} mode works like roundTiesToEven from the
 IEEE@tie{}754 standard: in case the number to be rounded lies exactly
 in the middle between two consecutive representable numbers, it is
@@ -798,8 +798,8 @@ a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
-Note: In particular for a 1-digit precision and also for odd radices
-(in conversions to a string of digits), one considers the significands
+Note: In particular for a 1-digit precision (in radix 2 or other radices,
+as in conversions to a string of digits), one considers the significands
 associated with the exponent of the number to be rounded. For instance,
 to round the number 95 in radix 10 with a 1-digit precision, one considers
 its truncated 1-digit integer significand 9 and the following integer 10
