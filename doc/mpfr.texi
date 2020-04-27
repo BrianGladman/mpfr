@@ -2566,9 +2566,9 @@ See the documentation of @code{mpfr_strtofr} for a detailed description
 of the valid string formats.
 @c Special values can be read as follows (the case does not matter):
 @c @samp{@@NaN@@}, @samp{@@Inf@@}, @samp{+@@Inf@@} and @samp{-@@Inf@@},
-@c possibly followed by other characters; if the base is smaller or equal
-@c to 16, the following strings are accepted too: @samp{NaN}, @samp{Inf},
-@c @samp{+Inf} and @samp{-Inf}.
+@c possibly followed by other characters; if the base is smaller than
+@c or equal to 16, the following strings are accepted too: @samp{NaN},
+@c @samp{Inf}, @samp{+Inf} and @samp{-Inf}.
 
 Return the number of bytes read, or if an error occurred, return 0.
 @end deftypefun
