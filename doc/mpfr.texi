@@ -798,6 +798,14 @@ a precision of two bits, and not to (11.0)=3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
+Note: In particular for a 1-digit precision and also for odd radices
+(in conversions to a string of digits), one considers the significands
+associated with the exponent of the number to be rounded. For instance,
+to round the number 95 in radix 10 with a 1-digit precision, one considers
+its truncated 1-digit integer significand 9 and the following integer 10
+(since these are consecutive integers, exactly one of them is even).
+10 is the even significand, so that 95 will be rounded to 100, not to 90.
+
 @c VL: There exist multiple equivalent definitions. I tried to give the
 @c most intuitive ones, with the important requirement of being closest
 @c to the input, and to make the definitions similar to each other. For
