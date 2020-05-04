@@ -503,19 +503,24 @@ EOF
 # The codespell.exclude could be simplified after this is fixed:
 #   https://github.com/codespell-project/codespell/issues/17
 #   https://github.com/codespell-project/codespell/issues/535
+# Note: We ignore all messages sent to stderr since python libraries prefer
+# to annoy the user by sending programming errors to stderr rather than to
+# report the issue to the caller (application). This will not prevent this
+# script from detecting spelling errors, which are sent to stdout; and in
+# case of serious error, the non-zero exit status will be detected, but the
+# error message will not be visible (if such an issue is reproducible, then
+# remove the "2> /dev/null" and retry in order to see the error message).
 if which codespell > /dev/null 2> /dev/null; then
   doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
        faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
-  cscmd=(codespell ${term:+--enable-colors} \
-    -q3 -I codespell.ignore -x codespell.exclude \
-    AUTHORS BUGS INSTALL NEWS README TODO doc/${^doc} examples $srctests)
-  if test -z "$(codespell /dev/null 2>&1 > /dev/null)"; then
-    err-if-output "codespell" $cscmd
-  else
-    # Workaround to Debian bug 953369 in libpython3.8-minimal
-    $cscmd |& err-if-output -t "codespell" grep -Ev \
-      "RuntimeWarning: line buffering|file = builtins.open"
-  fi
+  cscmd()
+  {
+    codespell ${term:+--enable-colors} \
+      -q3 -I codespell.ignore -x codespell.exclude \
+      AUTHORS BUGS INSTALL NEWS README TODO doc/${^doc} examples $srctests \
+      2> /dev/null
+  }
+  err-if-output "codespell" cscmd
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
