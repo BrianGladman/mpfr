@@ -86,8 +86,9 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       mpfr_mul_ui (z, z, n, MPFR_RNDU);
       p = mpfr_get_ui (z, MPFR_RNDU); /* (n/e/2/pi)^n <= 2^p */
       mpfr_clear (z);
-      /* the +14 term ensures no rounding failure up to n=10000 */
-      MPFR_INC_PREC (prec, p + mpz_sizeinbase (den, 2) + 14);
+      MPFR_INC_PREC (prec, p + mpz_sizeinbase (den, 2));
+      /* the +2 term ensures no rounding failure up to n=10000 */
+      MPFR_INC_PREC (prec, __gmpfr_ceil_log2 (prec) + 2);
     }
 
  try_again:
