@@ -1116,7 +1116,8 @@ main (int argc, char *argv[])
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
   /* this test takes about one minute */
-  bug20200519 ();
+  if (getenv ("MPFR_CHECK_EXPENSIVE") != NULL)
+    bug20200519 ();
 
   tests_end_mpfr ();
   return 0;

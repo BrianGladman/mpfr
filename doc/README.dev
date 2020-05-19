@@ -574,7 +574,9 @@ Environment variables that affect the tests:
                         By default, a fixed seed is used. Only developers
                         and testers should change the seed.
 
-+ MPFR_CHECK_LARGEMEM:  Define to enable expensive tests.
++ MPFR_CHECK_LARGEMEM:  Define to enable tests that take a lot of memory.
+
++ MPFR_CHECK_EXPENSIVE: Define to enable tests that take a lot of time.
 
 + MPFR_CHECK_LIBC_PRINTF:
                         Define to enable comparisons with the printf
