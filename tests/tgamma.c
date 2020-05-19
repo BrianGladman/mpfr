@@ -1055,7 +1055,12 @@ exp_lgamma_tests (void)
   set_emax (emax);
 }
 
-/* bug reported by Frithjof Blomquist on May 19, 2020 */
+/* Bug reported by Frithjof Blomquist on May 19, 2020.
+   For the record, this bug was present since r8981
+   (in mpfr_bernoulli_internal, den was wrongly reset to 1 in case
+   of failure in Ziv's loop). The bug only occurred up from r8986
+   where the initial precision was reduced, but was potentially
+   present in any case of failure of Ziv's loop. */
 static void
 bug20200519 (void)
 {
