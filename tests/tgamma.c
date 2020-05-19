@@ -1055,6 +1055,35 @@ exp_lgamma_tests (void)
   set_emax (emax);
 }
 
+/* bug reported by Frithjof Blomquist on May 19, 2020 */
+static void
+bug20200519 (void)
+{
+  mpfr_prec_t prec = 25093;
+  mpfr_t x, y, z, d;
+  double dd;
+
+  mpfr_init2 (x, prec);
+  mpfr_init2 (y, prec);
+  mpfr_init2 (z, prec + 100);
+  mpfr_init2 (d, 24);
+  mpfr_set_d (x, 2.5, MPFR_RNDN);
+  mpfr_gamma (y, x, MPFR_RNDN);
+  mpfr_gamma (z, x, MPFR_RNDN);
+  mpfr_sub (d, y, z, MPFR_RNDN);
+  mpfr_mul_2si (d, d, prec - mpfr_get_exp (y), MPFR_RNDN);
+  dd = mpfr_get_d (d, MPFR_RNDN);
+  if (dd < -0.5 || 0.5 < dd)
+    {
+      printf ("Error in bug20200519: dd=%f\n", dd);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (d);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1085,6 +1114,9 @@ main (int argc, char *argv[])
   exp_lgamma_tests ();
 
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
+
+  /* this test takes about one minute */
+  bug20200519 ();
 
   tests_end_mpfr ();
   return 0;
