@@ -80,7 +80,7 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
       prec = __gmpfr_ceil_log2 (7.0 * (double) n); /* bound 2*pi by 7 */
       prec = (prec + 1) >> 1; /* sqrt(2*pi*n) <= 2^prec */
       mpfr_init2 (z, 53);
-      mpfr_set_ui_2exp (z, 251685084, -32, MPFR_RNDU); /* 1/e/2/pi <= z */
+      mpfr_set_ui_2exp (z, 251469612, -32, MPFR_RNDU); /* 1/e/2/pi <= z */
       mpfr_mul_ui (z, z, n, MPFR_RNDU);
       mpfr_log2 (z, z, MPFR_RNDU);
       mpfr_mul_ui (z, z, n, MPFR_RNDU);
@@ -184,7 +184,6 @@ mpfr_bernoulli_internal (mpz_t *b, unsigned long n)
   mpz_mul_ui (t, t, n + 1);
   mpz_divexact (t, t, den); /* t was still n! */
   mpz_mul (num, num, t);
-  mpz_set_ui (den, 1);
 
   mpfr_clear (y);
   mpfr_clear (z);
