@@ -132,7 +132,7 @@ bug20180904 (void)
 #if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
     defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   mpfr_t x;
-  long double d = 5.450797408381041489264061250159e-4937L;
+  long double d = 0x4.4p-16400L;
   long double e;
 
   mpfr_init2 (x, 64);
