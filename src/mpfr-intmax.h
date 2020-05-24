@@ -65,9 +65,22 @@ typedef uintmax_t mpfr_uintmax_t;
 #elif defined(HAVE_LONG_LONG) && !defined(NPRINTF_LL)
 typedef long long mpfr_intmax_t;
 typedef unsigned long long mpfr_uintmax_t;
+#if defined(ULLONG_MAX)
+/* standard */
 # define MPFR_UINTMAX_MAX ULLONG_MAX
 # define MPFR_INTMAX_MAX LLONG_MAX
 # define MPFR_INTMAX_MIN LLONG_MIN
+#elif defined(ULONGLONG_MAX)
+/* Silicon Graphics IRIX 6.5 with native /usr/bin/cc */
+# define MPFR_UINTMAX_MAX ULONGLONG_MAX
+# define MPFR_INTMAX_MAX LONGLONG_MAX
+# define MPFR_INTMAX_MIN LONGLONG_MIN
+#else
+/* We do not know any platform in this case (but this case would be a bug).
+   Let's give an error. A workaround should be possible, but it should be
+   tested first. */
+# error "Neither ULLONG_MAX nor ULONGLONG_MAX is defined."
+#endif
 # define MPFR_INTMAX_FSPEC "ll"
 #else
 typedef long mpfr_intmax_t;
