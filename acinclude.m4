@@ -648,6 +648,8 @@ dnl   3. Use uint64_t (or unsigned long long, though this type might not be
 dnl      on 64 bits) instead of or in addition to the test on double.
 dnl   4. Use an array of 8 unsigned char's instead of or in addition to the
 dnl      test on double, considering the 2 practical cases of endianness.
+dnl Note: If the compilation fails, the compiler should exit with
+dnl an exit status less than 80.
 if test "$enable_decimal_float" != no; then
   AC_MSG_CHECKING(if compiler knows _Decimal64)
   AC_COMPILE_IFELSE(
@@ -731,6 +733,8 @@ fi
 dnl Check the bit-field ordering for _Decimal128.
 dnl Little endian: sig=0 comb=49400 t0=0 t1=0 t2=0 t3=10
 dnl Big endian: sig=0 comb=8 t0=0 t1=0 t2=0 t3=570933248
+dnl Note: If the compilation fails, the compiler should exit with
+dnl an exit status less than 80.
 AC_MSG_CHECKING(bit-field ordering for _Decimal128)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
@@ -750,18 +754,19 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 
   x.d128 = 1.0dl;
   if (x.s.sig==0 && x.s.comb==49400 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==10)
-     return 1; /* little endian */
+     return 80; /* little endian */
   else if (x.s.sig==0 && x.s.comb==8 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==570933248)
-     return 2; /* big endian */
+     return 81; /* big endian */
   else
-     return 0; /* unknown encoding */
-]])], [AC_MSG_RESULT(unknown)],
+     return 82; /* unknown encoding */
+]])], [AC_MSG_RESULT(internal error)],
       [d128_exit_status=$?
        case "$d128_exit_status" in
-         1) AC_MSG_RESULT(little endian)
-            AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1) ;;
-         2) AC_MSG_RESULT(big endian)
-            AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
+         80) AC_MSG_RESULT(little endian)
+             AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1) ;;
+         81) AC_MSG_RESULT(big endian)
+             AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
+         *)  AC_MSG_RESULT(unavailable or unknown) ;;
        esac],
       [AC_MSG_RESULT(cannot test)])
   
