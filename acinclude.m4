@@ -633,10 +633,12 @@ then
  fi
 fi
 
+if test "$enable_decimal_float" != no; then
+
 dnl Check if decimal floats are available.
 dnl For the different cases, we try to use values that will not be returned
 dnl by build tools. For instance, 1 must not be used as it can be returned
-dnl by ld in case of link failure.
+dnl by gcc or by ld in case of link failure.
 dnl Note: We currently reread the 64-bit data memory as a double and compare
 dnl it with constants. However, if there is any issue with double, such as
 dnl the use of an extended precision, this may fail. Possible solutions:
@@ -648,9 +650,6 @@ dnl   3. Use uint64_t (or unsigned long long, though this type might not be
 dnl      on 64 bits) instead of or in addition to the test on double.
 dnl   4. Use an array of 8 unsigned char's instead of or in addition to the
 dnl      test on double, considering the 2 practical cases of endianness.
-dnl Note: If the compilation fails, the compiler should exit with
-dnl an exit status less than 80.
-if test "$enable_decimal_float" != no; then
   AC_MSG_CHECKING(if compiler knows _Decimal64)
   AC_COMPILE_IFELSE(
     [AC_LANG_PROGRAM([[_Decimal64 x;]])],
@@ -728,48 +727,52 @@ Please use another compiler or build MPFR without --enable-decimal-float.]) ;;
       *) AC_MSG_ERROR(internal error) ;;
     esac
   fi
-fi
 
 dnl Check the bit-field ordering for _Decimal128.
 dnl Little endian: sig=0 comb=49400 t0=0 t1=0 t2=0 t3=10
 dnl Big endian: sig=0 comb=8 t0=0 t1=0 t2=0 t3=570933248
 dnl Note: If the compilation fails, the compiler should exit with
 dnl an exit status less than 80.
-AC_MSG_CHECKING(bit-field ordering for _Decimal128)
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-]], [[
-  union ieee_decimal128
-  {
-    struct
+  AC_MSG_CHECKING(bit-field ordering for _Decimal128)
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+  ]], [[
+    union ieee_decimal128
     {
-      unsigned int t3:32;
-      unsigned int t2:32;
-      unsigned int t1:32;
-      unsigned int t0:14;
-      unsigned int comb:17;
-      unsigned int sig:1;
-    } s;
-    _Decimal128 d128;
-  } x;
+      struct
+      {
+        unsigned int t3:32;
+        unsigned int t2:32;
+        unsigned int t1:32;
+        unsigned int t0:14;
+        unsigned int comb:17;
+        unsigned int sig:1;
+      } s;
+      _Decimal128 d128;
+    } x;
 
-  x.d128 = 1.0dl;
-  if (x.s.sig==0 && x.s.comb==49400 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==10)
-     return 80; /* little endian */
-  else if (x.s.sig==0 && x.s.comb==8 && x.s.t0==0 && x.s.t1==0 && x.s.t2==0 && x.s.t3==570933248)
-     return 81; /* big endian */
-  else
-     return 82; /* unknown encoding */
-]])], [AC_MSG_RESULT(internal error)],
-      [d128_exit_status=$?
-       case "$d128_exit_status" in
-         80) AC_MSG_RESULT(little endian)
-             AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1) ;;
-         81) AC_MSG_RESULT(big endian)
-             AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
-         *)  AC_MSG_RESULT(unavailable or unknown) ;;
-       esac],
-      [AC_MSG_RESULT(cannot test)])
+    x.d128 = 1.0dl;
+    if (x.s.sig == 0 && x.s.comb == 49400 &&
+        x.s.t0 == 0 && x.s.t1 == 0 && x.s.t2 == 0 && x.s.t3 == 10)
+       return 80; /* little endian */
+    else if (x.s.sig == 0 && x.s.comb == 8 &&
+             x.s.t0 == 0 && x.s.t1 == 0 && x.s.t2 == 0 && x.s.t3 == 570933248)
+       return 81; /* big endian */
+    else
+       return 82; /* unknown encoding */
+  ]])], [AC_MSG_RESULT(internal error)],
+        [d128_exit_status=$?
+         case "$d128_exit_status" in
+           80) AC_MSG_RESULT(little endian)
+               AC_DEFINE([HAVE_DECIMAL128_IEEE_LITTLE_ENDIAN],1) ;;
+           81) AC_MSG_RESULT(big endian)
+               AC_DEFINE([HAVE_DECIMAL128_IEEE_BIG_ENDIAN],1) ;;
+           *)  AC_MSG_RESULT(unavailable or unknown) ;;
+         esac],
+        [AC_MSG_RESULT(cannot test)])
   
+fi
+# End of decimal float checks
+
 dnl Check if _Float128 or __float128 is available. We also require the
 dnl compiler to support hex constants with the f128 or q suffix (this
 dnl prevents the _Float128 support with GCC's -std=c90, but who cares?).
