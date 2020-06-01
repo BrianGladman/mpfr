@@ -22,7 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Note: this file comes from GMP's tests/memory.c */
 
-#include "mpfr-intmax.h"
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
 
 /* Each block allocated is a separate malloc, for the benefit of a redzoning

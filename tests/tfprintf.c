@@ -38,7 +38,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <float.h>
 #include <stddef.h>
 
-#include "mpfr-intmax.h"
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
 
 #define QUOTE(X) NAME(X)

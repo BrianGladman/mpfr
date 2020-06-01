@@ -20,6 +20,17 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* If you need something defined here, do not include this header file
+   directly, but define the MPFR_NEED_INTMAX_H macro before including
+   "mpfr-impl.h" (or "mpfr-test.h" in the tests). This will ensure that
+   this header file "mpfr-intmax.h" is included in a consistent way,
+   thus avoiding the various cases that could otherwise be obtained on
+   different platforms and compilation options. Note that in particular,
+   it needs <limits.h> (always included first in "mpfr-impl.h") if
+   <inttypes.h> or <stdint.h> does not exist or does not work. It also
+   needs "config.h" if used (HAVE_CONFIG_H defined), but "config.h" is
+   also included first in "mpfr-impl.h". */
+
 #ifndef __MPFR_INTMAX_H__
 #define __MPFR_INTMAX_H__
 
@@ -56,15 +67,15 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Largest integer type available and fully working for the MPFR build
    (may be smaller than intmax_t / uintmax_t if NPRINTF_J is defined). */
 #if defined(MPFR_USE_INTMAX_T) && !defined(NPRINTF_J)
-typedef intmax_t mpfr_intmax_t;
 typedef uintmax_t mpfr_uintmax_t;
+typedef intmax_t mpfr_intmax_t;
 # define MPFR_UINTMAX_MAX UINTMAX_MAX
 # define MPFR_INTMAX_MAX INTMAX_MAX
 # define MPFR_INTMAX_MIN INTMAX_MIN
 # define MPFR_INTMAX_FSPEC "j"
 #elif defined(HAVE_LONG_LONG) && !defined(NPRINTF_LL)
-typedef long long mpfr_intmax_t;
 typedef unsigned long long mpfr_uintmax_t;
+typedef long long mpfr_intmax_t;
 #if defined(ULLONG_MAX)
 /* standard */
 # define MPFR_UINTMAX_MAX ULLONG_MAX
@@ -83,8 +94,8 @@ typedef unsigned long long mpfr_uintmax_t;
 #endif
 # define MPFR_INTMAX_FSPEC "ll"
 #else
-typedef long mpfr_intmax_t;
 typedef unsigned long mpfr_uintmax_t;
+typedef long mpfr_intmax_t;
 # define MPFR_UINTMAX_MAX ULONG_MAX
 # define MPFR_INTMAX_MAX LONG_MAX
 # define MPFR_INTMAX_MIN LONG_MIN

@@ -49,6 +49,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    but the requirement is the same). Here, MPFR just follows ISO C.
 */
 
+/* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -83,7 +84,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <errno.h>
 
 #define MPFR_NEED_LONGLONG_H
-#include "mpfr-intmax.h"
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-impl.h"
 
 /* Define a length modifier corresponding to mpfr_prec_t.
