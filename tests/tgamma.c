@@ -1067,6 +1067,12 @@ bug20200519 (void)
   mpfr_prec_t prec = 25093;
   mpfr_t x, y, z, d;
   double dd;
+  size_t min_memory_limit, old_memory_limit;
+
+  old_memory_limit = tests_memory_limit;
+  min_memory_limit = 24000000;
+  if (tests_memory_limit > 0 && tests_memory_limit < min_memory_limit)
+    tests_memory_limit = min_memory_limit;
 
   mpfr_init2 (x, prec);
   mpfr_init2 (y, prec);
@@ -1087,6 +1093,8 @@ bug20200519 (void)
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (d);
+
+  tests_memory_limit = old_memory_limit;
 }
 
 int
@@ -1121,7 +1129,8 @@ main (int argc, char *argv[])
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
   /* this test takes about one minute */
-  if (getenv ("MPFR_CHECK_EXPENSIVE") != NULL)
+  if (getenv ("MPFR_CHECK_EXPENSIVE") != NULL &&
+      getenv ("MPFR_CHECK_LARGEMEM") != NULL)
     bug20200519 ();
 
   tests_end_mpfr ();
