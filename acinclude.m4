@@ -192,7 +192,7 @@ AC_CHECK_TYPES([intmax_t])
 if test "$ac_cv_type_intmax_t" = yes; then
   AC_CACHE_CHECK([for working INTMAX_MAX], mpfr_cv_have_intmax_max, [
     saved_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+    CPPFLAGS="$CPPFLAGS -I$srcdir/src -DMPFR_NEED_INTMAX_H"
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
         [[#include "mpfr-intmax.h"]],
         [[intmax_t x = INTMAX_MAX; (void) x;]]
@@ -1027,7 +1027,7 @@ AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_INTMAX], [
 AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for intmax_t to fit in mp_limb_t], mpfr_cv_intmax_within_limb, [
 saved_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS -I$srcdir/src"
+CPPFLAGS="$CPPFLAGS -I$srcdir/src -DMPFR_NEED_INTMAX_H"
 dnl AC_LINK_IFELSE is safier than AC_COMPILE_IFELSE, which did not detect
 dnl the missing #include "mpfr-sassert.h".
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
