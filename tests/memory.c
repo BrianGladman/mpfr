@@ -20,7 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-/* Note: this file comes from GMP's tests/memory.c */
+/* Note: this file originally came from GMP's tests/memory.c
+   (some features have been added). */
 
 #define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
