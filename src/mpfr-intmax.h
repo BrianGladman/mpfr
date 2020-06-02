@@ -31,6 +31,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    needs "config.h" if used (HAVE_CONFIG_H defined), but "config.h" is
    also included first in "mpfr-impl.h". */
 
+#ifndef MPFR_NEED_INTMAX_H
+# error "Never include mpfr-intmax.h directly; define MPFR_NEED_INTMAX_H instead."
+#endif
+
 #ifndef __MPFR_INTMAX_H__
 #define __MPFR_INTMAX_H__
 
