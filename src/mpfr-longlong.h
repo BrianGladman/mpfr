@@ -45,6 +45,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    expected.
 */
 
+#ifndef MPFR_NEED_LONGLONG_H
+# error "Never include mpfr-longlong.h directly; define MPFR_NEED_LONGLONG_H instead."
+#endif
+
 #define __BITS4 (W_TYPE_SIZE / 4)
 #define __ll_B ((UWtype) 1 << (W_TYPE_SIZE / 2))
 #define __ll_lowpart(t) ((UWtype) (t) & (__ll_B - 1))
