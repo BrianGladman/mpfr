@@ -149,22 +149,21 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 ]])], [AC_DEFINE([HAVE___VA_COPY]) AC_MSG_RESULT([__va_copy])],
    [AC_MSG_RESULT([memcpy])])])
 
-dnl FIXME: The functions memmove, memset and strtol are really needed by
-dnl MPFR, but if they are implemented as macros, this is also OK (in our
-dnl case).  So, we do not return an error, but their tests are currently
-dnl useless.
-dnl Moreover, for memmove and memset, when gcc -Werror is used, these
-dnl functions are considered to be missing because of a "conflicting
-dnl types for built-in function" error. Possible workarounds if the
-dnl results of this test are used (thus one doesn't want an error):
-dnl   * If "$GCC" is set, disable built-ins by adding -fno-builtin
-dnl     to $CFLAGS for this test (this would yield a failure if such
-dnl     functions are defined only as built-ins, but does this occur
-dnl     in practice?).
-dnl   * Enable -Werror only for the main compilation (and possibly
-dnl     some particular tests) via a new configure option.
-dnl gettimeofday is not defined for MinGW
-AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday signal])
+dnl Options like -Werror can yield a failure as AC_CHECK_FUNCS uses some
+dnl fixed prototype for function detection, generally incompatible with
+dnl the standard one. For instance, with GCC, if the function is defined
+dnl as a builtin, one can get a "conflicting types for built-in function"
+dnl error [-Werror=builtin-declaration-mismatch], even though the header
+dnl is not included; when these functions were tested, this occurred with
+dnl memmove and memset. Even though no failures are known with the tested
+dnl functions at this time, let's remove options starting with "-Werror"
+dnl since failures may still be possible.
+dnl
+dnl The gettimeofday function is not defined with MinGW.
+saved_CFLAGS="$CFLAGS"
+CFLAGS=`[echo " $CFLAGS" | $SED 's/ -Werror[^ ]*//g']`
+AC_CHECK_FUNCS([setlocale gettimeofday signal])
+CFLAGS="$saved_CFLAGS"
 
 dnl We cannot use AC_CHECK_FUNCS on sigaction, because while this
 dnl function may be provided by the C library, its prototype and
