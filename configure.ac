@@ -807,7 +807,7 @@ dnl End of setup related to GMP / mini-gmp
 dnl The getrusage function is needed for MPFR bench (cf tools/bench)
 AC_CHECK_FUNCS([getrusage])
 
-dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR and
+dnl Remove also many macros (AC_DEFINE), which are unused by MPFR and
 dnl pollute (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
   for i in PACKAGE_ HAVE_STRING HAVE_DLFCN_H HAVE_MEM STDC_HEADERS \
