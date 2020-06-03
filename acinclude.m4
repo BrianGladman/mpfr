@@ -896,17 +896,17 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
   if (GMP_NAIL_BITS != 0)
     {
       fprintf (stderr, "GMP_NAIL_BITS != 0\n");
-      return 1;
+      return 81;
     }
   if (GMP_NUMB_BITS != mp_bits_per_limb)
     {
       fprintf (stderr, "GMP_NUMB_BITS != mp_bits_per_limb\n");
-      return 2;
+      return 82;
     }
   if (GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT)
     {
       fprintf (stderr, "GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT\n");
-      return 3;
+      return 83;
     }
   return 0;
 ]])], [mpfr_cv_check_gmp="yes"],
