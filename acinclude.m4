@@ -1133,10 +1133,7 @@ AC_REQUIRE([AC_OBJEXT])
 AC_CACHE_CHECK([format of floating-point type `long double'],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown
-if test "$ac_cv_type_long_double" != yes; then
-  mpfr_cv_c_long_double_format="not available"
-else
-  cat >conftest.c <<\EOF
+ cat >conftest.c <<\EOF
 [
 #include <stdio.h>
 /* "before" is 16 bytes to ensure there's no padding between it and "x".
@@ -1163,9 +1160,9 @@ int main (void) {
 }
 ]
 EOF
-  mpfr_compile="$CC $CFLAGS $CPPFLAGS $LDFLAGS conftest.c -o conftest$EXEEXT >&AS_MESSAGE_LOG_FD 2>&1"
-  if AC_TRY_EVAL(mpfr_compile); then
-    cat >conftest.awk <<\EOF
+ mpfr_compile="$CC $CFLAGS $CPPFLAGS $LDFLAGS conftest.c -o conftest$EXEEXT >&AS_MESSAGE_LOG_FD 2>&1"
+ if AC_TRY_EVAL(mpfr_compile); then
+   cat >conftest.awk <<\EOF
 [
 BEGIN {
   found = 0
@@ -1443,18 +1440,17 @@ END {
 }
 ]
 EOF
-    mpfr_cv_c_long_double_format=`od -b conftest$EXEEXT | $AWK -f conftest.awk`
-    case $mpfr_cv_c_long_double_format in
-    unknown*)
-      echo "cannot match anything, conftest$EXEEXT contains" >&AS_MESSAGE_LOG_FD
-      od -b conftest$EXEEXT >&AS_MESSAGE_LOG_FD
-      ;;
-    esac
-  else
-    AC_MSG_WARN([oops, cannot compile test program])
-  fi
-fi
-rm -f conftest*
+   mpfr_cv_c_long_double_format=`od -b conftest$EXEEXT | $AWK -f conftest.awk`
+   case $mpfr_cv_c_long_double_format in
+   unknown*)
+     echo "cannot match anything, conftest$EXEEXT contains" >&AS_MESSAGE_LOG_FD
+     od -b conftest$EXEEXT >&AS_MESSAGE_LOG_FD
+     ;;
+   esac
+ else
+   AC_MSG_WARN([oops, cannot compile test program])
+ fi
+ rm -f conftest*
 ])
 
 AH_VERBATIM([HAVE_LDOUBLE],
