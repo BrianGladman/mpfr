@@ -39,15 +39,25 @@ AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
 
-dnl FIXME: Several AC_RUN_IFELSE programs can return several values
-dnl (one for each format to be detected), but the Autoconf manual says:
-dnl "This exit status might be that of a failed compilation, or it might
-dnl be that of a failed program execution." Unfortunately, we cannot
-dnl know whether a non-zero exit status comes from a failed compilation,
-dnl so that the detection may be incorrect. To avoid this problem, write
-dnl a test program for each possible format? Alternatively, the test
-dnl program could output the result of the format detection to a file
-dnl and return with the 0 exit status if it could do that successfully.
+dnl Some AC_RUN_IFELSE programs need to be able to return several values
+dnl (e.g., in a format detection, one for each possible format). But the
+dnl Autoconf manual says: "This exit status might be that of a failed
+dnl compilation, or it might be that of a failed program execution."
+dnl Unfortunately, we cannot know whether a non-zero exit status comes
+dnl from a failed compilation, so that the detection may be incorrect.
+dnl Since failures generally occur with a small exit status, the value 77
+dnl is reserved for skipped tests by Autoconf, and values larger than 125
+dnl have special meanings in POSIX[*], good candidates for success are 0
+dnl and values from 80 to 125.
+dnl https://tldp.org/LDP/abs/html/exitcodes.html suggests the range 64-113
+dnl but note that /usr/include/sysexits.h now allocates previously unused
+dnl exit codes from 64 - 78 (for various kinds of errors).
+dnl
+dnl Alternatively, the test program could output the result to a file and
+dnl return with the 0 exit status if it could do that successfully.
+dnl
+dnl [*] 2.8.2 Exit Status for Commands
+dnl https://pubs.opengroup.org/onlinepubs/9699919799//utilities/V3_chap02.html#tag_18_08_02
 
 test_CFLAGS=${CFLAGS+set}
 
