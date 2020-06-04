@@ -526,7 +526,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 LIBS="$saved_LIBS"
 
 dnl Try to determine the format of double
-MPFR_C_REALFP_FORMAT(double)
+MPFR_C_REALFP_FORMAT(double,)
 case $mpfr_cv_c_double_format in
   "IEEE double, big endian"*)
     AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN, 1)
@@ -542,7 +542,7 @@ case $mpfr_cv_c_double_format in
 esac
 
 dnl Now try to determine the format of long double
-MPFR_C_REALFP_FORMAT(long double)
+MPFR_C_REALFP_FORMAT(long double,L)
 case $mpfr_cv_c_long_double_format in
   "IEEE double, big endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
@@ -1104,8 +1104,9 @@ AC_DEFUN([MPFR_PARSE_DIRECTORY],
 
 dnl MPFR_C_REALFP_FORMAT
 dnl --------------------
-dnl Determine the format of a real floating type, actually either
-dnl double or long double.
+dnl Determine the format of a real floating type (first argument),
+dnl actually either double or long double. The second argument is
+dnl the printf length modifier.
 dnl
 dnl The object file is grepped, so as to work when cross-compiling.
 dnl Start and end sequences are included to avoid false matches, and
@@ -1163,7 +1164,7 @@ foo_t foo = {
 int main (void) {
   int i;
   for (i = 0; i < 8; i++)
-    printf ("%d %Lf\n", foo.before[i] + foo.after[i], foo.x);
+    printf ("%d %$2f\n", foo.before[i] + foo.after[i], foo.x);
   return 0;
 }
 ]
