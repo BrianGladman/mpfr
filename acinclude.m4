@@ -940,9 +940,6 @@ dnl MPFR_CHECK_DBL2INT_BUG
 dnl ----------------------
 dnl Check for double-to-integer conversion bug
 dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
-dnl For the exit status, the lowest values (including some values after 128)
-dnl are reserved for various system errors. So, let's use the largest values
-dnl below 255 for errors in the test itself.
 dnl The following problem has been seen under Solaris in config.log,
 dnl i.e. the failure to link with libgmp wasn't detected in the first
 dnl test:
@@ -965,6 +962,7 @@ AC_DEFUN([MPFR_CHECK_DBL2INT_BUG], [
 AC_REQUIRE([MPFR_CONFIGS])dnl
 AC_CACHE_CHECK([for double-to-integer conversion bug], mpfr_cv_dbl_int_bug, [
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
 #include <gmp.h>
 ]], [[
   double d;
@@ -981,7 +979,11 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
         break;
       u = u >> 1;
     }
-  return (i == 0 && u == 1UL) ? 0 : 254 - i;
+  if (i == 0 && u == 1UL)
+    return 0;
+  fprintf (stderr, "Failure: i = %d, (unsigned long) u = %lu\n",
+           i, (unsigned long) u);
+  return 1;
 ]])], [mpfr_cv_dbl_int_bug="no"],
       [mpfr_cv_dbl_int_bug="yes or failed to exec (exit status is $?)"],
       [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
