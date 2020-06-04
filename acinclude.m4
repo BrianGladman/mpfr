@@ -1453,16 +1453,6 @@ EOF
  rm -f conftest*
 ])
 
-AH_VERBATIM([HAVE_LDOUBLE],
-[/* Define one of the following to 1 for the format of a `long double'.
-   If your format is not among these choices, or you don't know what it is,
-   then leave all undefined.
-   IEEE_EXT is the 10-byte IEEE extended precision format.
-   IEEE_QUAD is the 16-byte IEEE quadruple precision format.
-   LITTLE or BIG is the endianness.  */
-#undef HAVE_LDOUBLE_IEEE_EXT_LITTLE
-#undef HAVE_LDOUBLE_IEEE_QUAD_BIG])
-
 case $mpfr_cv_c_long_double_format in
   "IEEE double, big endian"*)
     AC_DEFINE(HAVE_LDOUBLE_IS_DOUBLE, 1)
@@ -1494,7 +1484,7 @@ case $mpfr_cv_c_long_double_format in
     AC_MSG_WARN([You can safely ignore this warning, though.])
     AC_DEFINE(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE, 1)
     ;;
-  unknown* | "not available"*)
+  unknown*)
     ;;
   *)
     AC_MSG_WARN([format of `long double' not recognized: $mpfr_cv_c_long_double_format])
