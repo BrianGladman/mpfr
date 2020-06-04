@@ -1130,7 +1130,6 @@ AC_DEFUN([MPFR_C_LONG_DOUBLE_FORMAT],
 [AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_AWK])
 AC_REQUIRE([AC_OBJEXT])
-AC_CHECK_TYPES([long double])
 AC_CACHE_CHECK([format of floating-point type `long double'],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown

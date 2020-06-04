@@ -812,8 +812,7 @@ dnl pollute (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
   for i in PACKAGE_ HAVE_STRING HAVE_DLFCN_H HAVE_MEM STDC_HEADERS \
            HAVE_STDLIB_H HAVE_UNISTD_H HAVE_STDC_HEADERS \
-           HAVE_LONG_DOUBLE HAVE_SYS_STAT_H HAVE_SYS_TYPES_H \
-           PROTOTYPES __PROTOTYPES
+           HAVE_SYS_STAT_H HAVE_SYS_TYPES_H PROTOTYPES __PROTOTYPES
   do
     $SED "/#define $i/d" < confdefs.h > confdefs.tmp
     mv confdefs.tmp confdefs.h
