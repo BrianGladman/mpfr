@@ -420,6 +420,40 @@ main (void)
   printf ("[tversion] GMP_NUMB_BITS = %ld, sizeof(mp_limb_t) = %ld\n",
           (long) GMP_NUMB_BITS, (long) sizeof(mp_limb_t));
 
+  /* Concerning the MPFR_LONG_WITHIN_LIMB and MPFR_INTMAX_WITHIN_LIMB macros,
+     if defined, code may be optimized to take these properties into account.
+     If not defined, MPFR should select portable code. So one should ideally
+     get either "y/y" or "n/n"; "n/y" is allowed, but "y/n" is forbidden.
+     Note: MPFR_LONG_WITHIN_LIMB should be defined by the configure script,
+     but may also be defined by the src/mpfr-impl.h header file. */
+#define WITHIN_LIMB(T)                         \
+  ((mp_limb_t) -1 >= (T) -1 ?                  \
+   ((WM) ? "y/y" : "n/y") :                    \
+   ((WM) ? (err = 1, "y/n (WRONG!)") : "n/n"))
+
+  (printf) ("[tversion] Within limb: long = %s"
+#if defined(_MPFR_H_HAVE_INTMAX_T)
+            ", intmax_t = %s"
+#endif
+            "\n"
+#undef WM
+#if defined(MPFR_LONG_WITHIN_LIMB)
+# define WM 1
+#else
+# define WM 0
+#endif
+            , WITHIN_LIMB (unsigned long)
+#if defined(_MPFR_H_HAVE_INTMAX_T)
+#undef WM
+#if defined(MPFR_INTMAX_WITHIN_LIMB)
+# define WM 1
+#else
+# define WM 0
+#endif
+            , WITHIN_LIMB (uintmax_t)
+#endif
+            );
+
   printf ("[tversion] _MPFR_PREC_FORMAT = %ld, sizeof(mpfr_prec_t) = %ld\n",
           (long) _MPFR_PREC_FORMAT, (long) sizeof(mpfr_prec_t));
 
