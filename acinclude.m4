@@ -1042,6 +1042,7 @@ dnl ------------------------------
 dnl Check that an intmax_t can fit in a mp_limb_t.
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_INTMAX], [
 AC_REQUIRE([MPFR_CONFIGS])
+if test "$ac_cv_type_intmax_t" = yes; then
 AC_CACHE_CHECK([for intmax_t to fit in mp_limb_t], mpfr_cv_intmax_within_limb, [
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src -DMPFR_NEED_INTMAX_H"
@@ -1062,6 +1063,7 @@ yes*)
       AC_DEFINE([MPFR_INTMAX_WITHIN_LIMB],1,[intmax_t can be stored in mp_limb_t]) ;;
 esac
 CPPFLAGS="$saved_CPPFLAGS"
+fi
 ])
 
 dnl MPFR_PARSE_DIRECTORY
