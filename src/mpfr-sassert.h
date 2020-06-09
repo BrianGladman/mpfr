@@ -27,8 +27,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* How to use:
    ===========
-   MPFR_DECL_STATIC_ASSERT:
-   + to check a condition at compile time within the declaration section.
    MPFR_STAT_STATIC_ASSERT:
    + to check a condition at compile time within the statement section.
 
@@ -43,13 +41,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* C11 version */
 # if defined (__STDC_VERSION__)
 #  if (__STDC_VERSION__ >= 201112L)
-#   define MPFR_DECL_STATIC_ASSERT(c) _Static_assert((c), #c )
 #   define MPFR_STAT_STATIC_ASSERT(c) _Static_assert((c), #c )
 #  endif
 # endif
 
 /* Default version which should be compatible with nearly all compilers */
-# if !defined(MPFR_DECL_STATIC_ASSERT)
+# if !defined(MPFR_STAT_STATIC_ASSERT)
 #  if __MPFR_GNUC(4,8)
 /* Get rid of annoying warnings "typedef '...' locally defined but not used"
    (new in GCC 4.8). Thanks to Jonathan Wakely for this solution:
@@ -64,15 +61,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  typedef enum { MPFR_ASSERT_CAT(MPFR_STATIC_ASSERT_CONST_,__LINE__) = !(c) } \
  MPFR_ASSERT_CAT(MPFR_ASSERT_,__LINE__)[!!(c) ? 1 : -1]                      \
    MPFR_TYPEDEF_UNUSED; } while (0)
-#  define MPFR_DECL_STATIC_ASSERT(c)                                         \
- typedef enum { MPFR_ASSERT_CAT(MPFR_STATIC_ASSERT_CONST_,__LINE__) = !(c) } \
- MPFR_ASSERT_CAT(MPFR_ASSERT_,__LINE__)[!!(c) ? 1 : -1];
 # endif
 
 #else
 
 /* No support: default to classic assertions */
-# define MPFR_DECL_STATIC_ASSERT(c) /* Nothing */
 # define MPFR_STAT_STATIC_ASSERT(c) MPFR_ASSERTN(c)
 
 #endif

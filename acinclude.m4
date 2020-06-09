@@ -837,10 +837,8 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include "mpfr-sassert.h"
 
 /* Test if Static Assertions work */
-MPFR_DECL_STATIC_ASSERT(sizeof(char) <= sizeof(int));
 
 int main (void) {
-  MPFR_DECL_STATIC_ASSERT(sizeof(int) <= sizeof(long));
   int x;
   (void) (x = 1);  /* cast to void: avoid a warning, at least with GCC */
   /* Test of the macro after a declaraction and a statement. */

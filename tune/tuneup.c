@@ -31,9 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "speed.h"
 
 /* Undefine static assertion system */
-#undef MPFR_DECL_STATIC_ASSERT
 #undef MPFR_STAT_STATIC_ASSERT
-#define MPFR_DECL_STATIC_ASSERT(a) MPFR_ASSERTN(a)
 #define MPFR_STAT_STATIC_ASSERT(a) MPFR_ASSERTN(a)
 
 int verbose;
