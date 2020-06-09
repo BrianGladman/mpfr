@@ -996,7 +996,6 @@ esac
 dnl MPFR_CHECK_MP_LIMB_T_VS_LONG
 dnl ----------------------------
 dnl Check whether a long fits in mp_limb_t.
-dnl Note: Since AC_COMPILE_IFELSE is used, the test needs a static assertion.
 dnl If static assertions are not supported, one gets "no" even though a long
 dnl fits in mp_limb_t. Therefore, code without MPFR_LONG_WITHIN_LIMB defined
 dnl needs to be portable.
@@ -1009,7 +1008,11 @@ AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+dnl AC_LINK_IFELSE is safer than AC_COMPILE_IFELSE, as it will detect
+dnl undefined function-like macros (which otherwise may be regarded
+dnl as valid function calls with AC_COMPILE_IFELSE since prototypes
+dnl are not required by the C standard).
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
 /* Make sure that a static assertion is used (not MPFR_ASSERTN). */
 #undef MPFR_USE_STATIC_ASSERT
@@ -1037,10 +1040,15 @@ if test "$ac_cv_type_intmax_t" = yes; then
 AC_CACHE_CHECK([for intmax_t to fit in mp_limb_t], mpfr_cv_intmax_within_limb, [
 saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src -DMPFR_NEED_INTMAX_H"
-dnl AC_LINK_IFELSE is safier than AC_COMPILE_IFELSE, which did not detect
-dnl the missing #include "mpfr-sassert.h".
+dnl AC_LINK_IFELSE is safer than AC_COMPILE_IFELSE, as it will detect
+dnl undefined function-like macros (which otherwise may be regarded
+dnl as valid function calls with AC_COMPILE_IFELSE since prototypes
+dnl are not required by the C standard).
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
+/* Make sure that a static assertion is used (not MPFR_ASSERTN). */
+#undef MPFR_USE_STATIC_ASSERT
+#define MPFR_USE_STATIC_ASSERT 1
 #include "mpfr-sassert.h"
 #include "mpfr-intmax.h"
 ]], [[
