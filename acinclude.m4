@@ -995,27 +995,15 @@ esac
 
 dnl MPFR_CHECK_MP_LIMB_T_VS_LONG
 dnl ----------------------------
-dnl Check that a long can fit in a mp_limb_t.
-dnl If so, it set the define MPFR_LONG_WITHIN_LIMB
-dnl FIXME: The following code is wrong when using:
-dnl   -std=c99 -pedantic-errors -Wno-error=overlength-strings
-dnl because static assertions are not supported, so that MPFR_ASSERTN
-dnl is used, but it is not defined by "mpfr-sassert.h". The consequence
-dnl is that the program fails, and MPFR_LONG_WITHIN_LIMB is not defined
-dnl while it should be. Conversely, using MPFR_ASSERTN would be incorrect
-dnl as we use AC_COMPILE_IFELSE here, thus it must be an assertion checked
-dnl at compile time. Before fixing this bug, find a way to test with
-dnl MPFR_LONG_WITHIN_LIMB undefined; this is necessary for code coverage
-dnl and possibly to find new bugs, like in r12252:
-dnl   ./configure --enable-assert=full \
-dnl     'CFLAGS=-std=c99 -O3 -pedantic-errors -Wno-error=overlength-strings'
+dnl Check whether a long fits in mp_limb_t.
+dnl Note: Since AC_COMPILE_IFELSE is used, the test needs a static assertion.
+dnl If static assertions are not supported, one gets "no" even though a long
+dnl fits in mp_limb_t. Therefore, code without MPFR_LONG_WITHIN_LIMB defined
+dnl needs to be portable.
 dnl According to the GMP developers, a limb is always as large as a long,
-dnl except when __GMP_SHORT_LIMB is defined, but this is never defined:
+dnl except when __GMP_SHORT_LIMB is defined. It is currently never defined:
 dnl https://gmplib.org/list-archives/gmp-discuss/2018-February/006190.html
-dnl FIXME: This is not safe. The fact that __GMP_SHORT_LIMB cannot occur
-dnl is not documented, and gmp.h has such a code probably because it may
-dnl occur in the future (or the user may want to override the default
-dnl choice).
+dnl but it is not clear whether this could change in the future.
 AC_DEFUN([MPFR_CHECK_MP_LIMB_T_VS_LONG], [
 AC_REQUIRE([MPFR_CONFIGS])
 AC_CACHE_CHECK([for long to fit in mp_limb_t], mpfr_cv_long_within_limb, [
@@ -1023,6 +1011,9 @@ saved_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$srcdir/src"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <gmp.h>
+/* Make sure that a static assertion is used (not MPFR_ASSERTN). */
+#undef MPFR_USE_STATIC_ASSERT
+#define MPFR_USE_STATIC_ASSERT 1
 #include "mpfr-sassert.h"
 ]], [[
   MPFR_STAT_STATIC_ASSERT ((mp_limb_t) -1 >= (unsigned long) -1);
