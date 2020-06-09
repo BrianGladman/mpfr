@@ -151,7 +151,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
 #elif GMP_NUMB_BITS == 8
       {
-        uint64_t mant = 0;
+        unsigned long long mant = 0;
         int i;
         for (i = 0; i < 8; i++)
           mant |= ((unsigned long) tmpmant[i] << (8*i));
