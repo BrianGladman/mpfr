@@ -131,6 +131,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
     mpfr_set_ui (uu, u, MPFR_RNDZ);
     inexact = mpfr_mul (y, x, uu, rnd_mode);
     mpfr_clear (uu);
+    MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
     MPFR_SAVE_EXPO_FREE (expo);
     return mpfr_check_range (y, inexact, rnd_mode);
   }
