@@ -87,8 +87,11 @@ main (int argc, char *argv[])
   unsigned int xprec, yprec, i;
   mpfr_prec_t p;
   mpfr_exp_t emax;
+  int r;
 
   tests_start_mpfr ();
+
+  emax = mpfr_get_emax ();
 
   for (p=2; p<100; p++)
     for (i=1; i<50; i++)
@@ -145,7 +148,6 @@ main (int argc, char *argv[])
   mpfr_mul_ui (x, x, 0, MPFR_RNDU);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
 
-  emax = mpfr_get_emax ();
   set_emax (0);
   mpfr_set_str_binary (x, "0.1E0");
   (mpfr_mul_ui) (x, x, 2, MPFR_RNDN);
@@ -278,6 +280,32 @@ main (int argc, char *argv[])
       printf ("Regression tested failed for x=1742175942 * 59\n");
       exit (1);
     }
+
+  set_emax (MPFR_EMAX_MAX);
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 96);
+  mpfr_set_inf (x, 1);
+  mpfr_nextbelow (x);
+  RND_LOOP (r)
+    {
+      mpfr_flags_t ex_flags, flags;
+
+      ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      mpfr_mul_ui (y, x, 123, (mpfr_rnd_t) r);
+      flags = __gmpfr_flags;
+      if (flags != ex_flags)
+        {
+          printf ("Error in overflow check for %s\n",
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+          printf ("Expected flags:");
+          flags_out (ex_flags);
+          printf ("Got:           ");
+          flags_out (flags);
+          exit (1);
+        }
+    }
+  set_emax (emax);
 
   mpfr_clear(x);
   mpfr_clear(y);
