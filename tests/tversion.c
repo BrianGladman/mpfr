@@ -427,7 +427,7 @@ main (void)
      Note: MPFR_LONG_WITHIN_LIMB should be defined by the configure script,
      but may also be defined by the src/mpfr-impl.h header file. */
 #define WITHIN_LIMB(T)                         \
-  ((mp_limb_t) -1 >= (T) -1 ?                  \
+  (MPFR_LIMB_MAX >= (T) -1 ?                   \
    ((WM) ? "y/y" : "n/y") :                    \
    ((WM) ? (err = 1, "y/n (WRONG!)") : "n/n"))
 
