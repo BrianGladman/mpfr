@@ -103,10 +103,17 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* With the current code, MPFR_LONG_WITHIN_LIMB must be defined if an
    unsigned long fits in a limb. Since one cannot rely on the configure
    tests entirely (in particular when GMP is involved) and some platforms
-   may not use configure, make sure that MPFR_LONG_WITHIN_LIMB is defined
-   when __GMP_SHORT_LIMB is not defined (this is the general case) or
-   when int and long have the same size (as with MS Windows). */
-#if !defined(__GMP_SHORT_LIMB) || INT_MAX == LONG_MAX
+   may not use configure, handle this definition here. A limb (mp_limb_t)
+   is normally defined as an unsigned long, but this may not be the case
+   with mini-gmp (and we can't rely on __GMP_SHORT_LIMB for this reason).
+   So, concerning mp_limb_t, we can only test GMP_NUMB_BITS.
+   Chosen heuristic: define MPFR_LONG_WITHIN_LIMB only when
+     * mp_limb_t and unsigned long have both 32 bits exactly, or
+     * mp_limb_t has at least 64 bits.
+   Since we require that mp_limb_t have a size that is a power of 2, we
+   can currently be wrong only if mini-gmp is used and unsigned long has
+   more than 64 bits, which is unlikely to occur. */
+#if GMP_NUMB_BITS >= 64 || (GMP_NUMB_BITS == 32 && ULONG_MAX == 0xffffffff)
 # undef MPFR_LONG_WITHIN_LIMB
 # define MPFR_LONG_WITHIN_LIMB 1
 #endif
