@@ -3,8 +3,10 @@
 Copyright 1991-1994, 1996, 1997, 1999-2005, 2007-2009, 2011-2020 Free Software Foundation, Inc.
 
 This file is part of the GNU MPFR Library and has been copied from
-GNU MP 6.1.0 (the FIXME's come from GNU MP), except the parts marked
-beginning of code specific to MPFR ... end of code specific to MPFR.
+GNU MP 6.2.0, with the following changes:
+  * the copyright notice (note: only LGPL 3+ is used in MPFR);
+  * the code declared as added for MPFR just below these comments;
+  * __GMP_DECLSPEC renamed to __MPFR_DECLSPEC.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -45,9 +47,17 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    expected.
 */
 
+/* Code added for MPFR */
+
 #ifndef MPFR_NEED_LONGLONG_H
 # error "Never include mpfr-longlong.h directly; define MPFR_NEED_LONGLONG_H instead."
 #endif
+
+#ifndef __GMP_GNUC_PREREQ
+# define __GMP_GNUC_PREREQ(X,Y) __MPFR_GNUC(X,Y)
+#endif
+
+/* End of code added for MPFR */
 
 #define __BITS4 (W_TYPE_SIZE / 4)
 #define __ll_B ((UWtype) 1 << (W_TYPE_SIZE / 2))
