@@ -52,8 +52,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * the second inclusion is not a no-op due to some #include guard. This
  * was fixed in r7320.
  *
- * With mini-gmp, mpfr-impl.h is included first, but this should not
- * affect this test thanks to MPFR_DONT_USE_FILE.
+ * With mini-gmp, mpfr-impl.h is included first (as mini-gmp requires
+ * some specific code from it, e.g. to define gmp_randstate_t), but
+ * this should not affect this test thanks to MPFR_DONT_USE_FILE.
  */
 #include <mpfr.h>
 
