@@ -7,7 +7,7 @@ To build and test MPFR against mini-gmp:
   make
   make check
 
-where DIR is the directory which contains mini-gmp
+where DIR is the directory that contains mini-gmp
 (for example .../gmp-6.2.0/mini-gmp).
 
 "make" will build mini-gmp with the same compiler as for MPFR.
