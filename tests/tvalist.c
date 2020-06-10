@@ -24,17 +24,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
-#if HAVE_STDARG
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
 
 #if _MPFR_EXP_FORMAT == 4
 /* If mpfr_exp_t is defined as intmax_t, intmax_t must be defined before
    the inclusion of mpfr.h (this test doesn't use mpfr-impl.h). */
 # include <stdint.h>
-#endif
-
-#define MPFR_DONT_USE_FILE  /* don't use FILE in mpfr-impl.h */
-#ifdef MPFR_USE_MINI_GMP
-#include "mpfr-test.h"
 #endif
 
 /* One of the goals of this test is to detect potential issues with the
@@ -51,9 +46,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * the second inclusion is not a no-op due to some #include guard. This
  * was fixed in r7320.
  *
- * With mini-gmp, mpfr-impl.h is included first (as mini-gmp requires
- * some specific code from it, e.g. to define gmp_randstate_t), but
- * this should not affect this test thanks to MPFR_DONT_USE_FILE.
+ * Note: one needs to make sure that optimizations do not drop the call
+ * to mpfr_vfprintf.
  */
 #include <mpfr.h>
 
@@ -70,23 +64,18 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 test (FILE *fout, const char *fmt, ...)
 {
-  int (*fct) (FILE*, const char*, va_list);
+  va_list ap;
 
-  fct = mpfr_vfprintf;
-  if (0)
-    {
-      va_list ap;
-      va_start (ap, fmt);
-      fct (fout, fmt, ap);
-      va_end (ap);
-    }
+  va_start (ap, fmt);
+  mpfr_vfprintf (fout, fmt, ap);
+  va_end (ap);
 }
 
 int
 main (void)
 {
   tests_start_mpfr ();
-  test (stdout, "%d\n", 0);
+  test (stdout, "");
   tests_end_mpfr ();
   return 0;
 }
