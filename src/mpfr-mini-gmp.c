@@ -40,7 +40,9 @@ gmp_randinit_default (gmp_randstate_t state)
 void
 gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
 {
-  srand48 (seed);
+  /* With a portable version of the conversion from unsigned long to long
+     (at least GCC and Clang optimize this expression to identity). */
+  srand48 (seed > LONG_MAX ? -1 - (long) ~seed : (long) seed);
 }
 #endif
 
