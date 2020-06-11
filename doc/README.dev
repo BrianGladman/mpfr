@@ -127,21 +127,27 @@ To make a release (for the MPFR team):
 
   *** Please read this section entirely before making any release. ***
 
-  Note: The following needs to be done in a branch x.y for MPFR x.y.z.
-  Before creating a branch from the trunk, update the ChangeLog in the
-  trunk (in order to minimize the future diffs).
-
-  0) Make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
-     and the libtool-related files (config.guess, etc.) are up-to-date.
-     Running autogen.sh may be necessary; avoid the possible warnings,
-     as long as this does not require too recent tools (e.g. < 4 years
-     old).
+  0) For a non-patchlevel release, before creating a branch from the trunk,
+     some operations should be done:
+       * make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
+         is up-to-date (updates could also be done in patchlevel releases,
+         but with care);
+       * update the libtool version (see src/Makefile.am) and the DLL version
+         (see configure.ac) if need be, though this should have been done as
+         soon as the ABI changed in the trunk;
+       * among the checks below, those that are most likely to notice issues,
+         e.g. abi-compliance-checker and the "API Compatibility" section in
+         the manual (mpfr.texi), as it is easy to forget something;
+       * update the ChangeLog (see below) in the trunk, in order to minimize
+         the future diffs.
+     If everything is OK, create the branch. Then:
 
   1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
-     Update the libtool version (see src/Makefile.am).
-     Update the DLL version (see configure.ac) if need be.
+     Update the libtool version (see src/Makefile.am), needed at least for
+     patchlevel releases.
+     Update the DLL version (see configure.ac) if not done yet.
      Check these versions with tools/ck-version-info (this check will also
      be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
@@ -205,7 +211,9 @@ To make a release (for the MPFR team):
 
   4) Update the ChangeLog file with "TZ=UTC0 svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC0 svn log -rHEAD:0 -v".
-     Make sure that all the pending commits have been done.
+     This should at least be done last, in order to be complete before the
+     generation of the tarball.
+     Note: First, make sure that all the pending commits have been done.
 
   5) Do a "svn export" of the branch to make sure to start from a clean
      source tree; this also has the advantage (over a checkout) to set
