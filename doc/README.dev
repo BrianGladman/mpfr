@@ -128,6 +128,8 @@ To make a release (for the MPFR team):
   *** Please read this section entirely before making any release. ***
 
   Note: The following needs to be done in a branch x.y for MPFR x.y.z.
+  Before creating a branch from the trunk, update the ChangeLog in the
+  trunk (in order to minimize the future diffs).
 
   0) Make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
      and the libtool-related files (config.guess, etc.) are up-to-date.
