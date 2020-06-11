@@ -32,13 +32,13 @@ provide them), thus one should avoid mini-gmp if one needs some really
 serious random functions. Another consequence is that these functions
 are not thread-safe.
 
-This was tested with MPFR svn r13965 and GMP 6.2.0 on x86_64 GNU/Linux:
+This was tested with MPFR svn r13974 and GMP 6.2.0 on x86_64 GNU/Linux:
 ============================================================================
 Testsuite summary for MPFR 4.1.0-dev
 ============================================================================
 # TOTAL: 183
-# PASS:  173
-# SKIP:  10
+# PASS:  172
+# SKIP:  11
 # XFAIL: 0
 # FAIL:  0
 # XPASS: 0
