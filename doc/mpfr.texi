@@ -2144,17 +2144,17 @@ Return non-zero if @var{op1} or @var{op2} is a NaN (i.e., they cannot be
 compared), zero otherwise.
 @end deftypefun
 
-@deftypefun int mpfr_total_order (mpfr_t @var{x}, mpfr_t @var{y})
+@deftypefun int mpfr_total_order_p (mpfr_t @var{x}, mpfr_t @var{y})
 This function implements the totalOrder predicate from IEEE@tie{}754-2008,
 where @minus{}NaN < @minus{}Inf < negative finite numbers < @minus{}0 <
 +0 < positive finite numbers < +Inf < +NaN@.
 It returns a non-zero value (true) when @var{x} is smaller than or equal
 to @var{y} for this order relation, and zero (false) otherwise.
 Contrary to @code{mpfr_cmp (x, y)}, which returns a ternary value,
-@code{mpfr_total_order} returns a binary value (zero or non-zero).
-In particular, @code{mpfr_total_order (x, x)} returns true,
-@code{mpfr_total_order (-0, +0)} returns true and
-@code{mpfr_total_order (+0, -0)} returns false.
+@code{mpfr_total_order_p} returns a binary value (zero or non-zero).
+In particular, @code{mpfr_total_order_p (x, x)} returns true,
+@code{mpfr_total_order_p (-0, +0)} returns true and
+@code{mpfr_total_order_p (+0, -0)} returns false.
 The sign bit of NaN also matters.
 @end deftypefun
 
@@ -4217,7 +4217,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_sub_d} in MPFR@tie{}2.4.
 
-@item @code{mpfr_total_order} in MPFR@tie{}4.1.
+@item @code{mpfr_total_order_p} in MPFR@tie{}4.1.
 
 @item @code{mpfr_urandom} in MPFR@tie{}3.0.
 

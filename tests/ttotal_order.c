@@ -1,4 +1,4 @@
-/* Test file for mpfr_total_order.
+/* Test file for mpfr_total_order_p.
 
 Copyright 2018-2020 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -25,9 +25,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 check1 (mpfr_ptr x, mpfr_ptr y)
 {
-  if (! mpfr_total_order (x, x))
+  if (! mpfr_total_order_p (x, x))
     {
-      printf ("Error on mpfr_total_order (x, x) with\n");
+      printf ("Error on mpfr_total_order_p (x, x) with\n");
       printf ("x = ");
       mpfr_dump (x);
       exit (1);
@@ -35,9 +35,9 @@ check1 (mpfr_ptr x, mpfr_ptr y)
 
   mpfr_set (y, x, MPFR_RNDN);
 
-  if (! mpfr_total_order (x, y))
+  if (! mpfr_total_order_p (x, y))
     {
-      printf ("Error on mpfr_total_order (x, y) with\n");
+      printf ("Error on mpfr_total_order_p (x, y) with\n");
       printf ("x = ");
       mpfr_dump (x);
       printf ("y = ");
@@ -49,9 +49,9 @@ check1 (mpfr_ptr x, mpfr_ptr y)
 static void
 check2 (mpfr_ptr x, mpfr_ptr y)
 {
-  if (! mpfr_total_order (x, y))
+  if (! mpfr_total_order_p (x, y))
     {
-      printf ("Error on mpfr_total_order (x, y) with\n");
+      printf ("Error on mpfr_total_order_p (x, y) with\n");
       printf ("x = ");
       mpfr_dump (x);
       printf ("y = ");
@@ -59,9 +59,9 @@ check2 (mpfr_ptr x, mpfr_ptr y)
       exit (1);
     }
 
-  if (mpfr_total_order (y, x))
+  if (mpfr_total_order_p (y, x))
     {
-      printf ("Error on mpfr_total_order (y, x) with\n");
+      printf ("Error on mpfr_total_order_p (y, x) with\n");
       printf ("x = ");
       mpfr_dump (x);
       printf ("y = ");
