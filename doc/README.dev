@@ -127,17 +127,19 @@ To make a release (for the MPFR team):
 
   *** Please read this section entirely before making any release. ***
 
-  0) For a non-patchlevel release, before creating a branch from the trunk,
-     some operations should be done:
+  0) For a non-patchlevel release, before creating a branch from the trunk
+     (or more often), some operations should be done:
        * make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
          is up-to-date (updates could also be done in patchlevel releases,
          but with care);
+       * among the checks below, those that are most likely to notice issues,
+         as it is easy to forget something;
+       * in particular, check that the abi-compliance-checker output,
+         the "API Compatibility" section of the manual (mpfr.texi), and
+         the NEWS file are consistent;
        * update the libtool version (see src/Makefile.am) and the DLL version
          (see configure.ac) if need be, though this should have been done as
          soon as the ABI changed in the trunk;
-       * among the checks below, those that are most likely to notice issues,
-         e.g. abi-compliance-checker and the "API Compatibility" section in
-         the manual (mpfr.texi), as it is easy to forget something;
        * update the ChangeLog (see below) in the trunk, in order to minimize
          the future diffs.
      If everything is OK, create the branch. Then:
