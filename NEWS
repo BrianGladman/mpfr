@@ -30,7 +30,8 @@ Changes from versions 4.0.* to version 4.1.0:
   __float128 is used as a fallback if _Float128 is not supported.
 - New function mpfr_get_str_ndigits.
 - New function mpfr_dot for the dot product (incomplete, experimental).
-- New functions mpfr_get_decimal128 and mpfr_set_decimal128.
+- New functions mpfr_get_decimal128 and mpfr_set_decimal128 (available only
+  when MPFR has been built with decimal float support).
 - New function mpfr_cmpabs_ui.
 - The mpfr_out_str function now accepts bases from -2 to -36, in order to
   follow mpfr_get_str and GMP's mpf_out_str functions.
@@ -39,7 +40,7 @@ Changes from versions 4.0.* to version 4.1.0:
   an empty precision field has improved: trailing zeros are kept in a way
   similar to the formatted output functions from C.
 - Improved mpfr_add and mpfr_sub when all operands have a precision equal to
-  twice the number of bits per word, e.g., 128 bits on a 64-bit computer.
+  twice the number of bits per word, e.g., 128 bits on a 64-bit platform.
 - Optimized the tuning parameters for various architectures.
 - Improved test coverage to 98.6% of code for x86_64.
 - Bug fixes.
