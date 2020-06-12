@@ -56,4 +56,4 @@ if [ $# -lt 5 ]; then
 fi
 
 echo "MPFR version successfully updated."
-echo "Don't forget to update MPFR libtool version in Makefile.am."
+echo "Don't forget to update MPFR libtool version in 'src/Makefile.am'."
