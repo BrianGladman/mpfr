@@ -25,7 +25,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #endif
 
 #include <float.h>
-#include <errno.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
