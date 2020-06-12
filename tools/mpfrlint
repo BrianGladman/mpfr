@@ -189,8 +189,10 @@ grep GMP_RND $srctests | err-if-output -t "GMP_RND*" grep -v '#define GMP_RND'
 # this file to MPFR. See:
 #   https://sympa.inria.fr/sympa/arc/mpfr/2018-08/msg00000.html
 #   https://sympa.inria.fr/sympa/arc/mpfr/2018-08/msg00001.html
-err-if-output --msg="Use __MPFR_DECLSPEC instead." -t "__GMP_DECLSPEC" \
-  grep --exclude=src/mpfr.h __GMP_DECLSPEC $srctests
+grep __GMP_DECLSPEC $srctests | \
+  grep -Ev '^src/mpfr.h:(#|.*__GMP_DECLSPEC_..PORT)' | \
+  grep -v '__GMP_DECLSPEC renamed to __MPFR_DECLSPEC' | \
+  err-if-output --msg="Use __MPFR_DECLSPEC instead." -t "__GMP_DECLSPEC" cat
 
 # Use mpfr_div_2ui/mpfr_mul_2ui instead of mpfr_div_2exp/mpfr_mul_2exp.
 grep 'mpfr_\(div\|mul\)_2exp' {src,tests}/*.[ch] |\
