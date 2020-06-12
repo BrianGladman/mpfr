@@ -20,6 +20,8 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <errno.h>
+
 #include "mpfr-test.h"
 
 #define FILE_NAME_RW "tfpif_rw.dat" /* temporary name (written then read) */
@@ -242,7 +244,18 @@ check_bad (void)
       exit (1);
     }
 
-  fh = fopen (filenameCompressed, "w");
+  /* Since the file will be read after writing to it and a rewind, we need
+     to open it in mode "w+".
+     Note: mode "w" was used previously, and the issue remained undetected
+     until a test on AIX, where the fclose failed with the error:
+       check_bad: A file descriptor does not refer to an open file.
+     (the exit code of fclose has been checked since r13549 / 2019-08-09).
+     What actually happened is that the fread in mpfr_fpif_import failed,
+     but this was not tested. So a test of errno has been added below;
+     with mode "w" (instead of "w+"), it yields:
+       check_bad: Bad file descriptor
+     as expected. */
+  fh = fopen (filenameCompressed, "w+");
   if (fh == NULL)
     {
       perror ("check_bad");
@@ -284,7 +297,20 @@ check_bad (void)
           exit (1);
         }
       rewind (fh);
+      /* The check of errno below is needed to make sure that
+         mpfr_fpif_import fails due to bad data, not for some
+         arbitrary system error. */
+      errno = 0;
       status = mpfr_fpif_import (x, fh);
+      if (errno != 0)
+        {
+          perror ("check_bad");
+          fprintf (stderr, "mpfr_fpif_import failed with unexpected"
+                   " errno = %d (and status = %d)\n", errno, status);
+          fclose (fh);
+          remove (filenameCompressed);
+          exit (1);
+        }
       if (status == 0)
         {
           printf ("mpfr_fpif_import did not fail on a bad imported data\n");
