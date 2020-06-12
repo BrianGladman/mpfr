@@ -454,7 +454,7 @@ long __MPN(count_leading_zeros) (UDItype);
   } while (0)
 /* FIXME: Extend the immediate range for the low word by using both ADDS and
    SUBS, since they set carry in the same way.  Note: We need separate
-   definitions for thumb and non-thumb to to th absense of RSC under thumb.  */
+   definitions for thumb and non-thumb due to the absence of RSC under thumb. */
 #if defined (__thumb__)
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
   do {									\
