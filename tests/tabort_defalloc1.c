@@ -35,6 +35,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 main (int argc, char **argv)
 {
+  /* Disable this test under Valgrind, which complains due to the
+     large allocation size. */
+  if (tests_run_within_valgrind ())
+    return 77;
+
   tests_start_mpfr ();
   tests_expect_abort ();
 

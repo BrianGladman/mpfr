@@ -1179,3 +1179,16 @@ tests_expect_abort (void)
   exit (77);
 #endif
 }
+
+/* Guess whether the test runs within Valgrind. */
+int
+tests_run_within_valgrind (void)
+{
+  char *p;
+
+  p = getenv ("LD_PRELOAD");
+  if (p == NULL)
+    return 0;
+  return (strstr (p, "/valgrind/") != NULL ||
+          strstr (p, "/vgpreload") != NULL);
+}
