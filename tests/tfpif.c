@@ -249,7 +249,8 @@ check_bad (void)
      Note: mode "w" was used previously, and the issue remained undetected
      until a test on AIX, where the fclose failed with the error:
        check_bad: A file descriptor does not refer to an open file.
-     (the exit code of fclose has been checked since r13549 / 2019-08-09).
+     (the exit code of fclose has been checked since r13549 / 2019-08-09,
+     at the same time "w+" was changed to "w" by mistake).
      What actually happened is that the fread in mpfr_fpif_import failed,
      but this was not tested. So a test of errno has been added below;
      with mode "w" (instead of "w+"), it yields:
