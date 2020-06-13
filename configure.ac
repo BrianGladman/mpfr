@@ -458,6 +458,8 @@ dnl (__GMP_CFLAGS macro in gmp.h) above. The consequence is that this
 dnl might yield a compilation failure if the -Werror option appears in
 dnl __GMP_CFLAGS. But in this case, since -Werror is not used by default,
 dnl one may expect that the user would also set CFLAGS for MPFR.
+dnl Note: When the compiler is GCC not in C++ mode, -Wc++-compat may be
+dnl interesting, but it has been introduced in GCC 4.1 only.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wpointer-arith $CFLAGS"
   AC_MSG_CHECKING(whether the selected language is C++)
@@ -468,7 +470,7 @@ error
 #endif
   ]], [[]])],[
     AC_MSG_RESULT(no)
-    CFLAGS="-Wmissing-prototypes -Wc++-compat $CFLAGS"
+    CFLAGS="-Wmissing-prototypes $CFLAGS"
   ],[
     AC_MSG_RESULT(yes)
     CFLAGS="-Wmissing-declarations -Wno-sign-compare $CFLAGS"
