@@ -194,9 +194,9 @@ else
   cat <<EOF
 Subject: GNU MPFR $base Release Candidate$n
 
-The release of GNU MPFR $base ($rname)
-is imminent. Please help to make this release as good as possible
-by downloading and testing this release candidate:
+The release of GNU MPFR $base ($rname) is imminent.
+Please help to make this release as good as possible by downloading
+and testing this release candidate:
 
 https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz
 https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2
