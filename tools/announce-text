@@ -191,12 +191,21 @@ EOF
 else
   rc=${vers#*-rc}
   [ $rc -gt 1 ] && n=" $rc"
-  cat <<EOF
-Subject: GNU MPFR $base Release Candidate$n
-
+  printf "%s\n\n" "Subject: GNU MPFR $base Release Candidate$n"
+  if [ $(echo "$base ($rname)" | wc -m) -gt 30 ]; then
+    cat <<EOF
+The release of GNU MPFR $base ($rname)
+is imminent.  Please help to make this release as good as possible
+by downloading and testing this release candidate:
+EOF
+  else
+    cat <<EOF
 The release of GNU MPFR $base ($rname) is imminent.
 Please help to make this release as good as possible by downloading
 and testing this release candidate:
+EOF
+  fi
+  cat <<EOF
 
 https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.xz
 https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.bz2
