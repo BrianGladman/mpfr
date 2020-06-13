@@ -478,15 +478,20 @@ bug_20160907 (void)
       ld = mpfr_get_ld (mp, MPFR_RNDU);
       mpfr_set_ld (mp, ld, MPFR_RNDU);
       /* mp is 2^e rounded up, thus should be >= 2^e */
-      MPFR_ASSERTN(mpfr_cmp_ui_2exp (mp, 1, e) >= 0);
+      if (mpfr_cmp_ui_2exp (mp, 1, e) < 0)
+        {
+          printf ("Error, expected value >= 2^(%ld)\n", e);
+          printf ("got "); mpfr_dump (mp);
+          exit (1);
+        }
 
       mpfr_set_ui_2exp (mp, 1, e, MPFR_RNDN);
       ld = mpfr_get_ld (mp, MPFR_RNDD);
       mpfr_set_ld (mp, ld, MPFR_RNDD);
       /* mp is 2^e rounded down, thus should be <= 2^e */
-      if (mpfr_cmp_ui_2exp (mp, 3, e) > 0)
+      if (mpfr_cmp_ui_2exp (mp, 1, e) > 0)
         {
-          printf ("Error, expected value <= 2^%ld\n", e);
+          printf ("Error, expected value <= 2^(%ld)\n", e);
           printf ("got "); mpfr_dump (mp);
           exit (1);
         }
