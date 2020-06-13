@@ -4570,7 +4570,7 @@ Patrick P@'elissier and Paul Zimmermann,
 "MPFR: A Multiple-Precision Binary Floating-Point Library With Correct Rounding",
 ACM Transactions on Mathematical Software,
 volume 33, issue 2, article 13, 15 pages, 2007,
-@url{http://doi.acm.org/10.1145/1236463.1236468}.
+@url{https://doi.org/10.1145/1236463.1236468}.
 
 @item
 Torbj@"orn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library",
