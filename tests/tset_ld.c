@@ -480,6 +480,22 @@ bug_20160907 (void)
       /* mp is 2^e rounded up, thus should be >= 2^e */
       if (mpfr_cmp_ui_2exp (mp, 1, e) < 0)
         {
+          if (tests_run_within_valgrind () && MPFR_IS_ZERO (mp))
+            {
+              /* Since this is not a bug in MPFR and it is just caused by
+                 Valgrind, let's output a message and skip the remaining
+                 part of the test without an error. Note that the message
+                 will be not be visible via "make check".
+                 Note that the other tests do not fail probably because
+                 long double has the same behavior as double (which is
+                 allowed by the C standard), but here this is a test that
+                 is specific to x86 extended precision. */
+              printf
+                ("Error in bug_20160907 due to a bug in Valgrind.\n"
+                 "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=890215\n"
+                 "https://bugs.kde.org/show_bug.cgi?id=421262\n");
+              break;
+            }
           printf ("Error, expected value >= 2^(%ld)\n", e);
           printf ("got "); mpfr_dump (mp);
           exit (1);
