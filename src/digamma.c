@@ -275,7 +275,10 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_sub (t, t, u, MPFR_RNDN);
       if (MPFR_GET_EXP (t) < expt)
         errt += expt - MPFR_EXP(t);
-      if (MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
+      /* Warning: if u is zero (which happens when x_plus_j >= min at the
+         beginning of the while loop above), EXP(u) is not defined.
+         In this case we have no error from u. */
+      if (MPFR_NOTZERO(u) && MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
         erru += MPFR_EXP(u) - MPFR_EXP(t);
       if (errt > erru)
         errt = errt + 1;
