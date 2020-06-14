@@ -22,6 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* FIXME: Check that MPFR_GET_EXP can only be called on regular values
+   (in r14025, this is not the case) and that there cannot be integer
+   overflows. */
+
 /* Put in s an approximation of digamma(x).
    Assumes x >= 2.
    Assumes s does not overlap with x.
