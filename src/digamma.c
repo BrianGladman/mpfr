@@ -74,13 +74,13 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
          sum((10n+4)/2^n, n=1..infinity) = 24 */
-      exps = mpfr_get_exp (s);
-      expu = mpfr_get_exp (u);
+      exps = MPFR_GET_EXP (s);
+      expu = MPFR_GET_EXP (u);
       if (expu < exps - (mpfr_exp_t) p)
         break;
       mpfr_sub (s, s, u, MPFR_RNDN); /* error <= 24 + n/2 */
-      if (mpfr_get_exp (s) < exps)
-        e <<= exps - mpfr_get_exp (s);
+      if (MPFR_GET_EXP (s) < exps)
+        e <<= exps - MPFR_GET_EXP (s);
       e ++; /* error in mpfr_sub */
       f = 10 * n + 4;
       while (expu < exps)
