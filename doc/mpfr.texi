@@ -1735,8 +1735,11 @@ m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
 $m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
 @end tex
 with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
+
+The argument @var{b} must be in the range 2 to 62; this is the range of bases
+supported by the @code{mpfr_get_str} function. Note that contrary to the base
+argument of this function, negative values are not accepted.
 @end deftypefun
-The argument @var{b} should be in the range 2 to 62.
 
 @anchor{mpfr_get_str}
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
