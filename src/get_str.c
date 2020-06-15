@@ -2484,7 +2484,7 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
 size_t
 mpfr_get_str_ndigits (int b, mpfr_prec_t p)
 {
-  MPFR_ASSERTD(2 <= b && b <= 62);
+  MPFR_ASSERTN (2 <= b && b <= 62);
 
   /* deal first with power of two bases, since even for those, mpfr_ceil_mul
      might return a value too large by 1 */
