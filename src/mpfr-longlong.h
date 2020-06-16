@@ -7,6 +7,7 @@ GNU MP 6.2.0, with the following changes:
   * the copyright notice (note: only LGPL 3+ is used in MPFR);
   * the code declared as added for MPFR just below these comments;
   * __GMP_DECLSPEC renamed to __MPFR_DECLSPEC.
+  * a buggy branch of sub_ddmmss disabled for 64-bit __aarch64__
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -583,7 +584,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   } while (0)
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
   do {									\
-    if (__builtin_constant_p (bl) && -(UDItype)(bl) < 0x1000)		\
+    /* if 0 added for MPFR: buggy branch */                             \
+    if (0 && __builtin_constant_p (bl) && -(UDItype)(bl) < 0x1000)      \
       __asm__ ("adds\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
 	       : "=r,r" (sh), "=&r,&r" (sl)				\
 	       : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),	\
