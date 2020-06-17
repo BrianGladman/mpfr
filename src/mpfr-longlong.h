@@ -7,7 +7,6 @@ GNU MP 6.2.0, with the following changes:
   * the copyright notice (note: only LGPL 3+ is used in MPFR);
   * the code declared as added for MPFR just below these comments;
   * __GMP_DECLSPEC renamed to __MPFR_DECLSPEC.
-  * a buggy branch of sub_ddmmss disabled for 64-bit __aarch64__
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -442,20 +441,12 @@ long __MPN(count_leading_zeros) (UDItype);
 #if defined (__arm__) && (defined (__thumb2__) || !defined (__thumb__)) \
     && W_TYPE_SIZE == 32
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl) && -(USItype)(bl) < 0x100)		\
-      __asm__ ("subs\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
+  __asm__ ("adds\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
 	   : "=r" (sh), "=&r" (sl)					\
-	       : "r" (ah), "rI" (bh),					\
-		 "%r" (al), "rI" (-(USItype)(bl)) __CLOBBER_CC);	\
-    else								\
-      __asm__ ("adds\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
-	   : "=r" (sh), "=&r" (sl)					\
-	   : "r" (ah), "rI" (bh), "%r" (al), "rI" (bl) __CLOBBER_CC);	\
-  } while (0)
+	   : "r" (ah), "rI" (bh), "%r" (al), "rI" (bl) __CLOBBER_CC)
 /* FIXME: Extend the immediate range for the low word by using both ADDS and
-   SUBS, since they set carry in the same way.  Note: We need separate
-   definitions for thumb and non-thumb due to the absence of RSC under thumb. */
+   SUBS, since they set carry in the same way.  We need separate definitions
+   for thumb and non-thumb since thumb lacks RSC.  */
 #if defined (__thumb__)
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
   do {									\
@@ -570,32 +561,15 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 /* FIXME: Extend the immediate range for the low word by using both
    ADDS and SUBS, since they set carry in the same way.  */
 #define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl) && -(UDItype)(bl) < 0x1000)		\
-      __asm__ ("subs\t%1, %x4, %5\n\tadc\t%0, %x2, %x3"			\
-	       : "=r" (sh), "=&r" (sl)					\
-	       : "rZ" ((UDItype)(ah)), "rZ" ((UDItype)(bh)),		\
-		 "%r" ((UDItype)(al)), "rI" (-(UDItype)(bl)) __CLOBBER_CC);\
-    else								\
-      __asm__ ("adds\t%1, %x4, %5\n\tadc\t%0, %x2, %x3"			\
-	       : "=r" (sh), "=&r" (sl)					\
-	       : "rZ" ((UDItype)(ah)), "rZ" ((UDItype)(bh)),		\
-		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl)) __CLOBBER_CC);\
-  } while (0)
+  __asm__ ("adds\t%1, %x4, %5\n\tadc\t%0, %x2, %x3"			\
+	   : "=r" (sh), "=&r" (sl)					\
+	   : "rZ" ((UDItype)(ah)), "rZ" ((UDItype)(bh)),		\
+	     "%r" ((UDItype)(al)), "rI" ((UDItype)(bl)) __CLOBBER_CC)
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    /* if 0 added for MPFR: buggy branch */                             \
-    if (0 && __builtin_constant_p (bl) && -(UDItype)(bl) < 0x1000)      \
-      __asm__ ("adds\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
-	       : "=r,r" (sh), "=&r,&r" (sl)				\
-	       : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),	\
-		 "r,Z"   ((UDItype)(al)), "rI,r" (-(UDItype)(bl)) __CLOBBER_CC);\
-    else								\
-      __asm__ ("subs\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
-	       : "=r,r" (sh), "=&r,&r" (sl)				\
-	       : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),	\
-		 "r,Z"   ((UDItype)(al)), "rI,r"  ((UDItype)(bl)) __CLOBBER_CC);\
-  } while(0);
+  __asm__ ("subs\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
+	   : "=r,r" (sh), "=&r,&r" (sl)					\
+	   : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),		\
+	     "r,Z"   ((UDItype)(al)), "rI,r"  ((UDItype)(bl)) __CLOBBER_CC)
 #if __GMP_GNUC_PREREQ (4,9)
 #define umul_ppmm(w1, w0, u, v) \
   do {									\
@@ -1498,73 +1472,38 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl))		\
 		 __CLOBBER_CC);						\
   } while (0)
-/* We use "*rI" for the constant operand here, since with just "I", gcc barfs.
-   This might seem strange, but gcc folds away the dead code late.  */
 #define sub_ddmmss(sh, sl, ah, al, bh, bl) \
   do {									\
-    if (__builtin_constant_p (bl) && bl > -0x8000 && bl <= 0x8000) {	\
-	if (__builtin_constant_p (ah) && (ah) == 0)			\
-	  __asm__ ("addic %1,%3,%4\n\tsubfze %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   :                       "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
-	  __asm__ ("addic %1,%3,%4\n\tsubfme %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   :                       "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == 0)		\
-	  __asm__ ("addic %1,%3,%4\n\taddme %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)),				\
-		     "rI" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
-	  __asm__ ("addic %1,%3,%4\n\taddze %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)),				\
-		     "rI" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
-		     __CLOBBER_CC);					\
-	else								\
-	  __asm__ ("addic %1,%4,%5\n\tsubfe %0,%3,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
-		     __CLOBBER_CC);					\
-    } else {								\
-	if (__builtin_constant_p (ah) && (ah) == 0)			\
-	  __asm__ ("subf%I3c %1,%4,%3\n\tsubfze %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   :                       "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
-	  __asm__ ("subf%I3c %1,%4,%3\n\tsubfme %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   :                       "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == 0)		\
-	  __asm__ ("subf%I3c %1,%4,%3\n\taddme %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)),				\
-		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
-		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
-	  __asm__ ("subf%I3c %1,%4,%3\n\taddze %0,%2"			\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)),				\
-		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
-		     __CLOBBER_CC);					\
-	else								\
-	  __asm__ ("subf%I4c %1,%5,%4\n\tsubfe %0,%3,%2"		\
-		   : "=r" (sh), "=&r" (sl)				\
-		   : "r"  ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
-		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
-		     __CLOBBER_CC);					\
-    }									\
+    if (__builtin_constant_p (ah) && (ah) == 0)				\
+      __asm__ ("subf%I3c %1,%4,%3\n\tsubfze %0,%2"			\
+	       : "=r" (sh), "=&r" (sl)					\
+	       :                       "r" ((UDItype)(bh)),		\
+		 "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
+		 __CLOBBER_CC);						\
+    else if (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)		\
+      __asm__ ("subf%I3c %1,%4,%3\n\tsubfme %0,%2"			\
+	       : "=r" (sh), "=&r" (sl)					\
+	       :                       "r" ((UDItype)(bh)),		\
+		 "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
+		 __CLOBBER_CC);						\
+    else if (__builtin_constant_p (bh) && (bh) == 0)			\
+      __asm__ ("subf%I3c %1,%4,%3\n\taddme %0,%2"			\
+	       : "=r" (sh), "=&r" (sl)					\
+	       : "r"  ((UDItype)(ah)),					\
+		 "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
+		 __CLOBBER_CC);						\
+    else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)		\
+      __asm__ ("subf%I3c %1,%4,%3\n\taddze %0,%2"			\
+	       : "=r" (sh), "=&r" (sl)					\
+	       : "r"  ((UDItype)(ah)),					\
+		 "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
+		 __CLOBBER_CC);						\
+    else								\
+      __asm__ ("subf%I4c %1,%5,%4\n\tsubfe %0,%3,%2"			\
+	       : "=r" (sh), "=&r" (sl)					\
+	       : "r"  ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
+		 "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
+		 __CLOBBER_CC);						\
   } while (0)
 #endif /* ! _LONG_LONG_LIMB */
 #define count_leading_zeros(count, x) \
