@@ -113,6 +113,12 @@ check_macros (void)
       /* Failure in r13626 on x86_64 with the clang-9 1:9-1 Debian package,
          with any optimization level: c = 2 instead of 1
          Bug report: https://bugs.llvm.org/show_bug.cgi?id=43557 */
+      /* [2020-06-17]
+         If one adds tcc support for macros using __builtin_constant_p
+         in mpfr.h by testing __TINYC__, one also gets a failure.
+         Bug report: https://savannah.nongnu.org/bugs/?58606
+         "__builtin_constant_p is buggy on argument with side effect and
+         constant value" */
       printf ("Error 3 on mpfr_cmp_ui(x,17) in check_macros\n"
               "(c = %d instead of 1)\n", c);
       exit (1);
