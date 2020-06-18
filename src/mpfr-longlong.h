@@ -6,7 +6,9 @@ This file is part of the GNU MPFR Library and has been copied from
 GNU MP 6.2.0, with the following changes:
   * the copyright notice (note: only LGPL 3+ is used in MPFR);
   * the code declared as added for MPFR just below these comments;
-  * __GMP_DECLSPEC renamed to __MPFR_DECLSPEC.
+  * __GMP_DECLSPEC renamed to __MPFR_DECLSPEC;
+  * patch on https://gmplib.org/list-archives/gmp-bugs/2020-June/004807.html
+    for arm / aarch64 / 64-bit powerpc applied.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
