@@ -32,6 +32,8 @@ bug20200703 (void)
 
   mpfr_init (x);
   mpfr_init (y);
+  mpfr_set_si (x, 73333, MPFR_RNDN);
+  mpfr_jn (y, 73333, x, MPFR_RNDN);
   mpfr_set_si (x, 733333, MPFR_RNDN);
   mpfr_jn (y, 733333, x, MPFR_RNDN);
   mpfr_clear (x);
