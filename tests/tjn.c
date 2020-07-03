@@ -22,6 +22,22 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* mpfr_jn doesn't terminate. Bug reported by Alex Coplan on 2020-07-03.
+* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
+*/
+static void
+bug20200703 (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_set_si (x, 733333, MPFR_RNDN);
+  mpfr_jn (y, 733333, x, MPFR_RNDN);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -40,6 +56,9 @@ main (int argc, char *argv[])
     }
 
   tests_start_mpfr ();
+
+  if (getenv ("MPFR_CHECK_EXPENSIVE") != NULL)
+    bug20200703 ();
 
   mpfr_init (x);
   mpfr_init (y);
@@ -293,12 +312,6 @@ main (int argc, char *argv[])
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
-
-  /* mpfr_jn doesn't terminate. Bug reported by Alex Coplan on 2020-07-03.
-   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
-   */
-  mpfr_set_si (x, 733333, MPFR_RNDN);
-  mpfr_jn (y, 733333, x, MPFR_RNDN);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -49,7 +49,18 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   mpfr_exp_t err2, err;
   MPFR_ZIV_DECL (loop);
 
-  mpfr_init (c);
+  mpfr_init2 (c, 64);
+
+  /* The terms of the asymptotic expansion grow like mu^(2k)/(8z)^(2k), where
+     mu = 4n^2, thus we need mu < 8z so that it converges, i.e., n^2/2 < z. */
+  mpfr_set_ui (c, n, MPFR_RNDU);
+  mpfr_mul_ui (c, c, n, MPFR_RNDU);
+  mpfr_div_2ui (c, c, 1, MPFR_RNDU);
+  if (mpfr_cmp (c, z) >= 0)
+    {
+      mpfr_clear (c);
+      return 0; /* asymptotic expansion failed */
+    }
 
   w = MPFR_PREC(res) + MPFR_INT_CEIL_LOG2(MPFR_PREC(res)) + 4;
 
