@@ -294,6 +294,12 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* mpfr_jn doesn't terminate. Bug reported by Alex Coplan on 2020-07-03.
+   * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
+   */
+  mpfr_set_si (x, 733333, MPFR_RNDN);
+  mpfr_jn (y, 733333, x, MPFR_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (y);
 
