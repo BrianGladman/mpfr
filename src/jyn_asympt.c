@@ -92,6 +92,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       for (k = 1, stop = 0; stop < 4; k++)
         {
           /* compute next term: t(k)/t(k-1) = (2n+2k-1)(2n-2k+1)/(8kz) */
+          MPFR_LOG_MSG (("loop (k,stop) = (%ld,%d)\n", k, stop));
           mpfr_mul_si (t, t, 2 * (n + k) - 1, MPFR_RNDN); /* err <= err_k + 1 */
           mpfr_mul_si (t, t, 2 * (n - k) + 1, MPFR_RNDN); /* err <= err_k + 2 */
           mpfr_div_ui (t, t, k, MPFR_RNDN);               /* err <= err_k + 3 */
