@@ -590,6 +590,11 @@ Environment variables that affect the tests:
 + MPFR_CHECK_LARGEMEM:  Define to enable tests that take a lot of memory.
 
 + MPFR_CHECK_EXPENSIVE: Define to enable tests that take a lot of time.
+                        Warning! The --enable-assert=full option should
+                        not be used, otherwise this can take much too
+                        long. While checking assertions (--enable-assert)
+                        may be useful with MPFR_CHECK_EXPENSIVE, the
+                        --enable-assert=full is not necessary with it.
 
 + MPFR_CHECK_LIBC_PRINTF:
                         Define to enable comparisons with the printf

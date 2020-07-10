@@ -24,6 +24,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* mpfr_jn doesn't terminate. Bug reported by Alex Coplan on 2020-07-03.
  * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
+ * Note: This test is enabled only with MPFR_CHECK_EXPENSIVE. But do not
+ * use that with --enable-assert=full, as it may take more than 1 hour!
  */
 static void
 bug20200703 (void)
