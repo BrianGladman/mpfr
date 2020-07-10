@@ -23,8 +23,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 /* mpfr_jn doesn't terminate. Bug reported by Alex Coplan on 2020-07-03.
-* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
-*/
+ * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96044
+ */
 static void
 bug20200703 (void)
 {
