@@ -44,6 +44,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *   https://gforge.inria.fr/tracker/index.php?func=detail&aid=21849&group_id=136&atid=619
  * They could be avoided by accessing the fields directly like
  * in get_d64.c for _Decimal64.
+ * Another MB or so could be saved with a direct implementation of
+ * string_to_Decimal128 (i.e. avoiding _Decimal128 operations).
  */
 
 /* construct a decimal128 NaN */
