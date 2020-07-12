@@ -36,6 +36,16 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define DEC128_MAX 9.999999999999999999999999999999999E6144dl
 #endif
 
+/* FIXME: The double to _Decimal128 conversions
+ *   (_Decimal128) MPFR_DBL_NAN
+ *   (_Decimal128) (negative ? MPFR_DBL_INFM : MPFR_DBL_INFP)
+ * below makes GCC generate 3 MB of code:
+ *   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96173
+ *   https://gforge.inria.fr/tracker/index.php?func=detail&aid=21849&group_id=136&atid=619
+ * They could be avoided by accessing the fields directly like
+ * in get_d64.c for _Decimal64.
+ */
+
 /* construct a decimal128 NaN */
 static _Decimal128
 get_decimal128_nan (void)
