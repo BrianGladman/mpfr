@@ -239,7 +239,8 @@ check_set_get (long double d)
               printf ("  d ~= %.36Le (output may be wrong!)\n", d);
               printf ("  e ~= %.36Le (output may be wrong!)\n", e);
               ld_trace ("  d", d);
-              printf ("  x = "); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
+              printf ("  x = ");
+              mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
               printf ("\n");
               ld_trace ("  e", e);
               printf ("  d = ");
@@ -286,16 +287,16 @@ test_small (void)
                  mpfr_erangeflag_p ()))
     {
       printf ("Error with x = ");
-      mpfr_out_str (NULL, 10, 21, x, MPFR_RNDN);
+      mpfr_out_str (stdout, 10, 21, x, MPFR_RNDN);
       printf (" = ");
-      mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
+      mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
       printf ("\n        -> d = %.33Le", d);
       printf ("\n        -> y = ");
-      mpfr_out_str (NULL, 10, 21, y, MPFR_RNDN);
+      mpfr_out_str (stdout, 10, 21, y, MPFR_RNDN);
       printf (" = ");
-      mpfr_out_str (NULL, 16, 0, y, MPFR_RNDN);
+      mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
       printf ("\n        -> |x-y| = ");
-      mpfr_out_str (NULL, 16, 0, z, MPFR_RNDN);
+      mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
