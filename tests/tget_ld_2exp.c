@@ -60,7 +60,7 @@ check_round (void)
                   printf  ("   f    ");
                   mpfr_out_str (stdout, 2, 0, f, MPFR_RNDN);
                   printf  ("\n");
-                  d_trace ("   got  ", got);
+                  ld_trace ("   got  ", got);
                   printf  ("   got exp  %ld\n", got_exp);
                   exit(1);
                 }
