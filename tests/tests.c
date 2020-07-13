@@ -550,22 +550,19 @@ Isnan (double d)
 void
 d_trace (const char *name, double d)
 {
-  union {
-    double         d;
-    unsigned char  b[sizeof(double)];
-  } u;
+  double x = d;
+  unsigned char *p = (unsigned char *) &x;
   int  i;
 
   if (name != NULL && name[0] != '\0')
-    printf ("%s=", name);
+    printf ("%s = ", name);
 
-  u.d = d;
   printf ("[");
-  for (i = 0; i < (int) sizeof (u.b); i++)
+  for (i = 0; i < (int) sizeof (double); i++)
     {
       if (i != 0)
         printf (" ");
-      printf ("%02X", (int) u.b[i]);
+      printf ("%02X", (unsigned int) p[i]);
     }
   printf ("] %.20g\n", d);
 }
@@ -573,22 +570,19 @@ d_trace (const char *name, double d)
 void
 ld_trace (const char *name, long double ld)
 {
-  union {
-    long double    ld;
-    unsigned char  b[sizeof(long double)];
-  } u;
+  long double x = ld;
+  unsigned char *p = (unsigned char *) &x;
   int  i;
 
   if (name != NULL && name[0] != '\0')
-    printf ("%s=", name);
+    printf ("%s = ", name);
 
-  u.ld = ld;
   printf ("[");
-  for (i = 0; i < (int) sizeof (u.b); i++)
+  for (i = 0; i < (int) sizeof (long double); i++)
     {
       if (i != 0)
         printf (" ");
-      printf ("%02X", (int) u.b[i]);
+      printf ("%02X", (unsigned int) p[i]);
     }
   printf ("] %.20Lg\n", ld);
 }
