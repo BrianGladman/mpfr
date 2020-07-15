@@ -361,7 +361,7 @@ check_subnormal (void)
       e = mpfr_get_ld (x, MPFR_RNDN);
       if (e != d)
         {
-          printf ("Error for mpfr_get_ld o mpfr_set_ld\n");
+          printf ("Error in check_subnormal for mpfr_get_ld o mpfr_set_ld\n");
           printf ("d=%.30Le\n", d);
           printf ("x="); mpfr_dump (x);
           printf ("e=%.30Le\n", e);
