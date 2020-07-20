@@ -25,6 +25,21 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* Warning! Do not use any conversion between binary and decimal types,
+ * otherwise GCC will generate from 2 to 3 MB of code (depending on the
+ * GCC version) in the MPFR shared library when the _Decimal128 format
+ * is BID (e.g. on x86).
+ *   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96173
+ *   https://gforge.inria.fr/tracker/index.php?func=detail&aid=21849&group_id=136&atid=619
+ *
+ * FIXME: Try to save even more space in the MPFR library by avoiding
+ * _Decimal128 operations entirely. These operations now appear only in
+ * string_to_Decimal128(). In the case where the _Decimal128 format is
+ * recognized as BID, this function should be reimplemented directly by
+ * using the specification of the encoding of this format, as already
+ * done for _Decimal64 (see string_to_Decimal64 in get_d64.c).
+ */
+
 #include "mpfr-impl.h"
 #include "ieee_floats.h"
 
@@ -35,18 +50,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef DEC128_MAX
 # define DEC128_MAX 9.999999999999999999999999999999999E6144dl
 #endif
-
-/* FIXME: The double to _Decimal128 conversions
- *   (_Decimal128) MPFR_DBL_NAN
- *   (_Decimal128) (negative ? MPFR_DBL_INFM : MPFR_DBL_INFP)
- * below makes GCC generate 3 MB of code:
- *   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96173
- *   https://gforge.inria.fr/tracker/index.php?func=detail&aid=21849&group_id=136&atid=619
- * They could be avoided by accessing the fields directly like
- * in get_d64.c for _Decimal64.
- * Another MB or so could be saved with a direct implementation of
- * string_to_Decimal128 (i.e. avoiding _Decimal128 operations).
- */
 
 /* construct a decimal128 NaN */
 static _Decimal128
