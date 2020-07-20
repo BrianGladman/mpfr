@@ -1350,6 +1350,16 @@ Use assertions (MPFR_ASSERTN) instead.
 
 ===========================================================================
 
+The only compiler known to support _Decimal64 and _Decimal128 is GCC.
+In code related to these types, when the decimal encoding can be BID,
+do not use any conversion between binary and decimal types, otherwise
+GCC will generate from 2 to 3 MB of code (depending on the GCC version)
+in the MPFR shared library when the encoding is BID:
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96173
+  https://gforge.inria.fr/tracker/index.php?func=detail&aid=21849&group_id=136&atid=619
+
+===========================================================================
+
 When using GNU extensions (based on the value of the __GNUC_* macros), check
 whether they work with ICC. The following paper can give useful information:
 "Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
