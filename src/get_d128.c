@@ -52,14 +52,14 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static _Decimal128
 get_decimal128_nan (void)
 {
-  return (_Decimal128) MPFR_DBL_NAN;
+  return 0.0dl / 0.0dl;
 }
 
 /* construct the decimal128 Inf with given sign */
 static _Decimal128
 get_decimal128_inf (int negative)
 {
-  return (_Decimal128) (negative ? MPFR_DBL_INFM : MPFR_DBL_INFP);
+  return negative ? - 1.0dl / 0.0dl : 1.0dl / 0.0dl;
 }
 
 /* construct the decimal128 zero with given sign */
@@ -67,7 +67,7 @@ static _Decimal128
 get_decimal128_zero (int negative)
 {
   _Decimal128 zero = 0;
-  return (_Decimal128) (negative ? -zero : zero);
+  return negative ? - 0.0dl : 0.0dl;
 }
 
 /* construct the decimal128 smallest non-zero with given sign:
