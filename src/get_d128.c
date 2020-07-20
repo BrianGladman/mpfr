@@ -66,7 +66,6 @@ get_decimal128_inf (int negative)
 static _Decimal128
 get_decimal128_zero (int negative)
 {
-  _Decimal128 zero = 0;
   return negative ? - 0.0dl : 0.0dl;
 }
 
