@@ -2183,7 +2183,8 @@ some functions on some particular inputs might be very hard to round
 (i.e. the Table Maker's Dilemma occurs in much larger precisions than
 normally expected from the context), meaning that the internal precision
 needs to be increased even more; but it is conjectured that the needed
-precision has a reasonable bound.
+precision has a reasonable bound (and in particular, that potentially
+exact cases are known and can be detected efficiently).
 @c Let's not give too many details, but by context, it is implied that
 @c the input precision is involved if the cases have been built so that
 @c they are hard to round, like in function bad_cases in the test suite
