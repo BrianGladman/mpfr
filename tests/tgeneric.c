@@ -205,7 +205,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                  take a larger input precision in general, else
                  take a smaller precision. */
               xprec *= (prec < 16 ? 256.0 : 1.0) *
-                (double) randlimb () / MPFR_LIMB_MAX;
+                (double) randlimb () / (double) MPFR_LIMB_MAX;
               if (xprec < MPFR_PREC_MIN)
                 xprec = MPFR_PREC_MIN;
             }
