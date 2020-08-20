@@ -1630,7 +1630,7 @@ test_locale (void)
 
       strcpy (buf, "(5) 10^i=1");
       for (j = i; j > 0; j--)
-        strcat (buf, ",0" + (j % 3 != 0));
+        strcat (buf, (j % 3 == 0) ? ",0" : "0");
       strcat (buf, " ");
 
       mpfr_set_str (x, s, 10, MPFR_RNDN);
