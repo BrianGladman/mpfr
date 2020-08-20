@@ -777,6 +777,24 @@ does not conform to the C standard by default. References:
 
 [*] https://stackoverflow.com/questions/4331200/what-do-f-and-d-mean-at-the-end-of-numeric-literals
 
+   =====================================================================
+
+For string suffix selection, do not write expressions of the form
+string + integer, such as
+
+  "foo" + i
+
+because Clang emits a warning
+
+  adding 'int' to a string does not append to the string [-Wstring-plus-int]
+
+Instead, one may write
+
+  &"foo"[i]    or    (char *) "foo" + i
+
+(the first form is the one suggested by Clang, the second one is more
+immediate to understand).
+
 ===========================================================================
 
 Avoid variable names "l", "I" and "O", which look like "1" and "0" with
