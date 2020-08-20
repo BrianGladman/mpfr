@@ -1610,7 +1610,7 @@ test_locale (void)
 
       strcpy (buf, "(4) 10^i=1");
       for (j = i; j > 0; j--)
-        strcat (buf, ",0" + (j % 3 != 0));
+        strcat (buf, (j % 3 == 0) ? ",0" : "0");
       strcat (buf, " ");
       mpfr_set_str (x, v + sizeof (v) - 3 - i, 10, MPFR_RNDN);
       check_sprintf (buf, "(4) 10^i=%'.0Rf ", x);
