@@ -74,7 +74,7 @@ const int prec_max_printf = 5000;
 int stdout_redirect;
 
 static void
-check (const char *fmt, mpfr_t x)
+check (const char *fmt, mpfr_ptr x)
 {
   if (mpfr_printf (fmt, x) == -1)
     {

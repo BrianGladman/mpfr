@@ -23,7 +23,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-teq (mpfr_t x)
+teq (mpfr_ptr x)
 {
   mpfr_t y;
   unsigned long k, px, mx;

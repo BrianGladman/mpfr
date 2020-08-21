@@ -963,7 +963,7 @@ floor_log10 (mpfr_srcptr x)
 #define NDIGITS 8
 
 MPFR_RETURNS_NONNULL static char *
-mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, const mpfr_t op,
+mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
                       const struct printf_spec spec)
 {
   size_t ndigits;

@@ -31,7 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    for determinating the relative error.
 */
 static int
-li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
+li2_series (mpfr_ptr sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
 {
   int i;
   mpfr_t s, u, v, w;

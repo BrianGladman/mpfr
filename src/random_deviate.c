@@ -280,7 +280,7 @@ mpfr_random_deviate_less (mpfr_random_deviate_t x, mpfr_random_deviate_t y,
 /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
 int
 mpfr_random_deviate_value (int neg, unsigned long n,
-                           mpfr_random_deviate_t x, mpfr_t z,
+                           mpfr_random_deviate_t x, mpfr_ptr z,
                            gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   /* r is used to add as many bits as necessary to match the precision of z */

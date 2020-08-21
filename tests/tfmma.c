@@ -24,7 +24,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* check both mpfr_fmma and mpfr_fmms */
 static void
-random_test (mpfr_t a, mpfr_t b, mpfr_t c, mpfr_t d, mpfr_rnd_t rnd)
+random_test (mpfr_ptr a, mpfr_ptr b, mpfr_ptr c, mpfr_ptr d, mpfr_rnd_t rnd)
 {
   mpfr_t ref, res, ab, cd;
   int inex_ref, inex_res;

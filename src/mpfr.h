@@ -781,8 +781,8 @@ __MPFR_DECLSPEC int mpfr_subnormalize (mpfr_ptr, int, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_strtofr (mpfr_ptr, const char *, char **, int,
                                   mpfr_rnd_t);
 
-__MPFR_DECLSPEC void mpfr_round_nearest_away_begin (mpfr_t);
-__MPFR_DECLSPEC int mpfr_round_nearest_away_end (mpfr_t, int);
+__MPFR_DECLSPEC void mpfr_round_nearest_away_begin (mpfr_ptr);
+__MPFR_DECLSPEC int mpfr_round_nearest_away_end (mpfr_ptr, int);
 
 __MPFR_DECLSPEC size_t mpfr_custom_get_size (mpfr_prec_t);
 __MPFR_DECLSPEC void mpfr_custom_init (void *, mpfr_prec_t);
@@ -1080,10 +1080,12 @@ extern "C" {
 #define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
 #define mpfr_get_sj __gmpfr_mpfr_get_sj
 #define mpfr_get_uj __gmpfr_mpfr_get_uj
-__MPFR_DECLSPEC int mpfr_set_sj (mpfr_t, intmax_t, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_set_sj_2exp (mpfr_t, intmax_t, intmax_t, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_set_uj (mpfr_t, uintmax_t, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_set_uj_2exp (mpfr_t, uintmax_t, intmax_t, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_set_sj (mpfr_ptr, intmax_t, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_set_sj_2exp (mpfr_ptr, intmax_t, intmax_t,
+                                      mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_set_uj (mpfr_ptr, uintmax_t, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_set_uj_2exp (mpfr_ptr, uintmax_t, intmax_t,
+                                      mpfr_rnd_t);
 __MPFR_DECLSPEC intmax_t mpfr_get_sj (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC uintmax_t mpfr_get_uj (mpfr_srcptr, mpfr_rnd_t);
 

@@ -890,7 +890,7 @@ tiny (int stop)
    computing with a working precision p2. Assume that x is not an
    integer <= 2. */
 static void
-exp_lgamma (mpfr_t x, mpfr_prec_t p1, mpfr_prec_t p2)
+exp_lgamma (mpfr_ptr x, mpfr_prec_t p1, mpfr_prec_t p2)
 {
   mpfr_t yd, yu, zd, zu;
   int inexd, inexu, sign;

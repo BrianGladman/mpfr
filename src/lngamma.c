@@ -31,7 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    precision should be >= 4.
 */
 static void
-mpfr_gamma_alpha (mpfr_t s, mpfr_prec_t p)
+mpfr_gamma_alpha (mpfr_ptr s, mpfr_prec_t p)
 {
   MPFR_LOG_FUNC
     (("p=%Pu", p),

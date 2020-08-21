@@ -80,7 +80,7 @@ E (mpfr_random_deviate_t x, gmp_randstate_t r,
 
 /* return an exponential random deviate with mean 1 as a MPFR  */
 int
-mpfr_erandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
+mpfr_erandom (mpfr_ptr z, gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   mpfr_random_deviate_t x, p, q;
   int inex;

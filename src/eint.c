@@ -36,7 +36,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Return PREC(y) when the truncated series does not converge.
 */
 static mpfr_exp_t
-mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
+mpfr_eint_aux (mpfr_ptr y, mpfr_srcptr x)
 {
   mpfr_t eps; /* dynamic (absolute) error bound on t */
   mpfr_t erru, errs;

@@ -56,7 +56,7 @@ static const mp_limb_t atan_table[][3] = {
   };
 
 static void
-set_table (mpfr_t y, const mp_limb_t x[3])
+set_table (mpfr_ptr y, const mp_limb_t x[3])
 {
   mpfr_prec_t p = MPFR_PREC(y);
   mp_size_t n = MPFR_PREC2LIMBS(p);

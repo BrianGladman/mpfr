@@ -463,7 +463,7 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
    Return err such that the relative error is bounded by 2^err ulps.
 */
 static int
-sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+sincos_aux (mpfr_ptr s, mpfr_ptr c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t prec_s, sh;
   mpz_t Q, S, C, Q2, S2, C2, y;
@@ -577,7 +577,7 @@ sincos_aux (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    Assumes s differs from c.
  */
 int
-mpfr_sincos_fast (mpfr_t s, mpfr_t c, mpfr_srcptr x, mpfr_rnd_t rnd)
+mpfr_sincos_fast (mpfr_ptr s, mpfr_ptr c, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inexs, inexc;
   mpfr_t x_red, ts, tc;

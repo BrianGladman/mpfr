@@ -59,7 +59,7 @@ get_prec_max (mpfr_t *t, int n)
 }
 
 static void
-get_exact_sum (mpfr_t sum, mpfr_t *tab, int n)
+get_exact_sum (mpfr_ptr sum, mpfr_t *tab, int n)
 {
   int i;
 
@@ -1198,7 +1198,7 @@ check_coverage (void)
 }
 
 static int
-mpfr_sum_naive (mpfr_t s, mpfr_t *x, int n, mpfr_rnd_t rnd)
+mpfr_sum_naive (mpfr_ptr s, mpfr_t *x, int n, mpfr_rnd_t rnd)
 {
   int ret, i;
   switch (n)

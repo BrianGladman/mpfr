@@ -76,7 +76,7 @@ __MPFR_DECLSPEC int
 /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
 __MPFR_DECLSPEC int
   mpfr_random_deviate_value (int, unsigned long,
-                             mpfr_random_deviate_ptr, mpfr_t,
+                             mpfr_random_deviate_ptr, mpfr_ptr,
                              gmp_randstate_t, mpfr_rnd_t);
 
 #if defined(__cplusplus)

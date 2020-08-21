@@ -369,7 +369,7 @@ check_convergence (void)
 /* given y = o(x/u), x, u, find the inexact flag by
    multiplying y by u */
 static int
-get_inexact (mpfr_t y, mpfr_t x, mpfr_t u)
+get_inexact (mpfr_ptr y, mpfr_ptr x, mpfr_ptr u)
 {
   mpfr_t xx;
   int inex;

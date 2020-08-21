@@ -24,7 +24,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* set bit n of x to b, where bit 0 is the most significant one */
 static void
-set_bit (mpfr_t x, unsigned int n, int b)
+set_bit (mpfr_ptr x, unsigned int n, int b)
 {
   unsigned l;
   mp_size_t xn;

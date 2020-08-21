@@ -23,7 +23,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_set_str (mpfr_t x, const char *str, int base, mpfr_rnd_t rnd)
+mpfr_set_str (mpfr_ptr x, const char *str, int base, mpfr_rnd_t rnd)
 {
   char *p;
 

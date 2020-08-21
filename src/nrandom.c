@@ -155,7 +155,7 @@ B (unsigned long k, mpfr_random_deviate_t x, gmp_randstate_t r,
 
 /* return a normal random deviate with mean 0 and variance 1 as a MPFR  */
 int
-mpfr_nrandom (mpfr_t z, gmp_randstate_t r, mpfr_rnd_t rnd)
+mpfr_nrandom (mpfr_ptr z, gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   mpfr_random_deviate_t x, p, q;
   int inex;

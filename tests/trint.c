@@ -367,7 +367,7 @@ test_against_libc (void)
 #endif
 
 static void
-err (const char *str, mp_size_t s, mpfr_t x, mpfr_t y, mpfr_prec_t p,
+err (const char *str, mp_size_t s, mpfr_ptr x, mpfr_ptr y, mpfr_prec_t p,
      mpfr_rnd_t r, int trint, int inexact)
 {
   printf ("Error: %s\ns = %u, p = %u, r = %s, trint = %d, inexact = %d\nx = ",

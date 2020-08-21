@@ -181,7 +181,7 @@ mpfr_const_euler_bs_2 (mpz_t P, mpz_t Q, mpz_t T,
 }
 
 int
-mpfr_const_euler_internal (mpfr_t x, mpfr_rnd_t rnd)
+mpfr_const_euler_internal (mpfr_ptr x, mpfr_rnd_t rnd)
 {
   mpfr_const_euler_bs_t sum;
   mpz_t t, u, v;
