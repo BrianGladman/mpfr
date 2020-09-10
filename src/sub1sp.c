@@ -589,7 +589,7 @@ mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode,
           /* TODO: Change the code to generate a full subtraction with borrow,
              avoiding the test on sb and the corresponding correction. Note
              that Clang has builtins:
-               http://clang.llvm.org/docs/LanguageExtensions.html#multiprecision-arithmetic-builtins
+               https://clang.llvm.org/docs/LanguageExtensions.html#multiprecision-arithmetic-builtins
              but the generated code may not be good:
                https://llvm.org/bugs/show_bug.cgi?id=20748
              With the current source code, Clang generates on x86_64:
