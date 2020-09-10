@@ -407,7 +407,7 @@ To make a release (for the MPFR team):
      contains the new URL's.
 
      [1] https://www.gnu.org/prep/maintain/html_node/Announcements.html
-     [2] http://siteadmin.gforge.inria.fr/FAQ.html
+     [2] https://siteadmin.gforge.inria.fr/FAQ.html
      [3] See https://lists.gnu.org/mailman/listinfo/platform-testers and
      https://lists.gnu.org/archive/html/platform-testers/2011-09/msg00000.html
      [4] https://gforge.inria.fr/scm/viewvc.php/misc/www/mpfr-3.1.2/index.html?view=markup&revision=8472&root=mpfr
@@ -655,7 +655,7 @@ About undefined behavior:
   https://blog.regehr.org/archives/226
   https://blog.regehr.org/archives/232
   https://blog.regehr.org/archives/1520
-  http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html
+  https://blog.llvm.org/posts/2011-05-13-what-every-c-programmer-should-know/
 
 Type punning, strict aliasing, and optimization:
   https://blog.regehr.org/archives/959
