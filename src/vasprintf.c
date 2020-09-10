@@ -26,7 +26,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    function to return a negative value and set errno to EOVERFLOW.
    [*] The Open Group Base Specifications Issue 7, 2018 edition
        IEEE Std 1003.1-2017 (Revision of IEEE Std 1003.1-2008)
-   http://pubs.opengroup.org/onlinepubs/9699919799/functions/fprintf.html
+   https://pubs.opengroup.org/onlinepubs/9699919799/functions/fprintf.html
    This follows a defect report submitted in 2007 to austin-review-l.
    Even in case of such a failure (just because of the limitation on int),
    we try to support %n, %ln, %jn when possible. That's why the sizes (or

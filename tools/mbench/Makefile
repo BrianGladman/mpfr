@@ -58,7 +58,7 @@ NAME=mbench
 # Warning! If $(MPFR) and/or $(GMP) is regarded as a "system directory",
 # this may give unexpected results[*]; in particular, with GCC, the option
 # is ignored in such a case.
-# [*] http://austingroupbugs.net/view.php?id=187
+# [*] https://austingroupbugs.net/view.php?id=187
 ifeq	($(CC),gcc)
 INCLUDES=`test -f $(GMP_INCLUDE)/gmp.h && echo "-include $(GMP_INCLUDE)/gmp.h"` `test -f $(GMP)/gmp.h && echo "-include $(GMP)/gmp.h"` `test -f $(MPFR_INCLUDE)/mpfr.h && echo "-include $(MPFR_INCLUDE)/mpfr.h"` `test -f $(MPFR)/mpfr.h && echo "-include $(MPFR)/mpfr.h"` `test -f $(MPFR)/src/mpfr.h && echo "-include $(MPFR)/src/mpfr.h"` -I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
 else

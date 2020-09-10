@@ -442,7 +442,7 @@ mpfr_overflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)
  *
  * Code to debug branch prediction, based on Ulrich Drepper's paper
  * "What Every Programmer Should Know About Memory":
- *   http://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+ *   https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
  */
 
 extern long int __start_predict_data;

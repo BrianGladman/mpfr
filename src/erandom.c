@@ -35,7 +35,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *   "Sampling exactly from the normal distribution",
  *   ACM Trans. Math. Software 42(1), 3:1-14 (Jan. 2016).
  *   https://dx.doi.org/10.1145/2710016
- *   http://arxiv.org/abs/1303.6257
+ *   https://arxiv.org/abs/1303.6257
  * Although this improves the bit efficiency, in practice, it results in
  * a slightly slower algorithm for MPFR. So here the original von Neumann
  * algorithm is used.

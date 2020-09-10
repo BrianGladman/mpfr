@@ -21,7 +21,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 /* The approximation error bound uses Theorem 1 and Remark 2 in
-   http://arxiv.org/pdf/1312.0039v1.pdf */
+   https://arxiv.org/pdf/1312.0039v1.pdf */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

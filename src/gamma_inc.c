@@ -342,7 +342,7 @@ mpfr_gamma_inc (mpfr_ptr y, mpfr_srcptr a, mpfr_srcptr x, mpfr_rnd_t rnd)
 
    gamma(-n,x) = (-1)^n/n! [E_1(x) - exp(-x) sum((-1)^j*j!/x^(j+1), j=0..n-1)]
 
-   See also http://arxiv.org/pdf/1407.0349v1.pdf.
+   See also https://arxiv.org/pdf/1407.0349v1.pdf.
 
    Assumes 'a' is a negative integer.
 */
