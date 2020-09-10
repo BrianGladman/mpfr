@@ -529,7 +529,7 @@ dnl build tree. Other OS with the same issue might be added later.
 dnl
 dnl References:
 dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859732
-dnl   http://lists.gnu.org/archive/html/libtool/2017-05/msg00000.html
+dnl   https://lists.gnu.org/archive/html/libtool/2017-05/msg00000.html
 dnl
 dnl We need to check whether --disable-new-dtags is supported as alternate
 dnl linkers may be used (e.g., with tcc: CC=tcc LD=tcc).
