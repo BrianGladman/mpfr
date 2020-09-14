@@ -40,15 +40,9 @@ gmp_randinit_default (gmp_randstate_t state)
 void
 gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
 {
-  unsigned int s = seed;
-
-  while (seed > UINT_MAX)
-    {
-      seed /= (unsigned long int) UINT_MAX + 1;
-      s ^= seed;
-    }
-
-  srand (seed);
+  /* Note: We possibly ignore the high-order bits of seed. One should take
+     that into account when setting GMP_CHECK_RANDOMIZE for the tests. */
+  srand ((unsigned int) seed);
 }
 #endif
 
