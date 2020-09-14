@@ -45,7 +45,7 @@ gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
   while (seed > UINT_MAX)
     {
       seed /= (unsigned long int) UINT_MAX + 1;
-      s |= seed;
+      s ^= seed;
     }
 
   srand (seed);
