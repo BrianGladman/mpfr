@@ -40,9 +40,15 @@ gmp_randinit_default (gmp_randstate_t state)
 void
 gmp_randseed_ui (gmp_randstate_t state, unsigned long int seed)
 {
-  /* With a portable version of the conversion from unsigned long to long
-     (at least GCC and Clang optimize this expression to identity). */
-  srand48 (seed > LONG_MAX ? -1 - (long) ~seed : (long) seed);
+  unsigned int s = seed;
+
+  while (seed > UINT_MAX)
+    {
+      seed /= (unsigned long int) UINT_MAX + 1;
+      s |= seed;
+    }
+
+  srand (seed);
 }
 #endif
 
@@ -60,26 +66,28 @@ gmp_randinit_set (gmp_randstate_t s1, gmp_randstate_t s2)
 }
 #endif
 
+static unsigned int
+rand15 (void)
+{
+  /* With a good PRNG, we could use "rand () % 32768", but let's choose
+     the following from <http://c-faq.com/lib/randrange.html>. Note that
+     on most platforms, the compiler should generate a shift. */
+  return rand () / (RAND_MAX / 32768 + 1);
+}
+
 static mp_limb_t
 random_limb (void)
 {
-  /* lrand48() returns a random number in [0, 2^31-1],
-     but the low 15 bits do not depend on the random seed,
-     thus it is safer to use the upper bits */
-#if GMP_NUMB_BITS < 32
-  /* use the upper GMP_NUMB_BITS bits from lrand48 () */
-  return (mp_limb_t) (lrand48 () >> (31 - GMP_NUMB_BITS));
-#elif GMP_NUMB_BITS == 32
-  /* use the upper 16 bits from two lrand48 calls */
-  return (lrand48 () >> 15) + ((lrand48 () >> 15) << 16);
-#elif GMP_NUMB_BITS == 64
-  /* use the upper 16 bits from four lrand48 calls */
-  return (lrand48 () >> 15) + ((((mp_limb_t) lrand48 ()) >> 15) << 16)
-    + ((((mp_limb_t) lrand48 ()) >> 15) << 32)
-    + ((((mp_limb_t) lrand48 ()) >> 15) << 48);
-#else
-#error "GMP_NUMB_BITS should be 8, 16, 32 or >= 64"
-#endif
+  mp_limb_t r = 0;
+  int i = GMP_NUMB_BITS;
+
+  while (i > 0)
+    {
+      r = (r << 15) | rand15 ();
+      i -= 15;
+    }
+
+  return r;
 }
 
 #ifdef WANT_mpz_urandomb

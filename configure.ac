@@ -813,12 +813,6 @@ AC_COMPUTE_INT(mini_gmp_numb_bits, [(GMP_NUMB_BITS)],
 CPPFLAGS="$saved_CPPFLAGS"
 AC_MSG_RESULT([$mini_gmp_numb_bits bits ($how)])
 
-dnl We need to check the availability of lrand48 (used by random_limb)
-dnl and srand48 (used by gmp_randseed_ui), in particular because these
-dnl functions are not part of the ISO C standard.
-AC_CHECK_FUNC(lrand48,,AC_MSG_FAILURE([MPFR + mini-gmp requires lrand48]))
-AC_CHECK_FUNC(srand48,,AC_MSG_FAILURE([MPFR + mini-gmp requires srand48]))
-
 fi
 
 dnl End of setup related to GMP / mini-gmp
