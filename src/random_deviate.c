@@ -371,7 +371,7 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   if (neg)
     mpz_neg (t, t);
   /* Is -x->e representable as a mpfr_exp_t? */
-  MPFR_ASSERTN (x->e <= (mpfr_uexp_t)(-1) >> 1);
+  MPFR_ASSERTN (-x->e <= MPFR_EXP_MAX);
   /*
    * Let mpfr_set_z_2exp do all the work of rounding to the requested
    * precision, setting overflow/underflow flags, and returning the right
