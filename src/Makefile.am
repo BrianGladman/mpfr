@@ -42,7 +42,7 @@ const_pi.c pow.c pow_si.c pow_ui.c print_raw.c print_rnd_mode.c		\
 reldiff.c round_prec.c set.c setmax.c setmin.c set_d.c set_dfl_prec.c	\
 set_exp.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c	\
 set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub1.c	\
-sub_ui.c rint.c ui_div.c ui_sub.c urandom.c urandomb.c get_z_exp.c	\
+sub_ui.c rint.c ui_div.c ui_sub.c urandom.c urandomb.c get_z_2exp.c	\
 swap.c factorial.c cosh.c sinh.c tanh.c sinh_cosh.c acosh.c asinh.c	\
 atanh.c atan.c cmp2.c exp_2.c asin.c const_euler.c cos.c sin.c tan.c	\
 fma.c fms.c hypot.c log1p.c expm1.c log2.c log10.c ui_pow.c		\
@@ -62,7 +62,7 @@ round_near_x.c constant.c abort_prec_max.c stack_interface.c lngamma.c	\
 zeta_ui.c set_d64.c get_d64.c jn.c yn.c rem1.c add_d.c			\
 sub_d.c d_sub.c mul_d.c div_d.c d_div.c li2.c rec_sqrt.c min_prec.c	\
 buildopt.c digamma.c bernoulli.c isregular.c set_flt.c get_flt.c	\
-scale2.c set_z_exp.c ai.c gammaonethird.c ieee_floats.h			\
+scale2.c set_z_2exp.c ai.c gammaonethird.c ieee_floats.h		\
 grandom.c fpif.c set_float128.c get_float128.c rndna.c nrandom.c        \
 random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
 mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c invert_limb.h 	\
