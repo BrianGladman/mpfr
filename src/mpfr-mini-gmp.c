@@ -153,7 +153,9 @@ unsigned long
 gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
 {
 #ifdef MPFR_LONG_WITHIN_LIMB
-  return random_limb () % (1UL << n);
+  /* Since n may be equal to the width of unsigned long,
+     we must not shift 1UL by n as this may be UB. */
+  return n == 0 ? 0 : random_limb () & (((1UL << (n - 1)) << 1) - 1);
 #else
   unsigned long res = 0;
   int m = n; /* remaining bits to generate */
@@ -163,8 +165,8 @@ gmp_urandomb_ui (gmp_randstate_t state, unsigned long n)
       res = (res << GMP_NUMB_BITS) | (unsigned long) random_limb ();
       m -= GMP_NUMB_BITS;
     }
-  /* now m < GMP_NUMB_BITS */
-  if (m) /* generate m extra bits */
+  MPFR_ASSERTD (m < GMP_NUMB_BITS);  /* thus m < width(unsigned long) */
+  if (m != 0) /* generate m extra bits */
     res = (res << m) | (unsigned long) (random_limb () % (1UL << m));
   return res;
 #endif
