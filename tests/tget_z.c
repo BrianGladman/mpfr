@@ -1,4 +1,4 @@
-/* Test file for mpz_set_fr / mpfr_get_z.
+/* Test file for mpz_set_fr / mpfr_get_z / mpfr_get_z_2exp.
 
 Copyright 2004, 2006-2020 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
