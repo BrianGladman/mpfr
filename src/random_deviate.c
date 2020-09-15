@@ -289,6 +289,7 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   mpfr_random_size_t p = mpfr_get_prec (z); /* Number of bits in result */
   mpz_t t;
   int inex;
+  mpfr_exp_t negxe;
 
   if (n == 0)
     {
@@ -370,14 +371,22 @@ mpfr_random_deviate_value (int neg, unsigned long n,
   mpz_setbit (t, 0);     /* Set the trailing bit so result is always inexact */
   if (neg)
     mpz_neg (t, t);
-  /* Is -x->e representable as a mpfr_exp_t? */
-  MPFR_ASSERTN (-x->e <= MPFR_EXP_MAX);
+  /* Portable version of the negation of x->e, with a check of overflow. */
+  if (MPFR_UNLIKELY (x->e > MPFR_EXP_MAX))
+    {
+      /* Overflow, except when x->e = MPFR_EXP_MAX + 1 = - MPFR_EXP_MIN. */
+      MPFR_ASSERTN (MPFR_EXP_MIN + MPFR_EXP_MAX == -1 &&
+                    x->e == (mpfr_random_size_t) MPFR_EXP_MAX + 1);
+      negxe = MPFR_EXP_MIN;
+    }
+  else
+    negxe = - (mpfr_exp_t) x->e;
   /*
    * Let mpfr_set_z_2exp do all the work of rounding to the requested
    * precision, setting overflow/underflow flags, and returning the right
    * inexact value.
    */
-  inex = mpfr_set_z_2exp (z, t, -x->e, rnd);
+  inex = mpfr_set_z_2exp (z, t, negxe, rnd);
   mpz_clear (t);
   return inex;
 }
