@@ -20,6 +20,13 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* NOTE. Some tests on macro definitions are already done in src/init2.c
+ * as static assertions (in general). This allows one to get a failure at
+ * build time in case of inconsistency (probably due to search path issues
+ * in header file inclusion). This does not need to be done again in the
+ * test suite.
+ */
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
