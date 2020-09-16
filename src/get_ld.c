@@ -154,7 +154,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         unsigned long long mant = 0;
         int i;
         for (i = 0; i < 8; i++)
-          mant |= ((unsigned long) tmpmant[i] << (8*i));
+          mant |= (unsigned long long) tmpmant[i] << (8*i);
         mant >>= denorm;
         ld.s.manl = mant;
         ld.s.manh = mant >> 32;
