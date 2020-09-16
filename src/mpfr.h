@@ -822,7 +822,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
   (mpfr_round_nearest_away_begin(rop),                                  \
    mpfr_round_nearest_away_end((rop), func((rop), __VA_ARGS__, MPFR_RNDN)))
 #else
-/* C89 version: function with one input supported */
+/* C90 version: function with one input supported */
 #define mpfr_round_nearest_away(func, rop, op)                          \
   (mpfr_round_nearest_away_begin(rop),                                  \
    mpfr_round_nearest_away_end((rop), func((rop), (op), MPFR_RNDN)))

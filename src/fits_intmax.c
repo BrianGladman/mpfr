@@ -58,7 +58,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (neg)
     {
       uintmax_t s;
-      /* In C89, the division on negative integers isn't well-defined. */
+      /* In C90, the division on negative integers isn't well-defined. */
       s = SAFE_ABS (uintmax_t, INTMAX_MIN);
       for (prec = 0; s != 0; s /= 2, prec ++);
     }

@@ -200,7 +200,7 @@ check_mixed (FILE *fout)
   check_length (4, i, 29, d);
   check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz,
                   &sz);
-  check_length (5, (unsigned long) sz, 34, lu); /* no format specifier "%zu" in C89 */
+  check_length (5, (unsigned long) sz, 34, lu); /* no format specifier "%zu" in C90 */
   check_vfprintf (fout, "a. %Pu, b. %c, c. %Zi%Zn", prec, ch, mpz, &mpz);
   check_length_with_cmp (6, mpz, 17, mpz_cmp_ui (mpz, 17), Zi);
   check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %p", mpfr, mpq, &mpfr,
@@ -219,17 +219,17 @@ check_mixed (FILE *fout)
                "with -D__USE_MINGW_ANSI_STDIO might be required.\n");
 #endif
     }
-  check_length (8, (long) p, 20, ld); /* no format specifier "%td" in C89 */
+  check_length (8, (long) p, 20, ld); /* no format specifier "%td" in C90 */
 #endif
 
 #ifdef PRINTF_L
   check_vfprintf (fout, "a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
-  check_length (9, (unsigned long) sz, 30, lu); /* no format specifier "%zu" in C89 */
+  check_length (9, (unsigned long) sz, 30, lu); /* no format specifier "%zu" in C90 */
 #endif
 
 #ifndef NPRINTF_HH
   check_vfprintf (fout, "a. %hhi, b. %RA, c. %hhu%hhn", sch, mpfr, uch, &uch);
-  check_length (10, (unsigned int) uch, 22, u); /* no format specifier "%hhu" in C89 */
+  check_length (10, (unsigned int) uch, 22, u); /* no format specifier "%hhu" in C90 */
 #endif
 
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42

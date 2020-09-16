@@ -58,7 +58,7 @@ FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (neg)
     {
       unsigned TYPE s;
-      /* In C89, the division on negative integers isn't well-defined. */
+      /* In C90, the division on negative integers isn't well-defined. */
       s = SAFE_ABS (unsigned TYPE, MINIMUM);
       for (prec = 0; s != 0; s /= 2, prec ++);
     }
