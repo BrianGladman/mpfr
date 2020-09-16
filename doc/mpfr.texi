@@ -1300,10 +1300,10 @@ macro.
 
 @item Your compiler must support @samp{Non-Constant Initializers} (standard
 in C++ and ISO C99) and @samp{Token Pasting}
-(standard in ISO C89). If @var{prec} is not a constant expression, your
+(standard in ISO C90). If @var{prec} is not a constant expression, your
 compiler must support @samp{variable-length automatic arrays} (standard
 in ISO C99). GCC 2.95.3 and above supports all these features.
-If you compile your program with GCC in C89 mode and with @samp{-pedantic},
+If you compile your program with GCC in C90 mode and with @samp{-pedantic},
 you may want to define the @code{MPFR_USE_EXTENSION} macro to avoid warnings
 due to the @code{MPFR_DECL_INIT} implementation.
 
@@ -3195,7 +3195,7 @@ This macro has been made such that the compiler is able to detect
 mismatch between the argument list @var{op}
 and the function prototype of @var{foo}.
 Multiple input arguments @var{op} are supported only with C99 compilers.
-Otherwise, for C89 compilers, only one such argument is supported.
+Otherwise, for C90 compilers, only one such argument is supported.
 
 Note: this macro is experimental and its interface might change in future
 versions.
