@@ -31,6 +31,8 @@ use the standard rand() function, thus one should avoid mini-gmp if one
 needs some really serious random functions. Another consequence is that
 these functions may not be thread-safe.
 
+The build with mini-gmp may require ISO C99+ features, such as "long long".
+
 This was tested with MPFR svn r13974 and GMP 6.2.0 on x86_64 GNU/Linux:
 ============================================================================
 Testsuite summary for MPFR 4.1.0-dev
