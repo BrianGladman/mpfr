@@ -64,6 +64,10 @@ mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
      and exp = zn * GMP_NUMB_BITS + e - k
              <= (zn + en) * GMP_NUMB_BITS - k + GMP_NUMB_BITS - 1
              <= MPFR_EMAX_MAX + 2 * GMP_NUMB_BITS - 1 */
+  /* FIXME: possible integer overflow in the multiplication below.
+     This can be reproduced with a 32-bit ABI by defining MPFR_PREC_MAX
+     as ((mpfr_prec_t) ((((mpfr_uprec_t) -1) >> 1) - 63))
+     and in tnrandom.c, using "test_special (MPFR_PREC_MAX);". */
   exp = (mpfr_prec_t) zn * GMP_NUMB_BITS + e - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
   if (MPFR_UNLIKELY (exp > __gmpfr_emax))
