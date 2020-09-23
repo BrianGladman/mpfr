@@ -618,10 +618,9 @@ a. Using MinGW
 3 - To avoid using the Microsoft runtime (which might not be conform to ISO C),
     you can use the MinGW runtime package (which is an integral part of MinGW).
 
-    With old MinGW versions, you can get an ISO-compliant printf()
+    With MinGW versions before 8, you can get an ISO-compliant printf()
     if you compile your application with either '-ansi', '-posix' or
-    '-D__USE_MINGW_ANSI_STDIO'. But note that this latter option,
-    which was useful in the past (see below) should no longer be used.
+    '-D__USE_MINGW_ANSI_STDIO'.
 
     The following applies to old MinGW versions, and may be discouraged
     with recent MinGW versions.
