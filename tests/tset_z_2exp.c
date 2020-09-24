@@ -140,6 +140,31 @@ check (long i, mpfr_rnd_t rnd)
   mpz_clear (z);
 }
 
+static void
+check_huge (void)
+{
+  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
+    {
+      mpfr_t x;
+      mpz_t z;
+
+      /* Increase tests_memory_limit to the maximum in order to avoid
+         an obvious failure due to insufficient memory. */
+      tests_memory_limit = (size_t) -1;  /* no memory limit */
+
+      mpfr_init2 (x, 64);
+
+      mpz_init_set_ui (z, 17);
+      mpz_mul_2exp (z, z, 0xffffffb0);
+      mpz_add_ui (z, z, 1);
+
+      mpfr_set_z_2exp (x, z, -1, MPFR_RNDN);
+
+      mpz_clear (z);
+      mpfr_clear (x);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -151,6 +176,8 @@ main (int argc, char *argv[])
   for (j = 0; j < 200000; j++)
     check (randlimb () & LONG_MAX, RND_RAND ());
   check0 ();
+
+  check_huge ();
 
   tests_end_mpfr ();
 
