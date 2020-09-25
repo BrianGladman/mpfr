@@ -183,6 +183,14 @@ check_huge (void)
       mpz_mul_2exp (z, z, 0xffffffb0);
       mpz_add_ui (z, z, 1);
       mpfr_set_z_2exp (x, z, -1, MPFR_RNDN);
+      if (! MPFR_IS_INF (x) || MPFR_IS_NEG (x))
+        {
+          printf ("Error 2 in check_huge\n");
+          printf ("Expected @Inf@\n");
+          printf ("Got      ");
+          mpfr_dump (x);
+          exit (1);
+        }
       mpz_clear (z);
 
       mpfr_clear (x);
