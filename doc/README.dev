@@ -760,6 +760,14 @@ Adding a level of indirection is OK, as suggested there, and on:
 
   https://stackoverflow.com/questions/36645660/why-cant-i-cast-a-function-pointer-to-void
 
+To convert an unsigned integer u to the corresponding signed integer with
+the two's complement rule (i.e. modular arithmetic) but in a portable way,
+write e.g. for long:
+
+  u > LONG_MAX ? -1 - (long) ~u : (long) u
+
+(at least GCC and Clang optimize this expression to identity).
+
    =====================================================================
 
 For floating-point constants, do not use the non-standard and useless
