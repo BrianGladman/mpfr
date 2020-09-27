@@ -97,46 +97,89 @@ check0 (void)
    mpfr_get_si is a rather indirect test of a low level routine.  */
 
 static void
-check (long i, mpfr_rnd_t rnd)
+check (long i, mpfr_rnd_t rnd, int reduced)
 {
-  mpfr_t f;
+  mpfr_t f1, f2, f3;
   mpz_t z;
-  mpfr_exp_t e;
+  mpfr_exp_t e, old_emin, old_emax;
   int inex;
+  mpfr_flags_t flags;
+
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
 
   /* using CHAR_BIT * sizeof(long) bits of precision ensures that
      mpfr_set_z_2exp is exact below */
-  mpfr_init2 (f, CHAR_BIT * sizeof(long));
+  mpfr_inits2 (CHAR_BIT * sizeof(long), f1, f2, f3, (mpfr_ptr) 0);
   mpz_init (z);
   mpz_set_ui (z, i);
   /* the following loop ensures that no overflow occurs */
   do
     e = randexp ();
   while (e > mpfr_get_emax () - CHAR_BIT * sizeof(long));
-  inex = mpfr_set_z_2exp (f, z, e, rnd);
-  if (inex != 0)
+
+  mpfr_clear_flags ();
+  inex = mpfr_set_z_2exp (f1, z, e, rnd);
+  flags = __gmpfr_flags;
+
+  if (inex != 0 || flags != 0 ||
+      (mpfr_div_2si (f2, f1, e, rnd), mpfr_get_si (f2, MPFR_RNDZ) != i))
     {
-      printf ("Error in mpfr_set_z_2exp for i=%ld, e=%ld,"
-              " wrong ternary value\n", i, (long) e);
-      printf ("expected 0, got %d\n", inex);
+      printf ("Error in mpfr_set_z_2exp for i=%ld e=%" MPFR_EXP_FSPEC
+              "d rnd_mode=%d\n", i, (mpfr_eexp_t) e, rnd);
+      mpfr_set_si_2exp (f2, i, e, MPFR_RNDN);
+      printf ("expected "); mpfr_dump (f2);
+      printf ("with inex = %d and flags =", 0);
+      flags_out (0);
+      printf ("got      "); mpfr_dump (f1);
+      printf ("with inex = %d and flags =", inex);
+      flags_out (flags);
       exit (1);
     }
-  mpfr_div_2si (f, f, e, rnd);
-  if (mpfr_get_si (f, MPFR_RNDZ) != i)
+
+  if (reduced)
     {
-      printf ("Error in mpfr_set_z_2exp for i=%ld e=", i);
-      if (e < LONG_MIN)
-        printf ("(<LONG_MIN)");
-      else if (e > LONG_MAX)
-        printf ("(>LONG_MAX)");
-      else
-        printf ("%ld", (long) e);
-      printf (" rnd_mode=%d\n", rnd);
-      printf ("expected %ld\n", i);
-      printf ("got      "); mpfr_dump (f);
-      exit (1);
+      mpfr_exp_t ef, emin, emax;
+      int inex2, inex3;
+      mpfr_flags_t flags2, flags3;
+
+      ef = i == 0 ? 0 : mpfr_get_exp (f1);
+      for (emin = ef - 2; emin <= ef + 2; emin++)
+        for (emax = emin; emax <= ef + 2; emax++)
+          {
+            inex3 = mpfr_set (f3, f1, rnd);
+            MPFR_ASSERTN (inex3 == 0);
+            mpfr_set_emin (emin);
+            mpfr_set_emax (emax);
+            mpfr_clear_flags ();
+            inex2 = mpfr_set_z_2exp (f2, z, e, rnd);
+            flags2 = __gmpfr_flags;
+            mpfr_clear_flags ();
+            inex3 = mpfr_check_range (f3, 0, rnd);
+            flags3 = __gmpfr_flags;
+            if (!(mpfr_equal_p (f2, f3) &&
+                  SAME_SIGN (inex2, inex3) &&
+                  flags2 == flags2))
+              {
+                printf ("Error in mpfr_set_z_2exp for i=%ld e=%"
+                        MPFR_EXP_FSPEC "d rnd_mode=%d\nand emin=%"
+                        MPFR_EXP_FSPEC "d emax=%" MPFR_EXP_FSPEC
+                        "d\n", i, (mpfr_eexp_t) e, rnd,
+                        (mpfr_eexp_t) emin, (mpfr_eexp_t) emax);
+                printf ("expected "); mpfr_dump (f3);
+                printf ("with inex = %d and flags =", inex3);
+                flags_out (flags3);
+                printf ("got      "); mpfr_dump (f2);
+                printf ("with inex = %d and flags =", inex2);
+                flags_out (flags2);
+                exit (1);
+              }
+          }
+      mpfr_set_emin (old_emin);
+      mpfr_set_emax (old_emax);
     }
-  mpfr_clear (f);
+
+  mpfr_clears (f1, f2, f3, (mpfr_ptr) 0);
   mpz_clear (z);
 }
 
@@ -204,9 +247,9 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  check (0, MPFR_RNDN);
+  check (0, MPFR_RNDN, 0);
   for (j = 0; j < 200000; j++)
-    check (randlimb () & LONG_MAX, RND_RAND ());
+    check (randlimb () & LONG_MAX, RND_RAND (), j < 200);
   check0 ();
 
   check_huge ();
