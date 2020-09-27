@@ -78,23 +78,18 @@ mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
      result in modular arithmetic, using mpfr_uexp_t, and convert it to
      mpfr_exp_t. */
   uexp = (mpfr_uexp_t) zn * GMP_NUMB_BITS + (mpfr_uexp_t) e - k;
+
+  /* Convert to signed in a portable way (see doc/README.dev).
+     On most platforms, this can be optimized to identity (no-op). */
+  exp = uexp > MPFR_EXP_MAX ? -1 - (mpfr_exp_t) ~uexp : (mpfr_exp_t) uexp;
+
   /* The exponent will be exp or exp + 1 (due to rounding) */
-  if (uexp <= MPFR_EXP_MAX)  /* non-negative */
-    {
-      if (MPFR_UNLIKELY (uexp > __gmpfr_emax))
-        return mpfr_overflow (f, rnd_mode, sign_z);
-      exp = uexp;
-    }
-  else  /* negative */
-    {
-      /* Convert to signed in a portable way (see doc/README.dev).
-         On most platforms, this can be optimized to identity (no-op). */
-      exp = -1 - (mpfr_exp_t) ~uexp;
-      if (MPFR_UNLIKELY (exp + 1 < __gmpfr_emin))
-        return mpfr_underflow (f,
-                               rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
-                               sign_z);
-    }
+
+  if (MPFR_UNLIKELY (exp > __gmpfr_emax))
+    return mpfr_overflow (f, rnd_mode, sign_z);
+  if (MPFR_UNLIKELY (exp + 1 < __gmpfr_emin))
+    return mpfr_underflow (f, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
+                           sign_z);
 
   if (MPFR_LIKELY (dif >= 0))
     {
