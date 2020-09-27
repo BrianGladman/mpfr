@@ -159,7 +159,7 @@ check (long i, mpfr_rnd_t rnd, int reduced)
             flags3 = __gmpfr_flags;
             if (!(mpfr_equal_p (f2, f3) &&
                   SAME_SIGN (inex2, inex3) &&
-                  flags2 == flags2))
+                  flags2 == flags3))
               {
                 printf ("Error in mpfr_set_z_2exp for i=%ld e=%"
                         MPFR_EXP_FSPEC "d rnd_mode=%d\nand emin=%"
