@@ -2135,13 +2135,16 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
       if (*fmt == '.')
         {
-          const char *f = ++fmt;
+          ++fmt;
           READ_INT (ap, fmt, spec.prec);
-          if (f == fmt || spec.prec < 0)
+          /* A negative value is possible with ".*" and it will be regarded
+             as a missing precision (ISO C). We need to make sure that such
+             a value is representable in an int (see its use below). */
+          if (spec.prec < 0)
             spec.prec = -1;
         }
       else
-        spec.prec = -1;
+        spec.prec = -1;  /* missing precision */
       MPFR_ASSERTD (spec.prec >= -1);
 
       fmt = parse_arg_type (fmt, &spec);

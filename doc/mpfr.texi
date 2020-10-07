@@ -2666,7 +2666,7 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 % [flags] [width] [.[precision]] [type] [rounding] conv
 @end example
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
-the standard @code{printf} (in particular, notice that the @samp{precision} is
+the standard @code{printf} (in particular, notice that the precision is
 related to the number of digits displayed in the base chosen by @samp{conv}
 and not related to the internal precision of the @code{mpfr_t} variable), but
 note that for @samp{Re}, the default precision is not the same as the one for
@@ -2730,8 +2730,8 @@ The @samp{P} type specifies that a following @samp{d}, @samp{i},
 to a @code{mpfr_prec_t} argument.
 It is needed because the @code{mpfr_prec_t} type does not necessarily
 correspond to an @code{int} or any fixed standard type.
-The @samp{precision} field specifies the minimum number of digits to
-appear. The default @samp{precision} is 1.
+The @samp{precision} value specifies the minimum number of digits to
+appear. The default precision is 1.
 For example:
 @example
 mpfr_t x;
@@ -2800,8 +2800,7 @@ for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 @samp{G} specifiers.
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
-specified by the rounding mode (see below if the @samp{precision} field is
-empty).
+specified by the rounding mode (see below if the precision is missing).
 If the precision is zero with rounding to nearest mode and one of the
 following @samp{conv} specifiers: @samp{a}, @samp{A}, @samp{b}, @samp{e},
 @samp{E}, tie case is rounded to even when it lies between two consecutive
@@ -2815,10 +2814,9 @@ the @samp{e} (resp. @samp{E}) style.
 If the precision is set to a value greater than the maximum value for an
 @code{int}, it will be silently reduced down to @code{INT_MAX}.
 
-If the @samp{precision} field is empty with @samp{conv} specifier @samp{e}
-and @samp{E} (as in @code{%Re} or @code{%.RE}), the chosen precision
-(i.e., the number of digits to be displayed after the initial digit and
-the decimal point) is
+If the precision is missing with @samp{conv} specifier @samp{e} and @samp{E}
+(as in @code{%Re}), the chosen precision (i.e., the number of digits to be
+displayed after the initial digit and the decimal point) is
 @ifnottex
 ceil(@var{p}*log(2)/log(@var{10})),
 @end ifnottex
@@ -2827,9 +2825,9 @@ $\left\lceil @var{p} {\log 2 \over \log @var{10}} \right\rceil$,
 @end tex
 where @var{p} is the precision of the input variable, matching the choice
 done for @code{mpfr_get_str}; thus, if rounding to nearest is used,
-outputting the value with an empty @samp{precision} field and reading it
-back will yield the original value.
-The chosen precision for an empty @samp{precision} field with @samp{conv}
+outputting the value with a missing precision and reading it back will
+yield the original value.
+The chosen precision for a missing precision with @samp{conv}
 specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
 @c For the record, concerning the choice for 'e'/'E':
 @c   https://sympa.inria.fr/sympa/arc/mpfr/2019-12/msg00000.html
@@ -4251,7 +4249,9 @@ is empty: trailing zeros were not output with the conversion specifier
 it depended on the input value), and also on the value zero with the
 conversion specifiers @samp{f} / @samp{F} / @samp{g} / @samp{G} (this
 could partly be regarded as a bug); they are now kept in a way similar
-to the formatted output functions from C@.
+to the formatted output functions from C@. Moreover, the case where the
+precision consists only of a period has been fixed in MPFR@tie{}4.2 to
+be like @samp{.0} as specified in the ISO C standard.
 @c https://gforge.inria.fr/tracker/index.php?func=detail&aid=21816&group_id=136&atid=619
 
 @item @code{mpfr_abs}, @code{mpfr_neg} and @code{mpfr_set} changed in
