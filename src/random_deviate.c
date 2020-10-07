@@ -64,7 +64,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* allocate and set to (0,1) */
 void
-mpfr_random_deviate_init (mpfr_random_deviate_t x)
+mpfr_random_deviate_init (mpfr_random_deviate_ptr x)
 {
   mpz_init (x->f);
   x->e = 0;
@@ -72,21 +72,22 @@ mpfr_random_deviate_init (mpfr_random_deviate_t x)
 
 /* reset to (0,1) */
 void
-mpfr_random_deviate_reset (mpfr_random_deviate_t x)
+mpfr_random_deviate_reset (mpfr_random_deviate_ptr x)
 {
   x->e = 0;
 }
 
 /* deallocate */
 void
-mpfr_random_deviate_clear (mpfr_random_deviate_t x)
+mpfr_random_deviate_clear (mpfr_random_deviate_ptr x)
 {
   mpz_clear (x->f);
 }
 
 /* swap two random deviates */
 void
-mpfr_random_deviate_swap (mpfr_random_deviate_t x, mpfr_random_deviate_t y)
+mpfr_random_deviate_swap (mpfr_random_deviate_ptr x,
+                          mpfr_random_deviate_ptr y)
 {
   mpfr_random_size_t s;
   unsigned long t;
@@ -107,7 +108,7 @@ mpfr_random_deviate_swap (mpfr_random_deviate_t x, mpfr_random_deviate_t y)
 
 /* ensure x has at least k bits */
 static void
-random_deviate_generate (mpfr_random_deviate_t x, mpfr_random_size_t k,
+random_deviate_generate (mpfr_random_deviate_ptr x, mpfr_random_size_t k,
                          gmp_randstate_t r, mpz_t t)
 {
   /* Various compile time checks on mpfr_random_deviate_t */
@@ -223,7 +224,7 @@ highest_bit_idx (unsigned long x)
 
 /* return position of leading bit, counting from 1 */
 static mpfr_random_size_t
-random_deviate_leading_bit (mpfr_random_deviate_t x, gmp_randstate_t r)
+random_deviate_leading_bit (mpfr_random_deviate_ptr x, gmp_randstate_t r)
 {
   mpfr_random_size_t l;
   random_deviate_generate (x, W, r, 0);
@@ -243,7 +244,7 @@ random_deviate_leading_bit (mpfr_random_deviate_t x, gmp_randstate_t r)
 
 /* return kth bit of fraction, representing 2^-k */
 int
-mpfr_random_deviate_tstbit (mpfr_random_deviate_t x, mpfr_random_size_t k,
+mpfr_random_deviate_tstbit (mpfr_random_deviate_ptr x, mpfr_random_size_t k,
                             gmp_randstate_t r)
 {
   if (k == 0)
@@ -256,7 +257,8 @@ mpfr_random_deviate_tstbit (mpfr_random_deviate_t x, mpfr_random_size_t k,
 
 /* compare two random deviates, x < y */
 int
-mpfr_random_deviate_less (mpfr_random_deviate_t x, mpfr_random_deviate_t y,
+mpfr_random_deviate_less (mpfr_random_deviate_ptr x,
+                          mpfr_random_deviate_ptr y,
                           gmp_randstate_t r)
 {
   mpfr_random_size_t k = 1;
@@ -280,7 +282,7 @@ mpfr_random_deviate_less (mpfr_random_deviate_t x, mpfr_random_deviate_t y,
 /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
 int
 mpfr_random_deviate_value (int neg, unsigned long n,
-                           mpfr_random_deviate_t x, mpfr_ptr z,
+                           mpfr_random_deviate_ptr x, mpfr_ptr z,
                            gmp_randstate_t r, mpfr_rnd_t rnd)
 {
   /* r is used to add as many bits as necessary to match the precision of z */
