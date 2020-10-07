@@ -121,6 +121,8 @@ static const char num_to_text[] = "0123456789abcdef";
 
 /* Read an integer var of type mpfr_intmax_t. In case of overflow, set
    overflow to 1.
+   The variable var must be 0 on input. If there are no digits, it is
+   left to 0.
    Note: Since mpfr_intmax_t = int is theoretically possible, all values
    of var are potentially valid values (via '*'). Hence the need of an
    overflow flag instead of a special value that would indicate overflow.
