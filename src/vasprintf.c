@@ -123,12 +123,20 @@ static const char num_to_text[] = "0123456789abcdef";
    overflow to 1.
    The variable var must be 0 on input. If there are no digits, it is
    left to 0.
+   This macro will be used to read the field width and the precision.
+   The behavior will be similar to ISO C99. Note that unless "*" is
+   used, the result will be nonnegative (ISO C99 and C11 just specify
+   "optional decimal integer" for the precision, but the behavior with
+   a hardcoded negative integer is not explicitly defined, thus it is
+   undefined, so that it is fine to reject such integers; the C2x draft
+   now clarifies this: "an optional nonnegative decimal integer").
    Note: Since mpfr_intmax_t = int is theoretically possible, all values
    of var are potentially valid values (via '*'). Hence the need of an
    overflow flag instead of a special value that would indicate overflow.
-   Saturating would not be OK either as the maximum value could be
+   Just saturating would not be OK either as the maximum value could be
    meaningful with %jn and/or in the case mpfr_intmax_t = int, for
-   MPFR_PREC_ARG.
+   MPFR_PREC_ARG, i.e. one must be able to distinguish the maximum value
+   from an overflow.
 */
 #define READ_INT(ap, format, var)                                       \
   do {                                                                  \
