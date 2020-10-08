@@ -4251,7 +4251,8 @@ conversion specifiers @samp{f} / @samp{F} / @samp{g} / @samp{G} (this
 could partly be regarded as a bug); they are now kept in a way similar
 to the formatted output functions from C@. Moreover, the case where the
 precision consists only of a period has been fixed in MPFR@tie{}4.2 to
-be like @samp{.0} as specified in the ISO C standard.
+be like @samp{.0} as specified in the ISO C standard (it previously
+behaved as a missing precision).
 @c https://gforge.inria.fr/tracker/index.php?func=detail&aid=21816&group_id=136&atid=619
 
 @item @code{mpfr_abs}, @code{mpfr_neg} and @code{mpfr_set} changed in
