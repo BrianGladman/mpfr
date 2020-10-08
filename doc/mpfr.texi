@@ -2662,9 +2662,11 @@ prototypes for these functions.
 @subsection Format String
 The format specification accepted by @code{mpfr_printf} is an extension of the
 @code{printf} one. The conversion specification is of the form:
+
 @example
 % [flags] [width] [.[precision]] [type] [rounding] conv
 @end example
+
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
 the standard @code{printf} (in particular, notice that the precision is
 related to the number of digits displayed in the base chosen by @samp{conv}
@@ -2688,10 +2690,11 @@ length modifiers defined in the C standard:
 @end multitable
 @end quotation
 
-and the @samp{type} specifiers defined in GMP plus @samp{R} and @samp{P}
-specific to MPFR (the second column in the table below shows the type of the
-argument read in the argument list and the kind of @samp{conv} specifier to
-use after the @samp{type} specifier):
+@noindent
+and the @samp{type} specifiers defined in GMP, plus @samp{R} and @samp{P},
+which are specific to MPFR (the second column in the table below shows the
+type of the argument read in the argument list and the kind of @samp{conv}
+specifier to use after the @samp{type} specifier):
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
