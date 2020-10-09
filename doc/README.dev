@@ -788,7 +788,7 @@ does not conform to the C standard by default. References:
    =====================================================================
 
 In MPFR, _Float128 may be defined as __float128 if the latter is provided
-by the compiler, but not the former. In such a case, do not assumed that
+by the compiler, but not the former. In such a case, do not assume that
 _Float128 and long double are necessarily different types (as required by
 the WG14 N2405 draft "IEC 60559 interchange and extended types").
 
