@@ -1935,8 +1935,8 @@ If @var{op} is zero, set @var{rop} to zero with the sign obtained by the
 usual limit rules, i.e., the same sign as @var{op} if @var{n} is odd, and
 positive if @var{n} is even.
 
-These functions agree with the rootn function of the IEEE@tie{}754-2008
-standard and the P754/D2.41 draft of the next standard (Section@tie{}9.2).
+These functions agree with the rootn function of the IEEE@tie{}754-2019
+standard.
 Note that it is here restricted to @math{@var{n} @ge{} 0}. Functions
 allowing a negative @var{n} may be implemented in the future.
 @end deftypefun
