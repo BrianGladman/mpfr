@@ -2686,6 +2686,9 @@ extern "C" {
 
    (see changeset r13820 in the ubf2 branch). So, for the time being,
    as long as the code does not break, do not change anything.
+
+   Alternatively, GCC's may_alias attribute could be used on the
+   __mpfr_ubf_struct and __mpfr_struct types.
 */
 
 typedef struct {
