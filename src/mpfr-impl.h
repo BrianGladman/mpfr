@@ -2687,6 +2687,16 @@ extern "C" {
    (see changeset r13820 in the ubf2 branch). So, for the time being,
    as long as the code does not break, do not change anything.
 
+   Note: The condition "use mpfr_ptr to access the usual mpfr_t members and
+   mpfr_ubf_ptr to access the additional member _mpfr_zexp" may be ignored
+   if the union type is visible within the function (see ISO C99 6.5.2.3#5
+   and 6.5.2.3#8 for the example, this implementation being very similar to
+   the valid fragment of this example), which must be the case as the union
+   is declared globally. However, this seems to be buggy in GCC:
+
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=14319
+     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65892
+
    Alternatively, GCC's may_alias attribute could conditionally be used
    on the __mpfr_ubf_struct and __mpfr_struct types (though it would be
    much stronger than needed since only these two types may alias each
