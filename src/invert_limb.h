@@ -74,7 +74,14 @@ static const unsigned short invert_limb_table[256] =
     1055, 1053, 1051, 1049, 1047, 1044, 1042, 1040,
     1038, 1036, 1034, 1032, 1030, 1028, 1026, 1024 };
 
-/* for 256 <= d9 < 512, invert_limb_table2[d9-256] = floor((2^19-3*2^8)/d9)^2 */
+/* for 256 <= d9 < 512, invert_limb_table2[d9-256] = floor((2^19-3*2^8)/d9)^2
+ *
+ * Note: This table requires 4182025 to be representable in unsigned int,
+ * thus disallows 16-bit int, for instance. However, this code is under
+ * "#if GMP_NUMB_BITS == 64", and a system with int smaller than 32 bits
+ * should better be used with GMP_NUMB_BITS == 32 (or 16 if supported).
+ * This constraint is checked with MPFR_STAT_STATIC_ASSERT below.
+ */
 static const unsigned int invert_limb_table2[256] =
   { 4182025, 4149369, 4116841, 4084441, 4052169, 4020025, 3992004, 3960100, 3932289,
     3900625, 3873024, 3841600, 3814209, 3786916, 3755844, 3728761, 3701776, 3674889,
