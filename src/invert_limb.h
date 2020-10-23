@@ -112,11 +112,12 @@ static const unsigned int invert_limb_table2[256] =
 #define __gmpfr_invert_limb(r, d)                                       \
     do {                                                                \
       mp_limb_t _d, _d0, _i, _d40, _d63, _v0, _v1, _v2, _e, _v3, _h, _l; \
+      MPFR_STAT_STATIC_ASSERT (4182025 <= UINT_MAX);                    \
       _d = (d);                                                         \
       _i = (_d >> 55) - 256; /* i = d9 - 256 */                         \
       /* the shift by 11 is for free since it is hidden in the */       \
       /* invert_limb_table2[_i] * _d40 multiplication latency */        \
-      _v0 = invert_limb_table[_i] << 11;                                \
+      _v0 = (mp_limb_t) invert_limb_table[_i] << 11;                    \
       _d40 = (_d >> 24) + 1;                                            \
       _v1 = _v0 - ((invert_limb_table2[_i] * _d40) >> 40) - 1;          \
       _v2 = (_v1 << 13) +                                               \
@@ -138,9 +139,10 @@ static const unsigned int invert_limb_table2[256] =
 #define __gmpfr_invert_limb_approx(r, d)                                \
     do {                                                                \
       mp_limb_t _d, _d0, _i, _d40, _d63, _v0, _v1, _v2, _e, _h;         \
+      MPFR_STAT_STATIC_ASSERT (4182025 <= UINT_MAX);                    \
       _d = (d);                                                         \
       _i = (_d >> 55) - 256; /* i = d9 - 256 */                         \
-      _v0 = invert_limb_table[_i] << 11;                                \
+      _v0 = (mp_limb_t) invert_limb_table[_i] << 11;                    \
       _d40 = (_d >> 24) + 1;                                            \
       _v1 = _v0 - ((invert_limb_table2[_i] * _d40) >> 40) - 1;          \
       _v2 = (_v1 << 13) +                                               \
