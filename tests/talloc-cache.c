@@ -36,6 +36,8 @@ static void *
 my_alloc1 (size_t s)
 {
   void *p = malloc (s + A);
+  if (p == NULL)
+    abort ();
   MPFR_ASSERTN (v == 1);
   *(int *) p = 1;
   return (void *) ((char *) p + A);
@@ -63,6 +65,8 @@ static void *
 my_alloc2 (size_t s)
 {
   void *p = malloc (s + A);
+  if (p == NULL)
+    abort ();
   MPFR_ASSERTN (v == 2);
   *(int *) p = 2;
   return (void *) ((char *) p + A);
