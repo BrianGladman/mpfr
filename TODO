@@ -33,6 +33,13 @@ Table of contents:
 
 - add a description of the algorithms used and a proof of correctness
 
+- when mp*_srcptr is used in a prototype, add "const" in the prototype
+  in the manual, like what is now done in the GMP manual, i.e.
+    mpfr_srcptr -> const mpfr_t
+    mpz_srcptr  -> const mpz_t
+    mpq_srcptr  -> const mpq_t
+    mpf_srcptr  -> const mpf_t
+
 ##############################################################################
 2. Compiler/library detection
 ##############################################################################
