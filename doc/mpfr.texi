@@ -3522,7 +3522,8 @@ been set due to internal computations.
 This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range of the emulated
 floating-point system, this function just propagates the
-@ref{ternary value} @var{t}; otherwise, it rounds @var{x} to precision
+@ref{ternary value} @var{t}; otherwise, if @code{EXP(@var{x})}
+denotes the exponent of @var{x}, it rounds @var{x} to precision
 @code{EXP(@var{x})-emin+1} according to rounding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
 More precisely in the subnormal domain, denoting by @m{e,@var{e}} the value of
@@ -3532,8 +3533,8 @@ arithmetic to an integer multiple of @m{2^{e-1}, two to the power
 1.5 multiplied by two to the power @var{e}@minus{}1} when @var{t} is zero
 is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
 
-@code{PREC(@var{x})} is not modified by this function.
-@var{rnd} and @var{t} must be the rounding mode
+The precision @code{PREC(@var{x})} of @var{x} is not modified by
+this function. @var{rnd} and @var{t} must be the rounding mode
 and the returned ternary value used when computing @var{x}
 (as in @code{mpfr_check_range}).
 The subnormal exponent range is from @code{emin} to @code{emin+PREC(@var{x})-1}.
