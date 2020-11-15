@@ -664,15 +664,21 @@ A @dfn{floating-point number}, or @dfn{float} for short, is an object
 representing a radix-2 floating-point number consisting of a sign,
 an arbitrary-precision normalized significand (also called mantissa),
 and an exponent (an integer in some given range); these are called
-@dfn{regular numbers}. Like in the IEEE@tie{}754 standard, a floating-point
-number can also have three kinds of special values: a signed zero, a
-signed infinity, and Not-a-Number (NaN)@. NaN can represent the default
-value of a floating-point object and the result of some operations for
-which no other results would make sense, such as 0 divided by 0 or
-+Infinity minus +Infinity; unless documented otherwise, the sign bit of
-a NaN is unspecified. Note that contrary to IEEE@tie{}754, MPFR has a single
-kind of NaN and does not have subnormals. Other than that, the behavior
-is very similar to IEEE@tie{}754, but there may be some differences.
+@dfn{regular numbers}. By convention, the radix point of the significand
+is just before the first digit (which is always 1 due to normalization),
+like in the C language, but unlike in IEEE@tie{}754 (thus, for a given
+number, the exponent values in MPFR and in IEEE@tie{}754 differ by 1).
+
+Like in the IEEE@tie{}754 standard, a floating-point number can also
+have three kinds of special values: a signed zero (+0 or @minus{}0),
+a signed infinity (+Inf or @minus{}Inf), and Not-a-Number (NaN)@. NaN
+can represent the default value of a floating-point object and the
+result of some operations for which no other results would make sense,
+such as 0 divided by 0 or +Infinity minus +Infinity; unless documented
+otherwise, the sign bit of a NaN is unspecified. Note that contrary to
+IEEE@tie{}754, MPFR has a single kind of NaN and does not have subnormals.
+Other than that, the behavior is very similar to IEEE@tie{}754, but there
+are some minor differences.
 
 The C data type for such objects is @code{mpfr_t}, internally defined
 as a one-element array of a structure (so that when passed as an
