@@ -659,6 +659,7 @@ symbols using these prefixes.
 @cindex Regular number
 @tindex @code{mpfr_t}
 @tindex @code{mpfr_ptr}
+@tindex @code{mpfr_srcptr}
 A @dfn{floating-point number}, or @dfn{float} for short, is an object
 representing a radix-2 floating-point number consisting of a sign,
 an arbitrary-precision normalized significand (also called mantissa),
@@ -677,7 +678,8 @@ The C data type for such objects is @code{mpfr_t}, internally defined
 as a one-element array of a structure (so that when passed as an
 argument to a function, it is the pointer that is actually passed),
 and @code{mpfr_ptr} is the C data type representing a pointer to this
-structure.
+structure; @code{mpfr_srcptr} is like @code{mpfr_ptr}, but the structure
+is read-only (i.e., const qualified).
 
 @cindex Precision
 @tindex @code{mpfr_prec_t}
