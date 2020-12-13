@@ -644,8 +644,8 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           /* multiply z_pre by sin(Pi*s/2) */
           mpfr_mul (y, s, p, MPFR_RNDN);
           mpfr_div_2ui (p, y, 1, MPFR_RNDN);      /* p = s*Pi/2 */
-          /* FIXME: sinpi will be available, we should replace the mpfr_sin
-             call below by mpfr_sinpi(s/2), where s/2 will be exact.
+          /* FIXME: once mpfr_sinpi is available, we should replace the
+             mpfr_sin call below by mpfr_sinpi(s/2), where s/2 will be exact.
              Can mpfr_sin underflow? Moreover, the code below should be
              improved so that the "if" condition becomes unlikely, e.g.
              by taking a slightly larger working precision. */
