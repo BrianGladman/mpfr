@@ -79,9 +79,11 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                                             |theta3| <= 2^-prec */
       /* if t is zero here, it means the division by u underflows, then
          sin(t) also underflows, since |sin(x)| <= |x| for say |x| < 1. */
-      if (MPFR_IS_ZERO (t))
+      if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
         {
           inexact = mpfr_underflow (y, rnd_mode, MPFR_SIGN(t));
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_INEXACT
+                                       | MPFR_FLAGS_UNDERFLOW);
           underflow = 1;
           goto end;
         }
@@ -100,7 +102,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
           mpfr_mul_2ui (t, t, 2, MPFR_RNDN);
           if (inexact == 0 && mpfr_integer_p (t))
             {
-              if (!mpfr_odd_p (t))
+              if (MPFR_IS_ZERO (t) || !mpfr_odd_p (t))
                 /* t is even: we have a multiple of pi, thus sinu = 0,
                    for the sign, we follow IEEE 754-2019: sinPi(+n) is +0
                    and sinPi(-n) is -0 for positive integers n, so that the
@@ -112,7 +114,8 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                   MPFR_ASSERTD(inexact == 0);
                   inexact = mpfr_div_2ui (t, t, 1, MPFR_RNDZ);
                   MPFR_ASSERTD(inexact == 0);
-                  if (!mpfr_odd_p (t)) /* case pi/4: sinu = 1 */
+                  if (MPFR_IS_ZERO (t) || !mpfr_odd_p (t))
+                    /* case pi/4: sinu = 1 */
                     mpfr_set_ui (y, 1, MPFR_RNDZ);
                   else
                     mpfr_set_si (y, -1, MPFR_RNDZ);
@@ -129,5 +132,5 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
  end:
   mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
-  return (underflow == 0) ? mpfr_check_range (y, inexact, rnd_mode) : inexact;
+  return underflow ? inexact : mpfr_check_range (y, inexact, rnd_mode);
 }
