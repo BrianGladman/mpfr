@@ -991,7 +991,7 @@ before rounding, such a function call would yield an underflow, as
 @var{e}@minus{}1 is outside the current exponent range. However, MPFR
 first considers the rounded result assuming an unbounded exponent range.
 The exact result cannot be represented exactly in precision 2, and here,
-it is rounded to @m{0.5 @times 2^e, 0.5 times 2 to @var{e}}, which is
+it is rounded to @m{0.5 \times 2^e, 0.5 times 2 to @var{e}}, which is
 representable in the current exponent range. As a consequence, this will
 not yield an underflow in MPFR@.
 
@@ -2273,11 +2273,12 @@ tangent of @var{op}, rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_sinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the sine of @var{op} multiplied by @m{2\pi,2*Pi} and divided
-by @var{u}. Thus for @code{u=360} one gets the sine for @var{x} in degrees.
-When @var{op} multiplied by 2 and divided by @var{u} is an integer, the
-result is 0 with the same sign of @var{op}, following IEEE 754-2019, so that
-the function is odd.
+Set @var{rop} to the sine of @m{@var{op} \times 2\pi/u,@var{op} multiplied
+by 2@tie{}Pi and divided by @var{u}}. Thus for @var{u} equal to 360, one
+gets the sine for @var{op} in degrees. When @m{@var{op} \times 2/u,@var{op}
+multiplied by 2 and divided by @var{u}} is an integer, the result is zero
+with the same sign as @var{op}, following IEEE@tie{}754-2019 (sinPi),
+so that the function is odd.
 
 Note: this function is experimental and its interface might change in future
 versions.
