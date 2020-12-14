@@ -30,7 +30,7 @@ test_singular (void)
 
   mpfr_init (x);
   mpfr_init (y);
-  
+
   /* check u = 0 */
   mpfr_set_ui (x, 17, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 0, MPFR_RNDN);
@@ -75,7 +75,7 @@ test_exact (void)
 
   mpfr_init (x);
   mpfr_init (y);
-  
+
   /* check 2*pi*x/u = pi/2 thus x/u = pi/4 for x=1 and u=4 */
   mpfr_set_ui (x, 1, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
@@ -146,6 +146,9 @@ test_regular (void)
   mpfr_clear (z);
 }
 
+/* FIXME[VL]: For mpfr_sinu, the range reduction should not be expensive.
+   If I'm not mistaken, this is linear in the bitsize of the exponent
+   since one just needs to compute the argument modulo the integer u. */
 #define TEST_FUNCTION mpfr_sinu
 #define ULONG_ARG2
 #ifndef MPFR_USE_MINI_GMP
@@ -163,7 +166,7 @@ main (void)
   test_singular ();
   test_exact ();
   test_regular ();
-  
+
   test_generic (MPFR_PREC_MIN, 100, 1);
 
   tests_end_mpfr ();
