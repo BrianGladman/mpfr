@@ -23,6 +23,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* FIXME[VL]: Implement the range reduction in this function.
+   That's the whole point of sinu compared to sin. */
+
 /* put in y the corrected-rounded value of sin(2*pi*x/u) */
 int
 mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
@@ -112,7 +115,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                   if (!mpfr_odd_p (t)) /* case pi/4: sinu = 1 */
                     mpfr_set_ui (y, 1, MPFR_RNDZ);
                   else
-                    mpfr_set_si	(y, -1, MPFR_RNDZ);
+                    mpfr_set_si (y, -1, MPFR_RNDZ);
                 }
               goto end;
             }
