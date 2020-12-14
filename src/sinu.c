@@ -76,7 +76,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_mul (t, t, x, MPFR_RNDN);     /* t = 2*pi*x * (1 + theta2)^2 where
                                             |theta2| <= 2^-prec */
       mpfr_div_ui (t, t, u, MPFR_RNDN);  /* t = 2*pi*x/u * (1 + theta3)^3 where
-                                            |theta2| <= 2^-prec */
+                                            |theta3| <= 2^-prec */
       /* if t is zero here, it means the division by u underflows, then
          sin(t) also underflows, since |sin(x)| <= |x| for say |x| < 1. */
       if (MPFR_IS_ZERO (t))
