@@ -2275,6 +2275,12 @@ tangent of @var{op}, rounded in the direction @var{rnd}.
 @deftypefun int mpfr_sinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sine of @var{op} multiplied by @m{2\pi,2*Pi} and divided
 by @var{u}. Thus for @code{u=360} one gets the sine for @var{x} in degrees.
+When @var{op} multiplied by 2 and divided by @var{u} is an integer, the
+result is 0 with the same sign of @var{op}, following IEEE 754-2019, so that
+the function is odd.
+
+Note: this function is experimental and its interface might change in future
+versions.
 @end deftypefun
 
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -4232,6 +4238,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_signbit} in MPFR@tie{}2.3.
 
 @item @code{mpfr_sinh_cosh} in MPFR@tie{}2.4.
+
+@item @code{mpfr_sinu} in MPFR@tie{}4.2.0 (experimental).
 
 @item @code{mpfr_snprintf} and @code{mpfr_sprintf} in MPFR@tie{}2.4.
 
