@@ -2272,6 +2272,11 @@ Set @var{rop} to the cosine of @var{op}, sine of @var{op},
 tangent of @var{op}, rounded in the direction @var{rnd}.
 @end deftypefun
 
+@deftypefun int mpfr_sinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the sine of @var{op} multiplied by @m{2\pi,2*Pi} and divided
+by @var{u}. Thus for @code{u=360} one gets the sine for @var{x} in degrees.
+@end deftypefun
+
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set simultaneously @var{sop} to the sine of @var{op} and @var{cop} to the
 cosine of @var{op}, rounded in the direction @var{rnd} with the corresponding

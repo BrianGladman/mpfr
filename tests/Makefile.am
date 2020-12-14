@@ -48,7 +48,7 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1		\
      trec_sqrt tremquo trint trndna troot trootn_ui tsec tsech		\
      tset_d tset_f tset_float128 tset_ld tset_q tset_si tset_sj		\
      tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos tsinh tsinh_cosh	\
-     tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr		\
+     tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
      tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan ttanh	\
      ttotal_order ttrunc tui_div tui_pow tui_sub turandom tvalist	\
      ty0 ty1 tyn tzeta tzeta_ui
