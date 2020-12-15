@@ -76,45 +76,45 @@ test_exact (void)
   mpfr_init (x);
   mpfr_init (y);
 
-  /* check 2*pi*x/u = pi/2 thus x/u = pi/4 for x=1 and u=4 */
+  /* check 2*pi*x/u = pi/2 thus x/u = 1/4, for example x=1 and u=4 */
   mpfr_set_ui (x, 1, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0 && inexact == 0);
 
-  /* check 2*pi*x/u = pi thus x/u=pi/2 for x=2 and u=4 */
+  /* check 2*pi*x/u = pi thus x/u = 1/2, for example x=2 and u=4 */
   mpfr_set_ui (x, 2, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
   MPFR_ASSERTN(inexact == 0);
 
-  /* check 2*pi*x/u = 3*pi/2 thus x/u = 3*pi/4 for x=3 and u=4 */
+  /* check 2*pi*x/u = 3*pi/2 thus x/u = 3/4, for example x=3 and u=4 */
   mpfr_set_ui (x, 3, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_si (y, -1) == 0 && inexact == 0);
 
-  /* check 2*pi*x/u = 2*pi thus x/u = pi for x=4 and u=4 */
+  /* check 2*pi*x/u = 2*pi thus x/u = 1, for example x=4 and u=4 */
   mpfr_set_ui (x, 4, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
   MPFR_ASSERTN(inexact == 0);
 
-  /* check 2*pi*x/u = -pi/2 thus x/u = pi/4 for x=-1 and u=4 */
+  /* check 2*pi*x/u = -pi/2 thus x/u = -1/4, for example x=-1 and u=4 */
   mpfr_set_si (x, -1, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_si (y, -1) == 0 && inexact == 0);
 
-  /* check 2*pi*x/u = -pi thus x/u=pi/2 for x=-2 and u=4 */
+  /* check 2*pi*x/u = -pi thus x/u = -1/2, for example x=-2 and u=4 */
   mpfr_set_si (x, -2, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) != 0);
   MPFR_ASSERTN(inexact == 0);
 
-  /* check 2*pi*x/u = -3*pi/2 thus x/u = -3*pi/4 for x=3 and u=4 */
+  /* check 2*pi*x/u = -3*pi/2 thus x/u = -3/4, for example x=-3 and u=4 */
   mpfr_set_si (x, -3, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0 && inexact == 0);
 
-  /* check 2*pi*x/u = -2*pi thus x/u = pi for x=4 and u=4 */
+  /* check 2*pi*x/u = -2*pi thus x/u = -1, for example x=-4 and u=4 */
   mpfr_set_si (x, -4, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) != 0);
