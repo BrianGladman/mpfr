@@ -142,8 +142,6 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
           /* detect case (b): this can only occur if u is divisible by 3 */
           if ((u % 3) == 0)
             {
-              mpz_t z;
-              int mod12;
               inexact = mpfr_div_ui (t, x, u / 3, MPFR_RNDZ);
               /* t should be +/-1/4 mod 3/2 */
               mpfr_mul_2ui (t, t, 2, MPFR_RNDZ);
@@ -152,22 +150,25 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                  t = 5 mod 6: case 5pi/6: return 1/2
                  t = 7 mod 6: case 7pi/6: return -1/2
                  t = 11 mod 6: case 11pi/6: return -1/2 */
-              if (!mpfr_integer_p (t))
-                break;
-              mpz_init (z);
-              inexact = mpfr_get_z (z, t, MPFR_RNDZ);
-              MPFR_ASSERTN(inexact == 0);
-              mod12 = mpz_fdiv_ui (z, 12);
-              mpz_clear (z);
-              if (mod12 == 1 || mod12 == 5)
+              if (inexact == 0 && mpfr_integer_p (t))
                 {
-                  mpfr_set_ui_2exp (y, 1, -1, MPFR_RNDZ);
-                  goto end;
-                }
-              else if (mod12 == 7 || mod12 == 11)
-                {
-                  mpfr_set_si_2exp (y, -1, -1, MPFR_RNDZ);
-                  goto end;
+                  mpz_t z;
+                  int mod12;
+                  mpz_init (z);
+                  inexact = mpfr_get_z (z, t, MPFR_RNDZ);
+                  MPFR_ASSERTN(inexact == 0);
+                  mod12 = mpz_fdiv_ui (z, 12);
+                  mpz_clear (z);
+                  if (mod12 == 1 || mod12 == 5)
+                    {
+                      mpfr_set_ui_2exp (y, 1, -1, MPFR_RNDZ);
+                      goto end;
+                    }
+                  else if (mod12 == 7 || mod12 == 11)
+                    {
+                      mpfr_set_si_2exp (y, -1, -1, MPFR_RNDZ);
+                      goto end;
+                    }
                 }
             }
         }
