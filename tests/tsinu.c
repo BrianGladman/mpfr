@@ -125,6 +125,21 @@ test_exact (void)
   inexact = mpfr_sinu (y, x, 12, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0 && inexact == 0);
 
+  /* check 2*pi*x/u = 5*pi/6, for example x=5 and u=12 */
+  mpfr_set_ui (x, 5, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 12, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0 && inexact == 0);
+
+  /* check 2*pi*x/u = 7*pi/6, for example x=5 and u=12 */
+  mpfr_set_ui (x, 7, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 12, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_si_2exp (y, -1, -1) == 0 && inexact == 0);
+
+  /* check 2*pi*x/u = 11*pi/6, for example x=5 and u=12 */
+  mpfr_set_ui (x, 11, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 12, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_si_2exp (y, -1, -1) == 0 && inexact == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
