@@ -90,7 +90,9 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       /* since prec >= 2, |(1 + theta3)^3 - 1| <= 4*theta3 <= 2^(2-prec) */
       expt = MPFR_GET_EXP (t);
       /* we have |s| <= 2^(expt + 2 - prec) */
-      mpfr_sin (t, t, MPFR_RNDN);
+      mpfr_sin (t, t, MPFR_RNDA);
+      /* t cannot be zero here, since we excluded t=0 before, which is the
+         only exact case where sin(t)=0, and we round away from zero */
       err = MPFR_GET_EXP (t) + prec - expt - 2;
       if (MPFR_CAN_ROUND (t, err, precy, rnd_mode))
         break;
@@ -98,11 +100,11 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
          of pi/2, i.e., if x/u is a multiple of 1/4 */
       if (nloops == 1)
         {
-          inexact = mpfr_div_ui (t, x, u, MPFR_RNDN);
-          mpfr_mul_2ui (t, t, 2, MPFR_RNDN);
+          inexact = mpfr_div_ui (t, x, u, MPFR_RNDA);
+          mpfr_mul_2ui (t, t, 2, MPFR_RNDA);
           if (inexact == 0 && mpfr_integer_p (t))
             {
-              if (MPFR_IS_ZERO (t) || !mpfr_odd_p (t))
+              if (!mpfr_odd_p (t))
                 /* t is even: we have a multiple of pi, thus sinu = 0,
                    for the sign, we follow IEEE 754-2019: sinPi(+n) is +0
                    and sinPi(-n) is -0 for positive integers n, so that the
