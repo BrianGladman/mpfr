@@ -124,7 +124,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                   inexact = mpfr_div_2ui (t, t, 1, MPFR_RNDZ);
                   MPFR_ASSERTD(inexact == 0);
                   if (MPFR_IS_ZERO (t) || !mpfr_odd_p (t))
-                    /* case pi/4: sinu = 1 */
+                    /* case pi/2: sinu = 1 */
                     mpfr_set_ui (y, 1, MPFR_RNDZ);
                   else
                     mpfr_set_si (y, -1, MPFR_RNDZ);
