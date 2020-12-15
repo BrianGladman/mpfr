@@ -108,10 +108,13 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       err = expt - err;
       if (MPFR_CAN_ROUND (t, err, precy, rnd_mode))
         break;
-      /* check exact cases: this can only occur if 2*pi*x/u is a multiple
-         of pi/2, i.e., if x/u is a multiple of 1/4 */
+      /* Check exact cases only after the first level of Ziv' strategy, to
+         avoid slowing down the average case. Exact cases are:
+         (a) 2*pi*x/u is a multiple of pi/2, i.e., x/u is a multiple of 1/4
+         (b) 2*pi*x/u is +/-pi/6 modulo pi, i.e., x/u = +/-1/12 mod 1/2 */
       if (nloops == 1)
         {
+          /* detect case (a) */
           inexact = mpfr_div_ui (t, x, u, MPFR_RNDA);
           mpfr_mul_2ui (t, t, 2, MPFR_RNDA);
           if (inexact == 0 && mpfr_integer_p (t))
@@ -135,6 +138,37 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                     mpfr_set_si (y, -1, MPFR_RNDZ);
                 }
               goto end;
+            }
+          /* detect case (b): this can only occur if u is divisible by 3 */
+          if ((u % 3) == 0)
+            {
+              mpz_t z;
+              int mod12;
+              inexact = mpfr_div_ui (t, x, u / 3, MPFR_RNDZ);
+              /* t should be +/-1/4 mod 3/2 */
+              mpfr_mul_2ui (t, t, 2, MPFR_RNDZ);
+              /* t should be +/-1 mod 6, i.e., in {1,5,7,11} mod 12:
+                 t = 1 mod 6: case pi/6: return 1/2
+                 t = 5 mod 6: case 5pi/6: return 1/2
+                 t = 7 mod 6: case 7pi/6: return -1/2
+                 t = 11 mod 6: case 11pi/6: return -1/2 */
+              if (!mpfr_integer_p (t))
+                break;
+              mpz_init (z);
+              inexact = mpfr_get_z (z, t, MPFR_RNDZ);
+              MPFR_ASSERTN(inexact == 0);
+              mod12 = mpz_fdiv_ui (z, 12);
+              mpz_clear (z);
+              if (mod12 == 1 || mod12 == 5)
+                {
+                  mpfr_set_ui_2exp (y, 1, -1, MPFR_RNDZ);
+                  goto end;
+                }
+              else if (mod12 == 7 || mod12 == 11)
+                {
+                  mpfr_set_si_2exp (y, -1, -1, MPFR_RNDZ);
+                  goto end;
+                }
             }
         }
       MPFR_ZIV_NEXT (loop, prec);

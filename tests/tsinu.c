@@ -120,6 +120,11 @@ test_exact (void)
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) != 0);
   MPFR_ASSERTN(inexact == 0);
 
+  /* check 2*pi*x/u = pi/6, for example x=1 and u=12 */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 12, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0 && inexact == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
