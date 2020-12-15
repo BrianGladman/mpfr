@@ -166,6 +166,17 @@ grep -E "mpfr_(clear|set)_($flaglist) *\(" src/*.[ch] | \
   grep -v '^src/mpfr.h:' | \
   err-if-output "flags" cat
 
+# Variables should not be initialized with the default precision, which
+# could have been set to a large value by the user. Even if the precision
+# is set with mpfr_set_prec (e.g. in the Ziv loop) before the variable is
+# assigned, this is a waste of memory.
+grep -E "mpfr_inits? *\(" src/*.[ch] | \
+  grep -Ev '^src/mpfr\.h:.*(\(mpfr_ptr|, mpfr_set)' | \
+  grep -Ev '^src/(inits?|set_str)\.c:' | \
+  err-if-output \
+    --msg="Use mpfr_init2/mpfr_inits2 instead of mpfr_init/mpfr_inits." \
+    -t "init/inits" cat
+
 grconf()
 {
   grep -v '^dnl ' acinclude.m4 configure.ac | \
