@@ -93,7 +93,14 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_sin (t, t, MPFR_RNDA);
       /* t cannot be zero here, since we excluded t=0 before, which is the
          only exact case where sin(t)=0, and we round away from zero */
-      err = MPFR_GET_EXP (t) + prec - expt - 2;
+      err = expt + 2 - prec;
+      expt = MPFR_GET_EXP (t); /* new exponent of t */
+      /* the total error is bounded by 2^err + ulp(t) = 2^err + 2^(expt-prec)
+         thus if err <= expt-prec, it is bounded by 2^(expt-prec+1),
+         otherwise it is bounded by 2^(err+1). */
+      err = (err <= expt - prec) ? expt - prec + 1 : err + 1;
+      /* normalize err for mpfr_can_round */
+      err = expt - err;
       if (MPFR_CAN_ROUND (t, err, precy, rnd_mode))
         break;
       /* check exact cases: this can only occur if 2*pi*x/u is a multiple
