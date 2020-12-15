@@ -99,8 +99,13 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       m += err1;
     }
 
-  mpfr_init (c);
-  mpfr_init (xr);
+  if (expx >= 2)
+    {
+      mpfr_init2 (c, expx + m - 1);
+      mpfr_init2 (xr, m);
+    }
+  else
+    mpfr_init2 (c, m);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
@@ -193,7 +198,8 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      within the target precision, but in that case mpfr_can_round will fail */
 
   mpfr_clear (c);
-  mpfr_clear (xr);
+  if (expx >= 2)
+    mpfr_clear (xr);
 
  end:
   MPFR_SAVE_EXPO_FREE (expo);

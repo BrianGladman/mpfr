@@ -131,8 +131,8 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return mpfr_sincos_fast (y, z, x, rnd_mode);
     }
 
-  mpfr_init (c);
-  mpfr_init (xr);
+  mpfr_init2 (c, m);
+  mpfr_init2 (xr, MPFR_PREC_MIN);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
@@ -141,6 +141,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (expx >= 2) /* reduce the argument */
         {
           reduce = 1;
+          MPFR_ASSERTN (expx + m - 1 <= MPFR_PREC_MAX);
           mpfr_set_prec (c, expx + m - 1);
           mpfr_set_prec (xr, m);
           mpfr_const_pi (c, MPFR_RNDN);
