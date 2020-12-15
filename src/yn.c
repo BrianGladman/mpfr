@@ -324,12 +324,13 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
     mpfr_t y, s1, s2, s3;
     MPFR_ZIV_DECL (loop);
 
-    mpfr_init (y);
-    mpfr_init (s1);
-    mpfr_init (s2);
-    mpfr_init (s3);
-
     prec = MPFR_PREC(res) + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (res)) + 13;
+
+    mpfr_init2 (y, prec);
+    mpfr_init2 (s1, prec);
+    mpfr_init2 (s2, prec);
+    mpfr_init2 (s3, prec);
+
     MPFR_ZIV_INIT (loop, prec);
     for (;;)
       {
