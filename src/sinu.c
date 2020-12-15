@@ -62,7 +62,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
      any failure in Ziv's strategy, thus we take into account expx too */
   prec = precy + MPFR_INT_CEIL_LOG2 (MAX(precy,expx)) + 8;
   MPFR_ASSERTD(prec >= 2);
-  mpfr_init (t);
+  mpfr_init2 (t, prec);
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
