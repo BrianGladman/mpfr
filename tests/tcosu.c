@@ -120,6 +120,26 @@ test_exact (void)
   inexact = mpfr_cosu (y, x, 4, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0 && inexact == 0);
 
+  /* check 2*pi*x/u = pi/3, for example x=1 and u=6 */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 6, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0 && inexact == 0);
+
+  /* check 2*pi*x/u = 2*pi/3, for example x=2 and u=6 */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 6, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_si_2exp (y, -1, -1) == 0 && inexact == 0);
+
+  /* check 2*pi*x/u = 4*pi/3, for example x=4 and u=6 */
+  mpfr_set_ui (x, 4, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 6, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_si_2exp (y, -1, -1) == 0 && inexact == 0);
+
+  /* check 2*pi*x/u = 5*pi/3, for example x=5 and u=6 */
+  mpfr_set_ui (x, 5, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 6, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1) == 0 && inexact == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

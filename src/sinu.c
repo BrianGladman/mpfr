@@ -153,7 +153,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
               if (inexact == 0 && mpfr_integer_p (t))
                 {
                   mpz_t z;
-                  int mod12;
+                  unsigned long mod12;
                   mpz_init (z);
                   inexact = mpfr_get_z (z, t, MPFR_RNDZ);
                   MPFR_ASSERTN(inexact == 0);

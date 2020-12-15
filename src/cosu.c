@@ -107,10 +107,13 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       err = expt - err;
       if (MPFR_CAN_ROUND (t, err, precy, rnd_mode))
         break;
-      /* check exact cases: this can only occur if 2*pi*x/u is a multiple
-         of pi/2, i.e., if x/u is a multiple of 1/4 */
+      /* Check exact cases only after the first level of Ziv' strategy, to
+         avoid slowing down the average case. Exact cases are:
+         (a) 2*pi*x/u is a multiple of pi/2, i.e., x/u is a multiple of 1/4
+         (b) 2*pi*x/u is {pi/3,2pi/3,4pi/3,5pi/3} mod 2pi */
       if (nloops == 1)
         {
+          /* detect case (a) */
           inexact = mpfr_div_ui (t, x, u, MPFR_RNDZ);
           mpfr_mul_2ui (t, t, 2, MPFR_RNDZ);
           if (inexact == 0 && mpfr_integer_p (t))
@@ -131,6 +134,40 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                     mpfr_set_si (y, -1, MPFR_RNDZ);
                 }
               goto end;
+            }
+          /* detect case (b): this can only occur if u is divisible by 3 */
+          if ((u % 3) == 0)
+            {
+              inexact = mpfr_div_ui (t, x, u / 3, MPFR_RNDZ);
+              /* t should be in {1/2,2/2,4/2,5/2} */
+              mpfr_mul_2ui (t, t, 1, MPFR_RNDZ);
+              /* t should be {1,2,4,5} mod 6:
+                 t = 1 mod 6: case pi/3: return 1/2
+                 t = 2 mod 6: case 2pi/3: return -1/2
+                 t = 4 mod 6: case 4pi/3: return -1/2
+                 t = 5 mod 6: case 5pi/3: return 1/2 */
+              if (inexact == 0 && mpfr_integer_p (t))
+                {
+                  mpz_t z;
+                  unsigned long mod6;
+                  mpz_init (z);
+                  inexact = mpfr_get_z (z, t, MPFR_RNDZ);
+                  MPFR_ASSERTN(inexact == 0);
+                  mod6 = mpz_fdiv_ui (z, 6);
+                  mpz_clear (z);
+                  if (mod6 == 1 || mod6 == 5)
+                    {
+                      mpfr_set_ui_2exp (y, 1, -1, MPFR_RNDZ);
+                      goto end;
+                    }
+                  else /* we cannot have mod6 = 0 or 3 since those
+                          case belong to (a) */
+                    {
+                      MPFR_ASSERTD(mod6 == 2 || mod6 == 4);
+                      mpfr_set_si_2exp (y, -1, -1, MPFR_RNDZ);
+                      goto end;
+                    }
+                }
             }
         }
       MPFR_ZIV_NEXT (loop, prec);
