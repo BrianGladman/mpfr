@@ -749,7 +749,8 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
       MPFR_ASSERTN (expected_inex != INT_MIN);
       if (!(SAME_VAL (y, z) || SAME_SIGN (inex, expected_inex)))
         {
-          printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
+          printf ("test5rm: error for %s with xprec=%lu, yprec=%lu, rnd=%s\n"
+                  "x = ",
                   name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
                   mpfr_print_rnd_mode (rnd));
           mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
