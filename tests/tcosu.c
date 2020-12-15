@@ -158,6 +158,12 @@ test_regular (void)
 #endif
 #include "tgeneric.c"
 
+static int
+mpfr_cos2pi (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
+{
+  return mpfr_cosu (y, x, 1, r);
+}
+
 int
 main (void)
 {
@@ -168,6 +174,8 @@ main (void)
   test_regular ();
 
   test_generic (MPFR_PREC_MIN, 100, 1);
+
+  data_check ("data/cos2pi", mpfr_cos2pi, "mpfr_cos2pi");
 
   tests_end_mpfr ();
   return 0;
