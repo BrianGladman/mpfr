@@ -132,7 +132,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   mpfr_init2 (c, m);
-  mpfr_init2 (xr, MPFR_PREC_MIN);
+  mpfr_init2 (xr, m);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
@@ -178,9 +178,10 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (!MPFR_CAN_ROUND (c, err, MPFR_PREC (z), rnd_mode))
         goto next_step;
 
-      /* we can't set z now, because in case z = x, and the MPFR_CAN_ROUND()
-         call below fails, we will have clobbered the input */
-      mpfr_set_prec (xr, MPFR_PREC(c));
+      /* We can't set z now, because in case z = x, and the MPFR_CAN_ROUND()
+         call below fails, we will have clobbered the input.
+         Note: m below is the precision of c; see above. */
+      mpfr_set_prec (xr, m);
       mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
       mpfr_sqr (c, xr, MPFR_RNDU); /* the absolute error is bounded by
                                       2^(5-m) if reduce=1, and by 2^(2-m)
