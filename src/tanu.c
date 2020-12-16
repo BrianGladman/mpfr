@@ -1,4 +1,5 @@
-/* mpfr_tanu -- tanu(x) = tan(2*pi*x/u)
+/* mpfr_tanu  -- tanu(x) = tan(2*pi*x/u)
+   mpfr_tanpi -- tanpi(x) = tan(pi*x)
 
 Copyright 2020 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -174,4 +175,10 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
   mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
   return underflow ? inexact : mpfr_check_range (y, inexact, rnd_mode);
+}
+
+int
+mpfr_tanpi (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  return mpfr_tanu (y, x, 2, rnd_mode);
 }

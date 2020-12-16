@@ -169,10 +169,8 @@ Table of contents:
   + axis_rad (5.3.9.1) if useful in MPFR;
   + cycle (5.3.10.1): rad(2 pi x / u) u / (2 pi) = remr(x, u);
   + axis_cycle (5.3.10.1) if useful in MPFR;
-  + sinu, cosu, tanu, cotu, secu, cscu, cossinu, arcsinu, arccosu,
-    arctanu, arccotu, arcsecu, arccscu (5.3.10.{2..14}):
-    sin(x 2 pi / u), etc.;
-    [from which sinpi(x) = sin(Pi*x), ... are trivial to implement, with u=2.]
+  + cotu, secu, cscu, cossinu, arcsinu, arccosu,
+    arctanu, arccotu, arcsecu, arccscu (5.3.10.{5..14}):
   + arcu (5.3.10.15): arctan2(y,x) u / (2 pi);
   + rad_to_cycle, cycle_to_rad, cycle_to_cycle (5.3.11.{1..3}).
 - From GSL, missing special functions (if useful in MPFR):
