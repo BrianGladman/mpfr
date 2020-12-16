@@ -89,7 +89,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_div_ui (t, t, u, MPFR_RNDN);  /* t = 2*pi*x/u * (1 + theta3)^3 where
                                             |theta3| <= 2^-prec */
       /* if t is zero here, it means the division by u underflows, then
-         sin(t) also underflows, since |sin(x)| <= |x| for say |x| < 1. */
+         sin(t) also underflows, since |sin(x)| <= |x|. */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
         {
           inexact = mpfr_underflow (y, rnd_mode, MPFR_SIGN(t));
