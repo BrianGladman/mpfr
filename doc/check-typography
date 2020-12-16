@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-o=$(grep -E '[A-Z]\)?[.!?]( |$)' mpfr.texi | grep -Ev '^(\* .*::|@c )')
+o=$(grep -E '([A-Z]|resp)\)?[.!?]( |$)' mpfr.texi | grep -Ev '^(\* .*::|@c )')
 [ -z "$o" ] && exit
 
 # Note: The default Texinfo rules are heuristics allowing one to get
