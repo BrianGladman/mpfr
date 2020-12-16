@@ -22,7 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "" release.
-- New functions mpfr_cosu and mpfr_sinu (experimental).
+- New functions mpfr_cosu, mpfr_sinu and mpfr_tanu (experimental).
 - Bug fixes.
   In particular, for the formatted output functions (mpfr_printf, etc.),
   the case where the precision consists only of a period has been fixed
