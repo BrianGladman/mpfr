@@ -2289,9 +2289,9 @@ Note: these functions are experimental and their interface might change in futur
 versions.
 @end deftypefun
 
-@deftypefun int mpfr_cospi (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_sinpi (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_tanpi (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long @var{u}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_cospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_sinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_tanpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cosine (resp. sine and tangent) of @m{@var{op} \times \pi,@var{op} multiplied by @tie{}Pi}. See the description of @code{mpfr_sinu},
 @code{mpfr_cosu} and @code{mpfr_tanu} for special values.
 
