@@ -202,6 +202,12 @@ test_regular (void)
 #endif
 #include "tgeneric.c"
 
+static int
+mpfr_tan2pi (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
+{
+  return mpfr_tanu (y, x, 1, r);
+}
+
 int
 main (void)
 {
@@ -212,6 +218,8 @@ main (void)
   test_regular ();
 
   test_generic (MPFR_PREC_MIN, 100, 1);
+
+  data_check ("data/tan2pi", mpfr_tan2pi, "mpfr_tan2pi");
 
   tests_end_mpfr ();
   return 0;
