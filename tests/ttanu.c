@@ -71,13 +71,13 @@ static void
 test_exact (void)
 {
   mpfr_t x, y;
-  int inexact;
+  int inexact, n;
 
   mpfr_init2 (x, 6);
   mpfr_init2 (y, 6);
 
   /* check n + 0.5 for n integer */
-  for (int n = 0; n < 10; n++)
+  for (n = 0; n < 10; n++)
     {
       /* check 2n+0.5 for n>=0: +Inf and divide by 0 exception */
       mpfr_set_ui (x, 4 * n + 1, MPFR_RNDN);
