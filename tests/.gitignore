@@ -52,6 +52,7 @@
 /tcopysign
 /tcos
 /tcosh
+/tcosu
 /tcot
 /tcoth
 /tcsc
@@ -164,6 +165,7 @@
 /tsin_cos
 /tsinh
 /tsinh_cosh
+/tsinu
 /tsprintf
 /tsqr
 /tsqrt
@@ -181,6 +183,7 @@
 /tswap
 /ttan
 /ttanh
+/ttanu
 /ttrunc
 /tui_div
 /tui_pow
