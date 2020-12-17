@@ -785,6 +785,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
         }
     }
 
+if (getenv ("MPFR_TGENERIC_STAT") != NULL)
+  printf ("tgeneric: normal cases / total = %lu / %lu in %s\n",
+          ctrn, ctrt, __func__);
+
 #ifndef TGENERIC_NOWARNING
   if (3 * ctrn < 2 * ctrt)
     printf ("Warning! Too few normal cases in generic tests (%lu / %lu)\n",
