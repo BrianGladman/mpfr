@@ -193,7 +193,7 @@ main (void)
   test_exact ();
   test_regular ();
 
-  test_generic (MPFR_PREC_MIN, 100, 1);
+  test_generic (MPFR_PREC_MIN, 100, 5);
 
   data_check ("data/cos2pi", mpfr_cos2pi, "mpfr_cos2pi");
 
