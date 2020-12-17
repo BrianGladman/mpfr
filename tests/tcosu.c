@@ -193,7 +193,11 @@ main (void)
   test_exact ();
   test_regular ();
 
-  test_generic (MPFR_PREC_MIN, 100, 5);
+  /* Note: since the value of u can be large (up to 2^64 - 1 on 64-bit
+     machines), the cos argument can be very small, yielding a special
+     case in small precision. Thus it is better to use a maximum
+     precision (second test_generic argument) that is large enough. */
+  test_generic (MPFR_PREC_MIN, 200, 3);
 
   data_check ("data/cos2pi", mpfr_cos2pi, "mpfr_cos2pi");
 
