@@ -70,9 +70,11 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   precy = MPFR_PREC (y);
   expx = MPFR_GET_EXP (x);
-  /* for x large, since argument reduction is expensive, we want to avoid
-     any failure in Ziv's strategy, thus we take into account expx too */
-  prec = precy + MPFR_INT_CEIL_LOG2 (MAX(precy,expx)) + 8;
+  /* For x large, since argument reduction is expensive, we want to avoid
+     any failure in Ziv's strategy, thus we take into account expx too.
+     FIXME: this has to be modified when argument reduction is done
+     directly on x. */
+  prec = precy + MAX(expx, MPFR_INT_CEIL_LOG2 (precy)) + 8;
   MPFR_ASSERTD(prec >= 2);
   mpfr_init2 (t, prec);
   MPFR_ZIV_INIT (loop, prec);

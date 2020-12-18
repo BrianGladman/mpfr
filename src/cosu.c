@@ -32,7 +32,7 @@ int
 mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t precy, prec;
-  mpfr_exp_t expx, expt, err;
+  mpfr_exp_t expx, expt, err, log2u;
   mpfr_t t;
   int inexact = 0, nloops = 0, underflow = 0;
   MPFR_ZIV_DECL (loop);
@@ -60,11 +60,19 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  precy = MPFR_PREC (y);
+  /* for x small, we have |cos(2*pi*x/u)-1| < 1/2*(2*pi*x/u)^2 < 2^5*(x/u)^2 */
   expx = MPFR_GET_EXP (x);
-  /* for x large, since argument reduction is expensive, we want to avoid
-     any failure in Ziv's strategy, thus we take into account expx too */
-  prec = precy + MPFR_INT_CEIL_LOG2 (MAX(precy,expx)) + 8;
+  log2u = (u == 1) ? 0 : MPFR_INT_CEIL_LOG2 (u) - 1;
+  /* u >= 2^log2u thus 1/u <= 2^(-log2u) */
+  MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, -2 * expx + 2 * log2u - 5,
+                                    0, 0, rnd_mode, expo, {});
+
+  precy = MPFR_PREC (y);
+  /* For x large, since argument reduction is expensive, we want to avoid
+     any failure in Ziv's strategy, thus we take into account expx too.
+     FIXME: this has to be modified when argument reduction is done
+     directly on x. */
+  prec = precy + MAX(expx,MPFR_INT_CEIL_LOG2 (precy)) + 8;
   MPFR_ASSERTD(prec >= 2);
   mpfr_init2 (t, prec);
   MPFR_ZIV_INIT (loop, prec);
