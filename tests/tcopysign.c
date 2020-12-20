@@ -26,26 +26,41 @@ static void
 copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                   mpfr_rnd_t rnd_mode, int k)
 {
+  mpfr_srcptr p;
+
+  /* invalid sign, to test that the sign is always correctly set */
+  MPFR_SIGN (z) = 0;
+
+  if (k >= 6)
+    {
+      MPFR_ASSERTN (MPFR_PREC (z) >= MPFR_PREC (x));
+      mpfr_set (z, x, MPFR_RNDN);
+      p = z;
+      k -= 6;
+    }
+  else
+    p = x;
+
   mpfr_clear_flags ();
   switch (k)
     {
     case 0:
-      mpfr_copysign (z, x, y, MPFR_RNDN);
+      mpfr_copysign (z, p, y, rnd_mode);
       return;
     case 1:
-      (mpfr_copysign) (z, x, y, MPFR_RNDN);
+      (mpfr_copysign) (z, p, y, rnd_mode);
       return;
     case 2:
-      mpfr_setsign (z, x, mpfr_signbit (y), MPFR_RNDN);
+      mpfr_setsign (z, p, mpfr_signbit (y), rnd_mode);
       return;
     case 3:
-      mpfr_setsign (z, x, (mpfr_signbit) (y), MPFR_RNDN);
+      mpfr_setsign (z, p, (mpfr_signbit) (y), rnd_mode);
       return;
     case 4:
-      (mpfr_setsign) (z, x, mpfr_signbit (y), MPFR_RNDN);
+      (mpfr_setsign) (z, p, mpfr_signbit (y), rnd_mode);
       return;
     case 5:
-      (mpfr_setsign) (z, x, (mpfr_signbit) (y), MPFR_RNDN);
+      (mpfr_setsign) (z, p, (mpfr_signbit) (y), rnd_mode);
       return;
     }
 }
@@ -64,7 +79,7 @@ main (void)
 
   for (i = 0; i <= 1; i++)
     for (j = 0; j <= 1; j++)
-      for (k = 0; k <= 5; k++)
+      for (k = 0; k < 12; k++)
         {
           mpfr_set_nan (x);
           i ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);

@@ -34,5 +34,14 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_copysign (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
-  return mpfr_set4 (z, x, rnd_mode, MPFR_SIGN (y));
+  if (MPFR_UNLIKELY (z != x))
+    return mpfr_set4 (z, x, rnd_mode, MPFR_SIGN (y));
+  else
+    {
+      MPFR_SET_SAME_SIGN (z, y);
+      if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
+        MPFR_RET_NAN;
+      else
+        MPFR_RET (0);
+    }
 }
