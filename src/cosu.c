@@ -32,7 +32,7 @@ int
 mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {
   mpfr_prec_t precy, prec;
-  mpfr_exp_t expx, expt, err, log2u;
+  mpfr_exp_t expx, expt, err, log2u, erra, errb;
   mpfr_t t;
   int inexact = 0, nloops = 0, underflow = 0;
   MPFR_ZIV_DECL (loop);
@@ -62,10 +62,24 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   /* for x small, we have |cos(2*pi*x/u)-1| < 1/2*(2*pi*x/u)^2 < 2^5*(x/u)^2 */
   expx = MPFR_GET_EXP (x);
-  log2u = (u == 1) ? 0 : MPFR_INT_CEIL_LOG2 (u) - 1;
+  log2u = u == 1 ? 0 : MPFR_INT_CEIL_LOG2 (u) - 1;
   /* u >= 2^log2u thus 1/u <= 2^(-log2u) */
-  MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, -2 * expx + 2 * log2u - 5,
-                                    0, 0, rnd_mode, expo, {});
+  erra = -2 * expx;
+  errb = 5 - 2 * log2u;
+  /* The 3rd argument (err1) of MPFR_SMALL_INPUT_AFTER_SAVE_EXPO should be
+     erra - errb, but it may overflow. The negative overflow is avoided by
+     the test erra > errb: if erra - errb <= 0, the macro is no-op.
+     Saturate to MPFR_EXP_MAX in case of positive overflow, as the error
+     test in MPFR_SMALL_INPUT_AFTER_SAVE_EXPO will always be true for
+     any value >= MPFR_PREC_MAX + 1, and this includes MPFR_EXP_MAX (from
+     the definition of MPFR_PREC_MAX and mpfr_exp_t >= mpfr_prec_t). */
+  if (erra > errb)
+    {
+      mpfr_exp_t err1 = errb >= 0 || erra < MPFR_EXP_MAX + errb ?
+        erra - errb : MPFR_EXP_MAX;
+      MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, err1, 0, 0,
+                                        rnd_mode, expo, {});
+    }
 
   precy = MPFR_PREC (y);
   /* For x large, since argument reduction is expensive, we want to avoid
