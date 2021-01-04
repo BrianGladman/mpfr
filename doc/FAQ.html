@@ -289,8 +289,11 @@ that your program is <samp>foo.c</samp>, you should link it using:
 <cite><acronym>MPFR</acronym></cite> library reference (<samp>-lmpfr</samp>)
 should be before <cite><acronym>GMP</acronym></cite>'s one
 (<samp>-lgmp</samp>). Another solution is, with <acronym>GNU</acronym>
-<samp>ld</samp>, to give all the libraries inside a group:
+<samp>ld</samp>, to give all the libraries in any order inside a group:
 <samp class="block-code">gcc link.c -Wl,--start-group libgmp.a libmpfr.a -Wl,--end-group</samp>
+with the full path to the libraries, or
+<samp class="block-code">gcc link.c -Wl,--start-group -l:libgmp.a -l:libmpfr.a -Wl,--end-group</samp>
+to use the library path.
 See <samp>INSTALL</samp> file and <samp>ld</samp> manual for more
 details.</p>
 <p>If you used correct link options, but still get an error, this may mean
