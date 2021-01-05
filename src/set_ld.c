@@ -176,7 +176,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 
 #elif defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
 
-/* double-double code */
+/* double-double code, see
+   https://gcc.gnu.org/git/?p=gcc.git;a=blob;f=libgcc/config/rs6000/ibm-ldouble-format;h=e8ada17f7696cd942e710d5b67d4149f5fcccf45;hb=HEAD */
 int
 mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 {
