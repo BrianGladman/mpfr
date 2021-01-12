@@ -166,8 +166,8 @@ test_regular (void)
   mpfr_clear (z);
 }
 
-/* Check argument reduction with large hard-coded inputs. The following values were
-   generated with the following Sage code:
+/* Check argument reduction with large hard-coded inputs. The following
+   values were generated with the following Sage code:
 # generate N random tests for f, with precision p, u < U, and |x| < 2^K
 # f might be cos (for cosu), sin (for sinu) or tan (for tanu)
 # gen_random(cos,10,53,100,20)
@@ -188,34 +188,34 @@ def gen_random(f,N,p,U,K):
 static void
 test_large (void)
 {
-#define SIZE 10
-  static double T[SIZE][3] = {
-    {0xd.ddfeb0f4a01fp+16, 72, 0x4.8e54ce9b84d78p-4},
-    {-0xb.ccb63f74f9abp+16, 36, -0xb.cce98d64941bp-4},
-    {0x9.8451e45ed4bap+16, 26, -0xb.b205cfe8a13cp-4},
-    {-0x7.6b4c16c45445p+16, 60, -0x7.dee04000f4934p-4},
-    {0x1.bb80916be884p+16, 43, -0xc.059d9c8f1b7fp-4},
-    {-0x5.4d3623b69226p+16, 1, 0xa.3cb353892757p-4},
-    {0xd.1c59eab5a14bp+16, 58, 0x1.02978f1c99614p-4},
-    {-0xf.bb1f858b9949p+16, 33, -0x3.b53e5214db138p-4},
-    {-0x2.9bcda761bb7p+16, 55, -0x6.e6c08e7d92898p-4},
-    {-0x9.f8f40e2c50f9p+16, 73, 0x7.0e0ff5e4dccbp-4}
+  static struct {
+    const char *x;
+    unsigned long u;
+    const char *y;
+  } t[] = {
+    { "0xd.ddfeb0f4a01fp+16", 72, "0x4.8e54ce9b84d78p-4" },
+    { "-0xb.ccb63f74f9abp+16", 36, "-0xb.cce98d64941bp-4" },
+    { "0x9.8451e45ed4bap+16", 26, "-0xb.b205cfe8a13cp-4" },
+    { "-0x7.6b4c16c45445p+16", 60, "-0x7.dee04000f4934p-4" },
+    { "0x1.bb80916be884p+16", 43, "-0xc.059d9c8f1b7fp-4" },
+    { "-0x5.4d3623b69226p+16", 1, "0xa.3cb353892757p-4" },
+    { "0xd.1c59eab5a14bp+16", 58, "0x1.02978f1c99614p-4" },
+    { "-0xf.bb1f858b9949p+16", 33, "-0x3.b53e5214db138p-4" },
+    { "-0x2.9bcda761bb7p+16", 55, "-0x6.e6c08e7d92898p-4" },
+    { "-0x9.f8f40e2c50f9p+16", 73, "0x7.0e0ff5e4dccbp-4" }
   };
   int i;
-  unsigned long u;
-
   mpfr_t x, y, z;
-  mpfr_inits2 (53, x, y, z, (mpfr_ptr) NULL);
-  for (i = 0; i < SIZE; i++)
+
+  mpfr_inits2 (53, x, y, z, (mpfr_ptr) 0);
+  for (i = 0; i < numberof (t); i++)
     {
-      mpfr_set_d (x, T[i][0], MPFR_RNDN);
-      u = (unsigned long) T[i][1];
-      mpfr_set_d (y, T[i][2], MPFR_RNDN);
-      mpfr_cosu (z, x, u, MPFR_RNDN);
+      mpfr_set_str (x, t[i].x, 0, MPFR_RNDN);
+      mpfr_set_str (y, t[i].y, 0, MPFR_RNDN);
+      mpfr_cosu (z, x, t[i].u, MPFR_RNDN);
       MPFR_ASSERTN (mpfr_equal_p (y, z));
     }
-  mpfr_clears (x, y, z, (mpfr_ptr) NULL);
-#undef SIZE  
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
 /* FIXME[VL]: For mpfr_cosu, the range reduction should not be expensive.
