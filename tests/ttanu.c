@@ -190,6 +190,42 @@ test_regular (void)
   mpfr_clear (z);
 }
 
+/* Check argument reduction with large hard-coded inputs. The following values were
+   generated with gen_random(tan,10,53,100,20), where the Sage code for gen_random
+   is given in the tcosu.c file */
+static void
+test_large (void)
+{
+#define SIZE 10
+  static double T[SIZE][3] = {
+    {-0x1.8f7cb49edc03p+16, 28, 0x4.c869fd8050554p-4},
+    {-0xe.8ede30716292p+16, 17, -0x2.c83df69d8fdecp+4},
+    {-0x8.f14a73a7b4a3p+16, 4, -0xd.be24a6d0fde98p-4},
+    {0xe.f82c4537b473p+16, 93, -0x5.d0d95fdc8ffbcp+0},
+    {0x8.4148f00c8418p+16, 50, 0x1.e4e4aa652b2a4p-4},
+    {-0x6.e8b69db10e63p+16, 27, -0x2.4f32f1977b7b2p-4},
+    {-0xe.a3ebf225ea2fp+16, 18, 0x6.5f7637f74517p+0},
+    {-0x5.580eb29168d8p+16, 92, 0x8.96418eed84e8p+0},
+    {0x8.13c5a1b43231p+16, 19, 0xb.2718b861b29fp-8},
+    {0x4.eb4e546e042dp+16, 64, 0x6.0b3ba821e4ep+0}
+  };
+  int i;
+  unsigned long u;
+
+  mpfr_t x, y, z;
+  mpfr_inits2 (53, x, y, z, (mpfr_ptr) NULL);
+  for (i = 0; i < SIZE; i++)
+    {
+      mpfr_set_d (x, T[i][0], MPFR_RNDN);
+      u = (unsigned long) T[i][1];
+      mpfr_set_d (y, T[i][2], MPFR_RNDN);
+      mpfr_tanu (z, x, u, MPFR_RNDN);
+      MPFR_ASSERTN (mpfr_equal_p (y, z));
+    }
+  mpfr_clears (x, y, z, (mpfr_ptr) NULL);
+#undef SIZE  
+}
+
 /* FIXME[VL]: For mpfr_tanu, the range reduction should not be expensive.
    If I'm not mistaken, this is linear in the bitsize of the exponent
    since one just needs to compute the argument modulo the integer u. */
@@ -216,6 +252,7 @@ main (void)
   test_singular ();
   test_exact ();
   test_regular ();
+  test_large ();
 
   test_generic (MPFR_PREC_MIN, 100, 1);
 
