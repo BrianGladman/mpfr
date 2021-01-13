@@ -186,7 +186,10 @@ test_large (void)
     { "0xe.add2f0441bap+16", 82, "-0xf.fc35c5a5e1448p-4" },
     { "0xc.8feb943a0fe5p+16", 43, "-0x5.8af3e0e11b794p-4" },
     { "-0xd.d61b06ace6d9p+16", 55, "0xa.175c9f7e4ede8p-4" },
-    { "0xb.cf036b4e5fap+12", 46, "0x1.b7128e1975d9ap-4" }
+    { "0xb.cf036b4e5fap+12", 46, "0x1.b7128e1975d9ap-4" },
+    /* The following case does not come from the random values.
+       Here, x mod u may need more precision than x. */
+    { "0x3.p+16", 99, "-0xb.e4a8a986c9fd03ap-5" }
   };
   int i;
   mpfr_t x, y, z;
@@ -198,6 +201,11 @@ test_large (void)
       mpfr_set_str (y, t[i].y, 0, MPFR_RNDN);
       mpfr_sinu (z, x, t[i].u, MPFR_RNDN);
       MPFR_ASSERTN (mpfr_equal_p (y, z));
+      /* Same test after reducing the precision of x to its minimum one. */
+      mpfr_prec_round (x, mpfr_min_prec (x), MPFR_RNDN);
+      mpfr_sinu (z, x, t[i].u, MPFR_RNDN);
+      MPFR_ASSERTN (mpfr_equal_p (y, z));
+      mpfr_prec_round (x, 53, MPFR_RNDN);
     }
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
