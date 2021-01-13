@@ -24,16 +24,14 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME[VL]: Implement the range reduction in this function.
-   That's the whole point of tanu compared to tan. */
-
 /* put in y the corrected-rounded value of tan(2*pi*x/u) */
 int
 mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {
+  mpfr_srcptr xp;
   mpfr_prec_t precy, prec;
   mpfr_exp_t expx, expt, err;
-  mpfr_t t;
+  mpfr_t t, xr;
   int inexact = 0, nloops = 0, underflow = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -62,12 +60,40 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
+  if (mpfr_cmpabs_ui (x, u) < 1)
+    {
+      xp = x;
+    }
+  else
+    {
+      mpfr_exp_t e = MPFR_GET_PREC (x) - MPFR_GET_EXP (x);
+      int inex;
+
+      /* Let's compute xr = x mod u, with signbit(xr) = signbit(x), which
+         may be important when x is a multiple of u, in which case xr = 0
+         (but this property is actually not needed in the code below).
+         Note that due to the rules on the special values, we needed to
+         consider a period of u instead of u/2. */
+      mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (e < 0 ? 0 : e));
+      MPFR_DBGRES (inex = mpfr_fmod_ui (xr, x, u, MPFR_RNDN));  /* exact */
+      MPFR_ASSERTD (inex == 0);
+      if (MPFR_IS_ZERO (xr))
+        {
+          mpfr_clear (xr);
+          MPFR_SAVE_EXPO_FREE (expo);
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
+      xp = xr;
+    }
+
+  /* now |xp/u| < 1 */
+
   precy = MPFR_GET_PREC (y);
-  expx = MPFR_GET_EXP (x);
+  expx = MPFR_GET_EXP (xp);
   /* For x large, since argument reduction is expensive, we want to avoid
-     any failure in Ziv's strategy, thus we take into account expx too.
-     FIXME: this has to be modified when argument reduction is done
-     directly on x. */
+     any failure in Ziv's strategy, thus we take into account expx too. */
   prec = precy + MAX(expx,MPFR_INT_CEIL_LOG2(precy)) + 8;
   MPFR_ASSERTD(prec >= 2);
   mpfr_init2 (t, prec);
@@ -76,7 +102,8 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
     {
       int inex;
       nloops ++;
-      /* We first compute an approximation t of 2*pi*x/u, then call tan(t).
+      /* In the error analysis below, xp stands for x.
+         We first compute an approximation t of 2*pi*x/u, then call tan(t).
          If t = 2*pi*x/u + s, then
          |tan(t) - tan(2*pi*x/u)| = |s| * (1 + tan(v)^2) where v is in the
          interval [t, t+s]. If we ensure that |t| >= |2*pi*x/u|, since tan() is
@@ -85,7 +112,7 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_const_pi (t, MPFR_RNDU); /* t = pi * (1 + theta1) where
                                        |theta1| <= 2^(1-prec) */
       mpfr_mul_2ui (t, t, 1, MPFR_RNDN); /* t = 2*pi * (1 + theta1) */
-      mpfr_mul (t, t, x, MPFR_RNDA);     /* t = 2*pi*x * (1 + theta2)^2 where
+      mpfr_mul (t, t, xp, MPFR_RNDA);    /* t = 2*pi*x * (1 + theta2)^2 where
                                             |theta2| <= 2^(1-prec) */
       inex = mpfr_div_ui (t, t, u, MPFR_RNDN);
       /* t = 2*pi*x/u * (1 + theta3)^3 where |theta3| <= 2^(1-prec) */
@@ -139,7 +166,7 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
          (c) x/u = {1/8,3/8,5/8,7/8} mod 1: return 1 or -1 */
       if (nloops == 1)
         {
-          inexact = mpfr_div_ui (t, x, u, MPFR_RNDA);
+          inexact = mpfr_div_ui (t, xp, u, MPFR_RNDA);
           mpfr_mul_2ui (t, t, 3, MPFR_RNDA);
           if (inexact == 0 && mpfr_integer_p (t))
             {
@@ -175,6 +202,11 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
  end:
   mpfr_clear (t);
+  if (xp != x)
+    {
+      MPFR_ASSERTD (xp == xr);
+      mpfr_clear (xr);
+    }
   MPFR_SAVE_EXPO_FREE (expo);
   return underflow ? inexact : mpfr_check_range (y, inexact, rnd_mode);
 }
