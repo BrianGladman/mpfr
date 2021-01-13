@@ -1617,11 +1617,11 @@ only under some conditions: see the documentation of @code{mpfr_set_float128},
 @code{mpfr_set_decimal64} and @code{mpfr_set_decimal128} respectively.
 @end deftypefun
 
-@deftypefun long mpfr_get_si (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx {unsigned long} mpfr_get_ui (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun {long int} mpfr_get_si (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx {unsigned long int} mpfr_get_ui (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx intmax_t mpfr_get_sj (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Convert @var{op} to a @code{long}, an @code{unsigned long},
+Convert @var{op} to a @code{long int}, an @code{unsigned long int},
 an @code{intmax_t} or an @code{uintmax_t} (respectively) after rounding
 it to an integer with respect to @var{rnd}.
 If @var{op} is NaN, 0 is returned and the @emph{erange} flag is set.
@@ -1821,7 +1821,7 @@ The block is assumed to be @code{strlen(@var{str})+1} bytes.
 @deftypefunx int mpfr_fits_uintmax_p (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_fits_intmax_p (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Return non-zero if @var{op} would fit in the respective C data type,
-respectively @code{unsigned long}, @code{long}, @code{unsigned int},
+respectively @code{unsigned long int}, @code{long int}, @code{unsigned int},
 @code{int}, @code{unsigned short}, @code{short}, @code{uintmax_t},
 @code{intmax_t}, when rounded to an integer in the direction @var{rnd}.
 For instance, with the @code{MPFR_RNDU} rounding mode on @minus{}0.5,
@@ -3043,9 +3043,9 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 
 @deftypefun int mpfr_fmod (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_fmod_ui (mpfr_t @var{r}, mpfr_t @var{x}, unsigned long int @var{y}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_fmodquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fmodquo (mpfr_t @var{r}, long int* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_remquo (mpfr_t @var{r}, long int* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 Set @var{r} to the value of @math{@var{x} - @var{n}@var{y}}, rounded
 according to the direction @var{rnd}, where @var{n} is the integer quotient
 of @var{x} divided by @var{y}, defined as follows: @var{n} is rounded
@@ -3063,7 +3063,7 @@ The return value is the ternary value corresponding to @var{r}.
 
 Additionally, @code{mpfr_fmodquo} and @code{mpfr_remquo} store
 the low significant bits from the quotient @var{n} in @var{*q}
-(more precisely the number of bits in a @code{long} minus one),
+(more precisely the number of bits in a @code{long int} minus one),
 with the sign of @var{x} divided by @var{y}
 (except if those low bits are all zero, in which case zero is returned).
 Note that @var{x} may be so large in magnitude relative to @var{y} that an
@@ -3213,7 +3213,7 @@ or a null pointer if @var{rnd} is an invalid rounding mode.
 
 @deftypefn Macro int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
 Given a function @var{foo} and one or more values @var{op} (which may be
-a @code{mpfr_t}, a @code{long}, a @code{double}, etc.), put in @var{rop}
+a @code{mpfr_t}, a @code{long int}, a @code{double}, etc.), put in @var{rop}
 the round-to-nearest-away rounding of @code{@var{foo}(@var{op},...)}.
 This rounding is defined in the same way as round-to-nearest-even,
 except in case of tie, where the value away from zero is returned.
