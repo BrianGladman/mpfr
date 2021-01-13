@@ -98,6 +98,12 @@ test_exact (void)
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
   MPFR_ASSERTN(inexact == 0);
 
+  /* check x/u = 2^16, for example x=3*2^16 and u=3 */
+  mpfr_set_ui_2exp (x, 3, 16, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 3, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+  MPFR_ASSERTN(inexact == 0);
+
   /* check 2*pi*x/u = -pi/2 thus x/u = -1/4, for example x=-1 and u=4 */
   mpfr_set_si (x, -1, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
@@ -117,6 +123,12 @@ test_exact (void)
   /* check 2*pi*x/u = -2*pi thus x/u = -1, for example x=-4 and u=4 */
   mpfr_set_si (x, -4, MPFR_RNDN);
   inexact = mpfr_sinu (y, x, 4, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) != 0);
+  MPFR_ASSERTN(inexact == 0);
+
+  /* check x/u = -2^16, for example x=-3*2^16 and u=3 */
+  mpfr_set_si_2exp (x, -3, 16, MPFR_RNDN);
+  inexact = mpfr_sinu (y, x, 3, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) != 0);
   MPFR_ASSERTN(inexact == 0);
 
