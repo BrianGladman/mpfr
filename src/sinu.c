@@ -24,9 +24,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* FIXME[VL]: Implement the range reduction in this function.
-   That's the whole point of sinu compared to sin. */
-
 /* References:
  * Steve Kargl wrote sinpi and friends for FreeBSD's libm under BSD
    license:
@@ -81,7 +78,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       /* Let's compute xr = x mod u, with sign(xr) = sign(x) except
          when x is a multiple of u, in which case xr = 0.
          The precision of xr is chosen to ensure that x mod u is exactly
-         representable in xr, e.g. the maximum size of u + the length of
+         representable in xr, e.g., the maximum size of u + the length of
          the fractional part of x.
       */
       mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (e < 0 ? 0 : e));
@@ -98,6 +95,8 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       xp = xr;
     }
 
+  /* now |xp/u| < 1 */
+
   precy = MPFR_GET_PREC (y);
   expx = MPFR_GET_EXP (xp);
   /* For x large, since argument reduction is expensive, we want to avoid
@@ -110,7 +109,8 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
     {
       nloops ++;
       /* We first compute an approximation t of 2*pi*x/u, then call sin(t).
-         If t = 2*pi*x/u + s, then |sin(t) - sin(2*pi*x/u)| <= |s|. */
+         If t = 2*pi*x/u + s, then |sin(t) - sin(2*pi*x/u)| <= |s|.
+         In the error analysis below, xp stands for x. */
       mpfr_set_prec (t, prec);
       mpfr_const_pi (t, MPFR_RNDN); /* t = pi * (1 + theta1) where
                                        |theta1| <= 2^-prec */
