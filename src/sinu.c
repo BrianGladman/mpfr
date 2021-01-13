@@ -68,7 +68,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  precy = MPFR_PREC (y);
+  precy = MPFR_GET_PREC (y);
   expx = MPFR_GET_EXP (x);
   /* For x large, since argument reduction is expensive, we want to avoid
      any failure in Ziv's strategy, thus we take into account expx too.

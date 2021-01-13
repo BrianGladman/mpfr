@@ -81,7 +81,7 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
                                         rnd_mode, expo, {});
     }
 
-  precy = MPFR_PREC (y);
+  precy = MPFR_GET_PREC (y);
   /* For x large, since argument reduction is expensive, we want to avoid
      any failure in Ziv's strategy, thus we take into account expx too.
      FIXME: this has to be modified when argument reduction is done
