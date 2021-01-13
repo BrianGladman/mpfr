@@ -22,8 +22,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "" release.
-- New functions mpfr_cosu, mpfr_sinu and mpfr_tanu (experimental).
-- New functions mpfr_cospi, mpfr_sinpi and mpfr_tanpi (experimental).
+- New functions mpfr_cosu, mpfr_sinu and mpfr_tanu.
+- New functions mpfr_cospi, mpfr_sinpi and mpfr_tanpi.
 - New function mpfr_fmod_ui.
 - Bug fixes.
   In particular, for the formatted output functions (mpfr_printf, etc.),

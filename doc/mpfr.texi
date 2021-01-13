@@ -2281,9 +2281,6 @@ when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
 is an integer, the result is zero with the same sign as @var{op}, following
 IEEE@tie{}754-2019 (sinPi), so that the function is odd.
 Similarly, the function @code{mpfr_tanu} follows IEEE@tie{}754-2019 (tanPi).
-
-Note: these functions are experimental and their interface might change in
-future versions.
 @end deftypefun
 
 @deftypefun int mpfr_cospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2292,9 +2289,6 @@ future versions.
 Set @var{rop} to the cosine (resp.@: sine and tangent) of
 @m{@var{op} \times \pi,@var{op} multiplied by Pi}. See the description of
 @code{mpfr_sinu}, @code{mpfr_cosu} and @code{mpfr_tanu} for special values.
-
-Note: these functions are experimental and their interface might change in
-future versions.
 @end deftypefun
 
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -4133,7 +4127,7 @@ but not documented,
 and with a slight difference in the semantics (when
 the second input operand is a NaN)@.
 
-@item @code{mpfr_cosu} in MPFR@tie{}4.2.0 (experimental).
+@item @code{mpfr_cospi} and @code{mpfr_cosu} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_custom_get_significand} in MPFR@tie{}3.0.
 This function was named @code{mpfr_custom_get_mantissa} in previous
@@ -4258,11 +4252,13 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_sinh_cosh} in MPFR@tie{}2.4.
 
-@item @code{mpfr_sinu} in MPFR@tie{}4.2.0 (experimental).
+@item @code{mpfr_sinpi} and @code{mpfr_sinu} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_snprintf} and @code{mpfr_sprintf} in MPFR@tie{}2.4.
 
 @item @code{mpfr_sub_d} in MPFR@tie{}2.4.
+
+@item @code{mpfr_tanpi} and @code{mpfr_tanu} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_total_order_p} in MPFR@tie{}4.1.
 
