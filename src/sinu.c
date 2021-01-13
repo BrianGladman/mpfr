@@ -108,9 +108,9 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       nloops ++;
-      /* We first compute an approximation t of 2*pi*x/u, then call sin(t).
-         If t = 2*pi*x/u + s, then |sin(t) - sin(2*pi*x/u)| <= |s|.
-         In the error analysis below, xp stands for x. */
+      /* In the error analysis below, xp stands for x.
+         We first compute an approximation t of 2*pi*x/u, then call sin(t).
+         If t = 2*pi*x/u + s, then |sin(t) - sin(2*pi*x/u)| <= |s|. */
       mpfr_set_prec (t, prec);
       mpfr_const_pi (t, MPFR_RNDN); /* t = pi * (1 + theta1) where
                                        |theta1| <= 2^-prec */
