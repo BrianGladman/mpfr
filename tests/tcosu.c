@@ -218,16 +218,8 @@ test_large (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
-/* FIXME[VL]: For mpfr_cosu, the range reduction should not be expensive.
-   If I'm not mistaken, this is linear in the bitsize of the exponent
-   since one just needs to compute the argument modulo the integer u. */
 #define TEST_FUNCTION mpfr_cosu
 #define ULONG_ARG2
-#ifndef MPFR_USE_MINI_GMP
-#define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
-#else
-#define REDUCE_EMAX 16383  /* reduce further since mini-gmp works in O(n^2) */
-#endif
 #include "tgeneric.c"
 
 static int
