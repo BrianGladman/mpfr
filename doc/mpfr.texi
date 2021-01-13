@@ -3042,6 +3042,7 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 @end deftypefun
 
 @deftypefun int mpfr_fmod (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_fmod_ui (mpfr_t @var{r}, mpfr_t @var{x}, unsigned long int @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_fmodquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
@@ -4165,6 +4166,8 @@ in MPFR@tie{}4.0.
 @item @code{mpfr_fmod} in MPFR@tie{}2.4.
 
 @item @code{mpfr_fmodquo} in MPFR@tie{}4.0.
+
+@item @code{mpfr_fmod_ui} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_fms} in MPFR@tie{}2.3.
 
