@@ -37,9 +37,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {
+  mpfr_srcptr xp;
   mpfr_prec_t precy, prec;
   mpfr_exp_t expx, expt, err;
-  mpfr_t t;
+  mpfr_t t, xr;
   int inexact = 0, nloops = 0, underflow = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -68,12 +69,39 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
+  if (mpfr_cmpabs_ui (x, u) < 1)
+    {
+      xp = x;
+    }
+  else
+    {
+      mpfr_exp_t e = MPFR_GET_PREC (x) - MPFR_GET_EXP (x);
+      int inex;
+
+      /* Let's compute xr = x mod u, with sign(xr) = sign(x) except
+         when x is a multiple of u, in which case xr = 0.
+         The precision of xr is chosen to ensure that x mod u is exactly
+         representable in xr, e.g. the maximum size of u + the length of
+         the fractional part of x.
+      */
+      mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (e < 0 ? 0 : e));
+      MPFR_DBGRES (inex = mpfr_fmod_ui (xr, x, u, MPFR_RNDN));  /* exact */
+      MPFR_ASSERTD (inex == 0);
+      if (MPFR_IS_ZERO (xr))
+        {
+          mpfr_clear (xr);
+          MPFR_SAVE_EXPO_FREE (expo);
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
+      xp = xr;
+    }
+
   precy = MPFR_GET_PREC (y);
-  expx = MPFR_GET_EXP (x);
+  expx = MPFR_GET_EXP (xp);
   /* For x large, since argument reduction is expensive, we want to avoid
-     any failure in Ziv's strategy, thus we take into account expx too.
-     FIXME: this has to be modified when argument reduction is done
-     directly on x. */
+     any failure in Ziv's strategy, thus we take into account expx too. */
   prec = precy + MAX(expx, MPFR_INT_CEIL_LOG2 (precy)) + 8;
   MPFR_ASSERTD(prec >= 2);
   mpfr_init2 (t, prec);
@@ -87,7 +115,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_const_pi (t, MPFR_RNDN); /* t = pi * (1 + theta1) where
                                        |theta1| <= 2^-prec */
       mpfr_mul_2ui (t, t, 1, MPFR_RNDN); /* t = 2*pi * (1 + theta1) */
-      mpfr_mul (t, t, x, MPFR_RNDN);     /* t = 2*pi*x * (1 + theta2)^2 where
+      mpfr_mul (t, t, xp, MPFR_RNDN);    /* t = 2*pi*x * (1 + theta2)^2 where
                                             |theta2| <= 2^-prec */
       mpfr_div_ui (t, t, u, MPFR_RNDN);  /* t = 2*pi*x/u * (1 + theta3)^3 where
                                             |theta3| <= 2^-prec */
@@ -124,7 +152,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       if (nloops == 1)
         {
           /* detect case (a) */
-          inexact = mpfr_div_ui (t, x, u, MPFR_RNDA);
+          inexact = mpfr_div_ui (t, xp, u, MPFR_RNDA);
           mpfr_mul_2ui (t, t, 2, MPFR_RNDA);
           if (inexact == 0 && mpfr_integer_p (t))
             {
@@ -151,7 +179,7 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
           /* detect case (b): this can only occur if u is divisible by 3 */
           if ((u % 3) == 0)
             {
-              inexact = mpfr_div_ui (t, x, u / 3, MPFR_RNDZ);
+              inexact = mpfr_div_ui (t, xp, u / 3, MPFR_RNDZ);
               /* t should be +/-1/4 mod 3/2 */
               mpfr_mul_2ui (t, t, 2, MPFR_RNDZ);
               /* t should be +/-1 mod 6, i.e., in {1,5,7,11} mod 12:
@@ -189,6 +217,11 @@ mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
  end:
   mpfr_clear (t);
+  if (xp != x)
+    {
+      MPFR_ASSERTD (xp == xr);
+      mpfr_clear (xr);
+    }
   MPFR_SAVE_EXPO_FREE (expo);
   return underflow ? inexact : mpfr_check_range (y, inexact, rnd_mode);
 }
