@@ -26,10 +26,16 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mpfr_rnd_t rnd_mode)
 {
+  int inex;
+
+  MPFR_LOG_FUNC
+    (("u=%lu rnd=%d", u, rnd_mode),
+     ("y[%Pu]=%.*Rg inexact=%d",
+      mpfr_get_prec(r), mpfr_log_prec, r, inex));
+
   if (u != 0)
     {
       mpfr_t uu;
-      int inex;
 #ifdef MPFR_LONG_WITHIN_LIMB
       mp_limb_t up[1];
       int cnt;
@@ -54,7 +60,8 @@ mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_clear (uu);
 #endif /* MPFR_LONG_WITHIN_LIMB */
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (r, inex, rnd_mode);
+      inex = mpfr_check_range (r, inex, rnd_mode);
+      return inex;
     }
   else /* sqrt(0) = 0 */
     {
