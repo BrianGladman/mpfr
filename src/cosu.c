@@ -72,6 +72,12 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (e < 0 ? 0 : e));
       MPFR_DBGRES (inex = mpfr_fmod_ui (xr, x, u, MPFR_RNDN));  /* exact */
       MPFR_ASSERTD (inex == 0);
+      if (MPFR_IS_ZERO (xr))
+        {
+          mpfr_clear (xr);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_set_ui (y, 1, rnd_mode);
+        }
       xp = xr;
     }
 
