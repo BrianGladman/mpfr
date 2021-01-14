@@ -60,21 +60,29 @@ mpfr_tanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  if (mpfr_cmpabs_ui (x, u) < 1)
+  /* Range reduction. We do not need to reduce the argument if it is
+     already reduced (|x| < u).
+     Note that the case |x| = u is better in the "else" branch as it
+     will give xr = 0. */
+  if (mpfr_cmpabs_ui (x, u) < 0)
     {
       xp = x;
     }
   else
     {
-      mpfr_exp_t e = MPFR_GET_PREC (x) - MPFR_GET_EXP (x);
+      mpfr_exp_t p = MPFR_GET_PREC (x) - MPFR_GET_EXP (x);
       int inex;
 
       /* Let's compute xr = x mod u, with signbit(xr) = signbit(x), which
          may be important when x is a multiple of u, in which case xr = 0
          (but this property is actually not needed in the code below).
+         The precision of xr is chosen to ensure that x mod u is exactly
+         representable in xr, e.g., the maximum size of u + the length of
+         the fractional part of x. Note that since |x| >= u in this branch,
+         the additional memory amount will not be more than the one of x.
          Note that due to the rules on the special values, we needed to
          consider a period of u instead of u/2. */
-      mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (e < 0 ? 0 : e));
+      mpfr_init2 (xr, sizeof (unsigned long) * CHAR_BIT + (p < 0 ? 0 : p));
       MPFR_DBGRES (inex = mpfr_fmod_ui (xr, x, u, MPFR_RNDN));  /* exact */
       MPFR_ASSERTD (inex == 0);
       if (MPFR_IS_ZERO (xr))
