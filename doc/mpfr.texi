@@ -3043,7 +3043,7 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 Set @var{r} to the value of @math{@var{x} - @var{n}@var{y}}, rounded
 according to the direction @var{rnd}, where @var{n} is the integer quotient
 of @var{x} divided by @var{y}, defined as follows: @var{n} is rounded
-toward zero for @code{mpfr_fmod} and @code{mpfr_fmodquo},
+toward zero for @code{mpfr_fmod}, @code{mpfr_fmod_ui} and @code{mpfr_fmodquo},
 and to the nearest integer (ties rounded to even) for @code{mpfr_remainder}
 and @code{mpfr_remquo}.
 
