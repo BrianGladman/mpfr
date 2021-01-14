@@ -63,6 +63,18 @@ test_singular (void)
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
   MPFR_ASSERTN(inexact == 0);
 
+  /* check x/u = 2^16, for example x=3*2^16 and u=3 */
+  mpfr_set_ui_2exp (x, 3, 16, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 3, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  MPFR_ASSERTN(inexact == 0);
+
+  /* check x/u = -2^16, for example x=-3*2^16 and u=3 */
+  mpfr_set_si_2exp (x, -3, 16, MPFR_RNDN);
+  inexact = mpfr_cosu (y, x, 3, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  MPFR_ASSERTN(inexact == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
