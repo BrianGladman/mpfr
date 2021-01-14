@@ -246,7 +246,7 @@ main (void)
   test_regular ();
   test_large ();
 
-  test_generic (MPFR_PREC_MIN, 100, 1);
+  test_generic (MPFR_PREC_MIN, 100, 1000);
 
   data_check ("data/tan2pi", mpfr_tan2pi, "mpfr_tan2pi");
 

@@ -242,7 +242,7 @@ main (void)
      machines), the cos argument can be very small, yielding a special
      case in small precision. Thus it is better to use a maximum
      precision (second test_generic argument) that is large enough. */
-  test_generic (MPFR_PREC_MIN, 200, 3);
+  test_generic (MPFR_PREC_MIN, 200, 1000);
 
   data_check ("data/cos2pi", mpfr_cos2pi, "mpfr_cos2pi");
 
