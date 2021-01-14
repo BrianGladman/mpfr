@@ -75,6 +75,15 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       xp = xr;
     }
 
+#define CLEAR_XR                       \
+  do                                   \
+    if (xp != x)                       \
+      {                                \
+        MPFR_ASSERTD (xp == xr);       \
+        mpfr_clear (xr);               \
+      }                                \
+  while (0)
+
   /* now |xp/u| < 1 */
 
   /* for x small, we have |cos(2*pi*x/u)-1| < 1/2*(2*pi*x/u)^2 < 2^5*(x/u)^2 */
@@ -95,7 +104,7 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       mpfr_exp_t err1 = errb >= 0 || erra < MPFR_EXP_MAX + errb ?
         erra - errb : MPFR_EXP_MAX;
       MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, err1, 0, 0,
-                                        rnd_mode, expo, {});
+                                        rnd_mode, expo, CLEAR_XR);
     }
 
   precy = MPFR_GET_PREC (y);
@@ -217,11 +226,7 @@ mpfr_cosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
  end:
   mpfr_clear (t);
-  if (xp != x)
-    {
-      MPFR_ASSERTD (xp == xr);
-      mpfr_clear (xr);
-    }
+  CLEAR_XR;
   MPFR_SAVE_EXPO_FREE (expo);
   return underflow ? inexact : mpfr_check_range (y, inexact, rnd_mode);
 }
