@@ -112,6 +112,15 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
+- cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
+  (page 392):
+  acospi, asinpi, atan2pi, atanpi
+  compoundn = (1+x)^n
+  exp10m1, exp2m1, log10p1, log2p1
+  pown (but there is mpfr_pow_si with n long instead of intmax_t)
+  powr = exp(y*log(x))
+  rootn (there is mpfr_rootn_ui but not mpfr_rootn_si)
+  maybe rename mpfr_rec_sqrt into mpfr_rsqrt?
 - a function to compute the hash of a floating-point number
   (suggested by Patrick Pelissier)
 - implement new functions from the C++17 standard:
