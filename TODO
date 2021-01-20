@@ -118,9 +118,12 @@ Table of contents:
   compoundn = (1+x)^n
   exp10m1, exp2m1, log10p1, log2p1
   pown (but there is mpfr_pow_si with n long instead of intmax_t)
-  powr = exp(y*log(x))
-  rootn (there is mpfr_rootn_ui but not mpfr_rootn_si)
-  maybe rename mpfr_rec_sqrt into mpfr_rsqrt?
+  powr = exp(y*log(x)). The difference with pow = x^y is that when x < 0
+  and y is an integer, powr returns NaN, also when x=1 and y=+/Inf,
+  or x=+/-Inf and y=0.
+  rootn (there is mpfr_rootn_ui but not mpfr_rootn_si yet)
+  rsqrt (differs from mpfr_rec_sqrt in -0: mpfr_rec_sqrt gives +Inf whereas
+         rsqrt gives -Inf)
 - a function to compute the hash of a floating-point number
   (suggested by Patrick Pelissier)
 - implement new functions from the C++17 standard:
