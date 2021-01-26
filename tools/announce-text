@@ -29,7 +29,7 @@ tmpdir=$(mktemp -d /tmp/announce-text-XXXXXXXX)
 trap 'rm -rf $tmpdir' 0 1 2 15
 echo "Temporary directory: $tmpdir" >&2
 
-alias wget="wget -q"
+alias wget="wget --no-config -q"
 
 for i in $@
 do

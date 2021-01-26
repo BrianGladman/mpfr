@@ -42,7 +42,7 @@ MPFR).
    which may have additional information. The patches can be applied
    with commands like:
 
-     wget https://www.mpfr.org/mpfr-4.2.0/allpatches
+     wget --no-config https://www.mpfr.org/mpfr-4.2.0/allpatches
      patch -N -Z -p1 < allpatches
 
    or
