@@ -79,11 +79,10 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
      u is a multiple of 3 */
   if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), -1) == 0 && (u % 3) == 0)
     {
-      u = u / 3;
-      if (MPFR_SIGN(x) > 0)
-        return mpfr_set_si_2exp (y, u, -1, rnd_mode);
-      else
-        return mpfr_set_si_2exp (y, - (long) u, -1, rnd_mode);
+      long v = u / 3;
+      if (MPFR_IS_NEG (x))
+        v = -v;
+      return mpfr_set_si_2exp (y, v, -1, rnd_mode);
     }
 
   prec = MPFR_PREC (y);
@@ -152,7 +151,7 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   mpfr_init2 (tmp, prec);
   mpfr_init2 (pi, prec);
-  
+
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
