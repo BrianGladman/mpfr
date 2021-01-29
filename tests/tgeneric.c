@@ -178,7 +178,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
 
       mpfr_set_prec (z, prec);
       mpfr_set_prec (t, prec);
-      yprec = prec + 10;
+      yprec = prec + 20;
       mpfr_set_prec (y, yprec);
       mpfr_set_prec (yd, yprec);
       mpfr_set_prec (yu, yprec);
@@ -386,10 +386,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                    printf ("For RNDF, result does not match RNDD nor RNDU\n");
                    printf ("x = "); mpfr_dump (x);
 #ifdef NEED_U
-                   printf ("u = "); mpfr_dump (u);
-#endif
+                  printf ("u = ");
 #if defined(ULONG_ARG1) || defined(ULONG_ARG2)
-                   printf ("i = %lu\n", i);
+                  printf ("%lu\n", i);
+#else
+                  mpfr_dump (u);
+#endif
 #endif
                    printf ("yd (RNDD) = "); mpfr_dump (yd);
                    printf ("yu (RNDU) = "); mpfr_dump (yu);
@@ -713,11 +715,16 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
               if (! mpfr_equal_p (t, z) && rnd != MPFR_RNDF)
                 {
                   printf ("tgeneric: results differ for "
-                          MAKE_STR(TEST_FUNCTION) " on\n  x = ");
+                          MAKE_STR(TEST_FUNCTION) " on\n  x[%lu] = ",
+                          mpfr_get_prec (x));
                   mpfr_dump (x);
 #ifdef NEED_U
                   printf ("  u = ");
+#if defined(ULONG_ARG1) || defined(ULONG_ARG2)
+                  printf ("%lu\n", i);
+#else
                   mpfr_dump (u);
+#endif
 #endif
                   printf ("  prec = %u, rnd_mode = %s\n",
                           (unsigned int) prec, mpfr_print_rnd_mode (rnd));
