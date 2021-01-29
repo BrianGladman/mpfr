@@ -169,7 +169,7 @@ Table of contents:
   and versions with an unsigned integer: mpfr_rootn_ui (now implemented, as
   similar to mpfr_root) and mpfr_rootn_uj.
 - functions defined in the LIA-2 standard
-  (http://standards.iso.org/ittf/PubliclyAvailableStandards/c024427_ISO_IEC_10967-2_2001(E).zip)
+  <https://standards.iso.org/ittf/PubliclyAvailableStandards/c024427_ISO_IEC_10967-2_2001(E).zip>
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq
     and mmin_seq (mpfr_min and mpfr_max correspond to mmin and mmax);
   + rounding_rest, floor_rest, ceiling_rest (5.2.4);
