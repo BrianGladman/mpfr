@@ -1,5 +1,5 @@
-/* mpfr_acosu  -- acosu(x) = acos(x)*u/(2*pi)
-   mpfr_acospi -- acospi(x) = cos(x)/pi
+/* mpfr_acosu  -- acosu(x)  = acos(x)*u/(2*pi)
+   mpfr_acospi -- acospi(x) = acos(x)/pi
 
 Copyright 2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
