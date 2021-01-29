@@ -386,11 +386,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                    printf ("For RNDF, result does not match RNDD nor RNDU\n");
                    printf ("x = "); mpfr_dump (x);
 #ifdef NEED_U
-                  printf ("u = ");
+                   printf ("u = ");
 #if defined(ULONG_ARG1) || defined(ULONG_ARG2)
-                  printf ("%lu\n", i);
+                   printf ("%lu\n", i);
 #else
-                  mpfr_dump (u);
+                   mpfr_dump (u);
 #endif
 #endif
                    printf ("yd (RNDD) = "); mpfr_dump (yd);
