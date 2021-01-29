@@ -716,7 +716,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 {
                   printf ("tgeneric: results differ for "
                           MAKE_STR(TEST_FUNCTION) " on\n  x[%lu] = ",
-                          mpfr_get_prec (x));
+                          (unsigned long) mpfr_get_prec (x));
                   mpfr_dump (x);
 #ifdef NEED_U
                   printf ("  u = ");
