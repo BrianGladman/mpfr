@@ -71,11 +71,11 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
         {
           /* we can't use mpfr_set_si_2exp with -u since -u might not be
              representable as long */
-          inexact = mpfr_set_ui_2exp (y, u, -2, rnd_mode);
           if (MPFR_SIGN(x) > 0)
-            return inexact;
+            return mpfr_set_ui_2exp (y, u, -2, rnd_mode);
           else
             {
+              inexact = mpfr_set_ui_2exp (y, u, -2, MPFR_INVERT_RND(rnd_mode));
               MPFR_CHANGE_SIGN(y);
               return -inexact;
             }
@@ -100,27 +100,42 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   mpfr_init2 (tmp, prec);
   mpfr_init2 (pi, prec);
-  
+
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* In the error analysis below, each thetax denotes a variable such that
-         |thetax| <= 2^-prec */
-      mpfr_asin (tmp, x, MPFR_RNDN);
+         |thetax| <= 2^(1-prec) */
+      mpfr_asin (tmp, x, MPFR_RNDA);
       /* tmp = asin(x) * (1 + theta1) */
-      mpfr_const_pi (pi, MPFR_RNDN);
-      /* pi = Pi * (1 + theta2) */
-      mpfr_div (tmp, tmp, pi, MPFR_RNDN);
-      /* tmp = asin(x)/Pi * (1 + theta3)^3 */
-      mpfr_mul_ui (tmp, tmp, u, MPFR_RNDN);
+      /* first multiply by u to avoid underflow issues */
+      mpfr_mul_ui (tmp, tmp, u, MPFR_RNDA);
+      /* tmp = asin(x)*u * (1 + theta2)^2 */
+      mpfr_const_pi (pi, MPFR_RNDZ); /* round toward zero since we divide */
+      /* pi = Pi * (1 + theta3) */
+      mpfr_div (tmp, tmp, pi, MPFR_RNDA);
       /* tmp = asin(x)*u/Pi * (1 + theta4)^4 */
-      mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN); /* exact */
+      /* since we rounded away from 0, if we get 0.5*2^emin here, it means
+         |asinu(x,u)| < 0.25*2^emin (pi is not exact), and we cannot have
+         tmp=0 */
+      if (MPFR_EXP(tmp) == __gmpfr_emin)
+        {
+          /* mpfr_underflow rounds away for RNDN */
+          mpfr_clear (tmp);
+          mpfr_clear (pi);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_underflow (y,
+                            (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, 1);
+        }
+      mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDA); /* exact */
       /* tmp = asin(x)*u/(2*Pi) * (1 + theta4)^4 */
-      /* since |(1 + theta4)^4 - 1| <= 8*|theta4| for prec >= 2,
-         the relative error is less than 2^(3-prec) */
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 3,
+      /* since |(1 + theta4)^4 - 1| <= 8*|theta4| for prec >= 3,
+         the relative error is less than 2^(4-prec) */
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 4,
                                        MPFR_PREC (y), rnd_mode)))
         break;
+      /* FIXME: in case u is small (say u=1) and x is near 2^EMIN,
+         then we get tmp=0 above, and an infinite loop */
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (pi, prec);

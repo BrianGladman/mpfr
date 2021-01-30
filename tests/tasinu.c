@@ -26,6 +26,24 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define ULONG_ARG2
 #include "tgeneric.c"
 
+static void
+check_underflow (void)
+{
+  mpfr_t x;
+  mpfr_exp_t emin = mpfr_get_emin ();
+
+  mpfr_set_emin (mpfr_get_emin_min ());
+
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  mpfr_set_ui_2exp (x, 1, mpfr_get_emin_min () - 1, MPFR_RNDN);
+  /* asinu(x,1) = asin(x)/(2*pi) will underflow */
+  mpfr_asinu (x, x, 1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_clear (x);
+
+  mpfr_set_emin (emin);
+}
+
 int
 main (void)
 {
@@ -33,6 +51,8 @@ main (void)
   int r, inex;
 
   tests_start_mpfr ();
+
+  check_underflow ();
 
   mpfr_init (x);
   mpfr_init (y);
