@@ -148,7 +148,7 @@ main (void)
       exit (1);
     }
 
-  test_generic (MPFR_PREC_MIN, 100, 1000);
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   mpfr_clear (x);
   mpfr_clear (y);
