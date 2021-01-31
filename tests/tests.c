@@ -652,7 +652,8 @@ set_emin (mpfr_exp_t exponent)
 {
   if (mpfr_set_emin (exponent))
     {
-      printf ("set_emin: setting emin to %ld failed\n", (long int) exponent);
+      printf ("set_emin: setting emin to %" MPFR_EXP_FSPEC "d failed\n",
+              (mpfr_eexp_t) exponent);
       exit (1);
     }
 }
@@ -662,7 +663,8 @@ set_emax (mpfr_exp_t exponent)
 {
   if (mpfr_set_emax (exponent))
     {
-      printf ("set_emax: setting emax to %ld failed\n", (long int) exponent);
+      printf ("set_emax: setting emax to %" MPFR_EXP_FSPEC "d failed\n",
+              (mpfr_eexp_t) exponent);
       exit (1);
     }
 }
