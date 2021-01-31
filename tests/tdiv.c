@@ -1082,12 +1082,7 @@ test_20070628 (void)
   int inex, err = 0;
 
   old_emax = mpfr_get_emax ();
-
-  if (mpfr_set_emax (256))
-    {
-      printf ("Can't change exponent range\n");
-      exit (1);
-    }
+  set_emax (256);
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
   mpfr_set_si (x, -1, MPFR_RNDN);
