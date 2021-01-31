@@ -213,6 +213,12 @@ grep 'mpfr_\(div\|mul\)_2exp' {src,tests}/*.[ch] |\
   err-if-output --msg="Use mpfr_div_2ui and mpfr_mul_2ui instead." \
     "mpfr_div_2exp and mpfr_mul_2exp" cat
 
+# In tests, use set_emin / set_emax rather than mpfr_set_emin / mpfr_set_emax
+# (except when a failure may be expected).
+err-if-output --msg="Use set_emin / set_emax instead." \
+  -t "mpfr_set_emin / mpfr_set_emax" \
+  grep "^[[:space:]]*mpfr_set_e\(min\|max\)[[:space:]]*(" tests/*.[ch]
+
 # Note: GMP internals must not be used unless WANT_GMP_INTERNALS is defined.
 # The check below attempts to handle that, but this is a heuristic (it might
 # fail in case of nested #if's, but this is currently OK).
