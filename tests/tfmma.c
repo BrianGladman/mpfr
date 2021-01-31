@@ -488,7 +488,7 @@ underflow_tests (void)
   mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-17);
+  set_emin (-17);
   for (p = MPFR_PREC_MIN; p <= 1024; p++)
     {
       mpfr_inits2 (p, x, y, (mpfr_ptr) 0);
@@ -503,7 +503,7 @@ underflow_tests (void)
       MPFR_ASSERTN(mpfr_signbit (z) == 0);
       mpfr_clears (x, y, z, (mpfr_ptr) 0);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 static void
@@ -514,7 +514,7 @@ bug20180604 (void)
   int ret;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-1073741821);
+  set_emin (-1073741821);
   mpfr_inits2 (564, x, y, yneg, (mpfr_ptr) 0);
   mpfr_init2 (z, 2256);
   mpfr_set_str_binary (x, "1.10010000111100110011001101111111101000111001011000110100110010000101000100010001000000111100010000101001011011111001111000110101111100101111001100001100011101100100011110000000011000010110111100111000100101010001011111010111011001110010001011101111001011001110110000010000011100010001010001011100100110111110101001001111001011101111110011101110101010110100010010111011111100010101111100011110111001011111101110101101101110100101111010000101011110100000000110111101000001100001000100010110100111010011011010110011100111010000101110010101111001011100110101100001100E-737194993");
@@ -550,7 +550,7 @@ bug20180604 (void)
   MPFR_ASSERTN(ret > 0);
 
   mpfr_clears (x, y, yneg, z, (mpfr_ptr) 0);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 /* this bug was discovered from mpc_mul */
@@ -560,7 +560,7 @@ bug20200206 (void)
   mpfr_exp_t emin = mpfr_get_emin ();
   mpfr_t xre, xim, yre, yim, zre;
 
-  mpfr_set_emin (-1073);
+  set_emin (-1073);
   mpfr_inits2 (53, xre, xim, yre, yim, zre, (mpfr_ptr) 0);
   mpfr_set_str (xre, "-0x8.294611b331c8p-904", 16, MPFR_RNDN);
   mpfr_set_str (xim, "-0x1.859278c2992fap-676", 16, MPFR_RNDN);
@@ -574,7 +574,7 @@ bug20200206 (void)
       exit (1);
     }
   mpfr_clears (xre, xim, yre, yim, zre, (mpfr_ptr) 0);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 /* check for integer overflow (see bug fixed in r13798) */

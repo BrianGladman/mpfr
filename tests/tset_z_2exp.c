@@ -149,8 +149,8 @@ check (long i, mpfr_rnd_t rnd, int reduced)
           {
             inex3 = mpfr_set (f3, f1, rnd);
             MPFR_ASSERTN (inex3 == 0);
-            mpfr_set_emin (emin);
-            mpfr_set_emax (emax);
+            set_emin (emin);
+            set_emax (emax);
             mpfr_clear_flags ();
             inex2 = mpfr_set_z_2exp (f2, z, e, rnd);
             flags2 = __gmpfr_flags;
@@ -175,8 +175,8 @@ check (long i, mpfr_rnd_t rnd, int reduced)
                 exit (1);
               }
           }
-      mpfr_set_emin (old_emin);
-      mpfr_set_emax (old_emax);
+      set_emin (old_emin);
+      set_emax (old_emax);
     }
 
   mpfr_clears (f1, f2, f3, (mpfr_ptr) 0);

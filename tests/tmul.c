@@ -1071,7 +1071,7 @@ test_underflow2 (void)
   mpfr_exp_t emin;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (0);
+  set_emin (0);
 
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
@@ -1100,7 +1100,7 @@ test_underflow2 (void)
   mpfr_clear (x);
   mpfr_clear (z);
 
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 static void
@@ -1275,7 +1275,7 @@ coverage2 (void)
   mpfr_exp_t emin;
 
   emin = mpfr_get_emin (); /* save emin */
-  mpfr_set_emin (0);
+  set_emin (0);
 
   mpfr_init2 (a, 64);
   mpfr_init2 (b, 64);
@@ -1292,7 +1292,7 @@ coverage2 (void)
   mpfr_clear (b);
   mpfr_clear (c);
 
-  mpfr_set_emin (emin); /* restore emin */
+  set_emin (emin); /* restore emin */
 }
 
 int

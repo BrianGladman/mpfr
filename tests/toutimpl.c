@@ -107,13 +107,13 @@ main (void)
   MPFR_MANT(x)[MPFR_LAST_LIMB(x)] >>= 1;
   MPFR_MANT(x)[0] |= 1;
   e = mpfr_get_emin ();
-  mpfr_set_emin (33);
+  set_emin (33);
   mpfr_dump (x);
-  mpfr_set_emin (e);
+  set_emin (e);
   e = mpfr_get_emax ();
-  mpfr_set_emax (31);
+  set_emax (31);
   mpfr_dump (x);
-  mpfr_set_emax (e);
+  set_emax (e);
   mpfr_clear (x);
   fclose (stdout);
 

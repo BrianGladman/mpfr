@@ -348,14 +348,14 @@ special (void)
   /* bug found by Kevin Rauch on 26 Oct 2007 */
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000000);
-  mpfr_set_emax (1000000000);
+  set_emin (-1000000000);
+  set_emax (1000000000);
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_lgamma (x, &sign, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_get_emin () == -1000000000);
   MPFR_ASSERTN(mpfr_get_emax () == 1000000000);
-  mpfr_set_emin (emin);
-  mpfr_set_emax (emax);
+  set_emin (emin);
+  set_emax (emax);
 
   /* two other bugs reported by Kevin Rauch on 27 Oct 2007 */
   mpfr_set_prec (x, 128);
@@ -427,13 +427,13 @@ bug20180110 (void)
       mpfr_set_si_2exp (x, -1, -(1L << i), MPFR_RNDN);  /* -2^(-2^i) */
       mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
       e = mpfr_get_exp (y);
-      mpfr_set_emax (e - 1);
+      set_emax (e - 1);
       mpfr_clear_flags ();
       inex = mpfr_lgamma (y, &sign, x, MPFR_RNDZ);
       flags = __gmpfr_flags;
       mpfr_set_inf (z, 1);
       mpfr_nextbelow (z);
-      mpfr_set_emax (emax);
+      set_emax (emax);
       if (! (mpfr_equal_p (y, z) && SAME_SIGN (inex, -1) && flags == eflags))
         {
           printf ("Error in bug20180110 for i = %d:\n", i);

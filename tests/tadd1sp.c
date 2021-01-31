@@ -224,7 +224,7 @@ coverage (void)
 
   /* coverage test in mpfr_add1sp3: case bx > emax */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (1);
+  set_emax (1);
   mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
@@ -237,7 +237,7 @@ coverage (void)
   inex = mpfr_add_cf (a, b, b, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* coverage test in mpfr_add1sp3: case round away, where add_one_ulp gives
      a carry, no overflow */
@@ -255,7 +255,7 @@ coverage (void)
   /* coverage test in mpfr_add1sp3: case round away, where add_one_ulp gives
      a carry, with overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (1);
+  set_emax (1);
   mpfr_set_prec (a, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_prec (b, 2 * GMP_NUMB_BITS + 1);
   mpfr_set_prec (c, 2 * GMP_NUMB_BITS + 1);
@@ -267,7 +267,7 @@ coverage (void)
   inex = mpfr_add_cf (a, b, c, MPFR_RNDU);
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (a) && mpfr_sgn (a) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   mpfr_clear (a);
   mpfr_clear (b);

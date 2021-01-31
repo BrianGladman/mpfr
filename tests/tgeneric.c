@@ -439,7 +439,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     /* Exponent e of the result > exponents of the inputs;
                        let's set emax to e - 1, so that one should get an
                        overflow. */
-                    mpfr_set_emax (e - 1);
+                    set_emax (e - 1);
 #ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: overflow test (emax = %"
                             MPFR_EXP_FSPEC "d)\n",
@@ -462,7 +462,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     inexact = TEST_FUNCTION (w, x, rnd);
 #endif
                     flags = __gmpfr_flags;
-                    mpfr_set_emax (oemax);
+                    set_emax (oemax);
                     ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
                     /* For RNDF, this test makes no sense, since RNDF
                        might return either the maximal floating-point
@@ -502,7 +502,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     /* Exponent e of the result < exponents of the inputs;
                        let's set emin to e + 1, so that one should get an
                        underflow. */
-                    mpfr_set_emin (e + 1);
+                    set_emin (e + 1);
 #ifdef MPFR_DEBUG_TGENERIC
                     printf ("tgeneric: underflow test (emin = %"
                             MPFR_EXP_FSPEC "d)\n",
@@ -525,7 +525,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                     inexact = TEST_FUNCTION (w, x, rnd);
 #endif
                     flags = __gmpfr_flags;
-                    mpfr_set_emin (oemin);
+                    set_emin (oemin);
                     ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
                     /* For RNDF, this test makes no sense, since RNDF
                        might return either the maximal floating-point
@@ -572,8 +572,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                some special cases) should be sufficient. */
             if (ctrt <= 10 || prec == p1)
               {
-                mpfr_set_emin (emin);
-                mpfr_set_emax (emax);
+                set_emin (emin);
+                set_emax (emax);
 #ifdef MPFR_DEBUG_TGENERIC
                 /* Useful information in case of assertion failure. */
                 printf ("tgeneric: reduced exponent range [%"
@@ -597,8 +597,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 inexact = TEST_FUNCTION (w, x, rnd);
 #endif
                 flags = __gmpfr_flags;
-                mpfr_set_emin (oemin);
-                mpfr_set_emax (oemax);
+                set_emin (oemin);
+                set_emax (oemax);
                 /* That test makes no sense for RNDF. */
                 if (rnd != MPFR_RNDF && ! (SAME_VAL (w, y) &&
                        SAME_SIGN (inexact, compare) &&
@@ -787,8 +787,8 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
         next_n:
           /* In case the exponent range has been changed by
              tests_default_random() or for special values... */
-          mpfr_set_emin (old_emin);
-          mpfr_set_emax (old_emax);
+          set_emin (old_emin);
+          set_emax (old_emax);
         }
     }
 

@@ -1280,17 +1280,17 @@ bug20170308 (void)
 
   emin = mpfr_get_emin ();
   mpfr_init2 (z, 53);
-  mpfr_set_emin (-1073);
+  set_emin (-1073);
   /* with emin = -1073, the smallest positive number is 0.5*2^emin = 2^(-1074),
      thus str should be rounded to 2^(-1074) with inex > 0 */
   inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex > 0 && mpfr_cmp_ui_2exp (z, 1, -1074) == 0);
-  mpfr_set_emin (-1074);
+  set_emin (-1074);
   /* with emin = -1074, str should be rounded to 2^(-1075) with inex < 0 */
   inex = mpfr_strtofr (z, str, NULL, 10, MPFR_RNDN);
   MPFR_ASSERTN(inex < 0 && mpfr_cmp_ui_2exp (z, 1, -1075) == 0);
   mpfr_clear (z);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 /* r13299 fails with 8-bit limbs (micro-gmp/8). */
@@ -1330,7 +1330,7 @@ coverage (void)
 
   /* exercise assertion cy == 0 around line 698 of strtofr.c */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (mpfr_get_emin_min ());
+  set_emin (mpfr_get_emin_min ());
   /* emin = -4611686018427387903 on a 64-bit machine */
   mpfr_init2 (x, 1);
   inex = mpfr_strtofr (x, str3, NULL, 3, MPFR_RNDN);
@@ -1344,7 +1344,7 @@ coverage (void)
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -39569396093273623 * 64) == 0);
   mpfr_clear (x);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 #endif
 }
 

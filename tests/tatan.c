@@ -443,7 +443,7 @@ smallvals_atan2 (void)
   mpfr_set_prec (y, 8);
   mpfr_set_prec (a, 8);
   old_emin = mpfr_get_emin ();
-  mpfr_set_emin (MPFR_EMIN_MIN);
+  set_emin (MPFR_EMIN_MIN);
 
   mpfr_set_si (y, 3, MPFR_RNDN);
   mpfr_set_exp (y, mpfr_get_emin ());
@@ -473,7 +473,7 @@ smallvals_atan2 (void)
   mpfr_atan2 (a, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_zero_p (a));
 
-  mpfr_set_emin (old_emin);
+  set_emin (old_emin);
 
   mpfr_clears (a, x, y, (mpfr_ptr) 0);
 }

@@ -43,7 +43,7 @@ test_small (void)
       if (e == -30)
         {
           e = mpfr_get_emin_min () - 1;
-          mpfr_set_emin (e + 1);
+          set_emin (e + 1);
         }
       for (sign = -1; sign <= 1; sign += 2)
         {
@@ -67,7 +67,7 @@ test_small (void)
             }
         }
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
   mpfr_clear (x);
   mpfr_clear (y);
 }

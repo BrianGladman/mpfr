@@ -1035,7 +1035,7 @@ coverage (void)
 
   /* same example, but with overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (GMP_NUMB_BITS + 1);
+  set_emax (GMP_NUMB_BITS + 1);
   mpfr_set_ui_2exp (z, 1, mpfr_get_emax () - 1, MPFR_RNDZ);
   mpfr_clear_flags ();
   inex = mpfr_fma (s, x, y, z, MPFR_RNDN);
@@ -1045,7 +1045,7 @@ coverage (void)
   MPFR_ASSERTN(inex > 0);
   MPFR_ASSERTN(mpfr_inf_p (s) && mpfr_sgn (s) > 0);
   MPFR_ASSERTN(mpfr_overflow_p ());
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -230,13 +230,13 @@ reduced_expo_range (void)
   mpfr_inits2 (4, x, y, ex_y, (mpfr_ptr) 0);
   mpfr_set_str (x, "-0.1e1", 2, MPFR_RNDN);
 
-  mpfr_set_emin (1);
-  mpfr_set_emax (1);
+  set_emin (1);
+  set_emax (1);
   mpfr_clear_flags ();
   inex = mpfr_asin (y, x, MPFR_RNDA);
   flags = __gmpfr_flags;
-  mpfr_set_emin (emin);
-  mpfr_set_emax (emax);
+  set_emin (emin);
+  set_emax (emax);
 
   mpfr_set_str (ex_y, "-0.1101e1", 2, MPFR_RNDN);
   ex_inex = -1;

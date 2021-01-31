@@ -376,7 +376,7 @@ check_special_pow_si (void)
     }
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-10);
+  set_emin (-10);
   mpfr_set_si (a, -2, MPFR_RNDN);
   mpfr_pow_si (b, a, -10000, MPFR_RNDN);
   if (!MPFR_IS_ZERO (b))
@@ -386,7 +386,7 @@ check_special_pow_si (void)
       mpfr_dump (b);
       exit (1);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
   mpfr_clear (a);
   mpfr_clear (b);
 }
@@ -667,8 +667,8 @@ special (void)
   /* Bugs reported by Kevin Rauch on 29 Oct 2007 */
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000);
-  mpfr_set_emax ( 1000000);
+  set_emin (-1000000);
+  set_emax ( 1000000);
   mpfr_set_prec (x, 64);
   mpfr_set_prec (y, 64);
   mpfr_set_prec (z, 64);
@@ -708,8 +708,8 @@ special (void)
   inex = mpfr_pow (z, x, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (z));
 
-  mpfr_set_emin (emin);
-  mpfr_set_emax (emax);
+  set_emin (emin);
+  set_emax (emax);
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
@@ -1015,7 +1015,7 @@ underflows (void)
     }
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-256);
+  set_emin (-256);
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 2);
   mpfr_set_prec (z, 12);
@@ -1033,10 +1033,10 @@ underflows (void)
               MPFR_IS_ZERO (z) ? "yes" : "no", inexact);
       exit (1);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-256);
+  set_emin (-256);
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 40);
   mpfr_set_prec (z, 12);
@@ -1067,7 +1067,7 @@ underflows (void)
       inexact = mpfr_sub_ui (y, y, 1, MPFR_RNDN);
       MPFR_ASSERTN (inexact == 0);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
@@ -1258,8 +1258,8 @@ bug20071103 (void)
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000);
-  mpfr_set_emax ( 1000000);
+  set_emin (-1000000);
+  set_emax ( 1000000);
 
   mpfr_inits2 (64, x, y, z, (mpfr_ptr) 0);
   mpfr_set_si_2exp (x, -3, -1, MPFR_RNDN);  /* x = -1.5 */
@@ -1285,8 +1285,8 @@ bug20071104 (void)
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000);
-  mpfr_set_emax ( 1000000);
+  set_emin (-1000000);
+  set_emax ( 1000000);
 
   mpfr_inits2 (20, x, y, z, (mpfr_ptr) 0);
   mpfr_set_ui (x, 0, MPFR_RNDN);
@@ -1327,8 +1327,8 @@ bug20071127 (void)
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000);
-  mpfr_set_emax ( 1000000);
+  set_emin (-1000000);
+  set_emax ( 1000000);
 
   mpfr_init2 (x, 128);
   mpfr_init2 (y, 128);
@@ -1348,8 +1348,8 @@ bug20071127 (void)
   mpfr_clear (y);
   mpfr_clear (z);
 
-  mpfr_set_emin (emin);
-  mpfr_set_emax (emax);
+  set_emin (emin);
+  set_emax (emax);
 }
 
 /* Bug found by Kevin P. Rauch */
@@ -1362,8 +1362,8 @@ bug20071128 (void)
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
-  mpfr_set_emin (-1000000);
-  mpfr_set_emax ( 1000000);
+  set_emin (-1000000);
+  set_emax ( 1000000);
 
   mpfr_init2 (max_val, 64);
   mpfr_init2 (x, 64);
@@ -1398,8 +1398,8 @@ bug20071128 (void)
   mpfr_clear (z);
   mpfr_clear (max_val);
 
-  mpfr_set_emin (emin);
-  mpfr_set_emax (emax);
+  set_emin (emin);
+  set_emax (emax);
 }
 
 /* Bug found by Kevin P. Rauch */
@@ -1516,7 +1516,7 @@ bug20080820 (void)
   mpfr_t x, y, z1, z2;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (MPFR_EMIN_MIN);
+  set_emin (MPFR_EMIN_MIN);
   mpfr_init2 (x, 80);
   mpfr_init2 (y, sizeof (mpfr_exp_t) * CHAR_BIT + 32);
   mpfr_init2 (z1, 2);
@@ -1548,7 +1548,7 @@ bug20110320 (void)
   unsigned int flags;
 
   emin = mpfr_get_emin ();
-  mpfr_set_emin (11);
+  set_emin (11);
   mpfr_inits2 (2, x, y, z1, z2, (mpfr_ptr) 0);
   mpfr_set_ui_2exp (x, 1, 215, MPFR_RNDN);
   mpfr_set_ui (y, 1024, MPFR_RNDN);
@@ -1613,7 +1613,7 @@ coverage (void)
   mpfr_init2 (z, 1);
   mpfr_set_ui_2exp (x, 3, -2, MPFR_RNDN);   /* x = 3/4 */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-40);
+  set_emin (-40);
   mpfr_set_ui_2exp (y, 199, -1, MPFR_RNDN); /* y = 99.5 */
   /* x^y ~ 0.81*2^-41 */
   mpfr_clear_underflow ();
@@ -1640,7 +1640,7 @@ coverage (void)
   MPFR_ASSERTN(mpfr_zero_p (z) && mpfr_signbit (z) == 0);
   MPFR_ASSERTN(mpfr_underflow_p ());
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   /* test for x = -2, y an odd integer with EXP(y) > i */
   mpfr_inits2 (10, t, u, (mpfr_ptr) 0);
@@ -1696,7 +1696,7 @@ coverage (void)
     mpfr_exp_t emax;
 
     emax = mpfr_get_emax ();
-    mpfr_set_emax ((1UL << 62) - 1);
+    set_emax ((1UL << 62) - 1);
     /* emax = 4611686018427387903 on a 64-bit machine */
     mpfr_init2 (x, 65);
     mpfr_init2 (y, 65);
@@ -1709,7 +1709,7 @@ coverage (void)
     MPFR_ASSERTN(inex > 0);
     MPFR_ASSERTN(mpfr_inf_p (z));
     mpfr_clears (x, y, z, (mpfr_ptr) 0);
-    mpfr_set_emax (emax);
+    set_emax (emax);
   }
 #endif
 }

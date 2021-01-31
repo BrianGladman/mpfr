@@ -148,7 +148,7 @@ check_special_exprange (void)
     }
 
   /* Test if an overflow occurs in mpfr_set for ope >= opq. */
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emax (MPFR_EMAX_MAX);
   mpfr_set_inf (x, 1);
   mpfr_nextbelow (x);
   mpfr_clear_flags ();

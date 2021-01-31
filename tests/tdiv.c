@@ -1111,7 +1111,7 @@ test_20070628 (void)
       err++;
     }
   mpfr_clears (x, y, (mpfr_ptr) 0);
-  mpfr_set_emax (old_emax);
+  set_emax (old_emax);
 }
 
 /* Bug in mpfr_divhigh_n_basecase when all limbs of q (except the most
@@ -1257,8 +1257,8 @@ test_extreme (void)
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
 
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 
   for (xi = 0; xi < 4; xi++)
     {

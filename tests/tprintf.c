@@ -480,8 +480,8 @@ check_random (int nb_tests)
       putchar ('\n');
     }
 
-  mpfr_set_emin (old_emin);
-  mpfr_set_emax (old_emax);
+  set_emin (old_emin);
+  set_emax (old_emax);
 
   mpfr_clear (x);
 }

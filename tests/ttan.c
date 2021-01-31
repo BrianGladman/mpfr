@@ -120,7 +120,7 @@ coverage (void)
 
   /* exercise mpfr_round_near_x when rounding gives an overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (-2);
+  set_emax (-2);
   mpfr_init2 (x, 2);
   mpfr_init2 (y, 2);
   mpfr_setmax (x, mpfr_get_emax ());
@@ -129,7 +129,7 @@ coverage (void)
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_signbit (y) == 0);
   mpfr_clear (x);
   mpfr_clear (y);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 }
 
 int

@@ -102,7 +102,7 @@ coverage (void)
   mpfr_init2 (y, 64);
 
   MPFR_ASSERTN(mpfr_get_emax_max () == 4611686018427387903UL); /* 2^62-1 */
-  mpfr_set_emax (mpfr_get_emax_max ());
+  set_emax (mpfr_get_emax_max ());
 
   mpfr_set_ui (x, 3196577161300663915UL, MPFR_RNDN);
   mpfr_clear_overflow ();
@@ -125,7 +125,7 @@ coverage (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 #endif
 }
 
