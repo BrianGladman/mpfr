@@ -30,7 +30,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=218514
  */
 
-/* put in y the corrected-rounded value of sin(2*pi*x/u) */
+/* put in y the correctly rounded value of sin(2*pi*x/u) */
 int
 mpfr_sinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {

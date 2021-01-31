@@ -24,7 +24,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* put in y the corrected-rounded value of acos(x)*u/(2*pi) */
+/* put in y the correctly rounded value of acos(x)*u/(2*pi) */
 int
 mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 {
@@ -82,7 +82,7 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* acos(1/2) = pi/6 and acos(-1/2) = pi/3, thus in theses cases acos(x,u)
+  /* acos(1/2) = pi/6 and acos(-1/2) = pi/3, thus in these cases acos(x,u)
      is exact when u is a multiple of 3 */
   if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), -1) == 0 && (u % 3) == 0)
     return mpfr_set_si_2exp (y, u / 3, MPFR_IS_NEG (x) ? 0 : -1, rnd_mode);
