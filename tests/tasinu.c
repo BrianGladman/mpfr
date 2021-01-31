@@ -106,7 +106,7 @@ main (void)
       mpfr_set_si (x, 1, MPFR_RNDN); /* exact */
       mpfr_asinu (y, x, 17, (mpfr_rnd_t) r);
       mpfr_set_ui_2exp (x, 17, -2, (mpfr_rnd_t) r);
-      if (mpfr_cmp (x, y))
+      if (!mpfr_equal_p (x, y))
         {
           printf ("Error: asinu(1,17) != 17/4 for rnd=%s\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -120,7 +120,7 @@ main (void)
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_asinu (y, x, 17, (mpfr_rnd_t) r);
       mpfr_set_si_2exp (x, -17, -2, (mpfr_rnd_t) r);
-      if (mpfr_cmp (x, y))
+      if (!mpfr_equal_p (x, y))
         {
           printf ("Error: asinu(-1,17) != -17/4 for rnd=%s\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
