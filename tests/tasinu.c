@@ -131,7 +131,7 @@ main (void)
   /* asinu (1/2,u) = u/12 */
   mpfr_set_si_2exp (x, 1, -1, MPFR_RNDN); /* exact */
   inex = mpfr_asinu (y, x, 12, MPFR_RNDN);
-  if (inex != 0 || mpfr_cmp_ui (y, 1) != 0)
+  if (inex != 0 || mpfr_cmp_ui0 (y, 1) != 0)
     {
       printf ("Error: asinu(1/2,12) != 1 (inex=%d)\n", inex);
       mpfr_dump (y);
@@ -141,7 +141,7 @@ main (void)
   /* asinu (-1/2,u) = -u/12 */
   mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* exact */
   inex = mpfr_asinu (y, x, 12, MPFR_RNDN);
-  if (inex != 0 || mpfr_cmp_si (y, -1) != 0)
+  if (inex != 0 || mpfr_cmp_si0 (y, -1) != 0)
     {
       printf ("Error: asinu(-1/2,12) != -1 (inex=%d)\n", inex);
       mpfr_dump (y);
