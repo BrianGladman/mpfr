@@ -69,7 +69,7 @@ main (void)
       mpfr_set_ui (x, 0, MPFR_RNDN); /* exact */
       mpfr_acosu (y, x, 17, (mpfr_rnd_t) r);
       mpfr_set_ui_2exp (x, 17, -2, MPFR_RNDN);
-      if (mpfr_cmp (x, y))
+      if (!mpfr_equal_p (x, y))
         {
           printf ("Error: acosu(0,17) != 17/4 for rnd=%s\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -119,7 +119,7 @@ main (void)
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_acosu (y, x, 17, (mpfr_rnd_t) r);
       mpfr_set_ui_2exp (x, 17, -1, MPFR_RNDN);
-      if (mpfr_cmp (x, y))
+      if (!mpfr_equal_p (x, y))
         {
           printf ("Error: acosu(1,17) != 17/2 for rnd=%s\n",
                   mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -136,7 +136,7 @@ main (void)
          inex = mpfr_set_ui (x, u, MPFR_RNDN);
          MPFR_ASSERTN(inex == 0);
          inex = mpfr_div_ui (x, x, 6, (mpfr_rnd_t) r);
-         if ((r != MPFR_RNDF || inex == 0) && mpfr_cmp (x, y))
+         if ((r != MPFR_RNDF || inex == 0) && !mpfr_equal_p (x, y))
            {
              printf ("Error: acosu(1/2,u) != u/6 for u=%lu and rnd=%s\n",
                      u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -154,7 +154,7 @@ main (void)
          inex = mpfr_set_ui (x, u, MPFR_RNDN);
          MPFR_ASSERTN(inex == 0);
          inex = mpfr_div_ui (x, x, 3, (mpfr_rnd_t) r);
-         if ((r != MPFR_RNDF || inex == 0) && mpfr_cmp (x, y))
+         if ((r != MPFR_RNDF || inex == 0) && !mpfr_equal_p (x, y))
            {
              printf ("Error: acosu(-1/2,u) != u/3 for u=%lu and rnd=%s\n",
                      u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
