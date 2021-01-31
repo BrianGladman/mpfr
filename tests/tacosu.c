@@ -135,8 +135,8 @@ main (void)
          mpfr_acosu (y, x, u, (mpfr_rnd_t) r);
          inex = mpfr_set_ui (x, u, MPFR_RNDN);
          MPFR_ASSERTN(inex == 0);
-         mpfr_div_ui (x, x, 6, (mpfr_rnd_t) r);
-         if (mpfr_cmp (x, y))
+         inex = mpfr_div_ui (x, x, 6, (mpfr_rnd_t) r);
+         if ((r != MPFR_RNDF || inex == 0) && mpfr_cmp (x, y))
            {
              printf ("Error: acosu(1/2,u) != u/6 for u=%lu and rnd=%s\n",
                      u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
@@ -153,8 +153,8 @@ main (void)
          mpfr_acosu (y, x, u, (mpfr_rnd_t) r);
          inex = mpfr_set_ui (x, u, MPFR_RNDN);
          MPFR_ASSERTN(inex == 0);
-         mpfr_div_ui (x, x, 3, (mpfr_rnd_t) r);
-         if (mpfr_cmp (x, y))
+         inex = mpfr_div_ui (x, x, 3, (mpfr_rnd_t) r);
+         if ((r != MPFR_RNDF || inex == 0) && mpfr_cmp (x, y))
            {
              printf ("Error: acosu(-1/2,u) != u/3 for u=%lu and rnd=%s\n",
                      u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
