@@ -88,11 +88,8 @@ two2emin (mpfr_exp_t e)
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
 
-  if (mpfr_set_emin (-e) || mpfr_set_emax (e))
-    {
-      printf ("Can't change exponent range\n");
-      exit (1);
-    }
+  set_emin (-e);
+  set_emax (e);
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
   for (i = -4; i <= 4; i++)
@@ -120,8 +117,8 @@ two2emin (mpfr_exp_t e)
       }
   mpfr_clears (x, y, (mpfr_ptr) 0);
 
-  mpfr_set_emin (old_emin);
-  mpfr_set_emax (old_emax);
+  set_emin (old_emin);
+  set_emax (old_emax);
 }
 
 int
