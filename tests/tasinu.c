@@ -32,7 +32,7 @@ check_underflow (void)
   mpfr_t x;
   mpfr_exp_t emin = mpfr_get_emin ();
 
-  mpfr_set_emin (mpfr_get_emin_min ());
+  set_emin (mpfr_get_emin_min ());
 
   mpfr_init2 (x, MPFR_PREC_MIN);
   mpfr_set_ui_2exp (x, 1, mpfr_get_emin_min () - 1, MPFR_RNDN);
@@ -41,7 +41,7 @@ check_underflow (void)
   MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
   mpfr_clear (x);
 
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 int
