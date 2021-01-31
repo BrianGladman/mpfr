@@ -50,7 +50,7 @@ special (void)
     }
 
   /* atan(+Inf) = Pi/2 */
-  for (r = 0; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       mpfr_set_inf (x, 1);
       mpfr_atan (y, x, (mpfr_rnd_t) r);
@@ -65,7 +65,7 @@ special (void)
     }
 
   /* atan(-Inf) = - Pi/2 */
-  for (r = 0; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       mpfr_set_inf (x, -1);
       mpfr_atan (y, x, (mpfr_rnd_t) r);

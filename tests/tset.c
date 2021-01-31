@@ -222,7 +222,7 @@ check_ternary_value (void)
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          RND_LOOP (rnd)
             {
               if (rnd == MPFR_RNDF) /* the test below makes no sense */
                 continue;

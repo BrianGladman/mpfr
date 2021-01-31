@@ -125,7 +125,7 @@ main (void)
   mpfr_set_prec (x, 53);
   mpf_set_prec (y, 53);
   mpf_set_ui (y, 0);
-  for (r = 0 ; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       int i;
       for (i = -1; i <= 1; i++)

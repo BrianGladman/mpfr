@@ -483,7 +483,7 @@ check_random (mpfr_prec_t p)
       mpfr_urandomb (y, RANDS);
       mpfr_urandomb (z, RANDS);
       if (MPFR_IS_PURE_FP(y) && MPFR_IS_PURE_FP(z))
-        for(r = 0 ; r < MPFR_RND_MAX ; r++)
+        RND_LOOP (r)
           {
             if (r == MPFR_RNDF)
               continue; /* mpfr_sub1 and mpfr_sub1sp could differ,
@@ -511,7 +511,7 @@ check_special (void)
 
   mpfr_inits (x, y, z, x2, (mpfr_ptr) 0);
 
-  for (r = 0 ; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       if (r == MPFR_RNDF)
         continue; /* comparison between sub1 and sub1sp makes no sense here */

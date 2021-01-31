@@ -358,7 +358,7 @@ test_against_libc (void)
   TEST_FCT (ceil);
 #endif
 #if HAVE_NEARBYINT
-  for (r = 0; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     if (mpfr_set_machine_rnd_mode ((mpfr_rnd_t) r) == 0)
       test_fct (&nearbyint, &mpfr_rint, "rint", (mpfr_rnd_t) r);
 #endif
@@ -526,7 +526,7 @@ main (int argc, char *argv[])
           int trint;
           mpfr_set_prec (y, p);
           mpfr_set_prec (v, p);
-          for (r = 0; r < MPFR_RND_MAX ; r++)
+          RND_LOOP (r)
             for (trint = 0; trint < 4; trint++)
               {
                 if (trint == 2)

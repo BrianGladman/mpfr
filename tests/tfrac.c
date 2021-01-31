@@ -113,7 +113,7 @@ check1 (mpfr_ptr ip, mpfr_ptr fp)
 {
   int rnd;
 
-  for (rnd = 0; rnd < MPFR_RND_MAX ; rnd++)
+  RND_LOOP (rnd)
     {
       check0 (ip, fp, PMAX, (mpfr_rnd_t) rnd);
       check0 (ip, fp, 70, (mpfr_rnd_t) rnd);

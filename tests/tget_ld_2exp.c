@@ -37,7 +37,7 @@ check_round (void)
 
   mpfr_init2 (f, 1024L);
 
-  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX ; rnd_mode++)
+  RND_LOOP (rnd_mode)
     {
       for (i = 0; i < (int) numberof (data); i++)
         {

@@ -367,7 +367,7 @@ check_random (mpfr_prec_t p)
               MPFR_ALIAS (bs, b, MPFR_SIGN (b), MPFR_EXP (b));
               MPFR_ALIAS (cs, c, MPFR_SIGN (c), MPFR_EXP (c));
             }
-          for (r = 0 ; r < MPFR_RND_MAX ; r++)
+          RND_LOOP (r)
             {
               mpfr_flags_t flags1, flags2;
 
@@ -404,7 +404,7 @@ check_special (void)
 
   mpfr_inits (a1, a2, b, c, (mpfr_ptr) 0);
 
-  for (r = 0 ; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       if (r == MPFR_RNDF)
         continue; /* inexact makes no sense, mpfr_add1 and mpfr_add1sp

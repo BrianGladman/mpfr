@@ -821,7 +821,7 @@ check_1minuseps (void)
         mpfr_sub (b, c, b, MPFR_RNDN);  /* b = 1 - 2^(-prec_a) */
 
         for (ic = 0; ic < numberof (supp_b); ic++)
-          for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
+          RND_LOOP (rnd_mode)
             {
               mpfr_t s;
               int inex_a, inex_s;

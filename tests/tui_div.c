@@ -68,7 +68,7 @@ check_inexact (void)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + px);
-          for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+          RND_LOOP (rnd)
             {
               inexact = mpfr_ui_div (y, u, x, (mpfr_rnd_t) rnd);
               if (mpfr_mul (z, y, x, (mpfr_rnd_t) rnd))

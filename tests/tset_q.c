@@ -95,7 +95,7 @@ check0 (void)
   mpfr_init (x);
   mpq_init (y);
   mpq_set_si (y, 0, 1);
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_clear_flags ();
       inexact = mpfr_set_q (x, y, (mpfr_rnd_t) r);

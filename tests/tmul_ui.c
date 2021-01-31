@@ -43,7 +43,7 @@ check_inexact (mpfr_prec_t p)
     }
 
   for (q = MPFR_PREC_MIN; q <= p; q++)
-    for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+    RND_LOOP (rnd)
       {
         if (rnd == MPFR_RNDF)
           continue; /* inexact is undefined */

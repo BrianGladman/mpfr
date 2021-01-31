@@ -101,7 +101,7 @@ main (void)
     }
 
   /* asinu (1,u) = u/4 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_si (x, 1, MPFR_RNDN); /* exact */
       mpfr_asinu (y, x, 17, (mpfr_rnd_t) r);
@@ -115,7 +115,7 @@ main (void)
     }
 
   /* asinu (-1,u) = -u/4 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_asinu (y, x, 17, (mpfr_rnd_t) r);

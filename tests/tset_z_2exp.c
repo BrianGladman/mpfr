@@ -63,7 +63,7 @@ check0 (void)
   mpfr_init (x);
   mpz_init (y);
   mpz_set_si (y, 0);
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       e = randexp ();
       inexact = mpfr_set_z_2exp (x, y, e, (mpfr_rnd_t) r);

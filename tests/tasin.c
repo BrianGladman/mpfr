@@ -93,7 +93,7 @@ special (void)
     }
 
   /* asin(1) = Pi/2 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_ui (x, 1, MPFR_RNDN); /* exact */
       mpfr_asin (y, x, (mpfr_rnd_t) r);
@@ -108,7 +108,7 @@ special (void)
     }
 
   /* asin(-1) = -Pi/2 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_asin (y, x, (mpfr_rnd_t) r);

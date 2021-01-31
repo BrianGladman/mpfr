@@ -44,7 +44,7 @@ check_default_rnd (void)
 {
   int r;
   mpfr_rnd_t t;
-  for(r = 0 ; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       mpfr_set_default_rounding_mode ((mpfr_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
@@ -203,7 +203,7 @@ test_set_underflow (void)
   r[1] = r[3] = zero;       /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < MPFR_RND_MAX ; i++)
+      RND_LOOP (i)
         {
           int j;
           int inex;
@@ -263,7 +263,7 @@ test_set_overflow (void)
   r[1] = r[3] = max;        /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < MPFR_RND_MAX ; i++)
+      RND_LOOP (i)
         {
           int j;
           int inex;

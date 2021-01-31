@@ -193,7 +193,7 @@ main (void)
   for (p = 2; p < 100; p++)
     {
       mpfr_set_prec (x, p);
-      for (r = 0; r < MPFR_RND_MAX; r++)
+      RND_LOOP (r)
         {
           mpfr_set_ui (x, 1, MPFR_RNDN);
           inex = mpfr_cbrt (x, x, (mpfr_rnd_t) r);

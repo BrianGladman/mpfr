@@ -129,45 +129,45 @@ bad_case2 (void)
         mpfr_init2 (u, pu);
 
         mpfr_set_ui (u, 1, MPFR_RNDN);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 1, MPFR_RNDN);
         mpfr_nextabove (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextabove (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 2, MPFR_RNDN);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextbelow (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_set_ui (u, 2, MPFR_RNDN);
         mpfr_nextabove (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_nextabove (u);
-        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
+        RND_LOOP (rnd)
           mpfr_rec_sqrt (r, u, (mpfr_rnd_t) rnd);
 
         mpfr_clear (r);

@@ -64,7 +64,7 @@ main (void)
     }
 
   /* acosu (0,u) = u/4 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_ui (x, 0, MPFR_RNDN); /* exact */
       mpfr_acosu (y, x, 17, (mpfr_rnd_t) r);
@@ -114,7 +114,7 @@ main (void)
     }
 
   /* acos (-1,u) = u/2 */
-  for (r = 0; r < MPFR_RND_MAX; r++)
+  RND_LOOP (r)
     {
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_acosu (y, x, 17, (mpfr_rnd_t) r);
@@ -129,7 +129,7 @@ main (void)
 
   /* acos (1/2,u) = u/6 */
   for (u = 1; u < 100; u++)
-     for (r = 0; r < MPFR_RND_MAX; r++)
+     RND_LOOP (r)
        {
          mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN); /* exact */
          mpfr_acosu (y, x, u, (mpfr_rnd_t) r);
@@ -147,7 +147,7 @@ main (void)
 
   /* acos (-1/2,u) = u/3 */
   for (u = 1; u < 100; u++)
-     for (r = 0; r < MPFR_RND_MAX; r++)
+     RND_LOOP (r)
        {
          mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* exact */
          mpfr_acosu (y, x, u, (mpfr_rnd_t) r);

@@ -568,7 +568,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  for (r = 0 ; r < MPFR_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       mpfr_set_si (x, -1, (mpfr_rnd_t) r);
       mpfr_set_ui (x, 0, (mpfr_rnd_t) r);
