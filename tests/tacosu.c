@@ -30,13 +30,15 @@ int
 main (void)
 {
   mpfr_t x, y;
-  int r;
+  int r, inex;
+  int unsigned long u;
 
   tests_start_mpfr ();
 
   mpfr_init (x);
   mpfr_init (y);
 
+  /* check singular cases */
   MPFR_SET_NAN(x);
   mpfr_acosu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
@@ -45,28 +47,19 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_set_inf (x, 1);
   mpfr_acosu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
     {
-      printf ("Error: acosu (2, 1) != NaN\n");
+      printf ("Error: acosu (+Inf, 1) != NaN\n");
       exit (1);
     }
 
-  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
   mpfr_acosu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
     {
-      printf ("Error: acosu (-2, 1) != NaN\n");
-      exit (1);
-    }
-
-  /* acosu (1,u) = 0, acosu(-1,u) = u/2 */
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_acosu (y, x, 1, MPFR_RNDN);
-  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
-    {
-      printf ("Error: acosu(1,1) != +0.0\n");
+      printf ("Error: acosu (-Inf, 1) != NaN\n");
       exit (1);
     }
 
@@ -84,6 +77,42 @@ main (void)
         }
     }
 
+  /* check case u=0 */
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+  mpfr_acosu (y, x, 0, MPFR_RNDN);
+  if (!mpfr_zero_p (y) || MPFR_SIGN(y) < 0)
+    {
+      printf ("Error: acosu (1/2, 0) != +0\n");
+      printf ("got: "); mpfr_dump (y);
+      exit (1);
+    }
+
+  /* check case |x| > 1 */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_acosu (y, x, 1, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: acosu (2, 1) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_acosu (y, x, 1, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: acosu (-2, 1) != NaN\n");
+      exit (1);
+    }
+
+  /* acosu (1,u) = +0 */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_acosu (y, x, 1, MPFR_RNDN);
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
+    {
+      printf ("Error: acosu(1,1) != +0.0\n");
+      exit (1);
+    }
+
   /* acos (-1,u) = u/2 */
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
@@ -97,6 +126,42 @@ main (void)
           exit (1);
         }
     }
+
+  /* acos (1/2,u) = u/6 */
+  for (u = 1; u < 100; u++)
+     for (r = 0; r < MPFR_RND_MAX; r++)
+       {
+         mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN); /* exact */
+         mpfr_acosu (y, x, u, (mpfr_rnd_t) r);
+         inex = mpfr_set_ui (x, u, MPFR_RNDN);
+         MPFR_ASSERTN(inex == 0);
+         mpfr_div_ui (x, x, 6, (mpfr_rnd_t) r);
+         if (mpfr_cmp (x, y))
+           {
+             printf ("Error: acosu(1/2,u) != u/6 for u=%lu and rnd=%s\n",
+                     u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+             printf ("got: "); mpfr_dump (y);
+             exit (1);
+           }
+       }
+
+  /* acos (-1/2,u) = u/3 */
+  for (u = 1; u < 100; u++)
+     for (r = 0; r < MPFR_RND_MAX; r++)
+       {
+         mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* exact */
+         mpfr_acosu (y, x, u, (mpfr_rnd_t) r);
+         inex = mpfr_set_ui (x, u, MPFR_RNDN);
+         MPFR_ASSERTN(inex == 0);
+         mpfr_div_ui (x, x, 3, (mpfr_rnd_t) r);
+         if (mpfr_cmp (x, y))
+           {
+             printf ("Error: acosu(-1/2,u) != u/3 for u=%lu and rnd=%s\n",
+                     u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+             printf ("got: "); mpfr_dump (y);
+             exit (1);
+           }
+       }
 
   test_generic (MPFR_PREC_MIN, 100, 100);
 

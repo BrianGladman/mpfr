@@ -57,6 +57,13 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
         }
     }
 
+  if (u == 0) /* return +0 since acos(x)>=0 */
+    {
+      MPFR_SET_ZERO (y);
+      MPFR_SET_POS (y);
+      MPFR_RET (0);
+    }
+
   compared = mpfr_cmpabs_ui (x, 1);
   if (compared >= 0)
     {
@@ -66,24 +73,19 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      else /* |x| = 1: acosu(1,u) = 0, acosu(-1,u)=u/2 */
+      else /* |x| = 1: acosu(1,u) = +0, acosu(-1,u)=u/2 */
         {
-          if (MPFR_SIGN(x) > 0)
+          if (MPFR_SIGN(x) > 0) /* IEEE-754 2019: acosPi(1) = +0 */
             return mpfr_set_ui (y, 0, rnd_mode);
           else
             return mpfr_set_ui_2exp (y, u, -1, rnd_mode);
         }
     }
 
-  /* acos(+/-1/2) = +/-pi/3, thus in this case acos(x,u) is exact when
-     u is a multiple of 3 */
+  /* acos(1/2) = pi/6 and acos(-1/2) = pi/3, thus in theses cases acos(x,u)
+     is exact when u is a multiple of 3 */
   if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), -1) == 0 && (u % 3) == 0)
-    {
-      long v = u / 3;
-      if (MPFR_IS_NEG (x))
-        v = -v;
-      return mpfr_set_si_2exp (y, v, -1, rnd_mode);
-    }
+    return mpfr_set_si_2exp (y, u / 3, MPFR_IS_NEG (x) ? 0 : -1, rnd_mode);
 
   prec = MPFR_PREC (y);
 
