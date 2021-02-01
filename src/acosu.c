@@ -88,6 +88,8 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
 
   prec = MPFR_PREC (y);
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* For |x|<0.5, we have acos(x) = pi/2 - x*r(x) with |r(x)| < 1.05
      thus acosu(x,u) = u/4*(1 - x*s(x)) with 0 <= s(x) < 1.
      If EXP(x) <= -prec-3, then |u/4*x*s(x)| < u/4*2^(-prec-3) < ulp(u/4)/8
@@ -100,53 +102,25 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
   expx = MPFR_GET_EXP(x);
   if (expx <= -64 && expx <= - (mpfr_exp_t) prec - 3)
     {
-      MPFR_SET_INEXFLAG ();
-      inexact = mpfr_set_ui_2exp (y, u, -2, rnd_mode);
-      /* for all rounding modes, if the division u/4 is inexact, it will
-         give the correct rounding */
-      if (inexact != 0 || rnd_mode == MPFR_RNDF)
-        {
-          /* For RNDN, if inexact = +/-MPFR_EVEN_INEX, we can't conclude:
-             inexact=MPFR_EVEN_INEX x>0: subtract one ulp
-             inexact=MPFR_EVEN_INEX x<0: ok
-             inexact=-MPFR_EVEN_INEX x>0: ok
-             inexact=MPFR_EVEN_INEX x<0: add one ulp */
-          if (inexact == MPFR_EVEN_INEX && MPFR_SIGN(x) > 0)
-            goto subtract_one_ulp;
-          if (inexact == -MPFR_EVEN_INEX && MPFR_SIGN(x) < 0)
-            goto add_one_ulp;
-          return inexact;
-        }
-      if (rnd_mode == MPFR_RNDN)
-        {
-          /* if u/4 is exact, result is u/4-eps for x>0, u/4+eps for x<0 */
-          return MPFR_SIGN(x);
-        }
-      if (MPFR_SIGN(x) > 0) /* exact result is u/4-eps */
-        {
-          if (MPFR_IS_LIKE_RNDU(rnd_mode,1))
-            return +1;
-          else /* round down */
-            {
-            subtract_one_ulp:
-              mpfr_nextbelow (y);
-              return -1;
-            }
-        }
-      else /* x < 0: exact result is u/4+eps */
-        {
-          if (MPFR_IS_LIKE_RNDD(rnd_mode,1))
-            return -1;
-          else /* round up */
-            {
-            add_one_ulp:
-              mpfr_nextabove (y);
-              return +1;
-            }
-        }
+      prec = (MPFR_PREC(y) <= 63) ? 65 : MPFR_PREC(y) + 2;
+      /* now prec > 64 and prec > MPFR_PREC(y)+1 */
+      mpfr_init2 (tmp, prec);
+      inexact = mpfr_set_ui (tmp, u, MPFR_RNDN); /* exact since prec >= 64 */
+      MPFR_ASSERTD(inexact == 0);
+      /* for x>0, we have acos(x) < pi/2; for x<0, we have acos(x) > pi/2 */
+      if (MPFR_IS_POS(x))
+        mpfr_nextbelow (tmp);
+      else
+        mpfr_nextabove (tmp);
+      /* Since prec >= 65, the last significant bit of tmp is 1, and since
+         prec > PREC(y), tmp is not representable in the target precision,
+         which ensures we will get a correct ternary value below. */
+      MPFR_ASSERTD(mpfr_min_prec(tmp) > MPFR_PREC(y));
+      /* since prec >= PREC(y)+2, the rounding of tmp is correct */
+      inexact = mpfr_div_2ui (y, tmp, 2, rnd_mode);
+      mpfr_clear (tmp);
+      goto end;
     }
-
-  MPFR_SAVE_EXPO_MARK (expo);
 
   prec += MPFR_INT_CEIL_LOG2(prec) + 10;
 
@@ -183,6 +157,7 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
   mpfr_clear (tmp);
   mpfr_clear (pi);
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
