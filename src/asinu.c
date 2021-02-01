@@ -59,31 +59,37 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
     }
 
   compared = mpfr_cmpabs_ui (x, 1);
-  if (compared >= 0)
+  if (compared > 0)
     {
-      /* asinu(x) = NaN for |x| > 1 */
-      if (compared > 0)
+      /* asinu(x) = NaN for |x| > 1, included for u=0, since NaN*0 = NaN */
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
+    }
+
+  if (u == 0) /* return 0 with sign of x */
+    {
+      MPFR_SET_ZERO (y);
+      MPFR_SET_POS (y);
+      MPFR_RET (0);
+    }
+
+  if (compared == 0)
+    {
+      /* |x| = 1: asinu(1,u) = u/4, asinu(-1,u)=-u/4 */
+      /* we can't use mpfr_set_si_2exp with -u since -u might not be
+         representable as long */
+      if (MPFR_SIGN(x) > 0)
+        return mpfr_set_ui_2exp (y, u, -2, rnd_mode);
+      else
         {
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      else /* |x| = 1: asinu(1,u) = u/4, asinu(-1,u)=-u/4 */
-        {
-          /* we can't use mpfr_set_si_2exp with -u since -u might not be
-             representable as long */
-          if (MPFR_SIGN(x) > 0)
-            return mpfr_set_ui_2exp (y, u, -2, rnd_mode);
-          else
-            {
-              inexact = mpfr_set_ui_2exp (y, u, -2, MPFR_INVERT_RND(rnd_mode));
-              MPFR_CHANGE_SIGN(y);
-              return -inexact;
-            }
+          inexact = mpfr_set_ui_2exp (y, u, -2, MPFR_INVERT_RND(rnd_mode));
+          MPFR_CHANGE_SIGN(y);
+          return -inexact;
         }
     }
 
-  /* asin(+/-1/2) = +/-pi/6, thus in this case asin(x,u) is exact when
-     u is a multiple of 3 */
+  /* asin(+/-1/2) = +/-pi/6, thus asin(+/-1/2,u) = +/-u/12 is exact when u is
+     a multiple of 3 */
   if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), -1) == 0 && (u % 3) == 0)
     {
       long v = u / 3;

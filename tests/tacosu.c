@@ -130,7 +130,7 @@ main (void)
       exit (1);
     }
 
-  /* acos (-1,u) = u/2 */
+  /* acosu (-1,u) = u/2 */
   RND_LOOP (r)
     {
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
@@ -144,7 +144,7 @@ main (void)
         }
     }
 
-  /* acos (1/2,u) = u/6 */
+  /* acosu (1/2,u) = u/6 */
   for (u = 1; u < 100; u++)
      RND_LOOP (r)
        {
@@ -162,7 +162,7 @@ main (void)
            }
        }
 
-  /* acos (-1/2,u) = u/3 */
+  /* acosu (-1/2,u) = u/3 */
   for (u = 1; u < 100; u++)
      RND_LOOP (r)
        {

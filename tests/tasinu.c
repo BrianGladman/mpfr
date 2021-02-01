@@ -49,6 +49,7 @@ main (void)
 {
   mpfr_t x, y;
   int r, inex;
+  unsigned long u;
 
   tests_start_mpfr ();
 
@@ -57,6 +58,7 @@ main (void)
   mpfr_init (x);
   mpfr_init (y);
 
+  /* check singular cases */
   MPFR_SET_NAN(x);
   mpfr_asinu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
@@ -65,19 +67,19 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_set_inf (x, 1);
   mpfr_asinu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
     {
-      printf ("Error: asinu (2, 1) != NaN\n");
+      printf ("Error: asinu (+Inf, 1) != NaN\n");
       exit (1);
     }
 
-  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_set_inf (x, -1);
   mpfr_asinu (y, x, 1, MPFR_RNDN);
   if (mpfr_nan_p (y) == 0)
     {
-      printf ("Error: asinu (-2, 1) != NaN\n");
+      printf ("Error: asinu (-Inf, 1) != NaN\n");
       exit (1);
     }
 
@@ -97,6 +99,39 @@ main (void)
   if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
     {
       printf ("Error: asinu(-0,1) != -0\n");
+      exit (1);
+    }
+
+  /* tests for |x| > 1 */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_asinu (y, x, 1, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: asinu (2, 1) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_asinu (y, x, 1, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: asinu (-2, 1) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_asinu (y, x, 0, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: asinu (2, 0) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_asinu (y, x, 0, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: asinu (-2, 0) != NaN\n");
       exit (1);
     }
 
@@ -129,24 +164,41 @@ main (void)
     }
 
   /* asinu (1/2,u) = u/12 */
-  mpfr_set_si_2exp (x, 1, -1, MPFR_RNDN); /* exact */
-  inex = mpfr_asinu (y, x, 12, MPFR_RNDN);
-  if (inex != 0 || mpfr_cmp_ui0 (y, 1) != 0)
-    {
-      printf ("Error: asinu(1/2,12) != 1 (inex=%d)\n", inex);
-      mpfr_dump (y);
-      exit (1);
-    }
+  for (u = 1; u < 100; u++)
+     RND_LOOP (r)
+       {
+         mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN); /* exact */
+         mpfr_asinu (y, x, u, (mpfr_rnd_t) r);
+         inex = mpfr_set_ui (x, u, MPFR_RNDN);
+         MPFR_ASSERTN(inex == 0);
+         inex = mpfr_div_ui (x, x, 12, (mpfr_rnd_t) r);
+         if ((r != MPFR_RNDF || inex == 0) && !mpfr_equal_p (x, y))
+           {
+             printf ("Error: asinu(1/2,u) != u/12 for u=%lu and rnd=%s\n",
+                     u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+             printf ("got: "); mpfr_dump (y);
+             exit (1);
+           }
+       }
 
   /* asinu (-1/2,u) = -u/12 */
-  mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* exact */
-  inex = mpfr_asinu (y, x, 12, MPFR_RNDN);
-  if (inex != 0 || mpfr_cmp_si0 (y, -1) != 0)
-    {
-      printf ("Error: asinu(-1/2,12) != -1 (inex=%d)\n", inex);
-      mpfr_dump (y);
-      exit (1);
-    }
+  for (u = 1; u < 100; u++)
+     RND_LOOP (r)
+       {
+         mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* exact */
+         mpfr_asinu (y, x, u, (mpfr_rnd_t) r);
+         inex = mpfr_set_ui (x, u, MPFR_RNDN);
+         MPFR_ASSERTN(inex == 0);
+         inex = mpfr_div_si (x, x, -12, (mpfr_rnd_t) r);
+         if ((r != MPFR_RNDF || inex == 0) && !mpfr_equal_p (x, y))
+           {
+             printf ("Error: asinu(-1/2,u) != -u/12 for u=%lu and rnd=%s\n",
+                     u, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+             printf ("expected: "); mpfr_dump (x);
+             printf ("got:      "); mpfr_dump (y);
+             exit (1);
+           }
+       }
 
   test_generic (MPFR_PREC_MIN, 100, 100);
 
