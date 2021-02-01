@@ -113,17 +113,18 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       /* In the error analysis below, each thetax denotes a variable such that
          |thetax| <= 2^(1-prec) */
       mpfr_asin (tmp, x, MPFR_RNDA);
-      /* tmp = asin(x) * (1 + theta1) */
+      /* tmp = asin(x) * (1 + theta1), and tmp cannot be zero since we rounded
+         away from zero, and the case x=0 was treated before */
       /* first multiply by u to avoid underflow issues */
       mpfr_mul_ui (tmp, tmp, u, MPFR_RNDA);
-      /* tmp = asin(x)*u * (1 + theta2)^2 */
-      mpfr_const_pi (pi, MPFR_RNDZ); /* round toward zero since we divide */
+      /* tmp = asin(x)*u * (1 + theta2)^2, and |tmp| >= 0.5*2^emin */
+      mpfr_const_pi (pi, MPFR_RNDZ); /* round toward zero since we we will
+                                        divide by pi, to round tmp away */
       /* pi = Pi * (1 + theta3) */
       mpfr_div (tmp, tmp, pi, MPFR_RNDA);
-      /* tmp = asin(x)*u/Pi * (1 + theta4)^4 */
+      /* tmp = asin(x)*u/Pi * (1 + theta4)^4, with |tmp| > 0 */
       /* since we rounded away from 0, if we get 0.5*2^emin here, it means
-         |asinu(x,u)| < 0.25*2^emin (pi is not exact), and we cannot have
-         tmp=0 */
+         |asinu(x,u)| < 0.25*2^emin (pi is not exact) thus we have underflow */
       if (MPFR_EXP(tmp) == __gmpfr_emin)
         {
           /* mpfr_underflow rounds away for RNDN */
@@ -137,11 +138,10 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       /* tmp = asin(x)*u/(2*Pi) * (1 + theta4)^4 */
       /* since |(1 + theta4)^4 - 1| <= 8*|theta4| for prec >= 3,
          the relative error is less than 2^(4-prec) */
+      MPFR_ASSERTD(!MPFR_IS_ZERO(tmp));
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 4,
                                        MPFR_PREC (y), rnd_mode)))
         break;
-      /* FIXME: in case u is small (say u=1) and x is near 2^EMIN,
-         then we get tmp=0 above, and an infinite loop */
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (pi, prec);

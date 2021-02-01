@@ -29,17 +29,23 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 check_underflow (void)
 {
-  mpfr_t x;
+  mpfr_t x, y;
   mpfr_exp_t emin = mpfr_get_emin ();
 
   set_emin (mpfr_get_emin_min ());
 
   mpfr_init2 (x, MPFR_PREC_MIN);
+  mpfr_init2 (y, MPFR_PREC_MIN);
   mpfr_set_ui_2exp (x, 1, mpfr_get_emin_min () - 1, MPFR_RNDN);
   /* asinu(x,1) = asin(x)/(2*pi) will underflow */
-  mpfr_asinu (x, x, 1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_asinu (y, x, 1, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+  mpfr_asinu (y, x, 1, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_zero_p (y) && mpfr_signbit (y) == 0);
+  mpfr_asinu (y, x, 1, MPFR_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, mpfr_get_emin_min () - 1) == 0);
   mpfr_clear (x);
+  mpfr_clear (y);
 
   set_emin (emin);
 }
