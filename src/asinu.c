@@ -1,5 +1,5 @@
 /* mpfr_asinu  -- asinu(x) = asin(x)*u/(2*pi)
-   mpfr_asinpi -- asinpi(x) = cos(x)/pi
+   mpfr_asinpi -- asinpi(x) = asin(x)/pi
 
 Copyright 2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
