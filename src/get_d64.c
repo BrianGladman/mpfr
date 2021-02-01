@@ -513,6 +513,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
       if (MPFR_IS_NAN (src))
+        /* we don't propagate the sign bit */
         return get_decimal64_nan ();
 
       negative = MPFR_IS_NEG (src);

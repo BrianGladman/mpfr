@@ -248,6 +248,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
     {
+      /* we don't propagate the sign bit */
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }

@@ -72,6 +72,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   /* Check for NAN */
   if (MPFR_UNLIKELY (DOUBLE_ISNAN (d)))
     {
+      /* we don't propagate the sign bit */
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
@@ -229,6 +230,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   return inexact;
 
  nan:
+  /* we don't propagate the sign bit */
   MPFR_SET_NAN(r);
   MPFR_RET_NAN;
 }
@@ -418,6 +420,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   return mpfr_check_range (r, inexact, rnd_mode);
 
  nan:
+  /* we don't propagate the sign bit */
   MPFR_SET_NAN(r);
   MPFR_RET_NAN;
 }

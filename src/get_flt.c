@@ -41,6 +41,7 @@ mpfr_get_flt (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
   /* in case of NaN, +Inf, -Inf, +0, -0, the conversion from double to float
      is exact */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
+    /* for NaN, we don't propagate the sign bit */
     return (float) mpfr_get_d (src, rnd_mode);
 
   e = MPFR_GET_EXP (src);

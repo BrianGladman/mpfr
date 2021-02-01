@@ -26,9 +26,9 @@ int
 mpfr_set_flt (mpfr_ptr r, float f, mpfr_rnd_t rnd_mode)
 {
   /* we convert f to double precision and use mpfr_set_d;
-     NaN and infinities should be preserved, and all single precision
-     numbers are exactly representable in the double format, thus the
-     conversion is always exact */
+     NaN and infinities should be preserved (except the sign bit for NaN),
+     and all single precision numbers are exactly representable in the double
+     format, thus the conversion is always exact */
   return mpfr_set_d (r, (double) f, rnd_mode);
 }
 

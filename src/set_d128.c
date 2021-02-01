@@ -278,6 +278,7 @@ decimal128_to_string (char *s, _Decimal128 d)
 
   if (MPFR_UNLIKELY (DOUBLE_ISNAN (d))) /* NaN */
     {
+      /* we don't propagate the sign bit */
       sprintf (s, "NaN"); /* sprintf puts a final '\0' */
       return;
     }
