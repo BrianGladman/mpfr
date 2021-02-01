@@ -2339,8 +2339,8 @@ degrees.
 
 @deftypefun int mpfr_acospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_atnnpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @code{acos(op)} (resp.@: @code{asin(op)} and @code{atnn(op)})
+@deftypefunx int mpfr_atanpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to @code{acos(op)} (resp.@: @code{asin(op)} and @code{atan(op)})
 divided by @m{\pi,Pi}.
 @end deftypefun
 
