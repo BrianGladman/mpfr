@@ -1608,7 +1608,7 @@ See @code{mpfr_set_str}.
 Convert @var{op} to a @code{float} (respectively @code{double},
 @code{long double}, @code{_Decimal64}, or @code{_Decimal128})
 using the rounding mode @var{rnd}.
-If @var{op} is NaN, some fixed NaN (either quiet or signaling) or the result
+If @var{op} is NaN, some NaN (either quiet or signaling) or the result
 of 0.0/0.0 is returned (the sign bit is not preserved).
 If @var{op} is @pom{}Inf, an infinity of the same
 sign or the result of @pom{}1.0/0.0 is returned. If @var{op} is zero, these
