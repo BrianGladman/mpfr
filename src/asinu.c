@@ -51,7 +51,8 @@ mpfr_asinu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       else /* necessarily x=0 */
         {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-          /* asin(0)=0 with same sign (even when u=0?) */
+          /* asin(0)=0 with same sign, even when u=0 to ensure
+             asinu(-x,u) = -asinu(x,u) */
           MPFR_SET_ZERO (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_RET (0); /* exact result */
