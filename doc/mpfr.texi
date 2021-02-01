@@ -1421,7 +1421,7 @@ If the system does not support the IEEE@tie{}754 standard,
 @code{mpfr_set_flt}, @code{mpfr_set_d}, @code{mpfr_set_ld},
 @code{mpfr_set_decimal64} and @code{mpfr_set_decimal128}
 might not preserve the signed zeros
-(and in any case they don't preserve the sign bit of NaN).
+(and in any case they don't preserve the sign bit of NaN)@.
 The @code{mpfr_set_decimal64} and @code{mpfr_set_decimal128}
 functions are built only with the configure
 option @samp{--enable-decimal-float}, and when the compiler or
@@ -2330,7 +2330,7 @@ small precision of @var{rop}.
 @deftypefun int mpfr_acosu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @var{a} multiplied by @var{u} and divided by
-@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine (resp. arc-sine)
+@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine (resp.@: arc-sine)
 of @var{op}.
 For example, if @var{u} equals 360, @code{mpfr_acosu} yields the arc-cosine in
 degrees.
@@ -2338,7 +2338,8 @@ degrees.
 
 @deftypefun int mpfr_acospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @code{acos(op)} (resp. @code{asin(op)}) divided by @m{\pi,Pi}.
+Set @var{rop} to @code{acos(op)} (resp.@: @code{asin(op)}) divided
+by @m{\pi,Pi}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
