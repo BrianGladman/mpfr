@@ -2326,13 +2326,17 @@ small precision of @var{rop}.
 @end deftypefun
 
 @deftypefun int mpfr_acosu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_asinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @var{a} multiplied by @var{u} and divided by
-@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine of @var{op}.
-For example, if @var{u} equals 360, one gets the arc-cosine in degrees.
+@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine (resp. arc-sine)
+of @var{op}.
+For example, if @var{u} equals 360, @code{mpfr_acosu} yields the arc-cosine in
+degrees.
 @end deftypefun
 
 @deftypefun int mpfr_acospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the arc-cosine of @var{op}, divided by @m{\pi,Pi}.
+@deftypefunx int mpfr_asinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to @code{acos(op)} (resp. @code{asin(op)}) divided by @m{\pi,Pi}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -4111,6 +4115,8 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 @item @code{mpfr_add_d} in MPFR@tie{}2.4.
 
 @item @code{mpfr_ai} in MPFR@tie{}3.0 (incomplete, experimental).
+
+@item @code{mpfr_asinpi} and @code{mpfr_asinu} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_asprintf} in MPFR@tie{}2.4.
 
