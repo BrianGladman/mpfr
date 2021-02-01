@@ -207,6 +207,7 @@ mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              to get the correct sign (assuming mpfr_get_d supports signed
              zeros on the implementation). */
           if (s == 0 || DOUBLE_ISNAN (s) || DOUBLE_ISINF (s))
+            /* we don't propagate the sign bit of NaN */
             r = (long double) s;
           else
             {
