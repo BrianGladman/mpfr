@@ -107,6 +107,8 @@ mpfr_atanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       prec = (MPFR_PREC(y) <= 63) ? 65 : MPFR_PREC(y) + 2;
       /* now prec > 64 and prec > MPFR_PREC(y)+1 */
       mpfr_init2 (tmp, prec);
+      /* since expx >= 65, we have emax >= 65, thus u is representable here,
+         and we don't need to work in an extended exponent range */
       inex = mpfr_set_ui (tmp, u, MPFR_RNDN); /* exact since prec >= 64 */
       MPFR_ASSERTD(inex == 0);
       mpfr_nextbelow (tmp);
