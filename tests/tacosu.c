@@ -77,16 +77,6 @@ main (void)
         }
     }
 
-  /* check case u=0 */
-  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
-  mpfr_acosu (y, x, 0, MPFR_RNDN);
-  if (!mpfr_zero_p (y) || MPFR_SIGN(y) < 0)
-    {
-      printf ("Error: acosu (1/2, 0) != +0\n");
-      printf ("got: "); mpfr_dump (y);
-      exit (1);
-    }
-
   /* check case |x| > 1 */
   mpfr_set_ui (x, 2, MPFR_RNDN);
   mpfr_acosu (y, x, 1, MPFR_RNDN);
@@ -101,6 +91,33 @@ main (void)
   if (mpfr_nan_p (y) == 0)
     {
       printf ("Error: acosu (-2, 1) != NaN\n");
+      exit (1);
+    }
+
+  /* check case |x| > 1 with u=0 */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_acosu (y, x, 0, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: acosu (2, 0) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_acosu (y, x, 0, MPFR_RNDN);
+  if (mpfr_nan_p (y) == 0)
+    {
+      printf ("Error: acosu (-2, 0) != NaN\n");
+      exit (1);
+    }
+
+  /* check case u=0 */
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+  mpfr_acosu (y, x, 0, MPFR_RNDN);
+  if (!mpfr_zero_p (y) || MPFR_SIGN(y) < 0)
+    {
+      printf ("Error: acosu (1/2, 0) != +0\n");
+      printf ("got: "); mpfr_dump (y);
       exit (1);
     }
 

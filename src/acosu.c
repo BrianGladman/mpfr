@@ -57,6 +57,14 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
         }
     }
 
+  compared = mpfr_cmpabs_ui (x, 1);
+  if (compared > 0)
+    {
+      /* acosu(x) = NaN for |x| > 1, included for u=0, since NaN*0 = NaN */
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
+    }
+
   if (u == 0) /* return +0 since acos(x)>=0 */
     {
       MPFR_SET_ZERO (y);
@@ -64,22 +72,13 @@ mpfr_acosu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
       MPFR_RET (0);
     }
 
-  compared = mpfr_cmpabs_ui (x, 1);
-  if (compared >= 0)
+  if (compared == 0)
     {
-      /* acosu(x) = NaN for |x| > 1 */
-      if (compared > 0)
-        {
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      else /* |x| = 1: acosu(1,u) = +0, acosu(-1,u)=u/2 */
-        {
-          if (MPFR_SIGN(x) > 0) /* IEEE-754 2019: acosPi(1) = +0 */
-            return mpfr_set_ui (y, 0, rnd_mode);
-          else
-            return mpfr_set_ui_2exp (y, u, -1, rnd_mode);
-        }
+      /* |x| = 1: acosu(1,u) = +0, acosu(-1,u)=u/2 */
+      if (MPFR_SIGN(x) > 0) /* IEEE-754 2019: acosPi(1) = +0 */
+        return mpfr_set_ui (y, 0, rnd_mode);
+      else
+        return mpfr_set_ui_2exp (y, u, -1, rnd_mode);
     }
 
   /* acos(1/2) = pi/6 and acos(-1/2) = pi/3, thus in these cases acos(x,u)
