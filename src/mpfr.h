@@ -728,8 +728,10 @@ __MPFR_DECLSPEC int mpfr_cosu (mpfr_ptr, mpfr_srcptr, unsigned long, mpfr_rnd_t)
 __MPFR_DECLSPEC int mpfr_tanu (mpfr_ptr, mpfr_srcptr, unsigned long, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_acosu (mpfr_ptr, mpfr_srcptr, unsigned long, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_asinu (mpfr_ptr, mpfr_srcptr, unsigned long, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_atanu (mpfr_ptr, mpfr_srcptr, unsigned long, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_acospi (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_asinpi (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_atanpi (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 
 __MPFR_DECLSPEC int mpfr_sinpi (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_cospi (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);

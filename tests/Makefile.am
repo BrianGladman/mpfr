@@ -31,7 +31,8 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1		\
      tabort_defalloc2 talloc tinternals tinits tisqrt tsgn tcheck	\
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse	\
      tabs tacos tacosh tacosu tadd tadd1sp tadd_d tadd_ui tagm tai	\
-     talloc-cache tasin tasinh tasinu tatan tatanh taway tbeta tbuildopt \
+     talloc-cache tasin tasinh tasinu tatan tatanh tatanu taway tbeta 	\
+     tbuildopt 								\
      tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs		\
      tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi	\
      tcopysign tcos tcosh tcosu tcot tcoth tcsc tcsch td_div td_sub     \
