@@ -27,31 +27,31 @@ output_info = { \
   grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
 
-TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1		\
-     tabort_defalloc2 talloc tinternals tinits tisqrt tsgn tcheck	\
-     tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse	\
-     tabs tacos tacosh tacosu tadd tadd1sp tadd_d tadd_ui tagm tai	\
-     talloc-cache tasin tasinh tasinu tatan tatanh tatanu taway tbeta 	\
-     tbuildopt 								\
-     tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs		\
-     tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi	\
+TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
+     tabort_defalloc2 talloc tinternals tinits tisqrt tsgn tcheck       \
+     tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse      \
+     tabs tacos tacosh tacosu tadd tadd1sp tadd_d tadd_ui tagm tai      \
+     talloc-cache tasin tasinh tasinu tatan tatanh tatanu taway tbeta   \
+     tbuildopt                                                          \
+     tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs         \
+     tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi     \
      tcopysign tcos tcosh tcosu tcot tcoth tcsc tcsch td_div td_sub     \
      tdigamma tdim tdiv tdiv_d tdiv_ui tdot teint teq terandom          \
      terandom_chisq terf texp texp10 texp2 texpm1 tfactorial tfits tfma \
      tfmma tfmod tfms tfpif tfprintf tfrac tfrexp tgamma tgamma_inc     \
      tget_d tget_d_2exp tget_f tget_flt tget_ld_2exp tget_q             \
      tget_set_d64 tget_set_d128 tget_sj tget_str tget_z tgmpop tgrandom \
-     thyperbolic thypot tinp_str					\
-     tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2	\
-     tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui	\
-     tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3		\
-     tpow_all tpow_z tprec_round tprintf trandom trandom_deviate	\
-     trec_sqrt tremquo trint trndna troot trootn_ui tsec tsech		\
-     tset_d tset_f tset_float128 tset_ld tset_q tset_si tset_sj		\
-     tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos tsinh tsinh_cosh	\
-     tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
-     tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan ttanh	\
-     ttanu ttotal_order ttrunc tui_div tui_pow tui_sub turandom tvalist	\
+     thyperbolic thypot tinp_str                                        \
+     tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2    \
+     tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui      \
+     tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3         \
+     tpow_all tpow_z tprec_round tprintf trandom trandom_deviate        \
+     trec_sqrt tremquo trint trndna troot trootn_ui tsec tsech          \
+     tset_d tset_f tset_float128 tset_ld tset_q tset_si tset_sj         \
+     tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos tsinh tsinh_cosh  \
+     tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr      \
+     tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan ttanh       \
+     ttanu ttotal_order ttrunc tui_div tui_pow tui_sub turandom tvalist \
      ty0 ty1 tyn tzeta tzeta_ui
 
 check_PROGRAMS = tversion $(TESTS_NO_TVERSION)
