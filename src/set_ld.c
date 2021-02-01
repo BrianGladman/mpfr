@@ -187,7 +187,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   double h, l;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* Check for NAN */
+  /* Check for NAN. Since we can't use isnan(), we rely on the
+     LONGDOUBLE_NAN_ACTION macro. */
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
@@ -246,7 +247,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
   long double x;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* Check for NAN */
+  /* Check for NAN. Since we can't use isnan(), we rely on the
+     LONGDOUBLE_NAN_ACTION macro. */
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
   /* Check for INF */
