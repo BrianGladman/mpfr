@@ -91,7 +91,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (mpfr_cmp_ui (z, 1) != 0)
         {
-          mpfr_printf ("Error for atan2u(+0,%Re,2)\n", x);
+          printf ("Error for atan2u(+0,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected 1\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -100,7 +101,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (mpfr_cmp_si (z, -1) != 0)
         {
-          mpfr_printf ("Error for atan2u(-0,%Re,2)\n", x);
+          printf ("Error for atan2u(-0,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected -1\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -118,7 +120,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (!MPFR_IS_ZERO(z) || MPFR_IS_NEG(z))
         {
-          mpfr_printf ("Error for atan2u(+0,%Re,2)\n", x);
+          printf ("Error for atan2u(+0,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected +0\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -127,7 +130,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (!MPFR_IS_ZERO(z) || MPFR_IS_POS(z))
         {
-          mpfr_printf ("Error for atan2u(-0,%Re,2)\n", x);
+          printf ("Error for atan2u(-0,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected -0\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -233,7 +237,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (mpfr_cmp_ui_2exp (z, 1, -1) != 0)
         {
-          mpfr_printf ("Error for atan2u(+Inf,%Re,2)\n", x);
+          printf ("Error for atan2u(+Inf,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected 1/2\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -242,7 +247,8 @@ check_ieee754 (void)
       mpfr_atan2u (z, y, x, 2, MPFR_RNDN);
       if (mpfr_cmp_si_2exp (z, -1, -1) != 0)
         {
-          mpfr_printf ("Error for atan2u(-Inf,%Re,2)\n", x);
+          printf ("Error for atan2u(-Inf,x,2)\nwith x = ");
+          mpfr_dump (x);
           printf ("expected -1/2\n");
           printf ("got     "); mpfr_dump (z);
           exit (1);
@@ -367,7 +373,7 @@ check_lia2 (void)
              exit (1);
            }
        }
-  
+
   /* arcu (u, x, x) = -3 · u/8 for x < 0 */
   for (u = 1; u < 100; u++)
      RND_LOOP (r)
@@ -386,7 +392,7 @@ check_lia2 (void)
              exit (1);
            }
        }
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
