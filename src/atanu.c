@@ -75,7 +75,7 @@ mpfr_atanu (mpfr_ptr y, mpfr_srcptr x, unsigned long u, mpfr_rnd_t rnd_mode)
   if (u == 0) /* return 0 with sign of x, which is coherent with case x=0 */
     {
       MPFR_SET_ZERO (y);
-      MPFR_SET_POS (y);
+      MPFR_SET_SAME_SIGN (y, x);
       MPFR_RET (0);
     }
 

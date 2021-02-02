@@ -145,6 +145,24 @@ main (void)
            }
        }
 
+  /* case u=0 */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_atanu (y, x, 0, MPFR_RNDN);
+  if (MPFR_NOTZERO (y) || MPFR_IS_NEG (y))
+    {
+      printf ("Error: atanu(1,0) != +0\n");
+      printf ("got "); mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_atanu (y, x, 0, MPFR_RNDN);
+  if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
+    {
+      printf ("Error: atanu(-1,0) != -0\n");
+      printf ("got "); mpfr_dump (y);
+      exit (1);
+    }
+
   test_generic (MPFR_PREC_MIN, 100, 100);
 
   mpfr_clear (x);
