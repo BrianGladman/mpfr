@@ -547,7 +547,8 @@ else
 fi
 
 err-if-output --msg='Say "positive infinity" and "negative infinity".' -t \
-  "+/- infinity" grep -Ei "(plus|minus) *infinity" $doc $srctests
+  "+/- infinity" grep -Ei "(plus|minus) *infinity" \
+  doc/algorithms.tex $doc $srctests
 
 err-if-output "ck-clz_tab" tools/ck-clz_tab
 err-if-output "ck-inits-clears" tools/ck-inits-clears
