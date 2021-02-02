@@ -22,12 +22,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#if 0
 #define TEST_FUNCTION mpfr_atan2u
-#define TWO_ARGS
-#define ULONG_ARG2
+#define THREE_ARGS
 #include "tgeneric.c"
-#endif
 
 /* Special cases from IEEE 754-2019 (page 63) */
 static void
@@ -530,6 +527,8 @@ main (void)
   check_lia2 ();
 
   check_random ();
+
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   tests_end_mpfr ();
   return 0;
