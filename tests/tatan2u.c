@@ -407,6 +407,60 @@ check_random (void)
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
 
+  /* hard-coded values */
+
+  /* first quadrant */
+  mpfr_set_ui (x, 17, MPFR_RNDN);
+  mpfr_set_ui (y, 42, MPFR_RNDN);
+  mpfr_atan2u (z, y, x, 360, MPFR_RNDN); /* in degrees */
+  mpfr_set_str (x, "4.3f6b9d4ccd754p+4", 16, MPFR_RNDN);
+  if (!mpfr_equal_p (z, x))
+    {
+      printf ("Error for atan2u(42,17,360)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
+  /* second quadrant */
+  mpfr_set_si (x, -17, MPFR_RNDN);
+  mpfr_set_ui (y, 42, MPFR_RNDN);
+  mpfr_atan2u (z, y, x, 360, MPFR_RNDN); /* in degrees */
+  mpfr_set_str (x, "7.009462b3328acp+4", 16, MPFR_RNDN);
+  if (!mpfr_equal_p (z, x))
+    {
+      printf ("Error for atan2u(42,-17,360)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
+  /* third quadrant */
+  mpfr_set_si (x, -17, MPFR_RNDN);
+  mpfr_set_si (y, -42, MPFR_RNDN);
+  mpfr_atan2u (z, y, x, 360, MPFR_RNDN); /* in degrees */
+  mpfr_set_str (x, "-7.009462b3328acp+4", 16, MPFR_RNDN);
+  if (!mpfr_equal_p (z, x))
+    {
+      printf ("Error for atan2u(-42,-17,360)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
+  /* fourth quadrant */
+  mpfr_set_ui (x, 17, MPFR_RNDN);
+  mpfr_set_si (y, -42, MPFR_RNDN);
+  mpfr_atan2u (z, y, x, 360, MPFR_RNDN); /* in degrees */
+  mpfr_set_str (x, "-4.3f6b9d4ccd754p+4", 16, MPFR_RNDN);
+  if (!mpfr_equal_p (z, x))
+    {
+      printf ("Error for atan2u(-42,17,360)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
   /* case u=0 with x > 0 */
   mpfr_set_ui (x, 17, MPFR_RNDN);
   mpfr_set_ui (y, 42, MPFR_RNDN);

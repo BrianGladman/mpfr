@@ -190,9 +190,15 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
     {
       mpfr_exp_t expt, e;
       /* atan2u(-y,x,u) = -atan(y,x,u)
-         atan2u(y,x,u) = atan(y/x)*u/(2*pi) for x > 0
-         atan2u(y,x,u) = u/2-atan(-y/x)*u/(2*pi) for x < 0 */
+         atan2u(y,x,u) = atan(|y/x|)*u/(2*pi) for x > 0
+         atan2u(y,x,u) = u/2-atan(|y/x|)*u/(2*pi) for x < 0
+                           atan2pi     atan2u
+         First quadrant:   [0,1/2]     [0,u/4]
+         Second quadrant:  [1/2,1]     [u/4,u/2]
+         Third quadrant:   [-1,-1/2]   [-u/2,-u/4]
+         Fourth quadrant:  [-1/2,0]    [-u/4,0] */
       inex = mpfr_div (tmp, y, x, MPFR_RNDN);
+      MPFR_SET_SIGN (tmp, 1);
       expt = MPFR_GET_EXP(tmp);
       /* |tmp - y/x| <= e1 := 1/2*ulp(tmp) = 2^(expt-prec-1) */
       inex |= mpfr_atanu (tmp, tmp, u, MPFR_RNDN);
@@ -220,6 +226,8 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
          now we want error <= 2^(expt-prec+err)
          thus err = e-expt */
       e -= MPFR_GET_EXP(tmp);
+      if (MPFR_SIGN(y) < 0) /* atan2u is odd with respect to y */
+        MPFR_CHANGE_SIGN(tmp);
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - e,
                                        MPFR_PREC (z), rnd_mode)))
         break;
