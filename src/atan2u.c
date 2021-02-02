@@ -152,7 +152,7 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
           return mpfr_atan2u_aux1 (z, u, -2, MPFR_SIGN(y), rnd_mode);
         }
       /* no special case should remain */
-      MPFR_ASSERTD(0);
+      MPFR_RET_NEVER_GO_HERE ();
     }
 
   /* IEEE 754-2019 say that atan2Pi is odd with respect to y */
