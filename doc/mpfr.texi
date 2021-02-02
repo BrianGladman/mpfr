@@ -764,10 +764,10 @@ The following rounding modes are supported:
 @item @code{MPFR_RNDN}: round to nearest, with the even rounding rule
       (roundTiesToEven in IEEE@tie{}754-2008); see details below.
 
-@item @code{MPFR_RNDD}: round toward minus infinity
+@item @code{MPFR_RNDD}: round toward negative infinity
       (roundTowardNegative in IEEE@tie{}754-2008).
 
-@item @code{MPFR_RNDU}: round toward plus infinity
+@item @code{MPFR_RNDU}: round toward positive infinity
       (roundTowardPositive in IEEE@tie{}754-2008).
 
 @item @code{MPFR_RNDZ}: round toward zero
@@ -985,7 +985,7 @@ can also be defined. For instance, consider a function that has the
 exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
 @var{e}@minus{}4}, where @var{e} is the smallest exponent (for a
 significand between 1/2 and 1),
-with a 2-bit target precision and rounding toward plus infinity.
+with a 2-bit target precision and rounding toward positive infinity.
 The exact result has the exponent @var{e}@minus{}1. With the underflow
 before rounding, such a function call would yield an underflow, as
 @var{e}@minus{}1 is outside the current exponent range. However, MPFR
@@ -2241,21 +2241,21 @@ rounded in the direction @var{rnd}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
 standards for the @code{pow} function:
 @itemize @bullet
-@item @code{pow(@pom{}0, @var{y})} returns plus or minus infinity for @var{y} a negative odd integer.
-@item @code{pow(@pom{}0, @var{y})} returns plus infinity for @var{y} negative and not an odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns plus or negative infinity for @var{y} a negative odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns positive infinity for @var{y} negative and not an odd integer.
 @item @code{pow(@pom{}0, @var{y})} returns plus or minus zero for @var{y} a positive odd integer.
 @item @code{pow(@pom{}0, @var{y})} returns plus zero for @var{y} positive and not an odd integer.
 @item @code{pow(-1, @pom{}Inf)} returns 1.
 @item @code{pow(+1, @var{y})} returns 1 for any @var{y}, even a NaN@.
 @item @code{pow(@var{x}, @pom{}0)} returns 1 for any @var{x}, even a NaN@.
 @item @code{pow(@var{x}, @var{y})} returns NaN for finite negative @var{x} and finite non-integer @var{y}.
-@item @code{pow(@var{x}, -Inf)} returns plus infinity for @math{0 < @GMPabs{x} < 1}, and plus zero for @math{@GMPabs{x} > 1}.
-@item @code{pow(@var{x}, +Inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}, and plus infinity for @math{@GMPabs{x} > 1}.
+@item @code{pow(@var{x}, -Inf)} returns positive infinity for @math{0 < @GMPabs{x} < 1}, and plus zero for @math{@GMPabs{x} > 1}.
+@item @code{pow(@var{x}, +Inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}, and positive infinity for @math{@GMPabs{x} > 1}.
 @item @code{pow(-Inf, @var{y})} returns minus zero for @var{y} a negative odd integer.
 @item @code{pow(-Inf, @var{y})} returns plus zero for @var{y} negative and not an odd integer.
-@item @code{pow(-Inf, @var{y})} returns minus infinity for @var{y} a positive odd integer.
-@item @code{pow(-Inf, @var{y})} returns plus infinity for @var{y} positive and not an odd integer.
-@item @code{pow(+Inf, @var{y})} returns plus zero for @var{y} negative, and plus infinity for @var{y} positive.
+@item @code{pow(-Inf, @var{y})} returns negative infinity for @var{y} a positive odd integer.
+@item @code{pow(-Inf, @var{y})} returns positive infinity for @var{y} positive and not an odd integer.
+@item @code{pow(+Inf, @var{y})} returns plus zero for @var{y} negative, and positive infinity for @var{y} positive.
 @end itemize
 Note: When 0 is of integer type, it is regarded as +0 by these functions.
 We do not use the usual limit rules in this case, as these rules are not
@@ -2507,7 +2507,7 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to the value of the first kind Bessel function of order 0,
 (resp.@: 1 and @var{n})
 on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN, @var{rop} is always set to NaN@. When @var{op} is plus or minus Infinity,
+NaN, @var{rop} is always set to NaN@. When @var{op} is plus or negative infinity,
 @var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
 @var{rop} is set to +0 or @minus{}0 depending on the parity and sign of @var{n},
 and the sign of @var{op}.
@@ -2799,8 +2799,8 @@ one of the following characters:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
-@item @samp{U}  @tab round toward plus infinity
-@item @samp{D}  @tab round toward minus infinity
+@item @samp{U}  @tab round toward positive infinity
+@item @samp{D}  @tab round toward negative infinity
 @item @samp{Y}  @tab round away from zero
 @item @samp{Z}  @tab round toward zero
 @item @samp{N}  @tab round to nearest (with ties to even)
@@ -3275,8 +3275,8 @@ overflow, or inexact exception is raised.
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
 @deftypefunx void mpfr_nextbelow (mpfr_t @var{x})
-Equivalent to @code{mpfr_nexttoward} where @var{y} is plus infinity
-(resp.@: minus infinity).
+Equivalent to @code{mpfr_nexttoward} where @var{y} is positive infinity
+(resp.@: negative infinity).
 @end deftypefun
 
 @deftypefun int mpfr_min (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -3977,7 +3977,7 @@ field.
 significant limbs stored first.
 The number of limbs in use is controlled by @code{_mpfr_prec}, namely
 ceil(@code{_mpfr_prec}/@code{mp_bits_per_limb}).
-Non-singular (i.e., different from NaN, Infinity or zero)
+Non-singular (i.e., different from NaN, infinity or zero)
 values always have the most significant bit of the most
 significant limb set to 1.  When the precision does not correspond to a
 whole number of limbs, the excess bits at the low end of the data are zeros.
