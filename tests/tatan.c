@@ -1,4 +1,4 @@
-/* Test file for mpfr_atan.
+/* Test file for mpfr_atan and mpfr_atan2.
 
 Copyright 2001-2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.

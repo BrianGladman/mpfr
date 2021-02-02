@@ -56,7 +56,7 @@ version.c mpn_exp.c mpfr-gmp.c mp_clz_tab.c sum.c add1sp.c              \
 free_cache.c si_op.c cmp_ld.c set_ui_2exp.c set_si_2exp.c set_uj.c      \
 set_sj.c get_sj.c get_uj.c get_z.c iszero.c cache.c sqr.c               \
 int_ceil_log2.c isqrt.c strtofr.c pow_z.c logging.c mulders.c get_f.c   \
-round_p.c erfc.c atan2.c subnormal.c const_catalan.c root.c             \
+round_p.c erfc.c atan2.c atan2u.c subnormal.c const_catalan.c root.c    \
 gen_inverse.h sec.c csc.c cot.c eint.c sech.c csch.c coth.c             \
 round_near_x.c constant.c abort_prec_max.c stack_interface.c lngamma.c  \
 zeta_ui.c set_d64.c get_d64.c jn.c yn.c rem1.c add_d.c                  \
