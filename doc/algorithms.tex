@@ -85,8 +85,8 @@ Algorithms and Proofs}
 
 In the whole document, $\N()$ denotes rounding to nearest,
 $\Z()$ rounding toward zero,
-$\pinf()$ rounding toward plus infinity,
-$\minf()$ rounding toward minus infinity,
+$\pinf()$ rounding toward positive infinity,
+$\minf()$ rounding toward negative infinity,
 and $\circ()$ any of those four rounding modes.
 
 In the whole document, except special notice, all variables are assumed
@@ -2414,12 +2414,12 @@ When rounding to nearest, if $p_x \leq p_z$ and $\frac{p_z+1}{2} < \Exp(x) -
 p_x$, the condition $\frac{p_x+1}{2} < \Exp(x) - \Exp(y)$ ensures that
 $\frac{y^2}{2x} < \frac{1}{2} \ulp_{p_x}(x)$.  In both cases, these
 inequalities show that $z=\N_{p_z}(x)$, except that tie case is rounded
-toward plus infinity since hypot($x$,$y$) is strictly greater than $x$.
+toward positive infinity since hypot($x$,$y$) is strictly greater than $x$.
 
 With the other rounding modes, the conditions $p_z/2 < \Exp(x) - \Exp(y)$
 if $p_x \leq p_z$, and $p_x/2 < \Exp(x) - \Exp(y)$ if $p_z < p_x$ mean in
 a similar way that $z=\circ_{p_z}(x)$, except that we need to add one ulp
-to the result when rounding toward plus infinity and $x$ is exactly
+to the result when rounding toward positive infinity and $x$ is exactly
 representable with $p_z$ bits of precision.
 
 When none of the above conditions are satisfied, we use the following

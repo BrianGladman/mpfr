@@ -1,4 +1,4 @@
-/* mpfr_set_inf -- set a number to plus or minus infinity.
+/* mpfr_set_inf -- set a number to positive or negative infinity.
 
 Copyright 2002, 2004, 2006-2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
