@@ -527,8 +527,12 @@ check_random (void)
 static void
 bug20210203 (void)
 {
+#if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
+  /* then 64-bit constants are supported */
+
   mpfr_t x, y, z;
   unsigned long u;
+
   mpfr_init2 (x, 12);
   mpfr_init2 (y, 12);
   mpfr_init2 (z, 28);
@@ -548,6 +552,8 @@ bug20210203 (void)
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+
+#endif
 }
 
 int
