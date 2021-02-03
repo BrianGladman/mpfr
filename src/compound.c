@@ -29,9 +29,8 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   int inex, compared;
 
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg u=%lu rnd=%d",
-      mpfr_get_prec(x), mpfr_log_prec, x,
-      u, rnd_mode),
+    (("x[%Pu]=%.*Rg n=%ld rnd=%d",
+      mpfr_get_prec(x), mpfr_log_prec, x, n, rnd_mode),
      ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (y), mpfr_log_prec, y, inex));
 
   /* Special cases */
@@ -43,8 +42,10 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           MPFR_RET_NAN;
         }
       else if (n == 0 || MPFR_IS_ZERO (x))
-        /* (1+Inf)^0 = 1 and (1+x)^0 = 1 */
-        return mpfr_set_ui (y, 1, rnd_mode);
+        {
+          /* (1+Inf)^0 = 1 and (1+x)^0 = 1 */
+          return mpfr_set_ui (y, 1, rnd_mode);
+        }
       else if (MPFR_IS_INF (x)) /* x = +Inf */
         {
           if (n < 0) /* (1+Inf)^n = +0 for n < 0 */
@@ -87,5 +88,6 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         }
     }
 
+  inex = 0;
   return mpfr_set_si (y, -17, rnd_mode);
 }
