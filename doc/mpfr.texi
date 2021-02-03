@@ -2263,6 +2263,13 @@ We do not use the usual limit rules in this case, as these rules are not
 used for @code{pow}.
 @end deftypefun
 
+@deftypefun int mpfr_compound (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the power @var{n} of one plus @var{op},
+following IEEE@tie{}754-2019 for the special cases and exceptions.
+When @var{n} is zero and @var{op} is larger or equal @minus{}1,
+@var{rop} is set to 1 (IEEE@tie{}754-2019 also allows NaN).
+@end deftypefun
+
 @deftypefun int mpfr_cos (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_sin (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_tan (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -4146,6 +4153,8 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 (new divide-by-zero exception).
 
 @item @code{mpfr_cmpabs_ui} in MPFR@tie{}4.1.
+
+@item @code{mpfr_compound} in MPFR@tie{}4.2.0.
 
 @item @code{mpfr_copysign} in MPFR@tie{}2.3.
 Note: MPFR@tie{}2.2 had a @code{mpfr_copysign} function that was available,

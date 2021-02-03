@@ -26,7 +26,7 @@ Changes from versions 4.1.* to version 4.2.0:
   mpfr_atanu.
 - New functions mpfr_cospi, mpfr_sinpi, mpfr_tanpi, mpfr_acospi, mpfr_asinpi
   and mpfr_atanpi.
-- New function log2p1.
+- New function mpfr_log2p1 and mpfr_compound.
 - New function mpfr_fmod_ui.
 - Bug fixes.
   In particular, for the formatted output functions (mpfr_printf, etc.),
