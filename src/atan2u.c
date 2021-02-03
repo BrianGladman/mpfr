@@ -207,6 +207,8 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
          Fourth quadrant:  [-1/2,0]    [-u/4,0] */
       inex = mpfr_div (tmp, y, x, MPFR_RNDN);
       MPFR_SET_SIGN (tmp, 1);
+      /* FIXME: The division may overflow or underflow, in which case
+         the following MPFR_GET_EXP is incorrect. */
       expt = MPFR_GET_EXP(tmp);
       /* |tmp - y/x| <= e1 := 1/2*ulp(tmp) = 2^(expt-prec-1) */
       inex |= mpfr_atanu (tmp, tmp, u, MPFR_RNDN);
