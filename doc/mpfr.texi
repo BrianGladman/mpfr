@@ -2211,8 +2211,10 @@ Set @var{rop} to @minus{}Inf if @var{op} is @pom{}0
 
 @deftypefun int mpfr_log1p (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_log2p1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_log10p1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the logarithm of one plus @var{op} (in radix two for
-@code{mpfr_log2p1}), rounded in the direction @var{rnd}.
+@code{mpfr_log2p1}, and in radix ten for @code{mpfr_log10p1}), rounded in the
+direction @var{rnd}.
 Set @var{rop} to @minus{}Inf if @var{op} is @minus{}1.
 @end deftypefun
 
@@ -4247,7 +4249,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_j0}, @code{mpfr_j1} and @code{mpfr_jn} in MPFR@tie{}2.3.
 
-@item @code{mpfr_log2p1} in MPFR@tie{}4.2.
+@item @code{mpfr_log2p1} and @code{mpfr_log10p1} in MPFR@tie{}4.2.
 
 @item @code{mpfr_lgamma} in MPFR@tie{}2.3.
 

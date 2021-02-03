@@ -45,13 +45,13 @@ set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub1.c  \
 sub_ui.c rint.c ui_div.c ui_sub.c urandom.c urandomb.c get_z_2exp.c     \
 swap.c factorial.c cosh.c sinh.c tanh.c sinh_cosh.c acosh.c asinh.c     \
 atanh.c atan.c cmp2.c exp_2.c asin.c const_euler.c cos.c sin.c tan.c    \
-fma.c fms.c hypot.c log1p.c expm1.c log2.c log2p1.c log10.c ui_pow.c    \
-ui_pow_ui.c minmax.c dim.c signbit.c copysign.c setsign.c gmp_op.c      \
-init2.c acos.c sin_cos.c set_nan.c set_inf.c set_zero.c powerof2.c      \
-gamma.c set_ld.c get_ld.c cbrt.c volatile.c fits_s.h fits_sshort.c      \
-fits_sint.c fits_slong.c fits_u.h fits_ushort.c fits_uint.c             \
-fits_ulong.c fits_uintmax.c fits_intmax.c get_si.c get_ui.c zeta.c      \
-cmp_d.c erf.c inits.c inits2.c clears.c sgn.c check.c sub1sp.c          \
+fma.c fms.c hypot.c log1p.c expm1.c log2.c log2p1.c log10.c log10p1.c   \
+ui_pow.c ui_pow_ui.c minmax.c dim.c signbit.c copysign.c setsign.c      \
+gmp_op.c init2.c acos.c sin_cos.c set_nan.c set_inf.c set_zero.c        \
+powerof2.c gamma.c set_ld.c get_ld.c cbrt.c volatile.c fits_s.h         \
+fits_sshort.c fits_sint.c fits_slong.c fits_u.h fits_ushort.c           \
+fits_uint.c fits_ulong.c fits_uintmax.c fits_intmax.c get_si.c get_ui.c \
+zeta.c cmp_d.c erf.c inits.c inits2.c clears.c sgn.c check.c sub1sp.c   \
 version.c mpn_exp.c mpfr-gmp.c mp_clz_tab.c sum.c add1sp.c              \
 free_cache.c si_op.c cmp_ld.c set_ui_2exp.c set_si_2exp.c set_uj.c      \
 set_sj.c get_sj.c get_uj.c get_z.c iszero.c cache.c sqr.c               \

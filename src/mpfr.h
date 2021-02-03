@@ -614,6 +614,7 @@ __MPFR_DECLSPEC int mpfr_log2 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_log10 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_log1p (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_log2p1 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_log10p1 (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_log_ui (mpfr_ptr, unsigned long, mpfr_rnd_t);
 
 __MPFR_DECLSPEC int mpfr_exp (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);

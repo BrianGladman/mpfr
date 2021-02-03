@@ -42,8 +42,8 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tget_d tget_d_2exp tget_f tget_flt tget_ld_2exp tget_q             \
      tget_set_d64 tget_set_d128 tget_sj tget_str tget_z tgmpop tgrandom \
      thyperbolic thypot tinp_str                                        \
-     tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2    \
-     tlog2p1                                                            \
+     tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog10p1 tlog1p \
+     tlog2 tlog2p1                                                      \
      tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui      \
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3         \
      tpow_all tpow_z tprec_round tprintf trandom trandom_deviate        \
