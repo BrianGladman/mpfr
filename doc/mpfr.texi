@@ -4123,17 +4123,17 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @itemize @bullet
 
-@item @code{mpfr_acospi} and @code{mpfr_acosu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_acospi} and @code{mpfr_acosu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_add_d} in MPFR@tie{}2.4.
 
 @item @code{mpfr_ai} in MPFR@tie{}3.0 (incomplete, experimental).
 
-@item @code{mpfr_asinpi} and @code{mpfr_asinu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_asinpi} and @code{mpfr_asinu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_asprintf} in MPFR@tie{}2.4.
 
-@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_beta} in MPFR@tie{}4.0 (incomplete, experimental).
 
@@ -4154,7 +4154,7 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @item @code{mpfr_cmpabs_ui} in MPFR@tie{}4.1.
 
-@item @code{mpfr_compound} in MPFR@tie{}4.2.0.
+@item @code{mpfr_compound} in MPFR@tie{}4.2.
 
 @item @code{mpfr_copysign} in MPFR@tie{}2.3.
 Note: MPFR@tie{}2.2 had a @code{mpfr_copysign} function that was available,
@@ -4162,7 +4162,7 @@ but not documented,
 and with a slight difference in the semantics (when
 the second input operand is a NaN)@.
 
-@item @code{mpfr_cospi} and @code{mpfr_cosu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_cospi} and @code{mpfr_cosu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_custom_get_significand} in MPFR@tie{}3.0.
 This function was named @code{mpfr_custom_get_mantissa} in previous
@@ -4196,7 +4196,7 @@ in MPFR@tie{}4.0.
 
 @item @code{mpfr_fmodquo} in MPFR@tie{}4.0.
 
-@item @code{mpfr_fmod_ui} in MPFR@tie{}4.2.0.
+@item @code{mpfr_fmod_ui} in MPFR@tie{}4.2.
 
 @item @code{mpfr_fms} in MPFR@tie{}2.3.
 
@@ -4238,7 +4238,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_j0}, @code{mpfr_j1} and @code{mpfr_jn} in MPFR@tie{}2.3.
 
-@item @code{mpfr_log2p1} in MPFR@tie{}4.2.0.
+@item @code{mpfr_log2p1} in MPFR@tie{}4.2.
 
 @item @code{mpfr_lgamma} in MPFR@tie{}2.3.
 
@@ -4289,13 +4289,13 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_sinh_cosh} in MPFR@tie{}2.4.
 
-@item @code{mpfr_sinpi} and @code{mpfr_sinu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_sinpi} and @code{mpfr_sinu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_snprintf} and @code{mpfr_sprintf} in MPFR@tie{}2.4.
 
 @item @code{mpfr_sub_d} in MPFR@tie{}2.4.
 
-@item @code{mpfr_tanpi} and @code{mpfr_tanu} in MPFR@tie{}4.2.0.
+@item @code{mpfr_tanpi} and @code{mpfr_tanu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_total_order_p} in MPFR@tie{}4.1.
 
