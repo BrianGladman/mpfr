@@ -523,10 +523,39 @@ check_random (void)
   mpfr_clear (z);
 }
 
+/* bug found with GMP_CHECK_RANDOMIZE=1612368173909457 */
+static void
+bug20210203 (void)
+{
+  mpfr_t x, y, z;
+  unsigned long u;
+  mpfr_init2 (x, 12);
+  mpfr_init2 (y, 12);
+  mpfr_init2 (z, 28);
+  mpfr_set_str_binary (y, "-0.111101100000E-66");
+  mpfr_set_str_binary (x, "0.111011100000E0");
+  u = 13484982567905493265UL;
+  mpfr_atan2u (z, y, x, u, MPFR_RNDN);
+  mpfr_set_prec (x, 28);
+  mpfr_set_str_binary (x, "-0.1111011001001001000110001010E-5");
+  if (!mpfr_equal_p (z, x))
+    {
+      printf ("Error in bug20210203\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
+
+  bug20210203 ();
 
   check_ieee754 ();
 
