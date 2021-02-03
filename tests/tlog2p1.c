@@ -101,7 +101,7 @@ check_exact (void)
         inex = mpfr_sub_ui (x, x, 1, (mpfr_rnd_t) r);
         MPFR_ASSERTN(inex == 0);
         inex = mpfr_log2p1 (x, x, (mpfr_rnd_t) r);
-        MPFR_ASSERTN(mpfr_cmp_si (x, k) == 0);
+        MPFR_ASSERTN(mpfr_cmp_si0 (x, k) == 0);
         MPFR_ASSERTN(inex == 0);
       }
   mpfr_clear (x);
