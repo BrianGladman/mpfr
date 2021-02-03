@@ -45,7 +45,7 @@ set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub1.c  \
 sub_ui.c rint.c ui_div.c ui_sub.c urandom.c urandomb.c get_z_2exp.c     \
 swap.c factorial.c cosh.c sinh.c tanh.c sinh_cosh.c acosh.c asinh.c     \
 atanh.c atan.c cmp2.c exp_2.c asin.c const_euler.c cos.c sin.c tan.c    \
-fma.c fms.c hypot.c log1p.c expm1.c log2.c log10.c ui_pow.c             \
+fma.c fms.c hypot.c log1p.c expm1.c log2.c log2p1.c log10.c ui_pow.c    \
 ui_pow_ui.c minmax.c dim.c signbit.c copysign.c setsign.c gmp_op.c      \
 init2.c acos.c sin_cos.c set_nan.c set_inf.c set_zero.c powerof2.c      \
 gamma.c set_ld.c get_ld.c cbrt.c volatile.c fits_s.h fits_sshort.c      \
@@ -68,7 +68,7 @@ random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
 mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c invert_limb.h         \
 invsqrt_limb.h beta.c odd_p.c get_q.c pool.c total_order.c set_d128.c   \
 get_d128.c nbits_ulong.c cmpabs_ui.c sinu.c cosu.c tanu.c fmod_ui.c     \
-acosu.c asinu.c atanu.c
+acosu.c asinu.c atanu.c compound.c
 
 nodist_libmpfr_la_SOURCES = $(BUILT_SOURCES)
 

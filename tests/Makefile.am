@@ -32,9 +32,9 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tisnan texceptions tset_exp tset mpf_compat mpfr_compat reuse      \
      tabs tacos tacosh tacosu tadd tadd1sp tadd_d tadd_ui tagm tai      \
      talloc-cache tasin tasinh tasinu tatan tatanh tatanu tatan2u taway \
-     tbeta tbuildopt                                                    \
-     tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs         \
-     tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi     \
+     tbeta tbuildopt tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui \
+     tcmpabs tcomparisons tcompound tconst_catalan tconst_euler         \
+     tconst_log2 tconst_pi                                              \
      tcopysign tcos tcosh tcosu tcot tcoth tcsc tcsch td_div td_sub     \
      tdigamma tdim tdiv tdiv_d tdiv_ui tdot teint teq terandom          \
      terandom_chisq terf texp texp10 texp2 texpm1 tfactorial tfits tfma \
@@ -43,6 +43,7 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tget_set_d64 tget_set_d128 tget_sj tget_str tget_z tgmpop tgrandom \
      thyperbolic thypot tinp_str                                        \
      tj0 tj1 tjn tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2    \
+     tlog2p1                                                            \
      tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui      \
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3         \
      tpow_all tpow_z tprec_round tprintf trandom trandom_deviate        \
