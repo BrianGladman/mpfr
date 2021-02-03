@@ -56,11 +56,9 @@ mpfr_atan2u_aux2 (mpfr_ptr z, unsigned long u, int e, int s,
 
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (t, ULSIZE + 2);
-  inex = mpfr_set_ui (t, u, MPFR_RNDZ);     /* exact */
+  inex = mpfr_set_ui_2exp (t, u, e, MPFR_RNDZ); /* exact */
   MPFR_ASSERTD (inex == 0);
-  inex = mpfr_mul_ui (t, t, 3, MPFR_RNDZ);  /* exact */
-  MPFR_ASSERTD (inex == 0);
-  inex = mpfr_mul_2si (t, t, e, MPFR_RNDZ); /* exact */
+  inex = mpfr_mul_ui (t, t, 3, MPFR_RNDZ);      /* exact */
   MPFR_ASSERTD (inex == 0);
   if (s < 0)
     MPFR_CHANGE_SIGN (t);
