@@ -134,10 +134,10 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   for (nloop = 0; ; nloop++)
     {
       /* we compute (1+x)^n as 2^(n*log2p1(x)) */
-      inexact = mpfr_log2p1 (t, x, MPFR_RNDN);
+      inexact = mpfr_log2p1 (t, x, MPFR_RNDN) != 0;
       e = MPFR_GET_EXP(t);
       /* |t - log2(1+x)| <= 1/2*ulp(t) = 2^(e-prec-1) */
-      inexact |= mpfr_mul_ui (t, t, n, MPFR_RNDN);
+      inexact |= mpfr_mul_ui (t, t, n, MPFR_RNDN) != 0;
       /* |t - n*log2(1+x)| <= 2^(e2-prec-1) + n*2^(e-prec-1)
                            <= 2^(e2-prec-1) + 2^(e+k-prec-1) <= 2^(e+k-prec)
                            where n < 2^k, and e2 is the new exponent of t. */
@@ -161,7 +161,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_compound_near_one (y, signt, rnd_mode);
         }
-      inexact |= mpfr_exp2 (t, t, MPFR_RNDA);
+      inexact |= mpfr_exp2 (t, t, MPFR_RNDA) != 0;
       /* |t - (1+x)^n| <= ulp(t) + |t|*log(2)*2^(e-prec)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-prec) */
       e = (e >= 0) ? e + 1 : 1;
@@ -174,6 +174,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (t, prec);
     }
+
   inexact = mpfr_set (y, t, rnd_mode);
 
   MPFR_ZIV_FREE (loop);
