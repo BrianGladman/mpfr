@@ -25,9 +25,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* z <- s*u*2^e */
+/* z <- s*u*2^e, with e between -3 and -1 */
 static int
-mpfr_atan2u_aux1 (mpfr_ptr z, unsigned long u, mpfr_exp_t e, int s,
+mpfr_atan2u_aux1 (mpfr_ptr z, unsigned long u, int e, int s,
                   mpfr_rnd_t rnd_mode)
 {
   if (s > 0)
@@ -35,6 +35,7 @@ mpfr_atan2u_aux1 (mpfr_ptr z, unsigned long u, mpfr_exp_t e, int s,
   else
     {
       int inex;
+
       rnd_mode = MPFR_INVERT_RND (rnd_mode);
       inex = mpfr_set_ui_2exp (z, u, e, rnd_mode);
       MPFR_CHANGE_SIGN (z);
@@ -42,22 +43,29 @@ mpfr_atan2u_aux1 (mpfr_ptr z, unsigned long u, mpfr_exp_t e, int s,
     }
 }
 
-/* z <- s*3*u*2^e */
+/* z <- s*3*u*2^e, with e between -3 and -1 */
 static int
-mpfr_atan2u_aux2 (mpfr_ptr z, unsigned long u, mpfr_exp_t e, int s,
+mpfr_atan2u_aux2 (mpfr_ptr z, unsigned long u, int e, int s,
                   mpfr_rnd_t rnd_mode)
 {
   int inex;
   mpfr_t t;
-  mpfr_init2 (t, 66);
-  mpfr_set_ui (t, u, MPFR_RNDZ);     /* exact */
-  mpfr_mul_ui (t, t, 3, MPFR_RNDZ);  /* exact */
-  mpfr_mul_2si (t, t, e, MPFR_RNDZ); /* exact */
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  mpfr_init2 (t, sizeof (unsigned long) * CHAR_BIT + 2);
+  inex = mpfr_set_ui (t, u, MPFR_RNDZ);     /* exact */
+  MPFR_ASSERTD (inex == 0);
+  inex = mpfr_mul_ui (t, t, 3, MPFR_RNDZ);  /* exact */
+  MPFR_ASSERTD (inex == 0);
+  inex = mpfr_mul_2si (t, t, e, MPFR_RNDZ); /* exact */
+  MPFR_ASSERTD (inex == 0);
   if (s < 0)
     MPFR_CHANGE_SIGN (t);
   inex = mpfr_set (z, t, rnd_mode);
   mpfr_clear (t);
-  return inex;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (z, inex, rnd_mode);
 }
 
 /* put in z the correctly rounded value of atan2y(y,x,u) */
