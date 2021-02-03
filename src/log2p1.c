@@ -37,11 +37,13 @@ mpfr_log2p1_isexact (mpfr_srcptr x)
      range, thus no need to extend it. */
   mpfr_t t;
   int inex;
+  mpfr_exp_t e;
 
   mpfr_init2 (t, 1);
   inex = mpfr_add_ui (t, x, 1, MPFR_RNDZ);
+  e = MPFR_GET_EXP (t);
   mpfr_clear (t);
-  return (inex == 0) ? MPFR_GET_EXP(t) - 1 : 0;
+  return inex == 0 ? e - 1 : 0;
 }
 
 /* in case x=2^k and we can decide of the correct rounding,
