@@ -311,13 +311,15 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
         }
       MPFR_SET_SIGN (tmp, 1);
       expt = MPFR_GET_EXP(tmp);
-      /* |tmp - y/x| <= e1 := 1/2*ulp(tmp) = 2^(expt-prec-1) */
+      /* |tmp - |y/x|| <= e1 := 1/2*ulp(tmp) = 2^(expt-prec-1) */
       inex |= mpfr_atanu (tmp, tmp, u, MPFR_RNDN);
-      /* the derivative of atan(t) is 1/(1+t^2), thus if tmp2 is the new value
-         of tmp, we have |tmp2 - atan(y/x)| <= 1/2*ulp(tmp2) + e1/(1+tmp^2) */
+      /* the derivative of atan(t) is 1/(1+t^2), thus that of atanu(t) is
+         u/(1+t^2)/(2*pi), and if tmp2 is the new value of tmp, we have
+         |tmp2 - atanu|y/x|| <= 1/2*ulp(tmp2) + e1*u/(1+tmp^2)/4 */
       e = (expt < 1) ? 0 : expt - 1;
       /* max(1,|tmp|) >= 2^e thus 1/(1+tmp^2) <= 2^(-2*e) */
-      e = expt - 2 * e;
+      e = expt - 2 * e + MPFR_INT_CEIL_LOG2(u) - 2;
+      /* now e1*u/(1+tmp^2)/4 <= 2^(e-prec-1) */
       /* |tmp2 - atanu(y/x)| <= 1/2*ulp(tmp2) + 2^(e-prec-1) */
       e = (e < MPFR_GET_EXP(tmp)) ? MPFR_GET_EXP(tmp) : e;
       /* |tmp2 - atanu(y/x)| <= 2^(e-prec) */
