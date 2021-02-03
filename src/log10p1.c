@@ -38,7 +38,7 @@ mpfr_log10p1_exact_p (mpfr_srcptr x)
   mpfr_t t;
   int inex, ret = 0;
 
-  MPFR_ASSERTD(!MPFR_IS_ZERO(x));
+  MPFR_ASSERTD(!MPFR_IS_SINGULAR(x));
   if (MPFR_IS_NEG(x) || MPFR_EXP(x) <= 3) /* x < 8 */
     return 0;
   mpfr_init2 (t, MPFR_PREC(x));
@@ -90,16 +90,16 @@ mpfr_log10p1_small (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode,
   /* now e = EXP(x) <= -PREC(y) <= -1 which ensures |x| < 1/2 */
   mpfr_init2 (t, prec);
   mpfr_log_ui (t, 10, MPFR_RNDN);
-  MPFR_EXP(t) -= 2;
+  MPFR_SET_EXP (t, MPFR_GET_EXP (t) - 2);
   /* we divide x by log(10)/4 which is smaller than 1 to avoid any underflow */
   mpfr_div (t, x, t, MPFR_RNDN);
-  if (MPFR_EXP(t) < __gmpfr_emin + 2) /* underflow case */
+  if (MPFR_GET_EXP (t) < __gmpfr_emin + 2) /* underflow case */
     {
-      MPFR_SET_ZERO(y);
+      MPFR_SET_ZERO(y);  /* the sign does not matter */
       inex = 1;
       goto end;
     }
-  MPFR_EXP(t) -= 2;
+  MPFR_SET_EXP (t, MPFR_GET_EXP (t) - 2);
   /* t = x/log(10) * (1 + theta)^2 where |theta| < 2^-prec.
      For prec>=2, |(1 + theta)^2 - 1| < 3*theta thus the error is
      bounded by 3 ulps. The error term in x^2 is bounded by |t*x|,
@@ -171,7 +171,10 @@ mpfr_log10p1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (nloop == 0)
         {
           /* check for exact cases */
-          mpfr_exp_t k = mpfr_log10p1_exact_p (x);
+          mpfr_exp_t k;
+
+          MPFR_LOG_MSG (("check for exact cases\n", 0));
+          k = mpfr_log10p1_exact_p (x);
           if (k != 0) /* 1+x = 10^k */
             {
               inexact = mpfr_set_si (y, k, rnd_mode);
