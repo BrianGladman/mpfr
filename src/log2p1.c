@@ -23,6 +23,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H /* needed for MPFR_INT_CEIL_LOG2 */
 #include "mpfr-impl.h"
 
+#define ULSIZE (sizeof (unsigned long) * CHAR_BIT)
+
 /* return non-zero if log2(1+x) is exactly representable in infinite precision,
    and in such case the returned value is k such that 1+x = 2^k (the case k=0
    cannot happen since we assume x<>0) */
@@ -62,9 +64,9 @@ mpfr_log2p1_special (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      we have 2/x < 1/4*ulp(k) and we can decide the correct rounding */
   if (2 - expx >= expk - MPFR_PREC(y) - 1)
     return 0;
-  prec = (MPFR_PREC(y) <= 64) ? 66 : MPFR_PREC(y) + 2;
+  prec = (MPFR_PREC(y) + 2 <= ULSIZE) ? ULSIZE : MPFR_PREC(y) + 2;
   mpfr_init2 (t, prec);
-  mpfr_set_ui (t, k, MPFR_RNDZ); /* exact since prec >= 64 */
+  mpfr_set_ui (t, k, MPFR_RNDZ); /* exact since prec >= ULSIZE */
   mpfr_nextabove (t);
   /* now k < t < k + 2/x and round(t) = round(log2(1+x)) */
   inex = mpfr_set (y, t, rnd_mode);
