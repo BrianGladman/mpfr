@@ -25,6 +25,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#define ULSIZE (sizeof (unsigned long) * CHAR_BIT)
+
 /* z <- s*u*2^e, with e between -3 and -1 */
 static int
 mpfr_atan2u_aux1 (mpfr_ptr z, unsigned long u, int e, int s,
@@ -53,7 +55,7 @@ mpfr_atan2u_aux2 (mpfr_ptr z, unsigned long u, int e, int s,
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init2 (t, sizeof (unsigned long) * CHAR_BIT + 2);
+  mpfr_init2 (t, ULSIZE + 2);
   inex = mpfr_set_ui (t, u, MPFR_RNDZ);     /* exact */
   MPFR_ASSERTD (inex == 0);
   inex = mpfr_mul_ui (t, t, 3, MPFR_RNDZ);  /* exact */
@@ -76,8 +78,8 @@ mpfr_atan2u_aux3 (mpfr_ptr z, unsigned long u, int s, mpfr_rnd_t rnd_mode)
   mpfr_prec_t prec;
   int inex;
 
-  prec = (MPFR_PREC(z) > 64) ? MPFR_PREC(z) + 2 : 66;
-  /* prec >= PREC(z)+2 and prec >= 64 + 2 */
+  prec = (MPFR_PREC(z) > ULSIZE) ? MPFR_PREC(z) + 2 : ULSIZE + 2;
+  /* prec >= PREC(z)+2 and prec >= ULSIZE + 2 */
   mpfr_init2 (t, prec);
   mpfr_set_ui_2exp (t, u, -1, MPFR_RNDN); /* exact */
   mpfr_nextbelow (t);
@@ -98,8 +100,8 @@ mpfr_atan2u_aux4 (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
   mpfr_prec_t prec;
   int inex;
 
-  prec = (MPFR_PREC(z) > 64) ? MPFR_PREC(z) + 2 : 66;
-  /* prec >= PREC(z)+2 and prec >= 64 + 2 */
+  prec = (MPFR_PREC(z) > ULSIZE) ? MPFR_PREC(z) + 2 : ULSIZE + 2;
+  /* prec >= PREC(z)+2 and prec >= ULSIZE + 2 */
   mpfr_init2 (t, prec);
   mpfr_set_ui_2exp (t, u, -2, MPFR_RNDN); /* exact */
   if (MPFR_SIGN(x) > 0)
@@ -118,20 +120,24 @@ static int
 mpfr_atan2u_underflow (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x,
                        unsigned long u, mpfr_rnd_t rnd_mode)
 {
-  mpfr_exp_t e = MPFR_GET_EXP(y) - MPFR_GET_EXP(x) + 63;
+  mpfr_exp_t e = MPFR_GET_EXP(y) - MPFR_GET_EXP(x) + (ULSIZE - 1);
   /* Detect underflow: since |atan(|y/x|)| < |y/x| for |y/x| < 1,
-     |atan2u(y,x,u)| < |y/x|*u/(2*pi) < 2^62*|y/x| < 2^(EXP(y)-EXP(x)+63).
-     For x > 0, we have underflow when EXP(y)-EXP(x)+63 < emin.
-     For x < 0, we have underflow when EXP(y)-EXP(x)+63 < EXP(u/2)-prec. */
+     |atan2u(y,x,u)| < |y/x|*u/(2*pi) < 2^(ULSIZE-2)*|y/x|
+                     < 2^(EXP(y)-EXP(x)+(ULSIZE-1)).
+     For x > 0, we have underflow when
+     EXP(y)-EXP(x)+(ULSIZE-1) < emin.
+     For x < 0, we have underflow when
+     EXP(y)-EXP(x)+(ULSIZE-1) < EXP(u/2)-prec. */
   if (MPFR_IS_POS(x))
     {
       MPFR_ASSERTN(e < __gmpfr_emin);
       return mpfr_underflow (z,
                  (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, MPFR_SIGN(y));
     }
-  else if (MPFR_IS_NEG(x))
+  else
     {
-      MPFR_ASSERTN(e < 63 - MPFR_PREC(z));
+      MPFR_ASSERTD (MPFR_IS_NEG(x));
+      MPFR_ASSERTN(e < (ULSIZE - 1) - MPFR_PREC(z));
       return mpfr_atan2u_aux3 (z, u, MPFR_SIGN(y), rnd_mode);
     }
 }
@@ -146,9 +152,9 @@ mpfr_atan2u_overflow (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x,
      As soon as u/(2*pi*t) < 1/2*ulp(u/4), the result is either u/4
      or the number just below.
      Here t = y/x, thus 1/t <= x/y < 2^(EXP(x)-EXP(y)+1),
-     and u/(2*pi*t) < 2^(EXP(x)-EXP(y)+62). */
-  mpfr_exp_t e = MPFR_GET_EXP(x) - MPFR_GET_EXP(y) + 62;
-  mpfr_exp_t ulpz = 62 - MPFR_PREC(z); /* ulp(u/4) <= 2^ulpz */
+     and u/(2*pi*t) < 2^(EXP(x)-EXP(y)+(ULSIZE-2)). */
+  mpfr_exp_t e = MPFR_GET_EXP(x) - MPFR_GET_EXP(y) + (ULSIZE - 2);
+  mpfr_exp_t ulpz = (ULSIZE - 2) - MPFR_PREC(z); /* ulp(u/4) <= 2^ulpz */
   MPFR_ASSERTN (e < ulpz - 1);
   return mpfr_atan2u_aux4 (z, y, x, u, rnd_mode);
 }
