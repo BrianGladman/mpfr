@@ -76,11 +76,13 @@ mpfr_atan2u_aux3 (mpfr_ptr z, unsigned long u, int s, mpfr_rnd_t rnd_mode)
   mpfr_prec_t prec;
   int inex;
 
-  prec = (MPFR_PREC(z) > ULSIZE) ? MPFR_PREC(z) + 2 : ULSIZE + 2;
-  /* prec >= PREC(z)+2 and prec >= ULSIZE + 2 */
+  prec = (MPFR_PREC(z) + 2 > ULSIZE) ? MPFR_PREC(z) + 2 : ULSIZE;
+  /* prec >= PREC(z)+2 and prec >= ULSIZE */
   mpfr_init2 (t, prec);
-  mpfr_set_ui_2exp (t, u, -1, MPFR_RNDN); /* exact */
+  mpfr_set_ui_2exp (t, u, -1, MPFR_RNDN); /* exact since prec >= ULSIZE */
   mpfr_nextbelow (t);
+  /* u/2 - 1/4*ulp_p(u/2) <= t <= u/2, where p = PREC(z),
+     which ensures round_p(t) = round_p(u/2-eps) */
   if (s < 0)
     mpfr_neg (t, t, MPFR_RNDN);
   inex = mpfr_set (z, t, rnd_mode);
