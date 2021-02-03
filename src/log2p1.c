@@ -37,6 +37,7 @@ mpfr_log2p1_isexact (mpfr_srcptr x)
      range, thus no need to extend it. */
   mpfr_t t;
   int inex;
+
   mpfr_init2 (t, 1);
   inex = mpfr_add_ui (t, x, 1, MPFR_RNDZ);
   mpfr_clear (t);
@@ -130,7 +131,10 @@ mpfr_log2p1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (nloop == 0)
         {
           /* check for exact cases */
-          mpfr_exp_t k = mpfr_log2p1_isexact (x);
+          mpfr_exp_t k;
+
+          MPFR_LOG_MSG (("check for exact cases\n", 0));
+          k = mpfr_log2p1_isexact (x);
           if (k != 0) /* 1+x = 2^k */
             {
               inexact = mpfr_set_si (y, k, rnd_mode);
