@@ -49,6 +49,7 @@
 /tcmp_ui
 /tcmpabs
 /tcomparisons
+/tcompound
 /tconst_catalan
 /tconst_euler
 /tconst_log2
@@ -121,6 +122,7 @@
 /tlog
 /tlog1p
 /tlog2
+/tlog2p1
 /tlog10
 /tlog_ui
 /tminmax
