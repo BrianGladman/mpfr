@@ -32,7 +32,7 @@ special (void)
   mpfr_t x;
   int inex;
 
-  mpfr_init2 (x, 32);
+  mpfr_init2 (x, MPFR_PREC_MIN);
 
   mpfr_set_nan (x);
   mpfr_clear_flags ();
@@ -76,9 +76,10 @@ special (void)
   MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
 
   /* include one hard-coded test */
+  mpfr_set_prec (x, 32);
   mpfr_set_ui (x, 17, MPFR_RNDN);
   inex = mpfr_log2p1 (x, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp_ui_2exp (x, 1119355719, -28) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui_2exp (x, 1119355719UL, -28) == 0);
   MPFR_ASSERTN (inex < 0);
 
   mpfr_clear (x);
