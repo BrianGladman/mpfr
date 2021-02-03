@@ -65,7 +65,8 @@ check_ieee754 (void)
       mpfr_compound (y, x, 0, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
-          mpfr_printf ("Error, compound(%Re,0) should give 1\n", x);
+          printf ("Error, compound(x,0) should give 1 on\nx = ");
+          mpfr_dump (x);
           printf ("got "); mpfr_dump (y);
           exit (1);
         }
@@ -104,7 +105,8 @@ check_ieee754 (void)
       mpfr_compound (y, x, i, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
-          mpfr_printf ("Error1, compound(%Re,%ld) should give 1\n", x, i);
+          printf ("Error1, compound(x,%ld) should give 1\non x = ", i);
+          mpfr_dump (x);
           printf ("got "); mpfr_dump (y);
           exit (1);
         }
@@ -112,7 +114,8 @@ check_ieee754 (void)
       mpfr_compound (y, x, i, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
-          mpfr_printf ("Error, compound(%Re,%ld) should give 1\n", x, i);
+          printf ("Error, compound(x,%ld) should give 1\non x = ", i);
+          mpfr_dump (x);
           printf ("got "); mpfr_dump (y);
           exit (1);
         }
