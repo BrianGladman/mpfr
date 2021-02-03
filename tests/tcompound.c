@@ -158,6 +158,20 @@ check_ieee754 (void)
       exit (1);
     }
 
+  /* hard-coded test: x is the 32-bit nearest approximation of 17/42 */
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+  mpfr_set_ui_2exp (x, 3476878287UL, -33, MPFR_RNDN);
+  mpfr_compound (y, x, 12, MPFR_RNDN);
+  mpfr_set_ui_2exp (x, 1981447393UL, -25, MPFR_RNDN);
+  if (!mpfr_equal_p (y, x))
+    {
+      printf ("Error for compound(3476878287/2^33,12)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
