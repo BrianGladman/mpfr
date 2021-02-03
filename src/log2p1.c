@@ -126,7 +126,10 @@ mpfr_log2p1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_const_log2 (lg2, MPFR_RNDN);
       mpfr_div (t, t, lg2, MPFR_RNDN);
       /* t = log2(1+x) * (1 + theta)^3 where |theta| < 2^-prec,
-         for prec >= 2 we have |(1 + theta)^3 - 1| < 4*theta. */
+         for prec >= 2 we have |(1 + theta)^3 - 1| < 4*theta.
+         Note: contrary to log10p1, no underflow is possible in extended
+         exponent range, since for tiny x, |log2(1+x)| ~ |x|/log(2) >= |x|,
+         and x is representable, thus x/log(2) too. */
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, prec - 2, Ny, rnd_mode)))
         break;
 
