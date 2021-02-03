@@ -155,7 +155,7 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
       MPFR_RET_NEVER_GO_HERE ();
     }
 
-  /* IEEE 754-2019 say that atan2Pi is odd with respect to y */
+  /* IEEE 754-2019 says that atan2Pi is odd with respect to y */
 
   /* now both y and x are regular */
   if (mpfr_cmpabs (y, x) == 0)
@@ -222,7 +222,7 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
           mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
           /* error <= 2^(e-prec) */
         }
-      /* both with x>0 and x<0 we have error <= 2^(e-prec),
+      /* both with x>0 and x<0, we have error <= 2^(e-prec),
          now we want error <= 2^(expt-prec+err)
          thus err = e-expt */
       e -= MPFR_GET_EXP(tmp);
