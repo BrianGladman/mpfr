@@ -84,12 +84,37 @@ special (void)
   mpfr_clear (x);
 }
 
+/* check exact cases, when 1+x = 2^k */
+static void
+check_exact (void)
+{
+  mpfr_exp_t k;
+  mpfr_t x;
+  int inex, r;
+
+#define KMAX 100
+  mpfr_init2 (x, KMAX);
+  for (k = -KMAX; k <= KMAX; k++)
+    RND_LOOP (r)
+      {
+        mpfr_set_ui_2exp (x, 1, k, (mpfr_rnd_t) r);
+        inex = mpfr_sub_ui (x, x, 1, (mpfr_rnd_t) r);
+        MPFR_ASSERTN(inex == 0);
+        inex = mpfr_log2p1 (x, x, (mpfr_rnd_t) r);
+        MPFR_ASSERTN(mpfr_cmp_si (x, k) == 0);
+        MPFR_ASSERTN(inex == 0);
+      }
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   special ();
+
+  check_exact ();
 
   test_generic (MPFR_PREC_MIN, 100, 50);
 
