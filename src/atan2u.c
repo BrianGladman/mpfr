@@ -68,6 +68,91 @@ mpfr_atan2u_aux2 (mpfr_ptr z, unsigned long u, int e, int s,
   return mpfr_check_range (z, inex, rnd_mode);
 }
 
+/* return round(sign(s)*(u/2-eps),rnd_mode), where eps < 1/2*ulp(u/2) */
+static int
+mpfr_atan2u_aux3 (mpfr_ptr z, unsigned long u, int s, mpfr_rnd_t rnd_mode)
+{
+  mpfr_t t;
+  mpfr_prec_t prec;
+  int inex;
+
+  prec = (MPFR_PREC(z) > 64) ? MPFR_PREC(z) + 2 : 66;
+  /* prec >= PREC(z)+2 and prec >= 64 + 2 */
+  mpfr_init2 (t, prec);
+  mpfr_set_ui_2exp (t, u, -1, MPFR_RNDN); /* exact */
+  mpfr_nextbelow (t);
+  if (s < 0)
+    mpfr_neg (t, t, MPFR_RNDN);
+  inex = mpfr_set (z, t, rnd_mode);
+  mpfr_clear (t);
+  return inex;
+}
+
+/* return round(sign(y)*(u/4-sign(x)*eps),rnd_mode),
+   where eps < 1/2*ulp(u/4) */
+static int
+mpfr_atan2u_aux4 (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
+                  mpfr_rnd_t rnd_mode)
+{
+  mpfr_t t;
+  mpfr_prec_t prec;
+  int inex;
+
+  prec = (MPFR_PREC(z) > 64) ? MPFR_PREC(z) + 2 : 66;
+  /* prec >= PREC(z)+2 and prec >= 64 + 2 */
+  mpfr_init2 (t, prec);
+  mpfr_set_ui_2exp (t, u, -2, MPFR_RNDN); /* exact */
+  if (MPFR_SIGN(x) > 0)
+    mpfr_nextbelow (t);
+  else
+    mpfr_nextabove (t);
+  if (MPFR_SIGN(y) < 0)
+    mpfr_neg (t, t, MPFR_RNDN);
+  inex = mpfr_set (z, t, rnd_mode);
+  mpfr_clear (t);
+  return inex;
+}
+
+/* deal with underflow case, i.e., when y/x rounds to zero */
+static int
+mpfr_atan2u_underflow (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x,
+                       unsigned long u, mpfr_rnd_t rnd_mode)
+{
+  mpfr_exp_t e = MPFR_GET_EXP(y) - MPFR_GET_EXP(x) + 63;
+  /* Detect underflow: since |atan(|y/x|)| < |y/x| for |y/x| < 1,
+     |atan2u(y,x,u)| < |y/x|*u/(2*pi) < 2^62*|y/x| < 2^(EXP(y)-EXP(x)+63).
+     For x > 0, we have underflow when EXP(y)-EXP(x)+63 < emin.
+     For x < 0, we have underflow when EXP(y)-EXP(x)+63 < EXP(u/2)-prec. */
+  if (MPFR_IS_POS(x))
+    {
+      MPFR_ASSERTN(e < __gmpfr_emin);
+      return mpfr_underflow (z,
+                 (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, MPFR_SIGN(y));
+    }
+  else if (MPFR_IS_NEG(x))
+    {
+      MPFR_ASSERTN(e < 63 - MPFR_PREC(z));
+      return mpfr_atan2u_aux3 (z, u, MPFR_SIGN(y), rnd_mode);
+    }
+}
+
+/* deal with overflow case, i.e., when y/x rounds to infinity */
+static int
+mpfr_atan2u_overflow (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x,
+                       unsigned long u, mpfr_rnd_t rnd_mode)
+{
+  /* When t goes to +Inf, pi/2 - 1/t < atan(t) < pi/2,
+     thus u/4 - u/(2*pi*t) < atanu(t) < u/4.
+     As soon as u/(2*pi*t) < 1/2*ulp(u/4), the result is either u/4
+     or the number just below.
+     Here t = y/x, thus 1/t <= x/y < 2^(EXP(x)-EXP(y)+1),
+     and u/(2*pi*t) < 2^(EXP(x)-EXP(y)+62). */
+  mpfr_exp_t e = MPFR_GET_EXP(x) - MPFR_GET_EXP(y) + 62;
+  mpfr_exp_t ulpz = 62 - MPFR_PREC(z); /* ulp(u/4) <= 2^ulpz */
+  MPFR_ASSERTN (e < ulpz - 1);
+  return mpfr_atan2u_aux4 (z, y, x, u, rnd_mode);
+}
+
 /* put in z the correctly rounded value of atan2y(y,x,u) */
 int
 mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
@@ -206,13 +291,22 @@ mpfr_atan2u (mpfr_ptr z, mpfr_srcptr y, mpfr_srcptr x, unsigned long u,
          Third quadrant:   [-1,-1/2]   [-u/2,-u/4]
          Fourth quadrant:  [-1/2,0]    [-u/4,0] */
       inex = mpfr_div (tmp, y, x, MPFR_RNDN);
+      if (MPFR_IS_ZERO(tmp))
+        {
+          mpfr_clear (tmp);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_atan2u_underflow (z, y, x, u, rnd_mode);
+        }
+      if (MPFR_IS_INF(tmp))
+        {
+          mpfr_clear (tmp);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_atan2u_overflow (z, y, x, u, rnd_mode);
+        }
       MPFR_SET_SIGN (tmp, 1);
-      /* FIXME: The division may overflow or underflow, in which case
-         the following MPFR_GET_EXP is incorrect. */
       expt = MPFR_GET_EXP(tmp);
       /* |tmp - y/x| <= e1 := 1/2*ulp(tmp) = 2^(expt-prec-1) */
       inex |= mpfr_atanu (tmp, tmp, u, MPFR_RNDN);
-      MPFR_ASSERTN(inex != 0);
       /* the derivative of atan(t) is 1/(1+t^2), thus if tmp2 is the new value
          of tmp, we have |tmp2 - atan(y/x)| <= 1/2*ulp(tmp2) + e1/(1+tmp^2) */
       e = (expt < 1) ? 0 : expt - 1;
