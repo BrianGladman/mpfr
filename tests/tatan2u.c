@@ -527,9 +527,12 @@ check_random (void)
 static void
 bug20210203 (void)
 {
-#if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
-  /* then 64-bit constants are supported */
+  /* The "#if" makes sure that 64-bit constants are supported, avoiding
+     a compilation failure. The "if" makes sure that the constant is
+     representable in an unsigned long (this would not be the case with
+     32-bit unsigned long and 64-bit limb). */
 
+#if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
   mpfr_t x, y, z;
   unsigned long u = 13484982567905493265;
 
@@ -554,7 +557,6 @@ bug20210203 (void)
       mpfr_clear (y);
       mpfr_clear (z);
     }
-
 #endif
 }
 
