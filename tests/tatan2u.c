@@ -534,9 +534,9 @@ bug20210203 (void)
 
 #if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
   mpfr_t x, y, z;
-  unsigned long u = 13484982567905493265;
+  unsigned long u = 13484982567905493265U;
 
-  if (u == 13484982567905493265)
+  if (u == 13484982567905493265U)
     {
       mpfr_init2 (x, 12);
       mpfr_init2 (y, 12);
