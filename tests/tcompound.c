@@ -204,7 +204,8 @@ check_ieee754 (void)
       i = -4994322635099777669;
       mpfr_set_ui (x, 1, MPFR_RNDN);
       mpfr_compound (y, x, i, MPFR_RNDN);
-      mpfr_set_si_2exp (x, 1, i, MPFR_RNDN);
+      mpfr_set_si (x, 1, MPFR_RNDN);
+      mpfr_mul_2si (x, x, i, MPFR_RNDN);
       if (!mpfr_equal_p (y, x))
         {
           printf ("Error for compound(1,%ld)\n", i);
