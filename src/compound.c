@@ -29,7 +29,7 @@ static int
 mpfr_compound_near_one (mpfr_ptr y, int s, mpfr_rnd_t rnd_mode)
 {
   mpfr_set_ui (y, 1, rnd_mode); /* exact */
-  if (rnd_mode == MPFR_RNDN || MPFR_RNDF
+  if (rnd_mode == MPFR_RNDN || rnd_mode == MPFR_RNDF
       || (s > 0 && (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD))
       || (s < 0 && (rnd_mode == MPFR_RNDA || rnd_mode == MPFR_RNDU)))
     {
