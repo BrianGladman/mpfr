@@ -178,6 +178,7 @@ check_ieee754 (void)
   i = -1;
   while (1)
     {
+      /* i has the form -(2^k-1) */
       mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* x = -0.5 */
       mpfr_compound (y, x, i, MPFR_RNDN);
       mpfr_set_ui_2exp (x, 1, -i, MPFR_RNDN);
@@ -193,18 +194,24 @@ check_ieee754 (void)
       i = 2 * i - 1;
     }
 
+  /* The "#if" makes sure that 64-bit constants are supported, avoiding
+     a compilation failure. The "if" makes sure that the constant is
+     representable in a long (this would not be the case with 32-bit
+     unsigned long and 64-bit limb). */
 #if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
-  /* then 64-bit constants are supported */
-  i = 4994322635099777669L;
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  mpfr_compound (y, x, -i, MPFR_RNDN);
-  mpfr_set_si_2exp (x, 1, -i, MPFR_RNDN);
-  if (!mpfr_equal_p (y, x))
+  if (4994322635099777669 <= LONG_MAX)
     {
-      printf ("Error for compound(1,%ld)\n", i);
-      printf ("expected "); mpfr_dump (x);
-      printf ("got      "); mpfr_dump (y);
-      exit (1);
+      i = 4994322635099777669;
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      mpfr_compound (y, x, -i, MPFR_RNDN);
+      mpfr_set_si_2exp (x, 1, -i, MPFR_RNDN);
+      if (!mpfr_equal_p (y, x))
+        {
+          printf ("Error for compound(1,%ld)\n", i);
+          printf ("expected "); mpfr_dump (x);
+          printf ("got      "); mpfr_dump (y);
+          exit (1);
+        }
     }
 #endif
 
