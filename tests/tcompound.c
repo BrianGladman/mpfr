@@ -201,10 +201,10 @@ check_ieee754 (void)
 #if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
   if (4994322635099777669 <= LONG_MAX)
     {
-      i = 4994322635099777669;
+      i = -4994322635099777669;
       mpfr_set_ui (x, 1, MPFR_RNDN);
-      mpfr_compound (y, x, -i, MPFR_RNDN);
-      mpfr_set_si_2exp (x, 1, -i, MPFR_RNDN);
+      mpfr_compound (y, x, i, MPFR_RNDN);
+      mpfr_set_si_2exp (x, 1, i, MPFR_RNDN);
       if (!mpfr_equal_p (y, x))
         {
           printf ("Error for compound(1,%ld)\n", i);
