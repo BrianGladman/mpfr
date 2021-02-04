@@ -2268,8 +2268,8 @@ used for @code{pow}.
 @deftypefun int mpfr_compound (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the power @var{n} of one plus @var{op},
 following IEEE@tie{}754-2019 for the special cases and exceptions.
-When @var{n} is zero and @var{op} is larger or equal @minus{}1,
-@var{rop} is set to 1 (IEEE@tie{}754-2019 also allows NaN)@.
+When @var{n} is zero and @var{op} is NaN or greater or equal to @minus{}1,
+@var{rop} is set to 1.
 @end deftypefun
 
 @deftypefun int mpfr_cos (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

@@ -69,15 +69,15 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   /* Special cases */
   if (MPFR_IS_SINGULAR (x))
     {
-      if (MPFR_IS_NAN (x) || (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0))
+      if (n == 0 || MPFR_IS_ZERO (x))
+        {
+          /* (1+Inf)^0 = 1 and (1+x)^0 = 1, even for x = NaN */
+          return mpfr_set_ui (y, 1, rnd_mode);
+        }
+      else if (MPFR_IS_NAN (x) || (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0))
         {
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
-        }
-      else if (n == 0 || MPFR_IS_ZERO (x))
-        {
-          /* (1+Inf)^0 = 1 and (1+x)^0 = 1 */
-          return mpfr_set_ui (y, 1, rnd_mode);
         }
       else if (MPFR_IS_INF (x)) /* x = +Inf */
         {

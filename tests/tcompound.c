@@ -55,13 +55,15 @@ check_ieee754 (void)
       exit (1);
     }
 
-  /* compound(x,0) = 1 for x >= -1 or x = qNaN */
-  for (i = -1; i <= 2; i++)
+  /* compound(x,0) = 1 for x >= -1 or x = NaN */
+  for (i = -2; i <= 2; i++)
     {
-      if (i != 2)
-        mpfr_set_si (x, i, MPFR_RNDN);
-      else
+      if (i == -2)
+        mpfr_set_nan (x);
+      else if (i == 2)
         mpfr_set_inf (x, 1);
+      else
+        mpfr_set_si (x, i, MPFR_RNDN);
       mpfr_compound (y, x, 0, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
