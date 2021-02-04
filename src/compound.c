@@ -137,22 +137,27 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       inexact = mpfr_log2p1 (t, x, MPFR_RNDN) != 0;
       e = MPFR_GET_EXP(t);
       /* |t - log2(1+x)| <= 1/2*ulp(t) = 2^(e-prec-1) */
-      /* FIXME: The following does not make sense if n < 0. */
-      inexact |= mpfr_mul_ui (t, t, n, MPFR_RNDN) != 0;
-      /* FIXME: "n < 2^k" may be incorrect: the equality is possible.
-         And consider the case n < 0. */
-      /* |t - n*log2(1+x)| <= 2^(e2-prec-1) + n*2^(e-prec-1)
+      inexact |= mpfr_mul_si (t, t, n, MPFR_RNDN) != 0;
+      /* |t - n*log2(1+x)| <= 2^(e2-prec-1) + |n|*2^(e-prec-1)
                            <= 2^(e2-prec-1) + 2^(e+k-prec-1) <= 2^(e+k-prec)
-                           where n < 2^k, and e2 is the new exponent of t. */
+                          where |n| <= 2^k, and e2 is the new exponent of t. */
       MPFR_ASSERTD(MPFR_GET_EXP(t) <= e + k);
       e += k;
       /* |t - n*log2(1+x)| <= 2^(e-prec) */
       /* detect overflow */
-      if (nloop == 0 && mpfr_cmp_ui (t, __gmpfr_emax) >= 0)
+      if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emax) >= 0)
         {
           mpfr_clear (t);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (y, rnd_mode, 1);
+        }
+      /* detect underflow */
+      if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emin - 1) <= 0)
+        {
+          mpfr_clear (t);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_underflow (y,
+                            (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, 1);
         }
       /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
          |2^t - 1| = |exp(t*log(2)) - 1| <= |t|*log(2) < |t| */
