@@ -55,7 +55,7 @@ check_ieee754 (void)
       exit (1);
     }
 
-  /* compound(x,0) = 1 for x >= -1 (or NaN), we choose 1 */
+  /* compound(x,0) = 1 for x >= -1 or x = qNaN */
   for (i = -1; i <= 2; i++)
     {
       if (i != 2)
