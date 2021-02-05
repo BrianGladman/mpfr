@@ -50,6 +50,21 @@ mpfr_compound_near_one (mpfr_ptr y, int s, mpfr_rnd_t rnd_mode)
     }
 }
 
+/* Try to compute compound(x,n) as pow_si(1+x,n), set the temporary value t to
+   zero if it fails, and return the ternary value. */
+static int
+mpfr_compound_exact (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode,
+                     mpfr_t t)
+{
+  int inex;
+
+  inex = mpfr_add_ui (t, x, 1, MPFR_RNDZ);
+  if (inex != 0)
+    return mpfr_set_ui (t, 0, MPFR_RNDZ);
+  /* since t is exact, just call pow_si */
+  return mpfr_pow_si (y, t, n, rnd_mode);
+}
+
 /* put in y the correctly rounded value of (1+x)^n */
 int
 mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
@@ -195,6 +210,12 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       if (MPFR_LIKELY (inexact == 0 ||
                        MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
         break;
+
+      /* Detect exact cases like compound(0.5,2) = 9/4. This must be done
+         with increasing precision for the computation of 1+x (done in t). */
+      inexact = mpfr_compound_exact (y, x, n, rnd_mode, t);
+      if (!MPFR_IS_ZERO(t))
+        goto end;
 
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (t, prec);
