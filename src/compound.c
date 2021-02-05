@@ -162,8 +162,6 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   for (nloop = 0; ; nloop++)
     {
       /* we compute (1+x)^n as 2^(n*log2p1(x)) */
-      /* FIXME: In general, mpfr_log2p1 is inexact while the result is
-         exact, which will yield an infinite loop. */
       inexact = mpfr_log2p1 (t, x, MPFR_RNDN) != 0;
       e = MPFR_GET_EXP(t);
       /* |t - log2(1+x)| <= 1/2*ulp(t) = 2^(e-prec-1) */
