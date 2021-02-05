@@ -137,12 +137,94 @@ special (void)
   mpfr_clear (y);
 }
 
+/* test -100 <= x <= 100, where 2^x-1 is exact */
+static void
+test_exact (void)
+{
+  long k;
+  mpfr_t x, y, z;
+  mpz_t n;
+  mpfr_prec_t p;
+  int i, j, r;
+
+  mpfr_init2 (x, 7); /* 100 is exact within 7 bits */
+  mpfr_init2 (y, MPFR_PREC_MIN);
+  mpfr_init2 (z, MPFR_PREC_MIN);
+  mpz_init_set_ui (n, 1);
+  for (k = 1; k <= 100; k++)
+    {
+      /* invariant: n = 2^k-1 */
+      for (p = MPFR_PREC_MIN; p <= 100; p++)
+        {
+          mpfr_set_prec (y, p);
+          mpfr_set_prec (z, p);
+          mpfr_set_si (x, k, MPFR_RNDN);
+          /* for RNDF, result may differ */
+          RND_LOOP_NO_RNDF(r)
+            {
+              i = mpfr_exp2m1 (y, x, (mpfr_rnd_t) r);
+              j = mpfr_set_z (z, n, (mpfr_rnd_t) r);
+              if (!mpfr_equal_p (y, z))
+                {
+                  printf ("Error for mpfr_exp2m1, x=%ld, rnd=%s\n", k,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("expected "); mpfr_dump (z);
+                  printf ("got      "); mpfr_dump (y);
+                  exit (1);
+                }
+              if ((i == 0 && j != 0) || (i != 0 && j == 0) || (i * j < 0))
+                {
+                  printf ("Bar ternary value for mpfr_exp2m1, x=%ld, rnd=%s\n",
+                          k, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("expected %d\n", j);
+                  printf ("got      %d\n", i);
+                  exit (1);
+                }
+            }
+          mpfr_set_si (x, -k, MPFR_RNDN);
+          /* 1/2^k-1 = (1-2^k)/2^k = -n/2^k */
+          RND_LOOP_NO_RNDF(r)
+            {
+              i = mpfr_exp2m1 (y, x, (mpfr_rnd_t) r);
+              j = mpfr_set_z (z, n, MPFR_INVERT_RND((mpfr_rnd_t) r));
+              mpfr_neg (z, z, (mpfr_rnd_t) r);
+              j = -j;
+              mpfr_div_2ui (z, z, k, (mpfr_rnd_t) r);
+              if (!mpfr_equal_p (y, z))
+                {
+                  printf ("Error for mpfr_exp2m1, x=%ld, rnd=%s\n", -k,
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("expected "); mpfr_dump (z);
+                  printf ("got      "); mpfr_dump (y);
+                  exit (1);
+                }
+              if ((i == 0 && j != 0) || (i != 0 && j == 0) || (i * j < 0))
+                {
+                  printf ("Bar ternary value for mpfr_exp2m1, x=%ld, rnd=%s\n",
+                          -k, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                  printf ("expected %d\n", j);
+                  printf ("got      %d\n", i);
+                  exit (1);
+                }
+            }
+        }
+      mpz_mul_2exp (n, n, 1);
+      mpz_add_ui (n, n, 1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpz_clear (n);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   special ();
+
+  test_exact ();
 
   test_generic (MPFR_PREC_MIN, 100, 100);
 
