@@ -478,7 +478,8 @@ main (void)
   e = mpfr_get_emin_min ();
   if (e != MPFR_EMIN_MIN)
     {
-      printf ("ERROR! mpfr_get_emin_min != MPFR_EMIN_MIN (%ld vs %ld)\n",
+      printf ("ERROR! mpfr_get_emin_min != MPFR_EMIN_MIN (%"
+              MPFR_EXP_FSPEC "d vs %" MPFR_EXP_FSPEC "d)\n",
               (mpfr_eexp_t) e, (mpfr_eexp_t) MPFR_EMIN_MIN);
       err = 1;
     }
@@ -486,7 +487,8 @@ main (void)
   e = mpfr_get_emax_max ();
   if (e != MPFR_EMAX_MAX)
     {
-      printf ("ERROR! mpfr_get_emax_max != MPFR_EMAX_MAX (%ld vs %ld)\n",
+      printf ("ERROR! mpfr_get_emax_max != MPFR_EMAX_MAX (%"
+              MPFR_EXP_FSPEC "d vs %" MPFR_EXP_FSPEC "d)\n",
               (mpfr_eexp_t) e, (mpfr_eexp_t) MPFR_EMAX_MAX);
       err = 1;
     }
