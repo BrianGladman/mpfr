@@ -82,7 +82,7 @@ mpfr_log10p1_small (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode,
 {
   mpfr_t t;
   mpfr_exp_t e = MPFR_GET_EXP(x);
-  int inex = 0;
+  int inex;
 
   /* for |x| < 1/2, |log10(x+1) - x/log(10)| < x^2/log(10) */
   if (e > - (mpfr_exp_t) MPFR_PREC(y))
@@ -97,21 +97,23 @@ mpfr_log10p1_small (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode,
     {
       MPFR_SET_ZERO(y);  /* the sign does not matter */
       inex = 1;
-      goto end;
     }
-  MPFR_SET_EXP (t, MPFR_GET_EXP (t) - 2);
-  /* t = x/log(10) * (1 + theta)^2 where |theta| < 2^-prec.
-     For prec>=2, |(1 + theta)^2 - 1| < 3*theta thus the error is
-     bounded by 3 ulps. The error term in x^2 is bounded by |t*x|,
-     which is less than |t|*2^e < 2^(EXP(t)+e). */
-  e += prec;
-  /* now the error is bounded by 2^e+3 ulps */
-  e = (e >= 2) ? e + 1 : 3;
-  /* now the error is bounded by 2^e ulps */
-  if (MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode))
-    inex = mpfr_set (y, t, rnd_mode);
-
- end:
+  else
+    {
+      MPFR_SET_EXP (t, MPFR_GET_EXP (t) - 2);
+      /* t = x/log(10) * (1 + theta)^2 where |theta| < 2^-prec.
+         For prec>=2, |(1 + theta)^2 - 1| < 3*theta thus the error is
+         bounded by 3 ulps. The error term in x^2 is bounded by |t*x|,
+         which is less than |t|*2^e < 2^(EXP(t)+e). */
+      e += prec;
+      /* now the error is bounded by 2^e+3 ulps */
+      e = (e >= 2) ? e + 1 : 3;
+      /* now the error is bounded by 2^e ulps */
+      if (MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode))
+        inex = mpfr_set (y, t, rnd_mode);
+      else
+        inex = 0;
+    }
   mpfr_clear (t);
   return inex;
 }
@@ -182,6 +184,8 @@ mpfr_log10p1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             }
         }
 
+      /* inexact will be the non-zero ternary value if rounding could be
+         done, otherwise it is set to 0. */
       inexact = mpfr_log10p1_small (y, x, rnd_mode, prec);
       if (inexact)
         goto end;
