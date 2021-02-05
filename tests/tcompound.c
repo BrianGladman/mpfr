@@ -34,26 +34,44 @@ check_ieee754 (void)
 {
   mpfr_t x, y;
   long i;
+  long t[] = { 0, 1, 2, 3, 17, LONG_MAX-1, LONG_MAX };
+  int j;
   mpfr_prec_t prec = 2; /* we need at least 2 so that 3/4 is exact */
 
   mpfr_init2 (x, prec);
   mpfr_init2 (y, prec);
 
   /* compound(x,n) = NaN for x < -1, and set invalid exception */
-  mpfr_clear_nanflag ();
-  mpfr_set_si (x, -2, MPFR_RNDN);
-  mpfr_compound (y, x, 17, MPFR_RNDN);
-  if (!mpfr_nan_p (y))
-    {
-      printf ("Error, compound(-2,17) should give NaN\n");
-      printf ("got "); mpfr_dump (y);
-      exit (1);
-    }
-  if (!mpfr_nanflag_p ())
-    {
-      printf ("Error, compound(-2,17) should raise invalid flag\n");
-      exit (1);
-    }
+  for (i = 0; i < numberof(t); i++)
+    for (j = 0; j < 2; j++)
+      {
+        const char *s;
+
+        mpfr_clear_nanflag ();
+        if (j == 0)
+          {
+            mpfr_set_si (x, -2, MPFR_RNDN);
+            s = "-2";
+          }
+        else
+          {
+            mpfr_set_inf (x, -1);
+            s = "-Inf";
+          }
+        mpfr_compound (y, x, t[i], MPFR_RNDN);
+        if (!mpfr_nan_p (y))
+          {
+            printf ("Error, compound(%s,%ld) should give NaN\n", s, t[i]);
+            printf ("got "); mpfr_dump (y);
+            exit (1);
+          }
+        if (!mpfr_nanflag_p ())
+          {
+            printf ("Error, compound(%s,%ld) should raise invalid flag\n",
+                    s, t[i]);
+            exit (1);
+          }
+      }
 
   /* compound(x,0) = 1 for x >= -1 or x = NaN */
   for (i = -2; i <= 2; i++)
