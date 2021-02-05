@@ -180,12 +180,11 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          |2^t - 1| = |exp(t*log(2)) - 1| <= |t|*log(2) < |t| */
       if (nloop == 0 && MPFR_GET_EXP(t) < - (mpfr_exp_t) MPFR_PREC(y))
         {
-          int signt = MPFR_SIGN(t);
           /* since ulp(1) = 2^(1-PREC(y)), we have |t| < 1/4*ulp(1) */
-          MPFR_ZIV_FREE (loop);
-          mpfr_clear (t);
-          MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_compound_near_one (y, signt, rnd_mode);
+          /* mpfr_compound_near_one must be called in the extended
+             exponent range, so that 1 is representable. */
+          inexact = mpfr_compound_near_one (y, MPFR_SIGN (t), rnd_mode);
+          goto end;
         }
       inexact |= mpfr_exp2 (t, t, MPFR_RNDA) != 0;
       /* |t - (1+x)^n| <= ulp(t) + |t|*log(2)*2^(e-prec)
@@ -203,6 +202,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
   inexact = mpfr_set (y, t, rnd_mode);
 
+ end:
   MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
 
