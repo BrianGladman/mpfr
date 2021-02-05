@@ -114,7 +114,6 @@ Table of contents:
 
 - cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
-  exp10m1
   pown (but there is mpfr_pow_si with n long instead of intmax_t)
   powr = exp(y*log(x)). The difference with pow = x^y is that when x < 0
   and y is an integer, powr returns NaN, also when x=1 and y=+/Inf,

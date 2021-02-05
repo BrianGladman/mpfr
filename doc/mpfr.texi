@@ -2229,10 +2229,12 @@ rounded in the direction @var{rnd}.
 
 @deftypefun int mpfr_expm1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_exp2m1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_exp10m1 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{e^{@var{op}}-1,the exponential of @var{op} followed by a
 subtraction by one}
 (resp.@: @m{2^{@var{op}}-1,2 power of @var{op} followed by a
-subtraction by one}),
+subtraction by one},
+and @m{10^{@var{op}}-1,10 power of @var{op} followed by a subtraction by one}),
 rounded in the direction @var{rnd}.
 @end deftypefun
 
@@ -4201,7 +4203,7 @@ use @code{mpfr_custom_get_mantissa}.
 
 @item @code{mpfr_erandom} in MPFR@tie{}4.0.
 
-@item @code{mpfr_exp2m1} in MPFR@tie{}4.2.
+@item @code{mpfr_exp2m1} and @code{mpfr_exp10m1} in MPFR@tie{}4.2.
 
 @item @code{mpfr_flags_clear}, @code{mpfr_flags_restore},
 @code{mpfr_flags_save}, @code{mpfr_flags_set} and @code{mpfr_flags_test}
