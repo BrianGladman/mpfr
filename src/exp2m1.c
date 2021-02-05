@@ -35,6 +35,7 @@ mpfr_exp2m1_small (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode, mpfr_ptr t)
 {
   mpfr_prec_t prec;
   mpfr_exp_t e;
+  MPFR_BLOCK_DECL (flags);
 
   /* for |x| < 0.125, we have |2^x-1-x*log(2)| < x^2/4 */
   if (MPFR_EXP(x) > -3)
@@ -43,10 +44,9 @@ mpfr_exp2m1_small (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode, mpfr_ptr t)
   prec = MPFR_PREC(t);
   mpfr_const_log2 (t, MPFR_RNDN);
   /* t = log(2)*(1 + theta) with |theta| <= 2^(-prec) */
-  mpfr_clear_underflow ();
-  mpfr_mul (t, t, x, MPFR_RNDN);
+  MPFR_BLOCK (flags, mpfr_mul (t, t, x, MPFR_RNDN));
   /* If an underflow occurs in log(2)*x, then return underflow. */
-  if (mpfr_underflow_p ())
+  if (MPFR_UNDERFLOW (flags))
     {
       MPFR_SET_ZERO (t);
       return 1;
