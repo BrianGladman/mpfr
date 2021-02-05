@@ -197,7 +197,8 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
          except for 1+x power of 2, the log2p1 above will be inexact,
          so that in the Ziv test, inexact != 0 and MPFR_CAN_ROUND will
-         fail (even for RNDN, as the ternary value cannot be determined).
+         fail (even for RNDN, as the ternary value cannot be determined),
+         yielding an infinite loop.
          For an exact case in precision prec(y), 1+x will necessarily
          be exact in precision prec(y), thus also in prec(t), where
          prec(t) >= prec(y), and we can use mpfr_pow_si under this
