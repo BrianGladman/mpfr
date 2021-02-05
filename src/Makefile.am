@@ -68,7 +68,7 @@ random_deviate.h random_deviate.c erandom.c mpfr-mini-gmp.c             \
 mpfr-mini-gmp.h fmma.c log_ui.c gamma_inc.c ubf.c invert_limb.h         \
 invsqrt_limb.h beta.c odd_p.c get_q.c pool.c total_order.c set_d128.c   \
 get_d128.c nbits_ulong.c cmpabs_ui.c sinu.c cosu.c tanu.c fmod_ui.c     \
-acosu.c asinu.c atanu.c compound.c
+acosu.c asinu.c atanu.c compound.c exp2m1.c
 
 nodist_libmpfr_la_SOURCES = $(BUILT_SOURCES)
 
