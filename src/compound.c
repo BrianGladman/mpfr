@@ -162,6 +162,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       /* detect overflow */
       if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emax) >= 0)
         {
+          MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (y, rnd_mode, 1);
@@ -169,6 +170,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       /* detect underflow */
       if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emin - 1) <= 0)
         {
+          MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_underflow (y,
@@ -180,6 +182,7 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         {
           int signt = MPFR_SIGN(t);
           /* since ulp(1) = 2^(1-PREC(y)), we have |t| < 1/4*ulp(1) */
+          MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_compound_near_one (y, signt, rnd_mode);
