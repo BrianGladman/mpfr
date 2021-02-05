@@ -131,6 +131,9 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         }
     }
 
+  if (n == 1)
+    return mpfr_add_ui (y, x, 1, rnd_mode);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   prec = MPFR_PREC(y);
