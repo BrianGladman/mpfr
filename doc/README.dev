@@ -487,7 +487,9 @@ Format of long double.
                         LDBL_MANT_DIG). Note: be careful with formats such
                         as double-double (a.k.a. IBM long double).
 
-+ MPFR_USE_LOGGING:     Define to enable logging.
++ MPFR_USE_LOGGING:     Define to enable logging (this needs GCC, and this
+                        is not available with mini-gmp, since mpfr_fprintf
+                        cannot be defined with mini-gmp).
 
 + MPFR_WANT_DECIMAL_FLOATS:
                         Define to build conversion functions from/to
@@ -923,6 +925,9 @@ If you want to use the logging of MPFR, you need to enable it:
   ./configure --enable-logging
   make
 Then link your program with this new build of MPFR.
+
+The logging feature needs GCC to build MPFR, and it is not available
+with mini-gmp, since mpfr_fprintf cannot be defined with mini-gmp.
 
 Warning! The logging code for functions sometimes output an "inexact"
 value, but in case of exception, this value may be meaningless. In
