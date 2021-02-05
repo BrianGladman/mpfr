@@ -238,6 +238,26 @@ check_ieee754 (void)
   mpfr_clear (y);
 }
 
+static int
+mpfr_compound2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  return mpfr_compound (y, x, 2, rnd_mode);
+}
+
+static int
+mpfr_compound3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  return mpfr_compound (y, x, 3, rnd_mode);
+}
+
+#define TEST_FUNCTION mpfr_compound2
+#define test_generic test_generic_compound2
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_compound3
+#define test_generic test_generic_compound3
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -246,6 +266,9 @@ main (void)
   check_ieee754 ();
 
   test_generic_si (MPFR_PREC_MIN, 100, 100);
+
+  test_generic_compound2 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compound3 (MPFR_PREC_MIN, 100, 100);
 
   tests_end_mpfr ();
   return 0;
