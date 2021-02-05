@@ -50,21 +50,6 @@ mpfr_compound_near_one (mpfr_ptr y, int s, mpfr_rnd_t rnd_mode)
     }
 }
 
-/* Try to compute compound(x,n) as pow_si(1+x,n), set the temporary value t to
-   zero if it fails, and return the ternary value. */
-static int
-mpfr_compound_exact (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode,
-                     mpfr_t t)
-{
-  int inex;
-
-  inex = mpfr_add_ui (t, x, 1, MPFR_RNDZ);
-  if (inex != 0)
-    return mpfr_set_ui (t, 0, MPFR_RNDZ);
-  /* since t is exact, just call pow_si */
-  return mpfr_pow_si (y, t, n, rnd_mode);
-}
-
 /* put in y the correctly rounded value of (1+x)^n */
 int
 mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
@@ -209,11 +194,19 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                        MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
         break;
 
-      /* Detect exact cases like compound(0.5,2) = 9/4. This must be done
-         with increasing precision for the computation of 1+x (done in t). */
-      inexact = mpfr_compound_exact (y, x, n, rnd_mode, t);
-      if (!MPFR_IS_ZERO(t))
-        goto end;
+      /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
+         except for 1+x power of 2, the log2p1 above will be inexact,
+         so that in the Ziv test, inexact != 0 and MPFR_CAN_ROUND will
+         fail (even for RNDN, as the ternary value cannot be determined).
+         For an exact case in precision prec(y), 1+x will necessarily
+         be exact in precision prec(y), thus also in prec(t), where
+         prec(t) >= prec(y), and we can use mpfr_pow_si under this
+         condition (which will also evaluate some non-exact cases). */
+      if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
+        {
+          inexact = mpfr_pow_si (y, t, n, rnd_mode);
+          goto end;
+        }
 
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (t, prec);
