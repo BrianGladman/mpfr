@@ -69,18 +69,28 @@ mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   /* Special cases */
   if (MPFR_IS_SINGULAR (x))
     {
-      if (n == 0 || MPFR_IS_ZERO (x))
+      if (MPFR_IS_INF (x) && MPFR_IS_NEG (x))
         {
-          /* (1+Inf)^0 = 1 and (1+x)^0 = 1, even for x = NaN */
+          /* compound(-Inf,n) is NaN */
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else if (n == 0 || MPFR_IS_ZERO (x))
+        {
+          /* compound(x,0) = 1 for x >= -1 or NaN (the only special value
+             of x that is not concerned is -Inf, already handled);
+             compound(0,n) = 1 */
           return mpfr_set_ui (y, 1, rnd_mode);
         }
-      else if (MPFR_IS_NAN (x) || (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0))
+      else if (MPFR_IS_NAN (x))
         {
+          /* compound(NaN,n) is NaN, except for n = 0, already handled. */
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
       else if (MPFR_IS_INF (x)) /* x = +Inf */
         {
+          MPFR_ASSERTD (MPFR_IS_POS (x));
           if (n < 0) /* (1+Inf)^n = +0 for n < 0 */
             MPFR_SET_ZERO (y);
           else /* n > 0: (1+Inf)^n = +Inf */
