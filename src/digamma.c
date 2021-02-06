@@ -214,18 +214,6 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     (("x[%Pu]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
      ("y[%Pu]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
 
-  /* compute a precision q such that x+1 is exact */
-  if (MPFR_PREC(x) < MPFR_GET_EXP(x))
-    {
-      /* The goal of the first assertion is to let the compiler ignore
-         the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
-      MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
-      MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
-      q = MPFR_EXP(x);
-    }
-  else
-    q = MPFR_PREC(x) + 1;
-
   /* for very large x, use |digamma(x) - log(x)| < 1/x < 2^(1-EXP(x)) */
   if (MPFR_PREC(y) + 10 < MPFR_EXP(x))
     {
@@ -240,6 +228,18 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       mpfr_clear (t);
     }
+
+  /* compute a precision q such that x+1 is exact */
+  if (MPFR_PREC(x) < MPFR_GET_EXP(x))
+    {
+      /* The goal of the first assertion is to let the compiler ignore
+         the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
+      MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
+      MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
+      q = MPFR_EXP(x);
+    }
+  else
+    q = MPFR_PREC(x) + 1;
 
   mpfr_init2 (x_plus_j, q);
 
