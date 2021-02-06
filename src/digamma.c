@@ -241,6 +241,8 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   else
     q = MPFR_PREC(x) + 1;
 
+  MPFR_LOG_MSG (("q=%Pu\n", q));
+
   mpfr_init2 (x_plus_j, q);
 
   mpfr_init2 (t, p);
