@@ -235,6 +235,11 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           mpfr_set_prec (x2, IEEE_DBL_MANT_DIG);
 #endif
 
+#ifdef MPFR_DEBUG_TGENERIC
+          printf ("prec = %u, n = %u, xprec = %u\n",
+                  (unsigned int) prec, n, (unsigned int) xprec);
+#endif
+
           /* Generate random arguments, even in the special cases
              (this may not be needed, but this is simpler).
              Note that if RAND_FUNCTION is defined, this specific
