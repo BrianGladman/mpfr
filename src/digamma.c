@@ -216,7 +216,13 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* compute a precision q such that x+1 is exact */
   if (MPFR_PREC(x) < MPFR_GET_EXP(x))
-    q = MPFR_EXP(x);
+    {
+      /* The goal of the first assertion is to let the compiler ignore
+         the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
+      MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
+      MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
+      q = MPFR_EXP(x);
+    }
   else
     q = MPFR_PREC(x) + 1;
 
