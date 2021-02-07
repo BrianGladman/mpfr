@@ -220,7 +220,7 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      fail since it requires x+1 to be exact, thus a huge precision if
      x is huge. There are two workarounds:
      * either perform a Ziv's loop, by increasing GUARD at each step.
-       However this might fail if x is moderately large, in which case
+       However, this might fail if x is moderately large, in which case
        more terms of the asymptotic expansion would be needed.
      * implement a full asymptotic expansion (with Ziv's loop). */
 #define GUARD 20
