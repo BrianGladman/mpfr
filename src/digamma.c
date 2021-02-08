@@ -296,7 +296,7 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       errt = mpfr_digamma_approx (t, x_plus_j);
       expt = MPFR_GET_EXP (t);
       mpfr_sub (t, t, u, MPFR_RNDN);
-      if (!MPFR_IS_ZERO(t))
+      if (MPFR_NOTZERO(t))
         {
           if (MPFR_GET_EXP (t) < expt)
             errt += expt - MPFR_EXP(t);
