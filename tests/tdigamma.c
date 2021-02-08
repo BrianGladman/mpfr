@@ -82,6 +82,15 @@ bug20210206 (void)
       mpfr_clear (x);
     }
 
+  /* another test that fails with GMP_CHECK_RANDOMIZE=1612741376857003
+     on revision 14398 */
+  mpfr_set_prec (y[0], 1);
+  mpfr_set_prec (z, 73);
+  mpfr_set_str (z, "1.4613470547060071827450", 10, MPFR_RNDN);
+  i = mpfr_digamma (y[0], z, MPFR_RNDU);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (y[0], -1, -12) == 0);
+  MPFR_ASSERTN (i > 0);
+
   for (i = 0; i < NPREC; i++)
     mpfr_clear (y[i]);
   mpfr_clear (z);
