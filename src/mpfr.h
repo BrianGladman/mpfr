@@ -162,9 +162,6 @@ typedef unsigned short mpfr_uprec_t;
 typedef int   mpfr_prec_t;
 typedef unsigned int   mpfr_uprec_t;
 #elif _MPFR_PREC_FORMAT == 3
-/* we could use "long long" under Windows 64 here, which can be tested
-   with the macro _WIN64 according to
-   https://sourceforge.net/p/predef/wiki/OperatingSystems/ */
 typedef long  mpfr_prec_t;
 typedef unsigned long  mpfr_uprec_t;
 #else
@@ -196,8 +193,19 @@ typedef long mpfr_exp_t;
 typedef unsigned long mpfr_uexp_t;
 #elif _MPFR_EXP_FORMAT == 4
 /* Note: in this case, intmax_t and uintmax_t must be defined before
-   the inclusion of mpfr.h (we do not include <stdint.h> here because
-   of some non-ISO C99 implementations that support these types). */
+   the inclusion of mpfr.h (we do not include <stdint.h> here due to
+   potential issues with non-ISO implementations, on which there are
+   alternative ways to define these types).
+   In all known implementations, intmax_t has exactly 64 bits and is
+   equivalent to long long when defined, but when long has 64 bits,
+   it may be defined as long by <stdint.h> for better portability
+   with old compilers, thus offers more flexibility than long long.
+   This may change in the future.
+   This _MPFR_EXP_FORMAT value is currently not supported since the
+   MPFR code assumes that mpfr_exp_t fits in a long. Some examples
+   of problematic code can be obtained with:
+     grep -E 'mpfr_cmp_[su]i *\(.*__gmpfr_em' *.c
+*/
 typedef intmax_t mpfr_exp_t;
 typedef uintmax_t mpfr_uexp_t;
 #else
