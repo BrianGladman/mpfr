@@ -223,7 +223,7 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
        However, this might fail if x is moderately large, in which case
        more terms of the asymptotic expansion would be needed.
      * implement a full asymptotic expansion (with Ziv's loop). */
-#define GUARD 20
+#define GUARD 30
   if (MPFR_PREC(y) + GUARD < MPFR_EXP(x))
     {
       /* this ensures EXP(x) >= 3, thus x >= 4, thus log(x) > 1 */

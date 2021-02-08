@@ -57,16 +57,17 @@ special (void)
 static void
 bug20210206 (void)
 {
-  mpfr_t x, y[2], z;
+#define NPREC 4
+  mpfr_t x, y[NPREC], z;
   mpfr_exp_t emin, emax;
-  int i, precx, precy[2] = { 200, 400 };
+  int i, precx, precy[NPREC] = { 200, 400, 520, 1416 };
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < NPREC; i++)
     mpfr_init2 (y[i], precy[i]);
   mpfr_init2 (z, precy[0]);
 
@@ -74,14 +75,14 @@ bug20210206 (void)
     {
       mpfr_init2 (x, precx);
       mpfr_setmax (x, __gmpfr_emax);
-      for (i = 0; i < 2; i++)
+      for (i = 0; i < NPREC; i++)
         mpfr_digamma (y[i], x, MPFR_RNDA);
       mpfr_set (z, y[1], MPFR_RNDA);
       MPFR_ASSERTN (mpfr_equal_p (y[0], z));
       mpfr_clear (x);
     }
 
-  for (i = 0; i < 2; i++)
+  for (i = 0; i < NPREC; i++)
     mpfr_clear (y[i]);
   mpfr_clear (z);
 
