@@ -82,21 +82,30 @@ bug20210206 (void)
       mpfr_clear (x);
     }
 
-  /* another test that fails with GMP_CHECK_RANDOMIZE=1612741376857003
-     on revision 14398 */
-  mpfr_set_prec (y[0], 1);
-  mpfr_set_prec (z, 73);
-  mpfr_set_str (z, "1.4613470547060071827450", 10, MPFR_RNDN);
-  i = mpfr_digamma (y[0], z, MPFR_RNDU);
-  MPFR_ASSERTN (mpfr_cmp_si_2exp (y[0], -1, -12) == 0);
-  MPFR_ASSERTN (i > 0);
-
   for (i = 0; i < NPREC; i++)
     mpfr_clear (y[i]);
   mpfr_clear (z);
 
   set_emin (emin);
   set_emax (emax);
+}
+
+/* another test that fails with GMP_CHECK_RANDOMIZE=1612741376857003
+   on revision 14398 */
+static void
+bug20210208 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 73);
+  mpfr_init2 (y, 1);
+  mpfr_set_str (x, "1.4613470547060071827450", 10, MPFR_RNDN);
+  inex = mpfr_digamma (y, x, MPFR_RNDU);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (y, -1, -12) == 0);
+  MPFR_ASSERTN (inex > 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 int
@@ -106,6 +115,7 @@ main (int argc, char *argv[])
 
   special ();
   bug20210206 ();
+  bug20210208 ();
 
   test_generic (MPFR_PREC_MIN, 200, 20);
 
