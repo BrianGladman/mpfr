@@ -27,6 +27,23 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
 #include "tgeneric.c"
 
+/* bug found in revision 14399 with GMP_CHECK_RANDOMIZE=1612721106588971 */
+static void
+bug20210208 (void)
+{
+  mpfr_t x, y;
+  int inex;
+  
+  mpfr_init2 (x, 79);
+  mpfr_init2 (y, 1);
+  mpfr_set_str (x, "2.552495117262005805960565e+02", 10, MPFR_RNDN);
+  inex = mpfr_j0 (y, x, MPFR_RNDZ);
+  MPFR_ASSERTN(mpfr_cmp_si_2exp (y, -1, -5) == 0);
+  MPFR_ASSERTN(inex > 0);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -34,6 +51,8 @@ main (int argc, char *argv[])
   int inex;
 
   tests_start_mpfr ();
+
+  bug20210208 ();
 
   mpfr_init (x);
   mpfr_init (y);

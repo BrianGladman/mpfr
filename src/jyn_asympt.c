@@ -69,6 +69,8 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   MPFR_ZIV_INIT (loop, w);
   for (;;)
     {
+      int ok = 1;
+
       mpfr_set_prec (c, w);
       mpfr_init2 (s, w);
       mpfr_init2 (P, w);
@@ -91,6 +93,13 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_swap (s, t);
       /* now s approximates sin(z)+cos(z), and c approximates sin(z)-cos(z),
          with total absolute error bounded by 2^(1-w). */
+
+      /* if s or c is zero, MPFR_GET_EXP will fail below */
+      if (MPFR_IS_ZERO(s) || MPFR_IS_ZERO(c))
+        {
+          ok = 0;
+          goto clear;
+        }
 
       /* precompute 1/(8|z|) */
       mpfr_si_div (iz, MPFR_IS_POS(z) ? 1 : -1, z, MPFR_RNDN);   /* err <= 1 */
@@ -257,6 +266,9 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       err = (err >= err2) ? err + 1 : err2 + 1;
       /* the absolute error on c is bounded by 2^(err - w) */
 
+      err -= MPFR_GET_EXP (c);
+
+    clear:
       mpfr_clear (s);
       mpfr_clear (P);
       mpfr_clear (Q);
@@ -266,8 +278,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
       mpfr_clear (err_s);
       mpfr_clear (err_u);
 
-      err -= MPFR_GET_EXP (c);
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (c, w - err, MPFR_PREC(res), r)))
+      if (ok && MPFR_LIKELY (MPFR_CAN_ROUND (c, w - err, MPFR_PREC(res), r)))
         break;
       if (diverge != 0)
         {
