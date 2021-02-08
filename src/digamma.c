@@ -296,6 +296,8 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       errt = mpfr_digamma_approx (t, x_plus_j);
       expt = MPFR_GET_EXP (t);
       mpfr_sub (t, t, u, MPFR_RNDN);
+      /* Warning! t may be zero (more likely in small precision). Note
+         that in this case, this is an exact zero, not an underflow. */
       if (MPFR_NOTZERO(t))
         {
           if (MPFR_GET_EXP (t) < expt)
