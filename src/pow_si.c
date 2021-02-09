@@ -29,12 +29,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 
 #ifndef POW_S
-#define	POW_S mpfr_pow_si
-#define	POW_U mpfr_pow_ui
+#define POW_S mpfr_pow_si
+#define POW_U mpfr_pow_ui
 #define SET_S mpfr_set_si
 #define SET_S_2EXP mpfr_set_si_2exp
 #define NBITS_UTYPE mpfr_nbits_ulong
-#define	TYPE long int
+#define TYPE long int
 #define UTYPE unsigned long
 #define LONG_TYPE 1
 #endif
