@@ -31,18 +31,28 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define ULONG_BITS (sizeof (unsigned long) * CHAR_BIT)
 
-/* z <- n, assuming uintmax_t is at most twice as wide as unsigned long */
+/* z <- n, assuming uintmax_t is at most twice as wide as unsigned long
+   and assume no padding bits.
+   FIXME: code should be shared with mpfr_set_uj_2exp to avoid such
+   limitations (and this could be more efficient).
+*/
 static void
 mpfr_mpz_set_uj (mpz_t z, uintmax_t n)
 {
-  uintmax_t h;
+  if ((unsigned long) n == n)
+    mpz_set_ui (z, n);
+  else
+    {
+      uintmax_t h = (n >> (ULONG_BITS - 1)) >> 1;
+      /* equivalent to n >> ULONG_BITS, as a workaround to GCC bug 4210
+         "should not warn in dead code". */
 
-  h = n >> ULONG_BITS;
+      MPFR_ASSERTN ((unsigned long) h == h);
 
-  mpz_set_ui (z, (unsigned long) h);
-  MPFR_ASSERTN((h >> ULONG_BITS) == 0);
-  mpz_mul_2exp (z, z, ULONG_BITS);
-  mpz_add_ui (z, z, (unsigned long) n);
+      mpz_set_ui (z, (unsigned long) h);
+      mpz_mul_2exp (z, z, ULONG_BITS);
+      mpz_add_ui (z, z, (unsigned long) n);
+    }
 }
 
 #include "pow_ui.c"
