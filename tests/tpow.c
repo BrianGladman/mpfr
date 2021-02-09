@@ -356,6 +356,110 @@ check_pow_si (void)
   mpfr_clear (x);
 }
 
+/* check the IEEE 754-2019 special rules for pown */
+static void
+check_pown_ieee754_2019 (void)
+{
+  mpfr_t x;
+
+  mpfr_init2 (x, 5); /* ensures 17 is exact */
+
+  /* pown (x, 0) is 1 if x is not a signaling NaN: in MPFR we decide to
+     return 1 for a NaN */
+  mpfr_set_nan (x);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_inf (x, 1);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_inf (x, -1);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_zero (x, 1);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_zero (x, -1);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_si (x, 17, MPFR_RNDN);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  mpfr_set_si (x, -17, MPFR_RNDN);
+  mpfr_pown (x, x, 0, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+
+  /* pown (±0, n) is ±∞ and signals the divideByZero exception for odd n < 0 */
+  mpfr_set_zero (x, 1);
+  mpfr_clear_divby0 ();
+  mpfr_pown (x, x, -17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0 && mpfr_divby0_p ());
+  mpfr_set_zero (x, -1);
+  mpfr_clear_divby0 ();
+  mpfr_pown (x, x, -17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0 && mpfr_divby0_p ());
+
+  /* pown (±0, n) is +∞ and signals the divideByZero exception for even n < 0*/
+  mpfr_set_zero (x, 1);
+  mpfr_clear_divby0 ();
+  mpfr_pown (x, x, -42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0 && mpfr_divby0_p ());
+  mpfr_set_zero (x, -1);
+  mpfr_clear_divby0 ();
+  mpfr_pown (x, x, -42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0 && mpfr_divby0_p ());
+
+  /* pown (±0, n) is +0 for even n > 0 */
+  mpfr_set_zero (x, 1);
+  mpfr_pown (x, x, 42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_set_zero (x, -1);
+  mpfr_pown (x, x, 42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+
+  /* pown (±0, n) is ±0 for odd n > 0 */
+  mpfr_set_zero (x, 1);
+  mpfr_pown (x, x, 17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_set_zero (x, -1);
+  mpfr_pown (x, x, 17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 1);
+
+  /* pown (+∞, n) is +∞ for n > 0 */
+  mpfr_set_inf (x, 1);
+  mpfr_pown (x, x, 17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  /* pown (−∞, n) is −∞ for odd n > 0 */
+  mpfr_set_inf (x, -1);
+  mpfr_pown (x, x, 17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+
+  /* pown (−∞, n) is +∞ for even n > 0 */
+  mpfr_set_inf (x, -1);
+  mpfr_pown (x, x, 42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  /* pown (+∞, n) is +0 for n < 0 */
+  mpfr_set_inf (x, 1);
+  mpfr_pown (x, x, -17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+  mpfr_set_inf (x, 1);
+  mpfr_pown (x, x, -42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+
+  /* pown (−∞, n) is −0 for odd n < 0 */
+  mpfr_set_inf (x, -1);
+  mpfr_pown (x, x, -17, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) != 0);
+  
+  /* pown (−∞, n) is +0 for even n < 0 */
+  mpfr_set_inf (x, -1);
+  mpfr_pown (x, x, -42, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
+
+  mpfr_clear (x);
+}
+
 static void
 check_special_pow_si (void)
 {
@@ -1773,6 +1877,7 @@ main (int argc, char **argv)
   particular_cases ();
   check_pow_ui ();
   check_pow_si ();
+  check_pown_ieee754_2019 ();
   check_special_pow_si ();
   pow_si_long_min ();
   for (p = MPFR_PREC_MIN; p < 100; p++)

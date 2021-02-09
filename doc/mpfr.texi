@@ -2242,11 +2242,14 @@ rounded in the direction @var{rnd}.
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_pow_n (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}^{@var{op2}}, @var{op1} raised to @var{op2}},
 rounded in the direction @var{rnd}.
+The function @code{mpfr_pow_n} is just an alias for @code{mpfr_pow_si},
+to mimic the IEEE@tie{}754-2019 function @code{pown}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
 standards for the @code{pow} function:
 @itemize @bullet
