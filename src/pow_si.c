@@ -36,18 +36,16 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define NBITS_UTYPE mpfr_nbits_ulong
 #define TYPE long int
 #define UTYPE unsigned long
-#define LONG_TYPE 1
+#define FSPEC "l"
 #endif
 
 int
 POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
 {
-#ifdef LONG_TYPE /* FIXME: what printf format for intmax_t? */
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg n=%ld rnd=%d",
+    (("x[%Pu]=%.*Rg n=%" FSPEC "d rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x, n, rnd),
      ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
-#endif
 
   if (n >= 0)
     return POW_U (y, x, n, rnd);

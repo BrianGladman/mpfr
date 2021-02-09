@@ -27,7 +27,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define POW_U mpfr_pow_ui
 #define MPZ_SET_U mpz_set_ui
 #define UTYPE unsigned long int
-#define LONG_TYPE 1
+#define FSPEC "l"
 #endif
 
 /* sets y to x^n, and return 0 if exact, non-zero otherwise */
@@ -43,13 +43,11 @@ POW_U (mpfr_ptr y, mpfr_srcptr x, UTYPE n, mpfr_rnd_t rnd)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
-#ifdef LONG_TYPE /* FIXME: how to print a uintmax_t? */
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg n=%lu rnd=%d",
+    (("x[%Pu]=%.*Rg n=%" FSPEC "u rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x, n, rnd),
      ("y[%Pu]=%.*Rg inexact=%d",
       mpfr_get_prec (y), mpfr_log_prec, y, inexact));
-#endif
 
   /* x^0 = 1 for any x, even a NaN */
   if (MPFR_UNLIKELY (n == 0))

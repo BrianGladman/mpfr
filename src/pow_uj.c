@@ -27,7 +27,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define POW_U mpfr_pow_uj
 #define MPZ_SET_U mpfr_mpz_set_uj
 #define UTYPE uintmax_t
-#define LONG_TYPE 0
+#define FSPEC "j"
 
 #define ULONG_BITS (sizeof (unsigned long) * CHAR_BIT)
 

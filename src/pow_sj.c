@@ -31,6 +31,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define NBITS_UTYPE mpfr_nbits_uj
 #define TYPE intmax_t
 #define UTYPE uintmax_t
-#define LONG_TYPE 0
+#define FSPEC "j"
 
 #include "pow_si.c"
