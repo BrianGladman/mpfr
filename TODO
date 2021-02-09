@@ -114,9 +114,6 @@ Table of contents:
 
 - cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
-  powr = exp(y*log(x)). The difference with pow = x^y is that when x < 0
-  and y is an integer, powr returns NaN, also when x=1 and y=+/Inf,
-  or x=+/-Inf and y=0.
   rootn (there is mpfr_rootn_ui but not mpfr_rootn_si yet)
   rsqrt (differs from mpfr_rec_sqrt in -0: mpfr_rec_sqrt gives +Inf whereas
          rsqrt gives -Inf)
