@@ -563,6 +563,8 @@ __MPFR_DECLSPEC int mpfr_snprintf (char*, size_t, const char*, ...);
 
 __MPFR_DECLSPEC int mpfr_pow (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_pow_si (mpfr_ptr, mpfr_srcptr, long, mpfr_rnd_t);
+/* FIXME: mpfr_pown should be an alias of mpfr_pow_sj to follow ISO C2x,
+   where pown is defined with intmax_t n. */
 /* define mpfr_pown (defined in IEEE 754-2019) as an alias for mpfr_pow_si */
 #define mpfr_pown mpfr_pow_si
 __MPFR_DECLSPEC int mpfr_compound (mpfr_ptr, mpfr_srcptr, long, mpfr_rnd_t);

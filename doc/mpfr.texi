@@ -2248,8 +2248,9 @@ rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}^{@var{op2}}, @var{op1} raised to @var{op2}},
 rounded in the direction @var{rnd}.
-The function @code{mpfr_pow_n} is just an alias for @code{mpfr_pow_si},
-to mimic the IEEE@tie{}754-2019 function @code{pown}.
+@c FIXME: mpfr_pown should be an alias of mpfr_pow_sj to follow ISO C2x.
+@c The function @code{mpfr_pow_n} is just an alias for @code{mpfr_pow_si},
+@c %to mimic the IEEE@tie{}754-2019 function @code{pown}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
 standards for the @code{pow} function:
 @itemize @bullet
