@@ -134,7 +134,7 @@ check_pow_ui (void)
 
   mpfr_set_str_binary (a, "1E-10");
   res = mpfr_pow_ui (a, a, -mpfr_get_emin (), MPFR_RNDZ);
-  if (!MPFR_IS_ZERO (a))
+  if (MPFR_NOTZERO (a))
     {
       printf ("Error for (1e-10)^MPFR_EMAX_MAX\n");
       mpfr_dump (a);
@@ -281,15 +281,15 @@ check_pow_si (void)
 
   mpfr_set_inf (x, 1);
   mpfr_pow_si (x, x, -1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_POS (x));
 
   mpfr_set_inf (x, -1);
   mpfr_pow_si (x, x, -1, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
+  MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_NEG (x));
 
   mpfr_set_inf (x, -1);
   mpfr_pow_si (x, x, -2, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_POS (x));
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_pow_si (x, x, -1, MPFR_RNDN);
@@ -370,25 +370,25 @@ check_pown_ieee754_2019 (void)
      return 1 for a NaN */
   mpfr_set_nan (x);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_inf (x, 1);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_inf (x, -1);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_zero (x, 1);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_zero (x, -1);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_si (x, 17, MPFR_RNDN);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
   mpfr_set_si (x, -17, MPFR_RNDN);
   mpfr_pown (x, x, 0, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (x, 1) == 0);
 
   /* pown (±0, n) is ±∞ and signals the divideByZero exception for odd n < 0 */
   mpfr_set_zero (x, 1);
@@ -453,7 +453,7 @@ check_pown_ieee754_2019 (void)
   mpfr_set_inf (x, -1);
   mpfr_pown (x, x, -17, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) != 0);
-  
+
   /* pown (−∞, n) is +0 for even n < 0 */
   mpfr_set_inf (x, -1);
   mpfr_pown (x, x, -42, MPFR_RNDN);
@@ -474,7 +474,7 @@ check_special_pow_si (void)
   mpfr_set_str (a, "2E100000000", 10, MPFR_RNDN);
   mpfr_set_si (b, -10, MPFR_RNDN);
   test_pow (b, a, b, MPFR_RNDN);
-  if (!MPFR_IS_ZERO(b))
+  if (MPFR_NOTZERO(b))
     {
       printf("Pow(2E10000000, -10) failed\n");
       mpfr_dump (a);
@@ -486,7 +486,7 @@ check_special_pow_si (void)
   set_emin (-10);
   mpfr_set_si (a, -2, MPFR_RNDN);
   mpfr_pow_si (b, a, -10000, MPFR_RNDN);
-  if (!MPFR_IS_ZERO (b))
+  if (MPFR_NOTZERO (b))
     {
       printf ("Pow_so (1, -10000) doesn't underflow if emin=-10.\n");
       mpfr_dump (a);
@@ -761,7 +761,7 @@ special (void)
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (y, "1E10");
   test_pow (z, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (z, 1) == 0);
 
   /* Check (-0)^(17.0001) */
   mpfr_set_prec (x, 6);
@@ -789,13 +789,13 @@ special (void)
   /* (-1)^(-n) = 1 for n even */
   mpfr_set_str (x, "-1", 10, MPFR_RNDN);
   inex = mpfr_pow (z, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0 && inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (z, 1) == 0 && inex == 0);
 
   /* (-1)^n = 1 for n even */
   mpfr_set_str (x, "-1", 10, MPFR_RNDN);
   mpfr_neg (y, y, MPFR_RNDN);
   inex = mpfr_pow (z, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0 && inex == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (z, 1) == 0 && inex == 0);
 
   /* (-1.5)^n = +Inf for n even */
   mpfr_set_str (x, "-1.5", 10, MPFR_RNDN);
@@ -894,7 +894,7 @@ particular_cases (void)
         mpfr_clear_flags ();
         test_pow (r, t[i], t[j], MPFR_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-          mpfr_cmp_ui (r, 0) == 0 ? 2 :
+          mpfr_zero_p (r) ? 2 :
           (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
         if (p != 0 && MPFR_IS_NEG (r))
           p = -p;
@@ -924,7 +924,7 @@ particular_cases (void)
             mpfr_get_z (z, t[j], MPFR_RNDN);
             mpfr_pow_z (r, t[i], z, MPFR_RNDN);
             p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              mpfr_zero_p (r) ? 2 :
               (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
             if (p != 0 && MPFR_IS_NEG (r))
               p = -p;
@@ -950,7 +950,7 @@ particular_cases (void)
             si = mpfr_get_si (t[j], MPFR_RNDN);
             mpfr_pow_si (r, t[i], si, MPFR_RNDN);
             p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              mpfr_zero_p (r) ? 2 :
               (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
             if (p != 0 && MPFR_IS_NEG (r))
               p = -p;
@@ -977,7 +977,7 @@ particular_cases (void)
                 mpfr_clear_flags ();
                 mpfr_pow_ui (r, t[i], si, MPFR_RNDN);
                 p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-                  mpfr_cmp_ui (r, 0) == 0 ? 2 :
+                  mpfr_zero_p (r) ? 2 :
                   (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
                 if (p != 0 && MPFR_IS_NEG (r))
                   p = -p;
@@ -1008,7 +1008,7 @@ particular_cases (void)
             si = mpfr_get_si (t[i], MPFR_RNDN);
             mpfr_ui_pow (r, si, t[j], MPFR_RNDN);
             p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-              mpfr_cmp_ui (r, 0) == 0 ? 2 :
+              mpfr_zero_p (r) ? 2 :
               (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
             if (p != 0 && MPFR_IS_NEG (r))
               p = -p;
@@ -1062,7 +1062,7 @@ underflows (void)
       mpfr_set_ui (y, i, MPFR_RNDN);
       mpfr_div_2ui (y, y, 1, MPFR_RNDN);
       test_pow (y, x, y, MPFR_RNDN);
-      if (!MPFR_IS_FP(y) || mpfr_cmp_ui (y, 0))
+      if (MPFR_NOTZERO (y))
         {
           printf ("Error in mpfr_pow for ");
           mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
