@@ -27,7 +27,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
 #define POW_S mpfr_pow_sj
-#define POW_U mpfr_pow_uj /* to be defined */
+#define POW_U mpfr_pow_uj
 #define SET_S mpfr_set_sj
 #define SET_S_2EXP mpfr_set_sj_2exp
 #define NBITS_UTYPE mpfr_nbits_uj
