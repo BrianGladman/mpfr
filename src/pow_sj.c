@@ -24,6 +24,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_INTMAX_H
 #include "mpfr-impl.h"
 
+#ifdef _MPFR_H_HAVE_INTMAX_T
+
 #define POW_S mpfr_pow_sj
 #define POW_U mpfr_pow_uj /* to be defined */
 #define SET_S mpfr_set_sj
@@ -34,3 +36,5 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FSPEC "j"
 
 #include "pow_si.c"
+
+#endif

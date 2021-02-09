@@ -24,6 +24,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_INTMAX_H
 #include "mpfr-impl.h"
 
+#ifdef _MPFR_H_HAVE_INTMAX_T
+
 #define POW_U mpfr_pow_uj
 #define MPZ_SET_U mpfr_mpz_set_uj
 #define UTYPE uintmax_t
@@ -56,3 +58,5 @@ mpfr_mpz_set_uj (mpz_t z, uintmax_t n)
 }
 
 #include "pow_ui.c"
+
+#endif
