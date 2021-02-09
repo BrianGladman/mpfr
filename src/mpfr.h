@@ -563,10 +563,6 @@ __MPFR_DECLSPEC int mpfr_snprintf (char*, size_t, const char*, ...);
 
 __MPFR_DECLSPEC int mpfr_pow (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_pow_si (mpfr_ptr, mpfr_srcptr, long, mpfr_rnd_t);
-/* FIXME: mpfr_pown should be an alias of mpfr_pow_sj to follow ISO C2x,
-   where pown is defined with intmax_t n. */
-/* define mpfr_pown (defined in IEEE 754-2019) as an alias for mpfr_pow_si */
-#define mpfr_pown mpfr_pow_si
 __MPFR_DECLSPEC int mpfr_compound (mpfr_ptr, mpfr_srcptr, long, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_pow_ui (mpfr_ptr, mpfr_srcptr, unsigned long,
                                  mpfr_rnd_t);
@@ -1119,6 +1115,8 @@ extern "C" {
 #define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
 #define mpfr_get_sj __gmpfr_mpfr_get_sj
 #define mpfr_get_uj __gmpfr_mpfr_get_uj
+#define mpfr_pow_uj __gmpfr_mpfr_pow_uj
+#define mpfr_pow_sj __gmpfr_mpfr_pow_sj
 __MPFR_DECLSPEC int mpfr_set_sj (mpfr_ptr, intmax_t, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_set_sj_2exp (mpfr_ptr, intmax_t, intmax_t,
                                       mpfr_rnd_t);
@@ -1127,6 +1125,10 @@ __MPFR_DECLSPEC int mpfr_set_uj_2exp (mpfr_ptr, uintmax_t, intmax_t,
                                       mpfr_rnd_t);
 __MPFR_DECLSPEC intmax_t mpfr_get_sj (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC uintmax_t mpfr_get_uj (mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_pow_uj (mpfr_ptr, mpfr_srcptr, uintmax_t, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_pow_sj (mpfr_ptr, mpfr_srcptr, intmax_t, mpfr_rnd_t);
+/* define mpfr_pown (defined in IEEE 754-2019) as an alias for mpfr_pow_sj */
+#define mpfr_pown mpfr_pow_sj
 
 #if defined (__cplusplus)
 }

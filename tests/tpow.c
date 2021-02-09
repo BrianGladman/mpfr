@@ -21,6 +21,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define _MPFR_NO_DEPRECATED_ROOT
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
 
 #ifdef CHECK_EXTERNAL
@@ -360,6 +361,7 @@ check_pow_si (void)
 static void
 check_pown_ieee754_2019 (void)
 {
+#ifdef _MPFR_H_HAVE_INTMAX_T
   mpfr_t x;
 
   mpfr_init2 (x, 5); /* ensures 17 is exact */
@@ -458,6 +460,7 @@ check_pown_ieee754_2019 (void)
   MPFR_ASSERTN(mpfr_zero_p (x) && mpfr_signbit (x) == 0);
 
   mpfr_clear (x);
+#endif
 }
 
 static void

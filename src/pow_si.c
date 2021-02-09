@@ -23,21 +23,34 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H  /* for MPFR_INT_CEIL_LOG2 */
 #include "mpfr-impl.h"
 
-/* The computation of y = pow_si(x,n) is done by
- *    y = pow_ui(x,n)       if n >= 0
- *    y = 1 / pow_ui(x,-n)  if n < 0
+/* The computation of y = pow_si/sj(x,n) is done by
+ *    y = pow_ui/uj(x,n)       if n >= 0
+ *    y = 1 / pow_ui/uj(x,-n)  if n < 0
  */
 
+#ifndef POW_S
+#define	POW_S mpfr_pow_si
+#define	POW_U mpfr_pow_ui
+#define SET_S mpfr_set_si
+#define SET_S_2EXP mpfr_set_si_2exp
+#define NBITS_UTYPE mpfr_nbits_ulong
+#define	TYPE long int
+#define UTYPE unsigned long
+#define LONG_TYPE 1
+#endif
+
 int
-mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
+POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
 {
+#ifdef LONG_TYPE /* FIXME: what printf format for intmax_t? */
   MPFR_LOG_FUNC
     (("x[%Pu]=%.*Rg n=%ld rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x, n, rnd),
      ("y[%Pu]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
+#endif
 
   if (n >= 0)
-    return mpfr_pow_ui (y, x, n, rnd);
+    return POW_U (y, x, n, rnd);
   else
     {
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -49,7 +62,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
             }
           else
             {
-              int positive = MPFR_IS_POS (x) || ((unsigned long) n & 1) == 0;
+              int positive = MPFR_IS_POS (x) || ((UTYPE) n & 1) == 0;
               if (MPFR_IS_INF (x))
                 MPFR_SET_ZERO (y);
               else /* x is zero */
@@ -130,8 +143,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
             MPFR_EMIN_MIN - 2 /* Underflow */ :
             n != -1 && expx < 0 && expx < (__gmpfr_emax - 1) / n ?
             MPFR_EMAX_MAX /* Overflow */ : n * expx;
-          return mpfr_set_si_2exp (y, n % 2 ? MPFR_INT_SIGN (x) : 1,
-                                   expy, rnd);
+          return SET_S_2EXP (y, n % 2 ? MPFR_INT_SIGN (x) : 1, expy, rnd);
         }
 
       /* General case */
@@ -144,12 +156,12 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
         mpfr_rnd_t rnd1;
         int size_n;
         int inexact;
-        unsigned long abs_n;
+        UTYPE abs_n;
         MPFR_SAVE_EXPO_DECL (expo);
         MPFR_ZIV_DECL (loop);
 
-        abs_n = - (unsigned long) n;
-        size_n = mpfr_nbits_ulong (abs_n);
+        abs_n = - (UTYPE) n;
+        size_n = NBITS_UTYPE (abs_n);
 
         /* initial working precision */
         Ny = MPFR_PREC (y);
@@ -177,7 +189,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
             /* t = (1/x)*(1+theta) where |theta| <= 2^(-Nt) */
             if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
               goto overflow;
-            MPFR_BLOCK (flags, mpfr_pow_ui (t, t, abs_n, rnd));
+            MPFR_BLOCK (flags, POW_U (t, t, abs_n, rnd));
             /* t = (1/x)^|n|*(1+theta')^(|n|+1) where |theta'| <= 2^(-Nt).
                If (|n|+1)*2^(-Nt) <= 1/2, which is satisfied as soon as
                Nt >= bits(n)+2, then we can use Lemma \ref{lemma_graillat}
@@ -210,8 +222,8 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
                     MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
                                                     MPFR_EXP (x) - 1) != 0);
                     mpfr_init2 (y2, 2);
-                    mpfr_init2 (nn, sizeof (long) * CHAR_BIT);
-                    inexact = mpfr_set_si (nn, n, MPFR_RNDN);
+                    mpfr_init2 (nn, sizeof (TYPE) * CHAR_BIT);
+                    inexact = SET_S (nn, n, MPFR_RNDN);
                     MPFR_ASSERTN (inexact == 0);
                     inexact = mpfr_pow_general (y2, x, nn, rnd, 1,
                                                 (mpfr_save_expo_t *) NULL);

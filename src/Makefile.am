@@ -38,7 +38,8 @@ div_2ui.c div.c div_ui.c dot.c dump.c eq.c exp10.c exp2.c exp3.c exp.c  \
 frac.c frexp.c get_d.c get_exp.c get_str.c init.c inp_str.c isinteger.c \
 isinf.c isnan.c isnum.c const_log2.c log.c modf.c mul_2exp.c mul_2si.c  \
 mul_2ui.c mul.c mul_ui.c neg.c next.c out_str.c printf.c vasprintf.c    \
-const_pi.c pow.c pow_si.c pow_ui.c print_raw.c print_rnd_mode.c         \
+const_pi.c pow.c pow_si.c pow_ui.c pow_sj.c pow_uj.c print_raw.c        \
+print_rnd_mode.c                                                        \
 reldiff.c round_prec.c set.c setmax.c setmin.c set_d.c set_dfl_prec.c   \
 set_exp.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c   \
 set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub1.c  \

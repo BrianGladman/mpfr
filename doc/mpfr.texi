@@ -2242,15 +2242,16 @@ rounded in the direction @var{rnd}.
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
-@deftypefunx int mpfr_pow_n (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_pow_uj (mpfr_t @var{rop}, mpfr_t @var{op1}, uintmax_t @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_pow_sj (mpfr_t @var{rop}, mpfr_t @var{op1}, intmax_t @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_pow_n (mpfr_t @var{rop}, mpfr_t @var{op1}, intmax_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}^{@var{op2}}, @var{op1} raised to @var{op2}},
 rounded in the direction @var{rnd}.
-@c FIXME: mpfr_pown should be an alias of mpfr_pow_sj to follow ISO C2x.
-@c The function @code{mpfr_pow_n} is just an alias for @code{mpfr_pow_si},
-@c %to mimic the IEEE@tie{}754-2019 function @code{pown}.
+(The @code{mpfr_pow_n} function is just an alias for @code{mpfr_pow_sj},
+to follow the C2x function @code{pown}.)
 Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
 standards for the @code{pow} function:
 @itemize @bullet
@@ -4278,6 +4279,8 @@ use @code{mpfr_get_z_exp}.
 @item @code{mpfr_mul_d} in MPFR@tie{}2.4.
 
 @item @code{mpfr_nrandom} in MPFR@tie{}4.0.
+
+@item @code{mpfr_pow_sj} and @code{mpfr_pow_uj} in MPFR@tie{}4.2.
 
 @item @code{mpfr_printf} in MPFR@tie{}2.4.
 
