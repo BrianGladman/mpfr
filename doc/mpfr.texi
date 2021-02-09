@@ -259,7 +259,6 @@ See the file COPYING.LESSER.@refill
 @comment  node-name,  next,  previous,  up
 @chapter Introduction to MPFR
 
-
 MPFR is a portable library written in C for arbitrary precision arithmetic
 on floating-point numbers. It is based on the GNU MP library.
 It aims to provide a class of floating-point numbers with
@@ -284,14 +283,14 @@ too, but the results may no longer be reproducible.
 
 @end itemize
 
-In particular, with a precision of 53 bits and in any of the four standard
-rounding modes, MPFR is able to
-exactly reproduce all computations with double-precision machine
-floating-point numbers (e.g., @code{double} type in C, with a C
-implementation that rigorously follows Annex F of the ISO C99 standard
-and @code{FP_CONTRACT} pragma set to @code{OFF}) on the four arithmetic
-operations and the square root, except the default exponent range is much
-wider and subnormal numbers are not implemented (but can be emulated).
+In particular, MPFR follows the specification of the IEEE@tie{}754 standard,
+currently IEEE@tie{}754-2019 (which will be referred to as IEEE@tie{}754
+in this manual), with some minor differences, such as: there is a single
+NaN, the default exponent range is much wider, and subnormal numbers are
+not implemented (but the exponent range can be reduced to any interval,
+and subnormals can be emulated). For instance, computations in the
+binary64 format (a.k.a.@: double precision) can be reproduced by using
+a precision of 53 bits.
 
 This version of MPFR is released under the GNU Lesser General Public
 License, version 3 or any later version.
@@ -762,16 +761,16 @@ The following rounding modes are supported:
 @itemize @bullet
 
 @item @code{MPFR_RNDN}: round to nearest, with the even rounding rule
-      (roundTiesToEven in IEEE@tie{}754-2008); see details below.
+      (roundTiesToEven in IEEE@tie{}754); see details below.
 
 @item @code{MPFR_RNDD}: round toward negative infinity
-      (roundTowardNegative in IEEE@tie{}754-2008).
+      (roundTowardNegative in IEEE@tie{}754).
 
 @item @code{MPFR_RNDU}: round toward positive infinity
-      (roundTowardPositive in IEEE@tie{}754-2008).
+      (roundTowardPositive in IEEE@tie{}754).
 
 @item @code{MPFR_RNDZ}: round toward zero
-      (roundTowardZero in IEEE@tie{}754-2008).
+      (roundTowardZero in IEEE@tie{}754).
 
 @item @code{MPFR_RNDA}: round away from zero.
 
@@ -954,6 +953,12 @@ Example: @code{mpfr_hypot} on (NaN,0) gives NaN, but @code{mpfr_hypot}
 on (NaN,+Inf) gives +Inf (as specified in @ref{Transcendental Functions}),
 since for any finite or infinite input @var{x}, @code{mpfr_hypot} on
 (@var{x},+Inf) gives +Inf.
+
+MPFR also tries to follow the specifications of the IEEE@tie{}754 standard
+on special values (IEEE@tie{}754 agree with the above rules in most cases).
+Any difference with IEEE@tie{}754 that is not explicitly mentioned, other
+than those due to the single NaN, is unintended and might be regarded as a
+bug. See also @ref{MPFR and the IEEE 754 Standard}.
 
 @node Exceptions, Memory Handling, Floating-Point Values on Special Numbers, MPFR Basics
 @comment  node-name,  next,  previous,  up
@@ -1169,12 +1174,11 @@ identical to those obtained on a computer with a different word size,
 or with a different compiler or operating system.
 
 @cindex Accuracy
-MPFR @emph{does not keep track} of the accuracy of a computation. This is left
-to the user or to a higher layer (for example the MPFI library for interval
-arithmetic).
-As a consequence, if two variables are used to store
-only a few significant bits, and their product is stored in a variable with large
-precision, then MPFR will still compute the result with full precision.
+MPFR @emph{does not keep track} of the accuracy of a computation. This is
+left to the user or to a higher layer (for example, the MPFI library for
+interval arithmetic). As a consequence, if two variables are used to store
+only a few significant bits, and their product is stored in a variable with a
+large precision, then MPFR will still compute the result with full precision.
 
 The value of the standard C macro @code{errno} may be set to non-zero after
 calling any MPFR function or macro, whether or not there is an error. Except
@@ -1635,7 +1639,7 @@ When there is no such range error, if the return value differs from
 @c For the flag specification, we simply followed the historical behavior.
 @c See <https://sympa.inria.fr/sympa/arc/mpfr/2015-07/msg00010.html>.
 @c In summary, this was a consequence of the use of mpfr_rint in case of
-@c no range error. IEEE 754-2008 specifies two kinds of operations: with
+@c no range error. IEEE 754 specifies two kinds of operations: with
 @c inexact flag either affected or not. Here this is the former kind of
 @c operations. The easiest way to get the latter kind of operations is to
 @c save the status of the inexact flag just before the call and restore it
@@ -1925,7 +1929,7 @@ Set @var{rop} to @m{1/\sqrt{@var{op}}, the reciprocal square root of @var{op}}
 rounded in the direction @var{rnd}.  Set @var{rop} to +Inf if @var{op} is
 @pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.  Warning!
 Therefore the result on @minus{}0 is different from the one of the rSqrt
-function recommended by the IEEE@tie{}754-2008 standard (Section@tie{}9.2.1),
+function recommended by the IEEE@tie{}754 standard (Section@tie{}9.2.1),
 which is @minus{}Inf instead of +Inf.
 @end deftypefun
 
@@ -1940,8 +1944,7 @@ If @var{op} is zero, set @var{rop} to zero with the sign obtained by the
 usual limit rules, i.e., the same sign as @var{op} if @var{n} is odd, and
 positive if @var{n} is even.
 
-These functions agree with the rootn function of the IEEE@tie{}754-2019
-standard.
+These functions agree with the rootn operation of the IEEE@tie{}754 standard.
 Note that it is here restricted to @math{@var{n} @ge{} 0}. Functions
 allowing a negative @var{n} may be implemented in the future.
 @end deftypefun
@@ -1952,9 +1955,9 @@ is @minus{}0 and @var{n} is even: the result is @minus{}0 instead of +0
 (the reason was to be consistent with @code{mpfr_sqrt}). Said otherwise,
 if @var{op} is zero, set @var{rop} to @var{op}.
 
-This function predates the IEEE@tie{}754-2008 standard and behaves differently
-from its rootn function. It is marked as deprecated and will be removed in
-a future release.
+This function predates IEEE@tie{}754-2008, where rootn was introduced, and
+behaves differently from the IEEE@tie{}754 rootn operation. It is marked as
+deprecated and will be removed in a future release.
 @end deftypefun
 
 @deftypefun int mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2030,7 +2033,7 @@ i.e., $\sqrt{x^2+y^2}$,
 @end tex
 rounded in the direction @var{rnd}.
 Special values are handled as described in the ISO C99 (Section@tie{}F.9.4.3)
-and IEEE@tie{}754-2008 (Section@tie{}9.2.1) standards:
+and IEEE@tie{}754 (Section@tie{}9.2.1) standards:
 If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
 even if the other number is NaN@.
 @end deftypefun
@@ -2154,7 +2157,7 @@ compared), zero otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_total_order_p (mpfr_t @var{x}, mpfr_t @var{y})
-This function implements the totalOrder predicate from IEEE@tie{}754-2008,
+This function implements the totalOrder predicate from IEEE@tie{}754,
 where @minus{}NaN < @minus{}Inf < negative finite numbers < @minus{}0 <
 +0 < positive finite numbers < +Inf < +NaN@.
 It returns a non-zero value (true) when @var{x} is smaller than or equal
@@ -2204,7 +2207,7 @@ Set @var{rop} to the natural logarithm of @var{op},
 @m{\log_{10} @var{op}, log10(@var{op})}, respectively,
 rounded in the direction @var{rnd}.
 Set @var{rop} to +0 if @var{op} is 1 (in all rounding modes),
-for consistency with the ISO C99 and IEEE@tie{}754-2008 standards.
+for consistency with the ISO C99 and IEEE@tie{}754 standards.
 Set @var{rop} to @minus{}Inf if @var{op} is @pom{}0
 (i.e., the sign of the zero has no influence on the result).
 @end deftypefun
@@ -2252,11 +2255,11 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to @m{@var{op1}^{@var{op2}}, @var{op1} raised to @var{op2}},
 rounded in the direction @var{rnd}.
 The @code{mpfr_powr} function corresponds to the @code{powr} function
-from IEEE@tie{}754-2019, i.e., it computes the exponential of
+from IEEE@tie{}754, i.e., it computes the exponential of
 @var{op2} multiplied by the logarithm of @var{op1}.
 The @code{mpfr_pown} function is just an alias for @code{mpfr_pow_sj},
 to follow the C2x function @code{pown}.
-Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
+Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{pow} function:
 @itemize @bullet
 @item @code{pow(@pom{}0, @var{y})} returns plus or negative infinity for @var{y} a negative odd integer.
@@ -2282,7 +2285,7 @@ used for @code{pow}.
 
 @deftypefun int mpfr_compound (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the power @var{n} of one plus @var{op},
-following IEEE@tie{}754-2019 for the special cases and exceptions.
+following IEEE@tie{}754 for the special cases and exceptions.
 When @var{n} is zero and @var{op} is NaN or greater or equal to @minus{}1,
 @var{rop} is set to 1.
 @end deftypefun
@@ -2302,12 +2305,12 @@ Set @var{rop} to the cosine (resp.@: sine and tangent) of
 by @var{u}}. For example, if @var{u} equals 360, one gets the cosine
 (resp.@: sine and tangent) for @var{op} in degrees. For @code{mpfr_cosu},
 when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
-is a half-integer, the result is +0, following IEEE@tie{}754-2019 (cosPi),
+is a half-integer, the result is +0, following IEEE@tie{}754 (cosPi),
 so that the function is even. For @code{mpfr_sinu},
 when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
 is an integer, the result is zero with the same sign as @var{op}, following
-IEEE@tie{}754-2019 (sinPi), so that the function is odd.
-Similarly, the function @code{mpfr_tanu} follows IEEE@tie{}754-2019 (tanPi).
+IEEE@tie{}754 (sinPi), so that the function is odd.
+Similarly, the function @code{mpfr_tanu} follows IEEE@tie{}754 (tanPi).
 @end deftypefun
 
 @deftypefun int mpfr_cospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2387,7 +2390,7 @@ For example, if @var{u} equals 360, @code{mpfr_atan2u} returns the
 arc-tangent in degrees, with values from @minus{}180 to 180.
 
 @code{atan2(y, 0)} does not raise any floating-point exception.
-Special values are handled as described in the ISO C99 and IEEE@tie{}754-2008
+Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{atan2} function:
 @itemize @bullet
 @item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
@@ -2999,7 +3002,7 @@ similar way with some fixed rounding mode:
       (like @code{mpfr_rint} with @code{MPFR_RNDD});
 @item @code{mpfr_round} to the nearest representable integer,
       rounding halfway cases away from zero
-      (as in the roundTiesToAway mode of IEEE@tie{}754-2008);
+      (as in the roundTiesToAway mode of IEEE@tie{}754);
 @item @code{mpfr_roundeven} to the nearest representable integer,
       rounding halfway cases with the even-rounding rule
       (like @code{mpfr_rint} with @code{MPFR_RNDN});
@@ -3302,7 +3305,7 @@ exponent range) in the direction of @var{y}
 (the infinite values are seen as the smallest and largest floating-point
 numbers). If the result is zero, it keeps the same sign. No underflow,
 overflow, or inexact exception is raised.
-@c For NaN, the behavior is like IEEE@tie{}754-2008 with sNaN.
+@c For NaN, the behavior is like IEEE@tie{}754 with sNaN.
 @end deftypefun
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
@@ -3626,8 +3629,8 @@ in the current exponent range of MPFR@. But it is better to change
 @c floating-point systems in the same code.
 @end deftypefun
 
-This is an example of how to emulate binary double IEEE@tie{}754 arithmetic
-(binary64 in IEEE@tie{}754-2008) using MPFR:
+This is an example of how to emulate binary64 IEEE@tie{}754 arithmetic
+(a.k.a.@: double precision) using MPFR:
 
 @example
 @{
@@ -4391,7 +4394,7 @@ is set were unspecified.
 
 @item @code{mpfr_get_str} changed in MPFR@tie{}4.0.
 This function now sets the NaN flag on NaN input (to follow the usual MPFR
-rules on NaN and IEEE@tie{}754-2008 recommendations on string conversions
+rules on NaN and IEEE@tie{}754 recommendations on string conversions
 from Subclause@tie{}5.12.1) and sets the inexact flag when the conversion
 is inexact.
 
@@ -4566,8 +4569,8 @@ The @code{mpfr_rec_sqrt} function differs from IEEE@tie{}754 on @minus{}0,
 where it gives +Inf (like for +0), following the usual limit rules,
 instead of @minus{}Inf.
 
-The @code{mpfr_root} function predates IEEE@tie{}754-2008 and behaves
-differently from its rootn operation.
+The @code{mpfr_root} function predates IEEE@tie{}754-2008, where rootn was
+introduced, and behaves differently from the IEEE@tie{}754 rootn operation.
 It is deprecated and @code{mpfr_rootn_ui} should be used instead.
 
 @c The following paragraph should cover functions like mpfr_div_ui and
@@ -4697,9 +4700,15 @@ Approved March 21, 1985: IEEE Standards Board; approved July 26,
 
 @item
 IEEE Standard for Floating-Point Arithmetic,
-ANSI-IEEE Standard 754-2008, 2008.
-Revision of ANSI-IEEE Standard 754-1985,
-approved June 12, 2008: IEEE Standards Board, 70 pages.
+IEEE Standard 754-2008, 2008.
+Revision of IEEE Standard 754-1985,
+approved June 12, 2008: IEEE-SA Standards Board, 70 pages.
+
+@item
+IEEE Standard for Floating-Point Arithmetic,
+IEEE Standard 754-2019, 2019.
+Revision of IEEE Standard 754-2008,
+approved June 13, 2019: IEEE-SA Standards Board, 84 pages.
 
 @item
 Donald E.@: Knuth, "The Art of Computer Programming", vol 2,
