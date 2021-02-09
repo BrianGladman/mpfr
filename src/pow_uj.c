@@ -24,9 +24,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_INTMAX_H
 #include "mpfr-impl.h"
 
-#define	POW_U mpfr_pow_uj
+#define POW_U mpfr_pow_uj
 #define MPZ_SET_U mpfr_mpz_set_uj
-#define	UTYPE uintmax_t
+#define UTYPE uintmax_t
 #define LONG_TYPE 0
 
 #define ULONG_BITS (sizeof (unsigned long) * CHAR_BIT)
