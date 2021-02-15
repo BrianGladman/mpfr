@@ -173,16 +173,19 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_digamma (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
       expv = MPFR_GET_EXP (v);
       mpfr_sub (v, v, t, MPFR_RNDN);
-      if (MPFR_GET_EXP (v) < MPFR_GET_EXP (t))
-        e1 += MPFR_EXP(t) - MPFR_EXP(v); /* scale error for t wrt new v */
-      /* now take into account the 1/2 ulp error for v */
-      if (expv - MPFR_EXP(v) - 1 > e1)
-        e1 = expv - MPFR_EXP(v) - 1;
-      else
-        e1 ++;
-      e1 ++; /* rounding error for mpfr_sub */
-      if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
-        break;
+      if (!MPFR_IS_ZERO(v))
+        {
+          if (MPFR_GET_EXP (v) < MPFR_GET_EXP (t))
+            e1 += MPFR_EXP(t) - MPFR_EXP(v); /* scale error for t wrt new v */
+          /* now take into account the 1/2 ulp error for v */
+          if (expv - MPFR_EXP(v) - 1 > e1)
+            e1 = expv - MPFR_EXP(v) - 1;
+          else
+            e1 ++;
+          e1 ++; /* rounding error for mpfr_sub */
+          if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
+            break;
+        }
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (v, p);
@@ -416,10 +419,8 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  if (MPFR_IS_NEG(x))
-    inex = mpfr_digamma_reflection (y, x, rnd_mode);
   /* if x < 1/2 we use the reflection formula */
-  else if (MPFR_EXP(x) < 0)
+  if (MPFR_IS_NEG(x) || MPFR_EXP(x) < 0)
     inex = mpfr_digamma_reflection (y, x, rnd_mode);
   else
     inex = mpfr_digamma_positive (y, x, rnd_mode);
