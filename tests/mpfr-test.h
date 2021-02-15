@@ -192,6 +192,8 @@ int mpfr_cmp_str (mpfr_srcptr x, const char *, int, mpfr_rnd_t);
 #define mpfr_cmp0(x,y) (MPFR_ASSERTN (!MPFR_IS_NAN (x) && !MPFR_IS_NAN (y)), mpfr_cmp (x,y))
 #define mpfr_cmp_ui0(x,i) (MPFR_ASSERTN (!MPFR_IS_NAN (x)), mpfr_cmp_ui (x,i))
 #define mpfr_cmp_si0(x,i) (MPFR_ASSERTN (!MPFR_IS_NAN (x)), mpfr_cmp_si (x,i))
+#define mpfr_cmp_si_2exp0(x,i,e) (MPFR_ASSERTN (!MPFR_IS_NAN (x)), \
+                                  mpfr_cmp_si_2exp (x,i,e))
 
 /* define CHECK_EXTERNAL if you want to check mpfr against another library
    with correct rounding. You'll probably have to modify mpfr_print_raw()
