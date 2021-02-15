@@ -72,12 +72,34 @@ test_small (void)
   mpfr_clear (y);
 }
 
+/* a test that fails with GMP_CHECK_RANDOMIZE=1613146232984428
+   on revision 14429 */
+static void
+bug20210215 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 221);
+  mpfr_init2 (y, 1);
+  mpfr_set_str (x, "1.6484611511696130037307738844228498447763863563070374544054791168614e+01", 10, MPFR_RNDN);
+  mpfr_clear_flags ();
+  inex = mpfr_j1 (y, x, MPFR_RNDZ);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (y, -1, -9) == 0);
+  MPFR_ASSERTN (inex > 0);
+  MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_INEXACT);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
 
   tests_start_mpfr ();
+
+  bug20210215 ();
 
   test_small ();
 

@@ -69,7 +69,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
   MPFR_ZIV_INIT (loop, w);
   for (;;)
     {
-      int ok = 1;
+      int ok = 0;
 
       mpfr_set_prec (c, w);
       mpfr_init2 (s, w);
@@ -96,10 +96,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 
       /* if s or c is zero, MPFR_GET_EXP will fail below */
       if (MPFR_IS_ZERO(s) || MPFR_IS_ZERO(c))
-        {
-          ok = 0;
-          goto clear;
-        }
+        goto clear; /* with ok=0 */
 
       /* precompute 1/(8|z|) */
       mpfr_si_div (iz, MPFR_IS_POS(z) ? 1 : -1, z, MPFR_RNDN);   /* err <= 1 */
@@ -227,6 +224,9 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
           mpfr_sub (s, c, s, MPFR_RNDN);
 #endif
         }
+      if (MPFR_IS_ZERO(s))
+        goto clear; /* with ok=0 */
+      ok = 1;
       if ((n & 2) != 0)
         mpfr_neg (s, s, MPFR_RNDN);
       if (MPFR_GET_EXP (s) > err)
