@@ -173,7 +173,7 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_digamma (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
       expv = MPFR_GET_EXP (v);
       mpfr_sub (v, v, t, MPFR_RNDN);
-      if (!MPFR_IS_ZERO(v))
+      if (MPFR_NOTZERO(v))
         {
           if (MPFR_GET_EXP (v) < MPFR_GET_EXP (t))
             e1 += MPFR_EXP(t) - MPFR_EXP(v); /* scale error for t wrt new v */
