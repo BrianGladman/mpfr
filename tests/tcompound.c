@@ -1,4 +1,4 @@
-/* Test file for mpfr_compound.
+/* Test file for mpfr_compound_si.
 
 Copyright 2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -22,7 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_compound
+#define TEST_FUNCTION mpfr_compound_si
 #define INTEGER_TYPE long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_si
@@ -58,7 +58,7 @@ check_ieee754 (void)
             mpfr_set_inf (x, -1);
             s = "-Inf";
           }
-        mpfr_compound (y, x, t[i], MPFR_RNDN);
+        mpfr_compound_si (y, x, t[i], MPFR_RNDN);
         if (!mpfr_nan_p (y))
           {
             printf ("Error, compound(%s,%ld) should give NaN\n", s, t[i]);
@@ -82,7 +82,7 @@ check_ieee754 (void)
         mpfr_set_inf (x, 1);
       else
         mpfr_set_si (x, i, MPFR_RNDN);
-      mpfr_compound (y, x, 0, MPFR_RNDN);
+      mpfr_compound_si (y, x, 0, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
           printf ("Error, compound(x,0) should give 1 on\nx = ");
@@ -95,7 +95,7 @@ check_ieee754 (void)
   /* compound(-1,n) = +Inf for n < 0, and raise divide-by-zero flag */
   mpfr_clear_divby0 ();
   mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_compound (y, x, -1, MPFR_RNDN);
+  mpfr_compound_si (y, x, -1, MPFR_RNDN);
   if (!mpfr_inf_p (y) || MPFR_SIGN(y) < 0)
     {
       printf ("Error, compound(-1,-1) should give +Inf\n");
@@ -110,7 +110,7 @@ check_ieee754 (void)
 
   /* compound(-1,n) = +0 for n > 0 */
   mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_compound (y, x, 1, MPFR_RNDN);
+  mpfr_compound_si (y, x, 1, MPFR_RNDN);
   if (!mpfr_zero_p (y) || MPFR_SIGN(y) < 0)
     {
       printf ("Error, compound(-1,1) should give +0\n");
@@ -122,7 +122,7 @@ check_ieee754 (void)
   for (i = -1; i <= 1; i++)
     {
       mpfr_set_zero (x, -1);
-      mpfr_compound (y, x, i, MPFR_RNDN);
+      mpfr_compound_si (y, x, i, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
           printf ("Error1, compound(x,%ld) should give 1\non x = ", i);
@@ -131,7 +131,7 @@ check_ieee754 (void)
           exit (1);
         }
       mpfr_set_zero (x, +1);
-      mpfr_compound (y, x, i, MPFR_RNDN);
+      mpfr_compound_si (y, x, i, MPFR_RNDN);
       if (mpfr_cmp_ui (y, 1) != 0)
         {
           printf ("Error, compound(x,%ld) should give 1\non x = ", i);
@@ -143,7 +143,7 @@ check_ieee754 (void)
 
   /* compound(+Inf,n) = +Inf for n > 0 */
   mpfr_set_inf (x, 1);
-  mpfr_compound (y, x, 1, MPFR_RNDN);
+  mpfr_compound_si (y, x, 1, MPFR_RNDN);
   if (!mpfr_inf_p (y) || MPFR_SIGN(y) < 0)
     {
       printf ("Error, compound(+Inf,1) should give +Inf\n");
@@ -153,7 +153,7 @@ check_ieee754 (void)
 
   /* compound(+Inf,n) = +0 for n < 0 */
   mpfr_set_inf (x, 1);
-  mpfr_compound (y, x, -1, MPFR_RNDN);
+  mpfr_compound_si (y, x, -1, MPFR_RNDN);
   if (!mpfr_zero_p (y) || MPFR_SIGN(y) < 0)
     {
       printf ("Error, compound(+Inf,-1) should give +0\n");
@@ -163,14 +163,14 @@ check_ieee754 (void)
 
   /* compound(NaN,n) = NaN for n <> 0 */
   mpfr_set_nan (x);
-  mpfr_compound (y, x, -1, MPFR_RNDN);
+  mpfr_compound_si (y, x, -1, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error, compound(NaN,-1) should give NaN\n");
       printf ("got "); mpfr_dump (y);
       exit (1);
     }
-  mpfr_compound (y, x, +1, MPFR_RNDN);
+  mpfr_compound_si (y, x, +1, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error, compound(NaN,+1) should give NaN\n");
@@ -182,7 +182,7 @@ check_ieee754 (void)
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
   mpfr_set_ui_2exp (x, 3476878287UL, -33, MPFR_RNDN);
-  mpfr_compound (y, x, 12, MPFR_RNDN);
+  mpfr_compound_si (y, x, 12, MPFR_RNDN);
   mpfr_set_ui_2exp (x, 1981447393UL, -25, MPFR_RNDN);
   if (!mpfr_equal_p (y, x))
     {
@@ -198,7 +198,7 @@ check_ieee754 (void)
     {
       /* i has the form -(2^k-1) */
       mpfr_set_si_2exp (x, -1, -1, MPFR_RNDN); /* x = -0.5 */
-      mpfr_compound (y, x, i, MPFR_RNDN);
+      mpfr_compound_si (y, x, i, MPFR_RNDN);
       mpfr_set_ui_2exp (x, 1, -i, MPFR_RNDN);
       if (!mpfr_equal_p (y, x))
         {
@@ -221,7 +221,7 @@ check_ieee754 (void)
     {
       i = -4994322635099777669;
       mpfr_set_ui (x, 1, MPFR_RNDN);
-      mpfr_compound (y, x, i, MPFR_RNDN);
+      mpfr_compound_si (y, x, i, MPFR_RNDN);
       mpfr_set_si (x, 1, MPFR_RNDN);
       mpfr_mul_2si (x, x, i, MPFR_RNDN);
       if (!mpfr_equal_p (y, x))
@@ -241,13 +241,13 @@ check_ieee754 (void)
 static int
 mpfr_compound2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  return mpfr_compound (y, x, 2, rnd_mode);
+  return mpfr_compound_si (y, x, 2, rnd_mode);
 }
 
 static int
 mpfr_compound3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  return mpfr_compound (y, x, 3, rnd_mode);
+  return mpfr_compound_si (y, x, 3, rnd_mode);
 }
 
 #define TEST_FUNCTION mpfr_compound2

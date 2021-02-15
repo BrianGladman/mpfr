@@ -2283,7 +2283,7 @@ We do not use the usual limit rules in this case, as these rules are not
 used for @code{pow}.
 @end deftypefun
 
-@deftypefun int mpfr_compound (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_compound_si (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the power @var{n} of one plus @var{op},
 following IEEE@tie{}754 for the special cases and exceptions.
 When @var{n} is zero and @var{op} is NaN or greater or equal to @minus{}1,
@@ -4183,7 +4183,7 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @item @code{mpfr_cmpabs_ui} in MPFR@tie{}4.1.
 
-@item @code{mpfr_compound} in MPFR@tie{}4.2.
+@item @code{mpfr_compound_si} in MPFR@tie{}4.2.
 
 @item @code{mpfr_copysign} in MPFR@tie{}2.3.
 Note: MPFR@tie{}2.2 had a @code{mpfr_copysign} function that was available,

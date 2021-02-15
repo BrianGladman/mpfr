@@ -1,4 +1,4 @@
-/* mpfr_compound --- compound(x,n) = (1+x)^n
+/* mpfr_compound_si --- compound(x,n) = (1+x)^n
 
 Copyright 2021 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -52,7 +52,7 @@ mpfr_compound_near_one (mpfr_ptr y, int s, mpfr_rnd_t rnd_mode)
 
 /* put in y the correctly rounded value of (1+x)^n */
 int
-mpfr_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
+mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 {
   int inexact, compared, k, nloop;
   mpfr_t t;
