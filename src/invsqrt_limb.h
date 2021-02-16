@@ -29,7 +29,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* For 257 <= d10 <= 1024, T[d10-257] = floor(sqrt(2^30/d10)).
    Sage code:
    T = [floor(sqrt(2^30/d10)) for d10 in [257..1024]] */
-static const mp_limb_t T[768] =
+static const unsigned short T[768] =
   {       2044, 2040, 2036, 2032, 2028, 2024, 2020, 2016, 2012, 2009, 2005,
     2001, 1997, 1994, 1990, 1986, 1983, 1979, 1975, 1972, 1968, 1965, 1961,
     1958, 1954, 1951, 1947, 1944, 1941, 1937, 1934, 1930, 1927, 1924, 1920,
