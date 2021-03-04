@@ -710,6 +710,9 @@ Table of contents:
     --with-pkg-config[=<PATH>]
     --with-pkg-config-path[=<PATH>]
   See also the autoconf macros.
+  The non-standard CPATH and C_INCLUDE_PATH environment variables need to
+  be unset as a workaround to
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=984504
 
 ##############################################################################
 7. Portability
