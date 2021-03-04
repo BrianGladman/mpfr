@@ -704,6 +704,12 @@ Table of contents:
   internal macros if possible, such as MPFR_TMP_INIT1, MPFR_TMP_INIT and
   MPFR_ALIAS.
 
+- add some option to use pkg-config to get the compiler flags associated
+  with GMP ("pkg-config --cflags gmp" / "pkg-config --libs gmp"). It
+  could be one of
+    --with-pkg-config[=<PATH>]
+    --with-pkg-config-path[=<PATH>]
+  See also the autoconf macros.
 
 ##############################################################################
 7. Portability
