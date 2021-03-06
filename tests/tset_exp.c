@@ -28,6 +28,7 @@ main (int argc, char *argv[])
   mpfr_t x;
   int ret;
   mpfr_exp_t emin, emax, e;
+  int i = 0;
 
   tests_start_mpfr ();
 
@@ -62,6 +63,9 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (e == emin);
   e = (mpfr_get_exp) (x);
   MPFR_ASSERTN (e == emin);
+  e = mpfr_get_exp ((i++, (void *) x));
+  MPFR_ASSERTN (e == emin);
+  MPFR_ASSERTN (i == 1);
 
   ret = mpfr_set_exp (x, -1);
   MPFR_ASSERTN (ret == 0 && mpfr_cmp_ui_2exp (x, 1, -2) == 0);

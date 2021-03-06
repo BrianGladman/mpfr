@@ -103,10 +103,13 @@ static void
 check_get_prec (void)
 {
   mpfr_t x;
+  int i = 0;
 
   mpfr_init2 (x, 17);
-  if (mpfr_get_prec (x) != 17 || (mpfr_get_prec)(x) != 17)
+  if (mpfr_get_prec (x) != 17 || (mpfr_get_prec) (x) != 17 ||
+      mpfr_get_prec ((i++, (void *) x)) != 17)
     PRINT_ERROR ("mpfr_get_prec");
+  MPFR_ASSERTN (i == 1);
   mpfr_clear (x);
 }
 
