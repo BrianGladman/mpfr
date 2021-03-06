@@ -873,7 +873,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    arguments are evaluated one time exactly and that type conversion is
    done as it would be with a function. Tests should be added to ensure
    that. */
-/* FIXME: most macros are currently buggy. */
+/* FIXME: the mpfr_custom_* macros are currently buggy. */
 
 /* Prevent x from being used as an lvalue.
    Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
@@ -912,7 +912,13 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
-#define mpfr_set(a,b,r)  mpfr_set4(a,b,r,MPFR_SIGN(b))
+#if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
+#define mpfr_set(a,b,r)                         \
+  __extension__ ({                              \
+      mpfr_srcptr _p = (b);                     \
+      mpfr_set4(a,_p,r,MPFR_SIGN(_p));          \
+    })
+#endif
 #define mpfr_abs(a,b,r)  mpfr_set4(a,b,r,1)
 #define mpfr_copysign(a,b,c,r) mpfr_set4(a,b,r,MPFR_GET_SIGN(c))
 #define mpfr_setsign(a,b,s,r) mpfr_set4(a,b,r,(s) ? -1 : 1)
