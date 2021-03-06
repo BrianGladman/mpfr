@@ -606,6 +606,7 @@ the @code{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
 general this should not be necessary, but this can be useful when debugging
 user code: with some macros, the compiler may emit spurious warnings with
 some warning options, and macros can prevent some prototype checking.
+Also some macros do evaluate some of their arguments multiple times.
 
 @cindex Libraries
 @cindex Linking
