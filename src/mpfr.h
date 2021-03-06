@@ -870,7 +870,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #ifndef MPFR_USE_NO_MACRO
 
 /* In the implementation of these macros, we need to make sure that the
-   arguments are evaluated once time exactly and that type conversion is
+   arguments are evaluated one time exactly and that type conversion is
    done as it would be with a function. Tests should be added to ensure
    that. */
 /* FIXME: most macros are currently buggy. */
