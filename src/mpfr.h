@@ -895,8 +895,8 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 
 /* Prevent them from using as lvalues */
 #define MPFR_VALUE_OF(x)  (0 ? (x) : (x))
-#define mpfr_get_prec(_x) MPFR_VALUE_OF((_x)->_mpfr_prec)
-#define mpfr_get_exp(_x)  MPFR_VALUE_OF((_x)->_mpfr_exp)
+#define mpfr_get_prec(_x) MPFR_VALUE_OF(MPFR_SRCPTR(_x)->_mpfr_prec)
+#define mpfr_get_exp(_x)  MPFR_VALUE_OF(MPFR_SRCPTR(_x)->_mpfr_exp)
 /* Note 1: If need be, the MPFR_VALUE_OF can be used for other expressions
    (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea.
    Note 2: Defining mpfr_get_exp() as a macro has the effect to disable
