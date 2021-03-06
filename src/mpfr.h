@@ -875,32 +875,15 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    that. */
 /* FIXME: most macros are currently buggy. */
 
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
-/* We need to make sure that the usual type conversion for function
-   parameters is done. Forcing the correct type with a cast like in
-   ((mpfr_srcptr)(_x))->_mpfr_exp should be avoided since this would
-   hide potential type errors, e.g. if _x has an integer type. */
-#define mpfr_nan_p(_x)                          \
-  __extension__ ({                              \
-      mpfr_srcptr _p = (_x);                    \
-      _p->_mpfr_exp == __MPFR_EXP_NAN;          \
-    })
-#define mpfr_inf_p(_x)                          \
-  __extension__ ({                              \
-      mpfr_srcptr _p = (_x);                    \
-      _p->_mpfr_exp == __MPFR_EXP_INF;          \
-    })
-#define mpfr_zero_p(_x)                         \
-  __extension__ ({                              \
-      mpfr_srcptr _p = (_x);                    \
-      _p->_mpfr_exp == __MPFR_EXP_ZERO;         \
-    })
-#define mpfr_regular_p(_x)                      \
-  __extension__ ({                              \
-      mpfr_srcptr _p = (_x);                    \
-      _p->_mpfr_exp > __MPFR_EXP_INF;           \
-    })
-#endif
+/* The following macro converts the argument to mpfr_srcptr, as in type
+   conversion for function parameters. But it will detect disallowed
+   implicit conversions, e.g. when the argument has an integer type. */
+#define MPFR_SRCPTR(x) ((mpfr_srcptr) (0 ? (x) : (mpfr_srcptr) (x)))
+
+#define mpfr_nan_p(_x)      (MPFR_SRCPTR(_x)->_mpfr_exp == __MPFR_EXP_NAN)
+#define mpfr_inf_p(_x)      (MPFR_SRCPTR(_x)->_mpfr_exp == __MPFR_EXP_INF)
+#define mpfr_zero_p(_x)     (MPFR_SRCPTR(_x)->_mpfr_exp == __MPFR_EXP_ZERO)
+#define mpfr_regular_p(_x)  (MPFR_SRCPTR(_x)->_mpfr_exp >  __MPFR_EXP_INF)
 
 /* mpfr_sgn is documented as a macro, thus the following code is fine.
    But it would be safer to regard it as a function in some future
