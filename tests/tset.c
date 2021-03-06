@@ -239,8 +239,8 @@ check_ternary_value (void)
                       inexact = (mpfr_set) (y, x, (mpfr_rnd_t) rnd);
                       break;
                     case 2:
-                      inexact = mpfr_set ((a++, (void *) y),
-                                          (b++, (void *) x),
+                      inexact = mpfr_set ((a++, VOIDP_CAST(y)),
+                                          (b++, VOIDP_CAST(x)),
                                           (c++, (mpfr_rnd_t) rnd));
                       MPFR_ASSERTN (a == 1);
                       MPFR_ASSERTN (b == 1);

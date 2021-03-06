@@ -52,9 +52,9 @@ copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       (mpfr_copysign) (z, p, y, rnd_mode);
       return;
     case 2:
-      mpfr_copysign ((a++, (void *) z),
-                     (b++, (void *) p),
-                     (c++, (void *) y), rnd_mode);
+      mpfr_copysign ((a++, VOIDP_CAST(z)),
+                     (b++, VOIDP_CAST(p)),
+                     (c++, VOIDP_CAST(y)), rnd_mode);
       MPFR_ASSERTN (a == 1);
       MPFR_ASSERTN (b == 1);
       MPFR_ASSERTN (c == 1);
@@ -72,9 +72,9 @@ copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       (mpfr_setsign) (z, p, (mpfr_signbit) (y), rnd_mode);
       return;
     case 7:
-      mpfr_setsign ((a++, (void *) z),
-                    (b++, (void *) p),
-                    mpfr_signbit ((c++, (void *) y)), rnd_mode);
+      mpfr_setsign ((a++, VOIDP_CAST(z)),
+                    (b++, VOIDP_CAST(p)),
+                    mpfr_signbit ((c++, VOIDP_CAST(y))), rnd_mode);
       MPFR_ASSERTN (a == 1);
       MPFR_ASSERTN (b == 1);
       MPFR_ASSERTN (c == 1);

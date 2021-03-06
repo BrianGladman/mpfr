@@ -31,7 +31,7 @@ main (void)
 
   /* We need to check that when the function is implemented by a macro,
      it behaves correctly. */
-#define ARG     (i++, (void *) x)
+#define ARG     (i++, VOIDP_CAST(x))
 #define CHECK   MPFR_ASSERTN (i == ++j)
 
   tests_start_mpfr ();

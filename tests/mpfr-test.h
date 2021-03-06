@@ -93,6 +93,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MAKE_STR(S) STRINGIZE(S)
 
 #if defined (__cplusplus)
+#define VOIDP_CAST(X) (X)
+#else
+#define VOIDP_CAST(X) ((void *) (X))
+#endif
+
+#if defined (__cplusplus)
 extern "C" {
 #endif
 
