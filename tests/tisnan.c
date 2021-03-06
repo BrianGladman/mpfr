@@ -27,6 +27,12 @@ int
 main (void)
 {
   mpfr_t  x;
+  int i = 0, j = 0;
+
+  /* We need to check that when the function is implemented by a macro,
+     it behaves correctly. */
+#define ARG     (i++, (void *) x)
+#define CHECK   MPFR_ASSERTN (i == ++j)
 
   tests_start_mpfr ();
 
@@ -35,172 +41,202 @@ main (void)
   /* check +infinity gives non-zero for mpfr_inf_p only */
   mpfr_set_ui (x, 1L, MPFR_RNDZ);
   mpfr_div_ui (x, x, 0L, MPFR_RNDZ);
-  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) )
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) || mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(+Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) == 0)
+  CHECK;
+  if (!mpfr_inf_p (x) || !(mpfr_inf_p) (x) || !mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(+Inf) gives zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) || (mpfr_number_p) (x) )
+  CHECK;
+  if (mpfr_number_p (x) || (mpfr_number_p) (x) || mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(+Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) )
+  CHECK;
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) || mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_zero_p(+Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) )
+  CHECK;
+  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) || mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(+Inf) gives non-zero\n");
       exit (1);
     }
+  CHECK;
 
   /* same for -Inf */
   mpfr_neg (x, x, MPFR_RNDN);
-  if (mpfr_nan_p (x) || (mpfr_nan_p(x)))
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) || mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(-Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) == 0)
+  CHECK;
+  if (!mpfr_inf_p (x) || !(mpfr_inf_p) (x) || !mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(-Inf) gives zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) || (mpfr_number_p)(x) )
+  CHECK;
+  if (mpfr_number_p (x) || (mpfr_number_p) (x) || mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(-Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) || (mpfr_zero_p)(x) )
+  CHECK;
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) || mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_zero_p(-Inf) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) )
+  CHECK;
+  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) || mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(-Inf) gives non-zero\n");
       exit (1);
     }
+  CHECK;
 
   /* same for NaN */
   mpfr_sub (x, x, x, MPFR_RNDN);
-  if (mpfr_nan_p (x) == 0)
+  if (!mpfr_nan_p (x) || !(mpfr_nan_p) (x) || !mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(NaN) gives zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
+  CHECK;
+  if (mpfr_inf_p (x) || (mpfr_inf_p) (x) || mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(NaN) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) || (mpfr_number_p) (x) )
+  CHECK;
+  if (mpfr_number_p (x) || (mpfr_number_p) (x) || mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(NaN) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) || (mpfr_zero_p)(x) )
+  CHECK;
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) || mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_number_p(NaN) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) )
+  CHECK;
+  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) || mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(NaN) gives non-zero\n");
       exit (1);
     }
+  CHECK;
 
   /* same for a regular number */
   mpfr_set_ui (x, 1, MPFR_RNDN);
-  if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) || mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(1) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
+  CHECK;
+  if (mpfr_inf_p (x) || (mpfr_inf_p) (x) || mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(1) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) == 0)
+  CHECK;
+  if (!mpfr_number_p (x) || !(mpfr_number_p) (x) || !mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(1) gives zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) )
+  CHECK;
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) || mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_zero_p(1) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) == 0 || (mpfr_regular_p) (x) == 0)
+  CHECK;
+  if (!mpfr_regular_p (x) || !(mpfr_regular_p) (x) || !mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(1) gives zero\n");
       exit (1);
     }
+  CHECK;
 
   /* Same for +0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
-  if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) || mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(+0) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
+  CHECK;
+  if (mpfr_inf_p (x) || (mpfr_inf_p) (x) || mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(+0) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) == 0)
+  CHECK;
+  if (!mpfr_number_p (x) || !(mpfr_number_p) (x) || !mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(+0) gives zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) == 0 )
+  CHECK;
+  if (!mpfr_zero_p (x) || !(mpfr_zero_p) (x) || !mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_zero_p(+0) gives zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) )
+  CHECK;
+  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) || mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(+0) gives non-zero\n");
       exit (1);
     }
+  CHECK;
 
   /* Same for -0 */
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
-  if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) || mpfr_nan_p (ARG))
     {
       printf ("Error: mpfr_nan_p(-0) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
+  CHECK;
+  if (mpfr_inf_p (x) || (mpfr_inf_p) (x) || mpfr_inf_p (ARG))
     {
       printf ("Error: mpfr_inf_p(-0) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x) == 0)
+  CHECK;
+  if (!mpfr_number_p (x) || !(mpfr_number_p) (x) || !mpfr_number_p (ARG))
     {
       printf ("Error: mpfr_number_p(-0) gives zero\n");
       exit (1);
     }
-  if (mpfr_zero_p (x) == 0 )
+  CHECK;
+  if (!mpfr_zero_p (x) || !(mpfr_zero_p) (x) || !mpfr_zero_p (ARG))
     {
       printf ("Error: mpfr_zero_p(-0) gives zero\n");
       exit (1);
     }
-  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) )
+  CHECK;
+  if (mpfr_regular_p (x) || (mpfr_regular_p) (x) || mpfr_regular_p (ARG))
     {
       printf ("Error: mpfr_regular_p(-0) gives non-zero\n");
       exit (1);
     }
+  CHECK;
 
   mpfr_clear (x);
 
