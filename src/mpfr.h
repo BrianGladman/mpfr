@@ -875,10 +875,15 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    that. */
 /* FIXME: most macros are currently buggy. */
 
+/* Prevent x from being used as an lvalue.
+   Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
+#define MPFR_VALUE_OF(x)  (0 ? (x) : (x))
+
 /* The following macro converts the argument to mpfr_srcptr, as in type
    conversion for function parameters. But it will detect disallowed
    implicit conversions, e.g. when the argument has an integer type. */
 #define MPFR_SRCPTR(x) ((mpfr_srcptr) (0 ? (x) : (mpfr_srcptr) (x)))
+#define MPFR_GET_SIGN(_x) MPFR_VALUE_OF(MPFR_SIGN(MPFR_SRCPTR(_x)))
 
 #define mpfr_nan_p(_x)      (MPFR_SRCPTR(_x)->_mpfr_exp == __MPFR_EXP_NAN)
 #define mpfr_inf_p(_x)      (MPFR_SRCPTR(_x)->_mpfr_exp == __MPFR_EXP_INF)
@@ -893,13 +898,9 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    (mpfr_nan_p (_x) ? mpfr_set_erangeflag () : (mpfr_void) 0), 0 : \
    MPFR_SIGN (_x))
 
-/* Prevent them from using as lvalues */
-#define MPFR_VALUE_OF(x)  (0 ? (x) : (x))
 #define mpfr_get_prec(_x) MPFR_VALUE_OF(MPFR_SRCPTR(_x)->_mpfr_prec)
 #define mpfr_get_exp(_x)  MPFR_VALUE_OF(MPFR_SRCPTR(_x)->_mpfr_exp)
-/* Note 1: If need be, the MPFR_VALUE_OF can be used for other expressions
-   (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea.
-   Note 2: Defining mpfr_get_exp() as a macro has the effect to disable
+/* Note: Defining mpfr_get_exp() as a macro has the effect to disable
    the check that the argument is a pure FP number (done in the function);
    this increases the risk of undetected error and makes debugging more
    complex. Is it really worth in practice? (Potential FIXME) */
@@ -913,9 +914,9 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
 #define mpfr_set(a,b,r)  mpfr_set4(a,b,r,MPFR_SIGN(b))
 #define mpfr_abs(a,b,r)  mpfr_set4(a,b,r,1)
-#define mpfr_copysign(a,b,c,r) mpfr_set4(a,b,r,MPFR_SIGN(c))
+#define mpfr_copysign(a,b,c,r) mpfr_set4(a,b,r,MPFR_GET_SIGN(c))
 #define mpfr_setsign(a,b,s,r) mpfr_set4(a,b,r,(s) ? -1 : 1)
-#define mpfr_signbit(x)  (MPFR_SIGN(x) < 0)
+#define mpfr_signbit(x)  (MPFR_GET_SIGN(x) < 0)
 #define mpfr_cmp(b, c)   mpfr_cmp3(b, c, 1)
 #define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))
