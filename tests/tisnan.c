@@ -38,6 +38,16 @@ main (void)
 
   mpfr_init (x);
 
+#if 0
+  /* The following should yield a compilation error when the functions
+     are implemented as macros. Change 0 to 1 above in order to test. */
+  (void) (mpfr_nan_p (1L));
+  (void) (mpfr_inf_p (1L));
+  (void) (mpfr_number_p (1L));
+  (void) (mpfr_zero_p (1L));
+  (void) (mpfr_regular_p (1L));
+#endif
+
   /* check +infinity gives non-zero for mpfr_inf_p only */
   mpfr_set_ui (x, 1L, MPFR_RNDZ);
   mpfr_div_ui (x, x, 0L, MPFR_RNDZ);
