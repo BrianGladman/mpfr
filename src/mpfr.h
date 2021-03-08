@@ -872,8 +872,9 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 /* In the implementation of these macros, we need to make sure that the
    arguments are evaluated one time exactly and that type conversion is
    done as it would be with a function. Tests should be added to ensure
-   that. */
-/* FIXME: the mpfr_custom_* macros are currently buggy. */
+   that.
+   Note that the macros for the custom interface are not concerned; the
+   MPFR manual has been clarified. */
 
 /* Prevent x from being used as an lvalue.
    Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
