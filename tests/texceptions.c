@@ -106,9 +106,22 @@ check_get_prec (void)
   int i = 0;
 
   mpfr_init2 (x, 17);
-  if (mpfr_get_prec (x) != 17 || (mpfr_get_prec) (x) != 17 ||
-      mpfr_get_prec ((i++, (void *) x)) != 17)
+
+  if (mpfr_get_prec (x) != 17 || (mpfr_get_prec) (x) != 17)
     PRINT_ERROR ("mpfr_get_prec");
+
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
+
+  if (mpfr_get_prec ((i++, VOIDP_CAST(x))) != 17)
+    PRINT_ERROR ("mpfr_get_prec (2)");
+
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
+
   MPFR_ASSERTN (i == 1);
   mpfr_clear (x);
 }

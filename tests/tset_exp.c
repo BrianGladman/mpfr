@@ -63,7 +63,15 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (e == emin);
   e = (mpfr_get_exp) (x);
   MPFR_ASSERTN (e == emin);
-  e = mpfr_get_exp ((i++, (void *) x));
+
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
+  e = mpfr_get_exp ((i++, VOIDP_CAST(x)));
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
   MPFR_ASSERTN (e == emin);
   MPFR_ASSERTN (i == 1);
 
