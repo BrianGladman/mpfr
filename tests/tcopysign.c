@@ -52,9 +52,16 @@ copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       (mpfr_copysign) (z, p, y, rnd_mode);
       return;
     case 2:
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
       mpfr_copysign ((a++, VOIDP_CAST(z)),
                      (b++, VOIDP_CAST(p)),
                      (c++, VOIDP_CAST(y)), rnd_mode);
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
       MPFR_ASSERTN (a == 1);
       MPFR_ASSERTN (b == 1);
       MPFR_ASSERTN (c == 1);
@@ -72,9 +79,16 @@ copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       (mpfr_setsign) (z, p, (mpfr_signbit) (y), rnd_mode);
       return;
     case 7:
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
       mpfr_setsign ((a++, VOIDP_CAST(z)),
                     (b++, VOIDP_CAST(p)),
                     mpfr_signbit ((c++, VOIDP_CAST(y))), rnd_mode);
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
       MPFR_ASSERTN (a == 1);
       MPFR_ASSERTN (b == 1);
       MPFR_ASSERTN (c == 1);

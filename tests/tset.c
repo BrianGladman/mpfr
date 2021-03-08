@@ -239,9 +239,16 @@ check_ternary_value (void)
                       inexact = (mpfr_set) (y, x, (mpfr_rnd_t) rnd);
                       break;
                     case 2:
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
                       inexact = mpfr_set ((a++, VOIDP_CAST(y)),
                                           (b++, VOIDP_CAST(x)),
                                           (c++, (mpfr_rnd_t) rnd));
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
                       MPFR_ASSERTN (a == 1);
                       MPFR_ASSERTN (b == 1);
                       MPFR_ASSERTN (c == 1);

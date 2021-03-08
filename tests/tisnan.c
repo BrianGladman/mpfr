@@ -48,6 +48,11 @@ main (void)
   (void) (mpfr_regular_p (1L));
 #endif
 
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
+
   /* check +infinity gives non-zero for mpfr_inf_p only */
   mpfr_set_ui (x, 1L, MPFR_RNDZ);
   mpfr_div_ui (x, x, 0L, MPFR_RNDZ);
@@ -247,6 +252,10 @@ main (void)
       exit (1);
     }
   CHECK;
+
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
 
   mpfr_clear (x);
 
