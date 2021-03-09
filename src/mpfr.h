@@ -865,7 +865,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #endif
 
 /* Fast access macros to replace function interface.
-   If the USER doesn't want to use the macro interface, let him make happy
+   If the user doesn't want to use the macro interface, let him make happy
    even if it produces faster and smaller code. */
 #ifndef MPFR_USE_NO_MACRO
 
