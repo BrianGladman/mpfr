@@ -203,19 +203,19 @@ test (unsigned long n)
   mpfr_sqr (z, x, MPFR_RNDN);
   t = clock () - t;
   printf ("mpfr_sqr:      %.3gs\n", t / (double) CLOCKS_PER_SEC);
-  
+
   /* square root */
   t = clock ();
   mpfr_sqrt (z, x, MPFR_RNDN);
   t = clock () - t;
   printf ("mpfr_sqrt:     %.3gs\n", t / (double) CLOCKS_PER_SEC);
-  
+
   /* inverse square root */
   t = clock ();
   mpfr_rec_sqrt (z, x, MPFR_RNDN);
   t = clock () - t;
   printf ("mpfr_rec_sqrt: %.3gs\n", t / (double) CLOCKS_PER_SEC);
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

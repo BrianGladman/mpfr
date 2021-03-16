@@ -91,7 +91,7 @@ mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     {
       MPFR_ASSERTD(MPFR_IS_ZERO(z));
       return (x == y) ? mpfr_sqr (s, x, rnd_mode)
-	: mpfr_mul (s, x, y, rnd_mode);
+        : mpfr_mul (s, x, y, rnd_mode);
     }
 }
 
@@ -192,10 +192,10 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           MPFR_TMP_INIT (up, u, un * GMP_NUMB_BITS, un);
           up = MPFR_MANT(u);
           /* multiply x*y exactly into u */
-	  if (x == y)
-	    mpn_sqr (up, MPFR_MANT(x), n);
-	  else
-	    mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
+          if (x == y)
+            mpn_sqr (up, MPFR_MANT(x), n);
+          else
+            mpn_mul_n (up, MPFR_MANT(x), MPFR_MANT(y), n);
           if (MPFR_LIMB_MSB (up[un - 1]) == 0)
             {
               mpn_lshift (up, up, un, 1);
