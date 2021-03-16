@@ -149,9 +149,15 @@ mpfr_ubf_mul_exact (mpfr_ubf_ptr a, mpfr_srcptr b, mpfr_srcptr c)
         }
       else
         {
-          u = (bn >= cn) ?
-            mpn_mul (ap, MPFR_MANT (b), bn, MPFR_MANT (c), cn) :
-            mpn_mul (ap, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
+	  if (b == c)
+	    {
+	      mpn_sqr (ap, MPFR_MANT (b), bn);
+	      u = ap[2 * bn - 1];
+	    }
+	  else
+	    u = (bn >= cn) ?
+	      mpn_mul (ap, MPFR_MANT (b), bn, MPFR_MANT (c), cn) :
+	      mpn_mul (ap, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
           if (MPFR_LIMB_MSB (u) == 0)
             {
               m = 1;

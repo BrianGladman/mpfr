@@ -350,7 +350,7 @@ special (void)
       mpfr_set_exp (x, GMP_NUMB_BITS);
       mpfr_add_ui (x, x, 1, MPFR_RNDN);
       /* now x = 2^(GMP_NUMB_BITS - 1) + 1 (GMP_NUMB_BITS bits) */
-      inexact = mpfr_mul (x, x, x, MPFR_RNDN);
+      inexact = mpfr_sqr (x, x, MPFR_RNDN);
       MPFR_ASSERTN (inexact == 0); /* exact */
       inexact = test_sqrt (z, x, MPFR_RNDN);
       /* even rule: z should be 2^(GMP_NUMB_BITS - 1) */
@@ -429,7 +429,7 @@ check_inexact (mpfr_prec_t p)
   mpfr_urandomb (x, RANDS);
   rnd = RND_RAND_NO_RNDF ();
   inexact = test_sqrt (y, x, rnd);
-  if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
+  if (mpfr_sqr (z, y, rnd)) /* exact since prec(z) = 2*prec(y) */
     {
       printf ("Error: multiplication should be exact\n");
       exit (1);
@@ -902,7 +902,7 @@ coverage (void)
       mpfr_nextabove (w); /* w = nextabove(v) */
       mpfr_set (t, v, MPFR_RNDN);
       mpfr_nextabove (t);
-      mpfr_mul (u, t, t, MPFR_RNDN);
+      mpfr_sqr (u, t, MPFR_RNDN);
       inex = mpfr_sqrt (r, u, MPFR_RNDN);
       if (mpfr_min_prec (v) < p) /* v is even */
         {

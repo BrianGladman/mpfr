@@ -274,7 +274,7 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
         umul_ppmm(r[1], r[0], x[ln], x[ln]);
       else
         {
-          mpn_mul_n (r, x + ln, x + ln, xn);
+          mpn_sqr (r, x + ln, xn);
           /* we have {r, 2*xn} = X_h^2 */
           if (rn < 2 * xn)
             r ++;

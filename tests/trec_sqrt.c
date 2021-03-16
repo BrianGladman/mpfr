@@ -176,10 +176,11 @@ bad_case2 (void)
       }
 }
 
-/* timing test for p bits */
+/* timing test for n limbs (so that we can compare with GMP speed -s n) */
 static void
-test (mpfr_prec_t p)
+test (unsigned long n)
 {
+  mpfr_prec_t p = n * GMP_NUMB_BITS;
   mpfr_t x, y, z;
   gmp_randstate_t state;
   double t;
@@ -190,7 +191,7 @@ test (mpfr_prec_t p)
   mpfr_init2 (z, p);
   mpfr_urandom (x, state, MPFR_RNDN);
   mpfr_urandom (y, state, MPFR_RNDN);
-  
+
   /* multiplication */
   t = clock ();
   mpfr_mul (z, x, y, MPFR_RNDN);
@@ -228,8 +229,8 @@ main (int argc, char *argv[])
 
   if (argc == 2) /* trec_sqrt n */
     {
-      unsigned long p = strtoul (argv[1], NULL, 10);
-      test (p);
+      unsigned long n = strtoul (argv[1], NULL, 10);
+      test (n);
       goto end;
     }
 

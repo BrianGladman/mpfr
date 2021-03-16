@@ -1890,6 +1890,8 @@ direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
 (for types having no signed zeros, 0 is considered positive).
 The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
+Note: when @var{op1} and @var{op2} are equal, use @code{mpfr_sqr} instead of
+@code{mpfr_mul} for better efficiency.
 @end deftypefun
 
 @deftypefun int mpfr_sqr (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})

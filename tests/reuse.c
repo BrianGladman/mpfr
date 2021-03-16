@@ -664,6 +664,8 @@ main (void)
 
           test3 (mpfr_add, "mpfr_add", p, (mpfr_rnd_t) rnd);
           test3 (mpfr_sub, "mpfr_sub", p, (mpfr_rnd_t) rnd);
+	  /* the following will generate a call to mpn_mul_n with
+	     identical arguments */
           test3 (mpfr_mul, "mpfr_mul", p, (mpfr_rnd_t) rnd);
           test3 (mpfr_div, "mpfr_div", p, (mpfr_rnd_t) rnd);
 

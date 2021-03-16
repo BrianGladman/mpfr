@@ -582,6 +582,7 @@ check_regression (void)
   mpfr_set_str (y, "-1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d"
                 "4c76273644a29410f31c6809bbdf2a33679a748636600",
                 16, MPFR_RNDN);
+  /* the following call to mpfr_mul with identical arguments is intensional */
   i = mpfr_mul (x, y, y, MPFR_RNDU);
   if (mpfr_cmp_str (x, "2.77a79937c8bbcb495b89b36602306b1c2159a8ff834288a19a08"
     "84094f1cda3dc426da61174c4544a173de83c2500f8bfea2e0569e3698",
