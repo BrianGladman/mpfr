@@ -20,6 +20,7 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+#include <time.h>
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_rec_sqrt
@@ -175,10 +176,62 @@ bad_case2 (void)
       }
 }
 
+/* timing test for p bits */
+static void
+test (mpfr_prec_t p)
+{
+  mpfr_t x, y, z;
+  gmp_randstate_t state;
+  double t;
+
+  gmp_randinit_default (state);
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, p);
+  mpfr_urandom (x, state, MPFR_RNDN);
+  mpfr_urandom (y, state, MPFR_RNDN);
+  
+  /* multiplication */
+  t = clock ();
+  mpfr_mul (z, x, y, MPFR_RNDN);
+  t = clock () - t;
+  printf ("mpfr_mul:      %.3gs\n", t / (double) CLOCKS_PER_SEC);
+
+  /* squaring */
+  t = clock ();
+  mpfr_sqr (z, x, MPFR_RNDN);
+  t = clock () - t;
+  printf ("mpfr_sqr:      %.3gs\n", t / (double) CLOCKS_PER_SEC);
+  
+  /* square root */
+  t = clock ();
+  mpfr_sqrt (z, x, MPFR_RNDN);
+  t = clock () - t;
+  printf ("mpfr_sqrt:     %.3gs\n", t / (double) CLOCKS_PER_SEC);
+  
+  /* inverse square root */
+  t = clock ();
+  mpfr_rec_sqrt (z, x, MPFR_RNDN);
+  t = clock () - t;
+  printf ("mpfr_rec_sqrt: %.3gs\n", t / (double) CLOCKS_PER_SEC);
+  
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  gmp_randclear (state);
+}
+
 int
-main (void)
+main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  if (argc == 2) /* trec_sqrt n */
+    {
+      unsigned long p = strtoul (argv[1], NULL, 10);
+      test (p);
+      goto end;
+    }
 
   special ();
   bad_case1 ();
@@ -189,6 +242,7 @@ main (void)
   bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 0, -256, 255, 4, 128,
              800, 50);
 
+ end:
   tests_end_mpfr ();
   return 0;
 }
