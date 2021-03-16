@@ -70,7 +70,7 @@ check_random (mpfr_prec_t p)
         RND_LOOP_NO_RNDF (r)
           {
             /* the following call to mpfr_mul with identical arguments is
-               intensional (to compare with mpfr_sqr) */
+               intentional (to compare with mpfr_sqr) */
             inexact1 = mpfr_mul (y, x, x, (mpfr_rnd_t) r);
             inexact2 = mpfr_sqr (z, x, (mpfr_rnd_t) r);
             if (mpfr_cmp (y, z))

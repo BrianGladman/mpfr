@@ -63,7 +63,7 @@ main (void)
       max = 1000; /* Allows max 2^1000 bits for the exponent */
       while (!mpfr_overflow_p () && max > 0)
         {
-          /* this call to mpfr_mul with identical arguments is intensional,
+          /* this call to mpfr_mul with identical arguments is intentional,
              and should not be replaced by mpfr_sqr */
           mpfr_mul (a, a, a, MPFR_RNDN);
           if (!mpfr_check (a))
