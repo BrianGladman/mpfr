@@ -375,6 +375,14 @@ err-if-output --msg='Use mpfr_sqr instead of mpfr_mul.' "mul/sqr" perl -ne \
      do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
   src/*.[ch]~src/(mul|sqr).c
 
+# Detect mpn_mul_n with identical 2nd and 3rd arguments, which can be
+# replaced by mpn_sqr.
+err-if-output --msg='Use mpn_sqr instead of mpn_mul_n.' "mpn mul/sqr" \
+  perl -ne '($u,$v) = /mpn_mul_n *\([^,]*,([^,]*),([^,]*),/ and
+     !/# *define +mpn_sqr/ and
+     do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
+  src/*.[ch]
+
 # Re-seeding mpfr_rands in the tests is bad practice, as it would affect
 # later tests, defeating the purpose of GMP_CHECK_RANDOMIZE.
 err-if-output \
