@@ -44,13 +44,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include <fenv.h>
 #endif
 
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>  /* for struct timeval */
-# include <time.h>
-#elif defined HAVE_SYS_TIME_H
-#  include <sys/time.h>
+#ifdef HAVE_GETTIMEOFDAY
+# include <sys/time.h>
 #else
-#  include <time.h>
+# include <time.h>
 #endif
 
 /* <sys/fpu.h> is needed to have union fpc_csr defined under IRIX64
