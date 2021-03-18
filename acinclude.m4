@@ -61,6 +61,10 @@ dnl (such as with Debian's autoconf-archive 20160320-1), which contains
 dnl AX_PTHREAD_ZOS_MISSING, etc. It is not documented, but see:
 dnl   https://lists.gnu.org/archive/html/autoconf/2015-03/msg00011.html
 dnl
+dnl Even if we decide to include AX_PTHREAD in the MPFR repository, we
+dnl should leave this case, just in case there is some issue loading it
+dnl (or any other reason).
+dnl
 dnl Note: each time a change is done in m4_pattern_forbid, autogen.sh
 dnl should be tested with and without ax_pthread.m4 availability (in
 dnl the latter case, there should be an error).
