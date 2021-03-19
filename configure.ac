@@ -28,6 +28,17 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[4.2.0-dev])
 
+dnl AC_CANONICAL_HOST is needed by this configure.ac file.
+dnl AC_CANONICAL_TARGET is not explicitly needed, but may be required by
+dnl some other macros (e.g. AX_PTHREAD 29, committed on 2021-02-19) and
+dnl must be called quite early in order to avoid the following warning:
+dnl   warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
+dnl (we don't use AC_ARG_PROGRAM explicitly, but again, it is invoked by
+dnl another macro, apparently AM_INIT_AUTOMAKE).
+dnl So we need to call AC_CANONICAL_TARGET here, even if we don't use it.
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
 dnl Older Automake versions than 1.13 may still be supported, but no longer
 dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
 dnl and MPFR manual assume that MPFR has been built using Automake 1.13+
@@ -68,8 +79,6 @@ fi
 
 dnl Basic Autoconf macros. At this point, they must not make Autoconf
 dnl choose a compiler because of the CC and CFLAGS setup from gmp.h!
-
-AC_CANONICAL_HOST
 
 AC_PROG_EGREP
 AC_PROG_SED
