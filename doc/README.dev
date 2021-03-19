@@ -22,12 +22,13 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 Notes for the MPFR developers and Subversion users
 ==================================================
 
-To compile source code obtained from the Subversion repository, you
-need some GNU development utilities: aclocal, autoheader, automake,
-autoconf 2.60 (at least), libtoolize, and the AX_PTHREAD macro from
-<https://www.gnu.org/software/autoconf-archive/ax_pthread.html>
-(for the latter, under Debian/Ubuntu it suffices to install the
-autoconf-archive package).
+To compile the source code obtained from the repository or after applying
+some special patches, you need some additional GNU development utilities:
+aclocal, autoheader, automake, autoconf 2.60 (at least), and libtoolize.
+The AX_PTHREAD macro from autoconf-archive[*] is now included in the MPFR
+repository (m4/ax_pthread.m4).
+[*] https://www.gnu.org/software/autoconf-archive/ax_pthread.html
+
 As some files like "configure" are not part of the Subversion
 repository, you first need to run "autoreconf -i" (or ./autogen.sh,
 which could be used later to update the config files). Then you can
