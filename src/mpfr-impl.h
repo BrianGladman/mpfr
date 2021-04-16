@@ -2177,10 +2177,11 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 
 #define MPFR_LOG_VAR(x)                                                 \
   LOG_PRINT (MPFR_LOG_INTERNAL_F, "%s.%d:%s[%#Pu]=%.*Rg\n", __func__,   \
-             __LINE__, #x, mpfr_get_prec (x), mpfr_log_prec, x)
+             (int) __LINE__, #x, mpfr_get_prec (x), mpfr_log_prec, x)
 
 #define MPFR_LOG_MSG2(format, ...)                                      \
-  LOG_PRINT (MPFR_LOG_MSG_F, "%s.%d: "format, __func__, __LINE__, __VA_ARGS__)
+  LOG_PRINT (MPFR_LOG_MSG_F, "%s.%d: "format, __func__, (int) __LINE__, \
+             __VA_ARGS__)
 #define MPFR_LOG_MSG(x) MPFR_LOG_MSG2 x
 
 #define MPFR_LOG_BEGIN2(format, ...)                                    \
