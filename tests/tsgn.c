@@ -24,48 +24,68 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
+mpfr_sgn_test (mpfr_srcptr x, int res)
+{
+  mpfr_flags_t flags;
+  int v;
+
+  for (flags = 0; flags <= MPFR_FLAGS_ALL; flags++)
+    {
+      __gmpfr_flags = flags;
+      v = (mpfr_sgn) (x);
+      MPFR_ASSERTN (__gmpfr_flags == flags);
+      if (VSIGN (v) != res)
+        {
+          printf ("mpfr_sgn function error (got %d) for ", v);
+          mpfr_dump (x);
+          exit (1);
+        }
+      v = mpfr_sgn (x);
+      MPFR_ASSERTN (__gmpfr_flags == flags);
+      if (VSIGN (v) != res)
+        {
+          printf ("mpfr_sgn macro error (got %d) for ", v);
+          mpfr_dump (x);
+          exit (1);
+        }
+    }
+}
+
+static void
 check_special (void)
 {
   mpfr_t x;
-  int ret = 0;
+  int i;
 
   mpfr_init (x);
-  MPFR_SET_ZERO (x);
-  if ((mpfr_sgn) (x) != 0 || mpfr_sgn (x) != 0)
+
+  for (i = 1; i >= -1; i -= 2)
     {
-      printf("Sgn error for 0.\n");
-      ret = 1;
+      mpfr_set_zero (x, i);
+      mpfr_sgn_test (x, 0);
+      mpfr_set_inf (x, i);
+      mpfr_sgn_test (x, i);
+      mpfr_set_si (x, i, MPFR_RNDN);
+      mpfr_sgn_test (x, i);
     }
-  MPFR_SET_INF (x);
-  MPFR_SET_POS (x);
-  if ((mpfr_sgn) (x) != 1 || mpfr_sgn (x) != 1)
-    {
-      printf("Sgn error for +Inf.\n");
-      ret = 1;
-    }
-  MPFR_SET_INF (x);
-  MPFR_SET_NEG (x);
-  if ((mpfr_sgn) (x) != -1 || mpfr_sgn (x) != -1)
-    {
-      printf("Sgn error for -Inf.\n");
-      ret = 1;
-    }
+
   MPFR_SET_NAN (x);
+
   mpfr_clear_flags ();
   if ((mpfr_sgn) (x) != 0 || !mpfr_erangeflag_p ())
     {
-      printf("Sgn error for NaN.\n");
-      ret = 1;
+      printf ("Sgn error for NaN.\n");
+      exit (1);
     }
+
   mpfr_clear_flags ();
   if (mpfr_sgn (x) != 0 || !mpfr_erangeflag_p ())
     {
-      printf("Sgn error for NaN.\n");
-      ret = 1;
+      printf ("Sgn error for NaN.\n");
+      exit (1);
     }
+
   mpfr_clear (x);
-  if (ret)
-    exit (ret);
 }
 
 static void
