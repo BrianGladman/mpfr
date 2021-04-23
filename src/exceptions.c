@@ -252,17 +252,12 @@ mpfr_set_erangeflag (void)
 /* Note: It is possible that for pure FP numbers, EXP(x) < MPFR_EMIN_MIN,
    but the caller must make sure that the difference remains small enough
    to avoid reaching the special exponent values. */
+/* This function does not have logging messages. As it is also partly
+   implemented as a macro, if messages are added in the future, the macro
+   may need to be disabled when logging is used. */
 int
 mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
 {
-  /* FIXME: If the following log message is enabled, it is not always
-     output. This can be seen by adding
-       MPFR_LOG_MSG (("call mpfr_check_range\n", 0));
-     at the end of exp.c (before the return).
-     With "MPFR_LOG_ALL=1", when this "call mpfr_check_range" message
-     appears, it is not always followed by the one below.
-     MPFR_LOG_MSG (("mpfr_check_range\n", 0));
-  */
   if (MPFR_LIKELY (! MPFR_IS_SINGULAR (x)))
     { /* x is a non-zero FP */
       mpfr_exp_t exp = MPFR_EXP (x);  /* Do not use MPFR_GET_EXP */
