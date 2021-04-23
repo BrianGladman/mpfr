@@ -259,8 +259,8 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
      output. This can be seen by adding
        MPFR_LOG_MSG (("call mpfr_check_range\n", 0));
      at the end of exp.c (before the return).
-     When this "call mpfr_check_range" message appears, it is not always
-     followed by the one below.
+     With "MPFR_LOG_ALL=1", when this "call mpfr_check_range" message
+     appears, it is not always followed by the one below.
      MPFR_LOG_MSG (("mpfr_check_range\n", 0));
   */
   if (MPFR_LIKELY (! MPFR_IS_SINGULAR (x)))
