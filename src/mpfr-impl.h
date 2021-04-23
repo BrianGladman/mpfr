@@ -2186,7 +2186,8 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 
 #define MPFR_LOG_BEGIN2(format, ...)                                    \
   mpfr_log_current ++;                                                  \
-  LOG_PRINT (MPFR_LOG_INPUT_F, "%s:IN  "format"\n", __func__, __VA_ARGS__); \
+  LOG_PRINT (MPFR_LOG_INPUT_F, "%s:IN  flags=%x "format"\n", __func__,  \
+             (unsigned int) __gmpfr_flags, __VA_ARGS__);                \
   if ((MPFR_LOG_TIME_F & mpfr_log_type) &&                              \
       (mpfr_log_current <= mpfr_log_level))                             \
     __gmpfr_log_time = mpfr_get_cputime ();
@@ -2197,7 +2198,8 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
 #define MPFR_LOG_END2(format, ...)                                      \
   LOG_PRINT (MPFR_LOG_TIME_F, "%s:TIM %dms\n", __mpfr_log_fname,        \
              mpfr_get_cputime () - __gmpfr_log_time);                   \
-  LOG_PRINT (MPFR_LOG_OUTPUT_F, "%s:OUT "format"\n", __mpfr_log_fname,  \
+  LOG_PRINT (MPFR_LOG_OUTPUT_F, "%s:OUT flags=%x "format"\n",           \
+             __mpfr_log_fname, (unsigned int) __gmpfr_flags,            \
              __VA_ARGS__);                                              \
   mpfr_log_current --;
 #define MPFR_LOG_END(x)                                                 \
