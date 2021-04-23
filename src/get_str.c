@@ -2526,7 +2526,9 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
          integer, and thus Ziv's loop will terminate. */
       mpfr_prec_t w = 77; /* mpfr_ceil_mul used a 77-bit upper approximation
                              to log(2)/log(b) */
-      do
+
+      ret = 0;
+      while (ret == 0)
         {
           mpfr_t d, u;
 
@@ -2555,7 +2557,6 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
           mpfr_clear (d);
           mpfr_clear (u);
         }
-      while (ret == 0);
     }
 
   MPFR_SAVE_EXPO_FREE (expo);
