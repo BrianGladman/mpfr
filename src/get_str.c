@@ -2548,7 +2548,10 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
           mpfr_ceil (d, d);
           mpfr_ceil (u, u);
           if (mpfr_equal_p (d, u))
-            ret = mpfr_get_ui (d, MPFR_RNDU);
+            {
+              ret = mpfr_get_ui (d, MPFR_RNDU);
+              MPFR_ASSERTD (ret != 0);
+            }
           mpfr_clear (d);
           mpfr_clear (u);
         }
