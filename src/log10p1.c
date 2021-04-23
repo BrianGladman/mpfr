@@ -57,7 +57,7 @@ mpfr_log10p1_exact_p (mpfr_srcptr x)
           mpz_ui_pow_ui (z, 5, k);
           mpfr_init2 (y, mpz_sizeinbase (z, 2));
           mpfr_set_z_2exp (y, z, k, MPFR_RNDZ);
-          if (mpfr_cmp (t, y) == 0)
+          if (mpfr_equal_p (t, y))
             ret = k;
           mpfr_clear (y);
           mpz_clear (z);

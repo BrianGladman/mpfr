@@ -520,7 +520,7 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
     }
 
   /* Check for case s=1 before changing the exponent range */
-  if (mpfr_cmp (s, __gmpfr_one) == 0)
+  if (mpfr_equal_p (s, __gmpfr_one))
     {
       MPFR_SET_INF (z);
       MPFR_SET_POS (z);
@@ -614,7 +614,7 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
                   /* Note: it might be that EXP(z_down) = emax here, in that
                      case we will have overflow below when we multiply by 2 */
                   mpfr_prec_round (z_up, precz, rnd_mode);
-                  ok = mpfr_cmp (z_down, z_up) == 0;
+                  ok = mpfr_equal_p (z_down, z_up);
                   mpfr_clear (z_up);
                   mpfr_clear (z_down);
                   if (ok)
