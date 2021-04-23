@@ -2547,7 +2547,7 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
         /* d <= p*log(2)/log(b) <= u */
         mpfr_ceil (d, d);
         mpfr_ceil (u, u);
-        if (mpfr_cmp (d, u) == 0)
+        if (mpfr_equal_p (d, u))
           ret = mpfr_get_ui (d, MPFR_RNDU);
         mpfr_clear (d);
         mpfr_clear (u);
