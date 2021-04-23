@@ -26,29 +26,46 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 mpfr_sgn_test (mpfr_srcptr x, int res)
 {
+  mpfr_exp_t old_emin, old_emax, e;
   mpfr_flags_t flags;
-  int v;
+  int i, v;
 
-  for (flags = 0; flags <= MPFR_FLAGS_ALL; flags++)
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
+
+  for (i = 0; i <= 1; i++)
     {
-      __gmpfr_flags = flags;
-      v = (mpfr_sgn) (x);
-      MPFR_ASSERTN (__gmpfr_flags == flags);
-      if (VSIGN (v) != res)
+      if (i != 0)
         {
-          printf ("mpfr_sgn function error (got %d) for ", v);
-          mpfr_dump (x);
-          exit (1);
+          e = MPFR_IS_SINGULAR (x) ? MPFR_EMIN_MIN : mpfr_get_exp (x);
+          set_emin (e);
+          set_emax (e);
         }
-      v = mpfr_sgn (x);
-      MPFR_ASSERTN (__gmpfr_flags == flags);
-      if (VSIGN (v) != res)
+
+      for (flags = 0; flags <= MPFR_FLAGS_ALL; flags++)
         {
-          printf ("mpfr_sgn macro error (got %d) for ", v);
-          mpfr_dump (x);
-          exit (1);
+          __gmpfr_flags = flags;
+          v = (mpfr_sgn) (x);
+          MPFR_ASSERTN (__gmpfr_flags == flags);
+          if (VSIGN (v) != res)
+            {
+              printf ("mpfr_sgn function error (got %d) for ", v);
+              mpfr_dump (x);
+              exit (1);
+            }
+          v = mpfr_sgn (x);
+          MPFR_ASSERTN (__gmpfr_flags == flags);
+          if (VSIGN (v) != res)
+            {
+              printf ("mpfr_sgn macro error (got %d) for ", v);
+              mpfr_dump (x);
+              exit (1);
+            }
         }
     }
+
+  set_emin (old_emin);
+  set_emax (old_emax);
 }
 
 static void
