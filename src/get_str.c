@@ -2484,6 +2484,8 @@ mpfr_ceil_mul (mpfr_exp_t e, int beta, int i)
 size_t
 mpfr_get_str_ndigits (int b, mpfr_prec_t p)
 {
+  MPFR_SAVE_EXPO_DECL (expo);
+
   MPFR_ASSERTN (2 <= b && b <= 62);
 
   /* deal first with power of two bases, since even for those, mpfr_ceil_mul
@@ -2497,17 +2499,26 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
       return 1 + (p + k - 2) / k;
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* the value returned by mpfr_ceil_mul is guaranteed to be
      1 + ceil(p*log(2)/log(b)) for p < 186564318007 (it returns one more
      for p=186564318007 and b=7 or 49) */
   MPFR_STAT_STATIC_ASSERT (MPFR_PREC_BITS >= 64 || MPFR_PREC_BITS <= 32);
+  if
 #if MPFR_PREC_BITS >= 64
   /* 64-bit numbers are supported by the C implementation, so that we can
      use the large constant below. If MPFR_PREC_BITS <= 32, the condition
      is always satisfied, so that we do not need any test. */
-  if (MPFR_LIKELY (p < 186564318007))
+    (MPFR_LIKELY (p < 186564318007))
+#else
+    (1)
 #endif
-    return 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
+  {
+    size_t ret = 1 + mpfr_ceil_mul (IS_POW2(b) ? p - 1 : p, b, 1);
+    MPFR_SAVE_EXPO_FREE (expo);
+    return ret;
+  }
 
   /* Now p is large and b is not a power of two. The code below works for any
      value of p and b, as long as b is not a power of two. Indeed, in such a
@@ -2541,6 +2552,8 @@ mpfr_get_str_ndigits (int b, mpfr_prec_t p)
         mpfr_clear (d);
         mpfr_clear (u);
       }
+
+    MPFR_SAVE_EXPO_FREE (expo);
     return 1 + ret;
   }
 }
