@@ -199,12 +199,19 @@ check_ieee754_2019 (void)
   mpfr_clear (z);
 }
 
+#define TEST_FUNCTION mpfr_powr
+#define TWO_ARGS
+#define TEST_RANDOM_POS 16 /* the 2nd argument is negative with prob. 16/512 */
+#include "tgeneric.c"
+
 int
 main (int argc, char **argv)
 {
   tests_start_mpfr ();
 
   check_ieee754_2019 ();
+
+  test_generic (MPFR_PREC_MIN, 100, 100);
 
   tests_end_mpfr ();
   return 0;
