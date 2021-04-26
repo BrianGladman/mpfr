@@ -32,7 +32,7 @@ static void
 check_special (void)
 {
   mpfr_t x, y;
-  int res;
+  int i, res;
   char *s;
 
   mpfr_init (x);
@@ -116,13 +116,58 @@ check_special (void)
       exit (1);
     }
 
-  /* Check INF */
-  res = mpfr_strtofr (x, "INFINITY", &s, 8, MPFR_RNDN);
-  if (res != 0 || !mpfr_inf_p (x) || *s != 0)
+  /* Check infinity */
+  for (i = 0; i <= 0xff; i++)
     {
-      printf ("Error for setting INFINITY (1)\n s=%s\n x=", s);
-      mpfr_dump (x);
-      exit (1);
+      char t[11] = "+@INFINITY";  /* not char *: this will be modified. */
+      char *p;
+      int base, j;
+
+      /* Test all the case variants, assuming ASCII or similar.
+         The first letters are changed first, so that at i = 8,
+         the 2^3 = 8 "INF" case variants have been tested, and
+         they don't need to be tested again for i > 8. */
+      for (j = 0; j < 8; j++)
+        if ((i >> j) % 2 != 0)
+          t[j+2] += 'a' - 'A';
+
+      /* Test "INFINITY", "+INFINITY", "-INFINITY",
+              "INF", "+INF", "-INF",
+              "@INF@", "+@INF@", "-@INF@",
+         up to case changes. */
+      for (j = 0; j < 9; j++)
+        {
+          if (j == 3)
+            {
+              /* At i = 8, we have tested all the "INF" case variants. */
+              if (i >= 8)
+                break;
+              t[5] = '\0';
+            }
+          if (j == 6)
+            {
+              t[1] = '@';
+              t[5] = '@';
+              t[6] = '\0';
+            }
+          if (j % 3 == 1)
+            t[j != 7] = '+';
+          if (j % 3 == 2)
+            t[j != 8] = '-';
+          p = t + (j % 3 == 0) + (j < 6);
+          base = randlimb () % (j < 6 ? 17 : 63);
+          if (base == 1)
+            base = 0;
+          res = mpfr_strtofr (x, p, &s, base, MPFR_RNDN);
+          if (res != 0 || !mpfr_inf_p (x) || *s != 0 ||
+              (j % 3 != 2 ? MPFR_IS_NEG (x) : MPFR_IS_POS (x)))
+            {
+              printf ("Error for setting \"%s\" in base %d\n s=\"%s\"\n x=",
+                      p, base, s);
+              mpfr_dump (x);
+              exit (1);
+            }
+        }
     }
   res = mpfr_strtofr (x, "INFANITY", &s, 8, MPFR_RNDN);
   if (res != 0 || !mpfr_inf_p (x) || strcmp(s, "ANITY"))
