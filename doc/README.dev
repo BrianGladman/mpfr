@@ -872,10 +872,16 @@ Conversely, do not use locale-dependent functions when the result must
 not depend on the locales. In particular, the alphanumeric characters
 used in number strings (as created by mpfr_get_str) must be those of
 the required characters from the basic character set (see ISO C99
-standard Section 5.2.1 "Character sets"). And tolower(letter) does
-not necessarily return the corresponding lowercase letter from these
-required characters. For instance, tolower('I') returns a dotless 'i'
-in Turkish tr_TR.iso88599 locales.
+standard Section 5.2.1 "Character sets").
+
+Note that in Turkish locales on some systems:
+  * the uppercase version of "i" is "İ" (an "I" with a dot above);
+  * the lowercase version of "I" is "ı" (a dotless "i").
+These characters are available in ISO-8859-9, thus as "char" in the
+tr_TR.iso88599 locale. However, in UTF-8, they are not available as
+(8-bit) "char"; thus toupper('i') gives 'i' and tolower('I') gives 'I'.
+So, when writing code and testing, these two encodings need to be
+considered, as they can give different behaviors.
 
 ===========================================================================
 

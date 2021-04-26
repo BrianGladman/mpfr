@@ -1540,13 +1540,20 @@ stops at the character @samp{0}, thus 0 is read.
 Special data (for infinities and NaN) can be @samp{@@inf@@} or
 @samp{@@nan@@(n-char-sequence-opt)}, and if @math{@var{base} @le{} 16},
 it can also be @samp{infinity}, @samp{inf}, @samp{nan} or
-@samp{nan(n-char-sequence-opt)}, all case insensitive.
+@samp{nan(n-char-sequence-opt)}, all case insensitive with the rules of
+the C locale.
 A @samp{n-char-sequence-opt} is a possibly empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
 NaN@.
 For example, @samp{-@@nAn@@(This_Is_Not_17)} is a valid representation for NaN
 in base 17.
+
+@c Note about the "case insensitive with the rules of the C locale":
+@c The reason is that in Turkish locales on some systems, the uppercase
+@c version of "i" is an "I" with a dot above, and the lowercase version
+@c of "I" is a dotless "i". We do not follow these rules here.
+@c See README.dev for additional information.
 
 @end deftypefun
 
