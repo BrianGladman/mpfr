@@ -112,6 +112,9 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     {
       /* first perform argument reduction modulo 2*Pi (if needed),
          also helps to determine the sign of sin(x) */
+      /* TODO: Perform range reduction in a way so that the sine can
+         be computed directly from the cosine with sin(x)=cos(pi/2-x),
+         without the need of sqrt(1 - x^2). */
       if (expx >= 2) /* If Pi < x < 4, we need to reduce too, to determine
                         the sign of sin(x). For 2 <= |x| < Pi, we could avoid
                         the reduction. */
