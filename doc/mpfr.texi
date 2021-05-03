@@ -2266,8 +2266,8 @@ rounded in the direction @var{rnd}.
 The @code{mpfr_powr} function corresponds to the @code{powr} function
 from IEEE@tie{}754, i.e., it computes the exponential of
 @var{op2} multiplied by the logarithm of @var{op1}.
-The @code{mpfr_pown} function is just an alias for @code{mpfr_pow_sj},
-to follow the C2x function @code{pown}.
+The @code{mpfr_pown} function is just an alias (currently implemented as
+a macro) for @code{mpfr_pow_sj}, to follow the C2x function @code{pown}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{pow} function:
 @itemize @bullet

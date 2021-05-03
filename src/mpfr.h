@@ -1150,7 +1150,10 @@ __MPFR_DECLSPEC intmax_t mpfr_get_sj (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC uintmax_t mpfr_get_uj (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_pow_uj (mpfr_ptr, mpfr_srcptr, uintmax_t, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_pow_sj (mpfr_ptr, mpfr_srcptr, intmax_t, mpfr_rnd_t);
-/* define mpfr_pown (defined in IEEE 754-2019) as an alias for mpfr_pow_sj */
+/* define mpfr_pown (defined in IEEE 754-2019) as an alias for mpfr_pow_sj.
+   It is currently implemented as a macro, but this may change in the future
+   (it could be implemented as an inline function); in case of change, update
+   the manual. */
 #define mpfr_pown mpfr_pow_sj
 
 #if defined (__cplusplus)
