@@ -4302,7 +4302,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_nrandom} in MPFR@tie{}4.0.
 
-@item @code{mpfr_powr}, @code{mpfr_pow_sj} and @code{mpfr_pow_uj} in MPFR@tie{}4.2.
+@item @code{mpfr_powr}, @code{mpfr_pown}, @code{mpfr_pow_sj} and @code{mpfr_pow_uj} in MPFR@tie{}4.2.
 
 @item @code{mpfr_printf} in MPFR@tie{}2.4.
 
