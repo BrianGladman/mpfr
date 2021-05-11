@@ -359,6 +359,9 @@ Table of contents:
     * Add new mpfr_fpif_export, mpfr_fpif_import, mpfr_fpif_export_mem,
       mpfr_fpif_import_mem.
 
+- Fused divide-add and fused divide-subtract (mpfr_fda, mpfr_fds).
+
+
 ##############################################################################
 5. Efficiency
 ##############################################################################
