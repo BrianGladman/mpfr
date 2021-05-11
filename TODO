@@ -360,6 +360,13 @@ Table of contents:
       mpfr_fpif_import_mem.
 
 - Fused divide-add and fused divide-subtract (mpfr_fda, mpfr_fds).
+  Reference: K. Pande, A. Parkhi, S. Jaykar and A. Peshattiwar,
+  "Design and Implementation of Floating Point Divide-Add Fused Architecture",
+  2015 Fifth International Conference on Communication Systems and Network
+  Technologies, 2015, pp. 797-800, doi: 10.1109/CSNT.2015.179.
+  However, this article does not provide a specification of special values
+  (but the same rules as FMA/FMS could be chosen, based on 1/±0 = ±Inf and
+  1/±Inf = ±0).
 
 
 ##############################################################################
