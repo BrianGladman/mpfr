@@ -901,6 +901,8 @@ struct number_parts
 /* For a real non zero number x, what is the base exponent f when rounding x
    with rounding mode r to r(x) = m*b^f, where m is a digit and 1 <= m < b ?
    Return non zero value if x is rounded up to b^f, return zero otherwise */
+/* FIXME: It seems that the base-2 exponent is taken into account, which is
+   what is expected. In this case, the description is incorrect. */
 static int
 next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
 {
@@ -1020,7 +1022,28 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'a', 'A', or 'b'.
 
-   Return -1 in case of overflow on the sizes. */
+   Return -1 in case of overflow on the sizes.
+
+   Note for 'a'/'A': If the precision field is non-zero, the output is the
+   one with a binary exponent that is a multiple of 4 (thus this is similar
+   to base 16, where base-16 exponent = binary exponent / 4). But if the
+   precision field is 0, the exponent is no longer restricted to a multiple
+   of 4; the precision is maximized, but the displayed digit may be 1; this
+   is completely unintuitive.
+   The obtained output for 4 values with precision fields 0 and 1:
+               0         1
+      30     0xfp+1   0x1.ep+4
+      31     0x1p+5   0x1.fp+4
+      32     0x8p+2   0x2.0p+4
+      33     0x8p+2   0x2.1p+4
+   First, the output for numbers that round up to the next power of 16
+   with a precision field 0, like 31 here, has an unexpected form: here
+   with 31, "0x1p+5" instead of "0x8p+2".
+   Moreover, if one increases the output precision, the output form
+   changes (even if no rounding is involved). For instance, for 32,
+   "0x8p+2" changes to "0x2.0p+4" instead of "0x8.0p+2".
+   FIXME?
+*/
 static int
 regular_ab (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
