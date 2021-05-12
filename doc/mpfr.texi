@@ -1790,12 +1790,12 @@ If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 consecutive possible outputs, the one with an even significand is chosen,
 where both significands are considered with the exponent of @var{op}.
 Note that for an odd base, this may not correspond to an even last digit:
-for example with 2 digits in base 7, (14) and a half is rounded to (15)
-which is 12 in decimal, (16) and a half is rounded to
-(20) which is 14 in decimal,
+for example, with 2 digits in base 7, (14) and a half is rounded to (15),
+which is 12 in decimal, (16) and a half is rounded to (20), which is 14
+in decimal,
 @c The following example duplicates (16) and a half
 @c (36) and a half is rounded to (40) which is 28 in decimal,
-and (26) and a half is rounded to (26) which is 20 in decimal.
+and (26) and a half is rounded to (26), which is 20 in decimal.
 
 If @var{n} is zero, the number of digits of the significand is taken as
 @code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the precision
@@ -2880,7 +2880,7 @@ The output @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 @end multitable
 @end quotation
 
-The conversion specifier @samp{b} which displays the argument in binary is
+The conversion specifier @samp{b}, which displays the argument in binary, is
 specific to @code{mpfr_t} arguments and should not be used with other types.
 Other conversion specifiers have the same meaning as for a @code{double}
 argument.
@@ -3343,7 +3343,7 @@ the least @math{-@var{e}} significant bits of the significand are always 0).
 Return 0, unless the exponent is not in the current exponent range, in
 which case @var{rop} is set to NaN and a non-zero value is returned (this
 should never happen in practice, except in very specific cases). The
-second argument is a @code{gmp_randstate_t} structure which should be
+second argument is a @code{gmp_randstate_t} structure, which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
 Note: for a given version of MPFR, the returned value of @var{rop} and the
@@ -3357,7 +3357,7 @@ The floating-point number @var{rop} can be seen as if a random real number is
 generated according to the continuous uniform distribution on the interval
 [0, 1] and then rounded in the direction @var{rnd}.
 
-The second argument is a @code{gmp_randstate_t} structure which should be
+The second argument is a @code{gmp_randstate_t} structure, which should be
 created using the GMP @code{gmp_randinit} function (see the GMP manual).
 
 Note: the note for @code{mpfr_urandomb} holds too. Moreover, the exact number
