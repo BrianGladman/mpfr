@@ -1042,7 +1042,8 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
    Moreover, if one increases the output precision, the output form
    changes (even if no rounding is involved). For instance, for 32,
    "0x8p+2" changes to "0x2.0p+4" instead of "0x8.0p+2".
-   FIXME?
+   FIXME: choose first digit = always 1. Discussion:
+     https://sympa.inria.fr/sympa/arc/mpfr/2021-05/msg00002.html
 */
 static int
 regular_ab (struct number_parts *np, mpfr_srcptr p,
