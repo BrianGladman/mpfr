@@ -54,7 +54,7 @@ int randsize;
 /* 1. compare expected string with the string BUFFER returned by
    mpfr_sprintf(buffer, fmt, x)
    2. then test mpfr_snprintf (buffer, p, fmt, x) with a random p. */
-static int
+static void
 check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
   int n0, n1;
@@ -107,7 +107,6 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", part_expected, buffer);
       exit (1);
     }
-  return n0;
 }
 
 /* 1. compare expected string with the string BUFFER returned by
@@ -172,7 +171,6 @@ check_vsprintf (const char *expected, const char *fmt, ...)
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", part_expected, buffer);
       exit (1);
     }
-
   return n0;
 }
 
@@ -221,7 +219,7 @@ native_types (void)
   check_vsprintf (buf, "%x", ui);
 }
 
-static int
+static void
 decimal (void)
 {
   mpfr_prec_t p = 128;
@@ -376,7 +374,6 @@ decimal (void)
   check_sprintf ("    -1e+07", "%+10.0RUe", x);
   check_sprintf ("    -0e+00", "%+10.0RUe", z);
   check_sprintf ("        -0", "%+10.0RUf", z);
-
 
   /* neighborhood of 1 */
   mpfr_set_str (x, "0.99993896484375", 10, MPFR_RNDN);
@@ -620,13 +617,13 @@ decimal (void)
   check_sprintf ("-10", "%.2Rg", x);
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
-  return 0;
 }
 
-static int
+static void
 hexadecimal (void)
 {
   mpfr_t x, z;
+
   mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
   /* special */
@@ -765,14 +762,14 @@ hexadecimal (void)
                  "%.40RUa", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
-  return 0;
 }
 
-static int
+static void
 binary (void)
 {
   mpfr_t x;
   mpfr_t z;
+
   mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
   /* special */
@@ -845,10 +842,9 @@ binary (void)
   check_sprintf ("-1.110010101100110100000000000000p+9", "%.30RNb", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
-  return 0;
 }
 
-static int
+static void
 mixed (void)
 {
   int n1;
@@ -922,7 +918,6 @@ mixed (void)
   mpq_clear (mpq);
   mpz_clear (mpz);
   mpfr_clear (x);
-  return 0;
 }
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE) && MPFR_LCONV_DPTS
@@ -1000,7 +995,7 @@ locale_da_DK (void)
 
 /* check concordance between mpfr_asprintf result with a regular mpfr float
    and with a regular double float */
-static int
+static void
 random_double (void)
 {
   mpfr_t x; /* random regular mpfr float */
@@ -1141,7 +1136,6 @@ random_double (void)
     }
 
   mpfr_clear (x);
-  return 0;
 }
 
 static void
