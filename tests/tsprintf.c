@@ -171,6 +171,7 @@ check_vsprintf (const char *expected, const char *fmt, ...)
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", part_expected, buffer);
       exit (1);
     }
+
   return n0;
 }
 
