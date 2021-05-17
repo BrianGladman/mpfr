@@ -191,6 +191,10 @@ native_types (void)
   sprintf (buf, "%d", i);
   check_vsprintf (buf, "%d", i);
 
+  check_vsprintf ("0", "%d", 0);
+  check_vsprintf ("", "%.d", 0);
+  check_vsprintf ("", "%.0d", 0);
+
   sprintf (buf, "%e", d);
   check_vsprintf (buf, "%e", d);
 
