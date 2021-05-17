@@ -645,7 +645,13 @@ buffer_widen (struct string_buffer *b, size_t len)
 static int
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
-  MPFR_ASSERTD (len > 0);
+  /* If len == 0, which is possible when outputting an integer 0
+     (either a native one or mpfr_prec_t) with precision field = 0,
+     do nothing. This test is not necessary since the code below is
+     valid for len == 0, but this is safer, just in case. */
+  if (len == 0)
+    return 0;
+
   MPFR_ASSERTD (len <= strlen (s));
 
   if (buffer_incr_len (b, len))
