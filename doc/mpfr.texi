@@ -3134,6 +3134,7 @@ the low significant bits from the quotient @var{n} in @var{*q}
 (more precisely the number of bits in a @code{long int} minus one),
 with the sign of @var{x} divided by @var{y}
 (except if those low bits are all zero, in which case zero is returned).
+If the result is NaN, the value of @var{*q} is unspecified.
 Note that @var{x} may be so large in magnitude relative to @var{y} that an
 exact representation of the quotient is not practical.
 The @code{mpfr_remainder} and @code{mpfr_remquo} functions are useful for
