@@ -746,7 +746,7 @@ test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
         expected_inex =
           sb == 0 ? 0 : MPFR_IS_LIKE_RNDD (rnd, MPFR_SIGN (y)) ? -1 : 1;
       MPFR_ASSERTN (expected_inex != INT_MIN);
-      if (!(SAME_VAL (y, z) || SAME_SIGN (inex, expected_inex)))
+      if (!(SAME_VAL (y, z) && SAME_SIGN (inex, expected_inex)))
         {
           printf ("test5rm: error for %s with xprec=%lu, yprec=%lu, rnd=%s\n"
                   "x = ",
