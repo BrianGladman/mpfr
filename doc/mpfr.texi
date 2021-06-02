@@ -1139,7 +1139,8 @@ Here are a few hints to get the best efficiency out of MPFR:
       This will avoid copying the significands;
 
 @item avoid using MPFR from C++, or make sure your C++ interface does not
-      perform unnecessary allocations or copies;
+      perform unnecessary allocations or copies. Slowdowns of up to a
+      factor 15 have been observed on some applications with a C++ interface;
 
 @item MPFR functions work in-place: to compute @code{a = a + b} you don't
       need an auxiliary variable, you can directly write
