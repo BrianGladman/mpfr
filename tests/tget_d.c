@@ -107,7 +107,11 @@ check_inf_nan (void)
 
   mpfr_set_nan (x);
   d = mpfr_get_d (x, MPFR_RNDZ);
-  MPFR_ASSERTN (DOUBLE_ISNAN (d));
+  if (!DOUBLE_ISNAN (d))
+    {
+      printf ("Error in check_inf_nan() for NaN, got %.17g\n", d);
+      exit (1);
+    }
 
   mpfr_clear (x);
 #endif
