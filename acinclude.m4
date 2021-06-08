@@ -310,14 +310,18 @@ dnl neither tests would be reliable on implementations with partial
 dnl subnormal support. Anyway, this check is useful only for the
 dnl tests. Thus in doubt, assume that subnormals are not supported,
 dnl in order to disable the corresponding tests (which could fail).
+dnl Note: "volatile" is needed to avoid -ffast-math optimizations
+dnl (default in icx 2021.2.0, which also sets the FZ and DAZ bits
+dnl of the x86-64 MXCSR register to disregard subnormals).
 AC_CACHE_CHECK([for subnormal double-precision numbers],
 mpfr_cv_have_subnorm_dbl, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
-  double x = 2.22507385850720138309e-308;
-  fprintf (stderr, "%e\n", x / 2.0);
-  return 2.0 * (double) (x / 2.0) != x;
+  volatile double x = 2.22507385850720138309e-308, y;
+  y = x / 2.0;
+  fprintf (stderr, "%e\n", y);
+  return 2.0 * y != x;
 }
 ]])],
    [mpfr_cv_have_subnorm_dbl="yes"],
@@ -333,9 +337,10 @@ mpfr_cv_have_subnorm_flt, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
-  float x = 1.17549435082229e-38;
-  fprintf (stderr, "%e\n", x / 2.0);
-  return 2.0 * (float) (x / 2.0) != x;
+  volatile float x = 1.17549435082229e-38, y;
+  y = x / 2.0;
+  fprintf (stderr, "%e\n", (double) y);
+  return 2.0 * y != x;
 }
 ]])],
    [mpfr_cv_have_subnorm_flt="yes"],
