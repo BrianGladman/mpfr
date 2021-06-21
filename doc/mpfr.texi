@@ -561,7 +561,7 @@ You should include that file in any program using the MPFR library:
 @end example
 
 @cindex @code{stdio.h}
-Note however that prototypes for MPFR functions with @code{FILE *} parameters
+Note, however, that prototypes for MPFR functions with @code{FILE *} parameters
 are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}):
 
 @example
@@ -3495,7 +3495,7 @@ the MPFR library (contents of the @file{PATCHES} file), separated by spaces.
 Note: If the program has been compiled with an older MPFR version and is
 dynamically linked with a new MPFR library version, the identifiers of the
 patches applied to the old (compile-time) MPFR version are not available
-(however this information should not have much interest in general).
+(however, this information should not have much interest in general).
 @end deftypefun
 
 @deftypefun int mpfr_buildopt_tls_p (void)
@@ -4000,7 +4000,7 @@ with @code{mpfr_custom_init_set} is undefined.
 @deftypefun void mpfr_custom_move (mpfr_t @var{x}, void *@var{new_position})
 Inform MPFR that the significand of @var{x} has moved due to a garbage collect
 and update its new position to @code{new_position}.
-However the application has to move the significand and the @code{mpfr_t}
+However, the application has to move the significand and the @code{mpfr_t}
 itself.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
@@ -4145,7 +4145,7 @@ Warning!  A program assuming (intentionally or not) that
 it is built and run against MPFR@tie{}2.x.
 
 The rounding modes @code{GMP_RNDx} were renamed to @code{MPFR_RNDx}
-in MPFR@tie{}3.0. However the old names @code{GMP_RNDx} have been kept for
+in MPFR@tie{}3.0. However, the old names @code{GMP_RNDx} have been kept for
 compatibility (this might change in future versions), using:
 @example
 #define GMP_RNDN MPFR_RNDN
@@ -4154,7 +4154,7 @@ compatibility (this might change in future versions), using:
 #define GMP_RNDD MPFR_RNDD
 @end example
 The rounding mode ``round away from zero'' (@code{MPFR_RNDA}) was added in
-MPFR@tie{}3.0 (however no rounding mode @code{GMP_RNDA} exists).
+MPFR@tie{}3.0 (however, no rounding mode @code{GMP_RNDA} exists).
 Faithful rounding (@code{MPFR_RNDF}) was added in MPFR@tie{}4.0, but
 currently, it is partially supported.
 @c That's sufficient information for now. More should be said in future
@@ -4548,7 +4548,7 @@ In MPFR@tie{}2.x, if a macro @code{INTMAX_C} or @code{UINTMAX_C} was defined
 (e.g. when the @code{__STDC_CONSTANT_MACROS} macro had been defined
 before @code{<stdint.h>} or @code{<inttypes.h>} has been included),
 @code{intmax_t} was assumed to be defined.
-However this was not always the case (more precisely, @code{intmax_t}
+However, this was not always the case (more precisely, @code{intmax_t}
 can be defined only in the namespace @code{std}, as with Boost), so
 that compilations could fail.
 Thus the check for @code{INTMAX_C} or @code{UINTMAX_C} is now disabled for
@@ -4567,7 +4567,7 @@ namespace, though this is not clean.
 
 @end itemize
 
-The divide-by-zero exception is new in MPFR@tie{}3.1. However it should
+The divide-by-zero exception is new in MPFR@tie{}3.1. However, it should
 not introduce incompatible changes for programs that strictly follow
 the MPFR API since the exception can only be seen via new functions.
 

@@ -954,7 +954,7 @@ which yields $X - \frac{1}{2} \cdot 2^{-n} \leq A^{-1/2} \leq
               X + 1.21 \cdot 2^{-n}$,
 thus the right bound is not a priori fulfilled.
 % (3*1.003*1.311^2+0.5)/8+0.5 <= 1.21
-However the only problematic case is $n=19$, which gives exactly
+However, the only problematic case is $n=19$, which gives exactly
 $(n+3)/2 = 11$, since for $12 \leq n \leq 18$,
 the error terms in $2^{-2h}$ are halved.
 An exhaustive search of all possible inputs for $h=11$ and $n=19$ gives
@@ -966,7 +966,7 @@ Thus as soon as $n \geq 2$, Eq.~(\ref{rec_sqrt_eq1}) is fulfilled.
 
 In summary, Algorithm $\texttt{ApproximateInverseSquareRoot}$ provides an
 approximation $X$ of $A^{-1/2}$ with an error of at most one ulp.
-However if the input $A$ was itself truncated at precision $\geq p$
+However, if the input $A$ was itself truncated at precision $\geq p$
 from an input $A_0$ ---
 for example when the output precision $p$ is less than the input precision ---
 then we have $|X - A^{-1/2}| \leq \ulp(X)$, and
@@ -3176,7 +3176,7 @@ $\rho_k = -a_k \sigma_{k-1} / (1 + a_k \sigma_{k-1})$,
 $\sigma_k = 1 / (1 + a_k \sigma_{k-1})$, and:
 \[ a_k = \frac{k (a-k)}{(x + 2k - 1 - a) (x + 2k + 1 - a)}. \]
 Gautschi proves that when  $x \geq 1/4$ and $a \leq x + 1/4$, then
-$|\rho_k| \leq 1$ for all $k \geq 1$. However this is not enough to bound
+$|\rho_k| \leq 1$ for all $k \geq 1$. However, this is not enough to bound
 the tail of the above series.
 
 We consider here the case where $a \leq -1$, thus $a_k \leq 0$
@@ -4511,7 +4511,7 @@ $$  \wprec = \precc + 1 + 4 + \lceil \log_2(4\kvar)\rceil + \cond - \Exp(\svar).
 The \texttt{mpfr\_get\_str} function with size $0$ and base $b$ chooses an
 output precision of $1 + \lceil e \log(2)/\log(b) \rceil$ for a precision
 of $e$ bits if $b$ is not a power of two \cite{Mat68}.
-However the code uses instead $1 + \lceil e y \rceil$, where $y$ is
+However, the code uses instead $1 + \lceil e y \rceil$, where $y$ is
 an upper $76$-bit approximation of $\log(2)/\log(b)$. When do both values
 differ?
 In the case $b=2^k$, the worst case is when the first output digit contains

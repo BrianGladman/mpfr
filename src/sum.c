@@ -51,7 +51,7 @@ TODO [VL, after a discussion with James Demmel]: Compared to
   volume 37, number 1-4, pages 101--112, 2004.
 sorting is not necessary here. It is not done because in the most common
 cases (where big cancellations are rare), it would take time and be
-useless. However the lack of sorting increases the worst case complexity.
+useless. However, the lack of sorting increases the worst case complexity.
 For instance, consider many inputs that cancel one another (two by two).
 One would need n/2 iterations, where each iteration reads the exponent
 of each input, therefore n*n/2 read operations. Using a worst-case sort

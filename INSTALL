@@ -218,7 +218,7 @@ specific architecture.
 
 --disable-thread-safe   build MPFR without TLS. By default, TLS support
                         is detected automatically, and MPFR is built as
-                        thread safe if supported. However this detection
+                        thread safe if supported. However, this detection
                         is only a heuristic: TLS can be detected as
                         supported while its support is incomplete or
                         buggy (MPFR tests may fail). In such a case,

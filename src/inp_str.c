@@ -103,7 +103,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (nread >= 1);
   str_size += nread - 1;
   if (MPFR_UNLIKELY (str_size < nread - 1))  /* size_t overflow */
-    return 0;  /* however rop has been set successfully */
+    return 0;  /* however, rop has been set successfully */
   else
     return str_size;
 }

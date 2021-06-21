@@ -757,7 +757,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([(such as /usr/include or /usr/local/include). Another])
     AC_MSG_WARN([cause may be that LD_RUN_PATH is not honored (problem])
     AC_MSG_WARN([seen under OpenBSD 6.6).])
-    AC_MSG_WARN([However since we can't use 'libtool' inside the configure,])
+    AC_MSG_WARN([However, since we can't use 'libtool' inside the configure,])
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
     AC_MSG_WARN([CC="$CC"])
     AC_MSG_WARN([CFLAGS="$CFLAGS"])

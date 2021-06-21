@@ -326,7 +326,7 @@ grep '(mp_limb_t) *-\?[01][^0-9]' $srctests | grep -v '#define MPFR_LIMB_' | \
 # fragile. In practice, this may work because most (or all) platforms use
 # two's complement, and 0 being of type int (signed), this will give -1;
 # then when converted to a larger unsigned type, this will give the maximum
-# value as expected. However the reader may not know this explanation, and
+# value as expected. However, the reader may not know this explanation, and
 # a small change of the code can easily make it incorrect. The correct way
 # to obtain this result is to cast the constant to the expected type, then
 # do the bitwise complement; alternatively, cast -1 to the expected type.

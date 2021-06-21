@@ -233,7 +233,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
 
   /* For err < prec (+1 for rnd1=RNDN), we can never round correctly, since
      the error is at least 2*ulp(b) >= ulp(round(b)).
-     However for err = prec (+1 for rnd1=RNDN), we can round correctly in some
+     However, for err = prec (+1 for rnd1=RNDN), we can round correctly in some
      rare cases where ulp(b) = 1/2*ulp(U) [see below for the definition of U],
      which implies rnd1 = RNDZ or RNDN, and rnd2 = RNDA or RNDN. */
 
