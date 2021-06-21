@@ -159,12 +159,13 @@ To make a release (for the MPFR team):
      put them in src/mparam_h.in. For each architecture:
 
      a) download the latest release of GMP on gmplib.org
-     b) build GMP with --disable-shared in say /tmp/gmp-x.y.z
+     b) build GMP with --disable-shared in, say, "/path/to/gmp-x.y.z".
         There is no need in tuning GMP, since most users will build MPFR
         with a vanilla GMP installation, i.e., with the default GMP tuning;
-        however you need to go into /tmp/gmp-x.y.z/tune and type "make speed"
-        (the MPFR tuning is using the resulting speed library)
-     c) configure MPFR with --disable-shared --with-gmp-build=/tmp/gmp-x.y.z
+        however, you need to go into /path/to/gmp-x.y.z/tune and type
+        "make speed" (the MPFR tuning is using the resulting speed library)
+     c) configure MPFR with
+          --disable-shared --with-gmp-build=/path/to/gmp-x.y.z
      d) go into the "tune" directory and run "make tune"
      e) put the resulting mparam.h file into mparam_h.in (please include
         the version of GMP and the compiler used)
@@ -300,7 +301,7 @@ To make a release (for the MPFR team):
      Test with "clang -fsanitize=undefined" (available as of Clang 3.3),
      e.g.: ./configure CC=clang CFLAGS='-fsanitize=undefined'
      The -fno-sanitize-recover option can give more visibility by making
-     the corresponding tests fail (useful for automated tests). However
+     the corresponding tests fail (useful for automated tests). However,
      clang unconditionally regards the floating-point division by zero
      as an error with "-fsanitize=undefined"; this is detected by a
      configure test, which sets MPFR_ERRDIVZERO to disable the tests
@@ -1544,7 +1545,7 @@ of mismatch between a header and a library, an error message is output
 
 2. An error in the GMP version check is a non-fatal error: if there are
    no errors in MPFR version check, test_version() returns with value 1.
-   However the tversion test program will regard this as a fatal error
+   However, the tversion test program will regard this as a fatal error
    (thus "make check" will fail). The probable reason of the mismatch is
    that the GMP library has been upgraded while the MPFR test suite has
    not been rebuilt; otherwise there is probably something wrong in the
@@ -1670,7 +1671,7 @@ But you can filter the output with:
 For readability, you should redirect the valgrind output to a file.
 You can use --log-file, but due to --trace-children=yes, you need
 the %p format specifier in the filename argument to generate a file
-for each child; however many files will be generated, and it may be
+for each child; however, many files will be generated, and it may be
 better to use the following method to get a single file:
 
   valgrind --trace-children=yes --log-fd=3 make check 3> vg.out
