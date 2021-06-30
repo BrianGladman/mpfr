@@ -468,7 +468,7 @@ check_random (int nb_tests)
 
               if (stdout_redirect)
                 {
-                  if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
+                  if ((fflush (stdout) == EOF) || (fclose (stdout) == EOF))
                     {
                       perror ("check_random");
                       exit (1);
@@ -636,7 +636,7 @@ main (int argc, char *argv[])
 
   if (stdout_redirect)
     {
-      if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
+      if ((fflush (stdout) == EOF) || (fclose (stdout) == EOF))
         perror ("main");
     }
   tests_end_mpfr ();
