@@ -358,6 +358,12 @@ grep -E 'mpfr_set_(inf|zero) *\([^,]*, *[-+]?([02-9]|1[^)])' $srctests | \
   err-if-output -t "mpfr_set_(inf|zero) second argument" \
     grep -v tests/tset\\.c:
 
+# The return value of fclose() or fflush() should not be compared with -1
+# (usual value of EOF), but with EOF (or 0).
+err-if-output \
+  --msg="fclose() or fflush() seems to be compared with -1 instead of EOF" \
+  -t "fclose/fflush" grep -E 'f(close|flush).*[!=]= *-1' $srctests
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in $c_src
