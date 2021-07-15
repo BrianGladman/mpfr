@@ -47,7 +47,7 @@ union dbl_bytes {
    quiet NaN (qNaN) or a signaling NaN (sNaN). For instance, HP PA-RISC
    is known to do the opposite way of the usual choice recommended in
    IEEE 754-2008; see:
-     http://grouper.ieee.org/groups/1788/email/msg03272.html
+     https://grouper.ieee.org/groups/1788/email/msg03272.html
 
    Moreover, the right choice is to generate a qNaN in particular because
    signaling NaNs are not supported by all compilers (note that the support
