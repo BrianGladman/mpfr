@@ -752,3 +752,8 @@ Table of contents:
     * have a rule that copies the needed files ("mpfr.h" or they should
       be prefixed with "mpfr-") to $(top_builddir)/include;
     * use "-I$(top_builddir)/include".
+
+- _Noreturn (from ISO C11) may be replaced by [[noreturn]] in the future:
+  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2764.pdf
+  Once this is implemented in compilers, consider it as an alternative
+  (concerned files: acinclude.m4, doc/README.dev and src/mpfr-impl.h).
