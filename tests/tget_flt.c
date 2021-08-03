@@ -51,14 +51,11 @@ equal_flt (float f, float g)
 static void
 bug_icx (void)
 {
-#if __MPFR_STDC (199901L)
   mpfr_t x;
   float y;
 
   mpfr_init2 (x, 24);
-  /* FIXME: This test is incorrect as it triggers underflow, whose
-     behavior is platform-dependent. Probably not an icx bug. */
-  mpfr_set_flt (x, -0x1p-149f, MPFR_RNDN);
+  mpfr_set_si_2exp (x, -1, -149, MPFR_RNDN);
   mpfr_log (x, x, MPFR_RNDN);
   y = mpfr_get_flt (x, MPFR_RNDN);
   if (!DOUBLE_ISNAN (y))
@@ -68,7 +65,6 @@ bug_icx (void)
       exit (1);
     }
   mpfr_clear (x);
-#endif
 }
 
 int
