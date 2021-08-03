@@ -25,6 +25,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 #include "ieee_floats.h"
 
+#ifdef HAVE_SUBNORM_FLT
 /* return non-zero iff f == g, and if both are zero check the sign */
 static int
 equal_flt (float f, float g)
@@ -46,6 +47,7 @@ equal_flt (float f, float g)
       return !sf == !sg;
     }
 }
+#endif
 
 int
 main (void)
