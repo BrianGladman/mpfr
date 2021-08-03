@@ -82,7 +82,7 @@ main (void)
       exit (1);
     }
   mpfr_set_flt (x, f, MPFR_RNDN);
-  if (mpfr_nan_p (x) == 0)
+  if (! mpfr_nan_p (x))
     {
       printf ("Error for mpfr_set_flt(NaN)\n");
       exit (1);
@@ -91,7 +91,7 @@ main (void)
   mpfr_set_inf (x, 1);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
-  if (mpfr_inf_p (x) == 0 || mpfr_sgn (x) < 0)
+  if (! mpfr_inf_p (x) || mpfr_sgn (x) < 0)
     {
       printf ("Error for mpfr_set_flt(mpfr_get_flt(+Inf)):\n");
       printf ("f=%f, expected -Inf\n", f);
@@ -102,7 +102,7 @@ main (void)
   mpfr_set_inf (x, -1);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
-  if (mpfr_inf_p (x) == 0 || mpfr_sgn (x) > 0)
+  if (! mpfr_inf_p (x) || mpfr_sgn (x) > 0)
     {
       printf ("Error for mpfr_set_flt(mpfr_get_flt(-Inf)):\n");
       printf ("f=%f, expected -Inf\n", f);
@@ -114,7 +114,7 @@ main (void)
   mpfr_set_ui (x, 0, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
-  if (mpfr_zero_p (x) == 0 || MPFR_IS_NEG (x))
+  if (! mpfr_zero_p (x) || MPFR_IS_NEG (x))
     {
       printf ("Error for mpfr_set_flt(mpfr_get_flt(+0))\n");
       exit (1);
@@ -125,7 +125,7 @@ main (void)
   mpfr_neg (x, x, MPFR_RNDN);
   f = mpfr_get_flt (x, MPFR_RNDN);
   mpfr_set_flt (x, f, MPFR_RNDN);
-  if (mpfr_zero_p (x) == 0 || MPFR_IS_POS (x))
+  if (! mpfr_zero_p (x) || MPFR_IS_POS (x))
     {
       printf ("Error for mpfr_set_flt(mpfr_get_flt(-0))\n");
       exit (1);
