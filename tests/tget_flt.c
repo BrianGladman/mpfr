@@ -56,6 +56,8 @@ bug_icx (void)
   float y;
 
   mpfr_init2 (x, 24);
+  /* FIXME: This test is incorrect as it triggers underflow, whose
+     behavior is platform-dependent. Probably not an icx bug. */
   mpfr_set_flt (x, -0x1p-149f, MPFR_RNDN);
   mpfr_log (x, x, MPFR_RNDN);
   y = mpfr_get_flt (x, MPFR_RNDN);
