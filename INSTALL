@@ -716,3 +716,10 @@ wl="" into wl="-Wl," in the libtool file.
 All tests (make check) should pass (tget_set_d64, tget_set_d128 and
 tset_float128 are skipped, since CompCert does not support _Decimal64,
 _Decimal128 nor _Float128).
+
+e. Using the Intel OneApi compiler
+==================================
+
+When using the Intel OneApi compiler (icx), one should add -fp-model=strict
+to CFLAGS so that the conversion routines from/to native floating-point
+types (float, double, ...) work properly. Otherwise some tests will fail.

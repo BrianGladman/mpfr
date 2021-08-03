@@ -21,6 +21,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <float.h>     /* for FLT_MIN */
+#include <math.h>      /* for isnan */
 
 #include "mpfr-test.h"
 #include "ieee_floats.h"
@@ -47,6 +48,25 @@ equal_flt (float f, float g)
     }
 }
 
+/* bug with icx 2021.2.0, when MPFR is not compiled with -fp-model=strict */
+static void
+bug_icx (void)
+{
+  mpfr_t x;
+  float y;
+  mpfr_init2 (x, 24);
+  mpfr_set_flt (x, -0x1p-149f, MPFR_RNDN);
+  mpfr_log (x, x, MPFR_RNDN);
+  y = mpfr_get_flt (x, MPFR_RNDN);
+  if (!isnan (y))
+    {
+      printf ("Error, mpfr_get_flt(NaN) != NaN\n");
+      printf ("got %a\n", y);
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -58,6 +78,8 @@ main (void)
 #endif
 
   tests_start_mpfr ();
+
+  bug_icx ();
 
 #if !defined(MPFR_ERRDIVZERO)
   infp = (float) MPFR_DBL_INFP;
