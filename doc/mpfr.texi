@@ -3344,6 +3344,12 @@ and @var{op2} are both NaN, then @var{rop} is set to NaN@. If @var{op1}
 or @var{op2} is NaN, then @var{rop} is set to the numeric value. If
 @var{op1} and @var{op2} are zeros of different signs, then @var{rop}
 is set to @minus{}0 (resp.@: +0).
+As usual, the NaN flag is set only when the result is NaN, i.e.,
+when both @var{op1} and @var{op2} are NaN.
+
+Note: These functions correspond to the minimumNumber and maximumNumber
+operations of IEEE@tie{}754-2019 for the result. But in MPFR, the NaN flag
+is set only when @emph{both} operands are NaN.
 @end deftypefun
 
 @deftypefun int mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
