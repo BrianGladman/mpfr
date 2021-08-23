@@ -312,7 +312,6 @@ check_misc (void)
 
   /* subnormal number with exponent change when we round back
      from 34 digits to 1 digit */
-  // mpfr_set_str (x, "9.9E-6176", 10, MPFR_RNDN);
   mpfr_set_str (x, "9.9E-6176", 10, MPFR_RNDN);
   d = mpfr_get_decimal128 (x, MPFR_RNDU); /* should be 1E-6175 */
   mpfr_set_ui (x, 0, MPFR_RNDZ);
