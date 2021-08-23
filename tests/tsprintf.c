@@ -927,16 +927,19 @@ mixed (void)
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE) && MPFR_LCONV_DPTS
 
-/* Check with locale "da_DK". On most platforms, decimal point is ','
-   and thousands separator is '.'; the test is not performed if this
-   is not the case or if the locale doesn't exist. */
+/* Check with locale "da_DK.utf8" or "da_DK".
+   On most platforms, decimal point is ',' and thousands separator is '.';
+   if this is not the case or if the locale does not exist, the test is not
+   performed (and if the MPFR_CHECK_LOCALES environment variable is set,
+   the program fails). */
 static void
 locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
   mpfr_t x, y;
 
-  if (setlocale (LC_ALL, "da_DK") == 0 ||
+  if ((setlocale (LC_ALL, "da_DK.utf8") == 0 &&
+       setlocale (LC_ALL, "da_DK") == 0) ||
       localeconv()->decimal_point[0] != ',' ||
       localeconv()->thousands_sep[0] != '.')
     {
