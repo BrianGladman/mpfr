@@ -1748,14 +1748,9 @@ $ make
 $ make check LOG_COMPILER=wine
 $ make install
 
-Note: The -D__USE_MINGW_ANSI_STDIO option may be necessary in order to get
-an ISO-compliant printf as mentioned in MPFR's INSTALL file. In this case,
-add CC="i686-w64-mingw32-gcc -D__USE_MINGW_ANSI_STDIO" at the end of the
-configure line. Otherwise MPFR needs to be configured with
-  "CPPFLAGS=-DNPRINTF_J -DNPRINTF_L -DNPRINTF_T"
-But with recent versions of the tools, printf now seems to be ISO-compliant
-by default. The __USE_MINGW_ANSI_STDIO macro is now internal to MinGW and
-should no longer be used.
+Note: With MinGW earlier than v8.0.0, the -D__USE_MINGW_ANSI_STDIO option
+may be necessary in order to get an ISO-conforming printf as mentioned in
+MPFR's INSTALL file.
 
 2. Build and check MPFR.
 
