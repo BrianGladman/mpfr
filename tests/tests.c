@@ -1040,7 +1040,11 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
           if (!sb)
             {
               if (dbg)
-                printf ("bad_cases: exact case\n");
+                {
+                  printf ("bad_cases: exact case z = ");
+                  mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
+                  printf ("\n");
+                }
               if (inex_inv)
                 {
                   printf ("bad_cases: f exact while f^(-1) inexact,\n"
@@ -1082,11 +1086,28 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
             }
         }
       while (inex == 0);
-      /* We really have a bad case. */
-      do
-        py--;
-      while (py >= MPFR_PREC_MIN && mpfr_prec_round (z, py, MPFR_RNDZ) == 0);
-      py++;
+      /* We really have a bad case (or some special case). */
+      if (mpfr_zero_p (z))
+        {
+          /* This can occur on tlog (GMP_CHECK_RANDOMIZE=1630879377004032):
+             y = -0, giving x = 1 and z = 0. We have y = z, but here,
+             y and z have different signs. Since test5rm will test f(x)
+             and its sign (in particular for 0), we need to take the
+             sign of f(x), i.e. of z.
+             Note: To avoid this special case, one might want to detect and
+             ignore y = 0 (of any sign) when taking the random number above,
+             as this case should be redundant with some other tests. */
+          mpfr_set (y, z, MPFR_RNDN);
+          py = MPFR_PREC_MIN;
+        }
+      else
+        {
+          do
+            py--;
+          while (py >= MPFR_PREC_MIN &&
+                 mpfr_prec_round (z, py, MPFR_RNDZ) == 0);
+          py++;
+        }
       /* py is now the smallest output precision such that we have
          a bad case in the directed rounding modes. */
       if (mpfr_prec_round (y, py, MPFR_RNDZ) != 0)
