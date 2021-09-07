@@ -1089,7 +1089,8 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
       /* We really have a bad case (or some special case). */
       if (mpfr_zero_p (z))
         {
-          /* This can occur on tlog (GMP_CHECK_RANDOMIZE=1630879377004032):
+          /* This can occur on tlog (GMP_CHECK_RANDOMIZE=1630879377004032
+             in r14570, 2021-09-07):
              y = -0, giving x = 1 and z = 0. We have y = z, but here,
              y and z have different signs. Since test5rm will test f(x)
              and its sign (in particular for 0), we need to take the
