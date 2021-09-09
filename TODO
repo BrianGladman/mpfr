@@ -509,10 +509,14 @@ Table of contents:
   In particular, binary package distributions would benefit from FMV as
   only one binary is generated for different processor families.
 
-- use intrinsics when available (needs a configure test).
+- use intrinsics such as _addcarry_u64 when available
+  (needs a configure test).
   References:
     https://software.intel.com/sites/landingpage/IntrinsicsGuide/
     https://stackoverflow.com/q/11228855/3782797
+    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79173
+    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97387
+  (would be useful for add1sp.c and sub1sp.c).
 
 
 ##############################################################################
