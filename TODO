@@ -27,6 +27,7 @@ Table of contents:
 6. Miscellaneous
 7. Portability
 
+
 ##############################################################################
 1. Documentation
 ##############################################################################
@@ -40,12 +41,14 @@ Table of contents:
     mpq_srcptr  -> const mpq_t
     mpf_srcptr  -> const mpf_t
 
+
 ##############################################################################
 2. Compiler/library detection
 ##############################################################################
 
 - update ICC detection.
   * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
+
 
 ##############################################################################
 3. Changes in existing functions
@@ -506,6 +509,11 @@ Table of contents:
   In particular, binary package distributions would benefit from FMV as
   only one binary is generated for different processor families.
 
+- use intrinsics when available (needs a configure test).
+  References:
+    https://software.intel.com/sites/landingpage/IntrinsicsGuide/
+    https://stackoverflow.com/q/11228855/3782797
+
 
 ##############################################################################
 6. Miscellaneous
@@ -723,6 +731,7 @@ Table of contents:
   The non-standard CPATH and C_INCLUDE_PATH environment variables need to
   be unset (only when invoking pkg-config) as a workaround to
     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=984504
+
 
 ##############################################################################
 7. Portability
