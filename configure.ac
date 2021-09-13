@@ -34,10 +34,16 @@ dnl some other macros (e.g. AX_PTHREAD 29, committed on 2021-02-19) and
 dnl must be called quite early in order to avoid the following warning:
 dnl   warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
 dnl (we don't use AC_ARG_PROGRAM explicitly, but again, it is invoked by
-dnl another macro, apparently AM_INIT_AUTOMAKE).
-dnl So we need to call AC_CANONICAL_TARGET here, even if we don't use it.
+dnl another macro, apparently AM_INIT_AUTOMAKE). This has eventually been
+dnl fixed in AX_PTHREAD 31.
+dnl Due to this bug in AX_PTHREAD 29, AC_CANONICAL_HOST was moved here and
+dnl AC_CANONICAL_TARGET was added in r14481. However, it is unlikely that
+dnl we need AC_CANONICAL_TARGET in the future; see the comments at
+dnl   https://github.com/autoconf-archive/autoconf-archive/commit/2567e0ce0f3a11b535c6b527386197fb49ff172b
+dnl (introducing AX_PTHREAD 29). Thus it is probably better to avoid it,
+dnl as it could cause confusion. But let's keep AC_CANONICAL_HOST here,
+dnl since this may be a better place than later.
 AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
 
 dnl Older Automake versions than 1.13 may still be supported, but no longer
 dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
