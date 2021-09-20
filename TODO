@@ -376,6 +376,9 @@ Table of contents:
 5. Efficiency
 ##############################################################################
 
+- Fredrik Johansson wrote a new preprint about computing the gamma function,
+  where he claims a speedup of 10 over MPFR at machine precision, and a
+  speedup of 1000 for a first call to gamma at 10000 digits
 - Fredrik Johansson reports that mpfr_ai is slow for large arguments: an
   asymptotic expansion should be used (once done, remove REDUCE_EMAX from
   tests/tai.c and update the description in mpfr.texi).
