@@ -91,10 +91,10 @@ particular branch or tag instead of the trunk. Alternatively, you
 can now use the "https:" scheme (a.k.a. DAV) instead of "svn:".
 For more information about Subversion, please see:
 
-  * http://svnbook.red-bean.com/ (the official Subversion book);
+  * https://svnbook.red-bean.com/ (the official Subversion book);
   * https://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
     but interesting general information can be found there);
-  * http://subversion.apache.org/faq.html (the Subversion FAQ).
+  * https://subversion.apache.org/faq.html (the Subversion FAQ).
 
 Subversion users should read the file "doc/README.dev" (in the
 source tree).
