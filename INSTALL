@@ -593,13 +593,12 @@ approach depending on how you intend to use the resulting libraries.
 a. Using MinGW
 ==============
 
-1 - We advise to use MinGW (http://www.mingw.org/ for 32-bit, and
-    https://sourceforge.net/projects/mingw-w64/ for 32- and 64-bit),
-    which is simpler and less demanding than Cygwin. Contrary to Cygwin,
-    it also provides native Windows code.
+1 - We advise to use Mingw-w64 (https://www.mingw-w64.org/), which is
+    simpler and less demanding than Cygwin. Contrary to Cygwin, it also
+    provides native Windows code.
 
     If you also use MSYS, you should use "make" for MSYS instead of
-    the "make" utility from MinGW-W64 or from GCC, which causes the
+    the "make" utility from Mingw-w64 or from GCC, which causes the
     following error:
 
       libtool: warning: libobj name 'extract.Tpo -c -o extract.lo extract.lo'
