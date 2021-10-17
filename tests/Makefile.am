@@ -17,6 +17,7 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
+# TODO/FIXME: add Git information (see Mutt's version.sh as an example).
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
