@@ -19,8 +19,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-Notes for the MPFR developers and Subversion users
-==================================================
+Notes for the MPFR developers and Git users
+===========================================
 
 To compile the source code obtained from the repository or after applying
 some special patches, you need some additional GNU development utilities:
@@ -29,12 +29,12 @@ The AX_PTHREAD macro from autoconf-archive[*] is now included in the MPFR
 repository (m4/ax_pthread.m4).
 [*] https://www.gnu.org/software/autoconf-archive/ax_pthread.html
 
-As some files like "configure" are not part of the Subversion
-repository, you first need to run "autoreconf -i" (or ./autogen.sh,
-which could be used later to update the config files). Then you can
-run ./configure in the usual way (see the INSTALL file, but note that
-there are no patches to apply, and the URLs are not valid since the
-corresponding version has not been released yet).
+As some files like "configure" are not part of the Git repository, you
+first need to run "autoreconf -i" (or ./autogen.sh, which could be used
+later to update the config files). Then you can run ./configure in the
+usual way (see the INSTALL file, but note that there are no patches to
+apply, and the URLs are not valid since the corresponding version has
+not been released yet).
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
@@ -55,9 +55,8 @@ directory are required; such files are not included in tarballs as
 they can be large.
 
 If nightly snapshots are built, the date in the yyyymmdd format and/or
-the Subversion revision number (giving more accurate information) must
-be added to the version as a suffix, for instance: "2.3.0-20070621" or
-"2.3.0-r4553".
+some Git information (for more accurate information) must be added to
+the version as a suffix, for instance: "2.3.0-20070621".
 
 Patches can be tracked by adding a chunk of the form
 
@@ -83,7 +82,7 @@ For patches from MPFR developers, e.g. for MPFR 3.1.0:
 4. Reset the PATCHES file with "true >| PATCHES".
 5. Rename mpfr-3.1.0 as mpfr-3.1.0-a and duplicate it as mpfr-3.1.0-b
    without changing the timestamps (e.g. with cp -a).
-6. In mpfr-3.1.0-b, apply the patch obtained with "svn diff", e.g.
+6. In mpfr-3.1.0-b, apply the patch obtained with "git diff", e.g.
      patch --no-backup-if-mismatch -p0 < /path/to/new_patch
    If an autotools file has been modified, run "autoreconf" and remove
    the autom4te.cache directory.
@@ -102,8 +101,8 @@ not change when the patch is applied with the -Z option. Otherwise the
 autotools would be needed to build MPFR (unless maintainer mode is
 disabled).
 
-Patches are put under the misc/www directory of the Subversion repository.
-The web server is updated and patches are also copied as InriaForge files.
+Patches are put under the www directory of the misc.git repository for
+the MPFR website.
 
 ===========================================================================
 
@@ -125,6 +124,8 @@ The latest rules for GNU software can be found here:
 ===========================================================================
 
 To make a release (for the MPFR team):
+
+[TODO: update for Git and Inria GitLab.]
 
   *** Please read this section entirely before making any release. ***
 
@@ -1453,21 +1454,6 @@ In particular:
 
 ===========================================================================
 
-For developers - Use of the svn:eol-style Subversion property
-
-The svn:eol-style Subversion property is traditionally set to "native" on
-text files, but this has drawbacks:
-  * On systems where the end-of-line (EOL) sequence is not LF, the obtained
-    files are different from those from the tarballs. This makes maintenance
-    harder.
-  * Some tools under Windows (such as makeinfo of MinGW/MSYS) don't support
-    the MS-Windows EOL sequence CRLF, and the MPFR build fails.
-
-For these reasons, the svn:eol-style Subversion property should never be set
-to "native".
-
-===========================================================================
-
 About the test suite
 --------------------
 
@@ -1598,6 +1584,8 @@ Also, make sure that the tests run against previous MPFR versions,
 possibly by disabling some tests with code like
 
   #if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
+
+[TODO: update for Git.]
 
 Indeed one can now easily run the trunk tests in a branch by executing
 
@@ -1763,8 +1751,7 @@ Note: Due to bugs in autoconf[1] and dash[2], the configure script
 may create files with a binary filename or have any other arbitrary
 behavior if /bin/sh is dash. The cause is that it tries to execute
 a MS Windows executable, which is interpreted as a shell script by
-dash (thus with random, meaningless commands). This will confuse
-Subversion, and these files need to be removed manually.
+dash (thus with random, meaningless commands).
 
 [1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=850329
 [2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=816313
@@ -1811,7 +1798,7 @@ Modify the faq.xhtml file and run
 
   xsltproc --nodtdattr faq-web.xsl faq.xhtml > www/faq.html
 
-Check with "svn diff" that this change has been done correctly (in case
+Check with "git diff" that this change has been done correctly (in case
 of incorrect installation of XML tools), validate the files with
 
   xmllint --noout --loaddtd --valid faq.xhtml www/faq.html
