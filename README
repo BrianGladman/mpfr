@@ -68,33 +68,11 @@ Official GNU MPFR website:
   https://www.mpfr.org/
 
 
-NOTE: At the time of the release 4.1.0, the MPFR repository is hosted at
-InriaForge, but it will need to migrate since InriaForge will shut down in
-December 2020. Please go to https://www.mpfr.org/ for the current status.
-What follows remains valid until the migration is done.
+You can get the latest source code by Git at Inria GitLab:
 
-You can get the latest source code by Subversion at InriaForge:
+  https://gitlab.inria.fr/mpfr/mpfr
 
-  svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
+In this case, you should read the file "doc/README.dev" in the working tree
+or online:
 
-or
-
-  svn checkout https://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
-
-(the last argument can be any directory name). You can use
-
-  svn ls svn://scm.gforge.inria.fr/svn/mpfr/branches
-  svn ls svn://scm.gforge.inria.fr/svn/mpfr/tags
-
-to get the list of branches or tags (releases), then checkout a
-particular branch or tag instead of the trunk. Alternatively, you
-can now use the "https:" scheme (a.k.a. DAV) instead of "svn:".
-For more information about Subversion, please see:
-
-  * https://svnbook.red-bean.com/ (the official Subversion book);
-  * https://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
-    but interesting general information can be found there);
-  * https://subversion.apache.org/faq.html (the Subversion FAQ).
-
-Subversion users should read the file "doc/README.dev" (in the
-source tree).
+  https://gitlab.inria.fr/mpfr/mpfr/-/blob/master/doc/README.dev
