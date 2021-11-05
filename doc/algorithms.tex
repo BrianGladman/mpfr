@@ -15,6 +15,36 @@
 Algorithms and Proofs}
 \author{The MPFR team}
 
+% This fixes some regressions compared to old LaTeX versions (in 2009).
+% For instance, one had in some CMap's (apparently not ToUnicode ones)
+% of the generated PDF file:
+%   <34><34><25b3>
+%   <35><35><25bd>
+% [...]
+%   <14><15><2264>
+%   <30><30><2032>
+%   <31><31><221e>
+%   <64><65><2308>
+%   <6a><6a><007c>
+%   <70><70><221a>
+% Some of the mappings are no longer needed with TeX Live 2020, but
+% at least the following ones are (probably less common symbols).
+% See /usr/share/texlive/texmf-dist/tex/generic/pdftex/glyphtounicode.tex
+% for a full list of ToUnicode mappings. Note that TeX Live 2021 adds all
+% of them, but this triggers Ghostscript bugs:
+%   https://bugs.ghostscript.com/show_bug.cgi?id=704478
+%   https://bugs.ghostscript.com/show_bug.cgi?id=704674
+%   https://bugs.ghostscript.com/show_bug.cgi?id=704681
+%   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=995392
+\pdfglyphtounicode{prime}{2032}
+\pdfglyphtounicode{ceilingleft}{2308}
+\pdfglyphtounicode{ceilingright}{2309}
+\pdfglyphtounicode{floorleft}{230A}
+\pdfglyphtounicode{floorright}{230B}
+\pdfglyphtounicode{triangle}{25B3}
+\pdfglyphtounicode{triangleinv}{25BD}
+\pdfgentounicode=1
+
 %%%%%%%%%%%%%% macros for the package algorithm2e %%%%%%%%%%%%%%%
 \usepackage[english, lined, linesnumbered]{algorithm2e}
 \SetKwData{tempv}{temp}
