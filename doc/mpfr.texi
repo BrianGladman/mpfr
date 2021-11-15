@@ -2895,8 +2895,8 @@ for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
 specified by the rounding mode (see below if the precision is missing).
-Similarly to the native C types, the precision is the number of digits
-output after the decimal point, except for the @samp{g} and @samp{G}
+Similarly to the native C types, the precision is the number of digits output
+after the decimal-point character, except for the @samp{g} and @samp{G}
 conversion specifiers, where it is the number of significant digits
 (but trailing zeros of the fractional part are not output by default),
 or 1 if the precision is zero.
