@@ -45,7 +45,8 @@ output_info = { \
     rm excluded-branches; \
     gitc=`git rev-list --count HEAD`; \
     gith=`git rev-parse --short HEAD`; \
-    echo "[git] $$gitb-$$gitc-$$gith"; \
+    gitm=`git diff-index --name-only HEAD`; \
+    echo "[git] $$gitb-$$gitc-$$gith$${gitm:+ (modified)}"; \
   fi; \
   grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
