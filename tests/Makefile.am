@@ -17,13 +17,21 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# TODO/FIXME: add Git information (see Mutt's version.sh as an example).
+# TODO/FIXME: improve Git information. We should show the current branch,
+# typically with "git branch --show-current", but in detached HEAD state,
+# this command prints nothing. *-root tags can be useful, but we still
+# need to differentiate the branch identified by such a tag and master.
+# Alternatively *-branch tags could be added to identify the first commit
+# of a branch (just after the corresponding *-root commit).
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
     if [ -n "$$output" ]; then \
       echo "[svnversion] $$output"; \
     fi; \
+  fi; \
+  if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
+    echo "[git] `git describe --match '*-root'`"; \
   fi; \
   grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
