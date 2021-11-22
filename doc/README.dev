@@ -144,7 +144,9 @@ To make a release (for the MPFR team):
          soon as the ABI changed in the trunk;
        * update the ChangeLog (see below) in the trunk, in order to minimize
          the future diffs.
-     If everything is OK, create the branch. Then:
+     If everything is OK, create the branch and add a <branch>-root tag on
+     the root commit (i.e. just before the first commit in the new branch).
+     Then:
 
   1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
@@ -1814,3 +1816,13 @@ MPFR trunk and supported branches.
 Spelling:
   * Some suggestions: https://gcc.gnu.org/codingconventions.html#Spelling
   * Check with "codespell" (done by mpfrlint).
+
+===========================================================================
+
+Git:
+  * When creating a branch, add an associated <branch>-root tag on the
+    root commit (i.e. just before the first commit in the new branch).
+    This can be useful for commands like "git diff <branch>-root" to get
+    the commits done in the branch since its creation, and such tags are
+    used in tests/Makefile.am for output_info (Git information output by
+    "make check").
