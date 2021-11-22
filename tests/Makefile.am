@@ -18,14 +18,22 @@
 AUTOMAKE_OPTIONS = 1.6 gnu
 
 # For Git, output dash-separated information:
-#   * the detected branch, which also works in detached HEAD state
-#     (for old commits that can be found in multiple branches,
-#     "master" is prefered over the other branches);
+#   * the detected branch;
 #   * the total commit count;
 #   * the commit id (hash).
+# Note: for the branch detection, in the case of a detached HEAD state,
+# the commit may appear in multiple branches, i.e. which diverge after
+# the commit; thus we exclude branches created after this commit, based
+# on <branch>-root tags (such a tag should be added by the user when
+# creating a branch, so that "git diff <branch>-root" shows commits done
+# in the branch since its creation, etc.). If $gitb contains multiple
+# branches, this means that something is probably wrong with the tags
+# or the branches (merged branches should be deleted).
 # Alternatively *-branch tags could be added to identify the first commit
 # of a branch (just after the corresponding commit with the *-root tag),
 # so that "git describe --match '*-branch'" could be used.
+# Concerning the test "git rev-parse ...", if git is not installed, this
+# test should silently fail.
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
@@ -34,9 +42,10 @@ output_info = { \
     fi; \
   fi; \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
-    gitb=`git branch --format='%(refname:short)' --contains | grep -v '^('`; \
-    gitb=`{ echo "$$gitb" | grep '^master$$' || true; \
-            echo "$$gitb"; } | head -n 1`; \
+    git tag --contains | sed -n 's/-root$$//p' > excluded-branches; \
+    gitb=`git branch --format='%(refname:short)' --contains | \
+          grep -v '^(' | grep -v -F -f excluded-branches`; \
+    rm excluded-branches; \
     gitc=`git rev-list --count HEAD`; \
     gith=`git rev-parse --short HEAD`; \
     echo "[git] $$gitb-$$gitc-$$gith"; \
