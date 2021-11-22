@@ -17,12 +17,15 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# TODO/FIXME: improve Git information. We should show the current branch,
-# typically with "git branch --show-current", but in detached HEAD state,
-# this command prints nothing. *-root tags can be useful, but we still
-# need to differentiate the branch identified by such a tag and master.
+# For Git, output dash-separated information:
+#   * the detected branch, which also works in detached HEAD state
+#     (for old commits that can be found in multiple branches,
+#     "master" is prefered over the other branches);
+#   * the total commit count;
+#   * the commit id (hash).
 # Alternatively *-branch tags could be added to identify the first commit
-# of a branch (just after the corresponding *-root commit).
+# of a branch (just after the corresponding commit with the *-root tag),
+# so that "git describe --match '*-branch'" could be used.
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
@@ -31,7 +34,11 @@ output_info = { \
     fi; \
   fi; \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
-    echo "[git] `git describe --match '*-root'`"; \
+    gitb=`git branch --format='%(refname:short)' --contains | grep -v '^('`; \
+    gitb=`{ echo "$$gitb" | grep '^master$$'; echo "$$gitb"; } | head -n 1`; \
+    gitc=`git rev-list --count HEAD`; \
+    gith=`git rev-parse --short HEAD`; \
+    echo "[git] $$gitb-$$gitc-$$gith"; \
   fi; \
   grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
