@@ -26,9 +26,6 @@ AUTOMAKE_OPTIONS = 1.6 gnu
 # Alternatively *-branch tags could be added to identify the first commit
 # of a branch (just after the corresponding commit with the *-root tag),
 # so that "git describe --match '*-branch'" could be used.
-# FIXME: This works well for master, but not for the 4.1 branch, where $gitb
-# gets empty, even though testing from an interactive shell (/bin/sh = dash)
-# does not show any issue.
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
@@ -38,7 +35,8 @@ output_info = { \
   fi; \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
     gitb=`git branch --format='%(refname:short)' --contains | grep -v '^('`; \
-    gitb=`{ echo "$$gitb" | grep '^master$$'; echo "$$gitb"; } | head -n 1`; \
+    gitb=`{ echo "$$gitb" | grep '^master$$' || true; \
+            echo "$$gitb"; } | head -n 1`; \
     gitc=`git rev-list --count HEAD`; \
     gith=`git rev-parse --short HEAD`; \
     echo "[git] $$gitb-$$gitc-$$gith"; \
