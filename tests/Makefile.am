@@ -26,6 +26,9 @@ AUTOMAKE_OPTIONS = 1.6 gnu
 # Alternatively *-branch tags could be added to identify the first commit
 # of a branch (just after the corresponding commit with the *-root tag),
 # so that "git describe --match '*-branch'" could be used.
+# FIXME: This works well for master, but not for the 4.1 branch, where $gitb
+# gets empty, even though testing from an interactive shell (/bin/sh = dash)
+# does not show any issue.
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
