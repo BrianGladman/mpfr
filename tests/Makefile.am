@@ -29,9 +29,6 @@ AUTOMAKE_OPTIONS = 1.6 gnu
 # in the branch since its creation, etc.). If $gitb contains multiple
 # branches, this means that something is probably wrong with the tags
 # or the branches (merged branches should be deleted).
-# Alternatively *-branch tags could be added to identify the first commit
-# of a branch (just after the corresponding commit with the *-root tag),
-# so that "git describe --match '*-branch'" could be used.
 # Concerning the test "git rev-parse ...", if git is not installed, this
 # test should silently fail.
 output_info = { \
