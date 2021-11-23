@@ -538,7 +538,8 @@ Format of long double.
                         the generic code would not sufficiently be tested.
 
 + MPFR_WANT_PROVEN_CODE:
-                        Define to enable formally proven code.
+                        Define to enable formally proven code (used only
+                        under some conditions, see below).
 
 List of macros used for checking MPFR:
 
@@ -1421,6 +1422,36 @@ whether they work with ICC. The following paper can give useful information:
 To detect compilers, see
 
   https://sourceforge.net/p/predef/wiki/Compilers/
+
+===========================================================================
+
+Note about the formally proven code (src/*_extracted.c):
+
+The code has been proven with types of fixed width (due to a limitation
+of the F*/KreMLin proof system). Thus this code may be used only under
+some conditions, so that MPFR enables it only under such conditions via
+a #if, e.g. in add1sp.c:
+
+#if defined(MPFR_WANT_PROVEN_CODE) && GMP_NUMB_BITS == 64 && \
+  UINT_MAX == 0xffffffff && MPFR_PREC_BITS == 64 && \
+  _MPFR_PREC_FORMAT == 3 && _MPFR_EXP_FORMAT == _MPFR_PREC_FORMAT
+
+which implies that the #define's in add1sp1_extracted.c
+
+#define int64_t long
+#define uint32_t unsigned int
+#define uint64_t mp_limb_t
+
+are correct.
+
+Be careful with any attempt to reuse the code in a more general context,
+e.g. by removing these #define's and just assuming that the prototypes
+match the ABI. There is another implicit requirement: uint64_t must be
+at least as large as unsigned int. Otherwise the code may become incorrect
+due to integer promotions. The issue of integer promotions about intN_t vs
+int has been mentioned in
+
+  https://gcc.gnu.org/pipermail/gcc/2021-November/237726.html
 
 ===========================================================================
 
