@@ -41,7 +41,7 @@ output_info = { \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
     git tag --contains | sed -n 's/-root$$//p' > excluded-branches; \
     gitb=`git branch --format='%(refname:short)' --contains | \
-          grep -v '^(' | grep -v -F -f excluded-branches`; \
+          grep -v '^(' | grep -v -F -f excluded-branches -x`; \
     rm excluded-branches; \
     gitc=`git rev-list --count HEAD`; \
     gith=`git rev-parse --short HEAD`; \
