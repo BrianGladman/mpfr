@@ -53,6 +53,7 @@ test-driver     - auxiliary installation file
 tests/          - directory containing the testsuite (for "make check")
 tools/          - directory containing various tools
 tune/           - directory containing files for tuning MPFR
+version-ext.sh  - script to get Git-related MPFR version information
 
 According to the special exception to the GNU General Public License,
 the autotools files compile, config.sub, config.guess, ltmain.sh,

@@ -39,14 +39,8 @@ output_info = { \
     fi; \
   fi; \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
-    git tag --contains | sed -n 's/-root$$//p' > excluded-branches; \
-    gitb=`git branch --format='%(refname:short)' --contains | \
-          $(GREP) -v '^(' | $(GREP) -v -F -f excluded-branches -x`; \
-    rm excluded-branches; \
-    gitc=`git rev-list --count HEAD`; \
-    gith=`git rev-parse --short HEAD`; \
-    gitm=`git diff-index --name-only HEAD`; \
-    echo "[git] $$gitb-$$gitc-$$gith$${gitm:+ (modified)}"; \
+    gitv=`GREP=$(GREP) $(top_srcdir)/version-ext.sh`; \
+    echo "[git] $$gitv"; \
   fi; \
   $(GREP) -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
