@@ -41,14 +41,14 @@ output_info = { \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
     git tag --contains | sed -n 's/-root$$//p' > excluded-branches; \
     gitb=`git branch --format='%(refname:short)' --contains | \
-          grep -v '^(' | grep -v -F -f excluded-branches -x`; \
+          $(GREP) -v '^(' | $(GREP) -v -F -f excluded-branches -x`; \
     rm excluded-branches; \
     gitc=`git rev-list --count HEAD`; \
     gith=`git rev-parse --short HEAD`; \
     gitm=`git diff-index --name-only HEAD`; \
     echo "[git] $$gitb-$$gitc-$$gith$${gitm:+ (modified)}"; \
   fi; \
-  grep -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
+  $(GREP) -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \
 }
 
 TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
