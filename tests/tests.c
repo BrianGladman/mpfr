@@ -1203,7 +1203,13 @@ tests_expect_abort (void)
 #endif
 }
 
-/* Guess whether the test runs within Valgrind. */
+/* Guess whether the test runs within Valgrind.
+   Note: This should work at least under Linux and Solaris.
+   If need be, support for macOS (with DYLD_INSERT_LIBRARIES) and
+   i386 FreeBSD on amd64 (with LD_32_PRELOAD) could be added; thanks
+   to Paul Floyd for the information.
+   Up-to-date information should be found at
+   <https://stackoverflow.com/a/62364698/3782797>. */
 int
 tests_run_within_valgrind (void)
 {
