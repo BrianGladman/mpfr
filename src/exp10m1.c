@@ -31,7 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    If we put 0 in t, it means underflow.
    Otherwise return 0. */
 static int
-mpfr_exp10m1_small (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode,
+mpfr_exp10m1_small (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode,
                     mpfr_ptr t)
 {
   mpfr_prec_t prec;
@@ -58,7 +58,7 @@ mpfr_exp10m1_small (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode,
 }
 
 int
-mpfr_exp10m1 (mpfr_ptr y, mpfr_srcptr x , mpfr_rnd_t rnd_mode)
+mpfr_exp10m1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inexact, nloop;
   mpfr_t t;

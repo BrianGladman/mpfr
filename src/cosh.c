@@ -27,7 +27,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *  cosh= 1/2[e^(x)+e^(-x)]              */
 
 int
-mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
+mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
 {
   mpfr_t x;
   int inexact;

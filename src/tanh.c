@@ -24,7 +24,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
+mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
 {
   /****** Declaration ******/
   mpfr_t x;

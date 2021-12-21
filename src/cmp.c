@@ -35,7 +35,7 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
   mp_size_t bn, cn;
   mp_limb_t *bp, *cp;
 
-  s = MPFR_MULT_SIGN( s , MPFR_SIGN(c) );
+  s = MPFR_MULT_SIGN(s, MPFR_SIGN(c));
 
   if (MPFR_ARE_SINGULAR(b, c))
     {

@@ -72,7 +72,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
 
       if (rnd == MPFR_RNDN || rnd == MPFR_RNDNA)
         {
-          mp_limb_t *mant, rb ,sb;
+          mp_limb_t *mant, rb, sb;
           mp_size_t s;
           /* We need the rounding bit and the sticky bit. Read them
              and use the previous table to conclude. */

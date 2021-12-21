@@ -59,7 +59,7 @@ mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       else /* z is finite */
         {
           MPFR_SET_INF(s);
-          MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x) , MPFR_SIGN(y)));
+          MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y)));
           MPFR_RET(0);
         }
     }
@@ -75,7 +75,7 @@ mpfr_fma_singular (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       if (MPFR_IS_ZERO(z))
         {
           int sign_p;
-          sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          sign_p = MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y));
           MPFR_SET_SIGN(s, (rnd_mode != MPFR_RNDD ?
                             (MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z) ?
                              MPFR_SIGN_NEG : MPFR_SIGN_POS) :
@@ -146,7 +146,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           MPFR_PREC(u) = MPFR_PREC(zz) = 2 * precx;
           MPFR_MANT(u) = umant;
           MPFR_MANT(zz) = zmant;
-          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          MPFR_SIGN(u) = MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y));
           MPFR_SIGN(zz) = MPFR_SIGN(z);
           MPFR_EXP(zz) = MPFR_EXP(z);
           if (MPFR_PREC(zz) <= GMP_NUMB_BITS) /* zz fits in one limb */
@@ -203,7 +203,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             }
           else
             MPFR_EXP(u) = e;
-          MPFR_SIGN(u) = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+          MPFR_SIGN(u) = MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y));
           /* The above code does not generate any exception.
              The exceptions will come only from mpfr_add. */
           inexact = mpfr_add (s, u, z, rnd_mode);
