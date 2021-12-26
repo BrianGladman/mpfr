@@ -327,7 +327,7 @@ check_special (void)
   mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_agm (m, x, y, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp_ui (m ,1) == 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (m, 1) == 0);
 
   /* agm(-1,-2) is NaN */
   mpfr_set_si (x, -1, MPFR_RNDN);

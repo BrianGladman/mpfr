@@ -272,7 +272,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                 }
 
               /* foo (a, a, a, a) */
-              testfunc (ref, op1, op1, op1 ,rnd);
+              testfunc (ref, op1, op1, op1, rnd);
               mpfr_set (res, op1, rnd);
               testfunc (res, res, res, res, rnd);
               if (mpfr_compare (res, ref))

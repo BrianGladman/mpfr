@@ -692,8 +692,8 @@ hexadecimal (void)
   check_sprintf ("0x0000f.edcba987654321p+24", "%026RDa", x);
   check_sprintf ("0x0000000000000000000fp+24", "%026.0RDa", x);
   /* sign or space, decimal point, left justified */
-  check_sprintf (" 0XF.EP+24 " , "%- #11.1RDA", x);
-  check_sprintf (" 0XF.P+24  " , "%- #11.0RDA", x);
+  check_sprintf (" 0XF.EP+24 ", "%- #11.1RDA", x);
+  check_sprintf (" 0XF.P+24  ", "%- #11.0RDA", x);
 
   mpfr_mul_si (x, x, -1, MPFR_RNDD);
   mpfr_mul_si (z, z, -1, MPFR_RNDD);

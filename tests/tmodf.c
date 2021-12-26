@@ -87,7 +87,7 @@ check_nans (void)
 
   /* -inf */
   mpfr_set_inf (x, -1);
-  mpfr_modf (xi ,xf, x, MPFR_RNDN);
+  mpfr_modf (xi, xf, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (xi));
   MPFR_ASSERTN (mpfr_sgn (xi) < 0);
   MPFR_ASSERTN (mpfr_zero_p (xf));

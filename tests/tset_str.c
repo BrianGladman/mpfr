@@ -373,7 +373,7 @@ main (int argc, char *argv[])
     }
 
   /* in this example, I think there was a pb in the old function :
-     result of mpfr_set_str_old for the same number , but with more
+     result of mpfr_set_str_old for the same number, but with more
      precision is: 1.111111111110000000000000000111111111111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100111000100001100000010101100111010e184
      this result is the same as mpfr_set_str */
   mpfr_set_prec (x, 64);

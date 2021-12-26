@@ -94,7 +94,7 @@ main (void)
       mpf_urandomb (z, RANDS, z->_mp_prec);
       mpfr_set_prec (u, ((pr / GMP_NUMB_BITS + 1) * GMP_NUMB_BITS));
       mpfr_set_f (u, z, MPFR_RNDN);
-      if (mpfr_cmp_f (u , z) != 0)
+      if (mpfr_cmp_f (u, z) != 0)
         {
           printf ("Error in mpfr_set_f:\n");
           printf ("mpf (precision=%lu)=", pr);
