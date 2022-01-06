@@ -1,6 +1,6 @@
 /* Test file for the beta function
 
-Copyright 2017-2021 Free Software Foundation, Inc.
+Copyright 2017-2022 Free Software Foundation, Inc.
 Contributed by ChemicalDevelopment.
 
 This file is part of the GNU MPFR Library.
