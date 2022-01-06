@@ -181,6 +181,11 @@ POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
           {
             MPFR_BLOCK_DECL (flags);
 
+            /* TODO: Compute POW_U before the division (instead of after)
+               in order to reduce the error in the intermediate result?
+               POW_U, whose condition number is |n|, which may be large,
+               would be called on an exact value. */
+
             /* compute (1/x)^|n| */
             MPFR_BLOCK (flags, mpfr_ui_div (t, 1, x, rnd1));
             MPFR_ASSERTD (! MPFR_UNDERFLOW (flags));
