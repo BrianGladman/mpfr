@@ -230,6 +230,10 @@ To make a release (for the MPFR team):
        $ ./autogen.sh
        $ ./configure
        $ make distcheck
+     If need be, after "./autogen.sh", replace config.guess and config.sub
+     by their latest version (see URLs in these files), e.g. if they are
+     known to solve issues. But note that they may not have been fully
+     tested.
 
   6) Test the release version on different machines, with --enable-assert
      set to "yes", "no" (default), "none" and "full" respectively, with
