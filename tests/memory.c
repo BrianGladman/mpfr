@@ -172,8 +172,12 @@ tests_allocate (size_t size)
 
 /* Note: the double cast (mpfr_uintmax_t) (uintptr_t) below allows to avoid a
    pointer-to-int-cast warning with GCC. The AC_TYPE_UINTPTR_T Autoconf macro
-   must be used to define uintptr_t if not available. */
-
+   must be used to define uintptr_t if not available.
+   Note that pointers may be larger than uintmax_t, even in practice[*];
+   however, since this is just used in error messages, the loss of
+   information may be acceptable (but we should probably use %p).
+   [*] http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2889.htm
+*/
 void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 {
