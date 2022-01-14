@@ -745,8 +745,6 @@ Table of contents:
 7. Portability
 ##############################################################################
 
-- add a web page with results of builds on different architectures
-
 - [Kevin about texp.c long strings]
   For strings longer than c99 guarantees, it might be cleaner to
   introduce a "tests_strdupcat" or something to concatenate literal
