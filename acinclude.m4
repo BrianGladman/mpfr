@@ -1481,6 +1481,7 @@ dnl  Determine a math library -lm to use.
 dnl
 dnl FIXME: The tests below may yield the following error with a GCC snapshot:
 dnl   error: infinite recursion detected [-Werror=infinite-recursion]
+dnl The consequence is that -lm is not used, and the build of trint fails.
 dnl Why is "main" used as the library function?
 AC_DEFUN([MPFR_CHECK_LIBM],
 [AC_REQUIRE([AC_CANONICAL_HOST])
