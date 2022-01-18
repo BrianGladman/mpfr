@@ -31,6 +31,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *   https://dx.doi.org/10.1145/2710016
  *   https://arxiv.org/abs/1303.6257
  *
+ * Note: the algorithm implemented here has been improved in
+ * Du, Fan and Wei in "An improved exact sampling algorithm for the standard
+ * normal distribution", Computational Statistics, 2021,
+ * https://doi.org/10.1007/s00180-021-01136-w
+ *
  * The implementation here closely follows the C++ one given in the paper
  * above.  However, here, C is simplified by using gmp_urandomm_ui; the initial
  * rejection step in H just tests the leading bit of p; and the assignment of
