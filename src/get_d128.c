@@ -38,6 +38,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * recognized as BID, this function should be reimplemented directly by
  * using the specification of the encoding of this format, as already
  * done for _Decimal64 (see string_to_Decimal64 in get_d64.c).
+ * Or use strtod128 when available, making sure that the string is
+ * locale-independent? (Should one optionally use libdfp for that?)
  */
 
 #include "mpfr-impl.h"
