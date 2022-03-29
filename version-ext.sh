@@ -25,5 +25,15 @@ gitb=`git branch --format='%(refname:short)' --contains | \
 rm excluded-branches
 gitc=`git rev-list --count HEAD`
 gith=`git rev-parse --short HEAD`
-gitm=`git diff-index --name-only HEAD`
+gitm=`git update-index -q --refresh; git diff-index --name-only HEAD`
 echo "$gitb-$gitc-$gith${gitm:+ (modified)}"
+
+# References:
+#   https://stackoverflow.com/q/3882838/3782797
+#   https://stackoverflow.com/a/3899339/3782797
+#     for the "git diff-index --name-only HEAD" solution, but this
+#     is not sufficient, because autogen.sh modifies the "INSTALL"
+#     and "doc/texinfo.tex" files (due to "autoreconf -f -i"), and
+#     restores them. On needs:
+#   https://stackoverflow.com/q/3882838/3782797#comment121636904_3899339
+#     suggesting "git update-index -q --refresh" first.
