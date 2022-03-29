@@ -115,6 +115,9 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
+- reduction function and augmented arithmetic functions that are not planned
+  for inclusing in C23:
+  https://wiki.edg.com/pub/CFP/WebHome/cfp4r-20220328.pdf
 - cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
   rootn (there is mpfr_rootn_ui but not mpfr_rootn_si yet)
