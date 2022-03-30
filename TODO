@@ -115,10 +115,6 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- reduction function and augmented arithmetic functions that are not planned
-  for inclusing in C23.
-  Note: the interface for the augmented arithmetic functions will need to be
-  discussed.
 - cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
   rootn (there is mpfr_rootn_ui but not mpfr_rootn_si yet)
@@ -168,6 +164,11 @@ Table of contents:
   Some propositions about rootn: mpfr_rootn_si, mpfr_rootn_sj, mpfr_rootn_z,
   and versions with an unsigned integer: mpfr_rootn_ui (now implemented, as
   similar to mpfr_root) and mpfr_rootn_uj.
+- reduction functions and augmented arithmetic functions from IEEE 754-2019.
+  Note: the interface for the augmented arithmetic functions will need to be
+  discussed (suggestion: for augmentedAddition and augmentedSubtraction,
+  where x+y-roundTiesTowardZero(x+y) may be inexact in MPFR, use a spec
+  similar to augmentedMultiplication).
 - functions defined in the LIA-2 standard
   <https://standards.iso.org/ittf/PubliclyAvailableStandards/c024427_ISO_IEC_10967-2_2001(E).zip>
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq
