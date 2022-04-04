@@ -93,7 +93,8 @@ mpfr_rootn_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mpfr_rnd_t rnd_mode)
           MPFR_SET_SAME_SIGN (y, x);
         }
       else /* x is necessarily 0: (+0)^(1/k) = +0
-                                  (-0)^(1/k) = -0 */
+                                  (-0)^(1/k) = +0 if k even
+                                  (-0)^(1/k) = -0 if k odd */
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           MPFR_SET_ZERO (y);
