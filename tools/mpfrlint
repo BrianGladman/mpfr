@@ -364,6 +364,14 @@ err-if-output \
   --msg="fclose() or fflush() seems to be compared with -1 instead of EOF" \
   -t "fclose/fflush" grep -E 'f(close|flush).*[!=]= *-1' $srctests
 
+# Detect "% 1", which always gives 0, probably mistaken for "& 1" or "% 2".
+# Note: We use "% +1" instead of "% *1" because the code has lots of "%1"
+# in strings (for other purposes). Anyway, the coding styles recommend to
+# put a space around operators.
+err-if-output \
+  --msg='"% 1" always gives 0; was "& 1" or "% 2" intended?' \
+  -t "modulo 1" grep -E '% +1\>' $srctests
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in $c_src
