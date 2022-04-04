@@ -1909,27 +1909,27 @@ main (int argc, char **argv)
 
   bad_cases (powu2, root2, "mpfr_pow_ui[2]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows2, root2, "mpfr_pow_ui[2]",
+  bad_cases (pows2, root2, "mpfr_pow_si[2]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu3, root3, "mpfr_pow_ui[3]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows3, root3, "mpfr_pow_ui[3]",
+  bad_cases (pows3, root3, "mpfr_pow_si[3]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu4, root4, "mpfr_pow_ui[4]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows4, root4, "mpfr_pow_ui[4]",
+  bad_cases (pows4, root4, "mpfr_pow_si[4]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu5, root5, "mpfr_pow_ui[5]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows5, root5, "mpfr_pow_ui[5]",
+  bad_cases (pows5, root5, "mpfr_pow_si[5]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu17, root17, "mpfr_pow_ui[17]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows17, root17, "mpfr_pow_ui[17]",
+  bad_cases (pows17, root17, "mpfr_pow_si[17]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu120, root120, "mpfr_pow_ui[120]",
              8, -256, 255, 4, 128, 800, 40);
-  bad_cases (pows120, root120, "mpfr_pow_ui[120]",
+  bad_cases (pows120, root120, "mpfr_pow_si[120]",
              8, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
