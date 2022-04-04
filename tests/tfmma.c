@@ -259,7 +259,7 @@ overflow_tests (void)
       mpfr_flags_t flags1, flags2;
 
       /* In most cases, we do the test with the maximum exponent. */
-      emax = i % 8 != 0 ? MPFR_EMAX_MAX : 64 + (randlimb () % 1);
+      emax = i % 8 != 0 ? MPFR_EMAX_MAX : 64 + (randlimb () & 1);
       set_emax (emax);
       exp_a = emax/2 + 32;
 
@@ -315,12 +315,12 @@ overflow_tests (void)
 
       /* c and d such that a^2 +/- cd ~= a^2 (overflow) */
       mpfr_urandom (c, RANDS, MPFR_RNDU);
-      mpfr_set_exp (c, randlimb () % 1 ? exp_a - 2 : __gmpfr_emin);
-      if (randlimb () % 1)
+      mpfr_set_exp (c, randlimb () & 1 ? exp_a - 2 : __gmpfr_emin);
+      if (randlimb () & 1)
         mpfr_neg (c, c, MPFR_RNDN);
       mpfr_urandom (d, RANDS, MPFR_RNDU);
-      mpfr_set_exp (d, randlimb () % 1 ? exp_a - 2 : __gmpfr_emin);
-      if (randlimb () % 1)
+      mpfr_set_exp (d, randlimb () & 1 ? exp_a - 2 : __gmpfr_emin);
+      if (randlimb () & 1)
         mpfr_neg (d, d, MPFR_RNDN);
 
       mpfr_clear_flags ();
