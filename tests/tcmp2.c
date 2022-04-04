@@ -91,7 +91,7 @@ worst_cases (void)
       set_bit (y, i + 1, 0);
       for (j = 0; j < 64; j++) /* |v| = j */
         {
-          b = randlimb () % 2;
+          b = RAND_BOOL ();
           set_bit (x, i + j + 2, b);
           set_bit (y, i + j + 2, b);
           for (k = 0; k < 64; k++)
@@ -322,9 +322,9 @@ test_equal (void)
             inex = mpfr_set (y, w, MPFR_RNDN);
             MPFR_ASSERTN (inex == 0);
             MPFR_ASSERTN (mpfr_equal_p (x, y));
-            if (randlimb () & 1)
+            if (RAND_BOOL ())
               mpfr_neg (x, x, MPFR_RNDN);
-            if (randlimb () & 1)
+            if (RAND_BOOL ())
               mpfr_neg (y, y, MPFR_RNDN);
             if (mpfr_cmp2 (x, y, &j) != 0)
               {

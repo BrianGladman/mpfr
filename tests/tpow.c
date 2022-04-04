@@ -541,7 +541,7 @@ check_inexact (mpfr_prec_t p)
   mpfr_init (z);
   mpfr_init (t);
   mpfr_urandomb (x, RANDS);
-  u = randlimb () % 2;
+  u = RAND_BOOL ();
   for (q = MPFR_PREC_MIN; q <= p; q++)
     RND_LOOP_NO_RNDF(rnd)
       {

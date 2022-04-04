@@ -135,8 +135,13 @@ extern "C" {
 /* Ditto, excluding RNDF, assumed to be the last rounding mode */
 #define RND_RAND_NO_RNDF() ((mpfr_rnd_t) (randlimb() % MPFR_RNDF))
 
+/* Generates a random boolean (with type int, thanks to the "!= 0" test).
+   Note: "& 1" is better than "% 2" for compilers with limited optimization,
+   such as tcc 0.9.27. */
+#define RAND_BOOL() ((randlimb() & 1) != 0)
+
 /* Generates a random sign */
-#define RAND_SIGN() (randlimb() % 2 ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
+#define RAND_SIGN() (RAND_BOOL() ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
 
 /* Loop for all rounding modes */
 #define RND_LOOP(_r) for((_r) = 0 ; (_r) < MPFR_RND_MAX ; (_r)++)

@@ -345,7 +345,7 @@ bigint (void)
 #define TEST_FUNCTION TF
 #define INTEGER_TYPE unsigned long
 #define INT_RAND_FUNCTION() \
-  (INTEGER_TYPE) (randlimb () & 1 ? randlimb () : randlimb () % 3 + 2)
+  (INTEGER_TYPE) (RAND_BOOL () ? randlimb () : randlimb () % 3 + 2)
 #include "tgeneric_ui.c"
 
 static void

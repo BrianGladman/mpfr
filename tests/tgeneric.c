@@ -217,7 +217,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
           mpfr_exp_t oemin, oemax;
 
           xprec = prec;
-          if (randlimb () & 1)
+          if (RAND_BOOL ())
             {
               /* In half cases, modify the precision of the inputs:
                  If the base precision (for the result) is small,
@@ -291,7 +291,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   mpfr_set_si (x, n == 1 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, REDUCE_EMIN);
 #if defined(TWO_ARGS_ALL)
-                  mpfr_set_si (x2, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_si (x2, RAND_BOOL () ? -1 : 1, MPFR_RNDN);
                   mpfr_set_exp (x2, REDUCE_EMIN);
 #endif
                 }
@@ -301,7 +301,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   mpfr_set_si (x, n == 3 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS_ALL)
-                  mpfr_set_si (x2, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_si (x2, RAND_BOOL () ? -1 : 1, MPFR_RNDN);
                   mpfr_setmax (x2, REDUCE_EMAX);
 #endif
                 }
@@ -311,7 +311,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   MPFR_ASSERTN (n == 5 || n == 6);
                   mpfr_set_si (x, n == 5 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, REDUCE_EMIN);
-                  mpfr_set_si (x2, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_si (x2, RAND_BOOL () ? -1 : 1, MPFR_RNDN);
                   mpfr_setmax (x2, REDUCE_EMAX);
                 }
               else
@@ -319,7 +319,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   MPFR_ASSERTN (n == 7 || n == 8);
                   mpfr_set_si (x, n == 7 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
-                  mpfr_set_si (x2, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
+                  mpfr_set_si (x2, RAND_BOOL () ? -1 : 1, MPFR_RNDN);
                   mpfr_set_exp (x2, REDUCE_EMIN);
                 }
 #endif  /* two arguments */
@@ -714,7 +714,7 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                  it will remain set after the function call and no checks
                  are performed in such a case (see the mpfr_erangeflag_p
                  test below). */
-              if (randlimb () & 1)
+              if (RAND_BOOL ())
                 __gmpfr_flags = MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE;
 #ifdef MPFR_DEBUG_TGENERIC
               TGENERIC_INFO (MPFR_PREC (z));

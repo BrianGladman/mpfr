@@ -41,7 +41,7 @@ check_inexact (void)
       mpfr_set_prec (x, p);
       mpfr_set_prec (absx, p);
       mpfr_urandomb (x, RANDS);
-      if (randlimb () % 2)
+      if (RAND_BOOL ())
         {
           mpfr_set (absx, x, MPFR_RNDN);
           mpfr_neg (x, x, MPFR_RNDN);

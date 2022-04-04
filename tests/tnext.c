@@ -60,11 +60,11 @@ generic_abovebelow (void)
       do
         mpfr_urandomb (x, RANDS);
       while (mpfr_cmp_ui (x, 0) == 0);
-      neg = randlimb () & 1;
+      neg = RAND_BOOL ();
       if (neg)
         mpfr_neg (x, x, MPFR_RNDN);
       mpfr_set (y, x, MPFR_RNDN);
-      below = randlimb () & 1;
+      below = RAND_BOOL ();
       if (below)
         mpfr_nextbelow (y);
       else

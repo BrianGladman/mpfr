@@ -748,7 +748,7 @@ check_1111 (void)
         mpfr_set (b, one, MPFR_RNDN);
       tc = 1 + (randlimb () % (prec_c - 1));
       mpfr_div_2ui (c, one, tc, MPFR_RNDN);
-      sc = randlimb () % 2;
+      sc = RAND_BOOL ();
       if (sc)
         mpfr_neg (c, c, MPFR_RNDN);
       test_add (c, c, one, MPFR_RNDN);

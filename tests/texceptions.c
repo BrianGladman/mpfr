@@ -404,7 +404,7 @@ check_groups (void)
       MPFR_ASSERTN ((mpfr_flags_save) () == f1);
       MPFR_ASSERTN (__gmpfr_flags == f1);
       mask = randlimb () & MPFR_FLAGS_ALL;
-      if (randlimb () & 1)
+      if (RAND_BOOL ())
         mpfr_flags_set (mask);
       else
         (mpfr_flags_set) (mask);
@@ -420,7 +420,7 @@ check_groups (void)
 
       f2 = __gmpfr_flags;
       mask = randlimb () & MPFR_FLAGS_ALL;
-      if (randlimb () & 1)
+      if (RAND_BOOL ())
         mpfr_flags_clear (mask);
       else
         (mpfr_flags_clear) (mask);
@@ -435,8 +435,7 @@ check_groups (void)
           }
 
       mask = randlimb () & MPFR_FLAGS_ALL;
-      f2 = (randlimb () & 1) ?
-        mpfr_flags_test (mask) : (mpfr_flags_test) (mask);
+      f2 = RAND_BOOL () ? mpfr_flags_test (mask) : (mpfr_flags_test) (mask);
       for (j = 1; j <= MPFR_FLAGS_ALL; j <<= 1)
         if ((f2 & j) != ((mask & j) != 0 ? (__gmpfr_flags & j) : 0))
           {
@@ -448,7 +447,7 @@ check_groups (void)
           }
 
       f2 = __gmpfr_flags;
-      if (randlimb () & 1)
+      if (RAND_BOOL ())
         mpfr_flags_restore (f1, mask);
       else
         (mpfr_flags_restore) (f1, mask);

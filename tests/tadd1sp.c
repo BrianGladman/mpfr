@@ -351,9 +351,9 @@ check_random (mpfr_prec_t p)
       mpfr_urandom (c, RANDS, MPFR_RNDA);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
         {
-          if (randlimb () & 1)
+          if (RAND_BOOL ())
             mpfr_neg (b, b, MPFR_RNDN);
-          if (randlimb () & 1)
+          if (RAND_BOOL ())
             mpfr_neg (c, c, MPFR_RNDN);
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
             {

@@ -590,7 +590,7 @@ consistency (void)
         {
           tests_default_random (x, 256, -5, 50, 0);
           rnd = RND_RAND_NO_RNDF ();
-          flags_before = (randlimb () & 1) ?
+          flags_before = RAND_BOOL () ?
             (unsigned int) (MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE) :
             (unsigned int) 0;
         }

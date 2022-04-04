@@ -73,7 +73,7 @@ check4 (const char *as, const char *bs, mpfr_rnd_t rnd_mode,
         }
 
       __gmpfr_flags = expflags =
-        (randlimb () & 1) ? MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE : 0;
+        RAND_BOOL () ? MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE : 0;
       inex2 = mpfr_agm (tres, ta, tb, rnd_mode);
       newflags = __gmpfr_flags;
       expflags |= MPFR_FLAGS_INEXACT;

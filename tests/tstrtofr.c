@@ -1458,7 +1458,7 @@ random_tests (void)
              we should cover all cases, with s2 very close to s0, s2 very
              close to s1, or not too close to either. */
 
-          neg = randlimb () & 1;
+          neg = RAND_BOOL ();
           s2[0] = neg ? '-' : '+';
           s2[1] = '.';
 

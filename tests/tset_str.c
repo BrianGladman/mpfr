@@ -154,7 +154,7 @@ main (int argc, char *argv[])
         {
           for (k = 1; k <= bd; k++, str2++)
             {
-              *str2 = '0' + (randlimb () & 1);
+              *str2 = '0' + RAND_BOOL ();
               if (lz == -bd && *str2 != '0')
                 lz = k - bd; /* position of the first 1 */
             }
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
 
       for (k = 1; k < nc - 17 - bd; k++, str2++)
         {
-          *str2 = '0' + (randlimb () & 1);
+          *str2 = '0' + RAND_BOOL ();
           if (lz == -bd && *str2 != '0')
             lz = k; /* position of the first 1 */
         }

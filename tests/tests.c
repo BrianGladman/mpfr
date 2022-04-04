@@ -683,7 +683,7 @@ tests_default_random (mpfr_ptr x, int pos, mpfr_exp_t emin, mpfr_exp_t emax,
      exponent range (well, this is a bit ugly...). */
 
   mpfr_urandomb (x, RANDS);
-  if (MPFR_IS_PURE_FP (x) && (emin >= 1 || always_scale || (randlimb () & 1)))
+  if (MPFR_IS_PURE_FP (x) && (emin >= 1 || always_scale || RAND_BOOL ()))
     {
       mpfr_exp_t e;
       e = emin + (mpfr_exp_t) (randlimb () % (emax - emin + 1));

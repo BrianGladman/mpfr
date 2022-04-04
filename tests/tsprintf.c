@@ -1066,7 +1066,7 @@ random_double (void)
       while (ABS(y) < DBL_MIN);
 #endif
 
-      if (randlimb () % 2 == 0)
+      if (RAND_BOOL ())
         y = -y;
 
       mpfr_set_d (x, y, MPFR_RNDN);
@@ -1100,10 +1100,8 @@ random_double (void)
       MPFR_ASSERTN (ptr_mpfr - fmt_mpfr < FMT_MPFR_SIZE);
 
       /* advantage small precision */
-      if (randlimb() % 2 == 0)
-        prec = (int) (randlimb() % 10);
-      else
-        prec = (int) (randlimb() % prec_max_printf);
+      prec = RAND_BOOL () ? 10 : prec_max_printf;
+      prec = (int) (randlimb () % prec);
 
       /* 3. calls and checks */
       /* the double float case is handled by the libc asprintf through

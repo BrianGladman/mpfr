@@ -500,7 +500,7 @@ main (int argc, char *argv[])
       if (s > 1)
         {
           mpz_mul_2exp (z, z, 1);
-          if (randlimb () % 2)
+          if (RAND_BOOL ())
             mpz_add_ui (z, z, 1);
         }
       /* now 2^(s-1) <= z < 2^s */
@@ -517,9 +517,9 @@ main (int argc, char *argv[])
 #endif
           exit (1);
         }
-      if (randlimb () % 2)
+      if (RAND_BOOL ())
         mpfr_neg (x, x, MPFR_RNDN);
-      if (randlimb () % 2)
+      if (RAND_BOOL ())
         mpfr_div_2ui (x, x, randlimb () % s, MPFR_RNDN);
       for (p = MPFR_PREC_MIN; p < 100; p++)
         {

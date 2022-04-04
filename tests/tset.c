@@ -217,7 +217,7 @@ check_ternary_value (void)
     {
       mpfr_set_prec (x, p);
       mpfr_urandomb (x, RANDS);
-      if (randlimb () % 2)
+      if (RAND_BOOL ())
         mpfr_neg (x, x, MPFR_RNDN);
       for (q=2; q<2*p; q++)
         {
