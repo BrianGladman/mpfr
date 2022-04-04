@@ -73,7 +73,8 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   static int pows##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
   { return mpfr_pow_si (y, x, N, rnd); }                                \
   static int root##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
-  { return mpfr_root (y, x, N, rnd); }
+  { return RAND_BOOL () ?                                               \
+      mpfr_root (y, x, N, rnd) : mpfr_rootn_ui (y, x, N, rnd); }
 
 DEFN(2)
 DEFN(3)
