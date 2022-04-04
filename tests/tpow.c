@@ -1932,6 +1932,9 @@ main (int argc, char **argv)
   bad_cases (pows120, root120, "mpfr_pow_si[120]",
              8, -256, 255, 4, 128, 800, 40);
 
+  /* TODO: Once mpfr_rootn_si is implemented, mpfr_pow_si could be tested
+     with bad_cases on negative values. */
+
   tests_end_mpfr ();
   return 0;
 }
