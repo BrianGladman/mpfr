@@ -764,6 +764,7 @@ __MPFR_DECLSPEC int mpfr_root (mpfr_ptr, mpfr_srcptr, unsigned long,
                                mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_rootn_ui (mpfr_ptr, mpfr_srcptr, unsigned long,
                                    mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_rootn_si (mpfr_ptr, mpfr_srcptr, long, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_gamma (mpfr_ptr, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_gamma_inc (mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                                     mpfr_rnd_t);

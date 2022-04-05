@@ -65,13 +65,13 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tlog_ui tmin_prec tminmax tmodf tmul tmul_2exp tmul_d tmul_ui      \
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3 tpowr   \
      tpow_all tpow_z tprec_round tprintf trandom trandom_deviate        \
-     trec_sqrt tremquo trint trndna troot trootn_ui tsec tsech          \
-     tset_d tset_f tset_float128 tset_ld tset_q tset_si tset_sj         \
-     tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos tsinh tsinh_cosh  \
-     tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr      \
-     tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan ttanh       \
-     ttanu ttotal_order ttrunc tui_div tui_pow tui_sub turandom tvalist \
-     ty0 ty1 tyn tzeta tzeta_ui
+     trec_sqrt tremquo trint trndna troot trootn_si trootn_ui           \
+     tsec tsech tset_d tset_f tset_float128 tset_ld tset_q              \
+     tset_si tset_sj tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos   \
+     tsinh tsinh_cosh tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc      \
+     tstdint tstrtofr tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap \
+     ttan ttanh ttanu ttotal_order ttrunc tui_div tui_pow tui_sub       \
+     turandom tvalist ty0 ty1 tyn tzeta tzeta_ui
 
 check_PROGRAMS = tversion $(TESTS_NO_TVERSION)
 
