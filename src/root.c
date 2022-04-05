@@ -365,13 +365,25 @@ mpfr_rootn_si (mpfr_ptr y, mpfr_srcptr x, long k, mpfr_rnd_t rnd_mode)
   if (mpfr_cmpabs (x, __gmpfr_one) == 0)
     return mpfr_set (y, x, rnd_mode);
 
-  /* The case k == -1 is probably rare in practice (the user would directly
+  /* The case k = -1 is probably rare in practice (the user would directly
      do a division if k is a constant, and even mpfr_pow_si is more natural).
      But let's take it into account here, so that in the general case below,
      overflows and underflows will be impossible, and we won't need to test
-     and handle the corresponding flags. */
-  if (k == -1)
-    return mpfr_ui_div (y, 1, x, rnd_mode);
+     and handle the corresponding flags. And let's take the opportunity to
+     handle k = -2 as well since mpfr_rec_sqrt is faster than the generic
+     mpfr_rootn_si (this is visible when running the trec_sqrt tests with
+     mpfr_rootn_si + generic code for k = -2 instead of mpfr_rec_sqrt). */
+  /* TODO: If MPFR_WANT_ASSERT >= 2, define a new mpfr_rootn_si function
+     so that for k = -2, compute the result with both mpfr_rec_sqrt and
+     the generic code, and compare (ditto for mpfr_rec_sqrt), like what
+     is done in add1sp.c (mpfr_add1sp and mpfr_add1 results compared). */
+  if (k >= -2)
+    {
+      if (k == -1)
+        return mpfr_ui_div (y, 1, x, rnd_mode);
+      else
+        return mpfr_rec_sqrt (y, x, rnd_mode);
+    }
 
   /* TODO: Should we expand mpfr_root_aux to negative values of k
      and call it if k < -100, a bit like in mpfr_rootn_ui? */
