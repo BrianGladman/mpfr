@@ -402,7 +402,7 @@ mpfr_rootn_si (mpfr_ptr y, mpfr_srcptr x, long k, mpfr_rnd_t rnd_mode)
         /* Let's use MPFR_RNDF to avoid the potentially costly detection
            of exact cases in mpfr_rootn_ui (we just lose one bit in the
            final approximation). */
-        mpfr_rootn_ui (t, x, -k, MPFR_RNDF);
+        mpfr_rootn_ui (t, x, - (unsigned long) k, MPFR_RNDF);
         inexact = mpfr_ui_div (t, 1, t, rnd_mode);
 
         /* The final error is bounded by 5 ulp (see algorithms.tex,

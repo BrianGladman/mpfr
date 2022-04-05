@@ -184,6 +184,12 @@ special (void)
   mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
+#define TEST_FUNCTION mpfr_rootn_si
+#define INTEGER_TYPE long
+#define INT_RAND_FUNCTION() \
+  (randlimb () % 16 == 0 ? randlong () : (long) (randlimb () % 31) - 15)
+#include "tgeneric_ui.c"
+
 int
 main (void)
 {
@@ -204,6 +210,8 @@ main (void)
   bad_cases (rootm5, powm5, "rootn[-5]", 256, -256, 255, 4, 128, 440, 40);
   bad_cases (rootm17, powm17, "rootn[-17]", 256, -256, 255, 4, 128, 800, 40);
   bad_cases (rootm120, powm120, "rootn[-120]", 0, -256, 255, 4, 128, 800, 40);
+
+  test_generic_ui (MPFR_PREC_MIN, 200, 30);
 
   tests_end_mpfr ();
   return 0;
