@@ -36,7 +36,7 @@ POW_U (mpfr_ptr y, mpfr_srcptr x, UTYPE n, mpfr_rnd_t rnd)
 {
   UTYPE m;
   mpfr_t res;
-  mpfr_prec_t prec, err;
+  mpfr_prec_t prec, err, nlen;
   int inexact;
   mpfr_rnd_t rnd1;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -95,9 +95,15 @@ POW_U (mpfr_ptr y, mpfr_srcptr x, UTYPE n, mpfr_rnd_t rnd)
   /* Augment exponent range */
   MPFR_SAVE_EXPO_MARK (expo);
 
+  for (m = n, nlen = 0; m != 0; nlen++, m >>= 1)
+    ;
+  /* 2^(nlen-1) <= n < 2^nlen */
+
   /* setup initial precision */
   prec = MPFR_PREC (y) + 3 + GMP_NUMB_BITS
     + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
+  if (prec <= nlen)
+    prec = nlen + 1;
   mpfr_init2 (res, prec);
 
   rnd1 = MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD; /* away */
@@ -107,15 +113,13 @@ POW_U (mpfr_ptr y, mpfr_srcptr x, UTYPE n, mpfr_rnd_t rnd)
     {
       int i;
 
-      for (m = n, i = 0; m; i++, m >>= 1)
-        ;
-      /* now 2^(i-1) <= n < 2^i */
-      MPFR_ASSERTD (prec > (mpfr_prec_t) i);
-      err = prec - 1 - (mpfr_prec_t) i;
+      MPFR_ASSERTD (prec > nlen);
+      err = prec - 1 - nlen;
       /* First step: compute square from x */
       MPFR_BLOCK (flags,
                   inexact = mpfr_sqr (res, x, MPFR_RNDU);
-                  MPFR_ASSERTD (i >= 2);
+                  MPFR_ASSERTD (nlen >= 2 && nlen <= INT_MAX);
+                  i = nlen;
                   if (n & ((UTYPE) 1 << (i-2)))
                     inexact |= mpfr_mul (res, res, x, rnd1);
                   for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
