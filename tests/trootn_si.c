@@ -162,7 +162,7 @@ special (void)
             if (MPFR_NOTZERO (y))
               {
                 printf ("Error: rootn(%c0,%d) is not a zero\n",
-                        x > 0 ? '+' : '-', n[i]);
+                        sx > 0 ? '+' : '-', n[i]);
                 exit (1);
               }
             MPFR_ASSERTN (__gmpfr_flags == 0);
@@ -171,7 +171,7 @@ special (void)
           {
             if (! MPFR_IS_NAN (y))
               {
-                printf ("Error: rootn(%c0,0) <> NaN\n", x > 0 ? '+' : '-');
+                printf ("Error: rootn(%c0,0) <> NaN\n", sx > 0 ? '+' : '-');
                 exit (1);
               }
             MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
