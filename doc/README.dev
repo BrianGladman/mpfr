@@ -782,7 +782,8 @@ write e.g. for long:
 
   u > LONG_MAX ? -1 - (long) ~u : (long) u
 
-(at least GCC and Clang optimize this expression to identity).
+(at least GCC and Clang optimize this expression to identity). This is
+provided by the ULONG2LONG() macro (defined in mpfr-impl.h).
 
    =====================================================================
 

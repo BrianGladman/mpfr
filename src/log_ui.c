@@ -143,7 +143,7 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   if (k < sizeof (unsigned long) * CHAR_BIT)
     n -= 1UL << k;
   /* n is now the value of p mod ULONG_MAX+1 */
-  p = n > LONG_MAX ? - (long) - n : (long) n;
+  p = ULONG2LONG (n);
 
   MPFR_TMP_MARK(marker);
   w = MPFR_PREC(x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC(x)) + 10;

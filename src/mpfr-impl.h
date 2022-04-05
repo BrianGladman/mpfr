@@ -1613,6 +1613,8 @@ do {                                                                  \
 #define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
 #define SAFE_DIFF(type,x,y) (MPFR_ASSERTD((x) >= (y)), (type)(x) - (type)(y))
 
+#define ULONG2LONG(U) ((U) > LONG_MAX ? -1 - (long) ~(U) : (long) (U))
+
 /* Check whether an integer type (after integer promotion) is signed.
    This can be determined at compilation time, but unfortunately this
    is not a constant expression, so that this cannot be used for a
