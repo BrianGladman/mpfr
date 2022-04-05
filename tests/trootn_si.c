@@ -43,7 +43,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  int i, inex;
+  int i, inex, sx;
   int n[] = { -123456, -12345, -123, -12, -5, -4, -3, -2, -1, 0,
     1, 2, 3, 4, 5, 12, 123, 12345, 123456 };
 
@@ -53,12 +53,14 @@ special (void)
   mpfr_set_nan (x);
   for (i = 0; i < numberof (n); i++)
     {
+      mpfr_clear_flags ();
       inex = mpfr_rootn_si (y, x, n[i], MPFR_RNDN);
       if (! MPFR_IS_NAN (y))
         {
           printf ("Error: rootn(NaN,%d) <> NaN\n", n[i]);
           exit (1);
         }
+      MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
       MPFR_ASSERTN (inex == 0);
     }
 
@@ -66,6 +68,7 @@ special (void)
   mpfr_set_inf (x, 1);
   for (i = 0; i < numberof (n); i++)
     {
+      mpfr_clear_flags ();
       inex = mpfr_rootn_si (y, x, n[i], MPFR_RNDN);
       if (n[i] < 0)
         {
@@ -77,7 +80,7 @@ special (void)
         }
       else if (n[i] > 0)
         {
-          if (! mpfr_inf_p (y) || MPFR_IS_NEG (y))
+          if (! MPFR_IS_INF (y) || MPFR_IS_NEG (y))
             {
               printf ("Error: rootn(+Inf,%d) <> +Inf\n", n[i]);
               exit (1);
@@ -88,8 +91,93 @@ special (void)
           printf ("Error: rootn(+Inf,0) <> NaN\n");
           exit (1);
         }
+      MPFR_ASSERTN (__gmpfr_flags == (n[i] == 0 ? MPFR_FLAGS_NAN : 0));
       MPFR_ASSERTN (inex == 0);
     }
+
+  /* rootn(-Inf) = -0 (resp. -Inf) for sign(n) = -1 (resp. 1) and odd n,
+     NaN for even n */
+  mpfr_set_inf (x, -1);
+  for (i = 0; i < numberof (n); i++)
+    {
+      mpfr_clear_flags ();
+      inex = mpfr_rootn_si (y, x, n[i], MPFR_RNDN);
+      if (n[i] % 2 == 0)
+        {
+          if (! MPFR_IS_NAN (y))
+            {
+              printf ("Error: rootn(-Inf,%d) <> NaN\n", n[i]);
+              exit (1);
+            }
+          MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
+        }
+      else
+        {
+          if (n[i] < 0)
+            {
+              if (MPFR_NOTZERO (y) || MPFR_IS_POS (y))
+                {
+                  printf ("Error: rootn(-Inf,%d) <> -0\n", n[i]);
+                  exit (1);
+                }
+            }
+          else
+            {
+              if (! MPFR_IS_INF (y) || MPFR_IS_POS (y))
+                {
+                  printf ("Error: rootn(-Inf,%d) <> -Inf\n", n[i]);
+                  exit (1);
+                }
+            }
+          MPFR_ASSERTN (__gmpfr_flags == 0);
+        }
+      MPFR_ASSERTN (inex == 0);
+    }
+
+  /* rootn(+/- 0) */
+  for (i = 0; i < numberof (n); i++)
+    for (sx = -1; sx <= 1; sx += 2)
+      {
+        mpfr_set_zero (x, sx);
+        mpfr_clear_flags ();
+        inex = mpfr_rootn_si (y, x, n[i], MPFR_RNDN);
+        if (sx > 0 || n[i] % 2 == 0 ? MPFR_IS_NEG (y) : MPFR_IS_POS (y))
+          {
+            printf ("Error: rootn(%c0,%d) has a wrong sign\n",
+                    sx > 0 ? '+' : '-', n[i]);
+            exit (1);
+          }
+        if (n[i] < 0)
+          {
+            if (! MPFR_IS_INF (y))
+              {
+                printf ("Error: rootn(%c0,%d) is not an infinity\n",
+                        sx > 0 ? '+' : '-', n[i]);
+                exit (1);
+              }
+            MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_DIVBY0);
+          }
+        else if (n[i] > 0)
+          {
+            if (MPFR_NOTZERO (y))
+              {
+                printf ("Error: rootn(%c0,%d) is not a zero\n",
+                        x > 0 ? '+' : '-', n[i]);
+                exit (1);
+              }
+            MPFR_ASSERTN (__gmpfr_flags == 0);
+          }
+        else
+          {
+            if (! MPFR_IS_NAN (y))
+              {
+                printf ("Error: rootn(%c0,0) <> NaN\n", x > 0 ? '+' : '-');
+                exit (1);
+              }
+            MPFR_ASSERTN (__gmpfr_flags == MPFR_FLAGS_NAN);
+          }
+        MPFR_ASSERTN (inex == 0);
+      }
 
   /* TODO: complete the tests. */
 
