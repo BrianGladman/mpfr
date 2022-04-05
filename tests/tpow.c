@@ -59,11 +59,15 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #define TEST_FUNCTION mpfr_pow_ui
 #define INTEGER_TYPE  unsigned long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
+#define INT_RAND_FUNCTION() \
+  (randlimb () % 16 == 0 ? randulong () : (unsigned long) (randlimb () % 32))
 #include "tgeneric_ui.c"
 
 #define TEST_FUNCTION mpfr_pow_si
 #define INTEGER_TYPE  long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
+#define INT_RAND_FUNCTION() \
+  (randlimb () % 16 == 0 ? randlong () : (long) (randlimb () % 31) - 15)
 #define test_generic_ui test_generic_si
 #include "tgeneric_ui.c"
 
