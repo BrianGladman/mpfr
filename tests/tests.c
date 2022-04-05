@@ -494,6 +494,36 @@ randlimb (void)
   return limb;
 }
 
+unsigned long
+randulong (void)
+{
+#ifdef MPFR_LONG_WITHIN_LIMB
+
+  return randlimb ();
+
+#else
+
+  unsigned long u = 0, v = 0;
+
+  while (u |= randlimb (), v |= MPFR_LIMB_MAX, v != ULONG_MAX)
+    {
+      u <<= GMP_NUMB_BITS;
+      v <<= GMP_NUMB_BITS;
+    }
+
+  return u;
+
+#endif
+}
+
+long
+randlong (void)
+{
+  unsigned long u = randulong ();
+
+  return ULONG2LONG (u);
+}
+
 /* returns ulp(x) for x a 'normal' double-precision number */
 double
 Ulp (double x)

@@ -195,6 +195,8 @@ int tests_run_within_valgrind (void);
 int mpfr_set_machine_rnd_mode (mpfr_rnd_t);
 void mpfr_test_init (void);
 mp_limb_t randlimb (void);
+unsigned long randulong (void);
+long randlong (void);
 void randseed (unsigned int);
 void mpfr_random2 (mpfr_ptr, mp_size_t, mpfr_exp_t, gmp_randstate_t);
 int ulp (double, double);
