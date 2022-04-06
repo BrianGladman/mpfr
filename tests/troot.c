@@ -591,6 +591,11 @@ main (int argc, char *argv[])
 
   test_generic_ui (MPFR_PREC_MIN, 200, 30);
 
+  /* The sign of the random value y (used to generate a potential bad case)
+     is negative with a probability 256/512 = 1/2 for odd n, and never
+     negative (probability 0/512) for even n (if y is negative, then
+     (y^(2k))^(1/(2k)) is different from y, so that this would yield
+     an error). */
   bad_cases (root2, pow2, "rootn[2]", 0, -256, 255, 4, 128, 80, 40);
   bad_cases (root3, pow3, "rootn[3]", 256, -256, 255, 4, 128, 200, 40);
   bad_cases (root4, pow4, "rootn[4]", 0, -256, 255, 4, 128, 320, 40);

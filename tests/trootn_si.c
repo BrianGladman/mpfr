@@ -197,6 +197,11 @@ main (void)
 
   special ();
 
+  /* The sign of the random value y (used to generate a potential bad case)
+     is negative with a probability 256/512 = 1/2 for odd n, and never
+     negative (probability 0/512) for even n (if y is negative, then
+     (y^(2k))^(1/(2k)) is different from y, so that this would yield
+     an error). */
   bad_cases (root2, pow2, "rootn[2]", 0, -256, 255, 4, 128, 80, 40);
   bad_cases (root3, pow3, "rootn[3]", 256, -256, 255, 4, 128, 200, 40);
   bad_cases (root4, pow4, "rootn[4]", 0, -256, 255, 4, 128, 320, 40);
@@ -204,6 +209,7 @@ main (void)
   bad_cases (root17, pow17, "rootn[17]", 256, -256, 255, 4, 128, 800, 40);
   bad_cases (root120, pow120, "rootn[120]", 0, -256, 255, 4, 128, 800, 40);
 
+  /* Ditto. */
   bad_cases (rootm2, powm2, "rootn[-2]", 0, -256, 255, 4, 128, 80, 40);
   bad_cases (rootm3, powm3, "rootn[-3]", 256, -256, 255, 4, 128, 200, 40);
   bad_cases (rootm4, powm4, "rootn[-4]", 0, -256, 255, 4, 128, 320, 40);
