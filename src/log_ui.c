@@ -120,8 +120,8 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
 
   /* here n >= 3 */
 
-  /* Argument reduction: compute k such that 2/3 <= n/2^k < 4/3,
-     i.e., 2^(k+1) <= 3n < 2^(k+2).
+  /* Argument reduction: compute k such that 2/3 < n/2^k < 4/3,
+     i.e., 2^(k+1) < 3n < 2^(k+2).
 
      FIXME: we could do better by considering n/(2^k*3^i*5^j),
      which reduces the maximal distance to 1 from 1/3 to 1/8,
@@ -140,9 +140,12 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   /* The reduced argument is n/2^k - 1 = (n-2^k)/2^k.
      Compute p = n-2^k. One has: |p| = |n-2^k| < 2^k/3 < n/2 <= LONG_MAX,
      so that p and -p both fit in a long. */
-  if (k < sizeof (unsigned long) * CHAR_BIT)
+  if (k < sizeof (unsigned long) * CHAR_BIT)  /* assume no padding bits */
     n -= 1UL << k;
-  /* n is now the value of p mod ULONG_MAX+1 */
+  /* n is now the value of p mod ULONG_MAX+1.
+     Since |p| <= LONG_MAX, if n > LONG_MAX, this means that p < 0 and
+     -n as an unsigned long value is at most LONG_MAX, thus fits in a
+     long. */
   p = ULONG2LONG (n);
 
   MPFR_TMP_MARK(marker);
