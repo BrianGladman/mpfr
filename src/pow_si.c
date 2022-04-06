@@ -176,6 +176,10 @@ POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
         rnd1 = MPFR_EXP (x) < 1 ? MPFR_RNDZ :
           (MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD);
 
+        /* The following ensures that 1/x cannot underflow.
+           Since |x| < 2^emax, |1/x| > 2^(-emax) >= 2^emin. */
+        MPFR_STAT_STATIC_ASSERT (MPFR_EMIN_MIN + MPFR_EMAX_MAX <= 0);
+
         MPFR_ZIV_INIT (loop, Nt);
         for (;;)
           {
@@ -184,7 +188,18 @@ POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
             /* TODO: Compute POW_U before the division (instead of after)
                in order to reduce the error in the intermediate result?
                POW_U, whose condition number is |n|, which may be large,
-               would be called on an exact value. */
+               would be called on an exact value. This may be important
+               in very small precisions.
+               In this case, if x^|n| underflows, then |x^n| > 2^emax
+               (real overflow, and we can return the result); and if
+               x^|n| overflows, then the result underflows or is very
+               close to the underflow threshold, so that we should use
+               mpfr_pow_general, which can handle such a case.
+               So the advantage of computing POW_U before the division
+               is that the code would be slightly faster is the general
+               case, but it could be noticeably slower in very uncommon
+               cases (and only with the extended exponent range).
+               Alternatively, the rescaling could be done here. */
 
             /* compute (1/x)^|n| */
             MPFR_BLOCK (flags, mpfr_ui_div (t, 1, x, rnd1));
