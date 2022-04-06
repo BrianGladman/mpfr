@@ -76,9 +76,14 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   { return mpfr_pow_ui (y, x, N, rnd); }                                \
   static int pows##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
   { return mpfr_pow_si (y, x, N, rnd); }                                \
+  static int powm##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
+  { return mpfr_pow_si (y, x, -(N), rnd); }                             \
   static int root##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
   { return RAND_BOOL () ?                                               \
-      mpfr_root (y, x, N, rnd) : mpfr_rootn_ui (y, x, N, rnd); }
+      mpfr_root (y, x, N, rnd) : mpfr_rootn_ui (y, x, N, rnd); }        \
+  static int rootm##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)       \
+  { return mpfr_rootn_si (y, x, -(N), rnd); }
+
 
 DEFN(2)
 DEFN(3)
@@ -1915,29 +1920,38 @@ main (int argc, char **argv)
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (pows2, root2, "mpfr_pow_si[2]",
              8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm2, rootm2, "mpfr_pow_si[-2]",
+             8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu3, root3, "mpfr_pow_ui[3]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (pows3, root3, "mpfr_pow_si[3]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm3, rootm3, "mpfr_pow_si[-3]",
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (powu4, root4, "mpfr_pow_ui[4]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (pows4, root4, "mpfr_pow_si[4]",
              8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm4, rootm4, "mpfr_pow_si[-4]",
+             8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu5, root5, "mpfr_pow_ui[5]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (pows5, root5, "mpfr_pow_si[5]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm5, rootm5, "mpfr_pow_si[-5]",
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (powu17, root17, "mpfr_pow_ui[17]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (pows17, root17, "mpfr_pow_si[17]",
-             8, -256, 255, 4, 128, 800, 40);
+             256, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm17, rootm17, "mpfr_pow_si[-17]",
+             256, -256, 255, 4, 128, 800, 40);
   bad_cases (powu120, root120, "mpfr_pow_ui[120]",
              8, -256, 255, 4, 128, 800, 40);
   bad_cases (pows120, root120, "mpfr_pow_si[120]",
              8, -256, 255, 4, 128, 800, 40);
-
-  /* TODO: Once mpfr_rootn_si is implemented, mpfr_pow_si could be tested
-     with bad_cases on negative values. */
+  bad_cases (powm120, rootm120, "mpfr_pow_si[-120]",
+             8, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;
