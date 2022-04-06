@@ -1171,12 +1171,13 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 
   if (dbg)
-    printf ("bad_cases: %d bad cases over %d generated values\n", cnt, n);
+    printf ("bad_cases: %d bad cases over %d generated values for %s\n",
+            cnt, n, name);
 
   if (getenv ("MPFR_CHECK_BADCASES") && n - cnt > n/10)
     {
-      printf ("bad_cases: too few bad cases (%d over %d generated values)\n",
-              cnt, n);
+      printf ("bad_cases: too few bad cases (%d over %d generated values)"
+              " for %s\n", cnt, n, name);
       exit (1);
     }
 }
