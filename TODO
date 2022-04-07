@@ -117,7 +117,6 @@ Table of contents:
 
 - cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
-  rootn (there is mpfr_rootn_ui but not mpfr_rootn_si yet)
   rsqrt (differs from mpfr_rec_sqrt in -0: mpfr_rec_sqrt gives +Inf whereas
          rsqrt gives -Inf)
 - a function to compute the hash of a floating-point number
@@ -161,9 +160,7 @@ Table of contents:
 - new functions of IEEE 754-2008, and more generally functions of the
   C binding draft TS 18661-4:
     http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1946.pdf
-  Some propositions about rootn: mpfr_rootn_si, mpfr_rootn_sj, mpfr_rootn_z,
-  and versions with an unsigned integer: mpfr_rootn_ui (now implemented, as
-  similar to mpfr_root) and mpfr_rootn_uj.
+  More rootn functions: mpfr_rootn_uj, mpfr_rootn_sj, mpfr_rootn_z.
 - reduction functions and augmented arithmetic functions from IEEE 754-2019.
   Note: the interface for the augmented arithmetic functions will need to be
   discussed (suggestion: for augmentedAddition and augmentedSubtraction,
