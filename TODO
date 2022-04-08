@@ -319,6 +319,16 @@ Table of contents:
 
   Text from: https://www.zsh.org/mla/workers/2019/msg01138.html
 
+  Idea of implementation: The get_str.c code is based on mpn_get_str, so
+  that we would like to do something similar, but mpn_get_str doesn't give
+  any information about the error. So we should request additional digits
+  (a bit like what is done in get_str.c) and compute approximations to the
+  distance (as an mpz_t) between the input and the straddling midpoints,
+  the unit being the weight of the last requested digit. Then deduce the
+  closest string to the input with the fewest digits in the interval (data
+  are approximate, so that it may be impossible to answer, i.e. this needs
+  to be done in a Ziv loop).
+
 - Serialization / Deserialization. Suggested by Frédéric Pétrot:
   https://sympa.inria.fr/sympa/arc/mpfr/2020-02/msg00006.html
   like mpfr_fpif_{import,export}, but with memory instead of file.
