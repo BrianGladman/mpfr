@@ -9,10 +9,11 @@
 # PARTICULAR PURPOSE.
 
 
-# Since we do not require GNU "make", let's select the POSIX behavior to
-# uniformize the behavior a bit more with various "make" implementations
-# and ease maintenance. This target should be removed only if one day,
-# we need to require GNU "make".
+# The ".POSIX" line is needed in particular for GNU "make", so that
+# recipes are invoked as if the shell had been passed the -e flag.
+# But note that since GNU Automake adds non-comment lines before it
+# in its generated Makefile, this does not ensure POSIX behavior with
+# other "make" implementations.
 .POSIX:
 
 AUTOMAKE_OPTIONS = gnu
