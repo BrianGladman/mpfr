@@ -194,12 +194,12 @@ POW_S (mpfr_ptr y, mpfr_srcptr x, TYPE n, mpfr_rnd_t rnd)
                (real overflow, and we can return the result); and if
                x^|n| overflows, then the result underflows or is very
                close to the underflow threshold, so that we should use
-               mpfr_pow_general, which can handle such a case.
+               mpfr_pow_general (as already done for MPFR_RNDN), which
+               can handle such a case.
                So the advantage of computing POW_U before the division
                is that the code would be slightly faster is the general
                case, but it could be noticeably slower in very uncommon
-               cases (and only with the extended exponent range).
-               Alternatively, the rescaling could be done here. */
+               cases (and only with the extended exponent range). */
 
             /* compute (1/x)^|n| */
             MPFR_BLOCK (flags, mpfr_ui_div (t, 1, x, rnd1));
