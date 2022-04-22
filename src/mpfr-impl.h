@@ -1198,15 +1198,16 @@ typedef uintmax_t mpfr_ueexp_t;
 
 /* We want to test this :
  *  (rnd == MPFR_RNDU && test) || (rnd == RNDD && !test)
- * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
+ * i.e. it transforms RNDU or RNDD to away or zero according to the sign.
+ * The argument test must be 0 or 1. */
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
-  (((rnd) + (test)) == MPFR_RNDD)
+  (MPFR_ASSERTD ((test) == 0 || (test) == 1),      \
+   ((rnd) + (test)) == MPFR_RNDD)
 
-/* We want to test if rnd = Zero, or Away.
+/* We want to test if rnd rounds toward zero or away from zero.
    'neg' is 1 if negative, and 0 if positive. */
 #define MPFR_IS_LIKE_RNDZ(rnd, neg) \
   ((rnd) == MPFR_RNDZ || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, neg))
-
 #define MPFR_IS_LIKE_RNDA(rnd, neg) \
   ((rnd) == MPFR_RNDA || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, (neg) == 0))
 
@@ -1220,7 +1221,7 @@ typedef uintmax_t mpfr_ueexp_t;
    ((rnd) == MPFR_RNDZ && MPFR_IS_POS_SIGN (sign)) ||   \
    ((rnd) == MPFR_RNDA && MPFR_IS_NEG_SIGN (sign)))
 
-/* Invert a rounding mode, RNDN, RNDZ and RNDA are unchanged */
+/* Invert RNDU and RNDD; the other rounding modes are unchanged. */
 #define MPFR_INVERT_RND(rnd) ((rnd) == MPFR_RNDU ? MPFR_RNDD :          \
                               (rnd) == MPFR_RNDD ? MPFR_RNDU : (rnd))
 
@@ -1231,7 +1232,7 @@ typedef uintmax_t mpfr_ueexp_t;
       rnd = MPFR_RNDZ;                                              \
   } while (0)
 
-/* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
+/* Transform RNDU and RNDD to RNDZ or RNDA according to sign;
    leave the other modes unchanged.
    Usage: MPFR_UPDATE2_RND_MODE (rnd_mode, MPFR_SIGN (x)) */
 #define MPFR_UPDATE2_RND_MODE(rnd, sign)                       \
