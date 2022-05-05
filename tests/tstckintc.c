@@ -117,58 +117,110 @@ reset_stack (void)
 
 /*************************************************************************/
 
- /* Alloc a new mpfr_t on the main stack */
+/* Alloc a new mpfr_t on the main stack */
 static mpfr_ptr
 new_mpfr (mpfr_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
   void *mantissa = new_st (mpfr_custom_get_size (p));
+
   mpfr_custom_init (mantissa, p);
   mpfr_custom_init_set (x, 0, 0, p, mantissa);
   return x;
 }
 
- /* Alloc a new mpfr_t on the main stack */
+/* Alloc a new mpfr_t on the main stack */
 static mpfr_ptr
-new_nan (mpfr_prec_t p)
+new_nan1 (mpfr_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
   void *mantissa = new_st ((mpfr_custom_get_size) (p));
+
   (mpfr_custom_init) (mantissa, p);
   (mpfr_custom_init_set) (x, MPFR_NAN_KIND, 0, p, mantissa);
   return x;
 }
 
- /* Alloc a new mpfr_t on the main stack */
+/* Alloc a new mpfr_t on the main stack */
+static mpfr_ptr
+new_nan2 (mpfr_prec_t p)
+{
+  mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
+  void *px;
+  void *mantissa = new_st ((mpfr_custom_get_size) (p));
+  int i1, i2, i3, i4, i5;
+
+  px = x;
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = i2 = 0;
+  mpfr_custom_init ((i1++, mantissa), (i2++, p));
+  MPFR_ASSERTN (i1 == 1);
+  MPFR_ASSERTN (i2 == 1);
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = i2 = i3 = i4 = i5 = 0;
+  mpfr_custom_init_set ((i1++, px),
+                        (i2++, MPFR_NAN_KIND),
+                        (i3++, 0),
+                        (i4++, p),
+                        (i5++, mantissa));
+  MPFR_ASSERTN (i1 == 1);
+  MPFR_ASSERTN (i2 == 1);
+  MPFR_ASSERTN (i3 == 1);
+  MPFR_ASSERTN (i4 == 1);
+  MPFR_ASSERTN (i5 == 1);
+
+  return x;
+}
+
+/* Alloc a new mpfr_t on the main stack */
 static mpfr_ptr
 new_inf (mpfr_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
   void *mantissa = new_st ((mpfr_custom_get_size) (p));
+
   (mpfr_custom_init) (mantissa, p);
   (mpfr_custom_init_set) (x, -MPFR_INF_KIND, 0, p, mantissa);
   return x;
 }
 
- /* Garbage the stack by keeping only x and save it in old_stack */
+/* Garbage the stack by keeping only x and save it in old_stack */
 static mpfr_ptr
 return_mpfr (mpfr_ptr x, char *old_stack)
 {
+  void *px = x;
   void *mantissa       = mpfr_custom_get_significand (x);
   size_t size_mantissa = mpfr_custom_get_size (mpfr_get_prec (x));
-  mpfr_ptr newx;
-  long *newx2;
+  void *newx, *newx2;
+  int i1, i2;
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = 0;
+  MPFR_ASSERTN (mpfr_custom_get_significand ((i1++, px)) == mantissa);
+  MPFR_ASSERTN (i1 == 1);
 
   memmove (old_stack, x, sizeof (mpfr_t));
   memmove (old_stack + ALIGNED (sizeof (mpfr_t)), mantissa, size_mantissa);
-  newx = (mpfr_ptr) (long *) (void *) old_stack;
-  newx2 = (long *) (void *) (old_stack + ALIGNED (sizeof (mpfr_t)));
-  mpfr_custom_move (newx, newx2);
+  newx = (void *) old_stack;
+  newx2 = (void *) (old_stack + ALIGNED (sizeof (mpfr_t)));
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = i2 = 0;
+  mpfr_custom_move ((i1++, newx), (i2++, newx2));
+  MPFR_ASSERTN (i1 == 1);
+  MPFR_ASSERTN (i2 == 1);
+
   stack = (char *) newx2 + ALIGNED (size_mantissa);
-  return newx;
+  return (mpfr_ptr) newx;
 }
 
- /* Garbage the stack by keeping only x and save it in old_stack */
+/* Garbage the stack by keeping only x and save it in old_stack */
 static mpfr_ptr
 return_mpfr_func (mpfr_ptr x, char *old_stack)
 {
@@ -241,10 +293,17 @@ test_nan_inf_zero (void)
       exit (1);
     }
 
-  val = new_nan (MPFR_PREC_MIN);
+  val = new_nan1 (MPFR_PREC_MIN);
   if (!mpfr_nan_p(val))
     {
-      printf ("Error: mpfr_custom_init_set doesn't set NAN mpfr.\n");
+      printf ("Error: mpfr_custom_init_set doesn't set NAN mpfr (1).\n");
+      exit (1);
+    }
+
+  val = new_nan2 (MPFR_PREC_MIN);
+  if (!mpfr_nan_p(val))
+    {
+      printf ("Error: mpfr_custom_init_set doesn't set NAN mpfr (2).\n");
       exit (1);
     }
 
@@ -303,11 +362,43 @@ static long *
 dummy_set_si (long si)
 {
   mpfr_t x;
+  void *px;
   long * r = dummy_new ();
-  (mpfr_custom_init_set) (x, MPFR_REGULAR_KIND, 0, p, &r[2]);
+  int i1, i2, i3, i4, i5;
+
+  px = x;
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = i2 = i3 = i4 = i5 = 0;
+  mpfr_custom_init_set ((i1++, px),
+                        (i2++, MPFR_REGULAR_KIND),
+                        (i3++, 0),
+                        (i4++, p),
+                        (i5++, &r[2]));
+  MPFR_ASSERTN (i1 == 1);
+  MPFR_ASSERTN (i2 == 1);
+  MPFR_ASSERTN (i3 == 1);
+  MPFR_ASSERTN (i4 == 1);
+  MPFR_ASSERTN (i5 == 1);
+
   mpfr_set_si (x, si, MPFR_RNDN);
   r[0] = mpfr_custom_get_kind (x);
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = 0;
+  MPFR_ASSERTN (mpfr_custom_get_kind ((i1++, px)) == r[0]);
+  MPFR_ASSERTN (i1 == 1);
+
   r[1] = mpfr_custom_get_exp (x);
+
+  /* Check that the type "void *" can be used, like with the function.
+     Also check side effects. */
+  i1 = 0;
+  MPFR_ASSERTN (mpfr_custom_get_exp ((i1++, px)) == r[1]);
+  MPFR_ASSERTN (i1 == 1);
+
   return r;
 }
 
@@ -316,6 +407,7 @@ dummy_add (long *a, long *b)
 {
   mpfr_t x, y, z;
   long *r = dummy_new ();
+
   mpfr_custom_init_set (x, 0 + MPFR_REGULAR_KIND, 0, p, &r[2]);
   (mpfr_custom_init_set) (y, a[0], a[1], p, &a[2]);
   mpfr_custom_init_set (z, 0 + b[0], b[1], p, &b[2]);

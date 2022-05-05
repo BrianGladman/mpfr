@@ -1020,21 +1020,29 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #endif
 #endif
 
-/* Macro version of mpfr_stack interface for fast access.
-   The internal cast to mpfr_size_t will silent a warning with
+/* Macro versions of mpfr_stack interface for fast access. */
+
+/* The internal cast to mpfr_size_t will silent a warning with
    GCC's -Wsign-conversion that could occur with user code, as
    sizeof is of type size_t, which is unsigned. */
 #define mpfr_custom_get_size(p)                                             \
   ((mpfr_size_t)                                                            \
    ((mpfr_size_t) (((mpfr_prec_t)(p) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)  \
     * sizeof (mp_limb_t)))
-#define mpfr_custom_init(m,p) do {} while (0)
-#define mpfr_custom_get_significand(x) ((mpfr_void*)((x)->_mpfr_d))
-#define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
-#define mpfr_custom_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
+
+#define mpfr_custom_init(m,p) do { (void) (m); (void) (p); } while (0)
+
+#define mpfr_custom_get_significand(x) \
+  ((mpfr_void *) MPFR_VALUE_OF(MPFR_SRCPTR(x)->_mpfr_d))
+
+#define mpfr_custom_get_exp(x) MPFR_VALUE_OF(MPFR_SRCPTR(x)->_mpfr_exp)
+
+#define mpfr_custom_move(x,m) \
+  do { ((mpfr_ptr) (x))->_mpfr_d = (mp_limb_t *) (m); } while (0)
+
 #define mpfr_custom_init_set(x,k,e,p,m) do {                   \
-  mpfr_ptr _x = (x);                                           \
-  mpfr_exp_t _e;                                               \
+  mpfr_ptr _x = (mpfr_ptr) (x);                                \
+  mpfr_exp_t _e = (e);                                         \
   mpfr_kind_t _t;                                              \
   mpfr_int _s, _k;                                             \
   _k = (k);                                                    \
@@ -1045,7 +1053,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
     _t = (mpfr_kind_t) - _k;                                   \
     _s = -1;                                                   \
   }                                                            \
-  _e = _t == MPFR_REGULAR_KIND ? (e) :                         \
+  _e = _t == MPFR_REGULAR_KIND ? _e :                          \
     _t == MPFR_NAN_KIND ? __MPFR_EXP_NAN :                     \
     _t == MPFR_INF_KIND ? __MPFR_EXP_INF : __MPFR_EXP_ZERO;    \
   _x->_mpfr_prec = (p);                                        \
@@ -1053,14 +1061,23 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
   _x->_mpfr_exp  = _e;                                         \
   _x->_mpfr_d    = (mp_limb_t*) (m);                           \
  } while (0)
-#define mpfr_custom_get_kind(x)                                         \
-  ( (x)->_mpfr_exp >  __MPFR_EXP_INF ?                                  \
-    (mpfr_int) MPFR_REGULAR_KIND * MPFR_SIGN (x)                        \
-  : (x)->_mpfr_exp == __MPFR_EXP_INF ?                                  \
-    (mpfr_int) MPFR_INF_KIND * MPFR_SIGN (x)                            \
-  : (x)->_mpfr_exp == __MPFR_EXP_NAN ? (mpfr_int) MPFR_NAN_KIND         \
-  : (mpfr_int) MPFR_ZERO_KIND * MPFR_SIGN (x) )
 
+#if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
+#define mpfr_custom_get_kind(x)                                         \
+  __extension__ ({                                                      \
+    mpfr_ptr _x = (x);                                                  \
+    _x->_mpfr_exp >  __MPFR_EXP_INF ?                                   \
+      (mpfr_int) MPFR_REGULAR_KIND * MPFR_SIGN (_x)                     \
+      : _x->_mpfr_exp == __MPFR_EXP_INF ?                               \
+      (mpfr_int) MPFR_INF_KIND * MPFR_SIGN (_x)                         \
+      : _x->_mpfr_exp == __MPFR_EXP_NAN ? (mpfr_int) MPFR_NAN_KIND      \
+      : (mpfr_int) MPFR_ZERO_KIND * MPFR_SIGN (_x);                     \
+  })
+#else
+#define mpfr_custom_get_kind(x) ((mpfr_custom_get_kind)(x))
+#endif
+
+/* End of the macro versions of mpfr_stack interface. */
 
 #endif /* MPFR_USE_NO_MACRO */
 
