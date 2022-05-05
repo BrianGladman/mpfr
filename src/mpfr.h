@@ -1020,10 +1020,14 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #endif
 #endif
 
-/* Macro version of mpfr_stack interface for fast access */
-#define mpfr_custom_get_size(p) \
-  ((mpfr_size_t) (((mpfr_prec_t)(p) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS \
-                  * sizeof (mp_limb_t)))
+/* Macro version of mpfr_stack interface for fast access.
+   The internal cast to mpfr_size_t will silent a warning with
+   GCC's -Wsign-conversion that could occur with user code, as
+   sizeof is of type size_t, which is unsigned. */
+#define mpfr_custom_get_size(p)                                             \
+  ((mpfr_size_t)                                                            \
+   ((mpfr_size_t) (((mpfr_prec_t)(p) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)  \
+    * sizeof (mp_limb_t)))
 #define mpfr_custom_init(m,p) do {} while (0)
 #define mpfr_custom_get_significand(x) ((mpfr_void*)((x)->_mpfr_d))
 #define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
