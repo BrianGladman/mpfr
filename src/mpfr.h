@@ -1021,8 +1021,9 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #endif
 
 /* Macro version of mpfr_stack interface for fast access */
-#define mpfr_custom_get_size(p) ((mpfr_size_t)                          \
-       (((p)+GMP_NUMB_BITS-1)/GMP_NUMB_BITS*sizeof (mp_limb_t)))
+#define mpfr_custom_get_size(p) \
+  ((mpfr_size_t) (((mpfr_prec_t)(p) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS \
+                  * sizeof (mp_limb_t)))
 #define mpfr_custom_init(m,p) do {} while (0)
 #define mpfr_custom_get_significand(x) ((mpfr_void*)((x)->_mpfr_d))
 #define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)

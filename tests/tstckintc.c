@@ -22,6 +22,53 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/*************************************************************************/
+
+/* Bug found on 2022-05-05 in the mpfr_custom_get_size macro.
+   With the buggy macro, this test will fail if mpfr_prec_t > int,
+   typically on LP64 platforms (usual 64-bit machines).
+   This bug could occur only for precisions close to INT_MAX or higher. */
+static void
+test_get_size (void)
+{
+  unsigned int u = UINT_MAX;
+  int i = INT_MAX;
+
+  if (u <= MPFR_PREC_MAX)
+    {
+      mpfr_prec_t p = u;
+      size_t s1, s2;
+
+      s1 = mpfr_custom_get_size (p);
+      s2 = mpfr_custom_get_size (u);
+      if (s1 != s2)
+        {
+          printf ("Error 1 in test_get_size (mpfr_custom_get_size macro).\n");
+          printf ("Expected %lu\n", (unsigned long) s1);
+          printf ("Got      %lu\n", (unsigned long) s2);
+          exit (1);
+        }
+    }
+
+  if (i <= MPFR_PREC_MAX)
+    {
+      mpfr_prec_t p = i;
+      size_t s1, s2;
+
+      s1 = mpfr_custom_get_size (p);
+      s2 = mpfr_custom_get_size (i);
+      if (s1 != s2)
+        {
+          printf ("Error 2 in test_get_size (mpfr_custom_get_size macro).\n");
+          printf ("Expected %lu\n", (unsigned long) s1);
+          printf ("Got      %lu\n", (unsigned long) s2);
+          exit (1);
+        }
+    }
+}
+
+/*************************************************************************/
+
 #define BUFFER_SIZE 250
 #define PREC_TESTED 200
 
@@ -329,6 +376,7 @@ int
 main (void)
 {
   tests_start_mpfr ();
+  test_get_size ();
   /* We test iff long = mp_limb_t */
   if (sizeof (long) == sizeof (mp_limb_t))
     {
