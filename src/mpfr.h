@@ -1041,7 +1041,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
   do { ((mpfr_ptr) (x))->_mpfr_d = (mp_limb_t *) (m); } while (0)
 
 #define mpfr_custom_init_set(x,k,e,p,m) do {                   \
-  mpfr_ptr _x = (mpfr_ptr) (x);                                \
+  mpfr_ptr _x = (x);                                           \
   mpfr_exp_t _e = (e);                                         \
   mpfr_kind_t _t;                                              \
   mpfr_int _s, _k;                                             \
@@ -1065,7 +1065,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #define mpfr_custom_get_kind(x)                                         \
   __extension__ ({                                                      \
-    mpfr_ptr _x = (mpfr_ptr) (x);                                       \
+    mpfr_ptr _x = (x);                                                  \
     _x->_mpfr_exp >  __MPFR_EXP_INF ?                                   \
       (mpfr_int) MPFR_REGULAR_KIND * MPFR_SIGN (_x)                     \
       : _x->_mpfr_exp == __MPFR_EXP_INF ?                               \

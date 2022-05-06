@@ -146,21 +146,24 @@ static mpfr_ptr
 new_nan2 (mpfr_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
+#ifdef __cplusplus
+  mpfr_ptr px;
+#else
   void *px;
+#endif
   void *mantissa = new_st ((mpfr_custom_get_size) (p));
   int i1, i2, i3, i4, i5;
 
   px = x;
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  /* Check side effects. */
   i1 = i2 = 0;
   mpfr_custom_init ((i1++, mantissa), (i2++, p));
   MPFR_ASSERTN (i1 == 1);
   MPFR_ASSERTN (i2 == 1);
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  /* Check that the type "void *" can be used in C, like with the function
+     (forbidden in C++). Also check side effects. */
   i1 = i2 = i3 = i4 = i5 = 0;
   mpfr_custom_init_set ((i1++, px),
                         (i2++, MPFR_NAN_KIND),
@@ -192,25 +195,31 @@ new_inf (mpfr_prec_t p)
 static mpfr_ptr
 return_mpfr (mpfr_ptr x, char *old_stack)
 {
-  void *px = x;
   void *mantissa       = mpfr_custom_get_significand (x);
   size_t size_mantissa = mpfr_custom_get_size (mpfr_get_prec (x));
-  void *newx, *newx2;
+#ifdef __cplusplus
+  mpfr_ptr px, newx;
+#else
+  void *px, *newx;
+#endif
+  long *newx2;
   int i1, i2;
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  px = x;
+
+  /* Check that the type "void *" can be used in C, like with the function
+     (forbidden in C++). Also check side effects. */
   i1 = 0;
   MPFR_ASSERTN (mpfr_custom_get_significand ((i1++, px)) == mantissa);
   MPFR_ASSERTN (i1 == 1);
 
   memmove (old_stack, x, sizeof (mpfr_t));
   memmove (old_stack + ALIGNED (sizeof (mpfr_t)), mantissa, size_mantissa);
-  newx = (void *) old_stack;
-  newx2 = (void *) (old_stack + ALIGNED (sizeof (mpfr_t)));
+  newx = (mpfr_ptr) (long *) (void *) old_stack;
+  newx2 = (long *) (void *) (old_stack + ALIGNED (sizeof (mpfr_t)));
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  /* Check that the type "void *" can be used in C, like with the function
+     (forbidden in C++). Also check side effects. */
   i1 = i2 = 0;
   mpfr_custom_move ((i1++, newx), (i2++, newx2));
   MPFR_ASSERTN (i1 == 1);
@@ -362,7 +371,11 @@ static long *
 dummy_set_si (long si)
 {
   mpfr_t x;
+#ifdef __cplusplus
+  mpfr_ptr px;
+#else
   void *px;
+#endif
   long * r = dummy_new ();
   int i1, i2, i3, i4, i5;
 
@@ -385,16 +398,16 @@ dummy_set_si (long si)
   mpfr_set_si (x, si, MPFR_RNDN);
   r[0] = mpfr_custom_get_kind (x);
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  /* Check that the type "void *" can be used in C, like with the function
+     (forbidden in C++). Also check side effects. */
   i1 = 0;
   MPFR_ASSERTN (mpfr_custom_get_kind ((i1++, px)) == r[0]);
   MPFR_ASSERTN (i1 == 1);
 
   r[1] = mpfr_custom_get_exp (x);
 
-  /* Check that the type "void *" can be used, like with the function.
-     Also check side effects. */
+  /* Check that the type "void *" can be used in C, like with the function
+     (forbidden in C++). Also check side effects. */
   i1 = 0;
   MPFR_ASSERTN (mpfr_custom_get_exp ((i1++, px)) == r[1]);
   MPFR_ASSERTN (i1 == 1);
