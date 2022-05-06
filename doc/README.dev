@@ -1643,6 +1643,45 @@ in MPFR.
 
    ---------------------------------------------------------------------
 
+Test function-like macros associated with functions
+  * for side effects in argument evaluation (arguments must always be
+    evaluated once);
+  * for support of types that would be eligible to implicit type conversion
+    with the function. Be careful: C and C++ have different rules.
+
+Support "gcc -Werror=c++-compat" and g++, possibly with -DMPFR_USE_NO_MACRO
+in CFLAGS. The following was added to mpfr-test.h:
+
+#if defined (__cplusplus)
+#define VOIDP_CAST(X) (X)
+#else
+#define VOIDP_CAST(X) ((void *) (X))
+#if defined (__GNUC__)
+#define IGNORE_CPP_COMPAT
+#endif
+#endif
+
+For instance, in tcopysign.c, since mpfr_copysign is implemented both as
+a function and as a function-like macro:
+
+  int a = 0, b = 0, c = 0;
+[...]
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
+#endif
+      mpfr_copysign ((a++, VOIDP_CAST(z)),
+                     (b++, VOIDP_CAST(p)),
+                     (c++, VOIDP_CAST(y)), rnd_mode);
+#ifdef IGNORE_CPP_COMPAT
+#pragma GCC diagnostic pop
+#endif
+      MPFR_ASSERTN (a == 1);
+      MPFR_ASSERTN (b == 1);
+      MPFR_ASSERTN (c == 1);
+
+   ---------------------------------------------------------------------
+
 To check the coverage of the test suite, you can use gcov.
 To get accurate information, do not enable optimizations.
 
