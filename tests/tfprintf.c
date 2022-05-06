@@ -47,7 +47,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define check_length(num_test, var, value, var_spec)                    \
   if ((var) != (value))                                                 \
     {                                                                   \
-      printf ("Error in test #%d: mpfr_vfprintf printed %"QUOTE(var_spec) \
+      printf ("Error in test #%d: mpfr_vfprintf printed %" QUOTE(var_spec) \
               " characters instead of %d\n", (num_test), (var), (value)); \
       exit (1);                                                         \
     }
@@ -56,7 +56,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   if (cmp != 0)                                                         \
     {                                                                   \
       mpfr_printf ("Error in test #%d, mpfr_vfprintf printed %"         \
-                   QUOTE(var_spec)" characters instead of %d\n",        \
+                   QUOTE(var_spec) " characters instead of %d\n",       \
                    (num_test), (var), (value));                         \
       exit (1);                                                         \
     }

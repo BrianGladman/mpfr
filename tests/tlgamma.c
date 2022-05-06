@@ -142,7 +142,7 @@ special (void)
   mpfr_set_str (x, CHECK_Y1, 10, MPFR_RNDN);
   if (mpfr_equal_p (y, x) == 0 || sign != 1)
     {
-      printf ("mpfr_lgamma("CHECK_X1") is wrong:\n"
+      printf ("mpfr_lgamma(" CHECK_X1 ") is wrong:\n"
               "expected ");
       mpfr_dump (x);
       printf ("got      ");
@@ -158,7 +158,7 @@ special (void)
   mpfr_set_str (x, CHECK_Y2, 10, MPFR_RNDN);
   if (mpfr_equal_p (y, x) == 0 || sign != 1)
     {
-      printf ("mpfr_lgamma("CHECK_X2") is wrong:\n"
+      printf ("mpfr_lgamma(" CHECK_X2 ") is wrong:\n"
               "expected ");
       mpfr_dump (x);
       printf ("got      ");
