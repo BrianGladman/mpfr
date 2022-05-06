@@ -267,7 +267,7 @@ typedef const __mpfr_struct *mpfr_srcptr;
 */
 #define MPFR_SIGN(x) ((x)->_mpfr_sign)
 
-/* Stack interface */
+/* Custom interface */
 typedef enum {
   MPFR_NAN_KIND     = 0,
   MPFR_INF_KIND     = 1,
@@ -1020,7 +1020,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #endif
 #endif
 
-/* Macro versions of mpfr_stack interface for fast access. */
+/* Macro versions of the custom interface for fast access. */
 
 /* The internal cast to mpfr_size_t will silent a warning with
    GCC's -Wsign-conversion that could occur with user code, as
@@ -1077,7 +1077,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 #define mpfr_custom_get_kind(x) ((mpfr_custom_get_kind)(x))
 #endif
 
-/* End of the macro versions of mpfr_stack interface. */
+/* End of the macro versions of the custom interface. */
 
 #endif /* MPFR_USE_NO_MACRO */
 

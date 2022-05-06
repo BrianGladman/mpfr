@@ -1,4 +1,5 @@
-/* mpfr_stack -- initialize a floating-point number with given allocation area
+/* custom interface -- initialize a floating-point number with given
+   allocation area
 
 Copyright 2005-2022 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
