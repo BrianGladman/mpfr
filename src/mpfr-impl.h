@@ -1617,8 +1617,10 @@ do {                                                                  \
 #define ULONG2LONG(U) ((U) > LONG_MAX ? -1 - (long) ~(U) : (long) (U))
 
 /* Check whether an integer type (after integer promotion) is signed.
-   This can be determined at compilation time, but unfortunately this
-   is not a constant expression, so that this cannot be used for a
+   This can be determined at compilation time, but unfortunately,
+   when used in practice, this is not a constant expression (because
+   the argument X is not a constant expression, even though the result
+   does not depend on its value), so that this cannot be used for a
    static assertion. */
 #define IS_SIGNED(X) ((X) * 0 - 1 < 0)
 
