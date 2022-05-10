@@ -3932,12 +3932,11 @@ to the application.
 Each function in this interface is also implemented as a macro for
 efficiency reasons: for example @code{mpfr_custom_init (s, p)}
 uses the macro, while @code{(mpfr_custom_init) (s, p)} uses the function.
-Note that the macro may evaluate arguments multiple times (or none).
-Moreover, macros implementing functions with the @code{void} return type
-may not be used in contexts where an expression is expected, e.g., inside
-@code{for(...)} or before a comma operator.
-@c These limitations with macros cannot be avoided in a C90 compatible way.
-@c In the future, inline functions could be used.
+The @code{mpfr_custom_init_set} macro is not usable in contexts where
+an expression is expected, e.g., inside @code{for(...)} or before a
+comma operator.
+@c FIXME: In the future, an inline function could be used to avoid this
+@c limitation.
 
 Note 1: MPFR functions may still initialize temporary floating-point numbers
 using @code{mpfr_init} and similar functions. See Custom Allocation (GNU MP)@.
@@ -4384,9 +4383,10 @@ use @code{mpfr_get_z_exp}.
 @node Changed Functions, Removed Functions, Added Functions, API Compatibility
 @section Changed Functions
 
-The following functions have changed after MPFR@tie{}2.2. Changes can affect
-the behavior of code written for some MPFR version when built and run
-against another MPFR version (older or newer), as described below.
+The following functions and function-like macros have changed after
+MPFR@tie{}2.2. Changes can affect the behavior of code written for
+some MPFR version when built and run against another MPFR version
+(older or newer), as described below.
 
 @itemize @bullet
 
@@ -4529,6 +4529,10 @@ the rounding mode. The exceptions due to the rounding of the random number
 are now correctly generated, following the uniform distribution.
 As a consequence, the returned values can be different between MPFR@tie{}4.0
 and previous MPFR versions.
+
+@item Up to MPFR@tie{}4.1.0, some macros of the @ref{Custom Interface} had
+undocumented limitations. In particular, their arguments may be evaluated
+multiple times or none.
 
 @end itemize
 

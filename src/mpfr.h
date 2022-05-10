@@ -873,9 +873,7 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 /* In the implementation of these macros, we need to make sure that the
    arguments are evaluated one time exactly and that type conversion is
    done as it would be with a function. Tests should be added to ensure
-   that.
-   Note that the macros for the custom interface are not concerned; the
-   MPFR manual has been clarified. */
+   that. */
 
 /* Prevent x from being used as an lvalue.
    Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
@@ -1030,16 +1028,17 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    ((mpfr_size_t) (((mpfr_prec_t)(p) + GMP_NUMB_BITS - 1) / GMP_NUMB_BITS)  \
     * sizeof (mp_limb_t)))
 
-#define mpfr_custom_init(m,p) do { (void) (m); (void) (p); } while (0)
+#define mpfr_custom_init(m,p) ((void) (m), (void) (p))
 
 #define mpfr_custom_get_significand(x) \
   ((mpfr_void *) MPFR_VALUE_OF(MPFR_SRCPTR(x)->_mpfr_d))
 
 #define mpfr_custom_get_exp(x) MPFR_VALUE_OF(MPFR_SRCPTR(x)->_mpfr_exp)
 
-#define mpfr_custom_move(x,m) \
-  do { ((mpfr_ptr) (x))->_mpfr_d = (mp_limb_t *) (m); } while (0)
+#define mpfr_custom_move(x,m) (((mpfr_ptr) (x))->_mpfr_d = (mp_limb_t *) (m))
 
+/* Note: the following macro is not usable in contexts where an expression
+   is expected. */
 #define mpfr_custom_init_set(x,k,e,p,m) do {                   \
   mpfr_ptr _x = (x);                                           \
   mpfr_exp_t _e = (e);                                         \
