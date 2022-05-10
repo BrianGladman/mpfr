@@ -35,6 +35,8 @@ Changes from versions 4.1.* to version 4.2.0:
   the case where the precision consists only of a period has been fixed
   to be like ".0" as specified in the ISO C standard, and the manual has
   been corrected and clarified.
+  The macros of the custom interface have also been fixed: they now behave
+  like functions (except a minor limitation for mpfr_custom_init_set).
 
 Changes from versions 4.0.* to version 4.1.0:
 - The "épinards à la crème" release.
