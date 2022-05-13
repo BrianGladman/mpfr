@@ -304,12 +304,11 @@ fi
 dnl Check if subnormal numbers are supported.
 dnl for the binary64 format, the smallest normal number is 2^(-1022)
 dnl for the binary32 format, the smallest normal number is 2^(-126)
-dnl Note: One could double-check with the value of the macros
-dnl DBL_HAS_SUBNORM and FLT_HAS_SUBNORM, when defined (C2x), but
-dnl neither tests would be reliable on implementations with partial
-dnl subnormal support. Anyway, this check is useful only for the
-dnl tests. Thus in doubt, assume that subnormals are not supported,
+dnl This check is useful only for the tests. Thus if this cannot be
+dnl done (cross-compiling), assume that subnormals are not supported
 dnl in order to disable the corresponding tests (which could fail).
+dnl FIXME: In order to support cross-compiling, the check should
+dnl actually be done when running the tests since it is very fast.
 dnl Note: "volatile" is needed to avoid -ffast-math optimizations
 dnl (default in icx 2021.2.0, which also sets the FZ and DAZ bits
 dnl of the x86-64 MXCSR register to disregard subnormals).
