@@ -373,6 +373,14 @@ err-if-output \
   --msg='"% 1" always gives 0; was "& 1" or "% 2" intended?' \
   -t "modulo 1" grep -E '% +1\>' $srctests
 
+# The HAVE_SUBNORM_* macros may still be generated for build information,
+# but should no longer be used, in particular because they are not defined
+# when cross-compiling. For the tests, use the have_subnorm_* functions
+# instead.
+err-if-output \
+  --msg='Do not use the HAVE_SUBNORM_* macros (for the tests, use have_subnorm_*).' \
+  -t "HAVE_SUBNORM_" grep HAVE_SUBNORM_ $srctests
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in $c_src

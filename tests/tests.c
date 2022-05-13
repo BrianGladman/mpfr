@@ -441,6 +441,26 @@ tests_rand_end (void)
   RANDS_CLEAR ();
 }
 
+/* true if subnormals are supported for double */
+int
+have_subnorm_dbl (void)
+{
+  volatile double x = DBL_MIN, y;
+
+  y = x / 2.0;
+  return 2.0 * y == x;
+}
+
+/* true if subnormals are supported for float */
+int
+have_subnorm_flt (void)
+{
+  volatile float x = FLT_MIN, y;
+
+  y = x / 2.0f;
+  return 2.0f * y == x;
+}
+
 /* initialization function for tests using the hardware floats
    Not very useful now. */
 void
@@ -453,17 +473,6 @@ mpfr_test_init (void)
   exp.fc_word = get_fpc_csr();
   exp.fc_struct.flush = 0;
   set_fpc_csr(exp.fc_word);
-#endif
-
-#ifdef HAVE_SUBNORM_DBL
-  {
-    double d = DBL_MIN;
-    if (2.0 * (d / 2.0) != d)
-      {
-        printf ("Error: HAVE_SUBNORM_DBL defined, but no subnormals.\n");
-        exit (1);
-      }
-  }
 #endif
 
   /* generate DBL_EPSILON with a loop to avoid that the compiler

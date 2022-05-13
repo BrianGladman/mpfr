@@ -193,6 +193,8 @@ void tests_expect_abort (void);
 int tests_run_within_valgrind (void);
 
 int mpfr_set_machine_rnd_mode (mpfr_rnd_t);
+int have_subnorm_dbl (void);
+int have_subnorm_flt (void);
 void mpfr_test_init (void);
 mp_limb_t randlimb (void);
 unsigned long randulong (void);

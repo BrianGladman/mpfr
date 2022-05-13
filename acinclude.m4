@@ -302,13 +302,11 @@ static double get_max (void) { static volatile double d = DBL_MAX; return d; }
 fi
 
 dnl Check if subnormal numbers are supported.
-dnl for the binary64 format, the smallest normal number is 2^(-1022)
-dnl for the binary32 format, the smallest normal number is 2^(-126)
-dnl This check is useful only for the tests. Thus if this cannot be
-dnl done (cross-compiling), assume that subnormals are not supported
-dnl in order to disable the corresponding tests (which could fail).
-dnl FIXME: In order to support cross-compiling, the check should
-dnl actually be done when running the tests since it is very fast.
+dnl For the binary64 format, the smallest normal number is 2^(-1022).
+dnl For the binary32 format, the smallest normal number is 2^(-126).
+dnl Do not use the corresponding HAVE_SUBNORM_* macros as they
+dnl are not available when cross-compiling. For the tests, use
+dnl the have_subnorm_* functions if need be.
 dnl Note: "volatile" is needed to avoid -ffast-math optimizations
 dnl (default in icx 2021.2.0, which also sets the FZ and DAZ bits
 dnl of the x86-64 MXCSR register to disregard subnormals).
@@ -337,9 +335,9 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main (void) {
   volatile float x = 1.17549435082229e-38, y;
-  y = x / 2.0;
+  y = x / 2.0f;
   fprintf (stderr, "%e\n", (double) y);
-  return 2.0 * y != x;
+  return 2.0f * y != x;
 }
 ]])],
    [mpfr_cv_have_subnorm_flt="yes"],

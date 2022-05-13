@@ -25,7 +25,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 #include "ieee_floats.h"
 
-#ifdef HAVE_SUBNORM_FLT
 /* return non-zero iff f == g, and if both are zero check the sign */
 static int
 equal_flt (float f, float g)
@@ -38,6 +37,7 @@ equal_flt (float f, float g)
     {
       int sf, sg;
       mpfr_t z;
+
       mpfr_init2 (z, MPFR_PREC_MIN);
       mpfr_set_flt (z, f, MPFR_RNDN);
       sf = mpfr_signbit (z);
@@ -47,7 +47,6 @@ equal_flt (float f, float g)
       return !sf == !sg;
     }
 }
-#endif
 
 int
 main (void)
@@ -209,149 +208,148 @@ main (void)
       mpfr_mul_2ui (x, x, 1, MPFR_RNDN);
     }
 
-#ifdef HAVE_SUBNORM_FLT
-  for (i = 0; i < 2; i++)
-    {
-      mpfr_set_si_2exp (x, 1, -150, MPFR_RNDN);
-      g = 0.0;
-      if (i == 1)
-        {
-          mpfr_neg (x, x, MPFR_RNDN);
+  if (have_subnorm_flt ())
+    for (i = 0; i < 2; i++)
+      {
+        mpfr_set_si_2exp (x, 1, -150, MPFR_RNDN);
+        g = 0.0;
+        if (i == 1)
+          {
+            mpfr_neg (x, x, MPFR_RNDN);
+            g = -g;
+          }
+        f = mpfr_get_flt (x, MPFR_RNDN);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-150),RNDN)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDZ);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-150),RNDZ)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDD : MPFR_RNDU);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-150),%s)\n",
+                    i == 0 ? "RNDD" : "RNDU");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        g = FLT_MIN * FLT_EPSILON;
+        if (i == 1)
           g = -g;
-        }
-      f = mpfr_get_flt (x, MPFR_RNDN);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-150),RNDN)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDZ);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-150),RNDZ)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDD : MPFR_RNDU);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-150),%s)\n",
-                  (i == 0) ? "RNDD" : "RNDU");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      g = FLT_MIN * FLT_EPSILON;
-      if (i == 1)
-        g = -g;
-      f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDU : MPFR_RNDD);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-150),%s)\n",
-                  (i == 0) ? "RNDU" : "RNDD");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDA);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-150),RNDA)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
+        f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDU : MPFR_RNDD);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-150),%s)\n",
+                    i == 0 ? "RNDU" : "RNDD");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDA);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-150),RNDA)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
 
-      mpfr_set_si_2exp (x, 1, -151, MPFR_RNDN);
-      g = 0.0;
-      if (i == 1)
-        {
-          mpfr_neg (x, x, MPFR_RNDN);
+        mpfr_set_si_2exp (x, 1, -151, MPFR_RNDN);
+        g = 0.0;
+        if (i == 1)
+          {
+            mpfr_neg (x, x, MPFR_RNDN);
+            g = -g;
+          }
+        f = mpfr_get_flt (x, MPFR_RNDN);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-151),RNDN)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDZ);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-151),RNDZ)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDD : MPFR_RNDU);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-151),%s)\n",
+                    i == 0 ? "RNDD" : "RNDU");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        g = FLT_MIN * FLT_EPSILON;
+        if (i == 1)
           g = -g;
-        }
-      f = mpfr_get_flt (x, MPFR_RNDN);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-151),RNDN)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDZ);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-151),RNDZ)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDD : MPFR_RNDU);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-151),%s)\n",
-                  (i == 0) ? "RNDD" : "RNDU");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      g = FLT_MIN * FLT_EPSILON;
-      if (i == 1)
-        g = -g;
-      f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDU : MPFR_RNDD);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-151),%s)\n",
-                  (i == 0) ? "RNDU" : "RNDD");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDA);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-151),RNDA)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
+        f = mpfr_get_flt (x, (i == 0) ? MPFR_RNDU : MPFR_RNDD);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-151),%s)\n",
+                    i == 0 ? "RNDU" : "RNDD");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDA);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-151),RNDA)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
 
-      mpfr_set_si_2exp (x, 1, -149, MPFR_RNDN);
-      g = FLT_MIN * FLT_EPSILON;
-      if (i == 1)
-        {
-          mpfr_neg (x, x, MPFR_RNDN);
-          g = -g;
-        }
-      f = mpfr_get_flt (x, MPFR_RNDN);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-149),RNDN)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDZ);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-149),RNDZ)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDD);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-149),RNDD)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDU);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-149),RNDU)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-      f = mpfr_get_flt (x, MPFR_RNDA);
-      if (!equal_flt (f, g))
-        {
-          printf ("Error for mpfr_get_flt(2^(-149),RNDA)\n");
-          printf ("expected %.8e, got %.8e\n", g, f);
-          exit (1);
-        }
-    }
-#endif /* HAVE_SUBNORM_FLT */
+        mpfr_set_si_2exp (x, 1, -149, MPFR_RNDN);
+        g = FLT_MIN * FLT_EPSILON;
+        if (i == 1)
+          {
+            mpfr_neg (x, x, MPFR_RNDN);
+            g = -g;
+          }
+        f = mpfr_get_flt (x, MPFR_RNDN);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-149),RNDN)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDZ);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-149),RNDZ)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDD);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-149),RNDD)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDU);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-149),RNDU)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+        f = mpfr_get_flt (x, MPFR_RNDA);
+        if (!equal_flt (f, g))
+          {
+            printf ("Error for mpfr_get_flt(2^(-149),RNDA)\n");
+            printf ("expected %.8e, got %.8e\n", g, f);
+            exit (1);
+          }
+      }  /* for loop with tests on subnormals */
 
   mpfr_set_si_2exp (x, 1, 128, MPFR_RNDN);
   g = FLT_MAX;
