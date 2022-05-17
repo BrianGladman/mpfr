@@ -40,7 +40,7 @@ output_info = { \
     fi; \
   fi; \
   if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
-    gitv=`GREP=$(GREP) $(top_srcdir)/version-ext.sh`; \
+    gitv=`GREP=$(GREP) SED=$(SED) $(top_srcdir)/version-ext.sh`; \
     echo "[git] $$gitv"; \
   fi; \
   $(GREP) -v '^\(PASS\|FAIL\) ' tversion.log 2> /dev/null || true; \

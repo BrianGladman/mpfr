@@ -16,12 +16,13 @@ if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" != xtrue ]; then
   exit 1
 fi
 
-# Normally passed by Makefile.am with "GREP=$(GREP)".
+# Normally passed by tests/Makefile.am with "GREP=$(GREP) SED=$(SED)".
 GREP=${GREP:-grep}
+SED=${SED:-sed}
 
 git tag --contains | sed -n 's/-root$//p' > excluded-branches
 gitb=`git branch --format='%(refname:short)' --contains | \
-        sed 's,(HEAD detached at origin/\(.*\)),\1,' | \
+        $SED 's,(HEAD detached at origin/\(.*\)),\1,' | \
         $GREP -v '^(' | $GREP -v -F -f excluded-branches -x`
 rm excluded-branches
 gitc=`git rev-list --count HEAD`
