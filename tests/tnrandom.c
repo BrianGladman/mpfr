@@ -40,6 +40,19 @@ test_special (mpfr_prec_t p)
   mpfr_clear (x);
 }
 
+#define NRES 10
+
+static const char *res[NRES] = {
+  "d.045d0ff20f5ba6d8702391be8d38e3b82023bb445efd47af60b9a16dd42b91ccb6fb4b9c93ac4134570583b079ac575df695ec570@-1",
+  "9.c8ab7e45a0f79cfbb5486d44c56e99e69e33cfb58729a7ce72cf34270a8b751c0e65269bf9c122ac5192d6d0bb15c03230b1c4600@-1",
+  "7.f82ae1b380e448b35216920cd4a1e20f3390cf8aa06a419c8fcb18abc0057220b4d4170574654606f6d3ef664523ce1bd2fbc0508@-1",
+  "-4.a86e702fe0c829f547b489d39f11283a52ea70e1a44ee34d621cc62ca44b02c9a55d7754b011b934281c1da2bab2e94f80ad079b0@-1",
+  "e.16dacf5086c47676d70dc41a9c9e05d2d7cd55e15c4f92b37838812f995a4a4242197f334769313ccd414d3137bc7833d1c200e40@-1",
+  "f.3581a7f831e2ef4c4c5f2ba21583a599ee722e64c017e9d9bd11f6065243d777c8dcd82e4658001b7f7115077eff5d8dbaaad2040@-1",
+  "d.57e17bebe2a23b24a1bb6b294779406a09590c011baf3c66157a944c182bcbb89ac301c35db8703ce220d9e0a5cd10344a202de90@-1",
+  "-a.55d67f858fb3fd92c440ee27c1dfebae2b71a915abd87bd4801967abcfa662b0e28edf3d5ea311dc8ba465b0ec5b4a190b1e55850@-1",
+  "-1.00f594aa573376a1ac4be1bbc4850738a4ac7ee805408dfd07a96b7edd42773a1ede75a5f371f607f41f2aff72eee7fb2b6f13138@0",
+  "-3.275e0ceb2a81bc9387cccf6eb3404aed9e275e03fe9f0745e2cf3967616a37479768ba61bee1aa02120f527a320460a616980ea94@-1" };
 
 static void
 test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
@@ -56,6 +69,15 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   for (i = 0; i < nbtests; i++)
     {
       inexact = mpfr_nrandom (t[i], RANDS, MPFR_RNDN);
+      if (i < NRES && mpfr_cmp_str (t[i], res[i], 16, MPFR_RNDN) != 0)
+        {
+          printf ("Unexpected value in test_nrandom().\n"
+                  "Expected %s\n"
+                  "Got      ", res[i]);
+          mpfr_out_str (stdout, 16, 0, t[i], MPFR_RNDN);
+          printf ("\n");
+          exit (1);
+        }
       if (inexact == 0)
         {
           /* one call in the loop pretended to return an exact number! */
