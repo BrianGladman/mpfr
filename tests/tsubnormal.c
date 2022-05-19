@@ -273,8 +273,9 @@ bug20220518 (void)
 {
   mpfr_t y;
   int inex;
+
   mpfr_init2 (y, 53);
-  mpfr_set_d (y, 0x2.000000000037ep+0, MPFR_RNDN);
+  mpfr_set_str (y, "0x2.000000000037ep+0", 0, MPFR_RNDN);
   mpfr_mul_2si (y, y, -1076, MPFR_RNDN);
   mpfr_set_emin (-1073);
   inex = mpfr_subnormalize (y, 1, MPFR_RNDN);
