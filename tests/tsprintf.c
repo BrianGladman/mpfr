@@ -217,11 +217,20 @@ native_types (void)
   sprintf (buf, "%le", d);
   check_vsprintf (buf, "%le", d);
 
+  sprintf (buf, "%lE", d);
+  check_vsprintf (buf, "%lE", d);
+
   sprintf (buf, "%lf", d);
   check_vsprintf (buf, "%lf", d);
 
+  sprintf (buf, "%lF", d);
+  check_vsprintf (buf, "%lF", d);
+
   sprintf (buf, "%lg", d);
   check_vsprintf (buf, "%lg", d);
+
+  sprintf (buf, "%lG", d);
+  check_vsprintf (buf, "%lG", d);
 
 #endif
 
@@ -928,19 +937,6 @@ mixed (void)
   check_vsprintf ("00000010610209857723, -1.2345678875000000e+07, 0.032258",
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
-
-  /* check %la, %lA, %le, %lE, %lf, %lF, %lg, %lG */
-  {
-    double d = 0x1.00000000001bfp+10;
-    check_vsprintf ("0x1.00000000001bfp+10", "%la", d);
-    check_vsprintf ("0X1.00000000001BFP+10", "%lA", d);
-    check_vsprintf ("1.024000e+03", "%le", d);
-    check_vsprintf ("1.024000E+03", "%lE", d);
-    check_vsprintf ("1024.000000", "%lf", d);
-    check_vsprintf ("1024.000000", "%lF", d);
-    check_vsprintf ("1024", "%lg", d);
-    check_vsprintf ("1024", "%lG", d);
-  }
 
   /* check invalid spec.spec */
   check_vsprintf ("%,", "%,");
