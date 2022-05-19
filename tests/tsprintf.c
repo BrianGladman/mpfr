@@ -220,6 +220,18 @@ native_types (void)
 
 #if __MPFR_STDC (199901L)
 
+  sprintf (buf, "%a", d);
+  check_vsprintf (buf, "%a", d);
+
+  sprintf (buf, "%A", d);
+  check_vsprintf (buf, "%A", d);
+
+  sprintf (buf, "%la", d);
+  check_vsprintf (buf, "%la", d);
+
+  sprintf (buf, "%lA", d);
+  check_vsprintf (buf, "%lA", d);
+
   sprintf (buf, "%le", d);
   check_vsprintf (buf, "%le", d);
 
