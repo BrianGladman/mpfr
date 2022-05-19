@@ -196,14 +196,18 @@ native_types (void)
   check_vsprintf ("", "%.d", 0);
   check_vsprintf ("", "%.0d", 0);
 
+  sprintf (buf, "%i", i);
+  check_vsprintf (buf, "%i", i);
+
+  check_vsprintf ("0", "%i", 0);
+  check_vsprintf ("", "%.i", 0);
+  check_vsprintf ("", "%.0i", 0);
+
   sprintf (buf, "%e", d);
   check_vsprintf (buf, "%e", d);
 
   sprintf (buf, "%f", d);
   check_vsprintf (buf, "%f", d);
-
-  sprintf (buf, "%i", i);
-  check_vsprintf (buf, "%i", i);
 
   sprintf (buf, "%g", d);
   check_vsprintf (buf, "%g", d);
