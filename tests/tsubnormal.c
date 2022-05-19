@@ -267,27 +267,6 @@ coverage (void)
   mpfr_clear (y);
 }
 
-static void
-bug20220518 (void)
-{
-  mpfr_t y;
-  int inex;
-  mpfr_exp_t emin;
-
-  emin = mpfr_get_emin ();
-
-  mpfr_init2 (y, 53);
-  mpfr_set_str (y, "0x2.000000000037ep-1076", 0, MPFR_RNDN);
-  mpfr_set_emin (-1073);
-  inex = mpfr_subnormalize (y, 1, MPFR_RNDN);
-  /* since y = 0x2.000000000037ep-1076 > 1p-1075, we should round to 1p-1074 */
-  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1074) == 0);
-  MPFR_ASSERTN(inex > 0);
-  mpfr_clear (y);
-
-  set_emin (emin);
-}
-
 int
 main (int argc, char *argv[])
 {
@@ -298,7 +277,6 @@ main (int argc, char *argv[])
   check1 ();
   check2 ();
   check3 ();
-  bug20220518 ();
 
   tests_end_mpfr ();
   return 0;
