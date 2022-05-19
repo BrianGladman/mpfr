@@ -42,6 +42,7 @@ test_special (mpfr_prec_t p)
 
 #define NRES 10
 
+#ifndef MPFR_USE_MINI_GMP
 static const char *res[NRES] = {
   "d.045d0ff20f5ba6d8702391be8d38e3b82023bb445efd47af60b9a16dd42b91ccb6fb4b9c93ac4134570583b079ac575df695ec570@-1",
   "9.c8ab7e45a0f79cfbb5486d44c56e99e69e33cfb58729a7ce72cf34270a8b751c0e65269bf9c122ac5192d6d0bb15c03230b1c4600@-1",
@@ -53,6 +54,7 @@ static const char *res[NRES] = {
   "-a.55d67f858fb3fd92c440ee27c1dfebae2b71a915abd87bd4801967abcfa662b0e28edf3d5ea311dc8ba465b0ec5b4a190b1e55850@-1",
   "-1.00f594aa573376a1ac4be1bbc4850738a4ac7ee805408dfd07a96b7edd42773a1ede75a5f371f607f41f2aff72eee7fb2b6f13138@0",
   "-3.275e0ceb2a81bc9387cccf6eb3404aed9e275e03fe9f0745e2cf3967616a37479768ba61bee1aa02120f527a320460a616980ea94@-1" };
+#endif /* MPFR_USE_MINI_GMP */
 
 static void
 test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
@@ -69,6 +71,8 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   for (i = 0; i < nbtests; i++)
     {
       inexact = mpfr_nrandom (t[i], RANDS, MPFR_RNDN);
+
+#ifndef MPFR_USE_MINI_GMP
       if (i < NRES && mpfr_cmp_str (t[i], res[i], 16, MPFR_RNDN) != 0)
         {
           printf ("Unexpected value in test_nrandom().\n"
@@ -78,6 +82,8 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
           printf ("\n");
           exit (1);
         }
+#endif /* MPFR_USE_MINI_GMP */
+
       if (inexact == 0)
         {
           /* one call in the loop pretended to return an exact number! */
