@@ -256,7 +256,7 @@ specinfo_is_valid (struct printf_spec spec)
       return spec.arg_type == MPFR_ARG;
 
     case 'd':    case 'i':
-    case 'u':    case 'o':
+    case 'o':    case 'u':
     case 'x':    case 'X':
       return (spec.arg_type == NONE
               || INTEGER_LIKE_ARG_TYPE (spec.arg_type));
@@ -504,14 +504,14 @@ typedef wint_t mpfr_va_wint;
           case 'c':                             \
             (void) va_arg ((ap), int);          \
             break;                              \
-          case 'f':                             \
-          case 'F':                             \
-          case 'e':                             \
-          case 'E':                             \
-          case 'g':                             \
-          case 'G':                             \
           case 'a':                             \
           case 'A':                             \
+          case 'e':                             \
+          case 'E':                             \
+          case 'f':                             \
+          case 'F':                             \
+          case 'g':                             \
+          case 'G':                             \
             (void) va_arg ((ap), double);       \
             break;                              \
           case 's':                             \
