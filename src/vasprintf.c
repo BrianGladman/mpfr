@@ -250,11 +250,13 @@ specinfo_is_valid (struct printf_spec spec)
 
     case 'a':    case 'A':
     case 'e':    case 'E':
-    case 'f':    case 'F':
+    case 'f':    /* 'F': see below */
     case 'g':    case 'G':
       return (spec.arg_type == NONE
               || FLOATING_POINT_ARG_TYPE (spec.arg_type));
 
+    case 'F':  /* only MPFR_ARG is supported since GMP doesn't support it
+                  due to its use as the mpf_t type specifier */
     case 'b':
       return spec.arg_type == MPFR_ARG;
 
@@ -432,7 +434,7 @@ typedef wint_t mpfr_va_wint;
     (void) va_arg ((ap), int); /* we assume integer promotion */        \
   else if ((specinfo).spec == 'a' || (specinfo).spec == 'A'             \
            || (specinfo).spec == 'e' || (specinfo).spec == 'E'          \
-           || (specinfo).spec == 'f' || (specinfo).spec == 'F'          \
+           || (specinfo).spec == 'f' /* 'F' impossible */               \
            || (specinfo).spec == 'g' || (specinfo).spec == 'G')         \
     (void) va_arg ((ap), double);                                       \
   else                                                                  \
@@ -512,7 +514,7 @@ typedef wint_t mpfr_va_wint;
           case 'e':                             \
           case 'E':                             \
           case 'f':                             \
-          case 'F':                             \
+          /* 'F' impossible */                  \
           case 'g':                             \
           case 'G':                             \
             (void) va_arg ((ap), double);       \
