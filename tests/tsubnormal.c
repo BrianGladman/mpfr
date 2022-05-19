@@ -273,6 +273,9 @@ bug20220518 (void)
 {
   mpfr_t y;
   int inex;
+  mpfr_exp_t emin;
+
+  emin = mpfr_get_emin ();
 
   mpfr_init2 (y, 53);
   mpfr_set_str (y, "0x2.000000000037ep-1076", 0, MPFR_RNDN);
@@ -281,6 +284,9 @@ bug20220518 (void)
   /* since y = 0x2.000000000037ep-1076 > 1p-1075, we should round to 1p-1074 */
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 1, -1074) == 0);
   MPFR_ASSERTN(inex > 0);
+  mpfr_clear (y);
+
+  set_emin (emin);
 }
 
 int
