@@ -206,11 +206,20 @@ native_types (void)
   sprintf (buf, "%e", d);
   check_vsprintf (buf, "%e", d);
 
+  sprintf (buf, "%le", d);
+  check_vsprintf (buf, "%le", d);
+
   sprintf (buf, "%f", d);
   check_vsprintf (buf, "%f", d);
 
+  sprintf (buf, "%lf", d);
+  check_vsprintf (buf, "%lf", d);
+
   sprintf (buf, "%g", d);
   check_vsprintf (buf, "%g", d);
+
+  sprintf (buf, "%lg", d);
+  check_vsprintf (buf, "%lg", d);
 
   sprintf (buf, "%o", i);
   check_vsprintf (buf, "%o", i);
