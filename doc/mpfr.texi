@@ -2753,8 +2753,9 @@ standard header before @file{mpfr.h}, to allow @file{mpfr.h} to define
 prototypes for these functions.
 
 @subsection Format String
-The format specification accepted by @code{mpfr_printf} is an extension of the
-@code{printf} one. The conversion specification is of the form:
+The format specification accepted by @code{mpfr_printf} is an extension of
+the @code{gmp_printf} one (itself, an extension of the @code{printf} one).
+The conversion specification is of the form:
 
 @example
 % [flags] [width] [.[precision]] [type] [rounding] conv
@@ -2820,6 +2821,10 @@ not be used with other types.
 
 With conversion specification not involving @samp{P} and @samp{R} types,
 @code{mpfr_printf} behaves exactly as @code{gmp_printf}.
+
+Thus the @samp{conv} specifier @samp{F} is not supported (due to the use
+of @samp{F} as the @samp{type} specifier for @code{mpf_t}), except for
+the @samp{type} specifier @samp{R} (i.e., for @code{mpfr_t} arguments).
 
 The @samp{P} type specifies that a following @samp{d}, @samp{i},
 @samp{o}, @samp{u}, @samp{x}, or @samp{X} conversion specifier applies
