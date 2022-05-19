@@ -925,6 +925,19 @@ mixed (void)
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
 
+  /* check %la, %lA, %le, %lE, %lf, %lF, %lg, %lG */
+  {
+    double d = 0x1.00000000001bfp+10;
+    check_vsprintf ("0x1.00000000001bfp+10", "%la", d);
+    check_vsprintf ("0X1.00000000001BFP+10", "%lA", d);
+    check_vsprintf ("1.024000e+03", "%le", d);
+    check_vsprintf ("1.024000E+03", "%lE", d);
+    check_vsprintf ("1024.000000", "%lf", d);
+    check_vsprintf ("1024.000000", "%lF", d);
+    check_vsprintf ("1024", "%lg", d);
+    check_vsprintf ("1024", "%lG", d);
+  }
+
   /* check invalid spec.spec */
   check_vsprintf ("%,", "%,");
   check_vsprintf ("%3*Rg", "%3*Rg");
