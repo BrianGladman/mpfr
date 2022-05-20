@@ -394,6 +394,12 @@ fi
 dnl Check whether NAN != NAN (as required by the IEEE-754 standard,
 dnl but not by the ISO C standard). For instance, this is false with
 dnl MIPSpro 7.3.1.3m under IRIX64. By default, assume this is true.
+dnl Note that this test may not detect all issues. For instance, with
+dnl icx 2021.2.0 (and default fast-math), the result depends on whether
+dnl the identifier has internal or external linkage:
+dnl   https://community.intel.com/t5/Intel-oneAPI-Base-Toolkit/icx-2021-2-0-bug-incorrect-NaN-comparison-using-an-identifier/m-p/1286869
+dnl TODO: change "NAN == NAN" to "NaN is supported" and rename
+dnl the MPFR_NANISNAN macro?
 AC_CACHE_CHECK([if NAN == NAN], mpfr_cv_nanisnan, [
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>

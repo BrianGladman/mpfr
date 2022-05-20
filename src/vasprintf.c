@@ -228,8 +228,11 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->pad = ' ';
 }
 
+/* Note: LONG_ARG is unusual, but is accepted (ISO C99 says "as no effect
+   on a following a, A, e, E, f, F, g, or G conversion specifier"). */
 #define FLOATING_POINT_ARG_TYPE(at) \
-  ((at) == MPFR_ARG || (at) == MPF_ARG || (at) == LONG_DOUBLE_ARG)
+  ((at) == MPFR_ARG || (at) == MPF_ARG \
+   || (at) == LONG_ARG || (at) == LONG_DOUBLE_ARG)
 
 #define INTEGER_LIKE_ARG_TYPE(at)                                       \
   ((at) == SHORT_ARG || (at) == LONG_ARG || (at) == LONG_LONG_ARG       \
@@ -247,16 +250,18 @@ specinfo_is_valid (struct printf_spec spec)
 
     case 'a':    case 'A':
     case 'e':    case 'E':
-    case 'f':    case 'F':
+    case 'f':    /* 'F': see below */
     case 'g':    case 'G':
       return (spec.arg_type == NONE
               || FLOATING_POINT_ARG_TYPE (spec.arg_type));
 
+    case 'F':  /* only MPFR_ARG is supported since GMP doesn't support it
+                  due to its use as the mpf_t type specifier */
     case 'b':
       return spec.arg_type == MPFR_ARG;
 
     case 'd':    case 'i':
-    case 'u':    case 'o':
+    case 'o':    case 'u':
     case 'x':    case 'X':
       return (spec.arg_type == NONE
               || INTEGER_LIKE_ARG_TYPE (spec.arg_type));
@@ -412,7 +417,6 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
    to int (because wchar_t <= int).
    For wint_t, we assume that the case WINT_MAX < INT_MAX yields an
    integer promotion. */
-#ifdef HAVE_WCHAR_H
 #if defined(WINT_MAX) && WINT_MAX < INT_MAX
 typedef int    mpfr_va_wint;  /* integer promotion */
 #else
@@ -428,13 +432,14 @@ typedef wint_t mpfr_va_wint;
     (void) va_arg ((ap), mpfr_va_wint);                                 \
   else if ((specinfo).spec == 's')                                      \
     (void) va_arg ((ap), int); /* we assume integer promotion */        \
+  else if ((specinfo).spec == 'a' || (specinfo).spec == 'A'             \
+           || (specinfo).spec == 'e' || (specinfo).spec == 'E'          \
+           || (specinfo).spec == 'f' /* 'F' impossible */               \
+           || (specinfo).spec == 'g' || (specinfo).spec == 'G')         \
+    (void) va_arg ((ap), double);                                       \
+  else                                                                  \
+    MPFR_RET_NEVER_GO_HERE();                                           \
   break;
-#else
-#define CASE_LONG_ARG(specinfo, ap)             \
-  case LONG_ARG:                                \
-  (void) va_arg ((ap), long);                   \
-  break;
-#endif
 
 #if defined(_MPFR_H_HAVE_INTMAX_T)
 #define CASE_INTMAX_ARG(specinfo, ap)           \
@@ -504,14 +509,14 @@ typedef wint_t mpfr_va_wint;
           case 'c':                             \
             (void) va_arg ((ap), int);          \
             break;                              \
-          case 'f':                             \
-          case 'F':                             \
-          case 'e':                             \
-          case 'E':                             \
-          case 'g':                             \
-          case 'G':                             \
           case 'a':                             \
           case 'A':                             \
+          case 'e':                             \
+          case 'E':                             \
+          case 'f':                             \
+          /* 'F' impossible */                  \
+          case 'g':                             \
+          case 'G':                             \
             (void) va_arg ((ap), double);       \
             break;                              \
           case 's':                             \

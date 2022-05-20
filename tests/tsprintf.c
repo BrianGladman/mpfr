@@ -181,10 +181,10 @@ native_types (void)
   int c = 'a';
   int i = -1;
   unsigned int ui = 1;
-  double d = -1.25;
+  double d[] = { -1.25, 7.62939453125e-6 /* 2^(-17) */ };
   char s[] = "test";
-
   char buf[255];
+  int k;
 
   sprintf (buf, "%c", c);
   check_vsprintf (buf, "%c", c);
@@ -196,17 +196,61 @@ native_types (void)
   check_vsprintf ("", "%.d", 0);
   check_vsprintf ("", "%.0d", 0);
 
-  sprintf (buf, "%e", d);
-  check_vsprintf (buf, "%e", d);
-
-  sprintf (buf, "%f", d);
-  check_vsprintf (buf, "%f", d);
-
   sprintf (buf, "%i", i);
   check_vsprintf (buf, "%i", i);
 
-  sprintf (buf, "%g", d);
-  check_vsprintf (buf, "%g", d);
+  check_vsprintf ("0", "%i", 0);
+  check_vsprintf ("", "%.i", 0);
+  check_vsprintf ("", "%.0i", 0);
+
+  for (k = 0; k < numberof(d); k++)
+    {
+      sprintf (buf, "%e", d[k]);
+      check_vsprintf (buf, "%e", d[k]);
+
+      sprintf (buf, "%E", d[k]);
+      check_vsprintf (buf, "%E", d[k]);
+
+      sprintf (buf, "%f", d[k]);
+      check_vsprintf (buf, "%f", d[k]);
+
+      sprintf (buf, "%g", d[k]);
+      check_vsprintf (buf, "%g", d[k]);
+
+      sprintf (buf, "%G", d[k]);
+      check_vsprintf (buf, "%G", d[k]);
+
+#if __MPFR_STDC (199901L)
+
+      sprintf (buf, "%a", d[k]);
+      check_vsprintf (buf, "%a", d[k]);
+
+      sprintf (buf, "%A", d[k]);
+      check_vsprintf (buf, "%A", d[k]);
+
+      sprintf (buf, "%la", d[k]);
+      check_vsprintf (buf, "%la", d[k]);
+
+      sprintf (buf, "%lA", d[k]);
+      check_vsprintf (buf, "%lA", d[k]);
+
+      sprintf (buf, "%le", d[k]);
+      check_vsprintf (buf, "%le", d[k]);
+
+      sprintf (buf, "%lE", d[k]);
+      check_vsprintf (buf, "%lE", d[k]);
+
+      sprintf (buf, "%lf", d[k]);
+      check_vsprintf (buf, "%lf", d[k]);
+
+      sprintf (buf, "%lg", d[k]);
+      check_vsprintf (buf, "%lg", d[k]);
+
+      sprintf (buf, "%lG", d[k]);
+      check_vsprintf (buf, "%lG", d[k]);
+
+#endif
+    }
 
   sprintf (buf, "%o", i);
   check_vsprintf (buf, "%o", i);
