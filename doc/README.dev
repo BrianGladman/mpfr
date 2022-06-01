@@ -218,8 +218,7 @@ To make a release (for the MPFR team):
      directory.
      [*] https://lvc.github.io/abi-compliance-checker/
 
-  4) Update the ChangeLog file with "TZ=UTC0 svn log -rHEAD:0 -v" in
-     UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC0 svn log -rHEAD:0 -v".
+  4) Update the ChangeLog file with "make ChangeLog" in UTF-8 locales.
      This should at least be done last, in order to be complete before the
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
