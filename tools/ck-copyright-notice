@@ -30,6 +30,10 @@ lgpl=`sed -n "/version [0-9.]* or any later version/ {
 clyr=`sed -n "/^r/ {
   s/.* | $yrx-.*/\1/p
   q
+  }
+  /^$yrx-/ {
+  s/^$yrx-.*/\1/p
+  q
   }" ChangeLog`
 
 # Do not use "find ... | while read file do ... done" because the "do"
