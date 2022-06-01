@@ -78,4 +78,16 @@ check-gmp-symbols:
 check-exported-symbols:
 	cd src && $(MAKE) check-exported-symbols
 
+# For gitlog-to-changelog, use the '%B%n' format string rather than the
+# default '%s%n%b%n' because Git's commit message convention is not always
+# followed (in particular before the conversion of the repository to Git).
+# When it isn't, this makes the text much more readable for the concerned
+# commits. The only minor drawback is that this makes the ChangeLog file
+# about 1% larger.
+ChangeLog: FORCE
+	cd $(srcdir) && tools/gitlog-to-changelog \
+	  --ignore-line='\[From SVN r.*\]' --format='%B%n' > $@
+
+FORCE:
+
 .PHONY: check-gmp-symbols check-exported-symbols
