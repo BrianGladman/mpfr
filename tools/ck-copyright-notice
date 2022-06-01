@@ -21,19 +21,19 @@ err=0
 yrx="\([0-9][0-9][0-9][0-9]\)"
 
 lgpl=`sed -n "/version [0-9.]* or any later version/ {
-  s/.*version //
-  s/ or.*//
-  p
-  q
+    s/.*version //
+    s/ or.*//
+    p
+    q
   }" doc/mpfr.texi`
 
 clyr=`sed -n "/^r/ {
-  s/.* | $yrx-.*/\1/p
-  q
+    s/.* | $yrx-.*/\1/p
+    q
   }
   /^$yrx-/ {
-  s/^$yrx-.*/\1/p
-  q
+    s/^$yrx-.*/\1/p
+    q
   }" ChangeLog`
 
 # Do not use "find ... | while read file do ... done" because the "do"
