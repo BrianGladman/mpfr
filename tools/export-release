@@ -29,5 +29,10 @@ echo "commit id: $id"
 mkdir "$dir"
 git archive --format=tar "$id" | tar -x -C "$dir"
 
-# TODO: fix the timestamps so that each file has a timestamp
+# Fix the timestamps so that each file or directory has a timestamp
 # corresponding to its last change.
+# https://stackoverflow.com/a/36243002/3782797
+for f in $(git ls-tree -r -t --name-only "$id")
+do
+  touch -d $(git log --pretty=format:%cI -1 "$id" -- "$f") "$dir/$f"
+done
