@@ -41,11 +41,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <time.h>
 
 #define timp_rdtsc()                                           \
-({unsigned long long int x;				       \
-  struct timespec ts;                                          \
-  clock_gettime(CLOCK_MONOTONIC, &ts);                         \
-  x = ts.tv_sec * 1000000000UL + ts.tv_nsec;                   \
- x; })
+  ({ unsigned long long int x;                                 \
+    struct timespec ts;                                        \
+    clock_gettime(CLOCK_MONOTONIC, &ts);                       \
+    x = ts.tv_sec * 1000000000ULL + ts.tv_nsec;                \
+    x; })
 #define timp_rdtsc_before(time) (time = timp_rdtsc())
 #define timp_rdtsc_after(time)  (time = timp_rdtsc())
 
