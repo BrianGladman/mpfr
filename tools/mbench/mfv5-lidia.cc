@@ -122,7 +122,7 @@ bool lidia_test<T>::test (const vector<string> &base, const option_test &opt) {
     b = table[i];
     c = table[i+1];
     CALCUL_OVERHEAD ;
-    m = MEASURE(f.func (a, b, c) ); 
+    m = MEASURE(f.func (a, b, c) );
     cont = tim->update (i, m) || cont;
   }
 

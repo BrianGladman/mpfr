@@ -31,14 +31,14 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TIMP_VERSION 1*100+1*10+0
 
 #ifndef __GNUC__
-# error  CC != GCC 
+# error  CC != GCC
 #endif
 
 /* High accuracy timing */
 #if defined (USE_CLOCK_MONOTONIC)
 
 /* Needs to include -lrt in the library section */
-#include <time.h> 
+#include <time.h>
 
 #define timp_rdtsc()                                           \
 ({unsigned long long int x;				       \

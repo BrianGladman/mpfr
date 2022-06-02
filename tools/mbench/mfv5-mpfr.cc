@@ -49,7 +49,7 @@ public:
   bool test (const vector<string> &base, const option_test &opt);
 };
 
-template <class T> 
+template <class T>
 class mpfr_test3 : public registered_test {
 private:
   unsigned long size;
@@ -71,7 +71,7 @@ public:
   bool test (const vector<string> &base, const option_test &opt);
 };
 
-template <class T> 
+template <class T>
 class mpfr_test4 : public registered_test {
 private:
   unsigned long size;
@@ -348,7 +348,7 @@ bool mpfr_test<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (b, table[i], opt.rnd);
     mpfr_set (c, table[i+1], opt.rnd);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, opt.rnd) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, opt.rnd) );
     cont = tim->update (i, m) || cont;
   }
 
@@ -382,7 +382,7 @@ bool mpfr_test3<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (c, table[i+1], opt.rnd);
     mpfr_set (d, table[i+2], opt.rnd);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, d, opt.rnd) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, d, opt.rnd) );
     //cout << "m = " << m << endl;
     cont = tim->update (i, m) || cont;
   }
@@ -418,7 +418,7 @@ bool mpfr_test4<T>::test (const vector<string> &base, const option_test &opt) {
     mpfr_set (d, table[i+2], opt.rnd);
     mpfr_set (e, table[i+3], opt.rnd);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c, d, e, opt.rnd) ); 
+    m = TIMP_MEASURE (f.func (a, b, c, d, e, opt.rnd) );
     //cout << "m = " << m << endl;
     cont = tim->update (i, m) || cont;
   }

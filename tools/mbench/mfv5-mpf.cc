@@ -127,7 +127,7 @@ bool mpf_test<T>::test (const vector<string> &base, const option_test &opt) {
     mpf_set (b, table[i]);
     mpf_set (c, table[i+1]);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE(f.func (a, b, c) ); 
+    m = TIMP_MEASURE(f.func (a, b, c) );
     cont = tim->update (i, m) || cont;
   }
 

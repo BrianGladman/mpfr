@@ -111,10 +111,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   BENCH("tan", d1 = tan(d2)); \
   BENCH("asin", d1 = asin(d2)); \
   BENCH("acos", d1 = acos(d2)); \
-  BENCH("atan", d1 = atan(d2)); 
+  BENCH("atan", d1 = atan(d2));
 
 #define TEST_LIST3 \
-  BENCH("mpfr_cos", mpfr_cos(a,b,MPFR_RNDN)); 
+  BENCH("mpfr_cos", mpfr_cos(a,b,MPFR_RNDN));
 
 #define TEST_LIST4 \
   BENCH("get_d", d1 = mpfr_get_d (b, MPFR_RNDN)); \
@@ -169,7 +169,7 @@ void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
   /* INIT */
   mpf_init2 (x, prec);
   mpf_init2 (y, prec);
-  mpf_init2 (z, prec);  
+  mpf_init2 (z, prec);
   mpfr_init2 (a, prec);
   mpfr_init2 (b, prec);
   mpfr_init2 (c, prec);
@@ -257,7 +257,7 @@ void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
       max -= min-1; op = 0;
       TEST_LIST;
 
-      // Output data 
+      // Output data
       sprintf(filename, "%s.data", outputname);
       out = fopen(filename, "w");
       if (out == NULL)
@@ -277,7 +277,7 @@ void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
 	  fprintf(out, "\n");
 	}
       fclose (out);
-      
+
       // Output GNUPLOT Info
       sprintf(filename, "%s.gnuplot", outputname);
       out = fopen(filename, "w");
@@ -289,7 +289,7 @@ void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
       fprintf (out, "set key left\n"
 	       "set data style linespoints\n"
 	       "plot ");
-      
+
       // "toto.data" using 1:2 title "mpfr_log",
       // "toto.data" using 1:3 title "mpfr_exp"
 #undef BENCH
@@ -315,7 +315,7 @@ void make_stats(const char *filename, int num, mpfr_prec_t prec, int select_op,
 int main(int argc, const char *argv[])
 {
   mpfr_prec_t prec;
-  unsigned long stat;  
+  unsigned long stat;
   int i, select_op = -1, smooth = 3, granularity = 10, op;
   const char *filename = "float.data";
   const char *output   = NULL;

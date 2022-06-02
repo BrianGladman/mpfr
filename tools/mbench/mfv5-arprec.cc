@@ -77,7 +77,7 @@ static arprec_test<arprec_div_test> test4 ("arprec_div");
 
 
 /* Do the test */
-template <class T> bool 
+template <class T> bool
 arprec_test<T>::test (const vector<string> &base, const option_test &opt) {
   unsigned long i;
   unsigned long long m;
@@ -100,7 +100,7 @@ arprec_test<T>::test (const vector<string> &base, const option_test &opt) {
     b = table[i];
     c = table[i+1];
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE(f.func (a, b, c) ); 
+    m = TIMP_MEASURE(f.func (a, b, c) );
     cont = tim->update (i, m) || cont;
   }
 

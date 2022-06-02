@@ -185,7 +185,7 @@ bool libc_test<T>::test (const vector<string> &base, const option_test &opt) {
   for(i = 0 ; i < (size-1) ; i++) {
     b = table[i];
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE(a = f.func (b) ); 
+    m = TIMP_MEASURE(a = f.func (b) );
     b = a;
     cont = tim->update (i, m) || cont;
   }

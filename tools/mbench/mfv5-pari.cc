@@ -113,7 +113,7 @@ bool pari_test<T>::test (const vector<string> &base, const option_test &opt) {
     mpaff (table[i], b);
     mpaff (table[i+1], c);
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE(f.func (a, b, c) ); 
+    m = TIMP_MEASURE(f.func (a, b, c) );
     cont = tim->update (i, m) || cont;
   }
   avma = (ulong) stck;

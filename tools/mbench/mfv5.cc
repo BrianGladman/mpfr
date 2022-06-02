@@ -226,7 +226,7 @@ int main (int argc, const char *argv[])
 
   /* Set low priority */
   setpriority(PRIO_PROCESS, 0, prio);
-  
+
   /* Build Used Base */
   if (options.verbose)
     cout << "Building DATA Base\n";
