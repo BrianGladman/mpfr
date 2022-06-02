@@ -1,5 +1,5 @@
 /*
-Copyright 2005-2016 Free Software Foundation, Inc.
+Copyright 2005-2022 Free Software Foundation, Inc.
 Contributed by Patrick Pelissier, INRIA.
 Small changes by Paul Zimmermann.
 
