@@ -125,8 +125,6 @@ The latest rules for GNU software can be found here:
 
 To make a release (for the MPFR team):
 
-[TODO: update for Git and Inria GitLab.]
-
   *** Please read this section entirely before making any release. ***
 
   0) For a non-patchlevel release, before creating a branch from master
@@ -223,11 +221,20 @@ To make a release (for the MPFR team):
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
 
-  5) Do a "svn export" of the branch to make sure to start from a clean
-     source tree; this also has the advantage (over a checkout) to set
-     the timestamps to the commit time, ensuring the right ordering of
-     the files by date.
-     Generate the tarballs with:
+  5) Create a tag corresponding to the content of the VERSION file:
+       $ tag=$(cat VERSION)
+       $ git tag $tag
+     and push it:
+       $ git push origin $tag
+     Note: in case of error, this can be reverted later without leaving
+     any trace. But the next step will check the tag upstream in order
+     to make sure that nothing has been forgotten.
+
+  6) Export the tree identified by this tag in order to get a tarball:
+       $ ./tools/export-release $(cat VERSION) /path/to/some/dir
+     A mpfr-$tag subdirectory will be created there; each file or directory
+     has a timestamp corresponding to its last change.
+     From this directory, generate the tarballs with:
        $ ./autogen.sh
        $ ./configure
        $ make distcheck
@@ -236,7 +243,7 @@ To make a release (for the MPFR team):
      known to solve issues. But note that they may not have been fully
      tested.
 
-  6) Test the release version on different machines, with --enable-assert
+  7) Test the release version on different machines, with --enable-assert
      set to "yes", "no" (default), "none" and "full" respectively, with
      and without -DMPFR_DISABLE_IEEE_FLOATS in $CFLAGS, with and without gmp
      internal files (--enable-gmp-internals), with and without GMP built as
@@ -379,13 +386,9 @@ To make a release (for the MPFR team):
      But note that these rules are not really portable: they may do
      nothing or might even incorrectly fail on some platforms.
 
-  7) For the release itself (not the release candidates), if no problems
-     have been found, create a tag with:
-       svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
-
-  8) For the release itself (not the release candidates), update
-     the version with the update-version script to indicate the
-     next version (use the "dev" suffix).
+  8) For the release itself (not the release candidates), update the
+     version with the update-version script in the Git repository to
+     indicate the next version (use the "dev" suffix).
 
   9) * For the release itself (not the release candidates):
      Create a web page for the MPFR release and add the documentation
@@ -394,9 +397,9 @@ To make a release (for the MPFR team):
      have an a4 papersize (see technical information later about the
      MPFR manual).
      Upload the tarballs and the signatures to the MPFR web server
-     (via a svn working copy) and to InriaForge.
+     (via the misc.git repository).
      Prepare the files for the GNU FTP site with the gnu-sigdir script
-     in the /misc directory and upload them.
+     of the misc.git repository and upload them.
      Update the mpfr-current symbolic link and the history page.
      Update the old current page to point to the new release; see
      examples for 3.0.1 (latest version of the branch) and 3.1.0
@@ -404,23 +407,21 @@ To make a release (for the MPFR team):
      Run the tools/announce-text script to do some checking and get
      the announce text. Edit this text if need be.
      Announce the release in the mpfr-announce, mpfr, gmp-discuss, gcc
-     and info-gnu[1] mailing-lists, and on InriaForge (MPFR News, and
-     contact the InriaForge administrators[2] to have the announce
-     published on the main page).
+     and info-gnu[1] mailing-lists.
      In case of a new patchlevel release, add a link from the web page
      of the previous release.
 
      * For the release candidates: Announce the RC in the mpfr-announce,
-     mpfr, gmp-discuss, gcc and platform-testers[3] mailing-lists.
+     mpfr, gmp-discuss, gcc and platform-testers[2] mailing-lists.
      A minimal web page for the MPFR release can be created right now
-     (see svn history such as [4] for examples), as the manual already
-     contains the new URL's.
+     (see Git history such as [3] for examples), as the manual already
+     contains the new URLs.
 
      [1] https://www.gnu.org/prep/maintain/html_node/Announcements.html
-     [2] https://siteadmin.gforge.inria.fr/FAQ.html
-     [3] See https://lists.gnu.org/mailman/listinfo/platform-testers and
+     [2] See https://lists.gnu.org/mailman/listinfo/platform-testers and
      https://lists.gnu.org/archive/html/platform-testers/2011-09/msg00000.html
-     [4] https://gforge.inria.fr/scm/viewvc.php/misc/www/mpfr-3.1.2/index.html?view=markup&revision=8472&root=mpfr
+     [3] commit a04e43bb98b916c354f15d7e88b2934f84d0a6ab of misc.git
+         i.e. https://gitlab.inria.fr/mpfr/misc/-/commit/a04e43bb
 
 Note: Mail sent to the mpfr-announce list should also be sent to
 the mpfr list, and the Reply-To should be set to the mpfr list.
