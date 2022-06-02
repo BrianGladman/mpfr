@@ -105,22 +105,30 @@ float.data: generate.o
 	./generate-float-data
 	$(RM) generate-float-data
 
-mfv5-ntl.o: mfv5-ntl.cc mfv5.h
+mfv5.o: timp.h
+
+mfv5-libc.o: timp.h
+
+mfv5-mpf.o: timp.h
+
+mfv5-mpfr.o: timp.h
+
+mfv5-ntl.o: mfv5-ntl.cc mfv5.h timp.h
 	@(test -f $(NTL)/lib/libntl.a && $(CXX) $(INCLUDES) -I$(NTL)/include/ $(CFLAGS) -c $< && echo "Using NTL.") || ($(CXX) -c mfv5-void.cc -o mfv5-ntl.o && echo "NTL not found.")
 
-mfv5-arprec.o: mfv5-arprec.cc mfv5.h
+mfv5-arprec.o: mfv5-arprec.cc mfv5.h timp.h
 	@(test -f $(ARPREC)/lib/libmp.a && $(CXX) $(INCLUDES) -I$(ARPREC)/include/ $(CFLAGS) -c $< && echo "Using ARPREC.") || ($(CXX) -c mfv5-void.cc -o mfv5-arprec.o && echo "Arprec not found.")
 
-mfv5-pari.o: mfv5-pari.cc mfv5.h
+mfv5-pari.o: mfv5-pari.cc mfv5.h timp.h
 	@(test -f $(PARI)/lib/libpari.a && $(CXX) $(INCLUDES) -I$(PARI)/include/ $(CFLAGS) -c $< && echo "Using PARI.") || ($(CXX) -c mfv5-void.cc -o mfv5-pari.o && echo "PARI not found.")
 
-mfv5-cln.o: mfv5-cln.cc mfv5.h
+mfv5-cln.o: mfv5-cln.cc mfv5.h timp.h
 	@(test -f $(CLN)/lib/libcln.a && $(CXX) $(INCLUDES) -I$(CLN)/include/ $(CFLAGS) -c $< && echo "Using CLN.") || ($(CXX) -c mfv5-void.cc -o mfv5-cln.o && echo "CLN not found.")
 
-mfv5-lidia.o: mfv5-lidia.cc mfv5.h
+mfv5-lidia.o: mfv5-lidia.cc mfv5.h timp.h
 	@(test -f $(LIDIA)/lib/liblidia.a && $(CXX) $(INCLUDES) -I$(LIDIA)/include/ $(CFLAGS) -c $< && echo "Using LIDIA.") || ($(CXX) -c mfv5-void.cc -o mfv5-lidia.o && echo "LIDIA not found.")
 
-mfv5-crlibm.o: mfv5-crlibm.cc mfv5.h
+mfv5-crlibm.o: mfv5-crlibm.cc mfv5.h timp.h
 	@(test -f $(CRLIBM)/lib/libcrlibm.a && $(CXX) $(INCLUDES) -I$(CRLIBM)/include/ $(CFLAGS) -c $< && echo "Using CRLIBM.") || ($(CXX) -c mfv5-void.cc -o mfv5-crlibm.o && echo "CRLIBM not found.")
 
 mfv5:	mfv5.o mfv5-mpfr.o mfv5-mpf.o mfv5-ntl.o mfv5-arprec.o mfv5-pari.o mfv5-cln.o mfv5-libc.o mfv5-crlibm.o
