@@ -1,5 +1,5 @@
 /*
-Copyright 2005-2009 Free Software Foundation, Inc.
+Copyright 2005-2022 Free Software Foundation, Inc.
 Contributed by Patrick Pelissier and Paul Zimmermann, INRIA.
 
 This file is part of the MPFR Library.
@@ -69,7 +69,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   BENCH("mpfr_tanh", mpfr_tanh(a,b,MPFR_RNDN)); \
   BENCH("mpfr_asinh", mpfr_asinh(a,b,MPFR_RNDN)); \
   BENCH("mpfr_acosh", mpfr_acosh(a,b,MPFR_RNDN)); \
-  BENCH("mpfr_atanh", mpfr_atanh(a,b,MPFR_RNDN)); 
+  BENCH("mpfr_atanh", mpfr_atanh(a,b,MPFR_RNDN));
 
 
 
@@ -148,7 +148,7 @@ void lets_start(unsigned long n, mpfr_prec_t p)
       mpf_init2(zt[i], p);
       mpf_urandomb(yt[i], state, p);
       mpf_urandomb(zt[i], state, p);
-    }  
+    }
   gmp_randclear(state);
 }
 
@@ -183,7 +183,7 @@ double get_speed(mpfr_prec_t p, int select)
   for(i = 0 ; i < num ; i++)
     {
       //      yt[i][0]._mp_exp = (rand() % p) / GMP_NUMB_BITS;
-      //zt[i][0]._mp_exp = (rand() % p) / GMP_NUMB_BITS;      
+      //zt[i][0]._mp_exp = (rand() % p) / GMP_NUMB_BITS;
       mc[i] = 0xFFFFFFFFFFFFFFFLL;
     }
 
@@ -234,12 +234,12 @@ double get_speed(mpfr_prec_t p, int select)
 
 /* compares two functions given by indices select1 and select2
    (by default select1 refers to mpfr and select2 to mpf).
-   
+
    If postscript=0, output is plain gnuplot;
    If postscript=1, output is postscript.
 */
 int
-write_data (const char *filename, 
+write_data (const char *filename,
 	    unsigned long num,
 	    mpfr_prec_t p1, mpfr_prec_t p2, mpfr_prec_t ps, float pr,
 	    int select1, int select2, int postscript)
@@ -284,7 +284,7 @@ write_data (const char *filename,
   step = ps;
   for (p = p1 ; p < p2 ; p+=step)
     {
-      fprintf(f, "%lu\t%1.20e\t%1.20e\n", p, 
+      fprintf(f, "%lu\t%1.20e\t%1.20e\n", p,
               get_speed(p, select1),
               get_speed(p, select2));
       if (pr != 0.0)
@@ -308,7 +308,7 @@ write_data (const char *filename,
 
 /* this function considers all functions from s_begin to s_end */
 int
-write_data2 (const char *filename, 
+write_data2 (const char *filename,
 	     unsigned long num,
 	     mpfr_prec_t p_begin, mpfr_prec_t p_end, mpfr_prec_t p_step, float p_r,
 	     int s_begin, int s_end)

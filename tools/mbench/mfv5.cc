@@ -1,5 +1,5 @@
 /*
-Copyright 2005-2009 Free Software Foundation, Inc.
+Copyright 2005-2022 Free Software Foundation, Inc.
 Contributed by Patrick Pelissier, INRIA.
 
 This file is part of the MPFR Library.
@@ -226,7 +226,7 @@ int main (int argc, const char *argv[])
 
   /* Set low priority */
   setpriority(PRIO_PROCESS, 0, prio);
-  
+
   /* Build Used Base */
   if (options.verbose)
     cout << "Building DATA Base\n";

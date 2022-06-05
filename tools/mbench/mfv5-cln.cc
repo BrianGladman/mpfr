@@ -1,5 +1,5 @@
 /*
-Copyright 2005-2009 Free Software Foundation, Inc.
+Copyright 2005-2022 Free Software Foundation, Inc.
 Contributed by Patrick Pelissier, INRIA.
 
 This file is part of the MPFR Library.
@@ -107,7 +107,7 @@ bool cln_test<T>::test (const vector<string> &base, const option_test &opt) {
       delete[] Buffer;
     }
   }
-  
+
   cl_F a = cl_float(0.0, float_format_t(opt.prec));
   cl_F b = cl_float(0.0, float_format_t(opt.prec));
   cl_F c = cl_float(0.0, float_format_t(opt.prec));
@@ -117,7 +117,7 @@ bool cln_test<T>::test (const vector<string> &base, const option_test &opt) {
     b = *table[i];
     c = *table[i+1];
     TIMP_OVERHEAD ();
-    m = TIMP_MEASURE (f.func (a, b, c) ); 
+    m = TIMP_MEASURE (f.func (a, b, c) );
     cont = tim->update (i, m) || cont;
   }
 

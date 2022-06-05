@@ -1,18 +1,18 @@
-# Copyright 2005-2017 Free Software Foundation, Inc.
+# Copyright 2005-2022 Free Software Foundation, Inc.
 # Contributed by Patrick Pelissier, INRIA.
-# 
+#
 # This file is part of the MPFR Library.
-# 
+#
 # The MPFR Library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or (at your
 # option) any later version.
-# 
+#
 # The MPFR Library is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 # License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with the MPFR Library; see the file COPYING.LESSER.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
@@ -105,22 +105,30 @@ float.data: generate.o
 	./generate-float-data
 	$(RM) generate-float-data
 
-mfv5-ntl.o: mfv5-ntl.cc mfv5.h
+mfv5.o: timp.h
+
+mfv5-libc.o: timp.h
+
+mfv5-mpf.o: timp.h
+
+mfv5-mpfr.o: timp.h
+
+mfv5-ntl.o: mfv5-ntl.cc mfv5.h timp.h
 	@(test -f $(NTL)/lib/libntl.a && $(CXX) $(INCLUDES) -I$(NTL)/include/ $(CFLAGS) -c $< && echo "Using NTL.") || ($(CXX) -c mfv5-void.cc -o mfv5-ntl.o && echo "NTL not found.")
 
-mfv5-arprec.o: mfv5-arprec.cc mfv5.h
+mfv5-arprec.o: mfv5-arprec.cc mfv5.h timp.h
 	@(test -f $(ARPREC)/lib/libmp.a && $(CXX) $(INCLUDES) -I$(ARPREC)/include/ $(CFLAGS) -c $< && echo "Using ARPREC.") || ($(CXX) -c mfv5-void.cc -o mfv5-arprec.o && echo "Arprec not found.")
 
-mfv5-pari.o: mfv5-pari.cc mfv5.h
+mfv5-pari.o: mfv5-pari.cc mfv5.h timp.h
 	@(test -f $(PARI)/lib/libpari.a && $(CXX) $(INCLUDES) -I$(PARI)/include/ $(CFLAGS) -c $< && echo "Using PARI.") || ($(CXX) -c mfv5-void.cc -o mfv5-pari.o && echo "PARI not found.")
 
-mfv5-cln.o: mfv5-cln.cc mfv5.h
+mfv5-cln.o: mfv5-cln.cc mfv5.h timp.h
 	@(test -f $(CLN)/lib/libcln.a && $(CXX) $(INCLUDES) -I$(CLN)/include/ $(CFLAGS) -c $< && echo "Using CLN.") || ($(CXX) -c mfv5-void.cc -o mfv5-cln.o && echo "CLN not found.")
 
-mfv5-lidia.o: mfv5-lidia.cc mfv5.h
+mfv5-lidia.o: mfv5-lidia.cc mfv5.h timp.h
 	@(test -f $(LIDIA)/lib/liblidia.a && $(CXX) $(INCLUDES) -I$(LIDIA)/include/ $(CFLAGS) -c $< && echo "Using LIDIA.") || ($(CXX) -c mfv5-void.cc -o mfv5-lidia.o && echo "LIDIA not found.")
 
-mfv5-crlibm.o: mfv5-crlibm.cc mfv5.h
+mfv5-crlibm.o: mfv5-crlibm.cc mfv5.h timp.h
 	@(test -f $(CRLIBM)/lib/libcrlibm.a && $(CXX) $(INCLUDES) -I$(CRLIBM)/include/ $(CFLAGS) -c $< && echo "Using CRLIBM.") || ($(CXX) -c mfv5-void.cc -o mfv5-crlibm.o && echo "CRLIBM not found.")
 
 mfv5:	mfv5.o mfv5-mpfr.o mfv5-mpf.o mfv5-ntl.o mfv5-arprec.o mfv5-pari.o mfv5-cln.o mfv5-libc.o mfv5-crlibm.o
