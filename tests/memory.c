@@ -176,7 +176,7 @@ tests_allocate (size_t size)
    Note that pointers may be larger than uintmax_t, even in practice[*];
    however, since this is just used in error messages, the loss of
    information may be acceptable (but we should probably use %p).
-   [*] http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2889.htm
+   [*] https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2889.htm
 */
 void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
