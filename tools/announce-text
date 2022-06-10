@@ -113,11 +113,18 @@ EOF
   exit 1
 fi
 
-exit
+cd $tmpdir
 
-www="$root/misc/www/mpfr-$base"
-echo "MPFR $vers www directory: $www" >&2
-svn ls "$www" | sort > ls1
+git clone --no-checkout --depth 1 https://gitlab.inria.fr/mpfr/misc.git
+cd misc
+
+echo "Getting files from the www/mpfr-$base directory..." >&2
+git checkout HEAD www/mpfr-$base
+cd www/mpfr-$base
+
+files=$(ls)
+printf "%s\n" $files > ls1
+
 cat <<EOF > ls2
 index.html
 mpfr-$vers.tar.bz2
@@ -137,23 +144,23 @@ EOF
 missing=$(diff ls1 ls2 | sed -n 's/^> //p')
 if [ -n "$missing" ]; then
   echo "Missing files in the www directory:" $missing >&2
+  # Error if this is not a release candidate.
   [ $vers != $base ]
 fi
 
-echo "Getting the files from the www directory..." >&2
+tarballs=""
 for i in tar.bz2 tar.gz tar.xz zip
 do
-  svn cat "$www/mpfr-$vers.$i" > "mpfr-$vers.$i"
+  tarballs="$tarballs mpfr-$vers.$i"
 done
-sha1sum mpfr-$vers.* > sha1sum.out
-sha256sum mpfr-$vers.* > sha256sum.out
+sha1sum $tarballs > sha1sum.out
+sha256sum $tarballs > sha256sum.out
 unzip -jq mpfr-$vers.zip '*/NEWS'
 
 if [ -z "$nopgpsig" ]; then
   echo "Checking the signatures..." >&2
-  for i in mpfr-$vers.*
+  for i in $tarballs
   do
-    svn cat "$www/$i.asc" > "$i.asc"
     gpg --verify "$i.asc" >&2
   done
 fi
@@ -163,7 +170,6 @@ if [ -z "$nowebsrv" ]; then
   for i in $(cat ls1)
   do
     echo "  [$i]" >&2
-    [ -f "$i" ] || svn cat "$www/$i" > "$i"
     wget -O file "https://www.mpfr.org/mpfr-$base/$i"
     cmp file "$i"
     rm file
@@ -185,9 +191,6 @@ if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   done
   rm mpfr-* sums-gnu
 fi
-
-# Do not use a pipe in order to check the exit status.
-#svn cat "$root/tags/$vers/NEWS" > NEWS
 
 sed -n "/^Changes .* to version ${base}:/,/^\$/p" NEWS > Changes
 if [ "$(wc -l < Changes)" -lt 3 ]; then
