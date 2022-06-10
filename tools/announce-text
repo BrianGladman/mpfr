@@ -30,6 +30,8 @@ EOF
   exit 1
 fi
 
+# https://stackoverflow.com/a/3899339/3782797
+# https://stackoverflow.com/q/3882838/3782797#comment121636904_3899339
 if [ -n "$(git update-index -q --refresh; \
            git diff-index --name-only HEAD)" ]; then
   cat <<EOF >&2
@@ -39,7 +41,10 @@ EOF
   exit 1
 fi
 
-if [ -n "$(git log '@{u}..')" ]; then
+# https://stackoverflow.com/a/20624168/3782797  git cherry -v
+# https://stackoverflow.com/a/8182309/3782797   git log '@{u}..'
+# Note: "git log @{push}.." proposed elsewhere is not what we want.
+if [ -n "$(git cherry)" ]; then
   cat <<EOF >&2
 $0 error: the current branch contains unpushed commits.
 $0 error: please push them first.
