@@ -18,6 +18,9 @@
 #   nopgpsig=1  to disable checking of the PGP signatures.
 #   nowebsrv=1  to disable checking of the mpfr.org web server.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
+#
+# If the MPFR version is not provided, this must be the one at HEAD,
+# i.e. the contents of the working tree.
 
 set -e
 
@@ -30,32 +33,6 @@ EOF
   exit 1
 fi
 
-# https://stackoverflow.com/a/3899339/3782797
-# https://stackoverflow.com/q/3882838/3782797#comment121636904_3899339
-if [ -n "$(git update-index -q --refresh; \
-           git diff-index --name-only HEAD)" ]; then
-  cat <<EOF >&2
-$0 error: you have unstaged and/or uncommitted changes.
-$0 error: please commit or stash them.
-EOF
-  exit 1
-fi
-
-# https://stackoverflow.com/a/20624168/3782797  git cherry -v
-# https://stackoverflow.com/a/8182309/3782797   git log '@{u}..'
-# Note: "git log @{push}.." proposed elsewhere is not what we want.
-if [ -n "$(git cherry)" ]; then
-  cat <<EOF >&2
-$0 error: the current branch contains unpushed commits.
-$0 error: please push them first.
-EOF
-  exit 1
-fi
-
-# Note: if one wants to detect unpushed commits in other branches too:
-#   git log --branches --not --remotes
-# but this is not wanted here.
-
 tmpdir=$(mktemp -d /tmp/announce-text-XXXXXXXX)
 trap 'rm -rf $tmpdir' 0 1 2 15
 echo "Temporary directory: $tmpdir" >&2
@@ -67,29 +44,54 @@ do
   eval "$i"
 done
 
-cd $tmpdir
+if [ -z "$vers" ]; then
+  vers=$(git tag --points-at HEAD)
+  if [ -z "$vers" ]; then
+    echo "$0 error: no MPFR version" >&2
+    exit 1
+  fi
+fi
 
-exit
-
-#vers=$(svn ls --xml "$root/tags" | xmlstarlet sel -T -t -v \
-#  "//entry[not(commit/@revision < //entry/commit/@revision)]/name" -)
-[ -z "$vers" ] && vers=$(svn ls -v "$root/tags" | perl -ne \
-  'm,^\s*(\d+)\s.*\s(\d+\.\d+\.\d+)/, && $1 > $r and ($r,$v) = ($1,$2);
-   END { print $v }')
 base=${vers%-rc*}
 echo "MPFR version: $vers" >&2
 echo "Base version: $base" >&2
 
-if [ $vers = $base ]; then
-  # This is a release (not a release candidate).
-  tagversfile="$root/tags/$vers/VERSION"
-  tagvers=$(svn cat "$tagversfile")
-  if [ $vers != "$tagvers" ]; then
-    echo "$tagversfile is incorrect or does not exist:" >&2
-    echo "got '$tagvers' instead of '$vers'" >&2
-    exit 1
-  fi
+# With Subversion, we were doing checks against the (remote) repository.
+# With Git, the checks are done locally, so that we need to make sure
+# that the working tree and index have no uncommitted changes and that
+# the local branch of the MPFR version to announce is up-to-date with
+# remote.
+
+# https://stackoverflow.com/a/3899339/3782797
+# https://stackoverflow.com/q/3882838/3782797#comment121636904_3899339
+if [ -n "$(git update-index -q --refresh; \
+           git diff-index --name-only HEAD)" ]; then
+  cat <<EOF >&2
+$0 error: you have unstaged and/or uncommitted changes.
+$0 error: please commit or stash them.
+EOF
+  exit 1
 fi
+
+if [ -n "$(git log $vers --not --remotes)" ]; then
+  cat <<EOF >&2
+$0 error: this MPFR version contains unpushed commits.
+$0 error: please push them first.
+EOF
+  exit 1
+fi
+
+versionfile=${vers}:VERSION
+vfcontents=$(git show $versionfile)
+if [ "$vers" != "$vfcontents" ]; then
+  cat <<EOF >&2
+$0 error: $versionfile is incorrect or does not exist.
+$0 error: got '$vfcontents' instead of '$vers'.
+EOF
+  exit 1
+fi
+
+exit
 
 www="$root/misc/www/mpfr-$base"
 echo "MPFR $vers www directory: $www" >&2
