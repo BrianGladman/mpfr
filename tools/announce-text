@@ -18,7 +18,6 @@
 #   vers=<mpfr_version>
 #   nopgpsig=1  to disable checking of the PGP signatures.
 #   nowebsrv=1  to disable checking of the mpfr.org web server.
-#   nogforge=1  to disable checking of the tarballs on InriaForge.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
 #
 # When it is run from a working copy, setting $root is not necessary.
@@ -118,24 +117,6 @@ fi
 
 rm mpfr*
 
-if [ $vers = $base ] && [ -z "$nogforge" ]; then
-  echo "Comparing with InriaForge..." >&2
-  gforge="https://gforge.inria.fr"
-  wget -O files.html "$gforge/frs/?group_id=136"
-  for i in \
-    $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\">mpfr-.*/\1/p" \
-          files.html)
-  do
-    wget "$gforge$i"
-  done
-  for i in sha1sum sha256sum
-  do
-    $i mpfr-$vers.* > sums-gforge
-    diff $i.out sums-gforge >&2
-  done
-  rm mpfr-* sums-gforge
-fi
-
 if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   echo "Comparing with GNU FTP (ftp.gnu.org)..." >&2
   for i in tar.bz2 tar.gz tar.xz zip
@@ -176,10 +157,6 @@ multiple-precision floating-point computations with correct rounding,
 is now available for download from the MPFR web site:
 
   https://www.mpfr.org/mpfr-$vers/
-
-from InriaForge:
-
-  https://gforge.inria.fr/projects/mpfr/
 
 and from the GNU FTP site:
 
