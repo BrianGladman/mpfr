@@ -10,19 +10,46 @@
 # based. Moreover, you may need to modify the text.
 #
 # Specific dependencies:
-#   GNU Coreutils (sha1sum, sha256sum, date), svn, gpg, unzip, wget.
+#   GNU Coreutils (sha1sum, sha256sum, date), git, gpg, unzip, wget.
 #
 # Usage: announce-text [ <variable_settings> ]
 # where arguments can be, for instance:
-#   root=<repository_root>
 #   vers=<mpfr_version>
 #   nopgpsig=1  to disable checking of the PGP signatures.
 #   nowebsrv=1  to disable checking of the mpfr.org web server.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
-#
-# When it is run from a working copy, setting $root is not necessary.
 
 set -e
+
+if [ -z "$(git remote -v 2> /dev/null | \
+           grep '^origin[[:space:]].*:mpfr/mpfr\.git')" ]; then
+  cat <<EOF >&2
+This $0 script must be run from a git working tree
+with mpfr/mpfr.git as origin.
+EOF
+  exit 1
+fi
+
+if [ -n "$(git update-index -q --refresh; \
+           git diff-index --name-only HEAD)" ]; then
+  cat <<EOF >&2
+$0 error: you have unstaged and/or uncommitted changes.
+$0 error: please commit or stash them.
+EOF
+  exit 1
+fi
+
+if [ -n "$(git log '@{u}..')" ]; then
+  cat <<EOF >&2
+$0 error: the current branch contains unpushed commits.
+$0 error: please push them first.
+EOF
+  exit 1
+fi
+
+# Note: if one wants to detect unpushed commits in other branches too:
+#   git log --branches --not --remotes
+# but this is not wanted here.
 
 tmpdir=$(mktemp -d /tmp/announce-text-XXXXXXXX)
 trap 'rm -rf $tmpdir' 0 1 2 15
@@ -35,10 +62,9 @@ do
   eval "$i"
 done
 
-[ -z "$root" ] && root=$(svn info | sed -n 's/^Repository Root: //p')
-echo "Repository root: $root" >&2
-
 cd $tmpdir
+
+exit
 
 #vers=$(svn ls --xml "$root/tags" | xmlstarlet sel -T -t -v \
 #  "//entry[not(commit/@revision < //entry/commit/@revision)]/name" -)
