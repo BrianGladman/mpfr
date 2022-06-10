@@ -81,6 +81,28 @@ EOF
   exit 1
 fi
 
+getid() { sed -n 's/^\([0-9a-f]*\)[[:space:]].*/\1/p' "$@"; }
+
+# Check that one has an annotated tag at origin.
+tid=$(git show-ref refs/tags/$vers | getid)
+if [ -z "$tid" ]; then
+  echo "$0 error: no local tag '$vers'" >&2
+  exit 1
+fi
+rtid=$(git ls-remote --tags origin refs/tags/$vers | getid)
+if [ -z "$rtid" ]; then
+  echo "$0 error: no remote tag '$vers'" >&2
+  exit 1
+fi
+if [ "$tid" != "$rtid" ]; then
+  echo "$0 error: local and remote tags '$vers' do not match." >&2
+  exit 1
+fi
+if [ "tag $vers" != "$(git show $tid | head -n 1)" ]; then
+  echo "$0 error: '$vers' is not an annotated tag." >&2
+  exit 1
+fi
+
 versionfile=${vers}:VERSION
 vfcontents=$(git show $versionfile)
 if [ "$vers" != "$vfcontents" ]; then
