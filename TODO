@@ -115,7 +115,7 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- cr_xxx functions from http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
+- cr_xxx functions from https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2596.pdf
   (section 7.31.8, page 392):
   rsqrt (differs from mpfr_rec_sqrt in -0: mpfr_rec_sqrt gives +Inf whereas
          rsqrt gives -Inf)
@@ -159,7 +159,7 @@ Table of contents:
   GammaD(x) = Gamma(x+1/2)
 - new functions of IEEE 754-2008, and more generally functions of the
   C binding draft TS 18661-4:
-    http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1946.pdf
+    https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1946.pdf
   More rootn functions: mpfr_rootn_uj, mpfr_rootn_sj, mpfr_rootn_z.
 - reduction functions and augmented arithmetic functions from IEEE 754-2019.
   Note: the interface for the augmented arithmetic functions will need to be
@@ -265,9 +265,9 @@ Table of contents:
 - functions from ISO/IEC 24747:2009 (Extensions to the C Library,
   to Support Mathematical Special Functions).
   Standard: https://www.iso.org/standard/38857.html
-  Draft: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1292.pdf
-  Rationale: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1244.pdf
-  See also: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3060.pdf
+  Draft: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1292.pdf
+  Rationale: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1244.pdf
+  See also: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3060.pdf
   (similar, for C++).
   Also check whether the functions that are already implemented in MPFR
   match this standard.
@@ -785,6 +785,6 @@ Table of contents:
     * use "-I$(top_builddir)/include".
 
 - _Noreturn (from ISO C11) may be replaced by [[noreturn]] in the future:
-  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2764.pdf
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2764.pdf
   Once this is implemented in compilers, consider it as an alternative
   (concerned files: acinclude.m4, doc/README.dev and src/mpfr-impl.h).

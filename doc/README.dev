@@ -662,10 +662,10 @@ ISO C Names and corresponding headers:
   http://www.schweikhardt.net/identifiers.html
 
 The C language:
-  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
-  http://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
-  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
-  http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2731.pdf (C2x draft)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
+  https://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2912.pdf (C2x draft)
   http://home.datacomm.ch/t_wolf/tw/c/c9x_changes.html
 
 About undefined behavior:

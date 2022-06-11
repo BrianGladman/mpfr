@@ -29,7 +29,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* To check for +inf, one can use the test x > LDBL_MAX, as LDBL_MAX is
    the maximum finite number representable in a long double, according
    to DR 467; see
-     http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2092.htm
+     https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2092.htm
    If this fails on some platform, a test x - x != 0 might be used. */
 
 #if defined(HAVE_LDOUBLE_IS_DOUBLE)

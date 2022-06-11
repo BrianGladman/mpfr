@@ -480,7 +480,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
      with GCC's -Wunused-but-set-variable, in non-debug mode).
      Note: WG14/N2270 proposed a maybe_unused attribute, which could
      be useful to avoid MPFR_DBGRES. See:
-       http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2270.pdf
+       https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2270.pdf
    Note: Evaluating expr might yield side effects, but such side effects
    must not change the results (except by yielding an assertion failure).
 */

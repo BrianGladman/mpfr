@@ -10,20 +10,28 @@
 # based. Moreover, you may need to modify the text.
 #
 # Specific dependencies:
-#   GNU Coreutils (sha1sum, sha256sum, date), svn, gpg, unzip, wget.
+#   GNU Coreutils (sha1sum, sha256sum, date), git, gpg, unzip, wget.
 #
 # Usage: announce-text [ <variable_settings> ]
 # where arguments can be, for instance:
-#   root=<repository_root>
 #   vers=<mpfr_version>
 #   nopgpsig=1  to disable checking of the PGP signatures.
 #   nowebsrv=1  to disable checking of the mpfr.org web server.
-#   nogforge=1  to disable checking of the tarballs on InriaForge.
 #   nognuftp=1  to disable checking of the tarballs on the GNU FTP.
 #
-# When it is run from a working copy, setting $root is not necessary.
+# If the MPFR version is not provided, this must be the one at HEAD,
+# i.e. the contents of the working tree.
 
 set -e
+
+if [ -z "$(git remote -v 2> /dev/null | \
+           grep '^origin[[:space:]].*:mpfr/mpfr\.git')" ]; then
+  cat <<EOF >&2
+This $0 script must be run from a git working tree
+with mpfr/mpfr.git as origin.
+EOF
+  exit 1
+fi
 
 tmpdir=$(mktemp -d /tmp/announce-text-XXXXXXXX)
 trap 'rm -rf $tmpdir' 0 1 2 15
@@ -36,34 +44,87 @@ do
   eval "$i"
 done
 
-[ -z "$root" ] && root=$(svn info | sed -n 's/^Repository Root: //p')
-echo "Repository root: $root" >&2
-
-cd $tmpdir
-
-#vers=$(svn ls --xml "$root/tags" | xmlstarlet sel -T -t -v \
-#  "//entry[not(commit/@revision < //entry/commit/@revision)]/name" -)
-[ -z "$vers" ] && vers=$(svn ls -v "$root/tags" | perl -ne \
-  'm,^\s*(\d+)\s.*\s(\d+\.\d+\.\d+)/, && $1 > $r and ($r,$v) = ($1,$2);
-   END { print $v }')
-base=${vers%-rc*}
-echo "MPFR version: $vers" >&2
-echo "Base version: $base" >&2
-
-if [ $vers = $base ]; then
-  # This is a release (not a release candidate).
-  tagversfile="$root/tags/$vers/VERSION"
-  tagvers=$(svn cat "$tagversfile")
-  if [ $vers != "$tagvers" ]; then
-    echo "$tagversfile is incorrect or does not exist:" >&2
-    echo "got '$tagvers' instead of '$vers'" >&2
+if [ -z "$vers" ]; then
+  vers=$(git tag --points-at HEAD)
+  if [ -z "$vers" ]; then
+    echo "$0 error: no MPFR version" >&2
     exit 1
   fi
 fi
 
-www="$root/misc/www/mpfr-$base"
-echo "MPFR $vers www directory: $www" >&2
-svn ls "$www" | sort > ls1
+base=${vers%-rc*}
+echo "MPFR version: $vers" >&2
+echo "Base version: $base" >&2
+
+# With Subversion, we were doing checks against the (remote) repository.
+# With Git, the checks are done locally, so that we need to make sure
+# that the working tree and index have no uncommitted changes and that
+# the local branch of the MPFR version to announce is up-to-date with
+# remote.
+
+# https://stackoverflow.com/a/3899339/3782797
+# https://stackoverflow.com/q/3882838/3782797#comment121636904_3899339
+if [ -n "$(git update-index -q --refresh; \
+           git diff-index --name-only HEAD)" ]; then
+  cat <<EOF >&2
+$0 error: you have unstaged and/or uncommitted changes.
+$0 error: please commit or stash them.
+EOF
+  exit 1
+fi
+
+if [ -n "$(git log $vers --not --remotes)" ]; then
+  cat <<EOF >&2
+$0 error: this MPFR version contains unpushed commits.
+$0 error: please push them first.
+EOF
+  exit 1
+fi
+
+getid() { sed -n 's/^\([0-9a-f]*\)[[:space:]].*/\1/p' "$@"; }
+
+# Check that one has an annotated tag at origin.
+tid=$(git show-ref refs/tags/$vers | getid)
+if [ -z "$tid" ]; then
+  echo "$0 error: no local tag '$vers'" >&2
+  exit 1
+fi
+rtid=$(git ls-remote --tags origin refs/tags/$vers | getid)
+if [ -z "$rtid" ]; then
+  echo "$0 error: no remote tag '$vers'" >&2
+  exit 1
+fi
+if [ "$tid" != "$rtid" ]; then
+  echo "$0 error: local and remote tags '$vers' do not match." >&2
+  exit 1
+fi
+if [ "tag $vers" != "$(git show $tid | head -n 1)" ]; then
+  echo "$0 error: '$vers' is not an annotated tag." >&2
+  exit 1
+fi
+
+versionfile=${vers}:VERSION
+vfcontents=$(git show $versionfile)
+if [ "$vers" != "$vfcontents" ]; then
+  cat <<EOF >&2
+$0 error: $versionfile is incorrect or does not exist.
+$0 error: got '$vfcontents' instead of '$vers'.
+EOF
+  exit 1
+fi
+
+cd $tmpdir
+
+git clone --no-checkout --depth 1 https://gitlab.inria.fr/mpfr/misc.git
+cd misc
+
+echo "Getting files from the www/mpfr-$base directory..." >&2
+git checkout HEAD www/mpfr-$base
+cd www/mpfr-$base
+
+files=$(ls)
+printf "%s\n" $files > ls1
+
 cat <<EOF > ls2
 index.html
 mpfr-$vers.tar.bz2
@@ -83,23 +144,23 @@ EOF
 missing=$(diff ls1 ls2 | sed -n 's/^> //p')
 if [ -n "$missing" ]; then
   echo "Missing files in the www directory:" $missing >&2
+  # Error if this is not a release candidate.
   [ $vers != $base ]
 fi
 
-echo "Getting the files from the www directory..." >&2
+tarballs=""
 for i in tar.bz2 tar.gz tar.xz zip
 do
-  svn cat "$www/mpfr-$vers.$i" > "mpfr-$vers.$i"
+  tarballs="$tarballs mpfr-$vers.$i"
 done
-sha1sum mpfr-$vers.* > sha1sum.out
-sha256sum mpfr-$vers.* > sha256sum.out
+sha1sum $tarballs > sha1sum.out
+sha256sum $tarballs > sha256sum.out
 unzip -jq mpfr-$vers.zip '*/NEWS'
 
 if [ -z "$nopgpsig" ]; then
   echo "Checking the signatures..." >&2
-  for i in mpfr-$vers.*
+  for i in $tarballs
   do
-    svn cat "$www/$i.asc" > "$i.asc"
     gpg --verify "$i.asc" >&2
   done
 fi
@@ -109,7 +170,6 @@ if [ -z "$nowebsrv" ]; then
   for i in $(cat ls1)
   do
     echo "  [$i]" >&2
-    [ -f "$i" ] || svn cat "$www/$i" > "$i"
     wget -O file "https://www.mpfr.org/mpfr-$base/$i"
     cmp file "$i"
     rm file
@@ -117,24 +177,6 @@ if [ -z "$nowebsrv" ]; then
 fi
 
 rm mpfr*
-
-if [ $vers = $base ] && [ -z "$nogforge" ]; then
-  echo "Comparing with InriaForge..." >&2
-  gforge="https://gforge.inria.fr"
-  wget -O files.html "$gforge/frs/?group_id=136"
-  for i in \
-    $(sed -n "s/.*href=\"\([^\"]*mpfr-$vers\.[^\"]*[^c]\)\">mpfr-.*/\1/p" \
-          files.html)
-  do
-    wget "$gforge$i"
-  done
-  for i in sha1sum sha256sum
-  do
-    $i mpfr-$vers.* > sums-gforge
-    diff $i.out sums-gforge >&2
-  done
-  rm mpfr-* sums-gforge
-fi
 
 if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   echo "Comparing with GNU FTP (ftp.gnu.org)..." >&2
@@ -149,9 +191,6 @@ if [ $vers = $base ] && [ -z "$nognuftp" ]; then
   done
   rm mpfr-* sums-gnu
 fi
-
-# Do not use a pipe in order to check the exit status.
-#svn cat "$root/tags/$vers/NEWS" > NEWS
 
 sed -n "/^Changes .* to version ${base}:/,/^\$/p" NEWS > Changes
 if [ "$(wc -l < Changes)" -lt 3 ]; then
@@ -176,10 +215,6 @@ multiple-precision floating-point computations with correct rounding,
 is now available for download from the MPFR web site:
 
   https://www.mpfr.org/mpfr-$vers/
-
-from InriaForge:
-
-  https://gforge.inria.fr/projects/mpfr/
 
 and from the GNU FTP site:
 

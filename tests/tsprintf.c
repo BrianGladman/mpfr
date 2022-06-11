@@ -222,16 +222,16 @@ native_types (void)
 
 #if __MPFR_STDC (199901L)
 
-      sprintf (buf, "%a", d[k]);
+      gmp_sprintf (buf, "%a", d[k]);
       check_vsprintf (buf, "%a", d[k]);
 
-      sprintf (buf, "%A", d[k]);
+      gmp_sprintf (buf, "%A", d[k]);
       check_vsprintf (buf, "%A", d[k]);
 
-      sprintf (buf, "%la", d[k]);
+      gmp_sprintf (buf, "%la", d[k]);
       check_vsprintf (buf, "%la", d[k]);
 
-      sprintf (buf, "%lA", d[k]);
+      gmp_sprintf (buf, "%lA", d[k]);
       check_vsprintf (buf, "%lA", d[k]);
 
       sprintf (buf, "%le", d[k]);
