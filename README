@@ -21,7 +21,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ##############################################################################
 
 The GNU MPFR distribution contains the following files:
-(This does not apply to code retrieved by Subversion.)
+(This does not apply to code retrieved by Git.)
 
 AUTHORS         - the authors of the library
 BUGS            - bugs in MPFR - please read this file!
@@ -34,7 +34,7 @@ NEWS            - new features with respect to previous versions
 PATCHES         - empty file (until patches are applied)
 README          - this file
 TODO            - what remains to do (any help is welcome!)
-VERSION         - version of MPFR (next release version if taken by Subversion)
+VERSION         - version of MPFR (next release version if taken by Git)
 ac*.m4          - automatic configuration files
 ar-lib          - auxiliary installation file
 compile         - auxiliary installation file
