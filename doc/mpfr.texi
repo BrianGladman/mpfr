@@ -3335,6 +3335,11 @@ exponent range) in the direction of @var{y}
 numbers). If the result is zero, it keeps the same sign. No underflow,
 overflow, or inexact exception is raised.
 @c For NaN, the behavior is like IEEE@tie{}754 with sNaN.
+
+Note: Concerning the exceptions and the sign of 0, the behavior differs
+from the ISO C @code{nextafter} and @code{nexttoward} functions. It is
+similar to the nextUp and nextDown operations from IEEE 754 (introduced
+in its 2008 revision).
 @end deftypefun
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
