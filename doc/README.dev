@@ -1622,26 +1622,29 @@ filename should start with the name of the test program (for instance,
 "tfprintf_out.txt" for tfprintf.c). Add the filename to CLEANFILES in
 the tests/Makefile.am file.
 
-Also, make sure that the tests run against previous MPFR versions,
+In case of failure of a test, freeing the memory explicitly before exiting
+is not necessary. We do this in case of success just to be able to detect
+memory leaks in MPFR.
+
+Also, try to make sure that the tests run against previous MPFR versions,
 possibly by disabling some tests with code like
 
   #if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
 
-[TODO: update for Git.]
+It is possible to check out the tests from a branch, e.g. master, with
 
-Indeed one can now easily run the trunk tests in a branch by executing
+  git checkout master -- tests/
 
-  svn switch .../svn/mpfr/trunk/tests tests
+But to avoid the update of tests/Makefile.am with new tests, which
+would probably fail as these new tests are typically written for new
+MPFR functions, the following may be better:
 
-from the working copy. One can know when the tests directory has been
-switched, thanks to
+  git checkout master -- 'tests/*.c' 'tests/*.h'
 
-  $ svn status
-      S  tests
+Note that (as seen with "git status") since the corresponding changes are
+put in the index and there is no intent to commit, you should also do
 
-In case of failure, freeing the memory explicitly is not necessary.
-We do this in case of success just to be able to detect memory leaks
-in MPFR.
+  git restore --staged tests
 
    ---------------------------------------------------------------------
 

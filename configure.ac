@@ -726,6 +726,7 @@ dnl incorrect and even have security implications.
 dnl WARNING! LD_RUN_PATH is not taken into account by the GNU gold ld,
 dnl e.g. from binutils-gold 2.22-5 under Debian; see
 dnl   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=660813
+dnl   https://sourceware.org/bugzilla/show_bug.cgi?id=13764
 saved_LD_RUN_PATH="$LD_RUN_PATH"
 LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
 export LD_RUN_PATH
@@ -762,7 +763,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([or --with-gmp-include with a system include directory])
     AC_MSG_WARN([(such as /usr/include or /usr/local/include). Another])
     AC_MSG_WARN([cause may be that LD_RUN_PATH is not honored (problem])
-    AC_MSG_WARN([seen under OpenBSD 6.6).])
+    AC_MSG_WARN([seen under OpenBSD 6.6 and with the GNU gold linker).])
     AC_MSG_WARN([However, since we can't use 'libtool' inside the configure,])
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
     AC_MSG_WARN([CC="$CC"])
