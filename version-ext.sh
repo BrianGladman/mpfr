@@ -20,7 +20,7 @@ fi
 GREP=${GREP:-grep}
 SED=${SED:-sed}
 
-git tag --contains | sed -n 's/-root$//p' > excluded-branches
+git tag --contains | $SED -n 's/-root$//p' > excluded-branches
 gitb=`git branch --format='%(refname:short)' --contains | \
         $SED 's,(HEAD detached at origin/\(.*\)),\1,' | \
         $GREP -v '^(' | $GREP -v -F -f excluded-branches -x || true`
