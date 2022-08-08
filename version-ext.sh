@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # This script outputs additional MPFR version information for a
-# Git working tree (Git branch, total commit count, commit id,
-# and whether the current HEAD is modified). It is called in
-# tests/Makefile.am for "make check", but may be used by other
-# tools that need such information.
+# Git working tree (Git branch or "(none)", total commit count,
+# commit id, and whether the current HEAD is modified). It is
+# called in tests/Makefile.am for "make check", but may be used
+# by other tools that need such information.
 # Note that this does not replace version information found in
 # the VERSION file, which may still need to be output in addition
 # to the output of this script.
@@ -23,12 +23,12 @@ SED=${SED:-sed}
 git tag --contains | sed -n 's/-root$//p' > excluded-branches
 gitb=`git branch --format='%(refname:short)' --contains | \
         $SED 's,(HEAD detached at origin/\(.*\)),\1,' | \
-        $GREP -v '^(' | $GREP -v -F -f excluded-branches -x`
+        $GREP -v '^(' | $GREP -v -F -f excluded-branches -x || true`
 rm excluded-branches
 gitc=`git rev-list --count HEAD`
 gith=`git rev-parse --short HEAD`
 gitm=`git update-index -q --refresh; git diff-index --name-only HEAD`
-echo "$gitb-$gitc-$gith${gitm:+ (modified)}"
+echo "${gitb:-(none)}-$gitc-$gith${gitm:+ (modified)}"
 
 # References:
 #   https://stackoverflow.com/q/3882838/3782797
