@@ -34,7 +34,7 @@ a. 1, b. -1.250000, c. -1.0000000000000000e+00
 a. -1, b. -1.250000, c. -1.00
 a. -0X1P+0, b. -1.000000e+00, c. 1
 a. 53, b. a, c. 1
-% a. -1., b. -1, c. 000000A9B9CFFBAC
+% a. -1., b. -1, c. 0000005491F1FA7C
 a. -1, b. 0XFP+0, c. 1
 a. ffffffffffffffff b. 1.5000000000000000e+01
 a. 1.5000000000000000e+01 .b ffffffffffffffffffffffffffffffffffffffffffffffff
