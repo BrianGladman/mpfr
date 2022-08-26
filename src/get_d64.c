@@ -152,7 +152,7 @@ get_decimal64_inf (int negative)
 static _Decimal64
 get_decimal64_zero (int negative)
 {
-  return negative ? -0.0dd : 0.0dd;
+  return negative ? -0.dd : 0.dd;
 }
 
 /* construct the decimal64 smallest non-zero with given sign:

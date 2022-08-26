@@ -108,7 +108,7 @@ special (void)
   res = mpfr_sub_q (y, x, q, MPFR_RNDU);
   CHECK_FOR ("0.5-3/2", mpfr_cmp_si(y, -1)==0 && res==0);
 
-  /* Inf Rationnal */
+  /* Inf rational */
   mpq_set_ui (q, 1, 0);
   mpfr_set_str1 (x, "0.5");
   res = mpfr_add_q (y, x, q, MPFR_RNDN);

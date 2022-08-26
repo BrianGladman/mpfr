@@ -49,15 +49,15 @@ print_decimal128 (_Decimal128 d)
   else /* regular number */
     {
       long e = 0;
-      while (d < 1.0dl)
+      while (d < 1.dl)
         {
-          d *= 10.0dl;
+          d *= 10.dl;
           e --;
         }
       /* now d >= 1 */
-      while (d > 10.0dl)
+      while (d > 10.dl)
         {
-          d /= 10.0dl;
+          d /= 10.dl;
           e ++;
         }
       /* now 1 <= d < 10 */
@@ -471,7 +471,7 @@ noncanonical (void)
          in tget_set_d64.c). More information at:
          https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91226
       */
-      volatile _Decimal128 d = 9999999999999999999999999999999999.0dl;
+      volatile _Decimal128 d = 9999999999999999999999999999999999.dl;
       mpfr_t y;
 
       x.s.comb = 98560; /* force Gh >= 24 thus a non-canonical number

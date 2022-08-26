@@ -268,14 +268,14 @@ https://www.mpfr.org/mpfr-$base/mpfr-$vers.tar.gz.asc
 https://www.mpfr.org/mpfr-$base/mpfr-$vers.zip.asc
 
 Each tarball is signed by Vincent Lefèvre. This can be verified using
-the DSA key ID 980C197698C3739D; this key can be retrieved with:
+the GPG key ID 5831D11A0D4DB02A; this key can be retrieved with:
 
-  gpg --recv-keys 980C197698C3739D
+  gpg --recv-keys 5831D11A0D4DB02A
 
 or by downloading it from <https://www.vinc17.net/pgp.html>.
 The key fingerprint is:
 
-  07F3 DBBE CC1A 3960 5078  094D 980C 1976 98C3 739D
+  A534 BE3F 83E2 41D9 1828  0AEB 5831 D11A 0D4D B02A
 
 The signatures can be verified with: gpg --verify <file.asc>
 You should check that the key fingerprint matches.

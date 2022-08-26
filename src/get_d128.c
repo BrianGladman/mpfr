@@ -57,21 +57,21 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static _Decimal128
 get_decimal128_nan (void)
 {
-  return 0.0dl / 0.0dl;
+  return 0.dl / 0.dl;
 }
 
 /* construct the decimal128 Inf with given sign */
 static _Decimal128
 get_decimal128_inf (int negative)
 {
-  return negative ? - 1.0dl / 0.0dl : 1.0dl / 0.0dl;
+  return negative ? - 1.dl / 0.dl : 1.dl / 0.dl;
 }
 
 /* construct the decimal128 zero with given sign */
 static _Decimal128
 get_decimal128_zero (int negative)
 {
-  return negative ? - 0.0dl : 0.0dl;
+  return negative ? - 0.dl : 0.dl;
 }
 
 /* construct the decimal128 smallest non-zero with given sign:
