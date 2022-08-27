@@ -139,9 +139,9 @@ To make a release (for the MPFR team):
          the NEWS file are consistent;
        * update the libtool version (see src/Makefile.am) and the DLL version
          (see configure.ac) if need be, though this should have been done as
-         soon as the ABI changed in the trunk;
-       * update the ChangeLog (see below) in the trunk, in order to minimize
-         the future diffs.
+         soon as the ABI changed in the master branch;
+       * update the ChangeLog (see below) in the master branch, in order to
+         minimize the future diffs.
      If everything is OK, create the branch.
 
   1) Switch to the branch and add a <branch>-root tag on HEAD. This tag
@@ -426,8 +426,8 @@ To make a release (for the MPFR team):
 Note: Mail sent to the mpfr-announce list should also be sent to
 the mpfr list, and the Reply-To should be set to the mpfr list.
 
-For major or minor releases (but not patchlevels), a branch may be
-created first to allow new features to be committed to the trunk.
+For major or minor releases (but not patchlevels), a new branch may be
+created first to allow new features to be committed to master.
 
 To add tcc support with libtool 2.4.2 or below, do the following before
 running "make distcheck":
@@ -1890,7 +1890,7 @@ of incorrect installation of XML tools), validate the files with
 and if everything is OK (no error messages), commit both files.
 
 Update the FAQ.html file with update-faq in the doc directory of the
-MPFR trunk and supported branches.
+MPFR master and supported release branches.
 
 ===========================================================================
 
