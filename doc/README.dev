@@ -129,6 +129,9 @@ To make a release (for the MPFR team):
 
   0) For a non-patchlevel release, before creating a branch from master
      (or more often), some operations should be done in master:
+       * update the doc/texinfo.tex file from a recent version, and check
+         whether this yields unwanted changes in the MPFR manual generated
+         in the main formats (HTML, info, PDF);
        * make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
          is up-to-date (updates could also be done in patchlevel releases,
          but with care);
