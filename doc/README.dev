@@ -348,11 +348,11 @@ To make a release (for the MPFR team):
      -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
      -Wmissing-field-initializers". The -Wint-in-bool-context option
      could be added once available. These warnings can easily be checked
-     in automatic tests by adding "-Werror -Wno-error=unused-function",
-     but this needs:
-       * GCC 4.9+
-       * a patched autoconf:
-     https://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
+     in automatic tests by adding "-Werror". Add -Wno-error=... options
+     when needed (but except in some cases, it may be better to improve
+     the MPFR code; in particular, the -Wno-error=unused-function option
+     should no longer be necessary, thanks to conditional compilation or
+     MPFR_MAYBE_UNUSED).
 
      Check whether some functions could be declared as pure, const, etc.
      with GCC, using -Wsuggest-attribute=... options.
