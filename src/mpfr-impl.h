@@ -200,8 +200,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # define MPFR_COLD_FUNCTION_ATTR
 #endif
 
-/* add MPFR_MAYBE_UNUSED after a variable declaration to avoid compiler
-   warnings if it is not used */
+/* Add MPFR_MAYBE_UNUSED after a variable declaration to avoid compiler
+   warnings if it is not used.
+   TODO: To be replaced by the future maybe_unused attribute (C2x) once
+   supported. */
 #if __MPFR_GNUC(3,4)
 #define MPFR_MAYBE_UNUSED __attribute__ ((unused))
 #else

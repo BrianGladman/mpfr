@@ -2,7 +2,7 @@
    Usage:
    0) compile this file with NTL
    1) compile tadd.c with -DCHECK_EXTERNAL
-   2) ./tadd | egrep -v 'Seed|Inf|NaN' > /tmp/log
+   2) ./tadd | grep -Ev 'Seed|Inf|NaN' > /tmp/log
       (Warning, this produces a large file.)
    3) ./RRTest < /tmp/add.log
 */

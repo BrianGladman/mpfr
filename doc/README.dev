@@ -129,6 +129,9 @@ To make a release (for the MPFR team):
 
   0) For a non-patchlevel release, before creating a branch from master
      (or more often), some operations should be done in master:
+       * update the doc/texinfo.tex file from a recent version, and check
+         whether this yields unwanted changes in the MPFR manual generated
+         in the main formats (HTML, info, PDF);
        * make sure that the src/mpfr-longlong.h file (from GMP's longlong.h)
          is up-to-date (updates could also be done in patchlevel releases,
          but with care);
@@ -139,9 +142,9 @@ To make a release (for the MPFR team):
          the NEWS file are consistent;
        * update the libtool version (see src/Makefile.am) and the DLL version
          (see configure.ac) if need be, though this should have been done as
-         soon as the ABI changed in the trunk;
-       * update the ChangeLog (see below) in the trunk, in order to minimize
-         the future diffs.
+         soon as the ABI changed in the master branch;
+       * update the ChangeLog (see below) in the master branch, in order to
+         minimize the future diffs.
      If everything is OK, create the branch.
 
   1) Switch to the branch and add a <branch>-root tag on HEAD. This tag
@@ -345,11 +348,11 @@ To make a release (for the MPFR team):
      -Wmissing-parameter-type -Wmissing-prototypes -Wmissing-declarations
      -Wmissing-field-initializers". The -Wint-in-bool-context option
      could be added once available. These warnings can easily be checked
-     in automatic tests by adding "-Werror -Wno-error=unused-function",
-     but this needs:
-       * GCC 4.9+
-       * a patched autoconf:
-     https://lists.gnu.org/archive/html/autoconf-patches/2014-01/msg00003.html
+     in automatic tests by adding "-Werror". Add -Wno-error=... options
+     when needed (but except in some cases, it may be better to improve
+     the MPFR code; in particular, the -Wno-error=unused-function option
+     should no longer be necessary, thanks to conditional compilation or
+     MPFR_MAYBE_UNUSED).
 
      Check whether some functions could be declared as pure, const, etc.
      with GCC, using -Wsuggest-attribute=... options.
@@ -426,8 +429,8 @@ To make a release (for the MPFR team):
 Note: Mail sent to the mpfr-announce list should also be sent to
 the mpfr list, and the Reply-To should be set to the mpfr list.
 
-For major or minor releases (but not patchlevels), a branch may be
-created first to allow new features to be committed to the trunk.
+For major or minor releases (but not patchlevels), a new branch may be
+created first to allow new features to be committed to master.
 
 To add tcc support with libtool 2.4.2 or below, do the following before
 running "make distcheck":
@@ -665,7 +668,7 @@ The C language:
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
   https://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
-  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2912.pdf (C2x draft)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3054.pdf (C2x draft)
   http://home.datacomm.ch/t_wolf/tw/c/c9x_changes.html
 
 About undefined behavior:
@@ -1890,7 +1893,7 @@ of incorrect installation of XML tools), validate the files with
 and if everything is OK (no error messages), commit both files.
 
 Update the FAQ.html file with update-faq in the doc directory of the
-MPFR trunk and supported branches.
+MPFR master and supported release branches.
 
 ===========================================================================
 
