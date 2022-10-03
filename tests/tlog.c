@@ -83,7 +83,7 @@ check3 (char *s, unsigned long prec, mpfr_rnd_t rnd)
 }
 
 /* examples from Jean-Michel Muller and Vincent Lefevre
-   Cf http://www.ens-lyon.fr/~jmmuller/Intro-to-TMD.htm
+   Cf http://perso.ens-lyon.fr/jean-michel.muller/Intro-to-TMD.htm
 */
 
 static void
