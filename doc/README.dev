@@ -150,13 +150,14 @@ To make a release (for the MPFR team):
      should be placed on the parent of the first commit specific to the
      branch; it could also be added later; its id should be the same as
      the one output by "git merge-base master <branch>".
+     In the master branch, update the version with the update-version
+     script to indicate the next version (use the "dev" suffix).
 
   1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
-     Update the libtool version (see src/Makefile.am), needed at least for
-     patchlevel releases.
-     Update the DLL version (see configure.ac) if not done yet.
+     If not done yet, update the libtool version (see src/Makefile.am)
+     and the DLL version (see configure.ac).
      Check these versions with tools/ck-version-info (this check will also
      be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
@@ -391,7 +392,9 @@ To make a release (for the MPFR team):
 
   8) For the release itself (not the release candidates), update the
      version with the update-version script in the Git repository to
-     indicate the next version (use the "dev" suffix).
+     indicate the next patchlevel version (use the "dev" suffix).
+     Increase the 2nd number of the libtool version (see src/Makefile.am)
+     for the next patchlevel version.
 
   9) * For the release itself (not the release candidates):
      Create a web page for the MPFR release and add the documentation
