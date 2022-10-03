@@ -146,12 +146,12 @@ To make a release (for the MPFR team):
        * update the ChangeLog (see below) in the master branch, in order to
          minimize the future diffs.
      If everything is OK, create the branch.
-
-  1) Switch to the branch and add a <branch>-root tag on HEAD. This tag
+     Switch to the branch and add a <branch>-root tag on HEAD. This tag
      should be placed on the parent of the first commit specific to the
      branch; it could also be added later; its id should be the same as
      the one output by "git merge-base master <branch>".
-     Check the version and change the suffix to "rc1", "rc2", etc. with
+
+  1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
      Update the libtool version (see src/Makefile.am), needed at least for
