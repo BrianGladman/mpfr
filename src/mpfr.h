@@ -946,9 +946,9 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    implicit conversion in the macro allows the compiler to emit diagnostics
    when normally expected, for instance in the following call:
      mpfr_set_ui (x, "foo", MPFR_RNDN);
-   If this is not possible (for future macros), one of the tricks described
-   on http://groups.google.com/group/comp.std.c/msg/e92abd24bf9eaf7b could
-   be used. */
+   If this is not possible (for future macros), one of the tricks described on
+   https://groups.google.com/g/comp.std.c/c/9Jl0giNILfg/m/e6-evyS9KukJ?pli=1
+   could be used. */
 #if defined (__GNUC__) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 

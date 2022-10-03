@@ -33,7 +33,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    truncate the rationals inside the algorithm, but then the error analysis
    should be redone. */
 
-/* Cf http://www.ginac.de/CLN/binsplit.pdf: the Taylor series of log(1+x)
+/* Cf https://www.ginac.de/CLN/binsplit.pdf - the Taylor series of log(1+x)
    up to order N for x=p/2^k is T/(B*Q).
    P[0] <- (-p)^(n2-n1) [with opposite sign when n1=1]
    q <- k*(n2-n1) [corresponding to Q[0] = 2^q]

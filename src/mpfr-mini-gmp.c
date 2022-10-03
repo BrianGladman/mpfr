@@ -64,7 +64,7 @@ static unsigned int
 rand15 (void)
 {
   /* With a good PRNG, we could use "rand () % 32768", but let's choose
-     the following from <http://c-faq.com/lib/randrange.html>. Note that
+     the following from <https://c-faq.com/lib/randrange.html>. Note that
      on most platforms, the compiler should generate a shift. */
   return rand () / (RAND_MAX / 32768 + 1);
 }

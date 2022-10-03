@@ -39,7 +39,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *
  * in the comp.lang.c FAQ:
  *
- *   http://c-faq.com/ansi/constmismatch.html
+ *   https://c-faq.com/ansi/constmismatch.html
  */
 
 /* See the doc/sum.txt file for the algorithm and a part of its proof
@@ -61,7 +61,8 @@ iteration. But are there practical applications which would be used as
 tests?
 
 Note: see the following paper and its references:
-http://www.eecs.berkeley.edu/~hdnguyen/public/papers/ARITH21_Fast_Sum.pdf
+  http://www.acsel-lab.com/arithmetic/arith21/papers/p54.pdf
+  (J. Demmel and H. D. Nguyen, Fast Reproducible Floating-Point Summation)
 VL: This is very different:
           In MPFR             In the paper & references
     arbitrary precision            fixed precision
