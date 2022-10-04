@@ -138,6 +138,10 @@ main (int argc, char *argv[])
   nbtests = 10;
   if (argc > 1)
     {
+      /* Number of values in argument. Note that the mpfr_clear loop above
+         is in O(n^2) until the FIXME for tests_memory_find() in memory.c
+         is resolved (the search in tests_memory_find() is in O(n), while
+         it could be in almost constant time). */
       long a = atol (argv[1]);
       verbose = 1;
       if (a != 0)
