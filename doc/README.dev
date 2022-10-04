@@ -375,6 +375,8 @@ To make a release (for the MPFR team):
      (GMP_CHECK_RANDOMIZE, MPFR_CHECK_LIBC_PRINTF, MPFR_CHECK_LARGEMEM,
      MPFR_CHECK_EXPENSIVE, MPFR_SUSPICIOUS_OVERFLOW, MPFR_CHECK_LOCALES,
      MPFR_CHECK_BADCASES).
+     Note: a non-default GMP_CHECK_RANDOMIZE value allows one to make sure
+     that a test against a hard-coded result does not depend on it.
 
      Check there is no branch misprediction due to wrong MPFR_LIKELY or
      MPFR_UNLIKELY statements. For that test, configure with
