@@ -56,12 +56,22 @@ static const char *res[NRES] = {
   "1.5bf69aff31bb3e6430cc263fdd45ef2c70a779984e764524bc35a9cb4a430dd0@0" };
 #endif /* MPFR_USE_MINI_GMP */
 
+/* If checkval is true, check the obtained results by using a fixed seed
+   for reproducibility. */
 static void
 test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
               int verbose, int checkval)
 {
+  gmp_randstate_t s;
   mpfr_t *t;
   int i, inexact;
+
+  if (checkval)
+    {
+      gmp_randinit_default (s);
+      gmp_randseed_ui (s, 17);
+      nbtests = NRES;
+    }
 
   t = (mpfr_t *) tests_allocate (nbtests * sizeof (mpfr_t));
 
@@ -70,7 +80,7 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
 
   for (i = 0; i < nbtests; i++)
     {
-      inexact = mpfr_nrandom (t[i], RANDS, MPFR_RNDN);
+      inexact = mpfr_nrandom (t[i], checkval ? s : RANDS, MPFR_RNDN);
 
       if (checkval && mpfr_cmp_str (t[i], res[i], 16, MPFR_RNDN) != 0)
         {
@@ -122,6 +132,8 @@ test_nrandom (long nbtests, mpfr_prec_t prec, mpfr_rnd_t rnd,
   for (i = 0; i < nbtests; ++i)
     mpfr_clear (t[i]);
   tests_free (t, nbtests * sizeof (mpfr_t));
+  if (checkval)
+    gmp_randclear (s);
   return;
 }
 
@@ -149,17 +161,14 @@ main (int argc, char *argv[])
     }
 
   test_nrandom (nbtests, 420, MPFR_RNDN, verbose, 0);
-  test_special (2);
-  test_special (42000);
 
 #ifndef MPFR_USE_MINI_GMP
   /* The random generator in mini-gmp is not deterministic. */
-  /* This test needs a fixed seed for reproducibility, thus it should be
-     last (in general, the seed obtained from GMP_CHECK_RANDOMIZE should
-     be used). */
-  gmp_randseed_ui (mpfr_rands, 17);
-  test_nrandom (NRES, 256, MPFR_RNDN, 0, 1);
+  test_nrandom (0, 256, MPFR_RNDN, 0, 1);
 #endif /* MPFR_USE_MINI_GMP */
+
+  test_special (2);
+  test_special (42000);
 
   tests_end_mpfr ();
   return 0;
