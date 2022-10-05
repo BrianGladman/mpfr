@@ -237,12 +237,10 @@ To make a release (for the MPFR team):
 
   5) Create a tag corresponding to the content of the VERSION file:
        $ tag=$(cat VERSION)
-       $ git tag $tag
+       $ git tag -m "GNU MPFR $tag tag." $tag
      and push it:
        $ git push origin $tag
-     Note: in case of error, this can be reverted later without leaving
-     any trace. But the next step will check the tag upstream in order
-     to make sure that nothing has been forgotten.
+     Note: in case of error, see the git-tag(1) man page.
 
   6) Export the tree identified by this tag in order to get a tarball:
        $ ./tools/export-release $(cat VERSION) /path/to/some/dir
