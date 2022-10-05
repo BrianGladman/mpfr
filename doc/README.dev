@@ -230,7 +230,7 @@ To make a release (for the MPFR team):
      [a] https://lvc.github.io/abi-compliance-checker/
      [b] https://gitlab.inria.fr/mpfr/misc/-/blob/master/build-multi
 
-  4) Update the ChangeLog file with "make ChangeLog" in UTF-8 locales.
+  4) Update the ChangeLog file with "make update-changelog" in UTF-8 locales.
      This should at least be done last, in order to be complete before the
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
