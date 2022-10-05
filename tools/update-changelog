@@ -10,5 +10,8 @@
 # This script can be run from the tools directory.
 [ -d tools ] || [ "$(basename "$(pwd)")" != tools ] || cd ..
 
+TZ=UTC0
+export TZ
+
 tools/gitlog-to-changelog --ignore-line='\[From SVN r.*\]' \
                           --strip-cherry-pick --format='%B%n' > ChangeLog
