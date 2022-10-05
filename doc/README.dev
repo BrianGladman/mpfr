@@ -235,7 +235,8 @@ To make a release (for the MPFR team):
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
 
-  5) Create a tag corresponding to the content of the VERSION file:
+  5) Create an annotated tag whose name corresponds to the content of
+     the VERSION file:
        $ tag=$(cat VERSION)
        $ git tag -m "GNU MPFR $tag tag." $tag
      and push it:
