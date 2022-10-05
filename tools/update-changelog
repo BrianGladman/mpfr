@@ -11,4 +11,4 @@
 [ -d tools ] || [ "$(basename "$(pwd)")" != tools ] || cd ..
 
 tools/gitlog-to-changelog --ignore-line='\[From SVN r.*\]' \
-                          --format='%B%n' > ChangeLog
+                          --strip-cherry-pick --format='%B%n' > ChangeLog

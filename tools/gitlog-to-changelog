@@ -35,7 +35,7 @@
 eval 'exec perl -wSx "$0" "$@"'
      if 0;
 
-my $VERSION = '2022-01-27 18:49'; # UTC
+my $VERSION = '2022-01-27 18:49 (modified)'; # UTC
 # The definition above must lie within the first 8 lines in order
 # for the Emacs time-stamp write hook (at end) to update it.
 # If you change this file with Emacs, please let the write hook
@@ -343,7 +343,7 @@ sub git_dir_option($)
       if ($strip_cherry_pick)
         {
           $rest =~ s/^\s*Conflicts:\n.*//sm;
-          $rest =~ s/^\s*\(cherry picked from commit [\da-f]+\)\n//m;
+          $rest =~ s/^\s*\(cherry picked from commit [\da-f]{40}\b[^)]*\)\n//m;
         }
 
       my @line = split /[ \t]*\n/, $rest;
