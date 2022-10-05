@@ -42,7 +42,6 @@ test_special (mpfr_prec_t p)
 
 #define NRES 10
 
-#ifndef MPFR_USE_MINI_GMP
 static const char *res[NRES] = {
   "-2.07609e2d96da78b2d6bea3ab30d4359222a82f8a35e4e4464303ad4808f57458@0",
   "1.a4650a963ab9f266ed009ee96c8788f6b88212f5f2a4d4aef65db2a9e57c44bc@-1",
@@ -54,7 +53,6 @@ static const char *res[NRES] = {
   "3.0a08181e342b02187463c0025f895b41ddb7076c5bf157e3b898e9248baf4ad4@-1",
   "-d.44fda7a51276b722ebc88dd016b7d9d7ea5ba682282a42cdef6948312e5dcf70@-1",
   "1.5bf69aff31bb3e6430cc263fdd45ef2c70a779984e764524bc35a9cb4a430dd0@0" };
-#endif /* MPFR_USE_MINI_GMP */
 
 /* If checkval is true, check the obtained results by using a fixed seed
    for reproducibility. */
