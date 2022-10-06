@@ -146,17 +146,18 @@ To make a release (for the MPFR team):
        * update the ChangeLog (see below) in the master branch, in order to
          minimize the future diffs.
      If everything is OK, create the branch.
-
-  1) Switch to the branch and add a <branch>-root tag on HEAD. This tag
+     Switch to the branch and add a <branch>-root tag on HEAD. This tag
      should be placed on the parent of the first commit specific to the
      branch; it could also be added later; its id should be the same as
      the one output by "git merge-base master <branch>".
-     Check the version and change the suffix to "rc1", "rc2", etc. with
+     In the master branch, update the version with the update-version
+     script to indicate the next version (use the "dev" suffix).
+
+  1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
      for the final release.
-     Update the libtool version (see src/Makefile.am), needed at least for
-     patchlevel releases.
-     Update the DLL version (see configure.ac) if not done yet.
+     If not done yet, update the libtool version (see src/Makefile.am)
+     and the DLL version (see configure.ac).
      Check these versions with tools/ck-version-info (this check will also
      be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
@@ -208,30 +209,39 @@ To make a release (for the MPFR team):
   3) Update the NEWS file, in particular say if the release is binary
      and/or API compatible (or not) with previous releases.
      Also update the "API Compatibility" section in the manual (mpfr.texi).
-     Check with abi-compliance-checker (ABI Compliance Checker)[*], on the
-     latest MPFR releases built with no configure options (except --prefix),
-     that no changes have been missed. The ^/misc/build-multi script in the
-     repository may be useful to prepare data for abi-compliance-checker.
-     Note that abi-compliance-checker can only check the symbols, types
+     Check with abi-compliance-checker (ABI Compliance Checker)[a] against
+     the previous MPFR release (built with no configure options, except
+     --prefix) that no changes have been missed. The build-multi script
+     in the misc.git repository[b] may be useful to prepare data for
+     abi-compliance-checker (for the version to be released, a temporary
+     tarball thus needs to be generated, e.g. with "make dist").
+     Example of use for the 4.1.1 release candidate:
+        $ make distcheck
+        $ mkdir ~/tmp/abicc
+        $ /path/to/build-multi ~/tmp/abicc \
+            /path/to/mpfr-4.1.0.tar.xz mpfr-4.1.1-rc1.tar.xz
+        $ cd ~/tmp/abicc
+        $ abi-compliance-checker -lib mpfr -old 4.1.0.xml -new 4.1.1-rc1.xml
+     Note that abi-compliance-checker can check only the symbols, types
      and constants; it cannot detect just a change in the behavior, thus
      may miss some incompatibilities.
      Update the FAQ.html file with update-faq (and check it) in the doc
      directory.
-     [*] https://lvc.github.io/abi-compliance-checker/
+     [a] https://lvc.github.io/abi-compliance-checker/
+     [b] https://gitlab.inria.fr/mpfr/misc/-/blob/master/build-multi
 
-  4) Update the ChangeLog file with "make ChangeLog" in UTF-8 locales.
+  4) Update the ChangeLog file with "make update-changelog" in UTF-8 locales.
      This should at least be done last, in order to be complete before the
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
 
-  5) Create a tag corresponding to the content of the VERSION file:
+  5) Create an annotated tag whose name corresponds to the content of
+     the VERSION file:
        $ tag=$(cat VERSION)
-       $ git tag $tag
+       $ git tag -m "GNU MPFR $tag tag." $tag
      and push it:
        $ git push origin $tag
-     Note: in case of error, this can be reverted later without leaving
-     any trace. But the next step will check the tag upstream in order
-     to make sure that nothing has been forgotten.
+     Note: in case of error, see the git-tag(1) man page.
 
   6) Export the tree identified by this tag in order to get a tarball:
        $ ./tools/export-release $(cat VERSION) /path/to/some/dir
@@ -374,6 +384,8 @@ To make a release (for the MPFR team):
      (GMP_CHECK_RANDOMIZE, MPFR_CHECK_LIBC_PRINTF, MPFR_CHECK_LARGEMEM,
      MPFR_CHECK_EXPENSIVE, MPFR_SUSPICIOUS_OVERFLOW, MPFR_CHECK_LOCALES,
      MPFR_CHECK_BADCASES).
+     Note: a non-default GMP_CHECK_RANDOMIZE value allows one to make sure
+     that a test against a hard-coded result does not depend on it.
 
      Check there is no branch misprediction due to wrong MPFR_LIKELY or
      MPFR_UNLIKELY statements. For that test, configure with
@@ -391,7 +403,9 @@ To make a release (for the MPFR team):
 
   8) For the release itself (not the release candidates), update the
      version with the update-version script in the Git repository to
-     indicate the next version (use the "dev" suffix).
+     indicate the next patchlevel version (use the "dev" suffix).
+     Increase the 2nd number of the libtool version (see src/Makefile.am)
+     for the next patchlevel version.
 
   9) * For the release itself (not the release candidates):
      Create a web page for the MPFR release and add the documentation

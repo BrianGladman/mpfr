@@ -551,7 +551,7 @@ check_inexact (void)
 }
 
 /* Bug found by Jakub Jelinek
- * http://bugzilla.redhat.com/643657
+ * https://bugzilla.redhat.com/show_bug.cgi?id=643657
  * https://gforge.inria.fr/tracker/index.php?func=detail&aid=11301
  * The consequence can be either an assertion failure (i = 2 in the
  * testcase below, in debug mode) or an incorrectly rounded value.

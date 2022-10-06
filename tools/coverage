@@ -10,7 +10,7 @@
 # To avoid being affected by this libtool bug, this script could be modified
 # to use a subdirectory of /tmp/ompfr-gcov for the MPFR build.
 
-# Set up the right directoy
+# Set up the right directory
 cd $(dirname $0)/..
 
 # First Build MPFR in /tmp/

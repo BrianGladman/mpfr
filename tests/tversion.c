@@ -70,8 +70,8 @@ main (void)
   /************************* Compiler information **************************/
 
   /* TODO: We may want to output info for non-GNUC-compat compilers too. See:
-   * http://sourceforge.net/p/predef/wiki/Compilers/
-   * http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
+   * https://sourceforge.net/p/predef/wiki/Compilers/
+   * https://web.archive.org/web/20191011050717/http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
    *
    * For ICC, do not check the __ICC macro as it is obsolete and not always
    * defined (in particular, on MS Windows).

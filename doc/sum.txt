@@ -119,7 +119,7 @@ annoying errors for the user in practice. See:
 
 in the comp.lang.c FAQ:
 
-  http://c-faq.com/ansi/constmismatch.html
+  https://c-faq.com/ansi/constmismatch.html
 
 If n = 0, then the result is +0, whatever the rounding mode. This is
 equivalent to mpfr_set_ui and mpfr_set_si on the integer 0, and this
@@ -972,8 +972,8 @@ This is done by considering two cases:
             For sq = 1, the IEEE 754 rule for halfway cases is to choose
             the value larger in magnitude, i.e., round away from zero.
             Discussion about this rule and errata:
-              http://grouper.ieee.org/groups/754/email/msg03907.html
-              http://speleotrove.com/misc/IEEE754-errata.html
+              https://web.archive.org/web/20100818144356/http://grouper.ieee.org/groups/754/email/msg03907.html
+              https://speleotrove.com/misc/IEEE754-errata.html
             therefore, in this case, we want to keep rbit to 1 for
             positive values, and set it to 0 for negative values; but
             it happens that this corresponds to the rule chosen for

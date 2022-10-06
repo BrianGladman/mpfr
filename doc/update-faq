@@ -2,6 +2,9 @@
 
 set -e
 
+# Set up the right directory
+cd "$(dirname "$0")"
+
 # We cannot use
 #   <!ENTITY styles SYSTEM "https://www.mpfr.org/styles/visual.css">
 # in faq.xsl since libxml2 still does not support https! And http
