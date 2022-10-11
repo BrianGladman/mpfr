@@ -802,8 +802,8 @@ IEEE@tie{}754 standard: in case the number to be rounded lies exactly
 in the middle between two consecutive representable numbers, it is
 rounded to the one with an even significand; in radix 2, this means
 that the least significant bit is 0. For example, the number 2.5,
-which is represented by (10.1) in binary, is rounded to (10.0)=2 with
-a precision of two bits, and not to (11.0)=3.
+which is represented by (10.1) in binary, is rounded to (10.0)@tie{}=@tie{}2
+with a precision of two bits, and not to (11.0)@tie{}=@tie{}3.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
