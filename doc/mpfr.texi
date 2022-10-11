@@ -1748,7 +1748,7 @@ rounding to nearest, can be recovered exactly when read again,
 still with rounding to nearest.
 More precisely, we have
 @ifnottex
-m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
+@math{m} = 1 + ceil(@var{p}*log(2)/log(@var{b})),
 @end ifnottex
 @tex
 $m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil$,
