@@ -2462,9 +2462,10 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to the exponential integral of @var{op},
 rounded in the direction @var{rnd}.
 This is the sum of Euler's constant, of the logarithm
-of the absolute value of @var{op}, and of the sum for k from 1 to infinity of
+of the absolute value of @var{op}, and of the sum for @math{k}
+from 1 to infinity of
 @ifnottex
-@var{op} to the power k, divided by k and factorial(k).
+@var{op} to the power @math{k}, divided by @math{k} and factorial(@math{k}).
 @end ifnottex
 @tex
 $@var{op}^k/(k \cdot k!)$.
