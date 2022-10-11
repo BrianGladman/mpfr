@@ -85,7 +85,8 @@ set_special (mpfr_ptr x, unsigned int select)
       break;
     }
 }
-/* same than mpfr_cmp, but returns 0 for both NaN's */
+
+/* same as mpfr_cmp, but returns 0 for both NaN's */
 static int
 mpfr_compare (mpfr_srcptr a, mpfr_srcptr b)
 {

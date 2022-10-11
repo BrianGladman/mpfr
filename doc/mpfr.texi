@@ -372,7 +372,7 @@ Then, in the MPFR build directory, type the following commands.
 @item
 @samp{./configure}
 
-This will prepare the build and setup the options according to your system.
+This will prepare the build and set up the options according to your system.
 You can give options to specify the install directories (instead of
 the default @file{/usr/local}), threading support, and so on. See
 the @file{INSTALL} file and/or the output of @samp{./configure --help}
@@ -439,7 +439,7 @@ Create a DVI version of the manual, in @file{mpfr.dvi}.
 @item
 @samp{mpfr.ps} or @samp{ps}
 
-Create a Postscript version of the manual, in @file{mpfr.ps}.
+Create a PostScript version of the manual, in @file{mpfr.ps}.
 
 @item
 @samp{mpfr.html} or @samp{html}
@@ -503,7 +503,7 @@ You might also look in the archives of the MPFR mailing-list:
 @url{https://sympa.inria.fr/sympa/arc/mpfr}.
 Otherwise, please investigate and report it.
 We have made this library available to you, and it is not to ask too
-much from you, to ask you to report the bugs that you find.
+much from you to ask you to report the bugs that you find.
 
 There are a few things you should think about when you put your bug report
 together.
@@ -1543,7 +1543,7 @@ Special data (for infinities and NaN) can be @samp{@@inf@@} or
 it can also be @samp{infinity}, @samp{inf}, @samp{nan} or
 @samp{nan(n-char-sequence-opt)}, all case insensitive with the rules of
 the C locale.
-A @samp{n-char-sequence-opt} is a possibly empty string containing only digits,
+An @samp{n-char-sequence-opt} is a possibly empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
 NaN@.
@@ -1699,7 +1699,7 @@ exactly equals @m{@var{rop} \times 2^{@var{exp}},@var{rop} times 2 raised
 to the power @var{exp}}.
 If @var{op} is zero, the minimal exponent @code{emin} is returned.
 If @var{op} is NaN or an infinity, the @emph{erange} flag is set, @var{rop}
-is set to 0, and the the minimal exponent @code{emin} is returned.
+is set to 0, and the minimal exponent @code{emin} is returned.
 The returned exponent may be less than the minimal exponent @code{emin}
 of MPFR numbers in the current exponent range; in case the exponent is
 not representable in the @code{mpfr_exp_t} type, the @emph{erange} flag
@@ -1883,7 +1883,7 @@ Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
 But for types having no signed zeros, 0 is considered unsigned
 (i.e., (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
 0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
-The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_sub}
+The same restrictions as for @code{mpfr_add_d} apply to @code{mpfr_d_sub}
 and @code{mpfr_sub_d}.
 @end deftypefun
 
@@ -1897,7 +1897,7 @@ Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2}} rounded in the
 direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
 (for types having no signed zeros, 0 is considered positive).
-The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
+The same restrictions as for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
 Note: when @var{op1} and @var{op2} are equal, use @code{mpfr_sqr} instead of
 @code{mpfr_mul} for better efficiency.
 @end deftypefun
@@ -1922,7 +1922,7 @@ For types having no signed zeros, 0 is considered positive; but note that if
 @var{op1} is non-zero and @var{op2} is zero, the result might change from
 @pom{}Inf to NaN in future MPFR versions if there is an opposite decision
 on the IEEE@tie{}754 side.
-The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_div}
+The same restrictions as for @code{mpfr_add_d} apply to @code{mpfr_d_div}
 and @code{mpfr_div_d}.
 @end deftypefun
 
@@ -3052,7 +3052,7 @@ the inexact flag is set when @var{rop} differs from @var{op}, following
 the ISO C99 rule for the @code{rint} function. If you want the behavior to
 be more like IEEE@tie{}754 / ISO TS@tie{}18661-1, i.e., the usual behavior
 where the round-to-integer function is regarded as any other mathematical
-function, you should use one the @code{mpfr_rint_*} functions instead.
+function, you should use one of the @code{mpfr_rint_*} functions instead.
 
 Note that no double rounding is performed; for instance, 10.5 (1010.1 in
 binary) is rounded by @code{mpfr_rint} with rounding to nearest to 12 (1100

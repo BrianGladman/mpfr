@@ -208,7 +208,7 @@ check_inexact (void)
   mpfr_clear (z);
 }
 
-/* Note the the preprocessor test and the if test in the function are
+/* Note that the preprocessor test and the if test in the function are
    complementary. If the size of an unsigned long is a power of 2 and
    this type has no padding bits, the test on ULONG_MAX and the if test
    are equivalent. The preprocessor test can avoid compiler warnings
