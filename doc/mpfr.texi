@@ -3201,13 +3201,13 @@ with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
-E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
-value if one is able to round correctly @var{x} to precision @var{prec}
-with the direction @var{rnd2} assuming an unbounded exponent range, and
-0 otherwise (including for NaN and Inf).
+E(@var{b})@minus{}@var{err} where E(@var{b}) is the exponent of @var{b},
+return a non-zero value if one is able to round correctly @var{x} to
+precision @var{prec} with the direction @var{rnd2} assuming an unbounded
+exponent range, and 0 otherwise (including for NaN and Inf).
 In other words, if the error on @var{b} is bounded by two to the power
-@var{k} ulps, and @var{b} has precision @var{prec},
-you should give @var{err}=@var{prec}@minus{}@var{k}.
+@var{k}@tie{}ulps, and @var{b} has precision @var{prec},
+you should give @var{err}@tie{}=@tie{}@var{prec}@minus{}@var{k}.
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
