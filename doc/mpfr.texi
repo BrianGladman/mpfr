@@ -110,6 +110,8 @@ floating-point arithmetic, version @value{VERSION}.
 @c  @m{T,N} is $T$ in tex or @math{N} otherwise.  This is an easy way to give
 @c  different forms for math in tex and info.  Commas in N or T don't work,
 @c  but @C{} can be used instead.  \, works in info but not in tex.
+@c  Note: @math{...} should be used only with tex; it should not be used with
+@c  HTML in particular, because it puts everything in italics (even digits).
 @iftex
 @macro m {T,N}
 @tex$\T\$@end tex
