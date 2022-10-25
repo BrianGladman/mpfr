@@ -107,11 +107,28 @@ floating-point arithmetic, version @value{VERSION}.
 @end menu
 
 
-@c  @m{T,N} is $T$ in tex or @math{N} otherwise.  This is an easy way to give
-@c  different forms for math in tex and info.  Commas in N or T don't work,
-@c  but @C{} can be used instead.  \, works in info but not in tex.
-@c  Note: @math{...} should be used only with tex; it should not be used with
-@c  HTML in particular, because it puts everything in italics (even digits).
+@c  @m{T,N} is $T$ for the TeX output, otherwise just N (for Info/HTML),
+@c  where N is expected to be human-readable text.  This is an easy way to
+@c  give different forms for math in TeX and Info/HTML.
+@c  Commas in N or T don't work, but @C{} can be used instead.
+@c  \, works in Info but not in TeX.
+@c  Warning!  For TeX, the use of some Texinfo macros (even empty macros) may
+@c  give incorrect output (e.g., incorrect spacing with empty macros).
+@c  Note: This macro came from GMP's gmp.texi, where it was added in 2000-10
+@c  (see "hg diff -c3083").  This macro expanded to $T$ in TeX, otherwise
+@c  to @math{N}, thus for Info and HTML output (though HTML was not mentioned
+@c  in the change and potentially not considered at that time).  However, for
+@c  Info output, the use of @math is ignored by Texinfo (thus useless), and
+@c  the HTML output is enclosed by <em> (generally rendered in italics),
+@c  which was unexpected since N is just human-readable text, without any
+@c  reason to use emphasis (note that @math{...} formatting could be changed
+@c  via the HTML_MATH variable, but anyway, its use would have been incorrect
+@c  because it expects $...$ TeX syntax, instead of human-readable text as
+@c  used in the GMP/MPFR manuals, and @math{...} did not handle @var{...}
+@c  correctly).
+@c  See discussions:
+@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-10/msg00045.html
+@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-10/msg00078.html
 @iftex
 @macro m {T,N}
 @tex$\T\$@end tex
@@ -119,7 +136,7 @@ floating-point arithmetic, version @value{VERSION}.
 @end iftex
 @ifnottex
 @macro m {T,N}
-@math{\N\}
+\N\
 @end macro
 @end ifnottex
 
