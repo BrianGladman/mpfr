@@ -9,7 +9,7 @@
 @iftex
 @afourpaper
 @end iftex
-@comment %**end of header
+@c %**end of header
 
 @c Note: avoid using non-ASCII characters directly when possible,
 @c as the "info" utility cannot currently handle them.
