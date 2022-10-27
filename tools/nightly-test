@@ -13,7 +13,7 @@ cd /tmp
 mkdir "$DIR"
 # The following test should be useless, but let's be paranoid.
 test ! -h "$DIR"
-svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
+git clone https://gitlab.inria.fr/mpfr/mpfr.git "$DIR"
 cd "$DIR"
 ./autogen.sh
 # -Wmissing-prototypes is not valid for C++
