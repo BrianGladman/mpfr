@@ -273,7 +273,7 @@ mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
            Some other systems may just have an unsigned zero.
            We can't use d == +0.0 since it should be always true,
            so we check that the memory representation of d is the
-           same than +0.0, etc.
+           same as +0.0, etc.
            Note: r is set to -0 only if d is detected as a negative zero
            *and*, for the double type, -0 has a different representation
            from +0. If -0.0 has several representations, the code below

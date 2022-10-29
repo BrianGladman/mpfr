@@ -1,59 +1,79 @@
-#!/bin/bash
-# Usage: nightly-test <GMPDIR> <CC> <BRANCH>
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+  echo "Usage: nightly-test <GMPDIR> [ <CC> [ <BRANCH> ] ]" >&2
+  exit 1
+fi
+
 set -e
+
 GMP="$1"
 CC="$2"
 BRANCH="$3"
 DIR=mpfr-nightly
+
 echo "BRANCH=$BRANCH"
 echo "GMP=$GMP"
 echo "CC=$CC"
+
 cd /tmp
-/bin/rm -fr "$DIR"
+rm -fr "$DIR"
 mkdir "$DIR"
+
 # The following test should be useless, but let's be paranoid.
 test ! -h "$DIR"
-svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
+
+git clone ${BRANCH:+-b "$BRANCH"} --depth 1 \
+  https://gitlab.inria.fr/mpfr/mpfr.git "$DIR"
+
 cd "$DIR"
 ./autogen.sh
-# -Wmissing-prototypes is not valid for C++
-# add -Wno-sign-conversion because of a bug in g++
-# -pedantic-errors (instead of just -pedantic) below allows us to
-# deactivate the support of C99 features in the configure (as they
-# will give an error) and to test that MPFR can be built with a
-# C90-only compiler.
-if [ "$CC" = "g++" ]; then
-   ./configure --with-gmp="$GMP" --enable-assert=full --enable-decimal-float \
-   --enable-float128 \
-   --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
-   CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector -Wno-sign-compare \
-   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -ansi -pedantic-errors"
-else
-# removed -ansi since it is incompatible with --enable-decimal-float
-   ./configure --with-gmp="$GMP" --enable-assert=full --enable-decimal-float \
-   --enable-float128 \
-   --disable-shared --enable-thread-safe --enable-tests-timeout=60 \
-   CC="$CC" CFLAGS="-Wall -Wmissing-prototypes -O2 -g -fstack-protector \
-   -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -pedantic -Wlogical-op"
-fi
+
+case $CC in
+  *g++*)
+    opt=""
+    # -Wmissing-prototypes is not valid for C++
+    # add -Wno-sign-compare because of a bug in g++
+    # -pedantic-errors (instead of just -pedantic) below allows us to
+    # deactivate the support of C99 features in the configure (as they
+    # will give an error) and to test that MPFR can be built with a
+    # C90-only compiler.
+    flags="-Wno-sign-compare -ansi -pedantic-errors" ;;
+  *)
+    opt="--enable-decimal-float --enable-float128"
+    # removed -ansi since it is incompatible with --enable-decimal-float
+    flags="-Wmissing-prototypes -pedantic -Wlogical-op" ;;
+esac
+
+./configure --with-gmp="$GMP" --enable-assert=full --disable-shared \
+    --enable-thread-safe --enable-tests-timeout=60 $opt \
+    CC="$CC" CFLAGS="-Wall -O2 -g -fstack-protector -D_FORTIFY_SOURCE=2 \
+                     -Wformat -Wformat-security $flags"
+
 make
+
 export GMP_CHECK_RANDOMIZE=1
 export MPFR_SUSPICIOUS_OVERFLOW=1
 export MPFR_CHECK_LIBC_PRINTF=1
 export MPFR_SKIP_EXTREME=1
+
 # The VERBOSE=1 allows tests/test-suite.log to be output in case of failure.
 VERBOSE=1 make check
+
 # reconfigure for mpfrbench
 make distclean
-if [ "$CC" = "g++" ]; then
-   ./configure --with-gmp="$GMP" --disable-shared CC="$CC"
-else
-# removed -ansi since it is incompatible with --enable-decimal-float
-   ./configure --with-gmp="$GMP" --disable-shared
-fi
+
+case $CC in
+  *g++*)
+    ./configure --with-gmp="$GMP" --disable-shared CC="$CC" ;;
+  *)
+    ./configure --with-gmp="$GMP" --disable-shared ;;
+esac
+
 make
 cd tools/bench
 make mpfrbench
 ./mpfrbench
+
 cd /tmp
-/bin/rm -fr "$DIR"
+rm -fr "$DIR"

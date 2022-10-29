@@ -554,6 +554,7 @@ EOF
 doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
      faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
 doc=(doc/${^doc})
+files=(AUTHORS BUGS INSTALL NEWS README TODO $doc examples $srctests)
 
 # In case of problems, one can skip files with -S or use "grep -v"...
 # The codespell.exclude could be simplified after this is fixed:
@@ -570,9 +571,7 @@ if which codespell > /dev/null 2> /dev/null; then
   cscmd()
   {
     codespell ${term:+--enable-colors} \
-      -q3 -I codespell.ignore -x codespell.exclude \
-      AUTHORS BUGS INSTALL NEWS README TODO $doc examples $srctests \
-      2> /dev/null
+      -q3 -I codespell.ignore -x codespell.exclude $files 2> /dev/null
   }
   err-if-output "codespell" cscmd
 else
@@ -580,8 +579,10 @@ else
 fi
 
 err-if-output --msg='Say "positive infinity" and "negative infinity".' -t \
-  "+/- infinity" grep -Ei "(plus|minus) *infinity" \
-  doc/algorithms.tex $doc $srctests
+  "+/- infinity" grep -Eir "(plus|minus) *infinity" $files
+
+err-if-output --msg='Say "same as".' -t \
+  "same than" grep -Eir "same +(\w+ +)?than" $files
 
 err-if-output "ck-clz_tab" tools/ck-clz_tab
 err-if-output "ck-inits-clears" tools/ck-inits-clears

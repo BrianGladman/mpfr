@@ -99,7 +99,7 @@ POW_U (mpfr_ptr y, mpfr_srcptr x, UTYPE n, mpfr_rnd_t rnd)
     ;
   /* 2^(nlen-1) <= n < 2^nlen */
 
-  /* setup initial precision */
+  /* set up initial precision */
   prec = MPFR_PREC (y) + 3 + GMP_NUMB_BITS
     + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
   if (prec <= nlen)

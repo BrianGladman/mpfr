@@ -73,7 +73,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 
   /* since |r| < 1, r = x*2^ex, and x is an integer, necessarily ex < 0 */
 
-  p = mpfr_get_prec (f); /* same than r */
+  p = mpfr_get_prec (f); /* same as r */
   /* bound for number of iterations */
   imax = p / (-mpfr_get_exp (r));
   imax += (imax == 0);
