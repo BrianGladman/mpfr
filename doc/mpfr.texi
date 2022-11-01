@@ -2927,9 +2927,9 @@ argument.
 
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @code{nan}, @code{-inf}, and @code{inf}
+Special values are always displayed as @samp{nan}, @samp{-inf}, and @samp{inf}
 for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
-@code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
+@samp{NAN}, @samp{-INF}, and @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and
 @samp{G} specifiers.
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
@@ -2945,8 +2945,8 @@ following conversion specifiers: @samp{a}, @samp{A}, @samp{b}, @samp{e},
 values at the
 wanted precision which have the same exponent, otherwise, it is rounded away
 from zero.
-For instance, 85 is displayed as "8e+1" and 95 is displayed as "1e+2" with the
-format specification @code{"%.0RNe"}.
+For instance, 85 is displayed as @samp{8e+1} and 95 is displayed as
+@samp{1e+2} with the format specification @code{"%.0RNe"}.
 This also applies when the @samp{g} (resp.@: @samp{G}) conversion specifier
 uses the @samp{e} (resp.@: @samp{E}) style.
 If the precision is set to a value greater than the maximum value for an
