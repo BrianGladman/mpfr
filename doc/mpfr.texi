@@ -3534,7 +3534,7 @@ Create an integer in the same format as used by @code{MPFR_VERSION} from the
 given @var{major}, @var{minor} and @var{patchlevel}.
 Here is an example of how to check the MPFR version at compile time:
 @example
-#if (!defined(MPFR_VERSION) || (MPFR_VERSION<MPFR_VERSION_NUM(3,0,0)))
+#if (!defined(MPFR_VERSION) || (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0)))
 # error "Wrong MPFR version."
 #endif
 @end example
