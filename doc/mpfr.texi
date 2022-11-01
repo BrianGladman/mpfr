@@ -141,7 +141,12 @@ floating-point arithmetic, version @value{VERSION}.
 @end ifnottex
 
 @c  @mm{T} is @m{T,T}. It should be used for math symbols (+, <, >) outside
-@c  of @m, @tm, @code or similar (but do not use it for "C++").
+@c  of @m, @tm, @code or similar (but do not use it for the "+" in "C++").
+@c  Indeed, for TeX output, there are 2 kinds of "+" rendering: one in math
+@c  mode and one in text mode; for consistency and better look, the one in
+@c  math mode should be used for what looks like math, i.e. what could be
+@c  in a math expression. Ditto for other symbols like < and >, but this is
+@c  not needed for @minus{}, as this builtin macro does already that.
 @c  Note: @tm{T}, defined below, could also be used, but @mm{T} is simpler
 @c  for a single character (no need to disable line breaks).
 @macro mm {T}
