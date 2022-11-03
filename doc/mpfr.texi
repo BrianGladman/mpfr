@@ -839,8 +839,8 @@ IEEE@tie{}754 standard: in case the number to be rounded lies exactly
 in the middle between two consecutive representable numbers, it is
 rounded to the one with an even significand; in radix 2, this means
 that the least significant bit is 0. For example, the number 2.5,
-which is represented by (10.1) in binary, is rounded to (10.0)@tie{}=@tie{}2
-with a precision of two bits, and not to (11.0)@tie{}=@tie{}3.
+which is represented by (10.1) in binary, is rounded to @tm{(10.0) = 2}
+with a precision of two bits, and not to @tm{(11.0) = 3}.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
@@ -3241,7 +3241,7 @@ precision @var{prec} with the direction @var{rnd2} assuming an unbounded
 exponent range, and 0 otherwise (including for NaN and Inf).
 In other words, if the error on @var{b} is bounded by two to the power
 @var{k}@tie{}ulps, and @var{b} has precision @var{prec},
-you should give @var{err}@tie{}=@tie{}@var{prec}@minus{}@var{k}.
+you should give @tm{@var{err} = @var{prec} @minus{} @var{k}}.
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
