@@ -2410,9 +2410,9 @@ small precision of @var{rop}.
 @deftypefun int mpfr_acosu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_atanu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @var{a} multiplied by @var{u} and divided by
-@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine (resp.@: arc-sine and
-arc-tangent) of @var{op}.
+Set @var{rop} to @m{@var{a} \times @var{u}/(2\pi),@var{a} multiplied
+by @var{u} and divided by 2@tie{}Pi}, where @var{a} is the arc-cosine
+(resp.@: arc-sine and arc-tangent) of @var{op}.
 For example, if @var{u} equals 360, @code{mpfr_acosu} yields the arc-cosine in
 degrees.
 @end deftypefun
@@ -2436,8 +2436,8 @@ As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
 @m{-\pi,-Pi},
 its rounded result might be outside the function output range.
 The function @code{mpfr_atan2u} behaves similarly, except the result is
-multiplied by @var{u} and divided by 2@tie{}Pi; and @code{mpfr_atan2pi}
-is the same as @code{mpfr_atan2u} with @code{u=2}.
+multiplied by @m{@var{u}/(2\pi),@var{u} and divided by 2@tie{}Pi}; and
+@code{mpfr_atan2pi} is the same as @code{mpfr_atan2u} with @code{u=2}.
 For example, if @var{u} equals 360, @code{mpfr_atan2u} returns the
 arc-tangent in degrees, with values from @minus{}180 to 180.
 
