@@ -185,13 +185,22 @@ times
 @end ifnottex
 
 @c  New math operators.
-@c  @abs{} can be used in both tex and info, or just \abs in tex.
+@c  @abs{}, @atan{} and @sign{} can be used in both tex and info,
+@c  or just \abs, \atan and \sign in tex.
 @tex
 \gdef\abs{\mathop{\rm abs}}
+\gdef\atan{\mathop{\rm atan}}
+\gdef\sign{\mathop{\rm sign}}
 @end tex
 @ifnottex
 @macro abs
 abs
+@end macro
+@macro atan
+atan
+@end macro
+@macro sign
+sign
 @end macro
 @end ifnottex
 
@@ -1409,9 +1418,10 @@ closely match the actual accurate part of the numbers.
 Set the precision of @var{x} to be @strong{exactly} @var{prec} bits,
 and set its value to NaN@.
 The previous value stored in @var{x} is lost. It is equivalent to
-a call to @code{mpfr_clear(x)} followed by a call to
-@code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
-case the current allocated space for the significand of @var{x} is enough.
+a call to @code{mpfr_clear(@var{x})} followed by a call to
+@code{mpfr_init2(@var{x}, @var{prec})}, but more efficient as no allocation
+is done in case the current allocated space for the significand of @var{x}
+is enough.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 In case you want to keep the previous value stored in @var{x},
@@ -2177,7 +2187,7 @@ number (i.e., neither NaN nor an infinity), zero, or a regular number
 Return a positive value if @tm{@var{op} > 0}, zero if @tm{@var{op} = 0},
 and a negative value if @tm{@var{op} < 0}.
 If the operand is NaN, set the @emph{erange} flag and return zero.
-This is equivalent to @code{mpfr_cmp_ui (op, 0)}, but more efficient.
+This is equivalent to @code{mpfr_cmp_ui (@var{op}, 0)}, but more efficient.
 @end deftypefn
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
@@ -2402,7 +2412,7 @@ of the arc-cosine function;
 still, the result lies in the image of the output range
 by the rounding function.
 The same holds for @code{asin(-1)}, @code{asin(1)}, @code{atan(-Inf)},
-@code{atan(+Inf)} or for @code{atan(op)} with large @var{op} and
+@code{atan(+Inf)} or for @code{atan(@var{op})} with large @var{op} and
 small precision of @var{rop}.
 @c PZ: check the above is correct
 @end deftypefun
@@ -2420,8 +2430,8 @@ degrees.
 @deftypefun int mpfr_acospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_atanpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @code{acos(op)} (resp.@: @code{asin(op)} and @code{atan(op)})
-divided by @m{\pi,Pi}.
+Set @var{rop} to @code{acos(@var{op})} (resp.@: @code{asin(@var{op})} and
+@code{atan(@var{op})}) divided by @m{\pi,Pi}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2429,15 +2439,18 @@ divided by @m{\pi,Pi}.
 @deftypefunx int mpfr_atan2pi (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
 For @code{mpfr_atan2}, set @var{rop} to the arc-tangent2 of @var{y} and
 @var{x}, rounded in the direction @var{rnd}:
-if @code{x > 0}, @code{atan2(y, x) = atan(y/x)};
-if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan(@GMPabs{y/x}))},
+if @tm{@var{x} > 0}, then @code{atan2(@var{y}, @var{x})} returns
+@tm{@atan{}(@var{y}/@var{x})};
+if @tm{@var{x} < 0}, then @code{atan2(@var{y}, @var{x})} returns
+@m{\sign(@var{y}) \times (\pi - \atan(@GMPabs{@var{y}/@var{x}})),the sign
+of @var{y} multiplied by @w{Pi @minus{} atan(abs(@var{y}/@var{x}))}},
 thus a number from @m{-\pi,-Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
 @m{-\pi,-Pi},
 its rounded result might be outside the function output range.
 The function @code{mpfr_atan2u} behaves similarly, except the result is
 multiplied by @m{@var{u}/(2\pi),@var{u} and divided by 2@tie{}Pi}; and
-@code{mpfr_atan2pi} is the same as @code{mpfr_atan2u} with @code{u=2}.
+@code{mpfr_atan2pi} is the same as @code{mpfr_atan2u} with @tm{@var{u} = 2}.
 For example, if @var{u} equals 360, @code{mpfr_atan2u} returns the
 arc-tangent in degrees, with values from @minus{}180 to 180.
 
