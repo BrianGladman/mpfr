@@ -1,4 +1,4 @@
-/* mpfr_set_zero -- set a number to plus or minus zero.
+/* mpfr_set_zero -- set a number to positive or negative zero.
 
 Copyright 2009-2022 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
