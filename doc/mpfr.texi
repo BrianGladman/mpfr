@@ -193,7 +193,9 @@ times
 @c  @abs{}, @atan{}, @sign{} and @EXP{} can normally be used in both tex
 @c  and info, but due to a spacing bug in texi2dvi from GNU Texinfo 6.8,
 @c  one should use \abs, \atan, \sign and \EXP in tex (so the @tm macro
-@c  cannot be used).
+@c  cannot be used):
+@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00032.html
+@c
 @c  Note: in the definitions below, let's use \mathop rather than
 @c  \operatorname, which is not available.
 @tex
