@@ -192,6 +192,7 @@ times
 @c  New math operators.
 @c  @abs{}, @atan{} and @sign{} can be used in both tex and info,
 @c  or just \abs, \atan and \sign in tex.
+@c  Note: use \mathop rather than \operatorname, which is not available.
 @tex
 \gdef\abs{\mathop{\rm abs}}
 \gdef\atan{\mathop{\rm atan}}
