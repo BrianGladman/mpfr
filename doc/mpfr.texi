@@ -112,6 +112,11 @@ floating-point arithmetic, version @value{VERSION}.
 @c  give different forms for math in TeX and Info/HTML.
 @c  Commas in N or T don't work, but @comma{} can be used instead.
 @c  \, works in Info but not in TeX.
+@c  For simple math, one may have T = N, in which case @mm or @tm (macros
+@c  defined below) should be used instead of @m.
+@c  Line breaks should not be disabled for the TeX output T (the concept of
+@c  penalty is used instead). For N, @w can be used, possibly on a part of
+@c  the text.
 @c  Warning!  For TeX, the use of some Texinfo macros (even empty macros) may
 @c  give incorrect output (e.g., incorrect spacing with empty macros).
 @c  Note: This macro came from GMP's gmp.texi, where it was added in 2000-10
