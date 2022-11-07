@@ -1041,12 +1041,12 @@ Note: This is not the single possible definition of the underflow. MPFR chooses
 to consider the underflow @emph{after} rounding. The underflow before rounding
 can also be defined. For instance, consider a function that has the
 exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
-@var{e}@minus{}4}, where @var{e} is the smallest exponent (for a
-significand between 1/2 and 1),
+@w{@var{e} @minus{} 4}}, where @var{e} is the smallest exponent
+(for a significand between 1/2 and 1),
 with a 2-bit target precision and rounding toward positive infinity.
-The exact result has the exponent @var{e}@minus{}1. With the underflow
-before rounding, such a function call would yield an underflow, as
-@var{e}@minus{}1 is outside the current exponent range. However, MPFR
+The exact result has the exponent @tm{@var{e} @minus{} 1}. With the
+underflow before rounding, such a function call would yield an underflow, as
+@tm{@var{e} @minus{} 1} is outside the current exponent range. However, MPFR
 first considers the rounded result assuming an unbounded exponent range.
 The exact result cannot be represented exactly in precision 2, and here,
 it is rounded to @m{0.5 \times 2^e, 0.5 times 2 to @var{e}}, which is
@@ -1801,7 +1801,7 @@ still with rounding to nearest.
 More precisely, we have
 @m{m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil,
 m = 1 + ceil(@var{p}*log(2)/log(@var{b}))},
-with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
+with @var{p} replaced by @tm{@var{p} @minus{} 1} if @var{b} is a power of 2.
 
 The argument @var{b} must be in the range 2 to 62; this is the range of bases
 supported by the @code{mpfr_get_str} function. Note that contrary to the base
@@ -2630,12 +2630,9 @@ NaN or negative, @var{rop} is always set to NaN@. When @var{op} is @mm{+}Inf,
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded in the direction @var{rnd}.
 The arithmetic-geometric mean is the common limit of the sequences
-@m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}},
-where @m{u_0,@var{u}_@var{0}}=@var{op1}, @m{v_0,@var{v}_@var{0}}=@var{op2},
-@m{u_{n+1},@var{u}_(@var{n}+1)} is the
-arithmetic mean of @m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}},
-and @m{v_{n+1},@var{v}_(@var{n}+1)} is the geometric mean of
-@m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}}.
+@mm{u_n} and @mm{v_n}, where @tm{u_0 = @var{op1}}, @tm{v_0 = @var{op2}},
+@m{u_{n+1},u_(n+1)} is the arithmetic mean of @mm{u_n} and @mm{v_n}, and
+@m{v_{n+1},v_(n+1)} is the geometric mean of @mm{u_n} and @mm{v_n}.
 If any operand is negative and the other one is not zero,
 set @var{rop} to NaN@.
 If any operand is zero and the other one is finite (resp.@: infinite),
@@ -2698,7 +2695,7 @@ If the input is NaN, @mm{+}Inf, @minus{}Inf, @mm{+}0, or @minus{}0, then
 
 For the regular numbers, the format of the output is the following: the
 most significant digit, then a decimal-point character (defined by the
-current locale), then the remaining @var{n}@minus{}1 digits (including
+current locale), then the remaining @tm{@var{n} @minus{} 1} digits (including
 trailing zeros), then the exponent prefix, then the exponent in decimal.
 The exponent prefix is @samp{e} when @tm{@GMPabs{@var{base}} @le{} 10},
 and @samp{@@} when @tm{@GMPabs{@var{base}} > 10}. @xref{mpfr_get_str} for
@@ -3044,8 +3041,9 @@ the terminating null character or a negative value if an error occurred.
 Form a null-terminated string corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
 @var{buf}. If @var{n} is zero, nothing is
-written and @var{buf} may be a null pointer, otherwise, the @var{n}@minus{}1
-first characters are written in @var{buf} and the @var{n}-th is a null character.
+written and @var{buf} may be a null pointer, otherwise, the first
+@tm{@var{n} @minus{} 1} characters are written in @var{buf} and the
+@var{n}-th one is a null character.
 Return the number of characters that would have been written had @var{n} been
 sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
@@ -3699,8 +3697,8 @@ ternary value @var{t}, avoiding double rounding problems.
 More precisely in the subnormal domain, denoting by @m{e,@var{e}} the value of
 @code{emin}, @var{x} is rounded in fixed-point
 arithmetic to an integer multiple of @m{2^{e-1}, two to the power
-@var{e}@minus{}1}; as a consequence, @m{1.5 \times 2^{e-1},
-1.5 multiplied by two to the power @var{e}@minus{}1} when @var{t} is zero
+@w{@var{e} @minus{} 1}}; as a consequence, @m{1.5 \times 2^{e-1},1.5
+multiplied by two to the power @w{@var{e} @minus{} 1}} when @var{t} is zero
 is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
 
 The precision @code{PREC(@var{x})} of @var{x} is not modified by
