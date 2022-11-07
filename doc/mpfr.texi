@@ -190,13 +190,17 @@ times
 @end ifnottex
 
 @c  New math operators.
-@c  @abs{}, @atan{} and @sign{} can be used in both tex and info,
-@c  or just \abs, \atan and \sign in tex.
-@c  Note: use \mathop rather than \operatorname, which is not available.
+@c  @abs{}, @atan{}, @sign{} and @EXP{} can normally be used in both tex
+@c  and info, but due to a spacing bug in texi2dvi from GNU Texinfo 6.8,
+@c  one should use \abs, \atan, \sign and \EXP in tex (so the @tm macro
+@c  cannot be used).
+@c  Note: in the definitions below, let's use \mathop rather than
+@c  \operatorname, which is not available.
 @tex
 \gdef\abs{\mathop{\rm abs}}
 \gdef\atan{\mathop{\rm atan}}
 \gdef\sign{\mathop{\rm sign}}
+\gdef\EXP{\mathop{\rm E}}
 @end tex
 @ifnottex
 @macro abs
@@ -207,6 +211,9 @@ atan
 @end macro
 @macro sign
 sign
+@end macro
+@macro EXP
+E
 @end macro
 @end ifnottex
 
@@ -2446,13 +2453,13 @@ Set @var{rop} to @code{acos(@var{op})} (resp.@: @code{asin(@var{op})} and
 For @code{mpfr_atan2}, set @var{rop} to the arc-tangent2 of @var{y} and
 @var{x}, rounded in the direction @var{rnd}:
 if @tm{@var{x} > 0}, then @code{atan2(@var{y}, @var{x})} returns
-@tm{@atan{}(@var{y}/@var{x})};
+@m{\atan(@var{y}/@var{x}),@atan{}(@var{y}/@var{x})};
 if @tm{@var{x} < 0}, then @code{atan2(@var{y}, @var{x})} returns
 @m{\sign(@var{y}) \times (\pi - \atan(@GMPabs{@var{y}/@var{x}})),the sign
 of @var{y} multiplied by @w{Pi @minus{} atan(abs(@var{y}/@var{x}))}},
-thus a number from @m{-\pi,-Pi} to @m{\pi,Pi}.
+thus a number from @m{-\pi,@minus{}Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
-@m{-\pi,-Pi},
+@m{-\pi,@minus{}Pi},
 its rounded result might be outside the function output range.
 The function @code{mpfr_atan2u} behaves similarly, except the result is
 multiplied by @m{@var{u}/(2\pi),@var{u} and divided by 2@tie{}Pi}; and
@@ -2465,23 +2472,23 @@ Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{atan2} function:
 @itemize @bullet
 @item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
-@item @code{atan2(-0, -0)} returns @m{-\pi,-Pi}.
+@item @code{atan2(-0, -0)} returns @m{-\pi,@minus{}Pi}.
 @item @code{atan2(+0, +0)} returns @mm{+}0.
 @item @code{atan2(-0, +0)} returns @minus{}0.
 @item @code{atan2(+0, x)} returns @m{+\pi,+Pi} for @tm{x < 0}.
-@item @code{atan2(-0, x)} returns @m{-\pi,-Pi} for @tm{x < 0}.
+@item @code{atan2(-0, x)} returns @m{-\pi,@minus{}Pi} for @tm{x < 0}.
 @item @code{atan2(+0, x)} returns @mm{+}0 for @tm{x > 0}.
 @item @code{atan2(-0, x)} returns @minus{}0 for @tm{x > 0}.
-@item @code{atan2(y, 0)} returns @m{-\pi/2,-Pi/2} for @tm{y < 0}.
+@item @code{atan2(y, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{y < 0}.
 @item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @tm{y > 0}.
 @item @code{atan2(+Inf, -Inf)} returns @m{+3\pi/4,+3*Pi/4}.
 @item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,-3*Pi/4}.
 @item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
-@item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,-Pi/4}.
+@item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,@minus{}Pi/4}.
 @item @code{atan2(+Inf, x)} returns @m{+\pi/2,+Pi/2} for finite @tm{x}.
-@item @code{atan2(-Inf, x)} returns @m{-\pi/2,-Pi/2} for finite @tm{x}.
+@item @code{atan2(-Inf, x)} returns @m{-\pi/2,@minus{}Pi/2} for finite @tm{x}.
 @item @code{atan2(y, -Inf)} returns @m{+\pi,+Pi} for finite @tm{y > 0}.
-@item @code{atan2(y, -Inf)} returns @m{-\pi,-Pi} for finite @tm{y < 0}.
+@item @code{atan2(y, -Inf)} returns @m{-\pi,@minus{}Pi} for finite @tm{y < 0}.
 @item @code{atan2(y, +Inf)} returns @mm{+}0 for finite @tm{y > 0}.
 @item @code{atan2(y, +Inf)} returns @minus{}0 for finite @tm{y < 0}.
 @end itemize
@@ -3252,7 +3259,8 @@ with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
-E(@var{b})@minus{}@var{err} where E(@var{b}) is the exponent of @var{b},
+@m{\EXP(@var{b}) @minus{} @var{err},@w{@EXP{}(@var{b}) @minus{} @var{err}}}
+where @m{\EXP(@var{b}),@EXP{}(@var{b})} is the exponent of @var{b},
 return a non-zero value if one is able to round correctly @var{x} to
 precision @var{prec} with the direction @var{rnd2} assuming an unbounded
 exponent range, and 0 otherwise (including for NaN and Inf).
