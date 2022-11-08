@@ -190,19 +190,21 @@ times
 @end ifnottex
 
 @c  New math operators.
-@c  @abs{}, @atan{}, @sign{} and @EXP{} can normally be used in both tex
-@c  and info, but due to a spacing bug in texi2dvi from GNU Texinfo 6.8,
-@c  one should use \abs, \atan, \sign and \EXP in tex (so the @tm macro
-@c  cannot be used):
-@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00032.html
+@c  @abs{}, @atan{}, @sign{}, @EXP{} and @PREC{} can be used in both tex
+@c  and info.
 @c
-@c  Note: in the definitions below, let's use \mathop rather than
-@c  \operatorname, which is not available.
+@c  Note: In the definitions below, let's use \mathop rather than
+@c  \operatorname, which is not available. And the #1 is necessary
+@c  to avoid a spacing issue:
+@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00033.html
+@c  The consequence is that if \abs, etc. is used in TeX, one still needs
+@c  the {}; so it is preferable to use the Texinfo syntax.
 @tex
-\gdef\abs{\mathop{\rm abs}}
-\gdef\atan{\mathop{\rm atan}}
-\gdef\sign{\mathop{\rm sign}}
-\gdef\EXP{\mathop{\rm E}}
+\gdef\abs#1{\mathop{\rm abs}}
+\gdef\atan#1{\mathop{\rm atan}}
+\gdef\sign#1{\mathop{\rm sign}}
+\gdef\EXP#1{\mathop{\rm EXP}}
+\gdef\PREC#1{\mathop{\rm PREC}}
 @end tex
 @ifnottex
 @macro abs
@@ -215,7 +217,10 @@ atan
 sign
 @end macro
 @macro EXP
-E
+EXP
+@end macro
+@macro PREC
+PREC
 @end macro
 @end ifnottex
 
@@ -1761,10 +1766,10 @@ precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
 exactly equals @m{@var{rop} \times 2^{@var{exp}},@var{rop} times 2 raised
 to the power @var{exp}}.
-If @var{op} is zero, the minimal exponent @code{emin} is returned.
+If @var{op} is zero, the minimal exponent @var{emin} is returned.
 If @var{op} is NaN or an infinity, the @emph{erange} flag is set, @var{rop}
-is set to 0, and the minimal exponent @code{emin} is returned.
-The returned exponent may be less than the minimal exponent @code{emin}
+is set to 0, and the minimal exponent @var{emin} is returned.
+The returned exponent may be less than the minimal exponent @var{emin}
 of MPFR numbers in the current exponent range; in case the exponent is
 not representable in the @code{mpfr_exp_t} type, the @emph{erange} flag
 is set and the minimal value of the @code{mpfr_exp_t} type is returned.
@@ -1859,8 +1864,8 @@ in decimal,
 and (26) and a half is rounded to (26), which is 20 in decimal.
 
 If @var{n} is zero, the number of digits of the significand is taken as
-@code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the precision
-of @var{op} (@pxref{mpfr_get_str_ndigits}).
+@code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where @var{p} is the
+precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the allocation function (@pxref{Memory Handling}) and a pointer to the string
@@ -1870,7 +1875,7 @@ To free the returned string, you must use @code{mpfr_free_str}.
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand. A safe block size (sufficient for any
 value) is @code{max(@var{n} + 2, 7)} if @var{n} is not zero; if @var{n} is
-zero, replace it by @code{mpfr_get_str_ndigits(@var{base},@var{p})} where
+zero, replace it by @code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where
 @var{p} is the precision of @var{op}, as mentioned above.
 The extra two bytes are
 for a possible minus sign, and for the terminating null character, and the
@@ -2455,9 +2460,9 @@ Set @var{rop} to @code{acos(@var{op})} (resp.@: @code{asin(@var{op})} and
 For @code{mpfr_atan2}, set @var{rop} to the arc-tangent2 of @var{y} and
 @var{x}, rounded in the direction @var{rnd}:
 if @tm{@var{x} > 0}, then @code{atan2(@var{y}, @var{x})} returns
-@m{\atan(@var{y}/@var{x}),@atan{}(@var{y}/@var{x})};
+@tm{@atan{}(@var{y}/@var{x})};
 if @tm{@var{x} < 0}, then @code{atan2(@var{y}, @var{x})} returns
-@m{\sign(@var{y}) \times (\pi - \atan(@GMPabs{@var{y}/@var{x}})),the sign
+@m{@sign{}(@var{y}) \times (\pi - @atan{}(@GMPabs{@var{y}/@var{x}})),the sign
 of @var{y} multiplied by @w{Pi @minus{} atan(abs(@var{y}/@var{x}))}},
 thus a number from @m{-\pi,@minus{}Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
@@ -2696,7 +2701,7 @@ The base may vary from 2 to 62 or from @minus{}2 to @minus{}36
 (any other value yields undefined behavior). The argument @var{n} has
 the same meaning as in @code{mpfr_get_str} (@pxref{mpfr_get_str}):
 Print @var{n} significant digits exactly, or if @var{n} is 0, the number
-@code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the
+@code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where @var{p} is the
 precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
 
 If the input is NaN, @mm{+}Inf, @minus{}Inf, @mm{+}0, or @minus{}0, then
@@ -3261,8 +3266,8 @@ with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
-@m{\EXP(@var{b}) @minus{} @var{err},@w{@EXP{}(@var{b}) @minus{} @var{err}}}
-where @m{\EXP(@var{b}),@EXP{}(@var{b})} is the exponent of @var{b},
+@tm{@EXP{}(@var{b}) @minus{} @var{err}} where @tm{@EXP{}(@var{b})}
+is the exponent of @var{b},
 return a non-zero value if one is able to round correctly @var{x} to
 precision @var{prec} with the direction @var{rnd2} assuming an unbounded
 exponent range, and 0 otherwise (including for NaN and Inf).
@@ -3366,7 +3371,7 @@ according to this rounding mode, and returns the corresponding ternary value
 (which is expected to be correct, otherwise @code{mpfr_round_nearest_away}
 will not work as desired).
 Due to implementation constraints, this function must not be called when
-the minimal exponent @code{emin} is the smallest possible one.
+the minimal exponent @var{emin} is the smallest possible one.
 This macro has been made such that the compiler is able to detect
 mismatch between the argument list @var{op}
 and the function prototype of @var{foo}.
@@ -3629,9 +3634,9 @@ This file is normally selected from the processor type.
 @deftypefunx mpfr_exp_t mpfr_get_emax (void)
 Return the (current) smallest and largest exponents allowed for a
 floating-point variable. The smallest positive value of a floating-point
-variable is @m{1/2 \times 2^{\rm emin}, one half times 2 raised to the
+variable is @m{1/2 \times 2^{@var{emin}}, one half times 2 raised to the
 smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
-\times 2^{\rm emax}, (1 - epsilon) times 2 raised to the largest exponent},
+\times 2^{@var{emax}}, (1 - epsilon) times 2 raised to the largest exponent},
 where @m{\varepsilon,epsilon} depends on the precision of the considered
 variable.
 @end deftypefun
@@ -3654,7 +3659,7 @@ Note: Caches may still have values outside the current exponent range.
 This is not an issue as the user cannot use these caches directly via
 the API (MPFR extends the exponent range internally when need be).
 
-If @tm{@code{emin} > @code{emax}} and a floating-point value needs to
+If @tm{@var{emin} > @var{emax}} and a floating-point value needs to
 be produced as output, the behavior is undefined (@code{mpfr_set_emin}
 and @code{mpfr_set_emax} do not check this condition as it might occur
 between successive calls to these two functions).
@@ -3701,24 +3706,24 @@ been set due to internal computations.
 This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range of the emulated
 floating-point system, this function just propagates the
-@ref{ternary value} @var{t}; otherwise, if @code{EXP(@var{x})}
+@ref{ternary value} @var{t}; otherwise, if @tm{@EXP{}(@var{x})}
 denotes the exponent of @var{x}, it rounds @var{x} to precision
-@code{EXP(@var{x})-emin+1} according to rounding mode @var{rnd} and previous
-ternary value @var{t}, avoiding double rounding problems.
-More precisely in the subnormal domain, denoting by @m{e,@var{e}} the value of
-@code{emin}, @var{x} is rounded in fixed-point
-arithmetic to an integer multiple of @m{2^{e-1}, two to the power
-@w{@var{e} @minus{} 1}}; as a consequence, @m{1.5 \times 2^{e-1},1.5
-multiplied by two to the power @w{@var{e} @minus{} 1}} when @var{t} is zero
-is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
+@tm{@EXP{}(@var{x})@minus{}@var{emin}+1} according to rounding mode @var{rnd}
+and previous ternary value @var{t}, avoiding double rounding problems.
+More precisely in the subnormal domain, denoting by @tm{e} the value of
+@var{emin}, @var{x} is rounded in fixed-point arithmetic to an integer
+multiple of @m{2^{e-1},two to the power @w{e @minus{} 1}}; as a consequence,
+@m{1.5 \times 2^{e-1},1.5 multiplied by two to the power @w{e @minus{} 1}}
+when @var{t} is zero is rounded to @m{2^e,two to the power e} with rounding
+to nearest.
 
-The precision @code{PREC(@var{x})} of @var{x} is not modified by
+The precision @tm{@PREC{}(@var{x})} of @var{x} is not modified by
 this function. @var{rnd} and @var{t} must be the rounding mode
 and the returned ternary value used when computing @var{x}
-(as in @code{mpfr_check_range}).
-The subnormal exponent range is from @code{emin} to @code{emin+PREC(@var{x})-1}.
+(as in @code{mpfr_check_range}). The subnormal exponent range is
+from @var{emin} to @tm{@var{emin}+@PREC{}(@var{x})@minus{}1}.
 If the result cannot be represented in the current exponent range of MPFR
-(due to a too small @code{emax}), the behavior is undefined.
+(due to a too small @var{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
@@ -3726,10 +3731,10 @@ As usual, if the returned ternary value is non zero, the inexact flag is set.
 Moreover, if a second rounding occurred (because the input @var{x} was in the
 subnormal range), the underflow flag is set.
 
-Warning! If you change @code{emin} (with @code{mpfr_set_emin}) just before
+Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
 in the current exponent range of MPFR@. But it is better to change
-@code{emin} before any computation, if possible.
+@var{emin} before any computation, if possible.
 @c Note: not necessarily possible if the user wants to emulate different
 @c floating-point systems in the same code.
 @end deftypefun
@@ -3766,8 +3771,8 @@ in the subnormal range, which may not be the case for your hardware.
 Below is another example showing how to emulate fixed-point arithmetic
 in a specific case.
 Here we compute the sine of the integers 1 to 17 with a result in a
-fixed-point arithmetic rounded at @m{2^{-42}, 2 power -42} (using the
-fact that the result is at most 1 in absolute value):
+fixed-point arithmetic rounded at @m{2^{-42},two to the power @minus{}42}
+(using the fact that the result is at most 1 in absolute value):
 
 @example
 @{
