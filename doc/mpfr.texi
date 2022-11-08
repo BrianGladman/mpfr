@@ -207,6 +207,7 @@ times
 @tex
 \gdef\abs#1{\mathop{\rm abs}}
 \gdef\atan#1{\mathop{\rm atan}}
+\gdef\max#1{\mathop{\rm max}}
 \gdef\sign#1{\mathop{\rm sign}}
 \gdef\EXP#1{\mathop{\rm EXP}}
 \gdef\PREC#1{\mathop{\rm PREC}}
@@ -217,6 +218,9 @@ abs
 @end macro
 @macro atan
 atan
+@end macro
+@macro max
+max
 @end macro
 @macro sign
 sign
@@ -1878,8 +1882,8 @@ is returned (unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
-large enough for the significand. A safe block size (sufficient for any
-value) is @code{max(@var{n} + 2, 7)} if @var{n} is not zero; if @var{n} is
+large enough for the significand. A safe block size (sufficient for any value)
+is @tm{@max{}(@var{n} + 2@comma{} 7)} if @var{n} is not zero; if @var{n} is
 zero, replace it by @code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where
 @var{p} is the precision of @var{op}, as mentioned above.
 The extra two bytes are
