@@ -198,7 +198,10 @@ times
 @c  to avoid a spacing issue:
 @c    https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00033.html
 @c  The consequence is that if \abs, etc. is used in TeX, one still needs
-@c  the {}; so it is preferable to use the Texinfo syntax.
+@c  the {}; so it is preferable to use the Texinfo syntax. Unfortunately,
+@c  the consequence of the Texinfo behavior is that it is not possible to
+@c  use the macros associated with the pre-existing math operators, like
+@c  @sin{}.
 @c
 @c  Warning! If new math operators are added, they must not consist of a
 @c  single character, otherwise it is shifted downward. A workaround is to
