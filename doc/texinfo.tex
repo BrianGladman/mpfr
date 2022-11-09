@@ -3,7 +3,7 @@
 % Load plain if necessary, i.e., if running under initex.
 \expandafter\ifx\csname fmtname\endcsname\relax\input plain\fi
 %
-\def\texinfoversion{2022-10-18.18}
+\def\texinfoversion{2022-11-07.17}
 %
 % Copyright 1985, 1986, 1988, 1990-2022 Free Software Foundation, Inc.
 %
@@ -5270,7 +5270,10 @@ $$%
         \xdef\trimmed{\segment}%
         \xdef\trimmed{\expandafter\eatspaces\expandafter{\trimmed}}%
         \xdef\indexsortkey{\trimmed}%
-        \ifx\indexsortkey\empty\xdef\indexsortkey{ }\fi
+        \ifx\indexsortkey\empty
+          \message{Empty index sort key near line \the\inputlineno}%
+          \xdef\indexsortkey{ }%
+        \fi
       }\fi
       %
       % Append to \fullindexsortkey.
@@ -11448,17 +11451,18 @@ directory should work if nowhere else does.}
   \mtadjustprotcode#1\relax
 }
 
+\newcount\countC
 \def\mtadjustprotcode#1{%
-  \countA=0
+  \countC=0
   \loop
-    \ifcase\lpcode#1\countA\else
-      \mtadjustcp\lpcode#1\countA
+    \ifcase\lpcode#1\countC\else
+      \mtadjustcp\lpcode#1\countC
     \fi
-    \ifcase\rpcode#1\countA\else
-      \mtadjustcp\rpcode#1\countA
+    \ifcase\rpcode#1\countC\else
+      \mtadjustcp\rpcode#1\countC
     \fi
-    \advance\countA 1
-  \ifnum\countA < 256 \repeat
+    \advance\countC 1
+  \ifnum\countC < 256 \repeat
 }
 
 \newcount\countB
