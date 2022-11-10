@@ -25,9 +25,11 @@ dir=`pwd`
 replace()
 {
   if [ ! -h "$2" ] && [ -r "$2" ] && [ -w "$2" ]; then
-    err=`perl -pi -e "$1" "$2" 2>&1 >/dev/null`
+    set +e
+    err=`perl -p0i -e "$1" "$2" 2>&1 >/dev/null`
+    set -e
     if [ -n "$err" ]; then
-      printf >&2 "Error from perl:\n%s\n" "$err"
+      printf >&2 "Error from perl for file %s:\n%s\n" "$2" "$err"
       exit 2
     fi
   else
@@ -38,21 +40,22 @@ replace()
 
 vers="$1.$2.$3"
 full="$vers${4:+-$4}"
-replace "s/(?<=#define MPFR_VERSION_MAJOR ).*/$1/; \
-         s/(?<=#define MPFR_VERSION_MINOR ).*/$2/; \
-         s/(?<=#define MPFR_VERSION_PATCHLEVEL ).*/$3/; \
-         s/(?<=#define MPFR_VERSION_STRING ).*/\"$full\"/" src/mpfr.h
-replace "s/(?<=return \").*\"/$full\"/" src/version.c
+replace "s/(?<=^#define MPFR_VERSION_MAJOR ).*/$1/m or die 'err 1'; \
+         s/(?<=^#define MPFR_VERSION_MINOR ).*/$2/m or die 'err 2'; \
+         s/(?<=^#define MPFR_VERSION_PATCHLEVEL ).*/$3/m or die 'err 3'; \
+         s/(?<=^#define MPFR_VERSION_STRING ).*/\"$full\"/m or die 'err 4';" \
+  src/mpfr.h
+replace "s/(?<= return \").*\"/$full\"/m or die;" src/version.c
 echo $full > VERSION
 
 if [ $# -lt 5 ]; then
   # Up to 4 arguments...
   u="https://www.mpfr.org/mpfr-"
-  replace "s/(?<=\@set VERSION ).*/$full/" doc/mpfr.texi
-  replace "s,MPFR [\d.]+( web page \@url\{$u)[\d.]+/,MPFR $vers\${1}$vers/," \
-    doc/mpfr.texi
-  replace "s/(?<=AC_INIT).*/([MPFR],[$full])/" configure.ac
-  replace "s,(?<=$u).*?/,$vers/," INSTALL
+  replace "s/(?<=^\@set VERSION ).*/$full/m or die 'err 1';" doc/mpfr.texi
+  replace "s,MPFR [\d.]+( web page \@url\{$u)[\d.]+/,MPFR $vers\${1}$vers/,
+           or die 'err 2';" doc/mpfr.texi
+  replace "s/(?<=^AC_INIT).*/([MPFR],[$full])/m or die;" configure.ac
+  replace "s,(?<=$u).*?/,$vers/, or die;" INSTALL
 fi
 
 echo "MPFR version successfully updated."
