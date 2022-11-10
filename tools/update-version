@@ -52,8 +52,8 @@ if [ $# -lt 5 ]; then
   # Up to 4 arguments...
   u="https://www.mpfr.org/mpfr-"
   replace "s/(?<=^\@set VERSION ).*/$full/m or die 'err 1';" doc/mpfr.texi
-  replace "s,MPFR [\d.]+( web page \@url\{$u)[\d.]+/,MPFR $vers\${1}$vers/,
-           or die 'err 2';" doc/mpfr.texi
+  replace "s<(MPFR\@tie\{\})[\d.]+( web page \@url\{$u)[\d.]+>
+            <\${1}$vers\${2}$vers> or die 'err 2';" doc/mpfr.texi
   replace "s/(?<=^AC_INIT).*/([MPFR],[$full])/m or die;" configure.ac
   replace "s,(?<=$u).*?/,$vers/, or die;" INSTALL
 fi
