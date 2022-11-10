@@ -562,7 +562,7 @@ specific to MPFR)@. Problems are also mentioned in the FAQ
 Please report problems to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
-MPFR@tie{}4.1.0 web page @url{https://www.mpfr.org/mpfr-4.1.0/}.
+MPFR@tie{}4.2.0 web page @url{https://www.mpfr.org/mpfr-4.2.0/}.
 
 @section Getting the Latest Version of MPFR
 
