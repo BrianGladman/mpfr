@@ -158,6 +158,8 @@ To make a release (for the MPFR team):
      for the final release.
      If not done yet, update the libtool version (see src/Makefile.am)
      and the DLL version (see configure.ac).
+     Update the README file if need be: the list of the distributed files
+     and the URL of the README.dev file (use the right branch).
      Check these versions with tools/ck-version-info (this check will also
      be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
