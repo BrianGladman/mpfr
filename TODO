@@ -530,6 +530,7 @@ Table of contents:
   (needs a configure test).
   References:
     https://software.intel.com/sites/landingpage/IntrinsicsGuide/
+    https://clang.llvm.org/docs/LanguageExtensions.html#multiprecision-arithmetic-builtins
     https://stackoverflow.com/q/11228855/3782797
     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79173
     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97387
