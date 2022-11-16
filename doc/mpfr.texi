@@ -1830,7 +1830,7 @@ rounding to nearest, can be recovered exactly when read again,
 still with rounding to nearest.
 More precisely, we have
 @m{m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil,
-m = 1 + ceil(@var{p}*log(2)/log(@var{b}))},
+m = 1 + ceil(@var{p} times log(2)/log(@var{b}))},
 with @var{p} replaced by @tm{@var{p} @minus{} 1} if @var{b} is a power of 2.
 
 The argument @var{b} must be in the range 2 to 62; this is the range of bases
@@ -1866,7 +1866,7 @@ in all cases.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
-be returned as "@minus{}31416" in the string and 1 written at @var{expptr}.
+be returned as @samp{-31416} in the string and 1 written at @var{expptr}.
 If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 consecutive possible outputs, the one with an even significand is chosen,
 where both significands are considered with the exponent of @var{op}.
@@ -2118,14 +2118,9 @@ rounding toward zero.
 @end deftypefun
 
 @deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the Euclidean norm of @var{x} and @var{y},
-@ifnottex
-i.e., the square root of the sum of the squares of @var{x} and @var{y},
-@end ifnottex
-@tex
-i.e., $\sqrt{x^2+y^2}$,
-@end tex
-rounded in the direction @var{rnd}.
+Set @var{rop} to the Euclidean norm of @var{x} and @var{y}, i.e.,
+@m{\sqrt{@var{x}^2+@var{y}^2},the square root of the sum of the squares
+of @var{x} and @var{y}}, rounded in the direction @var{rnd}.
 Special values are handled as described in the ISO C99 (Section@tie{}F.9.4.3)
 and IEEE@tie{}754 (Section@tie{}9.2.1) standards:
 If @var{x} or @var{y} is an infinity, then @mm{+}Inf is returned in @var{rop},
@@ -2259,9 +2254,9 @@ where @minus{}NaN @mm{<} @minus{}Inf @mm{<} negative finite numbers
 @mm{<} @mm{+}Inf @mm{<} @mm{+}NaN@.
 It returns a non-zero value (true) when @var{x} is smaller than or equal
 to @var{y} for this order relation, and zero (false) otherwise.
-Contrary to @code{mpfr_cmp (x, y)}, which returns a ternary value,
+Contrary to @code{mpfr_cmp (@var{x}, @var{y})}, which returns a ternary value,
 @code{mpfr_total_order_p} returns a binary value (zero or non-zero).
-In particular, @code{mpfr_total_order_p (x, x)} returns true,
+In particular, @code{mpfr_total_order_p (@var{x}, @var{x})} returns true,
 @code{mpfr_total_order_p (-0, +0)} returns true and
 @code{mpfr_total_order_p (+0, -0)} returns false.
 The sign bit of NaN also matters.
@@ -2398,13 +2393,13 @@ tangent of @var{op}, rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_sinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_tanu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cosine (resp.@: sine and tangent) of
-@m{@var{op} \times 2\pi/u,@var{op} multiplied by 2@tie{}Pi and divided
+@m{@var{op} \times 2\pi/@var{u},@var{op} multiplied by 2@tie{}Pi and divided
 by @var{u}}. For example, if @var{u} equals 360, one gets the cosine
-(resp.@: sine and tangent) for @var{op} in degrees. For @code{mpfr_cosu},
-when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
+(resp.@: sine and tangent) for @var{op} in degrees. For @code{mpfr_cosu}, when
+@m{@var{op} \times 2/@var{u},@var{op} multiplied by 2 and divided by @var{u}}
 is a half-integer, the result is @mm{+}0, following IEEE@tie{}754 (cosPi),
-so that the function is even. For @code{mpfr_sinu},
-when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
+so that the function is even. For @code{mpfr_sinu}, when
+@m{@var{op} \times 2/@var{u},@var{op} multiplied by 2 and divided by @var{u}}
 is an integer, the result is zero with the same sign as @var{op}, following
 IEEE@tie{}754 (sinPi), so that the function is odd.
 Similarly, the function @code{mpfr_tanu} follows IEEE@tie{}754 (tanPi).
@@ -2489,7 +2484,7 @@ multiplied by @m{@var{u}/(2\pi),@var{u} and divided by 2@tie{}Pi}; and
 For example, if @var{u} equals 360, @code{mpfr_atan2u} returns the
 arc-tangent in degrees, with values from @minus{}180 to 180.
 
-@code{atan2(y, 0)} does not raise any floating-point exception.
+@code{atan2(@var{y}, 0)} does not raise any floating-point exception.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{atan2} function:
 @itemize @bullet
@@ -2497,22 +2492,22 @@ standards for the @code{atan2} function:
 @item @code{atan2(-0, -0)} returns @m{-\pi,@minus{}Pi}.
 @item @code{atan2(+0, +0)} returns @mm{+}0.
 @item @code{atan2(-0, +0)} returns @minus{}0.
-@item @code{atan2(+0, x)} returns @m{+\pi,+Pi} for @tm{x < 0}.
-@item @code{atan2(-0, x)} returns @m{-\pi,@minus{}Pi} for @tm{x < 0}.
-@item @code{atan2(+0, x)} returns @mm{+}0 for @tm{x > 0}.
-@item @code{atan2(-0, x)} returns @minus{}0 for @tm{x > 0}.
-@item @code{atan2(y, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{y < 0}.
-@item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @tm{y > 0}.
+@item @code{atan2(+0, @var{x})} returns @m{+\pi,+Pi} for @tm{@var{x} < 0}.
+@item @code{atan2(-0, @var{x})} returns @m{-\pi,@minus{}Pi} for @tm{@var{x} < 0}.
+@item @code{atan2(+0, @var{x})} returns @mm{+}0 for @tm{@var{x} > 0}.
+@item @code{atan2(-0, @var{x})} returns @minus{}0 for @tm{@var{x} > 0}.
+@item @code{atan2(@var{y}, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{@var{y} < 0}.
+@item @code{atan2(@var{y}, 0)} returns @m{+\pi/2,+Pi/2} for @tm{@var{y} > 0}.
 @item @code{atan2(+Inf, -Inf)} returns @m{+3\pi/4,+3*Pi/4}.
 @item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,-3*Pi/4}.
 @item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
 @item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,@minus{}Pi/4}.
-@item @code{atan2(+Inf, x)} returns @m{+\pi/2,+Pi/2} for finite @tm{x}.
-@item @code{atan2(-Inf, x)} returns @m{-\pi/2,@minus{}Pi/2} for finite @tm{x}.
-@item @code{atan2(y, -Inf)} returns @m{+\pi,+Pi} for finite @tm{y > 0}.
-@item @code{atan2(y, -Inf)} returns @m{-\pi,@minus{}Pi} for finite @tm{y < 0}.
-@item @code{atan2(y, +Inf)} returns @mm{+}0 for finite @tm{y > 0}.
-@item @code{atan2(y, +Inf)} returns @minus{}0 for finite @tm{y < 0}.
+@item @code{atan2(+Inf, @var{x})} returns @m{+\pi/2,+Pi/2} for finite @tm{@var{x}}.
+@item @code{atan2(-Inf, @var{x})} returns @m{-\pi/2,@minus{}Pi/2} for finite @tm{@var{x}}.
+@item @code{atan2(@var{y}, -Inf)} returns @m{+\pi,+Pi} for finite @tm{@var{y} > 0}.
+@item @code{atan2(@var{y}, -Inf)} returns @m{-\pi,@minus{}Pi} for finite @tm{@var{y} < 0}.
+@item @code{atan2(@var{y}, +Inf)} returns @mm{+}0 for finite @tm{@var{y} > 0}.
+@item @code{atan2(@var{y}, +Inf)} returns @minus{}0 for finite @tm{@var{y} < 0}.
 @end itemize
 @end deftypefun
 
@@ -2590,8 +2585,8 @@ rounded in the direction @var{rnd}.
 When @var{op} is 1 or 2, set @var{rop} to @mm{+}0 (in all rounding modes).
 When @var{op} is an infinity or a nonpositive integer, set @var{rop} to
 @mm{+}Inf, following the general rules on special values.
-When @tm{@minus{}2@var{k} @minus{} 1 < @var{op} < @minus{}2@var{k}},
-@var{k} being a nonnegative integer, set @var{rop} to NaN@.
+When @tm{@minus{}2k @minus{} 1 < @var{op} < @minus{}2k},
+@tm{k} being a nonnegative integer, set @var{rop} to NaN@.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
@@ -2804,8 +2799,8 @@ breaking the ABI and may depend on the environment.
 The current output format is the following: a minus sign if the sign bit
 is set (even for NaN); @samp{@@NaN@@}, @samp{@@Inf@@} or @samp{0} if the
 argument is NaN, an infinity or zero, respectively; otherwise the remaining
-of the output is as follows: @samp{0.} then the @var{p} bits of the binary
-significand, where @var{p} is the precision of the number; if the trailing
+of the output is as follows: @samp{0.} then the @tm{p} bits of the binary
+significand, where @tm{p} is the precision of the number; if the trailing
 bits are not all zeros (which must not occur with valid data), they are
 output enclosed by square brackets; the character @samp{E} followed by
 the exponent written in base 10; in case of invalid data or out-of-range
@@ -3010,13 +3005,9 @@ an exact representation with no trailing zeros.
 @c Avoid saying "minimum" as this could be confusing with the different
 @c possible choices for a/A.
 @item With @samp{e} and @samp{E}, it is
-@ifnottex
-ceil(@var{p}*log(2)/log(@var{10})),
-@end ifnottex
-@tex
-$\left\lceil @var{p} {\log 2 \over \log @var{10}} \right\rceil$,
-@end tex
-where @var{p} is the precision of the input variable, matching the choice
+@m{\left\lceil p {\log 2 \over \log 10} \right\rceil,ceil(p times
+log(2)/log(10))},
+where @tm{p} is the precision of the input variable, matching the choice
 done for @code{mpfr_get_str}; thus, if rounding to nearest is used,
 outputting the value with a missing precision and reading it back will
 yield the original value.
@@ -3367,9 +3358,10 @@ Return the minimal number of bits required to store the significand of
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
-Return a string ("MPFR_RNDN", "MPFR_RNDZ", "MPFR_RNDU", "MPFR_RNDD",
-"MPFR_RNDA", "MPFR_RNDF") corresponding to the rounding mode @var{rnd},
-or a null pointer if @var{rnd} is an invalid rounding mode.
+Return a string (@code{"MPFR_RNDN"}, @code{"MPFR_RNDZ"}, @code{"MPFR_RNDU"},
+@code{"MPFR_RNDD"}, @code{"MPFR_RNDA"}, @code{"MPFR_RNDF"}) corresponding to
+the rounding mode @var{rnd}, or a null pointer if @var{rnd} is an invalid
+rounding mode.
 @end deftypefun
 
 @deftypefn Macro int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
@@ -3911,7 +3903,7 @@ is set.
 The other bits of @var{way} are currently ignored and are reserved for
 future use; they should be zero.
 
-Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
+Note: @code{mpfr_free_cache2 (MPFR_FREE_LOCAL_CACHE | MPFR_FREE_GLOBAL_CACHE)}
 is currently equivalent to @code{mpfr_free_cache()}.
 @end deftypefun
 
@@ -4585,8 +4577,8 @@ a special value (NaN, infinity or zero).
 This was actually a bug fix since the code and the documentation did
 not match.  But both were changed in order to have a more consistent
 and useful behavior.  The main changes in the code are as follows.
-The binary exponent is now accepted even without the @code{0b} or
-@code{0x} prefix.  Data corresponding to NaN can now have an optional
+The binary exponent is now accepted even without the @samp{0b} or
+@samp{0x} prefix.  Data corresponding to NaN can now have an optional
 sign (such data were previously invalid).
 
 @item @code{mpfr_strtofr} changed in MPFR@tie{}3.0.
