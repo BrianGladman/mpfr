@@ -1,4 +1,4 @@
-/* mpfr_fac_ui -- factorial of a nonnegative integer
+/* mpfr_fac_ui -- factorial of a non-negative integer
 
 Copyright 2001, 2004-2022 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.

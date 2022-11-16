@@ -30,7 +30,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *   1) it is in the exponent range [__gmpfr_emin,__gmpfr_emax],
  *   2) the smaller a number is (in absolute value), the smaller its
  *      exponent is. In other words, the f -> exp function is monotonous
- *      on nonnegative numbers. --> This is WRONG since the returned
+ *      on non-negative numbers. --> This is WRONG since the returned
  *      exponent is not necessarily in the exponent range!
  * Note that this is different from the C function frexp().
  *
