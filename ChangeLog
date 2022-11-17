@@ -1,4 +1,340 @@
+2022-11-17  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Changed a @need command due to a bug in @need.
+
+	A page break was introduced for "@need 800" while there was the
+	space for 12 lines of text + 3 paragraph skips, as seen after the
+	change. That's much more than the 8/10 in needed by "@need 800".
+	So the page break was incorrect!
+
+2022-11-17  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added @need commands to prevent page breaks.
+
+2022-11-17  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Hack to improve TeX output (PDF).
+
+	Define a @fptt macro to fix the TeX output (PDF) issue mentioned
+	in commit 1877cf9aef96c2280aab60f67e5e7302676d199a (if the style
+	of HTML output is fixed to be more like TeX output, this code will
+	need an update).
+
+2022-11-17  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added a note about a TeX output (PDF) issue.
+
+	This affects "[]", which appears in the mpfr_sum and mpfr_dot
+	function prototypes.
+
+2022-11-16  Vincent Lefevre  <vincent@vinc17.net>
+
+	Consistency: s/non(zero|positive|negative)/non-$1/
+
+	Changed non(zero|positive|negative) to non-zero, etc. for consistency
+	(target files: src & tests directory, doc/README.dev, doc/mpfr.texi).
+	Did it this way because the former was in minority (21 vs 165) and
+	the IEEE 754-2019 standard uses a hyphen.
+
+2022-11-16  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Final typographic and style corrections.
+
+	Actually a bit more than that, since this affected the textual part
+	of the PDF file (used for searching and copy-paste): the underscore
+	character needs to be in something like @code or @samp to be present
+	in this textual part.
+
+2022-11-16  Vincent Lefevre  <vincent@vinc17.net>
+
+	Updated version to 4.2.0-dev with the new tools/update-version.
+
+	All the expected replacements have now *really* been done thanks to
+	commit a4dec8938b85afbca2d448ae2dd4e0d3ab72b00c.
+
+2022-11-16  Vincent Lefevre  <vincent@vinc17.net>
+
+	[tools/update-version] Fixed replacements in "doc/mpfr.texi".
+
+	The change done in commits 4885b57add174f390eff29abe14d12fb5ebd6a61
+	and 7eda345244f503359d14cd5bae1ed42865d39ee8 was incorrect as there
+	are 2 identical replacements to do in "doc/mpfr.texi", not just one.
+	The previous code changed lines separately. But for the check of
+	failing replacements, a global change on the full file is needed;
+	thus the 2 identical replacements were expected to be done at the
+	same time, so that the "g" modifier is needed on the regexp.
+
+2022-11-15  Vincent Lefevre  <vincent@vinc17.net>
+
+	Updated doc/texinfo.tex to 2022-11-13.08
+
+	[TODO] Added URL for the Clang multiprecision arithmetic builtins.
+
+2022-11-15  Paul Zimmermann  <Paul.Zimmermann@inria.fr>
+
+	[TODO] add reference to __builtin_addcll
+
+2022-11-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/README.dev] "To make a release": mention the README file.
+
+2022-11-10  Vincent Lefevre  <vincent@vinc17.net>
+
+	Updated version to 4.2.0-dev with the new tools/update-version.
+
+	All the expected replacements have now been done in doc/mpfr.texi,
+	thanks to commit 7eda345244f503359d14cd5bae1ed42865d39ee8.
+
+2022-11-10  Vincent Lefevre  <vincent@vinc17.net>
+
+	[tools/update-version] Updated a replacement.
+
+	This was needed due to a change done on 2018-09-07 in doc/mpfr.texi
+	(commit 84796030c7c732e8e66e5e650ec929c541dd207f / SVN r13153), as
+	said in the previous commit.
+
+2022-11-10  Vincent Lefevre  <vincent@vinc17.net>
+
+	[tools/update-version] Check for failing replacements.
+
+	This script currently fails due to a change done on 2018-09-07 in
+	doc/mpfr.texi (commit 84796030c7c732e8e66e5e650ec929c541dd207f /
+	SVN r13153), and this issue remained unnoticed until now,
+	in particular due to the absence of checking for failing
+	replacements.
+
+	The penultimate non-patchlevel release was done on 2017-12-25, i.e.
+	before this change, and no patchlevel releases have been done yet
+	for the latest release, so that no current releases are affected by
+	this issue, but the 4.1.1 release candidate is affected.
+
+2022-11-09  Vincent Lefevre  <vincent@vinc17.net>
+
+	Updated doc/texinfo.tex to 2022-11-07.17 (from GNU Texinfo 7.0).
+
+2022-11-08  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Updated comment about an issue with math operators.
+
+	[doc/mpfr.texi] Added a comment about an issue with math operators.
+
+	[doc/mpfr.texi] Another typographic improvement.
+
+2022-11-08  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added a comment for \mathop with a single character.
+
+	Workaround to avoid an alignment issue described at
+	  https://tex.stackexchange.com/questions/41261/mathop-shifts-the-baseline-declaremathoperator-doesnt
+	when the math operator @EXP{} was just "E".
+
+2022-11-08  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] More typographic corrections and improvements.
+
+	Also did some changes to improve the consistency.
+
+2022-11-07  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added a comment (ref to the GNU Texinfo spacing bug).
+
+2022-11-07  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] More typographic corrections for math expressions.
+
+	* Note a spacing bug in texi2dvi from GNU Texinfo 6.8 with macros
+	  (found while testing).
+	* Define macro @EXP (and \EXP in TeX).
+	* Typographic corrections for math expressions.
+
+2022-11-07  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added a comment.
+
+	[doc/mpfr.texi] Improved typography and English usage.
+
+	[doc/mpfr.texi] More documentation for the @m{T,N} macro.
+
+2022-11-04  Vincent Lefevre  <vincent@vinc17.net>
+
+	[src/set_zero.c] IEEE 754 terminology in a comment.
+
+2022-11-04  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Improved consistency about infinity and zero.
+
+	Note: one writes "+0", but "positive zero", not "plus zero", etc.
+	See the IEEE 754 standard.
+
+2022-11-03  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Minor corrections related to infinity.
+
+	This completes commit 75041697429ba467c448195b4f0863d0eb92e20c
+	done in 2021-02.
+
+2022-11-03  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Style corrections.
+
+2022-11-03  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Style improvement for TeX (PDF) output.
+
+	For mpfr_acosu, mpfr_asinu, mpfr_atanu and mpfr_atan2u, make the style
+	similar to the one for mpfr_cosu, mpfr_sinu and mpfr_tanu.
+
+2022-11-03  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] More use of @tm (typographic corrections).
+
+2022-11-01  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Updated the month.
+
+	[doc/mpfr.texi] Completed the description of the @mm macro.
+
+2022-11-01  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Improved typography for the formatted output functions.
+
+	For what is displayed (or output text), @samp{...} should be used,
+	as already done in some cases (note: never enclose @samp{...} with
+	quotes as this is already done in the Texinfo processing).
+
+2022-11-01  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Improved the readability of an example.
+
+2022-11-01  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] More typographic corrections for TeX (PDF) output.
+
+	* Define a @mm{T} macro to be used for math symbols outside of @m,
+	  @tm, @code or similar (but not for the "+" in "C++").
+	* Use this macro when applicable.
+	* Add missing @tm for some simple math expressions.
+
+2022-10-28  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added tm macro and improved math typography.
+
+2022-10-27  Vincent Lefevre  <vincent@vinc17.net>
+
+	[tools/nightly-test] Corrections and cleanup.
+
+	In particular, reverted most changes done in SVN r9832
+	(commit 1ca64e34907c5a968ca7fcc3d22cdca2ede7f28b):
+	  * switch back to /bin/sh (bash is not needed by this script);
+	  * do not use --enable-decimal-float and --enable-float128 with
+	    a C++ compiler as they are not supported (configure fails).
+
+	And for the "git clone" command:
+	  * take the BRANCH argument into account;
+	  * use --depth 1 to avoid an unnecessary full clone.
+
+	Better g++ detection (e.g. g++-12 or /usr/bin/g++, not just g++).
+
+2022-10-27  Paul Zimmermann  <Paul.Zimmermann@inria.fr>
+
+	[tools/nightly-test] change to git
+
+2022-10-26  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Cosmetic consistency change in the .texi source.
+
+	Let's use the same code for "start of header" and "end of header".
+
+2022-10-25  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Updated @m{T,N} macro, with comments.
+
+	The @m{T,N} macro is used for math formatting and textual equivalent
+	(human-readable text). However, it was generating emphasis in HTML,
+	which was unexpected. This commit removes the use of @math for the
+	Info and HTML output (for Info, this does not change anything, and
+	for HTML, this removes the incorrect emphasis). It also updates the
+	documentation and adds a comment about the history of this macro and
+	various issues related to it.
+
+2022-10-24  Vincent Lefevre  <vincent@vinc17.net>
+
+	Updated doc/texinfo.tex to 2022-10-18.18
+
+	Update from the texinfo Git repository.
+	  * The generated mpfr.html and mpfr.info files remain the same.
+	  * For mpfr.pdf, there are some spacing improvements.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Updated the month.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Fix formatting for mpfr_can_round.
+
+	Consistency changes and use of no-break space (@tie{}).
+
+	Note: Once @math{...} has been clarified/fixed, apply the suggestions
+	by Ivan Panchenko:
+	  https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00020.html
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Consistency correction for mpfr_get_str_ndigits.
+
+	Use @math{m} (instead of just m) as already used a bit earlier.
+
+	But the use of @math may need to be revised. See
+	https://lists.gnu.org/archive/html/bug-texinfo/2022-10/msg00045.html
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Improved spacing.
+
+	2 changes suggested by Ivan Panchenko at
+
+	  https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00020.html
+
+	but do not use @math{...} as with HTML output, it puts everything
+	in italics with <em class='math'>...</em>, which is incorrect for
+	things like digits.
+
+	However, this behavior of @math{...} is not what is documented in
+	the GNU Texinfo 6.8 manual, which says:
+
+	  The '@math' command has no special effect on the Info output or (by
+	  default) the HTML output, merely outputting the contents verbatim.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Added a comment about the use of @math{...}.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	[doc/mpfr.texi] Fixed italicization for mpfr_eint.
+
+	An issue reported by Ivan Panchenko:
+	  https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00020.html
+
+	I also had to fix the occurrences of k in @ifnottex for HTML.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	Fixed some minor mistakes.
+
+	* Minor mistakes in doc/mpfr.texi reported by Ivan Panchenko:
+	    https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00020.html
+	  (spacing and italicization not fixed yet).
+	* Fixed similar mistakes in the other files.
+
+2022-10-11  Vincent Lefevre  <vincent@vinc17.net>
+
+	mpfrlint: updated text checking (spelling...)
+
 2022-10-05  Vincent Lefevre  <vincent@vinc17.net>
+
+	ChangeLog update with tools/update-changelog
 
 	[tools/update-changelog] Use UTC to generate the ChangeLog file.
 

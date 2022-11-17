@@ -125,11 +125,11 @@ static const char num_to_text[] = "0123456789abcdef";
    left to 0.
    This macro will be used to read the field width and the precision.
    The behavior will be similar to ISO C99. Note that unless "*" is
-   used, the result will be nonnegative (ISO C99 and C11 just specify
+   used, the result will be non-negative (ISO C99 and C11 just specify
    "optional decimal integer" for the precision, but the behavior with
    a hardcoded negative integer is not explicitly defined, thus it is
    undefined, so that it is fine to reject such integers; the C2x draft
-   now clarifies this: "an optional nonnegative decimal integer").
+   now clarifies this: "an optional non-negative decimal integer").
    Note: Since mpfr_intmax_t = int is theoretically possible, all values
    of var are potentially valid values (via '*'). Hence the need of an
    overflow flag instead of a special value that would indicate overflow.
@@ -1681,7 +1681,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         }
 
       if (str_len > 0)
-        /* some nonzero digits in fractional part */
+        /* some non-zero digits in fractional part */
         {
           np->point = MPFR_DECIMAL_POINT;
           np->fp_ptr = str;

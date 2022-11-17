@@ -158,6 +158,8 @@ To make a release (for the MPFR team):
      for the final release.
      If not done yet, update the libtool version (see src/Makefile.am)
      and the DLL version (see configure.ac).
+     Update the README file if need be: the list of the distributed files
+     and the URL of the README.dev file (use the right branch).
      Check these versions with tools/ck-version-info (this check will also
      be done automatically by "make dist" / "make distcheck").
      Update the date in doc/mpfr.texi.
@@ -1319,7 +1321,7 @@ An example that will fail with 32-bit int and long:
       return a - b;
     }
 
-When creating a new variable that will always contain nonnegative values,
+When creating a new variable that will always contain non-negative values,
 it is generally better to define it as a signed type if it may be used in
 an arithmetic expression. The exceptions are when the value is seen as an
 array of bits (e.g. for limbs) and to temporarily avoid integer overflow.
@@ -1381,8 +1383,8 @@ More on exponent handling:
   ± a ± b ± 1 fits in a mpfr_exp_t.
 
 * The unsigned type corresponding to mpfr_exp_t is mpfr_uexp_t. It may be
-  useful if the considered values are nonnegative and don't necessarily
-  fit in mpfr_exp_t. To convert a nonnegative mpfr_exp_t to mpfr_uexp_t,
+  useful if the considered values are non-negative and don't necessarily
+  fit in mpfr_exp_t. To convert a non-negative mpfr_exp_t to mpfr_uexp_t,
   you should use the MPFR_UEXP macro, which is defined as:
     #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 

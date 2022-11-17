@@ -61,7 +61,7 @@ extern "C" {
 #endif
 
 #if GMP_NAIL_BITS != 0
-# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
+# error "MPFR doesn't support non-zero values of GMP_NAIL_BITS"
 #endif
 
 #if (GMP_NUMB_BITS<8) || (GMP_NUMB_BITS & (GMP_NUMB_BITS - 1))

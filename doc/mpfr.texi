@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 4.2.0-dev
-@set UPDATED-MONTH October 2022
+@set UPDATED-MONTH November 2022
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -112,6 +112,11 @@ floating-point arithmetic, version @value{VERSION}.
 @c  give different forms for math in TeX and Info/HTML.
 @c  Commas in N or T don't work, but @comma{} can be used instead.
 @c  \, works in Info but not in TeX.
+@c  For simple math, one may have T = N, in which case @mm or @tm (macros
+@c  defined below) should be used instead of @m.
+@c  Line breaks should not be disabled for the TeX output T (the concept of
+@c  penalty is used instead). For N, @w can be used, possibly on a part of
+@c  the text.
 @c  Warning!  For TeX, the use of some Texinfo macros (even empty macros) may
 @c  give incorrect output (e.g., incorrect spacing with empty macros).
 @c  Note: This macro came from GMP's gmp.texi, where it was added in 2000-10
@@ -139,6 +144,19 @@ floating-point arithmetic, version @value{VERSION}.
 \N\
 @end macro
 @end ifnottex
+
+@c  @mm{T} is @m{T,T}. It should be used for math symbols (+, <, >) outside
+@c  of @m, @tm, @code or similar (but do not use it for the "+" in "C++").
+@c  Indeed, for TeX output, there are 2 kinds of "+" rendering: one in math
+@c  mode and one in text mode; for consistency and better look, the one in
+@c  math mode should be used for what looks like math, i.e. what could be
+@c  in a math expression. Ditto for other symbols like < and >, but this is
+@c  not needed for @minus{}, as this builtin macro does already that.
+@c  Note: @tm{T}, defined below, could also be used, but @mm{T} is simpler
+@c  for a single character (no need to disable line breaks).
+@macro mm {T}
+@m{\T\,\T\}
+@end macro
 
 @c  @tm{T} is $T$ for the TeX output, otherwise @w{T} in order to disable
 @c  line breaks.  Use this for simple math expressions.
@@ -172,13 +190,52 @@ times
 @end ifnottex
 
 @c  New math operators.
-@c  @abs{} can be used in both tex and info, or just \abs in tex.
+@c  @abs{}, @atan{}, @sign{}, @EXP{} and @PREC{} can be used in both tex
+@c  and info.
+@c
+@c  Note: In the definitions below, let's use \mathop rather than
+@c  \operatorname, which is not available. And the #1 is necessary
+@c  to avoid a spacing issue:
+@c    https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00033.html
+@c  The consequence is that if \abs, etc. is used in TeX, one still needs
+@c  the {}; so it is preferable to use the Texinfo syntax. Unfortunately,
+@c  the consequence of the Texinfo behavior is that it is not possible to
+@c  use the macros associated with the pre-existing math operators, like
+@c  @sin{}, because in the pre-existing TeX definition, there is no #1
+@c  (if a pre-existing operator like "sin" is needed, we have to use our
+@c  own macro name, like @mysin, as the redefinition of pre-existing TeX
+@c  commands is discouraged).
+@c
+@c  Warning! If new math operators are added, they must not consist of a
+@c  single character, otherwise it is shifted downward. A workaround is to
+@c  add an empty hbox, e.g. \mathop{\rm F\hbox{}} instead of \mathop{\rm F}.
+@c  Idea inspired by <https://tex.stackexchange.com/a/284370/58921>.
 @tex
-\gdef\abs{\mathop{\rm abs}}
+\gdef\abs#1{\mathop{\rm abs}}
+\gdef\atan#1{\mathop{\rm atan}}
+\gdef\max#1{\mathop{\rm max}}
+\gdef\sign#1{\mathop{\rm sign}}
+\gdef\EXP#1{\mathop{\rm EXP}}
+\gdef\PREC#1{\mathop{\rm PREC}}
 @end tex
 @ifnottex
 @macro abs
 abs
+@end macro
+@macro atan
+atan
+@end macro
+@macro max
+max
+@end macro
+@macro sign
+sign
+@end macro
+@macro EXP
+EXP
+@end macro
+@macro PREC
+PREC
 @end macro
 @end ifnottex
 
@@ -213,6 +270,27 @@ log
 @ifnottex
 @macro pom
 ±
+@end macro
+@end ifnottex
+
+@c Hack for TeX output (PDF).
+@c
+@c With texinfo.tex 2022-11-13.08, in TeX output (PDF), the "[]" in
+@c function prototypes via @deftypefun (for mpfr_sum and mpfr_dot)
+@c is not rendered in a monospaced font and appears as a rectangle:
+@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00156.html
+@c
+@c The suggestion to use @t{[]} makes the HTML output inconsistent
+@c and ugly. Thus this should be done only for TeX output thanks to
+@c the following macro.
+@iftex
+@macro fptt {T}
+@tt{\T\}
+@end macro
+@end iftex
+@ifnottex
+@macro fptt {T}
+\T\
 @end macro
 @end ifnottex
 
@@ -345,6 +423,7 @@ installed on your computer, you can check the presence of the file
 having @code{#include <mpfr.h>} (since @file{mpfr.h} may be installed
 somewhere else). For instance, you can try to compile:
 
+@need 400
 @example
 #include <stdio.h>
 #include <mpfr.h>
@@ -505,7 +584,7 @@ specific to MPFR)@. Problems are also mentioned in the FAQ
 Please report problems to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
-MPFR@tie{}4.1.0 web page @url{https://www.mpfr.org/mpfr-4.1.0/}.
+MPFR@tie{}4.2.0 web page @url{https://www.mpfr.org/mpfr-4.2.0/}.
 
 @section Getting the Latest Version of MPFR
 
@@ -520,7 +599,7 @@ The latest version of MPFR is available from
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
 If you think you have found a bug in the MPFR library, first have a look
-on the MPFR@tie{}4.1.0 web page @url{https://www.mpfr.org/mpfr-4.1.0/}
+on the MPFR@tie{}4.2.0 web page @url{https://www.mpfr.org/mpfr-4.2.0/}
 and the FAQ @url{https://www.mpfr.org/faq.html}:
 perhaps this bug is already known, in which case you may find there
 a workaround for it.
@@ -589,6 +668,7 @@ You should include that file in any program using the MPFR library:
 Note, however, that prototypes for MPFR functions with @code{FILE *} parameters
 are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}):
 
+@need 300
 @example
 #include <stdio.h>
 #include <mpfr.h>
@@ -694,13 +774,14 @@ like in the C language, but unlike in IEEE@tie{}754 (thus, for a given
 number, the exponent values in MPFR and in IEEE@tie{}754 differ by 1).
 
 Like in the IEEE@tie{}754 standard, a floating-point number can also
-have three kinds of special values: a signed zero (+0 or @minus{}0),
-a signed infinity (+Inf or @minus{}Inf), and Not-a-Number (NaN)@. NaN
+have three kinds of special values: a signed zero (@mm{+}0 or @minus{}0),
+a signed infinity (@mm{+}Inf or @minus{}Inf), and Not-a-Number (NaN)@. NaN
 can represent the default value of a floating-point object and the
 result of some operations for which no other results would make sense,
-such as 0 divided by 0 or +Infinity minus +Infinity; unless documented
-otherwise, the sign bit of a NaN is unspecified. Note that contrary to
-IEEE@tie{}754, MPFR has a single kind of NaN and does not have subnormals.
+such as 0 divided by 0 or @mm{+}Inf minus @mm{+}Inf; unless
+documented otherwise, the sign bit of a NaN is unspecified.
+Note that contrary to IEEE@tie{}754, MPFR has a single kind of NaN and
+does not have subnormals.
 Other than that, the behavior is very similar to IEEE@tie{}754, but there
 are some minor differences.
 
@@ -825,8 +906,8 @@ IEEE@tie{}754 standard: in case the number to be rounded lies exactly
 in the middle between two consecutive representable numbers, it is
 rounded to the one with an even significand; in radix 2, this means
 that the least significant bit is 0. For example, the number 2.5,
-which is represented by (10.1) in binary, is rounded to (10.0)@tie{}=@tie{}2
-with a precision of two bits, and not to (11.0)@tie{}=@tie{}3.
+which is represented by (10.1) in binary, is rounded to @tm{(10.0) = 2}
+with a precision of two bits, and not to @tm{(11.0) = 3}.
 This rule avoids the @dfn{drift} phenomenon mentioned by Knuth in volume 2
 of The Art of Computer Programming (Section@tie{}4.2.2).
 
@@ -940,15 +1021,15 @@ the description of the MPFR function (@ref{MPFR Interface}).
 When the input point is not in the domain of the mathematical function
 but is in its closure in the extended real numbers and the function can
 be extended by continuity, the result is the obtained limit.
-Examples: @code{mpfr_hypot} on (+Inf,0) gives +Inf. But @code{mpfr_pow}
-cannot be defined on (1,+Inf) using this rule, as one can find
-sequences (@m{x_n,@var{x}_@var{n}},@m{y_n,@var{y}_@var{n}}) such that
-@m{x_n,@var{x}_@var{n}} goes to 1, @m{y_n,@var{y}_@var{n}} goes to +Inf
-and @m{(x_n)^{y_n},@var{x}_@var{n} to the @var{y}_@var{n}} goes to any
-positive value when @var{n} goes to the infinity.
+Examples: @code{mpfr_hypot} on (@mm{+}Inf,0) gives @mm{+}Inf. But
+@code{mpfr_pow} cannot be defined on (1,@mm{+}Inf) using this rule, as
+one can find sequences (@m{x_n,@var{x}_@var{n}},@m{y_n,@var{y}_@var{n}})
+such that @m{x_n,@var{x}_@var{n}} goes to 1, @m{y_n,@var{y}_@var{n}} goes
+to @mm{+}Inf and @m{(x_n)^{y_n},@var{x}_@var{n} to the @var{y}_@var{n}}
+goes to any positive value when @var{n} goes to the infinity.
 
 When the input point is in the closure of the domain of the mathematical
-function and an input argument is +0 (resp.@: @minus{}0), one considers
+function and an input argument is @mm{+}0 (resp.@: @minus{}0), one considers
 the limit when the corresponding argument approaches 0 from above
 (resp.@: below), if possible. If the limit is not defined (e.g.,
 @code{mpfr_sqrt} and @code{mpfr_log} on @minus{}0), the behavior is
@@ -958,11 +1039,11 @@ gives @minus{}Inf).
 
 When the result is equal to 0, its sign is determined by considering the
 limit as if the input point were not in the domain: If one approaches 0
-from above (resp.@: below), the result is +0 (resp.@: @minus{}0);
+from above (resp.@: below), the result is @mm{+}0 (resp.@: @minus{}0);
 for example, @code{mpfr_sin} on @minus{}0 gives @minus{}0 and
-@code{mpfr_acos} on 1 gives +0 (in all rounding modes).
+@code{mpfr_acos} on 1 gives @mm{+}0 (in all rounding modes).
 In the other cases, the sign is specified in the description of the MPFR
-function; for example @code{mpfr_max} on @minus{}0 and +0 gives +0.
+function; for example @code{mpfr_max} on @minus{}0 and @mm{+}0 gives @mm{+}0.
 
 When the input point is not in the closure of the domain of the function,
 the result is NaN@. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN@.
@@ -975,9 +1056,9 @@ such a case is always explicitly specified in @ref{MPFR Interface}.
 @c to change the libtool interface number (this would have more drawbacks
 @c that advantages in practice), like for any bug fix.
 Example: @code{mpfr_hypot} on (NaN,0) gives NaN, but @code{mpfr_hypot}
-on (NaN,+Inf) gives +Inf (as specified in @ref{Transcendental Functions}),
-since for any finite or infinite input @var{x}, @code{mpfr_hypot} on
-(@var{x},+Inf) gives +Inf.
+on (NaN,@mm{+}Inf) gives @mm{+}Inf (as specified in
+@ref{Transcendental Functions}), since for any finite or infinite
+input @var{x}, @code{mpfr_hypot} on (@var{x},@mm{+}Inf) gives @mm{+}Inf.
 
 MPFR also tries to follow the specifications of the IEEE@tie{}754 standard
 on special values (IEEE@tie{}754 agree with the above rules in most cases).
@@ -1013,12 +1094,12 @@ Note: This is not the single possible definition of the underflow. MPFR chooses
 to consider the underflow @emph{after} rounding. The underflow before rounding
 can also be defined. For instance, consider a function that has the
 exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
-@var{e}@minus{}4}, where @var{e} is the smallest exponent (for a
-significand between 1/2 and 1),
+@w{@var{e} @minus{} 4}}, where @var{e} is the smallest exponent
+(for a significand between 1/2 and 1),
 with a 2-bit target precision and rounding toward positive infinity.
-The exact result has the exponent @var{e}@minus{}1. With the underflow
-before rounding, such a function call would yield an underflow, as
-@var{e}@minus{}1 is outside the current exponent range. However, MPFR
+The exact result has the exponent @tm{@var{e} @minus{} 1}. With the
+underflow before rounding, such a function call would yield an underflow, as
+@tm{@var{e} @minus{} 1} is outside the current exponent range. However, MPFR
 first considers the rounded result assuming an unbounded exponent range.
 The exact result cannot be represented exactly in precision 2, and here,
 it is rounded to @m{0.5 \times 2^e, 0.5 times 2 to @var{e}}, which is
@@ -1064,7 +1145,7 @@ Differences with the ISO C99 standard:
 @item In C, only quiet NaNs are specified, and a NaN propagation does not
 raise an invalid exception. Unless explicitly stated otherwise, MPFR sets
 the NaN flag whenever a NaN is generated, even when a NaN is propagated
-(e.g., in NaN + NaN), as if all NaNs were signaling.
+(e.g., in NaN @mm{+} NaN), as if all NaNs were signaling.
 
 @item An invalid exception in C corresponds to either a NaN exception or
 a range error in MPFR@.
@@ -1286,6 +1367,7 @@ Here is an example of how to use multiple initialization functions
 (since @code{NULL} is not necessarily defined in this context, we use
 @code{(mpfr_ptr) 0} instead, but @code{(mpfr_ptr) NULL} is also correct).
 
+@need 400
 @example
 @{
   mpfr_t x, y, z, t;
@@ -1395,9 +1477,10 @@ closely match the actual accurate part of the numbers.
 Set the precision of @var{x} to be @strong{exactly} @var{prec} bits,
 and set its value to NaN@.
 The previous value stored in @var{x} is lost. It is equivalent to
-a call to @code{mpfr_clear(x)} followed by a call to
-@code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
-case the current allocated space for the significand of @var{x} is enough.
+a call to @code{mpfr_clear(@var{x})} followed by a call to
+@code{mpfr_init2(@var{x}, @var{prec})}, but more efficient as no allocation
+is done in case the current allocated space for the significand of @var{x}
+is enough.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 In case you want to keep the previous value stored in @var{x},
@@ -1437,7 +1520,7 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded
 toward the given direction @var{rnd}.
-Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
+Note that the input 0 is converted to @mm{+}0 by @code{mpfr_set_ui},
 @code{mpfr_set_si}, @code{mpfr_set_uj}, @code{mpfr_set_sj},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
@@ -1484,7 +1567,7 @@ number before MPFR can work with it.
 @deftypefunx int mpfr_set_z_2exp (mpfr_t @var{rop}, mpz_t @var{op}, mpfr_exp_t @var{e}, mpfr_rnd_t @var{rnd})
 Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
 two to the power @var{e}}, rounded toward the given direction @var{rnd}.
-Note that the input 0 is converted to +0.
+Note that the input 0 is converted to @mm{+}0.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{rop}, const char *@var{s}, int @var{base}, mpfr_rnd_t @var{rnd})
@@ -1587,8 +1670,8 @@ in base 17.
 @deftypefunx void mpfr_set_inf (mpfr_t @var{x}, int @var{sign})
 @deftypefunx void mpfr_set_zero (mpfr_t @var{x}, int @var{sign})
 Set the variable @var{x} to NaN (Not-a-Number), infinity or zero respectively.
-In @code{mpfr_set_inf} or @code{mpfr_set_zero}, @var{x} is set to plus
-infinity or plus zero iff @var{sign} is nonnegative;
+In @code{mpfr_set_inf} or @code{mpfr_set_zero}, @var{x} is set to positive
+infinity (@mm{+}Inf) or positive zero (@mm{+}0) iff @var{sign} is non-negative;
 in @code{mpfr_set_nan}, the sign bit of the result is unspecified.
 @end deftypefun
 
@@ -1722,10 +1805,10 @@ precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
 exactly equals @m{@var{rop} \times 2^{@var{exp}},@var{rop} times 2 raised
 to the power @var{exp}}.
-If @var{op} is zero, the minimal exponent @code{emin} is returned.
+If @var{op} is zero, the minimal exponent @var{emin} is returned.
 If @var{op} is NaN or an infinity, the @emph{erange} flag is set, @var{rop}
-is set to 0, and the minimal exponent @code{emin} is returned.
-The returned exponent may be less than the minimal exponent @code{emin}
+is set to 0, and the minimal exponent @var{emin} is returned.
+The returned exponent may be less than the minimal exponent @var{emin}
 of MPFR numbers in the current exponent range; in case the exponent is
 not representable in the @code{mpfr_exp_t} type, the @emph{erange} flag
 is set and the minimal value of the @code{mpfr_exp_t} type is returned.
@@ -1752,7 +1835,7 @@ Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
 The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
 do not exist in MPF@.  If @var{op} is NaN, then @var{rop} is undefined.
-If @var{op} is +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
+If @var{op} is @mm{+}Inf (resp.@: @minus{}Inf), then @var{rop} is set to
 the maximum (resp.@: minimum) value in the precision of the MPF number;
 if a future MPF version supports infinities, this behavior will be
 considered incorrect and will change (portable programs should assume
@@ -1771,8 +1854,8 @@ rounding to nearest, can be recovered exactly when read again,
 still with rounding to nearest.
 More precisely, we have
 @m{m = 1 + \left\lceil @var{p} {\log 2 \over \log @var{b}} \right\rceil,
-m = 1 + ceil(@var{p}*log(2)/log(@var{b}))},
-with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2.
+m = 1 + ceil(@var{p} times log(2)/log(@var{b}))},
+with @var{p} replaced by @tm{@var{p} @minus{} 1} if @var{b} is a power of 2.
 
 The argument @var{b} must be in the range 2 to 62; this is the range of bases
 supported by the @code{mpfr_get_str} function. Note that contrary to the base
@@ -1797,7 +1880,7 @@ function. Users who wish a more consistent behavior should write a simple
 wrapper.
 
 If the input is NaN, then the returned string is @samp{@@NaN@@} and the
-NaN flag is set. If the input is +Inf (resp.@: @minus{}Inf), then the
+NaN flag is set. If the input is @mm{+}Inf (resp.@: @minus{}Inf), then the
 returned string is @samp{@@Inf@@} (resp.@: @samp{-@@Inf@@}).
 
 If the input number is a finite number, the exponent is written through
@@ -1807,7 +1890,7 @@ in all cases.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
-be returned as "@minus{}31416" in the string and 1 written at @var{expptr}.
+be returned as @samp{-31416} in the string and 1 written at @var{expptr}.
 If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 consecutive possible outputs, the one with an even significand is chosen,
 where both significands are considered with the exponent of @var{op}.
@@ -1820,8 +1903,8 @@ in decimal,
 and (26) and a half is rounded to (26), which is 20 in decimal.
 
 If @var{n} is zero, the number of digits of the significand is taken as
-@code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the precision
-of @var{op} (@pxref{mpfr_get_str_ndigits}).
+@code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where @var{p} is the
+precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the allocation function (@pxref{Memory Handling}) and a pointer to the string
@@ -1829,9 +1912,9 @@ is returned (unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
-large enough for the significand. A safe block size (sufficient for any
-value) is @code{max(@var{n} + 2, 7)} if @var{n} is not zero; if @var{n} is
-zero, replace it by @code{mpfr_get_str_ndigits(@var{base},@var{p})} where
+large enough for the significand. A safe block size (sufficient for any value)
+is @tm{@max{}(@var{n} + 2@comma{} 7)} if @var{n} is not zero; if @var{n} is
+zero, replace it by @code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where
 @var{p} is the precision of @var{op}, as mentioned above.
 The extra two bytes are
 for a possible minus sign, and for the terminating null character, and the
@@ -1883,7 +1966,7 @@ non-zero for a non-negative number less than or equal to @code{ULONG_MAX}.
 Set @var{rop} to @tm{@var{op1} + @var{op2}} rounded in the direction
 @var{rnd}.  The IEEE@tie{}754 rules are used, in particular for signed zeros.
 But for types having no signed zeros, 0 is considered unsigned
-(i.e., (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
+(i.e., @tm{(+0) + 0 = (+0)} and @tm{(@minus{}0) + 0 = (@minus{}0)}).
 The @code{mpfr_add_d} function assumes that the radix of the @code{double} type
 is a power of 2, with a precision at most that declared by the C implementation
 (macro @code{IEEE_DBL_MANT_DIG}, and if not defined 53 bits).
@@ -1959,11 +2042,11 @@ Set @var{rop} to NaN if @var{op} is negative.
 
 @deftypefun int mpfr_rec_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @m{1/\sqrt{@var{op}}, the reciprocal square root of @var{op}}
-rounded in the direction @var{rnd}.  Set @var{rop} to +Inf if @var{op} is
-@pom{}0, +0 if @var{op} is +Inf, and NaN if @var{op} is negative.  Warning!
-Therefore the result on @minus{}0 is different from the one of the rSqrt
-function recommended by the IEEE@tie{}754 standard (Section@tie{}9.2.1),
-which is @minus{}Inf instead of +Inf. However, @code{mpfr_rec_sqrt} is
+rounded in the direction @var{rnd}.  Set @var{rop} to @mm{+}Inf if @var{op} is
+@pom{}0, @mm{+}0 if @var{op} is @mm{+}Inf, and NaN if @var{op} is negative.
+Warning!  Therefore the result on @minus{}0 is different from the one of the
+rSqrt function recommended by the IEEE@tie{}754 standard (Section@tie{}9.2.1),
+which is @minus{}Inf instead of @mm{+}Inf. However, @code{mpfr_rec_sqrt} is
 equivalent to @code{mpfr_rootn_si} with @tm{@var{n} = @minus{}2}.
 @end deftypefun
 
@@ -1984,7 +2067,7 @@ These functions agree with the rootn operation of the IEEE@tie{}754 standard.
 
 @deftypefun int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 This function is the same as @code{mpfr_rootn_ui} except when @var{op}
-is @minus{}0 and @var{n} is even: the result is @minus{}0 instead of +0
+is @minus{}0 and @var{n} is even: the result is @minus{}0 instead of @mm{+}0
 (the reason was to be consistent with @code{mpfr_sqrt}). Said otherwise,
 if @var{op} is zero, set @var{rop} to @var{op}.
 
@@ -2011,7 +2094,7 @@ But contrary to IEEE@tie{}754, the NaN flag is set as usual.
 @deftypefun int mpfr_dim (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the positive difference of @var{op1} and @var{op2}, i.e.,
 @tm{@var{op1} @minus{} @var{op2}} rounded in the direction @var{rnd}
-if @tm{@var{op1} > @var{op2}}, +0 if @tm{@var{op1} @le{} @var{op2}},
+if @tm{@var{op1} > @var{op2}}, @mm{+}0 if @tm{@var{op1} @le{} @var{op2}},
 and NaN if @var{op1} or @var{op2} is NaN@.
 @end deftypefun
 
@@ -2059,41 +2142,36 @@ rounding toward zero.
 @end deftypefun
 
 @deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the Euclidean norm of @var{x} and @var{y},
-@ifnottex
-i.e., the square root of the sum of the squares of @var{x} and @var{y},
-@end ifnottex
-@tex
-i.e., $\sqrt{x^2+y^2}$,
-@end tex
-rounded in the direction @var{rnd}.
+Set @var{rop} to the Euclidean norm of @var{x} and @var{y}, i.e.,
+@m{\sqrt{@var{x}^2+@var{y}^2},the square root of the sum of the squares
+of @var{x} and @var{y}}, rounded in the direction @var{rnd}.
 Special values are handled as described in the ISO C99 (Section@tie{}F.9.4.3)
 and IEEE@tie{}754 (Section@tie{}9.2.1) standards:
-If @var{x} or @var{y} is an infinity, then +Inf is returned in @var{rop},
+If @var{x} or @var{y} is an infinity, then @mm{+}Inf is returned in @var{rop},
 even if the other number is NaN@.
 @end deftypefun
 
-@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}@fptt{[]}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
 @var{tab} is an array of pointers
 to @code{mpfr_t}, not an array of @code{mpfr_t}.
-If @var{n} = 0, then the result is +0, and if @var{n} = 1, then the function
-is equivalent to @code{mpfr_set}.
+If @tm{@var{n} = 0}, then the result is @mm{+}0, and if @tm{@var{n} = 1},
+then the function is equivalent to @code{mpfr_set}.
 For the special exact cases, the result is the same as the one obtained
 with a succession of additions (@code{mpfr_add}) in infinite precision.
 In particular, if the result is an exact zero and @tm{@var{n} @ge{} 1}:
 @itemize @bullet
-@item if all the inputs have the same sign (i.e., all +0 or all @minus{}0),
-then the result has the same sign as the inputs;
-@item otherwise, either because all inputs are zeros with at least a +0 and
-a @minus{}0, or because some inputs are non-zero (but they globally cancel),
-the result is +0, except for the @code{MPFR_RNDD} rounding mode, where it is
-@minus{}0.
+@item if all the inputs have the same sign (i.e., all @mm{+}0 or
+all @minus{}0), then the result has the same sign as the inputs;
+@item otherwise, either because all inputs are zeros with at least
+a @mm{+}0 and a @minus{}0, or because some inputs are non-zero
+(but they globally cancel), the result is @mm{+}0, except for the
+@code{MPFR_RNDD} rounding mode, where it is @minus{}0.
 @end itemize
 @end deftypefun
 
-@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}[], const mpfr_ptr @var{b}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}@fptt{[]}, const mpfr_ptr @var{b}@fptt{[]}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
 whose common size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
@@ -2163,7 +2241,7 @@ number (i.e., neither NaN nor an infinity), zero, or a regular number
 Return a positive value if @tm{@var{op} > 0}, zero if @tm{@var{op} = 0},
 and a negative value if @tm{@var{op} < 0}.
 If the operand is NaN, set the @emph{erange} flag and return zero.
-This is equivalent to @code{mpfr_cmp_ui (op, 0)}, but more efficient.
+This is equivalent to @code{mpfr_cmp_ui (@var{op}, 0)}, but more efficient.
 @end deftypefn
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
@@ -2195,13 +2273,14 @@ compared), zero otherwise.
 
 @deftypefun int mpfr_total_order_p (mpfr_t @var{x}, mpfr_t @var{y})
 This function implements the totalOrder predicate from IEEE@tie{}754,
-where @minus{}NaN < @minus{}Inf < negative finite numbers < @minus{}0 <
-+0 < positive finite numbers < +Inf < +NaN@.
+where @minus{}NaN @mm{<} @minus{}Inf @mm{<} negative finite numbers
+@mm{<} @minus{}0 @mm{<} @mm{+}0 @mm{<} positive finite numbers
+@mm{<} @mm{+}Inf @mm{<} @mm{+}NaN@.
 It returns a non-zero value (true) when @var{x} is smaller than or equal
 to @var{y} for this order relation, and zero (false) otherwise.
-Contrary to @code{mpfr_cmp (x, y)}, which returns a ternary value,
+Contrary to @code{mpfr_cmp (@var{x}, @var{y})}, which returns a ternary value,
 @code{mpfr_total_order_p} returns a binary value (zero or non-zero).
-In particular, @code{mpfr_total_order_p (x, x)} returns true,
+In particular, @code{mpfr_total_order_p (@var{x}, @var{x})} returns true,
 @code{mpfr_total_order_p (-0, +0)} returns true and
 @code{mpfr_total_order_p (+0, -0)} returns false.
 The sign bit of NaN also matters.
@@ -2243,7 +2322,7 @@ Set @var{rop} to the natural logarithm of @var{op},
 @m{\log_2 @var{op}, log2(@var{op})} or
 @m{\log_{10} @var{op}, log10(@var{op})}, respectively,
 rounded in the direction @var{rnd}.
-Set @var{rop} to +0 if @var{op} is 1 (in all rounding modes),
+Set @var{rop} to @mm{+}0 if @var{op} is 1 (in all rounding modes),
 for consistency with the ISO C99 and IEEE@tie{}754 standards.
 Set @var{rop} to @minus{}Inf if @var{op} is @pom{}0
 (i.e., the sign of the zero has no influence on the result).
@@ -2299,23 +2378,23 @@ a macro) for @code{mpfr_pow_sj}, to follow the C2x function @code{pown}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{pow} function:
 @itemize @bullet
-@item @code{pow(@pom{}0, @var{y})} returns plus or negative infinity for @var{y} a negative odd integer.
-@item @code{pow(@pom{}0, @var{y})} returns positive infinity for @var{y} negative and not an odd integer.
-@item @code{pow(@pom{}0, @var{y})} returns plus or minus zero for @var{y} a positive odd integer.
-@item @code{pow(@pom{}0, @var{y})} returns plus zero for @var{y} positive and not an odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns @pom{}Inf for @var{y} a negative odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns @mm{+}Inf for @var{y} negative and not an odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns @pom{}0 for @var{y} a positive odd integer.
+@item @code{pow(@pom{}0, @var{y})} returns @mm{+}0 for @var{y} positive and not an odd integer.
 @item @code{pow(-1, @pom{}Inf)} returns 1.
 @item @code{pow(+1, @var{y})} returns 1 for any @var{y}, even a NaN@.
 @item @code{pow(@var{x}, @pom{}0)} returns 1 for any @var{x}, even a NaN@.
 @item @code{pow(@var{x}, @var{y})} returns NaN for finite negative @var{x} and finite non-integer @var{y}.
-@item @code{pow(@var{x}, -Inf)} returns positive infinity for @tm{0 < @GMPabs{x} < 1}, and plus zero for @tm{@GMPabs{x} > 1}.
-@item @code{pow(@var{x}, +Inf)} returns plus zero for @tm{0 < @GMPabs{x} < 1}, and positive infinity for @tm{@GMPabs{x} > 1}.
-@item @code{pow(-Inf, @var{y})} returns minus zero for @var{y} a negative odd integer.
-@item @code{pow(-Inf, @var{y})} returns plus zero for @var{y} negative and not an odd integer.
-@item @code{pow(-Inf, @var{y})} returns negative infinity for @var{y} a positive odd integer.
-@item @code{pow(-Inf, @var{y})} returns positive infinity for @var{y} positive and not an odd integer.
-@item @code{pow(+Inf, @var{y})} returns plus zero for @var{y} negative, and positive infinity for @var{y} positive.
+@item @code{pow(@var{x}, -Inf)} returns @mm{+}Inf for @tm{0 < @GMPabs{x} < 1}, and @mm{+}0 for @tm{@GMPabs{x} > 1}.
+@item @code{pow(@var{x}, +Inf)} returns @mm{+}0 for @tm{0 < @GMPabs{x} < 1}, and @mm{+}Inf for @tm{@GMPabs{x} > 1}.
+@item @code{pow(-Inf, @var{y})} returns @minus{}0 for @var{y} a negative odd integer.
+@item @code{pow(-Inf, @var{y})} returns @mm{+}0 for @var{y} negative and not an odd integer.
+@item @code{pow(-Inf, @var{y})} returns @minus{}Inf for @var{y} a positive odd integer.
+@item @code{pow(-Inf, @var{y})} returns @mm{+}Inf for @var{y} positive and not an odd integer.
+@item @code{pow(+Inf, @var{y})} returns @mm{+}0 for @var{y} negative, and @mm{+}Inf for @var{y} positive.
 @end itemize
-Note: When 0 is of integer type, it is regarded as +0 by these functions.
+Note: When 0 is of integer type, it is regarded as @mm{+}0 by these functions.
 We do not use the usual limit rules in this case, as these rules are not
 used for @code{pow}.
 @end deftypefun
@@ -2338,13 +2417,13 @@ tangent of @var{op}, rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_sinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_tanu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the cosine (resp.@: sine and tangent) of
-@m{@var{op} \times 2\pi/u,@var{op} multiplied by 2@tie{}Pi and divided
+@m{@var{op} \times 2\pi/@var{u},@var{op} multiplied by 2@tie{}Pi and divided
 by @var{u}}. For example, if @var{u} equals 360, one gets the cosine
-(resp.@: sine and tangent) for @var{op} in degrees. For @code{mpfr_cosu},
-when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
-is a half-integer, the result is +0, following IEEE@tie{}754 (cosPi),
-so that the function is even. For @code{mpfr_sinu},
-when @m{@var{op} \times 2/u,@var{op} multiplied by 2 and divided by @var{u}}
+(resp.@: sine and tangent) for @var{op} in degrees. For @code{mpfr_cosu}, when
+@m{@var{op} \times 2/@var{u},@var{op} multiplied by 2 and divided by @var{u}}
+is a half-integer, the result is @mm{+}0, following IEEE@tie{}754 (cosPi),
+so that the function is even. For @code{mpfr_sinu}, when
+@m{@var{op} \times 2/@var{u},@var{op} multiplied by 2 and divided by @var{u}}
 is an integer, the result is zero with the same sign as @var{op}, following
 IEEE@tie{}754 (sinPi), so that the function is odd.
 Similarly, the function @code{mpfr_tanu} follows IEEE@tie{}754 (tanPi).
@@ -2387,7 +2466,7 @@ of the arc-cosine function;
 still, the result lies in the image of the output range
 by the rounding function.
 The same holds for @code{asin(-1)}, @code{asin(1)}, @code{atan(-Inf)},
-@code{atan(+Inf)} or for @code{atan(op)} with large @var{op} and
+@code{atan(+Inf)} or for @code{atan(@var{op})} with large @var{op} and
 small precision of @var{rop}.
 @c PZ: check the above is correct
 @end deftypefun
@@ -2395,9 +2474,9 @@ small precision of @var{rop}.
 @deftypefun int mpfr_acosu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_atanu (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{u}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @var{a} multiplied by @var{u} and divided by
-@m{2\pi,2@tie{}Pi}, where @var{a} is the arc-cosine (resp.@: arc-sine and
-arc-tangent) of @var{op}.
+Set @var{rop} to @m{@var{a} \times @var{u}/(2\pi),@var{a} multiplied
+by @var{u} and divided by 2@tie{}Pi}, where @var{a} is the arc-cosine
+(resp.@: arc-sine and arc-tangent) of @var{op}.
 For example, if @var{u} equals 360, @code{mpfr_acosu} yields the arc-cosine in
 degrees.
 @end deftypefun
@@ -2405,8 +2484,8 @@ degrees.
 @deftypefun int mpfr_acospi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_asinpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_atanpi (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to @code{acos(op)} (resp.@: @code{asin(op)} and @code{atan(op)})
-divided by @m{\pi,Pi}.
+Set @var{rop} to @code{acos(@var{op})} (resp.@: @code{asin(@var{op})} and
+@code{atan(@var{op})}) divided by @m{\pi,Pi}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2414,42 +2493,45 @@ divided by @m{\pi,Pi}.
 @deftypefunx int mpfr_atan2pi (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
 For @code{mpfr_atan2}, set @var{rop} to the arc-tangent2 of @var{y} and
 @var{x}, rounded in the direction @var{rnd}:
-if @code{x > 0}, @code{atan2(y, x) = atan(y/x)};
-if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan(@GMPabs{y/x}))},
-thus a number from @m{-\pi,-Pi} to @m{\pi,Pi}.
+if @tm{@var{x} > 0}, then @code{atan2(@var{y}, @var{x})} returns
+@tm{@atan{}(@var{y}/@var{x})};
+if @tm{@var{x} < 0}, then @code{atan2(@var{y}, @var{x})} returns
+@m{@sign{}(@var{y}) \times (\pi - @atan{}(@GMPabs{@var{y}/@var{x}})),the sign
+of @var{y} multiplied by @w{Pi @minus{} atan(abs(@var{y}/@var{x}))}},
+thus a number from @m{-\pi,@minus{}Pi} to @m{\pi,Pi}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
-@m{-\pi,-Pi},
+@m{-\pi,@minus{}Pi},
 its rounded result might be outside the function output range.
 The function @code{mpfr_atan2u} behaves similarly, except the result is
-multiplied by @var{u} and divided by 2@tie{}Pi; and @code{mpfr_atan2pi}
-is the same as @code{mpfr_atan2u} with @code{u=2}.
+multiplied by @m{@var{u}/(2\pi),@var{u} and divided by 2@tie{}Pi}; and
+@code{mpfr_atan2pi} is the same as @code{mpfr_atan2u} with @tm{@var{u} = 2}.
 For example, if @var{u} equals 360, @code{mpfr_atan2u} returns the
 arc-tangent in degrees, with values from @minus{}180 to 180.
 
-@code{atan2(y, 0)} does not raise any floating-point exception.
+@code{atan2(@var{y}, 0)} does not raise any floating-point exception.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{atan2} function:
 @itemize @bullet
 @item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
-@item @code{atan2(-0, -0)} returns @m{-\pi,-Pi}.
-@item @code{atan2(+0, +0)} returns +0.
+@item @code{atan2(-0, -0)} returns @m{-\pi,@minus{}Pi}.
+@item @code{atan2(+0, +0)} returns @mm{+}0.
 @item @code{atan2(-0, +0)} returns @minus{}0.
-@item @code{atan2(+0, x)} returns @m{+\pi,+Pi} for @tm{x < 0}.
-@item @code{atan2(-0, x)} returns @m{-\pi,-Pi} for @tm{x < 0}.
-@item @code{atan2(+0, x)} returns +0 for @tm{x > 0}.
-@item @code{atan2(-0, x)} returns @minus{}0 for @tm{x > 0}.
-@item @code{atan2(y, 0)} returns @m{-\pi/2,-Pi/2} for @tm{y < 0}.
-@item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @tm{y > 0}.
+@item @code{atan2(+0, @var{x})} returns @m{+\pi,+Pi} for @tm{@var{x} < 0}.
+@item @code{atan2(-0, @var{x})} returns @m{-\pi,@minus{}Pi} for @tm{@var{x} < 0}.
+@item @code{atan2(+0, @var{x})} returns @mm{+}0 for @tm{@var{x} > 0}.
+@item @code{atan2(-0, @var{x})} returns @minus{}0 for @tm{@var{x} > 0}.
+@item @code{atan2(@var{y}, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{@var{y} < 0}.
+@item @code{atan2(@var{y}, 0)} returns @m{+\pi/2,+Pi/2} for @tm{@var{y} > 0}.
 @item @code{atan2(+Inf, -Inf)} returns @m{+3\pi/4,+3*Pi/4}.
 @item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,-3*Pi/4}.
 @item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
-@item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,-Pi/4}.
-@item @code{atan2(+Inf, x)} returns @m{+\pi/2,+Pi/2} for finite @tm{x}.
-@item @code{atan2(-Inf, x)} returns @m{-\pi/2,-Pi/2} for finite @tm{x}.
-@item @code{atan2(y, -Inf)} returns @m{+\pi,+Pi} for finite @tm{y > 0}.
-@item @code{atan2(y, -Inf)} returns @m{-\pi,-Pi} for finite @tm{y < 0}.
-@item @code{atan2(y, +Inf)} returns +0 for finite @tm{y > 0}.
-@item @code{atan2(y, +Inf)} returns @minus{}0 for finite @tm{y < 0}.
+@item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,@minus{}Pi/4}.
+@item @code{atan2(+Inf, @var{x})} returns @m{+\pi/2,+Pi/2} for finite @tm{@var{x}}.
+@item @code{atan2(-Inf, @var{x})} returns @m{-\pi/2,@minus{}Pi/2} for finite @tm{@var{x}}.
+@item @code{atan2(@var{y}, -Inf)} returns @m{+\pi,+Pi} for finite @tm{@var{y} > 0}.
+@item @code{atan2(@var{y}, -Inf)} returns @m{-\pi,@minus{}Pi} for finite @tm{@var{y} < 0}.
+@item @code{atan2(@var{y}, +Inf)} returns @mm{+}0 for finite @tm{@var{y} > 0}.
+@item @code{atan2(@var{y}, +Inf)} returns @minus{}0 for finite @tm{@var{y} < 0}.
 @end itemize
 @end deftypefun
 
@@ -2524,11 +2606,11 @@ might also occur.
 @deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
-When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
-When @var{op} is an infinity or a nonpositive integer, set @var{rop} to +Inf,
-following the general rules on special values.
-When @tm{@minus{}2@var{k} @minus{} 1 < @var{op} < @minus{}2@var{k}},
-@var{k} being a nonnegative integer, set @var{rop} to NaN@.
+When @var{op} is 1 or 2, set @var{rop} to @mm{+}0 (in all rounding modes).
+When @var{op} is an infinity or a non-positive integer, set @var{rop} to
+@mm{+}Inf, following the general rules on special values.
+When @tm{@minus{}2k @minus{} 1 < @var{op} < @minus{}2k},
+@tm{k} being a non-negative integer, set @var{rop} to NaN@.
 See also @code{mpfr_lgamma}.
 @end deftypefun
 
@@ -2537,8 +2619,9 @@ Set @var{rop} to the value of the logarithm of the absolute value of the
 Gamma function on @var{op}, rounded in the direction @var{rnd}. The sign
 (1 or @minus{}1) of Gamma(@var{op}) is returned in the object pointed to
 by @var{signp}.
-When @var{op} is 1 or 2, set @var{rop} to +0 (in all rounding modes).
-When @var{op} is an infinity or a nonpositive integer, set @var{rop} to +Inf.
+When @var{op} is 1 or 2, set @var{rop} to @mm{+}0 (in all rounding modes).
+When @var{op} is an infinity or a non-positive integer, set @var{rop} to
+@mm{+}Inf.
 When @var{op} is NaN, @minus{}Inf or a negative integer, *@var{signp} is
 undefined, and when @var{op} is @pom{}0, *@var{signp} is the sign of the zero.
 @end deftypefun
@@ -2574,11 +2657,11 @@ rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_jn (mpfr_t @var{rop}, long int @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the first kind Bessel function of order 0,
 (resp.@: 1 and @var{n})
-on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN, @var{rop} is always set to NaN@. When @var{op} is plus or negative infinity,
-@var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
-@var{rop} is set to +0 or @minus{}0 depending on the parity and sign of @var{n},
-and the sign of @var{op}.
+on @var{op}, rounded in the direction @var{rnd}. When @var{op} is NaN,
+@var{rop} is always set to NaN@. When @var{op} is positive or negative infinity,
+@var{rop} is set to @mm{+}0. When @var{op} is zero, and @var{n} is not zero,
+@var{rop} is set to @mm{+}0 or @minus{}0 depending on the parity and sign of
+@var{n}, and the sign of @var{op}.
 @end deftypefun
 
 @deftypefun int mpfr_y0 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2587,25 +2670,22 @@ and the sign of @var{op}.
 Set @var{rop} to the value of the second kind Bessel function of order 0
 (resp.@: 1 and @var{n})
 on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
-NaN or negative, @var{rop} is always set to NaN@. When @var{op} is +Inf,
-@var{rop} is set to +0. When @var{op} is zero, @var{rop} is set to +Inf
-or @minus{}Inf depending on the parity and sign of @var{n}.
+NaN or negative, @var{rop} is always set to NaN@. When @var{op} is @mm{+}Inf,
+@var{rop} is set to @mm{+}0. When @var{op} is zero, @var{rop} is set to
+@mm{+}Inf or @minus{}Inf depending on the parity and sign of @var{n}.
 @end deftypefun
 
 @deftypefun int mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded in the direction @var{rnd}.
 The arithmetic-geometric mean is the common limit of the sequences
-@m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}},
-where @m{u_0,@var{u}_@var{0}}=@var{op1}, @m{v_0,@var{v}_@var{0}}=@var{op2},
-@m{u_{n+1},@var{u}_(@var{n}+1)} is the
-arithmetic mean of @m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}},
-and @m{v_{n+1},@var{v}_(@var{n}+1)} is the geometric mean of
-@m{u_n,@var{u}_@var{n}} and @m{v_n,@var{v}_@var{n}}.
+@mm{u_n} and @mm{v_n}, where @tm{u_0 = @var{op1}}, @tm{v_0 = @var{op2}},
+@m{u_{n+1},u_(n+1)} is the arithmetic mean of @mm{u_n} and @mm{v_n}, and
+@m{v_{n+1},v_(n+1)} is the geometric mean of @mm{u_n} and @mm{v_n}.
 If any operand is negative and the other one is not zero,
 set @var{rop} to NaN@.
 If any operand is zero and the other one is finite (resp.@: infinite),
-set @var{rop} to +0 (resp.@: NaN)@.
+set @var{rop} to @mm{+}0 (resp.@: NaN)@.
 @end deftypefun
 
 @deftypefun int mpfr_ai (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_rnd_t @var{rnd})
@@ -2613,8 +2693,8 @@ Set @var{rop} to the value of the Airy function Ai
  on @var{x}, rounded in the direction @var{rnd}.
 When @var{x} is
 NaN,
-@var{rop} is always set to NaN@. When @var{x} is +Inf or @minus{}Inf,
-@var{rop} is +0.
+@var{rop} is always set to NaN@. When @var{x} is @mm{+}Inf or @minus{}Inf,
+@var{rop} is @mm{+}0.
 The current implementation is not intended to be used with large arguments.
 It works with @GMPabs{@var{x}} typically smaller than 500. For larger arguments,
 other methods should be used and will be implemented in a future version.
@@ -2655,16 +2735,16 @@ The base may vary from 2 to 62 or from @minus{}2 to @minus{}36
 (any other value yields undefined behavior). The argument @var{n} has
 the same meaning as in @code{mpfr_get_str} (@pxref{mpfr_get_str}):
 Print @var{n} significant digits exactly, or if @var{n} is 0, the number
-@code{mpfr_get_str_ndigits(@var{base},@var{p})} where @var{p} is the
+@code{mpfr_get_str_ndigits (@var{base}, @var{p})}, where @var{p} is the
 precision of @var{op} (@pxref{mpfr_get_str_ndigits}).
 
-If the input is NaN, +Inf, @minus{}Inf, +0, or @minus{}0, then
+If the input is NaN, @mm{+}Inf, @minus{}Inf, @mm{+}0, or @minus{}0, then
 @samp{@@NaN@@}, @samp{@@Inf@@}, @samp{-@@Inf@@}, @samp{0}, or
 @samp{-0} is output, respectively.
 
 For the regular numbers, the format of the output is the following: the
 most significant digit, then a decimal-point character (defined by the
-current locale), then the remaining @var{n}@minus{}1 digits (including
+current locale), then the remaining @tm{@var{n} @minus{} 1} digits (including
 trailing zeros), then the exponent prefix, then the exponent in decimal.
 The exponent prefix is @samp{e} when @tm{@GMPabs{@var{base}} @le{} 10},
 and @samp{@@} when @tm{@GMPabs{@var{base}} > 10}. @xref{mpfr_get_str} for
@@ -2743,8 +2823,8 @@ breaking the ABI and may depend on the environment.
 The current output format is the following: a minus sign if the sign bit
 is set (even for NaN); @samp{@@NaN@@}, @samp{@@Inf@@} or @samp{0} if the
 argument is NaN, an infinity or zero, respectively; otherwise the remaining
-of the output is as follows: @samp{0.} then the @var{p} bits of the binary
-significand, where @var{p} is the precision of the number; if the trailing
+of the output is as follows: @samp{0.} then the @tm{p} bits of the binary
+significand, where @tm{p} is the precision of the number; if the trailing
 bits are not all zeros (which must not occur with valid data), they are
 output enclosed by square brackets; the character @samp{E} followed by
 the exponent written in base 10; in case of invalid data or out-of-range
@@ -2882,6 +2962,7 @@ just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
+@need 400
 The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
 @example
@@ -2916,9 +2997,9 @@ argument.
 
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @code{nan}, @code{-inf}, and @code{inf}
+Special values are always displayed as @samp{nan}, @samp{-inf}, and @samp{inf}
 for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
-@code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
+@samp{NAN}, @samp{-INF}, and @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and
 @samp{G} specifiers.
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
@@ -2934,8 +3015,8 @@ following conversion specifiers: @samp{a}, @samp{A}, @samp{b}, @samp{e},
 values at the
 wanted precision which have the same exponent, otherwise, it is rounded away
 from zero.
-For instance, 85 is displayed as "8e+1" and 95 is displayed as "1e+2" with the
-format specification @code{"%.0RNe"}.
+For instance, 85 is displayed as @samp{8e+1} and 95 is displayed as
+@samp{1e+2} with the format specification @code{"%.0RNe"}.
 This also applies when the @samp{g} (resp.@: @samp{G}) conversion specifier
 uses the @samp{e} (resp.@: @samp{E}) style.
 If the precision is set to a value greater than the maximum value for an
@@ -2949,13 +3030,9 @@ an exact representation with no trailing zeros.
 @c Avoid saying "minimum" as this could be confusing with the different
 @c possible choices for a/A.
 @item With @samp{e} and @samp{E}, it is
-@ifnottex
-ceil(@var{p}*log(2)/log(@var{10})),
-@end ifnottex
-@tex
-$\left\lceil @var{p} {\log 2 \over \log @var{10}} \right\rceil$,
-@end tex
-where @var{p} is the precision of the input variable, matching the choice
+@m{\left\lceil p {\log 2 \over \log 10} \right\rceil,ceil(p times
+log(2)/log(10))},
+where @tm{p} is the precision of the input variable, matching the choice
 done for @code{mpfr_get_str}; thus, if rounding to nearest is used,
 outputting the value with a missing precision and reading it back will
 yield the original value.
@@ -3010,8 +3087,9 @@ the terminating null character or a negative value if an error occurred.
 Form a null-terminated string corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
 @var{buf}. If @var{n} is zero, nothing is
-written and @var{buf} may be a null pointer, otherwise, the @var{n}@minus{}1
-first characters are written in @var{buf} and the @var{n}-th is a null character.
+written and @var{buf} may be a null pointer, otherwise, the first
+@tm{@var{n} @minus{} 1} characters are written in @var{buf} and the
+@var{n}-th one is a null character.
 Return the number of characters that would have been written had @var{n} been
 sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
@@ -3219,13 +3297,14 @@ with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
-E(@var{b})@minus{}@var{err} where E(@var{b}) is the exponent of @var{b},
+@tm{@EXP{}(@var{b}) @minus{} @var{err}} where @tm{@EXP{}(@var{b})}
+is the exponent of @var{b},
 return a non-zero value if one is able to round correctly @var{x} to
 precision @var{prec} with the direction @var{rnd2} assuming an unbounded
 exponent range, and 0 otherwise (including for NaN and Inf).
 In other words, if the error on @var{b} is bounded by two to the power
 @var{k}@tie{}ulps, and @var{b} has precision @var{prec},
-you should give @var{err}@tie{}=@tie{}@var{prec}@minus{}@var{k}.
+you should give @tm{@var{err} = @var{prec} @minus{} @var{k}}.
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
@@ -3282,7 +3361,7 @@ if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
   @}
 @end example
 Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
-round to @var{prec}+1 bits with a directed rounding:
+round to @tm{@var{prec} + 1} bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not
 be the case when @var{b} is near from a value exactly representable on
@@ -3304,9 +3383,10 @@ Return the minimal number of bits required to store the significand of
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mpfr_rnd_t @var{rnd})
-Return a string ("MPFR_RNDN", "MPFR_RNDZ", "MPFR_RNDU", "MPFR_RNDD",
-"MPFR_RNDA", "MPFR_RNDF") corresponding to the rounding mode @var{rnd},
-or a null pointer if @var{rnd} is an invalid rounding mode.
+Return a string (@code{"MPFR_RNDN"}, @code{"MPFR_RNDZ"}, @code{"MPFR_RNDU"},
+@code{"MPFR_RNDD"}, @code{"MPFR_RNDA"}, @code{"MPFR_RNDF"}) corresponding to
+the rounding mode @var{rnd}, or a null pointer if @var{rnd} is an invalid
+rounding mode.
 @end deftypefun
 
 @deftypefn Macro int mpfr_round_nearest_away (int (@var{foo})(mpfr_t, type1_t, ..., mpfr_rnd_t), mpfr_t @var{rop}, type1_t @var{op}, ...)
@@ -3323,7 +3403,7 @@ according to this rounding mode, and returns the corresponding ternary value
 (which is expected to be correct, otherwise @code{mpfr_round_nearest_away}
 will not work as desired).
 Due to implementation constraints, this function must not be called when
-the minimal exponent @code{emin} is the smallest possible one.
+the minimal exponent @var{emin} is the smallest possible one.
 This macro has been made such that the compiler is able to detect
 mismatch between the argument list @var{op}
 and the function prototype of @var{foo}.
@@ -3365,8 +3445,8 @@ in its 2008 revision).
 
 @deftypefun void mpfr_nextabove (mpfr_t @var{x})
 @deftypefunx void mpfr_nextbelow (mpfr_t @var{x})
-Equivalent to @code{mpfr_nexttoward} where @var{y} is positive infinity
-(resp.@: negative infinity).
+Equivalent to @code{mpfr_nexttoward} where @var{y} is @mm{+}Inf
+(resp.@: @minus{}Inf).
 @end deftypefun
 
 @deftypefun int mpfr_min (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
@@ -3376,7 +3456,7 @@ of @var{op1} and @var{op2}. If @var{op1}
 and @var{op2} are both NaN, then @var{rop} is set to NaN@. If @var{op1}
 or @var{op2} is NaN, then @var{rop} is set to the numeric value. If
 @var{op1} and @var{op2} are zeros of different signs, then @var{rop}
-is set to @minus{}0 (resp.@: +0).
+is set to @minus{}0 (resp.@: @mm{+}0).
 As usual, the NaN flag is set only when the result is NaN, i.e.,
 when both @var{op1} and @var{op2} are NaN@.
 
@@ -3523,7 +3603,7 @@ Create an integer in the same format as used by @code{MPFR_VERSION} from the
 given @var{major}, @var{minor} and @var{patchlevel}.
 Here is an example of how to check the MPFR version at compile time:
 @example
-#if (!defined(MPFR_VERSION) || (MPFR_VERSION<MPFR_VERSION_NUM(3,0,0)))
+#if (!defined(MPFR_VERSION) || (MPFR_VERSION < MPFR_VERSION_NUM(3,0,0)))
 # error "Wrong MPFR version."
 #endif
 @end example
@@ -3586,9 +3666,9 @@ This file is normally selected from the processor type.
 @deftypefunx mpfr_exp_t mpfr_get_emax (void)
 Return the (current) smallest and largest exponents allowed for a
 floating-point variable. The smallest positive value of a floating-point
-variable is @m{1/2 \times 2^{\rm emin}, one half times 2 raised to the
+variable is @m{1/2 \times 2^{@var{emin}}, one half times 2 raised to the
 smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
-\times 2^{\rm emax}, (1 - epsilon) times 2 raised to the largest exponent},
+\times 2^{@var{emax}}, (1 - epsilon) times 2 raised to the largest exponent},
 where @m{\varepsilon,epsilon} depends on the precision of the considered
 variable.
 @end deftypefun
@@ -3611,7 +3691,7 @@ Note: Caches may still have values outside the current exponent range.
 This is not an issue as the user cannot use these caches directly via
 the API (MPFR extends the exponent range internally when need be).
 
-If @tm{@code{emin} > @code{emax}} and a floating-point value needs to
+If @tm{@var{emin} > @var{emax}} and a floating-point value needs to
 be produced as output, the behavior is undefined (@code{mpfr_set_emin}
 and @code{mpfr_set_emax} do not check this condition as it might occur
 between successive calls to these two functions).
@@ -3658,24 +3738,24 @@ been set due to internal computations.
 This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range of the emulated
 floating-point system, this function just propagates the
-@ref{ternary value} @var{t}; otherwise, if @code{EXP(@var{x})}
+@ref{ternary value} @var{t}; otherwise, if @tm{@EXP{}(@var{x})}
 denotes the exponent of @var{x}, it rounds @var{x} to precision
-@code{EXP(@var{x})-emin+1} according to rounding mode @var{rnd} and previous
-ternary value @var{t}, avoiding double rounding problems.
-More precisely in the subnormal domain, denoting by @m{e,@var{e}} the value of
-@code{emin}, @var{x} is rounded in fixed-point
-arithmetic to an integer multiple of @m{2^{e-1}, two to the power
-@var{e}@minus{}1}; as a consequence, @m{1.5 \times 2^{e-1},
-1.5 multiplied by two to the power @var{e}@minus{}1} when @var{t} is zero
-is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
+@tm{@EXP{}(@var{x})@minus{}@var{emin}+1} according to rounding mode @var{rnd}
+and previous ternary value @var{t}, avoiding double rounding problems.
+More precisely in the subnormal domain, denoting by @tm{e} the value of
+@var{emin}, @var{x} is rounded in fixed-point arithmetic to an integer
+multiple of @m{2^{e-1},two to the power @w{e @minus{} 1}}; as a consequence,
+@m{1.5 \times 2^{e-1},1.5 multiplied by two to the power @w{e @minus{} 1}}
+when @var{t} is zero is rounded to @m{2^e,two to the power e} with rounding
+to nearest.
 
-The precision @code{PREC(@var{x})} of @var{x} is not modified by
+The precision @tm{@PREC{}(@var{x})} of @var{x} is not modified by
 this function. @var{rnd} and @var{t} must be the rounding mode
 and the returned ternary value used when computing @var{x}
-(as in @code{mpfr_check_range}).
-The subnormal exponent range is from @code{emin} to @code{emin+PREC(@var{x})-1}.
+(as in @code{mpfr_check_range}). The subnormal exponent range is
+from @var{emin} to @tm{@var{emin}+@PREC{}(@var{x})@minus{}1}.
 If the result cannot be represented in the current exponent range of MPFR
-(due to a too small @code{emax}), the behavior is undefined.
+(due to a too small @var{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
@@ -3683,10 +3763,10 @@ As usual, if the returned ternary value is non zero, the inexact flag is set.
 Moreover, if a second rounding occurred (because the input @var{x} was in the
 subnormal range), the underflow flag is set.
 
-Warning! If you change @code{emin} (with @code{mpfr_set_emin}) just before
+Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
 in the current exponent range of MPFR@. But it is better to change
-@code{emin} before any computation, if possible.
+@var{emin} before any computation, if possible.
 @c Note: not necessarily possible if the user wants to emulate different
 @c floating-point systems in the same code.
 @end deftypefun
@@ -3723,9 +3803,10 @@ in the subnormal range, which may not be the case for your hardware.
 Below is another example showing how to emulate fixed-point arithmetic
 in a specific case.
 Here we compute the sine of the integers 1 to 17 with a result in a
-fixed-point arithmetic rounded at @m{2^{-42}, 2 power -42} (using the
-fact that the result is at most 1 in absolute value):
+fixed-point arithmetic rounded at @m{2^{-42},two to the power @minus{}42}
+(using the fact that the result is at most 1 in absolute value):
 
+@need 400
 @example
 @{
   mpfr_t x; int i, inex;
@@ -3848,7 +3929,7 @@ is set.
 The other bits of @var{way} are currently ignored and are reserved for
 future use; they should be zero.
 
-Note: @code{mpfr_free_cache2(MPFR_FREE_LOCAL_CACHE|MPFR_FREE_GLOBAL_CACHE)}
+Note: @code{mpfr_free_cache2 (MPFR_FREE_LOCAL_CACHE | MPFR_FREE_GLOBAL_CACHE)}
 is currently equivalent to @code{mpfr_free_cache()}.
 @end deftypefun
 
@@ -4522,8 +4603,8 @@ a special value (NaN, infinity or zero).
 This was actually a bug fix since the code and the documentation did
 not match.  But both were changed in order to have a more consistent
 and useful behavior.  The main changes in the code are as follows.
-The binary exponent is now accepted even without the @code{0b} or
-@code{0x} prefix.  Data corresponding to NaN can now have an optional
+The binary exponent is now accepted even without the @samp{0b} or
+@samp{0x} prefix.  Data corresponding to NaN can now have an optional
 sign (such data were previously invalid).
 
 @item @code{mpfr_strtofr} changed in MPFR@tie{}3.0.
@@ -4641,7 +4722,7 @@ to a quiet NaN, depending on the context. For any function returning a NaN
 some operations are quiet (even on a signaling NaN)@.
 
 The @code{mpfr_rec_sqrt} function differs from IEEE@tie{}754 on @minus{}0,
-where it gives +Inf (like for +0), following the usual limit rules,
+where it gives @mm{+}Inf (like for @mm{+}0), following the usual limit rules,
 instead of @minus{}Inf.
 
 The @code{mpfr_root} function predates IEEE@tie{}754-2008, where rootn was
@@ -4662,12 +4743,12 @@ floating-point zero (this includes the zero of type @code{unsigned long},
 which is a mathematical, exact zero, as opposed to a floating-point zero,
 which may come from an underflow and whose sign would correspond to the
 sign of the real non-zero value). Unless documented otherwise, this zero
-is regarded as +0, as if it were first converted to a MPFR number with
+is regarded as @mm{+}0, as if it were first converted to a MPFR number with
 @code{mpfr_set_ui} or @code{mpfr_set_si} (thus the result may not agree
 with the usual limit rules applied to a mathematical zero). This is not
 the case of addition and subtraction (@code{mpfr_add_ui}, etc.), but for
 these functions, only the sign of a zero result would be affected, with
-+0 and @minus{}0 considered equal.
+@mm{+}0 and @minus{}0 considered equal.
 Such operations are currently out of the scope of the IEEE@tie{}754 standard,
 and at the time of specification in MPFR, the Floating-Point Working Group
 in charge of the revision of IEEE@tie{}754 did not want to discuss issues with

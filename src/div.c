@@ -76,7 +76,7 @@ mpfr_div2_approx (mpfr_limb_ptr Q1, mpfr_limb_ptr Q0,
   r0 = u0 - r0;
   r1 = u1 - r1 - (r0 > u0);
 
-  /* r1:r0 should be nonnegative */
+  /* r1:r0 should be non-negative */
   MPFR_ASSERTD((r1 & MPFR_LIMB_HIGHBIT) == 0);
 
   /* the second quotient limb is approximated by (r1*B^2+r0*B) / v1,

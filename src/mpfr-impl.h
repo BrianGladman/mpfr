@@ -990,7 +990,7 @@ union ieee_decimal128
 #endif
 
 /* Before doing a cast to mpfr_uexp_t, make sure that the value is
-   nonnegative. */
+   non-negative. */
 #define MPFR_UEXP(X) (MPFR_ASSERTD ((X) >= 0), (mpfr_uexp_t) (X))
 
 /* Define mpfr_eexp_t, mpfr_ueexp_t and MPFR_EXP_FSPEC.
@@ -2037,7 +2037,7 @@ typedef struct {
 /* To safely increase some precision, detecting integer overflows.
    This macro is particularly useful when determining the initial
    working precision before Ziv's loop. P is a precision, X is an
-   arbitrary nonnegative integer.
+   arbitrary non-negative integer.
    Note: On 2012-02-23, the MPFR_PREC_MAX value has been decreased
    by 256 from the maximum value representable in the mpfr_prec_t
    type, in order to avoid some integer overflows when this macro
