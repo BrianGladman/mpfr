@@ -2962,7 +2962,7 @@ just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
-@need 800
+@need 400
 The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
 @example
