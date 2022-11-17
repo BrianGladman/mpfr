@@ -19,6 +19,13 @@
 @c info at least (e.g. with @ifnottex) in order to avoid a failure with
 @c makeinfo 5.2 (there is no such problem with makeinfo 6.5).
 
+@c NOTE. With texinfo.tex 2022-11-13.08, in TeX output (PDF), the "[]"
+@c in function prototypes via @deftypefun (for mpfr_sum and mpfr_dot)
+@c is not rendered in a monospaced font and appears as a rectangle:
+@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00156.html
+@c The suggestion to use @t{[]} makes the HTML output inconsistent and
+@c ugly, thus it is not used.
+
 @copying
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
