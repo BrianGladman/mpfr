@@ -19,13 +19,6 @@
 @c info at least (e.g. with @ifnottex) in order to avoid a failure with
 @c makeinfo 5.2 (there is no such problem with makeinfo 6.5).
 
-@c NOTE. With texinfo.tex 2022-11-13.08, in TeX output (PDF), the "[]"
-@c in function prototypes via @deftypefun (for mpfr_sum and mpfr_dot)
-@c is not rendered in a monospaced font and appears as a rectangle:
-@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00156.html
-@c The suggestion to use @t{[]} makes the HTML output inconsistent and
-@c ugly, thus it is not used.
-
 @copying
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
@@ -277,6 +270,27 @@ log
 @ifnottex
 @macro pom
 ±
+@end macro
+@end ifnottex
+
+@c Hack for TeX output (PDF).
+@c
+@c With texinfo.tex 2022-11-13.08, in TeX output (PDF), the "[]" in
+@c function prototypes via @deftypefun (for mpfr_sum and mpfr_dot)
+@c is not rendered in a monospaced font and appears as a rectangle:
+@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00156.html
+@c
+@c The suggestion to use @t{[]} makes the HTML output inconsistent
+@c and ugly. Thus this should be done only for TeX output thanks to
+@c the following macro.
+@iftex
+@macro fptt {T}
+@tt{\T\}
+@end macro
+@end iftex
+@ifnottex
+@macro fptt {T}
+\T\
 @end macro
 @end ifnottex
 
@@ -2134,7 +2148,7 @@ If @var{x} or @var{y} is an infinity, then @mm{+}Inf is returned in @var{rop},
 even if the other number is NaN@.
 @end deftypefun
 
-@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_ptr @var{tab}@fptt{[]}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the sum of all elements of @var{tab}, whose size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
 @var{tab} is an array of pointers
@@ -2154,7 +2168,7 @@ a @mm{+}0 and a @minus{}0, or because some inputs are non-zero
 @end itemize
 @end deftypefun
 
-@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}[], const mpfr_ptr @var{b}[], unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_dot (mpfr_t @var{rop}, const mpfr_ptr @var{a}@fptt{[]}, const mpfr_ptr @var{b}@fptt{[]}, unsigned long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the dot product of elements of @var{a} by those of @var{b},
 whose common size is @var{n},
 correctly rounded in the direction @var{rnd}. Warning: for efficiency reasons,
