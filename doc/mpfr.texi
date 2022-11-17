@@ -423,6 +423,7 @@ installed on your computer, you can check the presence of the file
 having @code{#include <mpfr.h>} (since @file{mpfr.h} may be installed
 somewhere else). For instance, you can try to compile:
 
+@need 400
 @example
 #include <stdio.h>
 #include <mpfr.h>
@@ -667,6 +668,7 @@ You should include that file in any program using the MPFR library:
 Note, however, that prototypes for MPFR functions with @code{FILE *} parameters
 are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}):
 
+@need 300
 @example
 #include <stdio.h>
 #include <mpfr.h>
@@ -1365,6 +1367,7 @@ Here is an example of how to use multiple initialization functions
 (since @code{NULL} is not necessarily defined in this context, we use
 @code{(mpfr_ptr) 0} instead, but @code{(mpfr_ptr) NULL} is also correct).
 
+@need 400
 @example
 @{
   mpfr_t x, y, z, t;
@@ -2959,6 +2962,7 @@ just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
+@need 800
 The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
 @example
@@ -3802,6 +3806,7 @@ Here we compute the sine of the integers 1 to 17 with a result in a
 fixed-point arithmetic rounded at @m{2^{-42},two to the power @minus{}42}
 (using the fact that the result is at most 1 in absolute value):
 
+@need 400
 @example
 @{
   mpfr_t x; int i, inex;
