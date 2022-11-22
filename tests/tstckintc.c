@@ -295,14 +295,16 @@ static void
 test_nan_inf_zero (void)
 {
   mpfr_ptr val;
+  mpfr_srcptr sval;  /* for compilation error checking */
   int sign;
   int kind;
 
   reset_stack ();
 
   val = new_mpfr (MPFR_PREC_MIN);
+  sval = val;
   mpfr_set_nan (val);
-  kind = (mpfr_custom_get_kind) (val);
+  kind = (mpfr_custom_get_kind) (sval);
   if (kind != MPFR_NAN_KIND)
     {
       printf ("mpfr_custom_get_kind error: ");
@@ -380,7 +382,8 @@ static long *
 dummy_set_si (long si)
 {
   mpfr_t x;
-  long * r = dummy_new ();
+  mpfr_srcptr px;  /* for compilation error checking */
+  long *r = dummy_new ();
   int i1, i2, i3, i4, i5;
 
   /* Check that the type "void *" can be used, like with the function.
@@ -405,7 +408,8 @@ dummy_set_si (long si)
   MPFR_ASSERTN (i5 == 1);
 
   mpfr_set_si (x, si, MPFR_RNDN);
-  r[0] = mpfr_custom_get_kind (x);
+  px = x;
+  r[0] = mpfr_custom_get_kind (px);
 
   /* Check that the type "void *" can be used in C, like with the function
      (forbidden in C++). Also check side effects. */
