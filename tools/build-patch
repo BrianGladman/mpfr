@@ -67,7 +67,7 @@ if [[ $# -ge 1 ]] then
   patchfile=$(realpath $1)
   pushd $base-b
   echo "Applying patch $1"
-  if grep -q '^--- mpfr.*/' $patchfile; then
+  if grep -E -q '^--- (mpfr.*|a)/' $patchfile; then
     p=1
   else
     p=0
