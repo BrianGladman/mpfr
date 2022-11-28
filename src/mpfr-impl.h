@@ -1715,6 +1715,14 @@ do {                                                                  \
 /* Addition with carry (detected by GCC and other good compilers). */
 #define ADD_LIMB(u,v,c) ((u) += (v), (c) = (u) < (v))
 
+/* umul_hi(h, x, y) puts in h the high part of x*y */
+#define umul_hi(h, x, y)                        \
+  do {                                          \
+    mp_limb_t _l;                               \
+    umul_ppmm (h, _l, x, y);                    \
+    (void) _l;  /* unused variable */           \
+  } while (0)
+
 
 /******************************************************
  ************  Save exponent/flags macros  ************
