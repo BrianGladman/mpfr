@@ -2583,8 +2583,8 @@ at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd}. MPFR defines the dilogarithm function as
-@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
-to @var{op}}.
+@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of
+@minus{}log(1@minus{}t)/t from 0 to @var{op}}.
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -3668,9 +3668,9 @@ Return the (current) smallest and largest exponents allowed for a
 floating-point variable. The smallest positive value of a floating-point
 variable is @m{1/2 \times 2^{@var{emin}}, one half times 2 raised to the
 smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
-\times 2^{@var{emax}}, (1 - epsilon) times 2 raised to the largest exponent},
-where @m{\varepsilon,epsilon} depends on the precision of the considered
-variable.
+\times 2^{@var{emax}}, (1 @minus{} epsilon) times 2 raised to the largest
+exponent}, where @m{\varepsilon,epsilon} depends on the precision of the
+considered variable.
 @end deftypefun
 
 @deftypefun int mpfr_set_emin (mpfr_exp_t @var{exp})
