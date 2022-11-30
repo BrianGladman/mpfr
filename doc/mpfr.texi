@@ -2121,7 +2121,7 @@ Set @var{rop} to the factorial of @var{op}, rounded in the direction @var{rnd}.
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @tm{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}}
-(resp.@: @tm{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}})
+(resp.@: @tm{(@var{op1} @GMPtimes{} @var{op2}) @minus{} @var{op3}})
 rounded in the direction @var{rnd}.  Concerning special values (signed zeros,
 infinities, NaN), these functions behave like a multiplication followed by a
 separate addition or subtraction.  That is, the fused operation matters only
@@ -2523,7 +2523,7 @@ standards for the @code{atan2} function:
 @item @code{atan2(@var{y}, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{@var{y} < 0}.
 @item @code{atan2(@var{y}, 0)} returns @m{+\pi/2,+Pi/2} for @tm{@var{y} > 0}.
 @item @code{atan2(+Inf, -Inf)} returns @m{+3\pi/4,+3*Pi/4}.
-@item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,-3*Pi/4}.
+@item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,@minus{}3*Pi/4}.
 @item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
 @item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,@minus{}Pi/4}.
 @item @code{atan2(+Inf, @var{x})} returns @m{+\pi/2,+Pi/2} for finite @tm{@var{x}}.
