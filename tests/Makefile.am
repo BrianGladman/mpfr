@@ -18,20 +18,18 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# For Git, output dash-separated information:
-#   * the detected branch;
-#   * the total commit count;
-#   * the commit id (hash).
-# Note: for the branch detection, in the case of a detached HEAD state,
-# the commit may appear in multiple branches, i.e. which diverge after
-# the commit; thus we exclude branches created after this commit, based
-# on <branch>-root tags (such a tag should be added by the user when
-# creating a branch, so that "git diff <branch>-root" shows commits done
-# in the branch since its creation, etc.). If $gitb contains multiple
-# branches, this means that something is probably wrong with the tags
-# or the branches (merged branches should be deleted).
-# Concerning the test "git rev-parse ...", if git is not installed, this
-# test should silently fail.
+# For Git:
+#   * To avoid escaping the MPFR source tree, we check whether
+#     $(top_srcdir)/.git is readable (note that this is not
+#     necessarily a directory: in case of a "linked worktree",
+#     this is a file; see the git-worktree(1) man page).
+#     In particular, if one extracts an MPFR tarball within a
+#     Git working tree (e.g. after "make dist"), then running
+#     "make check" in this extracted source tree will work as
+#     expected, giving correct version information.
+#   * Additional test with "git rev-parse ...", which should
+#     silently fail if git is not installed.
+#   * See version-ext.sh for information on its output.
 output_info = { \
   if [ -d $(top_srcdir)/.svn ]; then \
     output=`svnversion $(top_srcdir) 2> /dev/null`; \
@@ -39,7 +37,8 @@ output_info = { \
       echo "[svnversion] $$output"; \
     fi; \
   fi; \
-  if [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
+  if [ -r $(top_srcdir)/.git ] && \
+     [ "x`git rev-parse --is-inside-work-tree 2> /dev/null`" = xtrue ]; then \
     gitv=`GREP=$(GREP) SED=$(SED) $(top_srcdir)/version-ext.sh`; \
     echo "[git] $$gitv"; \
   fi; \
