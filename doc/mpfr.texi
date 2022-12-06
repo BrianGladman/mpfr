@@ -2962,6 +2962,10 @@ just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
+@c FIXME: The @need value was changed from 800 to 400 in commit 73b04f49f2
+@c in order to avoid a bug in Texinfo. Change it back to 800 once this bug
+@c has been fixed. See thread
+@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00228.html
 @need 400
 The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
