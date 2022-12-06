@@ -3359,8 +3359,8 @@ directed rounding mode):
 if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
                     prec + (rnd2 == MPFR_RNDN)))
   @{
-    /* round the approximation 'b' to the result 'r' of 'prec' bits
-       with rounding mode 'rnd2' and get the ternary value 'inex' */
+    /* round the approximation b to the result r of prec bits
+       with rounding mode rnd2 and get the ternary value inex */
     inex = mpfr_set (r, b, rnd2);
   @}
 @end example
