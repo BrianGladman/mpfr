@@ -44,11 +44,12 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
   examples/rndo-add.c examples/sample.c examples/threads.c \
   examples/version.c
 
-# Note: Even though tarballs do not normally contain a .git directory,
-# we need to distribute version-ext.sh to avoid a failure in case a
-# tarball is tested from a Git directory (this script is executed by
-# tests/Makefile.am in case of a Git working tree), which happens with
-# "make distcheck", for instance.
+# Note: The version-ext.sh script is normally no longer needed because
+# the output_info code in tests/Makefile.am now executes this script
+# only if $(top_srcdir)/.git exists and is readable, but this should
+# not occur in a tarball (built based on EXTRA_DIST), unless someone
+# has modified it for some reason. But since this script is small, we
+# distribute it just in case it would be used.
 EXTRA_DIST = PATCHES VERSION doc/README.dev doc/check-typography doc/mini-gmp \
   tools/check_mparam.c tools/ck-clz_tab tools/ck-copyright-notice \
   tools/ck-mparam tools/ck-news tools/ck-version-info tools/get_patches.sh \
