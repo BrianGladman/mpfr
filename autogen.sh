@@ -6,10 +6,11 @@
 # EXIT and signals that correspond to SIGHUP, SIGINT, SIGQUIT and SIGTERM.
 signals="0 1 2 3 15"
 
-# We do not want the generic INSTALL file. And doc/texinfo.tex is in the
-# repository because the one provided by the system may be obsolete or
-# have regressions. We need to control it in order to make sure that the
-# MPFR manual generated in various formats is OK.
+# We do not want the generic INSTALL file (which is installed due to
+# "AUTOMAKE_OPTIONS = gnu" in Makefile.am). And doc/texinfo.tex is in
+# the repository because the one provided by the system may be obsolete
+# or have regressions; we need to control it in order to make sure that
+# the MPFR manual generated in various formats is OK.
 files="INSTALL doc/texinfo.tex"
 
 cleanup()
