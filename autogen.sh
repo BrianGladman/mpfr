@@ -6,7 +6,7 @@
 # EXIT and signals that correspond to SIGHUP, SIGINT, SIGQUIT and SIGTERM.
 signals="0 1 2 3 15"
 
-# We do not want the generic INSTALL file (which is installed due to
+# We do not want the generic INSTALL file (which is added by -f due to
 # "AUTOMAKE_OPTIONS = gnu" in Makefile.am). And doc/texinfo.tex is in
 # the repository because the one provided by the system may be obsolete
 # or have regressions; we need to control it in order to make sure that
