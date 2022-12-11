@@ -7,7 +7,8 @@
 # assumed to be "$HOME/mpfr-misc/www/mpfr-current".
 #
 # Typical use:
-#   svn diff -c <REV> > $MPFR_CURRENT_DIR/mpfr.patch
+#   git show <commit> > $MPFR_CURRENT_DIR/mpfr.patch
+#     (or use "git diff ...")
 #   cd $MPFR_CURRENT_DIR
 #   patchlevel=$(($(ls patch?? | tail -n 1 | sed 's/patch//')+1))
 #   .../build-patch mpfr.patch $patchlevel <patchname>
@@ -66,7 +67,7 @@ if [[ $# -ge 1 ]] then
   patchfile=$(realpath $1)
   pushd $base-b
   echo "Applying patch $1"
-  if grep -q '^--- mpfr.*/' $patchfile; then
+  if grep -E -q '^--- (mpfr.*|a)/' $patchfile; then
     p=1
   else
     p=0

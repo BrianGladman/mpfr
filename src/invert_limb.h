@@ -26,19 +26,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* for now, we only provide __gmpfr_invert_limb for 64-bit limb */
 #if GMP_NUMB_BITS == 64
 
-/* umul_hi(h, x, y) puts in h the high part of x*y */
-#ifdef HAVE_MULX_U64
-#include <immintrin.h>
-#define umul_hi(h, x, y) _mulx_u64 (x, y, (unsigned long long *) &(h))
-#else
-#define umul_hi(h, x, y)                        \
-  do {                                          \
-    mp_limb_t _l;                               \
-    umul_ppmm (h, _l, x, y);                    \
-    (void) _l;  /* unused variable */           \
-  } while (0)
-#endif
-
 /* for 256 <= d9 < 512, invert_limb_table[d9-256] = floor((2^19-3*2^8)/d9) */
 static const unsigned short invert_limb_table[256] =
   { 2045, 2037, 2029, 2021, 2013, 2005, 1998, 1990,

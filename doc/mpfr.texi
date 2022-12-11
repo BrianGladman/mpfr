@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding UTF-8
 @set VERSION 4.2.0-dev
-@set UPDATED-MONTH November 2022
+@set UPDATED-MONTH December 2022
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -2121,7 +2121,7 @@ Set @var{rop} to the factorial of @var{op}, rounded in the direction @var{rnd}.
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
 @deftypefunx int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to @tm{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}}
-(resp.@: @tm{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}})
+(resp.@: @tm{(@var{op1} @GMPtimes{} @var{op2}) @minus{} @var{op3}})
 rounded in the direction @var{rnd}.  Concerning special values (signed zeros,
 infinities, NaN), these functions behave like a multiplication followed by a
 separate addition or subtraction.  That is, the fused operation matters only
@@ -2523,7 +2523,7 @@ standards for the @code{atan2} function:
 @item @code{atan2(@var{y}, 0)} returns @m{-\pi/2,@minus{}Pi/2} for @tm{@var{y} < 0}.
 @item @code{atan2(@var{y}, 0)} returns @m{+\pi/2,+Pi/2} for @tm{@var{y} > 0}.
 @item @code{atan2(+Inf, -Inf)} returns @m{+3\pi/4,+3*Pi/4}.
-@item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,-3*Pi/4}.
+@item @code{atan2(-Inf, -Inf)} returns @m{-3\pi/4,@minus{}3*Pi/4}.
 @item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
 @item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,@minus{}Pi/4}.
 @item @code{atan2(+Inf, @var{x})} returns @m{+\pi/2,+Pi/2} for finite @tm{@var{x}}.
@@ -2583,8 +2583,8 @@ at @minus{}@var{op} (formula 5.1.1 from the same reference).
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
 direction @var{rnd}. MPFR defines the dilogarithm function as
-@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of -log(1-t)/t from 0
-to @var{op}}.
+@m{-\int_{t=0}^{@var{op}} \log(1-t)/t\ dt,the integral of
+@minus{}log(1@minus{}t)/t from 0 to @var{op}}.
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2962,6 +2962,10 @@ just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
+@c FIXME: The @need value was changed from 800 to 400 in commit 73b04f49f2
+@c in order to avoid a bug in Texinfo. Change it back to 800 once this bug
+@c has been fixed. See thread
+@c   https://lists.gnu.org/archive/html/bug-texinfo/2022-11/msg00228.html
 @need 400
 The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
@@ -3279,14 +3283,14 @@ Here is an example of how to use @code{mpfr_prec_round} to implement
 Newton's algorithm to compute the inverse of @var{a}, assuming @var{x} is
 already an approximation to @var{n} bits:
 @example
-  mpfr_set_prec (t, 2 * n);
-  mpfr_set (t, a, MPFR_RNDN);         /* round a to 2n bits */
-  mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to 2n bits */
-  mpfr_ui_sub (t, 1, t, MPFR_RNDN);   /* high n bits cancel with 1 */
-  mpfr_prec_round (t, n, MPFR_RNDN);  /* t is correct to n bits */
-  mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to n bits */
-  mpfr_prec_round (x, 2 * n, MPFR_RNDN); /* exact */
-  mpfr_add (x, x, t, MPFR_RNDN);      /* x is correct to 2n bits */
+mpfr_set_prec (t, 2 * n);
+mpfr_set (t, a, MPFR_RNDN);         /* round a to 2n bits */
+mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to 2n bits */
+mpfr_ui_sub (t, 1, t, MPFR_RNDN);   /* high n bits cancel with 1 */
+mpfr_prec_round (t, n, MPFR_RNDN);  /* t is correct to n bits */
+mpfr_mul (t, t, x, MPFR_RNDN);      /* t is correct to n bits */
+mpfr_prec_round (x, 2 * n, MPFR_RNDN); /* exact */
+mpfr_add (x, x, t, MPFR_RNDN);      /* x is correct to 2n bits */
 @end example
 
 Warning! You must not use this function if @var{x} was initialized
@@ -3355,8 +3359,8 @@ directed rounding mode):
 if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
                     prec + (rnd2 == MPFR_RNDN)))
   @{
-    /* round the approximation 'b' to the result 'r' of 'prec' bits
-       with rounding mode 'rnd2' and get the ternary value 'inex' */
+    /* round the approximation b to the result r of prec bits
+       with rounding mode rnd2 and get the ternary value inex */
     inex = mpfr_set (r, b, rnd2);
   @}
 @end example
@@ -3668,9 +3672,9 @@ Return the (current) smallest and largest exponents allowed for a
 floating-point variable. The smallest positive value of a floating-point
 variable is @m{1/2 \times 2^{@var{emin}}, one half times 2 raised to the
 smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
-\times 2^{@var{emax}}, (1 - epsilon) times 2 raised to the largest exponent},
-where @m{\varepsilon,epsilon} depends on the precision of the considered
-variable.
+\times 2^{@var{emax}}, (1 @minus{} epsilon) times 2 raised to the largest
+exponent}, where @m{\varepsilon,epsilon} depends on the precision of the
+considered variable.
 @end deftypefun
 
 @deftypefun int mpfr_set_emin (mpfr_exp_t @var{exp})
@@ -4558,18 +4562,18 @@ C code using @code{mpfr_get_z} as the second or third term of
 a conditional operator may also be affected. For instance, the
 following is correct with MPFR@tie{}3.0, but not with MPFR@tie{}2.x:
 @example
-  bool ? mpfr_get_z(...) : mpfr_add(...);
+bool ? mpfr_get_z(...) : mpfr_add(...);
 @end example
 On the other hand, the following is correct with MPFR@tie{}2.x, but not
 with MPFR@tie{}3.0:
 @example
-  bool ? mpfr_get_z(...) : (void) mpfr_add(...);
+bool ? mpfr_get_z(...) : (void) mpfr_add(...);
 @end example
 Portable code should cast @code{mpfr_get_z(...)} to @code{void} to
 use the type @code{void} for both terms of the conditional operator,
 as in:
 @example
-  bool ? (void) mpfr_get_z(...) : (void) mpfr_add(...);
+bool ? (void) mpfr_get_z(...) : (void) mpfr_add(...);
 @end example
 Alternatively, @code{if ... else} can be used instead of the
 conditional operator.

@@ -228,19 +228,6 @@ static const mp_limb_t T3[768] =
     1083206683, 1080045576, 1080045576, 1076890625, 1076890625, 1073741824,
     1073741824 };
 
-/* umul_hi(h, x, y) puts in h the high part of x*y */
-#ifdef HAVE_MULX_U64
-#include <immintrin.h>
-#define umul_hi(h, x, y) _mulx_u64 (x, y, (unsigned long long *) &(h))
-#else
-#define umul_hi(h, x, y)                        \
-  do {                                          \
-    mp_limb_t _l;                               \
-    umul_ppmm (h, _l, x, y);                    \
-    (void) _l;  /* unused variable */           \
-  } while (0)
-#endif
-
 /* given 2^62 <= d < 2^64, put in r an approximation of
    s = floor(2^96/sqrt(d)) - 2^64, with r <= s <= r + 15 */
 #define __gmpfr_invsqrt_limb_approx(r, d)                               \

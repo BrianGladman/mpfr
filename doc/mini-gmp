@@ -33,7 +33,7 @@ these functions may not be thread-safe.
 
 The build with mini-gmp may require ISO C99+ features, such as "long long".
 
-This was tested with MPFR svn r13974 and GMP 6.2.0 on x86_64 GNU/Linux:
+This was tested with revision 39ac9e4 and GMP 6.2.0 on x86_64 GNU/Linux:
 ============================================================================
 Testsuite summary for MPFR 4.1.0-dev
 ============================================================================
@@ -62,7 +62,7 @@ For example:
 
   ./configure --with-mini-gmp=DIR CFLAGS="-DMINI_GMP_LIMB_TYPE=int"
 
-This was tested with MPFR svn r13974 and GMP 6.2.0 on x86_64 GNU/Linux:
+This was tested with revision 39ac9e4 and GMP 6.2.0 on x86_64 GNU/Linux:
 ============================================================================
 Testsuite summary for MPFR 4.1.0-dev
 ============================================================================

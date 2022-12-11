@@ -515,27 +515,6 @@ static int f (double (*func)(double)) { return 0; }
    AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO C99 nearbyint function])
 ],[AC_MSG_RESULT(no)])
 
-dnl Check if _mulx_u64 is provided
-dnl Note: This intrinsic is not standard. We need a run because
-dnl it may be provided but not working as expected (with ICC 15,
-dnl one gets an "Illegal instruction").
-AC_MSG_CHECKING([for _mulx_u64])
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <immintrin.h>
-]], [[
- unsigned long long h1, h2;
- _mulx_u64(17, 42, &h1);
- _mulx_u64(-1, -1, &h2);
- return h1 == 0 && h2 == -2 ? 0 : 1;
-]])],
-  [AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_MULX_U64, 1,[Have a working _mulx_u64 function])
-  ],
-  [AC_MSG_RESULT(no)
-  ],
-  [AC_MSG_RESULT([cannot test, assume no])
-  ])
-
 LIBS="$saved_LIBS"
 
 dnl Try to determine the format of double
