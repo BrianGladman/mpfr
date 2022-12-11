@@ -103,8 +103,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    However, at least when the function is not implemented as a macro (which
    is the case when MPFR_USE_NO_MACRO is defined), such tests with void *
    arguments are not valid in C++; therefore, we will not do the cast to
-   void * if the __cplusplus macro is defined. And with GCC compilers (and
-   compatible), we will ignore the -Wc++-compat option around these tests.
+   void * if the __cplusplus macro is defined. And with GCC 4.6+ compilers
+   (and compatible), we will ignore the -Wc++-compat option around these
+   tests.
 
    Note: in the future, inline functions could be used instead of macros,
    and such tests would become useless (except to detect compiler bugs).
@@ -113,7 +114,14 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define VOIDP_CAST(X) (X)
 #else
 #define VOIDP_CAST(X) ((void *) (X))
-#if defined (__GNUC__)
+/* Define IGNORE_CPP_COMPAT only for the GCC and Clang versions that
+   support it.
+   Note: GCC versions < 4.6 do not allow "#pragma GCC diagnostic" inside
+   functions, and Clang on Windows (clang-cl) does not define __GNUC__.
+   See https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00007.html */
+#if (defined (__GNUC__) && (__GNUC__ > 4 ||                             \
+                            (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))    \
+  || defined (__clang__)
 #define IGNORE_CPP_COMPAT
 #endif
 #endif
