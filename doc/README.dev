@@ -663,7 +663,7 @@ Environment variables that affect the tests:
 
 ===========================================================================
 
-Before testing any macro in a .c file, one needs:
+Before testing any macro (such as HAVE_STDINT_H) in a .c file, one needs:
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
