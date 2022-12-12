@@ -56,8 +56,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * Moreover, assuming that this test is run on a platform that has
  * <stdint.h> (most platforms do nowadays), without mini-gmp, this
  * test also allows one to detect that mpfr.h can be included without
- * any other inclusion before. For instance, it can detect any
- * unprotected use of FILE in the mpfr.h header file.
+ * any other inclusion before (such as <stdio.h>). For instance, it
+ * can detect any unprotected use of FILE in the mpfr.h header file.
  */
 #include <mpfr.h>
 
