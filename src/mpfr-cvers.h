@@ -45,6 +45,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define __MPFR_MAJMIN(a,i) (((a) << 8) | (i))
 
+/* Instead of __MPFR_MAJMIN below, we could use code like
+     (__MAJ__ + (__MIN__ >= (i)) > (a))
+   as in the patch at
+   https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00007.html
+*/
+
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && ! __MPFR_ICC(0,0,0)
 # define __MPFR_GNUC(a,i) \
  (__MPFR_MAJMIN(__GNUC__,__GNUC_MINOR__) >= __MPFR_MAJMIN(a,i))
