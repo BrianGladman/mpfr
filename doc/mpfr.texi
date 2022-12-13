@@ -4316,9 +4316,9 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @item @code{mpfr_asprintf} in MPFR@tie{}2.4.
 
-@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.
-
 @item @code{mpfr_atan2pi} and @code{mpfr_atan2u} in MPFR@tie{}4.2.
+
+@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_beta} in MPFR@tie{}4.0 (incomplete, experimental).
 
