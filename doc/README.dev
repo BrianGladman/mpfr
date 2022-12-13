@@ -153,6 +153,9 @@ To make a release (for the MPFR team):
      the one output by "git merge-base master <branch>".
      In the master branch, update the version with the update-version
      script to indicate the next version (use the "dev" suffix).
+     Note: Not everything can be done in master before creating the branch,
+     as this step may be done much time before the release candidate, with
+     the goal of a feature freeze.
 
   1) Check the version and change the suffix to "rc1", "rc2", etc. with
      tools/update-version for the release candidates; remove the suffix
@@ -212,6 +215,7 @@ To make a release (for the MPFR team):
   3) Update the NEWS file, in particular say if the release is binary
      and/or API compatible (or not) with previous releases.
      Also update the "API Compatibility" section in the manual (mpfr.texi).
+     Cherry-pick these changes in the master branch.
      Check with abi-compliance-checker (ABI Compliance Checker)[a] against
      the previous MPFR release (built with no configure options, except
      --prefix) that no changes have been missed. The build-multi script
