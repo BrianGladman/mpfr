@@ -145,10 +145,11 @@ To make a release (for the MPFR team):
          soon as the ABI changed in the master branch;
        * update the ChangeLog (see below) in the master branch, in order to
          minimize the future diffs.
-     If everything is OK, create the branch.
-     Switch to the branch and add a <branch>-root tag on HEAD. This tag
-     should be placed on the parent of the first commit specific to the
-     branch; it could also be added later; its id should be the same as
+     If everything is OK, create the branch (below designated <branch>).
+     Switch to the branch and create an annotated tag <branch>-root on HEAD:
+     "New <branch> branch from master."
+     This tag should be placed on the parent of the first commit specific to
+     the branch; it could also be added later; its id should be the same as
      the one output by "git merge-base master <branch>".
      In the master branch, update the version with the update-version
      script to indicate the next version (use the "dev" suffix).
