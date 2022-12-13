@@ -211,6 +211,10 @@ main (void)
   if (have_subnorm_flt ())
     for (i = 0; i < 2; i++)
       {
+        /* We assume here that the format of float is binary32, a.k.a.
+           IEEE single precision (Annex F of ISO C for IEEE 754 support),
+           as this is the case on all machines nowadays. Then 2^(-150) is
+           halfway between 0 and the smallest positive float 2^(-149). */
         mpfr_set_si_2exp (x, 1, -150, MPFR_RNDN);
         g = 0.0;
         if (i == 1)

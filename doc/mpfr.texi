@@ -2,7 +2,9 @@
 @c %**start of header
 @setfilename mpfr.info
 @documentencoding UTF-8
-@set VERSION 4.2.0-dev
+@c Note that the 5 occurrences of the version string in this file
+@c should be updated by the tools/update-version script.
+@set VERSION 4.3.0-dev
 @set UPDATED-MONTH December 2022
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
@@ -584,7 +586,7 @@ specific to MPFR)@. Problems are also mentioned in the FAQ
 Please report problems to the MPFR mailing-list @samp{mpfr@@inria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
-MPFR@tie{}4.2.0 web page @url{https://www.mpfr.org/mpfr-4.2.0/}.
+MPFR@tie{}4.3.0 web page @url{https://www.mpfr.org/mpfr-4.3.0/}.
 
 @section Getting the Latest Version of MPFR
 
@@ -599,7 +601,7 @@ The latest version of MPFR is available from
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
 If you think you have found a bug in the MPFR library, first have a look
-on the MPFR@tie{}4.2.0 web page @url{https://www.mpfr.org/mpfr-4.2.0/}
+on the MPFR@tie{}4.3.0 web page @url{https://www.mpfr.org/mpfr-4.3.0/}
 and the FAQ @url{https://www.mpfr.org/faq.html}:
 perhaps this bug is already known, in which case you may find there
 a workaround for it.
@@ -2373,8 +2375,9 @@ rounded in the direction @var{rnd}.
 The @code{mpfr_powr} function corresponds to the @code{powr} function
 from IEEE@tie{}754, i.e., it computes the exponential of
 @var{op2} multiplied by the logarithm of @var{op1}.
-The @code{mpfr_pown} function is just an alias (currently implemented as
-a macro) for @code{mpfr_pow_sj}, to follow the C2x function @code{pown}.
+The @code{mpfr_pown} function is just an alias for @code{mpfr_pow_sj}
+(defined with @code{#define mpfr_pown mpfr_pow_sj}), to follow the
+C2x function @code{pown}.
 Special values are handled as described in the ISO C99 and IEEE@tie{}754
 standards for the @code{pow} function:
 @itemize @bullet
@@ -4313,9 +4316,9 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @item @code{mpfr_asprintf} in MPFR@tie{}2.4.
 
-@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.
-
 @item @code{mpfr_atan2pi} and @code{mpfr_atan2u} in MPFR@tie{}4.2.
+
+@item @code{mpfr_atanpi} and @code{mpfr_atanu} in MPFR@tie{}4.2.
 
 @item @code{mpfr_beta} in MPFR@tie{}4.0 (incomplete, experimental).
 
