@@ -371,7 +371,7 @@ To make a release (for the MPFR team):
 
      Check that there are no abnormal regressions in the timings (both for
      100, 1000, 10000 digits, https://www.mpfr.org/mpfr-current/timings.html,
-     and for small precision, using the mbench program, see mpfr/mbench).
+     and for small precision, using the mbench program, see tools/mbench).
 
      Test the library interface compatibility by running the test suite
      compiled against an old library version and dynamically linked with
