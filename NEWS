@@ -22,6 +22,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
+- Binary compatible with MPFR 4.0.* and 4.1.*, though some minor changes in
+  the behavior of the formatted output functions may be visible, regarded
+  as underspecified behavior or bug fixes (see below).
 - New functions mpfr_cosu, mpfr_sinu, mpfr_tanu, mpfr_acosu, mpfr_asinu,
   mpfr_atanu and mpfr_atan2u.
 - New functions mpfr_cospi, mpfr_sinpi, mpfr_tanpi, mpfr_acospi, mpfr_asinpi,
