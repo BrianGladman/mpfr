@@ -430,6 +430,15 @@ AC_LANG(C)
 dnl AM_PROG_AR is needed so that ar-lib (wrapper for Microsoft lib.exe)
 dnl gets installed by "automake -i" (if absent, "automake --warnings=all"
 dnl gives a warning).
+dnl However, if GMP chooses a non-default mode (a.k.a. ABI), this test may
+dnl fail. The reason is that GMP provides GMP_CC and GMP_CFLAGS to get the
+dnl right commands to compile (and link?) in the chosen non-default mode,
+dnl but does not provide a macro for the archiver (if such a special command
+dnl is needed). In case of failure, the user needs to either force GMP to
+dnl use the default mode or provide an AR variable for MPFR's configure.
+dnl Example: on power-aix, "gcc -c -O2 -maix64 -mpowerpc64 -mtune=power7"
+dnl is used, but "ar cru" fails. Solution: use AR="ar -X64" NM="nm -B -X64"
+dnl as said in the INSTALL file ("Notes on AIX/PowerPC").
 AM_PROG_AR
 
 dnl This must done before MPFR_CONFIGS.
