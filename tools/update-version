@@ -55,7 +55,7 @@ if [ $# -lt 5 ]; then
   replace "s<(MPFR\@tie\{\})[\d.]+( web page \@url\{$u)[\d.]+>
             <\${1}$vers\${2}$vers>g == 2 or die 'err 2';" doc/mpfr.texi
   replace "s/(?<=^AC_INIT).*/([MPFR],[$full])/m or die;" configure.ac
-  replace "s,(?<=$u).*?/,$vers/, or die;" INSTALL
+  replace "s,(?<=$u).*?/,$vers/,g == 4 or die;" INSTALL
 fi
 
 echo "MPFR version successfully updated."
