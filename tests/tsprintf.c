@@ -21,6 +21,20 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* Note: If you use a C99-compatible implementation and GMP (or MPIR)
+ * has been compiled without HAVE_VSNPRINTF defined, then this test
+ * may fail with an error like
+ *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
+ *
+ * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
+ * even though the C library supports it.
+ *
+ * References:
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
+ */
+
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
