@@ -470,8 +470,9 @@ Here are the steps needed to install the library on Unix systems
 To build MPFR, you first have to install GNU MP (version 5.0.0 or higher)
 on your computer.
 You need a C compiler, preferably GCC, but any reasonable compiler should
-work.  And you need the standard Unix @samp{make} command, plus some other
-standard Unix utility commands.
+work (C++ compilers should work too, under the condition that they do not
+break type punning via union).  And you need the standard Unix @samp{make}
+command, plus some other standard Unix utility commands.
 
 Then, in the MPFR build directory, type the following commands.
 

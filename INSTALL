@@ -30,6 +30,11 @@ MPFR).
 
 0. You first need to install GMP. See <https://gmplib.org/>.
    MPFR requires GMP version 5.0.0 or later.
+   You need a C compiler, preferably GCC, but any reasonable compiler should
+   work (C++ compilers should work too, under the condition that they do not
+   break type punning via union).
+   And you need the standard Unix "make" command, plus some other standard
+   Unix utility commands.
 
 1. Extract the files from the archive.
 
