@@ -22,17 +22,21 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 /* Note: If you use a C99-compatible implementation and GMP (or MPIR)
- * has been compiled without HAVE_VSNPRINTF defined, then this test
+ * has been compiled without HAVE_VSNPRINTF defined[*], then this test
  * may fail with an error like
  *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
  *
  * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
  * even though the C library supports it.
  *
+ * [*] GMP compiled under OpenBSD 7+ is affected, but not its official port,
+ * which skips the %n vsnprintf test: https://openports.se/devel/gmp
+ *
  * References:
  *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
  *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
  *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
+ *   https://marc.info/?l=openbsd-bugs&m=167118761118904&w=2
  */
 
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
