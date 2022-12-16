@@ -33,13 +33,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
  *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
  *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
- *
- * Moreover, under OpenBSD 7+, GMP's HAVE_VSNPRINTF is not defined because
- * OpenBSD no longer supports the %n printf specifier:
- * https://www.openbsd.org/plus70.html says "Changed usage of %n from a syslog
- * warning to syslog and abort for printf(3) (and associated variants)."
- * If GMP is built with HAVE_VSNPRINTF defined (by setting it manually),
- * then several MPFR tests would fail because of the test of %n.
  */
 
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
