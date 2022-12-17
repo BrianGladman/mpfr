@@ -471,7 +471,7 @@ grep 'gmp_printf *(' tests/*.c | \
                 -t "gmp_printf" grep -Ev '/\*.*gmp_printf|%Z'
 
 grep __gmp_ tests/*.c | \
-  err-if-output -t "__gmp_" grep -v '^tests/tabort_defalloc'
+  err-if-output -t "__gmp_" grep -v 'is that __gmp_replacement_vsnprintf'
 
 grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
   err-if-output -t "alloc" grep -Ev '^tests/(memory|talloc-cache).c:'
