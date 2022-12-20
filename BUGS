@@ -70,3 +70,18 @@ Potential bugs:
 
 * Possible use of non-portable feature (pre-C99) of the integer division
   with negative result.
+
+* Conversion with long double on m68k is buggy.
+  https://www.nxp.com/docs/en/reference-manual/M68000PM.pdf
+  Page 1-18, Section 1.6.1 "Normalized Numbers" says:
+    In extended precision, the mantissa's MSB, the explicit integer bit,
+    can only be a one (see Figure 1-13); and the exponent can be zero.
+  and Section 1.6.2 "Denormalized Numbers" says:
+    In extended precision, the mantissa's MSB, the explicit integer bit,
+    can only be a zero (see Figure 1-14).
+  So, this is different from the x86 extended-precision format.
+  Note: this format was allowed by IEEE 754-1985, but not by IEEE 754-2008
+  and later, because one does not have emin = 1 - emax.
+  For additional information:
+    https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00032.html
+    https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00040.html
