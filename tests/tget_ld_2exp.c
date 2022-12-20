@@ -155,21 +155,29 @@ static void
 check_smallest_subnormal (void)
 {
   long double x = 1.0;
-  while ((x * 0.5) != 0)
-    x = x * 0.5;
-  long double y;
-#if defined(HAVE_LDOUBLE_IS_DOUBLE) || defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
-  y = 0x1p-1074;
-#elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || defined(HAVE_LDOUBLE_IEEE_EXT_BIG) || defined(HAVE_LDOUBLE_IEEE_QUAD_LITTLE) || defined(HAVE_LDOUBLE_IEEE_QUAD_BIG)
-  y = 0x1p-16445L;
+  int e1 = 0, e2;
+
+#if defined(HAVE_LDOUBLE_IS_DOUBLE) || \
+    defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
+  e2 = -1074;
+#elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+      defined(HAVE_LDOUBLE_IEEE_EXT_BIG) || \
+      defined(HAVE_LDOUBLE_IEEE_QUAD_LITTLE) || \
+      defined(HAVE_LDOUBLE_IEEE_QUAD_BIG)
+  e2 = -16445;
 #else
-  y = 0; /* unknown format */
+  /* unknown format, do not do anything */
+  return;
 #endif
-  if (y != 0 && (x != y))
+
+  while ((x *= 0.5) != 0)
+    e1--;
+
+  if (e1 != e2)
     {
-      printf ("Error, unexpected smallest subnormal number:\n");
-      printf ("got      %La\n", x);
-      printf ("expected %La\n", y);
+      printf ("Error, unexpected smallest positive subnormal number:\n");
+      printf ("got      0x1p%d\n", e1);
+      printf ("expected 0x1p%d\n", e2);
       exit (1);
     }
 }
