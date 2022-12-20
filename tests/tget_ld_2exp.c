@@ -149,11 +149,38 @@ bug20180904 (void)
 #endif
 }
 
+/* This functions checks the smallest subnormal agrees with the macro defined
+   in acinclude.m4. This could also be checked at configure time. */
+static void
+check_smallest_subnormal (void)
+{
+  long double x = 1.0;
+  while ((x * 0.5) != 0)
+    x = x * 0.5;
+  long double y;
+#if defined(HAVE_LDOUBLE_IS_DOUBLE) || defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
+  y = 0x1p-1074;
+#elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || defined(HAVE_LDOUBLE_IEEE_EXT_BIG) || defined(HAVE_LDOUBLE_IEEE_QUAD_LITTLE) || defined(HAVE_LDOUBLE_IEEE_QUAD_BIG)
+  y = 0x1p-16445L;
+#else
+  y = 0; /* unknown format */
+#endif
+  if (y != 0 && (x != y))
+    {
+      printf ("Error, unexpected smallest subnormal number:\n");
+      printf ("got      %La\n", x);
+      printf ("expected %La\n", y);
+      exit (1);
+    }
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
   mpfr_test_init ();
+
+  check_smallest_subnormal ();
 
   bug20180904 ();
   bug20090520 ();
