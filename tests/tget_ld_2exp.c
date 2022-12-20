@@ -149,8 +149,10 @@ bug20180904 (void)
 #endif
 }
 
-/* This functions checks the smallest subnormal agrees with the macro defined
-   in acinclude.m4. This could also be checked at configure time. */
+/* This function checks that the smallest positive subnormal in long double
+   agrees with the macro defined in acinclude.m4. This should actually be
+   checked at configure time. Otherwise, the behavior of the long double
+   related functions may be wrong. That's why we report an error. */
 static void
 check_smallest_subnormal (void)
 {
