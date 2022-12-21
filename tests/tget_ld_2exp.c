@@ -149,10 +149,8 @@ bug20180904 (void)
 #endif
 }
 
-/* This function checks that the smallest positive subnormal in long double
-   agrees with the macro defined in acinclude.m4. This should actually be
-   checked at configure time. Otherwise, the behavior of the long double
-   related functions may be wrong. That's why we report an error. */
+#if 0
+
 static void
 check_smallest_subnormal (void)
 {
@@ -184,6 +182,8 @@ check_smallest_subnormal (void)
     }
 }
 
+#endif
+
 /* This functions checks the presence of a bug in QEMU for m68k,
    see https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html */
 static void
@@ -207,7 +207,7 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  check_smallest_subnormal ();
+  /* check_smallest_subnormal (); */
   check_qemu_m68k_bug ();
 
   bug20180904 ();
