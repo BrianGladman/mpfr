@@ -184,6 +184,23 @@ check_smallest_subnormal (void)
     }
 }
 
+/* This functions checks the presence of a bug in QEMU for m68k,
+   see https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html */
+static void
+check_qemu_m68k_bug (void)
+{
+  volatile long double m = 0.5;
+  int i;
+  for (i = 0; i < 14; i++)
+    m = m * m;
+  if (m != 0x1p-16384L)
+    {
+      printf ("Error, arithmetic on long doubles is wrong near subnormals\n");
+      printf ("(maybe a QEMU bug on m68k)\n");
+      exit (1);
+    }
+}
+
 int
 main (void)
 {
@@ -191,6 +208,7 @@ main (void)
   mpfr_test_init ();
 
   check_smallest_subnormal ();
+  check_qemu_m68k_bug ();
 
   bug20180904 ();
   bug20090520 ();
