@@ -149,41 +149,6 @@ bug20180904 (void)
 #endif
 }
 
-#if 0
-
-static void
-check_smallest_subnormal (void)
-{
-  long double x = 1.0;
-  int e1 = 0, e2;
-
-#if defined(HAVE_LDOUBLE_IS_DOUBLE) || \
-    defined(HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE)
-  e2 = -1074;
-#elif defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
-      defined(HAVE_LDOUBLE_IEEE_EXT_BIG) || \
-      defined(HAVE_LDOUBLE_IEEE_QUAD_LITTLE) || \
-      defined(HAVE_LDOUBLE_IEEE_QUAD_BIG)
-  e2 = -16445;
-#else
-  /* unknown format, do not do anything */
-  return;
-#endif
-
-  while ((x *= 0.5) != 0)
-    e1--;
-
-  if (e1 != e2)
-    {
-      printf ("Error, unexpected smallest positive subnormal number:\n");
-      printf ("got      0x1p%d\n", e1);
-      printf ("expected 0x1p%d\n", e2);
-      exit (1);
-    }
-}
-
-#endif
-
 /* This functions checks the presence of a bug in QEMU for m68k,
    see https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html */
 static void
@@ -207,7 +172,6 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  /* check_smallest_subnormal (); */
   check_qemu_m68k_bug ();
 
   bug20180904 ();
