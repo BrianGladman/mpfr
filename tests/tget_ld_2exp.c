@@ -144,6 +144,16 @@ check_qemu_m68k_bug (void)
     }
 }
 
+/* The following test was added in commit bc5394550 on 2018-09-04 to
+   detect a MPFR bug with 16-bit limbs. This bug was probably fixed
+   with the work done in the following days. But a failure reappeared
+   on emulated m68k machines with tests done in 2022-12, due to a bug
+   in QEMU caused by the specific m68k extended-precision format, where
+   the bias for the exponent field 0 is different from the x86 one:
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00030.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00039.html
+*/
 static void
 bug20180904 (void)
 {
