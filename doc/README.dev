@@ -497,11 +497,12 @@ List of macros used for building MPFR (also used for checking):
 
 Format of long double.
 + HAVE_LDOUBLE_IS_DOUBLE:               IEEE double.
-+ HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian.
++ HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian (m68k).
 + HAVE_LDOUBLE_IEEE_EXT_LITTLE:         IEEE extended, little endian.
 + HAVE_LDOUBLE_IEEE_QUAD_BIG:           IEEE quad, big endian.
 + HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
+Note that emin(m68k) = emin(x86) - 1.
 
 + MPFR_DISABLE_IEEE_FLOATS:
                         Related to the native floating-point types (e.g.
