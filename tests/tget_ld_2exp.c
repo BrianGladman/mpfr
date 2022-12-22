@@ -131,6 +131,8 @@ bug20090520 (void)
 static void
 check_qemu_m68k_bug (void)
 {
+  /* C99 compiler needed for the hexadecimal FP constant */
+#if __MPFR_STDC (199901L)
   volatile long double m = 0.5;
   int i;
   for (i = 0; i < 14; i++)
@@ -142,6 +144,7 @@ check_qemu_m68k_bug (void)
       printf ("of the above failure.\n");
       exit (1);
     }
+#endif
 }
 
 /* The following test was added in commit bc5394550 on 2018-09-04 to
