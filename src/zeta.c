@@ -642,7 +642,19 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 
           /* multiply z_pre by sin(Pi*s/2) */
           mpfr_div_2ui (p, s, 1, MPFR_RNDN);      /* p = s/2 */
-          /* FIXME: Can mpfr_sinpi underflow? */
+          /* Can mpfr_sinpi underflow? While with mpfr_sin, we could not
+             answer in any precision without a theoretical study (though
+             an underflow would have been very unlikely as we have a
+             huge exponent range), with mpfr_sinpi, an underflow could
+             occur only in a huge, unsupported precision. Indeed, if r is
+             the reduced argument such that |r| <= 1/2, an underflow could
+             occur only if |r| is less than the minimum representable
+             positive number (since |sinpi(r)| > |r| for |r| > 0) and this
+             means that |s/2| > 1/2 and s/2 has non-zero bits of exponent
+             less than the minimum exponent (s/2 - r being an integer),
+             i.e. the precision is at least MPFR_EMAX_MAX. With such a
+             precision, there would probably be failures before reaching
+             this point. */
           mpfr_sinpi (y, p, MPFR_RNDN);           /* y = sin(Pi*s/2) */
           mpfr_mul (z_pre, z_pre, y, MPFR_RNDN);
 
