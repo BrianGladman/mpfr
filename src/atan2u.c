@@ -2,7 +2,7 @@
                    atan2u(y,x,u) = 1-atan(|y/x|)*u/(2*pi) for x < 0
    mpfr_atan2pi -- atan2pi(x) = atan2u(u=2)
 
-Copyright 2021-2022 Free Software Foundation, Inc.
+Copyright 2021-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
