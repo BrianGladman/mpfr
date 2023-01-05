@@ -562,7 +562,6 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, prec1);
       for (;;)
         {
-          mpfr_exp_t ey;
           mpfr_t z_up;
 
           mpfr_const_pi (p, MPFR_RNDD); /* p is Pi */
@@ -642,27 +641,9 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
           mpfr_mul_2ui (z_pre, z_pre, 1, MPFR_RNDN);
 
           /* multiply z_pre by sin(Pi*s/2) */
-          mpfr_mul (y, s, p, MPFR_RNDN);
-          mpfr_div_2ui (p, y, 1, MPFR_RNDN);      /* p = s*Pi/2 */
-          /* FIXME: Now that mpfr_sinpi is available, we should replace the
-             mpfr_sin call below by mpfr_sinpi(s/2), where s/2 will be exact.
-             Can mpfr_sin underflow? Moreover, the code below should be
-             improved so that the "if" condition becomes unlikely, e.g.
-             by taking a slightly larger working precision. */
-          mpfr_sin (y, p, MPFR_RNDN);             /* y = sin(Pi*s/2) */
-          ey = MPFR_GET_EXP (y);
-          if (ey < 0) /* take account of cancellation in sin(p) */
-            {
-              mpfr_t t;
-
-              MPFR_ASSERTN (- ey < MPFR_PREC_MAX - prec1);
-              mpfr_init2 (t, prec1 - ey);
-              mpfr_const_pi (t, MPFR_RNDD);
-              mpfr_mul (t, s, t, MPFR_RNDN);
-              mpfr_div_2ui (t, t, 1, MPFR_RNDN);
-              mpfr_sin (y, t, MPFR_RNDN);
-              mpfr_clear (t);
-            }
+          mpfr_div_2ui (p, s, 1, MPFR_RNDN);      /* p = s/2 */
+          /* FIXME: Can mpfr_sinpi underflow? */
+          mpfr_sinpi (y, p, MPFR_RNDN);           /* y = sin(Pi*s/2) */
           mpfr_mul (z_pre, z_pre, y, MPFR_RNDN);
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, prec1 - add, precz,
