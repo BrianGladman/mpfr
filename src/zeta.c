@@ -300,12 +300,16 @@ mpfr_zeta_pos (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
   return inex;
 }
 
+/* TODO: Check the error analysis. The following (undocumented?) one
+   does not take into account the replacement of sin(Pi*s/2) by sinpi(s/2)
+   in commit fd5d811d81f6d1839d4099cc1bb2cde705981648, which could have
+   reduced the error bound since the multiplication by Pi is now exact. */
 /* return add = 1 + floor(log(c^3*(13+m1))/log(2))
    where c = (1+eps)*(1+eps*max(8,m1)),
    m1 = 1 + max(1/eps,2*sd)*(1+eps),
    eps = 2^(-precz-14)
    sd = abs(s-1)
- */
+*/
 static long
 compute_add (mpfr_srcptr s, mpfr_prec_t precz)
 {
