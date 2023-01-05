@@ -126,6 +126,9 @@ bug20090520 (void)
   mpfr_clear (x);
 }
 
+#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
+
 /* This functions checks the presence of a bug in QEMU for m68k,
    see https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html */
 static void
@@ -160,8 +163,6 @@ check_qemu_m68k_bug (void)
 static void
 bug20180904 (void)
 {
-#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
-    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   mpfr_t x;
   long double d = 5.450797408381041489264061250159e-4937L;
   long double e;
@@ -178,8 +179,9 @@ bug20180904 (void)
       exit (1);
     }
   mpfr_clear (x);
-#endif
 }
+
+#endif  /* HAVE_LDOUBLE_IEEE_EXT_* */
 
 int
 main (void)
@@ -187,7 +189,11 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
+#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   bug20180904 ();
+#endif
+
   bug20090520 ();
 
   check_round ();
