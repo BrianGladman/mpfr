@@ -1,4 +1,8 @@
 # Copyright 2010-2023 Free Software Foundation, Inc.
+# Contributed by the AriC and Caramba projects, INRIA.
+
+# This file is part of the GNU MPFR Library.
+
 # This Makefile.am is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
