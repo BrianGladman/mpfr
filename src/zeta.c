@@ -650,15 +650,17 @@ mpfr_zeta (mpfr_ptr z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
              answer in any precision without a theoretical study (though
              an underflow would have been very unlikely as we have a
              huge exponent range), with mpfr_sinpi, an underflow could
-             occur only in a huge, unsupported precision. Indeed, if r is
-             the reduced argument such that |r| <= 1/2, an underflow could
-             occur only if |r| is less than the minimum representable
-             positive number (since |sinpi(r)| > |r| for |r| > 0) and this
-             means that |s/2| > 1/2 and s/2 has non-zero bits of exponent
-             less than the minimum exponent (s/2 - r being an integer),
-             i.e. the precision is at least MPFR_EMAX_MAX. With such a
-             precision, there would probably be failures before reaching
-             this point. */
+             occur only in a huge, unsupported precision. Indeed, if
+             mpfr_sinpi underflows, this means that 0 < |sinpi(s/2)| < m,
+             where m is the minimum representable positive number, and in
+             this case, r being the reduced argument such that |r| <= 1/2,
+             one has |sinpi(r)| > |2r|, so that |2r| < m; this can be
+             possible only if |s/2| > 1/2 (otherwise |s| = |2r| < m and
+             s would not be representable as an MPFR number) and s has
+             non-zero bits of exponent less than the minimum exponent
+             (s/2 - r being an integer), i.e. the precision is at least
+             MPFR_EMAX_MAX + 2. With such a huge precision, there would
+             probably be failures before reaching this point. */
           mpfr_sinpi (y, p, MPFR_RNDN);           /* y = sin(Pi*s/2) */
           mpfr_mul (z_pre, z_pre, y, MPFR_RNDN);
 
