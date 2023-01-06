@@ -241,6 +241,7 @@ To make a release (for the MPFR team):
      This should at least be done last, in order to be complete before the
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
+     Push the changes with "git push".
 
   5) Create an annotated tag whose name corresponds to the content of
      the VERSION file:
