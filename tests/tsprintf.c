@@ -1719,7 +1719,17 @@ test_locale (void)
   check_sprintf ("000000001,000", "%'013.4Rg", x);
 
 #ifdef PRINTF_GROUPFLAG
-  check_vsprintf ("+01,234,567  :", "%0+ -'13.10Pd:", (mpfr_prec_t) 1234567);
+  /* Do not test the thousands separator with a precision field larger
+     than the number of digits (thus needing leading zeros), such as
+     "%0+ -'13.10Pd:" (used up to MPFR 4.2.0), since the GNU libc is
+     buggy: https://sourceware.org/bugzilla/show_bug.cgi?id=23432
+     We don't know about the other implementations.
+     If we wanted to check that and avoid a failure of the test because of
+     a buggy C library (while MPFR would be consistent with the C library),
+     we could compare the MPFR output with both the correct output and the
+     output from the C library (possibly buggy). But to do that in a clean
+     way, this would require a change in the check_vsprintf() call. */
+  check_vsprintf ("+1,234,567   :", "%0+ -'13Pd:", (mpfr_prec_t) 1234567);
 #endif
 
   mpfr_clear (x);
