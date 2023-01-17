@@ -24,6 +24,15 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* Note: The 3 "INITIALIZED(sh)" occurrences below are necessary
+   to avoid a maybe-uninitialized warning or error, e.g. when
+   configuring MPFR with
+     ./configure --enable-assert CFLAGS="-O2 -Werror=maybe-uninitialized"
+   (a --enable-assert or --enable-assert=full is needed to reproduce
+   the issue). This occurs with GCC 4.9.4, 5.5.0, 6.5.0, 8.4.0, 9.5.0,
+   10.4.0, 11.3.0 and 12.2.0 under Linux (Debian/unstable).
+*/
+
 /* define MPFR_FULLSUB to use alternate code in mpfr_sub1sp2 and mpfr_sub1sp2n
    (see comments in mpfr_sub1sp2) */
 /* #define MPFR_FULLSUB */
