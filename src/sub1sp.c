@@ -31,6 +31,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    (a --enable-assert or --enable-assert=full is needed to reproduce
    the issue). This occurs with GCC 4.9.4, 5.5.0, 6.5.0, 8.4.0, 9.5.0,
    10.4.0, 11.3.0 and 12.2.0 under Linux (Debian/unstable).
+   Bug report: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=108467
 */
 
 /* define MPFR_FULLSUB to use alternate code in mpfr_sub1sp2 and mpfr_sub1sp2n
