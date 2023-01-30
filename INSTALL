@@ -1,4 +1,4 @@
-Copyright 1999-2022 Free Software Foundation, Inc.
+Copyright 1999-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -30,6 +30,11 @@ MPFR).
 
 0. You first need to install GMP. See <https://gmplib.org/>.
    MPFR requires GMP version 5.0.0 or later.
+   You need a C compiler, preferably GCC, but any reasonable compiler should
+   work (C++ compilers should work too, under the condition that they do not
+   break type punning via union).
+   And you need the standard Unix "make" command, plus some other standard
+   Unix utility commands.
 
 1. Extract the files from the archive.
 
@@ -42,12 +47,12 @@ MPFR).
    which may have additional information. The patches can be applied
    with commands like:
 
-     wget --no-config https://www.mpfr.org/mpfr-4.2.0/allpatches
+     wget --no-config https://www.mpfr.org/mpfr-4.3.0/allpatches
      patch -N -Z -p1 < allpatches
 
    or
 
-     curl https://www.mpfr.org/mpfr-4.2.0/allpatches | patch -N -Z -p1
+     curl https://www.mpfr.org/mpfr-4.3.0/allpatches | patch -N -Z -p1
 
    (Those instructions are for the GNU patch command, for example
    /usr/bin/gpatch on Solaris.)
@@ -387,7 +392,7 @@ Several documents may help you to solve the problem:
   * the FAQ (either the FAQ.html file distributed with MPFR, or the
     on-line version <https://www.mpfr.org/faq.html>, which may be more
     up-to-date);
-  * the MPFR web page for this version <https://www.mpfr.org/mpfr-4.2.0/>,
+  * the MPFR web page for this version <https://www.mpfr.org/mpfr-4.3.0/>,
     which lists bugs found in this version and provides some patches.
 
 If the "configure" fails, please check that the C compiler and its

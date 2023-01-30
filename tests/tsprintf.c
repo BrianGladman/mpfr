@@ -1,7 +1,7 @@
 /* tsprintf.c -- test file for mpfr_sprintf, mpfr_vsprintf, mpfr_snprintf,
    and mpfr_vsnprintf
 
-Copyright 2007-2022 Free Software Foundation, Inc.
+Copyright 2007-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -20,6 +20,24 @@ You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+
+/* Note: If you use a C99-compatible implementation and GMP (or MPIR)
+ * has been compiled without HAVE_VSNPRINTF defined[*], then this test
+ * may fail with an error like
+ *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
+ *
+ * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
+ * even though the C library supports it.
+ *
+ * [*] GMP compiled under OpenBSD 7+ is affected, but not its official port,
+ * which skips the %n vsnprintf test: https://openports.se/devel/gmp
+ *
+ * References:
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
+ *   https://marc.info/?l=openbsd-bugs&m=167118761118904&w=2
+ */
 
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
@@ -1701,7 +1719,17 @@ test_locale (void)
   check_sprintf ("000000001,000", "%'013.4Rg", x);
 
 #ifdef PRINTF_GROUPFLAG
-  check_vsprintf ("+01,234,567  :", "%0+ -'13.10Pd:", (mpfr_prec_t) 1234567);
+  /* Do not test the thousands separator with a precision field larger
+     than the number of digits (thus needing leading zeros), such as
+     "%0+ -'13.10Pd:" (used up to MPFR 4.2.0), since the GNU libc is
+     buggy: https://sourceware.org/bugzilla/show_bug.cgi?id=23432
+     We don't know about the other implementations.
+     If we wanted to check that and avoid a failure of the test because of
+     a buggy C library (while MPFR would be consistent with the C library),
+     we could compare the MPFR output with both the correct output and the
+     output from the C library (possibly buggy). But to do that in a clean
+     way, this would require a change in the check_vsprintf() call. */
+  check_vsprintf ("+1,234,567   :", "%0+ -'13Pd:", (mpfr_prec_t) 1234567);
 #endif
 
   mpfr_clear (x);

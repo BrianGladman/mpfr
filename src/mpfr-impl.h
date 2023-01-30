@@ -1,6 +1,6 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999-2022 Free Software Foundation, Inc.
+Copyright 1999-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -1499,8 +1499,9 @@ asm (".section predict_data, \"aw\"; .previous\n"
    VAR = VAR trick (see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296#c3)
    only with gcc as this is undefined behavior, and we don't know what other
    compilers do (they may also be smarter). This self-initialization trick
-   could be disabled with future gcc versions. */
-#if defined(__GNUC__)
+   could be disabled with future gcc versions. It can explicitly be disabled
+   by defining NO_INITIALIZED_TRICK (useful for testing). */
+#if defined(__GNUC__) && !defined(NO_INITIALIZED_TRICK)
 # define INITIALIZED(VAR) VAR = VAR
 #else
 # define INITIALIZED(VAR) VAR

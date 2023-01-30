@@ -1,6 +1,6 @@
 /* mpfr_compound_si --- compound(x,n) = (1+x)^n
 
-Copyright 2021-2022 Free Software Foundation, Inc.
+Copyright 2021-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.

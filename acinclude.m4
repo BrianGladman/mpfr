@@ -1,6 +1,6 @@
 dnl  MPFR specific autoconf macros
 
-dnl  Copyright 2000, 2002-2022 Free Software Foundation, Inc.
+dnl  Copyright 2000, 2002-2023 Free Software Foundation, Inc.
 dnl  Contributed by the AriC and Caramba projects, INRIA.
 dnl
 dnl  This file is part of the GNU MPFR Library.
@@ -533,7 +533,20 @@ case $mpfr_cv_c_double_format in
     ;;
 esac
 
-dnl Now try to determine the format of long double
+dnl Now try to determine the format of long double.
+dnl For IEEE extended, only a normal number is tested. However, there is
+dnl a difference between x86 and m68k in and near the subnormal range:
+dnl emin(m68k) = emin(x86) - 1.
+dnl https://www.nxp.com/docs/en/reference-manual/M68000PM.pdf
+dnl Page 1-18, Section 1.6.1 "Normalized Numbers" says:
+dnl   In extended precision, the mantissa's MSB, the explicit integer bit,
+dnl   can only be a one (see Figure 1-13); and the exponent can be zero.
+dnl and Section 1.6.2 "Denormalized Numbers" says:
+dnl   In extended precision, the mantissa's MSB, the explicit integer bit,
+dnl   can only be a zero (see Figure 1-14).
+dnl However, m68k is big endian, while x86 is little endian. So it seems
+dnl that HAVE_LDOUBLE_IEEE_EXT_LITTLE means x86 extended precision and
+dnl HAVE_LDOUBLE_IEEE_EXT_BIG means m68k extended precision.
 MPFR_C_REALFP_FORMAT(long double,L)
 case $mpfr_cv_c_long_double_format in
   "IEEE double, big endian"*)

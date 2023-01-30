@@ -1,7 +1,7 @@
 /* mpfr_sub1sp -- internal function to perform a "real" subtraction
    All the op must have the same precision
 
-Copyright 2003-2022 Free Software Foundation, Inc.
+Copyright 2003-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -23,6 +23,16 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
+
+/* Note: The 3 "INITIALIZED(sh)" occurrences below are necessary
+   to avoid a maybe-uninitialized warning or error, e.g. when
+   configuring MPFR with
+     ./configure --enable-assert CFLAGS="-O2 -Werror=maybe-uninitialized"
+   (a --enable-assert or --enable-assert=full is needed to reproduce
+   the issue). This occurs with GCC 4.9.4, 5.5.0, 6.5.0, 8.4.0, 9.5.0,
+   10.4.0, 11.3.0 and 12.2.0 under Linux (Debian/unstable).
+   Bug report: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=108467
+*/
 
 /* define MPFR_FULLSUB to use alternate code in mpfr_sub1sp2 and mpfr_sub1sp2n
    (see comments in mpfr_sub1sp2) */

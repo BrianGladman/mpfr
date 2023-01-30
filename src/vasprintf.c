@@ -1,7 +1,7 @@
 /* mpfr_vasnprintf_aux -- helper function for the formatted output functions
    (printf functions family).
 
-Copyright 2007-2022 Free Software Foundation, Inc.
+Copyright 2007-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.

@@ -1,6 +1,6 @@
 /* Test mpfr_get_ld_2exp.
 
-Copyright 2006-2022 Free Software Foundation, Inc.
+Copyright 2006-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -126,11 +126,43 @@ bug20090520 (void)
   mpfr_clear (x);
 }
 
+#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
+
+/* This functions checks the presence of a bug in QEMU for m68k,
+   see https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html */
+static void
+check_qemu_m68k_bug (void)
+{
+  /* C99 compiler needed for the hexadecimal FP constant */
+#if __MPFR_STDC (199901L)
+  volatile long double m = 0.5;
+  int i;
+  for (i = 0; i < 14; i++)
+    m = m * m;
+  if (m != 0x1p-16384L)
+    {
+      printf ("The arithmetic on long double is wrong near subnormals\n");
+      printf ("(maybe a QEMU bug on m68k). This is the probable cause\n");
+      printf ("of the above failure.\n");
+      exit (1);
+    }
+#endif
+}
+
+/* The following test was added in commit bc5394550 on 2018-09-04 to
+   detect a MPFR bug with 16-bit limbs. This bug was probably fixed
+   with the work done in the following days. But a failure reappeared
+   on emulated m68k machines with tests done in 2022-12, due to a bug
+   in QEMU caused by the specific m68k extended-precision format, where
+   the bias for the exponent field 0 is different from the x86 one:
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00030.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00036.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2022-12/msg00039.html
+*/
 static void
 bug20180904 (void)
 {
-#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
-    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   mpfr_t x;
   long double d = 5.450797408381041489264061250159e-4937L;
   long double e;
@@ -143,11 +175,13 @@ bug20180904 (void)
       printf ("Error in bug20180904:\n");
       printf ("expected %.30Le\n", d);
       printf ("got      %.30Le\n", e);
+      check_qemu_m68k_bug ();
       exit (1);
     }
   mpfr_clear (x);
-#endif
 }
+
+#endif  /* HAVE_LDOUBLE_IEEE_EXT_* */
 
 int
 main (void)
@@ -155,7 +189,11 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
+#if defined(HAVE_LDOUBLE_IEEE_EXT_LITTLE) || \
+    defined(HAVE_LDOUBLE_IEEE_EXT_BIG)
   bug20180904 ();
+#endif
+
   bug20090520 ();
 
   check_round ();

@@ -5,7 +5,7 @@
 @c Note that the 5 occurrences of the version string in this file
 @c should be updated by the tools/update-version script.
 @set VERSION 4.3.0-dev
-@set UPDATED-MONTH December 2022
+@set UPDATED-MONTH January 2023
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -25,7 +25,7 @@
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
 
-Copyright 1991, 1993-2022 Free Software Foundation, Inc.
+Copyright 1991, 1993-2023 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License, Version 1.2 or any later
@@ -470,8 +470,9 @@ Here are the steps needed to install the library on Unix systems
 To build MPFR, you first have to install GNU MP (version 5.0.0 or higher)
 on your computer.
 You need a C compiler, preferably GCC, but any reasonable compiler should
-work.  And you need the standard Unix @samp{make} command, plus some other
-standard Unix utility commands.
+work (C++ compilers should work too, under the condition that they do not
+break type punning via union).  And you need the standard Unix @samp{make}
+command, plus some other standard Unix utility commands.
 
 Then, in the MPFR build directory, type the following commands.
 

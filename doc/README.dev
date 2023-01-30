@@ -1,4 +1,4 @@
-Copyright 2002-2022 Free Software Foundation, Inc.
+Copyright 2002-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -241,6 +241,7 @@ To make a release (for the MPFR team):
      This should at least be done last, in order to be complete before the
      generation of the tarball.
      Note: First, make sure that all the pending commits have been done.
+     Push the changes with "git push".
 
   5) Create an annotated tag whose name corresponds to the content of
      the VERSION file:
@@ -497,11 +498,12 @@ List of macros used for building MPFR (also used for checking):
 
 Format of long double.
 + HAVE_LDOUBLE_IS_DOUBLE:               IEEE double.
-+ HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian.
++ HAVE_LDOUBLE_IEEE_EXT_BIG:            IEEE extended, big endian (m68k).
 + HAVE_LDOUBLE_IEEE_EXT_LITTLE:         IEEE extended, little endian.
 + HAVE_LDOUBLE_IEEE_QUAD_BIG:           IEEE quad, big endian.
 + HAVE_LDOUBLE_IEEE_QUAD_LITTLE:        IEEE quad, little endian.
 + HAVE_LDOUBLE_MAYBE_DOUBLE_DOUBLE:     Double-double (a.k.a. IBM).
+Note that emin(m68k) = emin(x86) - 1.
 
 + MPFR_DISABLE_IEEE_FLOATS:
                         Related to the native floating-point types (e.g.
@@ -1525,6 +1527,32 @@ In particular:
 
 ===========================================================================
 
+Makefile portability
+--------------------
+
+Due to the various "make" implementations, the "make" rules must follow
+the POSIX standard:
+  https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+
+The GNU Autoconf manual has a chapter "Portable Make Programming".
+
+The Makefile.am files in the directories distributed with MPFR have
+a .POSIX special target to ensure POSIX behavior. However, Automake
+(at least for versions up to 1.16.5) adds non-comment lines before
+this target in the generated Makefile files; it is not clear whether
+this matters for any "make" implementation, though. About this issue,
+see <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025>.
+
+Be careful with "make" bugs related to errors in shell commands:
+  https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025#24
+
+Corresponding bug report for GNU make:
+  https://savannah.gnu.org/bugs/index.php?63667
+
+So, do not use the '-' prefix or the .IGNORE special target.
+
+===========================================================================
+
 About the test suite
 --------------------
 
@@ -1545,7 +1573,7 @@ of the tests/Makefile.am file.
 
 /* Test file for mpfr_func.
 
-Copyright 2022 Free Software Foundation, Inc.
+Copyright 2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
