@@ -55,7 +55,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define check_length_with_cmp(num_test, var, value, cmp, var_spec)      \
   if (cmp != 0)                                                         \
     {                                                                   \
-      mpfr_printf ("Error in test #%d, mpfr_vfprintf printed %"         \
+      mpfr_printf ("Error in test #%d: mpfr_vfprintf printed %"         \
                    QUOTE(var_spec) " characters instead of %d\n",       \
                    (num_test), (var), (value));                         \
       exit (1);                                                         \
@@ -212,7 +212,9 @@ check_mixed (FILE *fout)
   check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   if (p != 20)
     {
-      mpfr_fprintf (stderr, "Error in test 8, got '%% a. %RNg, b. %Qx, c. %td'\n", mpfr, mpq, saved_p);
+      mpfr_fprintf (stderr,
+                    "Error in test #8: got '%% a. %RNg, b. %Qx, c. %td'\n",
+                    mpfr, mpq, saved_p);
 #if defined(__MINGW32__) || defined(__MINGW64__)
       fprintf (stderr,
                "Your MinGW may be too old, in which case compiling GMP\n"
