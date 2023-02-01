@@ -287,7 +287,7 @@ To make a release (for the MPFR team):
      platform supports that (e.g. under Linux/x86, with GCC and its -mpc64
      option to simulate the FreeBSD / NetBSD 6- behavior, where by default,
      the x87 FPU is configured to round on 53 bits), and in various locales
-     (LC_ALL=tr_TR in particular, if installed).
+     (LC_ALL=tr_TR and LC_ALL=ps_AF in particular, if installed).
      On x86, test with -m96bit-long-double and -m128bit-long-double.
      Try also with gcc's -fno-common option.
      Check also with "-Wformat=2", but without logging support (in order
