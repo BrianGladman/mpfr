@@ -1724,6 +1724,12 @@ test_locale (void)
      "%0+ -'13.10Pd:" (used up to MPFR 4.2.0), since the GNU libc is
      buggy: https://sourceware.org/bugzilla/show_bug.cgi?id=23432
      We don't know about the other implementations.
+     This new test works fine with glibc up to 2.36, but fails with 2.37
+     (as reported by Klaus Dittrich in the MPFR mailing-list); this is
+     actually a bug introduced in glibc 2.37, not in MPFR:
+       https://sourceware.org/bugzilla/show_bug.cgi?id=30068
+     Since this bug can yield a buffer overflow (CVE-2023-25139), let us
+     rather wait for a fix in glibc.
      If we wanted to check that and avoid a failure of the test because of
      a buggy C library (while MPFR would be consistent with the C library),
      we could compare the MPFR output with both the correct output and the
