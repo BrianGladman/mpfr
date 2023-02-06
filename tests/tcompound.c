@@ -238,6 +238,30 @@ check_ieee754 (void)
   mpfr_clear (y);
 }
 
+static void
+bug_20230206 (void)
+{
+  if (MPFR_PREC_MIN == 1)
+    {
+      mpfr_t x, y, z;
+
+      mpfr_inits2 (1, x, y, z, (mpfr_ptr) 0);
+      mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+      mpfr_set_ui_2exp (y, 1, -1072124363, MPFR_RNDN);
+      mpfr_compound_si (z, x, -1832808704, MPFR_RNDN);
+      if (! mpfr_equal_p (y, z))
+        {
+          printf ("Error in bug_20230206:\n");
+          printf ("Expected ");
+          mpfr_dump (y);
+          printf ("Got      ");
+          mpfr_dump (z);
+          exit (1);
+        }
+      mpfr_clears (x, y, z, (mpfr_ptr) 0);
+    }
+}
+
 static int
 mpfr_compound2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -264,6 +288,7 @@ main (void)
   tests_start_mpfr ();
 
   check_ieee754 ();
+  bug_20230206 ();
 
   test_generic_si (MPFR_PREC_MIN, 100, 100);
 
