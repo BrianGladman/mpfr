@@ -238,7 +238,7 @@ check_ieee754 (void)
   mpfr_clear (y);
 }
 
-/* On 2023-02-06, the failure occurs with a 32-bit mpfr_exp_t type
+/* Failure with mpfr_compound_si from 2021-02-15 (e.g. in MPFR 4.2.0)
    due to incorrect underflow detection. */
 static void
 bug_20230206 (void)
@@ -248,9 +248,15 @@ bug_20230206 (void)
       mpfr_t x, y1, y2;
       int inex1, inex2;
       mpfr_flags_t flags1, flags2;
+      mpfr_exp_t emin;
 
       mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
       mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);  /* x = 1/2 */
+
+      /* This first test is for a 32-bit mpfr_exp_t type
+         (no failure with a 64-bit mpfr_exp_t type since
+         the underflow threshold is much lower). */
+
       mpfr_set_ui_2exp (y1, 1, -1072124363, MPFR_RNDN);
       inex1 = -1;
       flags1 = MPFR_FLAGS_INEXACT;
@@ -262,7 +268,7 @@ bug_20230206 (void)
             SAME_SIGN (inex1, inex2) &&
             flags1 == flags2))
         {
-          printf ("Error in bug_20230206:\n");
+          printf ("Error in bug_20230206 (1):\n");
           printf ("Expected ");
           mpfr_dump (y1);
           printf ("  with inex = %d, flags =", inex1);
@@ -273,6 +279,43 @@ bug_20230206 (void)
           flags_out (flags2);
           exit (1);
         }
+
+      /* This second test is for a 64-bit mpfr_exp_t type
+         (it is disabled with a 32-bit mpfr_exp_t type). */
+
+      /* The "#if" makes sure that 64-bit constants are supported, avoiding
+         a compilation failure. The "if" makes sure that the constant is
+         representable in a long (this would not be the case with 32-bit
+         unsigned long and 64-bit limb). It also ensures that mpfr_exp_t
+         has at least 64 bits. */
+#if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
+      emin = mpfr_get_emin ();
+      set_emin (MPFR_EMIN_MIN);
+      mpfr_set_ui_2exp (y1, 1, -4611686018427366846, MPFR_RNDN);
+      inex1 = 1;
+      flags1 = MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      /* -7883729320669216768 ~= -2^62 / log2(3/2) */
+      inex2 = mpfr_compound_si (y2, x, -7883729320669216768, MPFR_RNDN);
+      flags2 = __gmpfr_flags;
+      if (!(mpfr_equal_p (y1, y2) &&
+            SAME_SIGN (inex1, inex2) &&
+            flags1 == flags2))
+        {
+          printf ("Error in bug_20230206 (2):\n");
+          printf ("Expected ");
+          mpfr_dump (y1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
+          printf ("Got      ");
+          mpfr_dump (y2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
+          exit (1);
+        }
+      set_emin (emin);
+#endif
+
       mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
     }
 }
