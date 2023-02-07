@@ -33,6 +33,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 int
 mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
 {
+  MPFR_LOG_FUNC
+    (("x[%Pu]=%.*Rg i=%ld e=%" MPFR_EXP_FSPEC "d",
+      mpfr_get_prec (b), mpfr_log_prec, b, i, (mpfr_eexp_t) f),
+     ("", 0));
+
   int si;
 
   si = i < 0 ? -1 : 1; /* sign of i */
