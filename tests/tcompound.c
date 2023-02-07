@@ -20,6 +20,10 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* TODO: Generate and test cases that are very close to the overflow
+   and underflow thresholds (for all rounding modes), both below and
+   above the thresholds. */
+
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_compound_si
