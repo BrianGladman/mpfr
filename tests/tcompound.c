@@ -238,6 +238,8 @@ check_ieee754 (void)
   mpfr_clear (y);
 }
 
+/* On 2023-02-06, the failure occurs with a 32-bit mpfr_exp_t type
+   due to incorrect underflow detection. */
 static void
 bug_20230206 (void)
 {
@@ -253,6 +255,7 @@ bug_20230206 (void)
       inex1 = -1;
       flags1 = MPFR_FLAGS_INEXACT;
       mpfr_clear_flags ();
+      /* -1832808704 ~= -2^30 / log2(3/2) */
       inex2 = mpfr_compound_si (y2, x, -1832808704, MPFR_RNDN);
       flags2 = __gmpfr_flags;
       if (!(mpfr_equal_p (y1, y2) &&
