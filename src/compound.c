@@ -55,7 +55,7 @@ int
 mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 {
   int inexact, compared, k, nloop;
-  mpfr_t t;
+  mpfr_t t, u;
   mpfr_exp_t e;
   mpfr_prec_t prec;
   MPFR_ZIV_DECL (loop);
@@ -140,6 +140,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   prec += MPFR_INT_CEIL_LOG2 (prec) + 6;
 
   mpfr_init2 (t, prec);
+  mpfr_init2 (u, prec);
 
   k = MPFR_INT_CEIL_LOG2(SAFE_ABS (unsigned long, n));  /* thus |n| <= 2^k */
 
@@ -160,18 +161,32 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       e += k;
       /* |t - n*log2(1+x)| <= 2^(e-prec) */
       /* detect overflow */
-      if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emax) >= 0)
+      mpfr_set_ui (u, 2, MPFR_RNDN);
+      mpfr_pow_si (u, u, e - prec, MPFR_RNDN);
+      /* now u = 2^(e-prec) */
+      mpfr_sub (u, t, u, MPFR_RNDD);
+      /* u <= n*log2(1+x) thus if u >= __gmpfr_emax, then
+         (1+x)^n >= 2^__gmpfr_emax and we have overflow */
+      if (mpfr_cmp_si (t, __gmpfr_emax) >= 0)
         {
           MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
+          mpfr_clear (u);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (y, rnd_mode, 1);
         }
       /* detect underflow */
-      if (nloop == 0 && mpfr_cmp_si (t, __gmpfr_emin - 1) <= 0)
+      mpfr_set_ui (u, 2, MPFR_RNDN);
+      mpfr_pow_si (u, u, e - prec, MPFR_RNDN);
+      /* now u = 2^(e-prec) */
+      mpfr_add (u, t, u, MPFR_RNDU);
+      /* n*log2(1+x) <= u thus if u <= __gmpfr_emin-1, then
+         (1+x)^n <= 2^(__gmpfr_emin-1) and we have underflow */
+      if (mpfr_cmp_si (u, __gmpfr_emin - 1) <= 0)
         {
           MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
+          mpfr_clear (u);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_underflow (y,
                             (rnd_mode == MPFR_RNDN) ? MPFR_RNDZ : rnd_mode, 1);
@@ -220,6 +235,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
  end:
   MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
+  mpfr_clear (u);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
