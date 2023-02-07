@@ -292,7 +292,7 @@ bug_20230206 (void)
          representable in a long (this would not be the case with 32-bit
          unsigned long and 64-bit limb). It also ensures that mpfr_exp_t
          has at least 64 bits. */
-#if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
+#if MPFR_PREC_BITS >= 64
       emin = mpfr_get_emin ();
       set_emin (MPFR_EMIN_MIN);
       mpfr_set_ui_2exp (y1, 1, -4611686018427366846, MPFR_RNDN);
