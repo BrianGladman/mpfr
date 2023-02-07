@@ -243,22 +243,34 @@ bug_20230206 (void)
 {
   if (MPFR_PREC_MIN == 1)
     {
-      mpfr_t x, y, z;
+      mpfr_t x, y1, y2;
+      int inex1, inex2;
+      mpfr_flags_t flags1, flags2;
 
-      mpfr_inits2 (1, x, y, z, (mpfr_ptr) 0);
-      mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
-      mpfr_set_ui_2exp (y, 1, -1072124363, MPFR_RNDN);
-      mpfr_compound_si (z, x, -1832808704, MPFR_RNDN);
-      if (! mpfr_equal_p (y, z))
+      mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
+      mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);  /* x = 1/2 */
+      mpfr_set_ui_2exp (y1, 1, -1072124363, MPFR_RNDN);
+      inex1 = -1;
+      flags1 = MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      inex2 = mpfr_compound_si (y2, x, -1832808704, MPFR_RNDN);
+      flags2 = __gmpfr_flags;
+      if (!(mpfr_equal_p (y1, y2) &&
+            SAME_SIGN (inex1, inex2) &&
+            flags1 == flags2))
         {
           printf ("Error in bug_20230206:\n");
           printf ("Expected ");
-          mpfr_dump (y);
+          mpfr_dump (y1);
+          printf ("  with inex = %d, flags =", inex1);
+          flags_out (flags1);
           printf ("Got      ");
-          mpfr_dump (z);
+          mpfr_dump (y2);
+          printf ("  with inex = %d, flags =", inex2);
+          flags_out (flags2);
           exit (1);
         }
-      mpfr_clears (x, y, z, (mpfr_ptr) 0);
+      mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
     }
 }
 
