@@ -2405,9 +2405,13 @@ used for @code{pow}.
 
 @deftypefun int mpfr_compound_si (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the power @var{n} of one plus @var{op},
-following IEEE@tie{}754 for the special cases and exceptions.
-When @var{n} is zero and @var{op} is NaN or greater or equal to @minus{}1,
-@var{rop} is set to 1.
+following IEEE@tie{}754 for the special cases and exceptions. In particular:
+@itemize @bullet
+@item When @tm{@var{op} < @minus{}1}, @var{rop} is set to NaN@.
+@item When @var{n} is zero and @var{op} is NaN (like any value greater or equal to @minus{}1), @var{rop} is set to 1.
+@item When @tm{@var{op} = @minus{}1}, @var{rop} is set to @mm{+}Inf for @tm{@var{n} < 0}, and to @mm{+}0 for @tm{@var{n} > 0}.
+@end itemize
+The other special cases follow the usual rules.
 @end deftypefun
 
 @deftypefun int mpfr_cos (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
