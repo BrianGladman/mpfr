@@ -326,17 +326,104 @@ bug_20230206 (void)
     }
 }
 
+/* Inverse function on non-special cases...
+   One has x = (1+y)^n with y > -1 and x > 0. Thus y = x^(1/n) - 1.
+   The inverse function is useful
+     - to build and check hard-to-round cases (see bad_cases() in tests.c);
+     - to test the behavior close to the overflow and underflow thresholds.
+   The case x = 0 actually needs to be handled as it may occur with
+   bad_cases() due to rounding.
+*/
 static int
-mpfr_compound2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 {
-  return mpfr_compound_si (y, x, 2, rnd_mode);
+  mpfr_t t;
+  int inexact;
+  mpfr_prec_t precy, prect;
+  MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_ASSERTN (n != 0);
+
+  if (MPFR_UNLIKELY (MPFR_IS_ZERO (x)))
+    {
+      if (n > 0)
+        return mpfr_set_si (y, -1, rnd_mode);
+      else
+        {
+          MPFR_SET_INF (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);
+        }
+    }
+
+  MPFR_SAVE_EXPO_MARK (expo);
+
+  if (mpfr_equal_p (x, __gmpfr_one))
+    {
+      MPFR_SAVE_EXPO_FREE (expo);
+      mpfr_set_zero (y, 1);
+      MPFR_RET (0);
+    }
+
+  precy = MPFR_GET_PREC (y);
+  prect = precy + 20;
+  mpfr_init2 (t, prect);
+
+  MPFR_ZIV_INIT (loop, prect);
+  for (;;)
+    {
+      mpfr_exp_t expt1, expt2, err;
+      unsigned int inex1, inex2;
+
+      inex1 = mpfr_rootn_si (t, x, n, MPFR_RNDN);
+      expt1 = MPFR_GET_EXP (t);
+      /* |error| <= 2^(expt1-prect-1) */
+      inex2 = mpfr_sub_ui (t, t, 1, MPFR_RNDN);
+      if ((inex1 | inex2) == 0)
+        break;  /* exact */
+      if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+        goto cont;  /* cannot round yet */
+      expt2 = MPFR_GET_EXP (t);
+      err = 1;
+      if (expt2 < expt1)
+        err += expt1 - expt2;
+      /* |error(rootn)| <= 2^(err+expt2-prect-2)
+         and if mpfr_sub_ui is inexact:
+         |error| <= 2^(err+expt2-prect-2) + 2^(expt2-prect-1)
+                 <= (2^(err-1) + 1) * 2^(expt2-prect-1)
+                 <= 2^((err+1)+expt2-prect-2) */
+      if (inex2)
+        err++;
+      /* |error| <= 2^(err+expt2-prect-2) */
+      if (MPFR_CAN_ROUND (t, prect + 2 - err, precy, rnd_mode))
+        break;
+
+    cont:
+      MPFR_ZIV_NEXT (loop, prect);
+      mpfr_set_prec (t, prect);
+    }
+  MPFR_ZIV_FREE (loop);
+
+  inexact = mpfr_set (y, t, rnd_mode);
+  mpfr_clear (t);
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
 
-static int
-mpfr_compound3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
-{
-  return mpfr_compound_si (y, x, 3, rnd_mode);
-}
+#define DEFN(N)                                                         \
+  static int mpfr_compound##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r) \
+  { return mpfr_compound_si (y, x, N, r); }                             \
+  static int inv_compound##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)  \
+  { return inv_compound (y, x, N, r); }
+
+DEFN(2)
+DEFN(3)
+DEFN(4)
+DEFN(5)
+DEFN(17)
+DEFN(120)
 
 #define TEST_FUNCTION mpfr_compound2
 #define test_generic test_generic_compound2
@@ -344,6 +431,22 @@ mpfr_compound3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
 #define TEST_FUNCTION mpfr_compound3
 #define test_generic test_generic_compound3
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_compound4
+#define test_generic test_generic_compound4
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_compound5
+#define test_generic test_generic_compound5
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_compound17
+#define test_generic test_generic_compound17
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_compound120
+#define test_generic test_generic_compound120
 #include "tgeneric.c"
 
 int
@@ -358,6 +461,25 @@ main (void)
 
   test_generic_compound2 (MPFR_PREC_MIN, 100, 100);
   test_generic_compound3 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compound4 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compound5 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compound17 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compound120 (MPFR_PREC_MIN, 100, 100);
+
+  /* Note: For small n, we need a psup high enough to avoid too many
+     "f exact while f^(-1) inexact" occurrences in bad_cases(). */
+  bad_cases (mpfr_compound2, inv_compound2, "mpfr_compound2",
+             0, -256, 255, 4, 128, 240, 40);
+  bad_cases (mpfr_compound3, inv_compound3, "mpfr_compound3",
+             0, -256, 255, 4, 128, 120, 40);
+  bad_cases (mpfr_compound4, inv_compound4, "mpfr_compound4",
+             0, -256, 255, 4, 128, 80, 40);
+  bad_cases (mpfr_compound5, inv_compound5, "mpfr_compound5",
+             0, -256, 255, 4, 128, 80, 40);
+  bad_cases (mpfr_compound17, inv_compound17, "mpfr_compound17",
+             0, -256, 255, 4, 128, 80, 40);
+  bad_cases (mpfr_compound120, inv_compound120, "mpfr_compound120",
+             0, -256, 255, 4, 128, 80, 40);
 
   tests_end_mpfr ();
   return 0;
