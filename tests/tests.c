@@ -1086,8 +1086,18 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                 }
               if (inex_inv)
                 {
-                  printf ("bad_cases: f exact while f^(-1) inexact,\n"
-                          "due to a poor choice of the parameters.\n");
+                  printf ("bad_cases (%s): f exact while f^(-1) inexact,\n"
+                          "due to a poor choice of the parameters."
+                          " Increase psup?\n", name);
+                  printf ("y = ");
+                  mpfr_out_str (stdout, 16, 0, y, MPFR_RNDN);
+                  printf ("\n");
+                  printf ("x = ");
+                  mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
+                  printf ("\n");
+                  printf ("z = ");
+                  mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
+                  printf ("\n\n");
                   exit (1);
                   /* alternatively, goto next_i */
                 }
