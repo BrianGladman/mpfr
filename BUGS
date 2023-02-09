@@ -45,11 +45,25 @@ Known bugs:
 
 Potential bugs:
 
-* Possible incorrect results due to internal underflow, which can lead to
-  a huge loss of accuracy while the error analysis doesn't take that into
-  account. If the underflow occurs at the last function call (just before
-  the MPFR_CAN_ROUND), the result should be correct (or MPFR gets into an
-  infinite loop). TODO: check the code and the error analysis.
+* Possible incorrect results due to internal overflow or underflow, which
+  can lead to a huge loss of accuracy while the error analysis does not
+  take that into account. If the overflow or underflow occurs at the last
+  function call (just before the MPFR_CAN_ROUND), the (result,error bound)
+  pair should be valid (or MPFR may either get into an infinite loop or
+  return an incorrect result). In particular, this may not be the case if
+  the last operation before MPFR_CAN_ROUND underflows to a non-zero real
+  number (i.e. the minimum positive or negative number in magnitude): while
+  MPFR_CAN_ROUND always returns false for singular numbers (which could be
+  the consequence of an overflow or an underflow in the last operation),
+  the behavior on non-zero real numbers is based on a valid error bound.
+  An overflow with MPFR_RNDZ could also be an issue (though such a case
+  is probably already handled correctly in the MPFR code). Note that the
+  README.dev file already warns about these issues.
+  TODO:
+    * Check the code and the error analysis.
+    * When possible, add tests near the underflow and overflow thresholds,
+      using the inverse function (in a similar way to what bad_cases() does
+      to build hard-to-round cases).
 
 * Possible bugs with huge precisions (> 2^30) and a 32-bit ABI, in particular
   undetected integer overflows. TODO: use the MPFR_ADD_PREC macro.
