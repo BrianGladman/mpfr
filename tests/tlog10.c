@@ -113,6 +113,8 @@ main (int argc, char *argv[])
   mpfr_clear (y);
 
   data_check ("data/log10", mpfr_log10, "mpfr_log10");
+  bad_cases (mpfr_log10, mpfr_exp10, "mpfr_log10",
+             256, -30, 30, 4, 128, 800, 50);
 
   tests_end_mpfr ();
   return 0;

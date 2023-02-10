@@ -75,6 +75,8 @@ main (int argc, char *argv[])
   test_generic (MPFR_PREC_MIN, 100, 30);
 
   data_check ("data/log2", mpfr_log2, "mpfr_log2");
+  bad_cases (mpfr_log2, mpfr_exp2, "mpfr_log2",
+             256, -30, 30, 4, 128, 800, 50);
 
   tests_end_mpfr ();
   return 0;

@@ -310,6 +310,8 @@ main (int argc, char *argv[])
   overfl_exp10_0 ();
 
   data_check ("data/exp10", mpfr_exp10, "mpfr_exp10");
+  bad_cases (mpfr_exp10, mpfr_log10, "mpfr_exp10",
+             0, -256, 255, 4, 128, 800, 50);
 
   tests_end_mpfr ();
   return 0;
