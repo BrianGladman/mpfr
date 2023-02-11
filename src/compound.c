@@ -167,11 +167,13 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       mpfr_sub (u, t, u, MPFR_RNDD);
       /* FIXME: An exponent check is not sufficient because the overflow
          and underflow thresholds before rounding are not necessarily
-         powers of 2, i.e. one can have an infinite loop. Conversely,
-         Patrick Pelissier also reported an independent failure about a
-         spurious overflow, which would mean that the error analysis is
-         incorrect, as an overflow is generated while
-         (1+x)^n < 2^__gmpfr_emax. */
+         powers of 2, i.e. one can have an infinite loop (a possible
+         solution would be to compare the log2 of the result with the
+         log2 of the overflow/underflow threshold, taking the error bound
+         into account). Conversely, Patrick Pelissier also reported an
+         independent failure about a spurious overflow, which would mean
+         that the error analysis is incorrect, as an overflow is generated
+         while (1+x)^n < 2^__gmpfr_emax. */
       /* u <= n*log2(1+x) thus if u >= __gmpfr_emax, then
          (1+x)^n >= 2^__gmpfr_emax and we have overflow */
       if (mpfr_cmp_si (t, __gmpfr_emax) >= 0)
