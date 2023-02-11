@@ -165,6 +165,13 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       mpfr_pow_si (u, u, e - prec, MPFR_RNDN);
       /* now u = 2^(e-prec) */
       mpfr_sub (u, t, u, MPFR_RNDD);
+      /* FIXME: An exponent check is not sufficient because the overflow
+         and underflow thresholds before rounding are not necessarily
+         powers of 2, i.e. one can have an infinite loop. Conversely,
+         Patrick Pelissier also reported an independent failure about a
+         spurious overflow, which would mean that the error analysis is
+         incorrect, as an overflow is generated while
+         (1+x)^n < 2^__gmpfr_emax. */
       /* u <= n*log2(1+x) thus if u >= __gmpfr_emax, then
          (1+x)^n >= 2^__gmpfr_emax and we have overflow */
       if (mpfr_cmp_si (t, __gmpfr_emax) >= 0)
@@ -201,6 +208,10 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (t), rnd_mode);
           goto end;
         }
+      /* FIXME: mpfr_exp2 could underflow to the smallest positive number
+         since MPFR_RNDA is used, and this case will not be detected by
+         MPFR_CAN_ROUND (see BUGS). Either fix that, or do early underflow
+         detection (which may be necessary). */
       inex |= mpfr_exp2 (t, t, MPFR_RNDA) != 0;
       /* |t - (1+x)^n| <= ulp(t) + |t|*log(2)*2^(e-prec)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-prec) */
