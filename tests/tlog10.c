@@ -49,6 +49,60 @@ test_log10 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
 
+/* On 2023-02-13, one gets an infinite loop in mpfr_log10 on both
+   32-bit and 64-bit hosts when the precision is not large enough
+   (precision 12 and below). */
+static void
+bug20230213 (void)
+{
+  mpfr_exp_t old_emin, old_emax, e;
+  mpfr_t t, x, y0, y1, y2;
+  int prec;
+
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
+
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+  e = mpfr_get_emax () - 1;
+
+  /* The precisions of t and y0 should be large enough to avoid
+     a hard-to-round case for the target precisions. */
+  mpfr_inits2 (64, t, y0, (mpfr_ptr) 0);
+  mpfr_set_exp_t (y0, e, MPFR_RNDN);
+  mpfr_log_ui (t, 10, MPFR_RNDN);
+  mpfr_div (y0, y0, t, MPFR_RNDN);
+  mpfr_log_ui (t, 2, MPFR_RNDN);
+  mpfr_mul (y0, y0, t, MPFR_RNDN);
+
+  for (prec = 16; prec >= MPFR_PREC_MIN; prec--)
+    {
+      mpfr_inits2 (prec, x, y1, y2, (mpfr_ptr) 0);
+      mpfr_set (y1, y0, MPFR_RNDN);
+
+      mpfr_set_ui_2exp (x, 1, e, MPFR_RNDN);
+      mpfr_log10 (y2, x, MPFR_RNDN);
+      MPFR_ASSERTN (MPFR_IS_PURE_FP (y2));
+      MPFR_ASSERTN (MPFR_IS_POS (y2));
+
+      if (! mpfr_equal_p (y1, y2))
+        {
+          printf ("Error in bug20230213.\n");
+          printf ("Expected ");
+          mpfr_dump (y1);
+          printf ("Got      ");
+          mpfr_dump (y2);
+          exit (1);
+        }
+      mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+    }
+
+  mpfr_clears (t, y0, (mpfr_ptr) 0);
+
+  set_emin (old_emin);
+  set_emax (old_emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -111,6 +165,8 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  bug20230213 ();
 
   data_check ("data/log10", mpfr_log10, "mpfr_log10");
   bad_cases (mpfr_log10, mpfr_exp10, "mpfr_log10",
