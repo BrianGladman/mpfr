@@ -358,6 +358,7 @@ main (void)
   test_generic (MPFR_PREC_MIN, 200, 15);
   data_check ("data/sqr", mpfr_sqr, "mpfr_sqr");
   bad_cases (mpfr_sqr, mpfr_sqrt, "mpfr_sqr", 8, -256, 255, 4, 128, 800, 50);
+  ofuf_thresholds (mpfr_sqr, mpfr_sqrt, "mpfr_sqr", 128, 128, 0, POSOF);
 
   tests_end_mpfr ();
   return 0;

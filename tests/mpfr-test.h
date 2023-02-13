@@ -184,6 +184,11 @@ extern "C" {
 
 #define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
+#define POSOF (0+0)
+#define POSUF (0+1)
+#define NEGOF (2+0)
+#define NEGUF (2+1)
+
 int test_version (void);
 
 /* Memory handling */
@@ -224,6 +229,8 @@ void data_check (const char *, int (*) (FLIST), const char *);
 void bad_cases (int (*)(FLIST), int (*)(FLIST),
                 const char *, int, mpfr_exp_t, mpfr_exp_t,
                 mpfr_prec_t, mpfr_prec_t, mpfr_prec_t, int);
+void ofuf_thresholds (int (*)(FLIST), int (*)(FLIST), const char *,
+                      mpfr_prec_t, mpfr_prec_t, int, unsigned int);
 void flags_out (unsigned int);
 
 int mpfr_cmp_str (mpfr_srcptr x, const char *, int, mpfr_rnd_t);

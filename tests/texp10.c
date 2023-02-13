@@ -312,6 +312,8 @@ main (int argc, char *argv[])
   data_check ("data/exp10", mpfr_exp10, "mpfr_exp10");
   bad_cases (mpfr_exp10, mpfr_log10, "mpfr_exp10",
              0, -256, 255, 4, 128, 800, 50);
+  ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 128, 128, 0, POSOF);
+  ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 128, 128, 0, POSUF);
 
   tests_end_mpfr ();
   return 0;

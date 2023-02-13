@@ -1953,6 +1953,34 @@ main (int argc, char **argv)
   bad_cases (powm120, rootm120, "mpfr_pow_si[-120]",
              8, -256, 255, 4, 128, 800, 40);
 
+  ofuf_thresholds (powu2, root2, "mpfr_pow_ui[2]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows2, root2, "mpfr_pow_si[2]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powm2, rootm2, "mpfr_pow_si[-2]", 128, 128, 1, POSOF);
+  ofuf_thresholds (powu3, root3, "mpfr_pow_ui[3]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powu3, root3, "mpfr_pow_ui[3]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (pows3, root3, "mpfr_pow_si[3]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows3, root3, "mpfr_pow_si[3]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (powm3, rootm3, "mpfr_pow_si[-3]", 128, 128, 1, POSOF);
+  ofuf_thresholds (powm3, rootm3, "mpfr_pow_si[-3]", 128, 128, 1, NEGOF);
+  ofuf_thresholds (powu4, root4, "mpfr_pow_ui[4]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows4, root4, "mpfr_pow_si[4]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powm4, rootm4, "mpfr_pow_si[-4]", 128, 128, 1, POSOF);
+  ofuf_thresholds (powu5, root5, "mpfr_pow_ui[5]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powu5, root5, "mpfr_pow_ui[5]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (pows5, root5, "mpfr_pow_si[5]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows5, root5, "mpfr_pow_si[5]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (powm5, rootm5, "mpfr_pow_si[-5]", 128, 128, 1, POSOF);
+  ofuf_thresholds (powm5, rootm5, "mpfr_pow_si[-5]", 128, 128, 1, NEGOF);
+  ofuf_thresholds (powu17, root17, "mpfr_pow_ui[17]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powu17, root17, "mpfr_pow_ui[17]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (pows17, root17, "mpfr_pow_si[17]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows17, root17, "mpfr_pow_si[17]", 128, 128, 0, NEGOF);
+  ofuf_thresholds (powm17, rootm17, "mpfr_pow_si[-17]", 128, 128, 1, POSOF);
+  ofuf_thresholds (powm17, rootm17, "mpfr_pow_si[-17]", 128, 128, 1, NEGOF);
+  ofuf_thresholds (powu120, root120, "mpfr_pow_ui[120]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows120, root120, "mpfr_pow_si[120]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powm120, rootm120, "mpfr_pow_si[-120]", 128, 128, 1, POSOF);
+
   tests_end_mpfr ();
   return 0;
 }

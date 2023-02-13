@@ -438,6 +438,8 @@ main (int argc, char *argv[])
   data_check ("data/exp2", mpfr_exp2, "mpfr_exp2");
   bad_cases (mpfr_exp2, mpfr_log2, "mpfr_exp2",
              0, -256, 255, 4, 128, 800, 50);
+  ofuf_thresholds (mpfr_exp2, mpfr_log2, "mpfr_exp2", 128, 128, 0, POSOF);
+  /* Do not test the underflow threshold as it is exact. */
 
   tests_end_mpfr ();
   return 0;

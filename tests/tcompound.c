@@ -481,6 +481,11 @@ main (void)
   bad_cases (mpfr_compound120, inv_compound120, "mpfr_compound120",
              0, -256, 255, 4, 128, 80, 40);
 
+  ofuf_thresholds (mpfr_compound2, inv_compound2, "mpfr_compound2",
+                   128, 128, 0, POSOF);
+  ofuf_thresholds (mpfr_compound2, inv_compound2, "mpfr_compound2",
+                   128, 128, 0, POSUF);
+
   tests_end_mpfr ();
   return 0;
 }
