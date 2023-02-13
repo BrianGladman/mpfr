@@ -1221,10 +1221,11 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                  mpfr_prec_t pxmax, mpfr_prec_t pymax,
                  int decr, unsigned int threshold)
 {
+  char *dbgenv;
   mpfr_exp_t old_emin, old_emax;
   mpfr_prec_t px, py;
   mpfr_t t;
-  int neg, ufl, nxu;
+  int neg, ufl, nxu, dbg;
   mpfr_flags_t eflags;
   int always_exact = 1;
 
@@ -1236,6 +1237,12 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 
   old_emin = mpfr_get_emin ();
   old_emax = mpfr_get_emax ();
+
+  dbgenv = getenv ("MPFR_DEBUG_OFUF");
+  dbg = dbgenv != 0 ? atoi (dbgenv) : 0;  /* debug level */
+  if (dbg)
+    printf ("ofuf_thresholds: %s with %s %s\n", name,
+            neg ? "negative" : "positive", ufl ? "underflow" : "overflow");
 
   /* Extend the exponent range to the maximum since this is what is
      generally done in the implementation.
@@ -1271,8 +1278,22 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
               mpfr_setmax (t, mpfr_get_emax ());
             }
 
+          if (dbg)
+            {
+              printf ("ofuf_thresholds: xprec=%lu, yprec=%lu\n"
+                      "ofuf_thresholds: t = ",
+                      (unsigned long) px, (unsigned long) py);
+              mpfr_dump (t);
+            }
+
           inex = inv (x[0], t, MPFR_RNDD);
           MPFR_ASSERTN (inex <= 0);
+
+          if (dbg)
+            {
+              printf ("ofuf_thresholds: xd = ");
+              mpfr_dump (x[0]);
+            }
 
           /* The test is valid only on an inexact threshold. */
           if (inex == 0)
@@ -1298,6 +1319,15 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                 mpfr_rnd_t rnd = (mpfr_rnd_t) r;
                 mpfr_flags_t flags;
                 int sign;
+
+                if (dbg)
+                  {
+                    printf ("ofuf_thresholds: xprec=%lu, yprec=%lu, rnd=%s\n"
+                            "ofuf_thresholds: x = ",
+                            (unsigned long) px, (unsigned long) py,
+                            mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                    mpfr_dump (x[i]);
+                  }
 
                 mpfr_clear_flags ();
                 inex = fct (y, x[i], rnd);

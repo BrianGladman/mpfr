@@ -659,6 +659,8 @@ Environment variables that affect the tests:
 
 + MPFR_DEBUG_BADCASES:  For debugging (see tests.c, function bad_cases).
 
++ MPFR_DEBUG_OFUF:      For debugging (see tests.c, function ofuf_thresholds).
+
 + MPFR_SUSPICIOUS_OVERFLOW:
                         Define to check suspicious overflow in the generic
                         tests (tgeneric.c). For developers and testers.
