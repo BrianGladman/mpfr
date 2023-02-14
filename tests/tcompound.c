@@ -326,6 +326,43 @@ bug_20230206 (void)
     }
 }
 
+/* Reported by Patrick Pelissier on 2023-02-11
+   (tgeneric_ui.c with GMP_CHECK_RANDOMIZE=1412991715).
+   On a 32-bit host, one gets Inf (overflow) instead of 0.1E1071805703.
+*/
+static void
+bug_20230211 (void)
+{
+  mpfr_t x, y1, y2;
+  int inex1, inex2;
+  mpfr_flags_t flags1, flags2;
+
+  mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);  /* x = 1/2 */
+  mpfr_set_ui_2exp (y1, 1, 1071805702, MPFR_RNDN);
+  inex1 = 1;
+  flags1 = MPFR_FLAGS_INEXACT;
+  mpfr_clear_flags ();
+  inex2 = mpfr_compound_si (y2, x, 1832263949, MPFR_RNDN);
+  flags2 = __gmpfr_flags;
+  if (!(mpfr_equal_p (y1, y2) &&
+        SAME_SIGN (inex1, inex2) &&
+        flags1 == flags2))
+    {
+      printf ("Error in bug_20230211:\n");
+      printf ("Expected ");
+      mpfr_dump (y1);
+      printf ("  with inex = %d, flags =", inex1);
+      flags_out (flags1);
+      printf ("Got      ");
+      mpfr_dump (y2);
+      printf ("  with inex = %d, flags =", inex2);
+      flags_out (flags2);
+      exit (1);
+    }
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+}
+
 /* Inverse function on non-special cases...
    One has x = (1+y)^n with y > -1 and x > 0. Thus y = x^(1/n) - 1.
    The inverse function is useful
@@ -456,6 +493,7 @@ main (void)
 
   check_ieee754 ();
   bug_20230206 ();
+  bug_20230211 ();
 
   test_generic_si (MPFR_PREC_MIN, 100, 100);
 
