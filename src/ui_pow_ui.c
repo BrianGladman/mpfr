@@ -78,6 +78,36 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int k, unsigned long int n,
           if (n & (1UL << i))
             inex_res |= mpfr_mul_ui (res, res, k, MPFR_RNDU);
         }
+
+      if (MPFR_UNLIKELY (MPFR_IS_INF (res)))
+        {
+          mpfr_t kf;
+          mpz_t z;
+          int size_k;
+          MPFR_BLOCK_DECL (flags);
+
+          /* Let's handle the overflow by calling mpfr_pow_z.
+             Alternatively, we could call mpfr_pow_ui; this would
+             need a bit shorter code below, but mpfr_pow_ui handles
+             the overflow by calling mpfr_pow_z, so that calling
+             mpfr_pow_z directly should be a bit more efficient. */
+
+          MPFR_ZIV_FREE (loop);
+          mpfr_clear (res);
+          for (size_k = 0, m = k; m != 0; size_k++, m >>= 1)
+            ;
+          mpfr_init2 (kf, size_k);
+          inexact = mpfr_set_ui (kf, k, MPFR_RNDN);
+          MPFR_ASSERTD (inexact == 0);
+          mpz_init (z);
+          mpz_set_ui (z, n);
+          MPFR_BLOCK (flags, inexact = mpfr_pow_z (x, kf, z, rnd););
+          mpz_clear (z);
+          mpfr_clear (kf);
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, flags);
+          goto end;
+        }
+
       /* since the loop is executed floor(log2(n)) times,
          we have err = 1+floor(log2(n)).
          Since prec >= MPFR_PREC(x) + 4 + floor(log2(n)), prec > err */
@@ -98,6 +128,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int k, unsigned long int n,
 
   mpfr_clear (res);
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd);
 }
