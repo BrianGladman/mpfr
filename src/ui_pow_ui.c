@@ -83,6 +83,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int k, unsigned long int n,
          Since prec >= MPFR_PREC(x) + 4 + floor(log2(n)), prec > err */
       err = prec - err;
 
+      MPFR_LOG_VAR (res);
       if (MPFR_LIKELY (!inex_res
                        || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))
         break;
