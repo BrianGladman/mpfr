@@ -414,6 +414,16 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       unsigned int inex1, inex2;
 
       inex1 = mpfr_rootn_si (t, x, n, MPFR_RNDN);
+      if (inex1 == 0)
+        {
+          /* With a huge t, this case would yield inex2 != 0 and the need
+             of a huge precision for correct rounding. Fortunately, since
+             t is exact, we can obtain the correct rounding by doing the
+             second operation to the target precision directly. */
+          inexact = mpfr_sub_ui (y, t, 1, rnd_mode);
+          MPFR_ZIV_FREE (loop);
+          goto end;
+        }
       expt1 = MPFR_GET_EXP (t);
       /* |error| <= 2^(expt1-prect-1) */
       inex2 = mpfr_sub_ui (t, t, 1, MPFR_RNDN);
@@ -443,8 +453,9 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (y, t, rnd_mode);
-  mpfr_clear (t);
 
+ end:
+  mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
