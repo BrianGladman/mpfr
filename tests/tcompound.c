@@ -411,24 +411,23 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   for (;;)
     {
       mpfr_exp_t expt1, expt2, err;
-      unsigned int inex1, inex2;
+      unsigned int inext;
 
-      inex1 = mpfr_rootn_si (t, x, n, MPFR_RNDN);
-      if (inex1 == 0)
+      if (mpfr_rootn_si (t, x, n, MPFR_RNDN) == 0)
         {
-          /* With a huge t, this case would yield inex2 != 0 and the need
-             of a huge precision for correct rounding. Fortunately, since
-             t is exact, we can obtain the correct rounding by doing the
-             second operation to the target precision directly. */
+          /* With a huge t, this case would yield inext != 0 and a
+             MPFR_CAN_ROUND failure until a huge precision is reached
+             (as the result is very close to an exact point). Fortunately,
+             since t is exact, we can obtain the correctly rounded result
+             by doing the second operation to the target precision directly.
+          */
           inexact = mpfr_sub_ui (y, t, 1, rnd_mode);
           MPFR_ZIV_FREE (loop);
           goto end;
         }
       expt1 = MPFR_GET_EXP (t);
       /* |error| <= 2^(expt1-prect-1) */
-      inex2 = mpfr_sub_ui (t, t, 1, MPFR_RNDN);
-      if ((inex1 | inex2) == 0)
-        break;  /* exact */
+      inext = mpfr_sub_ui (t, t, 1, MPFR_RNDN);
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
         goto cont;  /* cannot round yet */
       expt2 = MPFR_GET_EXP (t);
@@ -440,7 +439,7 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          |error| <= 2^(err+expt2-prect-2) + 2^(expt2-prect-1)
                  <= (2^(err-1) + 1) * 2^(expt2-prect-1)
                  <= 2^((err+1)+expt2-prect-2) */
-      if (inex2)
+      if (inext)
         err++;
       /* |error| <= 2^(err+expt2-prect-2) */
       if (MPFR_CAN_ROUND (t, prect + 2 - err, precy, rnd_mode))
