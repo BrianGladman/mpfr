@@ -422,7 +422,6 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
              by doing the second operation to the target precision directly.
           */
           inexact = mpfr_sub_ui (y, t, 1, rnd_mode);
-          MPFR_ZIV_FREE (loop);
           goto end;
         }
       expt1 = MPFR_GET_EXP (t);
@@ -449,11 +448,11 @@ inv_compound (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_NEXT (loop, prect);
       mpfr_set_prec (t, prect);
     }
-  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (y, t, rnd_mode);
 
  end:
+  MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
