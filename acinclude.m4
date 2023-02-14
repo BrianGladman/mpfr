@@ -883,6 +883,32 @@ int main (void) {
      ])
 fi
 
+dnl Timeout support in the testsuite.
+dnl If the --enable-tests-timeout option has not been provided, let's
+dnl enable timeout support only in -dev versions and if we detect that
+dnl the needed POSIX features seem to be available (this is not much
+dnl useful for releases, where an infinite loop is very unlikely).
+dnl When supported, default is 0 (no timeout).
+if test -z "$enable_tests_timeout" && test -n "$dev_version"; then
+AC_MSG_CHECKING(if timeout can be supported)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/resource.h>
+]], [[
+  struct rlimit rlim[1];
+  if (getrlimit (RLIMIT_CPU, rlim))
+    return 1;
+  rlim->rlim_cur = 1;
+  if (setrlimit (RLIMIT_CPU, rlim))
+    return 1;
+]])], [
+  AC_MSG_RESULT(yes)
+  enable_tests_timeout=yes
+],[AC_MSG_RESULT(no)])
+fi
+if test "$enable_tests_timeout" = yes; then
+  AC_DEFINE([MPFR_TESTS_TIMEOUT], 0, [timeout limit])
+fi
+
 ])
 dnl end of MPFR_CONFIGS
 

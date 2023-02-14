@@ -95,6 +95,11 @@ dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 unset gmp_lib_path GMP_CFLAGS GMP_CC
 
+unset dev_version
+if $EGREP -q -e '-dev$' $srcdir/VERSION; then
+  dev_version=1
+fi
+
 dnl ********************************************************************
 dnl Extra arguments to configure (AC_ARG_WITH and AC_ARG_ENABLE)
 
@@ -228,6 +233,9 @@ AC_ARG_ENABLE(warnings,
       *)   AC_MSG_ERROR([bad value for --enable-warnings: yes or no]) ;;
      esac])
 
+dnl For timeout support (in the testsuite), the case "yes" and absent
+dnl --enable-tests-timeout option will be handled in a consistent way
+dnl in MPFR_CONFIGS (see acinclude.m4).
 AC_ARG_ENABLE(tests-timeout,
    [  --enable-tests-timeout=NUM
                           [[for developers]] enable timeout for test programs
@@ -236,7 +244,7 @@ AC_ARG_ENABLE(tests-timeout,
                           overrides NUM (0: no timeout)],
    [ case $enableval in
       no)   ;;
-      yes)  AC_DEFINE([MPFR_TESTS_TIMEOUT], 0, [timeout limit]) ;;
+      yes)  ;;
       [[0-9]]|[[0-9]][[0-9]]|[[0-9]][[0-9]][[0-9]]|[[0-9]][[0-9]][[0-9]][[0-9]])
        AC_DEFINE_UNQUOTED([MPFR_TESTS_TIMEOUT], $enableval, [timeout limit]) ;;
       *)    AC_MSG_ERROR([bad value for --enable-tests-timeout]) ;;
@@ -857,7 +865,7 @@ if test -f confdefs.h; then
   done
 fi
 
-if $EGREP -q -e '-dev$' $srcdir/VERSION; then
+if test -n "$dev_version"; then
   AC_SUBST([DATAFILES])dnl
   DATAFILES=`echo \`$SED -n \
     's/^ *data_check *("\(data\/[[^"]]*\)".*/tests\/\1/p' \
