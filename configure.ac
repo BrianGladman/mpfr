@@ -245,7 +245,7 @@ AC_ARG_ENABLE(tests-timeout,
    [ case $enableval in
       no)   ;;
       yes)  ;;
-      [[0-9]]|[[0-9]][[0-9]]|[[0-9]][[0-9]][[0-9]]|[[0-9]][[0-9]][[0-9]][[0-9]])
+      [[0-9]|[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]])
        AC_DEFINE_UNQUOTED([MPFR_TESTS_TIMEOUT], $enableval, [timeout limit]) ;;
       *)    AC_MSG_ERROR([bad value for --enable-tests-timeout]) ;;
      esac])
