@@ -173,7 +173,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          into account). Conversely, Patrick Pelissier also reported an
          independent failure about a spurious overflow, which would mean
          that the error analysis is incorrect, as an overflow is generated
-         while (1+x)^n < 2^__gmpfr_emax. */
+         while (1+x)^n < 2^__gmpfr_emax.
+         Note: getting the intermediate result with rounding toward 1
+         might be a solution to avoid spurious overflow and underflow. */
       /* u <= n*log2(1+x) thus if u >= __gmpfr_emax, then
          (1+x)^n >= 2^__gmpfr_emax and we have overflow */
       if (mpfr_cmp_si (t, __gmpfr_emax) >= 0)
